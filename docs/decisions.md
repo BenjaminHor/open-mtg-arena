@@ -454,5 +454,6 @@ every schema change and every change D-024 lists bumps it.
 - It isn't listed by `legalActions`: it's always available, like a menu button, and listing it would make random
   agents (the CLI's `random`, the fuzzer) concede all the time. Hosts offer it themselves.
 - The game ends at once (CR 104.1): a spell or ability part way through being put on the stack stays where it is, and
-  the result's `turn` is 0 when the game ends before the first turn.
+  the result's `turn` is 0 when the game ends before the first turn. So code reading a finished game (a replay viewer,
+  a log) must not assume a spell on the stack means `casting` is set, or that `pregame` is null.
 

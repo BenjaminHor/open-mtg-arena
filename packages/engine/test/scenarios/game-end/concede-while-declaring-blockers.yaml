@@ -16,3 +16,4 @@ steps:
   - expect:
       winner: p2
       pending: null
+      p2.life: 20

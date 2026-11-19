@@ -1,0 +1,11 @@
+name: The player who isn't choosing who goes first can concede before the choice
+rules: [CR 104.3a, CR 103.1]
+setup:
+  opening: standard
+steps:
+  - expect:
+      pending: { player: p1, kind: chooseStartingPlayer }
+  - p2 concede: now
+  - expect:
+      winner: p1
+      events contains: [{ type: GAME_ENDED, result: { winner: p1, turn: 0 } }]

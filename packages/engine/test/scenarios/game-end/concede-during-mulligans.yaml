@@ -1,5 +1,5 @@
 name: Conceding before the first turn ends the game on turn 0
-rules: [CR 104.3a, CR 103.5]
+rules: [CR 104.3a, CR 104.2a, CR 104.1, CR 103.5]
 setup:
   opening: standard
   first: p1

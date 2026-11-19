@@ -123,7 +123,10 @@ record of which creatures already dealt damage. A creature blocking several atta
 scenario `block` step.
 
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
-*Watch out:* combat (D-040) throws when attacks go to several players; each defending player will declare blockers
+*Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
+the player from `turnOrder` (or mark them) so they can't concede twice, and pass priority on if they had it (CR 800.4a).
+`GameResult.winner` is one player: team games (CR 104.2c) and draws for only some players (CR 104.4e) will need a
+result per player. Combat (D-040) throws when attacks go to several players; each defending player will declare blockers
 (CR 509.1) and attacks will need planeswalkers and battles as defenders (CR 506.3). `playersLose` (D-039) throws when a player loses with more than one player left. Leaving the game
 (CR 800.4a: their objects leave, control effects end, priority passes on) has to be built there first.
 *Needs now:* nothing assumes exactly two players. Use player lists and turn order, never "the opponent".
