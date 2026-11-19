@@ -1,0 +1,11 @@
+name: A player without priority can't pass
+rules: [CR 117.3d, CR 117.4, CR 500.2]
+setup:
+  turn: { active: p1, step: main1 }
+steps:
+  - p2 pass: once
+  - expect error: notYourPriority
+  - p1 pass: once
+  - expect:
+      step: main1
+      pending: { player: p2, kind: priority }

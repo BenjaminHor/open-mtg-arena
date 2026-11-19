@@ -1,0 +1,16 @@
+name: Unspent mana empties from every pool as each step ends, even between steps of one phase
+rules: [CR 500.5]
+setup:
+  turn: { active: p1, step: combat.beginning }
+  p1: { manaPool: { R: 2 } }
+  p2: { manaPool: { G: 1 } }
+steps:
+  - p1 pass: once
+  - expect:
+      p1.manaPool: { R: 2 }
+      step: combat.beginning
+  - p2 pass: once
+  - expect:
+      step: combat.declareAttackers
+      p1.manaPool: {}
+      p2.manaPool: {}

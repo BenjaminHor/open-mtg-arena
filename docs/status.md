@@ -25,8 +25,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
 - `pnpm check` is typecheck + lint + tests for now. Its other parts in `docs/testing.md` join as they're built:
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
-- M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
-  them to YAML scenarios (`scenarios/start/`), keeping the same cases.
+- Scenarios: write new rules tests as YAML in `packages/engine/test/scenarios/<area>/` (testing.md). Extend the runner
+  (`packages/scenarios`) and testing.md together when a task adds steps (`play`, `cast`, `activate`, `attack`, `block`).
+  The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
 - Work queue (D-032): new pauses mid-step (M1-13's attackers and blockers) become work items, like `finishCleanup`.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
 - For M1-09/M1-10: target legality on resolution (CR 608.2b) goes in `effectWork` (`game/resolve.ts`); a spell that
@@ -53,7 +54,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
 - The engine's step names follow the CR (`precombatMain`, `declareBlockers`, see `engine/src/state/turn.ts`).
   `testing.md`'s scenario YAML uses short names (`main1`, `combat.declareBlockers`); the M1-16 runner maps them.
-- When M1-16 lands the scenario runner, drop `--passWithNoTests` from `test:scenarios`, so a misplaced runner fails.
 - `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request and is now the default branch
   (2026-11-19). From now on, work reaches `main` only through pull requests.
 - The "open-mtg-arena" environment also allows Scryfall (`api.scryfall.com`, `data.scryfall.io`). `pnpm cards:fetch`
@@ -84,6 +84,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-07 Priority and the stack: the work queue and `advance()` (D-032), resolving the top of the stack when all pass
   (CR 117.4, 608): abilities cease to exist, instants and sorceries to the graveyard, permanents onto the battlefield;
   priority to the active player after (CR 117.3b) (2026-11-19).
+- M1-16 Scenario runner: `packages/scenarios` (D-033) runs YAML scenarios through `legalActions()`, checking expectations
+  and invariants on every state; 16 scenarios for game start and turn structure; a test checks testing.md documents
+  every word the runner knows (2026-11-19).
 
 ## Open questions for the owner
 - (none)

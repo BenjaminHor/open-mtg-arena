@@ -1,0 +1,9 @@
+name: A deck smaller than an opening hand can't start a standard game
+# An engine precondition, not a CR rule (D-030): it's far below any legal deck size (CR 100.2a), and it means the
+# start of the game can never draw from an empty library.
+rules: [CR 100.2a]
+setup:
+  opening: standard
+  p2:
+    library: [Mountain, Mountain, Mountain]
+expect setup error: at least 7 cards

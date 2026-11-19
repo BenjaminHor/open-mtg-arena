@@ -1,0 +1,5 @@
+name: A fixed opening can't start in the starting player's skipped turn-1 draw step
+rules: [CR 103.8a]
+setup:
+  turn: { active: p1, step: draw, number: 1 }
+expect setup error: CR 103.8a

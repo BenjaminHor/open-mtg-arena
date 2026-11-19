@@ -146,6 +146,8 @@ the card data types in `src/cards/` (`CardDatabase`, `CardDef`, ...; D-026) and 
 engine internals leak. The RNG functions stay internal for now. The CLI's `random` agent and the fuzzer (M1-17, M1-18)
 need seeded randomness to reproduce failures; when they arrive, export `seedRng` and `randomInt` with a new entry here
 rather than copying the RNG or using `Math.random`.
+It also exports `controllerOf` (M1-16), the single answer to "who controls this?", so tools like the scenario runner
+never read the stored default controller themselves; `characteristics()` will cover it once it exists (M1-11).
 
 **D-024: The random number generator and its outputs are fixed** · 2026-11-19 · accepted
 All randomness in a game comes from `GameState.rng`: xoshiro128** 1.1, seeded from `GameSetup.seed` (a non-negative safe
@@ -215,6 +217,8 @@ and avoids crossover or digital-only printings, without changing any rules behav
 - Every zone change goes through `moveCard` (`engine/src/zones/move-card.ts`), the one place the replacement and
   trigger steps of the event pipeline will plug in.
 - Only two-player games start for now: the multiplayer start rules (CR 103.5c, 103.8c) aren't built.
+- A standard opening needs at least 7 cards in each deck. That's an engine precondition, not a CR rule (legal decks are
+  far bigger, CR 100.2a), so the start of the game can never draw from an empty library.
 - Superseded by D-031 for the first turn: M1-05's shortcut to the upkeep is gone, and the first turn walks its steps
   like any other. `legalActions` lists `PASS_PRIORITY` for priority from M1-06.
 - In a standard opening every setup permanent starts summoning sick and mana pools must be empty: no turn has begun.
@@ -274,3 +278,15 @@ and avoids crossover or digital-only printings, without changing any rules behav
   skipped if the object already left the stack, CR 608.2m), then priority. A spell whose targets are all illegal won't
   resolve (CR 608.2b, 608.3b); that becomes a different final step with M1-09.
 - The spec's M1-07 scenario of responding to a spell with an instant needs casting, so it moved to M1-09's acceptance.
+
+**D-033: The scenario runner is its own package, with `yaml` as a dependency** · 2026-11-19 · accepted
+Scenarios name real cards, so the runner needs `@mtg/cards`, and the engine may not depend on it. So the runner is
+`packages/scenarios` (depends on `engine`; its tests use `cards` for the real card database, and callers pass the
+database in). The scenario files stay in `packages/engine/test/scenarios/`,
+next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario` and `export --scenario`.
+- New runtime dependency: `yaml` 2.9.1 (pinned), the standard YAML parser for JavaScript, with no dependencies of its own.
+  It's used only by `packages/scenarios`, never by the engine or the app.
+- The runner has no file I/O (`runScenario(text, cards)`), so it runs anywhere. Its `invariantProblems` is the shared
+  list of engine invariants the fuzzer (M1-18) will reuse.
+- The M1-05 and M1-06 behaviors are also YAML scenarios now (`start/`, `turn/`), as the readable spec. The TypeScript
+  tests stay: they check event order and were mutation-tested. The M1-07 stack tests stay TypeScript until casting exists.

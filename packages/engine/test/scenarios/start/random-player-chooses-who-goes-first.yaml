@@ -1,0 +1,16 @@
+name: A player picked at random chooses who takes the first turn, and may choose the other player
+rules: [CR 103.1]
+setup:
+  opening: standard
+  seed: 1
+steps:
+  - expect:
+      pending: { player: p1, kind: chooseStartingPlayer }
+  - p1 choose: p2
+  - expect:
+      pending: { player: p2, kind: mulligan }
+  - p2 choose: keep
+  - p1 choose: keep
+  - expect:
+      turn: 1
+      active: p2

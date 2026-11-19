@@ -1,0 +1,17 @@
+name: Both players keep, and the starting player begins turn 1
+rules: [CR 103.5, CR 103.8, CR 117.3a]
+setup:
+  opening: standard
+  first: p1
+steps:
+  - expect:
+      pending: { player: p1, kind: mulligan, mulligansTaken: 0 }
+      p1.hand count: 7
+      p2.hand count: 7
+  - p1 choose: keep
+  - p2 choose: keep
+  - expect:
+      turn: 1
+      active: p1
+      step: upkeep
+      pending: { player: p1, kind: priority }

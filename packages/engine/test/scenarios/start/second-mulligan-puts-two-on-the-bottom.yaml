@@ -1,0 +1,22 @@
+name: A second mulligan puts two cards on the bottom, and a player who kept isn't asked again
+rules: [CR 103.5]
+setup:
+  opening: standard
+  first: p1
+steps:
+  - p1 choose: mulligan
+  - p2 choose: keep
+  - p1 choose: Forest
+  - expect:
+      pending: { player: p1, kind: mulligan, mulligansTaken: 1 }
+  - p2 choose: mulligan
+  - expect error: notYourDecision
+  - p1 choose: mulligan
+  - expect:
+      p1.hand count: 7
+      pending: { player: p1, kind: mulliganBottom, remaining: 2 }
+  - p1 choose: Forest
+  - p1 choose: Forest
+  - expect:
+      p1.hand count: 5
+      pending: { player: p1, kind: mulligan, mulligansTaken: 2 }
