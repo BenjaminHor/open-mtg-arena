@@ -7,7 +7,24 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (none: M1-19 next)
+- M1-19 Golden games, coverage report and benchmarks (plan, 2026-11-19). docs/testing.md sections 4 to 6. Three PRs:
+  1. Golden games. `packages/engine/test/golden/<name>.json` is a recipe (decks, setup seed, agent, agent seed, turn
+     cap) plus the actions it produced; `<name>.log` is the game's event log (`logLines`, brief), one event per line.
+     `cli/test/golden.test.ts` replays each game's actions and compares the log line by line, so a diff reads as
+     "T6 Giant Spider now survives". `pnpm golden:update` replays the recipes and rewrites actions and logs (a game
+     whose actions became illegal is played again from its recipe); `pnpm golden:add --decks a,b --seed N` adds one.
+     Games: two per prebuilt pairing (red-aggro and green-stompy against each other and themselves), plus enough
+     random-deck games that every pool card is played or cast in at least one; a test checks that coverage.
+     Accept: a deliberate rules change (a mutant) shows a readable diff.
+  2. Coverage report. `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`: rules cited in code
+     (`packages/*/src`), rules tested by scenarios (`rules:` lists), and gaps (cited, not tested), plus interaction
+     matrix cells marked "not yet". A test fails on a gap not in the committed report. The matrix README in
+     `packages/engine/test/scenarios/interactions/` for the M1 mechanics. Accept: removing a scenario fails the check.
+  3. `pnpm bench` against `bench/baseline.json` (applyAction on typical states, a full random game, legalActions and
+     characteristics on a busy board), failing above 20% slower; budgets from architecture.md. Accept: a deliberate
+     slowdown fails it.
+  - Future impact: golden logs change whenever event text or rules change, so the recipe-based regenerate keeps them
+    cheap to update; the coverage report's parser must accept every citation form used (`CR 702.19c`, ranges later).
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
