@@ -166,6 +166,16 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- **M1 exit criterion "no rule cited in code without a scenario" (asked 2026-11-19; not blocking yet).** A first count:
+  the engine and card code cite 290 rules; scenarios cover 156; 49 more are covered only by TypeScript unit tests
+  (player views, card data parsing, damage helpers: things a scenario can't express); 85 have no test at all. Of those
+  85, many are type-definition notes or mentions of rules not built yet (CR 614 replacement effects, CR 800.4 leaving
+  the game), and some are real gaps (attack restrictions CR 508.1b–d, CR 510.3, CR 608.2d/e).
+  Recommended: count a rule as tested when a scenario *or* a unit test cites it (the report lists the two separately),
+  write mentions of rules not yet built as `(later: CR 614)` so they aren't counted as implemented, and close the real
+  gaps with scenarios. The criterion would read "no rule cited in code without a test". The alternative is the literal
+  reading: a scenario for every cited rule, which needs the runner to express views and card data, or the citations
+  removed. Until the owner decides, the report shows both kinds and the check fails on rules with neither.
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
