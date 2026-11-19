@@ -97,9 +97,14 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `expect: { ... }`, see below.
 - `expect error: <code>`: the step before it must be rejected with this error code (for example `notYourPriority`). The
   runner then sends the action directly, without looking it up in `legalActions()`.
+- `p1 activate: <card>`: activate an ability of a permanent. A plain name means one p1 controls (the first, in
+  battlefield order, whose ability can be activated now); a reference like `p2:Mountain` names exactly one, for
+  example to show p1 can't activate p2's land. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
+  them (printed abilities, then a basic land's mana ability), when the permanent has more than one. Only mana
+  abilities can be activated so far; other activated abilities arrive in M1-14.
 - Steps that arrive with later tasks, and fail until then: `p1 play: <land>` and `p1 cast: <card>` (M1-09, with
-  `targets`, `modes`, `x`, `pay: auto`), `p1 activate: <card>` (M1-08, with `ability: <n>` counting from 1 in the order
-  `characteristics()` lists the object's abilities), `p1 attack: [...]` and `p2 block: { blocker: attacker }` (M1-13).
+  `targets`, `modes`, `x`, `pay: auto`), `p1 attack: [...]` and `p2 block: { blocker: attacker }` (M1-13). `activate`
+  also takes `targets`, `modes`, `x` and `pay` from M1-14.
 
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).

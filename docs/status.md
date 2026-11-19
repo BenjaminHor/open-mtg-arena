@@ -7,24 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-08 Mana and costs. Plan:
-  - `abilitiesOf(state, id, cards)` (rules/abilities.ts): an object's activated abilities with their `AbilityRef`, the
-    printed ones plus a basic land type's intrinsic "{T}: Add [mana]" (CR 305.6). `isManaAbility` decides CR 605.1a.
-  - Activating a mana ability while holding priority (CR 605.3a): only its controller (CR 602.2), only on the battlefield
-    (CR 113.6), costs paid in full (CR 118.3): {T} needs an untapped permanent (CR 107.5), and a creature controlled since
-    the turn began (CR 602.5a, 302.6). It doesn't use the stack and resolves at once (CR 605.3b): mana goes into the pool
-    (CR 106.4). The player keeps priority (CR 117.3c), and the pass count restarts (CR 117.4). One `tapPermanent`
-    function, with events (`PERMANENT_TAPPED`, `MANA_ADDED`).
-  - `legalActions` lists every mana ability the player can activate; other activated abilities (firebreathing) arrive in
-    M1-14 and are rejected until then.
-  - Paying a mana cost from a pool (CR 601.2h, 107.4): `payFromPool` takes the colored symbols from their color and
-    generic from what's left, all or nothing, in a fixed order. `autoPay(state, player, cost, cards)`: the deterministic
-    helper that picks which mana abilities to activate, for scenarios (`pay: auto`), the CLI and the AI (D-034). Casting
-    (M1-09) uses both; "paying exact costs" and "failing to pay" scenarios need casting, so M1-08 covers them with tests
-    of these functions, and M1-09 adds the scenarios.
-  - Scenario runner: `p1 activate: <card>` (with `ability: <n>`), and testing.md updated.
-  - Scenarios: tapping each basic land, Llanowar Elves (and summoning sick: can't), a tapped land can't, another player's
-    land can't, mana empties at the end of the step, priority stays with the player.
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -63,7 +46,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   creature and yourself (CR 115.4); Giant Growth can't target a player (CR 109.2). M1-11: Giant Growth wears off in
   cleanup (CR 514.2). M1-14: firebreathing uses the stack (CR 602.2), stacks three times (CR 613.4c), and resolves after
   the Whelp dies without affecting anything (CR 113.7a, 400.7, 611.2c).
-- For M1-08 or M1-13, a settled CR 302.6 edge case to write as a scenario: a creature that entered on its controller's
+- For M1-09: casting pays with `payFromPool`; the runner's `pay: auto` uses `autoPay` (D-034). Add the "paying exact
+  costs" and "failing to pay" scenarios moved from M1-08.
+- (Done in M1-08: the summoning-sickness mana scenario.) A settled CR 302.6 edge case: a creature that entered on its controller's
   last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
   its controller's next turn.
 - For M1-14: an ability whose source is gone still resolves (CR 113.7a) and uses last known information (CR 608.2h),
@@ -104,6 +89,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-16 Scenario runner: `packages/scenarios` (D-033) runs YAML scenarios through `legalActions()`, checking expectations
   and invariants on every state; 16 scenarios for game start and turn structure; a test checks testing.md documents
   every word the runner knows (2026-11-19).
+- M1-08 Mana and costs: abilities and mana abilities (CR 305.6, 605.1a), activating them with priority (CR 605.3),
+  tapping, summoning sickness for {T} (CR 602.5a), payments checked all or nothing (CR 601.2h), `autoPay` (D-034), the
+  runner's `activate` step, 8 mana scenarios (2026-11-19).
 
 ## Open questions for the owner
 - (none)

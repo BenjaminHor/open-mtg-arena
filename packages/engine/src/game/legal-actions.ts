@@ -2,13 +2,15 @@
 // accepted by applyAction, and the scenario runner, the CLI and the AI choose only from this list.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { manaAbilityProblem } from "../mana/activate.ts";
+import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { PlayerId } from "../state/ids.ts";
+import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { canMulligan } from "./pregame.ts";
 
-export function legalActions(state: GameState, player: PlayerId, _cards: CardDatabase): Action[] {
+export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
   if (state.result !== null || pending === null || pending.player !== player) return [];
   const answer = { type: "ANSWER", decisionId: pending.id, player } as const;
@@ -33,7 +35,19 @@ export function legalActions(state: GameState, player: PlayerId, _cards: CardDat
           answer: { kind: "discardToHandSize", object },
         }));
     case "priority":
-      // Playing lands, casting spells and activating abilities arrive in M1-08 to M1-14.
-      return [{ type: "PASS_PRIORITY", decisionId: pending.id, player }];
+      // Playing lands and casting spells arrive in M1-09, other activated abilities in M1-14.
+      return [
+        { type: "PASS_PRIORITY", decisionId: pending.id, player },
+        ...manaAbilityActions(state, player, pending.id, cards),
+      ];
   }
+}
+
+/** Every mana ability the player could activate now (CR 605.3a), on permanents in battlefield order. */
+function manaAbilityActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
+  return state.zones.battlefield.flatMap((object) =>
+    abilitiesOf(state, object, cards)
+      .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
+      .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),
+  );
 }

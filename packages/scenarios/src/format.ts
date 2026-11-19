@@ -16,6 +16,8 @@ export type ScenarioStep =
   | { kind: "pass"; player: string }
   | { kind: "allPass"; until: string | null }
   | { kind: "choose"; player: string; value: unknown }
+  /** Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. */
+  | { kind: "activate"; player: string; card: string; ability: number | null }
   | { kind: "expect"; expectations: Record<string, unknown> }
   | { kind: "expectError"; code: string }
   /** A step word the format has but the runner doesn't support yet, kept whole for the task that adds it. */
@@ -35,7 +37,6 @@ export const TOP_KEYS = ["name", "rules", "setup", "steps", "expect setup error"
 export const COMING_STEP_WORDS: Record<string, string> = {
   play: "M1-09",
   cast: "M1-09",
-  activate: "M1-08",
   attack: "M1-13",
   block: "M1-13",
 };
@@ -116,6 +117,16 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
   if (word === "choose") {
     noOptions();
     return { kind: "choose", player, value };
+  }
+  if (word === "activate") {
+    const allowed = ["ability"];
+    for (const option of rest)
+      if (!allowed.includes(option)) throw new Error(`${where}: "activate" has no option "${option}" yet`);
+    const ability = raw.ability;
+    if (ability !== undefined && (typeof ability !== "number" || !Number.isInteger(ability) || ability < 1)) {
+      throw new Error(`${where}: ability is a number counting from 1`);
+    }
+    return { kind: "activate", player, card: String(value), ability: typeof ability === "number" ? ability : null };
   }
   const arrives = COMING_STEP_WORDS[word];
   if (arrives === undefined) throw new Error(`${where}: unknown step word "${word}"`);

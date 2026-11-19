@@ -290,3 +290,22 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   list of engine invariants the fuzzer (M1-18) will reuse.
 - The M1-05 and M1-06 behaviors are also YAML scenarios now (`start/`, `turn/`), as the readable spec. The TypeScript
   tests stay: they check event order and were mutation-tested. The M1-07 stack tests stay TypeScript until casting exists.
+
+**D-034: Mana abilities, paying mana, and the autoPay helper** · 2026-11-19 · accepted
+- An object's activated abilities come from `abilitiesOf` (`rules/abilities.ts`): its printed abilities, then the
+  intrinsic mana ability of each basic land type (CR 305.6). Whether an ability is a mana ability is decided by CR 605.1a
+  (`isManaAbility`). Basic land types and card types are read through `subtypesOf` / `cardTypesOf`, which layer 4 will
+  change. Summoning sickness for {T} abilities is one function, `canUseTapAbilities` (CR 602.5a, 302.6), where haste
+  plugs in (M1-13); it applies only to creatures.
+- A player with priority activates a mana ability with `ACTIVATE_ABILITY`: it doesn't use the stack and resolves at once
+  (CR 605.3b), the player keeps priority (CR 117.3c) and the pass count restarts (CR 117.4). Other activated abilities
+  are rejected until M1-14.
+- Which mana pays a cost is the player's choice (CR 601.2h), so a payment is data: how much of each mana type to spend.
+  `payFromPool` checks it all or nothing (colored symbols need their color, generic takes any, no partial payment).
+- `autoPay(state, player, cost, cards)` proposes a payment: mana abilities to activate, then the payment. It uses pool
+  mana first, then lands before creatures, each in battlefield order, and pays colored symbols before generic. With
+  sources that each make one color (all M1 cards), that finds a payment whenever one exists (a brute-force test checks
+  every small board); sources with a choice of colors will need a search. The scenario runner (`pay: auto`), the CLI and
+  the AI use it. The engine exports it with `payFromPool`, `manaValue`, `abilitiesOf` and `isManaAbility` (D-023).
+- The spec's "paying exact costs" and "failing to pay" scenarios need casting, so they moved to M1-09's acceptance;
+  M1-08 tests `payFromPool` and `autoPay` directly. "Leftover mana emptying" is a scenario now.

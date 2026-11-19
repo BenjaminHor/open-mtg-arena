@@ -76,7 +76,7 @@ CLI and the AI. *Accept:* scenarios for paying exact costs, failing to pay, and 
 **M1-09 Playing lands and casting spells.** One land per turn (CR 305.2), sorcery-speed timing (CR 307.1),
 instants (CR 304), the casting procedure as decisions (CR 601.2), and targets: legal choices and the check
 on resolution (CR 115, 608.2b). *Accept:* scenarios for each timing rule (including negative cases) and a spell
-whose only target became illegal. Also a scenario of responding to a spell with an instant (moved here from M1-07, which has no casting).
+whose only target became illegal. Also a scenario of responding to a spell with an instant (moved here from M1-07, which has no casting). And scenarios for paying exact costs and failing to pay (moved here from M1-08, D-034).
 
 **M1-10 Effects interpreter v0.** Effect ops: `dealDamage`, `addMana`, `modifyPT` (until end of turn), and
 the zone-change and draw primitives that turn steps need. Each op documented in `engine/src/effects/README.md`.
