@@ -29,7 +29,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   them to YAML scenarios (`scenarios/start/`), keeping the same cases.
 - Work queue (D-032): new pauses mid-step (M1-13's attackers and blockers) become work items, like `finishCleanup`.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
-- For M1-09/M1-10: target legality on resolution (CR 608.2b) goes in `resolveEffects` (`game/resolve.ts`). Reset
+- For M1-09/M1-10: target legality on resolution (CR 608.2b) goes in `effectWork` (`game/resolve.ts`); a spell that
+  doesn't resolve needs its own final step. Test CR 608.2m (a spell that leaves the stack mid-resolution) once an effect
+  can move one. Reset
   `passesInSuccession` when a player casts or activates (CR 117.4).
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
   each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).

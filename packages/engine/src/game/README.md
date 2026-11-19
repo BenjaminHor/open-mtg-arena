@@ -12,8 +12,8 @@ The engine's entry points and the flow of a game.
 | `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031) |
 | `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
-| `resolve.ts` | `resolveTopOfStack()`: the top spell or ability resolves (CR 608) |
-| `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the step ends (CR 117.3d, 117.4) |
+| `resolve.ts` | `resolveTopOfStack()` queues a resolution's steps; `finishResolving()` is its final part (CR 608) |
+| `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves or the step ends (CR 117.3d, 117.4) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |

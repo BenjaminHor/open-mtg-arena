@@ -2,9 +2,12 @@
 // stack directly; the M1-09 scenarios cast them for real.
 
 import { describe, expect, it } from "vitest";
+import { advance } from "../../src/game/advance.ts";
+import { waitFor } from "../../src/game/decide.ts";
 import { queueWork } from "../../src/game/work.ts";
 import type { AbilityObject, GameState, ObjectId, PlayerId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
+import { TEST_CARDS } from "../support/cards.ts";
 import { act, type Game, playerSetup, start } from "../support/game.ts";
 
 const deck = (card: string, n = 20) => Array.from({ length: n }, () => card);
@@ -133,16 +136,67 @@ describe("resolving the top of the stack (CR 117.4, 405.5, 608.1)", () => {
   });
 });
 
-describe("the work queue (docs/architecture.md)", () => {
-  it("leaves no work behind once the game waits for a decision", () => {
+describe("the work queue and resolution, in more detail", () => {
+  it("gives the active player priority after a resolution even when someone else would be next (CR 117.3b)", () => {
+    // p2 holds priority with the pass count at 0, so after p2 and p1 pass, "the next player" would be p2 again.
     let game = putSpell(precombatMain(), "p1", 1);
+    const s = game.state;
+    game = {
+      state: { ...s, pending: { id: `d${s.nextId}`, player: "p2", kind: "priority" }, nextId: s.nextId + 1 },
+      events: [],
+    };
     game = pass(pass(game));
-    expect(game.state.work).toStrictEqual([]);
+    expect(game.state.zones.stack).toStrictEqual([]);
+    expect(game.state.pending).toMatchObject({ player: "p1", kind: "priority" });
   });
-});
 
-describe("more of the work queue and resolution", () => {
-  it("runs newly queued work before work queued earlier (D-032)", () => {
+  it("needs every player to pass again after a resolution: one pass resolves nothing (CR 117.4)", () => {
+    let game = putSpell(precombatMain(), "p1", 1);
+    game = putSpell(game, "p2", 0);
+    game = pass(pass(game)); // p2's Shock resolves
+    const stack = game.state.zones.stack;
+    game = pass(game);
+    expect(game.state.zones.stack).toStrictEqual(stack);
+    expect(game.state.pending).toMatchObject({ player: "p2", kind: "priority" });
+  });
+
+  it("puts an instant into its owner's graveyard even when another player controlled it, on top (CR 608.2n, 404.1)", () => {
+    let game = precombatMain();
+    const [shock, , hammer] = hand(game.state, "p1") as [ObjectId, ObjectId, ObjectId];
+    const shockCard = cardIdsIn(game.state, [shock])[0];
+    const hammerCard = cardIdsIn(game.state, [hammer])[0];
+    game = { state: moveCard(game.state, hammer, { zone: "stack", controller: "p1" }).state, events: [] };
+    game = { state: moveCard(game.state, shock, { zone: "stack", controller: "p2" }).state, events: [] };
+    game = pass(pass(game)); // Shock (controlled by p2, owned by p1)
+    game = pass(pass(game)); // Hammer
+    expect(cardIdsIn(game.state, game.state.zones.players.p1?.graveyard ?? [])).toStrictEqual([shockCard, hammerCard]);
+    expect(game.state.zones.players.p2?.graveyard).toStrictEqual([]);
+  });
+
+  it("refuses to replace a pending decision, and refuses to stall (D-032)", () => {
+    const game = precombatMain();
+    expect(() => waitFor(game.state, "p2", { kind: "priority" })).toThrow(/Already waiting/);
+    const stuck = { ...game.state, pending: null, work: [] };
+    expect(() => advance({ state: stuck, events: [] }, TEST_CARDS)).toThrow(/nothing pending and no work/);
+  });
+
+  it("runs work an item creates before older work (D-032)", () => {
+    const game = precombatMain();
+    const s = {
+      ...game.state,
+      pending: null,
+      work: [{ kind: "endStep" }, { kind: "givePriority", player: "p2" }],
+    } as const;
+    // endStep begins the next step, which queues priority for the active player ahead of the older item.
+    const result = advance({ state: { ...s, work: [...s.work] }, events: [] }, TEST_CARDS);
+    expect(result.state.turn?.step).toBe("beginningOfCombat");
+    expect(result.state.pending).toMatchObject({ player: "p1", kind: "priority" });
+    expect(result.state.work).toStrictEqual([{ kind: "givePriority", player: "p2" }]);
+    // A game waiting for a decision with work still queued is plain data, and picks up where it left off.
+    expect(JSON.parse(JSON.stringify(result.state))).toStrictEqual(result.state);
+  });
+
+  it("queues a sequence in the order given, ahead of older work", () => {
     const game = precombatMain();
     const queued = queueWork(
       { ...game.state, work: [{ kind: "endStep" }] },

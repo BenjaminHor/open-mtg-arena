@@ -270,3 +270,7 @@ and avoids crossover or digital-only printings, without changing any rules behav
   Effects (M1-10) and target checks on resolution (CR 608.2b, M1-09/M1-10) plug into `resolveEffects`.
 - Card types are read through `cardTypesOf` (`rules/card-types.ts`), printed types until `characteristics()` (M1-11).
 - The start of the game stays a direct state machine (D-030); its answers still end in `advance()`.
+- A resolution queues its whole sequence in one call: effect work, then `finishResolving` (CR 608.2n's "final part",
+  skipped if the object already left the stack, CR 608.2m), then priority. A spell whose targets are all illegal won't
+  resolve (CR 608.2b, 608.3b); that becomes a different final step with M1-09.
+- The spec's M1-07 scenario of responding to a spell with an instant needs casting, so it moved to M1-09's acceptance.

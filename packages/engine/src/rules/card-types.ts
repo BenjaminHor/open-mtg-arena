@@ -8,7 +8,7 @@ import type { ObjectId } from "../state/ids.ts";
  * The card types an object has now. Until `characteristics()` and the layer system arrive (M1-11), that's the printed
  * types; type-changing effects (layer 4) will change the answer here, in one place.
  */
-export function cardTypesOf(state: GameState, id: ObjectId, cards: CardDatabase): CardType[] {
+export function cardTypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly CardType[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
   const data = cards[obj.oracleId];
