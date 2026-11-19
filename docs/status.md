@@ -7,20 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-11 Characteristics and layer 7c (plan, 2026-11-19). CR 613.1–613.4, 613.7, 208.3, 302.4c, 122.1a, 514.2, 611.2a.
-  - `rules/characteristics.ts`: `characteristics(state, id, cards)` starts from the printed card (CR 613.1) and applies
-    the layers in order: control (layer 2, none yet), types (layer 4, none yet), abilities/keywords (layer 6, printed),
-    then power/toughness (layer 7: 7c effects in timestamp order, +1/+1 and -1/-1 counters, rule modifiers). A
-    noncreature has no power or toughness (CR 208.3). `cardTypesOf`, `subtypesOf`, `controllerOf` and `abilitiesOf`
-    read from it, so every rules question already goes through one function.
-  - Rule modifiers (`creaturesGetPT`) apply as layer 7c effects with timestamp 0 (before every object, like an
-    emblem from the start of the game). Scenario setup `rules: [...]` takes them.
-  - Cleanup: "until end of turn" effects end with damage removal, in one action (CR 514.2), with `EFFECT_ENDED`.
-  - Runner: `.power`, `.toughness`, `.abilities contains` (keywords).
-  - Tests: two Giant Growths stack; a pump wears off in cleanup; rule modifier; counters; a noncreature has no P/T;
-    TS tests for timestamp order and the layer order.
-  - Future impact: each layer is a named step in one function, so layers 1–6 and 7a/7b/7d slot in without a rewrite;
-    dependency (CR 613.8) will reorder within a layer later.
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -45,10 +32,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
 - Effects (D-036): test CR 608.2m (a spell that leaves the stack mid-resolution) once an effect can move one. A new op
   goes in `effects/run-effect.ts` and the table in `effects/README.md`.
-- For M1-11: end "until end of turn" effects in the same CR 514.2 action that removes damage (`removeAllDamage` is
-  called from the cleanup step), and decide what to do with an effect whose `affected` ids no longer exist (they never
-  come back, CR 400.7, so dropping the effect, or just the ids, is safe). `characteristics()` reads `GameState.effects`
-  (D-036); the scenarios in `effects/` can then also check `.power` and `.toughness`.
+- Characteristics (D-038): read power, toughness and keywords through `characteristics()` or `powerAndToughness`.
+  An effect whose `affected` objects are gone stays until cleanup and does nothing (their ids never come back, CR 400.7).
 - For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
   and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
 - For M1-12: check state-based actions in `givePriority` (CR 117.5), never between work items: a spell's effects are
@@ -82,7 +67,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-11 Characteristics and layer 7c
+- M1-12 State-based actions
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -120,6 +105,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `dealDamage` (CR 120), life loss (CR 119.3), continuous effects stored in `GameState.effects` (CR 611.2, 613.7b);
   targets checked once as resolution begins (CR 608.2b); mana abilities use the same interpreter; 7 effect scenarios
   and TS tests with made-up two-target cards (D-036, D-037) (2026-11-19).
+
+- M1-11 Characteristics and layer 7c: `characteristics()` through the layers (CR 613), layer 7 with 7c effects,
+  +1/+1 and -1/-1 counters and rule modifiers, no power or toughness for noncreature permanents (CR 208.3),
+  "until end of turn" effects ending with damage in cleanup (CR 514.2); scenario `rules:` and `.power`, `.toughness`,
+  `.abilities contains`; 6 characteristics scenarios (D-038) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

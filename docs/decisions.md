@@ -367,3 +367,20 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
 `ENGINE_VERSION` (D-019) stays 0 until a release can save games. No saves or replays exist yet, so new fields
 (`casting` in M1-09, `effects` in M1-10) and RNG changes (D-024) don't bump it. From the first release that saves games,
 every schema change and every change D-024 lists bumps it.
+
+**D-038: characteristics() composes one reader per layer** · 2026-11-19 · accepted
+- `characteristics(state, id, cards)` (`rules/characteristics.ts`) is the full answer to "what is this object now"
+  (CR 613.1). It calls one reader per layer, in the CR's order: `controllerOf` (layer 2), `cardTypesOf` and
+  `subtypesOf` (layer 4), printed colors and keywords (layers 5 and 6, no effects yet), `powerAndToughness` (layer 7).
+  Rules code may call those readers directly; none of them calls `characteristics()`, so a later layer can ask an
+  earlier one without recursion (the rule modifier in 7c asks for control and types).
+- Layer 7c only adds and subtracts, so its effects aren't sorted: their order can't change the result. (They're in
+  timestamp order anyway: `GameState.effects` only grows at the end, as each effect is created.) Sorting by
+  timestamp (CR 613.7) and dependency (CR 613.8) arrives with the first setting or switching effect (7b, 7d), or a
+  layer with non-commutative effects.
+- Rule modifiers apply in 7c to creature permanents only (CR 109.2), never to cards in hand or spells on the stack.
+- A noncreature permanent has no power or toughness; a noncreature card elsewhere keeps its printed values (CR 208.3).
+- "Until end of turn" effects end in the same call that removes damage (CR 514.2), so nothing, including the
+  state-based action check of M1-12, can come between them. `EFFECT_ENDED` reports each one.
+- Only cards have characteristics here. An ability on the stack is asked for its controller through `controllerOf`.
+

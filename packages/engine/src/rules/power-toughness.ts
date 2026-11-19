@@ -26,7 +26,7 @@ export function powerAndToughness(state: GameState, id: ObjectId, cards: CardDat
   if (printed?.power == null || printed.toughness == null || (onBattlefield && !isCreature)) {
     return { power: null, toughness: null };
   }
-  const bonus = layer7c(state, obj, isCreature, onBattlefield);
+  const bonus = layer7c(state, obj, onBattlefield);
   return { power: printed.power + bonus.power, toughness: printed.toughness + bonus.toughness };
 }
 
@@ -34,19 +34,15 @@ export function powerAndToughness(state: GameState, id: ObjectId, cards: CardDat
  * Layer 7c (CR 613.4c): effects and counters that modify power and toughness, summed. Reached only for a creature,
  * or a noncreature card off the battlefield with printed values (so on the battlefield, it's a creature).
  */
-function layer7c(
-  state: GameState,
-  obj: CardObject,
-  isCreature: boolean,
-  onBattlefield: boolean,
-): { power: number; toughness: number } {
+function layer7c(state: GameState, obj: CardObject, onBattlefield: boolean): { power: number; toughness: number } {
   const changes: { power: number; toughness: number }[] = [];
   // Continuous effects from resolved spells and abilities, on the objects they locked in (CR 611.2c).
   for (const effect of state.effects) {
     if (effect.change.kind === "modifyPT" && effect.affected.includes(obj.id)) changes.push(effect.change);
   }
-  // +X/+Y and -X/-Y counters, on a creature or a creature card in another zone (CR 122.1a).
-  for (const [name, count] of isCreature ? Object.entries(obj.counters) : []) {
+  // +X/+Y and -X/-Y counters (CR 122.1a). Only a permanent has counters here: counters don't move with a card that changes
+  // zones (CR 122.2, 400.7), and on the battlefield this is a creature.
+  for (const [name, count] of Object.entries(obj.counters)) {
     const pt = ptCounter(name);
     if (pt !== null) changes.push({ power: pt.power * count, toughness: pt.toughness * count });
   }

@@ -1,16 +1,16 @@
-name: A rule modifier gives one player's creatures +1/+1, and only creatures on the battlefield
+name: A rule modifier gives one player's creatures +2/+1, and only creatures on the battlefield
 rules: [CR 613.4c, CR 109.2]
 setup:
   turn: { active: p1, step: main1 }
   rules:
-    - { kind: creaturesGetPT, controller: p2, power: 1, toughness: 1 }
+    - { kind: creaturesGetPT, controller: p2, power: 2, toughness: 1 }
   p1:
     battlefield: [Grizzly Bears]
   p2:
     battlefield: [Gray Ogre, Mountain]
 steps:
   - expect:
-      p2:Gray Ogre.power: 3
+      p2:Gray Ogre.power: 4
       p2:Gray Ogre.toughness: 3
       p2:Mountain.power: null
       p1:Grizzly Bears.power: 2

@@ -11,6 +11,9 @@ implemented, move it out of this file (or mark it done) in the same commit.
 
 **Full layer system (CR 613), M3.** Copy effects (layer 1), control (2), text-changing (3), type (4),
 color (5), ability adding and removing (6), and power/toughness (7a–7d), with timestamps and dependencies.
+*Built (M1-11, D-038):* `characteristics()` composes one reader per layer; layer 7 has 7c. Adding a layer means adding
+its effects to the reader for that layer. Sorting within a sublayer by timestamp and dependency arrives with the first
+non-additive effect.
 *Needs now:* every characteristic is read through `characteristics()`, never from raw object fields. Code that
 asks "is this a creature?", "who controls this?" or "does it have flying?" must go through it, even in M1.
 

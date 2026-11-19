@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { runEffect } from "../../src/effects/run-effect.ts";
 import { characteristics, type GameSetup, type ObjectId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
-import { BEARS, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, STATUE, TEST_CARDS } from "../support/cards.ts";
 import { type Game, playerSetup, start, take } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -68,6 +68,24 @@ describe("characteristics()", () => {
   it("refuses an ability on the stack, which has no card: ask controllerOf instead", () => {
     const game = setup();
     expect(() => characteristics(game.state, "o999", TEST_CARDS)).toThrow(/isn't a card/);
+  });
+});
+
+describe("a noncreature with a printed power and toughness (CR 208.3)", () => {
+  it("has none as a permanent, but has its printed ones elsewhere", () => {
+    const game = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], hand: [STATUE], battlefield: [permanent(STATUE)] }),
+        playerSetup("p2", { library: ["forest"] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const onBattlefield = game.state.zones.battlefield[0] as ObjectId;
+    const inHand = game.state.zones.players.p1?.hand[0] as ObjectId;
+    expect(characteristics(game.state, onBattlefield, TEST_CARDS)).toMatchObject({ power: null, toughness: null });
+    expect(characteristics(game.state, inHand, TEST_CARDS)).toMatchObject({ power: 4, toughness: 5 });
   });
 });
 
