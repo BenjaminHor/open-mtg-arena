@@ -60,11 +60,8 @@ export type AbilityObject = {
   source: ObjectId;
   /** The source's card, so the ability's definition can be found even after the source is gone. */
   sourceOracleId: OracleId;
-  /**
-   * Which of that card's abilities this is, as indexed in its card definition. Abilities granted by effects
-   * (layer 6) and delayed triggers (CR 603.7) will need a different reference when they arrive.
-   */
-  abilityIndex: number;
+  /** Which of the source's abilities this is (D-028). */
+  ability: AbilityRef;
   /**
    * Its controller (CR 113.8): who activated it, or for a triggered ability, who controlled its source when it
    * triggered. Read the current controller through `characteristics()`.
@@ -74,6 +71,20 @@ export type AbilityObject = {
   /** The choices made while activating it (CR 602.2b, which follows CR 601.2b–c). */
   choices: StackChoices;
 };
+
+/**
+ * Names one ability of an object, in a way that stays right when effects add or remove other abilities (D-028).
+ * The object's current abilities come from `characteristics()`; each one carries the ref that names it.
+ * Abilities granted by effects (layer 6) and delayed triggers (CR 603.7) will add kinds when they arrive.
+ */
+export type AbilityRef =
+  /** An ability written on the card: an index into its definition's `abilities`. */
+  | { kind: "printed"; index: number }
+  /** The intrinsic "{T}: Add [mana]" of a land with that basic land type (CR 305.6). */
+  | { kind: "basicLandType"; landType: BasicLandType };
+
+/** The basic land types (CR 305.6). */
+export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";
 
 /** Choices announced while casting a spell or activating an ability (CR 601.2b–c), kept on the stack object. */
 export type StackChoices = {

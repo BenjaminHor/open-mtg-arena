@@ -97,7 +97,7 @@ export function midTurnState(): GameState {
         id: "o11",
         source: "o5",
         sourceOracleId: WHELP,
-        abilityIndex: 0,
+        ability: { kind: "printed", index: 0 },
         baseController: "p1",
         timestamp: 11,
         choices: { modes: [], x: null, targets: [] },

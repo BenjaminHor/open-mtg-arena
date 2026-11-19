@@ -1,0 +1,23 @@
+# The card pool: every card the engine supports, one name per line, exactly as in Oracle.
+# After changing it, run `pnpm cards:extract` and add a definition in src/defs/ (see docs/card-scripting.md).
+# Lines starting with # are comments. To choose which printing's art is shown, add its Scryfall set code (and a
+# collector number if the set has several): `Lightning Bolt [m10]` or `Lightning Bolt [m10 146]`. A pin always names an
+# English printing. Without one, the newest regular paper printing is used (D-029).
+
+Centaur Courser
+Craw Wurm
+Fire Elemental
+Forest
+Furnace Whelp
+Giant Growth
+Giant Spider
+Gray Ogre
+Grizzly Bears
+Hill Giant
+Lightning Bolt
+Llanowar Elves
+Mountain
+Raging Goblin
+Shock
+Spined Wurm
+Volcanic Hammer

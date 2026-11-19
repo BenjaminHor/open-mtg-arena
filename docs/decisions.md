@@ -141,8 +141,8 @@ a spell (CR 112.2), or who controls an ability on the stack (CR 113.8). Cards in
 effects exist. Zones that belong to a player (library, hand, graveyard) are the owner's (CR 400.3).
 
 **D-023: The engine exports its state types** · 2026-11-19 · accepted
-`engine/src/index.ts` exports the types in `src/state/` (`GameState`, `GameSetup`, `Action`, `GameEvent`, ...) and
-`RngState`, because every other package builds setups, reads views and sends actions. These are types only, so no
+`engine/src/index.ts` exports the types in `src/state/` (`GameState`, `GameSetup`, `Action`, `GameEvent`, ...),
+the card data types in `src/cards/` (`CardDatabase`, `CardDef`, ...; D-026) and `RngState`, because every other package builds setups, reads views and sends actions. These are types only, so no
 engine internals leak. The RNG functions stay internal for now. The CLI's `random` agent and the fuzzer (M1-17, M1-18)
 need seeded randomness to reproduce failures; when they arrive, export `seedRng` and `randomInt` with a new entry here
 rather than copying the RNG or using `Math.random`.
@@ -159,3 +159,46 @@ Comments in `engine/src/state/` cite the CR to explain what a type models (for e
 CR 700.2), even before any rule uses it. Those are descriptions, not implementations, so `pnpm coverage:rules` (M1-19)
 ignores `engine/src/state/` when it looks for cited-but-untested rules. Speculative members still don't belong in the
 types: a union member or field is added by the task that uses it.
+
+**D-026: Card definitions: a first draft, printed data kept separate** · 2026-11-19 · accepted
+- The engine's `CardData` is `{ oracleId, printed, def }`. `printed` holds only rules-relevant printed characteristics
+  (name, mana cost, colors, supertypes, types, subtypes, power, toughness), parsed from `pool.json` by `packages/cards`.
+  Images, artist and set stay in `packages/cards` for the UI; the engine never sees Scryfall's format.
+- `def` is the hand-written `CardDef`. Its effect, cost, target and ability shapes are a draft: M1-08, M1-10 and M1-14
+  may reshape them when they interpret them, updating all definitions in the same change.
+- Whether an activated ability is a mana ability isn't written in definitions; the engine derives it from CR 605.1a.
+  Basic land mana abilities aren't written either; the engine derives them from the basic land type (CR 305.6).
+- Printed colors are derived from the mana cost and color indicator (CR 202.2, 204.2), not copied from Scryfall,
+  whose colors also count color-defining abilities (layer 5). A test checks they agree for every pool card.
+- Extraction and the parser reject anything the engine can't play yet: any layout but "normal", hybrid or X costs,
+  `*` power, planeswalkers and battles, a creature without power and toughness. So an unsupported card can't enter
+  the pool by accident.
+- `packages/cards/src` must run in a Web Worker (D-006): it imports `pool.json` as a JSON module and may not use Node
+  modules or Node globals (a Biome override enforces it). Only `packages/cards/scripts` uses Node.
+- Generated files are sorted by character codes, not the machine's locale, so they're identical on every machine.
+
+**D-027: Claude Code may merge its own pull requests once they check out** · 2026-11-19 · accepted
+The owner said (2026-11-19) that "feel free to merge if it all checks out" stands for the current and all future pull
+requests. "Checks out" means: CI is green on the PR's latest commit, the `rules-judge` and `code-reviewer` findings
+are fixed or answered, no review comment on the PR is left unanswered, and `docs/status.md` is up to date. Claude Code
+merges with a merge commit (keeping each commit) and then restarts its branch from `main`. Anything outside that
+(a red CI, an open question for the owner, a PR someone else opened) still waits for the owner.
+
+**D-028: Abilities are named by an `AbilityRef`, not by an index into the definition** · 2026-11-19 · accepted
+A basic land's mana ability isn't in its definition (CR 305.6), so "the nth ability in `def.abilities`" can't name it,
+and later effects that add or remove abilities (layer 6, CR 305.7) would shift any index. So `ACTIVATE_ABILITY.ability`
+and `AbilityObject.ability` are an `AbilityRef`: `{ kind: "printed", index }` for an ability written in the definition,
+or `{ kind: "basicLandType", landType }` for the intrinsic mana ability. `characteristics()` lists an object's current
+abilities, each with its ref; legality checks look the ref up in that list. Granted abilities and delayed triggers add
+kinds when they arrive. Scenarios say `ability: <n>` (the nth ability in that list) only when there's more than one.
+
+**D-029: Card art comes from a chosen printing, pinned per card or picked by a fixed rule** · 2026-11-19 · accepted
+The owner chose (2026-11-19): `pool.txt` may pin a printing per card, as `Lightning Bolt [m10]` (a Scryfall set code,
+optionally with a collector number: `[m10 146]`). A card without a pin gets its newest regular printing: a paper,
+non-digital English printing that isn't a promo or a variant, from a core set or expansion, not a Universes Beyond
+crossover, and already released on the date of the bulk file. Ties go to the lowest collector number. A pin always names
+an English printing, and may choose one the rule would skip. Some printings slip past Scryfall's crossover tag, and a
+beginner-box or showcase printing can win; pin the card when the pick looks wrong. Only if it has none does it fall back to
+Scryfall's Oracle Cards pick. Rules data (Oracle text, types, cost) always comes from Oracle Cards; only the printing
+details (images, artist, set, collector number) come from the chosen printing. That keeps the art stable across refreshes
+and avoids crossover or digital-only printings, without changing any rules behavior.

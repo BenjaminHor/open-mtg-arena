@@ -1,6 +1,7 @@
 // Actions: every input to the engine. Each one answers the current `PendingDecision`, except `CONCEDE`.
 
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
+import type { AbilityRef } from "./objects.ts";
 
 export type Action =
   | { type: "PASS_PRIORITY"; decisionId: DecisionId; player: PlayerId } // CR 117.3d
@@ -11,8 +12,8 @@ export type Action =
       decisionId: DecisionId;
       player: PlayerId;
       object: ObjectId;
-      /** Which ability of the object, as indexed in its card definition. */
-      ability: number;
+      /** Which of the object's abilities (D-028). */
+      ability: AbilityRef;
     } // CR 602.2
   | { type: "ANSWER"; decisionId: DecisionId; player: PlayerId; answer: Answer }
   /** A player can concede at any time (CR 104.3a), so this doesn't answer a decision. */

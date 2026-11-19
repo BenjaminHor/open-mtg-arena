@@ -8,9 +8,16 @@ Where the data comes from and its terms: [`docs/data-sources.md`](../../docs/dat
 
 ## Entry points
 
-- `src/index.ts`: empty for now. The card data pipeline (`pnpm cards:fetch`, `pnpm cards:extract`), `pool.txt` and the
-  first `CardDef` types arrive in M1-04.
+- `pool.txt`: the cards the engine supports, one name per line.
+- `src/index.ts`:
+  - `cardDatabase()`: the engine's `CardDatabase`, built from `data/pool.json` and the definitions.
+  - `CARD_DEFS`: every definition (`src/defs/<letter>/<slug>.ts`).
+  - `definitionProblems()`: the errata and completeness check.
+  - `POOL`: the extracted Oracle data, including image URIs and artist for the UI.
+- `scripts/fetch.ts` (`pnpm cards:fetch`) and `scripts/extract.ts` (`pnpm cards:extract`): the data pipeline. These
+  are the only Node-only code here; `src/` also runs in the browser.
 
 ## Tests
 
-`pnpm test` runs this package's tests along with the rest.
+`pnpm test` runs `test/pool.test.ts` (pool, definitions and errata check) and `test/printed.test.ts` (parsing
+mana costs and type lines). They read only committed files, so they don't need the Scryfall download.

@@ -16,7 +16,7 @@
 
 API docs: https://scryfall.com/docs/api. Key points to follow:
 - Don't simply repackage or republish Scryfall data. Our app adds value (a game), and we extract only the pool's cards.
-- Use the **bulk data** files (`oracle-cards`, `rulings`) for card data instead of calling the API per card.
+- Use the **bulk data** files (`oracle-cards`, `default-cards`, `rulings`) for card data instead of calling the API per card.
   The browsable card database (`deckbuilding.md`) is a trimmed subset built from `oracle-cards` at build time
   and used inside the game and deckbuilder. It's never offered as a standalone data download.
 - Images for browsing are fetched on demand, one card at a time as it scrolls into view, then cached.

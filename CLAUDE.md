@@ -127,7 +127,7 @@ Include a short "Future impact" note in every plan, and record any design choice
    a stale doc misleads the next session.
 8. Commit with a clear message on a feature branch (one branch per task), push it, and open a pull request.
    Changes reach `main` only through a pull request with CI green. Never push to `main` directly, never force-push
-   shared branches. The owner merges, or tells you to.
+   shared branches. Claude Code may merge its own PR once it checks out (D-027); otherwise the owner merges.
 9. When a milestone's exit criteria are met, the owner tags `main` (`m1`, `m2`, ...) as a known-good point to roll back to.
 
 When the owner reports a bug in plain language, use the `fix-bug` skill: reproduce it as a failing

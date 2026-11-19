@@ -66,7 +66,8 @@ steps:
   `p2:Grizzly Bears#2` when there are several (ordered as listed in setup). `p1` and `p2` alone mean players.
 - **Steps** (each step is one of):
   - `p1 cast: <card>` with optional `targets`, `modes`, `x`, `pay: auto | [<mana sources>]`
-  - `p1 activate: <card>` with optional `ability: <index>` and the same options
+  - `p1 activate: <card>` with optional `ability: <n>` (which of the object's abilities, counting from 1 in the order
+    `characteristics()` lists them, when it has more than one) and the same options
   - `p1 play: <land>`
   - `p1 pass: once`, `all pass: once`, `all pass: until <step>` (for example `until combat.declareBlockers`)
   - `p1 attack: [<creature>, ...]`, `p2 block: { <blocker>: <attacker>, ... }`
