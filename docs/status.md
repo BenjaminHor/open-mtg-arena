@@ -7,20 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-16 Scenario runner. Plan:
-  - A new package `@mtg/scenarios` (engine + cards + `yaml`): the runner needs real card names, and the engine may not
-    depend on cards. The CLI (M1-17) reuses it for `new --scenario` and `export --scenario`. Scenario files stay in
-    `packages/engine/test/scenarios/<area>/*.yaml` (testing.md); its test file runs every one of them, one test each.
-  - Setup: everything testing.md lists (fixed openings), plus a standard opening (`opening: standard`, `first: p1`,
-    `seed`), and `expect setup error:` for setups the engine must reject. Step names: `main1`, `main2`,
-    `combat.beginning`, `combat.declareAttackers`, ... mapped to the engine's CR names.
-  - Steps now: `pass`, `all pass: once | until <step>`, `choose` (keep, mulligan, a card, a player), `expect`, `expect
-    error`. Every step becomes an action found in `legalActions()`; an unlisted action fails the scenario. `cast`,
-    `play`, `activate`, `attack`, `block` fail with "arrives in M1-0x" until their tasks extend the runner.
-  - Expectations: life, zones (exact or `contains`), stack, step, turn, pending, a permanent's tapped/damage, events
-    contains. Unknown keys fail loudly, so a typo can't make a scenario pass.
-  - Port the M1-05 and M1-06 behaviors to YAML (`start/`, `turn/`). The M1-07 tests stay TypeScript until casting exists.
-  - testing.md documents exactly what's implemented (the acceptance), and D-033 records the package and dependency.
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -38,8 +25,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
 - `pnpm check` is typecheck + lint + tests for now. Its other parts in `docs/testing.md` join as they're built:
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
-- M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
-  them to YAML scenarios (`scenarios/start/`), keeping the same cases.
+- Scenarios: write new rules tests as YAML in `packages/engine/test/scenarios/<area>/` (testing.md). Extend the runner
+  (`packages/scenarios`) and testing.md together when a task adds steps (`play`, `cast`, `activate`, `attack`, `block`).
+  The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
 - Work queue (D-032): new pauses mid-step (M1-13's attackers and blockers) become work items, like `finishCleanup`.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
 - For M1-09/M1-10: target legality on resolution (CR 608.2b) goes in `effectWork` (`game/resolve.ts`); a spell that
@@ -66,7 +54,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
 - The engine's step names follow the CR (`precombatMain`, `declareBlockers`, see `engine/src/state/turn.ts`).
   `testing.md`'s scenario YAML uses short names (`main1`, `combat.declareBlockers`); the M1-16 runner maps them.
-- When M1-16 lands the scenario runner, drop `--passWithNoTests` from `test:scenarios`, so a misplaced runner fails.
 - `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request and is now the default branch
   (2026-11-19). From now on, work reaches `main` only through pull requests.
 - The "open-mtg-arena" environment also allows Scryfall (`api.scryfall.com`, `data.scryfall.io`). `pnpm cards:fetch`
@@ -97,6 +84,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-07 Priority and the stack: the work queue and `advance()` (D-032), resolving the top of the stack when all pass
   (CR 117.4, 608): abilities cease to exist, instants and sorceries to the graveyard, permanents onto the battlefield;
   priority to the active player after (CR 117.3b) (2026-11-19).
+- M1-16 Scenario runner: `packages/scenarios` (D-033) runs YAML scenarios through `legalActions()`, checking expectations
+  and invariants on every state; 13 scenarios for game start and turn structure; testing.md matches it exactly
+  (a test checks the vocabulary) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

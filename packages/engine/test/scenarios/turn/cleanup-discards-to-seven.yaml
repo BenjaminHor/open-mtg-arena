@@ -1,0 +1,22 @@
+name: In cleanup the active player discards down to seven, choosing each card
+rules: [CR 514.1, CR 402.2]
+setup:
+  turn: { active: p1, step: end }
+  p1:
+    hand: [Forest, Forest, Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+  p2:
+    hand: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+steps:
+  - all pass: once
+  - expect:
+      step: cleanup
+      pending: { player: p1, kind: discardToHandSize, remaining: 2 }
+  - p1 pass: once
+  - expect error: illegalAction
+  - p1 choose: Forest
+  - p1 choose: Forest
+  - expect:
+      p1.hand count: 7
+      p1.graveyard: [Forest, Forest]
+      p2.hand count: 9
+      active: p2

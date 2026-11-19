@@ -1,0 +1,7 @@
+name: A deck smaller than an opening hand can't start a standard game
+rules: [CR 103.5]
+setup:
+  opening: standard
+  p2:
+    library: [Mountain, Mountain, Mountain]
+expect setup error: at least 7 cards

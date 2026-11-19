@@ -12,6 +12,7 @@ apps/web            PWA: PixiJS match board + React UI (menus, prompts, HUD, dec
                └─ uses ─> packages/engine   the rules: pure reducer
 packages/cards      card definitions (data) + the extracted card pool
 packages/cli        headless text interface for playing and debugging games
+packages/scenarios  the scenario runner: YAML scenarios run against the engine with real cards (D-033)
 packages/library    full card database, search index, Scryfall-style query parser (M4)
 packages/decks      deck model, validation, stats, import/export (M4)
 packages/meta       collection, packs, economy, later the RPG world (M4+)
@@ -23,7 +24,8 @@ Allowed dependencies (arrows point at what a package may import):
 - `cards` → `engine` (only for types).
 - `ai` → `engine`.
 - `match` → `engine`, `ai`, `cards`.
-- `cli` → `match`, `engine`, `ai`, `cards`.
+- `scenarios` → `engine`, `cards`.
+- `cli` → `match`, `engine`, `ai`, `cards`, `scenarios`.
 - `library` → nothing in this repo except types from `cards`.
 - `decks` → `library`, `cards`.
 - `meta` → `engine` (types), `cards`, `decks`. It never reaches into a running game. It creates a

@@ -7,6 +7,7 @@
   "dependencies": {
     "@mtg/engine": "workspace:*",
     "@mtg/cards": "workspace:*",
-    "@mtg/ai": "workspace:*"
+    "@mtg/ai": "workspace:*",
+    "@mtg/scenarios": "workspace:*"
   }
 }

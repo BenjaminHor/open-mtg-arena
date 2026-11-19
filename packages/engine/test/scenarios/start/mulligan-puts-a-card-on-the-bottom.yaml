@@ -1,0 +1,21 @@
+name: A first mulligan draws a new seven and puts one card on the bottom
+rules: [CR 103.5]
+setup:
+  opening: standard
+  first: p1
+steps:
+  - p1 choose: mulligan
+  - p2 choose: keep
+  - expect:
+      p1.hand count: 7
+      pending: { player: p1, kind: mulliganBottom, remaining: 1 }
+  - p1 choose: Forest
+  - expect:
+      p1.hand count: 6
+      p1.library count: 34
+      pending: { player: p1, kind: mulligan, mulligansTaken: 1 }
+  - p1 choose: keep
+  - expect:
+      turn: 1
+      p1.hand count: 6
+      p2.hand count: 7

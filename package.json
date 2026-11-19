@@ -13,7 +13,7 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "vitest run",
-    "test:scenarios": "vitest run --project scenarios --passWithNoTests",
+    "test:scenarios": "vitest run --project scenarios",
     "fuzz": "node packages/cli/src/fuzz.ts",
     "cli": "node packages/cli/src/main.ts",
     "cards:fetch": "node --use-env-proxy packages/cards/scripts/fetch.ts",

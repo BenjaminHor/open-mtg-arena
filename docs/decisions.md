@@ -274,3 +274,14 @@ and avoids crossover or digital-only printings, without changing any rules behav
   skipped if the object already left the stack, CR 608.2m), then priority. A spell whose targets are all illegal won't
   resolve (CR 608.2b, 608.3b); that becomes a different final step with M1-09.
 - The spec's M1-07 scenario of responding to a spell with an instant needs casting, so it moved to M1-09's acceptance.
+
+**D-033: The scenario runner is its own package, with `yaml` as a dependency** · 2026-11-19 · accepted
+Scenarios name real cards, so the runner needs `@mtg/cards`, and the engine may not depend on it. So the runner is
+`packages/scenarios` (depends on `engine` and `cards`). The scenario files stay in `packages/engine/test/scenarios/`,
+next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario` and `export --scenario`.
+- New runtime dependency: `yaml` 2.9.1 (pinned), the standard YAML parser for JavaScript, with no dependencies of its own.
+  It's used only by `packages/scenarios`, never by the engine or the app.
+- The runner has no file I/O (`runScenario(text, cards)`), so it runs anywhere. Its `invariantProblems` is the shared
+  list of engine invariants the fuzzer (M1-18) will reuse.
+- The M1-05 and M1-06 behaviors are also YAML scenarios now (`start/`, `turn/`), as the readable spec. The TypeScript
+  tests stay: they check event order and were mutation-tested. The M1-07 stack tests stay TypeScript until casting exists.

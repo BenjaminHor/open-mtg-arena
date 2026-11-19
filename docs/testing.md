@@ -55,35 +55,72 @@ steps:
 
 ### Format
 
-- **setup**: `turn` (active player, step, optional turn number), then per player:
-  `life`, `library` (top first), `hand`, `battlefield`, `graveyard`, `exile`, `manaPool`.
-  A battlefield entry can be a name or a map: `{ card: Grizzly Bears, tapped: true, sick: false,
-  damage: 1, counters: { +1/+1: 2 } }`. `sick: true` means it hasn't been under its controller's control continuously
-  since their most recent turn began (CR 302.6), so a creature that entered on its controller's last turn is still
-  sick during the opponent's turn. Unlisted libraries default to 20 basic lands, so drawing doesn't lose the game.
-  `rules: [...]` lists rule modifiers (for testing RPG-style setups).
-- **References**: `p2:Grizzly Bears` means the only Grizzly Bears that p2 controls. Use
-  `p2:Grizzly Bears#2` when there are several (ordered as listed in setup). `p1` and `p2` alone mean players.
-- **Steps** (each step is one of):
-  - `p1 cast: <card>` with optional `targets`, `modes`, `x`, `pay: auto | [<mana sources>]`
-  - `p1 activate: <card>` with optional `ability: <n>` (which of the object's abilities, counting from 1 in the order
-    `characteristics()` lists them, when it has more than one) and the same options
-  - `p1 play: <land>`
-  - `p1 pass: once`, `all pass: once`, `all pass: until <step>` (for example `until combat.declareBlockers`)
-  - `p1 attack: [<creature>, ...]`, `p2 block: { <blocker>: <attacker>, ... }`
-  - `p1 choose: <answer>` for any other pending decision (`yes`, `no`, a card, a list, an order)
-  - `expect: { ... }` (see below). An `expect` can come after any step.
-  - `expect error: <code>` asserts that the previous step was rejected as illegal (for example `notYourPriority`).
-- **Expectations**: `pX.life`, `pX.<zone>` (exact list), `pX.<zone> contains: [...]`, `stack`,
-  `step`, `pending: { player, kind }`, `<ref>.power`, `.toughness`, `.tapped`, `.damage`,
-  `.counters`, `.abilities contains`, `winner`, `events contains: [{ type: ..., ... }]`.
+The runner is `packages/scenarios` (D-033). `pnpm test:scenarios` runs every `.yaml` file under
+`packages/engine/test/scenarios/`, one test each. Unknown keys, steps and expectations fail the scenario, so a typo
+can't make it pass.
 
-The scenario runner (built in M1) converts each step into a real `Action` through the engine's
-own `legalActions()`. **A step that names an illegal action fails the test** unless it's followed by
-`expect error`. So scenarios also prove the legal-action list is right.
+**Top level:** `name`, `rules` (the CR rules tested, like `[CR 103.5]`, required), `setup`, then either `steps` or
+`expect setup error: <part of the message>` for a setup the engine must reject.
 
-When the runner needs a new step or expectation, add it, document it here in the same commit,
-and keep the vocabulary small.
+**setup:**
+- `seed` (default 1).
+- `opening: fixed` (the default) or `opening: standard`.
+  - **fixed:** `turn: { active: p1, step: main1, number: 3 }`. The game starts in that step with its turn-based actions
+    done and the active player holding priority. `number` defaults to 3, because turn 1 has special rules (the starting
+    player skips their draw step, CR 103.8a); say `number: 1` to test them.
+  - **standard:** the normal start (CR 103): shuffles, opening hands, mulligans. `first: p1` names the starting player;
+    without it, a player picked at random from the seed chooses (`chooseStartingPlayer`). A standard setup takes no `turn`.
+- Per player (`p1`, `p2`): `life` (default 20), `library` (top first), `hand`, `battlefield`, `graveyard`, `exile`,
+  `manaPool` (like `{ R: 2 }`). Cards are named exactly as in Oracle. An unlisted library is 20 basic lands (40 in a
+  standard opening): Forest for p1, Mountain for p2.
+- A battlefield entry is a card name or a map: `{ card: Grizzly Bears, tapped: true, sick: true, damage: 1 }`.
+  `sick: true` means it hasn't been under its controller's control continuously since their most recent turn began
+  (CR 302.6). In a standard opening every permanent starts sick. `counters` is accepted but nothing uses counters yet.
+- `rules: [...]` for rule modifiers isn't supported yet: it arrives with layer 7c effects in M1-11 and fails until then.
+
+**Step names:** `untap`, `upkeep`, `draw`, `main1`, `combat.beginning`, `combat.declareAttackers`,
+`combat.declareBlockers`, `combat.damage`, `combat.end`, `main2`, `end`, `cleanup`.
+
+**References:** `p2:Grizzly Bears` means the only Grizzly Bears that p2 controls; `p2:Grizzly Bears#2` the second, in
+battlefield order. `p1` and `p2` alone mean players.
+
+**Steps** (each is one of these). Every step becomes an action found in the engine's `legalActions()`, so a step that
+names an illegal action fails the scenario, unless the next step is `expect error`.
+- `p1 pass: once`: p1 passes priority.
+- `all pass: once`: each player passes once, in turn, starting with whoever has priority.
+- `all pass: until <step>`: players keep passing until that step next begins and someone has priority in it. It fails
+  (rather than hanging) if a decision other than priority comes up, or the step doesn't come within 500 passes (for
+  example `untap`, which gives no one priority).
+- `p1 choose: <answer>` for the pending decision: `keep` or `mulligan`; a player (`p2`) for who goes first; a card name
+  for a card to put on the bottom or discard. With several identical cards, the first one that's still a legal answer
+  is used.
+- `expect: { ... }`, see below.
+- `expect error: <code>`: the step before it must be rejected with this error code (for example `notYourPriority`). The
+  runner then sends the action directly, without looking it up in `legalActions()`.
+- Steps that arrive with later tasks, and fail until then: `p1 play: <land>` and `p1 cast: <card>` (M1-09, with
+  `targets`, `modes`, `x`, `pay: auto`), `p1 activate: <card>` (M1-08, with `ability: <n>` counting from 1 in the order
+  `characteristics()` lists the object's abilities), `p1 attack: [...]` and `p2 block: { blocker: attacker }` (M1-13).
+
+**Expectations** (all keys in one `expect` must hold):
+- `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).
+- `p1.library`, `p1.hand`, `p1.graveyard`, `p1.battlefield`: the exact list of card names, in zone order (library top
+  first; graveyard oldest first, so the top is last; battlefield is the permanents p1 controls). Add ` contains` for a
+  subset (`p1.hand contains: [Shock]`) or ` count` for the size (`p1.hand count: 7`).
+- `stack` (bottom first, so the top is last; an ability shows as "<card> ability"), `exile`.
+- `step`, `turn` (the turn number), `active` (the active player).
+- `pending: { player: p1, kind: priority }`: every key given must match (`remaining`, `mulligansTaken`, ...);
+  `pending: null` for nothing pending.
+- `p1:Grizzly Bears.tapped`, `.damage`, `.sick`.
+- `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
+  the last step that changed the game.
+- Expectations that arrive later and fail until then: `.power`, `.toughness` and `.abilities contains` (M1-11),
+  `.counters` (M1-13), `winner` (M1-15).
+
+Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
+object in exactly one zone, casting choices only on the stack, nothing stalled, every listed legal action accepted.
+
+When the runner needs a new step or expectation, add it, document it here in the same commit (a test checks every word
+the runner knows appears here), and keep the vocabulary small.
 
 ### Rules for writing scenarios
 

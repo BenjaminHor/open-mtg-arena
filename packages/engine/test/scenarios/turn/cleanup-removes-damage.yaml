@@ -1,0 +1,14 @@
+name: Damage is removed from every permanent in cleanup
+rules: [CR 514.2]
+setup:
+  turn: { active: p1, step: end }
+  p1:
+    battlefield: [{ card: Grizzly Bears, damage: 1 }]
+  p2:
+    battlefield: [{ card: Grizzly Bears, damage: 1 }]
+steps:
+  - all pass: once
+  - expect:
+      active: p2
+      p1:Grizzly Bears.damage: 0
+      p2:Grizzly Bears.damage: 0
