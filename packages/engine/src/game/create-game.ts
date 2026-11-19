@@ -94,6 +94,7 @@ function emptyGame(setup: GameSetup): GameState {
       exile: [],
       command: [],
     },
+    effects: [],
     pregame: null,
     passesInSuccession: 0,
     casting: null,

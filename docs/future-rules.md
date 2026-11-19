@@ -20,6 +20,13 @@ asks "is this a creature?", "who controls this?" or "does it have flying?" must 
 through the single propose → replace → perform → trigger pipeline. Nothing changes state directly
 outside it, so replacements can be added in one place later.
 
+*Watch out (D-036):* `dealDamage`, `loseLife` and `runEffect` are synchronous, and mana abilities call `runEffect`
+outside the work queue. When the affected player must choose the order of replacements (CR 616.1), damage needs to
+become a work item or a resumable step. Lifelink, infect, wither and "a source you control deals damage" need the
+damage source's characteristics and controller as it dealt the damage (CR 120.3, 608.2h), so the last-known-information
+store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
+spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.
+
 **Triggered abilities (CR 603), M3.** "When/whenever/at" abilities, including leaves-the-battlefield
 triggers that "look back in time" (CR 603.10), delayed triggers, and state triggers.
 *Needs now:* events carry enough information to match triggers later (for a zone change: the object as it

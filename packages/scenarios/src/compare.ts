@@ -13,7 +13,17 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   return ak.length === bk.length && ak.every((k) => k in bo && deepEqual(ao[k], bo[k]));
 }
 
-/** Every key of `want` is in `have` with an equal value (other keys of `have` don't matter). */
+/**
+ * Every key of `want` is in `have` with a matching value; other keys of `have` don't matter. A nested map matches
+ * the same way, on its own keys given (`effect: { controller: p1 }`); anything else (a list, a number) must be equal.
+ */
 export function partialMatch(have: Record<string, unknown>, want: Record<string, unknown>): boolean {
-  return Object.entries(want).every(([k, v]) => deepEqual(have[k], v));
+  return Object.entries(want).every(([k, v]) => {
+    const h = have[k];
+    return isMap(v) && isMap(h) ? partialMatch(h, v) : deepEqual(h, v);
+  });
+}
+
+function isMap(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

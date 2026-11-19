@@ -7,22 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-10 Effects interpreter v0 (plan, 2026-11-19). CR 608.2b–c, 120.3a/e, 120.8, 119.3, 611.2a/c, 613.7.
-  - `engine/src/effects/`: `effect-work.ts` turns a resolving object's effects into one `runEffect` work item each,
-    with its targets resolved as resolution begins (only the still-legal ones, CR 608.2b); `run-effect.ts` switches on
-    `op`; `deal-damage.ts` (player: life loss, CR 120.3a; creature: marked damage, CR 120.3e; 0 damage isn't dealt,
-    CR 120.8); `modify-pt.ts` creates a `ContinuousEffect` in a new `GameState.effects` (affected set locked, CR
-    611.2c; a timestamp, CR 613.7). `addMana` reuses `mana/pool.ts`. README documents every op and the primitives
-    (`zones/draw.ts`, `zones/move-card.ts`) that turn steps use; those become ops when a card needs them.
-  - Mana abilities run their effects through the same `runEffect`.
-  - Events: `DAMAGE_DEALT`, `LIFE_LOST`, `EFFECT_CREATED`.
-  - Not here: reading P/T and effects ending in cleanup (M1-11), SBAs (M1-12).
-  - Tests: scenarios in `scenarios/effects/` (Shock and Hammer to players including yourself, Bolt to a creature, Giant
-    Growth makes an effect, Bolt in response to Giant Growth); TS tests for a two-target test card skipping the
-    illegal target (CR 608.2b), 0 damage, the locked affected set.
-  - Future impact: damage goes through one function, where prevention/replacement (CR 614–615), lifelink, infect and
-    wither (CR 120.3) plug in; events carry source and recipient for damage triggers; effects carry source,
-    controller, timestamp and duration for layers and cleanup.
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -45,11 +30,18 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
 - Work queue (D-032): new pauses mid-step (M1-13's attackers and blockers) become work items, like `finishCleanup`.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
-- For M1-10: effects run in `effectWork` (`game/resolve.ts`), after the CR 608.2b check (done in M1-09); with several
-  targets, effects skip the illegal ones (CR 608.2b). Test CR 608.2m (a spell that leaves the stack mid-resolution) once
-  an effect can move one. The M1-07 stack tests are TypeScript; real casting now covers the same paths in YAML.
+- Effects (D-036): test CR 608.2m (a spell that leaves the stack mid-resolution) once an effect can move one. A new op
+  goes in `effects/run-effect.ts` and the table in `effects/README.md`.
+- For M1-11: end "until end of turn" effects in the same CR 514.2 action that removes damage (`removeAllDamage` is
+  called from the cleanup step), and decide what to do with an effect whose `affected` ids no longer exist (they never
+  come back, CR 400.7, so dropping the effect, or just the ids, is safe). `characteristics()` reads `GameState.effects`
+  (D-036); the scenarios in `effects/` can then also check `.power` and `.toughness`.
 - For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
   and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
+- For M1-12: check state-based actions in `givePriority` (CR 117.5), never between work items: a spell's effects are
+  separate `runEffect` items, and no SBA check may come between them (CR 704.3).
+- For M1-13: combat damage goes through `dealDamage` as one list (CR 510.2); add a `combat` flag to `Damage` and
+  `DAMAGE_DEALT` (CR 120.2a) for "deals combat damage" triggers and prevention.
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
   each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
@@ -66,7 +58,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
   its controller's next turn.
 - For M1-14: an ability whose source is gone still resolves (CR 113.7a) and uses last known information (CR 608.2h),
-  which needs a store in `GameState` (`future-rules.md`).
+  which needs a store in `GameState` (`future-rules.md`). Firebreathing's `modifyPT` of `"self"` uses
+  `EffectContext.self` = the source permanent (D-036), so the context for abilities is built differently from spells'.
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
 - The engine's step names follow the CR (`precombatMain`, `declareBlockers`, see `engine/src/state/turn.ts`).
   `testing.md`'s scenario YAML uses short names (`main1`, `combat.declareBlockers`); the M1-16 runner maps them.
@@ -76,7 +69,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-10 Effects interpreter
+- M1-11 Characteristics and layer 7c
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -107,8 +100,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   tapping, summoning sickness for {T} (CR 602.5a), payments checked all or nothing (CR 601.2h), `autoPay` (D-034), the
   runner's `activate` step, 8 mana scenarios (2026-11-19).
 - M1-09 Playing lands and casting spells: land plays (CR 305), timing (CR 117.1a), casting as decisions with targets and
-  payment (CR 601.2), cancelling reverses it (CR 734.1), CR 608.2b on resolution; the runner's `play` and `cast`; 12 land
-  and casting scenarios (D-035) (2026-11-19).
+  payment (CR 601.2), cancelling reverses it (CR 734.1), CR 608.2b on resolution; the runner's `play` and `cast`; 4 land
+  and 16 casting scenarios (D-035) (2026-11-19).
+
+- M1-10 Effects interpreter v0: `effects/` runs `dealDamage`, `addMana` and `modifyPT` (CR 608.2c), all damage through
+  `dealDamage` (CR 120), life loss (CR 119.3), continuous effects stored in `GameState.effects` (CR 611.2, 613.7b);
+  targets checked once as resolution begins (CR 608.2b); mana abilities use the same interpreter; 7 effect scenarios
+  and TS tests with made-up two-target cards (D-036, D-037) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

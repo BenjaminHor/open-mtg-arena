@@ -3,9 +3,10 @@
 //
 // Each task adds the events it produces. Every visible change must produce one (docs/future-rules.md).
 
+import type { ContinuousEffect } from "./effects.ts";
 import type { CardId, ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool, ManaType } from "./mana.ts";
-import type { CardObject } from "./objects.ts";
+import type { CardObject, Target } from "./objects.ts";
 import type { GameResult } from "./result.ts";
 import type { Step } from "./turn.ts";
 import type { ZoneRef } from "./zones.ts";
@@ -66,6 +67,14 @@ export type GameEvent =
   | { type: "PERMANENT_TAPPED"; object: ObjectId } // CR 701.26a
   /** Mana added to a player's mana pool (CR 106.4), by an ability of `source` (for "tapped for mana" rules, CR 106.12). */
   | { type: "MANA_ADDED"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
+  /**
+   * `source` dealt damage to a player or creature (CR 120.1). Its result follows: `LIFE_LOST` for a player
+   * (CR 120.3a); for a creature, the damage is marked on it (CR 120.3e).
+   */
+  | { type: "DAMAGE_DEALT"; source: ObjectId; to: Target; amount: number }
+  | { type: "LIFE_LOST"; player: PlayerId; amount: number } // CR 119.3
+  /** A spell or ability created a continuous effect (CR 611.2). */
+  | { type: "EFFECT_CREATED"; effect: ContinuousEffect }
   /** Damage removed from a permanent in the cleanup step (CR 514.2). */
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
   /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */

@@ -5,6 +5,7 @@
 import type { RngState } from "../rng/xoshiro128.ts";
 import type { Casting } from "./casting.ts";
 import type { PendingDecision } from "./decisions.ts";
+import type { ContinuousEffect } from "./effects.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { GameObject } from "./objects.ts";
 import type { PlayerState } from "./players.ts";
@@ -37,6 +38,8 @@ export type GameState = {
   players: Record<PlayerId, PlayerState>;
   objects: Record<ObjectId, GameObject>;
   zones: Zones;
+  /** Continuous effects from resolved spells and abilities (CR 611.2), oldest first. */
+  effects: ContinuousEffect[];
 
   /** The start of a `standard` game (CR 103.1–103.5), until the first turn begins. Null afterwards. */
   pregame: Pregame | null;

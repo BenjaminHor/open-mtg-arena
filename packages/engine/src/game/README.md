@@ -12,7 +12,7 @@ The engine's entry points and the flow of a game.
 | `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031) |
 | `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
-| `resolve.ts` | `resolveTopOfStack()` queues a resolution's steps; `finishResolving()` is its final part (CR 608) |
+| `resolve.ts` | `resolveTopOfStack()` checks targets (CR 608.2b) and queues a resolution's steps: its effects (`effects/`), then `finishResolving()`, the final part (CR 608) |
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
 | `cast.ts` | Casting a spell as decisions (CR 601.2): `castProblem`, `startCast`, targets, paying, cancelling (D-035) |
 | `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves or the step ends (CR 117.3d, 117.4) |

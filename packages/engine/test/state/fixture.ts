@@ -1,6 +1,6 @@
 // A hand-built game in the middle of a turn, touching every part of GameState: objects in every zone,
 // a spell with targets on the stack, an activated ability above it, mana in a pool, counters, damage,
-// a rule modifier and a pending decision. Built by hand because createGame arrives in M1-05.
+// a continuous effect, a rule modifier and a pending decision. Built by hand because createGame arrives in M1-05.
 
 import { type CardObject, ENGINE_VERSION, type GameState } from "../../src/index.ts";
 import { seedRng } from "../../src/rng/xoshiro128.ts";
@@ -61,7 +61,7 @@ export function midTurnState(): GameState {
     },
     rng: seedRng(42),
     nextId: 20,
-    nextTimestamp: 12,
+    nextTimestamp: 13,
     turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
     turnOrder: ["p1", "p2"],
     players: {
@@ -125,10 +125,28 @@ export function midTurnState(): GameState {
       exile: ["o9"],
       command: [],
     },
+    effects: [
+      // From a Giant Growth p2 cast earlier this turn; that spell is gone, so its id is no longer an object.
+      {
+        source: "o15",
+        controller: "p2",
+        timestamp: 12,
+        duration: "endOfTurn",
+        affected: ["o6"],
+        change: { kind: "modifyPT", power: 3, toughness: 3 },
+      },
+    ],
     pregame: null,
     passesInSuccession: 1,
     casting: null,
-    work: [],
+    work: [
+      {
+        kind: "runEffect",
+        effect: { op: "dealDamage", amount: 3, from: "self", to: { target: 0 } },
+        context: { self: "o10", controller: "p1", targets: [[{ kind: "player", player: "p2" }]] },
+      },
+      { kind: "finishResolving", object: "o10" },
+    ],
     pending: { id: "d19", player: "p2", kind: "priority" },
     result: null,
   };
