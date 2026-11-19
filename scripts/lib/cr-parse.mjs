@@ -91,7 +91,7 @@ export function parseRules(text) {
       continue;
     }
     // "Example: ..." lines and any wrapped text belong to the previous entry.
-    if (entry) entry.text += "\n" + line.trim();
+    if (entry) entry.text += `\n${line.trim()}`;
   }
 
   /** @type {GlossaryEntry[]} */ const glossary = [];

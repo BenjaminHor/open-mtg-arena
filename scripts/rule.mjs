@@ -26,7 +26,7 @@ function usage() {
 /** Does entry `id` fall under query `q`? "601.2" matches 601.2 and 601.2a but not 601.20. */
 function matches(id, q) {
   if (id === q) return true;
-  if (/^\d{3}$/.test(q)) return id.startsWith(q + ".");
+  if (/^\d{3}$/.test(q)) return id.startsWith(`${q}.`);
   return id.startsWith(q) && /^[a-z]$/.test(id.slice(q.length));
 }
 
@@ -48,7 +48,7 @@ async function main() {
     const phrase = args.slice(1).join(" ").toLowerCase();
     if (!phrase) usage();
     const hits = all.filter((e) => e.text.toLowerCase().includes(phrase));
-    for (const e of hits) console.log(e.text + "\n");
+    for (const e of hits) console.log(`${e.text}\n`);
     console.log(`${hits.length} rule(s) contain "${phrase}". (CR effective ${rules.effective})`);
     return;
   }
@@ -75,7 +75,7 @@ async function main() {
       const s = rules.sections.find((x) => x.num === query);
       console.log(`${s.num}. ${s.title}\n`);
     }
-    for (const e of hits) console.log(e.text + "\n");
+    for (const e of hits) console.log(`${e.text}\n`);
   }
   if (missing) process.exit(2);
 }

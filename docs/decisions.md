@@ -91,3 +91,21 @@ permission settings, and CI, unless the owner's GitHub plan adds branch protecti
 **D-016: Pinned dependencies with weekly Dependabot updates** · 2026-11-19 · accepted
 Exact versions, a committed lockfile, and Dependabot pull requests that must pass CI. Fewer surprises, and
 upgrades happen deliberately.
+
+**D-017: Toolchain versions** · 2026-11-19 · accepted
+Refines D-004 with concrete choices made while scaffolding (M1-01). All exact-pinned (D-016).
+- **Node 26** (the LTS line in November 2026), pinned in `.nvmrc`, `engines` and CI.
+- **pnpm 10** (`packageManager` in `package.json`), not the newer pnpm 12: 10 is a well-known major, and the
+  starter's `.npmrc` settings work with it unchanged. Revisit when a Dependabot PR proposes the major upgrade.
+- **TypeScript 7** (the native compiler). Strict, plus `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`
+  (the second helps keep `undefined` out of `GameState`). One root `tsc --noEmit` covers every package's source and tests.
+- **Vitest 5**, with `unit` and `scenarios` projects so `pnpm test:scenarios` can run alone.
+- **Biome 2** lints and formats code and JSON only. It skips Markdown and YAML, which are hand-written docs and
+  config (reformatting them adds churn and catches nothing), and the generated `rules/`.
+No runtime dependencies were added.
+
+**D-018: No build step; Node runs TypeScript directly** · 2026-11-19 · accepted
+Node 26 strips TypeScript types natively, and Vitest does too, so packages export `src/index.ts` and nothing is
+compiled. This avoids a build step and a dev dependency like `tsx`. The cost: code must use only erasable syntax
+(no `enum`, `namespace` or parameter properties; `erasableSyntaxOnly` enforces it), and relative imports end in `.ts`.
+If the web app (M2) needs compiled packages, Vite bundles them from source.

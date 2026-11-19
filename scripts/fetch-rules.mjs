@@ -70,7 +70,7 @@ function header(title, effective) {
 }
 
 function entriesText(entries) {
-  return entries.map((e) => e.text).join("\n\n") + "\n";
+  return `${entries.map((e) => e.text).join("\n\n")}\n`;
 }
 
 /** A top-level rule like "702.9. Flying" is a title; long rule text is not. */
@@ -93,13 +93,17 @@ async function main() {
   await writeFile(path.join(OUT, "raw", "MagicCompRules.txt"), text);
   await writeFile(
     path.join(OUT, "VERSION.json"),
-    JSON.stringify({ effective: rules.effective, source, sections: rules.sections.length, glossaryTerms: rules.glossary.length }, null, 2) + "\n",
+    `${JSON.stringify(
+      { effective: rules.effective, source, sections: rules.sections.length, glossaryTerms: rules.glossary.length },
+      null,
+      2,
+    )}\n`,
   );
 
   const index = [header("Comprehensive Rules index", rules.effective)];
   index.push(
     "Each section is one file. Large sections are folders with one file per top-level rule.\n" +
-      "Find a rule by number: `grep -rn \"^702.19b\" rules/cr` or `node scripts/rule.mjs 702.19b`.\n",
+      'Find a rule by number: `grep -rn "^702.19b" rules/cr` or `node scripts/rule.mjs 702.19b`.\n',
   );
 
   for (const chapter of rules.chapters) {
@@ -125,7 +129,10 @@ async function main() {
         const first = group[0];
         const subTitle = topRuleTitle(first);
         const file = `${top}-${slugify(subTitle) || "rule"}.md`;
-        await writeFile(path.join(dir, file), header(`${top}. ${subTitle} (in ${title})`, rules.effective) + entriesText(group));
+        await writeFile(
+          path.join(dir, file),
+          header(`${top}. ${subTitle} (in ${title})`, rules.effective) + entriesText(group),
+        );
         index.push(`  - ${top} ${subTitle} — \`cr/${name}/${file}\``);
       }
     }
@@ -140,12 +147,15 @@ async function main() {
     byLetter.get(key).push(g);
   }
   for (const [key, entries] of [...byLetter].sort(([a], [b]) => a.localeCompare(b))) {
-    const body = entries.map((g) => `## ${g.term}\n${g.text}`).join("\n\n") + "\n";
-    await writeFile(path.join(OUT, "glossary", `${key}.md`), header(`Glossary: ${key.toUpperCase()}`, rules.effective) + body);
+    const body = `${entries.map((g) => `## ${g.term}\n${g.text}`).join("\n\n")}\n`;
+    await writeFile(
+      path.join(OUT, "glossary", `${key}.md`),
+      header(`Glossary: ${key.toUpperCase()}`, rules.effective) + body,
+    );
     index.push(`- ${key.toUpperCase()} (${entries.length} terms) — \`glossary/${key}.md\``);
   }
 
-  await writeFile(path.join(OUT, "cr", "INDEX.md"), index.join("\n") + "\n");
+  await writeFile(path.join(OUT, "cr", "INDEX.md"), `${index.join("\n")}\n`);
 
   const ruleCount = rules.sections.reduce((n, s) => n + s.entries.length, 0);
   console.log(

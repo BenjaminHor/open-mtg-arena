@@ -6,6 +6,8 @@
 - `node scripts/fetch-rules.mjs` finds the latest TXT link on that page, downloads it and writes `rules/`.
   If the download is blocked (for example in a sandboxed environment), download the TXT by hand and run
   `node scripts/fetch-rules.mjs path/to/MagicCompRules.txt`.
+- Behind an HTTPS proxy (as in Claude Code on the web), Node's `fetch` ignores `HTTPS_PROXY` unless
+  `NODE_USE_ENV_PROXY=1` is set: `NODE_USE_ENV_PROXY=1 node scripts/fetch-rules.mjs`.
 - The generated files are committed (D-008). `rules/VERSION.json` records the effective date.
 - After a refresh, run `git diff --stat rules/` and check whether any changed rules are cited in the code
   (`grep -rn "CR <number>"`). Note relevant changes in `docs/status.md`.

@@ -137,6 +137,7 @@ scenario first, then fix it. When adding cards, use the `add-cards` skill.
 The M1 scaffolding task creates these scripts. Keep these names stable.
 
 - `pnpm check` — typecheck + lint + all tests (the definition of "green")
+- `pnpm typecheck`, `pnpm lint` — the first two parts of `check` on their own; `pnpm format` — apply Biome's fixes
 - `pnpm test` — unit and scenario tests (Vitest)
 - `pnpm test:scenarios` — scenario tests only
 - `pnpm fuzz --games 500` — random legal games checking invariants

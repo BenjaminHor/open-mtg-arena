@@ -1,0 +1,15 @@
+{
+  "name": "@mtg/cli",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@mtg/engine": "workspace:*",
+    "@mtg/cards": "workspace:*",
+    "@mtg/ai": "workspace:*"
+  }
+}
