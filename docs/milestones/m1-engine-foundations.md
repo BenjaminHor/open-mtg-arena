@@ -67,7 +67,7 @@ while the other player draws on turn 2.
 
 **M1-07 Priority and the stack.** CR 117 and 405: who gets priority when, passing in succession, resolving
 the top object (CR 608), and advancing when the stack is empty. The work queue and `advance()` loop from the
-architecture doc. *Accept:* scenarios for pass/pass resolution and for responding to a spell with an instant.
+architecture doc. *Accept:* scenarios for pass/pass resolution, and (once casting exists, M1-09) for responding to a spell with an instant.
 
 **M1-08 Mana and costs.** Mana pools and mana types (CR 106), basic land mana abilities (CR 305.6, 605),
 Llanowar Elves, paying costs (CR 601.2g–h), and a deterministic `pay: auto` helper used by scenarios, the

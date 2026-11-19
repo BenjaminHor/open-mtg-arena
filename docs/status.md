@@ -7,7 +7,23 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-07 Priority and the stack. Plan:
+  - `GameState.work`: the work queue from the architecture doc. `applyAction` applies the action, then `advance()` runs work
+    items until a decision is pending or the game is over. First kinds: `givePriority` (where SBAs and triggers will run
+    first, M1-12), `endStep`, `resolveTopOfStack`, `finishCleanup` (the cleanup discard resumes through it, not a hard-wired
+    call). Steps queue `givePriority` instead of giving it directly.
+  - All players pass in succession: with an empty stack the step ends; otherwise the top object resolves (CR 117.4, 405.5,
+    608.1). Resolving: an ability's effects, then it ceases to exist (CR 608.2n); an instant or sorcery's effects, then its
+    owner's graveyard (CR 608.2n); a permanent spell enters the battlefield under its controller (CR 608.3a). Effects are
+    M1-10, so resolution has a single no-op `resolveEffects` hook. Then the active player gets priority (CR 117.3b) and the
+    pass count restarts.
+  - Card types come from one `cardTypesOf` (printed types until `characteristics()` in M1-11).
+  - Tests put objects on the stack directly (casting is M1-09): pass/pass resolution, last in first out, priority to the
+    active player after a non-active player's spell resolves, an ability ceasing to exist, a permanent spell entering under
+    its controller, the empty-stack step end still working. The spec's "responding to a spell with an instant" needs
+    casting, so its scenario lands with M1-09 (spec updated).
+  - Future impact: the work queue makes every wait a data snapshot; triggers, SBAs and multi-step resolution become work
+    items; stack objects aren't assumed to be cards.
 
 ## Handoff notes
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
