@@ -2,19 +2,29 @@
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { DECKS, deckLibrary } from "@mtg/cards";
+import { DECKS } from "@mtg/cards";
 import type { CardDatabase, GameSetup, PlayerId } from "@mtg/engine";
 import { buildSetup, parseScenario } from "@mtg/scenarios";
+import { deckGameSetup } from "../deck-setup.ts";
 import { newGameFile, writeGameFile } from "../game-file.ts";
 import { showGame } from "../show.ts";
 
 /** Where scenario names like `combat/reach-blocks-flyer` are looked up. */
 const SCENARIOS = path.join(import.meta.dirname, "../../../engine/test/scenarios");
 
-export type NewOptions = { decks?: string; scenario?: string; seed?: string; first?: string; out?: string };
+export type NewOptions = {
+  decks?: string | undefined;
+  scenario?: string | undefined;
+  seed?: string | undefined;
+  first?: string | undefined;
+  out?: string | undefined;
+};
 
 export function newCommand(options: NewOptions, cards: CardDatabase): string {
   if (options.out === undefined) throw new Error("new needs --out <file>");
+  if (options.scenario !== undefined && (options.decks ?? options.seed ?? options.first) !== undefined) {
+    throw new Error("new --scenario takes its setup from the scenario: no --decks, --seed or --first");
+  }
   const setup = options.scenario !== undefined ? scenarioSetup(options.scenario, cards) : deckSetup(options);
   const file = newGameFile(setup, cards);
   writeGameFile(options.out, file);
@@ -24,30 +34,17 @@ export function newCommand(options: NewOptions, cards: CardDatabase): string {
 function deckSetup(options: NewOptions): GameSetup {
   const names = (options.decks ?? "").split(",").filter((n) => n !== "");
   if (names.length !== 2) throw new Error(`new needs --decks <deck>,<deck>; decks: ${Object.keys(DECKS).join(", ")}`);
-  const seed = options.seed === undefined ? 1 : Number(options.seed);
-  if (!Number.isSafeInteger(seed) || seed < 0) throw new Error("--seed is a whole number, 0 or more");
+  const seed = options.seed ?? "1";
+  if (!/^\d+$/.test(seed) || !Number.isSafeInteger(Number(seed)))
+    throw new Error("--seed is a whole number, 0 or more");
   const first = options.first;
   if (first !== undefined && first !== "p1" && first !== "p2") throw new Error("--first is p1 or p2");
-  const players = names.map((name, i) => {
+  const decks = names.map((name) => {
     const deck = DECKS[name];
     if (deck === undefined) throw new Error(`No deck "${name}"; decks: ${Object.keys(DECKS).join(", ")}`);
-    return {
-      id: `p${i + 1}` as PlayerId,
-      life: 20,
-      library: deckLibrary(deck),
-      hand: [],
-      battlefield: [],
-      graveyard: [],
-      exile: [],
-      manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
-    };
+    return deck;
   });
-  return {
-    seed,
-    players,
-    opening: { kind: "standard", firstPlayer: (first ?? null) as PlayerId | null },
-    ruleModifiers: [],
-  };
+  return deckGameSetup(decks, Number(seed), (first ?? null) as PlayerId | null);
 }
 
 /** A scenario's setup: by path to a `.yaml` file, or by name under the engine's scenarios. */

@@ -95,7 +95,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   hanging) if a decision other than priority comes up, the game ends before that step begins, or the step doesn't come
   with priority within 500 passes (`untap`, which gives no one priority, never does).
 - `p1 choose: <answer>` for the pending decision: `keep` or `mulligan`; a player (`p2`) for who goes first; a card name
-  for a card to put on the bottom or discard (with several identical cards, the first one that's still a legal answer);
+  for a card to put on the bottom or discard (with several identical cards, the first one that's still a legal answer,
+  or `Forest#2` for the second Forest in hand: which copy goes to the bottom changes the next shuffle);
   a target (`p2`, `p2:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.
 - `p1 play: <land>`: play a land from hand.
@@ -195,11 +196,11 @@ pnpm cli do /tmp/g.json 3            # take legal action #3
 pnpm cli do /tmp/g.json "cast: Lightning Bolt, targets: [p2:Grizzly Bears], pay: auto"   # a scenario step, as YAML
 pnpm cli do /tmp/g.json "all pass: until combat.declareAttackers"   # any step a scenario can take
 pnpm cli do /tmp/g.json "p2 concede: now"   # not in `actions`: always allowed (D-042)
-pnpm cli ai /tmp/g.json --until p1   # let the AI act for the other player until p1 must decide
-pnpm cli auto /tmp/g.json --ai both --max-turns 30   # AI vs AI to the end; prints a turn-by-turn log
-pnpm cli log /tmp/g.json             # events so far, one per line, with CR-relevant detail
+pnpm cli ai /tmp/g.json --until p1   # an agent acts for the other player until p1 must decide (--agent, --seed)
+pnpm cli auto /tmp/g.json --ai both --max-turns 30   # agents play everyone to the end; prints the game's log
+pnpm cli log /tmp/g.json             # events so far, one per line, by turn (--brief leaves out passes and steps)
 pnpm cli inspect /tmp/g.json "p2:Grizzly Bears"   # an object's computed characteristics and which effects/layers produced them
-pnpm cli export /tmp/g.json --scenario > new.yaml # the game so far as a scenario (setup + steps)
+pnpm cli export /tmp/g.json --scenario --rules "CR 510.1c" > new.yaml # the game so far as a scenario (setup + steps + expect)
 pnpm cli replay bug-report.json      # replay a saved log and stop at the end (or --step N)
 ```
 
@@ -224,6 +225,13 @@ p1  life 20  hand 4  library 32  graveyard 0
 pending: priority (p1) — 6 legal actions; run `pnpm cli actions`
 ```
 
+The agents (`--agent random`, the default, or `first-legal`) choose only among `legalActions()`, from their own seed, so
+the same seed plays the same game. `first-legal` passes whenever it can, so its games end by a library running out.
+`ai` and `auto` stop at `--max-actions` (default 10,000) or `--max-turns` (default 200) and say so. `export` names each
+permanent exactly (`p1:Mountain#2`), writes each payment and division in full, and ends with an `expect` of where the
+game ended up; it can't write a game that stops part way through declaring attackers or blockers or dividing damage.
+`--rules` lists what the scenario proves (without it, `CR 100.1` stands in: replace it).
+
 **How Claude Code should use it**: after implementing a rule, start a game from a scenario,
 step through it with `do`, and read `show`, `log` and `inspect` to confirm the behavior matches
 the CR. Then make that path a scenario test with `export`, so it stays checked.
@@ -231,7 +239,7 @@ the CR. Then make that path a scenario test with `export`, so it stays checked.
 ## 3. Invariant fuzzing
 
 `pnpm fuzz --games N --seed S` plays games where every decision is a random legal action
-(and some are AI-chosen), for both the M2 decks and random decks from the pool. After every
+(and some are AI-chosen), for both prebuilt decks and random decks from the pool. After every
 action it checks:
 
 - the state round-trips through JSON unchanged
@@ -248,7 +256,8 @@ CLI and turned into a scenario. Run a short fuzz in `pnpm check`; run longer one
 
 ## 4. Replays and golden games
 
-- A replay file is `{ setup, actions, engineVersion }` (the seed is part of `setup`). The app's "Report a bug" button exports
+- A replay file is the CLI's game file, `{ format, version, setup, actions, state? }` (the seed is part of `setup`;
+  `state` is only a cache, D-043). The app's "Report a bug" button exports
   one, with the owner's description attached.
 - `packages/engine/test/replays/` holds replays that must keep producing the same final state hash.
   When an intentional rules change alters a replay, regenerate its hash in the same commit and explain why.

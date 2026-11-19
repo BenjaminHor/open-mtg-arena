@@ -4,7 +4,9 @@
 import {
   type CardDatabase,
   characteristics,
+  controllerOf,
   type GameState,
+  isFreeOfSummoningSickness,
   legalActions,
   type ObjectId,
   type PlayerId,
@@ -28,7 +30,7 @@ export function showGame(state: GameState, cards: CardDatabase, viewer: PlayerId
   for (const p of others) lines.push(...playerLines(state, p, viewer, cards));
   lines.push(`stack: ${stackText(state, cards)}`);
   if (bottom !== undefined) lines.push(...playerLines(state, bottom, viewer, cards));
-  lines.push(pendingLine(state, cards));
+  lines.push(pendingLine(state, cards, viewer));
   return lines.join("\n");
 }
 
@@ -68,9 +70,8 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
   const notes: string[] = [];
   if (obj?.kind === "card") {
     if (obj.tapped) notes.push("T");
-    // Summoning sick: can't attack or use {T} yet (CR 302.6); haste ignores that (CR 702.10).
-    if (c.types.includes("creature") && !obj.controlledSinceTurnStart && !c.keywords.includes("haste"))
-      notes.push("sick");
+    // Summoning sick: can't attack or use {T} yet (CR 302.6, with haste, 702.10).
+    if (c.types.includes("creature") && !isFreeOfSummoningSickness(state, id, cards)) notes.push("sick");
     if (obj.damage > 0) notes.push(`${obj.damage} damage`);
   }
   if (state.combat?.attacks.some((a) => a.attacker === id)) notes.push("attacking");
@@ -87,12 +88,12 @@ function stackText(state: GameState, cards: CardDatabase): string {
       const obj = state.objects[id];
       const targets = (obj?.choices?.targets ?? []).flat().map((t) => targetText(state, t, cards));
       const arrow = targets.length > 0 ? ` → ${targets.join(", ")}` : "";
-      return `${nameOf(state, id, cards)}${arrow} (${obj?.baseController ?? "?"})`;
+      return `${nameOf(state, id, cards)}${arrow} (${controllerOf(state, id)})`;
     })
     .join(", ");
 }
 
-function pendingLine(state: GameState, cards: CardDatabase): string {
+function pendingLine(state: GameState, cards: CardDatabase, viewer: PlayerId | null): string {
   const result = state.result;
   if (result !== null) {
     const losses = result.losses.map((l) => `${l.player}: ${l.reason}`).join(", ");
@@ -101,6 +102,8 @@ function pendingLine(state: GameState, cards: CardDatabase): string {
   }
   const pending = state.pending;
   if (pending === null) return "pending: nothing";
+  // How many actions another player has would hint at their hand: shown only to them (or in debug).
+  if (viewer !== null && viewer !== pending.player) return `pending: ${pending.kind} (${pending.player})`;
   const count = legalActions(state, pending.player, cards).length;
   return `pending: ${pending.kind} (${pending.player}) — ${count} legal actions; run \`pnpm cli actions\``;
 }

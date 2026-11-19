@@ -1,7 +1,7 @@
 // Actions and objects in words, for `actions`, `show` and `log`. Permanents are named as scenarios name them
 // (`p2:Grizzly Bears#2`), so what the CLI prints can be pasted into a scenario or into `do`.
 
-import type { Action, Answer, CardDatabase, GameState, ManaPool, ObjectId, Target } from "@mtg/engine";
+import type { AbilityRef, Action, Answer, CardDatabase, GameState, ManaPool, ObjectId, Target } from "@mtg/engine";
 import { nameOf, refOf } from "@mtg/scenarios";
 
 /** A permanent's reference, or the object's name if it isn't on the battlefield. */
@@ -34,14 +34,21 @@ export function actionText(state: GameState, action: Action, cards: CardDatabase
       return `play ${nameOf(state, action.object, cards)}`;
     case "CAST_SPELL":
       return `cast ${nameOf(state, action.object, cards)}`;
-    case "ACTIVATE_ABILITY": {
-      const which = action.ability.kind === "printed" ? `ability ${action.ability.index + 1}` : "mana ability";
-      return `activate ${objectText(state, action.object, cards)} (${which})`;
-    }
+    case "ACTIVATE_ABILITY":
+      return `activate ${objectText(state, action.object, cards)} (${abilityText(action.ability)})`;
     case "CONCEDE":
       return `${action.player} concedes`;
     case "ANSWER":
       return answerText(state, action.answer, cards);
+  }
+}
+
+function abilityText(ref: AbilityRef): string {
+  switch (ref.kind) {
+    case "printed":
+      return `ability ${ref.index + 1}`;
+    case "basicLandType":
+      return "{T}: add mana";
   }
 }
 

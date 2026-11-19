@@ -1,0 +1,238 @@
+// Writing a game as a scenario (`pnpm cli export --scenario`): its setup, one step per action (grouped where a
+// scenario step takes several), and a final `expect` of where everything ended up, so the scenario checks the result
+// and not only that the steps were legal. Running the written scenario must pass (a round-trip test checks it).
+
+import {
+  type Action,
+  applyAction,
+  type CardDatabase,
+  createGame,
+  type GameSetup,
+  type GameState,
+  type ManaPool,
+  type ObjectId,
+  type PlayerId,
+  type Target,
+} from "@mtg/engine";
+import { stringify } from "yaml";
+import { nameOf, refOf, scenarioStep } from "./names.ts";
+
+type Step = Record<string, unknown>;
+
+export function scenarioFromGame(
+  name: string,
+  rules: readonly string[],
+  setup: GameSetup,
+  actions: readonly Action[],
+  cards: CardDatabase,
+): string {
+  const created = createGame(setup, cards);
+  if (!created.ok) throw new Error(`the setup is rejected: ${created.error.message}`);
+  const steps: Step[] = [];
+  let state = created.state;
+  for (let i = 0; i < actions.length; ) {
+    const { step, taken } = stepFor(state, actions, i, cards);
+    for (const action of actions.slice(i, i + taken)) {
+      const result = applyAction(state, action, cards);
+      if (!result.ok) throw new Error(`action ${i + 1} is rejected: ${result.error.message}`);
+      state = result.state;
+    }
+    steps.push(step);
+    i += taken;
+  }
+  steps.push({ expect: finalExpect(state, cards) });
+  const doc = { name, rules: [...rules], setup: scenarioSetup(setup, cards), steps };
+  return stringify(doc, { lineWidth: 120 });
+}
+
+/** The scenario step for the action at `i`, and how many actions it takes. */
+function stepFor(
+  state: GameState,
+  actions: readonly Action[],
+  i: number,
+  cards: CardDatabase,
+): { step: Step; taken: number } {
+  const action = actions[i] as Action;
+  if (action.type === "CONCEDE") return { step: { [`${action.player} concede`]: "now" }, taken: 1 };
+  const p = action.player;
+  switch (action.type) {
+    case "PASS_PRIORITY":
+      return { step: { [`${p} pass`]: "once" }, taken: 1 };
+    case "PLAY_LAND":
+      return { step: { [`${p} play`]: nameOf(state, action.object, cards) }, taken: 1 };
+    // With no targets or payment, a cast stops at its first decision; the answers follow as `choose` steps.
+    case "CAST_SPELL":
+      return { step: { [`${p} cast`]: nameOf(state, action.object, cards) }, taken: 1 };
+    case "ACTIVATE_ABILITY": {
+      const ref = refOf(state, action.object, cards) ?? nameOf(state, action.object, cards);
+      const step: Step = { [`${p} activate`]: ref };
+      if (action.ability.kind === "printed") step.ability = action.ability.index + 1;
+      return { step, taken: 1 };
+    }
+    case "ANSWER":
+      return answerStep(state, actions, i, cards);
+  }
+}
+
+function answerStep(
+  state: GameState,
+  actions: readonly Action[],
+  i: number,
+  cards: CardDatabase,
+): { step: Step; taken: number } {
+  const action = actions[i] as Extract<Action, { type: "ANSWER" }>;
+  const p = action.player;
+  const answer = action.answer;
+  const choose = (value: unknown) => ({ step: { [`${p} choose`]: value }, taken: 1 });
+  switch (answer.kind) {
+    case "chooseStartingPlayer":
+      return choose(answer.player);
+    case "mulligan":
+      return choose(answer.choice);
+    case "mulliganBottom":
+    case "discardToHandSize":
+      return choose(handCardName(state, p, answer.object, cards));
+    case "chooseTarget":
+      return choose(targetName(state, answer.target, cards));
+    case "payMana":
+      return choose(nonZero(answer.payment));
+    case "cancelCast":
+      return choose("cancel");
+    case "declareAttacker":
+    case "declareBlocker":
+    case "finishDeclaring":
+      return declaration(state, actions, i, cards);
+    case "assignDamage":
+      return division(state, actions, i, cards);
+  }
+}
+
+/** One declaration's answers, up to and including `finishDeclaring`, as one `attack` or `block` step. */
+function declaration(
+  state: GameState,
+  actions: readonly Action[],
+  i: number,
+  cards: CardDatabase,
+): { step: Step; taken: number } {
+  const pending = state.pending;
+  const p = (actions[i] as Action & { player: PlayerId }).player;
+  const end = actions.findIndex((a, j) => j >= i && a.type === "ANSWER" && a.answer.kind === "finishDeclaring");
+  if (end < 0) throw new Error("the game stops part way through a declaration, which a scenario can't write");
+  const answers = actions.slice(i, end).map((a) => (a.type === "ANSWER" ? a.answer : null));
+  const local = (id: Parameters<typeof refOf>[1]) =>
+    (refOf(state, id, cards) ?? nameOf(state, id, cards)).replace(/^p\d+:/, "");
+  if (pending?.kind === "declareAttackers") {
+    const attackers = answers.map((a) => (a?.kind === "declareAttacker" ? local(a.attack.attacker) : null));
+    return { step: { [`${p} attack`]: attackers }, taken: end - i + 1 };
+  }
+  const blocks = Object.fromEntries(
+    answers.map((a) => (a?.kind === "declareBlocker" ? [local(a.block.blocker), local(a.block.attacker)] : ["?", "?"])),
+  );
+  return { step: { [`${p} block`]: blocks }, taken: end - i + 1 };
+}
+
+/** One attacker's division of damage: an answer per blocker but the last, which gets the rest. */
+function division(
+  state: GameState,
+  actions: readonly Action[],
+  i: number,
+  cards: CardDatabase,
+): { step: Step; taken: number } {
+  const pending = state.pending;
+  if (pending?.kind !== "assignDamage") throw new Error("an assignDamage answer without its decision");
+  const count = pending.blockers.length - 1;
+  const amounts = actions
+    .slice(i, i + count)
+    .map((a) => (a.type === "ANSWER" && a.answer.kind === "assignDamage" ? a.answer.amount : -1));
+  if (amounts.length < count || amounts.includes(-1)) {
+    throw new Error("the game stops part way through dividing damage, which a scenario can't write");
+  }
+  const last = pending.amount - amounts.reduce((sum, n) => sum + n, 0);
+  const local = (id: Parameters<typeof refOf>[1]) =>
+    (refOf(state, id, cards) ?? nameOf(state, id, cards)).replace(/^p\d+:/, "");
+  const map = Object.fromEntries(pending.blockers.map((b, j) => [local(b), amounts[j] ?? last]));
+  return { step: { [`${pending.player} assign`]: map }, taken: count };
+}
+
+/** A card in hand by name, with `#n` when the hand holds several copies (which copy can matter, CR 103.5). */
+function handCardName(state: GameState, player: PlayerId, id: ObjectId, cards: CardDatabase): string {
+  const name = nameOf(state, id, cards);
+  const copies = (state.zones.players[player]?.hand ?? []).filter((x) => nameOf(state, x, cards) === name);
+  return copies.length > 1 ? `${name}#${copies.indexOf(id) + 1}` : name;
+}
+
+function targetName(state: GameState, target: Target, cards: CardDatabase): string {
+  return target.kind === "player"
+    ? target.player
+    : (refOf(state, target.object, cards) ?? nameOf(state, target.object, cards));
+}
+
+function nonZero(pool: ManaPool): Record<string, number> {
+  return Object.fromEntries(Object.entries(pool).filter(([, n]) => n !== 0));
+}
+
+/** Where everything ended up: what a reader of the scenario would want checked. */
+function finalExpect(state: GameState, cards: CardDatabase): Record<string, unknown> {
+  const expect: Record<string, unknown> = {};
+  const names = (ids: readonly string[]) => ids.map((id) => nameOf(state, id as `o${number}`, cards));
+  for (const p of state.turnOrder) {
+    const zones = state.zones.players[p];
+    expect[`${p}.life`] = state.players[p]?.life;
+    expect[`${p}.hand`] = names(zones?.hand ?? []);
+    expect[`${p}.graveyard`] = names(zones?.graveyard ?? []);
+    expect[`${p}.battlefield`] = names(
+      state.zones.battlefield.filter((id) => refOf(state, id, cards)?.startsWith(`${p}:`)),
+    );
+  }
+  expect.stack = names(state.zones.stack);
+  if (state.result !== null) {
+    expect.winner = state.result.winner ?? "draw";
+  } else {
+    if (state.turn !== null) {
+      expect.turn = state.turn.number;
+      expect.step = scenarioStep(state.turn.step);
+    }
+    expect.pending = state.pending === null ? null : { player: state.pending.player, kind: state.pending.kind };
+  }
+  return expect;
+}
+
+/** The game's setup in the scenario format (docs/testing.md, "setup"). */
+function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, unknown> {
+  const card = (oracleId: string) => cards[oracleId]?.printed.name ?? oracleId;
+  const out: Record<string, unknown> = { seed: setup.seed };
+  switch (setup.opening.kind) {
+    case "standard":
+      out.opening = "standard";
+      if (setup.opening.firstPlayer !== null) out.first = setup.opening.firstPlayer;
+      break;
+    case "fixed":
+      out.turn = {
+        active: setup.opening.turn.activePlayer,
+        step: scenarioStep(setup.opening.turn.step),
+        number: setup.opening.turn.number,
+      };
+      break;
+  }
+  if (setup.ruleModifiers.length > 0) out.rules = setup.ruleModifiers;
+  for (const player of setup.players) {
+    const p: Record<string, unknown> = { life: player.life, library: player.library.map(card) };
+    if (player.hand.length > 0) p.hand = player.hand.map(card);
+    if (player.battlefield.length > 0) {
+      p.battlefield = player.battlefield.map((perm) => {
+        const entry: Record<string, unknown> = { card: card(perm.oracleId) };
+        if (perm.tapped) entry.tapped = true;
+        if (perm.summoningSick) entry.sick = true;
+        if (perm.damage > 0) entry.damage = perm.damage;
+        if (Object.keys(perm.counters).length > 0) entry.counters = perm.counters;
+        return entry;
+      });
+    }
+    if (player.graveyard.length > 0) p.graveyard = player.graveyard.map(card);
+    if (player.exile.length > 0) p.exile = player.exile.map(card);
+    const pool = nonZero(player.manaPool);
+    if (Object.keys(pool).length > 0) p.manaPool = pool;
+    out[player.id] = p;
+  }
+  return out;
+}

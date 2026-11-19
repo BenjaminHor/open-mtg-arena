@@ -1,9 +1,11 @@
 // The CLI's commands, run in-process through `run` (the same function `pnpm cli` calls), on files in a temp dir.
 
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { cardDatabase } from "@mtg/cards";
 import { describe, expect, it } from "vitest";
+import { readGameFile, replay } from "../src/game-file.ts";
 import { run } from "../src/main.ts";
 
 function cli(...args: string[]): string {
@@ -60,5 +62,74 @@ describe("new, show, actions and do", () => {
     expect(p1Hand).toBeDefined();
     expect(p2View).not.toContain(`hand: ${p1Hand}`);
     expect(p2View).toMatch(/p2 {2}life[^\n]*\n[^\n]*\n {4}hand: /);
+  });
+});
+
+describe("the game file's actions are the truth (D-043)", () => {
+  it("replaying the actions gives the cached state, and show is the same without the cache", () => {
+    const cards = cardDatabase();
+    const file = tempFile();
+    cli("new", "--decks", "red-aggro,green-stompy", "--seed", "9", "--first", "p2", "--out", file);
+    cli("auto", file, "--ai", "both", "--agent", "random", "--seed", "4", "--max-actions", "300");
+    const game = readGameFile(file);
+    expect(replay(game.setup, game.actions, cards).state).toStrictEqual(game.state);
+    const shown = cli("show", file);
+    writeFileSync(file, JSON.stringify({ ...game, state: undefined }));
+    expect(cli("show", file)).toBe(shown);
+  });
+});
+
+describe("show's layout", () => {
+  it("matches testing.md's form exactly", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "casting/targets", "--out", file);
+    expect(cli("show", file)).toBe(
+      [
+        "Turn 3 · p1 · main1 · p1 has priority",
+        "p2  life 20  hand 0  library 20  graveyard 0",
+        "    battlefield: Mountain",
+        "stack: (empty)",
+        "p1  life 20  hand 3  library 20  graveyard 0",
+        "    battlefield: Mountain, Mountain, Forest, Grizzly Bears 2/2",
+        "    hand: Lightning Bolt, Giant Growth, Shock",
+        "pending: priority (p1) — 7 legal actions; run `pnpm cli actions`",
+      ].join("\n"),
+    );
+    // p2 doesn't learn how many actions p1 has (it would hint at p1's hand).
+    expect(cli("show", file, "--as", "p2")).toMatch(/pending: priority \(p1\)$/);
+  });
+});
+
+describe("mistakes are reported, not thrown", () => {
+  it("says what's wrong, with exit code 1", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "casting/targets", "--out", file);
+    const fails = (...args: string[]) => {
+      const { output, code } = run(args);
+      expect(code, args.join(" ")).toBe(1);
+      return output;
+    };
+    expect(fails("dance")).toMatch(/Unknown command/);
+    expect(fails("do", file, "0")).toMatch(/no action 0/);
+    expect(fails("do", file, "99")).toMatch(/no action 99/);
+    expect(fails("show", file, "--as", "p3")).toMatch(/no player p3/);
+    expect(fails("show", file, "extra")).toMatch(/takes one game file/);
+    expect(fails("show", file, "--seed", "3")).toMatch(/Unknown option/);
+    expect(fails("new", "--scenario", "casting/targets", "--seed", "3", "--out", file)).toMatch(/takes its setup/);
+    expect(fails("new", "--decks", "red-aggro,green-stompy", "--seed", "0x10", "--out", file)).toMatch(/--seed/);
+    cli("do", file, "p1 concede: now");
+    expect(fails("do", file, "p2 concede: now")).toMatch(/the game is over/);
+  });
+
+  it("takes a step with or without braces and a player", () => {
+    for (const step of [
+      "{cast: Shock, targets: [p2], pay: auto}",
+      "cast: Shock, targets: [p2], pay: auto",
+      "{ p1 cast: Shock, targets: [p2], pay: auto }",
+    ]) {
+      const file = tempFile();
+      cli("new", "--scenario", "casting/targets", "--out", file);
+      expect(cli("do", file, step), step).toMatch(/stack: Shock → p2 \(p1\)/);
+    }
   });
 });

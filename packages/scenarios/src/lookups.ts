@@ -38,8 +38,9 @@ export function paymentFrom(value: unknown): ManaPool {
 
 /**
  * A card with this name among the player's legal answers. With several identical cards (eight Forests), the first in
- * zone order that's still a legal answer is used. For an illegal attempt (`expect error`), any card with the name,
- * wherever it is.
+ * zone order that's still a legal answer is used, or `Forest#2` names the second Forest in the player's hand: which
+ * copy goes to the bottom after a mulligan changes the hand's order, and so the next shuffle (CR 103.5). For an
+ * illegal attempt (`expect error`), any card with the name, wherever it is.
  */
 export function cardNamed(
   state: GameState,
@@ -51,6 +52,16 @@ export function cardNamed(
   const answers = legalActions(state, player as PlayerId, cards).flatMap((a) =>
     a.type === "ANSWER" && "object" in a.answer ? [a.answer.object] : [],
   );
+  const nth = /^(.+)#(\d+)$/.exec(name);
+  if (nth !== null) {
+    const [, card = "", n = "1"] = nth;
+    const hand = state.zones.players[player as PlayerId]?.hand ?? [];
+    const copy = hand.filter((id) => nameOf(state, id, cards) === card)[Number(n) - 1];
+    if (copy === undefined || (which === "legal" && !answers.includes(copy))) {
+      throw new Error(`no ${name} in ${player}'s hand to choose`);
+    }
+    return copy;
+  }
   const pool = which === "legal" ? answers : [...answers, ...(Object.keys(state.objects) as ObjectId[])];
   const found = pool.find((id) => nameOf(state, id, cards) === name);
   if (found === undefined) throw new Error(`no ${name} for ${player} to choose`);

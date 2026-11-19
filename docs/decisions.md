@@ -471,4 +471,11 @@ every schema change and every change D-024 lists bumps it.
   (`canSeeHand`). The engine's `playerView` (architecture.md) isn't built yet: no M1 task needs it, and the AI that
   must read only views arrives in M2.
 - The prebuilt decks are written by card name and count, as in the M1 spec (`packages/cards/src/decks/`).
+- (Part 2.) Agents are pure functions of the state, the legal actions and their own seed (a small PRNG in the CLI,
+  separate from the game's RNG), so `auto` is reproducible and the fuzzer can reuse them. They never concede (D-042).
+  The log names objects from the states before and after the action that caused each event (a creature that died is
+  only in the first), and follows the turn event by event. `export --scenario` lives in `packages/scenarios` beside
+  the parser; a game's cards in hand are named `Forest#2` when it matters which copy (a mulligan's bottom card changes
+  the next shuffle). `layerSevenCChanges` (engine) explains power and toughness for `inspect`, from the same code that
+  computes them.
 

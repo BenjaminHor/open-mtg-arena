@@ -14,6 +14,8 @@ Where the data comes from and its terms: [`docs/data-sources.md`](../../docs/dat
   - `CARD_DEFS`: every definition (`src/defs/<letter>/<slug>.ts`).
   - `definitionProblems()`: the errata and completeness check.
   - `POOL`: the extracted Oracle data, including image URIs and artist for the UI.
+  - `DECKS`, `deckLibrary()`: the prebuilt decks, red-aggro and green-stompy (`src/decks/`), by name and count. M4's
+    deck model (`packages/decks`) will absorb this shape.
 - `scripts/fetch.ts` (`pnpm cards:fetch`) and `scripts/extract.ts` (`pnpm cards:extract`): the data pipeline. These
   are the only Node-only code here; `src/` also runs in the browser.
 
