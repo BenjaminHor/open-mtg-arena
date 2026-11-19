@@ -20,6 +20,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
 - `pnpm check` is typecheck + lint + tests for now. Its other parts in `docs/testing.md` join as they're built:
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
+- When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
+- When M1-16 lands the scenario runner, drop `--passWithNoTests` from `test:scenarios`, so a misplaced runner fails.
 - M1-04 will need Scryfall's hosts (`api.scryfall.com`, `data.scryfall.io`) allowed in that environment. Request them then.
 
 ## Next up

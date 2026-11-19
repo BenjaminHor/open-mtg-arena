@@ -1,0 +1,4 @@
+// Engine randomness must come from the seeded RNG in GameState (CLAUDE.md, hard invariants).
+`Math.random` as $call where {
+  register_diagnostic(span = $call, message = "No Math.random in the engine: use the seeded RNG in GameState.", severity = "error")
+}

@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.mjs", "**/*.js", "**/*.json", "!!rules"]
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.mjs", "**/*.js", "**/*.json", "!!rules"]
   },
   "formatter": {
     "enabled": true,
@@ -32,5 +32,46 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["packages/engine/src/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "error"
+          },
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "Date": "No clocks in the engine. The engine is a pure reducer (CLAUDE.md, hard invariants).",
+                  "process": "No environment access in the engine. The engine is a pure reducer (CLAUDE.md, hard invariants).",
+                  "setTimeout": "No timers in the engine. The engine is a pure reducer (CLAUDE.md, hard invariants).",
+                  "setInterval": "No timers in the engine. The engine is a pure reducer (CLAUDE.md, hard invariants).",
+                  "Map": "GameState is plain JSON: use a Record, not a Map.",
+                  "Set": "GameState is plain JSON: use an array or Record, not a Set.",
+                  "fetch": "No I/O in the engine. The engine is a pure reducer (CLAUDE.md, hard invariants).",
+                  "console": "No I/O in the engine. Return events instead. The engine is a pure reducer (CLAUDE.md, hard invariants)."
+                }
+              }
+            },
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@mtg/*", "**/cards/src/**", "**/cli/src/**", "**/ai/src/**"],
+                    "message": "The engine depends on nothing in this repo (docs/architecture.md)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "plugins": ["./tools/biome/no-math-random.grit"]
+    }
+  ]
 }

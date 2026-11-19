@@ -6,6 +6,10 @@ See "AI" in [`docs/architecture.md`](../../docs/architecture.md).
 It will take a `PlayerView` and the pending decision, and return an action. It never reads the full game state.
 Depends only on `@mtg/engine`.
 
+## Entry points
+
+- `src/index.ts`: empty for now.
+
 Until then, the CLI's `random` and `first-legal` agents (M1-17) play games for testing.
 
 ## Tests

@@ -93,8 +93,9 @@ Exact versions, a committed lockfile, and Dependabot pull requests that must pas
 upgrades happen deliberately.
 
 **D-017: Toolchain versions** · 2026-11-19 · accepted
-Refines D-004 with concrete choices made while scaffolding (M1-01). All exact-pinned (D-016).
-- **Node 26** (the LTS line in November 2026), pinned in `.nvmrc`, `engines` and CI.
+Refines D-004 with concrete choices made while scaffolding (M1-01). npm packages are exact-pinned (D-016);
+Node (`.nvmrc`) and the CI actions are pinned to a major version, and `engine-strict` makes `pnpm install` refuse an older Node.
+- **Node 26** (the LTS line in November 2026), in `.nvmrc`, `engines` (`>=26`) and CI.
 - **pnpm 10** (`packageManager` in `package.json`), not the newer pnpm 12: 10 is a well-known major, and the
   starter's `.npmrc` settings work with it unchanged. Revisit when a Dependabot PR proposes the major upgrade.
 - **TypeScript 7** (the native compiler). Strict, plus `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`
@@ -109,3 +110,10 @@ Node 26 strips TypeScript types natively, and Vitest does too, so packages expor
 compiled. This avoids a build step and a dev dependency like `tsx`. The cost: code must use only erasable syntax
 (no `enum`, `namespace` or parameter properties; `erasableSyntaxOnly` enforces it), and relative imports end in `.ts`.
 If the web app (M2) needs compiled packages, Vite bundles them from source.
+
+**D-019: Engine purity is checked by the linter** · 2026-11-19 · accepted
+The hard invariants in CLAUDE.md are enforced mechanically for `packages/engine/src`, not only by review.
+A Biome override there bans Node modules, imports from other packages in this repo, `Date`, `process`, timers,
+`fetch`, `console`, `Map` and `Set`, and a small GritQL plugin (`tools/biome/no-math-random.grit`) bans
+`Math.random`. Tests may use them. The engine also exports `ENGINE_VERSION`, the current `GameState.version`,
+so hosts (the CLI, saves, replays) can reject state from another schema. M1-03 uses it for `GameState.version`.
