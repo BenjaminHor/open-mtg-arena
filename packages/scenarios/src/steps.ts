@@ -17,7 +17,7 @@ import { paymentActions, targetAction, targetsAndPayment } from "./stack-steps.t
 /** A step that changes the game: passing or choosing. */
 export type ActionStep = Extract<
   ScenarioStep,
-  { kind: "pass" | "allPass" | "choose" | "activate" | "play" | "cast" | "attack" | "block" | "assign" }
+  { kind: "pass" | "allPass" | "choose" | "activate" | "play" | "cast" | "attack" | "block" | "assign" | "concede" }
 >;
 
 /** Applies a step's actions, each checked by `afterEach`. Throws a readable message when the step can't be taken. */
@@ -32,6 +32,9 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
       );
     case "allPass":
       return allPass(game, step.until, cards, afterEach);
+    case "concede":
+      // Not looked up in legalActions: a player may concede at any time (CR 104.3a), so it's never listed.
+      return apply(game, { type: "CONCEDE", player: step.player as PlayerId }, cards, afterEach);
     case "attack":
     case "block":
     case "assign": {
@@ -152,6 +155,8 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
   }
   const player = step.player as PlayerId;
   switch (step.kind) {
+    case "concede":
+      return i === 0 ? { type: "CONCEDE", player } : null;
     case "pass":
       return i === 0 ? { type: "PASS_PRIORITY", decisionId, player } : null;
     case "choose":

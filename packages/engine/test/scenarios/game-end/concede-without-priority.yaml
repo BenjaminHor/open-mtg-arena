@@ -1,0 +1,8 @@
+name: A player can concede at any time, even while another player has priority
+rules: [CR 104.3a]
+setup:
+  turn: { active: p1, step: main1 }
+steps:
+  - p2 concede: now
+  - expect:
+      winner: p1

@@ -77,7 +77,8 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
       case "cast":
       case "attack":
       case "block":
-      case "assign": {
+      case "assign":
+      case "concede": {
         const next = steps[i + 1];
         if (next?.kind === "expectError") {
           const problem = rejected(game, step, next.code, cards);

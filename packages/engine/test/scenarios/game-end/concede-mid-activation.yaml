@@ -1,0 +1,14 @@
+name: Conceding in the middle of activating an ability ends the game there
+rules: [CR 104.3a, CR 104.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Furnace Whelp]
+steps:
+  - p1 activate: Furnace Whelp
+  - expect:
+      pending: { player: p1, kind: payMana }
+  - p1 concede: now
+  - expect:
+      winner: p2
+      stack: [Furnace Whelp ability]

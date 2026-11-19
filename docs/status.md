@@ -43,12 +43,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   (the legend rule, CR 704.5j) can wait for it, since a performed check re-queues `givePriority`.
 - Combat (D-040): engine tests that pass through combat with creatures must answer `declareAttackers` and
   `declareBlockers` (the turn tests' `playUntilTurn` declares nothing).
-- For M1-15: losing to 0 life and an empty library, `GameResult` and `winner` already work (M1-12). What's left is
-  conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn. Conceding
-  can go through `playersLose` with reason `conceded`; then `PLAYER_CONCEDED` overlaps `PLAYER_LOST`, so keep one.
-  A concession mid-cast or mid-activation leaves a spell or a partly chosen ability on the stack with `casting: null`;
-  when a player leaves, objects they control on the stack that aren't cards cease to exist (CR 800.4a,
-  `removeAbilityFromStack`). Check the invariants accept the result.
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).
@@ -72,8 +66,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - The "open-mtg-arena" environment also allows Scryfall (`api.scryfall.com`, `data.scryfall.io`). `pnpm cards:fetch`
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
+- For M1-17: the CLI's `show` prints the result once the game is over (winner, each loss and its reason, turn).
+- For M1-18: conceding isn't in `legalActions` (D-042), so the fuzzer never reaches a state after a concession; only
+  the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
+
 ## Next up
-- M1-15 Game end
+- M1-17 Headless CLI (M1-16 is done; M1-18 and M1-19 follow)
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -131,6 +129,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   mana costs, cancelling and resolution from the source's card (CR 113.7a); firebreathing; the runner's `activate`
   with `targets` and `pay`; 8 activated-ability scenarios and TS tests with a targeted test ability (D-041)
   (2026-11-19).
+
+- M1-15 Game end: conceding at any time (CR 104.3a) through the same `playersLose` as state-based losses; results with
+  winner, losses and reasons, and turn; the runner's `concede`; 6 game-end scenarios (D-042) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time

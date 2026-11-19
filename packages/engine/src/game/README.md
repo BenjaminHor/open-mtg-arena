@@ -18,7 +18,7 @@ The engine's entry points and the flow of a game.
 | `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |
 | `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): targets, paying, `cancelCasting` |
 | `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves, the step ends, or another cleanup step begins (CR 117.3d, 117.4, 514.3a) |
-| `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
+| `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision (or is a concession, any time, CR 104.3a), then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |
 | `priority.ts` | `givePriority()`: every place that gives a player priority goes through it; state-based actions are checked first (CR 117.5) |

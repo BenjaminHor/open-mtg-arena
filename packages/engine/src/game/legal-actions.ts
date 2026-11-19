@@ -1,5 +1,6 @@
-// legalActions: every action a player may take right now (docs/architecture.md, "Engine API"). Each one is
-// accepted by applyAction, and the scenario runner, the CLI and the AI choose only from this list.
+// legalActions: every action a player may take right now (docs/architecture.md, "Engine API"), except `CONCEDE`,
+// which is always allowed and never listed (D-042). Each one is accepted by applyAction, and the scenario runner, the
+// CLI and the AI choose from this list.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { damageLeft } from "../combat/combat-damage.ts";

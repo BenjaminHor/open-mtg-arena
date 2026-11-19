@@ -99,6 +99,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   a target (`p2`, `p2:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.
 - `p1 play: <land>`: play a land from hand.
+- `p1 concede: now`: p1 concedes and loses (CR 104.3a). A player may concede at any time, even without priority, so
+  conceding is never listed by `legalActions()`; this step sends the action directly.
 - `p1 cast: <card>` with `targets: [...]` and `pay:`: cast a spell from hand. `targets` lists one target per instance of
   "target", in order: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`). `pay: auto` pays with `autoPay`
   (activating mana abilities as needed); `pay: { R: 1 }` pays that from mana already in the pool; `pay: cancel` cancels
@@ -191,6 +193,7 @@ pnpm cli show /tmp/g.json --as p2    # what p2 is allowed to see (playerView)
 pnpm cli actions /tmp/g.json         # numbered legal actions for the pending decision
 pnpm cli do /tmp/g.json 3            # take legal action #3
 pnpm cli do /tmp/g.json "cast Lightning Bolt -> p2:Grizzly Bears"   # same step syntax as scenarios
+pnpm cli do /tmp/g.json "p1 concede"   # not in `actions`: always allowed (D-042)
 pnpm cli ai /tmp/g.json --until p1   # let the AI act for the other player until p1 must decide
 pnpm cli auto /tmp/g.json --ai both --max-turns 30   # AI vs AI to the end; prints a turn-by-turn log
 pnpm cli log /tmp/g.json             # events so far, one per line, with CR-relevant detail

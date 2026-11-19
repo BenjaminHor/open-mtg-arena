@@ -1,0 +1,12 @@
+name: Conceding before the first turn ends the game on turn 0
+rules: [CR 104.3a, CR 104.2a, CR 104.1, CR 103.5]
+setup:
+  opening: standard
+  first: p1
+steps:
+  - expect:
+      pending: { kind: mulligan }
+  - p2 concede: now
+  - expect:
+      winner: p1
+      events contains: [{ type: GAME_ENDED, result: { turn: 0 } }]
