@@ -54,8 +54,8 @@ the 17 cards; generated `data/pool.json` and rulings. A first draft of the `Card
 test that every pool card has Oracle data, and the errata check (`card-scripting.md`) fails when a definition's `oracle` text differs from `pool.json`. (If Scryfall is unreachable in the session, ask the owner to run
 `pnpm cards:fetch` locally and commit the extracted files.)
 
-**M1-05 Game start.** Create a game from a setup: shuffle (CR 103.3), choose who goes first (CR 103.1, random
-from the seeded RNG unless the setup says), opening hands, London mulligan (CR 103.5) as decisions, and the
+**M1-05 Game start.** Create a game from a setup: shuffle (CR 103.3), choose who goes first (CR 103.1: unless the setup names
+the starting player, a player picked at random from the seeded RNG chooses, as a decision; D-020), opening hands, London mulligan (CR 103.5) as decisions, and the
 first player skipping their first draw (see CR 103). *Accept:* scenarios for keep, mulligan and bottom cards; deterministic with a fixed seed.
 
 **M1-06 Turn structure.** All steps and phases (CR 500–514): untap, upkeep, draw, main phases, combat steps,
@@ -89,8 +89,8 @@ without a rewrite. *Accept:* scenarios for stacking two pumps, and a pump wearin
 scenario per SBA, plus one where two SBAs happen at once.
 
 **M1-13 Combat.** Declare attackers (CR 508) and blockers (CR 509) as decisions, summoning sickness (CR 302.6),
-haste (CR 702.10), flying and reach (CR 702.9, 702.17), combat damage (CR 510) with damage assignment order when
-one attacker is blocked by several creatures, and unblocked damage to the player. *Accept:* scenarios for each
+haste (CR 702.10), flying and reach (CR 702.9, 702.17), combat damage (CR 510), including an attacker blocked by several
+creatures dividing its damage among them as its controller chooses (CR 510.1c; the CR no longer has damage assignment order, D-020), and unblocked damage to the player. *Accept:* scenarios for each
 keyword interaction (and its negatives), multiple blockers, and a lethal attack ending the game.
 
 **M1-14 Activated abilities.** CR 602: Furnace Whelp's firebreathing, activated at instant speed, as a

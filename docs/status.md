@@ -20,15 +20,26 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
 - `pnpm check` is typecheck + lint + tests for now. Its other parts in `docs/testing.md` join as they're built:
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
+- For M1-05 (game start), decide in its plan: what `GameState.turn` says before turn 1 (it's required, and `Step` has no
+  pregame value: make it `Turn | null` or add a marker), where mulligan bookkeeping lives before `work` exists (M1-07),
+  and validation of `fixed` openings (reject steps with no priority or that need combat state). CR 103.1: a random
+  player chooses who goes first, as a decision.
+- For M1-08 or M1-13, a settled CR 302.6 edge case to write as a scenario: a creature that entered on its controller's
+  last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
+  its controller's next turn.
+- For M1-14: an ability whose source is gone still resolves (CR 113.7a) and uses last known information (CR 608.2h),
+  which needs a store in `GameState` (`future-rules.md`).
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
+- The engine's step names follow the CR (`precombatMain`, `declareBlockers`, see `engine/src/state/turn.ts`).
+  `testing.md`'s scenario YAML uses short names (`main1`, `combat.declareBlockers`); the M1-16 runner maps them.
 - When M1-16 lands the scenario runner, drop `--passWithNoTests` from `test:scenarios`, so a misplaced runner fails.
-- `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request (2026-11-19). From now on, work reaches
-  `main` only through pull requests. If GitHub still shows the session branch as the default, the owner switches the
-  default to `main` in the repo settings, so Dependabot targets `main`.
+- `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request and is now the default branch
+  (2026-11-19). From now on, work reaches `main` only through pull requests.
 - The owner approved allowing Scryfall's hosts (`api.scryfall.com`, `data.scryfall.io`) in the "open-mtg-arena" environment for M1-04.
 
 ## Next up
-- M1-03 Core types and state
+- M1-04 Card data pipeline
+- M1-05 Game start
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -37,6 +48,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-01 Scaffold the monorepo: pnpm workspaces (`engine`, `cards`, `cli`, `ai`), strict TypeScript 7 with no build
   step (D-018), Vitest 5 with `unit`/`scenarios` projects, Biome 2, GitHub Actions running `pnpm check`,
   `pnpm cli --help`, and a `pnpm fuzz` stub (D-017) (2026-11-19).
+- M1-03 Core types and state: `engine/src/state/` (ids, zones, objects, setup, decisions, actions, events, results,
+  `GameState`) and `engine/src/rng/` (xoshiro128**, D-024), with type-level, JSON round-trip and known-answer tests.
+  Reviewed by rules-judge and code-reviewer; D-020 to D-025 (2026-11-19).
 
 ## Open questions for the owner
 - (none)

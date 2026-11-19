@@ -117,3 +117,45 @@ A Biome override there bans Node modules, imports from other packages in this re
 `fetch`, `console`, `Map` and `Set`, and a small GritQL plugin (`tools/biome/no-math-random.grit`) bans
 `Math.random`. Tests may use them. The engine also exports `ENGINE_VERSION`, the current `GameState.version`,
 so hosts (the CLI, saves, replays) can reject state from another schema. M1-03 uses it for `GameState.version`.
+
+**D-020: The Comprehensive Rules win over every other spec** · 2026-11-19 · accepted
+The owner said (2026-11-19): "if there's conflict in rule logic, the CR trumps all." So when a spec, doc, task
+description or owner request conflicts with the current CR on how the game works, the CR wins. Fix the spec to match the CR in the same commit and note it here or in `status.md`. (Questions
+that aren't about rules logic, such as product scope, UI or card choices, still go to the owner.)
+First application: the M1-13 spec and `architecture.md` mentioned damage assignment order and an `orderBlockers`
+decision. The current CR has no damage assignment order. A creature blocked by several creatures divides its combat
+damage among them as its controller chooses (CR 510.1c), so that's an `assignDamage` decision.
+
+**D-021: State updates are pure and share structure** · 2026-11-19 · accepted
+Engine functions take a `GameState` and return a new one. They copy only the path they change (object spread) and
+never mutate their input, so unchanged parts are shared between states. This keeps old states valid for undo, replays
+and AI search (cheap clones, `future-rules.md`). Random functions follow the same rule: they take an `RngState` and
+return `{ value, rng }`.
+
+**D-022: Objects reference card data by `oracleId`; the stored controller is only the default** · 2026-11-19 · accepted
+A game object stores its card's Scryfall `oracleId` and looks up printed values in the `CardDatabase` given to the engine,
+instead of copying them. That keeps state small, and later faces, copies and text changes (layers 1 and 3) change which
+values apply, not stored fields. Objects store `baseController`, the default controller: the player a permanent entered under (CR 110.2), who cast
+a spell (CR 112.2), or who controls an ability on the stack (CR 113.8). Cards in other zones have no controller
+(CR 108.4) and questions about it use the owner (CR 108.4a). The current controller always comes from `characteristics()` (layer 2), even before control-changing
+effects exist. Zones that belong to a player (library, hand, graveyard) are the owner's (CR 400.3).
+
+**D-023: The engine exports its state types** · 2026-11-19 · accepted
+`engine/src/index.ts` exports the types in `src/state/` (`GameState`, `GameSetup`, `Action`, `GameEvent`, ...) and
+`RngState`, because every other package builds setups, reads views and sends actions. These are types only, so no
+engine internals leak. The RNG functions stay internal for now. The CLI's `random` agent and the fuzzer (M1-17, M1-18)
+need seeded randomness to reproduce failures; when they arrive, export `seedRng` and `randomInt` with a new entry here
+rather than copying the RNG or using `Math.random`.
+
+**D-024: The random number generator and its outputs are fixed** · 2026-11-19 · accepted
+All randomness in a game comes from `GameState.rng`: xoshiro128** 1.1, seeded from `GameSetup.seed` (a non-negative safe
+integer) by taking two SplitMix64 outputs and splitting each into two 32-bit words, low word first (the same seeding as
+rand_xoshiro's `seed_from_u64`). `randomInt(n)` draws until the value is below 2^32 − (2^32 mod n) and returns it mod n.
+Saved games and replays depend on these exact outputs, so any change to the algorithm, the seeding or `randomInt` needs
+a new entry here and a `GameState.version` bump. Tests pin them with reference vectors and snapshots.
+
+**D-025: The rules coverage report counts citations in engine logic, not type descriptions** · 2026-11-19 · accepted
+Comments in `engine/src/state/` cite the CR to explain what a type models (for example X in CR 107.3, or modes in
+CR 700.2), even before any rule uses it. Those are descriptions, not implementations, so `pnpm coverage:rules` (M1-19)
+ignores `engine/src/state/` when it looks for cited-but-untested rules. Speculative members still don't belong in the
+types: a union member or field is added by the task that uses it.
