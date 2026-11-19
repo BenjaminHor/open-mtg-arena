@@ -186,14 +186,15 @@ shell runs one command at a time and can't drive an interactive prompt, so **the
 stateless**: every command reads a game file, does one thing, and writes it back.
 
 ```sh
-pnpm cli new --decks red-aggro,green-stompy --seed 42 --out /tmp/g.json   # start a game
+pnpm cli new --decks red-aggro,green-stompy --seed 42 --out /tmp/g.json   # start a game (--first p1 to skip the choice)
 pnpm cli new --scenario combat/reach-blocks-flyer --out /tmp/g.json       # start from a scenario's setup
 pnpm cli show /tmp/g.json            # board, hands (debug shows both), stack, step, pending decision
-pnpm cli show /tmp/g.json --as p2    # what p2 is allowed to see (playerView)
+pnpm cli show /tmp/g.json --as p2    # what p2 is allowed to see (hides p1's hand; D-043)
 pnpm cli actions /tmp/g.json         # numbered legal actions for the pending decision
 pnpm cli do /tmp/g.json 3            # take legal action #3
-pnpm cli do /tmp/g.json "cast Lightning Bolt -> p2:Grizzly Bears"   # same step syntax as scenarios
-pnpm cli do /tmp/g.json "p1 concede"   # not in `actions`: always allowed (D-042)
+pnpm cli do /tmp/g.json "cast: Lightning Bolt, targets: [p2:Grizzly Bears], pay: auto"   # a scenario step, as YAML
+pnpm cli do /tmp/g.json "all pass: until combat.declareAttackers"   # any step a scenario can take
+pnpm cli do /tmp/g.json "p2 concede: now"   # not in `actions`: always allowed (D-042)
 pnpm cli ai /tmp/g.json --until p1   # let the AI act for the other player until p1 must decide
 pnpm cli auto /tmp/g.json --ai both --max-turns 30   # AI vs AI to the end; prints a turn-by-turn log
 pnpm cli log /tmp/g.json             # events so far, one per line, with CR-relevant detail
@@ -201,6 +202,13 @@ pnpm cli inspect /tmp/g.json "p2:Grizzly Bears"   # an object's computed charact
 pnpm cli export /tmp/g.json --scenario > new.yaml # the game so far as a scenario (setup + steps)
 pnpm cli replay bug-report.json      # replay a saved log and stop at the end (or --step N)
 ```
+
+`do` takes a step exactly as a scenario writes it (YAML, braces optional), so a step can be pasted from a scenario and
+back. Without a player (`cast: Shock, ...`), the pending player takes it. A step is all or nothing: if any of its
+actions is refused, the file is left as it was.
+
+The game file holds the setup and the actions taken; replaying them reproduces the game. It also caches the current
+state so commands don't replay a long game each time. The same file is the replay log and the bug-report format.
 
 Output is plain, stable text with no colors unless `--color`, so it can be read by Claude and
 compared in tests. `show` must make the full situation obvious at a glance, for example:

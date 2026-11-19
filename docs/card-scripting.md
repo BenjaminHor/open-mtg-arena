@@ -13,7 +13,7 @@ packages/cards/
   data/rulings/<slug>.json   generated: Scryfall rulings for each pool card
   src/defs/<first-letter>/<slug>.ts   one hand-written definition per card
   src/keywords/              shared definitions for keyword abilities (flying, haste, ...), from M1-13
-  src/decks/                 prebuilt decks (M2: red-aggro, green-stompy)
+  src/decks/                 prebuilt decks: red-aggro, green-stompy (M1 spec)
   scripts/                   fetch.ts and extract.ts (Node only; src/ must also run in the browser)
   test/                      pool and parser tests; per-card scenarios live with the engine scenarios
 ```

@@ -7,7 +7,12 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
 
 ## Entry points
 
-- `src/main.ts`: the `pnpm cli` command. Today only `--help` and `--version` work. The game commands arrive in M1-17.
+- `src/main.ts`: the `pnpm cli` command; `run(argv)` returns the output, so tests call it directly.
+- `src/game-file.ts`: the game file (setup, actions, cached state) and `replay` (D-043).
+- `src/commands/`: one file per command: `new`, `show`, `actions`, `do`. `ai`, `auto`, `log`, `inspect`, `export` and
+  `replay` come with the second part of M1-17.
+- `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
+  actions, targets and mana in words.
 - `src/fuzz.ts`: the `pnpm fuzz` command. A stub that exits with an error until M1-18.
 
 ```sh
@@ -18,4 +23,5 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 
 ## Tests
 
-`pnpm test` runs this package's tests along with the rest.
+`pnpm test` runs this package's tests along with the rest: `test/cli.test.ts` plays games through the commands,
+including a whole game from the prebuilt decks.

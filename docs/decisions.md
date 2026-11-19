@@ -457,3 +457,18 @@ every schema change and every change D-024 lists bumps it.
   the result's `turn` is 0 when the game ends before the first turn. So code reading a finished game (a replay viewer,
   a log) must not assume a spell on the stack means `casting` is set, or that `pregame` is null.
 
+**D-043: The CLI's game file and `do`** · 2026-11-19 · accepted
+- The game file is `{ format, version, setup, actions, state? }`. The setup and the actions are the truth: replaying
+  them reproduces the game, since the engine is deterministic. `state` is only a cache, so commands don't replay a
+  long game each time; no events are stored (they're most of a game's size), so commands that need them replay. The
+  same file is the replay log and the bug-report format. While `ENGINE_VERSION` stays 0 (D-037), a cache from an
+  older build can't be detected, so `replay` ignores it and says if it differs.
+- `do` takes a number from `actions`, or a scenario step written as YAML (the scenario parser reads it, and the
+  runner's `takeStep` takes it, reporting each action so it can be recorded). One step syntax for scenarios and the
+  CLI, so steps paste between them; comma-separated shorthand was rejected because card names can contain commas. A
+  step is all or nothing.
+- `show --as p2` hides the other players' hands (libraries never show their contents), in one function
+  (`canSeeHand`). The engine's `playerView` (architecture.md) isn't built yet: no M1 task needs it, and the AI that
+  must read only views arrives in M2.
+- The prebuilt decks are written by card name and count, as in the M1 spec (`packages/cards/src/decks/`).
+

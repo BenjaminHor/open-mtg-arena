@@ -7,7 +7,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-17 Headless CLI (plan, 2026-11-19). docs/testing.md section 2. In two parts, each its own PR.
+- M1-17 Headless CLI (plan, 2026-11-19). docs/testing.md section 2. In two parts, each its own PR. Part 1 done
+  (D-043): the game file, `new`, `show`, `actions`, `do`, the prebuilt decks. Next: part 2.
   - Part 1: the game file, `new`, `show`, `actions`, `do`, and the prebuilt decks. Part 2: `ai`, `auto`, `log`,
     `inspect`, `export --scenario`, `replay`, the agents.
   - Game file (`cli/src/game-file.ts`): `{ format, version, setup, actions, state? }`. Setup and actions are the truth;

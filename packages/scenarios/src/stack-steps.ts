@@ -2,7 +2,7 @@
 // targets in order, then the payment (CR 601.2c–h, 602.2b).
 
 import { type Action, autoPay, type CardDatabase, type GameState, type PlayerId } from "@mtg/engine";
-import { apply, type Game, legal } from "./apply.ts";
+import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
 import { paymentFrom, targetNamed } from "./lookups.ts";
@@ -13,12 +13,7 @@ export type StackStep = Extract<ScenarioStep, { kind: "cast" | "activate" }>;
  * Chooses the listed targets, then pays as `pay` says. With no targets listed it may stop at the first target choice;
  * with some listed, they must all be there. Without `pay` it stops at the payment decision.
  */
-export function targetsAndPayment(
-  game: Game,
-  step: StackStep,
-  cards: CardDatabase,
-  afterEach: (g: Game) => void,
-): Game {
+export function targetsAndPayment(game: Game, step: StackStep, cards: CardDatabase, afterEach: AfterEach): Game {
   let next = game;
   for (const value of step.targets) {
     const target = targetNamed(next.state, value, cards);

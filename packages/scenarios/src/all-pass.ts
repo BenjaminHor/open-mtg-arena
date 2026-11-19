@@ -1,7 +1,7 @@
 // `all pass: once` and `all pass: until <step>` (docs/testing.md, "Steps").
 
 import type { CardDatabase } from "@mtg/engine";
-import { apply, type Game, legal } from "./apply.ts";
+import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { engineStep } from "./names.ts";
 
 /** The most passes `all pass: until` makes before giving up, so a step that never comes fails instead of hanging. */
@@ -15,7 +15,7 @@ export function allPass(
   game: Game,
   until: string | null,
   cards: CardDatabase,
-  afterEach: (g: Game) => void,
+  afterEach: AfterEach,
   maxPasses = MAX_PASSES,
 ): Game {
   if (until === null) {
@@ -53,7 +53,7 @@ function stopsHere(game: Game): boolean {
  * Whoever has priority passes. Passing through combat, a pending declaration is answered first with no attackers or no
  * blockers, the natural "do nothing" (a division of damage has no such answer, so it stops the passing).
  */
-function passByWhoeverHasPriority(game: Game, cards: CardDatabase, afterEach: (g: Game) => void): Game {
+function passByWhoeverHasPriority(game: Game, cards: CardDatabase, afterEach: AfterEach): Game {
   let next = game;
   for (;;) {
     const pending = next.state.pending;

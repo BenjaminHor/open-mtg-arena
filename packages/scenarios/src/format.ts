@@ -197,6 +197,16 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
   return { kind: "unsupported", player, word, value, options, arrives };
 }
 
+/**
+ * One step written on its own, as YAML: `p1 cast: Lightning Bolt, targets: [p2], pay: auto`, with or without braces.
+ * The CLI's `do` uses it, so a step from a scenario can be pasted straight in.
+ */
+export function parseStepText(text: string): ScenarioStep {
+  const trimmed = text.trim();
+  const raw: unknown = parse(trimmed.startsWith("{") ? trimmed : `{ ${trimmed} }`);
+  return parseStep(raw, "step");
+}
+
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
