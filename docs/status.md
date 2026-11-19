@@ -7,7 +7,24 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-08 Mana and costs. Plan:
+  - `abilitiesOf(state, id, cards)` (rules/abilities.ts): an object's activated abilities with their `AbilityRef`, the
+    printed ones plus a basic land type's intrinsic "{T}: Add [mana]" (CR 305.6). `isManaAbility` decides CR 605.1a.
+  - Activating a mana ability while holding priority (CR 605.3a): only its controller (CR 602.2), only on the battlefield
+    (CR 113.6), costs paid in full (CR 118.3): {T} needs an untapped permanent (CR 107.5), and a creature controlled since
+    the turn began (CR 602.5a, 302.6). It doesn't use the stack and resolves at once (CR 605.3b): mana goes into the pool
+    (CR 106.4). The player keeps priority (CR 117.3c), and the pass count restarts (CR 117.4). One `tapPermanent`
+    function, with events (`PERMANENT_TAPPED`, `MANA_ADDED`).
+  - `legalActions` lists every mana ability the player can activate; other activated abilities (firebreathing) arrive in
+    M1-14 and are rejected until then.
+  - Paying a mana cost from a pool (CR 601.2h, 107.4): `payFromPool` takes the colored symbols from their color and
+    generic from what's left, all or nothing, in a fixed order. `autoPay(state, player, cost, cards)`: the deterministic
+    helper that picks which mana abilities to activate, for scenarios (`pay: auto`), the CLI and the AI (D-034). Casting
+    (M1-09) uses both; "paying exact costs" and "failing to pay" scenarios need casting, so M1-08 covers them with tests
+    of these functions, and M1-09 adds the scenarios.
+  - Scenario runner: `p1 activate: <card>` (with `ability: <n>`), and testing.md updated.
+  - Scenarios: tapping each basic land, Llanowar Elves (and summoning sick: can't), a tapped land can't, another player's
+    land can't, mana empties at the end of the step, priority stays with the player.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
