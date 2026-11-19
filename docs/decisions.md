@@ -544,8 +544,9 @@ every schema change and every change D-024 lists bumps it.
   line diff of what changed. If an action is now rejected, the log stops there with a `!! action N is rejected` line
   instead of an exception, so the diff still shows where the game went differently.
 - `pnpm golden:update` keeps a game's actions when they still play out to where the game stopped, and otherwise plays
-  it again from its recipe; it reports per game "log changed" or "played again from its recipe (actions differ from
-  action N)", for the commit message. `pnpm golden:add --decks a,b --seed N` adds one between prebuilt decks.
+  it again from its recipe; it reports per game "log changed", "played again from its recipe (why; where the
+  actions differ)", "actions kept; the recipe now plays differently", or "file rewritten (version or layout)", for
+  the commit message. A recipe that stops anywhere but the game's end or its turn cap is an error. `pnpm golden:add --decks a,b --seed N` adds one between prebuilt decks.
 - Four games for M1: red-aggro against green-stompy twice (each deck seated first once) and each deck against itself;
   between them every pool card is played, cast or activated, which a test checks. Seeds were picked for that (the
   green mirror at seed 33 is one that casts both Craw Wurm and Spined Wurm).

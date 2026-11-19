@@ -8,16 +8,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 
 ## In progress
 - M1-19 Golden games, coverage report and benchmarks (plan, 2026-11-19). docs/testing.md sections 4 to 6. Three PRs:
-  1. Golden games (done, D-047; PR open). `packages/engine/test/golden/<name>.json` is a recipe (decks, setup seed, agent, agent seed, turn
-     cap) plus the actions it produced; `<name>.log` is the game's event log (`logLines`, brief), one event per line.
-     `cli/test/golden.test.ts` replays each game's actions and compares the log line by line, so a diff reads as
-     "T6 Giant Spider now survives". `pnpm golden:update` replays the recipes and rewrites actions and logs (a game
-     whose actions became illegal is played again from its recipe); `pnpm golden:add --decks a,b --seed N` adds one.
-     Games: two per prebuilt pairing (red-aggro and green-stompy against each other and themselves), plus enough
-     random-deck games that every pool card is played or cast in at least one; a test checks that coverage.
-     Accept: a deliberate rules change (a mutant) shows a readable diff. Done: doubled mana shows as new
-     "p1's unspent {R} empties" lines in the diff. Four games (seeds 1, 2, 3, 33). Rules-judge exit review of casting,
-     priority, SBAs and combat is running; its fixes may change the logs (`pnpm golden:update`).
+  1. Golden games (done, D-047; PR #17, BenjaminHor/open-mtg-arena#17). Four games between the prebuilt decks (seeds 1,
+     2, 3, 33), each a game file with its recipe plus its brief log; `pnpm golden:update` keeps actions that still
+     play out and otherwise plays the game again from its recipe; `pnpm golden:add` adds one. Accepted: doubled mana
+     shows as new "unspent {R} empties" lines in the diff. Rules-judge exit review of casting, priority, SBAs and
+     combat is running; its fixes may change the logs (`pnpm golden:update`).
   2. Coverage report. `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`: rules cited in code
      (`packages/*/src`), rules tested by scenarios (`rules:` lists), and gaps (cited, not tested), plus interaction
      matrix cells marked "not yet". A test fails on a gap not in the committed report. The matrix README in
@@ -92,9 +87,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- M1-19 Golden games, coverage report and benchmarks (docs/milestones/m1-engine-foundations.md): golden games reusing
-  the event log, `pnpm coverage:rules` and its check in `pnpm check`, the interaction matrix README, `pnpm bench` with
-  a baseline. Then the M1 exit criteria with the owner.
+- After M1-19: the M1 exit criteria with the owner (docs/milestones/m1-engine-foundations.md), then the M2 spec.
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).

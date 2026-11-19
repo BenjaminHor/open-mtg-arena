@@ -3,7 +3,7 @@
 // actions and compares the log line by line, so an engine change shows as a readable diff ("T6 Giant Spider now
 // survives"). `pnpm golden:update` rewrites them after an intended change; `pnpm golden:add` adds one.
 
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
@@ -17,7 +17,10 @@ import { wholeNumber } from "./numbers.ts";
 
 export const GOLDEN_DIR = join(import.meta.dirname, "../../engine/test/golden");
 
-/** How the game was made: replaying it from here gives the same actions, as long as the engine doesn't change. */
+/**
+ * How the game was made. Playing it again gives the stored actions until an engine change alters what the agents see;
+ * `pnpm golden:update` keeps actions that still play out, and says when the recipe no longer gives them.
+ */
 export type GoldenRecipe = { setup: GameSetup; agent: AgentName; agentSeed: number; maxTurns: number };
 
 export type GoldenGame = GoldenRecipe & {
@@ -32,7 +35,12 @@ export function playRecipe(recipe: GoldenRecipe, cards: CardDatabase): Action[] 
   const created = createGame(recipe.setup, cards);
   if (!created.ok) throw new Error(`the setup is rejected: ${created.error.message}`);
   const limits = { maxActions: 100_000, maxTurns: recipe.maxTurns };
-  return playAgents(created.state, () => true, recipe.agent, recipe.agentSeed, limits, cards).actions;
+  const played = playAgents(created.state, () => true, recipe.agent, recipe.agentSeed, limits, cards);
+  // Any other stop would leave a game that never plays out "the same", and would be played again on every update.
+  if (played.stopped !== "gameOver" && played.stopped !== "maxTurns") {
+    throw new Error(`the game stopped at ${played.stopped}, not at its end or its turn cap`);
+  }
+  return played.actions;
 }
 
 /**
@@ -59,6 +67,10 @@ export function goldenFiles(dir = GOLDEN_DIR): string[] {
 export function readGolden(path: string): GoldenGame {
   const game = JSON.parse(readFileSync(path, "utf8")) as GoldenGame;
   if (game.format !== FORMAT) throw new Error(`${path} isn't a game file`);
+  // Without these, playing the recipe again would run without a turn cap.
+  if (typeof game.agentSeed !== "number" || typeof game.maxTurns !== "number" || typeof game.agent !== "string") {
+    throw new Error(`${path} has no recipe: it needs agent, agentSeed and maxTurns`);
+  }
   return game;
 }
 
@@ -67,38 +79,47 @@ export const logPath = (jsonPath: string): string => jsonPath.replace(/\.json$/,
 /**
  * Rewrites every golden game from the current engine. Its actions stay if they still play out to where the game
  * stopped; otherwise (an action is rejected, or the game no longer ends there) it's played again from its recipe.
- * Returns one line per game that changed, saying which, for the commit message.
+ * Returns one line per game that changed, saying what and why, for the commit message. Games are written one at a
+ * time: if one throws, those before it are already rewritten (git shows them).
  */
 export function updateGoldens(dir: string, cards: CardDatabase): string[] {
   const report: string[] = [];
   for (const path of goldenFiles(dir)) {
     const old = readGolden(path);
-    const stillPlays = playsOutTheSame(old, cards);
-    const game: GoldenGame = {
-      ...old,
-      version: ENGINE_VERSION,
-      actions: stillPlays ? old.actions : playRecipe(old, cards),
-    };
+    const fromRecipe = playRecipe(old, cards);
+    const problem = playOutProblem(old, cards);
+    const game: GoldenGame = { ...old, version: ENGINE_VERSION, actions: problem === null ? old.actions : fromRecipe };
     const changes: string[] = [];
-    if (!stillPlays) changes.push(`played again from its recipe (${actionsDiffer(old.actions, game.actions)})`);
+    if (problem !== null)
+      changes.push(`played again from its recipe (${problem}; ${actionsDiffer(old.actions, game.actions)})`);
+    else if (!sameActions(fromRecipe, old.actions)) {
+      changes.push(`actions kept; the recipe now plays differently (${actionsDiffer(old.actions, fromRecipe)})`);
+    }
     if (writeIfChanged(logPath(path), goldenLog(game, cards))) changes.push("log changed");
-    if (writeIfChanged(path, goldenText(game)) && stillPlays) changes.push("file rewritten");
+    const fileChanged = writeIfChanged(path, goldenText(game));
+    // With the same actions, a changed file means only its version or its layout changed.
+    if (fileChanged && problem === null) changes.push("file rewritten (version or layout)");
     if (changes.length > 0) report.push(`${path}: ${changes.join(", ")}`);
   }
   return report;
 }
 
-/** Whether the stored actions are all accepted and leave the game where the recipe would stop it. */
-function playsOutTheSame(game: GoldenGame, cards: CardDatabase): boolean {
+/** Why the stored actions don't play out to where the recipe stops the game, or null when they do. */
+function playOutProblem(game: GoldenGame, cards: CardDatabase): string | null {
+  let state: ReturnType<typeof replay>["state"];
   try {
-    const { state } = replay(game.setup, game.actions, cards);
-    return state.result !== null || (state.turn?.number ?? 0) > game.maxTurns;
-  } catch {
-    return false;
+    state = replay(game.setup, game.actions, cards).state;
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error);
   }
+  if (state.result !== null || (state.turn?.number ?? 0) > game.maxTurns) return null;
+  return "the game no longer ends where it did";
 }
 
+const sameActions = (a: readonly Action[], b: readonly Action[]) => JSON.stringify(a) === JSON.stringify(b);
+
 function actionsDiffer(before: readonly Action[], after: readonly Action[]): string {
+  if (sameActions(before, after)) return "the same actions";
   const first = after.findIndex((a, i) => JSON.stringify(a) !== JSON.stringify(before[i]));
   const at = first === -1 ? Math.min(before.length, after.length) : first;
   return `actions differ from action ${at + 1}: ${before.length} before, ${after.length} now`;
@@ -136,6 +157,7 @@ export function addGolden(
     actions: playRecipe(recipe, cards),
   };
   const path = join(dir, `${options.name}.json`);
+  if (existsSync(path)) throw new Error(`${path} exists; pnpm golden:update regenerates it`);
   writeFileSync(path, goldenText(game));
   writeFileSync(logPath(path), goldenLog(game, cards));
   return path;

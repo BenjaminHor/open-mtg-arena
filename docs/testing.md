@@ -275,24 +275,28 @@ background.
 
 ### Golden games
 
-`packages/engine/test/golden/` holds full agent-vs-agent games (several per prebuilt deck pairing, and between them
+`packages/engine/test/golden/` holds full agent-vs-agent games (one or more per prebuilt deck pairing, and between them
 every card in the pool played, cast or activated; D-047), each stored as its replay **and** its readable event log,
 one event per line (the CLI's brief log). Until the AI exists (M2) the players are the random agents:
 
 ```
-T6 p1 attack: Craw Wurm
-T6 p2 block: Giant Spider -> Craw Wurm
-T6 damage: Craw Wurm -> Giant Spider 6; Giant Spider -> Craw Wurm 2
-T6 dies: Giant Spider (lethal damage, CR 704.5g)
+T36 p1 attack: p1:Hill Giant -> p2
+T36 p2 block: p2:Grizzly Bears#2 -> p1:Hill Giant
+T36 combat damage: p1:Hill Giant -> p2:Grizzly Bears#2 3
+T36 combat damage: p2:Grizzly Bears#2 -> p1:Hill Giant 2
+T36 state-based actions: p2:Grizzly Bears#2 lethalDamage
+T36 destroyed: p2:Grizzly Bears#2
 ```
 
 `pnpm test` replays each golden game and compares the new log with the stored one. If anything differs,
-the test fails and shows the diff, so it's obvious what an engine change did ("turn 6: Giant Spider now survives").
+the test fails and shows the diff, so it's obvious what an engine change did ("turn 36: the Bears now survive").
 If an action is no longer accepted, the new log stops there with a `!! action N is rejected` line, so the diff still
 shows where the game went differently.
 If the change is intended (a bug fix, a rules update), regenerate the golden file with `pnpm golden:update`
 in the same commit and explain the diff in the commit message. It keeps a game's actions when they still play out,
-and otherwise plays the game again from its recipe (setup, agent and seeds), and says which for each game.
+and otherwise plays the game again from its recipe (setup, agent and seeds). For each game it says what changed and
+why: "log changed", "played again from its recipe (action N is rejected: ...)", "actions kept; the recipe now plays
+differently", or "file rewritten (version or layout)".
 `pnpm golden:add --decks red-aggro,green-stompy --seed N` adds a game. Never regenerate golden files just to make a failure go away.
 
 Regenerate and add new golden games when the pool grows, so every card appears in at least one.
