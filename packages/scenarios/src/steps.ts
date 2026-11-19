@@ -38,7 +38,10 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
     case "allPass": {
       if (step.until === null) {
         let next = game;
-        for (const _ of game.state.turnOrder) next = passByWhoeverHasPriority(next, cards, afterEach);
+        for (const _ of game.state.turnOrder) {
+          if (next !== game && next.state.result !== null) break; // the game ended part way round
+          next = passByWhoeverHasPriority(next, cards, afterEach);
+        }
         return next;
       }
       const target = engineStep(step.until);
@@ -48,6 +51,10 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         const before = next.events.length;
         next = passByWhoeverHasPriority(next, cards, afterEach);
         begun ||= next.events.slice(before).some((e) => e.type === "STEP_BEGAN" && e.step === target);
+        if (next.state.result !== null) {
+          if (begun) return next; // the game ended in that step, before anyone got priority
+          throw new Error(`"all pass: until ${step.until}": the game ended before that step began`);
+        }
         if (begun && next.state.pending?.kind === "priority" && next.state.turn?.step === target) return next;
       }
       throw new Error(`"all pass: until ${step.until}" didn't reach that step with priority in ${MAX_PASSES} passes`);
@@ -228,6 +235,7 @@ function paymentActions(game: Game, step: Extract<ScenarioStep, { kind: "cast" }
 
 function passByWhoeverHasPriority(game: Game, cards: CardDatabase, afterEach: (g: Game) => void): Game {
   const pending = game.state.pending;
+  if (game.state.result !== null) throw new Error("the game is over, so no one can pass");
   if (pending?.kind !== "priority")
     throw new Error(`expected someone to have priority, but the game waits for ${pending?.kind ?? "nothing"}`);
   return apply(

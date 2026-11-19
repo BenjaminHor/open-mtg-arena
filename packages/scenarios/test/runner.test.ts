@@ -110,8 +110,16 @@ describe("the scenario runner fails a scenario that's wrong", () => {
   });
 
   it("fails 'all pass: until' a step that never begins with priority, instead of hanging", () => {
-    const empty = at("main1", "  p1: { library: [] }\n  p2: { library: [] }\n");
-    expect(first(`${empty}  - all pass: until untap\n`)).toMatch(/didn't reach that step with priority in 500 passes/);
+    // With nothing played, hands grow until the cleanup discard (CR 514.1) stops the passing; with empty libraries the
+    // game would end. Either way it fails rather than hanging.
+    expect(first(`${main1}  - all pass: until untap\n`)).toMatch(/expected someone to have priority/);
+  });
+
+  it("fails 'all pass: until' a step the game ends before, and passing once the game is over", () => {
+    const dying = at("main1", "  p2: { library: [] }\n");
+    expect(first(`${dying}  - all pass: until main1\n`)).toMatch(/the game ended before that step began/);
+    const over = at("main1", "  p2: { life: 0 }\n");
+    expect(first(`${over}  - all pass: once\n`)).toMatch(/the game is over/);
   });
 });
 
@@ -173,7 +181,6 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
       'step 1: "attack" steps arrive in M1-13',
     ]);
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
-    expect(problems(`${main1}  - expect: { winner: p1 }\n`)).toStrictEqual(["step 1: winner: arrives in M1-15"]);
     expect(first(`${main1}  - expect: { "p1:Forest.counters": {} }\n`)).toMatch(/arrives in M1-13/);
   });
 

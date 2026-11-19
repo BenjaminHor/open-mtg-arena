@@ -22,5 +22,9 @@ export type WorkItem =
   | { kind: "finishResolving"; object: ObjectId }
   /** Every target of the spell is illegal: it doesn't resolve and goes to its owner's graveyard (CR 608.2b). */
   | { kind: "doesNotResolve"; object: ObjectId }
+  /** The cleanup step's state-based action check, after damage is removed and effects end (CR 514.3a). */
+  | { kind: "cleanupStateBasedActions" }
+  /** All players passed in a cleanup step that gave them priority, so another cleanup step begins (CR 514.3a). */
+  | { kind: "anotherCleanupStep" }
   /** The rest of the cleanup step, once the active player has chosen any discards (CR 514). */
   | { kind: "finishCleanup"; chosen: ObjectId[] };

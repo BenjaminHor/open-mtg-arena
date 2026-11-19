@@ -15,6 +15,7 @@ export const HAMMER = "volcanic-hammer";
 export const ELVES = "llanowar-elves";
 export const WHELP = "furnace-whelp";
 export const GROWTH = "giant-growth";
+export const HILL_GIANT = "hill-giant";
 /** Not a real card: a spell with two instances of "target", which nothing in the M1 pool has (CR 608.2b tests). */
 export const SHOT_AND_BOOST = "test-shot-and-boost";
 /** Not a real card: damage dealt by a target, so its source can be an illegal target (CR 608.2b). */
@@ -242,5 +243,22 @@ export const TEST_CARDS: CardDatabase = {
       toughness: 5,
     },
     def: { name: "Statue", oracle: "" },
+  }),
+  [HILL_GIANT]: card(HILL_GIANT, {
+    printed: {
+      name: "Hill Giant",
+      manaCost: [
+        { kind: "generic", amount: 3 },
+        { kind: "colored", color: "R" },
+      ],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Giant"],
+      power: 3,
+      toughness: 3,
+    },
+    def: { name: "Hill Giant", oracle: "" },
   }),
 };

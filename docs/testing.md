@@ -88,7 +88,8 @@ battlefield order. `p1` and `p2` alone mean players.
 **Steps** (each is one of these). Every step becomes an action found in the engine's `legalActions()`, so a step that
 names an illegal action fails the scenario, unless the next step is `expect error`.
 - `p1 pass: once`: p1 passes priority.
-- `all pass: once`: each player passes once, in turn, starting with whoever has priority.
+- `all pass: once`: each player passes once, in turn, starting with whoever has priority. Passing stops early if the
+  game ends; `all pass: until <step>` too.
 - `all pass: until <step>`: players keep passing until that step next begins and someone has priority in it. It fails
   (rather than hanging) if a decision other than priority comes up, or the step doesn't come within 500 passes (for
   example `untap`, which gives no one priority).
@@ -130,7 +131,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
   the last step that changed the game. Nested maps match on their keys given too: `{ type: EFFECT_CREATED, effect:
   { controller: p1 } }`. `pending:` matches the same way.
-- Expectations that arrive later and fail until then: `.counters` (M1-13), `winner` (M1-15).
+- `winner: p1` once the game is over; `winner: draw` when it ended in a draw (CR 104.4a); `winner: (game not over)`
+  while it's still going.
+- Expectations that arrive later and fail until then: `.counters` (M1-13).
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, every listed legal action accepted.

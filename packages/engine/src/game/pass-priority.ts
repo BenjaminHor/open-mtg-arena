@@ -2,6 +2,7 @@
 
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
+import type { WorkItem } from "../state/work.ts";
 import type { Progress } from "./progress.ts";
 import { nextPlayer } from "./steps.ts";
 import { queueWork } from "./work.ts";
@@ -17,6 +18,15 @@ export function passPriority(state: GameState, player: PlayerId): Progress {
   if (passes < state.turnOrder.length) {
     return { state: queueWork(passed, { kind: "givePriority", player: nextPlayer(state, player) }), events };
   }
-  const next = state.zones.stack.length > 0 ? ({ kind: "resolveTopOfStack" } as const) : ({ kind: "endStep" } as const);
-  return { state: queueWork(passed, next), events };
+  return { state: queueWork(passed, afterAllPass(state)), events };
+}
+
+/**
+ * The top of the stack resolves; with an empty stack the step ends, except that a cleanup step in which players got
+ * priority is followed by another cleanup step (CR 514.3a).
+ */
+function afterAllPass(state: GameState): WorkItem {
+  if (state.zones.stack.length > 0) return { kind: "resolveTopOfStack" };
+  if (state.turn?.step === "cleanup") return { kind: "anotherCleanupStep" };
+  return { kind: "endStep" };
 }

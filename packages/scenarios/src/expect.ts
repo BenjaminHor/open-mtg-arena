@@ -36,12 +36,12 @@ export const EXPECTATIONS = [
   "toughness",
   "abilities contains",
   "events contains",
+  "winner",
 ];
 
 /** Expectation keys the format defines that later tasks add, with the task. */
 export const COMING_EXPECTATIONS: Record<string, string> = {
   counters: "M1-13",
-  winner: "M1-15",
 };
 
 export function expectationProblems(
@@ -148,6 +148,9 @@ function check(
       const pending = state.pending as Record<string, unknown> | null;
       return { value: pending, matches: pending !== null && partialMatch(pending, expected) };
     }
+    case "winner":
+      // A player, `draw` (CR 104.4a), or `(game not over)`.
+      return same(state.result === null ? "(game not over)" : (state.result.winner ?? "draw"));
     case "events contains": {
       if (!Array.isArray(expected) || expected.length === 0 || !expected.every(isRecord)) {
         return { error: "events contains takes a non-empty list of events like { type: CARD_DRAWN }" };
