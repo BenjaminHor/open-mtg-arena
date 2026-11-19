@@ -5,11 +5,9 @@ import type { CardDatabase } from "../cards/types.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
-import { discardCard } from "../zones/discard.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { passPriority } from "./pass-priority.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
-import { andThen } from "./progress.ts";
 import { finishCleanup } from "./steps.ts";
 
 export function applyAction(state: GameState, action: Action, _cards: CardDatabase): EngineResult {
@@ -51,10 +49,13 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
       return { ok: true, ...putOnBottom(state, pending.player, answer.object) };
     case "discardToHandSize":
       if (answer.kind !== "discardToHandSize") return mismatch;
-      if (!zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object)) {
-        return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
+      if (
+        !zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object) ||
+        pending.chosen.includes(answer.object)
+      ) {
+        return error("illegalAction", `${answer.object} isn't a card in ${pending.player}'s hand not yet chosen`);
       }
-      return { ok: true, ...andThen(discardCard(state, pending.player, answer.object), finishCleanup) };
+      return { ok: true, ...finishCleanup(state, [...pending.chosen, answer.object]) };
     case "priority":
       return mismatch;
   }

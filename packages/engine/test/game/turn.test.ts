@@ -3,7 +3,9 @@
 
 import { describe, expect, it } from "vitest";
 import type { GameEvent, GameState, PermanentSetup, PlayerId, Step } from "../../src/index.ts";
+import { applyAction, createGame } from "../../src/index.ts";
 import { emptyManaPool } from "../../src/state/mana.ts";
+import { TEST_CARDS } from "../support/cards.ts";
 import { act, answer, type Game, playerSetup, standardSetup, start } from "../support/game.ts";
 
 const hand = (s: GameState, p: PlayerId) => s.zones.players[p]?.hand ?? [];
@@ -148,7 +150,8 @@ describe("passing priority (CR 117.3d, 117.4)", () => {
     const game = fixedGame("upkeep");
     const pending = game.state.pending;
     if (pending === null) throw new Error("expected priority");
-    expect(() => act(game, { type: "PASS_PRIORITY", decisionId: pending.id, player: "p2" })).toThrow(/rejected/);
+    const result = applyAction(game.state, { type: "PASS_PRIORITY", decisionId: pending.id, player: "p2" }, TEST_CARDS);
+    expect(result).toMatchObject({ ok: false, error: { code: "notYourPriority" } });
   });
 });
 
@@ -196,10 +199,18 @@ describe("cleanup step (CR 514)", () => {
     game = allPass(game);
     expect(game.state.turn?.step).toBe("cleanup");
     expect(game.state.pending).toMatchObject({ player: "p1", kind: "discardToHandSize", remaining: 2 });
-    const first = hand(game.state, "p1")[0] as `o${number}`;
+    const [first, second] = hand(game.state, "p1") as [`o${number}`, `o${number}`];
     game = answer(game, { kind: "discardToHandSize", object: first });
-    expect(game.state.pending).toMatchObject({ player: "p1", kind: "discardToHandSize", remaining: 1 });
-    game = answer(game, { kind: "discardToHandSize", object: hand(game.state, "p1")[0] as `o${number}` });
+    expect(game.state.pending).toMatchObject({
+      player: "p1",
+      kind: "discardToHandSize",
+      remaining: 1,
+      chosen: [first],
+    });
+    // Nothing is discarded until all are chosen, and a chosen card can't be chosen again.
+    expect(hand(game.state, "p1")).toHaveLength(9);
+    expect(() => answer(game, { kind: "discardToHandSize", object: first })).toThrow(/isn't a legal answer/);
+    game = answer(game, { kind: "discardToHandSize", object: second });
     expect(hand(game.state, "p1")).toHaveLength(7);
     expect(graveyard(game.state, "p1")).toHaveLength(2);
     expect(hand(game.state, "p2")).toHaveLength(9);
@@ -237,5 +248,78 @@ describe("beginning a turn", () => {
     const next = allPass({ state: { ...game.state, players }, events: [] });
     expect(next.state.players.p1?.landsPlayedThisTurn).toBe(0);
     expect(next.state.players.p2?.landsPlayedThisTurn).toBe(0);
+  });
+});
+
+describe("more turn structure cases (from the M1-06 rules review)", () => {
+  it("doesn't draw for the starting player on turn 1 at all (CR 103.8a)", () => {
+    let game = keptGame();
+    game = allPass(game); // upkeep ends
+    expect(game.state.turn).toMatchObject({ number: 1, step: "precombatMain" });
+    expect(hand(game.state, "p1")).toHaveLength(7);
+    const turnBegan = game.events.findIndex((e) => e.type === "TURN_BEGAN");
+    expect(game.events.slice(turnBegan).some((e) => e.type === "CARD_DRAWN")).toBe(false);
+  });
+
+  it("rejects a fixed opening in the starting player's skipped first draw step, but not on a later turn", () => {
+    const at = (number: number) =>
+      createGame(
+        { ...standardSetup(), opening: { kind: "fixed", turn: { number, activePlayer: "p1", step: "draw" } } },
+        TEST_CARDS,
+      );
+    expect(at(1)).toMatchObject({
+      ok: false,
+      error: { code: "invalidSetup", message: expect.stringMatching(/103.8a/) },
+    });
+    expect(at(2).ok).toBe(true);
+  });
+
+  it("discards before damage wears off, and passing isn't allowed while discarding (CR 514.1, 514.2, 514.3)", () => {
+    let game = fixedGame("end", { hand: deck("forest", 8), battlefield: [permanent("grizzly-bears", { damage: 1 })] });
+    game = allPass(game);
+    expect(game.state.pending).toMatchObject({ player: "p1", kind: "discardToHandSize" });
+    const bears = game.state.zones.battlefield[0] as `o${number}`;
+    expect(game.state.objects[bears]).toMatchObject({ damage: 1 });
+    const pending = game.state.pending;
+    if (pending === null) throw new Error("expected a decision");
+    const passing = applyAction(
+      game.state,
+      { type: "PASS_PRIORITY", decisionId: pending.id, player: "p1" },
+      TEST_CARDS,
+    );
+    expect(passing).toMatchObject({ ok: false, error: { code: "illegalAction" } });
+    game = answer(game, { kind: "discardToHandSize", object: hand(game.state, "p1")[0] as `o${number}` });
+    expect(game.state.objects[bears]).toMatchObject({ damage: 0 });
+  });
+
+  it("doesn't make the non-active player discard, even over seven (CR 514.1)", () => {
+    let game = fixedGame("end", { hand: deck("forest", 1) }, { hand: deck("mountain", 9) });
+    game = allPass(game);
+    expect(game.state.turn).toMatchObject({ number: 2, activePlayer: "p2", step: "upkeep" });
+    expect(hand(game.state, "p2")).toHaveLength(9);
+  });
+
+  it("leaves the non-active player's permanents tapped and summoning sick through the other player's untap step", () => {
+    let game = fixedGame(
+      "end",
+      {},
+      { battlefield: [permanent("grizzly-bears", { tapped: true, summoningSick: true })] },
+    );
+    game = allPass(game); // p1's turn ends; p2's turn 2
+    game = playUntilTurn(game, 3); // p2's turn ends; p1's turn 3
+    const bears = game.state.objects[game.state.zones.battlefield[0] as `o${number}`];
+    expect(game.state.turn?.activePlayer).toBe("p1");
+    // p2 untapped it on turn 2 and it's been theirs since; on p1's turn it doesn't untap or change again.
+    expect(bears).toMatchObject({ tapped: false, controlledSinceTurnStart: true });
+    const tappedAgain = fixedGame(
+      "end",
+      { battlefield: [permanent("forest", { tapped: true, summoningSick: true })] },
+      {},
+    );
+    const afterP1 = allPass(tappedAgain); // p2's untap step
+    expect(afterP1.state.objects[afterP1.state.zones.battlefield[0] as `o${number}`]).toMatchObject({
+      tapped: true,
+      controlledSinceTurnStart: false,
+    });
   });
 });

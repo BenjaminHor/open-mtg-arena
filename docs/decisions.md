@@ -245,3 +245,10 @@ and avoids crossover or digital-only printings, without changing any rules behav
 - Drawing from an empty library sets `attemptedDrawFromEmptyLibrary` (CR 121.4) instead of failing; state-based actions
   (M1-12) turn it into a loss (CR 704.5b) and clear it.
 - The maximum hand size (CR 402.2) and the starting hand size (CR 103.5) are separate constants, both 7.
+- Actions the CR makes simultaneous are done as one action: untapping in the untap step (CR 502.3), and discarding in
+  cleanup (CR 514.1). The discard is still chosen one card at a time (`discardToHandSize` collects the choices in
+  `chosen`), then all of them are discarded together.
+- "Controlled since their most recent turn began" (CR 302.6) is set as the turn begins, not in the untap step, so it
+  still happens when an effect skips the untap step.
+- Setup validation and the step machine share `skipsFirstDrawStep`, so a fixed opening can't start in a draw step
+  that CR 103.8a says doesn't exist.

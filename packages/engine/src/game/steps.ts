@@ -4,13 +4,14 @@
 
 import { anyAttackers } from "../combat/attackers.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
-import { untapPermanent } from "../permanents/untap.ts";
+import { untapPermanents } from "../permanents/untap.ts";
 import { controllerOf } from "../rules/controller.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { PlayerId } from "../state/ids.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { emptyManaPool, MANA_TYPES } from "../state/mana.ts";
 import type { Step } from "../state/turn.ts";
+import { discardCards } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
@@ -22,14 +23,22 @@ import { stepAfter } from "./turn-steps.ts";
 /** The maximum hand size (CR 402.2). A different rule from the starting hand size, though both are normally seven. */
 export const MAXIMUM_HAND_SIZE = 7;
 
-/** Begins a player's turn with its untap step (CR 500.1). Each player's land count starts again (CR 305.2). */
+/** Begins a player's turn with its untap step (CR 501.1). Each player's land count starts again (CR 305.2). */
 export function beginTurn(state: GameState, player: PlayerId, number: number): Progress {
   const players = { ...state.players };
   for (const p of state.turnOrder) {
     const ps = players[p];
     if (ps !== undefined) players[p] = { ...ps, landsPlayedThisTurn: 0 };
   }
-  const begun: GameState = { ...state, players, turn: { number, activePlayer: player, step: "untap" } };
+  // The active player's permanents have now been under their control since their most recent turn began (CR 302.6).
+  // This belongs to the turn beginning, not the untap step, so it still happens if the untap step is skipped.
+  const objects = { ...state.objects };
+  for (const id of state.zones.battlefield) {
+    const obj = objects[id];
+    if (obj?.kind === "card" && controllerOf(state, id) === player)
+      objects[id] = { ...obj, controlledSinceTurnStart: true };
+  }
+  const begun: GameState = { ...state, players, objects, turn: { number, activePlayer: player, step: "untap" } };
   return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player }] }, (s) =>
     beginStep(s, "untap"),
   );
@@ -49,17 +58,37 @@ export function endStep(state: GameState): Progress {
   return andThen(emptied, (s) => beginTurn(s, after, turn.number + 1));
 }
 
-/** Finishes the cleanup step once the active player has discarded down to their maximum hand size (CR 514.1). */
-export function finishCleanup(state: GameState): Progress {
+/**
+ * The cleanup step's turn-based actions (CR 514.1, 514.2). If the active player's hand is over their maximum hand size,
+ * they choose that many cards to discard, one decision per card (`chosen` collects them), and then discard them all at
+ * once: it's one action (CR 514.1).
+ */
+export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []): Progress {
   const turn = currentTurn(state);
   const hand = zoneList(state, { zone: "hand", player: turn.activePlayer });
-  if (hand.length > MAXIMUM_HAND_SIZE) {
-    const remaining = hand.length - MAXIMUM_HAND_SIZE;
-    return { state: waitFor(state, turn.activePlayer, { kind: "discardToHandSize", remaining }), events: [] };
+  const excess = hand.length - MAXIMUM_HAND_SIZE;
+  if (chosen.length < excess) {
+    const remaining = excess - chosen.length;
+    return {
+      state: waitFor(state, turn.activePlayer, { kind: "discardToHandSize", remaining, chosen: [...chosen] }),
+      events: [],
+    };
   }
-  // CR 514.2, then no one gets priority (CR 514.3): with no state-based actions or triggers yet (CR 514.3a), the step
-  // simply ends.
+  if (chosen.length > 0) {
+    return andThen(discardCards(state, turn.activePlayer, chosen), (s) => finishCleanup(s));
+  }
+  // CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action with no
+  // state-based action check in between (those effects arrive in M1-10). Then no one gets priority (CR 514.3): with no
+  // state-based actions or triggers yet (CR 514.3a), the step simply ends.
   return andThen(removeAllDamage(state), endStep);
+}
+
+/**
+ * In a two-player game the starting player skips the draw step of their first turn (CR 103.8a). The game's first turn
+ * is always the starting player's. Setup validation asks this too, so a fixed opening can't start in that step.
+ */
+export function skipsFirstDrawStep(turnNumber: number, playerCount: number): boolean {
+  return turnNumber === 1 && playerCount === 2;
 }
 
 /**
@@ -70,9 +99,7 @@ function isSkipped(state: GameState, step: Step): boolean {
   const turn = currentTurn(state);
   switch (step) {
     case "draw":
-      // In a two-player game the starting player skips the draw step of their first turn (CR 103.8a). The first turn of
-      // the game is always the starting player's.
-      return turn.number === 1 && state.turnOrder.length === 2;
+      return skipsFirstDrawStep(turn.number, state.turnOrder.length);
     case "declareBlockers":
     case "combatDamage":
       return !anyAttackers(state); // CR 508.8
@@ -115,28 +142,13 @@ function beginStep(state: GameState, step: Step): Progress {
   }
 }
 
-/**
- * The active player untaps their permanents (CR 502.3). Those permanents have now been under their control since the
- * turn began (CR 302.6).
- */
+/** The active player untaps all their permanents at once (CR 502.3). */
 function untapStep(state: GameState): Progress {
   const active = currentTurn(state).activePlayer;
-  let progress: Progress = { state, events: [] };
-  for (const id of state.zones.battlefield) {
-    if (controllerOf(state, id) !== active) continue;
-    progress = andThen(progress, (s) => untapPermanent(s, id));
-    const obj = progress.state.objects[id];
-    if (obj?.kind === "card") {
-      progress = {
-        state: {
-          ...progress.state,
-          objects: { ...progress.state.objects, [id]: { ...obj, controlledSinceTurnStart: true } },
-        },
-        events: progress.events,
-      };
-    }
-  }
-  return progress;
+  return untapPermanents(
+    state,
+    state.zones.battlefield.filter((id) => controllerOf(state, id) === active),
+  );
 }
 
 function priorityForActivePlayer(state: GameState): Progress {
@@ -156,7 +168,7 @@ function emptyManaPools(state: GameState): Progress {
   return { state: { ...state, players }, events };
 }
 
-/** The next player in turn order (CR 101.4), wrapping around. */
+/** The next player in turn order (CR 103.1, 117.3d), wrapping around. */
 export function nextPlayer(state: GameState, player: PlayerId): PlayerId {
   const at = state.turnOrder.indexOf(player);
   const next = state.turnOrder[(at + 1) % state.turnOrder.length];

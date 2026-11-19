@@ -4,6 +4,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { MANA_TYPES } from "../state/mana.ts";
 import type { GameSetup } from "../state/setup.ts";
 import type { Step } from "../state/turn.ts";
+import { skipsFirstDrawStep } from "./steps.ts";
 
 /** The starting hand size (CR 103.5). Rule modifiers may change it later. */
 export const STARTING_HAND_SIZE = 7;
@@ -76,6 +77,9 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       problems.push("turn number must be 1 or more");
     if (!FIXED_START_STEPS.includes(opening.turn.step)) {
       problems.push(`a fixed opening can't start in the ${opening.turn.step} step yet`);
+    }
+    if (opening.turn.step === "draw" && skipsFirstDrawStep(opening.turn.number, setup.players.length)) {
+      problems.push("the starting player has no draw step on turn 1 (CR 103.8a)");
     }
   }
   for (const modifier of setup.ruleModifiers) {

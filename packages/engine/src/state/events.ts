@@ -33,7 +33,10 @@ export type GameEvent =
   | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5
   | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId }
-  /** A step or phase began (CR 500.1). Skipped steps don't begin (CR 500.11). */
+  /**
+   * A step began, or a main phase (which has no steps, CR 505.2): `Step` names both. Skipped steps don't begin
+   * (CR 500.11).
+   */
   | { type: "STEP_BEGAN"; turn: number; step: Step; activePlayer: PlayerId }
   | { type: "PRIORITY_PASSED"; player: PlayerId } // CR 117.3d
   /** Unspent mana emptied from a pool as a step ended (CR 500.5). Only for pools that weren't empty. */

@@ -3,7 +3,7 @@
 //
 // Each task adds the kinds it needs (casting choices, attackers, blockers, dividing damage, ...).
 
-import type { DecisionId, PlayerId } from "./ids.ts";
+import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 
 export type PendingDecision = {
   id: DecisionId;
@@ -29,7 +29,8 @@ export type DecisionKind =
    */
   | { kind: "mulliganBottom"; remaining: number }
   /**
-   * In the cleanup step, discard one card because the hand is over the maximum hand size (CR 514.1, 402.2). Asked once
-   * per card. `remaining` counts this one.
+   * In the cleanup step, choose a card to discard because the hand is over the maximum hand size (CR 514.1, 402.2).
+   * Asked once per card; `remaining` counts this one, and `chosen` holds the cards already chosen. Once all are chosen
+   * they're discarded together, as one action.
    */
-  | { kind: "discardToHandSize"; remaining: number };
+  | { kind: "discardToHandSize"; remaining: number; chosen: ObjectId[] };
