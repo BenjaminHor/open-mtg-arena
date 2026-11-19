@@ -7,29 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-06 Turn structure. Plan:
-  - The turn sequence is data: `TURN_STEPS` lists the steps in order (CR 500.1, 501.1, 506.1, 512.1), and one function
-    walks it, so extra turns, phases and steps can be queued later (future-rules.md).
-  - Each step, as it begins, does its turn-based actions, then gives the active player priority (CR 117.3a):
-    untap (CR 502.3: the active player's permanents untap; they're now controlled since the turn began, CR 302.6; no
-    priority, CR 502.4); upkeep (CR 503.1); draw (CR 504.1: the active player draws). The starting player skips the draw step of
-    turn 1 entirely (CR 103.8a): a skipped step is passed over as though it didn't exist (CR 500.11, 614.10a), so it
-    has no draw and no priority; main phases (CR 505.6); beginning of combat (CR 507.2); declare attackers (CR 508: no attacks until M1-13,
-    so none are declared and the declare blockers and combat damage steps are skipped, CR 508.8); end of combat (CR 511.1);
-    end (CR 513.1); cleanup (CR 514.1: discard down to seven, one `discardToHandSize` decision per card; CR 514.2: damage
-    is removed; no priority, CR 514.3). Then the next player in turn order begins their turn.
-  - Mana empties as each step and phase ends (CR 500.5; the spec's "500.4" is a mis-cite, fixed under D-020).
-  - Minimal priority passing, so steps can advance: `PASS_PRIORITY` gives the next player in turn order priority (CR 117.3d);
-    when all players have passed in succession with the stack empty, the step ends (CR 117.4, 500.2). M1-07 adds the stack,
-    resolving, and the work queue.
-  - Drawing from an empty library sets the fact CR 704.5b reads (`attemptedDrawFromEmptyLibrary`) instead of throwing;
-    the loss itself arrives with state-based actions in M1-12.
-  - Replaces M1-05's first-turn shortcut. `landsPlayedThisTurn` resets as a turn begins.
-  - Tests: a full turn walk checking every step and what happens in it; turn 1 has no draw, turn 2 does; the combat skip;
-    mana emptying; cleanup discard (and its decision) and damage removal; untap only for the active player; two full turns.
-  - Future impact: steps are data (extra turns, phases, first-strike damage step later); every step change goes through one
-    function where "until end of step" effects and triggers will hook in; nothing assumes two players (next player = next in
-    `turnOrder`).
+- (nothing)
 
 ## Handoff notes
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
@@ -47,10 +25,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
 - M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
   them to YAML scenarios (`scenarios/start/`), keeping the same cases.
-- For M1-06: replace `beginFirstTurn`'s shortcut (untap, then straight to upkeep) with the real step walk, including the
-  starting player skipping their first draw (CR 103.8a; decide it by turn number 1, not `turnOrder[0]`). The untap step
-  must ask `controllerOf`, not object fields. `drawCard` throws on an empty library until M1-12, so either record the
-  "drew from an empty library" fact CR 704.5b needs, or keep M1-06's tests away from empty libraries.
+- For M1-07: `passPriority` throws if all players pass with a non-empty stack; that's where resolving goes. Reset
+  `passesInSuccession` when a player takes an action (CR 117.4). `endStep` is what the work queue's `advance()` drives.
+- For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
+  each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).
@@ -76,7 +54,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-06 Turn structure
+- M1-07 Priority and the stack
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -94,6 +72,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-05 Game start: `createGame` with setup validation, the random chooser for the starting player (CR 103.1), shuffling
   (CR 103.3), opening hands and CR 103.5 mulligans as decisions, fixed openings, `applyAction`/`legalActions` for these
   decisions, and the first turn (D-030) (2026-11-19).
+- M1-06 Turn structure: the turn sequence as data and one step machine (D-031), every step's turn-based actions, the
+  starting player's skipped first draw step (CR 103.8a), the combat skip (CR 508.8), mana emptying (CR 500.5), cleanup
+  discard and damage removal (CR 514), passing priority with an empty stack (CR 117.3d, 117.4) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

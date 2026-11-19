@@ -226,3 +226,16 @@ describe("drawing from an empty library (CR 121.4, 704.5b)", () => {
     expect(game.state.players.p1?.attemptedDrawFromEmptyLibrary).toBe(false);
   });
 });
+
+describe("beginning a turn", () => {
+  it("lets every player play a land again: the count of lands played this turn starts over (CR 305.2)", () => {
+    // Nothing plays lands until M1-09, so start from a state where both players already have.
+    const game = fixedGame("end");
+    const players = Object.fromEntries(
+      Object.entries(game.state.players).map(([id, p]) => [id, { ...p, landsPlayedThisTurn: 1 }]),
+    ) as GameState["players"];
+    const next = allPass({ state: { ...game.state, players }, events: [] });
+    expect(next.state.players.p1?.landsPlayedThisTurn).toBe(0);
+    expect(next.state.players.p2?.landsPlayedThisTurn).toBe(0);
+  });
+});

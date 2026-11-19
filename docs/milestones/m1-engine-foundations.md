@@ -60,7 +60,7 @@ player skipping their first draw, CR 103.8a, is part of the draw step, so it mov
 
 **M1-06 Turn structure.** All steps and phases (CR 500–514): untap, upkeep, draw, main phases, combat steps,
 end step, cleanup (discard to hand size; damage wears off and "until end of turn" effects end, CR 514);
-mana pools empty between steps (CR 500.4); skipping combat steps when there are no attackers (CR 508.8); the starting
+mana pools empty between steps (CR 500.5; this said 500.4, fixed under D-020); skipping combat steps when there are no attackers (CR 508.8); the starting
 player skipping the draw step of their first turn (CR 103.8a, moved from M1-05).
 *Accept:* a scenario that walks a full turn checking each step, and one that the starting player doesn't draw on turn 1
 while the other player draws on turn 2.
