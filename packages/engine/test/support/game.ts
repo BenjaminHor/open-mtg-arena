@@ -124,4 +124,12 @@ export function checkInvariants(state: GameState): void {
       expect(applyAction(frozen, action, TEST_CARDS).ok, object).toBe(false);
     }
   }
+  // A card already chosen to discard can't be chosen again.
+  if (pending?.kind === "discardToHandSize") {
+    for (const object of pending.chosen) {
+      const answerValue = { kind: "discardToHandSize", object } as const;
+      const action = { type: "ANSWER", decisionId: pending.id, player: pending.player, answer: answerValue } as const;
+      expect(applyAction(frozen, action, TEST_CARDS).ok, object).toBe(false);
+    }
+  }
 }

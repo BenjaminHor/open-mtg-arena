@@ -4,7 +4,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { MANA_TYPES } from "../state/mana.ts";
 import type { GameSetup } from "../state/setup.ts";
 import type { Step } from "../state/turn.ts";
-import { skipsFirstDrawStep } from "./steps.ts";
+import { skipsFirstDrawStep } from "./turn-steps.ts";
 
 /** The starting hand size (CR 103.5). Rule modifiers may change it later. */
 export const STARTING_HAND_SIZE = 7;

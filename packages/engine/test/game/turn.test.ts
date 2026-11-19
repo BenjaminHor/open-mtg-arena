@@ -37,7 +37,10 @@ function allPass(game: Game): Game {
 /** Passes until turn `number` begins, discarding the first card whenever cleanup asks for a discard. */
 function playUntilTurn(game: Game, number: number): Game {
   let next = game;
+  let actions = 0;
   while ((next.state.turn?.number ?? 0) < number) {
+    // A bound, so a bug that stops the turn advancing fails the test instead of hanging the suite.
+    if (++actions > 1000) throw new Error(`turn ${number} never began`);
     if (next.state.pending?.kind === "discardToHandSize") {
       const active = next.state.pending.player;
       next = answer(next, { kind: "discardToHandSize", object: hand(next.state, active)[0] as `o${number}` });
@@ -80,7 +83,8 @@ describe("walking a turn (CR 500.1)", () => {
   it("goes through every step in order, skipping the starting player's first draw step and the empty combat steps", () => {
     let game = keptGame();
     const priority: string[] = [];
-    while (game.state.turn?.number === 1) {
+    for (let guard = 0; game.state.turn?.number === 1; guard++) {
+      if (guard > 50) throw new Error("turn 1 never ended");
       priority.push(`${game.state.turn.step} ${game.state.pending?.player}`);
       game = allPass(game);
     }
@@ -115,7 +119,7 @@ describe("walking a turn (CR 500.1)", () => {
   it("gives the second player a draw step on turn 2, and the starting player one on turn 3 (CR 504.1)", () => {
     let game = keptGame();
     expect(hand(game.state, "p1")).toHaveLength(7);
-    while (game.state.turn?.number === 1) game = allPass(game);
+    game = playUntilTurn(game, 2);
     game = allPass(game); // p2's upkeep ends; the draw step begins
     expect(game.state.turn?.step).toBe("draw");
     expect(hand(game.state, "p2")).toHaveLength(8);
@@ -138,6 +142,7 @@ describe("passing priority (CR 117.3d, 117.4)", () => {
     game = pass(game);
     expect(game.state.turn?.step).toBe("precombatMain");
     expect(game.state.pending).toMatchObject({ player: "p2", kind: "priority" });
+    expect(game.events.at(-1)).toStrictEqual({ type: "PRIORITY_PASSED", player: "p1" });
     game = pass(game);
     expect(game.state.turn?.step).toBe("beginningOfCombat");
     // A new step starts the count again: one pass isn't enough to end it.
@@ -179,11 +184,14 @@ describe("untap step (CR 502.3)", () => {
         battlefield: [
           permanent("mountain", { tapped: true }),
           permanent("grizzly-bears", { tapped: true, summoningSick: true }),
+          permanent("mountain"), // already untapped: no event for it
         ],
       },
     );
     game = allPass(game); // p1's end step ends; cleanup, then p2's turn 2
     const [p1Forest, p2Mountain, p2Bears] = game.state.zones.battlefield.map((id) => game.state.objects[id]);
+    const untapped = game.events.flatMap((e) => (e.type === "PERMANENT_UNTAPPED" ? [e.object] : []));
+    expect(untapped).toStrictEqual(game.state.zones.battlefield.slice(1, 3));
     expect(game.state.turn).toMatchObject({ number: 2, activePlayer: "p2" });
     expect(p1Forest).toMatchObject({ tapped: true });
     expect(p2Mountain).toMatchObject({ tapped: false, controlledSinceTurnStart: true });
@@ -213,6 +221,8 @@ describe("cleanup step (CR 514)", () => {
     game = answer(game, { kind: "discardToHandSize", object: second });
     expect(hand(game.state, "p1")).toHaveLength(7);
     expect(graveyard(game.state, "p1")).toHaveLength(2);
+    const discards = game.events.filter((e) => e.type === "CARD_DISCARDED");
+    expect(discards.map((e) => e.type === "CARD_DISCARDED" && e.player)).toStrictEqual(["p1", "p1"]);
     expect(hand(game.state, "p2")).toHaveLength(9);
     expect(game.events.filter((e) => e.type === "CARD_DISCARDED")).toHaveLength(2);
     expect(game.state.turn).toMatchObject({ number: 2, activePlayer: "p2", step: "upkeep" });

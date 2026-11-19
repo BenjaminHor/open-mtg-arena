@@ -37,7 +37,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
         turn: { ...opening.turn },
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
       };
-      return { ok: true, state: givePriority(state, opening.turn.activePlayer), events: [] };
+      return { ok: true, ...givePriority(state, opening.turn.activePlayer) };
     case "standard": {
       state = {
         ...state,

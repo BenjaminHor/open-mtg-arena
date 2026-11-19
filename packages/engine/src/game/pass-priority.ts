@@ -17,7 +17,7 @@ export function passPriority(state: GameState, player: PlayerId): Progress {
     events: [{ type: "PRIORITY_PASSED", player }],
   };
   if (passes < state.turnOrder.length) {
-    return { state: givePriority(passed.state, nextPlayer(state, player)), events: passed.events };
+    return andThen(passed, (s) => givePriority(s, nextPlayer(state, player)));
   }
   // Resolving the top of the stack arrives with the stack itself in M1-07.
   if (state.zones.stack.length > 0) throw new Error("Resolving the stack isn't built yet (M1-07)");

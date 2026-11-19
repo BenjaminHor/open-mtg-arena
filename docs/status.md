@@ -25,6 +25,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
 - M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
   them to YAML scenarios (`scenarios/start/`), keeping the same cases.
+- For M1-07: turn-based actions are chained on the call stack today, and the only resume-after-decision is hard-wired
+  (`discardToHandSize` → `finishCleanup`). Turn these into work items rather than copying the pattern: M1-13's attackers
+  and blockers will pause mid-step. A decision set mid-chain is silently overwritten if the chain continues.
 - For M1-07: `passPriority` throws if all players pass with a non-empty stack; that's where resolving goes. Reset
   `passesInSuccession` when a player takes an action (CR 117.4). `endStep` is what the work queue's `advance()` drives.
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after

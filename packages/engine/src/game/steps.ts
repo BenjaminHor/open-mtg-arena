@@ -18,7 +18,7 @@ import { waitFor } from "./decide.ts";
 import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
-import { stepAfter } from "./turn-steps.ts";
+import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
 
 /** The maximum hand size (CR 402.2). A different rule from the starting hand size, though both are normally seven. */
 export const MAXIMUM_HAND_SIZE = 7;
@@ -59,9 +59,9 @@ export function endStep(state: GameState): Progress {
 }
 
 /**
- * The cleanup step's turn-based actions (CR 514.1, 514.2). If the active player's hand is over their maximum hand size,
+ * The cleanup step's first turn-based action (CR 514.1). If the active player's hand is over their maximum hand size,
  * they choose that many cards to discard, one decision per card (`chosen` collects them), and then discard them all at
- * once: it's one action (CR 514.1).
+ * once: it's one action. Then the rest of the step.
  */
 export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []): Progress {
   const turn = currentTurn(state);
@@ -74,21 +74,19 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []
       events: [],
     };
   }
-  if (chosen.length > 0) {
-    return andThen(discardCards(state, turn.activePlayer, chosen), (s) => finishCleanup(s));
-  }
-  // CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action with no
-  // state-based action check in between (those effects arrive in M1-10). Then no one gets priority (CR 514.3): with no
-  // state-based actions or triggers yet (CR 514.3a), the step simply ends.
-  return andThen(removeAllDamage(state), endStep);
+  // CR 514.1 happens once per cleanup step, so after the discard the step moves on even if something left the hand
+  // over its maximum; a new cleanup step would deal with that (CR 514.3a).
+  if (chosen.length > 0) return andThen(discardCards(state, chosen), endCleanup);
+  return endCleanup(state);
 }
 
 /**
- * In a two-player game the starting player skips the draw step of their first turn (CR 103.8a). The game's first turn
- * is always the starting player's. Setup validation asks this too, so a fixed opening can't start in that step.
+ * CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action with no
+ * state-based action check in between (those effects arrive in M1-10). Then no one gets priority (CR 514.3): with no
+ * state-based actions or triggers yet (CR 514.3a), the step simply ends.
  */
-export function skipsFirstDrawStep(turnNumber: number, playerCount: number): boolean {
-  return turnNumber === 1 && playerCount === 2;
+function endCleanup(state: GameState): Progress {
+  return andThen(removeAllDamage(state), endStep);
 }
 
 /**
@@ -99,7 +97,7 @@ function isSkipped(state: GameState, step: Step): boolean {
   const turn = currentTurn(state);
   switch (step) {
     case "draw":
-      return skipsFirstDrawStep(turn.number, state.turnOrder.length);
+      return skipsFirstDrawStep(turn.number, state.setup.players.length);
     case "declareBlockers":
     case "combatDamage":
       return !anyAttackers(state); // CR 508.8
@@ -152,7 +150,7 @@ function untapStep(state: GameState): Progress {
 }
 
 function priorityForActivePlayer(state: GameState): Progress {
-  return { state: givePriority(state, currentTurn(state).activePlayer), events: [] };
+  return givePriority(state, currentTurn(state).activePlayer);
 }
 
 /** Empties every player's mana pool (CR 500.5), reporting only the pools that had mana. */
