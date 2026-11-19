@@ -135,8 +135,9 @@ return `{ value, rng }`.
 **D-022: Objects reference card data by `oracleId`; the stored controller is only the default** · 2026-11-19 · accepted
 A game object stores its card's Scryfall `oracleId` and looks up printed values in the `CardDatabase` given to the engine,
 instead of copying them. That keeps state small, and later faces, copies and text changes (layers 1 and 3) change which
-values apply, not stored fields. Objects store `baseController`, the CR 110.2 default (the player it entered under, or who
-cast or activated it). The current controller always comes from `characteristics()` (layer 2), even before control-changing
+values apply, not stored fields. Objects store `baseController`, the default controller: the player a permanent entered under (CR 110.2), who cast
+a spell (CR 112.2), or who controls an ability on the stack (CR 113.8). Cards in other zones have no controller
+(CR 108.4) and questions about it use the owner (CR 108.4a). The current controller always comes from `characteristics()` (layer 2), even before control-changing
 effects exist. Zones that belong to a player (library, hand, graveyard) are the owner's (CR 400.3).
 
 **D-023: The engine exports its state types** · 2026-11-19 · accepted

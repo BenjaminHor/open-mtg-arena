@@ -24,6 +24,10 @@ outside it, so replacements can be added in one place later.
 triggers that "look back in time" (CR 603.10), delayed triggers, and state triggers.
 *Needs now:* events carry enough information to match triggers later (for a zone change: the object as it
 last existed, both ids, from and to zones). Keep the last known information of objects that leave a zone.
+Events aren't state, so last known information (CR 608.2h, 603.10) needs its own store in `GameState`, added by
+the first task that resolves an effect whose source may be gone (M1-14: firebreathing after the Whelp dies).
+Abilities on the stack carry `sourceOracleId` + `abilityIndex`; granted abilities (layer 6) and delayed triggers
+(CR 603.7) will need another kind of reference.
 
 **Continuous effects from static abilities (CR 604, 611).** "Other creatures you control get +1/+1", "can't attack".
 *Needs now:* effects know their source and are recomputed by the layer system, never applied once and stored.
@@ -38,6 +42,8 @@ life as costs (CR 601.2f–h, 118).
 
 **Spell copies, modal spells, and choices made on resolution (CR 707, 700.2).**
 *Needs now:* stack objects aren't assumed to be cards; casting choices (modes, targets, X) are stored on the stack object.
+A spell copy has no card and is owned by whoever put it on the stack (CR 707.10, 112.2): a third `GameObject` kind.
+Choices a permanent remembers from its spell (kicked, X; CR 400.7d) must be copied when it enters the battlefield.
 
 **Card types beyond the M1 pool.** Tokens (CR 111), auras and equipment (CR 303.4, 301.5), planeswalkers and
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down
@@ -46,10 +52,14 @@ permanents such as morph and manifest (CR 708).
 single card record; tokens are objects without a deck card.
 
 **Counters (CR 122), including +1/+1 and -1/-1 annihilation (CR 704.5q).**
-*Needs now:* counters live on objects as a map of counter type to number.
+*Needs now:* counters live on objects as a map of counter type to number. Keyword counters (CR 122.1b) will need
+timestamps (CR 613.7c) for layer 6, which means a state migration (`GameState.version`).
 
 **Control-changing effects and ownership vs. control (CR 108.3, 110.2).**
 *Needs now:* code never assumes the controller is the owner. "Your" in card text means controller.
+Control is computed (layer 2), so `controlledSinceTurnStart` (CR 302.6) must reset whenever the computed
+controller changes, including when a control effect ends. A bare boolean can't see A→B→A in one turn; expect to
+replace it with a `{ player, since }` record when control-changing effects arrive.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
 "at the beginning of the next end step".

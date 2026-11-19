@@ -25,7 +25,10 @@ export type GameState = {
   nextTimestamp: number;
 
   turn: Turn;
-  /** Players in turn order (CR 101.4, 102.1). APNAP order and "next player" always come from this list. */
+  /**
+   * Players in turn order, starting with the starting player (CR 103.1). APNAP order (CR 101.4) and
+   * "the next player" always come from this list, cyclically.
+   */
   turnOrder: PlayerId[];
   players: Record<PlayerId, PlayerState>;
   objects: Record<ObjectId, GameObject>;

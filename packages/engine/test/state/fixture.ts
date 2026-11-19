@@ -14,11 +14,12 @@ const WHELP = "oracle-furnace-whelp";
 const BEARS = "oracle-grizzly-bears";
 const GROWTH = "oracle-giant-growth";
 
+// Timestamps are unique: even objects that arrive together are ordered (CR 613.7m). Here, each is its id number.
 function card(fields: Pick<CardObject, "id" | "cardId" | "oracleId" | "owner"> & Partial<CardObject>): CardObject {
   return {
     kind: "card",
     baseController: fields.owner,
-    timestamp: 1,
+    timestamp: Number(fields.id.slice(1)),
     tapped: false,
     damage: 0,
     counters: {},
@@ -89,13 +90,13 @@ export function midTurnState(): GameState {
         cardId: "c10",
         oracleId: BOLT,
         owner: "p1",
-        timestamp: 10,
-        choices: { modes: [], x: null, targets: [{ kind: "object", object: "o6" }] },
+        choices: { modes: [], x: null, targets: [[{ kind: "object", object: "o6" }]] },
       }),
       o11: {
         kind: "ability",
         id: "o11",
         source: "o5",
+        sourceOracleId: WHELP,
         abilityIndex: 0,
         baseController: "p1",
         timestamp: 11,

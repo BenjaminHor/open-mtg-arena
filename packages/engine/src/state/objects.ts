@@ -21,12 +21,19 @@ export type CardObject = {
   /** The player who started the game with it in their deck (CR 108.3). */
   owner: PlayerId;
   /**
-   * The default controller (CR 110.2): the player it entered the battlefield under, or who cast it.
-   * Don't read this to find the controller: use `characteristics()`, which applies control-changing effects (layer 2).
+   * The default controller of a permanent (CR 110.2: the player it entered the battlefield under) or a spell
+   * (CR 112.2: the player who cast it). Cards in other zones have no controller (CR 108.4); anything that asks
+   * uses the owner (CR 108.4a). Don't read this field to find the controller: use `characteristics()`, which
+   * handles all of that and control-changing effects (layer 2).
    */
   baseController: PlayerId;
-  /** When the object entered its zone, for applying effects in timestamp order (CR 613.7). */
+  /**
+   * The object's current timestamp, for applying effects in timestamp order (CR 613.7). It gets one when it
+   * enters a zone (CR 613.7d), and later rules give it new ones (attaching, turning face up, CR 613.7e–g).
+   */
   timestamp: number;
+  // The next three fields mean something only on the battlefield (CR 110.5d: only permanents have status).
+  // A card that changes zones is a new object (CR 400.7), so they start fresh: untapped, no damage, false.
   /** Status (CR 110.5). Only tapped is supported so far; flipped, face down and phased out come later. */
   tapped: boolean;
   /** Damage marked on a permanent (CR 120.3e), removed in the cleanup step (CR 514.2). */
@@ -46,11 +53,22 @@ export type CardObject = {
 export type AbilityObject = {
   kind: "ability";
   id: ObjectId;
-  /** The object the ability came from (CR 113.7). It may have left its zone since. */
+  /**
+   * The object the ability came from (CR 113.7). It may have left its zone since, and then it's no longer in
+   * `objects`: the ability still resolves on its own (CR 113.7a), so nothing here depends on finding it.
+   */
   source: ObjectId;
-  /** Which of the source card's abilities this is, as indexed in its card definition. */
+  /** The source's card, so the ability's definition can be found even after the source is gone. */
+  sourceOracleId: OracleId;
+  /**
+   * Which of that card's abilities this is, as indexed in its card definition. Abilities granted by effects
+   * (layer 6) and delayed triggers (CR 603.7) will need a different reference when they arrive.
+   */
   abilityIndex: number;
-  /** The player who activated it (CR 113.8). Read the current controller through `characteristics()`. */
+  /**
+   * Its controller (CR 113.8): who activated it, or for a triggered ability, who controlled its source when it
+   * triggered. Read the current controller through `characteristics()`.
+   */
   baseController: PlayerId;
   timestamp: number;
   /** The choices made while activating it (CR 602.2b, which follows CR 601.2b–c). */
@@ -63,8 +81,12 @@ export type StackChoices = {
   modes: number[];
   /** The value announced for X (CR 107.3), or null when there is no X. */
   x: number | null;
-  /** One entry per target requirement, in the order the card lists them (CR 601.2c). */
-  targets: Target[];
+  /**
+   * The chosen targets, grouped by each instance of the word "target" in the text, in the order the card lists
+   * them (CR 601.2c). "Tap two target creatures" is one instance with two targets: `[[a, b]]`. The same object
+   * can't appear twice within one instance, but can across instances.
+   */
+  targets: Target[][];
 };
 
 /** A chosen target: a player or an object (CR 115.1). */

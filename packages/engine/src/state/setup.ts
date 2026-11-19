@@ -9,7 +9,7 @@ import type { Turn } from "./turn.ts";
 export type GameSetup = {
   /** Seeds the game's random number generator. A non-negative safe integer. */
   seed: number;
-  /** In turn order. */
+  /** In seating order, clockwise. Turn order starts with the starting player and goes clockwise (CR 103.1). */
   players: PlayerSetup[];
   opening: Opening;
   /** Extra rules for this game, owned by no card, like emblems (RPG encounters, test setups). */
@@ -17,8 +17,9 @@ export type GameSetup = {
 };
 
 /**
- * - `standard`: the normal start (CR 103). Libraries are shuffled, the starting player is chosen (at random from
- *   the seed when `firstPlayer` is null, CR 103.1), opening hands are drawn and players may mulligan (CR 103.5).
+ * - `standard`: the normal start (CR 103). First the starting player is decided (CR 103.1): `firstPlayer` if set,
+ *   otherwise a player picked at random from the seed chooses who goes first. Then libraries are shuffled (CR 103.3),
+ *   opening hands are drawn and players may mulligan (CR 103.5).
  * - `fixed`: the game begins exactly as described, at the given turn and step, with libraries in the order given and no
  *   mulligans. Used by scenario tests and for saved positions.
  */
@@ -42,15 +43,19 @@ export type PlayerSetup = {
 export type PermanentSetup = {
   oracleId: OracleId;
   tapped: boolean;
-  /** True if it came under its controller's control this turn (CR 302.6), so it can't attack or use {T} yet. */
+  /**
+   * True if it hasn't been under its controller's control continuously since their most recent turn began
+   * (CR 302.6), so it can't attack or use {T} abilities. The opposite of `CardObject.controlledSinceTurnStart`.
+   */
   summoningSick: boolean;
   damage: number;
   counters: Counters;
 };
 
 /**
- * A rule modifier is a continuous effect with no source card (CR 611). The engine applies it through the
- * layer system like any other continuous effect, from M1-11.
+ * A rule modifier is an extra rule for the whole game, owned by no card. It works like an emblem's static
+ * ability (CR 114): the engine applies it through the layer system like any other continuous effect (CR 611),
+ * from M1-11. Effects that aren't additive will need it to have a timestamp (CR 613.7), as an emblem would.
  */
 export type RuleModifier = {
   /** "Creatures this player controls get +N/+N": layer 7c (CR 613.4c). */

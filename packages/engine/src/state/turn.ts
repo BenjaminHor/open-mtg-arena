@@ -3,7 +3,7 @@
 import type { PlayerId } from "./ids.ts";
 
 /**
- * Where the game is in the turn. Main phases have no steps (CR 505), so they appear here as their own entries.
+ * Where the game is in the turn. Main phases have no steps (CR 505.2), so they appear here as their own entries.
  * Names follow the CR: beginning phase (CR 501), precombat main (CR 505.1), combat phase (CR 506),
  * postcombat main, ending phase (CR 512).
  */
@@ -23,7 +23,7 @@ export type Step =
 
 export type Phase = "beginning" | "precombatMain" | "combat" | "postcombatMain" | "ending";
 
-/** The phase a step belongs to (CR 500.1). */
+/** The phase a step belongs to (CR 500.1; the steps of each phase: CR 501.1, 506.1, 512.1). */
 export function phaseOf(step: Step): Phase {
   switch (step) {
     case "untap":

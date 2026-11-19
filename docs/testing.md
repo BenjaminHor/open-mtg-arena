@@ -58,7 +58,9 @@ steps:
 - **setup**: `turn` (active player, step, optional turn number), then per player:
   `life`, `library` (top first), `hand`, `battlefield`, `graveyard`, `exile`, `manaPool`.
   A battlefield entry can be a name or a map: `{ card: Grizzly Bears, tapped: true, sick: false,
-  damage: 1, counters: { +1/+1: 2 } }`. Unlisted libraries default to 20 basic lands, so drawing doesn't lose the game.
+  damage: 1, counters: { +1/+1: 2 } }`. `sick: true` means it hasn't been under its controller's control continuously
+  since their most recent turn began (CR 302.6), so a creature that entered on its controller's last turn is still
+  sick during the opponent's turn. Unlisted libraries default to 20 basic lands, so drawing doesn't lose the game.
   `rules: [...]` lists rule modifiers (for testing RPG-style setups).
 - **References**: `p2:Grizzly Bears` means the only Grizzly Bears that p2 controls. Use
   `p2:Grizzly Bears#2` when there are several (ordered as listed in setup). `p1` and `p2` alone mean players.
