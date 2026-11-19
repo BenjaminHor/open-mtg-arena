@@ -1,4 +1,4 @@
-name: The division is free, with no damage assignment order, so all of it can go to one blocker
+name: The division is free, with no damage assignment order, so all of it can go to one blocker (named in any order)
 rules: [CR 510.1c]
 setup:
   turn: { active: p1, step: main1 }
@@ -12,7 +12,7 @@ steps:
   - all pass: until combat.declareBlockers
   - p2 block: { Grizzly Bears: Craw Wurm, Giant Spider: Craw Wurm }
   - all pass: until combat.damage
-  - p1 assign: { Grizzly Bears: 0, Giant Spider: 6 }
+  - p1 assign: { Giant Spider: 6, Grizzly Bears: 0 }
   - expect:
       p2.battlefield: [Grizzly Bears]
       p2:Grizzly Bears.damage: 0

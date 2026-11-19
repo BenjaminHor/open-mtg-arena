@@ -404,6 +404,8 @@ every schema change and every change D-024 lists bumps it.
 - The scenario runner gets `winner` now (M1-15 keeps conceding and the result scenarios).
 
 **D-040: Combat** · 2026-11-19 · accepted
+- The defending player comes from the declared attacks, so it's known even if every attacker has left (in a two-player
+  game it's the nonactive player, CR 506.2).
 - `GameState.combat` exists exactly during the combat phase (created as it begins, CR 506.1; cleared as the end of
   combat step ends, CR 511.3). It records every declared attack (attacker, defending player) and every block. The
   declaration is kept even when a creature leaves, because CR 508.8 asks whether any were declared and CR 509.1h keeps
@@ -416,8 +418,10 @@ every schema change and every change D-024 lists bumps it.
   attack (or block), no one is asked and the declaration is empty.
 - `canAttack` and `canBlock` (with evasion as its own check) are the one place restrictions go (CR 508.1c, 509.1b).
   Haste also lets a creature use {T} abilities (CR 702.10c), in `canUseTapAbilities`.
-- Combat damage: an attacker blocked by two or more creatures gets an `assignDamage` decision listing every division
-  that adds up to its power (CR 510.1c, 510.1e; no damage assignment order, D-020). A creature with 0 or less power
+- Combat damage: an attacker blocked by two or more creatures gets `assignDamage` decisions, one per blocker but the
+  last, in declaration order, each offering 0 up to what's left; the last blocker gets the rest, so the division always
+  adds up (CR 510.1c, 510.1e; no damage assignment order, D-020). Listing whole divisions would grow combinatorially
+  (C(power+n-1, n-1): 53,130 for 20 damage over 6 blockers); one amount at a time grows with power only. A creature with 0 or less power
   assigns none and raises no decision (CR 510.1a). Then all combat damage goes to `dealDamage` as one list with
   `combat: true` (CR 510.2), and state-based actions run at the next priority.
 - Scenarios: `attack`, `block` and `assign` steps; `all pass` declares nothing when it passes through combat.

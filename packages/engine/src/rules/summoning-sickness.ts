@@ -13,8 +13,16 @@ import { cardTypesOf } from "./card-types.ts";
  * so a land that just entered can tap for mana.
  */
 export function canUseTapAbilities(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  if (!cardTypesOf(state, id, cards).includes("creature")) return state.objects[id]?.kind === "card";
+  return isFreeOfSummoningSickness(state, id, cards);
+}
+
+/**
+ * The summoning sickness rule itself, for attacking (CR 302.6) and {T} abilities (CR 602.5a): the creature has been
+ * under its controller's control continuously since their most recent turn began, or it has haste (CR 702.10b–c).
+ */
+export function isFreeOfSummoningSickness(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return false;
-  if (!cardTypesOf(state, id, cards).includes("creature")) return true;
   return obj.controlledSinceTurnStart || keywordsOf(state, id, cards).includes("haste");
 }

@@ -120,7 +120,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `p2 block: { Giant Spider: Craw Wurm }`: declare blockers (CR 509.1), blocker (p2's) to attacker (p1's); `{}` declares
   none.
 - `p1 assign: { Grizzly Bears: 2, Giant Spider: 4 }`: divide an attacker's combat damage among its blockers (CR 510.1c),
-  when an `assignDamage` decision is pending. Any division that adds up to its power is legal, including 0 to one.
+  when an `assignDamage` decision is pending, naming each blocker once in any order. Any division that adds up to its
+  power is legal, including 0 to one. The engine asks one blocker at a time (the last gets the rest); the step answers
+  all of them.
 - Passing through combat (`all pass`) declares no attackers and no blockers when asked, the "do nothing" answer;
   `all pass: until combat.declareAttackers` (or `.declareBlockers`, `.damage`) stops there when that step's own decision
   is pending. A division of damage has no "do nothing", so it stops `all pass` with an error.

@@ -9,7 +9,8 @@ import { queueWork } from "../game/work.ts";
 import { attacksInCombat, blocksInCombat, isBlocked } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { powerAndToughness } from "../rules/power-toughness.ts";
-import type { AttackerDivision, DamageDivision } from "../state/combat.ts";
+import type { AttackerDivision } from "../state/combat.ts";
+import type { PendingDecision } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
@@ -25,8 +26,8 @@ export function combatDamage(state: GameState, divisions: Divisions, cards: Card
     const blockers = blockersOf(state, attacker, cards);
     const amount = combatPower(state, attacker, cards);
     if (blockers.length < 2 || amount === 0 || divisions.some((d) => d.attacker === attacker)) continue;
-    const kind = { kind: "assignDamage", attacker, blockers, amount, divided: divisions } as const;
-    return { state: waitFor(state, controllerOf(state, attacker), kind), events: [] };
+    const decision = { kind: "assignDamage" as const, attacker, blockers, amount, assigned: [], divided: divisions };
+    return { state: waitFor(state, controllerOf(state, attacker), decision), events: [] };
   }
   const active = currentTurn(state).activePlayer;
   return andThen(dealDamage(state, assignedDamage(state, divisions, cards), cards), (s) => ({
@@ -81,30 +82,37 @@ function combatPower(state: GameState, id: ObjectId, cards: CardDatabase): numbe
   return Math.max(0, powerAndToughness(state, id, cards).power ?? 0);
 }
 
-/** Every way to divide `amount` damage among these blockers (CR 510.1c): any whole amounts that add up to it. */
-export function allDivisions(amount: number, blockers: readonly ObjectId[]): DamageDivision[] {
-  const [first, ...rest] = blockers;
-  if (first === undefined) return amount === 0 ? [[]] : [];
-  if (rest.length === 0) return [[{ blocker: first, amount }]];
-  const out: DamageDivision[] = [];
-  for (let here = amount; here >= 0; here--) {
-    for (const tail of allDivisions(amount - here, rest)) out.push([{ blocker: first, amount: here }, ...tail]);
-  }
-  return out;
+/**
+ * Why this amount can't go to the next blocker, or null (CR 510.1c): any whole amount from 0 up to what's left, since
+ * the division is free. The last blocker isn't asked: it gets the rest, so the division always adds up (CR 510.1e).
+ */
+export function assignProblem(left: number, amount: number): string | null {
+  return Number.isInteger(amount) && amount >= 0 && amount <= left
+    ? null
+    : `give this blocker a whole amount from 0 to ${left}`;
 }
 
-/** Why this division doesn't answer the decision, or null (CR 510.1c, 510.1e). */
-export function divisionProblem(
-  blockers: readonly ObjectId[],
+/** What's left of the attacker's damage after the amounts given so far. */
+export function damageLeft(amount: number, assigned: readonly number[]): number {
+  return amount - assigned.reduce((sum, n) => sum + n, 0);
+}
+
+/**
+ * The next blocker gets `amount`. Once only the last blocker is left, it gets the rest and the attacker's division is
+ * done; combat damage then goes on (more decisions, or dealing it).
+ */
+export function assignToNextBlocker(
+  state: GameState,
+  pending: Extract<PendingDecision, { kind: "assignDamage" }>,
   amount: number,
-  division: DamageDivision,
-): string | null {
-  const each = blockers.map((b) => division.filter((d) => d.blocker === b));
-  if (division.length !== blockers.length || each.some((d) => d.length !== 1)) {
-    return "a division names each blocking creature exactly once";
+): GameState {
+  const assigned = [...pending.assigned, amount];
+  if (assigned.length < pending.blockers.length - 1) {
+    const { id: _id, player, ...decision } = pending;
+    return waitFor(state, player, { ...decision, assigned });
   }
-  if (division.some((d) => !Number.isInteger(d.amount) || d.amount < 0))
-    return "each amount is a whole number, 0 or more";
-  const total = division.reduce((n, d) => n + d.amount, 0);
-  return total === amount ? null : `the division must add up to ${amount}, not ${total}`;
+  const last = damageLeft(pending.amount, assigned);
+  const division = pending.blockers.map((blocker, i) => ({ blocker, amount: assigned[i] ?? last }));
+  const divisions = [...pending.divided, { attacker: pending.attacker, division }];
+  return queueWork(state, { kind: "combatDamage", divisions });
 }

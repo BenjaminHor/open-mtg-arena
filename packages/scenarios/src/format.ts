@@ -47,7 +47,7 @@ export type ScenarioStep =
 export const TOP_KEYS = ["name", "rules", "setup", "steps", "expect setup error"];
 
 /** Step words the format defines that later tasks add to the runner, with the task. */
-export const COMING_STEP_WORDS: Record<string, string> = {};
+export const COMING_STEP_WORDS: Record<string, string> = {}; // none now; a task adding a step word lists it here first
 
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {

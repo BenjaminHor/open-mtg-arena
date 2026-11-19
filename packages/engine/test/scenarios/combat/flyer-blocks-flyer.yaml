@@ -1,0 +1,17 @@
+name: A creature with flying can block a creature with flying
+rules: [CR 702.9b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Furnace Whelp]
+  p2:
+    battlefield: [Furnace Whelp]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Furnace Whelp]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Furnace Whelp: Furnace Whelp }
+  - all pass: until combat.damage
+  - expect:
+      p1.graveyard: [Furnace Whelp]
+      p2.graveyard: [Furnace Whelp]

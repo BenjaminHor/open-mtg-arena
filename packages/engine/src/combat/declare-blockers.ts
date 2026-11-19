@@ -12,11 +12,12 @@ import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 
 /**
- * The defending player: the player the attackers attack. With two players there's one. Several defending players
- * (multiplayer, CR 802) would each declare blockers, which isn't built.
+ * The defending player: the player the declared attackers attack, even if those attackers have since left combat (in a
+ * two-player game, simply the nonactive player, CR 506.2). Several defending players (multiplayer, CR 802) would each
+ * declare blockers, which isn't built.
  */
-export function defendingPlayer(state: GameState, cards: CardDatabase): PlayerId | null {
-  const all = attacksInCombat(state, cards).map((a) => a.defender);
+export function defendingPlayer(state: GameState): PlayerId | null {
+  const all = (state.combat?.attacks ?? []).map((a) => a.defender);
   const defenders = all.filter((p, i) => all.indexOf(p) === i);
   if (defenders.length > 1) throw new Error("Attacks on several players aren't supported yet");
   return defenders[0] ?? null;
@@ -27,7 +28,7 @@ export function defendingPlayer(state: GameState, cards: CardDatabase): PlayerId
  * attacking them that it can block (CR 509.1a–b). A creature blocks only one attacker (CR 509.1a).
  */
 export function possibleBlocks(state: GameState, chosen: readonly Block[], cards: CardDatabase): Block[] {
-  const defender = defendingPlayer(state, cards);
+  const defender = defendingPlayer(state);
   if (defender === null) return [];
   const attackers = attacksInCombat(state, cards)
     .filter((a) => a.defender === defender)
@@ -43,7 +44,7 @@ export function possibleBlocks(state: GameState, chosen: readonly Block[], cards
 
 /** Asks the defending player for blocks, one at a time, until they finish (CR 509.1). No one is asked if none could. */
 export function declareBlockers(state: GameState, chosen: Block[], cards: CardDatabase): Progress {
-  const defender = defendingPlayer(state, cards);
+  const defender = defendingPlayer(state);
   if (defender === null || (chosen.length === 0 && possibleBlocks(state, chosen, cards).length === 0)) {
     return finishBlockers(state, defender, []);
   }
@@ -64,8 +65,8 @@ export function blockProblem(state: GameState, chosen: readonly Block[], block: 
  */
 export function finishBlockers(state: GameState, defender: PlayerId | null, chosen: readonly Block[]): Progress {
   const active = currentTurn(state).activePlayer;
-  const combat = state.combat ?? { attacks: [], blocks: [], blockersDeclared: false };
-  const declared: GameState = { ...state, combat: { ...combat, blocks: [...chosen], blockersDeclared: true } };
+  const combat = state.combat ?? { attacks: [], blocks: [] };
+  const declared: GameState = { ...state, combat: { ...combat, blocks: [...chosen] } };
   return {
     state: queueWork(declared, { kind: "givePriority", player: active }),
     events: defender === null ? [] : [{ type: "BLOCKERS_DECLARED", player: defender, blocks: [...chosen] }],

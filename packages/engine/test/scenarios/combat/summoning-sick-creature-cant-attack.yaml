@@ -1,4 +1,4 @@
-name: A creature that hasn't been under its controller's control since the turn began can't attack, and isn't asked
+name: A creature that hasn't been under its controller's control since the turn began can't attack
 rules: [CR 302.6, CR 508.1a]
 setup:
   turn: { active: p1, step: main1 }

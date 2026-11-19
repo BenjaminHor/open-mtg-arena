@@ -152,9 +152,7 @@ function beginStep(state: GameState, step: Step): Progress {
       return andThen(progress, finishCleanup);
     case "beginningOfCombat":
       // The combat phase begins (CR 506.1): no attackers or blockers yet. Then priority (CR 507.2).
-      return andThen(progress, (s) =>
-        priorityForActivePlayer({ ...s, combat: { attacks: [], blocks: [], blockersDeclared: false } }),
-      );
+      return andThen(progress, (s) => priorityForActivePlayer({ ...s, combat: { attacks: [], blocks: [] } }));
     case "declareAttackers":
       // CR 508.1, then priority (CR 508.2), queued by the declaration when it's done.
       return andThen(progress, (s) => ({ state: queueWork(s, { kind: "declareAttackers", chosen: [] }), events: [] }));

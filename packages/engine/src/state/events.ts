@@ -43,9 +43,9 @@ export type GameEvent =
   | { type: "STEP_BEGAN"; turn: number; step: Step; activePlayer: PlayerId }
   | { type: "PRIORITY_PASSED"; player: PlayerId } // CR 117.3d
   | { type: "LAND_PLAYED"; player: PlayerId; newId: ObjectId; cardId: CardId } // CR 305.1
-  /** Attackers were declared (CR 508.1), possibly none. */
+  /** Attackers were declared (CR 508.1), possibly none; emitted whenever the step's action happens, asked or not. */
   | { type: "ATTACKERS_DECLARED"; player: PlayerId; attacks: Attack[] }
-  /** Blockers were declared (CR 509.1), possibly none. */
+  /** Blockers were declared (CR 509.1), possibly none; emitted whenever the step's action happens, asked or not. */
   | { type: "BLOCKERS_DECLARED"; player: PlayerId; blocks: Block[] }
   /** A spell became cast (CR 601.2i), with its targets chosen and costs paid. */
   | { type: "SPELL_CAST"; player: PlayerId; object: ObjectId; cardId: CardId }

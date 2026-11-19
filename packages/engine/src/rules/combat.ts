@@ -1,5 +1,6 @@
-// Combat rules questions (CR 506–510): who can attack, who can block what, and who's still in combat. Each restriction
-// is a named check here, so later ones ("can't block", menace, protection) have one place to go (CR 508.1c, 509.1b).
+// Combat rules questions (CR 506–510): who can attack, who can block what, and who's still in combat. Restrictions on
+// one creature ("can't block", protection) are named checks here (CR 508.1c, 509.1b). Rules about the whole
+// declaration (menace, "can't attack alone", requirements, CR 508.1d, 509.1c) will be checked at `finishDeclaring`.
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { Attack, Block } from "../state/combat.ts";
@@ -8,6 +9,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { keywordsOf } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
+import { isFreeOfSummoningSickness } from "./summoning-sickness.ts";
 
 /** A creature permanent (CR 506.3: only creatures attack or block). */
 function isCreaturePermanent(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
@@ -22,7 +24,7 @@ export function canAttack(state: GameState, id: ObjectId, player: PlayerId, card
   const obj = state.objects[id];
   if (obj?.kind !== "card" || !isCreaturePermanent(state, id, cards)) return false;
   if (controllerOf(state, id) !== player || obj.tapped) return false;
-  return obj.controlledSinceTurnStart || keywordsOf(state, id, cards).includes("haste");
+  return isFreeOfSummoningSickness(state, id, cards);
 }
 
 /** Whether `blocker` may block `attacker` (CR 509.1a–b): an untapped creature, obeying evasion abilities. */

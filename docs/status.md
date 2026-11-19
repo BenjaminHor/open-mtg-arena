@@ -126,7 +126,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-13 Combat: declaring attackers and blockers as incremental decisions (CR 508.1, 509.1), summoning sickness and
   haste (CR 302.6, 702.10), flying and reach (CR 702.9, 702.17), combat damage with free division among several
   blockers (CR 510.1c) dealt at once (CR 510.2), `GameState.combat` for the combat phase; the runner's `attack`,
-  `block`, `assign`; 18 combat scenarios (D-040) (2026-11-19).
+  `block`, `assign`; 23 combat scenarios (D-040) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time

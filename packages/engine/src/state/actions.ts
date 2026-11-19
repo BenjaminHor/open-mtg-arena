@@ -1,6 +1,6 @@
 // Actions: every input to the engine. Each one answers the current `PendingDecision`, except `CONCEDE`.
 
-import type { Attack, Block, DamageDivision } from "./combat.ts";
+import type { Attack, Block } from "./combat.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";
 import type { AbilityRef, Target } from "./objects.ts";
@@ -38,5 +38,5 @@ export type Answer =
   | { kind: "declareBlocker"; block: Block }
   /** The declaration of attackers or blockers is complete (it may be empty). */
   | { kind: "finishDeclaring" }
-  /** How the attacker's combat damage is divided among its blockers (CR 510.1c). */
-  | { kind: "assignDamage"; division: DamageDivision };
+  /** How much of the attacker's combat damage goes to the next blocker in the decision's order (CR 510.1c). */
+  | { kind: "assignDamage"; amount: number };

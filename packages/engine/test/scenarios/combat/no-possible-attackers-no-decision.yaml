@@ -12,3 +12,6 @@ steps:
   - expect:
       step: combat.declareAttackers
       pending: { player: p1, kind: priority }
+  - all pass: once
+  - expect:
+      step: combat.end

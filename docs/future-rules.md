@@ -99,6 +99,17 @@ so leaves-the-battlefield triggers (CR 603.10a) must look back at the state befo
 group, not after each move. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
 owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
 
+**More combat (CR 506–511, D-040).**
+*Watch out:* removal from combat is read from the battlefield (an id that's gone left combat). That can't represent
+regeneration, phasing, "remove from combat" effects or control changes, which leave the id on the battlefield, and a
+permanent that stops and starts being a creature would rejoin combat: those need a recorded removed-from-combat set
+(CR 506.4). Rules about a whole declaration (menace, "can't attack alone", requirements, CR 508.1c–d, 509.1b–c) are
+checked at `finishDeclaring`, so a partial declaration can reach a dead end: then `finishDeclaring` must be offered only
+when legal, and the player needs a way to take a pick back. Trample (CR 702.19) lets damage go to the player, so a
+division names the player too, one blocker asks too, and earlier lethal damage counts. First strike (CR 510.4) needs a
+record of which creatures already dealt damage. A creature blocking several attackers needs a list form for the
+scenario `block` step.
+
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 *Watch out:* combat (D-040) throws when attacks go to several players; each defending player will declare blockers
 (CR 509.1) and attacks will need planeswalkers and battles as defenders (CR 506.3). `playersLose` (D-039) throws when a player loses with more than one player left. Leaving the game

@@ -34,13 +34,14 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
       // The game starts in the given step with its turn-based actions done, and the active player gets priority
       // (CR 117.3a). On turn 1 the active player is the starting player, so turn order starts with them (CR 103.1).
       // On later turns it stays in seating order: the starting player isn't known, and it no longer matters.
-      // Starting in the combat phase means its turn-based actions declared no attackers or blockers.
+      // A fixed opening can start in the beginning of combat step (setup validation allows no later combat step):
+      // the combat phase has begun, with no attackers or blockers.
       const inCombat = phaseOf(opening.turn.step) === "combat";
       state = {
         ...state,
         turn: { ...opening.turn },
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
-        combat: inCombat ? { attacks: [], blocks: [], blockersDeclared: false } : null,
+        combat: inCombat ? { attacks: [], blocks: [] } : null,
       };
       const first = queueWork(state, { kind: "givePriority", player: opening.turn.activePlayer });
       return { ok: true, ...advance({ state: first, events: [] }, cards) };

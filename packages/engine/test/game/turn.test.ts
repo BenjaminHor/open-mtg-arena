@@ -44,11 +44,10 @@ function playUntilTurn(game: Game, number: number): Game {
   while ((next.state.turn?.number ?? 0) < number) {
     // A bound, so a bug that stops the turn advancing fails the test instead of hanging the suite.
     if (++actions > 1000) throw new Error(`turn ${number} never began`);
-    const kind = next.state.pending?.kind;
-    if (kind === "discardToHandSize") {
-      const active = next.state.pending?.player ?? "p1";
-      next = answer(next, { kind: "discardToHandSize", object: hand(next.state, active)[0] as `o${number}` });
-    } else if (kind === "declareAttackers" || kind === "declareBlockers") {
+    const pending = next.state.pending;
+    if (pending?.kind === "discardToHandSize") {
+      next = answer(next, { kind: "discardToHandSize", object: hand(next.state, pending.player)[0] as `o${number}` });
+    } else if (pending?.kind === "declareAttackers" || pending?.kind === "declareBlockers") {
       next = answer(next, { kind: "finishDeclaring" }); // no attackers or blockers (M1-13)
     } else {
       next = pass(next);

@@ -154,6 +154,30 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     expect(first(`${negative}  - p1 pass: once\n`)).toMatch(/can't be negative/);
   });
 
+  it("refuses combat steps it can't read, and an assign that doesn't add up", () => {
+    expect(first(`${main1}  - p1 attack: Grizzly Bears\n`)).toMatch(/attack takes a list/);
+    expect(first(`${main1}  - p2 block: [Gray Ogre]\n`)).toMatch(/block takes a map/);
+    expect(first(`${main1}  - p1 assign: { Grizzly Bears: two }\n`)).toMatch(/must be a whole number/);
+    const wurm = at(
+      "main1",
+      "  p1: { battlefield: [Craw Wurm] }\n  p2: { battlefield: [Grizzly Bears, Giant Spider] }\n",
+    );
+    const blocked = `${wurm}  - all pass: until combat.declareAttackers\n  - p1 attack: [Craw Wurm]\n  - all pass: until combat.declareBlockers\n  - p2 block: { Grizzly Bears: Craw Wurm, Giant Spider: Craw Wurm }\n`;
+    expect(
+      first(`${blocked}  - all pass: until combat.damage\n  - p1 assign: { Grizzly Bears: 2, Giant Spider: 3 }\n`),
+    ).toMatch(/must add up to 6, not 5/);
+    expect(first(`${blocked}  - all pass: until combat.damage\n  - p1 assign: { Grizzly Bears: 6 }\n`)).toMatch(
+      /each blocking creature exactly once/,
+    );
+    // A division has no "do nothing", so passing through it fails.
+    expect(first(`${blocked}  - all pass: until main2\n`)).toMatch(/waits for assignDamage/);
+    // A declaration is answered with the attack step, not choose.
+    const twoBears = at("main1", "  p1: { battlefield: [Grizzly Bears, Hill Giant] }\n");
+    expect(first(`${twoBears}  - all pass: until combat.declareAttackers\n  - p1 choose: x\n`)).toMatch(
+      /use the attack, block or assign step/,
+    );
+  });
+
   it("reports format errors as problems", () => {
     expect(first(`${main1.replace("steps:\n", "stepz:\n")}  - p1 pass: once\n`)).toMatch(
       /Unknown top-level key "stepz"/,

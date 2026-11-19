@@ -46,10 +46,10 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
       for (let i = 0; ; i++) {
         const action = combatAction(next.state, step, cards, i);
         if (action === null) return next;
-        const want = JSON.stringify(action);
+        // Compared field by field: the same answer built with keys in another order is the same answer.
         next = apply(
           next,
-          legal(next, step.player, cards, (a) => JSON.stringify(a) === want, step.kind),
+          legal(next, step.player, cards, (a) => deepEqual(a, action), step.kind),
           cards,
           afterEach,
         );

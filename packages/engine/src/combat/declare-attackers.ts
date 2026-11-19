@@ -49,7 +49,7 @@ export function finishAttackers(state: GameState, chosen: readonly Attack[]): Pr
   const active = currentTurn(state).activePlayer;
   let progress: Progress = { state, events: [] };
   for (const { attacker } of chosen) progress = andThen(progress, (s) => tapPermanent(s, attacker));
-  const combat = { attacks: [...chosen], blocks: [], blockersDeclared: false };
+  const combat = { attacks: [...chosen], blocks: [] };
   return andThen(progress, (s) => ({
     state: queueWork({ ...s, combat }, { kind: "givePriority", player: active }),
     events: [{ type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] }],

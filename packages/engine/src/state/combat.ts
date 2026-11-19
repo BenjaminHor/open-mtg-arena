@@ -16,8 +16,6 @@ export type Combat = {
   attacks: Attack[];
   /** Every block declared (CR 509.1g). Empty until blockers are declared. */
   blocks: Block[];
-  /** Whether blockers have been declared, so each attacker is now blocked or unblocked for good (CR 509.1h). */
-  blockersDeclared: boolean;
 };
 
 /** How an attacker blocked by several creatures divides its combat damage among them (CR 510.1c). */

@@ -37,17 +37,25 @@ export type DecisionKind =
    */
   | { kind: "discardToHandSize"; remaining: number; chosen: ObjectId[] }
   /**
-   * Declare attackers (CR 508.1), one creature per answer; `chosen` holds those already chosen. Nothing happens until
-   * the player finishes: then the whole declaration is checked and carried out.
+   * Declare attackers (CR 508.1), one creature per answer; `chosen` holds those already chosen. Each answer is checked
+   * as it's added; nothing happens until the player finishes, and then the declaration is carried out.
    */
   | { kind: "declareAttackers"; chosen: Attack[] }
   /** Declare blockers (CR 509.1), one block per answer, the same way. */
   | { kind: "declareBlockers"; chosen: Block[] }
   /**
    * Divide an attacker's combat damage among the creatures blocking it (CR 510.1c), in any way that adds up to
-   * `amount`. Asked for each attacker with two or more blockers; `divided` holds the attackers already divided.
+   * `amount`. One answer per blocker, in `blockers` order, giving it 0 up to what's left; the last blocker gets the
+   * rest. `assigned` holds the amounts given so far; `divided`, the attackers already divided.
    */
-  | { kind: "assignDamage"; attacker: ObjectId; blockers: ObjectId[]; amount: number; divided: AttackerDivision[] }
+  | {
+      kind: "assignDamage";
+      attacker: ObjectId;
+      blockers: ObjectId[];
+      amount: number;
+      assigned: number[];
+      divided: AttackerDivision[];
+    }
   /** While casting: choose the target for this instance of "target" (CR 601.2c). */
   | { kind: "chooseTarget"; spell: ObjectId; instance: number }
   /**

@@ -30,6 +30,7 @@ export { type Characteristics, characteristics } from "./rules/characteristics.t
 export { controllerOf } from "./rules/controller.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";
+export type { Attack, AttackerDivision, Block, Combat, DamageDivision } from "./state/combat.ts";
 export type { DecisionKind, PendingDecision } from "./state/decisions.ts";
 export type { ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
 export type { GameEvent } from "./state/events.ts";
