@@ -24,6 +24,8 @@ export const BITE = "test-bite";
 export const STATUE = "test-statue";
 /** Not a real card: a creature with haste and a {T} mana ability, for CR 702.10c. */
 export const HASTY_ELF = "test-hasty-elf";
+/** Not a real card: an activated ability with a target and a damage source, which nothing in the M1 pool has. */
+export const PINGER = "test-pinger";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -281,6 +283,31 @@ export const TEST_CARDS: CardDatabase = {
       keywords: ["haste"],
       abilities: [
         { kind: "activated", cost: [{ kind: "tap" }], targets: [], effects: [{ op: "addMana", mana: "G", amount: 1 }] },
+      ],
+    },
+  }),
+  [PINGER]: card(PINGER, {
+    printed: {
+      name: "Pinger",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Goblin"],
+      power: 1,
+      toughness: 1,
+    },
+    def: {
+      name: "Pinger",
+      oracle: "{R}: This creature deals 1 damage to any target.",
+      abilities: [
+        {
+          kind: "activated",
+          cost: [{ kind: "mana", cost: [{ kind: "colored", color: "R" }] }],
+          targets: [{ kind: "anyTarget" }],
+          effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
+        },
       ],
     },
   }),
