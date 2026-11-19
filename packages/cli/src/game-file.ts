@@ -73,3 +73,13 @@ export function newGameFile(setup: GameSetup, cards: CardDatabase): GameFile {
   const { state } = replay(setup, [], cards);
   return { format: FORMAT, version: ENGINE_VERSION, setup, actions: [], state };
 }
+
+/**
+ * A game file as text with one action per line, so a diff shows which actions changed: `head`'s fields first, each on
+ * one line, then the actions. Saved replays and golden games are written this way.
+ */
+export function actionPerLineText(head: Record<string, unknown>, actions: readonly Action[]): string {
+  const fields = Object.entries(head).map(([key, value]) => `  ${JSON.stringify(key)}: ${JSON.stringify(value)}`);
+  const lines = actions.map((a) => `    ${JSON.stringify(a)}`).join(",\n");
+  return `{\n${fields.join(",\n")},\n  "actions": [\n${lines}\n  ]\n}\n`;
+}

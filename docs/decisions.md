@@ -536,3 +536,21 @@ every schema change and every change D-024 lists bumps it.
   `cli/test/replays.test.ts` replays each one (the engine's own tests use test cards, not the pool, as scenarios do,
   D-033). `pnpm replays:update` rewrites the hashes after an intended change (say why in the commit), and fills in
   the hash of a game file newly copied there.
+
+**D-047: Golden games** · 2026-11-19 · accepted
+- A golden game is a game file in `packages/engine/test/golden/` (`<name>.json`: setup, actions, and the recipe that
+  made them: agent, agent seed, turn cap, description) plus its log (`<name>.log`: the CLI's brief event log, one
+  event per line). `cli/test/golden.test.ts` replays the actions and compares the log as text, so a failure is a
+  line diff of what changed. If an action is now rejected, the log stops there with a `!! action N is rejected` line
+  instead of an exception, so the diff still shows where the game went differently.
+- `pnpm golden:update` keeps a game's actions when they still play out to where the game stopped, and otherwise plays
+  it again from its recipe; it reports per game "log changed", "played again from its recipe (why; where the
+  actions differ)", "actions kept; the recipe now plays differently", or "file rewritten (version or layout)", for
+  the commit message. A recipe that stops anywhere but the game's end or its turn cap is an error. `pnpm golden:add --decks a,b --seed N` adds one between prebuilt decks.
+- Four games for M1: red-aggro against green-stompy twice (each deck seated first once) and each deck against itself;
+  between them every pool card is played, cast or activated, which a test checks. Seeds were picked for that (the
+  green mirror at seed 33 is one that casts both Craw Wurm and Spined Wurm).
+- The players are the random agents until the AI exists (M2), so the logs are noisy (agents often start a cast and
+  cancel it). When the AI arrives, regenerate the golden games with it.
+- Saved replays (D-046) check a final-state hash; golden games check the whole log. Both stay: a replay is the
+  compact form for bug reports, a golden game the readable one for engine changes.

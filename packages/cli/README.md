@@ -19,6 +19,8 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
   checked after every action, including `scrambleHidden` for views), `run-game.ts` (`fuzzGame`: one seed, one game),
   `run-fuzz.ts` (many games, failures written to `fuzz-failures/`).
 - `src/replays.ts`: the saved replays in `packages/engine/test/replays/` and `pnpm replays:update`.
+- `src/golden.ts`: the golden games in `packages/engine/test/golden/`, `pnpm golden:update` and `pnpm golden:add`
+  (D-047).
 
 ```sh
 pnpm cli --help
@@ -31,5 +33,6 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 `pnpm test` runs this package's tests along with the rest: `test/cli.test.ts` plays games through the commands,
 including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games
 replay exactly), `test/log-inspect-replay.test.ts`, `test/fuzz.test.ts` (the checks, failure files, and the short
-fuzz `pnpm check` runs) and `test/replays.test.ts` (every saved replay) cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root,
-where pnpm runs scripts.
+fuzz `pnpm check` runs), `test/replays.test.ts` (every saved replay) and `test/golden.test.ts` (every golden game's
+log) cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo
+root, where pnpm runs scripts.

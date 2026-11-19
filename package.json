@@ -16,6 +16,8 @@
     "test:scenarios": "vitest run --project scenarios",
     "fuzz": "node packages/cli/src/fuzz.ts",
     "replays:update": "node packages/cli/src/replays.ts",
+    "golden:update": "node packages/cli/src/golden.ts update",
+    "golden:add": "node packages/cli/src/golden.ts add",
     "cli": "node packages/cli/src/main.ts",
     "cards:fetch": "node --use-env-proxy packages/cards/scripts/fetch.ts",
     "cards:extract": "node packages/cards/scripts/extract.ts"

@@ -7,7 +7,21 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (none: M1-19 next)
+- M1-19 Golden games, coverage report and benchmarks (plan, 2026-11-19). docs/testing.md sections 4 to 6. Three PRs:
+  1. Golden games (done, D-047; PR #17, BenjaminHor/open-mtg-arena#17). Four games between the prebuilt decks (seeds 1,
+     2, 3, 33), each a game file with its recipe plus its brief log; `pnpm golden:update` keeps actions that still
+     play out and otherwise plays the game again from its recipe; `pnpm golden:add` adds one. Accepted: doubled mana
+     shows as new "unspent {R} empties" lines in the diff. Rules-judge exit review of casting, priority, SBAs and
+     combat is running; its fixes may change the logs (`pnpm golden:update`).
+  2. Coverage report. `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`: rules cited in code
+     (`packages/*/src`), rules tested by scenarios (`rules:` lists), and gaps (cited, not tested), plus interaction
+     matrix cells marked "not yet". A test fails on a gap not in the committed report. The matrix README in
+     `packages/engine/test/scenarios/interactions/` for the M1 mechanics. Accept: removing a scenario fails the check.
+  3. `pnpm bench` against `bench/baseline.json` (applyAction on typical states, a full random game, legalActions and
+     characteristics on a busy board), failing above 20% slower; budgets from architecture.md. Accept: a deliberate
+     slowdown fails it.
+  - Future impact: golden logs change whenever event text or rules change, so the recipe-based regenerate keeps them
+    cheap to update; the coverage report's parser must accept every citation form used (`CR 702.19c`, ranges later).
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -23,8 +37,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Local setup: Node 26 (`.nvmrc`) and pnpm 10.34.9 (`packageManager`). The "open-mtg-arena" environment's setup
   script installs both into `/opt/node26` and runs `pnpm install`. Shells there start on an older Node, so run
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
-- `pnpm check` is typecheck + lint + tests, which include a short fuzz (seeds 1 to 6, M1-18). Its other parts in
-  `docs/testing.md` join as they're built: golden games and the coverage check (M1-19).
+- `pnpm check` is typecheck + lint + tests, which include a short fuzz (seeds 1 to 6, M1-18), the saved replays and
+  the golden games. The coverage check joins in M1-19's second PR.
 - Scenarios: write new rules tests as YAML in `packages/engine/test/scenarios/<area>/` (testing.md). Extend the runner
   (`packages/scenarios`) and testing.md together when a task adds steps (`play`, `cast`, `activate`, `attack`, `block`).
   The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
@@ -73,9 +87,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- M1-19 Golden games, coverage report and benchmarks (docs/milestones/m1-engine-foundations.md): golden games reusing
-  the event log, `pnpm coverage:rules` and its check in `pnpm check`, the interaction matrix README, `pnpm bench` with
-  a baseline. Then the M1 exit criteria with the owner.
+- After M1-19: the M1 exit criteria with the owner (docs/milestones/m1-engine-foundations.md), then the M2 spec.
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -147,6 +159,16 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- **M1 exit criterion "no rule cited in code without a scenario" (asked 2026-11-19; not blocking yet).** A first count:
+  the engine and card code cite 290 rules; scenarios cover 156; 49 more are covered only by TypeScript unit tests
+  (player views, card data parsing, damage helpers: things a scenario can't express); 85 have no test at all. Of those
+  85, many are type-definition notes or mentions of rules not built yet (CR 614 replacement effects, CR 800.4 leaving
+  the game), and some are real gaps (attack restrictions CR 508.1b–d, CR 510.3, CR 608.2d/e).
+  Recommended: count a rule as tested when a scenario *or* a unit test cites it (the report lists the two separately),
+  write mentions of rules not yet built as `(later: CR 614)` so they aren't counted as implemented, and close the real
+  gaps with scenarios. The criterion would read "no rule cited in code without a test". The alternative is the literal
+  reading: a scenario for every cited rule, which needs the runner to express views and card data, or the citations
+  removed. Until the owner decides, the report shows both kinds and the check fails on rules with neither.
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
