@@ -74,7 +74,10 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
       case "choose":
       case "activate":
       case "play":
-      case "cast": {
+      case "cast":
+      case "attack":
+      case "block":
+      case "assign": {
         const next = steps[i + 1];
         if (next?.kind === "expectError") {
           const problem = rejected(game, step, next.code, cards);
@@ -89,6 +92,11 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
           return [`${where}: ${error instanceof Error ? error.message : String(error)}`];
         }
         break;
+      }
+      default: {
+        // Every step kind has a case above: a new kind fails to compile here instead of being skipped silently.
+        const unhandled: never = step;
+        throw new Error(`unhandled step ${JSON.stringify(unhandled)}`);
       }
     }
   }

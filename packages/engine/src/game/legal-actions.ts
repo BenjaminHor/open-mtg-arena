@@ -2,6 +2,9 @@
 // accepted by applyAction, and the scenario runner, the CLI and the AI choose only from this list.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { allDivisions } from "../combat/combat-damage.ts";
+import { possibleAttacks } from "../combat/declare-attackers.ts";
+import { possibleBlocks } from "../combat/declare-blockers.ts";
 import { manaAbilityProblem } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
@@ -38,6 +41,22 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
           ...answer,
           answer: { kind: "discardToHandSize", object },
         }));
+    case "declareAttackers": {
+      const add = possibleAttacks(state, pending.chosen, cards).map(
+        (attack): Action => ({ ...answer, answer: { kind: "declareAttacker", attack } }),
+      );
+      return [...add, { ...answer, answer: { kind: "finishDeclaring" } }];
+    }
+    case "declareBlockers": {
+      const add = possibleBlocks(state, pending.chosen, cards).map(
+        (block): Action => ({ ...answer, answer: { kind: "declareBlocker", block } }),
+      );
+      return [...add, { ...answer, answer: { kind: "finishDeclaring" } }];
+    }
+    case "assignDamage":
+      return allDivisions(pending.amount, pending.blockers).map(
+        (division): Action => ({ ...answer, answer: { kind: "assignDamage", division } }),
+      );
     case "chooseTarget": {
       const casting = state.casting;
       const spec = casting === null ? undefined : targetSpecsOf(state, casting.spell, cards)[pending.instance];

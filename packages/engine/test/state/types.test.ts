@@ -71,6 +71,12 @@ describe("discriminated unions", () => {
           return `target ${decision.instance}`;
         case "payMana":
           return `pay for ${decision.spell}`;
+        case "declareAttackers":
+          return `attackers so far: ${decision.chosen.length}`;
+        case "declareBlockers":
+          return `blockers so far: ${decision.chosen.length}`;
+        case "assignDamage":
+          return `divide ${decision.amount}`;
         default:
           return assertNever(decision);
       }

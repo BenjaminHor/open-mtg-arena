@@ -97,6 +97,7 @@ function emptyGame(setup: GameSetup): GameState {
     effects: [],
     pregame: null,
     passesInSuccession: 0,
+    combat: null,
     casting: null,
     work: [],
     pending: null,

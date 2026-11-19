@@ -19,7 +19,7 @@ export function playersLose(state: GameState, losses: readonly Loss[]): Progress
   }
   const result = { winner: left[0] ?? null, losses: [...losses], turn: currentTurn(state).number };
   return {
-    state: { ...state, result, pending: null, work: [], casting: null },
+    state: { ...state, result, pending: null, work: [], casting: null, combat: null },
     events: [
       ...losses.map((l) => ({ type: "PLAYER_LOST", player: l.player, reason: l.reason }) as const),
       { type: "GAME_ENDED", result },

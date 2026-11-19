@@ -1,8 +1,10 @@
-// The "summoning sickness" rule (CR 302.6, 602.5a), in one place, so haste (CR 702.10, M1-13) plugs in here.
+// The "summoning sickness" rule (CR 302.6, 602.5a) for {T} abilities, with haste (CR 702.10c). Attacking has the same
+// rule, in `rules/combat.ts` (`canAttack`).
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import { keywordsOf } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 
 /**
@@ -14,5 +16,5 @@ export function canUseTapAbilities(state: GameState, id: ObjectId, cards: CardDa
   const obj = state.objects[id];
   if (obj?.kind !== "card") return false;
   if (!cardTypesOf(state, id, cards).includes("creature")) return true;
-  return obj.controlledSinceTurnStart;
+  return obj.controlledSinceTurnStart || keywordsOf(state, id, cards).includes("haste");
 }

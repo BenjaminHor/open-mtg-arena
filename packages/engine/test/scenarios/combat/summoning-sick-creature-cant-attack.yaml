@@ -1,0 +1,13 @@
+name: A creature that hasn't been under its controller's control since the turn began can't attack, and isn't asked
+rules: [CR 302.6, CR 508.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Grizzly Bears, sick: true }, Hill Giant]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - expect error: illegalAction
+  - p1 attack: [Hill Giant]
+  - expect:
+      p1:Hill Giant.tapped: true

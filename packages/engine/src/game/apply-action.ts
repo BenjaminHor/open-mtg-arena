@@ -2,6 +2,9 @@
 // decision, applies it, and returns the new state and events. An illegal action changes nothing.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { divisionProblem } from "../combat/combat-damage.ts";
+import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
+import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { activateManaAbility, manaAbilityProblem } from "../mana/activate.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -114,6 +117,31 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (answer.kind !== "payMana") return mismatch;
       const paid = payForSpell(answered, pending.cost, answer.payment);
       return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
+    }
+    case "declareAttackers": {
+      if (answer.kind === "finishDeclaring") return { ok: true, ...finishAttackers(answered, pending.chosen) };
+      if (answer.kind !== "declareAttacker") return mismatch;
+      const problem = attackProblem(answered, pending.chosen, answer.attack, cards);
+      if (problem !== null) return error("illegalAction", problem);
+      const chosen = [...pending.chosen, answer.attack];
+      return { ok: true, state: queueWork(answered, { kind: "declareAttackers", chosen }), events: [] };
+    }
+    case "declareBlockers": {
+      if (answer.kind === "finishDeclaring") {
+        return { ok: true, ...finishBlockers(answered, pending.player, pending.chosen) };
+      }
+      if (answer.kind !== "declareBlocker") return mismatch;
+      const problem = blockProblem(answered, pending.chosen, answer.block, cards);
+      if (problem !== null) return error("illegalAction", problem);
+      const chosen = [...pending.chosen, answer.block];
+      return { ok: true, state: queueWork(answered, { kind: "declareBlockers", chosen }), events: [] };
+    }
+    case "assignDamage": {
+      if (answer.kind !== "assignDamage") return mismatch;
+      const problem = divisionProblem(pending.blockers, pending.amount, answer.division);
+      if (problem !== null) return error("illegalAction", problem);
+      const divisions = [...pending.divided, { attacker: pending.attacker, division: answer.division }];
+      return { ok: true, state: queueWork(answered, { kind: "combatDamage", divisions }), events: [] };
     }
     case "priority":
       return mismatch;

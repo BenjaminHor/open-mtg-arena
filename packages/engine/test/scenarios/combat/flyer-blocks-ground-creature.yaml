@@ -1,0 +1,17 @@
+name: A creature with flying can block a creature without flying
+rules: [CR 702.9b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears]
+  p2:
+    battlefield: [Furnace Whelp]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Furnace Whelp: Grizzly Bears }
+  - all pass: until combat.damage
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+      p2.graveyard: [Furnace Whelp]

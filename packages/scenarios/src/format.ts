@@ -25,6 +25,12 @@ export type ScenarioStep =
   | { kind: "cast"; player: string; card: string; targets: unknown[]; pay: unknown }
   /** Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. */
   | { kind: "activate"; player: string; card: string; ability: number | null }
+  /** Declare attackers (CR 508.1): the player's creatures by name or reference (`Grizzly Bears#2`), maybe none. */
+  | { kind: "attack"; player: string; attackers: string[] }
+  /** Declare blockers (CR 509.1): pairs of the player's blocker and the attacker it blocks, maybe none. */
+  | { kind: "block"; player: string; blocks: [string, string][] }
+  /** Divide an attacker's combat damage among its blockers (CR 510.1c): pairs of blocker and amount. */
+  | { kind: "assign"; player: string; division: [string, number][] }
   | { kind: "expect"; expectations: Record<string, unknown> }
   | { kind: "expectError"; code: string }
   /** A step word the format has but the runner doesn't support yet, kept whole for the task that adds it. */
@@ -41,10 +47,7 @@ export type ScenarioStep =
 export const TOP_KEYS = ["name", "rules", "setup", "steps", "expect setup error"];
 
 /** Step words the format defines that later tasks add to the runner, with the task. */
-export const COMING_STEP_WORDS: Record<string, string> = {
-  attack: "M1-13",
-  block: "M1-13",
-};
+export const COMING_STEP_WORDS: Record<string, string> = {};
 
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
@@ -133,6 +136,28 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
     const targets = raw.targets ?? [];
     if (!Array.isArray(targets)) throw new Error(`${where}: targets is a list`);
     return { kind: "cast", player, card: String(value), targets, pay: raw.pay };
+  }
+  if (word === "attack") {
+    noOptions();
+    if (!Array.isArray(value)) throw new Error(`${where}: attack takes a list of creatures, like [Grizzly Bears]`);
+    return { kind: "attack", player, attackers: value.map(String) };
+  }
+  if (word === "block") {
+    noOptions();
+    if (!isRecord(value))
+      throw new Error(`${where}: block takes a map of blocker to attacker, like { Giant Spider: Craw Wurm }`);
+    return { kind: "block", player, blocks: Object.entries(value).map(([b, a]): [string, string] => [b, String(a)]) };
+  }
+  if (word === "assign") {
+    noOptions();
+    if (!isRecord(value))
+      throw new Error(`${where}: assign takes a map of blocker to damage, like { Grizzly Bears: 2 }`);
+    const division = Object.entries(value).map(([b, n]): [string, number] => {
+      if (typeof n !== "number" || !Number.isInteger(n))
+        throw new Error(`${where}: damage for ${b} must be a whole number`);
+      return [b, n];
+    });
+    return { kind: "assign", player, division };
   }
   if (word === "activate") {
     const allowed = ["ability"];

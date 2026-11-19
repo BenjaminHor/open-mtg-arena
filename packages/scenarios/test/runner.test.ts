@@ -188,9 +188,6 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
   });
 
   it("says when a step or expectation arrives in a later task, keeping a step's options", () => {
-    expect(problems(`${main1}  - p1 attack: [Grizzly Bears]\n`)).toStrictEqual([
-      'step 1: "attack" steps arrive in M1-13',
-    ]);
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
     expect(first(`${main1}  - expect: { "p1:Forest.counters": {} }\n`)).toMatch(/arrives in M1-13/);
   });

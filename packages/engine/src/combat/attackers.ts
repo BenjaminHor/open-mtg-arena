@@ -3,10 +3,10 @@
 import type { GameState } from "../state/game-state.ts";
 
 /**
- * Whether any creature was declared as an attacker or put onto the battlefield attacking this combat. Declaring
- * attackers arrives in M1-13; until then no creature ever attacks, so the declare blockers and combat damage steps
- * are always skipped (CR 508.8).
+ * Whether any creature was declared as an attacker this combat (CR 508.8), even if it has since left combat. When none
+ * was, the declare blockers and combat damage steps are skipped. Creatures put onto the battlefield attacking will
+ * count too, once something can do that.
  */
-export function anyAttackers(_state: GameState): boolean {
-  return false;
+export function anyAttackers(state: GameState): boolean {
+  return (state.combat?.attacks.length ?? 0) > 0;
 }

@@ -1,0 +1,19 @@
+name: An unblocked attacker deals combat damage to the player it attacks, and attacking taps it
+rules: [CR 508.1a, CR 508.1f, CR 509.1h, CR 510.1b, CR 510.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - expect:
+      pending: { player: p1, kind: declareAttackers }
+  - p1 attack: [Grizzly Bears]
+  - expect:
+      p1:Grizzly Bears.tapped: true
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: ATTACKERS_DECLARED }]
+  - all pass: until combat.damage
+  - expect:
+      p2.life: 18
+      events contains: [{ type: DAMAGE_DEALT, combat: true, to: { kind: player, player: p2 }, amount: 2 }]

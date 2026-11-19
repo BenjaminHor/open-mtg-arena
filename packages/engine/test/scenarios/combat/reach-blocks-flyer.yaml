@@ -1,0 +1,18 @@
+name: A creature with reach can block a creature with flying
+rules: [CR 702.17b, CR 702.9b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Furnace Whelp]
+  p2:
+    battlefield: [Giant Spider]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Furnace Whelp]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Giant Spider: Furnace Whelp }
+  - all pass: until combat.damage
+  - expect:
+      p2.life: 20
+      p1.graveyard: [Furnace Whelp]
+      p2:Giant Spider.damage: 2

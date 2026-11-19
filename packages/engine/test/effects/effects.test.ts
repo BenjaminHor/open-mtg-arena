@@ -153,8 +153,8 @@ describe("dealing damage (CR 120)", () => {
     const result = dealDamage(
       state,
       [
-        { source: bears, to: { kind: "player", player: "p2" }, amount: 0 },
-        { source: bears, to: { kind: "object", object: bears }, amount: 0 },
+        { source: bears, to: { kind: "player", player: "p2" }, amount: 0, combat: false },
+        { source: bears, to: { kind: "object", object: bears }, amount: 0, combat: false },
       ],
       TEST_CARDS,
     );
@@ -167,8 +167,8 @@ describe("dealing damage (CR 120)", () => {
     const result = dealDamage(
       game.state,
       [
-        { source: bears, to: { kind: "player", player: "p1" }, amount: 2 },
-        { source: bears, to: { kind: "object", object: bears }, amount: 1 },
+        { source: bears, to: { kind: "player", player: "p1" }, amount: 2, combat: false },
+        { source: bears, to: { kind: "object", object: bears }, amount: 1, combat: false },
       ],
       TEST_CARDS,
     );
@@ -181,7 +181,11 @@ describe("dealing damage (CR 120)", () => {
   it("deals no damage to a creature that has left the battlefield", () => {
     const { game, bears } = setup(GROWTH);
     const gone = moveCard(game.state, bears, { zone: "graveyard" }).state;
-    const result = dealDamage(gone, [{ source: bears, to: { kind: "object", object: bears }, amount: 3 }], TEST_CARDS);
+    const result = dealDamage(
+      gone,
+      [{ source: bears, to: { kind: "object", object: bears }, amount: 3, combat: false }],
+      TEST_CARDS,
+    );
     expect(result.events).toStrictEqual([]);
     expect(result.state).toStrictEqual(gone);
   });
@@ -191,7 +195,7 @@ describe("dealing damage (CR 120)", () => {
     const mountain = game.state.zones.battlefield[0] as ObjectId;
     const result = dealDamage(
       game.state,
-      [{ source: bears, to: { kind: "object", object: mountain }, amount: 3 }],
+      [{ source: bears, to: { kind: "object", object: mountain }, amount: 3, combat: false }],
       TEST_CARDS,
     );
     expect(result.events).toStrictEqual([]);

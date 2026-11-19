@@ -1,0 +1,14 @@
+name: With no creature able to attack, no one is asked and the combat damage steps are skipped
+rules: [CR 508.1a, CR 508.8]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Grizzly Bears, sick: true }]
+steps:
+  - p1 pass: once
+  - p2 pass: once
+  - p1 pass: once
+  - p2 pass: once
+  - expect:
+      step: combat.declareAttackers
+      pending: { player: p1, kind: priority }

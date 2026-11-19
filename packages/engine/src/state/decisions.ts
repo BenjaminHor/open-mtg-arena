@@ -4,6 +4,7 @@
 // Each task adds the kinds it needs (casting choices, attackers, blockers, dividing damage, ...).
 
 import type { ManaCost } from "../cards/types.ts";
+import type { Attack, AttackerDivision, Block } from "./combat.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 
 export type PendingDecision = {
@@ -35,6 +36,18 @@ export type DecisionKind =
    * they're discarded together, as one action.
    */
   | { kind: "discardToHandSize"; remaining: number; chosen: ObjectId[] }
+  /**
+   * Declare attackers (CR 508.1), one creature per answer; `chosen` holds those already chosen. Nothing happens until
+   * the player finishes: then the whole declaration is checked and carried out.
+   */
+  | { kind: "declareAttackers"; chosen: Attack[] }
+  /** Declare blockers (CR 509.1), one block per answer, the same way. */
+  | { kind: "declareBlockers"; chosen: Block[] }
+  /**
+   * Divide an attacker's combat damage among the creatures blocking it (CR 510.1c), in any way that adds up to
+   * `amount`. Asked for each attacker with two or more blockers; `divided` holds the attackers already divided.
+   */
+  | { kind: "assignDamage"; attacker: ObjectId; blockers: ObjectId[]; amount: number; divided: AttackerDivision[] }
   /** While casting: choose the target for this instance of "target" (CR 601.2c). */
   | { kind: "chooseTarget"; spell: ObjectId; instance: number }
   /**
