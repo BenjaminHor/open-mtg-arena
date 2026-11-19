@@ -10,7 +10,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 - M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
   casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
   (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (M2 is now rules depth,
-  D-051; Claude Code drafts `docs/milestones/m2-rules-depth.md` for that review), then tag `m1`.
+  D-051; the draft is `docs/milestones/m2-rules-depth.md`, with two open questions: which set, and planeswalkers in M2),
+  then tag `m1`.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
