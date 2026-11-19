@@ -1,151 +1,142 @@
-// playerView and eventsFor (CR 400.2, 401.2, 402.3): a view must not change when only hidden information changes, and
-// events that would reveal a hidden card don't.
+// playerView and eventsFor (CR 400.2, 401.2, 401.3, 402.3). That a view doesn't change when only hidden information
+// changes is tested as a property after every action of every fuzzed game: the `viewsLeakNothing` check in
+// packages/cli/src/fuzz/checks.ts, which `pnpm test` runs on a short fuzz. These tests check the shapes and each case.
 
 import { describe, expect, it } from "vitest";
 import {
-  type Action,
-  applyAction,
-  createGame,
   eventsFor,
   type GameEvent,
   type GameState,
-  legalActions,
   type ObjectId,
   type PlayerId,
   playerView,
 } from "../../src/index.ts";
-import { TEST_CARDS } from "../support/cards.ts";
-import { playerSetup } from "../support/game.ts";
+import { answer, type Game, standardSetup, start } from "../support/game.ts";
 
-/** A little game between two decks of the test cards, played by picking legal actions with a simple seeded LCG. */
-function playedStates(seed: number, actions: number): { states: GameState[]; events: GameEvent[][] } {
-  const deck = (cards: string[]) => Array.from({ length: 20 }, (_, i) => cards[i % cards.length] as string);
-  const created = createGame(
-    {
-      seed,
-      players: [
-        playerSetup("p1", { library: deck(["mountain", "shock", "grizzly-bears", "mountain", "volcanic-hammer"]) }),
-        playerSetup("p2", { library: deck(["forest", "llanowar-elves", "giant-growth", "forest", "grizzly-bears"]) }),
-      ],
-      opening: { kind: "standard", firstPlayer: null },
-      ruleModifiers: [],
-    },
-    TEST_CARDS,
-  );
-  if (!created.ok) throw new Error(created.error.message);
-  const states = [created.state];
-  const events = [created.events];
-  let state = created.state;
-  let r = seed;
-  for (let i = 0; i < actions && state.pending !== null; i++) {
-    const options = legalActions(state, state.pending.player, TEST_CARDS);
-    r = (r * 1103515245 + 12345) % 2147483648;
-    const result = applyAction(state, options[r % options.length] as Action, TEST_CARDS);
-    if (!result.ok) throw new Error(result.error.message);
-    state = result.state;
-    states.push(state);
-    events.push(result.events);
-  }
-  return { states, events };
+const hand = (s: GameState, p: PlayerId) => s.zones.players[p]?.hand ?? [];
+const library = (s: GameState, p: PlayerId) => s.zones.players[p]?.library ?? [];
+
+/**
+ * p1 goes first and keeps; p2 mulligans once and puts a card on the bottom (CR 103.5); then, unless `keepAgain` is
+ * false, p2 keeps and turn 1 begins.
+ */
+function p2Mulligans(keepAgain = true): Game {
+  let game = start(standardSetup({ opening: { kind: "standard", firstPlayer: "p1" } }));
+  game = answer(game, { kind: "mulligan", choice: "keep" });
+  game = answer(game, { kind: "mulligan", choice: "mulligan" });
+  game = answer(game, { kind: "mulliganBottom", object: hand(game.state, "p2")[0] as ObjectId });
+  if (!keepAgain) return game;
+  game = answer(game, { kind: "mulligan", choice: "keep" });
+  expect(game.state.turn?.number).toBe(1);
+  return game;
 }
 
-/** The same game with everything `viewer` can't see changed: hidden cards' identities, library order, seed, RNG. */
-function scrambled(state: GameState, viewer: PlayerId): GameState {
-  const objects = { ...state.objects };
-  const hidden: ObjectId[] = state.turnOrder.flatMap((p) => [
-    ...(state.zones.players[p]?.library ?? []),
-    ...(p === viewer ? [] : (state.zones.players[p]?.hand ?? [])),
-  ]);
-  for (const [i, id] of hidden.entries()) {
-    const obj = objects[id];
-    if (obj?.kind === "card")
-      objects[id] = { ...obj, oracleId: i % 2 === 0 ? "forest" : "shock", cardId: `c${9000 + i}` };
-  }
-  const players = { ...state.zones.players };
-  for (const p of state.turnOrder) {
-    const z = players[p];
-    if (z !== undefined) players[p] = { ...z, library: [...z.library].reverse() };
-  }
-  return {
-    ...state,
-    objects,
-    zones: { ...state.zones, players },
-    rng: [state.rng[0] ^ 0x5a5a5a5a, state.rng[1], state.rng[2], state.rng[3]],
-    setup: {
-      ...state.setup,
-      seed: state.setup.seed + 1,
-      players: state.setup.players.map((p) => ({ ...p, library: [] })),
-    },
-    nextId: state.nextId + 1000,
-    work: [],
-  };
-}
+const handToLibrary = (e: GameEvent, player: PlayerId) =>
+  e.type === "ZONE_CHANGED" && e.from.zone === "hand" && e.from.player === player && e.to.zone === "library";
 
 describe("playerView (CR 400.2)", () => {
-  it("doesn't change when only what the viewer can't see changes, at every state of a game", () => {
-    for (const seed of [1, 2, 3]) {
-      const { states } = playedStates(seed, 400);
-      for (const state of states) {
-        for (const viewer of state.turnOrder) {
-          expect(playerView(scrambled(state, viewer), viewer)).toStrictEqual(playerView(state, viewer));
-        }
-      }
-    }
+  const { state } = p2Mulligans();
+  const view = playerView(state, "p1");
+
+  it("lists the viewer's own hand; other hands and every library are only counts (CR 401.3, 402.3)", () => {
+    expect(view.zones.players.p1).toStrictEqual({
+      librarySize: library(state, "p1").length,
+      handSize: 7,
+      hand: hand(state, "p1"),
+      graveyard: [],
+    });
+    expect(view.zones.players.p2).toStrictEqual({ librarySize: 34, handSize: 6, hand: null, graveyard: [] });
   });
 
-  it("shows the viewer's own hand, other hands and every library only as counts, and no RNG or setup", () => {
-    const { states } = playedStates(4, 30);
-    const state = states.at(-1) as GameState;
-    const view = playerView(state, "p1");
-    expect(view.zones.players.p1?.hand).toStrictEqual(state.zones.players.p1?.hand);
-    expect(view.zones.players.p2?.hand).toBe(state.zones.players.p2?.hand.length);
-    expect(view.zones.players.p1?.library).toBe(state.zones.players.p1?.library.length);
-    for (const id of state.zones.players.p2?.hand ?? []) expect(view.objects[id]).toBeUndefined();
-    expect(JSON.stringify(view)).not.toMatch(/"rng"|"seed"|"work"/);
+  it("holds exactly the objects in public zones and the viewer's own hand", () => {
+    const visible = [...state.zones.battlefield, ...hand(state, "p1")];
+    expect(Object.keys(view.objects).sort()).toStrictEqual([...visible].sort());
+  });
+
+  it("leaves out the random generator, the setup and the engine's internals (CR 701.24a)", () => {
+    expect(JSON.stringify(view)).not.toMatch(/"rng"|"seed"|"setup"|"work"|"nextId"|"nextTimestamp"/);
+  });
+
+  it("keeps public facts: the mulligans taken, while the game is starting", () => {
+    expect(playerView(p2Mulligans(false).state, "p1").pregame?.mulligans).toStrictEqual({ p1: 0, p2: 1 });
   });
 });
 
-describe("another player's decision", () => {
-  it("shows only who must decide what, not its details (a hand being discarded, picks so far)", () => {
-    const { states } = playedStates(6, 300);
-    const theirs = states.filter(
-      (s) => s.pending !== null && s.pending.player === "p2" && Object.keys(s.pending).length > 3,
-    );
-    expect(theirs.length).toBeGreaterThan(0);
-    for (const state of theirs) {
-      const pending = state.pending;
-      expect(playerView(state, "p1").pending).toStrictEqual({ id: pending?.id, player: "p2", kind: pending?.kind });
-      expect(playerView(state, "p2").pending).toStrictEqual(pending);
-    }
+describe("decisions in a view", () => {
+  const { state } = p2Mulligans();
+  // p2 is discarding to hand size (CR 514.1) and has picked one card so far.
+  const picked = hand(state, "p2")[2] as ObjectId;
+  const discarding: GameState = {
+    ...state,
+    pending: { id: "d9999", player: "p2", kind: "discardToHandSize", remaining: 1, chosen: [picked] },
+  };
+
+  it("shows the deciding player their decision in full", () => {
+    const view = playerView(discarding, "p2");
+    expect(view.decision).toStrictEqual(discarding.pending);
+    expect(view.waitingFor).toStrictEqual({ id: "d9999", player: "p2", kind: "discardToHandSize" });
+  });
+
+  it("shows another player only who must decide what, not the picks so far", () => {
+    const view = playerView(discarding, "p1");
+    expect(view.decision).toBeNull();
+    expect(view.waitingFor).toStrictEqual({ id: "d9999", player: "p2", kind: "discardToHandSize" });
+    expect(JSON.stringify(view)).not.toContain(picked);
   });
 });
 
 describe("eventsFor", () => {
-  it("hides another player's draws and hidden moves, but not the viewer's own or public ones", () => {
-    const { events } = playedStates(5, 200);
-    const all = events.flat();
-    const draws = all.filter((e) => e.type === "CARD_DRAWN");
-    expect(draws.length).toBeGreaterThan(0);
-    for (const e of draws) {
-      const seen = eventsFor([e], "p1")[0];
-      expect(seen).toStrictEqual(e.player === "p1" ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player });
+  const { events } = p2Mulligans();
+
+  it("hides another player's mulligan: the hand shuffled back and the card put on the bottom (CR 103.5)", () => {
+    const moves = events.filter((e) => handToLibrary(e, "p2"));
+    expect(moves).toHaveLength(8); // seven shuffled back, one to the bottom
+    for (const e of moves) {
+      if (e.type !== "ZONE_CHANGED") throw new Error("a zone change");
+      expect(eventsFor([e], "p1")).toStrictEqual([{ type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to }]);
+      expect(eventsFor([e], "p2")).toStrictEqual([e]);
     }
-    for (const e of all) {
-      if (e.type !== "ZONE_CHANGED") continue;
-      const [seen] = eventsFor([e], "p1");
-      const opponentsHiddenMove =
-        e.from.zone === "library" && e.to.zone === "hand" && "player" in e.to && e.to.player === "p2";
-      if (opponentsHiddenMove) expect(seen).toStrictEqual({ type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to });
-      if (e.to.zone === "stack" || e.to.zone === "battlefield") expect(seen).toStrictEqual(e);
+  });
+
+  it("hides another player's draws, and shows a player their own (CR 121.1, 402.3)", () => {
+    // p2 drew two hands of seven: fourteen CARD_DRAWN events, each with its library-to-hand ZONE_CHANGED.
+    const drawn = events.flatMap((e) => (e.type === "CARD_DRAWN" && e.player === "p2" ? [e] : []));
+    const moved = events.flatMap((e) =>
+      e.type === "ZONE_CHANGED" && e.from.zone === "library" && e.to.zone === "hand" && e.to.player === "p2" ? [e] : [],
+    );
+    expect(drawn).toHaveLength(14);
+    expect(moved).toHaveLength(14);
+    for (const e of drawn) {
+      expect(eventsFor([e], "p1")).toStrictEqual([{ type: "HIDDEN_CARD_DRAWN", player: "p2" }]);
+      expect(eventsFor([e], "p2")).toStrictEqual([e]);
     }
-    // A card put on the bottom after a mulligan moves from hand to library: its owner saw it in hand, so sees the move;
-    // the other player doesn't.
-    const bottom = all.find((e) => e.type === "ZONE_CHANGED" && e.from.zone === "hand" && e.to.zone === "library");
-    if (bottom?.type === "ZONE_CHANGED" && "player" in bottom.from) {
-      const owner = bottom.from.player;
-      const other: PlayerId = owner === "p1" ? "p2" : "p1";
-      expect(eventsFor([bottom], owner)[0]).toStrictEqual(bottom);
-      expect(eventsFor([bottom], other)[0]).toMatchObject({ type: "HIDDEN_CARD_MOVED" });
+    for (const e of moved) {
+      expect(eventsFor([e], "p1")).toStrictEqual([{ type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to }]);
+      expect(eventsFor([e], "p2")).toStrictEqual([e]);
     }
+  });
+
+  it("shows everyone a move to or from a public zone, and a cancelled cast's card (it was on the stack, CR 734.1)", () => {
+    const { state } = p2Mulligans();
+    const card = state.objects[hand(state, "p2")[0] as ObjectId];
+    if (card?.kind !== "card") throw new Error("a card in hand");
+    const cast: GameEvent = {
+      type: "ZONE_CHANGED",
+      from: { zone: "hand", player: "p2" },
+      to: { zone: "stack" },
+      oldId: card.id,
+      newId: "o9999",
+      cardId: card.cardId,
+      object: { ...card, id: "o9999" },
+    };
+    const cancelled = {
+      type: "CAST_CANCELLED",
+      player: "p2",
+      cardId: card.cardId,
+      spell: "o9999",
+      restored: card.id,
+      untapped: [],
+    } as const satisfies GameEvent;
+    expect(eventsFor([cast, cancelled], "p1")).toStrictEqual([cast, cancelled]);
   });
 });

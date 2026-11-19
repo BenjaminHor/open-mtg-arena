@@ -484,12 +484,50 @@ every schema change and every change D-024 lists bumps it.
 - `playerView(state, viewer)` (`engine/src/view/`) is what a player may know: objects in public zones and the viewer's
   own hand (CR 400.2, 402.3); other hands and every library only as counts (CR 401.3); no RNG state, setup, work
   queue or id counters. Libraries are counts, not hidden objects in order: a shuffle keeps object ids, so an ordered
-  id list would let a player follow a card they had seen through a shuffle (CR 401.2, 701.24a). Another player's
-  pending decision shows only who must decide what.
+  id list would let a player follow a card they had seen through a shuffle (CR 401.2, 701.24a). `decision` is the
+  viewer's own pending decision in full; `waitingFor` (id, player, kind) says who must decide what, so another
+  player's picks so far stay hidden. Each player's zones have `handSize` and `librarySize`, and `hand` is the ids for
+  the viewer and null for others: separate fields rather than unions, so code can narrow them.
+- `canSee(zone, viewer)` (`view/visibility.ts`) decides visibility for both, so face-down cards and reveals change one
+  place. A view shares structure with its state (D-021) and must never be changed in place.
 - `eventsFor(events, viewer)` replaces an event that would reveal a hidden card with `HIDDEN_CARD_DRAWN` or
   `HIDDEN_CARD_MOVED`. It's an exhaustive switch, so each new event decides what it reveals.
-- "Leaks nothing" is tested as a property: scrambling everything the viewer can't see (hidden cards' identities,
-  library order, seed, RNG) must leave the view unchanged. The fuzzer checks it on every state.
+- "Leaks nothing" is tested as a property, by the fuzzer's `viewsLeakNothing` check after every action (D-046):
+  scrambling everything the viewer can't see (hidden objects' ids everywhere they appear, their cards and card ids,
+  the order of libraries and other hands, another player's casting details and pending picks, the seed, RNG and
+  internals) must leave the view unchanged, and the filtered events must name no card hidden from the viewer.
+- A card leaving another player's hand for a public zone shows its old id in `ZONE_CHANGED`, so roughly when it
+  entered that hand. That's fair: at a table, players see which card came from where.
 - The CLI's `show --as` stays a display filter (`canSeeHand`): the board text needs `characteristics()`, which reads
   the full state. Hosts and the AI (M2) use the engine's view.
 
+**D-045: Card ids are numbered in a random order** · 2026-11-19 · accepted
+- `createGame` numbers the setup's cards `c1` to `cN` in an order drawn from the game's RNG, before anything else
+  uses it. Numbered in setup order, a public card's id hinted at the cards next to it in the decklist, which sit in
+  hidden libraries and hands (CR 400.2): see `c5` as a Shock in a grouped decklist and `c6` is likely Shock too.
+  Object ids don't need this: a card gets a new object id each time it changes zones (CR 400.7), so a library's
+  object ids never become public.
+- Drawing from the RNG first changed which player the RNG picks to choose who goes first for a given seed, so two
+  scenarios that rely on p1 being picked use seed 2 instead of the default.
+- Tokens (later) need card ids too; they can take `c(N+1)` and up, as they're created in public.
+
+**D-046: The fuzzer and saved replays** · 2026-11-19 · accepted
+- `pnpm fuzz --games N --seed S` plays one game per seed, `S` to `S+N-1`. The seed is the setup's seed and the
+  agents' seed, so `--games 1 --seed <seed>` reruns one game exactly. Even seeds play the prebuilt decks, odd seeds two
+  random 40-card decks from the pool (17 basics mixed at random, 23 random nonland cards). The agent picks a random
+  legal action, one decision in ten the first legal one (which passes, so games move on), and about one game in ten
+  ends in a concession (CR 104.3a), which `legalActions` never lists (D-042).
+- Checks after every action (`cli/src/fuzz/checks.ts`): the scenario runner's `invariantProblems`; life changes
+  equal the `LIFE_LOST` events (when life gain arrives, count its event too); views and filtered events leak nothing
+  (D-044). Exceptions from the engine are failures, not crashes. A game past 200 turns is flagged as a likely loop.
+  Determinism is checked once per game, by replaying the whole log at the end: replaying after every action would
+  make a game quadratic, and any divergence shows in the final state anyway.
+- A failure is written to `fuzz-failures/seed-<n>.json`: a game file (D-043) up to the failing action, plus that
+  action and the problem, so `pnpm cli replay` opens it and `pnpm cli export` turns it into a scenario.
+- The short fuzz in `pnpm check` is a test (`cli/test/fuzz.test.ts`, seeds 1 to 6), not a separate command, so it
+  runs wherever the tests run, CI included.
+- Saved replays are game files in `packages/engine/test/replays/` with a `description` and the SHA-256 of the final
+  state's JSON, and no cached state. They're written one action per line, so a diff shows which actions changed.
+  `cli/test/replays.test.ts` replays each one (the engine's own tests use test cards, not the pool, as scenarios do,
+  D-033). `pnpm replays:update` rewrites the hashes after an intended change (say why in the commit), and fills in
+  the hash of a game file newly copied there.

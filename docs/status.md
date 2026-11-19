@@ -17,7 +17,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     (`pnpm replays:update`), three replays in `engine/test/replays/`, tests `cli/test/fuzz.test.ts` and
     `replays.test.ts`. Mutants caught by `pnpm fuzz`: a view showing every hand, unfiltered draws and library moves,
     life lost without its event, a zone move leaving the old id, `legalActions` listing unplayable lands.
-  - Review fixes to do (rules-judge and code-reviewer on c795388):
+  - Review fixes, done (rules-judge and code-reviewer on c795388):
     - cardIds are handed out in decklist order, so a public card hints at its neighbours in hidden zones: number them
       in a random order at game creation (game RNG), D-045.
     - `PlayerView`: `decision` (own, full) and `waitingFor` (anyone's id, player, kind) instead of a union `pending`;
@@ -29,6 +29,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     - Docs: architecture API block gets `eventsFor`; future-rules: per-object visibility (CR 406.3, 708.2, 121.8),
       partly known hands (CR 701.20a, 734.1), players leaving, how a view feeds `characteristics()` (M2); a comment
       that a hand card's `oldId` going public is fair.
+  - Replays regenerated after D-045 (seeds 92, 85, 67). Next: the 1,000-seed run (started), a code review of the whole
+    branch, the PR.
   - `pnpm fuzz --games N --seed S [--decks ...]` (`cli/src/fuzz.ts` on a `fuzz/` module): games between the prebuilt
     decks and random 40-card decks from the pool, with the random agent and sometimes `first-legal`. After every
     action: `invariantProblems` (JSON round trip, zones, nothing stalled, every legal action accepted, no negative

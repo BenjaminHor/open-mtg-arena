@@ -122,9 +122,19 @@ division names the player too, one blocker asks too, and earlier lethal damage c
 record of which creatures already dealt damage. A creature blocking several attackers needs a list form for the
 scenario `block` step.
 
-**Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708), revealed cards, looking at
-the top of a library (scry), and cards a player may see in another's hand all change what `playerView` shows: each
-is a new case there and in `eventsFor`, and the scramble test must learn to leave them alone.
+**Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2), face-down exile
+(CR 406.3), a card drawn face down while casting (CR 121.8), revealed cards (CR 701.20a), looking at the top of a
+library (scry), and cards a player has seen in another's hand (a cancelled cast's card back in hand, CR 734.1) all
+change what `playerView` shows. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
+per object, so `canSee` will take the object too. A partly known hand doesn't fit `hand: ObjectId[] | null`: another
+player's hand will need its known cards listed alongside `handSize`. The fuzzer's scramble (`scrambleHidden`) must
+learn to leave known cards alone.
+
+**What a view can compute (M2).** The UI and the AI get views, not states (D-044), but `characteristics()` reads a
+`GameState` (objects, the battlefield, effects, rule modifiers). Before M2 uses views, pick one: narrow
+`characteristics()` and its helpers to an input type that both `GameState` and `PlayerView` satisfy (keep the view's
+field paths the same as the state's for that), or have the host send each visible permanent's characteristics with
+the view. Never let the UI read `baseController` or printed power and toughness directly.
 
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 *Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
@@ -133,6 +143,8 @@ the player from `turnOrder` (or mark them) so they can't concede twice, and pass
 result per player. Combat (D-040) throws when attacks go to several players; each defending player will declare blockers
 (CR 509.1) and attacks will need planeswalkers and battles as defenders (CR 506.3). `playersLose` (D-039) throws when a player loses with more than one player left. Leaving the game
 (CR 800.4a: their objects leave, control effects end, priority passes on) has to be built there first.
+`playerView` builds each player's zones from `turnOrder`, so a player who left would lose their graveyard from views:
+build them from every player in the game instead.
 *Needs now:* nothing assumes exactly two players. Use player lists and turn order, never "the opponent".
 
 **Mana beyond six counters (CR 106.6, 106.12, 107.4h).** Mana with spending restrictions or riders, "tapped for mana"

@@ -89,7 +89,8 @@ export function fuzzGame(seed: number, checks: readonly Check[], cards: CardData
   }
   // Determinism: replaying the log from the setup gives the very same state.
   const replayed = replay(setup, actions, cards).state;
-  if (JSON.stringify(replayed) !== JSON.stringify(state)) return fail("replaying the game gives a different state", null);
+  if (JSON.stringify(replayed) !== JSON.stringify(state))
+    return fail("replaying the game gives a different state", null);
   return { ok: true, file: { format: FORMAT, version: ENGINE_VERSION, setup, actions }, state };
 }
 

@@ -239,29 +239,38 @@ the CR. Then make that path a scenario test with `export`, so it stays checked.
 
 ## 3. Invariant fuzzing
 
-`pnpm fuzz --games N --seed S` plays games where every decision is a random legal action
-(and some are AI-chosen), for both prebuilt decks and random decks from the pool. After every
-action it checks:
+`pnpm fuzz --games N --seed S` plays one game per seed from `S` (D-046): even seeds the prebuilt decks, odd seeds
+two random decks from the pool. Every decision is a random legal action (one in ten the first legal one, which
+passes), and about one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
+it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
 
 - the state round-trips through JSON unchanged
 - every object is in exactly one zone, and every zone entry is an existing object
 - `pending` is set, or `result` is set (the engine never stalls)
-- every action from `legalActions()` is accepted by `applyAction()`
-- replaying the action log from the setup gives an identical state (determinism)
-- `playerView` and the per-player event filter never leak hidden information (opponent's hand contents, library order)
+- every action from `legalActions()` is accepted by `applyAction()`, and no engine call throws
+- `playerView` and `eventsFor` never leak hidden information: scrambling what a player can't see leaves their view
+  unchanged, and the events they're shown name no card hidden from them (D-044)
 - no player has negative mana, and life totals change only through events
-- the game ends within a cap (for example 200 turns), or the fuzzer flags it as a likely loop
 
-A failure prints the seed and writes the replay log to `fuzz-failures/`, so it can be replayed in the
-CLI and turned into a scenario. Run a short fuzz in `pnpm check`; run longer ones before merging engine changes.
+At the end of each game, replaying the action log from the setup must give an identical state (determinism), and a
+game past 200 turns (`--turn-cap`) is flagged as a likely loop.
+
+A failure prints the seed and how to rerun it, exits 1, and writes `fuzz-failures/seed-<n>.json` (`--out` to change
+the folder): the game file up to the failing action, plus that action and the problem. Open it with
+`pnpm cli replay`, step it with `do`, and turn it into a failing scenario with `export` (the `fix-bug` skill).
+
+`pnpm test` runs a short fuzz (seeds 1 to 6, in `packages/cli/test/fuzz.test.ts`). Run longer ones before merging
+engine changes. A game takes about a second, so `pnpm fuzz --games 1000` takes about a quarter of an hour.
 
 ## 4. Replays and golden games
 
 - A replay file is the CLI's game file, `{ format, version, setup, actions, state? }` (the seed is part of `setup`;
   `state` is only a cache, D-043). The app's "Report a bug" button exports
   one, with the owner's description attached.
-- `packages/engine/test/replays/` holds replays that must keep producing the same final state hash.
-  When an intentional rules change alters a replay, regenerate its hash in the same commit and explain why.
+- `packages/engine/test/replays/` holds replays that must keep producing the same final state hash (D-046): game
+  files with a `description` and `finalStateHash`, one action per line. `packages/cli/test/replays.test.ts` plays each.
+  When an intentional rules change alters a replay, run `pnpm replays:update` in the same commit and explain why. To
+  add one, copy its game file there and run the same command, which fills in the hash and drops the cached state.
 
 ### Golden games
 

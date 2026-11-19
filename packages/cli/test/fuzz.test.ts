@@ -7,10 +7,10 @@ import path from "node:path";
 import { cardDatabase } from "@mtg/cards";
 import type { GameEvent, GameState, PlayerId } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
-import { fuzz } from "../src/fuzz.ts";
 import { ALL_CHECKS, type Check, lifeThroughEvents, viewsLeakNothing } from "../src/fuzz/checks.ts";
-import { fuzzGame } from "../src/fuzz/run-game.ts";
 import { runFuzz } from "../src/fuzz/run-fuzz.ts";
+import { fuzzGame } from "../src/fuzz/run-game.ts";
+import { fuzz } from "../src/fuzz.ts";
 import { readGameFile, replay } from "../src/game-file.ts";
 import { cli } from "./helpers.ts";
 
@@ -18,12 +18,13 @@ const cards = cardDatabase();
 const tempDir = () => mkdtempSync(path.join(tmpdir(), "mtg-fuzz-"));
 
 describe("fuzzGame", () => {
-  it("plays prebuilt decks (even seeds) and random decks (odd seeds) to the end with every check", () => {
-    for (const seed of [2, 3]) {
+  // The short fuzz `pnpm check` runs (docs/testing.md, section 3): fixed seeds, so a failure is the same every time.
+  it("plays prebuilt decks (even seeds) and random decks (odd seeds) to the end with every check: seeds 1 to 6", () => {
+    for (let seed = 1; seed <= 6; seed++) {
       const result = fuzzGame(seed, ALL_CHECKS, cards);
-      expect(result, `seed ${seed}`).toMatchObject({ ok: true });
+      expect(result.ok ? "ok" : result.problem, `seed ${seed}`).toBe("ok");
     }
-  });
+  }, 60_000);
 
   it("is deterministic: one seed is one game", () => {
     expect(fuzzGame(7, [], cards)).toEqual(fuzzGame(7, [], cards));

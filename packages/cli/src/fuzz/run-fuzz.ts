@@ -38,8 +38,7 @@ export function fuzzReport(summary: FuzzSummary, firstSeed: number): string {
   const last = firstSeed + summary.games - 1;
   const head = `${summary.games} games, seeds ${firstSeed}–${last}: ${summary.failures.length} failed`;
   const lines = summary.failures.map(
-    (f) =>
-      `  seed ${f.seed}: ${f.problem}\n    pnpm cli replay ${f.file}\n    pnpm fuzz --games 1 --seed ${f.seed}`,
+    (f) => `  seed ${f.seed}: ${f.problem}\n    pnpm cli replay ${f.file}\n    pnpm fuzz --games 1 --seed ${f.seed}`,
   );
   return [head, ...lines].join("\n");
 }

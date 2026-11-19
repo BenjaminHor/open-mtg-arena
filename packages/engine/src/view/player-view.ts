@@ -1,19 +1,26 @@
 // What one player may know of the game (CR 400.2: libraries and hands are hidden zones). Hosts give a view, never the
-// state, to the UI and the AI. A view must not change when only hidden information changes: the fuzzer (M1-18)
-// checks that by scrambling what the viewer can't see.
+// state, to the UI and the AI. A view must not change when only hidden information changes: the fuzzer's
+// `viewsLeakNothing` check (packages/cli/src/fuzz/checks.ts) tests that after every action of every game.
 
 import type { Combat } from "../state/combat.ts";
 import type { PendingDecision } from "../state/decisions.ts";
 import type { ContinuousEffect } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { DecisionId, ObjectId, PlayerId } from "../state/ids.ts";
 import type { GameObject } from "../state/objects.ts";
 import type { PlayerState } from "../state/players.ts";
 import type { Pregame } from "../state/pregame.ts";
 import type { GameResult } from "../state/result.ts";
 import type { RuleModifier } from "../state/setup.ts";
 import type { Turn } from "../state/turn.ts";
+import type { ZoneRef } from "../state/zones.ts";
+import { zoneList } from "../zones/zone-list.ts";
+import { canSee } from "./visibility.ts";
 
+/**
+ * One player's view. It shares structure with the state it came from (D-021), so it must never be changed in place:
+ * sort a copy, not `zones.battlefield`.
+ */
 export type PlayerView = {
   viewer: PlayerId;
   turn: Turn | null;
@@ -30,8 +37,10 @@ export type PlayerView = {
   /** Who is casting or activating what (the object on the stack is public); the rest is the caster's own business. */
   casting: { player: PlayerId; object: ObjectId } | null;
   passesInSuccession: number;
-  /** The viewer's own decision in full; another player's only as who must decide what. */
-  pending: PendingDecision | Pick<PendingDecision, "id" | "player" | "kind"> | null;
+  /** The viewer's own pending decision, in full; null when nothing is pending or another player must decide. */
+  decision: PendingDecision | null;
+  /** Who must decide what, whoever it is. Another player's choices so far (cards picked to discard) stay hidden. */
+  waitingFor: { id: DecisionId; player: PlayerId; kind: PendingDecision["kind"] } | null;
   result: GameResult | null;
 };
 
@@ -40,9 +49,11 @@ export type ViewZones = {
     PlayerId,
     {
       /** Any player may count a library (CR 401.3), but no one may see its cards or their order (CR 401.2). */
-      library: number;
-      /** The viewer's own hand, card by card (CR 402.3); another player's, only as a count. */
-      hand: ObjectId[] | number;
+      librarySize: number;
+      /** Any player may count a hand (CR 402.3). */
+      handSize: number;
+      /** The cards in the viewer's own hand (CR 402.3); null for another player's. */
+      hand: ObjectId[] | null;
       graveyard: ObjectId[];
     }
   >;
@@ -58,27 +69,23 @@ export type ViewZones = {
  * work queue and id counters.
  */
 export function playerView(state: GameState, viewer: PlayerId): PlayerView {
-  const visible: ObjectId[] = [
-    ...state.zones.battlefield,
-    ...state.zones.stack,
-    ...state.zones.exile,
-    ...state.zones.command,
-    ...state.turnOrder.flatMap((p) => state.zones.players[p]?.graveyard ?? []),
-    ...(state.zones.players[viewer]?.hand ?? []),
-  ];
   const objects: Record<ObjectId, GameObject> = {};
-  for (const id of visible) {
-    const obj = state.objects[id];
-    if (obj !== undefined) objects[id] = obj;
+  for (const ref of zoneRefs(state)) {
+    if (!canSee(ref, viewer)) continue;
+    for (const id of zoneList(state, ref)) {
+      const obj = state.objects[id];
+      if (obj !== undefined) objects[id] = obj;
+    }
   }
   const players: ViewZones["players"] = {};
   for (const p of state.turnOrder) {
     const z = state.zones.players[p];
     if (z === undefined) continue;
     players[p] = {
-      library: z.library.length,
-      hand: p === viewer ? [...z.hand] : z.hand.length,
-      graveyard: [...z.graveyard],
+      librarySize: z.library.length,
+      handSize: z.hand.length,
+      hand: canSee({ zone: "hand", player: p }, viewer) ? z.hand : null,
+      graveyard: z.graveyard,
     };
   }
   const pending = state.pending;
@@ -101,10 +108,23 @@ export function playerView(state: GameState, viewer: PlayerId): PlayerView {
     pregame: state.pregame,
     casting: state.casting === null ? null : { player: state.casting.player, object: state.casting.object },
     passesInSuccession: state.passesInSuccession,
-    pending:
-      pending === null || pending.player === viewer
-        ? pending
-        : { id: pending.id, player: pending.player, kind: pending.kind },
+    decision: pending !== null && pending.player === viewer ? pending : null,
+    waitingFor: pending === null ? null : { id: pending.id, player: pending.player, kind: pending.kind },
     result: state.result,
   };
+}
+
+/** Every zone in the game: the shared ones, then each player's, in turn order. */
+function zoneRefs(state: GameState): ZoneRef[] {
+  return [
+    { zone: "battlefield" },
+    { zone: "stack" },
+    { zone: "exile" },
+    { zone: "command" },
+    ...state.turnOrder.flatMap((player): ZoneRef[] => [
+      { zone: "library", player },
+      { zone: "hand", player },
+      { zone: "graveyard", player },
+    ]),
+  ];
 }

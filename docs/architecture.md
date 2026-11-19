@@ -42,6 +42,7 @@ createGame(setup: GameSetup, cards: CardDatabase): EngineResult
 applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult
 legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[]
 playerView(state: GameState, player: PlayerId): PlayerView      // hides hidden information
+eventsFor(events: GameEvent[], player: PlayerId): ViewEvent[]   // the same, for events
 characteristics(state: GameState, obj: ObjectId, cards: CardDatabase): Characteristics
 
 type EngineResult =
@@ -90,7 +91,8 @@ type GameState = {
 - An `ObjectId` names one game object. **When a card changes zones it becomes a new object
   with a new id** (CR 400.7). The engine never "moves" an id between zones.
 - Each object also has a `cardId`, the physical card from a deck (or the token that was created).
-  The `cardId` stays the same across zone changes. The UI uses it to animate a card moving from
+  The `cardId` stays the same across zone changes. Card ids are numbered in a random order, so a public one says
+  nothing about the hidden cards next to it in a decklist (D-045). The UI uses it to animate a card moving from
   hand to stack to battlefield. Rules logic uses only `ObjectId`.
 - `ZONE_CHANGED` events carry `from`, `to`, the old and new `ObjectId`, and the `cardId`.
 

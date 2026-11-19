@@ -4,6 +4,7 @@
 import type { GameEvent } from "../state/events.ts";
 import type { PlayerId } from "../state/ids.ts";
 import type { ZoneRef } from "../state/zones.ts";
+import { canSee } from "./visibility.ts";
 
 /** An event as one player sees it: the event itself, or what's left of it when it would reveal a hidden card. */
 export type ViewEvent =
@@ -18,30 +19,13 @@ export function eventsFor(events: readonly GameEvent[], viewer: PlayerId): ViewE
   return events.map((e) => eventFor(e, viewer));
 }
 
-/**
- * Whether `viewer` sees the cards in this zone: public zones (CR 400.2) and their own hand (CR 402.3). Not libraries,
- * not even their own (CR 401.2).
- */
-function canSee(zone: ZoneRef, viewer: PlayerId): boolean {
-  switch (zone.zone) {
-    case "library":
-      return false;
-    case "hand":
-      return zone.player === viewer;
-    case "graveyard":
-    case "battlefield":
-    case "stack":
-    case "exile":
-    case "command":
-      return true;
-  }
-}
-
 /** Exhaustive, so every new event has to decide what it reveals. */
 function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
   switch (e.type) {
     case "ZONE_CHANGED":
-      // The card is seen if it's in a zone the viewer sees before or after; otherwise only that a card moved.
+      // The card is seen if it's in a zone the viewer sees before or after; otherwise only that a card moved. A card
+      // leaving another player's hand for a public zone shows its old id, so when it entered that hand (its id came
+      // with it): fair, as a player at a table sees which card came from where in a hand.
       return canSee(e.from, viewer) || canSee(e.to, viewer) ? e : { type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to };
     case "CARD_DRAWN":
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };
