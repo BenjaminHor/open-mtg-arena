@@ -6,8 +6,8 @@ import { describe, expect, it } from "vitest";
 import { dealDamage } from "../../src/effects/deal-damage.ts";
 import { type Action, type GameState, legalActions, type ObjectId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
-import { GROWTH, SHOT_AND_BOOST, TEST_CARDS } from "../support/cards.ts";
-import { act, type Game, playerSetup, start } from "../support/game.ts";
+import { BITE, GROWTH, SHOT_AND_BOOST, TEST_CARDS } from "../support/cards.ts";
+import { act, type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
 
@@ -29,14 +29,6 @@ function setup(spell: string): { game: Game; bears: ObjectId } {
   return { game, bears: game.state.zones.battlefield[2] as ObjectId };
 }
 
-function take(game: Game, match: (a: Action) => boolean): Game {
-  const pending = game.state.pending;
-  if (pending === null) throw new Error("nothing pending");
-  const action = legalActions(game.state, pending.player, TEST_CARDS).find(match);
-  if (action === undefined) throw new Error("no such legal action");
-  return act(game, action);
-}
-
 const targetIs = (want: string) => (a: Action) =>
   a.type === "ANSWER" &&
   a.answer.kind === "chooseTarget" &&
@@ -52,12 +44,6 @@ function cast(game: Game, targets: string[]): Game {
   }
   return g;
 }
-
-const passBoth = (game: Game) =>
-  take(
-    take(game, (a) => a.type === "PASS_PRIORITY"),
-    (a) => a.type === "PASS_PRIORITY",
-  );
 
 /** The target leaves the battlefield: it's a new object now (CR 400.7), so the old target is illegal. */
 const removed = (game: Game, id: ObjectId): Game => ({
@@ -85,6 +71,31 @@ describe("CR 608.2b: illegal targets aren't affected", () => {
     expect(types).toStrictEqual(["DAMAGE_DEALT", "EFFECT_CREATED"]);
     // The spell says which object deals the damage: itself (CR 120.2b).
     expect(after.events.find((e) => e.type === "DAMAGE_DEALT")).toMatchObject({ source: spell });
+  });
+
+  it("doesn't resolve when every instance's target is illegal, even with two instances of \"target\"", () => {
+    const { game, bears } = setup(SHOT_AND_BOOST);
+    const after = passBoth(removed(cast(game, [bears, bears]), bears));
+    expect(after.events.some((e) => e.type === "SPELL_DID_NOT_RESOLVE")).toBe(true);
+    expect(after.events.some((e) => e.type === "DAMAGE_DEALT" || e.type === "EFFECT_CREATED")).toBe(false);
+    expect(after.state.zones.players.p1?.graveyard).toHaveLength(1);
+  });
+
+  it('can affect the same object through two instances of "target" (CR 115.3)', () => {
+    const { game, bears } = setup(SHOT_AND_BOOST);
+    const after = passBoth(cast(game, [bears, bears]));
+    expect(after.state.objects[bears]).toMatchObject({ damage: 1 });
+    expect(after.state.effects.map((e) => e.affected)).toStrictEqual([[bears]]);
+  });
+
+  it("deals no damage when the damage's source was an illegal target, but still resolves", () => {
+    // CR 608.2b: "If part of the effect requires information about an illegal target, it fails to determine any such
+    // information. Any part of the effect that requires that information won't happen."
+    const { game, bears } = setup(BITE);
+    const after = passBoth(removed(cast(game, [bears, "p2"]), bears));
+    expect(after.events.some((e) => e.type === "DAMAGE_DEALT")).toBe(false);
+    expect(after.state.players.p2?.life).toBe(20);
+    expect(after.events.some((e) => e.type === "SPELL_RESOLVED")).toBe(true);
   });
 
   it("creates no effect for an illegal target", () => {
@@ -144,7 +155,8 @@ describe("dealing damage (CR 120)", () => {
       ],
       TEST_CARDS,
     );
-    expect(result.events.map((e) => e.type)).toStrictEqual(["DAMAGE_DEALT", "LIFE_LOST", "DAMAGE_DEALT"]);
+    // All the damage is dealt first (CR 120.4b), then turned into its results (CR 120.4c).
+    expect(result.events.map((e) => e.type)).toStrictEqual(["DAMAGE_DEALT", "DAMAGE_DEALT", "LIFE_LOST"]);
     expect(result.state.players.p1?.life).toBe(18);
     expect(result.state.objects[bears]).toMatchObject({ damage: 1 });
   });
@@ -154,6 +166,7 @@ describe("dealing damage (CR 120)", () => {
     const gone = moveCard(game.state, bears, { zone: "graveyard" }).state;
     const result = dealDamage(gone, [{ source: bears, to: { kind: "object", object: bears }, amount: 3 }], TEST_CARDS);
     expect(result.events).toStrictEqual([]);
+    expect(result.state).toStrictEqual(gone);
   });
 
   it("deals no damage to a permanent that isn't a creature (CR 120.1a)", () => {

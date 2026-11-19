@@ -16,4 +16,4 @@ steps:
       p2:Giant Spider.damage: 3
       p2:Grizzly Bears.damage: 0
       p2.life: 20
-      events contains: [{ type: DAMAGE_DEALT, amount: 3 }]
+      events contains: [{ type: DAMAGE_DEALT, to: { kind: object }, amount: 3 }]

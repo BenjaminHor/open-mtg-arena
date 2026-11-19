@@ -1,5 +1,5 @@
 name: Giant Growth creates a +3/+3 effect on its target until end of turn
-rules: [CR 611.2a, CR 611.2c, CR 613.4c, CR 613.7b]
+rules: [CR 611.2a, CR 613.4c]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -14,7 +14,6 @@ steps:
   - all pass: once
   - expect:
       p1.graveyard: [Giant Growth]
-      p1:Grizzly Bears.damage: 0
       events contains:
         - type: EFFECT_CREATED
           effect: { controller: p1, duration: endOfTurn, change: { kind: modifyPT, power: 3, toughness: 3 } }

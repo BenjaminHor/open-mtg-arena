@@ -1,7 +1,7 @@
 // What a target requirement may choose (CR 115), in one place, so later rules (hexproof, protection, "another
 // target") have one function to change.
 
-import type { CardDatabase, TargetSpec } from "../cards/types.ts";
+import type { CardDatabase, Effect, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
@@ -53,6 +53,18 @@ export function stillLegalTargets(
     return spec === undefined ? [] : group.filter((target) => isLegalTarget(state, spec, target, cards));
   });
   return { chosen, legal };
+}
+
+/**
+ * What a card's spell does when it resolves, from its definition (CR 608.2c). One place to read it, so text-changing
+ * effects (layer 3) and copies can change the answer later.
+ */
+export function spellEffectsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Effect[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  const data = cards[obj.oracleId];
+  if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
+  return data.def.spell?.effects ?? [];
 }
 
 /** The target requirements of a card's spell, one per instance of "target" (CR 601.2c). */

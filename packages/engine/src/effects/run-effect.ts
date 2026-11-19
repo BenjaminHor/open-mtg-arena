@@ -15,10 +15,11 @@ import { dealDamage } from "./deal-damage.ts";
 export function runEffect(state: GameState, effect: Effect, context: EffectContext, cards: CardDatabase): Progress {
   switch (effect.op) {
     case "dealDamage": {
-      // The damage's source must be one object. If it was an illegal target, that part of the effect can't happen
-      // (CR 608.2b: it "fails to determine any such information").
+      // The damage's source is one object (CR 120.2b). If it was an illegal target, that part of the effect can't
+      // happen (CR 608.2b: it "fails to determine any such information").
       const [from, ...more] = objectsOf(subject(effect.from, context));
-      if (from === undefined || more.length > 0) return { state, events: [] };
+      if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
+      if (from === undefined) return { state, events: [] };
       const damage = subject(effect.to, context).map((to) => ({ source: from, to, amount: effect.amount }));
       return dealDamage(state, damage, cards);
     }
@@ -26,8 +27,9 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
       // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5).
       return addMana(state, context.controller, effect.mana, effect.amount, context.self);
     case "modifyPT": {
-      // The affected objects are fixed now (CR 611.2c); an illegal target isn't among them (CR 608.2b).
-      const affected = objectsOf(subject(effect.of, context));
+      // The affected objects are fixed now (CR 611.2c). An illegal target isn't among them (CR 608.2b), and neither is
+      // one that left the battlefield since resolution began: affecting it is impossible (CR 101.3, 400.7).
+      const affected = objectsOf(subject(effect.of, context)).filter((id) => state.zones.battlefield.includes(id));
       if (affected.length === 0) return { state, events: [] };
       const change = { kind: "modifyPT", power: effect.power, toughness: effect.toughness } as const;
       return createContinuousEffect(state, {

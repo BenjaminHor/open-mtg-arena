@@ -7,13 +7,12 @@ The design and its invariants are in [`docs/architecture.md`](../../docs/archite
 
 ## Entry points
 
-- `src/index.ts`: the whole public API (`createGame`, `applyAction`, `legalActions`, `playerView`,
-  `characteristics`, as listed in the architecture doc). So far: `createGame`, `applyAction`, `legalActions`,
-  `ENGINE_VERSION`, the state and card types, `controllerOf`, `abilitiesOf`, `isManaAbility`, `autoPay`, `payFromPool`,
-  `allPayments` and `manaValue`. Folders: `state/` (types), `game/` (the flow of a game), `effects/` (the effects
-  interpreter: damage, mana, continuous effects), `zones/`
-  (moving cards), `permanents/` (tapping, untapping, damage), `mana/` (mana abilities, paying), `combat/`, `rules/` (rules questions such as who controls an
-  object), `cards/` (card data types), `rng/`.
+- `src/index.ts`: the whole public API (`createGame`, `applyAction`, `legalActions`, `playerView`, `characteristics`, as
+  listed in the architecture doc). So far: `createGame`, `applyAction`, `legalActions`, `ENGINE_VERSION`, the state and
+  card types, `controllerOf`, `abilitiesOf`, `isManaAbility`, `autoPay`, `payFromPool`, `allPayments` and `manaValue`.
+- Folders: `state/` (types), `game/` (the flow of a game), `effects/` (the effects interpreter: damage, mana,
+  continuous effects), `zones/` (moving cards), `permanents/` (tapping, untapping, damage), `mana/` (mana abilities,
+  paying), `combat/`, `rules/` (rules questions such as who controls an object), `cards/` (card data types), `rng/`.
 
 ## Tests
 

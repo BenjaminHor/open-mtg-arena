@@ -82,6 +82,21 @@ export function act(game: Game, action: Action): Game {
   return { state: deepFreeze(result.state), events: [...game.events, ...result.events] };
 }
 
+/** Whoever is pending takes the first legal action matching. */
+export function take(game: Game, match: (a: Action) => boolean): Game {
+  const pending = game.state.pending;
+  if (pending === null) throw new Error("nothing pending");
+  const action = legalActions(game.state, pending.player, TEST_CARDS).find(match);
+  if (action === undefined) throw new Error("no such legal action");
+  return act(game, action);
+}
+
+/** Two players pass priority in a row: with two players, the top of the stack resolves or the step ends (CR 117.4). */
+export function passBoth(game: Game): Game {
+  const pass = (a: Action) => a.type === "PASS_PRIORITY";
+  return take(take(game, pass), pass);
+}
+
 export function pendingPlayer(state: GameState): PlayerId {
   if (state.pending === null) throw new Error("Nothing is pending");
   return state.pending.player;

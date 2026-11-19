@@ -15,22 +15,25 @@ import { loseLife } from "./life.ts";
 export type Damage = { source: ObjectId; to: Target; amount: number };
 
 /**
- * Deals damage, all of it in one event (CR 120.4): spells deal it to one recipient at a time, combat damage to many
- * at once (CR 510.2). Each damage is dealt (CR 120.4b), then turned into its result (CR 120.4c): life loss for a
- * player (CR 120.3a), damage marked on a creature (CR 120.3e). There are no planeswalkers or battles yet (CR 120.3c).
+ * Deals damage as one damage event (CR 120.4): spells deal it to one recipient, combat damage to many at once
+ * (CR 510.2). All of it is dealt first (CR 120.4b, when "whenever ... is dealt damage" triggers), then all of it turns
+ * into its results (CR 120.4c): life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e). There are
+ * no planeswalkers or battles yet (CR 120.3c, 120.3h).
  */
 export function dealDamage(state: GameState, damage: readonly Damage[], cards: CardDatabase): Progress {
-  let progress: Progress = { state, events: [] };
-  for (const d of damage) {
-    // A source that would deal 0 damage deals no damage at all (CR 120.8).
-    if (d.amount <= 0 || !canBeDealtDamage(progress.state, d.to, cards)) continue;
-    const dealt: GameEvent = { type: "DAMAGE_DEALT", source: d.source, to: d.to, amount: d.amount };
-    progress = andThen({ state: progress.state, events: [...progress.events, dealt] }, (s) => result(s, d));
-  }
-  return progress;
+  // A source that would deal 0 damage deals no damage at all (CR 120.8).
+  const dealt = damage.filter((d) => d.amount > 0 && canBeDealtDamage(state, d.to, cards));
+  const events: GameEvent[] = dealt.map((d) => ({
+    type: "DAMAGE_DEALT",
+    source: d.source,
+    to: d.to,
+    amount: d.amount,
+  }));
+  return dealt.reduce<Progress>((progress, d) => andThen(progress, (s) => damageResult(s, d)), { state, events });
 }
 
-function result(state: GameState, d: Damage): Progress {
+/** What dealt damage does (CR 120.3, 120.4c). */
+function damageResult(state: GameState, d: Damage): Progress {
   switch (d.to.kind) {
     case "player":
       return loseLife(state, d.to.player, d.amount);
@@ -41,7 +44,8 @@ function result(state: GameState, d: Damage): Progress {
 
 /**
  * Whether the recipient can be dealt damage: a player, or a creature on the battlefield (CR 120.1a; no planeswalkers or
- * battles yet). A recipient that left between the start of resolution and this effect is simply not dealt damage.
+ * battles yet). A recipient that left between the start of resolution and this effect is a new object (CR 400.7), so
+ * dealing it damage is impossible and is ignored (CR 101.3).
  */
 function canBeDealtDamage(state: GameState, to: Target, cards: CardDatabase): boolean {
   switch (to.kind) {

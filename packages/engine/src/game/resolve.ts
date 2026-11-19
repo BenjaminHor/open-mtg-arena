@@ -3,7 +3,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { stillLegalTargets } from "../rules/targets.ts";
+import { spellEffectsOf, stillLegalTargets } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
@@ -57,9 +57,8 @@ export function doesNotResolve(state: GameState, id: ObjectId): Progress {
  * with activated abilities (M1-14).
  */
 function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: CardDatabase): WorkItem[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  const effects = cards[obj.oracleId]?.def.spell?.effects ?? [];
+  if (state.objects[id]?.kind !== "card") return [];
+  const effects = spellEffectsOf(state, id, cards);
   const context = { self: id, controller: controllerOf(state, id), targets: legal };
   return effects.map((effect) => ({ kind: "runEffect", effect, context }));
 }

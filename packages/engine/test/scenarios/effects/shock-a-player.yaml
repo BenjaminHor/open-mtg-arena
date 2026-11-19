@@ -1,5 +1,5 @@
 name: Damage dealt to a player makes them lose that much life
-rules: [CR 120.3a, CR 119.3, CR 608.2c]
+rules: [CR 120.3a, CR 119.3, CR 120.2b]
 setup:
   turn: { active: p1, step: main1 }
   p1:

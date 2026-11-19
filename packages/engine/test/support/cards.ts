@@ -17,6 +17,8 @@ export const WHELP = "furnace-whelp";
 export const GROWTH = "giant-growth";
 /** Not a real card: a spell with two instances of "target", which nothing in the M1 pool has (CR 608.2b tests). */
 export const SHOT_AND_BOOST = "test-shot-and-boost";
+/** Not a real card: damage dealt by a target, so its source can be an illegal target (CR 608.2b). */
+export const BITE = "test-bite";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -201,6 +203,27 @@ export const TEST_CARDS: CardDatabase = {
           { op: "dealDamage", amount: 1, from: "self", to: { target: 0 } },
           { op: "modifyPT", power: 1, toughness: 1, of: { target: 1 }, duration: "endOfTurn" },
         ],
+      },
+    },
+  }),
+  [BITE]: card(BITE, {
+    printed: {
+      name: "Bite",
+      manaCost: [{ kind: "colored", color: "G" }],
+      colors: ["G"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Bite",
+      oracle: "Target creature deals 2 damage to any target.",
+      spell: {
+        targets: [{ kind: "creature" }, { kind: "anyTarget" }],
+        effects: [{ op: "dealDamage", amount: 2, from: { target: 0 }, to: { target: 1 } }],
       },
     },
   }),

@@ -82,7 +82,7 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []
 
 /**
  * CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action with no
- * state-based action check in between (those effects arrive in M1-10). Then no one gets priority (CR 514.3): with no
+ * state-based action check in between (ending those effects arrives in M1-11, status.md). Then no one gets priority (CR 514.3): with no
  * state-based actions or triggers yet (CR 514.3a), the step simply ends.
  */
 function endCleanup(state: GameState): Progress {

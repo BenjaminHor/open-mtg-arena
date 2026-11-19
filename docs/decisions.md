@@ -271,7 +271,7 @@ and avoids crossover or digital-only printings, without changing any rules behav
   (CR 117.4, 405.5). After a resolution the active player gets priority (CR 117.3b) and the pass count starts over.
 - Resolution: an ability ceases to exist (no zone change, `ABILITY_RESOLVED`); an instant or sorcery goes to its owner's
   graveyard and a permanent spell enters the battlefield under its controller (`SPELL_RESOLVED`, then `ZONE_CHANGED`).
-  Effects (M1-10) and target checks on resolution (CR 608.2b, M1-09/M1-10) plug into `resolveEffects`.
+  Effects and target checks on resolution (CR 608.2b) plug into `effectWork` in `game/resolve.ts` (D-035, D-036).
 - Card types are read through `cardTypesOf` (`rules/card-types.ts`), printed types until `characteristics()` (M1-11).
 - The start of the game stays a direct state machine (D-030); its answers still end in `advance()`.
 - A resolution queues its whole sequence in one call: effect work, then `finishResolving` (CR 608.2n's "final part",
@@ -351,7 +351,7 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
 - Targets are checked once, as resolution begins (CR 608.2b), and each work item carries an `EffectContext` with only
   the targets still legal. So the check isn't repeated per effect, and an illegal target is simply absent.
 - `runEffect` is a plain function of `(state, effect, context, cards)`. Mana abilities call it directly, because they
-  resolve at once, even while a payment is pending (CR 605.3b), and have no stack object. The context names the object
+  resolve at once (CR 605.3b), even while a payment is pending (CR 605.3a), and have no stack object. The context names the object
   "this" means, so activated abilities (M1-14) can make it the source rather than the ability.
 - All damage goes through `dealDamage`, which takes a list of damage dealt at once (spells now, combat in M1-13,
   CR 510.2). Prevention and replacement (CR 614–615), lifelink, infect and wither (CR 120.3) plug in there. Life loss
@@ -362,6 +362,8 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   the affected object ids fixed when it begins (CR 611.2c), and the change. It's never applied by changing the object;
   `characteristics()` reads it (M1-11).
 - The draw and zone-change primitives stay where they are (`zones/`); each becomes an effect op when a card needs it.
-- `GameState.version` stays 0 (`ENGINE_VERSION`) until a release can save games: no saves exist yet, so new fields
-  (`casting` in M1-09, `effects` here) don't bump it. From the first release that saves games, every schema change
-  bumps it.
+
+**D-037: `GameState.version` stays 0 until games can be saved** · 2026-11-19 · accepted
+`ENGINE_VERSION` (D-019) stays 0 until a release can save games. No saves or replays exist yet, so new fields
+(`casting` in M1-09, `effects` in M1-10) and RNG changes (D-024) don't bump it. From the first release that saves games,
+every schema change and every change D-024 lists bumps it.

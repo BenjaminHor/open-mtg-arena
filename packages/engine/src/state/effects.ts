@@ -11,7 +11,7 @@ export type Duration = "endOfTurn";
 
 /** A continuous effect from the resolution of a spell or ability (CR 611.2). */
 export type ContinuousEffect = {
-  /** The spell or ability that created it. */
+  /** The object "this" refers to in the text that created it: the spell, or an ability's source (CR 113.7a). */
   source: ObjectId;
   /** Its controller when the effect was created. */
   controller: PlayerId;

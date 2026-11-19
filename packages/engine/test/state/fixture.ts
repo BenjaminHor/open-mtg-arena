@@ -139,7 +139,14 @@ export function midTurnState(): GameState {
     pregame: null,
     passesInSuccession: 1,
     casting: null,
-    work: [],
+    work: [
+      {
+        kind: "runEffect",
+        effect: { op: "dealDamage", amount: 3, from: "self", to: { target: 0 } },
+        context: { self: "o10", controller: "p1", targets: [[{ kind: "player", player: "p2" }]] },
+      },
+      { kind: "finishResolving", object: "o10" },
+    ],
     pending: { id: "d19", player: "p2", kind: "priority" },
     result: null,
   };

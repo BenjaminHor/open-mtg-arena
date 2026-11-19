@@ -30,6 +30,7 @@ export { controllerOf } from "./rules/controller.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";
 export type { DecisionKind, PendingDecision } from "./state/decisions.ts";
+export type { ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
 export type { GameEvent } from "./state/events.ts";
 export type { GameState } from "./state/game-state.ts";
 export type { CardId, DecisionId, ObjectId, OracleId, PlayerId } from "./state/ids.ts";
