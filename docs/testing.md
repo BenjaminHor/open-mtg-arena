@@ -11,7 +11,7 @@ without a person watching. These are the tools for that, from most to least spec
    with readable diffs when an engine change alters what happens.
 5. **The rules coverage report:** which CR rules are implemented but not tested.
 6. **Benchmarks:** the engine must not get slower without anyone noticing.
-7. **Mutation testing** (from M3): proof that the tests would catch the engine being wrong.
+7. **Mutation testing** (from M2): proof that the tests would catch the engine being wrong.
 
 What runs when:
 
@@ -277,7 +277,7 @@ background.
 
 `packages/engine/test/golden/` holds full agent-vs-agent games (one or more per prebuilt deck pairing, and between them
 every card in the pool played, cast or activated; D-047), each stored as its replay **and** its readable event log,
-one event per line (the CLI's brief log). Until the AI exists (M2) the players are the random agents:
+one event per line (the CLI's brief log). Until the AI exists (M3) the players are the random agents:
 
 ```
 T36 p1 attack: p1:Hill Giant -> p2
@@ -308,10 +308,11 @@ Regenerate and add new golden games when the pool grows, so every card appears i
 - and flags rules that **code cites but nothing tests**, plus interaction matrix cells marked "not yet".
 
 It writes `docs/coverage/rules-coverage.md` (generated; commit it so the owner can read it on GitHub) with a
-summary at the top: rules cited, rules tested by scenarios, rules tested only by unit tests, gaps. `pnpm check` fails
-if a change adds a **new** gap compared to the committed report. Existing gaps are allowed, but they're listed so they
-get closed. `pnpm coverage:rules` won't write a report with a new gap unless given `--accept-new-gaps` (say why in the
-commit). D-048 has the details: which code counts, how citations match, and why a mention of a rule that isn't built
+summary at the top: rules cited, rules tested by scenarios, rules tested only by unit tests, gaps. There are no gaps,
+and none are allowed (D-052): every rule the code cites must have a scenario or a
+unit test (an owner requirement), so `pnpm check` fails on any gap and `pnpm coverage:rules` won't write a report
+with one. A rule losing its last scenario while a unit test still covers it needs `--accept-scenario-loss` (say why in
+the commit). D-048 has the details: which code counts, how citations match, and why a mention of a rule that isn't built
 yet is written `later: CR 614`.
 
 ## 6. Benchmarks
@@ -320,7 +321,7 @@ yet is written `later: CR 614`.
 - the time per `applyAction` across sets of typical states (an empty board, a busy combat, a deep stack),
 - the time for a full random-legal game,
 - the time for `legalActions` and `characteristics` on a busy board,
-- and (from M2) the AI's time per decision.
+- and (from M3) the AI's time per decision.
 
 Times are compared as multiples of a reference loop timed in the same run, so the baseline holds across machines.
 
@@ -329,7 +330,7 @@ If the slowdown is justified (a rule that genuinely costs time), update the base
 same commit and say why. It isn't part of `pnpm check`: timings on a shared CI runner would be flaky.
 Budgets from `architecture.md` are hard limits regardless of the baseline.
 
-## 7. Mutation testing (from M3)
+## 7. Mutation testing (from M2)
 
 Mutation testing (StrykerJS with the Vitest runner) makes small deliberate changes to the engine code, such as
 flipping a comparison or deleting a line, and checks that some test fails each time. A change that no test notices
@@ -342,7 +343,8 @@ A rules or card task is done when:
 - scenario tests for it exist (including negative cases) and pass,
 - interaction scenarios cover how it combines with related mechanics, and the matrix is updated,
 - you've checked it yourself in the CLI,
-- `pnpm check` passes: scenarios, golden games, a short fuzz, and no new coverage gaps,
+- every rule it implements is cited where it's implemented and tested by a scenario or a unit test (D-052),
+- `pnpm check` passes: scenarios, golden games, a short fuzz, and no coverage gaps,
 - any golden-game diffs are intended and explained,
 - for engine changes, `pnpm bench` shows no unexplained slowdown,
 - the `rules-judge` agent found no conflict with the cited CR rules.

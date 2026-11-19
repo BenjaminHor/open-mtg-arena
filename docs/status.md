@@ -9,8 +9,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 ## In progress
 - M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
   casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
-  (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (including whether to
-  keep M2 before M3; the owner asked when the remaining rules come: M3 "Rules depth", per roadmap.md), then tag `m1`.
+  (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (M2 is now rules depth,
+  D-051; `docs/milestones/m2-rules-depth.md`; the owner chose Magic 2010 with planeswalkers, D-053), then tag `m1`.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -64,7 +64,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   its controller's next turn.
 - Activated abilities (D-041): a stack object is a spell or an ability; read its targets and effects with
   `targetSpecsOf` and `effectsOf`, never from a card directly. No last-known-information store yet (future-rules.md).
-- When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
+- When M3 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
 - The engine's step names follow the CR (`precombatMain`, `declareBlockers`, see `engine/src/state/turn.ts`).
   `testing.md`'s scenario YAML uses short names (`main1`, `combat.declareBlockers`); the M1-16 runner maps them.
 - `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request and is now the default branch
@@ -79,8 +79,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- The rest of the M1 exit criteria, with the owner: the coverage question, following a CLI game log and spot-checking
-  scenarios, and reviewing the M2 spec (docs/milestones/m1-engine-foundations.md). Then the owner tags `m1`.
+- After the owner tags `m1`: M2 rules depth (`docs/milestones/m2-rules-depth.md`), starting with M2-01 (the
+  hidden-information fix) and M2-02 (the Magic 2010 pool and its mechanics map).
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -158,7 +158,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `pnpm fuzz` with every check after every action and failures written as game files, a short fuzz in `pnpm check`,
   saved replays with `pnpm replays:update` (D-046). Acceptance: `pnpm fuzz --games 1000 --seed 1` clean (0 of 1,000
   failed, 26 minutes); mutants breaking views, events, life, zones and legal actions are caught. One known issue left
-  for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
+  for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
@@ -171,6 +171,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   card through another player's hand (CR 402.3): after a cancelled cast (CR 734.1), `CAST_CANCELLED` names the card's
   card id and restored hand id, so when a copy is cast later the other player can tell whether it was that card. Object
   ids, numbered as they're made, also show roughly when a card entered a hand. The fuzzer can't see it (each event is
-  fine alone). Fix before M2's AI reads views. Sketch: a card entering a zone some player can't see gets a new card id,
+  fine alone). Fix early in M2, before any AI reads views (M3). Sketch: a card entering a zone some player can't see gets a new card id,
   and `eventsFor` shows other players neither the old object id of a card leaving a hidden zone nor `restored`.
   That changes what a card id means (architecture.md, "Object identity"), so it gets its own decision.

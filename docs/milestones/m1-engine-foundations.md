@@ -1,6 +1,6 @@
 # M1 — Engine foundations
 
-**Goal:** a pure, headless engine that plays complete two-player games with the M2 card pool,
+**Goal:** a pure, headless engine that plays complete two-player games with the first card pool (the 17 cards below),
 plus the tools Claude Code needs to check its own work: the scenario runner, the CLI and the fuzzer.
 No web app yet.
 
@@ -107,7 +107,7 @@ state-based actions, the result and the runner's `winner` arrived with M1-12, D-
 early (right after M1-07) and extend it with each task. *Accept:* the format documented in `testing.md` matches the implementation exactly.
 
 **M1-17 Headless CLI.** All commands in `testing.md`, stateless with a game file, including `export --scenario`
-and `inspect`. Simple `random` and `first-legal` agents for `auto` (the real AI arrives in M2). *Accept:* a full
+and `inspect`. Simple `random` and `first-legal` agents for `auto` (the real AI arrives in M3, D-051). *Accept:* a full
 game can be played from the shell using only `new`, `show`, `actions` and `do`.
 
 **M1-18 Fuzzer and replays.** `pnpm fuzz` with every invariant in `testing.md`, failure logs in `fuzz-failures/`,
@@ -126,4 +126,4 @@ removing a scenario makes the coverage check fail; a deliberate slowdown fails t
   can't express it (owner, 2026-11-19; D-050). Real behavior gets scenarios.
 - The owner can follow a CLI game log (`pnpm cli auto ... --max-turns 30`) and spot-check a few scenarios for correctness.
 - `rules-judge` has reviewed the casting, priority, SBA and combat code against the CR.
-- `docs/status.md` is up to date, and the M2 spec has been reviewed with the owner.
+- `docs/status.md` is up to date, and the M2 spec (rules depth, D-051) has been reviewed with the owner.

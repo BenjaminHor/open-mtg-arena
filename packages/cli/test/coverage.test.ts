@@ -6,7 +6,16 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { citedRules, covers, expandRange, laterRules, ruleIds } from "../src/coverage/citations.ts";
 import { codeFiles, matrixCellGaps, REPO } from "../src/coverage/collect.ts";
-import { collectInputs, coverage, listedGaps, newGaps, REPORT, reportText, sortRules } from "../src/coverage/report.ts";
+import {
+  collectInputs,
+  coverage,
+  gaps,
+  listedGaps,
+  newGaps,
+  REPORT,
+  reportText,
+  sortRules,
+} from "../src/coverage/report.ts";
 import { writeReport } from "../src/rules-coverage.ts";
 
 const CR = ruleIds(join(REPO, "rules/cr"));
@@ -124,6 +133,10 @@ describe("the committed report", () => {
     expect(committed).toBe(reportText(current));
   });
 
+  it("has no gaps: every rule the code cites is tested by a scenario or a unit test (owner, D-052)", () => {
+    expect(gaps(current)).toEqual([]);
+  });
+
   it("names only rules that are in the CR", () => {
     expect(current.notInCr).toEqual([]);
   });
@@ -155,25 +168,39 @@ describe("the committed report", () => {
 });
 
 describe("writeReport", () => {
-  const current = coverage(collectInputs(CR));
+  const inputs = collectInputs(CR);
+  const current = coverage(inputs);
   const committed = reportText(current);
-  const worse = coverage({ ...collectInputs(CR), matrixGaps: ["Flying × Reach: not yet"] });
 
-  it("writes a report that's no worse", () => {
-    expect(writeReport(current, committed, false).report).toBe(committed);
+  it("writes a report with no gaps and nothing lost", () => {
+    expect(writeReport(current, committed, false)).toEqual({ report: committed, output: "no gaps" });
   });
 
-  it("refuses a worse one unless the new gaps are accepted, and then says which", () => {
-    expect(writeReport(worse, committed, false)).toEqual({
-      report: null,
-      output: expect.stringMatching(/^coverage got worse: matrix: Flying × Reach: not yet\. .*--accept-new-gaps/),
-    });
-    const accepted = writeReport(worse, committed, true);
-    expect(accepted.report).toBe(reportText(worse));
-    expect(accepted.output).toMatch(/accepted: matrix: Flying × Reach: not yet$/);
+  it("refuses any gap, with no way to accept it (D-052)", () => {
+    const untested = coverage({ ...inputs, matrixGaps: ["Flying × Reach: not yet"] });
+    for (const accept of [false, true]) {
+      expect(writeReport(untested, committed, accept)).toEqual({
+        report: null,
+        output: "every cited rule needs a test (D-052); untested: matrix: Flying × Reach: not yet",
+      });
+    }
   });
 
-  it("refuses a rule that isn't in the CR, accepted or not", () => {
+  it("refuses a rule losing its last scenario unless that's accepted, as a unit test still covers it", () => {
+    const [rule, [scenario]] = Object.entries(current.byScenario).find(
+      ([r, files]) => files.length === 1 && Object.keys(inputs.unitTests).some((t) => covers(t, r)),
+    ) as [string, string[]];
+    const scenarios = Object.fromEntries(
+      Object.entries(inputs.scenarios).map(([r, files]) => [r, files.filter((f) => f !== scenario)]),
+    );
+    const fewer = coverage({ ...inputs, scenarios });
+    expect(writeReport(fewer, committed, false).report).toBeNull();
+    expect(writeReport(fewer, committed, true).output).toContain(
+      `accepted: CR ${rule} is no longer tested by a scenario`,
+    );
+  });
+
+  it("refuses a rule that isn't in the CR", () => {
     const typo = { ...current, notInCr: ["601.99"] };
     expect(writeReport(typo, committed, true).report).toBeNull();
   });

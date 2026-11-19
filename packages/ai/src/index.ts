@@ -1,2 +1,2 @@
-// Placeholder: the heuristic AI arrives in M2. See README.md.
+// Placeholder: the heuristic AI arrives in M3. See README.md.
 export {};

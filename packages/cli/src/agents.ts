@@ -1,4 +1,4 @@
-// Simple agents for `ai` and `auto` (and the fuzzer, M1-18) until the real AI arrives in M2. Each is pure: the state,
+// Simple agents for `ai` and `auto` (and the fuzzer, M1-18) until the real AI arrives in M3. Each is pure: the state,
 // the legal actions and a random state in, an action and the next random state out. They choose only from
 // `legalActions`, so they never concede (D-042).
 

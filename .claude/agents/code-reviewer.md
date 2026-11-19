@@ -20,6 +20,8 @@ Check, in this order:
 3. **Tests.** Is the behavior covered by scenario tests, including negative cases and interactions with related
    mechanics? Would the tests fail if the code were wrong? Was any test weakened, or a golden file regenerated
    without an explained diff? Did the coverage report or the benchmarks get worse?
+   Every rule the code implements must be cited where it's implemented and have a scenario or a unit test (D-052):
+   flag behavior with no citation.
 4. **Readability.** Could someone who knows TypeScript and Magic follow this without the author? Clear names
    from the CR, short focused files, comments that explain why and cite the CR, no clever tricks, no speculative
    abstraction, a README for new packages or folders.

@@ -19,7 +19,9 @@ When asked to review a change:
 3. Check the code and the scenario tests against each rule. Look especially for:
    timing and priority mistakes, the order of steps in a procedure (CR 601.2, 608.2), when state-based
    actions are checked, object identity across zone changes (CR 400.7), layer and timestamp order (CR 613),
-   who makes a choice, and missing negative cases in the tests.
+   who makes a choice, and missing negative cases in the tests. Every rule the code implements must be cited where
+   it's implemented and backed by a scenario or a unit test (D-052): flag behavior with no citation, a citation
+   whose test doesn't really check it, and a `later: CR` mark on a rule that is built.
 4. Try to construct a concrete game situation where the implementation gives the wrong result.
 
 Report:

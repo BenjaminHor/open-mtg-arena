@@ -6,7 +6,7 @@ wrong, change this document (and `decisions.md`) in the same commit as the code.
 ## Layers and packages
 
 ```
-apps/web            PWA: PixiJS match board + React UI (menus, prompts, HUD, deckbuilder) (M2+)
+apps/web            PWA: PixiJS match board + React UI (menus, prompts, HUD, deckbuilder) (M3+)
   └─ uses ─> packages/match   runs one game: routes decisions to UI or AI, auto-pass, saves
                ├─ uses ─> packages/ai       chooses actions from a player's view
                └─ uses ─> packages/engine   the rules: pure reducer
@@ -202,7 +202,7 @@ simple.
 ## AI (`packages/ai`)
 
 - Input: a `PlayerView` plus the pending decision. Output: an action. It never reads full state.
-- v0 (M2): heuristics. Board evaluation, simple attack/block math, burn the best target,
+- v0 (M3): heuristics. Board evaluation, simple attack/block math, burn the best target,
   never make an illegal move.
 - Later: search (for example Monte Carlo tree search). Clone the state from a sampled "plausible
   world" consistent with the view, and simulate with the real reducer. This is why the reducer
