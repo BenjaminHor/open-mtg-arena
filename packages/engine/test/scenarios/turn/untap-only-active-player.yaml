@@ -1,9 +1,9 @@
-name: Only the active player's permanents untap
+name: Only the active player's permanents untap, and only theirs stop being summoning sick
 rules: [CR 502.3, CR 302.6]
 setup:
   turn: { active: p1, step: end }
   p1:
-    battlefield: [{ card: Forest, tapped: true }]
+    battlefield: [{ card: Forest, tapped: true }, { card: Grizzly Bears, sick: true }]
   p2:
     battlefield: [{ card: Mountain, tapped: true }, { card: Grizzly Bears, tapped: true, sick: true }]
 steps:
@@ -11,6 +11,7 @@ steps:
   - expect:
       active: p2
       p1:Forest.tapped: true
+      p1:Grizzly Bears.sick: true
       p2:Mountain.tapped: false
       p2:Grizzly Bears.tapped: false
       p2:Grizzly Bears.sick: false

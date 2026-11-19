@@ -1,18 +1,22 @@
-name: A first mulligan draws a new seven and puts one card on the bottom
+name: A first mulligan draws a new seven and puts the chosen card on the bottom
 rules: [CR 103.5]
 setup:
   opening: standard
   first: p1
+  seed: 1
+  p1:
+    library: [Forest, Forest, Forest, Forest, Forest, Forest, Forest, Grizzly Bears]
 steps:
   - p1 choose: mulligan
   - p2 choose: keep
   - expect:
       p1.hand count: 7
+      p1.library count: 1
       pending: { player: p1, kind: mulliganBottom, remaining: 1 }
-  - p1 choose: Forest
+  - p1 choose: Grizzly Bears
   - expect:
       p1.hand count: 6
-      p1.library count: 34
+      p1.library: [Forest, Grizzly Bears]
       pending: { player: p1, kind: mulligan, mulligansTaken: 1 }
   - p1 choose: keep
   - expect:

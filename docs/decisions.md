@@ -215,6 +215,8 @@ and avoids crossover or digital-only printings, without changing any rules behav
 - Every zone change goes through `moveCard` (`engine/src/zones/move-card.ts`), the one place the replacement and
   trigger steps of the event pipeline will plug in.
 - Only two-player games start for now: the multiplayer start rules (CR 103.5c, 103.8c) aren't built.
+- A standard opening needs at least 7 cards in each deck. That's an engine precondition, not a CR rule (legal decks are
+  far bigger, CR 100.2a), so the start of the game can never draw from an empty library.
 - Superseded by D-031 for the first turn: M1-05's shortcut to the upkeep is gone, and the first turn walks its steps
   like any other. `legalActions` lists `PASS_PRIORITY` for priority from M1-06.
 - In a standard opening every setup permanent starts summoning sick and mana pools must be empty: no turn has begun.

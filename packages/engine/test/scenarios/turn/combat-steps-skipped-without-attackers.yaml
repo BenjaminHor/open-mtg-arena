@@ -1,5 +1,5 @@
 name: With no attackers, the declare blockers and combat damage steps are skipped
-rules: [CR 508.8, CR 500.11]
+rules: [CR 508.8, CR 500.11, CR 506.1]
 setup:
   turn: { active: p1, step: main1 }
 steps:

@@ -1,13 +1,16 @@
-name: The starting player has no draw step on turn 1
-rules: [CR 103.8a, CR 500.11]
+name: The starting player has no draw step on turn 1, even from the second seat
+rules: [CR 103.8, CR 103.8a, CR 500.11, CR 117.3a]
 setup:
   opening: standard
-  first: p1
+  first: p2
 steps:
-  - p1 choose: keep
   - p2 choose: keep
-  - all pass: once
+  - p1 choose: keep
   - expect:
       turn: 1
+      active: p2
+      step: upkeep
+  - all pass: once
+  - expect:
       step: main1
-      p1.hand count: 7
+      p2.hand count: 7
