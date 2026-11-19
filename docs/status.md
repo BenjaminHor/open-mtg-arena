@@ -7,7 +7,21 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-18 Fuzzer and replays (plan, 2026-11-19). docs/testing.md sections 3 and 4.
+  - `playerView(state, viewer)` and `eventsFor(events, viewer)` in a new engine folder `view/`: other players' hands
+    and every library become hidden objects (no oracle id or card id, which would let a card be tracked after a
+    shuffle), and `rng` is left out (CR 701.24a: no one knows a library's order). Events that would reveal a hidden card
+    (a draw, a move between hidden zones) lose the card's identity for other players. The fuzzer checks they leak
+    nothing; the AI (M2) reads only views.
+  - `pnpm fuzz --games N --seed S [--decks ...]` (`cli/src/fuzz.ts` on a `fuzz/` module): games between the prebuilt
+    decks and random 40-card decks from the pool, with the random agent and sometimes `first-legal`. After every
+    action: `invariantProblems` (JSON round trip, zones, nothing stalled, every legal action accepted, no negative
+    mana), life changes only through `LIFE_LOST` events, views and filtered events leak nothing, and at the end replay
+    gives the same state; a game over 200 turns is flagged. A failure prints the seed and writes the game file to
+    `fuzz-failures/` (gitignored), which `pnpm cli replay` opens.
+  - A short fuzz in `pnpm check` (a few games); `pnpm fuzz --games 1000` for the acceptance (about 11 minutes).
+  - Replays: `packages/engine/test/replays/*.json` are game files with a final-state hash; a test replays each and
+    compares. A test injects a broken invariant and checks the fuzzer's checks catch it.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
