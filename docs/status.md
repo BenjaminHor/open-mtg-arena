@@ -22,7 +22,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
 - When M1-16 lands the scenario runner, drop `--passWithNoTests` from `test:scenarios`, so a misplaced runner fails.
-- M1-04 will need Scryfall's hosts (`api.scryfall.com`, `data.scryfall.io`) allowed in that environment. Request them then.
+- `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request (2026-11-19). From now on, work reaches
+  `main` only through pull requests. If GitHub still shows the session branch as the default, the owner switches the
+  default to `main` in the repo settings, so Dependabot targets `main`.
+- The owner approved allowing Scryfall's hosts (`api.scryfall.com`, `data.scryfall.io`) in the "open-mtg-arena" environment for M1-04.
 
 ## Next up
 - M1-03 Core types and state
@@ -36,9 +39,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `pnpm cli --help`, and a `pnpm fuzz` stub (D-017) (2026-11-19).
 
 ## Open questions for the owner
-- The repo has no `main` branch yet. This session worked on `claude/eloquent-mayer-qcx0e1` (Claude Code on the web
-  may only push to its session branch). Should `main` be created from it, so later tasks can use pull requests into `main`?
-  Until then that branch is the repo's only (and so default) branch, and Dependabot's weekly PRs target it.
+- (none)
 
 ## Known issues
 - (none)

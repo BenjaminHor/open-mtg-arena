@@ -2,10 +2,11 @@
 # A pull request merges into main only with this green (CLAUDE.md, "How to work").
 name: CI
 
-# Pushes to every branch trigger it while there is no `main` yet (docs/status.md, Open questions).
-# Once `main` exists, limit `push` to main so pull request branches don't run CI twice.
+# Pull requests run it before merging; pushes to main run it again on the merged result.
+# (Only main for pushes, so a pull request branch doesn't run CI twice per commit.)
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
