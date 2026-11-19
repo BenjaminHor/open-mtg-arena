@@ -42,6 +42,7 @@ createGame(setup: GameSetup, cards: CardDatabase): EngineResult
 applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult
 legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[]
 playerView(state: GameState, player: PlayerId): PlayerView      // hides hidden information
+eventsFor(events: GameEvent[], player: PlayerId): ViewEvent[]   // the same, for events
 characteristics(state: GameState, obj: ObjectId, cards: CardDatabase): Characteristics
 
 type EngineResult =
@@ -90,7 +91,8 @@ type GameState = {
 - An `ObjectId` names one game object. **When a card changes zones it becomes a new object
   with a new id** (CR 400.7). The engine never "moves" an id between zones.
 - Each object also has a `cardId`, the physical card from a deck (or the token that was created).
-  The `cardId` stays the same across zone changes. The UI uses it to animate a card moving from
+  The `cardId` stays the same across zone changes. Card ids are numbered in a random order, so a public one says
+  nothing about the hidden cards next to it in a decklist (D-045). The UI uses it to animate a card moving from
   hand to stack to battlefield. Rules logic uses only `ObjectId`.
 - `ZONE_CHANGED` events carry `from`, `to`, the old and new `ObjectId`, and the `cardId`.
 
@@ -172,13 +174,13 @@ simple.
 
 ## Hidden information and randomness
 
-- Events can carry hidden information too (a drawn card), so the match host filters them per player before they
-  reach the UI or AI, the same way `playerView` filters state.
+- Events can carry hidden information too (a drawn card), so the match host filters them per player with
+  `eventsFor(events, p)` before they reach the UI or AI, the same way `playerView` filters state (D-044).
 - `GameState.rng` predicts every future shuffle, so `playerView` must leave it out too (CR 701.24a: no player knows
   a library's order).
-- `playerView(state, p)` replaces hidden objects (opponent's hand, libraries, face-down cards)
-  with placeholders and keeps only counts and public facts. The AI and the UI get views only.
-  Tests and the CLI's debug mode can see full state.
+- `playerView(state, p)` leaves out hidden objects (other players' hands, libraries; face-down cards later) and keeps
+  only counts and public facts; it also leaves out the setup (its seed and decklists) and the engine's internals. The
+  AI and the UI get views only. Tests and the CLI's debug mode can see full state.
 - All randomness (shuffles, coin flips, random choices) comes from `state.rng`, a small seeded
   PRNG implemented in the engine. The same setup and the same actions always give the same game.
 

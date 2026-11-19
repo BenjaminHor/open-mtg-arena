@@ -7,7 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- (none: M1-19 next)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -23,8 +23,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Local setup: Node 26 (`.nvmrc`) and pnpm 10.34.9 (`packageManager`). The "open-mtg-arena" environment's setup
   script installs both into `/opt/node26` and runs `pnpm install`. Shells there start on an older Node, so run
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
-- `pnpm check` is typecheck + lint + tests for now. Its other parts in `docs/testing.md` join as they're built:
-  golden games and the coverage check (M1-19), a short fuzz (M1-18).
+- `pnpm check` is typecheck + lint + tests, which include a short fuzz (seeds 1 to 6, M1-18). Its other parts in
+  `docs/testing.md` join as they're built: golden games and the coverage check (M1-19).
 - Scenarios: write new rules tests as YAML in `packages/engine/test/scenarios/<area>/` (testing.md). Extend the runner
   (`packages/scenarios`) and testing.md together when a task adds steps (`play`, `cast`, `activate`, `attack`, `block`).
   The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
@@ -73,7 +73,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- M1-18 Fuzzer and replays
+- M1-19 Golden games, coverage report and benchmarks (docs/milestones/m1-engine-foundations.md): golden games reusing
+  the event log, `pnpm coverage:rules` and its check in `pnpm check`, the interaction matrix README, `pnpm bench` with
+  a baseline. Then the M1 exit criteria with the owner.
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -138,6 +140,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-17 Headless CLI: `new`, `show`, `actions`, `do`, `ai`, `auto`, `log`, `inspect`, `export --scenario`, `replay`;
   the game file (setup + actions, cached state); `first-legal` and `random` agents; the prebuilt decks; exported games
   pass as scenarios (D-043) (2026-11-19).
+- M1-18 Fuzzer and replays: player views and event filtering (D-044), card ids numbered in a random order (D-045),
+  `pnpm fuzz` with every check after every action and failures written as game files, a short fuzz in `pnpm check`,
+  saved replays with `pnpm replays:update` (D-046). Acceptance: `pnpm fuzz --games 1000 --seed 1` clean (0 of 1,000
+  failed, 26 minutes); mutants breaking views, events, life, zones and legal actions are caught. One known issue left
+  for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
@@ -146,4 +153,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- (none)
+- Card tracking through hidden hands (rules-judge, 2026-11-19; D-044). Card ids and object ids let a player follow a
+  card through another player's hand (CR 402.3): after a cancelled cast (CR 734.1), `CAST_CANCELLED` names the card's
+  card id and restored hand id, so when a copy is cast later the other player can tell whether it was that card. Object
+  ids, numbered as they're made, also show roughly when a card entered a hand. The fuzzer can't see it (each event is
+  fine alone). Fix before M2's AI reads views. Sketch: a card entering a zone some player can't see gets a new card id,
+  and `eventsFor` shows other players neither the old object id of a card leaving a hidden zone nor `restored`.
+  That changes what a card id means (architecture.md, "Object identity"), so it gets its own decision.

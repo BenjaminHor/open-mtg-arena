@@ -15,7 +15,10 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
 - `src/event-log.ts`: events in words, by turn (`log`, `auto`). `src/deck-setup.ts`: a game between prebuilt decks.
 - `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
   actions, targets and mana in words.
-- `src/fuzz.ts`: the `pnpm fuzz` command. A stub that exits with an error until M1-18.
+- `src/fuzz.ts`: the `pnpm fuzz` command (docs/testing.md, section 3; D-046). `src/fuzz/`: `checks.ts` (what's
+  checked after every action, including `scrambleHidden` for views), `run-game.ts` (`fuzzGame`: one seed, one game),
+  `run-fuzz.ts` (many games, failures written to `fuzz-failures/`).
+- `src/replays.ts`: the saved replays in `packages/engine/test/replays/` and `pnpm replays:update`.
 
 ```sh
 pnpm cli --help
@@ -27,5 +30,6 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 
 `pnpm test` runs this package's tests along with the rest: `test/cli.test.ts` plays games through the commands,
 including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games
-replay exactly) and `test/log-inspect-replay.test.ts` cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root,
+replay exactly), `test/log-inspect-replay.test.ts`, `test/fuzz.test.ts` (the checks, failure files, and the short
+fuzz `pnpm check` runs) and `test/replays.test.ts` (every saved replay) cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root,
 where pnpm runs scripts.

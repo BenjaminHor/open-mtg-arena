@@ -2,7 +2,7 @@ name: A player picked at random chooses who takes the first turn, and may choose
 rules: [CR 103.1]
 setup:
   opening: standard
-  seed: 1
+  seed: 2
 steps:
   - expect:
       pending: { player: p1, kind: chooseStartingPlayer }

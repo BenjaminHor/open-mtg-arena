@@ -142,6 +142,7 @@ The M1 scaffolding task creates these scripts. Keep these names stable.
 - `pnpm test` — unit and scenario tests (Vitest)
 - `pnpm test:scenarios` — scenario tests only
 - `pnpm fuzz --games 500` — random legal games checking invariants
+- `pnpm replays:update` — rewrite the saved replays' final-state hashes (only with an explained diff)
 - `pnpm golden:update` / `pnpm golden:add` — regenerate or add golden games (only with an explained diff)
 - `pnpm coverage:rules` — which CR rules are cited by code but not tested
 - `pnpm bench` — engine benchmarks against `bench/baseline.json`

@@ -122,6 +122,23 @@ division names the player too, one blocker asks too, and earlier lethal damage c
 record of which creatures already dealt damage. A creature blocking several attackers needs a list form for the
 scenario `block` step.
 
+**Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2; who may look, CR 708.5;
+telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed
+cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), milling (CR 701.17), and cards a player has seen
+in another's hand (a cancelled cast's card back in hand, CR 734.1) all change what `playerView` shows. *Watch out:*
+shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order, so the first move from a library
+to a public zone (a mill, a search) would show a setup-order id and hint at decklist neighbours again (D-045). CR
+701.20d already makes shuffled revealed cards new objects: give every shuffled card a new object id. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
+per object, so `canSee` will take the object too. A partly known hand doesn't fit `hand: ObjectId[] | null`: another
+player's hand will need its known cards listed alongside `handSize`. The fuzzer's scramble (`scrambleHidden`) must
+learn to leave known cards alone.
+
+**What a view can compute (M2).** The UI and the AI get views, not states (D-044), but `characteristics()` reads a
+`GameState` (objects, the battlefield, effects, rule modifiers). Before M2 uses views, pick one: narrow
+`characteristics()` and its helpers to an input type that both `GameState` and `PlayerView` satisfy (keep the view's
+field paths the same as the state's for that), or have the host send each visible permanent's characteristics with
+the view. Never let the UI read `baseController` or printed power and toughness directly.
+
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 *Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
 the player from `turnOrder` (or mark them) so they can't concede twice, and pass priority on if they had it (CR 800.4a).

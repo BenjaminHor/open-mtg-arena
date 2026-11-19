@@ -70,6 +70,31 @@ describe("shuffling and opening hands (CR 103.3, 103.5)", () => {
   });
 });
 
+describe("card ids (D-045)", () => {
+  // Numbered in decklist order, a public card's id would hint at the cards next to it in the decklist, which are in a
+  // hidden library or hand (CR 400.2).
+  const idsInSetupOrder = (seed: number) => {
+    const fixed = { kind: "fixed", turn: { number: 1, activePlayer: "p1", step: "upkeep" } } as const;
+    const game = start(standardSetup({ seed, opening: fixed }));
+    return [...library(game.state, "p1"), ...library(game.state, "p2")].map((id) => cardIdOf(game.state, id));
+  };
+
+  it("numbers every card c1 to cN, once each", () => {
+    const ids = idsInSetupOrder(1);
+    const expected = Array.from({ length: ids.length }, (_, i) => `c${i + 1}`);
+    expect([...ids].sort()).toStrictEqual([...expected].sort());
+  });
+
+  it("numbers them in a random order, not the setup's, decided by the seed", () => {
+    const ids = idsInSetupOrder(1);
+    const ascending = ids.filter((id, i) => i > 0 && Number(id.slice(1)) > Number((ids[i - 1] as string).slice(1)));
+    // In setup order every id but the first would be one more than the one before; shuffled, about half are larger.
+    expect(ascending.length).toBeLessThan(ids.length * 0.75);
+    expect(idsInSetupOrder(1)).toStrictEqual(ids);
+    expect(idsInSetupOrder(2)).not.toStrictEqual(ids);
+  });
+});
+
 describe("mulligans (CR 103.5)", () => {
   it("asks the starting player first, then the next player in turn order", () => {
     let game = p1First();
