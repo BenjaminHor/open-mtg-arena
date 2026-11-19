@@ -161,6 +161,15 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- **Swap M2 and M3? (owner, 2026-11-19).** The owner said: "I honestly think we should probably just swap M2 and M3.
+  Because really the end goal is to have an accurate Magic the Gathering rules engine. Defined by the comprehensive
+  rule set." and asked whether implementing every rule is feasible. Claude Code's answer is in the conversation and
+  summarized here: feasible as a long-term goal if driven by cards (each rule built and tested with cards that use
+  it), in tiers: the core systems first (triggers, replacement and prevention, the full layer system, static
+  abilities, costs, tokens, auras and equipment, planeswalkers, copies, the evergreen keywords), then keywords by how
+  common they are, then multiplayer and variants (CR 8, 9). Waiting on the owner to confirm the swap; then update
+  roadmap.md, vision.md (its "not every Magic card" non-goal and the goal wording), the milestone specs, and record a
+  decision.
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
