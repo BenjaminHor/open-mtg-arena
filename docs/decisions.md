@@ -371,7 +371,8 @@ every schema change and every change D-024 lists bumps it.
 **D-038: characteristics() composes one reader per layer** · 2026-11-19 · accepted
 - `characteristics(state, id, cards)` (`rules/characteristics.ts`) is the full answer to "what is this object now"
   (CR 613.1). It calls one reader per layer, in the CR's order: `controllerOf` (layer 2), `cardTypesOf` and
-  `subtypesOf` (layer 4), printed colors and keywords (layers 5 and 6, no effects yet), `powerAndToughness` (layer 7).
+  `subtypesOf`, `supertypesOf` (layer 4), printed colors (layer 5), `keywordsOf` (layer 6), `powerAndToughness`
+  (layer 7). The controller isn't a characteristic (CR 109.3) but is included, computed in layer 2 (D-022).
   Rules code may call those readers directly; none of them calls `characteristics()`, so a later layer can ask an
   earlier one without recursion (the rule modifier in 7c asks for control and types).
 - Layer 7c only adds and subtracts, so its effects aren't sorted: their order can't change the result. (They're in

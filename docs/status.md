@@ -32,7 +32,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
 - Effects (D-036): test CR 608.2m (a spell that leaves the stack mid-resolution) once an effect can move one. A new op
   goes in `effects/run-effect.ts` and the table in `effects/README.md`.
-- Characteristics (D-038): read power, toughness and keywords through `characteristics()` or `powerAndToughness`.
+- Characteristics (D-038): read power, toughness and keywords through `characteristics()` or the per-layer readers
+  (`powerAndToughness`, `keywordsOf`, `supertypesOf` for the legend rule, CR 704.5j).
+- For M1-12: `characteristics/damage-and-pump-end-together.yaml` only starts proving CR 514.2 once SBAs exist; check
+  it fails if the pump ends before damage is removed.
   An effect whose `affected` objects are gone stays until cleanup and does nothing (their ids never come back, CR 400.7).
 - For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
   and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.

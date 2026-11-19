@@ -1,6 +1,6 @@
 // An object's activated abilities, and which of them are mana abilities.
 
-import type { AbilityDef, CardDatabase } from "../cards/types.ts";
+import type { AbilityDef, CardDatabase, Keyword } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -8,6 +8,13 @@ import type { AbilityRef, BasicLandType } from "../state/objects.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 
 export type ActivatedAbility = { ref: AbilityRef; def: AbilityDef };
+
+/** An object's keyword abilities (CR 702): layer 6 of `characteristics()`, printed until effects grant or remove them. */
+export function keywordsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Keyword[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  return cards[obj.oracleId]?.def.keywords ?? [];
+}
 
 const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
   Plains: "W",

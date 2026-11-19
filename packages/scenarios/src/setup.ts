@@ -113,7 +113,7 @@ function permanent(entry: unknown, cards: CardDatabase, id: PlayerId): Permanent
     tapped: boolean(entry.tapped, "tapped"),
     summoningSick: boolean(entry.sick, "sick"),
     damage: entry.damage === undefined ? 0 : integer(entry.damage, "damage"),
-    counters: Object.fromEntries(Object.entries(counters).map(([k, v]) => [k, integer(v, `counters ${k}`)])),
+    counters: Object.fromEntries(Object.entries(counters).map(([k, v]) => [k, count(v, `counters ${k}`)])),
   };
 }
 
@@ -130,6 +130,13 @@ function manaPool(raw: unknown, id: PlayerId): ManaPool {
 
 function keysIn(map: Record<string, unknown>, allowed: readonly string[], where: string): void {
   for (const key of Object.keys(map)) if (!allowed.includes(key)) throw new Error(`Unknown key "${key}" in ${where}`);
+}
+
+/** A number of counters: a whole number, not negative (CR 122.1). */
+function count(value: unknown, what: string): number {
+  const n = integer(value, what);
+  if (n < 0) throw new Error(`${what} can't be negative`);
+  return n;
 }
 
 function integer(value: unknown, what: string): number {

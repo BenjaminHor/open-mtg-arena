@@ -1,0 +1,10 @@
+name: Counters that aren't +X/+Y or -X/-Y don't change power or toughness
+rules: [CR 122.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Grizzly Bears, counters: { charge: 2 } }]
+steps:
+  - expect:
+      p1:Grizzly Bears.power: 2
+      p1:Grizzly Bears.toughness: 2

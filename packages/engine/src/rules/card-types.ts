@@ -1,6 +1,6 @@
 // An object's card types (CR 205.2), for code that asks "is this a creature?", "is this an instant?".
 
-import type { CardDatabase, CardType } from "../cards/types.ts";
+import type { CardDatabase, CardType, Supertype } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
@@ -12,6 +12,16 @@ export function subtypesOf(state: GameState, id: ObjectId, cards: CardDatabase):
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
   return cards[obj.oracleId]?.printed.subtypes ?? [];
+}
+
+/**
+ * An object's supertypes (CR 205.4): layer 4 of `characteristics()`, printed until type-changing effects exist.
+ * The legend rule (CR 704.5j) asks this.
+ */
+export function supertypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Supertype[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  return cards[obj.oracleId]?.printed.supertypes ?? [];
 }
 
 /**

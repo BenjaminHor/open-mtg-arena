@@ -1,4 +1,4 @@
-name: A rule modifier gives one player's creatures +2/+1, and only creatures on the battlefield
+name: A rule modifier gives one player's creatures +2/+1, and not other permanents or other players' creatures
 rules: [CR 613.4c, CR 109.2]
 setup:
   turn: { active: p1, step: main1 }

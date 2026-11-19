@@ -19,14 +19,15 @@ export function powerAndToughness(state: GameState, id: ObjectId, cards: CardDat
   const obj = state.objects[id];
   if (obj?.kind !== "card") return { power: null, toughness: null };
   const printed = cards[obj.oracleId]?.printed;
+  if (printed === undefined) throw new Error(`No card data for ${obj.oracleId}`);
   const isCreature = cardTypesOf(state, id, cards).includes("creature");
   const onBattlefield = state.zones.battlefield.includes(id);
   // A noncreature permanent has no power or toughness, even if printed; a noncreature card elsewhere has its printed
   // ones (CR 208.3).
-  if (printed?.power == null || printed.toughness == null || (onBattlefield && !isCreature)) {
+  if (printed.power === null || printed.toughness === null || (onBattlefield && !isCreature)) {
     return { power: null, toughness: null };
   }
-  const bonus = layer7c(state, obj, onBattlefield);
+  const bonus = layer7c(state, obj, isCreature, onBattlefield);
   return { power: printed.power + bonus.power, toughness: printed.toughness + bonus.toughness };
 }
 
@@ -34,15 +35,26 @@ export function powerAndToughness(state: GameState, id: ObjectId, cards: CardDat
  * Layer 7c (CR 613.4c): effects and counters that modify power and toughness, summed. Reached only for a creature,
  * or a noncreature card off the battlefield with printed values (so on the battlefield, it's a creature).
  */
-function layer7c(state: GameState, obj: CardObject, onBattlefield: boolean): { power: number; toughness: number } {
+function layer7c(
+  state: GameState,
+  obj: CardObject,
+  isCreature: boolean,
+  onBattlefield: boolean,
+): { power: number; toughness: number } {
   const changes: { power: number; toughness: number }[] = [];
   // Continuous effects from resolved spells and abilities, on the objects they locked in (CR 611.2c).
   for (const effect of state.effects) {
-    if (effect.change.kind === "modifyPT" && effect.affected.includes(obj.id)) changes.push(effect.change);
+    if (!effect.affected.includes(obj.id)) continue;
+    switch (effect.change.kind) {
+      case "modifyPT":
+        changes.push(effect.change);
+        break;
+    }
   }
-  // +X/+Y and -X/-Y counters (CR 122.1a). Only a permanent has counters here: counters don't move with a card that changes
-  // zones (CR 122.2, 400.7), and on the battlefield this is a creature.
-  for (const [name, count] of Object.entries(obj.counters)) {
+  // +X/+Y and -X/-Y counters count on a creature or a creature card in another zone, not on a noncreature card
+  // (CR 122.1a). In the engine today only permanents get counters (they don't move with a card, CR 122.2), but the CR
+  // allows them elsewhere.
+  for (const [name, count] of isCreature ? Object.entries(obj.counters) : []) {
     const pt = ptCounter(name);
     if (pt !== null) changes.push({ power: pt.power * count, toughness: pt.toughness * count });
   }

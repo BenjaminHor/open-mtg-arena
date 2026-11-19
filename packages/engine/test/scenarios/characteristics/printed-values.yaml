@@ -1,5 +1,5 @@
-name: Characteristics start from the printed card, and a noncreature has no power or toughness
-rules: [CR 613.1, CR 302.4c, CR 208.3]
+name: Characteristics start from the printed card, and a land has no power or toughness
+rules: [CR 613.1, CR 302.4c, CR 302.4]
 setup:
   turn: { active: p1, step: main1 }
   p1:

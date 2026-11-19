@@ -1,5 +1,5 @@
 name: Two Giant Growths on one creature both apply
-rules: [CR 613.4c, CR 613.7b]
+rules: [CR 613.4c, CR 611.2c]
 setup:
   turn: { active: p1, step: main1 }
   p1:
