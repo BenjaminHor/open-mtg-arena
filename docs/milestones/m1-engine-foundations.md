@@ -89,8 +89,8 @@ without a rewrite. *Accept:* scenarios for stacking two pumps, and a pump wearin
 scenario per SBA, plus one where two SBAs happen at once.
 
 **M1-13 Combat.** Declare attackers (CR 508) and blockers (CR 509) as decisions, summoning sickness (CR 302.6),
-haste (CR 702.10), flying and reach (CR 702.9, 702.17), combat damage (CR 510) with damage assignment order when
-one attacker is blocked by several creatures, and unblocked damage to the player. *Accept:* scenarios for each
+haste (CR 702.10), flying and reach (CR 702.9, 702.17), combat damage (CR 510), including an attacker blocked by several
+creatures dividing its damage among them as its controller chooses (CR 510.1c; the CR no longer has damage assignment order, D-020), and unblocked damage to the player. *Accept:* scenarios for each
 keyword interaction (and its negatives), multiple blockers, and a lethal attack ending the game.
 
 **M1-14 Activated abilities.** CR 602: Furnace Whelp's firebreathing, activated at instant speed, as a

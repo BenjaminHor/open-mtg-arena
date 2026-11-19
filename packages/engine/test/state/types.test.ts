@@ -1,0 +1,80 @@
+// Type-level tests: they pass when this file typechecks (`pnpm typecheck` covers tests).
+// The runtime assertions only make Vitest count them.
+
+import { describe, expectTypeOf, it } from "vitest";
+import type {
+  Action,
+  CardId,
+  DecisionId,
+  GameEvent,
+  GameObject,
+  GameSetup,
+  GameState,
+  ObjectId,
+  PendingDecision,
+  PlayerId,
+} from "../../src/index.ts";
+
+/** Plain JSON. With exactOptionalPropertyTypes, an optional property is absent or has its type, never undefined, so it fits. */
+type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
+
+describe("ids", () => {
+  it("keeps object ids and card ids apart (CR 400.7)", () => {
+    const objectId: ObjectId = "o1";
+    const cardId: CardId = "c1";
+    // @ts-expect-error an ObjectId is not a CardId
+    const notACard: CardId = objectId;
+    // @ts-expect-error a CardId is not an ObjectId
+    const notAnObject: ObjectId = cardId;
+    // @ts-expect-error a PlayerId is not an ObjectId
+    const notAPlayer: ObjectId = "p1" satisfies PlayerId;
+    // @ts-expect-error ids have their own prefixes
+    const wrongPrefix: DecisionId = "o3";
+    expectTypeOf([notACard, notAnObject, notAPlayer, wrongPrefix]).toBeArray();
+  });
+});
+
+describe("plain JSON", () => {
+  it("GameState, GameSetup, actions and events are all JSON types", () => {
+    expectTypeOf<GameState>().toExtend<Json>();
+    expectTypeOf<GameSetup>().toExtend<Json>();
+    expectTypeOf<Action>().toExtend<Json>();
+    expectTypeOf<GameEvent>().toExtend<Json>();
+  });
+});
+
+describe("discriminated unions", () => {
+  it("lets a switch on kind handle every kind of object and decision", () => {
+    function describeObject(obj: GameObject): string {
+      switch (obj.kind) {
+        case "card":
+          return obj.cardId;
+        case "ability":
+          return obj.source;
+        default:
+          return assertNever(obj);
+      }
+    }
+    function describeDecision(decision: PendingDecision): string {
+      switch (decision.kind) {
+        case "priority":
+          return "priority";
+        case "mulligan":
+          return `mulligan ${decision.mulligansTaken}`;
+        default:
+          return assertNever(decision);
+      }
+    }
+    expectTypeOf(describeObject).returns.toBeString();
+    expectTypeOf(describeDecision).returns.toBeString();
+  });
+
+  it("doesn't let an ability object pretend to be a card", () => {
+    type AbilityObject = Extract<GameObject, { kind: "ability" }>;
+    expectTypeOf<AbilityObject>().not.toHaveProperty("cardId");
+  });
+});
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled case: ${JSON.stringify(value)}`);
+}

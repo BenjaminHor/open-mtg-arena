@@ -117,3 +117,29 @@ A Biome override there bans Node modules, imports from other packages in this re
 `fetch`, `console`, `Map` and `Set`, and a small GritQL plugin (`tools/biome/no-math-random.grit`) bans
 `Math.random`. Tests may use them. The engine also exports `ENGINE_VERSION`, the current `GameState.version`,
 so hosts (the CLI, saves, replays) can reject state from another schema. M1-03 uses it for `GameState.version`.
+
+**D-020: The Comprehensive Rules win over every other spec** · 2026-11-19 · accepted
+The owner's rule: when a spec, doc or task description in this repo conflicts with the current CR on how the game
+works, the CR wins. Fix the spec to match the CR in the same commit and note it here or in `status.md`. (Questions
+that aren't about rules logic, such as product scope, UI or card choices, still go to the owner.)
+First application: the M1-13 spec and `architecture.md` mentioned damage assignment order and an `orderBlockers`
+decision. The current CR has no damage assignment order. A creature blocked by several creatures divides its combat
+damage among them as its controller chooses (CR 510.1c), so that's an `assignDamage` decision.
+
+**D-021: State updates are pure and share structure** · 2026-11-19 · accepted
+Engine functions take a `GameState` and return a new one. They copy only the path they change (object spread) and
+never mutate their input, so unchanged parts are shared between states. This keeps old states valid for undo, replays
+and AI search (cheap clones, `future-rules.md`). Random functions follow the same rule: they take an `RngState` and
+return `{ value, rng }`.
+
+**D-022: Objects reference card data by `oracleId`; the stored controller is only the default** · 2026-11-19 · accepted
+A game object stores its card's Scryfall `oracleId` and looks up printed values in the `CardDatabase` given to the engine,
+instead of copying them. That keeps state small, and later faces, copies and text changes (layers 1 and 3) change which
+values apply, not stored fields. Objects store `baseController`, the CR 110.2 default (the player it entered under, or who
+cast or activated it). The current controller always comes from `characteristics()` (layer 2), even before control-changing
+effects exist. Zones that belong to a player (library, hand, graveyard) are the owner's (CR 400.3).
+
+**D-023: The engine exports its state types** · 2026-11-19 · accepted
+`engine/src/index.ts` exports the types in `src/state/` (`GameState`, `GameSetup`, `Action`, `GameEvent`, ...) and
+`RngState`, because every other package builds setups, reads views and sends actions. These are types only, so no
+engine internals leak. The RNG functions stay internal: only the engine draws random numbers.

@@ -89,8 +89,8 @@ type GameState = {
 
 ### Characteristics are computed
 
-Objects store their **printed** values (from the card definition) plus state like counters,
-damage, tapped, face-down. Current power, toughness, types, colors, abilities and controller are
+Objects point at their card definition by `oracleId` (the printed values live there, D-022) and store
+state like counters, damage, tapped, face-down. The stored controller is only the CR 110.2 default. Current power, toughness, types, colors, abilities and controller are
 computed by `characteristics()`, which applies continuous effects in layer order (CR 613.1),
 using timestamps (CR 613.7) and dependencies (CR 613.8). Memoize per state object if profiling
 shows a need, never by caching values inside the state.
@@ -104,11 +104,10 @@ type PendingDecision = {
   id: string                 // must be echoed back, so stale answers are rejected
   player: PlayerId
   kind: 'priority' | 'mulligan' | 'chooseTargets' | 'chooseMode' | 'payCost'
-      | 'declareAttackers' | 'declareBlockers' | 'orderBlockers' | 'assignDamage'
+      | 'declareAttackers' | 'declareBlockers' | 'assignDamage'
       | 'orderTriggers' | 'orderReplacements' | 'chooseCards' | 'chooseYesNo' | ...
-  prompt: PromptSpec         // what is being asked, in data form (the UI turns it into words)
-  options: ...               // the legal answers, or constraints (min/max, legal target ids)
-}
+  ...                        // fields for that kind: what is asked and its constraints (min/max, legal ids), as data.
+}                            // Priority stores none: legalActions() computes its options.
 
 type Action =
   | { type: 'PASS_PRIORITY'; decisionId: string; player: PlayerId }
