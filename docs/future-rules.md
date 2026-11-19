@@ -134,7 +134,11 @@ to a public zone (a mill, a search) would show a setup-order id and hint at deck
 701.20d already makes shuffled revealed cards new objects: give every shuffled card a new object id. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
 per object, so `canSee` will take the object too. A partly known hand doesn't fit `hand: ObjectId[] | null`: another
 player's hand will need its known cards listed alongside `handSize`. The fuzzer's scramble (`scrambleHidden`) must
-learn to leave known cards alone.
+learn to leave known cards alone. Card ids don't carry knowledge through hidden zones (D-054): a card that comes out of
+a hand or library gets a new one, so rules that let a player know a hidden card (reveals, "look at", a card seen
+going into a hand) must record that knowledge per player explicitly, not rely on ids. Today a player can also follow
+their own cards into their own library by id (a mulligan's bottom cards); the view hides library contents, so nothing
+uses that yet.
 
 **What a view can compute (M3).** The UI and the AI get views, not states (D-044), but `characteristics()` reads a
 `GameState` (objects, the battlefield, effects, rule modifiers). Before M3 uses views, pick one: narrow

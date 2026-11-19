@@ -335,7 +335,8 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   and cancelling uses that model. It reverses the whole cast exactly: `GameState.casting` keeps the card as it was, its place in the
   hand, the pool before, and the permanents tapped for mana during the cast. The card goes back as the same object,
   the pool is restored, those permanents untap, and nothing triggers; the player keeps priority (CR 734.2).
-  `CAST_CANCELLED` carries `{ player, cardId, spell, restored, untapped }` so the UI can animate the undo. CR 734.1
+  `CAST_CANCELLED` carries `{ player, cardId, spell, restored, untapped }` so the UI can animate the undo (since
+  D-054, `cardId` is the spell's, and other players see `restored: null`). CR 734.1
   lets each player choose whether to reverse their mana abilities; cancelling always reverses them, one of the allowed
   choices.
 - On resolution, a spell whose targets are all illegal doesn't resolve (CR 608.2b): it goes to its owner's graveyard
@@ -497,10 +498,8 @@ every schema change and every change D-024 lists bumps it.
   the order of libraries and other hands, another player's casting details and pending picks, the seed, RNG and
   internals) must leave the view unchanged, and the filtered events must name no hidden card by its card id or object
   id. The checks run on the opening state too.
-- Known gap, to close before M2's AI reads views (docs/status.md, Known issues): card ids and object ids let a player
-  follow a card through another player's hand (CR 402.3). A cancelled spell goes back to hand with its card id and
-  object id (`CAST_CANCELLED.restored`), so when a copy is cast later the other player can tell which one it was;
-  and object ids, numbered as they're made, show roughly when a card entered a hand.
+- A gap found later, closed by D-054: card ids and object ids let a player follow a card through another player's
+  hand (CR 402.3), for example a cancelled spell told apart from a second copy cast later.
 - The CLI's `show --as` stays a display filter (`canSeeHand`): the board text needs `characteristics()`, which reads
   the full state. Hosts and the AI (M2) use the engine's view.
 
@@ -633,3 +632,20 @@ every schema change and every change D-024 lists bumps it.
   the modern rules (combat damage off the stack), holds Lightning Bolt and many M1 cards, and covers the core systems
   M2 builds. Each M10 card joins the pool only when it's fully scripted and tested; cards whose rules are out of scope
   (multiplayer or variants, D-051) are listed in `docs/milestones/m2-pool.md` and left out.
+
+**D-054: A card gets a new card id when it comes out of hiding** · 2026-11-19 · accepted (M2-01)
+- A card id now names a card for as long as it stays in view, or in hiding. When a card leaves a hand or a library for
+  a public zone (cast, played, discarded, milled), it gets a new card id (`GameState.nextCardId`, after the setup's
+  `c1`–`cN`). Otherwise a player who saw a card go into a hand (a cancelled spell, CR 734.1) could tell, when a copy
+  came out later, whether it was that card (CR 402.3).
+- Minting when a card comes out, not when it goes in: every card then arrives in public with a fresh id from one
+  counter, so the number says nothing about its past. (Minting on the way in would leave setup cards with ids at or
+  below N and re-hidden ones above it, which tells them apart.) A cancel still restores the hand card exactly (D-035).
+- `ZONE_CHANGED` carries `cardId` (before the move) and `newCardId` (after), and `object` is the card as it was.
+  `eventsFor` shows only the side of a move the viewer can see: `CARD_CAME_INTO_VIEW` (the new object id and card id)
+  or `CARD_LEFT_VIEW` (the old ones and the object as it was). That includes a player's own library, hidden from them
+  too (CR 401.2). Another player's `CAST_CANCELLED` has `restored: null`; its `cardId` is the spell's, which everyone
+  saw on the stack.
+- Tested by two worlds (p2 cancels a Shock, then casts the same one or the other: p1's events and views must be
+  identical), and the fuzzer's leak check now flags any id of a card hidden from the viewer before or after an
+  action, unless they could see it then too.

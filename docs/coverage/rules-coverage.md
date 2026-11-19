@@ -60,12 +60,12 @@ fails on a gap that isn't listed here; close these.
 | 208.1 | packages/engine/src/cards/types.ts | packages/cards/test/printed.test.ts |
 | 208.3 | packages/engine/src/cards/types.ts<br>packages/engine/src/rules/characteristics.ts<br>packages/engine/src/rules/power-toughness.ts<br>packages/cards/src/printed.ts | packages/engine/test/rules/characteristics.test.ts |
 | 400.1 | packages/engine/src/state/zones.ts | packages/engine/test/state/definitions.test.ts |
-| 400.2 | packages/engine/src/game/create-game.ts<br>packages/engine/src/view/player-view.ts<br>packages/engine/src/view/visibility.ts | packages/engine/test/game/start.test.ts<br>packages/engine/test/view/player-view.test.ts |
+| 400.2 | packages/engine/src/game/create-game.ts<br>packages/engine/src/view/player-view.ts<br>packages/engine/src/view/visibility.ts<br>packages/engine/src/zones/move-card.ts | packages/engine/test/game/start.test.ts<br>packages/engine/test/view/player-view.test.ts |
 | 400.3 | packages/engine/src/state/zones.ts<br>packages/engine/src/zones/move-card.ts | packages/engine/test/state/definitions.test.ts |
 | 401.1 | packages/engine/src/state/setup.ts | packages/cli/test/deck-setup.test.ts<br>packages/engine/test/state/definitions.test.ts |
-| 401.2 | packages/engine/src/view/player-view.ts<br>packages/engine/src/view/visibility.ts | packages/engine/test/view/player-view.test.ts |
+| 401.2 | packages/engine/src/view/player-view.ts<br>packages/engine/src/view/visibility.ts<br>packages/engine/src/zones/move-card.ts | packages/engine/test/view/player-view.test.ts |
 | 401.3 | packages/engine/src/view/player-view.ts | packages/engine/test/view/player-view.test.ts |
-| 402.3 | packages/engine/src/view/events-for.ts<br>packages/engine/src/view/player-view.ts<br>packages/engine/src/view/visibility.ts | packages/engine/test/view/player-view.test.ts |
+| 402.3 | packages/engine/src/view/events-for.ts<br>packages/engine/src/view/player-view.ts<br>packages/engine/src/view/visibility.ts<br>packages/engine/src/zones/move-card.ts | packages/engine/test/view/player-view.test.ts |
 | 404.1 | packages/engine/src/state/zones.ts<br>packages/engine/src/zones/move-card.ts | packages/engine/test/game/stack.test.ts |
 | 500.1 | packages/engine/src/game/turn-steps.ts<br>packages/engine/src/state/turn.ts | packages/engine/test/game/turn.test.ts |
 | 502.4 | packages/engine/src/game/setup-validation.ts<br>packages/engine/src/game/steps.ts | packages/engine/test/game/turn.test.ts |

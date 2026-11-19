@@ -9,19 +9,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 ## In progress
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
   spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
-- M2-01 Hidden information fix (plan). The known issue below: a card's ids let a player follow it through another
-  player's hidden hand (CR 402.3, 734.1). Plan, D-054:
-  - A card moving from a public zone into a hand or library gets a new card id (a separate counter, `nextCardId`,
-    after the setup's c1..cN), including a cancelled spell going back to hand (same object id and place, new card id).
-    A card id then names a card for as long as everyone can see it, or for as long as it stays hidden.
-  - `eventsFor`: a card leaving a zone the viewer can't see shows no old object id; a card entering one shows no new
-    object id, object or new card id; another player's `CAST_CANCELLED` shows no `restored` id.
-  - The fuzzer's leak check: events must name no object id hidden from the viewer before or after the action, and no
-    card id of a card hidden after it; the cancelled-cast exemption goes.
-  - Tests: the cancel-then-cast-a-copy case (the rules-judge's probe) as an engine test; cast tests updated (a cancel
-    restores the same object in the same place, with a new card id). Replays regenerate (state gains `nextCardId`).
-  - Future impact: reveals and "look at" (future-rules.md) will need per-viewer knowledge; this keeps card ids from
-    carrying knowledge across hidden stretches, which those rules then add back explicitly.
+- M2-01 Hidden information fix: done (D-054), PR to open. A card leaving a hand or library for a public zone gets a
+  new card id; `eventsFor` shows only the side of a move the viewer sees; another player's cancel hides `restored`.
+  The two-world test (cancel a Shock, cast the same one or the other: p1 sees the same) and the fuzzer's stricter
+  leak check guard it. Replays regenerated (state gains `nextCardId`); golden games unchanged.
+- Next: M2-02, the Magic 2010 pool and its mechanics map (`docs/milestones/m2-pool.md`).
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -178,10 +170,4 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- Card tracking through hidden hands (rules-judge, 2026-11-19; D-044). Card ids and object ids let a player follow a
-  card through another player's hand (CR 402.3): after a cancelled cast (CR 734.1), `CAST_CANCELLED` names the card's
-  card id and restored hand id, so when a copy is cast later the other player can tell whether it was that card. Object
-  ids, numbered as they're made, also show roughly when a card entered a hand. The fuzzer can't see it (each event is
-  fine alone). Fix early in M2, before any AI reads views (M3). Sketch: a card entering a zone some player can't see gets a new card id,
-  and `eventsFor` shows other players neither the old object id of a card leaving a hidden zone nor `restored`.
-  That changes what a card id means (architecture.md, "Object identity"), so it gets its own decision.
+- (none)

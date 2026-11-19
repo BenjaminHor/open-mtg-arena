@@ -3,7 +3,7 @@
 import { andThen, type Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import { moveCard } from "./move-card.ts";
+import { moveCard, newCardIdOf } from "./move-card.ts";
 
 /**
  * Discards these cards as one action. Emits `CARD_DISCARDED` for each (the discarding player is the card's owner,
@@ -20,7 +20,7 @@ export function discardCards(state: GameState, ids: readonly ObjectId[]): Progre
         type: "CARD_DISCARDED",
         player: card.owner,
         newId: moved.newId,
-        cardId: card.cardId,
+        cardId: newCardIdOf(moved),
       } as const;
       return { state: moved.state, events: [...moved.events, discarded] };
     });

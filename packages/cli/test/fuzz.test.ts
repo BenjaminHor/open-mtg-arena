@@ -147,8 +147,8 @@ describe("the checks", () => {
     // A made-up event that names p2's card in hand. Events of this type pass through unfiltered, so the check sees it.
     const leak: GameEvent = { type: "SPELL_CAST", player: p2, object, cardId: hidden.cardId };
     expect(viewsLeakNothing(before, before, [leak], cards)).toEqual([
-      `the events shown to ${p1} name ${hidden.cardId}, which is hidden from them`,
       `the events shown to ${p1} name ${object}, which is hidden from them`,
+      `the events shown to ${p1} name ${hidden.cardId}, which is hidden from them`,
     ]);
   });
 

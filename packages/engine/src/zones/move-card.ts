@@ -1,11 +1,11 @@
 // Moving a card between zones. Every zone change goes through `moveCard`, so the replacement and trigger steps of
 // the event pipeline (docs/architecture.md, "Effects, events, replacements, triggers") have one place to plug in.
 
-import { newObjectId, newTimestamp } from "../game/ids.ts";
+import { newCardId, newObjectId, newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { CardId, ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
@@ -23,6 +23,9 @@ export type Destination =
 /**
  * Moves a card to another zone, where it becomes a new object with a new id and no memory of the old one (CR 400.7):
  * untapped, no damage or counters, a new timestamp (CR 613.7d). Returns the new id and a `ZONE_CHANGED` event.
+ * A card coming out of a hand or a library into a public zone also gets a new card id (D-054): the old one may have
+ * been seen before it went into hiding (a cancelled spell), and keeping it would let a player follow the card through
+ * a zone they can't see (CR 401.2, 402.3).
  */
 export function moveCard(state: GameState, id: ObjectId, to: Destination): Progress & { newId: ObjectId } {
   const old = state.objects[id];
@@ -44,10 +47,13 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
   const allocated = newObjectId(next);
   const stamped = newTimestamp(allocated.state);
   next = stamped.state;
+  const comesIntoView = isHiddenZone(from) && !isHiddenZone(toRef);
+  const minted = comesIntoView ? newCardId(next) : { id: old.cardId, state: next };
+  next = minted.state;
   const card: CardObject = {
     kind: "card",
     id: allocated.id,
-    cardId: old.cardId,
+    cardId: minted.id,
     oracleId: old.oracleId,
     owner: old.owner,
     baseController: "controller" in to ? to.controller : old.owner,
@@ -73,7 +79,20 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     oldId: id,
     newId: card.id,
     cardId: old.cardId,
+    newCardId: card.cardId,
     object: old,
   };
   return { state: next, events: [event], newId: card.id };
+}
+
+/** Hands and libraries: zones some player can't see into (CR 400.2). */
+function isHiddenZone(zone: ZoneRef): boolean {
+  return zone.zone === "hand" || zone.zone === "library";
+}
+
+/** The card id a move gave the card: new if it came out of a hand or library into a public zone (D-054). */
+export function newCardIdOf(moved: Progress & { newId: ObjectId }): CardId {
+  const obj = moved.state.objects[moved.newId];
+  if (obj?.kind !== "card") throw new Error(`${moved.newId} isn't a card`);
+  return obj.cardId;
 }

@@ -18,7 +18,9 @@ export type GameEvent =
    * An object moved between zones and became a new object (CR 400.7). `object` is the old object as it last
    * existed, so triggers that look back in time (later: CR 603.10) can use it later. Abilities never change zones: they
    * leave the stack and cease to exist. Events can carry hidden information (a drawn card's `oracleId`), so hosts
-   * filter them per player before the UI or AI sees them, as `playerView` does for state.
+   * filter them per player before the UI or AI sees them, as `playerView` does for state. `cardId` is the card's id
+   * before the move and `newCardId` after it: they differ when a card comes out of a hand or library into a public
+   * zone (D-054), and the owner's UI follows the card by them.
    */
   | {
       type: "ZONE_CHANGED";
@@ -27,6 +29,7 @@ export type GameEvent =
       oldId: ObjectId;
       newId: ObjectId;
       cardId: CardId;
+      newCardId: CardId;
       object: CardObject;
     }
   /** CR 103.1. `chosenBy` is null when the setup named the starting player. */
@@ -50,8 +53,9 @@ export type GameEvent =
   /** A spell became cast (CR 601.2i), with its targets chosen and costs paid. */
   | { type: "SPELL_CAST"; player: PlayerId; object: ObjectId; cardId: CardId }
   /**
-   * The player cancelled a cast and it was reversed (D-035): the spell `spell` left the stack, the card is back in hand
-   * as `restored` (its object before the cast), and `untapped` untapped. Nothing triggers from this (CR 734.1).
+   * The player cancelled a cast and it was reversed (D-035): the spell `spell` (with card id `cardId`) left the stack,
+   * the card is back in hand as `restored`, exactly the object it was before the cast, and `untapped` untapped.
+   * Nothing triggers from this (CR 734.1). Other players aren't shown `restored` (D-054).
    */
   | {
       type: "CAST_CANCELLED";

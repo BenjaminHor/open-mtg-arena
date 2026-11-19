@@ -249,7 +249,8 @@ it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
 - `pending` is set, or `result` is set (the engine never stalls)
 - every action from `legalActions()` is accepted by `applyAction()`, and no engine call throws
 - `playerView` and `eventsFor` never leak hidden information: scrambling what a player can't see leaves their view
-  unchanged, and the events they're shown name no card hidden from them (D-044)
+  unchanged, and the events they're shown name no object or card id hidden from them before or after the action,
+  unless they could see it then too (D-044, D-054)
 - no player has negative mana, and life totals change only through events
 
 At the end of each game, replaying the action log from the setup must give an identical state (determinism), and a
