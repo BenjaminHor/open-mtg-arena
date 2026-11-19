@@ -1,0 +1,29 @@
+name: An instant cast in response resolves first
+rules: [CR 117.7, CR 405.2, CR 405.5, CR 608.2n]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Volcanic Hammer]
+    battlefield: [Mountain, Mountain]
+  p2:
+    hand: [Giant Growth]
+    battlefield: [Forest, Grizzly Bears]
+steps:
+  - p1 cast: Volcanic Hammer
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Giant Growth
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - expect:
+      stack: [Volcanic Hammer, Giant Growth]
+  - all pass: once
+  - expect:
+      stack: [Volcanic Hammer]
+      p2.graveyard: [Giant Growth]
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - expect:
+      stack: []
+      p1.graveyard: [Volcanic Hammer]

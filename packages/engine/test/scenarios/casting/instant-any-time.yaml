@@ -1,0 +1,18 @@
+name: An instant can be cast whenever its caster has priority, even on the opponent's turn with a spell on the stack
+rules: [CR 304.1, CR 117.1a, CR 117.7]
+setup:
+  turn: { active: p2, step: upkeep }
+  p1:
+    hand: [Lightning Bolt, Shock]
+    battlefield: [Mountain, Mountain]
+steps:
+  - p2 pass: once
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 cast: Shock
+    targets: [p2]
+    pay: auto
+  - expect:
+      stack: [Lightning Bolt, Shock]
+      pending: { player: p1, kind: priority }

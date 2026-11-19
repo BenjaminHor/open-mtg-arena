@@ -1,0 +1,16 @@
+name: A player can play one land during their turn
+rules: [CR 305.2, CR 305.1, CR 116.2a, CR 117.3c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Mountain, Forest]
+steps:
+  - p1 play: Mountain
+  - expect:
+      p1.battlefield: [Mountain]
+      p1.hand: [Forest]
+      stack: []
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: LAND_PLAYED, player: p1 }]
+  - p1 play: Forest
+  - expect error: illegalAction

@@ -47,6 +47,13 @@ describe("the scenario runner fails a scenario that's wrong", () => {
     expect(first(`${main1}  - p2 pass: once\n  - expect error: staleDecision\n`)).toMatch(/got notYourPriority/);
   });
 
+  it("treats a whole cast as one step under 'expect error': a fully legal cast is reported as accepted", () => {
+    const bolt = at("main1", "  p1: { hand: [Lightning Bolt], battlefield: [Mountain, Mountain] }\n");
+    expect(
+      first(`${bolt}  - p1 cast: Lightning Bolt\n    targets: [p2]\n    pay: auto\n  - expect error: illegalAction\n`),
+    ).toMatch(/but the action was accepted/);
+  });
+
   it("matches every key of pending, not just one", () => {
     expect(first(`${main1}  - expect: { pending: { player: p2, kind: priority } }\n`)).toMatch(
       /^step 1: pending: expected/,
@@ -135,8 +142,8 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
   });
 
   it("says when a step or expectation arrives in a later task, keeping a step's options", () => {
-    expect(problems(`${main1}  - p1 cast: Shock\n    targets: [p2]\n    pay: auto\n`)).toStrictEqual([
-      'step 1: "cast" steps arrive in M1-09',
+    expect(problems(`${main1}  - p1 attack: [Grizzly Bears]\n`)).toStrictEqual([
+      'step 1: "attack" steps arrive in M1-13',
     ]);
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
     expect(problems(`${main1}  - expect: { winner: p1 }\n`)).toStrictEqual(["step 1: winner: arrives in M1-15"]);

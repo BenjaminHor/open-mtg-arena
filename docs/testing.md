@@ -92,8 +92,16 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   (rather than hanging) if a decision other than priority comes up, or the step doesn't come within 500 passes (for
   example `untap`, which gives no one priority).
 - `p1 choose: <answer>` for the pending decision: `keep` or `mulligan`; a player (`p2`) for who goes first; a card name
-  for a card to put on the bottom or discard. With several identical cards, the first one that's still a legal answer
-  is used.
+  for a card to put on the bottom or discard (with several identical cards, the first one that's still a legal answer);
+  a target (`p2`, `p2:Grizzly Bears`) for a target choice; a payment like `{ R: 1 }`, or `cancel`, while paying for a
+  spell.
+- `p1 play: <land>`: play a land from hand.
+- `p1 cast: <card>` with `targets: [...]` and `pay:`: cast a spell from hand. `targets` lists one target per instance of
+  "target", in order: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`). `pay: auto` pays with `autoPay`
+  (activating mana abilities as needed); `pay: { R: 1 }` pays that from mana already in the pool; `pay: cancel` cancels
+  the cast. Without `pay`, the cast stops at the payment decision, where the player can `activate` mana abilities and
+  then `choose` a payment or `cancel`. A cast is several actions; followed by `expect error`, they're sent in order and
+  the first one rejected must have the code (the step fails if all are accepted).
 - `expect: { ... }`, see below.
 - `expect error: <code>`: the step before it must be rejected with this error code (for example `notYourPriority`). The
   runner then sends the action directly, without looking it up in `legalActions()`.
@@ -102,9 +110,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   example to show p1 can't activate p2's land. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
   them (printed abilities, then a basic land's mana ability), when the permanent has more than one. Only mana
   abilities can be activated so far; other activated abilities arrive in M1-14.
-- Steps that arrive with later tasks, and fail until then: `p1 play: <land>` and `p1 cast: <card>` (M1-09, with
-  `targets`, `modes`, `x`, `pay: auto`), `p1 attack: [...]` and `p2 block: { blocker: attacker }` (M1-13). `activate`
-  also takes `targets`, `modes`, `x` and `pay` from M1-14.
+- Steps that arrive with later tasks, and fail until then: `p1 attack: [...]` and `p2 block: { blocker: attacker }`
+  (M1-13). `activate` gains `targets` and `pay` in M1-14, and `cast` gains `modes` and `x` with the first card that has them.
 
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).

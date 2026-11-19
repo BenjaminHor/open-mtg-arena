@@ -7,21 +7,24 @@ import {
   type Answer,
   abilitiesOf,
   applyAction,
+  autoPay,
   type CardDatabase,
   type GameEvent,
   type GameState,
   legalActions,
   type ObjectId,
   type PlayerId,
+  type Target,
 } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
+import { isRecord } from "./format.ts";
 import { battlefieldOf, engineStep, nameOf, parseRef, resolveRef } from "./names.ts";
 
 export type Game = { state: GameState; events: GameEvent[] };
 
 /** A step that changes the game: passing or choosing. */
-export type ActionStep = Extract<ScenarioStep, { kind: "pass" | "allPass" | "choose" | "activate" }>;
+export type ActionStep = Extract<ScenarioStep, { kind: "pass" | "allPass" | "choose" | "activate" | "play" | "cast" }>;
 
 /** The most passes `all pass: until` makes before giving up, so a step that never comes fails instead of hanging. */
 const MAX_PASSES = 500;
@@ -53,6 +56,52 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
       }
       throw new Error(`"all pass: until ${step.until}" didn't reach that step with priority in ${MAX_PASSES} passes`);
     }
+    case "play": {
+      const action = legal(
+        game,
+        step.player,
+        cards,
+        (a) => a.type === "PLAY_LAND" && nameOf(game.state, a.object, cards) === step.card,
+        `play ${step.card}`,
+      );
+      return apply(game, action, cards, afterEach);
+    }
+    case "cast": {
+      let next = apply(
+        game,
+        legal(
+          game,
+          step.player,
+          cards,
+          (a) => a.type === "CAST_SPELL" && nameOf(game.state, a.object, cards) === step.card,
+          `cast ${step.card}`,
+        ),
+        cards,
+        afterEach,
+      );
+      for (const value of step.targets) {
+        const target = targetNamed(next.state, value, cards);
+        const answer = legal(
+          next,
+          step.player,
+          cards,
+          (a) => a.type === "ANSWER" && deepEqual(a.answer, { kind: "chooseTarget", target }),
+          `target ${String(value)}`,
+        );
+        next = apply(next, answer, cards, afterEach);
+      }
+      for (const action of paymentActions(next, step, cards)) {
+        const found = legal(
+          next,
+          step.player,
+          cards,
+          (a) => deepEqual({ ...a, decisionId: "" }, { ...action, decisionId: "" }),
+          "pay",
+        );
+        next = apply(next, found, cards, afterEach);
+      }
+      return next;
+    }
     case "activate": {
       const { object, ability } = abilityNamed(game.state, step, cards);
       const action = legal(
@@ -78,26 +127,109 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
   }
 }
 
-/** Builds the action a step names without checking it's legal, for a step followed by `expect error`. */
-export function actionFor(game: Game, step: ActionStep, cards: CardDatabase): Action {
-  const decisionId = game.state.pending?.id ?? "d0";
+/**
+ * For a step followed by `expect error`: sends the step's actions directly, without looking them up in `legalActions()`,
+ * and returns the first rejection, or null if every action was accepted. A `cast` is several actions (the cast, each
+ * target, the payment); the first one rejected is the one that counts.
+ */
+export function firstRejection(
+  game: Game,
+  step: ActionStep,
+  cards: CardDatabase,
+): { code: string; message: string } | null {
+  let state = game.state;
+  // A cast's payment is planned once, when the payment decision comes up, then carried out action by action.
+  let payment: Action[] | null = null;
+  for (let i = 0; ; i++) {
+    let action: Action | null;
+    if (step.kind === "cast" && i > step.targets.length) {
+      payment ??= paymentActions({ state, events: [] }, step, cards);
+      const next = payment[i - 1 - step.targets.length];
+      action =
+        next === undefined || next.type === "CONCEDE"
+          ? (next ?? null)
+          : { ...next, decisionId: state.pending?.id ?? "d0" };
+    } else {
+      action = directAction(state, step, cards, i);
+    }
+    if (action === null) return null;
+    const result = applyAction(state, action, cards);
+    if (!result.ok) return result.error;
+    state = result.state;
+  }
+}
+
+/**
+ * The i-th action of a step, built from the current state, or null when the step has no more actions. A cast's
+ * payment actions come from `paymentActions`, planned once by the caller.
+ */
+function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i: number): Action | null {
+  const decisionId = state.pending?.id ?? "d0";
+  if (step.kind === "allPass") {
+    throw new Error('"all pass" can\'t be followed by expect error: name the one player whose pass is illegal');
+  }
+  const player = step.player as PlayerId;
   switch (step.kind) {
     case "pass":
-      return { type: "PASS_PRIORITY", decisionId, player: step.player as PlayerId };
-    case "allPass":
-      throw new Error('"all pass" can\'t be followed by expect error: name the one player whose pass is illegal');
-    case "activate": {
-      const { object, ability } = abilityNamed(game.state, step, cards, "any");
-      return { type: "ACTIVATE_ABILITY", decisionId, player: step.player as PlayerId, object, ability };
-    }
+      return i === 0 ? { type: "PASS_PRIORITY", decisionId, player } : null;
     case "choose":
-      return {
-        type: "ANSWER",
-        decisionId,
-        player: step.player as PlayerId,
-        answer: answerFor(game.state, step.player, step.value, cards, "any"),
-      };
+      return i === 0
+        ? { type: "ANSWER", decisionId, player, answer: answerFor(state, step.player, step.value, cards, "any") }
+        : null;
+    case "activate": {
+      if (i > 0) return null;
+      const { object, ability } = abilityNamed(state, step, cards, "any");
+      return { type: "ACTIVATE_ABILITY", decisionId, player, object, ability };
+    }
+    case "play":
+      return i === 0
+        ? { type: "PLAY_LAND", decisionId, player, object: cardIn(state, player, step.card, cards) }
+        : null;
+    case "cast": {
+      if (i === 0) return { type: "CAST_SPELL", decisionId, player, object: cardIn(state, player, step.card, cards) };
+      const target = step.targets[i - 1];
+      return target === undefined
+        ? null
+        : {
+            type: "ANSWER",
+            decisionId,
+            player,
+            answer: { kind: "chooseTarget", target: targetNamed(state, target, cards) },
+          };
+    }
   }
+}
+
+/** The card with this name in the player's hand (the first one), for an attempt that may be illegal. */
+function cardIn(state: GameState, player: PlayerId, name: string, cards: CardDatabase): ObjectId {
+  const found = (state.zones.players[player]?.hand ?? []).find((id) => nameOf(state, id, cards) === name);
+  if (found === undefined) throw new Error(`${player} has no ${name} in hand`);
+  return found;
+}
+
+/**
+ * The actions that pay for a spell being cast: `auto` activates what autoPay picks, then pays; `{ R: 1 }` pays that from
+ * the pool; `cancel` cancels the cast; no `pay` leaves the payment decision pending.
+ */
+function paymentActions(game: Game, step: Extract<ScenarioStep, { kind: "cast" }>, cards: CardDatabase): Action[] {
+  const pending = game.state.pending;
+  const player = step.player as PlayerId;
+  if (step.pay === undefined || pending?.kind !== "payMana") return [];
+  const decisionId = pending.id;
+  if (step.pay === "cancel") return [{ type: "ANSWER", decisionId, player, answer: { kind: "cancelCast" } }];
+  if (step.pay === "auto") {
+    const plan = autoPay(game.state, player, pending.cost, cards);
+    if (plan === null) throw new Error("pay: auto found no way to pay");
+    return [
+      ...plan.activations.map(
+        (a) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object: a.object, ability: a.ability }) as const,
+      ),
+      { type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: plan.payment } },
+    ];
+  }
+  if (!isRecord(step.pay)) throw new Error('pay is "auto", "cancel", or a payment like { R: 1 }');
+  const payment = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...(step.pay as Record<string, number>) };
+  return [{ type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment } }];
 }
 
 function passByWhoeverHasPriority(game: Game, cards: CardDatabase, afterEach: (g: Game) => void): Game {
@@ -133,8 +265,15 @@ function answerFor(
     case "mulliganBottom":
     case "discardToHandSize":
       return { kind: pending.kind, object: cardNamed(state, player, text, cards, which) };
+    case "chooseTarget":
+      return { kind: "chooseTarget", target: targetNamed(state, value, cards) };
+    case "payMana": {
+      if (value === "cancel") return { kind: "cancelCast" };
+      if (!isRecord(value)) throw new Error('paying takes a payment like { R: 1 }, or "cancel"');
+      return { kind: "payMana", payment: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...(value as Record<string, number>) } };
+    }
     case "priority":
-      throw new Error("the player has priority: use pass (casting and the rest arrive with their tasks)");
+      throw new Error("the player has priority: use pass, play, cast or activate");
   }
 }
 
@@ -210,4 +349,14 @@ function abilityNamed(
   const first = options[0];
   if (first === undefined) throw new Error(`no ${step.card} to activate`);
   return which === "legal" ? (usable ?? first) : first;
+}
+
+/** A target a scenario names: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`). */
+export function targetNamed(state: GameState, value: unknown, cards: CardDatabase): Target {
+  const text = String(value);
+  if (/^p\d+$/.test(text)) return { kind: "player", player: text as PlayerId };
+  const ref = parseRef(text);
+  const object = ref === null ? null : resolveRef(state, ref, cards);
+  if (object === null) throw new Error(`no target "${text}": name a player (p2) or a permanent (p2:Grizzly Bears)`);
+  return { kind: "object", object };
 }

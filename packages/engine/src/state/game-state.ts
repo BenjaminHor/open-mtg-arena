@@ -3,6 +3,7 @@
 // States are never mutated; each change makes a new state that shares the unchanged parts (D-021).
 
 import type { RngState } from "../rng/xoshiro128.ts";
+import type { Casting } from "./casting.ts";
 import type { PendingDecision } from "./decisions.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { GameObject } from "./objects.ts";
@@ -46,6 +47,8 @@ export type GameState = {
    * starts it at 0.
    */
   passesInSuccession: number;
+  /** A spell part way through being cast (CR 601.2), or null. */
+  casting: Casting | null;
 
   /** Work waiting to happen, next first (docs/architecture.md, D-032). It waits while a decision is pending. */
   work: WorkItem[];

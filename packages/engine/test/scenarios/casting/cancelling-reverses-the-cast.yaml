@@ -1,0 +1,25 @@
+name: Cancelling a cast reverses it, including the mana abilities activated for it
+rules: [CR 734.1, CR 734.2, CR 605.3a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Shock, Lightning Bolt]
+    battlefield: [Mountain, Mountain]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+  - expect:
+      stack: [Lightning Bolt]
+      pending: { player: p1, kind: payMana }
+  - p1 activate: Mountain
+  - expect:
+      p1.manaPool: { R: 1 }
+      pending: { player: p1, kind: payMana }
+  - p1 choose: cancel
+  - expect:
+      stack: []
+      p1.hand: [Shock, Lightning Bolt]
+      p1.manaPool: {}
+      p1:Mountain#1.tapped: false
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: CAST_CANCELLED, player: p1 }]

@@ -16,5 +16,7 @@ export type WorkItem =
   | { kind: "resolveTopOfStack" }
   /** The final part of an object's resolution (CR 608.2n, 608.3a). */
   | { kind: "finishResolving"; object: ObjectId }
+  /** Every target of the spell is illegal: it doesn't resolve and goes to its owner's graveyard (CR 608.2b). */
+  | { kind: "doesNotResolve"; object: ObjectId }
   /** The rest of the cleanup step, once the active player has chosen any discards (CR 514). */
   | { kind: "finishCleanup"; chosen: ObjectId[] };

@@ -1,0 +1,14 @@
+name: A land can be played only in your own main phase while the stack is empty
+rules: [CR 305.1]
+setup:
+  turn: { active: p1, step: combat.beginning }
+  p1:
+    hand: [Mountain]
+  p2:
+    hand: [Forest]
+steps:
+  - p1 play: Mountain
+  - expect error: illegalAction
+  - p1 pass: once
+  - p2 play: Forest
+  - expect error: illegalAction

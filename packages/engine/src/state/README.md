@@ -12,6 +12,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 | `zones.ts` | Zones and their order conventions (library top is index 0; stack and graveyard tops are the last entry) |
 | `players.ts`, `mana.ts`, `turn.ts` | Players, mana pools, steps and phases |
 | `decisions.ts` | `PendingDecision`: what the game is waiting for |
+| `casting.ts` | `Casting`: a spell part way through being cast, with what's needed to reverse it (CR 734.1) |
 | `work.ts` | `WorkItem`: work waiting in the queue (D-032) |
 | `pregame.ts` | `Pregame`: the start of a standard game (starting player, mulligans), before turn 1 |
 | `actions.ts` | `Action`: every input to the engine |

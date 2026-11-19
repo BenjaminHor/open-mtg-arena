@@ -1,7 +1,8 @@
 // Actions: every input to the engine. Each one answers the current `PendingDecision`, except `CONCEDE`.
 
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
-import type { AbilityRef } from "./objects.ts";
+import type { ManaPool } from "./mana.ts";
+import type { AbilityRef, Target } from "./objects.ts";
 
 export type Action =
   | { type: "PASS_PRIORITY"; decisionId: DecisionId; player: PlayerId } // CR 117.3d
@@ -24,4 +25,9 @@ export type Answer =
   | { kind: "chooseStartingPlayer"; player: PlayerId }
   | { kind: "mulligan"; choice: "keep" | "mulligan" }
   | { kind: "mulliganBottom"; object: ObjectId }
-  | { kind: "discardToHandSize"; object: ObjectId };
+  | { kind: "discardToHandSize"; object: ObjectId }
+  | { kind: "chooseTarget"; target: Target }
+  /** How much of each type of mana to spend (CR 601.2h). */
+  | { kind: "payMana"; payment: ManaPool }
+  /** Cancel the cast: the whole action is reversed (CR 734.1). */
+  | { kind: "cancelCast" };

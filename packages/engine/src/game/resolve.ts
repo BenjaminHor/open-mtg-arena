@@ -3,10 +3,12 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
+import { isLegalTarget } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { WorkItem } from "../state/work.ts";
 import { moveCard } from "../zones/move-card.ts";
+import { targetSpecsOf } from "./cast.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
 import { queueWork } from "./work.ts";
@@ -20,12 +22,40 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
   const top = state.zones.stack.at(-1);
   if (top === undefined) throw new Error("The stack is empty");
   const active = currentTurn(state).activePlayer;
-  const items: WorkItem[] = [
-    ...effectWork(state, top, cards),
-    { kind: "finishResolving", object: top },
-    { kind: "givePriority", player: active },
-  ];
+  // CR 608.2b: a spell with targets whose targets are all illegal now doesn't resolve.
+  const allTargetsIllegal = targetsAllIllegal(state, top, cards);
+  const items: WorkItem[] = allTargetsIllegal
+    ? [
+        { kind: "doesNotResolve", object: top },
+        { kind: "givePriority", player: active },
+      ]
+    : [
+        ...effectWork(state, top, cards),
+        { kind: "finishResolving", object: top },
+        { kind: "givePriority", player: active },
+      ];
   return { state: queueWork({ ...state, passesInSuccession: 0 }, ...items), events: [] };
+}
+
+/** Whether the spell has targets and every one of them is illegal now (CR 608.2b). Abilities' targets come in M1-14. */
+function targetsAllIllegal(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card" || obj.choices === null) return false;
+  const specs = targetSpecsOf(state, id, cards);
+  const chosen = obj.choices.targets.flatMap((group, i) => group.map((target) => ({ target, spec: specs[i] })));
+  if (chosen.length === 0) return false;
+  return chosen.every(({ target, spec }) => spec === undefined || !isLegalTarget(state, spec, target, cards));
+}
+
+/**
+ * Every target is illegal, so the spell doesn't resolve (CR 608.2b): it does nothing and goes to its owner's graveyard.
+ * It isn't countered: nothing countered it.
+ */
+export function doesNotResolve(state: GameState, id: ObjectId): Progress {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card" || !state.zones.stack.includes(id)) return { state, events: [] };
+  const event = { type: "SPELL_DID_NOT_RESOLVE", object: id, cardId: obj.cardId } as const;
+  return andThen({ state, events: [event] }, (s) => moveCard(s, id, { zone: "graveyard" }));
 }
 
 /**

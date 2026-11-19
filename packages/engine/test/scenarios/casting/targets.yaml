@@ -1,0 +1,24 @@
+name: Each target must be a legal choice for its requirement
+rules: [CR 115.1, CR 115.4, CR 109.2, CR 601.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Lightning Bolt, Giant Growth, Shock]
+    battlefield: [Mountain, Mountain, Forest, Grizzly Bears]
+  p2:
+    battlefield: [Mountain]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2:Mountain]
+  - expect error: illegalAction
+  - p1 cast: Giant Growth
+    targets: [p2]
+  - expect error: illegalAction
+  - p1 cast: Lightning Bolt
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - p1 cast: Shock
+    targets: [p1]
+    pay: auto
+  - expect:
+      stack: [Lightning Bolt, Shock]
