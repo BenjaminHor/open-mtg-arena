@@ -30,7 +30,10 @@ describe("new, show, actions and do", () => {
     expect(cli("actions", file)).toBe("no actions: the game is over");
   });
 
-  it("play a game from the prebuilt decks by action numbers alone, until a library runs out", () => {
+  // Hundreds of commands, each reading and writing the game file: about 2 s alone, more on CI beside the short fuzz.
+  it("play a game from the prebuilt decks by action numbers alone, until a library runs out", {
+    timeout: 30_000,
+  }, () => {
     const file = tempFile();
     cli("new", "--decks", "red-aggro,green-stompy", "--seed", "7", "--first", "p1", "--out", file);
     // Always the first listed action: keep, pass, discard the first card, declare no one... until someone decks out.
