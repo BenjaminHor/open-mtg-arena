@@ -182,6 +182,14 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     expect(first(`${main1}  - p1 concede: yes\n`)).toMatch(/takes "now"/);
   });
 
+  it("names one copy of a card in hand with #n, for play, cast and choose", () => {
+    const hand = at("main1", "  p1: { hand: [Forest, Grizzly Bears, Forest] }\n");
+    expect(problems(`${hand}  - p1 play: Forest#2\n  - expect: { p1.hand: [Forest, Grizzly Bears] }\n`)).toStrictEqual(
+      [],
+    );
+    expect(first(`${hand}  - p1 play: Forest#3\n`)).toMatch(/no Forest#3 in p1's hand/);
+  });
+
   it("reports format errors as problems", () => {
     expect(first(`${main1.replace("steps:\n", "stepz:\n")}  - p1 pass: once\n`)).toMatch(
       /Unknown top-level key "stepz"/,

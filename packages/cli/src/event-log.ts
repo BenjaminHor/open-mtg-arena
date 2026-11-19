@@ -15,7 +15,7 @@ import {
   type Target,
 } from "@mtg/engine";
 import { nameOf, refOf, scenarioStep } from "@mtg/scenarios";
-import { manaText } from "./describe.ts";
+import { durationText, manaText } from "./describe.ts";
 
 type Namer = (id: ObjectId) => string;
 
@@ -101,7 +101,7 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "LIFE_LOST":
       return `${e.player} loses ${e.amount} life`;
     case "EFFECT_CREATED":
-      return `effect: ${e.effect.affected.map(name).join(", ")} ${ptChange(e.effect.change)} until end of turn`;
+      return `effect: ${e.effect.affected.map(name).join(", ")} ${ptChange(e.effect.change)} ${durationText(e.effect.duration)}`;
     case "EFFECT_ENDED":
       return `effect ends: ${e.effect.affected.map(name).join(", ")} ${ptChange(e.effect.change)}`;
     case "STATE_BASED_ACTIONS":

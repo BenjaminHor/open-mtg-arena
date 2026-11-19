@@ -99,7 +99,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   or `Forest#2` for the second Forest in hand: which copy goes to the bottom changes the next shuffle);
   a target (`p2`, `p2:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.
-- `p1 play: <land>`: play a land from hand.
+- `p1 play: <land>`: play a land from hand. `play`, `cast` and `choose` take `Forest#2` for the second Forest in hand,
+  when which copy matters (an exact replay: it changes the hand's order, and a mulligan's shuffle with it).
 - `p1 concede: now`: p1 concedes and loses (CR 104.3a). A player may concede at any time, even without priority, so
   conceding is never listed by `legalActions()`; this step sends the action directly.
 - `p1 cast: <card>` with `targets: [...]` and `pay:`: cast a spell from hand. `targets` lists one target per instance of
@@ -228,8 +229,8 @@ pending: priority (p1) — 6 legal actions; run `pnpm cli actions`
 The agents (`--agent random`, the default, or `first-legal`) choose only among `legalActions()`, from their own seed, so
 the same seed plays the same game. `first-legal` passes whenever it can, so its games end by a library running out.
 `ai` and `auto` stop at `--max-actions` (default 10,000) or `--max-turns` (default 200) and say so. `export` names each
-permanent exactly (`p1:Mountain#2`), writes each payment and division in full, and ends with an `expect` of where the
-game ended up; it can't write a game that stops part way through declaring attackers or blockers or dividing damage.
+permanent exactly (`p1:Mountain#2`) and each card in hand when it matters (`Forest#2`), writes each payment and
+division in full, and ends with an `expect` of where the game ended up; it checks the scenario passes before printing it; it can't write a game that stops part way through declaring attackers or blockers or dividing damage.
 `--rules` lists what the scenario proves (without it, `CR 100.1` stands in: replace it).
 
 **How Claude Code should use it**: after implementing a rule, start a game from a scenario,

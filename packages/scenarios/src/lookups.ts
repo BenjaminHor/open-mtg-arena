@@ -18,9 +18,31 @@ import { battlefieldOf, nameOf, parseRef, resolveRef } from "./names.ts";
 
 /** The card with this name in the player's hand (the first one), for an attempt that may be illegal. */
 export function cardIn(state: GameState, player: PlayerId, name: string, cards: CardDatabase): ObjectId {
-  const found = (state.zones.players[player]?.hand ?? []).find((id) => nameOf(state, id, cards) === name);
+  const copy = handCopy(state, player, name, cards);
+  const found = copy ?? (state.zones.players[player]?.hand ?? []).find((id) => nameOf(state, id, cards) === name);
   if (found === undefined) throw new Error(`${player} has no ${name} in hand`);
   return found;
+}
+
+/**
+ * Whether a card in the player's hand is the one `name` means: any copy with that name, or with `#n` (`Forest#2`), the
+ * n-th copy in hand order. Which copy matters for an exact replay: it changes the hand's order, and a mulligan's
+ * shuffle with it (CR 103.5).
+ */
+export function isHandCard(state: GameState, player: string, id: ObjectId, name: string, cards: CardDatabase): boolean {
+  const copy = handCopy(state, player as PlayerId, name, cards);
+  return copy !== null ? copy === id : nameOf(state, id, cards) === name;
+}
+
+/** The copy a `Name#n` names in the player's hand, or null when the name has no `#n`. Throws if there's no such copy. */
+function handCopy(state: GameState, player: PlayerId, name: string, cards: CardDatabase): ObjectId | null {
+  const nth = /^(.+)#(\d+)$/.exec(name);
+  if (nth === null) return null;
+  const [, card = "", n = "1"] = nth;
+  const hand = state.zones.players[player]?.hand ?? [];
+  const copy = hand.filter((id) => nameOf(state, id, cards) === card)[Number(n) - 1];
+  if (copy === undefined) throw new Error(`no ${name} in ${player}'s hand`);
+  return copy;
 }
 
 /** A payment written in a scenario, like `{ R: 1 }`: only mana types, whole amounts. */
@@ -52,14 +74,9 @@ export function cardNamed(
   const answers = legalActions(state, player as PlayerId, cards).flatMap((a) =>
     a.type === "ANSWER" && "object" in a.answer ? [a.answer.object] : [],
   );
-  const nth = /^(.+)#(\d+)$/.exec(name);
-  if (nth !== null) {
-    const [, card = "", n = "1"] = nth;
-    const hand = state.zones.players[player as PlayerId]?.hand ?? [];
-    const copy = hand.filter((id) => nameOf(state, id, cards) === card)[Number(n) - 1];
-    if (copy === undefined || (which === "legal" && !answers.includes(copy))) {
-      throw new Error(`no ${name} in ${player}'s hand to choose`);
-    }
+  const copy = handCopy(state, player as PlayerId, name, cards);
+  if (copy !== null) {
+    if (which === "legal" && !answers.includes(copy)) throw new Error(`${name} isn't a card ${player} can choose`);
     return copy;
   }
   const pool = which === "legal" ? answers : [...answers, ...(Object.keys(state.objects) as ObjectId[])];

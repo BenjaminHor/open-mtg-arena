@@ -475,7 +475,8 @@ every schema change and every change D-024 lists bumps it.
   separate from the game's RNG), so `auto` is reproducible and the fuzzer can reuse them. They never concede (D-042).
   The log names objects from the states before and after the action that caused each event (a creature that died is
   only in the first), and follows the turn event by event. `export --scenario` lives in `packages/scenarios` beside
-  the parser; a game's cards in hand are named `Forest#2` when it matters which copy (a mulligan's bottom card changes
-  the next shuffle). `layerSevenCChanges` (engine) explains power and toughness for `inspect`, from the same code that
+  the parser; a game's cards in hand are named `Forest#2` (for `play`, `cast` and `choose`) when there are several
+  copies, since which copy changes the hand's order and a mulligan's shuffle with it. Exported random games replay to
+  the very same state (a test checks six), and `export` runs the scenario before printing it. `layerSevenCChanges` (engine) explains power and toughness for `inspect`, from the same code that
   computes them.
 

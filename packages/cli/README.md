@@ -26,6 +26,6 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 ## Tests
 
 `pnpm test` runs this package's tests along with the rest: `test/cli.test.ts` plays games through the commands,
-including a whole game from the prebuilt decks; `test/cli-part2.test.ts` covers the agents, the log, `inspect`,
-`export` (exported games pass as scenarios) and `replay`. Paths given to `pnpm cli` are relative to the repo root,
+including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games
+replay exactly) and `test/log-inspect-replay.test.ts` cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root,
 where pnpm runs scripts.

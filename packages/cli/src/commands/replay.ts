@@ -4,12 +4,13 @@
 
 import type { CardDatabase } from "@mtg/engine";
 import { readGameFile, replay } from "../game-file.ts";
+import { wholeNumber } from "../numbers.ts";
 import { showGame } from "../show.ts";
 
 export function replayCommand(file: string, step: string | undefined, cards: CardDatabase): string {
   const game = readGameFile(file);
-  const upTo = step === undefined ? game.actions.length : Number(step);
-  if (!Number.isSafeInteger(upTo) || upTo < 0 || upTo > game.actions.length) {
+  const upTo = wholeNumber(step, game.actions.length, "step");
+  if (upTo > game.actions.length) {
     throw new Error(`--step is a number from 0 to ${game.actions.length}`);
   }
   const { state } = replay(game.setup, game.actions, cards, upTo);

@@ -10,8 +10,7 @@ export type { Game } from "./apply.ts";
 import { allPass } from "./all-pass.ts";
 import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { combatAction } from "./combat-steps.ts";
-import { abilityNamed, cardIn, cardNamed, paymentFrom, targetNamed } from "./lookups.ts";
-import { nameOf } from "./names.ts";
+import { abilityNamed, cardIn, cardNamed, isHandCard, paymentFrom, targetNamed } from "./lookups.ts";
 import { paymentActions, targetAction, targetsAndPayment } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
@@ -56,7 +55,7 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         game,
         step.player,
         cards,
-        (a) => a.type === "PLAY_LAND" && nameOf(game.state, a.object, cards) === step.card,
+        (a) => a.type === "PLAY_LAND" && isHandCard(game.state, step.player, a.object, step.card, cards),
         `play ${step.card}`,
       );
       return apply(game, action, cards, afterEach);
@@ -68,7 +67,7 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
           game,
           step.player,
           cards,
-          (a) => a.type === "CAST_SPELL" && nameOf(game.state, a.object, cards) === step.card,
+          (a) => a.type === "CAST_SPELL" && isHandCard(game.state, step.player, a.object, step.card, cards),
           `cast ${step.card}`,
         ),
         cards,

@@ -3,7 +3,7 @@
 // be true, and list the rules it proves.
 
 import type { CardDatabase } from "@mtg/engine";
-import { scenarioFromGame } from "@mtg/scenarios";
+import { runScenario, scenarioFromGame } from "@mtg/scenarios";
 import { readGameFile } from "../game-file.ts";
 
 export function exportCommand(
@@ -17,5 +17,10 @@ export function exportCommand(
   // replace it with what the scenario proves.
   const rules = (options.rules ?? "CR 100.1").split(",").map((r) => r.trim());
   const name = options.name ?? "Exported game (describe what it proves)";
-  return scenarioFromGame(name, rules, game.setup, game.actions, cards).trimEnd();
+  const yaml = scenarioFromGame(name, rules, game.setup, game.actions, cards);
+  // A wrong export must not go out silently: the scenario has to pass before it's printed.
+  const problems = runScenario(yaml, cards).problems;
+  if (problems.length > 0)
+    throw new Error(`the exported scenario doesn't pass (an exporter bug): ${problems.join("; ")}`);
+  return yaml.trimEnd();
 }

@@ -26,7 +26,9 @@ export function playAgents(
   const actions: Action[] = [];
   for (;;) {
     const pending = state.pending;
-    if (state.result !== null || pending === null) return { state, actions, stopped: "gameOver" };
+    if (state.result !== null) return { state, actions, stopped: "gameOver" };
+    // Nothing pending and no result is a stalled engine: always a bug, never a normal stop (architecture.md).
+    if (pending === null) throw new Error("the engine stalled: nothing pending and no result (an engine bug)");
     if (!plays(pending.player)) return { state, actions, stopped: "yourDecision" };
     if (actions.length >= limits.maxActions) return { state, actions, stopped: "maxActions" };
     if ((state.turn?.number ?? 0) > limits.maxTurns) return { state, actions, stopped: "maxTurns" };

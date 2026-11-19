@@ -7,6 +7,7 @@ import type { CardDatabase, GameSetup, PlayerId } from "@mtg/engine";
 import { buildSetup, parseScenario } from "@mtg/scenarios";
 import { deckGameSetup } from "../deck-setup.ts";
 import { newGameFile, writeGameFile } from "../game-file.ts";
+import { wholeNumber } from "../numbers.ts";
 import { showGame } from "../show.ts";
 
 /** Where scenario names like `combat/reach-blocks-flyer` are looked up. */
@@ -22,7 +23,8 @@ export type NewOptions = {
 
 export function newCommand(options: NewOptions, cards: CardDatabase): string {
   if (options.out === undefined) throw new Error("new needs --out <file>");
-  if (options.scenario !== undefined && (options.decks ?? options.seed ?? options.first) !== undefined) {
+  const deckOptions = options.decks !== undefined || options.seed !== undefined || options.first !== undefined;
+  if (options.scenario !== undefined && deckOptions) {
     throw new Error("new --scenario takes its setup from the scenario: no --decks, --seed or --first");
   }
   const setup = options.scenario !== undefined ? scenarioSetup(options.scenario, cards) : deckSetup(options);
@@ -34,9 +36,7 @@ export function newCommand(options: NewOptions, cards: CardDatabase): string {
 function deckSetup(options: NewOptions): GameSetup {
   const names = (options.decks ?? "").split(",").filter((n) => n !== "");
   if (names.length !== 2) throw new Error(`new needs --decks <deck>,<deck>; decks: ${Object.keys(DECKS).join(", ")}`);
-  const seed = options.seed ?? "1";
-  if (!/^\d+$/.test(seed) || !Number.isSafeInteger(Number(seed)))
-    throw new Error("--seed is a whole number, 0 or more");
+  const seed = wholeNumber(options.seed, 1, "seed");
   const first = options.first;
   if (first !== undefined && first !== "p1" && first !== "p2") throw new Error("--first is p1 or p2");
   const decks = names.map((name) => {
@@ -44,7 +44,7 @@ function deckSetup(options: NewOptions): GameSetup {
     if (deck === undefined) throw new Error(`No deck "${name}"; decks: ${Object.keys(DECKS).join(", ")}`);
     return deck;
   });
-  return deckGameSetup(decks, Number(seed), (first ?? null) as PlayerId | null);
+  return deckGameSetup(decks, seed, (first ?? null) as PlayerId | null);
 }
 
 /** A scenario's setup: by path to a `.yaml` file, or by name under the engine's scenarios. */

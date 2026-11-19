@@ -1,6 +1,7 @@
 // Power and toughness: layer 7 of the layer system (CR 613.4).
 
 import type { CardDatabase } from "../cards/types.ts";
+import type { Duration } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
@@ -37,7 +38,7 @@ export function powerAndToughness(state: GameState, id: ObjectId, cards: CardDat
 /** What changes an object's power and toughness in layer 7c, and by how much (CR 613.4c). */
 export type LayerSevenCChange =
   /** A continuous effect from a resolved spell or ability (CR 611.2), by its source and timestamp. */
-  | { kind: "effect"; source: ObjectId; timestamp: number; power: number; toughness: number }
+  | { kind: "effect"; source: ObjectId; timestamp: number; duration: Duration; power: number; toughness: number }
   /** All the counters of one kind on it (CR 122.1a). */
   | { kind: "counters"; counter: string; count: number; power: number; toughness: number }
   /** A rule modifier of the game (`GameSetup.ruleModifiers`, by index). */
@@ -66,7 +67,8 @@ function layer7c(state: GameState, obj: CardObject, isCreature: boolean, onBattl
     switch (effect.change.kind) {
       case "modifyPT": {
         const { power, toughness } = effect.change;
-        changes.push({ kind: "effect", source: effect.source, timestamp: effect.timestamp, power, toughness });
+        const { source, timestamp, duration } = effect;
+        changes.push({ kind: "effect", source, timestamp, duration, power, toughness });
         break;
       }
     }

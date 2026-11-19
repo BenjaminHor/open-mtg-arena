@@ -6,6 +6,7 @@ import { type PlayLimits, playAgents } from "../agent-play.ts";
 import { agentNamed } from "../agents.ts";
 import { logLines } from "../event-log.ts";
 import { currentState, readGameFile, writeGameFile } from "../game-file.ts";
+import { wholeNumber } from "../numbers.ts";
 import { showGame } from "../show.ts";
 
 export type AgentOptions = {
@@ -16,16 +17,14 @@ export type AgentOptions = {
 };
 
 function limits(options: AgentOptions): PlayLimits {
-  const num = (value: string | undefined, fallback: number, what: string) => {
-    const n = value === undefined ? fallback : Number(value);
-    if (!Number.isSafeInteger(n) || n < 0) throw new Error(`--${what} is a whole number`);
-    return n;
-  };
   return {
-    maxActions: num(options["max-actions"], 10_000, "max-actions"),
-    maxTurns: num(options["max-turns"], 200, "max-turns"),
+    maxActions: wholeNumber(options["max-actions"], 10_000, "max-actions"),
+    maxTurns: wholeNumber(options["max-turns"], 200, "max-turns"),
   };
 }
+
+/** How much of the log `auto` prints: the end of the game; `pnpm cli log` has all of it. */
+const LOG_LINES = 2000;
 
 const STOPPED = {
   gameOver: "the game is over",
@@ -39,7 +38,7 @@ export function aiCommand(file: string, until: string | undefined, options: Agen
   const game = readGameFile(file);
   const start = currentState(game, cards);
   if (!start.turnOrder.includes(until as PlayerId)) throw new Error(`--until: no player ${until}`);
-  const seed = Number(options.seed ?? 1);
+  const seed = wholeNumber(options.seed, 1, "seed");
   const played = playAgents(start, (p) => p !== until, agentNamed(options.agent), seed, limits(options), cards);
   writeGameFile(file, { ...game, actions: [...game.actions, ...played.actions], state: played.state });
   return `${STOPPED[played.stopped]} (${played.actions.length} actions)\n${showGame(played.state, cards)}`;
@@ -49,10 +48,12 @@ export function autoCommand(file: string, who: string | undefined, options: Agen
   if (who !== undefined && who !== "both") throw new Error("auto plays every player: --ai both");
   const game = readGameFile(file);
   const start = currentState(game, cards);
-  const seed = Number(options.seed ?? 1);
+  const seed = wholeNumber(options.seed, 1, "seed");
   const played = playAgents(start, () => true, agentNamed(options.agent), seed, limits(options), cards);
   const actions = [...game.actions, ...played.actions];
   writeGameFile(file, { ...game, actions, state: played.state });
-  const log = logLines(game.setup, actions, cards, true).slice(-2000);
-  return [...log, STOPPED[played.stopped], showGame(played.state, cards)].join("\n");
+  const log = logLines(game.setup, actions, cards, true);
+  const shown = log.slice(-LOG_LINES);
+  const cut = log.length > shown.length ? [`(${log.length - shown.length} earlier lines: run \`pnpm cli log\`)`] : [];
+  return [...cut, ...shown, STOPPED[played.stopped], showGame(played.state, cards)].join("\n");
 }

@@ -1,7 +1,17 @@
 // Actions and objects in words, for `actions`, `show` and `log`. Permanents are named as scenarios name them
 // (`p2:Grizzly Bears#2`), so what the CLI prints can be pasted into a scenario or into `do`.
 
-import type { AbilityRef, Action, Answer, CardDatabase, GameState, ManaPool, ObjectId, Target } from "@mtg/engine";
+import type {
+  AbilityRef,
+  Action,
+  Answer,
+  CardDatabase,
+  Duration,
+  GameState,
+  ManaPool,
+  ObjectId,
+  Target,
+} from "@mtg/engine";
 import { nameOf, refOf } from "@mtg/scenarios";
 
 /** A permanent's reference, or the object's name if it isn't on the battlefield. */
@@ -79,5 +89,13 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       const blocker = pending?.kind === "assignDamage" ? pending.blockers[pending.assigned.length] : undefined;
       return `assign ${answer.amount} to ${blocker === undefined ? "the next blocker" : objectText(state, blocker, cards)}`;
     }
+  }
+}
+
+/** How long an effect lasts, in words (CR 611.2a). */
+export function durationText(duration: Duration): string {
+  switch (duration) {
+    case "endOfTurn":
+      return "until end of turn";
   }
 }

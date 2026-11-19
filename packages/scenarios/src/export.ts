@@ -4,6 +4,7 @@
 
 import {
   type Action,
+  abilitiesOf,
   applyAction,
   type CardDatabase,
   createGame,
@@ -12,6 +13,7 @@ import {
   type ManaPool,
   type ObjectId,
   type PlayerId,
+  sameAbilityRef,
   type Target,
 } from "@mtg/engine";
 import { stringify } from "yaml";
@@ -58,15 +60,18 @@ function stepFor(
   switch (action.type) {
     case "PASS_PRIORITY":
       return { step: { [`${p} pass`]: "once" }, taken: 1 };
+    // Which copy in hand is played or cast matters for an exact replay: `Forest#2` when there are several.
     case "PLAY_LAND":
-      return { step: { [`${p} play`]: nameOf(state, action.object, cards) }, taken: 1 };
+      return { step: { [`${p} play`]: handCardName(state, p, action.object, cards) }, taken: 1 };
     // With no targets or payment, a cast stops at its first decision; the answers follow as `choose` steps.
     case "CAST_SPELL":
-      return { step: { [`${p} cast`]: nameOf(state, action.object, cards) }, taken: 1 };
+      return { step: { [`${p} cast`]: handCardName(state, p, action.object, cards) }, taken: 1 };
     case "ACTIVATE_ABILITY": {
       const ref = refOf(state, action.object, cards) ?? nameOf(state, action.object, cards);
       const step: Step = { [`${p} activate`]: ref };
-      if (action.ability.kind === "printed") step.ability = action.ability.index + 1;
+      // `ability: n` counts in `abilitiesOf` order, as the runner does, and is needed when there's more than one.
+      const abilities = abilitiesOf(state, action.object, cards);
+      if (abilities.length > 1) step.ability = abilities.findIndex((a) => sameAbilityRef(a.ref, action.ability)) + 1;
       return { step, taken: 1 };
     }
     case "ANSWER":
@@ -107,6 +112,11 @@ function answerStep(
   }
 }
 
+/** A permanent named relative to its controller, as `attack`, `block` and `assign` steps name it (`Grizzly Bears#2`). */
+function local(state: GameState, id: ObjectId, cards: CardDatabase): string {
+  return (refOf(state, id, cards) ?? nameOf(state, id, cards)).replace(/^p\d+:/, "");
+}
+
 /** One declaration's answers, up to and including `finishDeclaring`, as one `attack` or `block` step. */
 function declaration(
   state: GameState,
@@ -119,16 +129,22 @@ function declaration(
   const end = actions.findIndex((a, j) => j >= i && a.type === "ANSWER" && a.answer.kind === "finishDeclaring");
   if (end < 0) throw new Error("the game stops part way through a declaration, which a scenario can't write");
   const answers = actions.slice(i, end).map((a) => (a.type === "ANSWER" ? a.answer : null));
-  const local = (id: Parameters<typeof refOf>[1]) =>
-    (refOf(state, id, cards) ?? nameOf(state, id, cards)).replace(/^p\d+:/, "");
+  // Scenario steps attack the one other player; several defending players can't be written yet.
+  const others = state.turnOrder.filter((x) => x !== p);
   if (pending?.kind === "declareAttackers") {
-    const attackers = answers.map((a) => (a?.kind === "declareAttacker" ? local(a.attack.attacker) : null));
+    const attackers = answers.map((a) => {
+      if (a?.kind !== "declareAttacker") throw new Error("an unexpected answer in a declaration of attackers");
+      if (others.length !== 1 || a.attack.defender !== others[0])
+        throw new Error("attacks on several players can't be written");
+      return local(state, a.attack.attacker, cards);
+    });
     return { step: { [`${p} attack`]: attackers }, taken: end - i + 1 };
   }
-  const blocks = Object.fromEntries(
-    answers.map((a) => (a?.kind === "declareBlocker" ? [local(a.block.blocker), local(a.block.attacker)] : ["?", "?"])),
-  );
-  return { step: { [`${p} block`]: blocks }, taken: end - i + 1 };
+  const blocks = answers.map((a): [string, string] => {
+    if (a?.kind !== "declareBlocker") throw new Error("an unexpected answer in a declaration of blockers");
+    return [local(state, a.block.blocker, cards), local(state, a.block.attacker, cards)];
+  });
+  return { step: { [`${p} block`]: Object.fromEntries(blocks) }, taken: end - i + 1 };
 }
 
 /** One attacker's division of damage: an answer per blocker but the last, which gets the rest. */
@@ -148,9 +164,7 @@ function division(
     throw new Error("the game stops part way through dividing damage, which a scenario can't write");
   }
   const last = pending.amount - amounts.reduce((sum, n) => sum + n, 0);
-  const local = (id: Parameters<typeof refOf>[1]) =>
-    (refOf(state, id, cards) ?? nameOf(state, id, cards)).replace(/^p\d+:/, "");
-  const map = Object.fromEntries(pending.blockers.map((b, j) => [local(b), amounts[j] ?? last]));
+  const map = Object.fromEntries(pending.blockers.map((b, j) => [local(state, b, cards), amounts[j] ?? last]));
   return { step: { [`${pending.player} assign`]: map }, taken: count };
 }
 
@@ -174,7 +188,7 @@ function nonZero(pool: ManaPool): Record<string, number> {
 /** Where everything ended up: what a reader of the scenario would want checked. */
 function finalExpect(state: GameState, cards: CardDatabase): Record<string, unknown> {
   const expect: Record<string, unknown> = {};
-  const names = (ids: readonly string[]) => ids.map((id) => nameOf(state, id as `o${number}`, cards));
+  const names = (ids: readonly ObjectId[]) => ids.map((id) => nameOf(state, id, cards));
   for (const p of state.turnOrder) {
     const zones = state.zones.players[p];
     expect[`${p}.life`] = state.players[p]?.life;
