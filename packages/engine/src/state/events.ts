@@ -39,6 +39,10 @@ export type GameEvent =
    */
   | { type: "STEP_BEGAN"; turn: number; step: Step; activePlayer: PlayerId }
   | { type: "PRIORITY_PASSED"; player: PlayerId } // CR 117.3d
+  /** A spell resolved (CR 608.1). Its card then moves to the battlefield or a graveyard (`ZONE_CHANGED`). */
+  | { type: "SPELL_RESOLVED"; object: ObjectId; cardId: CardId; controller: PlayerId }
+  /** An ability resolved and ceased to exist (CR 608.2n). */
+  | { type: "ABILITY_RESOLVED"; object: ObjectId; source: ObjectId; controller: PlayerId }
   /** Unspent mana emptied from a pool as a step ended (CR 500.5). Only for pools that weren't empty. */
   | { type: "MANA_EMPTIED"; player: PlayerId; lost: ManaPool }
   | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3

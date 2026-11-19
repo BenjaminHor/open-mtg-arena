@@ -67,7 +67,7 @@ while the other player draws on turn 2.
 
 **M1-07 Priority and the stack.** CR 117 and 405: who gets priority when, passing in succession, resolving
 the top object (CR 608), and advancing when the stack is empty. The work queue and `advance()` loop from the
-architecture doc. *Accept:* scenarios for pass/pass resolution and for responding to a spell with an instant.
+architecture doc. *Accept:* scenarios for pass/pass resolution, and (once casting exists, M1-09) for responding to a spell with an instant.
 
 **M1-08 Mana and costs.** Mana pools and mana types (CR 106), basic land mana abilities (CR 305.6, 605),
 Llanowar Elves, paying costs (CR 601.2g–h), and a deterministic `pay: auto` helper used by scenarios, the
@@ -76,7 +76,7 @@ CLI and the AI. *Accept:* scenarios for paying exact costs, failing to pay, and 
 **M1-09 Playing lands and casting spells.** One land per turn (CR 305.2), sorcery-speed timing (CR 307.1),
 instants (CR 304), the casting procedure as decisions (CR 601.2), and targets: legal choices and the check
 on resolution (CR 115, 608.2b). *Accept:* scenarios for each timing rule (including negative cases) and a spell
-whose only target became illegal.
+whose only target became illegal. Also a scenario of responding to a spell with an instant (moved here from M1-07, which has no casting).
 
 **M1-10 Effects interpreter v0.** Effect ops: `dealDamage`, `addMana`, `modifyPT` (until end of turn), and
 the zone-change and draw primitives that turn steps need. Each op documented in `engine/src/effects/README.md`.

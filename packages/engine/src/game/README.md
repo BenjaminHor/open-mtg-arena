@@ -10,7 +10,10 @@ The engine's entry points and the flow of a game.
 | `first-turn.ts` | Turn 1 begins for the starting player (CR 103.8) |
 | `turn-steps.ts` | `TURN_STEPS`: the turn sequence as data (CR 500.1) |
 | `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031) |
-| `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the step ends (CR 117.3d, 117.4) |
+| `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
+| `work.ts` | `queueWork()`: adds work to the front of the queue |
+| `resolve.ts` | `resolveTopOfStack()` queues a resolution's steps; `finishResolving()` is its final part (CR 608) |
+| `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves or the step ends (CR 117.3d, 117.4) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |
@@ -20,5 +23,5 @@ The engine's entry points and the flow of a game.
 
 Every function takes a state and returns a new one (D-021). Events are collected alongside (`Progress`).
 
-Tests: `test/game/start.test.ts` and `test/game/turn.test.ts`. The helpers in `test/support/game.ts` check the engine's invariants on every state
+Tests: `test/game/start.test.ts`, `turn.test.ts` and `stack.test.ts`. The helpers in `test/support/game.ts` check the engine's invariants on every state
 and only take actions that `legalActions` lists.

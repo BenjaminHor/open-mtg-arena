@@ -1,6 +1,6 @@
 // Walking the turn: ending a step, beginning the next, and beginning turns (CR 500–514). This is the one place the
 // game moves between steps, so effects that last "until end of step", skipped and extra steps, and "at the beginning
-// of" triggers have one place to hook in. M1-07's work queue will drive it.
+// of" triggers have one place to hook in. The work queue drives it (D-032).
 
 import { anyAttackers } from "../combat/attackers.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
@@ -15,10 +15,10 @@ import { discardCards } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
-import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
 import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
+import { queueWork } from "./work.ts";
 
 /** The maximum hand size (CR 402.2). A different rule from the starting hand size, though both are normally seven. */
 export const MAXIMUM_HAND_SIZE = 7;
@@ -86,7 +86,9 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []
  * state-based actions or triggers yet (CR 514.3a), the step simply ends.
  */
 function endCleanup(state: GameState): Progress {
-  return andThen(removeAllDamage(state), endStep);
+  // Queued rather than called, so the CR 514.3a check (another cleanup step) can go between them in M1-12.
+  const removed = removeAllDamage(state);
+  return { state: queueWork(removed.state, { kind: "endStep" }), events: removed.events };
 }
 
 /**
@@ -117,7 +119,7 @@ function beginStep(state: GameState, step: Step): Progress {
   switch (step) {
     case "untap":
       // CR 502.3, then no one gets priority (CR 502.4) and the step ends.
-      return andThen(andThen(progress, untapStep), endStep);
+      return andThen(andThen(progress, untapStep), (s) => ({ state: queueWork(s, { kind: "endStep" }), events: [] }));
     case "draw":
       // CR 504.1, then priority (CR 504.2).
       return andThen(
@@ -150,7 +152,7 @@ function untapStep(state: GameState): Progress {
 }
 
 function priorityForActivePlayer(state: GameState): Progress {
-  return givePriority(state, currentTurn(state).activePlayer);
+  return { state: queueWork(state, { kind: "givePriority", player: currentTurn(state).activePlayer }), events: [] };
 }
 
 /** Empties every player's mana pool (CR 500.5), reporting only the pools that had mana. */

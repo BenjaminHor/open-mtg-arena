@@ -127,6 +127,7 @@ export function midTurnState(): GameState {
     },
     pregame: null,
     passesInSuccession: 1,
+    work: [],
     pending: { id: "d19", player: "p2", kind: "priority" },
     result: null,
   };

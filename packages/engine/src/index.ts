@@ -51,5 +51,6 @@ export type {
 } from "./state/result.ts";
 export type { GameSetup, Opening, PermanentSetup, PlayerSetup, RuleModifier } from "./state/setup.ts";
 export type { Phase, Step, Turn } from "./state/turn.ts";
+export type { WorkItem } from "./state/work.ts";
 export type { PlayerZoneName, SharedZoneName, ZoneName, ZoneRef, Zones } from "./state/zones.ts";
 export { ENGINE_VERSION } from "./version.ts";

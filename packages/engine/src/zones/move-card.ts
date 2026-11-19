@@ -56,7 +56,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     damage: 0,
     counters: {},
     controlledSinceTurnStart: false,
-    choices: null,
+    // A spell on the stack carries its casting choices (CR 601.2b–c); casting (M1-09) fills them in.
+    choices: to.zone === "stack" ? { modes: [], x: null, targets: [] } : null,
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

@@ -129,17 +129,17 @@ type Action =
 
 ## Running the game: the work queue
 
-`applyAction` applies the action, then calls `advance(state)`, which loops:
+`applyAction` applies the action, then calls `advance(state)`, which loops (D-032):
 
-1. If `result` is set, stop.
-2. If `work` has items, pop the next `WorkItem` and run it. A work item can push more work
-   items, change state, emit events, or **set `pending` and stop the loop** to wait for a choice.
-3. If the queue is empty and a player would receive priority: run state-based actions until
-   none apply (CR 704.3), then put pending triggers on the stack in APNAP order, asking for
-   an order when a player controls several (CR 603.3b). Repeat until stable, then set a
-   `priority` decision (CR 117).
-4. If all players passed in succession: resolve the top of the stack (CR 608), or if the stack
-   is empty, move to the next step (CR 500.2).
+1. If `result` is set, or a decision is pending, stop.
+2. Otherwise pop the next `WorkItem` and run it. A work item can queue more work items (at the front of the queue, so
+   they run before older work), change state, emit events, or **set `pending`**, which stops the loop.
+3. An empty queue with nothing pending is an engine bug: `advance` throws.
+
+The work items so far: `givePriority` (state-based actions and triggers will run there first, CR 117.5; then a `priority`
+decision), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it queues the resolution's effects, `finishResolving`,
+then priority for the active player) and `finishCleanup`. When all players pass in succession, the top of the stack
+resolves, or with an empty stack the step ends (CR 117.4).
 
 Resolving a spell means turning its effect data into work items. Because the queue lives in
 the state rather than on the JavaScript call stack, **any point that waits for a decision is a

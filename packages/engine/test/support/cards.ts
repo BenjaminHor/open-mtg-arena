@@ -10,6 +10,8 @@ function card(oracleId: string, data: Omit<CardData, "oracleId">): CardData {
 export const FOREST = "forest";
 export const MOUNTAIN = "mountain";
 export const BEARS = "grizzly-bears";
+export const SHOCK = "shock";
+export const HAMMER = "volcanic-hammer";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -39,6 +41,51 @@ export const TEST_CARDS: CardDatabase = {
       toughness: null,
     },
     def: { name: "Mountain", oracle: "({T}: Add {R}.)" },
+  }),
+  [SHOCK]: card(SHOCK, {
+    printed: {
+      name: "Shock",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Shock",
+      oracle: "Shock deals 2 damage to any target.",
+      spell: {
+        targets: [{ kind: "anyTarget" }],
+        effects: [{ op: "dealDamage", amount: 2, from: "self", to: { target: 0 } }],
+      },
+    },
+  }),
+  [HAMMER]: card(HAMMER, {
+    printed: {
+      name: "Volcanic Hammer",
+      manaCost: [
+        { kind: "generic", amount: 1 },
+        { kind: "colored", color: "R" },
+      ],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["sorcery"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Volcanic Hammer",
+      oracle: "Volcanic Hammer deals 3 damage to any target.",
+      spell: {
+        targets: [{ kind: "anyTarget" }],
+        effects: [{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }],
+      },
+    },
   }),
   [BEARS]: card(BEARS, {
     printed: {
