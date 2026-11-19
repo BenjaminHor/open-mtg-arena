@@ -1,6 +1,5 @@
-// Casting details the scenarios can't reach yet. CR 608.2b needs a target to become illegal, which in this pool takes
-// damage and a creature dying (state-based actions, M1-12); until then the target is moved away directly. The YAML scenario for it
-// is part of M1-12's acceptance.
+// Casting details, checked directly. The target is moved away by hand here; the YAML scenario
+// casting/target-died-does-not-resolve.yaml shows CR 608.2b with a creature that really died.
 
 import { describe, expect, it } from "vitest";
 import type { GameState, ObjectId } from "../../src/index.ts";

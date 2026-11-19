@@ -142,7 +142,8 @@ type Action =
 The work items so far: `givePriority` (state-based actions and triggers will run there first, CR 117.5; then a `priority`
 decision), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it queues the resolution's effects, `finishResolving`,
 then priority for the active player), `runEffect` (one effect of a resolving spell or ability, CR 608.2c),
-`finishResolving`, `doesNotResolve` (CR 608.2b) and `finishCleanup`. When all players pass in succession, the top of the stack
+`finishResolving`, `doesNotResolve` (CR 608.2b), `finishCleanup`, `cleanupStateBasedActions` and `anotherCleanupStep`
+(CR 514.3a). `givePriority` checks state-based actions first and re-queues itself while any are performed (D-039). When all players pass in succession, the top of the stack
 resolves, or with an empty stack the step ends (CR 117.4).
 
 Resolving a spell means turning its effect data into work items. Because the queue lives in

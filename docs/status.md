@@ -7,21 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-12 State-based actions (plan, 2026-11-19). CR 704.3, 704.5a/b/f/g, 117.5, 514.3a, 701.8, 104.2a, 104.4a, 404.3.
-  - `rules/state-based-actions.ts`: `stateBasedActions(state, cards)` lists what applies now, as data (no changes).
-  - `game/state-based-actions.ts`: `checkStateBasedActions` performs them all at once as one event (CR 704.3) and
-    repeats until none apply; clears `attemptedDrawFromEmptyLibrary` after each check. Called from `givePriority`
-    (CR 117.5), never between work items, and from the cleanup step (CR 514.3a: if any happened, the active player
-    gets priority, and once all pass, another cleanup step begins).
-  - 704.5f puts the creature in its owner's graveyard; 704.5g destroys it (`permanents/destroy.ts`, CR 701.8, its own
-    function for regeneration and indestructible later). Simultaneous cards go to a graveyard in battlefield order.
-  - Losing (CR 104.3): `PLAYER_LOST`; when one player is left they win (CR 104.2a), when none, a draw (CR 104.4a):
-    `GameResult`, `GAME_ENDED`, nothing pending. Conceding and the result scenarios stay in M1-15. The runner gets
-    `winner` now, since games can end.
-  - Tests: a scenario per SBA, two at once (and both players at 0 life: a draw), the CR 608.2b scenario (Shock whose
-    target died to a Bolt cast after it), damage-and-pump-end-together now meaningful; TS test for a second cleanup.
-  - Future impact: the SBA list is data, so the legend rule, +1/+1/-1/-1 annihilation, planeswalkers etc. are one case
-    each; triggers will go on the stack in the same loop (CR 117.5); multiplayer needs players leaving (CR 800.4).
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -48,17 +34,17 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   goes in `effects/run-effect.ts` and the table in `effects/README.md`.
 - Characteristics (D-038): read power, toughness and keywords through `characteristics()` or the per-layer readers
   (`powerAndToughness`, `keywordsOf`, `supertypesOf` for the legend rule, CR 704.5j).
-- For M1-12: `characteristics/damage-and-pump-end-together.yaml` only starts proving CR 514.2 once SBAs exist; check
-  it fails if the pump ends before damage is removed.
   An effect whose `affected` objects are gone stays until cleanup and does nothing (their ids never come back, CR 400.7).
-- For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
-  and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
-- For M1-12: check state-based actions in `givePriority` (CR 117.5), never between work items: a spell's effects are
-  separate `runEffect` items, and no SBA check may come between them (CR 704.3).
+- Casting, playing a land and activating a mana ability reset `passesInSuccession` (CR 117.4); M1-14's activated
+  abilities must too.
+- State-based actions (D-039) run in `givePriority` and the cleanup step's check, never between work items. A new SBA
+  is one case in `rules/state-based-actions.ts` and one in `game/state-based-actions.ts`. One that needs a choice
+  (the legend rule, CR 704.5j) can wait for it, since a performed check re-queues `givePriority`.
 - For M1-13: combat damage goes through `dealDamage` as one list (CR 510.2); add a `combat` flag to `Damage` and
   `DAMAGE_DEALT` (CR 120.2a) for "deals combat damage" triggers and prevention.
-- For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
-  each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
+- For M1-13: a lethal attack ends the game through the SBA check (CR 704.5a); `winner` in scenarios checks it.
+- For M1-15: losing to 0 life and an empty library, `GameResult` and `winner` already work (M1-12). What's left is
+  conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn.
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).
@@ -84,7 +70,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-12 State-based actions
+- M1-13 Combat
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -128,8 +114,16 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   "until end of turn" effects ending with damage in cleanup (CR 514.2); scenario `rules:` and `.power`, `.toughness`,
   `.abilities contains`; 6 characteristics scenarios (D-038) (2026-11-19).
 
+- M1-12 State-based actions: CR 704.5a/b/f/g listed as data and performed together (CR 704.3), checked before every
+  priority (CR 117.5) and in cleanup with another cleanup step when any happen (CR 514.3a); destroy (CR 701.8);
+  players losing and the game ending with a winner or a draw (CR 104.2a, 104.4a); the runner's `winner`; 9 SBA
+  scenarios and the CR 608.2b scenario (D-039) (2026-11-19).
+
 ## Open questions for the owner
-- (none)
+- (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
+  (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
+  doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
+  about graveyard order arrive?
 
 ## Known issues
 - (none)

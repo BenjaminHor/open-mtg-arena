@@ -385,3 +385,21 @@ every schema change and every change D-024 lists bumps it.
   state-based action check of M1-12, can come between them. `EFFECT_ENDED` reports each one.
 - Only cards have characteristics here. An ability on the stack is asked for its controller through `controllerOf`.
 
+**D-039: State-based actions** · 2026-11-19 · accepted
+- `stateBasedActions(state, cards)` (`rules/`) lists every SBA that applies, as data, from one state;
+  `checkStateBasedActions` (`game/`) performs them all as one event (`STATE_BASED_ACTIONS`, CR 704.3). Listing first and
+  then performing is what makes them simultaneous: nothing performed changes what else applies in the same check.
+- The check runs in `givePriority` (CR 117.5). If anything was performed, `givePriority` is queued again rather than
+  looped, so the check repeats (CR 704.3) and an SBA that needs a choice (the legend rule, CR 704.5j) could wait for it.
+  The cleanup step checks once after its CR 514.2 action; if anything happened, the active player gets priority, and
+  when all pass with an empty stack, another cleanup step begins (CR 514.3a).
+- CR 704.5f puts the creature into its owner's graveyard; 704.5g destroys it (`permanents/destroy.ts`, CR 701.8),
+  separate so regeneration and indestructible can tell them apart. A creature with 0 toughness isn't also destroyed.
+- Cards going to a graveyard at the same time go in battlefield (or hand) order. CR 404.3 lets their owner choose; the
+  engine doesn't ask, as Arena doesn't, while nothing in the pool cares (an open question in status.md).
+- Losing: `playersLose` emits `PLAYER_LOST` for each, and when one player is left they win (CR 104.2a), when none, a
+  draw (CR 104.4a). The game ends at once: `result` set, nothing pending or queued, no cast in progress. A player who
+  loses for two reasons in one check loses once, for the first listed. With more than one player left it throws:
+  leaving a multiplayer game (CR 800.4) isn't built.
+- The scenario runner gets `winner` now (M1-15 keeps conceding and the result scenarios).
+

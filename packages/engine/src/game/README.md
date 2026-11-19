@@ -19,7 +19,9 @@ The engine's entry points and the flow of a game.
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |
-| `priority.ts` | `givePriority()`: every place that gives a player priority goes through it (CR 117) |
+| `priority.ts` | `givePriority()`: every place that gives a player priority goes through it; state-based actions are checked first (CR 117.5) |
+| `state-based-actions.ts` | `checkStateBasedActions()`: performs every SBA that applies as one event (CR 704.3) (D-039) |
+| `game-end.ts` | `playersLose()`: players lose, and the game ends with a winner or a draw (CR 104) |
 | `turn-order.ts` | `rotateTo()`: turn order starting with a given player (CR 103.1) |
 | `ids.ts`, `progress.ts`, `turn.ts` | Id and timestamp allocation; passing state plus events along; `currentTurn()` |
 
