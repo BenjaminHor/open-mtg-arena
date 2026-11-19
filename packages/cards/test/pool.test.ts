@@ -5,7 +5,7 @@ import { parsePoolTxt } from "../src/pool-data.ts";
 
 // These tests read only committed files (pool.txt and data/), never the Scryfall downloads, so CI can run them.
 
-const poolTxt = parsePoolTxt(readFileSync(new URL("../pool.txt", import.meta.url), "utf8"));
+const poolTxt = parsePoolTxt(readFileSync(new URL("../pool.txt", import.meta.url), "utf8")).map((e) => e.name);
 
 describe("the card pool", () => {
   it("has Oracle data for exactly the cards in pool.txt", () => {
@@ -66,5 +66,20 @@ describe("slugify", () => {
     expect(slugify("Fire // Ice")).toBe("fire-ice");
     expect(slugify("Æther Vial")).toBe("aether-vial");
     expect(slugify("Lim-Dûl's Vault")).toBe("lim-duls-vault");
+  });
+});
+
+describe("parsePoolTxt", () => {
+  it("reads names, optional pins, and skips comments", () => {
+    expect(parsePoolTxt("# comment\n\nShock\nLightning Bolt [m10]\nForest [m10 246]\n")).toStrictEqual([
+      { name: "Forest", pin: { set: "m10", collectorNumber: "246" } },
+      { name: "Lightning Bolt", pin: { set: "m10", collectorNumber: null } },
+      { name: "Shock", pin: null },
+    ]);
+  });
+
+  it("rejects a duplicate card and a pin it can't read", () => {
+    expect(() => parsePoolTxt("Shock\nShock [m19]\n")).toThrow(/twice/);
+    expect(() => parsePoolTxt("Shock [M19\n")).toThrow(/can't read the pin/);
   });
 });

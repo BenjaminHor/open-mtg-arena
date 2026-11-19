@@ -4,7 +4,7 @@
 export type PoolFile = {
   generated: string;
   /** When Scryfall last updated the bulk files this was extracted from. */
-  scryfall: { oracleCardsUpdatedAt: string; rulingsUpdatedAt: string };
+  scryfall: { oracleCardsUpdatedAt: string; defaultCardsUpdatedAt: string; rulingsUpdatedAt: string };
   /** Sorted by name. */
   cards: PoolCard[];
 };
@@ -30,12 +30,17 @@ export type PoolCard = {
   colorIndicator: string[];
   /** Keyword abilities Scryfall lists, for example ["Flying"]. */
   keywords: string[];
-  /** Art comes from Scryfall's image hosts at runtime, never bundled (D-007). The artist is always credited. */
+  /**
+   * The rest describes the printing whose art is shown (D-029). Art comes from Scryfall's image hosts at runtime,
+   * never bundled (D-007), and the artist is always credited.
+   */
   images: { normal: string; large: string; png: string; artCrop: string };
   artist: string;
   set: string;
   collectorNumber: string;
   scryfallUri: string;
+  /** How the printing was chosen: pinned in pool.txt, by the newest-regular-printing rule, or Oracle Cards' pick. */
+  printingChosenBy: "pin" | "rule" | "oracleCards";
 };
 
 /** data/rulings/<slug>.json */
@@ -56,14 +61,35 @@ export function compareNames(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-/** The card names in pool.txt: one per line, ignoring blank lines and `#` comments. Sorted by `compareNames`. */
-export function parsePoolTxt(text: string): string[] {
-  const names = text
+/** One line of pool.txt: a card name, and optionally the printing to show (D-029). */
+export type PoolEntry = { name: string; pin: PrintingPin | null };
+
+/** `[m10]` or `[m10 146]`: a Scryfall set code, and a collector number when the set has several printings. */
+export type PrintingPin = { set: string; collectorNumber: string | null };
+
+/**
+ * The entries in pool.txt, sorted by name. One card per line, optionally followed by a pin:
+ * `Lightning Bolt`, `Lightning Bolt [m10]`, `Lightning Bolt [m10 146]`. Blank lines and `#` comments are ignored.
+ */
+export function parsePoolTxt(text: string): PoolEntry[] {
+  const entries = text
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line !== "" && !line.startsWith("#"));
+    .filter((line) => line !== "" && !line.startsWith("#"))
+    .map(parsePoolLine);
+  const names = entries.map((e) => e.name);
   if (new Set(names).size !== names.length) throw new Error("pool.txt lists a card twice.");
-  return names.sort(compareNames);
+  return entries.sort((a, b) => compareNames(a.name, b.name));
+}
+
+function parsePoolLine(line: string): PoolEntry {
+  const match = /^(.*?)\s*\[([a-z0-9]+)(?:\s+(\S+))?\]$/.exec(line);
+  if (match === null) {
+    if (line.includes("[") || line.includes("]")) throw new Error(`pool.txt: can't read the pin in "${line}"`);
+    return { name: line, pin: null };
+  }
+  const [, name = "", set = "", collectorNumber] = match;
+  return { name, pin: { set, collectorNumber: collectorNumber ?? null } };
 }
 
 /** "Lightning Bolt" -> "lightning-bolt", "Æther Vial" -> "aether-vial", "Lim-Dûl's Vault" -> "lim-duls-vault". */

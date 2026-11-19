@@ -9,7 +9,10 @@ export const CARDS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url
 export const SCRYFALL_DIR = path.join(CARDS_DIR, "data", "scryfall");
 
 export const BULK_FILES = {
+  /** One entry per card, for rules data (Oracle text, types, cost). */
   oracle_cards: "oracle-cards.jsonl.gz",
+  /** Every printing in English, for choosing which printing's art and artist to show (D-029). */
+  default_cards: "default-cards.jsonl.gz",
   rulings: "rulings.jsonl.gz",
 } as const;
 
@@ -37,7 +40,16 @@ export type ScryfallCard = {
   image_uris?: Record<string, string>;
   artist?: string;
   set: string;
+  set_type: string;
   collector_number: string;
+  released_at: string;
+  lang: string;
+  games: string[];
+  digital: boolean;
+  promo: boolean;
+  /** Includes "universesbeyond" for crossover printings (Marvel, Spider-Man, ...). */
+  promo_types?: string[];
+  variation: boolean;
   scryfall_uri: string;
 };
 

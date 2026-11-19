@@ -1,5 +1,6 @@
 // Matching pool.txt names to Scryfall's Oracle Cards, kept apart from the file handling so it can be tested.
 
+import { compareNames, type PoolEntry } from "../src/pool-data.ts";
 import type { ScryfallCard } from "./scryfall.ts";
 
 // Oracle Cards also has entries that aren't Magic cards you can put in a deck. Some share a name with a real card
@@ -25,4 +26,51 @@ export function matchPoolCards(names: readonly string[], cards: Iterable<Scryfal
     throw new Error(`Every pool.txt name must match exactly one card in Oracle Cards.\n${problems.join("\n")}`);
   }
   return names.map((name) => (matches.get(name) ?? [])[0] as ScryfallCard);
+}
+
+/** Set types of regular releases. Others are commander, masters, crossover and digital products, and so on. */
+const REGULAR_SET_TYPES = new Set(["core", "expansion"]);
+
+/**
+ * The printing whose art and artist a pool card shows (D-029): the pinned one, else the newest regular printing
+ * (paper, not digital-only, not a promo, variant or Universes Beyond crossover, from a core set or expansion, already
+ * released on `asOf`), else Oracle Cards' own pick. `printings` are the card's printings from Default Cards, in any order.
+ * `asOf` is the bulk file's date (YYYY-MM-DD), not today's, so the same download always gives the same choice.
+ */
+export function choosePrinting(
+  entry: PoolEntry,
+  oracleCard: ScryfallCard,
+  printings: readonly ScryfallCard[],
+  asOf: string,
+): { printing: ScryfallCard; chosenBy: "pin" | "rule" | "oracleCards" } {
+  const { pin } = entry;
+  if (pin !== null) {
+    const inSet = printings.filter((p) => p.set === pin.set);
+    const found =
+      pin.collectorNumber === null ? inSet : inSet.filter((p) => p.collector_number === pin.collectorNumber);
+    if (found.length === 1 && found[0] !== undefined) return { printing: found[0], chosenBy: "pin" };
+    const options = inSet.map((p) => `[${p.set} ${p.collector_number}]`).join(", ") || "none";
+    throw new Error(`${entry.name}: the pin doesn't name exactly one printing. Printings in that set: ${options}`);
+  }
+  const regular = printings
+    .filter(
+      (p) =>
+        p.lang === "en" &&
+        p.games.includes("paper") &&
+        !p.digital &&
+        !p.promo &&
+        !p.variation &&
+        !(p.promo_types ?? []).includes("universesbeyond") &&
+        p.released_at <= asOf &&
+        REGULAR_SET_TYPES.has(p.set_type),
+    )
+    .sort(
+      (a, b) =>
+        compareNames(b.released_at, a.released_at) ||
+        a.collector_number.localeCompare(b.collector_number, "en", { numeric: true }),
+    );
+  const newest = regular[0];
+  return newest !== undefined
+    ? { printing: newest, chosenBy: "rule" }
+    : { printing: oracleCard, chosenBy: "oracleCards" };
 }

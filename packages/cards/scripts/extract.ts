@@ -16,7 +16,7 @@ import {
   type RulingsFile,
   slugify,
 } from "../src/pool-data.ts";
-import { matchPoolCards } from "./match.ts";
+import { choosePrinting, matchPoolCards } from "./match.ts";
 import { BULK_FILES, CARDS_DIR, MANIFEST_FILE, type Manifest, SCRYFALL_DIR, type ScryfallCard } from "./scryfall.ts";
 
 const DATA_DIR = path.join(CARDS_DIR, "data");
@@ -25,7 +25,8 @@ const RULINGS_DIR = path.join(DATA_DIR, "rulings");
 type ScryfallRuling = { oracle_id: string; source: string; published_at: string; comment: string };
 
 async function main(): Promise<void> {
-  const names = parsePoolTxt(await readFile(path.join(CARDS_DIR, "pool.txt"), "utf8"));
+  const entries = parsePoolTxt(await readFile(path.join(CARDS_DIR, "pool.txt"), "utf8"));
+  const names = entries.map((e) => e.name);
   const manifest = await readManifest();
 
   // Keep only entries with a pool card's name while streaming (there are tens of thousands of cards), then match.
@@ -34,7 +35,24 @@ async function main(): Promise<void> {
   for await (const card of readJsonLines<ScryfallCard>(BULK_FILES.oracle_cards)) {
     if (wanted.has(card.name)) candidates.push(card);
   }
-  const cards = matchPoolCards(names, candidates).map(toPoolCard);
+  const oracleCards = matchPoolCards(names, candidates);
+
+  // Every printing of the pool's cards, to choose which one's art to show (D-029).
+  const printings = new Map<string, ScryfallCard[]>(oracleCards.map((c) => [c.oracle_id, []]));
+  for await (const card of readJsonLines<ScryfallCard>(BULK_FILES.default_cards)) {
+    printings.get(card.oracle_id)?.push(card);
+  }
+  const cards = entries.map((entry, i) => {
+    const oracleCard = oracleCards[i] as ScryfallCard;
+    const found = printings.get(oracleCard.oracle_id) ?? [];
+    const { printing, chosenBy } = choosePrinting(
+      entry,
+      oracleCard,
+      found,
+      manifest.default_cards.updatedAt.slice(0, 10),
+    );
+    return toPoolCard(oracleCard, printing, chosenBy);
+  });
   const slugs = new Set(cards.map((c) => c.slug));
   if (slugs.size !== cards.length) throw new Error("Two pool cards have the same slug.");
 
@@ -47,6 +65,7 @@ async function main(): Promise<void> {
     generated: GENERATED_NOTE,
     scryfall: {
       oracleCardsUpdatedAt: manifest.oracle_cards.updatedAt,
+      defaultCardsUpdatedAt: manifest.default_cards.updatedAt,
       rulingsUpdatedAt: manifest.rulings.updatedAt,
     },
     cards,
@@ -76,12 +95,13 @@ async function readManifest(): Promise<Manifest> {
   }
 }
 
-function toPoolCard(c: ScryfallCard): PoolCard {
+/** Rules data from the Oracle Cards entry; images, artist, set and collector number from the chosen printing. */
+function toPoolCard(c: ScryfallCard, printing: ScryfallCard, chosenBy: PoolCard["printingChosenBy"]): PoolCard {
   // Split, flip, adventure, saga, meld and other layouts need rules the engine doesn't have yet (D-026).
   if (c.layout !== "normal") throw new Error(`"${c.name}": layout "${c.layout}" isn't supported yet`);
-  const img = c.image_uris;
-  if (!img?.normal || !img.large || !img.png || !img.art_crop || !c.artist) {
-    throw new Error(`"${c.name}" has no images or artist on Scryfall`);
+  const img = printing.image_uris;
+  if (!img?.normal || !img.large || !img.png || !img.art_crop || !printing.artist) {
+    throw new Error(`"${c.name}": the chosen printing has no images or artist on Scryfall`);
   }
   if (c.oracle_text === undefined) throw new Error(`"${c.name}" has no Oracle text on Scryfall`);
   return {
@@ -99,10 +119,11 @@ function toPoolCard(c: ScryfallCard): PoolCard {
     colorIndicator: c.color_indicator ?? [],
     keywords: c.keywords,
     images: { normal: img.normal, large: img.large, png: img.png, artCrop: img.art_crop },
-    artist: c.artist,
-    set: c.set,
-    collectorNumber: c.collector_number,
-    scryfallUri: c.scryfall_uri,
+    artist: printing.artist,
+    set: printing.set,
+    collectorNumber: printing.collector_number,
+    scryfallUri: printing.scryfall_uri,
+    printingChosenBy: chosenBy,
   };
 }
 

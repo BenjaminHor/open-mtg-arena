@@ -191,3 +191,12 @@ and `AbilityObject.ability` are an `AbilityRef`: `{ kind: "printed", index }` fo
 or `{ kind: "basicLandType", landType }` for the intrinsic mana ability. `characteristics()` lists an object's current
 abilities, each with its ref; legality checks look the ref up in that list. Granted abilities and delayed triggers add
 kinds when they arrive. Scenarios say `ability: <n>` (the nth ability in that list) only when there's more than one.
+
+**D-029: Card art comes from a chosen printing, pinned per card or picked by a fixed rule** · 2026-11-19 · accepted
+The owner chose (2026-11-19): `pool.txt` may pin a printing per card, as `Lightning Bolt [m10]` (a Scryfall set code,
+optionally with a collector number: `[m10 146]`). A card without a pin gets its newest regular printing: a paper,
+non-digital, non-promo English printing from a core set or expansion, not a Universes Beyond crossover, and already
+released on the date of the bulk file. Only if it has none does it fall back to
+Scryfall's Oracle Cards pick. Rules data (Oracle text, types, cost) always comes from Oracle Cards; only the printing
+details (images, artist, set, collector number) come from the chosen printing. That keeps the art stable across refreshes
+and avoids crossover or digital-only printings, without changing any rules behavior.

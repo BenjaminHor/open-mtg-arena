@@ -59,16 +59,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `GameState`) and `engine/src/rng/` (xoshiro128**, D-024), with type-level, JSON round-trip and known-answer tests.
   Reviewed by rules-judge and code-reviewer; D-020 to D-025 (2026-11-19).
 - M1-04 Card data pipeline: `pnpm cards:fetch` / `cards:extract` (Scryfall bulk JSONL), `pool.txt` with the 17 M1
-  cards, generated `data/pool.json` and rulings, the engine's card types (D-026), all 17 definitions, and tests for
-  the pool, the errata check and the parsers (2026-11-19).
+  cards, generated `data/pool.json` and rulings, the engine's card types (D-026), all 17 definitions, ability refs
+  (D-028), printing choice for art (D-029), and tests for the pool, the errata check, matching and the parsers (2026-11-19).
 
 ## Open questions for the owner
-- **Which printing's art should the pool use?** `pnpm cards:extract` takes the printing Scryfall's Oracle Cards file
-  picks (its "most recognizable version"), which can change on every refresh. Today Lightning Bolt and Shock show a
-  Marvel Super Heroes Commander printing, Forest and Mountain a Marvel: Darkhold Destiny one, and Raging Goblin a
-  digital-only Arena starter set. Options: keep Scryfall's pick; pin a printing per card in `pool.txt`
-  (for example `Lightning Bolt [m10]`); or prefer a rule such as "newest core set or classic printing". It affects
-  the look (D-012), not the rules.
+- (none)
 
 ## Known issues
 - (none)

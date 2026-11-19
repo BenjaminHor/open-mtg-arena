@@ -18,8 +18,9 @@ packages/cards/
   test/                      pool and parser tests; per-card scenarios live with the engine scenarios
 ```
 
-`pnpm cards:fetch` downloads Scryfall bulk data (`oracle-cards` and `rulings`, gzipped JSON Lines) into `data/scryfall/`
-(gitignored, about 30 MB). `pnpm cards:extract` reads `pool.txt` and writes `data/pool.json` and `data/rulings/`.
+`pnpm cards:fetch` downloads Scryfall bulk data (`oracle-cards`, `default-cards` and `rulings`, gzipped JSON Lines) into
+`data/scryfall/` (gitignored, about 110 MB). Rules data comes from Oracle Cards; the printing whose art is shown is pinned
+in `pool.txt` (`Lightning Bolt [m10]`) or picked by a fixed rule from Default Cards (D-029). `pnpm cards:extract` reads `pool.txt` and writes `data/pool.json` and `data/rulings/`.
 Commit those small generated files. Follow Scryfall's request rate guidance (see `data-sources.md`):
 bulk files are downloaded once, and the API isn't called per card.
 
