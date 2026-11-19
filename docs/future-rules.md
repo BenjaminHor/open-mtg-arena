@@ -42,7 +42,8 @@ triggers that "look back in time" (CR 603.10), delayed triggers, and state trigg
 *Needs now:* events carry enough information to match triggers later (for a zone change: the object as it
 last existed, both ids, from and to zones). Keep the last known information of objects that leave a zone.
 Events aren't state, so last known information (CR 608.2h, 603.10) needs its own store in `GameState`, added by
-the first task that resolves an effect whose source may be gone (M1-14: firebreathing after the Whelp dies).
+the first effect that reads information from an object that may be gone (its power, its controller, lifelink on a
+damage source). Firebreathing after the Whelp dies reads nothing from it, so M1-14 didn't need one (D-041).
 Abilities on the stack carry `sourceOracleId` + `abilityIndex`; granted abilities (layer 6) and delayed triggers
 (CR 603.7) will need another kind of reference.
 

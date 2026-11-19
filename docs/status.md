@@ -7,22 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-14 Activated abilities (plan, 2026-11-19). CR 602.1–602.2, 602.5, 113.3b, 113.7a, 405.1, 608.2h, 601.2b–i.
-  - Activating a non-mana ability follows the casting steps (CR 602.2b), so the cast procedure becomes "putting an
-    object on the stack": `Casting` gets an origin (a card from hand, or an ability) and `spell` becomes `object` in
-    `Casting` and the `chooseTarget`/`payMana` decisions. ACTIVATE_ABILITY creates an `AbilityObject` on the stack
-    (CR 602.2a), then targets, then the mana cost (CR 601.2g–h); `ABILITY_ACTIVATED` when done. Cancelling removes the
-    ability object (it ceases to exist) and restores the pool and mana sources (D-035).
-  - Only costs the pool needs: mana. A non-mana ability with {T} in its cost is refused until a card needs it.
-  - Who and when: the source's controller (CR 602.2), whenever they have priority (CR 113.3b, no timing restriction);
-    no summoning sickness unless {T} (CR 302.6, 602.5a).
-  - Resolution: the ability's effects from its source's definition (`sourceOracleId`, `ability` ref), with "self" the
-    source (CR 113.7a); an effect on a source that left the battlefield does nothing (CR 608.2h, 101.3). Targets
-    checked as for spells (CR 608.2b).
-  - Runner: `activate` gains `targets` and `pay` (like `cast`).
-  - Tests: firebreathing several times, in response to a block, resolving after the Whelp dies, by a summoning-sick
-    Whelp, not by the other player, cancelling; it uses the stack (a response resolves first).
-  - Future impact: the same procedure serves triggered abilities' targets (CR 603.3d) and loyalty abilities later.
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -50,16 +35,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Characteristics (D-038): read power, toughness and keywords through `characteristics()` or the per-layer readers
   (`powerAndToughness`, `keywordsOf`, `supertypesOf` for the legend rule, CR 704.5j).
   An effect whose `affected` objects are gone stays until cleanup and does nothing (their ids never come back, CR 400.7).
-- Casting, playing a land and activating a mana ability reset `passesInSuccession` (CR 117.4); M1-14's activated
-  abilities must too.
+- Casting, playing a land and activating any ability reset `passesInSuccession` (CR 117.4); cancelling doesn't.
 - State-based actions (D-039) run in `givePriority` and the cleanup step's check, never between work items. A new SBA
   is one case in `rules/state-based-actions.ts` and two in `game/state-based-actions.ts` (`lossFrom`,
   `performOnObject`). The repeat of the check (CR 704.3) has no test: nothing in the pool makes one SBA cause another.
   The first card that can (an anthem, a lord) should add one. One that needs a choice
   (the legend rule, CR 704.5j) can wait for it, since a performed check re-queues `givePriority`.
 - Combat (D-040): engine tests that pass through combat with creatures must answer `declareAttackers` and
-  `declareBlockers` (the turn tests' `playUntilTurn` declares nothing). For M1-14: firebreathing in response to a block
-  is activated with priority in the declare blockers step, after `finishDeclaring`.
+  `declareBlockers` (the turn tests' `playUntilTurn` declares nothing).
 - For M1-15: losing to 0 life and an empty library, `GameResult` and `winner` already work (M1-12). What's left is
   conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn. Conceding
   can go through `playersLose` with reason `conceded`; then `PLAYER_CONCEDED` overlaps `PLAYER_LOST`, so keep one.
@@ -77,9 +60,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Done in M1-08 (`mana/elves-still-sick-on-opponents-turn.yaml`). A settled CR 302.6 edge case: a creature that entered on its controller's
   last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
   its controller's next turn.
-- For M1-14: an ability whose source is gone still resolves (CR 113.7a) and uses last known information (CR 608.2h),
-  which needs a store in `GameState` (`future-rules.md`). Firebreathing's `modifyPT` of `"self"` uses
-  `EffectContext.self` = the source permanent (D-036), so the context for abilities is built differently from spells'.
+- Activated abilities (D-041): a stack object is a spell or an ability; read its targets and effects with
+  `targetSpecsOf` and `effectsOf`, never from a card directly. No last-known-information store yet (future-rules.md).
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
 - The engine's step names follow the CR (`precombatMain`, `declareBlockers`, see `engine/src/state/turn.ts`).
   `testing.md`'s scenario YAML uses short names (`main1`, `combat.declareBlockers`); the M1-16 runner maps them.
@@ -89,7 +71,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-14 Activated abilities
+- M1-15 Game end
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -142,6 +124,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   haste (CR 302.6, 702.10), flying and reach (CR 702.9, 702.17), combat damage with free division among several
   blockers (CR 510.1c) dealt at once (CR 510.2), `GameState.combat` for the combat phase; the runner's `attack`,
   `block`, `assign`; 23 combat scenarios (D-040) (2026-11-19).
+
+- M1-14 Activated abilities: non-mana abilities go on the stack through the casting steps (CR 602.2), with targets,
+  mana costs, cancelling and resolution from the source's card (CR 113.7a); firebreathing; the runner's `activate`
+  with `targets` and `pay`; 8 activated-ability scenarios and TS tests with a targeted test ability (D-041)
+  (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time

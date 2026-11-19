@@ -14,7 +14,9 @@ The engine's entry points and the flow of a game.
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
 | `resolve.ts` | `resolveTopOfStack()` checks targets (CR 608.2b) and queues a resolution's steps: its effects (`effects/`), then `finishResolving()`, the final part (CR 608) |
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
-| `cast.ts` | Casting a spell as decisions (CR 601.2): `castProblem`, `startCast`, targets, paying, cancelling (D-035) |
+| `cast.ts` | Casting a spell (CR 601.2): `castProblem`, `startCast` (D-035) |
+| `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |
+| `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): targets, paying, `cancelCasting` |
 | `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves, the step ends, or another cleanup step begins (CR 117.3d, 117.4, 514.3a) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
