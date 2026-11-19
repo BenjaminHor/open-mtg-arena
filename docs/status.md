@@ -7,7 +7,24 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-13 Combat (plan, 2026-11-19). CR 506–511, 302.6, 702.9, 702.10, 702.17, 120.2a.
+  - `GameState.combat`: the attackers (each with the player it attacks, CR 506.3, and whether it's blocked, 509.1h)
+    and the blocks (blocker, attacker). Cleared as the end of combat step ends (CR 511.3). A creature that left the
+    battlefield is out of combat (CR 506.4) because its id is gone, so readers skip ids no longer on the battlefield.
+  - Declaring is incremental, like the cleanup discard, so `legalActions` stays linear (no 2^n subsets):
+    `declareAttackers` pending with `chosen`; answers add one attacker (with its defending player) or finish. Finishing
+    checks the whole declaration (CR 508.1c–d) and taps the attackers (508.1f). Same for `declareBlockers` (509.1).
+    No decision when no creature could attack or block.
+  - `rules/combat.ts`: `canAttack` (untapped creature, haste or CR 302.6), `canBlock` (untapped creature; flying needs
+    flying or reach, CR 702.9b, 702.17b). Separate named functions for restrictions later (CR 508.1c, 509.1b).
+  - Combat damage (CR 510): attackers blocked by two or more creatures get an `assignCombatDamage` decision, one per
+    attacker, listing every division (CR 510.1c, no ordering, D-020); then all damage is dealt at once through
+    `dealDamage` with `combat: true` (CR 510.2), then priority (SBAs end the game on a lethal attack).
+  - Runner: `p1 attack: [...]`, `p2 block: { blocker: attacker }`, and `p1 assign: { blocker: amount }`.
+  - Tests: scenarios per keyword and negative (flying, reach, haste, summoning sickness), unblocked damage, single and
+    multiple blockers with a chosen division, a lethal attack, blockers removed before damage (CR 510.1c).
+  - Future impact: defending player is per attacker (multiplayer, planeswalkers, battles); first strike's second
+    damage step (CR 510.4) is a turn-structure change noted in future-rules.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
