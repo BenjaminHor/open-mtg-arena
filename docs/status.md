@@ -7,39 +7,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-18 Fuzzer and replays (plan, 2026-11-19). docs/testing.md sections 3 and 4. One PR: the view (commit c795388,
-  D-044), then the fuzzer and replays, then the review fixes.
-  - `playerView(state, viewer)` and `eventsFor(events, viewer)` in a new engine folder `view/`: other players' hands
-    and every library are only counts, and `rng` and the setup are left out (CR 701.24a: no one knows a library's
-    order). Events that would reveal a hidden card (a draw, a move between hidden zones) lose the card's identity for
-    other players. The fuzzer checks they leak nothing; the AI (M2) reads only views.
-  - Done, uncommitted: `cli/src/fuzz/` (checks, `fuzzGame`, `runFuzz`), `cli/src/fuzz.ts`, `cli/src/replays.ts`
-    (`pnpm replays:update`), three replays in `engine/test/replays/`, tests `cli/test/fuzz.test.ts` and
-    `replays.test.ts`. Mutants caught by `pnpm fuzz`: a view showing every hand, unfiltered draws and library moves,
-    life lost without its event, a zone move leaving the old id, `legalActions` listing unplayable lands.
-  - Review fixes, done (rules-judge and code-reviewer on c795388):
-    - cardIds are handed out in decklist order, so a public card hints at its neighbours in hidden zones: number them
-      in a random order at game creation (game RNG), D-045.
-    - `PlayerView`: `decision` (own, full) and `waitingFor` (anyone's id, player, kind) instead of a union `pending`;
-      `handSize` for all plus `hand: ObjectId[] | null`; `canSee` in `view/visibility.ts` used by both files; say a
-      view shares structure and must not be mutated.
-    - The scramble property moves to the fuzzer's check (one copy): also renames hidden object ids everywhere,
-      reverses other hands, changes another player's casting origin and pending details. Engine view tests become
-      hand-built `eventsFor` cases and a forced mulligan, no vacuous `if`s.
-    - Docs: architecture API block gets `eventsFor`; future-rules: per-object visibility (CR 406.3, 708.2, 121.8),
-      partly known hands (CR 701.20a, 734.1), players leaving, how a view feeds `characteristics()` (M2); a comment
-      that a hand card's `oldId` going public is fair.
-  - Replays regenerated after D-045 (seeds 92, 85, 67). Next: the 1,000-seed run (started), a code review of the whole
-    branch, the PR.
-  - `pnpm fuzz --games N --seed S [--decks ...]` (`cli/src/fuzz.ts` on a `fuzz/` module): games between the prebuilt
-    decks and random 40-card decks from the pool, with the random agent and sometimes `first-legal`. After every
-    action: `invariantProblems` (JSON round trip, zones, nothing stalled, every legal action accepted, no negative
-    mana), life changes only through `LIFE_LOST` events, views and filtered events leak nothing, and at the end replay
-    gives the same state; a game over 200 turns is flagged. A failure prints the seed and writes the game file to
-    `fuzz-failures/` (gitignored), which `pnpm cli replay` opens.
-  - A short fuzz in `pnpm check` (a few games); `pnpm fuzz --games 1000` for the acceptance (about 11 minutes).
-  - Replays: `packages/engine/test/replays/*.json` are game files with a final-state hash; a test replays each and
-    compares. A test injects a broken invariant and checks the fuzzer's checks catch it.
+- M1-18 Fuzzer and replays (2026-11-19), PR #16 (BenjaminHor/open-mtg-arena#16). docs/testing.md sections 3 and 4.
+  - Built: player views (D-044), card ids numbered randomly (D-045), `pnpm fuzz` and saved replays (D-046), with two
+    rounds of rules-judge and code-reviewer fixes. Mutants `pnpm fuzz` catches: a view showing every hand, another
+    player's hand ids, decision, casting record or library order; unfiltered draws and library moves; life lost
+    without its event; a zone move leaving the old id; `legalActions` listing unplayable lands. (Doubled mana is a
+    rules error, not an invariant: scenarios, replays and golden games catch those.)
+  - Left: the 1,000-seed acceptance run (`pnpm fuzz --games 1000 --seed 1`, about a quarter of an hour, run in the
+    background), recording its result here and on the PR, then merge.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -55,8 +30,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Local setup: Node 26 (`.nvmrc`) and pnpm 10.34.9 (`packageManager`). The "open-mtg-arena" environment's setup
   script installs both into `/opt/node26` and runs `pnpm install`. Shells there start on an older Node, so run
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
-- `pnpm check` is typecheck + lint + tests for now. Its other parts in `docs/testing.md` join as they're built:
-  golden games and the coverage check (M1-19), a short fuzz (M1-18).
+- `pnpm check` is typecheck + lint + tests, which include a short fuzz (seeds 1 to 6, M1-18). Its other parts in
+  `docs/testing.md` join as they're built: golden games and the coverage check (M1-19).
 - Scenarios: write new rules tests as YAML in `packages/engine/test/scenarios/<area>/` (testing.md). Extend the runner
   (`packages/scenarios`) and testing.md together when a task adds steps (`play`, `cast`, `activate`, `attack`, `block`).
   The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
@@ -178,4 +153,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- (none)
+- Card tracking through hidden hands (rules-judge, 2026-11-19; D-044). Card ids and object ids let a player follow a
+  card through another player's hand (CR 402.3): after a cancelled cast (CR 734.1), `CAST_CANCELLED` names the card's
+  card id and restored hand id, so when a copy is cast later the other player can tell whether it was that card. Object
+  ids, numbered as they're made, also show roughly when a card entered a hand. The fuzzer can't see it (each event is
+  fine alone). Fix before M2's AI reads views. Sketch: a card entering a zone some player can't see gets a new card id,
+  and `eventsFor` shows other players neither the old object id of a card leaving a hidden zone nor `restored`.
+  That changes what a card id means (architecture.md, "Object identity"), so it gets its own decision.

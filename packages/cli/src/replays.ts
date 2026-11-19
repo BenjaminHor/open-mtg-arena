@@ -77,7 +77,11 @@ export function updateReplays(dir: string, cards: CardDatabase): string[] {
     const text = replayText(updated);
     if (text !== readFileSync(path, "utf8")) {
       writeFileSync(path, text);
-      changed.push(`${path}: ${file.finalStateHash ?? "(none)"} → ${updated.finalStateHash}`);
+      const hash =
+        file.finalStateHash === updated.finalStateHash
+          ? "same final state, file rewritten"
+          : `final state ${file.finalStateHash ?? "(none)"} → ${updated.finalStateHash}`;
+      changed.push(`${path}: ${hash}`);
     }
   }
   return changed;

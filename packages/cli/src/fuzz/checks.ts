@@ -22,7 +22,11 @@ export type Check = (
 /** The engine's invariants: JSON round trip, zones, never stalled, every legal action accepted, no negative mana. */
 export const engineInvariants: Check = (_before, after, _events, cards) => invariantProblems(after, cards);
 
-/** Life totals change only through events (CR 119.3): each player's change equals the life lost in the events. */
+/**
+ * Life totals change only through events (CR 119.3): each player's change equals the life lost in the events. In the
+ * M1 pool all of it is damage (CR 120.3a); paying life (CR 119.4), setting a total (CR 119.5) and life gain will need
+ * their events counted too.
+ */
 export const lifeThroughEvents: Check = (before, after, events) => {
   const problems: string[] = [];
   for (const p of after.turnOrder) {
@@ -45,14 +49,19 @@ export const viewsLeakNothing: Check = (before, after, events) => {
     ) {
       problems.push(`${viewer}'s view changes when only hidden information changes`);
     }
-    // A card is named by its physical card id across zones. One the viewer saw in a public zone before the action
-    // (a cancelled cast's card, back in hand) isn't a secret.
+    // A hidden card must not be named by its card id or its object id. (Not by its oracle id either, but that can't be
+    // checked this way: a Mountain in hand shares it with every Mountain on the battlefield.) A card the viewer saw
+    // in a public zone before the action, like a cancelled spell back in hand (CR 734.1), isn't a secret.
     const shown = JSON.stringify(eventsFor(events, viewer));
-    const seen = new Set(publicCardIds(before));
+    const seen = new Set<string>(publicCardIds(before));
+    for (const e of events) if (e.type === "CAST_CANCELLED") seen.add(e.cardId).add(e.restored);
     for (const id of hiddenFrom(after, viewer)) {
       const obj = after.objects[id];
-      if (obj?.kind === "card" && !seen.has(obj.cardId) && shown.includes(`"${obj.cardId}"`)) {
-        problems.push(`the events shown to ${viewer} name ${obj.cardId}, which is hidden from them`);
+      const names = obj?.kind === "card" ? [obj.cardId, id] : [id];
+      for (const name of names) {
+        if (!seen.has(name) && shown.includes(`"${name}"`)) {
+          problems.push(`the events shown to ${viewer} name ${name}, which is hidden from them`);
+        }
       }
     }
   }
@@ -74,7 +83,11 @@ function publicCardIds(state: GameState): string[] {
   });
 }
 
-/** The objects in other players' hands and libraries. (A player's own library may hold cards they saw go there.) */
+/**
+ * The objects in other players' hands and libraries. A player's own library is hidden from them too (CR 401.2), but it
+ * may hold cards they saw go there (a mulligan's bottom cards); telling those apart needs a record of what each player
+ * has seen, which hidden information beyond hands and libraries will need anyway (docs/future-rules.md).
+ */
 function hiddenFrom(state: GameState, viewer: PlayerId): ObjectId[] {
   return state.turnOrder
     .filter((p) => p !== viewer)

@@ -5,9 +5,16 @@ import { mkdtempSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { cardDatabase } from "@mtg/cards";
-import type { GameEvent, GameState, PlayerId } from "@mtg/engine";
+import {
+  type GameEvent,
+  type GameState,
+  type ObjectId,
+  type PlayerId,
+  type PlayerState,
+  playerView,
+} from "@mtg/engine";
 import { describe, expect, it } from "vitest";
-import { ALL_CHECKS, type Check, lifeThroughEvents, viewsLeakNothing } from "../src/fuzz/checks.ts";
+import { ALL_CHECKS, type Check, lifeThroughEvents, scrambleHidden, viewsLeakNothing } from "../src/fuzz/checks.ts";
 import { runFuzz } from "../src/fuzz/run-fuzz.ts";
 import { fuzzGame } from "../src/fuzz/run-game.ts";
 import { fuzz } from "../src/fuzz.ts";
@@ -36,12 +43,31 @@ describe("fuzzGame", () => {
     const result = fuzzGame(2, [stackCheck], cards);
     if (result.ok) throw new Error("expected a failure");
     expect(result.problem).toBe("something on the stack");
-    expect(result.file.failingAction).not.toBeNull();
+    const failing = result.file.failingAction;
+    if (failing === null) throw new Error("expected the failing action");
     // The file's actions lead to the state just before the failing action; taking it puts something on the stack.
     const before = replay(result.file.setup, result.file.actions, cards).state;
     expect(before.zones.stack).toHaveLength(0);
-    const after = replay(result.file.setup, [...result.file.actions, result.file.failingAction!], cards).state;
+    const after = replay(result.file.setup, [...result.file.actions, failing], cards).state;
     expect(after.zones.stack.length).toBeGreaterThan(0);
+  });
+
+  it("checks the opening state too, before any action", () => {
+    const opening: Check = (before, after) => (before === after ? ["the opening"] : []);
+    expect(fuzzGame(2, [opening], cards)).toMatchObject({
+      ok: false,
+      problem: "the opening",
+      file: { actions: [], failingAction: null },
+    });
+  });
+
+  it("reports a check that throws as a failure of that game, not a crash", () => {
+    const throwing: Check = (_b, after) => {
+      if ((after.turn?.number ?? 0) >= 2) throw new Error("boom");
+      return [];
+    };
+    const result = fuzzGame(2, [throwing], cards);
+    expect(result).toMatchObject({ ok: false, problem: "a check threw: boom" });
   });
 
   it("flags a game that passes the turn cap", () => {
@@ -71,7 +97,7 @@ describe("runFuzz", () => {
 });
 
 describe("pnpm fuzz", () => {
-  it("reports the seeds it played and exits 0 when all pass", () => {
+  it("reports the seeds it played and exits 0 when all pass", { timeout: 20_000 }, () => {
     const outDir = tempDir();
     expect(fuzz(["--games", "1", "--seed", "4", "--out", outDir], 0)).toEqual({
       output: "1 games, seeds 4–4: 0 failed",
@@ -79,7 +105,7 @@ describe("pnpm fuzz", () => {
     });
   });
 
-  it("exits 1 on a failure, printing the seed and how to rerun it", () => {
+  it("exits 1 on a failure, printing the seed and how to rerun it", { timeout: 20_000 }, () => {
     const outDir = tempDir();
     const { output, code } = fuzz(["--games", "1", "--seed", "4", "--turn-cap", "1", "--out", outDir], 0);
     expect(code).toBe(1);
@@ -89,6 +115,7 @@ describe("pnpm fuzz", () => {
 
   it("refuses bad options", () => {
     expect(fuzz(["--games", "ten"], 0)).toEqual({ output: "--games is a whole number, 0 or more", code: 1 });
+    expect(fuzz(["--games", "0"], 0)).toEqual({ output: "--games is 1 or more", code: 1 });
     expect(fuzz(["--colour"], 0).code).toBe(1);
   });
 });
@@ -101,24 +128,37 @@ describe("the checks", () => {
 
   it("lifeThroughEvents: a life change with no event is a problem", () => {
     const before = state();
-    const p1 = before.turnOrder[0]!;
-    const after = { ...before, players: { ...before.players, [p1]: { ...before.players[p1]!, life: 17 } } };
+    const p1 = before.turnOrder[0] as PlayerId;
+    const after = {
+      ...before,
+      players: { ...before.players, [p1]: { ...(before.players[p1] as PlayerState), life: 17 } },
+    };
     expect(lifeThroughEvents(before, after, [], cards)).toEqual([`${p1}'s life changed by -3, but the events say 0`]);
     expect(lifeThroughEvents(before, after, [{ type: "LIFE_LOST", player: p1, amount: 3 }], cards)).toEqual([]);
   });
 
-  it("viewsLeakNothing: an event naming another player's hidden card is a problem", () => {
+  it("viewsLeakNothing: an event naming another player's hidden card, by card id or object id, is a problem", () => {
     const before = state();
     const [p1, p2] = before.turnOrder as [PlayerId, PlayerId];
-    const object = before.zones.players[p2]!.hand[0]!;
-    const hidden = before.objects[object]!;
-    if (hidden.kind !== "card") throw new Error("a card in hand");
+    const object = before.zones.players[p2]?.hand[0] as ObjectId;
+    const hidden = before.objects[object];
+    if (hidden?.kind !== "card") throw new Error("a card in hand");
     expect(viewsLeakNothing(before, before, [], cards)).toEqual([]);
     // A made-up event that names p2's card in hand. Events of this type pass through unfiltered, so the check sees it.
     const leak: GameEvent = { type: "SPELL_CAST", player: p2, object, cardId: hidden.cardId };
     expect(viewsLeakNothing(before, before, [leak], cards)).toEqual([
       `the events shown to ${p1} name ${hidden.cardId}, which is hidden from them`,
+      `the events shown to ${p1} name ${object}, which is hidden from them`,
     ]);
+  });
+
+  it("scrambleHidden changes what a player can't see, and nothing they can", () => {
+    const s = state();
+    const [p1, p2] = s.turnOrder as [PlayerId, PlayerId];
+    const scrambled = scrambleHidden(s, p1);
+    // p2's hand is hidden from p1, so it's scrambled, and p2's own view sees that; p1's view doesn't change.
+    expect(playerView(scrambled, p2)).not.toEqual(playerView(s, p2));
+    expect(playerView(scrambled, p1)).toEqual(playerView(s, p1));
   });
 });
 

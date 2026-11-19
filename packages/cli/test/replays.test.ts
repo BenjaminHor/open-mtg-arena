@@ -7,7 +7,7 @@ import path from "node:path";
 import { cardDatabase } from "@mtg/cards";
 import { describe, expect, it } from "vitest";
 import { replay } from "../src/game-file.ts";
-import { REPLAYS_DIR, readReplay, replayFiles, replayProblem, updateReplays } from "../src/replays.ts";
+import { REPLAYS_DIR, readReplay, replayFiles, replayProblem, replayText, updateReplays } from "../src/replays.ts";
 import { cli, deckGame } from "./helpers.ts";
 
 const cards = cardDatabase();
@@ -22,6 +22,10 @@ describe("the saved replays", () => {
   for (const file of files) {
     it(`${path.basename(file)} reaches the same final state (if an intended change alters it: pnpm replays:update)`, () => {
       expect(replayProblem(readReplay(file), cards)).toBeNull();
+    });
+
+    it(`${path.basename(file)} is written the way pnpm replays:update writes it, one action per line`, () => {
+      expect(readFileSync(file, "utf8")).toBe(replayText(readReplay(file)));
     });
   }
 });

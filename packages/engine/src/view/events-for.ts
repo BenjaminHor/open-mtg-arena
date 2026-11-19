@@ -23,9 +23,9 @@ export function eventsFor(events: readonly GameEvent[], viewer: PlayerId): ViewE
 function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
   switch (e.type) {
     case "ZONE_CHANGED":
-      // The card is seen if it's in a zone the viewer sees before or after; otherwise only that a card moved. A card
-      // leaving another player's hand for a public zone shows its old id, so when it entered that hand (its id came
-      // with it): fair, as a player at a table sees which card came from where in a hand.
+      // The card is seen if it's in a zone the viewer sees before or after; otherwise only that a card moved.
+      // Known issue (docs/status.md): a card's card id and old object id let another player follow it through a hidden
+      // hand (CR 402.3), for example a cancelled spell back in hand, told apart from a second copy cast later.
       return canSee(e.from, viewer) || canSee(e.to, viewer) ? e : { type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to };
     case "CARD_DRAWN":
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };

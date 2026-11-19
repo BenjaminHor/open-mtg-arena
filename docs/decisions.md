@@ -482,7 +482,7 @@ every schema change and every change D-024 lists bumps it.
 
 **D-044: Player views and event filtering** · 2026-11-19 · accepted
 - `playerView(state, viewer)` (`engine/src/view/`) is what a player may know: objects in public zones and the viewer's
-  own hand (CR 400.2, 402.3); other hands and every library only as counts (CR 401.3); no RNG state, setup, work
+  own hand (CR 400.2, 402.3); other hands and every library only as counts (CR 401.3, 402.3); no RNG state, setup, work
   queue or id counters. Libraries are counts, not hidden objects in order: a shuffle keeps object ids, so an ordered
   id list would let a player follow a card they had seen through a shuffle (CR 401.2, 701.24a). `decision` is the
   viewer's own pending decision in full; `waitingFor` (id, player, kind) says who must decide what, so another
@@ -495,9 +495,12 @@ every schema change and every change D-024 lists bumps it.
 - "Leaks nothing" is tested as a property, by the fuzzer's `viewsLeakNothing` check after every action (D-046):
   scrambling everything the viewer can't see (hidden objects' ids everywhere they appear, their cards and card ids,
   the order of libraries and other hands, another player's casting details and pending picks, the seed, RNG and
-  internals) must leave the view unchanged, and the filtered events must name no card hidden from the viewer.
-- A card leaving another player's hand for a public zone shows its old id in `ZONE_CHANGED`, so roughly when it
-  entered that hand. That's fair: at a table, players see which card came from where.
+  internals) must leave the view unchanged, and the filtered events must name no hidden card by its card id or object
+  id. The checks run on the opening state too.
+- Known gap, to close before M2's AI reads views (docs/status.md, Known issues): card ids and object ids let a player
+  follow a card through another player's hand (CR 402.3). A cancelled spell goes back to hand with its card id and
+  object id (`CAST_CANCELLED.restored`), so when a copy is cast later the other player can tell which one it was;
+  and object ids, numbered as they're made, show roughly when a card entered a hand.
 - The CLI's `show --as` stays a display filter (`canSeeHand`): the board text needs `characteristics()`, which reads
   the full state. Hosts and the AI (M2) use the engine's view.
 
@@ -505,11 +508,13 @@ every schema change and every change D-024 lists bumps it.
 - `createGame` numbers the setup's cards `c1` to `cN` in an order drawn from the game's RNG, before anything else
   uses it. Numbered in setup order, a public card's id hinted at the cards next to it in the decklist, which sit in
   hidden libraries and hands (CR 400.2): see `c5` as a Shock in a grouped decklist and `c6` is likely Shock too.
-  Object ids don't need this: a card gets a new object id each time it changes zones (CR 400.7), so a library's
-  object ids never become public.
+  Object ids don't need this in M1: a card gets a new object id each time it changes zones (CR 400.7), and a
+  library's object ids aren't shown while the cards are in it. They're in setup order, though, and a card leaving the
+  library for a public zone shows its old id (future-rules.md: mill and reveal).
 - Drawing from the RNG first changed which player the RNG picks to choose who goes first for a given seed, so two
   scenarios that rely on p1 being picked use seed 2 instead of the default.
-- Tokens (later) need card ids too; they can take `c(N+1)` and up, as they're created in public.
+- Tokens aren't cards (CR 111.1), but the UI follows them across zones the same way, so they'll get an id of the same
+  kind when they arrive: `c(N+1)` and up, as they're created in public.
 
 **D-046: The fuzzer and saved replays** · 2026-11-19 · accepted
 - `pnpm fuzz --games N --seed S` plays one game per seed, `S` to `S+N-1`. The seed is the setup's seed and the

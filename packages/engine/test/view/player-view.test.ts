@@ -11,7 +11,7 @@ import {
   type PlayerId,
   playerView,
 } from "../../src/index.ts";
-import { answer, type Game, standardSetup, start } from "../support/game.ts";
+import { answer, type Game, passBoth, playerSetup, standardSetup, start, take } from "../support/game.ts";
 
 const hand = (s: GameState, p: PlayerId) => s.zones.players[p]?.hand ?? [];
 const library = (s: GameState, p: PlayerId) => s.zones.players[p]?.library ?? [];
@@ -49,8 +49,27 @@ describe("playerView (CR 400.2)", () => {
   });
 
   it("holds exactly the objects in public zones and the viewer's own hand", () => {
-    const visible = [...state.zones.battlefield, ...hand(state, "p1")];
-    expect(Object.keys(view.objects).sort()).toStrictEqual([...visible].sort());
+    // A board with something in every zone: permanents, graveyards, exile, hands and libraries.
+    const permanent = { oracleId: "grizzly-bears", tapped: false, summoningSick: false, damage: 0, counters: {} };
+    const zones = { library: ["forest", "forest"], hand: ["shock"], graveyard: ["shock"], exile: ["forest"] };
+    const board = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { ...zones, battlefield: [permanent] }),
+        playerSetup("p2", { ...zones, battlefield: [permanent] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 2, activePlayer: "p1", step: "upkeep" } },
+      ruleModifiers: [],
+    }).state;
+    const visible = [
+      ...board.zones.battlefield,
+      ...board.zones.exile,
+      ...(board.zones.players.p1?.graveyard ?? []),
+      ...(board.zones.players.p2?.graveyard ?? []),
+      ...hand(board, "p1"),
+    ];
+    expect(visible).toHaveLength(7);
+    expect(Object.keys(playerView(board, "p1").objects).sort()).toStrictEqual([...visible].sort());
   });
 
   it("leaves out the random generator, the setup and the engine's internals (CR 701.24a)", () => {
@@ -81,7 +100,7 @@ describe("decisions in a view", () => {
     const view = playerView(discarding, "p1");
     expect(view.decision).toBeNull();
     expect(view.waitingFor).toStrictEqual({ id: "d9999", player: "p2", kind: "discardToHandSize" });
-    expect(JSON.stringify(view)).not.toContain(picked);
+    expect(JSON.stringify(view)).not.toContain(`"${picked}"`);
   });
 });
 
@@ -138,5 +157,65 @@ describe("eventsFor", () => {
       untapped: [],
     } as const satisfies GameEvent;
     expect(eventsFor([cast, cancelled], "p1")).toStrictEqual([cast, cancelled]);
+  });
+});
+
+describe("views and events through a real game", () => {
+  const bearsAndShock = (step: "upkeep" | "precombatMain"): Game =>
+    start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: ["forest"],
+          hand: ["shock"],
+          battlefield: [{ oracleId: "mountain", tapped: false, summoningSick: false, damage: 0, counters: {} }],
+        }),
+        playerSetup("p2", {
+          library: ["forest"],
+          battlefield: [{ oracleId: "grizzly-bears", tapped: false, summoningSick: false, damage: 0, counters: {} }],
+        }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step } },
+      ruleModifiers: [],
+    });
+  const castShock = (game: Game): Game => {
+    let next = take(game, (a) => a.type === "CAST_SPELL");
+    next = take(
+      next,
+      (a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget" && a.answer.target.kind === "object",
+    );
+    return take(next, (a) => a.type === "ACTIVATE_ABILITY");
+  };
+
+  it("hides a draw in the draw step from the other player (CR 121.1, 504.1)", () => {
+    const game = passBoth(bearsAndShock("upkeep"));
+    const drawn = game.events.filter((e) => e.type === "CARD_DRAWN");
+    expect(drawn).toHaveLength(1);
+    expect(eventsFor(drawn, "p2")).toStrictEqual([{ type: "HIDDEN_CARD_DRAWN", player: "p1" }]);
+    expect(eventsFor(drawn, "p1")).toStrictEqual(drawn);
+  });
+
+  it("shows everyone a spell resolving and a creature dying (public zones, CR 400.2)", () => {
+    let game = castShock(bearsAndShock("precombatMain"));
+    game = take(game, (a) => a.type === "ANSWER" && a.answer.kind === "payMana");
+    const before = game.events.length;
+    game = passBoth(game);
+    const moves = game.events.slice(before).filter((e) => e.type === "ZONE_CHANGED");
+    // Shock from the stack to p1's graveyard; the Bears from the battlefield to p2's graveyard.
+    expect(moves.map((e) => e.type === "ZONE_CHANGED" && `${e.from.zone}>${e.to.zone}`)).toStrictEqual([
+      "stack>graveyard",
+      "battlefield>graveyard",
+    ]);
+    expect(eventsFor(moves, "p1")).toStrictEqual(moves);
+    expect(eventsFor(moves, "p2")).toStrictEqual(moves);
+  });
+
+  it("after a cancelled cast, shows the other player the hand only as a count again (CR 734.1)", () => {
+    let game = castShock(bearsAndShock("precombatMain"));
+    game = take(game, (a) => a.type === "ANSWER" && a.answer.kind === "cancelCast");
+    const view = playerView(game.state, "p2");
+    expect(view.zones.players.p1).toMatchObject({ handSize: 1, hand: null });
+    expect(view.objects[hand(game.state, "p1")[0] as ObjectId]).toBeUndefined();
+    expect(view.casting).toBeNull();
   });
 });
