@@ -7,13 +7,28 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-18 Fuzzer and replays (plan, 2026-11-19). docs/testing.md sections 3 and 4. In two PRs: the view first (done,
-  D-044), then the fuzzer and replays.
+- M1-18 Fuzzer and replays (plan, 2026-11-19). docs/testing.md sections 3 and 4. One PR: the view (commit c795388,
+  D-044), then the fuzzer and replays, then the review fixes.
   - `playerView(state, viewer)` and `eventsFor(events, viewer)` in a new engine folder `view/`: other players' hands
-    and every library become hidden objects (no oracle id or card id, which would let a card be tracked after a
-    shuffle), and `rng` is left out (CR 701.24a: no one knows a library's order). Events that would reveal a hidden card
-    (a draw, a move between hidden zones) lose the card's identity for other players. The fuzzer checks they leak
-    nothing; the AI (M2) reads only views.
+    and every library are only counts, and `rng` and the setup are left out (CR 701.24a: no one knows a library's
+    order). Events that would reveal a hidden card (a draw, a move between hidden zones) lose the card's identity for
+    other players. The fuzzer checks they leak nothing; the AI (M2) reads only views.
+  - Done, uncommitted: `cli/src/fuzz/` (checks, `fuzzGame`, `runFuzz`), `cli/src/fuzz.ts`, `cli/src/replays.ts`
+    (`pnpm replays:update`), three replays in `engine/test/replays/`, tests `cli/test/fuzz.test.ts` and
+    `replays.test.ts`. Mutants caught by `pnpm fuzz`: a view showing every hand, unfiltered draws and library moves,
+    life lost without its event, a zone move leaving the old id, `legalActions` listing unplayable lands.
+  - Review fixes to do (rules-judge and code-reviewer on c795388):
+    - cardIds are handed out in decklist order, so a public card hints at its neighbours in hidden zones: number them
+      in a random order at game creation (game RNG), D-045.
+    - `PlayerView`: `decision` (own, full) and `waitingFor` (anyone's id, player, kind) instead of a union `pending`;
+      `handSize` for all plus `hand: ObjectId[] | null`; `canSee` in `view/visibility.ts` used by both files; say a
+      view shares structure and must not be mutated.
+    - The scramble property moves to the fuzzer's check (one copy): also renames hidden object ids everywhere,
+      reverses other hands, changes another player's casting origin and pending details. Engine view tests become
+      hand-built `eventsFor` cases and a forced mulligan, no vacuous `if`s.
+    - Docs: architecture API block gets `eventsFor`; future-rules: per-object visibility (CR 406.3, 708.2, 121.8),
+      partly known hands (CR 701.20a, 734.1), players leaving, how a view feeds `characteristics()` (M2); a comment
+      that a hand card's `oldId` going public is fair.
   - `pnpm fuzz --games N --seed S [--decks ...]` (`cli/src/fuzz.ts` on a `fuzz/` module): games between the prebuilt
     decks and random 40-card decks from the pool, with the random agent and sometimes `first-legal`. After every
     action: `invariantProblems` (JSON round trip, zones, nothing stalled, every legal action accepted, no negative
