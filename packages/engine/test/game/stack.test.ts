@@ -1,5 +1,5 @@
-// Priority and the stack (CR 117, 405, 608). Casting arrives in M1-09, so these tests put spells and abilities on the
-// stack directly; the M1-09 scenarios cast them for real.
+// Priority and the stack (CR 117, 405, 608). These tests put spells and abilities on the stack directly, to look at the
+// stack itself; the casting and activated-ability scenarios put them there for real.
 
 import { describe, expect, it } from "vitest";
 import { advance } from "../../src/game/advance.ts";
@@ -32,7 +32,10 @@ function putSpell(game: Game, player: PlayerId, index: number): Game {
   return { state: moved.state, events: game.events };
 }
 
-/** Puts an activated ability of `source` on the stack, as if `player` had activated it. */
+/**
+ * Puts Furnace Whelp's firebreathing on the stack, as if `player` had activated it from `source`. (The source here is
+ * whatever permanent the test has; the ability's text comes from the Whelp's card, `sourceOracleId`.)
+ */
 function putAbility(game: Game, player: PlayerId, source: ObjectId): Game {
   const s = game.state;
   const id = `o${s.nextId}` as const;
@@ -40,7 +43,7 @@ function putAbility(game: Game, player: PlayerId, source: ObjectId): Game {
     kind: "ability",
     id,
     source,
-    sourceOracleId: "grizzly-bears",
+    sourceOracleId: "furnace-whelp",
     ability: { kind: "printed", index: 0 },
     baseController: player,
     timestamp: s.nextTimestamp,

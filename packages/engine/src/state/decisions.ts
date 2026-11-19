@@ -56,10 +56,10 @@ export type DecisionKind =
       assigned: number[];
       divided: AttackerDivision[];
     }
-  /** While casting: choose the target for this instance of "target" (CR 601.2c). */
-  | { kind: "chooseTarget"; spell: ObjectId; instance: number }
+  /** While casting a spell or activating an ability: choose the target for this instance of "target" (CR 601.2c). */
+  | { kind: "chooseTarget"; object: ObjectId; instance: number }
   /**
-   * While casting: pay the mana cost (CR 601.2g–h). Mana abilities may be activated while this is pending (CR 605.3a);
+   * While casting or activating: pay the mana cost (CR 601.2g–h). Mana abilities may be activated while this is pending (CR 605.3a);
    * then the answer is a payment from the pool, or cancelling the cast.
    */
-  | { kind: "payMana"; spell: ObjectId; cost: ManaCost };
+  | { kind: "payMana"; object: ObjectId; cost: ManaCost };

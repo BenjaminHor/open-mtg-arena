@@ -1,15 +1,7 @@
 // Turning scenario steps into engine actions (docs/testing.md, "Steps"). Every action comes from `legalActions()`, so
 // a step that names something illegal fails, unless the next step is `expect error`.
 
-import {
-  type Action,
-  type Answer,
-  applyAction,
-  autoPay,
-  type CardDatabase,
-  type GameState,
-  type PlayerId,
-} from "@mtg/engine";
+import { type Action, type Answer, applyAction, type CardDatabase, type GameState, type PlayerId } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
 
@@ -20,6 +12,7 @@ import { apply, type Game, legal } from "./apply.ts";
 import { combatAction } from "./combat-steps.ts";
 import { abilityNamed, cardIn, cardNamed, paymentFrom, targetNamed } from "./lookups.ts";
 import { nameOf } from "./names.ts";
+import { paymentActions, targetAction, targetsAndPayment } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
 export type ActionStep = Extract<
@@ -66,7 +59,7 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
       return apply(game, action, cards, afterEach);
     }
     case "cast": {
-      let next = apply(
+      const next = apply(
         game,
         legal(
           game,
@@ -78,35 +71,7 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         cards,
         afterEach,
       );
-      for (const value of step.targets) {
-        const target = targetNamed(next.state, value, cards);
-        const answer = legal(
-          next,
-          step.player,
-          cards,
-          (a) => a.type === "ANSWER" && deepEqual(a.answer, { kind: "chooseTarget", target }),
-          `target ${String(value)}`,
-        );
-        next = apply(next, answer, cards, afterEach);
-      }
-      // With no targets listed the cast may stop at the first target choice; with some listed, they must all be there.
-      if (step.targets.length > 0 && next.state.pending?.kind === "chooseTarget") {
-        throw new Error(`cast ${step.card}: it needs more targets than the ${step.targets.length} listed`);
-      }
-      if (step.pay !== undefined && next.state.pending?.kind !== "payMana") {
-        throw new Error(`cast ${step.card}: "pay" was given, but the cast isn't waiting for a payment`);
-      }
-      for (const action of paymentActions(next, step, cards)) {
-        const found = legal(
-          next,
-          step.player,
-          cards,
-          (a) => deepEqual({ ...a, decisionId: "" }, { ...action, decisionId: "" }),
-          "pay",
-        );
-        next = apply(next, found, cards, afterEach);
-      }
-      return next;
+      return targetsAndPayment(next, step, cards, afterEach);
     }
     case "activate": {
       const { object, ability } = abilityNamed(game.state, step, cards);
@@ -117,7 +82,8 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         (a) => a.type === "ACTIVATE_ABILITY" && a.object === object && deepEqual(a.ability, ability),
         `activate ${step.card}`,
       );
-      return apply(game, action, cards, afterEach);
+      // A mana ability resolves at once; another ability goes on the stack, then takes targets and payment.
+      return targetsAndPayment(apply(game, action, cards, afterEach), step, cards, afterEach);
     }
     case "choose": {
       const answer = answerFor(game.state, step.player, step.value, cards, "legal");
@@ -148,7 +114,7 @@ export function firstRejection(
   let payment: Action[] | null = null;
   for (let i = 0; ; i++) {
     let action: Action | null;
-    if (step.kind === "cast" && i > step.targets.length) {
+    if ((step.kind === "cast" || step.kind === "activate") && i > step.targets.length) {
       payment ??= paymentActions({ state, events: [] }, step, cards);
       const next = payment[i - 1 - step.targets.length];
       action =
@@ -183,9 +149,11 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
         ? { type: "ANSWER", decisionId, player, answer: answerFor(state, step.player, step.value, cards, "any") }
         : null;
     case "activate": {
-      if (i > 0) return null;
-      const { object, ability } = abilityNamed(state, step, cards, "any");
-      return { type: "ACTIVATE_ABILITY", decisionId, player, object, ability };
+      if (i === 0) {
+        const { object, ability } = abilityNamed(state, step, cards, "any");
+        return { type: "ACTIVATE_ABILITY", decisionId, player, object, ability };
+      }
+      return targetAction(state, step, cards, i);
     }
     case "play":
       return i === 0
@@ -195,42 +163,10 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
     case "block":
     case "assign":
       return combatAction(state, step, cards, i);
-    case "cast": {
+    case "cast":
       if (i === 0) return { type: "CAST_SPELL", decisionId, player, object: cardIn(state, player, step.card, cards) };
-      const target = step.targets[i - 1];
-      return target === undefined
-        ? null
-        : {
-            type: "ANSWER",
-            decisionId,
-            player,
-            answer: { kind: "chooseTarget", target: targetNamed(state, target, cards) },
-          };
-    }
+      return targetAction(state, step, cards, i);
   }
-}
-
-/**
- * The actions that pay for a spell being cast: `auto` activates what autoPay picks, then pays; `{ R: 1 }` pays that from
- * the pool; `cancel` cancels the cast; no `pay` leaves the payment decision pending.
- */
-function paymentActions(game: Game, step: Extract<ScenarioStep, { kind: "cast" }>, cards: CardDatabase): Action[] {
-  const pending = game.state.pending;
-  const player = step.player as PlayerId;
-  if (step.pay === undefined || pending?.kind !== "payMana") return [];
-  const decisionId = pending.id;
-  if (step.pay === "cancel") return [{ type: "ANSWER", decisionId, player, answer: { kind: "cancelCast" } }];
-  if (step.pay === "auto") {
-    const plan = autoPay(game.state, player, pending.cost, cards);
-    if (plan === null) throw new Error("pay: auto found no way to pay");
-    return [
-      ...plan.activations.map(
-        (a) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object: a.object, ability: a.ability }) as const,
-      ),
-      { type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: plan.payment } },
-    ];
-  }
-  return [{ type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: paymentFrom(step.pay) } }];
 }
 
 /** The answer a `choose:` value names, for the pending decision. Exhaustive, so new decision kinds must be handled. */

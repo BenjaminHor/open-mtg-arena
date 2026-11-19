@@ -6,20 +6,17 @@ import { assignProblem, assignToNextBlocker, damageLeft } from "../combat/combat
 import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { activateManaAbility, manaAbilityProblem } from "../mana/activate.ts";
+import { abilitiesOf, isManaAbility, sameAbilityRef } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
+import type { AbilityRef } from "../state/objects.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
 import { zoneList } from "../zones/zone-list.ts";
+import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
-import {
-  activateWhilePaying,
-  cancelCast,
-  castProblem,
-  chooseTarget,
-  payForSpell,
-  startCast,
-  targetProblem,
-} from "./cast.ts";
+import { castProblem, startCast } from "./cast.ts";
+import { activateWhilePaying, cancelCasting, chooseTarget, payCost, targetProblem } from "./casting-steps.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
@@ -53,9 +50,15 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     if (pending.kind !== "priority" && pending.kind !== "payMana") {
       return error("illegalAction", `Activating doesn't answer a ${pending.kind} decision`);
     }
+    // Other activated abilities use the stack and need priority (CR 602.2); mana abilities don't (CR 605.3a).
+    if (pending.kind === "priority" && !isManaAbilityOf(answered, action.object, action.ability, cards)) {
+      const problem = activationProblem(answered, pending.player, action.object, action.ability, cards);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, ...startActivation(answered, pending.player, action.object, action.ability, cards) };
+    }
     const problem = manaAbilityProblem(answered, pending.player, action.object, action.ability, cards);
     if (problem !== null) return error("illegalAction", problem);
-    // While paying for a spell, a mana ability can be activated too (CR 605.3a); the payment is asked again after.
+    // While paying a cost, a mana ability can be activated too (CR 605.3a); the payment is asked again after.
     if (pending.kind === "payMana")
       return { ok: true, ...activateWhilePaying(state, action.object, action.ability, cards) };
     return { ok: true, ...activateManaAbility(answered, pending.player, action.object, action.ability, cards) };
@@ -106,16 +109,16 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
     }
     case "chooseTarget": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCast(answered) };
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "chooseTarget") return mismatch;
       const problem = targetProblem(answered, pending.instance, answer.target, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...chooseTarget(answered, answer.target, cards) };
     }
     case "payMana": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCast(answered) };
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "payMana") return mismatch;
-      const paid = payForSpell(answered, pending.cost, answer.payment);
+      const paid = payCost(answered, pending.cost, answer.payment);
       return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
     }
     case "declareAttackers": {
@@ -149,4 +152,10 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
 
 function error(code: EngineErrorCode, message: string): EngineResult {
   return { ok: false, error: { code, message } };
+}
+
+/** Whether the object has this ability and it's a mana ability (CR 605.1a), which is activated without the stack. */
+function isManaAbilityOf(state: GameState, object: ObjectId, ref: AbilityRef, cards: CardDatabase): boolean {
+  const ability = abilitiesOf(state, object, cards).find((a) => sameAbilityRef(a.ref, ref));
+  return ability !== undefined && isManaAbility(ability.def);
 }

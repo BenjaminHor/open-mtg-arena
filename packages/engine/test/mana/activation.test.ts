@@ -56,7 +56,7 @@ describe("activating mana abilities", () => {
     const whelp = g.state.zones.battlefield[0] as ObjectId;
     // The Whelp's ability has a mana cost too; the reason must be that it isn't a mana ability.
     expect(manaAbilityProblem(g.state, "p1", whelp, { kind: "printed", index: 0 }, TEST_CARDS)).toMatch(
-      /arrive in M1-14/,
+      /isn't a mana ability/,
     );
     const fakeTapAbility = {
       ...TEST_CARDS,
@@ -85,7 +85,7 @@ describe("activating mana abilities", () => {
       },
     };
     expect(manaAbilityProblem(g.state, "p1", whelp, { kind: "printed", index: 0 }, fakeTapAbility)).toMatch(
-      /only mana abilities can be activated so far/,
+      /isn't a mana ability/,
     );
   });
 

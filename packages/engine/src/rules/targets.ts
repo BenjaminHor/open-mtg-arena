@@ -5,6 +5,7 @@ import type { CardDatabase, Effect, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
+import { stackAbilityDef } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 
 /** Every legal choice for this target requirement right now: permanents in battlefield order, then players in turn order. */
@@ -37,7 +38,7 @@ export function isLegalTarget(state: GameState, spec: TargetSpec, target: Target
 
 /**
  * A stack object's chosen targets, one group per instance of "target", and the same groups keeping only the targets
- * still legal (CR 608.2b), checked as it starts to resolve. Abilities' targets come with activated abilities (M1-14).
+ * still legal (CR 608.2b), checked as it starts to resolve.
  */
 export function stillLegalTargets(
   state: GameState,
@@ -45,9 +46,10 @@ export function stillLegalTargets(
   cards: CardDatabase,
 ): { chosen: Target[][]; legal: Target[][] } {
   const obj = state.objects[id];
-  if (obj?.kind !== "card" || obj.choices === null) return { chosen: [], legal: [] };
+  const choices = obj === undefined ? null : obj.choices;
+  if (choices === null) return { chosen: [], legal: [] };
   const specs = targetSpecsOf(state, id, cards);
-  const chosen = obj.choices.targets;
+  const chosen = choices.targets;
   const legal = chosen.map((group, i) => {
     const spec = specs[i];
     return spec === undefined ? [] : group.filter((target) => isLegalTarget(state, spec, target, cards));
@@ -56,20 +58,31 @@ export function stillLegalTargets(
 }
 
 /**
- * What a card's spell does when it resolves, from its definition (CR 608.2c). One place to read it, so text-changing
- * effects (layer 3) and copies can change the answer later.
+ * What a spell or ability on the stack does when it resolves, from its definition (CR 608.2c). One place to read it, so
+ * text-changing effects (layer 3) and copies can change the answer later. A permanent spell has none (CR 608.3).
  */
-export function spellEffectsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Effect[] {
+export function effectsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Effect[] {
   const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  const data = cards[obj.oracleId];
-  if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
-  return data.def.spell?.effects ?? [];
+  if (obj === undefined) return [];
+  switch (obj.kind) {
+    case "card": {
+      const data = cards[obj.oracleId];
+      if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
+      return data.def.spell?.effects ?? [];
+    }
+    case "ability":
+      return stackAbilityDef(state, id, cards).effects;
+  }
 }
 
-/** The target requirements of a card's spell, one per instance of "target" (CR 601.2c). */
+/** The target requirements of a spell or ability on the stack, one per instance of "target" (CR 601.2c, 602.2b). */
 export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly TargetSpec[] {
   const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.spell?.targets ?? [];
+  if (obj === undefined) return [];
+  switch (obj.kind) {
+    case "card":
+      return cards[obj.oracleId]?.def.spell?.targets ?? [];
+    case "ability":
+      return stackAbilityDef(state, id, cards).targets;
+  }
 }

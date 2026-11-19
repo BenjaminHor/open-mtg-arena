@@ -65,6 +65,25 @@ export function isManaAbility(def: AbilityDef): boolean {
   return def.kind === "activated" && def.targets.length === 0 && def.effects.some((e) => e.op === "addMana");
 }
 
+/**
+ * The definition of an ability on the stack, read from its source's card (`sourceOracleId`), never from the source
+ * itself: the source may have left the battlefield, and the ability resolves anyway (CR 113.7a).
+ */
+export function stackAbilityDef(state: GameState, id: ObjectId, cards: CardDatabase): AbilityDef {
+  const obj = state.objects[id];
+  if (obj?.kind !== "ability") throw new Error(`${id} isn't an ability on the stack`);
+  switch (obj.ability.kind) {
+    case "printed": {
+      const def = cards[obj.sourceOracleId]?.def.abilities?.[obj.ability.index];
+      if (def === undefined) throw new Error(`No ability ${obj.ability.index} on ${obj.sourceOracleId}`);
+      return def;
+    }
+    case "basicLandType":
+      // A mana ability never uses the stack (CR 605.3b): finding one here is an engine bug.
+      throw new Error("A basic land's mana ability can't be on the stack");
+  }
+}
+
 /** Whether two references name the same ability, whatever the order of their keys. */
 export function sameAbilityRef(a: AbilityRef, b: AbilityRef): boolean {
   switch (a.kind) {

@@ -14,11 +14,11 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
 
 /**
- * Why the player can't activate this ability of a permanent now, for any activated ability: it works only on the
- * battlefield (CR 113.6), only its controller activates it (CR 602.2), and its costs must be payable in full (CR 118.3).
- * Null if nothing stops it. M1-14 builds non-mana abilities on this.
+ * What stops any activated ability of a permanent, mana ability or not: it works only on the battlefield (CR 113.6),
+ * only its controller activates it (CR 602.2), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
+ * is paid later, while the ability is put on the stack (CR 601.2g–h, 602.2b). Null if nothing stops it.
  */
-export function activationProblem(
+export function activationBasicsProblem(
   state: GameState,
   player: PlayerId,
   id: ObjectId,
@@ -39,7 +39,7 @@ export function activationProblem(
           return `${id} hasn't been controlled since the turn began (CR 602.5a)`;
         break;
       case "mana":
-        return "abilities with mana costs arrive in M1-14";
+        break;
     }
   }
   return null;
@@ -53,11 +53,13 @@ export function manaAbilityProblem(
   ref: AbilityRef,
   cards: CardDatabase,
 ): string | null {
-  const problem = activationProblem(state, player, id, ref, cards);
+  const problem = activationBasicsProblem(state, player, id, ref, cards);
   if (problem !== null) return problem;
   const ability = findAbility(state, id, ref, cards);
-  if (ability === null || !isManaAbility(ability.def))
-    return "only mana abilities can be activated so far (others arrive in M1-14)";
+  if (ability === null || !isManaAbility(ability.def)) return "that isn't a mana ability";
+  // A mana ability with mana in its cost would need a payment while it resolves at once; none is in the pool yet.
+  if (ability.def.cost.some((part) => part.kind === "mana"))
+    return "mana abilities with mana costs aren't supported yet";
   // A mana ability can do more than add mana (CR 605.1a). Cancelling a cast can't reverse anything but mana and
   // tapping yet (D-035, future-rules.md), so mana abilities with other effects wait for a card that needs one.
   if (ability.def.effects.some((e) => e.op !== "addMana"))
@@ -88,7 +90,7 @@ export function resolveManaAbility(
         progress = andThen(progress, (s) => tapPermanent(s, id));
         break;
       case "mana":
-        throw new Error("abilities with mana costs arrive in M1-14");
+        throw new Error("mana abilities with mana costs aren't supported yet");
     }
   }
   // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana
