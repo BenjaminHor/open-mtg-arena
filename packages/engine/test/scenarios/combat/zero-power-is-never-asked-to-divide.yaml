@@ -1,0 +1,20 @@
+name: An attacker with 0 power blocked by two creatures assigns no damage, so its controller isn't asked to divide it
+rules: [CR 510.1a, CR 510.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  rules:
+    - { kind: creaturesGetPT, controller: p1, power: -2, toughness: 0 }
+  p1:
+    battlefield: [Grizzly Bears]
+  p2:
+    battlefield: [Gray Ogre, Hill Giant]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Gray Ogre: Grizzly Bears, Hill Giant: Grizzly Bears }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: priority }
+      p2:Gray Ogre.damage: 0
+      p1.graveyard: [Grizzly Bears]
