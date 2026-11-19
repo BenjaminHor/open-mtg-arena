@@ -8,14 +8,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 
 ## In progress
 - M1-19 Golden games, coverage report and benchmarks (plan, 2026-11-19). docs/testing.md sections 4 to 6. Three PRs:
-  1. Golden games. `packages/engine/test/golden/<name>.json` is a recipe (decks, setup seed, agent, agent seed, turn
+  1. Golden games (done, D-047; PR open). `packages/engine/test/golden/<name>.json` is a recipe (decks, setup seed, agent, agent seed, turn
      cap) plus the actions it produced; `<name>.log` is the game's event log (`logLines`, brief), one event per line.
      `cli/test/golden.test.ts` replays each game's actions and compares the log line by line, so a diff reads as
      "T6 Giant Spider now survives". `pnpm golden:update` replays the recipes and rewrites actions and logs (a game
      whose actions became illegal is played again from its recipe); `pnpm golden:add --decks a,b --seed N` adds one.
      Games: two per prebuilt pairing (red-aggro and green-stompy against each other and themselves), plus enough
      random-deck games that every pool card is played or cast in at least one; a test checks that coverage.
-     Accept: a deliberate rules change (a mutant) shows a readable diff.
+     Accept: a deliberate rules change (a mutant) shows a readable diff. Done: doubled mana shows as new
+     "p1's unspent {R} empties" lines in the diff. Four games (seeds 1, 2, 3, 33). Rules-judge exit review of casting,
+     priority, SBAs and combat is running; its fixes may change the logs (`pnpm golden:update`).
   2. Coverage report. `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`: rules cited in code
      (`packages/*/src`), rules tested by scenarios (`rules:` lists), and gaps (cited, not tested), plus interaction
      matrix cells marked "not yet". A test fails on a gap not in the committed report. The matrix README in
@@ -40,8 +42,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Local setup: Node 26 (`.nvmrc`) and pnpm 10.34.9 (`packageManager`). The "open-mtg-arena" environment's setup
   script installs both into `/opt/node26` and runs `pnpm install`. Shells there start on an older Node, so run
   `export PATH=/opt/node26/bin:$PATH` before `pnpm` commands.
-- `pnpm check` is typecheck + lint + tests, which include a short fuzz (seeds 1 to 6, M1-18). Its other parts in
-  `docs/testing.md` join as they're built: golden games and the coverage check (M1-19).
+- `pnpm check` is typecheck + lint + tests, which include a short fuzz (seeds 1 to 6, M1-18), the saved replays and
+  the golden games. The coverage check joins in M1-19's second PR.
 - Scenarios: write new rules tests as YAML in `packages/engine/test/scenarios/<area>/` (testing.md). Extend the runner
   (`packages/scenarios`) and testing.md together when a task adds steps (`play`, `cast`, `activate`, `attack`, `block`).
   The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).

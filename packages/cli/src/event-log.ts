@@ -21,8 +21,23 @@ type Namer = (id: ObjectId) => string;
 
 /** Every event of the game, as lines. With `brief`, priority passes and steps beginning are left out. */
 export function logLines(setup: GameSetup, actions: readonly Action[], cards: CardDatabase, brief = false): string[] {
+  const { lines, rejected } = logUntilRejected(setup, actions, cards, brief);
+  if (rejected !== null) throw new Error(rejected);
+  return lines;
+}
+
+/**
+ * The log as far as the game goes: if an action is rejected, the lines before it and why it was rejected, so a golden
+ * game that no longer plays out still shows where it went differently.
+ */
+export function logUntilRejected(
+  setup: GameSetup,
+  actions: readonly Action[],
+  cards: CardDatabase,
+  brief = false,
+): { lines: string[]; rejected: string | null } {
   const created = createGame(setup, cards);
-  if (!created.ok) throw new Error(`the setup is rejected: ${created.error.message}`);
+  if (!created.ok) return { lines: [], rejected: `the setup is rejected: ${created.error.message}` };
   const lines: string[] = [];
   const add = (events: readonly GameEvent[], before: GameState, after: GameState) => {
     const name: Namer = (id) => refOf(before, id, cards) ?? refOf(after, id, cards) ?? nameIn(before, after, id, cards);
@@ -38,11 +53,11 @@ export function logLines(setup: GameSetup, actions: readonly Action[], cards: Ca
   let state = created.state;
   for (const [i, action] of actions.entries()) {
     const result = applyAction(state, action, cards);
-    if (!result.ok) throw new Error(`action ${i + 1} is rejected: ${result.error.message}`);
+    if (!result.ok) return { lines, rejected: `action ${i + 1} is rejected: ${result.error.message}` };
     add(result.events, state, result.state);
     state = result.state;
   }
-  return lines;
+  return { lines, rejected: null };
 }
 
 function nameIn(before: GameState, after: GameState, id: ObjectId, cards: CardDatabase): string {

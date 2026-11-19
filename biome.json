@@ -14,7 +14,8 @@
       "**/*.json",
       "!!rules",
       "!!packages/cards/data",
-      "!!packages/engine/test/replays"
+      "!!packages/engine/test/replays",
+      "!!packages/engine/test/golden"
     ]
   },
   "formatter": {

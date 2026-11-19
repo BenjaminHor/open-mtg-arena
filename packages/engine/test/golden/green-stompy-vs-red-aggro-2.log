@@ -1,0 +1,2767 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Raging Goblin, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Hill Giant, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Volcanic Hammer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Hill Giant, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Centaur Courser, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Spined Wurm, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Giant Spider, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Grizzly Bears, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Hill Giant, p2's hand -> stack
+T1 p2 cancels casting Hill Giant
+T1 moves: Mountain, p2's hand -> battlefield
+T1 p2 plays p2:Mountain
+T1 moves: Hill Giant, p2's hand -> stack
+T1 p2 cancels casting Hill Giant
+T1 moves: Hill Giant, p2's hand -> stack
+T1 p2 cancels casting Hill Giant
+T1 moves: Hill Giant, p2's hand -> stack
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 cancels casting Hill Giant
+T1 p2 attack: nothing
+T1 moves: Raging Goblin, p2's hand -> stack
+T1 p2 cancels casting Raging Goblin
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 moves: Hill Giant, p2's hand -> stack
+T1 p2 cancels casting Hill Giant
+T1 moves: Hill Giant, p2's hand -> stack
+T1 p2 cancels casting Hill Giant
+T1 moves: Hill Giant, p2's hand -> stack
+T1 p2 cancels casting Hill Giant
+T1 p2's unspent {R} empties
+T2 turn 2 begins (p1)
+T2 moves: Giant Growth, p1's library -> p1's hand
+T2 p1 draws
+T2 p1 attack: nothing
+T2 moves: Giant Spider, p1's hand -> stack
+T2 p1 cancels casting Giant Spider
+T2 moves: Grizzly Bears, p1's hand -> stack
+T2 p1 cancels casting Grizzly Bears
+T2 moves: Spined Wurm, p1's hand -> stack
+T2 p1 cancels casting Spined Wurm
+T2 moves: Giant Spider, p1's hand -> stack
+T2 p1 cancels casting Giant Spider
+T2 moves: Centaur Courser, p1's hand -> stack
+T2 p1 cancels casting Centaur Courser
+T2 moves: Giant Spider, p1's hand -> stack
+T2 p1 cancels casting Giant Spider
+T2 moves: Centaur Courser, p1's hand -> stack
+T2 p1 cancels casting Centaur Courser
+T2 moves: Grizzly Bears, p1's hand -> stack
+T2 p1 cancels casting Grizzly Bears
+T2 moves: Forest, p1's hand -> battlefield
+T2 p1 plays p1:Forest
+T2 moves: Spined Wurm, p1's hand -> stack
+T2 p1 cancels casting Spined Wurm
+T2 taps: p1:Forest
+T2 p1 adds {G} (p1:Forest)
+T2 moves: Centaur Courser, p1's hand -> stack
+T2 p1 cancels casting Centaur Courser
+T2 moves: Giant Spider, p1's hand -> stack
+T2 p1 cancels casting Giant Spider
+T2 moves: Grizzly Bears, p1's hand -> stack
+T2 p1 cancels casting Grizzly Bears
+T2 moves: Centaur Courser, p1's hand -> stack
+T2 p1 cancels casting Centaur Courser
+T2 moves: Giant Spider, p1's hand -> stack
+T2 p1 cancels casting Giant Spider
+T2 moves: Grizzly Bears, p1's hand -> stack
+T2 p1 cancels casting Grizzly Bears
+T2 moves: Centaur Courser, p1's hand -> stack
+T2 p1 cancels casting Centaur Courser
+T2 moves: Spined Wurm, p1's hand -> stack
+T2 p1 cancels casting Spined Wurm
+T2 moves: Centaur Courser, p1's hand -> stack
+T2 p1 cancels casting Centaur Courser
+T2 p1's unspent {G} empties
+T3 turn 3 begins (p2)
+T3 untaps: p2:Mountain
+T3 moves: Mountain, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Mountain, p2's hand -> battlefield
+T3 p2 plays p2:Mountain#2
+T3 p2 attack: nothing
+T3 taps: p2:Mountain#2
+T3 p2 adds {R} (p2:Mountain#2)
+T3 taps: p2:Mountain#1
+T3 p2 adds {R} (p2:Mountain#1)
+T3 p2's unspent {R}{R} empties
+T4 turn 4 begins (p1)
+T4 untaps: p1:Forest
+T4 moves: Forest, p1's library -> p1's hand
+T4 p1 draws
+T4 taps: p1:Forest
+T4 p1 adds {G} (p1:Forest)
+T4 p1's unspent {G} empties
+T4 moves: Centaur Courser, p1's hand -> stack
+T4 p1 cancels casting Centaur Courser
+T4 moves: Giant Spider, p1's hand -> stack
+T4 p1 cancels casting Giant Spider
+T4 moves: Centaur Courser, p1's hand -> stack
+T4 p1 cancels casting Centaur Courser
+T4 moves: Giant Spider, p1's hand -> stack
+T4 p1 cancels casting Giant Spider
+T4 moves: Forest, p1's hand -> battlefield
+T4 p1 plays p1:Forest#2
+T4 moves: Giant Spider, p1's hand -> stack
+T4 p1 cancels casting Giant Spider
+T4 moves: Giant Spider, p1's hand -> stack
+T4 taps: p1:Forest#2
+T4 p1 adds {G} (p1:Forest#2)
+T4 p1 cancels casting Giant Spider
+T4 moves: Centaur Courser, p1's hand -> stack
+T4 taps: p1:Forest#2
+T4 p1 adds {G} (p1:Forest#2)
+T4 p1 cancels casting Centaur Courser
+T4 moves: Giant Spider, p1's hand -> stack
+T4 p1 cancels casting Giant Spider
+T4 taps: p1:Forest#2
+T4 p1 adds {G} (p1:Forest#2)
+T4 p1's unspent {G} empties
+T4 p1 attack: nothing
+T4 moves: Giant Spider, p1's hand -> stack
+T4 p1 cancels casting Giant Spider
+T4 moves: Centaur Courser, p1's hand -> stack
+T4 p1 cancels casting Centaur Courser
+T4 moves: Grizzly Bears, p1's hand -> stack
+T4 p1 cancels casting Grizzly Bears
+T4 moves: Centaur Courser, p1's hand -> stack
+T4 p1 cancels casting Centaur Courser
+T4 moves: Grizzly Bears, p1's hand -> stack
+T4 p1 cancels casting Grizzly Bears
+T4 moves: Spined Wurm, p1's hand -> stack
+T4 p1 cancels casting Spined Wurm
+T5 turn 5 begins (p2)
+T5 untaps: p2:Mountain#1
+T5 untaps: p2:Mountain#2
+T5 moves: Furnace Whelp, p2's library -> p2's hand
+T5 p2 draws
+T5 taps: p2:Mountain#1
+T5 p2 adds {R} (p2:Mountain#1)
+T5 moves: Mountain, p2's hand -> battlefield
+T5 p2 plays p2:Mountain#3
+T5 moves: Raging Goblin, p2's hand -> stack
+T5 p2 casts Raging Goblin
+T5 taps: p2:Mountain#3
+T5 p2 adds {R} (p2:Mountain#3)
+T5 taps: p2:Mountain#2
+T5 p2 adds {R} (p2:Mountain#2)
+T5 resolves: Raging Goblin
+T5 moves: Raging Goblin, stack -> battlefield
+T5 moves: Hill Giant, p2's hand -> stack
+T5 p2 cancels casting Hill Giant
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 p2's unspent {R}{R} empties
+T5 p2 attack: nothing
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 moves: Hill Giant, p2's hand -> stack
+T5 p2 cancels casting Hill Giant
+T5 moves: Furnace Whelp, p2's hand -> stack
+T5 p2 cancels casting Furnace Whelp
+T5 moves: Hill Giant, p2's hand -> stack
+T5 p2 cancels casting Hill Giant
+T5 moves: Volcanic Hammer, p2's hand -> stack
+T5 p2 cancels casting Volcanic Hammer
+T5 moves: Volcanic Hammer, p2's hand -> stack
+T5 p2 cancels casting Volcanic Hammer
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T6 turn 6 begins (p1)
+T6 untaps: p1:Forest#1
+T6 untaps: p1:Forest#2
+T6 taps: p1:Forest#2
+T6 p1 adds {G} (p1:Forest#2)
+T6 moves: Giant Growth, p1's hand -> stack
+T6 p1 cancels casting Giant Growth
+T6 moves: Giant Growth, p1's hand -> stack
+T6 taps: p1:Forest#1
+T6 p1 adds {G} (p1:Forest#1)
+T6 p1 casts Giant Growth
+T6 effect: p2:Raging Goblin +3/+3 until end of turn
+T6 resolves: Giant Growth
+T6 moves: Giant Growth, stack -> p1's graveyard
+T6 p1's unspent {G} empties
+T6 moves: Forest, p1's library -> p1's hand
+T6 p1 draws
+T6 moves: Forest, p1's hand -> battlefield
+T6 p1 plays p1:Forest#3
+T6 taps: p1:Forest#3
+T6 p1 adds {G} (p1:Forest#3)
+T6 p1's unspent {G} empties
+T6 p1 attack: nothing
+T6 moves: Spined Wurm, p1's hand -> stack
+T6 p1 cancels casting Spined Wurm
+T6 moves: Centaur Courser, p1's hand -> stack
+T6 p1 cancels casting Centaur Courser
+T6 moves: Giant Spider, p1's hand -> stack
+T6 p1 cancels casting Giant Spider
+T6 effect ends: p2:Raging Goblin +3/+3
+T7 turn 7 begins (p2)
+T7 untaps: p2:Mountain#1
+T7 untaps: p2:Mountain#2
+T7 untaps: p2:Mountain#3
+T7 taps: p2:Mountain#1
+T7 p2 adds {R} (p2:Mountain#1)
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 p2's unspent {R}{R} empties
+T7 moves: Gray Ogre, p2's library -> p2's hand
+T7 p2 draws
+T7 taps: p2:Mountain#3
+T7 p2 adds {R} (p2:Mountain#3)
+T7 p2's unspent {R} empties
+T7 taps: p2:Raging Goblin
+T7 p2 attack: p2:Raging Goblin -> p1
+T7 p1 block: nothing
+T7 combat damage: p2:Raging Goblin -> p1 1
+T7 p1 loses 1 life
+T7 moves: Volcanic Hammer, p2's hand -> stack
+T7 p2 cancels casting Volcanic Hammer
+T7 moves: Hill Giant, p2's hand -> stack
+T7 p2 cancels casting Hill Giant
+T7 moves: Gray Ogre, p2's hand -> stack
+T7 p2 cancels casting Gray Ogre
+T7 moves: Hill Giant, p2's hand -> stack
+T7 p2 cancels casting Hill Giant
+T7 moves: Mountain, p2's hand -> battlefield
+T7 p2 plays p2:Mountain#4
+T7 taps: p2:Mountain#4
+T7 p2 adds {R} (p2:Mountain#4)
+T7 p2's unspent {R} empties
+T8 turn 8 begins (p1)
+T8 untaps: p1:Forest#1
+T8 untaps: p1:Forest#2
+T8 untaps: p1:Forest#3
+T8 moves: Llanowar Elves, p1's library -> p1's hand
+T8 p1 draws
+T8 taps: p1:Forest#3
+T8 p1 adds {G} (p1:Forest#3)
+T8 taps: p1:Forest#1
+T8 p1 adds {G} (p1:Forest#1)
+T8 p1's unspent {G}{G} empties
+T8 moves: Spined Wurm, p1's hand -> stack
+T8 taps: p1:Forest#2
+T8 p1 adds {G} (p1:Forest#2)
+T8 p1 cancels casting Spined Wurm
+T8 moves: Forest, p1's hand -> battlefield
+T8 p1 plays p1:Forest#4
+T8 taps: p1:Forest#2
+T8 p1 adds {G} (p1:Forest#2)
+T8 taps: p1:Forest#4
+T8 p1 adds {G} (p1:Forest#4)
+T8 p1's unspent {G}{G} empties
+T8 p1 attack: nothing
+T9 turn 9 begins (p2)
+T9 untaps: p2:Mountain#1
+T9 untaps: p2:Mountain#2
+T9 untaps: p2:Mountain#3
+T9 untaps: p2:Raging Goblin
+T9 untaps: p2:Mountain#4
+T9 taps: p2:Mountain#1
+T9 p2 adds {R} (p2:Mountain#1)
+T9 taps: p2:Mountain#2
+T9 p2 adds {R} (p2:Mountain#2)
+T9 taps: p2:Mountain#3
+T9 p2 adds {R} (p2:Mountain#3)
+T9 p2's unspent {R}{R}{R} empties
+T9 moves: Fire Elemental, p2's library -> p2's hand
+T9 p2 draws
+T9 moves: Hill Giant, p2's hand -> stack
+T9 taps: p2:Mountain#4
+T9 p2 adds {R} (p2:Mountain#4)
+T9 p2 cancels casting Hill Giant
+T9 moves: Fire Elemental, p2's hand -> stack
+T9 taps: p2:Mountain#4
+T9 p2 adds {R} (p2:Mountain#4)
+T9 p2 cancels casting Fire Elemental
+T9 taps: p2:Mountain#4
+T9 p2 adds {R} (p2:Mountain#4)
+T9 p2's unspent {R} empties
+T9 taps: p2:Raging Goblin
+T9 p2 attack: p2:Raging Goblin -> p1
+T9 p1 block: nothing
+T9 combat damage: p2:Raging Goblin -> p1 1
+T9 p1 loses 1 life
+T9 moves: Hill Giant, p2's hand -> stack
+T9 p2 cancels casting Hill Giant
+T9 moves: Volcanic Hammer, p2's hand -> stack
+T9 p2 cancels casting Volcanic Hammer
+T9 moves: Hill Giant, p2's hand -> stack
+T9 p2 cancels casting Hill Giant
+T9 moves: Furnace Whelp, p2's hand -> stack
+T9 p2 cancels casting Furnace Whelp
+T9 moves: Fire Elemental, p2's hand -> stack
+T9 p2 cancels casting Fire Elemental
+T9 moves: Furnace Whelp, p2's hand -> stack
+T9 p2 cancels casting Furnace Whelp
+T9 moves: Furnace Whelp, p2's hand -> stack
+T9 p2 cancels casting Furnace Whelp
+T9 moves: Gray Ogre, p2's hand -> stack
+T9 p2 cancels casting Gray Ogre
+T9 moves: Volcanic Hammer, p2's hand -> stack
+T9 p2 cancels casting Volcanic Hammer
+T9 moves: Hill Giant, p2's hand -> stack
+T9 p2 cancels casting Hill Giant
+T9 moves: Furnace Whelp, p2's hand -> stack
+T9 p2 cancels casting Furnace Whelp
+T10 turn 10 begins (p1)
+T10 untaps: p1:Forest#1
+T10 untaps: p1:Forest#2
+T10 untaps: p1:Forest#3
+T10 untaps: p1:Forest#4
+T10 taps: p1:Forest#2
+T10 p1 adds {G} (p1:Forest#2)
+T10 taps: p1:Forest#3
+T10 p1 adds {G} (p1:Forest#3)
+T10 p1's unspent {G}{G} empties
+T10 moves: Giant Spider, p1's library -> p1's hand
+T10 p1 draws
+T10 taps: p1:Forest#1
+T10 p1 adds {G} (p1:Forest#1)
+T10 p1's unspent {G} empties
+T10 moves: Grizzly Bears, p1's hand -> stack
+T10 p1 cancels casting Grizzly Bears
+T10 taps: p1:Forest#4
+T10 p1 adds {G} (p1:Forest#4)
+T10 moves: Grizzly Bears, p1's hand -> stack
+T10 p1 cancels casting Grizzly Bears
+T10 moves: Grizzly Bears, p1's hand -> stack
+T10 p1 cancels casting Grizzly Bears
+T10 moves: Spined Wurm, p1's hand -> stack
+T10 p1 cancels casting Spined Wurm
+T10 moves: Forest, p1's hand -> battlefield
+T10 p1 plays p1:Forest#5
+T10 moves: Centaur Courser, p1's hand -> stack
+T10 taps: p1:Forest#5
+T10 p1 adds {G} (p1:Forest#5)
+T10 p1 cancels casting Centaur Courser
+T10 moves: Giant Spider, p1's hand -> stack
+T10 taps: p1:Forest#5
+T10 p1 adds {G} (p1:Forest#5)
+T10 p1 cancels casting Giant Spider
+T10 moves: Llanowar Elves, p1's hand -> stack
+T10 p1 cancels casting Llanowar Elves
+T10 taps: p1:Forest#5
+T10 p1 adds {G} (p1:Forest#5)
+T10 moves: Spined Wurm, p1's hand -> stack
+T10 p1 cancels casting Spined Wurm
+T10 moves: Giant Spider, p1's hand -> stack
+T10 p1 cancels casting Giant Spider
+T10 moves: Giant Spider, p1's hand -> stack
+T10 p1 cancels casting Giant Spider
+T10 moves: Grizzly Bears, p1's hand -> stack
+T10 p1 cancels casting Grizzly Bears
+T10 p1's unspent {G}{G} empties
+T10 p1 attack: nothing
+T10 moves: Giant Spider, p1's hand -> stack
+T10 p1 cancels casting Giant Spider
+T10 moves: Centaur Courser, p1's hand -> stack
+T10 p1 cancels casting Centaur Courser
+T10 moves: Giant Spider, p1's hand -> stack
+T10 p1 cancels casting Giant Spider
+T10 moves: Spined Wurm, p1's hand -> stack
+T10 p1 cancels casting Spined Wurm
+T11 turn 11 begins (p2)
+T11 untaps: p2:Mountain#1
+T11 untaps: p2:Mountain#2
+T11 untaps: p2:Mountain#3
+T11 untaps: p2:Raging Goblin
+T11 untaps: p2:Mountain#4
+T11 moves: Lightning Bolt, p2's library -> p2's hand
+T11 p2 draws
+T11 moves: Hill Giant, p2's hand -> stack
+T11 taps: p2:Mountain#3
+T11 p2 adds {R} (p2:Mountain#3)
+T11 taps: p2:Mountain#2
+T11 p2 adds {R} (p2:Mountain#2)
+T11 taps: p2:Mountain#1
+T11 p2 adds {R} (p2:Mountain#1)
+T11 taps: p2:Mountain#4
+T11 p2 adds {R} (p2:Mountain#4)
+T11 p2 casts Hill Giant
+T11 resolves: Hill Giant
+T11 moves: Hill Giant, stack -> battlefield
+T11 moves: Hill Giant, p2's hand -> stack
+T11 p2 cancels casting Hill Giant
+T11 moves: Furnace Whelp, p2's hand -> stack
+T11 p2 cancels casting Furnace Whelp
+T11 moves: Volcanic Hammer, p2's hand -> stack
+T11 p2 cancels casting Volcanic Hammer
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 p2 attack: nothing
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Gray Ogre, p2's hand -> stack
+T11 p2 cancels casting Gray Ogre
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Gray Ogre, p2's hand -> stack
+T11 p2 cancels casting Gray Ogre
+T11 moves: Gray Ogre, p2's hand -> stack
+T11 p2 cancels casting Gray Ogre
+T11 moves: Volcanic Hammer, p2's hand -> stack
+T11 p2 cancels casting Volcanic Hammer
+T11 moves: Gray Ogre, p2's hand -> stack
+T11 p2 cancels casting Gray Ogre
+T11 moves: Volcanic Hammer, p2's hand -> stack
+T11 p2 cancels casting Volcanic Hammer
+T11 moves: Volcanic Hammer, p2's hand -> stack
+T11 p2 cancels casting Volcanic Hammer
+T11 moves: Furnace Whelp, p2's hand -> stack
+T11 p2 cancels casting Furnace Whelp
+T11 moves: Gray Ogre, p2's hand -> stack
+T11 p2 cancels casting Gray Ogre
+T11 moves: Furnace Whelp, p2's hand -> stack
+T11 p2 cancels casting Furnace Whelp
+T11 moves: Gray Ogre, p2's hand -> stack
+T11 p2 cancels casting Gray Ogre
+T11 moves: Lightning Bolt, p2's hand -> stack
+T11 p2 cancels casting Lightning Bolt
+T11 moves: Hill Giant, p2's hand -> stack
+T11 p2 cancels casting Hill Giant
+T12 turn 12 begins (p1)
+T12 untaps: p1:Forest#1
+T12 untaps: p1:Forest#2
+T12 untaps: p1:Forest#3
+T12 untaps: p1:Forest#4
+T12 untaps: p1:Forest#5
+T12 taps: p1:Forest#5
+T12 p1 adds {G} (p1:Forest#5)
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 taps: p1:Forest#1
+T12 p1 adds {G} (p1:Forest#1)
+T12 taps: p1:Forest#4
+T12 p1 adds {G} (p1:Forest#4)
+T12 moves: Lightning Bolt, p2's hand -> stack
+T12 p2 cancels casting Lightning Bolt
+T12 p1's unspent {G}{G}{G}{G} empties
+T12 moves: Grizzly Bears, p1's library -> p1's hand
+T12 p1 draws
+T12 moves: Grizzly Bears, p1's hand -> stack
+T12 p1 cancels casting Grizzly Bears
+T12 moves: Giant Spider, p1's hand -> stack
+T12 p1 cancels casting Giant Spider
+T12 moves: Giant Spider, p1's hand -> stack
+T12 p1 cancels casting Giant Spider
+T12 moves: Giant Spider, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Giant Spider
+T12 moves: Centaur Courser, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Centaur Courser
+T12 moves: Centaur Courser, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Centaur Courser
+T12 moves: Grizzly Bears, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Grizzly Bears
+T12 moves: Grizzly Bears, p1's hand -> stack
+T12 p1 cancels casting Grizzly Bears
+T12 moves: Grizzly Bears, p1's hand -> stack
+T12 p1 cancels casting Grizzly Bears
+T12 moves: Grizzly Bears, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Grizzly Bears
+T12 moves: Spined Wurm, p1's hand -> stack
+T12 p1 cancels casting Spined Wurm
+T12 moves: Llanowar Elves, p1's hand -> stack
+T12 p1 cancels casting Llanowar Elves
+T12 moves: Grizzly Bears, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Grizzly Bears
+T12 moves: Giant Spider, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Giant Spider
+T12 moves: Lightning Bolt, p2's hand -> stack
+T12 p2 cancels casting Lightning Bolt
+T12 moves: Lightning Bolt, p2's hand -> stack
+T12 p2 cancels casting Lightning Bolt
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 moves: Lightning Bolt, p2's hand -> stack
+T12 p2 cancels casting Lightning Bolt
+T12 moves: Lightning Bolt, p2's hand -> stack
+T12 p2 cancels casting Lightning Bolt
+T12 p1's unspent {G} empties
+T12 p1 attack: nothing
+T12 moves: Lightning Bolt, p2's hand -> stack
+T12 p2 cancels casting Lightning Bolt
+T12 moves: Llanowar Elves, p1's hand -> stack
+T12 p1 cancels casting Llanowar Elves
+T12 moves: Spined Wurm, p1's hand -> stack
+T12 p1 cancels casting Spined Wurm
+T12 moves: Giant Spider, p1's hand -> stack
+T12 p1 cancels casting Giant Spider
+T12 moves: Giant Spider, p1's hand -> stack
+T12 p1 cancels casting Giant Spider
+T12 moves: Centaur Courser, p1's hand -> stack
+T12 p1 cancels casting Centaur Courser
+T12 moves: Giant Spider, p1's hand -> stack
+T12 p1 cancels casting Giant Spider
+T12 moves: Centaur Courser, p1's hand -> stack
+T12 p1 cancels casting Centaur Courser
+T12 moves: Llanowar Elves, p1's hand -> stack
+T12 p1 cancels casting Llanowar Elves
+T12 moves: Llanowar Elves, p1's hand -> stack
+T12 p1 cancels casting Llanowar Elves
+T13 turn 13 begins (p2)
+T13 untaps: p2:Mountain#1
+T13 untaps: p2:Mountain#2
+T13 untaps: p2:Mountain#3
+T13 untaps: p2:Mountain#4
+T13 taps: p2:Mountain#3
+T13 p2 adds {R} (p2:Mountain#3)
+T13 taps: p2:Mountain#4
+T13 p2 adds {R} (p2:Mountain#4)
+T13 p2's unspent {R}{R} empties
+T13 moves: Gray Ogre, p2's library -> p2's hand
+T13 p2 draws
+T13 taps: p2:Mountain#1
+T13 p2 adds {R} (p2:Mountain#1)
+T13 p2's unspent {R} empties
+T13 taps: p2:Mountain#2
+T13 p2 adds {R} (p2:Mountain#2)
+T13 p2's unspent {R} empties
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 p2 attack: nothing
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Gray Ogre, p2's hand -> stack
+T13 p2 cancels casting Gray Ogre
+T13 moves: Gray Ogre, p2's hand -> stack
+T13 p2 cancels casting Gray Ogre
+T13 moves: Volcanic Hammer, p2's hand -> stack
+T13 p2 cancels casting Volcanic Hammer
+T13 moves: Furnace Whelp, p2's hand -> stack
+T13 p2 cancels casting Furnace Whelp
+T13 moves: Volcanic Hammer, p2's hand -> stack
+T13 p2 cancels casting Volcanic Hammer
+T13 moves: Furnace Whelp, p2's hand -> stack
+T13 p2 cancels casting Furnace Whelp
+T13 moves: Hill Giant, p2's hand -> stack
+T13 p2 cancels casting Hill Giant
+T13 moves: Fire Elemental, p2's hand -> stack
+T13 p2 cancels casting Fire Elemental
+T13 moves: Gray Ogre, p2's hand -> stack
+T13 p2 cancels casting Gray Ogre
+T13 moves: Gray Ogre, p2's hand -> stack
+T13 p2 cancels casting Gray Ogre
+T13 moves: Volcanic Hammer, p2's hand -> stack
+T13 p2 cancels casting Volcanic Hammer
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Hill Giant, p2's hand -> stack
+T13 p2 cancels casting Hill Giant
+T13 moves: Volcanic Hammer, p2's hand -> stack
+T13 p2 cancels casting Volcanic Hammer
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T13 moves: Lightning Bolt, p2's hand -> stack
+T13 p2 cancels casting Lightning Bolt
+T14 turn 14 begins (p1)
+T14 untaps: p1:Forest#1
+T14 untaps: p1:Forest#2
+T14 untaps: p1:Forest#3
+T14 untaps: p1:Forest#4
+T14 untaps: p1:Forest#5
+T14 taps: p1:Forest#1
+T14 p1 adds {G} (p1:Forest#1)
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 taps: p1:Forest#5
+T14 p1 adds {G} (p1:Forest#5)
+T14 taps: p1:Forest#3
+T14 p1 adds {G} (p1:Forest#3)
+T14 taps: p1:Forest#4
+T14 p1 adds {G} (p1:Forest#4)
+T14 p1's unspent {G}{G}{G}{G}{G} empties
+T14 moves: Craw Wurm, p1's library -> p1's hand
+T14 p1 draws
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 p1 attack: nothing
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Craw Wurm, p1's hand -> stack
+T14 p1 cancels casting Craw Wurm
+T14 moves: Giant Spider, p1's hand -> stack
+T14 p1 cancels casting Giant Spider
+T14 moves: Craw Wurm, p1's hand -> stack
+T14 p1 cancels casting Craw Wurm
+T14 moves: Craw Wurm, p1's hand -> stack
+T14 p1 cancels casting Craw Wurm
+T14 moves: Craw Wurm, p1's hand -> stack
+T14 p1 cancels casting Craw Wurm
+T14 moves: Spined Wurm, p1's hand -> stack
+T14 p1 cancels casting Spined Wurm
+T14 moves: Craw Wurm, p1's hand -> stack
+T14 p1 cancels casting Craw Wurm
+T14 moves: Craw Wurm, p1's hand -> stack
+T14 p1 cancels casting Craw Wurm
+T14 moves: Giant Spider, p1's hand -> stack
+T14 p1 cancels casting Giant Spider
+T14 moves: Grizzly Bears, p1's hand -> stack
+T14 p1 cancels casting Grizzly Bears
+T14 moves: Giant Spider, p1's hand -> stack
+T14 p1 cancels casting Giant Spider
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Lightning Bolt, p2's hand -> stack
+T14 p2 cancels casting Lightning Bolt
+T14 moves: Llanowar Elves, p1's hand -> p1's graveyard
+T14 p1 discards Llanowar Elves
+T15 turn 15 begins (p2)
+T15 untaps: p2:Mountain#1
+T15 untaps: p2:Mountain#2
+T15 untaps: p2:Mountain#3
+T15 untaps: p2:Mountain#4
+T15 taps: p2:Mountain#1
+T15 p2 adds {R} (p2:Mountain#1)
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2's unspent {R}{R} empties
+T15 moves: Mountain, p2's library -> p2's hand
+T15 p2 draws
+T15 taps: p2:Mountain#4
+T15 p2 adds {R} (p2:Mountain#4)
+T15 taps: p2:Mountain#3
+T15 p2 adds {R} (p2:Mountain#3)
+T15 p2's unspent {R}{R} empties
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Gray Ogre, p2's hand -> stack
+T15 p2 cancels casting Gray Ogre
+T15 moves: Gray Ogre, p2's hand -> stack
+T15 p2 cancels casting Gray Ogre
+T15 moves: Fire Elemental, p2's hand -> stack
+T15 p2 cancels casting Fire Elemental
+T15 moves: Furnace Whelp, p2's hand -> stack
+T15 p2 cancels casting Furnace Whelp
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 taps: p2:Raging Goblin
+T15 taps: p2:Hill Giant
+T15 p2 attack: p2:Raging Goblin -> p1, p2:Hill Giant -> p1
+T15 p1 block: nothing
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 combat damage: p2:Raging Goblin -> p1 1
+T15 combat damage: p2:Hill Giant -> p1 3
+T15 p1 loses 1 life
+T15 p1 loses 3 life
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Fire Elemental, p2's hand -> stack
+T15 p2 cancels casting Fire Elemental
+T15 moves: Hill Giant, p2's hand -> stack
+T15 p2 cancels casting Hill Giant
+T15 moves: Mountain, p2's hand -> battlefield
+T15 p2 plays p2:Mountain#5
+T15 taps: p2:Mountain#5
+T15 p2 adds {R} (p2:Mountain#5)
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 cancels casting Lightning Bolt
+T15 moves: Lightning Bolt, p2's hand -> stack
+T15 p2 casts Lightning Bolt
+T15 damage: Lightning Bolt -> p2:Hill Giant 3
+T15 resolves: Lightning Bolt
+T15 moves: Lightning Bolt, stack -> p2's graveyard
+T15 state-based actions: p2:Hill Giant lethalDamage
+T15 destroyed: p2:Hill Giant
+T15 moves: Hill Giant, battlefield -> p2's graveyard
+T16 turn 16 begins (p1)
+T16 untaps: p1:Forest#1
+T16 untaps: p1:Forest#2
+T16 untaps: p1:Forest#3
+T16 untaps: p1:Forest#4
+T16 untaps: p1:Forest#5
+T16 taps: p1:Forest#3
+T16 p1 adds {G} (p1:Forest#3)
+T16 taps: p1:Forest#5
+T16 p1 adds {G} (p1:Forest#5)
+T16 taps: p1:Forest#4
+T16 p1 adds {G} (p1:Forest#4)
+T16 taps: p1:Forest#2
+T16 p1 adds {G} (p1:Forest#2)
+T16 taps: p1:Forest#1
+T16 p1 adds {G} (p1:Forest#1)
+T16 p1's unspent {G}{G}{G}{G}{G} empties
+T16 moves: Centaur Courser, p1's library -> p1's hand
+T16 p1 draws
+T16 moves: Grizzly Bears, p1's hand -> stack
+T16 p1 cancels casting Grizzly Bears
+T16 moves: Centaur Courser, p1's hand -> stack
+T16 p1 cancels casting Centaur Courser
+T16 moves: Spined Wurm, p1's hand -> stack
+T16 p1 cancels casting Spined Wurm
+T16 moves: Grizzly Bears, p1's hand -> stack
+T16 p1 cancels casting Grizzly Bears
+T16 moves: Spined Wurm, p1's hand -> stack
+T16 p1 cancels casting Spined Wurm
+T16 moves: Craw Wurm, p1's hand -> stack
+T16 p1 cancels casting Craw Wurm
+T16 p1 attack: nothing
+T16 moves: Giant Spider, p1's hand -> stack
+T16 p1 cancels casting Giant Spider
+T16 moves: Spined Wurm, p1's hand -> stack
+T16 p1 cancels casting Spined Wurm
+T16 moves: Craw Wurm, p1's hand -> stack
+T16 p1 cancels casting Craw Wurm
+T16 moves: Craw Wurm, p1's hand -> p1's graveyard
+T16 p1 discards Craw Wurm
+T17 turn 17 begins (p2)
+T17 untaps: p2:Mountain#1
+T17 untaps: p2:Mountain#2
+T17 untaps: p2:Mountain#3
+T17 untaps: p2:Raging Goblin
+T17 untaps: p2:Mountain#4
+T17 untaps: p2:Mountain#5
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 p2's unspent {R} empties
+T17 moves: Fire Elemental, p2's library -> p2's hand
+T17 p2 draws
+T17 taps: p2:Mountain#3
+T17 p2 adds {R} (p2:Mountain#3)
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 p2's unspent {R}{R} empties
+T17 moves: Fire Elemental, p2's hand -> stack
+T17 p2 cancels casting Fire Elemental
+T17 taps: p2:Mountain#4
+T17 p2 adds {R} (p2:Mountain#4)
+T17 moves: Hill Giant, p2's hand -> stack
+T17 p2 cancels casting Hill Giant
+T17 moves: Hill Giant, p2's hand -> stack
+T17 p2 cancels casting Hill Giant
+T17 moves: Volcanic Hammer, p2's hand -> stack
+T17 p2 cancels casting Volcanic Hammer
+T17 p2's unspent {R} empties
+T17 taps: p2:Raging Goblin
+T17 p2 attack: p2:Raging Goblin -> p1
+T17 p1 block: nothing
+T17 taps: p2:Mountain#5
+T17 p2 adds {R} (p2:Mountain#5)
+T17 p2's unspent {R} empties
+T17 combat damage: p2:Raging Goblin -> p1 1
+T17 p1 loses 1 life
+T17 moves: Gray Ogre, p2's hand -> stack
+T17 p2 cancels casting Gray Ogre
+T18 turn 18 begins (p1)
+T18 untaps: p1:Forest#1
+T18 untaps: p1:Forest#2
+T18 untaps: p1:Forest#3
+T18 untaps: p1:Forest#4
+T18 untaps: p1:Forest#5
+T18 moves: Llanowar Elves, p1's library -> p1's hand
+T18 p1 draws
+T18 taps: p1:Forest#4
+T18 p1 adds {G} (p1:Forest#4)
+T18 taps: p1:Forest#5
+T18 p1 adds {G} (p1:Forest#5)
+T18 taps: p1:Forest#3
+T18 p1 adds {G} (p1:Forest#3)
+T18 p1's unspent {G}{G}{G} empties
+T18 moves: Grizzly Bears, p1's hand -> stack
+T18 p1 cancels casting Grizzly Bears
+T18 taps: p1:Forest#2
+T18 p1 adds {G} (p1:Forest#2)
+T18 taps: p1:Forest#1
+T18 p1 adds {G} (p1:Forest#1)
+T18 p1's unspent {G}{G} empties
+T18 p1 attack: nothing
+T18 moves: Centaur Courser, p1's hand -> p1's graveyard
+T18 p1 discards Centaur Courser
+T19 turn 19 begins (p2)
+T19 untaps: p2:Mountain#1
+T19 untaps: p2:Mountain#2
+T19 untaps: p2:Mountain#3
+T19 untaps: p2:Raging Goblin
+T19 untaps: p2:Mountain#4
+T19 untaps: p2:Mountain#5
+T19 taps: p2:Mountain#3
+T19 p2 adds {R} (p2:Mountain#3)
+T19 taps: p2:Mountain#4
+T19 p2 adds {R} (p2:Mountain#4)
+T19 taps: p2:Mountain#2
+T19 p2 adds {R} (p2:Mountain#2)
+T19 taps: p2:Mountain#5
+T19 p2 adds {R} (p2:Mountain#5)
+T19 p2's unspent {R}{R}{R}{R} empties
+T19 moves: Hill Giant, p2's library -> p2's hand
+T19 p2 draws
+T19 moves: Gray Ogre, p2's hand -> stack
+T19 taps: p2:Mountain#1
+T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 cancels casting Gray Ogre
+T19 moves: Furnace Whelp, p2's hand -> stack
+T19 p2 cancels casting Furnace Whelp
+T19 taps: p2:Mountain#1
+T19 p2 adds {R} (p2:Mountain#1)
+T19 moves: Gray Ogre, p2's hand -> stack
+T19 p2 cancels casting Gray Ogre
+T19 moves: Hill Giant, p2's hand -> stack
+T19 p2 cancels casting Hill Giant
+T19 moves: Fire Elemental, p2's hand -> stack
+T19 p2 cancels casting Fire Elemental
+T19 p2's unspent {R} empties
+T19 p2 attack: nothing
+T19 moves: Hill Giant, p2's hand -> stack
+T19 p2 cancels casting Hill Giant
+T19 moves: Fire Elemental, p2's hand -> stack
+T19 p2 cancels casting Fire Elemental
+T19 moves: Hill Giant, p2's hand -> stack
+T19 p2 cancels casting Hill Giant
+T19 moves: Volcanic Hammer, p2's hand -> stack
+T19 p2 cancels casting Volcanic Hammer
+T19 moves: Gray Ogre, p2's hand -> stack
+T19 p2 cancels casting Gray Ogre
+T19 moves: Gray Ogre, p2's hand -> stack
+T19 p2 cancels casting Gray Ogre
+T19 moves: Volcanic Hammer, p2's hand -> p2's graveyard
+T19 p2 discards Volcanic Hammer
+T20 turn 20 begins (p1)
+T20 untaps: p1:Forest#1
+T20 untaps: p1:Forest#2
+T20 untaps: p1:Forest#3
+T20 untaps: p1:Forest#4
+T20 untaps: p1:Forest#5
+T20 taps: p1:Forest#2
+T20 p1 adds {G} (p1:Forest#2)
+T20 p1's unspent {G} empties
+T20 moves: Giant Spider, p1's library -> p1's hand
+T20 p1 draws
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1's unspent {G} empties
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 taps: p1:Forest#4
+T20 p1 adds {G} (p1:Forest#4)
+T20 taps: p1:Forest#5
+T20 p1 adds {G} (p1:Forest#5)
+T20 p1 cancels casting Grizzly Bears
+T20 moves: Spined Wurm, p1's hand -> stack
+T20 p1 cancels casting Spined Wurm
+T20 taps: p1:Forest#3
+T20 p1 adds {G} (p1:Forest#3)
+T20 moves: Centaur Courser, p1's hand -> stack
+T20 p1 cancels casting Centaur Courser
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 taps: p1:Forest#5
+T20 p1 adds {G} (p1:Forest#5)
+T20 p1 cancels casting Grizzly Bears
+T20 moves: Spined Wurm, p1's hand -> stack
+T20 p1 cancels casting Spined Wurm
+T20 moves: Giant Spider, p1's hand -> stack
+T20 taps: p1:Forest#4
+T20 p1 adds {G} (p1:Forest#4)
+T20 taps: p1:Forest#5
+T20 p1 adds {G} (p1:Forest#5)
+T20 p1 cancels casting Giant Spider
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 taps: p1:Forest#5
+T20 p1 adds {G} (p1:Forest#5)
+T20 taps: p1:Forest#4
+T20 p1 adds {G} (p1:Forest#4)
+T20 p1 cancels casting Grizzly Bears
+T20 taps: p1:Forest#4
+T20 p1 adds {G} (p1:Forest#4)
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Spined Wurm, p1's hand -> stack
+T20 p1 cancels casting Spined Wurm
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 p1 cancels casting Grizzly Bears
+T20 moves: Giant Spider, p1's hand -> stack
+T20 taps: p1:Forest#5
+T20 p1 adds {G} (p1:Forest#5)
+T20 p1 cancels casting Giant Spider
+T20 moves: Centaur Courser, p1's hand -> stack
+T20 taps: p1:Forest#5
+T20 p1 adds {G} (p1:Forest#5)
+T20 p1 casts Centaur Courser
+T20 resolves: Centaur Courser
+T20 moves: Centaur Courser, stack -> battlefield
+T20 p1 attack: nothing
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 p1 cancels casting Grizzly Bears
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Llanowar Elves, p1's hand -> stack
+T20 p1 cancels casting Llanowar Elves
+T20 moves: Spined Wurm, p1's hand -> stack
+T20 p1 cancels casting Spined Wurm
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 p1 cancels casting Grizzly Bears
+T20 moves: Llanowar Elves, p1's hand -> stack
+T20 p1 cancels casting Llanowar Elves
+T20 moves: Spined Wurm, p1's hand -> stack
+T20 p1 cancels casting Spined Wurm
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Giant Spider, p1's hand -> stack
+T20 p1 cancels casting Giant Spider
+T20 moves: Llanowar Elves, p1's hand -> stack
+T20 p1 cancels casting Llanowar Elves
+T20 moves: Grizzly Bears, p1's hand -> stack
+T20 p1 cancels casting Grizzly Bears
+T21 turn 21 begins (p2)
+T21 untaps: p2:Mountain#1
+T21 untaps: p2:Mountain#2
+T21 untaps: p2:Mountain#3
+T21 untaps: p2:Mountain#4
+T21 untaps: p2:Mountain#5
+T21 moves: Raging Goblin, p2's library -> p2's hand
+T21 p2 draws
+T21 taps: p2:Mountain#2
+T21 p2 adds {R} (p2:Mountain#2)
+T21 taps: p2:Mountain#4
+T21 p2 adds {R} (p2:Mountain#4)
+T21 taps: p2:Mountain#3
+T21 p2 adds {R} (p2:Mountain#3)
+T21 taps: p2:Mountain#5
+T21 p2 adds {R} (p2:Mountain#5)
+T21 p2's unspent {R}{R}{R}{R} empties
+T21 moves: Gray Ogre, p2's hand -> stack
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 cancels casting Gray Ogre
+T21 p2 attack: nothing
+T21 moves: Gray Ogre, p2's hand -> stack
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 cancels casting Gray Ogre
+T21 moves: Furnace Whelp, p2's hand -> stack
+T21 p2 cancels casting Furnace Whelp
+T21 moves: Fire Elemental, p2's hand -> stack
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 cancels casting Fire Elemental
+T21 moves: Fire Elemental, p2's hand -> stack
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 cancels casting Fire Elemental
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Fire Elemental, p2's hand -> stack
+T21 p2 cancels casting Fire Elemental
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 moves: Gray Ogre, p2's hand -> stack
+T21 p2 cancels casting Gray Ogre
+T21 moves: Gray Ogre, p2's hand -> stack
+T21 p2 cancels casting Gray Ogre
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Raging Goblin, p2's hand -> stack
+T21 p2 cancels casting Raging Goblin
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Fire Elemental, p2's hand -> stack
+T21 p2 cancels casting Fire Elemental
+T21 moves: Raging Goblin, p2's hand -> stack
+T21 p2 casts Raging Goblin
+T21 resolves: Raging Goblin
+T21 moves: Raging Goblin, stack -> battlefield
+T21 moves: Gray Ogre, p2's hand -> stack
+T21 p2 cancels casting Gray Ogre
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Fire Elemental, p2's hand -> stack
+T21 p2 cancels casting Fire Elemental
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Fire Elemental, p2's hand -> stack
+T21 p2 cancels casting Fire Elemental
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T21 moves: Gray Ogre, p2's hand -> stack
+T21 p2 cancels casting Gray Ogre
+T21 moves: Hill Giant, p2's hand -> stack
+T21 p2 cancels casting Hill Giant
+T22 turn 22 begins (p1)
+T22 untaps: p1:Forest#1
+T22 untaps: p1:Forest#2
+T22 untaps: p1:Forest#3
+T22 untaps: p1:Forest#4
+T22 untaps: p1:Forest#5
+T22 taps: p1:Forest#2
+T22 p1 adds {G} (p1:Forest#2)
+T22 p1's unspent {G} empties
+T22 moves: Forest, p1's library -> p1's hand
+T22 p1 draws
+T22 taps: p1:Forest#4
+T22 p1 adds {G} (p1:Forest#4)
+T22 taps: p1:Forest#3
+T22 p1 adds {G} (p1:Forest#3)
+T22 taps: p1:Forest#5
+T22 p1 adds {G} (p1:Forest#5)
+T22 p1's unspent {G}{G}{G} empties
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 taps: p1:Forest#1
+T22 p1 adds {G} (p1:Forest#1)
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Forest, p1's hand -> battlefield
+T22 p1 plays p1:Forest#6
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 taps: p1:Forest#1
+T22 p1 adds {G} (p1:Forest#1)
+T22 p1 cancels casting Spined Wurm
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 taps: p1:Forest#1
+T22 p1 adds {G} (p1:Forest#1)
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 p1 cancels casting Spined Wurm
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Spined Wurm
+T22 moves: Giant Spider, p1's hand -> stack
+T22 p1 cancels casting Giant Spider
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Spined Wurm
+T22 moves: Giant Spider, p1's hand -> stack
+T22 p1 cancels casting Giant Spider
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Spined Wurm
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Spined Wurm
+T22 moves: Llanowar Elves, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Llanowar Elves
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Giant Spider, p1's hand -> stack
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1 cancels casting Giant Spider
+T22 moves: Giant Spider, p1's hand -> stack
+T22 p1 cancels casting Giant Spider
+T22 taps: p1:Forest#6
+T22 p1 adds {G} (p1:Forest#6)
+T22 p1's unspent {G}{G} empties
+T22 taps: p1:Centaur Courser
+T22 p1 attack: p1:Centaur Courser -> p2
+T22 p2 block: p2:Raging Goblin#2 -> p1:Centaur Courser, p2:Raging Goblin#1 -> p1:Centaur Courser
+T22 combat damage: p1:Centaur Courser -> p2:Raging Goblin#2 1
+T22 combat damage: p1:Centaur Courser -> p2:Raging Goblin#1 2
+T22 combat damage: p2:Raging Goblin#2 -> p1:Centaur Courser 1
+T22 combat damage: p2:Raging Goblin#1 -> p1:Centaur Courser 1
+T22 state-based actions: p2:Raging Goblin#1 lethalDamage, p2:Raging Goblin#2 lethalDamage
+T22 destroyed: p2:Raging Goblin#1
+T22 moves: Raging Goblin, battlefield -> p2's graveyard
+T22 destroyed: p2:Raging Goblin#2
+T22 moves: Raging Goblin, battlefield -> p2's graveyard
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 moves: Giant Spider, p1's hand -> stack
+T22 p1 cancels casting Giant Spider
+T22 moves: Giant Spider, p1's hand -> stack
+T22 p1 cancels casting Giant Spider
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 p1 cancels casting Spined Wurm
+T22 moves: Giant Spider, p1's hand -> stack
+T22 p1 cancels casting Giant Spider
+T22 moves: Spined Wurm, p1's hand -> stack
+T22 p1 cancels casting Spined Wurm
+T22 moves: Llanowar Elves, p1's hand -> stack
+T22 p1 cancels casting Llanowar Elves
+T22 moves: Grizzly Bears, p1's hand -> stack
+T22 p1 cancels casting Grizzly Bears
+T22 damage removed: p1:Centaur Courser (2)
+T23 turn 23 begins (p2)
+T23 untaps: p2:Mountain#1
+T23 untaps: p2:Mountain#2
+T23 untaps: p2:Mountain#3
+T23 untaps: p2:Mountain#4
+T23 untaps: p2:Mountain#5
+T23 taps: p2:Mountain#5
+T23 p2 adds {R} (p2:Mountain#5)
+T23 taps: p2:Mountain#1
+T23 p2 adds {R} (p2:Mountain#1)
+T23 taps: p2:Mountain#4
+T23 p2 adds {R} (p2:Mountain#4)
+T23 taps: p2:Mountain#3
+T23 p2 adds {R} (p2:Mountain#3)
+T23 taps: p2:Mountain#2
+T23 p2 adds {R} (p2:Mountain#2)
+T23 p2's unspent {R}{R}{R}{R}{R} empties
+T23 moves: Mountain, p2's library -> p2's hand
+T23 p2 draws
+T23 moves: Hill Giant, p2's hand -> stack
+T23 p2 cancels casting Hill Giant
+T23 moves: Fire Elemental, p2's hand -> stack
+T23 p2 cancels casting Fire Elemental
+T23 p2 attack: nothing
+T23 moves: Mountain, p2's hand -> battlefield
+T23 p2 plays p2:Mountain#6
+T23 moves: Furnace Whelp, p2's hand -> stack
+T23 p2 cancels casting Furnace Whelp
+T23 moves: Fire Elemental, p2's hand -> stack
+T23 p2 cancels casting Fire Elemental
+T23 moves: Furnace Whelp, p2's hand -> stack
+T23 taps: p2:Mountain#6
+T23 p2 adds {R} (p2:Mountain#6)
+T23 p2 cancels casting Furnace Whelp
+T24 turn 24 begins (p1)
+T24 untaps: p1:Forest#1
+T24 untaps: p1:Forest#2
+T24 untaps: p1:Forest#3
+T24 untaps: p1:Forest#4
+T24 untaps: p1:Forest#5
+T24 untaps: p1:Centaur Courser
+T24 untaps: p1:Forest#6
+T24 taps: p1:Forest#6
+T24 p1 adds {G} (p1:Forest#6)
+T24 p1's unspent {G} empties
+T24 moves: Centaur Courser, p1's library -> p1's hand
+T24 p1 draws
+T24 taps: p1:Forest#2
+T24 p1 adds {G} (p1:Forest#2)
+T24 moves: Giant Spider, p1's hand -> stack
+T24 taps: p1:Forest#3
+T24 p1 adds {G} (p1:Forest#3)
+T24 taps: p1:Forest#4
+T24 p1 adds {G} (p1:Forest#4)
+T24 taps: p1:Forest#1
+T24 p1 adds {G} (p1:Forest#1)
+T24 taps: p1:Forest#5
+T24 p1 adds {G} (p1:Forest#5)
+T24 p1 cancels casting Giant Spider
+T24 moves: Llanowar Elves, p1's hand -> stack
+T24 taps: p1:Forest#3
+T24 p1 adds {G} (p1:Forest#3)
+T24 taps: p1:Forest#1
+T24 p1 adds {G} (p1:Forest#1)
+T24 taps: p1:Forest#4
+T24 p1 adds {G} (p1:Forest#4)
+T24 taps: p1:Forest#5
+T24 p1 adds {G} (p1:Forest#5)
+T24 p1 cancels casting Llanowar Elves
+T24 moves: Giant Spider, p1's hand -> stack
+T24 taps: p1:Forest#4
+T24 p1 adds {G} (p1:Forest#4)
+T24 p1 cancels casting Giant Spider
+T24 taps: p1:Forest#4
+T24 p1 adds {G} (p1:Forest#4)
+T24 moves: Grizzly Bears, p1's hand -> stack
+T24 p1 cancels casting Grizzly Bears
+T24 moves: Llanowar Elves, p1's hand -> stack
+T24 taps: p1:Forest#3
+T24 p1 adds {G} (p1:Forest#3)
+T24 p1 cancels casting Llanowar Elves
+T24 p1's unspent {G}{G} empties
+T24 taps: p1:Forest#1
+T24 p1 adds {G} (p1:Forest#1)
+T24 taps: p1:Forest#5
+T24 p1 adds {G} (p1:Forest#5)
+T24 taps: p1:Forest#3
+T24 p1 adds {G} (p1:Forest#3)
+T24 taps: p2:Mountain#6
+T24 p2 adds {R} (p2:Mountain#6)
+T24 p2's unspent {R} empties
+T24 p1's unspent {G}{G}{G} empties
+T24 taps: p1:Centaur Courser
+T24 p1 attack: p1:Centaur Courser -> p2
+T24 p2 block: nothing
+T24 combat damage: p1:Centaur Courser -> p2 3
+T24 p2 loses 3 life
+T24 moves: Giant Spider, p1's hand -> stack
+T24 p1 cancels casting Giant Spider
+T24 moves: Grizzly Bears, p1's hand -> p1's graveyard
+T24 p1 discards Grizzly Bears
+T25 turn 25 begins (p2)
+T25 untaps: p2:Mountain#1
+T25 untaps: p2:Mountain#2
+T25 untaps: p2:Mountain#3
+T25 untaps: p2:Mountain#4
+T25 untaps: p2:Mountain#5
+T25 untaps: p2:Mountain#6
+T25 taps: p2:Mountain#6
+T25 p2 adds {R} (p2:Mountain#6)
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 taps: p2:Mountain#3
+T25 p2 adds {R} (p2:Mountain#3)
+T25 p2's unspent {R}{R}{R} empties
+T25 moves: Shock, p2's library -> p2's hand
+T25 p2 draws
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T25 p2's unspent {R} empties
+T25 moves: Shock, p2's hand -> stack
+T25 taps: p2:Mountain#1
+T25 p2 adds {R} (p2:Mountain#1)
+T25 p2 casts Shock
+T25 damage: Shock -> p2 2
+T25 p2 loses 2 life
+T25 resolves: Shock
+T25 moves: Shock, stack -> p2's graveyard
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 cancels casting Fire Elemental
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 cancels casting Fire Elemental
+T25 moves: Gray Ogre, p2's hand -> stack
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 cancels casting Gray Ogre
+T25 moves: Hill Giant, p2's hand -> stack
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 cancels casting Hill Giant
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 p2 cancels casting Fire Elemental
+T25 moves: Hill Giant, p2's hand -> stack
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 cancels casting Hill Giant
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 cancels casting Fire Elemental
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 p2's unspent {R} empties
+T25 p2 attack: nothing
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 p2 cancels casting Fire Elemental
+T25 moves: Hill Giant, p2's hand -> stack
+T25 p2 cancels casting Hill Giant
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 p2 cancels casting Fire Elemental
+T25 moves: Fire Elemental, p2's hand -> stack
+T25 p2 cancels casting Fire Elemental
+T26 turn 26 begins (p1)
+T26 untaps: p1:Forest#1
+T26 untaps: p1:Forest#2
+T26 untaps: p1:Forest#3
+T26 untaps: p1:Forest#4
+T26 untaps: p1:Forest#5
+T26 untaps: p1:Centaur Courser
+T26 untaps: p1:Forest#6
+T26 taps: p1:Forest#3
+T26 p1 adds {G} (p1:Forest#3)
+T26 taps: p1:Forest#1
+T26 p1 adds {G} (p1:Forest#1)
+T26 taps: p1:Forest#6
+T26 p1 adds {G} (p1:Forest#6)
+T26 taps: p1:Forest#5
+T26 p1 adds {G} (p1:Forest#5)
+T26 taps: p1:Forest#4
+T26 p1 adds {G} (p1:Forest#4)
+T26 taps: p1:Forest#2
+T26 p1 adds {G} (p1:Forest#2)
+T26 p1's unspent {G}{G}{G}{G}{G}{G} empties
+T26 moves: Forest, p1's library -> p1's hand
+T26 p1 draws
+T26 moves: Grizzly Bears, p1's hand -> stack
+T26 p1 cancels casting Grizzly Bears
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Llanowar Elves, p1's hand -> stack
+T26 p1 cancels casting Llanowar Elves
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Spined Wurm, p1's hand -> stack
+T26 p1 cancels casting Spined Wurm
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Llanowar Elves, p1's hand -> stack
+T26 p1 cancels casting Llanowar Elves
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Spined Wurm, p1's hand -> stack
+T26 p1 cancels casting Spined Wurm
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Spined Wurm, p1's hand -> stack
+T26 p1 cancels casting Spined Wurm
+T26 moves: Spined Wurm, p1's hand -> stack
+T26 p1 cancels casting Spined Wurm
+T26 moves: Grizzly Bears, p1's hand -> stack
+T26 p1 cancels casting Grizzly Bears
+T26 moves: Centaur Courser, p1's hand -> stack
+T26 p1 cancels casting Centaur Courser
+T26 moves: Llanowar Elves, p1's hand -> stack
+T26 p1 cancels casting Llanowar Elves
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Forest, p1's hand -> battlefield
+T26 p1 plays p1:Forest#7
+T26 taps: p1:Forest#7
+T26 p1 adds {G} (p1:Forest#7)
+T26 moves: Centaur Courser, p1's hand -> stack
+T26 p1 cancels casting Centaur Courser
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Llanowar Elves, p1's hand -> stack
+T26 p1 cancels casting Llanowar Elves
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 p1's unspent {G} empties
+T26 p1 attack: nothing
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Grizzly Bears, p1's hand -> stack
+T26 p1 cancels casting Grizzly Bears
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Giant Spider, p1's hand -> stack
+T26 p1 cancels casting Giant Spider
+T26 moves: Spined Wurm, p1's hand -> stack
+T26 p1 cancels casting Spined Wurm
+T26 moves: Grizzly Bears, p1's hand -> stack
+T26 p1 cancels casting Grizzly Bears
+T26 moves: Spined Wurm, p1's hand -> stack
+T26 p1 cancels casting Spined Wurm
+T27 turn 27 begins (p2)
+T27 untaps: p2:Mountain#1
+T27 untaps: p2:Mountain#2
+T27 untaps: p2:Mountain#3
+T27 untaps: p2:Mountain#4
+T27 untaps: p2:Mountain#5
+T27 untaps: p2:Mountain#6
+T27 taps: p2:Mountain#5
+T27 p2 adds {R} (p2:Mountain#5)
+T27 taps: p2:Mountain#3
+T27 p2 adds {R} (p2:Mountain#3)
+T27 taps: p2:Mountain#6
+T27 p2 adds {R} (p2:Mountain#6)
+T27 taps: p2:Mountain#2
+T27 p2 adds {R} (p2:Mountain#2)
+T27 taps: p2:Mountain#4
+T27 p2 adds {R} (p2:Mountain#4)
+T27 p2's unspent {R}{R}{R}{R}{R} empties
+T27 moves: Shock, p2's library -> p2's hand
+T27 p2 draws
+T27 taps: p2:Mountain#1
+T27 p2 adds {R} (p2:Mountain#1)
+T27 p2's unspent {R} empties
+T27 moves: Gray Ogre, p2's hand -> stack
+T27 p2 cancels casting Gray Ogre
+T27 moves: Gray Ogre, p2's hand -> stack
+T27 p2 cancels casting Gray Ogre
+T27 moves: Furnace Whelp, p2's hand -> stack
+T27 p2 cancels casting Furnace Whelp
+T27 moves: Gray Ogre, p2's hand -> stack
+T27 p2 cancels casting Gray Ogre
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Furnace Whelp, p2's hand -> stack
+T27 p2 cancels casting Furnace Whelp
+T27 moves: Gray Ogre, p2's hand -> stack
+T27 p2 cancels casting Gray Ogre
+T27 moves: Furnace Whelp, p2's hand -> stack
+T27 p2 cancels casting Furnace Whelp
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Furnace Whelp, p2's hand -> stack
+T27 p2 cancels casting Furnace Whelp
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Furnace Whelp, p2's hand -> stack
+T27 p2 cancels casting Furnace Whelp
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 p2 attack: nothing
+T27 moves: Gray Ogre, p2's hand -> stack
+T27 p2 cancels casting Gray Ogre
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Hill Giant, p2's hand -> stack
+T27 p2 cancels casting Hill Giant
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Gray Ogre, p2's hand -> stack
+T27 p2 cancels casting Gray Ogre
+T27 moves: Fire Elemental, p2's hand -> stack
+T27 p2 cancels casting Fire Elemental
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Hill Giant, p2's hand -> p2's graveyard
+T27 p2 discards Hill Giant
+T28 turn 28 begins (p1)
+T28 untaps: p1:Forest#1
+T28 untaps: p1:Forest#2
+T28 untaps: p1:Forest#3
+T28 untaps: p1:Forest#4
+T28 untaps: p1:Forest#5
+T28 untaps: p1:Forest#6
+T28 untaps: p1:Forest#7
+T28 taps: p1:Forest#6
+T28 p1 adds {G} (p1:Forest#6)
+T28 taps: p1:Forest#5
+T28 p1 adds {G} (p1:Forest#5)
+T28 taps: p1:Forest#4
+T28 p1 adds {G} (p1:Forest#4)
+T28 taps: p1:Forest#3
+T28 p1 adds {G} (p1:Forest#3)
+T28 p1's unspent {G}{G}{G}{G} empties
+T28 moves: Llanowar Elves, p1's library -> p1's hand
+T28 p1 draws
+T28 taps: p1:Forest#1
+T28 p1 adds {G} (p1:Forest#1)
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 p1's unspent {G} empties
+T28 moves: Llanowar Elves, p1's hand -> stack
+T28 p1 cancels casting Llanowar Elves
+T28 moves: Llanowar Elves, p1's hand -> stack
+T28 taps: p1:Forest#7
+T28 p1 adds {G} (p1:Forest#7)
+T28 p1 casts Llanowar Elves
+T28 taps: p1:Forest#2
+T28 p1 adds {G} (p1:Forest#2)
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 resolves: Llanowar Elves
+T28 moves: Llanowar Elves, stack -> battlefield
+T28 moves: Spined Wurm, p1's hand -> stack
+T28 p1 cancels casting Spined Wurm
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Giant Spider, p1's hand -> stack
+T28 p1 cancels casting Giant Spider
+T28 moves: Grizzly Bears, p1's hand -> stack
+T28 p1 cancels casting Grizzly Bears
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Grizzly Bears, p1's hand -> stack
+T28 p1 cancels casting Grizzly Bears
+T28 moves: Llanowar Elves, p1's hand -> stack
+T28 p1 casts Llanowar Elves
+T28 resolves: Llanowar Elves
+T28 moves: Llanowar Elves, stack -> battlefield
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Grizzly Bears, p1's hand -> stack
+T28 p1 cancels casting Grizzly Bears
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Spined Wurm, p1's hand -> stack
+T28 p1 cancels casting Spined Wurm
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Grizzly Bears, p1's hand -> stack
+T28 p1 cancels casting Grizzly Bears
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 taps: p1:Centaur Courser
+T28 p1 attack: p1:Centaur Courser -> p2
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 p2 block: nothing
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 combat damage: p1:Centaur Courser -> p2 3
+T28 p2 loses 3 life
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Giant Spider, p1's hand -> stack
+T28 p1 cancels casting Giant Spider
+T28 moves: Giant Spider, p1's hand -> stack
+T28 p1 cancels casting Giant Spider
+T28 moves: Giant Spider, p1's hand -> stack
+T28 p1 cancels casting Giant Spider
+T28 moves: Giant Spider, p1's hand -> stack
+T28 p1 cancels casting Giant Spider
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T29 turn 29 begins (p2)
+T29 untaps: p2:Mountain#1
+T29 untaps: p2:Mountain#2
+T29 untaps: p2:Mountain#3
+T29 untaps: p2:Mountain#4
+T29 untaps: p2:Mountain#5
+T29 untaps: p2:Mountain#6
+T29 moves: Shock, p2's hand -> stack
+T29 taps: p2:Mountain#5
+T29 p2 adds {R} (p2:Mountain#5)
+T29 p2 cancels casting Shock
+T29 taps: p2:Mountain#6
+T29 p2 adds {R} (p2:Mountain#6)
+T29 taps: p2:Mountain#1
+T29 p2 adds {R} (p2:Mountain#1)
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 taps: p2:Mountain#3
+T29 p2 adds {R} (p2:Mountain#3)
+T29 taps: p2:Mountain#2
+T29 p2 adds {R} (p2:Mountain#2)
+T29 p2's unspent {R}{R}{R}{R} empties
+T29 moves: Volcanic Hammer, p2's library -> p2's hand
+T29 p2 draws
+T29 taps: p2:Mountain#4
+T29 p2 adds {R} (p2:Mountain#4)
+T29 p2's unspent {R} empties
+T29 moves: Shock, p2's hand -> stack
+T29 taps: p2:Mountain#5
+T29 p2 adds {R} (p2:Mountain#5)
+T29 p2 casts Shock
+T29 damage: Shock -> p1:Llanowar Elves#1 2
+T29 resolves: Shock
+T29 moves: Shock, stack -> p2's graveyard
+T29 state-based actions: p1:Llanowar Elves#1 lethalDamage
+T29 destroyed: p1:Llanowar Elves#1
+T29 moves: Llanowar Elves, battlefield -> p1's graveyard
+T29 p2 attack: nothing
+T30 turn 30 begins (p1)
+T30 untaps: p1:Forest#1
+T30 untaps: p1:Forest#2
+T30 untaps: p1:Forest#3
+T30 untaps: p1:Forest#4
+T30 untaps: p1:Forest#5
+T30 untaps: p1:Centaur Courser
+T30 untaps: p1:Forest#6
+T30 untaps: p1:Forest#7
+T30 taps: p1:Forest#4
+T30 p1 adds {G} (p1:Forest#4)
+T30 taps: p1:Forest#6
+T30 p1 adds {G} (p1:Forest#6)
+T30 taps: p1:Forest#7
+T30 p1 adds {G} (p1:Forest#7)
+T30 taps: p1:Forest#3
+T30 p1 adds {G} (p1:Forest#3)
+T30 taps: p1:Llanowar Elves
+T30 p1 adds {G} (p1:Llanowar Elves)
+T30 taps: p1:Forest#5
+T30 p1 adds {G} (p1:Forest#5)
+T30 taps: p1:Forest#1
+T30 p1 adds {G} (p1:Forest#1)
+T30 taps: p1:Forest#2
+T30 p1 adds {G} (p1:Forest#2)
+T30 p1's unspent {G}{G}{G}{G}{G}{G}{G}{G} empties
+T30 moves: Llanowar Elves, p1's library -> p1's hand
+T30 p1 draws
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 p1 attack: nothing
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Llanowar Elves, p1's hand -> stack
+T30 p1 cancels casting Llanowar Elves
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Grizzly Bears, p1's hand -> stack
+T30 p1 cancels casting Grizzly Bears
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T30 moves: Giant Spider, p1's hand -> stack
+T30 p1 cancels casting Giant Spider
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Spined Wurm, p1's hand -> stack
+T30 p1 cancels casting Spined Wurm
+T31 turn 31 begins (p2)
+T31 untaps: p2:Mountain#1
+T31 untaps: p2:Mountain#2
+T31 untaps: p2:Mountain#3
+T31 untaps: p2:Mountain#4
+T31 untaps: p2:Mountain#5
+T31 untaps: p2:Mountain#6
+T31 taps: p2:Mountain#5
+T31 p2 adds {R} (p2:Mountain#5)
+T31 p2's unspent {R} empties
+T31 moves: Lightning Bolt, p2's library -> p2's hand
+T31 p2 draws
+T31 moves: Lightning Bolt, p2's hand -> stack
+T31 taps: p2:Mountain#6
+T31 p2 adds {R} (p2:Mountain#6)
+T31 taps: p2:Mountain#2
+T31 p2 adds {R} (p2:Mountain#2)
+T31 taps: p2:Mountain#3
+T31 p2 adds {R} (p2:Mountain#3)
+T31 p2 casts Lightning Bolt
+T31 taps: p2:Mountain#1
+T31 p2 adds {R} (p2:Mountain#1)
+T31 taps: p2:Mountain#4
+T31 p2 adds {R} (p2:Mountain#4)
+T31 damage: Lightning Bolt -> p1:Centaur Courser 3
+T31 resolves: Lightning Bolt
+T31 moves: Lightning Bolt, stack -> p2's graveyard
+T31 state-based actions: p1:Centaur Courser lethalDamage
+T31 destroyed: p1:Centaur Courser
+T31 moves: Centaur Courser, battlefield -> p1's graveyard
+T31 moves: Gray Ogre, p2's hand -> stack
+T31 p2 cancels casting Gray Ogre
+T31 moves: Gray Ogre, p2's hand -> stack
+T31 p2 cancels casting Gray Ogre
+T31 moves: Volcanic Hammer, p2's hand -> stack
+T31 p2 cancels casting Volcanic Hammer
+T31 moves: Fire Elemental, p2's hand -> stack
+T31 p2 cancels casting Fire Elemental
+T31 moves: Gray Ogre, p2's hand -> stack
+T31 p2 cancels casting Gray Ogre
+T31 moves: Gray Ogre, p2's hand -> stack
+T31 p2 casts Gray Ogre
+T31 resolves: Gray Ogre
+T31 moves: Gray Ogre, stack -> battlefield
+T31 moves: Furnace Whelp, p2's hand -> stack
+T31 p2 cancels casting Furnace Whelp
+T31 moves: Fire Elemental, p2's hand -> stack
+T31 p2 cancels casting Fire Elemental
+T31 moves: Volcanic Hammer, p2's hand -> stack
+T31 p2 cancels casting Volcanic Hammer
+T31 p2's unspent {R} empties
+T31 p2 attack: nothing
+T32 turn 32 begins (p1)
+T32 untaps: p1:Forest#1
+T32 untaps: p1:Forest#2
+T32 untaps: p1:Forest#3
+T32 untaps: p1:Forest#4
+T32 untaps: p1:Forest#5
+T32 untaps: p1:Forest#6
+T32 untaps: p1:Forest#7
+T32 untaps: p1:Llanowar Elves
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 taps: p1:Forest#7
+T32 p1 adds {G} (p1:Forest#7)
+T32 taps: p1:Llanowar Elves
+T32 p1 adds {G} (p1:Llanowar Elves)
+T32 taps: p1:Forest#6
+T32 p1 adds {G} (p1:Forest#6)
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 p1's unspent {G}{G}{G}{G}{G} empties
+T32 moves: Forest, p1's library -> p1's hand
+T32 p1 draws
+T32 taps: p1:Forest#5
+T32 p1 adds {G} (p1:Forest#5)
+T32 taps: p1:Forest#4
+T32 p1 adds {G} (p1:Forest#4)
+T32 p1's unspent {G}{G} empties
+T32 moves: Giant Spider, p1's hand -> stack
+T32 p1 cancels casting Giant Spider
+T32 moves: Giant Spider, p1's hand -> stack
+T32 p1 cancels casting Giant Spider
+T32 moves: Spined Wurm, p1's hand -> stack
+T32 taps: p1:Forest#3
+T32 p1 adds {G} (p1:Forest#3)
+T32 p1 cancels casting Spined Wurm
+T32 moves: Giant Spider, p1's hand -> stack
+T32 p1 cancels casting Giant Spider
+T32 moves: Giant Spider, p1's hand -> stack
+T32 p1 cancels casting Giant Spider
+T32 moves: Forest, p1's hand -> battlefield
+T32 p1 plays p1:Forest#8
+T32 moves: Centaur Courser, p1's hand -> stack
+T32 taps: p1:Forest#8
+T32 p1 adds {G} (p1:Forest#8)
+T32 taps: p1:Forest#3
+T32 p1 adds {G} (p1:Forest#3)
+T32 p1 cancels casting Centaur Courser
+T32 moves: Grizzly Bears, p1's hand -> stack
+T32 p1 cancels casting Grizzly Bears
+T32 moves: Giant Spider, p1's hand -> stack
+T32 taps: p1:Forest#8
+T32 p1 adds {G} (p1:Forest#8)
+T32 p1 cancels casting Giant Spider
+T32 moves: Giant Spider, p1's hand -> stack
+T32 p1 cancels casting Giant Spider
+T32 taps: p1:Forest#8
+T32 p1 adds {G} (p1:Forest#8)
+T32 moves: Grizzly Bears, p1's hand -> stack
+T32 p1 cancels casting Grizzly Bears
+T32 moves: Spined Wurm, p1's hand -> stack
+T32 p1 cancels casting Spined Wurm
+T32 moves: Giant Spider, p1's hand -> stack
+T32 p1 cancels casting Giant Spider
+T32 moves: Giant Spider, p1's hand -> stack
+T32 taps: p1:Forest#3
+T32 p1 adds {G} (p1:Forest#3)
+T32 p1 cancels casting Giant Spider
+T32 moves: Giant Spider, p1's hand -> stack
+T32 taps: p1:Forest#3
+T32 p1 adds {G} (p1:Forest#3)
+T32 p1 cancels casting Giant Spider
+T32 moves: Llanowar Elves, p1's hand -> stack
+T32 p1 cancels casting Llanowar Elves
+T32 p1's unspent {G} empties
+T32 p1 attack: nothing
+T32 taps: p1:Forest#3
+T32 p1 adds {G} (p1:Forest#3)
+T32 p1's unspent {G} empties
+T32 moves: Centaur Courser, p1's hand -> stack
+T32 p1 cancels casting Centaur Courser
+T32 moves: Centaur Courser, p1's hand -> stack
+T32 p1 cancels casting Centaur Courser
+T33 turn 33 begins (p2)
+T33 untaps: p2:Mountain#1
+T33 untaps: p2:Mountain#2
+T33 untaps: p2:Mountain#3
+T33 untaps: p2:Mountain#4
+T33 untaps: p2:Mountain#5
+T33 untaps: p2:Mountain#6
+T33 taps: p2:Mountain#6
+T33 p2 adds {R} (p2:Mountain#6)
+T33 taps: p2:Mountain#4
+T33 p2 adds {R} (p2:Mountain#4)
+T33 taps: p2:Mountain#5
+T33 p2 adds {R} (p2:Mountain#5)
+T33 taps: p2:Mountain#3
+T33 p2 adds {R} (p2:Mountain#3)
+T33 p2's unspent {R}{R}{R}{R} empties
+T33 moves: Mountain, p2's library -> p2's hand
+T33 p2 draws
+T33 taps: p2:Mountain#1
+T33 p2 adds {R} (p2:Mountain#1)
+T33 taps: p2:Mountain#2
+T33 p2 adds {R} (p2:Mountain#2)
+T33 p2's unspent {R}{R} empties
+T33 moves: Furnace Whelp, p2's hand -> stack
+T33 p2 cancels casting Furnace Whelp
+T33 moves: Furnace Whelp, p2's hand -> stack
+T33 p2 cancels casting Furnace Whelp
+T33 moves: Hill Giant, p2's hand -> stack
+T33 p2 cancels casting Hill Giant
+T33 moves: Fire Elemental, p2's hand -> stack
+T33 p2 cancels casting Fire Elemental
+T33 moves: Mountain, p2's hand -> battlefield
+T33 p2 plays p2:Mountain#7
+T33 moves: Gray Ogre, p2's hand -> stack
+T33 p2 cancels casting Gray Ogre
+T33 moves: Gray Ogre, p2's hand -> stack
+T33 taps: p2:Mountain#7
+T33 p2 adds {R} (p2:Mountain#7)
+T33 p2 cancels casting Gray Ogre
+T33 taps: p2:Gray Ogre
+T33 p2 attack: p2:Gray Ogre -> p1
+T33 taps: p2:Mountain#7
+T33 p2 adds {R} (p2:Mountain#7)
+T33 p2's unspent {R} empties
+T33 p1 block: nothing
+T33 combat damage: p2:Gray Ogre -> p1 2
+T33 p1 loses 2 life
+T34 turn 34 begins (p1)
+T34 untaps: p1:Forest#1
+T34 untaps: p1:Forest#2
+T34 untaps: p1:Forest#3
+T34 untaps: p1:Forest#4
+T34 untaps: p1:Forest#5
+T34 untaps: p1:Forest#6
+T34 untaps: p1:Forest#7
+T34 untaps: p1:Llanowar Elves
+T34 untaps: p1:Forest#8
+T34 moves: Giant Growth, p1's library -> p1's hand
+T34 p1 draws
+T34 taps: p1:Forest#5
+T34 p1 adds {G} (p1:Forest#5)
+T34 moves: Giant Growth, p1's hand -> stack
+T34 p1 casts Giant Growth
+T34 taps: p1:Forest#7
+T34 p1 adds {G} (p1:Forest#7)
+T34 taps: p1:Forest#1
+T34 p1 adds {G} (p1:Forest#1)
+T34 taps: p1:Forest#2
+T34 p1 adds {G} (p1:Forest#2)
+T34 taps: p1:Llanowar Elves
+T34 p1 adds {G} (p1:Llanowar Elves)
+T34 taps: p1:Forest#3
+T34 p1 adds {G} (p1:Forest#3)
+T34 taps: p1:Forest#4
+T34 p1 adds {G} (p1:Forest#4)
+T34 taps: p1:Forest#8
+T34 p1 adds {G} (p1:Forest#8)
+T34 effect: p2:Gray Ogre +3/+3 until end of turn
+T34 resolves: Giant Growth
+T34 moves: Giant Growth, stack -> p1's graveyard
+T34 p1's unspent {G}{G}{G}{G}{G}{G}{G} empties
+T34 p1 attack: nothing
+T34 taps: p1:Forest#6
+T34 p1 adds {G} (p1:Forest#6)
+T34 p1's unspent {G} empties
+T34 moves: Giant Spider, p1's hand -> stack
+T34 p1 cancels casting Giant Spider
+T34 moves: Spined Wurm, p1's hand -> stack
+T34 p1 cancels casting Spined Wurm
+T34 moves: Giant Spider, p1's hand -> stack
+T34 p1 cancels casting Giant Spider
+T34 moves: Giant Spider, p1's hand -> stack
+T34 p1 cancels casting Giant Spider
+T34 effect ends: p2:Gray Ogre +3/+3
+T35 turn 35 begins (p2)
+T35 untaps: p2:Mountain#1
+T35 untaps: p2:Mountain#2
+T35 untaps: p2:Mountain#3
+T35 untaps: p2:Mountain#4
+T35 untaps: p2:Mountain#5
+T35 untaps: p2:Mountain#6
+T35 untaps: p2:Gray Ogre
+T35 untaps: p2:Mountain#7
+T35 moves: Mountain, p2's library -> p2's hand
+T35 p2 draws
+T35 taps: p2:Mountain#2
+T35 p2 adds {R} (p2:Mountain#2)
+T35 taps: p2:Mountain#1
+T35 p2 adds {R} (p2:Mountain#1)
+T35 taps: p2:Mountain#6
+T35 p2 adds {R} (p2:Mountain#6)
+T35 taps: p2:Mountain#7
+T35 p2 adds {R} (p2:Mountain#7)
+T35 taps: p2:Mountain#5
+T35 p2 adds {R} (p2:Mountain#5)
+T35 p2's unspent {R}{R}{R}{R}{R} empties
+T35 moves: Mountain, p2's hand -> battlefield
+T35 p2 plays p2:Mountain#8
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Hill Giant, p2's hand -> stack
+T35 taps: p2:Mountain#8
+T35 p2 adds {R} (p2:Mountain#8)
+T35 taps: p2:Mountain#3
+T35 p2 adds {R} (p2:Mountain#3)
+T35 taps: p2:Mountain#4
+T35 p2 adds {R} (p2:Mountain#4)
+T35 p2 cancels casting Hill Giant
+T35 taps: p2:Mountain#8
+T35 p2 adds {R} (p2:Mountain#8)
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 taps: p2:Mountain#4
+T35 p2 adds {R} (p2:Mountain#4)
+T35 p2 cancels casting Fire Elemental
+T35 p2's unspent {R} empties
+T35 taps: p2:Mountain#3
+T35 p2 adds {R} (p2:Mountain#3)
+T35 taps: p2:Mountain#4
+T35 p2 adds {R} (p2:Mountain#4)
+T35 p2's unspent {R}{R} empties
+T35 p2 attack: nothing
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 p2 cancels casting Volcanic Hammer
+T35 moves: Furnace Whelp, p2's hand -> stack
+T35 p2 cancels casting Furnace Whelp
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Furnace Whelp, p2's hand -> stack
+T35 p2 cancels casting Furnace Whelp
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Furnace Whelp, p2's hand -> stack
+T35 p2 cancels casting Furnace Whelp
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Furnace Whelp, p2's hand -> stack
+T35 p2 cancels casting Furnace Whelp
+T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 p2 cancels casting Volcanic Hammer
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Hill Giant, p2's hand -> stack
+T35 p2 cancels casting Hill Giant
+T35 moves: Hill Giant, p2's hand -> stack
+T35 p2 cancels casting Hill Giant
+T35 moves: Furnace Whelp, p2's hand -> stack
+T35 p2 cancels casting Furnace Whelp
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Hill Giant, p2's hand -> stack
+T35 p2 cancels casting Hill Giant
+T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 p2 cancels casting Volcanic Hammer
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Hill Giant, p2's hand -> stack
+T35 p2 cancels casting Hill Giant
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Gray Ogre, p2's hand -> stack
+T35 p2 cancels casting Gray Ogre
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Fire Elemental, p2's hand -> stack
+T35 p2 cancels casting Fire Elemental
+T35 moves: Hill Giant, p2's hand -> stack
+T35 p2 cancels casting Hill Giant
+T35 moves: Hill Giant, p2's hand -> stack
+T35 p2 cancels casting Hill Giant
+T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 p2 cancels casting Volcanic Hammer
+T35 moves: Furnace Whelp, p2's hand -> stack
+T35 p2 cancels casting Furnace Whelp
+T36 turn 36 begins (p1)
+T36 untaps: p1:Forest#1
+T36 untaps: p1:Forest#2
+T36 untaps: p1:Forest#3
+T36 untaps: p1:Forest#4
+T36 untaps: p1:Forest#5
+T36 untaps: p1:Forest#6
+T36 untaps: p1:Forest#7
+T36 untaps: p1:Llanowar Elves
+T36 untaps: p1:Forest#8
+T36 taps: p1:Forest#1
+T36 p1 adds {G} (p1:Forest#1)
+T36 p1's unspent {G} empties
+T36 moves: Forest, p1's library -> p1's hand
+T36 p1 draws
+T36 moves: Forest, p1's hand -> battlefield
+T36 p1 plays p1:Forest#9
+T36 moves: Giant Spider, p1's hand -> stack
+T36 taps: p1:Forest#5
+T36 p1 adds {G} (p1:Forest#5)
+T36 p1 cancels casting Giant Spider
+T36 taps: p1:Forest#7
+T36 p1 adds {G} (p1:Forest#7)
+T36 moves: Grizzly Bears, p1's hand -> stack
+T36 taps: p1:Forest#3
+T36 p1 adds {G} (p1:Forest#3)
+T36 taps: p1:Forest#4
+T36 p1 adds {G} (p1:Forest#4)
+T36 p1 casts Grizzly Bears
+T36 resolves: Grizzly Bears
+T36 moves: Grizzly Bears, stack -> battlefield
+T36 taps: p1:Forest#5
+T36 p1 adds {G} (p1:Forest#5)
+T36 moves: Giant Spider, p1's hand -> stack
+T36 taps: p1:Llanowar Elves
+T36 p1 adds {G} (p1:Llanowar Elves)
+T36 p1 cancels casting Giant Spider
+T36 moves: Giant Spider, p1's hand -> stack
+T36 taps: p1:Forest#9
+T36 p1 adds {G} (p1:Forest#9)
+T36 taps: p1:Forest#8
+T36 p1 adds {G} (p1:Forest#8)
+T36 taps: p1:Forest#6
+T36 p1 adds {G} (p1:Forest#6)
+T36 taps: p1:Llanowar Elves
+T36 p1 adds {G} (p1:Llanowar Elves)
+T36 p1 casts Giant Spider
+T36 taps: p1:Forest#2
+T36 p1 adds {G} (p1:Forest#2)
+T36 resolves: Giant Spider
+T36 moves: Giant Spider, stack -> battlefield
+T36 moves: Llanowar Elves, p1's hand -> stack
+T36 p1 cancels casting Llanowar Elves
+T36 p1's unspent {G}{G}{G} empties
+T36 p1 attack: nothing
+T36 moves: Llanowar Elves, p1's hand -> stack
+T36 p1 cancels casting Llanowar Elves
+T36 moves: Giant Spider, p1's hand -> stack
+T36 p1 cancels casting Giant Spider
+T37 turn 37 begins (p2)
+T37 untaps: p2:Mountain#1
+T37 untaps: p2:Mountain#2
+T37 untaps: p2:Mountain#3
+T37 untaps: p2:Mountain#4
+T37 untaps: p2:Mountain#5
+T37 untaps: p2:Mountain#6
+T37 untaps: p2:Mountain#7
+T37 untaps: p2:Mountain#8
+T37 moves: Mountain, p2's library -> p2's hand
+T37 p2 draws
+T37 taps: p2:Mountain#4
+T37 p2 adds {R} (p2:Mountain#4)
+T37 taps: p2:Mountain#5
+T37 p2 adds {R} (p2:Mountain#5)
+T37 taps: p2:Mountain#3
+T37 p2 adds {R} (p2:Mountain#3)
+T37 taps: p2:Mountain#6
+T37 p2 adds {R} (p2:Mountain#6)
+T37 taps: p2:Mountain#7
+T37 p2 adds {R} (p2:Mountain#7)
+T37 p2's unspent {R}{R}{R}{R}{R} empties
+T37 moves: Gray Ogre, p2's hand -> stack
+T37 p2 cancels casting Gray Ogre
+T37 taps: p2:Mountain#1
+T37 p2 adds {R} (p2:Mountain#1)
+T37 taps: p2:Mountain#2
+T37 p2 adds {R} (p2:Mountain#2)
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 taps: p2:Mountain#8
+T37 p2 adds {R} (p2:Mountain#8)
+T37 p2 cancels casting Fire Elemental
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 p2 cancels casting Volcanic Hammer
+T37 taps: p2:Mountain#8
+T37 p2 adds {R} (p2:Mountain#8)
+T37 moves: Hill Giant, p2's hand -> stack
+T37 p2 cancels casting Hill Giant
+T37 moves: Furnace Whelp, p2's hand -> stack
+T37 p2 cancels casting Furnace Whelp
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Gray Ogre, p2's hand -> stack
+T37 p2 casts Gray Ogre
+T37 resolves: Gray Ogre
+T37 moves: Gray Ogre, stack -> battlefield
+T37 moves: Mountain, p2's hand -> battlefield
+T37 p2 plays p2:Mountain#9
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 p2 cancels casting Volcanic Hammer
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 p2 cancels casting Volcanic Hammer
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 taps: p2:Mountain#9
+T37 p2 adds {R} (p2:Mountain#9)
+T37 p2 cancels casting Volcanic Hammer
+T37 taps: p2:Mountain#9
+T37 p2 adds {R} (p2:Mountain#9)
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 p2 cancels casting Volcanic Hammer
+T37 moves: Furnace Whelp, p2's hand -> stack
+T37 p2 cancels casting Furnace Whelp
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Furnace Whelp, p2's hand -> stack
+T37 p2 cancels casting Furnace Whelp
+T37 p2's unspent {R} empties
+T37 taps: p2:Gray Ogre#1
+T37 p2 attack: p2:Gray Ogre#1 -> p1
+T37 p1 block: p1:Grizzly Bears -> p2:Gray Ogre#1
+T37 combat damage: p2:Gray Ogre#1 -> p1:Grizzly Bears 2
+T37 combat damage: p1:Grizzly Bears -> p2:Gray Ogre#1 2
+T37 state-based actions: p2:Gray Ogre#1 lethalDamage, p1:Grizzly Bears lethalDamage
+T37 destroyed: p2:Gray Ogre#1
+T37 moves: Gray Ogre, battlefield -> p2's graveyard
+T37 destroyed: p1:Grizzly Bears
+T37 moves: Grizzly Bears, battlefield -> p1's graveyard
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 p2 cancels casting Volcanic Hammer
+T37 moves: Hill Giant, p2's hand -> stack
+T37 p2 cancels casting Hill Giant
+T37 moves: Fire Elemental, p2's hand -> stack
+T37 p2 cancels casting Fire Elemental
+T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 p2 cancels casting Volcanic Hammer
+T37 moves: Furnace Whelp, p2's hand -> stack
+T37 p2 cancels casting Furnace Whelp
+T37 moves: Furnace Whelp, p2's hand -> stack
+T37 p2 cancels casting Furnace Whelp
+T38 turn 38 begins (p1)
+T38 untaps: p1:Forest#1
+T38 untaps: p1:Forest#2
+T38 untaps: p1:Forest#3
+T38 untaps: p1:Forest#4
+T38 untaps: p1:Forest#5
+T38 untaps: p1:Forest#6
+T38 untaps: p1:Forest#7
+T38 untaps: p1:Llanowar Elves
+T38 untaps: p1:Forest#8
+T38 untaps: p1:Forest#9
+T38 moves: Forest, p1's library -> p1's hand
+T38 p1 draws
+T38 taps: p1:Forest#8
+T38 p1 adds {G} (p1:Forest#8)
+T38 taps: p1:Forest#7
+T38 p1 adds {G} (p1:Forest#7)
+T38 p1's unspent {G}{G} empties
+T38 moves: Spined Wurm, p1's hand -> stack
+T38 p1 cancels casting Spined Wurm
+T38 moves: Spined Wurm, p1's hand -> stack
+T38 taps: p1:Forest#4
+T38 p1 adds {G} (p1:Forest#4)
+T38 taps: p1:Forest#2
+T38 p1 adds {G} (p1:Forest#2)
+T38 taps: p1:Forest#3
+T38 p1 adds {G} (p1:Forest#3)
+T38 taps: p1:Forest#1
+T38 p1 adds {G} (p1:Forest#1)
+T38 taps: p1:Forest#6
+T38 p1 adds {G} (p1:Forest#6)
+T38 taps: p1:Forest#9
+T38 p1 adds {G} (p1:Forest#9)
+T38 p1 cancels casting Spined Wurm
+T38 moves: Giant Spider, p1's hand -> stack
+T38 taps: p1:Forest#2
+T38 p1 adds {G} (p1:Forest#2)
+T38 taps: p1:Forest#5
+T38 p1 adds {G} (p1:Forest#5)
+T38 taps: p1:Llanowar Elves
+T38 p1 adds {G} (p1:Llanowar Elves)
+T38 taps: p1:Forest#4
+T38 p1 adds {G} (p1:Forest#4)
+T38 taps: p1:Forest#3
+T38 p1 adds {G} (p1:Forest#3)
+T38 taps: p1:Forest#1
+T38 p1 adds {G} (p1:Forest#1)
+T38 p1 casts Giant Spider
+T38 resolves: Giant Spider
+T38 moves: Giant Spider, stack -> battlefield
+T38 p1's unspent {G}{G} empties
+T38 taps: p1:Forest#6
+T38 p1 adds {G} (p1:Forest#6)
+T38 taps: p1:Forest#9
+T38 p1 adds {G} (p1:Forest#9)
+T38 p1's unspent {G}{G} empties
+T38 p1 attack: nothing
+T38 moves: Llanowar Elves, p1's hand -> stack
+T38 p1 cancels casting Llanowar Elves
+T39 turn 39 begins (p2)
+T39 untaps: p2:Mountain#1
+T39 untaps: p2:Mountain#2
+T39 untaps: p2:Mountain#3
+T39 untaps: p2:Mountain#4
+T39 untaps: p2:Mountain#5
+T39 untaps: p2:Mountain#6
+T39 untaps: p2:Mountain#7
+T39 untaps: p2:Mountain#8
+T39 untaps: p2:Mountain#9
+T39 taps: p2:Mountain#8
+T39 p2 adds {R} (p2:Mountain#8)
+T39 taps: p2:Mountain#7
+T39 p2 adds {R} (p2:Mountain#7)
+T39 taps: p2:Mountain#6
+T39 p2 adds {R} (p2:Mountain#6)
+T39 taps: p2:Mountain#9
+T39 p2 adds {R} (p2:Mountain#9)
+T39 taps: p2:Mountain#4
+T39 p2 adds {R} (p2:Mountain#4)
+T39 taps: p2:Mountain#5
+T39 p2 adds {R} (p2:Mountain#5)
+T39 taps: p2:Mountain#2
+T39 p2 adds {R} (p2:Mountain#2)
+T39 p2's unspent {R}{R}{R}{R}{R}{R}{R} empties
+T39 moves: Shock, p2's library -> p2's hand
+T39 p2 draws
+T39 taps: p2:Mountain#3
+T39 p2 adds {R} (p2:Mountain#3)
+T39 p2's unspent {R} empties
+T39 taps: p2:Gray Ogre
+T39 p2 attack: p2:Gray Ogre -> p1
+T39 taps: p2:Mountain#1
+T39 p2 adds {R} (p2:Mountain#1)
+T39 p2's unspent {R} empties
+T39 p1 block: p1:Giant Spider#2 -> p2:Gray Ogre, p1:Giant Spider#1 -> p2:Gray Ogre
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 combat damage: p2:Gray Ogre -> p1:Giant Spider#2 1
+T39 combat damage: p2:Gray Ogre -> p1:Giant Spider#1 1
+T39 combat damage: p1:Giant Spider#2 -> p2:Gray Ogre 2
+T39 combat damage: p1:Giant Spider#1 -> p2:Gray Ogre 2
+T39 state-based actions: p2:Gray Ogre lethalDamage
+T39 destroyed: p2:Gray Ogre
+T39 moves: Gray Ogre, battlefield -> p2's graveyard
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 moves: Volcanic Hammer, p2's hand -> stack
+T39 p2 cancels casting Volcanic Hammer
+T39 moves: Fire Elemental, p2's hand -> stack
+T39 p2 cancels casting Fire Elemental
+T39 moves: Furnace Whelp, p2's hand -> stack
+T39 p2 cancels casting Furnace Whelp
+T39 moves: Volcanic Hammer, p2's hand -> stack
+T39 p2 cancels casting Volcanic Hammer
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 moves: Shock, p2's hand -> stack
+T39 p2 cancels casting Shock
+T39 damage removed: p1:Giant Spider#1 (1)
+T39 damage removed: p1:Giant Spider#2 (1)
+T40 turn 40 begins (p1)
+T40 untaps: p1:Forest#1
+T40 untaps: p1:Forest#2
+T40 untaps: p1:Forest#3
+T40 untaps: p1:Forest#4
+T40 untaps: p1:Forest#5
+T40 untaps: p1:Forest#6
+T40 untaps: p1:Forest#7
+T40 untaps: p1:Llanowar Elves
+T40 untaps: p1:Forest#8
+T40 untaps: p1:Forest#9
+T40 taps: p1:Forest#3
+T40 p1 adds {G} (p1:Forest#3)
+T40 taps: p1:Llanowar Elves
+T40 p1 adds {G} (p1:Llanowar Elves)
+T40 taps: p1:Forest#9
+T40 p1 adds {G} (p1:Forest#9)
+T40 taps: p1:Forest#7
+T40 p1 adds {G} (p1:Forest#7)
+T40 p1's unspent {G}{G}{G}{G} empties
+T40 moves: Centaur Courser, p1's library -> p1's hand
+T40 p1 draws
+T40 moves: Shock, p2's hand -> stack
+T40 p2 cancels casting Shock
+T40 moves: Centaur Courser, p1's hand -> stack
+T40 p1 cancels casting Centaur Courser
+T40 taps: p1:Forest#6
+T40 p1 adds {G} (p1:Forest#6)
+T40 moves: Forest, p1's hand -> battlefield
+T40 p1 plays p1:Forest#10
+T40 taps: p1:Forest#5
+T40 p1 adds {G} (p1:Forest#5)
+T40 moves: Centaur Courser, p1's hand -> stack
+T40 taps: p1:Forest#2
+T40 p1 adds {G} (p1:Forest#2)
+T40 taps: p1:Forest#10
+T40 p1 adds {G} (p1:Forest#10)
+T40 p1 casts Centaur Courser
+T40 resolves: Centaur Courser
+T40 moves: Centaur Courser, stack -> battlefield
+T40 taps: p1:Forest#8
+T40 p1 adds {G} (p1:Forest#8)
+T40 moves: Giant Spider, p1's hand -> stack
+T40 taps: p1:Forest#1
+T40 p1 adds {G} (p1:Forest#1)
+T40 p1 cancels casting Giant Spider
+T40 moves: Spined Wurm, p1's hand -> stack
+T40 p1 cancels casting Spined Wurm
+T40 p1's unspent {G}{G} empties
+T40 taps: p1:Forest#4
+T40 p1 adds {G} (p1:Forest#4)
+T40 taps: p1:Forest#1
+T40 p1 adds {G} (p1:Forest#1)
+T40 moves: Shock, p2's hand -> stack
+T40 p2 cancels casting Shock
+T40 p1's unspent {G}{G} empties
+T40 p1 attack: nothing
+T40 moves: Shock, p2's hand -> stack
+T40 p2 cancels casting Shock
+T40 moves: Llanowar Elves, p1's hand -> stack
+T40 p1 cancels casting Llanowar Elves
+T40 moves: Shock, p2's hand -> stack
+T40 p2 cancels casting Shock
+T40 moves: Shock, p2's hand -> stack
+T40 p2 cancels casting Shock
+T41 turn 41 begins (p2)
+T41 untaps: p2:Mountain#1
+T41 untaps: p2:Mountain#2
+T41 untaps: p2:Mountain#3
+T41 untaps: p2:Mountain#4
+T41 untaps: p2:Mountain#5
+T41 untaps: p2:Mountain#6
+T41 untaps: p2:Mountain#7
+T41 untaps: p2:Mountain#8
+T41 untaps: p2:Mountain#9
+T41 moves: Shock, p2's hand -> stack
+T41 p2 cancels casting Shock
+T41 moves: Shock, p2's hand -> stack
+T41 taps: p2:Mountain#2
+T41 p2 adds {R} (p2:Mountain#2)
+T41 taps: p2:Mountain#9
+T41 p2 adds {R} (p2:Mountain#9)
+T41 taps: p2:Mountain#8
+T41 p2 adds {R} (p2:Mountain#8)
+T41 taps: p2:Mountain#1
+T41 p2 adds {R} (p2:Mountain#1)
+T41 taps: p2:Mountain#5
+T41 p2 adds {R} (p2:Mountain#5)
+T41 p2 casts Shock
+T41 taps: p2:Mountain#6
+T41 p2 adds {R} (p2:Mountain#6)
+T41 taps: p2:Mountain#7
+T41 p2 adds {R} (p2:Mountain#7)
+T41 damage: Shock -> p1 2
+T41 p1 loses 2 life
+T41 resolves: Shock
+T41 moves: Shock, stack -> p2's graveyard
+T41 taps: p2:Mountain#4
+T41 p2 adds {R} (p2:Mountain#4)
+T41 p2's unspent {R}{R}{R}{R}{R}{R}{R} empties
+T41 moves: Furnace Whelp, p2's library -> p2's hand
+T41 p2 draws
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 taps: p2:Mountain#3
+T41 p2 adds {R} (p2:Mountain#3)
+T41 p2 cancels casting Fire Elemental
+T41 moves: Hill Giant, p2's hand -> stack
+T41 taps: p2:Mountain#3
+T41 p2 adds {R} (p2:Mountain#3)
+T41 p2 cancels casting Hill Giant
+T41 moves: Hill Giant, p2's hand -> stack
+T41 p2 cancels casting Hill Giant
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 taps: p2:Mountain#3
+T41 p2 adds {R} (p2:Mountain#3)
+T41 p2 cancels casting Furnace Whelp
+T41 taps: p2:Mountain#3
+T41 p2 adds {R} (p2:Mountain#3)
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Volcanic Hammer, p2's hand -> stack
+T41 p2 cancels casting Volcanic Hammer
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T41 p2's unspent {R} empties
+T41 p2 attack: nothing
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Hill Giant, p2's hand -> stack
+T41 p2 cancels casting Hill Giant
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T41 moves: Fire Elemental, p2's hand -> stack
+T41 p2 cancels casting Fire Elemental
+T41 moves: Volcanic Hammer, p2's hand -> stack
+T41 p2 cancels casting Volcanic Hammer
+T41 moves: Volcanic Hammer, p2's hand -> stack
+T41 p2 cancels casting Volcanic Hammer
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T41 moves: Furnace Whelp, p2's hand -> stack
+T41 p2 cancels casting Furnace Whelp
+T42 turn 42 begins (p1)
+T42 untaps: p1:Forest#1
+T42 untaps: p1:Forest#2
+T42 untaps: p1:Forest#3
+T42 untaps: p1:Forest#4
+T42 untaps: p1:Forest#5
+T42 untaps: p1:Forest#6
+T42 untaps: p1:Forest#7
+T42 untaps: p1:Llanowar Elves
+T42 untaps: p1:Forest#8
+T42 untaps: p1:Forest#9
+T42 untaps: p1:Forest#10
+T42 taps: p1:Forest#10
+T42 p1 adds {G} (p1:Forest#10)
+T42 taps: p1:Forest#8
+T42 p1 adds {G} (p1:Forest#8)
+T42 taps: p1:Forest#3
+T42 p1 adds {G} (p1:Forest#3)
+T42 taps: p1:Forest#2
+T42 p1 adds {G} (p1:Forest#2)
+T42 taps: p1:Forest#1
+T42 p1 adds {G} (p1:Forest#1)
+T42 taps: p1:Forest#4
+T42 p1 adds {G} (p1:Forest#4)
+T42 p1's unspent {G}{G}{G}{G}{G}{G} empties
+T42 moves: Forest, p1's library -> p1's hand
+T42 p1 draws
+T42 taps: p1:Forest#5
+T42 p1 adds {G} (p1:Forest#5)
+T42 moves: Llanowar Elves, p1's hand -> stack
+T42 taps: p1:Forest#6
+T42 p1 adds {G} (p1:Forest#6)
+T42 taps: p1:Llanowar Elves
+T42 p1 adds {G} (p1:Llanowar Elves)
+T42 taps: p1:Forest#7
+T42 p1 adds {G} (p1:Forest#7)
+T42 taps: p1:Forest#9
+T42 p1 adds {G} (p1:Forest#9)
+T42 p1 cancels casting Llanowar Elves
+T42 taps: p1:Forest#6
+T42 p1 adds {G} (p1:Forest#6)
+T42 p1's unspent {G}{G} empties
+T42 taps: p1:Forest#7
+T42 p1 adds {G} (p1:Forest#7)
+T42 p1's unspent {G} empties
+T42 taps: p1:Centaur Courser
+T42 taps: p1:Giant Spider#1
+T42 p1 attack: p1:Centaur Courser -> p2, p1:Giant Spider#1 -> p2
+T42 p2 block: nothing
+T42 combat damage: p1:Centaur Courser -> p2 3
+T42 combat damage: p1:Giant Spider#1 -> p2 2
+T42 p2 loses 3 life
+T42 p2 loses 2 life
+T42 taps: p1:Llanowar Elves
+T42 p1 adds {G} (p1:Llanowar Elves)
+T42 taps: p1:Forest#9
+T42 p1 adds {G} (p1:Forest#9)
+T42 p1's unspent {G}{G} empties
+T43 turn 43 begins (p2)
+T43 untaps: p2:Mountain#1
+T43 untaps: p2:Mountain#2
+T43 untaps: p2:Mountain#3
+T43 untaps: p2:Mountain#4
+T43 untaps: p2:Mountain#5
+T43 untaps: p2:Mountain#6
+T43 untaps: p2:Mountain#7
+T43 untaps: p2:Mountain#8
+T43 untaps: p2:Mountain#9
+T43 moves: Mountain, p2's library -> p2's hand
+T43 p2 draws
+T43 taps: p2:Mountain#2
+T43 p2 adds {R} (p2:Mountain#2)
+T43 taps: p2:Mountain#9
+T43 p2 adds {R} (p2:Mountain#9)
+T43 taps: p2:Mountain#3
+T43 p2 adds {R} (p2:Mountain#3)
+T43 taps: p2:Mountain#1
+T43 p2 adds {R} (p2:Mountain#1)
+T43 taps: p2:Mountain#8
+T43 p2 adds {R} (p2:Mountain#8)
+T43 taps: p2:Mountain#5
+T43 p2 adds {R} (p2:Mountain#5)
+T43 taps: p2:Mountain#7
+T43 p2 adds {R} (p2:Mountain#7)
+T43 p2's unspent {R}{R}{R}{R}{R}{R}{R} empties
+T43 taps: p2:Mountain#4
+T43 p2 adds {R} (p2:Mountain#4)
+T43 moves: Mountain, p2's hand -> battlefield
+T43 p2 plays p2:Mountain#10
+T43 moves: Hill Giant, p2's hand -> stack
+T43 taps: p2:Mountain#6
+T43 p2 adds {R} (p2:Mountain#6)
+T43 taps: p2:Mountain#10
+T43 p2 adds {R} (p2:Mountain#10)
+T43 p2 cancels casting Hill Giant
+T43 taps: p2:Mountain#6
+T43 p2 adds {R} (p2:Mountain#6)
+T43 taps: p2:Mountain#10
+T43 p2 adds {R} (p2:Mountain#10)
+T43 moves: Hill Giant, p2's hand -> stack
+T43 p2 cancels casting Hill Giant
+T43 moves: Fire Elemental, p2's hand -> stack
+T43 p2 cancels casting Fire Elemental
+T43 moves: Fire Elemental, p2's hand -> stack
+T43 p2 cancels casting Fire Elemental
+T43 moves: Fire Elemental, p2's hand -> stack
+T43 p2 cancels casting Fire Elemental
+T43 moves: Fire Elemental, p2's hand -> stack
+T43 p2 cancels casting Fire Elemental
+T43 p2's unspent {R}{R}{R} empties
+T43 p2 attack: nothing
+T44 turn 44 begins (p1)
+T44 untaps: p1:Forest#1
+T44 untaps: p1:Forest#2
+T44 untaps: p1:Forest#3
+T44 untaps: p1:Forest#4
+T44 untaps: p1:Forest#5
+T44 untaps: p1:Forest#6
+T44 untaps: p1:Forest#7
+T44 untaps: p1:Llanowar Elves
+T44 untaps: p1:Forest#8
+T44 untaps: p1:Forest#9
+T44 untaps: p1:Giant Spider#1
+T44 untaps: p1:Forest#10
+T44 untaps: p1:Centaur Courser
+T44 taps: p1:Forest#3
+T44 p1 adds {G} (p1:Forest#3)
+T44 taps: p1:Forest#8
+T44 p1 adds {G} (p1:Forest#8)
+T44 taps: p1:Forest#6
+T44 p1 adds {G} (p1:Forest#6)
+T44 taps: p1:Forest#9
+T44 p1 adds {G} (p1:Forest#9)
+T44 taps: p1:Forest#5
+T44 p1 adds {G} (p1:Forest#5)
+T44 taps: p1:Llanowar Elves
+T44 p1 adds {G} (p1:Llanowar Elves)
+T44 taps: p1:Forest#2
+T44 p1 adds {G} (p1:Forest#2)
+T44 taps: p1:Forest#4
+T44 p1 adds {G} (p1:Forest#4)
+T44 taps: p1:Forest#1
+T44 p1 adds {G} (p1:Forest#1)
+T44 taps: p1:Forest#7
+T44 p1 adds {G} (p1:Forest#7)
+T44 taps: p1:Forest#10
+T44 p1 adds {G} (p1:Forest#10)
+T44 p1's unspent {G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G} empties
+T44 moves: Forest, p1's library -> p1's hand
+T44 p1 draws
+T44 moves: Forest, p1's hand -> battlefield
+T44 p1 plays p1:Forest#11
+T44 taps: p1:Forest#11
+T44 p1 adds {G} (p1:Forest#11)
+T44 p1's unspent {G} empties
+T44 taps: p1:Centaur Courser
+T44 taps: p1:Giant Spider#1
+T44 taps: p1:Giant Spider#2
+T44 p1 attack: p1:Centaur Courser -> p2, p1:Giant Spider#1 -> p2, p1:Giant Spider#2 -> p2
+T44 p2 block: nothing
+T44 combat damage: p1:Centaur Courser -> p2 3
+T44 combat damage: p1:Giant Spider#1 -> p2 2
+T44 combat damage: p1:Giant Spider#2 -> p2 2
+T44 p2 loses 3 life
+T44 p2 loses 2 life
+T44 p2 loses 2 life
+T44 state-based actions: p2 zeroLife
+T44 p2 loses the game (zeroLife)
+T44 game over: p1 wins

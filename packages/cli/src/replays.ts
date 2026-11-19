@@ -7,7 +7,7 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { cardDatabase } from "@mtg/cards";
 import { type CardDatabase, ENGINE_VERSION, type GameState } from "@mtg/engine";
-import { FORMAT, type GameFile, replay } from "./game-file.ts";
+import { actionPerLineText, FORMAT, type GameFile, replay } from "./game-file.ts";
 
 export const REPLAYS_DIR = join(import.meta.dirname, "../../engine/test/replays");
 
@@ -57,9 +57,7 @@ export function replayText(file: ReplayFile): string {
     finalStateHash: file.finalStateHash,
     setup: file.setup,
   };
-  const fields = Object.entries(head).map(([key, value]) => `  ${JSON.stringify(key)}: ${JSON.stringify(value)}`);
-  const actions = file.actions.map((a) => `    ${JSON.stringify(a)}`).join(",\n");
-  return `{\n${fields.join(",\n")},\n  "actions": [\n${actions}\n  ]\n}\n`;
+  return actionPerLineText(head, file.actions);
 }
 
 /** Rewrites every replay's hash from the current engine. Returns one line per file that changed. */
