@@ -1,0 +1,30 @@
+{
+  "machine": "Intel(R) Xeon(R) Processor @ 2.10GHz, Node 26.13.1",
+  "referenceMs": 1.288994083333326,
+  "measures": {
+    "applyAction.emptyBoard": {
+      "ms": 0.007884098947368473,
+      "relative": 0.006116474116762639
+    },
+    "applyAction.busyCombat": {
+      "ms": 0.011503325806451643,
+      "relative": 0.008924265793915948
+    },
+    "applyAction.deepStack": {
+      "ms": 0.009026261250000119,
+      "relative": 0.0070025622046753664
+    },
+    "randomGame": {
+      "ms": 44.440376000000015,
+      "relative": 34.476788198342724
+    },
+    "legalActions.busyBoard": {
+      "ms": 0.03284143557692337,
+      "relative": 0.025478344704264074
+    },
+    "characteristics.busyBoard": {
+      "ms": 0.0006066282101865143,
+      "relative": 0.00047062140783282703
+    }
+  }
+}

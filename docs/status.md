@@ -21,13 +21,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      `--accept-new-gaps`. Mentions of unbuilt rules now read `later: CR 614`. Interaction matrix README with two new
      scenarios (`interactions/pump/`). Counts: 270 cited, 160 tested by scenarios, 45 only by unit tests, 65 gaps.
      The gaps get closed after the owner answers the open question on unit tests (M1 exit work).
-  3. `pnpm bench` against `bench/baseline.json` (applyAction on typical states, a full random game, legalActions and
-     characteristics on a busy board), failing above 20% slower; budgets from architecture.md. Accept: a deliberate
-     slowdown fails it.
+  3. `pnpm bench` (done, D-049; PR after #18). Six measures per operation, states from the golden games, timed in
+     interleaved rounds against a reference loop; five unchanged runs pass, a deliberate slowdown (`JSON.stringify` in
+     `applyAction`) fails with +240% to +340%. Today: about 8 to 12 µs per `applyAction`, 44 ms per random game.
   - Future impact: golden logs change whenever event text or rules change, so the recipe-based regenerate keeps them
     cheap to update; the coverage report's parser must accept every citation form used (`CR 702.19c`, ranges later).
 
 ## Handoff notes
+- After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
+  `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
+  then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for

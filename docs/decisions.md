@@ -571,3 +571,19 @@ every schema change and every change D-024 lists bumps it.
 - `cli/test/coverage.test.ts` fails on a gap the committed report doesn't list. `pnpm coverage:rules` refuses to write
   a report with a new gap unless given `--accept-new-gaps`, so accepting one is deliberate and shows in the commit.
   Closed gaps just disappear when the report is rewritten. The coverage tests' own sample citations aren't counted.
+
+**D-049: Benchmarks** · 2026-11-19 · accepted
+- `pnpm bench` times six measures, each reported per operation: `applyAction` on three sets of states (up to 40 each,
+  from the golden games: early turns with at most two permanents, combat with 20 or more, a stack of two or more), a
+  whole game between the random agents (five fixed setups in turn), `legalActions` in the 40 busiest states, and
+  `characteristics` of every permanent in them. Sets of states rather than one state each, so one state's quirks
+  don't decide a measure.
+- Timing: each workload is warmed up, then all are timed in 21 interleaved rounds of about 30 ms batches, and each
+  takes its median batch. A reference loop of plain JavaScript runs in the same rounds; measures are compared as
+  multiples of it, so a baseline holds across machines and a busy moment slows everything alike. On an unchanged
+  engine, five runs in a row stayed within 10% of the baseline.
+- More than 20% slower than `bench/baseline.json` on any measure fails, as does a measure over its budget
+  (architecture.md: 1 ms per `applyAction`, 100 ms per random game) or a time that isn't a positive number. `pnpm bench
+  --update` writes the baseline: only for a justified slowdown, explained in the commit.
+- It isn't part of `pnpm check`: timings on a shared CI runner would be flaky. Run it before merging engine changes
+  (testing.md). `cli/test/bench.test.ts` checks the workloads still build and run.

@@ -316,14 +316,17 @@ yet is written `later: CR 614`.
 
 ## 6. Benchmarks
 
-`pnpm bench` measures, on fixed seeds and boards:
-- the time per `applyAction` across a set of typical states (an empty board, a busy combat, a deep stack),
+`pnpm bench` measures, on fixed seeds and boards (states taken from the golden games; D-049):
+- the time per `applyAction` across sets of typical states (an empty board, a busy combat, a deep stack),
 - the time for a full random-legal game,
 - the time for `legalActions` and `characteristics` on a busy board,
 - and (from M2) the AI's time per decision.
 
+Times are compared as multiples of a reference loop timed in the same run, so the baseline holds across machines.
+
 Results are compared with `bench/baseline.json`. More than 20% slower on any measure fails the bench run.
-If the slowdown is justified (a rule that genuinely costs time), update the baseline in the same commit and say why.
+If the slowdown is justified (a rule that genuinely costs time), update the baseline with `pnpm bench --update` in the
+same commit and say why. It isn't part of `pnpm check`: timings on a shared CI runner would be flaky.
 Budgets from `architecture.md` are hard limits regardless of the baseline.
 
 ## 7. Mutation testing (from M3)
