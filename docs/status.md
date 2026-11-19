@@ -7,7 +7,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-15 Game end (plan, 2026-11-19). CR 104.1–104.4, 104.3a, 800.4a.
+  - `CONCEDE` (CR 104.3a): any player, any time the game is on (pregame, mid-cast, another player's decision); it
+    goes through `playersLose` with reason `conceded`. `PLAYER_LOST` is the one loss event; `PLAYER_CONCEDED` goes.
+    Not listed in `legalActions` (it's always available, like a menu; listing it would make random agents concede).
+  - `GameResult.turn` is 0 for a game that ends before the first turn.
+  - A concession mid-cast or mid-activation: the game is over, so the invariants accept a spell or ability left on the
+    stack (CR 800.4a's cleanup applies when the game goes on, in multiplayer).
+  - Runner: `p1 concede: now`.
+  - Tests: conceding on your turn, on the other player's priority, during mulligans, mid-cast; results reporting
+    winner, losses with reasons, and turn; actions after the end are `gameOver`.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
