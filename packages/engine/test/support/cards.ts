@@ -19,6 +19,8 @@ export const GROWTH = "giant-growth";
 export const SHOT_AND_BOOST = "test-shot-and-boost";
 /** Not a real card: damage dealt by a target, so its source can be an illegal target (CR 608.2b). */
 export const BITE = "test-bite";
+/** Not a real card: a noncreature artifact with a printed power and toughness, like a Vehicle (CR 208.3). */
+export const STATUE = "test-statue";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -226,5 +228,19 @@ export const TEST_CARDS: CardDatabase = {
         effects: [{ op: "dealDamage", amount: 2, from: { target: 0 }, to: { target: 1 } }],
       },
     },
+  }),
+  [STATUE]: card(STATUE, {
+    printed: {
+      name: "Statue",
+      manaCost: [{ kind: "generic", amount: 3 }],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["artifact"],
+      subtypes: [],
+      power: 4,
+      toughness: 5,
+    },
+    def: { name: "Statue", oracle: "" },
   }),
 };

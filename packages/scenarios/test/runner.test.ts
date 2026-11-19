@@ -117,6 +117,24 @@ describe("the scenario runner fails a scenario that's wrong", () => {
 
 describe("the scenario runner refuses what it can't read, instead of ignoring it", () => {
   const head = "name: t\nrules: [CR 117.3d]\n";
+  it("refuses rule modifiers it can't read, and an empty abilities list", () => {
+    const withRules = (rules: string) => at("main1", `  rules: ${rules}\n`);
+    expect(first(`${withRules("{ kind: creaturesGetPT }")}  - p1 pass: once\n`)).toMatch(/rules is a list/);
+    expect(first(`${withRules("[{ kind: flying }]")}  - p1 pass: once\n`)).toMatch(/unknown rule modifier/);
+    const good = "kind: creaturesGetPT, controller: p1, power: 1, toughness: 1";
+    expect(first(`${withRules(`[{ ${good}, extra: 1 }]`)}  - p1 pass: once\n`)).toMatch(/Unknown key "extra"/);
+    expect(first(`${withRules(`[{ ${good.replace("p1", "p3")} }]`)}  - p1 pass: once\n`)).toMatch(
+      /controller must be p1 or p2/,
+    );
+    expect(first(`${withRules(`[{ ${good.replace("power: 1", "power: 1.5")} }]`)}  - p1 pass: once\n`)).toMatch(
+      /power must be a whole number/,
+    );
+    const bears = at("main1", "  p1: { battlefield: [Grizzly Bears] }\n");
+    expect(first(`${bears}  - expect: { "p1:Grizzly Bears.abilities contains": [] }\n`)).toMatch(/non-empty list/);
+    const negative = at("main1", "  p1: { battlefield: [{ card: Grizzly Bears, counters: { +1/+1: -1 } }] }\n");
+    expect(first(`${negative}  - p1 pass: once\n`)).toMatch(/can't be negative/);
+  });
+
   it("reports format errors as problems", () => {
     expect(first(`${main1.replace("steps:\n", "stepz:\n")}  - p1 pass: once\n`)).toMatch(
       /Unknown top-level key "stepz"/,
@@ -156,7 +174,7 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     ]);
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
     expect(problems(`${main1}  - expect: { winner: p1 }\n`)).toStrictEqual(["step 1: winner: arrives in M1-15"]);
-    expect(first(`${main1}  - expect: { "p1:Forest.abilities contains": [x] }\n`)).toMatch(/arrives in M1-11/);
+    expect(first(`${main1}  - expect: { "p1:Forest.counters": {} }\n`)).toMatch(/arrives in M1-13/);
   });
 
   it("checks a rejected setup's reason, which must be given", () => {

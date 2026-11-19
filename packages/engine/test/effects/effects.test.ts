@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { dealDamage } from "../../src/effects/deal-damage.ts";
+import { runEffect } from "../../src/effects/run-effect.ts";
 import { type Action, type GameState, legalActions, type ObjectId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
 import { BITE, GROWTH, SHOT_AND_BOOST, TEST_CARDS } from "../support/cards.ts";
@@ -126,6 +127,22 @@ describe("continuous effects (CR 611.2)", () => {
     // The effect took that timestamp; the card going to the graveyard afterwards gets the next one (CR 613.7d).
     const growth = after.state.zones.players.p1?.graveyard[0] as ObjectId;
     expect(after.state.objects[growth]?.timestamp).toBe(timestamp + 1);
+  });
+});
+
+describe("an effect on an object that's gone", () => {
+  it("isn't created for an object that left the battlefield after resolution began (CR 101.3)", () => {
+    const { game } = setup(GROWTH);
+    const forest = game.state.zones.battlefield[0] as ObjectId;
+    const gone = moveCard(game.state, forest, { zone: "graveyard" }).state;
+    const result = runEffect(
+      gone,
+      { op: "modifyPT", power: 3, toughness: 3, of: { target: 0 }, duration: "endOfTurn" },
+      { self: forest, controller: "p1", targets: [[{ kind: "object", object: forest }]] },
+      TEST_CARDS,
+    );
+    expect(result.state.effects).toStrictEqual([]);
+    expect(result.events).toStrictEqual([]);
   });
 });
 

@@ -57,8 +57,9 @@ export type PermanentSetup = {
 
 /**
  * A rule modifier is an extra rule for the whole game, owned by no card. It works like an emblem's static
- * ability (CR 114): the engine applies it through the layer system like any other continuous effect (CR 611),
- * from M1-11. Effects that aren't additive will need it to have a timestamp (CR 613.7), as an emblem would.
+ * ability (CR 114): the engine applies it through the layer system like any other continuous effect (CR 611), in
+ * `rules/power-toughness.ts`. Effects that aren't additive will need it to have a timestamp (CR 613.7), as an
+ * emblem would.
  */
 export type RuleModifier = {
   /** "Creatures this player controls get +N/+N": layer 7c (CR 613.4c). */

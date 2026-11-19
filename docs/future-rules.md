@@ -11,7 +11,17 @@ implemented, move it out of this file (or mark it done) in the same commit.
 
 **Full layer system (CR 613), M3.** Copy effects (layer 1), control (2), text-changing (3), type (4),
 color (5), ability adding and removing (6), and power/toughness (7a–7d), with timestamps and dependencies.
-*Needs now:* every characteristic is read through `characteristics()`, never from raw object fields. Code that
+*Built (M1-11, D-038):* `characteristics()` composes one reader per layer; layer 7 has 7c. Adding a layer means adding
+its effects to the reader for that layer. Sorting within a sublayer by timestamp and dependency arrives with the first
+non-additive effect.
+*Watch out:* the readers work one object at a time. An effect that starts applying in one layer keeps applying to the
+same objects in later layers (CR 613.6), and dependency orders effects across the board (CR 613.8), so full layers will
+want one board-wide pass, layer by layer, that records each effect's affected set. Don't let the readers' signatures
+harden around per-object evaluation. Also: 7a/7b set the base power and toughness (the early "no printed P/T" return
+must become "base from 7a/7b, else printed"); tokens (CR 111) need a characteristics source other than the card
+database; an effect on a permanent spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet.
+*Needs now:* every characteristic is read through `characteristics()` or the per-layer readers it composes (D-038),
+never from raw object fields. Code that
 asks "is this a creature?", "who controls this?" or "does it have flying?" must go through it, even in M1.
 
 **Replacement and prevention effects (CR 614–616), M3.** "If a creature would die, exile it instead",

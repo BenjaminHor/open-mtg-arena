@@ -1,0 +1,22 @@
+name: Two Giant Growths on one creature both apply
+rules: [CR 613.4c, CR 611.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Giant Growth, Giant Growth]
+    battlefield: [Forest, Forest, Grizzly Bears]
+steps:
+  - p1 cast: Giant Growth
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 5
+      p1:Grizzly Bears.toughness: 5
+  - p1 cast: Giant Growth
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 8
+      p1:Grizzly Bears.toughness: 8

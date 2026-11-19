@@ -75,8 +75,9 @@ can't make it pass.
   standard opening): Forest for p1, Mountain for p2.
 - A battlefield entry is a card name or a map: `{ card: Grizzly Bears, tapped: true, sick: true, damage: 1 }`.
   `sick: true` means it hasn't been under its controller's control continuously since their most recent turn began
-  (CR 302.6). In a standard opening every permanent starts sick. `counters` is accepted but nothing uses counters yet.
-- `rules: [...]` for rule modifiers isn't supported yet: it arrives with layer 7c effects in M1-11 and fails until then.
+  (CR 302.6). In a standard opening every permanent starts sick. `counters` is a map like `{ +1/+1: 2 }`; +X/+Y and -X/-Y counters change power and toughness (CR 122.1a).
+- `rules: [...]`: rule modifiers for the whole game, like `{ kind: creaturesGetPT, controller: p2, power: 1, toughness: 1 }`
+  ("creatures p2 controls get +1/+1", layer 7c).
 
 **Step names:** `untap`, `upkeep`, `draw`, `main1`, `combat.beginning`, `combat.declareAttackers`,
 `combat.declareBlockers`, `combat.damage`, `combat.end`, `main2`, `end`, `cleanup`.
@@ -123,12 +124,13 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `step`, `turn` (the turn number), `active` (the active player).
 - `pending: { player: p1, kind: priority }`: every key given must match (`remaining`, `mulligansTaken`, ...);
   `pending: null` for nothing pending.
-- `p1:Grizzly Bears.tapped`, `.damage`, `.sick`.
+- `p1:Grizzly Bears.tapped`, `.damage`, `.sick`; `.power` and `.toughness` as computed by `characteristics()` (`null`
+  for a noncreature permanent); `.abilities contains: [reach]` checks its keyword abilities (CR 702), by their lowercase
+  names.
 - `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
   the last step that changed the game. Nested maps match on their keys given too: `{ type: EFFECT_CREATED, effect:
   { controller: p1 } }`. `pending:` matches the same way.
-- Expectations that arrive later and fail until then: `.power`, `.toughness` and `.abilities contains` (M1-11),
-  `.counters` (M1-13), `winner` (M1-15).
+- Expectations that arrive later and fail until then: `.counters` (M1-13), `winner` (M1-15).
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, every listed legal action accepted.

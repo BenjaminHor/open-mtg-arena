@@ -32,10 +32,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
 - Effects (D-036): test CR 608.2m (a spell that leaves the stack mid-resolution) once an effect can move one. A new op
   goes in `effects/run-effect.ts` and the table in `effects/README.md`.
-- For M1-11: end "until end of turn" effects in the same CR 514.2 action that removes damage (`removeAllDamage` is
-  called from the cleanup step), and decide what to do with an effect whose `affected` ids no longer exist (they never
-  come back, CR 400.7, so dropping the effect, or just the ids, is safe). `characteristics()` reads `GameState.effects`
-  (D-036); the scenarios in `effects/` can then also check `.power` and `.toughness`.
+- Characteristics (D-038): read power, toughness and keywords through `characteristics()` or the per-layer readers
+  (`powerAndToughness`, `keywordsOf`, `supertypesOf` for the legend rule, CR 704.5j).
+- For M1-12: `characteristics/damage-and-pump-end-together.yaml` only starts proving CR 514.2 once SBAs exist; check
+  it fails if the pump ends before damage is removed.
+  An effect whose `affected` objects are gone stays until cleanup and does nothing (their ids never come back, CR 400.7).
 - For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
   and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
 - For M1-12: check state-based actions in `givePriority` (CR 117.5), never between work items: a spell's effects are
@@ -69,7 +70,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-11 Characteristics and layer 7c
+- M1-12 State-based actions
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -107,6 +108,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `dealDamage` (CR 120), life loss (CR 119.3), continuous effects stored in `GameState.effects` (CR 611.2, 613.7b);
   targets checked once as resolution begins (CR 608.2b); mana abilities use the same interpreter; 7 effect scenarios
   and TS tests with made-up two-target cards (D-036, D-037) (2026-11-19).
+
+- M1-11 Characteristics and layer 7c: `characteristics()` through the layers (CR 613), layer 7 with 7c effects,
+  +1/+1 and -1/-1 counters and rule modifiers, no power or toughness for noncreature permanents (CR 208.3),
+  "until end of turn" effects ending with damage in cleanup (CR 514.2); scenario `rules:` and `.power`, `.toughness`,
+  `.abilities contains`; 6 characteristics scenarios (D-038) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

@@ -14,4 +14,6 @@ steps:
   - all pass: once
   - expect:
       p1.graveyard: [Giant Growth]
+      p2:Gray Ogre.power: 5
+      p2:Gray Ogre.toughness: 5
       events contains: [{ type: EFFECT_CREATED, effect: { controller: p1 } }]

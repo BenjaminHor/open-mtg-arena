@@ -3,6 +3,7 @@
 // of" triggers have one place to hook in. The work queue drives it (D-032).
 
 import { anyAttackers } from "../combat/attackers.ts";
+import { endUntilEndOfTurnEffects } from "../effects/continuous-effect.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
 import { untapPermanents } from "../permanents/untap.ts";
 import { controllerOf } from "../rules/controller.ts";
@@ -81,13 +82,13 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []
 }
 
 /**
- * CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action with no
- * state-based action check in between (ending those effects arrives in M1-11, status.md). Then no one gets priority (CR 514.3): with no
- * state-based actions or triggers yet (CR 514.3a), the step simply ends.
+ * CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action, in one call, so
+ * no state-based action check can come between them. Then no one gets priority (CR 514.3): with no state-based actions
+ * or triggers yet (CR 514.3a), the step simply ends.
  */
 function endCleanup(state: GameState): Progress {
+  const removed = andThen(removeAllDamage(state), endUntilEndOfTurnEffects);
   // Queued rather than called, so the CR 514.3a check (another cleanup step) can go between them in M1-12.
-  const removed = removeAllDamage(state);
   return { state: queueWork(removed.state, { kind: "endStep" }), events: removed.events };
 }
 

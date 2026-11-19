@@ -22,7 +22,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 
 Things to know before using these types:
 - Objects store state, not characteristics. Read power, types, abilities and **controller** through
-  `characteristics()` (from M1-11), never from fields. `baseController` is only the CR 110.2 default (D-022).
+  `characteristics()` (`rules/characteristics.ts`) or the per-layer readers it composes (D-038), never from fields. `baseController` is only the CR 110.2 default (D-022).
 - States are never mutated. Each change makes a new state that shares the unchanged parts (D-021).
 - Players come in turn order from `GameState.turnOrder`. Never assume two players or "the opponent".
 - Iterate zones (for order) or `turnOrder` (for players), never `Object.keys(objects)` or `Object.keys(players)`:

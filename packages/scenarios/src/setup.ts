@@ -1,7 +1,15 @@
 // Turns a scenario's `setup:` into the engine's GameSetup (docs/testing.md, "Format"). Every key and value is
 // checked: an unknown key or a value of the wrong type fails instead of falling back to a default.
 
-import type { CardDatabase, GameSetup, ManaPool, PermanentSetup, PlayerId, PlayerSetup } from "@mtg/engine";
+import type {
+  CardDatabase,
+  GameSetup,
+  ManaPool,
+  PermanentSetup,
+  PlayerId,
+  PlayerSetup,
+  RuleModifier,
+} from "@mtg/engine";
 import { isRecord } from "./format.ts";
 import { engineStep, oracleIdOf } from "./names.ts";
 
@@ -20,7 +28,7 @@ export const PERMANENT_KEYS = ["card", "tapped", "sick", "damage", "counters"];
 
 export function buildSetup(setup: Record<string, unknown>, cards: CardDatabase): GameSetup {
   keysIn(setup, SETUP_KEYS, "setup");
-  if (setup.rules !== undefined) throw new Error("Rule modifiers in scenarios arrive with layer 7c effects in M1-11");
+  const ruleModifiers = ruleModifiersFrom(setup.rules);
   const standard = setup.opening === "standard";
   const players = PLAYERS.map((id) => playerSetup(id, setup[id], cards, standard));
   const seed = setup.seed === undefined ? 1 : integer(setup.seed, "seed");
@@ -29,7 +37,7 @@ export function buildSetup(setup: Record<string, unknown>, cards: CardDatabase):
     const first = setup.first ?? null;
     if (first !== null && !PLAYERS.includes(first as PlayerId))
       throw new Error(`first must be p1 or p2, got ${String(first)}`);
-    return { seed, players, opening: { kind: "standard", firstPlayer: first as PlayerId | null }, ruleModifiers: [] };
+    return { seed, players, opening: { kind: "standard", firstPlayer: first as PlayerId | null }, ruleModifiers };
   }
   if (setup.opening !== undefined && setup.opening !== "fixed") throw new Error(`opening is "standard" or "fixed"`);
   if (setup.first !== undefined) throw new Error("first is only for a standard opening");
@@ -43,8 +51,26 @@ export function buildSetup(setup: Record<string, unknown>, cards: CardDatabase):
     seed,
     players,
     opening: { kind: "fixed", turn: { number, activePlayer: active as PlayerId, step: engineStep(String(turn.step)) } },
-    ruleModifiers: [],
+    ruleModifiers,
   };
+}
+
+/** `rules:` in a setup: rule modifiers, written like the engine's `RuleModifier` (one kind so far). */
+function ruleModifiersFrom(raw: unknown): RuleModifier[] {
+  if (raw === undefined) return [];
+  if (!Array.isArray(raw))
+    throw new Error("rules is a list like [{ kind: creaturesGetPT, controller: p2, power: 1, toughness: 1 }]");
+  return raw.map((r) => {
+    if (!isRecord(r) || r.kind !== "creaturesGetPT") throw new Error(`unknown rule modifier ${JSON.stringify(r)}`);
+    keysIn(r, ["kind", "controller", "power", "toughness"], "rule modifier");
+    if (!PLAYERS.includes(r.controller as PlayerId)) throw new Error(`rule modifier controller must be p1 or p2`);
+    return {
+      kind: "creaturesGetPT",
+      controller: r.controller as PlayerId,
+      power: integer(r.power, "rule modifier power"),
+      toughness: integer(r.toughness, "rule modifier toughness"),
+    };
+  });
 }
 
 function playerSetup(id: PlayerId, raw: unknown, cards: CardDatabase, standard: boolean): PlayerSetup {
@@ -87,7 +113,7 @@ function permanent(entry: unknown, cards: CardDatabase, id: PlayerId): Permanent
     tapped: boolean(entry.tapped, "tapped"),
     summoningSick: boolean(entry.sick, "sick"),
     damage: entry.damage === undefined ? 0 : integer(entry.damage, "damage"),
-    counters: Object.fromEntries(Object.entries(counters).map(([k, v]) => [k, integer(v, `counters ${k}`)])),
+    counters: Object.fromEntries(Object.entries(counters).map(([k, v]) => [k, count(v, `counters ${k}`)])),
   };
 }
 
@@ -104,6 +130,13 @@ function manaPool(raw: unknown, id: PlayerId): ManaPool {
 
 function keysIn(map: Record<string, unknown>, allowed: readonly string[], where: string): void {
   for (const key of Object.keys(map)) if (!allowed.includes(key)) throw new Error(`Unknown key "${key}" in ${where}`);
+}
+
+/** A number of counters: a whole number, not negative (CR 122.1). */
+function count(value: unknown, what: string): number {
+  const n = integer(value, what);
+  if (n < 0) throw new Error(`${what} can't be negative`);
+  return n;
 }
 
 function integer(value: unknown, what: string): number {

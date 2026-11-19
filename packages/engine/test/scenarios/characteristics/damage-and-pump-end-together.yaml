@@ -1,0 +1,31 @@
+name: Marked damage and "until end of turn" effects go away in the same cleanup action
+# Until state-based actions exist (M1-12), this passes however the two are ordered; from M1-12 it proves that the
+# pumped Bears (3 damage, toughness 5) never dies between them.
+rules: [CR 514.2, CR 120.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Volcanic Hammer]
+    battlefield: [Mountain, Mountain]
+  p2:
+    hand: [Giant Growth]
+    battlefield: [Forest, Grizzly Bears]
+steps:
+  - p1 cast: Volcanic Hammer
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Giant Growth
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p2:Grizzly Bears.damage: 3
+      p2:Grizzly Bears.toughness: 5
+  - all pass: until upkeep
+  - expect:
+      p2.battlefield: [Forest, Grizzly Bears]
+      p2:Grizzly Bears.damage: 0
+      p2:Grizzly Bears.power: 2
+      p2:Grizzly Bears.toughness: 2

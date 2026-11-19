@@ -83,7 +83,7 @@ the zone-change and draw primitives that turn steps need. Each op documented in 
 *Accept:* scenarios for Shock, Lightning Bolt, Volcanic Hammer and Giant Growth, including on a player.
 
 **M1-11 Characteristics and layer 7c.** `characteristics()` computing power and toughness from printed values
-plus `modifyPT` effects in timestamp order (CR 613.4c, 613.7), built so the other layers can be added later
+plus `modifyPT` effects in timestamp order (CR 613.4c, 613.7; 7c only adds, so D-038 leaves it unsorted), built so the other layers can be added later
 without a rewrite. *Accept:* scenarios for stacking two pumps, and a pump wearing off in cleanup.
 
 **M1-12 State-based actions.** CR 704: at least 704.5a (0 life), 704.5b (drawing from an empty library),
