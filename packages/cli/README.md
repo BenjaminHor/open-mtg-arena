@@ -7,7 +7,14 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
 
 ## Entry points
 
-- `src/main.ts`: the `pnpm cli` command. Today only `--help` and `--version` work. The game commands arrive in M1-17.
+- `src/main.ts`: the `pnpm cli` command; `run(argv)` returns the output, so tests call it directly.
+- `src/game-file.ts`: the game file (setup, actions, cached state) and `replay` (D-043).
+- `src/commands/`: one file per command: `new`, `show`, `actions`, `do`, `ai` (with `auto`), `log`, `inspect`, `export`,
+  `replay`.
+- `src/agents.ts`, `src/agent-play.ts`: the `first-legal` and `random` agents and the loop that lets them play.
+- `src/event-log.ts`: events in words, by turn (`log`, `auto`). `src/deck-setup.ts`: a game between prebuilt decks.
+- `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
+  actions, targets and mana in words.
 - `src/fuzz.ts`: the `pnpm fuzz` command. A stub that exits with an error until M1-18.
 
 ```sh
@@ -18,4 +25,7 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 
 ## Tests
 
-`pnpm test` runs this package's tests along with the rest.
+`pnpm test` runs this package's tests along with the rest: `test/cli.test.ts` plays games through the commands,
+including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games
+replay exactly) and `test/log-inspect-replay.test.ts` cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root,
+where pnpm runs scripts.

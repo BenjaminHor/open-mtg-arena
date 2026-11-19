@@ -8,7 +8,8 @@ checks every state against the engine's invariants.
 
 - `runScenario(yamlText, cards)`: returns `{ name, problems }`; no problems means it passed. No file I/O.
 - `invariantProblems(state, cards)`: everything wrong with a state (also for the fuzzer, M1-18).
-- `src/format.ts` (reading the file), `setup.ts` (the `setup:` block), `steps.ts` (steps to actions), `all-pass.ts` (`all pass`), `combat-steps.ts` (`attack`, `block`, `assign`), `stack-steps.ts` (targets and payment for `cast` and `activate`), `apply.ts` (taking one legal action), `lookups.ts`
+- `src/format.ts` (reading the file), `setup.ts` (the `setup:` block), `steps.ts` (steps to actions), `all-pass.ts` (`all pass`), `combat-steps.ts` (`attack`, `block`, `assign`), `stack-steps.ts` (targets and payment for `cast` and `activate`), `apply.ts` (taking one legal action), `export.ts` (`scenarioFromGame`: a game written as a scenario, for the
+  CLI's `export`), `lookups.ts`
   (what a step names), `expect.ts`
   (expectations), `names.ts` (step and card names).
 

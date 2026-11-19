@@ -48,6 +48,18 @@ export function resolveRef(state: GameState, ref: PermanentRef, cards: CardDatab
   return battlefieldOf(state, ref.player).filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
 }
 
+/**
+ * The reference that names this permanent: `p2:Grizzly Bears`, or `p2:Grizzly Bears#2` when its controller has more
+ * than one with that name (the inverse of `resolveRef`). Null if it isn't on the battlefield.
+ */
+export function refOf(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
+  if (!state.zones.battlefield.includes(id)) return null;
+  const player = controllerOf(state, id);
+  const name = nameOf(state, id, cards);
+  const same = battlefieldOf(state, player).filter((x) => nameOf(state, x, cards) === name);
+  return same.length > 1 ? `${player}:${name}#${same.indexOf(id) + 1}` : `${player}:${name}`;
+}
+
 /** The oracle id for a card name in the database. */
 export function oracleIdOf(cards: CardDatabase, name: string): string {
   const found = Object.values(cards).find((c) => c.printed.name === name);

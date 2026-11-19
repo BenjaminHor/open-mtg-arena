@@ -197,6 +197,19 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
   return { kind: "unsupported", player, word, value, options, arrives };
 }
 
+/**
+ * One step written on its own, as YAML: `p1 cast: Lightning Bolt, targets: [p2], pay: auto`, with or without braces.
+ * The CLI's `do` uses it, so a step from a scenario can be pasted straight in. A step whose first key has no player
+ * (`cast: Shock, ...`) is taken by `defaultPlayer`, if one is given.
+ */
+export function parseStepText(text: string, defaultPlayer: string | null = null): ScenarioStep {
+  const trimmed = text.trim();
+  const inner = trimmed.startsWith("{") && trimmed.endsWith("}") ? trimmed.slice(1, -1).trim() : trimmed;
+  const hasPlayer = /^(p\d+ |all pass|expect)/.test(inner);
+  const withPlayer = hasPlayer || defaultPlayer === null ? inner : `${defaultPlayer} ${inner}`;
+  return parseStep(parse(`{ ${withPlayer} }`), "step");
+}
+
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }

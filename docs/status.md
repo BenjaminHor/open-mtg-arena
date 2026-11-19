@@ -66,12 +66,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - The "open-mtg-arena" environment also allows Scryfall (`api.scryfall.com`, `data.scryfall.io`). `pnpm cards:fetch`
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
-- For M1-17: the CLI's `show` prints the result once the game is over (winner, each loss and its reason, turn).
-- For M1-18: conceding isn't in `legalActions` (D-042), so the fuzzer never reaches a state after a concession; only
+- CLI (D-043): run games with `pnpm cli` to check behavior by hand (CLAUDE.md step 4): `new --scenario <name>` or
+  `--decks`, then `do`, `show`, `log`, `inspect`; `export --scenario` turns a path into a scenario.
+- For M1-18: reuse the CLI's agents (`chooseAction`, `playAgents`), `deckGameSetup` and the game file (the failure
+  log is a game file, so `pnpm cli replay` opens it). Conceding isn't in `legalActions` (D-042), so the fuzzer never reaches a state after a concession; only
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- M1-17 Headless CLI (M1-16 is done; M1-18 and M1-19 follow)
+- M1-18 Fuzzer and replays
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -132,6 +134,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 - M1-15 Game end: conceding at any time (CR 104.3a) through the same `playersLose` as state-based losses; results with
   winner, losses and reasons, and turn; the runner's `concede`; 6 game-end scenarios (D-042) (2026-11-19).
+
+- M1-17 Headless CLI: `new`, `show`, `actions`, `do`, `ai`, `auto`, `log`, `inspect`, `export --scenario`, `replay`;
+  the game file (setup + actions, cached state); `first-legal` and `random` agents; the prebuilt decks; exported games
+  pass as scenarios (D-043) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time

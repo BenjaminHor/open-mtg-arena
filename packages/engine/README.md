@@ -9,7 +9,9 @@ The design and its invariants are in [`docs/architecture.md`](../../docs/archite
 
 - `src/index.ts`: the whole public API (`createGame`, `applyAction`, `legalActions`, `playerView`, `characteristics`, as
   listed in the architecture doc). So far: `createGame`, `applyAction`, `legalActions`, `characteristics`, `ENGINE_VERSION`, the state and
-  card types, `controllerOf`, `abilitiesOf`, `isManaAbility`, `autoPay`, `payFromPool`, `allPayments` and `manaValue`.
+  card types, `controllerOf`, `abilitiesOf`, `sameAbilityRef`, `isManaAbility`, `isFreeOfSummoningSickness`,
+  `layerSevenCChanges` (what makes up a power and toughness, for explaining it), `phaseOf`, `autoPay`, `payFromPool`,
+  `allPayments` and `manaValue`.
 - Folders: `state/` (types), `game/` (the flow of a game), `effects/` (the effects interpreter: damage, mana,
   continuous effects), `zones/` (moving cards), `permanents/` (tapping, untapping, damage, destroying), `mana/` (mana abilities,
   paying), `combat/` (declaring attackers and blockers, combat damage), `rules/` (rules questions such as who controls an object), `cards/` (card data types), `rng/`.
