@@ -29,7 +29,7 @@ export type CardObject = {
   baseController: PlayerId;
   /**
    * The object's current timestamp, for applying effects in timestamp order (CR 613.7). It gets one when it
-   * enters a zone (CR 613.7d), and later rules give it new ones (attaching, turning face up, CR 613.7e–g).
+   * enters a zone (CR 613.7d), and later rules give it new ones (attaching, turning face up, later: CR 613.7e–g).
    */
   timestamp: number;
   // The next three fields mean something only on the battlefield (CR 110.5d: only permanents have status).
@@ -75,7 +75,7 @@ export type AbilityObject = {
 /**
  * Names one ability of an object, in a way that stays right when effects add or remove other abilities (D-028).
  * The object's current abilities come from `characteristics()`; each one carries the ref that names it.
- * Abilities granted by effects (layer 6) and delayed triggers (CR 603.7) will add kinds when they arrive.
+ * Abilities granted by effects (layer 6) and delayed triggers (later: CR 603.7) will add kinds when they arrive.
  */
 export type AbilityRef =
   /** An ability written on the card: an index into its definition's `abilities`. */
@@ -88,7 +88,7 @@ export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest
 
 /** Choices announced while casting a spell or activating an ability (CR 601.2b–c), kept on the stack object. */
 export type StackChoices = {
-  /** The chosen modes of a modal spell (CR 700.2), as indexes. Empty when not modal. */
+  /** The chosen modes of a modal spell (later: CR 700.2), as indexes. Empty when not modal. */
   modes: number[];
   /** The value announced for X (CR 107.3), or null when there is no X. */
   x: number | null;

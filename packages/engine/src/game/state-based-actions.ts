@@ -20,7 +20,7 @@ export function checkStateBasedActions(state: GameState, cards: CardDatabase): P
   const cleared = clearEmptyLibraryDraws(state);
   if (actions.length === 0) return { state: cleared, events: [], performed: false };
   let progress: Progress = { state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] };
-  // Cards that go to a graveyard together go in battlefield order (D-039; CR 404.3 lets the owner choose).
+  // Cards that go to a graveyard together go in battlefield order (D-039; later: CR 404.3 lets the owner choose).
   for (const action of actions) progress = andThen(progress, (s) => performOnObject(s, action));
   const losses = actions.flatMap((a): Loss[] => {
     const loss = lossFrom(a);

@@ -7,7 +7,7 @@ import type { PoolCard } from "./pool-data.ts";
 const COLORS: readonly string[] = ["W", "U", "B", "R", "G"];
 const SUPERTYPES: readonly string[] = ["basic", "legendary", "snow", "world"];
 const CARD_TYPES: readonly string[] = ["artifact", "creature", "enchantment", "instant", "kindred", "land", "sorcery"];
-// Planeswalkers (loyalty, CR 209) and battles (defense, CR 310) need printed values the engine doesn't model yet.
+// Planeswalkers (loyalty, later: CR 209) and battles (defense, later: CR 310) need printed values the engine doesn't model yet.
 
 /** Creature types that are two words (CR 205.3b: creature subtypes are "one or two words"; the list is CR 205.3m). */
 const TWO_WORD_SUBTYPES: readonly string[] = ["Time Lord"];

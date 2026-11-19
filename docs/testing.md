@@ -303,14 +303,16 @@ Regenerate and add new golden games when the pool grows, so every card appears i
 
 ## 5. Rules coverage report
 
-`pnpm coverage:rules` lists, for every CR rule:
-- whether code cites it (`CR 702.19c` in a comment),
-- which scenarios test it (their `rules:` lists),
-- and flags rules that **code cites but no scenario tests**, plus interaction matrix cells marked "not yet".
+`pnpm coverage:rules` lists, for every CR rule the rules code cites (`CR 702.19c` in a comment):
+- which scenarios test it (their `rules:` lists), or else which unit tests cite it,
+- and flags rules that **code cites but nothing tests**, plus interaction matrix cells marked "not yet".
 
 It writes `docs/coverage/rules-coverage.md` (generated; commit it so the owner can read it on GitHub) with a
-summary at the top: rules cited, rules tested, gaps. `pnpm check` fails if a change adds a **new** gap compared to
-the committed report. Existing gaps are allowed, but they're listed so they get closed.
+summary at the top: rules cited, rules tested by scenarios, rules tested only by unit tests, gaps. `pnpm check` fails
+if a change adds a **new** gap compared to the committed report. Existing gaps are allowed, but they're listed so they
+get closed. `pnpm coverage:rules` won't write a report with a new gap unless given `--accept-new-gaps` (say why in the
+commit). D-048 has the details: which code counts, how citations match, and why a mention of a rule that isn't built
+yet is written `later: CR 614`.
 
 ## 6. Benchmarks
 

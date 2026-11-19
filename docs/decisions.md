@@ -554,3 +554,20 @@ every schema change and every change D-024 lists bumps it.
   cancel it). When the AI arrives, regenerate the golden games with it.
 - Saved replays (D-046) check a final-state hash; golden games check the whole log. Both stay: a replay is the
   compact form for bug reports, a golden game the readable one for engine changes.
+
+**D-048: The rules coverage report** · 2026-11-19 · accepted
+- `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`. "Cited by code" means the rules code:
+  `packages/engine/src` and `packages/cards/src`. The CLI and the scenario runner cite rules only to explain
+  themselves.
+- Citations are read in every form the code uses: lists (`CR 117.3d, 117.4`), ranges (`CR 601.2b–i`, `CR 506–511`,
+  `CR 500.7–500.11`) and asides (`CR 302.6, with haste, 702.10`). Every cited rule must exist in `rules/`.
+- A mention of a rule not built yet is written `later: CR 614`, and isn't a citation: a comment saying where
+  replacement effects will plug in doesn't mean they're implemented.
+- A test of rule T covers code citing rule C when T is C, T is under C (601.2c covers 601.2 and 601), or C is a
+  lettered subrule of T (601.2 covers 601.2c). A section never covers a subrule (601 doesn't cover 601.2c).
+- The report lists rules tested by scenarios, rules tested only by unit tests (they cite the rule in a name or
+  comment), and gaps: rules nothing tests, and interaction matrix cells marked "not yet". Whether unit tests count
+  for the M1 exit criterion is an open question for the owner (status.md); until then, a gap is a rule with neither.
+- `cli/test/coverage.test.ts` fails on a gap the committed report doesn't list. `pnpm coverage:rules` refuses to write
+  a report with a new gap unless given `--accept-new-gaps`, so accepting one is deliberate and shows in the commit.
+  Closed gaps just disappear when the report is rewritten. The coverage tests' own sample citations aren't counted.

@@ -1,5 +1,5 @@
 // Dealing damage (CR 120). Every source of damage goes through `dealDamage`, so prevention and replacement effects
-// (CR 614–615) and source abilities like lifelink, infect and wither (CR 120.3) have one place to plug in.
+// (later: CR 614–615) and source abilities like lifelink, infect and wither (CR 120.3) have one place to plug in.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
@@ -18,7 +18,7 @@ export type Damage = { source: ObjectId; to: Target; amount: number; combat: boo
  * Deals damage as one damage event (CR 120.4): spells deal it to one recipient, combat damage to many at once
  * (CR 510.2). All of it is dealt first (CR 120.4b, when "whenever ... is dealt damage" triggers), then all of it turns
  * into its results (CR 120.4c): life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e). There are
- * no planeswalkers or battles yet (CR 120.3c, 120.3h).
+ * no planeswalkers or battles yet (later: CR 120.3c, 120.3h).
  */
 export function dealDamage(state: GameState, damage: readonly Damage[], cards: CardDatabase): Progress {
   // A source that would deal 0 damage deals no damage at all (CR 120.8).

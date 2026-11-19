@@ -37,7 +37,8 @@ it up, then cite it.
 - `node scripts/rule.mjs --glossary trample` prints a glossary entry.
 - `grep -rn "^704.5g" rules/cr` finds the file a rule lives in.
 
-Cite rules in code comments and in tests as `CR 601.2c`. **The CR wins over every other spec** (D-020): if a doc
+Cite rules in code comments and in tests as `CR 601.2c`. A comment that only mentions a rule not built yet
+writes `later: CR 614`, so the coverage report (D-048) doesn't count it as implemented. **The CR wins over every other spec** (D-020): if a doc
 or task in this repo disagrees with the CR on rules logic, follow the CR and fix the doc. If the CR itself seems
 ambiguous, stop and ask. Don't guess.
 

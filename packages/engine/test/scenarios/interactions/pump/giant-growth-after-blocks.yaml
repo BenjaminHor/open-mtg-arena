@@ -1,0 +1,27 @@
+name: A Giant Growth after blockers are declared changes who survives the combat damage
+rules: [CR 509.2, CR 510.1a, CR 613.4c, CR 704.5g]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Giant Growth]
+    battlefield: [Forest, Grizzly Bears]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Hill Giant: Grizzly Bears }
+  # Blocks are locked in; the 2/2 Bears would die to the 3/3 Giant. Pumped to 5/5, they kill it and survive.
+  - p1 cast: Giant Growth
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 5
+      p1:Grizzly Bears.toughness: 5
+  - all pass: until combat.damage
+  - expect:
+      p2.graveyard: [Hill Giant]
+      p1.graveyard: [Giant Growth]
+      p1:Grizzly Bears.damage: 3

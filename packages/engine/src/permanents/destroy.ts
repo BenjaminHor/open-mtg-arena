@@ -1,5 +1,5 @@
 // Destroying a permanent (CR 701.8). Its own function, so regeneration (CR 701.19), which replaces "destroy" and not
-// other ways of going to the graveyard, has one place to plug in. Indestructible (CR 702.12b) belongs elsewhere too:
+// other ways of going to the graveyard, has one place to plug in. Indestructible (later: CR 702.12b) belongs elsewhere too:
 // an indestructible creature ignores the lethal-damage state-based action, so `rules/state-based-actions.ts` must not
 // list it. Listing it and doing nothing here would make the check "perform" it forever.
 
