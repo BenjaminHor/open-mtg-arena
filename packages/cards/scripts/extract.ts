@@ -16,7 +16,7 @@ import {
   type RulingsFile,
   slugify,
 } from "../src/pool-data.ts";
-import { choosePrinting, matchPoolCards } from "./match.ts";
+import { choosePrinting, matchPoolCards, type PrintingChoice } from "./match.ts";
 import { BULK_FILES, CARDS_DIR, MANIFEST_FILE, type Manifest, SCRYFALL_DIR, type ScryfallCard } from "./scryfall.ts";
 
 const DATA_DIR = path.join(CARDS_DIR, "data");
@@ -96,7 +96,7 @@ async function readManifest(): Promise<Manifest> {
 }
 
 /** Rules data from the Oracle Cards entry; images, artist, set and collector number from the chosen printing. */
-function toPoolCard(c: ScryfallCard, printing: ScryfallCard, chosenBy: PoolCard["printingChosenBy"]): PoolCard {
+function toPoolCard(c: ScryfallCard, printing: ScryfallCard, chosenBy: PrintingChoice): PoolCard {
   // Split, flip, adventure, saga, meld and other layouts need rules the engine doesn't have yet (D-026).
   if (c.layout !== "normal") throw new Error(`"${c.name}": layout "${c.layout}" isn't supported yet`);
   const img = printing.image_uris;

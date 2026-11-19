@@ -28,6 +28,8 @@ export function matchPoolCards(names: readonly string[], cards: Iterable<Scryfal
   return names.map((name) => (matches.get(name) ?? [])[0] as ScryfallCard);
 }
 
+export type PrintingChoice = "pin" | "rule" | "oracleCards";
+
 /** Set types of regular releases. Others are commander, masters, crossover and digital products, and so on. */
 const REGULAR_SET_TYPES = new Set(["core", "expansion"]);
 
@@ -42,7 +44,7 @@ export function choosePrinting(
   oracleCard: ScryfallCard,
   printings: readonly ScryfallCard[],
   asOf: string,
-): { printing: ScryfallCard; chosenBy: "pin" | "rule" | "oracleCards" } {
+): { printing: ScryfallCard; chosenBy: PrintingChoice } {
   const { pin } = entry;
   if (pin !== null) {
     const inSet = printings.filter((p) => p.set === pin.set);

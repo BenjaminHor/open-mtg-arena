@@ -39,8 +39,11 @@ export type PoolCard = {
   set: string;
   collectorNumber: string;
   scryfallUri: string;
-  /** How the printing was chosen: pinned in pool.txt, by the newest-regular-printing rule, or Oracle Cards' pick. */
-  printingChosenBy: "pin" | "rule" | "oracleCards";
+  /**
+   * How the printing was chosen: "pin" (in pool.txt), "rule" (newest regular printing) or "oracleCards" (Scryfall's
+   * pick). A plain string because JSON imports type strings as `string`.
+   */
+  printingChosenBy: string;
 };
 
 /** data/rulings/<slug>.json */
