@@ -122,7 +122,7 @@ type Action =
   | { type: 'CAST_SPELL'; decisionId: string; player: PlayerId; object: ObjectId }
   | { type: 'ACTIVATE_ABILITY'; decisionId: string; player: PlayerId; object: ObjectId; ability: AbilityRef }
   | { type: 'ANSWER'; decisionId: string; player: PlayerId; answer: Answer }
-  | { type: 'CONCEDE'; player: PlayerId }
+  | { type: 'CONCEDE'; player: PlayerId }   // any time, never listed by legalActions (D-042)
 ```
 
 - Priority is just one kind of decision. Its options are the actions that `legalActions()` returns.

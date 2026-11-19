@@ -3,11 +3,12 @@
 import type { GameState } from "../state/game-state.ts";
 import type { Loss } from "../state/result.ts";
 import type { Progress } from "./progress.ts";
-import { currentTurn } from "./turn.ts";
 
 /**
  * These players lose the game at the same time (CR 104.3). If one player is left, they win (CR 104.2a); if none, the
- * game is a draw (CR 104.4a). Either way the game ends: nothing is pending or queued after it.
+ * game is a draw (CR 104.4a). Either way the game ends at once (CR 104.1): nothing is pending or queued after it, and a
+ * spell or ability part way through being put on the stack stays where it is. (When a player leaves a multiplayer game
+ * that goes on, the objects they own leave too, CR 800.4a.)
  */
 export function playersLose(state: GameState, losses: readonly Loss[]): Progress {
   if (losses.length === 0) return { state, events: [] };
@@ -17,7 +18,8 @@ export function playersLose(state: GameState, losses: readonly Loss[]): Progress
     // In a multiplayer game the loser leaves and the game goes on (CR 800.4). Not supported yet (future-rules.md).
     throw new Error("A player lost with more than one player left: leaving a multiplayer game isn't supported yet");
   }
-  const result = { winner: left[0] ?? null, losses: [...losses], turn: currentTurn(state).number };
+  // Before the first turn (a concession during mulligans) the turn is 0.
+  const result = { winner: left[0] ?? null, losses: [...losses], turn: state.turn?.number ?? 0 };
   return {
     state: { ...state, result, pending: null, work: [], casting: null, combat: null },
     events: [

@@ -97,7 +97,6 @@ export type GameEvent =
   | { type: "STATE_BASED_ACTIONS"; actions: StateBasedAction[] }
   /** A permanent was destroyed (CR 701.8): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
   | { type: "PERMANENT_DESTROYED"; object: ObjectId; cardId: CardId }
-  /** A player lost the game (CR 104.3). `GAME_ENDED` follows when the game is over. */
+  /** A player lost the game (CR 104.3), including by conceding (reason `conceded`). `GAME_ENDED` follows when the game is over. */
   | { type: "PLAYER_LOST"; player: PlayerId; reason: LossReason }
-  | { type: "PLAYER_CONCEDED"; player: PlayerId } // CR 104.3a
   | { type: "GAME_ENDED"; result: GameResult };

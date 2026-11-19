@@ -178,6 +178,10 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     );
   });
 
+  it("refuses a concede step that doesn't say now", () => {
+    expect(first(`${main1}  - p1 concede: yes\n`)).toMatch(/takes "now"/);
+  });
+
   it("reports format errors as problems", () => {
     expect(first(`${main1.replace("steps:\n", "stepz:\n")}  - p1 pass: once\n`)).toMatch(
       /Unknown top-level key "stepz"/,

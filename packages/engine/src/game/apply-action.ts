@@ -17,6 +17,7 @@ import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
 import { castProblem, startCast } from "./cast.ts";
 import { activateWhilePaying, cancelCasting, chooseTarget, payCost, targetProblem } from "./casting-steps.ts";
+import { playersLose } from "./game-end.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
@@ -32,7 +33,11 @@ export function applyAction(state: GameState, action: Action, cards: CardDatabas
 /** Checks the action answers the pending decision, then applies it. The decision is cleared before it's applied. */
 function handleAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
   if (state.result !== null) return error("gameOver", "The game is over");
-  if (action.type === "CONCEDE") return error("illegalAction", "Conceding arrives in M1-15");
+  // A player can concede at any time, whoever the game is waiting for (CR 104.3a).
+  if (action.type === "CONCEDE") {
+    if (!state.turnOrder.includes(action.player)) return error("illegalAction", `${action.player} isn't in the game`);
+    return { ok: true, ...playersLose(state, [{ player: action.player, reason: "conceded" }]) };
+  }
   const pending = state.pending;
   if (pending === null) return error("illegalAction", "The game isn't waiting for anything");
   if (action.decisionId !== pending.id) return error("staleDecision", `Expected an answer to ${pending.id}`);

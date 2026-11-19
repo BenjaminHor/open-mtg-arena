@@ -29,7 +29,7 @@ export type GameResult = {
   winner: PlayerId | null;
   /** Every player who lost, in the order they lost. */
   losses: Loss[];
-  /** The turn number when the game ended. */
+  /** The turn number when the game ended; 0 if it ended before the first turn (a concession during mulligans). */
   turn: number;
 };
 

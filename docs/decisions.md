@@ -447,3 +447,12 @@ every schema change and every change D-024 lists bumps it.
   ability with mana in its cost is refused too (it would need a payment while resolving at once).
 - Cost functions live in `rules/costs.ts` (`totalCost`, `activationManaCost`), the one place cost changes will go.
 
+**D-042: Conceding** · 2026-11-19 · accepted
+- `CONCEDE` works for any player in the game at any time, whoever the game is waiting for, even mid-cast or during
+  mulligans (CR 104.3a). It goes through `playersLose` with reason `conceded`, like any loss, so `PLAYER_LOST` is the
+  one loss event (`PLAYER_CONCEDED` was dropped).
+- It isn't listed by `legalActions`: it's always available, like a menu button, and listing it would make random
+  agents (the CLI's `random`, the fuzzer) concede all the time. Hosts offer it themselves.
+- The game ends at once (CR 104.1): a spell or ability part way through being put on the stack stays where it is, and
+  the result's `turn` is 0 when the game ends before the first turn.
+

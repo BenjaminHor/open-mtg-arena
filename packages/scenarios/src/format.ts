@@ -34,6 +34,8 @@ export type ScenarioStep =
   | { kind: "block"; player: string; blocks: [string, string][] }
   /** Divide an attacker's combat damage among its blockers (CR 510.1c): pairs of blocker and amount. */
   | { kind: "assign"; player: string; division: [string, number][] }
+  /** Concede the game (CR 104.3a): `p1 concede: now`. Allowed at any time, so it isn't in `legalActions()`. */
+  | { kind: "concede"; player: string }
   | { kind: "expect"; expectations: Record<string, unknown> }
   | { kind: "expectError"; code: string }
   /** A step word the format has but the runner doesn't support yet, kept whole for the task that adds it. */
@@ -139,6 +141,11 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
     const targets = raw.targets ?? [];
     if (!Array.isArray(targets)) throw new Error(`${where}: targets is a list`);
     return { kind: "cast", player, card: String(value), targets, pay: raw.pay };
+  }
+  if (word === "concede") {
+    noOptions();
+    if (value !== "now") throw new Error(`${where}: "${player} concede" takes "now"`);
+    return { kind: "concede", player };
   }
   if (word === "attack") {
     noOptions();

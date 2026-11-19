@@ -99,6 +99,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   a target (`p2`, `p2:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.
 - `p1 play: <land>`: play a land from hand.
+- `p1 concede: now`: p1 concedes and loses (CR 104.3a). A player may concede at any time, even without priority, so
+  conceding is never listed by `legalActions()`; this step sends the action directly.
 - `p1 cast: <card>` with `targets: [...]` and `pay:`: cast a spell from hand. `targets` lists one target per instance of
   "target", in order: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`). `pay: auto` pays with `autoPay`
   (activating mana abilities as needed); `pay: { R: 1 }` pays that from mana already in the pool; `pay: cancel` cancels

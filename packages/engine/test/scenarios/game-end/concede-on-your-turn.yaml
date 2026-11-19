@@ -1,0 +1,14 @@
+name: A player who concedes loses at once, and the result says who won, why and on which turn
+rules: [CR 104.3a, CR 104.2a, CR 104.1]
+setup:
+  turn: { active: p1, step: main1, number: 5 }
+steps:
+  - p1 concede: now
+  - expect:
+      winner: p2
+      pending: null
+      events contains:
+        - { type: PLAYER_LOST, player: p1, reason: conceded }
+        - { type: GAME_ENDED, result: { winner: p2, losses: [{ player: p1, reason: conceded }], turn: 5 } }
+  - p2 pass: once
+  - expect error: gameOver

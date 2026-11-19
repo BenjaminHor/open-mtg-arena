@@ -7,16 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-15 Game end (plan, 2026-11-19). CR 104.1–104.4, 104.3a, 800.4a.
-  - `CONCEDE` (CR 104.3a): any player, any time the game is on (pregame, mid-cast, another player's decision); it
-    goes through `playersLose` with reason `conceded`. `PLAYER_LOST` is the one loss event; `PLAYER_CONCEDED` goes.
-    Not listed in `legalActions` (it's always available, like a menu; listing it would make random agents concede).
-  - `GameResult.turn` is 0 for a game that ends before the first turn.
-  - A concession mid-cast or mid-activation: the game is over, so the invariants accept a spell or ability left on the
-    stack (CR 800.4a's cleanup applies when the game goes on, in multiplayer).
-  - Runner: `p1 concede: now`.
-  - Tests: conceding on your turn, on the other player's priority, during mulligans, mid-cast; results reporting
-    winner, losses with reasons, and turn; actions after the end are `gameOver`.
+- (nothing)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -52,12 +43,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   (the legend rule, CR 704.5j) can wait for it, since a performed check re-queues `givePriority`.
 - Combat (D-040): engine tests that pass through combat with creatures must answer `declareAttackers` and
   `declareBlockers` (the turn tests' `playUntilTurn` declares nothing).
-- For M1-15: losing to 0 life and an empty library, `GameResult` and `winner` already work (M1-12). What's left is
-  conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn. Conceding
-  can go through `playersLose` with reason `conceded`; then `PLAYER_CONCEDED` overlaps `PLAYER_LOST`, so keep one.
-  A concession mid-cast or mid-activation leaves a spell or a partly chosen ability on the stack with `casting: null`;
-  when a player leaves, objects they control on the stack that aren't cards cease to exist (CR 800.4a,
-  `removeAbilityFromStack`). Check the invariants accept the result.
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).
@@ -82,7 +67,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-15 Game end
+- M1-17 Headless CLI (M1-16 is done; M1-18 and M1-19 follow)
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -140,6 +125,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   mana costs, cancelling and resolution from the source's card (CR 113.7a); firebreathing; the runner's `activate`
   with `targets` and `pay`; 8 activated-ability scenarios and TS tests with a targeted test ability (D-041)
   (2026-11-19).
+
+- M1-15 Game end: conceding at any time (CR 104.3a) through the same `playersLose` as state-based losses; results with
+  winner, losses and reasons, and turn; the runner's `concede`; 6 game-end scenarios (D-042) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
