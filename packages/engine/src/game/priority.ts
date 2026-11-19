@@ -11,8 +11,8 @@ import { queueWork } from "./work.ts";
 
 /**
  * State-based actions are checked first (CR 117.5). If any were performed, the check repeats: `givePriority` is queued
- * again, rather than looped here, so a state-based action that needs a player's choice (the legend rule, CR 704.5j)
- * can wait for it. When none apply, the player gets priority. If the game ended, no one does.
+ * again, rather than looped here, so a state-based action that needs a player's choice (the legend rule, later: CR
+ * 704.5j) can wait for it. When none apply, the player gets priority. If the game ended, no one does.
  */
 export function givePriority(state: GameState, player: PlayerId, cards: CardDatabase): Progress {
   const checked = checkStateBasedActions(state, cards);

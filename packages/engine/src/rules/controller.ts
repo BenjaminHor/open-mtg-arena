@@ -1,5 +1,5 @@
 // Who controls an object. Every rules question about control asks this function, never an object's fields, so
-// control-changing effects (layer 2, CR 613.1b) only have to be added here (docs/future-rules.md).
+// control-changing effects (layer 2, later: CR 613.1b) only have to be added here (docs/future-rules.md).
 
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";

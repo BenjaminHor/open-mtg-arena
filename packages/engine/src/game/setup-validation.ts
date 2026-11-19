@@ -25,7 +25,8 @@ const FIXED_START_STEPS: readonly Step[] = [
 export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
   const problems: string[] = [];
   if (!Number.isSafeInteger(setup.seed) || setup.seed < 0) problems.push("seed must be a non-negative safe integer");
-  // Multiplayer start-of-game rules (CR 103.5c, 103.8c) aren't built, so only two-player games are allowed for now.
+  // Multiplayer start-of-game rules (later: CR 103.5c, 103.8c) aren't built, so only two-player games are allowed for
+  // now.
   if (setup.players.length !== 2) problems.push("only two-player games are supported so far");
   const ids = setup.players.map((p) => p.id);
   if (ids.some((id, i) => ids.indexOf(id) !== i)) problems.push("player ids must be different");

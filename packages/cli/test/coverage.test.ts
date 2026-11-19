@@ -1,12 +1,13 @@
-// The rules coverage report (docs/testing.md, section 5; D-048): citations are read in every form the code uses,
-// and `pnpm check` fails on a gap the committed report doesn't list.
+// The rules coverage report (docs/testing.md, section 5; D-048): citations are read in every form the code uses, the
+// committed report is up to date, and coverage can't get worse without someone accepting it.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { citedRules, covers, expandRange, ruleIds } from "../src/coverage/citations.ts";
-import { notYetCells, REPO } from "../src/coverage/collect.ts";
-import { collectInputs, coverage, gaps, listedGaps, REPORT, reportText, sortRules } from "../src/coverage/report.ts";
+import { citedRules, covers, expandRange, laterRules, ruleIds } from "../src/coverage/citations.ts";
+import { matrixCellGaps, REPO } from "../src/coverage/collect.ts";
+import { collectInputs, coverage, listedGaps, newGaps, REPORT, reportText, sortRules } from "../src/coverage/report.ts";
+import { writeReport } from "../src/rules-coverage.ts";
 
 const CR = ruleIds(join(REPO, "rules/cr"));
 
@@ -18,16 +19,30 @@ describe("citedRules", () => {
       "602.2b",
     ]);
     expect(citedRules("can't attack or use {T} yet (CR 302.6, with haste, 702.10)")).toEqual(["302.6", "702.10"]);
-    expect(citedRules("CR 506.4, 508.1a, 509.1a, 509.1h")).toEqual(["506.4", "508.1a", "509.1a", "509.1h"]);
     expect(citedRules("CR 500.7–500.9 and CR 506–508")).toEqual(["500.7", "500.8", "500.9", "506", "507", "508"]);
   });
 
-  it("skips a mention of a rule not built yet, written `later: CR 614`", () => {
-    expect(citedRules("damage can't be prevented yet (later: CR 615) but is dealt (CR 120.3)")).toEqual(["120.3"]);
+  it("reads a list that wraps onto the next comment line", () => {
+    expect(citedRules("created on the stack (CR 602.2a,\n// 405.1), and")).toEqual(["602.2a", "405.1"]);
+    expect(citedRules(" * lose (CR 104.3,\n * 104.4a)")).toEqual(["104.3", "104.4a"]);
+  });
+
+  it("reads short ranges whole, and keeps a range it can't read as written, so it's reported as not in the CR", () => {
+    expect(citedRules("CR 601.2–4, 702.10–12, 704.5a–5c")).toEqual([
+      ...["601.2", "601.3", "601.4", "702.10", "702.11", "702.12"],
+      ...["704.5a", "704.5b", "704.5c"],
+    ]);
+    expect(citedRules("a CR 601.2c-style rule")).toEqual(["601.2c-style"]);
+  });
+
+  it("skips a mention of a rule not built yet, written `later: CR 614`, and laterRules finds it", () => {
+    const text = "damage can't be prevented yet (later: CR 615) but is dealt (CR 120.3)";
+    expect(citedRules(text)).toEqual(["120.3"]);
+    expect(laterRules(text)).toEqual(["615"]);
   });
 
   it("reads nothing that isn't a citation", () => {
-    expect(citedRules("a cap of 200 turns, 1.5 seconds; CR stands alone")).toEqual([]);
+    expect(citedRules("a cap of 200 turns, 1.5 seconds; CR stands alone; CR 1234")).toEqual([]);
   });
 });
 
@@ -46,34 +61,32 @@ describe("ruleIds", () => {
 });
 
 describe("covers", () => {
-  it("counts a test of the rule itself, of a rule under it, or of a lettered subrule's rule", () => {
+  it("counts a test of the rule itself or of a rule under it", () => {
     expect(covers("601.2c", "601.2c")).toBe(true);
     expect(covers("601.2c", "601.2")).toBe(true);
     expect(covers("601.2c", "601")).toBe(true);
-    expect(covers("601.2", "601.2c")).toBe(true);
   });
 
-  it("doesn't count a sibling, a section for a subrule, or a rule whose number only starts the same", () => {
-    expect(covers("601.2b", "601.2c")).toBe(false);
+  it("doesn't count a test of a broader rule, a sibling, or a rule whose number only starts the same", () => {
+    expect(covers("601.2", "601.2c")).toBe(false);
     expect(covers("601", "601.2c")).toBe(false);
+    expect(covers("601.2b", "601.2c")).toBe(false);
     expect(covers("601.20", "601.2")).toBe(false);
     expect(covers("702.10", "702.1")).toBe(false);
   });
 });
 
-describe("notYetCells", () => {
-  it("finds the interaction matrix's cells marked not yet, by row and column", () => {
-    const matrix = [
-      "| | Flying | Reach |",
-      "| --- | --- | --- |",
-      "| Flying | — | [reach-blocks-flyer](x.yaml) |",
-      "| Reach | | not yet |",
-    ].join("\n");
-    expect(notYetCells(matrix)).toEqual(["Reach × Reach"]);
-    expect(notYetCells(matrix.replace("[reach-blocks-flyer](x.yaml)", "Not yet"))).toEqual([
-      "Flying × Reach",
-      "Reach × Reach",
-    ]);
+describe("matrixCellGaps", () => {
+  const matrix = (cell: string) =>
+    ["| | Flying | Reach |", "| --- | --- | --- |", `| Flying | — | ${cell} |`, "| Reach | | — |"].join("\n");
+
+  it("finds cells above the diagonal marked not yet, however it's written, or left empty", () => {
+    expect(matrixCellGaps(matrix("[reach-blocks-flyer](x.yaml)"))).toEqual([]);
+    expect(matrixCellGaps(matrix("n/a"))).toEqual([]);
+    for (const cell of ["not yet", "Not yet.", "`not yet`"]) {
+      expect(matrixCellGaps(matrix(cell)), cell).toEqual(["Flying × Reach: not yet"]);
+    }
+    expect(matrixCellGaps(matrix(""))).toEqual(["Flying × Reach: empty"]);
   });
 });
 
@@ -94,29 +107,61 @@ describe("the committed report", () => {
   const current = coverage(inputs);
   const committed = readFileSync(join(REPO, REPORT), "utf8");
 
-  it("every rule the code cites is in the CR", () => {
+  it("is up to date: run `pnpm coverage:rules` after changing citations or tests", () => {
+    expect(committed).toBe(reportText(current));
+  });
+
+  it("names only rules that are in the CR", () => {
     expect(current.notInCr).toEqual([]);
   });
 
-  it("lists every gap there is: a new one means a test is missing (or pnpm coverage:rules --accept-new-gaps)", () => {
-    const listed = listedGaps(committed);
-    expect(gaps(current).filter((g) => !listed.includes(g))).toEqual([]);
-  });
-
-  it("would fail if a scenario were removed: its rules become gaps", () => {
-    // A scenario that's the only test of one of the cited rules.
-    const [rule, files] = Object.entries(current.byScenario).find(
-      ([r, f]) => f.length === 1 && !Object.keys(inputs.unitTests).some((t) => covers(t, r)),
-    ) ?? ["", []];
-    const removed = files[0] ?? "";
-    const scenarios = Object.fromEntries(
-      Object.entries(inputs.scenarios).map(([r, f]) => [r, f.filter((x) => x !== removed)]),
-    );
-    const without = coverage({ ...inputs, scenarios });
-    expect(gaps(without).filter((g) => !listedGaps(committed).includes(g))).toContain(`CR ${rule}`);
-  });
-
   it("reads back the gaps it writes", () => {
-    expect(listedGaps(reportText(current))).toEqual(gaps(current));
+    expect(listedGaps(reportText(current))).toHaveLength(current.untested.length + current.matrixGaps.length);
+    expect(newGaps(reportText(current), current)).toEqual([]);
+  });
+
+  it("gets worse when a scenario is removed, even if a unit test still cites the rule", () => {
+    // A rule only one scenario covers, which a unit test also cites.
+    const found = Object.entries(current.byScenario).find(
+      ([rule, files]) => files.length === 1 && Object.keys(inputs.unitTests).some((t) => covers(t, rule)),
+    );
+    if (found === undefined) throw new Error("no rule with one scenario and a unit test: pick another example");
+    const [rule, [scenario]] = found as [string, string[]];
+    const scenarios = Object.fromEntries(
+      Object.entries(inputs.scenarios).map(([r, files]) => [r, files.filter((f) => f !== scenario)]),
+    );
+    expect(newGaps(committed, coverage({ ...inputs, scenarios }))).toContain(
+      `CR ${rule} is no longer tested by a scenario`,
+    );
+  });
+
+  it("gets worse when a cited rule has no test at all", () => {
+    const withNewCitation = coverage({ ...inputs, code: { ...inputs.code, "601.99": ["x.ts"] } });
+    expect(newGaps(committed, withNewCitation)).toEqual(["CR 601.99"]);
+  });
+});
+
+describe("writeReport", () => {
+  const current = coverage(collectInputs(CR));
+  const committed = reportText(current);
+  const worse = coverage({ ...collectInputs(CR), matrixGaps: ["Flying × Reach: not yet"] });
+
+  it("writes a report that's no worse", () => {
+    expect(writeReport(current, committed, false).report).toBe(committed);
+  });
+
+  it("refuses a worse one unless the new gaps are accepted, and then says which", () => {
+    expect(writeReport(worse, committed, false)).toEqual({
+      report: null,
+      output: expect.stringMatching(/^coverage got worse: matrix: Flying × Reach: not yet\. .*--accept-new-gaps/),
+    });
+    const accepted = writeReport(worse, committed, true);
+    expect(accepted.report).toBe(reportText(worse));
+    expect(accepted.output).toMatch(/accepted: matrix: Flying × Reach: not yet$/);
+  });
+
+  it("refuses a rule that isn't in the CR, accepted or not", () => {
+    const typo = { ...current, notInCr: ["601.99"] };
+    expect(writeReport(typo, committed, true).report).toBeNull();
   });
 });

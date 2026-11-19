@@ -178,7 +178,7 @@ mechanic is added, also test how it combines with what's already in the pool:
 - Write scenarios in `packages/engine/test/scenarios/interactions/<mechanic>/` for the combinations that the
   CR or the rulings treat specially, and for at least one ordinary case per related mechanic.
 - Keep `packages/engine/test/scenarios/interactions/README.md` as a small matrix: mechanics on both axes, with
-  each cell linking to the scenarios that cover the pair, or marked "not applicable" or "not yet". Claude Code
+  each cell linking to the scenarios that cover the pair, or marked "n/a" or "not yet". Claude Code
   updates it with each new mechanic, and the coverage report flags pairs marked "not yet".
 
 ## 2. The headless CLI

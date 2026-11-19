@@ -1,5 +1,5 @@
 name: Giant Growth and firebreathing on one creature both apply, and both end in the cleanup step
-rules: [CR 613.4c, CR 613.7, CR 514.2]
+rules: [CR 613.4c, CR 514.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -16,7 +16,7 @@ steps:
     targets: [p1:Furnace Whelp]
     pay: auto
   - all pass: once
-  # Both change power and toughness in layer 7c, applied in timestamp order: 2/2, +1/+0, +3/+3.
+  # Both modify power and toughness in layer 7c: 2/2, +1/+0, +3/+3. They only add, so their order doesn't matter (D-038).
   - expect:
       p1:Furnace Whelp.power: 6
       p1:Furnace Whelp.toughness: 5

@@ -4,7 +4,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { parseScenario } from "@mtg/scenarios";
-import { citedRules } from "./citations.ts";
+import { citedRules, laterRules } from "./citations.ts";
 
 export const REPO = join(import.meta.dirname, "../../../..");
 
@@ -60,7 +60,8 @@ export function unitTestRules(): Citations {
   const citations: Citations = {};
   const packages = readdirSync(join(REPO, "packages"));
   for (const pkg of packages) {
-    for (const f of files(`packages/${pkg}/test`, ".ts")) {
+    // Test files only: fixtures and helpers (test/support/) cite rules to explain themselves, not to test them.
+    for (const f of files(`packages/${pkg}/test`, ".test.ts")) {
       if (NOT_RULE_TESTS.includes(relative(REPO, f))) continue;
       addAll(citations, citedRules(readFileSync(f, "utf8")), f);
     }
@@ -69,16 +70,17 @@ export function unitTestRules(): Citations {
 }
 
 /**
- * The interaction matrix's cells marked "not yet" (docs/testing.md, "Interaction scenarios"): a markdown table with
- * mechanics as rows and columns. Each is `row × column`.
+ * The interaction matrix's gaps (docs/testing.md, "Interaction scenarios"): a markdown table with mechanics as rows
+ * and columns, filled in above the diagonal. Each is `row × column: not yet` or `row × column: empty`.
  */
-export function matrixNotYet(): string[] {
+export function matrixGaps(): string[] {
   const path = join(REPO, MATRIX);
-  return existsSync(path) ? notYetCells(readFileSync(path, "utf8")) : [];
+  if (!existsSync(path)) throw new Error(`${MATRIX} is missing: the interaction matrix (docs/testing.md)`);
+  return matrixCellGaps(readFileSync(path, "utf8"));
 }
 
-/** The "not yet" cells of a markdown table whose first row and first column name the mechanics. */
-export function notYetCells(markdown: string): string[] {
+/** The cells above the diagonal of a mechanics table that are marked "not yet" or left empty. */
+export function matrixCellGaps(markdown: string): string[] {
   const rows = markdown
     .split("\n")
     .filter((line) => line.startsWith("|"))
@@ -90,7 +92,22 @@ export function notYetCells(markdown: string): string[] {
     );
   const [header, , ...body] = rows;
   if (header === undefined) return [];
-  return body.flatMap((cells) =>
-    cells.flatMap((cell, i) => (i > 0 && /^not yet$/i.test(cell) ? [`${cells[0]} × ${header[i]}`] : [])),
+  return body.flatMap((cells, row) =>
+    // Row r's own mechanic is column r + 1; the cells after it are the upper half.
+    cells.flatMap((cell, column) => {
+      if (column <= row + 1) return [];
+      const pair = `${cells[0]} × ${header[column]}`;
+      if (cell === "") return [`${pair}: empty`];
+      return /^`?not yet\b/i.test(cell) ? [`${pair}: not yet`] : [];
+    }),
   );
+}
+
+/** The rules the rules code mentions as not built yet (`later: CR 614`), and where. */
+export function laterMentions(): Citations {
+  const mentions: Citations = {};
+  for (const dir of CODE_DIRS) {
+    for (const f of files(dir, ".ts")) addAll(mentions, laterRules(readFileSync(f, "utf8")), f);
+  }
+  return mentions;
 }

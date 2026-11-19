@@ -35,10 +35,9 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 ## Tests
 
 `pnpm test` runs this package's tests along with the rest: `test/cli.test.ts` plays games through the commands,
-including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games
-replay exactly), `test/log-inspect-replay.test.ts`, `test/fuzz.test.ts` (the checks, failure files, and the short
-fuzz `pnpm check` runs), `test/replays.test.ts` (every saved replay), `test/coverage.test.ts` (the report and its gap check),
-`test/bench.test.ts` (the bench workloads build and run) and
-`test/golden.test.ts` (every golden game's
-log) cover the rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo
-root, where pnpm runs scripts.
+including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games replay
+exactly), `test/log-inspect-replay.test.ts`, `test/fuzz.test.ts` (the checks, failure files, and the short fuzz `pnpm
+check` runs), `test/replays.test.ts` (every saved replay), `test/coverage.test.ts` (the report and its gap check),
+`test/bench.test.ts` (the bench workloads build and run) and `test/golden.test.ts` (every golden game's log) cover the
+rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root, where pnpm
+runs scripts.

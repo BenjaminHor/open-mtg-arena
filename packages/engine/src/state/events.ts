@@ -77,7 +77,10 @@ export type GameEvent =
   | { type: "MANA_EMPTIED"; player: PlayerId; lost: ManaPool }
   | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3
   | { type: "PERMANENT_TAPPED"; object: ObjectId } // CR 701.26a
-  /** Mana added to a player's mana pool (CR 106.4), by an ability of `source` (for "tapped for mana" rules, later: CR 106.12). */
+  /**
+   * Mana added to a player's mana pool (CR 106.4), by an ability of `source` (for "tapped for mana" rules,
+   * later: CR 106.12).
+   */
   | { type: "MANA_ADDED"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /**
    * `source` dealt damage to a player or creature (CR 120.1). Its result follows: `LIFE_LOST` for a player

@@ -27,7 +27,7 @@ export type PrintedCard = {
   manaCost: ManaCost | null;
   /**
    * Its colors: the colors of the mana symbols in its mana cost (CR 202.2) plus its color indicator (CR 204.2).
-   * Empty means colorless (CR 105.2c). Abilities that define color apply later, in layer 5 (CR 613.1e).
+   * Empty means colorless (CR 105.2c). Abilities that define color apply later, in layer 5 (later: CR 613.1e).
    */
   colors: Color[];
   /** The color indicator, if any (CR 204). Kept separately because copies copy it (later: CR 707.2). */

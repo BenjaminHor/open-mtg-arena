@@ -1,53 +1,67 @@
-// The rules coverage report (docs/testing.md, section 5): which rules the rules code cites, which tests cover them,
-// and the gaps. Written to docs/coverage/rules-coverage.md; `pnpm check` fails on a gap the committed report doesn't
-// already list.
+// The rules coverage report (docs/testing.md, section 5; D-048): which rules the rules code cites, which tests cover
+// them, and the gaps. Written to docs/coverage/rules-coverage.md; `pnpm check` fails when the committed report is out
+// of date, and `pnpm coverage:rules` won't write one with a new gap unless told to.
 
 import { covers } from "./citations.ts";
-import { type Citations, codeCitations, matrixNotYet, scenarioRules, unitTestRules } from "./collect.ts";
+import { type Citations, codeCitations, laterMentions, matrixGaps, scenarioRules, unitTestRules } from "./collect.ts";
 
 export const REPORT = "docs/coverage/rules-coverage.md";
-
-export type Coverage = {
-  /** Rule → the files citing it. */
-  code: Citations;
-  /** Cited rules a scenario covers → those scenarios. */
-  byScenario: Citations;
-  /** Cited rules only unit tests cover → those tests. */
-  byUnitTestOnly: Citations;
-  /** Cited rules no test covers: the gaps. */
-  untested: string[];
-  /** Cited rules that aren't in the CR (a typo, or a rule renumbered by a CR update). */
-  notInCr: string[];
-  /** Interaction matrix cells marked "not yet": gaps too. */
-  matrixNotYet: string[];
-};
 
 /** What coverage is computed from; `collectInputs` reads the repo, and tests can change one part. */
 export type CoverageInputs = {
   crRules: readonly string[];
   code: Citations;
+  later: Citations;
   scenarios: Citations;
   unitTests: Citations;
-  matrixNotYet: string[];
+  matrixGaps: string[];
+};
+
+export type Coverage = {
+  /** Rule → the files citing it. */
+  code: Citations;
+  /** Rules mentioned as not built yet (`later: CR 614`) → where. Not counted, but listed, so a change shows. */
+  later: Citations;
+  /** Cited rules a scenario covers → those scenarios. */
+  byScenario: Citations;
+  /** Cited rules only unit tests cover → those tests. */
+  byUnitTestOnly: Citations;
+  /** Cited rules no test covers. */
+  untested: string[];
+  /** Cited rules that aren't in the CR (a typo, or a rule renumbered by a CR update). */
+  notInCr: string[];
+  /** Interaction matrix cells marked "not yet" or left empty. */
+  matrixGaps: string[];
 };
 
 export function collectInputs(crRules: readonly string[]): CoverageInputs {
   return {
     crRules,
     code: codeCitations(),
+    later: laterMentions(),
     scenarios: scenarioRules(),
     unitTests: unitTestRules(),
-    matrixNotYet: matrixNotYet(),
+    matrixGaps: matrixGaps(),
   };
 }
 
-export function coverage({ crRules, code, scenarios, unitTests, matrixNotYet }: CoverageInputs): Coverage {
-  const known = new Set(crRules);
-  const result: Coverage = { code, byScenario: {}, byUnitTestOnly: {}, untested: [], notInCr: [], matrixNotYet };
-  for (const rule of sortRules(Object.keys(code))) {
-    if (!known.has(rule)) result.notInCr.push(rule);
-    const inScenarios = coveringFiles(scenarios, rule);
-    const inTests = coveringFiles(unitTests, rule);
+export function coverage(inputs: CoverageInputs): Coverage {
+  const known = new Set(inputs.crRules);
+  const result: Coverage = {
+    code: inputs.code,
+    later: inputs.later,
+    byScenario: {},
+    byUnitTestOnly: {},
+    untested: [],
+    notInCr: [],
+    matrixGaps: inputs.matrixGaps,
+  };
+  for (const rule of sortRules([...Object.keys(inputs.code), ...Object.keys(inputs.later)])) {
+    if (!known.has(rule) && !result.notInCr.includes(rule)) result.notInCr.push(rule);
+  }
+  for (const rule of sortRules(Object.keys(inputs.code))) {
+    const inScenarios = coveringFiles(inputs.scenarios, rule);
+    const inTests = coveringFiles(inputs.unitTests, rule);
     if (inScenarios.length > 0) result.byScenario[rule] = inScenarios;
     else if (inTests.length > 0) result.byUnitTestOnly[rule] = inTests;
     else result.untested.push(rule);
@@ -62,45 +76,74 @@ function coveringFiles(tests: Citations, rule: string): string[] {
 
 /** Rules in CR order: 100.1 before 100.10, 601.2 before 601.2a. */
 export function sortRules(rules: readonly string[]): string[] {
-  const key = (rule: string) => rule.split(/[.]/).flatMap((part) => /^(\d+)([a-z]?)$/.exec(part)?.slice(1) ?? [part]);
   return [...rules].sort((a, b) => {
-    const [x, y] = [key(a), key(b)];
+    const [x, y] = [ruleKey(a), ruleKey(b)];
     for (let i = 0; i < Math.max(x.length, y.length); i++) {
-      const [p = "", q = ""] = [x[i], y[i]];
+      const [p, q] = [x[i], y[i]];
       if (p === q) continue;
-      const [m, n] = [Number(p), Number(q)];
-      return p === "" ? -1 : q === "" ? 1 : !Number.isNaN(m) && !Number.isNaN(n) ? m - n : p < q ? -1 : 1;
+      // A rule comes before its subrules: 601.2 before 601.2a.
+      if (p === undefined) return -1;
+      if (q === undefined) return 1;
+      if (typeof p === "number" && typeof q === "number") return p - q;
+      return String(p) < String(q) ? -1 : 1;
     }
     return 0;
   });
 }
 
-/** The gaps: untested rules and "not yet" interaction pairs, as the report lists them. */
+/** `601.2c` is [601, 2, "c"]. */
+function ruleKey(rule: string): (number | string)[] {
+  return rule.split(".").flatMap((part) => {
+    const match = /^(\d+)([a-z]?)$/.exec(part);
+    if (match === null) return [part];
+    return match[2] === "" ? [Number(match[1])] : [Number(match[1]), match[2] as string];
+  });
+}
+
+/** The gaps: untested rules and the interaction matrix's open cells, as the report lists them. */
 export function gaps(c: Coverage): string[] {
-  return [...c.untested.map((r) => `CR ${r}`), ...c.matrixNotYet];
+  return [...c.untested.map((r) => `CR ${r}`), ...c.matrixGaps.map((g) => `matrix: ${g}`)];
+}
+
+/**
+ * What a change made worse than the committed report: gaps it doesn't list, and rules it lists as tested by
+ * scenarios that no scenario tests now (whether or not a unit test still does). Rules the code no longer cites
+ * don't count.
+ */
+export function newGaps(committedReport: string, c: Coverage): string[] {
+  const listed = listedGaps(committedReport);
+  const lostScenarios = listedRules(committedReport, "Tested by scenarios").filter(
+    (rule) => c.code[rule] !== undefined && c.byScenario[rule] === undefined,
+  );
+  return [
+    ...gaps(c).filter((g) => !listed.includes(g)),
+    ...lostScenarios.map((rule) => `CR ${rule} is no longer tested by a scenario`),
+  ];
 }
 
 export function reportText(c: Coverage): string {
-  const cited = Object.keys(c.code).length;
   const files = (list: readonly string[]) => list.map((f) => `\`${f}\``).join(", ");
-  const lines = [
+  const gapLines = [
+    ...c.untested.map((r) => `- CR ${r} — cited in ${files(c.code[r] ?? [])}`),
+    ...c.matrixGaps.map((g) => `- matrix: ${g}`),
+  ];
+  const later = sortRules(Object.keys(c.later));
+  return [
     "# Rules coverage",
     "",
     "<!-- Generated by `pnpm coverage:rules` (docs/testing.md, section 5; D-048). Do not edit. -->",
     "",
-    `The rules code (\`packages/engine/src\`, \`packages/cards/src\`) cites ${cited} rules: ` +
+    `The rules code (\`packages/engine/src\`, \`packages/cards/src\`) cites ${Object.keys(c.code).length} rules: ` +
       `${Object.keys(c.byScenario).length} are tested by scenarios, ` +
       `${Object.keys(c.byUnitTestOnly).length} only by unit tests, and ${c.untested.length} by nothing. ` +
-      `${c.matrixNotYet.length} interaction pairs are marked "not yet".`,
+      `${c.matrixGaps.length} interaction matrix cells are open. ${later.length} rules are mentioned as not built yet.`,
     "",
     "## Gaps",
     "",
-    "Rules the code cites that no test covers, and interaction pairs not yet covered. `pnpm check` fails on a gap",
-    "that isn't listed here; close these.",
+    'Rules the code cites that no test covers, and interaction matrix cells marked "not yet" or empty. `pnpm check`',
+    "fails on a gap that isn't listed here; close these.",
     "",
-    ...(gaps(c).length === 0
-      ? ["(none)"]
-      : gaps(c).map((g) => `- ${g}: ${g.startsWith("CR ") ? files(c.code[g.slice(3)] ?? []) : "not yet"}`)),
+    ...(gapLines.length === 0 ? ["(none)"] : gapLines),
     "",
     "## Tested only by unit tests",
     "",
@@ -110,8 +153,13 @@ export function reportText(c: Coverage): string {
     "",
     ...section(c.byScenario, c.code),
     "",
-  ];
-  return lines.join("\n");
+    "## Mentioned as not built yet",
+    "",
+    "Written `later: CR 614` in the code, and not counted above. Check that each really isn't built.",
+    "",
+    ...(later.length === 0 ? ["(none)"] : later.map((r) => `- CR ${r} — in ${files(c.later[r] ?? [])}`)),
+    "",
+  ].join("\n");
 }
 
 function section(tested: Citations, code: Citations): string[] {
@@ -126,10 +174,17 @@ function section(tested: Citations, code: Citations): string[] {
 
 /** The gaps a report lists (its "Gaps" section's items). */
 export function listedGaps(report: string): string[] {
-  const start = report.indexOf("## Gaps");
+  return sectionLines(report, "Gaps").flatMap((line) => /^- (.+?)(?: — .*)?$/.exec(line)?.[1] ?? []);
+}
+
+/** The rules in one of a report's tables (`| 601.2c | ... |`). */
+function listedRules(report: string, heading: string): string[] {
+  return sectionLines(report, heading).flatMap((line) => /^\| (\d{3}[\d.a-z]*) \|/.exec(line)?.[1] ?? []);
+}
+
+function sectionLines(report: string, heading: string): string[] {
+  const start = report.indexOf(`## ${heading}`);
+  if (start === -1) return [];
   const end = report.indexOf("\n## ", start + 1);
-  return report
-    .slice(start, end === -1 ? undefined : end)
-    .split("\n")
-    .flatMap((line) => /^- (.+?): /.exec(line)?.[1] ?? []);
+  return report.slice(start, end === -1 ? undefined : end).split("\n");
 }

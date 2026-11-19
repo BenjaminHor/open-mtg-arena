@@ -559,18 +559,26 @@ every schema change and every change D-024 lists bumps it.
 - `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`. "Cited by code" means the rules code:
   `packages/engine/src` and `packages/cards/src`. The CLI and the scenario runner cite rules only to explain
   themselves.
-- Citations are read in every form the code uses: lists (`CR 117.3d, 117.4`), ranges (`CR 601.2b–i`, `CR 506–511`,
-  `CR 500.7–500.11`) and asides (`CR 302.6, with haste, 702.10`). Every cited rule must exist in `rules/`.
+- Citations are read in every form the code uses: lists (`CR 117.3d, 117.4`, also wrapped onto the next comment
+  line), ranges (`CR 601.2b–i`, `CR 506–511`, `CR 500.7–500.11`, `CR 601.2–4`) and asides (`CR 302.6, with haste,
+  702.10`). A range of another shape is kept as written, so it fails the next check: every cited rule must exist in
+  `rules/`.
 - A mention of a rule not built yet is written `later: CR 614`, and isn't a citation: a comment saying where
-  replacement effects will plug in doesn't mean they're implemented.
-- A test of rule T covers code citing rule C when T is C, T is under C (601.2c covers 601.2 and 601), or C is a
-  lettered subrule of T (601.2 covers 601.2c). A section never covers a subrule (601 doesn't cover 601.2c).
+  replacement effects will plug in doesn't mean they're implemented. The report lists these mentions in their own
+  section, so marking a rule `later:` shows in the report's diff and a reviewer can check it really isn't built.
+- A test of rule T covers code citing rule C when T is C or T is under C (601.2c covers 601.2 and 601). Never the
+  other way: a scenario about 601.2 doesn't show that 601.2c is built. (A first version also let 601.2 cover 601.2c;
+  that credited unbuilt rules and hid real gaps, so it went.) Unit tests are the `*.test.ts` files; fixtures and
+  helpers don't count.
 - The report lists rules tested by scenarios, rules tested only by unit tests (they cite the rule in a name or
-  comment), and gaps: rules nothing tests, and interaction matrix cells marked "not yet". Whether unit tests count
+  comment), and gaps: rules nothing tests, and interaction matrix cells above the diagonal marked "not yet" or left
+  empty. A missing matrix is an error. Whether unit tests count
   for the M1 exit criterion is an open question for the owner (status.md); until then, a gap is a rule with neither.
-- `cli/test/coverage.test.ts` fails on a gap the committed report doesn't list. `pnpm coverage:rules` refuses to write
-  a report with a new gap unless given `--accept-new-gaps`, so accepting one is deliberate and shows in the commit.
-  Closed gaps just disappear when the report is rewritten. The coverage tests' own sample citations aren't counted.
+- `cli/test/coverage.test.ts` fails when the committed report isn't exactly what `pnpm coverage:rules` writes now, so
+  the report is always current and a gap closed and later reopened can't hide. `pnpm coverage:rules` refuses to write
+  a report that's worse than the committed one unless given `--accept-new-gaps`: a new gap, or a rule the committed
+  report lists as tested by scenarios that no scenario tests now (even if a unit test still cites it). Accepting is
+  deliberate and shows in the commit. The coverage tests' own sample citations aren't counted.
 
 **D-049: Benchmarks** · 2026-11-19 · accepted
 - `pnpm bench` times six measures, each reported per operation: `applyAction` on three sets of states (up to 40 each,

@@ -6,7 +6,7 @@ import type { ObjectId } from "../state/ids.ts";
 
 /**
  * An object's subtypes (CR 205.3): layer 4 of `characteristics()`. Printed, since no type-changing effects exist yet;
- * when they do (layer 4, such as CR 305.7), they change the answer here.
+ * when they do (layer 4, such as later: CR 305.7), they change the answer here.
  */
 export function subtypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly string[] {
   const obj = state.objects[id];
@@ -16,7 +16,7 @@ export function subtypesOf(state: GameState, id: ObjectId, cards: CardDatabase):
 
 /**
  * An object's supertypes (CR 205.4): layer 4 of `characteristics()`, printed until type-changing effects exist.
- * The legend rule (CR 704.5j) asks this.
+ * The legend rule (later: CR 704.5j) asks this.
  */
 export function supertypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Supertype[] {
   const obj = state.objects[id];
