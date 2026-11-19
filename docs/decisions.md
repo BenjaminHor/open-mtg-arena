@@ -172,3 +172,10 @@ types: a union member or field is added by the task that uses it.
   unsupported card can't enter the pool by accident.
 - `packages/cards/src` must run in a Web Worker (D-006): it imports `pool.json` as a JSON module and may not use Node
   modules (a Biome override enforces it). Only `packages/cards/scripts` uses Node.
+
+**D-027: Claude Code may merge its own pull requests once they check out** · 2026-11-19 · accepted
+The owner said (2026-11-19) that "feel free to merge if it all checks out" stands for the current and all future pull
+requests. "Checks out" means: CI is green on the PR's latest commit, the `rules-judge` and `code-reviewer` findings
+are fixed or answered, no review comment on the PR is left unanswered, and `docs/status.md` is up to date. Claude Code
+merges with a merge commit (keeping each commit) and then restarts its branch from `main`. Anything outside that
+(a red CI, an open question for the owner, a PR someone else opened) still waits for the owner.
