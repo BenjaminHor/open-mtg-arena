@@ -12,8 +12,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     walks it, so extra turns, phases and steps can be queued later (future-rules.md).
   - Each step, as it begins, does its turn-based actions, then gives the active player priority (CR 117.3a):
     untap (CR 502.3: the active player's permanents untap; they're now controlled since the turn began, CR 302.6; no
-    priority, CR 502.4); upkeep (CR 503.1); draw (CR 504.1: the active player draws, except the starting player on turn 1,
-    CR 103.8a); main phases (CR 505.6); beginning of combat (CR 507.2); declare attackers (CR 508: no attacks until M1-13,
+    priority, CR 502.4); upkeep (CR 503.1); draw (CR 504.1: the active player draws). The starting player skips the draw step of
+    turn 1 entirely (CR 103.8a): a skipped step is passed over as though it didn't exist (CR 500.11, 614.10a), so it
+    has no draw and no priority; main phases (CR 505.6); beginning of combat (CR 507.2); declare attackers (CR 508: no attacks until M1-13,
     so none are declared and the declare blockers and combat damage steps are skipped, CR 508.8); end of combat (CR 511.1);
     end (CR 513.1); cleanup (CR 514.1: discard down to seven, one `discardToHandSize` decision per card; CR 514.2: damage
     is removed; no priority, CR 514.3). Then the next player in turn order begins their turn.
@@ -31,6 +32,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     `turnOrder`).
 
 ## Handoff notes
+- **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
+  a go-ahead. Stop only for a decision that needs the owner (put it in Open questions and ask). Merge each PR once it
+  checks out (D-027), restart the branch from `main`, then start the next task.
 Anything the next session (or the session after a compaction) needs to pick up the current task:
 the plan, what's done so far, what's tricky, what was about to happen next.
 - Claude Code on the web: the cloud environment "open-mtg-arena" allows `magic.wizards.com` and `media.wizards.com`.
