@@ -7,7 +7,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-10 Effects interpreter v0 (plan, 2026-11-19). CR 608.2b–c, 120.3a/e, 120.8, 119.3, 611.2a/c, 613.7.
+  - `engine/src/effects/`: `effect-work.ts` turns a resolving object's effects into one `runEffect` work item each,
+    with its targets resolved as resolution begins (only the still-legal ones, CR 608.2b); `run-effect.ts` switches on
+    `op`; `deal-damage.ts` (player: life loss, CR 120.3a; creature: marked damage, CR 120.3e; 0 damage isn't dealt,
+    CR 120.8); `modify-pt.ts` creates a `ContinuousEffect` in a new `GameState.effects` (affected set locked, CR
+    611.2c; a timestamp, CR 613.7). `addMana` reuses `mana/pool.ts`. README documents every op and the primitives
+    (`zones/draw.ts`, `zones/move-card.ts`) that turn steps use; those become ops when a card needs them.
+  - Mana abilities run their effects through the same `runEffect`.
+  - Events: `DAMAGE_DEALT`, `LIFE_LOST`, `EFFECT_CREATED`.
+  - Not here: reading P/T and effects ending in cleanup (M1-11), SBAs (M1-12).
+  - Tests: scenarios in `scenarios/effects/` (Shock and Hammer to players including yourself, Bolt to a creature, Giant
+    Growth makes an effect, Bolt in response to Giant Growth); TS tests for a two-target test card skipping the
+    illegal target (CR 608.2b), 0 damage, the locked affected set.
+  - Future impact: damage goes through one function, where prevention/replacement (CR 614–615), lifelink, infect and
+    wither (CR 120.3) plug in; events carry source and recipient for damage triggers; effects carry source,
+    controller, timestamp and duration for layers and cleanup.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
