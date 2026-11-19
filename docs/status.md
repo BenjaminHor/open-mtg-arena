@@ -7,7 +7,23 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-17 Headless CLI (plan, 2026-11-19). docs/testing.md section 2. In two parts, each its own PR.
+  - Part 1: the game file, `new`, `show`, `actions`, `do`, and the prebuilt decks. Part 2: `ai`, `auto`, `log`,
+    `inspect`, `export --scenario`, `replay`, the agents.
+  - Game file (`cli/src/game-file.ts`): `{ format, version, setup, actions, state? }`. Setup and actions are the truth;
+    `state` is an optional cache so commands don't replay a long game each time. No events are stored: `log` and
+    `export` replay. `replay` ignores the cache and says if it differs. The same file is the replay log and the
+    bug-report format (architecture.md, "Match host").
+  - `do` takes a number from `actions`, or a scenario step in YAML flow style (`"p1 cast: Lightning Bolt, targets:
+    [p2], pay: auto"`), parsed by the scenario parser and taken by the runner's `takeStep`, which reports each action
+    so it can be recorded. All or nothing: if any action fails, the file isn't written.
+  - `show --as p2` hides the other player's hand and both libraries' contents, in one function. `playerView` isn't
+    built (no M1 task needs it; the AI that reads views is M2).
+  - Prebuilt decks by name and count, as in the M1 spec, in `packages/cards/src/decks/`.
+  - Exports (part 2) end with an `expect` built from the final state, use exact references and payments, and are
+    written by `packages/scenarios` (YAML), round-trip tested. Agents are pure: state + legal actions + RNG state in,
+    an action out, with an action cap.
+  - Then run a few `auto` games of red-aggro against green-stompy and read the logs (CLAUDE.md step 4).
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
