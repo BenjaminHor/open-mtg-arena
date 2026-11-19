@@ -7,7 +7,27 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-05 Game start. Plan:
+  - `createGame(setup, cards)` validates the setup (`invalidSetup`: unknown cards, duplicate ids, not exactly two
+    players since multiplayer rules such as CR 103.5c and 103.8c aren't built, a hand in a `standard` opening, a `fixed`
+    step that needs combat state or gives no priority) and creates one object per card (CR 400.7 ids).
+  - Standard opening, all as decisions answered through `applyAction`:
+    1. CR 103.1: `firstPlayer`, or a player picked at random from the seed chooses who takes the first turn
+       (`chooseStartingPlayer`). Turn order then starts with the starting player and follows seating order.
+    2. CR 103.3: each library is shuffled (Fisher–Yates over `randomInt`). CR 103.5: each player draws 7.
+    3. CR 103.5 mulligans, in rounds: each player who hasn't kept declares keep or mulligan, in turn order. Then everyone
+       who chose mulligan does so at once: hand shuffled into library, 7 drawn, then N cards put on the bottom, where N
+       is how many mulligans they've taken (one `mulliganBottom` decision per card, which also sets the order). No more
+       mulligans once the hand would be zero cards.
+    4. CR 103.8: turn 1 begins with the starting player. Until M1-06 walks the steps, the game goes straight to turn 1's
+       upkeep with the starting player holding priority. Skipping the first draw (CR 103.8a) is M1-06's.
+  - Fixed opening: zones exactly as given, the step's turn-based actions count as done, the active player has priority.
+  - State: `turn` is null before the first turn; mulligan bookkeeping lives in `pregame` (null once the game starts).
+    Zone changes all go through one `moveObject` function (the future replacement/trigger pipeline plugs in there).
+  - Tests (TypeScript until the M1-16 scenario runner, then ported to YAML): keep, mulligan and bottom, two rounds,
+    the zero-card limit, the random chooser, setup validation, determinism with a fixed seed, stale or wrong-player answers.
+  - Future impact: turn order is a list rotated to the starting player; nothing assumes "the opponent". Draws and
+    shuffles emit events. `moveObject` is the single place a replacement or trigger check is added later.
 
 ## Handoff notes
 Anything the next session (or the session after a compaction) needs to pick up the current task:
