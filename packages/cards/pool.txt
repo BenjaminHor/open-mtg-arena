@@ -1,0 +1,21 @@
+# The card pool: every card the engine supports, one name per line, exactly as in Oracle.
+# After changing it, run `pnpm cards:extract` and add a definition in src/defs/ (see docs/card-scripting.md).
+# Lines starting with # are comments.
+
+Centaur Courser
+Craw Wurm
+Fire Elemental
+Forest
+Furnace Whelp
+Giant Growth
+Giant Spider
+Gray Ogre
+Grizzly Bears
+Hill Giant
+Lightning Bolt
+Llanowar Elves
+Mountain
+Raging Goblin
+Shock
+Spined Wurm
+Volcanic Hammer

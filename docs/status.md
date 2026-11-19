@@ -35,10 +35,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - When M1-16 lands the scenario runner, drop `--passWithNoTests` from `test:scenarios`, so a misplaced runner fails.
 - `main` was created from `claude/eloquent-mayer-qcx0e1` at the owner's request and is now the default branch
   (2026-11-19). From now on, work reaches `main` only through pull requests.
-- The owner approved allowing Scryfall's hosts (`api.scryfall.com`, `data.scryfall.io`) in the "open-mtg-arena" environment for M1-04.
+- The "open-mtg-arena" environment also allows Scryfall (`api.scryfall.com`, `data.scryfall.io`). `pnpm cards:fetch`
+  passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-04 Card data pipeline
 - M1-05 Game start
 
 ## Done
@@ -51,6 +51,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-03 Core types and state: `engine/src/state/` (ids, zones, objects, setup, decisions, actions, events, results,
   `GameState`) and `engine/src/rng/` (xoshiro128**, D-024), with type-level, JSON round-trip and known-answer tests.
   Reviewed by rules-judge and code-reviewer; D-020 to D-025 (2026-11-19).
+- M1-04 Card data pipeline: `pnpm cards:fetch` / `cards:extract` (Scryfall bulk JSONL), `pool.txt` with the 17 M1
+  cards, generated `data/pool.json` and rulings, the engine's card types (D-026), all 17 definitions, and tests for
+  the pool, the errata check and the parsers (2026-11-19).
 
 ## Open questions for the owner
 - (none)

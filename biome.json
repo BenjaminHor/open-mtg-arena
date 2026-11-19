@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.tsx", "**/*.mjs", "**/*.js", "**/*.json", "!!rules"]
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.mjs", "**/*.js", "**/*.json", "!!rules", "!!packages/cards/data"]
   },
   "formatter": {
     "enabled": true,
@@ -72,6 +72,16 @@
         }
       },
       "plugins": ["./tools/biome/no-math-random.grit"]
+    },
+    {
+      "includes": ["packages/cards/src/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "error"
+          }
+        }
+      }
     }
   ]
 }

@@ -4,6 +4,24 @@
 /** The current `GameState.version` (docs/architecture.md), so hosts can reject saves from another schema. See D-019. */
 export const ENGINE_VERSION = 0;
 
+export type {
+  AbilityDef,
+  CardData,
+  CardDatabase,
+  CardDef,
+  CardType,
+  Color,
+  CostPart,
+  Effect,
+  EffectSubject,
+  Keyword,
+  ManaCost,
+  ManaSymbol,
+  PrintedCard,
+  SpellDef,
+  Supertype,
+  TargetSpec,
+} from "./cards/types.ts";
 export type { RngState } from "./rng/xoshiro128.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { DecisionKind, PendingDecision } from "./state/decisions.ts";

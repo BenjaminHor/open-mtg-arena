@@ -1,0 +1,66 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
+
+// These tests read only committed files (pool.txt and data/), never the Scryfall downloads, so CI can run them.
+
+const poolTxt = readFileSync(new URL("../pool.txt", import.meta.url), "utf8")
+  .split("\n")
+  .map((line) => line.trim())
+  .filter((line) => line !== "" && !line.startsWith("#"))
+  .sort((a, b) => a.localeCompare(b));
+
+describe("the card pool", () => {
+  it("has Oracle data for exactly the cards in pool.txt", () => {
+    expect(POOL.cards.map((c) => c.name)).toStrictEqual(poolTxt);
+  });
+
+  it("has a rulings file for every card", () => {
+    for (const card of POOL.cards) {
+      const file = JSON.parse(readFileSync(new URL(`../data/rulings/${card.slug}.json`, import.meta.url), "utf8"));
+      expect(file.oracleId).toBe(card.oracleId);
+    }
+  });
+
+  it("has definitions that match the Oracle data (errata check)", () => {
+    expect(definitionProblems(CARD_DEFS, POOL.cards)).toStrictEqual([]);
+  });
+
+  it("builds a database entry for every card, keyed by oracle id", () => {
+    const db = cardDatabase();
+    expect(Object.keys(db).sort()).toStrictEqual(POOL.cards.map((c) => c.oracleId).sort());
+  });
+});
+
+describe("definitionProblems", () => {
+  const bolt = POOL.cards.find((c) => c.name === "Lightning Bolt");
+  const whelp = POOL.cards.find((c) => c.name === "Furnace Whelp");
+  if (bolt === undefined || whelp === undefined) throw new Error("test cards missing from the pool");
+
+  it("reports a definition written against old Oracle text", () => {
+    const outdated = { name: "Lightning Bolt", oracle: "Lightning Bolt deals 3 damage to target creature or player." };
+    const [problem, ...rest] = definitionProblems([outdated], [bolt]);
+    expect(rest).toStrictEqual([]);
+    expect(problem).toContain("Lightning Bolt: Oracle text changed");
+  });
+
+  it("reports a missing keyword", () => {
+    const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
+    expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);
+  });
+
+  it("reports cards without definitions and definitions without cards", () => {
+    expect(definitionProblems([{ name: "Black Lotus", oracle: "" }], [bolt])).toStrictEqual([
+      "Black Lotus: has a definition but isn't in pool.txt / data/pool.json",
+      "Lightning Bolt: is in the pool but has no definition",
+    ]);
+  });
+});
+
+describe("slugify", () => {
+  it("makes file names from card names", () => {
+    expect(slugify("Lightning Bolt")).toBe("lightning-bolt");
+    expect(slugify("Gaea's Cradle")).toBe("gaeas-cradle");
+    expect(slugify("Fire // Ice")).toBe("fire-ice");
+  });
+});

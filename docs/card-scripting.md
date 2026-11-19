@@ -9,58 +9,66 @@ and check that they say the same thing.
 packages/cards/
   pool.txt                   the card pool: one card name per line (the source of truth for what's supported)
   data/pool.json             generated: Oracle data for pool cards (name, cost, types, text, oracle_id, image URIs, artist)
+                             plus when Scryfall last updated it
   data/rulings/<slug>.json   generated: Scryfall rulings for each pool card
   src/defs/<first-letter>/<slug>.ts   one hand-written definition per card
-  src/keywords/              shared definitions for keyword abilities (flying, haste, ...)
+  src/keywords/              shared definitions for keyword abilities (flying, haste, ...), from M1-13
   src/decks/                 prebuilt decks (M2: red-aggro, green-stompy)
-  test/                      per-card scenario tests live with the engine scenarios, tagged by card
+  scripts/                   fetch.ts and extract.ts (Node only; src/ must also run in the browser)
+  test/                      pool and parser tests; per-card scenarios live with the engine scenarios
 ```
 
-`pnpm cards:fetch` downloads Scryfall bulk data (`oracle-cards` and `rulings`) into `data/scryfall/`
-(gitignored, large). `pnpm cards:extract` reads `pool.txt` and writes `data/pool.json` and `data/rulings/`.
+`pnpm cards:fetch` downloads Scryfall bulk data (`oracle-cards` and `rulings`, gzipped JSON Lines) into `data/scryfall/`
+(gitignored, about 30 MB). `pnpm cards:extract` reads `pool.txt` and writes `data/pool.json` and `data/rulings/`.
 Commit those small generated files. Follow Scryfall's request rate guidance (see `data-sources.md`):
 bulk files are downloaded once, and the API isn't called per card.
 
 ## Shape of a definition
 
-The exact types are designed in M1 (`engine/src/cards/types.ts`). They should come out roughly like this:
+The types are in `engine/src/cards/types.ts` (a first draft, D-026). A definition is only what the card *does*;
+printed values (mana cost, types, power/toughness) come from `pool.json`. For example:
 
 ```ts
 // src/defs/l/lightning-bolt.ts
 export const lightningBolt: CardDef = {
-  name: 'Lightning Bolt',            // must match pool.json exactly; printed data is checked against it
-  oracle: 'Lightning Bolt deals 3 damage to any target.',
+  name: "Lightning Bolt",            // must match pool.json exactly
+  oracle: "Lightning Bolt deals 3 damage to any target.",   // the exact Oracle text it was written against
   spell: {
-    targets: [{ kind: 'anyTarget' }],                           // CR 115.4
-    effects: [{ op: 'dealDamage', amount: 3, source: 'self', to: { target: 0 } }],
+    targets: [{ kind: "anyTarget" }],                       // one entry per instance of "target" (CR 115.4, 601.2c)
+    effects: [{ op: "dealDamage", amount: 3, to: { target: 0 } }],
   },
 };
 
 // src/defs/l/llanowar-elves.ts
 export const llanowarElves: CardDef = {
-  name: 'Llanowar Elves',
-  oracle: '{T}: Add {G}.',
+  name: "Llanowar Elves",
+  oracle: "{T}: Add {G}.",
   abilities: [
-    { kind: 'activated', cost: [{ tap: 'self' }], manaAbility: true,   // CR 605.1a
-      effects: [{ op: 'addMana', mana: 'G' }] },
+    { kind: "activated", cost: [{ kind: "tap" }], targets: [],
+      effects: [{ op: "addMana", mana: "G", amount: 1 }] },   // a mana ability: the engine works that out (CR 605.1a)
   ],
 };
 
-// src/defs/g/giant-growth.ts
-export const giantGrowth: CardDef = {
-  name: 'Giant Growth',
-  oracle: 'Target creature gets +3/+3 until end of turn.',
-  spell: {
-    targets: [{ kind: 'creature' }],
-    effects: [{ op: 'modifyPT', power: 3, toughness: 3, of: { target: 0 }, duration: 'endOfTurn' }], // layer 7c
-  },
-  aiHints: { role: 'combatTrick' },
+// src/defs/f/furnace-whelp.ts
+export const furnaceWhelp: CardDef = {
+  name: "Furnace Whelp",
+  oracle: "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+  keywords: ["flying"],
+  abilities: [
+    { kind: "activated", cost: [{ kind: "mana", cost: [{ kind: "colored", color: "R" }] }], targets: [],
+      effects: [{ op: "modifyPT", power: 1, toughness: 0, of: "self", duration: "endOfTurn" }] },  // layer 7c
+  ],
 };
 ```
 
-Printed characteristics (mana cost, types, power/toughness) come from `pool.json`, not the
-definition. A test checks every definition against `pool.json`, and that every card in `pool.txt`
-has a definition.
+- Vanilla creatures are just `{ name, oracle: "" }`.
+- Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
+  (CR 305.6), so the engine derives it from the subtype. That keeps working when effects change a land's type.
+- `src/defs/index.ts` lists every definition. `cardDatabase()` joins them with `pool.json` (by name) into the engine's
+  `CardDatabase`, keyed by `oracleId`.
+
+Tests (`packages/cards/test/pool.test.ts`) check that `pool.txt`, `pool.json` and the definitions name exactly the same
+cards, that each definition's `oracle` equals the current Oracle text, and that its `keywords` match Scryfall's.
 
 ## Principles
 
