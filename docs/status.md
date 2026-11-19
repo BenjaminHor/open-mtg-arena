@@ -7,7 +7,27 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-09 Playing lands and casting spells. Plan:
+  - `PLAY_LAND` (a special action, CR 116.2a, 305.1): a land card in hand, the player's own main phase, empty stack,
+    priority, fewer than one land played this turn (CR 305.2). Onto the battlefield under their control; they keep
+    priority (CR 117.3c); passes restart (CR 117.4). A land can't be cast (CR 305.9).
+  - Timing in one function (`castTimingProblem`): instants whenever the player has priority (CR 117.1a, 304.1); other
+    spells in their own main phase with an empty stack (CR 117.1a, 302.1, 307.1).
+  - `CAST_SPELL` starts the casting procedure (CR 601.2), with the progress kept in the stack object and work items so
+    every pause is plain data: the card moves to the stack (601.2a); one `chooseTarget` decision per target (601.2c)
+    from `legalTargets` (one function, CR 115, 115.4; "creature" = a creature permanent, CR 109.2); then `payMana`
+    (601.2g–h): the player may activate mana abilities while it's pending (CR 605.3a, via `resolveManaAbility`), then
+    answers with a payment checked by `payFromPool`, or cancels. Cancelling reverses the whole cast (CR 734.1): the card
+    goes back to hand, permanents tapped for mana during the cast untap, and that mana leaves the pool. Then the spell
+    becomes cast (601.2i, `SPELL_CAST`) and the caster gets priority (117.3c).
+  - `legalActions` lists `CAST_SPELL` only when the timing allows, every target has a legal choice, and `autoPay` finds
+    a payment; so an unpayable spell can't be cast ("failing to pay").
+  - Resolution checks targets (CR 608.2b): a target that left its zone, or is no longer a legal choice, is illegal; if
+    every target is illegal the spell doesn't resolve and goes to its owner's graveyard. Effects stay M1-10's.
+  - Runner: `p1 play: <land>`, `p1 cast: <card>` with `targets: [...]` and `pay: auto | { R: 1 }` (an explicit payment
+    from the pool). Scenarios: land per turn and timing (with negatives), each target kind, paying exact costs, failing
+    to pay, a wrong payment, cancelling, responding to a spell with an instant, a spell whose only target became illegal.
+    The M1-07 stack tests (TypeScript) are kept; new stack behavior is tested through real casting.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
