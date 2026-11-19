@@ -35,8 +35,12 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): GameStat
 function costToPay(state: GameState, cards: CardDatabase): ManaCost {
   const casting = castingOf(state);
   switch (casting.origin.kind) {
-    case "card":
-      return totalCost(state, casting.object, cards) ?? [];
+    case "card": {
+      // A spell with no mana cost has an unpayable cost (CR 118.6); castProblem refuses it before it gets here.
+      const cost = totalCost(state, casting.object, cards);
+      if (cost === null) throw new Error("A spell with no mana cost can't be paid for (CR 118.6)");
+      return cost;
+    }
     case "ability":
       return activationManaCost(stackAbilityDef(state, casting.object, cards));
   }

@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { type Action, legalActions, type ObjectId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
-import { BEARS, PINGER, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, PINGER, TEST_CARDS, WHELP } from "../support/cards.ts";
 import { answer, type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -61,12 +61,40 @@ describe("an activated ability with a target (CR 602.2b, 601.2c)", () => {
     expect(g.events.some((e) => e.type === "DAMAGE_DEALT")).toBe(false);
   });
 
-  it("still deals its damage after its source has left the battlefield (CR 113.7a)", () => {
+  it("still deals its damage after its source has left the battlefield, from the source as it last existed", () => {
+    // CR 113.7a: the ability exists independently of its source; CR 608.2h: the object as it most recently existed
+    // deals the damage, so the source is the old id, now gone.
     const { game, pinger } = setup();
     const g0 = ping(game, pinger, "p2");
     const moved: Game = { state: moveCard(g0.state, pinger, { zone: "graveyard" }).state, events: g0.events };
     const g = passBoth(moved);
     expect(g.state.players.p2?.life).toBe(19);
+    expect(g.events.find((e) => e.type === "DAMAGE_DEALT")).toMatchObject({ source: pinger });
+    expect(g.state.objects[pinger]).toBeUndefined();
+    // Its controller is still the player who activated it (CR 113.8).
+    expect(g.events.find((e) => e.type === "ABILITY_RESOLVED")).toMatchObject({ controller: "p1" });
+  });
+
+  it("creates no effect when the source it would change has left (firebreathing on a dead Whelp, CR 400.7, 101.3)", () => {
+    const game = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], battlefield: [permanent(WHELP), permanent("mountain")] }),
+        playerSetup("p2", { library: ["forest"] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const whelp = game.state.zones.battlefield[0] as ObjectId;
+    let g = take(game, (a) => a.type === "ACTIVATE_ABILITY" && a.object === whelp);
+    g = take(g, (a) => a.type === "ACTIVATE_ABILITY");
+    g = answer(g, { kind: "payMana", payment: { W: 0, U: 0, B: 0, R: 1, G: 0, C: 0 } });
+    const moved: Game = { state: moveCard(g.state, whelp, { zone: "graveyard" }).state, events: g.events };
+    const after = passBoth(moved);
+    expect(after.state.zones.stack).toStrictEqual([]);
+    expect(after.events.some((e) => e.type === "ABILITY_RESOLVED")).toBe(true);
+    expect(after.events.some((e) => e.type === "EFFECT_CREATED")).toBe(false);
+    expect(after.state.effects).toStrictEqual([]);
   });
 });
 

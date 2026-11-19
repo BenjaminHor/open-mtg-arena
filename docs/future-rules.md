@@ -100,6 +100,14 @@ so leaves-the-battlefield triggers (CR 603.10a) must look back at the state befo
 group, not after each move. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
 owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
 
+**Triggered abilities and the casting steps (CR 603, D-041).** A triggered ability's targets are chosen as it's put on
+the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
+`casting-steps.ts` will need an origin kind with no payment step and no cancel. Once `def.abilities` holds triggered or
+static definitions, `activationProblem` and the activation list must check `def.kind === "activated"`.
+*Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`
+reads it from the source's card each time. Copies (layer 1), text changes (layer 3) and granted abilities (layer 6) will
+need the text fixed when it's activated.
+
 **More combat (CR 506–511, D-040).**
 *Watch out:* removal from combat is read from the battlefield (an id that's gone left combat). That can't represent
 regeneration, phasing, "remove from combat" effects or control changes, which leave the id on the battlefield, and a
