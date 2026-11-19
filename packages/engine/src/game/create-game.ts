@@ -13,7 +13,9 @@ import { withZoneList, zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
 import { newCardId, newObjectId, newTimestamp } from "./ids.ts";
 import { setStartingPlayer } from "./pregame.ts";
+import { givePriority } from "./priority.ts";
 import { setupProblems } from "./setup-validation.ts";
+import { rotateTo } from "./turn-order.ts";
 
 export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult {
   const problems = setupProblems(setup, cards);
@@ -21,15 +23,21 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
 
   let state = emptyGame(setup);
   // Objects are created player by player in seating order, zone by zone, so ids and timestamps are deterministic.
-  for (const player of setup.players) state = createCards(state, player);
+  const standard = setup.opening.kind === "standard";
+  for (const player of setup.players) state = createCards(state, player, standard);
 
   const opening = setup.opening;
   switch (opening.kind) {
     case "fixed":
       // The game starts in the given step with its turn-based actions done, and the active player gets priority
-      // (CR 117.3a). Turn order is the seating order.
-      state = { ...state, turn: opening.turn };
-      return { ok: true, state: waitFor(state, opening.turn.activePlayer, { kind: "priority" }), events: [] };
+      // (CR 117.3a). On turn 1 the active player is the starting player, so turn order starts with them (CR 103.1).
+      // On later turns it stays in seating order: the starting player isn't known, and it no longer matters.
+      state = {
+        ...state,
+        turn: { ...opening.turn },
+        turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
+      };
+      return { ok: true, state: givePriority(state, opening.turn.activePlayer), events: [] };
     case "standard": {
       state = {
         ...state,
@@ -81,7 +89,7 @@ function emptyGame(setup: GameSetup): GameState {
   };
 }
 
-function createCards(state: GameState, player: PlayerSetup): GameState {
+function createCards(state: GameState, player: PlayerSetup, standard: boolean): GameState {
   let next = state;
   const zones: [ZoneRef, string[]][] = [
     [{ zone: "library", player: player.id }, player.library],
@@ -93,7 +101,9 @@ function createCards(state: GameState, player: PlayerSetup): GameState {
     for (const oracleId of oracleIds) next = addCard(next, ref, player.id, oracleId, null);
   }
   for (const permanent of player.battlefield) {
-    next = addCard(next, { zone: "battlefield" }, player.id, permanent.oracleId, permanent);
+    // Before the first turn no turn has begun, so no permanent has been controlled since one did (CR 302.6).
+    const sick = standard ? { ...permanent, summoningSick: true } : permanent;
+    next = addCard(next, { zone: "battlefield" }, player.id, permanent.oracleId, sick);
   }
   return next;
 }

@@ -42,6 +42,7 @@ export type PlayerSetup = {
   manaPool: ManaPool;
 };
 
+/** In a `standard` opening every permanent starts summoning sick, since no turn has begun yet (CR 302.6). */
 export type PermanentSetup = {
   oracleId: OracleId;
   tapped: boolean;

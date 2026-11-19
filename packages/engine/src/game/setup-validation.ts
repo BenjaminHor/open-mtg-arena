@@ -38,7 +38,7 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       ...player.exile,
       ...player.battlefield.map((b) => b.oracleId),
     ];
-    for (const oracleId of all) {
+    for (const oracleId of all.filter((id, i) => all.indexOf(id) === i)) {
       if (cards[oracleId] === undefined) problems.push(`${player.id}: unknown card ${oracleId}`);
     }
     if (!Number.isSafeInteger(player.life)) problems.push(`${player.id}: life must be an integer`);
@@ -55,6 +55,9 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
     if (setup.opening.kind === "standard") {
       if (player.hand.length > 0)
         problems.push(`${player.id}: a standard opening draws the hand, so hand must be empty`);
+      // Mana empties at the end of every step (CR 106.4), so none can be left over from before the game.
+      if (MANA_TYPES.some((t) => player.manaPool[t] !== 0))
+        problems.push(`${player.id}: a standard opening starts with no mana`);
       // Mulligans shuffle the hand back, so a library this big can never run out before the first turn.
       if (player.library.length < STARTING_HAND_SIZE) {
         problems.push(`${player.id}: the deck needs at least ${STARTING_HAND_SIZE} cards to draw an opening hand`);

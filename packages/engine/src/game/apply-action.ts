@@ -22,27 +22,28 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
   if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives with priority (M1-07)`);
 
   const answer = action.answer;
+  const mismatch = error("illegalAction", `That doesn't answer a ${pending.kind} decision`);
+  // Each case returns, so TypeScript reports a decision kind with no case here.
   switch (pending.kind) {
     case "chooseStartingPlayer":
-      if (answer.kind !== "chooseStartingPlayer") break;
+      if (answer.kind !== "chooseStartingPlayer") return mismatch;
       if (!state.turnOrder.includes(answer.player)) return error("illegalAction", `${answer.player} isn't a player`);
       return { ok: true, ...setStartingPlayer(state, answer.player, pending.player) };
     case "mulligan":
-      if (answer.kind !== "mulligan") break;
+      if (answer.kind !== "mulligan") return mismatch;
       if (answer.choice === "mulligan" && !canMulligan(state, pending.player)) {
         return error("illegalAction", "No more mulligans: the hand would be zero cards (CR 103.5)");
       }
       return { ok: true, ...declareMulligan(state, pending.player, answer.choice) };
     case "mulliganBottom":
-      if (answer.kind !== "mulliganBottom") break;
+      if (answer.kind !== "mulliganBottom") return mismatch;
       if (!zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object)) {
         return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
       }
       return { ok: true, ...putOnBottom(state, pending.player, answer.object) };
     case "priority":
-      break;
+      return mismatch;
   }
-  return error("illegalAction", `That doesn't answer a ${pending.kind} decision`);
 }
 
 function error(code: EngineErrorCode, message: string): EngineResult {

@@ -7,12 +7,18 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
-import type { PlayerZoneName, SharedZoneName, ZoneRef } from "../state/zones.ts";
+import type { ZoneRef } from "../state/zones.ts";
 import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
 
 export type Destination =
-  /** A library, hand or graveyard: always the owner's (CR 400.3). */
-  { zone: PlayerZoneName; position: "top" | "bottom" } | { zone: SharedZoneName; controller: PlayerId };
+  /** The owner's library (CR 400.3). Index 0 is the top. */
+  | { zone: "library"; position: "top" | "bottom" }
+  /** The owner's hand or graveyard (CR 400.3). A graveyard card goes on top (CR 404.1), the end of the list. */
+  | { zone: "hand" | "graveyard" }
+  /** Permanents and spells have a controller (CR 110.2, 112.2). */
+  | { zone: "battlefield" | "stack"; controller: PlayerId }
+  /** Cards in exile or the command zone have no controller (CR 108.4). */
+  | { zone: "exile" | "command" };
 
 /**
  * Moves a card to another zone, where it becomes a new object with a new id and no memory of the old one (CR 400.7):
@@ -23,9 +29,9 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
   if (old === undefined || old.kind !== "card") throw new Error(`${id} isn't a card`);
   const from = zoneOf(state, id);
   const toRef: ZoneRef =
-    to.zone === "battlefield" || to.zone === "stack" || to.zone === "exile" || to.zone === "command"
-      ? { zone: to.zone }
-      : { zone: to.zone, player: old.owner };
+    to.zone === "library" || to.zone === "hand" || to.zone === "graveyard"
+      ? { zone: to.zone, player: old.owner }
+      : { zone: to.zone };
 
   let next = withZoneList(
     state,
@@ -54,11 +60,9 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 
-  // Library index 0 is the top; for every other zone, new objects go on top, at the end (zones.ts).
   const list = zoneList(next, toRef);
-  const placed =
-    "position" in to && to.position === "top" && to.zone === "library" ? [card.id, ...list] : [...list, card.id];
-  next = withZoneList(next, toRef, placed);
+  const toTop = to.zone === "library" && to.position === "top";
+  next = withZoneList(next, toRef, toTop ? [card.id, ...list] : [...list, card.id]);
 
   const event: GameEvent = {
     type: "ZONE_CHANGED",

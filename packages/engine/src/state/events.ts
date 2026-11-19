@@ -27,7 +27,9 @@ export type GameEvent =
   /** CR 103.1. `chosenBy` is null when the setup named the starting player. */
   | { type: "STARTING_PLAYER_CHOSEN"; player: PlayerId; chosenBy: PlayerId | null }
   | { type: "LIBRARY_SHUFFLED"; player: PlayerId } // CR 701.24
+  /** A card drawn (CR 121.1), as well as its `ZONE_CHANGED`. Hidden from other players, like the card itself. */
+  | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5
-  | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId } // CR 500.1
+  | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId }
   | { type: "PLAYER_CONCEDED"; player: PlayerId } // CR 104.3a
   | { type: "GAME_ENDED"; result: GameResult };

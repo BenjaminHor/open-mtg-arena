@@ -11,15 +11,14 @@ import { waitFor } from "./decide.ts";
 import { beginFirstTurn } from "./first-turn.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { STARTING_HAND_SIZE } from "./setup-validation.ts";
+import { rotateTo } from "./turn-order.ts";
 
 /**
  * The starting player is decided (CR 103.1). Turn order starts with them and follows the seating order. Then each
  * library is shuffled (CR 103.3), each player draws their opening hand (CR 103.5), and mulligans begin.
  */
 export function setStartingPlayer(state: GameState, player: PlayerId, chosenBy: PlayerId | null): Progress {
-  const seats = state.turnOrder;
-  const at = seats.indexOf(player);
-  const turnOrder = [...seats.slice(at), ...seats.slice(0, at)];
+  const turnOrder = rotateTo(state.turnOrder, player);
   let progress: Progress = {
     state: { ...state, turnOrder, pregame: { ...pregameOf(state), startingPlayer: player } },
     events: [{ type: "STARTING_PLAYER_CHOSEN", player, chosenBy }],
@@ -53,7 +52,8 @@ export function putOnBottom(state: GameState, player: PlayerId, object: ObjectId
   const pregame = pregameOf(state);
   const moved = moveCard(state, object, { zone: "library", position: "bottom" });
   const [first, ...rest] = pregame.bottom;
-  const remaining = (first?.remaining ?? 1) - 1;
+  if (first === undefined || first.player !== player) throw new Error(`${player} has no cards to put on the bottom`);
+  const remaining = first.remaining - 1;
   const bottom = remaining > 0 ? [{ player, remaining }, ...rest] : rest;
   return andThen(
     { state: { ...moved.state, pregame: { ...pregame, bottom } }, events: moved.events },
@@ -97,8 +97,9 @@ function takeMulligans(state: GameState): Progress {
   }
   const mulligans = { ...pregame.mulligans };
   for (const player of takers) mulligans[player] = (mulligans[player] ?? 0) + 1;
-  // Players who mulligan together put cards on the bottom at the same time. With no active player yet, their choices
-  // are taken in turn order from the starting player (the order CR 101.4 uses for simultaneous choices).
+  // Players who mulligan together put cards on the bottom at the same time. While starting the game the starting
+  // player counts as the active player (CR 101.4e), so their choices are taken in turn order from the starting player
+  // (CR 101.4).
   const bottom = takers.map((player) => ({ player, remaining: mulligans[player] ?? 0 }));
   const next: Pregame = { ...pregame, mulligans, declarations: [], bottom };
   return andThen({ state: { ...progress.state, pregame: next }, events: progress.events }, nextBottomOrRound);

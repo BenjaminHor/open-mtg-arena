@@ -49,11 +49,20 @@ export function standardSetup(fields: Partial<GameSetup> = {}): GameSetup {
 
 export type Game = { state: GameState; events: GameEvent[] };
 
+/** Freezes a value all the way down, so any attempt to mutate it throws (D-021: the engine never mutates its input). */
+export function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const item of Object.values(value)) deepFreeze(item);
+  }
+  return value;
+}
+
 export function start(setup: GameSetup): Game {
-  const result = createGame(setup, TEST_CARDS);
+  const result = createGame(deepFreeze(structuredClone(setup)), TEST_CARDS);
   if (!result.ok) throw new Error(`createGame failed: ${result.error.message}`);
   checkInvariants(result.state);
-  return { state: result.state, events: result.events };
+  return { state: deepFreeze(result.state), events: result.events };
 }
 
 /** The pending player answers. The answer must be one of the legal actions. */
@@ -67,10 +76,10 @@ export function answer(game: Game, answer: Answer): Game {
 }
 
 export function act(game: Game, action: Action): Game {
-  const result = applyAction(game.state, action, TEST_CARDS);
+  const result = applyAction(deepFreeze(game.state), action, TEST_CARDS);
   if (!result.ok) throw new Error(`${action.type} rejected: ${result.error.message}`);
   checkInvariants(result.state);
-  return { state: result.state, events: [...game.events, ...result.events] };
+  return { state: deepFreeze(result.state), events: [...game.events, ...result.events] };
 }
 
 export function pendingPlayer(state: GameState): PlayerId {
@@ -92,10 +101,26 @@ export function checkInvariants(state: GameState): void {
     ...state.zones.command,
   ];
   expect([...listed].sort()).toStrictEqual(Object.keys(state.objects).sort());
-  // Every listed legal action is accepted.
+  // Every listed legal action is accepted, and nothing in the state is mutated by trying them.
+  const frozen = deepFreeze(state);
   for (const player of state.turnOrder) {
-    for (const action of legalActions(state, player, TEST_CARDS)) {
-      expect(applyAction(state, action, TEST_CARDS).ok, JSON.stringify(action)).toBe(true);
+    for (const action of legalActions(frozen, player, TEST_CARDS)) {
+      expect(applyAction(frozen, action, TEST_CARDS).ok, JSON.stringify(action)).toBe(true);
+    }
+  }
+  // And the other direction, where it can be checked exhaustively: no card outside the hand can go to the bottom.
+  const pending = state.pending;
+  if (pending?.kind === "mulliganBottom") {
+    const inHand = state.zones.players[pending.player]?.hand ?? [];
+    for (const object of Object.keys(state.objects) as `o${number}`[]) {
+      if (inHand.includes(object)) continue;
+      const action = {
+        type: "ANSWER",
+        decisionId: pending.id,
+        player: pending.player,
+        answer: { kind: "mulliganBottom", object },
+      } as const;
+      expect(applyAction(frozen, action, TEST_CARDS).ok, object).toBe(false);
     }
   }
 }

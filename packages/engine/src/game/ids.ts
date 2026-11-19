@@ -16,7 +16,10 @@ export function newDecisionId(state: GameState): { id: DecisionId; state: GameSt
   return { id: `d${state.nextId}`, state: { ...state, nextId: state.nextId + 1 } };
 }
 
-/** A new timestamp (CR 613.7). Objects that get one at the same time get them in a fixed order (CR 613.7m). */
+/**
+ * A new timestamp (CR 613.7). Timestamps are always distinct. Objects created from a setup get them in setup order;
+ * objects that really arrive at the same time during play must get them in APNAP order (CR 613.7m).
+ */
 export function newTimestamp(state: GameState): { timestamp: number; state: GameState } {
   return { timestamp: state.nextTimestamp, state: { ...state, nextTimestamp: state.nextTimestamp + 1 } };
 }

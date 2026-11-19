@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { applyAction, createGame, type GameState, type PlayerId } from "../../src/index.ts";
 import { TEST_CARDS } from "../support/cards.ts";
-import { answer, type Game, pendingPlayer, playerSetup, standardSetup, start } from "../support/game.ts";
+import { act, answer, type Game, pendingPlayer, playerSetup, standardSetup, start } from "../support/game.ts";
 
 const hand = (s: GameState, p: PlayerId) => s.zones.players[p]?.hand ?? [];
 const library = (s: GameState, p: PlayerId) => s.zones.players[p]?.library ?? [];
@@ -57,7 +57,12 @@ describe("shuffling and opening hands (CR 103.3, 103.5)", () => {
       const game = start(standardSetup({ seed, opening: { kind: "standard", firstPlayer: "p1" } }));
       return [...hand(game.state, "p1"), ...library(game.state, "p1")].map((id) => cardIdOf(game.state, id));
     };
-    const unshuffled = Array.from({ length: 40 }, (_, i) => `c${2 * i + 1}`);
+    const setupOrder = (seed: number) => {
+      const fixed = { kind: "fixed", turn: { number: 1, activePlayer: "p1", step: "upkeep" } } as const;
+      const game = start(standardSetup({ seed, opening: fixed }));
+      return library(game.state, "p1").map((id) => cardIdOf(game.state, id));
+    };
+    const unshuffled = setupOrder(1);
     expect(order(1)).not.toStrictEqual(unshuffled);
     expect([...order(1)].sort()).toStrictEqual([...unshuffled].sort());
     expect(order(1)).toStrictEqual(order(1));
@@ -161,13 +166,13 @@ describe("mulligans (CR 103.5)", () => {
 });
 
 describe("answers that don't fit the decision", () => {
-  it("rejects a stale decision id, the wrong player, and a card that isn't in hand, changing nothing", () => {
+  it("rejects a decision id that isn't pending, the wrong player, and an answer of the wrong kind", () => {
     const game = p1First();
     const pending = game.state.pending;
     if (pending === null) throw new Error("expected a decision");
     const keep = { kind: "mulligan", choice: "keep" } as const;
     expect(
-      applyAction(game.state, { type: "ANSWER", decisionId: "d1", player: "p1", answer: keep }, TEST_CARDS),
+      applyAction(game.state, { type: "ANSWER", decisionId: "d9999", player: "p1", answer: keep }, TEST_CARDS),
     ).toMatchObject({
       ok: false,
       error: { code: "staleDecision" },
@@ -259,5 +264,152 @@ describe("setup validation", () => {
       /isn't a player/,
     );
     expect(problem(standardSetup())).toBeNull();
+  });
+});
+
+// Cases from the M1-05 reviews: each proves a rule the tests above don't pin down on their own.
+describe("game start, in more detail", () => {
+  const decision = (game: Game) => {
+    if (game.state.pending === null) throw new Error("expected a decision");
+    return game.state.pending;
+  };
+  const answerAs = (game: Game, answerValue: Parameters<typeof answer>[1]) =>
+    applyAction(
+      game.state,
+      { type: "ANSWER", decisionId: decision(game).id, player: decision(game).player, answer: answerValue },
+      TEST_CARDS,
+    );
+  const cardsOf = (s: GameState, ids: readonly string[]) => ids.map((id) => cardIdOf(s, id)).sort();
+
+  it("lets either player be picked to choose, depending on the seed, and the chooser may choose themselves (CR 103.1)", () => {
+    const choosers = new Set(
+      Array.from({ length: 20 }, (_, seed) => pendingPlayer(start(standardSetup({ seed })).state)),
+    );
+    expect([...choosers].sort()).toStrictEqual(["p1", "p2"]);
+    let game = start(standardSetup());
+    const chooser = pendingPlayer(game.state);
+    game = answer(game, { kind: "chooseStartingPlayer", player: chooser });
+    expect(game.state.turnOrder[0]).toBe(chooser);
+    expect(answerAs(start(standardSetup()), { kind: "chooseStartingPlayer", player: "p9" })).toMatchObject({
+      ok: false,
+      error: { code: "illegalAction" },
+    });
+  });
+
+  it("goes in turn order, not seating order, when the second seat starts (CR 103.5, 101.4e)", () => {
+    let game = start(standardSetup({ opening: { kind: "standard", firstPlayer: "p2" } }));
+    expect(decision(game)).toMatchObject({ player: "p2", kind: "mulligan" });
+    game = answer(game, { kind: "mulligan", choice: "mulligan" });
+    expect(decision(game)).toMatchObject({ player: "p1", kind: "mulligan" });
+    game = answer(game, { kind: "mulligan", choice: "mulligan" });
+    expect(decision(game)).toMatchObject({ player: "p2", kind: "mulliganBottom" });
+    game = answer(game, { kind: "mulliganBottom", object: hand(game.state, "p2")[0] as `o${number}` });
+    expect(decision(game)).toMatchObject({ player: "p1", kind: "mulliganBottom" });
+    game = answer(game, { kind: "mulliganBottom", object: hand(game.state, "p1")[0] as `o${number}` });
+    expect(decision(game)).toMatchObject({ player: "p2", kind: "mulligan", mulligansTaken: 1 });
+  });
+
+  it("shuffles the hand into the library for a mulligan, for both players before anyone bottoms a card", () => {
+    let game = p1First();
+    const before = game.events.length;
+    const p2Hand = hand(game.state, "p2");
+    game = answer(game, { kind: "mulligan", choice: "mulligan" });
+    game = answer(game, { kind: "mulligan", choice: "mulligan" });
+    const round = game.events.slice(before);
+    const shuffled = round.flatMap((e) => (e.type === "LIBRARY_SHUFFLED" ? [e.player] : []));
+    expect(shuffled).toStrictEqual(["p1", "p2"]);
+    // Both new hands are new objects (CR 400.7), drawn after both shuffles; nothing has gone to the bottom yet.
+    expect(hand(game.state, "p2").some((id) => p2Hand.includes(id))).toBe(false);
+    expect(decision(game)).toMatchObject({ player: "p1", kind: "mulliganBottom", remaining: 1 });
+    expect(cardsOf(game.state, [...hand(game.state, "p1"), ...library(game.state, "p1")])).toHaveLength(40);
+  });
+
+  it("has both players mulligan twice: round two asks in turn order and each puts two cards on the bottom", () => {
+    let game = p1First();
+    for (const _ of [1, 2]) {
+      game = answer(game, { kind: "mulligan", choice: "mulligan" });
+      game = answer(game, { kind: "mulligan", choice: "mulligan" });
+      for (const p of ["p1", "p2"] as const) {
+        const count =
+          decision(game).kind === "mulliganBottom" && decision(game).player === p
+            ? (decision(game) as { remaining: number }).remaining
+            : 0;
+        for (let i = 0; i < count; i++)
+          game = answer(game, { kind: "mulliganBottom", object: hand(game.state, p)[0] as `o${number}` });
+      }
+    }
+    expect(hand(game.state, "p1")).toHaveLength(5);
+    expect(hand(game.state, "p2")).toHaveLength(5);
+    expect(decision(game)).toMatchObject({ player: "p1", kind: "mulligan", mulligansTaken: 2 });
+  });
+
+  it("only lets a card from the player's own hand go to the bottom", () => {
+    let game = p1First();
+    game = answer(game, { kind: "mulligan", choice: "mulligan" });
+    game = answer(game, { kind: "mulligan", choice: "keep" });
+    expect(decision(game).kind).toBe("mulliganBottom");
+    for (const object of [hand(game.state, "p2")[0], library(game.state, "p1")[0], "o9999"] as `o${number}`[]) {
+      expect(answerAs(game, { kind: "mulliganBottom", object })).toMatchObject({
+        ok: false,
+        error: { code: "illegalAction" },
+      });
+    }
+  });
+
+  it("rejects an answer to a decision that's already been answered", () => {
+    const game = p1First();
+    const keep = {
+      type: "ANSWER",
+      decisionId: decision(game).id,
+      player: "p1",
+      answer: { kind: "mulligan", choice: "keep" },
+    } as const;
+    const after = act(game, keep);
+    expect(applyAction(after.state, keep, TEST_CARDS)).toMatchObject({ ok: false, error: { code: "staleDecision" } });
+  });
+
+  it("untaps only the starting player's permanents for turn 1, and none counts as controlled since a turn began until then (CR 302.6, 502.3)", () => {
+    const tappedBears = { oracleId: "grizzly-bears", tapped: true, summoningSick: false, damage: 0, counters: {} };
+    const setup = standardSetup({ opening: { kind: "standard", firstPlayer: "p1" } });
+    setup.players = setup.players.map((p) => ({ ...p, battlefield: [tappedBears] }));
+    let game = start(setup);
+    const [mine, theirs] = game.state.zones.battlefield.map((id) => game.state.objects[id]);
+    expect(mine).toMatchObject({ controlledSinceTurnStart: false });
+    expect(theirs).toMatchObject({ controlledSinceTurnStart: false });
+    game = answer(game, { kind: "mulligan", choice: "keep" });
+    game = answer(game, { kind: "mulligan", choice: "keep" });
+    const [p1Bears, p2Bears] = game.state.zones.battlefield.map((id) => game.state.objects[id]);
+    expect(p1Bears).toMatchObject({ baseController: "p1", tapped: false, controlledSinceTurnStart: true });
+    expect(p2Bears).toMatchObject({ baseController: "p2", tapped: true, controlledSinceTurnStart: false });
+  });
+
+  it("starts a fixed opening's turn order with the active player on turn 1, and keeps seating order later", () => {
+    const fixed = (number: number) =>
+      start(standardSetup({ opening: { kind: "fixed", turn: { number, activePlayer: "p2", step: "precombatMain" } } }))
+        .state.turnOrder;
+    expect(fixed(1)).toStrictEqual(["p2", "p1"]);
+    expect(fixed(3)).toStrictEqual(["p1", "p2"]);
+  });
+
+  it("rejects the other setups the engine can't start", () => {
+    const problem = (setup: Parameters<typeof createGame>[0]) => {
+      const result = createGame(setup, TEST_CARDS);
+      return result.ok ? "" : result.error.message;
+    };
+    const base = standardSetup();
+    const [p1, p2] = base.players as [ReturnType<typeof playerSetup>, ReturnType<typeof playerSetup>];
+    expect(problem({ ...base, players: [p1, { ...p2, id: "p1" }] })).toMatch(/must be different/);
+    expect(problem({ ...base, players: [p1, { ...p2, id: "player2" as `p${number}` }] })).toMatch(/isn't a player id/);
+    expect(problem({ ...base, players: [p1, { ...p2, manaPool: { ...p2.manaPool, R: 1 } }] })).toMatch(/no mana/);
+    const fixed = (step: "declareAttackers" | "cleanup", number = 1, activePlayer: `p${number}` = "p1") =>
+      problem({ ...base, opening: { kind: "fixed", turn: { number, activePlayer, step } } });
+    expect(fixed("declareAttackers")).toMatch(/can't start in the declareAttackers step/);
+    expect(fixed("cleanup")).toMatch(/can't start in the cleanup step/);
+    expect(
+      problem({ ...base, opening: { kind: "fixed", turn: { number: 0, activePlayer: "p1", step: "upkeep" } } }),
+    ).toMatch(/turn number/);
+    expect(
+      problem({ ...base, opening: { kind: "fixed", turn: { number: 1, activePlayer: "p7", step: "upkeep" } } }),
+    ).toMatch(/active player p7/);
   });
 });
