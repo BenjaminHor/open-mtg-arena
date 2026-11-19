@@ -7,3 +7,7 @@ It will take a `PlayerView` and the pending decision, and return an action. It n
 Depends only on `@mtg/engine`.
 
 Until then, the CLI's `random` and `first-legal` agents (M1-17) play games for testing.
+
+## Tests
+
+None yet. When the AI arrives, `pnpm test` runs its tests along with the rest.

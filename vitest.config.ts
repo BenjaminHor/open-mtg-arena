@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 // Two projects so scenario tests can run on their own (`pnpm test:scenarios`).
 // Scenario YAML files live in packages/engine/test/scenarios/ and are run by
@@ -12,7 +12,7 @@ export default defineConfig({
         test: {
           name: "unit",
           include: ["packages/*/test/**/*.test.ts"],
-          exclude: [SCENARIOS],
+          exclude: [...configDefaults.exclude, SCENARIOS],
         },
       },
       {
