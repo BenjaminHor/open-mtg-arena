@@ -1,0 +1,19 @@
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+.vite/
+playwright-report/
+test-results/
+fuzz-failures/
+
+# Large downloads; only the extracted card-pool files are committed
+data/scryfall/
+packages/cards/data/scryfall/
+
+# Local settings and secrets
+.env
+.env.*
+.claude/settings.local.json
+.DS_Store
