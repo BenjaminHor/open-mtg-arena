@@ -45,7 +45,10 @@ export type CardObject = {
    * the battlefield or changes control.
    */
   controlledSinceTurnStart: boolean;
-  /** The choices made while casting it, while it's a spell on the stack (CR 601.2b–c). Otherwise null. */
+  /**
+   * The choices made while casting it, while it's a spell on the stack (CR 601.2c; modes, later: CR 601.2b).
+   * Otherwise null.
+   */
   choices: StackChoices | null;
 };
 
@@ -68,7 +71,7 @@ export type AbilityObject = {
    */
   baseController: PlayerId;
   timestamp: number;
-  /** The choices made while activating it (CR 602.2b, which follows CR 601.2b–c). */
+  /** The choices made while activating it (CR 602.2b, which follows CR 601.2c). */
   choices: StackChoices;
 };
 
@@ -86,7 +89,10 @@ export type AbilityRef =
 /** The basic land types (CR 305.6). */
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";
 
-/** Choices announced while casting a spell or activating an ability (CR 601.2b–c), kept on the stack object. */
+/**
+ * Choices announced while casting a spell or activating an ability (CR 601.2c; modes, later: CR 601.2b), kept on the
+ * stack object.
+ */
 export type StackChoices = {
   /** The chosen modes of a modal spell (later: CR 700.2), as indexes. Empty when not modal. */
   modes: number[];

@@ -2,7 +2,9 @@
 
 import type { ObjectId, PlayerId } from "./ids.ts";
 
-/** A creature declared as an attacker, and the player it attacks (CR 506.3, 508.1b). */
+/**
+ * A creature declared as an attacker, and the player it attacks (CR 506.3; a choice of defenders, later: CR 508.1b).
+ */
 export type Attack = { attacker: ObjectId; defender: PlayerId };
 
 /** A creature declared as a blocker, and the attacking creature it blocks (CR 509.1a). */

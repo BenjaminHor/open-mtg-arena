@@ -1,5 +1,5 @@
 name: In cleanup the active player chooses cards to discard down to seven, before damage is removed
-rules: [CR 514.1, CR 514.2, CR 514.3, CR 402.2]
+rules: [CR 514.1, CR 514.2, CR 514.3, CR 402.2, CR 701.9a]
 setup:
   turn: { active: p1, step: end }
   p1:

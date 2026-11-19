@@ -122,7 +122,8 @@ removing a scenario makes the coverage check fail; a deliberate slowdown fails t
 
 - All tasks accepted, and `pnpm check` is green.
 - `pnpm fuzz --games 1000` is clean with both prebuilt decks.
-- The rules coverage report shows no rule cited in code without a scenario.
+- The rules coverage report shows no rule cited in code without a test: a scenario, or a unit test where a scenario
+  can't express it (owner, 2026-11-19; D-050). Real behavior gets scenarios.
 - The owner can follow a CLI game log (`pnpm cli auto ... --max-turns 30`) and spot-check a few scenarios for correctness.
 - `rules-judge` has reviewed the casting, priority, SBA and combat code against the CR.
 - `docs/status.md` is up to date, and the M2 spec has been reviewed with the owner.

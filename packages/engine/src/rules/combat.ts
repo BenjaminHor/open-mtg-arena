@@ -1,6 +1,7 @@
 // Combat rules questions (CR 506–510): who can attack, who can block what, and who's still in combat. Restrictions on
-// one creature ("can't block", protection) are named checks here (CR 508.1c, 509.1b). Rules about the whole
-// declaration (menace, "can't attack alone", requirements, CR 508.1d, 509.1c) will be checked at `finishDeclaring`.
+// one creature ("can't block", protection) are named checks here (CR 509.1b; "can't attack", later: CR 508.1c). Rules
+// about the whole declaration (menace, "can't attack alone", requirements, later: CR 508.1d, 509.1c) will be checked
+// at `finishDeclaring`.
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { Attack, Block } from "../state/combat.ts";
