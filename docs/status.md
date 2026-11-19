@@ -9,11 +9,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 ## In progress
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
   spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
-- M2-01 Hidden information fix: done (D-054), PR to open. A card leaving a hand or library for a public zone gets a
-  new card id; `eventsFor` shows only the side of a move the viewer sees; another player's cancel hides `restored`.
-  The two-world test (cancel a Shock, cast the same one or the other: p1 sees the same) and the fuzzer's stricter
-  leak check guard it. Replays regenerated (state gains `nextCardId`); golden games unchanged.
-- Next: M2-02, the Magic 2010 pool and its mechanics map (`docs/milestones/m2-pool.md`).
+- M2-01 Hidden information fix: done, merged (PR #21, D-054).
+- M2-02 The Magic 2010 pool and its mechanics (plan, 2026-11-19). From the local Scryfall bulk data (`data/scryfall/`,
+  gitignored): every M10 card with its Oracle text and Scryfall keywords. Classify each card's rules needs (triggers,
+  replacements, static abilities, costs, counters, tokens, auras, equipment, planeswalkers, keywords, keyword actions)
+  first by text patterns, then check each card by hand against its Oracle text. Write `docs/milestones/m2-pool.md`: a
+  table per M2 task of the cards it unlocks, every card mapped to a task or "left out" with the reason, and two or three
+  prebuilt decks for the fuzzer and golden games. The owner reads the mechanics table (M2-02 acceptance). Future
+  impact: the table decides the order of M2-03 to M2-14, so cards needing only built rules come first.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
