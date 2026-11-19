@@ -7,7 +7,21 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-12 State-based actions (plan, 2026-11-19). CR 704.3, 704.5a/b/f/g, 117.5, 514.3a, 701.8, 104.2a, 104.4a, 404.3.
+  - `rules/state-based-actions.ts`: `stateBasedActions(state, cards)` lists what applies now, as data (no changes).
+  - `game/state-based-actions.ts`: `checkStateBasedActions` performs them all at once as one event (CR 704.3) and
+    repeats until none apply; clears `attemptedDrawFromEmptyLibrary` after each check. Called from `givePriority`
+    (CR 117.5), never between work items, and from the cleanup step (CR 514.3a: if any happened, the active player
+    gets priority, and once all pass, another cleanup step begins).
+  - 704.5f puts the creature in its owner's graveyard; 704.5g destroys it (`permanents/destroy.ts`, CR 701.8, its own
+    function for regeneration and indestructible later). Simultaneous cards go to a graveyard in battlefield order.
+  - Losing (CR 104.3): `PLAYER_LOST`; when one player is left they win (CR 104.2a), when none, a draw (CR 104.4a):
+    `GameResult`, `GAME_ENDED`, nothing pending. Conceding and the result scenarios stay in M1-15. The runner gets
+    `winner` now, since games can end.
+  - Tests: a scenario per SBA, two at once (and both players at 0 life: a draw), the CR 608.2b scenario (Shock whose
+    target died to a Bolt cast after it), damage-and-pump-end-together now meaningful; TS test for a second cleanup.
+  - Future impact: the SBA list is data, so the legend rule, +1/+1/-1/-1 annihilation, planeswalkers etc. are one case
+    each; triggers will go on the stack in the same loop (CR 117.5); multiplayer needs players leaving (CR 800.4).
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
