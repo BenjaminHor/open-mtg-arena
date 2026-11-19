@@ -61,7 +61,7 @@ type GameState = {
   nextId: number               // allocator for object ids
   nextTimestamp: number        // CR 613.7
 
-  turn: { number: number; activePlayer: PlayerId; step: Step }
+  turn: { number: number; activePlayer: PlayerId; step: Step } | null   // null before the first turn
   turnOrder: PlayerId[]        // starts with the starting player (CR 103.1)
   players: Record<PlayerId, PlayerState>   // life, manaPool, landsPlayed, poison, lost, ...
   objects: Record<ObjectId, GameObject>    // every card/token/copy/ability object currently in a zone
@@ -73,6 +73,7 @@ type GameState = {
   pendingTriggers: PendingTrigger[] // triggered, waiting to be put on the stack (CR 603.3)
   turnHistory: TurnHistory          // facts later rules ask about ("a creature died this turn")
 
+  pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1
   work: WorkItem[]                 // the resolution queue (see "Running the game")
   pending: PendingDecision | null  // who must act, and what their options are
   result: GameResult | null        // set when the game ends

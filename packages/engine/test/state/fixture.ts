@@ -113,6 +113,7 @@ export function midTurnState(): GameState {
       exile: ["o9"],
       command: [],
     },
+    pregame: null,
     pending: { id: "d19", player: "p2", kind: "priority" },
     result: null,
   };

@@ -7,6 +7,7 @@ import type { PendingDecision } from "./decisions.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { GameObject } from "./objects.ts";
 import type { PlayerState } from "./players.ts";
+import type { Pregame } from "./pregame.ts";
 import type { GameResult } from "./result.ts";
 import type { GameSetup } from "./setup.ts";
 import type { Turn } from "./turn.ts";
@@ -24,7 +25,8 @@ export type GameState = {
   /** The next timestamp (CR 613.7). */
   nextTimestamp: number;
 
-  turn: Turn;
+  /** Null before the first turn begins (while the starting player is chosen and players mulligan). */
+  turn: Turn | null;
   /**
    * Players in turn order, starting with the starting player (CR 103.1). APNAP order (CR 101.4) and
    * "the next player" always come from this list, cyclically.
@@ -33,6 +35,9 @@ export type GameState = {
   players: Record<PlayerId, PlayerState>;
   objects: Record<ObjectId, GameObject>;
   zones: Zones;
+
+  /** The start of a `standard` game (CR 103.1–103.5), until the first turn begins. Null afterwards. */
+  pregame: Pregame | null;
 
   /** What the game is waiting for. Null only once the game has ended. */
   pending: PendingDecision | null;

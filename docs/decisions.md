@@ -202,3 +202,18 @@ beginner-box or showcase printing can win; pin the card when the pick looks wron
 Scryfall's Oracle Cards pick. Rules data (Oracle text, types, cost) always comes from Oracle Cards; only the printing
 details (images, artist, set, collector number) come from the chosen printing. That keeps the art stable across refreshes
 and avoids crossover or digital-only printings, without changing any rules behavior.
+
+**D-030: How the game starts** · 2026-11-19 · accepted
+- `GameState.turn` is null before the first turn, and `pregame` holds the start-of-game bookkeeping (CR 103): the
+  starting player, mulligans taken, who has kept, this round's declarations, and cards still to put on the bottom.
+  Code that runs only during turns reads the turn through `currentTurn()`, which throws before turn 1.
+- When the setup doesn't name the starting player, a player picked at random from the seed chooses who goes first
+  (CR 103.1), as a `chooseStartingPlayer` decision.
+- Mulligans follow the current CR 103.5: a mulligan puts N cards on the bottom right away (N = mulligans taken, this one
+  included), not when the player keeps. Each card is a separate `mulliganBottom` decision, which keeps every legal answer
+  listable and also sets the order. Players who mulligan together answer in turn order from the starting player.
+- Every zone change goes through `moveCard` (`engine/src/zones/move-card.ts`), the one place the replacement and
+  trigger steps of the event pipeline will plug in.
+- Only two-player games start for now: the multiplayer start rules (CR 103.5c, 103.8c) aren't built.
+- Until M1-06 walks the turn's steps, the first turn begins directly in the upkeep with the starting player holding
+  priority, and `legalActions` lists nothing for priority until M1-07 (so every listed action is one `applyAction` takes).

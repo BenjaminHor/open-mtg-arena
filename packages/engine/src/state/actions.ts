@@ -20,4 +20,7 @@ export type Action =
   | { type: "CONCEDE"; player: PlayerId };
 
 /** The answer to a decision other than priority. Its `kind` matches the decision's. */
-export type Answer = { kind: "mulligan"; choice: "keep" | "mulligan" };
+export type Answer =
+  | { kind: "chooseStartingPlayer"; player: PlayerId }
+  | { kind: "mulligan"; choice: "keep" | "mulligan" }
+  | { kind: "mulliganBottom"; object: ObjectId };
