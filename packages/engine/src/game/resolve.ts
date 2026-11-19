@@ -3,9 +3,10 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { isLegalTarget, targetSpecsOf } from "../rules/targets.ts";
+import { stillLegalTargets } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import type { Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
 import { moveCard } from "../zones/move-card.ts";
 import { andThen, type Progress } from "./progress.ts";
@@ -21,29 +22,21 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
   const top = state.zones.stack.at(-1);
   if (top === undefined) throw new Error("The stack is empty");
   const active = currentTurn(state).activePlayer;
-  // CR 608.2b: a spell with targets whose targets are all illegal now doesn't resolve.
-  const allTargetsIllegal = targetsAllIllegal(state, top, cards);
+  // CR 608.2b: the targets are checked once, as it starts to resolve. If it has targets and all of them are now
+  // illegal, it doesn't resolve; otherwise its effects skip the illegal ones.
+  const { chosen, legal } = stillLegalTargets(state, top, cards);
+  const allTargetsIllegal = chosen.some((group) => group.length > 0) && legal.every((group) => group.length === 0);
   const items: WorkItem[] = allTargetsIllegal
     ? [
         { kind: "doesNotResolve", object: top },
         { kind: "givePriority", player: active },
       ]
     : [
-        ...effectWork(state, top, cards),
+        ...effectWork(state, top, legal, cards),
         { kind: "finishResolving", object: top },
         { kind: "givePriority", player: active },
       ];
   return { state: queueWork({ ...state, passesInSuccession: 0 }, ...items), events: [] };
-}
-
-/** Whether the spell has targets and every one of them is illegal now (CR 608.2b). Abilities' targets come in M1-14. */
-function targetsAllIllegal(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card" || obj.choices === null) return false;
-  const specs = targetSpecsOf(state, id, cards);
-  const chosen = obj.choices.targets.flatMap((group, i) => group.map((target) => ({ target, spec: specs[i] })));
-  if (chosen.length === 0) return false;
-  return chosen.every(({ target, spec }) => spec === undefined || !isLegalTarget(state, spec, target, cards));
 }
 
 /**
@@ -58,12 +51,17 @@ export function doesNotResolve(state: GameState, id: ObjectId): Progress {
 }
 
 /**
- * The work for what the spell or ability does: first checking its targets are still legal (CR 608.2b), then its effects
- * (CR 608.2c–m). The effects interpreter arrives in M1-10; until then there is none (the all-targets-illegal check runs before).
- * When a spell has no legal targets left, it doesn't resolve (CR 608.2b, 608.3b): that will become a different final step.
+ * One `runEffect` work item per effect, in the order written (CR 608.2c), each knowing the spell's still-legal targets
+ * (CR 608.2b) and its controller. Queuing them, rather than running them here, lets a later effect wait for a choice
+ * (CR 608.2d–e) once one needs to. A permanent spell has no effects of its own (CR 608.3). Abilities' effects come
+ * with activated abilities (M1-14).
  */
-function effectWork(_state: GameState, _id: ObjectId, _cards: CardDatabase): WorkItem[] {
-  return [];
+function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: CardDatabase): WorkItem[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  const effects = cards[obj.oracleId]?.def.spell?.effects ?? [];
+  const context = { self: id, controller: controllerOf(state, id), targets: legal };
+  return effects.map((effect) => ({ kind: "runEffect", effect, context }));
 }
 
 /**

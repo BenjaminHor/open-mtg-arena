@@ -14,6 +14,9 @@ export const SHOCK = "shock";
 export const HAMMER = "volcanic-hammer";
 export const ELVES = "llanowar-elves";
 export const WHELP = "furnace-whelp";
+export const GROWTH = "giant-growth";
+/** Not a real card: a spell with two instances of "target", which nothing in the M1 pool has (CR 608.2b tests). */
+export const SHOT_AND_BOOST = "test-shot-and-boost";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -155,5 +158,50 @@ export const TEST_CARDS: CardDatabase = {
       toughness: 2,
     },
     def: { name: "Grizzly Bears", oracle: "" },
+  }),
+  [GROWTH]: card(GROWTH, {
+    printed: {
+      name: "Giant Growth",
+      manaCost: [{ kind: "colored", color: "G" }],
+      colors: ["G"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Giant Growth",
+      oracle: "Target creature gets +3/+3 until end of turn.",
+      spell: {
+        targets: [{ kind: "creature" }],
+        effects: [{ op: "modifyPT", power: 3, toughness: 3, of: { target: 0 }, duration: "endOfTurn" }],
+      },
+    },
+  }),
+  [SHOT_AND_BOOST]: card(SHOT_AND_BOOST, {
+    printed: {
+      name: "Shot and Boost",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Shot and Boost",
+      oracle: "Shot and Boost deals 1 damage to any target. Target creature gets +1/+1 until end of turn.",
+      spell: {
+        targets: [{ kind: "anyTarget" }, { kind: "creature" }],
+        effects: [
+          { op: "dealDamage", amount: 1, from: "self", to: { target: 0 } },
+          { op: "modifyPT", power: 1, toughness: 1, of: { target: 1 }, duration: "endOfTurn" },
+        ],
+      },
+    },
   }),
 };

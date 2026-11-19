@@ -60,6 +60,15 @@ describe("the scenario runner fails a scenario that's wrong", () => {
     );
   });
 
+  it("matches nested maps in 'events contains' on their keys given, and fails a wrong nested value", () => {
+    const bolt = at("main1", "  p1: { hand: [Lightning Bolt], battlefield: [Mountain] }\n");
+    const cast = `${bolt}  - p1 cast: Lightning Bolt\n    targets: [p2]\n    pay: auto\n  - all pass: once\n`;
+    const dealtTo = (player: string) =>
+      `${cast}  - expect: { events contains: [{ type: DAMAGE_DEALT, to: { player: ${player} } }] }\n`;
+    expect(problems(dealtTo("p2"))).toStrictEqual([]);
+    expect(first(dealtTo("p1"))).toMatch(/events contains: expected/);
+  });
+
   it("compares zone lists in order, and checks 'contains' and 'count'", () => {
     const yard = at("main1", "  p1: { graveyard: [Shock, Forest] }\n");
     expect(problems(`${yard}  - expect: { p1.graveyard: [Shock, Forest] }\n`)).toStrictEqual([]);

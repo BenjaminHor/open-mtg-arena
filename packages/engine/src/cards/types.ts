@@ -4,6 +4,7 @@
 // This is a first draft (M1-04). The effect, cost and ability shapes will be reshaped by the tasks that
 // interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities), see D-026.
 
+import type { Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 
@@ -149,4 +150,4 @@ export type Effect =
   /** "Add {G}." (CR 106.4). */
   | { op: "addMana"; mana: ManaType; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */
-  | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: "endOfTurn" };
+  | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration };

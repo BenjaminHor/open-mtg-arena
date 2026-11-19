@@ -2,6 +2,7 @@
 // Every engine entry point ends here.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { runEffect } from "../effects/run-effect.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { WorkItem } from "../state/work.ts";
 import { givePriority } from "./priority.ts";
@@ -29,6 +30,8 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       return endStep(state);
     case "resolveTopOfStack":
       return resolveTopOfStack(state, cards);
+    case "runEffect":
+      return runEffect(state, item.effect, item.context, cards);
     case "finishResolving":
       return finishResolving(state, item.object, cards);
     case "doesNotResolve":

@@ -2,6 +2,8 @@
 // GameState, not on the JavaScript call stack, so the game can stop for a decision at any point and every wait is a
 // plain-data snapshot.
 
+import type { Effect } from "../cards/types.ts";
+import type { EffectContext } from "./effects.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 
 export type WorkItem =
@@ -14,6 +16,8 @@ export type WorkItem =
   | { kind: "endStep" }
   /** The top object of the stack starts to resolve (CR 405.5, 608): this queues the steps of its resolution. */
   | { kind: "resolveTopOfStack" }
+  /** One effect of a resolving spell or ability, in the order written (CR 608.2c). */
+  | { kind: "runEffect"; effect: Effect; context: EffectContext }
   /** The final part of an object's resolution (CR 608.2n, 608.3a). */
   | { kind: "finishResolving"; object: ObjectId }
   /** Every target of the spell is illegal: it doesn't resolve and goes to its owner's graveyard (CR 608.2b). */

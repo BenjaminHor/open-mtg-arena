@@ -125,7 +125,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   `pending: null` for nothing pending.
 - `p1:Grizzly Bears.tapped`, `.damage`, `.sick`.
 - `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
-  the last step that changed the game.
+  the last step that changed the game. Nested maps match on their keys given too: `{ type: EFFECT_CREATED, effect:
+  { controller: p1 } }`.
 - Expectations that arrive later and fail until then: `.power`, `.toughness` and `.abilities contains` (M1-11),
   `.counters` (M1-13), `winner` (M1-15).
 

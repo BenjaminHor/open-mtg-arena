@@ -35,6 +35,26 @@ export function isLegalTarget(state: GameState, spec: TargetSpec, target: Target
   );
 }
 
+/**
+ * A stack object's chosen targets, one group per instance of "target", and the same groups keeping only the targets
+ * still legal (CR 608.2b), checked as it starts to resolve. Abilities' targets come with activated abilities (M1-14).
+ */
+export function stillLegalTargets(
+  state: GameState,
+  id: ObjectId,
+  cards: CardDatabase,
+): { chosen: Target[][]; legal: Target[][] } {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card" || obj.choices === null) return { chosen: [], legal: [] };
+  const specs = targetSpecsOf(state, id, cards);
+  const chosen = obj.choices.targets;
+  const legal = chosen.map((group, i) => {
+    const spec = specs[i];
+    return spec === undefined ? [] : group.filter((target) => isLegalTarget(state, spec, target, cards));
+  });
+  return { chosen, legal };
+}
+
 /** The target requirements of a card's spell, one per instance of "target" (CR 601.2c). */
 export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly TargetSpec[] {
   const obj = state.objects[id];

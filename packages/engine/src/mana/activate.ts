@@ -2,6 +2,7 @@
 // stack: it resolves at once (CR 605.3b).
 
 import type { CardDatabase } from "../cards/types.ts";
+import { runEffect } from "../effects/run-effect.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
 import { tapPermanent } from "../permanents/tap.ts";
@@ -11,7 +12,6 @@ import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
-import { addMana } from "./pool.ts";
 
 /**
  * Why the player can't activate this ability of a permanent now, for any activated ability: it works only on the
@@ -58,9 +58,10 @@ export function manaAbilityProblem(
   const ability = findAbility(state, id, ref, cards);
   if (ability === null || !isManaAbility(ability.def))
     return "only mana abilities can be activated so far (others arrive in M1-14)";
-  // A mana ability can do more than add mana (CR 605.1a). Until the effects interpreter (M1-10) runs those effects,
-  // such an ability is refused rather than half-done.
-  if (ability.def.effects.some((e) => e.op !== "addMana")) return "mana abilities with other effects arrive in M1-10";
+  // A mana ability can do more than add mana (CR 605.1a). Cancelling a cast can't reverse anything but mana and
+  // tapping yet (D-035, future-rules.md), so mana abilities with other effects wait for a card that needs one.
+  if (ability.def.effects.some((e) => e.op !== "addMana"))
+    return "mana abilities that do more than add mana aren't supported yet";
   return null;
 }
 
@@ -90,15 +91,11 @@ export function resolveManaAbility(
         throw new Error("abilities with mana costs arrive in M1-14");
     }
   }
+  // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana
+  // ability can't have targets (CR 605.1a).
+  const context = { self: id, controller: player, targets: [] };
   for (const effect of ability.def.effects) {
-    switch (effect.op) {
-      case "addMana":
-        progress = andThen(progress, (s) => addMana(s, player, effect.mana, effect.amount, id));
-        break;
-      case "dealDamage":
-      case "modifyPT":
-        throw new Error(`${effect.op} in a mana ability arrives in M1-10`);
-    }
+    progress = andThen(progress, (s) => runEffect(s, effect, context, cards));
   }
   return progress;
 }

@@ -77,6 +77,7 @@ type GameState = {
 
   pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1
   passesInSuccession: number       // priority passes in a row (CR 117.4)
+  casting: Casting | null          // a spell part way through being cast (CR 601.2)
   work: WorkItem[]                 // the resolution queue (see "Running the game")
   pending: PendingDecision | null  // who must act, and what their options are
   result: GameResult | null        // set when the game ends
@@ -126,7 +127,7 @@ type Action =
 - Priority is just one kind of decision. Its options are the actions that `legalActions()` returns.
 - Multi-step procedures such as casting a spell (CR 601.2a–i) are a sequence of decisions:
   announce → choose modes → choose targets → pay costs. Each answer is one action. The
-  in-progress cast lives in `work`, so the game can be saved and resumed in the middle of it.
+  in-progress cast lives in `GameState.casting`, so the game can be saved and resumed in the middle of it.
 - The engine validates every action. An illegal action returns `ok: false` and changes nothing.
 
 ## Running the game: the work queue
@@ -140,7 +141,8 @@ type Action =
 
 The work items so far: `givePriority` (state-based actions and triggers will run there first, CR 117.5; then a `priority`
 decision), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it queues the resolution's effects, `finishResolving`,
-then priority for the active player) and `finishCleanup`. When all players pass in succession, the top of the stack
+then priority for the active player), `runEffect` (one effect of a resolving spell or ability, CR 608.2c),
+`finishResolving`, `doesNotResolve` (CR 608.2b) and `finishCleanup`. When all players pass in succession, the top of the stack
 resolves, or with an empty stack the step ends (CR 117.4).
 
 Resolving a spell means turning its effect data into work items. Because the queue lives in

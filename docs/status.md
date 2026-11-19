@@ -48,6 +48,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - For M1-10: effects run in `effectWork` (`game/resolve.ts`), after the CR 608.2b check (done in M1-09); with several
   targets, effects skip the illegal ones (CR 608.2b). Test CR 608.2m (a spell that leaves the stack mid-resolution) once
   an effect can move one. The M1-07 stack tests are TypeScript; real casting now covers the same paths in YAML.
+- For M1-11: end "until end of turn" effects in the same CR 514.2 action that removes damage (`removeAllDamage` is
+  called from the cleanup step), and decide what to do with an effect whose `affected` ids no longer exist (they never
+  come back, CR 400.7, so dropping the effect, or just the ids, is safe). `characteristics()` reads `GameState.effects`
+  (D-036); the scenarios in `effects/` can then also check `.power` and `.toughness`.
 - For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
   and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
@@ -107,8 +111,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   tapping, summoning sickness for {T} (CR 602.5a), payments checked all or nothing (CR 601.2h), `autoPay` (D-034), the
   runner's `activate` step, 8 mana scenarios (2026-11-19).
 - M1-09 Playing lands and casting spells: land plays (CR 305), timing (CR 117.1a), casting as decisions with targets and
-  payment (CR 601.2), cancelling reverses it (CR 734.1), CR 608.2b on resolution; the runner's `play` and `cast`; 12 land
-  and casting scenarios (D-035) (2026-11-19).
+  payment (CR 601.2), cancelling reverses it (CR 734.1), CR 608.2b on resolution; the runner's `play` and `cast`; 4 land
+  and 16 casting scenarios (D-035) (2026-11-19).
 
 ## Open questions for the owner
 - (none)
