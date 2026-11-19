@@ -26,7 +26,7 @@ describe("conceding (CR 104.3a)", () => {
   it("is refused for someone not in the game, and once the game is over", () => {
     const g = game();
     const stranger = applyAction(g.state, { type: "CONCEDE", player: "p3" }, TEST_CARDS);
-    expect(stranger.ok).toBe(false);
+    expect(stranger).toMatchObject({ ok: false, error: { code: "illegalAction" } });
     const over = act(g, { type: "CONCEDE", player: "p1" });
     const again = applyAction(over.state, { type: "CONCEDE", player: "p2" }, TEST_CARDS);
     expect(again).toMatchObject({ ok: false, error: { code: "gameOver" } });

@@ -193,6 +193,7 @@ pnpm cli show /tmp/g.json --as p2    # what p2 is allowed to see (playerView)
 pnpm cli actions /tmp/g.json         # numbered legal actions for the pending decision
 pnpm cli do /tmp/g.json 3            # take legal action #3
 pnpm cli do /tmp/g.json "cast Lightning Bolt -> p2:Grizzly Bears"   # same step syntax as scenarios
+pnpm cli do /tmp/g.json "p1 concede"   # not in `actions`: always allowed (D-042)
 pnpm cli ai /tmp/g.json --until p1   # let the AI act for the other player until p1 must decide
 pnpm cli auto /tmp/g.json --ai both --max-turns 30   # AI vs AI to the end; prints a turn-by-turn log
 pnpm cli log /tmp/g.json             # events so far, one per line, with CR-relevant detail

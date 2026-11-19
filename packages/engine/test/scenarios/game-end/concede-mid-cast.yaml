@@ -13,3 +13,5 @@ steps:
   - expect:
       winner: p2
       pending: null
+      stack: [Lightning Bolt]
+      p1.hand: []

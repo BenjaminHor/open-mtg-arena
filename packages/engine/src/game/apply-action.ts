@@ -1,5 +1,6 @@
 // applyAction: the engine's reducer (docs/architecture.md, "Engine API"). It checks the action answers the pending
-// decision, applies it, and returns the new state and events. An illegal action changes nothing.
+// decision (except `CONCEDE`, which any player in the game may send at any time, CR 104.3a), applies it, and returns
+// the new state and events. An illegal action changes nothing.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextBlocker, damageLeft } from "../combat/combat-damage.ts";
@@ -30,7 +31,10 @@ export function applyAction(state: GameState, action: Action, cards: CardDatabas
   return { ok: true, ...advance({ state: result.state, events: result.events }, cards) };
 }
 
-/** Checks the action answers the pending decision, then applies it. The decision is cleared before it's applied. */
+/**
+ * Checks the action answers the pending decision (or is a concession), then applies it. The decision is cleared before
+ * it's applied.
+ */
 function handleAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
   if (state.result !== null) return error("gameOver", "The game is over");
   // A player can concede at any time, whoever the game is waiting for (CR 104.3a).

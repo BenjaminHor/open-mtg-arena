@@ -12,3 +12,5 @@ steps:
         - { type: GAME_ENDED, result: { winner: p2, losses: [{ player: p1, reason: conceded }], turn: 5 } }
   - p2 pass: once
   - expect error: gameOver
+  - p2 concede: now
+  - expect error: gameOver

@@ -66,6 +66,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - The "open-mtg-arena" environment also allows Scryfall (`api.scryfall.com`, `data.scryfall.io`). `pnpm cards:fetch`
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
+- For M1-17: the CLI's `show` prints the result once the game is over (winner, each loss and its reason, turn).
+- For M1-18: conceding isn't in `legalActions` (D-042), so the fuzzer never reaches a state after a concession; only
+  the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
+
 ## Next up
 - M1-17 Headless CLI (M1-16 is done; M1-18 and M1-19 follow)
 
