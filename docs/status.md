@@ -7,14 +7,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-18 Fuzzer and replays (2026-11-19), PR #16 (BenjaminHor/open-mtg-arena#16). docs/testing.md sections 3 and 4.
-  - Built: player views (D-044), card ids numbered randomly (D-045), `pnpm fuzz` and saved replays (D-046), with two
-    rounds of rules-judge and code-reviewer fixes. Mutants `pnpm fuzz` catches: a view showing every hand, another
-    player's hand ids, decision, casting record or library order; unfiltered draws and library moves; life lost
-    without its event; a zone move leaving the old id; `legalActions` listing unplayable lands. (Doubled mana is a
-    rules error, not an invariant: scenarios, replays and golden games catch those.)
-  - Left: the 1,000-seed acceptance run (`pnpm fuzz --games 1000 --seed 1`, about a quarter of an hour, run in the
-    background), recording its result here and on the PR, then merge.
+- (none: M1-19 next)
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -80,7 +73,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- M1-18 Fuzzer and replays
+- M1-19 Golden games, coverage report and benchmarks (docs/milestones/m1-engine-foundations.md): golden games reusing
+  the event log, `pnpm coverage:rules` and its check in `pnpm check`, the interaction matrix README, `pnpm bench` with
+  a baseline. Then the M1 exit criteria with the owner.
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -145,6 +140,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-17 Headless CLI: `new`, `show`, `actions`, `do`, `ai`, `auto`, `log`, `inspect`, `export --scenario`, `replay`;
   the game file (setup + actions, cached state); `first-legal` and `random` agents; the prebuilt decks; exported games
   pass as scenarios (D-043) (2026-11-19).
+- M1-18 Fuzzer and replays: player views and event filtering (D-044), card ids numbered in a random order (D-045),
+  `pnpm fuzz` with every check after every action and failures written as game files, a short fuzz in `pnpm check`,
+  saved replays with `pnpm replays:update` (D-046). Acceptance: `pnpm fuzz --games 1000 --seed 1` clean (0 of 1,000
+  failed, 26 minutes); mutants breaking views, events, life, zones and legal actions are caught. One known issue left
+  for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time

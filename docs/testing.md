@@ -260,7 +260,8 @@ the folder): the game file up to the failing action, plus that action and the pr
 `pnpm cli replay`, step it with `do`, and turn it into a failing scenario with `export` (the `fix-bug` skill).
 
 `pnpm test` runs a short fuzz (seeds 1 to 6, in `packages/cli/test/fuzz.test.ts`). Run longer ones before merging
-engine changes. A game takes about a second, so `pnpm fuzz --games 1000` takes about a quarter of an hour.
+engine changes. A game takes one to one and a half seconds, so `pnpm fuzz --games 1000` takes 15 to 25 minutes: run it in the
+background.
 
 ## 4. Replays and golden games
 
