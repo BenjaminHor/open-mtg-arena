@@ -59,8 +59,12 @@ describe("discriminated unions", () => {
       switch (decision.kind) {
         case "priority":
           return "priority";
+        case "chooseStartingPlayer":
+          return "choose";
         case "mulligan":
           return `mulligan ${decision.mulligansTaken}`;
+        case "mulliganBottom":
+          return `bottom ${decision.remaining}`;
         default:
           return assertNever(decision);
       }

@@ -16,5 +16,15 @@ export type DecisionKind =
    * so they can't fall out of sync with it.
    */
   | { kind: "priority" }
-  /** Keep this opening hand or take a mulligan (CR 103.5). */
-  | { kind: "mulligan"; mulligansTaken: number };
+  /** Choose who takes the first turn (CR 103.1). Any player may be chosen, including the one choosing. */
+  | { kind: "chooseStartingPlayer" }
+  /**
+   * Keep this hand or take a mulligan (CR 103.5). `mulligansTaken` counts the mulligans already taken. A mulligan
+   * isn't allowed once the hand would be zero cards.
+   */
+  | { kind: "mulligan"; mulligansTaken: number }
+  /**
+   * After a mulligan, put one card from hand on the bottom of the library (CR 103.5). Asked once per card, so the
+   * answers also set the order: each card goes below the ones before it. `remaining` counts this one.
+   */
+  | { kind: "mulliganBottom"; remaining: number };

@@ -8,7 +8,9 @@ The design and its invariants are in [`docs/architecture.md`](../../docs/archite
 ## Entry points
 
 - `src/index.ts`: the whole public API (`createGame`, `applyAction`, `legalActions`, `playerView`,
-  `characteristics`, as listed in the architecture doc). Today it only exports `ENGINE_VERSION`; M1-03 onward fills it in.
+  `characteristics`, as listed in the architecture doc). So far: `createGame`, `applyAction`, `legalActions`,
+  `ENGINE_VERSION` and the state and card types. Folders: `state/` (types), `game/` (the flow of a game), `zones/`
+  (moving cards), `rules/` (rules questions such as who controls an object), `cards/` (card data types), `rng/`.
 
 ## Tests
 

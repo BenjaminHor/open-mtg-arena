@@ -72,6 +72,13 @@ replace it with a `{ player, since }` record when control-changing effects arriv
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 *Needs now:* nothing assumes exactly two players. Use player lists and turn order, never "the opponent".
 
+**Starting the game, beyond the basics (CR 103).** In a match, the loser of the previous game chooses who goes first
+(CR 103.1); starting hand size can change (CR 103.5a, RPG rule modifiers); multiplayer's free first mulligan (CR 103.5c);
+actions from the opening hand (CR 103.6, Leylines) and "any time you could mulligan" (CR 103.5b).
+*Needs now:* the setup can name the starting player; `STARTING_HAND_SIZE` is one constant to make per-player; the
+mulligan count is the only thing that sets how many cards go to the bottom; opening-hand actions slot in before
+`beginFirstTurn`. A match host keeps `STARTING_PLAYER_CHOSEN.chosenBy` from the events, since `pregame` is cleared.
+
 ## App and game features
 
 **AI search (M3+).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).
