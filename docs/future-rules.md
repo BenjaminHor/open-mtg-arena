@@ -182,6 +182,11 @@ payment context that isn't `Casting`.
 (`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
 the hand. A card cast from a graveyard or exile must go back where it came from.
 
+**Smaller rules noted while closing the coverage gaps (later: in the code).** Power or toughness of `*`
+(CR 208.2) needs characteristic-defining abilities; dividing an effect among targets as a spell is cast (CR 601.2d)
+fits `StackChoices`, which has room for divisions; emblems (CR 114), which the setup's rule modifiers already behave
+like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions); X costs (CR 107.3).
+
 **Small keywords that touch M1 code.** Vigilance (CR 702.20b): `finishAttackers` taps every attacker
 (`combat/declare-attackers.ts`). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`
 (`rules/timing.ts`).

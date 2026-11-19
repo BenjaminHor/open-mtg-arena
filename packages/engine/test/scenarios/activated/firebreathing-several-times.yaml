@@ -7,10 +7,13 @@ setup:
 steps:
   - p1 activate: Furnace Whelp
     pay: auto
+  # The activation cost, {R}, is paid by the activating player (CR 602.1a): one Mountain each time.
   - expect:
       stack: [Furnace Whelp ability]
       pending: { player: p1, kind: priority }
       events contains: [{ type: ABILITY_ACTIVATED, player: p1 }]
+      p1:Mountain.tapped: true
+      p1:Mountain#2.tapped: false
   - p1 activate: Furnace Whelp
     pay: auto
   - p1 activate: Furnace Whelp
@@ -18,6 +21,7 @@ steps:
   - expect:
       stack: [Furnace Whelp ability, Furnace Whelp ability, Furnace Whelp ability]
       p1:Furnace Whelp.power: 2
+      p1:Mountain#3.tapped: true
   - all pass: once
   - all pass: once
   - all pass: once

@@ -87,7 +87,8 @@ function thisObject(obj: GameObject): ObjectId {
 /**
  * The final part of resolution (CR 608.2n, 608.3a): an ability ceases to exist; an instant or sorcery goes to its
  * owner's graveyard; a permanent spell enters the battlefield under its controller. If the object already left the
- * stack during its own resolution, it still resolved, and nothing more happens to it here (later: CR 608.2m).
+ * stack during its own resolution, it still resolved, and nothing more happens to it here (CR 608.2m; nothing in the
+ * pool can do that yet, so a unit test calls this directly).
  */
 export function finishResolving(state: GameState, id: ObjectId, cards: CardDatabase): Progress {
   const obj = state.objects[id];

@@ -79,9 +79,13 @@ describe("objects, owners and controllers", () => {
     }
   });
 
-  it("makes a permanent that leaves a new object with no status and no counters (CR 110.5, 110.5d, 122.2)", () => {
-    const after = shockTheBears(game());
+  it("makes a permanent that leaves a new object with no status and no counters (CR 110.5d, 122.2, 400.7)", () => {
+    const before = game();
+    const bears = before.state.zones.battlefield[2] as ObjectId;
+    const after = shockTheBears(before);
     const [dead] = zone(after.state, "p2", "graveyard");
+    expect(dead).not.toBe(bears);
+    // A card off the battlefield is neither tapped nor untapped (CR 110.5d); the engine keeps `tapped: false` there.
     expect(after.state.objects[dead as ObjectId]).toMatchObject({ tapped: false, damage: 0, counters: {} });
   });
 

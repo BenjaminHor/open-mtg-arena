@@ -17,7 +17,7 @@ describe("deckGameSetup", () => {
     expect(setup.players.every((p) => p.hand.length === 0 && p.battlefield.length === 0)).toBe(true);
   });
 
-  it("starts a standard game, where the random chooser decides who goes first unless one is named (CR 103.1)", () => {
+  it("starts a standard game, passing on who goes first when one is named, or null for the random chooser", () => {
     expect(deckGameSetup(decks, 7, null).opening).toEqual({ kind: "standard", firstPlayer: null });
     expect(deckGameSetup(decks, 7, "p2").opening).toEqual({ kind: "standard", firstPlayer: "p2" });
   });

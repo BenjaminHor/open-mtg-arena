@@ -82,8 +82,8 @@ can't make it pass.
 **Step names:** `untap`, `upkeep`, `draw`, `main1`, `combat.beginning`, `combat.declareAttackers`,
 `combat.declareBlockers`, `combat.damage`, `combat.end`, `main2`, `end`, `cleanup`.
 
-**References:** `p2:Grizzly Bears` means the only Grizzly Bears that p2 controls; `p2:Grizzly Bears#2` the second, in
-battlefield order. `p1` and `p2` alone mean players.
+**References:** `p2:Grizzly Bears` means the Grizzly Bears that p2 controls (the first, in battlefield order, if
+there are several); `p2:Grizzly Bears#2` the second. `p1` and `p2` alone mean players.
 
 **Steps** (each is one of these). Every step becomes an action found in the engine's `legalActions()`, so a step that
 names an illegal action fails the scenario, unless the next step is `expect error`.

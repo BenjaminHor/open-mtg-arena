@@ -1,5 +1,5 @@
 name: Mana of the wrong color can't pay a colored symbol
-rules: [CR 601.2h, CR 107.4a]
+rules: [CR 601.2e, CR 601.2h, CR 107.4a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

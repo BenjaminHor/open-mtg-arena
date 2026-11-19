@@ -1,5 +1,5 @@
 name: An unblocked attacker deals combat damage to the player it attacks, and attacking taps it
-rules: [CR 508.1a, CR 508.1f, CR 509.1h, CR 510.1b, CR 510.2]
+rules: [CR 508.1a, CR 508.1f, CR 509.1h, CR 510.1b, CR 510.2, CR 120.2a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

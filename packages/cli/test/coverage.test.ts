@@ -47,13 +47,13 @@ describe("citedRules", () => {
 });
 
 describe("citations in the rules code", () => {
-  // A citation broken across lines ("(CR" at a line's end) is silently not read, so its rule just disappears from the
+  // A citation broken across lines ("(CR", "later: CR" or "see CR" at a line's end) is silently not read, so its rule just disappears from the
   // report, which no gap check notices. Keep "CR" (and "later: CR") on the same line as the rule number.
   it("are never split across lines", () => {
     const split = codeFiles().flatMap((file) =>
       readFileSync(file, "utf8")
         .split("\n")
-        .flatMap((line, i) => (/(\(|later: )CR$/.test(line.trimEnd()) ? [`${file}:${i + 1}`] : [])),
+        .flatMap((line, i) => (/(\(|later: |, |; |see )CR$/.test(line.trimEnd()) ? [`${file}:${i + 1}`] : [])),
     );
     expect(split).toEqual([]);
   });
