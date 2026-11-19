@@ -634,7 +634,7 @@ every schema change and every change D-024 lists bumps it.
   (multiplayer or variants, D-051) are listed in `docs/milestones/m2-pool.md` and left out.
 
 **D-054: A card gets a new card id when it comes out of hiding** · 2026-11-19 · accepted (M2-01)
-- A card id now names a card for as long as it stays in view, or in hiding. When a card leaves a hand or a library for
+- A card id now changes only when a card comes out of hiding: when it leaves a hand or a library for
   a public zone (cast, played, discarded, milled), it gets a new card id (`GameState.nextCardId`, after the setup's
   `c1`–`cN`). Otherwise a player who saw a card go into a hand (a cancelled spell, CR 734.1) could tell, when a copy
   came out later, whether it was that card (CR 402.3).

@@ -152,6 +152,33 @@ describe("the checks", () => {
     ]);
   });
 
+  it("viewsLeakNothing: an event naming the card another player is casting, as it was in hand, is a problem", () => {
+    // Mid-cast, the card as it was in hand is kept aside in `casting.origin`, in no zone.
+    const s = state();
+    const [p1, p2] = s.turnOrder as [PlayerId, PlayerId];
+    const object = s.zones.players[p2]?.hand[0] as ObjectId;
+    const card = s.objects[object];
+    if (card?.kind !== "card") throw new Error("a card in hand");
+    const p2Zones = s.zones.players[p2];
+    if (p2Zones === undefined) throw new Error("p2's zones");
+    const casting: GameState = {
+      ...s,
+      // Out of the hand, as while it's being cast: only `casting.origin` still has it.
+      zones: { ...s.zones, players: { ...s.zones.players, [p2]: { ...p2Zones, hand: p2Zones.hand.slice(1) } } },
+      casting: {
+        player: p2,
+        object: "o9999",
+        origin: { kind: "card", card, handIndex: 0 },
+        poolBefore: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
+        tappedForMana: [],
+      },
+    };
+    const leak: GameEvent = { type: "SPELL_CAST", player: p2, object: "o9999", cardId: card.cardId };
+    expect(viewsLeakNothing(casting, casting, [leak], cards)).toContain(
+      `the events shown to ${p1} name ${card.cardId}, which is hidden from them`,
+    );
+  });
+
   it("scrambleHidden changes what a player can't see, and nothing they can", () => {
     const s = state();
     const [p1, p2] = s.turnOrder as [PlayerId, PlayerId];

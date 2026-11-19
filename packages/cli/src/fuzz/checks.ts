@@ -53,8 +53,8 @@ export const viewsLeakNothing: Check = (before, after, events) => {
     // unless the viewer could see it then too: their own draw, a card they saw go into a hand (D-054). (Not by its
     // oracle id either, but that can't be checked this way: a Mountain in hand shares it with every Mountain out.)
     const shown = JSON.stringify(eventsFor(events, viewer));
-    const seen = new Set([...namesOf(before, visibleTo(before, viewer)), ...namesOf(after, visibleTo(after, viewer))]);
-    const hidden = [...namesOf(before, hiddenFrom(before, viewer)), ...namesOf(after, hiddenFrom(after, viewer))];
+    const seen = new Set([...visibleNames(before, viewer), ...visibleNames(after, viewer)]);
+    const hidden = [...hiddenNames(before, viewer), ...hiddenNames(after, viewer)];
     for (const name of new Set(hidden)) {
       if (!seen.has(name) && shown.includes(`"${name}"`)) {
         problems.push(`the events shown to ${viewer} name ${name}, which is hidden from them`);
@@ -74,6 +74,28 @@ function visibleTo(state: GameState, viewer: PlayerId): ObjectId[] {
     ...state.turnOrder.flatMap((p) => state.zones.players[p]?.graveyard ?? []),
     ...(state.zones.players[viewer]?.hand ?? []),
   ];
+}
+
+/** The ids `viewer` may know: of the objects they can see, and of their own card being cast. */
+function visibleNames(state: GameState, viewer: PlayerId): string[] {
+  const casting = castingCard(state);
+  return [...namesOf(state, visibleTo(state, viewer)), ...(casting?.player === viewer ? casting.names : [])];
+}
+
+/** The ids hidden from `viewer`: of hidden objects, and of another player's card being cast (it's in no zone). */
+function hiddenNames(state: GameState, viewer: PlayerId): string[] {
+  const casting = castingCard(state);
+  return [
+    ...namesOf(state, hiddenFrom(state, viewer)),
+    ...(casting !== null && casting.player !== viewer ? casting.names : []),
+  ];
+}
+
+/** While a spell is being cast, the card as it was in hand is kept aside (D-035): its object id and card id. */
+function castingCard(state: GameState): { player: PlayerId; names: string[] } | null {
+  const origin = state.casting?.origin;
+  if (state.casting === null || origin?.kind !== "card") return null;
+  return { player: state.casting.player, names: [origin.card.id, origin.card.cardId] };
 }
 
 /** The names that identify these objects: their object ids and, for cards, their card ids. */
@@ -145,6 +167,7 @@ export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
     setup: { ...scrambled.setup, seed: scrambled.setup.seed + 1, players: [] },
     nextId: scrambled.nextId + 1000,
     nextTimestamp: scrambled.nextTimestamp + 1000,
+    nextCardId: scrambled.nextCardId + 1000,
     work: [],
   };
 }

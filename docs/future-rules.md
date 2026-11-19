@@ -129,9 +129,12 @@ scenario `block` step.
 telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed
 cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), milling (CR 701.17), and cards a player has seen
 in another's hand (a cancelled cast's card back in hand, CR 734.1) all change what `playerView` shows. *Watch out:*
-shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order, so the first move from a library
-to a public zone (a mill, a search) would show a setup-order id and hint at decklist neighbours again (D-045). CR
-701.20d already makes shuffled revealed cards new objects: give every shuffled card a new object id. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
+shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order. A move from a library to a public
+zone no longer shows the old object id or card id (D-054), but a "look at" or reveal in place would: give every
+shuffled card a new object id, as CR 701.20d already does for shuffled revealed cards. A reveal or "look at" must not
+show a hidden card's stored card id either: it may be one the other player saw before the card went into hiding. And
+`moveCard` decides when to give a new card id by zone (`isHiddenZone`): face-down cards (CR 406.3, 708) need it to use
+the same per-object visibility as `canSee`. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
 per object, so `canSee` will take the object too. A partly known hand doesn't fit `hand: ObjectId[] | null`: another
 player's hand will need its known cards listed alongside `handSize`. The fuzzer's scramble (`scrambleHidden`) must
 learn to leave known cards alone. Card ids don't carry knowledge through hidden zones (D-054): a card that comes out of
