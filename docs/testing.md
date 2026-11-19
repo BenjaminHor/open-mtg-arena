@@ -178,7 +178,7 @@ mechanic is added, also test how it combines with what's already in the pool:
 - Write scenarios in `packages/engine/test/scenarios/interactions/<mechanic>/` for the combinations that the
   CR or the rulings treat specially, and for at least one ordinary case per related mechanic.
 - Keep `packages/engine/test/scenarios/interactions/README.md` as a small matrix: mechanics on both axes, with
-  each cell linking to the scenarios that cover the pair, or marked "not applicable" or "not yet". Claude Code
+  each cell linking to the scenarios that cover the pair, or marked "n/a" or "not yet". Claude Code
   updates it with each new mechanic, and the coverage report flags pairs marked "not yet".
 
 ## 2. The headless CLI
@@ -303,25 +303,30 @@ Regenerate and add new golden games when the pool grows, so every card appears i
 
 ## 5. Rules coverage report
 
-`pnpm coverage:rules` lists, for every CR rule:
-- whether code cites it (`CR 702.19c` in a comment),
-- which scenarios test it (their `rules:` lists),
-- and flags rules that **code cites but no scenario tests**, plus interaction matrix cells marked "not yet".
+`pnpm coverage:rules` lists, for every CR rule the rules code cites (`CR 702.19c` in a comment):
+- which scenarios test it (their `rules:` lists), or else which unit tests cite it,
+- and flags rules that **code cites but nothing tests**, plus interaction matrix cells marked "not yet".
 
 It writes `docs/coverage/rules-coverage.md` (generated; commit it so the owner can read it on GitHub) with a
-summary at the top: rules cited, rules tested, gaps. `pnpm check` fails if a change adds a **new** gap compared to
-the committed report. Existing gaps are allowed, but they're listed so they get closed.
+summary at the top: rules cited, rules tested by scenarios, rules tested only by unit tests, gaps. `pnpm check` fails
+if a change adds a **new** gap compared to the committed report. Existing gaps are allowed, but they're listed so they
+get closed. `pnpm coverage:rules` won't write a report with a new gap unless given `--accept-new-gaps` (say why in the
+commit). D-048 has the details: which code counts, how citations match, and why a mention of a rule that isn't built
+yet is written `later: CR 614`.
 
 ## 6. Benchmarks
 
-`pnpm bench` measures, on fixed seeds and boards:
-- the time per `applyAction` across a set of typical states (an empty board, a busy combat, a deep stack),
+`pnpm bench` measures, on fixed seeds and boards (states taken from the golden games; D-049):
+- the time per `applyAction` across sets of typical states (an empty board, a busy combat, a deep stack),
 - the time for a full random-legal game,
 - the time for `legalActions` and `characteristics` on a busy board,
 - and (from M2) the AI's time per decision.
 
+Times are compared as multiples of a reference loop timed in the same run, so the baseline holds across machines.
+
 Results are compared with `bench/baseline.json`. More than 20% slower on any measure fails the bench run.
-If the slowdown is justified (a rule that genuinely costs time), update the baseline in the same commit and say why.
+If the slowdown is justified (a rule that genuinely costs time), update the baseline with `pnpm bench --update` in the
+same commit and say why. It isn't part of `pnpm check`: timings on a shared CI runner would be flaky.
 Budgets from `architecture.md` are hard limits regardless of the baseline.
 
 ## 7. Mutation testing (from M3)

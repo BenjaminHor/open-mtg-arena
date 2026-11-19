@@ -14,7 +14,7 @@ type PT = { power: number | null; toughness: number | null };
  * An object's power and toughness (CR 302.4c): its printed values, then layer 7's sublayers in order (CR 613.4).
  * 7a (characteristic-defining abilities), 7b (setting effects) and 7d (switching) have no effects in the pool yet.
  * 7c only adds and subtracts, so the order of its effects never changes the result, and none is sorted here; once 7a,
- * 7b or 7d exist, those sublayers apply in timestamp order (CR 613.7) and dependency order (CR 613.8).
+ * 7b or 7d exist, those sublayers apply in timestamp order (CR 613.7) and dependency order (later: CR 613.8).
  */
 export function powerAndToughness(state: GameState, id: ObjectId, cards: CardDatabase): PT {
   const obj = state.objects[id];

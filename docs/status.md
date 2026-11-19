@@ -8,22 +8,30 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 
 ## In progress
 - M1-19 Golden games, coverage report and benchmarks (plan, 2026-11-19). docs/testing.md sections 4 to 6. Three PRs:
-  1. Golden games (done, D-047; PR #17, BenjaminHor/open-mtg-arena#17). Four games between the prebuilt decks (seeds 1,
-     2, 3, 33), each a game file with its recipe plus its brief log; `pnpm golden:update` keeps actions that still
-     play out and otherwise plays the game again from its recipe; `pnpm golden:add` adds one. Accepted: doubled mana
-     shows as new "unspent {R} empties" lines in the diff. Rules-judge exit review of casting, priority, SBAs and
-     combat is running; its fixes may change the logs (`pnpm golden:update`).
-  2. Coverage report. `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`: rules cited in code
-     (`packages/*/src`), rules tested by scenarios (`rules:` lists), and gaps (cited, not tested), plus interaction
-     matrix cells marked "not yet". A test fails on a gap not in the committed report. The matrix README in
-     `packages/engine/test/scenarios/interactions/` for the M1 mechanics. Accept: removing a scenario fails the check.
-  3. `pnpm bench` against `bench/baseline.json` (applyAction on typical states, a full random game, legalActions and
-     characteristics on a busy board), failing above 20% slower; budgets from architecture.md. Accept: a deliberate
-     slowdown fails it.
+  1. Golden games: done, merged (PR #17, D-047).
+  - M1 exit criterion, rules-judge review of casting, priority, SBAs and combat (2026-11-19): done, no rules errors for
+    what the M1 pool can reach; two deliberate deviations already recorded (D-035 always reverses mana abilities on a
+    cancel; `castProblem` checks targets before the card moves). Future traps it found are now in future-rules.md
+    (targeting without a source, paying outside casting, casting from other zones, vigilance, flash, token checks).
+    Its suggested scenarios (CR 117.3b after a resolution, the game ending with spells on the stack, a tapped blocker
+    still dealing damage across three blockers, CR 116.3, CR 504.2) and missing `rules:` citations (601.2i, 508.2,
+    510.3, 507.2) are part of closing the coverage gaps.
+  2. Coverage report (done, D-048; PR to open). `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`; the
+     test fails on a gap the committed report doesn't list, and the command refuses a new gap without
+     `--accept-new-gaps`. Mentions of unbuilt rules now read `later: CR 614`. Interaction matrix README with two new
+     scenarios (`interactions/pump/`). After review: 261 cited, 144 tested by scenarios, 48 only by unit tests, 69 gaps
+     (the stricter matching shows the casting steps CR 601.2a–i as untested).
+     The gaps get closed after the owner answers the open question on unit tests (M1 exit work).
+  3. `pnpm bench` (done, D-049; PR after #18). Six measures per operation, states from the golden games, timed in
+     interleaved rounds against a reference loop; five unchanged runs pass, a deliberate slowdown (`JSON.stringify` in
+     `applyAction`) fails with +240% to +340%. Today: about 8 to 12 µs per `applyAction`, 44 ms per random game.
   - Future impact: golden logs change whenever event text or rules change, so the recipe-based regenerate keeps them
     cheap to update; the coverage report's parser must accept every citation form used (`CR 702.19c`, ranges later).
 
 ## Handoff notes
+- After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
+  `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
+  then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
@@ -160,10 +168,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions for the owner
 - **M1 exit criterion "no rule cited in code without a scenario" (asked 2026-11-19; not blocking yet).** A first count:
-  the engine and card code cite 290 rules; scenarios cover 156; 49 more are covered only by TypeScript unit tests
-  (player views, card data parsing, damage helpers: things a scenario can't express); 85 have no test at all. Of those
-  85, many are type-definition notes or mentions of rules not built yet (CR 614 replacement effects, CR 800.4 leaving
-  the game), and some are real gaps (attack restrictions CR 508.1b–d, CR 510.3, CR 608.2d/e).
+  the engine and card code cite 261 rules; scenarios cover 144; 48 more are covered only by TypeScript unit tests
+  (player views, card data parsing, damage helpers: things a scenario can't express); 69 have no test at all. Mentions
+  of rules not built yet are now written `later: CR 614` and not counted (29 of them). Of the 69, many are
+  type-definition notes, and some are real gaps (casting steps CR 601.2a–i, attack restrictions CR 508.1b–d, CR 510.3).
   Recommended: count a rule as tested when a scenario *or* a unit test cites it (the report lists the two separately),
   write mentions of rules not yet built as `(later: CR 614)` so they aren't counted as implemented, and close the real
   gaps with scenarios. The criterion would read "no rule cited in code without a test". The alternative is the literal

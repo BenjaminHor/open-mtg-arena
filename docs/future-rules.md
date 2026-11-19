@@ -71,7 +71,10 @@ the first such card:* filter Scryfall's list to keyword abilities (CR 702) befor
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down
 permanents such as morph and manifest (CR 708).
 *Needs now:* an object's characteristics come from "which face or part is active", not straight from a
-single card record; tokens are objects without a deck card.
+single card record; tokens are objects without a deck card. *Watch out* (rules-judge, M1 exit review): many rules
+checks skip any object whose `kind` isn't `"card"` (`rules/state-based-actions.ts`, `rules/combat.ts`,
+`rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`). If tokens become a new object kind, a 0/0
+token would quietly not die and token creatures couldn't attack. Make those checks handle every kind, or fail loudly.
 
 **Counters (CR 122), including +1/+1 and -1/-1 annihilation (CR 704.5q).**
 *Needs now:* counters live on objects as a map of counter type to number. Keyword counters (CR 122.1b) will need
@@ -161,6 +164,27 @@ being an exact reversal once a mana ability has another effect or cost (sacrific
 mana ability fires; CR 734.1 forbids reversing some of those, so cancel will need to refuse, or reverse less.
 Modal spells and kicker change the target requirements after the mode or cost is chosen (CR 601.2b–c), so the
 "every target has a legal choice" pre-check in `castProblem` must then look at the chosen modes.
+
+**Targeting that knows who targets (CR 702.11b hexproof, 702.16b protection, 601.2c).** `legalTargets`,
+`isLegalTarget` and `stillLegalTargets` (`rules/targets.ts`, also used for the CR 608.2b check on resolution) take
+only the target spec: no source and no controller, so hexproof, protection, shroud and "target creature an opponent
+controls" can't be expressed. `game/cast.ts` checks targets before the spell object exists. Each target group is one
+target today; "two target creatures" needs several per group, and one instance can't choose the same target twice
+(CR 601.2c). *Needs now:* nothing; add `source` and `controller` parameters when the first such card arrives.
+
+**Paying mana outside casting (CR 117.1d, 605.3a).** Mana abilities may be activated whenever a payment is asked
+for, including during resolution: costs to attack or block (CR 508.1i–j, 509.1e–f), "counter unless its controller
+pays" and ward (CR 702.21a). Today `ACTIVATE_ABILITY` is accepted only with a `priority` or `payMana` decision
+pending, and paying (`casting-steps.ts`) assumes something is being cast and finishes by making it cast. These need a
+payment context that isn't `Casting`.
+
+**Casting from other zones (CR 601.2a, 734.1, 702.34a flashback).** Casting checks the hand
+(`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
+the hand. A card cast from a graveyard or exile must go back where it came from.
+
+**Small keywords that touch M1 code.** Vigilance (CR 702.20b): `finishAttackers` taps every attacker
+(`combat/declare-attackers.ts`). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`
+(`rules/timing.ts`).
 
 **Starting the game, beyond the basics (CR 103).** In a match, the loser of the previous game chooses who goes first
 (CR 103.1); starting hand size can change (CR 103.5a, RPG rule modifiers); multiplayer's free first mulligan (CR 103.5c);

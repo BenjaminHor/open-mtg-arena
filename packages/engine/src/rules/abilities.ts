@@ -58,8 +58,8 @@ function basicLandAbilities(state: GameState, id: ObjectId, cards: CardDatabase)
 /**
  * CR 605.1a: an activated ability is a mana ability if it doesn't require a target, could add mana when it resolves,
  * isn't a loyalty ability, and its cost and effect don't move a card to or from a library. No loyalty abilities exist
- * yet and no effect moves library cards, so those two always hold for now. Triggered mana abilities (CR 605.1b) will
- * be a separate check. Worked out from the definition, so a definition can't get it wrong (D-026).
+ * yet and no effect moves library cards, so those two always hold for now. Triggered mana abilities (later: CR 605.1b)
+ * will be a separate check. Worked out from the definition, so a definition can't get it wrong (D-026).
  */
 export function isManaAbility(def: AbilityDef): boolean {
   return def.kind === "activated" && def.targets.length === 0 && def.effects.some((e) => e.op === "addMana");

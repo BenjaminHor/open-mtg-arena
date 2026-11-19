@@ -554,3 +554,44 @@ every schema change and every change D-024 lists bumps it.
   cancel it). When the AI arrives, regenerate the golden games with it.
 - Saved replays (D-046) check a final-state hash; golden games check the whole log. Both stay: a replay is the
   compact form for bug reports, a golden game the readable one for engine changes.
+
+**D-048: The rules coverage report** · 2026-11-19 · accepted
+- `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`. "Cited by code" means the rules code:
+  `packages/engine/src` and `packages/cards/src`. The CLI and the scenario runner cite rules only to explain
+  themselves.
+- Citations are read in every form the code uses: lists (`CR 117.3d, 117.4`, also wrapped onto the next comment
+  line), ranges (`CR 601.2b–i`, `CR 506–511`, `CR 500.7–500.11`, `CR 601.2–4`) and asides (`CR 302.6, with haste,
+  702.10`). A range of another shape is kept as written, so it fails the next check: every cited rule must exist in
+  `rules/`.
+- A mention of a rule not built yet is written `later: CR 614`, and isn't a citation: a comment saying where
+  replacement effects will plug in doesn't mean they're implemented. The report lists these mentions in their own
+  section, so marking a rule `later:` shows in the report's diff and a reviewer can check it really isn't built.
+- A test of rule T covers code citing rule C when T is C or T is under C (601.2c covers 601.2 and 601). Never the
+  other way: a scenario about 601.2 doesn't show that 601.2c is built. (A first version also let 601.2 cover 601.2c;
+  that credited unbuilt rules and hid real gaps, so it went.) Unit tests are the `*.test.ts` files; fixtures and
+  helpers don't count.
+- The report lists rules tested by scenarios, rules tested only by unit tests (they cite the rule in a name or
+  comment), and gaps: rules nothing tests, and interaction matrix cells above the diagonal marked "not yet" or left
+  empty. A missing matrix is an error. Whether unit tests count
+  for the M1 exit criterion is an open question for the owner (status.md); until then, a gap is a rule with neither.
+- `cli/test/coverage.test.ts` fails when the committed report isn't exactly what `pnpm coverage:rules` writes now, so
+  the report is always current and a gap closed and later reopened can't hide. `pnpm coverage:rules` refuses to write
+  a report that's worse than the committed one unless given `--accept-new-gaps`: a new gap, or a rule the committed
+  report lists as tested by scenarios that no scenario tests now (even if a unit test still cites it). Accepting is
+  deliberate and shows in the commit. The coverage tests' own sample citations aren't counted.
+
+**D-049: Benchmarks** · 2026-11-19 · accepted
+- `pnpm bench` times six measures, each reported per operation: `applyAction` on three sets of states (up to 40 each,
+  from the golden games: early turns with at most two permanents, combat with 20 or more, a stack of two or more), a
+  whole game between the random agents (five fixed setups in turn), `legalActions` in the 40 busiest states, and
+  `characteristics` of every permanent in them. Sets of states rather than one state each, so one state's quirks
+  don't decide a measure.
+- Timing: each workload is warmed up, then all are timed in 21 interleaved rounds of about 30 ms batches, and each
+  takes its median batch. A reference loop of plain JavaScript runs in the same rounds; measures are compared as
+  multiples of it, so a baseline holds across machines and a busy moment slows everything alike. On an unchanged
+  engine, five runs in a row stayed within 10% of the baseline.
+- More than 20% slower than `bench/baseline.json` on any measure fails, as does a measure over its budget
+  (architecture.md: 1 ms per `applyAction`, 100 ms per random game) or a time that isn't a positive number. `pnpm bench
+  --update` writes the baseline: only for a justified slowdown, explained in the commit.
+- It isn't part of `pnpm check`: timings on a shared CI runner would be flaky. Run it before merging engine changes
+  (testing.md). `cli/test/bench.test.ts` checks the workloads still build and run.

@@ -13,8 +13,8 @@ import type { PlayerId } from "../state/ids.ts";
 
 /**
  * The defending player: the player the declared attackers attack, even if those attackers have since left combat (in a
- * two-player game, simply the nonactive player, CR 506.2). Several defending players (multiplayer, CR 802) would each
- * declare blockers, which isn't built.
+ * two-player game, simply the nonactive player, CR 506.2). Several defending players (multiplayer, later: CR 802) would
+ * each declare blockers, which isn't built.
  */
 export function defendingPlayer(state: GameState): PlayerId | null {
   const all = (state.combat?.attacks ?? []).map((a) => a.defender);

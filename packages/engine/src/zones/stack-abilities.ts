@@ -1,5 +1,6 @@
 // Abilities on the stack. An ability isn't a card, so it never changes zones: it's created on the stack (CR 602.2a,
-// 405.1), and it ceases to exist when it resolves (CR 608.2n) or is removed because its targets are illegal (608.2b).
+// 405.1), and it ceases to exist when it resolves (CR 608.2n) or is removed because its targets are illegal (CR
+// 608.2b).
 
 import { newObjectId, newTimestamp } from "../game/ids.ts";
 import type { GameState } from "../state/game-state.ts";
