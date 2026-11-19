@@ -14,6 +14,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 | `decisions.ts` | `PendingDecision`: what the game is waiting for |
 | `casting.ts` | `Casting`: a spell part way through being cast, with what's needed to reverse it (CR 734.1) |
 | `work.ts` | `WorkItem`: work waiting in the queue (D-032) |
+| `combat.ts` | `Combat`, `Attack`, `Block`, `DamageDivision`: attacks and blocks during the combat phase (CR 506) |
 | `state-based-actions.ts` | `StateBasedAction`: one state-based action a check found (CR 704) |
 | `effects.ts` | `ContinuousEffect`, `EffectChange`, `Duration` (CR 611); `EffectContext`, carried by `runEffect` work items (D-036) |
 | `pregame.ts` | `Pregame`: the start of a standard game (starting player, mulligans), before turn 1 |

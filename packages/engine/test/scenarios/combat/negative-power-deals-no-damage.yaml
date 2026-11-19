@@ -1,9 +1,9 @@
-name: A creature with 0 power assigns no combat damage
+name: A creature with less than 0 power assigns no combat damage
 rules: [CR 510.1a]
 setup:
   turn: { active: p1, step: main1 }
   rules:
-    - { kind: creaturesGetPT, controller: p1, power: -2, toughness: 0 }
+    - { kind: creaturesGetPT, controller: p1, power: -3, toughness: 0 }
   p1:
     battlefield: [Grizzly Bears]
 steps:

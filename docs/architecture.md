@@ -78,6 +78,7 @@ type GameState = {
   pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1
   passesInSuccession: number       // priority passes in a row (CR 117.4)
   casting: Casting | null          // a spell part way through being cast (CR 601.2)
+  combat: Combat | null            // attacks and blocks, during the combat phase (CR 506)
   work: WorkItem[]                 // the resolution queue (see "Running the game")
   pending: PendingDecision | null  // who must act, and what their options are
   result: GameResult | null        // set when the game ends
@@ -143,7 +144,8 @@ The work items so far: `givePriority` (state-based actions are checked first, CR
 while any are performed, D-039; triggers will join that check), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it
 queues the resolution's effects, `finishResolving`, then priority for the active player), `runEffect` (one effect of a
 resolving spell or ability, CR 608.2c), `finishResolving`, `doesNotResolve` (CR 608.2b), `finishCleanup`,
-`cleanupCheck` and `anotherCleanupStep` (CR 514.3a). When all players pass in succession, the top of the stack
+`cleanupCheck` and `anotherCleanupStep` (CR 514.3a), and combat's turn-based actions `declareAttackers`,
+`declareBlockers` and `combatDamage` (D-040). When all players pass in succession, the top of the stack
 resolves; with an empty stack the step ends, or after a cleanup step that gave players priority, another cleanup step
 begins (CR 117.4, 514.3a).
 

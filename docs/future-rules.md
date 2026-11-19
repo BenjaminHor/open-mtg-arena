@@ -83,7 +83,8 @@ controller changes, including when a control effect ends. A bare boolean can't s
 replace it with a `{ player, since }` record when control-changing effects arrive.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
-"at the beginning of the next end step". The second combat damage step for first strike (CR 510.4), and "no maximum hand size" (CR 402.2).
+"at the beginning of the next end step". The second combat damage step for first strike (CR 510.4; `combatDamage` would
+then deal only some creatures' damage per step, D-040), and "no maximum hand size" (CR 402.2).
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
@@ -99,7 +100,8 @@ group, not after each move. Cards going to a graveyard together go in battlefiel
 owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
 
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
-*Watch out:* `playersLose` (D-039) throws when a player loses with more than one player left. Leaving the game
+*Watch out:* combat (D-040) throws when attacks go to several players; each defending player will declare blockers
+(CR 509.1) and attacks will need planeswalkers and battles as defenders (CR 506.3). `playersLose` (D-039) throws when a player loses with more than one player left. Leaving the game
 (CR 800.4a: their objects leave, control effects end, priority passes on) has to be built there first.
 *Needs now:* nothing assumes exactly two players. Use player lists and turn order, never "the opponent".
 

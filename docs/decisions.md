@@ -403,3 +403,25 @@ every schema change and every change D-024 lists bumps it.
   leaving a multiplayer game (CR 800.4) isn't built.
 - The scenario runner gets `winner` now (M1-15 keeps conceding and the result scenarios).
 
+**D-040: Combat** · 2026-11-19 · accepted
+- `GameState.combat` exists exactly during the combat phase (created as it begins, CR 506.1; cleared as the end of
+  combat step ends, CR 511.3). It records every declared attack (attacker, defending player) and every block. The
+  declaration is kept even when a creature leaves, because CR 508.8 asks whether any were declared and CR 509.1h keeps
+  an attacker blocked after its blockers are gone. Who is still in combat (CR 506.4) is read from the battlefield in
+  `rules/combat.ts`: an id that's gone left combat (CR 400.7).
+- Declaring is incremental, like the cleanup discard: a `declareAttackers` (or `declareBlockers`) decision, answered
+  one attacker (or block) at a time, then `finishDeclaring`. All 2^n sets would make `legalActions` exponential.
+  Nothing changes until finishing: then the attackers tap (CR 508.1f) and the declaration takes effect. There's no
+  "un-pick" answer; a host that lets the player toggle buffers it and sends the final picks. When no creature could
+  attack (or block), no one is asked and the declaration is empty.
+- `canAttack` and `canBlock` (with evasion as its own check) are the one place restrictions go (CR 508.1c, 509.1b).
+  Haste also lets a creature use {T} abilities (CR 702.10c), in `canUseTapAbilities`.
+- Combat damage: an attacker blocked by two or more creatures gets an `assignDamage` decision listing every division
+  that adds up to its power (CR 510.1c, 510.1e; no damage assignment order, D-020). A creature with 0 or less power
+  assigns none and raises no decision (CR 510.1a). Then all combat damage goes to `dealDamage` as one list with
+  `combat: true` (CR 510.2), and state-based actions run at the next priority.
+- Scenarios: `attack`, `block` and `assign` steps; `all pass` declares nothing when it passes through combat.
+- Not built: attacking planeswalkers or battles, several defending players, first and double strike (a second combat
+  damage step, CR 510.4), a blocker blocking several attackers. The data shapes (a defender per attack, blocks as
+  pairs) leave room for each.
+
