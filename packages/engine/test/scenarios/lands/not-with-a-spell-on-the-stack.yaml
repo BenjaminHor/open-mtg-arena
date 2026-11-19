@@ -1,0 +1,17 @@
+name: A land can't be played while a spell is on the stack, and lands are played, never cast
+rules: [CR 305.1, CR 116.2a, CR 305.9]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Lightning Bolt, Forest, Grizzly Bears]
+    battlefield: [Mountain]
+steps:
+  - p1 cast: Forest
+  - expect error: illegalAction
+  - p1 play: Grizzly Bears
+  - expect error: illegalAction
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 play: Forest
+  - expect error: illegalAction

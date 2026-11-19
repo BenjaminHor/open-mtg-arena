@@ -3,6 +3,7 @@
 //
 // Each task adds the kinds it needs (casting choices, attackers, blockers, dividing damage, ...).
 
+import type { ManaCost } from "../cards/types.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 
 export type PendingDecision = {
@@ -33,4 +34,11 @@ export type DecisionKind =
    * Asked once per card; `remaining` counts this one, and `chosen` holds the cards already chosen. Once all are chosen
    * they're discarded together, as one action.
    */
-  | { kind: "discardToHandSize"; remaining: number; chosen: ObjectId[] };
+  | { kind: "discardToHandSize"; remaining: number; chosen: ObjectId[] }
+  /** While casting: choose the target for this instance of "target" (CR 601.2c). */
+  | { kind: "chooseTarget"; spell: ObjectId; instance: number }
+  /**
+   * While casting: pay the mana cost (CR 601.2g–h). Mana abilities may be activated while this is pending (CR 605.3a);
+   * then the answer is a payment from the pool, or cancelling the cast.
+   */
+  | { kind: "payMana"; spell: ObjectId; cost: ManaCost };

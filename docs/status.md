@@ -7,7 +7,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-10 Effects interpreter v0 (plan, 2026-11-19). CR 608.2b–c, 120.3a/e, 120.8, 119.3, 611.2a/c, 613.7.
+  - `engine/src/effects/`: `effect-work.ts` turns a resolving object's effects into one `runEffect` work item each,
+    with its targets resolved as resolution begins (only the still-legal ones, CR 608.2b); `run-effect.ts` switches on
+    `op`; `deal-damage.ts` (player: life loss, CR 120.3a; creature: marked damage, CR 120.3e; 0 damage isn't dealt,
+    CR 120.8); `modify-pt.ts` creates a `ContinuousEffect` in a new `GameState.effects` (affected set locked, CR
+    611.2c; a timestamp, CR 613.7). `addMana` reuses `mana/pool.ts`. README documents every op and the primitives
+    (`zones/draw.ts`, `zones/move-card.ts`) that turn steps use; those become ops when a card needs them.
+  - Mana abilities run their effects through the same `runEffect`.
+  - Events: `DAMAGE_DEALT`, `LIFE_LOST`, `EFFECT_CREATED`.
+  - Not here: reading P/T and effects ending in cleanup (M1-11), SBAs (M1-12).
+  - Tests: scenarios in `scenarios/effects/` (Shock and Hammer to players including yourself, Bolt to a creature, Giant
+    Growth makes an effect, Bolt in response to Giant Growth); TS tests for a two-target test card skipping the
+    illegal target (CR 608.2b), 0 damage, the locked affected set.
+  - Future impact: damage goes through one function, where prevention/replacement (CR 614–615), lifelink, infect and
+    wither (CR 120.3) plug in; events carry source and recipient for damage triggers; effects carry source,
+    controller, timestamp and duration for layers and cleanup.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
@@ -30,10 +45,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   The M1-07 stack tests (TypeScript) become YAML scenarios once `cast` exists (M1-09).
 - Work queue (D-032): new pauses mid-step (M1-13's attackers and blockers) become work items, like `finishCleanup`.
   `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
-- For M1-09/M1-10: target legality on resolution (CR 608.2b) goes in `effectWork` (`game/resolve.ts`); a spell that
-  doesn't resolve needs its own final step. Test CR 608.2m (a spell that leaves the stack mid-resolution) once an effect
-  can move one. Reset
-  `passesInSuccession` when a player casts or activates (CR 117.4).
+- For M1-10: effects run in `effectWork` (`game/resolve.ts`), after the CR 608.2b check (done in M1-09); with several
+  targets, effects skip the illegal ones (CR 608.2b). Test CR 608.2m (a spell that leaves the stack mid-resolution) once
+  an effect can move one. The M1-07 stack tests are TypeScript; real casting now covers the same paths in YAML.
+- For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
+  and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
   each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
@@ -46,9 +62,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   creature and yourself (CR 115.4); Giant Growth can't target a player (CR 109.2). M1-11: Giant Growth wears off in
   cleanup (CR 514.2). M1-14: firebreathing uses the stack (CR 602.2), stacks three times (CR 613.4c), and resolves after
   the Whelp dies without affecting anything (CR 113.7a, 400.7, 611.2c).
-- For M1-09: casting pays with `payFromPool`; mana abilities during payment use `resolveManaAbility` (no priority
-  change); the runner's `pay: auto` uses `autoPay` (D-034). Add the "paying exact
-  costs" and "failing to pay" scenarios moved from M1-08.
 - Done in M1-08 (`mana/elves-still-sick-on-opponents-turn.yaml`). A settled CR 302.6 edge case: a creature that entered on its controller's
   last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
   its controller's next turn.
@@ -63,7 +76,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-07 Priority and the stack
+- M1-10 Effects interpreter
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -93,6 +106,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-08 Mana and costs: abilities and mana abilities (CR 305.6, 605.1a), activating them with priority (CR 605.3),
   tapping, summoning sickness for {T} (CR 602.5a), payments checked all or nothing (CR 601.2h), `autoPay` (D-034), the
   runner's `activate` step, 8 mana scenarios (2026-11-19).
+- M1-09 Playing lands and casting spells: land plays (CR 305), timing (CR 117.1a), casting as decisions with targets and
+  payment (CR 601.2), cancelling reverses it (CR 734.1), CR 608.2b on resolution; the runner's `play` and `cast`; 12 land
+  and casting scenarios (D-035) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

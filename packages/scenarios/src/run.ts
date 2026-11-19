@@ -2,12 +2,12 @@
 // invariants. Returns the problems found; an empty list means the scenario passed. No file I/O here: callers pass
 // the YAML text (the tests and, from M1-17, the CLI).
 
-import { applyAction, type CardDatabase, createGame, type GameState } from "@mtg/engine";
+import { type CardDatabase, createGame, type GameState } from "@mtg/engine";
 import { expectationProblems } from "./expect.ts";
 import { parseScenario, type Scenario } from "./format.ts";
 import { invariantProblems } from "./invariants.ts";
 import { buildSetup } from "./setup.ts";
-import { type ActionStep, actionFor, type Game, takeStep } from "./steps.ts";
+import { type ActionStep, firstRejection, type Game, takeStep } from "./steps.ts";
 
 export type ScenarioResult = { name: string; problems: string[] };
 
@@ -72,7 +72,9 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
       case "pass":
       case "allPass":
       case "choose":
-      case "activate": {
+      case "activate":
+      case "play":
+      case "cast": {
         const next = steps[i + 1];
         if (next?.kind === "expectError") {
           const problem = rejected(game, step, next.code, cards);
@@ -95,9 +97,8 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
 
 /** The step must be rejected with this error code. Returns a problem, or null if it was. */
 function rejected(game: Game, step: ActionStep, code: string, cards: CardDatabase): string | null {
-  const action = actionFor(game, step, cards);
-  const result = applyAction(game.state, action, cards);
-  if (result.ok) return `expected error ${code}, but the action was accepted`;
-  if (result.error.code !== code) return `expected error ${code}, got ${result.error.code} (${result.error.message})`;
+  const rejection = firstRejection(game, step, cards);
+  if (rejection === null) return `expected error ${code}, but the action was accepted`;
+  if (rejection.code !== code) return `expected error ${code}, got ${rejection.code} (${rejection.message})`;
   return null;
 }

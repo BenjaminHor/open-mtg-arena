@@ -96,6 +96,7 @@ function emptyGame(setup: GameSetup): GameState {
     },
     pregame: null,
     passesInSuccession: 0,
+    casting: null,
     work: [],
     pending: null,
     result: null,

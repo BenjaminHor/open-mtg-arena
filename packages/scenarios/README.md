@@ -8,7 +8,7 @@ checks every state against the engine's invariants.
 
 - `runScenario(yamlText, cards)`: returns `{ name, problems }`; no problems means it passed. No file I/O.
 - `invariantProblems(state, cards)`: everything wrong with a state (also for the fuzzer, M1-18).
-- `src/format.ts` (reading the file), `setup.ts` (the `setup:` block), `steps.ts` (steps to actions), `expect.ts`
+- `src/format.ts` (reading the file), `setup.ts` (the `setup:` block), `steps.ts` (steps to actions), `lookups.ts` (what a step names), `expect.ts`
   (expectations), `names.ts` (step and card names).
 
 ## Tests

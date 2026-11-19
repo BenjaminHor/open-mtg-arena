@@ -13,6 +13,8 @@ The engine's entry points and the flow of a game.
 | `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
 | `resolve.ts` | `resolveTopOfStack()` queues a resolution's steps; `finishResolving()` is its final part (CR 608) |
+| `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
+| `cast.ts` | Casting a spell as decisions (CR 601.2): `castProblem`, `startCast`, targets, paying, cancelling (D-035) |
 | `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves or the step ends (CR 117.3d, 117.4) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
@@ -23,5 +25,5 @@ The engine's entry points and the flow of a game.
 
 Every function takes a state and returns a new one (D-021). Events are collected alongside (`Progress`).
 
-Tests: `test/game/start.test.ts`, `turn.test.ts` and `stack.test.ts`. The helpers in `test/support/game.ts` check the engine's invariants on every state
+Tests: `test/game/*.test.ts` and the scenarios in `test/scenarios/` (`lands/`, `casting/` for this folder's newest parts). The helpers in `test/support/game.ts` check the engine's invariants on every state
 and only take actions that `legalActions` lists.

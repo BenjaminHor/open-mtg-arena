@@ -3,11 +3,15 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { manaAbilityProblem } from "../mana/activate.ts";
+import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
+import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
+import { castProblem } from "./cast.ts";
+import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
@@ -34,10 +38,35 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
           ...answer,
           answer: { kind: "discardToHandSize", object },
         }));
+    case "chooseTarget": {
+      const casting = state.casting;
+      const spec = casting === null ? undefined : targetSpecsOf(state, casting.spell, cards)[pending.instance];
+      if (spec === undefined) return [];
+      const targets = legalTargets(state, spec, cards).map(
+        (target): Action => ({ ...answer, answer: { kind: "chooseTarget", target } }),
+      );
+      // The player can cancel at any step of a cast (D-035).
+      return [...targets, { ...answer, answer: { kind: "cancelCast" } }];
+    }
+    case "payMana": {
+      // Every payment the pool covers, since which mana pays is the player's choice (CR 601.2h); mana abilities to make
+      // more; and cancelling, always possible, so a cast can never get stuck (D-035).
+      const cancel: Action = { ...answer, answer: { kind: "cancelCast" } };
+      const pool = state.players[player]?.manaPool;
+      const pay: Action[] =
+        pool === undefined
+          ? []
+          : allPayments(pool, pending.cost).map(
+              (payment): Action => ({ ...answer, answer: { kind: "payMana", payment } }),
+            );
+      return [...pay, cancel, ...manaAbilityActions(state, player, pending.id, cards)];
+    }
     case "priority":
-      // Playing lands and casting spells arrive in M1-09, other activated abilities in M1-14.
+      // Other activated abilities arrive in M1-14.
       return [
         { type: "PASS_PRIORITY", decisionId: pending.id, player },
+        ...landActions(state, player, pending.id, cards),
+        ...castActions(state, player, pending.id, cards),
         ...manaAbilityActions(state, player, pending.id, cards),
       ];
   }
@@ -50,4 +79,16 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
       .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
       .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),
   );
+}
+
+function landActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
+  return zoneList(state, { zone: "hand", player })
+    .filter((object) => playLandProblem(state, player, object, cards) === null)
+    .map((object) => ({ type: "PLAY_LAND", decisionId, player, object }) as const);
+}
+
+function castActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
+  return zoneList(state, { zone: "hand", player })
+    .filter((object) => castProblem(state, player, object, cards) === null)
+    .map((object) => ({ type: "CAST_SPELL", decisionId, player, object }) as const);
 }

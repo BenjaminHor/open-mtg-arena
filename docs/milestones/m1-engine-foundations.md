@@ -88,7 +88,8 @@ without a rewrite. *Accept:* scenarios for stacking two pumps, and a pump wearin
 
 **M1-12 State-based actions.** CR 704: at least 704.5a (0 life), 704.5b (drawing from an empty library),
 704.5f (0 toughness) and 704.5g (lethal damage), checked repeatedly before priority (CR 704.3). *Accept:* a
-scenario per SBA, plus one where two SBAs happen at once.
+scenario per SBA, plus one where two SBAs happen at once. Also the scenario of a spell whose only target became illegal (CR 608.2b), moved here from M1-09: in this pool only
+damage and a creature dying can make a target illegal (D-035).
 
 **M1-13 Combat.** Declare attackers (CR 508) and blockers (CR 509) as decisions, summoning sickness (CR 302.6),
 haste (CR 702.10), flying and reach (CR 702.9, 702.17), combat damage (CR 510), including an attacker blocked by several

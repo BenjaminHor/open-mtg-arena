@@ -8,7 +8,17 @@ import type { GameState } from "../state/game-state.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { advance } from "./advance.ts";
+import {
+  activateWhilePaying,
+  cancelCast,
+  castProblem,
+  chooseTarget,
+  payForSpell,
+  startCast,
+  targetProblem,
+} from "./cast.ts";
 import { passPriority } from "./pass-priority.ts";
+import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
 import { queueWork } from "./work.ts";
 
@@ -37,13 +47,29 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     return { ok: true, ...passPriority(answered, pending.player) };
   }
   if (action.type === "ACTIVATE_ABILITY") {
-    if (pending.kind !== "priority")
+    if (pending.kind !== "priority" && pending.kind !== "payMana") {
       return error("illegalAction", `Activating doesn't answer a ${pending.kind} decision`);
+    }
     const problem = manaAbilityProblem(answered, pending.player, action.object, action.ability, cards);
     if (problem !== null) return error("illegalAction", problem);
+    // While paying for a spell, a mana ability can be activated too (CR 605.3a); the payment is asked again after.
+    if (pending.kind === "payMana")
+      return { ok: true, ...activateWhilePaying(state, action.object, action.ability, cards) };
     return { ok: true, ...activateManaAbility(answered, pending.player, action.object, action.ability, cards) };
   }
-  if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives in M1-09`);
+  if (action.type === "PLAY_LAND") {
+    if (pending.kind !== "priority")
+      return error("illegalAction", `Playing a land doesn't answer a ${pending.kind} decision`);
+    const problem = playLandProblem(answered, pending.player, action.object, cards);
+    if (problem !== null) return error("illegalAction", problem);
+    return { ok: true, ...playLand(answered, pending.player, action.object) };
+  }
+  if (action.type === "CAST_SPELL") {
+    if (pending.kind !== "priority") return error("illegalAction", `Casting doesn't answer a ${pending.kind} decision`);
+    const problem = castProblem(answered, pending.player, action.object, cards);
+    if (problem !== null) return error("illegalAction", problem);
+    return { ok: true, ...startCast(answered, pending.player, action.object, cards) };
+  }
 
   const answer = action.answer;
   const mismatch = error("illegalAction", `That doesn't answer a ${pending.kind} decision`);
@@ -75,6 +101,19 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       }
       const chosen = [...pending.chosen, answer.object];
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
+    }
+    case "chooseTarget": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCast(answered) };
+      if (answer.kind !== "chooseTarget") return mismatch;
+      const problem = targetProblem(answered, pending.instance, answer.target, cards);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, ...chooseTarget(answered, answer.target, cards) };
+    }
+    case "payMana": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCast(answered) };
+      if (answer.kind !== "payMana") return mismatch;
+      const paid = payForSpell(answered, pending.cost, answer.payment);
+      return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
     }
     case "priority":
       return mismatch;

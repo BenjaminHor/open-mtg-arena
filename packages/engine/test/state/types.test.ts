@@ -67,6 +67,10 @@ describe("discriminated unions", () => {
           return `bottom ${decision.remaining}`;
         case "discardToHandSize":
           return `discard ${decision.remaining}`;
+        case "chooseTarget":
+          return `target ${decision.instance}`;
+        case "payMana":
+          return `pay for ${decision.spell}`;
         default:
           return assertNever(decision);
       }

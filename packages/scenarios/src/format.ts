@@ -16,6 +16,13 @@ export type ScenarioStep =
   | { kind: "pass"; player: string }
   | { kind: "allPass"; until: string | null }
   | { kind: "choose"; player: string; value: unknown }
+  /** Play a land from hand (CR 305.1). */
+  | { kind: "play"; player: string; card: string }
+  /**
+   * Cast a spell from hand (CR 601.2): its targets in order, then the payment: `auto` (autoPay), a payment from the pool
+   * like `{ R: 1 }`, or `cancel`. Without `pay`, the cast stops at the payment decision.
+   */
+  | { kind: "cast"; player: string; card: string; targets: unknown[]; pay: unknown }
   /** Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. */
   | { kind: "activate"; player: string; card: string; ability: number | null }
   | { kind: "expect"; expectations: Record<string, unknown> }
@@ -35,16 +42,14 @@ export const TOP_KEYS = ["name", "rules", "setup", "steps", "expect setup error"
 
 /** Step words the format defines that later tasks add to the runner, with the task. */
 export const COMING_STEP_WORDS: Record<string, string> = {
-  play: "M1-09",
-  cast: "M1-09",
   attack: "M1-13",
   block: "M1-13",
 };
 
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
-  cast: ["targets", "modes", "x", "pay"],
-  activate: ["ability", "targets", "modes", "x", "pay"],
+  cast: ["targets", "pay"],
+  activate: ["ability"],
 };
 
 export function parseScenario(text: string): Scenario {
@@ -117,6 +122,17 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
   if (word === "choose") {
     noOptions();
     return { kind: "choose", player, value };
+  }
+  if (word === "play") {
+    noOptions();
+    return { kind: "play", player, card: String(value) };
+  }
+  if (word === "cast") {
+    for (const option of rest)
+      if (!(STEP_OPTIONS.cast ?? []).includes(option)) throw new Error(`${where}: "cast" has no option "${option}"`);
+    const targets = raw.targets ?? [];
+    if (!Array.isArray(targets)) throw new Error(`${where}: targets is a list`);
+    return { kind: "cast", player, card: String(value), targets, pay: raw.pay };
   }
   if (word === "activate") {
     const allowed = ["ability"];
