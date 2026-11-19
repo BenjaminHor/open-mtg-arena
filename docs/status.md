@@ -7,7 +7,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-16 Scenario runner. Plan:
+  - A new package `@mtg/scenarios` (engine + cards + `yaml`): the runner needs real card names, and the engine may not
+    depend on cards. The CLI (M1-17) reuses it for `new --scenario` and `export --scenario`. Scenario files stay in
+    `packages/engine/test/scenarios/<area>/*.yaml` (testing.md); its test file runs every one of them, one test each.
+  - Setup: everything testing.md lists (fixed openings), plus a standard opening (`opening: standard`, `first: p1`,
+    `seed`), and `expect setup error:` for setups the engine must reject. Step names: `main1`, `main2`,
+    `combat.beginning`, `combat.declareAttackers`, ... mapped to the engine's CR names.
+  - Steps now: `pass`, `all pass: once | until <step>`, `choose` (keep, mulligan, a card, a player), `expect`, `expect
+    error`. Every step becomes an action found in `legalActions()`; an unlisted action fails the scenario. `cast`,
+    `play`, `activate`, `attack`, `block` fail with "arrives in M1-0x" until their tasks extend the runner.
+  - Expectations: life, zones (exact or `contains`), stack, step, turn, pending, a permanent's tapped/damage, events
+    contains. Unknown keys fail loudly, so a typo can't make a scenario pass.
+  - Port the M1-05 and M1-06 behaviors to YAML (`start/`, `turn/`). The M1-07 tests stay TypeScript until casting exists.
+  - testing.md documents exactly what's implemented (the acceptance), and D-033 records the package and dependency.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
