@@ -14,6 +14,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   blocker still dealing damage across three blockers). Add a rule to a scenario's `rules:` only when the scenario
   really checks it. Then the rest: type-definition notes (a unit test, or a rewording if the note isn't a rule the
   code follows) until `pnpm coverage:rules` shows no gaps.
+  - Done: 0 gaps (240 cited: 173 by scenarios, 67 only by unit tests; 49 mentions marked `later:`). New scenarios: a
+    whole turn step by step, paying taps lands for the total cost, a land keeps priority, the game ends with a spell
+    still on the stack, priority after a resolution, a tapped blocker still deals damage across three blockers. New
+    unit tests: the CR's definitions (`engine/test/state/definitions.test.ts`), deck setups. A test now fails on a
+    citation split across lines (one had silently dropped CR 608.2b and 510.1c). Next: reviews, then the PR.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with

@@ -26,7 +26,7 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       );
     }
     // Scryfall lists the card's keywords, which catches a missing "flying" or "reach". Its list also has keyword
-    // actions (Scry, CR 701) and ability words (Landfall, CR 207.2c), which aren't keyword abilities; see
+    // actions (Scry, CR 701) and ability words (Landfall, later: CR 207.2c), which aren't keyword abilities; see
     // docs/future-rules.md before adding a card with those.
     const expected = card.keywords.map((k) => k.toLowerCase()).sort();
     const actual = [...(def.keywords ?? [])].sort();

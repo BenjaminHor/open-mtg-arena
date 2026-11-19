@@ -96,7 +96,7 @@ export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest
 export type StackChoices = {
   /** The chosen modes of a modal spell (later: CR 700.2), as indexes. Empty when not modal. */
   modes: number[];
-  /** The value announced for X (CR 107.3), or null when there is no X. */
+  /** The value announced for X (later: CR 107.3), or null when there is no X. */
   x: number | null;
   /**
    * The chosen targets, grouped by each instance of the word "target" in the text, in the order the card lists

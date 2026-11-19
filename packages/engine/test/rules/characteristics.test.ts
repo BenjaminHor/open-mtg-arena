@@ -50,7 +50,7 @@ describe("rule modifiers apply only to creature permanents (CR 109.2)", () => {
 });
 
 describe("characteristics()", () => {
-  it("gives the printed values of a card, with its controller and types", () => {
+  it("gives the printed values of a card, with its controller and types (CR 109.3)", () => {
     const game = setup();
     const forest = game.state.zones.battlefield[0] as ObjectId;
     expect(characteristics(game.state, forest, TEST_CARDS)).toStrictEqual({

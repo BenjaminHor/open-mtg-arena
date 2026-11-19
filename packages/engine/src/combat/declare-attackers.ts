@@ -12,7 +12,8 @@ import type { GameState } from "../state/game-state.ts";
 
 /**
  * Every attack the active player could still add to the declaration: each creature that can attack and isn't chosen
- * yet, against each other player (CR 508.1a–b). Players in turn order, creatures in battlefield order.
+ * yet, against each other player (CR 508.1a; a choice of defenders, later: CR 508.1b). Players in turn order, creatures
+ * in battlefield order.
  */
 export function possibleAttacks(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Attack[] {
   const active = currentTurn(state).activePlayer;

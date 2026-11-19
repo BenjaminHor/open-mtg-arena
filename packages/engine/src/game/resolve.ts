@@ -87,7 +87,7 @@ function thisObject(obj: GameObject): ObjectId {
 /**
  * The final part of resolution (CR 608.2n, 608.3a): an ability ceases to exist; an instant or sorcery goes to its
  * owner's graveyard; a permanent spell enters the battlefield under its controller. If the object already left the
- * stack during its own resolution, it still resolved, and nothing more happens to it here (CR 608.2m).
+ * stack during its own resolution, it still resolved, and nothing more happens to it here (later: CR 608.2m).
  */
 export function finishResolving(state: GameState, id: ObjectId, cards: CardDatabase): Progress {
   const obj = state.objects[id];
@@ -106,7 +106,7 @@ export function finishResolving(state: GameState, id: ObjectId, cards: CardDatab
         types.includes("instant") || types.includes("sorcery")
           ? ({ zone: "graveyard" } as const)
           : ({ zone: "battlefield", controller } as const);
-      // The resolution is reported before the card moves; triggers on resolving come after both (CR 608.2p).
+      // The resolution is reported before the card moves; triggers on resolving come after both (later: CR 608.2p).
       const resolved = { type: "SPELL_RESOLVED", object: id, cardId: obj.cardId, controller } as const;
       return andThen({ state, events: [resolved] }, (s) => moveCard(s, id, destination));
     }

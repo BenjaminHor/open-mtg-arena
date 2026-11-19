@@ -1,5 +1,5 @@
 name: A turn goes through its phases and steps in order, and the active player gets priority in each step that has it
-rules: [CR 501.1, CR 504.2, CR 505.1, CR 507.2, CR 508.2, CR 510.3, CR 512.1]
+rules: [CR 102.1, CR 501.1, CR 504.2, CR 505.1, CR 505.2, CR 507.2, CR 508.2, CR 510.3, CR 512.1]
 setup:
   turn: { active: p1, step: upkeep }
   p1:

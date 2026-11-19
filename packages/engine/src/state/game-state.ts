@@ -42,7 +42,10 @@ export type GameState = {
   /** Continuous effects from resolved spells and abilities (CR 611.2), oldest first. */
   effects: ContinuousEffect[];
 
-  /** The start of a `standard` game (CR 103.1–103.5), until the first turn begins. Null afterwards. */
+  /**
+   * The start of a `standard` game (CR 103.1, 103.3–103.5; extra steps some formats take, later: CR 103.2), until the
+   * first turn begins. Null afterwards.
+   */
   pregame: Pregame | null;
 
   /**

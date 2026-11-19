@@ -1,5 +1,5 @@
 name: Firebreathing goes on the stack each time, and each resolution adds +1/+0
-rules: [CR 602.2, CR 602.2a, CR 405.1, CR 613.4c]
+rules: [CR 602.1a, CR 602.2, CR 602.2a, CR 405.1, CR 613.4c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

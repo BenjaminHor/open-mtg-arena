@@ -1,4 +1,4 @@
-// Players (CR 102).
+// Players (CR 102.1).
 
 import type { PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";

@@ -35,10 +35,14 @@ function addAll(into: Citations, rules: string[], file: string): void {
   }
 }
 
+/** The rules code's source files. */
+export function codeFiles(): string[] {
+  return CODE_DIRS.flatMap((dir) => files(dir, ".ts"));
+}
+
 export function codeCitations(): Citations {
   const citations: Citations = {};
-  for (const dir of CODE_DIRS)
-    for (const f of files(dir, ".ts")) addAll(citations, citedRules(readFileSync(f, "utf8")), f);
+  for (const f of codeFiles()) addAll(citations, citedRules(readFileSync(f, "utf8")), f);
   return citations;
 }
 
@@ -106,8 +110,6 @@ export function matrixCellGaps(markdown: string): string[] {
 /** The rules the rules code mentions as not built yet (`later: CR 614`), and where. */
 export function laterMentions(): Citations {
   const mentions: Citations = {};
-  for (const dir of CODE_DIRS) {
-    for (const f of files(dir, ".ts")) addAll(mentions, laterRules(readFileSync(f, "utf8")), f);
-  }
+  for (const f of codeFiles()) addAll(mentions, laterRules(readFileSync(f, "utf8")), f);
   return mentions;
 }

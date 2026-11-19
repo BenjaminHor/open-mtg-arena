@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { citedRules, covers, expandRange, laterRules, ruleIds } from "../src/coverage/citations.ts";
-import { matrixCellGaps, REPO } from "../src/coverage/collect.ts";
+import { codeFiles, matrixCellGaps, REPO } from "../src/coverage/collect.ts";
 import { collectInputs, coverage, listedGaps, newGaps, REPORT, reportText, sortRules } from "../src/coverage/report.ts";
 import { writeReport } from "../src/rules-coverage.ts";
 
@@ -43,6 +43,19 @@ describe("citedRules", () => {
 
   it("reads nothing that isn't a citation", () => {
     expect(citedRules("a cap of 200 turns, 1.5 seconds; CR stands alone; CR 1234")).toEqual([]);
+  });
+});
+
+describe("citations in the rules code", () => {
+  // A citation broken across lines ("(CR" at a line's end) is silently not read, so its rule just disappears from the
+  // report, which no gap check notices. Keep "CR" (and "later: CR") on the same line as the rule number.
+  it("are never split across lines", () => {
+    const split = codeFiles().flatMap((file) =>
+      readFileSync(file, "utf8")
+        .split("\n")
+        .flatMap((line, i) => (/(\(|later: )CR$/.test(line.trimEnd()) ? [`${file}:${i + 1}`] : [])),
+    );
+    expect(split).toEqual([]);
   });
 });
 
