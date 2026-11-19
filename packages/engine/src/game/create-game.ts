@@ -37,7 +37,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
         turn: { ...opening.turn },
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
       };
-      return { ok: true, state: givePriority(state, opening.turn.activePlayer), events: [] };
+      return { ok: true, ...givePriority(state, opening.turn.activePlayer) };
     case "standard": {
       state = {
         ...state,
@@ -73,7 +73,16 @@ function emptyGame(setup: GameSetup): GameState {
     turn: null,
     turnOrder: ids,
     players: Object.fromEntries(
-      setup.players.map((p) => [p.id, { id: p.id, life: p.life, manaPool: { ...p.manaPool }, landsPlayedThisTurn: 0 }]),
+      setup.players.map((p) => [
+        p.id,
+        {
+          id: p.id,
+          life: p.life,
+          manaPool: { ...p.manaPool },
+          landsPlayedThisTurn: 0,
+          attemptedDrawFromEmptyLibrary: false,
+        },
+      ]),
     ),
     objects: {},
     zones: {
@@ -84,6 +93,7 @@ function emptyGame(setup: GameSetup): GameState {
       command: [],
     },
     pregame: null,
+    passesInSuccession: 0,
     pending: null,
     result: null,
   };

@@ -25,9 +25,15 @@ export function legalActions(state: GameState, player: PlayerId, _cards: CardDat
         ...answer,
         answer: { kind: "mulliganBottom", object },
       }));
+    case "discardToHandSize":
+      return zoneList(state, { zone: "hand", player })
+        .filter((object) => !pending.chosen.includes(object))
+        .map((object) => ({
+          ...answer,
+          answer: { kind: "discardToHandSize", object },
+        }));
     case "priority":
-      // Priority actions (passing, playing lands, casting) arrive in M1-07 to M1-09. Listing none until then keeps
-      // the promise that every listed action is accepted.
-      return [];
+      // Playing lands, casting spells and activating abilities arrive in M1-08 to M1-14.
+      return [{ type: "PASS_PRIORITY", decisionId: pending.id, player }];
   }
 }

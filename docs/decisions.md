@@ -215,10 +215,8 @@ and avoids crossover or digital-only printings, without changing any rules behav
 - Every zone change goes through `moveCard` (`engine/src/zones/move-card.ts`), the one place the replacement and
   trigger steps of the event pipeline will plug in.
 - Only two-player games start for now: the multiplayer start rules (CR 103.5c, 103.8c) aren't built.
-- Until M1-06 walks the turn's steps, the first turn begins with a shortcut: the starting player's permanents untap
-  (CR 502.3) and count as controlled since the turn began (CR 302.6), then the game goes to the upkeep with the
-  starting player holding priority. `legalActions` lists nothing for priority until M1-07, so every listed action is
-  one `applyAction` takes. Skipping the first draw (CR 103.8a) moved to M1-06 with the draw step.
+- Superseded by D-031 for the first turn: M1-05's shortcut to the upkeep is gone, and the first turn walks its steps
+  like any other. `legalActions` lists `PASS_PRIORITY` for priority from M1-06.
 - In a standard opening every setup permanent starts summoning sick and mana pools must be empty: no turn has begun.
   A fixed opening on turn 1 starts turn order with the active player (the starting player); on later turns it keeps
   seating order.
@@ -227,3 +225,30 @@ and avoids crossover or digital-only printings, without changing any rules behav
   plug in. Draws emit `CARD_DRAWN` as well as `ZONE_CHANGED`.
 - The start of the game stays a small state machine over `pregame` rather than moving into the M1-07 work queue: it has
   no stack, priority or triggers, and every wait is already a plain-data decision.
+
+**D-031: The turn sequence is data, walked by one step machine** · 2026-11-19 · accepted
+- `TURN_STEPS` (`engine/src/game/turn-steps.ts`) lists every step in order. `endStep` (`game/steps.ts`) ends the current
+  step (unspent mana empties, CR 500.5) and begins the next step that isn't skipped; after cleanup the next player in
+  `turnOrder` begins their turn. `beginStep` does the step's turn-based actions, then gives the active player priority,
+  or, in the untap step and a cleanup with nothing to do, goes straight on (CR 502.4, 514.3). Every step change goes
+  through these two functions, so extra or skipped steps, phases and turns, "until end of step" effects and "at the
+  beginning of" triggers have one place to hook in.
+- A skipped step is passed over as though it didn't exist (CR 500.11, 614.10a): it doesn't begin, has no events and
+  gives no priority. `isSkipped` decides it: the starting player's first draw step in a two-player game (CR 103.8a),
+  and the declare blockers and combat damage steps when nothing attacked (CR 508.8, via `anyAttackers`, false until M1-13).
+- Passing priority is built now so steps can advance: `passesInSuccession` counts passes, a new step resets it, and when
+  every player has passed with the stack empty the step ends (CR 117.4, 500.2). M1-07 adds the stack, resolving, the
+  reset when a player acts, and the work queue that will drive `endStep`.
+- Untapping, removing damage and discarding each go through one function (`permanents/untap.ts`, `permanents/damage.ts`,
+  `zones/discard.ts`), and each visible change has an event (`STEP_BEGAN`, `PRIORITY_PASSED`, `MANA_EMPTIED`,
+  `PERMANENT_UNTAPPED`, `DAMAGE_REMOVED`, `CARD_DISCARDED`).
+- Drawing from an empty library sets `attemptedDrawFromEmptyLibrary` (CR 121.4) instead of failing; state-based actions
+  (M1-12) turn it into a loss (CR 704.5b) and clear it.
+- The maximum hand size (CR 402.2) and the starting hand size (CR 103.5) are separate constants, both 7.
+- Actions the CR makes simultaneous are done as one action: untapping in the untap step (CR 502.3), and discarding in
+  cleanup (CR 514.1). The discard is still chosen one card at a time (`discardToHandSize` collects the choices in
+  `chosen`), then all of them are discarded together.
+- "Controlled since their most recent turn began" (CR 302.6) is set as the turn begins, not in the untap step, so it
+  still happens when an effect skips the untap step.
+- Setup validation and the step machine share `skipsFirstDrawStep`, so a fixed opening can't start in a draw step
+  that CR 103.8a says doesn't exist.

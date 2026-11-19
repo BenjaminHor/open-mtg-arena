@@ -65,6 +65,8 @@ describe("discriminated unions", () => {
           return `mulligan ${decision.mulligansTaken}`;
         case "mulliganBottom":
           return `bottom ${decision.remaining}`;
+        case "discardToHandSize":
+          return `discard ${decision.remaining}`;
         default:
           return assertNever(decision);
       }

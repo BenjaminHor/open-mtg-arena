@@ -85,7 +85,12 @@ describe("mulligans (CR 103.5)", () => {
     expect(game.state.pregame).toBeNull();
     expect(game.state.turn).toStrictEqual({ number: 1, activePlayer: "p1", step: "upkeep" });
     expect(game.state.pending).toMatchObject({ player: "p1", kind: "priority" });
-    expect(game.events.at(-1)).toStrictEqual({ type: "TURN_BEGAN", turn: 1, activePlayer: "p1" });
+    // The turn begins with its untap step, where no one gets priority, then the upkeep (M1-06).
+    expect(game.events.slice(-3)).toStrictEqual([
+      { type: "TURN_BEGAN", turn: 1, activePlayer: "p1" },
+      { type: "STEP_BEGAN", turn: 1, step: "untap", activePlayer: "p1" },
+      { type: "STEP_BEGAN", turn: 1, step: "upkeep", activePlayer: "p1" },
+    ]);
   });
 
   it("has a first mulligan draw a new seven and put one card on the bottom", () => {

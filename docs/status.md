@@ -10,6 +10,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 - (nothing)
 
 ## Handoff notes
+- **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
+  a go-ahead. Stop only for a decision that needs the owner (put it in Open questions and ask). Merge each PR once it
+  checks out (D-027), restart the branch from `main`, then start the next task.
 Anything the next session (or the session after a compaction) needs to pick up the current task:
 the plan, what's done so far, what's tricky, what was about to happen next.
 - Claude Code on the web: the cloud environment "open-mtg-arena" allows `magic.wizards.com` and `media.wizards.com`.
@@ -22,10 +25,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
 - M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
   them to YAML scenarios (`scenarios/start/`), keeping the same cases.
-- For M1-06: replace `beginFirstTurn`'s shortcut (untap, then straight to upkeep) with the real step walk, including the
-  starting player skipping their first draw (CR 103.8a; decide it by turn number 1, not `turnOrder[0]`). The untap step
-  must ask `controllerOf`, not object fields. `drawCard` throws on an empty library until M1-12, so either record the
-  "drew from an empty library" fact CR 704.5b needs, or keep M1-06's tests away from empty libraries.
+- For M1-07: turn-based actions are chained on the call stack today, and the only resume-after-decision is hard-wired
+  (`discardToHandSize` → `finishCleanup`). Turn these into work items rather than copying the pattern: M1-13's attackers
+  and blockers will pause mid-step. A decision set mid-chain is silently overwritten if the chain continues.
+- For M1-07: `passPriority` throws if all players pass with a non-empty stack; that's where resolving goes. Reset
+  `passesInSuccession` when a player takes an action (CR 117.4). `endStep` is what the work queue's `advance()` drives.
+- For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
+  each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).
@@ -51,7 +57,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-06 Turn structure
+- M1-07 Priority and the stack
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -69,6 +75,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-05 Game start: `createGame` with setup validation, the random chooser for the starting player (CR 103.1), shuffling
   (CR 103.3), opening hands and CR 103.5 mulligans as decisions, fixed openings, `applyAction`/`legalActions` for these
   decisions, and the first turn (D-030) (2026-11-19).
+- M1-06 Turn structure: the turn sequence as data and one step machine (D-031), every step's turn-based actions, the
+  starting player's skipped first draw step (CR 103.8a), the combat skip (CR 508.8), mana emptying (CR 500.5), cleanup
+  discard and damage removal (CR 514), passing priority with an empty stack (CR 117.3d, 117.4) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

@@ -65,8 +65,20 @@ export function midTurnState(): GameState {
     turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
     turnOrder: ["p1", "p2"],
     players: {
-      p1: { id: "p1", life: 20, manaPool: { ...emptyManaPool(), R: 1 }, landsPlayedThisTurn: 1 },
-      p2: { id: "p2", life: 18, manaPool: emptyManaPool(), landsPlayedThisTurn: 0 },
+      p1: {
+        id: "p1",
+        life: 20,
+        manaPool: { ...emptyManaPool(), R: 1 },
+        landsPlayedThisTurn: 1,
+        attemptedDrawFromEmptyLibrary: false,
+      },
+      p2: {
+        id: "p2",
+        life: 18,
+        manaPool: emptyManaPool(),
+        landsPlayedThisTurn: 0,
+        attemptedDrawFromEmptyLibrary: false,
+      },
     },
     objects: {
       o1: card({ id: "o1", cardId: "c1", oracleId: MOUNTAIN, owner: "p1" }),
@@ -114,6 +126,7 @@ export function midTurnState(): GameState {
       command: [],
     },
     pregame: null,
+    passesInSuccession: 1,
     pending: { id: "d19", player: "p2", kind: "priority" },
     result: null,
   };

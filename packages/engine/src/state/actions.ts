@@ -23,4 +23,5 @@ export type Action =
 export type Answer =
   | { kind: "chooseStartingPlayer"; player: PlayerId }
   | { kind: "mulligan"; choice: "keep" | "mulligan" }
-  | { kind: "mulliganBottom"; object: ObjectId };
+  | { kind: "mulliganBottom"; object: ObjectId }
+  | { kind: "discardToHandSize"; object: ObjectId };

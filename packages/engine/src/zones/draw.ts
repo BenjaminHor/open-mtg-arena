@@ -6,14 +6,26 @@ import type { PlayerId } from "../state/ids.ts";
 import { moveCard } from "./move-card.ts";
 import { zoneList } from "./zone-list.ts";
 
+function playerState(state: GameState, player: PlayerId) {
+  const p = state.players[player];
+  if (p === undefined) throw new Error(`No player ${player}`);
+  return p;
+}
+
 /**
  * Emits `CARD_DRAWN` as well as the zone change, so "whenever you draw" triggers and the UI can tell a draw from
  * other ways a card reaches the hand.
  */
 export function drawCard(state: GameState, player: PlayerId): Progress {
   const top = zoneList(state, { zone: "library", player })[0];
-  // Drawing from an empty library makes the player lose (CR 704.5b), which arrives in M1-12. Until then, fail loudly.
-  if (top === undefined) throw new Error(`${player} would draw from an empty library (CR 704.5b, not built yet)`);
+  if (top === undefined) {
+    // Nothing is drawn, and the player will lose when state-based actions are next checked (CR 121.4, 704.5b).
+    const players = {
+      ...state.players,
+      [player]: { ...playerState(state, player), attemptedDrawFromEmptyLibrary: true },
+    };
+    return { state: { ...state, players }, events: [] };
+  }
   const card = state.objects[top];
   if (card?.kind !== "card") throw new Error(`${top} in a library isn't a card`);
   const moved = moveCard(state, top, { zone: "hand" });

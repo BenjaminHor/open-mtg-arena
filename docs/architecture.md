@@ -74,6 +74,7 @@ type GameState = {
   turnHistory: TurnHistory          // facts later rules ask about ("a creature died this turn")
 
   pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1
+  passesInSuccession: number       // priority passes in a row (CR 117.4)
   work: WorkItem[]                 // the resolution queue (see "Running the game")
   pending: PendingDecision | null  // who must act, and what their options are
   result: GameResult | null        // set when the game ends

@@ -108,9 +108,10 @@ export function checkInvariants(state: GameState): void {
       expect(applyAction(frozen, action, TEST_CARDS).ok, JSON.stringify(action)).toBe(true);
     }
   }
-  // And the other direction, where it can be checked exhaustively: no card outside the hand can go to the bottom.
+  // And the other direction, where it can be checked exhaustively: no card outside the hand can go to the bottom or
+  // be discarded.
   const pending = state.pending;
-  if (pending?.kind === "mulliganBottom") {
+  if (pending?.kind === "mulliganBottom" || pending?.kind === "discardToHandSize") {
     const inHand = state.zones.players[pending.player]?.hand ?? [];
     for (const object of Object.keys(state.objects) as `o${number}`[]) {
       if (inHand.includes(object)) continue;
@@ -118,8 +119,16 @@ export function checkInvariants(state: GameState): void {
         type: "ANSWER",
         decisionId: pending.id,
         player: pending.player,
-        answer: { kind: "mulliganBottom", object },
+        answer: { kind: pending.kind, object },
       } as const;
+      expect(applyAction(frozen, action, TEST_CARDS).ok, object).toBe(false);
+    }
+  }
+  // A card already chosen to discard can't be chosen again.
+  if (pending?.kind === "discardToHandSize") {
+    for (const object of pending.chosen) {
+      const answerValue = { kind: "discardToHandSize", object } as const;
+      const action = { type: "ANSWER", decisionId: pending.id, player: pending.player, answer: answerValue } as const;
       expect(applyAction(frozen, action, TEST_CARDS).ok, object).toBe(false);
     }
   }
