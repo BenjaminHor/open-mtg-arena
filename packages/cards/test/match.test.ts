@@ -88,6 +88,44 @@ describe("choosePrinting (D-029)", () => {
     });
   });
 
+  it("leaves out each kind of printing the rule excludes", () => {
+    const regular = card("Bolt", { set: "old", released_at: "2001-01-01" });
+    const excluded: [string, Partial<ScryfallCard>][] = [
+      ["not English", { lang: "ja" }],
+      ["a variant", { variation: true }],
+      ["paper-less (MTGO only)", { games: ["mtgo"] }],
+      ["digital, even if listed for paper", { digital: true, games: ["paper", "arena"] }],
+      ["a promo", { promo: true }],
+      ["Universes Beyond", { promo_types: ["universesbeyond"] }],
+      ["not a core set or expansion", { set_type: "masters" }],
+      ["released after the bulk file", { released_at: "2026-11-20" }],
+    ];
+    for (const [why, fields] of excluded) {
+      const newer = card("Bolt", { set: "new", released_at: "2026-11-19", ...fields });
+      expect(choosePrinting({ name: "Bolt", pin: null }, oracle, [regular, newer], ASOF).printing, why).toBe(regular);
+    }
+  });
+
+  it("keeps a printing released on the bulk file's date", () => {
+    const today = card("Bolt", { set: "new", released_at: ASOF });
+    expect(choosePrinting({ name: "Bolt", pin: null }, oracle, [m10, today], ASOF).printing).toBe(today);
+  });
+
+  it("breaks a same-day tie by collector number, compared as numbers", () => {
+    const n100 = card("Bolt", { set: "fra", collector_number: "100", released_at: "2026-02-01" });
+    const n99 = card("Bolt", { set: "fra", collector_number: "99", released_at: "2026-02-01" });
+    expect(choosePrinting({ name: "Bolt", pin: null }, oracle, [n100, n99], ASOF).printing).toBe(n99);
+    expect(choosePrinting({ name: "Bolt", pin: null }, oracle, [n99, n100], ASOF).printing).toBe(n99);
+  });
+
+  it("lets a pin choose a printing the rule would skip", () => {
+    const pin = { set: "pm11", collectorNumber: null };
+    expect(choosePrinting({ name: "Bolt", pin }, oracle, all, ASOF)).toStrictEqual({
+      printing: promo,
+      chosenBy: "pin",
+    });
+  });
+
   it("falls back to Oracle Cards' pick when there's no regular printing", () => {
     expect(choosePrinting({ name: "Bolt", pin: null }, oracle, [digital, crossover], ASOF)).toStrictEqual({
       printing: oracle,

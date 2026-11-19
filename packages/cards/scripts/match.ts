@@ -1,6 +1,6 @@
 // Matching pool.txt names to Scryfall's Oracle Cards, kept apart from the file handling so it can be tested.
 
-import { compareNames, type PoolEntry } from "../src/pool-data.ts";
+import { compareNames as compareStrings, type PoolEntry } from "../src/pool-data.ts";
 import type { ScryfallCard } from "./scryfall.ts";
 
 // Oracle Cards also has entries that aren't Magic cards you can put in a deck. Some share a name with a real card
@@ -47,7 +47,8 @@ export function choosePrinting(
 ): { printing: ScryfallCard; chosenBy: PrintingChoice } {
   const { pin } = entry;
   if (pin !== null) {
-    const inSet = printings.filter((p) => p.set === pin.set);
+    // Pins name English printings, like the rule, so a set with foreign-language printings can't pin one by accident.
+    const inSet = printings.filter((p) => p.set === pin.set && p.lang === "en");
     const found =
       pin.collectorNumber === null ? inSet : inSet.filter((p) => p.collector_number === pin.collectorNumber);
     if (found.length === 1 && found[0] !== undefined) return { printing: found[0], chosenBy: "pin" };
@@ -68,8 +69,11 @@ export function choosePrinting(
     )
     .sort(
       (a, b) =>
-        compareNames(b.released_at, a.released_at) ||
-        a.collector_number.localeCompare(b.collector_number, "en", { numeric: true }),
+        compareStrings(b.released_at, a.released_at) ||
+        a.collector_number.localeCompare(b.collector_number, "en", { numeric: true }) ||
+        // Final plain comparisons make the order total, so the file's order never matters.
+        compareStrings(a.set, b.set) ||
+        compareStrings(a.collector_number, b.collector_number),
     );
   const newest = regular[0];
   return newest !== undefined

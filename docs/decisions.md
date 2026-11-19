@@ -195,8 +195,10 @@ kinds when they arrive. Scenarios say `ability: <n>` (the nth ability in that li
 **D-029: Card art comes from a chosen printing, pinned per card or picked by a fixed rule** · 2026-11-19 · accepted
 The owner chose (2026-11-19): `pool.txt` may pin a printing per card, as `Lightning Bolt [m10]` (a Scryfall set code,
 optionally with a collector number: `[m10 146]`). A card without a pin gets its newest regular printing: a paper,
-non-digital, non-promo English printing from a core set or expansion, not a Universes Beyond crossover, and already
-released on the date of the bulk file. Only if it has none does it fall back to
+non-digital English printing that isn't a promo or a variant, from a core set or expansion, not a Universes Beyond
+crossover, and already released on the date of the bulk file. Ties go to the lowest collector number. A pin always names
+an English printing, and may choose one the rule would skip. Some printings slip past Scryfall's crossover tag, and a
+beginner-box or showcase printing can win; pin the card when the pick looks wrong. Only if it has none does it fall back to
 Scryfall's Oracle Cards pick. Rules data (Oracle text, types, cost) always comes from Oracle Cards; only the printing
 details (images, artist, set, collector number) come from the chosen printing. That keeps the art stable across refreshes
 and avoids crossover or digital-only printings, without changing any rules behavior.

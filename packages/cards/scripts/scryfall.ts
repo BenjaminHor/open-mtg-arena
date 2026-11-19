@@ -11,7 +11,10 @@ export const SCRYFALL_DIR = path.join(CARDS_DIR, "data", "scryfall");
 export const BULK_FILES = {
   /** One entry per card, for rules data (Oracle text, types, cost). */
   oracle_cards: "oracle-cards.jsonl.gz",
-  /** Every printing in English, for choosing which printing's art and artist to show (D-029). */
+  /**
+   * Every printing, in English where one exists (otherwise in its printed language), for choosing which printing's
+   * art and artist to show (D-029).
+   */
   default_cards: "default-cards.jsonl.gz",
   rulings: "rulings.jsonl.gz",
 } as const;

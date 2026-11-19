@@ -5,7 +5,8 @@ import { parsePoolTxt } from "../src/pool-data.ts";
 
 // These tests read only committed files (pool.txt and data/), never the Scryfall downloads, so CI can run them.
 
-const poolTxt = parsePoolTxt(readFileSync(new URL("../pool.txt", import.meta.url), "utf8")).map((e) => e.name);
+const poolEntries = parsePoolTxt(readFileSync(new URL("../pool.txt", import.meta.url), "utf8"));
+const poolTxt = poolEntries.map((e) => e.name);
 
 describe("the card pool", () => {
   it("has Oracle data for exactly the cards in pool.txt", () => {
@@ -21,6 +22,21 @@ describe("the card pool", () => {
     for (const card of POOL.cards) {
       const file = JSON.parse(readFileSync(new URL(`../data/rulings/${card.slug}.json`, import.meta.url), "utf8"));
       expect(file.oracleId).toBe(card.oracleId);
+    }
+  });
+
+  it("shows the pinned printing for every pinned card, and says how each printing was chosen (D-029)", () => {
+    for (const card of POOL.cards) expect(["pin", "rule", "oracleCards"]).toContain(card.printingChosenBy);
+    for (const { name, pin } of poolEntries) {
+      const card = POOL.cards.find((c) => c.name === name);
+      if (pin === null) {
+        expect(card?.printingChosenBy, name).not.toBe("pin");
+        continue;
+      }
+      // A failure here usually means pool.txt changed without `pnpm cards:extract`.
+      expect(card?.printingChosenBy, name).toBe("pin");
+      expect(card?.set, name).toBe(pin.set);
+      if (pin.collectorNumber !== null) expect(card?.collectorNumber, name).toBe(pin.collectorNumber);
     }
   });
 

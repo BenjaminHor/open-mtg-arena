@@ -2,7 +2,7 @@
 // (data/pool.json) and rulings (data/rulings/<slug>.json). The output is sorted and stable, so running it twice
 // changes nothing, and a diff after a refresh shows exactly what Scryfall changed (errata, new art, new rulings).
 
-import { createReadStream } from "node:fs";
+import { createReadStream, existsSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createInterface } from "node:readline";
@@ -128,7 +128,9 @@ function toPoolCard(c: ScryfallCard, printing: ScryfallCard, chosenBy: PrintingC
 }
 
 async function* readJsonLines<T>(file: string): AsyncGenerator<T> {
-  const input = createReadStream(path.join(SCRYFALL_DIR, file)).pipe(createGunzip());
+  const full = path.join(SCRYFALL_DIR, file);
+  if (!existsSync(full)) throw new Error(`${file} is missing. Run \`pnpm cards:fetch\` first.`);
+  const input = createReadStream(full).pipe(createGunzip());
   for await (const line of createInterface({ input, crlfDelay: Number.POSITIVE_INFINITY })) {
     if (line.trim() !== "") yield JSON.parse(line) as T;
   }

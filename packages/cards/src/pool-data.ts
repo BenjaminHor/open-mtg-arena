@@ -88,7 +88,9 @@ export function parsePoolTxt(text: string): PoolEntry[] {
 function parsePoolLine(line: string): PoolEntry {
   const match = /^(.*?)\s*\[([a-z0-9]+)(?:\s+(\S+))?\]$/.exec(line);
   if (match === null) {
-    if (line.includes("[") || line.includes("]")) throw new Error(`pool.txt: can't read the pin in "${line}"`);
+    if (line.includes("[") || line.includes("]")) {
+      throw new Error(`pool.txt: can't read the pin in "${line}" (set codes are lower case, like [m10] or [m10 146])`);
+    }
     return { name: line, pin: null };
   }
   const [, name = "", set = "", collectorNumber] = match;
