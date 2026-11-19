@@ -99,7 +99,8 @@ keyword interaction (and its negatives), multiple blockers, and a lethal attack 
 **M1-14 Activated abilities.** CR 602: Furnace Whelp's firebreathing, activated at instant speed, as a
 non-mana ability on the stack. *Accept:* scenarios for activating it several times and in response to a block.
 
-**M1-15 Game end.** CR 104: losing from life, drawing from an empty library, conceding; `GameResult`.
+**M1-15 Game end.** CR 104: losing from life, drawing from an empty library, conceding; `GameResult`. (Losing through
+state-based actions, the result and the runner's `winner` arrived with M1-12, D-039.)
 *Accept:* scenarios for each, and a result reporting winner, reason and turn.
 
 **M1-16 Scenario runner.** The YAML format in `testing.md`, converting steps through `legalActions()`. Build it

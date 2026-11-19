@@ -1,6 +1,6 @@
 name: Marked damage and "until end of turn" effects go away in the same cleanup action
-# Until state-based actions exist (M1-12), this passes however the two are ordered; from M1-12 it proves that the
-# pumped Bears (3 damage, toughness 5) never dies between them.
+# The pumped Bears (3 damage, toughness 5) would die to a state-based action check between the two (CR 704.5g); it
+# survives because they happen together, before the cleanup step's check (CR 514.3a).
 rules: [CR 514.2, CR 120.6]
 setup:
   turn: { active: p1, step: main1 }

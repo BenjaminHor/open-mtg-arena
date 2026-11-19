@@ -139,11 +139,13 @@ type Action =
    they run before older work), change state, emit events, or **set `pending`**, which stops the loop.
 3. An empty queue with nothing pending is an engine bug: `advance` throws.
 
-The work items so far: `givePriority` (state-based actions and triggers will run there first, CR 117.5; then a `priority`
-decision), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it queues the resolution's effects, `finishResolving`,
-then priority for the active player), `runEffect` (one effect of a resolving spell or ability, CR 608.2c),
-`finishResolving`, `doesNotResolve` (CR 608.2b) and `finishCleanup`. When all players pass in succession, the top of the stack
-resolves, or with an empty stack the step ends (CR 117.4).
+The work items so far: `givePriority` (state-based actions are checked first, CR 117.5, and it re-queues itself
+while any are performed, D-039; triggers will join that check), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it
+queues the resolution's effects, `finishResolving`, then priority for the active player), `runEffect` (one effect of a
+resolving spell or ability, CR 608.2c), `finishResolving`, `doesNotResolve` (CR 608.2b), `finishCleanup`,
+`cleanupCheck` and `anotherCleanupStep` (CR 514.3a). When all players pass in succession, the top of the stack
+resolves; with an empty stack the step ends, or after a cleanup step that gave players priority, another cleanup step
+begins (CR 117.4, 514.3a).
 
 Resolving a spell means turning its effect data into work items. Because the queue lives in
 the state rather than on the JavaScript call stack, **any point that waits for a decision is a

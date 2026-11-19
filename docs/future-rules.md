@@ -83,14 +83,24 @@ controller changes, including when a control effect ends. A bare boolean can't s
 replace it with a `{ player, since }` record when control-changing effects arrive.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
-"at the beginning of the next end step". Also another cleanup step when something happened in one (CR 514.3a), the
-second combat damage step for first strike (CR 510.4), and "no maximum hand size" (CR 402.2).
+"at the beginning of the next end step". The second combat damage step for first strike (CR 510.4), and "no maximum hand size" (CR 402.2).
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 
+**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) needs a choice; deathtouch (704.5h) needs a
+"since the last check" record like `attemptedDrawFromEmptyLibrary`, cleared with it at every check.
+*Watch out (D-039):* a listed SBA counts as performed, and a performed check repeats. So anything that stops an SBA
+(indestructible ignoring lethal damage, CR 702.12b; "can't lose the game") must keep it off the list in
+`rules/state-based-actions.ts`, or the check repeats forever. Creatures dying together move one `moveCard` at a time,
+so leaves-the-battlefield triggers (CR 603.10a) must look back at the state before the whole `STATE_BASED_ACTIONS`
+group, not after each move. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
+owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
+
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
+*Watch out:* `playersLose` (D-039) throws when a player loses with more than one player left. Leaving the game
+(CR 800.4a: their objects leave, control effects end, priority passes on) has to be built there first.
 *Needs now:* nothing assumes exactly two players. Use player lists and turn order, never "the opponent".
 
 **Mana beyond six counters (CR 106.6, 106.12, 107.4h).** Mana with spending restrictions or riders, "tapped for mana"

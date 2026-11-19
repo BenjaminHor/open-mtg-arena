@@ -10,6 +10,7 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `summoning-sickness.ts`: `canUseTapAbilities` (CR 602.5a, 302.6), only for creatures.
 - `targets.ts`: `legalTargets`, `isLegalTarget`, `stillLegalTargets` (CR 115, 115.4, 109.2, 608.2b); `targetSpecsOf`
   and `spellEffectsOf`, the one place a spell's targets and effects are read from its definition.
+- `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/f/g).
 - `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1).
 - `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes
   types yet).

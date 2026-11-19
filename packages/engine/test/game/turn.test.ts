@@ -238,13 +238,18 @@ describe("cleanup step (CR 514)", () => {
 });
 
 describe("drawing from an empty library (CR 121.4, 704.5b)", () => {
-  it("records the attempt for state-based actions instead of failing", () => {
+  it("records the attempt instead of failing, and the player loses at the next state-based action check", () => {
+    // Before M1-12 this test checked the record stayed set; state-based actions now act on it and clear it.
     let game = fixedGame("end", {}, { library: [] });
     game = allPass(game); // p2's turn 2: untap, upkeep
-    game = allPass(game); // draw step: p2 tries to draw
+    game = allPass(game); // draw step: p2 tries to draw, then loses before anyone gets priority
     expect(game.state.turn?.step).toBe("draw");
-    expect(game.state.players.p2?.attemptedDrawFromEmptyLibrary).toBe(true);
-    expect(game.state.players.p1?.attemptedDrawFromEmptyLibrary).toBe(false);
+    expect(game.events.some((e) => e.type === "CARD_DRAWN" && e.player === "p2")).toBe(false);
+    expect(game.state.result).toMatchObject({
+      winner: "p1",
+      losses: [{ player: "p2", reason: "drewFromEmptyLibrary" }],
+    });
+    expect(game.state.players.p2?.attemptedDrawFromEmptyLibrary).toBe(false);
   });
 });
 

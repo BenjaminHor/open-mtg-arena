@@ -7,7 +7,8 @@ import type { ContinuousEffect } from "./effects.ts";
 import type { CardId, ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool, ManaType } from "./mana.ts";
 import type { CardObject, Target } from "./objects.ts";
-import type { GameResult } from "./result.ts";
+import type { GameResult, LossReason } from "./result.ts";
+import type { StateBasedAction } from "./state-based-actions.ts";
 import type { Step } from "./turn.ts";
 import type { ZoneRef } from "./zones.ts";
 
@@ -81,5 +82,11 @@ export type GameEvent =
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
   /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */
   | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId; cardId: CardId }
+  /** State-based actions performed together as one event (CR 704.3); their results follow. */
+  | { type: "STATE_BASED_ACTIONS"; actions: StateBasedAction[] }
+  /** A permanent was destroyed (CR 701.8): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
+  | { type: "PERMANENT_DESTROYED"; object: ObjectId; cardId: CardId }
+  /** A player lost the game (CR 104.3). `GAME_ENDED` follows when the game is over. */
+  | { type: "PLAYER_LOST"; player: PlayerId; reason: LossReason }
   | { type: "PLAYER_CONCEDED"; player: PlayerId } // CR 104.3a
   | { type: "GAME_ENDED"; result: GameResult };

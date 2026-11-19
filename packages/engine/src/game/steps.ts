@@ -2,6 +2,7 @@
 // game moves between steps, so effects that last "until end of step", skipped and extra steps, and "at the beginning
 // of" triggers have one place to hook in. The work queue drives it (D-032).
 
+import type { CardDatabase } from "../cards/types.ts";
 import { anyAttackers } from "../combat/attackers.ts";
 import { endUntilEndOfTurnEffects } from "../effects/continuous-effect.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
@@ -17,6 +18,7 @@ import { drawCard } from "../zones/draw.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
 import { andThen, type Progress } from "./progress.ts";
+import { checkStateBasedActions } from "./state-based-actions.ts";
 import { currentTurn } from "./turn.ts";
 import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
 import { queueWork } from "./work.ts";
@@ -83,13 +85,30 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []
 
 /**
  * CR 514.2: damage is removed, and "until end of turn" and "this turn" effects end, all as one action, in one call, so
- * no state-based action check can come between them. Then no one gets priority (CR 514.3): with no state-based actions
- * or triggers yet (CR 514.3a), the step simply ends.
+ * no state-based action check can come between them. Normally no one gets priority and the step ends (CR 514.3). But
+ * if the check that follows performs any state-based actions, the active player gets priority, and once all players
+ * pass with the stack empty, another cleanup step begins (CR 514.3a, `passPriority`).
  */
 function endCleanup(state: GameState): Progress {
   const removed = andThen(removeAllDamage(state), endUntilEndOfTurnEffects);
-  // Queued rather than called, so the CR 514.3a check (another cleanup step) can go between them in M1-12.
-  return { state: queueWork(removed.state, { kind: "endStep" }), events: removed.events };
+  return { state: queueWork(removed.state, { kind: "cleanupCheck" }), events: removed.events };
+}
+
+/**
+ * The cleanup step's check (CR 514.3a), after the CR 514.2 action: state-based actions now, triggered abilities later. If none were performed, the step
+ * ends with no one getting priority (CR 514.3); if any were, the active player gets priority (which checks again).
+ */
+export function cleanupCheck(state: GameState, cards: CardDatabase): Progress {
+  const checked = checkStateBasedActions(state, cards);
+  if (checked.state.result !== null) return { state: checked.state, events: checked.events };
+  const active = currentTurn(checked.state).activePlayer;
+  const next = checked.performed ? ({ kind: "givePriority", player: active } as const) : ({ kind: "endStep" } as const);
+  return { state: queueWork(checked.state, next), events: checked.events };
+}
+
+/** Another cleanup step begins (CR 514.3a), after the last one gave players priority and they all passed. */
+export function anotherCleanupStep(state: GameState): Progress {
+  return andThen(emptyManaPools(state), (s) => beginStep(s, "cleanup"));
 }
 
 /**

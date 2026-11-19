@@ -5,10 +5,11 @@ import { readFileSync } from "node:fs";
 import { cardDatabase } from "@mtg/cards";
 import { createGame } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
+import { allPass } from "../src/all-pass.ts";
 import { EXPECTATIONS } from "../src/expect.ts";
 import { STEP_OPTIONS, TOP_KEYS } from "../src/format.ts";
 import { COMING_EXPECTATIONS, COMING_STEP_WORDS, invariantProblems, runScenario, STEP_NAMES } from "../src/index.ts";
-import { PERMANENT_KEYS, PLAYER_KEYS, SETUP_KEYS, TURN_KEYS } from "../src/setup.ts";
+import { buildSetup, PERMANENT_KEYS, PLAYER_KEYS, SETUP_KEYS, TURN_KEYS } from "../src/setup.ts";
 
 const cards = cardDatabase();
 const problems = (yaml: string) => runScenario(yaml, cards).problems;
@@ -109,9 +110,27 @@ describe("the scenario runner fails a scenario that's wrong", () => {
     expect(checked).toBe(3); // the starting state and the state after each pass
   });
 
-  it("fails 'all pass: until' a step that never begins with priority, instead of hanging", () => {
-    const empty = at("main1", "  p1: { library: [] }\n  p2: { library: [] }\n");
-    expect(first(`${empty}  - all pass: until untap\n`)).toMatch(/didn't reach that step with priority in 500 passes/);
+  it("fails 'all pass: until' a step no one gets priority in, instead of hanging", () => {
+    // Untap gives no one priority. With nothing played, hands grow until the cleanup discard (CR 514.1) stops it.
+    expect(first(`${main1}  - all pass: until untap\n`)).toMatch(/expected someone to have priority/);
+    // The pass limit itself, with a small limit (500 passes would take a game far past its libraries).
+    const created = createGame(buildSetup({ turn: { active: "p1", step: "main1" } }, cards), cards);
+    if (!created.ok) throw new Error(created.error.message);
+    const game = { state: created.state, events: [] };
+    expect(() => allPass(game, "untap", cards, () => {}, 3)).toThrow(
+      /didn't reach that step with priority in 3 passes/,
+    );
+  });
+
+  it("fails 'all pass: until' a step the game ends before, and passing once the game is over", () => {
+    const dying = at("main1", "  p2: { library: [] }\n");
+    expect(first(`${dying}  - all pass: until main1\n`)).toMatch(/the game ended before that step began/);
+    // Untap begins on p2's turn, but the game ends in p2's draw step: that isn't reaching untap.
+    expect(first(`${dying}  - all pass: until untap\n`)).toMatch(/the game ended before that step began/);
+    expect(problems(`${dying}  - all pass: until draw\n  - expect: { winner: p1 }\n`)).toStrictEqual([]);
+    expect(first(`${dying}  - all pass: until draw\n  - expect: { winner: p2 }\n`)).toMatch(/winner: expected "p2"/);
+    const over = at("main1", "  p2: { life: 0 }\n");
+    expect(first(`${over}  - all pass: once\n`)).toMatch(/the game is over/);
   });
 });
 
@@ -173,7 +192,6 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
       'step 1: "attack" steps arrive in M1-13',
     ]);
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
-    expect(problems(`${main1}  - expect: { winner: p1 }\n`)).toStrictEqual(["step 1: winner: arrives in M1-15"]);
     expect(first(`${main1}  - expect: { "p1:Forest.counters": {} }\n`)).toMatch(/arrives in M1-13/);
   });
 

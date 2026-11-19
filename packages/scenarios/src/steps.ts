@@ -7,23 +7,21 @@ import {
   applyAction,
   autoPay,
   type CardDatabase,
-  type GameEvent,
   type GameState,
-  legalActions,
   type PlayerId,
 } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
-import { abilityNamed, cardIn, cardNamed, paymentFrom, targetNamed } from "./lookups.ts";
-import { engineStep, nameOf } from "./names.ts";
 
-export type Game = { state: GameState; events: GameEvent[] };
+export type { Game } from "./apply.ts";
+
+import { allPass } from "./all-pass.ts";
+import { apply, type Game, legal } from "./apply.ts";
+import { abilityNamed, cardIn, cardNamed, paymentFrom, targetNamed } from "./lookups.ts";
+import { nameOf } from "./names.ts";
 
 /** A step that changes the game: passing or choosing. */
 export type ActionStep = Extract<ScenarioStep, { kind: "pass" | "allPass" | "choose" | "activate" | "play" | "cast" }>;
-
-/** The most passes `all pass: until` makes before giving up, so a step that never comes fails instead of hanging. */
-const MAX_PASSES = 500;
 
 /** Applies a step's actions, each checked by `afterEach`. Throws a readable message when the step can't be taken. */
 export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afterEach: (g: Game) => void): Game {
@@ -35,23 +33,8 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         cards,
         afterEach,
       );
-    case "allPass": {
-      if (step.until === null) {
-        let next = game;
-        for (const _ of game.state.turnOrder) next = passByWhoeverHasPriority(next, cards, afterEach);
-        return next;
-      }
-      const target = engineStep(step.until);
-      let next = game;
-      let begun = false;
-      for (let passes = 0; passes < MAX_PASSES; passes++) {
-        const before = next.events.length;
-        next = passByWhoeverHasPriority(next, cards, afterEach);
-        begun ||= next.events.slice(before).some((e) => e.type === "STEP_BEGAN" && e.step === target);
-        if (begun && next.state.pending?.kind === "priority" && next.state.turn?.step === target) return next;
-      }
-      throw new Error(`"all pass: until ${step.until}" didn't reach that step with priority in ${MAX_PASSES} passes`);
-    }
+    case "allPass":
+      return allPass(game, step.until, cards, afterEach);
     case "play": {
       const action = legal(
         game,
@@ -226,18 +209,6 @@ function paymentActions(game: Game, step: Extract<ScenarioStep, { kind: "cast" }
   return [{ type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: paymentFrom(step.pay) } }];
 }
 
-function passByWhoeverHasPriority(game: Game, cards: CardDatabase, afterEach: (g: Game) => void): Game {
-  const pending = game.state.pending;
-  if (pending?.kind !== "priority")
-    throw new Error(`expected someone to have priority, but the game waits for ${pending?.kind ?? "nothing"}`);
-  return apply(
-    game,
-    legal(game, pending.player, cards, (a) => a.type === "PASS_PRIORITY", "pass"),
-    cards,
-    afterEach,
-  );
-}
-
 /** The answer a `choose:` value names, for the pending decision. Exhaustive, so new decision kinds must be handled. */
 function answerFor(
   state: GameState,
@@ -269,22 +240,4 @@ function answerFor(
     case "priority":
       throw new Error("the player has priority: use pass, play, cast or activate");
   }
-}
-
-function legal(game: Game, player: string, cards: CardDatabase, match: (a: Action) => boolean, what: string): Action {
-  const actions = legalActions(game.state, player as PlayerId, cards);
-  const found = actions.find(match);
-  if (found !== undefined) return found;
-  const pending = game.state.pending;
-  throw new Error(
-    `${player} can't ${what}: it isn't a legal action (pending: ${pending === null ? "nothing" : `${pending.kind} for ${pending.player}`})`,
-  );
-}
-
-function apply(game: Game, action: Action, cards: CardDatabase, afterEach: (g: Game) => void): Game {
-  const result = applyAction(game.state, action, cards);
-  if (!result.ok) throw new Error(`a legal action was rejected: ${result.error.message}`);
-  const next = { state: result.state, events: [...game.events, ...result.events] };
-  afterEach(next);
-  return next;
 }

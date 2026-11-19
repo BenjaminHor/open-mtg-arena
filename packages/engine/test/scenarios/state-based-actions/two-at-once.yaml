@@ -1,0 +1,13 @@
+name: All state-based actions that apply are performed together, as one event
+# Nothing in the M1 pool makes two creatures die at once mid-game (combat arrives in M1-13), so the setup does: one
+# creature has lethal damage, the other 0 toughness, and both go at the first check. Cards that go to a graveyard at
+# the same time go in battlefield order (D-039). both-players-at-zero-is-a-draw.yaml shows the simultaneity.
+rules: [CR 704.3, CR 704.5f, CR 704.5g]
+setup:
+  turn: { active: p1, step: main1 }
+  p2:
+    battlefield: [{ card: Gray Ogre, damage: 2 }, Giant Spider, { card: Grizzly Bears, counters: { -1/-1: 2 } }]
+steps:
+  - expect:
+      p2.graveyard: [Gray Ogre, Grizzly Bears]
+      p2.battlefield: [Giant Spider]
