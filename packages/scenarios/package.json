@@ -8,8 +8,10 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@mtg/cards": "workspace:*",
     "@mtg/engine": "workspace:*",
     "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@mtg/cards": "workspace:*"
   }
 }

@@ -2,7 +2,7 @@
 // invariants. Returns the problems found; an empty list means the scenario passed. No file I/O here: callers pass
 // the YAML text (the tests and, from M1-17, the CLI).
 
-import { applyAction, type CardDatabase, createGame } from "@mtg/engine";
+import { applyAction, type CardDatabase, createGame, type GameState } from "@mtg/engine";
 import { expectationProblems } from "./expect.ts";
 import { parseScenario, type Scenario } from "./format.ts";
 import { invariantProblems } from "./invariants.ts";
@@ -11,16 +11,32 @@ import { type ActionStep, actionFor, type Game, takeStep } from "./steps.ts";
 
 export type ScenarioResult = { name: string; problems: string[] };
 
-export function runScenario(text: string, cards: CardDatabase): ScenarioResult {
-  const scenario = parseScenario(text);
+/** Checks one state; the default is the engine's invariants. Tests replace it to prove every state is checked. */
+export type StateCheck = (state: GameState, cards: CardDatabase) => string[];
+
+export function runScenario(
+  text: string,
+  cards: CardDatabase,
+  checkState: StateCheck = invariantProblems,
+): ScenarioResult {
+  let scenario: Scenario;
   try {
-    return { name: scenario.name, problems: run(scenario, cards) };
+    scenario = parseScenario(text);
   } catch (error) {
-    return { name: scenario.name, problems: [error instanceof Error ? error.message : String(error)] };
+    return { name: "(unreadable scenario)", problems: [message(error)] };
+  }
+  try {
+    return { name: scenario.name, problems: run(scenario, cards, checkState) };
+  } catch (error) {
+    return { name: scenario.name, problems: [message(error)] };
   }
 }
 
-function run(scenario: Scenario, cards: CardDatabase): string[] {
+function message(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): string[] {
   const created = createGame(buildSetup(scenario.setup, cards), cards);
   if (scenario.expectSetupError !== null) {
     if (created.ok) return [`expected the setup to be rejected (${scenario.expectSetupError}), but it started`];
@@ -31,7 +47,7 @@ function run(scenario: Scenario, cards: CardDatabase): string[] {
   if (!created.ok) return [`setup rejected: ${created.error.message}`];
 
   const checkInvariants = (g: Game) => {
-    const problems = invariantProblems(g.state, cards);
+    const problems = checkState(g.state, cards);
     if (problems.length > 0) throw new Error(`invariant broken: ${problems.join("; ")}`);
   };
   let game: Game = { state: created.state, events: created.events };

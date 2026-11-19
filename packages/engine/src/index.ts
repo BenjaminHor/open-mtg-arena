@@ -23,6 +23,7 @@ export { applyAction } from "./game/apply-action.ts";
 export { createGame } from "./game/create-game.ts";
 export { legalActions } from "./game/legal-actions.ts";
 export type { RngState } from "./rng/xoshiro128.ts";
+export { controllerOf } from "./rules/controller.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { DecisionKind, PendingDecision } from "./state/decisions.ts";
 export type { GameEvent } from "./state/events.ts";

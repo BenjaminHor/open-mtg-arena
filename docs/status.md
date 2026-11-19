@@ -85,8 +85,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   (CR 117.4, 608): abilities cease to exist, instants and sorceries to the graveyard, permanents onto the battlefield;
   priority to the active player after (CR 117.3b) (2026-11-19).
 - M1-16 Scenario runner: `packages/scenarios` (D-033) runs YAML scenarios through `legalActions()`, checking expectations
-  and invariants on every state; 13 scenarios for game start and turn structure; testing.md matches it exactly
-  (a test checks the vocabulary) (2026-11-19).
+  and invariants on every state; 16 scenarios for game start and turn structure; a test checks testing.md documents
+  every word the runner knows (2026-11-19).
 
 ## Open questions for the owner
 - (none)

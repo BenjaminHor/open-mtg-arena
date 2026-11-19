@@ -52,15 +52,16 @@ importers:
 
   packages/scenarios:
     dependencies:
-      '@mtg/cards':
-        specifier: workspace:*
-        version: link:../cards
       '@mtg/engine':
         specifier: workspace:*
         version: link:../engine
       yaml:
         specifier: 2.9.1
         version: 2.9.1
+    devDependencies:
+      '@mtg/cards':
+        specifier: workspace:*
+        version: link:../cards
 
 packages:
 

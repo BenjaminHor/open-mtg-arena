@@ -24,7 +24,7 @@ Allowed dependencies (arrows point at what a package may import):
 - `cards` → `engine` (only for types).
 - `ai` → `engine`.
 - `match` → `engine`, `ai`, `cards`.
-- `scenarios` → `engine`, `cards`.
+- `scenarios` → `engine` (its tests also use `cards`).
 - `cli` → `match`, `engine`, `ai`, `cards`, `scenarios`.
 - `library` → nothing in this repo except types from `cards`.
 - `decks` → `library`, `cards`.

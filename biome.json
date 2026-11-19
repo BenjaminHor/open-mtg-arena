@@ -97,6 +97,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["packages/scenarios/src/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "error"
+          }
+        }
+      }
     }
   ]
 }

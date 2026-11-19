@@ -146,6 +146,8 @@ the card data types in `src/cards/` (`CardDatabase`, `CardDef`, ...; D-026) and 
 engine internals leak. The RNG functions stay internal for now. The CLI's `random` agent and the fuzzer (M1-17, M1-18)
 need seeded randomness to reproduce failures; when they arrive, export `seedRng` and `randomInt` with a new entry here
 rather than copying the RNG or using `Math.random`.
+It also exports `controllerOf` (M1-16), the single answer to "who controls this?", so tools like the scenario runner
+never read the stored default controller themselves; `characteristics()` will cover it once it exists (M1-11).
 
 **D-024: The random number generator and its outputs are fixed** · 2026-11-19 · accepted
 All randomness in a game comes from `GameState.rng`: xoshiro128** 1.1, seeded from `GameSetup.seed` (a non-negative safe
@@ -279,7 +281,8 @@ and avoids crossover or digital-only printings, without changing any rules behav
 
 **D-033: The scenario runner is its own package, with `yaml` as a dependency** · 2026-11-19 · accepted
 Scenarios name real cards, so the runner needs `@mtg/cards`, and the engine may not depend on it. So the runner is
-`packages/scenarios` (depends on `engine` and `cards`). The scenario files stay in `packages/engine/test/scenarios/`,
+`packages/scenarios` (depends on `engine`; its tests use `cards` for the real card database, and callers pass the
+database in). The scenario files stay in `packages/engine/test/scenarios/`,
 next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario` and `export --scenario`.
 - New runtime dependency: `yaml` 2.9.1 (pinned), the standard YAML parser for JavaScript, with no dependencies of its own.
   It's used only by `packages/scenarios`, never by the engine or the app.

@@ -12,6 +12,7 @@ import {
   type ObjectId,
   type PlayerId,
 } from "@mtg/engine";
+import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
 import { engineStep, nameOf } from "./names.ts";
 
@@ -56,7 +57,7 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         game,
         step.player,
         cards,
-        (a) => a.type === "ANSWER" && same(a.answer, answer),
+        (a) => a.type === "ANSWER" && deepEqual(a.answer, answer),
         `choose ${String(step.value)}`,
       );
       return apply(game, action, cards, afterEach);
@@ -157,8 +158,4 @@ function apply(game: Game, action: Action, cards: CardDatabase, afterEach: (g: G
   const next = { state: result.state, events: [...game.events, ...result.events] };
   afterEach(next);
   return next;
-}
-
-function same(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
 }
