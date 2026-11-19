@@ -578,7 +578,7 @@ every schema change and every change D-024 lists bumps it.
   the report is always current and a gap closed and later reopened can't hide. `pnpm coverage:rules` refuses to write
   a report that's worse than the committed one unless given `--accept-new-gaps`: a new gap, or a rule the committed
   report lists as tested by scenarios that no scenario tests now (even if a unit test still cites it). Accepting is
-  deliberate and shows in the commit. The coverage tests' own sample citations aren't counted.
+  deliberate and shows in the commit. (D-052 later removed accepting a gap: none are allowed.) The coverage tests' own sample citations aren't counted.
 
 **D-049: Benchmarks** · 2026-11-19 · accepted
 - `pnpm bench` times six measures, each reported per operation: `applyAction` on three sets of states (up to 40 each,
@@ -602,3 +602,28 @@ every schema change and every change D-024 lists bumps it.
 - So the coverage report's gaps stay what D-048 made them (rules with neither), and "Tested only by unit tests" is a
   list to read, not a list of failures: things a scenario can't express (player views, card data parsing) belong
   there; game behavior there should move to a scenario when it's next touched.
+
+**D-051: Rules depth before the app; the goal is every two-player rule** · 2026-11-19 · accepted (owner)
+- The owner: "the end goal is to have an accurate Magic the Gathering rules engine. Defined by the comprehensive rule
+  set." So the roadmap swaps M2 and M3: M2 is now Rules depth (triggers, replacement and prevention, the full layer
+  system, static abilities, costs, tokens, auras and equipment, the evergreen keywords, about 200 cards) and M3 is
+  First playable (the web app and the AI). M4 and M5 are unchanged. Decisions written before this one say "M2" for
+  the app and "M3" for rules depth.
+- Scope (owner's choice): eventually every rule two-player games use, CR chapters 1 to 7. Multiplayer and casual
+  variants (CR 8, 9) stay out unless the owner decides otherwise.
+- How: rules are built through cards. A rule with no card exercising it can't be tested, so each mechanic arrives
+  with cards that use it, scenarios and interaction tests (the coverage report, D-048, keeps this honest). The core
+  systems come first because nearly every card touches them; keywords follow, the most common first.
+- The engine doesn't depend on the app: the CLI, scenarios, fuzzer, golden games and coverage report are enough to
+  build and check rules. The owner playtests through the CLI until M3. The hidden-information known issue (status.md)
+  is fixed early in M2, before any AI reads views.
+
+**D-052: Every rule has a test** · 2026-11-19 · accepted (owner)
+- The owner: "It's really important that every rule has some sort of test, whether it's a unit test or scenario that
+  backs up the expected behavior." A requirement, not a goal: every rule the code implements is cited where it's
+  implemented (CLAUDE.md), and every cited rule has a scenario or a unit test (D-050).
+- Enforced: the coverage test fails on any gap (a cited rule with no test, or an open interaction matrix cell), and
+  `pnpm coverage:rules` refuses to write a report with one. The `--accept-new-gaps` escape from D-048 is gone. A rule
+  losing its last scenario while a unit test still covers it is allowed (D-050) but needs `--accept-scenario-loss`.
+- The check can only see cited rules, so citing is part of the requirement, and reviews (rules-judge, code-reviewer)
+  look for implemented behavior without a citation. A rule that's mentioned but not built is written `later: CR …`.

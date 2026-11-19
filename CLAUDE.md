@@ -38,7 +38,10 @@ it up, then cite it.
 - `grep -rn "^704.5g" rules/cr` finds the file a rule lives in.
 
 Cite rules in code comments and in tests as `CR 601.2c`. A comment that only mentions a rule not built yet
-writes `later: CR 614`, so the coverage report (D-048) doesn't count it as implemented. **The CR wins over every other spec** (D-020): if a doc
+writes `later: CR 614`, so the coverage report (D-048) doesn't count it as implemented.
+**Every rule the code implements has a test** (owner requirement, D-052): cite each rule where the code implements
+it, and back each cited rule with a scenario, or a unit test where a scenario can't express it. `pnpm check` fails on
+any cited rule without one, and there's no way to accept a gap. **The CR wins over every other spec** (D-020): if a doc
 or task in this repo disagrees with the CR on rules logic, follow the CR and fix the doc. If the CR itself seems
 ambiguous, stop and ask. Don't guess.
 
@@ -145,11 +148,11 @@ The M1 scaffolding task creates these scripts. Keep these names stable.
 - `pnpm fuzz --games 500` — random legal games checking invariants
 - `pnpm replays:update` — rewrite the saved replays' final-state hashes (only with an explained diff)
 - `pnpm golden:update` / `pnpm golden:add` — regenerate or add golden games (only with an explained diff)
-- `pnpm coverage:rules` — which CR rules are cited by code but not tested
+- `pnpm coverage:rules` — the rules coverage report; it refuses to write one with an untested rule
 - `pnpm bench` — engine benchmarks against `bench/baseline.json`
 - `pnpm cli <command>` — the headless game CLI (see `docs/testing.md`)
 - `pnpm cards:fetch` / `pnpm cards:extract` — download Scryfall bulk data / extract the card pool (see `docs/card-scripting.md`)
-- `pnpm dev` — the web app (from M2)
+- `pnpm dev` — the web app (from M3)
 - `node scripts/fetch-rules.mjs` — refresh `rules/` when Wizards publishes a new CR
 
 ## Don'ts

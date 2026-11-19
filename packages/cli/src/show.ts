@@ -16,7 +16,7 @@ import { manaText, objectText, targetText } from "./describe.ts";
 
 /**
  * Whether `viewer` may see the cards in `owner`'s hand. With no viewer (debug), everything shows. The one place the
- * CLI hides information; the engine's `playerView` (architecture.md) arrives with the AI that needs it (M2).
+ * CLI hides information; the engine's `playerView` (architecture.md) arrives with the AI that needs it (M3).
  */
 export function canSeeHand(viewer: PlayerId | null, owner: PlayerId): boolean {
   return viewer === null || viewer === owner;

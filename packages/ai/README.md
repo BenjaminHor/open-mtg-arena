@@ -1,6 +1,6 @@
 # @mtg/ai
 
-**Placeholder.** The computer opponent arrives in M2 (heuristics), and search comes later.
+**Placeholder.** The computer opponent arrives in M3 (heuristics), and search comes later.
 See "AI" in [`docs/architecture.md`](../../docs/architecture.md).
 
 It will take a `PlayerView` and the pending decision, and return an action. It never reads the full game state.

@@ -9,7 +9,7 @@ implemented, move it out of this file (or mark it done) in the same commit.
 
 ## Rules systems
 
-**Full layer system (CR 613), M3.** Copy effects (layer 1), control (2), text-changing (3), type (4),
+**Full layer system (CR 613), M2.** Copy effects (layer 1), control (2), text-changing (3), type (4),
 color (5), ability adding and removing (6), and power/toughness (7a–7d), with timestamps and dependencies.
 *Built (M1-11, D-038):* `characteristics()` composes one reader per layer; layer 7 has 7c. Adding a layer means adding
 its effects to the reader for that layer. Sorting within a sublayer by timestamp and dependency arrives with the first
@@ -24,7 +24,7 @@ database; an effect on a permanent spell carries over to the permanent it become
 never from raw object fields. Code that
 asks "is this a creature?", "who controls this?" or "does it have flying?" must go through it, even in M1.
 
-**Replacement and prevention effects (CR 614–616), M3.** "If a creature would die, exile it instead",
+**Replacement and prevention effects (CR 614–616), M2.** "If a creature would die, exile it instead",
 "prevent the next 3 damage", "enters tapped", "if you would draw a card, ...".
 *Needs now:* every game event (draw, damage, life change, zone change, counter placement, tapping) goes
 through the single propose → replace → perform → trigger pipeline. Nothing changes state directly
@@ -37,7 +37,7 @@ damage source's characteristics and controller as it dealt the damage (CR 120.3,
 store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
 spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.
 
-**Triggered abilities (CR 603), M3.** "When/whenever/at" abilities, including leaves-the-battlefield
+**Triggered abilities (CR 603), M2.** "When/whenever/at" abilities, including leaves-the-battlefield
 triggers that "look back in time" (CR 603.10), delayed triggers, and state triggers.
 *Needs now:* events carry enough information to match triggers later (for a zone change: the object as it
 last existed, both ids, from and to zones). Keep the last known information of objects that leave a zone.
@@ -136,8 +136,8 @@ per object, so `canSee` will take the object too. A partly known hand doesn't fi
 player's hand will need its known cards listed alongside `handSize`. The fuzzer's scramble (`scrambleHidden`) must
 learn to leave known cards alone.
 
-**What a view can compute (M2).** The UI and the AI get views, not states (D-044), but `characteristics()` reads a
-`GameState` (objects, the battlefield, effects, rule modifiers). Before M2 uses views, pick one: narrow
+**What a view can compute (M3).** The UI and the AI get views, not states (D-044), but `characteristics()` reads a
+`GameState` (objects, the battlefield, effects, rule modifiers). Before M3 uses views, pick one: narrow
 `characteristics()` and its helpers to an input type that both `GameState` and `PlayerView` satisfy (keep the view's
 field paths the same as the state's for that), or have the host send each visible permanent's characteristics with
 the view. Never let the UI read `baseController` or printed power and toughness directly.
@@ -200,11 +200,11 @@ mulligan count is the only thing that sets how many cards go to the bottom; open
 
 ## App and game features
 
-**AI search (M3+).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).
+**AI search (after M3).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).
 **Saves and replays across versions.** *Needs now:* `GameState.version` exists and replays record the engine version.
 **RPG encounters (M5).** *Needs now:* `GameSetup` supports custom starting life, starting permanents and rule
 modifiers; `GameResult` reports what the meta layer needs.
 **Deckbuilding and the full card database (M4).** *Needs now:* card identity uses Scryfall's `oracle_id`, so decks
 can refer to cards the engine doesn't support yet.
-**Animations and the board UI (M2).** *Needs now:* every visible change produces an event, with the `cardId` the UI
+**Animations and the board UI (M3).** *Needs now:* every visible change produces an event, with the `cardId` the UI
 uses to track a card between zones.

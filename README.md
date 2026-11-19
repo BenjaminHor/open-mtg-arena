@@ -17,7 +17,7 @@ rules text and art are the property of Wizards of the Coast. Card data comes fro
 | `docs/architecture.md` | The technical design and its invariants |
 | `docs/decisions.md` | Decisions made so far |
 | `docs/roadmap.md` | Milestones M1–M5 |
-| `docs/milestones/` | Detailed task lists for M1 and M2 |
+| `docs/milestones/` | Detailed task lists for the current and next milestones |
 | `docs/testing.md` | Scenario tests, the headless CLI, fuzzing, replays |
 | `docs/deckbuilding.md` | Card browser, deck editor and collection spec |
 | `docs/future-rules.md` | Rules and features still to come, and what today's code must not block |
@@ -45,7 +45,7 @@ rules text and art are the property of Wizards of the Coast. Card data comes fro
    Push this first commit to `main`. From then on, all changes go through pull requests.
    (GitHub's free plan has no branch protection for private repos, so this is enforced by `CLAUDE.md`, Claude Code's
    permissions and CI. If you have GitHub Pro, also add a branch protection rule on `main` requiring the CI check.)
-4. Before M2 (the web app), install PixiJS's official skills for Claude Code from the repo folder:
+4. Before M3 (the web app), install PixiJS's official skills for Claude Code from the repo folder:
    `npx skills add https://github.com/pixijs/pixijs-skills`. They keep Claude Code on current PixiJS v8 APIs.
 
 ## Working with Claude Code
@@ -61,6 +61,6 @@ After that, a good rhythm:
 - One task per session. Start a fresh session (or `/clear`) between tasks so each one begins from the docs.
 - Ask for a plan before code on anything big.
 - When a task is done, ask: "What should I check?" Claude can show a CLI game or the scenarios it added.
-- Report bugs in plain language, or attach the app's bug-report file from M2 on. Say "use the fix-bug skill".
+- Report bugs in plain language, or attach the app's bug-report file from M3 on. Say "use the fix-bug skill".
 - Add cards with "use the add-cards skill for: <card names>".
 - Every so often: "Review the repo against CLAUDE.md and the architecture doc, and tell me what's drifting."

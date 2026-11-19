@@ -78,6 +78,6 @@ The collection is the player's **in-game** collection only. Tracking real paper 
   `oracle-cards` bulk data (only the fields the app uses). It's downloaded on first run and stored in IndexedDB.
   Measure its size and keep it as small as reasonably possible.
 - Card images for browsing are fetched from Scryfall on demand when online and cached. Offline, uncached cards
-  show a clean text frame. Playable cards' images are downloaded up front (M2-08).
+  show a clean text frame. Playable cards' images are downloaded up front (M3-08).
 - Searching runs in a Web Worker so typing never stutters.
 - Decks and collection live in IndexedDB and are included in save export/import.

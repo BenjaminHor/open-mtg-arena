@@ -1,5 +1,5 @@
 // The prebuilt decks (docs/milestones/m1-engine-foundations.md, "Card pool"), by card name and count, as the spec
-// writes them. 40 cards each. The fuzzer, the CLI and the M2 app play with these.
+// writes them. 40 cards each. The fuzzer, the CLI and the M3 app play with these.
 
 import type { OracleId } from "@mtg/engine";
 import { POOL } from "../database.ts";
