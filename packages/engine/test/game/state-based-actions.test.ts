@@ -3,10 +3,17 @@
 // make them.
 
 import { describe, expect, it } from "vitest";
-import { applyAction, type CardObject, type GameState, legalActions, type ObjectId } from "../../src/index.ts";
+import {
+  type Action,
+  applyAction,
+  type CardObject,
+  type GameState,
+  legalActions,
+  type ObjectId,
+} from "../../src/index.ts";
 import { stateBasedActions } from "../../src/rules/state-based-actions.ts";
-import { HILL_GIANT, TEST_CARDS } from "../support/cards.ts";
-import { type Game, passBoth, playerSetup, start } from "../support/game.ts";
+import { BEARS, HILL_GIANT, SHOT_AND_BOOST, TEST_CARDS } from "../support/cards.ts";
+import { type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
 
@@ -95,5 +102,116 @@ describe("state-based actions in the cleanup step (CR 514.3a)", () => {
     const after = passBoth(g);
     expect(after.events.filter((e) => e.type === "STEP_BEGAN" && e.step === "cleanup")).toHaveLength(1);
     expect(after.state.turn).toMatchObject({ number: 4, activePlayer: "p2" });
+  });
+});
+
+describe("state-based actions are performed together (CR 704.3)", () => {
+  it("performs a lethal-damage and a 0-toughness action in one event", () => {
+    const g = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: ["forest"],
+          battlefield: [
+            { ...permanent(BEARS), damage: 2 },
+            { ...permanent(HILL_GIANT), counters: { "-1/-1": 3 } },
+          ],
+        }),
+        playerSetup("p2", { library: ["forest"] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const checks = g.events.filter((e) => e.type === "STATE_BASED_ACTIONS");
+    expect(checks).toHaveLength(1);
+    expect(checks[0]?.type === "STATE_BASED_ACTIONS" && checks[0].actions.map((a) => a.kind)).toStrictEqual([
+      "lethalDamage",
+      "zeroToughness",
+    ]);
+  });
+
+  it("aren't checked in the middle of a resolution (CR 704.4)", () => {
+    // Bears with 1 damage: Shot and Boost deals 1 (lethal for a 2/2), then gives +1/+1 (now 3/3). No check comes
+    // between the two effects, so the Bears survive.
+    const g = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], hand: [SHOT_AND_BOOST], battlefield: [permanent("mountain")] }),
+        playerSetup("p2", { library: ["forest"], battlefield: [{ ...permanent(BEARS), damage: 1 }] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const bears = g.state.zones.battlefield[1] as ObjectId;
+    let next = take(g, (a) => a.type === "CAST_SPELL");
+    const target = (a: Action) =>
+      a.type === "ANSWER" && a.answer.kind === "chooseTarget" && JSON.stringify(a.answer.target).includes(bears);
+    next = take(take(next, target), target);
+    while (next.state.pending?.kind === "payMana") {
+      next = take(next, (a) => (a.type === "ANSWER" && a.answer.kind === "payMana") || a.type === "ACTIVATE_ABILITY");
+    }
+    next = passBoth(next);
+    expect(next.state.zones.battlefield).toContain(bears);
+    expect(next.state.objects[bears]).toMatchObject({ damage: 2 });
+  });
+});
+
+describe("another cleanup step (CR 514.3a)", () => {
+  /** p1's end step, with a Hill Giant that will die in cleanup (see above) and a Mountain. */
+  function dyingInCleanup(): Game {
+    const g = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: ["forest", "forest"],
+          hand: ["shock"],
+          battlefield: [permanent(HILL_GIANT), permanent("mountain")],
+        }),
+        playerSetup("p2", { library: ["forest", "forest"] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "end" } },
+      ruleModifiers: [],
+    });
+    const giant = g.state.zones.battlefield[0] as ObjectId;
+    const state: GameState = {
+      ...edit(g.state, giant, { counters: { "-1/-1": 3 } }),
+      effects: [
+        {
+          source: giant,
+          controller: "p1",
+          timestamp: g.state.nextTimestamp,
+          duration: "endOfTurn",
+          affected: [giant],
+          change: { kind: "modifyPT", power: 3, toughness: 3 },
+        },
+      ],
+      nextTimestamp: g.state.nextTimestamp + 1,
+    };
+    return passBoth({ state, events: [] });
+  }
+
+  it("follows a spell cast while players had priority in cleanup", () => {
+    let g = dyingInCleanup();
+    g = take(g, (a) => a.type === "CAST_SPELL");
+    g = take(g, (a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget" && a.answer.target.kind === "player");
+    while (g.state.pending?.kind === "payMana") {
+      g = take(g, (a) => (a.type === "ANSWER" && a.answer.kind === "payMana") || a.type === "ACTIVATE_ABILITY");
+    }
+    g = passBoth(g); // Shock resolves; p1 gets priority again in the same cleanup step
+    expect(g.state.turn).toMatchObject({ number: 3, step: "cleanup" });
+    g = passBoth(g);
+    expect(g.events.filter((e) => e.type === "STEP_BEGAN" && e.step === "cleanup")).toHaveLength(2);
+    expect(g.state.turn).toMatchObject({ number: 4 });
+  });
+
+  it("empties mana pools before it begins (CR 500.5)", () => {
+    let g = dyingInCleanup();
+    g = take(g, (a) => a.type === "ACTIVATE_ABILITY");
+    expect(g.state.players.p1?.manaPool.R).toBe(1);
+    const before = g.events.length;
+    g = passBoth(g);
+    const types = g.events.slice(before).map((e) => (e.type === "STEP_BEGAN" ? `STEP_BEGAN ${e.step}` : e.type));
+    expect(types.indexOf("MANA_EMPTIED")).toBeLessThan(types.indexOf("STEP_BEGAN cleanup"));
+    expect(types).toContain("MANA_EMPTIED");
   });
 });

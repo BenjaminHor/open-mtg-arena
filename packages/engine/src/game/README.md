@@ -9,13 +9,13 @@ The engine's entry points and the flow of a game.
 | `pregame.ts` | The start of a standard game (CR 103): starting player, shuffles, opening hands, mulligans |
 | `first-turn.ts` | Turn 1 begins for the starting player (CR 103.8) |
 | `turn-steps.ts` | `TURN_STEPS`: the turn sequence as data (CR 500.1) |
-| `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031) |
+| `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031); the cleanup step's check and another cleanup step (CR 514.3a) |
 | `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
 | `resolve.ts` | `resolveTopOfStack()` checks targets (CR 608.2b) and queues a resolution's steps: its effects (`effects/`), then `finishResolving()`, the final part (CR 608) |
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
 | `cast.ts` | Casting a spell as decisions (CR 601.2): `castProblem`, `startCast`, targets, paying, cancelling (D-035) |
-| `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves or the step ends (CR 117.3d, 117.4) |
+| `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves, the step ends, or another cleanup step begins (CR 117.3d, 117.4, 514.3a) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |

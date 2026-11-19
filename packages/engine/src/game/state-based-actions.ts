@@ -22,12 +22,25 @@ export function checkStateBasedActions(state: GameState, cards: CardDatabase): P
   let progress: Progress = { state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] };
   // Cards that go to a graveyard together go in battlefield order (D-039; CR 404.3 lets the owner choose).
   for (const action of actions) progress = andThen(progress, (s) => performOnObject(s, action));
-  const losses = actions.flatMap((a): Loss[] =>
-    a.kind === "zeroLife" || a.kind === "drewFromEmptyLibrary" ? [{ player: a.player, reason: a.kind }] : [],
-  );
+  const losses = actions.flatMap((a): Loss[] => {
+    const loss = lossFrom(a);
+    return loss === null ? [] : [loss];
+  });
   // A player who loses for two reasons at once loses once, for the first reason listed.
   const once = losses.filter((l, i) => losses.findIndex((m) => m.player === l.player) === i);
   return { ...andThen(progress, (s) => playersLose(s, once)), performed: true };
+}
+
+/** Whether this state-based action makes a player lose, and why (CR 104.3). Exhaustive, so a new one must say. */
+function lossFrom(action: StateBasedAction): Loss | null {
+  switch (action.kind) {
+    case "zeroLife":
+    case "drewFromEmptyLibrary":
+      return { player: action.player, reason: action.kind };
+    case "zeroToughness":
+    case "lethalDamage":
+      return null;
+  }
 }
 
 function performOnObject(state: GameState, action: StateBasedAction): Progress {

@@ -89,10 +89,11 @@ battlefield order. `p1` and `p2` alone mean players.
 names an illegal action fails the scenario, unless the next step is `expect error`.
 - `p1 pass: once`: p1 passes priority.
 - `all pass: once`: each player passes once, in turn, starting with whoever has priority. Passing stops early if the
-  game ends; `all pass: until <step>` too.
-- `all pass: until <step>`: players keep passing until that step next begins and someone has priority in it. It fails
-  (rather than hanging) if a decision other than priority comes up, or the step doesn't come within 500 passes (for
-  example `untap`, which gives no one priority).
+  game ends.
+- `all pass: until <step>`: players keep passing until that step next begins and someone has priority in it, or the
+  game ends in that step before anyone does (a player who loses drawing from an empty library). It fails (rather than
+  hanging) if a decision other than priority comes up, the game ends before that step begins, or the step doesn't come
+  with priority within 500 passes (`untap`, which gives no one priority, never does).
 - `p1 choose: <answer>` for the pending decision: `keep` or `mulligan`; a player (`p2`) for who goes first; a card name
   for a card to put on the bottom or discard (with several identical cards, the first one that's still a legal answer);
   a target (`p2`, `p2:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while

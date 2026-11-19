@@ -8,7 +8,7 @@ import type { WorkItem } from "../state/work.ts";
 import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { doesNotResolve, finishResolving, resolveTopOfStack } from "./resolve.ts";
-import { anotherCleanupStep, cleanupStateBasedActions, endStep, finishCleanup } from "./steps.ts";
+import { anotherCleanupStep, cleanupCheck, endStep, finishCleanup } from "./steps.ts";
 
 export function advance(progress: Progress, cards: CardDatabase): Progress {
   let current = progress;
@@ -36,8 +36,8 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       return finishResolving(state, item.object, cards);
     case "doesNotResolve":
       return doesNotResolve(state, item.object);
-    case "cleanupStateBasedActions":
-      return cleanupStateBasedActions(state, cards);
+    case "cleanupCheck":
+      return cleanupCheck(state, cards);
     case "anotherCleanupStep":
       return anotherCleanupStep(state);
     case "finishCleanup":

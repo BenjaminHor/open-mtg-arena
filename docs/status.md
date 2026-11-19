@@ -38,7 +38,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Casting, playing a land and activating a mana ability reset `passesInSuccession` (CR 117.4); M1-14's activated
   abilities must too.
 - State-based actions (D-039) run in `givePriority` and the cleanup step's check, never between work items. A new SBA
-  is one case in `rules/state-based-actions.ts` and one in `game/state-based-actions.ts`. One that needs a choice
+  is one case in `rules/state-based-actions.ts` and two in `game/state-based-actions.ts` (`lossFrom`,
+  `performOnObject`). The repeat of the check (CR 704.3) has no test: nothing in the pool makes one SBA cause another.
+  The first card that can (an anthem, a lord) should add one. One that needs a choice
   (the legend rule, CR 704.5j) can wait for it, since a performed check re-queues `givePriority`.
 - For M1-13: combat damage goes through `dealDamage` as one list (CR 510.2); add a `combat` flag to `Damage` and
   `DAMAGE_DEALT` (CR 120.2a) for "deals combat damage" triggers and prevention.
@@ -116,7 +118,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 - M1-12 State-based actions: CR 704.5a/b/f/g listed as data and performed together (CR 704.3), checked before every
   priority (CR 117.5) and in cleanup with another cleanup step when any happen (CR 514.3a); destroy (CR 701.8);
-  players losing and the game ending with a winner or a draw (CR 104.2a, 104.4a); the runner's `winner`; 9 SBA
+  players losing and the game ending with a winner or a draw (CR 104.2a, 104.4a); the runner's `winner`; 8 SBA
   scenarios and the CR 608.2b scenario (D-039) (2026-11-19).
 
 ## Open questions for the owner

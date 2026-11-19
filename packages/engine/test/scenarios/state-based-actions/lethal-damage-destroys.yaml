@@ -1,14 +1,14 @@
-name: A creature with damage at least its toughness is destroyed and goes to its owner's graveyard
+name: A creature with damage equal to its toughness is destroyed and goes to its owner's graveyard
 rules: [CR 704.5g, CR 701.8a, CR 120.6]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    hand: [Lightning Bolt]
+    hand: [Shock]
     battlefield: [Mountain]
   p2:
     battlefield: [Grizzly Bears, Giant Spider]
 steps:
-  - p1 cast: Lightning Bolt
+  - p1 cast: Shock
     targets: [p2:Grizzly Bears]
     pay: auto
   - all pass: once
