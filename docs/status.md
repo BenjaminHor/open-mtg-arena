@@ -7,18 +7,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1 exit: close the coverage gaps (2026-11-19). The owner decided (D-050): a scenario or a unit test counts, and real
-  behavior holes get scenarios. Behavior gaps, with scenarios: the casting steps (CR 601.2a–i), attack restrictions
-  (CR 508.1b–d), priority after a land or a draw (CR 116.3, 504.2), the steps' priority (CR 507.2, 508.2, 510.3), and
-  the rules-judge's suggestions (CR 117.3b after a resolution, the game ending with spells on the stack, a tapped
-  blocker still dealing damage across three blockers). Add a rule to a scenario's `rules:` only when the scenario
-  really checks it. Then the rest: type-definition notes (a unit test, or a rewording if the note isn't a rule the
-  code follows) until `pnpm coverage:rules` shows no gaps.
-  - Done: 0 gaps (240 cited: 173 by scenarios, 67 only by unit tests; 49 mentions marked `later:`). New scenarios: a
-    whole turn step by step, paying taps lands for the total cost, a land keeps priority, the game ends with a spell
-    still on the stack, priority after a resolution, a tapped blocker still deals damage across three blockers. New
-    unit tests: the CR's definitions (`engine/test/state/definitions.test.ts`), deck setups. A test now fails on a
-    citation split across lines (one had silently dropped CR 608.2b and 510.1c). Next: reviews, then the PR.
+- M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
+  casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
+  (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (including whether to
+  keep M2 before M3; the owner asked when the remaining rules come: M3 "Rules depth", per roadmap.md), then tag `m1`.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -153,6 +145,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-17 Headless CLI: `new`, `show`, `actions`, `do`, `ai`, `auto`, `log`, `inspect`, `export --scenario`, `replay`;
   the game file (setup + actions, cached state); `first-legal` and `random` agents; the prebuilt decks; exported games
   pass as scenarios (D-043) (2026-11-19).
+- M1 coverage gaps closed (D-050: a scenario or a unit test counts): 242 rules cited, 174 tested by scenarios, 68
+  only by unit tests, 0 gaps, 50 mentions marked `later:`. New scenarios for the turn's steps, paying, land plays,
+  the game ending mid-stack, priority after a resolution and tapped blockers; unit tests for the CR's definitions
+  (2026-11-19).
 - M1-19 Golden games, coverage report and benchmarks: four golden games with readable logs (D-047), `pnpm
   coverage:rules` with its check in `pnpm check` and the interaction matrix (D-048), `pnpm bench` against a baseline
   (D-049). Accepted: doubled mana shows in the golden diff; removing a scenario fails the coverage check; a slowdown
