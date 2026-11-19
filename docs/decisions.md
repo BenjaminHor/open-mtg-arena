@@ -627,3 +627,9 @@ every schema change and every change D-024 lists bumps it.
   losing its last scenario while a unit test still covers it is allowed (D-050) but needs `--accept-scenario-loss`.
 - The check can only see cited rules, so citing is part of the requirement, and reviews (rules-judge, code-reviewer)
   look for implemented behavior without a citation. A rule that's mentioned but not built is written `later: CR …`.
+
+**D-053: M2's pool is Magic 2010, planeswalkers included** · 2026-11-19 · accepted (owner)
+- The owner chose Magic 2010 (M10) for M2's card pool, and planeswalkers in M2, both as recommended. M10 brought in
+  the modern rules (combat damage off the stack), holds Lightning Bolt and many M1 cards, and covers the core systems
+  M2 builds. Each M10 card joins the pool only when it's fully scripted and tested; cards whose rules are out of scope
+  (multiplayer or variants, D-051) are listed in `docs/milestones/m2-pool.md` and left out.

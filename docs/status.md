@@ -10,8 +10,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 - M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
   casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
   (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (M2 is now rules depth,
-  D-051; the draft is `docs/milestones/m2-rules-depth.md`, with two open questions: which set, and planeswalkers in M2),
-  then tag `m1`.
+  D-051; `docs/milestones/m2-rules-depth.md`; the owner chose Magic 2010 with planeswalkers, D-053), then tag `m1`.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -80,8 +79,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- The rest of the M1 exit criteria, with the owner: the coverage question, following a CLI game log and spot-checking
-  scenarios, and reviewing the M2 spec (rules depth, `docs/milestones/m2-rules-depth.md`). Then the owner tags `m1`.
+- After the owner tags `m1`: M2 rules depth (`docs/milestones/m2-rules-depth.md`), starting with M2-01 (the
+  hidden-information fix) and M2-02 (the Magic 2010 pool and its mechanics map).
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).

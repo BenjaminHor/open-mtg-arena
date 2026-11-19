@@ -5,7 +5,7 @@ every card touches (triggered abilities, replacement and prevention effects, the
 costs, counters, tokens, auras and equipment) and the evergreen keywords, each proven by the cards that use them. Still
 headless: the owner playtests through the CLI. The web app and the AI come in M3 (D-051).
 
-**Draft for review with the owner** (M1 exit criterion). Open questions are at the end.
+Reviewed with the owner as an M1 exit criterion; decisions at the end.
 
 Every task ends with `pnpm check` green, `docs/status.md` updated, and **every rule it implements cited where it's
 implemented and backed by a scenario or a unit test** (D-052; the coverage check allows no gaps). Rules come with the
@@ -22,7 +22,7 @@ use (they come with later sets).
 
 ## Card pool
 
-One classic core set (open question 1). Each card is in the pool only when it's fully scripted and tested. The pool's
+Magic 2010 (M10), decided with the owner (D-053). Each card is in the pool only when it's fully scripted and tested. The pool's
 cards drive which rules are built, so the first task maps every card to the mechanics it needs.
 
 ## Tasks
@@ -90,7 +90,7 @@ filled in for every pair.
 CR 702.16), counter, destroy, exile, sacrifice, discard, mill, scry, regenerate, and whatever else M2-02 lists.
 *Accept:* scenarios per keyword, interaction matrix updated.
 
-**M2-13 Planeswalkers, if the set has them (CR 306, 606, 704.5i).** Loyalty abilities once per turn at sorcery speed,
+**M2-13 Planeswalkers (CR 306, 606, 704.5i).** M10 has five. Loyalty abilities once per turn at sorcery speed,
 damage to planeswalkers, attacking a planeswalker (several possible defenders, CR 508.1b). *Accept:* scenarios for
 activating, attacking, and a planeswalker with no loyalty.
 
@@ -112,12 +112,9 @@ owner, chapter by chapter, of which rules the engine implements and tests. *Acce
 - The owner has played and spot-checked games through the CLI, and the M3 spec has been revised for the new pool and
   reviewed with the owner.
 
-## Open questions for the owner
+## Decided with the owner
 
-1. **Which set?** Recommended: **Magic 2010** (M10). It's the classic core set that brought in the modern rules
-   (combat damage no longer uses the stack), it already holds this pool's Lightning Bolt and many M1 cards, and it
-   covers the core systems: triggers, auras, equipment, tokens, counters, regeneration, planeswalkers, X spells,
-   counterspells, and most evergreen keywords. Alternatives: Core Set 2021 (modern templates, similar mechanics), or
-   Tenth Edition (no planeswalkers, older templates).
-2. **Planeswalkers in M2 or later?** They need several defenders in combat and loyalty abilities. Recommended: in M2
-   if the set has them, since the goal is the full two-player rules.
+1. **The set is Magic 2010 (M10)** (D-053): the classic core set that brought in the modern rules (combat damage no
+   longer uses the stack). It already holds Lightning Bolt and many M1 cards, and covers triggers, auras, equipment,
+   tokens, counters, regeneration, planeswalkers, X spells, counterspells and most evergreen keywords.
+2. **Planeswalkers are in M2** (D-053), since the goal is every two-player rule.
