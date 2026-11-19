@@ -65,3 +65,5 @@ export { type Phase, phaseOf, type Step, type Turn } from "./state/turn.ts";
 export type { WorkItem } from "./state/work.ts";
 export type { PlayerZoneName, SharedZoneName, ZoneName, ZoneRef, Zones } from "./state/zones.ts";
 export { ENGINE_VERSION } from "./version.ts";
+export { eventsFor, type ViewEvent } from "./view/events-for.ts";
+export { type PlayerView, playerView, type ViewZones } from "./view/player-view.ts";

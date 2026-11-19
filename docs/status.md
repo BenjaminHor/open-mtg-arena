@@ -7,7 +7,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-18 Fuzzer and replays (plan, 2026-11-19). docs/testing.md sections 3 and 4.
+- M1-18 Fuzzer and replays (plan, 2026-11-19). docs/testing.md sections 3 and 4. In two PRs: the view first (done,
+  D-044), then the fuzzer and replays.
   - `playerView(state, viewer)` and `eventsFor(events, viewer)` in a new engine folder `view/`: other players' hands
     and every library become hidden objects (no oracle id or card id, which would let a card be tracked after a
     shuffle), and `rng` is left out (CR 701.24a: no one knows a library's order). Events that would reveal a hidden card

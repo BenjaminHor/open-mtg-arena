@@ -122,6 +122,10 @@ division names the player too, one blocker asks too, and earlier lethal damage c
 record of which creatures already dealt damage. A creature blocking several attackers needs a list form for the
 scenario `block` step.
 
+**Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708), revealed cards, looking at
+the top of a library (scry), and cards a player may see in another's hand all change what `playerView` shows: each
+is a new case there and in `eventsFor`, and the scramble test must learn to leave them alone.
+
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 *Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
 the player from `turnOrder` (or mark them) so they can't concede twice, and pass priority on if they had it (CR 800.4a).

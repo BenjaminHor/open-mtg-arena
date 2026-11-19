@@ -172,13 +172,13 @@ simple.
 
 ## Hidden information and randomness
 
-- Events can carry hidden information too (a drawn card), so the match host filters them per player before they
-  reach the UI or AI, the same way `playerView` filters state.
+- Events can carry hidden information too (a drawn card), so the match host filters them per player with
+  `eventsFor(events, p)` before they reach the UI or AI, the same way `playerView` filters state (D-044).
 - `GameState.rng` predicts every future shuffle, so `playerView` must leave it out too (CR 701.24a: no player knows
   a library's order).
-- `playerView(state, p)` replaces hidden objects (opponent's hand, libraries, face-down cards)
-  with placeholders and keeps only counts and public facts. The AI and the UI get views only.
-  Tests and the CLI's debug mode can see full state.
+- `playerView(state, p)` leaves out hidden objects (other players' hands, libraries; face-down cards later) and keeps
+  only counts and public facts; it also leaves out the setup (its seed and decklists) and the engine's internals. The
+  AI and the UI get views only. Tests and the CLI's debug mode can see full state.
 - All randomness (shuffles, coin flips, random choices) comes from `state.rng`, a small seeded
   PRNG implemented in the engine. The same setup and the same actions always give the same game.
 

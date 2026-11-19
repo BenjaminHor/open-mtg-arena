@@ -480,3 +480,16 @@ every schema change and every change D-024 lists bumps it.
   the very same state (a test checks six), and `export` runs the scenario before printing it. `layerSevenCChanges` (engine) explains power and toughness for `inspect`, from the same code that
   computes them.
 
+**D-044: Player views and event filtering** · 2026-11-19 · accepted
+- `playerView(state, viewer)` (`engine/src/view/`) is what a player may know: objects in public zones and the viewer's
+  own hand (CR 400.2, 402.3); other hands and every library only as counts (CR 401.3); no RNG state, setup, work
+  queue or id counters. Libraries are counts, not hidden objects in order: a shuffle keeps object ids, so an ordered
+  id list would let a player follow a card they had seen through a shuffle (CR 401.2, 701.24a). Another player's
+  pending decision shows only who must decide what.
+- `eventsFor(events, viewer)` replaces an event that would reveal a hidden card with `HIDDEN_CARD_DRAWN` or
+  `HIDDEN_CARD_MOVED`. It's an exhaustive switch, so each new event decides what it reveals.
+- "Leaks nothing" is tested as a property: scrambling everything the viewer can't see (hidden cards' identities,
+  library order, seed, RNG) must leave the view unchanged. The fuzzer checks it on every state.
+- The CLI's `show --as` stays a display filter (`canSeeHand`): the board text needs `characteristics()`, which reads
+  the full state. Hosts and the AI (M2) use the engine's view.
+
