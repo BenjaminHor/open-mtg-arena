@@ -2,7 +2,7 @@
 // and doesn't know where it came from (packages/cards builds it from Scryfall's Oracle data).
 //
 // This is a first draft (M1-04). The effect, cost and ability shapes will be reshaped by the tasks that
-// interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities), see D-026.
+// interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities, D-041), see D-026.
 
 import type { Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";

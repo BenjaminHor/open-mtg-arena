@@ -1,0 +1,27 @@
+name: Firebreathing goes on the stack each time, and each resolution adds +1/+0
+rules: [CR 602.2, CR 602.2a, CR 405.1, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Furnace Whelp]
+steps:
+  - p1 activate: Furnace Whelp
+    pay: auto
+  - expect:
+      stack: [Furnace Whelp ability]
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: ABILITY_ACTIVATED, player: p1 }]
+  - p1 activate: Furnace Whelp
+    pay: auto
+  - p1 activate: Furnace Whelp
+    pay: auto
+  - expect:
+      stack: [Furnace Whelp ability, Furnace Whelp ability, Furnace Whelp ability]
+      p1:Furnace Whelp.power: 2
+  - all pass: once
+  - all pass: once
+  - all pass: once
+  - expect:
+      stack: []
+      p1:Furnace Whelp.power: 5
+      p1:Furnace Whelp.toughness: 2

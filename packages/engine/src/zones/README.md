@@ -8,6 +8,8 @@ effects, triggers, CR 614 and 603) have one place to hook in.
 - `draw.ts`: `drawCard`, `drawCards` (CR 121). Drawing from an empty library records the attempt (CR 121.4).
 - `discard.ts`: `discardCards` (CR 701.9): discards them as one action, emitting `CARD_DISCARDED` for each.
 - `shuffle.ts`: `shuffleLibrary`, a Fisher–Yates shuffle from the game's seeded RNG (CR 701.24).
+- `stack-abilities.ts`: `putAbilityOnStack` (CR 602.2a) and `removeAbilityFromStack`: an ability isn't a card, so it
+  doesn't change zones; it's created on the stack and ceases to exist (CR 608.2n, 608.2b).
 - `zone-list.ts`: read or replace one zone's list, and find which zone an object is in.
 
 Tests: through `test/game/start.test.ts` (draws, shuffles and moving cards to the bottom).

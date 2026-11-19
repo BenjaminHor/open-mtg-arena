@@ -1,0 +1,26 @@
+name: An activated ability resolves even after its source has died, but the bonus has nothing to apply to
+rules: [CR 113.7a, CR 400.7, CR 101.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Furnace Whelp]
+  p2:
+    hand: [Shock]
+    battlefield: [Mountain]
+steps:
+  - p1 activate: Furnace Whelp
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Furnace Whelp]
+    pay: auto
+  - expect:
+      stack: [Furnace Whelp ability, Shock]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Furnace Whelp]
+      stack: [Furnace Whelp ability]
+  - all pass: once
+  - expect:
+      stack: []
+      events contains: [{ type: ABILITY_RESOLVED, controller: p1 }]

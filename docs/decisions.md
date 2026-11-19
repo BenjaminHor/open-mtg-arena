@@ -299,7 +299,7 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   plugs in (M1-13); it applies only to creatures.
 - A player with priority activates a mana ability with `ACTIVATE_ABILITY`: it doesn't use the stack and resolves at once
   (CR 605.3b), the player keeps priority (CR 117.3c) and the pass count restarts (CR 117.4). Other activated abilities
-  are rejected until M1-14.
+  use the stack (D-041).
 - Which mana pays a cost is the player's choice (CR 601.2h), so a payment is data: how much of each mana type to spend.
   `payFromPool` checks it all or nothing (colored symbols need their color, generic takes any, no partial payment).
 - `autoPay(state, player, cost, cards)` proposes a payment: mana abilities to activate, then the payment. It uses pool
@@ -308,7 +308,7 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   every small board); sources with a choice of colors will need a search. The scenario runner (`pay: auto`), the CLI and
   the AI use it. The engine exports it with `payFromPool`, `manaValue`, `abilitiesOf` and `isManaAbility` (D-023).
 - Activation is split in three (`mana/activate.ts`): `activationProblem` (checks any activated ability needs: zone,
-  controller, payable costs), `manaAbilityProblem` (that, plus it's a mana ability whose effects are all supported), and
+  controller, payable costs; renamed `activationBasicsProblem` in M1-14, with mana now paid during activation, D-041), `manaAbilityProblem` (that, plus it's a mana ability whose effects are all supported), and
   `resolveManaAbility` (pays and adds the mana, with no priority change, so casting can use it while a cost is being
   paid, CR 605.3a, 601.2g). The priority action `activateManaAbility` wraps it. Unsupported costs and effects are
   refused, never skipped. `MANA_ADDED` names its source (CR 106.12).
@@ -428,4 +428,22 @@ every schema change and every change D-024 lists bumps it.
 - Not built: attacking planeswalkers or battles, several defending players, first and double strike (a second combat
   damage step, CR 510.4), a blocker blocking several attackers. The data shapes (a defender per attack, blocks as
   pairs) leave room for each.
+
+**D-041: Activated abilities share the casting procedure** · 2026-11-19 · accepted
+- Activating a non-mana ability follows the casting steps (CR 602.2b, 601.2b–i), so both run through
+  `game/casting-steps.ts`: targets, then paying, then becoming cast or activated, or cancelling. `GameState.casting`
+  records the origin (a card from hand, or an ability of a permanent) and the decisions name the `object` being put on
+  the stack (was `spell`). `cast.ts` and `activate-ability.ts` each only check that the action can begin and start it.
+- The ability is created on the stack as an `AbilityObject` (CR 602.2a, `zones/stack-abilities.ts`) and its text is read
+  from its source's card (`sourceOracleId` + ref), never from the source, which may be gone by resolution (CR 113.7a).
+  "This" in its effects is the source; an effect on a source that has left does nothing (CR 101.3, 400.7). Nothing in
+  the pool reads information from a gone source yet, so no last-known-information store is built (future-rules.md).
+- Who and when: the source's controller (CR 602.2), any time they have priority (CR 113.3b), no summoning sickness
+  without {T} (CR 302.6). Like casting (D-035), activation is offered without a payability check, and cancelling is
+  Arena-style undo: the ability ceases to exist, the pool and mana sources are restored (`ACTIVATION_CANCELLED`), and
+  since nothing was done, the passes don't restart. A completed activation restarts them and the activator gets
+  priority (CR 117.3c, 117.4); `ABILITY_ACTIVATED` reports it.
+- Only mana in activation costs so far: a non-mana ability with {T} in its cost is refused until a card has one. A mana
+  ability with mana in its cost is refused too (it would need a payment while resolving at once).
+- Cost functions live in `rules/costs.ts` (`totalCost`, `activationManaCost`), the one place cost changes will go.
 

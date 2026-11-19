@@ -13,6 +13,7 @@ import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
+import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
@@ -66,7 +67,7 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
     }
     case "chooseTarget": {
       const casting = state.casting;
-      const spec = casting === null ? undefined : targetSpecsOf(state, casting.spell, cards)[pending.instance];
+      const spec = casting === null ? undefined : targetSpecsOf(state, casting.object, cards)[pending.instance];
       if (spec === undefined) return [];
       const targets = legalTargets(state, spec, cards).map(
         (target): Action => ({ ...answer, answer: { kind: "chooseTarget", target } }),
@@ -88,12 +89,12 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
       return [...pay, cancel, ...manaAbilityActions(state, player, pending.id, cards)];
     }
     case "priority":
-      // Other activated abilities arrive in M1-14.
       return [
         { type: "PASS_PRIORITY", decisionId: pending.id, player },
         ...landActions(state, player, pending.id, cards),
         ...castActions(state, player, pending.id, cards),
         ...manaAbilityActions(state, player, pending.id, cards),
+        ...activationActions(state, player, pending.id, cards),
       ];
   }
 }
@@ -103,6 +104,15 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
   return state.zones.battlefield.flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
+      .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),
+  );
+}
+
+/** Every other activated ability the player could begin activating now (CR 602.2), in battlefield order. */
+function activationActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
+  return state.zones.battlefield.flatMap((object) =>
+    abilitiesOf(state, object, cards)
+      .filter(({ ref, def }) => !isManaAbility(def) && activationProblem(state, player, object, ref, cards) === null)
       .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),
   );
 }

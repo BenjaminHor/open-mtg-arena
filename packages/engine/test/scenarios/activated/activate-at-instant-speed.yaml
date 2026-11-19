@@ -1,0 +1,13 @@
+name: An activated ability can be activated whenever its controller has priority, even on another player's turn
+rules: [CR 113.3b, CR 602.2]
+setup:
+  turn: { active: p1, step: upkeep }
+  p2:
+    battlefield: [Mountain, Furnace Whelp]
+steps:
+  - p1 pass: once
+  - p2 activate: Furnace Whelp
+    pay: auto
+  - expect:
+      stack: [Furnace Whelp ability]
+      pending: { player: p2, kind: priority }

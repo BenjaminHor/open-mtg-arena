@@ -42,8 +42,9 @@ triggers that "look back in time" (CR 603.10), delayed triggers, and state trigg
 *Needs now:* events carry enough information to match triggers later (for a zone change: the object as it
 last existed, both ids, from and to zones). Keep the last known information of objects that leave a zone.
 Events aren't state, so last known information (CR 608.2h, 603.10) needs its own store in `GameState`, added by
-the first task that resolves an effect whose source may be gone (M1-14: firebreathing after the Whelp dies).
-Abilities on the stack carry `sourceOracleId` + `abilityIndex`; granted abilities (layer 6) and delayed triggers
+the first effect that reads information from an object that may be gone (its power, its controller, lifelink on a
+damage source). Firebreathing after the Whelp dies reads nothing from it, so M1-14 didn't need one (D-041).
+Abilities on the stack carry `sourceOracleId` + `ability: AbilityRef`; granted abilities (layer 6) and delayed triggers
 (CR 603.7) will need another kind of reference.
 
 **Continuous effects from static abilities (CR 604, 611).** "Other creatures you control get +1/+1", "can't attack".
@@ -98,6 +99,17 @@ with two combat phases or two upkeeps can't be represented yet. That needs a per
 so leaves-the-battlefield triggers (CR 603.10a) must look back at the state before the whole `STATE_BASED_ACTIONS`
 group, not after each move. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
 owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
+
+**Triggered abilities and the casting steps (CR 603, D-041).** A triggered ability's targets are chosen as it's put on
+the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
+`casting-steps.ts` will need an origin kind with no payment step and no cancel. Once `def.abilities` holds triggered or
+static definitions, `activationProblem` and the activation list must check `def.kind === "activated"`.
+When a non-mana ability has {T} in its cost, cancelling it must untap its source too (`tappedForMana` records only taps
+for mana). The activation events name the source by its id, which dies with the source; a UI that names it later will
+want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
+*Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`
+reads it from the source's card each time. Copies (layer 1), text changes (layer 3) and granted abilities (layer 6) will
+need the text fixed when it's activated.
 
 **More combat (CR 506–511, D-040).**
 *Watch out:* removal from combat is read from the battlefield (an id that's gone left combat). That can't represent

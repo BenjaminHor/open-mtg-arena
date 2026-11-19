@@ -112,8 +112,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `p1 activate: <card>`: activate an ability of a permanent. A plain name means one the acting player controls (the
   first, in battlefield order, whose ability can be activated now; before an `expect error`, simply the first); a reference like `p2:Mountain` names exactly one, for
   example to show p1 can't activate p2's land. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
-  them (printed abilities, then a basic land's mana ability), when the permanent has more than one. Only mana
-  abilities can be activated so far; other activated abilities arrive in M1-14.
+  them (printed abilities, then a basic land's mana ability), when the permanent has more than one. A mana ability
+  resolves at once. Any other ability goes on the stack and takes `targets` and `pay` exactly as `cast` does (without
+  `pay`, it stops at the payment decision). On the stack it's named after its source: `stack: [Furnace Whelp ability]`.
 - `p1 attack: [Grizzly Bears, Hill Giant]`: declare attackers (CR 508.1), each creature by name or reference among
   p1's (`Grizzly Bears#2` for the second), each attacking the other player; `[]` declares none. It answers one
   `declareAttackers` decision per creature, then finishes.
@@ -126,7 +127,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - Passing through combat (`all pass`) declares no attackers and no blockers when asked, the "do nothing" answer;
   `all pass: until combat.declareAttackers` (or `.declareBlockers`, `.damage`) stops there when that step's own decision
   is pending. A division of damage has no "do nothing", so it stops `all pass` with an error.
-- `activate` gains `targets` and `pay` in M1-14, and `cast` gains `modes` and `x` with the first card that has them.
+- `cast` and `activate` gain `modes` and `x` with the first card that has them.
 
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).

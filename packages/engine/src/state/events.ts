@@ -61,6 +61,12 @@ export type GameEvent =
       restored: ObjectId;
       untapped: ObjectId[];
     }
+  /** An activated ability was put on the stack, with its targets chosen and costs paid (CR 602.2b, 601.2i). */
+  | { type: "ABILITY_ACTIVATED"; player: PlayerId; object: ObjectId; source: ObjectId }
+  /** The player cancelled an activation (D-035): the ability ceased to exist and `untapped` untapped (CR 734.1). */
+  | { type: "ACTIVATION_CANCELLED"; player: PlayerId; object: ObjectId; source: ObjectId; untapped: ObjectId[] }
+  /** Every target was illegal, so the ability didn't resolve and was removed from the stack (CR 608.2b). */
+  | { type: "ABILITY_DID_NOT_RESOLVE"; object: ObjectId; source: ObjectId }
   /** Every target was illegal, so the spell didn't resolve (CR 608.2b); it goes to its owner's graveyard. */
   | { type: "SPELL_DID_NOT_RESOLVE"; object: ObjectId; cardId: CardId }
   /** A spell resolved (CR 608.1). Its card then moves to the battlefield or a graveyard (`ZONE_CHANGED`). */

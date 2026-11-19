@@ -1,12 +1,13 @@
-// Priority and the stack (CR 117, 405, 608). Casting arrives in M1-09, so these tests put spells and abilities on the
-// stack directly; the M1-09 scenarios cast them for real.
+// Priority and the stack (CR 117, 405, 608). These tests put spells and abilities on the stack directly, to look at the
+// stack itself; the casting and activated-ability scenarios put them there for real.
 
 import { describe, expect, it } from "vitest";
 import { advance } from "../../src/game/advance.ts";
 import { waitFor } from "../../src/game/decide.ts";
 import { queueWork } from "../../src/game/work.ts";
-import type { AbilityObject, GameState, ObjectId, PlayerId } from "../../src/index.ts";
+import type { GameState, ObjectId, PlayerId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
+import { putAbilityOnStack } from "../../src/zones/stack-abilities.ts";
 import { TEST_CARDS } from "../support/cards.ts";
 import { act, type Game, playerSetup, start } from "../support/game.ts";
 
@@ -32,30 +33,13 @@ function putSpell(game: Game, player: PlayerId, index: number): Game {
   return { state: moved.state, events: game.events };
 }
 
-/** Puts an activated ability of `source` on the stack, as if `player` had activated it. */
+/**
+ * Puts Furnace Whelp's firebreathing on the stack, as if `player` had activated it from `source`. (The source here is
+ * whatever permanent the test has; the ability's text comes from the Whelp's card, `sourceOracleId`.)
+ */
 function putAbility(game: Game, player: PlayerId, source: ObjectId): Game {
-  const s = game.state;
-  const id = `o${s.nextId}` as const;
-  const ability: AbilityObject = {
-    kind: "ability",
-    id,
-    source,
-    sourceOracleId: "grizzly-bears",
-    ability: { kind: "printed", index: 0 },
-    baseController: player,
-    timestamp: s.nextTimestamp,
-    choices: { modes: [], x: null, targets: [] },
-  };
-  return {
-    state: {
-      ...s,
-      nextId: s.nextId + 1,
-      nextTimestamp: s.nextTimestamp + 1,
-      objects: { ...s.objects, [id]: ability },
-      zones: { ...s.zones, stack: [...s.zones.stack, id] },
-    },
-    events: game.events,
-  };
+  const put = putAbilityOnStack(game.state, source, "furnace-whelp", { kind: "printed", index: 0 }, player);
+  return { state: put.state, events: game.events };
 }
 
 function pass(game: Game): Game {

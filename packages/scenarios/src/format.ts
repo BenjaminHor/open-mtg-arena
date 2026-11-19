@@ -23,8 +23,11 @@ export type ScenarioStep =
    * like `{ R: 1 }`, or `cancel`. Without `pay`, the cast stops at the payment decision.
    */
   | { kind: "cast"; player: string; card: string; targets: unknown[]; pay: unknown }
-  /** Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. */
-  | { kind: "activate"; player: string; card: string; ability: number | null }
+  /**
+   * Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. An ability that uses
+   * the stack then takes `targets` and `pay`, as `cast` does.
+   */
+  | { kind: "activate"; player: string; card: string; ability: number | null; targets: unknown[]; pay: unknown }
   /** Declare attackers (CR 508.1): the player's creatures by name or reference (`Grizzly Bears#2`), maybe none. */
   | { kind: "attack"; player: string; attackers: string[] }
   /** Declare blockers (CR 509.1): pairs of the player's blocker and the attacker it blocks, maybe none. */
@@ -52,7 +55,7 @@ export const COMING_STEP_WORDS: Record<string, string> = {}; // none now; a task
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
   cast: ["targets", "pay"],
-  activate: ["ability"],
+  activate: ["ability", "targets", "pay"],
 };
 
 export function parseScenario(text: string): Scenario {
@@ -160,14 +163,23 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
     return { kind: "assign", player, division };
   }
   if (word === "activate") {
-    const allowed = ["ability"];
     for (const option of rest)
-      if (!allowed.includes(option)) throw new Error(`${where}: "activate" has no option "${option}" yet`);
+      if (!(STEP_OPTIONS.activate ?? []).includes(option))
+        throw new Error(`${where}: "activate" has no option "${option}"`);
     const ability = raw.ability;
     if (ability !== undefined && (typeof ability !== "number" || !Number.isInteger(ability) || ability < 1)) {
       throw new Error(`${where}: ability is a number counting from 1`);
     }
-    return { kind: "activate", player, card: String(value), ability: typeof ability === "number" ? ability : null };
+    const targets = raw.targets ?? [];
+    if (!Array.isArray(targets)) throw new Error(`${where}: targets is a list`);
+    return {
+      kind: "activate",
+      player,
+      card: String(value),
+      ability: typeof ability === "number" ? ability : null,
+      targets,
+      pay: raw.pay,
+    };
   }
   const arrives = COMING_STEP_WORDS[word];
   if (arrives === undefined) throw new Error(`${where}: unknown step word "${word}"`);

@@ -70,7 +70,7 @@ describe("discriminated unions", () => {
         case "chooseTarget":
           return `target ${decision.instance}`;
         case "payMana":
-          return `pay for ${decision.spell}`;
+          return `pay for ${decision.object}`;
         case "declareAttackers":
           return `attackers so far: ${decision.chosen.length}`;
         case "declareBlockers":

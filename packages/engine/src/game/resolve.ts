@@ -3,12 +3,13 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { spellEffectsOf, stillLegalTargets } from "../rules/targets.ts";
+import { effectsOf, stillLegalTargets } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import type { Target } from "../state/objects.ts";
+import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
 import { moveCard } from "../zones/move-card.ts";
+import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
 import { queueWork } from "./work.ts";
@@ -40,27 +41,46 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
 }
 
 /**
- * Every target is illegal, so the spell doesn't resolve (CR 608.2b): it does nothing and goes to its owner's graveyard.
- * It isn't countered: nothing countered it.
+ * Every target is illegal, so the spell or ability doesn't resolve (CR 608.2b): it does nothing and is removed from the
+ * stack. A spell goes to its owner's graveyard; an ability ceases to exist. It isn't countered: nothing countered it.
  */
 export function doesNotResolve(state: GameState, id: ObjectId): Progress {
   const obj = state.objects[id];
-  if (obj?.kind !== "card" || !state.zones.stack.includes(id)) return { state, events: [] };
-  const event = { type: "SPELL_DID_NOT_RESOLVE", object: id, cardId: obj.cardId } as const;
-  return andThen({ state, events: [event] }, (s) => moveCard(s, id, { zone: "graveyard" }));
+  if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
+  switch (obj.kind) {
+    case "card": {
+      const event = { type: "SPELL_DID_NOT_RESOLVE", object: id, cardId: obj.cardId } as const;
+      return andThen({ state, events: [event] }, (s) => moveCard(s, id, { zone: "graveyard" }));
+    }
+    case "ability":
+      return {
+        state: removeAbilityFromStack(state, id),
+        events: [{ type: "ABILITY_DID_NOT_RESOLVE", object: id, source: obj.source }],
+      };
+  }
 }
 
 /**
- * One `runEffect` work item per effect, in the order written (CR 608.2c), each knowing the spell's still-legal targets
- * (CR 608.2b) and its controller. Queuing them, rather than running them here, lets a later effect wait for a choice
- * (CR 608.2d–e) once one needs to. A permanent spell has no effects of its own (CR 608.3). Abilities' effects come
- * with activated abilities (M1-14).
+ * One `runEffect` work item per effect, in the order written (CR 608.2c), each knowing the still-legal targets
+ * (CR 608.2b) and the controller. Queuing them, rather than running them here, lets a later effect wait for a choice
+ * (CR 608.2d–e) once one needs to. "This" in a spell's text is the spell; in an ability's, the ability's source, even if
+ * it has left the battlefield (CR 113.7a): an effect on a source that's gone then does nothing (CR 101.3, 400.7).
  */
 function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: CardDatabase): WorkItem[] {
-  if (state.objects[id]?.kind !== "card") return [];
-  const effects = spellEffectsOf(state, id, cards);
-  const context = { self: id, controller: controllerOf(state, id), targets: legal };
-  return effects.map((effect) => ({ kind: "runEffect", effect, context }));
+  const obj = state.objects[id];
+  if (obj === undefined) return [];
+  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal };
+  return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context }));
+}
+
+/** What "this" means in the text of a spell (the spell) or an ability (its source, CR 113.7a). */
+function thisObject(obj: GameObject): ObjectId {
+  switch (obj.kind) {
+    case "card":
+      return obj.id;
+    case "ability":
+      return obj.source;
+  }
 }
 
 /**
@@ -73,15 +93,12 @@ export function finishResolving(state: GameState, id: ObjectId, cards: CardDatab
   if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
   const controller = controllerOf(state, id);
   switch (obj.kind) {
-    case "ability": {
+    case "ability":
       // Not a card, so this isn't a zone change: it's removed from the stack and ceases to exist.
-      const { [id]: _gone, ...objects } = state.objects;
-      const stack = state.zones.stack.filter((x) => x !== id);
       return {
-        state: { ...state, objects, zones: { ...state.zones, stack } },
+        state: removeAbilityFromStack(state, id),
         events: [{ type: "ABILITY_RESOLVED", object: id, source: obj.source, controller }],
       };
-    }
     case "card": {
       const types = cardTypesOf(state, id, cards);
       const destination =
