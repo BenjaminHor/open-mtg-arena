@@ -7,10 +7,21 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
-  casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
-  (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (M2 is now rules depth,
-  D-051; `docs/milestones/m2-rules-depth.md`; the owner chose Magic 2010 with planeswalkers, D-053), then tag `m1`.
+- M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
+  spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
+- M2-01 Hidden information fix (plan). The known issue below: a card's ids let a player follow it through another
+  player's hidden hand (CR 402.3, 734.1). Plan, D-054:
+  - A card moving from a public zone into a hand or library gets a new card id (a separate counter, `nextCardId`,
+    after the setup's c1..cN), including a cancelled spell going back to hand (same object id and place, new card id).
+    A card id then names a card for as long as everyone can see it, or for as long as it stays hidden.
+  - `eventsFor`: a card leaving a zone the viewer can't see shows no old object id; a card entering one shows no new
+    object id, object or new card id; another player's `CAST_CANCELLED` shows no `restored` id.
+  - The fuzzer's leak check: events must name no object id hidden from the viewer before or after the action, and no
+    card id of a card hidden after it; the cancelled-cast exemption goes.
+  - Tests: the cancel-then-cast-a-copy case (the rules-judge's probe) as an engine test; cast tests updated (a cancel
+    restores the same object in the same place, with a new card id). Replays regenerate (state gains `nextCardId`).
+  - Future impact: reveals and "look at" (future-rules.md) will need per-viewer knowledge; this keeps card ids from
+    carrying knowledge across hidden stretches, which those rules then add back explicitly.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
