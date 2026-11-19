@@ -15,10 +15,10 @@ import { discardCards } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
-import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
 import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
+import { queueWork } from "./work.ts";
 
 /** The maximum hand size (CR 402.2). A different rule from the starting hand size, though both are normally seven. */
 export const MAXIMUM_HAND_SIZE = 7;
@@ -150,7 +150,7 @@ function untapStep(state: GameState): Progress {
 }
 
 function priorityForActivePlayer(state: GameState): Progress {
-  return givePriority(state, currentTurn(state).activePlayer);
+  return { state: queueWork(state, { kind: "givePriority", player: currentTurn(state).activePlayer }), events: [] };
 }
 
 /** Empties every player's mana pool (CR 500.5), reporting only the pools that had mana. */

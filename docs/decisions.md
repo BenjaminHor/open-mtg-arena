@@ -252,3 +252,21 @@ and avoids crossover or digital-only printings, without changing any rules behav
   still happens when an effect skips the untap step.
 - Setup validation and the step machine share `skipsFirstDrawStep`, so a fixed opening can't start in a draw step
   that CR 103.8a says doesn't exist.
+
+**D-032: The work queue drives the game** · 2026-11-19 · accepted
+- `GameState.work` holds what's waiting to happen (`state/work.ts`): `givePriority`, `endStep`, `resolveTopOfStack`,
+  `finishCleanup`. `advance()` (`game/advance.ts`) runs items until a decision is pending or the game is over, and every
+  entry point ends in it: `createGame` and every branch of `applyAction`. `advance()` throws if nothing is pending and no
+  work is queued, since that would leave the game stuck.
+- New work goes to the front of the queue (depth-first): work an item creates finishes before older work continues, so a
+  spell's effects and the state-based actions after them happen before the priority queued after them.
+- `applyAction` clears `pending` before applying an answer, and `waitFor` throws if a decision is already pending, so a
+  decision can never be silently replaced.
+- Every grant of priority is a `givePriority` work item, where state-based actions and triggers will run first
+  (CR 117.5, M1-12). When all players pass, the top of the stack resolves, or with an empty stack the step ends
+  (CR 117.4, 405.5). After a resolution the active player gets priority (CR 117.3b) and the pass count starts over.
+- Resolution: an ability ceases to exist (no zone change, `ABILITY_RESOLVED`); an instant or sorcery goes to its owner's
+  graveyard and a permanent spell enters the battlefield under its controller (`SPELL_RESOLVED`, then `ZONE_CHANGED`).
+  Effects (M1-10) and target checks on resolution (CR 608.2b, M1-09/M1-10) plug into `resolveEffects`.
+- Card types are read through `cardTypesOf` (`rules/card-types.ts`), printed types until `characteristics()` (M1-11).
+- The start of the game stays a direct state machine (D-030); its answers still end in `advance()`.

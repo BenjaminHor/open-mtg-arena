@@ -6,11 +6,20 @@ import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
 import { zoneList } from "../zones/zone-list.ts";
+import { advance } from "./advance.ts";
 import { passPriority } from "./pass-priority.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
-import { finishCleanup } from "./steps.ts";
+import { queueWork } from "./work.ts";
 
-export function applyAction(state: GameState, action: Action, _cards: CardDatabase): EngineResult {
+export function applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
+  const result = handleAction(state, action);
+  if (!result.ok) return result;
+  // Every action is followed by running the queued work until the next decision (docs/architecture.md).
+  return { ok: true, ...advance({ state: result.state, events: result.events }, cards) };
+}
+
+/** Checks the action answers the pending decision, then applies it. The decision is cleared before it's applied. */
+function handleAction(state: GameState, action: Action): EngineResult {
   if (state.result !== null) return error("gameOver", "The game is over");
   if (action.type === "CONCEDE") return error("illegalAction", "Conceding arrives in M1-15");
   const pending = state.pending;
@@ -21,9 +30,10 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
       ? error("notYourPriority", `${pending.player} has priority`)
       : error("notYourDecision", `The decision is ${pending.player}'s`);
   }
+  const answered: GameState = { ...state, pending: null };
   if (action.type === "PASS_PRIORITY") {
     if (pending.kind !== "priority") return error("illegalAction", `Passing doesn't answer a ${pending.kind} decision`);
-    return { ok: true, ...passPriority(state, pending.player) };
+    return { ok: true, ...passPriority(answered, pending.player) };
   }
   if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives in M1-08 to M1-14`);
 
@@ -34,20 +44,20 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
     case "chooseStartingPlayer":
       if (answer.kind !== "chooseStartingPlayer") return mismatch;
       if (!state.turnOrder.includes(answer.player)) return error("illegalAction", `${answer.player} isn't a player`);
-      return { ok: true, ...setStartingPlayer(state, answer.player, pending.player) };
+      return { ok: true, ...setStartingPlayer(answered, answer.player, pending.player) };
     case "mulligan":
       if (answer.kind !== "mulligan") return mismatch;
       if (answer.choice === "mulligan" && !canMulligan(state, pending.player)) {
         return error("illegalAction", "No more mulligans: the hand would be zero cards (CR 103.5)");
       }
-      return { ok: true, ...declareMulligan(state, pending.player, answer.choice) };
+      return { ok: true, ...declareMulligan(answered, pending.player, answer.choice) };
     case "mulliganBottom":
       if (answer.kind !== "mulliganBottom") return mismatch;
       if (!zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object)) {
         return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
       }
-      return { ok: true, ...putOnBottom(state, pending.player, answer.object) };
-    case "discardToHandSize":
+      return { ok: true, ...putOnBottom(answered, pending.player, answer.object) };
+    case "discardToHandSize": {
       if (answer.kind !== "discardToHandSize") return mismatch;
       if (
         !zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object) ||
@@ -55,7 +65,9 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
       ) {
         return error("illegalAction", `${answer.object} isn't a card in ${pending.player}'s hand not yet chosen`);
       }
-      return { ok: true, ...finishCleanup(state, [...pending.chosen, answer.object]) };
+      const chosen = [...pending.chosen, answer.object];
+      return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
+    }
     case "priority":
       return mismatch;
   }

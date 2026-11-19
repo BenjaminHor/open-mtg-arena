@@ -11,6 +11,7 @@ import type { Pregame } from "./pregame.ts";
 import type { GameResult } from "./result.ts";
 import type { GameSetup } from "./setup.ts";
 import type { Turn } from "./turn.ts";
+import type { WorkItem } from "./work.ts";
 import type { Zones } from "./zones.ts";
 
 export type GameState = {
@@ -45,6 +46,9 @@ export type GameState = {
    * starts it at 0.
    */
   passesInSuccession: number;
+
+  /** Work waiting to happen, next first (docs/architecture.md, D-032). It waits while a decision is pending. */
+  work: WorkItem[];
 
   /** What the game is waiting for. Null only once the game has ended. */
   pending: PendingDecision | null;

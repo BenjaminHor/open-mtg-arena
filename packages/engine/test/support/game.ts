@@ -101,6 +101,11 @@ export function checkInvariants(state: GameState): void {
     ...state.zones.command,
   ];
   expect([...listed].sort()).toStrictEqual(Object.keys(state.objects).sort());
+  // A spell on the stack carries its casting choices; a card anywhere else has none (objects.ts).
+  for (const [id, obj] of Object.entries(state.objects)) {
+    if (obj.kind !== "card") continue;
+    expect(obj.choices === null, id).toBe(!state.zones.stack.includes(obj.id));
+  }
   // Every listed legal action is accepted, and nothing in the state is mutated by trying them.
   const frozen = deepFreeze(state);
   for (const player of state.turnOrder) {

@@ -7,25 +7,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-07 Priority and the stack. Plan:
-  - `GameState.work`: the work queue from the architecture doc. `applyAction` applies the action, then `advance()` runs work
-    items until a decision is pending or the game is over. First kinds: `givePriority` (where SBAs and triggers will run
-    first, M1-12), `endStep`, `resolveTopOfStack`, `finishCleanup` (the cleanup discard resumes through it, not a hard-wired
-    call). Steps queue `givePriority` instead of giving it directly.
-  - All players pass in succession: with an empty stack the step ends; otherwise the top object resolves (CR 117.4, 405.5,
-    608.1). Resolving: an ability's effects, then it ceases to exist (CR 608.2n); an instant or sorcery's effects, then its
-    owner's graveyard (CR 608.2n); a permanent spell enters the battlefield under its controller (CR 608.3a). Effects are
-    M1-10, so resolution has a single no-op `resolveEffects` hook. Then the active player gets priority (CR 117.3b) and the
-    pass count restarts.
-  - Card types come from one `cardTypesOf` (printed types until `characteristics()` in M1-11).
-  - Tests put objects on the stack directly (casting is M1-09): pass/pass resolution, last in first out, priority to the
-    active player after a non-active player's spell resolves, an ability ceasing to exist, a permanent spell entering under
-    its controller, the empty-stack step end still working. The spec's "responding to a spell with an instant" needs
-    casting, so its scenario lands with M1-09 (spec updated).
-  - Future impact: the work queue makes every wait a data snapshot; triggers, SBAs and multi-step resolution become work
-    items; stack objects aren't assumed to be cards.
+- (nothing)
 
 ## Handoff notes
+- Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
+  `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
   a go-ahead. Stop only for a decision that needs the owner (put it in Open questions and ask). Merge each PR once it
   checks out (D-027), restart the branch from `main`, then start the next task.
@@ -41,11 +27,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
 - M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
   them to YAML scenarios (`scenarios/start/`), keeping the same cases.
-- For M1-07: turn-based actions are chained on the call stack today, and the only resume-after-decision is hard-wired
-  (`discardToHandSize` → `finishCleanup`). Turn these into work items rather than copying the pattern: M1-13's attackers
-  and blockers will pause mid-step. A decision set mid-chain is silently overwritten if the chain continues.
-- For M1-07: `passPriority` throws if all players pass with a non-empty stack; that's where resolving goes. Reset
-  `passesInSuccession` when a player takes an action (CR 117.4). `endStep` is what the work queue's `advance()` drives.
+- Work queue (D-032): new pauses mid-step (M1-13's attackers and blockers) become work items, like `finishCleanup`.
+  `waitFor` throws if a decision is already pending, so a chain can't silently replace one.
+- For M1-09/M1-10: target legality on resolution (CR 608.2b) goes in `resolveEffects` (`game/resolve.ts`). Reset
+  `passesInSuccession` when a player casts or activates (CR 117.4).
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
   each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
@@ -94,6 +79,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-06 Turn structure: the turn sequence as data and one step machine (D-031), every step's turn-based actions, the
   starting player's skipped first draw step (CR 103.8a), the combat skip (CR 508.8), mana emptying (CR 500.5), cleanup
   discard and damage removal (CR 514), passing priority with an empty stack (CR 117.3d, 117.4) (2026-11-19).
+- M1-07 Priority and the stack: the work queue and `advance()` (D-032), resolving the top of the stack when all pass
+  (CR 117.4, 608): abilities cease to exist, instants and sorceries to the graveyard, permanents onto the battlefield;
+  priority to the active player after (CR 117.3b) (2026-11-19).
 
 ## Open questions for the owner
 - (none)

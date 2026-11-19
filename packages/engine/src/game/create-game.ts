@@ -10,12 +10,13 @@ import type { GameSetup, PermanentSetup, PlayerSetup } from "../state/setup.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { ENGINE_VERSION } from "../version.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
+import { advance } from "./advance.ts";
 import { waitFor } from "./decide.ts";
 import { newCardId, newObjectId, newTimestamp } from "./ids.ts";
 import { setStartingPlayer } from "./pregame.ts";
-import { givePriority } from "./priority.ts";
 import { setupProblems } from "./setup-validation.ts";
 import { rotateTo } from "./turn-order.ts";
+import { queueWork } from "./work.ts";
 
 export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult {
   const problems = setupProblems(setup, cards);
@@ -28,7 +29,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
 
   const opening = setup.opening;
   switch (opening.kind) {
-    case "fixed":
+    case "fixed": {
       // The game starts in the given step with its turn-based actions done, and the active player gets priority
       // (CR 117.3a). On turn 1 the active player is the starting player, so turn order starts with them (CR 103.1).
       // On later turns it stays in seating order: the starting player isn't known, and it no longer matters.
@@ -37,7 +38,9 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
         turn: { ...opening.turn },
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
       };
-      return { ok: true, ...givePriority(state, opening.turn.activePlayer) };
+      const first = queueWork(state, { kind: "givePriority", player: opening.turn.activePlayer });
+      return { ok: true, ...advance({ state: first, events: [] }, cards) };
+    }
     case "standard": {
       state = {
         ...state,
@@ -50,14 +53,13 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
         },
       };
       if (opening.firstPlayer !== null) {
-        const started = setStartingPlayer(state, opening.firstPlayer, null);
-        return { ok: true, ...started };
+        return { ok: true, ...advance(setStartingPlayer(state, opening.firstPlayer, null), cards) };
       }
       // CR 103.1: the players determine who chooses who takes the first turn. We pick that player at random.
       const pick = randomInt(state.rng, state.turnOrder.length);
       const chooser = state.turnOrder[pick.value] as PlayerId;
       state = waitFor({ ...state, rng: pick.rng }, chooser, { kind: "chooseStartingPlayer" });
-      return { ok: true, state, events: [] };
+      return { ok: true, ...advance({ state, events: [] }, cards) };
     }
   }
 }
@@ -94,6 +96,7 @@ function emptyGame(setup: GameSetup): GameState {
     },
     pregame: null,
     passesInSuccession: 0,
+    work: [],
     pending: null,
     result: null,
   };
