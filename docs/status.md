@@ -46,7 +46,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `DAMAGE_DEALT` (CR 120.2a) for "deals combat damage" triggers and prevention.
 - For M1-13: a lethal attack ends the game through the SBA check (CR 704.5a); `winner` in scenarios checks it.
 - For M1-15: losing to 0 life and an empty library, `GameResult` and `winner` already work (M1-12). What's left is
-  conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn.
+  conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn. Conceding
+  can go through `playersLose` with reason `conceded`; then `PLAYER_CONCEDED` overlaps `PLAYER_LOST`, so keep one.
+  A concession mid-cast leaves the spell on the stack with `casting: null`: check the invariants accept it.
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).
