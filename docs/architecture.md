@@ -164,6 +164,8 @@ simple.
 
 - Events can carry hidden information too (a drawn card), so the match host filters them per player before they
   reach the UI or AI, the same way `playerView` filters state.
+- `GameState.rng` predicts every future shuffle, so `playerView` must leave it out too (CR 701.24a: no player knows
+  a library's order).
 - `playerView(state, p)` replaces hidden objects (opponent's hand, libraries, face-down cards)
   with placeholders and keeps only counts and public facts. The AI and the UI get views only.
   Tests and the CLI's debug mode can see full state.

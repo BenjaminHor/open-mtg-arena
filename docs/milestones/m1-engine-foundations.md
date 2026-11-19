@@ -55,13 +55,15 @@ test that every pool card has Oracle data, and the errata check (`card-scripting
 `pnpm cards:fetch` locally and commit the extracted files.)
 
 **M1-05 Game start.** Create a game from a setup: shuffle (CR 103.3), choose who goes first (CR 103.1: unless the setup names
-the starting player, a player picked at random from the seeded RNG chooses, as a decision; D-020), opening hands, London mulligan (CR 103.5) as decisions, and the
-first player skipping their first draw (see CR 103). *Accept:* scenarios for keep, mulligan and bottom cards; deterministic with a fixed seed.
+the starting player, a player picked at random from the seeded RNG chooses, as a decision; D-020), opening hands, and mulligans (CR 103.5) as decisions. (The first
+player skipping their first draw, CR 103.8a, is part of the draw step, so it moved to M1-06.) *Accept:* scenarios for keep, mulligan and bottom cards; deterministic with a fixed seed.
 
 **M1-06 Turn structure.** All steps and phases (CR 500–514): untap, upkeep, draw, main phases, combat steps,
 end step, cleanup (discard to hand size; damage wears off and "until end of turn" effects end, CR 514);
-mana pools empty between steps (CR 500.4); skipping combat steps when there are no attackers (CR 508.8).
-*Accept:* a scenario that walks a full turn checking each step.
+mana pools empty between steps (CR 500.4); skipping combat steps when there are no attackers (CR 508.8); the starting
+player skipping the draw step of their first turn (CR 103.8a, moved from M1-05).
+*Accept:* a scenario that walks a full turn checking each step, and one that the starting player doesn't draw on turn 1
+while the other player draws on turn 2.
 
 **M1-07 Priority and the stack.** CR 117 and 405: who gets priority when, passing in succession, resolving
 the top object (CR 608), and advancing when the stack is empty. The work queue and `advance()` loop from the

@@ -215,5 +215,15 @@ and avoids crossover or digital-only printings, without changing any rules behav
 - Every zone change goes through `moveCard` (`engine/src/zones/move-card.ts`), the one place the replacement and
   trigger steps of the event pipeline will plug in.
 - Only two-player games start for now: the multiplayer start rules (CR 103.5c, 103.8c) aren't built.
-- Until M1-06 walks the turn's steps, the first turn begins directly in the upkeep with the starting player holding
-  priority, and `legalActions` lists nothing for priority until M1-07 (so every listed action is one `applyAction` takes).
+- Until M1-06 walks the turn's steps, the first turn begins with a shortcut: the starting player's permanents untap
+  (CR 502.3) and count as controlled since the turn began (CR 302.6), then the game goes to the upkeep with the
+  starting player holding priority. `legalActions` lists nothing for priority until M1-07, so every listed action is
+  one `applyAction` takes. Skipping the first draw (CR 103.8a) moved to M1-06 with the draw step.
+- In a standard opening every setup permanent starts summoning sick and mana pools must be empty: no turn has begun.
+  A fixed opening on turn 1 starts turn order with the active player (the starting player); on later turns it keeps
+  seating order.
+- Every place that gives priority calls `givePriority` (`game/priority.ts`), where state-based actions and triggers will
+  run first (M1-07, M1-12). Every question about control calls `controllerOf` (`rules/controller.ts`), where layer 2 will
+  plug in. Draws emit `CARD_DRAWN` as well as `ZONE_CHANGED`.
+- The start of the game stays a small state machine over `pregame` rather than moving into the M1-07 work queue: it has
+  no stack, priority or triggers, and every wait is already a plain-data decision.

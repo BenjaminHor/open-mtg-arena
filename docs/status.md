@@ -22,8 +22,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   golden games and the coverage check (M1-19), a short fuzz (M1-18).
 - M1-05's tests are TypeScript (`packages/engine/test/game/start.test.ts`). When the M1-16 scenario runner exists, port
   them to YAML scenarios (`scenarios/start/`), keeping the same cases.
-- For M1-06: replace `beginFirstTurn`'s shortcut (straight to upkeep) with the real step walk, including the untap step
-  and the starting player skipping their first draw (CR 103.8a). `drawCard` throws on an empty library until M1-12.
+- For M1-06: replace `beginFirstTurn`'s shortcut (untap, then straight to upkeep) with the real step walk, including the
+  starting player skipping their first draw (CR 103.8a; decide it by turn number 1, not `turnOrder[0]`). The untap step
+  must ask `controllerOf`, not object fields. `drawCard` throws on an empty library until M1-12, so either record the
+  "drew from an empty library" fact CR 704.5b needs, or keep M1-06's tests away from empty libraries.
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
   `legalActions`. Use them in every new engine test. Never name a module export `then` (Vitest treats the module as a
   promise).

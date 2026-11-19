@@ -11,6 +11,8 @@ The engine's entry points and the flow of a game.
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision, then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |
+| `priority.ts` | `givePriority()`: every place that gives a player priority goes through it (CR 117) |
+| `turn-order.ts` | `rotateTo()`: turn order starting with a given player (CR 103.1) |
 | `ids.ts`, `progress.ts`, `turn.ts` | Id and timestamp allocation; passing state plus events along; `currentTurn()` |
 
 Every function takes a state and returns a new one (D-021). Events are collected alongside (`Progress`).
