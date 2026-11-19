@@ -4,6 +4,7 @@
 
 import type { RngState } from "../rng/xoshiro128.ts";
 import type { Casting } from "./casting.ts";
+import type { Combat } from "./combat.ts";
 import type { PendingDecision } from "./decisions.ts";
 import type { ContinuousEffect } from "./effects.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
@@ -50,6 +51,8 @@ export type GameState = {
    * starts it at 0.
    */
   passesInSuccession: number;
+  /** Attackers and blockers during the combat phase (CR 506), or null outside it. */
+  combat: Combat | null;
   /** A spell part way through being cast (CR 601.2), or null. */
   casting: Casting | null;
 

@@ -2,6 +2,9 @@
 // Every engine entry point ends here.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { combatDamage } from "../combat/combat-damage.ts";
+import { declareAttackers } from "../combat/declare-attackers.ts";
+import { declareBlockers } from "../combat/declare-blockers.ts";
 import { runEffect } from "../effects/run-effect.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { WorkItem } from "../state/work.ts";
@@ -40,6 +43,12 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       return cleanupCheck(state, cards);
     case "anotherCleanupStep":
       return anotherCleanupStep(state);
+    case "declareAttackers":
+      return declareAttackers(state, item.chosen, cards);
+    case "declareBlockers":
+      return declareBlockers(state, item.chosen, cards);
+    case "combatDamage":
+      return combatDamage(state, item.divisions, cards);
     case "finishCleanup":
       return finishCleanup(state, item.chosen);
   }

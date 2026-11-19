@@ -1,0 +1,14 @@
+name: Combat damage that brings a player to 0 life ends the game
+rules: [CR 510.2, CR 704.5a, CR 104.3b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Craw Wurm]
+  p2:
+    life: 6
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Craw Wurm]
+  - all pass: until combat.damage
+  - expect:
+      winner: p1

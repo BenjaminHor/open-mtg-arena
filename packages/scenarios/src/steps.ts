@@ -17,11 +17,15 @@ export type { Game } from "./apply.ts";
 
 import { allPass } from "./all-pass.ts";
 import { apply, type Game, legal } from "./apply.ts";
+import { combatAction } from "./combat-steps.ts";
 import { abilityNamed, cardIn, cardNamed, paymentFrom, targetNamed } from "./lookups.ts";
 import { nameOf } from "./names.ts";
 
 /** A step that changes the game: passing or choosing. */
-export type ActionStep = Extract<ScenarioStep, { kind: "pass" | "allPass" | "choose" | "activate" | "play" | "cast" }>;
+export type ActionStep = Extract<
+  ScenarioStep,
+  { kind: "pass" | "allPass" | "choose" | "activate" | "play" | "cast" | "attack" | "block" | "assign" }
+>;
 
 /** Applies a step's actions, each checked by `afterEach`. Throws a readable message when the step can't be taken. */
 export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afterEach: (g: Game) => void): Game {
@@ -35,6 +39,22 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
       );
     case "allPass":
       return allPass(game, step.until, cards, afterEach);
+    case "attack":
+    case "block":
+    case "assign": {
+      let next = game;
+      for (let i = 0; ; i++) {
+        const action = combatAction(next.state, step, cards, i);
+        if (action === null) return next;
+        // Compared field by field: the same answer built with keys in another order is the same answer.
+        next = apply(
+          next,
+          legal(next, step.player, cards, (a) => deepEqual(a, action), step.kind),
+          cards,
+          afterEach,
+        );
+      }
+    }
     case "play": {
       const action = legal(
         game,
@@ -171,6 +191,10 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
       return i === 0
         ? { type: "PLAY_LAND", decisionId, player, object: cardIn(state, player, step.card, cards) }
         : null;
+    case "attack":
+    case "block":
+    case "assign":
+      return combatAction(state, step, cards, i);
     case "cast": {
       if (i === 0) return { type: "CAST_SPELL", decisionId, player, object: cardIn(state, player, step.card, cards) };
       const target = step.targets[i - 1];
@@ -237,6 +261,10 @@ function answerFor(
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "payMana", payment: paymentFrom(value) };
     }
+    case "declareAttackers":
+    case "declareBlockers":
+    case "assignDamage":
+      throw new Error(`for ${pending.kind}, use the attack, block or assign step`);
     case "priority":
       throw new Error("the player has priority: use pass, play, cast or activate");
   }

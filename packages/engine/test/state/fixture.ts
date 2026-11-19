@@ -138,6 +138,7 @@ export function midTurnState(): GameState {
     ],
     pregame: null,
     passesInSuccession: 1,
+    combat: null,
     casting: null,
     work: [
       {

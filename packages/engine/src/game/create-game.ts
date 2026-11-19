@@ -7,6 +7,7 @@ import type { PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
 import type { EngineResult } from "../state/result.ts";
 import type { GameSetup, PermanentSetup, PlayerSetup } from "../state/setup.ts";
+import { phaseOf } from "../state/turn.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { ENGINE_VERSION } from "../version.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
@@ -33,10 +34,14 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
       // The game starts in the given step with its turn-based actions done, and the active player gets priority
       // (CR 117.3a). On turn 1 the active player is the starting player, so turn order starts with them (CR 103.1).
       // On later turns it stays in seating order: the starting player isn't known, and it no longer matters.
+      // A fixed opening can start in the beginning of combat step (setup validation allows no later combat step):
+      // the combat phase has begun, with no attackers or blockers.
+      const inCombat = phaseOf(opening.turn.step) === "combat";
       state = {
         ...state,
         turn: { ...opening.turn },
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
+        combat: inCombat ? { attacks: [], blocks: [] } : null,
       };
       const first = queueWork(state, { kind: "givePriority", player: opening.turn.activePlayer });
       return { ok: true, ...advance({ state: first, events: [] }, cards) };
@@ -97,6 +102,7 @@ function emptyGame(setup: GameSetup): GameState {
     effects: [],
     pregame: null,
     passesInSuccession: 0,
+    combat: null,
     casting: null,
     work: [],
     pending: null,

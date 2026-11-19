@@ -53,7 +53,9 @@ export function beginTurn(state: GameState, player: PlayerId, number: number): P
  */
 export function endStep(state: GameState): Progress {
   const turn = currentTurn(state);
-  const emptied = emptyManaPools(state);
+  // As the end of combat step ends, every creature is removed from combat (CR 511.3).
+  const left = turn.step === "endOfCombat" ? { ...state, combat: null } : state;
+  const emptied = emptyManaPools(left);
   let next = stepAfter(turn.step);
   while (next !== null && isSkipped(emptied.state, next)) next = stepAfter(next);
   if (next !== null) return andThen(emptied, (s) => beginStep(s, next));
@@ -148,16 +150,22 @@ function beginStep(state: GameState, step: Step): Progress {
       );
     case "cleanup":
       return andThen(progress, finishCleanup);
+    case "beginningOfCombat":
+      // The combat phase begins (CR 506.1): no attackers or blockers yet. Then priority (CR 507.2).
+      return andThen(progress, (s) => priorityForActivePlayer({ ...s, combat: { attacks: [], blocks: [] } }));
+    case "declareAttackers":
+      // CR 508.1, then priority (CR 508.2), queued by the declaration when it's done.
+      return andThen(progress, (s) => ({ state: queueWork(s, { kind: "declareAttackers", chosen: [] }), events: [] }));
+    case "declareBlockers":
+      return andThen(progress, (s) => ({ state: queueWork(s, { kind: "declareBlockers", chosen: [] }), events: [] }));
+    case "combatDamage":
+      return andThen(progress, (s) => ({ state: queueWork(s, { kind: "combatDamage", divisions: [] }), events: [] }));
     case "upkeep":
     case "precombatMain":
-    case "beginningOfCombat":
-    case "declareAttackers":
-    case "declareBlockers":
-    case "combatDamage":
     case "endOfCombat":
     case "postcombatMain":
     case "end":
-      // These have no turn-based actions yet (declaring attackers and blockers and combat damage arrive in M1-13).
+      // No turn-based actions: the active player gets priority.
       return andThen(progress, priorityForActivePlayer);
   }
 }

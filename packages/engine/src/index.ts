@@ -30,6 +30,7 @@ export { type Characteristics, characteristics } from "./rules/characteristics.t
 export { controllerOf } from "./rules/controller.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";
+export type { Attack, AttackerDivision, Block, Combat, DamageDivision } from "./state/combat.ts";
 export type { DecisionKind, PendingDecision } from "./state/decisions.ts";
 export type { ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
 export type { GameEvent } from "./state/events.ts";
@@ -58,7 +59,7 @@ export type {
 } from "./state/result.ts";
 export type { GameSetup, Opening, PermanentSetup, PlayerSetup, RuleModifier } from "./state/setup.ts";
 export type { StateBasedAction } from "./state/state-based-actions.ts";
-export type { Phase, Step, Turn } from "./state/turn.ts";
+export { type Phase, phaseOf, type Step, type Turn } from "./state/turn.ts";
 export type { WorkItem } from "./state/work.ts";
 export type { PlayerZoneName, SharedZoneName, ZoneName, ZoneRef, Zones } from "./state/zones.ts";
 export { ENGINE_VERSION } from "./version.ts";

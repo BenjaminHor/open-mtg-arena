@@ -11,8 +11,8 @@ import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { loseLife } from "./life.ts";
 
-/** `source` deals `amount` damage to `to`. */
-export type Damage = { source: ObjectId; to: Target; amount: number };
+/** `source` deals `amount` damage to `to`; `combat` for combat damage (CR 120.2a), which some abilities care about. */
+export type Damage = { source: ObjectId; to: Target; amount: number; combat: boolean };
 
 /**
  * Deals damage as one damage event (CR 120.4): spells deal it to one recipient, combat damage to many at once
@@ -28,6 +28,7 @@ export function dealDamage(state: GameState, damage: readonly Damage[], cards: C
     source: d.source,
     to: d.to,
     amount: d.amount,
+    combat: d.combat,
   }));
   return dealt.reduce<Progress>((progress, d) => andThen(progress, (s) => damageResult(s, d)), { state, events });
 }

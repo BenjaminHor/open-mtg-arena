@@ -1,5 +1,6 @@
 // Actions: every input to the engine. Each one answers the current `PendingDecision`, except `CONCEDE`.
 
+import type { Attack, Block } from "./combat.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";
 import type { AbilityRef, Target } from "./objects.ts";
@@ -30,4 +31,12 @@ export type Answer =
   /** How much of each type of mana to spend (CR 601.2h). */
   | { kind: "payMana"; payment: ManaPool }
   /** Cancel the cast: the whole action is reversed (CR 734.1). */
-  | { kind: "cancelCast" };
+  | { kind: "cancelCast" }
+  /** Add one attacker to the declaration (CR 508.1a–b). */
+  | { kind: "declareAttacker"; attack: Attack }
+  /** Add one block to the declaration (CR 509.1a). */
+  | { kind: "declareBlocker"; block: Block }
+  /** The declaration of attackers or blockers is complete (it may be empty). */
+  | { kind: "finishDeclaring" }
+  /** How much of the attacker's combat damage goes to the next blocker in the decision's order (CR 510.1c). */
+  | { kind: "assignDamage"; amount: number };

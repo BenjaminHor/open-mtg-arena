@@ -20,7 +20,12 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
       const [from, ...more] = objectsOf(subject(effect.from, context));
       if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
       if (from === undefined) return { state, events: [] };
-      const damage = subject(effect.to, context).map((to) => ({ source: from, to, amount: effect.amount }));
+      const damage = subject(effect.to, context).map((to) => ({
+        source: from,
+        to,
+        amount: effect.amount,
+        combat: false,
+      }));
       return dealDamage(state, damage, cards);
     }
     case "addMana":

@@ -3,6 +3,7 @@
 // plain-data snapshot.
 
 import type { Effect } from "../cards/types.ts";
+import type { Attack, AttackerDivision, Block } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 
@@ -26,5 +27,11 @@ export type WorkItem =
   | { kind: "cleanupCheck" }
   /** All players passed in a cleanup step that gave them priority, so another cleanup step begins (CR 514.3a). */
   | { kind: "anotherCleanupStep" }
+  /** The declare attackers step's turn-based action (CR 508.1), with the attackers chosen so far. */
+  | { kind: "declareAttackers"; chosen: Attack[] }
+  /** The declare blockers step's turn-based action (CR 509.1), with the blocks chosen so far. */
+  | { kind: "declareBlockers"; chosen: Block[] }
+  /** The combat damage step's turn-based action (CR 510.1–510.2), with the divisions chosen so far. */
+  | { kind: "combatDamage"; divisions: AttackerDivision[] }
   /** The rest of the cleanup step, once the active player has chosen any discards (CR 514). */
   | { kind: "finishCleanup"; chosen: ObjectId[] };

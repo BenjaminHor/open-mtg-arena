@@ -22,6 +22,8 @@ export const SHOT_AND_BOOST = "test-shot-and-boost";
 export const BITE = "test-bite";
 /** Not a real card: a noncreature artifact with a printed power and toughness, like a Vehicle (CR 208.3). */
 export const STATUE = "test-statue";
+/** Not a real card: a creature with haste and a {T} mana ability, for CR 702.10c. */
+export const HASTY_ELF = "test-hasty-elf";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -260,5 +262,26 @@ export const TEST_CARDS: CardDatabase = {
       toughness: 3,
     },
     def: { name: "Hill Giant", oracle: "" },
+  }),
+  [HASTY_ELF]: card(HASTY_ELF, {
+    printed: {
+      name: "Hasty Elf",
+      manaCost: [{ kind: "colored", color: "G" }],
+      colors: ["G"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Elf"],
+      power: 1,
+      toughness: 1,
+    },
+    def: {
+      name: "Hasty Elf",
+      oracle: "Haste\n{T}: Add {G}.",
+      keywords: ["haste"],
+      abilities: [
+        { kind: "activated", cost: [{ kind: "tap" }], targets: [], effects: [{ op: "addMana", mana: "G", amount: 1 }] },
+      ],
+    },
   }),
 };

@@ -42,9 +42,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `performOnObject`). The repeat of the check (CR 704.3) has no test: nothing in the pool makes one SBA cause another.
   The first card that can (an anthem, a lord) should add one. One that needs a choice
   (the legend rule, CR 704.5j) can wait for it, since a performed check re-queues `givePriority`.
-- For M1-13: combat damage goes through `dealDamage` as one list (CR 510.2); add a `combat` flag to `Damage` and
-  `DAMAGE_DEALT` (CR 120.2a) for "deals combat damage" triggers and prevention.
-- For M1-13: a lethal attack ends the game through the SBA check (CR 704.5a); `winner` in scenarios checks it.
+- Combat (D-040): engine tests that pass through combat with creatures must answer `declareAttackers` and
+  `declareBlockers` (the turn tests' `playUntilTurn` declares nothing). For M1-14: firebreathing in response to a block
+  is activated with priority in the declare blockers step, after `finishDeclaring`.
 - For M1-15: losing to 0 life and an empty library, `GameResult` and `winner` already work (M1-12). What's left is
   conceding (CR 104.3a: any time, even without priority) and scenarios for the result's reasons and turn. Conceding
   can go through `playersLose` with reason `conceded`; then `PLAYER_CONCEDED` overlaps `PLAYER_LOST`, so keep one.
@@ -74,7 +74,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-13 Combat
+- M1-14 Activated abilities
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -122,6 +122,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   priority (CR 117.5) and in cleanup with another cleanup step when any happen (CR 514.3a); destroy (CR 701.8);
   players losing and the game ending with a winner or a draw (CR 104.2a, 104.4a); the runner's `winner`; 8 SBA
   scenarios and the CR 608.2b scenario (D-039) (2026-11-19).
+
+- M1-13 Combat: declaring attackers and blockers as incremental decisions (CR 508.1, 509.1), summoning sickness and
+  haste (CR 302.6, 702.10), flying and reach (CR 702.9, 702.17), combat damage with free division among several
+  blockers (CR 510.1c) dealt at once (CR 510.2), `GameState.combat` for the combat phase; the runner's `attack`,
+  `block`, `assign`; 23 combat scenarios (D-040) (2026-11-19).
 
 ## Open questions for the owner
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time

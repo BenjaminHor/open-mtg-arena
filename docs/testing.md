@@ -114,8 +114,19 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   example to show p1 can't activate p2's land. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
   them (printed abilities, then a basic land's mana ability), when the permanent has more than one. Only mana
   abilities can be activated so far; other activated abilities arrive in M1-14.
-- Steps that arrive with later tasks, and fail until then: `p1 attack: [...]` and `p2 block: { blocker: attacker }`
-  (M1-13). `activate` gains `targets` and `pay` in M1-14, and `cast` gains `modes` and `x` with the first card that has them.
+- `p1 attack: [Grizzly Bears, Hill Giant]`: declare attackers (CR 508.1), each creature by name or reference among
+  p1's (`Grizzly Bears#2` for the second), each attacking the other player; `[]` declares none. It answers one
+  `declareAttackers` decision per creature, then finishes.
+- `p2 block: { Giant Spider: Craw Wurm }`: declare blockers (CR 509.1), blocker (p2's) to attacker (p1's); `{}` declares
+  none.
+- `p1 assign: { Grizzly Bears: 2, Giant Spider: 4 }`: divide an attacker's combat damage among its blockers (CR 510.1c),
+  when an `assignDamage` decision is pending, naming each blocker once in any order. Any division that adds up to its
+  power is legal, including 0 to one. The engine asks one blocker at a time (the last gets the rest); the step answers
+  all of them.
+- Passing through combat (`all pass`) declares no attackers and no blockers when asked, the "do nothing" answer;
+  `all pass: until combat.declareAttackers` (or `.declareBlockers`, `.damage`) stops there when that step's own decision
+  is pending. A division of damage has no "do nothing", so it stops `all pass` with an error.
+- `activate` gains `targets` and `pay` in M1-14, and `cast` gains `modes` and `x` with the first card that has them.
 
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).

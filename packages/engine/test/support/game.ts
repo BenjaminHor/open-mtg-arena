@@ -14,6 +14,7 @@ import {
   legalActions,
   type PlayerId,
   type PlayerSetup,
+  phaseOf,
 } from "../../src/index.ts";
 import { emptyManaPool } from "../../src/state/mana.ts";
 import { TEST_CARDS } from "./cards.ts";
@@ -120,6 +121,10 @@ export function checkInvariants(state: GameState): void {
   for (const [id, obj] of Object.entries(state.objects)) {
     if (obj.kind !== "card") continue;
     expect(obj.choices === null, id).toBe(!state.zones.stack.includes(obj.id));
+  }
+  // Combat state exists exactly during the combat phase (CR 506.1, 511.3), until the game ends.
+  if (state.result === null) {
+    expect(state.combat !== null).toBe(state.turn !== null && phaseOf(state.turn.step) === "combat");
   }
   // Every listed legal action is accepted, and nothing in the state is mutated by trying them.
   const frozen = deepFreeze(state);

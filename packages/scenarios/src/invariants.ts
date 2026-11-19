@@ -1,7 +1,7 @@
 // The engine's invariants (CLAUDE.md "Hard invariants", docs/testing.md "Invariant fuzzing"), checked on a state.
 // The scenario runner checks every state it sees; the fuzzer (M1-18) will reuse this.
 
-import { applyAction, type CardDatabase, type GameState, legalActions } from "@mtg/engine";
+import { applyAction, type CardDatabase, type GameState, legalActions, phaseOf } from "@mtg/engine";
 
 /** Everything wrong with a state, as readable messages. Empty when it holds every invariant. */
 export function invariantProblems(state: GameState, cards: CardDatabase): string[] {
@@ -29,6 +29,10 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
     if (obj.kind === "card" && (obj.choices === null) === state.zones.stack.includes(obj.id)) {
       problems.push(`${obj.id}: a card has casting choices exactly when it's on the stack`);
     }
+  }
+  const inCombat = state.turn !== null && phaseOf(state.turn.step) === "combat";
+  if (state.result === null && (state.combat !== null) !== inCombat) {
+    problems.push("combat state exists exactly during the combat phase (CR 506.1, 511.3)");
   }
   for (const player of state.turnOrder) {
     for (const action of legalActions(state, player, cards)) {
