@@ -36,7 +36,7 @@ export function abilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase)
 function basicLandAbilities(state: GameState, id: ObjectId, cards: CardDatabase): ActivatedAbility[] {
   if (!cardTypesOf(state, id, cards).includes("land")) return [];
   return subtypesOf(state, id, cards)
-    .filter((t): t is BasicLandType => t in BASIC_LAND_MANA)
+    .filter((t): t is BasicLandType => Object.hasOwn(BASIC_LAND_MANA, t))
     .map((landType) => ({
       ref: { kind: "basicLandType", landType } as const,
       def: {
@@ -49,9 +49,21 @@ function basicLandAbilities(state: GameState, id: ObjectId, cards: CardDatabase)
 }
 
 /**
- * CR 605.1a: a mana ability doesn't require a target, could add mana when it resolves, and isn't a loyalty ability (no
- * loyalty abilities exist yet). Worked out from the definition, so a definition can't get it wrong (D-026).
+ * CR 605.1a: an activated ability is a mana ability if it doesn't require a target, could add mana when it resolves,
+ * isn't a loyalty ability, and its cost and effect don't move a card to or from a library. No loyalty abilities exist
+ * yet and no effect moves library cards, so those two always hold for now. Triggered mana abilities (CR 605.1b) will
+ * be a separate check. Worked out from the definition, so a definition can't get it wrong (D-026).
  */
 export function isManaAbility(def: AbilityDef): boolean {
-  return def.targets.length === 0 && def.effects.some((e) => e.op === "addMana");
+  return def.kind === "activated" && def.targets.length === 0 && def.effects.some((e) => e.op === "addMana");
+}
+
+/** Whether two references name the same ability, whatever the order of their keys. */
+export function sameAbilityRef(a: AbilityRef, b: AbilityRef): boolean {
+  switch (a.kind) {
+    case "printed":
+      return b.kind === "printed" && a.index === b.index;
+    case "basicLandType":
+      return b.kind === "basicLandType" && a.landType === b.landType;
+  }
 }

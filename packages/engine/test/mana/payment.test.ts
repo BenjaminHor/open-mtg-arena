@@ -1,15 +1,7 @@
 // Paying mana costs (CR 601.2h, 107.4) and the autoPay helper (D-034).
 
 import { describe, expect, it } from "vitest";
-import {
-  autoPay,
-  type GameState,
-  isManaAbility,
-  type ManaCost,
-  type ManaPool,
-  type ObjectId,
-  payFromPool,
-} from "../../src/index.ts";
+import { autoPay, isManaAbility, type ManaCost, type ManaPool, type ObjectId, payFromPool } from "../../src/index.ts";
 import { abilitiesOf } from "../../src/rules/abilities.ts";
 import { TEST_CARDS } from "../support/cards.ts";
 import { act, type Game, playerSetup, start } from "../support/game.ts";
@@ -35,6 +27,7 @@ describe("payFromPool (CR 601.2h, 107.4)", () => {
     expect(payFromPool(pool({ R: 3 }), [generic(1), R], pool({ R: 1 }))).toBeNull(); // partial payment
     expect(payFromPool(pool({ R: 3 }), [generic(1), R], pool({ R: 3 }))).toBeNull(); // overpaying
     expect(start).toStrictEqual(pool({ R: 1 }));
+    expect(payFromPool(pool({ R: 1, G: 1 }), [generic(1)], pool({ R: 0.5, G: 0.5 }))).toBeNull(); // whole mana only
   });
 });
 
@@ -47,23 +40,23 @@ describe("mana abilities (CR 605.1a)", () => {
   });
 });
 
-/** p1 in their precombat main phase with these permanents, none of them summoning sick. */
-function board(permanents: string[], manaPool: ManaPool = pool()): Game {
+type Permanent = string | { oracleId: string; tapped?: boolean; sick?: boolean };
+
+/** p1 in their precombat main phase with these permanents (untapped and not sick unless said), p2 with theirs. */
+function board(permanents: Permanent[], manaPool: ManaPool = pool(), theirs: string[] = []): Game {
+  const setup = (p: Permanent) =>
+    typeof p === "string"
+      ? { oracleId: p, tapped: false, summoningSick: false, damage: 0, counters: {} }
+      : { oracleId: p.oracleId, tapped: p.tapped ?? false, summoningSick: p.sick ?? false, damage: 0, counters: {} };
   return start({
     seed: 1,
     players: [
       playerSetup("p1", {
         library: ["forest", "forest"],
         manaPool,
-        battlefield: permanents.map((oracleId) => ({
-          oracleId,
-          tapped: false,
-          summoningSick: false,
-          damage: 0,
-          counters: {},
-        })),
+        battlefield: permanents.map(setup),
       }),
-      playerSetup("p2", { library: ["mountain", "mountain"] }),
+      playerSetup("p2", { library: ["mountain", "mountain"], battlefield: theirs.map(setup) }),
     ],
     opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
     ruleModifiers: [],
@@ -106,6 +99,22 @@ describe("autoPay (D-034)", () => {
     expect(autoPay(board(["mountain"]).state, "p1", [generic(1), R], TEST_CARDS)).toBeNull();
   });
 
+  it("never uses a tapped source, a summoning-sick creature, or another player's permanent", () => {
+    expect(autoPay(board([{ oracleId: "forest", tapped: true }]).state, "p1", [G], TEST_CARDS)).toBeNull();
+    expect(autoPay(board([{ oracleId: "llanowar-elves", sick: true }]).state, "p1", [G], TEST_CARDS)).toBeNull();
+    expect(autoPay(board([], pool(), ["forest"]).state, "p1", [G], TEST_CARDS)).toBeNull();
+    // A summoning-sick land is fine: the rule is only about creatures (CR 602.5a).
+    expect(autoPay(board([{ oracleId: "forest", sick: true }]).state, "p1", [G], TEST_CARDS)).not.toBeNull();
+  });
+
+  it("combines mana already in the pool with mana it makes", () => {
+    const game = board(["mountain"], pool({ G: 1 }));
+    const plan = autoPay(game.state, "p1", [generic(1), R], TEST_CARDS);
+    expect(plan?.activations).toHaveLength(1);
+    expect(plan?.payment).toStrictEqual(pool({ R: 1, G: 1 }));
+    expect(carryOut(game, [generic(1), R])).toStrictEqual(pool());
+  });
+
   it("finds a payment whenever one exists, on every small board (checked by brute force)", () => {
     const kinds = ["mountain", "forest", "llanowar-elves"];
     const costs: ManaCost[] = [
@@ -118,12 +127,18 @@ describe("autoPay (D-034)", () => {
       [generic(1), R, R],
       [generic(3)],
     ];
+    const pools = [pool(), pool({ R: 1 }), pool({ G: 1, C: 1 })];
     for (const permanents of boards(kinds, 4)) {
-      const game = board(permanents);
-      for (const cost of costs) {
-        const possible = payable(game.state, cost);
-        const result = carryOut(game, cost);
-        expect(result !== null, `${permanents.join(",")} paying ${JSON.stringify(cost)}`).toBe(possible);
+      for (const start of pools) {
+        const game = board(permanents, start);
+        for (const cost of costs) {
+          const possible = payable(permanents, start, cost);
+          const result = carryOut(game, cost);
+          expect(
+            result !== null,
+            `${permanents.join(",")} + ${JSON.stringify(start)} paying ${JSON.stringify(cost)}`,
+          ).toBe(possible);
+        }
       }
     }
   });
@@ -144,22 +159,25 @@ function boards(kinds: string[], max: number): string[][] {
   return out;
 }
 
-/** Brute force: is there any set of mana sources that covers the cost? Each permanent makes one mana of one color. */
-function payable(state: GameState, cost: ManaCost): boolean {
-  const colors = state.zones.battlefield.map((id) => {
-    const ability = abilitiesOf(state, id, TEST_CARDS).find((a) => isManaAbility(a.def));
-    const effect = ability?.def.effects.find((e) => e.op === "addMana");
-    return effect?.op === "addMana" ? effect.mana : null;
-  });
-  const sources = colors.filter((c) => c !== null);
-  for (let mask = 0; mask < 1 << sources.length; mask++) {
+/**
+ * Brute force, independent of the engine: is there any subset of the board's mana, plus the pool, that pays the cost
+ * exactly? Each of these permanents makes one mana: Mountain R, Forest G, Llanowar Elves G.
+ */
+function payable(permanents: string[], start: ManaPool, cost: ManaCost): boolean {
+  const COLOR: Record<string, "R" | "G"> = { mountain: "R", forest: "G", "llanowar-elves": "G" };
+  const sources = permanents.map((p) => COLOR[p] as "R" | "G");
+  const poolMana = (Object.entries(start) as [keyof ManaPool, number][]).flatMap(([t, n]) =>
+    Array.from({ length: n }, () => t),
+  );
+  const all = [...sources, ...poolMana];
+  const needTotal = cost.reduce((n, s) => n + (s.kind === "generic" ? s.amount : 1), 0);
+  for (let mask = 0; mask < 1 << all.length; mask++) {
     const have = pool();
-    sources.forEach((c, i) => {
+    all.forEach((c, i) => {
       if (mask & (1 << i)) have[c] += 1;
     });
     const total = Object.values(have).reduce((a, b) => a + b, 0);
     const needColored = (c: "R" | "G") => cost.filter((s) => s.kind === "colored" && s.color === c).length;
-    const needTotal = cost.reduce((n, s) => n + (s.kind === "generic" ? s.amount : 1), 0);
     if (have.R >= needColored("R") && have.G >= needColored("G") && total === needTotal) return true;
   }
   return false;

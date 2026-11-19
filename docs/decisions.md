@@ -307,5 +307,11 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   sources that each make one color (all M1 cards), that finds a payment whenever one exists (a brute-force test checks
   every small board); sources with a choice of colors will need a search. The scenario runner (`pay: auto`), the CLI and
   the AI use it. The engine exports it with `payFromPool`, `manaValue`, `abilitiesOf` and `isManaAbility` (D-023).
+- Activation is split in three (`mana/activate.ts`): `activationProblem` (checks any activated ability needs: zone,
+  controller, payable costs), `manaAbilityProblem` (that, plus it's a mana ability whose effects are all supported), and
+  `resolveManaAbility` (pays and adds the mana, with no priority change, so casting can use it while a cost is being
+  paid, CR 605.3a, 601.2g). The priority action `activateManaAbility` wraps it. Unsupported costs and effects are
+  refused, never skipped. `MANA_ADDED` names its source (CR 106.12).
+- `autoPay` only uses sources that make exactly one mana of one type; anything else is skipped until a card needs it.
 - The spec's "paying exact costs" and "failing to pay" scenarios need casting, so they moved to M1-09's acceptance;
   M1-08 tests `payFromPool` and `autoPay` directly. "Leftover mana emptying" is a scenario now.

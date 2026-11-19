@@ -5,10 +5,6 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
 /**
- * The card types an object has now. Until `characteristics()` and the layer system arrive (M1-11), that's the printed
- * types; type-changing effects (layer 4) will change the answer here, in one place.
- */
-/**
  * An object's subtypes (CR 205.3), printed until the layer system (M1-11), where type-changing effects (layer 4, such
  * as CR 305.7) will change the answer here.
  */
@@ -18,6 +14,10 @@ export function subtypesOf(state: GameState, id: ObjectId, cards: CardDatabase):
   return cards[obj.oracleId]?.printed.subtypes ?? [];
 }
 
+/**
+ * The card types an object has now. Until `characteristics()` and the layer system arrive (M1-11), that's the printed
+ * types; type-changing effects (layer 4) will change the answer here, in one place.
+ */
 export function cardTypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly CardType[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];

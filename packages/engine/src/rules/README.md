@@ -10,4 +10,4 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `summoning-sickness.ts`: `canUseTapAbilities` (CR 602.5a, 302.6), only for creatures.
 - `card-types.ts`: `cardTypesOf(state, id, cards)`: an object's card types (printed until the layer system, M1-11).
 
-Tests: through `test/game/start.test.ts` for now (the first turn's untap uses it).
+Tests: `test/mana/` and the scenarios in `test/scenarios/mana/` (abilities, summoning sickness), and the game tests.

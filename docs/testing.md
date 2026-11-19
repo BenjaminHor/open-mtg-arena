@@ -97,8 +97,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `expect: { ... }`, see below.
 - `expect error: <code>`: the step before it must be rejected with this error code (for example `notYourPriority`). The
   runner then sends the action directly, without looking it up in `legalActions()`.
-- `p1 activate: <card>`: activate an ability of a permanent. A plain name means one p1 controls (the first, in
-  battlefield order, whose ability can be activated now); a reference like `p2:Mountain` names exactly one, for
+- `p1 activate: <card>`: activate an ability of a permanent. A plain name means one the acting player controls (the
+  first, in battlefield order, whose ability can be activated now; before an `expect error`, simply the first); a reference like `p2:Mountain` names exactly one, for
   example to show p1 can't activate p2's land. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
   them (printed abilities, then a basic land's mana ability), when the permanent has more than one. Only mana
   abilities can be activated so far; other activated abilities arrive in M1-14.

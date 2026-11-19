@@ -76,6 +76,11 @@ with two combat phases or two upkeeps can't be represented yet. That needs a per
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 *Needs now:* nothing assumes exactly two players. Use player lists and turn order, never "the opponent".
 
+**Mana beyond six counters (CR 106.6, 106.12, 107.4h).** Mana with spending restrictions or riders, "tapped for mana"
+triggers and replacements, snow mana, sources that make more than one mana or a choice of colors.
+*Needs now:* `ManaPool` is six counters, which these rules will outgrow (a state migration); `MANA_ADDED` already names
+its source; `autoPay` will need a real search once a source can make a choice of colors.
+
 **Starting the game, beyond the basics (CR 103).** In a match, the loser of the previous game chooses who goes first
 (CR 103.1); starting hand size can change (CR 103.5a, RPG rule modifiers); multiplayer's free first mulligan (CR 103.5c);
 actions from the opening hand (CR 103.6, Leylines) and "any time you could mulligan" (CR 103.5b).
