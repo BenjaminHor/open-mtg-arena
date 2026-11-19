@@ -3,7 +3,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { activationBasicsProblem } from "../mana/activate.ts";
-import { abilitiesOf, isManaAbility, sameAbilityRef } from "../rules/abilities.ts";
+import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import { legalTargets } from "../rules/targets.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -28,8 +28,8 @@ export function activationProblem(
 ): string | null {
   const basics = activationBasicsProblem(state, player, source, ref, cards);
   if (basics !== null) return basics;
-  const ability = abilitiesOf(state, source, cards).find((a) => sameAbilityRef(a.ref, ref));
-  if (ability === undefined) return `${source} has no such ability`;
+  const ability = findAbility(state, source, ref, cards);
+  if (ability === null) return `${source} has no such ability`;
   if (isManaAbility(ability.def)) return "that's a mana ability";
   // Only mana in activation costs so far; {T} and other costs come with the first card that has one.
   if (ability.def.cost.some((part) => part.kind !== "mana")) return "costs other than mana aren't supported yet";
@@ -54,7 +54,7 @@ export function startActivation(
   const casting: Casting = {
     player,
     object: created.id,
-    origin: { kind: "ability", source, ability },
+    origin: { kind: "ability", source },
     poolBefore: ps.manaPool,
     tappedForMana: [],
   };

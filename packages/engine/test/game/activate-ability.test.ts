@@ -3,7 +3,9 @@
 // activating and cancelling affect priority (CR 117.3c, 117.4).
 
 import { describe, expect, it } from "vitest";
+import { activationProblem } from "../../src/game/activate-ability.ts";
 import { type Action, legalActions, type ObjectId } from "../../src/index.ts";
+import { manaAbilityProblem } from "../../src/mana/activate.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
 import { BEARS, PINGER, TEST_CARDS, WHELP } from "../support/cards.ts";
 import { answer, type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
@@ -143,5 +145,85 @@ describe("activating and priority (CR 117.3c, 117.4)", () => {
     expect(g.state.passesInSuccession).toBe(1);
     g = take(g, (a) => a.type === "PASS_PRIORITY");
     expect(g.state.turn?.step).toBe("beginningOfCombat");
+  });
+});
+
+describe("activations the engine refuses rather than half-does (D-041)", () => {
+  /** TEST_CARDS with the Pinger's ability replaced. */
+  const withPingerAbility = (ability: object, types: string[] = ["creature"]) => ({
+    ...TEST_CARDS,
+    [PINGER]: {
+      ...(TEST_CARDS[PINGER] as NonNullable<(typeof TEST_CARDS)[string]>),
+      printed: { ...(TEST_CARDS[PINGER] as NonNullable<(typeof TEST_CARDS)[string]>).printed, types },
+      def: { name: "Pinger", oracle: "", abilities: [ability] },
+    },
+  });
+  const ref = { kind: "printed", index: 0 } as const;
+
+  it("refuses a non-mana ability with {T} in its cost, until a card needs it", () => {
+    const { game, pinger } = setup();
+    const cards = withPingerAbility({
+      kind: "activated",
+      cost: [{ kind: "tap" }],
+      targets: [{ kind: "anyTarget" }],
+      effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
+    }) as typeof TEST_CARDS;
+    expect(activationProblem(game.state, "p1", pinger, ref, cards)).toMatch(/costs other than mana/);
+  });
+
+  it("refuses a mana ability with mana in its cost", () => {
+    const { game, pinger } = setup();
+    const cards = withPingerAbility({
+      kind: "activated",
+      cost: [{ kind: "mana", cost: [{ kind: "colored", color: "R" }] }],
+      targets: [],
+      effects: [{ op: "addMana", mana: "G", amount: 1 }],
+    }) as typeof TEST_CARDS;
+    expect(manaAbilityProblem(game.state, "p1", pinger, ref, cards)).toMatch(/mana abilities with mana costs/);
+  });
+
+  it("refuses an ability whose target requirement has no legal choice (CR 601.2c, 602.2b)", () => {
+    const g = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], battlefield: [permanent(PINGER), permanent("mountain")] }),
+        playerSetup("p2", { library: ["forest"] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const pinger = g.state.zones.battlefield[0] as ObjectId;
+    // A noncreature Pinger that targets creatures, with no creature on the battlefield.
+    const cards = withPingerAbility(
+      {
+        kind: "activated",
+        cost: [{ kind: "mana", cost: [{ kind: "colored", color: "R" }] }],
+        targets: [{ kind: "creature" }],
+        effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
+      },
+      ["artifact"],
+    ) as typeof TEST_CARDS;
+    expect(activationProblem(g.state, "p1", pinger, ref, cards)).toMatch(/nothing it could target/);
+  });
+
+  it("can be cancelled while choosing its target, too", () => {
+    const { game, pinger } = setup();
+    let g = take(game, isPing(pinger));
+    expect(g.state.pending?.kind).toBe("chooseTarget");
+    g = answer(g, { kind: "cancelCast" });
+    expect(g.state.zones.stack).toStrictEqual([]);
+    expect(g.state.casting).toBeNull();
+  });
+
+  it("offers exactly the payments, cancelling and mana abilities while paying", () => {
+    const { game, pinger } = setup();
+    let g = take(game, isPing(pinger));
+    g = answer(g, { kind: "chooseTarget", target: { kind: "player", player: "p2" } });
+    const kinds = legalActions(g.state, "p1", TEST_CARDS).map((a) =>
+      a.type === "ANSWER" ? `ANSWER ${a.answer.kind}` : `${a.type} ${"object" in a ? a.object : ""}`,
+    );
+    const [, m1, m2] = g.state.zones.battlefield as ObjectId[];
+    // The pool is empty, so no payment is listed yet: cancel, and the two Mountains' mana abilities.
+    expect(kinds).toStrictEqual(["ANSWER cancelCast", `ACTIVATE_ABILITY ${m1}`, `ACTIVATE_ABILITY ${m2}`]);
   });
 });

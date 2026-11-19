@@ -30,7 +30,7 @@ export type Answer =
   | { kind: "chooseTarget"; target: Target }
   /** How much of each type of mana to spend (CR 601.2h). */
   | { kind: "payMana"; payment: ManaPool }
-  /** Cancel the cast: the whole action is reversed (CR 734.1). */
+  /** Cancel the cast or activation in progress: the whole action is reversed (CR 734.1, D-035). */
   | { kind: "cancelCast" }
   /** Add one attacker to the declaration (CR 508.1a–b). */
   | { kind: "declareAttacker"; attack: Attack }

@@ -84,6 +84,16 @@ export function stackAbilityDef(state: GameState, id: ObjectId, cards: CardDatab
   }
 }
 
+/** The ability of this object that `ref` names, or null if it has none. */
+export function findAbility(
+  state: GameState,
+  id: ObjectId,
+  ref: AbilityRef,
+  cards: CardDatabase,
+): ActivatedAbility | null {
+  return abilitiesOf(state, id, cards).find((a) => sameAbilityRef(a.ref, ref)) ?? null;
+}
+
 /** Whether two references name the same ability, whatever the order of their keys. */
 export function sameAbilityRef(a: AbilityRef, b: AbilityRef): boolean {
   switch (a.kind) {

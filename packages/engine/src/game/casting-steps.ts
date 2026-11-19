@@ -5,14 +5,13 @@
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
 import { type ManaPayment, payFromPool } from "../mana/payment.ts";
-import { stackAbilityDef } from "../rules/abilities.ts";
-import { activationManaCost, totalCost } from "../rules/costs.ts";
+import { costOf } from "../rules/costs.ts";
 import { isLegalTarget, targetSpecsOf } from "../rules/targets.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
-import type { AbilityRef, Target } from "../state/objects.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { AbilityRef, GameObject, Target } from "../state/objects.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
@@ -28,22 +27,11 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): GameStat
   if (chosen < targetSpecsOf(state, casting.object, cards).length) {
     return waitFor(state, casting.player, { kind: "chooseTarget", object: casting.object, instance: chosen });
   }
-  return waitFor(state, casting.player, { kind: "payMana", object: casting.object, cost: costToPay(state, cards) });
-}
-
-/** The mana to pay: a spell's total cost (CR 601.2f), or an ability's activation cost (CR 602.2b). */
-function costToPay(state: GameState, cards: CardDatabase): ManaCost {
-  const casting = castingOf(state);
-  switch (casting.origin.kind) {
-    case "card": {
-      // A spell with no mana cost has an unpayable cost (CR 118.6); castProblem refuses it before it gets here.
-      const cost = totalCost(state, casting.object, cards);
-      if (cost === null) throw new Error("A spell with no mana cost can't be paid for (CR 118.6)");
-      return cost;
-    }
-    case "ability":
-      return activationManaCost(stackAbilityDef(state, casting.object, cards));
-  }
+  return waitFor(state, casting.player, {
+    kind: "payMana",
+    object: casting.object,
+    cost: costOf(state, casting.object, cards),
+  });
 }
 
 /** Why this target can't be chosen for the pending instance, or null. */
@@ -98,10 +86,7 @@ export function payCost(state: GameState, cost: ManaCost, payment: ManaPayment):
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
   const done: GameState = { ...state, players, casting: null, passesInSuccession: 0 };
-  const event: GameEvent =
-    obj.kind === "card"
-      ? { type: "SPELL_CAST", player: casting.player, object: casting.object, cardId: obj.cardId }
-      : { type: "ABILITY_ACTIVATED", player: casting.player, object: casting.object, source: obj.source };
+  const event = becameCastOrActivated(casting.player, obj);
   return { state: queueWork(done, { kind: "givePriority", player: casting.player }), events: [event] };
 }
 
@@ -161,6 +146,16 @@ function untapAndRestorePool(state: GameState, casting: Casting): GameState {
   const players =
     ps === undefined ? state.players : { ...state.players, [casting.player]: { ...ps, manaPool: casting.poolBefore } };
   return { ...state, objects, players };
+}
+
+/** CR 601.2i: the spell becomes cast; CR 602.2b: the ability becomes activated. */
+function becameCastOrActivated(player: PlayerId, obj: GameObject): GameEvent {
+  switch (obj.kind) {
+    case "card":
+      return { type: "SPELL_CAST", player, object: obj.id, cardId: obj.cardId };
+    case "ability":
+      return { type: "ABILITY_ACTIVATED", player, object: obj.id, source: obj.source };
+  }
 }
 
 export function castingOf(state: GameState): Casting {

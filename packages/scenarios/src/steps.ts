@@ -83,7 +83,17 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         `activate ${step.card}`,
       );
       // A mana ability resolves at once; another ability goes on the stack, then takes targets and payment.
-      return targetsAndPayment(apply(game, action, cards, afterEach), step, cards, afterEach);
+      const next = apply(game, action, cards, afterEach);
+      // `targets` and `pay` belong to an ability the activation put on the stack, not to a mana ability activated
+      // while some other cost is being paid.
+      const created = next.state.casting !== null && next.state.casting.object !== game.state.casting?.object;
+      if (!created) {
+        if (step.targets.length > 0 || step.pay !== undefined) {
+          throw new Error(`activate ${step.card}: that ability doesn't go on the stack, so it takes no targets or pay`);
+        }
+        return next;
+      }
+      return targetsAndPayment(next, step, cards, afterEach);
     }
     case "choose": {
       const answer = answerFor(game.state, step.player, step.value, cards, "legal");
@@ -101,7 +111,7 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
 
 /**
  * For a step followed by `expect error`: sends the step's actions directly, without looking them up in `legalActions()`,
- * and returns the first rejection, or null if every action was accepted. A `cast` is several actions (the cast, each
+ * and returns the first rejection, or null if every action was accepted. A `cast` or `activate` is several actions (the cast, each
  * target, the payment); the first one rejected is the one that counts.
  */
 export function firstRejection(

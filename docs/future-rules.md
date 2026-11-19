@@ -44,7 +44,7 @@ last existed, both ids, from and to zones). Keep the last known information of o
 Events aren't state, so last known information (CR 608.2h, 603.10) needs its own store in `GameState`, added by
 the first effect that reads information from an object that may be gone (its power, its controller, lifelink on a
 damage source). Firebreathing after the Whelp dies reads nothing from it, so M1-14 didn't need one (D-041).
-Abilities on the stack carry `sourceOracleId` + `abilityIndex`; granted abilities (layer 6) and delayed triggers
+Abilities on the stack carry `sourceOracleId` + `ability: AbilityRef`; granted abilities (layer 6) and delayed triggers
 (CR 603.7) will need another kind of reference.
 
 **Continuous effects from static abilities (CR 604, 611).** "Other creatures you control get +1/+1", "can't attack".
@@ -104,6 +104,9 @@ owner choose, so once a card cares about graveyard order, ask with a `PendingDec
 the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
 `casting-steps.ts` will need an origin kind with no payment step and no cancel. Once `def.abilities` holds triggered or
 static definitions, `activationProblem` and the activation list must check `def.kind === "activated"`.
+When a non-mana ability has {T} in its cost, cancelling it must untap its source too (`tappedForMana` records only taps
+for mana). The activation events name the source by its id, which dies with the source; a UI that names it later will
+want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
 *Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`
 reads it from the source's card each time. Copies (layer 1), text changes (layer 3) and granted abilities (layer 6) will
 need the text fixed when it's activated.

@@ -64,8 +64,8 @@ export function targetAction(state: GameState, step: StackStep, cards: CardDatab
 }
 
 /**
- * The actions that pay for a spell being cast or an ability being activated: `auto` activates what autoPay picks, then pays; `{ R: 1 }` pays that from
- * the pool; `cancel` cancels it; no `pay` leaves the payment decision pending.
+ * The actions that pay for a spell being cast or an ability being activated: `auto` activates what autoPay picks,
+ * then pays; `{ R: 1 }` pays that from the pool; `cancel` cancels it; no `pay` leaves the payment decision pending.
  */
 export function paymentActions(game: Game, step: StackStep, cards: CardDatabase): Action[] {
   const pending = game.state.pending;

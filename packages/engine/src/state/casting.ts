@@ -4,7 +4,7 @@
 
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";
-import type { AbilityRef, CardObject } from "./objects.ts";
+import type { CardObject } from "./objects.ts";
 
 export type Casting = {
   player: PlayerId;
@@ -22,4 +22,4 @@ export type CastingOrigin =
   /** A spell cast from hand: the card as it was, and where it was in the hand. */
   | { kind: "card"; card: CardObject; handIndex: number }
   /** An activated ability of a permanent (CR 602.2a): it was created on the stack, and simply ceases to exist. */
-  | { kind: "ability"; source: ObjectId; ability: AbilityRef };
+  | { kind: "ability"; source: ObjectId };

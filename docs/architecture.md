@@ -120,7 +120,7 @@ type Action =
   | { type: 'PASS_PRIORITY'; decisionId: string; player: PlayerId }
   | { type: 'PLAY_LAND'; decisionId: string; player: PlayerId; object: ObjectId }
   | { type: 'CAST_SPELL'; decisionId: string; player: PlayerId; object: ObjectId }
-  | { type: 'ACTIVATE_ABILITY'; decisionId: string; player: PlayerId; object: ObjectId; ability: number }
+  | { type: 'ACTIVATE_ABILITY'; decisionId: string; player: PlayerId; object: ObjectId; ability: AbilityRef }
   | { type: 'ANSWER'; decisionId: string; player: PlayerId; answer: Answer }
   | { type: 'CONCEDE'; player: PlayerId }
 ```
@@ -128,7 +128,8 @@ type Action =
 - Priority is just one kind of decision. Its options are the actions that `legalActions()` returns.
 - Multi-step procedures such as casting a spell (CR 601.2a–i) are a sequence of decisions:
   announce → choose modes → choose targets → pay costs. Each answer is one action. The
-  in-progress cast lives in `GameState.casting`, so the game can be saved and resumed in the middle of it.
+  in-progress cast lives in `GameState.casting`, so the game can be saved and resumed in the middle of it. Activating
+  an ability that uses the stack follows the same steps (CR 602.2b, D-041).
 - The engine validates every action. An illegal action returns `ok: false` and changes nothing.
 
 ## Running the game: the work queue

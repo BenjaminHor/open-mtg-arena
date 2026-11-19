@@ -6,7 +6,7 @@ import { assignProblem, assignToNextBlocker, damageLeft } from "../combat/combat
 import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { activateManaAbility, manaAbilityProblem } from "../mana/activate.ts";
-import { abilitiesOf, isManaAbility, sameAbilityRef } from "../rules/abilities.ts";
+import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -156,6 +156,6 @@ function error(code: EngineErrorCode, message: string): EngineResult {
 
 /** Whether the object has this ability and it's a mana ability (CR 605.1a), which is activated without the stack. */
 function isManaAbilityOf(state: GameState, object: ObjectId, ref: AbilityRef, cards: CardDatabase): boolean {
-  const ability = abilitiesOf(state, object, cards).find((a) => sameAbilityRef(a.ref, ref));
-  return ability !== undefined && isManaAbility(ability.def);
+  const ability = findAbility(state, object, ref, cards);
+  return ability !== null && isManaAbility(ability.def);
 }

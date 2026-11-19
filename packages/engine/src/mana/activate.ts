@@ -6,7 +6,7 @@ import { runEffect } from "../effects/run-effect.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
 import { tapPermanent } from "../permanents/tap.ts";
-import { type ActivatedAbility, abilitiesOf, isManaAbility, sameAbilityRef } from "../rules/abilities.ts";
+import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -115,8 +115,4 @@ export function activateManaAbility(
 ): Progress {
   const resolved = resolveManaAbility({ ...state, passesInSuccession: 0 }, player, id, ref, cards);
   return { state: queueWork(resolved.state, { kind: "givePriority", player }), events: resolved.events };
-}
-
-function findAbility(state: GameState, id: ObjectId, ref: AbilityRef, cards: CardDatabase): ActivatedAbility | null {
-  return abilitiesOf(state, id, cards).find((a) => sameAbilityRef(a.ref, ref)) ?? null;
 }

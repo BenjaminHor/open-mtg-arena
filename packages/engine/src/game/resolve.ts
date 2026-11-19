@@ -6,7 +6,7 @@ import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, stillLegalTargets } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import type { Target } from "../state/objects.ts";
+import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
 import { moveCard } from "../zones/move-card.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
@@ -69,9 +69,18 @@ export function doesNotResolve(state: GameState, id: ObjectId): Progress {
 function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: CardDatabase): WorkItem[] {
   const obj = state.objects[id];
   if (obj === undefined) return [];
-  const self = obj.kind === "ability" ? obj.source : id;
-  const context = { self, controller: controllerOf(state, id), targets: legal };
+  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal };
   return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context }));
+}
+
+/** What "this" means in the text of a spell (the spell) or an ability (its source, CR 113.7a). */
+function thisObject(obj: GameObject): ObjectId {
+  switch (obj.kind) {
+    case "card":
+      return obj.id;
+    case "ability":
+      return obj.source;
+  }
 }
 
 /**
