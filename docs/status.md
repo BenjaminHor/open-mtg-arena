@@ -7,7 +7,28 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-06 Turn structure. Plan:
+  - The turn sequence is data: `TURN_STEPS` lists the steps in order (CR 500.1, 501.1, 506.1, 512.1), and one function
+    walks it, so extra turns, phases and steps can be queued later (future-rules.md).
+  - Each step, as it begins, does its turn-based actions, then gives the active player priority (CR 117.3a):
+    untap (CR 502.3: the active player's permanents untap; they're now controlled since the turn began, CR 302.6; no
+    priority, CR 502.4); upkeep (CR 503.1); draw (CR 504.1: the active player draws, except the starting player on turn 1,
+    CR 103.8a); main phases (CR 505.6); beginning of combat (CR 507.2); declare attackers (CR 508: no attacks until M1-13,
+    so none are declared and the declare blockers and combat damage steps are skipped, CR 508.8); end of combat (CR 511.1);
+    end (CR 513.1); cleanup (CR 514.1: discard down to seven, one `discardToHandSize` decision per card; CR 514.2: damage
+    is removed; no priority, CR 514.3). Then the next player in turn order begins their turn.
+  - Mana empties as each step and phase ends (CR 500.5; the spec's "500.4" is a mis-cite, fixed under D-020).
+  - Minimal priority passing, so steps can advance: `PASS_PRIORITY` gives the next player in turn order priority (CR 117.3d);
+    when all players have passed in succession with the stack empty, the step ends (CR 117.4, 500.2). M1-07 adds the stack,
+    resolving, and the work queue.
+  - Drawing from an empty library sets the fact CR 704.5b reads (`attemptedDrawFromEmptyLibrary`) instead of throwing;
+    the loss itself arrives with state-based actions in M1-12.
+  - Replaces M1-05's first-turn shortcut. `landsPlayedThisTurn` resets as a turn begins.
+  - Tests: a full turn walk checking every step and what happens in it; turn 1 has no draw, turn 2 does; the combat skip;
+    mana emptying; cleanup discard (and its decision) and damage removal; untap only for the active player; two full turns.
+  - Future impact: steps are data (extra turns, phases, first-strike damage step later); every step change goes through one
+    function where "until end of step" effects and triggers will hook in; nothing assumes two players (next player = next in
+    `turnOrder`).
 
 ## Handoff notes
 Anything the next session (or the session after a compaction) needs to pick up the current task:
