@@ -4,7 +4,7 @@
 // Each task adds the events it produces. Every visible change must produce one (docs/future-rules.md).
 
 import type { CardId, ObjectId, PlayerId } from "./ids.ts";
-import type { ManaPool } from "./mana.ts";
+import type { ManaPool, ManaType } from "./mana.ts";
 import type { CardObject } from "./objects.ts";
 import type { GameResult } from "./result.ts";
 import type { Step } from "./turn.ts";
@@ -46,6 +46,9 @@ export type GameEvent =
   /** Unspent mana emptied from a pool as a step ended (CR 500.5). Only for pools that weren't empty. */
   | { type: "MANA_EMPTIED"; player: PlayerId; lost: ManaPool }
   | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3
+  | { type: "PERMANENT_TAPPED"; object: ObjectId } // CR 701.26a
+  /** Mana added to a player's mana pool (CR 106.4), by an ability of `source` (for "tapped for mana" rules, CR 106.12). */
+  | { type: "MANA_ADDED"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /** Damage removed from a permanent in the cleanup step (CR 514.2). */
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
   /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */

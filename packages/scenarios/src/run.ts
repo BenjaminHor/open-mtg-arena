@@ -71,7 +71,8 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
         return [`${where}: "${step.word}" steps arrive in ${step.arrives}`];
       case "pass":
       case "allPass":
-      case "choose": {
+      case "choose":
+      case "activate": {
         const next = steps[i + 1];
         if (next?.kind === "expectError") {
           const problem = rejected(game, step, next.code, cards);

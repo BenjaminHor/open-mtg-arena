@@ -12,6 +12,8 @@ export const MOUNTAIN = "mountain";
 export const BEARS = "grizzly-bears";
 export const SHOCK = "shock";
 export const HAMMER = "volcanic-hammer";
+export const ELVES = "llanowar-elves";
+export const WHELP = "furnace-whelp";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -85,6 +87,56 @@ export const TEST_CARDS: CardDatabase = {
         targets: [{ kind: "anyTarget" }],
         effects: [{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }],
       },
+    },
+  }),
+  [ELVES]: card(ELVES, {
+    printed: {
+      name: "Llanowar Elves",
+      manaCost: [{ kind: "colored", color: "G" }],
+      colors: ["G"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Elf", "Druid"],
+      power: 1,
+      toughness: 1,
+    },
+    def: {
+      name: "Llanowar Elves",
+      oracle: "{T}: Add {G}.",
+      abilities: [
+        { kind: "activated", cost: [{ kind: "tap" }], targets: [], effects: [{ op: "addMana", mana: "G", amount: 1 }] },
+      ],
+    },
+  }),
+  [WHELP]: card(WHELP, {
+    printed: {
+      name: "Furnace Whelp",
+      manaCost: [
+        { kind: "generic", amount: 2 },
+        { kind: "colored", color: "R" },
+        { kind: "colored", color: "R" },
+      ],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Dragon"],
+      power: 2,
+      toughness: 2,
+    },
+    def: {
+      name: "Furnace Whelp",
+      oracle: "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+      keywords: ["flying"],
+      abilities: [
+        {
+          kind: "activated",
+          cost: [{ kind: "mana", cost: [{ kind: "colored", color: "R" }] }],
+          targets: [],
+          effects: [{ op: "modifyPT", power: 1, toughness: 0, of: "self", duration: "endOfTurn" }],
+        },
+      ],
     },
   }),
   [BEARS]: card(BEARS, {

@@ -1,0 +1,9 @@
+name: Firebreathing isn't a mana ability, so it can't be activated like one
+rules: [CR 605.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Furnace Whelp, Mountain]
+steps:
+  - p1 activate: Furnace Whelp
+  - expect error: illegalAction

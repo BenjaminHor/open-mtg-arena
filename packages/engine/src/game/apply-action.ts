@@ -2,6 +2,7 @@
 // decision, applies it, and returns the new state and events. An illegal action changes nothing.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { activateManaAbility, manaAbilityProblem } from "../mana/activate.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
@@ -12,14 +13,14 @@ import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./
 import { queueWork } from "./work.ts";
 
 export function applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
-  const result = handleAction(state, action);
+  const result = handleAction(state, action, cards);
   if (!result.ok) return result;
   // Every action is followed by running the queued work until the next decision (docs/architecture.md).
   return { ok: true, ...advance({ state: result.state, events: result.events }, cards) };
 }
 
 /** Checks the action answers the pending decision, then applies it. The decision is cleared before it's applied. */
-function handleAction(state: GameState, action: Action): EngineResult {
+function handleAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
   if (state.result !== null) return error("gameOver", "The game is over");
   if (action.type === "CONCEDE") return error("illegalAction", "Conceding arrives in M1-15");
   const pending = state.pending;
@@ -35,7 +36,14 @@ function handleAction(state: GameState, action: Action): EngineResult {
     if (pending.kind !== "priority") return error("illegalAction", `Passing doesn't answer a ${pending.kind} decision`);
     return { ok: true, ...passPriority(answered, pending.player) };
   }
-  if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives in M1-08 to M1-14`);
+  if (action.type === "ACTIVATE_ABILITY") {
+    if (pending.kind !== "priority")
+      return error("illegalAction", `Activating doesn't answer a ${pending.kind} decision`);
+    const problem = manaAbilityProblem(answered, pending.player, action.object, action.ability, cards);
+    if (problem !== null) return error("illegalAction", problem);
+    return { ok: true, ...activateManaAbility(answered, pending.player, action.object, action.ability, cards) };
+  }
+  if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives in M1-09`);
 
   const answer = action.answer;
   const mismatch = error("illegalAction", `That doesn't answer a ${pending.kind} decision`);

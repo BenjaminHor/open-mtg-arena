@@ -46,7 +46,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   creature and yourself (CR 115.4); Giant Growth can't target a player (CR 109.2). M1-11: Giant Growth wears off in
   cleanup (CR 514.2). M1-14: firebreathing uses the stack (CR 602.2), stacks three times (CR 613.4c), and resolves after
   the Whelp dies without affecting anything (CR 113.7a, 400.7, 611.2c).
-- For M1-08 or M1-13, a settled CR 302.6 edge case to write as a scenario: a creature that entered on its controller's
+- For M1-09: casting pays with `payFromPool`; mana abilities during payment use `resolveManaAbility` (no priority
+  change); the runner's `pay: auto` uses `autoPay` (D-034). Add the "paying exact
+  costs" and "failing to pay" scenarios moved from M1-08.
+- Done in M1-08 (`mana/elves-still-sick-on-opponents-turn.yaml`). A settled CR 302.6 edge case: a creature that entered on its controller's
   last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
   its controller's next turn.
 - For M1-14: an ability whose source is gone still resolves (CR 113.7a) and uses last known information (CR 608.2h),
@@ -87,6 +90,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-16 Scenario runner: `packages/scenarios` (D-033) runs YAML scenarios through `legalActions()`, checking expectations
   and invariants on every state; 16 scenarios for game start and turn structure; a test checks testing.md documents
   every word the runner knows (2026-11-19).
+- M1-08 Mana and costs: abilities and mana abilities (CR 305.6, 605.1a), activating them with priority (CR 605.3),
+  tapping, summoning sickness for {T} (CR 602.5a), payments checked all or nothing (CR 601.2h), `autoPay` (D-034), the
+  runner's `activate` step, 8 mana scenarios (2026-11-19).
 
 ## Open questions for the owner
 - (none)

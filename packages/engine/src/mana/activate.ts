@@ -1,0 +1,123 @@
+// Activating abilities of permanents, and mana abilities in particular (CR 602, 605). A mana ability doesn't use the
+// stack: it resolves at once (CR 605.3b).
+
+import type { CardDatabase } from "../cards/types.ts";
+import { andThen, type Progress } from "../game/progress.ts";
+import { queueWork } from "../game/work.ts";
+import { tapPermanent } from "../permanents/tap.ts";
+import { type ActivatedAbility, abilitiesOf, isManaAbility, sameAbilityRef } from "../rules/abilities.ts";
+import { controllerOf } from "../rules/controller.ts";
+import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
+import type { GameState } from "../state/game-state.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { AbilityRef } from "../state/objects.ts";
+import { addMana } from "./pool.ts";
+
+/**
+ * Why the player can't activate this ability of a permanent now, for any activated ability: it works only on the
+ * battlefield (CR 113.6), only its controller activates it (CR 602.2), and its costs must be payable in full (CR 118.3).
+ * Null if nothing stops it. M1-14 builds non-mana abilities on this.
+ */
+export function activationProblem(
+  state: GameState,
+  player: PlayerId,
+  id: ObjectId,
+  ref: AbilityRef,
+  cards: CardDatabase,
+): string | null {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card" || !state.zones.battlefield.includes(id)) return `${id} isn't a permanent`;
+  if (controllerOf(state, id) !== player) return `${player} doesn't control ${id}`;
+  const ability = findAbility(state, id, ref, cards);
+  if (ability === null) return `${id} has no such ability`;
+  for (const part of ability.def.cost) {
+    switch (part.kind) {
+      case "tap":
+        // A tapped permanent can't be tapped to pay a cost (CR 107.5, 118.3).
+        if (obj.tapped) return `${id} is already tapped`;
+        if (!canUseTapAbilities(state, id, cards))
+          return `${id} hasn't been controlled since the turn began (CR 602.5a)`;
+        break;
+      case "mana":
+        return "abilities with mana costs arrive in M1-14";
+    }
+  }
+  return null;
+}
+
+/** Why the player can't activate this as a mana ability now, or null. */
+export function manaAbilityProblem(
+  state: GameState,
+  player: PlayerId,
+  id: ObjectId,
+  ref: AbilityRef,
+  cards: CardDatabase,
+): string | null {
+  const problem = activationProblem(state, player, id, ref, cards);
+  if (problem !== null) return problem;
+  const ability = findAbility(state, id, ref, cards);
+  if (ability === null || !isManaAbility(ability.def))
+    return "only mana abilities can be activated so far (others arrive in M1-14)";
+  // A mana ability can do more than add mana (CR 605.1a). Until the effects interpreter (M1-10) runs those effects,
+  // such an ability is refused rather than half-done.
+  if (ability.def.effects.some((e) => e.op !== "addMana")) return "mana abilities with other effects arrive in M1-10";
+  return null;
+}
+
+/**
+ * A mana ability is activated and resolves at once (CR 605.3b): its costs are paid, then mana goes into the activating
+ * player's pool (CR 106.4). No priority changes here, so casting (M1-09) can use it while a cost is being paid
+ * (CR 605.3a, 601.2g).
+ */
+export function resolveManaAbility(
+  state: GameState,
+  player: PlayerId,
+  id: ObjectId,
+  ref: AbilityRef,
+  cards: CardDatabase,
+): Progress {
+  const problem = manaAbilityProblem(state, player, id, ref, cards);
+  if (problem !== null) throw new Error(problem);
+  const ability = findAbility(state, id, ref, cards);
+  if (ability === null) throw new Error("No such ability");
+  let progress: Progress = { state, events: [] };
+  for (const part of ability.def.cost) {
+    switch (part.kind) {
+      case "tap":
+        progress = andThen(progress, (s) => tapPermanent(s, id));
+        break;
+      case "mana":
+        throw new Error("abilities with mana costs arrive in M1-14");
+    }
+  }
+  for (const effect of ability.def.effects) {
+    switch (effect.op) {
+      case "addMana":
+        progress = andThen(progress, (s) => addMana(s, player, effect.mana, effect.amount, id));
+        break;
+      case "dealDamage":
+      case "modifyPT":
+        throw new Error(`${effect.op} in a mana ability arrives in M1-10`);
+    }
+  }
+  return progress;
+}
+
+/**
+ * The player activates a mana ability while holding priority (CR 605.3a). Taking an action means everyone must pass
+ * again (CR 117.4), and the player then gets priority again (CR 117.3c).
+ */
+export function activateManaAbility(
+  state: GameState,
+  player: PlayerId,
+  id: ObjectId,
+  ref: AbilityRef,
+  cards: CardDatabase,
+): Progress {
+  const resolved = resolveManaAbility({ ...state, passesInSuccession: 0 }, player, id, ref, cards);
+  return { state: queueWork(resolved.state, { kind: "givePriority", player }), events: resolved.events };
+}
+
+function findAbility(state: GameState, id: ObjectId, ref: AbilityRef, cards: CardDatabase): ActivatedAbility | null {
+  return abilitiesOf(state, id, cards).find((a) => sameAbilityRef(a.ref, ref)) ?? null;
+}

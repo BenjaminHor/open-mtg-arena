@@ -2,8 +2,10 @@
 // a step that names something illegal fails, unless the next step is `expect error`.
 
 import {
+  type AbilityRef,
   type Action,
   type Answer,
+  abilitiesOf,
   applyAction,
   type CardDatabase,
   type GameEvent,
@@ -14,12 +16,12 @@ import {
 } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
-import { engineStep, nameOf } from "./names.ts";
+import { battlefieldOf, engineStep, nameOf, parseRef, resolveRef } from "./names.ts";
 
 export type Game = { state: GameState; events: GameEvent[] };
 
 /** A step that changes the game: passing or choosing. */
-export type ActionStep = Extract<ScenarioStep, { kind: "pass" | "allPass" | "choose" }>;
+export type ActionStep = Extract<ScenarioStep, { kind: "pass" | "allPass" | "choose" | "activate" }>;
 
 /** The most passes `all pass: until` makes before giving up, so a step that never comes fails instead of hanging. */
 const MAX_PASSES = 500;
@@ -51,6 +53,17 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
       }
       throw new Error(`"all pass: until ${step.until}" didn't reach that step with priority in ${MAX_PASSES} passes`);
     }
+    case "activate": {
+      const { object, ability } = abilityNamed(game.state, step, cards);
+      const action = legal(
+        game,
+        step.player,
+        cards,
+        (a) => a.type === "ACTIVATE_ABILITY" && a.object === object && deepEqual(a.ability, ability),
+        `activate ${step.card}`,
+      );
+      return apply(game, action, cards, afterEach);
+    }
     case "choose": {
       const answer = answerFor(game.state, step.player, step.value, cards, "legal");
       const action = legal(
@@ -73,6 +86,10 @@ export function actionFor(game: Game, step: ActionStep, cards: CardDatabase): Ac
       return { type: "PASS_PRIORITY", decisionId, player: step.player as PlayerId };
     case "allPass":
       throw new Error('"all pass" can\'t be followed by expect error: name the one player whose pass is illegal');
+    case "activate": {
+      const { object, ability } = abilityNamed(game.state, step, cards, "any");
+      return { type: "ACTIVATE_ABILITY", decisionId, player: step.player as PlayerId, object, ability };
+    }
     case "choose":
       return {
         type: "ANSWER",
@@ -158,4 +175,39 @@ function apply(game: Game, action: Action, cards: CardDatabase, afterEach: (g: G
   const next = { state: result.state, events: [...game.events, ...result.events] };
   afterEach(next);
   return next;
+}
+
+/**
+ * The permanent and ability an `activate` step names. A plain name (`Mountain`) means a permanent the player controls:
+ * the first, in battlefield order, whose ability they can activate now (or just the first, for an illegal attempt).
+ * A reference (`p2:Mountain`, `p1:Mountain#2`) names exactly one. `ability: <n>` counts from 1 in the order
+ * `abilitiesOf` lists them, and is needed only when the permanent has more than one.
+ */
+function abilityNamed(
+  state: GameState,
+  step: Extract<ScenarioStep, { kind: "activate" }>,
+  cards: CardDatabase,
+  which: "legal" | "any" = "legal",
+): { object: ObjectId; ability: AbilityRef } {
+  const ref = parseRef(step.card);
+  const candidates =
+    ref !== null
+      ? [resolveRef(state, ref, cards)].filter((x): x is ObjectId => x !== null)
+      : battlefieldOf(state, step.player as PlayerId).filter((id) => nameOf(state, id, cards) === step.card);
+  if (candidates.length === 0) throw new Error(`no ${step.card} for ${step.player} to activate`);
+  const options = candidates.map((object) => {
+    const abilities = abilitiesOf(state, object, cards);
+    if (step.ability === null && abilities.length > 1)
+      throw new Error(`${step.card} has ${abilities.length} abilities: say ability: <n>`);
+    const chosen = abilities[(step.ability ?? 1) - 1];
+    if (chosen === undefined) throw new Error(`${step.card} has no ability ${step.ability ?? 1}`);
+    return { object, ability: chosen.ref };
+  });
+  const legal = legalActions(state, step.player as PlayerId, cards);
+  const usable = options.find((o) =>
+    legal.some((a) => a.type === "ACTIVATE_ABILITY" && a.object === o.object && deepEqual(a.ability, o.ability)),
+  );
+  const first = options[0];
+  if (first === undefined) throw new Error(`no ${step.card} to activate`);
+  return which === "legal" ? (usable ?? first) : first;
 }

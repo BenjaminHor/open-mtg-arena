@@ -20,6 +20,11 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
     const count = listed.filter((x) => x === id).length;
     if (count !== 1) problems.push(`object ${id} is in ${count} zones`);
   }
+  for (const p of state.turnOrder) {
+    for (const [type, amount] of Object.entries(state.players[p]?.manaPool ?? {})) {
+      if (!Number.isInteger(amount) || amount < 0) problems.push(`${p}'s mana pool has ${amount} ${type}`);
+    }
+  }
   for (const obj of Object.values(state.objects)) {
     if (obj.kind === "card" && (obj.choices === null) === state.zones.stack.includes(obj.id)) {
       problems.push(`${obj.id}: a card has casting choices exactly when it's on the stack`);
