@@ -7,7 +7,7 @@ import type { CardId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 
 export type GameObject = CardObject | AbilityObject;
 
-/** Counters on an object or player, by name (`"+1/+1"`, `"poison"`). Absent means none (CR 122). */
+/** Counters on an object, by name (`"+1/+1"`). A name that isn't there means none (CR 122). */
 export type Counters = Record<string, number>;
 
 /** A card in some zone: in a library, a hand, a graveyard or exile, a spell on the stack, or a permanent. */

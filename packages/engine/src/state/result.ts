@@ -12,9 +12,9 @@ export type EngineError = { code: EngineErrorCode; message: string };
 export type EngineErrorCode =
   /** The action's `decisionId` isn't the pending decision's. */
   | "staleDecision"
-  /** The action came from a player other than the one the decision is for. */
+  /** The action came from a player other than the one a non-priority decision is for. */
   | "notYourDecision"
-  /** A priority action from a player who doesn't have priority (CR 117). */
+  /** The action came from a player who doesn't have priority while a priority decision is pending (CR 117). */
   | "notYourPriority"
   /** The action isn't one of the legal choices right now. */
   | "illegalAction"
@@ -38,5 +38,4 @@ export type Loss = { player: PlayerId; reason: LossReason };
 export type LossReason =
   | "zeroLife" // CR 704.5a
   | "drewFromEmptyLibrary" // CR 704.5b
-  | "poison" // CR 704.5c
   | "conceded"; // CR 104.3a

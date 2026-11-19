@@ -158,7 +158,7 @@ action it checks:
 - `pending` is set, or `result` is set (the engine never stalls)
 - every action from `legalActions()` is accepted by `applyAction()`
 - replaying the action log from the setup gives an identical state (determinism)
-- `playerView` never leaks hidden information (opponent's hand contents, library order)
+- `playerView` and the per-player event filter never leak hidden information (opponent's hand contents, library order)
 - no player has negative mana, and life totals change only through events
 - the game ends within a cap (for example 200 turns), or the fuzzer flags it as a likely loop
 
@@ -167,7 +167,7 @@ CLI and turned into a scenario. Run a short fuzz in `pnpm check`; run longer one
 
 ## 4. Replays and golden games
 
-- A replay file is `{ setup, seed, actions, engineVersion }`. The app's "Report a bug" button exports
+- A replay file is `{ setup, actions, engineVersion }` (the seed is part of `setup`). The app's "Report a bug" button exports
   one, with the owner's description attached.
 - `packages/engine/test/replays/` holds replays that must keep producing the same final state hash.
   When an intentional rules change alters a replay, regenerate its hash in the same commit and explain why.

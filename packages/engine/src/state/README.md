@@ -21,6 +21,9 @@ Things to know before using these types:
   `characteristics()` (from M1-11), never from fields. `baseController` is only the CR 110.2 default (D-022).
 - States are never mutated. Each change makes a new state that shares the unchanged parts (D-021).
 - Players come in turn order from `GameState.turnOrder`. Never assume two players or "the opponent".
+- Iterate zones (for order) or `turnOrder` (for players), never `Object.keys(objects)` or `Object.keys(players)`:
+  record key order is just creation order, with no rules meaning.
+- `` `o${number}` `` also accepts strings like `o1.5`. Only the engine's id allocator (`nextId`) makes ids.
 
 Tests: `test/state/` (a JSON round trip of a realistic mid-turn state, and type-level tests) and
 `test/support/plain-json.ts`, a checker that lists anything in a value that isn't plain JSON.

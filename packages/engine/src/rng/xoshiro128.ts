@@ -1,4 +1,4 @@
-// xoshiro128** 1.1 (David Blackman and Sebastiano Vigna), the game's only source of randomness (D-002).
+// xoshiro128** 1.1 (David Blackman and Sebastiano Vigna), the game's only source of randomness (D-024).
 // It's small, fast, well tested, and its state is four 32-bit numbers, so it fits in plain-JSON game state.
 // Every function is pure: it takes a state and returns the value plus the state to use next (D-021).
 

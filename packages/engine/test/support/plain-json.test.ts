@@ -17,6 +17,9 @@ describe("plainJsonProblems", () => {
       set: new Set(),
       date: new Date(0),
       list: [1, undefined],
+      negativeZero: -0,
+      // biome-ignore lint/suspicious/noSparseArray: a sparse array is exactly what this checks for
+      sparse: [1, , 3],
     };
     expect(plainJsonProblems(bad)).toStrictEqual([
       "state.u is undefined",
@@ -28,6 +31,8 @@ describe("plainJsonProblems", () => {
       "state.set is a Set, not a plain object",
       "state.date is a Date, not a plain object",
       "state.list[1] is undefined",
+      "state.negativeZero is -0",
+      "state.sparse[1] is a hole in a sparse array",
     ]);
   });
 });

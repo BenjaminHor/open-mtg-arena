@@ -6,12 +6,20 @@ export function plainJsonProblems(value: unknown, path = "state"): string[] {
   if (value === null || typeof value === "string" || typeof value === "boolean") return [];
   if (typeof value === "number") {
     // JSON turns NaN and Infinity into null, so they wouldn't survive a save.
-    return Number.isFinite(value) ? [] : [`${path} is ${value}`];
+    if (!Number.isFinite(value)) return [`${path} is ${value}`];
+    // JSON writes -0 as 0, so it comes back as a different value.
+    return Object.is(value, -0) ? [`${path} is -0`] : [];
   }
   if (value === undefined) return [`${path} is undefined`];
   if (typeof value !== "object") return [`${path} is a ${typeof value}`];
   if (Array.isArray(value)) {
-    return value.flatMap((item, i) => plainJsonProblems(item, `${path}[${i}]`));
+    // Index by index, because flatMap skips the holes of a sparse array, which JSON turns into null.
+    const problems: string[] = [];
+    for (let i = 0; i < value.length; i++) {
+      if (!(i in value)) problems.push(`${path}[${i}] is a hole in a sparse array`);
+      else problems.push(...plainJsonProblems(value[i], `${path}[${i}]`));
+    }
+    return problems;
   }
   const proto = Object.getPrototypeOf(value);
   if (proto !== Object.prototype && proto !== null) {

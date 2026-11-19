@@ -1,6 +1,6 @@
 # engine/src/rng
 
-The game's only source of randomness (D-002): xoshiro128** 1.1, seeded from the game's `seed` with SplitMix64.
+The game's only source of randomness (D-024): xoshiro128** 1.1, seeded from the game's `seed` with SplitMix64.
 The state is four 32-bit numbers stored in `GameState.rng`. Every function is pure: it takes a state and
 returns `{ value, rng }` with the state to use next (D-021).
 

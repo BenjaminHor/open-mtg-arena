@@ -17,7 +17,7 @@ export type GameState = {
   version: number;
   /** How the game started. With the actions taken since, it reproduces the game exactly. */
   setup: GameSetup;
-  /** The only source of randomness (D-002). */
+  /** The only source of randomness (D-024). */
   rng: RngState;
   /** The next number for a new id (`o12`, `c12`, `d12`). Shared by all id kinds, so every id is unique. */
   nextId: number;

@@ -119,8 +119,8 @@ A Biome override there bans Node modules, imports from other packages in this re
 so hosts (the CLI, saves, replays) can reject state from another schema. M1-03 uses it for `GameState.version`.
 
 **D-020: The Comprehensive Rules win over every other spec** · 2026-11-19 · accepted
-The owner's rule: when a spec, doc or task description in this repo conflicts with the current CR on how the game
-works, the CR wins. Fix the spec to match the CR in the same commit and note it here or in `status.md`. (Questions
+The owner said (2026-11-19): "if there's conflict in rule logic, the CR trumps all." So when a spec, doc, task
+description or owner request conflicts with the current CR on how the game works, the CR wins. Fix the spec to match the CR in the same commit and note it here or in `status.md`. (Questions
 that aren't about rules logic, such as product scope, UI or card choices, still go to the owner.)
 First application: the M1-13 spec and `architecture.md` mentioned damage assignment order and an `orderBlockers`
 decision. The current CR has no damage assignment order. A creature blocked by several creatures divides its combat
@@ -143,4 +143,19 @@ effects exist. Zones that belong to a player (library, hand, graveyard) are the 
 **D-023: The engine exports its state types** · 2026-11-19 · accepted
 `engine/src/index.ts` exports the types in `src/state/` (`GameState`, `GameSetup`, `Action`, `GameEvent`, ...) and
 `RngState`, because every other package builds setups, reads views and sends actions. These are types only, so no
-engine internals leak. The RNG functions stay internal: only the engine draws random numbers.
+engine internals leak. The RNG functions stay internal for now. The CLI's `random` agent and the fuzzer (M1-17, M1-18)
+need seeded randomness to reproduce failures; when they arrive, export `seedRng` and `randomInt` with a new entry here
+rather than copying the RNG or using `Math.random`.
+
+**D-024: The random number generator and its outputs are fixed** · 2026-11-19 · accepted
+All randomness in a game comes from `GameState.rng`: xoshiro128** 1.1, seeded from `GameSetup.seed` (a non-negative safe
+integer) by taking two SplitMix64 outputs and splitting each into two 32-bit words, low word first (the same seeding as
+rand_xoshiro's `seed_from_u64`). `randomInt(n)` draws until the value is below 2^32 − (2^32 mod n) and returns it mod n.
+Saved games and replays depend on these exact outputs, so any change to the algorithm, the seeding or `randomInt` needs
+a new entry here and a `GameState.version` bump. Tests pin them with reference vectors and snapshots.
+
+**D-025: The rules coverage report counts citations in engine logic, not type descriptions** · 2026-11-19 · accepted
+Comments in `engine/src/state/` cite the CR to explain what a type models (for example X in CR 107.3, or modes in
+CR 700.2), even before any rule uses it. Those are descriptions, not implementations, so `pnpm coverage:rules` (M1-19)
+ignores `engine/src/state/` when it looks for cited-but-untested rules. Speculative members still don't belong in the
+types: a union member or field is added by the task that uses it.

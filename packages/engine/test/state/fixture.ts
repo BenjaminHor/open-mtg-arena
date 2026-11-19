@@ -2,7 +2,7 @@
 // a spell with targets on the stack, an activated ability above it, mana in a pool, counters, damage,
 // a rule modifier and a pending decision. Built by hand because createGame arrives in M1-05.
 
-import type { CardObject, GameState } from "../../src/index.ts";
+import { type CardObject, ENGINE_VERSION, type GameState } from "../../src/index.ts";
 import { seedRng } from "../../src/rng/xoshiro128.ts";
 import { emptyManaPool } from "../../src/state/mana.ts";
 
@@ -31,7 +31,7 @@ function card(fields: Pick<CardObject, "id" | "cardId" | "oracleId" | "owner"> &
 
 export function midTurnState(): GameState {
   return {
-    version: 0,
+    version: ENGINE_VERSION,
     setup: {
       seed: 42,
       players: [
@@ -65,8 +65,8 @@ export function midTurnState(): GameState {
     turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
     turnOrder: ["p1", "p2"],
     players: {
-      p1: { id: "p1", life: 20, manaPool: { ...emptyManaPool(), R: 1 }, landsPlayedThisTurn: 1, counters: {} },
-      p2: { id: "p2", life: 18, manaPool: emptyManaPool(), landsPlayedThisTurn: 0, counters: { poison: 2 } },
+      p1: { id: "p1", life: 20, manaPool: { ...emptyManaPool(), R: 1 }, landsPlayedThisTurn: 1 },
+      p2: { id: "p2", life: 18, manaPool: emptyManaPool(), landsPlayedThisTurn: 0 },
     },
     objects: {
       o1: card({ id: "o1", cardId: "c1", oracleId: MOUNTAIN, owner: "p1" }),

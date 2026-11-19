@@ -6,6 +6,13 @@ import { nextUint32, type RngState, randomInt, seedRng } from "../../src/rng/xos
 // src/splitmix64.rs). Its comments say they were produced with Sebastiano Vigna's reference C implementations
 // (xoshiro128starstar.c v1.1 and splitmix64.c).
 
+/** The state after n draws. */
+function advance(rng: RngState, n: number): RngState {
+  let r = rng;
+  for (let i = 0; i < n; i++) r = nextUint32(r).rng;
+  return r;
+}
+
 function take(rng: RngState, n: number): number[] {
   const out: number[] = [];
   let r = rng;
@@ -60,8 +67,9 @@ describe("seedRng", () => {
   });
 
   it("keeps producing the same values for seed 42", () => {
-    // Self-generated snapshot (no published vector covers our seeding path). If this changes, every saved
-    // game and replay would play out differently, so a change needs a reason in docs/decisions.md.
+    // Self-generated snapshot. The seeding follows rand_xoshiro 0.6.0's seed_from_u64 (SplitMix64 outputs, low word
+    // first), but this exact vector wasn't taken from it. If this changes, every saved game and replay would play
+    // out differently, so a change needs a reason in docs/decisions.md (D-024).
     expect(seedRng(42)).toMatchInlineSnapshot(`
       [
         803958421,
@@ -105,6 +113,41 @@ describe("randomInt", () => {
         rng = next.rng;
       }
     }
+  });
+
+  it("draws again when a draw would bias the result", () => {
+    // From state [1, 2, 3, 4] the 8th and 9th outputs are 3734860849 and 3729100597 (reference vector above).
+    // With n = 3734860849, 2^32 mod n = 560106447, so the accepted draws are those below 2^32 − 560106447 = n.
+    // The 8th output equals n, so it must be rejected and the 9th used instead.
+    const n = 3_734_860_849;
+    const result = randomInt(advance([1, 2, 3, 4], 7), n);
+    expect(result.value).toBe(3_729_100_597);
+    expect(result.rng).toStrictEqual(advance([1, 2, 3, 4], 9));
+  });
+
+  it("keeps producing the same values for seed 42 and n = 6", () => {
+    // Self-generated snapshot: shuffles depend on these, so a change needs a reason in docs/decisions.md (D-024).
+    const values: number[] = [];
+    let rng = seedRng(42);
+    for (let i = 0; i < 10; i++) {
+      const next = randomInt(rng, 6);
+      values.push(next.value);
+      rng = next.rng;
+    }
+    expect(values).toMatchInlineSnapshot(`
+      [
+        4,
+        2,
+        5,
+        2,
+        5,
+        4,
+        5,
+        5,
+        0,
+        5,
+      ]
+    `);
   });
 
   it("returns 0 for n = 1", () => {

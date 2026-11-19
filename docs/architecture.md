@@ -62,6 +62,7 @@ type GameState = {
   nextTimestamp: number        // CR 613.7
 
   turn: { number: number; activePlayer: PlayerId; step: Step }
+  turnOrder: PlayerId[]        // starts with the starting player (CR 103.1)
   players: Record<PlayerId, PlayerState>   // life, manaPool, landsPlayed, poison, lost, ...
   objects: Record<ObjectId, GameObject>    // every card/token/copy/ability object currently in a zone
   zones: Zones                             // ordered id arrays per player/zone; stack; battlefield
@@ -159,6 +160,8 @@ simple.
 
 ## Hidden information and randomness
 
+- Events can carry hidden information too (a drawn card), so the match host filters them per player before they
+  reach the UI or AI, the same way `playerView` filters state.
 - `playerView(state, p)` replaces hidden objects (opponent's hand, libraries, face-down cards)
   with placeholders and keeps only counts and public facts. The AI and the UI get views only.
   Tests and the CLI's debug mode can see full state.

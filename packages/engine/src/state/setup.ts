@@ -21,7 +21,9 @@ export type GameSetup = {
  *   otherwise a player picked at random from the seed chooses who goes first. Then libraries are shuffled (CR 103.3),
  *   opening hands are drawn and players may mulligan (CR 103.5).
  * - `fixed`: the game begins exactly as described, at the given turn and step, with libraries in the order given and no
- *   mulligans. Used by scenario tests and for saved positions.
+ *   mulligans. The step's turn-based actions count as already done, and the active player gets priority (CR 117.3a).
+ *   Steps where nobody normally gets priority, or that need combat state, are rejected until supported (M1-05).
+ *   Used by scenario tests and for saved positions.
  */
 export type Opening = { kind: "standard"; firstPlayer: PlayerId | null } | { kind: "fixed"; turn: Turn };
 
