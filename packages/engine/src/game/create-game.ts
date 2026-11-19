@@ -73,7 +73,16 @@ function emptyGame(setup: GameSetup): GameState {
     turn: null,
     turnOrder: ids,
     players: Object.fromEntries(
-      setup.players.map((p) => [p.id, { id: p.id, life: p.life, manaPool: { ...p.manaPool }, landsPlayedThisTurn: 0 }]),
+      setup.players.map((p) => [
+        p.id,
+        {
+          id: p.id,
+          life: p.life,
+          manaPool: { ...p.manaPool },
+          landsPlayedThisTurn: 0,
+          attemptedDrawFromEmptyLibrary: false,
+        },
+      ]),
     ),
     objects: {},
     zones: {
@@ -84,6 +93,7 @@ function emptyGame(setup: GameSetup): GameState {
       command: [],
     },
     pregame: null,
+    passesInSuccession: 0,
     pending: null,
     result: null,
   };

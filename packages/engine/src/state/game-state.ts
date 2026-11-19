@@ -39,6 +39,13 @@ export type GameState = {
   /** The start of a `standard` game (CR 103.1–103.5), until the first turn begins. Null afterwards. */
   pregame: Pregame | null;
 
+  /**
+   * How many players have passed priority in succession without taking an action (CR 117.4). When it reaches the
+   * number of players, the top of the stack resolves, or with an empty stack the step ends (CR 500.2). A new step
+   * starts it at 0.
+   */
+  passesInSuccession: number;
+
   /** What the game is waiting for. Null only once the game has ended. */
   pending: PendingDecision | null;
   /** Set when the game ends (CR 104). */

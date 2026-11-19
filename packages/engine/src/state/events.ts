@@ -4,8 +4,10 @@
 // Each task adds the events it produces. Every visible change must produce one (docs/future-rules.md).
 
 import type { CardId, ObjectId, PlayerId } from "./ids.ts";
+import type { ManaPool } from "./mana.ts";
 import type { CardObject } from "./objects.ts";
 import type { GameResult } from "./result.ts";
+import type { Step } from "./turn.ts";
 import type { ZoneRef } from "./zones.ts";
 
 export type GameEvent =
@@ -31,5 +33,15 @@ export type GameEvent =
   | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5
   | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId }
+  /** A step or phase began (CR 500.1). Skipped steps don't begin (CR 500.11). */
+  | { type: "STEP_BEGAN"; turn: number; step: Step; activePlayer: PlayerId }
+  | { type: "PRIORITY_PASSED"; player: PlayerId } // CR 117.3d
+  /** Unspent mana emptied from a pool as a step ended (CR 500.5). Only for pools that weren't empty. */
+  | { type: "MANA_EMPTIED"; player: PlayerId; lost: ManaPool }
+  | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3
+  /** Damage removed from a permanent in the cleanup step (CR 514.2). */
+  | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
+  /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */
+  | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "PLAYER_CONCEDED"; player: PlayerId } // CR 104.3a
   | { type: "GAME_ENDED"; result: GameResult };

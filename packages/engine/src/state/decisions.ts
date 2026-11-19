@@ -27,4 +27,9 @@ export type DecisionKind =
    * After a mulligan, put one card from hand on the bottom of the library (CR 103.5). Asked once per card, so the
    * answers also set the order: each card goes below the ones before it. `remaining` counts this one.
    */
-  | { kind: "mulliganBottom"; remaining: number };
+  | { kind: "mulliganBottom"; remaining: number }
+  /**
+   * In the cleanup step, discard one card because the hand is over the maximum hand size (CR 514.1, 402.2). Asked once
+   * per card. `remaining` counts this one.
+   */
+  | { kind: "discardToHandSize"; remaining: number };

@@ -5,8 +5,12 @@ import type { CardDatabase } from "../cards/types.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
+import { discardCard } from "../zones/discard.ts";
 import { zoneList } from "../zones/zone-list.ts";
+import { passPriority } from "./pass-priority.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
+import { andThen } from "./progress.ts";
+import { finishCleanup } from "./steps.ts";
 
 export function applyAction(state: GameState, action: Action, _cards: CardDatabase): EngineResult {
   if (state.result !== null) return error("gameOver", "The game is over");
@@ -19,7 +23,11 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
       ? error("notYourPriority", `${pending.player} has priority`)
       : error("notYourDecision", `The decision is ${pending.player}'s`);
   }
-  if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives with priority (M1-07)`);
+  if (action.type === "PASS_PRIORITY") {
+    if (pending.kind !== "priority") return error("illegalAction", `Passing doesn't answer a ${pending.kind} decision`);
+    return { ok: true, ...passPriority(state, pending.player) };
+  }
+  if (action.type !== "ANSWER") return error("illegalAction", `${action.type} arrives in M1-08 to M1-14`);
 
   const answer = action.answer;
   const mismatch = error("illegalAction", `That doesn't answer a ${pending.kind} decision`);
@@ -41,6 +49,12 @@ export function applyAction(state: GameState, action: Action, _cards: CardDataba
         return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
       }
       return { ok: true, ...putOnBottom(state, pending.player, answer.object) };
+    case "discardToHandSize":
+      if (answer.kind !== "discardToHandSize") return mismatch;
+      if (!zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object)) {
+        return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
+      }
+      return { ok: true, ...andThen(discardCard(state, pending.player, answer.object), finishCleanup) };
     case "priority":
       return mismatch;
   }
