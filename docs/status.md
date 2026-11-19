@@ -24,6 +24,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   pregame value: make it `Turn | null` or add a marker), where mulligan bookkeeping lives before `work` exists (M1-07),
   and validation of `fixed` openings (reject steps with no priority or that need combat state). CR 103.1: a random
   player chooses who goes first, as a decision.
+- For M1-08 or M1-13, a settled CR 302.6 edge case to write as a scenario: a creature that entered on its controller's
+  last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
+  its controller's next turn.
 - For M1-14: an ability whose source is gone still resolves (CR 113.7a) and uses last known information (CR 608.2h),
   which needs a store in `GameState` (`future-rules.md`).
 - When M2 adds `apps/web`: add `apps/*` to `pnpm-workspace.yaml`, the Vitest projects and the tsconfig include.
