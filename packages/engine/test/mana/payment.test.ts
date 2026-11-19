@@ -1,7 +1,15 @@
 // Paying mana costs (CR 601.2h, 107.4) and the autoPay helper (D-034).
 
 import { describe, expect, it } from "vitest";
-import { autoPay, isManaAbility, type ManaCost, type ManaPool, type ObjectId, payFromPool } from "../../src/index.ts";
+import {
+  allPayments,
+  autoPay,
+  isManaAbility,
+  type ManaCost,
+  type ManaPool,
+  type ObjectId,
+  payFromPool,
+} from "../../src/index.ts";
 import { abilitiesOf } from "../../src/rules/abilities.ts";
 import { TEST_CARDS } from "../support/cards.ts";
 import { act, type Game, playerSetup, start } from "../support/game.ts";
@@ -28,6 +36,13 @@ describe("payFromPool (CR 601.2h, 107.4)", () => {
     expect(payFromPool(pool({ R: 3 }), [generic(1), R], pool({ R: 3 }))).toBeNull(); // overpaying
     expect(start).toStrictEqual(pool({ R: 1 }));
     expect(payFromPool(pool({ R: 1, G: 1 }), [generic(1)], pool({ R: 0.5, G: 0.5 }))).toBeNull(); // whole mana only
+  });
+});
+
+describe("allPayments (CR 601.2h)", () => {
+  it("lists every way the pool can pay, since the player chooses", () => {
+    expect(allPayments(pool({ R: 2, G: 1 }), [generic(1), R])).toStrictEqual([pool({ R: 1, G: 1 }), pool({ R: 2 })]);
+    expect(allPayments(pool({ G: 1 }), [R])).toStrictEqual([]);
   });
 });
 

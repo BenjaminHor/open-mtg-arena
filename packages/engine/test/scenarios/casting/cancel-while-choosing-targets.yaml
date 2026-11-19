@@ -1,0 +1,16 @@
+name: A cast can be cancelled while choosing targets, too
+rules: [CR 601.2c, CR 734.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Lightning Bolt]
+    battlefield: [Mountain]
+steps:
+  - p1 cast: Lightning Bolt
+  - expect:
+      pending: { player: p1, kind: chooseTarget }
+  - p1 choose: cancel
+  - expect:
+      stack: []
+      p1.hand: [Lightning Bolt]
+      pending: { player: p1, kind: priority }

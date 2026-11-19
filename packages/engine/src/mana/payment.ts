@@ -36,3 +36,26 @@ export function payFromPool(pool: ManaPool, cost: ManaCost, payment: ManaPayment
 export function manaValue(cost: ManaCost | null): number {
   return (cost ?? []).reduce((sum, s) => sum + (s.kind === "generic" ? s.amount : 1), 0);
 }
+
+/**
+ * Every payment from `pool` that pays `cost` exactly, in a fixed order. Which mana pays is the player's choice
+ * (CR 601.2h), so `legalActions` lists them all. Pools are small (a few mana), so listing every split is cheap.
+ */
+export function allPayments(pool: ManaPool, cost: ManaCost): ManaPayment[] {
+  const payments: ManaPayment[] = [];
+  const current: ManaPayment = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+  const choose = (i: number) => {
+    const type = MANA_TYPES[i];
+    if (type === undefined) {
+      if (payFromPool(pool, cost, current) !== null) payments.push({ ...current });
+      return;
+    }
+    for (let n = 0; n <= pool[type]; n++) {
+      current[type] = n;
+      choose(i + 1);
+    }
+    current[type] = 0;
+  };
+  choose(0);
+  return payments;
+}

@@ -28,7 +28,8 @@ export function castTimingProblem(
   cards: CardDatabase,
 ): string | null {
   const types = cardTypesOf(state, card, cards);
-  if (types.includes("land")) return "a land is played, not cast (CR 305.9)";
+  // A land is played (CR 116.2a, 305.1), never cast, even one that also has another card type (CR 305.9).
+  if (types.includes("land")) return "a land is played, not cast";
   if (types.includes("instant")) return null;
   return mainPhaseEmptyStack(state, player) ? null : "only in your main phase with an empty stack (CR 117.1a)";
 }

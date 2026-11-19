@@ -42,8 +42,18 @@ export type GameEvent =
   | { type: "LAND_PLAYED"; player: PlayerId; newId: ObjectId; cardId: CardId } // CR 305.1
   /** A spell became cast (CR 601.2i), with its targets chosen and costs paid. */
   | { type: "SPELL_CAST"; player: PlayerId; object: ObjectId; cardId: CardId }
-  /** The player cancelled a cast and it was reversed (CR 734.1): nothing else happened. */
-  | { type: "CAST_CANCELLED"; player: PlayerId; cardId: CardId }
+  /**
+   * The player cancelled a cast and it was reversed (D-035): the spell `spell` left the stack, the card is back in hand
+   * as `restored` (its object before the cast), and `untapped` untapped. Nothing triggers from this (CR 734.1).
+   */
+  | {
+      type: "CAST_CANCELLED";
+      player: PlayerId;
+      cardId: CardId;
+      spell: ObjectId;
+      restored: ObjectId;
+      untapped: ObjectId[];
+    }
   /** Every target was illegal, so the spell didn't resolve (CR 608.2b); it goes to its owner's graveyard. */
   | { type: "SPELL_DID_NOT_RESOLVE"; object: ObjectId; cardId: CardId }
   /** A spell resolved (CR 608.1). Its card then moves to the battlefield or a graveyard (`ZONE_CHANGED`). */

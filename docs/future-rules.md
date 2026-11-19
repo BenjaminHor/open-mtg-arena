@@ -81,6 +81,15 @@ triggers and replacements, snow mana, sources that make more than one mana or a 
 *Needs now:* `ManaPool` is six counters, which these rules will outgrow (a state migration); `MANA_ADDED` already names
 its source; `autoPay` will need a real search once a source can make a choice of colors.
 
+**Cancelling a cast, as rules grow (CR 734.1, D-035).** Cancelling restores a snapshot: the card, its place in hand,
+the pool before, and the permanents tapped for mana.
+*Watch out:* once triggered abilities exist, any trigger from a cancelled cast (or from mana abilities it reverses)
+must be discarded, never put on the stack (CR 734.1: no abilities trigger from an undone action). The snapshot stops
+being an exact reversal once a mana ability has another effect or cost (sacrifice, life, a library) or a triggered
+mana ability fires; CR 734.1 forbids reversing some of those, so cancel will need to refuse, or reverse less.
+Modal spells and kicker change the target requirements after the mode or cost is chosen (CR 601.2b–c), so the
+"every target has a legal choice" pre-check in `castProblem` must then look at the chosen modes.
+
 **Starting the game, beyond the basics (CR 103).** In a match, the loser of the previous game chooses who goes first
 (CR 103.1); starting hand size can change (CR 103.5a, RPG rule modifiers); multiplayer's free first mulligan (CR 103.5c);
 actions from the opening hand (CR 103.6, Leylines) and "any time you could mulligan" (CR 103.5b).

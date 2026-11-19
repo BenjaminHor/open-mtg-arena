@@ -103,6 +103,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
     }
     case "chooseTarget": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCast(answered) };
       if (answer.kind !== "chooseTarget") return mismatch;
       const problem = targetProblem(answered, pending.instance, answer.target, cards);
       if (problem !== null) return error("illegalAction", problem);

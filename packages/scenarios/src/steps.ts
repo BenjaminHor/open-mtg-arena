@@ -12,6 +12,7 @@ import {
   type GameEvent,
   type GameState,
   legalActions,
+  type ManaPool,
   type ObjectId,
   type PlayerId,
   type Target,
@@ -89,6 +90,13 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
           `target ${String(value)}`,
         );
         next = apply(next, answer, cards, afterEach);
+      }
+      // With no targets listed the cast may stop at the first target choice; with some listed, they must all be there.
+      if (step.targets.length > 0 && next.state.pending?.kind === "chooseTarget") {
+        throw new Error(`cast ${step.card}: it needs more targets than the ${step.targets.length} listed`);
+      }
+      if (step.pay !== undefined && next.state.pending?.kind !== "payMana") {
+        throw new Error(`cast ${step.card}: "pay" was given, but the cast isn't waiting for a payment`);
       }
       for (const action of paymentActions(next, step, cards)) {
         const found = legal(
@@ -227,9 +235,20 @@ function paymentActions(game: Game, step: Extract<ScenarioStep, { kind: "cast" }
       { type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: plan.payment } },
     ];
   }
-  if (!isRecord(step.pay)) throw new Error('pay is "auto", "cancel", or a payment like { R: 1 }');
-  const payment = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...(step.pay as Record<string, number>) };
-  return [{ type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment } }];
+  return [{ type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: paymentFrom(step.pay) } }];
+}
+
+/** A payment written in a scenario, like `{ R: 1 }`: only mana types, whole amounts. */
+export function paymentFrom(value: unknown): ManaPool {
+  if (!isRecord(value)) throw new Error('pay is "auto", "cancel", or a payment like { R: 1 }');
+  const payment: ManaPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+  for (const [type, amount] of Object.entries(value)) {
+    if (!(type in payment) || typeof amount !== "number" || !Number.isInteger(amount)) {
+      throw new Error(`a payment is mana types and whole amounts, like { R: 1 }; got ${type}: ${String(amount)}`);
+    }
+    payment[type as keyof ManaPool] = amount;
+  }
+  return payment;
 }
 
 function passByWhoeverHasPriority(game: Game, cards: CardDatabase, afterEach: (g: Game) => void): Game {
@@ -266,11 +285,11 @@ function answerFor(
     case "discardToHandSize":
       return { kind: pending.kind, object: cardNamed(state, player, text, cards, which) };
     case "chooseTarget":
+      if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "chooseTarget", target: targetNamed(state, value, cards) };
     case "payMana": {
       if (value === "cancel") return { kind: "cancelCast" };
-      if (!isRecord(value)) throw new Error('paying takes a payment like { R: 1 }, or "cancel"');
-      return { kind: "payMana", payment: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...(value as Record<string, number>) } };
+      return { kind: "payMana", payment: paymentFrom(value) };
     }
     case "priority":
       throw new Error("the player has priority: use pass, play, cast or activate");

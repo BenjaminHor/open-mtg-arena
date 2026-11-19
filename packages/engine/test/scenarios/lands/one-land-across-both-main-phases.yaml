@@ -1,0 +1,20 @@
+name: The one land a turn counts across both main phases, and starts over the next turn
+rules: [CR 305.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Forest, Forest]
+    library: [Forest, Forest, Forest]
+steps:
+  - p1 play: Forest
+  - all pass: until main2
+  - p1 play: Forest
+  - expect error: illegalAction
+  - all pass: until main1
+  - all pass: until main1
+  - expect:
+      active: p1
+      turn: 5
+  - p1 play: Forest
+  - expect:
+      p1.battlefield: [Forest, Forest]

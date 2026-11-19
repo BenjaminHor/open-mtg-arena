@@ -1,19 +1,27 @@
-name: A spell can't be cast without the mana to pay for it, and a payment must match the cost
-rules: [CR 601.2h, CR 118.3, CR 107.4a]
+name: Starting to cast a spell you can't pay for is legal, but you can't finish it, so you cancel
+rules: [CR 118.6, CR 601.2h, CR 107.4a]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    hand: [Lightning Bolt, Volcanic Hammer]
+    hand: [Lightning Bolt]
     battlefield: [Forest]
 steps:
   - p1 cast: Lightning Bolt
     targets: [p2]
-    pay: auto
+  - expect:
+      stack: [Lightning Bolt]
+      pending: { player: p1, kind: payMana }
+  - p1 choose: { R: 1 }
   - expect error: illegalAction
   - p1 activate: Forest
-  - p1 cast: Volcanic Hammer
-    targets: [p2]
+  - p1 choose: { G: 1 }
   - expect error: illegalAction
   - expect:
-      p1.hand: [Lightning Bolt, Volcanic Hammer]
+      pending: { player: p1, kind: payMana }
       p1.manaPool: { G: 1 }
+  - p1 choose: cancel
+  - expect:
+      stack: []
+      p1.hand: [Lightning Bolt]
+      p1.manaPool: {}
+      p1:Forest.tapped: false

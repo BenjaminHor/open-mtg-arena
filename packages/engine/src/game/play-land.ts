@@ -22,7 +22,7 @@ export function playLandProblem(
 
 /**
  * The land enters the battlefield under the player's control and counts toward their lands this turn (CR 305.2).
- * Taking an action restarts the passes (CR 117.4), and the player gets priority again (CR 117.3c).
+ * Taking an action restarts the passes (CR 117.4), and the player gets priority again (CR 116.3, 117.3c).
  */
 export function playLand(state: GameState, player: PlayerId, card: ObjectId): Progress {
   const obj = state.objects[card];

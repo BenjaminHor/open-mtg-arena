@@ -18,6 +18,7 @@ steps:
     pay: auto
   - expect:
       stack: [Volcanic Hammer, Giant Growth]
+      pending: { player: p2, kind: priority }
   - all pass: once
   - expect:
       stack: [Volcanic Hammer]

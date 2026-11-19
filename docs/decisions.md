@@ -320,16 +320,22 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
 - Timing lives in `rules/timing.ts`: instants whenever the player has priority; every other spell, and land plays, only
   in the player's own main phase with an empty stack (CR 117.1a, 302.1, 304.1, 305.1, 307.1), and one land per turn
   (CR 305.2). Legal targets live in `rules/targets.ts` (CR 115, 115.4, 109.2).
-- `castProblem` checks everything before the card moves (CR 601.2a): it's in hand, the timing allows it, every target
-  requirement has a legal choice, and `autoPay` can pay. `legalActions` and `applyAction` both use it, so a cast that
-  couldn't be completed is never offered ("failing to pay" is "can't cast").
+- `castProblem` checks what it can before the card moves (CR 601.2a): it's in hand, the timing allows it, every target
+  requirement has a legal choice (`targetSpecsOf` in `rules/targets.ts`), and the spell has a mana cost. It doesn't
+  check that the player can pay: CR 118.6 makes even an attempt to cast with an unpayable cost a legal action, so a
+  spell the player can't afford is still offered, and they find out at `payMana`, where no payment is accepted and
+  cancelling is the way out. `legalActions` and `applyAction` both use `castProblem`.
 - Casting is a sequence of decisions: `CAST_SPELL` moves the card to the stack, then one `chooseTarget` per instance of
   "target" (CR 601.2c), then `payMana` (CR 601.2g–h). While `payMana` is pending the player may activate mana abilities
   (CR 605.3a), and the decision is asked again after each; then they answer with a payment (checked by `payFromPool`) or
-  cancel. The spell then becomes cast (`SPELL_CAST`, CR 601.2i) and the caster gets priority (CR 117.3c).
-- Cancelling reverses the whole cast exactly (CR 734.1): `GameState.casting` keeps the card as it was, its place in the
+  cancel. `legalActions` lists every exact payment the pool can make (`allPayments`), since which mana pays is the
+  player's choice (CR 601.2h). The spell then becomes cast (`SPELL_CAST`, CR 601.2i) and the caster gets priority (CR 117.3c).
+- Cancelling is a product choice, not a rule: Arena-style undo, offered at every decision of the cast (`chooseTarget`
+  and `payMana`). The CR has no "cancel" action, but CR 734.1 says how an action that can't be completed is reversed,
+  and cancelling uses that model. It reverses the whole cast exactly: `GameState.casting` keeps the card as it was, its place in the
   hand, the pool before, and the permanents tapped for mana during the cast. The card goes back as the same object,
-  the pool is restored, those permanents untap, and nothing triggers; the player keeps priority (CR 734.2). CR 734.1
+  the pool is restored, those permanents untap, and nothing triggers; the player keeps priority (CR 734.2).
+  `CAST_CANCELLED` carries `{ player, cardId, spell, restored, untapped }` so the UI can animate the undo. CR 734.1
   lets each player choose whether to reverse their mana abilities; cancelling always reverses them, one of the allowed
   choices.
 - On resolution, a spell whose targets are all illegal doesn't resolve (CR 608.2b): it goes to its owner's graveyard

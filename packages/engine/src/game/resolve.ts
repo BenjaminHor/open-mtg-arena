@@ -3,12 +3,11 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { isLegalTarget } from "../rules/targets.ts";
+import { isLegalTarget, targetSpecsOf } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { WorkItem } from "../state/work.ts";
 import { moveCard } from "../zones/move-card.ts";
-import { targetSpecsOf } from "./cast.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
 import { queueWork } from "./work.ts";
@@ -60,7 +59,7 @@ export function doesNotResolve(state: GameState, id: ObjectId): Progress {
 
 /**
  * The work for what the spell or ability does: first checking its targets are still legal (CR 608.2b), then its effects
- * (CR 608.2c–m). Target checks arrive with M1-09 and the effects interpreter with M1-10; until then there is none.
+ * (CR 608.2c–m). The effects interpreter arrives in M1-10; until then there is none (the all-targets-illegal check runs before).
  * When a spell has no legal targets left, it doesn't resolve (CR 608.2b, 608.3b): that will become a different final step.
  */
 function effectWork(_state: GameState, _id: ObjectId, _cards: CardDatabase): WorkItem[] {

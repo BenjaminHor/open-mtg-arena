@@ -33,8 +33,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - For M1-10: effects run in `effectWork` (`game/resolve.ts`), after the CR 608.2b check (done in M1-09); with several
   targets, effects skip the illegal ones (CR 608.2b). Test CR 608.2m (a spell that leaves the stack mid-resolution) once
   an effect can move one. The M1-07 stack tests are TypeScript; real casting now covers the same paths in YAML.
-- For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Reset
-  `passesInSuccession` when a player casts or activates (CR 117.4).
+- For M1-12: write the CR 608.2b scenario (a spell whose only target died), moved from M1-09. Casting, playing a land
+  and activating a mana ability already reset `passesInSuccession` (CR 117.4); M1-14's activated abilities must too.
 - For M1-12: state-based actions must turn `attemptedDrawFromEmptyLibrary` into a loss (CR 704.5b) and clear it after
   each check. Cleanup must then check SBAs and give priority if any happened (CR 514.3a).
 - Engine test helpers (`test/support/game.ts`) check invariants on every state and only take actions from
@@ -61,7 +61,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   passes `--use-env-proxy` itself, so it works behind the proxy with no environment variable.
 
 ## Next up
-- M1-07 Priority and the stack
+- M1-10 Effects interpreter
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).

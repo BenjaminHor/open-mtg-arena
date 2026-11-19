@@ -3,6 +3,7 @@
 
 import type { CardDatabase, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { cardTypesOf } from "./card-types.ts";
 
@@ -32,4 +33,11 @@ export function isLegalTarget(state: GameState, spec: TargetSpec, target: Target
       ? target.kind === "player" && target.player === t.player
       : target.kind === "object" && target.object === t.object,
   );
+}
+
+/** The target requirements of a card's spell, one per instance of "target" (CR 601.2c). */
+export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly TargetSpec[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  return cards[obj.oracleId]?.def.spell?.targets ?? [];
 }

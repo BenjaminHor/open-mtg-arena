@@ -1,11 +1,10 @@
 // Casting a spell (CR 601.2), as a sequence of decisions. Progress is kept in `GameState.casting` and on the stack
 // object, so every pause is plain data and a cancelled cast can be reversed exactly (CR 734.1, D-035).
 
-import type { CardDatabase, ManaCost, TargetSpec } from "../cards/types.ts";
+import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
-import { autoPay } from "../mana/auto-pay.ts";
 import { type ManaPayment, payFromPool } from "../mana/payment.ts";
-import { isLegalTarget, legalTargets } from "../rules/targets.ts";
+import { isLegalTarget, legalTargets, targetSpecsOf } from "../rules/targets.ts";
 import { castTimingProblem } from "../rules/timing.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -17,22 +16,21 @@ import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
 import { queueWork } from "./work.ts";
 
-/** The target requirements of a card's spell, one per instance of "target" (CR 601.2c). */
-export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly TargetSpec[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.spell?.targets ?? [];
-}
-
-function manaCostOf(state: GameState, id: ObjectId, cards: CardDatabase): ManaCost | null {
+/**
+ * The total cost of the spell (CR 601.2f): its mana cost, plus additional costs and increases, minus reductions. There
+ * are none of those yet, so it's the printed mana cost; every reader of a spell's cost asks this one function.
+ */
+export function totalCost(state: GameState, id: ObjectId, cards: CardDatabase): ManaCost | null {
   const obj = state.objects[id];
   return obj?.kind === "card" ? (cards[obj.oracleId]?.printed.manaCost ?? null) : null;
 }
 
 /**
  * Why the player can't begin casting this card now, or null. Checked once, before the card moves (CR 601.2a): it's in
- * their hand, the timing allows it, every target requirement has a legal choice (CR 601.2c), and the cost can be paid
- * (CR 601.2h). So a spell that couldn't be completed is never offered.
+ * their hand and the timing allows it. Two shortcuts give the same result as starting and then reversing the cast
+ * (CR 601.2, 734.1): every target requirement must have a legal choice (CR 601.2c), and a card with no mana cost can't be
+ * cast (it has no alternative costs yet; CR 118.6 makes the attempt legal, but it could never be paid). Whether the
+ * player can pay is NOT checked: attempting is legal (CR 118.6), and a player who can't pay cancels.
  */
 export function castProblem(state: GameState, player: PlayerId, card: ObjectId, cards: CardDatabase): string | null {
   if (!zoneList(state, { zone: "hand", player }).includes(card)) return `${card} isn't in ${player}'s hand`;
@@ -41,10 +39,7 @@ export function castProblem(state: GameState, player: PlayerId, card: ObjectId, 
   for (const spec of targetSpecsOf(state, card, cards)) {
     if (legalTargets(state, spec, cards).length === 0) return "there's nothing it could target (CR 601.2c)";
   }
-  const cost = manaCostOf(state, card, cards);
-  // A card with no mana cost can't be cast by paying it (CR 202.1b, 118.6); alternative costs come later.
-  if (cost === null) return "it has no mana cost to pay";
-  if (autoPay(state, player, cost, cards) === null) return "you can't pay its cost (CR 601.2h)";
+  if (totalCost(state, card, cards) === null) return "it has no mana cost, so it could never be paid (CR 118.6)";
   return null;
 }
 
@@ -75,7 +70,7 @@ function nextCastStep(state: GameState, cards: CardDatabase): GameState {
   if (chosen < targetSpecsOf(state, casting.spell, cards).length) {
     return waitFor(state, casting.player, { kind: "chooseTarget", spell: casting.spell, instance: chosen });
   }
-  const cost = manaCostOf(state, casting.spell, cards) ?? [];
+  const cost = totalCost(state, casting.spell, cards) ?? [];
   return waitFor(state, casting.player, { kind: "payMana", spell: casting.spell, cost });
 }
 
@@ -165,7 +160,16 @@ export function cancelCast(state: GameState): Progress {
     next = { ...next, players: { ...next.players, [casting.player]: { ...ps, manaPool: casting.poolBefore } } };
   return {
     state: queueWork(next, { kind: "givePriority", player: casting.player }),
-    events: [{ type: "CAST_CANCELLED", player: casting.player, cardId: casting.card.cardId }],
+    events: [
+      {
+        type: "CAST_CANCELLED",
+        player: casting.player,
+        cardId: casting.card.cardId,
+        spell: casting.spell,
+        restored: casting.card.id,
+        untapped: casting.tappedForMana,
+      },
+    ],
   };
 }
 

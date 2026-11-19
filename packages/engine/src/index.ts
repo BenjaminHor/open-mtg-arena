@@ -23,7 +23,7 @@ export { applyAction } from "./game/apply-action.ts";
 export { createGame } from "./game/create-game.ts";
 export { legalActions } from "./game/legal-actions.ts";
 export { type AutoPayment, autoPay } from "./mana/auto-pay.ts";
-export { type ManaPayment, manaValue, payFromPool } from "./mana/payment.ts";
+export { allPayments, type ManaPayment, manaValue, payFromPool } from "./mana/payment.ts";
 export type { RngState } from "./rng/xoshiro128.ts";
 export { type ActivatedAbility, abilitiesOf, isManaAbility } from "./rules/abilities.ts";
 export { controllerOf } from "./rules/controller.ts";
