@@ -12,8 +12,9 @@ export type PlayerId = `p${number}`;
 export type ObjectId = `o${number}`;
 
 /**
- * One physical card from a deck (later, also a token that was created). It stays the same as the
- * card moves between zones, so the UI can follow it. Rules logic never uses it (CR 400.7).
+ * One physical card from a deck (later, also a token that was created). It stays the same as the card moves between
+ * zones, so the UI can follow it, except that a card coming out of a hand or library into a public zone gets a new one
+ * (D-054). Rules logic never uses it (CR 400.7).
  */
 export type CardId = `c${number}`;
 

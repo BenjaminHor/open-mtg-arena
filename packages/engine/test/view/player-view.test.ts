@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  type Action,
   eventsFor,
   type GameEvent,
   type GameState,
@@ -113,7 +114,10 @@ describe("eventsFor", () => {
     for (const e of moves) {
       if (e.type !== "ZONE_CHANGED") throw new Error("a zone change");
       expect(eventsFor([e], "p1")).toStrictEqual([{ type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to }]);
-      expect(eventsFor([e], "p2")).toStrictEqual([e]);
+      // p2 saw the card in hand, but not where it went: their library is hidden from them too (CR 401.2).
+      expect(eventsFor([e], "p2")).toStrictEqual([
+        { type: "CARD_LEFT_VIEW", from: e.from, to: e.to, oldId: e.oldId, cardId: e.cardId, object: e.object },
+      ]);
     }
   });
 
@@ -131,11 +135,14 @@ describe("eventsFor", () => {
     }
     for (const e of moved) {
       expect(eventsFor([e], "p1")).toStrictEqual([{ type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to }]);
-      expect(eventsFor([e], "p2")).toStrictEqual([e]);
+      // p2 sees the card arrive in hand, not the object it was in their library (CR 401.2).
+      expect(eventsFor([e], "p2")).toStrictEqual([
+        { type: "CARD_CAME_INTO_VIEW", from: e.from, to: e.to, newId: e.newId, cardId: e.newCardId },
+      ]);
     }
   });
 
-  it("shows everyone a move to or from a public zone, and a cancelled cast's card (it was on the stack, CR 734.1)", () => {
+  it("shows another player only the public side of a card coming out of a hand, and of a cancel (CR 402.3, D-054)", () => {
     const { state } = p2Mulligans();
     const card = state.objects[hand(state, "p2")[0] as ObjectId];
     if (card?.kind !== "card") throw new Error("a card in hand");
@@ -146,17 +153,23 @@ describe("eventsFor", () => {
       oldId: card.id,
       newId: "o9999",
       cardId: card.cardId,
-      object: { ...card, id: "o9999" },
+      newCardId: "c9999",
+      object: card,
     };
     const cancelled = {
       type: "CAST_CANCELLED",
       player: "p2",
-      cardId: card.cardId,
+      cardId: "c9999",
       spell: "o9999",
       restored: card.id,
       untapped: [],
     } as const satisfies GameEvent;
-    expect(eventsFor([cast, cancelled], "p1")).toStrictEqual([cast, cancelled]);
+    // p1 sees the spell arrive and leave, with its new ids only: nothing about the card in p2's hand.
+    expect(eventsFor([cast, cancelled], "p1")).toStrictEqual([
+      { type: "CARD_CAME_INTO_VIEW", from: cast.from, to: cast.to, newId: "o9999", cardId: "c9999" },
+      { ...cancelled, restored: null },
+    ]);
+    expect(eventsFor([cast, cancelled], "p2")).toStrictEqual([cast, cancelled]);
   });
 });
 
@@ -217,5 +230,51 @@ describe("views and events through a real game", () => {
     expect(view.zones.players.p1).toMatchObject({ handSize: 1, hand: null });
     expect(view.objects[hand(game.state, "p1")[0] as ObjectId]).toBeUndefined();
     expect(view.casting).toBeNull();
+  });
+});
+
+describe("a cancelled spell can't be followed through its owner's hand (CR 402.3, 734.1)", () => {
+  // p2 holds two Shocks, starts casting the first and cancels; then casts either the same one (world A) or the other
+  // (world B). p1 sees the first cast and the cancel, but can't see p2's hand: everything p1 is shown must be the same
+  // in both worlds, or p1 could tell which Shock was cast.
+  function play(castSecond: boolean): { views: unknown[]; events: unknown[] } {
+    let game = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"] }),
+        playerSetup("p2", {
+          library: ["mountain"],
+          hand: ["shock", "shock"],
+          battlefield: [{ oracleId: "mountain", tapped: false, summoningSick: false, damage: 0, counters: {} }],
+        }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p2", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const views: unknown[] = [playerView(game.state, "p1")];
+    const step = (match: (a: Action) => boolean) => {
+      game = take(game, match);
+      views.push(playerView(game.state, "p1"));
+    };
+    const [first, second] = hand(game.state, "p2") as [ObjectId, ObjectId];
+    const mountain = game.state.zones.battlefield[0];
+    const castAtP1 = (card: ObjectId) => {
+      step((a) => a.type === "CAST_SPELL" && a.object === card);
+      step((a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget" && a.answer.target.kind === "player");
+    };
+    castAtP1(first);
+    step((a) => a.type === "ACTIVATE_ABILITY" && a.object === mountain);
+    step((a) => a.type === "ANSWER" && a.answer.kind === "cancelCast");
+    castAtP1(castSecond ? second : first);
+    step((a) => a.type === "ACTIVATE_ABILITY" && a.object === mountain);
+    step((a) => a.type === "ANSWER" && a.answer.kind === "payMana");
+    return { views, events: eventsFor(game.events, "p1") };
+  }
+
+  it("shows p1 the same events and views whichever Shock p2 casts after cancelling", () => {
+    const sameCard = play(false);
+    const otherCard = play(true);
+    expect(otherCard.events).toStrictEqual(sameCard.events);
+    expect(otherCard.views).toStrictEqual(sameCard.views);
   });
 });

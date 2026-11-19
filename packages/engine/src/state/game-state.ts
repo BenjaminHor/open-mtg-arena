@@ -24,8 +24,13 @@ export type GameState = {
   setup: GameSetup;
   /** The only source of randomness (D-024). */
   rng: RngState;
-  /** The next number for a new id (`o12`, `c12`, `d12`). Shared by all id kinds, so every id is unique. */
+  /** The next number for a new object or decision id (`o12`, `d12`). Shared by both, so every id is unique. */
   nextId: number;
+  /**
+   * The next number for a new card id. The setup's cards are `c1` to `cN` (D-045); a card that leaves a hand or a
+   * library for a public zone gets the next one (D-054), so no one can follow it through a hidden zone.
+   */
+  nextCardId: number;
   /** The next timestamp (CR 613.7). */
   nextTimestamp: number;
 

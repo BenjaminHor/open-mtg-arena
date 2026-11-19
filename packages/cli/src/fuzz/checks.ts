@@ -49,49 +49,69 @@ export const viewsLeakNothing: Check = (before, after, events) => {
     ) {
       problems.push(`${viewer}'s view changes when only hidden information changes`);
     }
-    // A hidden card must not be named by its card id or its object id. (Not by its oracle id either, but that can't be
-    // checked this way: a Mountain in hand shares it with every Mountain on the battlefield.) A card the viewer saw
-    // in a public zone before the action, like a cancelled spell back in hand (CR 734.1), isn't a secret.
+    // A card hidden from the viewer before or after the action must not be named by its card id or its object id,
+    // unless the viewer could see it then too: their own draw, a card they saw go into a hand (D-054). (Not by its
+    // oracle id either, but that can't be checked this way: a Mountain in hand shares it with every Mountain out.)
     const shown = JSON.stringify(eventsFor(events, viewer));
-    const seen = new Set<string>(publicCardIds(before));
-    for (const e of events) if (e.type === "CAST_CANCELLED") seen.add(e.cardId).add(e.restored);
-    for (const id of hiddenFrom(after, viewer)) {
-      const obj = after.objects[id];
-      const names = obj?.kind === "card" ? [obj.cardId, id] : [id];
-      for (const name of names) {
-        if (!seen.has(name) && shown.includes(`"${name}"`)) {
-          problems.push(`the events shown to ${viewer} name ${name}, which is hidden from them`);
-        }
+    const seen = new Set([...visibleNames(before, viewer), ...visibleNames(after, viewer)]);
+    const hidden = [...hiddenNames(before, viewer), ...hiddenNames(after, viewer)];
+    for (const name of new Set(hidden)) {
+      if (!seen.has(name) && shown.includes(`"${name}"`)) {
+        problems.push(`the events shown to ${viewer} name ${name}, which is hidden from them`);
       }
     }
   }
   return problems;
 };
 
-/** The physical cards in public zones (CR 400.2). */
-function publicCardIds(state: GameState): string[] {
-  const ids = [
+/** The objects `viewer` can see: those in public zones (CR 400.2) and in their own hand (CR 402.3). */
+function visibleTo(state: GameState, viewer: PlayerId): ObjectId[] {
+  return [
     ...state.zones.battlefield,
     ...state.zones.stack,
     ...state.zones.exile,
     ...state.zones.command,
     ...state.turnOrder.flatMap((p) => state.zones.players[p]?.graveyard ?? []),
+    ...(state.zones.players[viewer]?.hand ?? []),
   ];
+}
+
+/** The ids `viewer` may know: of the objects they can see, and of their own card being cast. */
+function visibleNames(state: GameState, viewer: PlayerId): string[] {
+  const casting = castingCard(state);
+  return [...namesOf(state, visibleTo(state, viewer)), ...(casting?.player === viewer ? casting.names : [])];
+}
+
+/** The ids hidden from `viewer`: of hidden objects, and of another player's card being cast (it's in no zone). */
+function hiddenNames(state: GameState, viewer: PlayerId): string[] {
+  const casting = castingCard(state);
+  return [
+    ...namesOf(state, hiddenFrom(state, viewer)),
+    ...(casting !== null && casting.player !== viewer ? casting.names : []),
+  ];
+}
+
+/** While a spell is being cast, the card as it was in hand is kept aside (D-035): its object id and card id. */
+function castingCard(state: GameState): { player: PlayerId; names: string[] } | null {
+  const origin = state.casting?.origin;
+  if (state.casting === null || origin?.kind !== "card") return null;
+  return { player: state.casting.player, names: [origin.card.id, origin.card.cardId] };
+}
+
+/** The names that identify these objects: their object ids and, for cards, their card ids. */
+function namesOf(state: GameState, ids: readonly ObjectId[]): string[] {
   return ids.flatMap((id) => {
     const obj = state.objects[id];
-    return obj?.kind === "card" ? [obj.cardId] : [];
+    return obj?.kind === "card" ? [id, obj.cardId] : [id];
   });
 }
 
-/**
- * The objects in other players' hands and libraries. A player's own library is hidden from them too (CR 401.2), but it
- * may hold cards they saw go there (a mulligan's bottom cards); telling those apart needs a record of what each player
- * has seen, which hidden information beyond hands and libraries will need anyway (docs/future-rules.md).
- */
+/** The objects hidden from `viewer`: other players' hands, and every library, their own too (CR 401.2, 402.3). */
 function hiddenFrom(state: GameState, viewer: PlayerId): ObjectId[] {
-  return state.turnOrder
-    .filter((p) => p !== viewer)
-    .flatMap((p) => [...(state.zones.players[p]?.hand ?? []), ...(state.zones.players[p]?.library ?? [])]);
+  return state.turnOrder.flatMap((p) => [
+    ...(p === viewer ? [] : (state.zones.players[p]?.hand ?? [])),
+    ...(state.zones.players[p]?.library ?? []),
+  ]);
 }
 
 /**
@@ -147,6 +167,7 @@ export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
     setup: { ...scrambled.setup, seed: scrambled.setup.seed + 1, players: [] },
     nextId: scrambled.nextId + 1000,
     nextTimestamp: scrambled.nextTimestamp + 1000,
+    nextCardId: scrambled.nextCardId + 1000,
     work: [],
   };
 }

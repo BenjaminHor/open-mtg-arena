@@ -4,7 +4,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { landPlayProblem } from "../rules/timing.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { moveCard } from "../zones/move-card.ts";
+import { moveCard, newCardIdOf } from "../zones/move-card.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import type { Progress } from "./progress.ts";
 import { queueWork } from "./work.ts";
@@ -25,8 +25,6 @@ export function playLandProblem(
  * Taking an action restarts the passes (CR 117.4), and the player gets priority again (CR 116.3, 117.3c).
  */
 export function playLand(state: GameState, player: PlayerId, card: ObjectId): Progress {
-  const obj = state.objects[card];
-  if (obj?.kind !== "card") throw new Error(`${card} isn't a card`);
   const moved = moveCard(state, card, { zone: "battlefield", controller: player });
   const ps = moved.state.players[player];
   if (ps === undefined) throw new Error(`No player ${player}`);
@@ -34,6 +32,6 @@ export function playLand(state: GameState, player: PlayerId, card: ObjectId): Pr
   const next = queueWork({ ...moved.state, players, passesInSuccession: 0 }, { kind: "givePriority", player });
   return {
     state: next,
-    events: [...moved.events, { type: "LAND_PLAYED", player, newId: moved.newId, cardId: obj.cardId }],
+    events: [...moved.events, { type: "LAND_PLAYED", player, newId: moved.newId, cardId: newCardIdOf(moved) }],
   };
 }

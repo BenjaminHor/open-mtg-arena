@@ -103,6 +103,8 @@ export function cancelCasting(state: GameState): Progress {
   switch (casting.origin.kind) {
     case "card": {
       const { card, handIndex } = casting.origin;
+      const spell = next.objects[casting.object];
+      if (spell?.kind !== "card") throw new Error(`${casting.object} isn't a spell`);
       const { [casting.object]: _spell, ...rest } = next.objects;
       next = { ...next, objects: { ...rest, [card.id]: card } };
       next = withZoneList(
@@ -116,7 +118,8 @@ export function cancelCasting(state: GameState): Progress {
       event = {
         type: "CAST_CANCELLED",
         player: casting.player,
-        cardId: card.cardId,
+        // The spell's card id, which everyone saw on the stack, not the restored card's, which is hidden (D-054).
+        cardId: spell.cardId,
         spell: casting.object,
         restored: card.id,
         untapped: casting.tappedForMana,

@@ -7,10 +7,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
-  casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
-  (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (M2 is now rules depth,
-  D-051; `docs/milestones/m2-rules-depth.md`; the owner chose Magic 2010 with planeswalkers, D-053), then tag `m1`.
+- M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
+  spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
+- M2-01 Hidden information fix: done (D-054), PR to open. A card leaving a hand or library for a public zone gets a
+  new card id; `eventsFor` shows only the side of a move the viewer sees; another player's cancel hides `restored`.
+  The two-world test (cancel a Shock, cast the same one or the other: p1 sees the same) and the fuzzer's stricter
+  leak check guard it. Replays regenerated (state gains `nextCardId`); golden games unchanged.
+- Next: M2-02, the Magic 2010 pool and its mechanics map (`docs/milestones/m2-pool.md`).
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -167,10 +170,4 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- Card tracking through hidden hands (rules-judge, 2026-11-19; D-044). Card ids and object ids let a player follow a
-  card through another player's hand (CR 402.3): after a cancelled cast (CR 734.1), `CAST_CANCELLED` names the card's
-  card id and restored hand id, so when a copy is cast later the other player can tell whether it was that card. Object
-  ids, numbered as they're made, also show roughly when a card entered a hand. The fuzzer can't see it (each event is
-  fine alone). Fix early in M2, before any AI reads views (M3). Sketch: a card entering a zone some player can't see gets a new card id,
-  and `eventsFor` shows other players neither the old object id of a card leaving a hidden zone nor `restored`.
-  That changes what a card id means (architecture.md, "Object identity"), so it gets its own decision.
+- (none)

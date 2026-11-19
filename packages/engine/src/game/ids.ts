@@ -2,10 +2,15 @@
 // game always gets the same ids.
 
 import type { GameState } from "../state/game-state.ts";
-import type { DecisionId, ObjectId } from "../state/ids.ts";
+import type { CardId, DecisionId, ObjectId } from "../state/ids.ts";
 
 export function newObjectId(state: GameState): { id: ObjectId; state: GameState } {
   return { id: `o${state.nextId}`, state: { ...state, nextId: state.nextId + 1 } };
+}
+
+/** A new card id, for a card coming out of a hidden zone into a public one (D-054). */
+export function newCardId(state: GameState): { id: CardId; state: GameState } {
+  return { id: `c${state.nextCardId}`, state: { ...state, nextCardId: state.nextCardId + 1 } };
 }
 
 export function newDecisionId(state: GameState): { id: DecisionId; state: GameState } {

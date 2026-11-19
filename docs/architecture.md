@@ -90,11 +90,13 @@ type GameState = {
 
 - An `ObjectId` names one game object. **When a card changes zones it becomes a new object
   with a new id** (CR 400.7). The engine never "moves" an id between zones.
-- Each object also has a `cardId`, the physical card from a deck (or the token that was created).
-  The `cardId` stays the same across zone changes. Card ids are numbered in a random order, so a public one says
-  nothing about the hidden cards next to it in a decklist (D-045). The UI uses it to animate a card moving from
-  hand to stack to battlefield. Rules logic uses only `ObjectId`.
-- `ZONE_CHANGED` events carry `from`, `to`, the old and new `ObjectId`, and the `cardId`.
+- Each object also has a `cardId`, the physical card from a deck (or the token that was created). The `cardId` stays
+  the same across zone changes, except that a card coming out of a hand or library into a public zone gets a new one
+  (D-054), so no one can follow it through a zone they can't see. Card ids are numbered in a random order, so a public
+  one says nothing about the hidden cards next to it in a decklist (D-045). The UI uses it to animate a card moving
+  from hand to stack to battlefield. Rules logic uses only `ObjectId`.
+- `ZONE_CHANGED` events carry `from`, `to`, the old and new `ObjectId`, the `cardId` before and after, and the
+  object as it was. `eventsFor` shows each player only the side of a move they can see (D-054).
 
 ### Characteristics are computed
 

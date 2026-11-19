@@ -3,7 +3,7 @@
 import { andThen, type Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
-import { moveCard } from "./move-card.ts";
+import { moveCard, newCardIdOf } from "./move-card.ts";
 import { zoneList } from "./zone-list.ts";
 
 function playerState(state: GameState, player: PlayerId) {
@@ -29,7 +29,7 @@ export function drawCard(state: GameState, player: PlayerId): Progress {
   const card = state.objects[top];
   if (card?.kind !== "card") throw new Error(`${top} in a library isn't a card`);
   const moved = moveCard(state, top, { zone: "hand" });
-  const drawn = { type: "CARD_DRAWN", player, newId: moved.newId, cardId: card.cardId } as const;
+  const drawn = { type: "CARD_DRAWN", player, newId: moved.newId, cardId: newCardIdOf(moved) } as const;
   return { state: moved.state, events: [...moved.events, drawn] };
 }
 

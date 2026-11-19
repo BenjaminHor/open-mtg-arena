@@ -2,15 +2,35 @@
 // UI or AI gets them, as `playerView` does for state.
 
 import type { GameEvent } from "../state/events.ts";
-import type { PlayerId } from "../state/ids.ts";
+import type { CardId, ObjectId, PlayerId } from "../state/ids.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { canSee } from "./visibility.ts";
 
-/** An event as one player sees it: the event itself, or what's left of it when it would reveal a hidden card. */
+type ZoneChanged = Extract<GameEvent, { type: "ZONE_CHANGED" }>;
+type CastCancelled = Extract<GameEvent, { type: "CAST_CANCELLED" }>;
+
+/**
+ * An event as one player sees it: the event itself, or what's left of it when it would reveal a hidden card. Nothing
+ * from the side the viewer can't see is shown, not even an id, so a card can't be followed through a hidden zone
+ * (D-054).
+ */
 export type ViewEvent =
   | GameEvent
+  /** Another player's cancelled cast: the spell left the stack; where in their hand the card went isn't shown. */
+  | (Omit<CastCancelled, "restored"> & { restored: null })
   /** A card moved between zones the viewer can't see into (another player's library to their hand, say). */
   | { type: "HIDDEN_CARD_MOVED"; from: ZoneRef; to: ZoneRef }
+  /** A card came into the viewer's sight (cast or played from another player's hand): only what it is now. */
+  | { type: "CARD_CAME_INTO_VIEW"; from: ZoneRef; to: ZoneRef; newId: ObjectId; cardId: CardId }
+  /** A card went out of the viewer's sight (into another player's hand, say): only what it was. */
+  | {
+      type: "CARD_LEFT_VIEW";
+      from: ZoneRef;
+      to: ZoneRef;
+      oldId: ObjectId;
+      cardId: CardId;
+      object: ZoneChanged["object"];
+    }
   /** Another player drew a card (CR 121.1); which one is hidden. */
   | { type: "HIDDEN_CARD_DRAWN"; player: PlayerId };
 
@@ -23,14 +43,14 @@ export function eventsFor(events: readonly GameEvent[], viewer: PlayerId): ViewE
 function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
   switch (e.type) {
     case "ZONE_CHANGED":
-      // The card is seen if it's in a zone the viewer sees before or after; otherwise only that a card moved.
-      // Known issue (docs/status.md): a card's card id and old object id let another player follow it through a hidden
-      // hand (CR 402.3), for example a cancelled spell back in hand, told apart from a second copy cast later.
-      return canSee(e.from, viewer) || canSee(e.to, viewer) ? e : { type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to };
+      return zoneChangeFor(e, viewer);
+    case "CAST_CANCELLED":
+      // Everyone saw the spell; only its caster sees where in their hand the card went back (CR 402.3).
+      return e.player === viewer ? e : { ...e, restored: null };
     case "CARD_DRAWN":
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };
     // Everything else names only public objects or facts: cards on the stack or battlefield, a discard (CR 701.9, the
-    // card goes to a public graveyard), a cancelled cast's card (it was on the stack), players and numbers.
+    // card goes to a public graveyard, with the card id it got coming out of the hand, D-054), players and numbers.
     case "STARTING_PLAYER_CHOSEN":
     case "LIBRARY_SHUFFLED":
     case "MULLIGAN_DECLARED":
@@ -41,7 +61,6 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "ATTACKERS_DECLARED":
     case "BLOCKERS_DECLARED":
     case "SPELL_CAST":
-    case "CAST_CANCELLED":
     case "ABILITY_ACTIVATED":
     case "ACTIVATION_CANCELLED":
     case "ABILITY_DID_NOT_RESOLVE":
@@ -64,4 +83,20 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "GAME_ENDED":
       return e;
   }
+}
+
+/**
+ * A card moving between zones, as `viewer` sees it: in full if they see both zones; if only one, only that side of the
+ * move, since the other side's ids (the object in a hidden hand, its card id before it came out, D-054) would let
+ * them follow the card where they can't see it; if neither, only that a card moved.
+ */
+function zoneChangeFor(e: ZoneChanged, viewer: PlayerId): ViewEvent {
+  const seesFrom = canSee(e.from, viewer);
+  const seesTo = canSee(e.to, viewer);
+  if (seesFrom && seesTo) return e;
+  if (seesTo) return { type: "CARD_CAME_INTO_VIEW", from: e.from, to: e.to, newId: e.newId, cardId: e.newCardId };
+  if (seesFrom) {
+    return { type: "CARD_LEFT_VIEW", from: e.from, to: e.to, oldId: e.oldId, cardId: e.cardId, object: e.object };
+  }
+  return { type: "HIDDEN_CARD_MOVED", from: e.from, to: e.to };
 }

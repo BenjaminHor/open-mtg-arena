@@ -14,7 +14,7 @@ export type Counters = Record<string, number>;
 export type CardObject = {
   kind: "card";
   id: ObjectId;
-  /** The physical card. The same across zone changes, unlike `id` (CR 400.7). */
+  /** The physical card. The same across zone changes, unlike `id` (CR 400.7), except out of hiding (D-054). */
   cardId: CardId;
   /** Which card this is. Printed values come from the `CardDatabase` entry (D-022). */
   oracleId: OracleId;

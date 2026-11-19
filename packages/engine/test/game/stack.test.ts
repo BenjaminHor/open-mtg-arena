@@ -148,10 +148,11 @@ describe("the work queue and resolution, in more detail", () => {
   it("puts an instant into its owner's graveyard even when another player controlled it, on top (CR 608.2n, 404.1)", () => {
     let game = precombatMain();
     const [shock, , hammer] = hand(game.state, "p1") as [ObjectId, ObjectId, ObjectId];
-    const shockCard = cardIdsIn(game.state, [shock])[0];
-    const hammerCard = cardIdsIn(game.state, [hammer])[0];
-    game = { state: moveCard(game.state, hammer, { zone: "stack", controller: "p1" }).state, events: [] };
-    game = { state: moveCard(game.state, shock, { zone: "stack", controller: "p2" }).state, events: [] };
+    const hammerOnStack = moveCard(game.state, hammer, { zone: "stack", controller: "p1" });
+    const shockOnStack = moveCard(hammerOnStack.state, shock, { zone: "stack", controller: "p2" });
+    // The card ids they have as spells (out of a hand, a card gets a new one, D-054), which they keep to the graveyard.
+    const [hammerCard, shockCard] = cardIdsIn(shockOnStack.state, [hammerOnStack.newId, shockOnStack.newId]);
+    game = { state: shockOnStack.state, events: [] };
     game = pass(pass(game)); // Shock (controlled by p2, owned by p1)
     game = pass(pass(game)); // Hammer
     expect(cardIdsIn(game.state, game.state.zones.players.p1?.graveyard ?? [])).toStrictEqual([shockCard, hammerCard]);

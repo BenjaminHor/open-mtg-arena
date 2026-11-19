@@ -31,10 +31,10 @@ Roughly in order: the foundations first (M2-01 to M2-04), then each system with 
 fit in one or a few focused sessions; split any that don't.
 
 **M2-01 Hidden information fix.** The known issue in `status.md`: a card's ids let a player follow it through another
-player's hidden hand (CR 402.3, 734.1). A card entering a zone some player can't see gets a new card id, and
-`eventsFor` hides the old object id of a card leaving a hidden zone and a cancelled cast's restored id. Needs its own
-decision (it changes what a card id means, architecture.md "Object identity"). *Accept:* a scenario-level test shows a
-cancelled card can't be told apart from another copy; the fuzzer's leak check covers it.
+player's hidden hand (CR 402.3, 734.1). Done (D-054): a card coming out of a hand or library into a public zone gets a
+new card id, `eventsFor` shows only the side of a move the viewer can see, and another player's cancel hides the
+restored id. *Accept:* engine tests with two worlds (YAML can't compare views) show a cancelled card can't be told
+apart from another copy, nor a played land or a discarded card; the fuzzer's leak check covers it.
 
 **M2-02 The pool and its mechanics.** Fetch the set's Oracle data (`pnpm cards:fetch` / `cards:extract`), and write
 `docs/milestones/m2-pool.md`: every card, the rules and mechanics it needs, which task builds them, and the cards left

@@ -62,6 +62,7 @@ export function midTurnState(): GameState {
     rng: seedRng(42),
     nextId: 20,
     nextTimestamp: 13,
+    nextCardId: 11,
     turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
     turnOrder: ["p1", "p2"],
     players: {

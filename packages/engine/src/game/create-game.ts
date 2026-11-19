@@ -28,7 +28,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
   // Card ids are numbered in a random order (D-045): numbered in setup order, one public card would hint at what its
   // neighbours in a decklist are, in hidden libraries and hands (CR 400.2).
   const numbered = shuffledCardIds(state, setup);
-  state = numbered.state;
+  state = { ...numbered.state, nextCardId: numbered.cardIds.length + 1 };
   const cardIds = [...numbered.cardIds];
   const standard = setup.opening.kind === "standard";
   for (const player of setup.players) state = createCards(state, player, standard, cardIds);
@@ -82,6 +82,7 @@ function emptyGame(setup: GameSetup): GameState {
     rng: seedRng(setup.seed),
     nextId: 1,
     nextTimestamp: 1,
+    nextCardId: 1,
     turn: null,
     turnOrder: ids,
     players: Object.fromEntries(
