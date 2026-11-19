@@ -35,7 +35,7 @@ export const lightningBolt: CardDef = {
   oracle: "Lightning Bolt deals 3 damage to any target.",   // the exact Oracle text it was written against
   spell: {
     targets: [{ kind: "anyTarget" }],                       // one entry per instance of "target" (CR 115.4, 601.2c)
-    effects: [{ op: "dealDamage", amount: 3, to: { target: 0 } }],
+    effects: [{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }],
   },
 };
 
@@ -63,7 +63,8 @@ export const furnaceWhelp: CardDef = {
 
 - Vanilla creatures are just `{ name, oracle: "" }`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
-  (CR 305.6), so the engine derives it from the subtype. That keeps working when effects change a land's type.
+  (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
+  a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).
 - `src/defs/index.ts` lists every definition. `cardDatabase()` joins them with `pool.json` (by name) into the engine's
   `CardDatabase`, keyed by `oracleId`.
 

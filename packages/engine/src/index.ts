@@ -29,7 +29,16 @@ export type { GameEvent } from "./state/events.ts";
 export type { GameState } from "./state/game-state.ts";
 export type { CardId, DecisionId, ObjectId, OracleId, PlayerId } from "./state/ids.ts";
 export type { ManaPool, ManaType } from "./state/mana.ts";
-export type { AbilityObject, CardObject, Counters, GameObject, StackChoices, Target } from "./state/objects.ts";
+export type {
+  AbilityObject,
+  AbilityRef,
+  BasicLandType,
+  CardObject,
+  Counters,
+  GameObject,
+  StackChoices,
+  Target,
+} from "./state/objects.ts";
 export type { PlayerState } from "./state/players.ts";
 export type {
   EngineError,

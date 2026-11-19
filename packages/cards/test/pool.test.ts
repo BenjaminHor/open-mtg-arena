@@ -1,21 +1,23 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
+import { parsePoolTxt } from "../src/pool-data.ts";
 
 // These tests read only committed files (pool.txt and data/), never the Scryfall downloads, so CI can run them.
 
-const poolTxt = readFileSync(new URL("../pool.txt", import.meta.url), "utf8")
-  .split("\n")
-  .map((line) => line.trim())
-  .filter((line) => line !== "" && !line.startsWith("#"))
-  .sort((a, b) => a.localeCompare(b));
+const poolTxt = parsePoolTxt(readFileSync(new URL("../pool.txt", import.meta.url), "utf8"));
 
 describe("the card pool", () => {
   it("has Oracle data for exactly the cards in pool.txt", () => {
     expect(POOL.cards.map((c) => c.name)).toStrictEqual(poolTxt);
   });
 
-  it("has a rulings file for every card", () => {
+  it("has exactly one rulings file per card, and no others", () => {
+    const files = readdirSync(new URL("../data/rulings/", import.meta.url)).filter((f) => f.endsWith(".json"));
+    expect(files.sort()).toStrictEqual(POOL.cards.map((c) => `${c.slug}.json`).sort());
+  });
+
+  it("has rulings files that belong to their cards", () => {
     for (const card of POOL.cards) {
       const file = JSON.parse(readFileSync(new URL(`../data/rulings/${card.slug}.json`, import.meta.url), "utf8"));
       expect(file.oracleId).toBe(card.oracleId);
@@ -62,5 +64,7 @@ describe("slugify", () => {
     expect(slugify("Lightning Bolt")).toBe("lightning-bolt");
     expect(slugify("Gaea's Cradle")).toBe("gaeas-cradle");
     expect(slugify("Fire // Ice")).toBe("fire-ice");
+    expect(slugify("Æther Vial")).toBe("aether-vial");
+    expect(slugify("Lim-Dûl's Vault")).toBe("lim-duls-vault");
   });
 });

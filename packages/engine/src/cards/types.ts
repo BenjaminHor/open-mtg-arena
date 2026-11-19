@@ -22,15 +22,23 @@ export type CardDatabase = Record<OracleId, CardData>;
  */
 export type PrintedCard = {
   name: string;
-  /** Null when the card has no mana cost at all, as lands don't (CR 202.1b). That isn't the same as {0}. */
+  /** Null when the card has no mana cost at all; lands, for example, have none (CR 202.1b). That isn't {0}. */
   manaCost: ManaCost | null;
-  /** Its colors (CR 105.1, 202.2). Empty means colorless (CR 105.2c). */
+  /**
+   * Its colors: the colors of the mana symbols in its mana cost (CR 202.2) plus its color indicator (CR 204.2).
+   * Empty means colorless (CR 105.2c). Abilities that define color apply later, in layer 5 (CR 613.1e).
+   */
   colors: Color[];
+  /** The color indicator, if any (CR 204). Kept separately because copies copy it (CR 707.2). */
+  colorIndicator: Color[];
   supertypes: Supertype[]; // CR 205.4a
   types: CardType[]; // CR 205.2a
   /** Creature types, land types and so on (CR 205.3), as printed: "Goblin", "Mountain". */
   subtypes: string[];
-  /** Null when the card has no power and toughness (CR 208.1, 302.4). */
+  /**
+   * Null when the card has no power and toughness (CR 208.1). A noncreature permanent has none even if they're
+   * printed (CR 208.3), so `characteristics()` decides whether these apply.
+   */
   power: number | null;
   toughness: number | null;
 };
@@ -38,8 +46,8 @@ export type PrintedCard = {
 /** The five colors (CR 105.1), by their mana symbol letters. */
 export type Color = "W" | "U" | "B" | "R" | "G";
 
-/** The supertypes (CR 205.4a). */
-export type Supertype = "basic" | "legendary" | "ongoing" | "snow" | "world";
+/** The supertypes (CR 205.4a), leaving out "ongoing", which only Archenemy schemes have (as with `CardType`). */
+export type Supertype = "basic" | "legendary" | "snow" | "world";
 
 /** The card types that can be in a deck (CR 205.2a), leaving out the ones for other game variants. */
 export type CardType =
@@ -53,14 +61,14 @@ export type CardType =
   | "planeswalker"
   | "sorcery";
 
-/** A mana cost: its mana symbols in printed order (CR 107.4). */
+/** A mana cost: its mana symbols in printed order (CR 202.1, 107.4). */
 export type ManaCost = ManaSymbol[];
 
 /** Only the symbols the current pool uses. Hybrid, Phyrexian, X and snow come with cards that need them. */
 export type ManaSymbol =
   /** {1}, {2}, ...: generic mana, payable with any type (CR 107.4b). */
   | { kind: "generic"; amount: number }
-  /** {W}, {U}, {B}, {R}, {G}: one mana of that color (CR 107.4). */
+  /** {W}, {U}, {B}, {R}, {G}: one mana of that color (CR 107.4a). */
   | { kind: "colored"; color: Color };
 
 /**
@@ -78,7 +86,10 @@ export type CardDef = {
   keywords?: Keyword[];
   /** For instants and sorceries: what the spell does when it resolves (CR 608.2). */
   spell?: SpellDef;
-  /** Activated abilities, in the order printed. `ACTIVATE_ABILITY.ability` and `abilityIndex` index this list. */
+  /**
+   * Activated abilities, in the order printed. `{ kind: "printed", index }` refers to this list (D-028). Abilities the
+   * rules give a card, such as a basic land's mana ability (CR 305.6), aren't written here.
+   */
   abilities?: AbilityDef[];
 };
 
@@ -95,7 +106,7 @@ export type SpellDef = {
 };
 
 /**
- * An activated ability (CR 602): "[cost]: [effect]". Whether it's a mana ability isn't written here: the engine
+ * An activated ability (CR 602): "[cost]: [effect]". Activating it follows the casting steps (CR 602.2b). Whether it's a mana ability isn't written here: the engine
  * works that out from the rules in CR 605.1a, so a definition can't get it wrong.
  */
 export type AbilityDef = {
@@ -114,18 +125,27 @@ export type CostPart =
 /** What one instance of "target" may choose (CR 115). */
 export type TargetSpec =
   /** "Any target": a creature, player, planeswalker or battle (CR 115.4). */
-  { kind: "anyTarget" } | { kind: "creature" };
+  | { kind: "anyTarget" }
+  /** "Target creature": a creature permanent on the battlefield (CR 109.2). */
+  | { kind: "creature" };
 
-/** Which object or player an effect applies to. */
+/**
+ * Which object or player an effect refers to. It's resolved to real ids when the effect begins, and a continuous
+ * effect keeps those ids (CR 611.2c): if the object later changes zones, it's a new object and the effect no longer
+ * applies to it (CR 400.7).
+ */
 export type EffectSubject =
   /** The chosen target(s) for that instance of "target", by index into `targets`. */
   | { target: number }
-  /** The object the ability or spell belongs to ("this creature"). */
+  /**
+   * The object whose text this is: for a spell, the spell itself; for an ability on the stack, the ability's source
+   * ("this creature"), using its last known information if it has left its zone (CR 113.7a, 608.2h).
+   */
   | "self";
 
 export type Effect =
-  /** "deals N damage to ..." (CR 120). The source is the spell or ability's object. */
-  | { op: "dealDamage"; amount: number; to: EffectSubject }
+  /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
+  | { op: "dealDamage"; amount: number; from: EffectSubject; to: EffectSubject }
   /** "Add {G}." (CR 106.4). */
   | { op: "addMana"; mana: ManaType; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */

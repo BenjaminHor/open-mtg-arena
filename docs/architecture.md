@@ -147,7 +147,8 @@ simple.
 ## Effects, events, replacements, triggers
 
 - **Effects are data**, for example
-  `{ op: 'dealDamage', amount: { const: 3 }, to: { target: 0 } }`. The engine has one
+  `{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }` (the draft shapes are in
+  `engine/src/cards/types.ts`, D-026). The engine has one
   interpreter that turns effect nodes into work items. Card definitions never contain functions.
 - Anything that happens in the game goes through one pipeline:
   1. **Propose** an event (draw a card, deal damage, move to a zone).

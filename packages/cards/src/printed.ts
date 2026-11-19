@@ -5,31 +5,41 @@ import type { CardType, Color, ManaCost, ManaSymbol, PrintedCard, Supertype } fr
 import type { PoolCard } from "./pool-data.ts";
 
 const COLORS: readonly string[] = ["W", "U", "B", "R", "G"];
-const SUPERTYPES: readonly string[] = ["basic", "legendary", "ongoing", "snow", "world"];
-const CARD_TYPES: readonly string[] = [
-  "artifact",
-  "battle",
-  "creature",
-  "enchantment",
-  "instant",
-  "kindred",
-  "land",
-  "planeswalker",
-  "sorcery",
-];
+const SUPERTYPES: readonly string[] = ["basic", "legendary", "snow", "world"];
+const CARD_TYPES: readonly string[] = ["artifact", "creature", "enchantment", "instant", "kindred", "land", "sorcery"];
+// Planeswalkers (loyalty, CR 209) and battles (defense, CR 310) need printed values the engine doesn't model yet.
+
+/** Creature types that are two words (CR 205.3b: creature subtypes are "one or two words"; the list is CR 205.3m). */
+const TWO_WORD_SUBTYPES: readonly string[] = ["Time Lord"];
 
 export function printedCard(card: PoolCard): PrintedCard {
   const { supertypes, types, subtypes } = parseTypeLine(card.typeLine);
+  const manaCost = card.manaCost === "" ? null : parseManaCost(card.manaCost);
+  const colorIndicator = card.colorIndicator.map(parseColor);
+  const power = parsePT(card.power, card.name);
+  const toughness = parsePT(card.toughness, card.name);
+  // Only creature cards have printed power and toughness in the current pool (Vehicles come later, CR 208.3).
+  if (types.includes("creature") !== (power !== null && toughness !== null)) {
+    throw new Error(`${card.name}: power/toughness don't fit its type line "${card.typeLine}"`);
+  }
   return {
     name: card.name,
-    manaCost: card.manaCost === "" ? null : parseManaCost(card.manaCost),
-    colors: card.colors.map(parseColor),
+    manaCost,
+    colors: colorsOf(manaCost, colorIndicator),
+    colorIndicator,
     supertypes,
     types,
     subtypes,
-    power: parsePT(card.power, card.name),
-    toughness: parsePT(card.toughness, card.name),
+    power,
+    toughness,
   };
+}
+
+/** The colors of the mana symbols in its cost (CR 202.2) plus its color indicator (CR 204.2), in WUBRG order. */
+export function colorsOf(manaCost: ManaCost | null, colorIndicator: readonly Color[]): Color[] {
+  const found = new Set<Color>(colorIndicator);
+  for (const symbol of manaCost ?? []) if (symbol.kind === "colored") found.add(symbol.color);
+  return (COLORS as readonly Color[]).filter((c) => found.has(c));
 }
 
 /** "{2}{R}{R}" -> generic 2, red, red (CR 107.4). */
@@ -44,7 +54,7 @@ export function parseManaCost(text: string): ManaCost {
   });
 }
 
-/** "Basic Land — Mountain" -> supertypes [basic], types [land], subtypes [Mountain] (CR 205.1). */
+/** "Basic Land — Mountain" -> supertypes [basic], types [land], subtypes [Mountain] (CR 205.1, 205.3b). */
 export function parseTypeLine(text: string): { supertypes: Supertype[]; types: CardType[]; subtypes: string[] } {
   const [left = "", right, extra] = text.split(" — ");
   if (extra !== undefined || text.includes("//")) throw new Error(`Type line not supported yet: "${text}"`);
@@ -57,7 +67,20 @@ export function parseTypeLine(text: string): { supertypes: Supertype[]; types: C
     else throw new Error(`Unknown supertype or card type "${word}" in "${text}"`);
   }
   if (types.length === 0) throw new Error(`No card type in "${text}"`);
-  return { supertypes, types, subtypes: right === undefined ? [] : right.split(" ") };
+  return { supertypes, types, subtypes: right === undefined ? [] : splitSubtypes(right) };
+}
+
+/** Each word after the dash is a subtype, except the two-word creature types (CR 205.3b). */
+function splitSubtypes(text: string): string[] {
+  const subtypes: string[] = [];
+  let rest = text;
+  while (rest !== "") {
+    const twoWord = TWO_WORD_SUBTYPES.find((t) => rest === t || rest.startsWith(`${t} `));
+    const next = twoWord ?? rest.split(" ")[0] ?? "";
+    subtypes.push(next);
+    rest = rest.slice(next.length).trimStart();
+  }
+  return subtypes;
 }
 
 function parseColor(color: string): Color {

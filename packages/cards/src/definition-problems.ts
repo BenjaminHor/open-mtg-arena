@@ -25,7 +25,9 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
           `Oracle now:  ${JSON.stringify(card.oracleText)}`,
       );
     }
-    // Scryfall lists keyword abilities too, which catches a missing "flying" or "reach".
+    // Scryfall lists the card's keywords, which catches a missing "flying" or "reach". Its list also has keyword
+    // actions (Scry, CR 701) and ability words (Landfall, CR 207.2c), which aren't keyword abilities; see
+    // docs/future-rules.md before adding a card with those.
     const expected = card.keywords.map((k) => k.toLowerCase()).sort();
     const actual = [...(def.keywords ?? [])].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {

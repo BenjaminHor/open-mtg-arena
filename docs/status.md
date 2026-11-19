@@ -24,6 +24,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   pregame value: make it `Turn | null` or add a marker), where mulligan bookkeeping lives before `work` exists (M1-07),
   and validation of `fixed` openings (reject steps with no priority or that need combat state). CR 103.1: a random
   player chooses who goes first, as a decision.
+- Scenarios the M1-04 rules review asked for, to write in the task that implements each rule:
+  M1-08: a Mountain taps for {R} without using the stack (CR 305.6, 605.3b); Llanowar Elves is a mana ability (CR 605.1a)
+  and can't be activated while summoning sick (CR 302.6). Also compute mana value from the cost (CR 202.3) and check it
+  equals Scryfall's `manaValue` for every pool card. M1-09: Lightning Bolt can't target a land, can target your own
+  creature and yourself (CR 115.4); Giant Growth can't target a player (CR 109.2). M1-11: Giant Growth wears off in
+  cleanup (CR 514.2). M1-14: firebreathing uses the stack (CR 602.2), stacks three times (CR 613.4c), and resolves after
+  the Whelp dies without affecting anything (CR 113.7a, 400.7, 611.2c).
 - For M1-08 or M1-13, a settled CR 302.6 edge case to write as a scenario: a creature that entered on its controller's
   last turn is still summoning sick on the opponent's turn (Llanowar Elves can't tap for mana there), and isn't on
   its controller's next turn.
@@ -56,7 +63,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the pool, the errata check and the parsers (2026-11-19).
 
 ## Open questions for the owner
-- (none)
+- **Which printing's art should the pool use?** `pnpm cards:extract` takes the printing Scryfall's Oracle Cards file
+  picks (its "most recognizable version"), which can change on every refresh. Today Lightning Bolt and Shock show a
+  Marvel Super Heroes Commander printing, Forest and Mountain a Marvel: Darkhold Destiny one, and Raging Goblin a
+  digital-only Arena starter set. Options: keep Scryfall's pick; pin a printing per card in `pool.txt`
+  (for example `Lightning Bolt [m10]`); or prefer a rule such as "newest core set or classic printing". It affects
+  the look (D-012), not the rules.
 
 ## Known issues
 - (none)

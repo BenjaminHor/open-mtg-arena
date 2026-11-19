@@ -5,6 +5,6 @@ export const shock: CardDef = {
   oracle: "Shock deals 2 damage to any target.",
   spell: {
     targets: [{ kind: "anyTarget" }], // CR 115.4
-    effects: [{ op: "dealDamage", amount: 2, to: { target: 0 } }],
+    effects: [{ op: "dealDamage", from: "self", amount: 2, to: { target: 0 } }],
   },
 };

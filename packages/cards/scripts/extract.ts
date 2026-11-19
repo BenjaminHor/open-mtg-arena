@@ -7,55 +7,34 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { createGunzip } from "node:zlib";
-import { GENERATED_NOTE, type PoolCard, type PoolFile, type RulingsFile, slugify } from "../src/pool-data.ts";
-import { BULK_FILES, CARDS_DIR, MANIFEST_FILE, type Manifest, SCRYFALL_DIR } from "./scryfall.ts";
+import {
+  compareNames,
+  GENERATED_NOTE,
+  type PoolCard,
+  type PoolFile,
+  parsePoolTxt,
+  type RulingsFile,
+  slugify,
+} from "../src/pool-data.ts";
+import { matchPoolCards } from "./match.ts";
+import { BULK_FILES, CARDS_DIR, MANIFEST_FILE, type Manifest, SCRYFALL_DIR, type ScryfallCard } from "./scryfall.ts";
 
 const DATA_DIR = path.join(CARDS_DIR, "data");
 const RULINGS_DIR = path.join(DATA_DIR, "rulings");
 
-// Oracle Cards also has entries that aren't Magic cards you can put in a deck. Some share a name with a real card
-// (Llanowar Elves has a token), so they're left out before matching names.
-const NOT_CARDS = new Set(["token", "double_faced_token", "emblem", "art_series", "vanguard", "planar", "scheme"]);
-
-type ScryfallCard = {
-  name: string;
-  oracle_id: string;
-  layout: string;
-  mana_cost?: string;
-  cmc: number;
-  type_line: string;
-  oracle_text?: string;
-  power?: string;
-  toughness?: string;
-  colors?: string[];
-  keywords: string[];
-  image_uris?: Record<string, string>;
-  artist?: string;
-  set: string;
-  collector_number: string;
-  scryfall_uri: string;
-};
-
 type ScryfallRuling = { oracle_id: string; source: string; published_at: string; comment: string };
 
 async function main(): Promise<void> {
-  const names = await readPoolNames();
-  const manifest = JSON.parse(await readFile(path.join(SCRYFALL_DIR, MANIFEST_FILE), "utf8")) as Manifest;
+  const names = parsePoolTxt(await readFile(path.join(CARDS_DIR, "pool.txt"), "utf8"));
+  const manifest = await readManifest();
 
-  const matches = new Map<string, ScryfallCard[]>(names.map((n) => [n, []]));
+  // Keep only entries with a pool card's name while streaming (there are tens of thousands of cards), then match.
+  const wanted = new Set(names);
+  const candidates: ScryfallCard[] = [];
   for await (const card of readJsonLines<ScryfallCard>(BULK_FILES.oracle_cards)) {
-    if (!NOT_CARDS.has(card.layout)) matches.get(card.name)?.push(card);
+    if (wanted.has(card.name)) candidates.push(card);
   }
-  const problems = [...matches].filter(([, found]) => found.length !== 1);
-  if (problems.length > 0) {
-    for (const [name, found] of problems) {
-      console.error(
-        `"${name}": ${found.length} matches${found.map((c) => `\n  ${c.layout} ${c.set} ${c.oracle_id}`).join("")}`,
-      );
-    }
-    throw new Error("Every pool.txt name must match exactly one card in Oracle Cards.");
-  }
-  const cards = names.map((name) => toPoolCard((matches.get(name) ?? [])[0] as ScryfallCard));
+  const cards = matchPoolCards(names, candidates).map(toPoolCard);
   const slugs = new Set(cards.map((c) => c.slug));
   if (slugs.size !== cards.length) throw new Error("Two pool cards have the same slug.");
 
@@ -75,12 +54,13 @@ async function main(): Promise<void> {
   await writeJson(path.join(DATA_DIR, "pool.json"), pool);
 
   await mkdir(RULINGS_DIR, { recursive: true });
+  // Remove rulings of cards that left the pool. Only .json files: anything else here was put there on purpose.
   for (const old of await readdir(RULINGS_DIR)) {
-    if (!slugs.has(old.replace(/\.json$/, ""))) await rm(path.join(RULINGS_DIR, old));
+    if (old.endsWith(".json") && !slugs.has(old.slice(0, -".json".length))) await rm(path.join(RULINGS_DIR, old));
   }
   for (const card of cards) {
     const list = (rulings.get(card.oracleId) ?? []).sort(
-      (a, b) => a.publishedAt.localeCompare(b.publishedAt) || a.comment.localeCompare(b.comment),
+      (a, b) => compareNames(a.publishedAt, b.publishedAt) || compareNames(a.comment, b.comment),
     );
     const file: RulingsFile = { generated: GENERATED_NOTE, name: card.name, oracleId: card.oracleId, rulings: list };
     await writeJson(path.join(RULINGS_DIR, `${card.slug}.json`), file);
@@ -88,21 +68,22 @@ async function main(): Promise<void> {
   console.log(`Wrote data/pool.json (${cards.length} cards) and their rulings.`);
 }
 
-async function readPoolNames(): Promise<string[]> {
-  const text = await readFile(path.join(CARDS_DIR, "pool.txt"), "utf8");
-  const names = text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line !== "" && !line.startsWith("#"));
-  if (new Set(names).size !== names.length) throw new Error("pool.txt lists a card twice.");
-  return names.sort((a, b) => a.localeCompare(b));
+async function readManifest(): Promise<Manifest> {
+  try {
+    return JSON.parse(await readFile(path.join(SCRYFALL_DIR, MANIFEST_FILE), "utf8")) as Manifest;
+  } catch {
+    throw new Error("No Scryfall bulk data found. Run `pnpm cards:fetch` first.");
+  }
 }
 
 function toPoolCard(c: ScryfallCard): PoolCard {
+  // Split, flip, adventure, saga, meld and other layouts need rules the engine doesn't have yet (D-026).
+  if (c.layout !== "normal") throw new Error(`"${c.name}": layout "${c.layout}" isn't supported yet`);
   const img = c.image_uris;
   if (!img?.normal || !img.large || !img.png || !img.art_crop || !c.artist) {
-    throw new Error(`"${c.name}" has no single-faced images or artist. Multi-faced cards aren't supported yet.`);
+    throw new Error(`"${c.name}" has no images or artist on Scryfall`);
   }
+  if (c.oracle_text === undefined) throw new Error(`"${c.name}" has no Oracle text on Scryfall`);
   return {
     name: c.name,
     slug: slugify(c.name),
@@ -111,10 +92,11 @@ function toPoolCard(c: ScryfallCard): PoolCard {
     manaCost: c.mana_cost ?? "",
     manaValue: c.cmc,
     typeLine: c.type_line,
-    oracleText: c.oracle_text ?? "",
+    oracleText: c.oracle_text,
     power: c.power ?? null,
     toughness: c.toughness ?? null,
     colors: c.colors ?? [],
+    colorIndicator: c.color_indicator ?? [],
     keywords: c.keywords,
     images: { normal: img.normal, large: img.large, png: img.png, artCrop: img.art_crop },
     artist: c.artist,

@@ -79,6 +79,21 @@
         "rules": {
           "correctness": {
             "noNodejsModules": "error"
+          },
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "process": "packages/cards/src also runs in the browser (D-026): no Node globals.",
+                  "Buffer": "packages/cards/src also runs in the browser (D-026): no Node globals.",
+                  "__dirname": "packages/cards/src also runs in the browser (D-026): no Node globals.",
+                  "__filename": "packages/cards/src also runs in the browser (D-026): no Node globals.",
+                  "require": "packages/cards/src also runs in the browser (D-026): no Node globals.",
+                  "global": "packages/cards/src also runs in the browser (D-026): no Node globals."
+                }
+              }
+            }
           }
         }
       }

@@ -20,6 +20,27 @@ export const MANIFEST_FILE = "manifest.json";
 export type Manifest = Record<BulkType, { updatedAt: string; source: string }>;
 
 // Scryfall asks API clients to send a descriptive User-Agent and an Accept header.
+/** The fields of a Scryfall card object that we read (https://scryfall.com/docs/api/cards). */
+export type ScryfallCard = {
+  name: string;
+  oracle_id: string;
+  layout: string;
+  mana_cost?: string;
+  cmc: number;
+  type_line: string;
+  oracle_text?: string;
+  power?: string;
+  toughness?: string;
+  colors?: string[];
+  color_indicator?: string[];
+  keywords: string[];
+  image_uris?: Record<string, string>;
+  artist?: string;
+  set: string;
+  collector_number: string;
+  scryfall_uri: string;
+};
+
 export const HEADERS = {
   "User-Agent": "mtg-engine-card-data/0.1 (non-commercial fan project)",
   Accept: "application/json",
