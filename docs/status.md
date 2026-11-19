@@ -7,7 +7,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-14 Activated abilities (plan, 2026-11-19). CR 602.1–602.2, 602.5, 113.3b, 113.7a, 405.1, 608.2h, 601.2b–i.
+  - Activating a non-mana ability follows the casting steps (CR 602.2b), so the cast procedure becomes "putting an
+    object on the stack": `Casting` gets an origin (a card from hand, or an ability) and `spell` becomes `object` in
+    `Casting` and the `chooseTarget`/`payMana` decisions. ACTIVATE_ABILITY creates an `AbilityObject` on the stack
+    (CR 602.2a), then targets, then the mana cost (CR 601.2g–h); `ABILITY_ACTIVATED` when done. Cancelling removes the
+    ability object (it ceases to exist) and restores the pool and mana sources (D-035).
+  - Only costs the pool needs: mana. A non-mana ability with {T} in its cost is refused until a card needs it.
+  - Who and when: the source's controller (CR 602.2), whenever they have priority (CR 113.3b, no timing restriction);
+    no summoning sickness unless {T} (CR 302.6, 602.5a).
+  - Resolution: the ability's effects from its source's definition (`sourceOracleId`, `ability` ref), with "self" the
+    source (CR 113.7a); an effect on a source that left the battlefield does nothing (CR 608.2h, 101.3). Targets
+    checked as for spells (CR 608.2b).
+  - Runner: `activate` gains `targets` and `pay` (like `cast`).
+  - Tests: firebreathing several times, in response to a block, resolving after the Whelp dies, by a summoning-sick
+    Whelp, not by the other player, cancelling; it uses the stack (a response resolves first).
+  - Future impact: the same procedure serves triggered abilities' targets (CR 603.3d) and loyalty abilities later.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
