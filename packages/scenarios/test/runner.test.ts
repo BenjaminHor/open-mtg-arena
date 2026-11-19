@@ -156,7 +156,7 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     ]);
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
     expect(problems(`${main1}  - expect: { winner: p1 }\n`)).toStrictEqual(["step 1: winner: arrives in M1-15"]);
-    expect(first(`${main1}  - expect: { "p1:Forest.abilities contains": [x] }\n`)).toMatch(/arrives in M1-11/);
+    expect(first(`${main1}  - expect: { "p1:Forest.counters": {} }\n`)).toMatch(/arrives in M1-13/);
   });
 
   it("checks a rejected setup's reason, which must be given", () => {

@@ -11,6 +11,9 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `targets.ts`: `legalTargets`, `isLegalTarget`, `stillLegalTargets` (CR 115, 115.4, 109.2, 608.2b); `targetSpecsOf`
   and `spellEffectsOf`, the one place a spell's targets and effects are read from its definition.
 - `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1).
-- `card-types.ts`: `cardTypesOf(state, id, cards)`: an object's card types (printed until the layer system, M1-11).
+- `card-types.ts`: `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes types yet).
+- `characteristics.ts`: `characteristics(state, id, cards)`, an object's characteristics through the layers (CR 613),
+  composing the readers above. `power-toughness.ts`: `powerAndToughness`, layer 7 (CR 613.4): printed values, then
+  7c effects, counters and rule modifiers. Read power and toughness only through these.
 
 Tests: `test/mana/` and the scenarios in `test/scenarios/mana/` (abilities, summoning sickness), and the game tests.

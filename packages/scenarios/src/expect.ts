@@ -1,6 +1,13 @@
 // Checking a scenario's `expect:` block against the game (docs/testing.md, "Expectations").
 
-import type { CardDatabase, GameEvent, GameState, ObjectId, PlayerId } from "@mtg/engine";
+import {
+  type CardDatabase,
+  characteristics,
+  type GameEvent,
+  type GameState,
+  type ObjectId,
+  type PlayerId,
+} from "@mtg/engine";
 import { deepEqual, partialMatch } from "./compare.ts";
 import { isRecord } from "./format.ts";
 import { battlefieldOf, nameOf, parseRef, resolveRef, STEP_NAMES, scenarioStep } from "./names.ts";
@@ -25,14 +32,14 @@ export const EXPECTATIONS = [
   "tapped",
   "damage",
   "sick",
+  "power",
+  "toughness",
+  "abilities contains",
   "events contains",
 ];
 
 /** Expectation keys the format defines that later tasks add, with the task. */
 export const COMING_EXPECTATIONS: Record<string, string> = {
-  power: "M1-11",
-  toughness: "M1-11",
-  "abilities contains": "M1-11",
   counters: "M1-13",
   winner: "M1-15",
 };
@@ -107,6 +114,15 @@ function check(
         return same(obj.damage);
       case "sick":
         return same(!obj.controlledSinceTurnStart);
+      case "power":
+        return same(characteristics(state, obj.id, cards).power);
+      case "toughness":
+        return same(characteristics(state, obj.id, cards).toughness);
+      case "abilities contains": {
+        if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
+        const keywords = characteristics(state, obj.id, cards).keywords;
+        return { value: keywords, matches: containsAll(keywords, expected, deepEqual) };
+      }
       default:
         return { error: `unknown property "${prop}"` };
     }

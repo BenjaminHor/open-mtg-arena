@@ -7,7 +7,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- (nothing)
+- M1-11 Characteristics and layer 7c (plan, 2026-11-19). CR 613.1–613.4, 613.7, 208.3, 302.4c, 122.1a, 514.2, 611.2a.
+  - `rules/characteristics.ts`: `characteristics(state, id, cards)` starts from the printed card (CR 613.1) and applies
+    the layers in order: control (layer 2, none yet), types (layer 4, none yet), abilities/keywords (layer 6, printed),
+    then power/toughness (layer 7: 7c effects in timestamp order, +1/+1 and -1/-1 counters, rule modifiers). A
+    noncreature has no power or toughness (CR 208.3). `cardTypesOf`, `subtypesOf`, `controllerOf` and `abilitiesOf`
+    read from it, so every rules question already goes through one function.
+  - Rule modifiers (`creaturesGetPT`) apply as layer 7c effects with timestamp 0 (before every object, like an
+    emblem from the start of the game). Scenario setup `rules: [...]` takes them.
+  - Cleanup: "until end of turn" effects end with damage removal, in one action (CR 514.2), with `EFFECT_ENDED`.
+  - Runner: `.power`, `.toughness`, `.abilities contains` (keywords).
+  - Tests: two Giant Growths stack; a pump wears off in cleanup; rule modifier; counters; a noncreature has no P/T;
+    TS tests for timestamp order and the layer order.
+  - Future impact: each layer is a named step in one function, so layers 1–6 and 7a/7b/7d slot in without a rewrite;
+    dependency (CR 613.8) will reorder within a layer later.
 
 ## Handoff notes
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through

@@ -19,8 +19,8 @@ const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
 
 /**
  * The activated abilities an object has now: the ones written on its card, in printed order, then the intrinsic
- * "{T}: Add [mana]" of each of its basic land types (CR 305.6). Abilities granted or removed by effects (layer 6) will
- * change this list, in this one place, from M1-11 on.
+ * "{T}: Add [mana]" of each of its basic land types (CR 305.6). Abilities granted or removed by effects (layer 6, none
+ * yet) will change this list, in this one place.
  */
 export function abilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): ActivatedAbility[] {
   const obj = state.objects[id];

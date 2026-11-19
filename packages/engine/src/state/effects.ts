@@ -1,7 +1,7 @@
 // Continuous effects (CR 611) and what a resolving effect knows about where it came from.
 //
 // A continuous effect is stored as data: what it changes, which objects, from when (its timestamp), and for how long.
-// `characteristics()` applies them in layer order (CR 613, M1-11); nothing applies them once and stores the result.
+// `characteristics()` applies them in layer order (CR 613); nothing applies them once and stores the result.
 
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";

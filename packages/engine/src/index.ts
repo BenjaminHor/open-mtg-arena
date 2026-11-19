@@ -26,6 +26,7 @@ export { type AutoPayment, autoPay } from "./mana/auto-pay.ts";
 export { allPayments, type ManaPayment, manaValue, payFromPool } from "./mana/payment.ts";
 export type { RngState } from "./rng/xoshiro128.ts";
 export { type ActivatedAbility, abilitiesOf, isManaAbility } from "./rules/abilities.ts";
+export { type Characteristics, characteristics } from "./rules/characteristics.ts";
 export { controllerOf } from "./rules/controller.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";

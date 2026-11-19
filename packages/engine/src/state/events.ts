@@ -75,6 +75,8 @@ export type GameEvent =
   | { type: "LIFE_LOST"; player: PlayerId; amount: number } // CR 119.3
   /** A spell or ability created a continuous effect (CR 611.2). */
   | { type: "EFFECT_CREATED"; effect: ContinuousEffect }
+  /** A continuous effect ended, as its duration ran out (CR 611.2a). */
+  | { type: "EFFECT_ENDED"; effect: ContinuousEffect }
   /** Damage removed from a permanent in the cleanup step (CR 514.2). */
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
   /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */

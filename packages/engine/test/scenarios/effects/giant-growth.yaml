@@ -14,6 +14,8 @@ steps:
   - all pass: once
   - expect:
       p1.graveyard: [Giant Growth]
+      p1:Grizzly Bears.power: 5
+      p1:Grizzly Bears.toughness: 5
       events contains:
         - type: EFFECT_CREATED
           effect: { controller: p1, duration: endOfTurn, change: { kind: modifyPT, power: 3, toughness: 3 } }
