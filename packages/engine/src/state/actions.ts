@@ -32,7 +32,7 @@ export type Answer =
   | { kind: "payMana"; payment: ManaPool }
   /** Cancel the cast or activation in progress: the whole action is reversed (CR 734.1, D-035). */
   | { kind: "cancelCast" }
-  /** Add one attacker to the declaration (CR 508.1a–b). */
+  /** Add one attacker to the declaration (CR 508.1a). */
   | { kind: "declareAttacker"; attack: Attack }
   /** Add one block to the declaration (CR 509.1a). */
   | { kind: "declareBlocker"; block: Block }

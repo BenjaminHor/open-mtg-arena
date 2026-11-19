@@ -89,7 +89,7 @@ function parseColor(color: string): Color {
   return color as Color;
 }
 
-/** Power or toughness. Values like "*" (CR 208.2) aren't supported yet. */
+/** Power or toughness. Values like "*" (later: CR 208.2) aren't supported yet. */
 function parsePT(value: string | null, name: string): number | null {
   if (value === null) return null;
   if (!/^\d+$/.test(value)) throw new Error(`${name}: power/toughness "${value}" isn't supported yet`);

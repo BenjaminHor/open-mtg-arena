@@ -1,5 +1,5 @@
 // The turn sequence, as data (CR 500.1, 501.1, 506.1, 512.1). One function walks it, so later rules can add or skip
-// steps, phases and turns (CR 500.7–500.11) in one place.
+// steps, phases and turns (CR 500.11; extra ones, later: CR 500.7–500.10) in one place.
 
 import type { Step } from "../state/turn.ts";
 

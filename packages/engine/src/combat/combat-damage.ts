@@ -47,8 +47,8 @@ function assignedDamage(state: GameState, divisions: Divisions, cards: CardDatab
       damage.push({ source: attacker, to: { kind: "player", player: defender }, amount, combat: true });
       continue;
     }
-    // A blocked creature with no blockers left assigns no damage; with one, all to it; with more, as divided (CR
-    // 510.1c).
+    // A blocked creature with no blockers left assigns no damage; with one, all to it; with more, as divided
+    // (CR 510.1c).
     const blockers = blockersOf(state, attacker, cards);
     const division =
       blockers.length === 1

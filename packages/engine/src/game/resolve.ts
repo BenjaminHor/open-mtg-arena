@@ -63,8 +63,9 @@ export function doesNotResolve(state: GameState, id: ObjectId): Progress {
 /**
  * One `runEffect` work item per effect, in the order written (CR 608.2c), each knowing the still-legal targets
  * (CR 608.2b) and the controller. Queuing them, rather than running them here, lets a later effect wait for a choice
- * (CR 608.2d–e) once one needs to. "This" in a spell's text is the spell; in an ability's, the ability's source, even if
- * it has left the battlefield (CR 113.7a): an effect on a source that's gone then does nothing (CR 101.3, 400.7).
+ * (later: CR 608.2d–e) once one needs to. "This" in a spell's text is the spell; in an ability's, the ability's source,
+ * even if it has left the battlefield (CR 113.7a): an effect on a source that's gone then does nothing (CR 101.3,
+ * 400.7).
  */
 function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: CardDatabase): WorkItem[] {
   const obj = state.objects[id];
@@ -86,7 +87,8 @@ function thisObject(obj: GameObject): ObjectId {
 /**
  * The final part of resolution (CR 608.2n, 608.3a): an ability ceases to exist; an instant or sorcery goes to its
  * owner's graveyard; a permanent spell enters the battlefield under its controller. If the object already left the
- * stack during its own resolution, it still resolved, and nothing more happens to it here (CR 608.2m).
+ * stack during its own resolution, it still resolved, and nothing more happens to it here (CR 608.2m; nothing in the
+ * pool can do that yet, so a unit test calls this directly).
  */
 export function finishResolving(state: GameState, id: ObjectId, cards: CardDatabase): Progress {
   const obj = state.objects[id];
@@ -105,7 +107,7 @@ export function finishResolving(state: GameState, id: ObjectId, cards: CardDatab
         types.includes("instant") || types.includes("sorcery")
           ? ({ zone: "graveyard" } as const)
           : ({ zone: "battlefield", controller } as const);
-      // The resolution is reported before the card moves; triggers on resolving come after both (CR 608.2p).
+      // The resolution is reported before the card moves; triggers on resolving come after both (later: CR 608.2p).
       const resolved = { type: "SPELL_RESOLVED", object: id, cardId: obj.cardId, controller } as const;
       return andThen({ state, events: [resolved] }, (s) => moveCard(s, id, destination));
     }

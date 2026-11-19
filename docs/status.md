@@ -7,26 +7,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
-- M1-19 Golden games, coverage report and benchmarks (plan, 2026-11-19). docs/testing.md sections 4 to 6. Three PRs:
-  1. Golden games: done, merged (PR #17, D-047).
-  - M1 exit criterion, rules-judge review of casting, priority, SBAs and combat (2026-11-19): done, no rules errors for
-    what the M1 pool can reach; two deliberate deviations already recorded (D-035 always reverses mana abilities on a
-    cancel; `castProblem` checks targets before the card moves). Future traps it found are now in future-rules.md
-    (targeting without a source, paying outside casting, casting from other zones, vigilance, flash, token checks).
-    Its suggested scenarios (CR 117.3b after a resolution, the game ending with spells on the stack, a tapped blocker
-    still dealing damage across three blockers, CR 116.3, CR 504.2) and missing `rules:` citations (601.2i, 508.2,
-    510.3, 507.2) are part of closing the coverage gaps.
-  2. Coverage report (done, D-048; PR to open). `pnpm coverage:rules` writes `docs/coverage/rules-coverage.md`; the
-     test fails on a gap the committed report doesn't list, and the command refuses a new gap without
-     `--accept-new-gaps`. Mentions of unbuilt rules now read `later: CR 614`. Interaction matrix README with two new
-     scenarios (`interactions/pump/`). After review: 261 cited, 144 tested by scenarios, 48 only by unit tests, 69 gaps
-     (the stricter matching shows the casting steps CR 601.2a–i as untested).
-     The gaps get closed after the owner answers the open question on unit tests (M1 exit work).
-  3. `pnpm bench` (done, D-049; PR after #18). Six measures per operation, states from the golden games, timed in
-     interleaved rounds against a reference loop; five unchanged runs pass, a deliberate slowdown (`JSON.stringify` in
-     `applyAction`) fails with +240% to +340%. Today: about 8 to 12 µs per `applyAction`, 44 ms per random game.
-  - Future impact: golden logs change whenever event text or rules change, so the recipe-based regenerate keeps them
-    cheap to update; the coverage report's parser must accept every citation form used (`CR 702.19c`, ranges later).
+- M1 exit criteria with the owner. Done by Claude Code: all M1 tasks, the 1,000-seed fuzz, the rules-judge review of
+  casting, priority, SBAs and combat, and 0 coverage gaps (D-050). Left for the owner: follow a CLI game log
+  (`pnpm cli auto ... --max-turns 30`), spot-check a few scenarios, review the M2 spec together (including whether to
+  keep M2 before M3; the owner asked when the remaining rules come: M3 "Rules depth", per roadmap.md), then tag `m1`.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -95,7 +79,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- After M1-19: the M1 exit criteria with the owner (docs/milestones/m1-engine-foundations.md), then the M2 spec.
+- The rest of the M1 exit criteria, with the owner: the coverage question, following a CLI game log and spot-checking
+  scenarios, and reviewing the M2 spec (docs/milestones/m1-engine-foundations.md). Then the owner tags `m1`.
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -160,6 +145,15 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - M1-17 Headless CLI: `new`, `show`, `actions`, `do`, `ai`, `auto`, `log`, `inspect`, `export --scenario`, `replay`;
   the game file (setup + actions, cached state); `first-legal` and `random` agents; the prebuilt decks; exported games
   pass as scenarios (D-043) (2026-11-19).
+- M1 coverage gaps closed (D-050: a scenario or a unit test counts): 242 rules cited, 174 tested by scenarios, 68
+  only by unit tests, 0 gaps, 50 mentions marked `later:`. New scenarios for the turn's steps, paying, land plays,
+  the game ending mid-stack, priority after a resolution and tapped blockers; unit tests for the CR's definitions
+  (2026-11-19).
+- M1-19 Golden games, coverage report and benchmarks: four golden games with readable logs (D-047), `pnpm
+  coverage:rules` with its check in `pnpm check` and the interaction matrix (D-048), `pnpm bench` against a baseline
+  (D-049). Accepted: doubled mana shows in the golden diff; removing a scenario fails the coverage check; a slowdown
+  fails the bench and five unchanged runs pass. Also the rules-judge M1 exit review of casting, priority, SBAs and
+  combat: no rules errors for the pool (2026-11-19).
 - M1-18 Fuzzer and replays: player views and event filtering (D-044), card ids numbered in a random order (D-045),
   `pnpm fuzz` with every check after every action and failures written as game files, a short fuzz in `pnpm check`,
   saved replays with `pnpm replays:update` (D-046). Acceptance: `pnpm fuzz --games 1000 --seed 1` clean (0 of 1,000
@@ -167,16 +161,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2 (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- **M1 exit criterion "no rule cited in code without a scenario" (asked 2026-11-19; not blocking yet).** A first count:
-  the engine and card code cite 261 rules; scenarios cover 144; 48 more are covered only by TypeScript unit tests
-  (player views, card data parsing, damage helpers: things a scenario can't express); 69 have no test at all. Mentions
-  of rules not built yet are now written `later: CR 614` and not counted (29 of them). Of the 69, many are
-  type-definition notes, and some are real gaps (casting steps CR 601.2a–i, attack restrictions CR 508.1b–d, CR 510.3).
-  Recommended: count a rule as tested when a scenario *or* a unit test cites it (the report lists the two separately),
-  write mentions of rules not yet built as `(later: CR 614)` so they aren't counted as implemented, and close the real
-  gaps with scenarios. The criterion would read "no rule cited in code without a test". The alternative is the literal
-  reading: a scenario for every cited rule, which needs the runner to express views and card data, or the citations
-  removed. Until the owner decides, the report shows both kinds and the check fails on rules with neither.
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care

@@ -1,5 +1,5 @@
 name: A basic land taps for one mana of its color, without using the stack
-rules: [CR 305.6, CR 605.3b, CR 106.4, CR 117.3c]
+rules: [CR 305.6, CR 605.3b, CR 106.4, CR 117.3c, CR 701.26a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

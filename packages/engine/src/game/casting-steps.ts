@@ -1,6 +1,7 @@
-// The steps shared by casting a spell (CR 601.2b–i) and activating an ability (CR 602.2b): choosing targets, paying the
-// cost, and cancelling. Progress is kept in `GameState.casting` and on the stack object, so every pause is plain data
-// and a cancelled action can be reversed exactly (CR 734.1, D-035).
+// The steps shared by casting a spell (CR 601.2c, 601.2f–i) and activating an ability (CR 602.2b): choosing targets,
+// paying the cost, and cancelling. Progress is kept in `GameState.casting` and on the stack object, so every pause is
+// plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes and divisions come later
+// (later: CR 601.2b, 601.2d).
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";

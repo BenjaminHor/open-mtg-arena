@@ -572,8 +572,8 @@ every schema change and every change D-024 lists bumps it.
   helpers don't count.
 - The report lists rules tested by scenarios, rules tested only by unit tests (they cite the rule in a name or
   comment), and gaps: rules nothing tests, and interaction matrix cells above the diagonal marked "not yet" or left
-  empty. A missing matrix is an error. Whether unit tests count
-  for the M1 exit criterion is an open question for the owner (status.md); until then, a gap is a rule with neither.
+  empty. A missing matrix is an error. Unit tests count for the M1 exit criterion (owner, D-050), so a gap is a rule
+  with neither.
 - `cli/test/coverage.test.ts` fails when the committed report isn't exactly what `pnpm coverage:rules` writes now, so
   the report is always current and a gap closed and later reopened can't hide. `pnpm coverage:rules` refuses to write
   a report that's worse than the committed one unless given `--accept-new-gaps`: a new gap, or a rule the committed
@@ -595,3 +595,10 @@ every schema change and every change D-024 lists bumps it.
   --update` writes the baseline: only for a justified slowdown, explained in the commit.
 - It isn't part of `pnpm check`: timings on a shared CI runner would be flaky. Run it before merging engine changes
   (testing.md). `cli/test/bench.test.ts` checks the workloads still build and run.
+
+**D-050: Unit tests count toward rules coverage** · 2026-11-19 · accepted (owner)
+- The owner decided: a rule the code cites is covered when a scenario or a unit test tests it, and any real hole in
+  behavior gets a scenario. The M1 exit criterion reads "no rule cited in code without a test".
+- So the coverage report's gaps stay what D-048 made them (rules with neither), and "Tested only by unit tests" is a
+  list to read, not a list of failures: things a scenario can't express (player views, card data parsing) belong
+  there; game behavior there should move to a scenario when it's next touched.

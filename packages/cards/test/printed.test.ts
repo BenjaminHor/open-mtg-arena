@@ -21,7 +21,7 @@ describe("parseManaCost", () => {
 });
 
 describe("parseTypeLine", () => {
-  it("splits supertypes, card types and subtypes (CR 205)", () => {
+  it("splits supertypes, card types and subtypes (CR 205.1, 205.2a, 205.4a)", () => {
     expect(parseTypeLine("Basic Land — Mountain")).toStrictEqual({
       supertypes: ["basic"],
       types: ["land"],
@@ -35,7 +35,7 @@ describe("parseTypeLine", () => {
     expect(parseTypeLine("Instant")).toStrictEqual({ supertypes: [], types: ["instant"], subtypes: [] });
   });
 
-  it("keeps two-word creature types together (CR 205.3b)", () => {
+  it("keeps two-word creature types together (CR 205.3b, from the list in CR 205.3m)", () => {
     expect(parseTypeLine("Legendary Creature — Time Lord Human").subtypes).toStrictEqual(["Time Lord", "Human"]);
   });
 
@@ -54,7 +54,7 @@ describe("parseTypeLine", () => {
 });
 
 describe("colorsOf", () => {
-  it("takes colors from the mana cost and the color indicator, in WUBRG order (CR 202.2, 204.2)", () => {
+  it("takes colors from the mana cost and the color indicator, in WUBRG order (CR 105.1, 105.2c, 202.2, 204.2)", () => {
     expect(colorsOf(parseManaCost("{2}{R}{G}{R}"), [])).toStrictEqual(["R", "G"]);
     expect(colorsOf(null, ["U"])).toStrictEqual(["U"]);
     expect(colorsOf(null, [])).toStrictEqual([]);
@@ -96,7 +96,7 @@ describe("printedCard", () => {
     for (const c of POOL.cards) expect(printedCard(c).colors, c.name).toStrictEqual(c.colors);
   });
 
-  it("rejects a creature without power and toughness, and a noncreature with them", () => {
+  it("rejects a creature without power and toughness, and a noncreature with them (CR 208.1)", () => {
     const bears = POOL.cards.find((c) => c.name === "Grizzly Bears");
     const bolt = POOL.cards.find((c) => c.name === "Lightning Bolt");
     if (bears === undefined || bolt === undefined) throw new Error("test cards missing from the pool");

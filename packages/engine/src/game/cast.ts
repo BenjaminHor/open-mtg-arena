@@ -14,7 +14,8 @@ import { nextCastingStep } from "./casting-steps.ts";
 import type { Progress } from "./progress.ts";
 
 /**
- * Why the player can't begin casting this card now, or null. Checked once, before the card moves (CR 601.2a): it's in
+ * Why the player can't begin casting this card now, or null: the check that the proposed spell can legally be cast
+ * (CR 601.2e), done once, before the card moves (CR 601.2a), rather than after all the choices: it's in
  * their hand and the timing allows it. Two shortcuts give the same result as starting and then reversing the cast
  * (CR 601.2, 734.1): every target requirement must have a legal choice (CR 601.2c), and a card with no mana cost can't be
  * cast (it has no alternative costs yet; CR 118.6 makes the attempt legal, but it could never be paid). Whether the

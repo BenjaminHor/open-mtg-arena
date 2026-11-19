@@ -114,8 +114,8 @@ export function anotherCleanupStep(state: GameState): Progress {
 }
 
 /**
- * A skipped step is passed over as though it didn't exist (CR 500.11, 614.10a): it doesn't begin, and nothing in it
- * happens.
+ * A skipped step is passed over as though it didn't exist (CR 500.11): it doesn't begin, and nothing in it happens.
+ * Things scheduled for it won't happen either (later: CR 614.10a), once anything can be scheduled.
  */
 function isSkipped(state: GameState, step: Step): boolean {
   const turn = currentTurn(state);

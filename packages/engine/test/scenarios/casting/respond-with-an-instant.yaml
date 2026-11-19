@@ -1,5 +1,5 @@
 name: An instant cast in response resolves first
-rules: [CR 117.7, CR 405.2, CR 405.5, CR 608.2n]
+rules: [CR 117.3b, CR 117.7, CR 405.2, CR 405.5, CR 601.2a, CR 608.2n]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -24,7 +24,9 @@ steps:
       stack: [Volcanic Hammer]
       p2.graveyard: [Giant Growth]
       pending: { player: p1, kind: priority }
+  # p2 passes last, but the active player gets priority after a resolution (CR 117.3b).
   - all pass: once
   - expect:
       stack: []
       p1.graveyard: [Volcanic Hammer]
+      pending: { player: p1, kind: priority }

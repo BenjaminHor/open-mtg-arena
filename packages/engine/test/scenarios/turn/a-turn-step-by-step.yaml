@@ -1,0 +1,59 @@
+name: A turn goes through its phases and steps in order, and the active player gets priority in each step that has it
+rules: [CR 102.1, CR 501.1, CR 504.2, CR 505.1, CR 505.2, CR 507.2, CR 508.2, CR 510.3, CR 512.1]
+setup:
+  turn: { active: p1, step: upkeep }
+  p1:
+    library: [Forest, Forest]
+    battlefield: [Grizzly Bears]
+  p2:
+    library: [Forest, Forest]
+steps:
+  - expect:
+      step: upkeep
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  # The draw step: the active player draws, then gets priority (CR 504.1, 504.2).
+  - expect:
+      step: draw
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: CARD_DRAWN, player: p1 }]
+  - all pass: once
+  - expect:
+      step: main1
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - expect:
+      step: combat.beginning
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - p1 attack: [Grizzly Bears]
+  - expect:
+      step: combat.declareAttackers
+      pending: { player: p1, kind: priority }
+  # p2 has no creatures, so there's no blocker to declare, only priority.
+  - all pass: once
+  - expect: { step: combat.declareBlockers }
+  - all pass: once
+  # Combat damage is dealt, then the active player gets priority.
+  - expect:
+      step: combat.damage
+      pending: { player: p1, kind: priority }
+      p2.life: 18
+  - all pass: once
+  - expect: { step: combat.end }
+  - all pass: once
+  # The second main phase comes after combat (CR 505.1).
+  - expect:
+      step: main2
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - expect:
+      step: end
+      pending: { player: p1, kind: priority }
+  # The ending phase is the end step, then cleanup (CR 512.1); then p2's turn begins with untap, upkeep (CR 501.1).
+  - all pass: once
+  - expect:
+      turn: 4
+      active: p2
+      step: upkeep
+      events contains: [{ type: STEP_BEGAN, step: cleanup }, { type: STEP_BEGAN, step: untap }]

@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { advance } from "../../src/game/advance.ts";
 import { waitFor } from "../../src/game/decide.ts";
+import { finishResolving } from "../../src/game/resolve.ts";
 import { queueWork } from "../../src/game/work.ts";
 import type { GameState, ObjectId, PlayerId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
@@ -205,5 +206,25 @@ describe("the work queue and resolution, in more detail", () => {
     const resolved = pass(pass({ state: moved.state, events: [] }));
     const permanent = resolved.state.objects[resolved.state.zones.battlefield[0] as ObjectId];
     expect(permanent).toMatchObject({ owner: "p1", baseController: "p2" });
+  });
+});
+
+describe("a spell that left the stack during its own resolution (CR 608.2m)", () => {
+  // Nothing in the M1 pool can move a resolving spell, so this calls the final part of resolution directly.
+  it("has still resolved: the final part does nothing more to it", () => {
+    const game = putSpell(precombatMain(), "p1", 0);
+    const [spell] = game.state.zones.stack as [ObjectId];
+    const exiled = moveCard(game.state, spell, { zone: "exile" });
+    const after = finishResolving(exiled.state, spell, TEST_CARDS);
+    expect(after.state).toBe(exiled.state);
+    expect(after.events).toEqual([]);
+  });
+
+  it("is finished normally when it's still there: an instant goes to its owner's graveyard (CR 608.2n)", () => {
+    const game = putSpell(precombatMain(), "p1", 0);
+    const [spell] = game.state.zones.stack as [ObjectId];
+    const after = finishResolving(game.state, spell, TEST_CARDS);
+    expect(after.state.zones.stack).toEqual([]);
+    expect(after.state.zones.players.p1?.graveyard).toHaveLength(1);
   });
 });
