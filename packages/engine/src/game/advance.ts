@@ -6,6 +6,7 @@ import { combatDamage } from "../combat/combat-damage.ts";
 import { declareAttackers } from "../combat/declare-attackers.ts";
 import { declareBlockers } from "../combat/declare-blockers.ts";
 import { runEffect } from "../effects/run-effect.ts";
+import { happenOrAsk } from "../pipeline/happen.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { WorkItem } from "../state/work.ts";
 import { putTriggers } from "../triggers/put-on-stack.ts";
@@ -60,5 +61,7 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       };
     case "putTriggers":
       return putTriggers(state, item.batch, item.player, cards);
+    case "happen":
+      return happenOrAsk(state, item.proposed, cards, item.choices);
   }
 }

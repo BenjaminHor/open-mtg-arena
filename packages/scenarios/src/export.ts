@@ -20,6 +20,7 @@ import {
 import { stringify } from "yaml";
 import { declaration, division } from "./export-declarations.ts";
 import { nameOf, refOf, scenarioStep } from "./names.ts";
+import { replacementWord } from "./steps.ts";
 
 type Step = Record<string, unknown>;
 
@@ -134,6 +135,12 @@ function answerStep(
       return choose("finish");
     case "chooseYesNo":
       return choose(answer.yes ? "yes" : "no");
+    case "chooseReplacement": {
+      const pending = state.pending;
+      const ref = pending?.kind === "chooseReplacement" ? pending.options[answer.option] : undefined;
+      if (ref === undefined) throw new Error("a chooseReplacement answer without its decision");
+      return choose(replacementWord(state, ref, cards));
+    }
     case "orderTrigger": {
       const pending = state.pending;
       if (pending?.kind !== "orderTriggers") throw new Error("an orderTrigger answer without its decision");

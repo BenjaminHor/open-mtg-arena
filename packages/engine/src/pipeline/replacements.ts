@@ -4,42 +4,74 @@
 // (`CardDef.replacements`: "enters tapped unless ...", "if it would be put into a graveyard from anywhere, ...
 // instead"), and a regeneration shield on a permanent about to be destroyed (`GameState.replacements`, CR 701.19a).
 //
-// One applies to an event at most so far. Several on one event, chosen in turn by the affected player, each applying
-// once, come in M2-08c (later: CR 616.1, 614.5); until then this refuses rather than choose for them.
+// They're applied one at a time, each once (none so far could apply again to its own result; later: CR 614.5, the
+// `applied` list), and after each the others are checked against the changed event
+// (CR 616.1f). When two different ones apply, the affected player or the affected object's controller chooses which
+// first (CR 616.1): `choices` holds the choices made so far, and without one for this event the answer is to ask.
 
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
 import { replacementsOf } from "../rules/abilities.ts";
+import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
-import { hasRegenerationShield } from "../state/replacements.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { hasRegenerationShield, type ReplacementRef, sameReplacement } from "../state/replacements.ts";
 import type { Destination } from "../zones/move-card.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { playLandDestination, type SingleEvent } from "./proposed.ts";
 
-/** The event as the replacements that apply change it: none, one, or several events in its place. */
-export function applyReplacements(state: GameState, event: SingleEvent, cards: CardDatabase): SingleEvent[] {
-  const [only, another] = candidatesFor(state, event, cards);
-  if (only === undefined) return [event];
-  // With two, the affected object's controller would choose one, and the other would be checked against the changed
-  // event (later: CR 616.1, 616.1f, 614.5).
-  if (another !== undefined)
-    throw new Error("two replacement effects apply to one event; choosing between them isn't built yet");
-  const replaced = replaceWith(state, only, event);
-  return [...replaced.before, replaced.event, ...replaced.after];
+/** The events in place of the event, or who must choose between which replacements first (CR 616.1). */
+export type Replaced =
+  | { kind: "replaced"; events: SingleEvent[] }
+  | { kind: "choose"; player: PlayerId; options: ReplacementRef[] };
+
+/**
+ * The event as the replacements that apply change it: none, one, or several events in its place. `choices` are the
+ * affected players' choices so far, in order; an event with two candidates and no choice among them asks.
+ */
+export function applyReplacements(
+  state: GameState,
+  event: SingleEvent,
+  cards: CardDatabase,
+  choices: readonly ReplacementRef[] = [],
+): Replaced {
+  let replaced: Replacing = { before: [], event, after: [] };
+  const applied: ReplacementRef[] = [];
+  for (;;) {
+    const candidates = candidatesFor(state, replaced.event, cards).filter(
+      (c) => !applied.some((done) => sameReplacement(done, c.ref)),
+    );
+    const [first, second] = candidates;
+    if (first === undefined)
+      return { kind: "replaced", events: [...replaced.before, replaced.event, ...replaced.after] };
+    const chosen =
+      second === undefined ? first : candidates.find((c) => choices.some((ch) => sameReplacement(ch, c.ref)));
+    if (chosen === undefined)
+      return { kind: "choose", player: affectedPlayer(state, event), options: candidates.map((c) => c.ref) };
+    applied.push(chosen.ref);
+    replaced = replaceWith(state, chosen, replaced);
+  }
 }
 
-/** A replacement effect that would apply to an event: the moving card's own, or a regeneration shield. */
-type Candidate = { kind: "ownText"; def: ReplacementDef; move: Move } | { kind: "regeneration"; object: ObjectId };
+/** The event so far: what earlier replacements put before and after it, and the event itself as changed. */
+type Replacing = { before: SingleEvent[]; event: SingleEvent; after: SingleEvent[] };
+
+/** A replacement effect that would apply to an event, with the reference that names it. */
+type Candidate =
+  | { kind: "ownText"; ref: ReplacementRef; def: ReplacementDef; move: Move }
+  | { kind: "regeneration"; ref: ReplacementRef; object: ObjectId };
 
 function candidatesFor(state: GameState, event: SingleEvent, cards: CardDatabase): Candidate[] {
   const move = moveOf(state, event);
-  const ownText =
-    move === null ? [] : replacementsOf(state, move.object, cards).filter((def) => applies(state, def, move, cards));
-  return [
-    ...ownText.map((def): Candidate => ({ kind: "ownText", def, move: move as Move })),
-    ...regeneration(state, event),
-  ];
+  const ownText: Candidate[] =
+    move === null
+      ? []
+      : replacementsOf(state, move.object, cards).flatMap((def, index) =>
+          applies(state, def, move, cards)
+            ? [{ kind: "ownText", ref: { kind: "ownText", object: move.object, index }, def, move }]
+            : [],
+        );
+  return [...ownText, ...regeneration(state, event)];
 }
 
 /**
@@ -49,7 +81,34 @@ function candidatesFor(state: GameState, event: SingleEvent, cards: CardDatabase
  */
 function regeneration(state: GameState, event: SingleEvent): Candidate[] {
   if (event.kind !== "destroy" || event.noRegeneration === true) return [];
-  return hasRegenerationShield(state, event.object) ? [{ kind: "regeneration", object: event.object }] : [];
+  if (!hasRegenerationShield(state, event.object)) return [];
+  return [{ kind: "regeneration", ref: { kind: "regenerationShield", object: event.object }, object: event.object }];
+}
+
+/** Who chooses among replacements for this event: the affected object's controller, or its owner (CR 616.1). */
+function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
+  switch (event.kind) {
+    case "destroy":
+    case "sacrifice":
+    case "discard":
+    case "counterObject":
+    case "moveCard":
+    case "regenerate":
+      return controllerOf(state, event.object);
+    case "playLand":
+      return event.player;
+    case "draw":
+    case "dealDamage":
+    case "gainLife":
+    case "loseLife":
+    case "reveal":
+    case "reorderLibrary":
+    case "tap":
+    case "untap":
+    case "addMana":
+    case "shuffle":
+      throw new Error(`no replacement offers a choice on ${event.kind} yet`);
+  }
 }
 
 /** The card an event would move, and where to: what replacements about where a card goes look at. */
@@ -102,16 +161,29 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
   }
 }
 
-/** The events that happen instead: before it, the changed event, and after it. */
-function replaceWith(
-  state: GameState,
-  candidate: Candidate,
-  event: SingleEvent,
-): { before: SingleEvent[]; event: SingleEvent; after: SingleEvent[] } {
-  // "Instead remove all damage marked on it and its controller taps it ... remove it from combat" (CR 701.19a).
-  if (candidate.kind === "regeneration")
-    return { before: [], event: { kind: "regenerate", object: candidate.object }, after: [] };
-  const { def, move } = candidate;
+/**
+ * The event with this replacement applied. One that swaps the event for another (regeneration for a destroy) replaces
+ * the whole modified event, so what earlier replacements put around it goes too (CR 614.6: a replaced event never
+ * happens).
+ */
+function replaceWith(state: GameState, candidate: Candidate, replaced: Replacing): Replacing {
+  switch (candidate.kind) {
+    case "regeneration":
+      // "Instead remove all damage marked on it and its controller taps it ... remove it from combat" (CR 701.19a).
+      return { before: [], event: { kind: "regenerate", object: candidate.object }, after: [] };
+    case "ownText": {
+      const own = replaceByOwnText(state, candidate.def, replaced.event, candidate.move);
+      return {
+        before: [...replaced.before, ...own.before],
+        event: own.event,
+        after: [...own.after, ...replaced.after],
+      };
+    }
+  }
+}
+
+/** The events a card's own replacement puts in place of the event. */
+function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEvent, move: Move): Replacing {
   switch (def.kind) {
     case "entersTapped":
       if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters tapped");

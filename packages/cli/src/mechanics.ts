@@ -22,8 +22,11 @@ import type {
   TriggeredAbilityDef,
 } from "@mtg/engine";
 
-/** Every kind of decision, so a new one must be added here (and covered). */
-const DECISION_KINDS: Record<DecisionKind["kind"], true> = {
+/**
+ * Every kind of decision: true if golden games must answer it; otherwise why agent games can't. A new one must be
+ * added here.
+ */
+const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   chooseStartingPlayer: true,
   mulligan: true,
   mulliganBottom: true,
@@ -41,6 +44,7 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true> = {
   chooseCards: true,
   chooseYesNo: true,
   orderTriggers: true,
+  chooseReplacement: "no two replacement effects in the pool apply to one event until M2-08d's prevention",
 };
 
 /**
@@ -154,7 +158,9 @@ export function wantedMechanics(cards: CardDatabase): string[] {
       delayedAbilities(effects).flatMap((ability) => [DELAYED_TRIGGER, ...triggerUnits(ability)]),
     ),
   ]);
-  const decisions = (Object.keys(DECISION_KINDS) as DecisionKind["kind"][]).map(decisionUnit);
+  const decisions = (Object.entries(DECISION_KINDS) as [DecisionKind["kind"], true | string][])
+    .filter(([, wanted]) => wanted === true)
+    .map(([kind]) => decisionUnit(kind));
   const events = (Object.entries(EVENT_TYPES) as [GameEvent["type"], true | string][])
     .filter(([, wanted]) => wanted === true)
     .map(([type]) => eventUnit(type));

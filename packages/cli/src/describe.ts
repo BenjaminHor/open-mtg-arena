@@ -11,6 +11,7 @@ import type {
   GameState,
   ManaPool,
   ObjectId,
+  ReplacementRef,
   Target,
 } from "@mtg/engine";
 import { nameOf, refOf } from "@mtg/scenarios";
@@ -126,6 +127,11 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return "done choosing";
     case "chooseYesNo":
       return answer.yes ? "yes" : "no";
+    case "chooseReplacement": {
+      const pending = state.pending;
+      const ref = pending?.kind === "chooseReplacement" ? pending.options[answer.option] : undefined;
+      return ref === undefined ? `replacement ${answer.option} first` : `${replacementText(state, ref, cards)} first`;
+    }
     case "orderTrigger": {
       const pending = state.pending;
       const trigger = pending?.kind === "orderTriggers" ? pending.batch[answer.index] : undefined;
@@ -157,5 +163,15 @@ function choiceText(purpose: ChoosePurpose, card: string): string {
       return `find ${card}`;
     case "putOnTop":
       return `put ${card} back next from the top`;
+  }
+}
+
+/** A replacement effect a player may choose, by what it is: a card's own text, or a regeneration shield. */
+export function replacementText(state: GameState, ref: ReplacementRef, cards: CardDatabase): string {
+  switch (ref.kind) {
+    case "ownText":
+      return `${nameOf(state, ref.object, cards)}'s replacement ${ref.index + 1}`;
+    case "regenerationShield":
+      return `regenerating ${nameOf(state, ref.object, cards)}`;
   }
 }

@@ -141,6 +141,7 @@ function answerLine(answer: Answer): string {
     case "orderTrigger":
       return `${answer.kind} ${answer.index}`;
     case "chooseCard":
+    case "chooseReplacement":
       return `${answer.kind} ${answer.option}`;
     case "chooseYesNo":
       return `${answer.kind} ${answer.yes ? "yes" : "no"}`;
@@ -246,6 +247,7 @@ const ANSWERS: { [K in Answer["kind"]]: Decode<K> } = {
   declareBlocker: ([a, b]) => ({ kind: "declareBlocker", block: { blocker: a as ObjectId, attacker: b as ObjectId } }),
   orderTrigger: ([a]) => ({ kind: "orderTrigger", index: Number(a) }),
   chooseCard: ([a]) => ({ kind: "chooseCard", option: Number(a) }),
+  chooseReplacement: ([a]) => ({ kind: "chooseReplacement", option: Number(a) }),
   chooseYesNo: ([a], line) => ({ kind: "chooseYesNo", yes: oneOf(a, ["yes", "no"], line) === "yes" }),
   cancelCast: () => ({ kind: "cancelCast" }),
   finishDeclaring: () => ({ kind: "finishDeclaring" }),

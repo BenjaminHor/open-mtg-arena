@@ -91,6 +91,8 @@ describe("discriminated unions", () => {
           return `yes or no: ${decision.purpose}`;
         case "orderTriggers":
           return `order ${decision.batch.length} triggered abilities`;
+        case "chooseReplacement":
+          return `choose one of ${decision.options.length} replacement effects`;
         default:
           return assertNever(decision);
       }

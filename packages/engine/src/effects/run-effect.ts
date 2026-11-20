@@ -3,7 +3,7 @@
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
-import { happen } from "../pipeline/happen.ts";
+import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
 import { controllerOf } from "../rules/controller.ts";
 import type { EffectContext } from "../state/effects.ts";
@@ -48,7 +48,8 @@ export function runEffect(
       const [from, ...more] = objectsNamed(state, effect.from, context, cards);
       if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
       if (from === undefined) return { state, events: [] };
-      return happen(state, { kind: "dealDamage", damage: damageOf(state, effect, from, context, cards) }, cards);
+      // A resolving effect does nothing after its event, so the event may wait for a choice (CR 616.1).
+      return happenOrAsk(state, { kind: "dealDamage", damage: damageOf(state, effect, from, context, cards) }, cards);
     }
     case "addMana": {
       // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5). A choice of color was
@@ -96,12 +97,16 @@ export function runEffect(
       }
       return happen(state, { kind: "sacrifice", object: source }, cards);
     }
-    case "destroy":
-      return toEach(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)), cards, (object) =>
+    case "destroy": {
+      // A resolving effect does nothing after its event, so the event may wait for a choice (CR 616.1).
+      const objects = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
+      if (objects.length === 0) return { state, events: [] };
+      const destroy = (object: ObjectId): SingleEvent =>
         effect.noRegeneration === true
           ? { kind: "destroy", object, noRegeneration: true }
-          : { kind: "destroy", object },
-      );
+          : { kind: "destroy", object };
+      return happenOrAsk(state, { kind: "simultaneous", events: objects.map(destroy) }, cards);
+    }
     case "regenerate":
       return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
     case "revealUntil": {

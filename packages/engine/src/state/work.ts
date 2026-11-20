@@ -3,10 +3,12 @@
 // plain-data snapshot.
 
 import type { Effect } from "../cards/types.ts";
+import type { ProposedEvent } from "../pipeline/proposed.ts";
 import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DidNotResolve } from "./events.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
+import type { ReplacementRef } from "./replacements.ts";
 import type { PendingTrigger } from "./triggers.ts";
 
 export type WorkItem =
@@ -46,4 +48,6 @@ export type WorkItem =
   /** A triggered ability's "you may" as it resolves (CR 603.5): `player` chooses whether `resume` happens. */
   | { kind: "askOptional"; player: PlayerId; resume: WorkItem[] }
   /** Triggered abilities of one batch still to be put on the stack, then priority for `player` (CR 603.3b). */
-  | { kind: "putTriggers"; batch: PendingTrigger[]; player: PlayerId };
+  | { kind: "putTriggers"; batch: PendingTrigger[]; player: PlayerId }
+  /** An event waiting on a choice of replacement effect (CR 616.1), replaced again with the choices made so far. */
+  | { kind: "happen"; proposed: ProposedEvent; choices: ReplacementRef[] };

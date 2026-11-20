@@ -11,6 +11,7 @@ import {
   type ObjectId,
   type PendingTrigger,
   type PlayerId,
+  type ReplacementRef,
 } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
@@ -30,6 +31,7 @@ import {
   permanentNamed,
   targetNamed,
 } from "./lookups.ts";
+import { nameOf } from "./names.ts";
 import { paymentActions, stackAnswer, targetsAndPayment, unusedListed } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
@@ -270,6 +272,12 @@ function answerFor(
       return { kind: "chooseYesNo", yes: text === "yes" };
     case "orderTriggers":
       return { kind: "orderTrigger", index: triggerNamed(pending.batch, player, text, cards) };
+    case "chooseReplacement": {
+      // "regeneration" for a regeneration shield, or the name of the card whose own replacement it is.
+      const option = pending.options.findIndex((ref) => replacementWord(state, ref, cards) === text);
+      if (option === -1) throw new Error(`no replacement effect "${text}" to choose`);
+      return { kind: "chooseReplacement", option };
+    }
     case "declareAttackers":
     case "declareBlockers":
       return declarationAnswer(state, player, text, cards);
@@ -292,4 +300,14 @@ function triggerNamed(batch: readonly PendingTrigger[], player: string, text: st
   const index = theirs[(nth === undefined ? 1 : Number(nth)) - 1];
   if (index === undefined) throw new Error(`${player} has no triggered ability of ${text} waiting`);
   return index;
+}
+
+/** How a scenario names a replacement effect to choose (CR 616.1): "regeneration", or the card whose own text it is. */
+export function replacementWord(state: GameState, ref: ReplacementRef, cards: CardDatabase): string {
+  switch (ref.kind) {
+    case "regenerationShield":
+      return "regeneration";
+    case "ownText":
+      return nameOf(state, ref.object, cards);
+  }
 }

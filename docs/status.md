@@ -427,7 +427,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
        Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
        isn't destroyed: its ruling).
-     - Now: M2-08c (2026-11-20). Design, with the advisor's review:
+     - Now: M2-08c (2026-11-20). Built (D-087): `happenOrAsk`, the `chooseReplacement` decision and its plumbing (legal
+       actions, view, CLI action lines and describe, scenario `choose:` "regeneration" or a card's name, export), unit
+       tests in `test/pipeline/replacement-choice.test.ts`, an import guard. Next: mutations, fuzz, reviews, PR.
+       Design, with the advisor's review:
        - `happenOrAsk`: like `happen`, but when the affected player (or the affected object's controller, CR 616.1)
          must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
          decision, and queues a `happen` work item holding the proposed event and the choices so far. On the answer,
@@ -475,6 +478,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
+- **Owner's preference (2026-11-20):** keep looking for ways to speed up iteration, so features land quickly while
+  staying accurate and high quality. Slow spots seen so far, to work on as they bite: the 300-game fuzz (about 10
+  minutes, one process: could run seeds across worker processes), `golden:cover` (plays up to 800 candidate games:
+  could stop at the first game covering each missing unit), the mutation pass (a vitest run per mutant: could run only
+  the engine and scenario projects, already done), and reviews waiting on each other (run mutations, fuzz and reviews
+  at once, but never edit while mutating).
 - **Owner's instruction (2026-11-20):** continue all the way to the end of M2; the owner won't be available much.
   For a decision that needs the owner, notify them with suggestions to choose from, and meanwhile carry on with the
   recommended option (recorded in Open questions, marked "proceeding with ...") so work doesn't stall.

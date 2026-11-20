@@ -11,6 +11,19 @@ export type ReplacementEffect =
    */
   { kind: "regenerationShield"; object: ObjectId };
 
+/**
+ * One replacement effect that would apply to an event, named so a player can choose it and so it's applied once
+ * (CR 616.1; later: CR 614.5): a card's own replacement by its object and place in `CardDef.replacements`, or an object's
+ * regeneration shields (interchangeable, so one reference stands for them all, D-086).
+ */
+export type ReplacementRef =
+  | { kind: "ownText"; object: ObjectId; index: number }
+  | { kind: "regenerationShield"; object: ObjectId };
+
+export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 /** Whether this permanent has a regeneration shield (CR 701.19a). */
 export function hasRegenerationShield(state: GameState, object: ObjectId): boolean {
   return state.replacements.some((r) => r.kind === "regenerationShield" && r.object === object);
