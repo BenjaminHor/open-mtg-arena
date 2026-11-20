@@ -61,7 +61,8 @@ export function logUntilRejected(
 }
 
 function nameIn(before: GameState, after: GameState, id: ObjectId, cards: CardDatabase): string {
-  return before.objects[id] !== undefined ? nameOf(before, id, cards) : nameOf(after, id, cards);
+  const known = (s: GameState) => s.objects[id] !== undefined || s.lastKnown[id] !== undefined;
+  return known(before) ? nameOf(before, id, cards) : nameOf(after, id, cards);
 }
 
 function target(t: Target, name: Namer): string {
