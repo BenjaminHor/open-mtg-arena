@@ -1,5 +1,5 @@
 name: Mind Spring draws X cards
-rules: [CR 107.3a, CR 121.2]
+rules: [CR 107.3a, CR 107.3i, CR 121.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:

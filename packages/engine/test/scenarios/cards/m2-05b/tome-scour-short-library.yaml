@@ -1,5 +1,5 @@
 name: With fewer than five cards in the library, Tome Scour mills them all
-rules: [CR 701.17a]
+rules: [CR 701.17b, CR 609.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:

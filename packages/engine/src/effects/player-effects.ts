@@ -1,21 +1,13 @@
-// Effects on players' cards: drawing several, discarding at random and milling (CR 121, 701.9, 701.17). Each goes
-// through the event pipeline; the random choices use the game's seeded RNG.
+// Effects on players' cards: drawing several, discarding at random and milling (CR 121, 701.9, 701.17). These aren't
+// primitives: each proposes its events to the pipeline with `happen`. The random choices use the game's seeded RNG.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
-import { currentTurn } from "../game/turn.ts";
 import { happen } from "../pipeline/happen.ts";
 import { randomInt } from "../rng/xoshiro128.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
-
-/** Every player in APNAP order: the active player first, then the others in turn order (CR 101.4). */
-export function apnapOrder(state: GameState): PlayerId[] {
-  if (state.turn === null) return [...state.turnOrder];
-  const at = state.turnOrder.indexOf(currentTurn(state).activePlayer);
-  return [...state.turnOrder.slice(at), ...state.turnOrder.slice(0, at)];
-}
 
 /**
  * Each player draws `amount` cards, one draw at a time (CR 121.2), all of one player's draws before the next player's
@@ -36,8 +28,9 @@ export function drawEach(
 }
 
 /**
- * Each player discards `amount` cards at random (CR 701.9b), or their whole hand if it's smaller. The random picks are
- * made in APNAP order, then every card is discarded at the same time (Burning Inquiry's ruling, CR 101.4).
+ * Each player discards `amount` cards at random (CR 701.9b), or their whole hand if it's smaller: as much as possible
+ * (CR 609.3). The random picks are made in APNAP order, then every card is discarded at the same time (Burning
+ * Inquiry's ruling, CR 101.4). Advancing the RNG is bookkeeping, not a game event (pipeline/README.md).
  */
 export function discardAtRandom(
   state: GameState,
@@ -65,25 +58,23 @@ export function discardAtRandom(
 }
 
 /**
- * Each player mills: the top cards of their library go to their graveyard, as many as there are if fewer (CR 701.17a;
- * Tome Scour's ruling), all at once. They go in library order, top first (later: CR 404.3 lets their owner order them,
- * Traumatize's ruling).
+ * Each player mills: the top cards of their library go to their graveyard (CR 701.17a), as many as there are if fewer
+ * (CR 701.17b, 609.3; Tome Scour's ruling), all at once. They go in library order, top first (later: CR 404.3 lets
+ * their owner order them, Traumatize's ruling). "Half their library, rounded down" is worked out for each player
+ * (CR 107.1a).
  */
 export function mill(
   state: GameState,
   players: readonly PlayerId[],
-  amountFor: (player: PlayerId) => number,
+  amount: number | "halfTheirLibrary",
   cards: CardDatabase,
 ): Progress {
-  const milled = players.flatMap((player) =>
-    zoneList(state, { zone: "library", player }).slice(0, Math.max(0, amountFor(player))),
-  );
+  const milled = players.flatMap((player) => {
+    const library = zoneList(state, { zone: "library", player });
+    const count = amount === "halfTheirLibrary" ? Math.floor(library.length / 2) : amount;
+    return library.slice(0, Math.max(0, count));
+  });
   if (milled.length === 0) return { state, events: [] };
   const moves = milled.map((object) => ({ kind: "moveCard", object, to: { zone: "graveyard" } }) as const);
   return happen(state, { kind: "simultaneous", events: moves }, cards);
-}
-
-/** Half the cards in a player's library, rounded down (CR 107.1a: Traumatize says how to round). */
-export function halfTheirLibrary(state: GameState, player: PlayerId): number {
-  return Math.floor(zoneList(state, { zone: "library", player }).length / 2);
 }

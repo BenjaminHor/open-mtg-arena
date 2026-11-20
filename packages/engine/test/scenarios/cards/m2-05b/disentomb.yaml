@@ -1,5 +1,5 @@
 name: Disentomb returns a creature card from its caster's graveyard to their hand
-rules: [CR 400.3]
+rules: [CR 109.2a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

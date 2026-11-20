@@ -6,12 +6,12 @@ setup:
     hand: [Tome Scour]
     battlefield: [Island]
   p2:
-    library: [Forest, Mountain, Island, Plains, Swamp, Forest, Mountain]
+    library: [Forest, Mountain, Island, Plains, Swamp, Grizzly Bears, Lightning Bolt]
 steps:
   - p1 cast: Tome Scour
     targets: [p2]
     pay: auto
   - all pass: once
   - expect:
-      p2.library: [Forest, Mountain]
+      p2.library: [Grizzly Bears, Lightning Bolt]
       p2.graveyard: [Forest, Mountain, Island, Plains, Swamp]

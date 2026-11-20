@@ -103,6 +103,15 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   modifyPT: (e) => (e as { of: EffectSubject }).of,
 };
 
+/** Ops that act on players, and the subject each names them with. */
+const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject>> = {
+  gainLife: (e) => (e as { who: EffectSubject }).who,
+  loseLife: (e) => (e as { who: EffectSubject }).who,
+  draw: (e) => (e as { who: EffectSubject }).who,
+  discardAtRandom: (e) => (e as { who: EffectSubject }).who,
+  mill: (e) => (e as { who: EffectSubject }).who,
+};
+
 /**
  * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming a player ("you", "each player", a
  * player target), or an op on players naming an object ("self", an object target).
@@ -128,12 +137,3 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   }
   return problems;
 }
-
-/** Ops that act on players, and the subject each names them with. */
-const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject>> = {
-  gainLife: (e) => (e as { who: EffectSubject }).who,
-  loseLife: (e) => (e as { who: EffectSubject }).who,
-  draw: (e) => (e as { who: EffectSubject }).who,
-  discardAtRandom: (e) => (e as { who: EffectSubject }).who,
-  mill: (e) => (e as { who: EffectSubject }).who,
-};

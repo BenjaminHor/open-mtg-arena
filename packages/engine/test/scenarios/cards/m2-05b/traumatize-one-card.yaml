@@ -1,0 +1,18 @@
+name: Traumatize on a library of one card mills none, as half of one rounds down to 0
+rules: [CR 107.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Traumatize]
+    battlefield: [Island, Island, Island, Island, Island]
+  p2:
+    library: [Forest]
+steps:
+  - p1 cast: Traumatize
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.library: [Forest]
+      p2.graveyard count: 0
+      events lacks: [{ type: ZONE_CHANGED, from: { zone: library } }]

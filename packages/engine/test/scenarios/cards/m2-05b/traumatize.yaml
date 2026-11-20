@@ -6,12 +6,12 @@ setup:
     hand: [Traumatize]
     battlefield: [Island, Island, Island, Island, Island]
   p2:
-    library: [Forest, Mountain, Island, Plains, Swamp, Forest, Mountain]
+    library: [Forest, Mountain, Island, Plains, Swamp, Grizzly Bears, Lightning Bolt]
 steps:
   - p1 cast: Traumatize
     targets: [p2]
     pay: auto
   - all pass: once
   - expect:
-      p2.library count: 4
+      p2.library: [Plains, Swamp, Grizzly Bears, Lightning Bolt]
       p2.graveyard count: 3

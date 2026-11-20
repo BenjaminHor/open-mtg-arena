@@ -3,6 +3,7 @@
 
 import type { CardDatabase, Effect, EffectSubject } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
+import { apnapOrder } from "../game/turn-order.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
 import { amountOf } from "../rules/amount.ts";
@@ -12,7 +13,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
-import { apnapOrder, discardAtRandom, drawEach, halfTheirLibrary, mill } from "./player-effects.ts";
+import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 
 /** Carries out one effect of a resolving spell or ability (CR 608.2c). */
 export function runEffect(state: GameState, effect: Effect, context: EffectContext, cards: CardDatabase): Progress {
@@ -87,9 +88,8 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
       return toEach(state, onStack, cards, (object) => ({ kind: "counterObject", object }));
     }
     case "loseLife": {
-      // Losing 0 life does nothing, so it isn't proposed.
+      // Whether losing 0 life is an event isn't settled until a card can lose a variable amount (docs/future-rules.md).
       const amount = amountOf(effect.amount, context.x);
-      if (amount <= 0) return { state, events: [] };
       return toEach(state, playersOf(subject(state, effect.who, context)), cards, (player) => ({
         kind: "loseLife",
         player,
@@ -106,14 +106,8 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
         cards,
       );
     case "mill": {
-      const players = playersOf(subject(state, effect.who, context));
-      const amount = effect.amount;
-      return mill(
-        state,
-        players,
-        (p) => (amount === "halfTheirLibrary" ? halfTheirLibrary(state, p) : amountOf(amount, context.x)),
-        cards,
-      );
+      const amount = effect.amount === "halfTheirLibrary" ? effect.amount : amountOf(effect.amount, context.x);
+      return mill(state, playersOf(subject(state, effect.who, context)), amount, cards);
     }
     case "gainLife": {
       const amount = amountOf(effect.amount, context.x);

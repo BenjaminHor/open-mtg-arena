@@ -34,6 +34,15 @@ describe("export --scenario", () => {
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 
+  it("names a card in a graveyard as a target, so games with Disentomb export too", () => {
+    const cards = cardDatabase();
+    // A golden game in which Disentomb and Nature's Spiral target cards in a graveyard.
+    const golden = new URL("../../engine/test/golden/black-red-vs-white-red-200.json", import.meta.url).pathname;
+    const yaml = cli("export", golden, "--scenario", "--name", "graveyard targets", "--rules", "CR 100.1");
+    expect(yaml).toContain("graveyard:p");
+    expect(runScenario(yaml, cards).problems).toStrictEqual([]);
+  }, 60_000);
+
   it("refuses a game that stops part way through a declaration", () => {
     const file = tempFile();
     cli("new", "--scenario", "combat/blocked-creatures-trade", "--out", file);

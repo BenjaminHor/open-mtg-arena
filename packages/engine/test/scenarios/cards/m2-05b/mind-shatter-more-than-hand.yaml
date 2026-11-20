@@ -1,5 +1,5 @@
 name: When X is more than the cards in hand, Mind Shatter discards the whole hand
-rules: [CR 701.9b]
+rules: [CR 609.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:

@@ -97,7 +97,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `p1 choose: <answer>` for the pending decision: `keep` or `mulligan`; a player (`p2`) for who goes first; a card name
   for a card to put on the bottom or discard (with several identical cards, the first one that's still a legal answer,
   or `Forest#2` for the second Forest in hand: which copy goes to the bottom changes the next shuffle);
-  a target (`p2`, `p2:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
+  a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
+  `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.
 - `p1 play: <land>`: play a land from hand. `play`, `cast` and `choose` take `Forest#2` for the second Forest in hand,
   when which copy matters (an exact replay: it changes the hand's order, and a mulligan's shuffle with it).

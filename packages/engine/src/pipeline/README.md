@@ -1,8 +1,8 @@
 # engine/src/pipeline
 
 The event pipeline (docs/architecture.md, "Effects, events, replacements, triggers"; D-056). Every game event goes
-through `happen`: moving a card, destroying, dealing damage, tapping, untapping, adding mana, drawing, discarding,
-shuffling, playing a land. One path means replacement and prevention effects (CR 614–616, M2-08) and triggered
+through `happen`: moving a card, destroying, sacrificing, countering, dealing damage, gaining and losing life, tapping,
+untapping, adding mana, drawing, discarding, shuffling, playing a land. One path means replacement and prevention effects (CR 614–616, M2-08) and triggered
 abilities (CR 603, M2-07) each plug in once, and see every event.
 
 ## How an event happens
@@ -42,18 +42,20 @@ anything can replace or trigger on:
   undoes events rather than causing them;
 - declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2);
 - players losing or conceding (CR 104.3) and the game ending;
-- `createGame`'s setup.
+- `createGame`'s setup, and advancing the seeded RNG for a random pick (`effects/player-effects.ts`'s random discard):
+  the pick is made first, then its event goes through `happen`.
 
 ## Not built yet
 
 - **Pausing for a choice** (M2-08). `happen` becomes a work item that can wait for a decision; every caller that does
   more after `happen` returns must then queue the rest as work: `startCast` (`game/cast.ts`), `playLand`, `putOnBottom`
   and the pregame loops, `finishAttackers`, `combatDamage`, `checkStateBasedActions`, `finishCleanup`, resolution
-  (`game/resolve.ts`), the draw and untap steps, and mana abilities (`mana/activate.ts`), which resolve at once
+  (`game/resolve.ts`), `drawEach` and `discardAtRandom` (`effects/player-effects.ts`), the draw and untap steps, and mana abilities (`mana/activate.ts`), which resolve at once
   (CR 605.3b) and may need their own path.
 - **Moves that go elsewhere or nowhere.** `startCast` throws if its card didn't move to the stack; a replacement that
   changes that (CR 614.6) needs a real path.
-- **Drawing several cards** as one instruction (CR 121.2a), with the first card that does (M2-05).
+- **Drawing several cards** as one instruction (CR 121.2a): "draw N" is N single draws for now (D-060); the container
+  comes with the first replacement that needs it (M2-08).
 - **Events triggers will match that are emitted outside the pipeline:** `TURN_BEGAN`, `STEP_BEGAN`, `SPELL_CAST`,
   `ABILITY_ACTIVATED`, `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`, `SPELL_RESOLVED`, `PLAYER_LOST`; "becomes the
   target" has no event yet. M2-07 routes them.
