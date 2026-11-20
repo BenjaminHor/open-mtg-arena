@@ -1,0 +1,21 @@
+name: Seismic Strike counts the Mountains as it resolves, including one fetched in response
+rules: [CR 608.2h, CR 205.3i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Seismic Strike]
+    library: [Mountain]
+    battlefield: [Mountain, Mountain, Mountain, Terramorphic Expanse]
+  p2:
+    battlefield: [Giant Spider]
+steps:
+  - p1 cast: Seismic Strike
+    targets: [p2:Giant Spider]
+    pay: auto
+  - p1 activate: Terramorphic Expanse
+  - all pass: once
+  - p1 choose: Mountain
+  - all pass: once
+  - expect:
+      p2.graveyard: [Giant Spider]
+      events contains: [{ type: DAMAGE_DEALT, amount: 4 }]

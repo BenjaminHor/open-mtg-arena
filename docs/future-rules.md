@@ -146,6 +146,15 @@ emits no event yet: "whenever a player searches" and Aven Mindcensor's replaceme
 `search` (`effects/library-effects.ts`), including on an empty library, which is still a search; only Haunting
 Echoes with nothing exiled doesn't search (D-063).
 
+**Damage to many, counts and payment restrictions (D-067).** One action dealing damage to several recipients is one
+`dealDamage` event (Earthquake, Goblin Artillery): "whenever a source deals damage to you" triggers (M2-07) count
+damage events, not `DAMAGE_DEALT` records, which can be two for one player (Goblin Artillery on its controller), and a
+prevention shield on Earthquake applies per recipient within the one event (CR 615.10, M2-08). A counted amount used
+twice in one resolution (Tendrils of Corruption) is counted twice; once replacements can move things mid-resolution
+(M2-08), count it once (CR 107.3i, 608.2h). `xPaidWith` (Consume Spirit) is a narrow stand-in: cost reductions
+(CR 118.7a), "black and/or red" (Soul Burn), "colored mana" and X in activation costs need mana tracked with its
+restrictions (CR 106.6).
+
 **Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2; who may look, CR 708.5;
 telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed
 cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), and cards a player has seen

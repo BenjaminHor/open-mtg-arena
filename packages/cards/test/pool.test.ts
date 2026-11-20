@@ -170,6 +170,51 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it("reports a player effect on 'each' permanent, a counted divided amount, and damage from a player", () => {
+    const quake = POOL.cards.find((c) => c.name === "Earthquake");
+    if (quake === undefined) throw new Error("Earthquake missing from the pool");
+    const def = (effects: Effect[], targets: TargetSpec[] = []): CardDef => ({
+      name: "Earthquake",
+      oracle: quake.oracleText,
+      spell: { targets, effects },
+    });
+    const each = { each: { types: ["creature" as const] } };
+    expect(definitionProblems([def([{ op: "gainLife", who: each, amount: 1 }])], [quake])).toStrictEqual([
+      "Earthquake: gainLife is for players, not objects",
+    ]);
+    const counted = { count: { types: ["land" as const] } };
+    const divided: Effect = {
+      op: "dealDamage",
+      amount: counted,
+      from: "self",
+      to: { target: 0 },
+      divided: "asYouChoose",
+    };
+    expect(definitionProblems([def([divided], [{ kind: "anyTarget" }])], [quake])).toContain(
+      "Earthquake: divided damage can't be a counted amount",
+    );
+    expect(
+      definitionProblems([def([{ op: "dealDamage", amount: 1, from: "you", to: "eachPlayer" }])], [quake]),
+    ).toStrictEqual(["Earthquake: damage comes from one object"]);
+  });
+
+  it("reports xPaidWith on a spell whose mana cost has no {X}", () => {
+    const bolt = POOL.cards.find((c) => c.name === "Lightning Bolt");
+    if (bolt === undefined) throw new Error("Lightning Bolt missing from the pool");
+    const def: CardDef = {
+      name: "Lightning Bolt",
+      oracle: bolt.oracleText,
+      spell: {
+        targets: [{ kind: "anyTarget" }],
+        effects: [{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }],
+        xPaidWith: "R",
+      },
+    };
+    expect(definitionProblems([def], [bolt])).toStrictEqual([
+      "Lightning Bolt: xPaidWith restricts paying X, but the mana cost has no {X}",
+    ]);
+  });
+
   it("reports cards without definitions and definitions without cards", () => {
     expect(definitionProblems([{ name: "Black Lotus", oracle: "" }], [bolt])).toStrictEqual([
       "Black Lotus: has a definition but isn't in pool.txt / data/pool.json",

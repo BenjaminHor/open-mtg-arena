@@ -5,12 +5,12 @@
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
-import { manaAvailable } from "../mana/auto-pay.ts";
+import { autoPay, manaAvailable } from "../mana/auto-pay.ts";
 import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { SingleEvent } from "../pipeline/proposed.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { announcesX, costOf } from "../rules/costs.ts";
+import { announcesX, costOf, withX } from "../rules/costs.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -36,7 +36,12 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): Progress
   const obj = state.objects[casting.object];
   if (obj?.choices?.x === null && announcesX(state, casting.object, cards)) {
     const available = manaAvailable(state, casting.player, cards);
-    const upTo = Math.max(0, available - manaValue(costOf(state, casting.object, cards)));
+    const upTo = payableX(
+      state,
+      casting.object,
+      Math.max(0, available - manaValue(costOf(state, casting.object, cards))),
+      cards,
+    );
     return wait(waitFor(state, casting.player, { kind: "announceX", object: casting.object, upTo }));
   }
   const targeted = targetStep(state, cards);
@@ -208,4 +213,20 @@ export function announceX(state: GameState, value: number): GameState {
   if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
   const choices = { ...obj.choices, x: value };
   return { ...state, objects: { ...state.objects, [casting.object]: { ...obj, choices } } };
+}
+
+/**
+ * `upTo` lowered, for "spend only black mana on X" (`xPaidWith`), to the largest X whose cost the player could pay
+ * now, so the X offered stays a guide to what's payable (D-058, D-067). Other spells' X is limited by mana alone.
+ */
+function payableX(state: GameState, id: ObjectId, upTo: number, cards: CardDatabase): number {
+  const obj = state.objects[id];
+  const data = obj?.kind === "card" ? cards[obj.oracleId] : undefined;
+  const color = data?.def.spell?.xPaidWith;
+  const printed = data?.printed.manaCost ?? null;
+  if (color === undefined || printed === null) return upTo;
+  const player = castingOf(state).player;
+  let x = upTo;
+  while (x > 0 && autoPay(state, player, withX(printed, x, color), cards) === null) x--;
+  return x;
 }

@@ -1,0 +1,24 @@
+name: Tendrils of Corruption whose target is gone doesn't resolve, so no life is gained
+rules: [CR 608.2b]
+# Tendrils of Corruption's ruling.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Tendrils of Corruption]
+    battlefield: [Swamp, Swamp, Swamp, Swamp]
+  p2:
+    hand: [Unsummon]
+    battlefield: [Grizzly Bears, Island]
+steps:
+  - p1 cast: Tendrils of Corruption
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 20
+      events lacks: [{ type: LIFE_GAINED }]

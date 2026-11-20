@@ -18,7 +18,7 @@ the one place their effects become changes to the game.
 
 | `op` | Card text | What it does |
 | --- | --- | --- |
-| `dealDamage` | "[from] deals N damage to [to]" | `from` (one object) deals `amount` to each player or creature `to` names, through `dealDamage` |
+| `dealDamage` | "[from] deals N damage to [to]" | `from` (one object) deals `amount` to each player or creature `to` names, through `dealDamage`; `and` adds recipients of the same action with their own amounts, all one damage event (CR 608.2f) |
 | `addMana` | "Add {G}." | Adds `amount` of `mana` to the controller's pool (CR 106.4, 109.5), naming `self` as its source |
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a) |
@@ -52,8 +52,10 @@ now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the control
 every player in APNAP order (CR 101.4).
 
 `from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"found"` (what an earlier
-`search` of this resolution found, kept in `GameState.resolution`, D-064), or `{ target: i }` for the still-legal
-targets of the i-th instance of "target". A subject with no legal targets left means that part does nothing (CR 608.2b).
+`search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
+it now, CR 608.2h), or `{ target: i }` for the still-legal targets of the i-th instance of "target". A subject with no
+legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, or `{ count: filter }`.
+`subjects.ts` reads both (D-067).
 
 ## Primitives
 
@@ -76,6 +78,6 @@ that use it.
 `player-effects.ts` isn't a primitive: `drawEach`, `discardAtRandom` and `mill` propose several events for the players
 an effect names (one draw at a time; random picks, then one simultaneous discard; one simultaneous mill).
 
-Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts` and
-`library-effects.test.ts`, and the scenarios in
+Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts`,
+`library-effects.test.ts` and `damage-to-many.test.ts`, and the scenarios in
 `test/scenarios/effects/` and `test/scenarios/cards/`.

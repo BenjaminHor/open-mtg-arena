@@ -1,0 +1,14 @@
+name: Goblin Artillery and Acolyte of Xathrid can't use their {T} abilities the turn they come under control
+rules: [CR 302.6, CR 602.5a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Goblin Artillery, sick: true }, { card: Acolyte of Xathrid, sick: true }, Swamp, Swamp]
+steps:
+  - p1 activate: Goblin Artillery
+    targets: [p2]
+  - expect error: illegalAction
+  - p1 activate: Acolyte of Xathrid
+    targets: [p2]
+    pay: auto
+  - expect error: illegalAction

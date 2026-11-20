@@ -1,7 +1,7 @@
 // What it costs to cast a spell or activate an ability, in one place each, so cost increases, reductions and
 // additional costs (CR 601.2f) have one function to change.
 
-import type { AbilityDef, CardDatabase, ManaCost } from "../cards/types.ts";
+import type { AbilityDef, CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { stackAbilityDef } from "./abilities.ts";
@@ -19,7 +19,7 @@ export function totalCost(state: GameState, id: ObjectId, cards: CardDatabase): 
   const printed = data?.printed.manaCost ?? null;
   if (printed === null) return null;
   const x = obj.choices?.x ?? 0;
-  const cost = withX(printed, x);
+  const cost = withX(printed, x, data?.def.spell?.xPaidWith);
   const increase = data?.def.spell?.costIncrease;
   if (increase === undefined) return cost;
   const targets = (obj.choices?.targets ?? []).reduce((n, group) => n + group.length, 0);
@@ -27,11 +27,17 @@ export function totalCost(state: GameState, id: ObjectId, cards: CardDatabase): 
   return [...cost, ...Array.from({ length: extra }, () => increase.perTargetBeyondFirst).flat()];
 }
 
-/** A cost with each {X} as `x` generic mana (CR 107.3a), so it can be paid; {X} with X = 0 is no mana at all. */
-export function withX(cost: ManaCost, x: number): ManaCost {
-  return cost.flatMap((symbol) =>
-    symbol.kind === "x" ? (x > 0 ? [{ kind: "generic" as const, amount: x }] : []) : [symbol],
-  );
+/**
+ * A cost with each {X} as `x` generic mana (CR 107.3a), so it can be paid; {X} with X = 0 is no mana at all. With
+ * `paidWith` ("Spend only black mana on X"), each X is one mana of that color instead: the same payments are legal
+ * (CR 601.2h), and the printed cost is untouched.
+ */
+export function withX(cost: ManaCost, x: number, paidWith?: Color): ManaCost {
+  return cost.flatMap((symbol): ManaCost => {
+    if (symbol.kind !== "x") return [symbol];
+    if (paidWith !== undefined) return Array.from({ length: x }, () => ({ kind: "colored", color: paidWith }) as const);
+    return x > 0 ? [{ kind: "generic", amount: x }] : [];
+  });
 }
 
 /** Whether a mana cost has an {X} the caster announces (CR 107.3a). */

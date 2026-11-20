@@ -111,6 +111,12 @@ export type SpellDef = {
    * cost once the targets are chosen (CR 601.2f). It doesn't change the mana cost or the mana value.
    */
   costIncrease?: { perTargetBeyondFirst: ManaCost };
+  /**
+   * "Spend only black mana on X" (Consume Spirit): the card's text overrides the rule that generic mana can be paid
+   * with any mana (CR 101.1, 107.4b), as a restriction on paying (CR 601.2h). Only the cost to pay reads it, making each
+   * X a mana of this color; the mana cost itself is never changed.
+   */
+  xPaidWith?: Color;
 };
 
 /**
@@ -186,6 +192,12 @@ export type ObjectFilter = {
    * (they differ once teams exist, later: CR 102.3).
    */
   controller?: "you" | "notYou" | "opponent";
+  /**
+   * "Creature with flying" / "without flying": keyword abilities, as computed (`keywordsOf`, CR 702.9a). `keywords`
+   * means any of them; `notKeywords`, none of them. "With flying and first strike" would need an all-of form.
+   */
+  keywords?: Keyword[];
+  notKeywords?: Keyword[];
   /** "Basic land card": supertypes (CR 205.4a), as computed (`supertypesOf`). */
   supertypes?: Supertype[];
   /** "Other than basic land cards": the object must not fit this whole filter (not basic-and-land). */
@@ -193,7 +205,15 @@ export type ObjectFilter = {
 };
 
 /** A number in an effect: written on the card, or X, the value announced as it was cast (CR 107.3a). */
-export type Amount = number | "X";
+export type Amount =
+  | number
+  | "X"
+  /**
+   * "For each land you control", "the number of Swamps you control": how many permanents fit the filter (its
+   * `controller` relative to "you"), counted as the effect applies (CR 608.2h). An X the text defines this way is
+   * this count, not announced (CR 107.3c).
+   */
+  | { count: ObjectFilter };
 
 /**
  * Which object or player an effect refers to. It's resolved to real ids when the effect begins, and a continuous
@@ -213,7 +233,9 @@ export type EffectSubject =
   /** "Each player": every player, in APNAP order (CR 101.4). */
   | "eachPlayer"
   /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
-  | "found";
+  | "found"
+  /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
+  | { each: ObjectFilter };
 
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
@@ -228,6 +250,11 @@ export type Effect =
        * (Fireball's rulings). Without it, each recipient is dealt `amount`.
        */
       divided?: "asYouChoose" | "evenly";
+      /**
+       * "...and 3 damage to you", "...and each player": more recipients of the same source in the same action, each
+       * dealt its own amount. All of it is one damage event (CR 608.2f, 120.4).
+       */
+      and?: { to: EffectSubject; amount: Amount }[];
     }
   /** "Add {G}." (CR 106.4). */
   | { op: "addMana"; mana: ManaType; amount: number }

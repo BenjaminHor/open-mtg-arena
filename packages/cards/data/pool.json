@@ -7,6 +7,62 @@
   },
   "cards": [
     {
+      "name": "Acolyte of Xathrid",
+      "slug": "acolyte-of-xathrid",
+      "oracleId": "62dca41b-58b0-45eb-ada7-568e80a2abec",
+      "layout": "normal",
+      "manaCost": "{B}",
+      "manaValue": 1,
+      "typeLine": "Creature — Human Cleric",
+      "oracleText": "{1}{B}, {T}: Target player loses 1 life.",
+      "power": "0",
+      "toughness": "1",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/b/4b0b14d4-41de-42ac-9894-77bbcebaabfc.jpg?1783942386",
+        "large": "https://cards.scryfall.io/large/front/4/b/4b0b14d4-41de-42ac-9894-77bbcebaabfc.jpg?1783942386",
+        "png": "https://cards.scryfall.io/png/front/4/b/4b0b14d4-41de-42ac-9894-77bbcebaabfc.png?1783942386",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/b/4b0b14d4-41de-42ac-9894-77bbcebaabfc.jpg?1783942386"
+      },
+      "artist": "Chris Rahn",
+      "set": "m10",
+      "collectorNumber": "83",
+      "scryfallUri": "https://scryfall.com/card/m10/83/acolyte-of-xathrid?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Angel's Mercy",
+      "slug": "angels-mercy",
+      "oracleId": "6b232bb7-d372-4174-a049-5f8d620810e6",
+      "layout": "normal",
+      "manaCost": "{2}{W}{W}",
+      "manaValue": 4,
+      "typeLine": "Instant",
+      "oracleText": "You gain 7 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/3/43e6d650-4e96-43a3-8b94-7f044d3b2f82.jpg?1783940523",
+        "large": "https://cards.scryfall.io/large/front/4/3/43e6d650-4e96-43a3-8b94-7f044d3b2f82.jpg?1783940523",
+        "png": "https://cards.scryfall.io/png/front/4/3/43e6d650-4e96-43a3-8b94-7f044d3b2f82.png?1783940523",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/3/43e6d650-4e96-43a3-8b94-7f044d3b2f82.jpg?1783940523"
+      },
+      "artist": "Andrew Robinson",
+      "set": "m13",
+      "collectorNumber": "3",
+      "scryfallUri": "https://scryfall.com/card/m13/3/angels-mercy?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Assassinate",
       "slug": "assassinate",
       "oracleId": "ce979f36-84f2-4419-b400-971263494cc6",
@@ -60,6 +116,34 @@
       "set": "m11",
       "collectorNumber": "8",
       "scryfallUri": "https://scryfall.com/card/m11/8/blinding-mage?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Bountiful Harvest",
+      "slug": "bountiful-harvest",
+      "oracleId": "2dc94a25-4e35-4277-8eba-b8d0b293ff7b",
+      "layout": "normal",
+      "manaCost": "{4}{G}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "You gain 1 life for each land you control.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/d/8d7a4494-2ced-4405-9204-d2617961a1d6.jpg?1783940474",
+        "large": "https://cards.scryfall.io/large/front/8/d/8d7a4494-2ced-4405-9204-d2617961a1d6.jpg?1783940474",
+        "png": "https://cards.scryfall.io/png/front/8/d/8d7a4494-2ced-4405-9204-d2617961a1d6.png?1783940474",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/d/8d7a4494-2ced-4405-9204-d2617961a1d6.jpg?1783940474"
+      },
+      "artist": "Jason Chan",
+      "set": "m13",
+      "collectorNumber": "163",
+      "scryfallUri": "https://scryfall.com/card/m13/163/bountiful-harvest?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -172,6 +256,34 @@
       "set": "m20",
       "collectorNumber": "168",
       "scryfallUri": "https://scryfall.com/card/m20/168/centaur-courser?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Consume Spirit",
+      "slug": "consume-spirit",
+      "oracleId": "861fa80d-99e0-4332-a2b8-5aa959fd41a4",
+      "layout": "normal",
+      "manaCost": "{X}{1}{B}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Spend only black mana on X.\nConsume Spirit deals X damage to any target and you gain X life.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/f/ef144439-fc8e-4844-8ebb-3e36e05ac9a0.jpg?1783941083",
+        "large": "https://cards.scryfall.io/large/front/e/f/ef144439-fc8e-4844-8ebb-3e36e05ac9a0.jpg?1783941083",
+        "png": "https://cards.scryfall.io/png/front/e/f/ef144439-fc8e-4844-8ebb-3e36e05ac9a0.png?1783941083",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/f/ef144439-fc8e-4844-8ebb-3e36e05ac9a0.jpg?1783941083"
+      },
+      "artist": "Justin Sweet",
+      "set": "m12",
+      "collectorNumber": "88",
+      "scryfallUri": "https://scryfall.com/card/m12/88/consume-spirit?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -424,6 +536,34 @@
       "set": "fdn",
       "collectorNumber": "606",
       "scryfallUri": "https://scryfall.com/card/fdn/606/duress?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Earthquake",
+      "slug": "earthquake",
+      "oracleId": "9a40614b-50a3-422c-849e-53c8b7d3d204",
+      "layout": "normal",
+      "manaCost": "{X}{R}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Earthquake deals X damage to each creature without flying and each player.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/9/19fb8ae1-a619-42bf-976f-2833777032d2.jpg?1783942374",
+        "large": "https://cards.scryfall.io/large/front/1/9/19fb8ae1-a619-42bf-976f-2833777032d2.jpg?1783942374",
+        "png": "https://cards.scryfall.io/png/front/1/9/19fb8ae1-a619-42bf-976f-2833777032d2.png?1783942374",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/9/19fb8ae1-a619-42bf-976f-2833777032d2.jpg?1783942374"
+      },
+      "artist": "Adrian Smith",
+      "set": "m10",
+      "collectorNumber": "134",
+      "scryfallUri": "https://scryfall.com/card/m10/134/earthquake?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -762,6 +902,34 @@
       "set": "m19",
       "collectorNumber": "183",
       "scryfallUri": "https://scryfall.com/card/m19/183/giant-spider?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Goblin Artillery",
+      "slug": "goblin-artillery",
+      "oracleId": "06db7444-0225-48c8-ab04-d69ff06e97b6",
+      "layout": "normal",
+      "manaCost": "{1}{R}{R}",
+      "manaValue": 3,
+      "typeLine": "Creature — Goblin Warrior",
+      "oracleText": "{T}: This creature deals 2 damage to any target and 3 damage to you.",
+      "power": "1",
+      "toughness": "3",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/7/674bd59d-9d6d-434d-974f-3aa1cbd770b5.jpg?1783942373",
+        "large": "https://cards.scryfall.io/large/front/6/7/674bd59d-9d6d-434d-974f-3aa1cbd770b5.jpg?1783942373",
+        "png": "https://cards.scryfall.io/png/front/6/7/674bd59d-9d6d-434d-974f-3aa1cbd770b5.png?1783942373",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/7/674bd59d-9d6d-434d-974f-3aa1cbd770b5.jpg?1783942373"
+      },
+      "artist": "Alex Horley-Orlandelli",
+      "set": "m10",
+      "collectorNumber": "138",
+      "scryfallUri": "https://scryfall.com/card/m10/138/goblin-artillery?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1347,6 +1515,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Pyroclasm",
+      "slug": "pyroclasm",
+      "oracleId": "e4bcd4ea-e7cd-4471-8f3b-18bb51d3d70c",
+      "layout": "normal",
+      "manaCost": "{1}{R}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Pyroclasm deals 2 damage to each creature.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/3/4391b0af-2f26-4a45-9e2a-5bd8e9838107.jpg?1783909464",
+        "large": "https://cards.scryfall.io/large/front/4/3/4391b0af-2f26-4a45-9e2a-5bd8e9838107.jpg?1783909464",
+        "png": "https://cards.scryfall.io/png/front/4/3/4391b0af-2f26-4a45-9e2a-5bd8e9838107.png?1783909464",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/3/4391b0af-2f26-4a45-9e2a-5bd8e9838107.jpg?1783909464"
+      },
+      "artist": "Néstor Ossandón Leal",
+      "set": "dsk",
+      "collectorNumber": "149",
+      "scryfallUri": "https://scryfall.com/card/dsk/149/pyroclasm?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Raging Goblin",
       "slug": "raging-goblin",
       "oracleId": "30997b43-fc13-41d3-8064-1ccc2cb6fd2b",
@@ -1484,6 +1680,34 @@
       "set": "m12",
       "collectorNumber": "105",
       "scryfallUri": "https://scryfall.com/card/m12/105/royal-assassin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Seismic Strike",
+      "slug": "seismic-strike",
+      "oracleId": "3513d862-ef0d-4949-b33a-3fa9437cc444",
+      "layout": "normal",
+      "manaCost": "{2}{R}",
+      "manaValue": 3,
+      "typeLine": "Instant",
+      "oracleText": "Seismic Strike deals damage to target creature equal to the number of Mountains you control.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/7/972d0b03-8602-4ada-86b9-4262941bae67.jpg?1783939144",
+        "large": "https://cards.scryfall.io/large/front/9/7/972d0b03-8602-4ada-86b9-4262941bae67.jpg?1783939144",
+        "png": "https://cards.scryfall.io/png/front/9/7/972d0b03-8602-4ada-86b9-4262941bae67.png?1783939144",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/7/972d0b03-8602-4ada-86b9-4262941bae67.jpg?1783939144"
+      },
+      "artist": "Christopher Moeller",
+      "set": "m15",
+      "collectorNumber": "280",
+      "scryfallUri": "https://scryfall.com/card/m15/280/seismic-strike?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1678,6 +1902,34 @@
       "set": "m10",
       "collectorNumber": "36",
       "scryfallUri": "https://scryfall.com/card/m10/36/tempest-of-light?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Tendrils of Corruption",
+      "slug": "tendrils-of-corruption",
+      "oracleId": "84ee0da2-d886-4603-9aaa-bc5326a424d7",
+      "layout": "normal",
+      "manaCost": "{3}{B}",
+      "manaValue": 4,
+      "typeLine": "Instant",
+      "oracleText": "Tendrils of Corruption deals X damage to target creature and you gain X life, where X is the number of Swamps you control.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/9/e97cf3d1-4929-4161-bc5e-f7fa0fb9af68.jpg?1783942378",
+        "large": "https://cards.scryfall.io/large/front/e/9/e97cf3d1-4929-4161-bc5e-f7fa0fb9af68.jpg?1783942378",
+        "png": "https://cards.scryfall.io/png/front/e/9/e97cf3d1-4929-4161-bc5e-f7fa0fb9af68.png?1783942378",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/9/e97cf3d1-4929-4161-bc5e-f7fa0fb9af68.jpg?1783942378"
+      },
+      "artist": "Vance Kovacs",
+      "set": "m10",
+      "collectorNumber": "114",
+      "scryfallUri": "https://scryfall.com/card/m10/114/tendrils-of-corruption?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1876,6 +2128,34 @@
       "set": "9ed",
       "collectorNumber": "226",
       "scryfallUri": "https://scryfall.com/card/9ed/226/volcanic-hammer?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Windstorm",
+      "slug": "windstorm",
+      "oracleId": "9969b822-2ead-4956-bac2-875ffd90e872",
+      "layout": "normal",
+      "manaCost": "{X}{G}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Windstorm deals X damage to each creature with flying.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/5/154dc31c-ac9d-4b78-b92b-e7bacc532915.jpg?1783939062",
+        "large": "https://cards.scryfall.io/large/front/1/5/154dc31c-ac9d-4b78-b92b-e7bacc532915.jpg?1783939062",
+        "png": "https://cards.scryfall.io/png/front/1/5/154dc31c-ac9d-4b78-b92b-e7bacc532915.png?1783939062",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/5/154dc31c-ac9d-4b78-b92b-e7bacc532915.jpg?1783939062"
+      },
+      "artist": "Jonas De Ro",
+      "set": "ktk",
+      "collectorNumber": "157",
+      "scryfallUri": "https://scryfall.com/card/ktk/157/windstorm?utm_source=api",
       "printingChosenBy": "rule"
     }
   ]

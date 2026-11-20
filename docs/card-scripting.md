@@ -78,6 +78,10 @@ export const furnaceWhelp: CardDef = {
   `"you"` (the controller: "you gain 4 life" is `{ op: "gainLife", who: "you", amount: 4 }`), or `"eachPlayer"` (in
   APNAP order: Burning Inquiry). "Target player" is the target kind `player`; "target opponent" is `opponent`. `"found"` names
   what an earlier `search` in the same text found ("put that card into your hand").
+- Amounts: a number, `"X"`, or `{ count: { subtypes: ["Swamp"], controller: "you" } }` ("the number of Swamps you
+  control"). "Each creature without flying" is the subject `{ each: { types: ["creature"], notKeywords: ["flying"] } }`;
+  "...and 3 damage to you" is `and: [{ to: "you", amount: 3 }]` on `dealDamage`. "Spend only black mana on X" is
+  `xPaidWith: "B"` on the spell.
 - Filters: "basic land card" is `{ supertypes: ["basic"], types: ["land"] }`; "other than basic land cards" is
   `{ not: { supertypes: ["basic"], types: ["land"] } }`. "Sacrifice this land" is the cost part `{ kind: "sacrificeSelf" }`. The ops are listed in
   `engine/src/effects/README.md`.

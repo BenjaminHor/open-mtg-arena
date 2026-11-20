@@ -142,6 +142,38 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
+  - M2-05c Life, damage to many, mana (now). Plan (2026-11-20), rules-reviewed and revised; split in two:
+    - M2-05c1, no new decisions: built (D-067), in review. 21 scenarios in `test/scenarios/cards/m2-05c/`, unit tests
+      in `test/effects/damage-to-many.test.ts`; the interim decks carry the ten cards, five new golden games. Angel's
+      Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
+      Corruption, Consume Spirit, Pyroclasm, Windstorm, Earthquake, Goblin Artillery.
+      - An `Amount` counted from the battlefield, `{ count: ObjectFilter }`, worked out as the effect applies
+        (CR 608.2h); "Mountains" and "Swamps" are land types read through characteristics (CR 205.3i). Tendrils' "where
+        X is the number of Swamps you control" is that count, with no X announced (CR 107.3c); it's counted once per
+        effect, which can only differ once replacements move things mid-resolution (later: CR 107.3i, 608.2h, M2-08).
+      - A subject `{ each: ObjectFilter }`: every permanent fitting it as the effect applies (Earthquake's ruling,
+        CR 608.2h). Filters gain `keywords` / `notKeywords`, read through `keywordsOf` (CR 702.9a).
+      - `dealDamage` gains `and: [{ to, amount }]`: one source, different damage to different recipients, as one damage
+        event (CR 608.2f, 120.4), backed by a unit test that both of Goblin Artillery's damages come before either life
+        loss. 0 damage isn't dealt
+        (CR 120.8); gaining 0 life isn't an event (CR 119.9).
+      - Consume Spirit's "Spend only black mana on X": X stays generic in the printed cost (CR 107.4b; color and mana
+        value unchanged, CR 202.2, 202.3e); only the cost to pay (`totalCost`) makes each X a {B}, a payment
+        restriction (CR 601.2h). Equivalent today; reductions (CR 118.7a) and other restrictions (Soul Burn) need
+        restricted mana later (future-rules).
+    - M2-05c2, choices: Yawning Fissure (`sacrifice` op, each opponent choosing a land they control, filter relative to
+      the chooser; CR 701.21a, 608.2d; with two players one chooser, so APNAP choosing then one simultaneous
+      sacrifice stays `later: CR 101.4, 608.2e`; a forced choice isn't asked, the battlefield being public). Birds of
+      Paradise: the color travels on the `ACTIVATE_ABILITY` action (a design choice: the CR has it chosen as the
+      ability resolves, CR 608.2d, which for a mana ability is right after activation, CR 605.3b), checked as it
+      resolves, W/U/B/R/G only (CR 106.1a), in both paths (priority and while paying), refused when missing or sent to a
+      fixed-color ability; `legalActions` lists one activation per color; `autoPay` sees it and tries any-color sources
+      last.
+    - Tests from the review: counts on resolution (Seismic Strike, Tendrils after a fetched land), zero counts and X=0,
+      flying checked on resolution, Windstorm sparing reach and players, both players dying (a draw), Pyroclasm on
+      damaged creatures, Artillery with its target gone, source gone, on its controller, summoning sick, Acolyte,
+      Consume Spirit's black-only X and target gone, Fissure's choices, Birds' colors.
+
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
@@ -291,10 +323,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
-  (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
-  doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
-  about graveyard order arrive?
+- (Not blocking until M2-07 triggers or M2-08 prevention.) Goblin Artillery targeting its own controller deals them
+  2 damage and 3 damage from the same source in the same action. The engine records it as one damage event with two
+  parts: two `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3). Should that be one 5-point loss instead? The CR doesn't
+  say. It decides how often "whenever you lose life" or "whenever a source deals damage to you" trigger (once or twice),
+  and how prevention shields count against it.
 
 ## Known issues
 - Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card

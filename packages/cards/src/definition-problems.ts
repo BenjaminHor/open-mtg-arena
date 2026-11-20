@@ -43,6 +43,9 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
       );
+    // "Spend only black mana on X" needs an {X} to restrict.
+    if (def.spell?.xPaidWith !== undefined && !card.manaCost.includes("{X}"))
+      problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
       problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
       problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
@@ -76,7 +79,9 @@ function targetProblems(
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
-    const spec = typeof effect.to === "string" ? undefined : targets[effect.to.target];
+    // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
+    if (typeof effect.amount === "object") problems.push(`${where}: divided damage can't be a counted amount`);
+    const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
     } else if (
@@ -126,7 +131,8 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
  */
 function subjectProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
   const problems: string[] = [];
-  const targetKind = (s: EffectSubject) => (typeof s === "object" ? targets[s.target]?.kind : undefined);
+  const targetKind = (s: EffectSubject) =>
+    typeof s === "object" && "target" in s ? targets[s.target]?.kind : undefined;
   const playerOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
     return (
@@ -135,9 +141,18 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   };
   const objectOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
-    return s === "self" || s === "found" || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
+    const each = typeof s === "object" && "each" in s;
+    return (
+      s === "self" || s === "found" || each || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard"
+    );
   };
   for (const effect of effects) {
+    // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
+    if (
+      effect.op === "dealDamage" &&
+      (playerOnly(effect.from) || (typeof effect.from === "object" && "each" in effect.from))
+    )
+      problems.push(`${where}: damage comes from one object`);
     const of = OBJECT_SUBJECTS[effect.op];
     if (of !== undefined && playerOnly(of(effect)))
       problems.push(`${where}: ${effect.op} acts on objects, not players`);

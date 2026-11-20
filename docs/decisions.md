@@ -840,3 +840,26 @@ every schema change and every change D-024 lists bumps it.
   life-loss replacements (M2-07, M2-08) will see it. The CR settles this only for gaining 0 life (CR 119.9, 119.10)
   and dealing 0 damage (CR 120.8), not for losing 0. The owner's ruling: "Treat losing 0 life as an event because we
   may encounter a card(s) that take advantage of that."
+
+**D-066: The app never asks for graveyard order** · 2026-11-20 · accepted (owner)
+- When several cards go to a graveyard at the same time, CR 404.3 lets their owner arrange them. The app never asks:
+  they go in the engine's fixed order (D-039; a whole hand discarded at once in the shown order, D-062), as Arena
+  does. The owner: "Don't ask about graveyard order." The code's `later: CR 404.3` marks stay, since the rule's choice
+  isn't offered.
+
+**D-067: Counted amounts, damage to each, and "spend only black mana on X"** · 2026-11-20 · accepted (M2-05c1)
+- An `Amount` can be a count of permanents fitting a filter (`{ count }`, "for each land you control", "the number of
+  Swamps you control"), worked out as the effect applies (CR 608.2h). An X the text defines that way is the count, not
+  announced (CR 107.3c). Each effect counts for itself; they can only differ once replacements move things
+  mid-resolution (M2-08).
+- A subject `{ each: ObjectFilter }` names every permanent fitting it as the effect applies ("each creature without
+  flying"); filters gain `keywords` / `notKeywords` through `keywordsOf`.
+- `dealDamage` gains `and`: more recipients of the same source in the same action, each with its own amount
+  (Earthquake's creatures and players, Goblin Artillery's 2 and 3), all one damage event (CR 608.2f, 120.4).
+- "Spend only black mana on X" is `xPaidWith` on the spell: only the cost to pay makes each X a {B}, so the same
+  payments are legal (CR 601.2h) and the printed cost, color and mana value don't change (CR 107.4b). It doesn't
+  generalize (cost reductions, CR 118.7a; Soul Burn's "black and/or red"): restricted mana in the pool replaces it when
+  a card needs that (future-rules). The X a player is offered is lowered to what they could pay in that color now, so
+  it stays a guide to what's payable (D-058).
+- Subjects and amounts live in `effects/subjects.ts`, out of `run-effect.ts`; `amountOf` takes only fixed amounts, so
+  nothing that can't count (dividing as it's cast) can be handed a count.

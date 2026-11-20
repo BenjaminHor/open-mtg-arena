@@ -5,6 +5,7 @@
 import type { CardDatabase, ObjectFilter } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { keywordsOf } from "./abilities.ts";
 import { cardTypesOf, subtypesOf, supertypesOf } from "./card-types.ts";
 import { colorsOf } from "./colors.ts";
 import { isAttacking, isBlocking } from "./combat.ts";
@@ -34,6 +35,11 @@ export function matchesFilter(
     if (!anyOf(colors, filter.colors) || !noneOf(colors, filter.notColors)) return false;
   }
   if (filter.subtypes !== undefined && !anyOf(subtypesOf(state, id, cards), filter.subtypes)) return false;
+  // "With flying" / "without flying": keyword abilities as computed now (CR 702.9a; layer 6, later: CR 613.1f).
+  if (filter.keywords !== undefined || filter.notKeywords !== undefined) {
+    const keywords = keywordsOf(state, id, cards);
+    if (!anyOf(keywords, filter.keywords) || !noneOf(keywords, filter.notKeywords)) return false;
+  }
   // "Basic land card": every supertype listed (CR 205.4a), as computed.
   if (filter.supertypes !== undefined) {
     const supertypes = supertypesOf(state, id, cards);

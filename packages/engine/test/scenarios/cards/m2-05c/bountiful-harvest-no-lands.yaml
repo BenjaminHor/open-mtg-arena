@@ -1,0 +1,14 @@
+name: Bountiful Harvest with no lands gains nothing, and gaining 0 life isn't an event
+rules: [CR 119.9]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Bountiful Harvest]
+    manaPool: { G: 5 }
+steps:
+  - p1 cast: Bountiful Harvest
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 20
+      events lacks: [{ type: LIFE_GAINED }]

@@ -177,7 +177,10 @@ function dividedEffect(
 ): { instance: number; amount: number } | null {
   for (const effect of effectsOf(state, id, cards)) {
     if (effect.op === "dealDamage" && effect.divided === "asYouChoose") {
-      if (typeof effect.to === "string") throw new Error("A divided effect divides among targets");
+      if (typeof effect.to !== "object" || !("target" in effect.to))
+        throw new Error("A divided effect divides among targets");
+      // Divided as it's cast: a number or X, never a count, which is worked out on resolution (definition-problems.ts).
+      if (typeof effect.amount === "object") throw new Error("A divided amount can't be a count");
       return { instance: effect.to.target, amount: amountOf(effect.amount, choicesOf(state, id).x) };
     }
   }

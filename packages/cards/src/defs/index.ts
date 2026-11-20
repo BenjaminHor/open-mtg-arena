@@ -1,12 +1,16 @@
 // Every card definition, one per card in pool.txt. A test checks the two lists match exactly.
 
 import type { CardDef } from "@mtg/engine";
+import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
+import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
+import { bountifulHarvest } from "./b/bountiful-harvest.ts";
 import { burningInquiry } from "./b/burning-inquiry.ts";
 import { cancel } from "./c/cancel.ts";
 import { celestialPurge } from "./c/celestial-purge.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
+import { consumeSpirit } from "./c/consume-spirit.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
 import { deathmark } from "./d/deathmark.ts";
@@ -16,6 +20,7 @@ import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
 import { doomBlade } from "./d/doom-blade.ts";
 import { duress } from "./d/duress.ts";
+import { earthquake } from "./e/earthquake.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
 import { elvishPiper } from "./e/elvish-piper.ts";
 import { essenceScatter } from "./e/essence-scatter.ts";
@@ -28,6 +33,7 @@ import { forest } from "./f/forest.ts";
 import { furnaceWhelp } from "./f/furnace-whelp.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
+import { goblinArtillery } from "./g/goblin-artillery.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
@@ -49,11 +55,13 @@ import { ornithopter } from "./o/ornithopter.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
 import { ponder } from "./p/ponder.ts";
+import { pyroclasm } from "./p/pyroclasm.ts";
 import { ragingGoblin } from "./r/raging-goblin.ts";
 import { rampantGrowth } from "./r/rampant-growth.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
+import { seismicStrike } from "./s/seismic-strike.ts";
 import { shatter } from "./s/shatter.ts";
 import { shock } from "./s/shock.ts";
 import { signInBlood } from "./s/sign-in-blood.ts";
@@ -61,6 +69,7 @@ import { solemnOffering } from "./s/solemn-offering.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { swamp } from "./s/swamp.ts";
 import { tempestOfLight } from "./t/tempest-of-light.ts";
+import { tendrilsOfCorruption } from "./t/tendrils-of-corruption.ts";
 import { terramorphicExpanse } from "./t/terramorphic-expanse.ts";
 import { tomeScour } from "./t/tome-scour.ts";
 import { traumatize } from "./t/traumatize.ts";
@@ -68,14 +77,19 @@ import { undeadSlayer } from "./u/undead-slayer.ts";
 import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
+import { windstorm } from "./w/windstorm.ts";
 
 export const CARD_DEFS: readonly CardDef[] = [
+  acolyteOfXathrid,
+  angelsMercy,
   assassinate,
   blindingMage,
+  bountifulHarvest,
   burningInquiry,
   cancel,
   celestialPurge,
   centaurCourser,
+  consumeSpirit,
   coralMerfolk,
   crawWurm,
   deathmark,
@@ -85,6 +99,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   divineVerdict,
   doomBlade,
   duress,
+  earthquake,
   eliteVanguard,
   elvishPiper,
   essenceScatter,
@@ -97,6 +112,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   furnaceWhelp,
   giantGrowth,
   giantSpider,
+  goblinArtillery,
   grayOgre,
   grizzlyBears,
   hauntingEchoes,
@@ -118,11 +134,13 @@ export const CARD_DEFS: readonly CardDef[] = [
   plains,
   planarCleansing,
   ponder,
+  pyroclasm,
   ragingGoblin,
   rampantGrowth,
   righteousness,
   rodOfRuin,
   royalAssassin,
+  seismicStrike,
   shatter,
   shock,
   signInBlood,
@@ -130,6 +148,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   spinedWurm,
   swamp,
   tempestOfLight,
+  tendrilsOfCorruption,
   terramorphicExpanse,
   tomeScour,
   traumatize,
@@ -137,4 +156,5 @@ export const CARD_DEFS: readonly CardDef[] = [
   unsummon,
   vampireAristocrat,
   volcanicHammer,
+  windstorm,
 ];
