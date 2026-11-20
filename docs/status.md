@@ -244,7 +244,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
-       Built (D-077), in review: 44 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
+       Done, merged (PR #40, D-077): 44 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
        Solemn Offering and Tempest of Light), three new Triggers matrix cells; six of the cards in the M10 pair; 12
        golden games added (5.1 MB; every golden log also gained a "taps ... for mana" line per land tapped). 146 cards
        in the pool; 138 of the 234 Magic 2010 cards. Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:
@@ -467,6 +467,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 ## Open questions for the owner
 - (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
   Artillery's two losses kept.)
+- Dragon Whelp (M2-07c), asked 2026-11-20: "If this ability has been activated four or more times this turn" is checked
+  as each activation resolves, and the CR doesn't define the count. Activated four times in a row with all four on the
+  stack, the literal reading has every resolution see four activations (four sacrifice triggers); the Gatherer ruling
+  ("the first three times will do nothing other than give it +1/+0") reads as each activation knowing its own number
+  (one trigger). The Whelp is sacrificed once either way; only the number of triggers at the end step differs.
 
 ## Known issues
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
