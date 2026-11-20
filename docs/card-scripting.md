@@ -95,3 +95,24 @@ cards, that each definition's `oracle` equals the current Oracle text, and that 
 4. Write scenarios: the basic behavior, every ruling that applies to supported rules, and at least one negative case.
 5. Add the name to `pool.txt` and run `pnpm cards:extract`.
 6. `pnpm check`, then play it once in the CLI.
+
+## Scaling to every card
+
+The owner asked how 30,000+ definitions would be stored (2026-11-20). Measured then, Scryfall's Oracle Cards held 39,356
+entries; their rules data (name, cost, types, text, power and toughness, faces) is about 25 MB of JSON, **under 5 MB
+gzipped**. Definitions are small too: the M1 ones average about 230 bytes, and a long card might reach 2 KB, so 30,000
+would be roughly 20–30 MB of source and a few MB compressed. Art is never part of this; it's downloaded and cached at
+runtime (D-007).
+
+So size isn't the hard part. The plan as the pool grows, none of it needed yet:
+- **Keep one file per card** (`src/defs/<letter>/<slug>.ts`): readable, reviewable, merges cleanly; git handles tens of
+  thousands of small files. Generate `defs/index.ts` (and the pool files) instead of keeping them by hand, once that
+  list gets long.
+- **Load only what a game needs.** The engine already takes the `CardDatabase` as a parameter, not a global, so a match
+  can hand it just the cards in its two decks. Split the definitions into chunks (by set) that the app loads on demand
+  and caches offline; the deckbuilder searches a slim index (name, cost, types, text) and loads a card's definition only
+  when it's added to a deck or played.
+- **The real cost is writing and checking the definitions.** Each card must be scripted and tested before it joins the
+  pool (D-051, D-052). Most cards reuse a small set of patterns, so a later tool can draft a definition from templated
+  Oracle text for a person (or the `add-cards` skill) to check against the card and test; it never adds a card
+  untested.
