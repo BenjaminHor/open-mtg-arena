@@ -254,8 +254,11 @@ the CR. Then make that path a scenario test with `export`, so it stays checked.
 ## 3. Invariant fuzzing
 
 `pnpm fuzz --games N --seed S` plays one game per seed from `S` (D-046): even seeds the prebuilt deck pairs in turn, odd
-seeds two random decks from the pool, with basic lands of their cards' colors. Every decision is a random legal action (one in ten the first legal one, which
-passes), and about one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
+seeds two random decks from the pool, with basic lands of their cards' colors. Every decision is a random legal
+action, picked by kind first (pass, cast, activate an ability, play a land, an answer of each kind; cancelling a tenth
+as often), then one of that kind (D-061); one in ten is the first legal one, which passes or declines where it can
+(while paying, it's a payment, or cancel when nothing can be paid). (The `random` agent of `ai` and `auto` still
+picks uniformly, so golden games and the bench don't change.) About one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
 it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
 
 - the state round-trips through JSON unchanged

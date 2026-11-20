@@ -86,7 +86,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       decision shows go on the decision, with visibility from one function shared by `playerView`, `eventsFor` and the
       fuzz leak check, and a two-worlds test for Haunting Echoes; check whether "put onto the battlefield tapped"
       becomes tapped; Rampant Growth isn't a land play; Birds of Paradise's choice inside a mana ability during payment
-      (M2-05c) can't use `waitFor` there. Profile a slow fuzz seed first (the cause in Known issues is a guess).
+      (M2-05c) can't use `waitFor` there. The slow fuzz is profiled (Known issues; D-061 for the picker, its own PR).
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -250,5 +250,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
   must appear in one). Before the pool reaches all 234 cards, make them smaller: a compact action format, shorter
   games, or targeted games per card. Not blocking yet.
-- `pnpm fuzz --games 300` took about 10 minutes after M2-05a (it was 2–3): the new interim decks make longer games,
-  and the random agent starts many casts it can't pay for. Look at it with the golden-game size issue.
+- `pnpm fuzz --games 300` takes about 7–8 minutes (it was 2–3 in M1). Profiled (2026-11-20): the engine isn't slower
+  (a bare game takes 100–200 ms; the bench is within its baseline). The time is the checks after every action, about
+  19 times the games themselves: the leak check (`scrambleHidden` and comparing whole views, ~60%) and the legal-action
+  check, times long random games (~45 turns, ~28 priority passes a turn). The fuzzer's picker by kind (D-061) cut it
+  by about a fifth. Further cuts would weaken the checks (run the leak check on fewer actions); not worth it yet.
