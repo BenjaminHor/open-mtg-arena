@@ -391,6 +391,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Not blocking until M2-06d.) The M2-06 spec puts protection's targeting and blocking, flash, indestructible and
+  "can't be countered" in M2-06 and asks for a scenario per keyword, but their Magic 2010 cards come later (Bogardan
+  Hellkite in M2-07; White Knight, Black Knight, Baneslayer Angel, Great Sable Stag, Darksteel Colossus in M2-08;
+  Indestructibility in M2-12). Scenarios name real cards. Build them now with engine unit tests on test cards, and add
+  the scenarios with the cards? Or build each keyword with its first card? (Claude's lean: with its first card: one
+  task, a real scenario, nothing built before it's used.)
 - (Not blocking until M2-07 triggers or M2-08 prevention.) Goblin Artillery targeting its own controller deals them
   2 damage and 3 damage from the same source in the same action. The engine records it as one damage event with two
   parts: two `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3). Should that be one 5-point loss instead? The CR doesn't
@@ -398,9 +404,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   and how prevention shields count against it.
 
 ## Known issues
-- Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
-  must appear in one). Before the pool reaches all 234 cards, make them smaller: a compact action format, shorter
-  games, or targeted games per card. Not blocking yet.
+- Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
+- The bench drifts: on `main` (2026-11-20, after M2-05) some workloads run 10–18% over `bench/baseline.json`
+  (`applyAction.emptyBoard`, `randomGame`, `legalActions.busyBoard`), near the failure threshold, so a noisy run can
+  fail. It comes from M2's engine changes, not one PR. Before it fails for real: profile, or reset the baseline with
+  an explained commit. M2-06a touches combat, so it's measured paired against `main`.
 - `pnpm fuzz --games 300` takes about 7–8 minutes (it was 2–3 in M1). Profiled (2026-11-20): the engine isn't slower
   (a bare game takes 100–200 ms; the bench is within its baseline). The time is the checks after every action, about
   19 times the games themselves: the leak check (`scrambleHidden` and comparing whole views, ~60%) and the legal-action
