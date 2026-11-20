@@ -7,6 +7,10 @@ export const ballLightning: CardDef = {
   keywords: ["trample", "haste"],
   triggers: [
     // "The end step": every end step, whoever's turn it is (CR 603.2b).
-    { when: { kind: "beginningOfStep", step: "end" }, targets: [], effects: [{ op: "sacrificeSource" }] },
+    {
+      when: { kind: "beginningOfStep", step: "end", whose: "each" },
+      targets: [],
+      effects: [{ op: "sacrificeSource" }],
+    },
   ],
 };

@@ -1,0 +1,19 @@
+name: Bogardan Hellkite's trigger with no targets chosen goes on the stack and resolves doing nothing
+rules: [CR 107.1c, CR 601.2c, CR 603.3d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+    hand: [Bogardan Hellkite]
+steps:
+  - p1 cast: Bogardan Hellkite
+    pay: auto
+  - all pass: once
+  - p1 choose: 0
+  - expect:
+      stack: [Bogardan Hellkite ability]
+  - all pass: once
+  - expect:
+      stack: []
+      p2.life: 20
+      events contains: [{ type: ABILITY_RESOLVED }]

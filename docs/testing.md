@@ -181,7 +181,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - Expectations that arrive later and fail until then: `.counters` (M1-13).
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
-object in exactly one zone, casting choices only on the stack, nothing stalled, every listed legal action accepted.
+object in exactly one zone, casting choices only on the stack, nothing stalled, a pending decision always has a legal
+action (a trigger's targeting can't be cancelled), every listed legal action accepted.
 
 When the runner needs a new step or expectation, add it, document it here in the same commit (a test checks every word
 the runner knows appears here), and keep the vocabulary small.
@@ -343,7 +344,7 @@ counts what the folder's games already use, and keeps, greedily, the game adding
 off at the turn its last new card is used. It also covers three choices the export tests read: a spell on the stack
 targeted, a card in a graveyard targeted, cards chosen as a spell or ability resolves. It only adds games, never changes one, and skips seeds whose game
 is already there; it lists what's still not covered and fails if anything is.
-Keep the folder under 8 MB through M2 (D-073).
+Keep the folder under 16 MB through M2 (D-081, was 8 MB in D-073).
 
 ## 5. Rules coverage report
 

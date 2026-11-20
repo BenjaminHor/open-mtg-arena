@@ -62,9 +62,9 @@ anything can replace or trigger on:
   changes that (CR 614.6) needs a real path.
 - **Drawing several cards** as one instruction (CR 121.2a): "draw N" is N single draws for now (D-060); the container
   comes with the first replacement that needs it (M2-08).
-- **Events triggers will match that are emitted outside the pipeline:** `STEP_BEGAN`, `ATTACKERS_DECLARED`, `SPELL_CAST`
-  and `TAPPED_FOR_MANA` are matched where they're emitted (M2-07a, M2-07b, `triggers/README.md`); `ABILITY_ACTIVATED`
-  and `BLOCKERS_DECLARED` will be when a card needs them, and "becomes the target" has no event yet (M2-07c).
+- **Events triggers will match that are emitted outside the pipeline:** `STEP_BEGAN`, `ATTACKERS_DECLARED`,
+  `BLOCKERS_DECLARED`, `SPELL_CAST` and `TAPPED_FOR_MANA` are matched where they're emitted (`triggers/README.md`);
+  `ABILITY_ACTIVATED` will be when a card needs it, and "becomes the target" has no event yet (M2-07c2).
 - Looking back in time for "leaves the battlefield" abilities (CR 603.10, M2-14). Last known information
   (`GameState.lastKnown`, CR 608.2h) is kept as a card leaves the battlefield (`zones/move-card.ts`).
 

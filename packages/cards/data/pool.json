@@ -353,6 +353,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Bogardan Hellkite",
+      "slug": "bogardan-hellkite",
+      "oracleId": "699bc130-2f1f-4bc8-a25f-9329e40efbb1",
+      "layout": "normal",
+      "manaCost": "{6}{R}{R}",
+      "manaValue": 8,
+      "typeLine": "Creature — Dragon",
+      "oracleText": "Flash\nFlying\nWhen this creature enters, it deals 5 damage divided as you choose among any number of targets.",
+      "power": "5",
+      "toughness": "5",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying",
+        "Flash"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/2/3226c1aa-37b8-4499-9579-60618261f3e8.jpg?1783942375",
+        "large": "https://cards.scryfall.io/large/front/3/2/3226c1aa-37b8-4499-9579-60618261f3e8.jpg?1783942375",
+        "png": "https://cards.scryfall.io/png/front/3/2/3226c1aa-37b8-4499-9579-60618261f3e8.png?1783942375",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/2/3226c1aa-37b8-4499-9579-60618261f3e8.jpg?1783942375"
+      },
+      "artist": "Scott M. Fischer",
+      "set": "m10",
+      "collectorNumber": "127",
+      "scryfallUri": "https://scryfall.com/card/m10/127/bogardan-hellkite?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Borderland Ranger",
       "slug": "borderland-ranger",
       "oracleId": "ffe25048-0bd4-49b5-aecb-2b1b57fb8d8b",
@@ -518,6 +549,34 @@
       "set": "m14",
       "collectorNumber": "131",
       "scryfallUri": "https://scryfall.com/card/m14/131/canyon-minotaur?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Capricious Efreet",
+      "slug": "capricious-efreet",
+      "oracleId": "9abd2286-23e9-49cd-be53-39423890f35c",
+      "layout": "normal",
+      "manaCost": "{4}{R}{R}",
+      "manaValue": 6,
+      "typeLine": "Creature — Efreet",
+      "oracleText": "At the beginning of your upkeep, choose target nonland permanent you control and up to two target nonland permanents you don't control. Destroy one of them at random.",
+      "power": "6",
+      "toughness": "4",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/d/3d844b29-3b5e-4824-befc-affe6aac6d87.jpg?1783942375",
+        "large": "https://cards.scryfall.io/large/front/3/d/3d844b29-3b5e-4824-befc-affe6aac6d87.jpg?1783942375",
+        "png": "https://cards.scryfall.io/png/front/3/d/3d844b29-3b5e-4824-befc-affe6aac6d87.png?1783942375",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/d/3d844b29-3b5e-4824-befc-affe6aac6d87.jpg?1783942375"
+      },
+      "artist": "Justin Sweet",
+      "set": "m10",
+      "collectorNumber": "131",
+      "scryfallUri": "https://scryfall.com/card/m10/131/capricious-efreet?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1873,6 +1932,34 @@
       "set": "m10",
       "collectorNumber": "141",
       "scryfallUri": "https://scryfall.com/card/m10/141/ignite-disorder?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Inferno Elemental",
+      "slug": "inferno-elemental",
+      "oracleId": "287cb63c-d52d-4871-83d1-792a41ae7adc",
+      "layout": "normal",
+      "manaCost": "{4}{R}{R}",
+      "manaValue": 6,
+      "typeLine": "Creature — Elemental",
+      "oracleText": "Whenever this creature blocks or becomes blocked by a creature, this creature deals 3 damage to that creature.",
+      "power": "4",
+      "toughness": "4",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/3/53f05a58-a801-483a-8648-8685a4eaa773.jpg?1783942372",
+        "large": "https://cards.scryfall.io/large/front/5/3/53f05a58-a801-483a-8648-8685a4eaa773.jpg?1783942372",
+        "png": "https://cards.scryfall.io/png/front/5/3/53f05a58-a801-483a-8648-8685a4eaa773.png?1783942372",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/3/53f05a58-a801-483a-8648-8685a4eaa773.jpg?1783942372"
+      },
+      "artist": "Zoltan Boros & Gabor Szikszai",
+      "set": "m10",
+      "collectorNumber": "142",
+      "scryfallUri": "https://scryfall.com/card/m10/142/inferno-elemental?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -4053,6 +4140,37 @@
       "set": "m12",
       "collectorNumber": "223",
       "scryfallUri": "https://scryfall.com/card/m12/223/wurms-tooth?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Xathrid Demon",
+      "slug": "xathrid-demon",
+      "oracleId": "dd2bbc90-0474-42b7-afe4-3655a120ab02",
+      "layout": "normal",
+      "manaCost": "{3}{B}{B}{B}",
+      "manaValue": 6,
+      "typeLine": "Creature — Demon",
+      "oracleText": "Flying, trample\nAt the beginning of your upkeep, sacrifice a creature other than this creature, then each opponent loses life equal to the sacrificed creature's power. If you can't sacrifice a creature, tap this creature and you lose 7 life.",
+      "power": "7",
+      "toughness": "7",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying",
+        "Trample"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/5/059e8ead-f295-4ca7-a309-6768e6e765cf.jpg?1783942376",
+        "large": "https://cards.scryfall.io/large/front/0/5/059e8ead-f295-4ca7-a309-6768e6e765cf.jpg?1783942376",
+        "png": "https://cards.scryfall.io/png/front/0/5/059e8ead-f295-4ca7-a309-6768e6e765cf.png?1783942376",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/5/059e8ead-f295-4ca7-a309-6768e6e765cf.jpg?1783942376"
+      },
+      "artist": "Wayne Reynolds",
+      "set": "m10",
+      "collectorNumber": "122",
+      "scryfallUri": "https://scryfall.com/card/m10/122/xathrid-demon?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

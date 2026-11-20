@@ -1,0 +1,15 @@
+name: With two other creatures, Xathrid Demon's controller chooses which to sacrifice
+rules: [CR 608.2d, CR 701.21a]
+setup:
+  turn: { active: p2, step: end }
+  p1:
+    battlefield: [Xathrid Demon, Grizzly Bears, Craw Wurm]
+steps:
+  - all pass: until upkeep
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards }
+  - p1 choose: Craw Wurm
+  - expect:
+      p1.graveyard: [Craw Wurm]
+      p2.life: 14

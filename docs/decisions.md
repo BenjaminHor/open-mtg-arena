@@ -1038,3 +1038,66 @@ every schema change and every change D-024 lists bumps it.
   creature card"), `optional` ("you may put", asked only if there's a card to put) and `into: "libraryBottom"`.
 - The CLI log shows each `TAPPED_FOR_MANA` ("p1 taps Forest for mana"), so every golden log gained those lines and
   nothing else.
+
+**D-078: Dragon Whelp counts activations as they're made and checks the count on each resolution** · 2026-11-20 · accepted (owner)
+- "If this ability has been activated four or more times this turn": an activation counts the moment it's activated,
+  its cost paid and the ability on the stack (CR 602.2), whether or not it resolves: one countered (Stifle) still
+  counts. A cancelled activation is reversed (CR 734.1, D-035), so it was never activated and doesn't count.
+- Each activation, as it resolves, checks the count so far this turn; four or more creates a delayed trigger to
+  sacrifice the creature at the beginning of the next end step (CR 603.7). So four activations stacked before any
+  resolves make four delayed triggers; the creature is sacrificed once, and the others do nothing.
+- A 4th activation during the end step sacrifices it at the next turn's end step (its ruling; "the next end step" has
+  begun already, CR 603.7). The count is per object: a creature that leaves and returns is a new object with a count of
+  0 (CR 400.7).
+- Owner's answer to the open question, 2026-11-20. Built in M2-07c.
+
+**D-079: Upkeep, block and sacrifice triggers; flash; destroy at random** · 2026-11-20 · accepted
+- `beginningOfStep` states `whose` step: `each` (Howling Mine, Ball Lightning) or `yours` (Xathrid Demon, Capricious
+  Efreet), so every card says which.
+- `selfBlocksOrBlocked` triggers once per creature blocked or blocking (CR 509.3b, 509.3d), matched where
+  `BLOCKERS_DECLARED` is emitted; the detector's `matches` returns one `TriggerEvent` per occurrence (CR 603.2c), and
+  "that creature" is the subject `triggeringObject`. `definitionProblems` checks which conditions supply a player, an
+  object or an amount, each an exhaustive switch.
+- Sacrificing during a resolution records each permanent with its power computed just before it leaves (its last
+  known information, CR 608.2h) in the resolution's "this way" record (`Resolution.sacrificed`, CR 608.2c), where
+  `cards` is in scope; `"sacrificedPower"` reads it, 0 if nothing was (CR 107.2), never below 0 (CR 107.1b), and `ifNothingSacrificed`
+  ("if you can't sacrifice") reads whether anything was started (CR 118.12). With nothing sacrificed, each opponent
+  loses 0 life, an event (D-065). `GameState.lastKnown` stays the raw object.
+- `destroyOneAtRandom` picks among the still-legal targets with the seeded RNG as the effect resolves.
+- "Any number of targets" for a divided effect (Bogardan Hellkite) may be zero: CR 107.1c says "any number" is any
+  positive number or zero. Forum answers saying a divided effect needs one target (a Magic Judges forum answer on
+  Atarka's trigger, old Gatherer rulings on X spells) predate the Core Set 2020 rules update, which removed that
+  exception (MTG Salvation's summary). Checked under D-080.
+- Flash (CR 702.8a) is a keyword read in the hand by `castTimingProblem`, the one timing check legal actions and
+  `applyAction` share.
+- A scenario invariant: a pending decision always has a legal action (a trigger's targeting has no cancel, so a count
+  or division that can't be completed would stall the game).
+
+**D-080: Card ambiguity: the CR, then the rulings, then what players and judges say online** · 2026-11-20 · accepted (owner)
+- The owner: when a card's mechanics are ambiguous, refer to the CR; if that doesn't help, search online for what
+  people think. So the order is the CR, the card's official rulings, then rulings and judge answers found online
+  (judge Q&A, rules forums, tournament rulings), and only then the owner. The source is recorded with the decision or
+  in the scenario's comment, so the reading can be checked later. Replaces CLAUDE.md's "stop and ask" for card
+  ambiguity; a question the CR and these sources leave open still goes to the owner.
+
+**D-081: The golden folder's budget is 16 MB through M2** · 2026-11-20 · accepted (owner)
+- The owner chose to raise the budget again (D-073 set 8 MB) and asked what's reasonable. Measured after M2-07c1: 66
+  games, 5.3 MB for 150 cards, about 36 KB per card (70% action files, 30% logs; both compress about 6 times, and git
+  stores them compressed). All 234 Magic 2010 cards come to about 9 MB, plus log lines new event types add, so 16 MB
+  leaves room through M2.
+- One game per card doesn't scale to the whole of Magic (tens of thousands of cards, about 1 GB at this rate). Before
+  the pool grows past Magic 2010, golden games change shape: a compact action encoding, and games chosen to cover each
+  mechanic and interaction rather than each card, with cards covered by their scenarios. That's a decision for then.
+
+**D-082: Golden games cover mechanics and interactions, in a compact action format** · 2026-11-20 · accepted (owner)
+- The owner: find a more compact way to store a game's actions; golden games needn't cover each card (that was only a
+  way to make sure each mechanic is covered), so choose and create games that cover mechanics and interactions.
+- Coverage: a golden game is chosen for the features it exercises, not the cards. A feature is what the engine runs:
+  each effect op, trigger condition, keyword, static ability, cost kind and target kind of a card whose script runs
+  (D-069's "used"), each decision kind and event type, plus the choices the export tests read. Each card is still
+  covered by its own scenarios (the add-cards skill; a test will check every pool card appears in one).
+- Format, measured on the current 66 games: actions drop the decision id and the acting player (both follow from the
+  pending decision when replaying), runs of passes are one line, and each action is one readable line ("pass 4",
+  "cast o12", "chooseTarget p2"): 3.3 MB of actions become 0.44 MB. Setups name cards instead of oracle ids
+  (0.23 MB to 0.09 MB). Logs stay as they are (the readable diff when a game changes).
+- Built as its own task before M2-07c2; the M1 bench games (D-049) are converted, not replaced.

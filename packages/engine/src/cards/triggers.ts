@@ -24,8 +24,11 @@ export type TriggerCondition =
   | { kind: "selfEnters" }
   /** "Whenever another [filter] enters", relative to this permanent's controller (CR 603.6a). */
   | { kind: "anotherEnters"; filter: ObjectFilter }
-  /** "At the beginning of [the/each player's] [step]" (CR 603.2b): every such step, whoever's turn it is. */
-  | { kind: "beginningOfStep"; step: Step }
+  /**
+   * "At the beginning of [the / each player's / your] [step]" (CR 603.2b): `each`, every such step, whoever's turn it
+   * is ("the end step" too); `yours`, only in turns of the trigger's controller.
+   */
+  | { kind: "beginningOfStep"; step: Step; whose: "each" | "yours" }
   /** "Whenever this creature attacks": declared as an attacker (CR 508.3a). */
   | { kind: "selfAttacks" }
   /**
@@ -48,6 +51,11 @@ export type TriggerCondition =
    * player (CR 120.2, 510.2). "That player" is the player dealt damage.
    */
   | { kind: "selfDealsDamageToPlayer"; player: PlayerRelation; combatOnly: boolean }
+  /**
+   * "Whenever this creature blocks or becomes blocked by a creature": once for each creature it blocks and each
+   * creature blocking it, as blockers are declared (CR 509.3b, 509.3d). "That creature" is the other one.
+   */
+  | { kind: "selfBlocksOrBlocked" }
   /**
    * "Whenever [you / a player] gain life": once per life-gain event, whatever the amount (CR 119.9; each lifelink source
    * is its own event). "That much" is the amount gained.

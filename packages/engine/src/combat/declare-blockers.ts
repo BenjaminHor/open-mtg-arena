@@ -8,8 +8,10 @@ import { queueWork } from "../game/work.ts";
 import { attacksInCombat, canBlock, canBlockAnyNumber } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { type Block, newCombat } from "../state/combat.ts";
+import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * The defending player: the player the declared attackers attack, even if those attackers have since left combat (in a
@@ -49,7 +51,7 @@ export function possibleBlocks(state: GameState, chosen: readonly Block[], cards
 export function declareBlockers(state: GameState, chosen: Block[], cards: CardDatabase): Progress {
   const defender = defendingPlayer(state);
   if (defender === null || (chosen.length === 0 && possibleBlocks(state, chosen, cards).length === 0)) {
-    return finishBlockers(state, defender, []);
+    return finishBlockers(state, defender, [], cards);
   }
   return { state: waitFor(state, defender, { kind: "declareBlockers", chosen }), events: [] };
 }
@@ -67,12 +69,19 @@ export function blockProblem(state: GameState, chosen: readonly Block[], block: 
  * (`declaration-rules.ts`, CR 509.1b–c). Each attacker is now blocked or unblocked for good (CR 509.1h); then the active
  * player gets priority (CR 509.2).
  */
-export function finishBlockers(state: GameState, defender: PlayerId | null, chosen: readonly Block[]): Progress {
+export function finishBlockers(
+  state: GameState,
+  defender: PlayerId | null,
+  chosen: readonly Block[],
+  cards: CardDatabase,
+): Progress {
   const active = currentTurn(state).activePlayer;
   const combat = state.combat ?? newCombat();
   const declared: GameState = { ...state, combat: { ...combat, blocks: [...chosen] } };
-  return {
-    state: queueWork(declared, { kind: "givePriority", player: active }),
-    events: defender === null ? [] : [{ type: "BLOCKERS_DECLARED", player: defender, blocks: [...chosen] }],
-  };
+  if (defender === null) return { state: queueWork(declared, { kind: "givePriority", player: active }), events: [] };
+  // "Whenever this creature blocks or becomes blocked" triggers as blockers are declared (CR 509.3), matched here, where
+  // the event is emitted.
+  const event: GameEvent = { type: "BLOCKERS_DECLARED", player: defender, blocks: [...chosen] };
+  const triggered = detectTriggers(declared, declared, [event], cards);
+  return { state: queueWork(triggered, { kind: "givePriority", player: active }), events: [event] };
 }

@@ -1,0 +1,20 @@
+name: Capricious Efreet as its controller's only nonland permanent must target itself, and with no other target destroys itself
+rules: [CR 603.3d, CR 115.1]
+setup:
+  turn: { active: p2, step: end }
+  p1:
+    battlefield: [Capricious Efreet, Forest]
+  p2:
+    battlefield: [Mountain]
+steps:
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseTarget }
+  - p1 choose: p1:Capricious Efreet
+  - p1 choose: 0
+  - expect:
+      stack: [Capricious Efreet ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Capricious Efreet]
+      p2.battlefield: [Mountain]

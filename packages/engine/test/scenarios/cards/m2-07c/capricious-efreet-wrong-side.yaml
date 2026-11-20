@@ -1,0 +1,22 @@
+name: Capricious Efreet's first target must be its controller's, the others the opponent's, each a different one
+rules: [CR 115.1, CR 601.2c]
+setup:
+  turn: { active: p2, step: end }
+  p1:
+    battlefield: [Capricious Efreet]
+  p2:
+    battlefield: [Grizzly Bears, Craw Wurm]
+steps:
+  - all pass: once
+  - p1 choose: p2:Grizzly Bears
+  - expect error: illegalAction
+  - p1 choose: p1:Capricious Efreet
+  - p1 choose: 2
+  - p1 choose: p1:Capricious Efreet
+  - expect error: illegalAction
+  - p1 choose: p2:Grizzly Bears
+  - p1 choose: p2:Grizzly Bears
+  - expect error: illegalAction
+  - p1 choose: p2:Craw Wurm
+  - expect:
+      stack: [Capricious Efreet ability]

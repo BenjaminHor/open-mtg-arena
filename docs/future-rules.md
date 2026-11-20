@@ -55,7 +55,9 @@ triggers that "look back in time" (CR 603.10), delayed triggers, and state trigg
 ordering, and last known information of a card leaving the battlefield (`GameState.lastKnown`, CR 608.2h).
 *Built (M2-07b, D-077):* casting, drawing, discarding, tapping a land for mana, damage to a player and life gain
 triggers; "that much"; "that player controls" in a target; identical triggers put on unasked; cleanup priority for
-triggers (CR 514.3a). *Still to come:* triggers on activating abilities and declaring blockers; delayed triggers
+triggers (CR 514.3a). *Built (M2-07c1, D-079):* "your upkeep", blocks (one trigger per creature blocked or blocking).
+Blocks caused by an effect, or a creature put onto the battlefield blocking (CR 509.3b, 509.3d), will need their own
+event, matched with the same per-pair `matches`. *Still to come:* triggers on activating abilities; delayed triggers
 (CR 603.7) and "becomes the target" (M2-07c), which need their own `AbilityRef` kind and a pending trigger whose source
 isn't a permanent; leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
 `lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through
@@ -65,7 +67,8 @@ reversed parts caused. `lastKnown` is emptied when the stack is empty, so an eff
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,
-702.15c; Xathrid Demon; leaves-the-battlefield triggers) must snapshot `characteristics()` in `moveCard` beside it, not
+702.15c; leaves-the-battlefield triggers; Xathrid Demon reads only the sacrificed creature's power, kept in the
+resolution's "this way" record as it's sacrificed, D-079) must snapshot `characteristics()` in `moveCard` beside it, not
 recompute later with the effects as they are then. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a
 controller who left the game; multiplayer (CR 800.4a) must drop that player's triggers instead.
@@ -263,8 +266,8 @@ your graveyard" spell would count itself as a choice before it moves to the stac
 across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule
 modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions).
 
-**Small keywords that touch M1 code.** Vigilance is built (M2-06a: `attackersTap` skips it). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`
-(`rules/timing.ts`).
+**Small keywords that touch M1 code.** Vigilance is built (M2-06a: `attackersTap` skips it). Flash (CR 702.8a) is built (M2-07c1): `castTimingProblem` reads it with `keywordsOf`, printed keywords for now; flash
+granted by an effect needs the layer-aware reader (layer 6).
 
 **Starting the game, beyond the basics (CR 103).** In a match, the loser of the previous game chooses who goes first
 (CR 103.1); starting hand size can change (CR 103.5a, RPG rule modifiers); multiplayer's free first mulligan (CR 103.5c);

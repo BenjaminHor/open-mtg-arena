@@ -244,7 +244,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
-       Built (D-077), in review: 44 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
+       Done, merged (PR #40, D-077): 44 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
        Solemn Offering and Tempest of Light), three new Triggers matrix cells; six of the cards in the M10 pair; 12
        golden games added (5.1 MB; every golden log also gained a "taps ... for mana" line per land tapped). 146 cards
        in the pool; 138 of the 234 Magic 2010 cards. Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:
@@ -266,6 +266,27 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
+     - Golden games rework (owner, D-082), next after M2-07c1's PR and before M2-07c2: a compact action format (game
+       file format 1: one line per action, no decision ids or acting player, pass runs, card names in setups; the
+       reader still loads format 0), conversion of every golden game, `golden:cover` by features (effect ops, trigger
+       conditions, keywords, statics, costs, targets, decision kinds, event types) instead of cards, a test that every
+       pool card has a scenario, then a re-cover with fewer games. The bench's games are converted, not replaced.
+     - M2-07c plan (2026-11-20), two PRs:
+       - M2-07c1, built (D-079), in review: 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
+         destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
+         action; three of the cards in the M10 pair; 3 golden games (5.4 MB). 150 cards in the pool; 142 of the 234
+         Magic 2010 cards. Plan: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",
+         then a loss equal to the sacrificed creature's power, read from its last known characteristics, CR 608.2h:
+         kept with it in the resolution's "this way" record as it's sacrificed, D-079; "if you can't" taps
+         it and loses 7), Capricious Efreet (targets on both sides, "up to two"; destroy one of the still-legal targets
+         at random with the seeded RNG), Inferno Elemental (blocks or becomes blocked: one trigger per blocker/attacker
+         pair, matched where `BLOCKERS_DECLARED` is emitted; "that creature" is the trigger's object), Bogardan Hellkite
+         (flash, CR 702.8a: cast any time an instant could be; its entering trigger divides 5 damage among zero to five
+         targets (CR 107.1c), the division chosen as the trigger goes on the stack, CR 603.3d, 601.2d).
+       - M2-07c2: delayed triggers (CR 603.7): created by a resolving effect, kept in `GameState.delayedTriggers` with
+         their own `AbilityRef`, removed once triggered ("the next end step"); Dragon Whelp's per-object, per-turn
+         activation count (D-078); "becomes the target" (CR 601.2c, 603.2) for spells, activations and triggers, as
+         targets are chosen, dropped on cancel (only what the cancelled cast caused): Illusionary Servant.
      - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
        Illusionary Servant ("becomes the target", CR 601.2c), Bogardan Hellkite (flash comes with it, D-074).
      - Settled before code (advisor, 2026-11-20):
@@ -304,7 +325,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          "taps a land for mana" per activation of a land's {T} mana ability (CR 106.12; not Terramorphic Expanse).
        - Intervening if re-checked in `resolveTopOfStack`, beside CR 608.2b: false removes it (CR 608.2a).
        - Delayed triggers (07c) live in state, not on a permanent; their own `AbilityRef`; Dragon Whelp needs a
-         per-object, per-turn activation count (not resolutions; cancel doesn't count; CR 400.7 resets).
+         per-object, per-turn activation count (not resolutions; cancel doesn't count; CR 400.7 resets; D-078).
        - CR 514.3a (cleanup with triggers) has no 07a card: built with Megrim (07b).
        - Read a permanent's triggers through one function (layer 6 later, CR 603.6b), like `keywordsOf`.
        - Test list: ETB in APNAP order, ordering one's own, Soul Warden negatives, source gone before and after going on
@@ -467,8 +488,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 ## Open questions for the owner
 - (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
   Artillery's two losses kept.)
+- (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
+  activation resolves.)
 
 ## Known issues
+- The golden folder's budget is 16 MB through M2 (D-081). It's 5.4 MB with 150 cards, about 36 KB per card; all 234
+  Magic 2010 cards come to about 9 MB. Before the pool grows past Magic 2010, change how golden games are stored
+  (D-081).
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with

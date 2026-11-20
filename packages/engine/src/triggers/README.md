@@ -11,7 +11,8 @@ abilities are data in `CardDef.triggers` (`cards/types.ts`): a condition (`when`
    permanents on the battlefield (only permanents' abilities trigger, CR 113.6). Called from `checkTriggers` in
    `pipeline/happen.ts` for every event that goes through the pipeline (drawing, discarding, damage, life gain), and
    from the places that emit events outside it, each for its own event only: a step beginning (`game/steps.ts`),
-   attackers declared (`combat/declare-attackers.ts`), a spell becoming cast (`game/casting-steps.ts`, CR 601.2i), a
+   attackers declared (`combat/declare-attackers.ts`), blockers declared (`combat/declare-blockers.ts`, one trigger per
+   creature blocked or blocking, CR 509.3), a spell becoming cast (`game/casting-steps.ts`, CR 601.2i), a
    land tapped for mana (`TAPPED_FOR_MANA`, `mana/activate.ts`, CR 106.12a). An intervening if that's false as the event happens means no trigger. A match
    becomes a `PendingTrigger` (`state/triggers.ts`) in `GameState.pendingTriggers`, remembering its source, the
    source's controller then (CR 603.3a) and what triggered it (the player and object "that player", "it" refer to).
@@ -38,12 +39,12 @@ from when it left until the stack is next empty. Howling Mine Shattered in respo
 
 ## Tests
 
-The m2-07a and m2-07b scenarios (`test/scenarios/cards/m2-07a/`, `m2-07b/`) show each card and rule; `test/triggers/triggers.test.ts` covers
+The m2-07a, m2-07b and m2-07c scenarios (`test/scenarios/cards/m2-07a/`, `m2-07b/`, `m2-07c/`) show each card and rule; `test/triggers/triggers.test.ts` covers
 what the pool's cards can't reach (creatures entering together, a cancelled cast's triggers, the CR 603.3b repeat, an
 intervening if turned false before resolving).
 
 ## Not built yet
 
 Delayed triggers (CR 603.7) and "becomes the target" (CR 601.2c, M2-07c); "leaves the battlefield" abilities, which
-look back in time (CR 603.10, M2-14); triggers on activating an ability or declaring blockers (no card yet). A trigger
+look back in time (CR 603.10, M2-14); triggers on activating an ability (no card yet). A trigger
 removed for too few legal targets (CR 603.3d) emits no event yet, so a log or the UI doesn't show that it triggered.

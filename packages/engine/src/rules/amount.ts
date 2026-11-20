@@ -4,7 +4,12 @@
 import type { Amount } from "../cards/types.ts";
 
 /** An amount that needs no game to work out: a number, or X. */
-export type FixedAmount = Exclude<Amount, { count: unknown } | "thatMuch">;
+export type FixedAmount = Extract<Amount, number | "X">;
+
+/** Whether the amount is known before resolution: a number or X, as a divided amount must be (CR 601.2d). */
+export function isFixedAmount(amount: Amount): amount is FixedAmount {
+  return typeof amount === "number" || amount === "X";
+}
 
 /**
  * `x` is the value announced as the spell was cast or the ability activated (CR 107.3a, 601.2b). An amount of X with

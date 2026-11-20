@@ -36,4 +36,5 @@ grep -rn "^704.5" rules/cr            # list all state-based action rules with t
   specific rule, and paraphrase it briefly.
 - In scenarios: `rules: [CR 601.2c, CR 608.2b]`.
 - If two rules seem to conflict, the more specific one usually wins (and CR 101 has the golden rules).
-  If it's still unclear, stop and ask the owner rather than choosing.
+  If it's still unclear, read the card's rulings, then search online for how players and judges read it (D-080), and
+  record the source; ask the owner only if that doesn't settle it.

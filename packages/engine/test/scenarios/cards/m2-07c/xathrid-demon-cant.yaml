@@ -1,0 +1,15 @@
+name: With no other creature to sacrifice, Xathrid Demon is tapped and its controller loses 7 life
+rules: [CR 701.21a, CR 608.2c, CR 118.12, CR 107.2]
+setup:
+  turn: { active: p2, step: end }
+  p1:
+    battlefield: [Xathrid Demon]
+steps:
+  - all pass: until upkeep
+  - all pass: once
+  - expect:
+      p1.life: 13
+      p2.life: 20
+      p1:Xathrid Demon.tapped: true
+      p1.battlefield: [Xathrid Demon]
+      events contains: [{ type: LIFE_LOST, player: p2, amount: 0 }]

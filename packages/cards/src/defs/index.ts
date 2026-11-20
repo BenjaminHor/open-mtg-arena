@@ -13,12 +13,14 @@ import { berserkersOfBloodRidge } from "./b/berserkers-of-blood-ridge.ts";
 import { birdsOfParadise } from "./b/birds-of-paradise.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
 import { bogWraith } from "./b/bog-wraith.ts";
+import { bogardanHellkite } from "./b/bogardan-hellkite.ts";
 import { borderlandRanger } from "./b/borderland-ranger.ts";
 import { bountifulHarvest } from "./b/bountiful-harvest.ts";
 import { brambleCreeper } from "./b/bramble-creeper.ts";
 import { burningInquiry } from "./b/burning-inquiry.ts";
 import { cancel } from "./c/cancel.ts";
 import { canyonMinotaur } from "./c/canyon-minotaur.ts";
+import { capriciousEfreet } from "./c/capricious-efreet.ts";
 import { celestialPurge } from "./c/celestial-purge.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
 import { childOfNight } from "./c/child-of-night.ts";
@@ -67,6 +69,7 @@ import { howlingBanshee } from "./h/howling-banshee.ts";
 import { howlingMine } from "./h/howling-mine.ts";
 import { hypnoticSpecter } from "./h/hypnotic-specter.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
+import { infernoElemental } from "./i/inferno-elemental.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
 import { kalonianBehemoth } from "./k/kalonian-behemoth.ts";
@@ -144,6 +147,7 @@ import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { windDrake } from "./w/wind-drake.ts";
 import { windstorm } from "./w/windstorm.ts";
 import { wurmsTooth } from "./w/wurms-tooth.ts";
+import { xathridDemon } from "./x/xathrid-demon.ts";
 import { yawningFissure } from "./y/yawning-fissure.ts";
 import { zephyrSprite } from "./z/zephyr-sprite.ts";
 import { zombieGoliath } from "./z/zombie-goliath.ts";
@@ -161,12 +165,14 @@ export const CARD_DEFS: readonly CardDef[] = [
   birdsOfParadise,
   blindingMage,
   bogWraith,
+  bogardanHellkite,
   borderlandRanger,
   bountifulHarvest,
   brambleCreeper,
   burningInquiry,
   cancel,
   canyonMinotaur,
+  capriciousEfreet,
   celestialPurge,
   centaurCourser,
   childOfNight,
@@ -215,6 +221,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   howlingMine,
   hypnoticSpecter,
   igniteDisorder,
+  infernoElemental,
   island,
   jackalFamiliar,
   kalonianBehemoth,
@@ -292,6 +299,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   windDrake,
   windstorm,
   wurmsTooth,
+  xathridDemon,
   yawningFissure,
   zephyrSprite,
   zombieGoliath,

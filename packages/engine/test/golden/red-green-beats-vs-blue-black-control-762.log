@@ -1,0 +1,1230 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Underworld Dreams, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Sage Owl, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Gravedigger, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Essence Scatter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mist Leopard, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Prized Unicorn, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 mulligans
+T0 p1 mulligans
+T0 moves: Underworld Dreams, p2's hand -> p2's library
+T0 moves: Sage Owl, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 moves: Island, p2's hand -> p2's library
+T0 moves: Gravedigger, p2's hand -> p2's library
+T0 moves: Essence Scatter, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Vampire Aristocrat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Sanguine Bond, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Phantom Warrior, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Llanowar Elves, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Llanowar Elves, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Mist Leopard, p1's hand -> p1's library
+T0 moves: Prized Unicorn, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Stampeding Rhino, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Terramorphic Expanse, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Sparkmage Apprentice, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Panic Attack, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p2's hand -> p2's library
+T0 moves: Sparkmage Apprentice, p1's hand -> p1's library
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Swamp, p2's hand -> battlefield
+T1 p2 plays p2:Swamp
+T1 moves: Phantom Warrior, p2's hand -> stack
+T1 taps: p2:Swamp
+T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
+T1 p2 cancels casting Phantom Warrior
+T1 taps: p2:Swamp
+T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
+T1 moves: Sanguine Bond, p2's hand -> stack
+T1 p2 cancels casting Sanguine Bond
+T1 moves: Phantom Warrior, p2's hand -> stack
+T1 p2 cancels casting Phantom Warrior
+T1 moves: Sanguine Bond, p2's hand -> stack
+T1 p2 cancels casting Sanguine Bond
+T1 p2's unspent {B} empties
+T1 p2 attack: nothing
+T2 turn 2 begins (p1)
+T2 moves: Borderland Ranger, p1's library -> p1's hand
+T2 p1 draws
+T2 p1 attack: nothing
+T3 turn 3 begins (p2)
+T3 untaps: p2:Swamp
+T3 taps: p2:Swamp
+T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
+T3 p2's unspent {B} empties
+T3 moves: Dread Warlock, p2's library -> p2's hand
+T3 p2 draws
+T3 p2 attack: nothing
+T4 turn 4 begins (p1)
+T4 moves: Forest, p1's library -> p1's hand
+T4 p1 draws
+T4 p1 attack: nothing
+T4 moves: Forest, p1's hand -> battlefield
+T4 p1 plays p1:Forest
+T4 taps: p1:Forest
+T4 p1 adds {G} (p1:Forest)
+T4 p1 taps p1:Forest for mana
+T4 p1's unspent {G} empties
+T5 turn 5 begins (p2)
+T5 untaps: p2:Swamp
+T5 moves: Sign in Blood, p2's library -> p2's hand
+T5 p2 draws
+T5 taps: p2:Swamp
+T5 p2 adds {B} (p2:Swamp)
+T5 p2 taps p2:Swamp for mana
+T5 p2's unspent {B} empties
+T5 moves: Island, p2's hand -> battlefield
+T5 p2 plays p2:Island
+T5 p2 attack: nothing
+T5 taps: p2:Island
+T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
+T5 p2's unspent {U} empties
+T5 moves: Sign in Blood, p2's hand -> stack
+T5 p2 cancels casting Sign in Blood
+T6 turn 6 begins (p1)
+T6 untaps: p1:Forest
+T6 taps: p1:Forest
+T6 p1 adds {G} (p1:Forest)
+T6 p1 taps p1:Forest for mana
+T6 p1's unspent {G} empties
+T6 moves: Mountain, p1's library -> p1's hand
+T6 p1 draws
+T6 moves: Mountain, p1's hand -> battlefield
+T6 p1 plays p1:Mountain
+T6 taps: p1:Mountain
+T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
+T6 moves: Borderland Ranger, p1's hand -> stack
+T6 p1 cancels casting Borderland Ranger
+T6 moves: Borderland Ranger, p1's hand -> stack
+T6 p1 cancels casting Borderland Ranger
+T6 moves: Panic Attack, p1's hand -> stack
+T6 p1 cancels casting Panic Attack
+T6 moves: Borderland Ranger, p1's hand -> stack
+T6 p1 cancels casting Borderland Ranger
+T6 moves: Panic Attack, p1's hand -> stack
+T6 p1 cancels casting Panic Attack
+T6 p1's unspent {R} empties
+T6 p1 attack: nothing
+T7 turn 7 begins (p2)
+T7 untaps: p2:Swamp
+T7 untaps: p2:Island
+T7 moves: Island, p2's library -> p2's hand
+T7 p2 draws
+T7 taps: p2:Island
+T7 p2 adds {U} (p2:Island)
+T7 p2 taps p2:Island for mana
+T7 moves: Sign in Blood, p2's hand -> stack
+T7 taps: p2:Swamp
+T7 p2 adds {B} (p2:Swamp)
+T7 p2 taps p2:Swamp for mana
+T7 p2 cancels casting Sign in Blood
+T7 moves: Island, p2's hand -> battlefield
+T7 p2 plays p2:Island#2
+T7 p2's unspent {U} empties
+T7 p2 attack: nothing
+T7 taps: p2:Swamp
+T7 p2 adds {B} (p2:Swamp)
+T7 p2 taps p2:Swamp for mana
+T7 p2's unspent {B} empties
+T7 taps: p2:Island#2
+T7 p2 adds {U} (p2:Island#2)
+T7 p2 taps p2:Island#2 for mana
+T7 p2's unspent {U} empties
+T8 turn 8 begins (p1)
+T8 untaps: p1:Forest
+T8 untaps: p1:Mountain
+T8 moves: Lightning Bolt, p1's library -> p1's hand
+T8 p1 draws
+T8 taps: p1:Forest
+T8 p1 adds {G} (p1:Forest)
+T8 p1 taps p1:Forest for mana
+T8 p1's unspent {G} empties
+T8 moves: Panic Attack, p1's hand -> stack
+T8 taps: p1:Mountain
+T8 p1 adds {R} (p1:Mountain)
+T8 p1 taps p1:Mountain for mana
+T8 p1 cancels casting Panic Attack
+T8 moves: Mountain, p1's hand -> battlefield
+T8 p1 plays p1:Mountain#2
+T8 moves: Lightning Bolt, p1's hand -> stack
+T8 taps: p1:Mountain#1
+T8 p1 adds {R} (p1:Mountain#1)
+T8 p1 taps p1:Mountain#1 for mana
+T8 taps: p1:Mountain#2
+T8 p1 adds {R} (p1:Mountain#2)
+T8 p1 taps p1:Mountain#2 for mana
+T8 p1 casts Lightning Bolt
+T8 damage: Lightning Bolt -> p1 3
+T8 p1 loses 3 life
+T8 resolves: Lightning Bolt
+T8 moves: Lightning Bolt, stack -> p1's graveyard
+T8 p1's unspent {R} empties
+T8 p1 attack: nothing
+T8 moves: Borderland Ranger, p1's hand -> stack
+T8 p1 cancels casting Borderland Ranger
+T8 moves: Stampeding Rhino, p1's hand -> stack
+T8 p1 cancels casting Stampeding Rhino
+T9 turn 9 begins (p2)
+T9 untaps: p2:Swamp
+T9 untaps: p2:Island#1
+T9 untaps: p2:Island#2
+T9 taps: p2:Island#1
+T9 p2 adds {U} (p2:Island#1)
+T9 p2 taps p2:Island#1 for mana
+T9 taps: p2:Island#2
+T9 p2 adds {U} (p2:Island#2)
+T9 p2 taps p2:Island#2 for mana
+T9 taps: p2:Swamp
+T9 p2 adds {B} (p2:Swamp)
+T9 p2 taps p2:Swamp for mana
+T9 p2's unspent {U}{U}{B} empties
+T9 moves: Hypnotic Specter, p2's library -> p2's hand
+T9 p2 draws
+T9 moves: Island, p2's hand -> battlefield
+T9 p2 plays p2:Island#3
+T9 taps: p2:Island#3
+T9 p2 adds {U} (p2:Island#3)
+T9 p2 taps p2:Island#3 for mana
+T9 p2's unspent {U} empties
+T9 p2 attack: nothing
+T10 turn 10 begins (p1)
+T10 untaps: p1:Forest
+T10 untaps: p1:Mountain#1
+T10 untaps: p1:Mountain#2
+T10 moves: Berserkers of Blood Ridge, p1's library -> p1's hand
+T10 p1 draws
+T10 moves: Borderland Ranger, p1's hand -> stack
+T10 taps: p1:Mountain#1
+T10 p1 adds {R} (p1:Mountain#1)
+T10 p1 taps p1:Mountain#1 for mana
+T10 taps: p1:Mountain#2
+T10 p1 adds {R} (p1:Mountain#2)
+T10 p1 taps p1:Mountain#2 for mana
+T10 taps: p1:Forest
+T10 p1 adds {G} (p1:Forest)
+T10 p1 taps p1:Forest for mana
+T10 p1 cancels casting Borderland Ranger
+T10 taps: p1:Mountain#2
+T10 p1 adds {R} (p1:Mountain#2)
+T10 p1 taps p1:Mountain#2 for mana
+T10 taps: p1:Mountain#1
+T10 p1 adds {R} (p1:Mountain#1)
+T10 p1 taps p1:Mountain#1 for mana
+T10 p1's unspent {R}{R} empties
+T10 p1 attack: nothing
+T10 taps: p1:Forest
+T10 p1 adds {G} (p1:Forest)
+T10 p1 taps p1:Forest for mana
+T10 moves: Berserkers of Blood Ridge, p1's hand -> stack
+T10 p1 cancels casting Berserkers of Blood Ridge
+T10 p1's unspent {G} empties
+T11 turn 11 begins (p2)
+T11 untaps: p2:Swamp
+T11 untaps: p2:Island#1
+T11 untaps: p2:Island#2
+T11 untaps: p2:Island#3
+T11 taps: p2:Island#1
+T11 p2 adds {U} (p2:Island#1)
+T11 p2 taps p2:Island#1 for mana
+T11 taps: p2:Island#3
+T11 p2 adds {U} (p2:Island#3)
+T11 p2 taps p2:Island#3 for mana
+T11 p2's unspent {U}{U} empties
+T11 moves: Royal Assassin, p2's library -> p2's hand
+T11 p2 draws
+T11 taps: p2:Swamp
+T11 p2 adds {B} (p2:Swamp)
+T11 p2 taps p2:Swamp for mana
+T11 p2's unspent {B} empties
+T11 p2 attack: nothing
+T11 taps: p2:Island#2
+T11 p2 adds {U} (p2:Island#2)
+T11 p2 taps p2:Island#2 for mana
+T11 p2's unspent {U} empties
+T12 turn 12 begins (p1)
+T12 untaps: p1:Forest
+T12 untaps: p1:Mountain#1
+T12 untaps: p1:Mountain#2
+T12 taps: p1:Forest
+T12 p1 adds {G} (p1:Forest)
+T12 p1 taps p1:Forest for mana
+T12 taps: p1:Mountain#2
+T12 p1 adds {R} (p1:Mountain#2)
+T12 p1 taps p1:Mountain#2 for mana
+T12 taps: p1:Mountain#1
+T12 p1 adds {R} (p1:Mountain#1)
+T12 p1 taps p1:Mountain#1 for mana
+T12 p1's unspent {R}{R}{G} empties
+T12 moves: Forest, p1's library -> p1's hand
+T12 p1 draws
+T12 moves: Forest, p1's hand -> battlefield
+T12 p1 plays p1:Forest#2
+T12 moves: Stampeding Rhino, p1's hand -> stack
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
+T12 p1 cancels casting Stampeding Rhino
+T12 moves: Berserkers of Blood Ridge, p1's hand -> stack
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
+T12 p1 cancels casting Berserkers of Blood Ridge
+T12 moves: Berserkers of Blood Ridge, p1's hand -> stack
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
+T12 p1 cancels casting Berserkers of Blood Ridge
+T12 p1 attack: nothing
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
+T12 p1's unspent {G} empties
+T12 moves: Berserkers of Blood Ridge, p1's hand -> stack
+T12 p1 cancels casting Berserkers of Blood Ridge
+T12 moves: Berserkers of Blood Ridge, p1's hand -> stack
+T12 p1 cancels casting Berserkers of Blood Ridge
+T12 moves: Stampeding Rhino, p1's hand -> stack
+T12 p1 cancels casting Stampeding Rhino
+T12 moves: Stampeding Rhino, p1's hand -> stack
+T12 p1 cancels casting Stampeding Rhino
+T13 turn 13 begins (p2)
+T13 untaps: p2:Swamp
+T13 untaps: p2:Island#1
+T13 untaps: p2:Island#2
+T13 untaps: p2:Island#3
+T13 moves: Howling Banshee, p2's library -> p2's hand
+T13 p2 draws
+T13 taps: p2:Swamp
+T13 p2 adds {B} (p2:Swamp)
+T13 p2 taps p2:Swamp for mana
+T13 taps: p2:Island#3
+T13 p2 adds {U} (p2:Island#3)
+T13 p2 taps p2:Island#3 for mana
+T13 taps: p2:Island#2
+T13 p2 adds {U} (p2:Island#2)
+T13 p2 taps p2:Island#2 for mana
+T13 taps: p2:Island#1
+T13 p2 adds {U} (p2:Island#1)
+T13 p2 taps p2:Island#1 for mana
+T13 p2's unspent {U}{U}{U}{B} empties
+T13 moves: Royal Assassin, p2's hand -> stack
+T13 p2 cancels casting Royal Assassin
+T13 moves: Howling Banshee, p2's hand -> stack
+T13 p2 cancels casting Howling Banshee
+T13 p2 attack: nothing
+T13 moves: Dread Warlock, p2's hand -> p2's graveyard
+T13 p2 discards Dread Warlock
+T14 turn 14 begins (p1)
+T14 untaps: p1:Forest#1
+T14 untaps: p1:Mountain#1
+T14 untaps: p1:Mountain#2
+T14 untaps: p1:Forest#2
+T14 moves: Llanowar Elves, p1's library -> p1's hand
+T14 p1 draws
+T14 taps: p1:Forest#1
+T14 p1 adds {G} (p1:Forest#1)
+T14 p1 taps p1:Forest#1 for mana
+T14 p1's unspent {G} empties
+T14 taps: p1:Mountain#1
+T14 p1 adds {R} (p1:Mountain#1)
+T14 p1 taps p1:Mountain#1 for mana
+T14 taps: p1:Mountain#2
+T14 p1 adds {R} (p1:Mountain#2)
+T14 p1 taps p1:Mountain#2 for mana
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
+T14 p1's unspent {R}{R}{G} empties
+T14 p1 attack: nothing
+T14 moves: Berserkers of Blood Ridge, p1's hand -> p1's graveyard
+T14 p1 discards Berserkers of Blood Ridge
+T15 turn 15 begins (p2)
+T15 untaps: p2:Swamp
+T15 untaps: p2:Island#1
+T15 untaps: p2:Island#2
+T15 untaps: p2:Island#3
+T15 taps: p2:Island#1
+T15 p2 adds {U} (p2:Island#1)
+T15 p2 taps p2:Island#1 for mana
+T15 taps: p2:Island#3
+T15 p2 adds {U} (p2:Island#3)
+T15 p2 taps p2:Island#3 for mana
+T15 p2's unspent {U}{U} empties
+T15 moves: Swamp, p2's library -> p2's hand
+T15 p2 draws
+T15 p2 attack: nothing
+T15 taps: p2:Island#2
+T15 p2 adds {U} (p2:Island#2)
+T15 p2 taps p2:Island#2 for mana
+T15 taps: p2:Swamp
+T15 p2 adds {B} (p2:Swamp)
+T15 p2 taps p2:Swamp for mana
+T15 p2's unspent {U}{B} empties
+T15 moves: Sanguine Bond, p2's hand -> p2's graveyard
+T15 p2 discards Sanguine Bond
+T16 turn 16 begins (p1)
+T16 untaps: p1:Forest#1
+T16 untaps: p1:Mountain#1
+T16 untaps: p1:Mountain#2
+T16 untaps: p1:Forest#2
+T16 moves: Bogardan Hellkite, p1's library -> p1's hand
+T16 p1 draws
+T16 moves: Forest, p1's hand -> battlefield
+T16 p1 plays p1:Forest#3
+T16 taps: p1:Mountain#2
+T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
+T16 taps: p1:Forest#3
+T16 p1 adds {G} (p1:Forest#3)
+T16 p1 taps p1:Forest#3 for mana
+T16 moves: Borderland Ranger, p1's hand -> stack
+T16 taps: p1:Mountain#1
+T16 p1 adds {R} (p1:Mountain#1)
+T16 p1 taps p1:Mountain#1 for mana
+T16 p1 cancels casting Borderland Ranger
+T16 taps: p1:Mountain#1
+T16 p1 adds {R} (p1:Mountain#1)
+T16 p1 taps p1:Mountain#1 for mana
+T16 p1's unspent {R}{R}{G} empties
+T16 p1 attack: nothing
+T16 taps: p1:Forest#2
+T16 p1 adds {G} (p1:Forest#2)
+T16 p1 taps p1:Forest#2 for mana
+T16 taps: p1:Forest#1
+T16 p1 adds {G} (p1:Forest#1)
+T16 p1 taps p1:Forest#1 for mana
+T16 moves: Bogardan Hellkite, p1's hand -> stack
+T16 p1 cancels casting Bogardan Hellkite
+T16 moves: Bogardan Hellkite, p1's hand -> stack
+T16 p1 cancels casting Bogardan Hellkite
+T16 moves: Bogardan Hellkite, p1's hand -> stack
+T16 p1 cancels casting Bogardan Hellkite
+T16 p1's unspent {G}{G} empties
+T16 moves: Llanowar Elves, p1's hand -> stack
+T16 p1 cancels casting Llanowar Elves
+T17 turn 17 begins (p2)
+T17 untaps: p2:Swamp
+T17 untaps: p2:Island#1
+T17 untaps: p2:Island#2
+T17 untaps: p2:Island#3
+T17 moves: Island, p2's library -> p2's hand
+T17 p2 draws
+T17 taps: p2:Swamp
+T17 p2 adds {B} (p2:Swamp)
+T17 p2 taps p2:Swamp for mana
+T17 p2's unspent {B} empties
+T17 moves: Swamp, p2's hand -> battlefield
+T17 p2 plays p2:Swamp#2
+T17 moves: Sign in Blood, p2's hand -> stack
+T17 taps: p2:Swamp#2
+T17 p2 adds {B} (p2:Swamp#2)
+T17 p2 taps p2:Swamp#2 for mana
+T17 taps: p2:Island#2
+T17 p2 adds {U} (p2:Island#2)
+T17 p2 taps p2:Island#2 for mana
+T17 p2 cancels casting Sign in Blood
+T17 taps: p2:Island#3
+T17 p2 adds {U} (p2:Island#3)
+T17 p2 taps p2:Island#3 for mana
+T17 moves: Royal Assassin, p2's hand -> stack
+T17 taps: p2:Island#2
+T17 p2 adds {U} (p2:Island#2)
+T17 p2 taps p2:Island#2 for mana
+T17 taps: p2:Island#1
+T17 p2 adds {U} (p2:Island#1)
+T17 p2 taps p2:Island#1 for mana
+T17 taps: p2:Swamp#2
+T17 p2 adds {B} (p2:Swamp#2)
+T17 p2 taps p2:Swamp#2 for mana
+T17 p2 cancels casting Royal Assassin
+T17 p2's unspent {U} empties
+T17 p2 attack: nothing
+T17 taps: p2:Swamp#2
+T17 p2 adds {B} (p2:Swamp#2)
+T17 p2 taps p2:Swamp#2 for mana
+T17 taps: p2:Island#1
+T17 p2 adds {U} (p2:Island#1)
+T17 p2 taps p2:Island#1 for mana
+T17 moves: Royal Assassin, p2's hand -> stack
+T17 taps: p2:Island#2
+T17 p2 adds {U} (p2:Island#2)
+T17 p2 taps p2:Island#2 for mana
+T17 p2 cancels casting Royal Assassin
+T17 moves: Hypnotic Specter, p2's hand -> stack
+T17 taps: p2:Island#2
+T17 p2 adds {U} (p2:Island#2)
+T17 p2 taps p2:Island#2 for mana
+T17 p2 cancels casting Hypnotic Specter
+T17 p2's unspent {U}{B} empties
+T17 taps: p2:Island#2
+T17 p2 adds {U} (p2:Island#2)
+T17 p2 taps p2:Island#2 for mana
+T17 moves: Bogardan Hellkite, p1's hand -> stack
+T17 p1 cancels casting Bogardan Hellkite
+T17 moves: Bogardan Hellkite, p1's hand -> stack
+T17 p1 cancels casting Bogardan Hellkite
+T17 p2's unspent {U} empties
+T18 turn 18 begins (p1)
+T18 untaps: p1:Forest#1
+T18 untaps: p1:Mountain#1
+T18 untaps: p1:Mountain#2
+T18 untaps: p1:Forest#2
+T18 untaps: p1:Forest#3
+T18 moves: Mountain, p1's library -> p1's hand
+T18 p1 draws
+T18 moves: Bogardan Hellkite, p1's hand -> stack
+T18 taps: p1:Mountain#2
+T18 p1 adds {R} (p1:Mountain#2)
+T18 p1 taps p1:Mountain#2 for mana
+T18 taps: p1:Forest#1
+T18 p1 adds {G} (p1:Forest#1)
+T18 p1 taps p1:Forest#1 for mana
+T18 taps: p1:Forest#3
+T18 p1 adds {G} (p1:Forest#3)
+T18 p1 taps p1:Forest#3 for mana
+T18 taps: p1:Forest#2
+T18 p1 adds {G} (p1:Forest#2)
+T18 p1 taps p1:Forest#2 for mana
+T18 taps: p1:Mountain#1
+T18 p1 adds {R} (p1:Mountain#1)
+T18 p1 taps p1:Mountain#1 for mana
+T18 p1 cancels casting Bogardan Hellkite
+T18 taps: p1:Forest#1
+T18 p1 adds {G} (p1:Forest#1)
+T18 p1 taps p1:Forest#1 for mana
+T18 moves: Mountain, p1's hand -> battlefield
+T18 p1 plays p1:Mountain#3
+T18 p1's unspent {G} empties
+T18 p1 attack: nothing
+T18 taps: p1:Forest#3
+T18 p1 adds {G} (p1:Forest#3)
+T18 p1 taps p1:Forest#3 for mana
+T18 p1's unspent {G} empties
+T18 moves: Bogardan Hellkite, p1's hand -> stack
+T18 taps: p1:Mountain#3
+T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
+T18 taps: p1:Mountain#2
+T18 p1 adds {R} (p1:Mountain#2)
+T18 p1 taps p1:Mountain#2 for mana
+T18 taps: p1:Forest#2
+T18 p1 adds {G} (p1:Forest#2)
+T18 p1 taps p1:Forest#2 for mana
+T18 taps: p1:Mountain#1
+T18 p1 adds {R} (p1:Mountain#1)
+T18 p1 taps p1:Mountain#1 for mana
+T18 p1 cancels casting Bogardan Hellkite
+T19 turn 19 begins (p2)
+T19 untaps: p2:Swamp#1
+T19 untaps: p2:Island#1
+T19 untaps: p2:Island#2
+T19 untaps: p2:Island#3
+T19 untaps: p2:Swamp#2
+T19 taps: p1:Forest#2
+T19 p1 adds {G} (p1:Forest#2)
+T19 p1 taps p1:Forest#2 for mana
+T19 taps: p2:Swamp#1
+T19 p2 adds {B} (p2:Swamp#1)
+T19 p2 taps p2:Swamp#1 for mana
+T19 taps: p1:Mountain#2
+T19 p1 adds {R} (p1:Mountain#2)
+T19 p1 taps p1:Mountain#2 for mana
+T19 taps: p2:Swamp#2
+T19 p2 adds {B} (p2:Swamp#2)
+T19 p2 taps p2:Swamp#2 for mana
+T19 taps: p2:Island#3
+T19 p2 adds {U} (p2:Island#3)
+T19 p2 taps p2:Island#3 for mana
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 taps: p1:Mountain#3
+T19 p1 adds {R} (p1:Mountain#3)
+T19 p1 taps p1:Mountain#3 for mana
+T19 taps: p1:Mountain#1
+T19 p1 adds {R} (p1:Mountain#1)
+T19 p1 taps p1:Mountain#1 for mana
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 taps: p1:Mountain#1
+T19 p1 adds {R} (p1:Mountain#1)
+T19 p1 taps p1:Mountain#1 for mana
+T19 taps: p1:Mountain#3
+T19 p1 adds {R} (p1:Mountain#3)
+T19 p1 taps p1:Mountain#3 for mana
+T19 p1 cancels casting Bogardan Hellkite
+T19 taps: p1:Mountain#1
+T19 p1 adds {R} (p1:Mountain#1)
+T19 p1 taps p1:Mountain#1 for mana
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 taps: p1:Mountain#3
+T19 p1 adds {R} (p1:Mountain#3)
+T19 p1 taps p1:Mountain#3 for mana
+T19 p1 cancels casting Bogardan Hellkite
+T19 taps: p1:Mountain#3
+T19 p1 adds {R} (p1:Mountain#3)
+T19 p1 taps p1:Mountain#3 for mana
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 p2's unspent {U}{B}{B} empties
+T19 p1's unspent {R}{R}{R}{G} empties
+T19 moves: Unsummon, p2's library -> p2's hand
+T19 p2 draws
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 taps: p2:Island#2
+T19 p2 adds {U} (p2:Island#2)
+T19 p2 taps p2:Island#2 for mana
+T19 taps: p2:Island#1
+T19 p2 adds {U} (p2:Island#1)
+T19 p2 taps p2:Island#1 for mana
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 p2's unspent {U}{U} empties
+T19 p2 attack: nothing
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Bogardan Hellkite, p1's hand -> stack
+T19 p1 cancels casting Bogardan Hellkite
+T19 moves: Hypnotic Specter, p2's hand -> p2's graveyard
+T19 p2 discards Hypnotic Specter
+T20 turn 20 begins (p1)
+T20 untaps: p1:Forest#1
+T20 untaps: p1:Mountain#1
+T20 untaps: p1:Mountain#2
+T20 untaps: p1:Forest#2
+T20 untaps: p1:Forest#3
+T20 untaps: p1:Mountain#3
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 taps: p1:Mountain#2
+T20 p1 adds {R} (p1:Mountain#2)
+T20 p1 taps p1:Mountain#2 for mana
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1 taps p1:Forest#1 for mana
+T20 taps: p1:Forest#3
+T20 p1 adds {G} (p1:Forest#3)
+T20 p1 taps p1:Forest#3 for mana
+T20 taps: p1:Mountain#3
+T20 p1 adds {R} (p1:Mountain#3)
+T20 p1 taps p1:Mountain#3 for mana
+T20 taps: p1:Mountain#1
+T20 p1 adds {R} (p1:Mountain#1)
+T20 p1 taps p1:Mountain#1 for mana
+T20 taps: p1:Forest#2
+T20 p1 adds {G} (p1:Forest#2)
+T20 p1 taps p1:Forest#2 for mana
+T20 p1 cancels casting Bogardan Hellkite
+T20 taps: p1:Forest#2
+T20 p1 adds {G} (p1:Forest#2)
+T20 p1 taps p1:Forest#2 for mana
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1 taps p1:Forest#1 for mana
+T20 taps: p1:Mountain#2
+T20 p1 adds {R} (p1:Mountain#2)
+T20 p1 taps p1:Mountain#2 for mana
+T20 taps: p1:Mountain#1
+T20 p1 adds {R} (p1:Mountain#1)
+T20 p1 taps p1:Mountain#1 for mana
+T20 taps: p1:Forest#3
+T20 p1 adds {G} (p1:Forest#3)
+T20 p1 taps p1:Forest#3 for mana
+T20 taps: p1:Mountain#3
+T20 p1 adds {R} (p1:Mountain#3)
+T20 p1 taps p1:Mountain#3 for mana
+T20 p1 cancels casting Bogardan Hellkite
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1 taps p1:Forest#1 for mana
+T20 p1's unspent {G}{G} empties
+T20 moves: Forest, p1's library -> p1's hand
+T20 p1 draws
+T20 taps: p1:Mountain#3
+T20 p1 adds {R} (p1:Mountain#3)
+T20 p1 taps p1:Mountain#3 for mana
+T20 moves: Borderland Ranger, p1's hand -> stack
+T20 taps: p1:Mountain#1
+T20 p1 adds {R} (p1:Mountain#1)
+T20 p1 taps p1:Mountain#1 for mana
+T20 taps: p1:Mountain#2
+T20 p1 adds {R} (p1:Mountain#2)
+T20 p1 taps p1:Mountain#2 for mana
+T20 taps: p1:Forest#3
+T20 p1 adds {G} (p1:Forest#3)
+T20 p1 taps p1:Forest#3 for mana
+T20 p1 casts Borderland Ranger
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 p1 cancels casting Bogardan Hellkite
+T20 resolves: Borderland Ranger
+T20 moves: Borderland Ranger, stack -> battlefield
+T20 p1:Borderland Ranger triggers (p1)
+T20 p1's library is revealed: Mountain
+T20 moves: Mountain, p1's library -> p1's hand
+T20 p1 shuffles their library
+T20 resolves: p1:Borderland Ranger's ability
+T20 p1's unspent {R} empties
+T20 moves: Unsummon, p2's hand -> stack
+T20 p2 cancels casting Unsummon
+T20 p1 attack: nothing
+T20 moves: Unsummon, p2's hand -> stack
+T20 p2 cancels casting Unsummon
+T20 moves: Mountain, p1's hand -> battlefield
+T20 p1 plays p1:Mountain#4
+T20 moves: Unsummon, p2's hand -> stack
+T20 p2 cancels casting Unsummon
+T20 taps: p1:Mountain#4
+T20 p1 adds {R} (p1:Mountain#4)
+T20 p1 taps p1:Mountain#4 for mana
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 p1 cancels casting Bogardan Hellkite
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 p1 cancels casting Bogardan Hellkite
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 p1 cancels casting Bogardan Hellkite
+T20 moves: Bogardan Hellkite, p1's hand -> stack
+T20 p1 cancels casting Bogardan Hellkite
+T20 moves: Unsummon, p2's hand -> stack
+T20 p2 cancels casting Unsummon
+T20 p1's unspent {R} empties
+T21 turn 21 begins (p2)
+T21 untaps: p2:Swamp#1
+T21 untaps: p2:Island#1
+T21 untaps: p2:Island#2
+T21 untaps: p2:Island#3
+T21 untaps: p2:Swamp#2
+T21 taps: p2:Swamp#2
+T21 p2 adds {B} (p2:Swamp#2)
+T21 p2 taps p2:Swamp#2 for mana
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 p2's unspent {B} empties
+T21 moves: Essence Scatter, p2's library -> p2's hand
+T21 p2 draws
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 moves: Vampire Aristocrat, p2's hand -> stack
+T21 taps: p2:Swamp#1
+T21 p2 adds {B} (p2:Swamp#1)
+T21 p2 taps p2:Swamp#1 for mana
+T21 taps: p2:Island#1
+T21 p2 adds {U} (p2:Island#1)
+T21 p2 taps p2:Island#1 for mana
+T21 taps: p2:Island#3
+T21 p2 adds {U} (p2:Island#3)
+T21 p2 taps p2:Island#3 for mana
+T21 taps: p2:Island#2
+T21 p2 adds {U} (p2:Island#2)
+T21 p2 taps p2:Island#2 for mana
+T21 p2 casts Vampire Aristocrat
+T21 moves: Essence Scatter, p2's hand -> stack
+T21 p2 cancels casting Essence Scatter
+T21 moves: Essence Scatter, p2's hand -> stack
+T21 p2 cancels casting Essence Scatter
+T21 moves: Essence Scatter, p2's hand -> stack
+T21 p2 cancels casting Essence Scatter
+T21 moves: Unsummon, p2's hand -> stack
+T21 p2 casts Unsummon
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 moves: Borderland Ranger, battlefield -> p1's hand
+T21 resolves: Unsummon
+T21 moves: Unsummon, stack -> p2's graveyard
+T21 moves: Essence Scatter, p2's hand -> stack
+T21 p2 cancels casting Essence Scatter
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 resolves: Vampire Aristocrat
+T21 moves: Vampire Aristocrat, stack -> battlefield
+T21 moves: Island, p2's hand -> battlefield
+T21 p2 plays p2:Island#4
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 p2 attack: nothing
+T21 taps: p2:Island#4
+T21 p2 adds {U} (p2:Island#4)
+T21 p2 taps p2:Island#4 for mana
+T21 p2 sacrifices p2:Vampire Aristocrat
+T21 moves: Vampire Aristocrat, battlefield -> p2's graveyard
+T21 p2 activates p2:Vampire Aristocrat
+T21 resolves: Vampire Aristocrat's ability
+T21 p2's unspent {U} empties
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T21 moves: Bogardan Hellkite, p1's hand -> stack
+T21 p1 cancels casting Bogardan Hellkite
+T22 turn 22 begins (p1)
+T22 untaps: p1:Forest#1
+T22 untaps: p1:Mountain#1
+T22 untaps: p1:Mountain#2
+T22 untaps: p1:Forest#2
+T22 untaps: p1:Forest#3
+T22 untaps: p1:Mountain#3
+T22 untaps: p1:Mountain#4
+T22 taps: p1:Forest#3
+T22 p1 adds {G} (p1:Forest#3)
+T22 p1 taps p1:Forest#3 for mana
+T22 p1's unspent {G} empties
+T22 moves: Dragon's Claw, p1's library -> p1's hand
+T22 p1 draws
+T22 taps: p1:Forest#2
+T22 p1 adds {G} (p1:Forest#2)
+T22 p1 taps p1:Forest#2 for mana
+T22 p1's unspent {G} empties
+T22 taps: p1:Mountain#3
+T22 p1 adds {R} (p1:Mountain#3)
+T22 p1 taps p1:Mountain#3 for mana
+T22 p1's unspent {R} empties
+T22 p1 attack: nothing
+T22 taps: p1:Mountain#4
+T22 p1 adds {R} (p1:Mountain#4)
+T22 p1 taps p1:Mountain#4 for mana
+T22 taps: p1:Mountain#1
+T22 p1 adds {R} (p1:Mountain#1)
+T22 p1 taps p1:Mountain#1 for mana
+T22 taps: p1:Forest#1
+T22 p1 adds {G} (p1:Forest#1)
+T22 p1 taps p1:Forest#1 for mana
+T22 taps: p1:Mountain#2
+T22 p1 adds {R} (p1:Mountain#2)
+T22 p1 taps p1:Mountain#2 for mana
+T22 p1's unspent {R}{R}{R}{G} empties
+T22 moves: Terramorphic Expanse, p1's hand -> battlefield
+T22 p1 plays p1:Terramorphic Expanse
+T22 taps: p1:Terramorphic Expanse
+T22 p1 sacrifices p1:Terramorphic Expanse
+T22 moves: Terramorphic Expanse, battlefield -> p1's graveyard
+T22 p1 activates p1:Terramorphic Expanse
+T22 moves: Mountain, p1's library -> battlefield
+T22 p1 shuffles their library
+T22 resolves: Terramorphic Expanse's ability
+T22 moves: Dragon's Claw, p1's hand -> stack
+T22 p1 cancels casting Dragon's Claw
+T22 moves: Dragon's Claw, p1's hand -> stack
+T22 p1 cancels casting Dragon's Claw
+T22 moves: Bogardan Hellkite, p1's hand -> stack
+T22 p1 cancels casting Bogardan Hellkite
+T22 moves: Borderland Ranger, p1's hand -> p1's graveyard
+T22 p1 discards Borderland Ranger
+T23 turn 23 begins (p2)
+T23 untaps: p2:Swamp#1
+T23 untaps: p2:Island#1
+T23 untaps: p2:Island#2
+T23 untaps: p2:Island#3
+T23 untaps: p2:Swamp#2
+T23 untaps: p2:Island#4
+T23 moves: Swamp, p2's library -> p2's hand
+T23 p2 draws
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 taps: p2:Swamp#1
+T23 p2 adds {B} (p2:Swamp#1)
+T23 p2 taps p2:Swamp#1 for mana
+T23 p2's unspent {B} empties
+T23 p2 attack: nothing
+T23 taps: p2:Island#1
+T23 p2 adds {U} (p2:Island#1)
+T23 p2 taps p2:Island#1 for mana
+T23 taps: p2:Island#4
+T23 p2 adds {U} (p2:Island#4)
+T23 p2 taps p2:Island#4 for mana
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 p2's unspent {U}{U} empties
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 taps: p2:Island#2
+T23 p2 adds {U} (p2:Island#2)
+T23 p2 taps p2:Island#2 for mana
+T23 moves: Swamp, p2's hand -> battlefield
+T23 p2 plays p2:Swamp#3
+T23 taps: p2:Swamp#3
+T23 p2 adds {B} (p2:Swamp#3)
+T23 p2 taps p2:Swamp#3 for mana
+T23 taps: p2:Swamp#2
+T23 p2 adds {B} (p2:Swamp#2)
+T23 p2 taps p2:Swamp#2 for mana
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T23 p2's unspent {U}{B}{B} empties
+T23 moves: Bogardan Hellkite, p1's hand -> stack
+T23 p1 cancels casting Bogardan Hellkite
+T24 turn 24 begins (p1)
+T24 untaps: p1:Forest#1
+T24 untaps: p1:Mountain#1
+T24 untaps: p1:Mountain#2
+T24 untaps: p1:Forest#2
+T24 untaps: p1:Forest#3
+T24 untaps: p1:Mountain#3
+T24 untaps: p1:Mountain#4
+T24 untaps: p1:Mountain#5
+T24 taps: p2:Island#3
+T24 p2 adds {U} (p2:Island#3)
+T24 p2 taps p2:Island#3 for mana
+T24 p2's unspent {U} empties
+T24 moves: Inferno Elemental, p1's library -> p1's hand
+T24 p1 draws
+T24 taps: p1:Forest#2
+T24 p1 adds {G} (p1:Forest#2)
+T24 p1 taps p1:Forest#2 for mana
+T24 taps: p1:Mountain#3
+T24 p1 adds {R} (p1:Mountain#3)
+T24 p1 taps p1:Mountain#3 for mana
+T24 moves: Bogardan Hellkite, p1's hand -> stack
+T24 taps: p1:Forest#3
+T24 p1 adds {G} (p1:Forest#3)
+T24 p1 taps p1:Forest#3 for mana
+T24 taps: p1:Mountain#2
+T24 p1 adds {R} (p1:Mountain#2)
+T24 p1 taps p1:Mountain#2 for mana
+T24 taps: p1:Mountain#1
+T24 p1 adds {R} (p1:Mountain#1)
+T24 p1 taps p1:Mountain#1 for mana
+T24 taps: p1:Forest#1
+T24 p1 adds {G} (p1:Forest#1)
+T24 p1 taps p1:Forest#1 for mana
+T24 taps: p1:Mountain#4
+T24 p1 adds {R} (p1:Mountain#4)
+T24 p1 taps p1:Mountain#4 for mana
+T24 taps: p1:Mountain#5
+T24 p1 adds {R} (p1:Mountain#5)
+T24 p1 taps p1:Mountain#5 for mana
+T24 p1 casts Bogardan Hellkite
+T24 moves: Essence Scatter, p2's hand -> stack
+T24 p2 cancels casting Essence Scatter
+T24 resolves: Bogardan Hellkite
+T24 moves: Bogardan Hellkite, stack -> battlefield
+T24 p1:Bogardan Hellkite triggers (p1)
+T24 damage: p1:Bogardan Hellkite -> p1:Bogardan Hellkite 2
+T24 damage: p1:Bogardan Hellkite -> p2 2
+T24 damage: p1:Bogardan Hellkite -> p1 1
+T24 p2 loses 2 life
+T24 p1 loses 1 life
+T24 resolves: p1:Bogardan Hellkite's ability
+T24 p1 attack: nothing
+T24 moves: Forest, p1's hand -> battlefield
+T24 p1 plays p1:Forest#4
+T24 taps: p1:Forest#4
+T24 p1 adds {G} (p1:Forest#4)
+T24 p1 taps p1:Forest#4 for mana
+T24 p1's unspent {G} empties
+T24 damage removed: p1:Bogardan Hellkite (2)
+T25 turn 25 begins (p2)
+T25 untaps: p2:Swamp#1
+T25 untaps: p2:Island#1
+T25 untaps: p2:Island#2
+T25 untaps: p2:Island#3
+T25 untaps: p2:Swamp#2
+T25 untaps: p2:Island#4
+T25 untaps: p2:Swamp#3
+T25 moves: Alluring Siren, p2's library -> p2's hand
+T25 p2 draws
+T25 taps: p2:Island#1
+T25 p2 adds {U} (p2:Island#1)
+T25 p2 taps p2:Island#1 for mana
+T25 p2's unspent {U} empties
+T25 p2 attack: nothing
+T25 taps: p2:Swamp#1
+T25 p2 adds {B} (p2:Swamp#1)
+T25 p2 taps p2:Swamp#1 for mana
+T25 p2's unspent {B} empties
+T25 moves: Howling Banshee, p2's hand -> stack
+T25 taps: p2:Island#2
+T25 p2 adds {U} (p2:Island#2)
+T25 p2 taps p2:Island#2 for mana
+T25 taps: p2:Island#3
+T25 p2 adds {U} (p2:Island#3)
+T25 p2 taps p2:Island#3 for mana
+T25 taps: p2:Swamp#2
+T25 p2 adds {B} (p2:Swamp#2)
+T25 p2 taps p2:Swamp#2 for mana
+T25 taps: p2:Island#4
+T25 p2 adds {U} (p2:Island#4)
+T25 p2 taps p2:Island#4 for mana
+T25 taps: p2:Swamp#3
+T25 p2 adds {B} (p2:Swamp#3)
+T25 p2 taps p2:Swamp#3 for mana
+T25 p2 casts Howling Banshee
+T25 resolves: Howling Banshee
+T25 moves: Howling Banshee, stack -> battlefield
+T25 p2:Howling Banshee triggers (p2)
+T25 p2 loses 3 life
+T25 p1 loses 3 life
+T25 resolves: p2:Howling Banshee's ability
+T25 p2's unspent {U} empties
+T26 turn 26 begins (p1)
+T26 untaps: p1:Forest#1
+T26 untaps: p1:Mountain#1
+T26 untaps: p1:Mountain#2
+T26 untaps: p1:Forest#2
+T26 untaps: p1:Forest#3
+T26 untaps: p1:Mountain#3
+T26 untaps: p1:Mountain#4
+T26 untaps: p1:Mountain#5
+T26 untaps: p1:Forest#4
+T26 taps: p1:Mountain#5
+T26 p1 adds {R} (p1:Mountain#5)
+T26 p1 taps p1:Mountain#5 for mana
+T26 p1's unspent {R} empties
+T26 moves: Giant Growth, p1's library -> p1's hand
+T26 p1 draws
+T26 moves: Giant Growth, p1's hand -> stack
+T26 taps: p1:Forest#2
+T26 p1 adds {G} (p1:Forest#2)
+T26 p1 taps p1:Forest#2 for mana
+T26 p1 casts Giant Growth
+T26 taps: p1:Mountain#2
+T26 p1 adds {R} (p1:Mountain#2)
+T26 p1 taps p1:Mountain#2 for mana
+T26 taps: p1:Forest#3
+T26 p1 adds {G} (p1:Forest#3)
+T26 p1 taps p1:Forest#3 for mana
+T26 effect: p2:Howling Banshee +3/+3 until end of turn
+T26 resolves: Giant Growth
+T26 moves: Giant Growth, stack -> p1's graveyard
+T26 taps: p1:Forest#4
+T26 p1 adds {G} (p1:Forest#4)
+T26 p1 taps p1:Forest#4 for mana
+T26 taps: p1:Forest#1
+T26 p1 adds {G} (p1:Forest#1)
+T26 p1 taps p1:Forest#1 for mana
+T26 taps: p1:Mountain#1
+T26 p1 adds {R} (p1:Mountain#1)
+T26 p1 taps p1:Mountain#1 for mana
+T26 taps: p1:Mountain#3
+T26 p1 adds {R} (p1:Mountain#3)
+T26 p1 taps p1:Mountain#3 for mana
+T26 p1's unspent {R}{R}{R}{G}{G}{G} empties
+T26 moves: Mountain, p1's hand -> battlefield
+T26 p1 plays p1:Mountain#6
+T26 taps: p1:Mountain#6
+T26 p1 adds {R} (p1:Mountain#6)
+T26 p1 taps p1:Mountain#6 for mana
+T26 taps: p1:Mountain#4
+T26 p1 adds {R} (p1:Mountain#4)
+T26 p1 taps p1:Mountain#4 for mana
+T26 p1's unspent {R}{R} empties
+T26 p1 attack: nothing
+T26 moves: Inferno Elemental, p1's hand -> stack
+T26 p1 cancels casting Inferno Elemental
+T26 effect ends: p2:Howling Banshee +3/+3
+T27 turn 27 begins (p2)
+T27 untaps: p2:Swamp#1
+T27 untaps: p2:Island#1
+T27 untaps: p2:Island#2
+T27 untaps: p2:Island#3
+T27 untaps: p2:Swamp#2
+T27 untaps: p2:Island#4
+T27 untaps: p2:Swamp#3
+T27 moves: Gravedigger, p2's library -> p2's hand
+T27 p2 draws
+T27 taps: p2:Swamp#3
+T27 p2 adds {B} (p2:Swamp#3)
+T27 p2 taps p2:Swamp#3 for mana
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 p2 taps p2:Swamp#1 for mana
+T27 taps: p2:Island#4
+T27 p2 adds {U} (p2:Island#4)
+T27 p2 taps p2:Island#4 for mana
+T27 p2's unspent {U}{B}{B} empties
+T27 taps: p2:Island#2
+T27 p2 adds {U} (p2:Island#2)
+T27 p2 taps p2:Island#2 for mana
+T27 moves: Gravedigger, p2's hand -> stack
+T27 taps: p2:Island#3
+T27 p2 adds {U} (p2:Island#3)
+T27 p2 taps p2:Island#3 for mana
+T27 taps: p2:Island#1
+T27 p2 adds {U} (p2:Island#1)
+T27 p2 taps p2:Island#1 for mana
+T27 taps: p2:Swamp#2
+T27 p2 adds {B} (p2:Swamp#2)
+T27 p2 taps p2:Swamp#2 for mana
+T27 p2 casts Gravedigger
+T27 resolves: Gravedigger
+T27 moves: Gravedigger, stack -> battlefield
+T27 p2:Gravedigger triggers (p2)
+T27 resolves: p2:Gravedigger's ability
+T27 moves: Royal Assassin, p2's hand -> stack
+T27 p2 cancels casting Royal Assassin
+T27 moves: Alluring Siren, p2's hand -> stack
+T27 p2 cancels casting Alluring Siren
+T27 moves: Sign in Blood, p2's hand -> stack
+T27 p2 cancels casting Sign in Blood
+T27 moves: Royal Assassin, p2's hand -> stack
+T27 p2 cancels casting Royal Assassin
+T27 p2 attack: nothing
+T28 turn 28 begins (p1)
+T28 untaps: p1:Forest#1
+T28 untaps: p1:Mountain#1
+T28 untaps: p1:Mountain#2
+T28 untaps: p1:Forest#2
+T28 untaps: p1:Forest#3
+T28 untaps: p1:Mountain#3
+T28 untaps: p1:Mountain#4
+T28 untaps: p1:Mountain#5
+T28 untaps: p1:Forest#4
+T28 untaps: p1:Mountain#6
+T28 moves: Bramble Creeper, p1's library -> p1's hand
+T28 p1 draws
+T28 taps: p1:Mountain#4
+T28 p1 adds {R} (p1:Mountain#4)
+T28 p1 taps p1:Mountain#4 for mana
+T28 taps: p1:Forest#2
+T28 p1 adds {G} (p1:Forest#2)
+T28 p1 taps p1:Forest#2 for mana
+T28 taps: p1:Mountain#6
+T28 p1 adds {R} (p1:Mountain#6)
+T28 p1 taps p1:Mountain#6 for mana
+T28 moves: Bramble Creeper, p1's hand -> stack
+T28 taps: p1:Mountain#3
+T28 p1 adds {R} (p1:Mountain#3)
+T28 p1 taps p1:Mountain#3 for mana
+T28 p1 cancels casting Bramble Creeper
+T28 moves: Inferno Elemental, p1's hand -> stack
+T28 taps: p1:Mountain#5
+T28 p1 adds {R} (p1:Mountain#5)
+T28 p1 taps p1:Mountain#5 for mana
+T28 taps: p1:Mountain#1
+T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
+T28 taps: p1:Mountain#3
+T28 p1 adds {R} (p1:Mountain#3)
+T28 p1 taps p1:Mountain#3 for mana
+T28 taps: p1:Forest#4
+T28 p1 adds {G} (p1:Forest#4)
+T28 p1 taps p1:Forest#4 for mana
+T28 p1 casts Inferno Elemental
+T28 taps: p1:Mountain#2
+T28 p1 adds {R} (p1:Mountain#2)
+T28 p1 taps p1:Mountain#2 for mana
+T28 resolves: Inferno Elemental
+T28 moves: Inferno Elemental, stack -> battlefield
+T28 taps: p1:Forest#1
+T28 p1 adds {G} (p1:Forest#1)
+T28 p1 taps p1:Forest#1 for mana
+T28 taps: p1:Forest#3
+T28 p1 adds {G} (p1:Forest#3)
+T28 p1 taps p1:Forest#3 for mana
+T28 p1's unspent {R}{G}{G}{G} empties
+T28 taps: p1:Bogardan Hellkite
+T28 p1 attack: p1:Bogardan Hellkite -> p2
+T28 p2 block: p2:Howling Banshee -> p1:Bogardan Hellkite
+T28 combat damage: p1:Bogardan Hellkite -> p2:Howling Banshee 5
+T28 combat damage: p2:Howling Banshee -> p1:Bogardan Hellkite 3
+T28 state-based actions: p2:Howling Banshee lethalDamage
+T28 destroyed: p2:Howling Banshee
+T28 moves: Howling Banshee, battlefield -> p2's graveyard
+T28 moves: Llanowar Elves, p1's hand -> stack
+T28 p1 cancels casting Llanowar Elves
+T28 moves: Stampeding Rhino, p1's hand -> stack
+T28 p1 cancels casting Stampeding Rhino
+T28 moves: Llanowar Elves, p1's hand -> stack
+T28 p1 cancels casting Llanowar Elves
+T28 moves: Bramble Creeper, p1's hand -> stack
+T28 p1 cancels casting Bramble Creeper
+T28 moves: Stampeding Rhino, p1's hand -> stack
+T28 p1 cancels casting Stampeding Rhino
+T28 moves: Dragon's Claw, p1's hand -> stack
+T28 p1 cancels casting Dragon's Claw
+T28 moves: Bramble Creeper, p1's hand -> stack
+T28 p1 cancels casting Bramble Creeper
+T28 damage removed: p1:Bogardan Hellkite (3)
+T29 turn 29 begins (p2)
+T29 untaps: p2:Swamp#1
+T29 untaps: p2:Island#1
+T29 untaps: p2:Island#2
+T29 untaps: p2:Island#3
+T29 untaps: p2:Swamp#2
+T29 untaps: p2:Island#4
+T29 untaps: p2:Swamp#3

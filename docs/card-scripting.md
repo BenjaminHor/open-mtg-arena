@@ -99,14 +99,18 @@ export const furnaceWhelp: CardDef = {
 - Triggered abilities go in `triggers` (D-076), each `{ when, onlyIf?, optional?, targets, effects }`. `when` is the
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's
-  controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw" }` ("each
-  end step" likewise, `step: "end"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
+  controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw", whose:
+  "each" }` ("the end step" likewise, `step: "end"`; "your upkeep" is `step: "upkeep", whose: "yours"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
   player casts a green spell" is `{ kind: "spellCast", filter: { colors: ["G"] } }` ("you cast" adds `controller:
   "you"`, the caster); "whenever an opponent draws / discards a card" is `{ kind: "playerDraws" / "playerDiscards",
   player: "opponent" }` (`"anyPlayer"`, `"you"`); "whenever a player taps a land for mana" is `{ kind:
   "landTappedForMana" }`; "whenever this creature deals [combat] damage to [an opponent / a player]" is `{ kind:
   "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
-  "you" }`, with "that much" the amount `"thatMuch"`. "Target permanent that player controls" is a target filter with
+  "you" }`, with "that much" the amount `"thatMuch"`. "Whenever this creature blocks or becomes blocked by a creature"
+  is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "Sacrifice a creature
+  other than this creature" is `{ op: "sacrifice", ..., otherThanSelf: true }`, "equal to the sacrificed creature's
+  power" the amount `"sacrificedPower"`, "if you can't sacrifice a creature, ..." `{ op: "ifNothingSacrificed",
+  effects }`; "destroy one of them at random" is `{ op: "destroyOneAtRandom", among: [{ target: 0 }, { target: 1 }] }`. "Target permanent that player controls" is a target filter with
   `controller: "triggeringPlayer"` (targets only). "If this artifact
   is untapped" right after the condition is an intervening if, `onlyIf: { kind: "sourceUntapped" }` (CR 603.4). "You
   may" is `optional: true` (asked as it resolves). "That player" is the subject `"triggeringPlayer"`; "sacrifice it"

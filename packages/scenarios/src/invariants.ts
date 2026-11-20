@@ -69,6 +69,14 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
   if (state.result === null && (state.combat !== null) !== inCombat) {
     problems.push("combat state exists exactly during the combat phase (CR 506.1, 511.3)");
   }
+  // A pending decision always has a way out: a trigger's targets can't be cancelled (CR 603.3d), so a count or division
+  // offered that can't be completed would leave the game stuck.
+  const waiting = state.pending;
+  if (waiting !== null && state.result === null) {
+    // Conceding is always allowed and never listed (D-042), so it's no way out here.
+    const answers = legalActions(state, waiting.player, cards);
+    if (answers.length === 0) problems.push(`${waiting.player} must decide ${waiting.kind} but has no legal action`);
+  }
   for (const player of state.turnOrder) {
     for (const action of legalActions(state, player, cards)) {
       const result = applyAction(state, action, cards);
