@@ -185,7 +185,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says. 9 scenarios in
      `test/scenarios/cards/m10-core/`, seven golden games from two throwaway deck lists (replaced by the fresh golden set
      in step 2). The pool's comment header, scrambled by sorting the file in earlier tasks, is restored.
-  2. Done, in review: the golden set rebuilt and Magic 2010's first deck pair (D-069). A `by-kind` agent (the fuzzer's
+  2. Done, merged (PR #34): the golden set rebuilt and Magic 2010's first deck pair (D-069). A `by-kind` agent (the fuzzer's
      picker); `pnpm golden:cover` (`packages/cli/src/golden-cover.ts`) plays the fuzzer's decks for seeds 1 to 800 and
      adds, greedily, the games using the most unused cards per action, each cut off at the turn its last new card is
      used; a card counts as used when played as a land or a spell or ability of it resolves, and three choices the
@@ -194,7 +194,26 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      versions of two of m2-pool.md's decks, are the fuzzer's main pair (two prebuilt games in three). The fuzzer's 40-seed
      measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
-  3. Next: M2-06 (combat keywords).
+  3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
+     four PRs, each with its cards, scenarios and interaction matrix rows:
+     - M2-06a combat damage, done, in review (D-070): first and double strike with a second combat damage step,
+       trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
+       result of the damage event), vigilance. Viashino Spearhunter, Razorfoot Griffin, Stampeding Rhino, Deadly
+       Recluse, Child of Night, Serra Angel, Griffin Sentinel. Scenarios in `test/scenarios/cards/m2-06a/` and
+       `test/scenarios/interactions/`, unit tests on test creatures in `test/combat/strikes-and-trample.test.ts`
+       (double strike has no Magic 2010 card), six new matrix rows; five of the cards in the M10 pair.
+       For 06b: trample's lethal damage must count damage other attackers assign to a blocker that blocks several
+       (Palace Guard; future-rules, "More combat").
+     - M2-06b one creature's restrictions: defender (CR 702.3), landwalk (CR 702.14), "can't be blocked", "can't be
+       blocked except by black creatures", "can block any number" (CR 509.1a), "can't block this turn" from a spell
+       (Panic Attack, up to three targets). Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior,
+       Dread Warlock, Palace Guard, Panic Attack.
+     - M2-06c whole-declaration rules: "can't attack or block alone" (CR 508.1c, 509.1b), requirements and their
+       maximum (CR 508.1d, 509.1c): "attacks each combat if able", "all creatures able to block it do so", "attacks
+       you this turn if able". Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren.
+     - M2-06d targeting keywords: shroud (CR 702.18). Mist Leopard, Kalonian Behemoth. Protection's targeting and
+       blocking parts (CR 702.16b, 702.16f), flash (CR 702.8), indestructible (CR 702.12), "can't be countered": the
+       spec puts them here, but their Magic 2010 cards come later (M2-07, M2-08, M2-12).
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -345,6 +364,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Not blocking until M2-06d.) The M2-06 spec puts protection's targeting and blocking, flash, indestructible and
+  "can't be countered" in M2-06 and asks for a scenario per keyword, but their Magic 2010 cards come later (Bogardan
+  Hellkite in M2-07; White Knight, Black Knight, Baneslayer Angel, Great Sable Stag, Darksteel Colossus in M2-08;
+  Indestructibility in M2-12). Scenarios name real cards. Build them now with engine unit tests on test cards, and add
+  the scenarios with the cards? Or build each keyword with its first card? (Claude's lean: with its first card: one
+  task, a real scenario, nothing built before it's used.)
 - (Not blocking until M2-07 triggers or M2-08 prevention.) Goblin Artillery targeting its own controller deals them
   2 damage and 3 damage from the same source in the same action. The engine records it as one damage event with two
   parts: two `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3). Should that be one 5-point loss instead? The CR doesn't
@@ -352,9 +377,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   and how prevention shields count against it.
 
 ## Known issues
-- Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
-  must appear in one). Before the pool reaches all 234 cards, make them smaller: a compact action format, shorter
-  games, or targeted games per card. Not blocking yet.
+- Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
+- The bench drifts: on `main` (2026-11-20, after M2-05) some workloads run 10–18% over `bench/baseline.json`
+  (`applyAction.emptyBoard`, `randomGame`, `legalActions.busyBoard`), near the failure threshold, so a noisy run can
+  fail. It comes from M2's engine changes, not one PR. Before it fails for real: profile, or reset the baseline with
+  an explained commit. M2-06a touches combat, so it's measured paired against `main`.
 - `pnpm fuzz --games 300` takes about 7–8 minutes (it was 2–3 in M1). Profiled (2026-11-20): the engine isn't slower
   (a bare game takes 100–200 ms; the bench is within its baseline). The time is the checks after every action, about
   19 times the games themselves: the leak check (`scrambleHidden` and comparing whole views, ~60%) and the legal-action

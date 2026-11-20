@@ -7,7 +7,7 @@ import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
 import { attacksInCombat, canBlock } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
-import type { Block } from "../state/combat.ts";
+import { type Block, newCombat } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 
@@ -66,7 +66,7 @@ export function blockProblem(state: GameState, chosen: readonly Block[], block: 
  */
 export function finishBlockers(state: GameState, defender: PlayerId | null, chosen: readonly Block[]): Progress {
   const active = currentTurn(state).activePlayer;
-  const combat = state.combat ?? { attacks: [], blocks: [] };
+  const combat = state.combat ?? newCombat();
   const declared: GameState = { ...state, combat: { ...combat, blocks: [...chosen] } };
   return {
     state: queueWork(declared, { kind: "givePriority", player: active }),

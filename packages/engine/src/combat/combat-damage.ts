@@ -1,34 +1,37 @@
-// The combat damage step's turn-based action (CR 510.1–510.2).
+// The combat damage step's turn-based action (CR 510.1–510.2). Which creatures deal damage in which step is
+// first-strike.ts (CR 510.4); dividing a creature's damage is damage-assignment.ts.
 
 import type { CardDatabase } from "../cards/types.ts";
-import { waitFor } from "../game/decide.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { Damage } from "../pipeline/proposed.ts";
+import { keywordsOf } from "../rules/abilities.ts";
 import { attacksInCombat, blocksInCombat, isBlocked } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { powerAndToughness } from "../rules/power-toughness.ts";
-import type { AttackerDivision } from "../state/combat.ts";
-import type { PendingDecision } from "../state/decisions.ts";
+import type { CombatDivision, DamageDivision } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-
-type Divisions = AttackerDivision[];
+import { askToAssign, blockersOf, hasChoice, recipientsOf } from "./damage-assignment.ts";
+import { assignsDamageNow } from "./first-strike.ts";
 
 /**
- * Combat damage (CR 510.1): first each attacker blocked by two or more creatures has its damage divided by its
+ * Combat damage (CR 510.1): first each attacker with a choice of how to divide its damage has it divided by its
  * controller, one decision each (the active player's attackers are the only ones that can need it here); then all
- * combat damage is dealt at once (CR 510.2), and the active player gets priority (CR 510.3), after state-based actions.
+ * combat damage of this step is dealt at once (CR 510.2), and the active player gets priority (CR 510.3), after
+ * state-based actions.
  */
-export function combatDamage(state: GameState, divisions: Divisions, cards: CardDatabase): Progress {
-  for (const { attacker } of attacksInCombat(state, cards)) {
-    const blockers = blockersOf(state, attacker, cards);
+export function combatDamage(state: GameState, divisions: CombatDivision[], cards: CardDatabase): Progress {
+  for (const { attacker, defender } of attacksInCombat(state, cards)) {
+    if (!assignsDamageNow(state, attacker, cards) || !isBlocked(state, attacker)) continue;
+    if (divisions.some((d) => d.source === attacker)) continue;
     const amount = combatPower(state, attacker, cards);
-    if (blockers.length < 2 || amount === 0 || divisions.some((d) => d.attacker === attacker)) continue;
-    const decision = { kind: "assignDamage" as const, attacker, blockers, amount, assigned: [], divided: divisions };
-    return { state: waitFor(state, controllerOf(state, attacker), decision), events: [] };
+    const recipients = recipientsOf(state, attacker, defender, amount, cards);
+    if (!hasChoice(recipients, amount)) continue;
+    const asked = askToAssign(state, controllerOf(state, attacker), attacker, recipients, amount, divisions);
+    return { state: asked, events: [] };
   }
   const active = currentTurn(state).activePlayer;
   const damage = assignedDamage(state, divisions, cards);
@@ -38,84 +41,48 @@ export function combatDamage(state: GameState, divisions: Divisions, cards: Card
   }));
 }
 
-/** Every combat damage assignment (CR 510.1a–d), to be dealt at the same time. */
-function assignedDamage(state: GameState, divisions: Divisions, cards: CardDatabase): Damage[] {
+/** Every combat damage assignment of this step (CR 510.1a–d), to be dealt at the same time. */
+function assignedDamage(state: GameState, divisions: readonly CombatDivision[], cards: CardDatabase): Damage[] {
   const damage: Damage[] = [];
   for (const { attacker, defender } of attacksInCombat(state, cards)) {
+    if (!assignsDamageNow(state, attacker, cards)) continue;
     const amount = combatPower(state, attacker, cards);
     if (amount === 0) continue;
+    const toDefender = { source: attacker, to: { kind: "player", player: defender }, amount, combat: true } as const;
+    // An unblocked creature assigns its damage to the player it attacks (CR 510.1b).
     if (!isBlocked(state, attacker)) {
-      // An unblocked creature assigns its damage to the player it attacks (CR 510.1b).
-      damage.push({ source: attacker, to: { kind: "player", player: defender }, amount, combat: true });
+      damage.push(toDefender);
       continue;
     }
-    // A blocked creature with no blockers left assigns no damage; with one, all to it; with more, as divided
-    // (CR 510.1c).
-    const blockers = blockersOf(state, attacker, cards);
+    // A blocked creature with no blockers left assigns no damage (CR 510.1c), unless it has trample: then all of it goes
+    // to the player, as though every blocker had lethal damage (CR 702.19d).
+    if (blockersOf(state, attacker, cards).length === 0) {
+      if (keywordsOf(state, attacker, cards).includes("trample")) damage.push(toDefender);
+      continue;
+    }
+    // As divided, or with no choice, all to its first recipient, its one blocker (CR 510.1c).
     const division =
-      blockers.length === 1
-        ? [{ blocker: blockers[0] as ObjectId, amount }]
-        : (divisions.find((d) => d.attacker === attacker)?.division ?? []);
+      divisions.find((d) => d.source === attacker)?.division ?? onlyDivision(state, attacker, amount, cards);
     for (const part of division) {
-      damage.push({
-        source: attacker,
-        to: { kind: "object", object: part.blocker },
-        amount: part.amount,
-        combat: true,
-      });
+      if (part.amount > 0) damage.push({ source: attacker, to: part.to, amount: part.amount, combat: true });
     }
   }
   // Each blocker assigns its damage to the attacker it blocks, if that's still in combat (CR 510.1d).
   for (const { blocker, attacker } of blocksInCombat(state, cards)) {
+    if (!assignsDamageNow(state, blocker, cards)) continue;
     const amount = combatPower(state, blocker, cards);
     if (amount > 0) damage.push({ source: blocker, to: { kind: "object", object: attacker }, amount, combat: true });
   }
   return damage;
 }
 
-/** The blockers still blocking this attacker, in the order they were declared. */
-function blockersOf(state: GameState, attacker: ObjectId, cards: CardDatabase): ObjectId[] {
-  return blocksInCombat(state, cards)
-    .filter((b) => b.attacker === attacker)
-    .map((b) => b.blocker);
+/** A division with no choice in it: all of the damage to the attacker's one blocker. */
+function onlyDivision(state: GameState, attacker: ObjectId, amount: number, cards: CardDatabase): DamageDivision {
+  const blocker = blockersOf(state, attacker, cards)[0];
+  return blocker === undefined ? [] : [{ to: { kind: "object", object: blocker }, amount }];
 }
 
 /** The combat damage a creature assigns: its power, or none if that's 0 or less (CR 510.1a). */
 function combatPower(state: GameState, id: ObjectId, cards: CardDatabase): number {
   return Math.max(0, powerAndToughness(state, id, cards).power ?? 0);
-}
-
-/**
- * Why this amount can't go to the next blocker, or null (CR 510.1c): any whole amount from 0 up to what's left, since
- * the division is free. The last blocker isn't asked: it gets the rest, so the division always adds up (CR 510.1e).
- */
-export function assignProblem(left: number, amount: number): string | null {
-  return Number.isInteger(amount) && amount >= 0 && amount <= left
-    ? null
-    : `give this blocker a whole amount from 0 to ${left}`;
-}
-
-/** What's left of the attacker's damage after the amounts given so far. */
-export function damageLeft(amount: number, assigned: readonly number[]): number {
-  return amount - assigned.reduce((sum, n) => sum + n, 0);
-}
-
-/**
- * The next blocker gets `amount`. Once only the last blocker is left, it gets the rest and the attacker's division is
- * done; combat damage then goes on (more decisions, or dealing it).
- */
-export function assignToNextBlocker(
-  state: GameState,
-  pending: Extract<PendingDecision, { kind: "assignDamage" }>,
-  amount: number,
-): GameState {
-  const assigned = [...pending.assigned, amount];
-  if (assigned.length < pending.blockers.length - 1) {
-    const { id: _id, player, ...decision } = pending;
-    return waitFor(state, player, { ...decision, assigned });
-  }
-  const last = damageLeft(pending.amount, assigned);
-  const division = pending.blockers.map((blocker, i) => ({ blocker, amount: assigned[i] ?? last }));
-  const divisions = [...pending.divided, { attacker: pending.attacker, division }];
-  return queueWork(state, { kind: "combatDamage", divisions });
 }

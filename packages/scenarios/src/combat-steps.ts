@@ -1,7 +1,16 @@
 // The combat steps, `attack`, `block` and `assign` (docs/testing.md, "Steps"), as engine actions. Each is a sequence
-// of answers: one per attacker or block, then finishing; or one amount per blocker but the last.
+// of answers: one per attacker or block, then finishing; or one amount per recipient of damage but the last.
 
-import type { Action, CardDatabase, GameState, ObjectId, PlayerId } from "@mtg/engine";
+import {
+  type Action,
+  type CardDatabase,
+  type GameState,
+  legalAmounts,
+  type ObjectId,
+  type PlayerId,
+  type Target,
+  withForcedAnswers,
+} from "@mtg/engine";
 import type { ScenarioStep } from "./format.ts";
 import { parseRef, resolveRef } from "./names.ts";
 
@@ -32,36 +41,64 @@ export function combatAction(state: GameState, step: CombatStep, cards: CardData
       return { type: "ANSWER", decisionId, player, answer: { kind: "declareBlocker", block } };
     }
     case "assign": {
-      // One answer per blocker but the last, in the decision's order; the last gets what's left (CR 510.1c).
+      // One answer per recipient but the last, in the decision's order; the last gets what's left (CR 510.1c).
       const pending = state.pending;
       if (pending?.kind !== "assignDamage") {
         if (i === 0) throw new Error(`nothing to assign: the game waits for ${pending?.kind ?? "nothing"}`);
         return null;
       }
+      // A new decision (the next attacker's) isn't this step's; answers the engine filled in aren't asked.
+      if (i > 0 && pending.assigned.length === 0) return null;
       if (i === 0) checkDivision(state, step, other, pending, cards);
-      if (i >= pending.blockers.length - 1) return null;
-      const blocker = pending.blockers[i];
-      const amount = step.division.find(([name]) => permanent(state, other, name, cards) === blocker)?.[1] ?? 0;
+      const to = pending.recipients[pending.assigned.length];
+      const amount = step.division.find(([name]) => sameTarget(recipient(state, other, name, cards), to))?.[1] ?? 0;
       return { type: "ANSWER", decisionId, player, answer: { kind: "assignDamage", amount } };
     }
   }
 }
 
-/** The step must name every blocker once, with amounts that add up to the attacker's damage (CR 510.1c, 510.1e). */
+/** The step must name every recipient once, with amounts that add up to the attacker's damage (CR 510.1c, 510.1e). */
 function checkDivision(
   state: GameState,
   step: Extract<CombatStep, { kind: "assign" }>,
   other: PlayerId,
-  pending: { blockers: ObjectId[]; amount: number },
+  pending: AssignDamage,
   cards: CardDatabase,
 ): void {
-  const named = step.division.map(([name]) => permanent(state, other, name, cards));
-  if (named.length !== pending.blockers.length || pending.blockers.some((b) => !named.includes(b))) {
-    throw new Error("assign names each blocking creature exactly once");
+  const named = step.division.map(([name]) => recipient(state, other, name, cards));
+  if (
+    named.length !== pending.recipients.length ||
+    pending.recipients.some((r) => !named.some((n) => sameTarget(n, r)))
+  ) {
+    throw new Error("assign names each blocking creature (and for a trampler, the player) exactly once");
   }
   const total = step.division.reduce((sum, [, n]) => sum + n, 0);
   if (total !== pending.amount) throw new Error(`the division must add up to ${pending.amount}, not ${total}`);
+  // The engine fills in answers that have only one legal amount without asking (CR 702.19b): the division must name
+  // those amounts, or the step would quietly do something else. Stops at an answer the engine will refuse.
+  const amountFor = (to: Target | undefined) =>
+    step.division.find(([name]) => sameTarget(recipient(state, other, name, cards), to))?.[1] ?? 0;
+  let assigned: number[] = [];
+  while (assigned.length < pending.recipients.length - 1) {
+    const asked = { ...pending, assigned };
+    const amount = amountFor(pending.recipients[assigned.length]);
+    if (!legalAmounts(asked).includes(amount)) return;
+    const next = withForcedAnswers(asked, [...assigned, amount]);
+    for (let j = assigned.length + 1; j < next.length; j++) {
+      const name = step.division.find(([n]) =>
+        sameTarget(recipient(state, other, n, cards), pending.recipients[j]),
+      )?.[0];
+      if (next[j] !== amountFor(pending.recipients[j])) {
+        throw new Error(
+          `${name} must get ${next[j]}: it's the only legal amount after the ones before it (CR 702.19b)`,
+        );
+      }
+    }
+    assigned = next;
+  }
 }
+
+type AssignDamage = Extract<NonNullable<GameState["pending"]>, { kind: "assignDamage" }>;
 
 /** The one other player: combat steps in scenarios are two-player. */
 function otherPlayer(state: GameState, player: PlayerId): PlayerId {
@@ -76,4 +113,17 @@ function permanent(state: GameState, controller: PlayerId, name: string, cards: 
   const id = ref === null ? null : resolveRef(state, ref, cards);
   if (id === null) throw new Error(`${controller} controls no ${name}`);
   return id;
+}
+
+/** A recipient of combat damage: the player, by id, or a permanent `controller` controls. */
+function recipient(state: GameState, controller: PlayerId, name: string, cards: CardDatabase): Target {
+  if (state.turnOrder.includes(name as PlayerId)) return { kind: "player", player: name as PlayerId };
+  return { kind: "object", object: permanent(state, controller, name, cards) };
+}
+
+function sameTarget(a: Target, b: Target | undefined): boolean {
+  if (b === undefined) return false;
+  return a.kind === "player"
+    ? b.kind === "player" && b.player === a.player
+    : b.kind === "object" && b.object === a.object;
 }

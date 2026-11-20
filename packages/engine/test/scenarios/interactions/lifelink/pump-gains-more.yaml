@@ -1,0 +1,19 @@
+name: Lifelink gains life equal to the damage dealt, so pumping the lifelinker gains more
+rules: [CR 702.15b, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    life: 10
+    hand: [Giant Growth]
+    battlefield: [Forest, Child of Night]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Child of Night]
+  - p1 cast: Giant Growth
+    targets: [p1:Child of Night]
+    pay: auto
+  - all pass: once
+  - all pass: until combat.damage
+  - expect:
+      p1.life: 15
+      p2.life: 15

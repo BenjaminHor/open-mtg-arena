@@ -54,7 +54,10 @@ export type ScenarioStep =
   | { kind: "attack"; player: string; attackers: string[] }
   /** Declare blockers (CR 509.1): pairs of the player's blocker and the attacker it blocks, maybe none. */
   | { kind: "block"; player: string; blocks: [string, string][] }
-  /** Divide an attacker's combat damage among its blockers (CR 510.1c): pairs of blocker and amount. */
+  /**
+   * Divide an attacker's combat damage among its recipients (CR 510.1c, 702.19b): pairs of a blocker (or the player, by
+   * id, for a trampler) and an amount.
+   */
   | { kind: "assign"; player: string; division: [string, number][] }
   /** Concede the game (CR 104.3a): `p1 concede: now`. Allowed at any time, so it isn't in `legalActions()`. */
   | { kind: "concede"; player: string }
@@ -192,7 +195,7 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
   if (word === "assign") {
     noOptions();
     if (!isRecord(value))
-      throw new Error(`${where}: assign takes a map of blocker to damage, like { Grizzly Bears: 2 }`);
+      throw new Error(`${where}: assign takes a map of recipient to damage, like { Grizzly Bears: 2, p2: 3 }`);
     const division = Object.entries(value).map(([b, n]): [string, number] => {
       if (typeof n !== "number" || !Number.isInteger(n))
         throw new Error(`${where}: damage for ${b} must be a whole number`);

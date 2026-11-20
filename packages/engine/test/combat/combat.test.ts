@@ -88,7 +88,8 @@ describe("dividing combat damage, one blocker at a time (CR 510.1c, 510.1e)", ()
       [b3, giant],
     ]);
     game = passBoth(game);
-    expect(game.state.pending).toMatchObject({ kind: "assignDamage", blockers: [b1, b2, b3], amount: 3 });
+    const recipients = [b1, b2, b3].map((object) => ({ kind: "object", object }));
+    expect(game.state.pending).toMatchObject({ kind: "assignDamage", recipients, lethal: null, amount: 3 });
     expect(amounts(game.state)).toStrictEqual([0, 1, 2, 3]);
     const pending = game.state.pending;
     if (pending === null) throw new Error("nothing pending");
@@ -127,9 +128,9 @@ describe("dividing combat damage, one blocker at a time (CR 510.1c, 510.1e)", ()
       [b4, g2],
     ]);
     game = passBoth(game);
-    expect(game.state.pending).toMatchObject({ kind: "assignDamage", attacker: g1 });
+    expect(game.state.pending).toMatchObject({ kind: "assignDamage", source: g1 });
     game = answer(game, { kind: "assignDamage", amount: 3 });
-    expect(game.state.pending).toMatchObject({ kind: "assignDamage", attacker: g2, divided: [{ attacker: g1 }] });
+    expect(game.state.pending).toMatchObject({ kind: "assignDamage", source: g2, divided: [{ source: g1 }] });
     expect(game.events.some((e) => e.type === "DAMAGE_DEALT")).toBe(false);
     game = answer(game, { kind: "assignDamage", amount: 0 });
     const dealt = game.events.filter((e) => e.type === "DAMAGE_DEALT");

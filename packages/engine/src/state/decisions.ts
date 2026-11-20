@@ -4,7 +4,7 @@
 // Each task adds the kinds it needs (casting choices, attackers, blockers, dividing damage, ...).
 
 import type { Effect, ManaCost } from "../cards/types.ts";
-import type { Attack, AttackerDivision, Block } from "./combat.ts";
+import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DecisionId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
@@ -47,17 +47,20 @@ export type DecisionKind =
   /** Declare blockers (CR 509.1), one block per answer, the same way. */
   | { kind: "declareBlockers"; chosen: Block[] }
   /**
-   * Divide an attacker's combat damage among the creatures blocking it (CR 510.1c), in any way that adds up to
-   * `amount`. One answer per blocker, in `blockers` order, giving it 0 up to what's left; the last blocker gets the
-   * rest. `assigned` holds the amounts given so far; `divided`, the attackers already divided.
+   * Divide a creature's combat damage among its recipients (CR 510.1c): an attacker's blockers, and with trample then the
+   * player it attacks (CR 702.19b), in any way that adds up to `amount`. One answer per recipient but the last, in
+   * `recipients` order, giving it 0 up to what's left; the last gets the rest. With trample, `lethal` is the damage each
+   * blocker needs before the player can get any; null without. `assigned` holds the amounts given so far; `divided`,
+   * the creatures already divided this step.
    */
   | {
       kind: "assignDamage";
-      attacker: ObjectId;
-      blockers: ObjectId[];
+      source: ObjectId;
+      recipients: Target[];
+      lethal: number[] | null;
       amount: number;
       assigned: number[];
-      divided: AttackerDivision[];
+      divided: CombatDivision[];
     }
   /** While casting a spell or activating an ability: choose the target for this instance of "target" (CR 601.2c). */
   | { kind: "chooseTarget"; object: ObjectId; instance: number }

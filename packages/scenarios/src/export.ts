@@ -16,6 +16,7 @@ import {
   type PlayerId,
   sameAbilityRef,
   type Target,
+  withForcedAnswers,
 } from "@mtg/engine";
 import { stringify } from "yaml";
 import { nameOf, refOf, scenarioStep } from "./names.ts";
@@ -170,7 +171,7 @@ function declaration(
   return { step: { [`${p} block`]: Object.fromEntries(blocks) }, taken: end - i + 1 };
 }
 
-/** One attacker's division of damage: an answer per blocker but the last, which gets the rest. */
+/** One attacker's division of damage: an answer per recipient but the last, which gets the rest. */
 function division(
   state: GameState,
   actions: readonly Action[],
@@ -179,15 +180,20 @@ function division(
 ): { step: Step; taken: number } {
   const pending = state.pending;
   if (pending?.kind !== "assignDamage") throw new Error("an assignDamage answer without its decision");
-  const count = pending.blockers.length - 1;
-  const amounts = actions
-    .slice(i, i + count)
-    .map((a) => (a.type === "ANSWER" && a.answer.kind === "assignDamage" ? a.answer.amount : -1));
-  if (amounts.length < count || amounts.includes(-1)) {
-    throw new Error("the game stops part way through dividing damage, which a scenario can't write");
+  // One answer per question; answers with only one legal amount the engine fills in, as it does for the game.
+  let amounts: number[] = [];
+  let count = 0;
+  while (amounts.length < pending.recipients.length - 1) {
+    const a = actions[i + count];
+    if (a?.type !== "ANSWER" || a.answer.kind !== "assignDamage") {
+      throw new Error("the game stops part way through dividing damage, which a scenario can't write");
+    }
+    amounts = withForcedAnswers({ ...pending, assigned: amounts }, [...amounts, a.answer.amount]);
+    count++;
   }
   const last = pending.amount - amounts.reduce((sum, n) => sum + n, 0);
-  const map = Object.fromEntries(pending.blockers.map((b, j) => [local(state, b, cards), amounts[j] ?? last]));
+  const name = (to: Target) => (to.kind === "player" ? to.player : local(state, to.object, cards));
+  const map = Object.fromEntries(pending.recipients.map((to, j) => [name(to), amounts[j] ?? last]));
   return { step: { [`${pending.player} assign`]: map }, taken: count };
 }
 

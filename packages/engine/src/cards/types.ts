@@ -98,9 +98,15 @@ export type CardDef = {
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =
+  | "deathtouch" // CR 702.2
+  | "double strike" // CR 702.4
+  | "first strike" // CR 702.7
   | "flying" // CR 702.9
   | "haste" // CR 702.10
-  | "reach"; // CR 702.17
+  | "lifelink" // CR 702.15
+  | "reach" // CR 702.17
+  | "trample" // CR 702.19
+  | "vigilance"; // CR 702.20
 
 export type SpellDef = {
   /** One entry per instance of the word "target" (CR 601.2c), matching `StackChoices.targets`. */

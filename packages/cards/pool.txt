@@ -16,9 +16,11 @@ Cancel
 Canyon Minotaur
 Celestial Purge
 Centaur Courser
+Child of Night
 Consume Spirit
 Coral Merfolk
 Craw Wurm
+Deadly Recluse
 Deathmark
 Diabolic Tutor
 Disentomb
@@ -45,6 +47,7 @@ Giant Spider
 Goblin Artillery
 Goblin Piker
 Gray Ogre
+Griffin Sentinel
 Grizzly Bears
 Haunting Echoes
 Hill Giant
@@ -74,11 +77,13 @@ Prodigal Pyromancer
 Pyroclasm
 Raging Goblin
 Rampant Growth
+Razorfoot Griffin
 Righteousness
 Rod of Ruin
 Royal Assassin
 Runeclaw Bear
 Seismic Strike
+Serra Angel
 Shatter
 Shivan Dragon
 Shock
@@ -88,6 +93,7 @@ Silvercoat Lion
 Snapping Drake
 Solemn Offering
 Spined Wurm
+Stampeding Rhino
 Stormfront Pegasus
 Swamp
 Tempest of Light
@@ -98,6 +104,7 @@ Traumatize
 Undead Slayer
 Unsummon
 Vampire Aristocrat
+Viashino Spearhunter
 Volcanic Hammer
 Warpath Ghoul
 Wind Drake

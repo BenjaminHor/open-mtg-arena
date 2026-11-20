@@ -42,7 +42,9 @@ since M2-05b1 "draw N" is N single draws (D-060), and the container comes with t
 (M2-08). Since each event is performed whole, a "would die" or
 "would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
 `destroy`, `sacrifice`, `counterObject`, `discard`, ...): M2-08 needs a small "the zone change this event makes"
-helper. Lifelink, infect, wither
+helper. Lifelink's life gain (D-070) is performed inside the damage event, one gain per source (CR 702.15e), so a life
+gain replacement ("if you would gain life", Boon Reflection) or "can't gain life" must apply to those gains there,
+as results of the damage event (CR 120.4c), not as separate `gainLife` events. Lifelink, infect, wither
 and "a source you control deals damage" need the damage source's characteristics and controller as it dealt the damage
 (CR 120.3, 608.2h), so the last-known-information store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
 spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.
@@ -100,15 +102,15 @@ controller changes, including when a control effect ends. A bare boolean can't s
 replace it with a `{ player, since }` record when control-changing effects arrive.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
-"at the beginning of the next end step". The second combat damage step for first strike (CR 510.4; `combatDamage` would
-then deal only some creatures' damage per step, D-040), and "no maximum hand size" (CR 402.2).
+"at the beginning of the next end step", and "no maximum hand size" (CR 402.2). (First strike's second combat damage
+step is built, D-070: `endStep` repeats `combatDamage` once, read from `Combat`.)
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 
-**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) needs a choice; deathtouch (704.5h) needs a
-"since the last check" record like `attemptedDrawFromEmptyLibrary`, cleared with it at every check.
+**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) needs a choice. (Deathtouch's 704.5h is
+built, D-070: `dealtDeathtouchDamage`, cleared at every check.)
 *Watch out (D-039):* a listed SBA counts as performed, and a performed check repeats. So anything that stops an SBA
 (indestructible ignoring lethal damage, CR 702.12b; "can't lose the game") must keep it off the list in
 `rules/state-based-actions.ts`, or the check repeats forever. Creatures dying together are one `simultaneous` event
@@ -133,10 +135,12 @@ regeneration, phasing, "remove from combat" effects or control changes, which le
 permanent that stops and starts being a creature would rejoin combat: those need a recorded removed-from-combat set
 (CR 506.4). Rules about a whole declaration (menace, "can't attack alone", requirements, CR 508.1c–d, 509.1b–c) are
 checked at `finishDeclaring`, so a partial declaration can reach a dead end: then `finishDeclaring` must be offered only
-when legal, and the player needs a way to take a pick back. Trample (CR 702.19) lets damage go to the player, so a
-division names the player too, one blocker asks too, and earlier lethal damage counts. First strike (CR 510.4) needs a
-record of which creatures already dealt damage. A creature blocking several attackers needs a list form for the
-scenario `block` step.
+when legal, and the player needs a way to take a pick back. Trample and first strike are built (M2-06a, D-070). A creature blocking several attackers (Palace Guard, M2-06b) needs
+a list form for the scenario `block` step, and its division among them a decision for the defending player (CR 510.1d,
+recipients never a player: trample does nothing for a blocker, CR 702.19a). Then trample's lethal damage must count
+every other damage assigned to a blocker in the step, forced assignments included, whatever order the decisions come
+in (CR 702.19b, 510.1e): today it counts only divisions already chosen, which is exact while a blocker blocks one
+attacker. The second step's "remaining attackers and blockers" (CR 510.4) needs the removed-from-combat set too.
 
 **Milling and losing life, as triggers and replacements arrive (M2-07, M2-08).** Mill is plain `moveCard` events from
 library to graveyard (D-060), so "whenever a player mills", "the milled card" (CR 701.17c, 701.17d) and replacements
@@ -210,11 +214,11 @@ Modal spells and kicker change the target requirements after the mode or cost is
 "every target has a legal choice" pre-check in `castProblem` must then look at the chosen modes.
 
 **Targeting that knows who targets (CR 702.11b hexproof, 702.16b protection, 601.2c).** `legalTargets`,
-`isLegalTarget` and `stillLegalTargets` (`rules/targets.ts`, also used for the CR 608.2b check on resolution) take
-only the target spec: no source and no controller, so hexproof, protection, shroud and "target creature an opponent
-controls" can't be expressed. `game/cast.ts` checks targets before the spell object exists. Each target group is one
+`isLegalTarget` and `stillLegalTargets` (`rules/targets.ts`, also used for the CR 608.2b check on resolution) take a
+`Targeting` (the object and its controller) since M2-05, so "an opponent controls" works; shroud, hexproof and
+protection still need a check of the target's abilities against the source (M2-06d). `game/cast.ts` checks targets before the spell object exists. Each target group is one
 target today; "two target creatures" needs several per group, and one instance can't choose the same target twice
-(CR 601.2c). *Needs now:* nothing; add `source` and `controller` parameters when the first such card arrives.
+(CR 601.2c). *Needs now:* nothing.
 
 **Paying mana outside casting (CR 117.1d, 605.3a).** Mana abilities may be activated whenever a payment is asked
 for, including during resolution: costs to attack or block (CR 508.1i–j, 509.1e–f), "counter unless its controller
@@ -243,8 +247,7 @@ your graveyard" spell would count itself as a choice before it moves to the stac
 across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule
 modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions).
 
-**Small keywords that touch M1 code.** Vigilance (CR 702.20b): `finishAttackers` taps every attacker
-(`combat/declare-attackers.ts`). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`
+**Small keywords that touch M1 code.** Vigilance is built (M2-06a: `attackersTap` skips it). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`
 (`rules/timing.ts`).
 
 **Starting the game, beyond the basics (CR 103).** In a match, the loser of the previous game chooses who goes first

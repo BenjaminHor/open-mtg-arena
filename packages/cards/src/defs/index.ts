@@ -13,9 +13,11 @@ import { cancel } from "./c/cancel.ts";
 import { canyonMinotaur } from "./c/canyon-minotaur.ts";
 import { celestialPurge } from "./c/celestial-purge.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
+import { childOfNight } from "./c/child-of-night.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
+import { deadlyRecluse } from "./d/deadly-recluse.ts";
 import { deathmark } from "./d/deathmark.ts";
 import { diabolicTutor } from "./d/diabolic-tutor.ts";
 import { disentomb } from "./d/disentomb.ts";
@@ -42,6 +44,7 @@ import { giantSpider } from "./g/giant-spider.ts";
 import { goblinArtillery } from "./g/goblin-artillery.ts";
 import { goblinPiker } from "./g/goblin-piker.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
+import { griffinSentinel } from "./g/griffin-sentinel.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
@@ -71,11 +74,13 @@ import { prodigalPyromancer } from "./p/prodigal-pyromancer.ts";
 import { pyroclasm } from "./p/pyroclasm.ts";
 import { ragingGoblin } from "./r/raging-goblin.ts";
 import { rampantGrowth } from "./r/rampant-growth.ts";
+import { razorfootGriffin } from "./r/razorfoot-griffin.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
 import { runeclawBear } from "./r/runeclaw-bear.ts";
 import { seismicStrike } from "./s/seismic-strike.ts";
+import { serraAngel } from "./s/serra-angel.ts";
 import { shatter } from "./s/shatter.ts";
 import { shivanDragon } from "./s/shivan-dragon.ts";
 import { shock } from "./s/shock.ts";
@@ -85,6 +90,7 @@ import { silvercoatLion } from "./s/silvercoat-lion.ts";
 import { snappingDrake } from "./s/snapping-drake.ts";
 import { solemnOffering } from "./s/solemn-offering.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
+import { stampedingRhino } from "./s/stampeding-rhino.ts";
 import { stormfrontPegasus } from "./s/stormfront-pegasus.ts";
 import { swamp } from "./s/swamp.ts";
 import { tempestOfLight } from "./t/tempest-of-light.ts";
@@ -95,6 +101,7 @@ import { traumatize } from "./t/traumatize.ts";
 import { undeadSlayer } from "./u/undead-slayer.ts";
 import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
+import { viashinoSpearhunter } from "./v/viashino-spearhunter.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { windDrake } from "./w/wind-drake.ts";
@@ -116,9 +123,11 @@ export const CARD_DEFS: readonly CardDef[] = [
   canyonMinotaur,
   celestialPurge,
   centaurCourser,
+  childOfNight,
   consumeSpirit,
   coralMerfolk,
   crawWurm,
+  deadlyRecluse,
   deathmark,
   diabolicTutor,
   disentomb,
@@ -145,6 +154,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   goblinArtillery,
   goblinPiker,
   grayOgre,
+  griffinSentinel,
   grizzlyBears,
   hauntingEchoes,
   hillGiant,
@@ -174,11 +184,13 @@ export const CARD_DEFS: readonly CardDef[] = [
   pyroclasm,
   ragingGoblin,
   rampantGrowth,
+  razorfootGriffin,
   righteousness,
   rodOfRuin,
   royalAssassin,
   runeclawBear,
   seismicStrike,
+  serraAngel,
   shatter,
   shivanDragon,
   shock,
@@ -188,6 +200,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   snappingDrake,
   solemnOffering,
   spinedWurm,
+  stampedingRhino,
   stormfrontPegasus,
   swamp,
   tempestOfLight,
@@ -198,6 +211,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   undeadSlayer,
   unsummon,
   vampireAristocrat,
+  viashinoSpearhunter,
   volcanicHammer,
   warpathGhoul,
   windDrake,

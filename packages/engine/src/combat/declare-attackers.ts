@@ -7,8 +7,9 @@ import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { ProposedEvent } from "../pipeline/proposed.ts";
+import { keywordsOf } from "../rules/abilities.ts";
 import { canAttack } from "../rules/combat.ts";
-import type { Attack } from "../state/combat.ts";
+import { type Attack, newCombat } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 
 /**
@@ -50,15 +51,21 @@ export function attackProblem(state: GameState, chosen: readonly Attack[], attac
  */
 export function finishAttackers(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
-  const progress = happen(state, attackersTap(chosen), cards);
-  const combat = { attacks: [...chosen], blocks: [] };
+  const progress = happen(state, attackersTap(state, chosen, cards), cards);
   return andThen(progress, (s) => ({
-    state: queueWork({ ...s, combat }, { kind: "givePriority", player: active }),
+    state: queueWork(
+      { ...s, combat: { ...(s.combat ?? newCombat()), attacks: [...chosen] } },
+      { kind: "givePriority", player: active },
+    ),
     events: [{ type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] }],
   }));
 }
 
-/** The attackers tap together (CR 508.1f), as part of the one turn-based action that declares them (CR 508.1). */
-export function attackersTap(chosen: readonly Attack[]): ProposedEvent {
-  return { kind: "simultaneous", events: chosen.map(({ attacker }) => ({ kind: "tap", object: attacker }) as const) };
+/**
+ * The attackers tap together (CR 508.1f), as part of the one turn-based action that declares them (CR 508.1), except
+ * those with vigilance (CR 702.20b).
+ */
+export function attackersTap(state: GameState, chosen: readonly Attack[], cards: CardDatabase): ProposedEvent {
+  const tapping = chosen.filter(({ attacker }) => !keywordsOf(state, attacker, cards).includes("vigilance"));
+  return { kind: "simultaneous", events: tapping.map(({ attacker }) => ({ kind: "tap", object: attacker }) as const) };
 }

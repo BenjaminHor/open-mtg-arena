@@ -1,0 +1,27 @@
+name: A first striker kills its 2-toughness blocker in the first combat damage step, so the blocker never deals damage
+rules: [CR 702.7b, CR 510.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Viashino Spearhunter]
+  p2:
+    battlefield: [Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Viashino Spearhunter]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Runeclaw Bear: Viashino Spearhunter }
+  - all pass: until combat.damage
+  # The first combat damage step: only the first striker deals damage, and the bear dies before the second.
+  - expect:
+      p2.graveyard: [Runeclaw Bear]
+      p1:Viashino Spearhunter.damage: 0
+  - all pass: once
+  # The second combat damage step began, with no damage left to deal: the bear is gone and the Viashino already dealt.
+  - expect:
+      step: combat.damage
+      p1:Viashino Spearhunter.damage: 0
+  - all pass: until main2
+  - expect:
+      p1.battlefield: [Viashino Spearhunter]
+      p2.life: 20

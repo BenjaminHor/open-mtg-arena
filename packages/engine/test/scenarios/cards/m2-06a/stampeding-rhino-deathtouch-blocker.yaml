@@ -1,0 +1,19 @@
+name: A trampler blocked by a deathtouch creature still needs lethal damage on it, and is destroyed by its 1 damage
+rules: [CR 702.19b, CR 702.2b, CR 704.5h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino]
+  p2:
+    battlefield: [Deadly Recluse]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Deadly Recluse: Stampeding Rhino }
+  - all pass: until combat.damage
+  - p1 assign: { Deadly Recluse: 2, p2: 2 }
+  - expect:
+      p2.life: 18
+      p1.graveyard: [Stampeding Rhino]
+      p2.graveyard: [Deadly Recluse]

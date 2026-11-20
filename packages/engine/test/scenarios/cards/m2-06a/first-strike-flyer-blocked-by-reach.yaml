@@ -1,0 +1,20 @@
+name: A flying first striker blocked by a reach creature deals its damage first; the blocker deals its own in the second step
+rules: [CR 510.4, CR 702.7b, CR 702.17b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Razorfoot Griffin]
+  p2:
+    battlefield: [Giant Spider]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Razorfoot Griffin]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Giant Spider: Razorfoot Griffin }
+  - all pass: until combat.damage
+  - expect:
+      p2:Giant Spider.damage: 2
+      p1.graveyard: []
+  - all pass: once
+  - expect:
+      p1.graveyard: [Razorfoot Griffin]

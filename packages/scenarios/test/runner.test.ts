@@ -210,7 +210,16 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
       first(`${blocked}  - all pass: until combat.damage\n  - p1 assign: { Grizzly Bears: 2, Giant Spider: 3 }\n`),
     ).toMatch(/must add up to 6, not 5/);
     expect(first(`${blocked}  - all pass: until combat.damage\n  - p1 assign: { Grizzly Bears: 6 }\n`)).toMatch(
-      /each blocking creature exactly once/,
+      /each blocking creature \(and for a trampler, the player\) exactly once/,
+    );
+    // The engine fills in a trampler's forced answer: a division naming another amount there is refused.
+    const rhino = at(
+      "main1",
+      "  p1: { battlefield: [Stampeding Rhino] }\n  p2: { battlefield: [Elite Vanguard, Runeclaw Bear] }\n",
+    );
+    const trampled = `${rhino}  - all pass: until combat.declareAttackers\n  - p1 attack: [Stampeding Rhino]\n  - all pass: until combat.declareBlockers\n  - p2 block: { Elite Vanguard: Stampeding Rhino, Runeclaw Bear: Stampeding Rhino }\n  - all pass: until combat.damage\n`;
+    expect(first(`${trampled}  - p1 assign: { Elite Vanguard: 0, Runeclaw Bear: 2, p2: 2 }\n`)).toMatch(
+      /Runeclaw Bear must get 4: it's the only legal amount/,
     );
     // A division has no "do nothing", so passing through it fails.
     expect(first(`${blocked}  - all pass: until main2\n`)).toMatch(/waits for assignDamage/);

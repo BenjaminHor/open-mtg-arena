@@ -100,8 +100,14 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return "done declaring";
     case "assignDamage": {
       const pending = state.pending;
-      const blocker = pending?.kind === "assignDamage" ? pending.blockers[pending.assigned.length] : undefined;
-      return `assign ${answer.amount} to ${blocker === undefined ? "the next blocker" : objectText(state, blocker, cards)}`;
+      const to = pending?.kind === "assignDamage" ? pending.recipients[pending.assigned.length] : undefined;
+      const name =
+        to === undefined
+          ? "the next recipient"
+          : to.kind === "player"
+            ? to.player
+            : objectText(state, to.object, cards);
+      return `assign ${answer.amount} to ${name}`;
     }
     case "chooseCard": {
       // By name only: an option from a hidden zone is shown without its id (D-062).

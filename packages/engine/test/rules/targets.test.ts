@@ -7,6 +7,7 @@ import type { ObjectFilter, TargetSpec } from "../../src/cards/types.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { applyAction, legalActions } from "../../src/index.ts";
 import { legalTargets, targetsProblem } from "../../src/rules/targets.ts";
+import { newCombat } from "../../src/state/combat.ts";
 import type { Target } from "../../src/state/objects.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
 import { putAbilityOnStack } from "../../src/zones/stack-abilities.ts";
@@ -93,7 +94,11 @@ describe("restrictions on a permanent (CR 115.2)", () => {
   it("attacking and blocking creatures, read from combat (CR 508.1k, 509.1g, 506.4)", () => {
     const state: GameState = {
       ...board(),
-      combat: { attacks: [{ attacker: bears, defender: "p2" }], blocks: [{ blocker: theirBears, attacker: bears }] },
+      combat: {
+        ...newCombat(),
+        attacks: [{ attacker: bears, defender: "p2" }],
+        blocks: [{ blocker: theirBears, attacker: bears }],
+      },
     };
     expect(permanents({ combat: "attacking" }, state)).toStrictEqual([bears]);
     expect(permanents({ combat: "blocking" }, state)).toStrictEqual([theirBears]);
