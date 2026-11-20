@@ -485,6 +485,21 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
          when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
          stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
+         Plan (2026-11-20, after #48 merged):
+         - One op, `redirectNextDamage { amount, to }`: with nothing chosen it asks (`chooseCards`, purpose
+           `damageSource`, among permanents and spells on the stack, CR 609.7a); with the source chosen it adds
+           `{ kind: "redirectDamage", id, sourceOracleId, controller, from, remaining, to }` to `GameState.replacements`.
+           A chosen permanent spell is followed onto the battlefield (`finishResolving` updates `from`, CR 609.7a).
+         - In `damage-replacements.ts`, a redirect candidate applies to an entry from `from` to its controller or a
+           creature they control, while the target can be dealt damage (CR 614.9, else not used up, CR 609.7b). It
+           splits the entry: part stays, part becomes a new entry to the target, replaced in turn for prevention with
+           its own chooser (CR 616.1f), the redirect not applying again (CR 614.5). The remaining amount is threaded
+           through the event's entries; when the eligible damage exceeds it, the controller chooses how much of each
+           entry (a new `chooseRedirect` decision, recorded with the choices), at least enough that all of it is used.
+         - A `damageRedirected` pipeline event uses the amount up in `perform` and is told as `DAMAGE_REDIRECTED`.
+         - Tests: redirect to a creature and to a player; a 3-damage source (1 stays, CR 615.7-like); the shield left for
+           later; two blockers hit by the source (the controller chooses, 1 and 1 allowed); a target gone (damage
+           stays, shield kept); Fog with the redirected damage; a creature spell chosen on the stack; ends at cleanup.
        - Golden cover: `chooseReplacement` becomes required once Seraph meets Fog or Safe Passage in agent games, or
          a deck runs both.
      - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
