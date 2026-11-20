@@ -367,8 +367,42 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
        delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
        way; copies of abilities and "trigger an additional time" fit the pending list.
-  5. Now: M2-08 replacement and prevention effects (CR 614–616; m2-rules-depth.md). Next step: the plan, from the
-     pool cards `m2-pool.md` marks for M2-08, written here before any code.
+  5. Now: M2-08 replacement and prevention effects (CR 614–616; m2-rules-depth.md). 19 cards. Draft plan
+     (2026-11-20), before the advisor's review, in four PRs:
+     - M2-08a, the framework, with no player choice yet: replacement effects as data, applied in `pipeline/happen.ts`'s
+       `replace` to each event against the state before its batch (CR 614.4), each at most once per event (CR 614.5),
+       the result replaced again (CR 616.1f). Sources: a permanent's static replacement (`CardDef.replacements`, read
+       through one function, layer 6 later), and replacement effects in state made by resolving spells and abilities
+       (shields). A "the zone change this event makes" helper, so "would be put into a graveyard from anywhere"
+       recognizes destroy, sacrifice, counter, discard, mill and moves. Cards: the five checklands ("enters tapped
+       unless you control a [type] or a [type]", CR 614.1c, 614.12: checked as it would enter), Darksteel Colossus
+       (indestructible, CR 702.12: `destroy` does nothing and CR 704.5g lethal damage isn't listed, D-039; its
+       graveyard replacement reveals it and shuffles it into its owner's library). Their mana abilities ("Add {G} or
+       {W}") exist already (D-068).
+     - M2-08b, regeneration (CR 701.19, 614.8): a shield, made by a resolving ability or spell, used up the next time
+       that permanent would be destroyed this turn (destroy, lethal damage and deathtouch, CR 704.5g–h; not sacrifice):
+       instead tap it, remove all its damage, and remove it from combat (needs the recorded removed-from-combat set
+       future-rules asks for, CR 506.4). "Can't be regenerated" (Polymorph, with its reveal-until and put onto the
+       battlefield). Identical shields are used unasked (like D-077). Cards: Drudge Skeletons, Wall of Bone, Cudgel
+       Troll, Regenerate, Polymorph.
+     - M2-08c, prevention and redirection, and the CR 616.1 choice: `happen` stops before performing anything and
+       resumes as a work item when the affected player must choose which replacement applies; every caller that does
+       more after `happen` must queue the rest (the list in the pipeline README). Prevention (CR 615): Fog (all combat
+       damage this turn), Safe Passage (you and your creatures), Guardian Seraph (1 from a source an opponent controls,
+       static), Harm's Way (the next 2 from a source of your choice, redirected to any target, CR 614.9; the source
+       chosen as it resolves). Lifelink and "deals damage" triggers read the damage as dealt after prevention
+       (CR 120.4c). Plus the M2-03 review's tests with test-only cards: a dying source's replacement still applying in
+       its SBA batch (CR 704.3, 614.4), regeneration and a "would die" replacement on one destruction (CR 616.1),
+       damage results replaced as one event (CR 120.4c, the Worship example), 0 damage an increase can't touch
+       (CR 120.8).
+     - M2-08d, protection (CR 702.16, D-074: its damage prevention, targeting and blocking; "can't be enchanted"
+       waits for M2-12): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons: creature
+       types), Great Sable Stag (from blue and from black; "this spell can't be countered", CR 101.2: a counter effect
+       does nothing to it, and it's still a legal target).
+     - Future impact: "if you would draw" replacements need the draw-several container (D-060, CR 121.2a), not built
+       until a card needs it (no Magic 2010 card does); copies entering (Clone, M2-14) are a CR 616.1c choice in the
+       same machinery; Auras' protection part (M2-12); layers (M2-09) granting or removing replacement abilities read
+       them through the one function; tokens (M2-11) go through the same zone-change helper.
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
