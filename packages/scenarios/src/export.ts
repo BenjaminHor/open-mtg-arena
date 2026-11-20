@@ -73,6 +73,7 @@ function stepFor(
       // `ability: n` counts in `abilitiesOf` order, as the runner does, and is needed when there's more than one.
       const abilities = abilitiesOf(state, action.object, cards);
       if (abilities.length > 1) step.ability = abilities.findIndex((a) => sameAbilityRef(a.ref, action.ability)) + 1;
+      if (action.color !== undefined) step.color = action.color;
       return { step, taken: 1 };
     }
     case "ANSWER":

@@ -1,7 +1,7 @@
 // Activating abilities of permanents, and mana abilities in particular (CR 602, 605). A mana ability doesn't use the
 // stack: it resolves at once (CR 605.3b).
 
-import type { CardDatabase } from "../cards/types.ts";
+import type { AbilityDef, CardDatabase, Color } from "../cards/types.ts";
 import { runEffect } from "../effects/run-effect.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
@@ -11,6 +11,7 @@ import { controllerOf } from "../rules/controller.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { COLORS } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
 
 /**
@@ -72,10 +73,33 @@ export function manaAbilityProblem(
   return null;
 }
 
+/** Whether this ability's text adds "one mana of any color", so its activation names a color (D-068). */
+export function addsAnyColor(def: AbilityDef): boolean {
+  return def.effects.some((e) => e.op === "addMana" && e.mana === "anyColor");
+}
+
+/**
+ * Why the color sent with a mana ability's activation is wrong, or null: an "any color" ability needs one of the five
+ * colors (CR 105.4); any other ability takes none (D-068).
+ */
+export function manaColorProblem(
+  state: GameState,
+  id: ObjectId,
+  ref: AbilityRef,
+  color: Color | undefined,
+  cards: CardDatabase,
+): string | null {
+  const ability = findAbility(state, id, ref, cards);
+  if (ability === null || !addsAnyColor(ability.def))
+    return color === undefined ? null : "only a mana ability of any color takes a color";
+  if (color === undefined || !COLORS.includes(color)) return "choose one of the five colors for that mana (CR 105.4)";
+  return null;
+}
+
 /**
  * A mana ability is activated and resolves at once (CR 605.3b): its costs are paid, then mana goes into the activating
  * player's pool (CR 106.4). No priority changes here, so casting (M1-09) can use it while a cost is being paid
- * (CR 605.3a, 601.2g).
+ * (CR 605.3a, 601.2g). For "one mana of any color", `color` is the color chosen as it resolves (CR 608.2d, D-068).
  */
 export function resolveManaAbility(
   state: GameState,
@@ -83,7 +107,10 @@ export function resolveManaAbility(
   id: ObjectId,
   ref: AbilityRef,
   cards: CardDatabase,
+  color?: Color,
 ): Progress {
+  const colorProblem = manaColorProblem(state, id, ref, color, cards);
+  if (colorProblem !== null) throw new Error(colorProblem);
   const problem = manaAbilityProblem(state, player, id, ref, cards);
   if (problem !== null) throw new Error(problem);
   const ability = findAbility(state, id, ref, cards);
@@ -107,7 +134,11 @@ export function resolveManaAbility(
   // ability can't have targets (CR 605.1a).
   const context = { self: id, controller: player, targets: [], division: [], x: null };
   for (const effect of ability.def.effects) {
-    progress = andThen(progress, (s) => runEffect(s, effect, context, cards));
+    const chosen =
+      effect.op === "addMana" && effect.mana === "anyColor" && color !== undefined
+        ? { ...effect, mana: color }
+        : effect;
+    progress = andThen(progress, (s) => runEffect(s, chosen, context, cards));
   }
   return progress;
 }
@@ -122,8 +153,9 @@ export function activateManaAbility(
   id: ObjectId,
   ref: AbilityRef,
   cards: CardDatabase,
+  color?: Color,
 ): Progress {
-  const resolved = resolveManaAbility({ ...state, passesInSuccession: 0 }, player, id, ref, cards);
+  const resolved = resolveManaAbility({ ...state, passesInSuccession: 0 }, player, id, ref, cards, color);
   return { state: queueWork(resolved.state, { kind: "givePriority", player }), events: resolved.events };
 }
 

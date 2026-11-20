@@ -1,7 +1,7 @@
 // autoPay: a deterministic way to pay a mana cost, for the scenario runner (`pay: auto`), the CLI and the AI (D-034).
 // The rules don't choose for a player; this proposes a choice, and the engine still checks it.
 
-import type { CardDatabase, ManaCost } from "../cards/types.ts";
+import type { CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import { tapsForCost } from "../game/tap-costs.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
@@ -14,8 +14,8 @@ import { manaAbilityProblem } from "./activate.ts";
 import type { ManaPayment } from "./payment.ts";
 
 export type AutoPayment = {
-  /** Mana abilities to activate first, in order (CR 601.2g). */
-  activations: { object: ObjectId; ability: AbilityRef }[];
+  /** Mana abilities to activate first, in order (CR 601.2g), with the color chosen for "any color" ones (D-068). */
+  activations: { object: ObjectId; ability: AbilityRef; color?: Color }[];
   /** Then the mana to spend from the pool (CR 601.2h). */
   payment: ManaPayment;
 };
@@ -26,8 +26,9 @@ const GENERIC_ORDER: readonly ManaType[] = ["C", "W", "U", "B", "R", "G"];
 /**
  * A way for the player to pay the cost, or null if there's none. Mana already in the pool is used first. Then mana
  * abilities: lands before creatures (keeping creatures free to attack), each group in battlefield order. Colored symbols
- * are paid before generic. With sources that each make one color (all M1 cards), this finds a payment whenever one
- * exists; sources with a choice of colors will need a search.
+ * are paid before generic. A source of any color (Birds of Paradise) is used only after the fixed-color ones, which
+ * always finds a payment when one exists with one-color and any-color sources; sources with a restricted choice
+ * ("{R} or {G}"), several mana or a mana cost will need a search (future-rules).
  */
 export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, cards: CardDatabase): AutoPayment | null {
   const pool = { ...(state.players[player]?.manaPool ?? { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }) };
@@ -43,12 +44,21 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
       payment[fromPool] += 1;
       return true;
     }
-    const at = sources.findIndex((s, i) => !used.includes(i) && allowed.includes(s.mana));
+    // A source of one fixed color first; one of any color last, so it stays free for a color nothing else makes.
+    const fixed = sources.findIndex((s, i) => !used.includes(i) && s.mana !== "anyColor" && allowed.includes(s.mana));
+    const color = allowed.find((t): t is Color => t !== "C");
+    const anyColor = color === undefined ? -1 : sources.findIndex((s, i) => !used.includes(i) && s.mana === "anyColor");
+    const at = fixed >= 0 ? fixed : anyColor;
     const source = sources[at];
     if (source === undefined) return false;
     used.push(at);
-    activations.push({ object: source.object, ability: source.ability });
-    payment[source.mana] += 1;
+    if (source.mana !== "anyColor") {
+      activations.push({ object: source.object, ability: source.ability });
+      payment[source.mana] += 1;
+    } else if (color !== undefined) {
+      activations.push({ object: source.object, ability: source.ability, color });
+      payment[color] += 1;
+    }
     return true;
   };
 
@@ -70,7 +80,7 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
   return { activations, payment };
 }
 
-type Source = { object: ObjectId; ability: AbilityRef; mana: ManaType };
+type Source = { object: ObjectId; ability: AbilityRef; mana: ManaType | "anyColor" };
 
 /**
  * The most mana the player could have right now: what's in their pool, and one for each permanent whose mana ability
@@ -92,7 +102,7 @@ function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): S
     for (const { ref, def } of abilitiesOf(state, object, cards)) {
       if (!isManaAbility(def) || manaAbilityProblem(state, player, object, ref, cards) !== null) continue;
       const effect = def.effects.find((e) => e.op === "addMana");
-      if (effect?.op !== "addMana" || effect.amount !== 1 || !MANA_TYPES.includes(effect.mana)) continue;
+      if (effect?.op !== "addMana" || effect.amount !== 1) continue;
       sources.push({
         object,
         ability: ref,

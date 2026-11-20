@@ -6,6 +6,7 @@ import type {
   Action,
   Answer,
   CardDatabase,
+  ChoosePurpose,
   Duration,
   GameState,
   ManaPool,
@@ -44,8 +45,10 @@ export function actionText(state: GameState, action: Action, cards: CardDatabase
       return `play ${nameOf(state, action.object, cards)}`;
     case "CAST_SPELL":
       return `cast ${nameOf(state, action.object, cards)}`;
-    case "ACTIVATE_ABILITY":
-      return `activate ${objectText(state, action.object, cards)} (${abilityText(action.ability)})`;
+    case "ACTIVATE_ABILITY": {
+      const color = action.color === undefined ? "" : ` for {${action.color}}`;
+      return `activate ${objectText(state, action.object, cards)} (${abilityText(action.ability)})${color}`;
+    }
     case "CONCEDE":
       return `${action.player} concedes`;
     case "ANSWER":
@@ -105,9 +108,7 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       const pending = state.pending;
       const option = pending?.kind === "chooseCards" ? pending.options[answer.option] : undefined;
       const card = option === undefined ? `option ${answer.option}` : nameOf(state, option, cards);
-      return pending?.kind === "chooseCards" && pending.purpose === "putOntoBattlefield"
-        ? `put ${card} onto the battlefield`
-        : `choose ${card}`;
+      return pending?.kind === "chooseCards" ? choiceText(pending.purpose, card) : `choose ${card}`;
     }
     case "finishChoosing":
       return "done choosing";
@@ -121,5 +122,21 @@ export function durationText(duration: Duration): string {
   switch (duration) {
     case "endOfTurn":
       return "until end of turn";
+  }
+}
+
+/** What choosing a card for this purpose does, in words. */
+function choiceText(purpose: ChoosePurpose, card: string): string {
+  switch (purpose) {
+    case "putOntoBattlefield":
+      return `put ${card} onto the battlefield`;
+    case "sacrifice":
+      return `sacrifice ${card}`;
+    case "discard":
+      return `discard ${card}`;
+    case "search":
+      return `find ${card}`;
+    case "putOnTop":
+      return `put ${card} back next from the top`;
   }
 }

@@ -232,6 +232,8 @@ export type EffectSubject =
   | "you"
   /** "Each player": every player, in APNAP order (CR 101.4). */
   | "eachPlayer"
+  /** "Each opponent": every opponent of "you" (CR 102.2; later: CR 102.3), in APNAP order. */
+  | "eachOpponent"
   /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
   | "found"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
@@ -256,8 +258,11 @@ export type Effect =
        */
       and?: { to: EffectSubject; amount: Amount }[];
     }
-  /** "Add {G}." (CR 106.4). */
-  | { op: "addMana"; mana: ManaType; amount: number }
+  /**
+   * "Add {G}." (CR 106.4). "Add one mana of any color" is `"anyColor"`: the color is chosen as the ability resolves
+   * (CR 608.2d), right after it's activated (CR 605.3b), so it comes with the activation (D-068).
+   */
+  | { op: "addMana"; mana: ManaType | "anyColor"; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */
   | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration }
   /** "Destroy [subject]" (CR 701.8a). */
@@ -326,4 +331,9 @@ export type Effect =
   /** "Look at the top N cards of your library, then put them back in any order" (CR 701.20e, 401.4). */
   | { op: "lookAtTop"; count: number }
   /** "Exile all cards from [whose] graveyard [other than ...]": the cards exiled this way are kept (CR 608.2c). */
-  | { op: "exileGraveyard"; of: EffectSubject; filter?: ObjectFilter };
+  | { op: "exileGraveyard"; of: EffectSubject; filter?: ObjectFilter }
+  /**
+   * "[who] sacrifices a [filter] of their choice": the player chooses one permanent they control that fits, its
+   * `controller` read relative to that player (CR 701.21a, 608.2d).
+   */
+  | { op: "sacrifice"; who: EffectSubject; filter: ObjectFilter };

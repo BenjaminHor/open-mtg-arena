@@ -1,0 +1,24 @@
+name: Yawning Fissure makes each opponent sacrifice a land of their own choice, and spares its caster's lands
+rules: [CR 701.21a, CR 608.2d, CR 102.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Yawning Fissure]
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Forest, Island, Grizzly Bears]
+steps:
+  - p1 cast: Yawning Fissure
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseCards, purpose: sacrifice, min: 1, max: 1 }
+  - p2 choose: Island
+  - expect:
+      p2.battlefield: [Forest, Grizzly Bears]
+      p2.graveyard: [Island]
+      p1.battlefield count: 5
+      events contains: [{ type: PERMANENT_SACRIFICED, player: p2 }]
+      p1.graveyard: [Yawning Fissure]
+      stack: []
+      pending: { player: p1, kind: priority }

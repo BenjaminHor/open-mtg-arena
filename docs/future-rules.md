@@ -167,8 +167,9 @@ same. Liliana Vess's "search, then shuffle and put that card on top" leaves the 
 chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt from views mid-choice loses the rest of
 the revealed hand, though it stays revealed until the effect is done (CR 701.20a). That, Telepathy, and a third player
 who must see a revealed hand need revealed cards in the view, per object. Several players
-choosing at once for one effect choose in APNAP order, then it's done at once (CR 608.2e): `discard` names one
-player until a card needs more. And
+choosing at once for one effect choose in APNAP order, then it's done at once (CR 608.2e): `discard` and
+`sacrifice` name one player until a card needs more (Yawning Fissure in multiplayer: each opponent's choice collected,
+then one simultaneous sacrifice). And
 `moveCard` decides when to give a new card id by zone (`isHiddenZone`): face-down cards (CR 406.3, 708) need it to use
 the same per-object visibility as `canSee`. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
 per object, so `canSee` will take the object too. A partly known hand doesn't fit `hand: ObjectId[] | null`: another
@@ -197,7 +198,7 @@ result per player. Combat (D-040) throws when attacks go to several players; eac
 **Mana beyond six counters (CR 106.6, 106.12, 107.4h).** Mana with spending restrictions or riders, "tapped for mana"
 triggers and replacements, snow mana, sources that make more than one mana or a choice of colors.
 *Needs now:* `ManaPool` is six counters, which these rules will outgrow (a state migration); `MANA_ADDED` already names
-its source; `autoPay` will need a real search once a source can make a choice of colors.
+its source; `autoPay` handles one-color and any-color sources (D-068); it needs a real search once a source offers a restricted choice ("{R} or {G}"), makes several mana, or has a mana cost.
 
 **Cancelling a cast, as rules grow (CR 734.1, D-035).** Cancelling restores a snapshot: the card, its place in hand,
 the pool before, and the permanents tapped for mana.

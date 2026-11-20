@@ -13,6 +13,7 @@ import { createContinuousEffect } from "./continuous-effect.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { exileGraveyard, lookAtTop, mayShuffle, revealObjects, search, shuffleEach } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
+import { sacrificeChosen } from "./sacrifice-choice.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
 /**
@@ -36,8 +37,10 @@ export function runEffect(
       return happen(state, { kind: "dealDamage", damage: damageOf(state, effect, from, context, cards) }, cards);
     }
     case "addMana": {
-      // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5).
+      // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5). "Any color" was replaced
+      // by the color chosen as the mana ability resolved (`resolveManaAbility`, D-068).
       const { mana, amount } = effect;
+      if (mana === "anyColor") throw new Error("mana of any color needs the color chosen as its ability resolves");
       return happen(state, { kind: "addMana", player: context.controller, mana, amount, source: context.self }, cards);
     }
     case "modifyPT": {
@@ -166,6 +169,10 @@ export function runEffect(
     }
     case "lookAtTop":
       return lookAtTop(state, context.controller, effect, context, chosen, cards);
+    case "sacrifice": {
+      const player = onePlayer(state, effect.who, context, cards);
+      return player === null ? { state, events: [] } : sacrificeChosen(state, player, effect, context, chosen, cards);
+    }
     case "exileGraveyard": {
       const player = onePlayer(state, effect.of, context, cards);
       if (player === null) return { state, events: [] };

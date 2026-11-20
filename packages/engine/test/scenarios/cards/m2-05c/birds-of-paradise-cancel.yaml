@@ -1,0 +1,19 @@
+name: Birds of Paradise tapped for mana during a cast that's then cancelled untaps, and the mana is gone
+rules: [CR 734.1, CR 605.3a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Unsummon]
+    battlefield: [Birds of Paradise]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Unsummon
+    targets: [p2:Grizzly Bears]
+  - p1 activate: Birds of Paradise
+    color: R
+  - p1 choose: cancel
+  - expect:
+      p1:Birds of Paradise.tapped: false
+      p1.manaPool: {}
+      p1.hand: [Unsummon]

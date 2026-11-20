@@ -215,6 +215,19 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it("reports mana of any color outside a mana ability with a {T} cost (D-068)", () => {
+    const harvest = POOL.cards.find((c) => c.name === "Bountiful Harvest");
+    if (harvest === undefined) throw new Error("Bountiful Harvest missing from the pool");
+    const def: CardDef = {
+      name: "Bountiful Harvest",
+      oracle: harvest.oracleText,
+      spell: { targets: [], effects: [{ op: "addMana", mana: "anyColor", amount: 1 }] },
+    };
+    expect(definitionProblems([def], [harvest])).toContain(
+      "Bountiful Harvest: mana of any color is only for a mana ability",
+    );
+  });
+
   it("reports cards without definitions and definitions without cards", () => {
     expect(definitionProblems([{ name: "Black Lotus", oracle: "" }], [bolt])).toStrictEqual([
       "Black Lotus: has a definition but isn't in pool.txt / data/pool.json",

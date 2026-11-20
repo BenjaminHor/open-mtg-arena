@@ -68,7 +68,7 @@ export function doesNotResolve(given: GameState, id: ObjectId, cards: CardDataba
 /**
  * One `runEffect` work item per effect, in the order written (CR 608.2c), each knowing the still-legal targets
  * (CR 608.2b) and the controller. Queuing them, rather than running them here, lets a later effect wait for a choice
- * (later: CR 608.2d–e) once one needs to. "This" in a spell's text is the spell; in an ability's, the ability's source,
+ * (CR 608.2d; several players choosing, later: CR 608.2e) once one needs to. "This" in a spell's text is the spell; in an ability's, the ability's source,
  * even if it has left the battlefield (CR 113.7a): an effect on a source that's gone then does nothing (CR 101.3,
  * 400.7).
  */

@@ -91,6 +91,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Birds of Paradise",
+      "slug": "birds-of-paradise",
+      "oracleId": "d3a0b660-358c-41bd-9cd2-41fbf3491b1a",
+      "layout": "normal",
+      "manaCost": "{G}",
+      "manaValue": 1,
+      "typeLine": "Creature — Bird",
+      "oracleText": "Flying\n{T}: Add one mana of any color.",
+      "power": "0",
+      "toughness": "1",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/0/307d4236-1e54-43e3-83f1-063d49d16dda.jpg?1783941062",
+        "large": "https://cards.scryfall.io/large/front/3/0/307d4236-1e54-43e3-83f1-063d49d16dda.jpg?1783941062",
+        "png": "https://cards.scryfall.io/png/front/3/0/307d4236-1e54-43e3-83f1-063d49d16dda.png?1783941062",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/0/307d4236-1e54-43e3-83f1-063d49d16dda.jpg?1783941062"
+      },
+      "artist": "Marcelo Vignali",
+      "set": "m12",
+      "collectorNumber": "165",
+      "scryfallUri": "https://scryfall.com/card/m12/165/birds-of-paradise?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Blinding Mage",
       "slug": "blinding-mage",
       "oracleId": "53a1faa1-ca67-4027-bee8-0f7c4584d62b",
@@ -2156,6 +2186,34 @@
       "set": "ktk",
       "collectorNumber": "157",
       "scryfallUri": "https://scryfall.com/card/ktk/157/windstorm?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Yawning Fissure",
+      "slug": "yawning-fissure",
+      "oracleId": "634ec9d3-24c9-4090-a087-2624b6d5bf5b",
+      "layout": "normal",
+      "manaCost": "{4}{R}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "Each opponent sacrifices a land of their choice.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/a/fa364a1c-14e4-4dda-aa1f-edb879a64a2d.jpg?1783942367",
+        "large": "https://cards.scryfall.io/large/front/f/a/fa364a1c-14e4-4dda-aa1f-edb879a64a2d.jpg?1783942367",
+        "png": "https://cards.scryfall.io/png/front/f/a/fa364a1c-14e4-4dda-aa1f-edb879a64a2d.png?1783942367",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/a/fa364a1c-14e4-4dda-aa1f-edb879a64a2d.jpg?1783942367"
+      },
+      "artist": "Véronique Meignaud",
+      "set": "m10",
+      "collectorNumber": "164",
+      "scryfallUri": "https://scryfall.com/card/m10/164/yawning-fissure?utm_source=api",
       "printingChosenBy": "rule"
     }
   ]

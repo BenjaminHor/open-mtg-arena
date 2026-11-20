@@ -46,7 +46,13 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     // "Spend only black mana on X" needs an {X} to restrict.
     if (def.spell?.xPaidWith !== undefined && !card.manaCost.includes("{X}"))
       problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
+    // "Add one mana of any color" takes its color from the activation, which only a mana ability has (CR 605.1a, D-068).
+    const anyColor = (effects: readonly Effect[]) => effects.some((e) => e.op === "addMana" && e.mana === "anyColor");
+    if (def.spell !== undefined && anyColor(def.spell.effects))
+      problems.push(`${def.name}: mana of any color is only for a mana ability`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
+      if (anyColor(ability.effects) && (ability.targets.length > 0 || ability.cost.some((p) => p.kind !== "tap")))
+        problems.push(`${def.name} ability ${i + 1}: mana of any color is only for a mana ability with a {T} cost`);
       problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
       problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
     }
@@ -123,6 +129,7 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   shuffle: (e) => (e as { who: EffectSubject }).who,
   mayShuffle: (e) => (e as { who: EffectSubject }).who,
   exileGraveyard: (e) => (e as { of: EffectSubject }).of,
+  sacrifice: (e) => (e as { who: EffectSubject }).who,
 };
 
 /**
@@ -136,7 +143,12 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   const playerOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
     return (
-      s === "you" || s === "eachPlayer" || kind === "player" || kind === "opponent" || kind === "playerOrPlaneswalker"
+      s === "you" ||
+      s === "eachPlayer" ||
+      s === "eachOpponent" ||
+      kind === "player" ||
+      kind === "opponent" ||
+      kind === "playerOrPlaneswalker"
     );
   };
   const objectOnly = (s: EffectSubject) => {
@@ -160,7 +172,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard"];
+    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard", "sacrifice"];
     if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).

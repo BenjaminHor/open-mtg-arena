@@ -1,5 +1,6 @@
 // Actions: every input to the engine. Each one answers the current `PendingDecision`, except `CONCEDE`.
 
+import type { Color } from "../cards/types.ts";
 import type { Attack, Block } from "./combat.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";
@@ -16,6 +17,11 @@ export type Action =
       object: ObjectId;
       /** Which of the object's abilities (D-028). */
       ability: AbilityRef;
+      /**
+       * For a mana ability that adds "one mana of any color" only: the color chosen (CR 105.4), since it resolves at
+       * once (CR 605.3b, D-068). Left out for every other ability.
+       */
+      color?: Color;
     } // CR 602.2
   | { type: "ANSWER"; decisionId: DecisionId; player: PlayerId; answer: Answer }
   /** A player can concede at any time (CR 104.3a), so this doesn't answer a decision. */

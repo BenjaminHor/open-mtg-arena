@@ -3,7 +3,7 @@
 // stack object, so every pause is plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes
 // come later (later: CR 700.2).
 
-import type { CardDatabase, ManaCost } from "../cards/types.ts";
+import type { CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
 import { autoPay, manaAvailable } from "../mana/auto-pay.ts";
 import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
@@ -71,11 +71,12 @@ export function activateWhilePaying(
   object: ObjectId,
   ability: AbilityRef,
   cards: CardDatabase,
+  color?: Color,
 ): Progress {
   const casting = castingOf(state);
   const pending = state.pending;
   if (pending?.kind !== "payMana") throw new Error("Not paying a cost");
-  const resolved = resolveManaAbility({ ...state, pending: null }, casting.player, object, ability, cards);
+  const resolved = resolveManaAbility({ ...state, pending: null }, casting.player, object, ability, cards, color);
   const tapped = resolved.events.flatMap((e) => (e.type === "PERMANENT_TAPPED" ? [e.object] : []));
   const next = { ...resolved.state, casting: { ...casting, tappedForMana: [...casting.tappedForMana, ...tapped] } };
   return {
