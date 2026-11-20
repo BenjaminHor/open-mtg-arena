@@ -144,14 +144,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 
   - M2-05c Life, damage to many, mana: done.
 - Next, before M2-06 (plan from the advisor, 2026-11-20):
-  1. Done, in review: the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
+  1. Done, merged (PR #33): the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
      Mastodon, Silvercoat Lion, Stormfront Pegasus, Air Elemental, Disorient, Horned Turtle, Snapping Drake, Wind
      Drake, Zephyr Sprite, Kelinore Bat, Looming Shade, Warpath Ghoul, Zombie Goliath, Canyon Minotaur, Fiery
      Hellhound, Goblin Piker, Lightning Elemental, Prodigal Pyromancer, Shivan Dragon, Enormous Baloth, Might of Oaks,
      Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says. 9 scenarios in
      `test/scenarios/cards/m10-core/`, seven golden games from two throwaway deck lists (replaced by the fresh golden set
      in step 2). The pool's comment header, scrambled by sorting the file in earlier tasks, is restored.
-  2. Then the first M10 deck pair, for play (the fuzzer's prebuilt rotation, the CLI), and a fresh, smaller golden set:
+  2. Now. Plan: a `by-kind` agent (the fuzzer's picker, D-061) so golden recipes can use it and stay replayable; a
+     `pnpm golden:cover` command that plays seeded random pool decks with it and keeps, greedily, the game adding the
+     most uncovered cards per action, each capped (`maxTurns`) at the turn its last new card appears; the interim decks
+     and their golden games removed; M1's four golden games (the bench) and the export tests' games kept or repointed.
+     Budget: the golden folder under 4 MB (13.7 MB now). Accept: no decision kind or event type lost in the fuzzer's
+     40-seed measure, 300 fuzz games clean, the bench unchanged. Then the first M10 deck pair, for play (the fuzzer's prebuilt rotation, the CLI), and a fresh, smaller golden set:
      coverage from seeded random pool decks, a greedy covering set chosen anew (most uncovered cards per action), made
      with the fuzzer's picker; M1's four games (the bench) and `red-aggro` / `green-stompy` stay; the export tests'
      games are kept or repointed; a size budget written first; the interim decks removed. Plan (2026-11-20), rules-reviewed and revised; split in two:
