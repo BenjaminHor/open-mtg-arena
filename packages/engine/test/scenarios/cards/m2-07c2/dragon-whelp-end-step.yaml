@@ -1,5 +1,5 @@
 name: A fourth activation in the end step makes a delayed trigger for the next turn's end step; the Whelp lives until then
-rules: [CR 603.7, CR 513.1]
+rules: [CR 603.7, CR 603.2b]
 setup:
   turn: { active: p1, step: main2 }
   p1:

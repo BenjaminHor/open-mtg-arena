@@ -25,7 +25,8 @@ export function detectTriggers(
   events: readonly GameEvent[],
   cards: CardDatabase,
 ): GameState {
-  // Delayed triggers first: they were made before anything these events trigger (CR 603.7).
+  // Delayed triggers are matched apart from the battlefield's: no permanent has them. Their order in the batch doesn't
+  // matter, as each player orders their own triggers as they go on the stack (CR 603.3b).
   const withDelayed = detectDelayed(after, events, cards);
   const sources = after.zones.battlefield.filter((id) => triggersOf(after, id, cards).length > 0);
   if (sources.length === 0) return withDelayed;

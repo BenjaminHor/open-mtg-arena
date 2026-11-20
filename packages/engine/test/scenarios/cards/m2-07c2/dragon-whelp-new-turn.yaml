@@ -1,5 +1,5 @@
 name: Dragon Whelp's count starts again each turn; two Whelps are counted apart
-rules: [CR 602.2b, CR 400.7]
+rules: [CR 602.2b]
 setup:
   turn: { active: p1, step: main2 }
   p1:

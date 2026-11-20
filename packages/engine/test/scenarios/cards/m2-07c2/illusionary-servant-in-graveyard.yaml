@@ -1,0 +1,17 @@
+name: Illusionary Servant in a graveyard isn't a permanent, so a spell targeting it there doesn't trigger it
+rules: [CR 113.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp]
+    hand: [Disentomb]
+    graveyard: [Illusionary Servant]
+steps:
+  - p1 cast: Disentomb
+    targets: [graveyard:p1:Illusionary Servant]
+    pay: auto
+  - expect:
+      stack: [Disentomb]
+  - all pass: once
+  - expect:
+      p1.hand: [Illusionary Servant]

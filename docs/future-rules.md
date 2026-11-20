@@ -63,7 +63,14 @@ own `AbilityRef` kind, waiting only for the next beginning of anyone's step with
 a delayed trigger for "your next upkeep" must match against its own `controller`, not its source's (which may be
 gone), and one with targets chooses them as it's put on the stack like any trigger; one spell targeting the same
 object twice (no rule says whether it "becomes the target" once or twice, and no Magic 2010 card can: decide with
-the first card that does); leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
+the first card that does). A delayed trigger is matched with its `source` and checked with `onlyIf` against it: a
+condition about "this creature" or an intervening if would read an object that may be gone, so such delayed triggers
+need their own reading. Cancelling a cast doesn't restore `delayedTriggers`: one that triggered during the cast would
+be lost; that can't happen while they wait only for the beginning of a step. Ward (CR 702.21a, "counter that spell
+or ability") will need `BECAME_TARGET.by` kept in the `TriggerEvent`. Activation counts (D-078) are keyed by the
+printed ability's index; a granted activated ability (layer 6) will need an `AbilityRef` key. A cancelled cast's
+`BECAME_TARGET` is still in the log before `CAST_CANCELLED`, though its trigger is dropped (CR 734.1); a UI may want to
+hide both. Leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
 `lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through
 `triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1). That stays right with "becomes the target" (M2-07c2),
 which triggers during a cast: a cast starts only when a player receives priority, which happens only once

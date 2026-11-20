@@ -1,0 +1,39 @@
+name: Dragon Whelp bounced in response to its fourth activation; the activation still makes its delayed trigger, from the Whelp's last known information
+rules: [CR 113.7a, CR 603.7e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Dragon Whelp, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Island]
+    hand: [Unsummon]
+steps:
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p1:Dragon Whelp]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Dragon Whelp]
+      stack: [Dragon Whelp ability]
+  - all pass: once
+  - expect:
+      stack: []
+  - all pass: until end
+  - expect:
+      stack: [Dragon Whelp ability]
+  - all pass: once
+  - expect:
+      stack: []
+      p1.hand: [Dragon Whelp]

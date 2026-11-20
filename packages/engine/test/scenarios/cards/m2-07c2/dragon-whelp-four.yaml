@@ -1,5 +1,5 @@
 name: The fourth resolving activation in a turn makes a delayed trigger that sacrifices Dragon Whelp at the beginning of the next end step
-rules: [CR 603.7, CR 603.7e, CR 513.1]
+rules: [CR 603.7, CR 603.7e, CR 603.2b]
 setup:
   turn: { active: p1, step: main1 }
   p1:

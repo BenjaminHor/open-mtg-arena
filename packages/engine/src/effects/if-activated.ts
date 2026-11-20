@@ -1,5 +1,6 @@
 // "If this ability has been activated four or more times this turn, [effects]" (Dragon Whelp): reads how many times
-// this turn the resolving activated ability has become activated, as of now, its own activation counted (D-078).
+// this turn the resolving activated ability has become activated, as of now, its own activation counted (D-078). The
+// count is read once, as the effect is applied (CR 608.2h), so four activations stacked before any resolves each see 4.
 
 import type { Effect } from "../cards/types.ts";
 import { activationsThisTurn } from "../game/activation-count.ts";
