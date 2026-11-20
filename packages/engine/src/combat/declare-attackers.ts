@@ -5,7 +5,8 @@ import { waitFor } from "../game/decide.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
-import { tapPermanent } from "../permanents/tap.ts";
+import { happen } from "../pipeline/happen.ts";
+import type { ProposedEvent } from "../pipeline/proposed.ts";
 import { canAttack } from "../rules/combat.ts";
 import type { Attack } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -29,7 +30,8 @@ export function possibleAttacks(state: GameState, chosen: readonly Attack[], car
  */
 export function declareAttackers(state: GameState, chosen: Attack[], cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
-  if (chosen.length === 0 && possibleAttacks(state, chosen, cards).length === 0) return finishAttackers(state, []);
+  if (chosen.length === 0 && possibleAttacks(state, chosen, cards).length === 0)
+    return finishAttackers(state, [], cards);
   return { state: waitFor(state, active, { kind: "declareAttackers", chosen }), events: [] };
 }
 
@@ -46,13 +48,17 @@ export function attackProblem(state: GameState, chosen: readonly Attack[], attac
  * attack is legal (restrictions and requirements, later: CR 508.1c–d). The attackers tap (CR 508.1f) and become
  * attacking creatures (CR 508.1k); then the active player gets priority (CR 508.2).
  */
-export function finishAttackers(state: GameState, chosen: readonly Attack[]): Progress {
+export function finishAttackers(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
-  let progress: Progress = { state, events: [] };
-  for (const { attacker } of chosen) progress = andThen(progress, (s) => tapPermanent(s, attacker));
+  const progress = happen(state, attackersTap(chosen), cards);
   const combat = { attacks: [...chosen], blocks: [] };
   return andThen(progress, (s) => ({
     state: queueWork({ ...s, combat }, { kind: "givePriority", player: active }),
     events: [{ type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] }],
   }));
+}
+
+/** The attackers tap together (CR 508.1f), as part of the one turn-based action that declares them (CR 508.1). */
+export function attackersTap(chosen: readonly Attack[]): ProposedEvent {
+  return { kind: "simultaneous", events: chosen.map(({ attacker }) => ({ kind: "tap", object: attacker }) as const) };
 }

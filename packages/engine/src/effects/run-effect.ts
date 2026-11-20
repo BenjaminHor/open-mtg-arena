@@ -3,13 +3,12 @@
 
 import type { CardDatabase, Effect, EffectSubject } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
-import { addMana } from "../mana/pool.ts";
+import { happen } from "../pipeline/happen.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
-import { dealDamage } from "./deal-damage.ts";
 
 /** Carries out one effect of a resolving spell or ability (CR 608.2c). */
 export function runEffect(state: GameState, effect: Effect, context: EffectContext, cards: CardDatabase): Progress {
@@ -26,11 +25,13 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
         amount: effect.amount,
         combat: false,
       }));
-      return dealDamage(state, damage, cards);
+      return happen(state, { kind: "dealDamage", damage }, cards);
     }
-    case "addMana":
+    case "addMana": {
       // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5).
-      return addMana(state, context.controller, effect.mana, effect.amount, context.self);
+      const { mana, amount } = effect;
+      return happen(state, { kind: "addMana", player: context.controller, mana, amount, source: context.self }, cards);
+    }
     case "modifyPT": {
       // The affected objects are fixed now (CR 611.2c). An illegal target isn't among them (CR 608.2b), and neither is
       // one that left the battlefield since resolution began: affecting it is impossible (CR 101.3, 400.7).

@@ -28,13 +28,21 @@ asks "is this a creature?", "who controls this?" or "does it have flying?" must 
 "prevent the next 3 damage", "enters tapped", "if you would draw a card, ...".
 *Needs now:* every game event (draw, damage, life change, zone change, counter placement, tapping) goes
 through the single propose → replace → perform → trigger pipeline. Nothing changes state directly
-outside it, so replacements can be added in one place later.
+outside it, so replacements can be added in one place later. Built in M2-03 (`engine/src/pipeline/`, D-056): `replace`
+is where they go.
 
-*Watch out (D-036):* `dealDamage`, `loseLife` and `runEffect` are synchronous, and mana abilities call `runEffect`
-outside the work queue. When the affected player must choose the order of replacements (CR 616.1), damage needs to
-become a work item or a resumable step. Lifelink, infect, wither and "a source you control deals damage" need the
-damage source's characteristics and controller as it dealt the damage (CR 120.3, 608.2h), so the last-known-information
-store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
+*Watch out (D-056):* `happen` returns at once, and mana abilities call it outside the work queue. When the affected
+player must choose the order of replacements (CR 616.1), `happen` must stop before performing anything (it replaces
+everything first, so it can) and resume as a work item; every caller that does more after `happen` returns then has
+to queue that rest as work too (the list is in `engine/src/pipeline/README.md`). Each member of a batch is replaced
+against the state before the batch (CR 614.4), and the results of damage are replaced as part of the damage event
+(CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
+draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a),
+when the first card that draws more than one arrives (M2-05). Since each event is performed whole, a "would die" or
+"would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
+`destroy`, `discard`, ...): M2-08 needs a small "the zone change this event makes" helper. Lifelink, infect, wither
+and "a source you control deals damage" need the damage source's characteristics and controller as it dealt the damage
+(CR 120.3, 608.2h), so the last-known-information store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
 spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.
 
 **Triggered abilities (CR 603), M2.** "When/whenever/at" abilities, including leaves-the-battlefield
@@ -98,9 +106,10 @@ with two combat phases or two upkeeps can't be represented yet. That needs a per
 "since the last check" record like `attemptedDrawFromEmptyLibrary`, cleared with it at every check.
 *Watch out (D-039):* a listed SBA counts as performed, and a performed check repeats. So anything that stops an SBA
 (indestructible ignoring lethal damage, CR 702.12b; "can't lose the game") must keep it off the list in
-`rules/state-based-actions.ts`, or the check repeats forever. Creatures dying together move one `moveCard` at a time,
-so leaves-the-battlefield triggers (CR 603.10a) must look back at the state before the whole `STATE_BASED_ACTIONS`
-group, not after each move. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
+`rules/state-based-actions.ts`, or the check repeats forever. Creatures dying together are one `simultaneous` event
+(D-056), and `checkTriggers` gets the state before it, so leaves-the-battlefield triggers (CR 603.10a) can look back at
+the whole group. Players losing is still performed after that event; it's part of the same CR 704.3 event, which only
+matters once triggers look back at it. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
 owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
 
 **Triggered abilities and the casting steps (CR 603, D-041).** A triggered ability's targets are chosen as it's put on

@@ -1,6 +1,6 @@
 // Drawing a card (CR 121): the top card of the library goes to its owner's hand.
 
-import { andThen, type Progress } from "../game/progress.ts";
+import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 import { moveCard, newCardIdOf } from "./move-card.ts";
@@ -31,10 +31,4 @@ export function drawCard(state: GameState, player: PlayerId): Progress {
   const moved = moveCard(state, top, { zone: "hand" });
   const drawn = { type: "CARD_DRAWN", player, newId: moved.newId, cardId: newCardIdOf(moved) } as const;
   return { state: moved.state, events: [...moved.events, drawn] };
-}
-
-export function drawCards(state: GameState, player: PlayerId, count: number): Progress {
-  let progress: Progress = { state, events: [] };
-  for (let i = 0; i < count; i++) progress = andThen(progress, (s) => drawCard(s, player));
-  return progress;
 }

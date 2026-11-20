@@ -1,12 +1,12 @@
 // Performing state-based actions (CR 704.3).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { destroy } from "../permanents/destroy.ts";
+import { happen } from "../pipeline/happen.ts";
+import type { ProposedEvent, SingleEvent } from "../pipeline/proposed.ts";
 import { stateBasedActions } from "../rules/state-based-actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { Loss } from "../state/result.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
-import { moveCard } from "../zones/move-card.ts";
 import { playersLose } from "./game-end.ts";
 import { andThen, type Progress } from "./progress.ts";
 
@@ -19,9 +19,9 @@ export function checkStateBasedActions(state: GameState, cards: CardDatabase): P
   const actions = stateBasedActions(state, cards);
   const cleared = clearEmptyLibraryDraws(state);
   if (actions.length === 0) return { state: cleared, events: [], performed: false };
-  let progress: Progress = { state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] };
-  // Cards that go to a graveyard together go in battlefield order (D-039; later: CR 404.3 lets the owner choose).
-  for (const action of actions) progress = andThen(progress, (s) => performOnObject(s, action));
+  const progress = andThen({ state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] }, (s) =>
+    happen(s, stateBasedActionsEvent(actions), cards),
+  );
   const losses = actions.flatMap((a): Loss[] => {
     const loss = lossFrom(a);
     return loss === null ? [] : [loss];
@@ -43,15 +43,24 @@ function lossFrom(action: StateBasedAction): Loss | null {
   }
 }
 
-function performOnObject(state: GameState, action: StateBasedAction): Progress {
+/**
+ * The state-based actions done to objects, as one event (CR 704.3). Cards that go to a graveyard together go in
+ * battlefield order (D-039; later: CR 404.3 lets the owner choose).
+ */
+export function stateBasedActionsEvent(actions: readonly StateBasedAction[]): ProposedEvent {
+  return { kind: "simultaneous", events: actions.flatMap(eventOn) };
+}
+
+/** What this state-based action does to an object, if anything. */
+function eventOn(action: StateBasedAction): SingleEvent[] {
   switch (action.kind) {
     case "zeroLife":
     case "drewFromEmptyLibrary":
-      return { state, events: [] }; // players lose together, after the objects move
+      return []; // players lose together, after the objects move
     case "zeroToughness":
-      return moveCard(state, action.object, { zone: "graveyard" }); // not "destroyed" (CR 704.5f)
+      return [{ kind: "moveCard", object: action.object, to: { zone: "graveyard" } }]; // not "destroyed" (CR 704.5f)
     case "lethalDamage":
-      return destroy(state, action.object);
+      return [{ kind: "destroy", object: action.object }];
   }
 }
 

@@ -63,7 +63,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
         },
       };
       if (opening.firstPlayer !== null) {
-        return { ok: true, ...advance(setStartingPlayer(state, opening.firstPlayer, null), cards) };
+        return { ok: true, ...advance(setStartingPlayer(state, opening.firstPlayer, null, cards), cards) };
       }
       // CR 103.1: the players determine who chooses who takes the first turn. We pick that player at random.
       const pick = randomInt(state.rng, state.turnOrder.length);

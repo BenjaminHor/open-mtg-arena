@@ -6,15 +6,13 @@ import type { CardDatabase } from "../cards/types.ts";
 import { anyAttackers } from "../combat/attackers.ts";
 import { endUntilEndOfTurnEffects } from "../effects/continuous-effect.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
-import { untapPermanents } from "../permanents/untap.ts";
+import { happen } from "../pipeline/happen.ts";
 import { controllerOf } from "../rules/controller.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { emptyManaPool, MANA_TYPES } from "../state/mana.ts";
 import type { Step } from "../state/turn.ts";
-import { discardCards } from "../zones/discard.ts";
-import { drawCard } from "../zones/draw.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
 import { andThen, type Progress } from "./progress.ts";
@@ -27,7 +25,7 @@ import { queueWork } from "./work.ts";
 export const MAXIMUM_HAND_SIZE = 7;
 
 /** Begins a player's turn with its untap step (CR 501.1). Each player's land count starts again (CR 305.2). */
-export function beginTurn(state: GameState, player: PlayerId, number: number): Progress {
+export function beginTurn(state: GameState, player: PlayerId, number: number, cards: CardDatabase): Progress {
   const players = { ...state.players };
   for (const p of state.turnOrder) {
     const ps = players[p];
@@ -43,7 +41,7 @@ export function beginTurn(state: GameState, player: PlayerId, number: number): P
   }
   const begun: GameState = { ...state, players, objects, turn: { number, activePlayer: player, step: "untap" } };
   return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player }] }, (s) =>
-    beginStep(s, "untap"),
+    beginStep(s, "untap", cards),
   );
 }
 
@@ -51,16 +49,16 @@ export function beginTurn(state: GameState, player: PlayerId, number: number): P
  * Ends the current step (CR 500.5: unspent mana empties) and begins the next step that isn't skipped. After cleanup,
  * the next player in turn order begins their turn.
  */
-export function endStep(state: GameState): Progress {
+export function endStep(state: GameState, cards: CardDatabase): Progress {
   const turn = currentTurn(state);
   // As the end of combat step ends, every creature is removed from combat (CR 511.3).
   const left = turn.step === "endOfCombat" ? { ...state, combat: null } : state;
   const emptied = emptyManaPools(left);
   let next = stepAfter(turn.step);
   while (next !== null && isSkipped(emptied.state, next)) next = stepAfter(next);
-  if (next !== null) return andThen(emptied, (s) => beginStep(s, next));
+  if (next !== null) return andThen(emptied, (s) => beginStep(s, next, cards));
   const after = nextPlayer(state, turn.activePlayer);
-  return andThen(emptied, (s) => beginTurn(s, after, turn.number + 1));
+  return andThen(emptied, (s) => beginTurn(s, after, turn.number + 1, cards));
 }
 
 /**
@@ -68,7 +66,7 @@ export function endStep(state: GameState): Progress {
  * they choose that many cards to discard, one decision per card (`chosen` collects them), and then discard them all at
  * once: it's one action. Then the rest of the step.
  */
-export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []): Progress {
+export function finishCleanup(state: GameState, chosen: readonly ObjectId[], cards: CardDatabase): Progress {
   const turn = currentTurn(state);
   const hand = zoneList(state, { zone: "hand", player: turn.activePlayer });
   const excess = hand.length - MAXIMUM_HAND_SIZE;
@@ -81,7 +79,15 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[] = []
   }
   // CR 514.1 happens once per cleanup step, so after the discard the step moves on even if something left the hand
   // over its maximum; a new cleanup step would deal with that (CR 514.3a).
-  if (chosen.length > 0) return andThen(discardCards(state, chosen), endCleanup);
+  if (chosen.length > 0)
+    return andThen(
+      happen(
+        state,
+        { kind: "simultaneous", events: chosen.map((object) => ({ kind: "discard", object }) as const) },
+        cards,
+      ),
+      endCleanup,
+    );
   return endCleanup(state);
 }
 
@@ -109,8 +115,8 @@ export function cleanupCheck(state: GameState, cards: CardDatabase): Progress {
 }
 
 /** Another cleanup step begins (CR 514.3a), after the last one gave players priority and they all passed. */
-export function anotherCleanupStep(state: GameState): Progress {
-  return andThen(emptyManaPools(state), (s) => beginStep(s, "cleanup"));
+export function anotherCleanupStep(state: GameState, cards: CardDatabase): Progress {
+  return andThen(emptyManaPools(state), (s) => beginStep(s, "cleanup", cards));
 }
 
 /**
@@ -131,7 +137,7 @@ function isSkipped(state: GameState, step: Step): boolean {
 }
 
 /** Begins a step: its turn-based actions, then priority for the active player, if anyone gets priority in it. */
-function beginStep(state: GameState, step: Step): Progress {
+function beginStep(state: GameState, step: Step, cards: CardDatabase): Progress {
   const turn = currentTurn(state);
   const started: GameState = { ...state, turn: { ...turn, step }, passesInSuccession: 0 };
   const progress: Progress = {
@@ -141,15 +147,18 @@ function beginStep(state: GameState, step: Step): Progress {
   switch (step) {
     case "untap":
       // CR 502.3, then no one gets priority (CR 502.4) and the step ends.
-      return andThen(andThen(progress, untapStep), (s) => ({ state: queueWork(s, { kind: "endStep" }), events: [] }));
+      return andThen(
+        andThen(progress, (s) => untapStep(s, cards)),
+        (s) => ({ state: queueWork(s, { kind: "endStep" }), events: [] }),
+      );
     case "draw":
       // CR 504.1, then priority (CR 504.2).
       return andThen(
-        andThen(progress, (s) => drawCard(s, turn.activePlayer)),
+        andThen(progress, (s) => happen(s, { kind: "draw", player: turn.activePlayer }, cards)),
         priorityForActivePlayer,
       );
     case "cleanup":
-      return andThen(progress, finishCleanup);
+      return andThen(progress, (s) => finishCleanup(s, [], cards));
     case "beginningOfCombat":
       // The combat phase begins (CR 506.1): no attackers or blockers yet. Then priority (CR 507.2).
       return andThen(progress, (s) => priorityForActivePlayer({ ...s, combat: { attacks: [], blocks: [] } }));
@@ -171,12 +180,17 @@ function beginStep(state: GameState, step: Step): Progress {
 }
 
 /** The active player untaps all their permanents at once (CR 502.3). */
-function untapStep(state: GameState): Progress {
+function untapStep(state: GameState, cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
-  return untapPermanents(
-    state,
-    state.zones.battlefield.filter((id) => controllerOf(state, id) === active),
-  );
+  const untaps = state.zones.battlefield
+    .filter((id) => controllerOf(state, id) === active && isTapped(state, id))
+    .map((object) => ({ kind: "untap", object }) as const);
+  return happen(state, { kind: "simultaneous", events: untaps }, cards);
+}
+
+function isTapped(state: GameState, id: ObjectId): boolean {
+  const obj = state.objects[id];
+  return obj?.kind === "card" && obj.tapped;
 }
 
 function priorityForActivePlayer(state: GameState): Progress {

@@ -77,7 +77,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return error("illegalAction", `Playing a land doesn't answer a ${pending.kind} decision`);
     const problem = playLandProblem(answered, pending.player, action.object, cards);
     if (problem !== null) return error("illegalAction", problem);
-    return { ok: true, ...playLand(answered, pending.player, action.object) };
+    return { ok: true, ...playLand(answered, pending.player, action.object, cards) };
   }
   if (action.type === "CAST_SPELL") {
     if (pending.kind !== "priority") return error("illegalAction", `Casting doesn't answer a ${pending.kind} decision`);
@@ -93,19 +93,19 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     case "chooseStartingPlayer":
       if (answer.kind !== "chooseStartingPlayer") return mismatch;
       if (!state.turnOrder.includes(answer.player)) return error("illegalAction", `${answer.player} isn't a player`);
-      return { ok: true, ...setStartingPlayer(answered, answer.player, pending.player) };
+      return { ok: true, ...setStartingPlayer(answered, answer.player, pending.player, cards) };
     case "mulligan":
       if (answer.kind !== "mulligan") return mismatch;
       if (answer.choice === "mulligan" && !canMulligan(state, pending.player)) {
         return error("illegalAction", "No more mulligans: the hand would be zero cards (CR 103.5)");
       }
-      return { ok: true, ...declareMulligan(answered, pending.player, answer.choice) };
+      return { ok: true, ...declareMulligan(answered, pending.player, answer.choice, cards) };
     case "mulliganBottom":
       if (answer.kind !== "mulliganBottom") return mismatch;
       if (!zoneList(state, { zone: "hand", player: pending.player }).includes(answer.object)) {
         return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
       }
-      return { ok: true, ...putOnBottom(answered, pending.player, answer.object) };
+      return { ok: true, ...putOnBottom(answered, pending.player, answer.object, cards) };
     case "discardToHandSize": {
       if (answer.kind !== "discardToHandSize") return mismatch;
       if (
@@ -131,7 +131,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
     }
     case "declareAttackers": {
-      if (answer.kind === "finishDeclaring") return { ok: true, ...finishAttackers(answered, pending.chosen) };
+      if (answer.kind === "finishDeclaring") return { ok: true, ...finishAttackers(answered, pending.chosen, cards) };
       if (answer.kind !== "declareAttacker") return mismatch;
       const problem = attackProblem(answered, pending.chosen, answer.attack, cards);
       if (problem !== null) return error("illegalAction", problem);

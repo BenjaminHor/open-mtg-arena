@@ -5,7 +5,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { runEffect } from "../effects/run-effect.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
-import { tapPermanent } from "../permanents/tap.ts";
+import { happen } from "../pipeline/happen.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
@@ -87,7 +87,7 @@ export function resolveManaAbility(
   for (const part of ability.def.cost) {
     switch (part.kind) {
       case "tap":
-        progress = andThen(progress, (s) => tapPermanent(s, id));
+        progress = andThen(progress, (s) => happen(s, { kind: "tap", object: id }, cards));
         break;
       case "mana":
         throw new Error("mana abilities with mana costs aren't supported yet");

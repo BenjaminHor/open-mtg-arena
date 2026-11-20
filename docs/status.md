@@ -3,7 +3,7 @@
 Living document. Update it at the end of every task: what changed, what's next, and anything the
 next session needs to know. Keep it short. Move finished detail into commit messages.
 
-**Current milestone:** M1 — Engine foundations (`milestones/m1-engine-foundations.md`)
+**Current milestone:** M2 — Rules depth (`milestones/m2-rules-depth.md`)
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
@@ -14,25 +14,15 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   2026-11-20). `docs/milestones/m2-pool.md` maps all 234 cards (none left out) to the systems they need and the task
   after which each is playable; the M2 tasks are reordered by it (D-055). The table is kept by hand from now on: when a
   task scripts a card, check its row.
-- M2-03 Events and last known information (plan, 2026-11-20). CR 614, 616, 603.2, 603.10, 608.2h, 400.7.
-  - One entry point for everything that happens: a `ProposedEvent` union (move a card, deal damage, lose life, tap,
-    untap, add mana, draw, discard, shuffle, mark damage, destroy) and `happen(state, proposed)`: replace (identity
-    for now, the place CR 614–616 plug in), perform (today's primitives), trigger (collects the events; triggered
-    abilities plug in at M2-07). Callers stop calling the primitives directly; an architecture test checks that only
-    the pipeline imports them.
-  - Last known information is deferred to its first reader (future-rules.md, "Triggered abilities"): nothing reads it
-    in M2-03, so its lifetime can't be tested, and a new state field would move the replay hashes this refactor uses as
-    its exact check. When the first reader arrives, choose between a snapshot carried by the referrer (as
-    `casting.origin.card` and `ZONE_CHANGED.object` do) and a table that needs pruning.
-  - No behavior change: `golden:update` and `replays:update` both report nothing; `pnpm bench` passes.
-  - Before coding: list every primitive's call sites, and for each whether it reads the result (`newId`), runs code
-    after it, or runs while a decision is pending; check the batch cases (combat damage, state-based actions, "destroy
-    all") and nesting (destroy causes a zone move, each with its own replacement pass); derived events (`LAND_PLAYED`,
-    `CARD_DRAWN`, `CARD_DISCARDED`, `PERMANENT_DESTROYED`) move into `perform`. The import check allowlists, with
-    reasons, the code that still writes state directly (casting's reversal, the pregame, `createGame`).
-  - Future impact: replacements (M2-08) and triggers (M2-07) plug into this one place; a replacement needing a
-    player's choice (CR 616.1) will need `happen` to pause as work, so it returns through the work queue rather than
-    calling back.
+- M2-03 The event pipeline: built, in review (PR #23, D-056). `engine/src/pipeline/`: every game event is a
+  `ProposedEvent` carried out by `happen` (replace, perform, check triggers). Each event changes one object or player
+  and is performed whole; events at the same time are one `simultaneous` event (state-based actions, untap step,
+  attackers tapping, cleanup discard, a mulligan's hand); all replacing comes before any performing, so M2-08 can
+  pause for a choice. Only `perform.ts` imports the primitives (`test/pipeline/only-the-pipeline-performs.test.ts`).
+  Reworked after the first reviews (rules-judge and code-reviewer both found batches replaced one member at a time and
+  continuations that couldn't pause). Golden games and replays unchanged, bench within budget, fuzz clean. Last known
+  information is deferred to its first reader (future-rules.md, "Triggered abilities").
+- Next: M2-04 Targeting and costs with context.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with

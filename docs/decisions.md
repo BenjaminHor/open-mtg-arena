@@ -215,7 +215,8 @@ and avoids crossover or digital-only printings, without changing any rules behav
   included), not when the player keeps. Each card is a separate `mulliganBottom` decision, which keeps every legal answer
   listable and also sets the order. Players who mulligan together answer in turn order from the starting player.
 - Every zone change goes through `moveCard` (`engine/src/zones/move-card.ts`), the one place the replacement and
-  trigger steps of the event pipeline will plug in.
+  trigger steps of the event pipeline will plug in. Superseded in part by D-056: they plug in at `happen`, and only
+  the pipeline calls `moveCard`.
 - Only two-player games start for now: the multiplayer start rules (CR 103.5c, 103.8c) aren't built.
 - A standard opening needs at least 7 cards in each deck. That's an engine precondition, not a CR rule (legal decks are
   far bigger, CR 100.2a), so the start of the game can never draw from an empty library.
@@ -355,7 +356,8 @@ next to the rules they test. The CLI (M1-17) uses the runner for `new --scenario
   resolve at once (CR 605.3b), even while a payment is pending (CR 605.3a), and have no stack object. The context names the object
   "this" means, so activated abilities (M1-14) can make it the source rather than the ability.
 - All damage goes through `dealDamage`, which takes a list of damage dealt at once (spells now, combat in M1-13,
-  CR 510.2). Prevention and replacement (CR 614–615), lifelink, infect and wither (CR 120.3) plug in there. Life loss
+  CR 510.2). Prevention and replacement (CR 614–615), lifelink, infect and wither (CR 120.3) plug in there
+  (superseded in part by D-056: prevention and replacement plug in at the pipeline's `replace`). Life loss
   is its own function (`loseLife`, CR 119.3), so "whenever a player loses life" has one event: `LIFE_LOST`.
 - A recipient that's gone when its damage would be dealt is skipped, not an error: an earlier effect of the same spell
   could have moved it.
@@ -660,3 +662,39 @@ every schema change and every change D-024 lists bumps it.
   through the milestone (38 cards playable now, 93 after M2-05, 144 after M2-07, all 234 after M2-14).
 - Protection is split across tasks by its parts (CR 702.16): targeting and blocking with keywords, damage prevention
   with M2-08, "can't be enchanted or equipped" with M2-12.
+
+**D-056: One event pipeline: replace everything, then perform everything** · 2026-11-20 · accepted (M2-03)
+- Every game event is a `ProposedEvent` carried out by `happen(state, proposed, cards)` (`engine/src/pipeline/`):
+  replace (only CR 120.8's dropping of 0 damage until M2-08), perform, check triggers (nothing until M2-07). Only
+  `perform.ts` calls the primitives that perform events; a test fails if another engine file imports one. Supersedes
+  in part D-030 and D-036, which put the plug-in points in `moveCard` and `dealDamage`.
+- An event changes one object or player and is performed whole. Destroying is moving to the graveyard (CR 701.8a),
+  discarding is moving from hand to graveyard (CR 701.9a), playing a land is its move plus counting the play (CR 305.1,
+  305.2): one event each, not an outer event that proposes an inner zone change. So "would be destroyed" and "would
+  die" replacements apply to the same event, in the order its controller chooses (CR 616.1, as the CR's example under
+  616.1f has it for "would die" and "would be put into a graveyard"). A damage event's results are part of it
+  (CR 120.4c).
+- Destroy and regeneration, asked of the owner on 2026-11-20 at the rules-judge's request. The owner: "I'm inclined to
+  say that a destroyed card goes to the graveyard but I would defer to the CR." Following the CR: destroying *is* the
+  move to the graveyard (CR 701.8a), dying *is* that move (CR 700.4), and the CR's example under 616.1f has a "would
+  die" and a "would be put into a graveyard" replacement on one destroyed creature, its controller choosing the order.
+  So regeneration (which replaces the destruction, CR 701.8c, 614.8) and a "would die" replacement apply to one event,
+  in the order the creature's controller chooses (CR 616.1e). The one point against: CR 616.1g's example treats
+  entering the battlefield as an event contained in creating a token, though CR 701.7a defines creating as putting it
+  onto the battlefield, so a definition alone doesn't make two things one event. But the CR names no event contained in
+  a destruction, and its own destruction example (616.1f) treats the two replacements as rival choices on one event.
+  M2-08 tests it with a scenario (its acceptance list); the M10 pool may not have a card that shows it.
+- Events that happen at the same time are one `simultaneous` event of single events: the state-based actions of one
+  check (CR 704.3), the untap step (CR 502.3), the attackers tapping (CR 508.1f), the cleanup discard (CR 514.1).
+  Every member is replaced against the state before the batch (CR 614.4, built with M2-08), then all are performed,
+  and triggers see them together.
+- Replacing comes entirely before performing, so a replacement that needs a choice (CR 616.1) can stop before anything
+  has changed. Making `happen` resumable is M2-08's: it becomes a work item, and the callers that do more after it
+  returns (listed in the pipeline README) queue that rest as work.
+- Nothing re-proposes an event, so a replacement's one chance at an event (CR 614.5) is all inside one `replace`.
+- Callers read the new object a move made from its `ZONE_CHANGED` event (`zoneChangeOf`), not the proposal.
+- Bookkeeping that isn't a game event stays outside (the README lists it). The pregame's shuffles, draws and mulligan
+  moves go through the pipeline. Events emitted outside it (`STEP_BEGAN`, `TURN_BEGAN`, `SPELL_CAST`,
+  `ABILITY_ACTIVATED`, `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`, `SPELL_RESOLVED`, `PLAYER_LOST`; "becomes the
+  target" has no event yet) are M2-07's to route when a trigger needs one.
+- Done with no behavior change: the golden games and replays are identical, and `pnpm bench` passes.
