@@ -78,15 +78,40 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       questions). A 300-game fuzz found a false alarm in the leak check (a card drawn and discarded in one action
       looked hidden from its own drawer); the check now counts it as seen, with a test. The draw-several container
       (CR 121.2a) moves to M2-08.
-    - M2-05b2, choices at resolution (now; first profile a slow fuzz seed, then the plan reviewed): Merfolk Looter, Mind Rot, Duress, Ponder, Fabricate,
-      Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Haunting Echoes, Elvish Piper. Constraints from the advisor:
-      a re-queued effect must run before the work behind it (test first); nothing happens before all answers are in
-      (no doubled reveal or move); one card per answer, as `discardToHandSize`; always a legal answer (counts clamped,
-      a search may find nothing, check CR 701.23 for "a card"); the chooser isn't always the controller; the cards a
-      decision shows go on the decision, with visibility from one function shared by `playerView`, `eventsFor` and the
-      fuzz leak check, and a two-worlds test for Haunting Echoes; check whether "put onto the battlefield tapped"
-      becomes tapped; Rampant Growth isn't a land play; Birds of Paradise's choice inside a mana ability during payment
-      (M2-05c) can't use `waitFor` there. The slow fuzz is profiled (Known issues; D-061 for the picker, its own PR).
+    - M2-05b2, choices at resolution (now), split in two. Plan (2026-11-20), to be reviewed by the rules-judge before
+      code:
+      - Shared (built in b2a): an effect that needs choices stops with a `chooseCards` decision and, on each answer,
+        is queued again in front of the rest of the resolution (`queueWork`) with the cards chosen so far, as
+        `discardToHandSize` does; it does nothing until every answer is in (CR 608.2d). One card per answer, plus a
+        `finishChoosing` answer once the minimum is reached. The decision holds `from` (what may be chosen), `shown`
+        (what the chooser may see because of it: a revealed hand, a searched library), `min`, `max`, `chosen`, and
+        the player choosing, who isn't always the controller (Mind Rot: the target player, CR 701.9b). Counts are
+        clamped to what's there (CR 609.3); with nothing to choose there's no decision, so there's always a legal
+        answer. `playerView` shows a decision's `shown` cards only to its player; a `CARDS_REVEALED` event shows
+        revealed cards to everyone (CR 701.20a); the fuzz leak check takes both as "seen" from the decision and event
+        data. A step that must not repeat (a reveal) is its own effect, ahead of the one that waits.
+      - M2-05b2a, choices from a hand: Mind Rot (`discard` op: the player discards N of their choice, CR 701.9a-b),
+        Merfolk Looter (draw, then discard, nothing between: its ruling), Duress (`target opponent`, CR 102.2;
+        `revealHand`, then `discard` chosen by "you" with a filter, from the revealed hand; none fits, nothing
+        discarded), Elvish Piper (`putOntoBattlefield` from hand, "you may": min 0; enters under the controller's
+        control, CR 110.2a; not cast, so no spell and summoning sick).
+      - M2-05b2b, libraries: Fabricate, Diabolic Tutor, Rampant Growth, Terramorphic Expanse (`search`: look at the
+        whole library, CR 701.23a; with a stated quality the searcher may find none, CR 701.23b; "a card" must be
+        found if there's one, CR 701.23d; then reveal if the card says so, CR 701.23e, put it somewhere, shuffle,
+        CR 701.24a); "onto the battlefield tapped" enters tapped as part of the move, not by a tap event (CR 110.5b),
+        and isn't a land play (CR 305.4); "Sacrifice this land" as a cost part, paid after {T} (D-059). Ponder
+        (`lookAtTop` and put back in any order, one card per answer from the top, CR 701.20e; "you may shuffle" as a
+        yes/no decision; draw). Haunting Echoes (exile all but basic lands from the target's graveyard; search the
+        target's library for any number with those names, CR 701.23b and its ruling; exile them; the target shuffles):
+        "exiled this way" is the first effect's result read by the next, kept on the resolving object until it
+        finishes resolving; a two-worlds test that the searcher sees the target's library and the target doesn't.
+      - Constraints carried over: a re-queued effect runs before the work behind it (test first); nothing moves before
+        all answers are in; Birds of Paradise's color choice inside a mana ability (M2-05c) can't wait this way.
+      - Future impact: "whenever a player discards / searches / shuffles" (M2-07) read the events this adds; a
+        replacement on a discard or a move (M2-08) sees one event per instruction, the choices already made; multiple
+        searchers at once decide in APNAP order (CR 701.23i, not in the pool); "creature card" in a hand is read
+        through `cardTypesOf`. Shuffled cards keep their object ids: ids seen during a search or a look never surface
+        after the cards leave the library (D-054), so renumbering isn't needed yet.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
