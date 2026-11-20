@@ -1,0 +1,19 @@
+name: A trampler blocked by Darksteel Colossus must assign it lethal damage first, though it can't be destroyed; none tramples over
+rules: [CR 702.19b, CR 702.12b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino]
+  p2:
+    battlefield: [Darksteel Colossus]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Darksteel Colossus: Stampeding Rhino }
+  - all pass: until main2
+  - expect:
+      p2.life: 20
+      p2:Darksteel Colossus.damage: 4
+      p2.battlefield: [Darksteel Colossus]
+      p1.graveyard: [Stampeding Rhino]

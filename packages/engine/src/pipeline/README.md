@@ -11,9 +11,12 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    `SingleEvent` changes one object or player (or is one damage event, CR 120.4). Events at the same time are one
    `simultaneous` event: the state-based actions of a check, the untap step, the attackers tapping, the cleanup
    discard, a mulligan's hand going back.
-2. **Replace** (`happen.ts`, `replace`): replacement and prevention effects modify each event, every member of a
-   batch against the state before the batch. Only CR 120.8 is here so far: 0 damage is dropped, so nothing can replace
-   it.
+2. **Replace** (`happen.ts`, `replace`; `replacements.ts`): replacement and prevention effects modify each event,
+   every member of a batch against the state before the batch (CR 614.4). So far: 0 damage is dropped, so nothing can
+   replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b); and a card's own
+   replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
+   into a graveyard from anywhere, ... instead". Destroy, sacrifice, counter and discard carry where a replacement sends
+   the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is
    its move to the graveyard (CR 701.8a), not a second event.
@@ -53,7 +56,9 @@ anything can replace or trigger on:
 
 ## Not built yet
 
-- **Pausing for a choice** (M2-08). `happen` becomes a work item that can wait for a decision; every caller that does
+- **Several replacements on one event** (M2-08c): `replacements.ts` refuses when two apply; the affected player chooses
+  (CR 616.1), each applies once (CR 614.5), the rest are checked again (CR 616.1f).
+- **Pausing for a choice** (M2-08c). `happen` becomes a work item that can wait for a decision; every caller that does
   more after `happen` returns must then queue the rest as work: `startCast` (`game/cast.ts`), `playLand`, `putOnBottom`
   and the pregame loops, `finishAttackers`, `combatDamage`, `checkStateBasedActions`, `finishCleanup`, resolution
   (`game/resolve.ts`), `drawEach` and `discardAtRandom` (`effects/player-effects.ts`), the draw and untap steps, and mana abilities (`mana/activate.ts`), which resolve at once

@@ -226,7 +226,10 @@ result per player. Combat (D-040) throws when attacks go to several players; eac
 **Mana beyond six counters (CR 106.6, 106.12, 107.4h).** Mana with spending restrictions or riders, "tapped for mana"
 triggers and replacements, snow mana, sources that make more than one mana or a choice of colors.
 *Needs now:* `ManaPool` is six counters, which these rules will outgrow (a state migration); `MANA_ADDED` already names
-its source; `autoPay` handles one-color and any-color sources (D-068); it needs a real search once a source offers a restricted choice ("{R} or {G}"), makes several mana, or has a mana cost.
+its source; `autoPay` handles one-color, two-color ("{G} or {W}", D-085) and any-color sources (D-068) by trying the
+sources with the fewest choices first, which always works for a cost of one color (every Magic 2010 cost); it needs a
+real search once a cost has two colors and two-color sources could be needed for both, or a source makes several mana
+or has a mana cost.
 
 **Cancelling a cast, as rules grow (CR 734.1, D-035).** Cancelling restores a snapshot: the card, its place in hand,
 the pool before, and the permanents tapped for mana.

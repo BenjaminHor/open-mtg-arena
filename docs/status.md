@@ -371,6 +371,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      the advisor's review), in five PRs. Three later cards shape the data now: Clone (M2-14, a copy as it enters,
      CR 616.1c), Protean Hydra (M2-10, a prevention that removes counters), Magebane Armor (M2-12, a granted
      noncombat-damage prevention).
+     - M2-08a: built (D-085), in review. 15 scenarios in `test/scenarios/cards/m2-08a/`, a CR 614.4 unit test
+       (`test/pipeline/replacements.test.ts`), an Indestructible matrix row, three golden games; the Magic 2010 decks
+       run checklands. 158 cards; 150 of the 234 Magic 2010 cards. Plan as made:
      - M2-08a, the framework, no player choice: replacement effects as data, applied in `pipeline/happen.ts`'s
        `replace` to each event against the state before its batch (CR 614.4), each at most once per event
        (CR 614.5), the result replaced again (CR 616.1f). Until M2-08c, `replace` throws if two different effects

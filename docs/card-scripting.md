@@ -81,7 +81,8 @@ export const furnaceWhelp: CardDef = {
 - Amounts: a number, `"X"`, or `{ count: { subtypes: ["Swamp"], controller: "you" } }` ("the number of Swamps you
   control"). "Each creature without flying" is the subject `{ each: { types: ["creature"], notKeywords: ["flying"] } }`;
   "...and 3 damage to you" is `and: [{ to: "you", amount: 3 }]` on `dealDamage`. "Spend only black mana on X" is
-  `xPaidWith: "B"` on the spell. "Add one mana of any color" is `{ op: "addMana", mana: "anyColor", amount: 1 }`;
+  `xPaidWith: "B"` on the spell. "Add one mana of any color" is `{ op: "addMana", mana: "anyColor", amount: 1 }`, and
+  "Add {G} or {W}" is `mana: { oneOf: ["G", "W"] }` (the color comes with the activation, D-068);
   "each opponent sacrifices a land of their choice" is `{ op: "sacrifice", who: "eachOpponent", filter: { types:
   ["land"] } }`.
 - Filters: "basic land card" is `{ supertypes: ["basic"], types: ["land"] }`; "other than basic land cards" is
@@ -120,6 +121,11 @@ export const furnaceWhelp: CardDef = {
   is untapped" right after the condition is an intervening if, `onlyIf: { kind: "sourceUntapped" }` (CR 603.4). "You
   may" is `optional: true` (asked as it resolves). "That player" is the subject `"triggeringPlayer"`; "sacrifice it"
   (the source) is `{ op: "sacrificeSource" }`. The engine reads them only through `triggersOf`.
+- Replacement effects in a card's own text are `def.replacements` (CR 614.1, D-085), read only through
+  `replacementsOf`: "This land enters tapped unless you control a Forest or a Plains" is `{ kind: "entersTapped",
+  unless: { subtypes: ["Forest", "Plains"], controller: "you" } }` (land types, not names; "you" is the player it
+  enters under); "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's
+  library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12).
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).
