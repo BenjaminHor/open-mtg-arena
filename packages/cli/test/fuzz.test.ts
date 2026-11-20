@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { cardDatabase } from "@mtg/cards";
 import {
+  type Action,
   type GameEvent,
   type GameState,
   type ObjectId,
@@ -15,6 +16,7 @@ import {
 } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { ALL_CHECKS, type Check, lifeThroughEvents, scrambleHidden, viewsLeakNothing } from "../src/fuzz/checks.ts";
+import { pickAction } from "../src/fuzz/pick-action.ts";
 import { runFuzz } from "../src/fuzz/run-fuzz.ts";
 import { fuzzGame } from "../src/fuzz/run-game.ts";
 import { fuzz } from "../src/fuzz.ts";
@@ -32,6 +34,26 @@ describe("fuzzGame", () => {
       expect(result.ok ? "ok" : result.problem, `seed ${seed}`).toBe("ok");
     }
   }, 60_000);
+
+  it("picks a kind of action, then one of that kind; every listed action stays possible, cancel less often (D-061)", () => {
+    const action = (i: number): Action => ({ type: "CAST_SPELL", player: "p1", object: `o${i}` }) as unknown as Action;
+    const pass = { type: "PASS_PRIORITY", decisionId: "d1", player: "p1" } as Action;
+    const cancel = { type: "ANSWER", decisionId: "d1", player: "p1", answer: { kind: "cancelCast" } } as Action;
+    const listed = [pass, action(1), action(2), action(3), action(4), cancel];
+    const picked = new Map<Action, number>();
+    let seed = 1;
+    for (let i = 0; i < 4000; i++) {
+      const r = pickAction(listed, seed);
+      picked.set(r.action, (picked.get(r.action) ?? 0) + 1);
+      seed = r.seed;
+    }
+    for (const a of listed) expect(picked.get(a) ?? 0, JSON.stringify(a)).toBeGreaterThan(0);
+    // Passing is one kind of three (weights 1, 1, 0.1), not one action of six; the four casts share one kind.
+    expect(picked.get(pass)).toBeGreaterThan(1600);
+    expect(picked.get(cancel)).toBeLessThan(400);
+    expect(pickAction(listed, 7)).toStrictEqual(pickAction(listed, 7));
+    expect(() => pickAction([], 1)).toThrow(/no legal actions/);
+  });
 
   it("is deterministic: one seed is one game", () => {
     expect(fuzzGame(7, [], cards)).toEqual(fuzzGame(7, [], cards));

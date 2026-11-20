@@ -766,3 +766,16 @@ every schema change and every change D-024 lists bumps it.
   (`KEYWORD_ACTIONS`, CR 701 vs 702). Scenarios can name a card in a graveyard: `graveyard:p1:Grizzly Bears`.
 - The fuzzer's leak check counts a card the viewer saw during the action (drawn, then discarded by Burning Inquiry) as
   seen: the ids a card gets moving into a zone the viewer sees are theirs to know.
+
+**D-061: The fuzzer picks a kind of action first** · 2026-11-20 · accepted
+- Picking uniformly among the legal actions spent most of a fuzz game on casts that ended in a cancel: every card in
+  hand is listed whether it can be paid or not (D-035), so with five uncastable cards, passing was one choice in seven.
+  In seed 13, 814 casts were cancelled and 15 cast.
+- The fuzzer now picks a kind of action (the action's type, or an answer's kind) and then one action of that kind.
+  Cancelling a cast or activation weighs a tenth of any other kind. No listed action has weight 0, so cancels and
+  mid-payment paths are still explored. It reads only the listed actions, not whether a cost can be paid, so the
+  fuzzer doesn't trust the code it tests.
+- Over seeds 1 to 40: 2,250 actions a game went to 1,809, spells cast from 13 to 18 a game, time down 22%, and three
+  more event types are reached (ABILITY_DID_NOT_RESOLVE, LIFE_GAINED, SPELL_DID_NOT_RESOLVE); none is lost.
+- The `random` agent of `ai` and `auto` is unchanged, so the golden games, the bench's random games and the CLI tests
+  play the same games. Golden generation can move to the picker when the golden games are regenerated (after M2-05c).

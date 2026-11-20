@@ -16,6 +16,7 @@ import { chooseAction, nextRandom } from "../agents.ts";
 import { deckGameSetup } from "../deck-setup.ts";
 import { FORMAT, type GameFile, replay } from "../game-file.ts";
 import type { Check } from "./checks.ts";
+import { pickAction } from "./pick-action.ts";
 
 export type FuzzResult =
   | { ok: true; file: GameFile; state: GameState }
@@ -77,7 +78,7 @@ export function fuzzGame(seed: number, checks: readonly Check[], cards: CardData
     if ((state.turn?.number ?? 0) > turnCap) return fail(`the game passed ${turnCap} turns: a likely loop`, null);
     const pending = state.pending;
     if (pending === null) return fail("the engine stalled: nothing pending and no result", null);
-    // Mostly random; one decision in ten the first legal action, which passes and declines, so games move on. Rarely
+    // Mostly random by kind of action (D-061); one decision in ten the first legal action, which passes and declines, so games move on. Rarely
     // a player concedes, which can happen at any time (CR 104.3a) and isn't among the legal actions (D-042).
     const roll = nextRandom(rng);
     rng = roll.seed;
@@ -97,7 +98,7 @@ export function fuzzGame(seed: number, checks: readonly Check[], cards: CardData
         return fail(`legalActions threw: ${message(error)}`, null);
       }
       if (legal.length === 0) return fail(`nothing legal for ${pending.player}'s ${pending.kind} decision`, null);
-      const choice = chooseAction(roll.value < 0.1 ? "first-legal" : "random", state, legal, rng);
+      const choice = roll.value < 0.1 ? chooseAction("first-legal", state, legal, rng) : pickAction(legal, rng);
       rng = choice.seed;
       action = choice.action;
     }
