@@ -8,12 +8,12 @@ import type { ObjectId } from "../state/ids.ts";
 
 /** Counts one more activation of the object's printed ability `index`. */
 export function countActivation(state: GameState, object: ObjectId, index: number): GameState {
-  const others = state.activationsThisTurn.filter((a) => !(a.object === object && a.index === index));
+  const others = state.turnHistory.activations.filter((a) => !(a.object === object && a.index === index));
   const count = activationsThisTurn(state, object, index) + 1;
-  return { ...state, activationsThisTurn: [...others, { object, index, count }] };
+  return { ...state, turnHistory: { ...state.turnHistory, activations: [...others, { object, index, count }] } };
 }
 
 /** How many times this turn the object's printed ability `index` has become activated. */
 export function activationsThisTurn(state: GameState, object: ObjectId, index: number): number {
-  return state.activationsThisTurn.find((a) => a.object === object && a.index === index)?.count ?? 0;
+  return state.turnHistory.activations.find((a) => a.object === object && a.index === index)?.count ?? 0;
 }

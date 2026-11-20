@@ -7,6 +7,7 @@
 // Each field of a card's definition is mapped to its units in a table the compiler checks (`Record<keyof ...>`), so a
 // new field, keyword, decision or event kind can't quietly go uncovered.
 
+import { conditionalEffects, delayedAbilities } from "@mtg/cards";
 import type {
   AbilityDef,
   CardDatabase,
@@ -127,6 +128,7 @@ export function wantedMechanics(cards: CardDatabase): string[] {
     ...(card.def.spell === undefined ? [] : spellUnits(card.def.spell, true)),
     ...(card.def.abilities ?? []).flatMap(abilityUnits),
     ...(card.def.triggers ?? []).flatMap(triggerUnits),
+    // A delayed triggered ability: wanted, but credited as it resolves.
     ...allEffects(card.def).flatMap((effects) =>
       delayedAbilities(effects).flatMap((ability) => [DELAYED_TRIGGER, ...triggerUnits(ability)]),
     ),
@@ -199,23 +201,9 @@ export function triggerUnits(trigger: TriggeredAbilityDef): string[] {
 const targetUnit = (t: TargetSpec): string => `target ${t.kind}`;
 
 /**
- * Each effect op, those nested in `ifNothingSacrificed` too. Coarse on purpose: a nested op counts when its ability
- * resolves, whether or not its branch ran.
+ * Each effect op, those inside a condition too (`conditionalEffects`). Coarse on purpose: a nested op counts when its
+ * ability resolves, whether or not its branch ran.
  */
 function effectOps(effects: readonly Effect[]): string[] {
   return effects.flatMap((e) => [`effect ${e.op}`, ...effectOps(conditionalEffects(e))]);
-}
-
-/** The effects inside a condition, which run as part of the same resolution. */
-function conditionalEffects(effect: Effect): readonly Effect[] {
-  return effect.op === "ifNothingSacrificed" || effect.op === "ifActivatedThisTurn" ? effect.effects : [];
-}
-
-/** The delayed triggered abilities these effects make, wherever they're nested: wanted, but credited as they resolve. */
-function delayedAbilities(effects: readonly Effect[]): TriggeredAbilityDef[] {
-  return effects.flatMap((e) =>
-    e.op === "createDelayedTrigger"
-      ? [e.ability, ...delayedAbilities(e.ability.effects)]
-      : delayedAbilities(conditionalEffects(e)),
-  );
 }

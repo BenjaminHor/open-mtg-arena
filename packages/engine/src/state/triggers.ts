@@ -46,9 +46,3 @@ export type DelayedTrigger = {
   controller: PlayerId;
   ability: TriggeredAbilityDef;
 };
-
-/**
- * How many times this turn an object's printed activated ability has become activated (D-078: counted as it's
- * activated, whether or not it resolves), for "if this ability has been activated four or more times this turn".
- */
-export type ActivationCount = { object: ObjectId; index: number; count: number };

@@ -4,7 +4,7 @@
 import type { AbilityDef, CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import { stackAbilityDef } from "./abilities.ts";
+import { isTriggerRef, stackAbilityDef } from "./abilities.ts";
 
 /**
  * The total cost of a spell (CR 601.2f): its mana cost with X as the announced amount of generic mana (CR 107.3a), plus
@@ -66,7 +66,7 @@ export function costOf(state: GameState, id: ObjectId, cards: CardDatabase): Man
     }
     case "ability":
       // A triggered ability has no cost to pay as it's put on the stack (CR 603.3d).
-      if (obj.ability.kind === "triggered") return [];
+      if (isTriggerRef(obj.ability)) return [];
       return withX(activationManaCost(stackAbilityDef(state, id, cards)), obj.choices.x ?? 0);
   }
 }
@@ -79,6 +79,6 @@ export function announcesX(state: GameState, id: ObjectId, cards: CardDatabase):
     case "card":
       return hasX(cards[obj.oracleId]?.printed.manaCost ?? null);
     case "ability":
-      return obj.ability.kind !== "triggered" && hasX(activationManaCost(stackAbilityDef(state, id, cards)));
+      return !isTriggerRef(obj.ability) && hasX(activationManaCost(stackAbilityDef(state, id, cards)));
   }
 }

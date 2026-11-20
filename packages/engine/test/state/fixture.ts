@@ -147,7 +147,7 @@ export function midTurnState(): GameState {
     pendingTriggers: [],
     lastKnown: {},
     delayedTriggers: [],
-    activationsThisTurn: [],
+    turnHistory: { activations: [] },
     work: [
       {
         kind: "runEffect",

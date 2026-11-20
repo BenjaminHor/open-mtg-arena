@@ -45,6 +45,8 @@ the one place their effects become changes to the game.
 | `shuffle` / `mayShuffle` | "Then shuffle" / "You may shuffle" | Shuffles (CR 701.24a); `mayShuffle` asks yes or no first |
 | `lookAtTop` | "Look at the top three cards of your library, then put them back in any order" | The player is shown them and puts them back top first (CR 701.20e, 401.4) |
 | `destroyOneAtRandom` | "Destroy one of them at random" | One of the permanents its subjects name, still legal and on the battlefield, picked with the seeded RNG (`destroy-at-random.ts`) |
+| `ifActivatedThisTurn` | "If this ability has been activated four or more times this turn, ..." | Its `effects` happen only if the resolving activated ability has become activated `atLeast` times this turn, its own activation counted, read now (CR 608.2h, D-078); for an activated ability only |
+| `createDelayedTrigger` | "Sacrifice Dragon Whelp at the beginning of the next end step" | Makes a delayed triggered ability, with this spell's or ability's source and controller (CR 603.7d, 603.7e), waiting in `GameState.delayedTriggers` (`triggers/delayed.ts`) |
 | `ifNothingSacrificed` | "If you can't sacrifice a creature, tap this creature and you lose 7 life" | Its `effects` happen only if no earlier `sacrifice` of this resolution sacrificed anything (CR 608.2c) |
 | `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |

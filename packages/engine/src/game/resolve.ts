@@ -11,7 +11,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
-import { holds } from "../triggers/detect.ts";
+import { holds } from "../triggers/match-event.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";

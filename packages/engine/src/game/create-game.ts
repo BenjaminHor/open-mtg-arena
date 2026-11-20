@@ -9,6 +9,7 @@ import type { CardObject } from "../state/objects.ts";
 import type { EngineResult } from "../state/result.ts";
 import type { GameSetup, PermanentSetup, PlayerSetup } from "../state/setup.ts";
 import { phaseOf } from "../state/turn.ts";
+import { newTurnHistory } from "../state/turn-history.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { ENGINE_VERSION } from "../version.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
@@ -116,7 +117,7 @@ function emptyGame(setup: GameSetup): GameState {
     pendingTriggers: [],
     lastKnown: {},
     delayedTriggers: [],
-    activationsThisTurn: [],
+    turnHistory: newTurnHistory(),
     work: [],
     pending: null,
     result: null,

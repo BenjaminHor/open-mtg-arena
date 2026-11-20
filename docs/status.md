@@ -283,7 +283,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        with the test-only instant Late Gift), definition checks, two matrix cells (Firebreathing × Triggers, Burn ×
        Triggers), golden logs with `targeted:` lines (additions only), pool-579 and pool-111 covering `trigger delayed`
        and `selfBecomesTarget`, docs. 152 cards; 144 of the 234 Magic 2010 cards. Not put in the M10 pair: each of its
-       slots carries a rule the pool needs. Left: fuzz, mutation pass, bench, rules-judge and code-reviewer, PR.
+       slots carries a rule the pool needs. Fuzz (300 games), mutation pass (10 caught), bench, rules-judge and code-reviewer all done, fixes in. Next: the PR.
        Design (2026-11-20, with the advisor's review):
        - `GameState.delayedTriggers`: each `{ source, sourceOracleId, controller, ability }`, the ability a
          `TriggeredAbilityDef` (its `when` limited to the next "beginning of step" for now). Created by an effect
@@ -291,7 +291,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          `detectTriggers` apart from the battlefield's (no early exit, no source lookup), and removed as it triggers
          (CR 603.7b). A pending trigger refers to its ability by `{ kind: "triggered", index }` or
          `{ kind: "delayed", ability }`; one lookup resolves both, and identical delayed triggers stay unasked (D-077).
-       - Dragon Whelp: `GameState.activationsThisTurn` counts each object's printed ability as it becomes activated
+       - Dragon Whelp: `GameState.turnHistory.activations` counts each object's printed ability as it becomes activated
          (where `ABILITY_ACTIVATED` is emitted: a cancel never counts, a countered activation does, D-078), reset as a
          turn begins; the effect `ifActivatedThisTurn { atLeast, effects }` reads its own ability's count through the
          resolving stack object.

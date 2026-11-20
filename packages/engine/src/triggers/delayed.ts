@@ -9,17 +9,18 @@ import type { Progress } from "../game/progress.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { PendingTrigger } from "../state/triggers.ts";
-import { matches } from "./detect.ts";
+import type { DelayedTrigger, PendingTrigger } from "../state/triggers.ts";
+import { matches } from "./match-event.ts";
 
 /**
  * Makes a delayed triggered ability. Its source is the resolving spell's or ability's source, and its controller who
- * controlled that spell or ability as it resolved (CR 603.7d, 603.7e): `context.self` and `context.controller`.
+ * controlled that spell or ability as it resolved (CR 603.7d, 603.7e): `context.self` and `context.controller`. The
+ * source's card is read from the resolving object itself, as the source may already be gone (CR 113.7a).
  */
 export function createDelayedTrigger(state: GameState, ability: TriggeredAbilityDef, context: EffectContext): Progress {
-  const source = state.objects[context.self] ?? state.lastKnown[context.self];
-  if (source === undefined) throw new Error(`no source ${context.self} for a delayed trigger`);
-  const sourceOracleId = source.kind === "card" ? source.oracleId : source.sourceOracleId;
+  const resolving = state.resolution === null ? undefined : state.objects[state.resolution.object];
+  if (resolving === undefined) throw new Error("a delayed trigger is made only as a spell or ability resolves");
+  const sourceOracleId = resolving.kind === "card" ? resolving.oracleId : resolving.sourceOracleId;
   const delayed = { source: context.self, sourceOracleId, controller: context.controller, ability };
   return { state: { ...state, delayedTriggers: [...state.delayedTriggers, delayed] }, events: [] };
 }
@@ -31,19 +32,22 @@ export function createDelayedTrigger(state: GameState, ability: TriggeredAbility
  */
 export function detectDelayed(state: GameState, events: readonly GameEvent[], cards: CardDatabase): GameState {
   if (state.delayedTriggers.length === 0) return state;
+  const waiting: DelayedTrigger[] = [];
   const fired: PendingTrigger[] = [];
-  const waiting = state.delayedTriggers.filter((d) => {
-    const event = events.flatMap((e) => matches(state, d.source, d.ability.when, e, cards))[0];
-    if (event === undefined) return true;
-    fired.push({
-      source: d.source,
-      sourceOracleId: d.sourceOracleId,
-      ref: { kind: "delayed", ability: d.ability },
-      controller: d.controller,
-      event,
-    });
-    return false;
-  });
+  for (const delayed of state.delayedTriggers) {
+    // later: CR 603.7b, its controller chooses which of several simultaneous events triggered it; a step beginning
+    // happens once.
+    const event = events.flatMap((e) => matches(state, delayed.source, delayed.ability.when, e, cards))[0];
+    if (event === undefined) waiting.push(delayed);
+    else
+      fired.push({
+        source: delayed.source,
+        sourceOracleId: delayed.sourceOracleId,
+        ref: { kind: "delayed", ability: delayed.ability },
+        controller: delayed.controller,
+        event,
+      });
+  }
   if (fired.length === 0) return state;
   return { ...state, delayedTriggers: waiting, pendingTriggers: [...state.pendingTriggers, ...fired] };
 }

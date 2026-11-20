@@ -1133,7 +1133,8 @@ every schema change and every change D-024 lists bumps it.
   no targets; the card definitions refuse anything else, since "your next upkeep" would need its own controller, not
   its source's (future-rules).
 - Activations are counted per object, per printed ability, as each becomes activated (where `ABILITY_ACTIVATED` is
-  emitted), in `GameState.activationsThisTurn`, emptied as a turn begins (D-078). The effect
+  emitted), in `GameState.turnHistory.activations` (the "this turn" container architecture.md planned), emptied as a turn
+  begins (D-078). The effect
   `ifActivatedThisTurn { atLeast, effects }` reads its own ability's count as it resolves, so it's for activated
   abilities only.
 - "Becomes the target" is an event, `BECAME_TARGET`, emitted as each object target is chosen (spells, activated and
@@ -1141,3 +1142,9 @@ every schema change and every change D-024 lists bumps it.
   pending trigger: a cast starts only with none waiting, so all of them came from it.
 - Golden cover: a delayed trigger is its own unit, `trigger delayed`, credited only as one resolves, since the effect
   that makes it is credited whether or not its condition held.
+- The card definition checks read a delayed ability as its own triggered ability (its effects run apart, with its own
+  targets and trigger event), named "<card> ability 1 delayed trigger"; a condition's effects are read with the
+  effects around them. Which ops nest other effects is one exhaustive switch (`cards/src/flat-effects.ts`), which the
+  golden cover imports too (code review).
+- Waiting delayed triggers aren't in `playerView` yet, nor is making one an event; the match UI (M3) adds both
+  (status, Known issues).

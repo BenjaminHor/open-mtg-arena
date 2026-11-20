@@ -75,7 +75,7 @@ type GameState = {
   delayedTriggers: DelayedTrigger[]
   pendingTriggers: PendingTrigger[] // triggered, waiting to be put on the stack (CR 603.3)
   lastKnown: Record<ObjectId, CardObject> // cards as they last were on the battlefield (CR 608.2h), until the stack empties
-  turnHistory: TurnHistory          // facts later rules ask about ("a creature died this turn")
+  turnHistory: TurnHistory          // facts later rules ask about, emptied each turn (activations, D-078; later "a creature died this turn")
 
   pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1
   passesInSuccession: number       // priority passes in a row (CR 117.4)
@@ -180,7 +180,7 @@ simple.
      the graveyard), and all replacing is done before any performing, so a replacement's choice can pause the event.
   4. **Trigger**: check triggered abilities against the events and add `pendingTriggers` (CR 603.2), once per
      proposed event, after everything it caused. Events emitted outside the pipeline (a step beginning, attackers
-     or blockers declared, a spell cast, a land tapped for mana) are matched where they're emitted (`engine/src/triggers/README.md`).
+     or blockers declared, a spell cast, a land tapped for mana, a target chosen) are matched where they're emitted (`engine/src/triggers/README.md`).
   Only the pipeline calls the primitives that change the game; a test checks the imports.
 - Events returned from `applyAction` are the UI's animation script and the AI's and tests'
   record of what happened. They're never needed to rebuild state.

@@ -15,6 +15,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { emptyManaPool, MANA_TYPES } from "../state/mana.ts";
 import type { Step } from "../state/turn.ts";
+import { newTurnHistory } from "../state/turn-history.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
@@ -42,12 +43,12 @@ export function beginTurn(state: GameState, player: PlayerId, number: number, ca
     if (obj?.kind === "card" && controllerOf(state, id) === player)
       objects[id] = { ...obj, controlledSinceTurnStart: true };
   }
-  // "This turn" counts start again (D-078).
+  // "This turn" facts start again (D-078).
   const begun: GameState = {
     ...state,
     players,
     objects,
-    activationsThisTurn: [],
+    turnHistory: newTurnHistory(),
     turn: { number, activePlayer: player, step: "untap" },
   };
   return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player }] }, (s) =>
