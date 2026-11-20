@@ -454,8 +454,18 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        in Open questions; only the Homing Bear one (regeneration and a "would be put into a graveyard" replacement on
        one destroy) is tested now.
      - Now: M2-08d (2026-11-20), in two PRs. M2-08d1 built (D-088): Fog, Safe Passage, Guardian Seraph; 11 scenarios in
-       `test/scenarios/cards/m2-08d/`; two golden games. 166 cards; 158 of the 234 Magic 2010 cards. Next: mutations,
-       reviews, PR; then M2-08d2 (Harm's Way). Plan:
+       `test/scenarios/cards/m2-08d/`; two golden games. 166 cards; 158 of the 234 Magic 2010 cards. Mutations (6/6
+       caught) and a 200-game fuzz are clean; both reviews found no wrong result. Fixing their findings, then the PR:
+       - Bug: identical candidates (two Seraphs) beside a different one (Fog) are offered as separate options. Group
+         candidates by identity: one option per group, all its members applied when chosen.
+       - A choice's `for` becomes a union (an object, or a damage entry by its index in the event, source and
+         recipient), so the CLI can say which damage is asked about; `affectedKey` becomes a switch.
+       - Tests: Seraph against two attackers (per-entry choices, CR 615.10), the creature chooser and APNAP across
+         entries, partial prevention with lifelink and a damage trigger, Fog with first strike and deathtouch, Fog
+         ending at cleanup, Safe Passage after damage, sharper Seraph-and-Fog expectations.
+       - State effect ids from `newObjectId`, the op moved to `effects/prevention.ts`; entries that can't be dealt
+         damage dropped before prevention (shields must not be used up by them, CR 609.7b); drop the unread
+         `fromOpponents`; one engine helper naming a state effect's card; citations (CR 120.2b); stale docs.
        - Damage is replaced per recipient: a `dealDamage` event's entries (one per source and recipient) each get their
          own candidates and their own chooser, the recipient player or the recipient object's controller (CR 616.1).
          Choices become `{ affected, ref }`, so a global effect's choice for one recipient isn't used for another
@@ -648,6 +658,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20, D-089) Does "modern Magic" mean the Modern format? `game:arena -is:alchemy -is:digital` keeps 13,036
+  of 23,012 Modern-legal cards, and 51 keywords on 596 Modern-legal cards appear on no card it keeps (Echo, Dredge,
+  Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). Options: (a) the filter sets the order, not
+  the boundary: Arena's mechanics first, then a later milestone for the Modern-only ones (recommended; nothing needs
+  deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) widen it now to
+  `game:arena -is:alchemy`, which brings back paper cards Arena had only in digital reprint sets.
 - (Asked 2026-11-20, D-089) Magic 2010 cards still to script in M2-14 whose rules may have no counterpart on MTG Arena
   (Hive Mind, Telepathy, Warp World, Sphinx Ambassador's naming a card, Mirror of Fate, and any other M2-14 card): (a)
   check each against Arena when M2-14 starts and skip those whose mechanic no Arena card uses (recommended; proceeding

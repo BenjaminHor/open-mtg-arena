@@ -1240,3 +1240,16 @@ every schema change and every change D-024 lists bumps it.
   mechanics such as "seek", "conjure" and "perpetually") and also paper cards that reached Arena only in digital
   reprint sets (Abbot of Keral Keep, from Arena's anthologies). Those paper cards use paper rules, so leaving them out
   costs no mechanic; the filter is a guide to which mechanics to build, not a ban on a card.
+- The pool figures above ("87 of 166", "51 of 76") were measured under the first filter (`game:arena` without
+  Alchemy); Magic 2010 was never on Arena either way.
+- What the filter leaves out (owner's question, measured on Scryfall 2026-11-20; baseline: paper, not Un-sets):
+  14,010 of 33,375 cards; 13,036 of 23,012 Modern-legal; 11,946 of 15,381 Pioneer-legal; 13,554 of 23,041 printed
+  since 2018. 215 of Scryfall's 304 keyword abilities and actions appear on a card it keeps. Of the 84 that don't,
+  about 30 are digital-only or from products Arena never had (conjure, spellbook, Attractions, Backgrounds, Planechase);
+  51 appear on 596 Modern-legal cards: Fear, Megamorph, Clash, Soulshift, Level Up, Monstrosity, Bloodthirst,
+  Intimidate, Echo, Renown, Soulbond, Undying, Multikicker, Embalm, Fuse, Awaken, Transmute, Unleash, Cipher,
+  Flanking, Dredge, Buyback, Scavenge, Freerunning, Detain, Forecast, Miracle, Tribute, Surge, Haunt, Conspire,
+  Ingest, Afflict, Prowl, landwalk variants, Recover, Ripple, Epic, Offering and a few singletons. Flip cards
+  (Kamigawa) have none; split cards 50 of 123; Auras 359 of 1,244. None of these is hard for the engine's design
+  (all are CR rules on the same machinery); the filter only decides what's built first. Banding and phasing, the
+  costly ones, aren't Modern-legal anyway.
