@@ -67,19 +67,18 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
       mana, gainLife 0, destroy and tap on an object gone mid-resolution.
   - M2-05b Cards moving, split in two by the advisor's review (2026-11-20):
-    - M2-05b1, no choices at resolution: built (D-060), PR #27. 17 scenarios in `test/scenarios/cards/m2-05b/`, unit
-      tests in `test/effects/player-effects.test.ts` (APNAP with p2 active, one event per draw, seeded random picks);
-      the interim decks carry the nine cards, five new golden games. Code-reviewed and rules-reviewed, fixes in
-      (citations CR 701.17b and 609.3, `apnapOrder` in `game/turn-order.ts`, the 0-life drop removed and left as a
-      question for when a card loses a variable amount, docs). A 300-game fuzz found a false alarm in the leak check
-      (a card drawn and discarded in one action); the check now counts it as seen, with a test. Divination, Mind Spring, Sign in Blood, Mind Shatter, Burning Inquiry,
-      Tome Scour, Traumatize, Disentomb, Nature's Spiral. A `player` target kind; a `loseLife` pipeline event back
-      (CR 119.3); ops draw N (separate single draws, CR 121.2; "each player" in APNAP order, CR 121.2c), lose life,
-      discard at random (the seeded RNG; Burning Inquiry: each player's random picks, then all discarded at once, its
-      ruling), mill (CR 701.17a; Traumatize's "half, rounded down", CR 107.1a; graveyard order later: CR 404.3);
-      return from your graveyard (`returnToHand`, already built). The draw-several container (CR 121.2a) moves to
-      M2-08 in future-rules, when a replacement needs it.
-    - M2-05b2, choices at resolution (next, plan reviewed first): Merfolk Looter, Mind Rot, Duress, Ponder, Fabricate,
+    - M2-05b1, no choices at resolution: done, merged (PR #27, D-060). Divination, Mind Spring, Sign in Blood, Mind
+      Shatter, Burning Inquiry, Tome Scour, Traumatize, Disentomb, Nature's Spiral. A `player` target kind, an
+      `"eachPlayer"` subject, a `loseLife` pipeline event (CR 119.3); ops draw N (N single draws, CR 121.2, each
+      player's in APNAP order, CR 121.2c; `apnapOrder` in `game/turn-order.ts`), lose life, discard at random (seeded
+      picks, then one simultaneous discard, Burning Inquiry's ruling; a smaller hand whole, CR 609.3), mill (CR 701.17a,
+      as many as possible, 701.17b; half rounded down, CR 107.1a; graveyard order later: CR 404.3). 17 scenarios in
+      `test/scenarios/cards/m2-05b/`, unit tests in `test/effects/player-effects.test.ts`; the interim decks carry the
+      nine cards, five new golden games. Code-reviewed and rules-reviewed, fixes in. The 0-life drop was removed (Open
+      questions). A 300-game fuzz found a false alarm in the leak check (a card drawn and discarded in one action
+      looked hidden from its own drawer); the check now counts it as seen, with a test. The draw-several container
+      (CR 121.2a) moves to M2-08.
+    - M2-05b2, choices at resolution (now; first profile a slow fuzz seed, then the plan reviewed): Merfolk Looter, Mind Rot, Duress, Ponder, Fabricate,
       Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Haunting Echoes, Elvish Piper. Constraints from the advisor:
       a re-queued effect must run before the work behind it (test first); nothing happens before all answers are in
       (no doubled reveal or move); one card per answer, as `discardToHandSize`; always a legal answer (counts clamped,
@@ -238,6 +237,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Not blocking yet.) Is losing 0 life an event? The CR says gaining 0 life isn't (CR 119.9, 119.10) but says nothing
+  about losing 0. Today `loseLife` proposes any amount, so losing 0 would emit `LIFE_LOST` of 0; no pool card can do
+  that yet. Needed before "whenever a player loses life" triggers (M2-07) or a card that loses X life
+  (docs/future-rules.md).
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
