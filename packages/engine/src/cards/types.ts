@@ -418,4 +418,14 @@ export type Effect =
    * resolution started to sacrifice anything (CR 118.12: the sacrifice is a cost paid on resolution, and "can't" asks
    * whether it was started, whatever then happened; CR 608.2c).
    */
-  | { op: "ifNothingSacrificed"; effects: Effect[] };
+  | { op: "ifNothingSacrificed"; effects: Effect[] }
+  /**
+   * "If this ability has been activated [atLeast] or more times this turn, [effects]": the count of the resolving
+   * activated ability's activations this turn, counted as it was activated (D-078). Only for an activated ability.
+   */
+  | { op: "ifActivatedThisTurn"; atLeast: number; effects: Effect[] }
+  /**
+   * "[Effects] at the beginning of the next end step": makes a delayed triggered ability (CR 603.7), whose source and
+   * controller are those of the spell's or ability's, as it resolves (CR 603.7d, 603.7e).
+   */
+  | { op: "createDelayedTrigger"; ability: TriggeredAbilityDef };

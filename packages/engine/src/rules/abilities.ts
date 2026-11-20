@@ -7,6 +7,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { AbilityRef, BasicLandType } from "../state/objects.ts";
+import type { TriggerRef } from "../state/triggers.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 
 export type ActivatedAbility = { ref: AbilityRef; def: AbilityDef };
@@ -94,6 +95,7 @@ export function stackAbilityDef(state: GameState, id: ObjectId, cards: CardDatab
       // A mana ability never uses the stack (CR 605.3b): finding one here is an engine bug.
       throw new Error("A basic land's mana ability can't be on the stack");
     case "triggered":
+    case "delayed":
       throw new Error("A triggered ability has no activation cost: read it with stackAbilityText");
   }
 }
@@ -109,19 +111,30 @@ export function stackAbilityText(
 ): { targets: readonly TargetSpec[]; effects: readonly Effect[] } {
   const obj = state.objects[id];
   if (obj?.kind !== "ability") throw new Error(`${id} isn't an ability on the stack`);
-  if (obj.ability.kind !== "triggered") return stackAbilityDef(state, id, cards);
-  return triggeredAbilityDef(obj.sourceOracleId, obj.ability.index, cards);
+  const ref = obj.ability;
+  return isTriggerRef(ref) ? triggeredAbilityDef(obj.sourceOracleId, ref, cards) : stackAbilityDef(state, id, cards);
+}
+
+/** Whether the reference names a triggered ability: printed on a card, or delayed (CR 603.7). */
+export function isTriggerRef(ref: AbilityRef): ref is TriggerRef {
+  return ref.kind === "triggered" || ref.kind === "delayed";
 }
 
 /**
- * A triggered ability by its card and index, for one that already triggered (a pending trigger, an ability on the
- * stack). Detection reads the triggers a permanent has now through `triggersOf`; granted triggered abilities
- * (layer 6, later: CR 613.1f) will need a reference that doesn't index the printed list, changed here.
+ * A triggered ability that already triggered (a pending trigger, an ability on the stack): by its card and index, or
+ * a delayed one's own text (CR 603.7). Detection reads the triggers a permanent has now through `triggersOf`; granted
+ * triggered abilities (layer 6, later: CR 613.1f) will need another kind of reference, resolved here.
  */
-export function triggeredAbilityDef(oracleId: OracleId, index: number, cards: CardDatabase): TriggeredAbilityDef {
-  const def = cards[oracleId]?.def.triggers?.[index];
-  if (def === undefined) throw new Error(`No triggered ability ${index} on ${oracleId}`);
-  return def;
+export function triggeredAbilityDef(oracleId: OracleId, ref: TriggerRef, cards: CardDatabase): TriggeredAbilityDef {
+  switch (ref.kind) {
+    case "delayed":
+      return ref.ability;
+    case "triggered": {
+      const def = cards[oracleId]?.def.triggers?.[ref.index];
+      if (def === undefined) throw new Error(`No triggered ability ${ref.index} on ${oracleId}`);
+      return def;
+    }
+  }
 }
 
 /**
@@ -157,5 +170,8 @@ export function sameAbilityRef(a: AbilityRef, b: AbilityRef): boolean {
       return b.kind === "basicLandType" && a.landType === b.landType;
     case "triggered":
       return b.kind === "triggered" && a.index === b.index;
+    case "delayed":
+      // The same text: delayed triggers made by the same effect are interchangeable.
+      return b.kind === "delayed" && JSON.stringify(a.ability) === JSON.stringify(b.ability);
   }
 }

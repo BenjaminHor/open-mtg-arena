@@ -9,9 +9,11 @@ import { controllerOf } from "../rules/controller.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import { createDelayedTrigger } from "../triggers/delayed.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
+import { ifActivatedThisTurn } from "./if-activated.ts";
 import {
   exileGraveyard,
   lookAtTop,
@@ -211,6 +213,10 @@ export function runEffect(
     }
     case "ifNothingSacrificed":
       return ifNothingSacrificed(state, effect.effects, context);
+    case "ifActivatedThisTurn":
+      return ifActivatedThisTurn(state, effect.atLeast, effect.effects, context);
+    case "createDelayedTrigger":
+      return createDelayedTrigger(state, effect.ability, context);
     case "exileGraveyard": {
       const player = onePlayer(state, effect.of, context, cards);
       if (player === null) return { state, events: [] };

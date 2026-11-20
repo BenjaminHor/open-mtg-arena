@@ -175,7 +175,9 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (answer.kind !== "chooseTarget") return mismatch;
       const problem = targetProblem(answered, answer.target, cards);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, ...nextCastingStep(chooseTarget(answered, answer.target), cards) };
+      const chosen = chooseTarget(answered, answer.target, cards);
+      const next = nextCastingStep(chosen.state, cards);
+      return { ok: true, state: next.state, events: [...chosen.events, ...next.events] };
     }
     case "divide": {
       if (answer.kind === "cancelCast") return cancel(answered);

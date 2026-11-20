@@ -39,6 +39,7 @@ Disorient
 Divination
 Divine Verdict
 Doom Blade
+Dragon Whelp
 Dragon's Claw
 Dread Warlock
 Duress
@@ -72,6 +73,7 @@ Howling Banshee
 Howling Mine
 Hypnotic Specter
 Ignite Disorder
+Illusionary Servant
 Inferno Elemental
 Island
 Jackal Familiar

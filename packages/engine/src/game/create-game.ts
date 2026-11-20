@@ -115,6 +115,8 @@ function emptyGame(setup: GameSetup): GameState {
     dealtDeathtouchDamage: [],
     pendingTriggers: [],
     lastKnown: {},
+    delayedTriggers: [],
+    activationsThisTurn: [],
     work: [],
     pending: null,
     result: null,

@@ -10,7 +10,7 @@ import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
 import { apnapOrder } from "../game/turn-order.ts";
 import { queueWork } from "../game/work.ts";
-import { triggeredAbilityDef } from "../rules/abilities.ts";
+import { sameAbilityRef, triggeredAbilityDef } from "../rules/abilities.ts";
 import { targetsProblem } from "../rules/targets.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -69,8 +69,8 @@ export function putOne(
   if (trigger === undefined) throw new Error(`no trigger ${index} in the batch`);
   const rest = batch.filter((_, i) => i !== index);
   const goOn = (s: GameState) => queueWork(s, { kind: "putTriggers", batch: rest, player });
-  const def = triggeredAbilityDef(trigger.sourceOracleId, trigger.index, cards);
-  const ref = { kind: "triggered", index: trigger.index } as const;
+  const def = triggeredAbilityDef(trigger.sourceOracleId, trigger.ref, cards);
+  const ref = trigger.ref;
   const put = putAbilityOnStack(state, trigger.source, trigger.sourceOracleId, ref, trigger.controller, trigger.event);
   // Checked for the ability itself, the object that targets (CR 115.5); too few legal targets, and it's removed.
   const by = { object: put.id, controller: trigger.controller };
@@ -104,7 +104,7 @@ function sameTrigger(a: PendingTrigger, b: PendingTrigger): boolean {
   return (
     a.source === b.source &&
     a.sourceOracleId === b.sourceOracleId &&
-    a.index === b.index &&
+    sameAbilityRef(a.ref, b.ref) &&
     a.controller === b.controller &&
     a.event.player === b.event.player &&
     a.event.object === b.event.object &&

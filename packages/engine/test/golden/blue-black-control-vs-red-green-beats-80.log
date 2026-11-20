@@ -1052,6 +1052,7 @@ T29 moves: Forest, p2's library -> p2's hand
 T29 p2 draws
 T29 resolves: p1:Howling Mine's ability
 T29 moves: Lightning Bolt, p2's hand -> stack
+T29 targeted: p1:Royal Assassin by Lightning Bolt
 T29 p2 cancels casting Lightning Bolt
 T29 moves: Lightning Bolt, p2's hand -> stack
 T29 taps: p2:Llanowar Elves
@@ -1125,9 +1126,11 @@ T30 p1:Howling Mine triggers (p1)
 T30 moves: Xathrid Demon, p1's library -> p1's hand
 T30 p1 draws
 T30 resolves: p1:Howling Mine's ability
+T30 targeted: p2:Llanowar Elves by Royal Assassin ability
 T30 taps: p1:Royal Assassin
 T30 p1 activates p1:Royal Assassin
 T30 moves: Unsummon, p1's hand -> stack
+T30 targeted: p2:Llanowar Elves by Unsummon
 T30 taps: p1:Island#2
 T30 p1 adds {U} (p1:Island#2)
 T30 p1 taps p1:Island#2 for mana

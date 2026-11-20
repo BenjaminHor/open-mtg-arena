@@ -53,6 +53,7 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "landTappedForMana":
     case "selfDealsDamageToPlayer":
     case "selfBlocksOrBlocked":
+    case "selfBecomesTarget":
       return false;
   }
 }
@@ -67,6 +68,7 @@ function suppliesObject(when: TriggerCondition): boolean {
     case "spellCast":
     case "selfBlocksOrBlocked":
       return true;
+    case "selfBecomesTarget":
     case "beginningOfStep":
     case "playerDraws":
     case "playerDiscards":
@@ -89,6 +91,7 @@ function suppliesPlayer(when: TriggerCondition): boolean {
     case "anotherEnters":
     case "selfAttacks":
     case "selfBlocksOrBlocked":
+    case "selfBecomesTarget":
       return false;
     // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.
     case "beginningOfStep":

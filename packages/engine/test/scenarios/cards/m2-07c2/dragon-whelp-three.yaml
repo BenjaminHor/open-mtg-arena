@@ -1,0 +1,24 @@
+name: Dragon Whelp's ability activated three times in a turn only pumps it; nothing is sacrificed
+rules: [CR 602.2, CR 603.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Dragon Whelp, Mountain, Mountain, Mountain]
+steps:
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Dragon Whelp.power: 5
+  - all pass: until end
+  - expect:
+      stack: []
+  - all pass: until upkeep
+  - expect:
+      p1.battlefield contains: [Dragon Whelp]

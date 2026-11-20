@@ -2,7 +2,7 @@
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
 import { type CardDef, type Effect, type EffectSubject, isFixedAmount, type TargetSpec } from "@mtg/engine";
-import { flatEffects } from "./flat-effects.ts";
+import { flatEffects, nestedEffects } from "./flat-effects.ts";
 import type { PoolCard } from "./pool-data.ts";
 import { triggerWordProblems } from "./trigger-words.ts";
 
@@ -66,7 +66,14 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
     problems.push(...triggerWordProblems(def));
+    // Only an activated ability has activations to count (D-078).
+    const countsActivations = (effects: readonly Effect[]) =>
+      flatEffects(effects).some((e) => e.op === "ifActivatedThisTurn");
+    if (def.spell !== undefined && countsActivations(def.spell.effects))
+      problems.push(`${def.name}: ifActivatedThisTurn is only for an activated ability`);
     for (const [i, trigger] of (def.triggers ?? []).entries()) {
+      if (countsActivations(trigger.effects))
+        problems.push(`${def.name} trigger ${i + 1}: ifActivatedThisTurn is only for an activated ability`);
       if (anyColor(trigger.effects))
         problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
       problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
@@ -193,14 +200,20 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       problems.push(`${where}: destroyOneAtRandom is for objects, not players`);
     // The engine reads a division and mana only from an ability's own effects, never from nested ones.
     if (
-      effect.op === "ifNothingSacrificed" &&
-      effect.effects.some(
+      nestedEffects(effect).some(
         (e) => e.op === "addMana" || e.op === "ifNothingSacrificed" || ("divided" in e && e.divided !== undefined),
       )
     )
-      problems.push(
-        `${where}: a divided effect, mana or another ifNothingSacrificed can't be inside ifNothingSacrificed`,
-      );
+      problems.push(`${where}: a divided effect, mana or ifNothingSacrificed can't be inside ${effect.op}`);
+    // A delayed trigger waits for the next beginning of anyone's step, with no targets to choose: "your next upkeep"
+    // would read its source's controller, and the source may be gone (CR 603.7; later, with a card that needs it).
+    if (
+      effect.op === "createDelayedTrigger" &&
+      (effect.ability.when.kind !== "beginningOfStep" ||
+        effect.ability.when.whose !== "each" ||
+        effect.ability.targets.length > 0)
+    )
+      problems.push(`${where}: a delayed trigger waits for the beginning of anyone's step, with no targets`);
     // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
     if (
       effect.op === "dealDamage" &&

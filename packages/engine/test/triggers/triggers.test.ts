@@ -116,7 +116,7 @@ describe("putting triggers on the stack (CR 603.3)", () => {
     const fake: PendingTrigger = {
       source: onBattlefield(g.state, MOUNTAIN)[0] as ObjectId,
       sourceOracleId: WARDEN,
-      index: 0,
+      ref: { kind: "triggered", index: 0 },
       controller: "p1",
       event: { player: null, object: null, amount: null },
     };
@@ -132,7 +132,7 @@ describe("putting triggers on the stack (CR 603.3)", () => {
     const trigger: PendingTrigger = {
       source: warden,
       sourceOracleId: WARDEN,
-      index: 0,
+      ref: { kind: "triggered", index: 0 },
       controller: "p1",
       event: { player: null, object: null, amount: null },
     };
@@ -160,7 +160,7 @@ describe("ordering one's own triggers (CR 603.3b)", () => {
     const trigger = (source: ObjectId, controller: PlayerId): PendingTrigger => ({
       source,
       sourceOracleId: WARDEN,
-      index: 0,
+      ref: { kind: "triggered", index: 0 },
       controller,
       event: { player: null, object: null, amount: null },
     });
@@ -194,7 +194,7 @@ describe("identical triggers (D-077)", () => {
     const trigger = (object: ObjectId): PendingTrigger => ({
       source: warden,
       sourceOracleId: WARDEN,
-      index: 0,
+      ref: { kind: "triggered", index: 0 },
       controller: "p1",
       event: { player: null, object, amount: null },
     });
@@ -262,7 +262,7 @@ describe("an intervening if (CR 603.4)", () => {
     const trigger: PendingTrigger = {
       source: mine,
       sourceOracleId: MINE,
-      index: 0,
+      ref: { kind: "triggered", index: 0 },
       controller: "p1",
       event: { player: "p1", object: null, amount: null },
     };

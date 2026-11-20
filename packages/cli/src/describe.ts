@@ -64,6 +64,8 @@ function abilityText(ref: AbilityRef): string {
       return "{T}: add mana";
     case "triggered":
       return `triggered ability ${ref.index + 1}`;
+    case "delayed":
+      return "delayed triggered ability";
   }
 }
 

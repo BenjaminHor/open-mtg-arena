@@ -13,7 +13,7 @@ import type { PlayerState } from "./players.ts";
 import type { Pregame } from "./pregame.ts";
 import type { GameResult } from "./result.ts";
 import type { GameSetup } from "./setup.ts";
-import type { PendingTrigger } from "./triggers.ts";
+import type { ActivationCount, DelayedTrigger, PendingTrigger } from "./triggers.ts";
 import type { Turn } from "./turn.ts";
 import type { WorkItem } from "./work.ts";
 import type { Zones } from "./zones.ts";
@@ -63,6 +63,10 @@ export type GameState = {
    * something on the stack or waiting to go on it might need them; emptied when a player gets priority with both empty.
    */
   lastKnown: Record<ObjectId, CardObject>;
+  /** Delayed triggered abilities waiting for their event (CR 603.7), in the order they were made. */
+  delayedTriggers: DelayedTrigger[];
+  /** Activated abilities' activations this turn (D-078), emptied as each turn begins. */
+  activationsThisTurn: ActivationCount[];
 
   /**
    * The start of a `standard` game (CR 103.1, 103.3–103.5; extra steps some formats take, later: CR 103.2), until the

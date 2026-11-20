@@ -1,0 +1,24 @@
+name: Illusionary Servant targeted by an opponent's spell is sacrificed first; the spell, its target gone, doesn't resolve
+rules: [CR 601.2c, CR 603.3, CR 608.2b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Illusionary Servant]
+  p2:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - p2 cast: Lightning Bolt
+    targets: [p1:Illusionary Servant]
+    pay: auto
+  - expect:
+      stack: [Lightning Bolt, Illusionary Servant ability]
+      events contains: [{ type: BECAME_TARGET }]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Illusionary Servant]
+  - all pass: once
+  - expect:
+      stack: []
+      events contains: [{ type: SPELL_DID_NOT_RESOLVE }]
+      p2.graveyard: [Lightning Bolt]

@@ -57,6 +57,11 @@ export type TriggerCondition =
    */
   | { kind: "selfBlocksOrBlocked" }
   /**
+   * "When this creature becomes the target of a spell or ability": as the target is chosen (CR 601.2c), for a spell, an
+   * activated ability or a triggered ability (CR 603.3d).
+   */
+  | { kind: "selfBecomesTarget" }
+  /**
    * "Whenever [you / a player] gain life": once per life-gain event, whatever the amount (CR 119.9; each lifelink source
    * is its own event). "That much" is the amount gained.
    */

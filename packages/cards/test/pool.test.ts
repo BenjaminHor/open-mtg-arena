@@ -160,11 +160,42 @@ describe("definitionProblems", () => {
       "Furnace Whelp ability 1: loseLife is for players, not objects",
       "Furnace Whelp ability 1: destroyOneAtRandom is for objects, not players",
       "Furnace Whelp ability 2: a divided amount is a number or X",
-      "Furnace Whelp ability 2: a divided effect, mana or another ifNothingSacrificed can't be inside ifNothingSacrificed",
+      "Furnace Whelp ability 2: a divided effect, mana or ifNothingSacrificed can't be inside ifNothingSacrificed",
       'Furnace Whelp ability 1: "that creature" is only for a triggered ability',
       'Furnace Whelp ability 2: "that much" is only for a triggered ability',
       'Furnace Whelp trigger 1: its event has no "that creature"',
     ]);
+  });
+
+  it("reports a delayed trigger it can't wait for, and an activation count outside an activated ability (D-078)", () => {
+    const sacrifice: Effect[] = [{ op: "sacrificeSource" }];
+    const delayed = (when: TriggeredAbilityDef["when"], targets: TriggeredAbilityDef["targets"]): Effect => ({
+      op: "createDelayedTrigger",
+      ability: { when, targets, effects: sacrifice },
+    });
+    const endStep = { kind: "beginningOfStep", step: "end", whose: "each" } as const;
+    const counted: Effect = { op: "ifActivatedThisTurn", atLeast: 4, effects: [delayed(endStep, [])] };
+    const def: CardDef = {
+      name: "Furnace Whelp",
+      oracle: whelp.oracleText,
+      keywords: ["flying"],
+      spell: { targets: [], effects: [counted] },
+      triggers: [{ when: { kind: "selfAttacks" }, targets: [], effects: [counted] }],
+      abilities: [
+        { kind: "activated", cost: [], targets: [], effects: [counted] },
+        { kind: "activated", cost: [], targets: [], effects: [delayed({ ...endStep, whose: "yours" }, [])] },
+        { kind: "activated", cost: [], targets: [], effects: [delayed({ kind: "selfAttacks" }, [])] },
+        { kind: "activated", cost: [], targets: [], effects: [delayed(endStep, [{ kind: "anyTarget" }])] },
+      ],
+    };
+    const problems = definitionProblems([def], [whelp]);
+    expect(problems).toContain("Furnace Whelp: ifActivatedThisTurn is only for an activated ability");
+    expect(problems).toContain("Furnace Whelp trigger 1: ifActivatedThisTurn is only for an activated ability");
+    for (const ability of [2, 3, 4])
+      expect(problems).toContain(
+        `Furnace Whelp ability ${ability}: a delayed trigger waits for the beginning of anyone's step, with no targets`,
+      );
+    expect(problems.filter((p) => p.startsWith("Furnace Whelp ability 1"))).toStrictEqual([]);
   });
 
   it("reports a missing keyword", () => {

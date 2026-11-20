@@ -1003,6 +1003,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Dragon Whelp",
+      "slug": "dragon-whelp",
+      "oracleId": "705a1985-ed39-4a4b-812e-a677170b596e",
+      "layout": "normal",
+      "manaCost": "{2}{R}{R}",
+      "manaValue": 4,
+      "typeLine": "Creature — Dragon",
+      "oracleText": "Flying\n{R}: This creature gets +1/+0 until end of turn. If this ability has been activated four or more times this turn, sacrifice this creature at the beginning of the next end step.",
+      "power": "2",
+      "toughness": "3",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/1/d13d40b9-319b-4630-a5cd-228ff2f24367.jpg?1783921321",
+        "large": "https://cards.scryfall.io/large/front/d/1/d13d40b9-319b-4630-a5cd-228ff2f24367.jpg?1783921321",
+        "png": "https://cards.scryfall.io/png/front/d/1/d13d40b9-319b-4630-a5cd-228ff2f24367.png?1783921321",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/1/d13d40b9-319b-4630-a5cd-228ff2f24367.jpg?1783921321"
+      },
+      "artist": "Jokubas Uogintas",
+      "set": "dmu",
+      "collectorNumber": "120",
+      "scryfallUri": "https://scryfall.com/card/dmu/120/dragon-whelp?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Dragon's Claw",
       "slug": "dragons-claw",
       "oracleId": "bd8d707d-1201-42c6-bce6-fbda12ce5ea8",
@@ -1932,6 +1962,36 @@
       "set": "m10",
       "collectorNumber": "141",
       "scryfallUri": "https://scryfall.com/card/m10/141/ignite-disorder?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Illusionary Servant",
+      "slug": "illusionary-servant",
+      "oracleId": "28e99c5f-a78a-4323-b5e9-1b43303acaf6",
+      "layout": "normal",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3,
+      "typeLine": "Creature — Illusion",
+      "oracleText": "Flying\nWhen this creature becomes the target of a spell or ability, sacrifice it.",
+      "power": "3",
+      "toughness": "4",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/2/b2348f3e-8c08-4250-95a9-fc5ed63cd725.jpg?1783942392",
+        "large": "https://cards.scryfall.io/large/front/b/2/b2348f3e-8c08-4250-95a9-fc5ed63cd725.jpg?1783942392",
+        "png": "https://cards.scryfall.io/png/front/b/2/b2348f3e-8c08-4250-95a9-fc5ed63cd725.png?1783942392",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/2/b2348f3e-8c08-4250-95a9-fc5ed63cd725.jpg?1783942392"
+      },
+      "artist": "Dave Kendall",
+      "set": "m10",
+      "collectorNumber": "57",
+      "scryfallUri": "https://scryfall.com/card/m10/57/illusionary-servant?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

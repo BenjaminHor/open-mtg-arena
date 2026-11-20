@@ -1,0 +1,16 @@
+name: Illusionary Servant targeted by an activated ability is sacrificed before the ability resolves
+rules: [CR 602.2b, CR 601.2c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Illusionary Servant]
+  p2:
+    battlefield: [Prodigal Pyromancer]
+steps:
+  - p2 activate: Prodigal Pyromancer
+    targets: [p1:Illusionary Servant]
+  - expect:
+      stack: [Prodigal Pyromancer ability, Illusionary Servant ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Illusionary Servant]

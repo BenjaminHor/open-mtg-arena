@@ -12,6 +12,7 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { PendingTrigger, TriggerEvent } from "../state/triggers.ts";
+import { detectDelayed } from "./delayed.ts";
 
 /**
  * Adds the triggered abilities these events trigger to the pending list, in the order they triggered. `before` is the
@@ -24,10 +25,14 @@ export function detectTriggers(
   events: readonly GameEvent[],
   cards: CardDatabase,
 ): GameState {
+  // Delayed triggers first: they were made before anything these events trigger (CR 603.7).
+  const withDelayed = detectDelayed(after, events, cards);
   const sources = after.zones.battlefield.filter((id) => triggersOf(after, id, cards).length > 0);
-  if (sources.length === 0) return after;
+  if (sources.length === 0) return withDelayed;
   const found = events.flatMap((event) => sources.flatMap((source) => triggered(after, source, event, cards)));
-  return found.length === 0 ? after : { ...after, pendingTriggers: [...after.pendingTriggers, ...found] };
+  return found.length === 0
+    ? withDelayed
+    : { ...withDelayed, pendingTriggers: [...withDelayed.pendingTriggers, ...found] };
 }
 
 /** The triggers of one permanent this event triggers. */
@@ -40,7 +45,8 @@ function triggered(state: GameState, source: ObjectId, event: GameEvent, cards: 
     if (occurrences.length === 0) return [];
     // An "intervening if" that's false as the event happens means it doesn't trigger at all (CR 603.4).
     if (def.onlyIf !== undefined && !holds(state, source, def.onlyIf)) return [];
-    return occurrences.map((matched) => ({ source, sourceOracleId: obj.oracleId, index, controller, event: matched }));
+    const ref = { kind: "triggered", index } as const;
+    return occurrences.map((matched) => ({ source, sourceOracleId: obj.oracleId, ref, controller, event: matched }));
   });
 }
 
@@ -48,7 +54,7 @@ function triggered(state: GameState, source: ObjectId, event: GameEvent, cards: 
  * What the ability knows of each occurrence of its trigger event in this event: none if it doesn't match, or one per
  * occurrence (CR 603.2c: a creature blocked by two creatures "becomes blocked by a creature" twice, CR 509.3d).
  */
-function matches(
+export function matches(
   state: GameState,
   source: ObjectId,
   when: TriggerCondition,
@@ -109,6 +115,10 @@ function matches(
             ? [{ player: null, object: b.blocker, amount: null }]
             : [],
       );
+    case "selfBecomesTarget":
+      return event.type === "BECAME_TARGET" && event.object === source
+        ? [{ player: null, object: null, amount: null }]
+        : [];
     case "spellCast":
       return event.type === "SPELL_CAST" &&
         matchesFilter(state, event.object, when.filter, controllerOf(state, source), cards)

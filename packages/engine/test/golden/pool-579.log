@@ -1,0 +1,2942 @@
+T0 p1 goes first (chosen by p2)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Cancel, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Giant Spider, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Silvercoat Lion, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Lava Axe, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Merfolk Looter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Underworld Dreams, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Undead Slayer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 keeps
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 moves: Lava Axe, p1's hand -> stack
+T1 p1 cancels casting Lava Axe
+T1 moves: Lava Axe, p1's hand -> stack
+T1 p1 cancels casting Lava Axe
+T1 p1 attack: nothing
+T1 moves: Mountain, p1's hand -> battlefield
+T1 p1 plays p1:Mountain
+T1 taps: p1:Mountain
+T1 p1 adds {R} (p1:Mountain)
+T1 p1 taps p1:Mountain for mana
+T1 p1's unspent {R} empties
+T2 turn 2 begins (p2)
+T2 moves: Swamp, p2's library -> p2's hand
+T2 p2 draws
+T2 p2 attack: nothing
+T2 moves: Undead Slayer, p2's hand -> p2's graveyard
+T2 p2 discards Undead Slayer
+T3 turn 3 begins (p1)
+T3 untaps: p1:Mountain
+T3 moves: Vampire Aristocrat, p1's library -> p1's hand
+T3 p1 draws
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
+T3 p1's unspent {R} empties
+T3 moves: Mountain, p1's hand -> battlefield
+T3 p1 plays p1:Mountain#2
+T3 moves: Vampire Aristocrat, p1's hand -> stack
+T3 taps: p1:Mountain#2
+T3 p1 adds {R} (p1:Mountain#2)
+T3 p1 taps p1:Mountain#2 for mana
+T3 p1 cancels casting Vampire Aristocrat
+T3 taps: p1:Mountain#2
+T3 p1 adds {R} (p1:Mountain#2)
+T3 p1 taps p1:Mountain#2 for mana
+T3 moves: Giant Spider, p1's hand -> stack
+T3 p1 cancels casting Giant Spider
+T3 p1's unspent {R} empties
+T3 p1 attack: nothing
+T4 turn 4 begins (p2)
+T4 moves: Mountain, p2's library -> p2's hand
+T4 p2 draws
+T4 p2 attack: nothing
+T4 moves: Plains, p2's hand -> p2's graveyard
+T4 p2 discards Plains
+T5 turn 5 begins (p1)
+T5 untaps: p1:Mountain#1
+T5 untaps: p1:Mountain#2
+T5 taps: p1:Mountain#1
+T5 p1 adds {R} (p1:Mountain#1)
+T5 p1 taps p1:Mountain#1 for mana
+T5 taps: p1:Mountain#2
+T5 p1 adds {R} (p1:Mountain#2)
+T5 p1 taps p1:Mountain#2 for mana
+T5 p1's unspent {R}{R} empties
+T5 moves: Wurm's Tooth, p1's library -> p1's hand
+T5 p1 draws
+T5 p1 attack: nothing
+T6 turn 6 begins (p2)
+T6 moves: Mountain, p2's library -> p2's hand
+T6 p2 draws
+T6 moves: Underworld Dreams, p2's hand -> stack
+T6 p2 cancels casting Underworld Dreams
+T6 p2 attack: nothing
+T6 moves: Merfolk Looter, p2's hand -> stack
+T6 p2 cancels casting Merfolk Looter
+T6 moves: Underworld Dreams, p2's hand -> stack
+T6 p2 cancels casting Underworld Dreams
+T6 moves: Merfolk Looter, p2's hand -> p2's graveyard
+T6 p2 discards Merfolk Looter
+T7 turn 7 begins (p1)
+T7 untaps: p1:Mountain#1
+T7 untaps: p1:Mountain#2
+T7 moves: Plains, p1's library -> p1's hand
+T7 p1 draws
+T7 moves: Vampire Aristocrat, p1's hand -> stack
+T7 p1 cancels casting Vampire Aristocrat
+T7 moves: Silvercoat Lion, p1's hand -> stack
+T7 taps: p1:Mountain#2
+T7 p1 adds {R} (p1:Mountain#2)
+T7 p1 taps p1:Mountain#2 for mana
+T7 taps: p1:Mountain#1
+T7 p1 adds {R} (p1:Mountain#1)
+T7 p1 taps p1:Mountain#1 for mana
+T7 p1 cancels casting Silvercoat Lion
+T7 moves: Plains, p1's hand -> battlefield
+T7 p1 plays p1:Plains
+T7 moves: Giant Spider, p1's hand -> stack
+T7 taps: p1:Plains
+T7 p1 adds {W} (p1:Plains)
+T7 p1 taps p1:Plains for mana
+T7 taps: p1:Mountain#1
+T7 p1 adds {R} (p1:Mountain#1)
+T7 p1 taps p1:Mountain#1 for mana
+T7 taps: p1:Mountain#2
+T7 p1 adds {R} (p1:Mountain#2)
+T7 p1 taps p1:Mountain#2 for mana
+T7 p1 cancels casting Giant Spider
+T7 taps: p1:Mountain#1
+T7 p1 adds {R} (p1:Mountain#1)
+T7 p1 taps p1:Mountain#1 for mana
+T7 taps: p1:Plains
+T7 p1 adds {W} (p1:Plains)
+T7 p1 taps p1:Plains for mana
+T7 p1's unspent {W}{R} empties
+T7 taps: p1:Mountain#2
+T7 p1 adds {R} (p1:Mountain#2)
+T7 p1 taps p1:Mountain#2 for mana
+T7 p1's unspent {R} empties
+T7 p1 attack: nothing
+T7 moves: Lava Axe, p1's hand -> stack
+T7 p1 cancels casting Lava Axe
+T8 turn 8 begins (p2)
+T8 moves: Island, p2's library -> p2's hand
+T8 p2 draws
+T8 moves: Island, p2's hand -> battlefield
+T8 p2 plays p2:Island
+T8 moves: Underworld Dreams, p2's hand -> stack
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2 cancels casting Underworld Dreams
+T8 moves: Underworld Dreams, p2's hand -> stack
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2 cancels casting Underworld Dreams
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2's unspent {U} empties
+T8 p2 attack: nothing
+T8 moves: Underworld Dreams, p2's hand -> stack
+T8 p2 cancels casting Underworld Dreams
+T8 moves: Underworld Dreams, p2's hand -> stack
+T8 p2 cancels casting Underworld Dreams
+T9 turn 9 begins (p1)
+T9 untaps: p1:Mountain#1
+T9 untaps: p1:Mountain#2
+T9 untaps: p1:Plains
+T9 moves: Swamp, p1's library -> p1's hand
+T9 p1 draws
+T9 p1 attack: nothing
+T9 taps: p1:Mountain#1
+T9 p1 adds {R} (p1:Mountain#1)
+T9 p1 taps p1:Mountain#1 for mana
+T9 p1's unspent {R} empties
+T9 taps: p1:Mountain#2
+T9 p1 adds {R} (p1:Mountain#2)
+T9 p1 taps p1:Mountain#2 for mana
+T9 taps: p1:Plains
+T9 p1 adds {W} (p1:Plains)
+T9 p1 taps p1:Plains for mana
+T9 p1's unspent {W}{R} empties
+T9 moves: Giant Spider, p1's hand -> p1's graveyard
+T9 p1 discards Giant Spider
+T10 turn 10 begins (p2)
+T10 untaps: p2:Island
+T10 moves: Swamp, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Island
+T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
+T10 p2's unspent {U} empties
+T10 moves: Underworld Dreams, p2's hand -> stack
+T10 p2 cancels casting Underworld Dreams
+T10 moves: Island, p2's hand -> battlefield
+T10 p2 plays p2:Island#2
+T10 taps: p2:Island#2
+T10 p2 adds {U} (p2:Island#2)
+T10 p2 taps p2:Island#2 for mana
+T10 p2's unspent {U} empties
+T10 p2 attack: nothing
+T11 turn 11 begins (p1)
+T11 untaps: p1:Mountain#1
+T11 untaps: p1:Mountain#2
+T11 untaps: p1:Plains
+T11 moves: Celestial Purge, p1's library -> p1's hand
+T11 p1 draws
+T11 moves: Mountain, p1's hand -> battlefield
+T11 p1 plays p1:Mountain#3
+T11 taps: p1:Plains
+T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
+T11 p1's unspent {W} empties
+T11 taps: p1:Mountain#1
+T11 p1 adds {R} (p1:Mountain#1)
+T11 p1 taps p1:Mountain#1 for mana
+T11 taps: p1:Mountain#2
+T11 p1 adds {R} (p1:Mountain#2)
+T11 p1 taps p1:Mountain#2 for mana
+T11 p1's unspent {R}{R} empties
+T11 p1 attack: nothing
+T11 taps: p1:Mountain#3
+T11 p1 adds {R} (p1:Mountain#3)
+T11 p1 taps p1:Mountain#3 for mana
+T11 p1's unspent {R} empties
+T12 turn 12 begins (p2)
+T12 untaps: p2:Island#1
+T12 untaps: p2:Island#2
+T12 taps: p2:Island#1
+T12 p2 adds {U} (p2:Island#1)
+T12 p2 taps p2:Island#1 for mana
+T12 taps: p2:Island#2
+T12 p2 adds {U} (p2:Island#2)
+T12 p2 taps p2:Island#2 for mana
+T12 p2's unspent {U}{U} empties
+T12 moves: Island, p2's library -> p2's hand
+T12 p2 draws
+T12 p2 attack: nothing
+T12 moves: Forest, p2's hand -> p2's graveyard
+T12 p2 discards Forest
+T13 turn 13 begins (p1)
+T13 untaps: p1:Mountain#1
+T13 untaps: p1:Mountain#2
+T13 untaps: p1:Plains
+T13 untaps: p1:Mountain#3
+T13 moves: Elvish Piper, p1's library -> p1's hand
+T13 p1 draws
+T13 taps: p1:Mountain#2
+T13 p1 adds {R} (p1:Mountain#2)
+T13 p1 taps p1:Mountain#2 for mana
+T13 p1's unspent {R} empties
+T13 taps: p1:Mountain#1
+T13 p1 adds {R} (p1:Mountain#1)
+T13 p1 taps p1:Mountain#1 for mana
+T13 p1's unspent {R} empties
+T13 p1 attack: nothing
+T13 taps: p1:Mountain#3
+T13 p1 adds {R} (p1:Mountain#3)
+T13 p1 taps p1:Mountain#3 for mana
+T13 p1's unspent {R} empties
+T13 moves: Silvercoat Lion, p1's hand -> stack
+T13 taps: p1:Plains
+T13 p1 adds {W} (p1:Plains)
+T13 p1 taps p1:Plains for mana
+T13 p1 cancels casting Silvercoat Lion
+T13 taps: p1:Plains
+T13 p1 adds {W} (p1:Plains)
+T13 p1 taps p1:Plains for mana
+T13 p1's unspent {W} empties
+T13 moves: Cancel, p1's hand -> p1's graveyard
+T13 p1 discards Cancel
+T14 turn 14 begins (p2)
+T14 untaps: p2:Island#1
+T14 untaps: p2:Island#2
+T14 moves: Centaur Courser, p2's library -> p2's hand
+T14 p2 draws
+T14 taps: p2:Island#2
+T14 p2 adds {U} (p2:Island#2)
+T14 p2 taps p2:Island#2 for mana
+T14 p2's unspent {U} empties
+T14 taps: p2:Island#1
+T14 p2 adds {U} (p2:Island#1)
+T14 p2 taps p2:Island#1 for mana
+T14 moves: Mountain, p2's hand -> battlefield
+T14 p2 plays p2:Mountain
+T14 moves: Centaur Courser, p2's hand -> stack
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2 cancels casting Centaur Courser
+T14 moves: Underworld Dreams, p2's hand -> stack
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2 cancels casting Underworld Dreams
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2's unspent {U}{R} empties
+T14 p2 attack: nothing
+T14 moves: Underworld Dreams, p2's hand -> stack
+T14 p2 cancels casting Underworld Dreams
+T14 moves: Underworld Dreams, p2's hand -> stack
+T14 p2 cancels casting Underworld Dreams
+T15 turn 15 begins (p1)
+T15 untaps: p1:Mountain#1
+T15 untaps: p1:Mountain#2
+T15 untaps: p1:Plains
+T15 untaps: p1:Mountain#3
+T15 moves: Phantom Warrior, p1's library -> p1's hand
+T15 p1 draws
+T15 p1 attack: nothing
+T15 taps: p1:Mountain#3
+T15 p1 adds {R} (p1:Mountain#3)
+T15 p1 taps p1:Mountain#3 for mana
+T15 p1's unspent {R} empties
+T15 moves: Lava Axe, p1's hand -> stack
+T15 taps: p1:Mountain#2
+T15 p1 adds {R} (p1:Mountain#2)
+T15 p1 taps p1:Mountain#2 for mana
+T15 taps: p1:Mountain#1
+T15 p1 adds {R} (p1:Mountain#1)
+T15 p1 taps p1:Mountain#1 for mana
+T15 taps: p1:Plains
+T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
+T15 p1 cancels casting Lava Axe
+T15 moves: Phantom Warrior, p1's hand -> stack
+T15 taps: p1:Plains
+T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
+T15 p1 cancels casting Phantom Warrior
+T15 moves: Lava Axe, p1's hand -> stack
+T15 taps: p1:Plains
+T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
+T15 taps: p1:Mountain#1
+T15 p1 adds {R} (p1:Mountain#1)
+T15 p1 taps p1:Mountain#1 for mana
+T15 taps: p1:Mountain#2
+T15 p1 adds {R} (p1:Mountain#2)
+T15 p1 taps p1:Mountain#2 for mana
+T15 p1 cancels casting Lava Axe
+T15 moves: Swamp, p1's hand -> battlefield
+T15 p1 plays p1:Swamp
+T15 moves: Wurm's Tooth, p1's hand -> stack
+T15 p1 cancels casting Wurm's Tooth
+T15 taps: p1:Plains
+T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
+T15 taps: p1:Mountain#1
+T15 p1 adds {R} (p1:Mountain#1)
+T15 p1 taps p1:Mountain#1 for mana
+T15 taps: p1:Mountain#2
+T15 p1 adds {R} (p1:Mountain#2)
+T15 p1 taps p1:Mountain#2 for mana
+T15 p1's unspent {W}{R}{R} empties
+T16 turn 16 begins (p2)
+T16 untaps: p2:Island#1
+T16 untaps: p2:Island#2
+T16 untaps: p2:Mountain
+T16 taps: p1:Swamp
+T16 p1 adds {B} (p1:Swamp)
+T16 p1 taps p1:Swamp for mana
+T16 taps: p2:Island#2
+T16 p2 adds {U} (p2:Island#2)
+T16 p2 taps p2:Island#2 for mana
+T16 taps: p2:Mountain
+T16 p2 adds {R} (p2:Mountain)
+T16 p2 taps p2:Mountain for mana
+T16 taps: p2:Island#1
+T16 p2 adds {U} (p2:Island#1)
+T16 p2 taps p2:Island#1 for mana
+T16 p1's unspent {B} empties
+T16 p2's unspent {U}{U}{R} empties
+T16 moves: Illusionary Servant, p2's library -> p2's hand
+T16 p2 draws
+T16 p2 attack: nothing
+T16 moves: Swamp, p2's hand -> battlefield
+T16 p2 plays p2:Swamp
+T16 taps: p2:Swamp
+T16 p2 adds {B} (p2:Swamp)
+T16 p2 taps p2:Swamp for mana
+T16 p2's unspent {B} empties
+T17 turn 17 begins (p1)
+T17 untaps: p1:Mountain#1
+T17 untaps: p1:Mountain#2
+T17 untaps: p1:Plains
+T17 untaps: p1:Mountain#3
+T17 untaps: p1:Swamp
+T17 moves: Lightwielder Paladin, p1's library -> p1's hand
+T17 p1 draws
+T17 taps: p1:Swamp
+T17 p1 adds {B} (p1:Swamp)
+T17 p1 taps p1:Swamp for mana
+T17 p1's unspent {B} empties
+T17 taps: p1:Mountain#2
+T17 p1 adds {R} (p1:Mountain#2)
+T17 p1 taps p1:Mountain#2 for mana
+T17 p1's unspent {R} empties
+T17 p1 attack: nothing
+T17 taps: p1:Mountain#1
+T17 p1 adds {R} (p1:Mountain#1)
+T17 p1 taps p1:Mountain#1 for mana
+T17 taps: p1:Plains
+T17 p1 adds {W} (p1:Plains)
+T17 p1 taps p1:Plains for mana
+T17 taps: p1:Mountain#3
+T17 p1 adds {R} (p1:Mountain#3)
+T17 p1 taps p1:Mountain#3 for mana
+T17 p1's unspent {W}{R}{R} empties
+T17 moves: Celestial Purge, p1's hand -> p1's graveyard
+T17 p1 discards Celestial Purge
+T18 turn 18 begins (p2)
+T18 untaps: p2:Island#1
+T18 untaps: p2:Island#2
+T18 untaps: p2:Mountain
+T18 untaps: p2:Swamp
+T18 taps: p2:Island#2
+T18 p2 adds {U} (p2:Island#2)
+T18 p2 taps p2:Island#2 for mana
+T18 p2's unspent {U} empties
+T18 moves: Forest, p2's library -> p2's hand
+T18 p2 draws
+T18 taps: p2:Mountain
+T18 p2 adds {R} (p2:Mountain)
+T18 p2 taps p2:Mountain for mana
+T18 p2's unspent {R} empties
+T18 taps: p2:Swamp
+T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
+T18 p2's unspent {B} empties
+T18 p2 attack: nothing
+T18 moves: Mountain, p2's hand -> battlefield
+T18 p2 plays p2:Mountain#2
+T18 taps: p2:Island#1
+T18 p2 adds {U} (p2:Island#1)
+T18 p2 taps p2:Island#1 for mana
+T18 taps: p2:Mountain#2
+T18 p2 adds {R} (p2:Mountain#2)
+T18 p2 taps p2:Mountain#2 for mana
+T18 p2's unspent {U}{R} empties
+T19 turn 19 begins (p1)
+T19 untaps: p1:Mountain#1
+T19 untaps: p1:Mountain#2
+T19 untaps: p1:Plains
+T19 untaps: p1:Mountain#3
+T19 untaps: p1:Swamp
+T19 taps: p1:Mountain#1
+T19 p1 adds {R} (p1:Mountain#1)
+T19 p1 taps p1:Mountain#1 for mana
+T19 p1's unspent {R} empties
+T19 moves: Plains, p1's library -> p1's hand
+T19 p1 draws
+T19 moves: Elvish Piper, p1's hand -> stack
+T19 p1 cancels casting Elvish Piper
+T19 p1 attack: nothing
+T19 taps: p1:Mountain#3
+T19 p1 adds {R} (p1:Mountain#3)
+T19 p1 taps p1:Mountain#3 for mana
+T19 taps: p1:Mountain#2
+T19 p1 adds {R} (p1:Mountain#2)
+T19 p1 taps p1:Mountain#2 for mana
+T19 p1's unspent {R}{R} empties
+T19 moves: Wurm's Tooth, p1's hand -> p1's graveyard
+T19 p1 discards Wurm's Tooth
+T20 turn 20 begins (p2)
+T20 untaps: p2:Island#1
+T20 untaps: p2:Island#2
+T20 untaps: p2:Mountain#1
+T20 untaps: p2:Swamp
+T20 untaps: p2:Mountain#2
+T20 taps: p1:Swamp
+T20 p1 adds {B} (p1:Swamp)
+T20 p1 taps p1:Swamp for mana
+T20 p1's unspent {B} empties
+T20 moves: Wall of Fire, p2's library -> p2's hand
+T20 p2 draws
+T20 taps: p2:Island#1
+T20 p2 adds {U} (p2:Island#1)
+T20 p2 taps p2:Island#1 for mana
+T20 taps: p2:Swamp
+T20 p2 adds {B} (p2:Swamp)
+T20 p2 taps p2:Swamp for mana
+T20 taps: p1:Plains
+T20 p1 adds {W} (p1:Plains)
+T20 p1 taps p1:Plains for mana
+T20 p1's unspent {W} empties
+T20 p2's unspent {U}{B} empties
+T20 taps: p2:Mountain#2
+T20 p2 adds {R} (p2:Mountain#2)
+T20 p2 taps p2:Mountain#2 for mana
+T20 p2's unspent {R} empties
+T20 p2 attack: nothing
+T20 moves: Wall of Fire, p2's hand -> p2's graveyard
+T20 p2 discards Wall of Fire
+T21 turn 21 begins (p1)
+T21 untaps: p1:Mountain#1
+T21 untaps: p1:Mountain#2
+T21 untaps: p1:Plains
+T21 untaps: p1:Mountain#3
+T21 untaps: p1:Swamp
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 p1's unspent {W} empties
+T21 moves: Island, p1's library -> p1's hand
+T21 p1 draws
+T21 taps: p1:Mountain#1
+T21 p1 adds {R} (p1:Mountain#1)
+T21 p1 taps p1:Mountain#1 for mana
+T21 taps: p1:Mountain#2
+T21 p1 adds {R} (p1:Mountain#2)
+T21 p1 taps p1:Mountain#2 for mana
+T21 taps: p1:Swamp
+T21 p1 adds {B} (p1:Swamp)
+T21 p1 taps p1:Swamp for mana
+T21 p1's unspent {B}{R}{R} empties
+T21 moves: Island, p1's hand -> battlefield
+T21 p1 plays p1:Island
+T21 taps: p2:Island#2
+T21 p2 adds {U} (p2:Island#2)
+T21 p2 taps p2:Island#2 for mana
+T21 taps: p1:Island
+T21 p1 adds {U} (p1:Island)
+T21 p1 taps p1:Island for mana
+T21 p1's unspent {U} empties
+T21 p2's unspent {U} empties
+T21 p1 attack: nothing
+T21 taps: p1:Mountain#3
+T21 p1 adds {R} (p1:Mountain#3)
+T21 p1 taps p1:Mountain#3 for mana
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
+T21 p1's unspent {R} empties
+T21 p2's unspent {R} empties
+T21 moves: Vampire Aristocrat, p1's hand -> stack
+T21 p1 cancels casting Vampire Aristocrat
+T21 moves: Phantom Warrior, p1's hand -> stack
+T21 p1 cancels casting Phantom Warrior
+T22 turn 22 begins (p2)
+T22 untaps: p2:Island#1
+T22 untaps: p2:Island#2
+T22 untaps: p2:Mountain#1
+T22 untaps: p2:Swamp
+T22 untaps: p2:Mountain#2
+T22 moves: Excommunicate, p2's library -> p2's hand
+T22 p2 draws
+T22 taps: p2:Mountain#2
+T22 p2 adds {R} (p2:Mountain#2)
+T22 p2 taps p2:Mountain#2 for mana
+T22 taps: p2:Island#1
+T22 p2 adds {U} (p2:Island#1)
+T22 p2 taps p2:Island#1 for mana
+T22 taps: p2:Island#2
+T22 p2 adds {U} (p2:Island#2)
+T22 p2 taps p2:Island#2 for mana
+T22 taps: p2:Mountain#1
+T22 p2 adds {R} (p2:Mountain#1)
+T22 p2 taps p2:Mountain#1 for mana
+T22 taps: p2:Swamp
+T22 p2 adds {B} (p2:Swamp)
+T22 p2 taps p2:Swamp for mana
+T22 p2's unspent {U}{U}{B}{R}{R} empties
+T22 moves: Swamp, p2's hand -> battlefield
+T22 p2 plays p2:Swamp#2
+T22 taps: p2:Swamp#2
+T22 p2 adds {B} (p2:Swamp#2)
+T22 p2 taps p2:Swamp#2 for mana
+T22 p2's unspent {B} empties
+T22 p2 attack: nothing
+T22 moves: Centaur Courser, p2's hand -> stack
+T22 p2 cancels casting Centaur Courser
+T22 moves: Illusionary Servant, p2's hand -> stack
+T22 p2 cancels casting Illusionary Servant
+T22 moves: Illusionary Servant, p2's hand -> stack
+T22 p2 cancels casting Illusionary Servant
+T23 turn 23 begins (p1)
+T23 untaps: p1:Mountain#1
+T23 untaps: p1:Mountain#2
+T23 untaps: p1:Plains
+T23 untaps: p1:Mountain#3
+T23 untaps: p1:Swamp
+T23 untaps: p1:Island
+T23 taps: p1:Mountain#1
+T23 p1 adds {R} (p1:Mountain#1)
+T23 p1 taps p1:Mountain#1 for mana
+T23 taps: p1:Mountain#2
+T23 p1 adds {R} (p1:Mountain#2)
+T23 p1 taps p1:Mountain#2 for mana
+T23 p1's unspent {R}{R} empties
+T23 moves: Plains, p1's library -> p1's hand
+T23 p1 draws
+T23 p1 attack: nothing
+T23 taps: p1:Plains
+T23 p1 adds {W} (p1:Plains)
+T23 p1 taps p1:Plains for mana
+T23 taps: p1:Mountain#3
+T23 p1 adds {R} (p1:Mountain#3)
+T23 p1 taps p1:Mountain#3 for mana
+T23 taps: p1:Island
+T23 p1 adds {U} (p1:Island)
+T23 p1 taps p1:Island for mana
+T23 taps: p1:Swamp
+T23 p1 adds {B} (p1:Swamp)
+T23 p1 taps p1:Swamp for mana
+T23 p1's unspent {W}{U}{B}{R} empties
+T23 moves: Silvercoat Lion, p1's hand -> p1's graveyard
+T23 p1 discards Silvercoat Lion
+T24 turn 24 begins (p2)
+T24 untaps: p2:Island#1
+T24 untaps: p2:Island#2
+T24 untaps: p2:Mountain#1
+T24 untaps: p2:Swamp#1
+T24 untaps: p2:Mountain#2
+T24 untaps: p2:Swamp#2
+T24 moves: Plains, p2's library -> p2's hand
+T24 p2 draws
+T24 moves: Underworld Dreams, p2's hand -> stack
+T24 p2 cancels casting Underworld Dreams
+T24 taps: p2:Mountain#1
+T24 p2 adds {R} (p2:Mountain#1)
+T24 p2 taps p2:Mountain#1 for mana
+T24 taps: p2:Island#1
+T24 p2 adds {U} (p2:Island#1)
+T24 p2 taps p2:Island#1 for mana
+T24 taps: p2:Mountain#2
+T24 p2 adds {R} (p2:Mountain#2)
+T24 p2 taps p2:Mountain#2 for mana
+T24 moves: Illusionary Servant, p2's hand -> stack
+T24 taps: p2:Island#2
+T24 p2 adds {U} (p2:Island#2)
+T24 p2 taps p2:Island#2 for mana
+T24 p2 casts Illusionary Servant
+T24 taps: p2:Swamp#1
+T24 p2 adds {B} (p2:Swamp#1)
+T24 p2 taps p2:Swamp#1 for mana
+T24 resolves: Illusionary Servant
+T24 moves: Illusionary Servant, stack -> battlefield
+T24 p2's unspent {B}{R} empties
+T24 p2 attack: nothing
+T24 taps: p2:Swamp#2
+T24 p2 adds {B} (p2:Swamp#2)
+T24 p2 taps p2:Swamp#2 for mana
+T24 moves: Swamp, p2's hand -> battlefield
+T24 p2 plays p2:Swamp#3
+T24 taps: p2:Swamp#3
+T24 p2 adds {B} (p2:Swamp#3)
+T24 p2 taps p2:Swamp#3 for mana
+T24 p2's unspent {B}{B} empties
+T25 turn 25 begins (p1)
+T25 untaps: p1:Mountain#1
+T25 untaps: p1:Mountain#2
+T25 untaps: p1:Plains
+T25 untaps: p1:Mountain#3
+T25 untaps: p1:Swamp
+T25 untaps: p1:Island
+T25 taps: p1:Plains
+T25 p1 adds {W} (p1:Plains)
+T25 p1 taps p1:Plains for mana
+T25 p1's unspent {W} empties
+T25 moves: Forest, p1's library -> p1's hand
+T25 p1 draws
+T25 taps: p1:Mountain#3
+T25 p1 adds {R} (p1:Mountain#3)
+T25 p1 taps p1:Mountain#3 for mana
+T25 p1's unspent {R} empties
+T25 moves: Plains, p1's hand -> battlefield
+T25 p1 plays p1:Plains#2
+T25 moves: Vampire Aristocrat, p1's hand -> stack
+T25 taps: p1:Mountain#1
+T25 p1 adds {R} (p1:Mountain#1)
+T25 p1 taps p1:Mountain#1 for mana
+T25 taps: p1:Island
+T25 p1 adds {U} (p1:Island)
+T25 p1 taps p1:Island for mana
+T25 taps: p1:Plains#2
+T25 p1 adds {W} (p1:Plains#2)
+T25 p1 taps p1:Plains#2 for mana
+T25 taps: p1:Swamp
+T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
+T25 p1 casts Vampire Aristocrat
+T25 resolves: Vampire Aristocrat
+T25 moves: Vampire Aristocrat, stack -> battlefield
+T25 p1's unspent {R} empties
+T25 p1 attack: nothing
+T25 p1 sacrifices p1:Vampire Aristocrat
+T25 moves: Vampire Aristocrat, battlefield -> p1's graveyard
+T25 p1 activates p1:Vampire Aristocrat
+T25 resolves: Vampire Aristocrat's ability
+T25 taps: p1:Mountain#2
+T25 p1 adds {R} (p1:Mountain#2)
+T25 p1 taps p1:Mountain#2 for mana
+T25 p1's unspent {R} empties
+T26 turn 26 begins (p2)
+T26 untaps: p2:Island#1
+T26 untaps: p2:Island#2
+T26 untaps: p2:Mountain#1
+T26 untaps: p2:Swamp#1
+T26 untaps: p2:Mountain#2
+T26 untaps: p2:Swamp#2
+T26 untaps: p2:Swamp#3
+T26 moves: Forest, p2's library -> p2's hand
+T26 p2 draws
+T26 taps: p2:Island#1
+T26 p2 adds {U} (p2:Island#1)
+T26 p2 taps p2:Island#1 for mana
+T26 moves: Underworld Dreams, p2's hand -> stack
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 p2 taps p2:Mountain#1 for mana
+T26 taps: p2:Swamp#3
+T26 p2 adds {B} (p2:Swamp#3)
+T26 p2 taps p2:Swamp#3 for mana
+T26 p2 cancels casting Underworld Dreams
+T26 p2's unspent {U} empties
+T26 taps: p2:Swamp#3
+T26 p2 adds {B} (p2:Swamp#3)
+T26 p2 taps p2:Swamp#3 for mana
+T26 p2's unspent {B} empties
+T26 p2 attack: nothing
+T26 taps: p2:Swamp#2
+T26 p2 adds {B} (p2:Swamp#2)
+T26 p2 taps p2:Swamp#2 for mana
+T26 p2's unspent {B} empties
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 p2 taps p2:Mountain#2 for mana
+T26 p2's unspent {R} empties
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 p2 taps p2:Mountain#1 for mana
+T26 p2's unspent {R} empties
+T27 turn 27 begins (p1)
+T27 untaps: p1:Mountain#1
+T27 untaps: p1:Mountain#2
+T27 untaps: p1:Plains#1
+T27 untaps: p1:Mountain#3
+T27 untaps: p1:Swamp
+T27 untaps: p1:Island
+T27 untaps: p1:Plains#2
+T27 moves: Mind Rot, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 p2 taps p2:Swamp#1 for mana
+T27 p2's unspent {B} empties
+T27 taps: p1:Swamp
+T27 p1 adds {B} (p1:Swamp)
+T27 p1 taps p1:Swamp for mana
+T27 taps: p1:Plains#1
+T27 p1 adds {W} (p1:Plains#1)
+T27 p1 taps p1:Plains#1 for mana
+T27 taps: p1:Mountain#2
+T27 p1 adds {R} (p1:Mountain#2)
+T27 p1 taps p1:Mountain#2 for mana
+T27 moves: Elvish Piper, p1's hand -> stack
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1 taps p1:Mountain#1 for mana
+T27 taps: p1:Island
+T27 p1 adds {U} (p1:Island)
+T27 p1 taps p1:Island for mana
+T27 taps: p1:Plains#2
+T27 p1 adds {W} (p1:Plains#2)
+T27 p1 taps p1:Plains#2 for mana
+T27 taps: p1:Mountain#3
+T27 p1 adds {R} (p1:Mountain#3)
+T27 p1 taps p1:Mountain#3 for mana
+T27 p1 cancels casting Elvish Piper
+T27 moves: Forest, p1's hand -> battlefield
+T27 p1 plays p1:Forest
+T27 moves: Phantom Warrior, p1's hand -> stack
+T27 taps: p1:Mountain#3
+T27 p1 adds {R} (p1:Mountain#3)
+T27 p1 taps p1:Mountain#3 for mana
+T27 taps: p1:Plains#2
+T27 p1 adds {W} (p1:Plains#2)
+T27 p1 taps p1:Plains#2 for mana
+T27 taps: p1:Forest
+T27 p1 adds {G} (p1:Forest)
+T27 p1 taps p1:Forest for mana
+T27 taps: p1:Island
+T27 p1 adds {U} (p1:Island)
+T27 p1 taps p1:Island for mana
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1 taps p1:Mountain#1 for mana
+T27 p1 cancels casting Phantom Warrior
+T27 taps: p1:Island
+T27 p1 adds {U} (p1:Island)
+T27 p1 taps p1:Island for mana
+T27 taps: p1:Forest
+T27 p1 adds {G} (p1:Forest)
+T27 p1 taps p1:Forest for mana
+T27 taps: p2:Island#2
+T27 p2 adds {U} (p2:Island#2)
+T27 p2 taps p2:Island#2 for mana
+T27 p1's unspent {W}{U}{B}{R}{G} empties
+T27 p2's unspent {U} empties
+T27 taps: p1:Mountain#3
+T27 p1 adds {R} (p1:Mountain#3)
+T27 p1 taps p1:Mountain#3 for mana
+T27 taps: p1:Plains#2
+T27 p1 adds {W} (p1:Plains#2)
+T27 p1 taps p1:Plains#2 for mana
+T27 p1's unspent {W}{R} empties
+T27 p1 attack: nothing
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1 taps p1:Mountain#1 for mana
+T27 p1's unspent {R} empties
+T28 turn 28 begins (p2)
+T28 untaps: p2:Island#1
+T28 untaps: p2:Island#2
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Swamp#1
+T28 untaps: p2:Mountain#2
+T28 untaps: p2:Swamp#2
+T28 untaps: p2:Swamp#3
+T28 moves: Deadly Recluse, p2's library -> p2's hand
+T28 p2 draws
+T28 taps: p2:Island#2
+T28 p2 adds {U} (p2:Island#2)
+T28 p2 taps p2:Island#2 for mana
+T28 taps: p2:Island#1
+T28 p2 adds {U} (p2:Island#1)
+T28 p2 taps p2:Island#1 for mana
+T28 p2's unspent {U}{U} empties
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 p2 taps p2:Mountain#2 for mana
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 p2 taps p2:Mountain#1 for mana
+T28 taps: p2:Swamp#3
+T28 p2 adds {B} (p2:Swamp#3)
+T28 p2 taps p2:Swamp#3 for mana
+T28 p2's unspent {B}{R}{R} empties
+T28 p2 attack: nothing
+T28 taps: p2:Swamp#2
+T28 p2 adds {B} (p2:Swamp#2)
+T28 p2 taps p2:Swamp#2 for mana
+T28 taps: p2:Swamp#1
+T28 p2 adds {B} (p2:Swamp#1)
+T28 p2 taps p2:Swamp#1 for mana
+T28 p2's unspent {B}{B} empties
+T28 moves: Forest, p2's hand -> battlefield
+T28 p2 plays p2:Forest
+T28 moves: Underworld Dreams, p2's hand -> stack
+T28 p2 cancels casting Underworld Dreams
+T29 turn 29 begins (p1)
+T29 untaps: p1:Mountain#1
+T29 untaps: p1:Mountain#2
+T29 untaps: p1:Plains#1
+T29 untaps: p1:Mountain#3
+T29 untaps: p1:Swamp
+T29 untaps: p1:Island
+T29 untaps: p1:Plains#2
+T29 untaps: p1:Forest
+T29 moves: Righteousness, p1's library -> p1's hand
+T29 p1 draws
+T29 taps: p1:Plains#2
+T29 p1 adds {W} (p1:Plains#2)
+T29 p1 taps p1:Plains#2 for mana
+T29 p1's unspent {W} empties
+T29 taps: p2:Forest
+T29 p2 adds {G} (p2:Forest)
+T29 p2 taps p2:Forest for mana
+T29 taps: p1:Mountain#1
+T29 p1 adds {R} (p1:Mountain#1)
+T29 p1 taps p1:Mountain#1 for mana
+T29 taps: p1:Swamp
+T29 p1 adds {B} (p1:Swamp)
+T29 p1 taps p1:Swamp for mana
+T29 p1's unspent {B}{R} empties
+T29 p2's unspent {G} empties
+T29 taps: p1:Island
+T29 p1 adds {U} (p1:Island)
+T29 p1 taps p1:Island for mana
+T29 taps: p1:Plains#1
+T29 p1 adds {W} (p1:Plains#1)
+T29 p1 taps p1:Plains#1 for mana
+T29 p1's unspent {W}{U} empties
+T29 p1 attack: nothing
+T29 taps: p1:Forest
+T29 p1 adds {G} (p1:Forest)
+T29 p1 taps p1:Forest for mana
+T29 p1's unspent {G} empties
+T29 moves: Plains, p1's hand -> battlefield
+T29 p1 plays p1:Plains#3
+T29 taps: p1:Mountain#2
+T29 p1 adds {R} (p1:Mountain#2)
+T29 p1 taps p1:Mountain#2 for mana
+T29 p1's unspent {R} empties
+T30 turn 30 begins (p2)
+T30 untaps: p2:Island#1
+T30 untaps: p2:Island#2
+T30 untaps: p2:Mountain#1
+T30 untaps: p2:Swamp#1
+T30 untaps: p2:Mountain#2
+T30 untaps: p2:Swamp#2
+T30 untaps: p2:Swamp#3
+T30 untaps: p2:Forest
+T30 taps: p2:Swamp#3
+T30 p2 adds {B} (p2:Swamp#3)
+T30 p2 taps p2:Swamp#3 for mana
+T30 taps: p2:Swamp#2
+T30 p2 adds {B} (p2:Swamp#2)
+T30 p2 taps p2:Swamp#2 for mana
+T30 p2's unspent {B}{B} empties
+T30 moves: Island, p2's library -> p2's hand
+T30 p2 draws
+T30 taps: p1:Mountain#3
+T30 p1 adds {R} (p1:Mountain#3)
+T30 p1 taps p1:Mountain#3 for mana
+T30 taps: p1:Plains#3
+T30 p1 adds {W} (p1:Plains#3)
+T30 p1 taps p1:Plains#3 for mana
+T30 taps: p2:Swamp#1
+T30 p2 adds {B} (p2:Swamp#1)
+T30 p2 taps p2:Swamp#1 for mana
+T30 p1's unspent {W}{R} empties
+T30 p2's unspent {B} empties
+T30 taps: p2:Island#1
+T30 p2 adds {U} (p2:Island#1)
+T30 p2 taps p2:Island#1 for mana
+T30 p2's unspent {U} empties
+T30 taps: p2:Illusionary Servant
+T30 p2 attack: p2:Illusionary Servant -> p1
+T30 p1 block: nothing
+T30 taps: p2:Island#2
+T30 p2 adds {U} (p2:Island#2)
+T30 p2 taps p2:Island#2 for mana
+T30 p2's unspent {U} empties
+T30 combat damage: p2:Illusionary Servant -> p1 3
+T30 p1 loses 3 life
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 p2 taps p2:Mountain#1 for mana
+T30 p2's unspent {R} empties
+T30 taps: p2:Forest
+T30 p2 adds {G} (p2:Forest)
+T30 p2 taps p2:Forest for mana
+T30 taps: p2:Mountain#2
+T30 p2 adds {R} (p2:Mountain#2)
+T30 p2 taps p2:Mountain#2 for mana
+T30 p2's unspent {R}{G} empties
+T30 moves: Island, p2's hand -> battlefield
+T30 p2 plays p2:Island#3
+T30 taps: p2:Island#3
+T30 p2 adds {U} (p2:Island#3)
+T30 p2 taps p2:Island#3 for mana
+T30 p2's unspent {U} empties
+T31 turn 31 begins (p1)
+T31 untaps: p1:Mountain#1
+T31 untaps: p1:Mountain#2
+T31 untaps: p1:Plains#1
+T31 untaps: p1:Mountain#3
+T31 untaps: p1:Swamp
+T31 untaps: p1:Island
+T31 untaps: p1:Plains#2
+T31 untaps: p1:Forest
+T31 untaps: p1:Plains#3
+T31 taps: p1:Mountain#3
+T31 p1 adds {R} (p1:Mountain#3)
+T31 p1 taps p1:Mountain#3 for mana
+T31 taps: p1:Plains#3
+T31 p1 adds {W} (p1:Plains#3)
+T31 p1 taps p1:Plains#3 for mana
+T31 taps: p1:Island
+T31 p1 adds {U} (p1:Island)
+T31 p1 taps p1:Island for mana
+T31 taps: p1:Swamp
+T31 p1 adds {B} (p1:Swamp)
+T31 p1 taps p1:Swamp for mana
+T31 p1's unspent {W}{U}{B}{R} empties
+T31 moves: Bogardan Hellkite, p1's library -> p1's hand
+T31 p1 draws
+T31 moves: Bogardan Hellkite, p1's hand -> stack
+T31 taps: p1:Forest
+T31 p1 adds {G} (p1:Forest)
+T31 p1 taps p1:Forest for mana
+T31 taps: p1:Plains#1
+T31 p1 adds {W} (p1:Plains#1)
+T31 p1 taps p1:Plains#1 for mana
+T31 taps: p1:Mountain#1
+T31 p1 adds {R} (p1:Mountain#1)
+T31 p1 taps p1:Mountain#1 for mana
+T31 taps: p1:Plains#2
+T31 p1 adds {W} (p1:Plains#2)
+T31 p1 taps p1:Plains#2 for mana
+T31 taps: p1:Mountain#2
+T31 p1 adds {R} (p1:Mountain#2)
+T31 p1 taps p1:Mountain#2 for mana
+T31 p1 cancels casting Bogardan Hellkite
+T31 taps: p1:Mountain#1
+T31 p1 adds {R} (p1:Mountain#1)
+T31 p1 taps p1:Mountain#1 for mana
+T31 p1's unspent {R} empties
+T31 moves: Bogardan Hellkite, p1's hand -> stack
+T31 taps: p1:Forest
+T31 p1 adds {G} (p1:Forest)
+T31 p1 taps p1:Forest for mana
+T31 taps: p1:Mountain#2
+T31 p1 adds {R} (p1:Mountain#2)
+T31 p1 taps p1:Mountain#2 for mana
+T31 taps: p1:Plains#2
+T31 p1 adds {W} (p1:Plains#2)
+T31 p1 taps p1:Plains#2 for mana
+T31 taps: p1:Plains#1
+T31 p1 adds {W} (p1:Plains#1)
+T31 p1 taps p1:Plains#1 for mana
+T31 p1 cancels casting Bogardan Hellkite
+T31 moves: Bogardan Hellkite, p1's hand -> stack
+T31 taps: p1:Mountain#2
+T31 p1 adds {R} (p1:Mountain#2)
+T31 p1 taps p1:Mountain#2 for mana
+T31 taps: p1:Plains#2
+T31 p1 adds {W} (p1:Plains#2)
+T31 p1 taps p1:Plains#2 for mana
+T31 taps: p1:Plains#1
+T31 p1 adds {W} (p1:Plains#1)
+T31 p1 taps p1:Plains#1 for mana
+T31 taps: p1:Forest
+T31 p1 adds {G} (p1:Forest)
+T31 p1 taps p1:Forest for mana
+T31 p1 cancels casting Bogardan Hellkite
+T31 taps: p1:Plains#2
+T31 p1 adds {W} (p1:Plains#2)
+T31 p1 taps p1:Plains#2 for mana
+T31 p1's unspent {W} empties
+T31 p1 attack: nothing
+T31 taps: p1:Mountain#2
+T31 p1 adds {R} (p1:Mountain#2)
+T31 p1 taps p1:Mountain#2 for mana
+T31 taps: p1:Forest
+T31 p1 adds {G} (p1:Forest)
+T31 p1 taps p1:Forest for mana
+T31 p1's unspent {R}{G} empties
+T31 taps: p1:Plains#1
+T31 p1 adds {W} (p1:Plains#1)
+T31 p1 taps p1:Plains#1 for mana
+T31 p1's unspent {W} empties
+T32 turn 32 begins (p2)
+T32 untaps: p2:Island#1
+T32 untaps: p2:Island#2
+T32 untaps: p2:Mountain#1
+T32 untaps: p2:Swamp#1
+T32 untaps: p2:Mountain#2
+T32 untaps: p2:Swamp#2
+T32 untaps: p2:Illusionary Servant
+T32 untaps: p2:Swamp#3
+T32 untaps: p2:Forest
+T32 untaps: p2:Island#3
+T32 taps: p2:Swamp#2
+T32 p2 adds {B} (p2:Swamp#2)
+T32 p2 taps p2:Swamp#2 for mana
+T32 taps: p2:Mountain#1
+T32 p2 adds {R} (p2:Mountain#1)
+T32 p2 taps p2:Mountain#1 for mana
+T32 taps: p2:Island#3
+T32 p2 adds {U} (p2:Island#3)
+T32 p2 taps p2:Island#3 for mana
+T32 moves: Bogardan Hellkite, p1's hand -> stack
+T32 p1 cancels casting Bogardan Hellkite
+T32 p2's unspent {U}{B}{R} empties
+T32 moves: Giant Growth, p2's library -> p2's hand
+T32 p2 draws
+T32 moves: Giant Growth, p2's hand -> stack
+T32 p2 cancels casting Giant Growth
+T32 taps: p2:Swamp#1
+T32 p2 adds {B} (p2:Swamp#1)
+T32 p2 taps p2:Swamp#1 for mana
+T32 moves: Giant Growth, p2's hand -> stack
+T32 targeted: p2:Illusionary Servant by Giant Growth
+T32 taps: p2:Mountain#2
+T32 p2 adds {R} (p2:Mountain#2)
+T32 p2 taps p2:Mountain#2 for mana
+T32 taps: p2:Island#2
+T32 p2 adds {U} (p2:Island#2)
+T32 p2 taps p2:Island#2 for mana
+T32 taps: p2:Forest
+T32 p2 adds {G} (p2:Forest)
+T32 p2 taps p2:Forest for mana
+T32 p2 casts Giant Growth
+T32 p2:Illusionary Servant triggers (p2)
+T32 moves: Bogardan Hellkite, p1's hand -> stack
+T32 p1 cancels casting Bogardan Hellkite
+T32 moves: Bogardan Hellkite, p1's hand -> stack
+T32 p1 cancels casting Bogardan Hellkite
+T32 moves: Bogardan Hellkite, p1's hand -> stack
+T32 p1 cancels casting Bogardan Hellkite
+T32 moves: Bogardan Hellkite, p1's hand -> stack
+T32 p1 cancels casting Bogardan Hellkite
+T32 p2 sacrifices p2:Illusionary Servant
+T32 moves: Illusionary Servant, battlefield -> p2's graveyard
+T32 resolves: p2:Illusionary Servant's ability
+T32 Giant Growth doesn't resolve: its targets are illegal (CR 608.2b)
+T32 moves: Giant Growth, stack -> p2's graveyard
+T32 taps: p2:Swamp#3
+T32 p2 adds {B} (p2:Swamp#3)
+T32 p2 taps p2:Swamp#3 for mana
+T32 moves: Bogardan Hellkite, p1's hand -> stack
+T32 p1 cancels casting Bogardan Hellkite
+T32 p2's unspent {U}{B}{B}{R} empties
+T32 p2 attack: nothing
+T32 taps: p2:Island#1
+T32 p2 adds {U} (p2:Island#1)
+T32 p2 taps p2:Island#1 for mana
+T32 p2's unspent {U} empties
+T33 turn 33 begins (p1)
+T33 untaps: p1:Mountain#1
+T33 untaps: p1:Mountain#2
+T33 untaps: p1:Plains#1
+T33 untaps: p1:Mountain#3
+T33 untaps: p1:Swamp
+T33 untaps: p1:Island
+T33 untaps: p1:Plains#2
+T33 untaps: p1:Forest
+T33 untaps: p1:Plains#3
+T33 moves: Wall of Faith, p1's library -> p1's hand
+T33 p1 draws
+T33 taps: p1:Mountain#2
+T33 p1 adds {R} (p1:Mountain#2)
+T33 p1 taps p1:Mountain#2 for mana
+T33 taps: p1:Plains#3
+T33 p1 adds {W} (p1:Plains#3)
+T33 p1 taps p1:Plains#3 for mana
+T33 taps: p1:Forest
+T33 p1 adds {G} (p1:Forest)
+T33 p1 taps p1:Forest for mana
+T33 moves: Elvish Piper, p1's hand -> stack
+T33 taps: p1:Island
+T33 p1 adds {U} (p1:Island)
+T33 p1 taps p1:Island for mana
+T33 taps: p1:Mountain#3
+T33 p1 adds {R} (p1:Mountain#3)
+T33 p1 taps p1:Mountain#3 for mana
+T33 p1 casts Elvish Piper
+T33 resolves: Elvish Piper
+T33 moves: Elvish Piper, stack -> battlefield
+T33 p1's unspent {R} empties
+T33 taps: p1:Plains#1
+T33 p1 adds {W} (p1:Plains#1)
+T33 p1 taps p1:Plains#1 for mana
+T33 p1's unspent {W} empties
+T33 p1 attack: nothing
+T33 taps: p1:Mountain#1
+T33 p1 adds {R} (p1:Mountain#1)
+T33 p1 taps p1:Mountain#1 for mana
+T33 taps: p1:Plains#2
+T33 p1 adds {W} (p1:Plains#2)
+T33 p1 taps p1:Plains#2 for mana
+T33 p1's unspent {W}{R} empties
+T33 taps: p1:Swamp
+T33 p1 adds {B} (p1:Swamp)
+T33 p1 taps p1:Swamp for mana
+T33 p1's unspent {B} empties
+T34 turn 34 begins (p2)
+T34 untaps: p2:Island#1
+T34 untaps: p2:Island#2
+T34 untaps: p2:Mountain#1
+T34 untaps: p2:Swamp#1
+T34 untaps: p2:Mountain#2
+T34 untaps: p2:Swamp#2
+T34 untaps: p2:Swamp#3
+T34 untaps: p2:Forest
+T34 untaps: p2:Island#3
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 moves: Silvercoat Lion, p2's library -> p2's hand
+T34 p2 draws
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 p2 taps p2:Mountain#1 for mana
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 p2's unspent {R} empties
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 taps: p2:Swamp#3
+T34 p2 adds {B} (p2:Swamp#3)
+T34 p2 taps p2:Swamp#3 for mana
+T34 taps: p2:Forest
+T34 p2 adds {G} (p2:Forest)
+T34 p2 taps p2:Forest for mana
+T34 p2's unspent {B}{G} empties
+T34 p2 attack: nothing
+T34 taps: p2:Island#2
+T34 p2 adds {U} (p2:Island#2)
+T34 p2 taps p2:Island#2 for mana
+T34 p2's unspent {U} empties
+T34 moves: Plains, p2's hand -> battlefield
+T34 p2 plays p2:Plains
+T34 moves: Centaur Courser, p2's hand -> stack
+T34 taps: p2:Island#3
+T34 p2 adds {U} (p2:Island#3)
+T34 p2 taps p2:Island#3 for mana
+T34 p2 cancels casting Centaur Courser
+T34 taps: p2:Swamp#2
+T34 p2 adds {B} (p2:Swamp#2)
+T34 p2 taps p2:Swamp#2 for mana
+T34 moves: Bogardan Hellkite, p1's hand -> stack
+T34 p1 cancels casting Bogardan Hellkite
+T34 p2's unspent {B} empties
+T35 turn 35 begins (p1)
+T35 untaps: p1:Mountain#1
+T35 untaps: p1:Mountain#2
+T35 untaps: p1:Plains#1
+T35 untaps: p1:Mountain#3
+T35 untaps: p1:Swamp
+T35 untaps: p1:Island
+T35 untaps: p1:Plains#2
+T35 untaps: p1:Forest
+T35 untaps: p1:Plains#3
+T35 taps: p2:Island#1
+T35 p2 adds {U} (p2:Island#1)
+T35 p2 taps p2:Island#1 for mana
+T35 p2's unspent {U} empties
+T35 moves: Forest, p1's library -> p1's hand
+T35 p1 draws
+T35 moves: Bogardan Hellkite, p1's hand -> stack
+T35 taps: p1:Plains#3
+T35 p1 adds {W} (p1:Plains#3)
+T35 p1 taps p1:Plains#3 for mana
+T35 taps: p1:Forest
+T35 p1 adds {G} (p1:Forest)
+T35 p1 taps p1:Forest for mana
+T35 taps: p1:Mountain#1
+T35 p1 adds {R} (p1:Mountain#1)
+T35 p1 taps p1:Mountain#1 for mana
+T35 p1 cancels casting Bogardan Hellkite
+T35 moves: Bogardan Hellkite, p1's hand -> stack
+T35 taps: p1:Forest
+T35 p1 adds {G} (p1:Forest)
+T35 p1 taps p1:Forest for mana
+T35 taps: p1:Plains#1
+T35 p1 adds {W} (p1:Plains#1)
+T35 p1 taps p1:Plains#1 for mana
+T35 taps: p1:Mountain#2
+T35 p1 adds {R} (p1:Mountain#2)
+T35 p1 taps p1:Mountain#2 for mana
+T35 taps: p1:Plains#2
+T35 p1 adds {W} (p1:Plains#2)
+T35 p1 taps p1:Plains#2 for mana
+T35 taps: p1:Mountain#1
+T35 p1 adds {R} (p1:Mountain#1)
+T35 p1 taps p1:Mountain#1 for mana
+T35 taps: p1:Mountain#3
+T35 p1 adds {R} (p1:Mountain#3)
+T35 p1 taps p1:Mountain#3 for mana
+T35 taps: p1:Swamp
+T35 p1 adds {B} (p1:Swamp)
+T35 p1 taps p1:Swamp for mana
+T35 taps: p1:Island
+T35 p1 adds {U} (p1:Island)
+T35 p1 taps p1:Island for mana
+T35 taps: p1:Plains#3
+T35 p1 adds {W} (p1:Plains#3)
+T35 p1 taps p1:Plains#3 for mana
+T35 p1 casts Bogardan Hellkite
+T35 taps: p2:Island#3
+T35 p2 adds {U} (p2:Island#3)
+T35 p2 taps p2:Island#3 for mana
+T35 taps: p2:Swamp#1
+T35 p2 adds {B} (p2:Swamp#1)
+T35 p2 taps p2:Swamp#1 for mana
+T35 p1 cancels activating p1:Elvish Piper
+T35 resolves: Bogardan Hellkite
+T35 moves: Bogardan Hellkite, stack -> battlefield
+T35 p1:Bogardan Hellkite triggers (p1)
+T35 targeted: p1:Elvish Piper by Bogardan Hellkite ability
+T35 damage: p1:Bogardan Hellkite -> p1:Elvish Piper 5
+T35 resolves: p1:Bogardan Hellkite's ability
+T35 state-based actions: p1:Elvish Piper lethalDamage
+T35 destroyed: p1:Elvish Piper
+T35 moves: Elvish Piper, battlefield -> p1's graveyard
+T35 taps: p2:Plains
+T35 p2 adds {W} (p2:Plains)
+T35 p2 taps p2:Plains for mana
+T35 p1's unspent {R} empties
+T35 p2's unspent {W}{U}{B} empties
+T35 moves: Lava Axe, p1's hand -> stack
+T35 p1 cancels casting Lava Axe
+T35 moves: Forest, p1's hand -> battlefield
+T35 p1 plays p1:Forest#2
+T35 taps: p1:Forest#2
+T35 p1 adds {G} (p1:Forest#2)
+T35 p1 taps p1:Forest#2 for mana
+T35 moves: Lava Axe, p1's hand -> stack
+T35 p1 cancels casting Lava Axe
+T35 taps: p2:Mountain#2
+T35 p2 adds {R} (p2:Mountain#2)
+T35 p2 taps p2:Mountain#2 for mana
+T35 p1's unspent {G} empties
+T35 p2's unspent {R} empties
+T35 p1 attack: nothing
+T36 turn 36 begins (p2)
+T36 untaps: p2:Island#1
+T36 untaps: p2:Island#2
+T36 untaps: p2:Mountain#1
+T36 untaps: p2:Swamp#1
+T36 untaps: p2:Mountain#2
+T36 untaps: p2:Swamp#2
+T36 untaps: p2:Swamp#3
+T36 untaps: p2:Forest
+T36 untaps: p2:Island#3
+T36 untaps: p2:Plains
+T36 moves: Viashino Spearhunter, p2's library -> p2's hand
+T36 p2 draws
+T36 taps: p2:Swamp#1
+T36 p2 adds {B} (p2:Swamp#1)
+T36 p2 taps p2:Swamp#1 for mana
+T36 taps: p2:Island#1
+T36 p2 adds {U} (p2:Island#1)
+T36 p2 taps p2:Island#1 for mana
+T36 p2's unspent {U}{B} empties
+T36 moves: Excommunicate, p2's hand -> stack
+T36 targeted: p1:Bogardan Hellkite by Excommunicate
+T36 taps: p2:Swamp#3
+T36 p2 adds {B} (p2:Swamp#3)
+T36 p2 taps p2:Swamp#3 for mana
+T36 taps: p2:Forest
+T36 p2 adds {G} (p2:Forest)
+T36 p2 taps p2:Forest for mana
+T36 taps: p2:Island#2
+T36 p2 adds {U} (p2:Island#2)
+T36 p2 taps p2:Island#2 for mana
+T36 taps: p2:Swamp#2
+T36 p2 adds {B} (p2:Swamp#2)
+T36 p2 taps p2:Swamp#2 for mana
+T36 taps: p2:Island#3
+T36 p2 adds {U} (p2:Island#3)
+T36 p2 taps p2:Island#3 for mana
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 p2 taps p2:Mountain#2 for mana
+T36 taps: p2:Mountain#1
+T36 p2 adds {R} (p2:Mountain#1)
+T36 p2 taps p2:Mountain#1 for mana
+T36 taps: p2:Plains
+T36 p2 adds {W} (p2:Plains)
+T36 p2 taps p2:Plains for mana
+T36 p2 casts Excommunicate
+T36 moves: Bogardan Hellkite, battlefield -> p1's library
+T36 resolves: Excommunicate
+T36 moves: Excommunicate, stack -> p2's graveyard
+T36 moves: Deadly Recluse, p2's hand -> stack
+T36 p2 casts Deadly Recluse
+T36 resolves: Deadly Recluse
+T36 moves: Deadly Recluse, stack -> battlefield
+T36 moves: Viashino Spearhunter, p2's hand -> stack
+T36 p2 cancels casting Viashino Spearhunter
+T36 p2's unspent {U}{U}{R} empties
+T36 p2 attack: nothing
+T36 moves: Viashino Spearhunter, p2's hand -> stack
+T36 p2 cancels casting Viashino Spearhunter
+T36 moves: Silvercoat Lion, p2's hand -> stack
+T36 p2 cancels casting Silvercoat Lion
+T36 moves: Forest, p2's hand -> battlefield
+T36 p2 plays p2:Forest#2
+T37 turn 37 begins (p1)
+T37 untaps: p1:Mountain#1
+T37 untaps: p1:Mountain#2
+T37 untaps: p1:Plains#1
+T37 untaps: p1:Mountain#3
+T37 untaps: p1:Swamp
+T37 untaps: p1:Island
+T37 untaps: p1:Plains#2
+T37 untaps: p1:Forest#1
+T37 untaps: p1:Plains#3
+T37 untaps: p1:Forest#2
+T37 moves: Bogardan Hellkite, p1's library -> p1's hand
+T37 p1 draws
+T37 taps: p1:Plains#1
+T37 p1 adds {W} (p1:Plains#1)
+T37 p1 taps p1:Plains#1 for mana
+T37 taps: p1:Swamp
+T37 p1 adds {B} (p1:Swamp)
+T37 p1 taps p1:Swamp for mana
+T37 taps: p1:Mountain#1
+T37 p1 adds {R} (p1:Mountain#1)
+T37 p1 taps p1:Mountain#1 for mana
+T37 taps: p2:Forest#2
+T37 p2 adds {G} (p2:Forest#2)
+T37 p2 taps p2:Forest#2 for mana
+T37 moves: Bogardan Hellkite, p1's hand -> stack
+T37 taps: p1:Plains#3
+T37 p1 adds {W} (p1:Plains#3)
+T37 p1 taps p1:Plains#3 for mana
+T37 taps: p1:Island
+T37 p1 adds {U} (p1:Island)
+T37 p1 taps p1:Island for mana
+T37 taps: p1:Mountain#2
+T37 p1 adds {R} (p1:Mountain#2)
+T37 p1 taps p1:Mountain#2 for mana
+T37 taps: p1:Mountain#3
+T37 p1 adds {R} (p1:Mountain#3)
+T37 p1 taps p1:Mountain#3 for mana
+T37 taps: p1:Forest#1
+T37 p1 adds {G} (p1:Forest#1)
+T37 p1 taps p1:Forest#1 for mana
+T37 p1 casts Bogardan Hellkite
+T37 taps: p1:Plains#2
+T37 p1 adds {W} (p1:Plains#2)
+T37 p1 taps p1:Plains#2 for mana
+T37 resolves: Bogardan Hellkite
+T37 moves: Bogardan Hellkite, stack -> battlefield
+T37 p1:Bogardan Hellkite triggers (p1)
+T37 targeted: p2:Deadly Recluse by Bogardan Hellkite ability
+T37 targeted: p1:Bogardan Hellkite by Bogardan Hellkite ability
+T37 damage: p1:Bogardan Hellkite -> p2:Deadly Recluse 1
+T37 damage: p1:Bogardan Hellkite -> p1:Bogardan Hellkite 1
+T37 damage: p1:Bogardan Hellkite -> p1 3
+T37 p1 loses 3 life
+T37 resolves: p1:Bogardan Hellkite's ability
+T37 taps: p1:Forest#2
+T37 p1 adds {G} (p1:Forest#2)
+T37 p1 taps p1:Forest#2 for mana
+T37 p1's unspent {W}{G} empties
+T37 p2's unspent {G} empties
+T37 moves: Wall of Faith, p1's hand -> stack
+T37 p1 cancels casting Wall of Faith
+T37 p1 attack: nothing
+T37 damage removed: p2:Deadly Recluse (1)
+T37 damage removed: p1:Bogardan Hellkite (1)
+T38 turn 38 begins (p2)
+T38 untaps: p2:Island#1
+T38 untaps: p2:Island#2
+T38 untaps: p2:Mountain#1
+T38 untaps: p2:Swamp#1
+T38 untaps: p2:Mountain#2
+T38 untaps: p2:Swamp#2
+T38 untaps: p2:Swamp#3
+T38 untaps: p2:Forest#1
+T38 untaps: p2:Island#3
+T38 untaps: p2:Plains
+T38 untaps: p2:Forest#2
+T38 taps: p2:Forest#1
+T38 p2 adds {G} (p2:Forest#1)
+T38 p2 taps p2:Forest#1 for mana
+T38 taps: p2:Swamp#1
+T38 p2 adds {B} (p2:Swamp#1)
+T38 p2 taps p2:Swamp#1 for mana
+T38 p2's unspent {B}{G} empties
+T38 moves: Mountain, p2's library -> p2's hand
+T38 p2 draws
+T38 taps: p2:Swamp#3
+T38 p2 adds {B} (p2:Swamp#3)
+T38 p2 taps p2:Swamp#3 for mana
+T38 moves: Underworld Dreams, p2's hand -> stack
+T38 taps: p2:Plains
+T38 p2 adds {W} (p2:Plains)
+T38 p2 taps p2:Plains for mana
+T38 taps: p2:Swamp#2
+T38 p2 adds {B} (p2:Swamp#2)
+T38 p2 taps p2:Swamp#2 for mana
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 p2 taps p2:Mountain#1 for mana
+T38 taps: p2:Forest#2
+T38 p2 adds {G} (p2:Forest#2)
+T38 p2 taps p2:Forest#2 for mana
+T38 taps: p2:Island#1
+T38 p2 adds {U} (p2:Island#1)
+T38 p2 taps p2:Island#1 for mana
+T38 taps: p2:Mountain#2
+T38 p2 adds {R} (p2:Mountain#2)
+T38 p2 taps p2:Mountain#2 for mana
+T38 p2 cancels casting Underworld Dreams
+T38 taps: p2:Island#2
+T38 p2 adds {U} (p2:Island#2)
+T38 p2 taps p2:Island#2 for mana
+T38 p2's unspent {U}{B} empties
+T38 taps: p2:Deadly Recluse
+T38 p2 attack: p2:Deadly Recluse -> p1
+T38 p1 block: p1:Bogardan Hellkite -> p2:Deadly Recluse
+T38 taps: p2:Forest#2
+T38 p2 adds {G} (p2:Forest#2)
+T38 p2 taps p2:Forest#2 for mana
+T38 p2's unspent {G} empties
+T38 combat damage: p2:Deadly Recluse -> p1:Bogardan Hellkite 1
+T38 combat damage: p1:Bogardan Hellkite -> p2:Deadly Recluse 5
+T38 state-based actions: p2:Deadly Recluse lethalDamage, p1:Bogardan Hellkite deathtouchDamage
+T38 destroyed: p2:Deadly Recluse
+T38 moves: Deadly Recluse, battlefield -> p2's graveyard
+T38 destroyed: p1:Bogardan Hellkite
+T38 moves: Bogardan Hellkite, battlefield -> p1's graveyard
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 p2 taps p2:Mountain#1 for mana
+T38 p2's unspent {R} empties
+T38 taps: p2:Swamp#2
+T38 p2 adds {B} (p2:Swamp#2)
+T38 p2 taps p2:Swamp#2 for mana
+T38 p2's unspent {B} empties
+T38 taps: p2:Island#3
+T38 p2 adds {U} (p2:Island#3)
+T38 p2 taps p2:Island#3 for mana
+T38 p2's unspent {U} empties
+T39 turn 39 begins (p1)
+T39 untaps: p1:Mountain#1
+T39 untaps: p1:Mountain#2
+T39 untaps: p1:Plains#1
+T39 untaps: p1:Mountain#3
+T39 untaps: p1:Swamp
+T39 untaps: p1:Island
+T39 untaps: p1:Plains#2
+T39 untaps: p1:Forest#1
+T39 untaps: p1:Plains#3
+T39 untaps: p1:Forest#2
+T39 taps: p1:Swamp
+T39 p1 adds {B} (p1:Swamp)
+T39 p1 taps p1:Swamp for mana
+T39 taps: p1:Plains#2
+T39 p1 adds {W} (p1:Plains#2)
+T39 p1 taps p1:Plains#2 for mana
+T39 p1's unspent {W}{B} empties
+T39 moves: Mountain, p1's library -> p1's hand
+T39 p1 draws
+T39 taps: p2:Plains
+T39 p2 adds {W} (p2:Plains)
+T39 p2 taps p2:Plains for mana
+T39 taps: p1:Forest#2
+T39 p1 adds {G} (p1:Forest#2)
+T39 p1 taps p1:Forest#2 for mana
+T39 taps: p1:Mountain#3
+T39 p1 adds {R} (p1:Mountain#3)
+T39 p1 taps p1:Mountain#3 for mana
+T39 taps: p2:Island#1
+T39 p2 adds {U} (p2:Island#1)
+T39 p2 taps p2:Island#1 for mana
+T39 taps: p2:Mountain#2
+T39 p2 adds {R} (p2:Mountain#2)
+T39 p2 taps p2:Mountain#2 for mana
+T39 p1's unspent {R}{G} empties
+T39 p2's unspent {W}{U}{R} empties
+T39 taps: p1:Mountain#1
+T39 p1 adds {R} (p1:Mountain#1)
+T39 p1 taps p1:Mountain#1 for mana
+T39 taps: p1:Plains#3
+T39 p1 adds {W} (p1:Plains#3)
+T39 p1 taps p1:Plains#3 for mana
+T39 taps: p1:Mountain#2
+T39 p1 adds {R} (p1:Mountain#2)
+T39 p1 taps p1:Mountain#2 for mana
+T39 p1's unspent {W}{R}{R} empties
+T39 taps: p1:Island
+T39 p1 adds {U} (p1:Island)
+T39 p1 taps p1:Island for mana
+T39 taps: p1:Forest#1
+T39 p1 adds {G} (p1:Forest#1)
+T39 p1 taps p1:Forest#1 for mana
+T39 p1's unspent {U}{G} empties
+T39 p1 attack: nothing
+T39 taps: p1:Plains#1
+T39 p1 adds {W} (p1:Plains#1)
+T39 p1 taps p1:Plains#1 for mana
+T39 p1's unspent {W} empties
+T39 moves: Mountain, p1's hand -> battlefield
+T39 p1 plays p1:Mountain#4
+T40 turn 40 begins (p2)
+T40 untaps: p2:Island#1
+T40 untaps: p2:Island#2
+T40 untaps: p2:Mountain#1
+T40 untaps: p2:Swamp#1
+T40 untaps: p2:Mountain#2
+T40 untaps: p2:Swamp#2
+T40 untaps: p2:Swamp#3
+T40 untaps: p2:Forest#1
+T40 untaps: p2:Island#3
+T40 untaps: p2:Plains
+T40 untaps: p2:Forest#2
+T40 taps: p2:Plains
+T40 p2 adds {W} (p2:Plains)
+T40 p2 taps p2:Plains for mana
+T40 p2's unspent {W} empties
+T40 moves: Lightwielder Paladin, p2's library -> p2's hand
+T40 p2 draws
+T40 taps: p2:Forest#2
+T40 p2 adds {G} (p2:Forest#2)
+T40 p2 taps p2:Forest#2 for mana
+T40 taps: p2:Swamp#1
+T40 p2 adds {B} (p2:Swamp#1)
+T40 p2 taps p2:Swamp#1 for mana
+T40 taps: p2:Swamp#3
+T40 p2 adds {B} (p2:Swamp#3)
+T40 p2 taps p2:Swamp#3 for mana
+T40 p2's unspent {B}{B}{G} empties
+T40 taps: p1:Mountain#4
+T40 p1 adds {R} (p1:Mountain#4)
+T40 p1 taps p1:Mountain#4 for mana
+T40 taps: p2:Island#3
+T40 p2 adds {U} (p2:Island#3)
+T40 p2 taps p2:Island#3 for mana
+T40 p1's unspent {R} empties
+T40 p2's unspent {U} empties
+T40 taps: p2:Swamp#2
+T40 p2 adds {B} (p2:Swamp#2)
+T40 p2 taps p2:Swamp#2 for mana
+T40 p2's unspent {B} empties
+T40 p2 attack: nothing
+T40 taps: p2:Island#1
+T40 p2 adds {U} (p2:Island#1)
+T40 p2 taps p2:Island#1 for mana
+T40 p2's unspent {U} empties
+T40 taps: p2:Mountain#1
+T40 p2 adds {R} (p2:Mountain#1)
+T40 p2 taps p2:Mountain#1 for mana
+T40 taps: p2:Forest#1
+T40 p2 adds {G} (p2:Forest#1)
+T40 p2 taps p2:Forest#1 for mana
+T40 taps: p2:Island#2
+T40 p2 adds {U} (p2:Island#2)
+T40 p2 taps p2:Island#2 for mana
+T40 p2's unspent {U}{R}{G} empties
+T41 turn 41 begins (p1)
+T41 untaps: p1:Mountain#1
+T41 untaps: p1:Mountain#2
+T41 untaps: p1:Plains#1
+T41 untaps: p1:Mountain#3
+T41 untaps: p1:Swamp
+T41 untaps: p1:Island
+T41 untaps: p1:Plains#2
+T41 untaps: p1:Forest#1
+T41 untaps: p1:Plains#3
+T41 untaps: p1:Forest#2
+T41 untaps: p1:Mountain#4
+T41 taps: p2:Mountain#2
+T41 p2 adds {R} (p2:Mountain#2)
+T41 p2 taps p2:Mountain#2 for mana
+T41 p2's unspent {R} empties
+T41 moves: Dragon Whelp, p1's library -> p1's hand
+T41 p1 draws
+T41 taps: p1:Forest#1
+T41 p1 adds {G} (p1:Forest#1)
+T41 p1 taps p1:Forest#1 for mana
+T41 taps: p1:Plains#1
+T41 p1 adds {W} (p1:Plains#1)
+T41 p1 taps p1:Plains#1 for mana
+T41 p1's unspent {W}{G} empties
+T41 taps: p1:Forest#2
+T41 p1 adds {G} (p1:Forest#2)
+T41 p1 taps p1:Forest#2 for mana
+T41 moves: Mind Rot, p1's hand -> stack
+T41 taps: p1:Plains#3
+T41 p1 adds {W} (p1:Plains#3)
+T41 p1 taps p1:Plains#3 for mana
+T41 taps: p1:Mountain#3
+T41 p1 adds {R} (p1:Mountain#3)
+T41 p1 taps p1:Mountain#3 for mana
+T41 taps: p1:Swamp
+T41 p1 adds {B} (p1:Swamp)
+T41 p1 taps p1:Swamp for mana
+T41 taps: p1:Mountain#1
+T41 p1 adds {R} (p1:Mountain#1)
+T41 p1 taps p1:Mountain#1 for mana
+T41 taps: p1:Plains#2
+T41 p1 adds {W} (p1:Plains#2)
+T41 p1 taps p1:Plains#2 for mana
+T41 p1 casts Mind Rot
+T41 moves: Lava Axe, p1's hand -> p1's graveyard
+T41 p1 discards Lava Axe
+T41 moves: Lightwielder Paladin, p1's hand -> p1's graveyard
+T41 p1 discards Lightwielder Paladin
+T41 resolves: Mind Rot
+T41 moves: Mind Rot, stack -> p1's graveyard
+T41 taps: p1:Mountain#4
+T41 p1 adds {R} (p1:Mountain#4)
+T41 p1 taps p1:Mountain#4 for mana
+T41 moves: Dragon Whelp, p1's hand -> stack
+T41 p1 casts Dragon Whelp
+T41 taps: p1:Island
+T41 p1 adds {U} (p1:Island)
+T41 p1 taps p1:Island for mana
+T41 resolves: Dragon Whelp
+T41 moves: Dragon Whelp, stack -> battlefield
+T41 taps: p1:Mountain#2
+T41 p1 adds {R} (p1:Mountain#2)
+T41 p1 taps p1:Mountain#2 for mana
+T41 p1's unspent {U}{R} empties
+T41 p1 attack: nothing
+T41 p1 cancels activating p1:Dragon Whelp
+T41 p1 cancels activating p1:Dragon Whelp
+T41 p1 cancels activating p1:Dragon Whelp
+T41 p1 cancels activating p1:Dragon Whelp
+T41 p1 cancels activating p1:Dragon Whelp
+T41 moves: Wall of Faith, p1's hand -> stack
+T41 p1 cancels casting Wall of Faith
+T42 turn 42 begins (p2)
+T42 untaps: p2:Island#1
+T42 untaps: p2:Island#2
+T42 untaps: p2:Mountain#1
+T42 untaps: p2:Swamp#1
+T42 untaps: p2:Mountain#2
+T42 untaps: p2:Swamp#2
+T42 untaps: p2:Swamp#3
+T42 untaps: p2:Forest#1
+T42 untaps: p2:Island#3
+T42 untaps: p2:Plains
+T42 untaps: p2:Forest#2
+T42 moves: Burning Inquiry, p2's library -> p2's hand
+T42 p2 draws
+T42 p1 cancels activating p1:Dragon Whelp
+T42 moves: Island, p2's hand -> battlefield
+T42 p2 plays p2:Island#4
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p2 attack: nothing
+T42 taps: p2:Mountain#1
+T42 p2 adds {R} (p2:Mountain#1)
+T42 p2 taps p2:Mountain#1 for mana
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p2's unspent {R} empties
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p1 cancels activating p1:Dragon Whelp
+T42 taps: p2:Mountain#2
+T42 p2 adds {R} (p2:Mountain#2)
+T42 p2 taps p2:Mountain#2 for mana
+T42 taps: p2:Plains
+T42 p2 adds {W} (p2:Plains)
+T42 p2 taps p2:Plains for mana
+T42 taps: p2:Island#1
+T42 p2 adds {U} (p2:Island#1)
+T42 p2 taps p2:Island#1 for mana
+T42 moves: Silvercoat Lion, p2's hand -> stack
+T42 taps: p2:Swamp#3
+T42 p2 adds {B} (p2:Swamp#3)
+T42 p2 taps p2:Swamp#3 for mana
+T42 p2 casts Silvercoat Lion
+T42 taps: p2:Forest#2
+T42 p2 adds {G} (p2:Forest#2)
+T42 p2 taps p2:Forest#2 for mana
+T42 taps: p2:Island#2
+T42 p2 adds {U} (p2:Island#2)
+T42 p2 taps p2:Island#2 for mana
+T42 taps: p2:Swamp#1
+T42 p2 adds {B} (p2:Swamp#1)
+T42 p2 taps p2:Swamp#1 for mana
+T42 taps: p2:Island#3
+T42 p2 adds {U} (p2:Island#3)
+T42 p2 taps p2:Island#3 for mana
+T42 resolves: Silvercoat Lion
+T42 moves: Silvercoat Lion, stack -> battlefield
+T42 p2's unspent {U}{U}{U}{B}{R}{G} empties
+T42 taps: p2:Forest#1
+T42 p2 adds {G} (p2:Forest#1)
+T42 p2 taps p2:Forest#1 for mana
+T42 taps: p2:Swamp#2
+T42 p2 adds {B} (p2:Swamp#2)
+T42 p2 taps p2:Swamp#2 for mana
+T42 p1 cancels activating p1:Dragon Whelp
+T42 p2's unspent {B}{G} empties
+T43 turn 43 begins (p1)
+T43 untaps: p1:Mountain#1
+T43 untaps: p1:Mountain#2
+T43 untaps: p1:Plains#1
+T43 untaps: p1:Mountain#3
+T43 untaps: p1:Swamp
+T43 untaps: p1:Island
+T43 untaps: p1:Plains#2
+T43 untaps: p1:Forest#1
+T43 untaps: p1:Plains#3
+T43 untaps: p1:Forest#2
+T43 untaps: p1:Mountain#4
+T43 taps: p1:Mountain#1
+T43 p1 adds {R} (p1:Mountain#1)
+T43 p1 taps p1:Mountain#1 for mana
+T43 taps: p1:Plains#1
+T43 p1 adds {W} (p1:Plains#1)
+T43 p1 taps p1:Plains#1 for mana
+T43 p1's unspent {W}{R} empties
+T43 moves: Howling Mine, p1's library -> p1's hand
+T43 p1 draws
+T43 taps: p1:Mountain#2
+T43 p1 adds {R} (p1:Mountain#2)
+T43 p1 taps p1:Mountain#2 for mana
+T43 p1's unspent {R} empties
+T43 taps: p2:Island#4
+T43 p2 adds {U} (p2:Island#4)
+T43 p2 taps p2:Island#4 for mana
+T43 taps: p1:Forest#1
+T43 p1 adds {G} (p1:Forest#1)
+T43 p1 taps p1:Forest#1 for mana
+T43 taps: p1:Mountain#4
+T43 p1 adds {R} (p1:Mountain#4)
+T43 p1 taps p1:Mountain#4 for mana
+T43 taps: p1:Plains#2
+T43 p1 adds {W} (p1:Plains#2)
+T43 p1 taps p1:Plains#2 for mana
+T43 taps: p1:Island
+T43 p1 adds {U} (p1:Island)
+T43 p1 taps p1:Island for mana
+T43 p1's unspent {W}{U}{R}{G} empties
+T43 p2's unspent {U} empties
+T43 taps: p1:Dragon Whelp
+T43 p1 attack: p1:Dragon Whelp -> p2
+T43 taps: p1:Forest#2
+T43 p1 adds {G} (p1:Forest#2)
+T43 p1 taps p1:Forest#2 for mana
+T43 taps: p1:Plains#3
+T43 p1 adds {W} (p1:Plains#3)
+T43 p1 taps p1:Plains#3 for mana
+T43 p1's unspent {W}{G} empties
+T43 p2 block: nothing
+T43 combat damage: p1:Dragon Whelp -> p2 2
+T43 p2 loses 2 life
+T43 taps: p1:Swamp
+T43 p1 adds {B} (p1:Swamp)
+T43 p1 taps p1:Swamp for mana
+T43 taps: p1:Mountain#3
+T43 p1 adds {R} (p1:Mountain#3)
+T43 p1 taps p1:Mountain#3 for mana
+T43 p1 activates p1:Dragon Whelp
+T43 effect: p1:Dragon Whelp +1/+0 until end of turn
+T43 resolves: p1:Dragon Whelp's ability
+T43 p1's unspent {B} empties
+T43 p1 cancels activating p1:Dragon Whelp
+T43 moves: Howling Mine, p1's hand -> stack
+T43 p1 cancels casting Howling Mine
+T43 p1 cancels activating p1:Dragon Whelp
+T43 p1 cancels activating p1:Dragon Whelp
+T43 p1 cancels activating p1:Dragon Whelp
+T43 moves: Phantom Warrior, p1's hand -> stack
+T43 p1 cancels casting Phantom Warrior
+T43 effect ends: p1:Dragon Whelp +1/+0
+T44 turn 44 begins (p2)
+T44 untaps: p2:Island#1
+T44 untaps: p2:Island#2
+T44 untaps: p2:Mountain#1
+T44 untaps: p2:Swamp#1
+T44 untaps: p2:Mountain#2
+T44 untaps: p2:Swamp#2
+T44 untaps: p2:Swamp#3
+T44 untaps: p2:Forest#1
+T44 untaps: p2:Island#3
+T44 untaps: p2:Plains
+T44 untaps: p2:Forest#2
+T44 untaps: p2:Island#4
+T44 taps: p2:Island#2
+T44 p2 adds {U} (p2:Island#2)
+T44 p2 taps p2:Island#2 for mana
+T44 p2's unspent {U} empties
+T44 moves: Gray Ogre, p2's library -> p2's hand
+T44 p2 draws
+T44 taps: p2:Mountain#1
+T44 p2 adds {R} (p2:Mountain#1)
+T44 p2 taps p2:Mountain#1 for mana
+T44 taps: p2:Swamp#1
+T44 p2 adds {B} (p2:Swamp#1)
+T44 p2 taps p2:Swamp#1 for mana
+T44 taps: p2:Island#3
+T44 p2 adds {U} (p2:Island#3)
+T44 p2 taps p2:Island#3 for mana
+T44 moves: Mountain, p2's hand -> battlefield
+T44 p2 plays p2:Mountain#3
+T44 moves: Burning Inquiry, p2's hand -> stack
+T44 taps: p2:Mountain#3
+T44 p2 adds {R} (p2:Mountain#3)
+T44 p2 taps p2:Mountain#3 for mana
+T44 taps: p2:Forest#1
+T44 p2 adds {G} (p2:Forest#1)
+T44 p2 taps p2:Forest#1 for mana
+T44 taps: p2:Swamp#3
+T44 p2 adds {B} (p2:Swamp#3)
+T44 p2 taps p2:Swamp#3 for mana
+T44 taps: p2:Plains
+T44 p2 adds {W} (p2:Plains)
+T44 p2 taps p2:Plains for mana
+T44 taps: p2:Forest#2
+T44 p2 adds {G} (p2:Forest#2)
+T44 p2 taps p2:Forest#2 for mana
+T44 taps: p2:Island#1
+T44 p2 adds {U} (p2:Island#1)
+T44 p2 taps p2:Island#1 for mana
+T44 taps: p2:Swamp#2
+T44 p2 adds {B} (p2:Swamp#2)
+T44 p2 taps p2:Swamp#2 for mana
+T44 taps: p2:Mountain#2
+T44 p2 adds {R} (p2:Mountain#2)
+T44 p2 taps p2:Mountain#2 for mana
+T44 p2 casts Burning Inquiry
+T44 moves: Grizzly Bears, p2's library -> p2's hand
+T44 p2 draws
+T44 moves: Goblin Artillery, p2's library -> p2's hand
+T44 p2 draws
+T44 moves: Centaur Courser, p2's library -> p2's hand
+T44 p2 draws
+T44 moves: Shivan Dragon, p1's library -> p1's hand
+T44 p1 draws
+T44 moves: Enormous Baloth, p1's library -> p1's hand
+T44 p1 draws
+T44 moves: Lurking Predators, p1's library -> p1's hand
+T44 p1 draws
+T44 moves: Goblin Artillery, p2's hand -> p2's graveyard
+T44 p2 discards Goblin Artillery
+T44 moves: Centaur Courser, p2's hand -> p2's graveyard
+T44 p2 discards Centaur Courser
+T44 moves: Grizzly Bears, p2's hand -> p2's graveyard
+T44 p2 discards Grizzly Bears
+T44 moves: Righteousness, p1's hand -> p1's graveyard
+T44 p1 discards Righteousness
+T44 moves: Enormous Baloth, p1's hand -> p1's graveyard
+T44 p1 discards Enormous Baloth
+T44 moves: Shivan Dragon, p1's hand -> p1's graveyard
+T44 p1 discards Shivan Dragon
+T44 resolves: Burning Inquiry
+T44 moves: Burning Inquiry, stack -> p2's graveyard
+T44 taps: p2:Island#4
+T44 p2 adds {U} (p2:Island#4)
+T44 p2 taps p2:Island#4 for mana
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p2's unspent {W}{U}{U}{U}{B}{B}{B}{R}{R}{G}{G} empties
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p2 attack: nothing
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T44 p1 cancels activating p1:Dragon Whelp
+T45 turn 45 begins (p1)
+T45 untaps: p1:Mountain#1
+T45 untaps: p1:Mountain#2
+T45 untaps: p1:Plains#1
+T45 untaps: p1:Mountain#3
+T45 untaps: p1:Swamp
+T45 untaps: p1:Island
+T45 untaps: p1:Plains#2
+T45 untaps: p1:Forest#1
+T45 untaps: p1:Plains#3
+T45 untaps: p1:Forest#2
+T45 untaps: p1:Mountain#4
+T45 untaps: p1:Dragon Whelp
+T45 taps: p1:Island
+T45 p1 adds {U} (p1:Island)
+T45 p1 taps p1:Island for mana
+T45 p1's unspent {U} empties
+T45 moves: Mind Rot, p1's library -> p1's hand
+T45 p1 draws
+T45 moves: Wall of Faith, p1's hand -> stack
+T45 taps: p1:Plains#1
+T45 p1 adds {W} (p1:Plains#1)
+T45 p1 taps p1:Plains#1 for mana
+T45 taps: p1:Forest#1
+T45 p1 adds {G} (p1:Forest#1)
+T45 p1 taps p1:Forest#1 for mana
+T45 p1 cancels casting Wall of Faith
+T45 taps: p1:Swamp
+T45 p1 adds {B} (p1:Swamp)
+T45 p1 taps p1:Swamp for mana
+T45 p1's unspent {B} empties
+T45 taps: p1:Plains#1
+T45 p1 adds {W} (p1:Plains#1)
+T45 p1 taps p1:Plains#1 for mana
+T45 p1's unspent {W} empties
+T45 taps: p1:Dragon Whelp
+T45 p1 attack: p1:Dragon Whelp -> p2
+T45 p2 block: nothing
+T45 taps: p1:Forest#2
+T45 p1 adds {G} (p1:Forest#2)
+T45 p1 taps p1:Forest#2 for mana
+T45 taps: p1:Plains#3
+T45 p1 adds {W} (p1:Plains#3)
+T45 p1 taps p1:Plains#3 for mana
+T45 taps: p1:Mountain#2
+T45 p1 adds {R} (p1:Mountain#2)
+T45 p1 taps p1:Mountain#2 for mana
+T45 p1 activates p1:Dragon Whelp
+T45 taps: p1:Plains#2
+T45 p1 adds {W} (p1:Plains#2)
+T45 p1 taps p1:Plains#2 for mana
+T45 effect: p1:Dragon Whelp +1/+0 until end of turn
+T45 resolves: p1:Dragon Whelp's ability
+T45 p1's unspent {W}{W}{G} empties
+T45 combat damage: p1:Dragon Whelp -> p2 3
+T45 p2 loses 3 life
+T45 taps: p1:Forest#1
+T45 p1 adds {G} (p1:Forest#1)
+T45 p1 taps p1:Forest#1 for mana
+T45 taps: p1:Mountain#1
+T45 p1 adds {R} (p1:Mountain#1)
+T45 p1 taps p1:Mountain#1 for mana
+T45 taps: p1:Mountain#4
+T45 p1 adds {R} (p1:Mountain#4)
+T45 p1 taps p1:Mountain#4 for mana
+T45 p1's unspent {R}{R}{G} empties
+T45 effect ends: p1:Dragon Whelp +1/+0
+T46 turn 46 begins (p2)
+T46 untaps: p2:Island#1
+T46 untaps: p2:Island#2
+T46 untaps: p2:Mountain#1
+T46 untaps: p2:Swamp#1
+T46 untaps: p2:Mountain#2
+T46 untaps: p2:Swamp#2
+T46 untaps: p2:Swamp#3
+T46 untaps: p2:Forest#1
+T46 untaps: p2:Island#3
+T46 untaps: p2:Plains
+T46 untaps: p2:Forest#2
+T46 untaps: p2:Island#4
+T46 untaps: p2:Mountain#3
+T46 taps: p2:Plains
+T46 p2 adds {W} (p2:Plains)
+T46 p2 taps p2:Plains for mana
+T46 taps: p2:Island#4
+T46 p2 adds {U} (p2:Island#4)
+T46 p2 taps p2:Island#4 for mana
+T46 taps: p2:Swamp#3
+T46 p2 adds {B} (p2:Swamp#3)
+T46 p2 taps p2:Swamp#3 for mana
+T46 p1 cancels activating p1:Dragon Whelp
+T46 p2's unspent {W}{U}{B} empties
+T46 moves: Traumatize, p2's library -> p2's hand
+T46 p2 draws
+T46 moves: Gray Ogre, p2's hand -> stack
+T46 taps: p2:Island#3
+T46 p2 adds {U} (p2:Island#3)
+T46 p2 taps p2:Island#3 for mana
+T46 taps: p2:Swamp#2
+T46 p2 adds {B} (p2:Swamp#2)
+T46 p2 taps p2:Swamp#2 for mana
+T46 taps: p2:Mountain#3
+T46 p2 adds {R} (p2:Mountain#3)
+T46 p2 taps p2:Mountain#3 for mana
+T46 p2 casts Gray Ogre
+T46 taps: p2:Island#2
+T46 p2 adds {U} (p2:Island#2)
+T46 p2 taps p2:Island#2 for mana
+T46 taps: p1:Mountain#3
+T46 p1 adds {R} (p1:Mountain#3)
+T46 p1 taps p1:Mountain#3 for mana
+T46 p1 activates p1:Dragon Whelp
+T46 p1 cancels activating p1:Dragon Whelp
+T46 p1 cancels activating p1:Dragon Whelp
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 p2 taps p2:Mountain#2 for mana
+T46 p1 cancels activating p1:Dragon Whelp
+T46 effect: p1:Dragon Whelp +1/+0 until end of turn
+T46 resolves: p1:Dragon Whelp's ability
+T46 p1 cancels activating p1:Dragon Whelp
+T46 p1 cancels activating p1:Dragon Whelp
+T46 resolves: Gray Ogre
+T46 moves: Gray Ogre, stack -> battlefield
+T46 taps: p2:Mountain#1
+T46 p2 adds {R} (p2:Mountain#1)
+T46 p2 taps p2:Mountain#1 for mana
+T46 p1 cancels activating p1:Dragon Whelp
+T46 p1 cancels activating p1:Dragon Whelp
+T46 p2's unspent {U}{R}{R} empties
+T46 taps: p2:Island#1
+T46 p2 adds {U} (p2:Island#1)
+T46 p2 taps p2:Island#1 for mana
+T46 taps: p2:Forest#2
+T46 p2 adds {G} (p2:Forest#2)
+T46 p2 taps p2:Forest#2 for mana
+T46 p2's unspent {U}{G} empties
+T46 p2 attack: nothing
+T46 taps: p2:Forest#1
+T46 p2 adds {G} (p2:Forest#1)
+T46 p2 taps p2:Forest#1 for mana
+T46 p2's unspent {G} empties
+T46 taps: p2:Swamp#1
+T46 p2 adds {B} (p2:Swamp#1)
+T46 p2 taps p2:Swamp#1 for mana
+T46 p2's unspent {B} empties
+T46 moves: Centaur Courser, p2's hand -> stack
+T46 p2 cancels casting Centaur Courser
+T46 moves: Underworld Dreams, p2's hand -> stack
+T46 p2 cancels casting Underworld Dreams
+T46 moves: Centaur Courser, p2's hand -> stack
+T46 p2 cancels casting Centaur Courser
+T46 moves: Lightwielder Paladin, p2's hand -> stack
+T46 p2 cancels casting Lightwielder Paladin
+T46 effect ends: p1:Dragon Whelp +1/+0
+T47 turn 47 begins (p1)
+T47 untaps: p1:Mountain#1
+T47 untaps: p1:Mountain#2
+T47 untaps: p1:Plains#1
+T47 untaps: p1:Mountain#3
+T47 untaps: p1:Swamp
+T47 untaps: p1:Island
+T47 untaps: p1:Plains#2
+T47 untaps: p1:Forest#1
+T47 untaps: p1:Plains#3
+T47 untaps: p1:Forest#2
+T47 untaps: p1:Mountain#4
+T47 untaps: p1:Dragon Whelp
+T47 moves: Island, p1's library -> p1's hand
+T47 p1 draws
+T47 taps: p1:Plains#3
+T47 p1 adds {W} (p1:Plains#3)
+T47 p1 taps p1:Plains#3 for mana
+T47 p1's unspent {W} empties
+T47 taps: p1:Island
+T47 p1 adds {U} (p1:Island)
+T47 p1 taps p1:Island for mana
+T47 moves: Island, p1's hand -> battlefield
+T47 p1 plays p1:Island#2
+T47 moves: Mind Rot, p1's hand -> stack
+T47 taps: p1:Forest#1
+T47 p1 adds {G} (p1:Forest#1)
+T47 p1 taps p1:Forest#1 for mana
+T47 taps: p1:Plains#1
+T47 p1 adds {W} (p1:Plains#1)
+T47 p1 taps p1:Plains#1 for mana
+T47 taps: p1:Forest#2
+T47 p1 adds {G} (p1:Forest#2)
+T47 p1 taps p1:Forest#2 for mana
+T47 taps: p1:Plains#2
+T47 p1 adds {W} (p1:Plains#2)
+T47 p1 taps p1:Plains#2 for mana
+T47 taps: p1:Swamp
+T47 p1 adds {B} (p1:Swamp)
+T47 p1 taps p1:Swamp for mana
+T47 p1 casts Mind Rot
+T47 taps: p1:Mountain#4
+T47 p1 adds {R} (p1:Mountain#4)
+T47 p1 taps p1:Mountain#4 for mana
+T47 moves: Wall of Faith, p1's hand -> p1's graveyard
+T47 p1 discards Wall of Faith
+T47 moves: Lurking Predators, p1's hand -> p1's graveyard
+T47 p1 discards Lurking Predators
+T47 resolves: Mind Rot
+T47 moves: Mind Rot, stack -> p1's graveyard
+T47 moves: Phantom Warrior, p1's hand -> stack
+T47 taps: p1:Mountain#2
+T47 p1 adds {R} (p1:Mountain#2)
+T47 p1 taps p1:Mountain#2 for mana
+T47 taps: p1:Island#2
+T47 p1 adds {U} (p1:Island#2)
+T47 p1 taps p1:Island#2 for mana
+T47 p1 casts Phantom Warrior
+T47 p1 activates p1:Dragon Whelp
+T47 effect: p1:Dragon Whelp +1/+0 until end of turn
+T47 resolves: p1:Dragon Whelp's ability
+T47 resolves: Phantom Warrior
+T47 moves: Phantom Warrior, stack -> battlefield
+T47 taps: p1:Mountain#1
+T47 p1 adds {R} (p1:Mountain#1)
+T47 p1 taps p1:Mountain#1 for mana
+T47 taps: p1:Mountain#3
+T47 p1 adds {R} (p1:Mountain#3)
+T47 p1 taps p1:Mountain#3 for mana
+T47 p1 activates p1:Dragon Whelp
+T47 p1 activates p1:Dragon Whelp
+T47 effect: p1:Dragon Whelp +1/+0 until end of turn
+T47 resolves: p1:Dragon Whelp's ability
+T47 effect: p1:Dragon Whelp +1/+0 until end of turn
+T47 resolves: p1:Dragon Whelp's ability
+T47 p1's unspent {G}{G} empties
+T47 taps: p1:Dragon Whelp
+T47 p1 attack: p1:Dragon Whelp -> p2
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p2 block: nothing
+T47 combat damage: p1:Dragon Whelp -> p2 5
+T47 p2 loses 5 life
+T47 p1 cancels activating p1:Dragon Whelp
+T47 moves: Howling Mine, p1's hand -> stack
+T47 p1 cancels casting Howling Mine
+T47 moves: Howling Mine, p1's hand -> stack
+T47 p1 cancels casting Howling Mine
+T47 moves: Howling Mine, p1's hand -> stack
+T47 p1 cancels casting Howling Mine
+T47 moves: Howling Mine, p1's hand -> stack
+T47 p1 cancels casting Howling Mine
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 p1 cancels activating p1:Dragon Whelp
+T47 effect ends: p1:Dragon Whelp +1/+0
+T47 effect ends: p1:Dragon Whelp +1/+0
+T47 effect ends: p1:Dragon Whelp +1/+0
+T48 turn 48 begins (p2)
+T48 untaps: p2:Island#1
+T48 untaps: p2:Island#2
+T48 untaps: p2:Mountain#1
+T48 untaps: p2:Swamp#1
+T48 untaps: p2:Mountain#2
+T48 untaps: p2:Swamp#2
+T48 untaps: p2:Swamp#3
+T48 untaps: p2:Forest#1
+T48 untaps: p2:Island#3
+T48 untaps: p2:Plains
+T48 untaps: p2:Forest#2
+T48 untaps: p2:Island#4
+T48 untaps: p2:Mountain#3
+T48 taps: p2:Swamp#1
+T48 p2 adds {B} (p2:Swamp#1)
+T48 p2 taps p2:Swamp#1 for mana
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p2's unspent {B} empties
+T48 moves: Prized Unicorn, p2's library -> p2's hand
+T48 p2 draws
+T48 taps: p2:Island#3
+T48 p2 adds {U} (p2:Island#3)
+T48 p2 taps p2:Island#3 for mana
+T48 taps: p2:Mountain#3
+T48 p2 adds {R} (p2:Mountain#3)
+T48 p2 taps p2:Mountain#3 for mana
+T48 taps: p2:Forest#2
+T48 p2 adds {G} (p2:Forest#2)
+T48 p2 taps p2:Forest#2 for mana
+T48 taps: p2:Island#2
+T48 p2 adds {U} (p2:Island#2)
+T48 p2 taps p2:Island#2 for mana
+T48 taps: p2:Swamp#2
+T48 p2 adds {B} (p2:Swamp#2)
+T48 p2 taps p2:Swamp#2 for mana
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p2's unspent {U}{U}{B}{R}{G} empties
+T48 moves: Centaur Courser, p2's hand -> stack
+T48 taps: p2:Island#4
+T48 p2 adds {U} (p2:Island#4)
+T48 p2 taps p2:Island#4 for mana
+T48 taps: p2:Mountain#2
+T48 p2 adds {R} (p2:Mountain#2)
+T48 p2 taps p2:Mountain#2 for mana
+T48 taps: p2:Forest#1
+T48 p2 adds {G} (p2:Forest#1)
+T48 p2 taps p2:Forest#1 for mana
+T48 p2 casts Centaur Courser
+T48 taps: p2:Mountain#1
+T48 p2 adds {R} (p2:Mountain#1)
+T48 p2 taps p2:Mountain#1 for mana
+T48 taps: p2:Island#1
+T48 p2 adds {U} (p2:Island#1)
+T48 p2 taps p2:Island#1 for mana
+T48 taps: p2:Swamp#3
+T48 p2 adds {B} (p2:Swamp#3)
+T48 p2 taps p2:Swamp#3 for mana
+T48 p1 cancels activating p1:Dragon Whelp
+T48 resolves: Centaur Courser
+T48 moves: Centaur Courser, stack -> battlefield
+T48 p2's unspent {U}{B}{R} empties
+T48 p2 attack: nothing
+T48 taps: p2:Plains
+T48 p2 adds {W} (p2:Plains)
+T48 p2 taps p2:Plains for mana
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p2's unspent {W} empties
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T48 p1 cancels activating p1:Dragon Whelp
+T49 turn 49 begins (p1)
+T49 untaps: p1:Mountain#1
+T49 untaps: p1:Mountain#2
+T49 untaps: p1:Plains#1
+T49 untaps: p1:Mountain#3
+T49 untaps: p1:Swamp
+T49 untaps: p1:Island#1
+T49 untaps: p1:Plains#2
+T49 untaps: p1:Forest#1
+T49 untaps: p1:Plains#3
+T49 untaps: p1:Forest#2
+T49 untaps: p1:Mountain#4
+T49 untaps: p1:Dragon Whelp
+T49 untaps: p1:Island#2
+T49 moves: Celestial Purge, p1's library -> p1's hand
+T49 p1 draws
+T49 moves: Celestial Purge, p1's hand -> stack
+T49 p1 cancels casting Celestial Purge
+T49 moves: Celestial Purge, p1's hand -> stack
+T49 targeted: p2:Gray Ogre by Celestial Purge
+T49 taps: p1:Mountain#2
+T49 p1 adds {R} (p1:Mountain#2)
+T49 p1 taps p1:Mountain#2 for mana
+T49 taps: p1:Plains#3
+T49 p1 adds {W} (p1:Plains#3)
+T49 p1 taps p1:Plains#3 for mana
+T49 p1 casts Celestial Purge
+T49 taps: p1:Plains#1
+T49 p1 adds {W} (p1:Plains#1)
+T49 p1 taps p1:Plains#1 for mana
+T49 moves: Gray Ogre, battlefield -> exile
+T49 resolves: Celestial Purge
+T49 moves: Celestial Purge, stack -> p1's graveyard
+T49 taps: p1:Forest#2
+T49 p1 adds {G} (p1:Forest#2)
+T49 p1 taps p1:Forest#2 for mana
+T49 p1's unspent {W}{G} empties
+T49 taps: p1:Dragon Whelp
+T49 p1 attack: p1:Dragon Whelp -> p2
+T49 taps: p1:Forest#1
+T49 p1 adds {G} (p1:Forest#1)
+T49 p1 taps p1:Forest#1 for mana
+T49 p1's unspent {G} empties
+T49 p2 block: nothing
+T49 p1 cancels activating p1:Dragon Whelp
+T49 taps: p1:Island#1
+T49 p1 adds {U} (p1:Island#1)
+T49 p1 taps p1:Island#1 for mana
+T49 taps: p1:Mountain#3
+T49 p1 adds {R} (p1:Mountain#3)
+T49 p1 taps p1:Mountain#3 for mana
+T49 p1's unspent {U}{R} empties
+T49 combat damage: p1:Dragon Whelp -> p2 2
+T49 p2 loses 2 life
+T49 taps: p1:Mountain#4
+T49 p1 adds {R} (p1:Mountain#4)
+T49 p1 taps p1:Mountain#4 for mana
+T49 p1 activates p1:Dragon Whelp
+T49 effect: p1:Dragon Whelp +1/+0 until end of turn
+T49 resolves: p1:Dragon Whelp's ability
+T49 taps: p1:Island#2
+T49 p1 adds {U} (p1:Island#2)
+T49 p1 taps p1:Island#2 for mana
+T49 taps: p1:Plains#2
+T49 p1 adds {W} (p1:Plains#2)
+T49 p1 taps p1:Plains#2 for mana
+T49 p1 cancels activating p1:Dragon Whelp
+T49 moves: Howling Mine, p1's hand -> stack
+T49 taps: p1:Plains#2
+T49 p1 adds {W} (p1:Plains#2)
+T49 p1 taps p1:Plains#2 for mana
+T49 taps: p1:Mountain#1
+T49 p1 adds {R} (p1:Mountain#1)
+T49 p1 taps p1:Mountain#1 for mana
+T49 p1 casts Howling Mine
+T49 resolves: Howling Mine
+T49 moves: Howling Mine, stack -> battlefield
+T49 p1's unspent {U} empties
+T49 taps: p1:Swamp
+T49 p1 adds {B} (p1:Swamp)
+T49 p1 taps p1:Swamp for mana
+T49 p1's unspent {B} empties
+T49 effect ends: p1:Dragon Whelp +1/+0
+T50 turn 50 begins (p2)
+T50 untaps: p2:Island#1
+T50 untaps: p2:Island#2
+T50 untaps: p2:Mountain#1
+T50 untaps: p2:Swamp#1
+T50 untaps: p2:Mountain#2
+T50 untaps: p2:Swamp#2
+T50 untaps: p2:Swamp#3
+T50 untaps: p2:Forest#1
+T50 untaps: p2:Island#3
+T50 untaps: p2:Plains
+T50 untaps: p2:Forest#2
+T50 untaps: p2:Island#4
+T50 untaps: p2:Mountain#3
+T50 moves: Haunting Echoes, p2's library -> p2's hand
+T50 p2 draws
+T50 p1:Howling Mine triggers (p1)
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 moves: Forest, p2's library -> p2's hand
+T50 p2 draws
+T50 resolves: p1:Howling Mine's ability
+T50 taps: p2:Swamp#1
+T50 p2 adds {B} (p2:Swamp#1)
+T50 p2 taps p2:Swamp#1 for mana
+T50 taps: p2:Mountain#2
+T50 p2 adds {R} (p2:Mountain#2)
+T50 p2 taps p2:Mountain#2 for mana
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p2's unspent {B}{R} empties
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p2 attack: nothing
+T50 taps: p2:Island#4
+T50 p2 adds {U} (p2:Island#4)
+T50 p2 taps p2:Island#4 for mana
+T50 p2's unspent {U} empties
+T50 moves: Forest, p2's hand -> battlefield
+T50 p2 plays p2:Forest#3
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 p1 cancels activating p1:Dragon Whelp
+T50 taps: p2:Forest#3
+T50 p2 adds {G} (p2:Forest#3)
+T50 p2 taps p2:Forest#3 for mana
+T50 taps: p2:Forest#2
+T50 p2 adds {G} (p2:Forest#2)
+T50 p2 taps p2:Forest#2 for mana
+T50 taps: p2:Island#2
+T50 p2 adds {U} (p2:Island#2)
+T50 p2 taps p2:Island#2 for mana
+T50 p2's unspent {U}{G}{G} empties
+T51 turn 51 begins (p1)
+T51 untaps: p1:Mountain#1
+T51 untaps: p1:Mountain#2
+T51 untaps: p1:Plains#1
+T51 untaps: p1:Mountain#3
+T51 untaps: p1:Swamp
+T51 untaps: p1:Island#1
+T51 untaps: p1:Plains#2
+T51 untaps: p1:Forest#1
+T51 untaps: p1:Plains#3
+T51 untaps: p1:Forest#2
+T51 untaps: p1:Mountain#4
+T51 untaps: p1:Dragon Whelp
+T51 untaps: p1:Island#2
+T51 moves: Plains, p1's library -> p1's hand
+T51 p1 draws
+T51 p1:Howling Mine triggers (p1)
+T51 taps: p1:Plains#3
+T51 p1 adds {W} (p1:Plains#3)
+T51 p1 taps p1:Plains#3 for mana
+T51 taps: p2:Swamp#2
+T51 p2 adds {B} (p2:Swamp#2)
+T51 p2 taps p2:Swamp#2 for mana
+T51 taps: p1:Forest#2
+T51 p1 adds {G} (p1:Forest#2)
+T51 p1 taps p1:Forest#2 for mana
+T51 moves: Swamp, p1's library -> p1's hand
+T51 p1 draws
+T51 resolves: p1:Howling Mine's ability
+T51 taps: p1:Mountain#4
+T51 p1 adds {R} (p1:Mountain#4)
+T51 p1 taps p1:Mountain#4 for mana
+T51 taps: p1:Mountain#3
+T51 p1 adds {R} (p1:Mountain#3)
+T51 p1 taps p1:Mountain#3 for mana
+T51 taps: p2:Forest#1
+T51 p2 adds {G} (p2:Forest#1)
+T51 p2 taps p2:Forest#1 for mana
+T51 taps: p2:Plains
+T51 p2 adds {W} (p2:Plains)
+T51 p2 taps p2:Plains for mana
+T51 p1's unspent {W}{R}{R}{G} empties
+T51 p2's unspent {W}{B}{G} empties
+T51 taps: p1:Phantom Warrior
+T51 p1 attack: p1:Phantom Warrior -> p2
+T51 taps: p2:Island#3
+T51 p2 adds {U} (p2:Island#3)
+T51 p2 taps p2:Island#3 for mana
+T51 p2's unspent {U} empties
+T51 p2 block: nothing
+T51 taps: p1:Swamp
+T51 p1 adds {B} (p1:Swamp)
+T51 p1 taps p1:Swamp for mana
+T51 taps: p1:Island#1
+T51 p1 adds {U} (p1:Island#1)
+T51 p1 taps p1:Island#1 for mana
+T51 taps: p1:Mountain#2
+T51 p1 adds {R} (p1:Mountain#2)
+T51 p1 taps p1:Mountain#2 for mana
+T51 taps: p1:Island#2
+T51 p1 adds {U} (p1:Island#2)
+T51 p1 taps p1:Island#2 for mana
+T51 taps: p1:Plains#2
+T51 p1 adds {W} (p1:Plains#2)
+T51 p1 taps p1:Plains#2 for mana
+T51 taps: p1:Mountain#1
+T51 p1 adds {R} (p1:Mountain#1)
+T51 p1 taps p1:Mountain#1 for mana
+T51 taps: p1:Plains#1
+T51 p1 adds {W} (p1:Plains#1)
+T51 p1 taps p1:Plains#1 for mana
+T51 p1 activates p1:Dragon Whelp
+T51 taps: p1:Forest#1
+T51 p1 adds {G} (p1:Forest#1)
+T51 p1 taps p1:Forest#1 for mana
+T51 p1 activates p1:Dragon Whelp
+T51 taps: p2:Mountain#1
+T51 p2 adds {R} (p2:Mountain#1)
+T51 p2 taps p2:Mountain#1 for mana
+T51 taps: p2:Island#1
+T51 p2 adds {U} (p2:Island#1)
+T51 p2 taps p2:Island#1 for mana
+T51 taps: p2:Mountain#3
+T51 p2 adds {R} (p2:Mountain#3)
+T51 p2 taps p2:Mountain#3 for mana
+T51 effect: p1:Dragon Whelp +1/+0 until end of turn
+T51 resolves: p1:Dragon Whelp's ability
+T51 taps: p2:Swamp#3
+T51 p2 adds {B} (p2:Swamp#3)
+T51 p2 taps p2:Swamp#3 for mana
+T51 p1 cancels activating p1:Dragon Whelp
+T51 effect: p1:Dragon Whelp +1/+0 until end of turn
+T51 resolves: p1:Dragon Whelp's ability
+T51 p1 cancels activating p1:Dragon Whelp
+T51 p1 cancels activating p1:Dragon Whelp
+T51 p1 cancels activating p1:Dragon Whelp
+T51 p1's unspent {W}{W}{U}{U}{B}{G} empties
+T51 p2's unspent {U}{B}{R}{R} empties
+T51 combat damage: p1:Phantom Warrior -> p2 2
+T51 p2 loses 2 life
+T51 p1 cancels activating p1:Dragon Whelp
+T51 p1 cancels activating p1:Dragon Whelp
+T51 p1 cancels activating p1:Dragon Whelp
+T51 p1 cancels activating p1:Dragon Whelp
+T51 effect ends: p1:Dragon Whelp +1/+0
+T51 effect ends: p1:Dragon Whelp +1/+0
+T52 turn 52 begins (p2)
+T52 untaps: p2:Island#1
+T52 untaps: p2:Island#2
+T52 untaps: p2:Mountain#1
+T52 untaps: p2:Swamp#1
+T52 untaps: p2:Mountain#2
+T52 untaps: p2:Swamp#2
+T52 untaps: p2:Swamp#3
+T52 untaps: p2:Forest#1
+T52 untaps: p2:Island#3
+T52 untaps: p2:Plains
+T52 untaps: p2:Forest#2
+T52 untaps: p2:Island#4
+T52 untaps: p2:Mountain#3
+T52 untaps: p2:Forest#3
+T52 taps: p2:Mountain#2
+T52 p2 adds {R} (p2:Mountain#2)
+T52 p2 taps p2:Mountain#2 for mana
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p2's unspent {R} empties
+T52 moves: Centaur Courser, p2's library -> p2's hand
+T52 p2 draws
+T52 p1:Howling Mine triggers (p1)
+T52 p1 cancels activating p1:Dragon Whelp
+T52 moves: Shock, p2's library -> p2's hand
+T52 p2 draws
+T52 resolves: p1:Howling Mine's ability
+T52 taps: p2:Forest#1
+T52 p2 adds {G} (p2:Forest#1)
+T52 p2 taps p2:Forest#1 for mana
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p2's unspent {G} empties
+T52 taps: p2:Swamp#2
+T52 p2 adds {B} (p2:Swamp#2)
+T52 p2 taps p2:Swamp#2 for mana
+T52 p2's unspent {B} empties
+T52 p2 attack: nothing
+T52 taps: p2:Island#2
+T52 p2 adds {U} (p2:Island#2)
+T52 p2 taps p2:Island#2 for mana
+T52 taps: p2:Forest#3
+T52 p2 adds {G} (p2:Forest#3)
+T52 p2 taps p2:Forest#3 for mana
+T52 moves: Shock, p2's hand -> stack
+T52 targeted: p1:Dragon Whelp by Shock
+T52 taps: p2:Forest#2
+T52 p2 adds {G} (p2:Forest#2)
+T52 p2 taps p2:Forest#2 for mana
+T52 p2 cancels casting Shock
+T52 taps: p2:Mountain#1
+T52 p2 adds {R} (p2:Mountain#1)
+T52 p2 taps p2:Mountain#1 for mana
+T52 taps: p2:Plains
+T52 p2 adds {W} (p2:Plains)
+T52 p2 taps p2:Plains for mana
+T52 moves: Shock, p2's hand -> stack
+T52 targeted: p2:Centaur Courser by Shock
+T52 taps: p2:Swamp#1
+T52 p2 adds {B} (p2:Swamp#1)
+T52 p2 taps p2:Swamp#1 for mana
+T52 taps: p2:Island#4
+T52 p2 adds {U} (p2:Island#4)
+T52 p2 taps p2:Island#4 for mana
+T52 taps: p2:Swamp#3
+T52 p2 adds {B} (p2:Swamp#3)
+T52 p2 taps p2:Swamp#3 for mana
+T52 taps: p2:Mountain#3
+T52 p2 adds {R} (p2:Mountain#3)
+T52 p2 taps p2:Mountain#3 for mana
+T52 taps: p2:Island#3
+T52 p2 adds {U} (p2:Island#3)
+T52 p2 taps p2:Island#3 for mana
+T52 taps: p2:Forest#2
+T52 p2 adds {G} (p2:Forest#2)
+T52 p2 taps p2:Forest#2 for mana
+T52 taps: p2:Island#1
+T52 p2 adds {U} (p2:Island#1)
+T52 p2 taps p2:Island#1 for mana
+T52 p2 cancels casting Shock
+T52 p2's unspent {W}{U}{R}{G} empties
+T52 taps: p2:Island#4
+T52 p2 adds {U} (p2:Island#4)
+T52 p2 taps p2:Island#4 for mana
+T52 taps: p2:Forest#2
+T52 p2 adds {G} (p2:Forest#2)
+T52 p2 taps p2:Forest#2 for mana
+T52 moves: Shock, p2's hand -> stack
+T52 targeted: p2:Centaur Courser by Shock
+T52 taps: p2:Island#1
+T52 p2 adds {U} (p2:Island#1)
+T52 p2 taps p2:Island#1 for mana
+T52 taps: p2:Swamp#1
+T52 p2 adds {B} (p2:Swamp#1)
+T52 p2 taps p2:Swamp#1 for mana
+T52 taps: p2:Mountain#3
+T52 p2 adds {R} (p2:Mountain#3)
+T52 p2 taps p2:Mountain#3 for mana
+T52 p2 casts Shock
+T52 taps: p2:Island#3
+T52 p2 adds {U} (p2:Island#3)
+T52 p2 taps p2:Island#3 for mana
+T52 taps: p2:Swamp#3
+T52 p2 adds {B} (p2:Swamp#3)
+T52 p2 taps p2:Swamp#3 for mana
+T52 damage: Shock -> p2:Centaur Courser 2
+T52 resolves: Shock
+T52 moves: Shock, stack -> p2's graveyard
+T52 p2's unspent {U}{U}{U}{B}{B}{G} empties
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p1 cancels activating p1:Dragon Whelp
+T52 p1 cancels activating p1:Dragon Whelp
+T52 damage removed: p2:Centaur Courser (2)
+T53 turn 53 begins (p1)
+T53 untaps: p1:Mountain#1
+T53 untaps: p1:Mountain#2
+T53 untaps: p1:Plains#1
+T53 untaps: p1:Mountain#3
+T53 untaps: p1:Swamp
+T53 untaps: p1:Island#1
+T53 untaps: p1:Plains#2
+T53 untaps: p1:Forest#1
+T53 untaps: p1:Plains#3
+T53 untaps: p1:Forest#2
+T53 untaps: p1:Mountain#4
+T53 untaps: p1:Island#2
+T53 untaps: p1:Phantom Warrior
+T53 moves: Swamp, p1's library -> p1's hand
+T53 p1 draws
+T53 p1:Howling Mine triggers (p1)
+T53 moves: Ornithopter, p1's library -> p1's hand
+T53 p1 draws
+T53 resolves: p1:Howling Mine's ability
+T53 taps: p1:Forest#1
+T53 p1 adds {G} (p1:Forest#1)
+T53 p1 taps p1:Forest#1 for mana
+T53 p1's unspent {G} empties
+T53 taps: p1:Mountain#1
+T53 p1 adds {R} (p1:Mountain#1)
+T53 p1 taps p1:Mountain#1 for mana
+T53 p1's unspent {R} empties
+T53 taps: p1:Phantom Warrior
+T53 p1 attack: p1:Phantom Warrior -> p2
+T53 p2 block: nothing
+T53 combat damage: p1:Phantom Warrior -> p2 2
+T53 p2 loses 2 life
+T53 taps: p1:Plains#2
+T53 p1 adds {W} (p1:Plains#2)
+T53 p1 taps p1:Plains#2 for mana
+T53 p1's unspent {W} empties
+T53 taps: p1:Island#2
+T53 p1 adds {U} (p1:Island#2)
+T53 p1 taps p1:Island#2 for mana
+T53 p1's unspent {U} empties
+T54 turn 54 begins (p2)
+T54 untaps: p2:Island#1
+T54 untaps: p2:Island#2
+T54 untaps: p2:Mountain#1
+T54 untaps: p2:Swamp#1
+T54 untaps: p2:Mountain#2
+T54 untaps: p2:Swamp#2
+T54 untaps: p2:Swamp#3
+T54 untaps: p2:Forest#1
+T54 untaps: p2:Island#3
+T54 untaps: p2:Plains
+T54 untaps: p2:Forest#2
+T54 untaps: p2:Island#4
+T54 untaps: p2:Mountain#3
+T54 untaps: p2:Forest#3
+T54 taps: p2:Swamp#2
+T54 p2 adds {B} (p2:Swamp#2)
+T54 p2 taps p2:Swamp#2 for mana
+T54 taps: p2:Forest#3
+T54 p2 adds {G} (p2:Forest#3)
+T54 p2 taps p2:Forest#3 for mana
+T54 taps: p1:Island#1
+T54 p1 adds {U} (p1:Island#1)
+T54 p1 taps p1:Island#1 for mana
+T54 p1's unspent {U} empties
+T54 p2's unspent {B}{G} empties
+T54 moves: Forest, p2's library -> p2's hand
+T54 p2 draws
+T54 p1:Howling Mine triggers (p1)
+T54 taps: p2:Mountain#2
+T54 p2 adds {R} (p2:Mountain#2)
+T54 p2 taps p2:Mountain#2 for mana
+T54 taps: p1:Mountain#4
+T54 p1 adds {R} (p1:Mountain#4)
+T54 p1 taps p1:Mountain#4 for mana
+T54 moves: Lightning Bolt, p2's library -> p2's hand
+T54 p2 draws
+T54 resolves: p1:Howling Mine's ability
+T54 p1's unspent {R} empties
+T54 p2's unspent {R} empties
+T54 moves: Haunting Echoes, p2's hand -> stack
+T54 taps: p2:Forest#2
+T54 p2 adds {G} (p2:Forest#2)
+T54 p2 taps p2:Forest#2 for mana
+T54 taps: p2:Forest#1
+T54 p2 adds {G} (p2:Forest#1)
+T54 p2 taps p2:Forest#1 for mana
+T54 taps: p2:Island#3
+T54 p2 adds {U} (p2:Island#3)
+T54 p2 taps p2:Island#3 for mana
+T54 taps: p2:Mountain#3
+T54 p2 adds {R} (p2:Mountain#3)
+T54 p2 taps p2:Mountain#3 for mana
+T54 taps: p2:Swamp#1
+T54 p2 adds {B} (p2:Swamp#1)
+T54 p2 taps p2:Swamp#1 for mana
+T54 taps: p2:Island#1
+T54 p2 adds {U} (p2:Island#1)
+T54 p2 taps p2:Island#1 for mana
+T54 taps: p2:Island#4
+T54 p2 adds {U} (p2:Island#4)
+T54 p2 taps p2:Island#4 for mana
+T54 taps: p2:Plains
+T54 p2 adds {W} (p2:Plains)
+T54 p2 taps p2:Plains for mana
+T54 taps: p2:Island#2
+T54 p2 adds {U} (p2:Island#2)
+T54 p2 taps p2:Island#2 for mana
+T54 taps: p2:Mountain#1
+T54 p2 adds {R} (p2:Mountain#1)
+T54 p2 taps p2:Mountain#1 for mana
+T54 taps: p2:Swamp#3
+T54 p2 adds {B} (p2:Swamp#3)
+T54 p2 taps p2:Swamp#3 for mana
+T54 p2 casts Haunting Echoes
+T54 moves: Lightning Bolt, p2's hand -> stack
+T54 targeted: p1:Phantom Warrior by Lightning Bolt
+T54 p2 casts Lightning Bolt
+T54 damage: Lightning Bolt -> p1:Phantom Warrior 3
+T54 resolves: Lightning Bolt
+T54 moves: Lightning Bolt, stack -> p2's graveyard
+T54 state-based actions: p1:Phantom Warrior lethalDamage
+T54 destroyed: p1:Phantom Warrior
+T54 moves: Phantom Warrior, battlefield -> p1's graveyard
+T54 taps: p1:Mountain#3
+T54 p1 adds {R} (p1:Mountain#3)
+T54 p1 taps p1:Mountain#3 for mana
+T54 p1 activates p1:Dragon Whelp
+T54 taps: p1:Plains#1
+T54 p1 adds {W} (p1:Plains#1)
+T54 p1 taps p1:Plains#1 for mana
+T54 effect: p1:Dragon Whelp +1/+0 until end of turn
+T54 resolves: p1:Dragon Whelp's ability
+T54 taps: p1:Mountain#2
+T54 p1 adds {R} (p1:Mountain#2)
+T54 p1 taps p1:Mountain#2 for mana
+T54 p1 cancels activating p1:Dragon Whelp
+T54 taps: p1:Swamp
+T54 p1 adds {B} (p1:Swamp)
+T54 p1 taps p1:Swamp for mana
+T54 moves: Giant Spider, p1's graveyard -> exile
+T54 moves: Cancel, p1's graveyard -> exile
+T54 moves: Celestial Purge, p1's graveyard -> exile
+T54 moves: Wurm's Tooth, p1's graveyard -> exile
+T54 moves: Silvercoat Lion, p1's graveyard -> exile
+T54 moves: Vampire Aristocrat, p1's graveyard -> exile
+T54 moves: Elvish Piper, p1's graveyard -> exile
+T54 moves: Bogardan Hellkite, p1's graveyard -> exile
+T54 moves: Lava Axe, p1's graveyard -> exile
+T54 moves: Lightwielder Paladin, p1's graveyard -> exile
+T54 moves: Mind Rot, p1's graveyard -> exile
+T54 moves: Righteousness, p1's graveyard -> exile
+T54 moves: Enormous Baloth, p1's graveyard -> exile
+T54 moves: Shivan Dragon, p1's graveyard -> exile
+T54 moves: Wall of Faith, p1's graveyard -> exile
+T54 moves: Lurking Predators, p1's graveyard -> exile
+T54 moves: Mind Rot, p1's graveyard -> exile
+T54 moves: Celestial Purge, p1's graveyard -> exile
+T54 moves: Phantom Warrior, p1's graveyard -> exile
+T54 p1 shuffles their library
+T54 resolves: Haunting Echoes
+T54 moves: Haunting Echoes, stack -> p2's graveyard
+T54 p1 activates p1:Dragon Whelp
+T54 effect: p1:Dragon Whelp +1/+0 until end of turn
+T54 resolves: p1:Dragon Whelp's ability
+T54 moves: Forest, p2's hand -> battlefield
+T54 p2 plays p2:Forest#4
+T54 moves: Viashino Spearhunter, p2's hand -> stack
+T54 taps: p2:Forest#4
+T54 p2 adds {G} (p2:Forest#4)
+T54 p2 taps p2:Forest#4 for mana
+T54 p2 casts Viashino Spearhunter
+T54 resolves: Viashino Spearhunter
+T54 moves: Viashino Spearhunter, stack -> battlefield
+T54 p1's unspent {W}{B} empties
+T54 p2's unspent {U}{U}{U} empties
+T54 p2 attack: nothing
+T54 taps: p1:Plains#3
+T54 p1 adds {W} (p1:Plains#3)
+T54 p1 taps p1:Plains#3 for mana
+T54 taps: p1:Forest#2
+T54 p1 adds {G} (p1:Forest#2)
+T54 p1 taps p1:Forest#2 for mana
+T54 p1 cancels activating p1:Dragon Whelp
+T54 taps: p1:Forest#2
+T54 p1 adds {G} (p1:Forest#2)
+T54 p1 taps p1:Forest#2 for mana
+T54 p1's unspent {W}{G} empties
+T54 p1 cancels activating p1:Dragon Whelp
+T54 p1 cancels activating p1:Dragon Whelp
+T54 p1 cancels activating p1:Dragon Whelp
+T54 p1 cancels activating p1:Dragon Whelp
+T54 p1 cancels activating p1:Dragon Whelp
+T54 effect ends: p1:Dragon Whelp +1/+0
+T54 effect ends: p1:Dragon Whelp +1/+0
+T55 turn 55 begins (p1)
+T55 untaps: p1:Mountain#1
+T55 untaps: p1:Mountain#2
+T55 untaps: p1:Plains#1
+T55 untaps: p1:Mountain#3
+T55 untaps: p1:Swamp
+T55 untaps: p1:Island#1
+T55 untaps: p1:Plains#2
+T55 untaps: p1:Forest#1
+T55 untaps: p1:Plains#3
+T55 untaps: p1:Forest#2
+T55 untaps: p1:Mountain#4
+T55 untaps: p1:Island#2
+T55 moves: Forest, p1's library -> p1's hand
+T55 p1 draws
+T55 p1:Howling Mine triggers (p1)
+T55 moves: Island, p1's library -> p1's hand
+T55 p1 draws
+T55 resolves: p1:Howling Mine's ability
+T55 taps: p1:Island#1
+T55 p1 adds {U} (p1:Island#1)
+T55 p1 taps p1:Island#1 for mana
+T55 p1's unspent {U} empties
+T55 moves: Ornithopter, p1's hand -> stack
+T55 p1 casts Ornithopter
+T55 taps: p1:Forest#1
+T55 p1 adds {G} (p1:Forest#1)
+T55 p1 taps p1:Forest#1 for mana
+T55 taps: p1:Plains#3
+T55 p1 adds {W} (p1:Plains#3)
+T55 p1 taps p1:Plains#3 for mana
+T55 taps: p1:Mountain#3
+T55 p1 adds {R} (p1:Mountain#3)
+T55 p1 taps p1:Mountain#3 for mana
+T55 p1 activates p1:Dragon Whelp
+T55 effect: p1:Dragon Whelp +1/+0 until end of turn
+T55 resolves: p1:Dragon Whelp's ability
+T55 resolves: Ornithopter
+T55 moves: Ornithopter, stack -> battlefield
+T55 moves: Swamp, p1's hand -> battlefield
+T55 p1 plays p1:Swamp#2
+T55 p1's unspent {W}{G} empties
+T55 taps: p1:Swamp#1
+T55 p1 adds {B} (p1:Swamp#1)
+T55 p1 taps p1:Swamp#1 for mana
+T55 taps: p1:Plains#2
+T55 p1 adds {W} (p1:Plains#2)
+T55 p1 taps p1:Plains#2 for mana
+T55 taps: p1:Swamp#2
+T55 p1 adds {B} (p1:Swamp#2)
+T55 p1 taps p1:Swamp#2 for mana
+T55 taps: p1:Forest#2
+T55 p1 adds {G} (p1:Forest#2)
+T55 p1 taps p1:Forest#2 for mana
+T55 taps: p1:Island#2
+T55 p1 adds {U} (p1:Island#2)
+T55 p1 taps p1:Island#2 for mana
+T55 taps: p1:Mountain#1
+T55 p1 adds {R} (p1:Mountain#1)
+T55 p1 taps p1:Mountain#1 for mana
+T55 taps: p1:Mountain#2
+T55 p1 adds {R} (p1:Mountain#2)
+T55 p1 taps p1:Mountain#2 for mana
+T55 taps: p1:Mountain#4
+T55 p1 adds {R} (p1:Mountain#4)
+T55 p1 taps p1:Mountain#4 for mana
+T55 p1 activates p1:Dragon Whelp
+T55 effect: p1:Dragon Whelp +1/+0 until end of turn
+T55 resolves: p1:Dragon Whelp's ability
+T55 p1 activates p1:Dragon Whelp
+T55 effect: p1:Dragon Whelp +1/+0 until end of turn
+T55 resolves: p1:Dragon Whelp's ability
+T55 taps: p1:Plains#1
+T55 p1 adds {W} (p1:Plains#1)
+T55 p1 taps p1:Plains#1 for mana
+T55 p1 activates p1:Dragon Whelp
+T55 p1 cancels activating p1:Dragon Whelp
+T55 effect: p1:Dragon Whelp +1/+0 until end of turn
+T55 resolves: p1:Dragon Whelp's ability
+T55 p1's unspent {W}{W}{U}{B}{B}{G} empties
+T55 p1 attack: nothing
+T55 p1:Dragon Whelp triggers (p1)
+T55 p1 cancels activating p1:Dragon Whelp
+T55 p1 sacrifices p1:Dragon Whelp
+T55 moves: Dragon Whelp, battlefield -> p1's graveyard
+T55 resolves: p1:Dragon Whelp's ability
+T55 effect ends: (gone o1467) +1/+0
+T55 effect ends: (gone o1467) +1/+0
+T55 effect ends: (gone o1467) +1/+0
+T55 effect ends: (gone o1467) +1/+0
+T56 turn 56 begins (p2)
+T56 untaps: p2:Island#1
+T56 untaps: p2:Island#2
+T56 untaps: p2:Mountain#1
+T56 untaps: p2:Swamp#1
+T56 untaps: p2:Mountain#2
+T56 untaps: p2:Swamp#2
+T56 untaps: p2:Swamp#3
+T56 untaps: p2:Forest#1
+T56 untaps: p2:Island#3
+T56 untaps: p2:Plains
+T56 untaps: p2:Forest#2
+T56 untaps: p2:Island#4
+T56 untaps: p2:Mountain#3
+T56 untaps: p2:Forest#3
+T56 untaps: p2:Forest#4

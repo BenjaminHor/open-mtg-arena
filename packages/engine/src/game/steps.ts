@@ -42,7 +42,14 @@ export function beginTurn(state: GameState, player: PlayerId, number: number, ca
     if (obj?.kind === "card" && controllerOf(state, id) === player)
       objects[id] = { ...obj, controlledSinceTurnStart: true };
   }
-  const begun: GameState = { ...state, players, objects, turn: { number, activePlayer: player, step: "untap" } };
+  // "This turn" counts start again (D-078).
+  const begun: GameState = {
+    ...state,
+    players,
+    objects,
+    activationsThisTurn: [],
+    turn: { number, activePlayer: player, step: "untap" },
+  };
   return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player }] }, (s) =>
     beginStep(s, "untap", cards),
   );

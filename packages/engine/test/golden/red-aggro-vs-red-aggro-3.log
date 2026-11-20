@@ -135,6 +135,7 @@ T4 p1's unspent {R} empties
 T4 moves: Shock, p1's library -> p1's hand
 T4 p1 draws
 T4 moves: Shock, p1's hand -> stack
+T4 targeted: p2:Raging Goblin by Shock
 T4 p1 cancels casting Shock
 T4 moves: Mountain, p1's hand -> battlefield
 T4 p1 plays p1:Mountain#2
@@ -147,6 +148,7 @@ T4 p1's unspent {R} empties
 T4 taps: p1:Raging Goblin
 T4 p1 attack: p1:Raging Goblin -> p2
 T4 moves: Shock, p1's hand -> stack
+T4 targeted: p1:Raging Goblin by Shock
 T4 p1 cancels casting Shock
 T4 p2 block: nothing
 T4 combat damage: p1:Raging Goblin -> p2 1
@@ -169,13 +171,17 @@ T5 p1 cancels casting Shock
 T5 moves: Shock, p1's hand -> stack
 T5 p1 cancels casting Shock
 T5 moves: Shock, p1's hand -> stack
+T5 targeted: p1:Raging Goblin by Shock
 T5 p1 cancels casting Shock
 T5 moves: Shock, p1's hand -> stack
+T5 targeted: p2:Raging Goblin by Shock
 T5 p1 cancels casting Shock
 T5 p2 attack: nothing
 T5 moves: Shock, p1's hand -> stack
+T5 targeted: p2:Raging Goblin by Shock
 T5 p1 cancels casting Shock
 T5 moves: Shock, p1's hand -> stack
+T5 targeted: p2:Raging Goblin by Shock
 T5 p1 cancels casting Shock
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 taps: p2:Mountain#3
@@ -276,6 +282,7 @@ T6 p1 cancels casting Shock
 T6 moves: Shock, p1's hand -> stack
 T6 p1 cancels casting Shock
 T6 moves: Shock, p1's hand -> stack
+T6 targeted: p2:Raging Goblin by Shock
 T6 p1 cancels casting Shock
 T6 moves: Shock, p1's hand -> stack
 T6 p1 cancels casting Shock
@@ -321,6 +328,7 @@ T7 p1 block: p1:Raging Goblin -> p2:Raging Goblin
 T7 moves: Shock, p1's hand -> stack
 T7 p1 cancels casting Shock
 T7 moves: Shock, p1's hand -> stack
+T7 targeted: p1:Raging Goblin by Shock
 T7 p1 cancels casting Shock
 T7 combat damage: p2:Raging Goblin -> p1:Raging Goblin 1
 T7 combat damage: p1:Raging Goblin -> p2:Raging Goblin 1
@@ -1355,6 +1363,7 @@ T21 p2 cancels casting Fire Elemental
 T21 moves: Hill Giant, p2's hand -> stack
 T21 p2 cancels casting Hill Giant
 T21 moves: Volcanic Hammer, p2's hand -> stack
+T21 targeted: p2:Hill Giant by Volcanic Hammer
 T21 p2 cancels casting Volcanic Hammer
 T21 p1 cancels activating p1:Furnace Whelp
 T22 turn 22 begins (p1)
@@ -1499,6 +1508,7 @@ T23 p2 adds {R} (p2:Mountain#1)
 T23 p2 taps p2:Mountain#1 for mana
 T23 p2 cancels casting Gray Ogre
 T23 moves: Volcanic Hammer, p2's hand -> stack
+T23 targeted: p1:Hill Giant by Volcanic Hammer
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
 T23 p2 taps p2:Mountain#1 for mana
@@ -1674,8 +1684,10 @@ T25 p2 draws
 T25 moves: Shock, p2's hand -> stack
 T25 p2 cancels casting Shock
 T25 moves: Shock, p2's hand -> stack
+T25 targeted: p1:Raging Goblin by Shock
 T25 p2 cancels casting Shock
 T25 moves: Shock, p2's hand -> stack
+T25 targeted: p1:Furnace Whelp by Shock
 T25 p2 cancels casting Shock
 T25 p1 cancels activating p1:Furnace Whelp
 T25 moves: Fire Elemental, p2's hand -> stack
@@ -1685,11 +1697,14 @@ T25 p1 cancels activating p1:Furnace Whelp
 T25 p1 cancels activating p1:Furnace Whelp
 T25 p2 attack: nothing
 T25 moves: Shock, p2's hand -> stack
+T25 targeted: p1:Raging Goblin by Shock
 T25 p2 cancels casting Shock
 T25 moves: Shock, p2's hand -> stack
+T25 targeted: p2:Hill Giant by Shock
 T25 p2 cancels casting Shock
 T25 p1 cancels activating p1:Furnace Whelp
 T25 moves: Shock, p2's hand -> stack
+T25 targeted: p1:Furnace Whelp by Shock
 T25 p2 cancels casting Shock
 T25 moves: Gray Ogre, p2's hand -> stack
 T25 p2 cancels casting Gray Ogre
@@ -1704,6 +1719,7 @@ T25 p2 cancels casting Fire Elemental
 T25 moves: Hill Giant, p2's hand -> stack
 T25 p2 cancels casting Hill Giant
 T25 moves: Shock, p2's hand -> stack
+T25 targeted: p1:Furnace Whelp by Shock
 T25 p2 cancels casting Shock
 T25 moves: Hill Giant, p2's hand -> stack
 T25 p2 cancels casting Hill Giant
@@ -1783,6 +1799,7 @@ T26 p1 adds {R} (p1:Mountain#4)
 T26 p1 taps p1:Mountain#4 for mana
 T26 p1 cancels activating p1:Furnace Whelp
 T26 moves: Shock, p2's hand -> stack
+T26 targeted: p2:Hill Giant by Shock
 T26 p2 cancels casting Shock
 T26 effect: p1:Furnace Whelp +1/+0 until end of turn
 T26 resolves: p1:Furnace Whelp's ability
@@ -1802,6 +1819,7 @@ T26 p1 cancels casting Furnace Whelp
 T26 moves: Shock, p2's hand -> stack
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
+T26 targeted: p1:Furnace Whelp by Shock
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
 T26 p2 cancels casting Shock
@@ -1830,14 +1848,17 @@ T26 destroyed: p1:Raging Goblin
 T26 moves: Raging Goblin, battlefield -> p1's graveyard
 T26 p1 cancels activating p1:Furnace Whelp
 T26 moves: Shock, p2's hand -> stack
+T26 targeted: p2:Hill Giant by Shock
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
+T26 targeted: p1:Furnace Whelp by Shock
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
+T26 targeted: p1:Furnace Whelp by Shock
 T26 p2 cancels casting Shock
 T26 moves: Shock, p2's hand -> stack
 T26 p2 cancels casting Shock
@@ -2531,6 +2552,7 @@ T35 p1 block: nothing
 T35 combat damage: p2:Hill Giant -> p1 3
 T35 p1 loses 3 life
 T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 targeted: p2:Hill Giant by Volcanic Hammer
 T35 p2 cancels casting Volcanic Hammer
 T35 moves: Gray Ogre, p2's hand -> stack
 T35 p2 cancels casting Gray Ogre
@@ -2753,6 +2775,7 @@ T38 taps: p1:Mountain#6
 T38 p1 adds {R} (p1:Mountain#6)
 T38 p1 taps p1:Mountain#6 for mana
 T38 moves: Lightning Bolt, p1's hand -> stack
+T38 targeted: p2:Fire Elemental by Lightning Bolt
 T38 p1 casts Lightning Bolt
 T38 damage: Lightning Bolt -> p2:Fire Elemental 3
 T38 resolves: Lightning Bolt

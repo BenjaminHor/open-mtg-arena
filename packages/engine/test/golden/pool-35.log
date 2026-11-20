@@ -984,10 +984,13 @@ T25 p2 adds {W} (p2:Plains#2)
 T25 p2 taps p2:Plains#2 for mana
 T25 p2 casts Wall of Faith
 T25 moves: Cancel, p2's hand -> stack
+T25 targeted: Wall of Faith by Cancel
 T25 p2 cancels casting Cancel
 T25 moves: Cancel, p2's hand -> stack
+T25 targeted: Wall of Faith by Cancel
 T25 p2 cancels casting Cancel
 T25 moves: Cancel, p2's hand -> stack
+T25 targeted: Wall of Faith by Cancel
 T25 p2 cancels casting Cancel
 T25 resolves: Wall of Faith
 T25 moves: Wall of Faith, stack -> battlefield
@@ -1143,6 +1146,7 @@ T28 taps: p1:Island#5
 T28 p1 adds {U} (p1:Island#5)
 T28 p1 taps p1:Island#5 for mana
 T28 moves: Giant Growth, p1's hand -> stack
+T28 targeted: p1:Emerald Oryx by Giant Growth
 T28 taps: p1:Island#2
 T28 p1 adds {U} (p1:Island#2)
 T28 p1 taps p1:Island#2 for mana
@@ -1176,6 +1180,7 @@ T28 p2 taps p2:Plains#4 for mana
 T28 p2 activates p2:Wall of Faith
 T28 p2 cancels activating p2:Wall of Faith
 T28 moves: Giant Growth, p1's hand -> stack
+T28 targeted: p2:Wall of Faith by Giant Growth
 T28 taps: p1:Island#1
 T28 p1 adds {U} (p1:Island#1)
 T28 p1 taps p1:Island#1 for mana
@@ -1202,6 +1207,7 @@ T28 p2 cancels activating p2:Wall of Faith
 T28 p2 cancels activating p2:Wall of Faith
 T28 p2 cancels activating p2:Wall of Faith
 T28 moves: Giant Growth, p1's hand -> stack
+T28 targeted: p1:Emerald Oryx by Giant Growth
 T28 taps: p1:Island#2
 T28 p1 adds {U} (p1:Island#2)
 T28 p1 taps p1:Island#2 for mana
@@ -1420,6 +1426,7 @@ T30 p2 cancels activating p2:Wall of Faith
 T30 moves: Consume Spirit, p1's hand -> stack
 T30 p1 cancels casting Consume Spirit
 T30 moves: Excommunicate, p1's hand -> stack
+T30 targeted: p2:Wall of Faith by Excommunicate
 T30 p1 cancels casting Excommunicate
 T30 damage removed: p2:Wall of Faith (1)
 T31 turn 31 begins (p2)
@@ -1565,11 +1572,13 @@ T32 p1 adds {W} (p1:Plains#2)
 T32 p1 taps p1:Plains#2 for mana
 T32 p1 cancels casting Acidic Slime
 T32 moves: Excommunicate, p1's hand -> stack
+T32 targeted: p2:Wall of Faith by Excommunicate
 T32 taps: p1:Forest#2
 T32 p1 adds {G} (p1:Forest#2)
 T32 p1 taps p1:Forest#2 for mana
 T32 p1 cancels casting Excommunicate
 T32 moves: Consume Spirit, p1's hand -> stack
+T32 targeted: p1:Emerald Oryx by Consume Spirit
 T32 taps: p1:Forest#2
 T32 p1 adds {G} (p1:Forest#2)
 T32 p1 taps p1:Forest#2 for mana
@@ -1672,6 +1681,7 @@ T33 taps: p2:Forest#3
 T33 p2 adds {G} (p2:Forest#3)
 T33 p2 taps p2:Forest#3 for mana
 T33 moves: Disentomb, p2's hand -> stack
+T33 targeted: Child of Night by Disentomb
 T33 p2 cancels casting Disentomb
 T33 p2's unspent {G} empties
 T33 p2 cancels activating p2:Wall of Faith
@@ -1771,6 +1781,7 @@ T35 untaps: p2:Forest#3
 T35 moves: Seismic Strike, p2's library -> p2's hand
 T35 p2 draws
 T35 moves: Seismic Strike, p2's hand -> stack
+T35 targeted: p2:Wall of Faith by Seismic Strike
 T35 taps: p2:Plains#1
 T35 p2 adds {W} (p2:Plains#1)
 T35 p2 taps p2:Plains#1 for mana
@@ -1811,6 +1822,7 @@ T35 p2 activates p2:Wall of Faith
 T35 effect: p2:Wall of Faith +0/+1 until end of turn
 T35 resolves: p2:Wall of Faith's ability
 T35 moves: Seismic Strike, p2's hand -> stack
+T35 targeted: p1:Horned Turtle by Seismic Strike
 T35 p2 casts Seismic Strike
 T35 p2 cancels activating p2:Wall of Faith
 T35 damage: Seismic Strike -> p1:Horned Turtle 1
@@ -1855,6 +1867,7 @@ T36 p2 taps p2:Mountain#2 for mana
 T36 p2's unspent {R} empties
 T36 p1's unspent {W} empties
 T36 moves: Excommunicate, p1's hand -> stack
+T36 targeted: p1:Horned Turtle by Excommunicate
 T36 taps: p1:Plains#3
 T36 p1 adds {W} (p1:Plains#3)
 T36 p1 taps p1:Plains#3 for mana
@@ -1869,6 +1882,7 @@ T36 taps: p1:Plains#2
 T36 p1 adds {W} (p1:Plains#2)
 T36 p1 taps p1:Plains#2 for mana
 T36 moves: Cancel, p2's hand -> stack
+T36 targeted: Excommunicate by Cancel
 T36 p2 cancels casting Cancel
 T36 p2 cancels activating p2:Wall of Faith
 T36 p2 cancels activating p2:Wall of Faith

@@ -36,6 +36,7 @@ import { disorient } from "./d/disorient.ts";
 import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
 import { doomBlade } from "./d/doom-blade.ts";
+import { dragonWhelp } from "./d/dragon-whelp.ts";
 import { dragonsClaw } from "./d/dragons-claw.ts";
 import { dreadWarlock } from "./d/dread-warlock.ts";
 import { duress } from "./d/duress.ts";
@@ -69,6 +70,7 @@ import { howlingBanshee } from "./h/howling-banshee.ts";
 import { howlingMine } from "./h/howling-mine.ts";
 import { hypnoticSpecter } from "./h/hypnotic-specter.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
+import { illusionaryServant } from "./i/illusionary-servant.ts";
 import { infernoElemental } from "./i/inferno-elemental.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
@@ -188,6 +190,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   divination,
   divineVerdict,
   doomBlade,
+  dragonWhelp,
   dragonsClaw,
   dreadWarlock,
   duress,
@@ -221,6 +224,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   howlingMine,
   hypnoticSpecter,
   igniteDisorder,
+  illusionaryServant,
   infernoElemental,
   island,
   jackalFamiliar,
