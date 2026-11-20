@@ -205,6 +205,16 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   revealUntil: (e) => (e as { who: EffectSubject }).who,
 };
 
+/** The target kinds that are objects, whose controller "its controller" can mean. */
+const OBJECT_TARGETS: readonly string[] = ["permanent", "spell", "cardInGraveyard"];
+
+/** Every subject an effect names, in any of its fields. */
+function subjectsOf(effect: Effect): EffectSubject[] {
+  return Object.values(effect).filter(
+    (v): v is EffectSubject => typeof v === "object" && v !== null && ("target" in v || "controllerOf" in v),
+  );
+}
+
 /**
  * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming a player ("you", "each player", a
  * player target), or an op on players naming an object ("self", an object target).
@@ -263,9 +273,30 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard", "sacrifice"];
+    const onePlayerOps: Effect["op"][] = [
+      "discard",
+      "search",
+      "mayShuffle",
+      "exileGraveyard",
+      "sacrifice",
+      "revealUntil",
+    ];
     if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
+    // "The player puts that card onto the battlefield": one player, who'd also be the one asked "you may".
+    if (effect.op === "put" && effect.by !== undefined) {
+      if (objectOnly(effect.by) || effect.by === "eachPlayer")
+        problems.push(`${where}: put is by one player, not ${JSON.stringify(effect.by)}`);
+      if (effect.optional === true) problems.push(`${where}: "you may" asks "you", not the player who puts`);
+    }
+    // "Its controller" reads an object's controller: the target it names must be an object.
+    for (const s of subjectsOf(effect))
+      if (
+        typeof s === "object" &&
+        "controllerOf" in s &&
+        !OBJECT_TARGETS.includes(targets[s.controllerOf.target]?.kind ?? "")
+      )
+        problems.push(`${where}: "its controller" names target ${s.controllerOf.target}, which isn't an object`);
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";

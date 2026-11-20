@@ -25,7 +25,8 @@ const revealed = (state: GameState) => {
 
 describe("revealing until a creature card (CR 701.20a)", () => {
   it("shows every card from the top down to the first creature card, which is found; none move", () => {
-    const state = withLibrary([FOREST, MOUNTAIN, BEARS, FOREST]);
+    // A second creature card below the first is neither shown nor found.
+    const state = withLibrary([FOREST, MOUNTAIN, BEARS, FOREST, BEARS]);
     const { cards, found } = revealed(state);
     expect([...cards].sort()).toStrictEqual([BEARS, FOREST, MOUNTAIN].sort());
     expect(found).toStrictEqual([state.zones.players.p1?.library[2]]);

@@ -125,7 +125,7 @@ export type GameEvent =
   | { type: "EFFECT_CREATED"; effect: ContinuousEffect }
   /** A continuous effect ended, as its duration ran out (CR 611.2a). */
   | { type: "EFFECT_ENDED"; effect: ContinuousEffect }
-  /** Damage removed from a permanent in the cleanup step (CR 514.2). */
+  /** Damage removed from a permanent: in the cleanup step (CR 514.2), or as it regenerates (CR 701.19a). */
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
   /** A permanent regenerated instead of being destroyed (CR 701.19a): a shield used up, then the rest as events. */
   | { type: "PERMANENT_REGENERATED"; object: ObjectId }

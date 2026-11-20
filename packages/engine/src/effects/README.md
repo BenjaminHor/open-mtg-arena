@@ -24,7 +24,8 @@ the one place their effects become changes to the game.
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
 | `mustAttack` | "attacks you this turn if able" | Creates a continuous effect `declaration-rules.ts` reads as a requirement (CR 508.1d) on the targets still legal; targets only for now |
 | `cantBlock` | "can't block this turn" | Creates a continuous effect `canBlock` reads (CR 509.1b) on the targets still legal (CR 608.2b); targets only for now |
-| `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a) |
+| `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a); `noRegeneration`: "It can't be regenerated", so no shield is used (CR 701.19c) |
+| `regenerate` | "Regenerate target creature" | A regeneration shield on each permanent `of` names still on the battlefield, used the next time it would be destroyed this turn (CR 701.19a; `regeneration-shield.ts`, D-086) |
 | `destroyAll` | "Destroy all nonland permanents" | Destroys every permanent fitting `filter`, decided once, at the same time (CR 608.2f, 608.2h) |
 | `exile` | "Exile target permanent" | Moves each object `of` names to exile (CR 701.13a) |
 | `returnToHand` | "Return target creature to its owner's hand" | Moves it to its owner's hand (CR 400.3) |
@@ -40,8 +41,9 @@ the one place their effects become changes to the game.
 | `putOntoBattlefield` | "You may put a creature card from your hand onto the battlefield" | Under the controller's control (CR 110.2a), not cast; asked whenever the hand isn't empty (D-062) |
 | `search` | "Search your library for a basic land card" | "You" choose among the library's cards fitting `filter` (or with the name of a card exiled this way), shown the whole library by identity (CR 701.23a, D-062); finds `"found"`, moves nothing |
 | `reveal` | "Reveal it" | Shows the cards to everyone, by identity (CR 701.20a) |
-| `put` | "Put that card onto the battlefield tapped" | Into the owner's hand or library bottom, or onto the battlefield under the controller, `tapped` as part of the move (CR 110.2a, 110.5b); `onlyIf` puts only cards fitting a filter ("if it's a creature card"); `optional` asks first, if there's a card to put (`put-effects.ts`) |
+| `put` | "Put that card onto the battlefield tapped" | Into the owner's hand or library bottom, or onto the battlefield under the controller, `tapped` as part of the move (CR 110.2a, 110.5b); `onlyIf` puts only cards fitting a filter ("if it's a creature card"); `optional` asks first, if there's a card to put; `by`: "the player puts", who controls it (CR 110.2a; `put-effects.ts`) |
 | `revealTop` | "Reveal the top card of your library" | Shows it to everyone, staying on top, as `"found"` for the effects after it (CR 701.20a, 701.20b) |
+| `revealUntil` | "Reveals cards from the top of their library until they reveal a creature card" | Shows the cards down to the first that fits the filter, which is `"found"`; none leave the library (CR 701.20a) |
 | `shuffle` / `mayShuffle` | "Then shuffle" / "You may shuffle" | Shuffles (CR 701.24a); `mayShuffle` asks yes or no first |
 | `lookAtTop` | "Look at the top three cards of your library, then put them back in any order" | The player is shown them and puts them back top first (CR 701.20e, 401.4) |
 | `destroyOneAtRandom` | "Destroy one of them at random" | One of the permanents its subjects name, still legal and on the battlefield, picked with the seeded RNG (`destroy-at-random.ts`) |
@@ -51,8 +53,8 @@ the one place their effects become changes to the game.
 | `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
-Which move op to use: `returnToHand` for a target bounced to its owner's hand; `put` for cards an earlier `search`
-or `revealTop` found (`"found"`), into the hand, onto the battlefield or on the bottom of the library; `putOntoBattlefield` when the player chooses a card from
+Which move op to use: `returnToHand` for a target bounced to its owner's hand; `put` for cards an earlier `search`,
+`revealTop` or `revealUntil` found (`"found"`), into the hand, onto the battlefield or on the bottom of the library; `putOntoBattlefield` when the player chooses a card from
 their hand as the effect resolves (Elvish Piper); `exile` for either.
 
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
@@ -62,7 +64,9 @@ every player in APNAP order (CR 101.4).
 `from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"triggeringPlayer"` and
 `"triggeringObject"` (a triggered ability's "that player" and "that creature"), `"found"` (what an earlier
 `search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
-it now, CR 608.2h), or `{ target: i }` for the still-legal targets of the i-th instance of "target". A subject with no
+it now, CR 608.2h), `{ target: i }` for the still-legal targets of the i-th instance of "target", or
+`{ controllerOf: { target: i } }` for that target's controller ("its controller", from last known information if it's
+gone, CR 608.2h). A subject with no
 legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, `{ count: filter }`, or
 `"thatMuch"` (a triggered ability's event amount: the life gained), or `"sacrificedPower"` (the power of what an earlier
 `sacrifice` sacrificed, as it last was on the battlefield, CR 608.2h, never below 0, CR 107.1b).

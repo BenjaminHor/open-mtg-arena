@@ -4,6 +4,8 @@
 import {
   type CardDatabase,
   characteristics,
+  isAttacking,
+  isBlocking,
   type LayerSevenCChange,
   layerSevenCChanges,
   type ObjectId,
@@ -38,9 +40,10 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
     `  status: ${obj.tapped ? "tapped" : "untapped"}; damage ${obj.damage}; counters: ${counters.length > 0 ? counters.join(", ") : "none"}`,
   );
   lines.push(`  under its controller's control since their turn began: ${obj.controlledSinceTurnStart ? "yes" : "no"}`);
-  const attack = state.combat?.attacks.find((a) => a.attacker === id);
+  // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
+  const attack = isAttacking(state, id, cards) ? state.combat?.attacks.find((a) => a.attacker === id) : undefined;
   if (attack !== undefined) lines.push(`  attacking ${attack.defender}`);
-  const blocks = (state.combat?.blocks ?? []).filter((b) => b.blocker === id);
+  const blocks = isBlocking(state, id, cards) ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id) : [];
   if (blocks.length > 0) lines.push(`  blocking ${blocks.map((b) => objectText(state, b.attacker, cards)).join(", ")}`);
   return lines.join("\n");
 

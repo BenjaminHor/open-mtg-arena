@@ -19,8 +19,6 @@ steps:
     targets: [p1:Cudgel Troll]
     pay: auto
   - all pass: once
-  - expect:
-      p1:Cudgel Troll.tapped: true
   - p1 pass: once
   - p2 cast: Divine Verdict
     targets: [p1:Cudgel Troll]

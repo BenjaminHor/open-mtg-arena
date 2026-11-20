@@ -1,5 +1,5 @@
-name: Wall of Bone regenerates from lethal combat damage while blocking; it can't attack
-rules: [CR 701.19a, CR 702.3b]
+name: Wall of Bone regenerates from lethal combat damage while blocking
+rules: [CR 701.19a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

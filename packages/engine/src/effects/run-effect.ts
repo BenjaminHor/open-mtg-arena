@@ -103,7 +103,7 @@ export function runEffect(
           : { kind: "destroy", object },
       );
     case "regenerate":
-      return addRegenerationShields(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)));
+      return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
     case "revealUntil": {
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : revealUntil(state, player, effect.filter, cards);

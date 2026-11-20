@@ -8,13 +8,14 @@ import { happen } from "../../src/pipeline/happen.ts";
 import { BEARS, FOREST, HOLLOW_STATUE, IRON_WALL, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
-/** p1 with these permanents, each with a regeneration shield. */
-function shielded(oracleIds: string[]): GameState {
+/** p1 with these permanents, each with a regeneration shield, and this hand. */
+function shielded(oracleIds: string[], inHand: string[] = []): GameState {
   const state = start({
     seed: 1,
     players: [
       playerSetup("p1", {
         library: [FOREST],
+        hand: inHand,
         battlefield: oracleIds.map((oracleId) => ({
           oracleId,
           tapped: false,
@@ -41,18 +42,21 @@ describe("regeneration shields", () => {
   });
 
   it("don't save a creature with toughness 0, which isn't destroyed (CR 704.5f, 701.19a)", () => {
-    // A 0/0 would die as the game starts; it's put onto the battlefield, with a shield, only now.
-    const state = shielded([]);
-    const statue = "o900" as ObjectId;
-    const withStatue: GameState = {
-      ...state,
-      objects: { ...state.objects, [statue]: { ...cardLike(state), id: statue, oracleId: HOLLOW_STATUE } },
-      zones: { ...state.zones, battlefield: [statue] },
-      replacements: [{ kind: "regenerationShield", object: statue }],
-    };
-    const after = checkStateBasedActions(withStatue, TEST_CARDS).state;
-    expect(after.zones.battlefield).toStrictEqual([]);
-    expect(after.zones.players.p1?.graveyard).toHaveLength(1);
+    // A 0/0 on the battlefield as the game starts would already be gone: it enters now, with no check yet.
+    const state = shielded([], [HOLLOW_STATUE]);
+    const statue = state.zones.players.p1?.hand[0] as ObjectId;
+    const entered = happen(
+      state,
+      { kind: "moveCard", object: statue, to: { zone: "battlefield", controller: "p1" } },
+      TEST_CARDS,
+    );
+    const [onBattlefield] = entered.state.zones.battlefield as [ObjectId];
+    const withStatue = addRegenerationShields(entered.state, [onBattlefield]).state;
+    expect(withStatue.replacements).toHaveLength(1);
+    const after = checkStateBasedActions(withStatue, TEST_CARDS);
+    expect(after.state.zones.battlefield).toStrictEqual([]);
+    expect(after.state.zones.players.p1?.graveyard).toHaveLength(1);
+    expect(after.events.map((e) => e.type)).not.toContain("PERMANENT_REGENERATED");
   });
 
   it("are used one at a time, and the creature is tapped with its damage removed", () => {
@@ -65,11 +69,3 @@ describe("regeneration shields", () => {
     expect(after.events.map((e) => e.type)).toStrictEqual(["PERMANENT_REGENERATED", "PERMANENT_TAPPED"]);
   });
 });
-
-/** A card object to copy: p1's library card. */
-function cardLike(state: GameState) {
-  const id = state.zones.players.p1?.library[0] as ObjectId;
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") throw new Error("no card to copy");
-  return obj;
-}

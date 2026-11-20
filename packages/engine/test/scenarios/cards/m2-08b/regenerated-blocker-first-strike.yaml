@@ -1,0 +1,23 @@
+name: A blocker regenerated in the first-strike step deals no damage back; the first striker stays blocked and deals none to the player
+rules: [CR 510.4, CR 509.1h, CR 510.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Viashino Spearhunter]
+  p2:
+    battlefield: [Drudge Skeletons, Swamp]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Viashino Spearhunter]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Drudge Skeletons: Viashino Spearhunter }
+  - p1 pass: once
+  - p2 activate: Drudge Skeletons
+    pay: auto
+  - all pass: once
+  - all pass: until main2
+  - expect:
+      p1.battlefield: [Viashino Spearhunter]
+      p1:Viashino Spearhunter.damage: 0
+      p2.life: 20
+      p2:Drudge Skeletons.tapped: true

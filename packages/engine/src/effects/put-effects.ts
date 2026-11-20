@@ -32,8 +32,9 @@ export function put(state: GameState, effect: Put, context: EffectContext, cards
     return { state: asked, events: [] };
   }
   // "The player puts that card onto the battlefield": that player controls it (CR 110.2a).
-  const by =
-    effect.by === undefined ? context.controller : (onePlayer(state, effect.by, context, cards) ?? context.controller);
+  // If no such player is left, no one puts it anywhere.
+  const by = effect.by === undefined ? context.controller : onePlayer(state, effect.by, context, cards);
+  if (by === null) return { state, events: [] };
   const to = destinationOf(effect, by);
   return happen(
     state,

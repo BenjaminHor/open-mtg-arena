@@ -12,6 +12,7 @@ import { replacementsOf } from "../rules/abilities.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import { hasRegenerationShield } from "../state/replacements.ts";
 import type { Destination } from "../zones/move-card.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { playLandDestination, type SingleEvent } from "./proposed.ts";
@@ -48,8 +49,7 @@ function candidatesFor(state: GameState, event: SingleEvent, cards: CardDatabase
  */
 function regeneration(state: GameState, event: SingleEvent): Candidate[] {
   if (event.kind !== "destroy" || event.noRegeneration === true) return [];
-  const shielded = state.replacements.some((r) => r.kind === "regenerationShield" && r.object === event.object);
-  return shielded ? [{ kind: "regeneration", object: event.object }] : [];
+  return hasRegenerationShield(state, event.object) ? [{ kind: "regeneration", object: event.object }] : [];
 }
 
 /** The card an event would move, and where to: what replacements about where a card goes look at. */

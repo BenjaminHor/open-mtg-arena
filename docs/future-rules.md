@@ -40,6 +40,14 @@ against the state before the batch (built, D-085), and the results of damage are
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):
 since M2-05b1 "draw N" is N single draws (D-060), and the container comes with the first replacement that needs it
 (M2-08). *Built (M2-08a, D-085):* a card's own replacements about where it goes, read from the moving card in any zone.
+*Built (M2-08b, D-086):* regeneration shields in `GameState.replacements`, used by a destroy. *Watch out:* a
+replacement is chosen in `replace` against the state before its batch but used up in `perform`; "prevent the next N"
+(M2-08d) across a batch must work out the amount used during `replace`, or two members of one batch each see all N.
+M2-08c's choice should name candidates by stable references (`{ kind: "ownText", object, index }`,
+`{ kind: "regenerationShield", object }`), not copied text, for CR 614.5's "already applied". Every entry is ended in
+cleanup: a replacement lasting longer than "this turn" needs a duration, like `ContinuousEffect`'s. Static regeneration
+(CR 701.19b, never used up) belongs to static abilities, and "can't be regenerated" as a continuous effect must be
+checked in `regeneration()` as well as the destroy's `noRegeneration`.
 *Still to come:* replacements from other permanents ("If a card would be put into a graveyard from anywhere, exile it
 instead"), found by scanning the battlefield as well as the moving card; tokens and copies with such text
 (`replacementsOf` and `ownerOf` read only cards); a shuffle-into-library replacement in a batch with a card put on top at

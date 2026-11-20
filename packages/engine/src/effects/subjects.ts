@@ -5,7 +5,7 @@
 import type { Amount, CardDatabase, EffectSubject, ObjectFilter } from "../cards/types.ts";
 import { apnapOrder } from "../game/turn-order.ts";
 import { amountOf } from "../rules/amount.ts";
-import { controllerOf } from "../rules/controller.ts";
+import { controllerNowOrLastKnown } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -46,10 +46,7 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
  */
 function controllerOfTarget(state: GameState, targets: readonly Target[]): PlayerId | null {
   const [object] = objectsOf(targets);
-  if (object === undefined) return null;
-  if (state.objects[object] !== undefined) return controllerOf(state, object);
-  // Last known information keeps the card as it left; control-changing effects will need its controller then (layer 2).
-  return state.lastKnown[object]?.baseController ?? null;
+  return object === undefined ? null : controllerNowOrLastKnown(state, object);
 }
 
 /**

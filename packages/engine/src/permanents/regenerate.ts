@@ -11,6 +11,7 @@ import { tapPermanent } from "./tap.ts";
 export function regenerate(state: GameState, id: ObjectId): Progress {
   const obj = state.objects[id];
   if (obj?.kind !== "card" || !state.zones.battlefield.includes(id)) throw new Error(`${id} isn't a permanent`);
+  // One shield is used up; several are interchangeable (D-086).
   const shield = state.replacements.findIndex((r) => r.kind === "regenerationShield" && r.object === id);
   if (shield === -1) throw new Error(`${id} has no regeneration shield`);
   const events: GameEvent[] = [{ type: "PERMANENT_REGENERATED", object: id }];
@@ -19,8 +20,6 @@ export function regenerate(state: GameState, id: ObjectId): Progress {
     ...state,
     replacements: state.replacements.filter((_, i) => i !== shield),
     objects: { ...state.objects, [id]: { ...obj, damage: 0 } },
-    // Its deathtouch damage is gone with the rest (CR 704.5h reads damage dealt since the last check).
-    dealtDeathtouchDamage: state.dealtDeathtouchDamage.filter((o) => o !== id),
     combat: removedFromCombat(state, id),
   };
   const tapped = tapPermanent(healed, id);

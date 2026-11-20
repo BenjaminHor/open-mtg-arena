@@ -23,5 +23,5 @@ steps:
       p2.battlefield contains: [Grizzly Bears]
       p2.library count: 3
       p2.library contains: [Forest, Island, Swamp]
-      p1.battlefield contains: [Island]
+      p1.battlefield: [Island, Island, Island, Island]
       events contains: [{ type: CARDS_REVEALED }, { type: LIBRARY_SHUFFLED, player: p2 }]

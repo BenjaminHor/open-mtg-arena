@@ -66,8 +66,16 @@ describe("replacement effects", () => {
 
 describe("indestructible", () => {
   it("doesn't stop a creature with toughness 0 or less going to the graveyard (CR 704.5f, 702.12b)", () => {
-    const state = withBattlefield([HOLLOW_STATUE]);
-    const after = checkStateBasedActions(state, TEST_CARDS).state;
+    // A 0/0 on the battlefield as the game starts would already be gone: it enters now, with no check yet.
+    const state = withBattlefield([], [HOLLOW_STATUE]);
+    const [statue] = hand(state);
+    const entered = happen(
+      state,
+      { kind: "moveCard", object: statue, to: { zone: "battlefield", controller: "p1" } },
+      TEST_CARDS,
+    );
+    expect(entered.state.zones.battlefield).toHaveLength(1);
+    const after = checkStateBasedActions(entered.state, TEST_CARDS).state;
     expect(after.zones.battlefield).toStrictEqual([]);
     expect(after.zones.players.p1?.graveyard).toHaveLength(1);
   });

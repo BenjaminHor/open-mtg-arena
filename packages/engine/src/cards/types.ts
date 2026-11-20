@@ -351,8 +351,7 @@ export type Effect =
    * (CR 701.21a).
    */
   | { op: "sacrificeSource" }
-  /** "Destroy [subject]" (CR 701.8a). */
-  /** "Destroy [of]" (CR 701.8). `noRegeneration`: "It can't be regenerated" (CR 701.19c): no shield is used. */
+  /** "Destroy [of]" (CR 701.8a). `noRegeneration`: "It can't be regenerated" (CR 701.19c): no shield is used. */
   | { op: "destroy"; of: EffectSubject; noRegeneration?: true }
   /**
    * "Regenerate [of]": a regeneration shield, used up the next time it would be destroyed this turn (CR 701.19a,

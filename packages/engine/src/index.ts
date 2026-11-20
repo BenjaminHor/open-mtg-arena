@@ -32,6 +32,7 @@ export type { RngState } from "./rng/xoshiro128.ts";
 export { type ActivatedAbility, abilitiesOf, isManaAbility, sameAbilityRef } from "./rules/abilities.ts";
 export { isFixedAmount } from "./rules/amount.ts";
 export { type Characteristics, characteristics } from "./rules/characteristics.ts";
+export { isAttacking, isBlocking } from "./rules/combat.ts";
 export { controllerOf } from "./rules/controller.ts";
 export { type LayerSevenCChange, layerSevenCChanges } from "./rules/power-toughness.ts";
 export { isFreeOfSummoningSickness } from "./rules/summoning-sickness.ts";

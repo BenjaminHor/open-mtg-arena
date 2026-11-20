@@ -24,3 +24,4 @@ steps:
       p2.battlefield: [Island]
       p2.library: [Forest, Hill Giant]
       events contains: [{ type: SPELL_DID_NOT_RESOLVE }]
+      events lacks: [{ type: CARDS_REVEALED }, { type: LIBRARY_SHUFFLED }]

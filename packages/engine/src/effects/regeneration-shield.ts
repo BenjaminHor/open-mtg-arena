@@ -6,13 +6,10 @@ import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
-/** A shield for each of these permanents; ones no longer on the battlefield get none (there's nothing to protect). */
-export function addRegenerationShields(state: GameState, permanents: readonly ObjectId[]): Progress {
-  const shields = permanents.map((object) => ({ kind: "regenerationShield", object }) as const);
+/** A shield for each of these that's still on the battlefield; one that left has nothing to protect (CR 400.7). */
+export function addRegenerationShields(state: GameState, objects: readonly ObjectId[]): Progress {
+  const shields = objects
+    .filter((object) => state.zones.battlefield.includes(object))
+    .map((object) => ({ kind: "regenerationShield", object }) as const);
   return { state: { ...state, replacements: [...state.replacements, ...shields] }, events: [] };
-}
-
-/** Every replacement effect ends in the cleanup step: all of them last "this turn" (CR 514.2). */
-export function endReplacementEffects(state: GameState): GameState {
-  return state.replacements.length === 0 ? state : { ...state, replacements: [] };
 }
