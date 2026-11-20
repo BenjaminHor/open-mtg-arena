@@ -1,0 +1,16 @@
+name: Disentomb returns an artifact creature card, which is a creature card
+rules: [CR 109.2a]
+# Disentomb's ruling: a "creature card" is any card with the type creature.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Disentomb]
+    graveyard: [Ornithopter]
+    battlefield: [Swamp]
+steps:
+  - p1 cast: Disentomb
+    targets: [graveyard:p1:Ornithopter]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Ornithopter]

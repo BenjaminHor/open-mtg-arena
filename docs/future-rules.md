@@ -37,8 +37,9 @@ everything first, so it can) and resume as a work item; every caller that does m
 to queue that rest as work too (the list is in `engine/src/pipeline/README.md`). Each member of a batch is replaced
 against the state before the batch (CR 614.4), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
-draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a),
-when the first card that draws more than one arrives (M2-05). Since each event is performed whole, a "would die" or
+draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):
+since M2-05b1 "draw N" is N single draws (D-060), and the container comes with the first replacement that needs it
+(M2-08). Since each event is performed whole, a "would die" or
 "would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
 `destroy`, `sacrifice`, `counterObject`, `discard`, ...): M2-08 needs a small "the zone change this event makes"
 helper. Lifelink, infect, wither
@@ -73,8 +74,9 @@ A spell copy has no card and is owned by whoever put it on the stack (CR 707.10,
 Choices a permanent remembers from its spell (kicked, X; CR 400.7d) must be copied when it enters the battlefield.
 
 **Keyword actions and ability words.** Scryfall's `keywords` list (which the definition check compares with
-`CardDef.keywords`) also holds keyword actions (scry, CR 701) and ability words (landfall, CR 207.2c). *Needs before
-the first such card:* filter Scryfall's list to keyword abilities (CR 702) before comparing, so those don't end up in `Keyword`.
+`CardDef.keywords`) also holds keyword actions (mill, scry, CR 701) and ability words (landfall, CR 207.2c). Keyword
+actions are left out of the comparison by name (`KEYWORD_ACTIONS` in `definition-problems.ts`, since M2-05b); ability
+words will need the same before the first card with one.
 
 **Card types beyond the M1 pool.** Tokens (CR 111), auras and equipment (CR 303.4, 301.5), planeswalkers and
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down
@@ -136,9 +138,16 @@ division names the player too, one blocker asks too, and earlier lethal damage c
 record of which creatures already dealt damage. A creature blocking several attackers needs a list form for the
 scenario `block` step.
 
+**Milling and losing life, as triggers and replacements arrive (M2-07, M2-08).** Mill is plain `moveCard` events from
+library to graveyard (D-060), so "whenever a player mills", "the milled card" (CR 701.17c, 701.17d) and replacements
+that change how many are milled can't tell it from another such move (surveil): mark it, as discard is marked, with a
+`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Whether losing 0 life is an
+event isn't settled by the CR (CR 119.9 and 119.10 cover only gaining 0): no pool card loses a variable amount yet, so
+`loseLife` proposes whatever amount it's given; ask the owner when "whenever a player loses life" or X life loss arrives.
+
 **Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2; who may look, CR 708.5;
 telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed
-cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), milling (CR 701.17), and cards a player has seen
+cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), and cards a player has seen
 in another's hand (a cancelled cast's card back in hand, CR 734.1) all change what `playerView` shows. *Watch out:*
 shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order. A move from a library to a public
 zone no longer shows the old object id or card id (D-054), but a "look at" or reveal in place would: give every

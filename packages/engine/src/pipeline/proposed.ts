@@ -33,6 +33,8 @@ export type SingleEvent =
   | { kind: "counterObject"; object: ObjectId }
   /** A player gains life (CR 119.3). */
   | { kind: "gainLife"; player: PlayerId; amount: number }
+  /** A player loses life (CR 119.3), other than from damage, whose life loss is part of the damage event. */
+  | { kind: "loseLife"; player: PlayerId; amount: number }
   /** A permanent becomes tapped (CR 701.26a). */
   | { kind: "tap"; object: ObjectId }
   /** A permanent becomes untapped (CR 701.26b). */

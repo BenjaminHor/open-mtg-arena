@@ -53,10 +53,15 @@ export const viewsLeakNothing: Check = (before, after, events) => {
       problems.push(`${viewer}'s view changes when only hidden information changes`);
     }
     // A card hidden from the viewer before or after the action must not be named by its card id or its object id,
-    // unless the viewer could see it then too: their own draw, a card they saw go into a hand (D-054). (Not by its
+    // unless the viewer could see it then too: their own draw, a card they saw go into a hand (D-054). That includes a
+    // card they saw only during the action, such as one drawn and then discarded by Burning Inquiry. (Not by its
     // oracle id either, but that can't be checked this way: a Mountain in hand shares it with every Mountain out.)
     const shown = JSON.stringify(eventsFor(events, viewer));
-    const seen = new Set([...visibleNames(before, viewer), ...visibleNames(after, viewer)]);
+    const seen = new Set([
+      ...visibleNames(before, viewer),
+      ...visibleNames(after, viewer),
+      ...arrivedInView(events, viewer),
+    ]);
     const hidden = [...hiddenNames(before, viewer), ...hiddenNames(after, viewer)];
     for (const name of new Set(hidden)) {
       if (!seen.has(name) && shown.includes(`"${name}"`)) {
@@ -77,6 +82,18 @@ function visibleTo(state: GameState, viewer: PlayerId): ObjectId[] {
     ...state.turnOrder.flatMap((p) => state.zones.players[p]?.graveyard ?? []),
     ...(state.zones.players[viewer]?.hand ?? []),
   ];
+}
+
+/**
+ * The new ids of cards that moved, during the action, into a zone `viewer` can see (public zones, CR 400.2, and their own
+ * hand, CR 402.3). Written out here rather than taken from the engine's view, so the check stays independent of it.
+ */
+function arrivedInView(events: readonly GameEvent[], viewer: PlayerId): string[] {
+  return events.flatMap((e) => {
+    if (e.type !== "ZONE_CHANGED") return [];
+    const visible = e.to.zone === "hand" ? e.to.player === viewer : e.to.zone !== "library";
+    return visible ? [e.newId, e.newCardId] : [];
+  });
 }
 
 /** The ids `viewer` may know: of the objects they can see, and of their own card being cast. */

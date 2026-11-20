@@ -1,0 +1,21 @@
+name: Each player draws three cards, then discards three at random
+rules: [CR 121.2c, CR 701.9b, CR 101.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Burning Inquiry, Lightning Bolt]
+    library: [Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+    battlefield: [Mountain]
+  p2:
+    library: [Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+steps:
+  - p1 cast: Burning Inquiry
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand count: 1
+      p2.hand count: 0
+      p1.graveyard count: 4
+      p2.graveyard count: 3
+      p1.library count: 4
+      p2.library count: 4

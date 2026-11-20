@@ -63,6 +63,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Burning Inquiry",
+      "slug": "burning-inquiry",
+      "oracleId": "af98156b-3064-4f16-940e-10039241f2b0",
+      "layout": "normal",
+      "manaCost": "{R}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Each player draws three cards, then discards three cards at random.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/4/a448bc9e-f5db-4507-ac40-7d8ee3598585.jpg?1783942375",
+        "large": "https://cards.scryfall.io/large/front/a/4/a448bc9e-f5db-4507-ac40-7d8ee3598585.jpg?1783942375",
+        "png": "https://cards.scryfall.io/png/front/a/4/a448bc9e-f5db-4507-ac40-7d8ee3598585.png?1783942375",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/4/a448bc9e-f5db-4507-ac40-7d8ee3598585.jpg?1783942375"
+      },
+      "artist": "Zoltan Boros & Gabor Szikszai",
+      "set": "m10",
+      "collectorNumber": "128",
+      "scryfallUri": "https://scryfall.com/card/m10/128/burning-inquiry?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Cancel",
       "slug": "cancel",
       "oracleId": "7d00fb28-ea6c-49a9-b4af-ffb38860a9a7",
@@ -228,6 +256,62 @@
       "set": "fdn",
       "collectorNumber": "601",
       "scryfallUri": "https://scryfall.com/card/fdn/601/deathmark?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Disentomb",
+      "slug": "disentomb",
+      "oracleId": "e4ab986d-662c-4879-b6f1-6887a2ec4d7c",
+      "layout": "normal",
+      "manaCost": "{B}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Return target creature card from your graveyard to your hand.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/d/7debd8f7-2f34-4fdd-8eb6-fa8f9d2a60e8.jpg?1783932907",
+        "large": "https://cards.scryfall.io/large/front/7/d/7debd8f7-2f34-4fdd-8eb6-fa8f9d2a60e8.jpg?1783932907",
+        "png": "https://cards.scryfall.io/png/front/7/d/7debd8f7-2f34-4fdd-8eb6-fa8f9d2a60e8.png?1783932907",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/d/7debd8f7-2f34-4fdd-8eb6-fa8f9d2a60e8.jpg?1783932907"
+      },
+      "artist": "Johann Bodin",
+      "set": "m20",
+      "collectorNumber": "322",
+      "scryfallUri": "https://scryfall.com/card/m20/322/disentomb?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Divination",
+      "slug": "divination",
+      "oracleId": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
+      "layout": "normal",
+      "manaCost": "{2}{U}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Draw two cards.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/b/cb3b35b8-f321-46d8-a441-6b9a6efa9021.jpg?1783934590",
+        "large": "https://cards.scryfall.io/large/front/c/b/cb3b35b8-f321-46d8-a441-6b9a6efa9021.jpg?1783934590",
+        "png": "https://cards.scryfall.io/png/front/c/b/cb3b35b8-f321-46d8-a441-6b9a6efa9021.png?1783934590",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/b/cb3b35b8-f321-46d8-a441-6b9a6efa9021.jpg?1783934590"
+      },
+      "artist": "Willian Murai",
+      "set": "m19",
+      "collectorNumber": "51",
+      "scryfallUri": "https://scryfall.com/card/m19/51/divination?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -791,6 +875,62 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Mind Shatter",
+      "slug": "mind-shatter",
+      "oracleId": "26809033-a823-4251-887e-0410a545f993",
+      "layout": "normal",
+      "manaCost": "{X}{B}{B}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Target player discards X cards at random.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/0/e089963a-f253-4e7a-9ddb-1880291a6a23.jpg?1783942380",
+        "large": "https://cards.scryfall.io/large/front/e/0/e089963a-f253-4e7a-9ddb-1880291a6a23.jpg?1783942380",
+        "png": "https://cards.scryfall.io/png/front/e/0/e089963a-f253-4e7a-9ddb-1880291a6a23.png?1783942380",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/0/e089963a-f253-4e7a-9ddb-1880291a6a23.jpg?1783942380"
+      },
+      "artist": "Michael Sutfin",
+      "set": "m10",
+      "collectorNumber": "106",
+      "scryfallUri": "https://scryfall.com/card/m10/106/mind-shatter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Mind Spring",
+      "slug": "mind-spring",
+      "oracleId": "3428287b-cfd5-45bc-b5f9-1e3f5a425a68",
+      "layout": "normal",
+      "manaCost": "{X}{U}{U}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Draw X cards.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/7/e7e7d174-eb7c-41ad-a241-cfbfdc71e3a7.jpg?1783910741",
+        "large": "https://cards.scryfall.io/large/front/e/7/e7e7d174-eb7c-41ad-a241-cfbfdc71e3a7.jpg?1783910741",
+        "png": "https://cards.scryfall.io/png/front/e/7/e7e7d174-eb7c-41ad-a241-cfbfdc71e3a7.png?1783910741",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/7/e7e7d174-eb7c-41ad-a241-cfbfdc71e3a7.jpg?1783910741"
+      },
+      "artist": "Mark Zug",
+      "set": "blb",
+      "collectorNumber": "389",
+      "scryfallUri": "https://scryfall.com/card/blb/389/mind-spring?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Mountain",
       "slug": "mountain",
       "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
@@ -842,6 +982,34 @@
       "set": "m19",
       "collectorNumber": "190",
       "scryfallUri": "https://scryfall.com/card/m19/190/naturalize?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Nature's Spiral",
+      "slug": "natures-spiral",
+      "oracleId": "565922d6-8152-411f-8d4d-dc7c8523a49b",
+      "layout": "normal",
+      "manaCost": "{1}{G}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Return target permanent card from your graveyard to your hand.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/6/6666b95e-80de-4bf7-bae6-8a7e991b38ad.jpg?1783934975",
+        "large": "https://cards.scryfall.io/large/front/6/6/6666b95e-80de-4bf7-bae6-8a7e991b38ad.jpg?1783934975",
+        "png": "https://cards.scryfall.io/png/front/6/6/6666b95e-80de-4bf7-bae6-8a7e991b38ad.png?1783934975",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/6/6666b95e-80de-4bf7-bae6-8a7e991b38ad.jpg?1783934975"
+      },
+      "artist": "Florian de Gesincourt",
+      "set": "dom",
+      "collectorNumber": "175",
+      "scryfallUri": "https://scryfall.com/card/dom/175/natures-spiral?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1123,6 +1291,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Sign in Blood",
+      "slug": "sign-in-blood",
+      "oracleId": "c6207f6a-a624-4754-88f5-dbe700c841ff",
+      "layout": "normal",
+      "manaCost": "{B}{B}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Target player draws two cards and loses 2 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/f/9f9cead6-7806-4c51-abd1-62c3b8f366b5.jpg?1783939180",
+        "large": "https://cards.scryfall.io/large/front/9/f/9f9cead6-7806-4c51-abd1-62c3b8f366b5.jpg?1783939180",
+        "png": "https://cards.scryfall.io/png/front/9/f/9f9cead6-7806-4c51-abd1-62c3b8f366b5.png?1783939180",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/f/9f9cead6-7806-4c51-abd1-62c3b8f366b5.jpg?1783939180"
+      },
+      "artist": "Howard Lyon",
+      "set": "m15",
+      "collectorNumber": "114",
+      "scryfallUri": "https://scryfall.com/card/m15/114/sign-in-blood?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Solemn Offering",
       "slug": "solemn-offering",
       "oracleId": "aff51c27-fb61-41b3-a7ea-7092cd280c63",
@@ -1230,6 +1426,66 @@
       "set": "m10",
       "collectorNumber": "36",
       "scryfallUri": "https://scryfall.com/card/m10/36/tempest-of-light?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Tome Scour",
+      "slug": "tome-scour",
+      "oracleId": "446a9d7e-9c1a-4e83-8342-2ed5acae2eed",
+      "layout": "normal",
+      "manaCost": "{U}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Target player mills five cards.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Mill"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/e/aed4cfec-5cea-4987-890e-825b2802e9f9.jpg?1783939929",
+        "large": "https://cards.scryfall.io/large/front/a/e/aed4cfec-5cea-4987-890e-825b2802e9f9.jpg?1783939929",
+        "png": "https://cards.scryfall.io/png/front/a/e/aed4cfec-5cea-4987-890e-825b2802e9f9.png?1783939929",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/e/aed4cfec-5cea-4987-890e-825b2802e9f9.jpg?1783939929"
+      },
+      "artist": "Steven Belledin",
+      "set": "m14",
+      "collectorNumber": "75",
+      "scryfallUri": "https://scryfall.com/card/m14/75/tome-scour?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Traumatize",
+      "slug": "traumatize",
+      "oracleId": "e2ea7d01-6564-4a7f-b935-49a5e3978dac",
+      "layout": "normal",
+      "manaCost": "{3}{U}{U}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "Target player mills half their library, rounded down.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Mill"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/b/9b8784dd-83f9-41f8-aedc-f0f81073ffcb.jpg?1783939929",
+        "large": "https://cards.scryfall.io/large/front/9/b/9b8784dd-83f9-41f8-aedc-f0f81073ffcb.jpg?1783939929",
+        "png": "https://cards.scryfall.io/png/front/9/b/9b8784dd-83f9-41f8-aedc-f0f81073ffcb.png?1783939929",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/b/9b8784dd-83f9-41f8-aedc-f0f81073ffcb.jpg?1783939929"
+      },
+      "artist": "Greg Staples",
+      "set": "m14",
+      "collectorNumber": "77",
+      "scryfallUri": "https://scryfall.com/card/m14/77/traumatize?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

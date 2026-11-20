@@ -71,7 +71,9 @@ Oracle text needs:
   library and shuffle, look at the top and reorder, return from a graveyard, put onto the battlefield from hand.
   Divination, Mind Spring, Sign in Blood, Merfolk Looter, Mind Rot, Mind Shatter, Duress, Burning Inquiry, Tome Scour,
   Traumatize, Ponder, Fabricate, Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Disentomb, Nature's Spiral,
-  Haunting Echoes, Elvish Piper.
+  Haunting Echoes, Elvish Piper. Split in two (2026-11-20): M2-05b1, the nine with no choices at resolution
+  (Divination, Mind Spring, Sign in Blood, Mind Shatter, Burning Inquiry, Tome Scour, Traumatize, Disentomb, Nature's
+  Spiral; D-060), then M2-05b2, the ten with choices at resolution.
 - **M2-05c Life, damage to many, mana:** gain and lose life, damage to each creature or player, amounts from a count,
   each opponent sacrificing of their choice, mana of a chosen color, spending restrictions. Angel's Mercy, Bountiful
   Harvest, Acolyte of Xathrid, Consume Spirit, Tendrils of Corruption, Seismic Strike, Earthquake, Pyroclasm, Windstorm,

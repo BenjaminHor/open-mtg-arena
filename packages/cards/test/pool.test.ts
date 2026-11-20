@@ -119,6 +119,12 @@ describe("definitionProblems", () => {
     expect(definitionProblems([def([{ op: "gainLife", who: { target: 0 }, amount: 4 }])], [offering])).toStrictEqual([
       "Solemn Offering: gainLife is for players, not objects",
     ]);
+    expect(definitionProblems([def([{ op: "exile", of: "eachPlayer" }])], [offering])).toStrictEqual([
+      "Solemn Offering: exile acts on objects, not players",
+    ]);
+    expect(definitionProblems([def([{ op: "mill", who: "self", amount: 2 }])], [offering])).toStrictEqual([
+      "Solemn Offering: mill is for players, not objects",
+    ]);
   });
 
   it("reports cards without definitions and definitions without cards", () => {

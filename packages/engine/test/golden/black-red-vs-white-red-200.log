@@ -1,0 +1,4237 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Gray Ogre, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Raging Goblin, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Shock, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Shatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Undead Slayer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Elite Vanguard, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Elite Vanguard, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Swamp, p1's hand -> p1's library
+T0 moves: Gray Ogre, p1's hand -> p1's library
+T0 moves: Swamp, p1's hand -> p1's library
+T0 moves: Raging Goblin, p1's hand -> p1's library
+T0 moves: Shock, p1's hand -> p1's library
+T0 moves: Mind Shatter, p1's hand -> p1's library
+T0 moves: Swamp, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Royal Assassin, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Gray Ogre, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Vampire Aristocrat, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Lava Axe, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Deathmark, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Sign in Blood, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's hand -> p1's library
+T0 p1 mulligans
+T0 moves: Royal Assassin, p1's hand -> p1's library
+T0 moves: Gray Ogre, p1's hand -> p1's library
+T0 moves: Vampire Aristocrat, p1's hand -> p1's library
+T0 moves: Lava Axe, p1's hand -> p1's library
+T0 moves: Deathmark, p1's hand -> p1's library
+T0 moves: Sign in Blood, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Raging Goblin, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Sign in Blood, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Fireball, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Shatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Mind Shatter, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Swamp, p1's hand -> battlefield
+T1 p1 plays p1:Swamp
+T1 taps: p1:Swamp
+T1 p1 adds {B} (p1:Swamp)
+T1 p1's unspent {B} empties
+T1 p1 attack: nothing
+T1 moves: Sign in Blood, p1's hand -> stack
+T1 p1 cancels casting Sign in Blood
+T1 moves: Sign in Blood, p1's hand -> stack
+T1 p1 cancels casting Sign in Blood
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Fireball, p1's hand -> stack
+T1 p1 cancels casting Fireball
+T1 moves: Sign in Blood, p1's hand -> stack
+T1 p1 cancels casting Sign in Blood
+T2 turn 2 begins (p2)
+T2 moves: Plains, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Plains, p2's hand -> battlefield
+T2 p2 plays p2:Plains
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Undead Slayer, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 cancels casting Undead Slayer
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 casts Elite Vanguard
+T2 resolves: Elite Vanguard
+T2 moves: Elite Vanguard, stack -> battlefield
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Undead Slayer, p2's hand -> stack
+T2 p2 cancels casting Undead Slayer
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 p2 cancels casting Elite Vanguard
+T2 moves: Undead Slayer, p2's hand -> stack
+T2 p2 cancels casting Undead Slayer
+T2 p2 attack: nothing
+T3 turn 3 begins (p1)
+T3 untaps: p1:Swamp
+T3 moves: Mountain, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Mountain, p1's hand -> battlefield
+T3 p1 plays p1:Mountain
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 moves: Raging Goblin, p1's hand -> stack
+T3 p1 cancels casting Raging Goblin
+T3 moves: Fireball, p1's hand -> stack
+T3 p1 cancels casting Fireball
+T3 moves: Raging Goblin, p1's hand -> stack
+T3 p1 cancels casting Raging Goblin
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Raging Goblin, p1's hand -> stack
+T3 p1 casts Raging Goblin
+T3 resolves: Raging Goblin
+T3 moves: Raging Goblin, stack -> battlefield
+T3 moves: Fireball, p1's hand -> stack
+T3 p1 cancels casting Fireball
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Fireball, p1's hand -> stack
+T3 p1 cancels casting Fireball
+T3 moves: Fireball, p1's hand -> stack
+T3 p1 cancels casting Fireball
+T3 p1's unspent {B} empties
+T3 taps: p1:Raging Goblin
+T3 p1 attack: p1:Raging Goblin -> p2
+T3 p2 block: nothing
+T3 combat damage: p1:Raging Goblin -> p2 1
+T3 p2 loses 1 life
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Fireball, p1's hand -> stack
+T3 p1 cancels casting Fireball
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Sign in Blood, p1's hand -> stack
+T3 p1 cancels casting Sign in Blood
+T3 moves: Fireball, p1's hand -> stack
+T3 p1 cancels casting Fireball
+T4 turn 4 begins (p2)
+T4 untaps: p2:Plains
+T4 moves: Rod of Ruin, p2's library -> p2's hand
+T4 p2 draws
+T4 taps: p2:Plains
+T4 p2 adds {W} (p2:Plains)
+T4 p2's unspent {W} empties
+T4 moves: Plains, p2's hand -> battlefield
+T4 p2 plays p2:Plains#2
+T4 moves: Undead Slayer, p2's hand -> stack
+T4 taps: p2:Plains#2
+T4 p2 adds {W} (p2:Plains#2)
+T4 p2 cancels casting Undead Slayer
+T4 moves: Elite Vanguard, p2's hand -> stack
+T4 taps: p2:Plains#2
+T4 p2 adds {W} (p2:Plains#2)
+T4 p2 casts Elite Vanguard
+T4 resolves: Elite Vanguard
+T4 moves: Elite Vanguard, stack -> battlefield
+T4 p2 attack: nothing
+T5 turn 5 begins (p1)
+T5 untaps: p1:Swamp
+T5 untaps: p1:Mountain
+T5 untaps: p1:Raging Goblin
+T5 moves: Hill Giant, p1's library -> p1's hand
+T5 p1 draws
+T5 taps: p1:Mountain
+T5 p1 adds {R} (p1:Mountain)
+T5 p1's unspent {R} empties
+T5 taps: p1:Swamp
+T5 p1 adds {B} (p1:Swamp)
+T5 p1's unspent {B} empties
+T5 taps: p1:Raging Goblin
+T5 p1 attack: p1:Raging Goblin -> p2
+T5 p2 block: nothing
+T5 combat damage: p1:Raging Goblin -> p2 1
+T5 p2 loses 1 life
+T5 moves: Fireball, p1's hand -> stack
+T5 p1 cancels casting Fireball
+T5 moves: Fireball, p1's hand -> stack
+T5 p1 cancels casting Fireball
+T5 moves: Fireball, p1's hand -> stack
+T5 p1 cancels casting Fireball
+T5 moves: Sign in Blood, p1's hand -> stack
+T5 p1 cancels casting Sign in Blood
+T5 moves: Hill Giant, p1's hand -> stack
+T5 p1 cancels casting Hill Giant
+T5 moves: Mountain, p1's hand -> battlefield
+T5 p1 plays p1:Mountain#2
+T5 moves: Sign in Blood, p1's hand -> stack
+T5 p1 cancels casting Sign in Blood
+T5 moves: Fireball, p1's hand -> stack
+T5 p1 cancels casting Fireball
+T5 moves: Fireball, p1's hand -> stack
+T5 taps: p1:Mountain#2
+T5 p1 adds {R} (p1:Mountain#2)
+T5 p1 cancels casting Fireball
+T5 moves: Hill Giant, p1's hand -> stack
+T5 taps: p1:Mountain#2
+T5 p1 adds {R} (p1:Mountain#2)
+T5 p1 cancels casting Hill Giant
+T5 taps: p1:Mountain#2
+T5 p1 adds {R} (p1:Mountain#2)
+T5 moves: Sign in Blood, p1's hand -> stack
+T5 p1 cancels casting Sign in Blood
+T5 p1's unspent {R} empties
+T6 turn 6 begins (p2)
+T6 untaps: p2:Plains#1
+T6 untaps: p2:Plains#2
+T6 moves: Shatter, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p2:Plains#2
+T6 p2 adds {W} (p2:Plains#2)
+T6 taps: p2:Plains#1
+T6 p2 adds {W} (p2:Plains#1)
+T6 p2's unspent {W}{W} empties
+T6 moves: Plains, p2's hand -> battlefield
+T6 p2 plays p2:Plains#3
+T6 moves: Undead Slayer, p2's hand -> stack
+T6 taps: p2:Plains#3
+T6 p2 adds {W} (p2:Plains#3)
+T6 p2 cancels casting Undead Slayer
+T6 taps: p2:Plains#3
+T6 p2 adds {W} (p2:Plains#3)
+T6 p2's unspent {W} empties
+T6 p2 attack: nothing
+T6 moves: Rod of Ruin, p2's hand -> stack
+T6 p2 cancels casting Rod of Ruin
+T6 moves: Undead Slayer, p2's hand -> stack
+T6 p2 cancels casting Undead Slayer
+T6 moves: Rod of Ruin, p2's hand -> stack
+T6 p2 cancels casting Rod of Ruin
+T6 moves: Undead Slayer, p2's hand -> stack
+T6 p2 cancels casting Undead Slayer
+T7 turn 7 begins (p1)
+T7 untaps: p1:Swamp
+T7 untaps: p1:Mountain#1
+T7 untaps: p1:Raging Goblin
+T7 untaps: p1:Mountain#2
+T7 taps: p1:Swamp
+T7 p1 adds {B} (p1:Swamp)
+T7 p1's unspent {B} empties
+T7 moves: Swamp, p1's library -> p1's hand
+T7 p1 draws
+T7 moves: Fireball, p1's hand -> stack
+T7 p1 cancels casting Fireball
+T7 taps: p1:Mountain#1
+T7 p1 adds {R} (p1:Mountain#1)
+T7 taps: p1:Mountain#2
+T7 p1 adds {R} (p1:Mountain#2)
+T7 p1's unspent {R}{R} empties
+T7 p1 attack: nothing
+T8 turn 8 begins (p2)
+T8 untaps: p2:Plains#1
+T8 untaps: p2:Plains#2
+T8 untaps: p2:Plains#3
+T8 taps: p2:Plains#3
+T8 p2 adds {W} (p2:Plains#3)
+T8 p2's unspent {W} empties
+T8 moves: Divine Verdict, p2's library -> p2's hand
+T8 p2 draws
+T8 taps: p2:Plains#2
+T8 p2 adds {W} (p2:Plains#2)
+T8 p2's unspent {W} empties
+T8 moves: Plains, p2's hand -> battlefield
+T8 p2 plays p2:Plains#4
+T8 taps: p2:Plains#1
+T8 p2 adds {W} (p2:Plains#1)
+T8 p2's unspent {W} empties
+T8 taps: p2:Plains#4
+T8 p2 adds {W} (p2:Plains#4)
+T8 p2's unspent {W} empties
+T8 p2 attack: nothing
+T8 moves: Undead Slayer, p2's hand -> stack
+T8 p2 cancels casting Undead Slayer
+T8 moves: Rod of Ruin, p2's hand -> stack
+T8 p2 cancels casting Rod of Ruin
+T8 moves: Rod of Ruin, p2's hand -> stack
+T8 p2 cancels casting Rod of Ruin
+T9 turn 9 begins (p1)
+T9 untaps: p1:Swamp
+T9 untaps: p1:Mountain#1
+T9 untaps: p1:Mountain#2
+T9 taps: p1:Swamp
+T9 p1 adds {B} (p1:Swamp)
+T9 taps: p1:Mountain#1
+T9 p1 adds {R} (p1:Mountain#1)
+T9 taps: p1:Mountain#2
+T9 p1 adds {R} (p1:Mountain#2)
+T9 p1's unspent {B}{R}{R} empties
+T9 moves: Shock, p1's library -> p1's hand
+T9 p1 draws
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Fireball, p1's hand -> stack
+T9 p1 cancels casting Fireball
+T9 moves: Hill Giant, p1's hand -> stack
+T9 p1 cancels casting Hill Giant
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Fireball, p1's hand -> stack
+T9 p1 cancels casting Fireball
+T9 moves: Hill Giant, p1's hand -> stack
+T9 p1 cancels casting Hill Giant
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Hill Giant, p1's hand -> stack
+T9 p1 cancels casting Hill Giant
+T9 moves: Sign in Blood, p1's hand -> stack
+T9 p1 cancels casting Sign in Blood
+T9 moves: Hill Giant, p1's hand -> stack
+T9 p1 cancels casting Hill Giant
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 p1 attack: nothing
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Fireball, p1's hand -> stack
+T9 p1 cancels casting Fireball
+T9 moves: Swamp, p1's hand -> battlefield
+T9 p1 plays p1:Swamp#2
+T9 taps: p1:Swamp#2
+T9 p1 adds {B} (p1:Swamp#2)
+T9 moves: Sign in Blood, p1's hand -> stack
+T9 p1 cancels casting Sign in Blood
+T9 moves: Fireball, p1's hand -> stack
+T9 p1 cancels casting Fireball
+T9 moves: Hill Giant, p1's hand -> stack
+T9 p1 cancels casting Hill Giant
+T9 moves: Sign in Blood, p1's hand -> stack
+T9 p1 cancels casting Sign in Blood
+T9 p1's unspent {B} empties
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T9 moves: Shock, p1's hand -> stack
+T9 p1 cancels casting Shock
+T10 turn 10 begins (p2)
+T10 untaps: p2:Plains#1
+T10 untaps: p2:Plains#2
+T10 untaps: p2:Plains#3
+T10 untaps: p2:Plains#4
+T10 moves: Plains, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Plains#2
+T10 p2 adds {W} (p2:Plains#2)
+T10 taps: p2:Plains#1
+T10 p2 adds {W} (p2:Plains#1)
+T10 taps: p2:Plains#4
+T10 p2 adds {W} (p2:Plains#4)
+T10 taps: p2:Plains#3
+T10 p2 adds {W} (p2:Plains#3)
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 p2's unspent {W}{W}{W}{W} empties
+T10 moves: Plains, p2's hand -> battlefield
+T10 p2 plays p2:Plains#5
+T10 moves: Rod of Ruin, p2's hand -> stack
+T10 taps: p2:Plains#5
+T10 p2 adds {W} (p2:Plains#5)
+T10 p2 cancels casting Rod of Ruin
+T10 taps: p2:Plains#5
+T10 p2 adds {W} (p2:Plains#5)
+T10 moves: Undead Slayer, p2's hand -> stack
+T10 p2 cancels casting Undead Slayer
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 p2's unspent {W} empties
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 taps: p2:Elite Vanguard#1
+T10 taps: p2:Elite Vanguard#2
+T10 p2 attack: p2:Elite Vanguard#1 -> p1, p2:Elite Vanguard#2 -> p1
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 p1 block: p1:Raging Goblin -> p2:Elite Vanguard#1
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 combat damage: p2:Elite Vanguard#1 -> p1:Raging Goblin 2
+T10 combat damage: p2:Elite Vanguard#2 -> p1 2
+T10 combat damage: p1:Raging Goblin -> p2:Elite Vanguard#1 1
+T10 p1 loses 2 life
+T10 state-based actions: p2:Elite Vanguard#1 lethalDamage, p1:Raging Goblin lethalDamage
+T10 destroyed: p2:Elite Vanguard#1
+T10 moves: Elite Vanguard, battlefield -> p2's graveyard
+T10 destroyed: p1:Raging Goblin
+T10 moves: Raging Goblin, battlefield -> p1's graveyard
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Divine Verdict, p2's hand -> stack
+T10 p2 cancels casting Divine Verdict
+T10 moves: Undead Slayer, p2's hand -> stack
+T10 p2 cancels casting Undead Slayer
+T10 moves: Rod of Ruin, p2's hand -> stack
+T10 p2 cancels casting Rod of Ruin
+T10 moves: Undead Slayer, p2's hand -> stack
+T10 p2 cancels casting Undead Slayer
+T10 moves: Rod of Ruin, p2's hand -> stack
+T10 p2 cancels casting Rod of Ruin
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T10 moves: Shock, p1's hand -> stack
+T10 p1 cancels casting Shock
+T11 turn 11 begins (p1)
+T11 untaps: p1:Swamp#1
+T11 untaps: p1:Mountain#1
+T11 untaps: p1:Mountain#2
+T11 untaps: p1:Swamp#2
+T11 taps: p1:Swamp#1
+T11 p1 adds {B} (p1:Swamp#1)
+T11 moves: Shock, p1's hand -> stack
+T11 p1 cancels casting Shock
+T11 taps: p1:Swamp#2
+T11 p1 adds {B} (p1:Swamp#2)
+T11 moves: Shock, p1's hand -> stack
+T11 taps: p1:Mountain#2
+T11 p1 adds {R} (p1:Mountain#2)
+T11 taps: p1:Mountain#1
+T11 p1 adds {R} (p1:Mountain#1)
+T11 p1 cancels casting Shock
+T11 p1's unspent {B}{B} empties
+T11 moves: Swamp, p1's library -> p1's hand
+T11 p1 draws
+T11 moves: Shock, p1's hand -> stack
+T11 p1 cancels casting Shock
+T11 p1 attack: nothing
+T11 taps: p1:Mountain#2
+T11 p1 adds {R} (p1:Mountain#2)
+T11 moves: Shock, p1's hand -> stack
+T11 p1 cancels casting Shock
+T11 taps: p1:Mountain#1
+T11 p1 adds {R} (p1:Mountain#1)
+T11 p1's unspent {R}{R} empties
+T11 moves: Swamp, p1's hand -> battlefield
+T11 p1 plays p1:Swamp#3
+T11 moves: Hill Giant, p1's hand -> stack
+T11 taps: p1:Swamp#3
+T11 p1 adds {B} (p1:Swamp#3)
+T11 p1 cancels casting Hill Giant
+T11 taps: p1:Swamp#3
+T11 p1 adds {B} (p1:Swamp#3)
+T11 p1's unspent {B} empties
+T12 turn 12 begins (p2)
+T12 untaps: p2:Plains#1
+T12 untaps: p2:Plains#2
+T12 untaps: p2:Elite Vanguard
+T12 untaps: p2:Plains#3
+T12 untaps: p2:Plains#4
+T12 untaps: p2:Plains#5
+T12 taps: p2:Plains#3
+T12 p2 adds {W} (p2:Plains#3)
+T12 taps: p2:Plains#4
+T12 p2 adds {W} (p2:Plains#4)
+T12 taps: p2:Plains#1
+T12 p2 adds {W} (p2:Plains#1)
+T12 taps: p2:Plains#2
+T12 p2 adds {W} (p2:Plains#2)
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 p2's unspent {W}{W}{W}{W} empties
+T12 moves: Mountain, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Plains#5
+T12 p2 adds {W} (p2:Plains#5)
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 p2's unspent {W} empties
+T12 moves: Mountain, p2's hand -> battlefield
+T12 p2 plays p2:Mountain
+T12 moves: Rod of Ruin, p2's hand -> stack
+T12 p2 cancels casting Rod of Ruin
+T12 moves: Undead Slayer, p2's hand -> stack
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 cancels casting Undead Slayer
+T12 moves: Rod of Ruin, p2's hand -> stack
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 cancels casting Rod of Ruin
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2's unspent {R} empties
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 p2 attack: nothing
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 moves: Undead Slayer, p2's hand -> stack
+T12 p2 cancels casting Undead Slayer
+T12 moves: Rod of Ruin, p2's hand -> stack
+T12 p2 cancels casting Rod of Ruin
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T12 moves: Shock, p1's hand -> stack
+T12 p1 cancels casting Shock
+T13 turn 13 begins (p1)
+T13 untaps: p1:Swamp#1
+T13 untaps: p1:Mountain#1
+T13 untaps: p1:Mountain#2
+T13 untaps: p1:Swamp#2
+T13 untaps: p1:Swamp#3
+T13 moves: Shock, p1's hand -> stack
+T13 p1 cancels casting Shock
+T13 moves: Shock, p1's hand -> stack
+T13 p1 cancels casting Shock
+T13 taps: p1:Swamp#1
+T13 p1 adds {B} (p1:Swamp#1)
+T13 moves: Shock, p1's hand -> stack
+T13 taps: p1:Mountain#2
+T13 p1 adds {R} (p1:Mountain#2)
+T13 p1 casts Shock
+T13 taps: p1:Swamp#2
+T13 p1 adds {B} (p1:Swamp#2)
+T13 taps: p1:Mountain#1
+T13 p1 adds {R} (p1:Mountain#1)
+T13 damage: Shock -> p1 2
+T13 p1 loses 2 life
+T13 resolves: Shock
+T13 moves: Shock, stack -> p1's graveyard
+T13 taps: p1:Swamp#3
+T13 p1 adds {B} (p1:Swamp#3)
+T13 p1's unspent {B}{B}{B}{R} empties
+T13 moves: Assassinate, p1's library -> p1's hand
+T13 p1 draws
+T13 moves: Sign in Blood, p1's hand -> stack
+T13 p1 cancels casting Sign in Blood
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T13 moves: Fireball, p1's hand -> stack
+T13 p1 cancels casting Fireball
+T13 moves: Fireball, p1's hand -> stack
+T13 p1 cancels casting Fireball
+T13 moves: Fireball, p1's hand -> stack
+T13 p1 cancels casting Fireball
+T13 p1 attack: nothing
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T13 moves: Sign in Blood, p1's hand -> stack
+T13 p1 cancels casting Sign in Blood
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T13 moves: Sign in Blood, p1's hand -> stack
+T13 p1 cancels casting Sign in Blood
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T13 moves: Sign in Blood, p1's hand -> stack
+T13 p1 cancels casting Sign in Blood
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T13 moves: Hill Giant, p1's hand -> stack
+T13 p1 cancels casting Hill Giant
+T14 turn 14 begins (p2)
+T14 untaps: p2:Plains#1
+T14 untaps: p2:Plains#2
+T14 untaps: p2:Plains#3
+T14 untaps: p2:Plains#4
+T14 untaps: p2:Plains#5
+T14 untaps: p2:Mountain
+T14 moves: Mountain, p2's library -> p2's hand
+T14 p2 draws
+T14 taps: p2:Plains#2
+T14 p2 adds {W} (p2:Plains#2)
+T14 taps: p2:Plains#3
+T14 p2 adds {W} (p2:Plains#3)
+T14 taps: p2:Plains#4
+T14 p2 adds {W} (p2:Plains#4)
+T14 taps: p2:Plains#5
+T14 p2 adds {W} (p2:Plains#5)
+T14 p2's unspent {W}{W}{W}{W} empties
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 moves: Mountain, p2's hand -> battlefield
+T14 p2 plays p2:Mountain#2
+T14 p2's unspent {R} empties
+T14 taps: p2:Mountain#2
+T14 p2 adds {R} (p2:Mountain#2)
+T14 p2's unspent {R} empties
+T14 p2 attack: nothing
+T14 taps: p2:Plains#1
+T14 p2 adds {W} (p2:Plains#1)
+T14 p2's unspent {W} empties
+T14 moves: Rod of Ruin, p2's hand -> stack
+T14 p2 cancels casting Rod of Ruin
+T14 moves: Rod of Ruin, p2's hand -> stack
+T14 p2 cancels casting Rod of Ruin
+T14 moves: Rod of Ruin, p2's hand -> stack
+T14 p2 cancels casting Rod of Ruin
+T15 turn 15 begins (p1)
+T15 untaps: p1:Swamp#1
+T15 untaps: p1:Mountain#1
+T15 untaps: p1:Mountain#2
+T15 untaps: p1:Swamp#2
+T15 untaps: p1:Swamp#3
+T15 taps: p1:Swamp#2
+T15 p1 adds {B} (p1:Swamp#2)
+T15 taps: p1:Mountain#2
+T15 p1 adds {R} (p1:Mountain#2)
+T15 taps: p1:Mountain#1
+T15 p1 adds {R} (p1:Mountain#1)
+T15 p1's unspent {B}{R}{R} empties
+T15 moves: Gray Ogre, p1's library -> p1's hand
+T15 p1 draws
+T15 moves: Gray Ogre, p1's hand -> stack
+T15 taps: p1:Swamp#3
+T15 p1 adds {B} (p1:Swamp#3)
+T15 p1 cancels casting Gray Ogre
+T15 moves: Gray Ogre, p1's hand -> stack
+T15 taps: p1:Swamp#3
+T15 p1 adds {B} (p1:Swamp#3)
+T15 p1 cancels casting Gray Ogre
+T15 moves: Fireball, p1's hand -> stack
+T15 p1 cancels casting Fireball
+T15 p1 attack: nothing
+T15 taps: p1:Swamp#3
+T15 p1 adds {B} (p1:Swamp#3)
+T15 taps: p1:Swamp#1
+T15 p1 adds {B} (p1:Swamp#1)
+T15 p1's unspent {B}{B} empties
+T16 turn 16 begins (p2)
+T16 untaps: p2:Plains#1
+T16 untaps: p2:Plains#2
+T16 untaps: p2:Plains#3
+T16 untaps: p2:Plains#4
+T16 untaps: p2:Plains#5
+T16 untaps: p2:Mountain#1
+T16 untaps: p2:Mountain#2
+T16 taps: p2:Mountain#1
+T16 p2 adds {R} (p2:Mountain#1)
+T16 taps: p2:Plains#4
+T16 p2 adds {W} (p2:Plains#4)
+T16 taps: p2:Plains#3
+T16 p2 adds {W} (p2:Plains#3)
+T16 taps: p2:Mountain#2
+T16 p2 adds {R} (p2:Mountain#2)
+T16 p2's unspent {W}{W}{R}{R} empties
+T16 moves: Mountain, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Plains#1
+T16 p2 adds {W} (p2:Plains#1)
+T16 p2's unspent {W} empties
+T16 taps: p2:Plains#2
+T16 p2 adds {W} (p2:Plains#2)
+T16 moves: Undead Slayer, p2's hand -> stack
+T16 p2 cancels casting Undead Slayer
+T16 moves: Mountain, p2's hand -> battlefield
+T16 p2 plays p2:Mountain#3
+T16 moves: Undead Slayer, p2's hand -> stack
+T16 p2 cancels casting Undead Slayer
+T16 moves: Rod of Ruin, p2's hand -> stack
+T16 taps: p2:Mountain#3
+T16 p2 adds {R} (p2:Mountain#3)
+T16 taps: p2:Plains#5
+T16 p2 adds {W} (p2:Plains#5)
+T16 p2 cancels casting Rod of Ruin
+T16 moves: Undead Slayer, p2's hand -> stack
+T16 p2 cancels casting Undead Slayer
+T16 moves: Undead Slayer, p2's hand -> stack
+T16 taps: p2:Mountain#3
+T16 p2 adds {R} (p2:Mountain#3)
+T16 p2 cancels casting Undead Slayer
+T16 moves: Rod of Ruin, p2's hand -> stack
+T16 taps: p2:Mountain#3
+T16 p2 adds {R} (p2:Mountain#3)
+T16 taps: p2:Plains#5
+T16 p2 adds {W} (p2:Plains#5)
+T16 p2 cancels casting Rod of Ruin
+T16 taps: p2:Plains#5
+T16 p2 adds {W} (p2:Plains#5)
+T16 p2's unspent {W}{W} empties
+T16 taps: p2:Mountain#3
+T16 p2 adds {R} (p2:Mountain#3)
+T16 p2's unspent {R} empties
+T16 p2 attack: nothing
+T17 turn 17 begins (p1)
+T17 untaps: p1:Swamp#1
+T17 untaps: p1:Mountain#1
+T17 untaps: p1:Mountain#2
+T17 untaps: p1:Swamp#2
+T17 untaps: p1:Swamp#3
+T17 taps: p1:Swamp#2
+T17 p1 adds {B} (p1:Swamp#2)
+T17 taps: p1:Mountain#2
+T17 p1 adds {R} (p1:Mountain#2)
+T17 taps: p1:Mountain#1
+T17 p1 adds {R} (p1:Mountain#1)
+T17 taps: p1:Swamp#1
+T17 p1 adds {B} (p1:Swamp#1)
+T17 taps: p1:Swamp#3
+T17 p1 adds {B} (p1:Swamp#3)
+T17 p1's unspent {B}{B}{B}{R}{R} empties
+T17 moves: Mountain, p1's library -> p1's hand
+T17 p1 draws
+T17 moves: Hill Giant, p1's hand -> stack
+T17 p1 cancels casting Hill Giant
+T17 moves: Fireball, p1's hand -> stack
+T17 p1 cancels casting Fireball
+T17 moves: Gray Ogre, p1's hand -> stack
+T17 p1 cancels casting Gray Ogre
+T17 moves: Hill Giant, p1's hand -> stack
+T17 p1 cancels casting Hill Giant
+T17 moves: Gray Ogre, p1's hand -> stack
+T17 p1 cancels casting Gray Ogre
+T17 moves: Hill Giant, p1's hand -> stack
+T17 p1 cancels casting Hill Giant
+T17 moves: Mountain, p1's hand -> battlefield
+T17 p1 plays p1:Mountain#3
+T17 moves: Sign in Blood, p1's hand -> stack
+T17 p1 cancels casting Sign in Blood
+T17 moves: Hill Giant, p1's hand -> stack
+T17 p1 cancels casting Hill Giant
+T17 p1 attack: nothing
+T17 taps: p1:Mountain#3
+T17 p1 adds {R} (p1:Mountain#3)
+T17 p1's unspent {R} empties
+T17 moves: Sign in Blood, p1's hand -> stack
+T17 p1 cancels casting Sign in Blood
+T17 moves: Fireball, p1's hand -> stack
+T17 p1 cancels casting Fireball
+T17 moves: Fireball, p1's hand -> stack
+T17 p1 cancels casting Fireball
+T18 turn 18 begins (p2)
+T18 untaps: p2:Plains#1
+T18 untaps: p2:Plains#2
+T18 untaps: p2:Plains#3
+T18 untaps: p2:Plains#4
+T18 untaps: p2:Plains#5
+T18 untaps: p2:Mountain#1
+T18 untaps: p2:Mountain#2
+T18 untaps: p2:Mountain#3
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 taps: p2:Mountain#2
+T18 p2 adds {R} (p2:Mountain#2)
+T18 taps: p2:Plains#1
+T18 p2 adds {W} (p2:Plains#1)
+T18 p2's unspent {W}{W}{R} empties
+T18 moves: Undead Slayer, p2's library -> p2's hand
+T18 p2 draws
+T18 taps: p2:Plains#5
+T18 p2 adds {W} (p2:Plains#5)
+T18 p2's unspent {W} empties
+T18 moves: Undead Slayer, p2's hand -> stack
+T18 taps: p2:Plains#4
+T18 p2 adds {W} (p2:Plains#4)
+T18 taps: p2:Mountain#3
+T18 p2 adds {R} (p2:Mountain#3)
+T18 taps: p2:Plains#3
+T18 p2 adds {W} (p2:Plains#3)
+T18 taps: p2:Mountain#1
+T18 p2 adds {R} (p2:Mountain#1)
+T18 p2 casts Undead Slayer
+T18 resolves: Undead Slayer
+T18 moves: Undead Slayer, stack -> battlefield
+T18 moves: Rod of Ruin, p2's hand -> stack
+T18 p2 cancels casting Rod of Ruin
+T18 moves: Undead Slayer, p2's hand -> stack
+T18 p2 cancels casting Undead Slayer
+T18 moves: Undead Slayer, p2's hand -> stack
+T18 p2 cancels casting Undead Slayer
+T18 moves: Rod of Ruin, p2's hand -> stack
+T18 p2 cancels casting Rod of Ruin
+T18 moves: Mountain, p2's hand -> battlefield
+T18 p2 plays p2:Mountain#4
+T18 p2's unspent {R} empties
+T18 taps: p2:Mountain#4
+T18 p2 adds {R} (p2:Mountain#4)
+T18 p2's unspent {R} empties
+T18 p2 attack: nothing
+T18 moves: Undead Slayer, p2's hand -> stack
+T18 p2 cancels casting Undead Slayer
+T18 moves: Undead Slayer, p2's hand -> stack
+T18 p2 cancels casting Undead Slayer
+T18 moves: Undead Slayer, p2's hand -> stack
+T18 p2 cancels casting Undead Slayer
+T19 turn 19 begins (p1)
+T19 untaps: p1:Swamp#1
+T19 untaps: p1:Mountain#1
+T19 untaps: p1:Mountain#2
+T19 untaps: p1:Swamp#2
+T19 untaps: p1:Swamp#3
+T19 untaps: p1:Mountain#3
+T19 taps: p1:Mountain#1
+T19 p1 adds {R} (p1:Mountain#1)
+T19 taps: p1:Mountain#2
+T19 p1 adds {R} (p1:Mountain#2)
+T19 taps: p1:Swamp#2
+T19 p1 adds {B} (p1:Swamp#2)
+T19 taps: p1:Swamp#1
+T19 p1 adds {B} (p1:Swamp#1)
+T19 taps: p1:Mountain#3
+T19 p1 adds {R} (p1:Mountain#3)
+T19 taps: p1:Swamp#3
+T19 p1 adds {B} (p1:Swamp#3)
+T19 p1's unspent {B}{B}{B}{R}{R}{R} empties
+T19 moves: Doom Blade, p1's library -> p1's hand
+T19 p1 draws
+T19 moves: Doom Blade, p1's hand -> stack
+T19 p1 cancels casting Doom Blade
+T19 moves: Gray Ogre, p1's hand -> stack
+T19 p1 cancels casting Gray Ogre
+T19 moves: Hill Giant, p1's hand -> stack
+T19 p1 cancels casting Hill Giant
+T19 p1 attack: nothing
+T19 moves: Doom Blade, p1's hand -> stack
+T19 p1 cancels casting Doom Blade
+T19 moves: Sign in Blood, p1's hand -> stack
+T19 p1 cancels casting Sign in Blood
+T19 moves: Gray Ogre, p1's hand -> stack
+T19 p1 cancels casting Gray Ogre
+T19 moves: Sign in Blood, p1's hand -> stack
+T19 p1 cancels casting Sign in Blood
+T19 moves: Sign in Blood, p1's hand -> stack
+T19 p1 cancels casting Sign in Blood
+T19 moves: Doom Blade, p1's hand -> stack
+T19 p1 cancels casting Doom Blade
+T19 moves: Doom Blade, p1's hand -> stack
+T19 p1 cancels casting Doom Blade
+T20 turn 20 begins (p2)
+T20 untaps: p2:Plains#1
+T20 untaps: p2:Plains#2
+T20 untaps: p2:Plains#3
+T20 untaps: p2:Plains#4
+T20 untaps: p2:Plains#5
+T20 untaps: p2:Mountain#1
+T20 untaps: p2:Mountain#2
+T20 untaps: p2:Mountain#3
+T20 untaps: p2:Mountain#4
+T20 taps: p2:Mountain#3
+T20 p2 adds {R} (p2:Mountain#3)
+T20 taps: p2:Mountain#4
+T20 p2 adds {R} (p2:Mountain#4)
+T20 taps: p2:Mountain#1
+T20 p2 adds {R} (p2:Mountain#1)
+T20 taps: p2:Plains#3
+T20 p2 adds {W} (p2:Plains#3)
+T20 taps: p2:Mountain#2
+T20 p2 adds {R} (p2:Mountain#2)
+T20 taps: p2:Plains#2
+T20 p2 adds {W} (p2:Plains#2)
+T20 taps: p2:Plains#5
+T20 p2 adds {W} (p2:Plains#5)
+T20 p2's unspent {W}{W}{W}{R}{R}{R}{R} empties
+T20 moves: Plains, p2's library -> p2's hand
+T20 p2 draws
+T20 moves: Undead Slayer, p2's hand -> stack
+T20 p2 cancels casting Undead Slayer
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 taps: p2:Undead Slayer
+T20 taps: p2:Elite Vanguard
+T20 p2 attack: p2:Undead Slayer -> p1, p2:Elite Vanguard -> p1
+T20 taps: p2:Plains#4
+T20 p2 adds {W} (p2:Plains#4)
+T20 taps: p2:Plains#1
+T20 p2 adds {W} (p2:Plains#1)
+T20 p2's unspent {W}{W} empties
+T20 p1 block: nothing
+T20 combat damage: p2:Undead Slayer -> p1 2
+T20 combat damage: p2:Elite Vanguard -> p1 2
+T20 p1 loses 2 life
+T20 p1 loses 2 life
+T20 moves: Divine Verdict, p2's hand -> stack
+T20 p2 cancels casting Divine Verdict
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T20 moves: Plains, p2's hand -> battlefield
+T20 p2 plays p2:Plains#6
+T20 moves: Undead Slayer, p2's hand -> stack
+T20 p2 cancels casting Undead Slayer
+T20 moves: Doom Blade, p1's hand -> stack
+T20 p1 cancels casting Doom Blade
+T21 turn 21 begins (p1)
+T21 untaps: p1:Swamp#1
+T21 untaps: p1:Mountain#1
+T21 untaps: p1:Mountain#2
+T21 untaps: p1:Swamp#2
+T21 untaps: p1:Swamp#3
+T21 untaps: p1:Mountain#3
+T21 taps: p1:Swamp#2
+T21 p1 adds {B} (p1:Swamp#2)
+T21 taps: p1:Swamp#3
+T21 p1 adds {B} (p1:Swamp#3)
+T21 taps: p1:Swamp#1
+T21 p1 adds {B} (p1:Swamp#1)
+T21 taps: p1:Mountain#2
+T21 p1 adds {R} (p1:Mountain#2)
+T21 taps: p2:Plains#6
+T21 p2 adds {W} (p2:Plains#6)
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 p1's unspent {B}{B}{B}{R} empties
+T21 p2's unspent {W} empties
+T21 moves: Swamp, p1's library -> p1's hand
+T21 p1 draws
+T21 taps: p1:Mountain#3
+T21 p1 adds {R} (p1:Mountain#3)
+T21 taps: p1:Mountain#1
+T21 p1 adds {R} (p1:Mountain#1)
+T21 p1's unspent {R}{R} empties
+T21 moves: Gray Ogre, p1's hand -> stack
+T21 p1 cancels casting Gray Ogre
+T21 moves: Swamp, p1's hand -> battlefield
+T21 p1 plays p1:Swamp#4
+T21 moves: Gray Ogre, p1's hand -> stack
+T21 taps: p1:Swamp#4
+T21 p1 adds {B} (p1:Swamp#4)
+T21 p1 cancels casting Gray Ogre
+T21 moves: Sign in Blood, p1's hand -> stack
+T21 p1 cancels casting Sign in Blood
+T21 moves: Fireball, p1's hand -> stack
+T21 p1 cancels casting Fireball
+T21 moves: Hill Giant, p1's hand -> stack
+T21 taps: p1:Swamp#4
+T21 p1 adds {B} (p1:Swamp#4)
+T21 p1 cancels casting Hill Giant
+T21 moves: Gray Ogre, p1's hand -> stack
+T21 p1 cancels casting Gray Ogre
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 taps: p1:Swamp#4
+T21 p1 adds {B} (p1:Swamp#4)
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Hill Giant, p1's hand -> stack
+T21 p1 cancels casting Hill Giant
+T21 moves: Sign in Blood, p1's hand -> stack
+T21 p1 cancels casting Sign in Blood
+T21 moves: Hill Giant, p1's hand -> stack
+T21 p1 cancels casting Hill Giant
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Assassinate, p1's hand -> stack
+T21 p1 cancels casting Assassinate
+T21 moves: Gray Ogre, p1's hand -> stack
+T21 p1 cancels casting Gray Ogre
+T21 moves: Fireball, p1's hand -> stack
+T21 p1 cancels casting Fireball
+T21 moves: Hill Giant, p1's hand -> stack
+T21 p1 cancels casting Hill Giant
+T21 moves: Hill Giant, p1's hand -> stack
+T21 p1 cancels casting Hill Giant
+T21 p1's unspent {B} empties
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 p1 attack: nothing
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Sign in Blood, p1's hand -> stack
+T21 p1 cancels casting Sign in Blood
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Assassinate, p1's hand -> stack
+T21 p1 cancels casting Assassinate
+T21 moves: Gray Ogre, p1's hand -> stack
+T21 p1 cancels casting Gray Ogre
+T21 moves: Sign in Blood, p1's hand -> stack
+T21 p1 cancels casting Sign in Blood
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Hill Giant, p1's hand -> stack
+T21 p1 cancels casting Hill Giant
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Hill Giant, p1's hand -> stack
+T21 p1 cancels casting Hill Giant
+T21 moves: Gray Ogre, p1's hand -> stack
+T21 p1 cancels casting Gray Ogre
+T21 moves: Sign in Blood, p1's hand -> stack
+T21 p1 cancels casting Sign in Blood
+T21 moves: Fireball, p1's hand -> stack
+T21 p1 cancels casting Fireball
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T21 moves: Doom Blade, p1's hand -> stack
+T21 p1 cancels casting Doom Blade
+T22 turn 22 begins (p2)
+T22 untaps: p2:Plains#1
+T22 untaps: p2:Plains#2
+T22 untaps: p2:Elite Vanguard
+T22 untaps: p2:Plains#3
+T22 untaps: p2:Plains#4
+T22 untaps: p2:Plains#5
+T22 untaps: p2:Mountain#1
+T22 untaps: p2:Mountain#2
+T22 untaps: p2:Mountain#3
+T22 untaps: p2:Undead Slayer
+T22 untaps: p2:Mountain#4
+T22 untaps: p2:Plains#6
+T22 taps: p2:Mountain#4
+T22 p2 adds {R} (p2:Mountain#4)
+T22 taps: p2:Plains#3
+T22 p2 adds {W} (p2:Plains#3)
+T22 p2's unspent {W}{R} empties
+T22 moves: Shatter, p2's library -> p2's hand
+T22 p2 draws
+T22 moves: Doom Blade, p1's hand -> stack
+T22 p1 cancels casting Doom Blade
+T22 moves: Doom Blade, p1's hand -> stack
+T22 p1 cancels casting Doom Blade
+T22 taps: p2:Plains#5
+T22 p2 adds {W} (p2:Plains#5)
+T22 taps: p2:Plains#4
+T22 p2 adds {W} (p2:Plains#4)
+T22 p2's unspent {W}{W} empties
+T22 taps: p2:Plains#6
+T22 p2 adds {W} (p2:Plains#6)
+T22 taps: p2:Plains#2
+T22 p2 adds {W} (p2:Plains#2)
+T22 taps: p2:Mountain#1
+T22 p2 adds {R} (p2:Mountain#1)
+T22 moves: Doom Blade, p1's hand -> stack
+T22 p1 cancels casting Doom Blade
+T22 moves: Doom Blade, p1's hand -> stack
+T22 p1 cancels casting Doom Blade
+T22 moves: Doom Blade, p1's hand -> stack
+T22 p1 cancels casting Doom Blade
+T22 p2's unspent {W}{W}{R} empties
+T22 p2 attack: nothing
+T22 taps: p2:Mountain#3
+T22 p2 adds {R} (p2:Mountain#3)
+T22 taps: p2:Mountain#2
+T22 p2 adds {R} (p2:Mountain#2)
+T22 p2's unspent {R}{R} empties
+T22 taps: p2:Plains#1
+T22 p2 adds {W} (p2:Plains#1)
+T22 p2's unspent {W} empties
+T22 moves: Doom Blade, p1's hand -> stack
+T22 p1 cancels casting Doom Blade
+T23 turn 23 begins (p1)
+T23 untaps: p1:Swamp#1
+T23 untaps: p1:Mountain#1
+T23 untaps: p1:Mountain#2
+T23 untaps: p1:Swamp#2
+T23 untaps: p1:Swamp#3
+T23 untaps: p1:Mountain#3
+T23 untaps: p1:Swamp#4
+T23 taps: p1:Mountain#2
+T23 p1 adds {R} (p1:Mountain#2)
+T23 moves: Doom Blade, p1's hand -> stack
+T23 p1 cancels casting Doom Blade
+T23 taps: p1:Mountain#3
+T23 p1 adds {R} (p1:Mountain#3)
+T23 taps: p1:Swamp#2
+T23 p1 adds {B} (p1:Swamp#2)
+T23 taps: p1:Swamp#3
+T23 p1 adds {B} (p1:Swamp#3)
+T23 p1's unspent {B}{B}{R}{R} empties
+T23 moves: Burning Inquiry, p1's library -> p1's hand
+T23 p1 draws
+T23 moves: Doom Blade, p1's hand -> stack
+T23 taps: p1:Mountain#1
+T23 p1 adds {R} (p1:Mountain#1)
+T23 taps: p1:Swamp#1
+T23 p1 adds {B} (p1:Swamp#1)
+T23 p1 casts Doom Blade
+T23 destroyed: p2:Undead Slayer
+T23 moves: Undead Slayer, battlefield -> p2's graveyard
+T23 resolves: Doom Blade
+T23 moves: Doom Blade, stack -> p1's graveyard
+T23 p1 attack: nothing
+T23 taps: p1:Swamp#4
+T23 p1 adds {B} (p1:Swamp#4)
+T23 p1's unspent {B} empties
+T23 moves: Hill Giant, p1's hand -> stack
+T23 p1 cancels casting Hill Giant
+T23 moves: Sign in Blood, p1's hand -> stack
+T23 p1 cancels casting Sign in Blood
+T23 moves: Burning Inquiry, p1's hand -> stack
+T23 p1 cancels casting Burning Inquiry
+T23 moves: Hill Giant, p1's hand -> stack
+T23 p1 cancels casting Hill Giant
+T23 moves: Gray Ogre, p1's hand -> stack
+T23 p1 cancels casting Gray Ogre
+T23 moves: Sign in Blood, p1's hand -> stack
+T23 p1 cancels casting Sign in Blood
+T23 moves: Burning Inquiry, p1's hand -> stack
+T23 p1 cancels casting Burning Inquiry
+T23 moves: Sign in Blood, p1's hand -> stack
+T23 p1 cancels casting Sign in Blood
+T23 moves: Burning Inquiry, p1's hand -> stack
+T23 p1 cancels casting Burning Inquiry
+T23 moves: Fireball, p1's hand -> stack
+T23 p1 cancels casting Fireball
+T23 moves: Burning Inquiry, p1's hand -> stack
+T23 p1 cancels casting Burning Inquiry
+T24 turn 24 begins (p2)
+T24 untaps: p2:Plains#1
+T24 untaps: p2:Plains#2
+T24 untaps: p2:Plains#3
+T24 untaps: p2:Plains#4
+T24 untaps: p2:Plains#5
+T24 untaps: p2:Mountain#1
+T24 untaps: p2:Mountain#2
+T24 untaps: p2:Mountain#3
+T24 untaps: p2:Mountain#4
+T24 untaps: p2:Plains#6
+T24 taps: p2:Mountain#1
+T24 p2 adds {R} (p2:Mountain#1)
+T24 taps: p2:Plains#2
+T24 p2 adds {W} (p2:Plains#2)
+T24 taps: p2:Mountain#4
+T24 p2 adds {R} (p2:Mountain#4)
+T24 taps: p2:Plains#3
+T24 p2 adds {W} (p2:Plains#3)
+T24 taps: p2:Plains#4
+T24 p2 adds {W} (p2:Plains#4)
+T24 taps: p2:Mountain#2
+T24 p2 adds {R} (p2:Mountain#2)
+T24 taps: p2:Plains#6
+T24 p2 adds {W} (p2:Plains#6)
+T24 taps: p2:Plains#5
+T24 p2 adds {W} (p2:Plains#5)
+T24 p2's unspent {W}{W}{W}{W}{W}{R}{R}{R} empties
+T24 moves: Mountain, p2's library -> p2's hand
+T24 p2 draws
+T24 taps: p2:Mountain#3
+T24 p2 adds {R} (p2:Mountain#3)
+T24 taps: p2:Plains#1
+T24 p2 adds {W} (p2:Plains#1)
+T24 p2's unspent {W}{R} empties
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 moves: Mountain, p2's hand -> battlefield
+T24 p2 plays p2:Mountain#5
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 taps: p2:Mountain#5
+T24 p2 adds {R} (p2:Mountain#5)
+T24 p2 cancels casting Undead Slayer
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 moves: Rod of Ruin, p2's hand -> stack
+T24 taps: p2:Mountain#5
+T24 p2 adds {R} (p2:Mountain#5)
+T24 p2 cancels casting Rod of Ruin
+T24 moves: Rod of Ruin, p2's hand -> stack
+T24 taps: p2:Mountain#5
+T24 p2 adds {R} (p2:Mountain#5)
+T24 p2 cancels casting Rod of Ruin
+T24 taps: p2:Mountain#5
+T24 p2 adds {R} (p2:Mountain#5)
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T24 p2's unspent {R} empties
+T24 p2 attack: nothing
+T24 moves: Undead Slayer, p2's hand -> stack
+T24 p2 cancels casting Undead Slayer
+T25 turn 25 begins (p1)
+T25 untaps: p1:Swamp#1
+T25 untaps: p1:Mountain#1
+T25 untaps: p1:Mountain#2
+T25 untaps: p1:Swamp#2
+T25 untaps: p1:Swamp#3
+T25 untaps: p1:Mountain#3
+T25 untaps: p1:Swamp#4
+T25 taps: p1:Swamp#3
+T25 p1 adds {B} (p1:Swamp#3)
+T25 taps: p1:Mountain#1
+T25 p1 adds {R} (p1:Mountain#1)
+T25 taps: p1:Swamp#2
+T25 p1 adds {B} (p1:Swamp#2)
+T25 taps: p1:Swamp#4
+T25 p1 adds {B} (p1:Swamp#4)
+T25 p1's unspent {B}{B}{B}{R} empties
+T25 moves: Raging Goblin, p1's library -> p1's hand
+T25 p1 draws
+T25 taps: p1:Mountain#3
+T25 p1 adds {R} (p1:Mountain#3)
+T25 taps: p1:Swamp#1
+T25 p1 adds {B} (p1:Swamp#1)
+T25 taps: p1:Mountain#2
+T25 p1 adds {R} (p1:Mountain#2)
+T25 p1's unspent {B}{R}{R} empties
+T25 p1 attack: nothing
+T25 moves: Hill Giant, p1's hand -> stack
+T25 p1 cancels casting Hill Giant
+T26 turn 26 begins (p2)
+T26 untaps: p2:Plains#1
+T26 untaps: p2:Plains#2
+T26 untaps: p2:Plains#3
+T26 untaps: p2:Plains#4
+T26 untaps: p2:Plains#5
+T26 untaps: p2:Mountain#1
+T26 untaps: p2:Mountain#2
+T26 untaps: p2:Mountain#3
+T26 untaps: p2:Mountain#4
+T26 untaps: p2:Plains#6
+T26 untaps: p2:Mountain#5
+T26 taps: p2:Plains#4
+T26 p2 adds {W} (p2:Plains#4)
+T26 taps: p2:Plains#5
+T26 p2 adds {W} (p2:Plains#5)
+T26 taps: p2:Plains#3
+T26 p2 adds {W} (p2:Plains#3)
+T26 taps: p2:Mountain#5
+T26 p2 adds {R} (p2:Mountain#5)
+T26 taps: p2:Plains#1
+T26 p2 adds {W} (p2:Plains#1)
+T26 taps: p2:Plains#2
+T26 p2 adds {W} (p2:Plains#2)
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 p2's unspent {W}{W}{W}{W}{W}{R}{R} empties
+T26 moves: Tempest of Light, p2's library -> p2's hand
+T26 p2 draws
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 taps: p2:Mountain#4
+T26 p2 adds {R} (p2:Mountain#4)
+T26 p2's unspent {R}{R} empties
+T26 taps: p2:Mountain#3
+T26 p2 adds {R} (p2:Mountain#3)
+T26 moves: Tempest of Light, p2's hand -> stack
+T26 taps: p2:Plains#6
+T26 p2 adds {W} (p2:Plains#6)
+T26 p2 cancels casting Tempest of Light
+T26 taps: p2:Plains#6
+T26 p2 adds {W} (p2:Plains#6)
+T26 p2's unspent {W}{R} empties
+T26 p2 attack: nothing
+T26 moves: Undead Slayer, p2's hand -> stack
+T26 p2 cancels casting Undead Slayer
+T26 moves: Tempest of Light, p2's hand -> stack
+T26 p2 cancels casting Tempest of Light
+T26 moves: Tempest of Light, p2's hand -> stack
+T26 p2 cancels casting Tempest of Light
+T26 moves: Tempest of Light, p2's hand -> stack
+T26 p2 cancels casting Tempest of Light
+T27 turn 27 begins (p1)
+T27 untaps: p1:Swamp#1
+T27 untaps: p1:Mountain#1
+T27 untaps: p1:Mountain#2
+T27 untaps: p1:Swamp#2
+T27 untaps: p1:Swamp#3
+T27 untaps: p1:Mountain#3
+T27 untaps: p1:Swamp#4
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Mountain, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p1:Swamp#3
+T27 p1 adds {B} (p1:Swamp#3)
+T27 taps: p1:Mountain#2
+T27 p1 adds {R} (p1:Mountain#2)
+T27 taps: p1:Swamp#2
+T27 p1 adds {B} (p1:Swamp#2)
+T27 taps: p1:Swamp#1
+T27 p1 adds {B} (p1:Swamp#1)
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 p1's unspent {B}{B}{B}{R} empties
+T27 moves: Raging Goblin, p1's hand -> stack
+T27 p1 cancels casting Raging Goblin
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 taps: p1:Mountain#3
+T27 p1 adds {R} (p1:Mountain#3)
+T27 p1's unspent {R} empties
+T27 p1 attack: nothing
+T27 taps: p1:Swamp#4
+T27 p1 adds {B} (p1:Swamp#4)
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1's unspent {B}{R} empties
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Tempest of Light, p2's hand -> stack
+T27 p2 cancels casting Tempest of Light
+T27 moves: Mountain, p1's hand -> p1's graveyard
+T27 p1 discards Mountain
+T28 turn 28 begins (p2)
+T28 untaps: p2:Plains#1
+T28 untaps: p2:Plains#2
+T28 untaps: p2:Plains#3
+T28 untaps: p2:Plains#4
+T28 untaps: p2:Plains#5
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Mountain#2
+T28 untaps: p2:Mountain#3
+T28 untaps: p2:Mountain#4
+T28 untaps: p2:Plains#6
+T28 untaps: p2:Mountain#5
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 p2's unspent {R} empties
+T28 moves: Mountain, p2's library -> p2's hand
+T28 p2 draws
+T28 taps: p2:Mountain#5
+T28 p2 adds {R} (p2:Mountain#5)
+T28 taps: p2:Plains#3
+T28 p2 adds {W} (p2:Plains#3)
+T28 taps: p2:Plains#1
+T28 p2 adds {W} (p2:Plains#1)
+T28 taps: p2:Plains#5
+T28 p2 adds {W} (p2:Plains#5)
+T28 taps: p2:Plains#4
+T28 p2 adds {W} (p2:Plains#4)
+T28 taps: p2:Plains#6
+T28 p2 adds {W} (p2:Plains#6)
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 taps: p2:Mountain#3
+T28 p2 adds {R} (p2:Mountain#3)
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 moves: Tempest of Light, p2's hand -> stack
+T28 p2 casts Tempest of Light
+T28 resolves: Tempest of Light
+T28 moves: Tempest of Light, stack -> p2's graveyard
+T28 p2's unspent {W}{W}{W}{W}{W}{R} empties
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 moves: Mountain, p2's hand -> battlefield
+T28 p2 plays p2:Mountain#6
+T28 p2's unspent {R} empties
+T28 taps: p2:Mountain#6
+T28 p2 adds {R} (p2:Mountain#6)
+T28 p2's unspent {R} empties
+T28 taps: p2:Elite Vanguard
+T28 p2 attack: p2:Elite Vanguard -> p1
+T28 moves: Divine Verdict, p2's hand -> stack
+T28 p2 cancels casting Divine Verdict
+T28 p1 block: nothing
+T28 combat damage: p2:Elite Vanguard -> p1 2
+T28 p1 loses 2 life
+T28 moves: Divine Verdict, p2's hand -> stack
+T28 p2 cancels casting Divine Verdict
+T29 turn 29 begins (p1)
+T29 untaps: p1:Swamp#1
+T29 untaps: p1:Mountain#1
+T29 untaps: p1:Mountain#2
+T29 untaps: p1:Swamp#2
+T29 untaps: p1:Swamp#3
+T29 untaps: p1:Mountain#3
+T29 untaps: p1:Swamp#4
+T29 taps: p1:Mountain#1
+T29 p1 adds {R} (p1:Mountain#1)
+T29 taps: p1:Swamp#2
+T29 p1 adds {B} (p1:Swamp#2)
+T29 taps: p1:Swamp#4
+T29 p1 adds {B} (p1:Swamp#4)
+T29 taps: p1:Mountain#3
+T29 p1 adds {R} (p1:Mountain#3)
+T29 taps: p1:Mountain#2
+T29 p1 adds {R} (p1:Mountain#2)
+T29 taps: p1:Swamp#3
+T29 p1 adds {B} (p1:Swamp#3)
+T29 p1's unspent {B}{B}{B}{R}{R}{R} empties
+T29 moves: Swamp, p1's library -> p1's hand
+T29 p1 draws
+T29 moves: Assassinate, p1's hand -> stack
+T29 p1 cancels casting Assassinate
+T29 taps: p1:Swamp#1
+T29 p1 adds {B} (p1:Swamp#1)
+T29 moves: Raging Goblin, p1's hand -> stack
+T29 p1 cancels casting Raging Goblin
+T29 moves: Raging Goblin, p1's hand -> stack
+T29 p1 cancels casting Raging Goblin
+T29 moves: Fireball, p1's hand -> stack
+T29 p1 cancels casting Fireball
+T29 moves: Raging Goblin, p1's hand -> stack
+T29 p1 cancels casting Raging Goblin
+T29 moves: Gray Ogre, p1's hand -> stack
+T29 p1 cancels casting Gray Ogre
+T29 moves: Raging Goblin, p1's hand -> stack
+T29 p1 cancels casting Raging Goblin
+T29 moves: Hill Giant, p1's hand -> stack
+T29 p1 cancels casting Hill Giant
+T29 moves: Swamp, p1's hand -> battlefield
+T29 p1 plays p1:Swamp#5
+T29 moves: Burning Inquiry, p1's hand -> stack
+T29 taps: p1:Swamp#5
+T29 p1 adds {B} (p1:Swamp#5)
+T29 p1 cancels casting Burning Inquiry
+T29 taps: p1:Swamp#5
+T29 p1 adds {B} (p1:Swamp#5)
+T29 moves: Raging Goblin, p1's hand -> stack
+T29 p1 cancels casting Raging Goblin
+T29 moves: Sign in Blood, p1's hand -> stack
+T29 p1 cancels casting Sign in Blood
+T29 moves: Raging Goblin, p1's hand -> stack
+T29 p1 cancels casting Raging Goblin
+T29 moves: Fireball, p1's hand -> stack
+T29 p1 cancels casting Fireball
+T29 moves: Burning Inquiry, p1's hand -> stack
+T29 p1 cancels casting Burning Inquiry
+T29 moves: Hill Giant, p1's hand -> stack
+T29 p1 cancels casting Hill Giant
+T29 moves: Burning Inquiry, p1's hand -> stack
+T29 p1 cancels casting Burning Inquiry
+T29 p1's unspent {B}{B} empties
+T29 p1 attack: nothing
+T30 turn 30 begins (p2)
+T30 untaps: p2:Plains#1
+T30 untaps: p2:Plains#2
+T30 untaps: p2:Elite Vanguard
+T30 untaps: p2:Plains#3
+T30 untaps: p2:Plains#4
+T30 untaps: p2:Plains#5
+T30 untaps: p2:Mountain#1
+T30 untaps: p2:Mountain#2
+T30 untaps: p2:Mountain#3
+T30 untaps: p2:Mountain#4
+T30 untaps: p2:Plains#6
+T30 untaps: p2:Mountain#5
+T30 untaps: p2:Mountain#6
+T30 taps: p2:Mountain#4
+T30 p2 adds {R} (p2:Mountain#4)
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 taps: p2:Plains#6
+T30 p2 adds {W} (p2:Plains#6)
+T30 taps: p2:Plains#5
+T30 p2 adds {W} (p2:Plains#5)
+T30 taps: p2:Mountain#6
+T30 p2 adds {R} (p2:Mountain#6)
+T30 taps: p2:Mountain#3
+T30 p2 adds {R} (p2:Mountain#3)
+T30 taps: p2:Mountain#5
+T30 p2 adds {R} (p2:Mountain#5)
+T30 taps: p2:Plains#4
+T30 p2 adds {W} (p2:Plains#4)
+T30 taps: p2:Plains#1
+T30 p2 adds {W} (p2:Plains#1)
+T30 taps: p2:Mountain#2
+T30 p2 adds {R} (p2:Mountain#2)
+T30 p2's unspent {W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T30 moves: Planar Cleansing, p2's library -> p2's hand
+T30 p2 draws
+T30 taps: p2:Plains#3
+T30 p2 adds {W} (p2:Plains#3)
+T30 taps: p2:Plains#2
+T30 p2 adds {W} (p2:Plains#2)
+T30 p2's unspent {W}{W} empties
+T30 moves: Planar Cleansing, p2's hand -> stack
+T30 p2 cancels casting Planar Cleansing
+T30 moves: Planar Cleansing, p2's hand -> stack
+T30 p2 cancels casting Planar Cleansing
+T30 taps: p2:Elite Vanguard
+T30 p2 attack: p2:Elite Vanguard -> p1
+T30 moves: Divine Verdict, p2's hand -> stack
+T30 p2 cancels casting Divine Verdict
+T30 moves: Divine Verdict, p2's hand -> stack
+T30 p2 cancels casting Divine Verdict
+T30 p1 block: nothing
+T30 moves: Divine Verdict, p2's hand -> stack
+T30 p2 cancels casting Divine Verdict
+T30 moves: Divine Verdict, p2's hand -> stack
+T30 p2 cancels casting Divine Verdict
+T30 combat damage: p2:Elite Vanguard -> p1 2
+T30 p1 loses 2 life
+T30 moves: Planar Cleansing, p2's hand -> stack
+T30 p2 cancels casting Planar Cleansing
+T30 moves: Rod of Ruin, p2's hand -> stack
+T30 p2 cancels casting Rod of Ruin
+T31 turn 31 begins (p1)
+T31 untaps: p1:Swamp#1
+T31 untaps: p1:Mountain#1
+T31 untaps: p1:Mountain#2
+T31 untaps: p1:Swamp#2
+T31 untaps: p1:Swamp#3
+T31 untaps: p1:Mountain#3
+T31 untaps: p1:Swamp#4
+T31 untaps: p1:Swamp#5
+T31 taps: p1:Swamp#5
+T31 p1 adds {B} (p1:Swamp#5)
+T31 taps: p1:Swamp#2
+T31 p1 adds {B} (p1:Swamp#2)
+T31 taps: p1:Mountain#3
+T31 p1 adds {R} (p1:Mountain#3)
+T31 p1's unspent {B}{B}{R} empties
+T31 moves: Royal Assassin, p1's library -> p1's hand
+T31 p1 draws
+T31 taps: p1:Swamp#4
+T31 p1 adds {B} (p1:Swamp#4)
+T31 taps: p1:Swamp#3
+T31 p1 adds {B} (p1:Swamp#3)
+T31 taps: p1:Mountain#2
+T31 p1 adds {R} (p1:Mountain#2)
+T31 p1's unspent {B}{B}{R} empties
+T31 moves: Burning Inquiry, p1's hand -> stack
+T31 taps: p1:Mountain#1
+T31 p1 adds {R} (p1:Mountain#1)
+T31 p1 casts Burning Inquiry
+T31 moves: Swamp, p1's library -> p1's hand
+T31 p1 draws
+T31 moves: Swamp, p1's library -> p1's hand
+T31 p1 draws
+T31 moves: Lightning Bolt, p1's library -> p1's hand
+T31 p1 draws
+T31 moves: Blinding Mage, p2's library -> p2's hand
+T31 p2 draws
+T31 moves: Divine Verdict, p2's library -> p2's hand
+T31 p2 draws
+T31 moves: Excommunicate, p2's library -> p2's hand
+T31 p2 draws
+T31 moves: Gray Ogre, p1's hand -> p1's graveyard
+T31 p1 discards Gray Ogre
+T31 moves: Assassinate, p1's hand -> p1's graveyard
+T31 p1 discards Assassinate
+T31 moves: Hill Giant, p1's hand -> p1's graveyard
+T31 p1 discards Hill Giant
+T31 moves: Rod of Ruin, p2's hand -> p2's graveyard
+T31 p2 discards Rod of Ruin
+T31 moves: Blinding Mage, p2's hand -> p2's graveyard
+T31 p2 discards Blinding Mage
+T31 moves: Excommunicate, p2's hand -> p2's graveyard
+T31 p2 discards Excommunicate
+T31 resolves: Burning Inquiry
+T31 moves: Burning Inquiry, stack -> p1's graveyard
+T31 taps: p1:Swamp#1
+T31 p1 adds {B} (p1:Swamp#1)
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 p1's unspent {B} empties
+T31 p1 attack: nothing
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Swamp, p1's hand -> battlefield
+T31 p1 plays p1:Swamp#6
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 taps: p1:Swamp#6
+T31 p1 adds {B} (p1:Swamp#6)
+T31 p1 cancels casting Royal Assassin
+T31 moves: Sign in Blood, p1's hand -> stack
+T31 taps: p1:Swamp#6
+T31 p1 adds {B} (p1:Swamp#6)
+T31 p1 cancels casting Sign in Blood
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Fireball, p1's hand -> stack
+T31 taps: p1:Swamp#6
+T31 p1 adds {B} (p1:Swamp#6)
+T31 p1 cancels casting Fireball
+T31 moves: Raging Goblin, p1's hand -> stack
+T31 taps: p1:Swamp#6
+T31 p1 adds {B} (p1:Swamp#6)
+T31 p1 cancels casting Raging Goblin
+T31 moves: Raging Goblin, p1's hand -> stack
+T31 taps: p1:Swamp#6
+T31 p1 adds {B} (p1:Swamp#6)
+T31 p1 cancels casting Raging Goblin
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 taps: p1:Swamp#6
+T31 p1 adds {B} (p1:Swamp#6)
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Sign in Blood, p1's hand -> stack
+T31 p1 cancels casting Sign in Blood
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Sign in Blood, p1's hand -> stack
+T31 p1 cancels casting Sign in Blood
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Raging Goblin, p1's hand -> stack
+T31 p1 cancels casting Raging Goblin
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Royal Assassin, p1's hand -> stack
+T31 p1 cancels casting Royal Assassin
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Fireball, p1's hand -> stack
+T31 p1 cancels casting Fireball
+T31 moves: Raging Goblin, p1's hand -> stack
+T31 p1 cancels casting Raging Goblin
+T31 moves: Lightning Bolt, p1's hand -> stack
+T31 p1 cancels casting Lightning Bolt
+T31 p1's unspent {B} empties
+T32 turn 32 begins (p2)
+T32 untaps: p2:Plains#1
+T32 untaps: p2:Plains#2
+T32 untaps: p2:Elite Vanguard
+T32 untaps: p2:Plains#3
+T32 untaps: p2:Plains#4
+T32 untaps: p2:Plains#5
+T32 untaps: p2:Mountain#1
+T32 untaps: p2:Mountain#2
+T32 untaps: p2:Mountain#3
+T32 untaps: p2:Mountain#4
+T32 untaps: p2:Plains#6
+T32 untaps: p2:Mountain#5
+T32 untaps: p2:Mountain#6
+T32 taps: p2:Plains#4
+T32 p2 adds {W} (p2:Plains#4)
+T32 taps: p2:Mountain#2
+T32 p2 adds {R} (p2:Mountain#2)
+T32 taps: p2:Mountain#5
+T32 p2 adds {R} (p2:Mountain#5)
+T32 taps: p2:Mountain#4
+T32 p2 adds {R} (p2:Mountain#4)
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 p2's unspent {W}{R}{R}{R} empties
+T32 moves: Blinding Mage, p2's library -> p2's hand
+T32 p2 draws
+T32 taps: p2:Mountain#1
+T32 p2 adds {R} (p2:Mountain#1)
+T32 taps: p2:Plains#3
+T32 p2 adds {W} (p2:Plains#3)
+T32 taps: p2:Plains#5
+T32 p2 adds {W} (p2:Plains#5)
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 p2's unspent {W}{W}{R} empties
+T32 moves: Blinding Mage, p2's hand -> stack
+T32 p2 cancels casting Blinding Mage
+T32 taps: p2:Plains#1
+T32 p2 adds {W} (p2:Plains#1)
+T32 taps: p2:Mountain#3
+T32 p2 adds {R} (p2:Mountain#3)
+T32 taps: p2:Plains#2
+T32 p2 adds {W} (p2:Plains#2)
+T32 moves: Undead Slayer, p2's hand -> stack
+T32 p2 cancels casting Undead Slayer
+T32 moves: Undead Slayer, p2's hand -> stack
+T32 taps: p2:Plains#6
+T32 p2 adds {W} (p2:Plains#6)
+T32 p2 casts Undead Slayer
+T32 taps: p2:Mountain#6
+T32 p2 adds {R} (p2:Mountain#6)
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 resolves: Undead Slayer
+T32 moves: Undead Slayer, stack -> battlefield
+T32 moves: Blinding Mage, p2's hand -> stack
+T32 p2 cancels casting Blinding Mage
+T32 moves: Planar Cleansing, p2's hand -> stack
+T32 p2 cancels casting Planar Cleansing
+T32 moves: Planar Cleansing, p2's hand -> stack
+T32 p2 cancels casting Planar Cleansing
+T32 moves: Planar Cleansing, p2's hand -> stack
+T32 p2 cancels casting Planar Cleansing
+T32 moves: Planar Cleansing, p2's hand -> stack
+T32 p2 cancels casting Planar Cleansing
+T32 moves: Planar Cleansing, p2's hand -> stack
+T32 p2 cancels casting Planar Cleansing
+T32 moves: Blinding Mage, p2's hand -> stack
+T32 p2 casts Blinding Mage
+T32 resolves: Blinding Mage
+T32 moves: Blinding Mage, stack -> battlefield
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 taps: p2:Elite Vanguard
+T32 p2 attack: p2:Elite Vanguard -> p1
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 p1 block: nothing
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T32 combat damage: p2:Elite Vanguard -> p1 2
+T32 p1 loses 2 life
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Divine Verdict, p2's hand -> stack
+T32 p2 cancels casting Divine Verdict
+T32 moves: Lightning Bolt, p1's hand -> stack
+T32 p1 cancels casting Lightning Bolt
+T33 turn 33 begins (p1)
+T33 untaps: p1:Swamp#1
+T33 untaps: p1:Mountain#1
+T33 untaps: p1:Mountain#2
+T33 untaps: p1:Swamp#2
+T33 untaps: p1:Swamp#3
+T33 untaps: p1:Mountain#3
+T33 untaps: p1:Swamp#4
+T33 untaps: p1:Swamp#5
+T33 untaps: p1:Swamp#6
+T33 moves: Lightning Bolt, p1's hand -> stack
+T33 p1 cancels casting Lightning Bolt
+T33 taps: p1:Swamp#2
+T33 p1 adds {B} (p1:Swamp#2)
+T33 moves: Lightning Bolt, p1's hand -> stack
+T33 p1 cancels casting Lightning Bolt
+T33 moves: Lightning Bolt, p1's hand -> stack
+T33 taps: p1:Swamp#5
+T33 p1 adds {B} (p1:Swamp#5)
+T33 taps: p1:Mountain#1
+T33 p1 adds {R} (p1:Mountain#1)
+T33 taps: p1:Mountain#2
+T33 p1 adds {R} (p1:Mountain#2)
+T33 taps: p1:Swamp#3
+T33 p1 adds {B} (p1:Swamp#3)
+T33 taps: p1:Swamp#6
+T33 p1 adds {B} (p1:Swamp#6)
+T33 taps: p1:Swamp#1
+T33 p1 adds {B} (p1:Swamp#1)
+T33 taps: p1:Swamp#4
+T33 p1 adds {B} (p1:Swamp#4)
+T33 p1 casts Lightning Bolt
+T33 damage: Lightning Bolt -> p2:Elite Vanguard 3
+T33 resolves: Lightning Bolt
+T33 moves: Lightning Bolt, stack -> p1's graveyard
+T33 state-based actions: p2:Elite Vanguard lethalDamage
+T33 destroyed: p2:Elite Vanguard
+T33 moves: Elite Vanguard, battlefield -> p2's graveyard
+T33 taps: p1:Mountain#3
+T33 p1 adds {R} (p1:Mountain#3)
+T33 p1's unspent {B}{B}{B}{B}{B}{B}{R}{R} empties
+T33 moves: Vampire Aristocrat, p1's library -> p1's hand
+T33 p1 draws
+T33 moves: Royal Assassin, p1's hand -> stack
+T33 p1 cancels casting Royal Assassin
+T33 p1 attack: nothing
+T33 moves: Sign in Blood, p1's hand -> stack
+T33 p1 cancels casting Sign in Blood
+T34 turn 34 begins (p2)
+T34 untaps: p2:Plains#1
+T34 untaps: p2:Plains#2
+T34 untaps: p2:Plains#3
+T34 untaps: p2:Plains#4
+T34 untaps: p2:Plains#5
+T34 untaps: p2:Mountain#1
+T34 untaps: p2:Mountain#2
+T34 untaps: p2:Mountain#3
+T34 untaps: p2:Mountain#4
+T34 untaps: p2:Plains#6
+T34 untaps: p2:Mountain#5
+T34 untaps: p2:Mountain#6
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 taps: p2:Plains#5
+T34 p2 adds {W} (p2:Plains#5)
+T34 p2 cancels activating p2:Blinding Mage
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 taps: p2:Mountain#3
+T34 p2 adds {R} (p2:Mountain#3)
+T34 taps: p2:Mountain#4
+T34 p2 adds {R} (p2:Mountain#4)
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 taps: p2:Plains#6
+T34 p2 adds {W} (p2:Plains#6)
+T34 p2 cancels activating p2:Blinding Mage
+T34 taps: p2:Mountain#5
+T34 p2 adds {R} (p2:Mountain#5)
+T34 taps: p2:Plains#4
+T34 p2 adds {W} (p2:Plains#4)
+T34 taps: p2:Plains#2
+T34 p2 adds {W} (p2:Plains#2)
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 p2's unspent {W}{W}{W}{W}{W}{W}{R}{R}{R}{R}{R} empties
+T34 moves: Righteousness, p2's library -> p2's hand
+T34 p2 draws
+T34 taps: p2:Mountain#6
+T34 p2 adds {R} (p2:Mountain#6)
+T34 p2 cancels activating p2:Blinding Mage
+T34 p2 cancels activating p2:Blinding Mage
+T34 p2 cancels activating p2:Blinding Mage
+T34 p2's unspent {R} empties
+T34 moves: Planar Cleansing, p2's hand -> stack
+T34 p2 cancels casting Planar Cleansing
+T34 taps: p2:Blinding Mage
+T34 p2 attack: p2:Blinding Mage -> p1
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 p1 block: nothing
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 combat damage: p2:Blinding Mage -> p1 1
+T34 p1 loses 1 life
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T34 moves: Divine Verdict, p2's hand -> stack
+T34 p2 cancels casting Divine Verdict
+T35 turn 35 begins (p1)
+T35 untaps: p1:Swamp#1
+T35 untaps: p1:Mountain#1
+T35 untaps: p1:Mountain#2
+T35 untaps: p1:Swamp#2
+T35 untaps: p1:Swamp#3
+T35 untaps: p1:Mountain#3
+T35 untaps: p1:Swamp#4
+T35 untaps: p1:Swamp#5
+T35 untaps: p1:Swamp#6
+T35 moves: Royal Assassin, p1's library -> p1's hand
+T35 p1 draws
+T35 taps: p1:Swamp#1
+T35 p1 adds {B} (p1:Swamp#1)
+T35 taps: p1:Mountain#1
+T35 p1 adds {R} (p1:Mountain#1)
+T35 taps: p1:Mountain#2
+T35 p1 adds {R} (p1:Mountain#2)
+T35 taps: p1:Swamp#4
+T35 p1 adds {B} (p1:Swamp#4)
+T35 taps: p1:Mountain#3
+T35 p1 adds {R} (p1:Mountain#3)
+T35 taps: p1:Swamp#2
+T35 p1 adds {B} (p1:Swamp#2)
+T35 taps: p1:Swamp#6
+T35 p1 adds {B} (p1:Swamp#6)
+T35 taps: p1:Swamp#3
+T35 p1 adds {B} (p1:Swamp#3)
+T35 taps: p1:Swamp#5
+T35 p1 adds {B} (p1:Swamp#5)
+T35 p1's unspent {B}{B}{B}{B}{B}{B}{R}{R}{R} empties
+T35 p1 attack: nothing
+T35 moves: Raging Goblin, p1's hand -> stack
+T35 p1 cancels casting Raging Goblin
+T35 moves: Swamp, p1's hand -> battlefield
+T35 p1 plays p1:Swamp#7
+T35 moves: Fireball, p1's hand -> stack
+T35 taps: p1:Swamp#7
+T35 p1 adds {B} (p1:Swamp#7)
+T35 p1 cancels casting Fireball
+T35 moves: Royal Assassin, p1's hand -> stack
+T35 taps: p1:Swamp#7
+T35 p1 adds {B} (p1:Swamp#7)
+T35 p1 cancels casting Royal Assassin
+T35 moves: Sign in Blood, p1's hand -> stack
+T35 p1 cancels casting Sign in Blood
+T35 moves: Raging Goblin, p1's hand -> stack
+T35 p1 cancels casting Raging Goblin
+T35 moves: Raging Goblin, p1's hand -> stack
+T35 taps: p1:Swamp#7
+T35 p1 adds {B} (p1:Swamp#7)
+T35 p1 cancels casting Raging Goblin
+T35 taps: p1:Swamp#7
+T35 p1 adds {B} (p1:Swamp#7)
+T35 moves: Raging Goblin, p1's hand -> stack
+T35 p1 cancels casting Raging Goblin
+T35 p1's unspent {B} empties
+T36 turn 36 begins (p2)
+T36 untaps: p2:Plains#1
+T36 untaps: p2:Plains#2
+T36 untaps: p2:Plains#3
+T36 untaps: p2:Plains#4
+T36 untaps: p2:Plains#5
+T36 untaps: p2:Mountain#1
+T36 untaps: p2:Mountain#2
+T36 untaps: p2:Mountain#3
+T36 untaps: p2:Mountain#4
+T36 untaps: p2:Plains#6
+T36 untaps: p2:Mountain#5
+T36 untaps: p2:Mountain#6
+T36 untaps: p2:Blinding Mage
+T36 p2 cancels activating p2:Blinding Mage
+T36 taps: p2:Plains#3
+T36 p2 adds {W} (p2:Plains#3)
+T36 taps: p2:Mountain#6
+T36 p2 adds {R} (p2:Mountain#6)
+T36 taps: p2:Mountain#1
+T36 p2 adds {R} (p2:Mountain#1)
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 taps: p2:Plains#4
+T36 p2 adds {W} (p2:Plains#4)
+T36 taps: p2:Mountain#5
+T36 p2 adds {R} (p2:Mountain#5)
+T36 p2's unspent {W}{W}{R}{R}{R}{R} empties
+T36 moves: Solemn Offering, p2's library -> p2's hand
+T36 p2 draws
+T36 taps: p2:Plains#6
+T36 p2 adds {W} (p2:Plains#6)
+T36 p2 cancels activating p2:Blinding Mage
+T36 p2's unspent {W} empties
+T36 taps: p2:Plains#2
+T36 p2 adds {W} (p2:Plains#2)
+T36 taps: p2:Plains#5
+T36 p2 adds {W} (p2:Plains#5)
+T36 taps: p2:Plains#1
+T36 p2 adds {W} (p2:Plains#1)
+T36 p2's unspent {W}{W}{W} empties
+T36 p2 attack: nothing
+T36 p2 cancels activating p2:Blinding Mage
+T36 taps: p2:Mountain#4
+T36 p2 adds {R} (p2:Mountain#4)
+T36 p2's unspent {R} empties
+T36 taps: p2:Mountain#3
+T36 p2 adds {R} (p2:Mountain#3)
+T36 moves: Planar Cleansing, p2's hand -> stack
+T36 p2 cancels casting Planar Cleansing
+T36 moves: Planar Cleansing, p2's hand -> stack
+T36 p2 cancels casting Planar Cleansing
+T36 p2's unspent {R} empties
+T37 turn 37 begins (p1)
+T37 untaps: p1:Swamp#1
+T37 untaps: p1:Mountain#1
+T37 untaps: p1:Mountain#2
+T37 untaps: p1:Swamp#2
+T37 untaps: p1:Swamp#3
+T37 untaps: p1:Mountain#3
+T37 untaps: p1:Swamp#4
+T37 untaps: p1:Swamp#5
+T37 untaps: p1:Swamp#6
+T37 untaps: p1:Swamp#7
+T37 moves: Mountain, p1's library -> p1's hand
+T37 p1 draws
+T37 taps: p1:Swamp#7
+T37 p1 adds {B} (p1:Swamp#7)
+T37 taps: p1:Swamp#4
+T37 p1 adds {B} (p1:Swamp#4)
+T37 taps: p1:Swamp#3
+T37 p1 adds {B} (p1:Swamp#3)
+T37 taps: p1:Swamp#1
+T37 p1 adds {B} (p1:Swamp#1)
+T37 taps: p1:Swamp#5
+T37 p1 adds {B} (p1:Swamp#5)
+T37 taps: p1:Mountain#2
+T37 p1 adds {R} (p1:Mountain#2)
+T37 taps: p1:Swamp#6
+T37 p1 adds {B} (p1:Swamp#6)
+T37 taps: p1:Swamp#2
+T37 p1 adds {B} (p1:Swamp#2)
+T37 p2 cancels activating p2:Blinding Mage
+T37 p1's unspent {B}{B}{B}{B}{B}{B}{B}{R} empties
+T37 moves: Raging Goblin, p1's hand -> stack
+T37 taps: p1:Mountain#3
+T37 p1 adds {R} (p1:Mountain#3)
+T37 taps: p1:Mountain#1
+T37 p1 adds {R} (p1:Mountain#1)
+T37 p1 cancels casting Raging Goblin
+T37 moves: Vampire Aristocrat, p1's hand -> stack
+T37 taps: p1:Mountain#1
+T37 p1 adds {R} (p1:Mountain#1)
+T37 p1 cancels casting Vampire Aristocrat
+T37 taps: p1:Mountain#3
+T37 p1 adds {R} (p1:Mountain#3)
+T37 p2 cancels activating p2:Blinding Mage
+T37 p1's unspent {R} empties
+T37 p2 cancels activating p2:Blinding Mage
+T37 p2 cancels activating p2:Blinding Mage
+T37 p2 cancels activating p2:Blinding Mage
+T37 p2 cancels activating p2:Blinding Mage
+T37 p1 attack: nothing
+T37 taps: p1:Mountain#1
+T37 p1 adds {R} (p1:Mountain#1)
+T37 p1's unspent {R} empties
+T37 moves: Royal Assassin, p1's hand -> stack
+T37 p1 cancels casting Royal Assassin
+T37 moves: Royal Assassin, p1's hand -> stack
+T37 p1 cancels casting Royal Assassin
+T37 moves: Vampire Aristocrat, p1's hand -> stack
+T37 p1 cancels casting Vampire Aristocrat
+T37 moves: Royal Assassin, p1's hand -> stack
+T37 p1 cancels casting Royal Assassin
+T37 p2 cancels activating p2:Blinding Mage
+T37 p2 cancels activating p2:Blinding Mage
+T37 p2 cancels activating p2:Blinding Mage
+T38 turn 38 begins (p2)
+T38 untaps: p2:Plains#1
+T38 untaps: p2:Plains#2
+T38 untaps: p2:Plains#3
+T38 untaps: p2:Plains#4
+T38 untaps: p2:Plains#5
+T38 untaps: p2:Mountain#1
+T38 untaps: p2:Mountain#2
+T38 untaps: p2:Mountain#3
+T38 untaps: p2:Mountain#4
+T38 untaps: p2:Plains#6
+T38 untaps: p2:Mountain#5
+T38 untaps: p2:Mountain#6
+T38 taps: p2:Plains#2
+T38 p2 adds {W} (p2:Plains#2)
+T38 taps: p2:Plains#4
+T38 p2 adds {W} (p2:Plains#4)
+T38 taps: p2:Plains#5
+T38 p2 adds {W} (p2:Plains#5)
+T38 taps: p2:Mountain#6
+T38 p2 adds {R} (p2:Mountain#6)
+T38 taps: p2:Plains#6
+T38 p2 adds {W} (p2:Plains#6)
+T38 p2 cancels activating p2:Blinding Mage
+T38 taps: p2:Mountain#6
+T38 p2 adds {R} (p2:Mountain#6)
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 taps: p2:Plains#5
+T38 p2 adds {W} (p2:Plains#5)
+T38 p2 cancels activating p2:Blinding Mage
+T38 taps: p2:Plains#4
+T38 p2 adds {W} (p2:Plains#4)
+T38 taps: p2:Mountain#5
+T38 p2 adds {R} (p2:Mountain#5)
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 p2 cancels activating p2:Blinding Mage
+T38 taps: p2:Plains#3
+T38 p2 adds {W} (p2:Plains#3)
+T38 taps: p2:Plains#5
+T38 p2 adds {W} (p2:Plains#5)
+T38 taps: p2:Plains#1
+T38 p2 adds {W} (p2:Plains#1)
+T38 taps: p2:Plains#6
+T38 p2 adds {W} (p2:Plains#6)
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 taps: p2:Mountain#3
+T38 p2 adds {R} (p2:Mountain#3)
+T38 taps: p2:Mountain#2
+T38 p2 adds {R} (p2:Mountain#2)
+T38 p2's unspent {W}{W}{W}{W}{W}{W}{R}{R}{R}{R}{R} empties
+T38 moves: Mountain, p2's library -> p2's hand
+T38 p2 draws
+T38 taps: p2:Mountain#4
+T38 p2 adds {R} (p2:Mountain#4)
+T38 p2 cancels activating p2:Blinding Mage
+T38 p2 cancels activating p2:Blinding Mage
+T38 taps: p2:Mountain#4
+T38 p2 adds {R} (p2:Mountain#4)
+T38 p2's unspent {R} empties
+T38 taps: p2:Undead Slayer
+T38 p2 attack: p2:Undead Slayer -> p1
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 p2 cancels activating p2:Blinding Mage
+T38 p1 block: nothing
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 p2 cancels activating p2:Blinding Mage
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 p2 cancels activating p2:Blinding Mage
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 combat damage: p2:Undead Slayer -> p1 2
+T38 p1 loses 2 life
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 p2 cancels activating p2:Blinding Mage
+T38 moves: Mountain, p2's hand -> battlefield
+T38 p2 plays p2:Mountain#7
+T38 taps: p2:Mountain#7
+T38 p2 adds {R} (p2:Mountain#7)
+T38 moves: Planar Cleansing, p2's hand -> stack
+T38 p2 cancels casting Planar Cleansing
+T38 p2 cancels activating p2:Blinding Mage
+T38 moves: Planar Cleansing, p2's hand -> stack
+T38 p2 cancels casting Planar Cleansing
+T38 moves: Planar Cleansing, p2's hand -> stack
+T38 p2 cancels casting Planar Cleansing
+T38 p2's unspent {R} empties
+T38 p2 cancels activating p2:Blinding Mage
+T39 turn 39 begins (p1)
+T39 untaps: p1:Swamp#1
+T39 untaps: p1:Mountain#1
+T39 untaps: p1:Mountain#2
+T39 untaps: p1:Swamp#2
+T39 untaps: p1:Swamp#3
+T39 untaps: p1:Mountain#3
+T39 untaps: p1:Swamp#4
+T39 untaps: p1:Swamp#5
+T39 untaps: p1:Swamp#6
+T39 untaps: p1:Swamp#7
+T39 taps: p1:Swamp#6
+T39 p1 adds {B} (p1:Swamp#6)
+T39 taps: p1:Swamp#4
+T39 p1 adds {B} (p1:Swamp#4)
+T39 taps: p1:Swamp#3
+T39 p1 adds {B} (p1:Swamp#3)
+T39 taps: p1:Swamp#2
+T39 p1 adds {B} (p1:Swamp#2)
+T39 taps: p1:Mountain#1
+T39 p1 adds {R} (p1:Mountain#1)
+T39 taps: p1:Mountain#2
+T39 p1 adds {R} (p1:Mountain#2)
+T39 p1's unspent {B}{B}{B}{B}{R}{R} empties
+T39 moves: Deathmark, p1's library -> p1's hand
+T39 p1 draws
+T39 p2 cancels activating p2:Blinding Mage
+T39 taps: p1:Swamp#1
+T39 p1 adds {B} (p1:Swamp#1)
+T39 taps: p1:Swamp#5
+T39 p1 adds {B} (p1:Swamp#5)
+T39 taps: p1:Mountain#3
+T39 p1 adds {R} (p1:Mountain#3)
+T39 taps: p1:Swamp#7
+T39 p1 adds {B} (p1:Swamp#7)
+T39 p1's unspent {B}{B}{B}{R} empties
+T39 p1 attack: nothing
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2 cancels activating p2:Blinding Mage
+T39 moves: Deathmark, p1's hand -> stack
+T39 p1 cancels casting Deathmark
+T39 moves: Deathmark, p1's hand -> stack
+T39 p1 cancels casting Deathmark
+T39 moves: Deathmark, p1's hand -> stack
+T39 p1 cancels casting Deathmark
+T39 moves: Fireball, p1's hand -> stack
+T39 p1 cancels casting Fireball
+T39 moves: Royal Assassin, p1's hand -> stack
+T39 p1 cancels casting Royal Assassin
+T39 moves: Sign in Blood, p1's hand -> stack
+T39 p1 cancels casting Sign in Blood
+T39 moves: Vampire Aristocrat, p1's hand -> stack
+T39 p1 cancels casting Vampire Aristocrat
+T39 moves: Mountain, p1's hand -> battlefield
+T39 p1 plays p1:Mountain#4
+T39 moves: Deathmark, p1's hand -> stack
+T39 p1 cancels casting Deathmark
+T39 taps: p1:Mountain#4
+T39 p1 adds {R} (p1:Mountain#4)
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2 cancels activating p2:Blinding Mage
+T39 p1's unspent {R} empties
+T40 turn 40 begins (p2)
+T40 untaps: p2:Plains#1
+T40 untaps: p2:Plains#2
+T40 untaps: p2:Plains#3
+T40 untaps: p2:Plains#4
+T40 untaps: p2:Plains#5
+T40 untaps: p2:Mountain#1
+T40 untaps: p2:Mountain#2
+T40 untaps: p2:Mountain#3
+T40 untaps: p2:Mountain#4
+T40 untaps: p2:Plains#6
+T40 untaps: p2:Mountain#5
+T40 untaps: p2:Mountain#6
+T40 untaps: p2:Undead Slayer
+T40 untaps: p2:Mountain#7
+T40 taps: p2:Mountain#6
+T40 p2 adds {R} (p2:Mountain#6)
+T40 p2's unspent {R} empties
+T40 moves: Lava Axe, p2's library -> p2's hand
+T40 p2 draws
+T40 taps: p2:Plains#2
+T40 p2 adds {W} (p2:Plains#2)
+T40 taps: p2:Mountain#3
+T40 p2 adds {R} (p2:Mountain#3)
+T40 taps: p2:Mountain#4
+T40 p2 adds {R} (p2:Mountain#4)
+T40 p2's unspent {W}{R}{R} empties
+T40 taps: p2:Plains#6
+T40 p2 adds {W} (p2:Plains#6)
+T40 p2's unspent {W} empties
+T40 p2 attack: nothing
+T40 taps: p2:Mountain#5
+T40 p2 adds {R} (p2:Mountain#5)
+T40 taps: p2:Mountain#2
+T40 p2 adds {R} (p2:Mountain#2)
+T40 taps: p2:Mountain#7
+T40 p2 adds {R} (p2:Mountain#7)
+T40 taps: p2:Plains#3
+T40 p2 adds {W} (p2:Plains#3)
+T40 p2 cancels activating p2:Blinding Mage
+T40 taps: p2:Mountain#1
+T40 p2 adds {R} (p2:Mountain#1)
+T40 taps: p2:Plains#5
+T40 p2 adds {W} (p2:Plains#5)
+T40 p2 cancels activating p2:Blinding Mage
+T40 taps: p2:Plains#4
+T40 p2 adds {W} (p2:Plains#4)
+T40 taps: p2:Plains#1
+T40 p2 adds {W} (p2:Plains#1)
+T40 p2 cancels activating p2:Blinding Mage
+T40 taps: p2:Mountain#1
+T40 p2 adds {R} (p2:Mountain#1)
+T40 taps: p2:Plains#4
+T40 p2 adds {W} (p2:Plains#4)
+T40 taps: p2:Plains#1
+T40 p2 adds {W} (p2:Plains#1)
+T40 p2's unspent {W}{W}{W}{R}{R}{R}{R} empties
+T40 taps: p2:Plains#5
+T40 p2 adds {W} (p2:Plains#5)
+T40 taps: p2:Blinding Mage
+T40 p2 activates p2:Blinding Mage
+T40 resolves: p2:Blinding Mage's ability
+T40 moves: Planar Cleansing, p2's hand -> stack
+T40 p2 cancels casting Planar Cleansing
+T40 moves: Solemn Offering, p2's hand -> p2's graveyard
+T40 p2 discards Solemn Offering
+T41 turn 41 begins (p1)
+T41 untaps: p1:Swamp#1
+T41 untaps: p1:Mountain#1
+T41 untaps: p1:Mountain#2
+T41 untaps: p1:Swamp#2
+T41 untaps: p1:Swamp#3
+T41 untaps: p1:Mountain#3
+T41 untaps: p1:Swamp#4
+T41 untaps: p1:Swamp#5
+T41 untaps: p1:Swamp#6
+T41 untaps: p1:Swamp#7
+T41 untaps: p1:Mountain#4
+T41 taps: p1:Mountain#4
+T41 p1 adds {R} (p1:Mountain#4)
+T41 taps: p1:Swamp#2
+T41 p1 adds {B} (p1:Swamp#2)
+T41 taps: p1:Swamp#3
+T41 p1 adds {B} (p1:Swamp#3)
+T41 taps: p1:Mountain#1
+T41 p1 adds {R} (p1:Mountain#1)
+T41 p1's unspent {B}{B}{R}{R} empties
+T41 moves: Mountain, p1's library -> p1's hand
+T41 p1 draws
+T41 taps: p1:Swamp#7
+T41 p1 adds {B} (p1:Swamp#7)
+T41 taps: p1:Swamp#6
+T41 p1 adds {B} (p1:Swamp#6)
+T41 taps: p1:Swamp#1
+T41 p1 adds {B} (p1:Swamp#1)
+T41 taps: p1:Mountain#2
+T41 p1 adds {R} (p1:Mountain#2)
+T41 taps: p1:Swamp#4
+T41 p1 adds {B} (p1:Swamp#4)
+T41 taps: p1:Mountain#3
+T41 p1 adds {R} (p1:Mountain#3)
+T41 taps: p1:Swamp#5
+T41 p1 adds {B} (p1:Swamp#5)
+T41 p1's unspent {B}{B}{B}{B}{B}{R}{R} empties
+T41 moves: Royal Assassin, p1's hand -> stack
+T41 p1 cancels casting Royal Assassin
+T41 moves: Royal Assassin, p1's hand -> stack
+T41 p1 cancels casting Royal Assassin
+T41 moves: Raging Goblin, p1's hand -> stack
+T41 p1 cancels casting Raging Goblin
+T41 moves: Raging Goblin, p1's hand -> stack
+T41 p1 cancels casting Raging Goblin
+T41 moves: Deathmark, p1's hand -> stack
+T41 p1 cancels casting Deathmark
+T41 moves: Royal Assassin, p1's hand -> stack
+T41 p1 cancels casting Royal Assassin
+T41 moves: Mountain, p1's hand -> battlefield
+T41 p1 plays p1:Mountain#5
+T41 moves: Royal Assassin, p1's hand -> stack
+T41 taps: p1:Mountain#5
+T41 p1 adds {R} (p1:Mountain#5)
+T41 p1 cancels casting Royal Assassin
+T41 moves: Deathmark, p1's hand -> stack
+T41 p1 cancels casting Deathmark
+T41 moves: Vampire Aristocrat, p1's hand -> stack
+T41 p1 cancels casting Vampire Aristocrat
+T41 moves: Sign in Blood, p1's hand -> stack
+T41 p1 cancels casting Sign in Blood
+T41 taps: p1:Mountain#5
+T41 p1 adds {R} (p1:Mountain#5)
+T41 moves: Vampire Aristocrat, p1's hand -> stack
+T41 p1 cancels casting Vampire Aristocrat
+T41 moves: Deathmark, p1's hand -> stack
+T41 p1 cancels casting Deathmark
+T41 moves: Vampire Aristocrat, p1's hand -> stack
+T41 p1 cancels casting Vampire Aristocrat
+T41 p1's unspent {R} empties
+T41 p1 attack: nothing
+T42 turn 42 begins (p2)
+T42 untaps: p2:Plains#1
+T42 untaps: p2:Plains#2
+T42 untaps: p2:Plains#3
+T42 untaps: p2:Plains#4
+T42 untaps: p2:Plains#5
+T42 untaps: p2:Mountain#1
+T42 untaps: p2:Mountain#2
+T42 untaps: p2:Mountain#3
+T42 untaps: p2:Mountain#4
+T42 untaps: p2:Plains#6
+T42 untaps: p2:Mountain#5
+T42 untaps: p2:Mountain#6
+T42 untaps: p2:Blinding Mage
+T42 untaps: p2:Mountain#7
+T42 taps: p2:Plains#5
+T42 p2 adds {W} (p2:Plains#5)
+T42 taps: p2:Mountain#5
+T42 p2 adds {R} (p2:Mountain#5)
+T42 taps: p2:Mountain#4
+T42 p2 adds {R} (p2:Mountain#4)
+T42 taps: p2:Plains#3
+T42 p2 adds {W} (p2:Plains#3)
+T42 taps: p2:Plains#4
+T42 p2 adds {W} (p2:Plains#4)
+T42 taps: p2:Mountain#7
+T42 p2 adds {R} (p2:Mountain#7)
+T42 taps: p2:Mountain#1
+T42 p2 adds {R} (p2:Mountain#1)
+T42 taps: p2:Mountain#3
+T42 p2 adds {R} (p2:Mountain#3)
+T42 taps: p2:Plains#2
+T42 p2 adds {W} (p2:Plains#2)
+T42 taps: p2:Blinding Mage
+T42 p2 activates p2:Blinding Mage
+T42 taps: p2:Plains#1
+T42 p2 adds {W} (p2:Plains#1)
+T42 taps: p2:Mountain#6
+T42 p2 adds {R} (p2:Mountain#6)
+T42 taps: p2:Plains#6
+T42 p2 adds {W} (p2:Plains#6)
+T42 taps: p2:Mountain#2
+T42 p2 adds {R} (p2:Mountain#2)
+T42 resolves: p2:Blinding Mage's ability
+T42 p2's unspent {W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R}{R} empties
+T42 moves: Blinding Mage, p2's library -> p2's hand
+T42 p2 draws
+T42 moves: Lava Axe, p2's hand -> stack
+T42 p2 cancels casting Lava Axe
+T42 p2 attack: nothing
+T42 moves: Blinding Mage, p2's hand -> stack
+T42 p2 cancels casting Blinding Mage
+T42 moves: Planar Cleansing, p2's hand -> stack
+T42 p2 cancels casting Planar Cleansing
+T42 moves: Divine Verdict, p2's hand -> p2's graveyard
+T42 p2 discards Divine Verdict
+T43 turn 43 begins (p1)
+T43 untaps: p1:Swamp#1
+T43 untaps: p1:Mountain#1
+T43 untaps: p1:Mountain#2
+T43 untaps: p1:Swamp#2
+T43 untaps: p1:Swamp#3
+T43 untaps: p1:Mountain#3
+T43 untaps: p1:Swamp#4
+T43 untaps: p1:Swamp#5
+T43 untaps: p1:Swamp#6
+T43 untaps: p1:Swamp#7
+T43 untaps: p1:Mountain#4
+T43 untaps: p1:Mountain#5
+T43 taps: p1:Swamp#5
+T43 p1 adds {B} (p1:Swamp#5)
+T43 taps: p1:Mountain#4
+T43 p1 adds {R} (p1:Mountain#4)
+T43 taps: p1:Mountain#5
+T43 p1 adds {R} (p1:Mountain#5)
+T43 taps: p1:Mountain#1
+T43 p1 adds {R} (p1:Mountain#1)
+T43 taps: p1:Swamp#2
+T43 p1 adds {B} (p1:Swamp#2)
+T43 taps: p1:Mountain#3
+T43 p1 adds {R} (p1:Mountain#3)
+T43 taps: p1:Swamp#7
+T43 p1 adds {B} (p1:Swamp#7)
+T43 taps: p1:Mountain#2
+T43 p1 adds {R} (p1:Mountain#2)
+T43 taps: p1:Swamp#3
+T43 p1 adds {B} (p1:Swamp#3)
+T43 taps: p1:Swamp#1
+T43 p1 adds {B} (p1:Swamp#1)
+T43 p1's unspent {B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T43 moves: Lightning Bolt, p1's library -> p1's hand
+T43 p1 draws
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 taps: p1:Swamp#6
+T43 p1 adds {B} (p1:Swamp#6)
+T43 p1 cancels casting Lightning Bolt
+T43 taps: p1:Swamp#6
+T43 p1 adds {B} (p1:Swamp#6)
+T43 p1's unspent {B} empties
+T43 moves: Raging Goblin, p1's hand -> stack
+T43 taps: p1:Swamp#4
+T43 p1 adds {B} (p1:Swamp#4)
+T43 p1 cancels casting Raging Goblin
+T43 moves: Fireball, p1's hand -> stack
+T43 p1 cancels casting Fireball
+T43 moves: Raging Goblin, p1's hand -> stack
+T43 p1 cancels casting Raging Goblin
+T43 moves: Fireball, p1's hand -> stack
+T43 p1 cancels casting Fireball
+T43 moves: Vampire Aristocrat, p1's hand -> stack
+T43 taps: p1:Swamp#4
+T43 p1 adds {B} (p1:Swamp#4)
+T43 p1 cancels casting Vampire Aristocrat
+T43 taps: p1:Swamp#4
+T43 p1 adds {B} (p1:Swamp#4)
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 p1 cancels casting Lightning Bolt
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Deathmark, p1's hand -> stack
+T43 p1 cancels casting Deathmark
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 p1 cancels casting Lightning Bolt
+T43 moves: Sign in Blood, p1's hand -> stack
+T43 p1 cancels casting Sign in Blood
+T43 moves: Sign in Blood, p1's hand -> stack
+T43 p1 cancels casting Sign in Blood
+T43 moves: Vampire Aristocrat, p1's hand -> stack
+T43 p1 cancels casting Vampire Aristocrat
+T43 moves: Deathmark, p1's hand -> stack
+T43 p1 cancels casting Deathmark
+T43 moves: Sign in Blood, p1's hand -> stack
+T43 p1 cancels casting Sign in Blood
+T43 moves: Sign in Blood, p1's hand -> stack
+T43 p1 cancels casting Sign in Blood
+T43 moves: Fireball, p1's hand -> stack
+T43 p1 cancels casting Fireball
+T43 moves: Deathmark, p1's hand -> stack
+T43 p1 cancels casting Deathmark
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 p1 cancels casting Lightning Bolt
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Fireball, p1's hand -> stack
+T43 p1 cancels casting Fireball
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Sign in Blood, p1's hand -> stack
+T43 p1 cancels casting Sign in Blood
+T43 moves: Raging Goblin, p1's hand -> stack
+T43 p1 cancels casting Raging Goblin
+T43 moves: Deathmark, p1's hand -> stack
+T43 p1 casts Deathmark
+T43 destroyed: p2:Undead Slayer
+T43 moves: Undead Slayer, battlefield -> p2's graveyard
+T43 resolves: Deathmark
+T43 moves: Deathmark, stack -> p1's graveyard
+T43 moves: Sign in Blood, p1's hand -> stack
+T43 p1 cancels casting Sign in Blood
+T43 moves: Royal Assassin, p1's hand -> stack
+T43 p1 cancels casting Royal Assassin
+T43 moves: Vampire Aristocrat, p1's hand -> stack
+T43 p1 cancels casting Vampire Aristocrat
+T43 p1 attack: nothing
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 p1 cancels casting Lightning Bolt
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 p1 cancels casting Lightning Bolt
+T43 moves: Lightning Bolt, p1's hand -> stack
+T43 p1 cancels casting Lightning Bolt
+T44 turn 44 begins (p2)
+T44 untaps: p2:Plains#1
+T44 untaps: p2:Plains#2
+T44 untaps: p2:Plains#3
+T44 untaps: p2:Plains#4
+T44 untaps: p2:Plains#5
+T44 untaps: p2:Mountain#1
+T44 untaps: p2:Mountain#2
+T44 untaps: p2:Mountain#3
+T44 untaps: p2:Mountain#4
+T44 untaps: p2:Plains#6
+T44 untaps: p2:Mountain#5
+T44 untaps: p2:Mountain#6
+T44 untaps: p2:Blinding Mage
+T44 untaps: p2:Mountain#7
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Plains, p2's library -> p2's hand
+T44 p2 draws
+T44 taps: p2:Plains#6
+T44 p2 adds {W} (p2:Plains#6)
+T44 p2 cancels activating p2:Blinding Mage
+T44 taps: p2:Plains#1
+T44 p2 adds {W} (p2:Plains#1)
+T44 taps: p2:Mountain#4
+T44 p2 adds {R} (p2:Mountain#4)
+T44 taps: p2:Plains#5
+T44 p2 adds {W} (p2:Plains#5)
+T44 taps: p2:Mountain#2
+T44 p2 adds {R} (p2:Mountain#2)
+T44 taps: p2:Plains#3
+T44 p2 adds {W} (p2:Plains#3)
+T44 taps: p2:Mountain#3
+T44 p2 adds {R} (p2:Mountain#3)
+T44 taps: p2:Plains#4
+T44 p2 adds {W} (p2:Plains#4)
+T44 p2 cancels activating p2:Blinding Mage
+T44 taps: p2:Mountain#7
+T44 p2 adds {R} (p2:Mountain#7)
+T44 taps: p2:Mountain#1
+T44 p2 adds {R} (p2:Mountain#1)
+T44 p2 cancels activating p2:Blinding Mage
+T44 taps: p2:Mountain#5
+T44 p2 adds {R} (p2:Mountain#5)
+T44 p2's unspent {W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T44 moves: Plains, p2's hand -> battlefield
+T44 p2 plays p2:Plains#7
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 p2 cancels activating p2:Blinding Mage
+T44 taps: p2:Plains#2
+T44 p2 adds {W} (p2:Plains#2)
+T44 p2 cancels activating p2:Blinding Mage
+T44 taps: p2:Plains#7
+T44 p2 adds {W} (p2:Plains#7)
+T44 taps: p2:Blinding Mage
+T44 p2 activates p2:Blinding Mage
+T44 taps: p2:Mountain#6
+T44 p2 adds {R} (p2:Mountain#6)
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 resolves: p2:Blinding Mage's ability
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 p2's unspent {W}{R} empties
+T44 p2 attack: nothing
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Lightning Bolt, p1's hand -> stack
+T44 p1 cancels casting Lightning Bolt
+T44 moves: Blinding Mage, p2's hand -> stack
+T44 p2 cancels casting Blinding Mage
+T44 moves: Lava Axe, p2's hand -> stack
+T44 p2 cancels casting Lava Axe
+T44 moves: Planar Cleansing, p2's hand -> stack
+T44 p2 cancels casting Planar Cleansing
+T44 moves: Planar Cleansing, p2's hand -> stack
+T44 p2 cancels casting Planar Cleansing
+T45 turn 45 begins (p1)
+T45 untaps: p1:Swamp#1
+T45 untaps: p1:Mountain#1
+T45 untaps: p1:Mountain#2
+T45 untaps: p1:Swamp#2
+T45 untaps: p1:Swamp#3
+T45 untaps: p1:Mountain#3
+T45 untaps: p1:Swamp#4
+T45 untaps: p1:Swamp#5
+T45 untaps: p1:Swamp#6
+T45 untaps: p1:Swamp#7
+T45 untaps: p1:Mountain#4
+T45 untaps: p1:Mountain#5
+T45 taps: p1:Swamp#3
+T45 p1 adds {B} (p1:Swamp#3)
+T45 moves: Lightning Bolt, p1's hand -> stack
+T45 p1 cancels casting Lightning Bolt
+T45 moves: Lightning Bolt, p1's hand -> stack
+T45 p1 cancels casting Lightning Bolt
+T45 taps: p1:Swamp#4
+T45 p1 adds {B} (p1:Swamp#4)
+T45 taps: p1:Swamp#7
+T45 p1 adds {B} (p1:Swamp#7)
+T45 p1's unspent {B}{B}{B} empties
+T45 moves: Fireball, p1's library -> p1's hand
+T45 p1 draws
+T45 taps: p1:Mountain#1
+T45 p1 adds {R} (p1:Mountain#1)
+T45 taps: p1:Mountain#3
+T45 p1 adds {R} (p1:Mountain#3)
+T45 taps: p1:Mountain#2
+T45 p1 adds {R} (p1:Mountain#2)
+T45 taps: p1:Swamp#5
+T45 p1 adds {B} (p1:Swamp#5)
+T45 taps: p1:Mountain#5
+T45 p1 adds {R} (p1:Mountain#5)
+T45 p1's unspent {B}{R}{R}{R}{R} empties
+T45 moves: Sign in Blood, p1's hand -> stack
+T45 taps: p1:Mountain#4
+T45 p1 adds {R} (p1:Mountain#4)
+T45 taps: p1:Swamp#2
+T45 p1 adds {B} (p1:Swamp#2)
+T45 taps: p1:Swamp#1
+T45 p1 adds {B} (p1:Swamp#1)
+T45 p1 casts Sign in Blood
+T45 moves: Disentomb, p1's library -> p1's hand
+T45 p1 draws
+T45 moves: Swamp, p1's library -> p1's hand
+T45 p1 draws
+T45 p1 loses 2 life
+T45 resolves: Sign in Blood
+T45 moves: Sign in Blood, stack -> p1's graveyard
+T45 moves: Disentomb, p1's hand -> stack
+T45 p1 cancels casting Disentomb
+T45 moves: Swamp, p1's hand -> battlefield
+T45 p1 plays p1:Swamp#8
+T45 taps: p1:Swamp#8
+T45 p1 adds {B} (p1:Swamp#8)
+T45 moves: Lightning Bolt, p1's hand -> stack
+T45 p1 cancels casting Lightning Bolt
+T45 moves: Vampire Aristocrat, p1's hand -> stack
+T45 p1 cancels casting Vampire Aristocrat
+T45 p1's unspent {B}{R} empties
+T45 taps: p1:Swamp#6
+T45 p1 adds {B} (p1:Swamp#6)
+T45 p1's unspent {B} empties
+T45 p1 attack: nothing
+T45 moves: Fireball, p1's hand -> stack
+T45 p1 cancels casting Fireball
+T45 moves: Disentomb, p1's hand -> stack
+T45 p1 cancels casting Disentomb
+T45 moves: Raging Goblin, p1's hand -> stack
+T45 p1 cancels casting Raging Goblin
+T45 moves: Royal Assassin, p1's hand -> stack
+T45 p1 cancels casting Royal Assassin
+T45 moves: Disentomb, p1's hand -> stack
+T45 p1 cancels casting Disentomb
+T45 moves: Fireball, p1's hand -> stack
+T45 p1 cancels casting Fireball
+T45 moves: Lightning Bolt, p1's hand -> p1's graveyard
+T45 p1 discards Lightning Bolt
+T46 turn 46 begins (p2)
+T46 untaps: p2:Plains#1
+T46 untaps: p2:Plains#2
+T46 untaps: p2:Plains#3
+T46 untaps: p2:Plains#4
+T46 untaps: p2:Plains#5
+T46 untaps: p2:Mountain#1
+T46 untaps: p2:Mountain#2
+T46 untaps: p2:Mountain#3
+T46 untaps: p2:Mountain#4
+T46 untaps: p2:Plains#6
+T46 untaps: p2:Mountain#5
+T46 untaps: p2:Mountain#6
+T46 untaps: p2:Blinding Mage
+T46 untaps: p2:Mountain#7
+T46 untaps: p2:Plains#7
+T46 taps: p2:Plains#6
+T46 p2 adds {W} (p2:Plains#6)
+T46 taps: p2:Mountain#6
+T46 p2 adds {R} (p2:Mountain#6)
+T46 taps: p2:Plains#7
+T46 p2 adds {W} (p2:Plains#7)
+T46 taps: p2:Plains#3
+T46 p2 adds {W} (p2:Plains#3)
+T46 taps: p2:Mountain#1
+T46 p2 adds {R} (p2:Mountain#1)
+T46 p2 cancels activating p2:Blinding Mage
+T46 taps: p2:Mountain#5
+T46 p2 adds {R} (p2:Mountain#5)
+T46 taps: p2:Plains#2
+T46 p2 adds {W} (p2:Plains#2)
+T46 taps: p2:Plains#1
+T46 p2 adds {W} (p2:Plains#1)
+T46 taps: p2:Plains#5
+T46 p2 adds {W} (p2:Plains#5)
+T46 taps: p2:Plains#4
+T46 p2 adds {W} (p2:Plains#4)
+T46 taps: p2:Mountain#4
+T46 p2 adds {R} (p2:Mountain#4)
+T46 p2's unspent {W}{W}{W}{W}{W}{W}{W}{R}{R}{R}{R} empties
+T46 moves: Plains, p2's library -> p2's hand
+T46 p2 draws
+T46 p2 cancels activating p2:Blinding Mage
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 p2 cancels activating p2:Blinding Mage
+T46 p2 cancels activating p2:Blinding Mage
+T46 p2's unspent {R} empties
+T46 p2 attack: nothing
+T46 taps: p2:Mountain#3
+T46 p2 adds {R} (p2:Mountain#3)
+T46 p2 cancels activating p2:Blinding Mage
+T46 p2 cancels activating p2:Blinding Mage
+T46 moves: Lava Axe, p2's hand -> stack
+T46 taps: p2:Mountain#3
+T46 p2 adds {R} (p2:Mountain#3)
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 p2 cancels casting Lava Axe
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 moves: Plains, p2's hand -> battlefield
+T46 p2 plays p2:Plains#8
+T46 p2 cancels activating p2:Blinding Mage
+T46 moves: Planar Cleansing, p2's hand -> stack
+T46 p2 cancels casting Planar Cleansing
+T46 taps: p2:Mountain#3
+T46 p2 adds {R} (p2:Mountain#3)
+T46 taps: p2:Plains#8
+T46 p2 adds {W} (p2:Plains#8)
+T46 taps: p2:Blinding Mage
+T46 p2 activates p2:Blinding Mage
+T46 resolves: p2:Blinding Mage's ability
+T46 moves: Blinding Mage, p2's hand -> stack
+T46 p2 cancels casting Blinding Mage
+T46 moves: Lava Axe, p2's hand -> stack
+T46 p2 cancels casting Lava Axe
+T46 moves: Planar Cleansing, p2's hand -> stack
+T46 p2 cancels casting Planar Cleansing
+T46 moves: Planar Cleansing, p2's hand -> stack
+T46 p2 cancels casting Planar Cleansing
+T46 moves: Blinding Mage, p2's hand -> stack
+T46 p2 cancels casting Blinding Mage
+T46 moves: Lava Axe, p2's hand -> stack
+T46 p2 cancels casting Lava Axe
+T46 moves: Lava Axe, p2's hand -> stack
+T46 p2 cancels casting Lava Axe
+T46 p2's unspent {R}{R} empties
+T47 turn 47 begins (p1)
+T47 untaps: p1:Swamp#1
+T47 untaps: p1:Mountain#1
+T47 untaps: p1:Mountain#2
+T47 untaps: p1:Swamp#2
+T47 untaps: p1:Swamp#3
+T47 untaps: p1:Mountain#3
+T47 untaps: p1:Swamp#4
+T47 untaps: p1:Swamp#5
+T47 untaps: p1:Swamp#6
+T47 untaps: p1:Swamp#7
+T47 untaps: p1:Mountain#4
+T47 untaps: p1:Mountain#5
+T47 untaps: p1:Swamp#8
+T47 taps: p1:Mountain#1
+T47 p1 adds {R} (p1:Mountain#1)
+T47 taps: p1:Mountain#4
+T47 p1 adds {R} (p1:Mountain#4)
+T47 taps: p1:Mountain#5
+T47 p1 adds {R} (p1:Mountain#5)
+T47 taps: p1:Swamp#3
+T47 p1 adds {B} (p1:Swamp#3)
+T47 taps: p1:Swamp#2
+T47 p1 adds {B} (p1:Swamp#2)
+T47 taps: p1:Swamp#5
+T47 p1 adds {B} (p1:Swamp#5)
+T47 taps: p1:Mountain#3
+T47 p1 adds {R} (p1:Mountain#3)
+T47 p1's unspent {B}{B}{B}{R}{R}{R}{R} empties
+T47 moves: Lava Axe, p1's library -> p1's hand
+T47 p1 draws
+T47 taps: p1:Swamp#1
+T47 p1 adds {B} (p1:Swamp#1)
+T47 taps: p1:Mountain#2
+T47 p1 adds {R} (p1:Mountain#2)
+T47 taps: p1:Swamp#4
+T47 p1 adds {B} (p1:Swamp#4)
+T47 taps: p1:Swamp#7
+T47 p1 adds {B} (p1:Swamp#7)
+T47 taps: p1:Swamp#8
+T47 p1 adds {B} (p1:Swamp#8)
+T47 taps: p1:Swamp#6
+T47 p1 adds {B} (p1:Swamp#6)
+T47 p1's unspent {B}{B}{B}{B}{B}{R} empties
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Raging Goblin, p1's hand -> stack
+T47 p1 cancels casting Raging Goblin
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Royal Assassin, p1's hand -> stack
+T47 p1 cancels casting Royal Assassin
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Royal Assassin, p1's hand -> stack
+T47 p1 cancels casting Royal Assassin
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Royal Assassin, p1's hand -> stack
+T47 p1 cancels casting Royal Assassin
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Raging Goblin, p1's hand -> stack
+T47 p1 cancels casting Raging Goblin
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Vampire Aristocrat, p1's hand -> stack
+T47 p1 cancels casting Vampire Aristocrat
+T47 moves: Fireball, p1's hand -> stack
+T47 p1 cancels casting Fireball
+T47 moves: Lava Axe, p1's hand -> stack
+T47 p1 cancels casting Lava Axe
+T47 moves: Disentomb, p1's hand -> stack
+T47 p1 cancels casting Disentomb
+T47 p1 attack: nothing
+T47 moves: Raging Goblin, p1's hand -> p1's graveyard
+T47 p1 discards Raging Goblin
+T48 turn 48 begins (p2)
+T48 untaps: p2:Plains#1
+T48 untaps: p2:Plains#2
+T48 untaps: p2:Plains#3
+T48 untaps: p2:Plains#4
+T48 untaps: p2:Plains#5
+T48 untaps: p2:Mountain#1
+T48 untaps: p2:Mountain#2
+T48 untaps: p2:Mountain#3
+T48 untaps: p2:Mountain#4
+T48 untaps: p2:Plains#6
+T48 untaps: p2:Mountain#5
+T48 untaps: p2:Mountain#6
+T48 untaps: p2:Blinding Mage
+T48 untaps: p2:Mountain#7
+T48 untaps: p2:Plains#7
+T48 untaps: p2:Plains#8
+T48 moves: Ignite Disorder, p2's library -> p2's hand
+T48 p2 draws
+T48 taps: p2:Mountain#4
+T48 p2 adds {R} (p2:Mountain#4)
+T48 taps: p2:Plains#4
+T48 p2 adds {W} (p2:Plains#4)
+T48 taps: p2:Plains#3
+T48 p2 adds {W} (p2:Plains#3)
+T48 taps: p2:Mountain#2
+T48 p2 adds {R} (p2:Mountain#2)
+T48 taps: p2:Plains#8
+T48 p2 adds {W} (p2:Plains#8)
+T48 taps: p2:Plains#6
+T48 p2 adds {W} (p2:Plains#6)
+T48 taps: p2:Mountain#6
+T48 p2 adds {R} (p2:Mountain#6)
+T48 p2 cancels activating p2:Blinding Mage
+T48 taps: p2:Mountain#5
+T48 p2 adds {R} (p2:Mountain#5)
+T48 taps: p2:Mountain#7
+T48 p2 adds {R} (p2:Mountain#7)
+T48 taps: p2:Plains#7
+T48 p2 adds {W} (p2:Plains#7)
+T48 taps: p2:Mountain#1
+T48 p2 adds {R} (p2:Mountain#1)
+T48 p2's unspent {W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T48 moves: Ignite Disorder, p2's hand -> stack
+T48 p2 cancels casting Ignite Disorder
+T48 moves: Ignite Disorder, p2's hand -> stack
+T48 p2 cancels casting Ignite Disorder
+T48 p2 cancels activating p2:Blinding Mage
+T48 taps: p2:Mountain#3
+T48 p2 adds {R} (p2:Mountain#3)
+T48 taps: p2:Plains#5
+T48 p2 adds {W} (p2:Plains#5)
+T48 moves: Ignite Disorder, p2's hand -> stack
+T48 taps: p2:Plains#2
+T48 p2 adds {W} (p2:Plains#2)
+T48 taps: p2:Plains#1
+T48 p2 adds {W} (p2:Plains#1)
+T48 p2 casts Ignite Disorder
+T48 damage: Ignite Disorder -> p2:Blinding Mage 3
+T48 resolves: Ignite Disorder
+T48 moves: Ignite Disorder, stack -> p2's graveyard
+T48 state-based actions: p2:Blinding Mage lethalDamage
+T48 destroyed: p2:Blinding Mage
+T48 moves: Blinding Mage, battlefield -> p2's graveyard
+T48 p2's unspent {W}{W} empties
+T48 p2 attack: nothing
+T48 moves: Blinding Mage, p2's hand -> stack
+T48 p2 cancels casting Blinding Mage
+T49 turn 49 begins (p1)
+T49 untaps: p1:Swamp#1
+T49 untaps: p1:Mountain#1
+T49 untaps: p1:Mountain#2
+T49 untaps: p1:Swamp#2
+T49 untaps: p1:Swamp#3
+T49 untaps: p1:Mountain#3
+T49 untaps: p1:Swamp#4
+T49 untaps: p1:Swamp#5
+T49 untaps: p1:Swamp#6
+T49 untaps: p1:Swamp#7
+T49 untaps: p1:Mountain#4
+T49 untaps: p1:Mountain#5
+T49 untaps: p1:Swamp#8
+T49 taps: p1:Mountain#2
+T49 p1 adds {R} (p1:Mountain#2)
+T49 taps: p1:Swamp#2
+T49 p1 adds {B} (p1:Swamp#2)
+T49 taps: p1:Mountain#4
+T49 p1 adds {R} (p1:Mountain#4)
+T49 taps: p1:Swamp#1
+T49 p1 adds {B} (p1:Swamp#1)
+T49 taps: p1:Mountain#5
+T49 p1 adds {R} (p1:Mountain#5)
+T49 taps: p1:Swamp#4
+T49 p1 adds {B} (p1:Swamp#4)
+T49 taps: p1:Mountain#3
+T49 p1 adds {R} (p1:Mountain#3)
+T49 taps: p1:Swamp#7
+T49 p1 adds {B} (p1:Swamp#7)
+T49 taps: p1:Swamp#3
+T49 p1 adds {B} (p1:Swamp#3)
+T49 taps: p1:Mountain#1
+T49 p1 adds {R} (p1:Mountain#1)
+T49 taps: p1:Swamp#6
+T49 p1 adds {B} (p1:Swamp#6)
+T49 p1's unspent {B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T49 moves: Gray Ogre, p1's library -> p1's hand
+T49 p1 draws
+T49 taps: p1:Swamp#5
+T49 p1 adds {B} (p1:Swamp#5)
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Royal Assassin, p1's hand -> stack
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 p1 cancels casting Royal Assassin
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Vampire Aristocrat, p1's hand -> stack
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 p1 cancels casting Vampire Aristocrat
+T49 moves: Vampire Aristocrat, p1's hand -> stack
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 p1 cancels casting Vampire Aristocrat
+T49 moves: Gray Ogre, p1's hand -> stack
+T49 p1 cancels casting Gray Ogre
+T49 moves: Royal Assassin, p1's hand -> stack
+T49 p1 cancels casting Royal Assassin
+T49 moves: Gray Ogre, p1's hand -> stack
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 p1 cancels casting Gray Ogre
+T49 moves: Lava Axe, p1's hand -> stack
+T49 p1 cancels casting Lava Axe
+T49 moves: Royal Assassin, p1's hand -> stack
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 p1 cancels casting Royal Assassin
+T49 moves: Gray Ogre, p1's hand -> stack
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 p1 cancels casting Gray Ogre
+T49 moves: Disentomb, p1's hand -> stack
+T49 p1 casts Disentomb
+T49 taps: p1:Swamp#8
+T49 p1 adds {B} (p1:Swamp#8)
+T49 moves: Hill Giant, p1's graveyard -> p1's hand
+T49 resolves: Disentomb
+T49 moves: Disentomb, stack -> p1's graveyard
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Lava Axe, p1's hand -> stack
+T49 p1 cancels casting Lava Axe
+T49 moves: Gray Ogre, p1's hand -> stack
+T49 p1 cancels casting Gray Ogre
+T49 moves: Hill Giant, p1's hand -> stack
+T49 p1 cancels casting Hill Giant
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Royal Assassin, p1's hand -> stack
+T49 p1 cancels casting Royal Assassin
+T49 moves: Vampire Aristocrat, p1's hand -> stack
+T49 p1 cancels casting Vampire Aristocrat
+T49 moves: Royal Assassin, p1's hand -> stack
+T49 p1 cancels casting Royal Assassin
+T49 moves: Lava Axe, p1's hand -> stack
+T49 p1 cancels casting Lava Axe
+T49 p1's unspent {B} empties
+T49 p1 attack: nothing
+T49 moves: Vampire Aristocrat, p1's hand -> stack
+T49 p1 cancels casting Vampire Aristocrat
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Hill Giant, p1's hand -> stack
+T49 p1 cancels casting Hill Giant
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Royal Assassin, p1's hand -> stack
+T49 p1 cancels casting Royal Assassin
+T49 moves: Vampire Aristocrat, p1's hand -> stack
+T49 p1 cancels casting Vampire Aristocrat
+T49 moves: Hill Giant, p1's hand -> stack
+T49 p1 cancels casting Hill Giant
+T49 moves: Hill Giant, p1's hand -> stack
+T49 p1 cancels casting Hill Giant
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Fireball, p1's hand -> stack
+T49 p1 cancels casting Fireball
+T49 moves: Gray Ogre, p1's hand -> p1's graveyard
+T49 p1 discards Gray Ogre
+T50 turn 50 begins (p2)
+T50 untaps: p2:Plains#1
+T50 untaps: p2:Plains#2
+T50 untaps: p2:Plains#3
+T50 untaps: p2:Plains#4
+T50 untaps: p2:Plains#5
+T50 untaps: p2:Mountain#1
+T50 untaps: p2:Mountain#2
+T50 untaps: p2:Mountain#3
+T50 untaps: p2:Mountain#4
+T50 untaps: p2:Plains#6
+T50 untaps: p2:Mountain#5
+T50 untaps: p2:Mountain#6
+T50 untaps: p2:Mountain#7
+T50 untaps: p2:Plains#7
+T50 untaps: p2:Plains#8
+T50 taps: p2:Plains#4
+T50 p2 adds {W} (p2:Plains#4)
+T50 taps: p2:Plains#5
+T50 p2 adds {W} (p2:Plains#5)
+T50 taps: p2:Plains#3
+T50 p2 adds {W} (p2:Plains#3)
+T50 taps: p2:Plains#6
+T50 p2 adds {W} (p2:Plains#6)
+T50 taps: p2:Mountain#2
+T50 p2 adds {R} (p2:Mountain#2)
+T50 taps: p2:Mountain#7
+T50 p2 adds {R} (p2:Mountain#7)
+T50 taps: p2:Plains#1
+T50 p2 adds {W} (p2:Plains#1)
+T50 taps: p2:Plains#2
+T50 p2 adds {W} (p2:Plains#2)
+T50 taps: p2:Mountain#6
+T50 p2 adds {R} (p2:Mountain#6)
+T50 taps: p2:Mountain#5
+T50 p2 adds {R} (p2:Mountain#5)
+T50 taps: p2:Mountain#3
+T50 p2 adds {R} (p2:Mountain#3)
+T50 taps: p2:Mountain#4
+T50 p2 adds {R} (p2:Mountain#4)
+T50 p2's unspent {W}{W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T50 moves: Mountain, p2's library -> p2's hand
+T50 p2 draws
+T50 taps: p2:Plains#7
+T50 p2 adds {W} (p2:Plains#7)
+T50 taps: p2:Plains#8
+T50 p2 adds {W} (p2:Plains#8)
+T50 p2's unspent {W}{W} empties
+T50 moves: Blinding Mage, p2's hand -> stack
+T50 p2 cancels casting Blinding Mage
+T50 moves: Lava Axe, p2's hand -> stack
+T50 p2 cancels casting Lava Axe
+T50 p2 attack: nothing
+T50 taps: p2:Mountain#1
+T50 p2 adds {R} (p2:Mountain#1)
+T50 p2's unspent {R} empties
+T50 moves: Blinding Mage, p2's hand -> stack
+T50 p2 cancels casting Blinding Mage
+T50 moves: Lava Axe, p2's hand -> p2's graveyard
+T50 p2 discards Lava Axe
+T51 turn 51 begins (p1)
+T51 untaps: p1:Swamp#1
+T51 untaps: p1:Mountain#1
+T51 untaps: p1:Mountain#2
+T51 untaps: p1:Swamp#2
+T51 untaps: p1:Swamp#3
+T51 untaps: p1:Mountain#3
+T51 untaps: p1:Swamp#4
+T51 untaps: p1:Swamp#5
+T51 untaps: p1:Swamp#6
+T51 untaps: p1:Swamp#7
+T51 untaps: p1:Mountain#4
+T51 untaps: p1:Mountain#5
+T51 untaps: p1:Swamp#8
+T51 taps: p1:Mountain#4
+T51 p1 adds {R} (p1:Mountain#4)
+T51 taps: p1:Swamp#4
+T51 p1 adds {B} (p1:Swamp#4)
+T51 taps: p1:Swamp#1
+T51 p1 adds {B} (p1:Swamp#1)
+T51 taps: p1:Swamp#5
+T51 p1 adds {B} (p1:Swamp#5)
+T51 taps: p1:Swamp#3
+T51 p1 adds {B} (p1:Swamp#3)
+T51 taps: p1:Swamp#7
+T51 p1 adds {B} (p1:Swamp#7)
+T51 taps: p1:Mountain#3
+T51 p1 adds {R} (p1:Mountain#3)
+T51 taps: p1:Swamp#6
+T51 p1 adds {B} (p1:Swamp#6)
+T51 taps: p1:Mountain#2
+T51 p1 adds {R} (p1:Mountain#2)
+T51 taps: p1:Mountain#5
+T51 p1 adds {R} (p1:Mountain#5)
+T51 taps: p1:Swamp#8
+T51 p1 adds {B} (p1:Swamp#8)
+T51 taps: p1:Swamp#2
+T51 p1 adds {B} (p1:Swamp#2)
+T51 taps: p1:Mountain#1
+T51 p1 adds {R} (p1:Mountain#1)
+T51 p1's unspent {B}{B}{B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T51 moves: Doom Blade, p1's library -> p1's hand
+T51 p1 draws
+T51 moves: Fireball, p1's hand -> stack
+T51 p1 cancels casting Fireball
+T51 moves: Hill Giant, p1's hand -> stack
+T51 p1 cancels casting Hill Giant
+T51 moves: Lava Axe, p1's hand -> stack
+T51 p1 cancels casting Lava Axe
+T51 moves: Fireball, p1's hand -> stack
+T51 p1 cancels casting Fireball
+T51 p1 attack: nothing
+T51 moves: Hill Giant, p1's hand -> stack
+T51 p1 cancels casting Hill Giant
+T51 moves: Fireball, p1's hand -> stack
+T51 p1 cancels casting Fireball
+T51 moves: Fireball, p1's hand -> stack
+T51 p1 cancels casting Fireball
+T51 moves: Vampire Aristocrat, p1's hand -> stack
+T51 p1 cancels casting Vampire Aristocrat
+T51 moves: Hill Giant, p1's hand -> stack
+T51 p1 cancels casting Hill Giant
+T51 moves: Royal Assassin, p1's hand -> stack
+T51 p1 cancels casting Royal Assassin
+T51 moves: Fireball, p1's hand -> p1's graveyard
+T51 p1 discards Fireball
+T52 turn 52 begins (p2)
+T52 untaps: p2:Plains#1
+T52 untaps: p2:Plains#2
+T52 untaps: p2:Plains#3
+T52 untaps: p2:Plains#4
+T52 untaps: p2:Plains#5
+T52 untaps: p2:Mountain#1
+T52 untaps: p2:Mountain#2
+T52 untaps: p2:Mountain#3
+T52 untaps: p2:Mountain#4
+T52 untaps: p2:Plains#6
+T52 untaps: p2:Mountain#5
+T52 untaps: p2:Mountain#6
+T52 untaps: p2:Mountain#7
+T52 untaps: p2:Plains#7
+T52 untaps: p2:Plains#8
+T52 taps: p2:Mountain#2
+T52 p2 adds {R} (p2:Mountain#2)
+T52 taps: p2:Mountain#6
+T52 p2 adds {R} (p2:Mountain#6)
+T52 taps: p2:Plains#3
+T52 p2 adds {W} (p2:Plains#3)
+T52 taps: p2:Plains#1
+T52 p2 adds {W} (p2:Plains#1)
+T52 taps: p2:Mountain#5
+T52 p2 adds {R} (p2:Mountain#5)
+T52 taps: p2:Plains#2
+T52 p2 adds {W} (p2:Plains#2)
+T52 taps: p2:Mountain#4
+T52 p2 adds {R} (p2:Mountain#4)
+T52 taps: p2:Mountain#7
+T52 p2 adds {R} (p2:Mountain#7)
+T52 taps: p2:Plains#5
+T52 p2 adds {W} (p2:Plains#5)
+T52 taps: p2:Mountain#1
+T52 p2 adds {R} (p2:Mountain#1)
+T52 taps: p2:Plains#6
+T52 p2 adds {W} (p2:Plains#6)
+T52 p2's unspent {W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T52 moves: Righteousness, p2's library -> p2's hand
+T52 p2 draws
+T52 taps: p2:Plains#4
+T52 p2 adds {W} (p2:Plains#4)
+T52 p2's unspent {W} empties
+T52 taps: p2:Plains#7
+T52 p2 adds {W} (p2:Plains#7)
+T52 taps: p2:Plains#8
+T52 p2 adds {W} (p2:Plains#8)
+T52 taps: p2:Mountain#3
+T52 p2 adds {R} (p2:Mountain#3)
+T52 p2's unspent {W}{W}{R} empties
+T52 p2 attack: nothing
+T52 moves: Planar Cleansing, p2's hand -> stack
+T52 p2 cancels casting Planar Cleansing
+T52 moves: Planar Cleansing, p2's hand -> stack
+T52 p2 cancels casting Planar Cleansing
+T52 moves: Mountain, p2's hand -> battlefield
+T52 p2 plays p2:Mountain#8
+T52 moves: Planar Cleansing, p2's hand -> stack
+T52 p2 cancels casting Planar Cleansing
+T52 taps: p2:Mountain#8
+T52 p2 adds {R} (p2:Mountain#8)
+T52 p2's unspent {R} empties
+T53 turn 53 begins (p1)
+T53 untaps: p1:Swamp#1
+T53 untaps: p1:Mountain#1
+T53 untaps: p1:Mountain#2
+T53 untaps: p1:Swamp#2
+T53 untaps: p1:Swamp#3
+T53 untaps: p1:Mountain#3
+T53 untaps: p1:Swamp#4
+T53 untaps: p1:Swamp#5
+T53 untaps: p1:Swamp#6
+T53 untaps: p1:Swamp#7
+T53 untaps: p1:Mountain#4
+T53 untaps: p1:Mountain#5
+T53 untaps: p1:Swamp#8
+T53 taps: p1:Swamp#3
+T53 p1 adds {B} (p1:Swamp#3)
+T53 taps: p1:Swamp#2
+T53 p1 adds {B} (p1:Swamp#2)
+T53 p1's unspent {B}{B} empties
+T53 moves: Vampire Aristocrat, p1's library -> p1's hand
+T53 p1 draws
+T53 taps: p1:Mountain#2
+T53 p1 adds {R} (p1:Mountain#2)
+T53 taps: p1:Mountain#1
+T53 p1 adds {R} (p1:Mountain#1)
+T53 taps: p1:Swamp#4
+T53 p1 adds {B} (p1:Swamp#4)
+T53 taps: p1:Swamp#7
+T53 p1 adds {B} (p1:Swamp#7)
+T53 taps: p1:Swamp#1
+T53 p1 adds {B} (p1:Swamp#1)
+T53 taps: p1:Mountain#5
+T53 p1 adds {R} (p1:Mountain#5)
+T53 taps: p1:Swamp#5
+T53 p1 adds {B} (p1:Swamp#5)
+T53 taps: p1:Mountain#4
+T53 p1 adds {R} (p1:Mountain#4)
+T53 taps: p1:Swamp#8
+T53 p1 adds {B} (p1:Swamp#8)
+T53 taps: p1:Swamp#6
+T53 p1 adds {B} (p1:Swamp#6)
+T53 taps: p1:Mountain#3
+T53 p1 adds {R} (p1:Mountain#3)
+T53 p1's unspent {B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T53 moves: Vampire Aristocrat, p1's hand -> stack
+T53 p1 cancels casting Vampire Aristocrat
+T53 moves: Vampire Aristocrat, p1's hand -> stack
+T53 p1 cancels casting Vampire Aristocrat
+T53 moves: Lava Axe, p1's hand -> stack
+T53 p1 cancels casting Lava Axe
+T53 moves: Hill Giant, p1's hand -> stack
+T53 p1 cancels casting Hill Giant
+T53 moves: Fireball, p1's hand -> stack
+T53 p1 cancels casting Fireball
+T53 moves: Royal Assassin, p1's hand -> stack
+T53 p1 cancels casting Royal Assassin
+T53 p1 attack: nothing
+T53 moves: Lava Axe, p1's hand -> stack
+T53 p1 cancels casting Lava Axe
+T53 moves: Vampire Aristocrat, p1's hand -> stack
+T53 p1 cancels casting Vampire Aristocrat
+T53 moves: Lava Axe, p1's hand -> stack
+T53 p1 cancels casting Lava Axe
+T53 moves: Vampire Aristocrat, p1's hand -> stack
+T53 p1 cancels casting Vampire Aristocrat
+T53 moves: Lava Axe, p1's hand -> stack
+T53 p1 cancels casting Lava Axe
+T53 moves: Lava Axe, p1's hand -> stack
+T53 p1 cancels casting Lava Axe
+T53 moves: Hill Giant, p1's hand -> stack
+T53 p1 cancels casting Hill Giant
+T53 moves: Vampire Aristocrat, p1's hand -> stack
+T53 p1 cancels casting Vampire Aristocrat
+T53 moves: Vampire Aristocrat, p1's hand -> p1's graveyard
+T53 p1 discards Vampire Aristocrat
+T54 turn 54 begins (p2)
+T54 untaps: p2:Plains#1
+T54 untaps: p2:Plains#2
+T54 untaps: p2:Plains#3
+T54 untaps: p2:Plains#4
+T54 untaps: p2:Plains#5
+T54 untaps: p2:Mountain#1
+T54 untaps: p2:Mountain#2
+T54 untaps: p2:Mountain#3
+T54 untaps: p2:Mountain#4
+T54 untaps: p2:Plains#6
+T54 untaps: p2:Mountain#5
+T54 untaps: p2:Mountain#6
+T54 untaps: p2:Mountain#7
+T54 untaps: p2:Plains#7
+T54 untaps: p2:Plains#8
+T54 untaps: p2:Mountain#8
+T54 taps: p2:Plains#1
+T54 p2 adds {W} (p2:Plains#1)
+T54 taps: p2:Plains#6
+T54 p2 adds {W} (p2:Plains#6)
+T54 taps: p2:Plains#8
+T54 p2 adds {W} (p2:Plains#8)
+T54 taps: p2:Mountain#3
+T54 p2 adds {R} (p2:Mountain#3)
+T54 taps: p2:Plains#2
+T54 p2 adds {W} (p2:Plains#2)
+T54 taps: p2:Mountain#2
+T54 p2 adds {R} (p2:Mountain#2)
+T54 taps: p2:Mountain#4
+T54 p2 adds {R} (p2:Mountain#4)
+T54 taps: p2:Mountain#6
+T54 p2 adds {R} (p2:Mountain#6)
+T54 taps: p2:Plains#5
+T54 p2 adds {W} (p2:Plains#5)
+T54 taps: p2:Mountain#7
+T54 p2 adds {R} (p2:Mountain#7)
+T54 taps: p2:Mountain#1
+T54 p2 adds {R} (p2:Mountain#1)
+T54 taps: p2:Plains#3
+T54 p2 adds {W} (p2:Plains#3)
+T54 p2's unspent {W}{W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T54 moves: Ignite Disorder, p2's library -> p2's hand
+T54 p2 draws
+T54 taps: p2:Plains#4
+T54 p2 adds {W} (p2:Plains#4)
+T54 taps: p2:Mountain#5
+T54 p2 adds {R} (p2:Mountain#5)
+T54 taps: p2:Mountain#8
+T54 p2 adds {R} (p2:Mountain#8)
+T54 taps: p2:Plains#7
+T54 p2 adds {W} (p2:Plains#7)
+T54 p2's unspent {W}{W}{R}{R} empties
+T54 moves: Planar Cleansing, p2's hand -> stack
+T54 p2 cancels casting Planar Cleansing
+T54 moves: Blinding Mage, p2's hand -> stack
+T54 p2 cancels casting Blinding Mage
+T54 p2 attack: nothing
+T54 moves: Righteousness, p2's hand -> p2's graveyard
+T54 p2 discards Righteousness
+T55 turn 55 begins (p1)
+T55 untaps: p1:Swamp#1
+T55 untaps: p1:Mountain#1
+T55 untaps: p1:Mountain#2
+T55 untaps: p1:Swamp#2
+T55 untaps: p1:Swamp#3
+T55 untaps: p1:Mountain#3
+T55 untaps: p1:Swamp#4
+T55 untaps: p1:Swamp#5
+T55 untaps: p1:Swamp#6
+T55 untaps: p1:Swamp#7
+T55 untaps: p1:Mountain#4
+T55 untaps: p1:Mountain#5
+T55 untaps: p1:Swamp#8
+T55 taps: p1:Mountain#5
+T55 p1 adds {R} (p1:Mountain#5)
+T55 taps: p1:Swamp#5
+T55 p1 adds {B} (p1:Swamp#5)
+T55 taps: p1:Mountain#1
+T55 p1 adds {R} (p1:Mountain#1)
+T55 taps: p1:Swamp#8
+T55 p1 adds {B} (p1:Swamp#8)
+T55 taps: p1:Swamp#6
+T55 p1 adds {B} (p1:Swamp#6)
+T55 taps: p1:Mountain#3
+T55 p1 adds {R} (p1:Mountain#3)
+T55 taps: p1:Mountain#2
+T55 p1 adds {R} (p1:Mountain#2)
+T55 taps: p1:Swamp#2
+T55 p1 adds {B} (p1:Swamp#2)
+T55 taps: p1:Swamp#7
+T55 p1 adds {B} (p1:Swamp#7)
+T55 taps: p1:Mountain#4
+T55 p1 adds {R} (p1:Mountain#4)
+T55 p1's unspent {B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T55 moves: Mountain, p1's library -> p1's hand
+T55 p1 draws
+T55 taps: p1:Swamp#1
+T55 p1 adds {B} (p1:Swamp#1)
+T55 taps: p1:Swamp#4
+T55 p1 adds {B} (p1:Swamp#4)
+T55 taps: p1:Swamp#3
+T55 p1 adds {B} (p1:Swamp#3)
+T55 p1's unspent {B}{B}{B} empties
+T55 moves: Hill Giant, p1's hand -> stack
+T55 p1 cancels casting Hill Giant
+T55 moves: Royal Assassin, p1's hand -> stack
+T55 p1 cancels casting Royal Assassin
+T55 p1 attack: nothing
+T55 moves: Lava Axe, p1's hand -> stack
+T55 p1 cancels casting Lava Axe
+T55 moves: Royal Assassin, p1's hand -> stack
+T55 p1 cancels casting Royal Assassin
+T55 moves: Mountain, p1's hand -> battlefield
+T55 p1 plays p1:Mountain#6
+T55 moves: Royal Assassin, p1's hand -> stack
+T55 taps: p1:Mountain#6
+T55 p1 adds {R} (p1:Mountain#6)
+T55 p1 cancels casting Royal Assassin
+T55 moves: Hill Giant, p1's hand -> stack
+T55 taps: p1:Mountain#6
+T55 p1 adds {R} (p1:Mountain#6)
+T55 p1 cancels casting Hill Giant
+T55 taps: p1:Mountain#6
+T55 p1 adds {R} (p1:Mountain#6)
+T55 p1's unspent {R} empties
+T56 turn 56 begins (p2)
+T56 untaps: p2:Plains#1
+T56 untaps: p2:Plains#2
+T56 untaps: p2:Plains#3
+T56 untaps: p2:Plains#4
+T56 untaps: p2:Plains#5
+T56 untaps: p2:Mountain#1
+T56 untaps: p2:Mountain#2
+T56 untaps: p2:Mountain#3
+T56 untaps: p2:Mountain#4
+T56 untaps: p2:Plains#6
+T56 untaps: p2:Mountain#5
+T56 untaps: p2:Mountain#6
+T56 untaps: p2:Mountain#7
+T56 untaps: p2:Plains#7
+T56 untaps: p2:Plains#8
+T56 untaps: p2:Mountain#8
+T56 taps: p2:Plains#5
+T56 p2 adds {W} (p2:Plains#5)
+T56 taps: p2:Plains#2
+T56 p2 adds {W} (p2:Plains#2)
+T56 taps: p2:Plains#8
+T56 p2 adds {W} (p2:Plains#8)
+T56 taps: p2:Plains#6
+T56 p2 adds {W} (p2:Plains#6)
+T56 p2's unspent {W}{W}{W}{W} empties
+T56 moves: Plains, p2's library -> p2's hand
+T56 p2 draws
+T56 taps: p2:Mountain#8
+T56 p2 adds {R} (p2:Mountain#8)
+T56 taps: p2:Mountain#1
+T56 p2 adds {R} (p2:Mountain#1)
+T56 taps: p2:Mountain#6
+T56 p2 adds {R} (p2:Mountain#6)
+T56 taps: p2:Mountain#7
+T56 p2 adds {R} (p2:Mountain#7)
+T56 taps: p2:Plains#7
+T56 p2 adds {W} (p2:Plains#7)
+T56 taps: p2:Mountain#3
+T56 p2 adds {R} (p2:Mountain#3)
+T56 taps: p2:Plains#3
+T56 p2 adds {W} (p2:Plains#3)
+T56 taps: p2:Mountain#5
+T56 p2 adds {R} (p2:Mountain#5)
+T56 taps: p2:Mountain#2
+T56 p2 adds {R} (p2:Mountain#2)
+T56 p2's unspent {W}{W}{R}{R}{R}{R}{R}{R}{R} empties
+T56 taps: p2:Mountain#4
+T56 p2 adds {R} (p2:Mountain#4)
+T56 taps: p2:Plains#4
+T56 p2 adds {W} (p2:Plains#4)
+T56 moves: Planar Cleansing, p2's hand -> stack
+T56 taps: p2:Plains#1
+T56 p2 adds {W} (p2:Plains#1)
+T56 p2 cancels casting Planar Cleansing
+T56 moves: Planar Cleansing, p2's hand -> stack
+T56 taps: p2:Plains#1
+T56 p2 adds {W} (p2:Plains#1)
+T56 p2 cancels casting Planar Cleansing
+T56 moves: Planar Cleansing, p2's hand -> stack
+T56 taps: p2:Plains#1
+T56 p2 adds {W} (p2:Plains#1)
+T56 p2 cancels casting Planar Cleansing
+T56 moves: Blinding Mage, p2's hand -> stack
+T56 taps: p2:Plains#1
+T56 p2 adds {W} (p2:Plains#1)
+T56 p2 casts Blinding Mage
+T56 resolves: Blinding Mage
+T56 moves: Blinding Mage, stack -> battlefield
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 p2's unspent {W} empties
+T56 p2 attack: nothing
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Doom Blade, p1's hand -> stack
+T56 p1 cancels casting Doom Blade
+T56 moves: Doom Blade, p1's hand -> stack
+T56 p1 cancels casting Doom Blade
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Planar Cleansing, p2's hand -> stack
+T56 p2 cancels casting Planar Cleansing
+T56 moves: Plains, p2's hand -> battlefield
+T56 p2 plays p2:Plains#9
+T56 moves: Planar Cleansing, p2's hand -> stack
+T56 taps: p2:Plains#9
+T56 p2 adds {W} (p2:Plains#9)
+T56 p2 cancels casting Planar Cleansing
+T56 taps: p2:Plains#9
+T56 p2 adds {W} (p2:Plains#9)
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Ignite Disorder, p2's hand -> stack
+T56 p2 cancels casting Ignite Disorder
+T56 moves: Doom Blade, p1's hand -> stack
+T56 p1 cancels casting Doom Blade
+T56 p2's unspent {W} empties
+T57 turn 57 begins (p1)
+T57 untaps: p1:Swamp#1
+T57 untaps: p1:Mountain#1
+T57 untaps: p1:Mountain#2
+T57 untaps: p1:Swamp#2
+T57 untaps: p1:Swamp#3
+T57 untaps: p1:Mountain#3
+T57 untaps: p1:Swamp#4
+T57 untaps: p1:Swamp#5
+T57 untaps: p1:Swamp#6
+T57 untaps: p1:Swamp#7
+T57 untaps: p1:Mountain#4
+T57 untaps: p1:Mountain#5
+T57 untaps: p1:Swamp#8
+T57 untaps: p1:Mountain#6
+T57 taps: p1:Swamp#4
+T57 p1 adds {B} (p1:Swamp#4)
+T57 taps: p1:Swamp#8
+T57 p1 adds {B} (p1:Swamp#8)
+T57 taps: p1:Mountain#5
+T57 p1 adds {R} (p1:Mountain#5)
+T57 p1's unspent {B}{B}{R} empties
+T57 moves: Swamp, p1's library -> p1's hand
+T57 p1 draws
+T57 taps: p1:Mountain#6
+T57 p1 adds {R} (p1:Mountain#6)
+T57 p1's unspent {R} empties
+T57 moves: Ignite Disorder, p2's hand -> stack
+T57 p2 cancels casting Ignite Disorder
+T57 taps: p1:Mountain#1
+T57 p1 adds {R} (p1:Mountain#1)
+T57 taps: p1:Mountain#2
+T57 p1 adds {R} (p1:Mountain#2)
+T57 taps: p1:Swamp#7
+T57 p1 adds {B} (p1:Swamp#7)
+T57 moves: Doom Blade, p1's hand -> stack
+T57 p1 cancels casting Doom Blade
+T57 taps: p1:Mountain#3
+T57 p1 adds {R} (p1:Mountain#3)
+T57 taps: p1:Mountain#4
+T57 p1 adds {R} (p1:Mountain#4)
+T57 taps: p1:Swamp#6
+T57 p1 adds {B} (p1:Swamp#6)
+T57 moves: Ignite Disorder, p2's hand -> stack
+T57 p2 cancels casting Ignite Disorder
+T57 p1's unspent {B}{B}{R}{R}{R}{R} empties
+T57 p1 attack: nothing
+T57 moves: Ignite Disorder, p2's hand -> stack
+T57 p2 cancels casting Ignite Disorder
+T57 taps: p1:Swamp#2
+T57 p1 adds {B} (p1:Swamp#2)
+T57 p1's unspent {B} empties
+T57 moves: Doom Blade, p1's hand -> stack
+T57 taps: p1:Swamp#5
+T57 p1 adds {B} (p1:Swamp#5)
+T57 taps: p1:Swamp#3
+T57 p1 adds {B} (p1:Swamp#3)
+T57 p1 casts Doom Blade
+T57 moves: Ignite Disorder, p2's hand -> stack
+T57 p2 cancels casting Ignite Disorder
+T57 destroyed: p2:Blinding Mage
+T57 moves: Blinding Mage, battlefield -> p2's graveyard
+T57 resolves: Doom Blade
+T57 moves: Doom Blade, stack -> p1's graveyard
+T57 moves: Hill Giant, p1's hand -> stack
+T57 taps: p1:Swamp#1
+T57 p1 adds {B} (p1:Swamp#1)
+T57 p1 cancels casting Hill Giant
+T58 turn 58 begins (p2)
+T58 untaps: p2:Plains#1
+T58 untaps: p2:Plains#2
+T58 untaps: p2:Plains#3
+T58 untaps: p2:Plains#4
+T58 untaps: p2:Plains#5
+T58 untaps: p2:Mountain#1
+T58 untaps: p2:Mountain#2
+T58 untaps: p2:Mountain#3
+T58 untaps: p2:Mountain#4
+T58 untaps: p2:Plains#6
+T58 untaps: p2:Mountain#5
+T58 untaps: p2:Mountain#6
+T58 untaps: p2:Mountain#7
+T58 untaps: p2:Plains#7
+T58 untaps: p2:Plains#8
+T58 untaps: p2:Mountain#8
+T58 untaps: p2:Plains#9
+T58 taps: p2:Plains#4
+T58 p2 adds {W} (p2:Plains#4)
+T58 taps: p2:Plains#5
+T58 p2 adds {W} (p2:Plains#5)
+T58 taps: p2:Plains#7
+T58 p2 adds {W} (p2:Plains#7)
+T58 taps: p2:Mountain#7
+T58 p2 adds {R} (p2:Mountain#7)
+T58 taps: p2:Mountain#4
+T58 p2 adds {R} (p2:Mountain#4)
+T58 taps: p2:Plains#2
+T58 p2 adds {W} (p2:Plains#2)
+T58 p2's unspent {W}{W}{W}{W}{R}{R} empties
+T58 moves: Raging Goblin, p2's library -> p2's hand
+T58 p2 draws
+T58 taps: p2:Mountain#3
+T58 p2 adds {R} (p2:Mountain#3)
+T58 taps: p2:Mountain#5
+T58 p2 adds {R} (p2:Mountain#5)
+T58 taps: p1:Swamp#1
+T58 p1 adds {B} (p1:Swamp#1)
+T58 taps: p2:Plains#6
+T58 p2 adds {W} (p2:Plains#6)
+T58 p1's unspent {B} empties
+T58 p2's unspent {W}{R}{R} empties
+T58 taps: p2:Plains#3
+T58 p2 adds {W} (p2:Plains#3)
+T58 taps: p2:Plains#9
+T58 p2 adds {W} (p2:Plains#9)
+T58 taps: p2:Plains#8
+T58 p2 adds {W} (p2:Plains#8)
+T58 taps: p2:Mountain#6
+T58 p2 adds {R} (p2:Mountain#6)
+T58 p2's unspent {W}{W}{W}{R} empties
+T58 taps: p2:Mountain#1
+T58 p2 adds {R} (p2:Mountain#1)
+T58 taps: p2:Plains#1
+T58 p2 adds {W} (p2:Plains#1)
+T58 taps: p2:Mountain#8
+T58 p2 adds {R} (p2:Mountain#8)
+T58 p2's unspent {W}{R}{R} empties
+T58 p2 attack: nothing
+T58 taps: p2:Mountain#2
+T58 p2 adds {R} (p2:Mountain#2)
+T58 p2's unspent {R} empties
+T59 turn 59 begins (p1)
+T59 untaps: p1:Swamp#1
+T59 untaps: p1:Mountain#1
+T59 untaps: p1:Mountain#2
+T59 untaps: p1:Swamp#2
+T59 untaps: p1:Swamp#3
+T59 untaps: p1:Mountain#3
+T59 untaps: p1:Swamp#4
+T59 untaps: p1:Swamp#5
+T59 untaps: p1:Swamp#6
+T59 untaps: p1:Swamp#7
+T59 untaps: p1:Mountain#4
+T59 untaps: p1:Mountain#5
+T59 untaps: p1:Swamp#8
+T59 untaps: p1:Mountain#6
+T59 taps: p1:Mountain#4
+T59 p1 adds {R} (p1:Mountain#4)
+T59 taps: p1:Swamp#8
+T59 p1 adds {B} (p1:Swamp#8)
+T59 taps: p1:Swamp#6
+T59 p1 adds {B} (p1:Swamp#6)
+T59 taps: p1:Swamp#1
+T59 p1 adds {B} (p1:Swamp#1)
+T59 taps: p1:Mountain#6
+T59 p1 adds {R} (p1:Mountain#6)
+T59 taps: p1:Mountain#5
+T59 p1 adds {R} (p1:Mountain#5)
+T59 taps: p1:Swamp#5
+T59 p1 adds {B} (p1:Swamp#5)
+T59 taps: p1:Mountain#3
+T59 p1 adds {R} (p1:Mountain#3)
+T59 taps: p1:Mountain#1
+T59 p1 adds {R} (p1:Mountain#1)
+T59 taps: p1:Mountain#2
+T59 p1 adds {R} (p1:Mountain#2)
+T59 taps: p1:Swamp#7
+T59 p1 adds {B} (p1:Swamp#7)
+T59 taps: p1:Swamp#4
+T59 p1 adds {B} (p1:Swamp#4)
+T59 taps: p1:Swamp#2
+T59 p1 adds {B} (p1:Swamp#2)
+T59 taps: p1:Swamp#3
+T59 p1 adds {B} (p1:Swamp#3)
+T59 p1's unspent {B}{B}{B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R}{R} empties
+T59 moves: Mountain, p1's library -> p1's hand
+T59 p1 draws
+T59 moves: Hill Giant, p1's hand -> stack
+T59 p1 cancels casting Hill Giant
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 p1 cancels casting Royal Assassin
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 p1 cancels casting Royal Assassin
+T59 moves: Lava Axe, p1's hand -> stack
+T59 p1 cancels casting Lava Axe
+T59 moves: Lava Axe, p1's hand -> stack
+T59 p1 cancels casting Lava Axe
+T59 moves: Fireball, p1's hand -> stack
+T59 p1 cancels casting Fireball
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 p1 cancels casting Royal Assassin
+T59 moves: Hill Giant, p1's hand -> stack
+T59 p1 cancels casting Hill Giant
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 p1 cancels casting Royal Assassin
+T59 moves: Mountain, p1's hand -> battlefield
+T59 p1 plays p1:Mountain#7
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 taps: p1:Mountain#7
+T59 p1 adds {R} (p1:Mountain#7)
+T59 p1 cancels casting Royal Assassin
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 taps: p1:Mountain#7
+T59 p1 adds {R} (p1:Mountain#7)
+T59 p1 cancels casting Royal Assassin
+T59 moves: Fireball, p1's hand -> stack
+T59 p1 cancels casting Fireball
+T59 p1 attack: nothing
+T59 taps: p1:Mountain#7
+T59 p1 adds {R} (p1:Mountain#7)
+T59 p1's unspent {R} empties
+T59 moves: Royal Assassin, p1's hand -> stack
+T59 p1 cancels casting Royal Assassin
+T59 moves: Hill Giant, p1's hand -> stack
+T59 p1 cancels casting Hill Giant
+T60 turn 60 begins (p2)
+T60 untaps: p2:Plains#1
+T60 untaps: p2:Plains#2
+T60 untaps: p2:Plains#3
+T60 untaps: p2:Plains#4
+T60 untaps: p2:Plains#5
+T60 untaps: p2:Mountain#1
+T60 untaps: p2:Mountain#2
+T60 untaps: p2:Mountain#3
+T60 untaps: p2:Mountain#4
+T60 untaps: p2:Plains#6
+T60 untaps: p2:Mountain#5
+T60 untaps: p2:Mountain#6
+T60 untaps: p2:Mountain#7
+T60 untaps: p2:Plains#7
+T60 untaps: p2:Plains#8
+T60 untaps: p2:Mountain#8
+T60 untaps: p2:Plains#9
+T60 taps: p2:Plains#2
+T60 p2 adds {W} (p2:Plains#2)
+T60 taps: p2:Plains#7
+T60 p2 adds {W} (p2:Plains#7)
+T60 taps: p2:Mountain#7
+T60 p2 adds {R} (p2:Mountain#7)
+T60 p2's unspent {W}{W}{R} empties
+T60 moves: Celestial Purge, p2's library -> p2's hand
+T60 p2 draws
+T60 taps: p2:Mountain#4
+T60 p2 adds {R} (p2:Mountain#4)
+T60 taps: p2:Plains#8
+T60 p2 adds {W} (p2:Plains#8)
+T60 taps: p2:Plains#6
+T60 p2 adds {W} (p2:Plains#6)
+T60 taps: p2:Mountain#8
+T60 p2 adds {R} (p2:Mountain#8)
+T60 taps: p2:Mountain#1
+T60 p2 adds {R} (p2:Mountain#1)
+T60 taps: p2:Mountain#5
+T60 p2 adds {R} (p2:Mountain#5)
+T60 taps: p2:Plains#9
+T60 p2 adds {W} (p2:Plains#9)
+T60 p2's unspent {W}{W}{W}{R}{R}{R}{R} empties
+T60 taps: p2:Plains#3
+T60 p2 adds {W} (p2:Plains#3)
+T60 taps: p2:Plains#5
+T60 p2 adds {W} (p2:Plains#5)
+T60 taps: p2:Mountain#2
+T60 p2 adds {R} (p2:Mountain#2)
+T60 taps: p2:Mountain#6
+T60 p2 adds {R} (p2:Mountain#6)
+T60 moves: Planar Cleansing, p2's hand -> stack
+T60 taps: p2:Mountain#3
+T60 p2 adds {R} (p2:Mountain#3)
+T60 p2 cancels casting Planar Cleansing
+T60 moves: Raging Goblin, p2's hand -> stack
+T60 p2 cancels casting Raging Goblin
+T60 taps: p2:Mountain#3
+T60 p2 adds {R} (p2:Mountain#3)
+T60 taps: p2:Plains#1
+T60 p2 adds {W} (p2:Plains#1)
+T60 moves: Raging Goblin, p2's hand -> stack
+T60 taps: p2:Plains#4
+T60 p2 adds {W} (p2:Plains#4)
+T60 p2 cancels casting Raging Goblin
+T60 moves: Raging Goblin, p2's hand -> stack
+T60 taps: p2:Plains#4
+T60 p2 adds {W} (p2:Plains#4)
+T60 p2 casts Raging Goblin
+T60 resolves: Raging Goblin
+T60 moves: Raging Goblin, stack -> battlefield
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 p2's unspent {W}{W}{W}{W}{R}{R} empties
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 p2 attack: nothing
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T60 moves: Celestial Purge, p2's hand -> stack
+T60 p2 cancels casting Celestial Purge
+T61 turn 61 begins (p1)
+T61 untaps: p1:Swamp#1
+T61 untaps: p1:Mountain#1
+T61 untaps: p1:Mountain#2
+T61 untaps: p1:Swamp#2
+T61 untaps: p1:Swamp#3
+T61 untaps: p1:Mountain#3
+T61 untaps: p1:Swamp#4
+T61 untaps: p1:Swamp#5
+T61 untaps: p1:Swamp#6
+T61 untaps: p1:Swamp#7
+T61 untaps: p1:Mountain#4
+T61 untaps: p1:Mountain#5
+T61 untaps: p1:Swamp#8
+T61 untaps: p1:Mountain#6
+T61 untaps: p1:Mountain#7
+T61 taps: p1:Mountain#1
+T61 p1 adds {R} (p1:Mountain#1)
+T61 taps: p1:Mountain#3
+T61 p1 adds {R} (p1:Mountain#3)
+T61 taps: p1:Mountain#4
+T61 p1 adds {R} (p1:Mountain#4)
+T61 taps: p1:Mountain#2
+T61 p1 adds {R} (p1:Mountain#2)
+T61 taps: p1:Swamp#6
+T61 p1 adds {B} (p1:Swamp#6)
+T61 moves: Celestial Purge, p2's hand -> stack
+T61 p2 cancels casting Celestial Purge
+T61 moves: Celestial Purge, p2's hand -> stack
+T61 p2 cancels casting Celestial Purge
+T61 p1's unspent {B}{R}{R}{R}{R} empties
+T61 moves: Mind Shatter, p1's library -> p1's hand
+T61 p1 draws
+T61 taps: p1:Swamp#1
+T61 p1 adds {B} (p1:Swamp#1)
+T61 taps: p1:Swamp#2
+T61 p1 adds {B} (p1:Swamp#2)
+T61 taps: p1:Mountain#7
+T61 p1 adds {R} (p1:Mountain#7)
+T61 taps: p1:Swamp#5
+T61 p1 adds {B} (p1:Swamp#5)
+T61 taps: p1:Swamp#4
+T61 p1 adds {B} (p1:Swamp#4)
+T61 taps: p1:Swamp#7
+T61 p1 adds {B} (p1:Swamp#7)
+T61 p1's unspent {B}{B}{B}{B}{B}{R} empties
+T61 taps: p1:Swamp#8
+T61 p1 adds {B} (p1:Swamp#8)
+T61 moves: Vampire Aristocrat, p1's hand -> stack
+T61 p1 cancels casting Vampire Aristocrat
+T61 taps: p1:Mountain#5
+T61 p1 adds {R} (p1:Mountain#5)
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 taps: p1:Swamp#3
+T61 p1 adds {B} (p1:Swamp#3)
+T61 taps: p1:Mountain#6
+T61 p1 adds {R} (p1:Mountain#6)
+T61 p1 casts Royal Assassin
+T61 resolves: Royal Assassin
+T61 moves: Royal Assassin, stack -> battlefield
+T61 moves: Fireball, p1's hand -> stack
+T61 p1 cancels casting Fireball
+T61 moves: Swamp, p1's hand -> battlefield
+T61 p1 plays p1:Swamp#9
+T61 moves: Hill Giant, p1's hand -> stack
+T61 p1 cancels casting Hill Giant
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 taps: p1:Swamp#9
+T61 p1 adds {B} (p1:Swamp#9)
+T61 p1 cancels casting Royal Assassin
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 taps: p1:Swamp#9
+T61 p1 adds {B} (p1:Swamp#9)
+T61 p1 cancels casting Royal Assassin
+T61 p1's unspent {R} empties
+T61 taps: p1:Swamp#9
+T61 p1 adds {B} (p1:Swamp#9)
+T61 moves: Celestial Purge, p2's hand -> stack
+T61 p2 cancels casting Celestial Purge
+T61 p1's unspent {B} empties
+T61 p1 attack: nothing
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 p1 cancels casting Royal Assassin
+T61 moves: Hill Giant, p1's hand -> stack
+T61 p1 cancels casting Hill Giant
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 p1 cancels casting Royal Assassin
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 p1 cancels casting Royal Assassin
+T61 moves: Lava Axe, p1's hand -> stack
+T61 p1 cancels casting Lava Axe
+T61 moves: Royal Assassin, p1's hand -> stack
+T61 p1 cancels casting Royal Assassin
+T61 moves: Vampire Aristocrat, p1's hand -> stack
+T61 p1 cancels casting Vampire Aristocrat
+T61 moves: Mind Shatter, p1's hand -> stack
+T61 p1 cancels casting Mind Shatter
+T61 moves: Mind Shatter, p1's hand -> stack
+T61 p1 cancels casting Mind Shatter
+T61 moves: Celestial Purge, p2's hand -> stack
+T61 p2 cancels casting Celestial Purge
+T61 moves: Celestial Purge, p2's hand -> stack
+T61 p2 cancels casting Celestial Purge
+T62 turn 62 begins (p2)
+T62 untaps: p2:Plains#1
+T62 untaps: p2:Plains#2
+T62 untaps: p2:Plains#3
+T62 untaps: p2:Plains#4
+T62 untaps: p2:Plains#5
+T62 untaps: p2:Mountain#1
+T62 untaps: p2:Mountain#2
+T62 untaps: p2:Mountain#3
+T62 untaps: p2:Mountain#4
+T62 untaps: p2:Plains#6
+T62 untaps: p2:Mountain#5
+T62 untaps: p2:Mountain#6
+T62 untaps: p2:Mountain#7
+T62 untaps: p2:Plains#7
+T62 untaps: p2:Plains#8
+T62 untaps: p2:Mountain#8
+T62 untaps: p2:Plains#9
+T62 taps: p2:Plains#8
+T62 p2 adds {W} (p2:Plains#8)
+T62 taps: p2:Plains#9
+T62 p2 adds {W} (p2:Plains#9)
+T62 taps: p2:Plains#4
+T62 p2 adds {W} (p2:Plains#4)
+T62 taps: p2:Mountain#1
+T62 p2 adds {R} (p2:Mountain#1)
+T62 taps: p2:Plains#6
+T62 p2 adds {W} (p2:Plains#6)
+T62 taps: p2:Plains#2
+T62 p2 adds {W} (p2:Plains#2)
+T62 taps: p2:Mountain#2
+T62 p2 adds {R} (p2:Mountain#2)
+T62 taps: p2:Mountain#8
+T62 p2 adds {R} (p2:Mountain#8)
+T62 taps: p2:Plains#5
+T62 p2 adds {W} (p2:Plains#5)
+T62 moves: Celestial Purge, p2's hand -> stack
+T62 p2 cancels casting Celestial Purge
+T62 p2's unspent {W}{W}{W}{W}{W}{W}{R}{R}{R} empties
+T62 state-based actions: p2 drewFromEmptyLibrary
+T62 p2 loses the game (drewFromEmptyLibrary)
+T62 game over: p1 wins

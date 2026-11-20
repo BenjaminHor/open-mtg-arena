@@ -159,6 +159,45 @@ describe("the checks", () => {
     ]);
   });
 
+  it("viewsLeakNothing: a card drawn and discarded in one action (Burning Inquiry) is the drawer's to see", () => {
+    // p1 draws the top card of their library, then discards it: it's hidden before and gone after, with a new card id
+    // in the graveyard (D-054), but p1 saw it in their hand in between. p2 sees neither the draw nor the old ids.
+    const s = state();
+    const [p1, p2] = s.turnOrder as [PlayerId, PlayerId];
+    const top = s.zones.players[p1]?.library[0] as ObjectId;
+    const card = s.objects[top];
+    if (card?.kind !== "card") throw new Error("a card in the library");
+    const inHand = { ...card, id: "o9001" as ObjectId };
+    const events: GameEvent[] = [
+      {
+        type: "ZONE_CHANGED",
+        from: { zone: "library", player: p1 },
+        to: { zone: "hand", player: p1 },
+        oldId: top,
+        newId: inHand.id,
+        cardId: card.cardId,
+        newCardId: card.cardId,
+        object: card,
+      },
+      { type: "CARD_DRAWN", player: p1, newId: inHand.id, cardId: card.cardId },
+      {
+        type: "ZONE_CHANGED",
+        from: { zone: "hand", player: p1 },
+        to: { zone: "graveyard", player: p1 },
+        oldId: inHand.id,
+        newId: "o9002",
+        cardId: card.cardId,
+        newCardId: "c9002",
+        object: inHand,
+      },
+      { type: "CARD_DISCARDED", player: p1, newId: "o9002", cardId: "c9002" },
+    ];
+    expect(viewsLeakNothing(s, s, events, cards)).toEqual([]);
+    // Shown to p2 unfiltered, the draw would name the card.
+    const unfiltered = viewsLeakNothing(s, s, [{ ...events[1], player: p2 } as GameEvent], cards);
+    expect(unfiltered).toContain(`the events shown to ${p2} name ${card.cardId}, which is hidden from them`);
+  });
+
   it("viewsLeakNothing: an event naming the card another player is casting, as it was in hand, is a problem", () => {
     // Mid-cast, the card as it was in hand is kept aside in `casting.origin`, in no zone.
     const s = state();

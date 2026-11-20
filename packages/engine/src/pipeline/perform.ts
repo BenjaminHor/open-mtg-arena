@@ -3,7 +3,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { dealDamage } from "../effects/deal-damage.ts";
-import { gainLife } from "../effects/life.ts";
+import { gainLife, loseLife } from "../effects/life.ts";
 import { countLandPlay } from "../game/land-played.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { addMana } from "../mana/pool.ts";
@@ -45,6 +45,8 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return counterObject(state, event.object);
     case "gainLife":
       return gainLife(state, event.player, event.amount);
+    case "loseLife":
+      return loseLife(state, event.player, event.amount);
     case "untap":
       return untapPermanent(state, event.object);
     case "addMana":

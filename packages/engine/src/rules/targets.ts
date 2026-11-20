@@ -33,6 +33,8 @@ export function legalTargets(state: GameState, spec: TargetSpec, by: Targeting, 
     case "playerOrPlaneswalker":
       // No planeswalkers yet (later: CR 306), so only players.
       return players;
+    case "player":
+      return players;
     case "permanent":
       return objects(
         state.zones.battlefield.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards)),

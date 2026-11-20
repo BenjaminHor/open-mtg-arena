@@ -751,3 +751,18 @@ every schema change and every change D-024 lists bumps it.
   (status, Known issues).
 - A scenario names a spell on the stack like a permanent (`p1:Lightning Bolt`) or, when a permanent has the same name,
   `spell:p1:Grizzly Bears`; `export --scenario` always writes the second form.
+
+**D-060: Player effects: drawing, losing life, discarding at random, milling** · 2026-11-20 · accepted (M2-05b1)
+- New effect ops `loseLife`, `draw`, `discardAtRandom` and `mill`, a `player` target kind and an `"eachPlayer"` subject
+  (APNAP order, CR 101.4). Losing life is a pipeline event again (`loseLife`, CR 119.3). Whether losing 0 is an event is
+  left open until a card can lose a variable amount (docs/future-rules.md).
+- "Draw N" is N separate draw events (CR 121.2), all of one player's before the next player's (CR 121.2c), so a
+  replacement of one draw can act before the next. The draw-several container (CR 121.2a) waits for a replacement that
+  needs it (M2-08, docs/future-rules.md).
+- "Discard at random" picks with the seeded RNG, player by player in APNAP order, then discards every pick in one
+  simultaneous event (Burning Inquiry's ruling). A smaller hand is discarded whole (CR 609.3). Mill moves the top N
+  (all there are if fewer, CR 701.17b) in one simultaneous event (CR 701.17a); the graveyard order is the library's for now (later: CR 404.3).
+- Keyword actions Scryfall lists among a card's keywords (Mill) are left out of the definition's keywords
+  (`KEYWORD_ACTIONS`, CR 701 vs 702). Scenarios can name a card in a graveyard: `graveyard:p1:Grizzly Bears`.
+- The fuzzer's leak check counts a card the viewer saw during the action (drawn, then discarded by Burning Inquiry) as
+  seen: the ids a card gets moving into a zone the viewer sees are theirs to know.

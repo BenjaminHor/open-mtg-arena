@@ -1,0 +1,17 @@
+name: Tome Scour makes its target mill five cards
+rules: [CR 701.17a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Tome Scour]
+    battlefield: [Island]
+  p2:
+    library: [Forest, Mountain, Island, Plains, Swamp, Grizzly Bears, Lightning Bolt]
+steps:
+  - p1 cast: Tome Scour
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.library: [Grizzly Bears, Lightning Bolt]
+      p2.graveyard: [Forest, Mountain, Island, Plains, Swamp]

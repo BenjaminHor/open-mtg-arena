@@ -75,8 +75,11 @@ export const furnaceWhelp: CardDef = {
 - Costs of activated abilities are a list of parts: `{ kind: "mana", cost }`, `{ kind: "tap" }`, and "Sacrifice a
   creature" as `{ kind: "sacrifice", filter: { types: ["creature"] } }` (a permanent its controller controls).
 - Effects name what they act on with a subject: `{ target: 0 }`, `"self"` (the spell, or the ability's source), or
-  `"you"` (the controller: "you gain 4 life" is `{ op: "gainLife", who: "you", amount: 4 }`). The ops are listed in
+  `"you"` (the controller: "you gain 4 life" is `{ op: "gainLife", who: "you", amount: 4 }`), or `"eachPlayer"` (in
+  APNAP order: Burning Inquiry). "Target player" is the target kind `player`. The ops are listed in
   `engine/src/effects/README.md`.
+- Keyword actions (CR 701) Scryfall lists among the keywords, such as Mill, go in `KEYWORD_ACTIONS` in
+  `definition-problems.ts` as the first card using each arrives, not in the definition's `keywords`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).

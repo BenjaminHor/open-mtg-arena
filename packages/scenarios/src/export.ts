@@ -187,8 +187,20 @@ function handCardName(state: GameState, player: PlayerId, id: ObjectId, cards: C
 function targetName(state: GameState, target: Target, cards: CardDatabase): string {
   if (target.kind === "player") return target.player;
   return (
-    refOf(state, target.object, cards) ?? spellRef(state, target.object, cards) ?? nameOf(state, target.object, cards)
+    refOf(state, target.object, cards) ??
+    spellRef(state, target.object, cards) ??
+    graveyardRef(state, target.object, cards) ??
+    nameOf(state, target.object, cards)
   );
+}
+
+/** A card in a graveyard, named as `targets:` names it (`graveyard:p1:Grizzly Bears`, `#2` counting from the bottom). */
+function graveyardRef(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
+  const player = state.turnOrder.find((p) => state.zones.players[p]?.graveyard.includes(id));
+  if (player === undefined) return null;
+  const name = nameOf(state, id, cards);
+  const same = (state.zones.players[player]?.graveyard ?? []).filter((x) => nameOf(state, x, cards) === name);
+  return same.length > 1 ? `graveyard:${player}:${name}#${same.indexOf(id) + 1}` : `graveyard:${player}:${name}`;
 }
 
 /** A spell on the stack, named only as a spell (`spell:p1:Lightning Bolt`, `#2` counting from the bottom). */
