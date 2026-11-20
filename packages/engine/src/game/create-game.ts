@@ -2,6 +2,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { randomInt, seedRng } from "../rng/xoshiro128.ts";
+import { newCombat } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { CardId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
@@ -46,7 +47,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
         ...state,
         turn: { ...opening.turn },
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
-        combat: inCombat ? { attacks: [], blocks: [] } : null,
+        combat: inCombat ? newCombat() : null,
       };
       const first = queueWork(state, { kind: "givePriority", player: opening.turn.activePlayer });
       return { ok: true, ...advance({ state: first, events: [] }, cards) };
@@ -111,6 +112,7 @@ function emptyGame(setup: GameSetup): GameState {
     combat: null,
     casting: null,
     resolution: null,
+    dealtDeathtouchDamage: [],
     work: [],
     pending: null,
     result: null,

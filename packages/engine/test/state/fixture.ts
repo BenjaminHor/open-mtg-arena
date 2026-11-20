@@ -142,6 +142,7 @@ export function midTurnState(): GameState {
     combat: null,
     casting: null,
     resolution: null,
+    dealtDeathtouchDamage: [],
     work: [
       {
         kind: "runEffect",

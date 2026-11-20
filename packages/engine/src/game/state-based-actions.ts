@@ -12,12 +12,12 @@ import { andThen, type Progress } from "./progress.ts";
 
 /**
  * One check (CR 704.3): every state-based action that applies is listed from the same state, then all are performed
- * together as one event. The caller repeats the check while `performed` is true. Either way, the record of drawing
- * from an empty library is cleared: it only counts until the next check (CR 704.5b).
+ * together as one event. The caller repeats the check while `performed` is true. Either way, the records of drawing
+ * from an empty library and of deathtouch damage are cleared: they only count until the next check (CR 704.5b, 704.5h).
  */
 export function checkStateBasedActions(state: GameState, cards: CardDatabase): Progress & { performed: boolean } {
   const actions = stateBasedActions(state, cards);
-  const cleared = clearEmptyLibraryDraws(state);
+  const cleared = clearDeathtouchDamage(clearEmptyLibraryDraws(state));
   if (actions.length === 0) return { state: cleared, events: [], performed: false };
   const progress = andThen({ state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] }, (s) =>
     happen(s, stateBasedActionsEvent(actions), cards),
@@ -39,6 +39,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
       return { player: action.player, reason: action.kind };
     case "zeroToughness":
     case "lethalDamage":
+    case "deathtouchDamage":
       return null;
   }
 }
@@ -60,6 +61,7 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
     case "zeroToughness":
       return [{ kind: "moveCard", object: action.object, to: { zone: "graveyard" } }]; // not "destroyed" (CR 704.5f)
     case "lethalDamage":
+    case "deathtouchDamage":
       return [{ kind: "destroy", object: action.object }];
   }
 }
@@ -72,4 +74,8 @@ function clearEmptyLibraryDraws(state: GameState): GameState {
     if (ps?.attemptedDrawFromEmptyLibrary) players[p] = { ...ps, attemptedDrawFromEmptyLibrary: false };
   }
   return { ...state, players };
+}
+
+function clearDeathtouchDamage(state: GameState): GameState {
+  return state.dealtDeathtouchDamage.length === 0 ? state : { ...state, dealtDeathtouchDamage: [] };
 }

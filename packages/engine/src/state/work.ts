@@ -3,7 +3,7 @@
 // plain-data snapshot.
 
 import type { Effect } from "../cards/types.ts";
-import type { Attack, AttackerDivision, Block } from "./combat.ts";
+import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 
@@ -35,6 +35,6 @@ export type WorkItem =
   /** The declare blockers step's turn-based action (CR 509.1), with the blocks chosen so far. */
   | { kind: "declareBlockers"; chosen: Block[] }
   /** The combat damage step's turn-based action (CR 510.1–510.2), with the divisions chosen so far. */
-  | { kind: "combatDamage"; divisions: AttackerDivision[] }
+  | { kind: "combatDamage"; divisions: CombatDivision[] }
   /** The rest of the cleanup step, once the active player has chosen any discards (CR 514). */
   | { kind: "finishCleanup"; chosen: ObjectId[] };

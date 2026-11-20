@@ -1,0 +1,20 @@
+name: Lifelink counts damage dealt to a creature too, even one that's dealt more than its toughness needs
+rules: [CR 702.15b, CR 120.3f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    life: 10
+    battlefield: [Child of Night]
+  p2:
+    battlefield: [Elite Vanguard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Child of Night]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Elite Vanguard: Child of Night }
+  - all pass: until main2
+  - expect:
+      p1.life: 12
+      p2.life: 20
+      p1.graveyard: [Child of Night]
+      p2.graveyard: [Elite Vanguard]

@@ -1,0 +1,21 @@
+name: Two first strikers deal damage at the same time, in the first step; nothing is dealt in the second
+rules: [CR 510.4, CR 702.7b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Razorfoot Griffin]
+  p2:
+    battlefield: [Viashino Spearhunter, Giant Spider]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Razorfoot Griffin]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Giant Spider: Razorfoot Griffin }
+  - all pass: until combat.damage
+  - expect:
+      p2:Giant Spider.damage: 2
+      p1.graveyard: []
+  - all pass: once
+  # Giant Spider, without first strike, deals its damage in the second step.
+  - expect:
+      p1.graveyard: [Razorfoot Griffin]

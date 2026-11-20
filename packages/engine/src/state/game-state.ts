@@ -46,6 +46,11 @@ export type GameState = {
   zones: Zones;
   /** Continuous effects from resolved spells and abilities (CR 611.2), oldest first. */
   effects: ContinuousEffect[];
+  /**
+   * Creatures dealt damage by a source with deathtouch since state-based actions were last checked (CR 704.5h,
+   * 702.2b). Every check clears it.
+   */
+  dealtDeathtouchDamage: ObjectId[];
 
   /**
    * The start of a `standard` game (CR 103.1, 103.3–103.5; extra steps some formats take, later: CR 103.2), until the

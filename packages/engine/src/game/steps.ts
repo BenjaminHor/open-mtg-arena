@@ -4,10 +4,12 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { anyAttackers } from "../combat/attackers.ts";
+import { beginCombatDamageStep, secondDamageStepFollows } from "../combat/first-strike.ts";
 import { endUntilEndOfTurnEffects } from "../effects/continuous-effect.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
 import { happen } from "../pipeline/happen.ts";
 import { controllerOf } from "../rules/controller.ts";
+import { newCombat } from "../state/combat.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -54,7 +56,8 @@ export function endStep(state: GameState, cards: CardDatabase): Progress {
   // As the end of combat step ends, every creature is removed from combat (CR 511.3).
   const left = turn.step === "endOfCombat" ? { ...state, combat: null } : state;
   const emptied = emptyManaPools(left);
-  let next = stepAfter(turn.step);
+  // After a first strike combat damage step comes a second one (CR 510.4).
+  let next = turn.step === "combatDamage" && secondDamageStepFollows(state) ? "combatDamage" : stepAfter(turn.step);
   while (next !== null && isSkipped(emptied.state, next)) next = stepAfter(next);
   if (next !== null) return andThen(emptied, (s) => beginStep(s, next, cards));
   const after = nextPlayer(state, turn.activePlayer);
@@ -161,14 +164,17 @@ function beginStep(state: GameState, step: Step, cards: CardDatabase): Progress 
       return andThen(progress, (s) => finishCleanup(s, [], cards));
     case "beginningOfCombat":
       // The combat phase begins (CR 506.1): no attackers or blockers yet. Then priority (CR 507.2).
-      return andThen(progress, (s) => priorityForActivePlayer({ ...s, combat: { attacks: [], blocks: [] } }));
+      return andThen(progress, (s) => priorityForActivePlayer({ ...s, combat: newCombat() }));
     case "declareAttackers":
       // CR 508.1, then priority (CR 508.2), queued by the declaration when it's done.
       return andThen(progress, (s) => ({ state: queueWork(s, { kind: "declareAttackers", chosen: [] }), events: [] }));
     case "declareBlockers":
       return andThen(progress, (s) => ({ state: queueWork(s, { kind: "declareBlockers", chosen: [] }), events: [] }));
     case "combatDamage":
-      return andThen(progress, (s) => ({ state: queueWork(s, { kind: "combatDamage", divisions: [] }), events: [] }));
+      return andThen(progress, (s) => ({
+        state: queueWork(beginCombatDamageStep(s, cards), { kind: "combatDamage", divisions: [] }),
+        events: [],
+      }));
     case "upkeep":
     case "precombatMain":
     case "endOfCombat":

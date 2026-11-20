@@ -142,15 +142,17 @@ describe("events that happen at the same time are one event", () => {
   });
 
   it("the attackers tap together, as part of declaring them (CR 508.1f)", () => {
+    const state = board();
+    const [a, b] = creatures(state);
     const attacks = [
-      { attacker: "o1", defender: "p2" },
-      { attacker: "o2", defender: "p2" },
+      { attacker: a, defender: "p2" },
+      { attacker: b, defender: "p2" },
     ] as const;
-    expect(attackersTap([...attacks])).toStrictEqual({
+    expect(attackersTap(state, [...attacks], TEST_CARDS)).toStrictEqual({
       kind: "simultaneous",
       events: [
-        { kind: "tap", object: "o1" },
-        { kind: "tap", object: "o2" },
+        { kind: "tap", object: a },
+        { kind: "tap", object: b },
       ],
     });
   });

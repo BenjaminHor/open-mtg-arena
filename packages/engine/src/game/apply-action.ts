@@ -3,7 +3,7 @@
 // the new state and events. An illegal action changes nothing.
 
 import type { CardDatabase } from "../cards/types.ts";
-import { assignProblem, assignToNextBlocker, damageLeft } from "../combat/combat-damage.ts";
+import { assignProblem, assignToNextRecipient } from "../combat/damage-assignment.ts";
 import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.ts";
@@ -212,9 +212,9 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     }
     case "assignDamage": {
       if (answer.kind !== "assignDamage") return mismatch;
-      const problem = assignProblem(damageLeft(pending.amount, pending.assigned), answer.amount);
+      const problem = assignProblem(pending, answer.amount);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, state: assignToNextBlocker(answered, pending, answer.amount), events: [] };
+      return { ok: true, state: assignToNextRecipient(answered, pending, answer.amount), events: [] };
     }
     case "priority":
       return mismatch;

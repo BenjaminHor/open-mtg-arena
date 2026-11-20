@@ -1,0 +1,22 @@
+name: A trampler must assign lethal damage to its blocker before any goes to the player it attacks
+rules: [CR 702.19b, CR 510.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino]
+  p2:
+    battlefield: [Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Runeclaw Bear: Stampeding Rhino }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: assignDamage, amount: 4, lethal: [2] }
+  - p1 assign: { Runeclaw Bear: 1, p2: 3 }
+  - expect error: illegalAction
+  - p1 assign: { Runeclaw Bear: 2, p2: 2 }
+  - expect:
+      p2.life: 18
+      p2.graveyard: [Runeclaw Bear]

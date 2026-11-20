@@ -1,0 +1,14 @@
+name: Two sources with lifelink dealing damage at once cause two life gain events
+rules: [CR 702.15e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Child of Night, Child of Night]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Child of Night#1, Child of Night#2]
+  - all pass: until combat.damage
+  - expect:
+      p1.life: 24
+      p2.life: 16
+      events contains: [{ type: LIFE_GAINED, player: p1, amount: 2 }, { type: LIFE_GAINED, player: p1, amount: 2 }]

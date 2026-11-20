@@ -1,7 +1,7 @@
 // A tiny card database for engine tests. The engine never depends on packages/cards (docs/architecture.md),
 // so engine tests describe the few cards they need here.
 
-import type { CardData, CardDatabase } from "../../src/index.ts";
+import type { CardData, CardDatabase, Keyword } from "../../src/index.ts";
 
 function card(oracleId: string, data: Omit<CardData, "oracleId">): CardData {
   return { oracleId, ...data };
@@ -38,6 +38,30 @@ export const X_BOLT = "test-x-bolt";
 export const SAC_PUMP = "test-sac-pump";
 /** Not a real card: an enchantment with no abilities, until the pool has one (M2-07), for "artifact or enchantment". */
 export const ENCHANTMENT = "test-enchantment";
+/** Not real cards: creatures with keywords no Magic 2010 card combines (CR 702.4, 702.2c), for unit tests. */
+export const DOUBLE_STRIKER = "test-double-striker";
+export const DOUBLE_LIFELINKER = "test-double-lifelinker";
+export const FIRST_STRIKER = "test-first-striker";
+export const DEATHTOUCH_TRAMPLER = "test-deathtouch-trampler";
+export const DOUBLE_TRAMPLER = "test-double-trampler";
+
+/** A test creature with only keywords: a vanilla body for combat tests. */
+function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
+  return card(oracleId, {
+    printed: {
+      name,
+      manaCost: [{ kind: "generic", amount: 2 }],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: [],
+      power: size[0],
+      toughness: size[1],
+    },
+    def: { name, oracle: keywords.join(", "), keywords },
+  });
+}
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -442,4 +466,9 @@ export const TEST_CARDS: CardDatabase = {
     },
     def: { name: "Test Enchantment", oracle: "" },
   }),
+  [DOUBLE_STRIKER]: keywordCreature(DOUBLE_STRIKER, "Double Striker", [2, 2], ["double strike"]),
+  [DOUBLE_LIFELINKER]: keywordCreature(DOUBLE_LIFELINKER, "Double Lifelinker", [2, 2], ["double strike", "lifelink"]),
+  [FIRST_STRIKER]: keywordCreature(FIRST_STRIKER, "First Striker", [2, 2], ["first strike"]),
+  [DEATHTOUCH_TRAMPLER]: keywordCreature(DEATHTOUCH_TRAMPLER, "Deathtouch Trampler", [5, 5], ["deathtouch", "trample"]),
+  [DOUBLE_TRAMPLER]: keywordCreature(DOUBLE_TRAMPLER, "Double Trampler", [4, 4], ["double strike", "trample"]),
 };

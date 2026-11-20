@@ -1,0 +1,17 @@
+name: Any damage from a creature with deathtouch destroys the creature it's dealt to, with reach against a flyer
+rules: [CR 702.2b, CR 704.5h, CR 702.17b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Air Elemental]
+  p2:
+    battlefield: [Deadly Recluse]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Air Elemental]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Deadly Recluse: Air Elemental }
+  - all pass: until main2
+  - expect:
+      p1.graveyard: [Air Elemental]
+      p2.graveyard: [Deadly Recluse]

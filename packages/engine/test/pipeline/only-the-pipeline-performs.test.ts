@@ -37,7 +37,8 @@ const BUILT_FROM: Record<string, string[]> = {
   "zones/counter.ts": ["moveCard"], // a countered spell goes to its owner's graveyard (CR 701.6a)
   "zones/draw.ts": ["moveCard"], // the top card moves to the hand (CR 121.1)
   "zones/discard.ts": ["moveCard"], // from hand to graveyard (CR 701.9a)
-  "effects/deal-damage.ts": ["loseLife", "markDamage"], // a damage event's results are part of it (CR 120.4c)
+  // A damage event's results are part of it (CR 120.4c), lifelink's life gain too (CR 120.3f).
+  "effects/deal-damage.ts": ["loseLife", "markDamage", "gainLife"],
 };
 
 /** Other guarded names, and the only files (or folders) that may import them, with the reason. */

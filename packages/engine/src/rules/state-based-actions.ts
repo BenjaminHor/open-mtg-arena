@@ -24,6 +24,8 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     // A creature with toughness 0 or less isn't also destroyed: CR 704.5g needs toughness greater than 0.
     if (toughness <= 0) actions.push({ kind: "zeroToughness", object });
     else if (obj.damage >= toughness) actions.push({ kind: "lethalDamage", object });
+    // Destroyed once, whichever of CR 704.5g and 704.5h applies.
+    else if (state.dealtDeathtouchDamage.includes(object)) actions.push({ kind: "deathtouchDamage", object });
   }
   return actions;
 }

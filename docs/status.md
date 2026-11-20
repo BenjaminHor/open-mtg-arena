@@ -196,8 +196,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
   3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
-     - M2-06a combat damage: first strike and the second combat damage step (CR 510.4, 702.7), trample (CR 702.19,
-       lethal damage CR 702.19b–c, 510.1c–d), deathtouch (CR 702.2, SBA 704.5h), lifelink (CR 702.15), vigilance
+     - M2-06a combat damage, done, in review (D-070): 7 cards, 24 scenarios in `test/scenarios/cards/m2-06a/`, 4 in
+       `test/scenarios/interactions/`, unit tests in `test/combat/strikes-and-trample.test.ts`, the matrix with six new
+       rows; the M10 pair carries five of the cards (the fuzzer reaches first strike steps, trample and deathtouch).
+       Plan as written: first strike and the second combat damage step (CR 510.4, 702.7), trample (CR 702.19,
+       lethal damage CR 702.19b, 120.6, 702.2c), deathtouch (CR 702.2, SBA 704.5h), lifelink (CR 702.15), vigilance
        (CR 702.20). Viashino Spearhunter, Razorfoot Griffin, Stampeding Rhino, Deadly Recluse, Child of Night, Serra
        Angel, Griffin Sentinel. Double strike (CR 702.4) has no Magic 2010 card, but it's part of CR 510.4: built here,
        tested by an engine unit test on a test card.
@@ -208,7 +211,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          player the same damage would kill. Keywords read from the state before the event; a gone source's last known
          information is later (later: CR 702.15c, 702.2e).
        - Deathtouch: damage to a creature from a source with deathtouch is recorded in a state-level list
-         (`deathtouchDamaged`, like `attemptedDrawFromEmptyLibrary`), listed by `stateBasedActions` as a destroy
+         (`dealtDeathtouchDamage`, like `attemptedDrawFromEmptyLibrary`), listed by `stateBasedActions` as a destroy
          (CR 704.5h, 702.2b) and cleared at every check so the check doesn't repeat (D-039). A state change: engine
          version bump, replays' hashes updated.
        - Trample: the `assignDamage` decision becomes "one source divides its damage among recipients" (creatures, or

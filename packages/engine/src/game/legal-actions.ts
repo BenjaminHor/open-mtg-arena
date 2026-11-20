@@ -4,7 +4,7 @@
 // list.
 
 import type { CardDatabase } from "../cards/types.ts";
-import { damageLeft } from "../combat/combat-damage.ts";
+import { assignProblem, damageLeft } from "../combat/damage-assignment.ts";
 import { possibleAttacks } from "../combat/declare-attackers.ts";
 import { possibleBlocks } from "../combat/declare-blockers.ts";
 import { addsAnyColor, manaAbilityProblem } from "../mana/activate.ts";
@@ -71,15 +71,12 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
       return [...add, { ...answer, answer: { kind: "finishDeclaring" } }];
     }
     case "assignDamage": {
-      // 0 up to what's left: one answer per amount, so the list grows with power, not with the number of divisions.
+      // 0 up to what's left, but those trample forbids: one answer per amount, so the list grows with power, not with
+      // the number of divisions.
       const left = damageLeft(pending.amount, pending.assigned);
-      return Array.from(
-        { length: left + 1 },
-        (_, amount): Action => ({
-          ...answer,
-          answer: { kind: "assignDamage", amount },
-        }),
-      );
+      return Array.from({ length: left + 1 }, (_, amount) => amount)
+        .filter((amount) => assignProblem(pending, amount) === null)
+        .map((amount): Action => ({ ...answer, answer: { kind: "assignDamage", amount } }));
     }
     case "announceX": {
       // Any whole number is legal (CR 107.3a); these are the ones the player could pay for now, from 0.

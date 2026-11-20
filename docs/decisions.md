@@ -902,3 +902,22 @@ every schema change and every change D-024 lists bumps it.
   or deck change can make one name a different game, which `golden:update` handles); each game is checked to cover
   what it was chosen for before it's written; the command lists what's still not covered and fails if anything is. A
   description's "Covered, when chosen" list can go stale once `golden:update` replays a recipe.
+
+**D-070: Combat damage keywords: two damage steps on `Combat`, one division decision for any recipients** · 2026-11-20 · accepted (M2-06a)
+- First and double strike (CR 510.4): `Combat` records `firstStrikers`, the attacking and blocking creatures with
+  first or double strike as the first combat damage step begins (null when none), and `secondDamageStep`. The snapshot,
+  not "who dealt damage", decides the second step (a 0-power first striker still splits the steps; CR 702.7c, 702.4c–d).
+  `endStep` begins `combatDamage` again after a first strike step, so the turn stays one walker over `TURN_STEPS`; no
+  new step name, since the CR calls both "combat damage step".
+- The `assignDamage` decision divides one creature's damage among `recipients` (targets: creatures, or the player),
+  replacing `attacker`/`blockers`. A trampler's recipients end with the player it attacks, and `lethal` lists what each
+  blocker needs first (CR 702.19b; 1 from a deathtouch source, CR 702.2c). Asked only when there's a choice; the answer
+  for the last blocker is the one trample can refuse, so no partial division reaches a dead end. Palace Guard's division
+  among attackers (M2-06b) and planeswalkers (M2-13) use the same shape.
+- Lifelink's life gain and deathtouch's record are results of the damage event (CR 120.4c), performed with it in
+  `effects/deal-damage.ts`; lifelink gains once per source (CR 702.15e). The deathtouch record is
+  `GameState.dealtDeathtouchDamage`, cleared at every state-based action check (CR 704.5h), like the empty-library draw.
+- Keyword names are Scryfall's lowercase ones ("first strike"), so the definition check compares them directly.
+- Double strike has no Magic 2010 card: it's built because it's part of CR 510.4, tested on test creatures. Gaining or
+  losing a keyword between the steps is tested by swapping the creature's card in the state, since nothing grants
+  keywords until layers (M2-09).

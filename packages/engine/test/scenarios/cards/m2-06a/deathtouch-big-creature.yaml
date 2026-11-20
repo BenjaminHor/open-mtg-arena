@@ -1,0 +1,18 @@
+name: 1 damage from a deathtouch blocker destroys a 4/4, and deathtouch damage to a player is only life loss
+rules: [CR 702.2b, CR 704.5h, CR 120.3a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Serra Angel, Deadly Recluse]
+  p2:
+    battlefield: [Deadly Recluse]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Serra Angel, Deadly Recluse]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Deadly Recluse: Serra Angel }
+  - all pass: until main2
+  - expect:
+      p1.graveyard: [Serra Angel]
+      p2.graveyard: [Deadly Recluse]
+      p2.life: 19
