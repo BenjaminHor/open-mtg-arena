@@ -827,6 +827,10 @@ every schema change and every change D-024 lists bumps it.
   land), so a nonbasic land like Terramorphic Expanse is exiled by Haunting Echoes.
 - "Onto the battlefield tapped" enters tapped as part of the move (CR 110.5b), never "becoming tapped" (CR 603.2e).
 - "Sacrifice this land" is a `sacrificeSelf` cost part, sacrificed with the rest of the cost after {T} (D-059).
+- Writing `resolution` is bookkeeping, like `casting` and `combat` (pipeline/README.md): it records what events already
+  did. Recording a result with no resolution under way throws, rather than quietly losing it.
+- Exported for hosts (D-023): `Seen` and `Resolution`, which the exported decision and state types use, and
+  `ViewChooseYesNo` with the other `ViewDecision` types, which a UI renders.
 - The new state field changes the saved replays' final-state hashes and nothing else (checked: each final state
   minus `resolution: null` has the old hash), so `pnpm replays:update` rewrote them.
 

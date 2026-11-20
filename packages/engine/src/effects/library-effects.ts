@@ -7,18 +7,16 @@ import { waitFor } from "../game/decide.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
 import { zoneChangeOf } from "../pipeline/moved.ts";
-import { matchesFilter } from "../rules/object-filter.ts";
+import { characteristics } from "../rules/characteristics.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState, Resolution } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { zoneList, zoneOf } from "../zones/zone-list.ts";
-import { askToChoose, seenOf } from "./choose-cards.ts";
+import { askToChoose, fittingCards, nothing, seenOf } from "./choose-cards.ts";
 
 type Search = Extract<Effect, { op: "search" }>;
 type LookAtTop = Extract<Effect, { op: "lookAtTop" }>;
 type MayShuffle = Extract<Effect, { op: "mayShuffle" }>;
-
-const nothing = (state: GameState): Progress => ({ state, events: [] });
 
 /**
  * "You" search `owner`'s library: look at all of it (CR 701.23a), shown by identity, and choose. The cards found are
@@ -41,11 +39,8 @@ export function search(
   if (chosen !== null) return nothing(remember(state, { found: chosen.filter((id) => library.includes(id)) }));
   const named = effect.sameNameAsExiled === true ? exiledNames(state, cards) : null;
   if (library.length === 0 || named?.length === 0) return nothing(remember(state, { found: [] }));
-  const options = library.filter(
-    (id) =>
-      (effect.filter === undefined || matchesFilter(state, id, effect.filter, context.controller, cards)) &&
-      (named === null || named.includes(nameOf(state, id, cards))),
-  );
+  const fitting = fittingCards(state, library, effect.filter, context.controller, cards);
+  const options = fitting.filter((id) => named === null || sameNameAsAny(state, id, named, cards));
   const anyNumber = effect.count === "anyNumber";
   const stated = effect.filter !== undefined || named !== null;
   return nothing(
@@ -125,7 +120,7 @@ export function exileGraveyard(
   cards: CardDatabase,
 ): Progress {
   const graveyard = zoneList(state, { zone: "graveyard", player });
-  const exiled = graveyard.filter((id) => filter === undefined || matchesFilter(state, id, filter, you, cards));
+  const exiled = fittingCards(state, graveyard, filter, you, cards);
   if (exiled.length === 0) return nothing(remember(state, { exiled: [] }));
   const moves = exiled.map((object) => ({ kind: "moveCard", object, to: { zone: "exile" } }) as const);
   const moved = happen(state, { kind: "simultaneous", events: moves }, cards);
@@ -136,32 +131,46 @@ export function exileGraveyard(
   return { state: remember(moved.state, { exiled: newIds }), events: moved.events };
 }
 
-/** Reveals these objects (CR 701.20a), zone by zone; they stay where they are (CR 701.20b). */
+/**
+ * Reveals these objects (CR 701.20a); they stay where they are (CR 701.20b). They're in one zone, as everything a
+ * search finds is in the library searched.
+ */
 export function revealObjects(state: GameState, ids: readonly ObjectId[], cards: CardDatabase): Progress {
-  const present = ids.filter((id) => state.objects[id] !== undefined);
-  const key = (id: ObjectId) => JSON.stringify(zoneOf(state, id));
-  const zones = present.filter((id, i) => present.findIndex((other) => key(other) === key(id)) === i);
-  return zones.reduce<Progress>((p, first) => {
-    const inZone = present.filter((id) => key(id) === key(first));
-    return andThen(p, (s) => happen(s, { kind: "reveal", from: zoneOf(state, first), objects: inZone }, cards));
-  }, nothing(state));
+  const [first] = ids;
+  if (first === undefined) return nothing(state);
+  const from = zoneOf(state, first);
+  if (ids.some((id) => JSON.stringify(zoneOf(state, id)) !== JSON.stringify(from)))
+    throw new Error("revealing cards from several zones at once isn't supported");
+  return happen(state, { kind: "reveal", from, objects: [...ids] }, cards);
 }
 
 /**
- * The names of the cards exiled this way so far: "the same name" (CR 201.2a). One name per card for now; split and
- * double-faced cards have more (later: CR 201.2a's "at least one name in common").
+ * The names of the cards exiled this way so far, read through `characteristics()` (layer 1 copies change a name).
+ * A card without a name (face down, later: CR 708.2) has none to share.
  */
 function exiledNames(state: GameState, cards: CardDatabase): string[] {
-  return (state.resolution?.exiled ?? []).map((id) => nameOf(state, id, cards));
+  return (state.resolution?.exiled ?? []).flatMap((id) => nameOf(state, id, cards) ?? []);
 }
 
-function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): string {
-  const obj = state.objects[id];
-  return obj?.kind === "card" ? (cards[obj.oracleId]?.printed.name ?? obj.oracleId) : "";
+/**
+ * Whether the card has the same name as one of these (CR 201.2a): one name per card for now; split and double-faced
+ * cards have more (later: CR 201.2a, "at least one name in common"). An object with no name shares none.
+ */
+function sameNameAsAny(state: GameState, id: ObjectId, names: readonly string[], cards: CardDatabase): boolean {
+  const name = nameOf(state, id, cards);
+  return name !== null && names.includes(name);
 }
 
-/** Keeps a "this way" result for the rest of this resolution (CR 608.2c). */
+function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
+  const name = characteristics(state, id, cards).name;
+  return name === "" ? null : name;
+}
+
+/**
+ * Keeps a "this way" result for the rest of this resolution (CR 608.2c). Bookkeeping, not an event: the events that
+ * did it already went through the pipeline. Only a resolving spell or ability has one (pipeline/README.md).
+ */
 function remember(state: GameState, result: Partial<Omit<Resolution, "object">>): GameState {
-  if (state.resolution === null) return state;
+  if (state.resolution === null) throw new Error('a "this way" result outside a resolution');
   return { ...state, resolution: { ...state.resolution, ...result } };
 }

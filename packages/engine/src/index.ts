@@ -33,10 +33,10 @@ export { isFreeOfSummoningSickness } from "./rules/summoning-sickness.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";
 export type { Attack, AttackerDivision, Block, Combat, DamageDivision } from "./state/combat.ts";
-export type { ChoosePurpose, DecisionKind, PendingDecision } from "./state/decisions.ts";
+export type { ChoosePurpose, DecisionKind, PendingDecision, Seen } from "./state/decisions.ts";
 export type { ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
 export type { GameEvent } from "./state/events.ts";
-export type { GameState } from "./state/game-state.ts";
+export type { GameState, Resolution } from "./state/game-state.ts";
 export type { CardId, DecisionId, ObjectId, OracleId, PlayerId } from "./state/ids.ts";
 export type { ManaPool, ManaType } from "./state/mana.ts";
 export type {

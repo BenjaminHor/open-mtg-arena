@@ -148,6 +148,28 @@ describe("definitionProblems", () => {
     expect(definitionProblems([def([{ op: "revealHand", who: { target: 0 } }, discard])], [duress])).toStrictEqual([]);
   });
 
+  it("reports 'found' with no search before it, a same-name search with no exile before it, and each player searching", () => {
+    const tutor = POOL.cards.find((c) => c.name === "Diabolic Tutor");
+    if (tutor === undefined) throw new Error("Diabolic Tutor missing from the pool");
+    const def = (effects: Effect[]): CardDef => ({
+      name: "Diabolic Tutor",
+      oracle: tutor.oracleText,
+      spell: { targets: [], effects },
+    });
+    expect(definitionProblems([def([{ op: "put", of: "found", into: "hand" }])], [tutor])).toStrictEqual([
+      "Diabolic Tutor: put names the cards found, but no search comes before it",
+    ]);
+    expect(
+      definitionProblems(
+        [def([{ op: "search", library: "you", count: "anyNumber", sameNameAsExiled: true }])],
+        [tutor],
+      ),
+    ).toStrictEqual(["Diabolic Tutor: a search for the cards exiled this way must follow exiling them"]);
+    expect(definitionProblems([def([{ op: "search", library: "eachPlayer", count: "one" }])], [tutor])).toStrictEqual([
+      "Diabolic Tutor: search names one player, not each player",
+    ]);
+  });
+
   it("reports cards without definitions and definitions without cards", () => {
     expect(definitionProblems([{ name: "Black Lotus", oracle: "" }], [bolt])).toStrictEqual([
       "Black Lotus: has a definition but isn't in pool.txt / data/pool.json",

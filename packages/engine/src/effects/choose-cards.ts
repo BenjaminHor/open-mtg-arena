@@ -1,9 +1,11 @@
 // Choosing cards while a spell or ability resolves (CR 608.2d; D-062): the effect waits with a `chooseCards` decision,
 // takes one card per answer, and runs again with the cards chosen once all are in. Nothing happens before that.
 
-import type { Effect } from "../cards/types.ts";
+import type { CardDatabase, Effect, ObjectFilter } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
+import type { Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
+import { matchesFilter } from "../rules/object-filter.ts";
 import type { Answer } from "../state/actions.ts";
 import type { ChoosePurpose, PendingDecision, Seen } from "../state/decisions.ts";
 import type { EffectContext } from "../state/effects.ts";
@@ -79,4 +81,18 @@ export function answerChooseCards(answered: GameState, decision: ChooseCards, an
   }
   const cards = chosen.map((i) => decision.options[i] as ObjectId);
   return queueWork(answered, { kind: "runEffect", ...decision.resume, chosen: cards });
+}
+
+/** No change, no events: an effect that does nothing, or that waits for a decision. */
+export const nothing = (state: GameState): Progress => ({ state, events: [] });
+
+/** The cards among `ids` fitting `filter` (all of them without one), read from their characteristics (CR 109.3). */
+export function fittingCards(
+  state: GameState,
+  ids: readonly ObjectId[],
+  filter: ObjectFilter | undefined,
+  you: PlayerId,
+  cards: CardDatabase,
+): ObjectId[] {
+  return filter === undefined ? [...ids] : ids.filter((id) => matchesFilter(state, id, filter, you, cards));
 }

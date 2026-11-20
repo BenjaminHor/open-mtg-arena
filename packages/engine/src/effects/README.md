@@ -43,6 +43,10 @@ the one place their effects become changes to the game.
 | `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
+Which move op to use: `returnToHand` for a target bounced to its owner's hand; `put` for cards an earlier `search`
+found (`"found"`), into the hand or onto the battlefield; `putOntoBattlefield` when the player chooses a card from
+their hand as the effect resolves (Elvish Piper); `exile` for either.
+
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
 now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5); `"eachPlayer"` names
 every player in APNAP order (CR 101.4).

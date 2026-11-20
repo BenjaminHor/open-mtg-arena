@@ -216,7 +216,6 @@ describe("the order things happen in, which `events contains` can't check", () =
 describe("Ponder's order is its caster's secret (CR 401.4, D-062)", () => {
   it("putting the cards back in two different orders looks the same to the opponent", () => {
     const resolve = [cast, ...toResolve];
-    sameToViewer(PONDER, game([FOREST, STATUE, MOUNTAIN]), game([FOREST, STATUE, MOUNTAIN]), "p2", resolve);
     let [x, y] = [game([FOREST, STATUE, MOUNTAIN]), game([FOREST, STATUE, MOUNTAIN])];
     for (const step of resolve) [x, y] = [act(x, PONDER, step), act(y, PONDER, step)];
     // One puts them back in the order shown, the other in reverse; then neither shuffles.

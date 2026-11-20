@@ -40,7 +40,10 @@ export function activationBasicsProblem(
         break;
       case "mana":
       case "sacrifice":
+      case "sacrificeSelf":
         break;
+      default:
+        return assertNever(part);
     }
   }
   return null;
@@ -94,7 +97,10 @@ export function resolveManaAbility(
       case "mana":
         throw new Error("mana abilities with mana costs aren't supported yet");
       case "sacrifice":
+      case "sacrificeSelf":
         throw new Error("mana abilities with sacrifice costs aren't supported yet");
+      default:
+        return assertNever(part);
     }
   }
   // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana
@@ -119,4 +125,8 @@ export function activateManaAbility(
 ): Progress {
   const resolved = resolveManaAbility({ ...state, passesInSuccession: 0 }, player, id, ref, cards);
   return { state: queueWork(resolved.state, { kind: "givePriority", player }), events: resolved.events };
+}
+
+function assertNever(part: never): never {
+  throw new Error(`unknown cost part ${JSON.stringify(part)}`);
 }

@@ -145,11 +145,14 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    if (effect.op === "discard" && effect.who === "eachPlayer")
-      problems.push(`${where}: a chosen discard names one player, not each player`);
+    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard"];
+    if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
+      problems.push(`${where}: ${effect.op} names one player, not each player`);
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
     const earlier = effects.slice(0, effects.indexOf(effect));
-    if (JSON.stringify(effect).includes('"found"') && !earlier.some((e) => e.op === "search"))
+    const names = (s: EffectSubject | undefined) => s === "found";
+    const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
+    if (foundNamed && !earlier.some((e) => e.op === "search"))
       problems.push(`${where}: ${effect.op} names the cards found, but no search comes before it`);
     if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileGraveyard"))
       problems.push(`${where}: a search for the cards exiled this way must follow exiling them`);

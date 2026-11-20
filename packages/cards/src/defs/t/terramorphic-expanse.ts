@@ -6,7 +6,7 @@ export const terramorphicExpanse: CardDef = {
     "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
   abilities: [
     {
-      // Not a mana ability: it moves a card from a library (CR 605.1a), so it uses the stack.
+      // Not a mana ability: it doesn't add mana, and it moves a card from a library (CR 605.1a), so it uses the stack.
       kind: "activated",
       cost: [{ kind: "tap" }, { kind: "sacrificeSelf" }],
       targets: [],

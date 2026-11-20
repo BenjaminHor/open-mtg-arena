@@ -12,6 +12,7 @@ import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
+import type { Destination } from "../zones/move-card.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { exileGraveyard, lookAtTop, mayShuffle, revealObjects, search, shuffleEach } from "./library-effects.ts";
@@ -136,34 +137,28 @@ export function runEffect(
     case "putOntoBattlefield":
       return putOntoBattlefieldFromHand(state, effect, context, chosen, cards);
     case "search": {
-      const [owner] = playersOf(subject(state, effect.library, context));
-      return owner === undefined ? { state, events: [] } : search(state, owner, effect, context, chosen, cards);
+      const owner = onePlayer(state, effect.library, context);
+      return owner === null ? { state, events: [] } : search(state, owner, effect, context, chosen, cards);
     }
     case "reveal":
       return revealObjects(state, stillThere(state, objectsOf(subject(state, effect.of, context))), cards);
     case "put": {
       // "Put it into your hand" (its owner's, CR 400.3); "onto the battlefield", under the controller (CR 110.2a).
-      const controller = context.controller;
-      const to =
-        effect.into === "hand"
-          ? ({ zone: "hand" } as const)
-          : effect.tapped === true
-            ? ({ zone: "battlefield", controller, tapped: true } as const)
-            : ({ zone: "battlefield", controller } as const);
+      const to = destinationOf(effect, context.controller);
       const ids = stillThere(state, objectsOf(subject(state, effect.of, context)));
       return toEach(state, ids, cards, (object) => ({ kind: "moveCard", object, to }));
     }
     case "shuffle":
       return shuffleEach(state, playersOf(subject(state, effect.who, context)), cards);
     case "mayShuffle": {
-      const [player] = playersOf(subject(state, effect.who, context));
-      return player === undefined ? { state, events: [] } : mayShuffle(state, player, effect, context);
+      const player = onePlayer(state, effect.who, context);
+      return player === null ? { state, events: [] } : mayShuffle(state, player, effect, context);
     }
     case "lookAtTop":
       return lookAtTop(state, context.controller, effect, context, chosen, cards);
     case "exileGraveyard": {
-      const [player] = playersOf(subject(state, effect.of, context));
-      if (player === undefined) return { state, events: [] };
+      const player = onePlayer(state, effect.of, context);
+      if (player === null) return { state, events: [] };
       return exileGraveyard(state, player, effect.filter, context.controller, cards);
     }
     case "gainLife": {
@@ -237,6 +232,24 @@ function subject(state: GameState, s: EffectSubject, context: EffectContext): Ta
   // What an earlier search of this resolution found (CR 608.2c).
   if (s === "found") return (state.resolution?.found ?? []).map((object) => ({ kind: "object", object }));
   return context.targets[s.target] ?? [];
+}
+
+/**
+ * The one player an op that waits for a choice, or keeps a "this way" result, acts on; null if none is left.
+ * `definition-problems.ts` refuses "each player" for these: several would choose in APNAP order (later: CR 608.2e).
+ */
+function onePlayer(state: GameState, s: EffectSubject, context: EffectContext): PlayerId | null {
+  const [player, ...more] = playersOf(subject(state, s, context));
+  if (more.length > 0) throw new Error("this effect acts on one player");
+  return player ?? null;
+}
+
+/** Where `put` moves a card: its owner's hand (CR 400.3), or the battlefield under the controller (CR 110.2a). */
+function destinationOf(effect: Extract<Effect, { op: "put" }>, controller: PlayerId): Destination {
+  if (effect.into === "hand") return { zone: "hand" };
+  return effect.tapped === true
+    ? { zone: "battlefield", controller, tapped: true }
+    : { zone: "battlefield", controller };
 }
 
 function playersOf(targets: readonly Target[]): PlayerId[] {

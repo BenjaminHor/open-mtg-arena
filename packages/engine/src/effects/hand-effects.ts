@@ -1,21 +1,18 @@
 // Effects that choose cards from a hand (M2-05b2a): discarding cards a player chooses, revealing a hand, putting a card
 // from a hand onto the battlefield. Each asks with `askToChoose` and runs again with the cards chosen.
 
-import type { CardDatabase, Effect, ObjectFilter } from "../cards/types.ts";
+import type { CardDatabase, Effect } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
-import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneList } from "../zones/zone-list.ts";
-import { askToChoose, seenOf } from "./choose-cards.ts";
+import { askToChoose, fittingCards, nothing, seenOf } from "./choose-cards.ts";
 
 type Discard = Extract<Effect, { op: "discard" }>;
 type PutOntoBattlefield = Extract<Effect, { op: "putOntoBattlefield" }>;
-
-const nothing = (state: GameState): Progress => ({ state, events: [] });
 
 /**
  * `player` discards `amount` cards (CR 701.9a), chosen by them (CR 701.9b) or by "you", among the cards fitting the
@@ -96,14 +93,4 @@ function discardAll(state: GameState, ids: readonly ObjectId[], cards: CardDatab
     { kind: "simultaneous", events: ids.map((object) => ({ kind: "discard", object }) as const) },
     cards,
   );
-}
-
-function fittingCards(
-  state: GameState,
-  ids: readonly ObjectId[],
-  filter: ObjectFilter | undefined,
-  you: PlayerId,
-  cards: CardDatabase,
-): ObjectId[] {
-  return filter === undefined ? [...ids] : ids.filter((id) => matchesFilter(state, id, filter, you, cards));
 }
