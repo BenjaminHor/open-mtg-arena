@@ -114,8 +114,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       - M2-05b2b, libraries: done, merged (PR #30, D-064); M2-05b is done. 22 scenarios (39 in
         `test/scenarios/cards/m2-05b2/`), unit tests in `test/effects/library-effects.test.ts`; reviewed by the
         rules-judge and code-reviewer, fixes in (a concession mid-search left the "this way" record behind; names read
-        through `characteristics()`; an invariant on what a decision shows). M2-05c is next. two-worlds tests first in `test/effects/library-effects.test.ts` (each checked to fail when a search
-        skips an empty-of-matches library or an "any number" search ends at its maximum); the interim decks carry
+        through `characteristics()`; an invariant on what a decision shows). M2-05c is next. The two-worlds tests came
+        first (each checked to fail when a search skips a library with no match or an "any number" search ends at its
+        maximum); the interim decks carry
         the six cards, five new golden games; the fuzzer reaches searches and Ponder's look. Design (settled
         2026-11-20 with the advisor; the rules-judge reviewed the cards): an
         `ObjectFilter` supertype (basic, CR 205.4a, read through `supertypesOf`) and a negated filter, since "other
