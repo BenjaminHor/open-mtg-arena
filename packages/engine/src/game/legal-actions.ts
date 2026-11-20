@@ -66,6 +66,14 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         }),
       );
     }
+    case "announceX": {
+      // Any whole number is legal (CR 107.3a); these are the ones the player could pay for now, from 0.
+      const values = Array.from(
+        { length: pending.upTo + 1 },
+        (_, value): Action => ({ ...answer, answer: { kind: "announceX", value } }),
+      );
+      return [...values, { ...answer, answer: { kind: "cancelCast" } }];
+    }
     case "chooseTargetCount": {
       const { min, max } = pending;
       const counts = Array.from(

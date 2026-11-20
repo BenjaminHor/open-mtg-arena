@@ -221,6 +221,9 @@ function answerFor(
     case "chooseTargetCount":
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "chooseTargetCount", count: Number(value) };
+    case "announceX":
+      if (value === "cancel") return { kind: "cancelCast" };
+      return { kind: "announceX", value: Number(value) };
     case "divide":
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "divide", amount: Number(value) };

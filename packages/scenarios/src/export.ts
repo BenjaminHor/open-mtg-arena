@@ -101,6 +101,8 @@ function answerStep(
       return choose(targetName(state, answer.target, cards));
     case "chooseTargetCount":
       return choose(answer.count);
+    case "announceX":
+      return choose(answer.value);
     case "divide":
       return choose(answer.amount);
     case "payMana":

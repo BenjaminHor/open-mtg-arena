@@ -69,6 +69,8 @@ describe("discriminated unions", () => {
           return `discard ${decision.remaining}`;
         case "chooseTarget":
           return `target ${decision.instance}`;
+        case "announceX":
+          return "X?";
         case "chooseTargetCount":
           return `how many targets for ${decision.instance}`;
         case "divide":

@@ -65,10 +65,12 @@ export type CardType =
 /** A mana cost: its mana symbols in printed order (CR 202.1, 107.4). */
 export type ManaCost = ManaSymbol[];
 
-/** Only the symbols the current pool uses. Hybrid, Phyrexian, X and snow come with cards that need them. */
+/** Only the symbols the current pool uses. Hybrid, Phyrexian and snow come with cards that need them. */
 export type ManaSymbol =
   /** {1}, {2}, ...: generic mana, payable with any type (CR 107.4b). */
   | { kind: "generic"; amount: number }
+  /** {X}: a number the caster announces (CR 107.3a), paid as that much generic mana. */
+  | { kind: "x" }
   /** {W}, {U}, {B}, {R}, {G}: one mana of that color (CR 107.4a). */
   | { kind: "colored"; color: Color };
 
@@ -104,6 +106,11 @@ export type SpellDef = {
   /** One entry per instance of the word "target" (CR 601.2c), matching `StackChoices.targets`. */
   targets: TargetSpec[];
   effects: Effect[];
+  /**
+   * "This spell costs {1} more to cast for each target beyond the first" (Fireball): a cost increase, added to the total
+   * cost once the targets are chosen (CR 601.2f). It doesn't change the mana cost or the mana value.
+   */
+  costIncrease?: { perTargetBeyondFirst: ManaCost };
 };
 
 /**
@@ -170,6 +177,9 @@ export type ObjectFilter = {
   controller?: "you" | "notYou" | "opponent";
 };
 
+/** A number in an effect: written on the card, or X, the value announced as it was cast (CR 107.3a). */
+export type Amount = number | "X";
+
 /**
  * Which object or player an effect refers to. It's resolved to real ids when the effect begins, and a continuous
  * effect keeps those ids (CR 611.2c): if the object later changes zones, it's a new object and the effect no longer
@@ -188,14 +198,15 @@ export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
   | {
       op: "dealDamage";
-      amount: number;
+      amount: Amount;
       from: EffectSubject;
       to: EffectSubject;
       /**
-       * "N damage divided as you choose among" the targets of `to`: each target's share is announced as it's cast
-       * (CR 601.2d), and `amount` is the total. Without it, each recipient is dealt `amount`.
+       * How `amount` is split among the targets of `to`. "Divided as you choose": each target's share is announced as
+       * it's cast (CR 601.2d). "Divided evenly, rounded down": worked out as it resolves, among the targets still legal
+       * (Fireball's rulings). Without it, each recipient is dealt `amount`.
        */
-      divided?: "asYouChoose";
+      divided?: "asYouChoose" | "evenly";
     }
   /** "Add {G}." (CR 106.4). */
   | { op: "addMana"; mana: ManaType; amount: number }

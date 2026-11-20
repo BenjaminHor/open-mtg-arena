@@ -108,4 +108,8 @@ describe("manaValue (CR 202.3)", () => {
     ).toBe(4);
     expect(manaValue(null)).toBe(0);
   });
+
+  it("counts X as 0 off the stack (CR 202.3e)", () => {
+    expect(manaValue([{ kind: "x" }, { kind: "colored", color: "R" }])).toBe(1);
+  });
 });

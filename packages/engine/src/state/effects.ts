@@ -50,4 +50,6 @@ export type EffectContext = {
   targets: Target[][];
   /** The shares of a divided effect whose targets are still legal (CR 601.2d, 608.2b); empty when nothing is divided. */
   division: Share[];
+  /** The value announced for X, or null when there is none (CR 107.3a). */
+  x: number | null;
 };

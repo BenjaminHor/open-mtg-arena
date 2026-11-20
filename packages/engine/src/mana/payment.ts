@@ -16,8 +16,17 @@ export function payFromPool(pool: ManaPool, cost: ManaCost, payment: ManaPayment
   let generic = 0;
   const colored: Record<ManaType, number> = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
   for (const symbol of cost) {
-    if (symbol.kind === "generic") generic += symbol.amount;
-    else colored[symbol.color] += 1;
+    switch (symbol.kind) {
+      case "generic":
+        generic += symbol.amount;
+        break;
+      case "colored":
+        colored[symbol.color] += 1;
+        break;
+      case "x":
+        // The cost to pay has X's announced value as generic mana (`costOf`); an X left in it is a bug.
+        throw new Error("X must be announced before the cost is paid (CR 107.3a)");
+    }
   }
   let spare = 0;
   for (const type of MANA_TYPES) {
@@ -32,9 +41,21 @@ export function payFromPool(pool: ManaPool, cost: ManaCost, payment: ManaPayment
   return rest;
 }
 
-/** The total mana in a cost: its mana value (CR 202.3). */
+/**
+ * The total mana in a cost: its mana value (CR 202.3). X counts as 0, as it does anywhere but on the stack (CR 202.3e);
+ * a spell on the stack counts its announced X (later: in a stack-aware reader, when a card needs one).
+ */
 export function manaValue(cost: ManaCost | null): number {
-  return (cost ?? []).reduce((sum, s) => sum + (s.kind === "generic" ? s.amount : 1), 0);
+  return (cost ?? []).reduce((sum, s) => {
+    switch (s.kind) {
+      case "generic":
+        return sum + s.amount;
+      case "colored":
+        return sum + 1;
+      case "x":
+        return sum;
+    }
+  }, 0);
 }
 
 /**

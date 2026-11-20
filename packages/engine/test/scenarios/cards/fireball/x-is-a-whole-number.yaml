@@ -1,0 +1,13 @@
+name: X is a whole number from 0
+rules: [CR 107.3a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fireball]
+    battlefield: [Mountain, Mountain]
+steps:
+  - p1 cast: Fireball
+  - expect:
+      pending: { player: p1, kind: announceX, upTo: 1 }
+  - p1 choose: -1
+  - expect error: illegalAction

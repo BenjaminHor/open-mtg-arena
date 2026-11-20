@@ -62,6 +62,16 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
 type Source = { object: ObjectId; ability: AbilityRef; mana: ManaType };
 
 /** The player's permanents that can make one mana now, lands first, each group in battlefield order. */
+/**
+ * The most mana the player could have right now: what's in their pool, and one for each permanent whose mana ability
+ * they could activate. Only a guide (`legalActions` lists values of X up to it), not a rule.
+ */
+export function manaAvailable(state: GameState, player: PlayerId, cards: CardDatabase): number {
+  const pool = state.players[player]?.manaPool;
+  const inPool = pool === undefined ? 0 : MANA_TYPES.reduce((sum, t) => sum + pool[t], 0);
+  return inPool + manaSources(state, player, cards).length;
+}
+
 function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): Source[] {
   const sources: (Source & { land: boolean })[] = [];
   for (const object of state.zones.battlefield) {

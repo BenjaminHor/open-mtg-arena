@@ -1,0 +1,25 @@
+name: Fireball divides its damage among the targets still legal as it resolves
+rules: [CR 608.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fireball]
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    hand: [Shock]
+    battlefield: [Grizzly Bears, Giant Spider, Mountain]
+steps:
+  - p1 cast: Fireball
+    x: 4
+    targets: [[p2:Grizzly Bears, p2:Giant Spider]]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  # Only Giant Spider is still legal, so it's dealt all 4, not 2 (its rulings).
+  - expect:
+      p2.graveyard contains: [Grizzly Bears, Giant Spider]
+      events contains: [{ type: DAMAGE_DEALT, amount: 4 }]

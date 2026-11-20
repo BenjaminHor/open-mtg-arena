@@ -6,6 +6,7 @@ import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
 import { fireElemental } from "./f/fire-elemental.ts";
+import { fireball } from "./f/fireball.ts";
 import { forest } from "./f/forest.ts";
 import { furnaceWhelp } from "./f/furnace-whelp.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
@@ -24,6 +25,7 @@ import { ragingGoblin } from "./r/raging-goblin.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { shock } from "./s/shock.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
+import { swamp } from "./s/swamp.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
 
 export const CARD_DEFS: readonly CardDef[] = [
@@ -32,6 +34,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   crawWurm,
   eliteVanguard,
   fireElemental,
+  fireball,
   forest,
   furnaceWhelp,
   giantGrowth,
@@ -50,5 +53,6 @@ export const CARD_DEFS: readonly CardDef[] = [
   righteousness,
   shock,
   spinedWurm,
+  swamp,
   volcanicHammer,
 ];

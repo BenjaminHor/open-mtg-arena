@@ -22,6 +22,9 @@ export function targetsAndPayment(game: Game, step: StackStep, cards: CardDataba
     next = apply(next, action, cards, afterEach);
   }
   const pending = next.state.pending?.kind;
+  if (pending === "announceX" && (step.targets.length > 0 || step.divide !== null)) {
+    throw new Error(`${step.kind} ${step.card}: it announces X first: give x`);
+  }
   if (step.targets.length > 0 && (pending === "chooseTarget" || pending === "chooseTargetCount")) {
     throw new Error(`${step.kind} ${step.card}: it needs more targets than the ${step.targets.length} listed`);
   }
@@ -59,6 +62,8 @@ export function stackAnswer(
   const pending = state.pending;
   if (pending === null) return null;
   switch (pending.kind) {
+    case "announceX":
+      return step.x === null ? null : { answer: { kind: "announceX", value: step.x }, label: `X = ${step.x}` };
     case "chooseTargetCount": {
       const listed = step.targets[pending.instance];
       if (listed === undefined) return null;
@@ -108,6 +113,8 @@ export function unusedListed(state: GameState, step: StackStep): string | null {
   if (step.targets.length > 0 && JSON.stringify(listed) !== JSON.stringify(chosen)) {
     return `${step.kind} ${step.card}: targets lists ${JSON.stringify(listed)} per instance, but it took ${JSON.stringify(chosen)}`;
   }
+  if (step.x !== null && choices.x === null)
+    return `${step.kind} ${step.card}: x is listed, but it has no X to announce`;
   if (step.divide !== null && (choices.division?.shares.length ?? 0) !== step.divide.length) {
     return `${step.kind} ${step.card}: divide is listed, but nothing was divided among ${step.divide.length} targets`;
   }

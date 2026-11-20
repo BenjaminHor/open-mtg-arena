@@ -28,6 +28,8 @@ export type Answer =
   | { kind: "mulliganBottom"; object: ObjectId }
   | { kind: "discardToHandSize"; object: ObjectId }
   | { kind: "chooseTarget"; target: Target }
+  /** The value of X (CR 107.3a). */
+  | { kind: "announceX"; value: number }
   /** How many targets this instance will have (CR 601.2c). */
   | { kind: "chooseTargetCount"; count: number }
   /** The next target's share of a divided effect (CR 601.2d). */

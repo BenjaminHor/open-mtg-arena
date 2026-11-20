@@ -13,6 +13,7 @@ const SRC = join(import.meta.dirname, "../../src");
 const PRIMITIVES = [
   "moveCard",
   "destroy",
+  "sacrifice",
   "dealDamage",
   "loseLife",
   "markDamage",
@@ -28,6 +29,7 @@ const PRIMITIVES = [
 /** The primitives a primitive's own file may use, because they're part of the event it performs. */
 const BUILT_FROM: Record<string, string[]> = {
   "permanents/destroy.ts": ["moveCard"], // destroying is the move to the graveyard (CR 701.8a)
+  "permanents/sacrifice.ts": ["moveCard"], // so is sacrificing (CR 701.21a)
   "zones/draw.ts": ["moveCard"], // the top card moves to the hand (CR 121.1)
   "zones/discard.ts": ["moveCard"], // from hand to graveyard (CR 701.9a)
   "effects/deal-damage.ts": ["loseLife", "markDamage"], // a damage event's results are part of it (CR 120.4c)

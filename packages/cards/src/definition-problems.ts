@@ -61,7 +61,11 @@ function targetProblems(where: string, targets: readonly TargetSpec[], effects: 
     const spec = effect.to === "self" ? undefined : targets[effect.to.target];
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
-    } else if ((spec.count?.min ?? 1) > effect.amount) {
+    } else if (
+      effect.divided === "asYouChoose" &&
+      typeof effect.amount === "number" &&
+      (spec.count?.min ?? 1) > effect.amount
+    ) {
       problems.push(
         `${where}: divided damage of ${effect.amount} can't give each of at least ${spec.count?.min} targets 1`,
       );

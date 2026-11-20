@@ -5,8 +5,9 @@
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
-import { type ManaPayment, payFromPool } from "../mana/payment.ts";
-import { costOf } from "../rules/costs.ts";
+import { manaAvailable } from "../mana/auto-pay.ts";
+import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
+import { announcesX, costOf } from "../rules/costs.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -20,11 +21,22 @@ import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
 import { queueWork } from "./work.ts";
 
-/** The next decision: targets and their division (CR 601.2c–d), then paying the cost (CR 601.2g–h). */
+/**
+ * The next decision: the value of X (CR 601.2b), targets and their division (CR 601.2c–d), then paying the cost
+ * (CR 601.2g–h).
+ */
 export function nextCastingStep(state: GameState, cards: CardDatabase): GameState {
+  const casting = castingOf(state);
+  const obj = state.objects[casting.object];
+  if (obj?.choices?.x === null && announcesX(state, casting.object, cards)) {
+    const upTo = Math.max(
+      0,
+      manaAvailable(state, casting.player, cards) - manaValue(costOf(state, casting.object, cards)),
+    );
+    return waitFor(state, casting.player, { kind: "announceX", object: casting.object, upTo });
+  }
   const targeted = targetStep(state, cards);
   if (targeted.pending !== null) return targeted;
-  const casting = castingOf(targeted);
   return waitFor(targeted, casting.player, {
     kind: "payMana",
     object: casting.object,
@@ -141,4 +153,18 @@ function becameCastOrActivated(player: PlayerId, obj: GameObject): GameEvent {
     case "ability":
       return { type: "ABILITY_ACTIVATED", player, object: obj.id, source: obj.source };
   }
+}
+
+/** Why this value of X can't be announced, or null: any whole number from 0 (CR 107.1b, 107.3a). */
+export function xProblem(value: number): string | null {
+  return Number.isInteger(value) && value >= 0 ? null : "X is a whole number from 0 (CR 107.3a)";
+}
+
+/** The player announces X; it's kept on the spell or ability (CR 107.3a). The casting steps then go on. */
+export function announceX(state: GameState, value: number): GameState {
+  const casting = castingOf(state);
+  const obj = state.objects[casting.object];
+  if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
+  const choices = { ...obj.choices, x: value };
+  return { ...state, objects: { ...state.objects, [casting.object]: { ...obj, choices } } };
 }

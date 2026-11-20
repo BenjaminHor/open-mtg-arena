@@ -17,7 +17,7 @@ import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
 import { castProblem, startCast } from "./cast.ts";
-import { activateWhilePaying, cancelCasting, nextCastingStep, payCost } from "./casting-steps.ts";
+import { activateWhilePaying, announceX, cancelCasting, nextCastingStep, payCost, xProblem } from "./casting-steps.ts";
 import {
   chooseTarget,
   chooseTargetCount,
@@ -124,6 +124,13 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       }
       const chosen = [...pending.chosen, answer.object];
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
+    }
+    case "announceX": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind !== "announceX") return mismatch;
+      const problem = xProblem(answer.value);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, state: nextCastingStep(announceX(answered, answer.value), cards), events: [] };
     }
     case "chooseTargetCount": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };

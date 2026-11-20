@@ -4,6 +4,7 @@
 // `choices`, so every pause is plain data and a cancel can reverse it (D-035).
 
 import type { CardDatabase } from "../cards/types.ts";
+import { amountOf } from "../rules/amount.ts";
 import { effectsOf, legalTargets, sameTarget, type Targeting, targetCount, targetSpecsOf } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -177,7 +178,7 @@ function dividedEffect(
   for (const effect of effectsOf(state, id, cards)) {
     if (effect.op === "dealDamage" && effect.divided === "asYouChoose") {
       if (effect.to === "self") throw new Error("A divided effect divides among targets");
-      return { instance: effect.to.target, amount: effect.amount };
+      return { instance: effect.to.target, amount: amountOf(effect.amount, choicesOf(state, id).x) };
     }
   }
   return null;
