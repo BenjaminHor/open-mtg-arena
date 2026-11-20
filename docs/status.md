@@ -427,6 +427,26 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
        Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
        isn't destroyed: its ruling).
+     - Now: M2-08c (2026-11-20). Design, with the advisor's review:
+       - `happenOrAsk`: like `happen`, but when the affected player (or the affected object's controller, CR 616.1)
+         must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
+         decision, and queues a `happen` work item holding the proposed event and the choices so far. On the answer,
+         `replace` runs again from the top with the choices in order; nothing was performed, so the state is as it
+         was, and each choice applies once (CR 614.5, 616.1f). Several players choose in APNAP order (CR 616.1).
+         Candidates are named by stable references (`{ kind: "ownText", object, index }`, `{ kind:
+         "regenerationShield", object }`). Identical candidates aren't asked about (D-086).
+       - Only callers that do nothing after the event may pause: a resolving effect's damage and destroy
+         (`run-effect.ts`, one work item per effect) and combat damage, which queues its priority before the event. A
+         test checks no other file imports `happenOrAsk`; plain `happen` still refuses a choice (unreachable with the
+         pool: only damage, from these two places, can meet two effects; Homing Bear's tests use a destroy spell).
+       - Applying candidates in order rebuilds the event: a replacement that swaps the core event for another
+         (regeneration) drops what earlier ones added around it (CR 614.6: a replaced event never happens). Homing
+         Bear (test-only: "would be put into a graveyard ... library instead") with a regeneration shield on one
+         destroy: shield first, it regenerates; library first, it's still a destroy, so the shield then applies
+         (CR 616.1f) and it regenerates, with no reveal or shuffle.
+       - Plumbing: the decision kind in `legalActions`, the view, the scenario syntax, the CLI's action lines, the
+         fuzz picker, and `DECISION_KINDS` with a reason until M2-08d's cards reach it.
+       - Future impact: Clone's "as it enters" (M2-14) is a choice pausing a zone change from `resolve.ts`, not built.
      - M2-08c, the CR 616.1 choice, no pool cards: `happen` stops before performing anything and resumes as a work item
        (the pattern mid-resolution decisions use) when the affected player must choose which effect applies; every
        caller that does more after `happen` queues the rest (the pipeline README's list). Tested with test-only cards
@@ -598,6 +618,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20) The M2 spec's M2-08 acceptance list includes three cases from the M2-03 review that no Magic 2010
+  card can produce: a dying creature's replacement still applying to the others in its state-based-action batch
+  (CR 704.3), a "would die" replacement with regeneration (testable now with a test-only card, done in M2-08c), and
+  Worship-style damage results replaced as one event (CR 120.4c). The first and third would need replacement kinds
+  written only for tests, which CLAUDE.md treats as speculative. Proposed: defer those two to the first card that
+  needs them (noted in future-rules), and count M2-08 done without them. Waiting on the owner.
 - (Asked 2026-11-20) The owner asked whether card definitions' raw strings (`op: "dealDamage"`, `step: "end"`...)
   should become enums. Recommended: no TypeScript `enum` (D-018 runs TypeScript by type stripping, and
   `erasableSyntaxOnly` refuses `enum`); the strings are already checked literal unions. Offered instead: named
