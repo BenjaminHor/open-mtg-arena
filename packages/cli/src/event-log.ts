@@ -125,6 +125,12 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `destroyed: ${name(e.object)}`;
     case "PERMANENT_SACRIFICED":
       return `${e.player} sacrifices ${name(e.object)}`;
+    case "SPELL_COUNTERED":
+      return `countered: ${name(e.object)}`;
+    case "ABILITY_COUNTERED":
+      return `countered: ${name(e.source)}'s ability`;
+    case "LIFE_GAINED":
+      return `${e.player} gains ${e.amount} life`;
     case "PLAYER_LOST":
       return `${e.player} loses the game (${e.reason})`;
     case "GAME_ENDED":

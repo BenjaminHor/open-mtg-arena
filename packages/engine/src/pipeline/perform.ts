@@ -3,6 +3,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { dealDamage } from "../effects/deal-damage.ts";
+import { gainLife } from "../effects/life.ts";
 import { countLandPlay } from "../game/land-played.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { addMana } from "../mana/pool.ts";
@@ -11,6 +12,7 @@ import { sacrifice } from "../permanents/sacrifice.ts";
 import { tapPermanent } from "../permanents/tap.ts";
 import { untapPermanent } from "../permanents/untap.ts";
 import type { GameState } from "../state/game-state.ts";
+import { counterObject } from "../zones/counter.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { moveCard } from "../zones/move-card.ts";
@@ -39,6 +41,10 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return dealDamage(state, event.damage, cards);
     case "tap":
       return tapPermanent(state, event.object);
+    case "counterObject":
+      return counterObject(state, event.object);
+    case "gainLife":
+      return gainLife(state, event.player, event.amount);
     case "untap":
       return untapPermanent(state, event.object);
     case "addMana":

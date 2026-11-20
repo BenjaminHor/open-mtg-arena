@@ -20,6 +20,7 @@ import { largestShare, possibleTargets } from "./choose-targets.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 import { nextSacrificeOptions } from "./sacrifice-costs.ts";
+import { tapsForCost } from "./tap-costs.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
@@ -115,7 +116,12 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
           : allPayments(pool, pending.cost).map(
               (payment): Action => ({ ...answer, answer: { kind: "payMana", payment } }),
             );
-      return [...pay, cancel, ...manaAbilityActions(state, player, pending.id, cards)];
+      // Not the mana abilities of a permanent the cost itself taps: the cost couldn't then be paid (CR 107.5).
+      const tappedByCost = tapsForCost(state, cards);
+      const abilities = manaAbilityActions(state, player, pending.id, cards).filter(
+        (a) => a.type !== "ACTIVATE_ABILITY" || !tappedByCost.includes(a.object),
+      );
+      return [...pay, cancel, ...abilities];
     }
     case "priority":
       return [

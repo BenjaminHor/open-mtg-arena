@@ -68,7 +68,7 @@ function targetProblems(
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
-    const spec = effect.to === "self" ? undefined : targets[effect.to.target];
+    const spec = typeof effect.to === "string" ? undefined : targets[effect.to.target];
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
     } else if (

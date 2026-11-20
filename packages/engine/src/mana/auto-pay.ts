@@ -2,6 +2,7 @@
 // The rules don't choose for a player; this proposes a choice, and the engine still checks it.
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
+import { tapsForCost } from "../game/tap-costs.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
@@ -84,8 +85,10 @@ export function manaAvailable(state: GameState, player: PlayerId, cards: CardDat
 /** The player's permanents that can make one mana now, lands first, each group in battlefield order. */
 function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): Source[] {
   const sources: (Source & { land: boolean })[] = [];
+  // A permanent the cost being paid taps can't be tapped for mana for it too (CR 107.5).
+  const tappedByCost = tapsForCost(state, cards);
   for (const object of state.zones.battlefield) {
-    if (controllerOf(state, object) !== player) continue;
+    if (controllerOf(state, object) !== player || tappedByCost.includes(object)) continue;
     for (const { ref, def } of abilitiesOf(state, object, cards)) {
       if (!isManaAbility(def) || manaAbilityProblem(state, player, object, ref, cards) !== null) continue;
       const effect = def.effects.find((e) => e.op === "addMana");

@@ -31,9 +31,8 @@ export function activationProblem(
   const ability = findAbility(state, source, ref, cards);
   if (ability === null) return `${source} has no such ability`;
   if (isManaAbility(ability.def)) return "that's a mana ability";
-  // Mana and sacrifices so far; {T} on an ability that uses the stack comes with the first card that has one. Whether
-  // there's anything to sacrifice isn't checked, as payability isn't (D-035): a player who can't pay cancels.
-  if (ability.def.cost.some((part) => part.kind === "tap")) return "{T} in such a cost isn't supported yet";
+  // {T} was checked with the basics. Whether there's anything to sacrifice isn't checked, as payability isn't (D-035):
+  // a player who can't pay cancels.
   // The ability isn't on the stack yet, so its source stands in as what targets; it can target its own source.
   return targetsProblem(state, ability.def.targets, { object: source, controller: player }, cards);
 }

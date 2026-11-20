@@ -4,11 +4,12 @@
 import type { CardDatabase, Effect, EffectSubject } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
-import type { Damage } from "../pipeline/proposed.ts";
+import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
 import { amountOf } from "../rules/amount.ts";
+import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 
@@ -42,7 +43,78 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
         change,
       });
     }
+    case "destroy":
+      return toEach(state, onBattlefield(state, objectsOf(subject(effect.of, context))), cards, (object) => ({
+        kind: "destroy",
+        object,
+      }));
+    case "destroyAll": {
+      // Every permanent that fits, decided once now (CR 608.2h), destroyed at the same time (CR 608.2f).
+      const all = state.zones.battlefield.filter((id) =>
+        matchesFilter(state, id, effect.filter, context.controller, cards),
+      );
+      return toEach(state, all, cards, (object) => ({ kind: "destroy", object }));
+    }
+    case "exile":
+      return toEach(state, stillThere(state, objectsOf(subject(effect.of, context))), cards, (object) => ({
+        kind: "moveCard",
+        object,
+        to: { zone: "exile" },
+      }));
+    case "returnToHand":
+      // Its owner's hand (CR 400.3): `moveCard` takes it there.
+      return toEach(state, stillThere(state, objectsOf(subject(effect.of, context))), cards, (object) => ({
+        kind: "moveCard",
+        object,
+        to: { zone: "hand" },
+      }));
+    case "putOnTopOfLibrary":
+      return toEach(state, stillThere(state, objectsOf(subject(effect.of, context))), cards, (object) => ({
+        kind: "moveCard",
+        object,
+        to: { zone: "library", position: "top" },
+      }));
+    case "tap":
+      return toEach(state, onBattlefield(state, objectsOf(subject(effect.of, context))), cards, (object) => ({
+        kind: "tap",
+        object,
+      }));
+    case "counter": {
+      const onStack = objectsOf(subject(effect.of, context)).filter((id) => state.zones.stack.includes(id));
+      return toEach(state, onStack, cards, (object) => ({ kind: "counterObject", object }));
+    }
+    case "gainLife": {
+      const amount = amountOf(effect.amount, context.x);
+      return toEach(state, playersOf(subject(effect.who, context)), cards, (player) => ({
+        kind: "gainLife",
+        player,
+        amount,
+      }));
+    }
   }
+}
+
+/**
+ * The same event for each object or player, at the same time (CR 608.2f). Objects that left their zone since the
+ * targets were checked are already gone from the list: acting on them is impossible (CR 101.3, 400.7).
+ */
+function toEach<T>(
+  state: GameState,
+  items: readonly T[],
+  cards: CardDatabase,
+  event: (item: T) => SingleEvent,
+): Progress {
+  if (items.length === 0) return { state, events: [] };
+  return happen(state, { kind: "simultaneous", events: items.map(event) }, cards);
+}
+
+/** The objects still in the game under these ids: one that changed zones is a new object (CR 400.7). */
+function stillThere(state: GameState, ids: readonly ObjectId[]): ObjectId[] {
+  return ids.filter((id) => state.objects[id] !== undefined);
+}
+
+function onBattlefield(state: GameState, ids: readonly ObjectId[]): ObjectId[] {
+  return ids.filter((id) => state.zones.battlefield.includes(id));
 }
 
 /** Who a damage effect deals how much to, as it resolves. */
@@ -67,7 +139,12 @@ function damageOf(effect: Extract<Effect, { op: "dealDamage" }>, from: ObjectId,
 /** The players and objects a subject refers to. A target group holds only the targets still legal (CR 608.2b). */
 function subject(s: EffectSubject, context: EffectContext): Target[] {
   if (s === "self") return [{ kind: "object", object: context.self }];
+  if (s === "you") return [{ kind: "player", player: context.controller }];
   return context.targets[s.target] ?? [];
+}
+
+function playersOf(targets: readonly Target[]): PlayerId[] {
+  return targets.flatMap((t) => (t.kind === "player" ? [t.player] : []));
 }
 
 function objectsOf(targets: readonly Target[]): ObjectId[] {

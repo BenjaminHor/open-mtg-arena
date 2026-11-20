@@ -8,6 +8,7 @@ import { resolveManaAbility } from "../mana/activate.ts";
 import { manaAvailable } from "../mana/auto-pay.ts";
 import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
 import { happen } from "../pipeline/happen.ts";
+import type { SingleEvent } from "../pipeline/proposed.ts";
 import { announcesX, costOf } from "../rules/costs.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
@@ -21,6 +22,7 @@ import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
 import { sacrificeParts, sacrificesStillPossible } from "./sacrifice-costs.ts";
+import { tapsForCost } from "./tap-costs.ts";
 import { queueWork } from "./work.ts";
 
 /**
@@ -95,11 +97,18 @@ export function payCost(
   if (rest === null) return "that payment doesn't pay the cost (CR 601.2h)";
   if (!sacrificesStillPossible(state, cards))
     return "a permanent chosen to sacrifice can't be sacrificed now (CR 601.2h)";
+  const taps = tapsForCost(state, cards);
+  if (taps.some((id) => !state.zones.battlefield.includes(id) || isTapped(state, id)))
+    return "a permanent to tap for the cost is already tapped (CR 107.5, 601.2h)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
-  const sacrifices = casting.sacrifices.map((object) => ({ kind: "sacrifice", object }) as const);
-  const sacrificed = happen({ ...state, players }, { kind: "simultaneous", events: sacrifices }, cards);
+  // Taps first, then sacrifices: "{T}, Sacrifice this" taps it before it's gone (CR 601.2h lets the order be chosen).
+  const costs: SingleEvent[] = [
+    ...taps.map((object) => ({ kind: "tap", object }) as const),
+    ...casting.sacrifices.map((object) => ({ kind: "sacrifice", object }) as const),
+  ];
+  const sacrificed = happen({ ...state, players }, { kind: "simultaneous", events: costs }, cards);
   const done: GameState = { ...sacrificed.state, casting: null, passesInSuccession: 0 };
   const event = becameCastOrActivated(casting.player, obj);
   return {
@@ -195,4 +204,9 @@ export function announceX(state: GameState, value: number): GameState {
   if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
   const choices = { ...obj.choices, x: value };
   return { ...state, objects: { ...state.objects, [casting.object]: { ...obj, choices } } };
+}
+
+function isTapped(state: GameState, id: ObjectId): boolean {
+  const obj = state.objects[id];
+  return obj?.kind !== "card" || obj.tapped;
 }

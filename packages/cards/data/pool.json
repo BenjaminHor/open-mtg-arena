@@ -7,6 +7,118 @@
   },
   "cards": [
     {
+      "name": "Assassinate",
+      "slug": "assassinate",
+      "oracleId": "ce979f36-84f2-4419-b400-971263494cc6",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Destroy target tapped creature.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/e/6eac7cb5-b9de-4c40-ab70-3084d8145f58.jpg?1783941820",
+        "large": "https://cards.scryfall.io/large/front/6/e/6eac7cb5-b9de-4c40-ab70-3084d8145f58.jpg?1783941820",
+        "png": "https://cards.scryfall.io/png/front/6/e/6eac7cb5-b9de-4c40-ab70-3084d8145f58.png?1783941820",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/e/6eac7cb5-b9de-4c40-ab70-3084d8145f58.jpg?1783941820"
+      },
+      "artist": "Kev Walker",
+      "set": "m11",
+      "collectorNumber": "81",
+      "scryfallUri": "https://scryfall.com/card/m11/81/assassinate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Blinding Mage",
+      "slug": "blinding-mage",
+      "oracleId": "53a1faa1-ca67-4027-bee8-0f7c4584d62b",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Creature — Human Wizard",
+      "oracleText": "{W}, {T}: Tap target creature.",
+      "power": "1",
+      "toughness": "2",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/4/2468c21b-d041-4e26-91cf-d53850e2a57e.jpg?1783941837",
+        "large": "https://cards.scryfall.io/large/front/2/4/2468c21b-d041-4e26-91cf-d53850e2a57e.jpg?1783941837",
+        "png": "https://cards.scryfall.io/png/front/2/4/2468c21b-d041-4e26-91cf-d53850e2a57e.png?1783941837",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/4/2468c21b-d041-4e26-91cf-d53850e2a57e.jpg?1783941837"
+      },
+      "artist": "Eric Deschamps",
+      "set": "m11",
+      "collectorNumber": "8",
+      "scryfallUri": "https://scryfall.com/card/m11/8/blinding-mage?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Cancel",
+      "slug": "cancel",
+      "oracleId": "7d00fb28-ea6c-49a9-b4af-ffb38860a9a7",
+      "layout": "normal",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3,
+      "typeLine": "Instant",
+      "oracleText": "Counter target spell.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/7/475bff39-220a-4490-9c2e-d311e306a6db.jpg?1783908966",
+        "large": "https://cards.scryfall.io/large/front/4/7/475bff39-220a-4490-9c2e-d311e306a6db.jpg?1783908966",
+        "png": "https://cards.scryfall.io/png/front/4/7/475bff39-220a-4490-9c2e-d311e306a6db.png?1783908966",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/7/475bff39-220a-4490-9c2e-d311e306a6db.jpg?1783908966"
+      },
+      "artist": "Mathias Kollros",
+      "set": "fdn",
+      "collectorNumber": "505",
+      "scryfallUri": "https://scryfall.com/card/fdn/505/cancel?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Celestial Purge",
+      "slug": "celestial-purge",
+      "oracleId": "ec1f6188-2516-46ac-8a03-7b7285b23a62",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Exile target black or red permanent.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/5/75f75e85-9454-4008-aa51-a1d5965752d6.jpg?1783941104",
+        "large": "https://cards.scryfall.io/large/front/7/5/75f75e85-9454-4008-aa51-a1d5965752d6.jpg?1783941104",
+        "png": "https://cards.scryfall.io/png/front/7/5/75f75e85-9454-4008-aa51-a1d5965752d6.png?1783941104",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/5/75f75e85-9454-4008-aa51-a1d5965752d6.jpg?1783941104"
+      },
+      "artist": "David Palumbo",
+      "set": "m12",
+      "collectorNumber": "11",
+      "scryfallUri": "https://scryfall.com/card/m12/11/celestial-purge?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Centaur Courser",
       "slug": "centaur-courser",
       "oracleId": "2f5bf099-2e01-4e1c-9ebf-0ce0ac66939e",
@@ -91,6 +203,90 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Deathmark",
+      "slug": "deathmark",
+      "oracleId": "cf09b0af-3cf1-4486-8f65-8cfd2410314a",
+      "layout": "normal",
+      "manaCost": "{B}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Destroy target green or white creature.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/2/42592d75-593e-4719-b13b-bca374017e79.jpg?1783908931",
+        "large": "https://cards.scryfall.io/large/front/4/2/42592d75-593e-4719-b13b-bca374017e79.jpg?1783908931",
+        "png": "https://cards.scryfall.io/png/front/4/2/42592d75-593e-4719-b13b-bca374017e79.png?1783908931",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/2/42592d75-593e-4719-b13b-bca374017e79.jpg?1783908931"
+      },
+      "artist": "Jeremy Jarvis",
+      "set": "fdn",
+      "collectorNumber": "601",
+      "scryfallUri": "https://scryfall.com/card/fdn/601/deathmark?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Divine Verdict",
+      "slug": "divine-verdict",
+      "oracleId": "3070f997-24f2-471d-af96-a2f3b588198e",
+      "layout": "normal",
+      "manaCost": "{3}{W}",
+      "manaValue": 4,
+      "typeLine": "Instant",
+      "oracleText": "Destroy target attacking or blocking creature.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/d/ed07b708-7232-4b87-b5d9-edaa20a69293.jpg?1783935340",
+        "large": "https://cards.scryfall.io/large/front/e/d/ed07b708-7232-4b87-b5d9-edaa20a69293.jpg?1783935340",
+        "png": "https://cards.scryfall.io/png/front/e/d/ed07b708-7232-4b87-b5d9-edaa20a69293.png?1783935340",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/d/ed07b708-7232-4b87-b5d9-edaa20a69293.jpg?1783935340"
+      },
+      "artist": "Slawomir Maniak",
+      "set": "rix",
+      "collectorNumber": "5",
+      "scryfallUri": "https://scryfall.com/card/rix/5/divine-verdict?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Doom Blade",
+      "slug": "doom-blade",
+      "oracleId": "59e7f2ae-4535-4191-98be-3e65b6b2befa",
+      "layout": "normal",
+      "manaCost": "{1}{B}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Destroy target nonblack creature.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/5/75d96a37-bdbe-46ae-926f-8742699a0b20.jpg?1783939924",
+        "large": "https://cards.scryfall.io/large/front/7/5/75d96a37-bdbe-46ae-926f-8742699a0b20.jpg?1783939924",
+        "png": "https://cards.scryfall.io/png/front/7/5/75d96a37-bdbe-46ae-926f-8742699a0b20.png?1783939924",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/5/75d96a37-bdbe-46ae-926f-8742699a0b20.jpg?1783939924"
+      },
+      "artist": "Chippy",
+      "set": "m14",
+      "collectorNumber": "96",
+      "scryfallUri": "https://scryfall.com/card/m14/96/doom-blade?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Elite Vanguard",
       "slug": "elite-vanguard",
       "oracleId": "b3b9a87d-cb95-435c-90b6-037406cab32e",
@@ -116,6 +312,62 @@
       "set": "m12",
       "collectorNumber": "15",
       "scryfallUri": "https://scryfall.com/card/m12/15/elite-vanguard?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Essence Scatter",
+      "slug": "essence-scatter",
+      "oracleId": "46665089-aa3d-44c3-964d-6638dfbb5782",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Counter target creature spell.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/2/32840097-0531-4c43-b6a8-e76c17420b04.jpg?1783903696",
+        "large": "https://cards.scryfall.io/large/front/3/2/32840097-0531-4c43-b6a8-e76c17420b04.jpg?1783903696",
+        "png": "https://cards.scryfall.io/png/front/3/2/32840097-0531-4c43-b6a8-e76c17420b04.png?1783903696",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/2/32840097-0531-4c43-b6a8-e76c17420b04.jpg?1783903696"
+      },
+      "artist": "Elliot Lang",
+      "set": "sos",
+      "collectorNumber": "47",
+      "scryfallUri": "https://scryfall.com/card/sos/47/essence-scatter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Excommunicate",
+      "slug": "excommunicate",
+      "oracleId": "6c2cf22e-5dbb-4fa9-8ece-17069e6f1d7f",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Put target creature on top of its owner's library.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/a/8aec6e3f-bc90-4e21-a087-330f7e072fc6.jpg?1783941835",
+        "large": "https://cards.scryfall.io/large/front/8/a/8aec6e3f-bc90-4e21-a087-330f7e072fc6.jpg?1783941835",
+        "png": "https://cards.scryfall.io/png/front/8/a/8aec6e3f-bc90-4e21-a087-330f7e072fc6.png?1783941835",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/a/8aec6e3f-bc90-4e21-a087-330f7e072fc6.jpg?1783941835"
+      },
+      "artist": "Matt Stewart",
+      "set": "m11",
+      "collectorNumber": "14",
+      "scryfallUri": "https://scryfall.com/card/m11/14/excommunicate?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -172,6 +424,34 @@
       "set": "m12",
       "collectorNumber": "131",
       "scryfallUri": "https://scryfall.com/card/m12/131/fireball?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Flashfreeze",
+      "slug": "flashfreeze",
+      "oracleId": "eaf98e03-729b-4145-b2af-c910c415c15d",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Counter target red or green spell.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/1/91e37a7e-6093-4ef5-b6e4-4aa800ddfc1b.jpg?1783908935",
+        "large": "https://cards.scryfall.io/large/front/9/1/91e37a7e-6093-4ef5-b6e4-4aa800ddfc1b.jpg?1783908935",
+        "png": "https://cards.scryfall.io/png/front/9/1/91e37a7e-6093-4ef5-b6e4-4aa800ddfc1b.png?1783908935",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/1/91e37a7e-6093-4ef5-b6e4-4aa800ddfc1b.jpg?1783908935"
+      },
+      "artist": "Brian Despain",
+      "set": "fdn",
+      "collectorNumber": "590",
+      "scryfallUri": "https://scryfall.com/card/fdn/590/flashfreeze?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -537,6 +817,90 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Naturalize",
+      "slug": "naturalize",
+      "oracleId": "bdb3ca68-ec1f-4e16-81cc-d23f8f52c728",
+      "layout": "normal",
+      "manaCost": "{1}{G}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Destroy target artifact or enchantment.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/9/390c40ba-2464-44ae-8d67-93c72ab3c425.jpg?1783934532",
+        "large": "https://cards.scryfall.io/large/front/3/9/390c40ba-2464-44ae-8d67-93c72ab3c425.jpg?1783934532",
+        "png": "https://cards.scryfall.io/png/front/3/9/390c40ba-2464-44ae-8d67-93c72ab3c425.png?1783934532",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/9/390c40ba-2464-44ae-8d67-93c72ab3c425.jpg?1783934532"
+      },
+      "artist": "Daniel Ljunggren",
+      "set": "m19",
+      "collectorNumber": "190",
+      "scryfallUri": "https://scryfall.com/card/m19/190/naturalize?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Negate",
+      "slug": "negate",
+      "oracleId": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Counter target noncreature spell.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/f/ff3b0dba-0207-4249-bdab-e807c76ce39e.jpg?1783908893",
+        "large": "https://cards.scryfall.io/large/front/f/f/ff3b0dba-0207-4249-bdab-e807c76ce39e.jpg?1783908893",
+        "png": "https://cards.scryfall.io/png/front/f/f/ff3b0dba-0207-4249-bdab-e807c76ce39e.png?1783908893",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/f/ff3b0dba-0207-4249-bdab-e807c76ce39e.jpg?1783908893"
+      },
+      "artist": "Magali Villeneuve",
+      "set": "fdn",
+      "collectorNumber": "710",
+      "scryfallUri": "https://scryfall.com/card/fdn/710/negate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Ornithopter",
+      "slug": "ornithopter",
+      "oracleId": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",
+      "layout": "normal",
+      "manaCost": "{0}",
+      "manaValue": 0,
+      "typeLine": "Artifact Creature — Thopter",
+      "oracleText": "Flying",
+      "power": "0",
+      "toughness": "2",
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/d/ddb96645-44d2-426c-90cb-3186297a8728.jpg?1783936724",
+        "large": "https://cards.scryfall.io/large/front/d/d/ddb96645-44d2-426c-90cb-3186297a8728.jpg?1783936724",
+        "png": "https://cards.scryfall.io/png/front/d/d/ddb96645-44d2-426c-90cb-3186297a8728.png?1783936724",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/d/ddb96645-44d2-426c-90cb-3186297a8728.jpg?1783936724"
+      },
+      "artist": "Mathias Kollros",
+      "set": "aer",
+      "collectorNumber": "167",
+      "scryfallUri": "https://scryfall.com/card/aer/167/ornithopter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Plains",
       "slug": "plains",
       "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
@@ -560,6 +924,34 @@
       "set": "fra",
       "collectorNumber": "281",
       "scryfallUri": "https://scryfall.com/card/fra/281/plains?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Planar Cleansing",
+      "slug": "planar-cleansing",
+      "oracleId": "a98c2d81-4add-4292-bbdd-e1b69ff936d4",
+      "layout": "normal",
+      "manaCost": "{3}{W}{W}{W}",
+      "manaValue": 6,
+      "typeLine": "Sorcery",
+      "oracleText": "Destroy all nonland permanents.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/e/5eddac86-947e-48c1-9f02-4634a7918c98.jpg?1783933021",
+        "large": "https://cards.scryfall.io/large/front/5/e/5eddac86-947e-48c1-9f02-4634a7918c98.jpg?1783933021",
+        "png": "https://cards.scryfall.io/png/front/5/e/5eddac86-947e-48c1-9f02-4634a7918c98.png?1783933021",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/e/5eddac86-947e-48c1-9f02-4634a7918c98.jpg?1783933021"
+      },
+      "artist": "Michael Komarck",
+      "set": "m20",
+      "collectorNumber": "33",
+      "scryfallUri": "https://scryfall.com/card/m20/33/planar-cleansing?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -621,6 +1013,88 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Rod of Ruin",
+      "slug": "rod-of-ruin",
+      "oracleId": "c29a04ab-4e14-45d8-a993-3fffd0e2f6eb",
+      "layout": "normal",
+      "manaCost": "{4}",
+      "manaValue": 4,
+      "typeLine": "Artifact",
+      "oracleText": "{3}, {T}: This artifact deals 1 damage to any target.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/a/9a0e90b8-bc38-4e1c-92ca-ac562cc57e31.jpg?1783939895",
+        "large": "https://cards.scryfall.io/large/front/9/a/9a0e90b8-bc38-4e1c-92ca-ac562cc57e31.jpg?1783939895",
+        "png": "https://cards.scryfall.io/png/front/9/a/9a0e90b8-bc38-4e1c-92ca-ac562cc57e31.png?1783939895",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/a/9a0e90b8-bc38-4e1c-92ca-ac562cc57e31.jpg?1783939895"
+      },
+      "artist": "Mark Zug",
+      "set": "m14",
+      "collectorNumber": "217",
+      "scryfallUri": "https://scryfall.com/card/m14/217/rod-of-ruin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Royal Assassin",
+      "slug": "royal-assassin",
+      "oracleId": "9ed6f28f-a3db-48c5-9ab0-b90a7fba5f57",
+      "layout": "normal",
+      "manaCost": "{1}{B}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Assassin",
+      "oracleText": "{T}: Destroy target tapped creature.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/1/d12e8109-8215-46b5-a0af-fe7e4b6b10b0.jpg?1783941080",
+        "large": "https://cards.scryfall.io/large/front/d/1/d12e8109-8215-46b5-a0af-fe7e4b6b10b0.jpg?1783941080",
+        "png": "https://cards.scryfall.io/png/front/d/1/d12e8109-8215-46b5-a0af-fe7e4b6b10b0.png?1783941080",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/1/d12e8109-8215-46b5-a0af-fe7e4b6b10b0.jpg?1783941080"
+      },
+      "artist": "Mark Zug",
+      "set": "m12",
+      "collectorNumber": "105",
+      "scryfallUri": "https://scryfall.com/card/m12/105/royal-assassin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Shatter",
+      "slug": "shatter",
+      "oracleId": "84d32e68-72b9-432d-a023-7bc6a26b8ad0",
+      "layout": "normal",
+      "manaCost": "{1}{R}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Destroy target artifact.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/2/929a41f7-f52d-4190-a80c-5ceb3e368a31.jpg?1783935294",
+        "large": "https://cards.scryfall.io/large/front/9/2/929a41f7-f52d-4190-a80c-5ceb3e368a31.jpg?1783935294",
+        "png": "https://cards.scryfall.io/png/front/9/2/929a41f7-f52d-4190-a80c-5ceb3e368a31.png?1783935294",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/2/929a41f7-f52d-4190-a80c-5ceb3e368a31.jpg?1783935294"
+      },
+      "artist": "Jonas De Ro",
+      "set": "rix",
+      "collectorNumber": "114",
+      "scryfallUri": "https://scryfall.com/card/rix/114/shatter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Shock",
       "slug": "shock",
       "oracleId": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
@@ -646,6 +1120,34 @@
       "set": "mkm",
       "collectorNumber": "144",
       "scryfallUri": "https://scryfall.com/card/mkm/144/shock?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Solemn Offering",
+      "slug": "solemn-offering",
+      "oracleId": "aff51c27-fb61-41b3-a7ea-7092cd280c63",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Destroy target artifact or enchantment. You gain 4 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/4/24d750b4-b58f-4465-8648-c86d678e0936.jpg?1783939199",
+        "large": "https://cards.scryfall.io/large/front/2/4/24d750b4-b58f-4465-8648-c86d678e0936.jpg?1783939199",
+        "png": "https://cards.scryfall.io/png/front/2/4/24d750b4-b58f-4465-8648-c86d678e0936.png?1783939199",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/4/24d750b4-b58f-4465-8648-c86d678e0936.jpg?1783939199"
+      },
+      "artist": "Sam Wood",
+      "set": "m15",
+      "collectorNumber": "33",
+      "scryfallUri": "https://scryfall.com/card/m15/33/solemn-offering?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -700,6 +1202,90 @@
       "set": "fra",
       "collectorNumber": "285",
       "scryfallUri": "https://scryfall.com/card/fra/285/swamp?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Tempest of Light",
+      "slug": "tempest-of-light",
+      "oracleId": "9399ed27-31c7-4d6a-99eb-644b74e67344",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Instant",
+      "oracleText": "Destroy all enchantments.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/8/d86e9c3f-c72d-4b7b-a2c2-5249fbf0990f.jpg?1783942397",
+        "large": "https://cards.scryfall.io/large/front/d/8/d86e9c3f-c72d-4b7b-a2c2-5249fbf0990f.jpg?1783942397",
+        "png": "https://cards.scryfall.io/png/front/d/8/d86e9c3f-c72d-4b7b-a2c2-5249fbf0990f.png?1783942397",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/8/d86e9c3f-c72d-4b7b-a2c2-5249fbf0990f.jpg?1783942397"
+      },
+      "artist": "Wayne England",
+      "set": "m10",
+      "collectorNumber": "36",
+      "scryfallUri": "https://scryfall.com/card/m10/36/tempest-of-light?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Undead Slayer",
+      "slug": "undead-slayer",
+      "oracleId": "08fc069e-7fdd-4726-aa08-a96bbd2bcaa3",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Cleric",
+      "oracleText": "{W}, {T}: Exile target Skeleton, Vampire, or Zombie.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/4/3439568c-606e-4b95-b4fc-4d31e12ff30a.jpg?1783942397",
+        "large": "https://cards.scryfall.io/large/front/3/4/3439568c-606e-4b95-b4fc-4d31e12ff30a.jpg?1783942397",
+        "png": "https://cards.scryfall.io/png/front/3/4/3439568c-606e-4b95-b4fc-4d31e12ff30a.png?1783942397",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/4/3439568c-606e-4b95-b4fc-4d31e12ff30a.jpg?1783942397"
+      },
+      "artist": "Eric Fortune",
+      "set": "m10",
+      "collectorNumber": "37",
+      "scryfallUri": "https://scryfall.com/card/m10/37/undead-slayer?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Unsummon",
+      "slug": "unsummon",
+      "oracleId": "837182db-1bf3-4a2c-bd01-1af9d9873561",
+      "layout": "normal",
+      "manaCost": "{U}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Return target creature to its owner's hand.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/d/ddad9f16-52d5-49de-82b0-b1a5294a9c44.jpg?1789556722",
+        "large": "https://cards.scryfall.io/large/front/d/d/ddad9f16-52d5-49de-82b0-b1a5294a9c44.jpg?1789556722",
+        "png": "https://cards.scryfall.io/png/front/d/d/ddad9f16-52d5-49de-82b0-b1a5294a9c44.png?1789556722",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/d/ddad9f16-52d5-49de-82b0-b1a5294a9c44.jpg?1789556722"
+      },
+      "artist": "Ioannis Fiore",
+      "set": "fra",
+      "collectorNumber": "46",
+      "scryfallUri": "https://scryfall.com/card/fra/46/unsummon?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
