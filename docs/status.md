@@ -14,7 +14,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   2026-11-20). `docs/milestones/m2-pool.md` maps all 234 cards (none left out) to the systems they need and the task
   after which each is playable; the M2 tasks are reordered by it (D-055). The table is kept by hand from now on: when a
   task scripts a card, check its row.
-- Next: M2-03 events and last known information (`docs/milestones/m2-rules-depth.md`).
+- M2-03 Events and last known information (plan, 2026-11-20). CR 614, 616, 603.2, 603.10, 608.2h, 400.7.
+  - One entry point for everything that happens: a `ProposedEvent` union (move a card, deal damage, lose life, tap,
+    untap, add mana, draw, discard, shuffle, mark damage, destroy) and `happen(state, proposed)`: replace (identity
+    for now, the place CR 614–616 plug in), perform (today's primitives), trigger (collects the events; triggered
+    abilities plug in at M2-07). Callers stop calling the primitives directly; an architecture test checks that only
+    the pipeline imports them.
+  - Last known information: `GameState.lastKnown`, each object as it last existed (and its characteristics) when it
+    leaves the battlefield or the stack, for effects and triggers that look back (CR 608.2h, 603.10). How long entries
+    live is the open design question (below in the advisor's notes once settled).
+  - No behavior change: golden games unchanged; replay hashes change only if the state gains a field.
+  - Future impact: replacements (M2-08) and triggers (M2-07) plug into this one place; a replacement needing a
+    player's choice (CR 616.1) will need `happen` to pause as work, so it returns through the work queue rather than
+    calling back.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
