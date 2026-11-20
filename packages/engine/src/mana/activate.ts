@@ -1,7 +1,7 @@
 // Activating abilities of permanents, and mana abilities in particular (CR 602, 605). A mana ability doesn't use the
 // stack: it resolves at once (CR 605.3b).
 
-import type { CardDatabase, Color } from "../cards/types.ts";
+import type { AbilityDef, CardDatabase, Color } from "../cards/types.ts";
 import { runEffect } from "../effects/run-effect.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
@@ -11,6 +11,7 @@ import { controllerOf } from "../rules/controller.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { COLORS } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
 
 /**
@@ -72,13 +73,9 @@ export function manaAbilityProblem(
   return null;
 }
 
-/** The colors "one mana of any color" can be: one of the five colors, never colorless (CR 105.4, 105.1). */
-export const COLORS: readonly Color[] = ["W", "U", "B", "R", "G"];
-
-/** Whether this mana ability adds "one mana of any color", so its activation names a color (D-068). */
-export function addsAnyColor(state: GameState, id: ObjectId, ref: AbilityRef, cards: CardDatabase): boolean {
-  const ability = findAbility(state, id, ref, cards);
-  return ability?.def.effects.some((e) => e.op === "addMana" && e.mana === "anyColor") ?? false;
+/** Whether this ability's text adds "one mana of any color", so its activation names a color (D-068). */
+export function addsAnyColor(def: AbilityDef): boolean {
+  return def.effects.some((e) => e.op === "addMana" && e.mana === "anyColor");
 }
 
 /**
@@ -92,8 +89,9 @@ export function manaColorProblem(
   color: Color | undefined,
   cards: CardDatabase,
 ): string | null {
-  if (!addsAnyColor(state, id, ref, cards))
-    return color === undefined ? null : "that ability's mana has no color to choose";
+  const ability = findAbility(state, id, ref, cards);
+  if (ability === null || !addsAnyColor(ability.def))
+    return color === undefined ? null : "only a mana ability of any color takes a color";
   if (color === undefined || !COLORS.includes(color)) return "choose one of the five colors for that mana (CR 105.4)";
   return null;
 }

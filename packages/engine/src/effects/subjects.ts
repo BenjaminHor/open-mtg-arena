@@ -30,6 +30,7 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
 /**
  * The one player an op that waits for a choice, or keeps a "this way" result, acts on; null if none is left.
  * `definition-problems.ts` refuses "each player" for these: several would choose in APNAP order (later: CR 608.2e).
+ * "Each opponent" is one player only while games have two (`setup-validation.ts`); multiplayer needs APNAP choosing.
  */
 export function onePlayer(
   state: GameState,

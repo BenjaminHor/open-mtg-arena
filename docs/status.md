@@ -142,7 +142,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
-  - M2-05c Life, damage to many, mana (now). Plan (2026-11-20), rules-reviewed and revised; split in two:
+  - M2-05c Life, damage to many, mana: done. Next: the first M10 deck pair replaces the interim decks, and the golden
+    games are made smaller (Known issues), before M2-06. Plan (2026-11-20), rules-reviewed and revised; split in two:
     - M2-05c1, no new decisions: done, merged (PR #31, D-067). 21 scenarios in `test/scenarios/cards/m2-05c/`, unit tests
       in `test/effects/damage-to-many.test.ts`; the interim decks carry the ten cards, five new golden games. Angel's
       Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
@@ -161,7 +162,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         value unchanged, CR 202.2, 202.3e); only the cost to pay (`totalCost`) makes each X a {B}, a payment
         restriction (CR 601.2h). Equivalent today; reductions (CR 118.7a) and other restrictions (Soul Burn) need
         restricted mana later (future-rules).
-    - M2-05c2, choices: built (D-068), in review. 7 scenarios (`yawning-fissure*`, `birds-of-paradise*` in
+    - M2-05c2, choices: done, merged (PR #32, D-068). 12 scenarios (`yawning-fissure*`, `birds-of-paradise*` in
       `test/scenarios/cards/m2-05c/`), unit tests in `test/mana/any-color.test.ts`; the interim decks carry both, two
       golden games. With it, M2-05 is done: 79 of 234 cards. Yawning Fissure (`sacrifice` op, each opponent choosing a land they control, filter relative to
       the chooser; CR 701.21a, 608.2d; with two players one chooser, so APNAP choosing then one simultaneous

@@ -7,12 +7,13 @@ import type { CardDatabase } from "../cards/types.ts";
 import { damageLeft } from "../combat/combat-damage.ts";
 import { possibleAttacks } from "../combat/declare-attackers.ts";
 import { possibleBlocks } from "../combat/declare-blockers.ts";
-import { addsAnyColor, COLORS, manaAbilityProblem } from "../mana/activate.ts";
+import { addsAnyColor, manaAbilityProblem } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
+import { COLORS } from "../state/mana.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
@@ -150,9 +151,9 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
   return state.zones.battlefield.flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
-      .flatMap(({ ref }): Action[] => {
+      .flatMap(({ ref, def }): Action[] => {
         const action = { type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref } as const;
-        if (!addsAnyColor(state, object, ref, cards)) return [action];
+        if (!addsAnyColor(def)) return [action];
         return COLORS.map((color) => ({ ...action, color }));
       }),
   );

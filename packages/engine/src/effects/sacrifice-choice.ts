@@ -28,20 +28,20 @@ export function sacrificeChosen(
 ): Progress {
   const theirs = state.zones.battlefield.filter((id) => controllerOf(state, id) === player);
   if (chosen !== null)
-    return sacrificeAll(
+    return sacrificeEach(
       state,
       chosen.filter((id) => theirs.includes(id)),
       cards,
     );
   const options = fittingCards(state, theirs, effect.filter, player, cards);
-  // None fits: nothing to sacrifice, as much as possible (CR 609.3).
-  if (options.length <= 1) return sacrificeAll(state, options, cards);
+  // None or one fits: nothing to choose (the battlefield is public); none sacrifices nothing (CR 609.3).
+  if (options.length <= 1) return sacrificeEach(state, options, cards);
   return nothing(
     askToChoose(state, { chooser: player, purpose: "sacrifice", options, min: 1, max: 1, effect, context }),
   );
 }
 
-function sacrificeAll(state: GameState, ids: readonly ObjectId[], cards: CardDatabase): Progress {
+function sacrificeEach(state: GameState, ids: readonly ObjectId[], cards: CardDatabase): Progress {
   if (ids.length === 0) return nothing(state);
   return happen(
     state,

@@ -52,13 +52,13 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
     const source = sources[at];
     if (source === undefined) return false;
     used.push(at);
-    const mana = source.mana === "anyColor" ? (color as Color) : source.mana;
-    activations.push(
-      source.mana === "anyColor"
-        ? { object: source.object, ability: source.ability, color: mana as Color }
-        : { object: source.object, ability: source.ability },
-    );
-    payment[mana] += 1;
+    if (source.mana !== "anyColor") {
+      activations.push({ object: source.object, ability: source.ability });
+      payment[source.mana] += 1;
+    } else if (color !== undefined) {
+      activations.push({ object: source.object, ability: source.ability, color });
+      payment[color] += 1;
+    }
     return true;
   };
 

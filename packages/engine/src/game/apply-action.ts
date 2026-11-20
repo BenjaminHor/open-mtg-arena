@@ -69,19 +69,16 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     if (pending.kind !== "priority" && pending.kind !== "payMana") {
       return error("illegalAction", `Activating doesn't answer a ${pending.kind} decision`);
     }
+    // Only "one mana of any color" takes a color, and it needs one (D-068); any other ability refuses one.
+    const colorProblem = manaColorProblem(answered, action.object, action.ability, action.color, cards);
+    if (colorProblem !== null) return error("illegalAction", colorProblem);
     // Other activated abilities use the stack and need priority (CR 602.2); mana abilities don't (CR 605.3a).
     if (pending.kind === "priority" && !isManaAbilityOf(answered, action.object, action.ability, cards)) {
-      // Only "one mana of any color" takes a color (D-068); any other ability refuses one rather than dropping it.
-      const problem =
-        action.color !== undefined
-          ? "only a mana ability of any color takes a color"
-          : activationProblem(answered, pending.player, action.object, action.ability, cards);
+      const problem = activationProblem(answered, pending.player, action.object, action.ability, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...startActivation(answered, pending.player, action.object, action.ability, cards) };
     }
-    const problem =
-      manaAbilityProblem(answered, pending.player, action.object, action.ability, cards) ??
-      manaColorProblem(answered, action.object, action.ability, action.color, cards);
+    const problem = manaAbilityProblem(answered, pending.player, action.object, action.ability, cards);
     if (problem !== null) return error("illegalAction", problem);
     // While paying a cost, a mana ability can be activated too (CR 605.3a); the payment is asked again after.
     if (pending.kind === "payMana")
