@@ -100,6 +100,17 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       const blocker = pending?.kind === "assignDamage" ? pending.blockers[pending.assigned.length] : undefined;
       return `assign ${answer.amount} to ${blocker === undefined ? "the next blocker" : objectText(state, blocker, cards)}`;
     }
+    case "chooseCard": {
+      // By name only: an option from a hidden zone is shown without its id (D-062).
+      const pending = state.pending;
+      const option = pending?.kind === "chooseCards" ? pending.options[answer.option] : undefined;
+      const card = option === undefined ? `option ${answer.option}` : nameOf(state, option, cards);
+      return pending?.kind === "chooseCards" && pending.purpose === "putOntoBattlefield"
+        ? `put ${card} onto the battlefield`
+        : `choose ${card}`;
+    }
+    case "finishChoosing":
+      return "done choosing";
   }
 }
 

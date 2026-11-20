@@ -2,7 +2,7 @@
 // place that turns them into changes to the game.
 
 import type { CardDatabase, Effect, EffectSubject } from "../cards/types.ts";
-import type { Progress } from "../game/progress.ts";
+import { andThen, type Progress } from "../game/progress.ts";
 import { apnapOrder } from "../game/turn-order.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
@@ -13,10 +13,20 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
+import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 
-/** Carries out one effect of a resolving spell or ability (CR 608.2c). */
-export function runEffect(state: GameState, effect: Effect, context: EffectContext, cards: CardDatabase): Progress {
+/**
+ * Carries out one effect of a resolving spell or ability (CR 608.2c). An effect that needs cards chosen waits for
+ * them and runs again with `chosen` (CR 608.2d, `choose-cards.ts`); for the others it's null.
+ */
+export function runEffect(
+  state: GameState,
+  effect: Effect,
+  context: EffectContext,
+  cards: CardDatabase,
+  chosen: readonly ObjectId[] | null = null,
+): Progress {
   switch (effect.op) {
     case "dealDamage": {
       // The damage's source is one object (CR 120.2b). If it was an illegal target, that part of the effect can't
@@ -109,6 +119,20 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
       const amount = effect.amount === "halfTheirLibrary" ? effect.amount : amountOf(effect.amount, context.x);
       return mill(state, playersOf(subject(state, effect.who, context)), amount, cards);
     }
+    case "discard": {
+      // One player's choice; several players discarding at once would choose in APNAP order first (later: CR 608.2e).
+      const [player, ...more] = playersOf(subject(state, effect.who, context));
+      if (more.length > 0) throw new Error("a chosen discard names one player");
+      if (player === undefined) return { state, events: [] };
+      return discardChosen(state, player, amountOf(effect.amount, context.x), effect, context, chosen, cards);
+    }
+    case "revealHand":
+      return playersOf(subject(state, effect.who, context)).reduce<Progress>(
+        (p, player) => andThen(p, (s) => revealHand(s, player, cards)),
+        { state, events: [] },
+      );
+    case "putOntoBattlefield":
+      return putOntoBattlefieldFromHand(state, effect, context, chosen, cards);
     case "gainLife": {
       const amount = amountOf(effect.amount, context.x);
       return toEach(state, playersOf(subject(state, effect.who, context)), cards, (player) => ({

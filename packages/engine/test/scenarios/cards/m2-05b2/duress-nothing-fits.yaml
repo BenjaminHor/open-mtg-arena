@@ -1,0 +1,20 @@
+name: Duress on a hand with no noncreature, nonland card reveals it and discards nothing
+rules: [CR 608.2d, CR 609.3, CR 701.20b]
+# Ornithopter is an artifact creature: a creature card, so it doesn't fit "noncreature".
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Duress]
+    battlefield: [Swamp]
+  p2:
+    hand: [Grizzly Bears, Mountain, Ornithopter]
+steps:
+  - p1 cast: Duress
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.hand count: 3
+      p2.graveyard: []
+      events contains: [{ type: CARDS_REVEALED }]
+      pending: { player: p1, kind: priority }

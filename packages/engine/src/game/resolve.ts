@@ -79,7 +79,7 @@ function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: Ca
   const division = (divided?.shares ?? []).filter((share) => stillLegal.some((t) => sameTarget(t, share.target)));
   const x = obj.choices?.x ?? null;
   const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division, x };
-  return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context }));
+  return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context, chosen: null }));
 }
 
 /** What "this" means in the text of a spell (the spell) or an ability (its source, CR 113.7a). */

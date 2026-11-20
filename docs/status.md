@@ -94,7 +94,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         hidden ids instead of shifting them, and keeps the identity of cards a viewer is entitled to see; two-worlds
         unit tests come first (Fabricate with and without an artifact, Piper declining against no creature, Tutor
         finding A against B, Echoes leaving copies against none, Duress on a hand built in two orders).
-      - M2-05b2a, choices from a hand: Mind Rot (`discard`: the player discards N of their choice, CR 701.9a-b; a
+      - M2-05b2a, choices from a hand: built, in review. 10 scenarios in `test/scenarios/cards/m2-05b2/`, two-worlds and
+        ordering tests in `test/effects/choose-cards.test.ts` (checked to fail when the view shows ids or the choice is
+        skipped); `scrambleHidden` permutes hidden ids; the interim decks carry the four cards, four new golden games.
+        Mind Rot (`discard`: the player discards N of their choice, CR 701.9a-b; a
         smaller hand whole, CR 609.3), Merfolk Looter (draw, then discard, nothing between: CR 608.2g and its ruling;
         CR 704.5b with an empty library), Duress (`target opponent`: a player target with an opponent restriction,
         relative to the controller, checked on choosing and resolving, CR 115.1a, 115.2, 102.2, later: CR 102.3;

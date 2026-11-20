@@ -34,7 +34,7 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
     case "resolveTopOfStack":
       return resolveTopOfStack(state, cards);
     case "runEffect":
-      return runEffect(state, item.effect, item.context, cards);
+      return runEffect(state, item.effect, item.context, cards, item.chosen);
     case "finishResolving":
       return finishResolving(state, item.object, cards);
     case "doesNotResolve":

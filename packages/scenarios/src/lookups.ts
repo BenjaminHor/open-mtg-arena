@@ -2,6 +2,7 @@
 
 import {
   type AbilityRef,
+  type Answer,
   abilitiesOf,
   type CardDatabase,
   controllerOf,
@@ -167,4 +168,18 @@ export function permanentNamed(state: GameState, player: string, value: unknown,
   const id = ref === null ? null : resolveRef(state, ref, cards);
   if (id === null) throw new Error(`no permanent "${text}"`);
   return id;
+}
+
+/**
+ * The answer a `choose:` value names for a `chooseCards` decision: `finish` to stop choosing, or a card's name, the
+ * first option not yet chosen with that name. Copies of one card are interchangeable: the options carry no history
+ * (D-062).
+ */
+export function chooseCardsAnswer(state: GameState, text: string, cards: CardDatabase): Answer {
+  const pending = state.pending;
+  if (pending?.kind !== "chooseCards") throw new Error("no chooseCards decision is pending");
+  if (text === "finish") return { kind: "finishChoosing" };
+  const option = pending.options.findIndex((id, i) => !pending.chosen.includes(i) && nameOf(state, id, cards) === text);
+  if (option < 0) throw new Error(`no ${text} among the cards to choose`);
+  return { kind: "chooseCard", option };
 }

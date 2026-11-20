@@ -140,19 +140,24 @@ function hiddenFrom(state: GameState, viewer: PlayerId): ObjectId[] {
  */
 export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
   const hidden = hiddenObjects(state, viewer);
-  // A hidden object's id is renamed everywhere it appears (zone lists, object keys, picks in a pending decision), so a
-  // view that names one, or keeps its order, changes.
-  const renamed = new Set<string>(hidden);
-  const json = JSON.stringify(state).replace(/"o(\d+)"/g, (whole, n: string) =>
-    renamed.has(`o${n}`) ? `"o${Number(n) + 1_000_000}"` : whole,
-  );
+  // A hidden object's id is renamed everywhere it appears (zone lists, object keys, picks in a pending decision), in
+  // reverse order, so a view that names one, or shows the order of their ids (which records how they got there, D-062),
+  // changes.
+  const renamed = new Map(hidden.map((id, i) => [id as string, `o${1_000_000 + hidden.length - 1 - i}`]));
+  const json = JSON.stringify(state).replace(/"o(\d+)"/g, (whole, n: string) => {
+    const to = renamed.get(`o${n}`);
+    return to === undefined ? whole : `"${to}"`;
+  });
   const scrambled = JSON.parse(json) as GameState;
+  // Cards the viewer's own decision shows them keep what they are (D-062): only their ids and history change.
+  const shown = new Set(shownBy(state, viewer).map((id) => renamed.get(id)));
   const objects = { ...scrambled.objects };
   for (const [i, id] of hidden.entries()) {
-    const newId = `o${Number(id.slice(1)) + 1_000_000}` as ObjectId;
+    const newId = renamed.get(id) as ObjectId;
     const obj = objects[newId];
     if (obj?.kind === "card") {
-      objects[newId] = { ...obj, oracleId: `scrambled-${i}`, cardId: `c${900_000 + i}`, timestamp: obj.timestamp + 1 };
+      const oracleId = shown.has(newId) ? obj.oracleId : `scrambled-${i}`;
+      objects[newId] = { ...obj, oracleId, cardId: `c${900_000 + i}`, timestamp: obj.timestamp + 1 };
     }
   }
   const players = { ...scrambled.zones.players };
@@ -190,6 +195,12 @@ export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
     nextCardId: scrambled.nextCardId + 1000,
     work: [],
   };
+}
+
+/** The cards a `chooseCards` decision of the viewer's offers them: they may see what those are (D-062). */
+function shownBy(state: GameState, viewer: PlayerId): ObjectId[] {
+  const pending = state.pending;
+  return pending?.kind === "chooseCards" && pending.player === viewer ? pending.options : [];
 }
 
 /** Every library's objects, and other players' hands. */

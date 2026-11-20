@@ -1,0 +1,12 @@
+name: Duress can target only an opponent, not its caster
+rules: [CR 115.1a, CR 102.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Duress, Lightning Bolt]
+    battlefield: [Swamp]
+steps:
+  - p1 cast: Duress
+    targets: [p1]
+    pay: auto
+  - expect error: illegalAction

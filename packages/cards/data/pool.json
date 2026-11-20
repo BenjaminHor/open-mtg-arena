@@ -371,6 +371,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Duress",
+      "slug": "duress",
+      "oracleId": "33d405ea-7a9a-4970-b70f-9c05d90dd6f0",
+      "layout": "normal",
+      "manaCost": "{B}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Target opponent reveals their hand. You choose a noncreature, nonland card from it. That player discards that card.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/4/34c3a894-ee75-4db9-a69f-711bb3cc150a.jpg?1783908930",
+        "large": "https://cards.scryfall.io/large/front/3/4/34c3a894-ee75-4db9-a69f-711bb3cc150a.jpg?1783908930",
+        "png": "https://cards.scryfall.io/png/front/3/4/34c3a894-ee75-4db9-a69f-711bb3cc150a.png?1783908930",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/4/34c3a894-ee75-4db9-a69f-711bb3cc150a.jpg?1783908930"
+      },
+      "artist": "PINDURSKI",
+      "set": "fdn",
+      "collectorNumber": "606",
+      "scryfallUri": "https://scryfall.com/card/fdn/606/duress?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Elite Vanguard",
       "slug": "elite-vanguard",
       "oracleId": "b3b9a87d-cb95-435c-90b6-037406cab32e",
@@ -396,6 +424,34 @@
       "set": "m12",
       "collectorNumber": "15",
       "scryfallUri": "https://scryfall.com/card/m12/15/elite-vanguard?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Elvish Piper",
+      "slug": "elvish-piper",
+      "oracleId": "872ef617-7cdb-4a7a-85f5-efc9e12bece5",
+      "layout": "normal",
+      "manaCost": "{3}{G}",
+      "manaValue": 4,
+      "typeLine": "Creature — Elf Shaman",
+      "oracleText": "{G}, {T}: You may put a creature card from your hand onto the battlefield.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/6/5666cb39-5fea-4eaa-a6da-1b2ffc5a3811.jpg?1783942364",
+        "large": "https://cards.scryfall.io/large/front/5/6/5666cb39-5fea-4eaa-a6da-1b2ffc5a3811.jpg?1783942364",
+        "png": "https://cards.scryfall.io/png/front/5/6/5666cb39-5fea-4eaa-a6da-1b2ffc5a3811.png?1783942364",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/6/5666cb39-5fea-4eaa-a6da-1b2ffc5a3811.jpg?1783942364"
+      },
+      "artist": "Rebecca Guay",
+      "set": "m10",
+      "collectorNumber": "177",
+      "scryfallUri": "https://scryfall.com/card/m10/177/elvish-piper?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -872,6 +928,62 @@
       "set": "fdn",
       "collectorNumber": "227",
       "scryfallUri": "https://scryfall.com/card/fdn/227/llanowar-elves?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Merfolk Looter",
+      "slug": "merfolk-looter",
+      "oracleId": "67362406-b1ca-49e2-800d-9050bfe8742a",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Creature — Merfolk Rogue",
+      "oracleText": "{T}: Draw a card, then discard a card.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/a/aad3aaec-7c88-4925-8023-0cf61bf906c2.jpg?1783941089",
+        "large": "https://cards.scryfall.io/large/front/a/a/aad3aaec-7c88-4925-8023-0cf61bf906c2.jpg?1783941089",
+        "png": "https://cards.scryfall.io/png/front/a/a/aad3aaec-7c88-4925-8023-0cf61bf906c2.png?1783941089",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/a/aad3aaec-7c88-4925-8023-0cf61bf906c2.jpg?1783941089"
+      },
+      "artist": "Austin Hsu",
+      "set": "m12",
+      "collectorNumber": "65",
+      "scryfallUri": "https://scryfall.com/card/m12/65/merfolk-looter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Mind Rot",
+      "slug": "mind-rot",
+      "oracleId": "ad44cf74-b717-48fb-9fa2-77512024d76a",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Target player discards two cards.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/3/833a8604-92d5-443b-9bc0-bd91c973ef07.jpg?1783930701",
+        "large": "https://cards.scryfall.io/large/front/8/3/833a8604-92d5-443b-9bc0-bd91c973ef07.jpg?1783930701",
+        "png": "https://cards.scryfall.io/png/front/8/3/833a8604-92d5-443b-9bc0-bd91c973ef07.png?1783930701",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/3/833a8604-92d5-443b-9bc0-bd91c973ef07.jpg?1783930701"
+      },
+      "artist": "Seb McKinnon",
+      "set": "m21",
+      "collectorNumber": "115",
+      "scryfallUri": "https://scryfall.com/card/m21/115/mind-rot?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

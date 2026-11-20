@@ -146,8 +146,10 @@ export type TargetKind =
   | { kind: "anyTarget" }
   /** "Target player or planeswalker". */
   | { kind: "playerOrPlaneswalker" }
-  /** "Target player" (CR 115.1; "target opponent" comes with its card). */
+  /** "Target player" (CR 115.1a). */
   | { kind: "player" }
+  /** "Target opponent": a player who's an opponent of the controller, "you" (CR 115.1a, 102.2; later: CR 102.3). */
+  | { kind: "opponent" }
   /** "Target [filter] permanent", "target creature": an object on the battlefield (CR 115.2). */
   | { kind: "permanent"; filter: ObjectFilter }
   /** "Target [filter] spell": a spell on the stack, never an ability (CR 112.1) and never itself (CR 115.5). */
@@ -252,4 +254,16 @@ export type Effect =
    * "[who] mill(s) N cards": the top N of their library to their graveyard (CR 701.17a); "half their library, rounded
    * down" (CR 107.1a) is `"halfTheirLibrary"`.
    */
-  | { op: "mill"; who: EffectSubject; amount: Amount | "halfTheirLibrary" };
+  | { op: "mill"; who: EffectSubject; amount: Amount | "halfTheirLibrary" }
+  /**
+   * "[who] discards N cards" (CR 701.9a): the player chooses which (CR 701.9b), or `chosenBy: "you"` ("you choose a
+   * card from it. That player discards that card"), among the cards fitting `filter` if there is one.
+   */
+  | { op: "discard"; who: EffectSubject; amount: Amount; chosenBy?: "you"; filter?: ObjectFilter }
+  /** "[who] reveals their hand" (CR 701.20a): shown to every player; it stays in the hand (CR 701.20b). */
+  | { op: "revealHand"; who: EffectSubject }
+  /**
+   * "You may put a [filter] card from your hand onto the battlefield": under the controller's control (CR 110.2a), not
+   * cast. `optional` for "you may".
+   */
+  | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean };

@@ -152,6 +152,7 @@ export function midTurnState(): GameState {
           division: [],
           x: null,
         },
+        chosen: null,
       },
       { kind: "finishResolving", object: "o10" },
     ],

@@ -9,6 +9,9 @@ events (`pipeline/`, D-056) and are called only by it: code that moves a card pr
 - `draw.ts`: `drawCard` (CR 121): one card. Drawing from an empty library records the attempt (CR 121.4).
 - `discard.ts`: `discardCard` (CR 701.9), emitting `CARD_DISCARDED`. Several cards discarded together are one
   `simultaneous` event.
+- `reveal.ts`: `reveal` (CR 701.20a), emitting `CARDS_REVEALED` with the cards' identities only; nothing moves
+  (CR 701.20b). `shown-order.ts`: `inShownOrder`, the fixed order (oracle id, then object id) cards are shown in
+  outside their own zone's order, which would tell how they got there (D-062).
 - `shuffle.ts`: `shuffleLibrary`, a Fisher–Yates shuffle from the game's seeded RNG (CR 701.24).
 - `counter.ts`: `counterObject` (CR 701.6a): a countered spell goes to its owner's graveyard, an ability ceases to
   exist; performs the pipeline's `counterObject` event.

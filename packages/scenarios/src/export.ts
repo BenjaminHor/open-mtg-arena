@@ -118,6 +118,15 @@ function answerStep(
       return declaration(state, actions, i, cards);
     case "assignDamage":
       return division(state, actions, i, cards);
+    case "chooseCard": {
+      // By name: the runner takes the first option not yet chosen with that name, and copies are interchangeable.
+      const pending = state.pending;
+      const option = pending?.kind === "chooseCards" ? pending.options[answer.option] : undefined;
+      if (option === undefined) throw new Error(`no option ${answer.option} to export`);
+      return choose(nameOf(state, option, cards));
+    }
+    case "finishChoosing":
+      return choose("finish");
   }
 }
 

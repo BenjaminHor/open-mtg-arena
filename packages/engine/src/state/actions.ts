@@ -47,4 +47,8 @@ export type Answer =
   /** The declaration of attackers or blockers is complete (it may be empty). */
   | { kind: "finishDeclaring" }
   /** How much of the attacker's combat damage goes to the next blocker in the decision's order (CR 510.1c). */
-  | { kind: "assignDamage"; amount: number };
+  | { kind: "assignDamage"; amount: number }
+  /** One more card for a `chooseCards` decision, by its position in the decision's `options` (D-062). */
+  | { kind: "chooseCard"; option: number }
+  /** No more cards for a `chooseCards` decision: allowed once its minimum is chosen. */
+  | { kind: "finishChoosing" };

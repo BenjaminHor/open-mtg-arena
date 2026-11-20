@@ -15,6 +15,7 @@ import type { RuleModifier } from "../state/setup.ts";
 import type { Turn } from "../state/turn.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { zoneList } from "../zones/zone-list.ts";
+import { type ViewDecision, viewDecision } from "./view-decision.ts";
 import { canSee } from "./visibility.ts";
 
 /**
@@ -37,8 +38,11 @@ export type PlayerView = {
   /** Who is casting or activating what (the object on the stack is public); the rest is the caster's own business. */
   casting: { player: PlayerId; object: ObjectId } | null;
   passesInSuccession: number;
-  /** The viewer's own pending decision, in full; null when nothing is pending or another player must decide. */
-  decision: PendingDecision | null;
+  /**
+   * The viewer's own pending decision; null when nothing is pending or another player must decide. Cards it offers
+   * from a zone the viewer can't see are shown by what they are, without ids (D-062).
+   */
+  decision: ViewDecision | null;
   /** Who must decide what, whoever it is. Another player's choices so far (cards picked to discard) stay hidden. */
   waitingFor: { id: DecisionId; player: PlayerId; kind: PendingDecision["kind"] } | null;
   result: GameResult | null;
@@ -108,7 +112,7 @@ export function playerView(state: GameState, viewer: PlayerId): PlayerView {
     pregame: state.pregame,
     casting: state.casting === null ? null : { player: state.casting.player, object: state.casting.object },
     passesInSuccession: state.passesInSuccession,
-    decision: pending !== null && pending.player === viewer ? pending : null,
+    decision: pending !== null && pending.player === viewer ? viewDecision(state, pending, viewer) : null,
     waitingFor: pending === null ? null : { id: pending.id, player: pending.player, kind: pending.kind },
     result: state.result,
   };

@@ -14,7 +14,9 @@ import { disentomb } from "./d/disentomb.ts";
 import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
 import { doomBlade } from "./d/doom-blade.ts";
+import { duress } from "./d/duress.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
+import { elvishPiper } from "./e/elvish-piper.ts";
 import { essenceScatter } from "./e/essence-scatter.ts";
 import { excommunicate } from "./e/excommunicate.ts";
 import { fireElemental } from "./f/fire-elemental.ts";
@@ -32,6 +34,8 @@ import { island } from "./i/island.ts";
 import { lavaAxe } from "./l/lava-axe.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
 import { llanowarElves } from "./l/llanowar-elves.ts";
+import { merfolkLooter } from "./m/merfolk-looter.ts";
+import { mindRot } from "./m/mind-rot.ts";
 import { mindShatter } from "./m/mind-shatter.ts";
 import { mindSpring } from "./m/mind-spring.ts";
 import { mountain } from "./m/mountain.ts";
@@ -73,11 +77,13 @@ export const CARD_DEFS: readonly CardDef[] = [
   divination,
   divineVerdict,
   doomBlade,
+  duress,
   eliteVanguard,
+  elvishPiper,
   essenceScatter,
   excommunicate,
-  fireElemental,
   fireball,
+  fireElemental,
   flashfreeze,
   forest,
   furnaceWhelp,
@@ -91,6 +97,8 @@ export const CARD_DEFS: readonly CardDef[] = [
   lavaAxe,
   lightningBolt,
   llanowarElves,
+  merfolkLooter,
+  mindRot,
   mindShatter,
   mindSpring,
   mountain,

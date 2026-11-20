@@ -147,6 +147,11 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `damage removed: ${name(e.object)} (${e.amount})`;
     case "CARD_DISCARDED":
       return `${e.player} discards ${name(e.newId)}`;
+    case "CARDS_REVEALED": {
+      const owner = "player" in e.from ? `${e.from.player}'s ` : "";
+      const shown = e.cards.map((oracleId) => cards[oracleId]?.printed.name ?? oracleId);
+      return `${owner}${e.from.zone} is revealed: ${shown.length === 0 ? "no cards" : shown.join(", ")}`;
+    }
   }
 }
 

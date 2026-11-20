@@ -31,6 +31,9 @@ the one place their effects become changes to the game.
 | `loseLife` | "Target player loses 2 life" | The players `who` names lose `amount` (CR 119.3); 0 isn't proposed |
 | `draw` | "Draw two cards" | One draw at a time (CR 121.2), all of one player's before the next player's, in APNAP order (CR 121.2c) |
 | `discardAtRandom` | "Discards X cards at random" | Picks with the seeded RNG, each player in APNAP order, then discards them all at once (CR 701.9b; Burning Inquiry's ruling) |
+| `discard` | "Target player discards two cards" | The player chooses (CR 701.9b), or "you" with `chosenBy` and a `filter` (Duress); a smaller hand is discarded whole without asking (CR 609.3) |
+| `revealHand` | "Target opponent reveals their hand" | Shows the hand's cards to everyone, by identity only (CR 701.20a, D-062) |
+| `putOntoBattlefield` | "You may put a creature card from your hand onto the battlefield" | Under the controller's control (CR 110.2a), not cast; asked whenever the hand isn't empty (D-062) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
@@ -53,8 +56,12 @@ events to it with `happen`, as do turn steps and casting.
 
 ## Helpers for ops
 
+`choose-cards.ts` is how an effect waits for cards to be chosen (CR 608.2d): `askToChoose` sets a `chooseCards`
+decision; each answer either waits for the next card or queues the effect again with `chosen`, ahead of the rest of
+the resolution, so nothing happens until all are in (D-062). `hand-effects.ts` has the ops that use it.
+
 `player-effects.ts` isn't a primitive: `drawEach`, `discardAtRandom` and `mill` propose several events for the players
 an effect names (one draw at a time; random picks, then one simultaneous discard; one simultaneous mill).
 
-Tests: `test/effects/effects.test.ts`, `removal.test.ts` and `player-effects.test.ts`, and the scenarios in
+Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts` and `choose-cards.test.ts`, and the scenarios in
 `test/scenarios/effects/` and `test/scenarios/cards/`.

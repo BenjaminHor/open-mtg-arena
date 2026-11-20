@@ -6,6 +6,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextBlocker, damageLeft } from "../combat/combat-damage.ts";
 import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
+import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.ts";
 import { activateManaAbility, manaAbilityProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
@@ -115,6 +116,11 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         return error("illegalAction", `${answer.object} isn't in ${pending.player}'s hand`);
       }
       return { ok: true, ...putOnBottom(answered, pending.player, answer.object, cards) };
+    case "chooseCards": {
+      const problem = chooseCardsProblem(pending, answer);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, state: answerChooseCards(answered, pending, answer), events: [] };
+    }
     case "discardToHandSize": {
       if (answer.kind !== "discardToHandSize") return mismatch;
       if (
