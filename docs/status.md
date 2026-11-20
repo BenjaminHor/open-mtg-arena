@@ -277,7 +277,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          kind answered (a cancel or take-back doesn't count), every event type agents can reach.
        - A test that every pool card is in a scenario, by whole name.
      - Golden action lines name the acting player (owner, D-083), done, merged (PR #43).
-     - Now: M2-07c2.
+     - Now: M2-07c2. Design (2026-11-20, with the advisor's review):
+       - `GameState.delayedTriggers`: each `{ source, sourceOracleId, controller, ability }`, the ability a
+         `TriggeredAbilityDef` (its `when` limited to the next "beginning of step" for now). Created by an effect
+         `createDelayedTrigger`; source and controller those of the ability that made it (CR 603.7e). Matched in
+         `detectTriggers` apart from the battlefield's (no early exit, no source lookup), and removed as it triggers
+         (CR 603.7b). A pending trigger refers to its ability by `{ kind: "triggered", index }` or
+         `{ kind: "delayed", ability }`; one lookup resolves both, and identical delayed triggers stay unasked (D-077).
+       - Dragon Whelp: `GameState.activationsThisTurn` counts each object's printed ability as it becomes activated
+         (where `ABILITY_ACTIVATED` is emitted: a cancel never counts, a countered activation does, D-078), reset as a
+         turn begins; the effect `ifActivatedThisTurn { atLeast, effects }` reads its own ability's count through the
+         resolving stack object.
+       - Illusionary Servant: a `BECAME_TARGET` event as each object target is chosen, for spells, activations and
+         triggers, matched where it's emitted; `selfBecomesTarget`. A cancelled cast drops its pending triggers, all of
+         which it caused (a cast starts only with none waiting). No pool card targets one object twice in one spell, so
+         one trigger per target chosen is enough for now (future-rules).
+       - Golden credit: the delayed ability's units when it resolves, not when it's created.
      - M2-07c plan (2026-11-20), two PRs:
        - M2-07c1, done, merged (PR #41, D-079): 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
