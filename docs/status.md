@@ -455,7 +455,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        one destroy) is tested now.
      - Now: M2-08d (2026-11-20), in two PRs. M2-08d1 built (D-088): Fog, Safe Passage, Guardian Seraph; 11 scenarios in
        `test/scenarios/cards/m2-08d/`; two golden games. 166 cards; 158 of the 234 Magic 2010 cards. Mutations (6/6
-       caught) and a 200-game fuzz are clean; both reviews found no wrong result. Fixing their findings, then the PR:
+       caught) and a 200-game fuzz are clean; both reviews found no wrong result. Their findings are fixed (dbade33,
+       21 scenarios now; a second mutation pass caught 6/6 after one test was tightened); next the PR, then M2-08d2.
+       What the fixes were:
        - Bug: identical candidates (two Seraphs) beside a different one (Fog) are offered as separate options. Group
          candidates by identity: one option per group, all its members applied when chosen.
        - A choice's `for` becomes a union (an object, or a damage entry by its index in the event, source and
