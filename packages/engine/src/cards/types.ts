@@ -118,9 +118,9 @@ export type ReplacementDef =
   /**
    * "This land enters tapped unless you control a Forest or a Plains" (CR 614.1d): checked as it would enter, against the
    * permanents already on the battlefield (CR 614.12; lands entering with it aren't seen: its ruling). `unless` is read
-   * with "you" being the player it would enter under. Without `unless`, it always enters tapped.
+   * with "you" being the player it would enter under.
    */
-  | { kind: "entersTapped"; unless?: ObjectFilter }
+  | { kind: "entersTapped"; unless: ObjectFilter }
   /**
    * "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's library instead"
    * (Darksteel Colossus): works in every zone, as it says (CR 113.6b).

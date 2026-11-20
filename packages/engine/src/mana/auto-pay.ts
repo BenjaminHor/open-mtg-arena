@@ -10,7 +10,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { MANA_TYPES, type ManaType } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
-import { manaAbilityProblem, manaChoices } from "./activate.ts";
+import { manaAbilityProblem, manaKinds } from "./activate.ts";
 import type { ManaPayment } from "./payment.ts";
 
 export type AutoPayment = {
@@ -45,16 +45,17 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
       payment[fromPool] += 1;
       return true;
     }
-    // The source with the fewest choices first: one fixed color, then two ("{G} or {W}"), then any color, so a source
-    // keeps its choice for a color nothing else makes.
+    // Lands before creatures, keeping creatures free to attack; then the source with the fewest choices: one fixed
+    // color, then two ("{G} or {W}"), then any color, so a source keeps its choice for a color nothing else makes.
     const candidates = sources
       .map((s, i) => ({ s, i }))
       .filter(({ s, i }) => !used.includes(i) && s.makes.some((t) => allowed.includes(t)))
-      .sort((a, b) => a.s.makes.length - b.s.makes.length);
+      .sort((a, b) => Number(!a.s.land) - Number(!b.s.land) || a.s.makes.length - b.s.makes.length);
     const best = candidates[0];
     if (best === undefined) return false;
     used.push(best.i);
-    const mana = allowed.find((t) => best.s.makes.includes(t)) as ManaType;
+    const mana = allowed.find((t) => best.s.makes.includes(t));
+    if (mana === undefined) return false;
     const { object, ability } = best.s;
     // A choice of color comes with the activation (D-068); colorless is never a choice.
     activations.push(best.s.chooses && mana !== "C" ? { object, ability, color: mana } : { object, ability });
@@ -80,8 +81,11 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
   return { activations, payment };
 }
 
-/** A permanent's mana ability that makes one mana: the kinds it can make, and whether its activation chooses one. */
-type Source = { object: ObjectId; ability: AbilityRef; makes: readonly ManaType[]; chooses: boolean };
+/**
+ * A permanent's mana ability that makes one mana: the kinds it can make, whether its activation chooses one, and
+ * whether the permanent is a land.
+ */
+type Source = { object: ObjectId; ability: AbilityRef; makes: readonly ManaType[]; chooses: boolean; land: boolean };
 
 /**
  * The most mana the player could have right now: what's in their pool, and one for each permanent whose mana ability
@@ -95,7 +99,7 @@ export function manaAvailable(state: GameState, player: PlayerId, cards: CardDat
 
 /** The player's permanents that can make one mana now, lands first, each group in battlefield order. */
 function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): Source[] {
-  const sources: (Source & { land: boolean })[] = [];
+  const sources: Source[] = [];
   // A permanent the cost being paid taps can't be tapped for mana for it too (CR 107.5).
   const tappedByCost = tapsForCost(state, cards);
   for (const object of state.zones.battlefield) {
@@ -104,16 +108,14 @@ function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): S
       if (!isManaAbility(def) || manaAbilityProblem(state, player, object, ref, cards) !== null) continue;
       const effect = def.effects.find((e) => e.op === "addMana");
       if (effect?.op !== "addMana" || effect.amount !== 1) continue;
-      const choices = manaChoices(def);
       sources.push({
         object,
         ability: ref,
-        makes: choices.length > 0 ? choices : typeof effect.mana === "string" ? [effect.mana as ManaType] : [],
-        chooses: choices.length > 0,
+        ...manaKinds(effect.mana),
         land: cardTypesOf(state, object, cards).includes("land"),
       });
       break; // one mana ability per permanent: activating it taps the permanent
     }
   }
-  return [...sources.filter((s) => s.land), ...sources.filter((s) => !s.land)].map(({ land: _land, ...s }) => s);
+  return [...sources.filter((s) => s.land), ...sources.filter((s) => !s.land)];
 }

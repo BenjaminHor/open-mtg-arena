@@ -11,7 +11,7 @@ import { controllerOf } from "../rules/controller.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { COLORS } from "../state/mana.ts";
+import { COLORS, type ManaType } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 
@@ -82,7 +82,15 @@ export function manaChoices(def: AbilityDef): readonly Color[] {
   return def.effects.flatMap((e) => (e.op === "addMana" ? choicesOf(e.mana) : []));
 }
 
-function choicesOf(mana: Extract<Effect, { op: "addMana" }>["mana"]): readonly Color[] {
+/** The kinds of mana an "add mana" effect can make, and whether its activation chooses one (D-068). */
+export function manaKinds(mana: AddedMana): { makes: readonly ManaType[]; chooses: boolean } {
+  if (mana === "anyColor" || typeof mana === "object") return { makes: choicesOf(mana), chooses: true };
+  return { makes: [mana], chooses: false };
+}
+
+type AddedMana = Extract<Effect, { op: "addMana" }>["mana"];
+
+function choicesOf(mana: AddedMana): readonly Color[] {
   if (mana === "anyColor") return COLORS;
   return typeof mana === "object" ? mana.oneOf : [];
 }
@@ -102,7 +110,8 @@ export function manaColorProblem(
   const choices = ability === null ? [] : manaChoices(ability.def);
   if (choices.length === 0)
     return color === undefined ? null : "only a mana ability with a choice of color takes a color";
-  if (color === undefined || !choices.includes(color)) return `choose one of ${choices.join(", ")} for that mana`;
+  if (color === undefined || !choices.includes(color))
+    return `choose one of ${choices.join(", ")} for that mana (CR 106.1)`;
   return null;
 }
 

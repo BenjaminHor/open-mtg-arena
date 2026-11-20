@@ -3,7 +3,7 @@
 import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import { type Destination, moveCard, newCardIdOf } from "./move-card.ts";
+import { type Destination, isHiddenZone, moveCard, newCardIdOf } from "./move-card.ts";
 
 /**
  * Emits `CARD_DISCARDED` (the discarding player is the card's owner, whose hand it was in) as well as its zone change,
@@ -14,7 +14,7 @@ export function discardCard(state: GameState, id: ObjectId, to: Destination = { 
   if (card?.kind !== "card") throw new Error(`${id} isn't a card`);
   const moved = moveCard(state, id, to);
   // Named where it went only if that's public: a library is hidden from everyone (CR 401.2).
-  const hidden = to.zone === "library" || to.zone === "hand";
+  const hidden = isHiddenZone(to);
   const discarded = {
     type: "CARD_DISCARDED",
     player: card.owner,

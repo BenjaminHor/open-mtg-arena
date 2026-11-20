@@ -129,9 +129,8 @@ export type GameEvent =
    * tell when and how they got there (D-062). They stay where they are (CR 701.20b).
    */
   | { type: "CARDS_REVEALED"; from: ZoneRef; cards: OracleId[] }
-  /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */
   /**
-   * A card discarded (CR 701.9a), named in the graveyard it went to. A replacement can send it somewhere hidden instead
+   * A card discarded (CR 701.9a), as well as its `ZONE_CHANGED`, named in the graveyard it went to. A replacement can send it somewhere hidden instead
    * (Darksteel Colossus, into a library): then `newId` and `cardId` are null, so no one can follow it there (D-054).
    */
   | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId | null; cardId: CardId | null }

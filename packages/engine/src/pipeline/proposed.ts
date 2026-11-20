@@ -69,6 +69,12 @@ export type SingleEvent =
    */
   | { kind: "playLand"; player: PlayerId; object: ObjectId; tapped?: true };
 
+/** Where a land played goes: its player's battlefield, tapped if a replacement said so. */
+export function playLandDestination(event: Extract<SingleEvent, { kind: "playLand" }>): Destination {
+  const to = { zone: "battlefield", controller: event.player } as const;
+  return event.tapped === true ? { ...to, tapped: true } : to;
+}
+
 export type ProposedEvent =
   | SingleEvent
   /**

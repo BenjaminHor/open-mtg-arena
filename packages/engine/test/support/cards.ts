@@ -40,6 +40,10 @@ export const SAC_PUMP = "test-sac-pump";
 export const LATE_GIFT = "test-late-gift";
 /** Not a real card: "enters tapped unless you control a Forest", for lands entering together (CR 614.4). */
 export const GROVE = "test-grove";
+/** Not a real card: a 2/2 that goes to its owner's library instead of a graveyard, and can be destroyed. */
+export const HOMING_BEAR = "test-homing-bear";
+/** Not a real card: an indestructible 0/0, for CR 704.5f, which indestructible doesn't stop. */
+export const HOLLOW_STATUE = "test-hollow-statue";
 /** Not a real card: an enchantment with no abilities, until the pool has one (M2-07), for "artifact or enchantment". */
 export const ENCHANTMENT = "test-enchantment";
 /** Not real cards: creatures with keywords no Magic 2010 card combines (CR 702.4, 702.2c), for unit tests. */
@@ -512,6 +516,39 @@ export const TEST_CARDS: CardDatabase = {
       oracle: "This land enters tapped unless you control a Forest.",
       replacements: [{ kind: "entersTapped", unless: { subtypes: ["Forest"], controller: "you" } }],
     },
+  }),
+  [HOMING_BEAR]: card(HOMING_BEAR, {
+    printed: {
+      name: "Homing Bear",
+      manaCost: [{ kind: "colored", color: "G" }],
+      colors: ["G"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Bear"],
+      power: 2,
+      toughness: 2,
+    },
+    def: {
+      name: "Homing Bear",
+      oracle:
+        "If this creature would be put into a graveyard from anywhere, shuffle it into its owner's library instead.",
+      replacements: [{ kind: "graveyardToLibrary" }],
+    },
+  }),
+  [HOLLOW_STATUE]: card(HOLLOW_STATUE, {
+    printed: {
+      name: "Hollow Statue",
+      manaCost: [{ kind: "generic", amount: 1 }],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["artifact", "creature"],
+      subtypes: ["Golem"],
+      power: 0,
+      toughness: 0,
+    },
+    def: { name: "Hollow Statue", oracle: "Indestructible", keywords: ["indestructible"] },
   }),
   [ENCHANTMENT]: card(ENCHANTMENT, {
     printed: {

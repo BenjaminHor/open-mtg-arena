@@ -8,18 +8,16 @@
 // than choose for them.
 
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
-import { keywordsOf, replacementsOf } from "../rules/abilities.ts";
+import { replacementsOf } from "../rules/abilities.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Destination } from "../zones/move-card.ts";
 import { zoneOf } from "../zones/zone-list.ts";
-import type { SingleEvent } from "./proposed.ts";
+import { playLandDestination, type SingleEvent } from "./proposed.ts";
 
 /** The event as the replacements that apply change it: none, one, or several events in its place. */
 export function applyReplacements(state: GameState, event: SingleEvent, cards: CardDatabase): SingleEvent[] {
-  // An indestructible permanent can't be destroyed (CR 702.12b): the event can't happen, so there's nothing to perform.
-  if (event.kind === "destroy" && keywordsOf(state, event.object, cards).includes("indestructible")) return [];
   const move = moveOf(state, event);
   if (move === null) return [event];
   const applicable = replacementsOf(state, move.object, cards).filter((def) => applies(state, def, move, cards));
@@ -51,10 +49,7 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
       // A countered ability ceases to exist; only a spell goes anywhere (CR 701.6a).
       return state.objects[event.object]?.kind === "card" ? { object: event.object, to: event.to ?? GRAVEYARD } : null;
     case "playLand":
-      return {
-        object: event.object,
-        to: { zone: "battlefield", controller: event.player, ...(event.tapped === true ? { tapped: true } : {}) },
-      };
+      return { object: event.object, to: playLandDestination(event) };
     // Which card a draw moves is known only as it's performed; nothing replaces a draw yet (later: "if you would draw").
     case "draw":
     case "dealDamage":
@@ -75,11 +70,10 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
   switch (def.kind) {
     case "entersTapped": {
       if (move.to.zone !== "battlefield" || "tapped" in move.to) return false;
-      if (def.unless === undefined) return true;
-      // Checked against the permanents already there, read as the player it enters under, "you" (CR 614.12).
+      // Checked against the permanents already there, not those entering with it (its ruling), read as the player it
+      // enters under, "you".
       const you = move.to.controller;
-      const unless = def.unless;
-      return !state.zones.battlefield.some((id) => matchesFilter(state, id, unless, you, cards));
+      return !state.zones.battlefield.some((id) => matchesFilter(state, id, def.unless, you, cards));
     }
     case "graveyardToLibrary":
       return move.to.zone === "graveyard";
@@ -98,8 +92,9 @@ function replaceWith(
       if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters tapped");
       return { before: [], event: rerouted(event, { ...move.to, tapped: true }), after: [] };
     case "graveyardToLibrary": {
-      // "Reveal it and shuffle it into its owner's library": revealed where it is, put into the library, then the
-      // library is shuffled (CR 701.24c).
+      // "Reveal it and shuffle it into its owner's library", in the card's order: revealed where it is, put into the
+      // library, then the library is shuffled. In a batch, the shuffle comes right after its own move, before the
+      // batch's later members; the library ends up just as random.
       const owner = ownerOf(state, move.object);
       return {
         before: [{ kind: "reveal", from: zoneOf(state, move.object), objects: [move.object] }],
@@ -118,13 +113,24 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "destroy":
     case "sacrifice":
     case "discard":
-    case "counterObject":
-      if (to.zone === "graveyard") return event;
-      return { ...event, to };
+    case "counterObject": {
+      // Back to the graveyard is where it goes anyway: no `to` (and none left from an earlier replacement).
+      const { to: _earlier, ...action } = event;
+      return to.zone === "graveyard" ? action : { ...action, to };
+    }
     case "playLand":
       if (to.zone !== "battlefield") throw new Error("a land played can only be sent elsewhere on the battlefield");
       return "tapped" in to ? { ...event, tapped: true } : event;
-    default:
+    case "draw":
+    case "dealDamage":
+    case "gainLife":
+    case "loseLife":
+    case "reveal":
+    case "reorderLibrary":
+    case "tap":
+    case "untap":
+    case "addMana":
+    case "shuffle":
       throw new Error(`${event.kind} moves no card`);
   }
 }

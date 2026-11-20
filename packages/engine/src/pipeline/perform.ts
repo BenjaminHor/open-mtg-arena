@@ -19,7 +19,7 @@ import { moveCard } from "../zones/move-card.ts";
 import { reorderLibraryTop } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
-import type { ProposedEvent, SingleEvent } from "./proposed.ts";
+import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
   if (event.kind !== "simultaneous") return performOne(state, event, cards);
@@ -64,12 +64,7 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     case "shuffle":
       return shuffleLibrary(state, event.player);
     case "playLand": {
-      const to = {
-        zone: "battlefield",
-        controller: event.player,
-        ...(event.tapped === true ? { tapped: true } : {}),
-      } as const;
-      const moved = moveCard(state, event.object, to);
+      const moved = moveCard(state, event.object, playLandDestination(event));
       return andThen(moved, (s) => countLandPlay(s, event.player, moved.newId));
     }
   }

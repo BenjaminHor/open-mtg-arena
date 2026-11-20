@@ -4,6 +4,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
+import { keywordsOf } from "../rules/abilities.ts";
 import type { GameState } from "../state/game-state.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { perform } from "./perform.ts";
@@ -42,8 +43,12 @@ function replaceOne(state: GameState, proposed: SingleEvent, cards: CardDatabase
     case "gainLife":
       // Gaining 0 life isn't an event: nothing triggers on it (CR 119.9) and nothing replaces it (CR 119.10).
       return proposed.amount > 0 ? [proposed] : [];
-    case "moveCard":
     case "destroy":
+      // An indestructible permanent can't be destroyed (CR 702.12b): not a replacement, a rule; the event can't happen,
+      // so no replacement (regeneration) sees it either.
+      if (keywordsOf(state, proposed.object, cards).includes("indestructible")) return [];
+      return applyReplacements(state, proposed, cards);
+    case "moveCard":
     case "sacrifice":
     case "tap":
     case "counterObject":
