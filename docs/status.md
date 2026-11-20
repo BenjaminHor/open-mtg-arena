@@ -487,7 +487,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
          stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
          Built (D-090): Harm's Way, 6 scenarios (`harms-way*.yaml`) and a unit test of the amount used up; golden
-         pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Fuzz clean. Reviews found (fixing now):
+         pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Fuzz clean. Review fixes done (93f2c4d,
+         6fd7c9e; D-090 rewritten): 15 Harm's Way scenarios, unit tests in `test/game/divide-redirect.test.ts`;
+         mutations 10 of 11 caught (the survivor only adds a zero-maximum entry to a split). Next: fuzz, rules-judge
+         re-review, PR. The reviews found:
          - Rules: Guardian Seraph prevents twice when redirected damage joins the same source's damage to the same
            player (CR 615.10: per source, per event): thread what's used across the event's entries and merge the
            dealt entries by source and recipient. Sources only referred to by a stack object (a pinger bounced in
