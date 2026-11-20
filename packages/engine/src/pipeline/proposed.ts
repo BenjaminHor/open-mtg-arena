@@ -1,9 +1,12 @@
-// What can happen in the game: every change a rule or effect makes is proposed as one of these and carried out by
+// What can happen in the game: each change a rule or effect makes is proposed as one of these and carried out by
 // `happen` (happen.ts), so replacement and prevention effects (later: CR 614–616) and triggered abilities
 // (later: CR 603.2) have one place to see it.
+//
+// Each event changes one object or player (or, for damage, is one damage event, CR 120.4); events that happen at the
+// same time are one `simultaneous` event. An event is performed whole: destroying a permanent is moving it to the
+// graveyard (CR 701.8a), not a destruction followed by a separate zone change, so a "would die" replacement and a
+// "would be destroyed" one apply to the same event, in the order its controller chooses (later: CR 616.1, 616.1f).
 
-import type { Progress } from "../game/progress.ts";
-import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { Target } from "../state/objects.ts";
@@ -12,39 +15,39 @@ import type { Destination } from "../zones/move-card.ts";
 /** `source` deals `amount` damage to `to`; `combat` for combat damage (CR 120.2a), which some abilities care about. */
 export type Damage = { source: ObjectId; to: Target; amount: number; combat: boolean };
 
-export type ProposedEvent =
+/** One event, performed whole. */
+export type SingleEvent =
   /** A card moves to another zone, becoming a new object (CR 400.7). */
   | { kind: "moveCard"; object: ObjectId; to: Destination }
-  /** A permanent is destroyed (CR 701.8): it moves to its owner's graveyard. */
+  /** A permanent is destroyed: it moves to its owner's graveyard (CR 701.8a). */
   | { kind: "destroy"; object: ObjectId }
-  /** One damage event (CR 120.4): spells deal damage to one recipient, combat damage to many at once (CR 510.2). */
+  /**
+   * One damage event (CR 120.4): spells deal damage to one recipient, combat damage to many at once (CR 510.2). Its
+   * results (life loss, marked damage) are part of it: replacements that change them modify this event
+   * (later: CR 120.4c).
+   */
   | { kind: "dealDamage"; damage: Damage[] }
-  /** A player loses life (CR 119.3). */
-  | { kind: "loseLife"; player: PlayerId; amount: number }
-  /** Damage is marked on a creature (CR 120.3e). */
-  | { kind: "markDamage"; object: ObjectId; amount: number }
+  /** A permanent becomes tapped (CR 701.26a). */
   | { kind: "tap"; object: ObjectId }
-  /** These permanents untap all at once (CR 502.3). */
-  | { kind: "untap"; objects: ObjectId[] }
+  /** A permanent becomes untapped (CR 701.26b). */
+  | { kind: "untap"; object: ObjectId }
   /** Mana goes into a player's mana pool (CR 106.4), made by an ability of `source`. */
   | { kind: "addMana"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
-  /** A player draws a card (CR 121.1). */
+  /** A player draws one card (CR 121.1, 121.2). */
   | { kind: "draw"; player: PlayerId }
-  /** These cards are discarded as one action (CR 701.9a). */
-  | { kind: "discard"; objects: ObjectId[] }
+  /** A card is discarded: it moves from its owner's hand to their graveyard (CR 701.9a). */
+  | { kind: "discard"; object: ObjectId }
   /** A player shuffles their library (CR 701.24a). */
   | { kind: "shuffle"; player: PlayerId }
   /** A player plays a land (CR 305.1): it enters the battlefield, and counts toward their land plays (CR 305.2). */
-  | { kind: "playLand"; player: PlayerId; object: ObjectId }
-  /**
-   * Several events at the same time, as one: the state-based actions performed together (CR 704.3), several
-   * attackers tapping (CR 508.1f). Each is replaced on its own (later: CR 614), and triggered abilities see them all
-   * at once (later: CR 603.2).
-   */
-  | { kind: "simultaneous"; events: ProposedEvent[] };
+  | { kind: "playLand"; player: PlayerId; object: ObjectId };
 
-/**
- * Carries out an event that another event leads to (destroying a permanent moves it), through the replacement step
- * again: compound events take this rather than calling the primitives, so each part gets its own replacement pass.
- */
-export type CarryOut = (state: GameState, proposed: ProposedEvent) => Progress;
+export type ProposedEvent =
+  | SingleEvent
+  /**
+   * Several events at the same time, as one: the state-based actions of one check (CR 704.3), a step's turn-based
+   * action on several permanents (CR 502.3, 508.1f), the cleanup discard (CR 514.1). Every member is replaced against
+   * the state before any of them happens (later: CR 614.4, 616.1), then all are performed, and triggered abilities see
+   * them together (later: CR 603.2).
+   */
+  | { kind: "simultaneous"; events: SingleEvent[] };

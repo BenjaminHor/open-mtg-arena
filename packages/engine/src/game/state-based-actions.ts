@@ -2,7 +2,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
-import type { ProposedEvent } from "../pipeline/proposed.ts";
+import type { ProposedEvent, SingleEvent } from "../pipeline/proposed.ts";
 import { stateBasedActions } from "../rules/state-based-actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { Loss } from "../state/result.ts";
@@ -19,10 +19,8 @@ export function checkStateBasedActions(state: GameState, cards: CardDatabase): P
   const actions = stateBasedActions(state, cards);
   const cleared = clearEmptyLibraryDraws(state);
   if (actions.length === 0) return { state: cleared, events: [], performed: false };
-  // Cards that go to a graveyard together go in battlefield order (D-039; later: CR 404.3 lets the owner choose).
-  const events = actions.flatMap(eventOn);
   const progress = andThen({ state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] }, (s) =>
-    happen(s, { kind: "simultaneous", events }, cards),
+    happen(s, stateBasedActionsEvent(actions), cards),
   );
   const losses = actions.flatMap((a): Loss[] => {
     const loss = lossFrom(a);
@@ -45,8 +43,16 @@ function lossFrom(action: StateBasedAction): Loss | null {
   }
 }
 
+/**
+ * The state-based actions done to objects, as one event (CR 704.3). Cards that go to a graveyard together go in
+ * battlefield order (D-039; later: CR 404.3 lets the owner choose).
+ */
+export function stateBasedActionsEvent(actions: readonly StateBasedAction[]): ProposedEvent {
+  return { kind: "simultaneous", events: actions.flatMap(eventOn) };
+}
+
 /** What this state-based action does to an object, if anything. */
-function eventOn(action: StateBasedAction): ProposedEvent[] {
+function eventOn(action: StateBasedAction): SingleEvent[] {
   switch (action.kind) {
     case "zeroLife":
     case "drewFromEmptyLibrary":

@@ -79,7 +79,15 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[], car
   }
   // CR 514.1 happens once per cleanup step, so after the discard the step moves on even if something left the hand
   // over its maximum; a new cleanup step would deal with that (CR 514.3a).
-  if (chosen.length > 0) return andThen(happen(state, { kind: "discard", objects: [...chosen] }, cards), endCleanup);
+  if (chosen.length > 0)
+    return andThen(
+      happen(
+        state,
+        { kind: "simultaneous", events: chosen.map((object) => ({ kind: "discard", object }) as const) },
+        cards,
+      ),
+      endCleanup,
+    );
   return endCleanup(state);
 }
 
@@ -174,8 +182,15 @@ function beginStep(state: GameState, step: Step, cards: CardDatabase): Progress 
 /** The active player untaps all their permanents at once (CR 502.3). */
 function untapStep(state: GameState, cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
-  const objects = state.zones.battlefield.filter((id) => controllerOf(state, id) === active);
-  return happen(state, { kind: "untap", objects }, cards);
+  const untaps = state.zones.battlefield
+    .filter((id) => controllerOf(state, id) === active && isTapped(state, id))
+    .map((object) => ({ kind: "untap", object }) as const);
+  return happen(state, { kind: "simultaneous", events: untaps }, cards);
+}
+
+function isTapped(state: GameState, id: ObjectId): boolean {
+  const obj = state.objects[id];
+  return obj?.kind === "card" && obj.tapped;
 }
 
 function priorityForActivePlayer(state: GameState): Progress {

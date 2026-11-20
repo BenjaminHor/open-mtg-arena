@@ -4,20 +4,18 @@
 // `rules/state-based-actions.ts` must not list it. Listing it and doing nothing here would make the check "perform" it
 // forever.
 
-import { andThen, type Progress } from "../game/progress.ts";
-import type { CarryOut } from "../pipeline/proposed.ts";
+import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import { moveCard } from "../zones/move-card.ts";
 
-/**
- * Moves a permanent from the battlefield to its owner's graveyard (CR 701.8a), emitting `PERMANENT_DESTROYED`. The move
- * is its own event, proposed through `next`: something may replace it without replacing the destruction.
- */
-export function destroy(state: GameState, id: ObjectId, next: CarryOut): Progress {
+/** Moves a permanent from the battlefield to its owner's graveyard (CR 701.8a), emitting `PERMANENT_DESTROYED`. */
+export function destroy(state: GameState, id: ObjectId): Progress {
   const obj = state.objects[id];
   if (obj?.kind !== "card" || !state.zones.battlefield.includes(id)) throw new Error(`${id} isn't a permanent`);
-  const destroyed = { type: "PERMANENT_DESTROYED", object: id, cardId: obj.cardId } as const;
-  return andThen({ state, events: [destroyed] }, (s) =>
-    next(s, { kind: "moveCard", object: id, to: { zone: "graveyard" } }),
-  );
+  const moved = moveCard(state, id, { zone: "graveyard" });
+  return {
+    state: moved.state,
+    events: [{ type: "PERMANENT_DESTROYED", object: id, cardId: obj.cardId }, ...moved.events],
+  };
 }

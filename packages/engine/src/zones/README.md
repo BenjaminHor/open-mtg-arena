@@ -1,15 +1,14 @@
 # engine/src/zones
 
-Zone primitives (CR 400). `moveCard`, `drawCard`, `discardCards` and `shuffleLibrary` perform the event pipeline's
+Zone primitives (CR 400). `moveCard`, `drawCard`, `discardCard` and `shuffleLibrary` perform the event pipeline's
 events (`pipeline/`, D-056) and are called only by it: code that moves a card proposes a `moveCard` event with
 `happen`, so replacement effects and triggers (CR 614, 603) see every move.
 
 - `move-card.ts`: `moveCard(state, id, destination)`. The card becomes a new object with a new id (CR 400.7) and goes to
   its owner's library, hand or graveyard (CR 400.3), or a shared zone under a given controller. Emits `ZONE_CHANGED`.
-- `draw.ts`: `drawCard` (CR 121), proposing the card's move through `next`. Drawing from an empty library records the
-  attempt (CR 121.4).
-- `discard.ts`: `discardCards` (CR 701.9): discards them as one action, each move proposed through `next`, emitting
-  `CARD_DISCARDED` for each.
+- `draw.ts`: `drawCard` (CR 121): one card. Drawing from an empty library records the attempt (CR 121.4).
+- `discard.ts`: `discardCard` (CR 701.9), emitting `CARD_DISCARDED`. Several cards discarded together are one
+  `simultaneous` event.
 - `shuffle.ts`: `shuffleLibrary`, a Fisher–Yates shuffle from the game's seeded RNG (CR 701.24).
 - `stack-abilities.ts`: `putAbilityOnStack` (CR 602.2a) and `removeAbilityFromStack`: an ability isn't a card, so it
   doesn't change zones; it's created on the stack and ceases to exist (CR 608.2n, 608.2b).

@@ -6,27 +6,36 @@ import type { CardDatabase } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import { perform } from "./perform.ts";
-import type { ProposedEvent } from "./proposed.ts";
+import type { ProposedEvent, SingleEvent } from "./proposed.ts";
 
 /**
- * Carries out an event and checks for triggered abilities once, after everything it caused: an event that leads to
- * others (destroying a permanent moves it) is one happening, and triggers see all of it together.
+ * Carries out an event. All of the replacing comes first, against the state before the event, and then all of the
+ * performing: a replacement that needs a player's choice (later: CR 616.1) can then stop before anything has changed.
  */
 export function happen(state: GameState, proposed: ProposedEvent, cards: CardDatabase): Progress {
-  return checkTriggers(state, carryOut(state, proposed, cards), cards);
+  return checkTriggers(state, perform(state, replace(state, proposed, cards), cards), cards);
 }
 
-/**
- * Replaces, then performs. An event that leads to others proposes each of them back through here, so each gets its own
- * replacement pass: regeneration replaces a destruction, and something else may replace the zone change it causes.
- */
-function carryOut(state: GameState, proposed: ProposedEvent, cards: CardDatabase): Progress {
-  return perform(state, replace(state, proposed, cards), cards, (s, next) => carryOut(s, next, cards));
+/** The members of a batch are each replaced against the same state, the one before the batch (later: CR 614.4). */
+function replace(state: GameState, proposed: ProposedEvent, cards: CardDatabase): ProposedEvent {
+  switch (proposed.kind) {
+    case "simultaneous":
+      return { kind: "simultaneous", events: proposed.events.map((e) => replaceOne(state, e, cards)) };
+    default:
+      return replaceOne(state, proposed, cards);
+  }
 }
 
 /** Replacement and prevention effects modify the event (later: CR 614–616). None exist yet. */
-function replace(_state: GameState, proposed: ProposedEvent, _cards: CardDatabase): ProposedEvent {
-  return proposed;
+function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDatabase): SingleEvent {
+  switch (proposed.kind) {
+    case "dealDamage":
+      // A source that would deal 0 damage deals no damage at all, so there's nothing for a replacement or prevention
+      // effect to modify, not even one that would increase it (CR 120.8).
+      return { kind: "dealDamage", damage: proposed.damage.filter((d) => d.amount > 0) };
+    default:
+      return proposed;
+  }
 }
 
 /**

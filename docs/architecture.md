@@ -168,11 +168,11 @@ simple.
 - Anything that happens in the game goes through one pipeline (`engine/src/pipeline/`, D-056), `happen(state,
   proposed, cards)`:
   1. **Propose** an event (draw a card, deal damage, move to a zone). Events that happen together are one
-     `simultaneous` event.
+     `simultaneous` event, each member replaced against the state before it.
   2. **Replace**: apply replacement and prevention effects (CR 614–616). If several apply, the
      affected player or controller chooses the order (CR 616.1), which is a decision.
-  3. **Perform** the event and emit `GameEvent`s. An event that leads to others (destroying moves the permanent)
-     proposes them back through step 2, so each gets its own replacement pass.
+  3. **Perform** the event and emit `GameEvent`s. Each event is performed whole (destroying a permanent is its move to
+     the graveyard), and all replacing is done before any performing, so a replacement's choice can pause the event.
   4. **Trigger**: check triggered abilities against the events and add `pendingTriggers` (CR 603.2), once per
      proposed event, after everything it caused.
   Only the pipeline calls the primitives that change the game; a test checks the imports.

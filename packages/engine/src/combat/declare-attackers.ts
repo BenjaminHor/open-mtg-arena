@@ -6,6 +6,7 @@ import { andThen, type Progress } from "../game/progress.ts";
 import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
+import type { ProposedEvent } from "../pipeline/proposed.ts";
 import { canAttack } from "../rules/combat.ts";
 import type { Attack } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -49,11 +50,15 @@ export function attackProblem(state: GameState, chosen: readonly Attack[], attac
  */
 export function finishAttackers(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
-  const taps = chosen.map(({ attacker }) => ({ kind: "tap", object: attacker }) as const);
-  const progress = happen(state, { kind: "simultaneous", events: taps }, cards);
+  const progress = happen(state, attackersTap(chosen), cards);
   const combat = { attacks: [...chosen], blocks: [] };
   return andThen(progress, (s) => ({
     state: queueWork({ ...s, combat }, { kind: "givePriority", player: active }),
     events: [{ type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] }],
   }));
+}
+
+/** The attackers tap together (CR 508.1f), as part of the one turn-based action that declares them (CR 508.1). */
+export function attackersTap(chosen: readonly Attack[]): ProposedEvent {
+  return { kind: "simultaneous", events: chosen.map(({ attacker }) => ({ kind: "tap", object: attacker }) as const) };
 }

@@ -77,8 +77,12 @@ gone, and an illegal target on resolution.
 
 **M2-08 Replacement and prevention effects (CR 614–616).** "Enters tapped (unless)", "as it enters, choose"
 (CR 614.12), "if it would ..., ... instead", regeneration (CR 701.19), damage prevention and redirection, protection's
-damage prevention (CR 702.16e), and the affected player ordering several replacements (CR 616.1). *Accept:* scenarios
-for each kind the pool uses, two replacements on one event, and a replacement applying only once (CR 614.5).
+damage prevention (CR 702.16e), and the affected player ordering several replacements (CR 616.1). `happen` becomes
+resumable for that choice (D-056). *Accept:* scenarios for each kind the pool uses, two replacements on one event, and
+a replacement applying only once (CR 614.5); from the M2-03 review: a batch of state-based actions whose dying source
+still replaces the others' moves (CR 704.3, 614.4), regeneration and a "would die" replacement on one destruction
+(CR 616.1), damage results replaced as one event (CR 120.4c, the CR's Worship example), and 0 damage that an increase
+can't touch (CR 120.8).
 
 **M2-09 The full layer system and static abilities (CR 613, 604, 611).** Layers 1 to 7 as one board-wide pass with
 timestamps and dependencies (CR 613.7, 613.8): control, type, color, ability adding and removing,

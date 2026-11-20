@@ -5,7 +5,7 @@ import { newCardId, newObjectId, newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { CardId, ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
@@ -88,4 +88,11 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
 /** Hands and libraries: zones some player can't see into (CR 400.2). */
 function isHiddenZone(zone: ZoneRef): boolean {
   return zone.zone === "hand" || zone.zone === "library";
+}
+
+/** The card id a move gave the card: new if it came out of a hand or library into a public zone (D-054). */
+export function newCardIdOf(moved: Progress & { newId: ObjectId }): CardId {
+  const obj = moved.state.objects[moved.newId];
+  if (obj?.kind !== "card") throw new Error(`${moved.newId} isn't a card`);
+  return obj.cardId;
 }

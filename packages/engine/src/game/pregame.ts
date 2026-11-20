@@ -68,7 +68,7 @@ export function putOnBottom(state: GameState, player: PlayerId, object: ObjectId
   );
 }
 
-/** A player draws their opening hand (CR 103.5), one card at a time. */
+/** A player draws their opening hand (CR 103.5), one card at a time (CR 121.2). */
 function drawHand(state: GameState, player: PlayerId, cards: CardDatabase): Progress {
   let progress: Progress = { state, events: [] };
   for (let i = 0; i < STARTING_HAND_SIZE; i++)
@@ -104,10 +104,12 @@ function takeMulligans(state: GameState, cards: CardDatabase): Progress {
   );
   let progress: Progress = { state, events: [] };
   for (const player of takers) {
-    for (const card of zoneList(progress.state, { zone: "hand", player })) {
-      const to = { zone: "library", position: "top" } as const;
-      progress = andThen(progress, (s) => happen(s, { kind: "moveCard", object: card, to }, cards));
-    }
+    // The whole hand goes back as one event.
+    const to = { zone: "library", position: "top" } as const;
+    const back = zoneList(progress.state, { zone: "hand", player }).map(
+      (object) => ({ kind: "moveCard", object, to }) as const,
+    );
+    progress = andThen(progress, (s) => happen(s, { kind: "simultaneous", events: back }, cards));
     progress = andThen(progress, (s) => happen(s, { kind: "shuffle", player }, cards));
     progress = andThen(progress, (s) => drawHand(s, player, cards));
   }

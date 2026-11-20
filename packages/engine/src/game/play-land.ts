@@ -21,8 +21,8 @@ export function playLandProblem(
 }
 
 /**
- * The land is played (the `playLand` event: it enters the battlefield, CR 305.1, and counts, CR 305.2). Taking an
- * action restarts the passes (CR 117.4), and the player gets priority again (CR 116.3, 117.3c).
+ * The land is played (the `playLand` event: it enters the battlefield and counts, CR 305.1, 305.2). Taking an action
+ * restarts the passes (CR 117.4), and the player gets priority again (CR 116.3, 117.3c).
  */
 export function playLand(state: GameState, player: PlayerId, card: ObjectId, cards: CardDatabase): Progress {
   const played = happen(state, { kind: "playLand", player, object: card }, cards);

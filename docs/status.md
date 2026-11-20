@@ -14,14 +14,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   2026-11-20). `docs/milestones/m2-pool.md` maps all 234 cards (none left out) to the systems they need and the task
   after which each is playable; the M2 tasks are reordered by it (D-055). The table is kept by hand from now on: when a
   task scripts a card, check its row.
-- M2-03 The event pipeline: built, in review (D-056). `engine/src/pipeline/`: every game event is a `ProposedEvent`
-  carried out by `happen` (replace, perform, check triggers; replace and triggers are identity until M2-08 and M2-07).
-  Compound events (destroy, draw, discard, damage, land play) propose their parts back through `next`; state-based
-  actions and attackers tapping are `simultaneous` batches; the pregame goes through it too. Only `perform.ts` imports
-  the primitives (`test/pipeline/only-the-pipeline-performs.test.ts`). Golden games and replays unchanged, bench
-  within budget, 300-game fuzz clean. Last known information is deferred to its first reader (future-rules.md,
-  "Triggered abilities"): when it arrives, choose between a snapshot carried by the referrer (as `casting.origin.card`
-  and `ZONE_CHANGED.object` do) and a table that needs pruning.
+- M2-03 The event pipeline: built, in review (PR #23, D-056). `engine/src/pipeline/`: every game event is a
+  `ProposedEvent` carried out by `happen` (replace, perform, check triggers). Each event changes one object or player
+  and is performed whole; events at the same time are one `simultaneous` event (state-based actions, untap step,
+  attackers tapping, cleanup discard, a mulligan's hand); all replacing comes before any performing, so M2-08 can
+  pause for a choice. Only `perform.ts` imports the primitives (`test/pipeline/only-the-pipeline-performs.test.ts`).
+  Reworked after the first reviews (rules-judge and code-reviewer both found batches replaced one member at a time and
+  continuations that couldn't pause). Golden games and replays unchanged, bench within budget, fuzz clean. Last known
+  information is deferred to its first reader (future-rules.md, "Triggered abilities").
 - Next: M2-04 Targeting and costs with context.
 
 ## Handoff notes
@@ -173,6 +173,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Before M2-08; not blocking.) Is destroying a permanent the same event as its move to the graveyard, so that a
+  regeneration shield and a "would die, instead ..." effect apply in the order the controller chooses (CR 616.1)? Or
+  is the move an event contained in the destruction (CR 616.1g), so regeneration always comes first? D-056 builds the
+  first reading, from CR 701.8a and the example under CR 616.1f; the rules-judge asked that the owner rule on it.
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
