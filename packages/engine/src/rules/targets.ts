@@ -1,11 +1,11 @@
-// What a target requirement may choose (CR 115), in one place, so later rules (hexproof, protection, shroud) have one
-// function to change.
+// What a target requirement may choose (CR 115), in one place, so rules that stop targeting (shroud; hexproof and
+// protection, later: CR 702.11b, 702.16b) have one function to change.
 
 import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
-import { stackAbilityDef } from "./abilities.ts";
+import { keywordsOf, stackAbilityDef } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
@@ -19,9 +19,18 @@ export type Targeting = { object: ObjectId; controller: PlayerId };
 
 /**
  * Every legal choice for this target requirement right now, in a fixed order: objects in their zone's order, then
- * players in turn order. Only permanents can be chosen unless the text says otherwise (CR 115.2).
+ * players in turn order. Only permanents can be chosen unless the text says otherwise (CR 115.2). A permanent with
+ * shroud can't be the target of spells or abilities (CR 702.18a), so it's never one; this list is also what's checked
+ * on resolution (CR 608.2b), so a target that gained shroud since is illegal then.
  */
 export function legalTargets(state: GameState, spec: TargetSpec, by: Targeting, cards: CardDatabase): Target[] {
+  return candidates(state, spec, by, cards).filter(
+    (t) => t.kind !== "object" || !keywordsOf(state, t.object, cards).includes("shroud"),
+  );
+}
+
+/** What the requirement's words allow, before abilities that stop targeting (shroud). */
+function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: CardDatabase): Target[] {
   const objects = (ids: readonly ObjectId[]): Target[] => ids.map((object) => ({ kind: "object", object }));
   const players: Target[] = state.turnOrder.map((player) => ({ kind: "player", player }));
   switch (spec.kind) {

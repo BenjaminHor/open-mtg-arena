@@ -128,6 +128,7 @@ export type Keyword =
   | "haste" // CR 702.10
   | "lifelink" // CR 702.15
   | "reach" // CR 702.17
+  | "shroud" // CR 702.18
   | "swampwalk" // CR 702.14
   | "trample" // CR 702.19
   | "vigilance"; // CR 702.20

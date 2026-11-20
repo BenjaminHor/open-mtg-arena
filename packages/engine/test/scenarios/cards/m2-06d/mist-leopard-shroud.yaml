@@ -1,0 +1,24 @@
+name: A creature with shroud can't be the target of spells, its controller's or an opponent's, but untargeted damage still hits it
+rules: [CR 702.18a, CR 115.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mist Leopard, Forest, Mountain, Mountain]
+    hand: [Giant Growth, Lightning Bolt, Earthquake]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p1:Mist Leopard]
+    pay: auto
+  - expect error: illegalAction
+  - p1 cast: Giant Growth
+    targets: [p1:Mist Leopard]
+    pay: auto
+  - expect error: illegalAction
+  - p1 cast: Earthquake
+    x: 2
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Earthquake, Mist Leopard]
+      p1.life: 18
+      p2.life: 18

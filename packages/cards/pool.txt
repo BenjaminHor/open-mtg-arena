@@ -60,6 +60,7 @@ Horned Turtle
 Ignite Disorder
 Island
 Jackal Familiar
+Kalonian Behemoth
 Kelinore Bat
 Lava Axe
 Lightning Bolt
@@ -71,6 +72,7 @@ Might of Oaks
 Mind Rot
 Mind Shatter
 Mind Spring
+Mist Leopard
 Mountain
 Naturalize
 Nature's Spiral

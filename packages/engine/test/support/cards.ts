@@ -46,6 +46,8 @@ export const DEATHTOUCH_TRAMPLER = "test-deathtouch-trampler";
 export const DOUBLE_TRAMPLER = "test-double-trampler";
 /** Not a real card: a creature that can't attack or block alone (Jackal Familiar's ability on a test body). */
 export const LONER = "test-loner";
+/** Not a real card: a 2/2 with shroud, to swap in for Grizzly Bears when a target gains shroud. */
+export const SHROUDED = "test-shrouded";
 
 /** A test creature with only keywords: a vanilla body for combat tests. */
 function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
@@ -481,4 +483,5 @@ export const TEST_CARDS: CardDatabase = {
       statics: [{ kind: "cantAttackOrBlockAlone" }],
     },
   },
+  [SHROUDED]: keywordCreature(SHROUDED, "Shrouded", [2, 2], ["shroud"]),
 };

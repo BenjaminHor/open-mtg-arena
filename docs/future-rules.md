@@ -216,8 +216,9 @@ Modal spells and kicker change the target requirements after the mode or cost is
 
 **Targeting that knows who targets (CR 702.11b hexproof, 702.16b protection, 601.2c).** `legalTargets`,
 `isLegalTarget` and `stillLegalTargets` (`rules/targets.ts`, also used for the CR 608.2b check on resolution) take a
-`Targeting` (the object and its controller) since M2-05, so "an opponent controls" works; shroud, hexproof and
-protection still need a check of the target's abilities against the source (M2-06d). `game/cast.ts` checks targets before the spell object exists. Each target group is one
+`Targeting` (the object and its controller) since M2-05, so "an opponent controls" works, and shroud filters
+`legalTargets` (M2-06d). Hexproof and protection need the target's abilities checked against the source and its
+controller, in the same place. `game/cast.ts` checks targets before the spell object exists. Each target group is one
 target today; "two target creatures" needs several per group, and one instance can't choose the same target twice
 (CR 601.2c). *Needs now:* nothing.
 
