@@ -475,6 +475,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
+- **Owner's instruction (2026-11-20):** continue all the way to the end of M2; the owner won't be available much.
+  For a decision that needs the owner, notify them with suggestions to choose from, and meanwhile carry on with the
+  recommended option (recorded in Open questions, marked "proceeding with ...") so work doesn't stall.
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
   a go-ahead. Stop only for a decision that needs the owner (put it in Open questions and ask). Merge each PR once it
   checks out (D-027), restart the branch from `main`, then start the next task.
@@ -623,7 +626,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   (CR 704.3), a "would die" replacement with regeneration (testable now with a test-only card, done in M2-08c), and
   Worship-style damage results replaced as one event (CR 120.4c). The first and third would need replacement kinds
   written only for tests, which CLAUDE.md treats as speculative. Proposed: defer those two to the first card that
-  needs them (noted in future-rules), and count M2-08 done without them. Waiting on the owner.
+  needs them (noted in future-rules), and count M2-08 done without them. Options: (a) defer them (recommended;
+  proceeding with this), (b) add minimal test-only replacement kinds to the engine to test them now, (c) drop them
+  from the spec.
 - (Asked 2026-11-20) The owner asked whether card definitions' raw strings (`op: "dealDamage"`, `step: "end"`...)
   should become enums. Recommended: no TypeScript `enum` (D-018 runs TypeScript by type stripping, and
   `erasableSyntaxOnly` refuses `enum`); the strings are already checked literal unions. Offered instead: named
