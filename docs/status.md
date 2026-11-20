@@ -209,7 +209,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        this turn". Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior, Dread Warlock, Palace Guard,
        Panic Attack. Scenarios in `test/scenarios/cards/m2-06b/` and `interactions/block-any-number/`, five new matrix
        rows; three of the cards in the M10 pair.
-     - M2-06c, done, in review (D-072): "can't attack or block alone", "attacks each combat if able", "attacks you this
+     - M2-06c, done, merged (PR #37, D-072): "can't attack or block alone", "attacks each combat if able", "attacks you this
        turn if able", "all creatures able to block it do so"; `finishDeclaring` only when the declaration is legal, and a
        `takeBack` answer. Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren. Scenarios in
        `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
