@@ -697,6 +697,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20, M2-09) The M2-09 spec asks for "at least one dependency example from the CR" (CR 613.8: within a
+  layer, an effect that changes what another applies to goes first). No card in the pool, or in M2-09's 24, has two
+  effects in one layer where that matters, so it would be machinery only test cards exercise. Options: (a) build
+  timestamp order now and leave dependency for the first card that needs it, amending the spec's acceptance line
+  (recommended; proceeding with this unless the rules review finds a pool pair); (b) build dependency now with a CR
+  example on test cards, as the spec says; (c) build it with M2-14's special-rules batch.
 - (Asked 2026-11-20, D-089) Does "modern Magic" mean the Modern format? `game:arena -is:alchemy -is:digital` keeps 13,036
   of 23,012 Modern-legal cards, and 51 keywords on 596 Modern-legal cards appear on no card it keeps (Echo, Dredge,
   Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the
