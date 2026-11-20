@@ -118,7 +118,7 @@ function gameSteps(cards: CardDatabase): Step[] {
   if (files.length !== BENCH_GAMES.length)
     throw new Error(`the bench needs the golden games ${BENCH_GAMES.join(", ")}`);
   for (const file of files) {
-    const game = readGolden(file);
+    const game = readGolden(file, cards);
     const created = createGame(game.setup, cards);
     if (!created.ok) throw new Error(created.error.message);
     let state = created.state;

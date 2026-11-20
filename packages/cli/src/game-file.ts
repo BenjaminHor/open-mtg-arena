@@ -3,6 +3,7 @@
 // game isn't replayed by every command. The same file is the replay log and the bug-report format.
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { cardDatabase } from "@mtg/cards";
 import {
   type Action,
   applyAction,
@@ -13,6 +14,9 @@ import {
   type GameSetup,
   type GameState,
 } from "@mtg/engine";
+
+import { actionLines, actionsFromLines } from "./action-lines.ts";
+import { setupFromNames, setupWithNames } from "./setup-names.ts";
 
 export const FORMAT = "open-mtg-arena game";
 
@@ -47,16 +51,39 @@ export function replay(
   return { state, events };
 }
 
-/** Reads a game file, checking its format. */
-export function readGameFile(path: string): GameFile {
+/**
+ * How a file on disk stores its setup and actions: as the engine's JSON (oracle ids, whole actions), or, with
+ * `"encoding": "lines"`, the compact form golden games use (D-082): cards by name, one line per action.
+ */
+type Stored = { encoding?: "lines"; setup: GameSetup; actions: unknown[] };
+
+/** The setup and actions a file stores, whichever encoding it uses. */
+export function decodeStored(stored: Stored, cards: CardDatabase): { setup: GameSetup; actions: Action[] } {
+  if (stored.encoding !== "lines") return { setup: stored.setup, actions: stored.actions as Action[] };
+  const setup = setupFromNames(stored.setup, cards);
+  return { setup, actions: actionsFromLines(setup, stored.actions as string[], cards) };
+}
+
+/** The setup and actions in the compact encoding (D-082). */
+export function encodeLines(
+  setup: GameSetup,
+  actions: readonly Action[],
+  cards: CardDatabase,
+): { encoding: "lines"; setup: GameSetup; actions: string[] } {
+  return { encoding: "lines", setup: setupWithNames(setup, cards), actions: actionLines(actions) };
+}
+
+/** Reads a game file, checking its format, in either encoding. */
+export function readGameFile(path: string, cards: CardDatabase = cardDatabase()): GameFile {
   const raw: unknown = JSON.parse(readFileSync(path, "utf8"));
   if (typeof raw !== "object" || raw === null || (raw as { format?: unknown }).format !== FORMAT) {
     throw new Error(`${path} isn't a game file`);
   }
-  const file = raw as GameFile;
+  const file = raw as GameFile & Stored;
   if (file.version !== ENGINE_VERSION)
     throw new Error(`${path} is from engine version ${file.version}, not ${ENGINE_VERSION}`);
-  return file;
+  const { encoding: _, ...rest } = file;
+  return { ...rest, ...decodeStored(file, cards) };
 }
 
 /** The game's current state: the cache if there is one, otherwise a replay. */
@@ -78,7 +105,7 @@ export function newGameFile(setup: GameSetup, cards: CardDatabase): GameFile {
  * A game file as text with one action per line, so a diff shows which actions changed: `head`'s fields first, each on
  * one line, then the actions. Saved replays and golden games are written this way.
  */
-export function actionPerLineText(head: Record<string, unknown>, actions: readonly Action[]): string {
+export function actionPerLineText(head: Record<string, unknown>, actions: readonly (Action | string)[]): string {
   const fields = Object.entries(head).map(([key, value]) => `  ${JSON.stringify(key)}: ${JSON.stringify(value)}`);
   const lines = actions.map((a) => `    ${JSON.stringify(a)}`).join(",\n");
   return `{\n${fields.join(",\n")},\n  "actions": [\n${lines}\n  ]\n}\n`;

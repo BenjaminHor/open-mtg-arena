@@ -138,7 +138,7 @@ export function chooseCover(candidates: readonly Candidate[], alreadyCovered: re
 /** Everything the golden games in `dir` cover between them. */
 export function coveredByGoldens(dir: string, cards: CardDatabase): string[] {
   const units = goldenFiles(dir).flatMap((file) => {
-    const game = readGolden(file);
+    const game = readGolden(file, cards);
     return Object.keys(coverageOf(game.setup, game.actions, cards).firstTurn);
   });
   return [...new Set(units)].sort();

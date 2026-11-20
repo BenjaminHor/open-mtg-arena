@@ -42,13 +42,13 @@ describe("the golden games", () => {
     it(`${name} plays out to the same log (if an intended change alters it: pnpm golden:update)`, {
       timeout: 30_000,
     }, () => {
-      expect(goldenLog(readGolden(file), cards)).toBe(readFileSync(logPath(file), "utf8"));
+      expect(goldenLog(readGolden(file, cards), cards)).toBe(readFileSync(logPath(file), "utf8"));
     });
 
     it(`${name} is written the way pnpm golden:update writes it, for this engine version`, () => {
-      const game = readGolden(file);
+      const game = readGolden(file, cards);
       expect(game.version, "run pnpm golden:update after a version change").toBe(ENGINE_VERSION);
-      expect(readFileSync(file, "utf8")).toBe(goldenText(game));
+      expect(readFileSync(file, "utf8")).toBe(goldenText(game, cards));
     });
   }
 });
@@ -70,41 +70,43 @@ describe("updateGoldens", () => {
     const file = smallGameFile();
     writeFileSync(logPath(file), "T1 something else\n");
     expect(updateGoldens(path.dirname(file), cards)).toEqual([`${file}: log changed`]);
-    expect(readFileSync(logPath(file), "utf8")).toBe(goldenLog(readGolden(file), cards));
+    expect(readFileSync(logPath(file), "utf8")).toBe(goldenLog(readGolden(file, cards), cards));
   });
 
   it("plays a game again from its recipe when an action is rejected, and says why", () => {
     const file = smallGameFile();
-    const original = readGolden(file);
+    const original = readGolden(file, cards);
     writeFileSync(
       file,
-      goldenText({ ...original, actions: [original.actions[0], ...original.actions.slice(2)] as Action[] }),
+      goldenText({ ...original, actions: [original.actions[0], ...original.actions.slice(2)] as Action[] }, cards),
     );
     const [line] = updateGoldens(path.dirname(file), cards);
-    expect(line).toMatch(/played again from its recipe \(action 2 is rejected: .+; actions differ from action 2: /);
-    expect(readGolden(file).actions).toEqual(original.actions);
+    // Stored as lines (D-082), each action answers whatever is pending as it's read back, so dropping one action makes
+    // a later one the first rejected: which one depends on the game.
+    expect(line).toMatch(/played again from its recipe \(action \d+ is rejected: .+; actions differ from action 2: /);
+    expect(readGolden(file, cards).actions).toEqual(original.actions);
     expect(readFileSync(logPath(file), "utf8")).not.toContain("!!");
   });
 
   it("plays a game again from its recipe when it no longer ends where it did", () => {
     const file = smallGameFile();
-    const original = readGolden(file);
-    writeFileSync(file, goldenText({ ...original, actions: original.actions.slice(0, 10) }));
+    const original = readGolden(file, cards);
+    writeFileSync(file, goldenText({ ...original, actions: original.actions.slice(0, 10) }, cards));
     const [line] = updateGoldens(path.dirname(file), cards);
     expect(line).toMatch(
       /played again from its recipe \(the game no longer ends where it did; actions differ from action 11: 10 before, \d+ now\)/,
     );
-    expect(readGolden(file).actions).toEqual(original.actions);
+    expect(readGolden(file, cards).actions).toEqual(original.actions);
   });
 
   it("keeps actions that still play out, but says when the recipe no longer gives them", () => {
     const file = smallGameFile();
-    const original = readGolden(file);
+    const original = readGolden(file, cards);
     // A recipe that plays differently now, as after an engine change that reorders the legal actions.
-    writeFileSync(file, goldenText({ ...original, agentSeed: original.agentSeed + 1 }));
+    writeFileSync(file, goldenText({ ...original, agentSeed: original.agentSeed + 1 }, cards));
     const [line] = updateGoldens(path.dirname(file), cards);
     expect(line).toMatch(/actions kept; the recipe now plays differently \(actions differ from action \d+/);
-    expect(readGolden(file).actions).toEqual(original.actions);
+    expect(readGolden(file, cards).actions).toEqual(original.actions);
   });
 });
 
@@ -142,5 +144,5 @@ function addSmallGame(dir: string): string {
 }
 
 function smallGame(): GoldenGame {
-  return readGolden(smallGameFile());
+  return readGolden(smallGameFile(), cards);
 }
