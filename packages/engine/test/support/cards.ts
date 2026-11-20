@@ -554,7 +554,7 @@ export const TEST_CARDS: CardDatabase = {
     def: {
       name: "Homing Bear",
       oracle:
-        "If this creature would be put into a graveyard from anywhere, shuffle it into its owner's library instead.",
+        "If this creature would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's library instead.",
       replacements: [{ kind: "graveyardToLibrary" }],
     },
   }),

@@ -12,7 +12,7 @@ import { playerView } from "../../src/view/player-view.ts";
 import { FOREST, HOMING_BEAR, MOUNTAIN, TEST_CARDS, UNMAKE, WRATH } from "../support/cards.ts";
 import { type Game, playerSetup, start, take } from "../support/game.ts";
 
-/** p1's shielded Homing Bear about to be destroyed by something p2 controls, with priority to follow (as combat does). */
+/** p1's shielded Homing Bear about to be destroyed by something p2 controls, with priority to follow. */
 function aboutToDestroy(): { state: GameState; bear: ObjectId } {
   const started = start({
     seed: 1,
@@ -77,7 +77,7 @@ describe("choosing between replacement effects (CR 616.1)", () => {
     expect(answered.events.map((e) => e.type)).not.toContain("LIBRARY_SHUFFLED");
   });
 
-  it("then the others still applicable to the changed event (CR 616.1f): sent to the library, it's still destroyed, so the shield regenerates it, and what was replaced never happens (CR 614.6)", () => {
+  it("then the others still applicable to the changed event (CR 616.1f): sent to the library, it's still destroyed, so the shield regenerates it, and what was replaced never happens (CR 614.6; CR 701.24c considered, D-087)", () => {
     const { answered, bear } = destroyChoosing("ownText");
     if (!answered.ok) throw new Error("rejected");
     const types = answered.events.map((e) => e.type);
@@ -86,6 +86,16 @@ describe("choosing between replacement effects (CR 616.1)", () => {
     expect(types).not.toContain("CARDS_REVEALED");
     expect(types).not.toContain("LIBRARY_SHUFFLED");
     expect(answered.state.pending).toMatchObject({ kind: "priority", player: "p2" });
+  });
+
+  it("offers nothing to choose when it can't be regenerated (CR 701.19c), or when it's sacrificed, not destroyed", () => {
+    const { state, bear } = aboutToDestroy();
+    const unregenerated = happenOrAsk(state, { kind: "destroy", object: bear, noRegeneration: true }, TEST_CARDS);
+    expect(unregenerated.state.pending).toBeNull();
+    expect(unregenerated.state.zones.players.p1?.library).toHaveLength(3);
+    const sacrificed = happenOrAsk(state, { kind: "sacrifice", object: bear }, TEST_CARDS);
+    expect(sacrificed.state.pending).toBeNull();
+    expect(sacrificed.state.zones.players.p1?.library).toHaveLength(3);
   });
 
   it("can't be asked by plain happen, whose callers do more after the event", () => {

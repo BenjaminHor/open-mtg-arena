@@ -5,7 +5,7 @@
 // Each event changes one object or player (or, for damage, is one damage event, CR 120.4); events that happen at the
 // same time are one `simultaneous` event. An event is performed whole: destroying a permanent is moving it to the
 // graveyard (CR 701.8a), not a destruction followed by a separate zone change, so a "would die" replacement and a
-// "would be destroyed" one apply to the same event, in the order its controller chooses (later: CR 616.1, 616.1f).
+// "would be destroyed" one apply to the same event, in the order its controller chooses (CR 616.1, 616.1f).
 
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -85,7 +85,7 @@ export type ProposedEvent =
   /**
    * Several events at the same time, as one: the state-based actions of one check (CR 704.3), a step's turn-based
    * action on several permanents (CR 502.3, 508.1f), the cleanup discard (CR 514.1). Every member is replaced against
-   * the state before any of them happens (several replacements on one, later: CR 616.1), then all are performed, and triggered abilities see
+   * the state before any of them happens (several replacements on one, chosen in turn, CR 616.1), then all are performed, and triggered abilities see
    * them together (later: CR 603.2).
    */
   | { kind: "simultaneous"; events: SingleEvent[] };

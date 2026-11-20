@@ -435,7 +435,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
          decision, and queues a `resumeEvent` work item holding the proposed event and the choices so far. On the answer,
          `replace` runs again from the top with the choices in order; nothing was performed, so the state is as it
-         was, and each choice applies once (CR 614.5, 616.1f). Several players choose in APNAP order (CR 616.1).
+         was, and the others are checked again after each (CR 616.1f; CR 614.5 later). Several players choose in APNAP order (CR 616.1).
          Candidates are named by stable references (`{ kind: "ownText", object, index }`, `{ kind:
          "regenerationShield", object }`). Identical candidates aren't asked about (D-086).
        - Only callers that do nothing after the event may pause: a resolving effect's damage and destroy
@@ -634,6 +634,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   needs them (noted in future-rules), and count M2-08 done without them. Options: (a) defer them (recommended;
   proceeding with this), (b) add minimal test-only replacement kinds to the engine to test them now, (c) drop them
   from the spec.
+- (Asked 2026-11-20, D-087) A regeneration shield and a "would be put into a graveyard ... shuffle into library"
+  replacement on one destroy, library one first: the shield still applies and the creature regenerates. Is the library
+  still shuffled? (a) No: regeneration replaces the whole modified event, CR 614.6 (recommended; proceeding with
+  this). (b) Yes: CR 701.24c shuffles even when the card stays where it is. No Magic 2010 card can reach this.
 - (Asked 2026-11-20) The owner asked whether card definitions' raw strings (`op: "dealDamage"`, `step: "end"`...)
   should become enums. Recommended: no TypeScript `enum` (D-018 runs TypeScript by type stripping, and
   `erasableSyntaxOnly` refuses `enum`); the strings are already checked literal unions. Offered instead: named

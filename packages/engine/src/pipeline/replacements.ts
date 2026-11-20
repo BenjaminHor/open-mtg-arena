@@ -50,6 +50,8 @@ export function applyReplacements(
     );
     const chosen =
       second === undefined ? first : candidates.find((c) => next !== undefined && sameReplacement(c.ref, next));
+    // Any of them may be chosen (CR 616.1e): no self-replacement or control, copy or face-up replacement exists yet,
+    // which must come first (later: CR 616.1a–d).
     if (chosen === undefined)
       return { kind: "choose", player: affectedPlayer(state, replaced.event), options: candidates.map((c) => c.ref) };
     applied.push(chosen.ref);
@@ -168,7 +170,9 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
 /**
  * The event with this replacement applied. One that swaps the event for another (regeneration for a destroy) replaces
  * the whole modified event, so what earlier replacements put around it goes too (CR 614.6: a replaced event never
- * happens).
+ * happens). Considered and not followed: CR 701.24c shuffles a library even when the card to be shuffled in stays
+ * where it is, but that's for an instruction carried out, not an event replaced (D-087; an open question for the
+ * owner, unreachable with the pool).
  */
 function replaceWith(state: GameState, candidate: Candidate, replaced: Replacing): Replacing {
   switch (candidate.kind) {
