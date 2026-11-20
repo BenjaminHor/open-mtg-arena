@@ -66,9 +66,23 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       keywords.)
       Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
       mana, gainLife 0, destroy and tap on an object gone mid-resolution.
-  - Next: M2-05b Cards moving (plan from the cards' Oracle text and rulings, rules-judge reads it before code), then
-    M2-05c Life, damage to many, mana. Consider the golden-game size and fuzz-time known issues before or with M2-05b:
-    each new task adds games.
+  - M2-05b Cards moving (plan draft, 2026-11-20; advisor and rules-judge to read before code). Cards: Divination, Mind
+    Spring, Sign in Blood, Merfolk Looter, Mind Rot, Mind Shatter, Duress, Burning Inquiry, Tome Scour, Traumatize,
+    Ponder, Fabricate, Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Disentomb, Nature's Spiral, Haunting
+    Echoes, Elvish Piper (Oracle text and rulings in the pool data once extracted).
+    - The new mechanism: choices made while a spell or ability resolves (CR 608.2d): which cards to discard (the
+      discarding player chooses, CR 701.9b? check), which card to take from a revealed hand (Duress) or a searched
+      library (CR 701.23, finding nothing is allowed: Rampant Growth's ruling), the order of cards put back (Ponder),
+      "may" (Elvish Piper, Ponder's shuffle). Draft shape: an effect that needs a choice waits for a decision kind
+      (choose cards from a list, min to max; order cards; yes or no) and is run again with the answer, the answers kept
+      in its work item, so every pause is data (D-032) and nothing calls back.
+    - Hidden information: searching a library or looking at its top shows those cards to that player only (CR 401.2,
+      701.23); revealing shows a hand to everyone (CR 701.20). The decision lists the objects, and `playerView` and
+      `eventsFor` must let the chooser (and, for a reveal, everyone) see exactly those and no more (D-044, D-054).
+    - Other effects: draw N (a sequence of single draws, CR 121.2; a container for CR 121.2a replacements later),
+      discard at random (the seeded RNG), mill (CR 701.17), shuffle, put onto the battlefield (tapped), return from a
+      graveyard to hand, lose life, "each player", amounts of X and of "half, rounded down".
+    - Known issues to weigh first: golden games grow about 2 MB per task and the fuzz takes about 10 minutes.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
