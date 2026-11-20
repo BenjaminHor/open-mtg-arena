@@ -110,6 +110,7 @@ function answerStep(
     case "chooseSacrifice":
       return choose(refOf(state, answer.object, cards) ?? nameOf(state, answer.object, cards));
     case "divide":
+    case "redirectShare":
       return choose(answer.amount);
     case "payMana":
       return choose(nonZero(answer.payment));

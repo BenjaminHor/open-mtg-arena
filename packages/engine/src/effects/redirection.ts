@@ -11,13 +11,14 @@ import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { askToChoose } from "./choose-cards.ts";
-import { cardOf } from "./prevention.ts";
+import { effectCardOf } from "./effect-card.ts";
 import { subject } from "./subjects.ts";
 
 /**
- * With no source chosen yet, asks for one: a permanent, or a spell on the stack (CR 609.7a). Objects only referred to by
- * something on the stack, or in the command zone, can be chosen too (later: CR 609.7a); no pool card needs them.
- * With the source chosen, makes the effect. Its target is read now: the effect deals the damage to it later even if it
+ * With no source chosen yet, asks for one (CR 609.7a): a permanent, a spell on the stack, or the source of an ability on
+ * the stack, even one that has left (a pinger bounced in response: its ability deals the damage as it last existed,
+ * CR 113.7a). Objects referred to otherwise (by a waiting effect or delayed trigger) or in the command zone aren't
+ * offered yet (later: CR 609.7a). With the source chosen, makes the effect. Its target is read now: the effect deals the damage to it later even if it
  * stops being a legal target (its ruling), as long as it can be dealt damage then (CR 614.9).
  */
 export function redirectNextDamage(
@@ -30,8 +31,7 @@ export function redirectNextDamage(
   const [to] = subject(state, effect.to, context, cards);
   if (to === undefined) return { state, events: [] };
   if (chosen === null) {
-    const spells = state.zones.stack.filter((id) => state.objects[id]?.kind === "card");
-    const options = [...state.zones.battlefield, ...spells];
+    const options = damageSources(state);
     const asked = askToChoose(state, {
       chooser: context.controller,
       purpose: "damageSource",
@@ -49,7 +49,7 @@ export function redirectNextDamage(
   const redirect = {
     kind: "redirectDamage",
     id: made.id,
-    sourceOracleId: cardOf(made.state, context),
+    sourceOracleId: effectCardOf(made.state, context),
     controller: context.controller,
     from,
     remaining: effect.amount,
@@ -58,7 +58,20 @@ export function redirectNextDamage(
   return { state: { ...made.state, replacements: [...made.state.replacements, redirect] }, events: [] };
 }
 
-/** Damage redirected uses up that much of the effect (like CR 615.7's shields); one used up is gone. */
+/** What may be chosen as a source of damage now (CR 609.7a), each once. */
+function damageSources(state: GameState): ObjectId[] {
+  const onStack = state.zones.stack.flatMap((id): ObjectId[] => {
+    const obj = state.objects[id];
+    if (obj === undefined) return [];
+    // An ability isn't a source; its source is (CR 113.7a), as it is or as it last existed.
+    if (obj.kind === "ability") return (state.objects[obj.source] ?? state.lastKnown[obj.source]) ? [obj.source] : [];
+    return [id];
+  });
+  const all = [...state.zones.battlefield, ...onStack];
+  return all.filter((id, i) => all.indexOf(id) === i);
+}
+
+/** Damage redirected uses up that much of the effect (like a prevention shield; later: CR 615.7); one used up is gone. */
 export function useRedirection(state: GameState, event: Extract<SingleEvent, { kind: "damageRedirected" }>): Progress {
   const replacements = state.replacements.flatMap((r) => {
     if (r.kind !== "redirectDamage" || r.id !== event.effect) return [r];
@@ -70,10 +83,10 @@ export function useRedirection(state: GameState, event: Extract<SingleEvent, { k
 }
 
 /**
- * A permanent spell chosen as a source, resolving: the effect applies to the permanent it becomes (CR 609.7a), a new
- * object (CR 400.7), so it follows it there.
+ * A permanent spell chosen as a source, resolving: the effect applies to the permanent it becomes (CR 609.7a, 400.7c),
+ * a new object (CR 400.7), so it follows it there. A state change outside the pipeline, listed in its README.
  */
-export function followOntoBattlefield(state: GameState, spell: ObjectId, permanent: ObjectId): GameState {
+export function effectsFollowSpellToPermanent(state: GameState, spell: ObjectId, permanent: ObjectId): GameState {
   if (!state.replacements.some((r) => r.kind === "redirectDamage" && r.from === spell)) return state;
   const replacements = state.replacements.map((r) =>
     r.kind === "redirectDamage" && r.from === spell ? { ...r, from: permanent } : r,

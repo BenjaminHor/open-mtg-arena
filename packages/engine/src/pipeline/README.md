@@ -20,9 +20,10 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Damage is prevented per entry
    (a source dealing damage to a recipient) inside its one event (`damage-replacements.ts`, D-088): Fog and Safe
    Passage from `GameState.replacements`, Guardian Seraph from the battlefield; a `damagePrevented` event tells it.
-   Redirection (Harm's Way, `redirection.ts`, D-090): what each effect takes from which entry is settled first, the
-   redirected part becomes an entry of its own, replaced again, and a `damageRedirected` event uses the amount up. Destroy, sacrifice, counter and discard carry where a replacement sends
-   the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library instead was discarded.
+   Redirection (Harm's Way, `redirection.ts`, D-090): what each effect takes from the event's own entries is settled
+   first; a redirected part becomes an entry of its own, replaced again; a `damageRedirected` event uses the amount up.
+   Destroy, sacrifice, counter and discard carry where a replacement sends the card (`Rerouted`), and are still what
+   they were: a discarded card shuffled into a library instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is
    its move to the graveyard (CR 701.8a), not a second event.
@@ -50,7 +51,10 @@ anything can replace or trigger on:
 - casting and activating: putting a spell's choices on it, spending mana from the pool (CR 601.2h), putting an ability
   on the stack and removing it (CR 602.2a, 608.2n), and putting a cancelled cast back (CR 734.1, D-035), which
   undoes events rather than causing them;
-- declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2);
+- declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2), prevention and
+  redirection effects (CR 615.1, 614.9) and regeneration shields;
+- a redirection effect whose source was a permanent spell following it onto the battlefield as it resolves
+  (`effectsFollowSpellToPermanent`, CR 609.7a, 400.7c);
 - triggered abilities waiting and going on the stack (`GameState.pendingTriggers`, CR 603.3), and the last known
   information kept as a card leaves the battlefield (`GameState.lastKnown`, CR 608.2h);
 - the resolving object's "this way" record (`GameState.resolution`, CR 608.2c, D-064): set as it starts to resolve,

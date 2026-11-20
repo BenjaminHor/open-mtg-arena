@@ -1,5 +1,5 @@
 name: When the source would deal more than 2 to Harm's Way's controller's creatures at once, they choose which 2, 1 to each if they like
-rules: [CR 614.9, CR 615.7, CR 510.1c]
+rules: [CR 614.9, CR 510.1c]
 setup:
   turn: { active: p2, step: main1 }
   p1:

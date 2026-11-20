@@ -130,6 +130,7 @@ function answerLine(answer: Answer): string {
     case "chooseTargetCount":
       return `${answer.kind} ${answer.count}`;
     case "divide":
+    case "redirectShare":
     case "assignDamage":
       return `${answer.kind} ${answer.amount}`;
     case "payMana":
@@ -238,6 +239,7 @@ const ANSWERS: { [K in Answer["kind"]]: Decode<K> } = {
   announceX: ([a]) => ({ kind: "announceX", value: Number(a) }),
   chooseTargetCount: ([a]) => ({ kind: "chooseTargetCount", count: Number(a) }),
   divide: ([a]) => ({ kind: "divide", amount: Number(a) }),
+  redirectShare: ([a]) => ({ kind: "redirectShare", amount: Number(a) }),
   assignDamage: ([a]) => ({ kind: "assignDamage", amount: Number(a) }),
   payMana: (args) => ({ kind: "payMana", payment: manaFrom(args) }),
   declareAttacker: ([a, b]) => ({

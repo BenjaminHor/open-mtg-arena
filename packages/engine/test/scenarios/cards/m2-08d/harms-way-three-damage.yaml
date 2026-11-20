@@ -1,5 +1,5 @@
 name: Harm's Way redirects only 2 of a 3-damage source's damage; the rest is dealt to its controller
-rules: [CR 614.9, CR 615.7]
+rules: [CR 614.9]
 setup:
   turn: { active: p2, step: main1 }
   p1:

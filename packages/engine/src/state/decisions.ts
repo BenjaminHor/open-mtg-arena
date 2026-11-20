@@ -139,7 +139,7 @@ export type DecisionKind =
     }
   /**
    * A redirection effect's controller chooses which of a source's damage it redirects, when that source would deal more
-   * to them and their creatures in one event than it has left (Harm's Way's ruling, like CR 615.7): how much of each
+   * to them and their creatures in one event than it has left (Harm's Way's ruling; prevention shields, later: CR 615.7): how much of each
    * damage entry in `entries`, one entry per answer, each at most `maxima` there; `shares` are the answers so far, and
    * the last entry gets the rest. As with `chooseReplacement`, nothing has happened yet: the event is replaced again.
    */

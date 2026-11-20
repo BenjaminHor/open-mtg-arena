@@ -1,0 +1,27 @@
+name: Redirected damage joining damage Safe Passage already prevented is prevented too; "prevent all" has no amount to use up
+rules: [CR 615.1a, CR 616.1f, CR 614.9]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Plains]
+    hand: [Harm's Way]
+  p2:
+    battlefield: [Mountain, Plains, Plains, Plains, Plains]
+    hand: [Earthquake, Safe Passage]
+steps:
+  - p2 cast: Earthquake
+    x: 1
+    pay: auto
+  - p2 cast: Safe Passage
+    pay: auto
+  - p2 pass: once
+  - p1 cast: Harm's Way
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - p1 choose: Earthquake
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 20
+      p2.life: 20

@@ -3,7 +3,7 @@
 
 import type { GameState } from "./game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "./ids.ts";
-import type { Target } from "./objects.ts";
+import { sameTarget, type Target } from "./objects.ts";
 
 export type ReplacementEffect =
   /**
@@ -27,7 +27,7 @@ export type ReplacementEffect =
     }
   /**
    * "The next N damage that [from] would deal to you and/or permanents you control this turn is dealt to [to] instead"
-   * (Harm's Way; CR 614.9): `remaining` is how much it still redirects, like a shield (CR 615.7); it's used up as damage
+   * (Harm's Way; CR 614.9): `remaining` is how much it still redirects (like a shield; later: CR 615.7); it's used up as damage
    * is redirected, and isn't when none is (CR 609.7b). `from` is the chosen source, followed from the stack onto the
    * battlefield if it's a permanent spell (CR 609.7a).
    */
@@ -72,22 +72,22 @@ export type RedirectShare = { entry: DamageEntryKey; amount: number };
  */
 export type ChoiceFor = { kind: "object"; object: ObjectId } | DamageEntryKey;
 
-/** One entry of a damage event, by its place in the event as proposed, its source and its recipient. */
-export type DamageEntryKey = { kind: "damage"; index: number; source: ObjectId; to: Target };
+/**
+ * One entry of a damage event, by its place in the event as proposed, its source and its recipient, and `hop`: 0 for
+ * the entry as proposed, 1 for a part redirected from it, 2 for a part redirected back, and so on, so a part sent away
+ * and back to the same recipient isn't the same entry (D-090).
+ */
+export type DamageEntryKey = { kind: "damage"; index: number; hop: number; source: ObjectId; to: Target };
 
 export function sameChoiceFor(a: ChoiceFor, b: ChoiceFor): boolean {
   switch (a.kind) {
     case "object":
       return b.kind === "object" && a.object === b.object;
     case "damage":
-      return b.kind === "damage" && a.index === b.index && a.source === b.source && sameTarget(a.to, b.to);
+      return (
+        b.kind === "damage" && a.index === b.index && a.hop === b.hop && a.source === b.source && sameTarget(a.to, b.to)
+      );
   }
-}
-
-function sameTarget(a: Target, b: Target): boolean {
-  return a.kind === "player"
-    ? b.kind === "player" && a.player === b.player
-    : b.kind === "object" && a.object === b.object;
 }
 
 export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {

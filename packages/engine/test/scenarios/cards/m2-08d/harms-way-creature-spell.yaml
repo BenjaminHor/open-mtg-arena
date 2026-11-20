@@ -1,5 +1,5 @@
 name: A creature spell chosen as Harm's Way's source is followed onto the battlefield, where its damage is redirected
-rules: [CR 609.7a, CR 400.7]
+rules: [CR 609.7a, CR 400.7, CR 400.7c]
 setup:
   turn: { active: p2, step: main1 }
   p1:

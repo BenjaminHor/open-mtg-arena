@@ -34,6 +34,7 @@ describe("action lines", () => {
       announceX: { kind: "announceX", value: 3 },
       chooseTargetCount: { kind: "chooseTargetCount", count: 2 },
       divide: { kind: "divide", amount: 2 },
+      redirectShare: { kind: "redirectShare", amount: 1 },
       chooseSacrifice: { kind: "chooseSacrifice", object: "o15" },
       payMana: { kind: "payMana", payment: { W: 0, U: 0, B: 1, R: 2, G: 0, C: 1 } },
       cancelCast: { kind: "cancelCast" },

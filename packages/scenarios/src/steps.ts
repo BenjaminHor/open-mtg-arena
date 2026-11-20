@@ -264,7 +264,7 @@ function answerFor(
       return { kind: "divide", amount: Number(value) };
     case "divideRedirect":
       // How much of the next entry's damage the redirection takes, in the decision's order of entries.
-      return { kind: "divide", amount: Number(value) };
+      return { kind: "redirectShare", amount: Number(value) };
     case "payMana": {
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "payMana", payment: paymentFrom(value) };

@@ -40,6 +40,8 @@ export type Answer =
   | { kind: "chooseTargetCount"; count: number }
   /** The next target's share of a divided effect (CR 601.2d). */
   | { kind: "divide"; amount: number }
+  /** How much of the next damage entry a redirection effect takes (`divideRedirect`, Harm's Way's ruling). */
+  | { kind: "redirectShare"; amount: number }
   /** The permanent to sacrifice for the cost (CR 701.21a). */
   | { kind: "chooseSacrifice"; object: ObjectId }
   /** How much of each type of mana to spend (CR 601.2h). */

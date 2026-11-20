@@ -1,0 +1,35 @@
+name: With Fog applied first, Harm's Way redirects nothing and isn't used up; it redirects the source's next damage that turn
+rules: [CR 609.7b, CR 616.1, CR 614.9]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, Plains, Forest]
+    hand: [Harm's Way, Fog]
+  p2:
+    battlefield: [Goblin Artillery]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Goblin Artillery: Grizzly Bears }
+  - p1 cast: Harm's Way
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - p1 choose: Goblin Artillery
+  - p1 cast: Fog
+    pay: auto
+  - all pass: once
+  - all pass: once
+  # The Artillery's 1 to the Bears: Fog first prevents it, so Harm's Way has nothing to redirect.
+  - p1 choose: Fog
+  - expect:
+      events lacks: [{ type: DAMAGE_REDIRECTED }]
+  - all pass: until main2
+  - p1 pass: once
+  - p2 activate: Goblin Artillery
+    targets: [p1]
+  - all pass: once
+  - expect:
+      p1.life: 20
+      p2.life: 15

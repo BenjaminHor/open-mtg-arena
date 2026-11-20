@@ -90,12 +90,13 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return `X = ${answer.value}`;
     case "chooseSacrifice":
       return `sacrifice ${objectText(state, answer.object, cards)}`;
+    case "redirectShare": {
+      const pending = state.pending;
+      const entry = pending?.kind === "divideRedirect" ? pending.entries[pending.shares.length] : undefined;
+      return `redirect ${answer.amount} of ${entry === undefined ? "the next damage" : choiceForText(state, entry, cards)}`;
+    }
     case "divide": {
       const pending = state.pending;
-      if (pending?.kind === "divideRedirect") {
-        const entry = pending.entries[pending.shares.length];
-        return `redirect ${answer.amount} of ${entry === undefined ? "the next damage" : choiceForText(state, entry, cards)}`;
-      }
       const target = pending?.kind === "divide" ? pending.targets[pending.shares.length] : undefined;
       return `give ${answer.amount} to ${target === undefined ? "the next target" : targetText(state, target, cards)}`;
     }
@@ -197,6 +198,6 @@ function choiceForText(state: GameState, choiceFor: ChoiceFor, cards: CardDataba
     case "object":
       return nameOf(state, choiceFor.object, cards);
     case "damage":
-      return `${nameOf(state, choiceFor.source, cards)}'s damage to ${targetText(state, choiceFor.to, cards)}`;
+      return `the damage ${nameOf(state, choiceFor.source, cards)} would deal to ${targetText(state, choiceFor.to, cards)}`;
   }
 }

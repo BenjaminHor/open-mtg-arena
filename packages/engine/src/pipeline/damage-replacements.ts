@@ -5,29 +5,28 @@
 // as a `damagePrevented` event. Redirected damage is the same damage dealt to another recipient (CR 614.9): its part
 // of the entry becomes an entry of its own, combat damage if it was, replaced in turn for prevention (CR 616.1f).
 //
-// Candidates: prevention effects made by resolving spells (`GameState.replacements`: Fog, Safe Passage), those in the
+// Candidates (`damage-candidates.ts`): prevention effects made by resolving spells (`GameState.replacements`: Fog, Safe Passage), those in the
 // text of permanents on the battlefield (Guardian Seraph), and redirection effects (Harm's Way), whose share of each
 // entry is settled first (`redirection.ts`). Identical ones (two Guardian Seraphs) are one option: no order among them
 // can differ (like D-077). Choosing it applies one of them, and the rest are checked again (CR 616.1f), so every order
 // the rules allow can still be chosen.
 
-import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
-import { replacementsOf } from "../rules/abilities.ts";
-import { controllerNowOrLastKnown, controllerOf } from "../rules/controller.ts";
+import type { CardDatabase } from "../cards/types.ts";
+import { controllerOf } from "../rules/controller.ts";
 import { canBeDealtDamage } from "../rules/damage-recipients.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
-import type { Target } from "../state/objects.ts";
+import type { PlayerId } from "../state/ids.ts";
+import { sameTarget, type Target } from "../state/objects.ts";
 import {
   type DamageEntryKey,
   type ReplacementChoice,
-  type ReplacementEffect,
   type ReplacementRef,
   sameChoiceFor,
   sameReplacement,
 } from "../state/replacements.ts";
+import { candidatesFor, refKey, type Spent } from "./damage-candidates.ts";
 import type { Damage, SingleEvent } from "./proposed.ts";
-import { type Entry, isYouOrYourCreature, redirectShares } from "./redirection.ts";
+import { type Entry, redirectShares, type Share } from "./redirection.ts";
 import { type Ask, firstInApnapOrder, type Replaced } from "./replacements.ts";
 
 /** The damage event with prevention and redirection applied to each entry, or the first choice needed (CR 616.1). */
@@ -41,7 +40,7 @@ export function replaceDamage(
   // that left) isn't dealt (CR 101.3): neither is there to prevent, so no effect is used up on it (CR 609.7b).
   const entries = damage.flatMap((entry, index): Entry[] =>
     entry.amount > 0 && canBeDealtDamage(state, entry.to, cards)
-      ? [{ entry, key: { kind: "damage", index, source: entry.source, to: entry.to } }]
+      ? [{ entry, key: { kind: "damage", index, hop: 0, source: entry.source, to: entry.to } }]
       : [],
   );
   // How much each redirection effect takes from which entry, settled first so the entries stay independent (D-090).
@@ -51,42 +50,50 @@ export function replaceDamage(
   const events: SingleEvent[] = [];
   const dealt: Damage[] = [];
   const asks: Ask[] = [];
+  // What amount-limited effects used on earlier entries: threaded through, in the event's order. An entry that asks
+  // leaves it as it was; a choice that an earlier entry's answer makes impossible is skipped when the event is replaced
+  // again from the start, and the entry asks again.
+  let spent: Spent = { limited: [], redirected: [] };
   for (const { entry, key } of entries) {
-    const redirect = shares.taken.flatMap((s) =>
-      sameChoiceFor(s.share.entry, key) ? [{ effect: s.effect, amount: s.share.amount }] : [],
-    );
-    const result = replaceEntry(state, entry, key, cards, choices, redirect, []);
+    const result = replaceEntry(state, entry, key, cards, choices, { shares: shares.taken, alreadyApplied: [] }, spent);
     if (result.kind === "choose") asks.push(result);
     else {
       events.push(...result.events);
       dealt.push(...result.dealt);
+      spent = result.spent;
     }
   }
   const ask = firstInApnapOrder(state, asks);
   if (ask !== null) return ask;
-  return { kind: "replaced", events: [...events, { kind: "dealDamage", damage: dealt }] };
+  return { kind: "replaced", events: [...events, { kind: "dealDamage", damage: merged(dealt) }] };
 }
 
-/** A redirection effect's share of one entry. */
-type RedirectShareOf = { effect: ObjectId; amount: number };
-
-/** A prevention or redirection effect that would apply to a damage entry. */
-type Candidate = {
-  ref: ReplacementRef;
-  /** Effects with the same identity can't differ in order: the same text, with the same "you" where it matters. */
-  identity: string;
-  /** The card whose effect it is, to say what prevented or redirected the damage. */
-  by: OracleId;
-} & ({ kind: "prevent"; prevents: number | "all" } | { kind: "redirect"; effect: ObjectId; share: number; to: Target });
+/**
+ * One source's damage to one recipient in one event is dealt as one (a redirected part joining damage the source was
+ * already dealing there): prevention counts it as one (CR 615.10), and "deals damage" triggers see it once (CR 603.2c).
+ */
+function merged(dealt: readonly Damage[]): Damage[] {
+  const out: Damage[] = [];
+  for (const d of dealt) {
+    const i = out.findIndex((o) => o.source === d.source && o.combat === d.combat && sameTarget(o.to, d.to));
+    const same = out[i];
+    if (same === undefined) out.push(d);
+    else out[i] = { ...same, amount: same.amount + d.amount };
+  }
+  return out;
+}
 
 type EntryResult =
-  | { kind: "done"; dealt: Damage[]; events: SingleEvent[] }
+  | { kind: "done"; dealt: Damage[]; events: SingleEvent[]; spent: Spent }
   | { kind: "choose"; player: PlayerId; for: DamageEntryKey; options: ReplacementRef[] };
 
+/** The redirection shares settled for the event, and the effects already applied to the damage an entry came from. */
+type EntryContext = { shares: readonly Share[]; alreadyApplied: readonly ReplacementRef[] };
+
 /**
- * One entry's replacement: the effects that apply, one at a time, each once in the event (none could apply again to its own result yet; later: CR 614.5), the rest checked
- * again after each (CR 616.1f), until none applies or nothing is left. `applied` are those already applied to the
- * damage this entry came from, when it was redirected.
+ * One entry's replacement: the effects that apply, one at a time, each once in the event (CR 614.5), the rest checked
+ * again after each (CR 616.1f), until none applies or nothing is left. A redirected part is replaced in turn, without
+ * the effects already applied to the damage it came from.
  */
 function replaceEntry(
   state: GameState,
@@ -94,16 +101,17 @@ function replaceEntry(
   key: DamageEntryKey,
   cards: CardDatabase,
   allChoices: readonly ReplacementChoice[],
-  redirect: readonly RedirectShareOf[],
-  alreadyApplied: readonly ReplacementRef[],
+  context: EntryContext,
+  spentBefore: Spent,
 ): EntryResult {
   const choices = allChoices.flatMap((c) => (c.kind === "first" && sameChoiceFor(c.for, key) ? [c.ref] : []));
   let amount = entry.amount;
-  const applied = [...alreadyApplied];
+  let spent = spentBefore;
+  const applied = [...context.alreadyApplied];
   const events: SingleEvent[] = [];
   const dealt: Damage[] = [];
   while (amount > 0) {
-    const candidates = candidatesFor(state, entry, cards, redirect).filter(
+    const candidates = candidatesFor(state, entry, key, cards, context.shares, spent).filter(
       (c) => !applied.some((done) => sameReplacement(done, c.ref)),
     );
     // One option for each identity: its first candidate stands for the others.
@@ -129,140 +137,53 @@ function replaceEntry(
       case "prevent": {
         const stopped = chosen.prevents === "all" ? amount : Math.min(amount, chosen.prevents);
         amount -= stopped;
+        if (chosen.limited) {
+          const used = { effect: refKey(chosen.ref), source: entry.source, to: entry.to, amount: stopped };
+          spent = { ...spent, limited: [...spent.limited, used] };
+        }
         events.push({ kind: "damagePrevented", source: entry.source, to: entry.to, amount: stopped, by: chosen.by });
         break;
       }
       case "redirect": {
         const moved = Math.min(amount, chosen.share);
         amount -= moved;
-        const { source } = entry;
+        // A part already redirected uses what the effect has left beyond its shares of the event's own entries.
+        if (key.hop > 0)
+          spent = { ...spent, redirected: [...spent.redirected, { effect: chosen.effect, amount: moved }] };
+        const { source, to: from } = entry;
         events.push({
           kind: "damageRedirected",
           effect: chosen.effect,
           source,
-          from: entry.to,
+          from,
           to: chosen.to,
           amount: moved,
           by: chosen.by,
         });
-        // The same damage, to another recipient (CR 614.9): replaced in turn, without what's already applied.
-        const redirected: Damage = { ...entry, to: chosen.to, amount: moved };
-        const redirectedKey: DamageEntryKey = { ...key, to: chosen.to };
-        const result = replaceEntry(state, redirected, redirectedKey, cards, allChoices, [], applied);
+        // The same damage, dealt to another recipient (CR 614.9): combat damage if it was, replaced in turn.
+        const part: Damage = { ...entry, to: chosen.to, amount: moved };
+        const partKey: DamageEntryKey = { ...key, hop: key.hop + 1, to: chosen.to };
+        const result = replaceEntry(
+          state,
+          part,
+          partKey,
+          cards,
+          allChoices,
+          { ...context, alreadyApplied: applied },
+          spent,
+        );
         if (result.kind === "choose") return result;
         events.push(...result.events);
         dealt.push(...result.dealt);
+        spent = result.spent;
         break;
       }
     }
   }
-  return { kind: "done", dealt: amount > 0 ? [{ ...entry, amount }, ...dealt] : dealt, events };
+  return { kind: "done", dealt: amount > 0 ? [{ ...entry, amount }, ...dealt] : dealt, events, spent };
 }
 
 /** Who chooses for damage to this recipient: the player, or the object's controller (CR 616.1). */
 function recipientChooser(state: GameState, to: Target): PlayerId {
   return to.kind === "player" ? to.player : controllerOf(state, to.object);
-}
-
-/** The prevention and redirection effects that would apply to this entry now. */
-function candidatesFor(
-  state: GameState,
-  entry: Damage,
-  cards: CardDatabase,
-  redirect: readonly RedirectShareOf[],
-): Candidate[] {
-  const fromSpells = state.replacements.flatMap((effect) =>
-    resolvedEffectCandidates(state, effect, entry, cards, redirect),
-  );
-  const fromPermanents = state.zones.battlefield.flatMap((permanent) =>
-    replacementsOf(state, permanent, cards).flatMap((def, index): Candidate[] => {
-      const prevents = preventsForPermanent(state, def, permanent, entry);
-      const obj = state.objects[permanent];
-      if (prevents === null || obj?.kind !== "card") return [];
-      return [
-        {
-          kind: "prevent",
-          ref: { kind: "ownText", object: permanent, index },
-          identity: JSON.stringify({ def, you: controllerOf(state, permanent) }),
-          prevents,
-          by: obj.oracleId,
-        },
-      ];
-    }),
-  );
-  return [...fromSpells, ...fromPermanents];
-}
-
-/** A prevention or redirection effect made by a resolving spell, if it applies to this entry. */
-function resolvedEffectCandidates(
-  state: GameState,
-  effect: ReplacementEffect,
-  entry: Damage,
-  cards: CardDatabase,
-  redirect: readonly RedirectShareOf[],
-): Candidate[] {
-  switch (effect.kind) {
-    case "preventAllDamage": {
-      if (effect.combatOnly && !entry.combat) return [];
-      if (
-        effect.protects === "controllerAndCreatures" &&
-        !isYouOrYourCreature(state, entry.to, effect.controller, cards)
-      )
-        return [];
-      const { combatOnly, protects, controller } = effect;
-      // Whose effect it is matters only when it protects its controller's things: two players' Fogs are the same.
-      const you = protects === "everyone" ? null : controller;
-      return [
-        {
-          kind: "prevent",
-          ref: { kind: "resolvedEffect", id: effect.id },
-          identity: JSON.stringify({ kind: "preventAllDamage", combatOnly, protects, you }),
-          prevents: "all",
-          by: effect.sourceOracleId,
-        },
-      ];
-    }
-    case "redirectDamage": {
-      const share = redirect.find((r) => r.effect === effect.id)?.amount ?? 0;
-      if (share <= 0) return [];
-      const { from, to, controller } = effect;
-      return [
-        {
-          kind: "redirect",
-          ref: { kind: "resolvedEffect", id: effect.id },
-          identity: JSON.stringify({ kind: "redirectDamage", from, to, controller, share }),
-          effect: effect.id,
-          share,
-          to,
-          by: effect.sourceOracleId,
-        },
-      ];
-    }
-    case "regenerationShield":
-      return [];
-  }
-}
-
-/** How much of this damage entry a permanent's own text prevents, or null if it doesn't apply. */
-function preventsForPermanent(
-  state: GameState,
-  def: ReplacementDef,
-  permanent: ObjectId,
-  entry: Damage,
-): number | null {
-  switch (def.kind) {
-    case "preventDamageToYou": {
-      // "If a source an opponent controls would deal damage to you": to its controller, from an opponent's source.
-      const you = controllerOf(state, permanent);
-      if (entry.to.kind !== "player" || entry.to.player !== you) return null;
-      // A source that left is as it last existed (CR 113.7a, 608.2h); one without a controller counts by its owner
-      // (its ruling), which `controllerOf` gives for a card outside the battlefield and the stack.
-      const sourceController = controllerNowOrLastKnown(state, entry.source);
-      // An opponent (CR 102.2); teams would change this (later: CR 102.3).
-      return sourceController !== null && sourceController !== you ? def.amount : null;
-    }
-    case "entersTapped":
-    case "graveyardToLibrary":
-      return null;
-  }
 }

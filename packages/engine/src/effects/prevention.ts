@@ -7,7 +7,7 @@ import { newObjectId } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { OracleId } from "../state/ids.ts";
+import { effectCardOf } from "./effect-card.ts";
 
 export function preventAllDamage(
   state: GameState,
@@ -19,23 +19,10 @@ export function preventAllDamage(
   const effectMade = {
     kind: "preventAllDamage",
     id: made.id,
-    sourceOracleId: cardOf(made.state, context),
+    sourceOracleId: effectCardOf(made.state, context),
     controller: context.controller,
     combatOnly: effect.combatOnly,
     protects: effect.protects === "everyone" ? "everyone" : "controllerAndCreatures",
   } as const;
   return { state: { ...made.state, replacements: [...made.state.replacements, effectMade] }, events: [] };
-}
-
-/** The card whose spell or ability made the effect, which names it: the spell, or the ability's source as it last was. */
-export function cardOf(state: GameState, context: EffectContext): OracleId {
-  const self = state.objects[context.self] ?? state.lastKnown[context.self];
-  switch (self?.kind) {
-    case "card":
-      return self.oracleId;
-    case "ability":
-      return self.sourceOracleId;
-    case undefined:
-      throw new Error(`no card made the prevention effect from ${context.self}`);
-  }
 }

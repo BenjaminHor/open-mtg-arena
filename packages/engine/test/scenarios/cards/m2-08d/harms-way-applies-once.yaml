@@ -1,0 +1,33 @@
+name: One Harm's Way applies once to an event, even when another sends the damage back to its controller
+rules: [CR 614.5, CR 616.1f]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Craw Wurm, Plains, Plains]
+    hand: [Harm's Way, Harm's Way]
+  p2:
+    battlefield: [Raging Goblin]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Raging Goblin]
+  - all pass: until combat.declareBlockers
+  - p1 block: {}
+  - p2 pass: once
+  # The first: the Goblin's damage to p1 goes to the Craw Wurm.
+  - p1 cast: Harm's Way
+    targets: [p1:Craw Wurm]
+    pay: auto
+  - all pass: once
+  - p1 choose: Raging Goblin
+  # The second: its damage to p1's permanents goes to p1.
+  - p2 pass: once
+  - p1 cast: Harm's Way
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - p1 choose: Raging Goblin
+  - all pass: once
+  # p1 -> Craw Wurm -> p1, and the first doesn't apply again, so p1 is dealt the 1.
+  - expect:
+      p1.life: 19
+      p1:Craw Wurm.damage: 0

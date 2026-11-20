@@ -44,7 +44,7 @@ export type SingleEvent =
    */
   | { kind: "damagePrevented"; source: ObjectId; to: Target; amount: number; by: OracleId }
   /**
-   * Damage redirected (CR 614.9) by the effect `effect`, which uses up that much of it (like a shield, CR 615.7); the damage
+   * Damage redirected (CR 614.9) by the effect `effect`, which uses up that much of it (its ruling; shields, later: CR 615.7); the damage
    * event itself holds the redirected damage. An event of its own so the amount is used where events are performed.
    */
   | {

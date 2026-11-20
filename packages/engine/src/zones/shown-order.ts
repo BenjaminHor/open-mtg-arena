@@ -21,7 +21,8 @@ export function inShownOrder(state: GameState, ids: readonly ObjectId[]): Object
 
 /** What a card is. Only cards are ever shown this way, so anything else is an engine bug. */
 export function oracleIdOf(state: GameState, id: ObjectId): OracleId {
-  const obj = state.objects[id];
+  // A card that left is named as it last existed (a source chosen after it was bounced, CR 609.7a).
+  const obj = state.objects[id] ?? state.lastKnown[id];
   if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
   return obj.oracleId;
 }

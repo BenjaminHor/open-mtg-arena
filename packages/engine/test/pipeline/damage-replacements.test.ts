@@ -60,12 +60,12 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
     expect(asked).toMatchObject({
       kind: "choose",
       player: "p1",
-      for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } },
+      for: { kind: "damage", index: 1, hop: 0, source: bears, to: { kind: "player", player: "p1" } },
     });
     // Once chosen, nothing is prevented for the gone recipient: the Fog-like effect isn't used on it.
     const choice = {
       kind: "first",
-      for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } },
+      for: { kind: "damage", index: 1, hop: 0, source: bears, to: { kind: "player", player: "p1" } },
     } as const;
     const replaced = replaceDamage(state, [gone, toP1(bears, 2)], TEST_CARDS, [
       { ...choice, ref: { kind: "resolvedEffect", id: "o902" } },
@@ -83,7 +83,7 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
     const { state, bears } = withTwoPreventions();
     const firstChoice = {
       kind: "first",
-      for: { kind: "damage", index: 0, source: bears, to: { kind: "player", player: "p1" } },
+      for: { kind: "damage", index: 0, hop: 0, source: bears, to: { kind: "player", player: "p1" } },
       ref: { kind: "resolvedEffect", id: "o902" },
     } as const;
     const asked = replaceDamage(state, [toP1(bears, 1), toP1(bears, 1)], TEST_CARDS, [firstChoice]);
