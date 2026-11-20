@@ -47,7 +47,8 @@ export function actionLines(actions: readonly Action[]): string[] {
 export type ReadBack = { actions: Action[]; unread: number };
 
 /**
- * The actions these lines stand for, replayed from the setup to fill in each decision id and acting player. Once an
+ * The actions these lines stand for, replayed from the setup to fill in each decision id; the engine checks each line's
+ * player is the one being asked (D-083). Once an
  * action is rejected (the engine changed), the game can't go on, so the actions end with that one: replaying them
  * stops there and says why, as a golden game's log does (D-047). Lines left after the game ended are counted, not
  * dropped in silence, so `pnpm golden:update` can say the game ends earlier now.
@@ -63,6 +64,8 @@ export function actionsFromLines(setup: GameSetup, lines: readonly string[], car
     const steps: [string, string[]][] =
       words[0] === "pass" ? words.slice(1).map((player) => [player, ["pass"]]) : [[words[0] ?? "", words.slice(1)]];
     if (steps.length === 0) throw new Error(`line ${i + 1}: a pass names no player`);
+    // One way to write a pass, so files written the same way compare the same.
+    if (words[0] !== "pass" && words[1] === "pass") throw new Error(`line ${i + 1}: write passes as "pass p1 p2 ..."`);
     for (const [player, [word = "", ...rest]] of steps) {
       // The game has ended: what's left no longer fits it.
       if (state.pending === null && word !== "concede") return { actions, unread: lines.length - i };

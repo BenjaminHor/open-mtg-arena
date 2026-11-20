@@ -1096,7 +1096,7 @@ every schema change and every change D-024 lists bumps it.
   each effect op, trigger condition, keyword, static ability, cost kind and target kind of a card whose script runs
   (D-069's "used"), each decision kind and event type, plus the choices the export tests read. Each card is still
   covered by its own scenarios (the add-cards skill; a test will check every pool card appears in one).
-- Format, measured on the current 66 games: actions drop the decision id and the acting player (both follow from the
+- Format (changed by D-083: lines name the acting player), measured on the current 66 games: actions drop the decision id and the acting player (both follow from the
   pending decision when replaying), runs of passes are one line, and each action is one readable line ("pass 4",
   "cast o12", "chooseTarget p2"): 3.3 MB of actions become 0.44 MB. Setups name cards instead of oracle ids
   (0.23 MB to 0.09 MB). Logs stay as they are (the readable diff when a game changes).

@@ -1,4 +1,4 @@
-// The compact action format (D-082): actions survive being written as lines and read back, every kind of them.
+// The compact action format (D-082, D-083): actions survive being written as lines and read back, every kind of them.
 
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import type { Action, Answer } from "@mtg/engine";
@@ -74,9 +74,11 @@ describe("action lines", () => {
     const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
     expect(() => actionsFromLines(setup, ["pass x"], cards)).toThrow('"x" isn\'t a player');
     expect(() => actionsFromLines(setup, ["p1 teleport o1"], cards)).toThrow('no action "teleport"');
+    expect(() => actionsFromLines(setup, ["pass"], cards)).toThrow("a pass names no player");
+    expect(() => actionsFromLines(setup, ["p1 pass"], cards)).toThrow('write passes as "pass p1 p2 ..."');
   });
 
-  it("stop at a line whose player isn't the one being asked: the engine refuses it, so who acts is checked (D-083)", () => {
+  it("stops at a line whose player isn't the one being asked: the engine refuses it, so who acts is checked (D-083)", () => {
     const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
     const actions = playRecipe({ setup, agent: "by-kind", agentSeed: 3, maxTurns: 3 }, cards);
     const lines = actionLines(actions);
@@ -85,7 +87,21 @@ describe("action lines", () => {
     const other = first.startsWith("p1 ") ? `p2${first.slice(2)}` : `p1${first.slice(2)}`;
     const back = actionsFromLines(setup, [other, ...rest], cards);
     expect(back.actions).toHaveLength(1);
+    expect(back.actions.at(-1)?.player).toBe(other.slice(0, 2));
     expect(back.unread).toBe(rest.length);
+  });
+
+  it("stops at a pass by the player who doesn't have priority (CR 117.3d)", () => {
+    const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
+    const actions = playRecipe({ setup, agent: "by-kind", agentSeed: 3, maxTurns: 3 }, cards);
+    const lines = actionLines(actions);
+    const at = lines.findIndex((l) => /^pass p\d+ p\d+/.test(l));
+    const run = (lines[at] ?? "").split(" ");
+    // The run's second pass given to the player who passed first: they don't have priority then.
+    const swapped = ["pass", run[1], run[1], ...run.slice(3)].join(" ");
+    const back = actionsFromLines(setup, [...lines.slice(0, at), swapped, ...lines.slice(at + 1)], cards);
+    expect(back.actions.at(-1)).toMatchObject({ type: "PASS_PRIORITY", player: run[1] });
+    expect(back.unread).toBe(lines.length - at - 1);
   });
 });
 

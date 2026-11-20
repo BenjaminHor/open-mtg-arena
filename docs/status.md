@@ -268,8 +268,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
      - Golden games rework (owner, D-082), done, merged (PR #42): 25 games, 1.5 MB (was 66, 5.4 MB).
        - `cli/src/action-lines.ts`: `actionLines(actions)` writes one readable line per action (`pass p1 p2`, `p1 land o85`,
-         `cast o12`, `activate o5 printed 0 for G`, `chooseTarget p2`, `declareBlocker o7 o5`); `actionsFromLines(setup,
-         lines, cards)` replays the game to fill in each decision id and acting player, and counts lines left after the
+         `p2 cast o12`, `p1 activate o5 printed 0 for G`, `p2 chooseTarget p1`, `p2 declareBlocker o7 o5`; D-083);
+         `actionsFromLines(setup, lines, cards)` replays the game to fill in each decision id, and counts lines left after the
          game ended. `setup-names.ts`: card names in setups. Game files with `"encoding": "lines"`; `readGameFile`
          reads either encoding.
        - `cli/src/mechanics.ts`: the cover's units: combat keywords and statics as creatures attack or block, flash and
@@ -498,6 +498,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
+- (D-083 review) A golden game's rejection names the action number (`!! action 78 is rejected`), not the stored line,
+  and a run of passes folds many actions into one line, so finding it in the JSON takes counting. The decoder could
+  report the line too.
 - The golden folder's budget is 16 MB through M2 (D-081). With the compact encoding and the mechanics cover (D-082) it's
   1.3 MB for 150 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
