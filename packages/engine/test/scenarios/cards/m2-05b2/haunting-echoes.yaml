@@ -1,0 +1,29 @@
+name: Haunting Echoes exiles all but basic lands from the graveyard, then the copies its caster chooses to find, leaving the rest
+rules: [CR 205.4a, CR 701.23h, CR 201.2a, CR 406.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Haunting Echoes]
+    battlefield: [Swamp, Swamp, Swamp, Swamp, Swamp]
+  p2:
+    graveyard: [Forest, Terramorphic Expanse, Grizzly Bears]
+    library: [Grizzly Bears, Island, Terramorphic Expanse, Grizzly Bears]
+steps:
+  - p1 cast: Haunting Echoes
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Forest]
+      pending: { player: p1, kind: chooseCards, min: 0 }
+  - p1 choose: Grizzly Bears
+  - p1 choose: Terramorphic Expanse
+  - expect:
+      pending: { player: p1, kind: chooseCards }
+  - p1 choose: finish
+  - expect:
+      p2.library count: 2
+      p2.library contains: [Island, Grizzly Bears]
+      exile: [Terramorphic Expanse, Grizzly Bears, Grizzly Bears, Terramorphic Expanse]
+      p1.graveyard: [Haunting Echoes]
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p2 }]

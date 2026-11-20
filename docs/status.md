@@ -111,17 +111,32 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         "noncreature, nonland", mandatory if any fits, nothing if none, CR 608.2d, 609.3), Elvish Piper
         (`putOntoBattlefield` from hand, min 0; under the activator's control, CR 110.2a, 109.5; not cast; summoning
         sick, CR 302.6; resolves with its source gone, CR 113.7a).
-      - M2-05b2b, libraries: an `ObjectFilter` supertype (basic, CR 205.4a) first. Search, move and shuffle are
-        separate steps passing a "found" result (CR 608.2c "this way"; Liliana Vess will need CR 701.24b), kept with
-        the resolving object until it finishes. Search: look at the whole zone (CR 701.23a); a stated quality may find
-        none (CR 701.23b), "a card" must be found if there's one (CR 701.23d); not revealed unless the card says so
-        (CR 701.23e). Fabricate, Diabolic Tutor, Rampant Growth and Terramorphic Expanse ("onto the battlefield
-        tapped": enters tapped as part of the move, CR 110.5b, so "becomes tapped" doesn't trigger, CR 603.2e; not a
-        land play, CR 305.4; "Sacrifice this land" as a cost part after {T}, CR 602.2, D-059; not a mana ability,
-        CR 605.1a). Ponder (look at the top three, CR 701.20e, put back in any order, CR 401.4, later: CR 701.20d;
-        "you may shuffle" yes/no; draw). Haunting Echoes (exile all but basic lands from the target's graveyard,
-        CR 406.3; one search for all those names, CR 701.23h, 201.2a, any number, its ruling; exile them; the target
-        shuffles). With nothing exiled there's no search at all, only the shuffle: the owner's ruling (D-063).
+      - M2-05b2b, libraries: done, merged (PR #30, D-064); M2-05b is done. 22 scenarios (39 in
+        `test/scenarios/cards/m2-05b2/`), unit tests in `test/effects/library-effects.test.ts`; reviewed by the
+        rules-judge and code-reviewer, fixes in (a concession mid-search left the "this way" record behind; names read
+        through `characteristics()`; an invariant on what a decision shows). M2-05c is next. The two-worlds tests came
+        first (each checked to fail when a search skips a library with no match or an "any number" search ends at its
+        maximum); the interim decks carry
+        the six cards, five new golden games; the fuzzer reaches searches and Ponder's look. Design (settled
+        2026-11-20 with the advisor; the rules-judge reviewed the cards): an
+        `ObjectFilter` supertype (basic, CR 205.4a, read through `supertypesOf`) and a negated filter, since "other
+        than basic land cards" means not (basic and land) (Haunting Echoes still exiles Terramorphic Expanse). A
+        `GameState.resolution` record `{ object, found, exiled }` for "this way" (CR 608.2c), set as an object starts
+        to resolve and cleared on every exit (`finishResolving`, its early return, `doesNotResolve`), with an
+        invariant the fuzzer checks; effects name the found cards with a `"found"` subject. Ops: `search` (only
+        chooses, into `found`; look at the whole zone, CR 701.23a; a stated quality may find none, CR 701.23b; "a
+        card" must be found if there's one, CR 701.23d), `reveal` of a subject (CR 701.23e), `put` into hand or onto
+        the battlefield (tapped: part of the move, CR 110.5b, 603.2e; not a land play, CR 305.4), `shuffle`,
+        `mayShuffle` (a `chooseYesNo` decision: yes queues the shuffle, no queues nothing), `lookAtTop` and put back
+        in any order (Ponder: a `chooseCards` of the top cards, top first, asked even for one card, CR 701.20e,
+        401.4, later: CR 701.20d; reordering is a pipeline event), `exileGraveyard` (records `exiled`). A
+        `chooseCards` decision gains `seen`, the whole zone by identity, shown only to the chooser (a searched
+        library; Duress's revealed hand, kept in view mid-choice). An "any number" choice (Haunting Echoes) ends only
+        on `finishChoosing`, never at its hidden maximum, or the number of answers would tell how many copies are
+        left. Haunting Echoes with nothing exiled doesn't search (D-063; the graveyard is public, so skipping tells
+        nothing); otherwise it asks even when no copy is left. "Sacrifice this land" is a `sacrificeSelf` cost part,
+        after {T} (CR 602.2, D-059); not a mana ability (CR 605.1a). Two-worlds tests first: Fabricate with and
+        without an artifact; Tutor finding A or B; Echoes leaving copies or none, from the target's view.
       - Future impact: "whenever a player discards / searches / shuffles" (M2-07) read these events; a replacement on
         a discard or move (M2-08) sees one event per instruction, the choices made; Telepathy and multiplayer reveals
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
@@ -276,10 +291,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Not blocking yet.) Is losing 0 life an event? The CR says gaining 0 life isn't (CR 119.9, 119.10) but says nothing
-  about losing 0. Today `loseLife` proposes any amount, so losing 0 would emit `LIFE_LOST` of 0; no pool card can do
-  that yet. Needed before "whenever a player loses life" triggers (M2-07) or a card that loses X life
-  (docs/future-rules.md).
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care

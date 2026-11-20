@@ -141,18 +141,20 @@ scenario `block` step.
 **Milling and losing life, as triggers and replacements arrive (M2-07, M2-08).** Mill is plain `moveCard` events from
 library to graveyard (D-060), so "whenever a player mills", "the milled card" (CR 701.17c, 701.17d) and replacements
 that change how many are milled can't tell it from another such move (surveil): mark it, as discard is marked, with a
-`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Whether losing 0 life is an
-event isn't settled by the CR (CR 119.9 and 119.10 cover only gaining 0): no pool card loses a variable amount yet, so
-`loseLife` proposes whatever amount it's given; ask the owner when "whenever a player loses life" or X life loss arrives.
+`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Losing 0 life is an event (D-065, the owner's ruling): a "whenever a player loses life" trigger sees it. A search
+emits no event yet: "whenever a player searches" and Aven Mindcensor's replacement (CR 701.23f) need one from
+`search` (`effects/library-effects.ts`), including on an empty library, which is still a search; only Haunting
+Echoes with nothing exiled doesn't search (D-063).
 
 **Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2; who may look, CR 708.5;
 telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed
 cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), and cards a player has seen
 in another's hand (a cancelled cast's card back in hand, CR 734.1) all change what `playerView` shows. *Watch out:*
 shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order. A move from a library to a public
-zone no longer shows the old object id or card id (D-054), and since M2-05b2a a reveal and a choice's options show
-cards by identity only, in a fixed order, never by id or zone order (D-062): searches, "look at" and scry must do
-the same. So far a reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
+zone no longer shows the old object id or card id (D-054), and since M2-05b2 a reveal, a choice's options, a search
+and a "look at" show cards by identity only, in a fixed order, never by id or zone order (D-062): scry must do the
+same. Liliana Vess's "search, then shuffle and put that card on top" leaves the found card out of the shuffle
+(CR 701.24b): search, move and shuffle are separate steps passing `"found"` (D-064), so it's one more op. So far a reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
 chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt from views mid-choice loses the rest of
 the revealed hand, though it stays revealed until the effect is done (CR 701.20a). That, Telepathy, and a third player
 who must see a revealed hand need revealed cards in the view, per object. Several players

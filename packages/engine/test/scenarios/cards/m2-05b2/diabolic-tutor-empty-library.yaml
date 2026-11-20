@@ -1,0 +1,16 @@
+name: Diabolic Tutor with an empty library asks nothing, and the empty library is shuffled
+rules: [CR 609.3, CR 401.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Diabolic Tutor]
+    library: []
+    battlefield: [Swamp, Swamp, Swamp, Swamp]
+steps:
+  - p1 cast: Diabolic Tutor
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      p1.graveyard: [Diabolic Tutor]
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }]

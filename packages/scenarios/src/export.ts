@@ -129,6 +129,8 @@ function answerStep(
     }
     case "finishChoosing":
       return choose("finish");
+    case "chooseYesNo":
+      return choose(answer.yes ? "yes" : "no");
   }
 }
 

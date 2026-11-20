@@ -37,14 +37,17 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
         { kind: "finishResolving", object: top },
         { kind: "givePriority", player: active },
       ];
-  return { state: queueWork({ ...state, passesInSuccession: 0 }, ...items), events: [] };
+  // "This way" (CR 608.2c) starts empty for each resolution; it's cleared as the resolution ends.
+  const resolution = allTargetsIllegal ? null : { object: top, found: [], exiled: [] };
+  return { state: queueWork({ ...state, passesInSuccession: 0, resolution }, ...items), events: [] };
 }
 
 /**
  * Every target is illegal, so the spell or ability doesn't resolve (CR 608.2b): it does nothing and is removed from the
  * stack. A spell goes to its owner's graveyard; an ability ceases to exist. It isn't countered: nothing countered it.
  */
-export function doesNotResolve(state: GameState, id: ObjectId, cards: CardDatabase): Progress {
+export function doesNotResolve(given: GameState, id: ObjectId, cards: CardDatabase): Progress {
+  const state = withoutResolution(given);
   const obj = state.objects[id];
   if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
   switch (obj.kind) {
@@ -98,7 +101,9 @@ function thisObject(obj: GameObject): ObjectId {
  * stack during its own resolution, it still resolved, and nothing more happens to it here (CR 608.2m; nothing in the
  * pool can do that yet, so a unit test calls this directly).
  */
-export function finishResolving(state: GameState, id: ObjectId, cards: CardDatabase): Progress {
+export function finishResolving(given: GameState, id: ObjectId, cards: CardDatabase): Progress {
+  // The resolution ends here, on every path, so "this way" can't reach the next object's resolution.
+  const state = withoutResolution(given);
   const obj = state.objects[id];
   if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
   const controller = controllerOf(state, id);
@@ -122,4 +127,9 @@ export function finishResolving(state: GameState, id: ObjectId, cards: CardDatab
       );
     }
   }
+}
+
+/** The state with no "this way" record (CR 608.2c): the resolution is over. */
+function withoutResolution(state: GameState): GameState {
+  return state.resolution === null ? state : { ...state, resolution: null };
 }

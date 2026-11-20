@@ -63,6 +63,11 @@ export type GameState = {
   combat: Combat | null;
   /** A spell part way through being cast (CR 601.2), or null. */
   casting: Casting | null;
+  /**
+   * What the spell or ability resolving now has done "this way" (CR 608.2c), for its later effects: the cards a
+   * search found, the cards it exiled. Null except while an object resolves; cleared as its resolution ends.
+   */
+  resolution: Resolution | null;
 
   /** Work waiting to happen, next first (docs/architecture.md, D-032). It waits while a decision is pending. */
   work: WorkItem[];
@@ -72,3 +77,6 @@ export type GameState = {
   /** Set when the game ends (CR 104). */
   result: GameResult | null;
 };
+
+/** See `GameState.resolution`. */
+export type Resolution = { object: ObjectId; found: ObjectId[]; exiled: ObjectId[] };

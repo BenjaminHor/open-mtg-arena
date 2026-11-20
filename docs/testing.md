@@ -99,7 +99,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   or `Forest#2` for the second Forest in hand: which copy goes to the bottom changes the next shuffle);
   a card's name for a `chooseCards` decision while a spell or ability resolves (the first option not yet chosen with
   that name, or `Shock#2` for the second option named Shock, in the decision's fixed order, D-062), or `finish` to stop
-  choosing once the minimum is chosen ("you may" declined, a search that finds nothing);
+  choosing once the minimum is chosen ("you may" declined, a search that finds nothing); `yes` or `no` for a "you
+  may" decision (`chooseYesNo`, Ponder's shuffle);
   a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
   `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.

@@ -121,6 +121,16 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, state: answerChooseCards(answered, pending, answer), events: [] };
     }
+    case "chooseYesNo": {
+      if (answer.kind !== "chooseYesNo") return mismatch;
+      // Yes runs the effect, ahead of the rest of the resolution; no does nothing (CR 608.2d).
+      if (!answer.yes) return { ok: true, state: answered, events: [] };
+      return {
+        ok: true,
+        state: queueWork(answered, { kind: "runEffect", ...pending.resume, chosen: null }),
+        events: [],
+      };
+    }
     case "discardToHandSize": {
       if (answer.kind !== "discardToHandSize") return mismatch;
       if (

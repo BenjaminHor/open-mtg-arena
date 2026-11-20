@@ -110,6 +110,7 @@ function emptyGame(setup: GameSetup): GameState {
     passesInSuccession: 0,
     combat: null,
     casting: null,
+    resolution: null,
     work: [],
     pending: null,
     result: null,

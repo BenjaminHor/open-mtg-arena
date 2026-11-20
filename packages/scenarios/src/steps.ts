@@ -258,6 +258,9 @@ function answerFor(
     }
     case "chooseCards":
       return chooseCardsAnswer(state, text, cards);
+    case "chooseYesNo":
+      if (text !== "yes" && text !== "no") throw new Error(`a yes or no decision takes yes or no, got ${text}`);
+      return { kind: "chooseYesNo", yes: text === "yes" };
     case "declareAttackers":
     case "declareBlockers":
     case "assignDamage":

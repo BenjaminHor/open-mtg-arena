@@ -101,6 +101,8 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   tap: (e) => (e as { of: EffectSubject }).of,
   counter: (e) => (e as { of: EffectSubject }).of,
   modifyPT: (e) => (e as { of: EffectSubject }).of,
+  reveal: (e) => (e as { of: EffectSubject }).of,
+  put: (e) => (e as { of: EffectSubject }).of,
 };
 
 /** Ops that act on players, and the subject each names them with. */
@@ -112,6 +114,10 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   mill: (e) => (e as { who: EffectSubject }).who,
   discard: (e) => (e as { who: EffectSubject }).who,
   revealHand: (e) => (e as { who: EffectSubject }).who,
+  search: (e) => (e as { library: EffectSubject }).library,
+  shuffle: (e) => (e as { who: EffectSubject }).who,
+  mayShuffle: (e) => (e as { who: EffectSubject }).who,
+  exileGraveyard: (e) => (e as { of: EffectSubject }).of,
 };
 
 /**
@@ -129,7 +135,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   };
   const objectOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
-    return s === "self" || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
+    return s === "self" || s === "found" || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
   };
   for (const effect of effects) {
     const of = OBJECT_SUBJECTS[effect.op];
@@ -139,8 +145,17 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    if (effect.op === "discard" && effect.who === "eachPlayer")
-      problems.push(`${where}: a chosen discard names one player, not each player`);
+    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard"];
+    if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
+      problems.push(`${where}: ${effect.op} names one player, not each player`);
+    // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
+    const earlier = effects.slice(0, effects.indexOf(effect));
+    const names = (s: EffectSubject | undefined) => s === "found";
+    const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
+    if (foundNamed && !earlier.some((e) => e.op === "search"))
+      problems.push(`${where}: ${effect.op} names the cards found, but no search comes before it`);
+    if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileGraveyard"))
+      problems.push(`${where}: a search for the cards exiled this way must follow exiling them`);
     // A filter, or "you" choosing from another player's hand, would show or hint at a hidden hand's cards unless it was
     // just revealed (D-062).
     if (effect.op === "discard" && (effect.filter !== undefined || effect.chosenBy !== undefined)) {

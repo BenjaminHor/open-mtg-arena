@@ -127,6 +127,8 @@ describe("a choice over a hidden hand tells no one what the hand holds (D-062)",
     const decision = playerView(x.state, "p1").decision;
     if (decision?.kind !== "chooseCards") throw new Error("no choice");
     expect(decision.options).toStrictEqual([GROWTH, SHOCK].sort().map((oracleId) => ({ oracleId, object: null })));
+    // The caster keeps seeing the whole revealed hand while choosing (CR 701.20a), by identity (D-062).
+    expect(decision.seen).toStrictEqual({ from: { zone: "hand", player: "p2" }, cards: [BEARS, GROWTH, SHOCK].sort() });
     const [after] = sameToViewer(x, y, "p1", [firstOption]);
     expect(after.state.zones.players.p2?.graveyard).toHaveLength(1);
   });
@@ -156,6 +158,8 @@ describe("Elvish Piper's options", () => {
     if (decision?.kind !== "chooseCards") throw new Error("no choice");
     const bears = g.state.zones.players.p1?.hand[0];
     expect(decision.options).toStrictEqual([{ oracleId: BEARS, object: bears }]);
+    // The chooser's own hand: nothing more to show.
+    expect(decision.seen).toBeNull();
   });
 });
 
@@ -169,6 +173,8 @@ describe("answers to a chooseCards decision", () => {
     min: 2,
     max: 2,
     chosen: [0],
+    endsOnlyOnFinish: false,
+    seen: null,
     resume: {
       effect: { op: "discard", who: "you", amount: 2 } as const,
       context: { self: "o9" as const, controller: "p1" as const, targets: [], division: [], x: null },

@@ -12,6 +12,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 | `zones.ts` | Zones and their order conventions (library top is index 0; stack and graveyard tops are the last entry) |
 | `players.ts`, `mana.ts`, `turn.ts` | Players, mana pools, steps and phases |
 | `decisions.ts` | `PendingDecision`: what the game is waiting for |
+| `game-state.ts` `Resolution` | What the resolving object did "this way" (CR 608.2c): found and exiled cards (D-064) |
 | `casting.ts` | `Casting`: a spell part way through being cast or an ability being activated, with its origin and what's needed to reverse it (CR 734.1) |
 | `work.ts` | `WorkItem`: work waiting in the queue (D-032) |
 | `combat.ts` | `Combat`, `Attack`, `Block`, `DamageDivision`, `AttackerDivision`: attacks and blocks during the combat phase (CR 506) |

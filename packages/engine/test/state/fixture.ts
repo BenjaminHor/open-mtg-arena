@@ -141,6 +141,7 @@ export function midTurnState(): GameState {
     passesInSuccession: 1,
     combat: null,
     casting: null,
+    resolution: null,
     work: [
       {
         kind: "runEffect",

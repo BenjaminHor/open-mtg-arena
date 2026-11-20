@@ -159,6 +159,13 @@ describe("gaining life (CR 119.3)", () => {
     expect(gained.events).toStrictEqual([{ type: "LIFE_GAINED", player: "p1", amount: 3 }]);
     expect(happen(state, { kind: "gainLife", player: "p1", amount: 0 }, TEST_CARDS).events).toStrictEqual([]);
   });
+
+  it("losing 0 life, unlike gaining 0, is an event (D-065, the owner's ruling)", () => {
+    const state = board([]);
+    const lost = runEffect(state, { op: "loseLife", who: "you", amount: 0 }, context("o999"), TEST_CARDS);
+    expect(lost.events).toStrictEqual([{ type: "LIFE_LOST", player: "p1", amount: 0 }]);
+    expect(lost.state.players.p1?.life).toBe(20);
+  });
 });
 
 describe("{T} in the cost of an ability whose source also makes mana (CR 107.5, 601.2h)", () => {

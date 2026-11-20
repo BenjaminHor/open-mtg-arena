@@ -133,7 +133,9 @@ export type CostPart =
    * "Sacrifice a creature": one permanent its controller controls that fits `filter` (CR 701.21a). It's chosen once the
    * total cost is locked, before the mana abilities' window (CR 601.2g), and sacrificed with the mana (CR 601.2h).
    */
-  | { kind: "sacrifice"; filter: ObjectFilter };
+  | { kind: "sacrifice"; filter: ObjectFilter }
+  /** "Sacrifice this land": the source itself, paid with the rest of the cost, after {T} (CR 602.2, 701.21a; D-059). */
+  | { kind: "sacrificeSelf" };
 
 /**
  * What one instance of the word "target" may choose (CR 115), and how many (`count`, exactly one when left out).
@@ -184,6 +186,10 @@ export type ObjectFilter = {
    * (they differ once teams exist, later: CR 102.3).
    */
   controller?: "you" | "notYou" | "opponent";
+  /** "Basic land card": supertypes (CR 205.4a), as computed (`supertypesOf`). */
+  supertypes?: Supertype[];
+  /** "Other than basic land cards": the object must not fit this whole filter (not basic-and-land). */
+  not?: ObjectFilter;
 };
 
 /** A number in an effect: written on the card, or X, the value announced as it was cast (CR 107.3a). */
@@ -205,7 +211,9 @@ export type EffectSubject =
   /** The player the text calls "you": the spell's or ability's controller (CR 109.5). It isn't a target (CR 115.10b). */
   | "you"
   /** "Each player": every player, in APNAP order (CR 101.4). */
-  | "eachPlayer";
+  | "eachPlayer"
+  /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
+  | "found";
 
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
@@ -266,4 +274,29 @@ export type Effect =
    * "You may put a [filter] card from your hand onto the battlefield": under the controller's control (CR 110.2a), not
    * cast. `optional` for "you may".
    */
-  | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean };
+  | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean }
+  /**
+   * "Search [whose] library for [a card / a [filter] card / all cards with the same name as a card exiled this way]":
+   * "you" look at the whole library (CR 701.23a) and choose; the cards found are `"found"` for the effects after it.
+   * With a stated quality the searcher may find none (CR 701.23b); "a card" must be found if there is one
+   * (CR 701.23d). `sameNameAsExiled` searches only if an earlier `exileGraveyard` exiled something (D-063).
+   */
+  | {
+      op: "search";
+      library: EffectSubject;
+      filter?: ObjectFilter;
+      count: "one" | "anyNumber";
+      sameNameAsExiled?: true;
+    }
+  /** "Reveal it": shows the cards to every player (CR 701.20a), staying where they are (CR 701.20b). */
+  | { op: "reveal"; of: EffectSubject }
+  /** "Put it into your hand" / "onto the battlefield tapped": under the controller's control (CR 110.2a). */
+  | { op: "put"; of: EffectSubject; into: "hand" | "battlefield"; tapped?: true }
+  /** "[who] shuffles" (CR 701.24a). */
+  | { op: "shuffle"; who: EffectSubject }
+  /** "You may shuffle": a yes or no choice; yes shuffles (CR 701.24a). */
+  | { op: "mayShuffle"; who: EffectSubject }
+  /** "Look at the top N cards of your library, then put them back in any order" (CR 701.20e, 401.4). */
+  | { op: "lookAtTop"; count: number }
+  /** "Exile all cards from [whose] graveyard [other than ...]": the cards exiled this way are kept (CR 608.2c). */
+  | { op: "exileGraveyard"; of: EffectSubject; filter?: ObjectFilter };

@@ -10,6 +10,7 @@ import { centaurCourser } from "./c/centaur-courser.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
 import { deathmark } from "./d/deathmark.ts";
+import { diabolicTutor } from "./d/diabolic-tutor.ts";
 import { disentomb } from "./d/disentomb.ts";
 import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
@@ -19,6 +20,7 @@ import { eliteVanguard } from "./e/elite-vanguard.ts";
 import { elvishPiper } from "./e/elvish-piper.ts";
 import { essenceScatter } from "./e/essence-scatter.ts";
 import { excommunicate } from "./e/excommunicate.ts";
+import { fabricate } from "./f/fabricate.ts";
 import { fireElemental } from "./f/fire-elemental.ts";
 import { fireball } from "./f/fireball.ts";
 import { flashfreeze } from "./f/flashfreeze.ts";
@@ -28,6 +30,7 @@ import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
+import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { island } from "./i/island.ts";
@@ -45,7 +48,9 @@ import { negate } from "./n/negate.ts";
 import { ornithopter } from "./o/ornithopter.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
+import { ponder } from "./p/ponder.ts";
 import { ragingGoblin } from "./r/raging-goblin.ts";
+import { rampantGrowth } from "./r/rampant-growth.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
@@ -56,6 +61,7 @@ import { solemnOffering } from "./s/solemn-offering.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { swamp } from "./s/swamp.ts";
 import { tempestOfLight } from "./t/tempest-of-light.ts";
+import { terramorphicExpanse } from "./t/terramorphic-expanse.ts";
 import { tomeScour } from "./t/tome-scour.ts";
 import { traumatize } from "./t/traumatize.ts";
 import { undeadSlayer } from "./u/undead-slayer.ts";
@@ -73,6 +79,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   coralMerfolk,
   crawWurm,
   deathmark,
+  diabolicTutor,
   disentomb,
   divination,
   divineVerdict,
@@ -82,6 +89,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   elvishPiper,
   essenceScatter,
   excommunicate,
+  fabricate,
   fireball,
   fireElemental,
   flashfreeze,
@@ -91,6 +99,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   giantSpider,
   grayOgre,
   grizzlyBears,
+  hauntingEchoes,
   hillGiant,
   igniteDisorder,
   island,
@@ -108,7 +117,9 @@ export const CARD_DEFS: readonly CardDef[] = [
   ornithopter,
   plains,
   planarCleansing,
+  ponder,
   ragingGoblin,
+  rampantGrowth,
   righteousness,
   rodOfRuin,
   royalAssassin,
@@ -119,6 +130,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   spinedWurm,
   swamp,
   tempestOfLight,
+  terramorphicExpanse,
   tomeScour,
   traumatize,
   undeadSlayer,

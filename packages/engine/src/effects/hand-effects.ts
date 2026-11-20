@@ -1,21 +1,18 @@
 // Effects that choose cards from a hand (M2-05b2a): discarding cards a player chooses, revealing a hand, putting a card
 // from a hand onto the battlefield. Each asks with `askToChoose` and runs again with the cards chosen.
 
-import type { CardDatabase, Effect, ObjectFilter } from "../cards/types.ts";
+import type { CardDatabase, Effect } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
-import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneList } from "../zones/zone-list.ts";
-import { askToChoose } from "./choose-cards.ts";
+import { askToChoose, fittingCards, nothing, seenOf } from "./choose-cards.ts";
 
 type Discard = Extract<Effect, { op: "discard" }>;
 type PutOntoBattlefield = Extract<Effect, { op: "putOntoBattlefield" }>;
-
-const nothing = (state: GameState): Progress => ({ state, events: [] });
 
 /**
  * `player` discards `amount` cards (CR 701.9a), chosen by them (CR 701.9b) or by "you", among the cards fitting the
@@ -48,9 +45,11 @@ export function discardChosen(
   // Their owner may choose the order instead (later: CR 404.3).
   if (count === hand.length) return discardAll(state, inShownOrder(state, hand), cards);
   const chooser = effect.chosenBy === "you" ? context.controller : player;
-  return nothing(
-    askToChoose(state, { chooser, purpose: "discard", options: fitting, min: count, max: count, effect, context }),
-  );
+  // "You", choosing from another player's hand that was just revealed, keep seeing all of it while choosing
+  // (CR 701.20a), by identity only (D-062).
+  const choice = { chooser, purpose: "discard", options: fitting, min: count, max: count, effect, context } as const;
+  if (chooser === player) return nothing(askToChoose(state, choice));
+  return nothing(askToChoose(state, { ...choice, seen: seenOf(state, { zone: "hand", player }, hand) }));
 }
 
 /** Shows `player`'s hand to every player (CR 701.20a), even an empty one; it stays in the hand (CR 701.20b). */
@@ -94,14 +93,4 @@ function discardAll(state: GameState, ids: readonly ObjectId[], cards: CardDatab
     { kind: "simultaneous", events: ids.map((object) => ({ kind: "discard", object }) as const) },
     cards,
   );
-}
-
-function fittingCards(
-  state: GameState,
-  ids: readonly ObjectId[],
-  filter: ObjectFilter | undefined,
-  you: PlayerId,
-  cards: CardDatabase,
-): ObjectId[] {
-  return filter === undefined ? [...ids] : ids.filter((id) => matchesFilter(state, id, filter, you, cards));
 }

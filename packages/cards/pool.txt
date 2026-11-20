@@ -13,6 +13,7 @@ Centaur Courser
 Coral Merfolk
 Craw Wurm
 Deathmark
+Diabolic Tutor
 Disentomb
 Divination
 Divine Verdict
@@ -22,6 +23,7 @@ Elite Vanguard
 Elvish Piper
 Essence Scatter
 Excommunicate
+Fabricate
 Fire Elemental
 Fireball
 Flashfreeze
@@ -31,6 +33,7 @@ Giant Growth
 Giant Spider
 Gray Ogre
 Grizzly Bears
+Haunting Echoes
 Hill Giant
 Ignite Disorder
 Island
@@ -48,7 +51,9 @@ Negate
 Ornithopter
 Plains
 Planar Cleansing
+Ponder
 Raging Goblin
+Rampant Growth
 Righteousness
 Rod of Ruin
 Royal Assassin
@@ -59,6 +64,7 @@ Solemn Offering
 Spined Wurm
 Swamp
 Tempest of Light
+Terramorphic Expanse
 Tome Scour
 Traumatize
 Undead Slayer

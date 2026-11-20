@@ -63,6 +63,15 @@ describe("performing an event", () => {
     expect(types({ kind: "discard", object: hand(state)[0] }, state)).toStrictEqual(["ZONE_CHANGED", "CARD_DISCARDED"]);
   });
 
+  it("reordering puts the given cards on top of the library in that order, and nothing else moves (CR 401.4)", () => {
+    const state = board();
+    const library = state.zones.players.p1?.library ?? [];
+    const [a, b] = [library[1], library[0]] as [ObjectId, ObjectId];
+    const after = happen(state, { kind: "reorderLibrary", player: "p1", top: [a, b] }, TEST_CARDS);
+    expect(after.state.zones.players.p1?.library).toStrictEqual([a, b, ...library.slice(2)]);
+    expect(after.events).toStrictEqual([]);
+  });
+
   it("damage is all dealt, then turned into its results, in one event (CR 120.4b–c)", () => {
     const state = board();
     const [source] = creatures(state);

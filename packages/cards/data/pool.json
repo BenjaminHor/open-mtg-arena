@@ -259,6 +259,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Diabolic Tutor",
+      "slug": "diabolic-tutor",
+      "oracleId": "14589b6b-1814-46f9-a364-83cc15dacac2",
+      "layout": "normal",
+      "manaCost": "{2}{B}{B}",
+      "manaValue": 4,
+      "typeLine": "Sorcery",
+      "oracleText": "Search your library for a card, put that card into your hand, then shuffle.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/6/06750380-a9a9-4ab4-a03b-d4d35a31132a.jpg?1783937210",
+        "large": "https://cards.scryfall.io/large/front/0/6/06750380-a9a9-4ab4-a03b-d4d35a31132a.jpg?1783937210",
+        "png": "https://cards.scryfall.io/png/front/0/6/06750380-a9a9-4ab4-a03b-d4d35a31132a.png?1783937210",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/6/06750380-a9a9-4ab4-a03b-d4d35a31132a.jpg?1783937210"
+      },
+      "artist": "Mark Winters",
+      "set": "kld",
+      "collectorNumber": "75",
+      "scryfallUri": "https://scryfall.com/card/kld/75/diabolic-tutor?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Disentomb",
       "slug": "disentomb",
       "oracleId": "e4ab986d-662c-4879-b6f1-6887a2ec4d7c",
@@ -508,6 +536,34 @@
       "set": "m11",
       "collectorNumber": "14",
       "scryfallUri": "https://scryfall.com/card/m11/14/excommunicate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Fabricate",
+      "slug": "fabricate",
+      "oracleId": "422e1869-134f-463d-9fa1-86b66a998b3e",
+      "layout": "normal",
+      "manaCost": "{2}{U}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Search your library for an artifact card, reveal it, put it into your hand, then shuffle.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/f/6f75d8c9-c15d-4474-9d3f-d35f49e46477.jpg?1783942393",
+        "large": "https://cards.scryfall.io/large/front/6/f/6f75d8c9-c15d-4474-9d3f-d35f49e46477.jpg?1783942393",
+        "png": "https://cards.scryfall.io/png/front/6/f/6f75d8c9-c15d-4474-9d3f-d35f49e46477.png?1783942393",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/f/6f75d8c9-c15d-4474-9d3f-d35f49e46477.jpg?1783942393"
+      },
+      "artist": "Warren Mahy",
+      "set": "m10",
+      "collectorNumber": "52",
+      "scryfallUri": "https://scryfall.com/card/m10/52/fabricate?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -762,6 +818,34 @@
       "set": "10e",
       "collectorNumber": "268",
       "scryfallUri": "https://scryfall.com/card/10e/268/grizzly-bears?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Haunting Echoes",
+      "slug": "haunting-echoes",
+      "oracleId": "3abd345a-69a5-486e-ada9-dd1ca0decc28",
+      "layout": "normal",
+      "manaCost": "{3}{B}{B}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "Exile all cards from target player's graveyard other than basic land cards. For each card exiled this way, search that player's library for all cards with the same name as that card and exile them. Then that player shuffles.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/a/5aa96bc7-b92f-4df5-89b5-0793b9e56509.jpg?1783941815",
+        "large": "https://cards.scryfall.io/large/front/5/a/5aa96bc7-b92f-4df5-89b5-0793b9e56509.jpg?1783941815",
+        "png": "https://cards.scryfall.io/png/front/5/a/5aa96bc7-b92f-4df5-89b5-0793b9e56509.png?1783941815",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/a/5aa96bc7-b92f-4df5-89b5-0793b9e56509.jpg?1783941815"
+      },
+      "artist": "Nils Hamm",
+      "set": "m11",
+      "collectorNumber": "99",
+      "scryfallUri": "https://scryfall.com/card/m11/99/haunting-echoes?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1235,6 +1319,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Ponder",
+      "slug": "ponder",
+      "oracleId": "02090581-61aa-4348-ad57-451be8ee91c2",
+      "layout": "normal",
+      "manaCost": "{U}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Look at the top three cards of your library, then put them back in any order. You may shuffle.\nDraw a card.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/1/81c908ee-e70a-4406-a32d-ab5ab17e67b1.jpg?1783941088",
+        "large": "https://cards.scryfall.io/large/front/8/1/81c908ee-e70a-4406-a32d-ab5ab17e67b1.jpg?1783941088",
+        "png": "https://cards.scryfall.io/png/front/8/1/81c908ee-e70a-4406-a32d-ab5ab17e67b1.png?1783941088",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/1/81c908ee-e70a-4406-a32d-ab5ab17e67b1.jpg?1783941088"
+      },
+      "artist": "Dan Murayama Scott",
+      "set": "m12",
+      "collectorNumber": "73",
+      "scryfallUri": "https://scryfall.com/card/m12/73/ponder?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Raging Goblin",
       "slug": "raging-goblin",
       "oracleId": "30997b43-fc13-41d3-8064-1ccc2cb6fd2b",
@@ -1262,6 +1374,34 @@
       "set": "m10",
       "collectorNumber": "153",
       "scryfallUri": "https://scryfall.com/card/m10/153/raging-goblin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Rampant Growth",
+      "slug": "rampant-growth",
+      "oracleId": "8539f295-5d58-4436-a73a-b9277c4c7795",
+      "layout": "normal",
+      "manaCost": "{1}{G}",
+      "manaValue": 2,
+      "typeLine": "Sorcery",
+      "oracleText": "Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/e/fe45a787-6d8a-48d7-ad6c-fb20a9b468a4.jpg?1783941055",
+        "large": "https://cards.scryfall.io/large/front/f/e/fe45a787-6d8a-48d7-ad6c-fb20a9b468a4.jpg?1783941055",
+        "png": "https://cards.scryfall.io/png/front/f/e/fe45a787-6d8a-48d7-ad6c-fb20a9b468a4.png?1783941055",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/e/fe45a787-6d8a-48d7-ad6c-fb20a9b468a4.jpg?1783941055"
+      },
+      "artist": "Steven Belledin",
+      "set": "m12",
+      "collectorNumber": "190",
+      "scryfallUri": "https://scryfall.com/card/m12/190/rampant-growth?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1538,6 +1678,32 @@
       "set": "m10",
       "collectorNumber": "36",
       "scryfallUri": "https://scryfall.com/card/m10/36/tempest-of-light?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Terramorphic Expanse",
+      "slug": "terramorphic-expanse",
+      "oracleId": "1bd3e453-aa21-4ee6-95c2-d6d920ee8e7a",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/a/9a4c5629-fadd-42b9-850f-9f8586a2ca50.jpg?1783903615",
+        "large": "https://cards.scryfall.io/large/front/9/a/9a4c5629-fadd-42b9-850f-9f8586a2ca50.jpg?1783903615",
+        "png": "https://cards.scryfall.io/png/front/9/a/9a4c5629-fadd-42b9-850f-9f8586a2ca50.png?1783903615",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/a/9a4c5629-fadd-42b9-850f-9f8586a2ca50.jpg?1783903615"
+      },
+      "artist": "Leon Tukker",
+      "set": "sos",
+      "collectorNumber": "265",
+      "scryfallUri": "https://scryfall.com/card/sos/265/terramorphic-expanse?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

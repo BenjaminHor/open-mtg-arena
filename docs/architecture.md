@@ -80,6 +80,7 @@ type GameState = {
   passesInSuccession: number       // priority passes in a row (CR 117.4)
   casting: Casting | null          // a spell part way through being cast (CR 601.2)
   combat: Combat | null            // attacks and blocks, during the combat phase (CR 506)
+  resolution: Resolution | null    // what the resolving object did "this way": found and exiled cards (CR 608.2c)
   work: WorkItem[]                 // the resolution queue (see "Running the game")
   pending: PendingDecision | null  // who must act, and what their options are
   result: GameResult | null        // set when the game ends

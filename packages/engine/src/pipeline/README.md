@@ -2,7 +2,7 @@
 
 The event pipeline (docs/architecture.md, "Effects, events, replacements, triggers"; D-056). Every game event goes
 through `happen`: moving a card, destroying, sacrificing, countering, dealing damage, gaining and losing life, tapping,
-untapping, adding mana, drawing, discarding, revealing, shuffling, playing a land. One path means replacement and prevention effects (CR 614–616, M2-08) and triggered
+untapping, adding mana, drawing, discarding, revealing, reordering a library's top cards, shuffling, playing a land. One path means replacement and prevention effects (CR 614–616, M2-08) and triggered
 abilities (CR 603, M2-07) each plug in once, and see every event.
 
 ## How an event happens
@@ -41,6 +41,9 @@ anything can replace or trigger on:
   on the stack and removing it (CR 602.2a, 608.2n), and putting a cancelled cast back (CR 734.1, D-035), which
   undoes events rather than causing them;
 - declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2);
+- the resolving object's "this way" record (`GameState.resolution`, CR 608.2c, D-064): set as it starts to resolve,
+  results added by `remember` in `effects/library-effects.ts` after their events went through `happen`, cleared when
+  it finishes, doesn't resolve, or the game ends;
 - players losing or conceding (CR 104.3) and the game ending;
 - `createGame`'s setup, and advancing the seeded RNG for a random pick (`effects/player-effects.ts`'s random discard):
   the pick is made first, then its event goes through `happen`.

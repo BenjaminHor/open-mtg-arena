@@ -17,6 +17,11 @@ export type Destination =
   | { zone: "hand" | "graveyard" }
   /** Permanents and spells have a controller (CR 110.2, 112.2). */
   | { zone: "battlefield" | "stack"; controller: PlayerId }
+  /**
+   * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
+   * (CR 603.2e): no `PERMANENT_TAPPED` event, the one such triggers will see.
+   */
+  | { zone: "battlefield"; controller: PlayerId; tapped: true }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
 
@@ -58,7 +63,7 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     owner: old.owner,
     baseController: "controller" in to ? to.controller : old.owner,
     timestamp: stamped.timestamp,
-    tapped: false,
+    tapped: "tapped" in to && to.tapped,
     damage: 0,
     counters: {},
     controlledSinceTurnStart: false,

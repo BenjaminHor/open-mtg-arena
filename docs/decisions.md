@@ -812,3 +812,31 @@ every schema change and every change D-024 lists bumps it.
   ruling, asked because the CR doesn't settle this wording (CR 701.23c's Lobotomy example reads the other way for
   Lobotomy's own text): "for each card exiled do xyz. If the graveyard is empty then the for each is basically 0 so it
   would be 0 xyz actions. Aka no searches."
+
+**D-064: Searching libraries, "this way" results, and "you may"** · 2026-11-20 · accepted (M2-05b2b)
+- `GameState.resolution` keeps what the resolving object has done "this way" (CR 608.2c): the cards a `search` found
+  and the cards `exileGraveyard` exiled. It's set as an object starts to resolve and cleared on every exit
+  (`finishResolving`, its early return, `doesNotResolve`); an invariant checks it never outlives its resolution.
+  Effects name the found cards with a `"found"` subject, so search, reveal, put and shuffle stay separate steps
+  (Liliana Vess will need CR 701.24b: search, shuffle, then put on top). A search asks whenever the library has cards,
+  even if none fits (D-062), and shows the chooser the whole library by identity (`seen`, CR 701.23a).
+- An "any number" choice ends only on `finishChoosing`, never at its maximum, which would tell the other players how
+  many copies a hidden library held.
+- "You may" is a `chooseYesNo` decision whose yes queues the effect it resumes; no does nothing.
+- Filters gain `supertypes` (read through `supertypesOf`) and `not`: "other than basic land cards" is not (basic and
+  land), so a nonbasic land like Terramorphic Expanse is exiled by Haunting Echoes.
+- "Onto the battlefield tapped" enters tapped as part of the move (CR 110.5b), never "becoming tapped" (CR 603.2e).
+- "Sacrifice this land" is a `sacrificeSelf` cost part, sacrificed with the rest of the cost after {T} (D-059).
+- Writing `resolution` is bookkeeping, like `casting` and `combat` (pipeline/README.md): it records what events already
+  did. Recording a result with no resolution under way throws, rather than quietly losing it.
+- Exported for hosts (D-023): `Seen` and `Resolution`, which the exported decision and state types use, and
+  `ViewChooseYesNo` with the other `ViewDecision` types, which a UI renders.
+- The new state field changes the saved replays' final-state hashes and nothing else (checked: each final state
+  minus `resolution: null` has the old hash), so `pnpm replays:update` rewrote them.
+
+**D-065: Losing 0 life is an event** · 2026-11-20 · accepted (owner)
+- "A player loses 0 life" (Xathrid Demon sacrificing a 0-power creature, a "loses X life" with X of 0) is a life-loss
+  event: `loseLife` proposes it, it emits `LIFE_LOST` with amount 0, and "whenever a player loses life" triggers and
+  life-loss replacements (M2-07, M2-08) will see it. The CR settles this only for gaining 0 life (CR 119.9, 119.10)
+  and dealing 0 damage (CR 120.8), not for losing 0. The owner's ruling: "Treat losing 0 life as an event because we
+  may encounter a card(s) that take advantage of that."

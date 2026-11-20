@@ -1,7 +1,15 @@
 // The engine's invariants (CLAUDE.md "Hard invariants", docs/testing.md "Invariant fuzzing"), checked on a state.
 // The scenario runner checks every state it sees; the fuzzer (M1-18) will reuse this.
 
-import { applyAction, type CardDatabase, type GameState, legalActions, phaseOf } from "@mtg/engine";
+import {
+  applyAction,
+  type CardDatabase,
+  type GameState,
+  legalActions,
+  type ObjectId,
+  phaseOf,
+  type ZoneRef,
+} from "@mtg/engine";
 
 /** Everything wrong with a state, as readable messages. Empty when it holds every invariant. */
 export function invariantProblems(state: GameState, cards: CardDatabase): string[] {
@@ -29,6 +37,25 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
     if (obj.kind === "card" && (obj.choices === null) === state.zones.stack.includes(obj.id)) {
       problems.push(`${obj.id}: a card has casting choices exactly when it's on the stack`);
     }
+  }
+  // Cards a decision shows by identity (D-062) are in the fixed order and really in that zone: never the zone's own
+  // order, never cards from elsewhere.
+  const pending = state.pending;
+  if (pending?.kind === "chooseCards" && pending.seen !== null) {
+    const shown = pending.seen.cards;
+    const inZone = zoneOf(state, pending.seen.from).map((id) => {
+      const obj = state.objects[id];
+      return obj?.kind === "card" ? obj.oracleId : "";
+    });
+    if (JSON.stringify(shown) !== JSON.stringify([...shown].sort()))
+      problems.push("a decision shows cards out of order");
+    if (!shown.every((card) => inZone.splice(inZone.indexOf(card), inZone.includes(card) ? 1 : 0).length === 1))
+      problems.push("a decision shows cards that aren't in the zone it names");
+  }
+  // "This way" results belong to one resolution: they exist only while that object's resolution is still to finish.
+  const resolving = state.resolution;
+  if (resolving !== null && !state.work.some((w) => w.kind === "finishResolving" && w.object === resolving.object)) {
+    problems.push(`a resolution record for ${resolving.object} outlives its resolution (CR 608.2c)`);
   }
   const inCombat = state.turn !== null && phaseOf(state.turn.step) === "combat";
   if (state.result === null && (state.combat !== null) !== inCombat) {
@@ -63,4 +90,10 @@ export function plainJsonProblems(value: unknown, path: string): string[] {
   const proto = Object.getPrototypeOf(value);
   if (proto !== Object.prototype && proto !== null) return [`${path} isn't a plain object`];
   return Object.entries(value).flatMap(([key, item]) => plainJsonProblems(item, `${path}.${key}`));
+}
+
+/** The objects in a zone, by its reference. */
+function zoneOf(state: GameState, ref: ZoneRef): readonly ObjectId[] {
+  if (!("player" in ref)) return state.zones[ref.zone];
+  return state.zones.players[ref.player]?.[ref.zone] ?? [];
 }
