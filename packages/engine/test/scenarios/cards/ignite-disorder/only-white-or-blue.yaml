@@ -1,5 +1,5 @@
 name: Ignite Disorder can't target a creature that's neither white nor blue
-rules: [CR 115.1a]
+rules: [CR 601.2c]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -9,7 +9,6 @@ setup:
     battlefield: [Elite Vanguard, Grizzly Bears]
 steps:
   - p1 cast: Ignite Disorder
-    targets: [[p2:Elite Vanguard, p2:Grizzly Bears]]
-    divide: [1, 2]
+    targets: [p2:Grizzly Bears]
     pay: auto
   - expect error: illegalAction

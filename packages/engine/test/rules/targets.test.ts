@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import type { ObjectFilter, TargetSpec } from "../../src/cards/types.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
-import { legalActions } from "../../src/index.ts";
+import { applyAction, legalActions } from "../../src/index.ts";
 import { legalTargets, targetsProblem } from "../../src/rules/targets.ts";
 import type { Target } from "../../src/state/objects.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
@@ -83,7 +83,7 @@ describe("restrictions on a permanent (CR 115.2)", () => {
     expect(permanents({ types: ["creature"], tapped: true })).toStrictEqual([knight]);
   });
 
-  it("who controls it, relative to the spell's controller (CR 102.2, 102.3)", () => {
+  it("who controls it, relative to the spell's controller (CR 102.2)", () => {
     expect(permanents({ types: ["creature"], controller: "you" })).toStrictEqual([bears, knight]);
     expect(permanents({ types: ["creature"], controller: "notYou" })).toStrictEqual([theirBears]);
     // With no teams, every other player is an opponent.
@@ -117,6 +117,9 @@ describe("targets in other zones (CR 115.2)", () => {
     expect(card("any", {})).toStrictEqual([mine, theirs]);
     // A card's characteristics are read in the graveyard too: "creature card".
     expect(card("any", { types: ["creature"] })).toStrictEqual([theirs]);
+    // A card in a graveyard isn't controlled by anyone, not even its owner (CR 109.4).
+    expect(card("yours", { controller: "you" })).toStrictEqual([]);
+    expect(card("any", { controller: "notYou" })).toStrictEqual([]);
   });
 
   it("a spell: a card on the stack, never an ability (CR 112.1), and never itself (CR 115.5)", () => {
@@ -138,6 +141,23 @@ describe("targets in other zones (CR 115.2)", () => {
       TEST_CARDS,
     );
     expect(creatureSpells).toStrictEqual([]);
+  });
+});
+
+describe("what can target what", () => {
+  it("an ability can target its own source: only the ability itself can't be its target (CR 115.5)", () => {
+    const state = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], battlefield: [permanent(PINGER)] }),
+        playerSetup("p2", { library: ["forest"] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    const pinger = state.zones.battlefield[0] as ObjectId;
+    const targets = legalTargets(state, { kind: "anyTarget" }, { object: pinger, controller: "p1" }, TEST_CARDS);
+    expect(ids(targets)).toStrictEqual([pinger, "p1", "p2"]);
   });
 });
 
@@ -196,5 +216,42 @@ describe("how many targets (CR 601.2c, 115.6)", () => {
       a.type === "ANSWER" && a.answer.kind === "divide" ? [a.answer.amount] : [],
     );
     expect(shares).toStrictEqual([1]);
+  });
+
+  it("the text's maximum caps the count even when the amount would allow more (CR 601.2c)", () => {
+    const split = TEST_CARDS[SPLIT];
+    if (split === undefined) throw new Error("no Split");
+    // "4 damage divided as you choose among one, two, or three target creatures", with four creatures out.
+    const cards = {
+      ...TEST_CARDS,
+      [SPLIT]: {
+        ...split,
+        def: {
+          ...split.def,
+          spell: {
+            targets: [{ kind: "permanent", filter: { types: ["creature"] }, count: { min: 1, max: 3 } }],
+            effects: [{ op: "dealDamage", amount: 4, from: "self", to: { target: 0 }, divided: "asYouChoose" }],
+          },
+        },
+      },
+    } as typeof TEST_CARDS;
+    let game: Game = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], hand: [SPLIT], battlefield: [permanent("mountain")] }),
+        playerSetup("p2", {
+          library: ["forest"],
+          battlefield: [permanent(BEARS), permanent(BEARS), permanent(BEARS), permanent(BEARS)],
+        }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const cast = legalActions(game.state, "p1", cards).find((a) => a.type === "CAST_SPELL");
+    if (cast === undefined) throw new Error("can't cast Split");
+    const result = applyAction(game.state, cast, cards);
+    if (!result.ok) throw new Error(result.error.message);
+    game = { state: result.state, events: result.events };
+    expect(game.state.pending).toMatchObject({ kind: "chooseTargetCount", min: 1, max: 3 });
   });
 });

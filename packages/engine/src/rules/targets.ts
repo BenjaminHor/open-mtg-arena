@@ -48,7 +48,7 @@ export function legalTargets(state: GameState, spec: TargetSpec, by: Targeting, 
       return objects(spells);
     }
     case "cardInGraveyard": {
-      // "Your graveyard" or "a graveyard" names the zone (CR 109.2a); cards there have no controller (CR 109.4).
+      // "Your graveyard" or "a graveyard" names the zone (CR 109.2a), not control: cards there have none (CR 109.4).
       const owners = spec.graveyard === "yours" ? [by.controller] : state.turnOrder;
       const inGraveyards = owners.flatMap((p) => state.zones.players[p]?.graveyard ?? []);
       return objects(inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards)));

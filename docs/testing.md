@@ -107,7 +107,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   per instance of "target", in order: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`), or a list of them
   when that instance has several (`targets: [[p2:Elite Vanguard, p2:Coral Merfolk]]`). For an instance whose number of
   targets varies, the number announced (CR 601.2c) is the list's length (one for a single entry). `divide` gives each
-  target's share of a divided effect, in the order the targets were listed (`divide: [2, 1]`, CR 601.2d); without it,
+  target's share of a divided effect, in the order the targets were listed (`divide: [2, 1]`, CR 601.2d): one share per
+  target, adding up to the whole, or the step fails (the last share isn't asked for: it gets the rest); without it,
   the cast stops at the division, where `choose` gives one share at a time. `choose` also answers a number of targets. `pay: auto` pays with `autoPay`
   (activating mana abilities as needed); `pay: { R: 1 }` pays that from mana already in the pool; `pay: cancel` cancels
   the cast. Without `pay`, the cast stops at the payment decision, where the player can `activate` mana abilities and

@@ -76,7 +76,16 @@ export function stackAnswer(state: GameState, step: StackStep, cards: CardDataba
       return name === undefined ? null : { kind: "chooseTarget", target: targetNamed(state, name, cards) };
     }
     case "divide": {
-      const amount = step.divide?.[pending.shares.length];
+      if (step.divide === null) return null;
+      // One share per target, adding up to the whole: the last is never asked for (it gets the rest), so the runner
+      // checks it here rather than let a wrong list pass.
+      const total = step.divide.reduce((sum, n) => sum + n, 0);
+      if (step.divide.length !== pending.targets.length || total !== pending.amount) {
+        throw new Error(
+          `${step.kind} ${step.card}: divide lists one share per target (${pending.targets.length}), adding up to ${pending.amount}`,
+        );
+      }
+      const amount = step.divide[pending.shares.length];
       return amount === undefined ? null : { kind: "divide", amount };
     }
     default:

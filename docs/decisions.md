@@ -712,6 +712,6 @@ every schema change and every change D-024 lists bumps it.
   choices and, for a division, by the amount. A fixed count asks nothing, so M1's games replay unchanged.
 - A division "as you choose" is announced after the targets, one share at a time like combat damage (`divide`), and
   stored on the spell as target and amount pairs, so an illegal target loses only its own share (CR 601.2d, 608.2b,
-  115.7f). Fireball's "divided evenly" is different (worked out at resolution, per its rulings) and comes with M2-04b.
+  later: 115.7f for changed targets). Fireball's "divided evenly" is different (worked out at resolution, per its rulings) and comes with M2-04b.
 - Interim prebuilt decks `white-red` and `blue-green` bring the new cards into the golden games until the first M10
   deck pair (after M2-05) replaces them. The bench reads states only from M1's four golden games (D-049).

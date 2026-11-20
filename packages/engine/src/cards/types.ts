@@ -165,7 +165,7 @@ export type ObjectFilter = {
   combat?: "attacking" | "blocking" | "attackingOrBlocking";
   /**
    * Relative to the spell's or ability's controller: "you control", "you don't control", "an opponent controls"
-   * (they differ once teams exist, CR 102.3).
+   * (they differ once teams exist, later: CR 102.3).
    */
   controller?: "you" | "notYou" | "opponent";
 };

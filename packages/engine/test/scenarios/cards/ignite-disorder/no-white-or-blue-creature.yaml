@@ -1,0 +1,12 @@
+name: With no white or blue creature on the battlefield, Ignite Disorder can't be cast
+rules: [CR 601.2c, CR 601.2e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Ignite Disorder]
+    battlefield: [Mountain, Mountain]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Ignite Disorder
+  - expect error: illegalAction

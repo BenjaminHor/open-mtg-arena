@@ -55,6 +55,18 @@ describe("the scenario runner fails a scenario that's wrong", () => {
     ).toMatch(/but the action was accepted/);
   });
 
+  it("fails a divide list that doesn't give one share per target adding up to the whole", () => {
+    const ignite = at(
+      "main1",
+      "  p1: { hand: [Ignite Disorder], battlefield: [Mountain, Mountain] }\n  p2: { battlefield: [Elite Vanguard, Coral Merfolk] }\n",
+    );
+    const cast = (divide: string) =>
+      `${ignite}  - p1 cast: Ignite Disorder\n    targets: [[p2:Elite Vanguard, p2:Coral Merfolk]]\n    divide: ${divide}\n    pay: auto\n`;
+    expect(problems(cast("[2, 1]"))).toStrictEqual([]);
+    expect(first(cast("[2, 9]"))).toMatch(/one share per target \(2\), adding up to 3/);
+    expect(first(cast("[1, 1, 1]"))).toMatch(/one share per target/);
+  });
+
   it("matches every key of pending, not just one", () => {
     expect(first(`${main1}  - expect: { pending: { player: p2, kind: priority } }\n`)).toMatch(
       /^step 1: pending: expected/,

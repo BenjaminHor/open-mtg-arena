@@ -36,8 +36,12 @@ export function matchesFilter(
   if (filter.subtypes !== undefined && !anyOf(subtypesOf(state, id, cards), filter.subtypes)) return false;
   if (filter.tapped === true && !obj.tapped) return false;
   if (filter.combat !== undefined && !inCombatAs(state, id, filter.combat, cards)) return false;
-  if (filter.controller !== undefined && !controlledAs(state, controllerOf(state, id), filter.controller, you))
-    return false;
+  if (filter.controller !== undefined) {
+    // Only permanents and spells have a controller; a card in any other zone has none, so it's controlled by no one
+    // (CR 109.4), even though `controllerOf` names its owner for questions that need someone.
+    const controlled = state.zones.battlefield.includes(id) || state.zones.stack.includes(id);
+    if (!controlled || !controlledAs(controllerOf(state, id), filter.controller, you)) return false;
+  }
   return true;
 }
 
@@ -63,21 +67,16 @@ function inCombatAs(state: GameState, id: ObjectId, as: NonNullable<ObjectFilter
 }
 
 /**
- * "You control", "you don't control", "an opponent controls". With no teams, a player's opponents are all the other
- * players (CR 102.2, 102.3), so "an opponent" and "not you" agree until teams exist.
+ * "You control", "you don't control", "an opponent controls". In a two-player game the opponent is the other player
+ * (CR 102.2), so "an opponent" and "not you" agree; they differ once teams exist (later: CR 102.3).
  */
-function controlledAs(
-  state: GameState,
-  controller: PlayerId,
-  as: NonNullable<ObjectFilter["controller"]>,
-  you: PlayerId,
-): boolean {
+function controlledAs(controller: PlayerId, as: NonNullable<ObjectFilter["controller"]>, you: PlayerId): boolean {
   switch (as) {
     case "you":
       return controller === you;
     case "notYou":
       return controller !== you;
     case "opponent":
-      return controller !== you && state.turnOrder.includes(controller);
+      return controller !== you;
   }
 }

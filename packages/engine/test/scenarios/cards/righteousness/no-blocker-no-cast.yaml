@@ -1,5 +1,5 @@
 name: With no blocking creature on the battlefield, Righteousness has no legal target and can't be cast
-rules: [CR 601.2c]
+rules: [CR 601.2c, CR 601.2e]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -11,7 +11,6 @@ steps:
   - all pass: until combat.declareAttackers
   - p1 attack: [Hill Giant]
   - p1 pass: once
+  # The cast itself is refused: there's nothing it could target.
   - p2 cast: Righteousness
-    targets: [p1:Hill Giant]
-    pay: auto
   - expect error: illegalAction
