@@ -489,8 +489,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Built (D-090): Harm's Way, 6 scenarios (`harms-way*.yaml`) and a unit test of the amount used up; golden
          pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Fuzz clean. Review fixes done (93f2c4d,
          6fd7c9e; D-090 rewritten): 15 Harm's Way scenarios, unit tests in `test/game/divide-redirect.test.ts`;
-         mutations 10 of 11 caught (the survivor only adds a zero-maximum entry to a split). Next: fuzz, rules-judge
-         re-review, PR. The reviews found:
+         mutations 10 of 11 caught (the survivor only adds a zero-maximum entry to a split). Fuzz clean.
+         Re-review (rules-judge, 2026-11-20): the three first findings are fixed, but settling shares before the
+         CR 616.1 choice gives two new wrong results, so a redesign comes next (one more cycle; if the judge still finds
+         a wrong result, revert M2-08d2 and ask the owner):
+         - Two of one player's Harm's Ways on one source: the cast order decides, not the player's choice. Hill Giant
+           (3) at p1, p1's Harm's Ways A (target p2) and B (target p2's Grizzly Bears); B first: the Bears die, p2 19.
+         - Prevention first leaves a share unused: Earthquake X=2 with p1's Grizzly Bears, Guardian Seraph and Harm's
+           Way (target p2's Hill Giant); Seraph first, then Harm's Way must take 2 of the 3 left (1 and 1 allowed);
+           nothing kept. Two players: p2's Goblin Artillery at p1, Harm's Ways on Artillery both sides (p2's at p1,
+           p1's at p2), p1's Guardian Seraph: either order gives p1 19, p2 17.
+         - Low: the split is asked before APNAP order choices; Artillery at its own controller asks a split between two
+           entries to p1 (merge first); two parts at one hop to one target share a key; CR 400.7c is prevention only;
+           `later: CR 609.7a` marks a built rule; the unit test asserts the wrong order behavior.
+         Earlier findings:
          - Rules: Guardian Seraph prevents twice when redirected damage joins the same source's damage to the same
            player (CR 615.10: per source, per event): thread what's used across the event's entries and merge the
            dealt entries by source and recipient. Sources only referred to by a stack object (a pinger bounced in
