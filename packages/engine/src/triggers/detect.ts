@@ -37,6 +37,7 @@ function triggered(state: GameState, source: ObjectId, event: GameEvent, cards: 
   const controller = controllerOf(state, source);
   return triggersOf(state, source, cards).flatMap(({ index, def }) => {
     const occurrences = matches(state, source, def.when, event, cards);
+    if (occurrences.length === 0) return [];
     // An "intervening if" that's false as the event happens means it doesn't trigger at all (CR 603.4).
     if (def.onlyIf !== undefined && !holds(state, source, def.onlyIf)) return [];
     return occurrences.map((matched) => ({ source, sourceOracleId: obj.oracleId, index, controller, event: matched }));

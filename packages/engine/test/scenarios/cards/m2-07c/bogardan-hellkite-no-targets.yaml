@@ -1,5 +1,5 @@
 name: Bogardan Hellkite's trigger with no targets chosen goes on the stack and resolves doing nothing
-rules: [CR 601.2c, CR 603.3d]
+rules: [CR 107.1c, CR 601.2c, CR 603.3d]
 setup:
   turn: { active: p1, step: main1 }
   p1:

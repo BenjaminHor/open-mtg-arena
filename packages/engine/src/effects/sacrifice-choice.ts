@@ -1,5 +1,6 @@
-// "Each opponent sacrifices a land of their choice" (Yawning Fissure, M2-05c2): the sacrificing player chooses among
-// the permanents they control that fit (CR 701.21a, 608.2d), then sacrifices it.
+// "Each opponent sacrifices a land of their choice" (Yawning Fissure), "sacrifice a creature other than this creature"
+// (Xathrid Demon): the sacrificing player chooses among the permanents they control that fit (CR 701.21a, 608.2d), then
+// sacrifices it; what's sacrificed is kept, with its power, for "if you can't" and "the sacrificed creature's power".
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";

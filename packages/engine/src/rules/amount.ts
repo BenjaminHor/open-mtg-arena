@@ -4,7 +4,7 @@
 import type { Amount } from "../cards/types.ts";
 
 /** An amount that needs no game to work out: a number, or X. */
-export type FixedAmount = Exclude<Amount, { count: unknown } | "thatMuch" | "sacrificedPower">;
+export type FixedAmount = Extract<Amount, number | "X">;
 
 /** Whether the amount is known before resolution: a number or X, as a divided amount must be (CR 601.2d). */
 export function isFixedAmount(amount: Amount): amount is FixedAmount {

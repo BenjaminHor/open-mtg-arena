@@ -272,12 +272,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          action; three of the cards in the M10 pair; 3 golden games (5.4 MB). 150 cards in the pool; 142 of the 234
          Magic 2010 cards. Plan: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",
          then a loss equal to the sacrificed creature's power, read from its last known characteristics, CR 608.2h:
-         `lastKnown` snapshots the computed power as a card leaves the battlefield, future-rules; "if you can't" taps
+         kept with it in the resolution's "this way" record as it's sacrificed, D-079; "if you can't" taps
          it and loses 7), Capricious Efreet (targets on both sides, "up to two"; destroy one of the still-legal targets
          at random with the seeded RNG), Inferno Elemental (blocks or becomes blocked: one trigger per blocker/attacker
          pair, matched where `BLOCKERS_DECLARED` is emitted; "that creature" is the trigger's object), Bogardan Hellkite
-         (flash, CR 702.8a: cast any time an instant could be; its entering trigger divides 5 damage among one to five
-         targets, the division chosen as the trigger goes on the stack, CR 603.3d, 601.2d).
+         (flash, CR 702.8a: cast any time an instant could be; its entering trigger divides 5 damage among zero to five
+         targets (CR 107.1c), the division chosen as the trigger goes on the stack, CR 603.3d, 601.2d).
        - M2-07c2: delayed triggers (CR 603.7): created by a resolving effect, kept in `GameState.delayedTriggers` with
          their own `AbilityRef`, removed once triggered ("the next end step"); Dragon Whelp's per-object, per-turn
          activation count (D-078); "becomes the target" (CR 601.2c, 603.2) for spells, activations and triggers, as
@@ -487,9 +487,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
-- The golden folder is 5.1 MB of its 8 MB budget (D-073) after M2-07b, with about 96 Magic 2010 cards still to script;
-  at the recent rate (about 0.3 MB per batch of a dozen cards, plus log lines each new event type adds) it passes
-  8 MB before M2 ends. Before then: a more compact log, fewer games per card, or a higher budget (an owner decision).
+- The golden folder's budget is 16 MB through M2 (D-081). It's 5.4 MB with 150 cards, about 36 KB per card; all 234
+  Magic 2010 cards come to about 9 MB. Before the pool grows past Magic 2010, change how golden games are stored
+  (D-081).
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with

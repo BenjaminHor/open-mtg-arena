@@ -39,7 +39,7 @@ from when it left until the stack is next empty. Howling Mine Shattered in respo
 
 ## Tests
 
-The m2-07a and m2-07b scenarios (`test/scenarios/cards/m2-07a/`, `m2-07b/`) show each card and rule; `test/triggers/triggers.test.ts` covers
+The m2-07a, m2-07b and m2-07c scenarios (`test/scenarios/cards/m2-07a/`, `m2-07b/`, `m2-07c/`) show each card and rule; `test/triggers/triggers.test.ts` covers
 what the pool's cards can't reach (creatures entering together, a cancelled cast's triggers, the CR 603.3b repeat, an
 intervening if turned false before resolving).
 

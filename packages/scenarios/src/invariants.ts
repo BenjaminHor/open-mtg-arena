@@ -73,7 +73,8 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
   // offered that can't be completed would leave the game stuck.
   const waiting = state.pending;
   if (waiting !== null && state.result === null) {
-    const answers = legalActions(state, waiting.player, cards).filter((a) => a.type !== "CONCEDE");
+    // Conceding is always allowed and never listed (D-042), so it's no way out here.
+    const answers = legalActions(state, waiting.player, cards);
     if (answers.length === 0) problems.push(`${waiting.player} must decide ${waiting.kind} but has no legal action`);
   }
   for (const player of state.turnOrder) {

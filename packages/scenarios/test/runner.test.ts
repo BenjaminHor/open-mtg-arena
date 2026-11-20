@@ -315,6 +315,18 @@ describe("invariantProblems", () => {
     expect(invariantProblems(created.state, cards)).toStrictEqual([]);
     const broken = { ...created.state, zones: { ...created.state.zones, exile: ["o999" as const] } };
     expect(invariantProblems(broken, cards)).toContain("zone entry o999 isn't an object");
+    // A decision with no way to answer it: the game would be stuck (a trigger's targeting has no cancel).
+    const stuck = {
+      ...created.state,
+      pending: {
+        id: "d99" as const,
+        player: "p1" as const,
+        kind: "orderTriggers" as const,
+        batch: [],
+        priorityTo: "p1" as const,
+      },
+    };
+    expect(invariantProblems(stuck, cards)).toContain("p1 must decide orderTriggers but has no legal action");
   });
 });
 

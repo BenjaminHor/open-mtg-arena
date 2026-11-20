@@ -109,6 +109,64 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it('reports "that creature", what was sacrificed and nested effects where they can\'t be read', () => {
+    const toIt: Effect = { op: "dealDamage", amount: 3, from: "self", to: "triggeringObject" };
+    const upkeep: TriggeredAbilityDef = {
+      when: { kind: "beginningOfStep", step: "upkeep", whose: "yours" },
+      targets: [],
+      effects: [toIt],
+    };
+    const def: CardDef = {
+      name: "Furnace Whelp",
+      oracle: whelp.oracleText,
+      keywords: ["flying"],
+      triggers: [upkeep],
+      abilities: [
+        {
+          kind: "activated",
+          cost: [],
+          targets: [{ kind: "anyTarget" }],
+          effects: [
+            { op: "loseLife", who: "you", amount: "sacrificedPower" },
+            { op: "loseLife", who: "triggeringObject", amount: 1 },
+            { op: "destroyOneAtRandom", among: ["you"] },
+          ],
+        },
+        {
+          kind: "activated",
+          cost: [],
+          targets: [{ kind: "anyTarget" }],
+          effects: [
+            { op: "sacrifice", who: "you", filter: { types: ["creature"] } },
+            {
+              op: "ifNothingSacrificed",
+              effects: [
+                {
+                  op: "dealDamage",
+                  amount: "sacrificedPower",
+                  from: "self",
+                  to: { target: 0 },
+                  divided: "asYouChoose",
+                },
+                { op: "loseLife", who: "you", amount: "thatMuch" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    expect(definitionProblems([def], [whelp])).toStrictEqual([
+      "Furnace Whelp ability 1: loseLife reads what was sacrificed, but no sacrifice comes before it",
+      "Furnace Whelp ability 1: loseLife is for players, not objects",
+      "Furnace Whelp ability 1: destroyOneAtRandom is for objects, not players",
+      "Furnace Whelp ability 2: a divided amount is a number or X",
+      "Furnace Whelp ability 2: a divided effect, mana or another ifNothingSacrificed can't be inside ifNothingSacrificed",
+      'Furnace Whelp ability 1: "that creature" is only for a triggered ability',
+      'Furnace Whelp ability 2: "that much" is only for a triggered ability',
+      'Furnace Whelp trigger 1: its event has no "that creature"',
+    ]);
+  });
+
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);

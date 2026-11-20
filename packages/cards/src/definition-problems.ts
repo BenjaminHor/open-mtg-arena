@@ -1,8 +1,10 @@
 // Checks that the hand-written definitions agree with the card data. Run by the tests, so `pnpm check` fails
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
-import type { CardDef, Effect, EffectSubject, TargetSpec, TriggerCondition } from "@mtg/engine";
+import { type CardDef, type Effect, type EffectSubject, isFixedAmount, type TargetSpec } from "@mtg/engine";
+import { flatEffects } from "./flat-effects.ts";
 import type { PoolCard } from "./pool-data.ts";
+import { triggerWordProblems } from "./trigger-words.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
 const KEYWORD_ACTIONS: readonly string[] = ["mill"];
@@ -63,33 +65,8 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
     }
     if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
-    // Words only a triggered ability can use, which would otherwise do nothing in silence.
-    if (def.spell?.effects.some((e) => e.op === "sacrificeSource"))
-      problems.push(`${def.name}: a spell has no source to sacrifice ("sacrifice it" is for an ability)`);
-    if (def.spell !== undefined && (namesTriggeringPlayer(def.spell.effects) || limitsToThatPlayer(def.spell)))
-      problems.push(`${def.name}: "that player" is only for a triggered ability`);
-    if (def.spell !== undefined && namesThatMuch(def.spell.effects))
-      problems.push(`${def.name}: "that much" is only for a triggered ability`);
-    if (def.spell !== undefined && namesTriggering(def.spell.effects, "triggeringObject"))
-      problems.push(`${def.name}: "that creature" is only for a triggered ability`);
-    for (const [i, ability] of (def.abilities ?? []).entries()) {
-      if (namesTriggeringPlayer(ability.effects) || limitsToThatPlayer(ability))
-        problems.push(`${def.name} ability ${i + 1}: "that player" is only for a triggered ability`);
-      if (namesThatMuch(ability.effects))
-        problems.push(`${def.name} ability ${i + 1}: "that much" is only for a triggered ability`);
-      if (namesTriggering(ability.effects, "triggeringObject"))
-        problems.push(`${def.name} ability ${i + 1}: "that creature" is only for a triggered ability`);
-    }
+    problems.push(...triggerWordProblems(def));
     for (const [i, trigger] of (def.triggers ?? []).entries()) {
-      if (!suppliesPlayer(trigger.when) && (namesTriggeringPlayer(trigger.effects) || limitsToThatPlayer(trigger)))
-        problems.push(`${def.name} trigger ${i + 1}: its event has no "that player"`);
-      // "That player controls" is read only where targets are chosen and checked (rules/targets.ts).
-      if (limitsToThatPlayer({ when: trigger.when, effects: trigger.effects }))
-        problems.push(`${def.name} trigger ${i + 1}: only a target can be limited to what "that player" controls`);
-      if (!suppliesObject(trigger.when) && namesTriggering(trigger.effects, "triggeringObject"))
-        problems.push(`${def.name} trigger ${i + 1}: its event has no "that creature"`);
-      if (!suppliesAmount(trigger.when) && namesThatMuch(trigger.effects))
-        problems.push(`${def.name} trigger ${i + 1}: its event has no "that much"`);
       if (anyColor(trigger.effects))
         problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
       problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
@@ -100,90 +77,6 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
   }
   return problems;
-}
-
-/** Whether the trigger's event has an amount "that much" can mean (`TriggerEvent.amount`): only life gained so far. */
-function suppliesAmount(when: TriggerCondition): boolean {
-  switch (when.kind) {
-    case "playerGainsLife":
-      return true;
-    case "selfEnters":
-    case "anotherEnters":
-    case "selfAttacks":
-    case "beginningOfStep":
-    case "spellCast":
-    case "playerDraws":
-    case "playerDiscards":
-    case "landTappedForMana":
-    case "selfDealsDamageToPlayer":
-    case "selfBlocksOrBlocked":
-      return false;
-  }
-}
-
-/** Whether the trigger's event has an object "that creature" can mean (`TriggerEvent.object`). */
-function suppliesObject(when: TriggerCondition): boolean {
-  switch (when.kind) {
-    // The creature that entered or attacked, the spell cast, the creature on the other side of a block.
-    case "selfEnters":
-    case "anotherEnters":
-    case "selfAttacks":
-    case "spellCast":
-    case "selfBlocksOrBlocked":
-      return true;
-    case "beginningOfStep":
-    case "playerDraws":
-    case "playerDiscards":
-    case "landTappedForMana":
-    case "selfDealsDamageToPlayer":
-    case "playerGainsLife":
-      return false;
-  }
-}
-
-/** Whether any of these effects' amounts is "that much". */
-function namesThatMuch(effects: readonly Effect[]): boolean {
-  return flatEffects(effects).some((e) => "amount" in e && e.amount === "thatMuch");
-}
-
-/** Whether the trigger's event has a player "that player" can mean (`TriggerEvent.player`). */
-function suppliesPlayer(when: TriggerCondition): boolean {
-  switch (when.kind) {
-    case "selfEnters":
-    case "anotherEnters":
-    case "selfAttacks":
-    case "selfBlocksOrBlocked":
-      return false;
-    // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.
-    case "beginningOfStep":
-    case "spellCast":
-    case "playerDraws":
-    case "playerDiscards":
-    case "landTappedForMana":
-    case "selfDealsDamageToPlayer":
-    case "playerGainsLife":
-      return true;
-  }
-}
-
-/** The effects with those nested in `ifNothingSacrificed` listed after it, in order, for the checks that read each. */
-function flatEffects(effects: readonly Effect[]): Effect[] {
-  return effects.flatMap((e) => (e.op === "ifNothingSacrificed" ? [e, ...flatEffects(e.effects)] : [e]));
-}
-
-/** Whether a filter anywhere in this text (targets, effects, a trigger condition) says "that player controls". */
-function limitsToThatPlayer(text: object): boolean {
-  return JSON.stringify(text).includes('"controller":"triggeringPlayer"');
-}
-
-/** Whether any of these effects names "that player" (the subject `triggeringPlayer`), in any of its subject fields. */
-function namesTriggeringPlayer(effects: readonly Effect[]): boolean {
-  return namesTriggering(effects, "triggeringPlayer");
-}
-
-/** Whether any of these effects names "that player" or "that creature", in any of its subject fields. */
-function namesTriggering(effects: readonly Effect[], subject: "triggeringPlayer" | "triggeringObject"): boolean {
-  return flatEffects(effects).some((e) => Object.values(e).includes(subject));
 }
 
 /**
@@ -214,8 +107,7 @@ function targetProblems(
       problems.push(`${where}: ${effect.op} applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
-    if (typeof effect.amount === "object" || (typeof effect.amount === "string" && effect.amount !== "X"))
-      problems.push(`${where}: a divided amount is a number or X`);
+    if (!isFixedAmount(effect.amount)) problems.push(`${where}: a divided amount is a number or X`);
     const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
@@ -275,6 +167,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     const kind = targetKind(s);
     return (
       s === "you" ||
+      s === "triggeringPlayer" ||
       s === "eachPlayer" ||
       s === "eachOpponent" ||
       kind === "player" ||
@@ -286,10 +179,28 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     const kind = targetKind(s);
     const each = typeof s === "object" && "each" in s;
     return (
-      s === "self" || s === "found" || each || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard"
+      s === "self" ||
+      s === "found" ||
+      s === "triggeringObject" ||
+      each ||
+      kind === "permanent" ||
+      kind === "spell" ||
+      kind === "cardInGraveyard"
     );
   };
   for (const effect of effects) {
+    if (effect.op === "destroyOneAtRandom" && effect.among.some(playerOnly))
+      problems.push(`${where}: destroyOneAtRandom is for objects, not players`);
+    // The engine reads a division and mana only from an ability's own effects, never from nested ones.
+    if (
+      effect.op === "ifNothingSacrificed" &&
+      effect.effects.some(
+        (e) => e.op === "addMana" || e.op === "ifNothingSacrificed" || ("divided" in e && e.divided !== undefined),
+      )
+    )
+      problems.push(
+        `${where}: a divided effect, mana or another ifNothingSacrificed can't be inside ifNothingSacrificed`,
+      );
     // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
     if (
       effect.op === "dealDamage" &&

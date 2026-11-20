@@ -179,7 +179,7 @@ function dividedEffect(
     if (effect.op === "dealDamage" && effect.divided === "asYouChoose") {
       if (typeof effect.to !== "object" || !("target" in effect.to))
         throw new Error("A divided effect divides among targets");
-      // Divided as it's cast: a number or X, never a count or "that much", worked out on resolution (definition-problems.ts).
+      // Divided as it's cast: a number or X, never an amount worked out on resolution (definition-problems.ts).
       if (!isFixedAmount(effect.amount)) throw new Error("A divided amount is a number or X");
       return { instance: effect.to.target, amount: amountOf(effect.amount, choicesOf(state, id).x) };
     }

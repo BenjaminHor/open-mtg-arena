@@ -8,7 +8,8 @@ export const bogardanHellkite: CardDef = {
   triggers: [
     {
       when: { kind: "selfEnters" },
-      // "Any number": as many as 5, since each target is dealt at least 1 (CR 601.2d).
+      // "Any number": zero or more (CR 107.1c; the older exception for divided effects is gone from the CR), and at
+      // most 5, since each target is dealt at least 1 (CR 601.2d).
       targets: [{ kind: "anyTarget", count: { min: 0, max: 5 } }],
       effects: [{ op: "dealDamage", amount: 5, from: "self", to: { target: 0 }, divided: "asYouChoose" }],
     },

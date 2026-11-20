@@ -43,7 +43,8 @@ writes `later: CR 614`, so the coverage report (D-048) doesn't count it as imple
 it, and back each cited rule with a scenario, or a unit test where a scenario can't express it. `pnpm check` fails on
 any cited rule without one, and there's no way to accept a gap. **The CR wins over every other spec** (D-020): if a doc
 or task in this repo disagrees with the CR on rules logic, follow the CR and fix the doc. If the CR itself seems
-ambiguous, stop and ask. Don't guess.
+ambiguous about a card, read the card's rulings, then search online for how players and judges read it (the owner's
+rule, D-080); ask the owner only if that doesn't settle it. Don't guess, and record what you found and where.
 
 ## Hard invariants (engine)
 

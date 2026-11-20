@@ -57,7 +57,8 @@ Every op that acts on objects skips one that's no longer where it was when the t
 now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5); `"eachPlayer"` names
 every player in APNAP order (CR 101.4).
 
-`from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"found"` (what an earlier
+`from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"triggeringPlayer"` and
+`"triggeringObject"` (a triggered ability's "that player" and "that creature"), `"found"` (what an earlier
 `search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
 it now, CR 608.2h), or `{ target: i }` for the still-legal targets of the i-th instance of "target". A subject with no
 legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, `{ count: filter }`, or

@@ -1064,7 +1064,27 @@ every schema change and every change D-024 lists bumps it.
   ("if you can't sacrifice") reads whether anything was started (CR 118.12). With nothing sacrificed, each opponent
   loses 0 life, an event (D-065). `GameState.lastKnown` stays the raw object.
 - `destroyOneAtRandom` picks among the still-legal targets with the seeded RNG as the effect resolves.
+- "Any number of targets" for a divided effect (Bogardan Hellkite) may be zero: CR 107.1c says "any number" is any
+  positive number or zero. Forum answers saying a divided effect needs one target (a Magic Judges forum answer on
+  Atarka's trigger, old Gatherer rulings on X spells) predate the Core Set 2020 rules update, which removed that
+  exception (MTG Salvation's summary). Checked under D-080.
 - Flash (CR 702.8a) is a keyword read in the hand by `castTimingProblem`, the one timing check legal actions and
   `applyAction` share.
 - A scenario invariant: a pending decision always has a legal action (a trigger's targeting has no cancel, so a count
   or division that can't be completed would stall the game).
+
+**D-080: Card ambiguity: the CR, then the rulings, then what players and judges say online** · 2026-11-20 · accepted (owner)
+- The owner: when a card's mechanics are ambiguous, refer to the CR; if that doesn't help, search online for what
+  people think. So the order is the CR, the card's official rulings, then rulings and judge answers found online
+  (judge Q&A, rules forums, tournament rulings), and only then the owner. The source is recorded with the decision or
+  in the scenario's comment, so the reading can be checked later. Replaces CLAUDE.md's "stop and ask" for card
+  ambiguity; a question the CR and these sources leave open still goes to the owner.
+
+**D-081: The golden folder's budget is 16 MB through M2** · 2026-11-20 · accepted (owner)
+- The owner chose to raise the budget again (D-073 set 8 MB) and asked what's reasonable. Measured after M2-07c1: 66
+  games, 5.3 MB for 150 cards, about 36 KB per card (70% action files, 30% logs; both compress about 6 times, and git
+  stores them compressed). All 234 Magic 2010 cards come to about 9 MB, plus log lines new event types add, so 16 MB
+  leaves room through M2.
+- One game per card doesn't scale to the whole of Magic (tens of thousands of cards, about 1 GB at this rate). Before
+  the pool grows past Magic 2010, golden games change shape: a compact action encoding, and games chosen to cover each
+  mechanic and interaction rather than each card, with cards covered by their scenarios. That's a decision for then.
