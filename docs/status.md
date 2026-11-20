@@ -224,6 +224,30 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer
        (Open questions): their Magic 2010 cards come in M2-07, M2-08 and M2-12.
 
+  4. Now: M2-07 triggered abilities (CR 603; m2-rules-depth.md). 30 cards. Draft plan (2026-11-20), in three PRs:
+     - Shared: `CardDef.triggers` (kept out of `abilities`, like `statics`, D-071), each a condition as data, targets,
+       effects, "you may" and an "intervening if" (CR 603.4). Triggers are detected in one place, the work loop: after
+       every action or work item, its events are matched against the state before it (looking back, CR 603.10) and
+       after (entering); matches wait in `GameState.pendingTriggers`. `givePriority`, after state-based actions, puts
+       them on the stack (CR 117.5, 603.3): active player's first in APNAP order (CR 603.3b), a player with several
+       ordering theirs (a decision), each choosing its targets as it goes on (CR 603.3d; none legal: removed), with no
+       cost and no cancel (future-rules: an origin kind in `casting-steps.ts`). An ability on the stack refers to its
+       trigger (`AbilityRef` gains `triggered`) and carries what triggered it ("that player", "that much": the
+       triggering event's player, object and amount). "You may" asks as it resolves (`chooseYesNo`).
+     - M2-07a: the machinery, entering and beginning-of-step triggers: Elvish Visionary, Howling Banshee, Sparkmage
+       Apprentice, Gravedigger, Borderland Ranger, Sage Owl, Acidic Slime, Soul Warden, Ball Lightning, Howling Mine
+       (intervening if), Bramble Creeper (attacks).
+     - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
+       Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
+       Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
+     - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
+       Illusionary Servant ("becomes the target", CR 603.2), Bogardan Hellkite (needs flash: owner question).
+     - No pool card has a "dies" or "leaves the battlefield" trigger, so looking back (CR 603.10) and the last known
+       information store come with their first card (M2-11's Cemetery Reaper? checked then); the detection point
+       already has the state before.
+     - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
+       delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
+       way; copies of abilities and "trigger an additional time" fit the pending list.
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
