@@ -17,7 +17,15 @@ import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
 import { castProblem, startCast } from "./cast.ts";
-import { activateWhilePaying, cancelCasting, chooseTarget, payCost, targetProblem } from "./casting-steps.ts";
+import { activateWhilePaying, cancelCasting, nextCastingStep, payCost } from "./casting-steps.ts";
+import {
+  chooseTarget,
+  chooseTargetCount,
+  divide,
+  shareProblem,
+  targetCountProblem,
+  targetProblem,
+} from "./choose-targets.ts";
 import { playersLose } from "./game-end.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
@@ -117,12 +125,29 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       const chosen = [...pending.chosen, answer.object];
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
     }
+    case "chooseTargetCount": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind !== "chooseTargetCount") return mismatch;
+      const problem = targetCountProblem(pending, answer.count);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, state: nextCastingStep(chooseTargetCount(answered, answer.count), cards), events: [] };
+    }
     case "chooseTarget": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "chooseTarget") return mismatch;
-      const problem = targetProblem(answered, pending.instance, answer.target, cards);
+      const problem = targetProblem(answered, answer.target, cards);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, ...chooseTarget(answered, answer.target, cards) };
+      return { ok: true, state: nextCastingStep(chooseTarget(answered, answer.target), cards), events: [] };
+    }
+    case "divide": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind !== "divide") return mismatch;
+      const problem = shareProblem(pending, answer.amount);
+      if (problem !== null) return error("illegalAction", problem);
+      // The next share is asked for here; once the last target gets the rest, casting goes on.
+      const divided = divide(answered, pending, answer.amount);
+      const state = divided.pending === null ? nextCastingStep(divided, cards) : divided;
+      return { ok: true, state, events: [] };
     }
     case "payMana": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };

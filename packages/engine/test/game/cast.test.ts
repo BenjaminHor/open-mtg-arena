@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
+import { BEARS, SPLIT } from "../support/cards.ts";
 import { type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 function setup(): Game {
@@ -73,5 +74,57 @@ describe("cancelling a cast (CR 734.1)", () => {
     expect(game.state.objects).toStrictEqual(before.objects);
     expect(game.state.players).toStrictEqual(before.players);
     expect(game.state.casting).toBeNull();
+  });
+
+  /** p1 can cast Split (2 damage divided among one or more target creatures) at p2's two Grizzly Bears. */
+  function splitSetup(): Game {
+    const permanent = (oracleId: string) => ({
+      oracleId,
+      tapped: false,
+      summoningSick: false,
+      damage: 0,
+      counters: {},
+    });
+    return start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: ["forest"], hand: [SPLIT], battlefield: [permanent("mountain")] }),
+        playerSetup("p2", { library: ["forest"], battlefield: [permanent(BEARS), permanent(BEARS)] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+  }
+
+  const restored = (game: Game, before: GameState) => {
+    expect(game.state.zones).toStrictEqual(before.zones);
+    expect(game.state.objects).toStrictEqual(before.objects);
+    expect(game.state.players).toStrictEqual(before.players);
+    expect(game.state.casting).toBeNull();
+  };
+
+  it("restores everything when cancelled while announcing the number of targets", () => {
+    let game = splitSetup();
+    const before = game.state;
+    game = take(game, (a) => a.type === "CAST_SPELL");
+    expect(game.state.pending?.kind).toBe("chooseTargetCount");
+    restored(
+      take(game, (a) => a.type === "ANSWER" && a.answer.kind === "cancelCast"),
+      before,
+    );
+  });
+
+  it("restores everything when cancelled while dividing, after the targets are chosen", () => {
+    let game = splitSetup();
+    const before = game.state;
+    game = take(game, (a) => a.type === "CAST_SPELL");
+    game = take(game, (a) => a.type === "ANSWER" && a.answer.kind === "chooseTargetCount" && a.answer.count === 2);
+    game = take(game, (a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget");
+    game = take(game, (a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget");
+    expect(game.state.pending?.kind).toBe("divide");
+    restored(
+      take(game, (a) => a.type === "ANSWER" && a.answer.kind === "cancelCast"),
+      before,
+    );
   });
 });

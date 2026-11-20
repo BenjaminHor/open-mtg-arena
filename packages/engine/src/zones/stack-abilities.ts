@@ -25,7 +25,7 @@ export function putAbilityOnStack(
     ability,
     baseController: controller,
     timestamp: stamped.timestamp,
-    choices: { modes: [], x: null, targets: [] },
+    choices: { modes: [], x: null, targets: [], division: null },
   };
   const next = stamped.state;
   return {

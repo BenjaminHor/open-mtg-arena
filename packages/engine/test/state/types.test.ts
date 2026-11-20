@@ -69,6 +69,10 @@ describe("discriminated unions", () => {
           return `discard ${decision.remaining}`;
         case "chooseTarget":
           return `target ${decision.instance}`;
+        case "chooseTargetCount":
+          return `how many targets for ${decision.instance}`;
+        case "divide":
+          return `divide ${decision.amount}`;
         case "payMana":
           return `pay for ${decision.object}`;
         case "declareAttackers":

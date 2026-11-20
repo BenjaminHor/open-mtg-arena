@@ -55,6 +55,29 @@ describe("the scenario runner fails a scenario that's wrong", () => {
     ).toMatch(/but the action was accepted/);
   });
 
+  it("fails a divide list that doesn't give one share per target adding up to the whole", () => {
+    const ignite = at(
+      "main1",
+      "  p1: { hand: [Ignite Disorder], battlefield: [Mountain, Mountain] }\n  p2: { battlefield: [Elite Vanguard, Coral Merfolk] }\n",
+    );
+    const cast = (divide: string) =>
+      `${ignite}  - p1 cast: Ignite Disorder\n    targets: [[p2:Elite Vanguard, p2:Coral Merfolk]]\n    divide: ${divide}\n    pay: auto\n`;
+    expect(problems(cast("[2, 1]"))).toStrictEqual([]);
+    expect(first(cast("[2, 9]"))).toMatch(/one share per target \(2\), adding up to 3/);
+    expect(first(cast("[1, 1, 1]"))).toMatch(/one share per target/);
+  });
+
+  it("fails targets or shares listed that the spell never used", () => {
+    const bolt = at("main1", "  p1: { hand: [Lightning Bolt], battlefield: [Mountain] }\n");
+    const castBolt = (options: string) => `${bolt}  - p1 cast: Lightning Bolt\n${options}    pay: auto\n`;
+    expect(problems(castBolt("    targets: [p2]\n"))).toStrictEqual([]);
+    expect(first(castBolt("    targets: [p2, p1]\n"))).toMatch(/targets lists \[1,1\] per instance, but it took \[1\]/);
+    expect(first(castBolt("    targets: [[p2, p1]]\n"))).toMatch(/targets lists \[2\] per instance/);
+    expect(first(castBolt("    targets: [p2]\n    divide: [3]\n"))).toMatch(/nothing was divided/);
+    // The same under 'expect error', which sends the actions directly.
+    expect(first(`${castBolt("    targets: [p2, p1]\n")}  - expect error: illegalAction\n`)).toMatch(/targets lists/);
+  });
+
   it("matches every key of pending, not just one", () => {
     expect(first(`${main1}  - expect: { pending: { player: p2, kind: priority } }\n`)).toMatch(
       /^step 1: pending: expected/,

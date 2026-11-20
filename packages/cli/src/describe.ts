@@ -74,6 +74,13 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return `discard ${nameOf(state, answer.object, cards)}`;
     case "chooseTarget":
       return `target ${targetText(state, answer.target, cards)}`;
+    case "chooseTargetCount":
+      return `${answer.count} target${answer.count === 1 ? "" : "s"}`;
+    case "divide": {
+      const pending = state.pending;
+      const target = pending?.kind === "divide" ? pending.targets[pending.shares.length] : undefined;
+      return `give ${answer.amount} to ${target === undefined ? "the next target" : targetText(state, target, cards)}`;
+    }
     case "payMana":
       return `pay ${manaText(answer.payment)}`;
     case "cancelCast":

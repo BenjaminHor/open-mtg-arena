@@ -9,13 +9,13 @@ import { possibleBlocks } from "../combat/declare-blockers.ts";
 import { manaAbilityProblem } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
-import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
+import { largestShare, possibleTargets } from "./choose-targets.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 
@@ -66,15 +66,27 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         }),
       );
     }
-    case "chooseTarget": {
-      const casting = state.casting;
-      const spec = casting === null ? undefined : targetSpecsOf(state, casting.object, cards)[pending.instance];
-      if (spec === undefined) return [];
-      const targets = legalTargets(state, spec, cards).map(
-        (target): Action => ({ ...answer, answer: { kind: "chooseTarget", target } }),
+    case "chooseTargetCount": {
+      const { min, max } = pending;
+      const counts = Array.from(
+        { length: Math.max(0, max - min + 1) },
+        (_, i): Action => ({ ...answer, answer: { kind: "chooseTargetCount", count: min + i } }),
       );
       // The player can cancel at any step of a cast (D-035).
+      return [...counts, { ...answer, answer: { kind: "cancelCast" } }];
+    }
+    case "chooseTarget": {
+      const targets = possibleTargets(state, cards).map(
+        (target): Action => ({ ...answer, answer: { kind: "chooseTarget", target } }),
+      );
       return [...targets, { ...answer, answer: { kind: "cancelCast" } }];
+    }
+    case "divide": {
+      const shares = Array.from(
+        { length: largestShare(pending) },
+        (_, i): Action => ({ ...answer, answer: { kind: "divide", amount: i + 1 } }),
+      );
+      return [...shares, { ...answer, answer: { kind: "cancelCast" } }];
     }
     case "payMana": {
       // Every payment the pool covers, since which mana pays is the player's choice (CR 601.2h); mana abilities to make

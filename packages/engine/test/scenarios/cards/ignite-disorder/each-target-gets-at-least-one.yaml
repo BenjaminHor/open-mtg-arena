@@ -1,0 +1,15 @@
+name: Each target of a division gets at least 1 damage
+rules: [CR 601.2d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Ignite Disorder]
+    battlefield: [Mountain, Mountain]
+  p2:
+    battlefield: [Elite Vanguard, Coral Merfolk]
+steps:
+  - p1 cast: Ignite Disorder
+    targets: [[p2:Elite Vanguard, p2:Coral Merfolk]]
+    divide: [3, 0]
+    pay: auto
+  - expect error: illegalAction

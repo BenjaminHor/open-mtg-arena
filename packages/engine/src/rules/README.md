@@ -9,10 +9,16 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   card, CR 113.7a); `abilitiesOf(state, id, cards)`: an object's activated abilities with their refs (printed, then a basic
   land type's intrinsic mana ability, CR 305.6); `isManaAbility` (CR 605.1a).
 - `summoning-sickness.ts`: `canUseTapAbilities` (CR 602.5a, 302.6, haste 702.10c), only for creatures.
-- `targets.ts`: `legalTargets`, `isLegalTarget`, `stillLegalTargets` (CR 115, 115.4, 109.2, 608.2b); `targetSpecsOf`
-  and `effectsOf`, the one place a spell's or ability's targets and effects are read from its definition.
+- `targets.ts`: `legalTargets` (permanents, spells, graveyard cards and players, CR 115.2, 115.4, 115.5),
+  `isLegalTarget`, `targetsProblem` (enough legal choices for each instance, CR 601.2c, 115.6), `stillLegalTargets`
+  (CR 608.2b); `targetSpecsOf` and `effectsOf`, the one place a spell's or ability's targets and effects are read from
+  its definition.
+- `object-filter.ts`: `matchesFilter`: whether an object fits an `ObjectFilter` ("nonblack", "tapped", "an opponent
+  controls", "blocking"), each restriction asking only the layer reader it needs.
+- `colors.ts`: `colorsOf`, an object's colors (layer 5; printed for now).
 - `combat.ts`: `canAttack`, `canBlock` (with flying and reach, CR 702.9b, 702.17b), `attacksInCombat`,
-  `blocksInCombat`, `isBlocked` (CR 506.4, 508.1a, 509.1a, 509.1h).
+  `blocksInCombat`, `isBlocked` (CR 506.4, 508.1a, 509.1a, 509.1h), `isAttacking` and `isBlocking` (CR 508.1k,
+  509.1g: a blocker stays one after its attacker is gone).
 - `costs.ts`: `costOf` (what to pay to put a spell or ability on the stack), from `totalCost` (a spell, CR 601.2f) and
   `activationManaCost` (an ability, CR 602.2b).
 - `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/f/g).

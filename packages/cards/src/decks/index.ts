@@ -1,5 +1,7 @@
-// The prebuilt decks (docs/milestones/m1-engine-foundations.md, "Card pool"), by card name and count, as the spec
-// writes them. 40 cards each. The fuzzer, the CLI and the M3 app play with these.
+// The prebuilt decks, by card name and count. 40 cards each. The fuzzer, the CLI, the golden games and the M3 app play
+// with these. red-aggro and green-stompy are M1's (docs/milestones/m1-engine-foundations.md, "Card pool");
+// white-red and blue-green are interim decks that bring M2's new cards into the golden games until the first M10
+// deck pair replaces them after M2-05 (docs/milestones/m2-pool.md, "Prebuilt decks").
 
 import type { OracleId } from "@mtg/engine";
 import { POOL } from "../database.ts";
@@ -32,6 +34,36 @@ export const DECKS: Record<string, DeckList> = {
       { card: "Spined Wurm", count: 2 },
       { card: "Craw Wurm", count: 2 },
       { card: "Giant Growth", count: 4 },
+    ],
+  },
+  "white-red": {
+    name: "white-red",
+    cards: [
+      { card: "Plains", count: 8 },
+      { card: "Mountain", count: 9 },
+      { card: "Elite Vanguard", count: 4 },
+      { card: "Raging Goblin", count: 3 },
+      { card: "Gray Ogre", count: 3 },
+      { card: "Hill Giant", count: 3 },
+      { card: "Righteousness", count: 3 },
+      { card: "Ignite Disorder", count: 2 },
+      { card: "Lava Axe", count: 2 },
+      { card: "Lightning Bolt", count: 2 },
+      { card: "Shock", count: 1 },
+    ],
+  },
+  "blue-green": {
+    name: "blue-green",
+    cards: [
+      { card: "Island", count: 8 },
+      { card: "Forest", count: 9 },
+      { card: "Coral Merfolk", count: 4 },
+      { card: "Llanowar Elves", count: 4 },
+      { card: "Grizzly Bears", count: 4 },
+      { card: "Centaur Courser", count: 3 },
+      { card: "Giant Spider", count: 3 },
+      { card: "Craw Wurm", count: 2 },
+      { card: "Giant Growth", count: 3 },
     ],
   },
 };

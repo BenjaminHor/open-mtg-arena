@@ -4,7 +4,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { activationBasicsProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
-import { legalTargets } from "../rules/targets.ts";
+import { targetsProblem } from "../rules/targets.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -17,7 +17,7 @@ import type { Progress } from "./progress.ts";
  * Why the player can't begin activating this ability now, or null. Only the controller of a permanent activates its
  * abilities (CR 602.2), whenever they have priority (CR 113.3b): there's no timing restriction in the pool. Mana
  * abilities go through `mana/activate.ts` instead. As with casting, payability isn't checked (D-035): a player who
- * can't pay cancels. Every target requirement must have a legal choice (CR 601.2c, 602.2b).
+ * can't pay cancels. Every instance of "target" must have enough legal choices (CR 601.2c, 602.2b).
  */
 export function activationProblem(
   state: GameState,
@@ -33,10 +33,8 @@ export function activationProblem(
   if (isManaAbility(ability.def)) return "that's a mana ability";
   // Only mana in activation costs so far; {T} and other costs come with the first card that has one.
   if (ability.def.cost.some((part) => part.kind !== "mana")) return "costs other than mana aren't supported yet";
-  for (const spec of ability.def.targets) {
-    if (legalTargets(state, spec, cards).length === 0) return "there's nothing it could target (CR 601.2c)";
-  }
-  return null;
+  // The ability isn't on the stack yet, so its source stands in as what targets; it can target its own source.
+  return targetsProblem(state, ability.def.targets, { object: source, controller: player }, cards);
 }
 
 /** CR 602.2a: the ability is created on the stack, and the activation continues with its targets and costs. */
@@ -57,6 +55,7 @@ export function startActivation(
     origin: { kind: "ability", source },
     poolBefore: ps.manaPool,
     tappedForMana: [],
+    targetCounts: [],
   };
   return { state: nextCastingStep({ ...created.state, casting }, cards), events: [] };
 }

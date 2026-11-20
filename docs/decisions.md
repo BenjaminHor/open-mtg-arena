@@ -586,7 +586,9 @@ every schema change and every change D-024 lists bumps it.
   from the golden games: early turns with at most two permanents, combat with 20 or more, a stack of two or more), a
   whole game between the random agents (five fixed setups in turn), `legalActions` in the 40 busiest states, and
   `characteristics` of every permanent in them. Sets of states rather than one state each, so one state's quirks
-  don't decide a measure.
+  don't decide a measure. The states come from a fixed list of golden games (M1's four, `BENCH_GAMES`), since adding
+  golden games for new cards changed the sample and read as a 30% slowdown in M2-04 (the code itself measured the
+  same).
 - Timing: each workload is warmed up, then all are timed in 21 interleaved rounds of about 30 ms batches, and each
   takes its median batch. A reference loop of plain JavaScript runs in the same rounds; measures are compared as
   multiples of it, so a baseline holds across machines and a busy moment slows everything alike. On an unchanged
@@ -698,3 +700,18 @@ every schema change and every change D-024 lists bumps it.
   `ABILITY_ACTIVATED`, `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`, `SPELL_RESOLVED`, `PLAYER_LOST`; "becomes the
   target" has no event yet) are M2-07's to route when a trigger needs one.
 - Done with no behavior change: the golden games and replays are identical, and `pnpm bench` passes.
+
+**D-057: Targets as a kind, a filter and a count** · 2026-11-20 · accepted (M2-04a)
+- A `TargetSpec` is a kind (`anyTarget`, `playerOrPlaneswalker`, `permanent`, `spell`, `cardInGraveyard`) with an
+  `ObjectFilter` and an optional `count`, taken from the Oracle text of every Magic 2010 card that targets. "Target
+  creature" is a permanent whose types include creature, one shape rather than a special case. Filters read the layer
+  readers (types, colors, subtypes, control, combat), so effects that change them (M2-09) apply to targeting too.
+- Targeting knows what targets and who controls it (`Targeting`), for "you control" filters, "can't target itself"
+  (CR 115.5), and later protection, hexproof and shroud.
+- A variable number of targets is announced first (`chooseTargetCount`, CR 601.2c), capped by the distinct legal
+  choices and, for a division, by the amount. A fixed count asks nothing, so M1's games replay unchanged.
+- A division "as you choose" is announced after the targets, one share at a time like combat damage (`divide`), and
+  stored on the spell as target and amount pairs, so an illegal target loses only its own share (CR 601.2d, 608.2b,
+  later: 115.7f for changed targets). Fireball's "divided evenly" is different (worked out at resolution, per its rulings) and comes with M2-04b.
+- Interim prebuilt decks `white-red` and `blue-green` bring the new cards into the golden games until the first M10
+  deck pair (after M2-05) replaces them. The bench reads states only from M1's four golden games (D-049).

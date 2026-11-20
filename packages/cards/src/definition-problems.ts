@@ -1,7 +1,7 @@
 // Checks that the hand-written definitions agree with the card data. Run by the tests, so `pnpm check` fails
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
-import type { CardDef } from "@mtg/engine";
+import type { CardDef, Effect, TargetSpec } from "@mtg/engine";
 import type { PoolCard } from "./pool-data.ts";
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
@@ -33,9 +33,39 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);
     }
+    if (def.spell !== undefined) problems.push(...targetProblems(def.name, def.spell.targets, def.spell.effects));
+    for (const [i, ability] of (def.abilities ?? []).entries()) {
+      problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
+    }
   }
   for (const card of pool) {
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
+  }
+  return problems;
+}
+
+/**
+ * Target shapes the engine can't use, caught here rather than in a game: a count whose minimum is above its maximum, and
+ * a divided effect that doesn't divide among an instance of "target", or divides less than that instance's minimum,
+ * since each target needs at least one (CR 601.2d).
+ */
+function targetProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
+  const problems: string[] = [];
+  for (const [i, spec] of targets.entries()) {
+    const count = spec.count;
+    if (count !== undefined && count.max !== "any" && count.min > count.max)
+      problems.push(`${where}: target ${i} has a minimum above its maximum`);
+  }
+  for (const effect of effects) {
+    if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
+    const spec = effect.to === "self" ? undefined : targets[effect.to.target];
+    if (spec === undefined) {
+      problems.push(`${where}: divided damage must divide among an instance of "target"`);
+    } else if ((spec.count?.min ?? 1) > effect.amount) {
+      problems.push(
+        `${where}: divided damage of ${effect.amount} can't give each of at least ${spec.count?.min} targets 1`,
+      );
+    }
   }
   return problems;
 }

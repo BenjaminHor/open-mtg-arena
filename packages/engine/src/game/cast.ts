@@ -5,7 +5,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
 import { zoneChangeOf } from "../pipeline/moved.ts";
 import { totalCost } from "../rules/costs.ts";
-import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
+import { targetSpecsOf, targetsProblem } from "../rules/targets.ts";
 import { castTimingProblem } from "../rules/timing.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -18,7 +18,7 @@ import type { Progress } from "./progress.ts";
  * Why the player can't begin casting this card now, or null: the check that the proposed spell can legally be cast
  * (CR 601.2e), done once, before the card moves (CR 601.2a), rather than after all the choices: it's in
  * their hand and the timing allows it. Two shortcuts give the same result as starting and then reversing the cast
- * (CR 601.2, 734.1): every target requirement must have a legal choice (CR 601.2c), and a card with no mana cost can't be
+ * (CR 601.2, 734.1): every instance of "target" must have enough legal choices (CR 601.2c, 115.3), and a card with no mana cost can't be
  * cast (it has no alternative costs yet; CR 118.6 makes the attempt legal, but it could never be paid). Whether the
  * player can pay is NOT checked: attempting is legal (CR 118.6), and a player who can't pay cancels.
  */
@@ -26,9 +26,8 @@ export function castProblem(state: GameState, player: PlayerId, card: ObjectId, 
   if (!zoneList(state, { zone: "hand", player }).includes(card)) return `${card} isn't in ${player}'s hand`;
   const timing = castTimingProblem(state, player, card, cards);
   if (timing !== null) return timing;
-  for (const spec of targetSpecsOf(state, card, cards)) {
-    if (legalTargets(state, spec, cards).length === 0) return "there's nothing it could target (CR 601.2c)";
-  }
+  const targets = targetsProblem(state, targetSpecsOf(state, card, cards), { object: card, controller: player }, cards);
+  if (targets !== null) return targets;
   if (totalCost(state, card, cards) === null) return "it has no mana cost, so it could never be paid (CR 118.6)";
   return null;
 }
@@ -48,6 +47,7 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
     origin: { kind: "card", card: obj, handIndex },
     poolBefore: ps.manaPool,
     tappedForMana: [],
+    targetCounts: [],
   };
   return { state: nextCastingStep({ ...moved.state, casting }, cards), events: moved.events };
 }

@@ -4,7 +4,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { effectsOf, stillLegalTargets } from "../rules/targets.ts";
+import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
@@ -72,7 +72,12 @@ export function doesNotResolve(state: GameState, id: ObjectId, cards: CardDataba
 function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: CardDatabase): WorkItem[] {
   const obj = state.objects[id];
   if (obj === undefined) return [];
-  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal };
+  // A divided effect's shares stay with their targets: an illegal target's share is lost, and the others keep theirs
+  // (CR 601.2d, 608.2b).
+  const divided = obj.choices?.division ?? null;
+  const stillLegal = divided === null ? [] : (legal[divided.instance] ?? []);
+  const division = (divided?.shares ?? []).filter((share) => stillLegal.some((t) => sameTarget(t, share.target)));
+  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division };
   return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context }));
 }
 

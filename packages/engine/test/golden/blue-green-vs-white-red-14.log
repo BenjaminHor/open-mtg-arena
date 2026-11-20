@@ -1,0 +1,3520 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Giant Growth, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Giant Spider, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Grizzly Bears, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Craw Wurm, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Raging Goblin, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Gray Ogre, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Shock, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Ignite Disorder, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Hill Giant, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 keeps
+T0 p2 mulligans
+T0 moves: Raging Goblin, p2's hand -> p2's library
+T0 moves: Gray Ogre, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 moves: Shock, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Ignite Disorder, p2's hand -> p2's library
+T0 moves: Hill Giant, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Gray Ogre, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lava Axe, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Righteousness, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Elite Vanguard, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lava Axe, p2's hand -> p2's library
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 p1 attack: nothing
+T1 moves: Forest, p1's hand -> battlefield
+T1 p1 plays p1:Forest
+T1 moves: Giant Spider, p1's hand -> stack
+T1 taps: p1:Forest
+T1 p1 adds {G} (p1:Forest)
+T1 p1 cancels casting Giant Spider
+T1 moves: Grizzly Bears, p1's hand -> stack
+T1 p1 cancels casting Grizzly Bears
+T1 moves: Craw Wurm, p1's hand -> stack
+T1 p1 cancels casting Craw Wurm
+T1 taps: p1:Forest
+T1 p1 adds {G} (p1:Forest)
+T1 moves: Grizzly Bears, p1's hand -> stack
+T1 p1 cancels casting Grizzly Bears
+T1 moves: Llanowar Elves, p1's hand -> stack
+T1 p1 casts Llanowar Elves
+T1 resolves: Llanowar Elves
+T1 moves: Llanowar Elves, stack -> battlefield
+T1 moves: Giant Growth, p1's hand -> stack
+T1 p1 cancels casting Giant Growth
+T1 moves: Giant Growth, p1's hand -> stack
+T1 p1 cancels casting Giant Growth
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Grizzly Bears, p1's hand -> stack
+T1 p1 cancels casting Grizzly Bears
+T1 moves: Giant Growth, p1's hand -> stack
+T1 p1 cancels casting Giant Growth
+T1 moves: Giant Growth, p1's hand -> stack
+T1 p1 cancels casting Giant Growth
+T2 turn 2 begins (p2)
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Mountain, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Plains, p2's hand -> battlefield
+T2 p2 plays p2:Plains
+T2 moves: Gray Ogre, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 cancels casting Gray Ogre
+T2 moves: Gray Ogre, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 cancels casting Gray Ogre
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 taps: p2:Plains
+T2 p2 adds {W} (p2:Plains)
+T2 p2 casts Elite Vanguard
+T2 resolves: Elite Vanguard
+T2 moves: Elite Vanguard, stack -> battlefield
+T2 moves: Gray Ogre, p2's hand -> stack
+T2 p2 cancels casting Gray Ogre
+T2 moves: Gray Ogre, p2's hand -> stack
+T2 p2 cancels casting Gray Ogre
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 p2 attack: nothing
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T2 moves: Giant Growth, p1's hand -> stack
+T2 p1 cancels casting Giant Growth
+T3 turn 3 begins (p1)
+T3 untaps: p1:Forest
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 taps: p1:Llanowar Elves
+T3 p1 adds {G} (p1:Llanowar Elves)
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 casts Giant Growth
+T3 effect: p1:Llanowar Elves +3/+3 until end of turn
+T3 resolves: Giant Growth
+T3 moves: Giant Growth, stack -> p1's graveyard
+T3 p1's unspent {G} empties
+T3 moves: Giant Growth, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Craw Wurm, p1's hand -> stack
+T3 p1 cancels casting Craw Wurm
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 p1 attack: nothing
+T3 moves: Giant Growth, p1's hand -> stack
+T3 p1 cancels casting Giant Growth
+T3 moves: Island, p1's hand -> battlefield
+T3 p1 plays p1:Island
+T3 effect ends: p1:Llanowar Elves +3/+3
+T4 turn 4 begins (p2)
+T4 untaps: p2:Plains
+T4 taps: p1:Island
+T4 p1 adds {U} (p1:Island)
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 taps: p2:Plains
+T4 p2 adds {W} (p2:Plains)
+T4 p1's unspent {U} empties
+T4 p2's unspent {W} empties
+T4 moves: Raging Goblin, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Mountain, p2's hand -> battlefield
+T4 p2 plays p2:Mountain
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 moves: Raging Goblin, p2's hand -> stack
+T4 p2 casts Raging Goblin
+T4 resolves: Raging Goblin
+T4 moves: Raging Goblin, stack -> battlefield
+T4 moves: Gray Ogre, p2's hand -> stack
+T4 p2 cancels casting Gray Ogre
+T4 taps: p2:Elite Vanguard
+T4 taps: p2:Raging Goblin
+T4 p2 attack: p2:Elite Vanguard -> p1, p2:Raging Goblin -> p1
+T4 p1 block: nothing
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 combat damage: p2:Elite Vanguard -> p1 2
+T4 combat damage: p2:Raging Goblin -> p1 1
+T4 p1 loses 2 life
+T4 p1 loses 1 life
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T4 moves: Giant Growth, p1's hand -> stack
+T4 p1 cancels casting Giant Growth
+T5 turn 5 begins (p1)
+T5 untaps: p1:Forest
+T5 untaps: p1:Llanowar Elves
+T5 untaps: p1:Island
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 taps: p1:Forest
+T5 p1 adds {G} (p1:Forest)
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1's unspent {U}{G} empties
+T5 moves: Forest, p1's library -> p1's hand
+T5 p1 draws
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 taps: p1:Llanowar Elves
+T5 p1 adds {G} (p1:Llanowar Elves)
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 cancels casting Giant Growth
+T5 moves: Giant Growth, p1's hand -> stack
+T5 p1 casts Giant Growth
+T5 effect: p2:Raging Goblin +3/+3 until end of turn
+T5 resolves: Giant Growth
+T5 moves: Giant Growth, stack -> p1's graveyard
+T5 p1 attack: nothing
+T5 moves: Forest, p1's hand -> battlefield
+T5 p1 plays p1:Forest#2
+T5 taps: p1:Forest#2
+T5 p1 adds {G} (p1:Forest#2)
+T5 p1's unspent {G} empties
+T5 effect ends: p2:Raging Goblin +3/+3
+T6 turn 6 begins (p2)
+T6 untaps: p2:Plains
+T6 untaps: p2:Elite Vanguard
+T6 untaps: p2:Mountain
+T6 untaps: p2:Raging Goblin
+T6 moves: Plains, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p2:Plains
+T6 p2 adds {W} (p2:Plains)
+T6 taps: p2:Mountain
+T6 p2 adds {R} (p2:Mountain)
+T6 p2's unspent {W}{R} empties
+T6 moves: Mountain, p2's hand -> battlefield
+T6 p2 plays p2:Mountain#2
+T6 moves: Gray Ogre, p2's hand -> stack
+T6 taps: p2:Mountain#2
+T6 p2 adds {R} (p2:Mountain#2)
+T6 p2 cancels casting Gray Ogre
+T6 moves: Gray Ogre, p2's hand -> stack
+T6 taps: p2:Mountain#2
+T6 p2 adds {R} (p2:Mountain#2)
+T6 p2 cancels casting Gray Ogre
+T6 taps: p2:Mountain#2
+T6 p2 adds {R} (p2:Mountain#2)
+T6 p2's unspent {R} empties
+T6 taps: p2:Elite Vanguard
+T6 taps: p2:Raging Goblin
+T6 p2 attack: p2:Elite Vanguard -> p1, p2:Raging Goblin -> p1
+T6 p1 block: nothing
+T6 combat damage: p2:Elite Vanguard -> p1 2
+T6 combat damage: p2:Raging Goblin -> p1 1
+T6 p1 loses 2 life
+T6 p1 loses 1 life
+T6 moves: Gray Ogre, p2's hand -> stack
+T6 p2 cancels casting Gray Ogre
+T7 turn 7 begins (p1)
+T7 untaps: p1:Forest#1
+T7 untaps: p1:Llanowar Elves
+T7 untaps: p1:Island
+T7 untaps: p1:Forest#2
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1's unspent {U} empties
+T7 moves: Giant Growth, p1's library -> p1's hand
+T7 p1 draws
+T7 taps: p1:Forest#2
+T7 p1 adds {G} (p1:Forest#2)
+T7 p1's unspent {G} empties
+T7 taps: p1:Forest#1
+T7 p1 adds {G} (p1:Forest#1)
+T7 moves: Craw Wurm, p1's hand -> stack
+T7 p1 cancels casting Craw Wurm
+T7 moves: Giant Growth, p1's hand -> stack
+T7 p1 cancels casting Giant Growth
+T7 p1's unspent {G} empties
+T7 moves: Giant Growth, p1's hand -> stack
+T7 p1 cancels casting Giant Growth
+T7 moves: Giant Growth, p1's hand -> stack
+T7 p1 cancels casting Giant Growth
+T7 taps: p1:Llanowar Elves
+T7 p1 adds {G} (p1:Llanowar Elves)
+T7 p1's unspent {G} empties
+T7 p1 attack: nothing
+T7 moves: Giant Growth, p1's hand -> stack
+T7 p1 cancels casting Giant Growth
+T7 moves: Giant Growth, p1's hand -> stack
+T7 p1 cancels casting Giant Growth
+T7 moves: Giant Growth, p1's hand -> stack
+T7 p1 cancels casting Giant Growth
+T8 turn 8 begins (p2)
+T8 untaps: p2:Plains
+T8 untaps: p2:Elite Vanguard
+T8 untaps: p2:Mountain#1
+T8 untaps: p2:Raging Goblin
+T8 untaps: p2:Mountain#2
+T8 taps: p2:Mountain#1
+T8 p2 adds {R} (p2:Mountain#1)
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 p2's unspent {R} empties
+T8 moves: Righteousness, p2's library -> p2's hand
+T8 p2 draws
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Plains, p2's hand -> battlefield
+T8 p2 plays p2:Plains#2
+T8 taps: p2:Plains#2
+T8 p2 adds {W} (p2:Plains#2)
+T8 taps: p2:Plains#1
+T8 p2 adds {W} (p2:Plains#1)
+T8 taps: p2:Mountain#2
+T8 p2 adds {R} (p2:Mountain#2)
+T8 p2's unspent {W}{W}{R} empties
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 taps: p2:Elite Vanguard
+T8 p2 attack: p2:Elite Vanguard -> p1
+T8 p1 block: nothing
+T8 combat damage: p2:Elite Vanguard -> p1 2
+T8 p1 loses 2 life
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Giant Growth, p1's hand -> stack
+T8 p1 cancels casting Giant Growth
+T8 moves: Gray Ogre, p2's hand -> stack
+T8 p2 cancels casting Gray Ogre
+T9 turn 9 begins (p1)
+T9 untaps: p1:Forest#1
+T9 untaps: p1:Llanowar Elves
+T9 untaps: p1:Island
+T9 untaps: p1:Forest#2
+T9 moves: Forest, p1's library -> p1's hand
+T9 p1 draws
+T9 moves: Giant Growth, p1's hand -> stack
+T9 p1 cancels casting Giant Growth
+T9 taps: p1:Forest#2
+T9 p1 adds {G} (p1:Forest#2)
+T9 p1's unspent {G} empties
+T9 p1 attack: nothing
+T9 moves: Giant Growth, p1's hand -> stack
+T9 taps: p1:Llanowar Elves
+T9 p1 adds {G} (p1:Llanowar Elves)
+T9 taps: p1:Island
+T9 p1 adds {U} (p1:Island)
+T9 p1 cancels casting Giant Growth
+T9 taps: p1:Llanowar Elves
+T9 p1 adds {G} (p1:Llanowar Elves)
+T9 moves: Giant Growth, p1's hand -> stack
+T9 taps: p1:Island
+T9 p1 adds {U} (p1:Island)
+T9 taps: p1:Forest#1
+T9 p1 adds {G} (p1:Forest#1)
+T9 p1 casts Giant Growth
+T9 effect: p2:Elite Vanguard +3/+3 until end of turn
+T9 resolves: Giant Growth
+T9 moves: Giant Growth, stack -> p1's graveyard
+T9 p1's unspent {U}{G} empties
+T9 effect ends: p2:Elite Vanguard +3/+3
+T10 turn 10 begins (p2)
+T10 untaps: p2:Plains#1
+T10 untaps: p2:Elite Vanguard
+T10 untaps: p2:Mountain#1
+T10 untaps: p2:Mountain#2
+T10 untaps: p2:Plains#2
+T10 moves: Plains, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Plains#1
+T10 p2 adds {W} (p2:Plains#1)
+T10 taps: p2:Mountain#1
+T10 p2 adds {R} (p2:Mountain#1)
+T10 taps: p2:Mountain#2
+T10 p2 adds {R} (p2:Mountain#2)
+T10 p2's unspent {W}{R}{R} empties
+T10 taps: p2:Raging Goblin
+T10 taps: p2:Elite Vanguard
+T10 p2 attack: p2:Raging Goblin -> p1, p2:Elite Vanguard -> p1
+T10 p1 block: nothing
+T10 combat damage: p2:Raging Goblin -> p1 1
+T10 combat damage: p2:Elite Vanguard -> p1 2
+T10 p1 loses 1 life
+T10 p1 loses 2 life
+T10 taps: p2:Plains#2
+T10 p2 adds {W} (p2:Plains#2)
+T10 p2's unspent {W} empties
+T11 turn 11 begins (p1)
+T11 untaps: p1:Forest#1
+T11 untaps: p1:Llanowar Elves
+T11 untaps: p1:Island
+T11 untaps: p1:Forest#2
+T11 taps: p1:Forest#2
+T11 p1 adds {G} (p1:Forest#2)
+T11 taps: p1:Llanowar Elves
+T11 p1 adds {G} (p1:Llanowar Elves)
+T11 taps: p1:Island
+T11 p1 adds {U} (p1:Island)
+T11 taps: p1:Forest#1
+T11 p1 adds {G} (p1:Forest#1)
+T11 p1's unspent {U}{G}{G}{G} empties
+T11 moves: Forest, p1's library -> p1's hand
+T11 p1 draws
+T11 moves: Forest, p1's hand -> battlefield
+T11 p1 plays p1:Forest#3
+T11 moves: Giant Spider, p1's hand -> stack
+T11 p1 cancels casting Giant Spider
+T11 moves: Craw Wurm, p1's hand -> stack
+T11 p1 cancels casting Craw Wurm
+T11 moves: Grizzly Bears, p1's hand -> stack
+T11 p1 cancels casting Grizzly Bears
+T11 taps: p1:Forest#3
+T11 p1 adds {G} (p1:Forest#3)
+T11 moves: Grizzly Bears, p1's hand -> stack
+T11 p1 cancels casting Grizzly Bears
+T11 moves: Craw Wurm, p1's hand -> stack
+T11 p1 cancels casting Craw Wurm
+T11 moves: Grizzly Bears, p1's hand -> stack
+T11 p1 cancels casting Grizzly Bears
+T11 p1's unspent {G} empties
+T11 p1 attack: nothing
+T11 moves: Giant Spider, p1's hand -> stack
+T11 p1 cancels casting Giant Spider
+T11 moves: Grizzly Bears, p1's hand -> stack
+T11 p1 cancels casting Grizzly Bears
+T12 turn 12 begins (p2)
+T12 untaps: p2:Plains#1
+T12 untaps: p2:Elite Vanguard
+T12 untaps: p2:Mountain#1
+T12 untaps: p2:Raging Goblin
+T12 untaps: p2:Mountain#2
+T12 untaps: p2:Plains#2
+T12 taps: p2:Mountain#2
+T12 p2 adds {R} (p2:Mountain#2)
+T12 taps: p2:Plains#1
+T12 p2 adds {W} (p2:Plains#1)
+T12 taps: p2:Plains#2
+T12 p2 adds {W} (p2:Plains#2)
+T12 p2's unspent {W}{W}{R} empties
+T12 moves: Ignite Disorder, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Mountain#1
+T12 p2 adds {R} (p2:Mountain#1)
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 p2's unspent {R} empties
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Gray Ogre, p2's hand -> stack
+T12 p2 cancels casting Gray Ogre
+T12 moves: Gray Ogre, p2's hand -> stack
+T12 p2 cancels casting Gray Ogre
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 taps: p2:Raging Goblin
+T12 taps: p2:Elite Vanguard
+T12 p2 attack: p2:Raging Goblin -> p1, p2:Elite Vanguard -> p1
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 p1 block: nothing
+T12 combat damage: p2:Raging Goblin -> p1 1
+T12 combat damage: p2:Elite Vanguard -> p1 2
+T12 p1 loses 1 life
+T12 p1 loses 2 life
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Mountain, p2's hand -> battlefield
+T12 p2 plays p2:Mountain#3
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T13 turn 13 begins (p1)
+T13 untaps: p1:Forest#1
+T13 untaps: p1:Llanowar Elves
+T13 untaps: p1:Island
+T13 untaps: p1:Forest#2
+T13 untaps: p1:Forest#3
+T13 taps: p1:Forest#3
+T13 p1 adds {G} (p1:Forest#3)
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 p1's unspent {G} empties
+T13 moves: Island, p1's library -> p1's hand
+T13 p1 draws
+T13 taps: p1:Forest#2
+T13 p1 adds {G} (p1:Forest#2)
+T13 taps: p1:Forest#1
+T13 p1 adds {G} (p1:Forest#1)
+T13 taps: p1:Island
+T13 p1 adds {U} (p1:Island)
+T13 taps: p1:Llanowar Elves
+T13 p1 adds {G} (p1:Llanowar Elves)
+T13 taps: p2:Mountain#3
+T13 p2 adds {R} (p2:Mountain#3)
+T13 p1's unspent {U}{G}{G}{G} empties
+T13 p2's unspent {R} empties
+T13 moves: Craw Wurm, p1's hand -> stack
+T13 p1 cancels casting Craw Wurm
+T13 moves: Craw Wurm, p1's hand -> stack
+T13 p1 cancels casting Craw Wurm
+T13 moves: Forest, p1's hand -> battlefield
+T13 p1 plays p1:Forest#4
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 p1 attack: nothing
+T13 taps: p1:Forest#4
+T13 p1 adds {G} (p1:Forest#4)
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 p1's unspent {G} empties
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 moves: Giant Spider, p1's hand -> stack
+T13 p1 cancels casting Giant Spider
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T14 turn 14 begins (p2)
+T14 untaps: p2:Plains#1
+T14 untaps: p2:Elite Vanguard
+T14 untaps: p2:Mountain#1
+T14 untaps: p2:Raging Goblin
+T14 untaps: p2:Mountain#2
+T14 untaps: p2:Plains#2
+T14 untaps: p2:Mountain#3
+T14 taps: p2:Mountain#1
+T14 p2 adds {R} (p2:Mountain#1)
+T14 taps: p2:Plains#2
+T14 p2 adds {W} (p2:Plains#2)
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 taps: p2:Mountain#3
+T14 p2 adds {R} (p2:Mountain#3)
+T14 taps: p2:Mountain#2
+T14 p2 adds {R} (p2:Mountain#2)
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 taps: p2:Plains#1
+T14 p2 adds {W} (p2:Plains#1)
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 p2's unspent {W}{W}{R}{R}{R} empties
+T14 moves: Plains, p2's library -> p2's hand
+T14 p2 draws
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Plains, p2's hand -> battlefield
+T14 p2 plays p2:Plains#3
+T14 taps: p2:Plains#3
+T14 p2 adds {W} (p2:Plains#3)
+T14 p2's unspent {W} empties
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 taps: p2:Raging Goblin
+T14 p2 attack: p2:Raging Goblin -> p1
+T14 p1 block: nothing
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 combat damage: p2:Raging Goblin -> p1 1
+T14 p1 loses 1 life
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T15 turn 15 begins (p1)
+T15 untaps: p1:Forest#1
+T15 untaps: p1:Llanowar Elves
+T15 untaps: p1:Island
+T15 untaps: p1:Forest#2
+T15 untaps: p1:Forest#3
+T15 untaps: p1:Forest#4
+T15 taps: p1:Llanowar Elves
+T15 p1 adds {G} (p1:Llanowar Elves)
+T15 taps: p1:Forest#2
+T15 p1 adds {G} (p1:Forest#2)
+T15 p1's unspent {G}{G} empties
+T15 moves: Coral Merfolk, p1's library -> p1's hand
+T15 p1 draws
+T15 taps: p1:Forest#1
+T15 p1 adds {G} (p1:Forest#1)
+T15 taps: p1:Forest#3
+T15 p1 adds {G} (p1:Forest#3)
+T15 taps: p1:Island
+T15 p1 adds {U} (p1:Island)
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 p1's unspent {U}{G}{G} empties
+T15 moves: Giant Spider, p1's hand -> stack
+T15 taps: p1:Forest#4
+T15 p1 adds {G} (p1:Forest#4)
+T15 p1 cancels casting Giant Spider
+T15 moves: Island, p1's hand -> battlefield
+T15 p1 plays p1:Island#2
+T15 taps: p1:Forest#4
+T15 p1 adds {G} (p1:Forest#4)
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 p1's unspent {G} empties
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 p1 attack: nothing
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1's unspent {U} empties
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Craw Wurm, p1's hand -> stack
+T15 p1 cancels casting Craw Wurm
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T16 turn 16 begins (p2)
+T16 untaps: p2:Plains#1
+T16 untaps: p2:Mountain#1
+T16 untaps: p2:Raging Goblin
+T16 untaps: p2:Mountain#2
+T16 untaps: p2:Plains#2
+T16 untaps: p2:Mountain#3
+T16 untaps: p2:Plains#3
+T16 taps: p2:Plains#3
+T16 p2 adds {W} (p2:Plains#3)
+T16 taps: p2:Plains#2
+T16 p2 adds {W} (p2:Plains#2)
+T16 taps: p2:Mountain#3
+T16 p2 adds {R} (p2:Mountain#3)
+T16 p2's unspent {W}{W}{R} empties
+T16 moves: Righteousness, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Mountain#2
+T16 p2 adds {R} (p2:Mountain#2)
+T16 moves: Ignite Disorder, p2's hand -> stack
+T16 taps: p2:Mountain#1
+T16 p2 adds {R} (p2:Mountain#1)
+T16 taps: p2:Plains#1
+T16 p2 adds {W} (p2:Plains#1)
+T16 p2 casts Ignite Disorder
+T16 damage: Ignite Disorder -> p2:Elite Vanguard 3
+T16 resolves: Ignite Disorder
+T16 moves: Ignite Disorder, stack -> p2's graveyard
+T16 state-based actions: p2:Elite Vanguard lethalDamage
+T16 destroyed: p2:Elite Vanguard
+T16 moves: Elite Vanguard, battlefield -> p2's graveyard
+T16 p2's unspent {R} empties
+T16 p2 attack: nothing
+T17 turn 17 begins (p1)
+T17 untaps: p1:Forest#1
+T17 untaps: p1:Llanowar Elves
+T17 untaps: p1:Island#1
+T17 untaps: p1:Forest#2
+T17 untaps: p1:Forest#3
+T17 untaps: p1:Forest#4
+T17 untaps: p1:Island#2
+T17 taps: p1:Forest#3
+T17 p1 adds {G} (p1:Forest#3)
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 taps: p1:Forest#4
+T17 p1 adds {G} (p1:Forest#4)
+T17 taps: p1:Island#2
+T17 p1 adds {U} (p1:Island#2)
+T17 taps: p1:Llanowar Elves
+T17 p1 adds {G} (p1:Llanowar Elves)
+T17 p1's unspent {U}{U}{G}{G}{G} empties
+T17 moves: Llanowar Elves, p1's library -> p1's hand
+T17 p1 draws
+T17 taps: p1:Forest#2
+T17 p1 adds {G} (p1:Forest#2)
+T17 p1's unspent {G} empties
+T17 moves: Craw Wurm, p1's hand -> stack
+T17 taps: p1:Forest#1
+T17 p1 adds {G} (p1:Forest#1)
+T17 p1 cancels casting Craw Wurm
+T17 moves: Craw Wurm, p1's hand -> stack
+T17 taps: p1:Forest#1
+T17 p1 adds {G} (p1:Forest#1)
+T17 p1 cancels casting Craw Wurm
+T17 moves: Giant Spider, p1's hand -> stack
+T17 p1 cancels casting Giant Spider
+T17 moves: Grizzly Bears, p1's hand -> stack
+T17 p1 cancels casting Grizzly Bears
+T17 moves: Llanowar Elves, p1's hand -> stack
+T17 taps: p1:Forest#1
+T17 p1 adds {G} (p1:Forest#1)
+T17 p1 casts Llanowar Elves
+T17 resolves: Llanowar Elves
+T17 moves: Llanowar Elves, stack -> battlefield
+T17 moves: Craw Wurm, p1's hand -> stack
+T17 p1 cancels casting Craw Wurm
+T17 moves: Giant Spider, p1's hand -> stack
+T17 p1 cancels casting Giant Spider
+T17 moves: Coral Merfolk, p1's hand -> stack
+T17 p1 cancels casting Coral Merfolk
+T17 p1 attack: nothing
+T17 moves: Grizzly Bears, p1's hand -> stack
+T17 p1 cancels casting Grizzly Bears
+T17 moves: Coral Merfolk, p1's hand -> stack
+T17 p1 cancels casting Coral Merfolk
+T17 moves: Craw Wurm, p1's hand -> stack
+T17 p1 cancels casting Craw Wurm
+T18 turn 18 begins (p2)
+T18 untaps: p2:Plains#1
+T18 untaps: p2:Mountain#1
+T18 untaps: p2:Mountain#2
+T18 untaps: p2:Plains#2
+T18 untaps: p2:Mountain#3
+T18 untaps: p2:Plains#3
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 taps: p2:Plains#3
+T18 p2 adds {W} (p2:Plains#3)
+T18 taps: p2:Plains#1
+T18 p2 adds {W} (p2:Plains#1)
+T18 p2's unspent {W}{W}{W} empties
+T18 moves: Plains, p2's library -> p2's hand
+T18 p2 draws
+T18 taps: p2:Mountain#1
+T18 p2 adds {R} (p2:Mountain#1)
+T18 taps: p2:Mountain#3
+T18 p2 adds {R} (p2:Mountain#3)
+T18 p2's unspent {R}{R} empties
+T18 taps: p2:Mountain#2
+T18 p2 adds {R} (p2:Mountain#2)
+T18 p2's unspent {R} empties
+T18 p2 attack: nothing
+T19 turn 19 begins (p1)
+T19 untaps: p1:Forest#1
+T19 untaps: p1:Llanowar Elves#1
+T19 untaps: p1:Island#1
+T19 untaps: p1:Forest#2
+T19 untaps: p1:Forest#3
+T19 untaps: p1:Forest#4
+T19 untaps: p1:Island#2
+T19 taps: p1:Forest#4
+T19 p1 adds {G} (p1:Forest#4)
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 taps: p1:Llanowar Elves#1
+T19 p1 adds {G} (p1:Llanowar Elves#1)
+T19 taps: p1:Forest#3
+T19 p1 adds {G} (p1:Forest#3)
+T19 p1's unspent {U}{G}{G}{G} empties
+T19 moves: Llanowar Elves, p1's library -> p1's hand
+T19 p1 draws
+T19 taps: p1:Llanowar Elves#2
+T19 p1 adds {G} (p1:Llanowar Elves#2)
+T19 p1's unspent {G} empties
+T19 taps: p1:Forest#1
+T19 p1 adds {G} (p1:Forest#1)
+T19 taps: p1:Forest#2
+T19 p1 adds {G} (p1:Forest#2)
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 moves: Coral Merfolk, p1's hand -> stack
+T19 p1 casts Coral Merfolk
+T19 resolves: Coral Merfolk
+T19 moves: Coral Merfolk, stack -> battlefield
+T19 p1's unspent {G} empties
+T19 p1 attack: nothing
+T19 moves: Craw Wurm, p1's hand -> stack
+T19 p1 cancels casting Craw Wurm
+T19 moves: Giant Spider, p1's hand -> stack
+T19 p1 cancels casting Giant Spider
+T19 moves: Llanowar Elves, p1's hand -> stack
+T19 p1 cancels casting Llanowar Elves
+T19 moves: Craw Wurm, p1's hand -> stack
+T19 p1 cancels casting Craw Wurm
+T20 turn 20 begins (p2)
+T20 untaps: p2:Plains#1
+T20 untaps: p2:Mountain#1
+T20 untaps: p2:Mountain#2
+T20 untaps: p2:Plains#2
+T20 untaps: p2:Mountain#3
+T20 untaps: p2:Plains#3
+T20 taps: p2:Mountain#3
+T20 p2 adds {R} (p2:Mountain#3)
+T20 taps: p2:Mountain#1
+T20 p2 adds {R} (p2:Mountain#1)
+T20 taps: p2:Plains#2
+T20 p2 adds {W} (p2:Plains#2)
+T20 p2's unspent {W}{R}{R} empties
+T20 moves: Mountain, p2's library -> p2's hand
+T20 p2 draws
+T20 taps: p2:Plains#3
+T20 p2 adds {W} (p2:Plains#3)
+T20 taps: p2:Plains#1
+T20 p2 adds {W} (p2:Plains#1)
+T20 taps: p2:Mountain#2
+T20 p2 adds {R} (p2:Mountain#2)
+T20 p2's unspent {W}{W}{R} empties
+T20 moves: Plains, p2's hand -> battlefield
+T20 p2 plays p2:Plains#4
+T20 taps: p2:Raging Goblin
+T20 p2 attack: p2:Raging Goblin -> p1
+T20 p1 block: p1:Coral Merfolk -> p2:Raging Goblin
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 taps: p2:Plains#4
+T20 p2 adds {W} (p2:Plains#4)
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 casts Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 effect: p1:Coral Merfolk +7/+7 until end of turn
+T20 resolves: Righteousness
+T20 moves: Righteousness, stack -> p2's graveyard
+T20 combat damage: p2:Raging Goblin -> p1:Coral Merfolk 1
+T20 combat damage: p1:Coral Merfolk -> p2:Raging Goblin 9
+T20 state-based actions: p2:Raging Goblin lethalDamage
+T20 destroyed: p2:Raging Goblin
+T20 moves: Raging Goblin, battlefield -> p2's graveyard
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Righteousness, p2's hand -> stack
+T20 p2 cancels casting Righteousness
+T20 moves: Gray Ogre, p2's hand -> stack
+T20 p2 cancels casting Gray Ogre
+T20 moves: Gray Ogre, p2's hand -> stack
+T20 p2 cancels casting Gray Ogre
+T20 moves: Gray Ogre, p2's hand -> stack
+T20 p2 cancels casting Gray Ogre
+T20 moves: Gray Ogre, p2's hand -> stack
+T20 p2 cancels casting Gray Ogre
+T20 damage removed: p1:Coral Merfolk (1)
+T20 effect ends: p1:Coral Merfolk +7/+7
+T21 turn 21 begins (p1)
+T21 untaps: p1:Forest#1
+T21 untaps: p1:Llanowar Elves#1
+T21 untaps: p1:Island#1
+T21 untaps: p1:Forest#2
+T21 untaps: p1:Forest#3
+T21 untaps: p1:Forest#4
+T21 untaps: p1:Island#2
+T21 untaps: p1:Llanowar Elves#2
+T21 taps: p1:Llanowar Elves#2
+T21 p1 adds {G} (p1:Llanowar Elves#2)
+T21 taps: p1:Island#1
+T21 p1 adds {U} (p1:Island#1)
+T21 taps: p1:Forest#1
+T21 p1 adds {G} (p1:Forest#1)
+T21 taps: p1:Forest#3
+T21 p1 adds {G} (p1:Forest#3)
+T21 taps: p1:Forest#4
+T21 p1 adds {G} (p1:Forest#4)
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1's unspent {U}{U}{G}{G}{G}{G} empties
+T21 moves: Forest, p1's library -> p1's hand
+T21 p1 draws
+T21 taps: p1:Forest#2
+T21 p1 adds {G} (p1:Forest#2)
+T21 taps: p1:Llanowar Elves#1
+T21 p1 adds {G} (p1:Llanowar Elves#1)
+T21 p1's unspent {G}{G} empties
+T21 moves: Craw Wurm, p1's hand -> stack
+T21 p1 cancels casting Craw Wurm
+T21 moves: Llanowar Elves, p1's hand -> stack
+T21 p1 cancels casting Llanowar Elves
+T21 moves: Forest, p1's hand -> battlefield
+T21 p1 plays p1:Forest#5
+T21 moves: Giant Spider, p1's hand -> stack
+T21 taps: p1:Forest#5
+T21 p1 adds {G} (p1:Forest#5)
+T21 p1 cancels casting Giant Spider
+T21 moves: Grizzly Bears, p1's hand -> stack
+T21 taps: p1:Forest#5
+T21 p1 adds {G} (p1:Forest#5)
+T21 p1 cancels casting Grizzly Bears
+T21 taps: p1:Forest#5
+T21 p1 adds {G} (p1:Forest#5)
+T21 moves: Llanowar Elves, p1's hand -> stack
+T21 p1 cancels casting Llanowar Elves
+T21 moves: Craw Wurm, p1's hand -> stack
+T21 p1 cancels casting Craw Wurm
+T21 moves: Craw Wurm, p1's hand -> stack
+T21 p1 cancels casting Craw Wurm
+T21 moves: Craw Wurm, p1's hand -> stack
+T21 p1 cancels casting Craw Wurm
+T21 p1's unspent {G} empties
+T21 p1 attack: nothing
+T21 moves: Grizzly Bears, p1's hand -> stack
+T21 p1 cancels casting Grizzly Bears
+T22 turn 22 begins (p2)
+T22 untaps: p2:Plains#1
+T22 untaps: p2:Mountain#1
+T22 untaps: p2:Mountain#2
+T22 untaps: p2:Plains#2
+T22 untaps: p2:Mountain#3
+T22 untaps: p2:Plains#3
+T22 untaps: p2:Plains#4
+T22 taps: p2:Plains#1
+T22 p2 adds {W} (p2:Plains#1)
+T22 taps: p2:Plains#3
+T22 p2 adds {W} (p2:Plains#3)
+T22 taps: p2:Plains#4
+T22 p2 adds {W} (p2:Plains#4)
+T22 taps: p2:Mountain#2
+T22 p2 adds {R} (p2:Mountain#2)
+T22 taps: p2:Plains#2
+T22 p2 adds {W} (p2:Plains#2)
+T22 taps: p2:Mountain#1
+T22 p2 adds {R} (p2:Mountain#1)
+T22 taps: p2:Mountain#3
+T22 p2 adds {R} (p2:Mountain#3)
+T22 p2's unspent {W}{W}{W}{W}{R}{R}{R} empties
+T22 moves: Shock, p2's library -> p2's hand
+T22 p2 draws
+T22 p2 attack: nothing
+T22 moves: Shock, p2's hand -> stack
+T22 p2 cancels casting Shock
+T22 moves: Shock, p2's hand -> stack
+T22 p2 cancels casting Shock
+T22 moves: Mountain, p2's hand -> battlefield
+T22 p2 plays p2:Mountain#4
+T22 moves: Gray Ogre, p2's hand -> stack
+T22 taps: p2:Mountain#4
+T22 p2 adds {R} (p2:Mountain#4)
+T22 p2 cancels casting Gray Ogre
+T22 moves: Gray Ogre, p2's hand -> stack
+T22 p2 cancels casting Gray Ogre
+T22 taps: p2:Mountain#4
+T22 p2 adds {R} (p2:Mountain#4)
+T22 p2's unspent {R} empties
+T23 turn 23 begins (p1)
+T23 untaps: p1:Forest#1
+T23 untaps: p1:Llanowar Elves#1
+T23 untaps: p1:Island#1
+T23 untaps: p1:Forest#2
+T23 untaps: p1:Forest#3
+T23 untaps: p1:Forest#4
+T23 untaps: p1:Island#2
+T23 untaps: p1:Llanowar Elves#2
+T23 untaps: p1:Forest#5
+T23 taps: p1:Island#1
+T23 p1 adds {U} (p1:Island#1)
+T23 taps: p1:Forest#3
+T23 p1 adds {G} (p1:Forest#3)
+T23 taps: p1:Forest#4
+T23 p1 adds {G} (p1:Forest#4)
+T23 taps: p1:Forest#5
+T23 p1 adds {G} (p1:Forest#5)
+T23 taps: p1:Island#2
+T23 p1 adds {U} (p1:Island#2)
+T23 taps: p1:Llanowar Elves#1
+T23 p1 adds {G} (p1:Llanowar Elves#1)
+T23 taps: p1:Forest#1
+T23 p1 adds {G} (p1:Forest#1)
+T23 taps: p1:Forest#2
+T23 p1 adds {G} (p1:Forest#2)
+T23 taps: p1:Llanowar Elves#2
+T23 p1 adds {G} (p1:Llanowar Elves#2)
+T23 p1's unspent {U}{U}{G}{G}{G}{G}{G}{G}{G} empties
+T23 moves: Island, p1's library -> p1's hand
+T23 p1 draws
+T23 moves: Island, p1's hand -> battlefield
+T23 p1 plays p1:Island#3
+T23 moves: Llanowar Elves, p1's hand -> stack
+T23 taps: p1:Island#3
+T23 p1 adds {U} (p1:Island#3)
+T23 p1 cancels casting Llanowar Elves
+T23 taps: p1:Island#3
+T23 p1 adds {U} (p1:Island#3)
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T23 moves: Craw Wurm, p1's hand -> stack
+T23 p1 cancels casting Craw Wurm
+T23 moves: Giant Spider, p1's hand -> stack
+T23 p1 cancels casting Giant Spider
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T23 moves: Craw Wurm, p1's hand -> stack
+T23 p1 cancels casting Craw Wurm
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T23 moves: Giant Spider, p1's hand -> stack
+T23 p1 cancels casting Giant Spider
+T23 moves: Craw Wurm, p1's hand -> stack
+T23 p1 cancels casting Craw Wurm
+T23 moves: Llanowar Elves, p1's hand -> stack
+T23 p1 cancels casting Llanowar Elves
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T23 moves: Giant Spider, p1's hand -> stack
+T23 p1 cancels casting Giant Spider
+T23 moves: Craw Wurm, p1's hand -> stack
+T23 p1 cancels casting Craw Wurm
+T23 moves: Llanowar Elves, p1's hand -> stack
+T23 p1 cancels casting Llanowar Elves
+T23 moves: Llanowar Elves, p1's hand -> stack
+T23 p1 cancels casting Llanowar Elves
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T23 moves: Craw Wurm, p1's hand -> stack
+T23 p1 cancels casting Craw Wurm
+T23 moves: Shock, p2's hand -> stack
+T23 p2 cancels casting Shock
+T23 moves: Shock, p2's hand -> stack
+T23 p2 cancels casting Shock
+T23 moves: Shock, p2's hand -> stack
+T23 p2 cancels casting Shock
+T23 moves: Shock, p2's hand -> stack
+T23 p2 cancels casting Shock
+T23 p1's unspent {U} empties
+T23 moves: Shock, p2's hand -> stack
+T23 p2 cancels casting Shock
+T23 p1 attack: nothing
+T23 moves: Giant Spider, p1's hand -> stack
+T23 p1 cancels casting Giant Spider
+T23 moves: Llanowar Elves, p1's hand -> stack
+T23 p1 cancels casting Llanowar Elves
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T24 turn 24 begins (p2)
+T24 untaps: p2:Plains#1
+T24 untaps: p2:Mountain#1
+T24 untaps: p2:Mountain#2
+T24 untaps: p2:Plains#2
+T24 untaps: p2:Mountain#3
+T24 untaps: p2:Plains#3
+T24 untaps: p2:Plains#4
+T24 untaps: p2:Mountain#4
+T24 moves: Gray Ogre, p2's library -> p2's hand
+T24 p2 draws
+T24 taps: p2:Plains#3
+T24 p2 adds {W} (p2:Plains#3)
+T24 taps: p2:Plains#4
+T24 p2 adds {W} (p2:Plains#4)
+T24 taps: p2:Mountain#2
+T24 p2 adds {R} (p2:Mountain#2)
+T24 taps: p2:Mountain#4
+T24 p2 adds {R} (p2:Mountain#4)
+T24 taps: p2:Plains#2
+T24 p2 adds {W} (p2:Plains#2)
+T24 taps: p2:Mountain#3
+T24 p2 adds {R} (p2:Mountain#3)
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 taps: p2:Plains#1
+T24 p2 adds {W} (p2:Plains#1)
+T24 p2's unspent {W}{W}{W}{W}{R}{R}{R} empties
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 taps: p2:Mountain#1
+T24 p2 adds {R} (p2:Mountain#1)
+T24 p2's unspent {R} empties
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 p2 attack: nothing
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 moves: Gray Ogre, p2's hand -> stack
+T24 p2 cancels casting Gray Ogre
+T24 moves: Gray Ogre, p2's hand -> stack
+T24 p2 cancels casting Gray Ogre
+T24 moves: Shock, p2's hand -> stack
+T24 p2 cancels casting Shock
+T24 moves: Gray Ogre, p2's hand -> stack
+T24 p2 cancels casting Gray Ogre
+T24 moves: Gray Ogre, p2's hand -> stack
+T24 p2 cancels casting Gray Ogre
+T25 turn 25 begins (p1)
+T25 untaps: p1:Forest#1
+T25 untaps: p1:Llanowar Elves#1
+T25 untaps: p1:Island#1
+T25 untaps: p1:Forest#2
+T25 untaps: p1:Forest#3
+T25 untaps: p1:Forest#4
+T25 untaps: p1:Island#2
+T25 untaps: p1:Llanowar Elves#2
+T25 untaps: p1:Forest#5
+T25 untaps: p1:Island#3
+T25 taps: p1:Island#3
+T25 p1 adds {U} (p1:Island#3)
+T25 taps: p1:Forest#5
+T25 p1 adds {G} (p1:Forest#5)
+T25 taps: p1:Forest#4
+T25 p1 adds {G} (p1:Forest#4)
+T25 taps: p1:Llanowar Elves#2
+T25 p1 adds {G} (p1:Llanowar Elves#2)
+T25 taps: p1:Island#2
+T25 p1 adds {U} (p1:Island#2)
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T25 p1's unspent {U}{U}{G}{G}{G} empties
+T25 moves: Coral Merfolk, p1's library -> p1's hand
+T25 p1 draws
+T25 taps: p1:Forest#3
+T25 p1 adds {G} (p1:Forest#3)
+T25 taps: p1:Forest#1
+T25 p1 adds {G} (p1:Forest#1)
+T25 taps: p1:Forest#2
+T25 p1 adds {G} (p1:Forest#2)
+T25 taps: p1:Llanowar Elves#1
+T25 p1 adds {G} (p1:Llanowar Elves#1)
+T25 p1's unspent {G}{G}{G}{G} empties
+T25 moves: Llanowar Elves, p1's hand -> stack
+T25 p1 cancels casting Llanowar Elves
+T25 moves: Giant Spider, p1's hand -> stack
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 cancels casting Giant Spider
+T25 moves: Grizzly Bears, p1's hand -> stack
+T25 p1 cancels casting Grizzly Bears
+T25 p1 attack: nothing
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T25 moves: Coral Merfolk, p1's hand -> stack
+T25 p1 cancels casting Coral Merfolk
+T25 moves: Craw Wurm, p1's hand -> stack
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 cancels casting Craw Wurm
+T25 moves: Grizzly Bears, p1's hand -> stack
+T25 p1 cancels casting Grizzly Bears
+T25 moves: Giant Spider, p1's hand -> stack
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 cancels casting Giant Spider
+T25 moves: Craw Wurm, p1's hand -> stack
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 cancels casting Craw Wurm
+T25 moves: Giant Spider, p1's hand -> stack
+T25 p1 cancels casting Giant Spider
+T25 moves: Llanowar Elves, p1's hand -> stack
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 cancels casting Llanowar Elves
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T25 moves: Shock, p2's hand -> stack
+T25 p2 cancels casting Shock
+T26 turn 26 begins (p2)
+T26 untaps: p2:Plains#1
+T26 untaps: p2:Mountain#1
+T26 untaps: p2:Mountain#2
+T26 untaps: p2:Plains#2
+T26 untaps: p2:Mountain#3
+T26 untaps: p2:Plains#3
+T26 untaps: p2:Plains#4
+T26 untaps: p2:Mountain#4
+T26 taps: p2:Mountain#4
+T26 p2 adds {R} (p2:Mountain#4)
+T26 taps: p2:Plains#3
+T26 p2 adds {W} (p2:Plains#3)
+T26 taps: p1:Island#1
+T26 p1 adds {U} (p1:Island#1)
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 taps: p2:Plains#4
+T26 p2 adds {W} (p2:Plains#4)
+T26 moves: Shock, p2's hand -> stack
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 p2 cancels casting Shock
+T26 p1's unspent {U} empties
+T26 p2's unspent {W}{W}{R}{R} empties
+T26 moves: Elite Vanguard, p2's library -> p2's hand
+T26 p2 draws
+T26 taps: p2:Mountain#3
+T26 p2 adds {R} (p2:Mountain#3)
+T26 taps: p2:Plains#2
+T26 p2 adds {W} (p2:Plains#2)
+T26 taps: p2:Plains#1
+T26 p2 adds {W} (p2:Plains#1)
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T26 p2's unspent {W}{W}{R}{R} empties
+T26 moves: Plains, p2's hand -> battlefield
+T26 p2 plays p2:Plains#5
+T26 moves: Elite Vanguard, p2's hand -> stack
+T26 taps: p2:Plains#5
+T26 p2 adds {W} (p2:Plains#5)
+T26 p2 cancels casting Elite Vanguard
+T26 moves: Gray Ogre, p2's hand -> stack
+T26 p2 cancels casting Gray Ogre
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T26 p2 attack: nothing
+T26 moves: Shock, p2's hand -> stack
+T26 taps: p2:Plains#5
+T26 p2 adds {W} (p2:Plains#5)
+T26 p2 cancels casting Shock
+T26 taps: p2:Plains#5
+T26 p2 adds {W} (p2:Plains#5)
+T26 p2's unspent {W} empties
+T26 moves: Gray Ogre, p2's hand -> stack
+T26 p2 cancels casting Gray Ogre
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T27 turn 27 begins (p1)
+T27 untaps: p1:Forest#1
+T27 untaps: p1:Llanowar Elves#1
+T27 untaps: p1:Island#1
+T27 untaps: p1:Forest#2
+T27 untaps: p1:Forest#3
+T27 untaps: p1:Forest#4
+T27 untaps: p1:Island#2
+T27 untaps: p1:Llanowar Elves#2
+T27 untaps: p1:Forest#5
+T27 untaps: p1:Island#3
+T27 taps: p1:Island#2
+T27 p1 adds {U} (p1:Island#2)
+T27 taps: p1:Island#3
+T27 p1 adds {U} (p1:Island#3)
+T27 taps: p1:Forest#3
+T27 p1 adds {G} (p1:Forest#3)
+T27 p1's unspent {U}{U}{G} empties
+T27 moves: Llanowar Elves, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p1:Forest#2
+T27 p1 adds {G} (p1:Forest#2)
+T27 taps: p1:Forest#4
+T27 p1 adds {G} (p1:Forest#4)
+T27 taps: p1:Island#1
+T27 p1 adds {U} (p1:Island#1)
+T27 taps: p1:Llanowar Elves#2
+T27 p1 adds {G} (p1:Llanowar Elves#2)
+T27 taps: p1:Llanowar Elves#1
+T27 p1 adds {G} (p1:Llanowar Elves#1)
+T27 taps: p1:Forest#1
+T27 p1 adds {G} (p1:Forest#1)
+T27 p1's unspent {U}{G}{G}{G}{G}{G} empties
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 taps: p1:Forest#5
+T27 p1 adds {G} (p1:Forest#5)
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 p1's unspent {G} empties
+T27 p1 attack: nothing
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Giant Spider, p1's hand -> stack
+T27 p1 cancels casting Giant Spider
+T27 moves: Craw Wurm, p1's hand -> stack
+T27 p1 cancels casting Craw Wurm
+T27 moves: Craw Wurm, p1's hand -> stack
+T27 p1 cancels casting Craw Wurm
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T28 turn 28 begins (p2)
+T28 untaps: p2:Plains#1
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Mountain#2
+T28 untaps: p2:Plains#2
+T28 untaps: p2:Mountain#3
+T28 untaps: p2:Plains#3
+T28 untaps: p2:Plains#4
+T28 untaps: p2:Mountain#4
+T28 untaps: p2:Plains#5
+T28 taps: p2:Plains#1
+T28 p2 adds {W} (p2:Plains#1)
+T28 p2's unspent {W} empties
+T28 moves: Mountain, p2's library -> p2's hand
+T28 p2 draws
+T28 taps: p2:Mountain#3
+T28 p2 adds {R} (p2:Mountain#3)
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 taps: p2:Plains#4
+T28 p2 adds {W} (p2:Plains#4)
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 taps: p2:Plains#5
+T28 p2 adds {W} (p2:Plains#5)
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 taps: p2:Plains#3
+T28 p2 adds {W} (p2:Plains#3)
+T28 moves: Shock, p2's hand -> stack
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2 cancels casting Shock
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2's unspent {W}{W}{W}{W}{R}{R}{R}{R} empties
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Elite Vanguard, p2's hand -> stack
+T28 p2 cancels casting Elite Vanguard
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Elite Vanguard, p2's hand -> stack
+T28 p2 cancels casting Elite Vanguard
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Elite Vanguard, p2's hand -> stack
+T28 p2 cancels casting Elite Vanguard
+T28 moves: Mountain, p2's hand -> battlefield
+T28 p2 plays p2:Mountain#5
+T28 taps: p2:Mountain#5
+T28 p2 adds {R} (p2:Mountain#5)
+T28 p2's unspent {R} empties
+T28 p2 attack: nothing
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T28 moves: Shock, p2's hand -> stack
+T28 p2 cancels casting Shock
+T29 turn 29 begins (p1)
+T29 untaps: p1:Forest#1
+T29 untaps: p1:Llanowar Elves#1
+T29 untaps: p1:Island#1
+T29 untaps: p1:Forest#2
+T29 untaps: p1:Forest#3
+T29 untaps: p1:Forest#4
+T29 untaps: p1:Island#2
+T29 untaps: p1:Llanowar Elves#2
+T29 untaps: p1:Forest#5
+T29 untaps: p1:Island#3
+T29 taps: p1:Llanowar Elves#2
+T29 p1 adds {G} (p1:Llanowar Elves#2)
+T29 taps: p1:Forest#3
+T29 p1 adds {G} (p1:Forest#3)
+T29 taps: p1:Forest#2
+T29 p1 adds {G} (p1:Forest#2)
+T29 taps: p1:Island#2
+T29 p1 adds {U} (p1:Island#2)
+T29 taps: p1:Island#1
+T29 p1 adds {U} (p1:Island#1)
+T29 taps: p1:Forest#5
+T29 p1 adds {G} (p1:Forest#5)
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 p1's unspent {U}{U}{G}{G}{G}{G} empties
+T29 moves: Forest, p1's library -> p1's hand
+T29 p1 draws
+T29 taps: p1:Island#3
+T29 p1 adds {U} (p1:Island#3)
+T29 p1's unspent {U} empties
+T29 taps: p1:Forest#1
+T29 p1 adds {G} (p1:Forest#1)
+T29 moves: Grizzly Bears, p1's hand -> stack
+T29 p1 cancels casting Grizzly Bears
+T29 moves: Giant Spider, p1's hand -> stack
+T29 p1 cancels casting Giant Spider
+T29 moves: Llanowar Elves, p1's hand -> stack
+T29 p1 casts Llanowar Elves
+T29 taps: p1:Forest#4
+T29 p1 adds {G} (p1:Forest#4)
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 resolves: Llanowar Elves
+T29 moves: Llanowar Elves, stack -> battlefield
+T29 moves: Giant Spider, p1's hand -> stack
+T29 taps: p1:Llanowar Elves#1
+T29 p1 adds {G} (p1:Llanowar Elves#1)
+T29 p1 cancels casting Giant Spider
+T29 taps: p1:Llanowar Elves#1
+T29 p1 adds {G} (p1:Llanowar Elves#1)
+T29 moves: Llanowar Elves, p1's hand -> stack
+T29 p1 casts Llanowar Elves
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 resolves: Llanowar Elves
+T29 moves: Llanowar Elves, stack -> battlefield
+T29 moves: Craw Wurm, p1's hand -> stack
+T29 p1 cancels casting Craw Wurm
+T29 moves: Forest, p1's hand -> battlefield
+T29 p1 plays p1:Forest#6
+T29 moves: Grizzly Bears, p1's hand -> stack
+T29 taps: p1:Forest#6
+T29 p1 adds {G} (p1:Forest#6)
+T29 p1 cancels casting Grizzly Bears
+T29 taps: p1:Forest#6
+T29 p1 adds {G} (p1:Forest#6)
+T29 p1's unspent {G}{G} empties
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 taps: p1:Coral Merfolk
+T29 p1 attack: p1:Coral Merfolk -> p2
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 p2 block: nothing
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 combat damage: p1:Coral Merfolk -> p2 2
+T29 p2 loses 2 life
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Shock, p2's hand -> stack
+T29 p2 cancels casting Shock
+T29 moves: Craw Wurm, p1's hand -> stack
+T29 p1 cancels casting Craw Wurm
+T29 moves: Craw Wurm, p1's hand -> stack
+T29 p1 cancels casting Craw Wurm
+T29 moves: Craw Wurm, p1's hand -> stack
+T29 p1 cancels casting Craw Wurm
+T29 moves: Grizzly Bears, p1's hand -> stack
+T29 p1 cancels casting Grizzly Bears
+T30 turn 30 begins (p2)
+T30 untaps: p2:Plains#1
+T30 untaps: p2:Mountain#1
+T30 untaps: p2:Mountain#2
+T30 untaps: p2:Plains#2
+T30 untaps: p2:Mountain#3
+T30 untaps: p2:Plains#3
+T30 untaps: p2:Plains#4
+T30 untaps: p2:Mountain#4
+T30 untaps: p2:Plains#5
+T30 untaps: p2:Mountain#5
+T30 taps: p2:Mountain#5
+T30 p2 adds {R} (p2:Mountain#5)
+T30 taps: p2:Mountain#3
+T30 p2 adds {R} (p2:Mountain#3)
+T30 taps: p2:Mountain#4
+T30 p2 adds {R} (p2:Mountain#4)
+T30 taps: p2:Plains#2
+T30 p2 adds {W} (p2:Plains#2)
+T30 p2's unspent {W}{R}{R}{R} empties
+T30 moves: Lava Axe, p2's library -> p2's hand
+T30 p2 draws
+T30 taps: p2:Plains#1
+T30 p2 adds {W} (p2:Plains#1)
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 p2's unspent {W}{R} empties
+T30 taps: p2:Plains#3
+T30 p2 adds {W} (p2:Plains#3)
+T30 moves: Lava Axe, p2's hand -> stack
+T30 p2 cancels casting Lava Axe
+T30 p2's unspent {W} empties
+T30 p2 attack: nothing
+T30 taps: p2:Plains#5
+T30 p2 adds {W} (p2:Plains#5)
+T30 taps: p2:Plains#4
+T30 p2 adds {W} (p2:Plains#4)
+T30 p2's unspent {W}{W} empties
+T30 moves: Shock, p2's hand -> stack
+T30 p2 cancels casting Shock
+T30 taps: p2:Mountain#2
+T30 p2 adds {R} (p2:Mountain#2)
+T30 p2's unspent {R} empties
+T31 turn 31 begins (p1)
+T31 untaps: p1:Forest#1
+T31 untaps: p1:Llanowar Elves#1
+T31 untaps: p1:Island#1
+T31 untaps: p1:Forest#2
+T31 untaps: p1:Forest#3
+T31 untaps: p1:Forest#4
+T31 untaps: p1:Island#2
+T31 untaps: p1:Llanowar Elves#2
+T31 untaps: p1:Coral Merfolk
+T31 untaps: p1:Forest#5
+T31 untaps: p1:Island#3
+T31 untaps: p1:Forest#6
+T31 taps: p1:Llanowar Elves#2
+T31 p1 adds {G} (p1:Llanowar Elves#2)
+T31 taps: p1:Forest#5
+T31 p1 adds {G} (p1:Forest#5)
+T31 taps: p1:Island#1
+T31 p1 adds {U} (p1:Island#1)
+T31 taps: p1:Forest#4
+T31 p1 adds {G} (p1:Forest#4)
+T31 taps: p1:Llanowar Elves#4
+T31 p1 adds {G} (p1:Llanowar Elves#4)
+T31 taps: p1:Forest#3
+T31 p1 adds {G} (p1:Forest#3)
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 p1's unspent {U}{G}{G}{G}{G}{G} empties
+T31 moves: Grizzly Bears, p1's library -> p1's hand
+T31 p1 draws
+T31 taps: p1:Forest#6
+T31 p1 adds {G} (p1:Forest#6)
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 p1's unspent {G} empties
+T31 taps: p1:Island#2
+T31 p1 adds {U} (p1:Island#2)
+T31 taps: p1:Island#3
+T31 p1 adds {U} (p1:Island#3)
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 taps: p1:Forest#1
+T31 p1 adds {G} (p1:Forest#1)
+T31 taps: p1:Llanowar Elves#3
+T31 p1 adds {G} (p1:Llanowar Elves#3)
+T31 p1 cancels casting Grizzly Bears
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 taps: p1:Llanowar Elves#3
+T31 p1 adds {G} (p1:Llanowar Elves#3)
+T31 taps: p1:Forest#2
+T31 p1 adds {G} (p1:Forest#2)
+T31 taps: p1:Forest#1
+T31 p1 adds {G} (p1:Forest#1)
+T31 p1 cancels casting Grizzly Bears
+T31 taps: p1:Llanowar Elves#3
+T31 p1 adds {G} (p1:Llanowar Elves#3)
+T31 taps: p1:Forest#1
+T31 p1 adds {G} (p1:Forest#1)
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 p1 casts Grizzly Bears
+T31 taps: p1:Llanowar Elves#1
+T31 p1 adds {G} (p1:Llanowar Elves#1)
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 resolves: Grizzly Bears
+T31 moves: Grizzly Bears, stack -> battlefield
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 taps: p1:Forest#2
+T31 p1 adds {G} (p1:Forest#2)
+T31 p1 casts Grizzly Bears
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 resolves: Grizzly Bears
+T31 moves: Grizzly Bears, stack -> battlefield
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Giant Spider, p1's hand -> stack
+T31 p1 cancels casting Giant Spider
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Craw Wurm, p1's hand -> stack
+T31 p1 cancels casting Craw Wurm
+T31 moves: Giant Spider, p1's hand -> stack
+T31 p1 cancels casting Giant Spider
+T31 p1's unspent {G}{G} empties
+T31 p1 attack: nothing
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Shock, p2's hand -> stack
+T31 p2 cancels casting Shock
+T31 moves: Giant Spider, p1's hand -> stack
+T31 p1 cancels casting Giant Spider
+T32 turn 32 begins (p2)
+T32 untaps: p2:Plains#1
+T32 untaps: p2:Mountain#1
+T32 untaps: p2:Mountain#2
+T32 untaps: p2:Plains#2
+T32 untaps: p2:Mountain#3
+T32 untaps: p2:Plains#3
+T32 untaps: p2:Plains#4
+T32 untaps: p2:Mountain#4
+T32 untaps: p2:Plains#5
+T32 untaps: p2:Mountain#5
+T32 taps: p2:Plains#4
+T32 p2 adds {W} (p2:Plains#4)
+T32 taps: p2:Mountain#2
+T32 p2 adds {R} (p2:Mountain#2)
+T32 taps: p2:Mountain#1
+T32 p2 adds {R} (p2:Mountain#1)
+T32 taps: p2:Plains#2
+T32 p2 adds {W} (p2:Plains#2)
+T32 taps: p2:Mountain#4
+T32 p2 adds {R} (p2:Mountain#4)
+T32 taps: p2:Mountain#3
+T32 p2 adds {R} (p2:Mountain#3)
+T32 taps: p2:Plains#5
+T32 p2 adds {W} (p2:Plains#5)
+T32 p2's unspent {W}{W}{W}{R}{R}{R}{R} empties
+T32 moves: Mountain, p2's library -> p2's hand
+T32 p2 draws
+T32 taps: p2:Plains#1
+T32 p2 adds {W} (p2:Plains#1)
+T32 p2's unspent {W} empties
+T32 taps: p2:Plains#3
+T32 p2 adds {W} (p2:Plains#3)
+T32 moves: Shock, p2's hand -> stack
+T32 taps: p2:Mountain#5
+T32 p2 adds {R} (p2:Mountain#5)
+T32 p2 cancels casting Shock
+T32 p2's unspent {W} empties
+T32 p2 attack: nothing
+T32 taps: p2:Mountain#5
+T32 p2 adds {R} (p2:Mountain#5)
+T32 p2's unspent {R} empties
+T32 moves: Shock, p2's hand -> stack
+T32 p2 cancels casting Shock
+T32 moves: Gray Ogre, p2's hand -> p2's graveyard
+T32 p2 discards Gray Ogre
+T33 turn 33 begins (p1)
+T33 untaps: p1:Forest#1
+T33 untaps: p1:Llanowar Elves#1
+T33 untaps: p1:Island#1
+T33 untaps: p1:Forest#2
+T33 untaps: p1:Forest#3
+T33 untaps: p1:Forest#4
+T33 untaps: p1:Island#2
+T33 untaps: p1:Llanowar Elves#2
+T33 untaps: p1:Forest#5
+T33 untaps: p1:Island#3
+T33 untaps: p1:Llanowar Elves#3
+T33 untaps: p1:Llanowar Elves#4
+T33 untaps: p1:Forest#6
+T33 taps: p1:Llanowar Elves#2
+T33 p1 adds {G} (p1:Llanowar Elves#2)
+T33 taps: p1:Forest#2
+T33 p1 adds {G} (p1:Forest#2)
+T33 taps: p1:Llanowar Elves#4
+T33 p1 adds {G} (p1:Llanowar Elves#4)
+T33 moves: Shock, p2's hand -> stack
+T33 p2 cancels casting Shock
+T33 moves: Shock, p2's hand -> stack
+T33 p2 cancels casting Shock
+T33 p1's unspent {G}{G}{G} empties
+T33 moves: Coral Merfolk, p1's library -> p1's hand
+T33 p1 draws
+T33 taps: p1:Forest#3
+T33 p1 adds {G} (p1:Forest#3)
+T33 taps: p1:Forest#5
+T33 p1 adds {G} (p1:Forest#5)
+T33 taps: p1:Island#1
+T33 p1 adds {U} (p1:Island#1)
+T33 taps: p1:Island#3
+T33 p1 adds {U} (p1:Island#3)
+T33 taps: p1:Island#2
+T33 p1 adds {U} (p1:Island#2)
+T33 taps: p1:Forest#6
+T33 p1 adds {G} (p1:Forest#6)
+T33 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T33 taps: p1:Forest#1
+T33 p1 adds {G} (p1:Forest#1)
+T33 moves: Coral Merfolk, p1's hand -> stack
+T33 p1 cancels casting Coral Merfolk
+T33 taps: p1:Llanowar Elves#1
+T33 p1 adds {G} (p1:Llanowar Elves#1)
+T33 taps: p1:Llanowar Elves#3
+T33 p1 adds {G} (p1:Llanowar Elves#3)
+T33 moves: Craw Wurm, p1's hand -> stack
+T33 p1 cancels casting Craw Wurm
+T33 moves: Craw Wurm, p1's hand -> stack
+T33 p1 cancels casting Craw Wurm
+T33 taps: p1:Forest#4
+T33 p1 adds {G} (p1:Forest#4)
+T33 p1's unspent {G}{G}{G}{G} empties
+T33 moves: Shock, p2's hand -> stack
+T33 p2 cancels casting Shock
+T33 taps: p1:Grizzly Bears#1
+T33 p1 attack: p1:Grizzly Bears#1 -> p2
+T33 p2 block: nothing
+T33 moves: Shock, p2's hand -> stack
+T33 p2 cancels casting Shock
+T33 moves: Shock, p2's hand -> stack
+T33 p2 cancels casting Shock
+T33 combat damage: p1:Grizzly Bears#1 -> p2 2
+T33 p2 loses 2 life
+T33 moves: Giant Spider, p1's hand -> stack
+T33 p1 cancels casting Giant Spider
+T33 moves: Craw Wurm, p1's hand -> stack
+T33 p1 cancels casting Craw Wurm
+T33 moves: Craw Wurm, p1's hand -> stack
+T33 p1 cancels casting Craw Wurm
+T33 moves: Giant Spider, p1's hand -> stack
+T33 p1 cancels casting Giant Spider
+T33 moves: Coral Merfolk, p1's hand -> stack
+T33 p1 cancels casting Coral Merfolk
+T33 moves: Craw Wurm, p1's hand -> stack
+T33 p1 cancels casting Craw Wurm
+T33 moves: Coral Merfolk, p1's hand -> stack
+T33 p1 cancels casting Coral Merfolk
+T33 moves: Coral Merfolk, p1's hand -> stack
+T33 p1 cancels casting Coral Merfolk
+T33 moves: Shock, p2's hand -> stack
+T33 p2 cancels casting Shock
+T34 turn 34 begins (p2)
+T34 untaps: p2:Plains#1
+T34 untaps: p2:Mountain#1
+T34 untaps: p2:Mountain#2
+T34 untaps: p2:Plains#2
+T34 untaps: p2:Mountain#3
+T34 untaps: p2:Plains#3
+T34 untaps: p2:Plains#4
+T34 untaps: p2:Mountain#4
+T34 untaps: p2:Plains#5
+T34 untaps: p2:Mountain#5
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 moves: Shock, p2's hand -> stack
+T34 p2 cancels casting Shock
+T34 taps: p2:Plains#2
+T34 p2 adds {W} (p2:Plains#2)
+T34 taps: p2:Mountain#3
+T34 p2 adds {R} (p2:Mountain#3)
+T34 taps: p2:Plains#5
+T34 p2 adds {W} (p2:Plains#5)
+T34 moves: Shock, p2's hand -> stack
+T34 taps: p2:Plains#4
+T34 p2 adds {W} (p2:Plains#4)
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 taps: p2:Mountain#4
+T34 p2 adds {R} (p2:Mountain#4)
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 cancels casting Shock
+T34 taps: p2:Mountain#5
+T34 p2 adds {R} (p2:Mountain#5)
+T34 taps: p2:Mountain#4
+T34 p2 adds {R} (p2:Mountain#4)
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 moves: Shock, p2's hand -> stack
+T34 taps: p2:Plains#4
+T34 p2 adds {W} (p2:Plains#4)
+T34 p2 casts Shock
+T34 damage: Shock -> p1:Grizzly Bears#1 2
+T34 resolves: Shock
+T34 moves: Shock, stack -> p2's graveyard
+T34 state-based actions: p1:Grizzly Bears#1 lethalDamage
+T34 destroyed: p1:Grizzly Bears#1
+T34 moves: Grizzly Bears, battlefield -> p1's graveyard
+T34 p2's unspent {W}{W}{W}{W}{R}{R}{R}{R} empties
+T34 moves: Elite Vanguard, p2's library -> p2's hand
+T34 p2 draws
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Lava Axe, p2's hand -> stack
+T34 p2 cancels casting Lava Axe
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 cancels casting Gray Ogre
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 p2 cancels casting Gray Ogre
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 p2 cancels casting Gray Ogre
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 p2 cancels casting Gray Ogre
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 casts Elite Vanguard
+T34 resolves: Elite Vanguard
+T34 moves: Elite Vanguard, stack -> battlefield
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 p2 cancels casting Gray Ogre
+T34 moves: Mountain, p2's hand -> battlefield
+T34 p2 plays p2:Mountain#6
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 taps: p2:Mountain#6
+T34 p2 adds {R} (p2:Mountain#6)
+T34 p2 cancels casting Gray Ogre
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 taps: p2:Mountain#6
+T34 p2 adds {R} (p2:Mountain#6)
+T34 p2's unspent {R} empties
+T34 p2 attack: nothing
+T34 moves: Lava Axe, p2's hand -> stack
+T34 p2 cancels casting Lava Axe
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Elite Vanguard, p2's hand -> stack
+T34 p2 cancels casting Elite Vanguard
+T34 moves: Gray Ogre, p2's hand -> stack
+T34 p2 cancels casting Gray Ogre
+T35 turn 35 begins (p1)
+T35 untaps: p1:Forest#1
+T35 untaps: p1:Llanowar Elves#1
+T35 untaps: p1:Island#1
+T35 untaps: p1:Forest#2
+T35 untaps: p1:Forest#3
+T35 untaps: p1:Forest#4
+T35 untaps: p1:Island#2
+T35 untaps: p1:Llanowar Elves#2
+T35 untaps: p1:Forest#5
+T35 untaps: p1:Island#3
+T35 untaps: p1:Llanowar Elves#3
+T35 untaps: p1:Llanowar Elves#4
+T35 untaps: p1:Forest#6
+T35 taps: p1:Forest#2
+T35 p1 adds {G} (p1:Forest#2)
+T35 taps: p1:Island#2
+T35 p1 adds {U} (p1:Island#2)
+T35 taps: p1:Llanowar Elves#4
+T35 p1 adds {G} (p1:Llanowar Elves#4)
+T35 taps: p1:Forest#4
+T35 p1 adds {G} (p1:Forest#4)
+T35 taps: p1:Island#1
+T35 p1 adds {U} (p1:Island#1)
+T35 taps: p1:Llanowar Elves#1
+T35 p1 adds {G} (p1:Llanowar Elves#1)
+T35 taps: p1:Forest#5
+T35 p1 adds {G} (p1:Forest#5)
+T35 taps: p1:Llanowar Elves#3
+T35 p1 adds {G} (p1:Llanowar Elves#3)
+T35 taps: p1:Island#3
+T35 p1 adds {U} (p1:Island#3)
+T35 taps: p1:Forest#1
+T35 p1 adds {G} (p1:Forest#1)
+T35 p1's unspent {U}{U}{U}{G}{G}{G}{G}{G}{G}{G} empties
+T35 moves: Giant Spider, p1's library -> p1's hand
+T35 p1 draws
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 p1 cancels casting Coral Merfolk
+T35 taps: p1:Forest#6
+T35 p1 adds {G} (p1:Forest#6)
+T35 moves: Giant Spider, p1's hand -> stack
+T35 p1 cancels casting Giant Spider
+T35 moves: Craw Wurm, p1's hand -> stack
+T35 taps: p1:Forest#3
+T35 p1 adds {G} (p1:Forest#3)
+T35 p1 cancels casting Craw Wurm
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 taps: p1:Llanowar Elves#2
+T35 p1 adds {G} (p1:Llanowar Elves#2)
+T35 taps: p1:Forest#3
+T35 p1 adds {G} (p1:Forest#3)
+T35 p1 cancels casting Coral Merfolk
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 taps: p1:Llanowar Elves#2
+T35 p1 adds {G} (p1:Llanowar Elves#2)
+T35 taps: p1:Forest#3
+T35 p1 adds {G} (p1:Forest#3)
+T35 p1 cancels casting Coral Merfolk
+T35 taps: p1:Forest#3
+T35 p1 adds {G} (p1:Forest#3)
+T35 moves: Craw Wurm, p1's hand -> stack
+T35 p1 cancels casting Craw Wurm
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 p1 cancels casting Coral Merfolk
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 taps: p1:Llanowar Elves#2
+T35 p1 adds {G} (p1:Llanowar Elves#2)
+T35 p1 cancels casting Coral Merfolk
+T35 taps: p1:Llanowar Elves#2
+T35 p1 adds {G} (p1:Llanowar Elves#2)
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 p1 cancels casting Coral Merfolk
+T35 moves: Coral Merfolk, p1's hand -> stack
+T35 p1 cancels casting Coral Merfolk
+T35 p1's unspent {G}{G}{G} empties
+T35 taps: p1:Grizzly Bears
+T35 taps: p1:Coral Merfolk
+T35 p1 attack: p1:Grizzly Bears -> p2, p1:Coral Merfolk -> p2
+T35 p2 block: p2:Elite Vanguard -> p1:Coral Merfolk
+T35 combat damage: p1:Grizzly Bears -> p2 2
+T35 combat damage: p1:Coral Merfolk -> p2:Elite Vanguard 2
+T35 combat damage: p2:Elite Vanguard -> p1:Coral Merfolk 2
+T35 p2 loses 2 life
+T35 state-based actions: p1:Coral Merfolk lethalDamage, p2:Elite Vanguard lethalDamage
+T35 destroyed: p1:Coral Merfolk
+T35 moves: Coral Merfolk, battlefield -> p1's graveyard
+T35 destroyed: p2:Elite Vanguard
+T35 moves: Elite Vanguard, battlefield -> p2's graveyard
+T35 moves: Giant Spider, p1's hand -> stack
+T35 p1 cancels casting Giant Spider
+T35 moves: Craw Wurm, p1's hand -> stack
+T35 p1 cancels casting Craw Wurm
+T36 turn 36 begins (p2)
+T36 untaps: p2:Plains#1
+T36 untaps: p2:Mountain#1
+T36 untaps: p2:Mountain#2
+T36 untaps: p2:Plains#2
+T36 untaps: p2:Mountain#3
+T36 untaps: p2:Plains#3
+T36 untaps: p2:Plains#4
+T36 untaps: p2:Mountain#4
+T36 untaps: p2:Plains#5
+T36 untaps: p2:Mountain#5
+T36 untaps: p2:Mountain#6
+T36 taps: p2:Mountain#4
+T36 p2 adds {R} (p2:Mountain#4)
+T36 p2's unspent {R} empties
+T36 moves: Lightning Bolt, p2's library -> p2's hand
+T36 p2 draws
+T36 taps: p2:Mountain#1
+T36 p2 adds {R} (p2:Mountain#1)
+T36 taps: p2:Plains#2
+T36 p2 adds {W} (p2:Plains#2)
+T36 taps: p2:Mountain#3
+T36 p2 adds {R} (p2:Mountain#3)
+T36 taps: p2:Mountain#5
+T36 p2 adds {R} (p2:Mountain#5)
+T36 taps: p2:Plains#5
+T36 p2 adds {W} (p2:Plains#5)
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 taps: p2:Plains#4
+T36 p2 adds {W} (p2:Plains#4)
+T36 p2's unspent {W}{W}{W}{R}{R}{R}{R} empties
+T36 taps: p2:Mountain#6
+T36 p2 adds {R} (p2:Mountain#6)
+T36 taps: p2:Plains#1
+T36 p2 adds {W} (p2:Plains#1)
+T36 taps: p2:Plains#3
+T36 p2 adds {W} (p2:Plains#3)
+T36 moves: Lava Axe, p2's hand -> stack
+T36 p2 cancels casting Lava Axe
+T36 p2's unspent {W}{W}{R} empties
+T36 moves: Lightning Bolt, p2's hand -> stack
+T36 p2 cancels casting Lightning Bolt
+T36 moves: Lightning Bolt, p2's hand -> stack
+T36 p2 cancels casting Lightning Bolt
+T36 p2 attack: nothing
+T36 moves: Gray Ogre, p2's hand -> stack
+T36 p2 cancels casting Gray Ogre
+T36 moves: Elite Vanguard, p2's hand -> stack
+T36 p2 cancels casting Elite Vanguard
+T36 moves: Gray Ogre, p2's hand -> stack
+T36 p2 cancels casting Gray Ogre
+T37 turn 37 begins (p1)
+T37 untaps: p1:Forest#1
+T37 untaps: p1:Llanowar Elves#1
+T37 untaps: p1:Island#1
+T37 untaps: p1:Forest#2
+T37 untaps: p1:Forest#3
+T37 untaps: p1:Forest#4
+T37 untaps: p1:Island#2
+T37 untaps: p1:Llanowar Elves#2
+T37 untaps: p1:Forest#5
+T37 untaps: p1:Island#3
+T37 untaps: p1:Llanowar Elves#3
+T37 untaps: p1:Llanowar Elves#4
+T37 untaps: p1:Forest#6
+T37 untaps: p1:Grizzly Bears
+T37 taps: p1:Llanowar Elves#2
+T37 p1 adds {G} (p1:Llanowar Elves#2)
+T37 taps: p1:Forest#5
+T37 p1 adds {G} (p1:Forest#5)
+T37 taps: p1:Island#2
+T37 p1 adds {U} (p1:Island#2)
+T37 taps: p1:Island#1
+T37 p1 adds {U} (p1:Island#1)
+T37 taps: p1:Forest#2
+T37 p1 adds {G} (p1:Forest#2)
+T37 taps: p1:Llanowar Elves#4
+T37 p1 adds {G} (p1:Llanowar Elves#4)
+T37 taps: p1:Forest#3
+T37 p1 adds {G} (p1:Forest#3)
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 p1's unspent {U}{U}{G}{G}{G}{G}{G} empties
+T37 moves: Island, p1's library -> p1's hand
+T37 p1 draws
+T37 taps: p1:Forest#1
+T37 p1 adds {G} (p1:Forest#1)
+T37 taps: p1:Forest#4
+T37 p1 adds {G} (p1:Forest#4)
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 p1's unspent {G}{G} empties
+T37 taps: p1:Island#3
+T37 p1 adds {U} (p1:Island#3)
+T37 moves: Giant Spider, p1's hand -> stack
+T37 p1 cancels casting Giant Spider
+T37 taps: p1:Forest#6
+T37 p1 adds {G} (p1:Forest#6)
+T37 p1's unspent {U}{G} empties
+T37 p1 attack: nothing
+T37 taps: p1:Llanowar Elves#3
+T37 p1 adds {G} (p1:Llanowar Elves#3)
+T37 taps: p1:Llanowar Elves#1
+T37 p1 adds {G} (p1:Llanowar Elves#1)
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 p1's unspent {G}{G} empties
+T37 moves: Craw Wurm, p1's hand -> stack
+T37 p1 cancels casting Craw Wurm
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T37 moves: Lightning Bolt, p2's hand -> stack
+T37 p2 cancels casting Lightning Bolt
+T38 turn 38 begins (p2)
+T38 untaps: p2:Plains#1
+T38 untaps: p2:Mountain#1
+T38 untaps: p2:Mountain#2
+T38 untaps: p2:Plains#2
+T38 untaps: p2:Mountain#3
+T38 untaps: p2:Plains#3
+T38 untaps: p2:Plains#4
+T38 untaps: p2:Mountain#4
+T38 untaps: p2:Plains#5
+T38 untaps: p2:Mountain#5
+T38 untaps: p2:Mountain#6
+T38 taps: p2:Plains#2
+T38 p2 adds {W} (p2:Plains#2)
+T38 taps: p2:Plains#1
+T38 p2 adds {W} (p2:Plains#1)
+T38 taps: p2:Mountain#5
+T38 p2 adds {R} (p2:Mountain#5)
+T38 taps: p2:Mountain#3
+T38 p2 adds {R} (p2:Mountain#3)
+T38 taps: p2:Plains#3
+T38 p2 adds {W} (p2:Plains#3)
+T38 taps: p2:Mountain#4
+T38 p2 adds {R} (p2:Mountain#4)
+T38 taps: p2:Plains#5
+T38 p2 adds {W} (p2:Plains#5)
+T38 taps: p2:Mountain#2
+T38 p2 adds {R} (p2:Mountain#2)
+T38 taps: p2:Mountain#6
+T38 p2 adds {R} (p2:Mountain#6)
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T38 taps: p2:Plains#4
+T38 p2 adds {W} (p2:Plains#4)
+T38 p2's unspent {W}{W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T38 moves: Hill Giant, p2's library -> p2's hand
+T38 p2 draws
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T38 moves: Gray Ogre, p2's hand -> stack
+T38 p2 cancels casting Gray Ogre
+T38 p2 attack: nothing
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T38 moves: Gray Ogre, p2's hand -> stack
+T38 p2 cancels casting Gray Ogre
+T38 moves: Elite Vanguard, p2's hand -> stack
+T38 p2 cancels casting Elite Vanguard
+T38 moves: Lightning Bolt, p2's hand -> stack
+T38 p2 cancels casting Lightning Bolt
+T39 turn 39 begins (p1)
+T39 untaps: p1:Forest#1
+T39 untaps: p1:Llanowar Elves#1
+T39 untaps: p1:Island#1
+T39 untaps: p1:Forest#2
+T39 untaps: p1:Forest#3
+T39 untaps: p1:Forest#4
+T39 untaps: p1:Island#2
+T39 untaps: p1:Llanowar Elves#2
+T39 untaps: p1:Forest#5
+T39 untaps: p1:Island#3
+T39 untaps: p1:Llanowar Elves#3
+T39 untaps: p1:Llanowar Elves#4
+T39 untaps: p1:Forest#6
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Grizzly Bears, p1's library -> p1's hand
+T39 p1 draws
+T39 taps: p1:Forest#4
+T39 p1 adds {G} (p1:Forest#4)
+T39 taps: p1:Forest#5
+T39 p1 adds {G} (p1:Forest#5)
+T39 taps: p1:Forest#3
+T39 p1 adds {G} (p1:Forest#3)
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 p1's unspent {G}{G}{G} empties
+T39 taps: p1:Forest#2
+T39 p1 adds {G} (p1:Forest#2)
+T39 moves: Coral Merfolk, p1's hand -> stack
+T39 taps: p1:Island#2
+T39 p1 adds {U} (p1:Island#2)
+T39 taps: p1:Llanowar Elves#3
+T39 p1 adds {G} (p1:Llanowar Elves#3)
+T39 p1 casts Coral Merfolk
+T39 taps: p1:Llanowar Elves#2
+T39 p1 adds {G} (p1:Llanowar Elves#2)
+T39 taps: p1:Forest#6
+T39 p1 adds {G} (p1:Forest#6)
+T39 taps: p1:Island#1
+T39 p1 adds {U} (p1:Island#1)
+T39 taps: p1:Llanowar Elves#4
+T39 p1 adds {G} (p1:Llanowar Elves#4)
+T39 taps: p1:Island#3
+T39 p1 adds {U} (p1:Island#3)
+T39 taps: p1:Llanowar Elves#1
+T39 p1 adds {G} (p1:Llanowar Elves#1)
+T39 taps: p1:Forest#1
+T39 p1 adds {G} (p1:Forest#1)
+T39 resolves: Coral Merfolk
+T39 moves: Coral Merfolk, stack -> battlefield
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 p1's unspent {U}{U}{G}{G}{G}{G}{G}{G} empties
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 taps: p1:Grizzly Bears
+T39 p1 attack: p1:Grizzly Bears -> p2
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 p2 block: nothing
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 combat damage: p1:Grizzly Bears -> p2 2
+T39 p2 loses 2 life
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Giant Spider, p1's hand -> stack
+T39 p1 cancels casting Giant Spider
+T39 moves: Craw Wurm, p1's hand -> stack
+T39 p1 cancels casting Craw Wurm
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T39 moves: Lightning Bolt, p2's hand -> stack
+T39 p2 cancels casting Lightning Bolt
+T40 turn 40 begins (p2)
+T40 untaps: p2:Plains#1
+T40 untaps: p2:Mountain#1
+T40 untaps: p2:Mountain#2
+T40 untaps: p2:Plains#2
+T40 untaps: p2:Mountain#3
+T40 untaps: p2:Plains#3
+T40 untaps: p2:Plains#4
+T40 untaps: p2:Mountain#4
+T40 untaps: p2:Plains#5
+T40 untaps: p2:Mountain#5
+T40 untaps: p2:Mountain#6
+T40 taps: p2:Plains#1
+T40 p2 adds {W} (p2:Plains#1)
+T40 p2's unspent {W} empties
+T40 moves: Mountain, p2's library -> p2's hand
+T40 p2 draws
+T40 taps: p2:Plains#5
+T40 p2 adds {W} (p2:Plains#5)
+T40 taps: p2:Mountain#6
+T40 p2 adds {R} (p2:Mountain#6)
+T40 taps: p2:Mountain#3
+T40 p2 adds {R} (p2:Mountain#3)
+T40 taps: p2:Mountain#1
+T40 p2 adds {R} (p2:Mountain#1)
+T40 taps: p2:Mountain#5
+T40 p2 adds {R} (p2:Mountain#5)
+T40 moves: Lightning Bolt, p2's hand -> stack
+T40 p2 cancels casting Lightning Bolt
+T40 taps: p2:Mountain#4
+T40 p2 adds {R} (p2:Mountain#4)
+T40 taps: p2:Plains#4
+T40 p2 adds {W} (p2:Plains#4)
+T40 taps: p2:Plains#3
+T40 p2 adds {W} (p2:Plains#3)
+T40 taps: p2:Plains#2
+T40 p2 adds {W} (p2:Plains#2)
+T40 moves: Lightning Bolt, p2's hand -> stack
+T40 taps: p2:Mountain#2
+T40 p2 adds {R} (p2:Mountain#2)
+T40 p2 cancels casting Lightning Bolt
+T40 taps: p2:Mountain#2
+T40 p2 adds {R} (p2:Mountain#2)
+T40 p2's unspent {W}{W}{W}{W}{R}{R}{R}{R}{R}{R} empties
+T40 moves: Elite Vanguard, p2's hand -> stack
+T40 p2 cancels casting Elite Vanguard
+T40 moves: Elite Vanguard, p2's hand -> stack
+T40 p2 cancels casting Elite Vanguard
+T40 moves: Mountain, p2's hand -> battlefield
+T40 p2 plays p2:Mountain#7
+T40 moves: Lightning Bolt, p2's hand -> stack
+T40 taps: p2:Mountain#7
+T40 p2 adds {R} (p2:Mountain#7)
+T40 p2 cancels casting Lightning Bolt
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 taps: p2:Mountain#7
+T40 p2 adds {R} (p2:Mountain#7)
+T40 moves: Lightning Bolt, p2's hand -> stack
+T40 p2 casts Lightning Bolt
+T40 damage: Lightning Bolt -> p1:Llanowar Elves#2 3
+T40 resolves: Lightning Bolt
+T40 moves: Lightning Bolt, stack -> p2's graveyard
+T40 state-based actions: p1:Llanowar Elves#2 lethalDamage
+T40 destroyed: p1:Llanowar Elves#2
+T40 moves: Llanowar Elves, battlefield -> p1's graveyard
+T40 p2 attack: nothing
+T40 moves: Lava Axe, p2's hand -> stack
+T40 p2 cancels casting Lava Axe
+T40 moves: Elite Vanguard, p2's hand -> stack
+T40 p2 cancels casting Elite Vanguard
+T40 moves: Lava Axe, p2's hand -> stack
+T40 p2 cancels casting Lava Axe
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T41 turn 41 begins (p1)
+T41 untaps: p1:Forest#1
+T41 untaps: p1:Llanowar Elves#1
+T41 untaps: p1:Island#1
+T41 untaps: p1:Forest#2
+T41 untaps: p1:Forest#3
+T41 untaps: p1:Forest#4
+T41 untaps: p1:Island#2
+T41 untaps: p1:Forest#5
+T41 untaps: p1:Island#3
+T41 untaps: p1:Llanowar Elves#2
+T41 untaps: p1:Llanowar Elves#3
+T41 untaps: p1:Forest#6
+T41 untaps: p1:Grizzly Bears
+T41 taps: p1:Forest#5
+T41 p1 adds {G} (p1:Forest#5)
+T41 p1's unspent {G} empties
+T41 moves: Centaur Courser, p1's library -> p1's hand
+T41 p1 draws
+T41 taps: p1:Llanowar Elves#2
+T41 p1 adds {G} (p1:Llanowar Elves#2)
+T41 taps: p1:Forest#6
+T41 p1 adds {G} (p1:Forest#6)
+T41 taps: p1:Island#1
+T41 p1 adds {U} (p1:Island#1)
+T41 taps: p1:Forest#4
+T41 p1 adds {G} (p1:Forest#4)
+T41 taps: p1:Forest#3
+T41 p1 adds {G} (p1:Forest#3)
+T41 taps: p1:Island#2
+T41 p1 adds {U} (p1:Island#2)
+T41 taps: p1:Forest#2
+T41 p1 adds {G} (p1:Forest#2)
+T41 taps: p1:Island#3
+T41 p1 adds {U} (p1:Island#3)
+T41 taps: p1:Llanowar Elves#3
+T41 p1 adds {G} (p1:Llanowar Elves#3)
+T41 p1's unspent {U}{U}{U}{G}{G}{G}{G}{G}{G} empties
+T41 moves: Giant Spider, p1's hand -> stack
+T41 taps: p1:Llanowar Elves#1
+T41 p1 adds {G} (p1:Llanowar Elves#1)
+T41 taps: p1:Forest#1
+T41 p1 adds {G} (p1:Forest#1)
+T41 p1 cancels casting Giant Spider
+T41 moves: Grizzly Bears, p1's hand -> stack
+T41 taps: p1:Forest#1
+T41 p1 adds {G} (p1:Forest#1)
+T41 p1 cancels casting Grizzly Bears
+T41 moves: Centaur Courser, p1's hand -> stack
+T41 taps: p1:Forest#1
+T41 p1 adds {G} (p1:Forest#1)
+T41 p1 cancels casting Centaur Courser
+T41 taps: p1:Llanowar Elves#1
+T41 p1 adds {G} (p1:Llanowar Elves#1)
+T41 taps: p1:Forest#1
+T41 p1 adds {G} (p1:Forest#1)
+T41 p1's unspent {G}{G} empties
+T41 p1 attack: nothing
+T41 moves: Coral Merfolk, p1's hand -> stack
+T41 p1 cancels casting Coral Merfolk
+T41 moves: Coral Merfolk, p1's hand -> stack
+T41 p1 cancels casting Coral Merfolk
+T41 moves: Craw Wurm, p1's hand -> stack
+T41 p1 cancels casting Craw Wurm
+T41 moves: Island, p1's hand -> battlefield
+T41 p1 plays p1:Island#4
+T41 taps: p1:Island#4
+T41 p1 adds {U} (p1:Island#4)
+T41 p1's unspent {U} empties
+T42 turn 42 begins (p2)
+T42 untaps: p2:Plains#1
+T42 untaps: p2:Mountain#1
+T42 untaps: p2:Mountain#2
+T42 untaps: p2:Plains#2
+T42 untaps: p2:Mountain#3
+T42 untaps: p2:Plains#3
+T42 untaps: p2:Plains#4
+T42 untaps: p2:Mountain#4
+T42 untaps: p2:Plains#5
+T42 untaps: p2:Mountain#5
+T42 untaps: p2:Mountain#6
+T42 untaps: p2:Mountain#7
+T42 taps: p2:Plains#4
+T42 p2 adds {W} (p2:Plains#4)
+T42 taps: p2:Mountain#6
+T42 p2 adds {R} (p2:Mountain#6)
+T42 taps: p2:Mountain#4
+T42 p2 adds {R} (p2:Mountain#4)
+T42 taps: p2:Mountain#1
+T42 p2 adds {R} (p2:Mountain#1)
+T42 p2's unspent {W}{R}{R}{R} empties
+T42 moves: Hill Giant, p2's library -> p2's hand
+T42 p2 draws
+T42 taps: p2:Mountain#7
+T42 p2 adds {R} (p2:Mountain#7)
+T42 taps: p2:Plains#2
+T42 p2 adds {W} (p2:Plains#2)
+T42 taps: p2:Mountain#5
+T42 p2 adds {R} (p2:Mountain#5)
+T42 taps: p2:Mountain#3
+T42 p2 adds {R} (p2:Mountain#3)
+T42 taps: p2:Mountain#2
+T42 p2 adds {R} (p2:Mountain#2)
+T42 p2's unspent {W}{R}{R}{R}{R} empties
+T42 taps: p2:Plains#5
+T42 p2 adds {W} (p2:Plains#5)
+T42 moves: Lava Axe, p2's hand -> stack
+T42 taps: p2:Plains#1
+T42 p2 adds {W} (p2:Plains#1)
+T42 taps: p2:Plains#3
+T42 p2 adds {W} (p2:Plains#3)
+T42 p2 cancels casting Lava Axe
+T42 moves: Hill Giant, p2's hand -> stack
+T42 taps: p2:Plains#3
+T42 p2 adds {W} (p2:Plains#3)
+T42 taps: p2:Plains#1
+T42 p2 adds {W} (p2:Plains#1)
+T42 p2 cancels casting Hill Giant
+T42 p2's unspent {W} empties
+T42 taps: p2:Plains#3
+T42 p2 adds {W} (p2:Plains#3)
+T42 taps: p2:Plains#1
+T42 p2 adds {W} (p2:Plains#1)
+T42 p2's unspent {W}{W} empties
+T42 p2 attack: nothing
+T43 turn 43 begins (p1)
+T43 untaps: p1:Forest#1
+T43 untaps: p1:Llanowar Elves#1
+T43 untaps: p1:Island#1
+T43 untaps: p1:Forest#2
+T43 untaps: p1:Forest#3
+T43 untaps: p1:Forest#4
+T43 untaps: p1:Island#2
+T43 untaps: p1:Forest#5
+T43 untaps: p1:Island#3
+T43 untaps: p1:Llanowar Elves#2
+T43 untaps: p1:Llanowar Elves#3
+T43 untaps: p1:Forest#6
+T43 untaps: p1:Island#4
+T43 moves: Coral Merfolk, p1's library -> p1's hand
+T43 p1 draws
+T43 taps: p1:Llanowar Elves#2
+T43 p1 adds {G} (p1:Llanowar Elves#2)
+T43 taps: p1:Llanowar Elves#3
+T43 p1 adds {G} (p1:Llanowar Elves#3)
+T43 taps: p1:Forest#4
+T43 p1 adds {G} (p1:Forest#4)
+T43 taps: p1:Forest#6
+T43 p1 adds {G} (p1:Forest#6)
+T43 taps: p1:Forest#2
+T43 p1 adds {G} (p1:Forest#2)
+T43 taps: p1:Island#3
+T43 p1 adds {U} (p1:Island#3)
+T43 taps: p1:Forest#3
+T43 p1 adds {G} (p1:Forest#3)
+T43 taps: p1:Island#2
+T43 p1 adds {U} (p1:Island#2)
+T43 taps: p1:Llanowar Elves#1
+T43 p1 adds {G} (p1:Llanowar Elves#1)
+T43 taps: p1:Island#4
+T43 p1 adds {U} (p1:Island#4)
+T43 p1's unspent {U}{U}{U}{G}{G}{G}{G}{G}{G}{G} empties
+T43 moves: Giant Spider, p1's hand -> stack
+T43 taps: p1:Forest#1
+T43 p1 adds {G} (p1:Forest#1)
+T43 p1 cancels casting Giant Spider
+T43 taps: p1:Forest#5
+T43 p1 adds {G} (p1:Forest#5)
+T43 p1's unspent {G} empties
+T43 p1 attack: nothing
+T43 taps: p1:Forest#1
+T43 p1 adds {G} (p1:Forest#1)
+T43 p1's unspent {G} empties
+T43 moves: Craw Wurm, p1's hand -> stack
+T43 taps: p1:Island#1
+T43 p1 adds {U} (p1:Island#1)
+T43 p1 cancels casting Craw Wurm
+T43 moves: Craw Wurm, p1's hand -> stack
+T43 taps: p1:Island#1
+T43 p1 adds {U} (p1:Island#1)
+T43 p1 cancels casting Craw Wurm
+T43 moves: Coral Merfolk, p1's hand -> stack
+T43 p1 cancels casting Coral Merfolk
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Centaur Courser, p1's hand -> stack
+T43 p1 cancels casting Centaur Courser
+T43 moves: Grizzly Bears, p1's hand -> stack
+T43 taps: p1:Island#1
+T43 p1 adds {U} (p1:Island#1)
+T43 p1 cancels casting Grizzly Bears
+T43 taps: p1:Island#1
+T43 p1 adds {U} (p1:Island#1)
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Coral Merfolk, p1's hand -> stack
+T43 p1 cancels casting Coral Merfolk
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Craw Wurm, p1's hand -> stack
+T43 p1 cancels casting Craw Wurm
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Centaur Courser, p1's hand -> stack
+T43 p1 cancels casting Centaur Courser
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Coral Merfolk, p1's hand -> stack
+T43 p1 cancels casting Coral Merfolk
+T43 moves: Coral Merfolk, p1's hand -> stack
+T43 p1 cancels casting Coral Merfolk
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Craw Wurm, p1's hand -> stack
+T43 p1 cancels casting Craw Wurm
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Grizzly Bears, p1's hand -> stack
+T43 p1 cancels casting Grizzly Bears
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Giant Spider, p1's hand -> stack
+T43 p1 cancels casting Giant Spider
+T43 moves: Grizzly Bears, p1's hand -> stack
+T43 p1 cancels casting Grizzly Bears
+T43 p1's unspent {U} empties
+T44 turn 44 begins (p2)
+T44 untaps: p2:Plains#1
+T44 untaps: p2:Mountain#1
+T44 untaps: p2:Mountain#2
+T44 untaps: p2:Plains#2
+T44 untaps: p2:Mountain#3
+T44 untaps: p2:Plains#3
+T44 untaps: p2:Plains#4
+T44 untaps: p2:Mountain#4
+T44 untaps: p2:Plains#5
+T44 untaps: p2:Mountain#5
+T44 untaps: p2:Mountain#6
+T44 untaps: p2:Mountain#7
+T44 taps: p2:Mountain#4
+T44 p2 adds {R} (p2:Mountain#4)
+T44 taps: p2:Mountain#5
+T44 p2 adds {R} (p2:Mountain#5)
+T44 taps: p2:Plains#1
+T44 p2 adds {W} (p2:Plains#1)
+T44 p2's unspent {W}{R}{R} empties
+T44 moves: Hill Giant, p2's library -> p2's hand
+T44 p2 draws
+T44 taps: p2:Mountain#3
+T44 p2 adds {R} (p2:Mountain#3)
+T44 p2's unspent {R} empties
+T44 taps: p2:Mountain#2
+T44 p2 adds {R} (p2:Mountain#2)
+T44 taps: p2:Mountain#1
+T44 p2 adds {R} (p2:Mountain#1)
+T44 taps: p2:Plains#3
+T44 p2 adds {W} (p2:Plains#3)
+T44 taps: p2:Plains#5
+T44 p2 adds {W} (p2:Plains#5)
+T44 moves: Hill Giant, p2's hand -> stack
+T44 taps: p2:Plains#2
+T44 p2 adds {W} (p2:Plains#2)
+T44 taps: p2:Mountain#7
+T44 p2 adds {R} (p2:Mountain#7)
+T44 p2 casts Hill Giant
+T44 taps: p2:Plains#4
+T44 p2 adds {W} (p2:Plains#4)
+T44 resolves: Hill Giant
+T44 moves: Hill Giant, stack -> battlefield
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 taps: p2:Mountain#6
+T44 p2 adds {R} (p2:Mountain#6)
+T44 p2 casts Gray Ogre
+T44 resolves: Gray Ogre
+T44 moves: Gray Ogre, stack -> battlefield
+T44 moves: Lava Axe, p2's hand -> stack
+T44 p2 cancels casting Lava Axe
+T44 p2's unspent {W} empties
+T44 p2 attack: nothing
+T44 moves: Lava Axe, p2's hand -> stack
+T44 p2 cancels casting Lava Axe
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T44 moves: Elite Vanguard, p2's hand -> stack
+T44 p2 cancels casting Elite Vanguard
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T45 turn 45 begins (p1)
+T45 untaps: p1:Forest#1
+T45 untaps: p1:Llanowar Elves#1
+T45 untaps: p1:Island#1
+T45 untaps: p1:Forest#2
+T45 untaps: p1:Forest#3
+T45 untaps: p1:Forest#4
+T45 untaps: p1:Island#2
+T45 untaps: p1:Forest#5
+T45 untaps: p1:Island#3
+T45 untaps: p1:Llanowar Elves#2
+T45 untaps: p1:Llanowar Elves#3
+T45 untaps: p1:Forest#6
+T45 untaps: p1:Island#4
+T45 taps: p1:Island#2
+T45 p1 adds {U} (p1:Island#2)
+T45 taps: p1:Forest#4
+T45 p1 adds {G} (p1:Forest#4)
+T45 taps: p1:Forest#1
+T45 p1 adds {G} (p1:Forest#1)
+T45 taps: p1:Island#4
+T45 p1 adds {U} (p1:Island#4)
+T45 taps: p1:Island#3
+T45 p1 adds {U} (p1:Island#3)
+T45 taps: p1:Forest#5
+T45 p1 adds {G} (p1:Forest#5)
+T45 taps: p1:Forest#6
+T45 p1 adds {G} (p1:Forest#6)
+T45 taps: p1:Forest#2
+T45 p1 adds {G} (p1:Forest#2)
+T45 taps: p1:Island#1
+T45 p1 adds {U} (p1:Island#1)
+T45 taps: p1:Llanowar Elves#3
+T45 p1 adds {G} (p1:Llanowar Elves#3)
+T45 taps: p1:Forest#3
+T45 p1 adds {G} (p1:Forest#3)
+T45 p1's unspent {U}{U}{U}{U}{G}{G}{G}{G}{G}{G}{G} empties
+T45 moves: Forest, p1's library -> p1's hand
+T45 p1 draws
+T45 moves: Forest, p1's hand -> battlefield
+T45 p1 plays p1:Forest#7
+T45 moves: Giant Spider, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 taps: p1:Forest#7
+T45 p1 adds {G} (p1:Forest#7)
+T45 p1 cancels casting Giant Spider
+T45 moves: Giant Spider, p1's hand -> stack
+T45 taps: p1:Forest#7
+T45 p1 adds {G} (p1:Forest#7)
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 p1 cancels casting Giant Spider
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 p1 cancels casting Centaur Courser
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 taps: p1:Forest#7
+T45 p1 adds {G} (p1:Forest#7)
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 taps: p1:Forest#7
+T45 p1 adds {G} (p1:Forest#7)
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Giant Spider, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 taps: p1:Forest#7
+T45 p1 adds {G} (p1:Forest#7)
+T45 p1 cancels casting Giant Spider
+T45 taps: p1:Forest#7
+T45 p1 adds {G} (p1:Forest#7)
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 p1 cancels casting Craw Wurm
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 p1 cancels casting Craw Wurm
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Giant Spider, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 p1 cancels casting Giant Spider
+T45 moves: Giant Spider, p1's hand -> stack
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 p1 cancels casting Giant Spider
+T45 taps: p1:Llanowar Elves#1
+T45 p1 adds {G} (p1:Llanowar Elves#1)
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 p1's unspent {G}{G} empties
+T45 taps: p1:Grizzly Bears
+T45 p1 attack: p1:Grizzly Bears -> p2
+T45 taps: p1:Llanowar Elves#2
+T45 p1 adds {G} (p1:Llanowar Elves#2)
+T45 p1's unspent {G} empties
+T45 p2 block: nothing
+T45 combat damage: p1:Grizzly Bears -> p2 2
+T45 p2 loses 2 life
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Craw Wurm, p1's hand -> stack
+T45 p1 cancels casting Craw Wurm
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T45 moves: Centaur Courser, p1's hand -> stack
+T45 p1 cancels casting Centaur Courser
+T45 moves: Giant Spider, p1's hand -> stack
+T45 p1 cancels casting Giant Spider
+T46 turn 46 begins (p2)
+T46 untaps: p2:Plains#1
+T46 untaps: p2:Mountain#1
+T46 untaps: p2:Mountain#2
+T46 untaps: p2:Plains#2
+T46 untaps: p2:Mountain#3
+T46 untaps: p2:Plains#3
+T46 untaps: p2:Plains#4
+T46 untaps: p2:Mountain#4
+T46 untaps: p2:Plains#5
+T46 untaps: p2:Mountain#5
+T46 untaps: p2:Mountain#6
+T46 untaps: p2:Mountain#7
+T46 taps: p2:Plains#2
+T46 p2 adds {W} (p2:Plains#2)
+T46 taps: p2:Plains#1
+T46 p2 adds {W} (p2:Plains#1)
+T46 taps: p2:Mountain#6
+T46 p2 adds {R} (p2:Mountain#6)
+T46 taps: p2:Mountain#4
+T46 p2 adds {R} (p2:Mountain#4)
+T46 taps: p2:Mountain#3
+T46 p2 adds {R} (p2:Mountain#3)
+T46 taps: p2:Plains#5
+T46 p2 adds {W} (p2:Plains#5)
+T46 taps: p2:Mountain#1
+T46 p2 adds {R} (p2:Mountain#1)
+T46 p2's unspent {W}{W}{W}{R}{R}{R}{R} empties
+T46 moves: Lightning Bolt, p2's library -> p2's hand
+T46 p2 draws
+T46 taps: p2:Plains#4
+T46 p2 adds {W} (p2:Plains#4)
+T46 p2's unspent {W} empties
+T46 moves: Lightning Bolt, p2's hand -> stack
+T46 taps: p2:Plains#3
+T46 p2 adds {W} (p2:Plains#3)
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 p2 cancels casting Lightning Bolt
+T46 moves: Hill Giant, p2's hand -> stack
+T46 p2 cancels casting Hill Giant
+T46 moves: Lightning Bolt, p2's hand -> stack
+T46 taps: p2:Plains#3
+T46 p2 adds {W} (p2:Plains#3)
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 p2 cancels casting Lightning Bolt
+T46 moves: Hill Giant, p2's hand -> stack
+T46 taps: p2:Mountain#5
+T46 p2 adds {R} (p2:Mountain#5)
+T46 p2 cancels casting Hill Giant
+T46 taps: p2:Plains#3
+T46 p2 adds {W} (p2:Plains#3)
+T46 moves: Lava Axe, p2's hand -> stack
+T46 taps: p2:Mountain#5
+T46 p2 adds {R} (p2:Mountain#5)
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 p2 cancels casting Lava Axe
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 moves: Hill Giant, p2's hand -> stack
+T46 p2 cancels casting Hill Giant
+T46 p2's unspent {W}{R} empties
+T46 taps: p2:Mountain#5
+T46 p2 adds {R} (p2:Mountain#5)
+T46 p2's unspent {R} empties
+T46 p2 attack: nothing
+T46 moves: Lava Axe, p2's hand -> stack
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 p2 cancels casting Lava Axe
+T46 moves: Lightning Bolt, p2's hand -> stack
+T46 p2 cancels casting Lightning Bolt
+T46 moves: Hill Giant, p2's hand -> stack
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 p2 cancels casting Hill Giant
+T46 moves: Lightning Bolt, p2's hand -> stack
+T46 p2 cancels casting Lightning Bolt
+T46 moves: Lava Axe, p2's hand -> stack
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 p2 cancels casting Lava Axe
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 moves: Lava Axe, p2's hand -> stack
+T46 p2 cancels casting Lava Axe
+T46 moves: Elite Vanguard, p2's hand -> stack
+T46 p2 cancels casting Elite Vanguard
+T46 moves: Lightning Bolt, p2's hand -> stack
+T46 p2 casts Lightning Bolt
+T46 damage: Lightning Bolt -> p2 3
+T46 p2 loses 3 life
+T46 resolves: Lightning Bolt
+T46 moves: Lightning Bolt, stack -> p2's graveyard
+T47 turn 47 begins (p1)
+T47 untaps: p1:Forest#1
+T47 untaps: p1:Llanowar Elves#1
+T47 untaps: p1:Island#1
+T47 untaps: p1:Forest#2
+T47 untaps: p1:Forest#3
+T47 untaps: p1:Forest#4
+T47 untaps: p1:Island#2
+T47 untaps: p1:Forest#5
+T47 untaps: p1:Island#3
+T47 untaps: p1:Llanowar Elves#2
+T47 untaps: p1:Llanowar Elves#3
+T47 untaps: p1:Forest#6
+T47 untaps: p1:Grizzly Bears
+T47 untaps: p1:Island#4
+T47 untaps: p1:Forest#7
+T47 taps: p1:Forest#6
+T47 p1 adds {G} (p1:Forest#6)
+T47 taps: p1:Island#1
+T47 p1 adds {U} (p1:Island#1)
+T47 taps: p1:Forest#7
+T47 p1 adds {G} (p1:Forest#7)
+T47 taps: p1:Forest#5
+T47 p1 adds {G} (p1:Forest#5)
+T47 taps: p1:Llanowar Elves#3
+T47 p1 adds {G} (p1:Llanowar Elves#3)
+T47 taps: p1:Forest#3
+T47 p1 adds {G} (p1:Forest#3)
+T47 taps: p1:Llanowar Elves#1
+T47 p1 adds {G} (p1:Llanowar Elves#1)
+T47 p1's unspent {U}{G}{G}{G}{G}{G}{G} empties
+T47 moves: Island, p1's library -> p1's hand
+T47 p1 draws
+T47 taps: p1:Island#3
+T47 p1 adds {U} (p1:Island#3)
+T47 taps: p1:Island#2
+T47 p1 adds {U} (p1:Island#2)
+T47 taps: p1:Forest#1
+T47 p1 adds {G} (p1:Forest#1)
+T47 p1's unspent {U}{U}{G} empties
+T47 moves: Craw Wurm, p1's hand -> stack
+T47 taps: p1:Island#4
+T47 p1 adds {U} (p1:Island#4)
+T47 taps: p1:Llanowar Elves#2
+T47 p1 adds {G} (p1:Llanowar Elves#2)
+T47 taps: p1:Forest#2
+T47 p1 adds {G} (p1:Forest#2)
+T47 p1 cancels casting Craw Wurm
+T47 taps: p1:Island#4
+T47 p1 adds {U} (p1:Island#4)
+T47 taps: p1:Forest#4
+T47 p1 adds {G} (p1:Forest#4)
+T47 p1's unspent {U}{G} empties
+T47 taps: p1:Coral Merfolk
+T47 taps: p1:Grizzly Bears
+T47 p1 attack: p1:Coral Merfolk -> p2, p1:Grizzly Bears -> p2
+T47 p2 block: p2:Gray Ogre -> p1:Grizzly Bears, p2:Hill Giant -> p1:Grizzly Bears
+T47 taps: p1:Forest#2
+T47 p1 adds {G} (p1:Forest#2)
+T47 moves: Righteousness, p2's hand -> stack
+T47 p2 cancels casting Righteousness
+T47 p1's unspent {G} empties
+T47 combat damage: p1:Coral Merfolk -> p2 2
+T47 combat damage: p1:Grizzly Bears -> p2:Gray Ogre 2
+T47 combat damage: p2:Gray Ogre -> p1:Grizzly Bears 2
+T47 combat damage: p2:Hill Giant -> p1:Grizzly Bears 3
+T47 p2 loses 2 life
+T47 state-based actions: p1:Grizzly Bears lethalDamage, p2:Gray Ogre lethalDamage
+T47 destroyed: p1:Grizzly Bears
+T47 moves: Grizzly Bears, battlefield -> p1's graveyard
+T47 destroyed: p2:Gray Ogre
+T47 moves: Gray Ogre, battlefield -> p2's graveyard
+T47 moves: Righteousness, p2's hand -> stack
+T47 p2 cancels casting Righteousness
+T47 moves: Righteousness, p2's hand -> stack
+T47 p2 cancels casting Righteousness
+T47 moves: Righteousness, p2's hand -> stack
+T47 p2 cancels casting Righteousness
+T47 moves: Coral Merfolk, p1's hand -> stack
+T47 taps: p1:Llanowar Elves#2
+T47 p1 adds {G} (p1:Llanowar Elves#2)
+T47 p1 cancels casting Coral Merfolk
+T47 moves: Island, p1's hand -> battlefield
+T47 p1 plays p1:Island#5
+T47 taps: p1:Llanowar Elves#2
+T47 p1 adds {G} (p1:Llanowar Elves#2)
+T47 moves: Centaur Courser, p1's hand -> stack
+T47 taps: p1:Island#5
+T47 p1 adds {U} (p1:Island#5)
+T47 p1 cancels casting Centaur Courser
+T47 moves: Craw Wurm, p1's hand -> stack
+T47 taps: p1:Island#5
+T47 p1 adds {U} (p1:Island#5)
+T47 p1 cancels casting Craw Wurm
+T47 moves: Giant Spider, p1's hand -> stack
+T47 p1 cancels casting Giant Spider
+T47 taps: p1:Island#5
+T47 p1 adds {U} (p1:Island#5)
+T47 moves: Giant Spider, p1's hand -> stack
+T47 p1 cancels casting Giant Spider
+T47 moves: Giant Spider, p1's hand -> stack
+T47 p1 cancels casting Giant Spider
+T47 moves: Coral Merfolk, p1's hand -> stack
+T47 p1 cancels casting Coral Merfolk
+T47 moves: Craw Wurm, p1's hand -> stack
+T47 p1 cancels casting Craw Wurm
+T47 p1's unspent {U}{G} empties
+T48 turn 48 begins (p2)
+T48 untaps: p2:Plains#1
+T48 untaps: p2:Mountain#1
+T48 untaps: p2:Mountain#2
+T48 untaps: p2:Plains#2
+T48 untaps: p2:Mountain#3
+T48 untaps: p2:Plains#3
+T48 untaps: p2:Plains#4
+T48 untaps: p2:Mountain#4
+T48 untaps: p2:Plains#5
+T48 untaps: p2:Mountain#5
+T48 untaps: p2:Mountain#6
+T48 untaps: p2:Mountain#7
+T48 taps: p2:Plains#4
+T48 p2 adds {W} (p2:Plains#4)
+T48 taps: p2:Plains#5
+T48 p2 adds {W} (p2:Plains#5)
+T48 taps: p2:Mountain#7
+T48 p2 adds {R} (p2:Mountain#7)
+T48 p2's unspent {W}{W}{R} empties
+T48 moves: Plains, p2's library -> p2's hand
+T48 p2 draws
+T48 taps: p2:Mountain#3
+T48 p2 adds {R} (p2:Mountain#3)
+T48 taps: p2:Mountain#5
+T48 p2 adds {R} (p2:Mountain#5)
+T48 taps: p2:Plains#2
+T48 p2 adds {W} (p2:Plains#2)
+T48 taps: p2:Plains#3
+T48 p2 adds {W} (p2:Plains#3)
+T48 p2's unspent {W}{W}{R}{R} empties
+T48 taps: p2:Plains#1
+T48 p2 adds {W} (p2:Plains#1)
+T48 moves: Lava Axe, p2's hand -> stack
+T48 taps: p2:Mountain#6
+T48 p2 adds {R} (p2:Mountain#6)
+T48 p2 cancels casting Lava Axe
+T48 taps: p2:Mountain#6
+T48 p2 adds {R} (p2:Mountain#6)
+T48 moves: Elite Vanguard, p2's hand -> stack
+T48 p2 casts Elite Vanguard
+T48 taps: p2:Mountain#2
+T48 p2 adds {R} (p2:Mountain#2)
+T48 resolves: Elite Vanguard
+T48 moves: Elite Vanguard, stack -> battlefield
+T48 moves: Hill Giant, p2's hand -> stack
+T48 taps: p2:Mountain#4
+T48 p2 adds {R} (p2:Mountain#4)
+T48 p2 cancels casting Hill Giant
+T48 taps: p2:Mountain#4
+T48 p2 adds {R} (p2:Mountain#4)
+T48 moves: Hill Giant, p2's hand -> stack
+T48 taps: p2:Mountain#1
+T48 p2 adds {R} (p2:Mountain#1)
+T48 p2 cancels casting Hill Giant
+T48 taps: p2:Mountain#1
+T48 p2 adds {R} (p2:Mountain#1)
+T48 moves: Hill Giant, p2's hand -> stack
+T48 p2 casts Hill Giant
+T48 resolves: Hill Giant
+T48 moves: Hill Giant, stack -> battlefield
+T48 moves: Hill Giant, p2's hand -> stack
+T48 p2 cancels casting Hill Giant
+T48 p2 attack: nothing
+T49 turn 49 begins (p1)
+T49 untaps: p1:Forest#1
+T49 untaps: p1:Llanowar Elves#1
+T49 untaps: p1:Island#1
+T49 untaps: p1:Forest#2
+T49 untaps: p1:Forest#3
+T49 untaps: p1:Forest#4
+T49 untaps: p1:Island#2
+T49 untaps: p1:Forest#5
+T49 untaps: p1:Island#3
+T49 untaps: p1:Llanowar Elves#2
+T49 untaps: p1:Llanowar Elves#3
+T49 untaps: p1:Forest#6
+T49 untaps: p1:Coral Merfolk
+T49 untaps: p1:Island#4
+T49 untaps: p1:Forest#7
+T49 untaps: p1:Island#5
+T49 taps: p1:Island#5
+T49 p1 adds {U} (p1:Island#5)
+T49 taps: p1:Island#2
+T49 p1 adds {U} (p1:Island#2)
+T49 taps: p1:Island#1
+T49 p1 adds {U} (p1:Island#1)
+T49 taps: p1:Island#4
+T49 p1 adds {U} (p1:Island#4)
+T49 p1's unspent {U}{U}{U}{U} empties
+T49 moves: Giant Spider, p1's library -> p1's hand
+T49 p1 draws
+T49 taps: p1:Forest#2
+T49 p1 adds {G} (p1:Forest#2)
+T49 taps: p1:Forest#6
+T49 p1 adds {G} (p1:Forest#6)
+T49 taps: p1:Forest#5
+T49 p1 adds {G} (p1:Forest#5)
+T49 taps: p1:Island#3
+T49 p1 adds {U} (p1:Island#3)
+T49 taps: p1:Forest#4
+T49 p1 adds {G} (p1:Forest#4)
+T49 taps: p1:Forest#1
+T49 p1 adds {G} (p1:Forest#1)
+T49 p1's unspent {U}{G}{G}{G}{G}{G} empties
+T49 taps: p1:Forest#7
+T49 p1 adds {G} (p1:Forest#7)
+T49 moves: Giant Spider, p1's hand -> stack
+T49 taps: p1:Forest#3
+T49 p1 adds {G} (p1:Forest#3)
+T49 taps: p1:Llanowar Elves#2
+T49 p1 adds {G} (p1:Llanowar Elves#2)
+T49 taps: p1:Llanowar Elves#1
+T49 p1 adds {G} (p1:Llanowar Elves#1)
+T49 p1 casts Giant Spider
+T49 resolves: Giant Spider
+T49 moves: Giant Spider, stack -> battlefield
+T49 moves: Craw Wurm, p1's hand -> stack
+T49 p1 cancels casting Craw Wurm
+T49 moves: Grizzly Bears, p1's hand -> stack
+T49 p1 cancels casting Grizzly Bears
+T49 taps: p1:Llanowar Elves#3
+T49 p1 adds {G} (p1:Llanowar Elves#3)
+T49 p1's unspent {G} empties
+T49 taps: p1:Coral Merfolk
+T49 p1 attack: p1:Coral Merfolk -> p2
+T49 p2 block: p2:Hill Giant#2 -> p1:Coral Merfolk, p2:Elite Vanguard -> p1:Coral Merfolk
+T49 combat damage: p1:Coral Merfolk -> p2:Hill Giant#2 1
+T49 combat damage: p1:Coral Merfolk -> p2:Elite Vanguard 1
+T49 combat damage: p2:Hill Giant#2 -> p1:Coral Merfolk 3
+T49 combat damage: p2:Elite Vanguard -> p1:Coral Merfolk 2
+T49 state-based actions: p1:Coral Merfolk lethalDamage, p2:Elite Vanguard lethalDamage
+T49 destroyed: p1:Coral Merfolk
+T49 moves: Coral Merfolk, battlefield -> p1's graveyard
+T49 destroyed: p2:Elite Vanguard
+T49 moves: Elite Vanguard, battlefield -> p2's graveyard
+T49 moves: Righteousness, p2's hand -> stack
+T49 p2 cancels casting Righteousness
+T49 moves: Righteousness, p2's hand -> stack
+T49 p2 cancels casting Righteousness
+T49 moves: Centaur Courser, p1's hand -> stack
+T49 p1 cancels casting Centaur Courser
+T49 moves: Grizzly Bears, p1's hand -> stack
+T49 p1 cancels casting Grizzly Bears
+T49 moves: Grizzly Bears, p1's hand -> stack
+T49 p1 cancels casting Grizzly Bears
+T49 moves: Giant Spider, p1's hand -> stack
+T49 p1 cancels casting Giant Spider
+T49 moves: Craw Wurm, p1's hand -> stack
+T49 p1 cancels casting Craw Wurm
+T49 damage removed: p2:Hill Giant#2 (1)
+T50 turn 50 begins (p2)
+T50 untaps: p2:Plains#1
+T50 untaps: p2:Mountain#1
+T50 untaps: p2:Mountain#2
+T50 untaps: p2:Plains#2
+T50 untaps: p2:Mountain#3
+T50 untaps: p2:Plains#3
+T50 untaps: p2:Plains#4
+T50 untaps: p2:Mountain#4
+T50 untaps: p2:Plains#5
+T50 untaps: p2:Mountain#5
+T50 untaps: p2:Mountain#6
+T50 untaps: p2:Mountain#7
+T50 taps: p2:Mountain#5
+T50 p2 adds {R} (p2:Mountain#5)
+T50 taps: p2:Mountain#2
+T50 p2 adds {R} (p2:Mountain#2)
+T50 taps: p2:Plains#3
+T50 p2 adds {W} (p2:Plains#3)
+T50 taps: p2:Plains#1
+T50 p2 adds {W} (p2:Plains#1)
+T50 taps: p2:Mountain#7
+T50 p2 adds {R} (p2:Mountain#7)
+T50 taps: p2:Plains#2
+T50 p2 adds {W} (p2:Plains#2)
+T50 p2's unspent {W}{W}{W}{R}{R}{R} empties
+T50 moves: Ignite Disorder, p2's library -> p2's hand
+T50 p2 draws
+T50 taps: p2:Mountain#4
+T50 p2 adds {R} (p2:Mountain#4)
+T50 taps: p2:Plains#5
+T50 p2 adds {W} (p2:Plains#5)
+T50 taps: p2:Mountain#1
+T50 p2 adds {R} (p2:Mountain#1)
+T50 taps: p2:Plains#4
+T50 p2 adds {W} (p2:Plains#4)
+T50 p2's unspent {W}{W}{R}{R} empties
+T50 taps: p2:Mountain#3
+T50 p2 adds {R} (p2:Mountain#3)
+T50 taps: p2:Mountain#6
+T50 p2 adds {R} (p2:Mountain#6)
+T50 p2's unspent {R}{R} empties
+T50 taps: p2:Hill Giant#1
+T50 p2 attack: p2:Hill Giant#1 -> p1
+T50 p1 block: p1:Giant Spider -> p2:Hill Giant#1
+T50 moves: Righteousness, p2's hand -> stack
+T50 p2 cancels casting Righteousness
+T50 moves: Righteousness, p2's hand -> stack
+T50 p2 cancels casting Righteousness
+T50 moves: Righteousness, p2's hand -> stack
+T50 p2 cancels casting Righteousness
+T50 combat damage: p2:Hill Giant#1 -> p1:Giant Spider 3
+T50 combat damage: p1:Giant Spider -> p2:Hill Giant#1 2
+T50 moves: Righteousness, p2's hand -> stack
+T50 p2 cancels casting Righteousness
+T50 moves: Righteousness, p2's hand -> stack
+T50 p2 cancels casting Righteousness
+T50 moves: Righteousness, p2's hand -> stack
+T50 p2 cancels casting Righteousness
+T50 moves: Plains, p2's hand -> battlefield
+T50 p2 plays p2:Plains#6
+T50 taps: p2:Plains#6
+T50 p2 adds {W} (p2:Plains#6)
+T50 p2's unspent {W} empties
+T50 damage removed: p2:Hill Giant#1 (2)
+T50 damage removed: p1:Giant Spider (3)
+T51 turn 51 begins (p1)
+T51 untaps: p1:Forest#1
+T51 untaps: p1:Llanowar Elves#1
+T51 untaps: p1:Island#1
+T51 untaps: p1:Forest#2
+T51 untaps: p1:Forest#3
+T51 untaps: p1:Forest#4
+T51 untaps: p1:Island#2
+T51 untaps: p1:Forest#5
+T51 untaps: p1:Island#3
+T51 untaps: p1:Llanowar Elves#2
+T51 untaps: p1:Llanowar Elves#3
+T51 untaps: p1:Forest#6
+T51 untaps: p1:Island#4
+T51 untaps: p1:Forest#7
+T51 untaps: p1:Island#5
+T51 taps: p1:Forest#3
+T51 p1 adds {G} (p1:Forest#3)
+T51 taps: p1:Llanowar Elves#1
+T51 p1 adds {G} (p1:Llanowar Elves#1)
+T51 taps: p1:Forest#1
+T51 p1 adds {G} (p1:Forest#1)
+T51 taps: p1:Llanowar Elves#2
+T51 p1 adds {G} (p1:Llanowar Elves#2)
+T51 taps: p1:Island#2
+T51 p1 adds {U} (p1:Island#2)
+T51 taps: p1:Island#5
+T51 p1 adds {U} (p1:Island#5)
+T51 taps: p1:Llanowar Elves#3
+T51 p1 adds {G} (p1:Llanowar Elves#3)
+T51 taps: p1:Forest#7
+T51 p1 adds {G} (p1:Forest#7)
+T51 taps: p1:Forest#4
+T51 p1 adds {G} (p1:Forest#4)
+T51 taps: p1:Forest#6
+T51 p1 adds {G} (p1:Forest#6)
+T51 taps: p1:Island#3
+T51 p1 adds {U} (p1:Island#3)
+T51 taps: p1:Island#4
+T51 p1 adds {U} (p1:Island#4)
+T51 taps: p1:Forest#2
+T51 p1 adds {G} (p1:Forest#2)
+T51 taps: p1:Island#1
+T51 p1 adds {U} (p1:Island#1)
+T51 p1's unspent {U}{U}{U}{U}{U}{G}{G}{G}{G}{G}{G}{G}{G}{G} empties
+T51 moves: Island, p1's library -> p1's hand
+T51 p1 draws
+T51 taps: p1:Forest#5
+T51 p1 adds {G} (p1:Forest#5)
+T51 p1's unspent {G} empties
+T51 moves: Centaur Courser, p1's hand -> stack
+T51 p1 cancels casting Centaur Courser
+T51 moves: Centaur Courser, p1's hand -> stack
+T51 p1 cancels casting Centaur Courser
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T51 taps: p1:Giant Spider
+T51 p1 attack: p1:Giant Spider -> p2
+T51 p2 block: p2:Hill Giant#2 -> p1:Giant Spider
+T51 moves: Righteousness, p2's hand -> stack
+T51 p2 cancels casting Righteousness
+T51 moves: Righteousness, p2's hand -> stack
+T51 p2 cancels casting Righteousness
+T51 combat damage: p1:Giant Spider -> p2:Hill Giant#2 2
+T51 combat damage: p2:Hill Giant#2 -> p1:Giant Spider 3
+T51 moves: Righteousness, p2's hand -> stack
+T51 p2 cancels casting Righteousness
+T51 moves: Centaur Courser, p1's hand -> stack
+T51 p1 cancels casting Centaur Courser
+T51 moves: Coral Merfolk, p1's hand -> stack
+T51 p1 cancels casting Coral Merfolk
+T51 moves: Craw Wurm, p1's hand -> stack
+T51 p1 cancels casting Craw Wurm
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T51 moves: Grizzly Bears, p1's hand -> stack
+T51 p1 cancels casting Grizzly Bears
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T51 moves: Coral Merfolk, p1's hand -> stack
+T51 p1 cancels casting Coral Merfolk
+T51 moves: Grizzly Bears, p1's hand -> stack
+T51 p1 cancels casting Grizzly Bears
+T51 moves: Craw Wurm, p1's hand -> stack
+T51 p1 cancels casting Craw Wurm
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T51 moves: Coral Merfolk, p1's hand -> stack
+T51 p1 cancels casting Coral Merfolk
+T51 moves: Craw Wurm, p1's hand -> stack
+T51 p1 cancels casting Craw Wurm
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T51 moves: Giant Spider, p1's hand -> p1's graveyard
+T51 p1 discards Giant Spider
+T51 damage removed: p2:Hill Giant#2 (2)
+T51 damage removed: p1:Giant Spider (3)
+T52 turn 52 begins (p2)
+T52 untaps: p2:Plains#1
+T52 untaps: p2:Mountain#1
+T52 untaps: p2:Mountain#2
+T52 untaps: p2:Plains#2
+T52 untaps: p2:Mountain#3
+T52 untaps: p2:Plains#3
+T52 untaps: p2:Plains#4
+T52 untaps: p2:Mountain#4
+T52 untaps: p2:Plains#5
+T52 untaps: p2:Mountain#5
+T52 untaps: p2:Mountain#6
+T52 untaps: p2:Mountain#7
+T52 untaps: p2:Hill Giant#1
+T52 untaps: p2:Plains#6
+T52 taps: p2:Plains#2
+T52 p2 adds {W} (p2:Plains#2)
+T52 taps: p2:Mountain#5
+T52 p2 adds {R} (p2:Mountain#5)
+T52 taps: p2:Mountain#6
+T52 p2 adds {R} (p2:Mountain#6)
+T52 taps: p2:Plains#3
+T52 p2 adds {W} (p2:Plains#3)
+T52 taps: p2:Mountain#3
+T52 p2 adds {R} (p2:Mountain#3)
+T52 taps: p2:Mountain#4
+T52 p2 adds {R} (p2:Mountain#4)
+T52 p2's unspent {W}{W}{R}{R}{R}{R} empties
+T52 moves: Mountain, p2's library -> p2's hand
+T52 p2 draws
+T52 taps: p2:Mountain#7
+T52 p2 adds {R} (p2:Mountain#7)
+T52 taps: p2:Plains#5
+T52 p2 adds {W} (p2:Plains#5)
+T52 taps: p2:Mountain#2
+T52 p2 adds {R} (p2:Mountain#2)
+T52 taps: p2:Plains#1
+T52 p2 adds {W} (p2:Plains#1)
+T52 taps: p2:Plains#6
+T52 p2 adds {W} (p2:Plains#6)
+T52 p2's unspent {W}{W}{W}{R}{R} empties
+T52 taps: p2:Plains#4
+T52 p2 adds {W} (p2:Plains#4)
+T52 moves: Mountain, p2's hand -> battlefield
+T52 p2 plays p2:Mountain#8
+T52 moves: Lava Axe, p2's hand -> stack
+T52 taps: p2:Mountain#8
+T52 p2 adds {R} (p2:Mountain#8)
+T52 taps: p2:Mountain#1
+T52 p2 adds {R} (p2:Mountain#1)
+T52 p2 cancels casting Lava Axe
+T52 moves: Lava Axe, p2's hand -> stack
+T52 taps: p2:Mountain#8
+T52 p2 adds {R} (p2:Mountain#8)
+T52 p2 cancels casting Lava Axe
+T52 p2's unspent {W} empties
+T52 taps: p2:Mountain#8
+T52 p2 adds {R} (p2:Mountain#8)
+T52 taps: p2:Mountain#1
+T52 p2 adds {R} (p2:Mountain#1)
+T52 p2's unspent {R}{R} empties
+T52 taps: p2:Hill Giant#1
+T52 taps: p2:Hill Giant#2
+T52 p2 attack: p2:Hill Giant#1 -> p1, p2:Hill Giant#2 -> p1
+T52 p1 block: nothing
+T52 combat damage: p2:Hill Giant#1 -> p1 3
+T52 combat damage: p2:Hill Giant#2 -> p1 3
+T52 p1 loses 3 life
+T52 p1 loses 3 life
+T52 state-based actions: p1 zeroLife
+T52 p1 loses the game (zeroLife)
+T52 game over: p2 wins

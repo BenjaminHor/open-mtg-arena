@@ -35,6 +35,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Coral Merfolk",
+      "slug": "coral-merfolk",
+      "oracleId": "4ed27607-21a8-4bc3-997e-6d2242313f6d",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Creature — Merfolk",
+      "oracleText": "",
+      "power": "2",
+      "toughness": "1",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/7/97a74ccf-8165-4db1-a87c-52c2d8ea0058.jpg?1783932908",
+        "large": "https://cards.scryfall.io/large/front/9/7/97a74ccf-8165-4db1-a87c-52c2d8ea0058.jpg?1783932908",
+        "png": "https://cards.scryfall.io/png/front/9/7/97a74ccf-8165-4db1-a87c-52c2d8ea0058.png?1783932908",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/7/97a74ccf-8165-4db1-a87c-52c2d8ea0058.jpg?1783932908"
+      },
+      "artist": "Lie Setiawan",
+      "set": "m20",
+      "collectorNumber": "315",
+      "scryfallUri": "https://scryfall.com/card/m20/315/coral-merfolk?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Craw Wurm",
       "slug": "craw-wurm",
       "oracleId": "6a462a69-3e42-41de-a3aa-a488d9f38d69",
@@ -60,6 +88,34 @@
       "set": "m10",
       "collectorNumber": "173",
       "scryfallUri": "https://scryfall.com/card/m10/173/craw-wurm?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Elite Vanguard",
+      "slug": "elite-vanguard",
+      "oracleId": "b3b9a87d-cb95-435c-90b6-037406cab32e",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Creature — Human Soldier",
+      "oracleText": "",
+      "power": "2",
+      "toughness": "1",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/0/f03487e9-f584-4bbd-8335-4dd001a88b52.jpg?1783941103",
+        "large": "https://cards.scryfall.io/large/front/f/0/f03487e9-f584-4bbd-8335-4dd001a88b52.jpg?1783941103",
+        "png": "https://cards.scryfall.io/png/front/f/0/f03487e9-f584-4bbd-8335-4dd001a88b52.png?1783941103",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/0/f03487e9-f584-4bbd-8335-4dd001a88b52.jpg?1783941103"
+      },
+      "artist": "Mark Tedin",
+      "set": "m12",
+      "collectorNumber": "15",
+      "scryfallUri": "https://scryfall.com/card/m12/15/elite-vanguard?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -289,6 +345,88 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Ignite Disorder",
+      "slug": "ignite-disorder",
+      "oracleId": "8f66317c-06fe-4320-9d98-eaedaef67c85",
+      "layout": "normal",
+      "manaCost": "{1}{R}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Ignite Disorder deals 3 damage divided as you choose among one, two, or three target white and/or blue creatures.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/4/c425d61c-f224-4ba6-a32e-44e3a3954c1b.jpg?1783942371",
+        "large": "https://cards.scryfall.io/large/front/c/4/c425d61c-f224-4ba6-a32e-44e3a3954c1b.jpg?1783942371",
+        "png": "https://cards.scryfall.io/png/front/c/4/c425d61c-f224-4ba6-a32e-44e3a3954c1b.png?1783942371",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/4/c425d61c-f224-4ba6-a32e-44e3a3954c1b.jpg?1783942371"
+      },
+      "artist": "Zoltan Boros & Gabor Szikszai",
+      "set": "m10",
+      "collectorNumber": "141",
+      "scryfallUri": "https://scryfall.com/card/m10/141/ignite-disorder?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Island",
+      "slug": "island",
+      "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Basic Land — Island",
+      "oracleText": "({T}: Add {U}.)",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/8/d8184e92-54e6-4ddc-86e8-67f5c5eb079d.jpg?1789599732",
+        "large": "https://cards.scryfall.io/large/front/d/8/d8184e92-54e6-4ddc-86e8-67f5c5eb079d.jpg?1789599732",
+        "png": "https://cards.scryfall.io/png/front/d/8/d8184e92-54e6-4ddc-86e8-67f5c5eb079d.png?1789599732",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/8/d8184e92-54e6-4ddc-86e8-67f5c5eb079d.jpg?1789599732"
+      },
+      "artist": "Chris Ostrowski",
+      "set": "fra",
+      "collectorNumber": "283",
+      "scryfallUri": "https://scryfall.com/card/fra/283/island?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Lava Axe",
+      "slug": "lava-axe",
+      "oracleId": "387b6b07-a283-412d-94c3-f7f1dc76e858",
+      "layout": "normal",
+      "manaCost": "{4}{R}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "Lava Axe deals 5 damage to target player or planeswalker.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/3/c3dab325-8f4f-4288-9f3f-960e52b4335b.jpg?1783934548",
+        "large": "https://cards.scryfall.io/large/front/c/3/c3dab325-8f4f-4288-9f3f-960e52b4335b.jpg?1783934548",
+        "png": "https://cards.scryfall.io/png/front/c/3/c3dab325-8f4f-4288-9f3f-960e52b4335b.png?1783934548",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/3/c3dab325-8f4f-4288-9f3f-960e52b4335b.jpg?1783934548"
+      },
+      "artist": "Brian Snõddy",
+      "set": "m19",
+      "collectorNumber": "150",
+      "scryfallUri": "https://scryfall.com/card/m19/150/lava-axe?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Lightning Bolt",
       "slug": "lightning-bolt",
       "oracleId": "4457ed35-7c10-48c8-9776-456485fdf070",
@@ -371,6 +509,32 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Plains",
+      "slug": "plains",
+      "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Basic Land — Plains",
+      "oracleText": "({T}: Add {W}.)",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/4/a4eaecb8-066a-4c72-aa5d-5ed0614ba537.jpg?1789599702",
+        "large": "https://cards.scryfall.io/large/front/a/4/a4eaecb8-066a-4c72-aa5d-5ed0614ba537.jpg?1789599702",
+        "png": "https://cards.scryfall.io/png/front/a/4/a4eaecb8-066a-4c72-aa5d-5ed0614ba537.png?1789599702",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/4/a4eaecb8-066a-4c72-aa5d-5ed0614ba537.jpg?1789599702"
+      },
+      "artist": "Luc Courtois",
+      "set": "fra",
+      "collectorNumber": "281",
+      "scryfallUri": "https://scryfall.com/card/fra/281/plains?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Raging Goblin",
       "slug": "raging-goblin",
       "oracleId": "30997b43-fc13-41d3-8064-1ccc2cb6fd2b",
@@ -398,6 +562,34 @@
       "set": "m10",
       "collectorNumber": "153",
       "scryfallUri": "https://scryfall.com/card/m10/153/raging-goblin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Righteousness",
+      "slug": "righteousness",
+      "oracleId": "3f6b2f76-0364-415e-a6a2-e9e5bf31b745",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Target blocking creature gets +7/+7 until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/2/d2910df2-e288-4fa0-9859-c5ca35da2d55.jpg?1783932667",
+        "large": "https://cards.scryfall.io/large/front/d/2/d2910df2-e288-4fa0-9859-c5ca35da2d55.jpg?1783932667",
+        "png": "https://cards.scryfall.io/png/front/d/2/d2910df2-e288-4fa0-9859-c5ca35da2d55.png?1783932667",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/2/d2910df2-e288-4fa0-9859-c5ca35da2d55.jpg?1783932667"
+      },
+      "artist": "Howard Lyon",
+      "set": "eld",
+      "collectorNumber": "27",
+      "scryfallUri": "https://scryfall.com/card/eld/27/righteousness?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

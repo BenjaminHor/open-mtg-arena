@@ -6,6 +6,7 @@
 import type { ManaCost } from "../cards/types.ts";
 import type { Attack, AttackerDivision, Block } from "./combat.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
+import type { Target } from "./objects.ts";
 
 export type PendingDecision = {
   id: DecisionId;
@@ -58,6 +59,16 @@ export type DecisionKind =
     }
   /** While casting a spell or activating an ability: choose the target for this instance of "target" (CR 601.2c). */
   | { kind: "chooseTarget"; object: ObjectId; instance: number }
+  /**
+   * While casting or activating: announce how many targets this instance of "target" will have, when the text
+   * allows a range, before choosing them (CR 601.2c). `max` is already limited to what can be chosen.
+   */
+  | { kind: "chooseTargetCount"; object: ObjectId; instance: number; min: number; max: number }
+  /**
+   * While casting or activating: announce how much of `amount` the next target gets (CR 601.2d), one target at a
+   * time, in the order they were chosen; `shares` holds what's given so far. The last target gets the rest.
+   */
+  | { kind: "divide"; object: ObjectId; instance: number; amount: number; targets: Target[]; shares: number[] }
   /**
    * While casting or activating: pay the mana cost (CR 601.2g–h). Mana abilities may be activated while this is
    * pending (CR 605.3a); then the answer is a payment from the pool, or cancelling the cast or activation.

@@ -81,8 +81,10 @@ permanents such as morph and manifest (CR 708).
 *Needs now:* an object's characteristics come from "which face or part is active", not straight from a
 single card record; tokens are objects without a deck card. *Watch out* (rules-judge, M1 exit review): many rules
 checks skip any object whose `kind` isn't `"card"` (`rules/state-based-actions.ts`, `rules/combat.ts`,
-`rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`). If tokens become a new object kind, a 0/0
-token would quietly not die and token creatures couldn't attack. Make those checks handle every kind, or fail loudly.
+`rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`, and since M2-04 `rules/targets.ts` and
+`rules/object-filter.ts`). If tokens or spell copies (CR 707.10) become a new object kind, a 0/0 token would quietly
+not die, token creatures couldn't attack, and a copy couldn't be targeted as a spell or match any filter. Make those
+checks handle every kind, or fail loudly.
 
 **Counters (CR 122), including +1/+1 and -1/-1 annihilation (CR 704.5q).**
 *Needs now:* counters live on objects as a map of counter type to number. Keyword counters (CR 122.1b) will need
@@ -196,12 +198,15 @@ payment context that isn't `Casting`.
 
 **Casting from other zones (CR 601.2a, 734.1, 702.34a flashback).** Casting checks the hand
 (`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
-the hand. A card cast from a graveyard or exile must go back where it came from.
+the hand. A card cast from a graveyard or exile must go back where it came from. The check before casting
+(`targetsProblem` in `castProblem`) uses the card in its zone as what targets; cast from a graveyard, a "target card in
+your graveyard" spell would count itself as a choice before it moves to the stack (CR 115.5), so exclude it there.
 
 **Smaller rules noted while closing the coverage gaps (later: in the code).** Power or toughness of `*`
-(CR 208.2) needs characteristic-defining abilities; dividing an effect among targets as a spell is cast (CR 601.2d)
-fits `StackChoices`, which has room for divisions; emblems (CR 114), which the setup's rule modifiers already behave
-like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions); X costs (CR 107.3).
+(CR 208.2) needs characteristic-defining abilities; "another target" (CR 115.4, Arc Trail) needs targets distinct
+across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule
+modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions);
+X costs (CR 107.3).
 
 **Small keywords that touch M1 code.** Vigilance (CR 702.20b): `finishAttackers` taps every attacker
 (`combat/declare-attackers.ts`). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`

@@ -104,7 +104,17 @@ export type StackChoices = {
    * can't appear twice within one instance, but can across instances.
    */
   targets: Target[][];
+  /**
+   * How an effect is divided among the targets of one instance, announced as it was cast (CR 601.2d): each share is
+   * kept with its target, so a target that becomes illegal loses its own share and no other (CR 608.2b). Changing
+   * targets will keep the division too (later: CR 115.7f). Null when nothing is divided.
+   */
+  division: Division | null;
 };
+
+/** One target's share of a divided effect. */
+export type Share = { target: Target; amount: number };
+export type Division = { instance: number; shares: Share[] };
 
 /** A chosen target: a player or an object (CR 115.1). */
 export type Target = { kind: "player"; player: PlayerId } | { kind: "object"; object: ObjectId };

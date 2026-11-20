@@ -198,12 +198,12 @@ describe("activations the engine refuses rather than half-does (D-041)", () => {
       {
         kind: "activated",
         cost: [{ kind: "mana", cost: [{ kind: "colored", color: "R" }] }],
-        targets: [{ kind: "creature" }],
+        targets: [{ kind: "permanent", filter: { types: ["creature"] } }],
         effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
       },
       ["artifact"],
     ) as typeof TEST_CARDS;
-    expect(activationProblem(g.state, "p1", pinger, ref, cards)).toMatch(/nothing it could target/);
+    expect(activationProblem(g.state, "p1", pinger, ref, cards)).toMatch(/enough legal targets/);
   });
 
   it("can be cancelled while choosing its target, too", () => {

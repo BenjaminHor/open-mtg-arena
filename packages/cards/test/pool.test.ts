@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
+import type { CardDef } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
 import { parsePoolTxt } from "../src/pool-data.ts";
@@ -65,6 +66,29 @@ describe("definitionProblems", () => {
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);
+  });
+
+  it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {
+    const ignite = POOL.cards.find((c) => c.name === "Ignite Disorder");
+    if (ignite === undefined) throw new Error("Ignite Disorder missing from the pool");
+    const def = (count: { min: number; max: number }, to: { target: number } | "self", amount = 3): CardDef => ({
+      name: "Ignite Disorder",
+      oracle: ignite.oracleText,
+      spell: {
+        targets: [{ kind: "permanent", filter: { types: ["creature"] }, count }],
+        effects: [{ op: "dealDamage", amount, from: "self", to, divided: "asYouChoose" }],
+      },
+    });
+    expect(definitionProblems([def({ min: 1, max: 3 }, { target: 0 })], [ignite])).toStrictEqual([]);
+    expect(definitionProblems([def({ min: 3, max: 1 }, { target: 0 })], [ignite])).toStrictEqual([
+      "Ignite Disorder: target 0 has a minimum above its maximum",
+    ]);
+    expect(definitionProblems([def({ min: 1, max: 3 }, "self")], [ignite])).toStrictEqual([
+      'Ignite Disorder: divided damage must divide among an instance of "target"',
+    ]);
+    expect(definitionProblems([def({ min: 4, max: 4 }, { target: 0 })], [ignite])).toStrictEqual([
+      "Ignite Disorder: divided damage of 3 can't give each of at least 4 targets 1",
+    ]);
   });
 
   it("reports cards without definitions and definitions without cards", () => {

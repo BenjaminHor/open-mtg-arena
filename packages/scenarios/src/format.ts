@@ -19,15 +19,24 @@ export type ScenarioStep =
   /** Play a land from hand (CR 305.1). */
   | { kind: "play"; player: string; card: string }
   /**
-   * Cast a spell from hand (CR 601.2): its targets in order, then the payment: `auto` (autoPay), a payment from the pool
-   * like `{ R: 1 }`, or `cancel`. Without `pay`, the cast stops at the payment decision.
+   * Cast a spell from hand (CR 601.2): its targets in order, one entry per instance of "target" (a list when that
+   * instance has several), then the shares of a divided effect (CR 601.2d), then the payment: `auto` (autoPay), a
+   * payment from the pool like `{ R: 1 }`, or `cancel`. Without `pay`, the cast stops at the payment decision.
    */
-  | { kind: "cast"; player: string; card: string; targets: unknown[]; pay: unknown }
+  | { kind: "cast"; player: string; card: string; targets: unknown[]; divide: number[] | null; pay: unknown }
   /**
    * Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. An ability that uses
    * the stack then takes `targets` and `pay`, as `cast` does.
    */
-  | { kind: "activate"; player: string; card: string; ability: number | null; targets: unknown[]; pay: unknown }
+  | {
+      kind: "activate";
+      player: string;
+      card: string;
+      ability: number | null;
+      targets: unknown[];
+      divide: number[] | null;
+      pay: unknown;
+    }
   /** Declare attackers (CR 508.1): the player's creatures by name or reference (`Grizzly Bears#2`), maybe none. */
   | { kind: "attack"; player: string; attackers: string[] }
   /** Declare blockers (CR 509.1): pairs of the player's blocker and the attacker it blocks, maybe none. */
@@ -56,8 +65,8 @@ export const COMING_STEP_WORDS: Record<string, string> = {}; // none now; a task
 
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
-  cast: ["targets", "pay"],
-  activate: ["ability", "targets", "pay"],
+  cast: ["targets", "divide", "pay"],
+  activate: ["ability", "targets", "divide", "pay"],
 };
 
 export function parseScenario(text: string): Scenario {
@@ -140,7 +149,7 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       if (!(STEP_OPTIONS.cast ?? []).includes(option)) throw new Error(`${where}: "cast" has no option "${option}"`);
     const targets = raw.targets ?? [];
     if (!Array.isArray(targets)) throw new Error(`${where}: targets is a list`);
-    return { kind: "cast", player, card: String(value), targets, pay: raw.pay };
+    return { kind: "cast", player, card: String(value), targets, divide: shares(raw.divide, where), pay: raw.pay };
   }
   if (word === "concede") {
     noOptions();
@@ -185,6 +194,7 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       card: String(value),
       ability: typeof ability === "number" ? ability : null,
       targets,
+      divide: shares(raw.divide, where),
       pay: raw.pay,
     };
   }
@@ -212,4 +222,12 @@ export function parseStepText(text: string, defaultPlayer: string | null = null)
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** A `divide:` option: each target's share, in the order the targets were chosen (CR 601.2d). */
+function shares(value: unknown, where: string): number[] | null {
+  if (value === undefined) return null;
+  if (!Array.isArray(value) || !value.every((n) => typeof n === "number" && Number.isInteger(n)))
+    throw new Error(`${where}: divide is a list of whole numbers, one per target, like [2, 1]`);
+  return value;
 }
