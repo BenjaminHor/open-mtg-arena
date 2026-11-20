@@ -1,0 +1,16 @@
+name: Cancelling while announcing X puts Fireball back in hand, and the player keeps priority
+rules: [CR 734.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fireball]
+    battlefield: [Mountain, Mountain]
+steps:
+  - p1 cast: Fireball
+  - expect:
+      pending: { player: p1, kind: announceX }
+  - p1 choose: cancel
+  - expect:
+      stack: []
+      p1.hand: [Fireball]
+      pending: { player: p1, kind: priority }

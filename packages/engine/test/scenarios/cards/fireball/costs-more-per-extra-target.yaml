@@ -1,5 +1,5 @@
 name: Fireball costs {1} more for each target beyond the first, and divides X evenly among them
-rules: [CR 601.2f]
+rules: [CR 601.2f, CR 107.1a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

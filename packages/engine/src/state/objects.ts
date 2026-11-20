@@ -46,7 +46,7 @@ export type CardObject = {
    */
   controlledSinceTurnStart: boolean;
   /**
-   * The choices made while casting it, while it's a spell on the stack (CR 601.2c; modes, later: CR 601.2b).
+   * The choices made while casting it, while it's a spell on the stack (CR 601.2c; modes, later: CR 700.2).
    * Otherwise null.
    */
   choices: StackChoices | null;
@@ -90,13 +90,13 @@ export type AbilityRef =
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";
 
 /**
- * Choices announced while casting a spell or activating an ability (CR 601.2c; modes, later: CR 601.2b), kept on the
+ * Choices announced while casting a spell or activating an ability (CR 601.2c; modes, later: CR 700.2), kept on the
  * stack object.
  */
 export type StackChoices = {
   /** The chosen modes of a modal spell (later: CR 700.2), as indexes. Empty when not modal. */
   modes: number[];
-  /** The value announced for X (later: CR 107.3), or null when there is no X. */
+  /** The value announced for X (CR 107.3a), or null when there is no X. */
   x: number | null;
   /**
    * The chosen targets, grouped by each instance of the word "target" in the text, in the order the card lists

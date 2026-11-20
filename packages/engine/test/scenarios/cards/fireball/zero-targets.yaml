@@ -9,8 +9,9 @@ steps:
   - p1 cast: Fireball
     x: 2
   - p1 choose: 0
+  # Zero targets costs no extra: the increase is for each target beyond the first.
   - expect:
-      pending: { player: p1, kind: payMana }
+      pending: { player: p1, kind: payMana, cost: [{ kind: generic, amount: 2 }, { kind: colored, color: R }] }
   - p1 choose: cancel
   - p1 cast: Fireball
     x: 2

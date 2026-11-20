@@ -130,8 +130,8 @@ export type CostPart =
   /** {T}: "tap this permanent" (CR 107.5). */
   | { kind: "tap" }
   /**
-   * "Sacrifice a creature": one permanent its controller controls that fits `filter` (CR 701.21a), chosen as the cost
-   * is paid (CR 601.2h).
+   * "Sacrifice a creature": one permanent its controller controls that fits `filter` (CR 701.21a). It's chosen once the
+   * total cost is locked, before the mana abilities' window (CR 601.2g), and sacrificed with the mana (CR 601.2h).
    */
   | { kind: "sacrifice"; filter: ObjectFilter };
 

@@ -12,6 +12,8 @@ steps:
       p1.graveyard: [Grizzly Bears]
       stack: [Vampire Aristocrat ability]
       events contains: [{ type: PERMANENT_SACRIFICED, player: p1 }, { type: ABILITY_ACTIVATED }]
+      # Sacrificed, not destroyed (CR 701.21a).
+      events lacks: [{ type: PERMANENT_DESTROYED }]
   - all pass: once
   - expect:
       p1:Vampire Aristocrat.power: 4

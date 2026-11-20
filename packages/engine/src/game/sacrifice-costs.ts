@@ -12,14 +12,15 @@ import { castingOf } from "./casting-state.ts";
 /** The sacrifices this spell's or ability's cost calls for, in order: what each may be. */
 export function sacrificeParts(state: GameState, id: ObjectId, cards: CardDatabase): ObjectFilter[] {
   const obj = state.objects[id];
-  // Spells have no additional costs in the pool yet (later: CR 601.2f, 118.8).
+  // Spells have no additional costs in the pool yet (later: CR 118.8).
   if (obj?.kind !== "ability") return [];
   return stackAbilityDef(state, id, cards).cost.flatMap((part) => (part.kind === "sacrifice" ? [part.filter] : []));
 }
 
 /**
  * The permanents the player may sacrifice for this part of the cost: only permanents they control (CR 701.21a) that fit
- * it, each at most once. A creature chosen as a target can still be sacrificed (CR 601.5); it's an illegal target by
+ * it, each at most once. A creature chosen as a target can still be sacrificed: nothing forbids it, and the player may
+ * plan for it while choosing targets (CR 601.5); it's an illegal target by
  * the time the spell or ability resolves (CR 608.2b).
  */
 export function possibleSacrifices(

@@ -1,7 +1,7 @@
 // The steps shared by casting a spell (CR 601.2c, 601.2f–i) and activating an ability (CR 602.2b): targets and their
 // division (`choose-targets.ts`), paying the cost, and cancelling. Progress is kept in `GameState.casting` and on the
 // stack object, so every pause is plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes
-// come later (later: CR 601.2b).
+// come later (later: CR 700.2).
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
@@ -179,10 +179,13 @@ function becameCastOrActivated(player: PlayerId, obj: GameObject): GameEvent {
   }
 }
 
-/** Why this value of X can't be announced, or null: any whole number from 0, none negative (CR 107.1b, 107.3a). */
+/**
+ * Why this value of X can't be announced, or null: a whole number (CR 107.1a), not negative (CR 107.1b), as the caster
+ * chooses (CR 107.3a).
+ */
 export function xProblem(value: number): string | null {
   // A safe integer, so the state stays exact as JSON.
-  return Number.isSafeInteger(value) && value >= 0 ? null : "X is a whole number from 0 (CR 107.1b, 107.3a)";
+  return Number.isSafeInteger(value) && value >= 0 ? null : "X is a whole number from 0 (CR 107.1a, 107.1b, 107.3a)";
 }
 
 /** The player announces X; it's kept on the spell or ability (CR 107.3a). The casting steps then go on. */
