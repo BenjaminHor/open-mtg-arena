@@ -61,7 +61,7 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       };
     case "putTriggers":
       return putTriggers(state, item.batch, item.player, cards);
-    case "happen":
+    case "resumeEvent":
       return happenOrAsk(state, item.proposed, cards, item.choices);
   }
 }

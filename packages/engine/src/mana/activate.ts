@@ -151,7 +151,8 @@ export function resolveManaAbility(
     }
   }
   // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana
-  // ability can't have targets (CR 605.1a).
+  // ability can't have targets (CR 605.1a). Its effects only add mana (`manaAbilityProblem` refuses others), so none
+  // can wait for a choice of replacement effect here, outside the work queue.
   const context = { self: id, controller: player, targets: [], division: [], x: null, trigger: null };
   for (const effect of ability.def.effects) {
     const chosen =

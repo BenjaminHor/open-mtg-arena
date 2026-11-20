@@ -59,7 +59,7 @@ anything can replace or trigger on:
 ## Not built yet
 
 - **Pausing anywhere.** Since M2-08c (D-087), `happenOrAsk` waits for a choice between replacement effects (CR 616.1):
-  it performs nothing, asks, and a `happen` work item replaces the event again with the choices so far. Only callers
+  it performs nothing, asks, and a `resumeEvent` work item replaces the event again with the choices so far. Only callers
   that do nothing after the event use it: resolving effects' destroy and damage (`effects/run-effect.ts`) and combat
   damage, which queues its priority first; a test lists them. Every other caller uses `happen`, which refuses a choice:
   unreachable with the pool, where only damage meets two different effects. A caller that does more after its event

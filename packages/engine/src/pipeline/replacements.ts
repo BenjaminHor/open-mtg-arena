@@ -44,10 +44,14 @@ export function applyReplacements(
     const [first, second] = candidates;
     if (first === undefined)
       return { kind: "replaced", events: [...replaced.before, replaced.event, ...replaced.after] };
+    // The earliest choice not yet applied that's among the candidates: choices are applied in the order made.
+    const next = choices.find(
+      (ch) => !applied.some((a) => sameReplacement(a, ch)) && candidates.some((c) => sameReplacement(c.ref, ch)),
+    );
     const chosen =
-      second === undefined ? first : candidates.find((c) => choices.some((ch) => sameReplacement(ch, c.ref)));
+      second === undefined ? first : candidates.find((c) => next !== undefined && sameReplacement(c.ref, next));
     if (chosen === undefined)
-      return { kind: "choose", player: affectedPlayer(state, event), options: candidates.map((c) => c.ref) };
+      return { kind: "choose", player: affectedPlayer(state, replaced.event), options: candidates.map((c) => c.ref) };
     applied.push(chosen.ref);
     replaced = replaceWith(state, chosen, replaced);
   }

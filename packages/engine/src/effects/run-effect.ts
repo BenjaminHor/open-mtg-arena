@@ -48,7 +48,7 @@ export function runEffect(
       const [from, ...more] = objectsNamed(state, effect.from, context, cards);
       if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
       if (from === undefined) return { state, events: [] };
-      // A resolving effect does nothing after its event, so the event may wait for a choice (CR 616.1).
+      // Run from the work queue, with the rest of the resolution queued behind it, so the event may wait (CR 616.1).
       return happenOrAsk(state, { kind: "dealDamage", damage: damageOf(state, effect, from, context, cards) }, cards);
     }
     case "addMana": {
@@ -98,7 +98,7 @@ export function runEffect(
       return happen(state, { kind: "sacrifice", object: source }, cards);
     }
     case "destroy": {
-      // A resolving effect does nothing after its event, so the event may wait for a choice (CR 616.1).
+      // Run from the work queue, with the rest of the resolution queued behind it, so the event may wait (CR 616.1).
       const objects = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (objects.length === 0) return { state, events: [] };
       const destroy = (object: ObjectId): SingleEvent =>
@@ -259,7 +259,8 @@ function toEach<T>(
   event: (item: T) => SingleEvent,
 ): Progress {
   if (items.length === 0) return { state, events: [] };
-  return happen(state, { kind: "simultaneous", events: items.map(event) }, cards);
+  // Every op using this runs from the work queue with nothing after it, so the event may wait (CR 616.1).
+  return happenOrAsk(state, { kind: "simultaneous", events: items.map(event) }, cards);
 }
 
 /**

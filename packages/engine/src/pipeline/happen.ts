@@ -28,7 +28,7 @@ export function happen(state: GameState, proposed: ProposedEvent, cards: CardDat
 
 /**
  * Carries out an event, or, when the affected player must choose which replacement effect applies first (CR 616.1),
- * performs nothing and asks: the answer queues a `happen` work item with the choices so far, and the event is replaced
+ * performs nothing and asks: the answer queues a `resumeEvent` work item with the choices so far, and the event is replaced
  * again from the start, as nothing has happened yet. Only callers that do nothing after the event may use it (a
  * resolving effect, the combat damage step): whatever they'd do next must already be queued behind it. `only-the-
  * pipeline-performs.test.ts` lists them.

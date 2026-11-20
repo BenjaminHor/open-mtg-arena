@@ -274,8 +274,10 @@ function answerFor(
       return { kind: "orderTrigger", index: triggerNamed(pending.batch, player, text, cards) };
     case "chooseReplacement": {
       // "regeneration" for a regeneration shield, or the name of the card whose own replacement it is.
-      const option = pending.options.findIndex((ref) => replacementWord(state, ref, cards) === text);
-      if (option === -1) throw new Error(`no replacement effect "${text}" to choose`);
+      const matching = pending.options.flatMap((ref, i) => (replacementWord(state, ref, cards) === text ? [i] : []));
+      const [option, another] = matching;
+      if (option === undefined) throw new Error(`no replacement effect "${text}" to choose`);
+      if (another !== undefined) throw new Error(`"${text}" names more than one replacement effect to choose`);
       return { kind: "chooseReplacement", option };
     }
     case "declareAttackers":

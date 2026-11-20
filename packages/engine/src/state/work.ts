@@ -50,4 +50,4 @@ export type WorkItem =
   /** Triggered abilities of one batch still to be put on the stack, then priority for `player` (CR 603.3b). */
   | { kind: "putTriggers"; batch: PendingTrigger[]; player: PlayerId }
   /** An event waiting on a choice of replacement effect (CR 616.1), replaced again with the choices made so far. */
-  | { kind: "happen"; proposed: ProposedEvent; choices: ReplacementRef[] };
+  | { kind: "resumeEvent"; proposed: ProposedEvent; choices: ReplacementRef[] };

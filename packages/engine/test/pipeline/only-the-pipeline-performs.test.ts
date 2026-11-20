@@ -119,7 +119,13 @@ describe("only the pipeline performs events (D-056)", () => {
 
   it("only callers that do nothing after the event import happenOrAsk, which may wait for a choice (CR 616.1)", () => {
     // A resolving effect, one work item each, and combat damage, which queues its priority first.
-    const allowed = ["effects/run-effect.ts", "combat/combat-damage.ts", "game/advance.ts", "pipeline/happen.ts"];
+    const allowed = [
+      "effects/run-effect.ts",
+      "effects/destroy-at-random.ts",
+      "combat/combat-damage.ts",
+      "game/advance.ts",
+      "pipeline/happen.ts",
+    ];
     const importers = files.filter((f) => importedValues(f.source).includes("happenOrAsk")).map((f) => f.name);
     expect(importers.filter((name) => !allowed.includes(name))).toStrictEqual([]);
   });

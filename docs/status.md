@@ -433,7 +433,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        Design, with the advisor's review:
        - `happenOrAsk`: like `happen`, but when the affected player (or the affected object's controller, CR 616.1)
          must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
-         decision, and queues a `happen` work item holding the proposed event and the choices so far. On the answer,
+         decision, and queues a `resumeEvent` work item holding the proposed event and the choices so far. On the answer,
          `replace` runs again from the top with the choices in order; nothing was performed, so the state is as it
          was, and each choice applies once (CR 614.5, 616.1f). Several players choose in APNAP order (CR 616.1).
          Candidates are named by stable references (`{ kind: "ownText", object, index }`, `{ kind:
@@ -450,13 +450,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Plumbing: the decision kind in `legalActions`, the view, the scenario syntax, the CLI's action lines, the
          fuzz picker, and `DECISION_KINDS` with a reason until M2-08d's cards reach it.
        - Future impact: Clone's "as it enters" (M2-14) is a choice pausing a zone change from `resolve.ts`, not built.
-     - M2-08c, the CR 616.1 choice, no pool cards: `happen` stops before performing anything and resumes as a work item
-       (the pattern mid-resolution decisions use) when the affected player must choose which effect applies; every
-       caller that does more after `happen` queues the rest (the pipeline README's list). Tested with test-only cards
-       and the M2-03 review's cases: a dying source's replacement still applying in its SBA batch (CR 704.3, 614.4),
-       regeneration and a "would die" replacement on one destruction (CR 616.1), damage results replaced as one event
-       (CR 120.4c, the Worship example), 0 damage an increase can't touch (CR 120.8). Golden logs unchanged. The new
-       decision kind can't be reached by pool cards until M2-08d: `DECISION_KINDS` gains a reason like `EVENT_TYPES`.
+     - M2-08c, the CR 616.1 choice, no pool cards: superseded by the design above (D-087). The M2-03 review's cases are
+       in Open questions; only the Homing Bear one (regeneration and a "would be put into a graveyard" replacement on
+       one destroy) is tested now.
      - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
        (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
        a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source

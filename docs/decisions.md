@@ -1187,7 +1187,7 @@ every schema change and every change D-024 lists bumps it.
 **D-087: Choosing between replacement effects; an event that waits (M2-08c)** · 2026-11-20 · accepted
 - When two different replacement effects would apply to one event, the affected player or the affected object's
   controller chooses which applies first (CR 616.1), several players in APNAP order. `happenOrAsk` then performs
-  nothing, sets a `chooseReplacement` decision, and the answer queues a `happen` work item: the event is replaced again
+  nothing, sets a `chooseReplacement` decision, and the answer queues a `resumeEvent` work item: the event is replaced again
   from the start with the choices so far, as nothing has happened yet. Candidates are named by stable references
   (`ReplacementRef`: a card's own text by object and index, or an object's regeneration shields), and applied one at a
   time, the rest checked again against the changed event (CR 616.1f).
