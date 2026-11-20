@@ -1,0 +1,22 @@
+name: Disorient on a blocker leaves it dealing no combat damage, while it's still dealt damage
+rules: [CR 510.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Disorient]
+    battlefield: [Goblin Piker, Island, Island, Island, Island]
+  p2:
+    battlefield: [Warpath Ghoul]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Goblin Piker]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Warpath Ghoul: Goblin Piker }
+  - p1 cast: Disorient
+    targets: [p2:Warpath Ghoul]
+    pay: auto
+  - all pass: once
+  - all pass: until main2
+  - expect:
+      p2.graveyard: [Warpath Ghoul]
+      p1:Goblin Piker.damage: 0

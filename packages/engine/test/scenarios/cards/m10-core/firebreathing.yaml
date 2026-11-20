@@ -1,5 +1,5 @@
 name: Fiery Hellhound and Shivan Dragon get +1/+0 for each {R}, Looming Shade +1/+1 for each {B}, until end of turn
-rules: [CR 602.2, CR 613.4c]
+rules: [CR 602.2, CR 613.4c, CR 514.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -30,5 +30,6 @@ steps:
       p1:Looming Shade.toughness: 3
   - all pass: until upkeep
   - expect:
+      p1:Fiery Hellhound.power: 2
       p1:Shivan Dragon.power: 5
       p1:Looming Shade.toughness: 1

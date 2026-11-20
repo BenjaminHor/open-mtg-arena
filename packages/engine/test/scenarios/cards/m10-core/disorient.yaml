@@ -18,6 +18,7 @@ steps:
   - all pass: once
   - expect:
       p1:Enormous Baloth.power: 0
+      p1:Enormous Baloth.toughness: 7
   - all pass: until main2
   - expect:
       p2.life: 20
