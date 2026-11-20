@@ -150,7 +150,8 @@ export function runEffect(
         object,
       }));
     case "counter": {
-      // "Can't be countered" will make this do nothing for that spell, without stopping the rest (later: CR 101.2).
+      // A spell that can't be countered is still countered here as far as this effect goes; `happen` drops that event
+      // (CR 101.2, 113.6g), and the rest of the effect happens.
       const onStack = objectsNamed(state, effect.of, context, cards).filter((id) => state.zones.stack.includes(id));
       return toEach(state, onStack, cards, (object) => ({ kind: "counterObject", object }));
     }

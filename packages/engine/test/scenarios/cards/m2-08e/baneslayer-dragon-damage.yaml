@@ -12,8 +12,8 @@ steps:
   - all pass: until combat.declareBlockers
   - p1 block: { Baneslayer Angel: Shivan Dragon }
   - all pass: until main2
-  # Protection doesn't stop Baneslayer blocking a Dragon (CR 702.16f is about blocking it). No Dragon in the pool can
-  # damage it: none survives its first strike, and their abilities can't target it; White Knight shows the prevention.
+  # Protection doesn't stop Baneslayer blocking a Dragon (CR 702.16f is about blocking it). No Dragon in the pool
+  # survives its first strike; baneslayer-demon-trample shows its damage prevention, with a Demon.
   - expect:
       p1:Baneslayer Angel.damage: 0
       p2.graveyard: [Shivan Dragon]

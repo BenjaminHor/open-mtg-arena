@@ -1272,7 +1272,7 @@ every schema change and every change D-024 lists bumps it.
 - Harm's Way ("The next 2 damage that a source of your choice would deal to you and/or permanents you control this
   turn is dealt to any target instead") was built twice on the branch and reverted (commits 1c4fcda, 93f2c4d,
   6fd7c9e, 1316d92, kept in history; reverted after the third rules review). Each review found wrong results reachable
-  with the pool. The card is out of the pool until the design below is settled.
+  with the pool, so the card was taken out of the pool.
 - Why it's hard: its split ("you choose which 2 damage", its ruling) has to be made when the effect applies, against
   what earlier CR 616.1 choices left, and CR 616.1 choices are per affected object or player, made by each affected
   player in APNAP order. Settling shares before those choices made the order choice meaningless (two of one player's
@@ -1289,8 +1289,8 @@ every schema change and every change D-024 lists bumps it.
   reverse D-075 (Goblin Artillery's 2 and 3 to its controller stay two parts), an owner decision.
 - Why set aside rather than finish now: none of this is needed by another Magic 2010 card, Harm's Way isn't on MTG
   Arena, and no card that filter keeps has "a source of your choice ... is dealt to ... instead" (Scryfall,
-  2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above need the owner (D-080, and
-  reversing D-088's per-entry choice). Fog, Safe Passage and Guardian Seraph (M2-08d1, D-088) are unaffected.
+  2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above needed the owner (D-080, and
+  reversing D-088's per-entry choice), who chose to leave the card out (below). Fog, Safe Passage and Guardian Seraph (M2-08d1, D-088) are unaffected.
 - The owner chose (a), 2026-11-20: leave Harm's Way out of the pool, like the M2-14 cards Arena doesn't have. M2
   finishes without it; this entry is the design record if a card ever needs redirection with an amount. The per-entry
   choice (Known issues) stays as built until a card makes it matter.
@@ -1310,5 +1310,10 @@ every schema change and every change D-024 lists bumps it.
   counter event aimed at it, as it drops a destroy aimed at an indestructible permanent (CR 101.2). The spell is
   still a legal target, and the counterspell resolves and does its other parts (Great Sable Stag's ruling).
 - Golden cover: "keyword protection" is credited in combat (coarse, like indestructible); static abilities now have a
-  `STATIC_WHEN` table like keywords, "can't be countered" credited as the spell resolves.
+  `STATIC_WHEN` table like keywords, "can't be countered" credited as the spell resolves, whether or not a counter was
+  tried (coarse too).
+- After the M2-08e reviews: the source's colors and subtypes are read through `colorsOf` and `subtypesOf` while it
+  exists, and printed values only for a gone source (the snapshot is later). `protectionsOf` works in any zone, like
+  `keywordsOf`, and `isProtectedFrom` checks the battlefield (CR 113.6); protections are in `characteristics()` and
+  `inspect`. The Oracle check compares `protections` with the text's "protection from A and from B".
 

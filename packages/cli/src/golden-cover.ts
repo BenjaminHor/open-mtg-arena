@@ -81,11 +81,11 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
 }
 
 /**
- * The mechanics an event shows a card's script running (D-082): a spell resolving (its fields, and the keywords a
- * permanent spell brings as it enters), an ability resolving (its costs or trigger condition, targets and effects), a
+ * The mechanics an event shows a card's script running (D-082): a spell resolving (its fields, and the keywords and
+ * statics credited as it resolves), an ability resolving (its costs or trigger condition, targets and effects), a
  * mana ability making mana, a card moving where its own replacement effect applies, or creatures attacking and blocking
- * (their combat keywords and statics, where those do something). A cast that's cancelled or countered never runs the script. Objects that left are only in the state
- * before.
+ * (their combat keywords, protection and statics, where those do something). A cast that's cancelled or countered
+ * never runs the script. Objects that left are only in the state before.
  */
 export function mechanicsUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string[] {
   const object = (id: ObjectId) => before.objects[id] ?? after.objects[id];

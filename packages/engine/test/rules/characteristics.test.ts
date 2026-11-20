@@ -61,6 +61,7 @@ describe("characteristics()", () => {
       subtypes: ["Forest"],
       colors: [],
       keywords: [],
+      protections: [],
       power: null,
       toughness: null,
     });

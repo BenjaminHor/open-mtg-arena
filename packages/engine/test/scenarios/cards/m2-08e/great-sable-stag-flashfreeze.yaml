@@ -1,0 +1,22 @@
+name: Flashfreeze (counter target red or green spell) can target Great Sable Stag, resolves, and the Stag isn't countered
+rules: [CR 113.6g, CR 101.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest]
+    hand: [Great Sable Stag]
+  p2:
+    battlefield: [Island, Island]
+    hand: [Flashfreeze]
+steps:
+  - p1 cast: Great Sable Stag
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Flashfreeze
+    targets: [spell:p1:Great Sable Stag]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p2.graveyard: [Flashfreeze]
+      p1.battlefield contains: [Great Sable Stag]

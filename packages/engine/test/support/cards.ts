@@ -72,6 +72,18 @@ export const THAT_PLAYERS = "test-that-players";
 
 /** Not a real card: a 2/2 with protection from black (White Knight's protection without its first strike). */
 export const PRO_BLACK = "test-pro-black";
+/** Not a real card: a black 1/1 with deathtouch (the pool's deathtouch creatures are green). */
+export const BLACK_DEATHTOUCH = "test-black-deathtouch";
+
+/** A test card with more of its definition set. */
+function withDef(data: CardData, def: Partial<CardData["def"]>): CardData {
+  return { ...data, def: { ...data.def, ...def } };
+}
+
+/** A test card with these colors. */
+function withColors(data: CardData, colors: CardData["printed"]["colors"]): CardData {
+  return { ...data, printed: { ...data.printed, colors } };
+}
 
 /** A test creature with only keywords: a vanilla body for combat tests. */
 function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
@@ -642,13 +654,11 @@ export const TEST_CARDS: CardDatabase = {
     },
     def: { name: "Test Enchantment", oracle: "" },
   }),
-  [PRO_BLACK]: (() => {
-    const base = keywordCreature(PRO_BLACK, "Pro Black", [2, 2], []);
-    return {
-      ...base,
-      def: { ...base.def, oracle: "Protection from black", protections: [{ kind: "color", color: "B" }] },
-    };
-  })(),
+  [PRO_BLACK]: withDef(keywordCreature(PRO_BLACK, "Pro Black", [2, 2], []), {
+    oracle: "Protection from black",
+    protections: [{ kind: "color", color: "B" }],
+  }),
+  [BLACK_DEATHTOUCH]: withColors(keywordCreature(BLACK_DEATHTOUCH, "Black Deathtouch", [1, 1], ["deathtouch"]), ["B"]),
   [DOUBLE_STRIKER]: keywordCreature(DOUBLE_STRIKER, "Double Striker", [2, 2], ["double strike"]),
   [DOUBLE_LIFELINKER]: keywordCreature(DOUBLE_LIFELINKER, "Double Lifelinker", [2, 2], ["double strike", "lifelink"]),
   [FIRST_STRIKER]: keywordCreature(FIRST_STRIKER, "First Striker", [2, 2], ["first strike"]),

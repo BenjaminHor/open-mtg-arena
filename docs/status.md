@@ -473,7 +473,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          own candidates and their own chooser, the recipient player or the recipient object's controller (CR 616.1).
          Choices become `{ for, ref }` (`for`: an object, or a damage entry), so a global effect's choice for one recipient isn't used for another
          (the M2-08c review). A prevented entry shrinks or goes; lifelink and "deals damage" triggers see what's left
-         (CR 615.6, 120.4c). State-held effects get an `id` (two Harm's Ways differ).
+         (CR 615.6, 120.4c). State-held effects get an `id` (two Fogs differ, D-088).
        - M2-08d1: Fog ("prevent all combat damage that would be dealt this turn"), Safe Passage ("all damage that would
          be dealt to you and creatures you control this turn", creatures arriving later too: its ruling), both kept in
          `GameState.replacements` until cleanup; Guardian Seraph ("if a source an opponent controls would deal damage to
@@ -481,59 +481,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          replacement read from another permanent's text on the battlefield, not the moving card's. Choices arise
          (Seraph with Fog or Safe Passage), though the result is the same; asked anyway (CR 616.1), skipping a choice
          whose outcome can't differ being a later UX question.
-       - M2-08d2: Harm's Way: a source chosen as it resolves (any object, CR 609.7a; offered: permanents and spells),
-         then "the next 2 damage that source would deal to you and/or permanents you control this turn is dealt to its
-         target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
-         when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
-         stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
-         Harm's Way was built (1c4fcda, then review fixes 93f2c4d and 6fd7c9e) and reverted (98b08ed): it is not in
-         the pool, which stays at 166 cards, 158 of the 234 Magic 2010 cards. Re-review (rules-judge, 2026-11-20): the three first findings are fixed, but settling shares before the
-         CR 616.1 choice gives two new wrong results. A paper redesign, reviewed by the judge, still had wrong results
-         and rests on unsettled readings, so M2-08d2 is reverted on the branch (D-090; Open questions). M2-08d ends
-         with M2-08d1. Next: M2-08e (protection). The findings, kept for when Harm's Way returns:
-         - Two of one player's Harm's Ways on one source: the cast order decides, not the player's choice. Hill Giant
-           (3) at p1, p1's Harm's Ways A (target p2) and B (target p2's Grizzly Bears); B first: the Bears die, p2 19.
-         - Prevention first leaves a share unused: Earthquake X=2 with p1's Grizzly Bears, Guardian Seraph and Harm's
-           Way (target p2's Hill Giant); Seraph first, then Harm's Way must take 2 of the 3 left (1 and 1 allowed);
-           nothing kept. Two players: p2's Goblin Artillery at p1, Harm's Ways on Artillery both sides (p2's at p1,
-           p1's at p2), p1's Guardian Seraph: either order gives p1 19, p2 17.
-         - Low: the split is asked before APNAP order choices; Artillery at its own controller asks a split between two
-           entries to p1 (merge first); two parts at one hop to one target share a key; CR 400.7c is prevention only;
-           `later: CR 609.7a` marks a built rule; the unit test asserts the wrong order behavior.
-         Earlier findings:
-         - Rules: Guardian Seraph prevents twice when redirected damage joins the same source's damage to the same
-           player (CR 615.10: per source, per event): thread what's used across the event's entries and merge the
-           dealt entries by source and recipient. Sources only referred to by a stack object (a pinger bounced in
-           response) aren't offered (CR 609.7a): offer abilities' sources. Two players' Harm's Ways on one source give a
-           wrong result: let a redirected part meet the other effects not yet applied (CR 616.1f, 614.5).
-         - Tests: other source / opponent's things not redirected, Earthquake with a forced minimum share, an
-           out-of-range answer, the shield not used when Fog goes first then used later (CR 609.7b), Harm's Way at its
-           controller's own creature (CR 614.5), damage already headed for the target.
-         - Code: CR 615.7 cited only by analogy (`later:`); "you and your permanents" in `rules/damage-recipients.ts`;
-           the decision's range and answer to `game/`; its own answer kind; one `sameTarget`; flat shares; the
-           spell-to-permanent link listed as a pipeline exception; docs (this plan is superseded by D-090).
-         Plan (2026-11-20, after #48 merged; superseded by D-090 where they differ):
-         - One op, `redirectNextDamage { amount, to }`: with nothing chosen it asks (`chooseCards`, purpose
-           `damageSource`, among permanents and spells on the stack, CR 609.7a); with the source chosen it adds
-           `{ kind: "redirectDamage", id, sourceOracleId, controller, from, remaining, to }` to `GameState.replacements`.
-           A chosen permanent spell is followed onto the battlefield (`finishResolving` updates `from`, CR 609.7a).
-         - In `damage-replacements.ts`, a redirect candidate applies to an entry from `from` to its controller or a
-           creature they control, while the target can be dealt damage (CR 614.9, else not used up, CR 609.7b). It
-           splits the entry: part stays, part becomes a new entry to the target, replaced in turn for prevention with
-           its own chooser (CR 616.1f), the redirect not applying again (CR 614.5). The remaining amount is threaded
-           through the event's entries; when the eligible damage exceeds it, the controller chooses how much of each
-           entry (a new `chooseRedirect` decision, recorded with the choices), at least enough that all of it is used.
-         - A `damageRedirected` pipeline event uses the amount up in `perform` and is told as `DAMAGE_REDIRECTED`.
-         - Tests: redirect to a creature and to a player; a 3-damage source (1 stays, CR 615.7-like); the shield left for
-           later; two blockers hit by the source (the controller chooses, 1 and 1 allowed); a target gone (damage
-           stays, shield kept); Fog with the redirected damage; a creature spell chosen on the stack; ends at cleanup.
+       - M2-08d2, Harm's Way: built twice and reverted (1c4fcda, 93f2c4d, 6fd7c9e; reverted in 98b08ed); the owner left
+         it out of the pool (D-090, which records what the rules reviews found and what a correct model needs).
        - Golden cover: `chooseReplacement` becomes required once Seraph meets Fog or Safe Passage in agent games, or
          a deck runs both.
-     - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
-       (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
-       a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
-       chosen as it resolves, redirected to its target; 2 in all across one event, its controller choosing which:
-       its ruling). Lifelink and "deals damage" triggers read the damage as dealt after prevention (CR 120.4c).
+     - M2-08d, prevention (CR 615), two shapes in state: a filter checked as each event happens (Fog: all combat damage
+       this turn; Safe Passage: you and your creatures, those arriving later too: its ruling), and a static (Guardian
+       Seraph: 1 from a source an opponent controls); Harm's Way's "the next N" redirection is left out (D-090). Lifelink and "deals damage" triggers read the damage as dealt after prevention (CR 120.4c).
      - M2-08e, protection (CR 702.16, D-074: damage prevention, targeting, blocking; "can't be enchanted" in M2-12),
        reading the source's characteristics, from last known information if it's gone (snapshot `characteristics()`,
        future-rules): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons), Great Sable Stag

@@ -36,7 +36,7 @@ order of replacements (CR 616.1) and resumes as a work item; only callers that d
 *Watch out:* every other caller (the list is in `engine/src/pipeline/README.md`) must queue its rest as work before it
 can wait, and mana abilities run outside the work queue. *Built (M2-08d1, D-088):* prevention per damage entry, each
 with its own choices and chooser, choices keyed by the entry (`ChoiceFor`), and an id for each state-held effect.
-*Set aside (D-090):* redirection with an amount (Harm's Way) needs CR 616.1 choices per (effect, recipient), its
+*Left out (owner, D-090):* redirection with an amount (Harm's Way) needs CR 616.1 choices per (effect, recipient), its
 split made when it applies against what earlier choices left, and amounts threaded through the event; per-entry
 choices (today) are finer than CR 616.1, and per-player ones coarser. D-090 lists what the reviews found. "Prevent the
 next N" shields (CR 615.7) will need the same. Each member of a batch is replaced
@@ -97,7 +97,7 @@ which triggers during a cast: a cast starts only when a player receives priority
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,
-702.15c; leaves-the-battlefield triggers; Xathrid Demon reads only the sacrificed creature's power, kept in the
+702.15c; protection reading a gone source's colors and subtypes, `rules/protection.ts`, D-091; leaves-the-battlefield triggers; Xathrid Demon reads only the sacrificed creature's power, kept in the
 resolution's "this way" record as it's sacrificed, D-079) must snapshot `characteristics()` in `moveCard` beside it, not
 recompute later with the effects as they are then. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a
@@ -267,10 +267,18 @@ Modal spells and kicker change the target requirements after the mode or cost is
 **Targeting that knows who targets (CR 702.11b hexproof, 702.16b protection, 601.2c).** `legalTargets`,
 `isLegalTarget` and `stillLegalTargets` (`rules/targets.ts`, also used for the CR 608.2b check on resolution) take a
 `Targeting` (the object and its controller) since M2-05, so "an opponent controls" works, and shroud filters
-`legalTargets` (M2-06d). Hexproof and protection need the target's abilities checked against the source and its
-controller, in the same place. `game/cast.ts` checks targets before the spell object exists. Each target group is one
+`legalTargets` (M2-06d), and so does protection from a color or a subtype (M2-08e, D-091), checked against the spell or
+the ability's source. Hexproof, and protection for players or "from everything" or "from a player" (CR 702.16b's "or
+player", 702.16j-k), need the source's controller too, in the same place. `game/cast.ts` checks targets before the spell object exists. Each target group is one
 target today; "two target creatures" needs several per group, and one instance can't choose the same target twice
 (CR 601.2c). *Needs now:* nothing.
+
+**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** Auras and Equipment (M2-12): "can't be enchanted or equipped"
+needs `isProtectedFrom(state, permanent, auraOrEquipment)` where an Aura is attached without targeting (put onto the
+battlefield, CR 303.4f) and in the state-based actions that put such an Aura into its owner's graveyard and unattach
+such Equipment (CR 704.5m-n); Aura spells and equip abilities that target are covered by `legalTargets`. Layers (M2-09):
+granted or removed protection goes through `protectionsOf`, with the keywords ("loses all abilities" removes both).
+Protection for players changes `isProtectedFrom`'s first parameter to a `Target`. *Needs now:* nothing.
 
 **Paying mana outside casting (CR 117.1d, 605.3a).** Mana abilities may be activated whenever a payment is asked
 for, including during resolution: costs to attack or block (CR 508.1i–j, 509.1e–f), "counter unless its controller

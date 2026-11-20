@@ -184,8 +184,8 @@ function allEffects(def: CardDef): (readonly Effect[])[] {
 }
 
 /**
- * A permanent's keywords credited at `when` (`KEYWORD_WHEN`), and, in combat, its static abilities: every one in the
- * pool is about attacking or blocking.
+ * A card's keywords, protection and static abilities credited at `when` (`KEYWORD_WHEN`, `STATIC_WHEN`): in combat, or
+ * as it resolves ("enters": a permanent spell's flash and shroud, a spell's "can't be countered").
  */
 export function permanentUnits(def: CardDef, when: "combat" | "enters"): string[] {
   const keywords = (def.keywords ?? []).filter((k) => KEYWORD_WHEN[k] === when).map((k) => `keyword ${k}`);
