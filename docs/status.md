@@ -142,8 +142,17 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
-  - M2-05c Life, damage to many, mana: done. Next: the first M10 deck pair replaces the interim decks, and the golden
-    games are made smaller (Known issues), before M2-06. Plan (2026-11-20), rules-reviewed and revised; split in two:
+  - M2-05c Life, damage to many, mana: done.
+- Next, before M2-06 (plan from the advisor, 2026-11-20):
+  1. Script the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
+     Mastodon, Silvercoat Lion, Stormfront Pegasus, Air Elemental, Disorient, Horned Turtle, Snapping Drake, Wind
+     Drake, Zephyr Sprite, Kelinore Bat, Looming Shade, Warpath Ghoul, Zombie Goliath, Canyon Minotaur, Fiery
+     Hellhound, Goblin Piker, Lightning Elemental, Prodigal Pyromancer, Shivan Dragon, Enormous Baloth, Might of Oaks,
+     Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says.
+  2. Then the first M10 deck pair, for play (the fuzzer's prebuilt rotation, the CLI), and a fresh, smaller golden set:
+     coverage from seeded random pool decks, a greedy covering set chosen anew (most uncovered cards per action), made
+     with the fuzzer's picker; M1's four games (the bench) and `red-aggro` / `green-stompy` stay; the export tests'
+     games are kept or repointed; a size budget written first; the interim decks removed. Plan (2026-11-20), rules-reviewed and revised; split in two:
     - M2-05c1, no new decisions: done, merged (PR #31, D-067). 21 scenarios in `test/scenarios/cards/m2-05c/`, unit tests
       in `test/effects/damage-to-many.test.ts`; the interim decks carry the ten cards, five new golden games. Angel's
       Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
@@ -164,7 +173,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         restricted mana later (future-rules).
     - M2-05c2, choices: done, merged (PR #32, D-068). 12 scenarios (`yawning-fissure*`, `birds-of-paradise*` in
       `test/scenarios/cards/m2-05c/`), unit tests in `test/mana/any-color.test.ts`; the interim decks carry both, two
-      golden games. With it, M2-05 is done: 79 of 234 cards. Yawning Fissure (`sacrifice` op, each opponent choosing a land they control, filter relative to
+      golden games. With it, M2-05 is done: 71 of the 234 Magic 2010 cards (the pool's 79 include 8 M1-only cards: Shock, Volcanic
+      Hammer, Grizzly Bears, Gray Ogre, Hill Giant, Fire Elemental, Spined Wurm, Furnace Whelp). Yawning Fissure (`sacrifice` op, each opponent choosing a land they control, filter relative to
       the chooser; CR 701.21a, 608.2d; with two players one chooser, so APNAP choosing then one simultaneous
       sacrifice stays `later: CR 101.4, 608.2e`; a forced choice isn't asked, the battlefield being public). Birds of
       Paradise: the color travels on the `ACTIVATE_ABILITY` action (a design choice: the CR has it chosen as the
