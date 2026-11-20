@@ -1,0 +1,19 @@
+name: A creature tapped by Blinding Mage before combat can't block
+rules: [CR 701.26a, CR 509.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Blinding Mage, Hill Giant, Plains]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 activate: Blinding Mage
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  # The tapped Bears can't block (CR 509.1a), so p2 isn't even asked, and the Giant's damage gets through.
+  - all pass: until main2
+  - expect:
+      p2.life: 17

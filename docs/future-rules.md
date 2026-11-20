@@ -40,7 +40,8 @@ against the state before the batch (CR 614.4), and the results of damage are rep
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a),
 when the first card that draws more than one arrives (M2-05). Since each event is performed whole, a "would die" or
 "would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
-`destroy`, `discard`, ...): M2-08 needs a small "the zone change this event makes" helper. Lifelink, infect, wither
+`destroy`, `sacrifice`, `counterObject`, `discard`, ...): M2-08 needs a small "the zone change this event makes"
+helper. Lifelink, infect, wither
 and "a source you control deals damage" need the damage source's characteristics and controller as it dealt the damage
 (CR 120.3, 608.2h), so the last-known-information store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
 spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.
@@ -118,8 +119,7 @@ owner choose, so once a card cares about graveyard order, ask with a `PendingDec
 the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
 `casting-steps.ts` will need an origin kind with no payment step and no cancel. Once `def.abilities` holds triggered or
 static definitions, `activationProblem` and the activation list must check `def.kind === "activated"`.
-When a non-mana ability has {T} in its cost, cancelling it must untap its source too (`tappedForMana` records only taps
-for mana). The activation events name the source by its id, which dies with the source; a UI that names it later will
+A non-mana ability's {T} is paid only at the final payment (D-059), so cancelling never has to untap it. The activation events name the source by its id, which dies with the source; a UI that names it later will
 want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
 *Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`
 reads it from the source's card each time. Copies (layer 1), text changes (layer 3) and granted abilities (layer 6) will

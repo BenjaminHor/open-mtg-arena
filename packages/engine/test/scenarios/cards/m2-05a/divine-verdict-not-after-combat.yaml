@@ -1,0 +1,16 @@
+name: After combat no creature is attacking or blocking, so Divine Verdict can't be cast
+rules: [CR 511.3, CR 601.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hill Giant]
+  p2:
+    hand: [Divine Verdict]
+    battlefield: [Plains, Plains, Plains, Plains]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: until main2
+  - p1 pass: once
+  - p2 cast: Divine Verdict
+  - expect error: illegalAction

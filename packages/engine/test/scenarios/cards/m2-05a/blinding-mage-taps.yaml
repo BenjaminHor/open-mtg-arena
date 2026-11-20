@@ -1,0 +1,23 @@
+name: Blinding Mage taps target creature; tapping an attacker's blocker doesn't remove it from combat
+rules: [CR 701.26a, CR 506.4b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Blinding Mage, Hill Giant, Plains]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Hill Giant }
+  - p1 activate: Blinding Mage
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Grizzly Bears.tapped: true
+  - all pass: once
+  - expect:
+      p1:Hill Giant.damage: 2
+      p2.graveyard: [Grizzly Bears]

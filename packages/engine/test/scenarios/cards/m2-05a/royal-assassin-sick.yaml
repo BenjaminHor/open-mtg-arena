@@ -1,0 +1,12 @@
+name: A Royal Assassin that hasn't been under its controller's control since the turn began can't use its {T} ability
+rules: [CR 602.5a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Royal Assassin, sick: true }]
+  p2:
+    battlefield: [{ card: Grizzly Bears, tapped: true }]
+steps:
+  - p1 activate: Royal Assassin
+    targets: [p2:Grizzly Bears]
+  - expect error: illegalAction

@@ -4,12 +4,22 @@
 # collector number if the set has several): `Lightning Bolt [m10]` or `Lightning Bolt [m10 146]`. A pin always names an
 # English printing. Without one, the newest regular paper printing is used (D-029).
 
+Assassinate
+Blinding Mage
+Cancel
+Celestial Purge
 Centaur Courser
 Coral Merfolk
 Craw Wurm
+Deathmark
+Divine Verdict
+Doom Blade
 Elite Vanguard
+Essence Scatter
+Excommunicate
 Fire Elemental
 Fireball
+Flashfreeze
 Forest
 Furnace Whelp
 Giant Growth
@@ -23,11 +33,22 @@ Lava Axe
 Lightning Bolt
 Llanowar Elves
 Mountain
+Naturalize
+Negate
+Ornithopter
 Plains
+Planar Cleansing
 Raging Goblin
 Righteousness
+Rod of Ruin
+Royal Assassin
+Shatter
 Shock
+Solemn Offering
 Spined Wurm
 Swamp
+Tempest of Light
+Undead Slayer
+Unsummon
 Vampire Aristocrat
 Volcanic Hammer

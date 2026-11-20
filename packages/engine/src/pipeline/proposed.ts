@@ -29,6 +29,10 @@ export type SingleEvent =
    * (later: CR 120.4c).
    */
   | { kind: "dealDamage"; damage: Damage[] }
+  /** A spell or ability on the stack is countered (CR 701.6a); a spell goes to its owner's graveyard with it. */
+  | { kind: "counterObject"; object: ObjectId }
+  /** A player gains life (CR 119.3). */
+  | { kind: "gainLife"; player: PlayerId; amount: number }
   /** A permanent becomes tapped (CR 701.26a). */
   | { kind: "tap"; object: ObjectId }
   /** A permanent becomes untapped (CR 701.26b). */

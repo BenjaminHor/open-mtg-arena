@@ -1,0 +1,11 @@
+name: Undead Slayer can't target a Vampire card in a graveyard, only a permanent
+rules: [CR 109.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Undead Slayer, Plains]
+  p2:
+    graveyard: [Vampire Aristocrat]
+steps:
+  - p1 activate: Undead Slayer
+  - expect error: illegalAction

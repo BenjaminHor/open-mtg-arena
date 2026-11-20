@@ -1,0 +1,19 @@
+name: Undead Slayer exiles a Vampire, but can't target a Bear
+rules: [CR 701.13a, CR 109.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Undead Slayer, Plains]
+  p2:
+    battlefield: [Vampire Aristocrat, Grizzly Bears]
+steps:
+  - p1 activate: Undead Slayer
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - expect error: illegalAction
+  - p1 activate: Undead Slayer
+    targets: [p2:Vampire Aristocrat]
+    pay: auto
+  - all pass: once
+  - expect:
+      exile: [Vampire Aristocrat]

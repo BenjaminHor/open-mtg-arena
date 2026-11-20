@@ -10,6 +10,8 @@ events (`pipeline/`, D-056) and are called only by it: code that moves a card pr
 - `discard.ts`: `discardCard` (CR 701.9), emitting `CARD_DISCARDED`. Several cards discarded together are one
   `simultaneous` event.
 - `shuffle.ts`: `shuffleLibrary`, a Fisher–Yates shuffle from the game's seeded RNG (CR 701.24).
+- `counter.ts`: `counterObject` (CR 701.6a): a countered spell goes to its owner's graveyard, an ability ceases to
+  exist; performs the pipeline's `counterObject` event.
 - `stack-abilities.ts`: `putAbilityOnStack` (CR 602.2a) and `removeAbilityFromStack`: an ability isn't a card, so it
   doesn't change zones; it's created on the stack and ceases to exist (CR 608.2n, 608.2b).
 - `zone-list.ts`: read or replace one zone's list, and find which zone an object is in.

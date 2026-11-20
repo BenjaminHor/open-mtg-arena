@@ -1,0 +1,15 @@
+name: Tempest of Light with no enchantments on the battlefield still resolves
+rules: [CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Tempest of Light]
+    battlefield: [Plains, Plains, Plains, Grizzly Bears]
+steps:
+  - p1 cast: Tempest of Light
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Tempest of Light]
+      p1.battlefield contains: [Grizzly Bears]
+      events contains: [{ type: SPELL_RESOLVED }]

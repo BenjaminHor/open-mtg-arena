@@ -80,6 +80,9 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "STATE_BASED_ACTIONS":
     case "PERMANENT_DESTROYED":
     case "PERMANENT_SACRIFICED":
+    case "SPELL_COUNTERED":
+    case "ABILITY_COUNTERED":
+    case "LIFE_GAINED":
     case "PLAYER_LOST":
     case "GAME_ENDED":
       return e;

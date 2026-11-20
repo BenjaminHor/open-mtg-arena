@@ -14,6 +14,8 @@ const PRIMITIVES = [
   "moveCard",
   "destroy",
   "sacrifice",
+  "counterObject",
+  "gainLife",
   "dealDamage",
   "loseLife",
   "markDamage",
@@ -30,6 +32,7 @@ const PRIMITIVES = [
 const BUILT_FROM: Record<string, string[]> = {
   "permanents/destroy.ts": ["moveCard"], // destroying is the move to the graveyard (CR 701.8a)
   "permanents/sacrifice.ts": ["moveCard"], // so is sacrificing (CR 701.21a)
+  "zones/counter.ts": ["moveCard"], // a countered spell goes to its owner's graveyard (CR 701.6a)
   "zones/draw.ts": ["moveCard"], // the top card moves to the hand (CR 121.1)
   "zones/discard.ts": ["moveCard"], // from hand to graveyard (CR 701.9a)
   "effects/deal-damage.ts": ["loseLife", "markDamage"], // a damage event's results are part of it (CR 120.4c)

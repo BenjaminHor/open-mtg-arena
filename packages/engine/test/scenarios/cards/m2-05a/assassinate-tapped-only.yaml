@@ -1,0 +1,20 @@
+name: Assassinate destroys a tapped creature; an untapped one isn't a legal target
+rules: [CR 601.2c, CR 701.8a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Assassinate, Assassinate]
+    battlefield: [Swamp, Swamp, Swamp, Swamp, Swamp, Swamp]
+  p2:
+    battlefield: [{ card: Grizzly Bears, tapped: true }, Hill Giant]
+steps:
+  - p1 cast: Assassinate
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Grizzly Bears]
+  - p1 cast: Assassinate
+    targets: [p2:Hill Giant]
+    pay: auto
+  - expect error: illegalAction

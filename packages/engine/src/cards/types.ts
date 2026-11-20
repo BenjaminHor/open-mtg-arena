@@ -197,7 +197,9 @@ export type EffectSubject =
    * The object whose text this is: for a spell, the spell itself; for an ability on the stack, the ability's source
    * ("this creature"), using its last known information if it has left its zone (CR 113.7a, 608.2h).
    */
-  | "self";
+  | "self"
+  /** The player the text calls "you": the spell's or ability's controller (CR 109.5). It isn't a target (CR 115.10b). */
+  | "you";
 
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
@@ -216,4 +218,23 @@ export type Effect =
   /** "Add {G}." (CR 106.4). */
   | { op: "addMana"; mana: ManaType; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */
-  | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration };
+  | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration }
+  /** "Destroy [subject]" (CR 701.8a). */
+  | { op: "destroy"; of: EffectSubject }
+  /**
+   * "Destroy all [filter]": every permanent that fits, decided once as the effect applies (CR 608.2h), destroyed at the
+   * same time (CR 608.2f).
+   */
+  | { op: "destroyAll"; filter: ObjectFilter }
+  /** "Exile [subject]": moved to the exile zone (CR 701.13a, 406.2). */
+  | { op: "exile"; of: EffectSubject }
+  /** "Return [subject] to its owner's hand" (CR 400.3). */
+  | { op: "returnToHand"; of: EffectSubject }
+  /** "Put [subject] on top of its owner's library" (CR 400.3). */
+  | { op: "putOnTopOfLibrary"; of: EffectSubject }
+  /** "Tap [subject]" (CR 701.26a). */
+  | { op: "tap"; of: EffectSubject }
+  /** "Counter [subject]": a spell or ability on the stack (CR 701.6a). */
+  | { op: "counter"; of: EffectSubject }
+  /** "[who] gain(s) N life" (CR 119.3). */
+  | { op: "gainLife"; who: EffectSubject; amount: Amount };

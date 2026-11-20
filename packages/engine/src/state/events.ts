@@ -92,6 +92,11 @@ export type GameEvent =
    */
   | { type: "DAMAGE_DEALT"; source: ObjectId; to: Target; amount: number; combat: boolean }
   | { type: "LIFE_LOST"; player: PlayerId; amount: number } // CR 119.3
+  | { type: "LIFE_GAINED"; player: PlayerId; amount: number } // CR 119.3
+  /** A spell was countered (CR 701.6a): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
+  | { type: "SPELL_COUNTERED"; object: ObjectId; cardId: CardId }
+  /** An ability was countered (CR 701.6a): it's removed from the stack and ceases to exist. */
+  | { type: "ABILITY_COUNTERED"; object: ObjectId; source: ObjectId }
   /** A spell or ability created a continuous effect (CR 611.2). */
   | { type: "EFFECT_CREATED"; effect: ContinuousEffect }
   /** A continuous effect ended, as its duration ran out (CR 611.2a). */

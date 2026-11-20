@@ -16,3 +16,13 @@ export function loseLife(state: GameState, player: PlayerId, amount: number): Pr
     events: [{ type: "LIFE_LOST", player, amount }],
   };
 }
+
+/** A player gains life (CR 119.3). Gaining 0 isn't an event at all (CR 119.9, 119.10); the pipeline drops it before this. */
+export function gainLife(state: GameState, player: PlayerId, amount: number): Progress {
+  const ps = state.players[player];
+  if (ps === undefined) throw new Error(`No player ${player}`);
+  return {
+    state: { ...state, players: { ...state.players, [player]: { ...ps, life: ps.life + amount } } },
+    events: [{ type: "LIFE_GAINED", player, amount }],
+  };
+}

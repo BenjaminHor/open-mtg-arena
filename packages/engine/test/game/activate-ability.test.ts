@@ -160,7 +160,7 @@ describe("activations the engine refuses rather than half-does (D-041)", () => {
   });
   const ref = { kind: "printed", index: 0 } as const;
 
-  it("refuses a non-mana ability with {T} in its cost, until a card needs it", () => {
+  it("allows {T} in the cost of an ability that uses the stack, while the permanent is untapped (CR 107.5)", () => {
     const { game, pinger } = setup();
     const cards = withPingerAbility({
       kind: "activated",
@@ -168,7 +168,7 @@ describe("activations the engine refuses rather than half-does (D-041)", () => {
       targets: [{ kind: "anyTarget" }],
       effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
     }) as typeof TEST_CARDS;
-    expect(activationProblem(game.state, "p1", pinger, ref, cards)).toMatch(/\{T\} in such a cost/);
+    expect(activationProblem(game.state, "p1", pinger, ref, cards)).toBeNull();
   });
 
   it("refuses a mana ability with mana in its cost", () => {

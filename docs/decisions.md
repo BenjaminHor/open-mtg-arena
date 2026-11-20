@@ -733,3 +733,21 @@ every schema change and every change D-024 lists bumps it.
 - Whether anything can be sacrificed isn't checked before activating, as payability isn't (D-035).
 - Fireball's "divided evenly" is worked out at resolution among the targets still legal (its rulings). An interim
   black-red deck brings Fireball, Swamp and Vampire Aristocrat into the golden games and the fuzzer.
+
+**D-059: Removal and counter effects, and {T} in ability costs** · 2026-11-20 · accepted (M2-05a)
+- New effect ops: `destroy`, `destroyAll` (decided once as it applies, one simultaneous event, CR 608.2f, 608.2h),
+  `exile`, `returnToHand`, `putOnTopOfLibrary`, `tap`, `counter`, `gainLife`. Each skips an object that's no longer
+  where it was when the targets were checked (CR 101.3, 400.7) rather than throwing. Zones are the owner's (CR 400.3).
+- A `"you"` subject names the controller (CR 109.5): "you gain 4 life" isn't a target (CR 115.10b) or "this".
+- Countering is its own pipeline event (`counterObject`, not `counter`, which CR 122 counters will want): a spell goes
+  to its owner's graveyard as part of it, an ability ceases to exist (CR 701.6a). Gaining life is its own event;
+  gaining 0 isn't one (CR 119.9). Lifelink will be a result of damage, not a `gainLife` proposal (CR 120.3f).
+- {T} in the cost of an ability that uses the stack is checked when the activation begins (untapped; for a creature,
+  controlled since the turn began, CR 602.5a) and paid with the rest of the cost, before any sacrifice, after the
+  targets (so Royal Assassin can't target itself, its ruling). The permanent a cost taps isn't offered as a mana source
+  for that cost (CR 107.5).
+- The three interim decks now carry the M2-05a cards, with five new golden games found by a seed search so that every
+  pool card is played (three more that added no card were dropped). Golden games grow by about 2 MB per task this way
+  (status, Known issues).
+- A scenario names a spell on the stack like a permanent (`p1:Lightning Bolt`) or, when a permanent has the same name,
+  `spell:p1:Grizzly Bears`; `export --scenario` always writes the second form.

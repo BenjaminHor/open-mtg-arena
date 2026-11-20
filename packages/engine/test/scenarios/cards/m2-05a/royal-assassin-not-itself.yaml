@@ -1,0 +1,12 @@
+name: "Royal Assassin can't target itself: its target is chosen before it taps, and it's untapped then"
+rules: [CR 601.2c, CR 601.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Royal Assassin]
+  p2:
+    battlefield: [{ card: Grizzly Bears, tapped: true }]
+steps:
+  - p1 activate: Royal Assassin
+    targets: [p1:Royal Assassin]
+  - expect error: illegalAction

@@ -20,6 +20,7 @@ The engine's entry points and the flow of a game.
 | `choose-targets.ts` | Targets and their division (CR 601.2c–d): how many for a range, each target (no repeats in an instance, CR 115.3), each target's share of a divided effect |
 | `casting-state.ts` | `castingOf`: the cast or activation in progress |
 | `sacrifice-costs.ts` | Choosing what to sacrifice for a cost (CR 601.2h, 701.21a); the sacrifice happens with the rest of the payment, in `payCost` |
+| `tap-costs.ts` | `tapsForCost`: the permanent an ability's {T} taps, paid with the rest of the cost (CR 107.5, 601.2h) and never offered as mana for that cost |
 | `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves, the step ends, or another cleanup step begins (CR 117.3d, 117.4, 514.3a) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision (or is a concession, any time, CR 104.3a), then applies it |
 | `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now, except `CONCEDE` (D-042) and values of X above what the player could pay for (D-058) |

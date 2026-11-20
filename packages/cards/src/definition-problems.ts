@@ -1,7 +1,7 @@
 // Checks that the hand-written definitions agree with the card data. Run by the tests, so `pnpm check` fails
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
-import type { CardDef, Effect, TargetSpec } from "@mtg/engine";
+import type { CardDef, Effect, EffectSubject, TargetSpec } from "@mtg/engine";
 import type { PoolCard } from "./pool-data.ts";
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
@@ -39,7 +39,9 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       );
     for (const [i, ability] of (def.abilities ?? []).entries()) {
       problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
+      problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
     }
+    if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
   }
   for (const card of pool) {
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
@@ -68,7 +70,7 @@ function targetProblems(
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
-    const spec = effect.to === "self" ? undefined : targets[effect.to.target];
+    const spec = typeof effect.to === "string" ? undefined : targets[effect.to.target];
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
     } else if (
@@ -80,6 +82,41 @@ function targetProblems(
         `${where}: divided damage of ${effect.amount} can't give each of at least ${spec.count?.min} targets 1`,
       );
     }
+  }
+  return problems;
+}
+
+/** Ops that act on objects, and the subject each names them with. */
+const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject>> = {
+  destroy: (e) => (e as { of: EffectSubject }).of,
+  exile: (e) => (e as { of: EffectSubject }).of,
+  returnToHand: (e) => (e as { of: EffectSubject }).of,
+  putOnTopOfLibrary: (e) => (e as { of: EffectSubject }).of,
+  tap: (e) => (e as { of: EffectSubject }).of,
+  counter: (e) => (e as { of: EffectSubject }).of,
+  modifyPT: (e) => (e as { of: EffectSubject }).of,
+};
+
+/**
+ * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming "you" or a target that can only
+ * be a player, or gaining life naming "self" or a target that can only be an object.
+ */
+function subjectProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
+  const problems: string[] = [];
+  const playerOnly = (s: EffectSubject) =>
+    s === "you" || (typeof s === "object" && targets[s.target]?.kind === "playerOrPlaneswalker");
+  const objectOnly = (s: EffectSubject) => {
+    if (s === "self") return true;
+    if (s === "you") return false;
+    const kind = targets[s.target]?.kind;
+    return kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
+  };
+  for (const effect of effects) {
+    const of = OBJECT_SUBJECTS[effect.op];
+    if (of !== undefined && playerOnly(of(effect)))
+      problems.push(`${where}: ${effect.op} acts on objects, not players`);
+    if (effect.op === "gainLife" && objectOnly(effect.who))
+      problems.push(`${where}: gainLife is for players, not objects`);
   }
   return problems;
 }

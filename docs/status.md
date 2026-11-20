@@ -16,38 +16,57 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   task scripts a card, check its row.
 - M2-03 The event pipeline: done, merged (PR #23, D-056). Every game event goes through `happen`; replacement
   effects (M2-08) and triggers (M2-07) plug in there. Reworked once after the rules-judge and code-reviewer reviews.
-- M2-04 Targeting and costs, split in two (plan, 2026-11-20; restrictions taken from the Oracle text of all 47 pool
-  cards marked T or C).
+- M2-04 Targeting and costs: done (both halves merged), split in two (restrictions taken from the Oracle text of all
+  47 pool cards marked T or C).
   - M2-04a Targeting: done, merged (PR #24, D-057). Righteousness, Ignite Disorder, Lava Axe, Elite Vanguard, Coral
     Merfolk, Plains, Island; interim decks white-red and blue-green.
-  - M2-04b Costs: built, in review (D-058). Fireball, Vampire Aristocrat and Swamp scripted with scenarios; unit tests
-    for X values legalActions doesn't list, the payment's event order, and sacrificing a target (CR 601.5); interim
-    deck black-red with a golden game. The rules-judge checked the plan; its corrections are in D-058. The plan as built:
-    - `{X}` is a mana symbol (`{ kind: "x" }`), worth 0 in the mana value off the stack (CR 202.3e). It's announced
-      first (CR 601.2b, 107.3a): an `announceX` decision, any non-negative integer accepted (CR 107.1b); `legalActions`
-      lists 0 up to the mana the player could make now minus the rest of the mana cost (an enumeration aid only, a
-      decision). Stored in `StackChoices.x`; effects read it through an amount of `"X"`.
-    - The total cost is computed once, after targets and division (CR 601.2f): the mana cost with X as generic mana,
-      plus increases, and locked into the `payMana` decision. Fireball's "costs {1} more for each target beyond the
-      first" is a `costIncrease` on its spell definition; it doesn't change its mana value (ruling).
-    - Fireball's "divided evenly, rounded down" is `divided: "evenly"`: worked out at resolution among the targets still
-      legal (rulings); more legal targets than X means 0 each, which is no damage (CR 120.8); zero targets resolves and
-      deals nothing.
-    - "Sacrifice a creature" is a `sacrifice` cost part with an `ObjectFilter`; only a permanent its controller
-      controls (CR 701.21a). After targets, the player chooses what to sacrifice (a `chooseSacrifice` decision, can
-      cancel); the sacrifice happens through `happen` (a new `sacrifice` event: the move to the graveyard, not a
-      destruction, so regeneration can't apply) when the payment is final, together with the mana, so a cancel never
-      undoes it (D-035). With no mana to pay, the cost is paid as soon as the sacrifice is chosen. Sacrificing Vampire
-      Aristocrat to itself is legal and its +2/+2 then does nothing (ruling, CR 400.7).
-    - Scenario runner: `x:` and `sacrifice:` options on `cast` and `activate`.
-    - Future impact: other additional costs (discard, tap an untapped creature, remove counters: Djinn of Wishes M2-10;
-      −X loyalty M2-13) are more cost parts chosen in the same step; cost reductions (later) join `costIncrease` in the
-      one total; Consume Spirit's "spend only black mana on X" waits for mana with restrictions.
+  - M2-04b Costs: done, merged (PR #25, D-058). Fireball, Vampire Aristocrat, Swamp; interim deck black-red.
   - Dropped from M2-04: paying mana outside casting. No Magic 2010 card pays mana while a spell resolves (checked).
   - Future impact: Aura targets (M2-12) use `permanent` targets with the same filters; triggered abilities (M2-07)
     choose targets with the same decisions as they're put on the stack (CR 603.3d); protection and shroud (M2-06)
     and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
     `playerOrPlaneswalker`.
+- M2-05 Effects and keyword actions: split in three by the 50 cards' Oracle text (the spec lists the cards).
+  - M2-05a Removal, counters and {T} abilities: built, in review (D-059). The 19 cards plus Ornithopter and Rod of
+    Ruin scripted; 31 scenarios in `test/scenarios/cards/m2-05a/`; unit tests in `test/effects/removal.test.ts`; the
+    interim decks carry the new cards, with five new golden games. Code-reviewed and rules-reviewed; fixes in. The plan
+    as built:
+    - New effect ops, each skipping an object no longer where the effect expects it (CR 101.3, 400.7), never
+      throwing: `destroy` (CR 701.8a), `destroyAll` (every permanent fitting an `ObjectFilter`, decided once as the
+      effect applies, one simultaneous event, CR 608.2f, 608.2h; graveyard order later: CR 404.3), `exile`
+      (CR 701.13a, 406.2), `returnToHand` and `putOnTopOfLibrary` (the owner's zone, CR 400.3, 404.1), `tap`
+      (CR 701.26a: a tapped one does nothing), `counter` (CR 701.6a; its pipeline event is `counterObject`, which won't
+      collide with CR 122 counters), `gainLife` (CR 119.3).
+    - Subjects: `"you"` joins `"self"` and targets for player effects, the spell's or ability's controller
+      (CR 109.5, 115.10b); "you gain 4 life" is `gainLife` to `"you"`.
+    - Pipeline events: `counterObject` (any stack object: a spell goes to its owner's graveyard as part of the event,
+      an ability ceases to exist; emits a countered event, not SPELL_DID_NOT_RESOLVE; no refund, CR 701.6b) and
+      `gainLife` (player, amount; 0 is dropped before replacement, CR 119.9; lifelink is a result of damage, not a
+      gainLife proposal, CR 120.3f). Exile, hand and library moves are `moveCard`. future-rules: the M2-08 "zone change
+      this event makes" helper must list `counterObject`.
+    - {T} in the cost of an ability that uses the stack (Royal Assassin, Blinding Mage, Undead Slayer, Rod of Ruin):
+      untapped (CR 107.5); controlled since the turn began only for creatures (CR 602.5a; Rod of Ruin can activate at
+      once); tapped at the final payment (CR 601.2h, after targets, so Royal Assassin can't target itself: its ruling),
+      before any sacrifice (for "{T}, Sacrifice this" later), rechecked. If the source was tapped for mana meanwhile,
+      the cost can't be paid (CR 107.5, 601.2h) and only cancel remains: `autoPay` and the `payMana` legal actions must
+      leave out the activating source's own mana ability, or the fuzzer's "every listed action is accepted" breaks.
+    - Citations: exile CR 701.13a; "target spell" can't be an ability CR 113.9, 112.1; Undead Slayer's target is a
+      permanent (CR 109.2), subtypes only; "can't be countered" later (CR 101.2).
+    - Cards: the 19 in the spec, plus Ornithopter and Rod of Ruin (artifacts to target). Enchantments aren't in the pool
+      until M2-07: the enchantment half of Naturalize, Solemn Offering and Tempest of Light is unit-tested until then.
+    - Tests (from the rulings): Royal Assassin can't target itself, its ability resolving without its source (and Rod
+      of Ruin's after Shatter); Solemn Offering whose target is gone gains no life; Ornithopter as an artifact creature
+      spell for Essence Scatter but not Negate or Flashfreeze; a countered creature spell to the graveyard, no refund;
+      Cancel can't target an ability or itself, and a Cancel whose target was countered first doesn't resolve; Divine
+      Verdict in the end of combat step, not in main 2; Celestial Purge not on a land; Undead Slayer exiling a Vampire,
+      not a Bear, not a card in a graveyard; Blinding Mage tapping a would-be blocker, a declared blocker staying in
+      combat (CR 506.4b), itself, sick; Assassinate untapped refused; Planar Cleansing both sides, lands stay; Tempest
+      of Light with nothing; Excommunicate to the owner's library; a counter war; Doom Blade on a colorless creature.
+      (Excommunicate is a sorcery, so it can't meet an attacker; Divine Verdict on a blocker is left to M2-06's combat
+      keywords.)
+      Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
+      mana, gainLife 0, destroy and tap on an object gone mid-resolution.
+  - M2-05b Cards moving, and M2-05c Life, damage to many, mana: after M2-05a, each planned the same way.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -204,4 +223,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- (none)
+- Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
+  must appear in one). Before the pool reaches all 234 cards, make them smaller: a compact action format, shorter
+  games, or targeted games per card. Not blocking yet.
+- `pnpm fuzz --games 300` took about 10 minutes after M2-05a (it was 2–3): the new interim decks make longer games,
+  and the random agent starts many casts it can't pay for. Look at it with the golden-game size issue.
