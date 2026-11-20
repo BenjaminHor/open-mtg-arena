@@ -55,7 +55,7 @@ function destroyChoosing(kind: "ownText" | "regenerationShield") {
 }
 
 describe("choosing between replacement effects (CR 616.1)", () => {
-  it("asks the affected object's controller, performing nothing yet", () => {
+  it("asks the affected object's controller, performing nothing yet, offering every one (CR 616.1e)", () => {
     const { asked, bear } = destroyChoosing("regenerationShield");
     expect(asked.pending).toMatchObject({
       kind: "chooseReplacement",
