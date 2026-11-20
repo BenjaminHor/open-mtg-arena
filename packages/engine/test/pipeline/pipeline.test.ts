@@ -83,13 +83,17 @@ describe("performing an event", () => {
     expect(result.state.players.p1?.landsPlayedThisTurn).toBe(1);
   });
 
-  it("only an untapped permanent can be tapped, and only a tapped one untapped (CR 701.26a–b)", () => {
+  it("only an untapped permanent can be tapped, and only a tapped one untapped; otherwise nothing happens (CR 701.26a–b, 101.3)", () => {
     const state = board();
     const [untapped, tapped] = creatures(state);
     expect(types({ kind: "tap", object: untapped }, state)).toStrictEqual(["PERMANENT_TAPPED"]);
     expect(types({ kind: "untap", object: tapped }, state)).toStrictEqual(["PERMANENT_UNTAPPED"]);
-    expect(() => happen(state, { kind: "tap", object: tapped }, TEST_CARDS)).toThrow();
-    expect(() => happen(state, { kind: "untap", object: untapped }, TEST_CARDS)).toThrow();
+    for (const event of [
+      { kind: "tap", object: tapped },
+      { kind: "untap", object: untapped },
+    ] as const) {
+      expect(happen(state, event, TEST_CARDS)).toStrictEqual({ state, events: [] });
+    }
   });
 
   it("happen gives the same result as performing, while nothing replaces events", () => {

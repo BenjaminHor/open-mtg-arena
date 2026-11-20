@@ -16,25 +16,37 @@ export function happen(state: GameState, proposed: ProposedEvent, cards: CardDat
   return checkTriggers(state, perform(state, replace(state, proposed, cards), cards), cards);
 }
 
-/** The members of a batch are each replaced against the same state, the one before the batch (later: CR 614.4). */
+/**
+ * The members of a batch are each replaced against the same state, the one before the batch (later: CR 614.4). A
+ * replacement may turn one event into several (regeneration, later: CR 701.19a) or none (a skip, later: CR 614.1b), so
+ * the result is a batch, unless it's exactly one event.
+ */
 function replace(state: GameState, proposed: ProposedEvent, cards: CardDatabase): ProposedEvent {
-  switch (proposed.kind) {
-    case "simultaneous":
-      return { kind: "simultaneous", events: proposed.events.map((e) => replaceOne(state, e, cards)) };
-    default:
-      return replaceOne(state, proposed, cards);
-  }
+  const members = proposed.kind === "simultaneous" ? proposed.events : [proposed];
+  const replaced = members.flatMap((e) => replaceOne(state, e, cards));
+  const [only] = replaced;
+  return replaced.length === 1 && only !== undefined && proposed.kind !== "simultaneous"
+    ? only
+    : { kind: "simultaneous", events: replaced };
 }
 
 /** Replacement and prevention effects modify the event (later: CR 614–616). None exist yet. */
-function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDatabase): SingleEvent {
+function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDatabase): SingleEvent[] {
   switch (proposed.kind) {
     case "dealDamage":
       // A source that would deal 0 damage deals no damage at all, so there's nothing for a replacement or prevention
       // effect to modify, not even one that would increase it (CR 120.8).
-      return { kind: "dealDamage", damage: proposed.damage.filter((d) => d.amount > 0) };
-    default:
-      return proposed;
+      return [{ kind: "dealDamage", damage: proposed.damage.filter((d) => d.amount > 0) }];
+    case "moveCard":
+    case "destroy":
+    case "tap":
+    case "untap":
+    case "addMana":
+    case "draw":
+    case "discard":
+    case "shuffle":
+    case "playLand":
+      return [proposed];
   }
 }
 

@@ -17,16 +17,9 @@ import { shuffleLibrary } from "../zones/shuffle.ts";
 import type { ProposedEvent, SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
-  switch (event.kind) {
-    case "simultaneous":
-      // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
-      return event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), {
-        state,
-        events: [],
-      });
-    default:
-      return performOne(state, event, cards);
-  }
+  if (event.kind !== "simultaneous") return performOne(state, event, cards);
+  // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
+  return event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
 }
 
 function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): Progress {

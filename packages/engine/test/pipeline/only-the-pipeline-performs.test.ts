@@ -25,6 +25,14 @@ const PRIMITIVES = [
   "countLandPlay",
 ];
 
+/** The primitives a primitive's own file may use, because they're part of the event it performs. */
+const BUILT_FROM: Record<string, string[]> = {
+  "permanents/destroy.ts": ["moveCard"], // destroying is the move to the graveyard (CR 701.8a)
+  "zones/draw.ts": ["moveCard"], // the top card moves to the hand (CR 121.1)
+  "zones/discard.ts": ["moveCard"], // from hand to graveyard (CR 701.9a)
+  "effects/deal-damage.ts": ["loseLife", "markDamage"], // a damage event's results are part of it (CR 120.4c)
+};
+
 /** Other guarded names, and the only files (or folders) that may import them, with the reason. */
 const GUARDED: Record<string, Record<string, string>> = {
   perform: { "pipeline/happen.ts": "the pipeline: replace, then perform, then check triggers" },
@@ -73,16 +81,20 @@ describe("only the pipeline performs events (D-056)", () => {
     expect(importedValues(source)).toStrictEqual(["a", "c", "f"]);
   });
 
-  it("no engine file but perform.ts, and the files that define primitives, imports a primitive", () => {
-    const defining = files.filter((f) => definedFunctions(f.source).some((name) => PRIMITIVES.includes(name)));
+  it("no engine file but perform.ts imports a primitive, except the ones a primitive is built from", () => {
     const offenders = files
-      .filter((f) => f.name !== "pipeline/perform.ts" && !defining.includes(f))
+      .filter((f) => f.name !== "pipeline/perform.ts")
       .flatMap((f) =>
         importedValues(f.source)
-          .filter((name) => PRIMITIVES.includes(name))
+          .filter((name) => PRIMITIVES.includes(name) && !(BUILT_FROM[f.name] ?? []).includes(name))
           .map((name) => `${f.name} imports ${name}`),
       );
     expect(offenders).toStrictEqual([]);
+  });
+
+  it("every primitive is defined somewhere, so the list stays true", () => {
+    const defined = files.flatMap((f) => definedFunctions(f.source));
+    expect(PRIMITIVES.filter((name) => !defined.includes(name))).toStrictEqual([]);
   });
 
   it("every function perform.ts calls from outside the pipeline is a guarded primitive", () => {

@@ -173,10 +173,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Before M2-08; not blocking.) Is destroying a permanent the same event as its move to the graveyard, so that a
-  regeneration shield and a "would die, instead ..." effect apply in the order the controller chooses (CR 616.1)? Or
-  is the move an event contained in the destruction (CR 616.1g), so regeneration always comes first? D-056 builds the
-  first reading, from CR 701.8a and the example under CR 616.1f; the rules-judge asked that the owner rule on it.
 - (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
   (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
   doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care

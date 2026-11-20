@@ -673,8 +673,17 @@ every schema change and every change D-024 lists bumps it.
   305.2): one event each, not an outer event that proposes an inner zone change. So "would be destroyed" and "would
   die" replacements apply to the same event, in the order its controller chooses (CR 616.1, as the CR's example under
   616.1f has it for "would die" and "would be put into a graveyard"). A damage event's results are part of it
-  (CR 120.4c). The rules-judge asked that the destroy reading go to the owner (Open questions); it's built so either
-  answer fits.
+  (CR 120.4c).
+- Destroy and regeneration, asked of the owner on 2026-11-20 at the rules-judge's request. The owner: "I'm inclined to
+  say that a destroyed card goes to the graveyard but I would defer to the CR." Following the CR: destroying *is* the
+  move to the graveyard (CR 701.8a), dying *is* that move (CR 700.4), and the CR's example under 616.1f has a "would
+  die" and a "would be put into a graveyard" replacement on one destroyed creature, its controller choosing the order.
+  So regeneration (which replaces the destruction, CR 701.8c, 614.8) and a "would die" replacement apply to one event,
+  in the order the creature's controller chooses (CR 616.1e). The one point against: CR 616.1g's example treats
+  entering the battlefield as an event contained in creating a token, though CR 701.7a defines creating as putting it
+  onto the battlefield, so a definition alone doesn't make two things one event. But the CR names no event contained in
+  a destruction, and its own destruction example (616.1f) treats the two replacements as rival choices on one event.
+  M2-08 tests it with a scenario (its acceptance list); the M10 pool may not have a card that shows it.
 - Events that happen at the same time are one `simultaneous` event of single events: the state-based actions of one
   check (CR 704.3), the untap step (CR 502.3), the attackers tapping (CR 508.1f), the cleanup discard (CR 514.1).
   Every member is replaced against the state before the batch (CR 614.4, built with M2-08), then all are performed,

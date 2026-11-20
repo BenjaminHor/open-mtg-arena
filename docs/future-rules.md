@@ -38,9 +38,11 @@ to queue that rest as work too (the list is in `engine/src/pipeline/README.md`).
 against the state before the batch (CR 614.4), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a),
-when the first card that draws more than one arrives (M2-05). Lifelink, infect, wither and "a source you control deals damage" need the
-damage source's characteristics and controller as it dealt the damage (CR 120.3, 608.2h), so the last-known-information
-store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
+when the first card that draws more than one arrives (M2-05). Since each event is performed whole, a "would die" or
+"would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
+`destroy`, `discard`, ...): M2-08 needs a small "the zone change this event makes" helper. Lifelink, infect, wither
+and "a source you control deals damage" need the damage source's characteristics and controller as it dealt the damage
+(CR 120.3, 608.2h), so the last-known-information store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
 spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.
 
 **Triggered abilities (CR 603), M2.** "When/whenever/at" abilities, including leaves-the-battlefield
