@@ -511,6 +511,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Step 1 done (D-092): the readers read one pass in `rules/layers.ts`, no behavior change (no golden log
          changed), kept per its inputs; a fuzz check compares it with a fresh pass. A random game is 98.5 ms against
          its 100 ms budget (61 before): watch it as the slices add layers.
+       - Paper review of the pass (rules-judge, 2026-11-20): boards A-E right; no same-layer dependency in the pool, nor
+         a case where timestamp order or CR 613.6 is visible (so they're unit tests on test effects, or `later:`).
+         Needs: CDAs work in every zone (Nightmare in hand), so the per-card cache for other zones and the "no printed
+         P/T" early return go (base from 7a/7b, else printed, at the start of layer 7); locked sets (CR 611.2c) are
+         found from fully computed characteristics as the effect begins, and stay on an object that stops being a
+         creature; "for as long as" durations tied to an object (Awakener Druid; none made if it's gone, CR 611.2b);
+         Rise from the Grave's effect made with the move, on the new id (CR 611.2e), "under your control" is the
+         stored controller, not layer 2; layer 2 inside the pass before the rest, every "you" read after it; a
+         changed controller removes a creature from combat (CR 506.4); Coat of Arms counts creature types only
+         (CR 205.3m: subtypes are one flat list today); Silence and Spellbook stay out of the pass (CR 613.10-11);
+         drop "attacking" from the pass (no static reads it; it would need combat in the inputs). Last known
+         information must be the computed characteristics, snapshotted as it leaves (CR 608.2h): Polymorph on a
+         stolen creature, Inferno Elemental risen black against White Knight, Stone Giant's power. The judge's
+         scenario list is in its report; the ones for each slice are written with it.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).
