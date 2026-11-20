@@ -41,10 +41,11 @@ another copy, nor a played land or a discarded card; the fuzzer's leak check cov
 task after which it's playable, the special rules some cards need, and the prebuilt decks. *Accept:* the owner has read
 the mechanics table; every card maps to a task.
 
-**M2-03 Events and last known information.** Every game event goes through one propose → replace → perform → trigger
-pipeline (future-rules.md), and a last-known-information store keeps objects as they last existed (CR 608.2h, 603.10).
-No card behavior changes yet. *Accept:* the golden games and replays are unchanged; unit tests for the pipeline and
-the store.
+**M2-03 The event pipeline.** Every game event goes through one propose → replace → perform → trigger pipeline
+(future-rules.md), shaped for what M2-07 and M2-08 need: batches of simultaneous events, nested events each with their
+own replacement pass, and room to pause for a choice. No card behavior changes yet. The last-known-information store
+(CR 608.2h, 603.10) comes with its first reader. *Accept:* the golden games and replays are unchanged, `pnpm bench`
+passes, and unit tests cover the pipeline.
 
 **M2-04 Targeting and costs with context.** Targeting knows its source and controller, and targets can be restricted
 (CR 115, 601.2c: "target nonblack creature", "attacking or blocking", a card in a graveyard, a spell), with a variable
