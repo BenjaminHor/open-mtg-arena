@@ -242,9 +242,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
      - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
        Illusionary Servant ("becomes the target", CR 603.2), Bogardan Hellkite (needs flash: owner question).
-     - No pool card has a "dies" or "leaves the battlefield" trigger, so looking back (CR 603.10) and the last known
-       information store come with their first card (M2-11's Cemetery Reaper? checked then); the detection point
-       already has the state before.
+     - Settled before code (advisor, 2026-11-20):
+       - Detection stays `checkTriggers` in `happen` (D-056: it has the state before each batch), plus the four places
+         that emit events outside the pipeline: `STEP_BEGAN` (steps.ts), `SPELL_CAST` / `ABILITY_ACTIVATED`
+         (casting-steps.ts), `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`. One `detectTriggers(before, after, events)`.
+         Early exit when no permanent has triggers.
+       - Only permanents' triggers fire (CR 113.6): not a card in a graveyard, not a spell on the stack.
+       - A cancelled cast drops the triggers its mana abilities caused (CR 734.1): `Casting` records how many were
+         pending as it began, and cancel cuts the list back.
+       - Pending triggers make cleanup give priority, like a state-based action did (CR 514.3a); `playersLose` clears
+         them; an invariant: nothing pending while a player has priority.
+       - Trigger target decisions offer no cancel; ordering is asked only of a player with two or more, the last
+         forced; the stack ability stores only what its effects read from the triggering event (no hidden ids).
+       - Slices of 07a: machinery and untargeted entering triggers; then targets and "may"; then step and attack
+         triggers. A mutation pass before review; trigger cards into the M10 pair and the 40-seed measure.
+     - No pool card has a "leaves the battlefield" trigger and the first "dies" one is Magma Phoenix (M2-14), so looking
+       back (CR 603.10) and last known information come with it: an owner question, like the four keywords.
      - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
        delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
        way; copies of abilities and "trigger an additional time" fit the pending list.
