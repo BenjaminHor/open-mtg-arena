@@ -7,7 +7,7 @@ import { assignProblem, assignToNextBlocker, damageLeft } from "../combat/combat
 import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.ts";
-import { activateManaAbility, manaAbilityProblem } from "../mana/activate.ts";
+import { activateManaAbility, manaAbilityProblem, manaColorProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -75,12 +75,17 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...startActivation(answered, pending.player, action.object, action.ability, cards) };
     }
-    const problem = manaAbilityProblem(answered, pending.player, action.object, action.ability, cards);
+    const problem =
+      manaAbilityProblem(answered, pending.player, action.object, action.ability, cards) ??
+      manaColorProblem(answered, action.object, action.ability, action.color, cards);
     if (problem !== null) return error("illegalAction", problem);
     // While paying a cost, a mana ability can be activated too (CR 605.3a); the payment is asked again after.
     if (pending.kind === "payMana")
-      return { ok: true, ...activateWhilePaying(state, action.object, action.ability, cards) };
-    return { ok: true, ...activateManaAbility(answered, pending.player, action.object, action.ability, cards) };
+      return { ok: true, ...activateWhilePaying(state, action.object, action.ability, cards, action.color) };
+    return {
+      ok: true,
+      ...activateManaAbility(answered, pending.player, action.object, action.ability, cards, action.color),
+    };
   }
   if (action.type === "PLAY_LAND") {
     if (pending.kind !== "priority")

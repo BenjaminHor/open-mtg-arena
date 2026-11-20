@@ -45,7 +45,7 @@ export function actionText(state: GameState, action: Action, cards: CardDatabase
     case "CAST_SPELL":
       return `cast ${nameOf(state, action.object, cards)}`;
     case "ACTIVATE_ABILITY":
-      return `activate ${objectText(state, action.object, cards)} (${abilityText(action.ability)})`;
+      return `activate ${objectText(state, action.object, cards)} (${abilityText(action.ability)})${action.color === undefined ? "" : ` for {${action.color}}`}`;
     case "CONCEDE":
       return `${action.player} concedes`;
     case "ANSWER":

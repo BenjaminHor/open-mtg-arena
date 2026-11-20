@@ -123,6 +123,7 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   shuffle: (e) => (e as { who: EffectSubject }).who,
   mayShuffle: (e) => (e as { who: EffectSubject }).who,
   exileGraveyard: (e) => (e as { of: EffectSubject }).of,
+  sacrifice: (e) => (e as { who: EffectSubject }).who,
 };
 
 /**
@@ -136,7 +137,12 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   const playerOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
     return (
-      s === "you" || s === "eachPlayer" || kind === "player" || kind === "opponent" || kind === "playerOrPlaneswalker"
+      s === "you" ||
+      s === "eachPlayer" ||
+      s === "eachOpponent" ||
+      kind === "player" ||
+      kind === "opponent" ||
+      kind === "playerOrPlaneswalker"
     );
   };
   const objectOnly = (s: EffectSubject) => {
@@ -160,7 +166,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard"];
+    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard", "sacrifice"];
     if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).

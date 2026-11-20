@@ -112,7 +112,7 @@ export type DecisionKind =
   | { kind: "chooseYesNo"; purpose: "shuffle"; resume: { effect: Effect; context: EffectContext } };
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
-export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop";
+export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice";
 
 /** Cards shown to one player by what they are, in a fixed order (D-062), and the zone they're in. */
 export type Seen = { from: ZoneRef; cards: OracleId[] };

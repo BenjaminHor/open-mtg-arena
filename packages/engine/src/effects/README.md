@@ -19,7 +19,8 @@ the one place their effects become changes to the game.
 | `op` | Card text | What it does |
 | --- | --- | --- |
 | `dealDamage` | "[from] deals N damage to [to]" | `from` (one object) deals `amount` to each player or creature `to` names, through `dealDamage`; `and` adds recipients of the same action with their own amounts, all one damage event (CR 608.2f) |
-| `addMana` | "Add {G}." | Adds `amount` of `mana` to the controller's pool (CR 106.4, 109.5), naming `self` as its source |
+| `addMana` | "Add {G}." | Adds `amount` of `mana` to the controller's pool (CR 106.4, 109.5), naming `self` as its source; `"anyColor"` is replaced by the color the activation chose (D-068) |
+| `sacrifice` | "Each opponent sacrifices a land of their choice" | The player chooses one permanent they control that fits, then sacrifices it (CR 701.21a, D-068) |
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a) |
 | `destroyAll` | "Destroy all nonland permanents" | Destroys every permanent fitting `filter`, decided once, at the same time (CR 608.2f, 608.2h) |

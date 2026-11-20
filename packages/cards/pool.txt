@@ -7,6 +7,7 @@
 Acolyte of Xathrid
 Angel's Mercy
 Assassinate
+Birds of Paradise
 Blinding Mage
 Bountiful Harvest
 Burning Inquiry
@@ -81,3 +82,4 @@ Unsummon
 Vampire Aristocrat
 Volcanic Hammer
 Windstorm
+Yawning Fissure

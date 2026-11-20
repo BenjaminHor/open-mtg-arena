@@ -863,3 +863,17 @@ every schema change and every change D-024 lists bumps it.
   it stays a guide to what's payable (D-058).
 - Subjects and amounts live in `effects/subjects.ts`, out of `run-effect.ts`; `amountOf` takes only fixed amounts, so
   nothing that can't count (dividing as it's cast) can be handed a count.
+
+**D-068: Mana of any color comes with the activation; choosing what to sacrifice** · 2026-11-20 · accepted (M2-05c2)
+- "Add one mana of any color" (Birds of Paradise): the CR has the color chosen as the ability resolves (CR 608.2d),
+  and a mana ability resolves right after it's activated (CR 605.3b), so nothing can happen in between. The engine
+  carries the color on the `ACTIVATE_ABILITY` action instead of a decision, a design choice: mana abilities can be
+  activated while a payment is pending, where no other decision can wait. The color is checked as the ability
+  resolves: one of W/U/B/R/G (CR 106.1a, never colorless, CR 106.1b), and refused for an ability with a fixed color.
+  `legalActions` lists one activation per color; `autoPay` uses any-color sources after fixed-color ones and records
+  the color. With costs of one color (today's pool) that always finds a payment; a two-color cost will need a search.
+- "Each opponent sacrifices a land of their choice" (Yawning Fissure): a `sacrifice` op; each sacrificing player
+  chooses among the permanents they control (the filter read relative to them, CR 701.21a) with `chooseCards`, purpose
+  "sacrifice". The battlefield is public, so a choice of one isn't asked. With two players there's one chooser; several
+  choosing in APNAP order before one simultaneous sacrifice is later (CR 101.4).
+- A subject `"eachOpponent"`: every opponent of "you" (CR 102.2; teams later, CR 102.3).

@@ -4,6 +4,7 @@ import type { CardDef } from "@mtg/engine";
 import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
+import { birdsOfParadise } from "./b/birds-of-paradise.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
 import { bountifulHarvest } from "./b/bountiful-harvest.ts";
 import { burningInquiry } from "./b/burning-inquiry.ts";
@@ -78,11 +79,13 @@ import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
 import { windstorm } from "./w/windstorm.ts";
+import { yawningFissure } from "./y/yawning-fissure.ts";
 
 export const CARD_DEFS: readonly CardDef[] = [
   acolyteOfXathrid,
   angelsMercy,
   assassinate,
+  birdsOfParadise,
   blindingMage,
   bountifulHarvest,
   burningInquiry,
@@ -157,4 +160,5 @@ export const CARD_DEFS: readonly CardDef[] = [
   vampireAristocrat,
   volcanicHammer,
   windstorm,
+  yawningFissure,
 ];

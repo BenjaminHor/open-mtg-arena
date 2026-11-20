@@ -1,0 +1,22 @@
+name: Yawning Fissure on an opponent with one land sacrifices it with nothing to choose, and with none does nothing
+rules: [CR 609.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Yawning Fissure, Yawning Fissure]
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Forest, Grizzly Bears]
+steps:
+  - p1 cast: Yawning Fissure
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield: [Grizzly Bears]
+      pending: { player: p1, kind: priority }
+  - p1 cast: Yawning Fissure
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield: [Grizzly Bears]
+      events lacks: [{ type: PERMANENT_SACRIFICED }]

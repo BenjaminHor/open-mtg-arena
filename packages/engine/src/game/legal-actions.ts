@@ -7,7 +7,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { damageLeft } from "../combat/combat-damage.ts";
 import { possibleAttacks } from "../combat/declare-attackers.ts";
 import { possibleBlocks } from "../combat/declare-blockers.ts";
-import { manaAbilityProblem } from "../mana/activate.ts";
+import { addsAnyColor, COLORS, manaAbilityProblem } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
@@ -142,12 +142,19 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
   }
 }
 
-/** Every mana ability the player could activate now (CR 605.3a), on permanents in battlefield order. */
+/**
+ * Every mana ability the player could activate now (CR 605.3a), on permanents in battlefield order; "one mana of any
+ * color" once per color, the color being part of the activation (D-068).
+ */
 function manaAbilityActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
   return state.zones.battlefield.flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
-      .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),
+      .flatMap(({ ref }): Action[] => {
+        const action = { type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref } as const;
+        if (!addsAnyColor(state, object, ref, cards)) return [action];
+        return COLORS.map((color) => ({ ...action, color }));
+      }),
   );
 }
 

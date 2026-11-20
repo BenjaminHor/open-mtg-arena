@@ -6,6 +6,7 @@ import {
   type Answer,
   applyAction,
   type CardDatabase,
+  type Color,
   type GameState,
   type ObjectId,
   type PlayerId,
@@ -98,8 +99,12 @@ export function takeStep(game: Game, step: ActionStep, cards: CardDatabase, afte
         game,
         step.player,
         cards,
-        (a) => a.type === "ACTIVATE_ABILITY" && a.object === object && deepEqual(a.ability, ability),
-        `activate ${step.card}`,
+        (a) =>
+          a.type === "ACTIVATE_ABILITY" &&
+          a.object === object &&
+          deepEqual(a.ability, ability) &&
+          (a.color ?? null) === step.color,
+        `activate ${step.card}${step.color === null ? "" : ` for ${step.color}`}`,
       );
       // A mana ability resolves at once; another ability goes on the stack, then takes targets and payment.
       const next = apply(game, action, cards, afterEach);
@@ -197,7 +202,8 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
     case "activate": {
       if (i === 0) {
         const { object, ability } = abilityNamed(state, step, cards, "any");
-        return { type: "ACTIVATE_ABILITY", decisionId, player, object, ability };
+        const action = { type: "ACTIVATE_ABILITY", decisionId, player, object, ability } as const;
+        return step.color === null ? action : { ...action, color: step.color as Color };
       }
       return null;
     }

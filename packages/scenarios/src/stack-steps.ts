@@ -163,9 +163,7 @@ export function paymentActions(game: Game, step: StackStep, cards: CardDatabase)
     const plan = autoPay(game.state, player, pending.cost, cards);
     if (plan === null) throw new Error("pay: auto found no way to pay");
     return [
-      ...plan.activations.map(
-        (a) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object: a.object, ability: a.ability }) as const,
-      ),
+      ...plan.activations.map((a): Action => ({ type: "ACTIVATE_ABILITY", decisionId, player, ...a })),
       { type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: plan.payment } },
     ];
   }

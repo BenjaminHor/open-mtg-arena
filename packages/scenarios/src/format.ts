@@ -47,6 +47,8 @@ export type ScenarioStep =
       divide: number[] | null;
       sacrifice: string[] | null;
       pay: unknown;
+      /** For "add one mana of any color": the color (`color: U`), part of the activation (D-068). */
+      color: string | null;
     }
   /** Declare attackers (CR 508.1): the player's creatures by name or reference (`Grizzly Bears#2`), maybe none. */
   | { kind: "attack"; player: string; attackers: string[] }
@@ -77,7 +79,7 @@ export const COMING_STEP_WORDS: Record<string, string> = {}; // none now; a task
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
   cast: ["x", "targets", "divide", "sacrifice", "pay"],
-  activate: ["ability", "x", "targets", "divide", "sacrifice", "pay"],
+  activate: ["ability", "x", "targets", "divide", "sacrifice", "pay", "color"],
 };
 
 export function parseScenario(text: string): Scenario {
@@ -218,6 +220,7 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       divide: shares(raw.divide, where),
       sacrifice: sacrifices(raw.sacrifice),
       pay: raw.pay,
+      color: raw.color === undefined ? null : String(raw.color),
     };
   }
   const arrives = COMING_STEP_WORDS[word];
