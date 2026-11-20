@@ -497,7 +497,25 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        `test/scenarios/cards/m2-08e/`, a unit test for a source that left; golden pool-197 and pool-537. 170 cards;
        162 of the 234 Magic 2010 cards. Mutations 7/7, fuzz clean, reviews (no wrong results) fixed in e5d7287:
        15 scenarios, unit tests in `test/rules/protection.test.ts`, protection in the interaction matrix. PR next, with
-       the M2-08d docs; then M2-09 (layers).
+       the M2-08d docs; then M2-09 (layers). Merged as #49.
+     - Now: M2-09, the full layer system (CR 613, 604, 611), 24 cards, in three PRs. Plan (2026-11-20):
+       - M2-09a, the board-wide layer pass and anthems: `rules/layers.ts` computes every object's characteristics once
+         per state, layer by layer (CR 613.1), each continuous effect with its timestamp (CR 613.7) and its affected set
+         fixed in the first layer it applies in (CR 613.6); static abilities' effects find their set as they apply
+         (CR 611.3a), resolved effects keep theirs (CR 611.2c). The per-layer readers (`controllerOf`, `cardTypesOf`,
+         `colorsOf`, `keywordsOf`, `protectionsOf`, `staticAbilitiesOf`, `powerAndToughness`) read it, so callers don't
+         change. Memoized per state object if the benchmark asks (architecture.md). Layer 6 grants keywords, layer 7c
+         adds. Cards: Honor of the Pure, Veteran Armorsmith, Veteran Swordsmith, Elvish Archdruid, Merfolk Sovereign,
+         Goblin Chieftain, Rhox Pikemaster, Levitation, Coat of Arms, Relentless Rats; Glorious Charge, Overrun,
+         Trumpet Blast, Kindled Fury, Jump, Burst of Speed. A CR 613.8 dependency example as a unit test.
+       - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
+         and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
+         Stone Giant (flying, then a delayed destroy).
+       - M2-09c, control and rules effects: layer 2 (Act of Treason; `controlledSinceTurnStart` becomes a record that
+         sees control change, future-rules), "can't cast spells" (Silence, CR 101.2), no maximum hand size (Spellbook).
+       - Future impact: copies (layer 1) and text changes (layer 3) slot into the pass; tokens (M2-11) need a
+         characteristics source beside the card database; counters (M2-10) stay in 7c; Auras and Equipment (M2-12)
+         are statics on the attached object, affecting the one they're attached to.
        Plan (2026-11-20):
        - `CardDef.protections: ProtectionQuality[]` (a color, or a subtype like Demon), one per "from" (CR 702.16g),
          read through `protectionsOf` (layer 6, like `keywordsOf`); `rules/protection.ts`: `isProtectedFrom(state,
