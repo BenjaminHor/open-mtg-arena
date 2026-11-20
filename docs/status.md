@@ -195,7 +195,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
   3. M2-06, keywords and attack or block restrictions (m2-rules-depth.md): done but for four keywords waiting on the
-     owner (Open questions); 21 cards, 136 of 234 playable with the M1-only cards. Next: M2-07 triggered abilities,
+     owner (Open questions); 21 cards; 114 of the 234 Magic 2010 cards now (the pool's 122 include 8 M1-only cards). Next: M2-07 triggered abilities,
      whose golden cover needs the owner's golden budget decision (Known issues). Plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
      - M2-06a combat damage, done, merged (PR #35, D-070): first and double strike with a second combat damage step,
