@@ -266,6 +266,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
+     - Golden games rework (owner, D-082), next after M2-07c1's PR and before M2-07c2: a compact action format (game
+       file format 1: one line per action, no decision ids or acting player, pass runs, card names in setups; the
+       reader still loads format 0), conversion of every golden game, `golden:cover` by features (effect ops, trigger
+       conditions, keywords, statics, costs, targets, decision kinds, event types) instead of cards, a test that every
+       pool card has a scenario, then a re-cover with fewer games. The bench's games are converted, not replaced.
      - M2-07c plan (2026-11-20), two PRs:
        - M2-07c1, built (D-079), in review: 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
