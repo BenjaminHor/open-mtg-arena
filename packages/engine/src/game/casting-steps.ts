@@ -9,6 +9,7 @@ import { manaAvailable } from "../mana/auto-pay.ts";
 import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { SingleEvent } from "../pipeline/proposed.ts";
+import { controllerOf } from "../rules/controller.ts";
 import { announcesX, costOf } from "../rules/costs.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
@@ -101,8 +102,8 @@ export function payCost(
   if (!taps.every((id) => canTapForCost(state, id)))
     return "a permanent to tap for the cost is tapped or gone (CR 107.5, 601.2h)";
   const selfSacrifices = selfSacrificesForCost(state, cards);
-  if (!selfSacrifices.every((id) => state.zones.battlefield.includes(id)))
-    return "the permanent to sacrifice for the cost is gone (CR 601.2h)";
+  if (!selfSacrifices.every((id) => state.zones.battlefield.includes(id) && controllerOf(state, id) === casting.player))
+    return "the permanent to sacrifice for the cost is gone or no longer the player's (CR 601.2h, 701.21a)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };

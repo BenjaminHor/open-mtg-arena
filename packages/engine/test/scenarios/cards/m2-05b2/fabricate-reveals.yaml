@@ -14,4 +14,6 @@ steps:
   - expect:
       p1.hand: [Ornithopter]
       p1.library count: 2
-      events contains: [{ type: CARDS_REVEALED, from: { zone: library, player: p1 } }, { type: LIBRARY_SHUFFLED }]
+      events contains:
+        - { type: CARDS_REVEALED, from: { zone: library, player: p1 } }
+        - { type: LIBRARY_SHUFFLED }

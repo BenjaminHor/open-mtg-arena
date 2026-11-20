@@ -1,5 +1,6 @@
-name: Fabricate finding nothing reveals nothing, and its caster still shuffles
-rules: [CR 701.23b, CR 701.23e]
+name: Fabricate is searched even with no artifact in the library, so the opponent learns nothing, and still shuffles
+rules: [CR 701.23a, CR 401.2]
+# D-062: skipping the search when nothing fits would tell the opponent the library holds no artifact.
 setup:
   turn: { active: p1, step: main1 }
   p1:

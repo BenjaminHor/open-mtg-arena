@@ -53,7 +53,8 @@ export function search(
       chooser: context.controller,
       purpose: "search",
       options,
-      min: stated ? 0 : Math.min(1, options.length),
+      // "Any number" may be none; "a card" with no stated quality must be found (CR 701.23b, 701.23d).
+      min: stated || anyNumber ? 0 : Math.min(1, options.length),
       max: anyNumber ? options.length : 1,
       endsOnlyOnFinish: anyNumber,
       seen: seenOf(state, from, library),
@@ -101,7 +102,10 @@ export function mayShuffle(state: GameState, player: PlayerId, effect: MayShuffl
   return nothing(waitFor(state, player, { kind: "chooseYesNo", purpose: "shuffle", resume }));
 }
 
-/** Each player shuffles their library (CR 701.24a), even an empty one (CR 701.24e). */
+/**
+ * Each player shuffles their library (CR 701.24a), even an empty one: `LIBRARY_SHUFFLED` is still emitted, the event
+ * "whenever a player shuffles" triggers will see (CR 701.24e).
+ */
 export function shuffleEach(state: GameState, players: readonly PlayerId[], cards: CardDatabase): Progress {
   return players.reduce<Progress>(
     (p, player) => andThen(p, (s) => happen(s, { kind: "shuffle", player }, cards)),
@@ -143,7 +147,10 @@ export function revealObjects(state: GameState, ids: readonly ObjectId[], cards:
   }, nothing(state));
 }
 
-/** The names of the cards exiled this way so far (CR 201.2: "same name"). */
+/**
+ * The names of the cards exiled this way so far: "the same name" (CR 201.2a). One name per card for now; split and
+ * double-faced cards have more (later: CR 201.2a's "at least one name in common").
+ */
 function exiledNames(state: GameState, cards: CardDatabase): string[] {
   return (state.resolution?.exiled ?? []).map((id) => nameOf(state, id, cards));
 }

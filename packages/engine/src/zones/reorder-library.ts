@@ -1,5 +1,6 @@
 // Putting a library's top cards back in a chosen order (CR 401.4: "Look at the top three cards of your library, then put
-// them back in any order"). Nothing leaves the library, so nothing becomes a new object (CR 400.7).
+// them back in any order"). The cards keep their ids; looked-at cards that are reordered become new objects
+// (later: CR 701.20d), which matters only once something tracks a card that was looked at.
 
 import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";

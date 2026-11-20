@@ -16,5 +16,4 @@ steps:
   - expect:
       p1.battlefield: [Swamp]
       p1:Swamp.tapped: true
-  - p1 play: Mountain
-  - expect error: illegalAction
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }]

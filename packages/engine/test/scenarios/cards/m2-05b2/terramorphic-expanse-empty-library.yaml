@@ -1,0 +1,14 @@
+name: Terramorphic Expanse with an empty library is still sacrificed, finds nothing, and the library is shuffled
+rules: [CR 701.21a, CR 609.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    library: []
+    battlefield: [Terramorphic Expanse]
+steps:
+  - p1 activate: Terramorphic Expanse
+  - all pass: once
+  - expect:
+      p1.graveyard: [Terramorphic Expanse]
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }]

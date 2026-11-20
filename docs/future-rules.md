@@ -141,7 +141,10 @@ scenario `block` step.
 **Milling and losing life, as triggers and replacements arrive (M2-07, M2-08).** Mill is plain `moveCard` events from
 library to graveyard (D-060), so "whenever a player mills", "the milled card" (CR 701.17c, 701.17d) and replacements
 that change how many are milled can't tell it from another such move (surveil): mark it, as discard is marked, with a
-`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Losing 0 life is an event (D-065, the owner's ruling): a "whenever a player loses life" trigger sees it.
+`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Losing 0 life is an event (D-065, the owner's ruling): a "whenever a player loses life" trigger sees it. A search
+emits no event yet: "whenever a player searches" and Aven Mindcensor's replacement (CR 701.23f) need one from
+`search` (`effects/library-effects.ts`), including on an empty library, which is still a search; only Haunting
+Echoes with nothing exiled doesn't search (D-063).
 
 **Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2; who may look, CR 708.5;
 telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed

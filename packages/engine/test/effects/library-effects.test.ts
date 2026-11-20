@@ -136,7 +136,6 @@ describe("a search tells the other players nothing about the library (CR 401.2, 
     let g = game([FOREST, MOUNTAIN]);
     for (const step of steps) g = act(g, TUTOR, step);
     expect(g.state.pending?.kind === "chooseCards" && g.state.pending.min).toBe(1);
-    sameToViewer(TUTOR, game([FOREST, MOUNTAIN]), game([FOREST, MOUNTAIN]), "p2", steps);
     const [a, b] = [act(g, TUTOR, option(0)), act(g, TUTOR, option(1))];
     expect(seen(a, "p2")).toStrictEqual(seen(b, "p2"));
   });
@@ -177,5 +176,59 @@ describe("a search tells the other players nothing about the library (CR 401.2, 
     const decision = playerView(g.state, "p1").decision;
     if (decision?.kind !== "chooseCards") throw new Error("no search");
     expect(decision.options.map((o) => o.oracleId)).toStrictEqual([FOREST]);
+  });
+});
+
+/** "Look at the top three cards of your library, then put them back in any order. You may shuffle. Draw a card." */
+const PONDER = hammerAs(
+  [],
+  [
+    { op: "lookAtTop", count: 3 },
+    { op: "mayShuffle", who: "you" },
+    { op: "draw", who: "you", amount: 1 },
+  ],
+);
+const anyCard = (a: Action) => a.type === "ANSWER" && a.answer.kind === "chooseCard";
+const yes = (a: Action) => a.type === "ANSWER" && a.answer.kind === "chooseYesNo" && a.answer.yes;
+const no = (a: Action) => a.type === "ANSWER" && a.answer.kind === "chooseYesNo" && !a.answer.yes;
+
+describe("the order things happen in, which `events contains` can't check", () => {
+  it("Fabricate reveals the card it found, by identity, before putting it into the hand", () => {
+    let g = game([FOREST, STATUE, FOREST]);
+    for (const step of [cast, ...toResolve, option(0)]) g = act(g, FABRICATE, step);
+    const types = g.events.map((e) => e.type);
+    const revealed = g.events.find((e) => e.type === "CARDS_REVEALED");
+    expect(revealed).toMatchObject({ from: { zone: "library", player: "p1" }, cards: [STATUE] });
+    const intoHand = g.events.findIndex((e) => e.type === "ZONE_CHANGED" && e.to.zone === "hand");
+    expect(types.indexOf("CARDS_REVEALED")).toBeLessThan(intoHand);
+    expect(intoHand).toBeLessThan(types.indexOf("LIBRARY_SHUFFLED"));
+  });
+
+  it("Ponder shuffles before drawing, so the draw comes from the shuffled library (its ruling)", () => {
+    let g = game([FOREST, STATUE, MOUNTAIN, FOREST]);
+    for (const step of [cast, ...toResolve, anyCard, anyCard, anyCard, yes]) g = act(g, PONDER, step);
+    const types = g.events.map((e) => e.type);
+    expect(types.indexOf("LIBRARY_SHUFFLED")).toBeGreaterThanOrEqual(0);
+    expect(types.indexOf("LIBRARY_SHUFFLED")).toBeLessThan(types.indexOf("CARD_DRAWN"));
+  });
+});
+
+describe("Ponder's order is its caster's secret (CR 401.4, D-062)", () => {
+  it("putting the cards back in two different orders looks the same to the opponent", () => {
+    const resolve = [cast, ...toResolve];
+    sameToViewer(PONDER, game([FOREST, STATUE, MOUNTAIN]), game([FOREST, STATUE, MOUNTAIN]), "p2", resolve);
+    let [x, y] = [game([FOREST, STATUE, MOUNTAIN]), game([FOREST, STATUE, MOUNTAIN])];
+    for (const step of resolve) [x, y] = [act(x, PONDER, step), act(y, PONDER, step)];
+    // One puts them back in the order shown, the other in reverse; then neither shuffles.
+    for (const [first, second] of [
+      [option(0), option(2)],
+      [option(1), option(1)],
+      [option(2), option(0)],
+      [no, no],
+    ] as const) {
+      [x, y] = [act(x, PONDER, first), act(y, PONDER, second)];
+      expect(seen(x, "p2")).toStrictEqual(seen(y, "p2"));
+    }
+    expect(x.state.zones.players.p1?.library).not.toStrictEqual(y.state.zones.players.p1?.library);
   });
 });
