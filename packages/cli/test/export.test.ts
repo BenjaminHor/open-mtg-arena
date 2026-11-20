@@ -28,28 +28,31 @@ describe("export --scenario", () => {
 
   it("names a spell on the stack as a target, so games with counterspells export too", () => {
     const cards = cardDatabase();
-    // A golden game in which Negate, Cancel and Essence Scatter target spells.
-    const golden = new URL("../../engine/test/golden/blue-green-vs-white-red-104.json", import.meta.url).pathname;
+    // A golden game in which Cancel targets Lightning Bolt on the stack (pnpm golden:cover keeps one, D-069).
+    const golden = new URL("../../engine/test/golden/blue-black-control-vs-red-green-beats-644.json", import.meta.url)
+      .pathname;
     const yaml = cli("export", golden, "--scenario", "--name", "counterspells", "--rules", "CR 100.1");
+    expect(yaml).toContain("p1 choose: spell:p2:Lightning Bolt");
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 
   it("names a card in a graveyard as a target, so games with Disentomb export too", () => {
     const cards = cardDatabase();
-    // A golden game in which Disentomb and Nature's Spiral target cards in a graveyard.
-    const golden = new URL("../../engine/test/golden/black-red-vs-white-red-200.json", import.meta.url).pathname;
+    // A golden game in which Nature's Spiral targets cards in a graveyard (pnpm golden:cover keeps one, D-069).
+    const golden = new URL("../../engine/test/golden/pool-463.json", import.meta.url).pathname;
     const yaml = cli("export", golden, "--scenario", "--name", "graveyard targets", "--rules", "CR 100.1");
     expect(yaml).toContain("graveyard:p");
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 
-  it("names cards chosen while a spell resolves, so games with Mind Rot export too", () => {
+  it("names cards chosen while a spell resolves, so games with Ponder or Mind Rot export too", () => {
     const cards = cardDatabase();
-    // A golden game in which p2's Mind Rot makes p1 choose two discards (a chooseCards decision, D-062).
-    const golden = new URL("../../engine/test/golden/blue-green-vs-black-red-300.json", import.meta.url).pathname;
+    // A golden game in which p1's Ponder has p1 put the top three cards back in an order (a chooseCards decision,
+    // D-062; pnpm golden:cover keeps one, D-069).
+    const golden = new URL("../../engine/test/golden/pool-707.json", import.meta.url).pathname;
     const yaml = cli("export", golden, "--scenario", "--name", "card choices", "--rules", "CR 100.1");
-    expect(yaml).toContain("p2 cast: Mind Rot");
-    expect(yaml).toContain("p1 choose: Centaur Courser");
+    expect(yaml).toContain("p1 cast: Ponder");
+    expect(yaml).toContain("p1 choose: Fiery Hellhound");
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 

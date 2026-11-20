@@ -878,3 +878,27 @@ every schema change and every change D-024 lists bumps it.
   "sacrifice". The battlefield is public, so a choice of one isn't asked. With two players there's one chooser; several
   choosing in APNAP order before one simultaneous sacrifice is later (CR 101.4).
 - A subject `"eachOpponent"`: every opponent of "you" (CR 102.2; teams later, CR 102.3).
+
+**D-069: Golden games chosen by a cover; Magic 2010's first deck pair** · 2026-11-20 · accepted
+- Golden games come from `pnpm golden:cover`, not from hand-made decks. It plays the fuzzer's decks for each seed (its
+  prebuilt pairs and seeded random pool decks) with `by-kind` agents, the fuzzer's picker (D-061), which cast more and
+  cancel less than `random`; they aren't the fuzzer's games (no first-legal tenth, no concessions, no checks). It counts what the games already in the folder use, then keeps,
+  greedily, the game adding the most unused cards per action, cut off (`maxTurns`) at the turn its last new card is
+  used, and re-scores the rest after each pick. It only adds: it never rewrites a golden game (the bench's are fixed,
+  D-049), and it checks each written game really uses what it was chosen for.
+- A card is used when it's played as a land, a spell of it resolves, or an ability of it resolves or makes mana. A
+  cast that's cancelled or countered doesn't run the card's script, so it doesn't count (D-047 counted casts). The
+  cover also counts three choices the export tests need: a spell on the stack targeted, a card in a graveyard
+  targeted, cards chosen as a spell or ability resolves. The golden test checks the whole pool and the three are covered.
+- Why: the folder was 15 MB for 40 games, most of them long games between interim decks. Now it's M1's four (the
+  bench) and 20 cut-off games, 3.2 MB, under a 4 MB budget, with every card used and no decision kind or event type
+  lost from the fuzzer's measure. Many golden games are now short; deep, long games are the fuzzer's job.
+- The interim decks (`white-red`, `blue-green`, `black-red`) are gone. Magic 2010's first pair, `red-green-beats` and
+  `blue-black-control`, are first versions of two of m2-pool.md's three decks, from scripted Magic 2010 cards only
+  (Ignite Disorder is there so the fuzzer still reaches the `divide` decision); M2-14 finishes them. The fuzzer's
+  prebuilt rotation is the M10 pair in both seats, then M1's pair: the M10 pair is its main decks, two prebuilt games in three,
+  and M1's decks stay for the bench and the tests built on them.
+- `golden:add` takes `--agent` (default `by-kind`). Seeds whose game is already in the folder aren't candidates (a pool
+  or deck change can make one name a different game, which `golden:update` handles); each game is checked to cover
+  what it was chosen for before it's written; the command lists what's still not covered and fails if anything is. A
+  description's "Covered, when chosen" list can go stale once `golden:update` replays a recipe.

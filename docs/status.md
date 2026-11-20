@@ -143,18 +143,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
   - M2-05c Life, damage to many, mana: done.
-- Next, before M2-06 (plan from the advisor, 2026-11-20):
-  1. Done, in review: the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
-     Mastodon, Silvercoat Lion, Stormfront Pegasus, Air Elemental, Disorient, Horned Turtle, Snapping Drake, Wind
-     Drake, Zephyr Sprite, Kelinore Bat, Looming Shade, Warpath Ghoul, Zombie Goliath, Canyon Minotaur, Fiery
-     Hellhound, Goblin Piker, Lightning Elemental, Prodigal Pyromancer, Shivan Dragon, Enormous Baloth, Might of Oaks,
-     Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says. 9 scenarios in
-     `test/scenarios/cards/m10-core/`, seven golden games from two throwaway deck lists (replaced by the fresh golden set
-     in step 2). The pool's comment header, scrambled by sorting the file in earlier tasks, is restored.
-  2. Then the first M10 deck pair, for play (the fuzzer's prebuilt rotation, the CLI), and a fresh, smaller golden set:
-     coverage from seeded random pool decks, a greedy covering set chosen anew (most uncovered cards per action), made
-     with the fuzzer's picker; M1's four games (the bench) and `red-aggro` / `green-stompy` stay; the export tests'
-     games are kept or repointed; a size budget written first; the interim decks removed. Plan (2026-11-20), rules-reviewed and revised; split in two:
+    Plan (2026-11-20), rules-reviewed and revised; split in two:
     - M2-05c1, no new decisions: done, merged (PR #31, D-067). 21 scenarios in `test/scenarios/cards/m2-05c/`, unit tests
       in `test/effects/damage-to-many.test.ts`; the interim decks carry the ten cards, five new golden games. Angel's
       Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
@@ -188,6 +177,24 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       flying checked on resolution, Windstorm sparing reach and players, both players dying (a draw), Pyroclasm on
       damaged creatures, Artillery with its target gone, source gone, on its controller, summoning sick, Acolyte,
       Consume Spirit's black-only X and target gone, Fissure's choices, Birds' colors.
+- Next, before M2-06 (plan from the advisor, 2026-11-20):
+  1. Done, merged (PR #33): the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
+     Mastodon, Silvercoat Lion, Stormfront Pegasus, Air Elemental, Disorient, Horned Turtle, Snapping Drake, Wind
+     Drake, Zephyr Sprite, Kelinore Bat, Looming Shade, Warpath Ghoul, Zombie Goliath, Canyon Minotaur, Fiery
+     Hellhound, Goblin Piker, Lightning Elemental, Prodigal Pyromancer, Shivan Dragon, Enormous Baloth, Might of Oaks,
+     Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says. 9 scenarios in
+     `test/scenarios/cards/m10-core/`, seven golden games from two throwaway deck lists (replaced by the fresh golden set
+     in step 2). The pool's comment header, scrambled by sorting the file in earlier tasks, is restored.
+  2. Done, in review: the golden set rebuilt and Magic 2010's first deck pair (D-069). A `by-kind` agent (the fuzzer's
+     picker); `pnpm golden:cover` (`packages/cli/src/golden-cover.ts`) plays the fuzzer's decks for seeds 1 to 800 and
+     adds, greedily, the games using the most unused cards per action, each cut off at the turn its last new card is
+     used; a card counts as used when played as a land or a spell or ability of it resolves, and three choices the
+     export tests read are covered too. The interim decks and their 36 golden games are gone; M1's four (the bench)
+     stay; 20 new games, the folder 3.2 MB (was 15 MB; budget 4 MB). `red-green-beats` and `blue-black-control`, first
+     versions of two of m2-pool.md's decks, are the fuzzer's main pair (two prebuilt games in three). The fuzzer's 40-seed
+     measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
+     repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
+  3. Next: M2-06 (combat keywords).
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with

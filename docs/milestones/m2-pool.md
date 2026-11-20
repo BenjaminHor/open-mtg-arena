@@ -72,7 +72,9 @@ Rules only one or two cards need, each built with its card:
 ## Prebuilt decks
 
 Decks for the fuzzer and the golden games grow with the pool. A first M10 deck pair once M2-05 is done (93 playable
-cards), replacing the M1 decks as the fuzzer's main decks; three final decks in M2-14, chosen so that between them
+cards), replacing the M1 decks as the fuzzer's main decks: done (D-069), `red-green-beats` and `blue-black-control`
+in `packages/cards/src/decks/`, first versions of two of the three below from scripted cards only; the fuzzer plays
+them in two of every three prebuilt games, and M1's pair stays for the benchmark. Three final decks in M2-14, chosen so that between them
 every mechanic appears:
 
 - **White Soldiers:** Elite Vanguard, Captain of the Watch, Veteran Armorsmith and Swordsmith, Honor of the Pure,

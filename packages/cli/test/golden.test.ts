@@ -6,10 +6,11 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { cardDatabase, DECKS, type DeckList, POOL } from "@mtg/cards";
-import { type Action, applyAction, createGame, ENGINE_VERSION, type GameState, type ObjectId } from "@mtg/engine";
+import { type Action, ENGINE_VERSION } from "@mtg/engine";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   addGolden,
+  GOLDEN_DIR,
   type GoldenGame,
   goldenFiles,
   goldenLog,
@@ -18,17 +19,22 @@ import {
   readGolden,
   updateGoldens,
 } from "../src/golden.ts";
+import { coveredByGoldens, FEATURES } from "../src/golden-cover.ts";
 
 const cards = cardDatabase();
 
 describe("the golden games", () => {
   const files = goldenFiles();
 
-  it("exist, and between them every card in the pool is played, cast or activated", { timeout: 60_000 }, () => {
+  it("exist, and between them use every card in the pool and show the export tests' choices", {
+    timeout: 60_000,
+  }, () => {
     expect(files.length).toBeGreaterThanOrEqual(4);
-    const used = new Set(files.flatMap((f) => cardsUsed(readGolden(f))));
-    const missing = POOL.cards.map((c) => c.name).filter((name) => !used.has(name));
-    expect(missing).toEqual([]);
+    // A card is used when it's played as a land, or a spell or ability of it resolves (pnpm golden:cover adds games
+    // until this holds, D-069).
+    const covered = new Set(coveredByGoldens(GOLDEN_DIR, cards));
+    const wanted = [...POOL.cards.map((c) => c.name), ...Object.values(FEATURES)];
+    expect(wanted.filter((unit) => !covered.has(unit))).toEqual([]);
   });
 
   for (const file of files) {
@@ -123,32 +129,18 @@ function smallGameFile(): string {
 
 function addSmallGame(dir: string): string {
   const decks = [DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[];
-  return addGolden({ decks, seed: 5, agentSeed: 5, maxTurns: 4, name: "small", description: "four turns" }, dir, cards);
+  const game = {
+    decks,
+    seed: 5,
+    agent: "random",
+    agentSeed: 5,
+    maxTurns: 4,
+    name: "small",
+    description: "four turns",
+  } as const;
+  return addGolden(game, dir, cards);
 }
 
 function smallGame(): GoldenGame {
   return readGolden(smallGameFile());
-}
-
-/** The names of the cards a game plays (lands), casts (spells) or activates (abilities' sources). */
-function cardsUsed(game: GoldenGame): string[] {
-  const created = createGame(game.setup, cards);
-  if (!created.ok) throw new Error(created.error.message);
-  let state: GameState = created.state;
-  const names: string[] = [];
-  const nameOf = (s: GameState, id: ObjectId): string => {
-    const obj = s.objects[id];
-    return obj?.kind === "card" ? (cards[obj.oracleId]?.printed.name ?? obj.oracleId) : "";
-  };
-  for (const action of game.actions) {
-    const result = applyAction(state, action, cards);
-    if (!result.ok) throw new Error(result.error.message);
-    for (const e of result.events) {
-      if (e.type === "LAND_PLAYED") names.push(nameOf(result.state, e.newId));
-      if (e.type === "SPELL_CAST") names.push(nameOf(result.state, e.object));
-      if (e.type === "ABILITY_ACTIVATED") names.push(nameOf(result.state, e.source));
-    }
-    state = result.state;
-  }
-  return names;
 }

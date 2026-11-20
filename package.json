@@ -18,6 +18,7 @@
     "replays:update": "node packages/cli/src/replays.ts",
     "golden:update": "node packages/cli/src/golden.ts update",
     "golden:add": "node packages/cli/src/golden.ts add",
+    "golden:cover": "node packages/cli/src/golden-cover.ts",
     "coverage:rules": "node packages/cli/src/rules-coverage.ts",
     "bench": "node packages/cli/src/bench.ts",
     "cli": "node packages/cli/src/main.ts",

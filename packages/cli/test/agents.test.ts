@@ -1,8 +1,9 @@
 // The agents (`ai`, `auto`): reproducible, legal, limited.
 
 import { describe, expect, it } from "vitest";
-import { chooseAction, nextRandom } from "../src/agents.ts";
+import { chooseAction } from "../src/agents.ts";
 import { readGameFile } from "../src/game-file.ts";
+import { nextRandom } from "../src/seeded-random.ts";
 import { cli, deckGame } from "./helpers.ts";
 
 describe("agents", () => {

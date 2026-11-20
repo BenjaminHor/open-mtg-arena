@@ -1,7 +1,7 @@
 // One fuzzed game: random legal actions (sometimes the first legal one), every check after every action, and the
 // whole game kept, so a failure can be written out and replayed.
 
-import { DECKS, type DeckList, POOL } from "@mtg/cards";
+import { DECKS, type DeckList } from "@mtg/cards";
 import {
   type Action,
   applyAction,
@@ -12,11 +12,13 @@ import {
   type GameState,
   legalActions,
 } from "@mtg/engine";
-import { chooseAction, nextRandom } from "../agents.ts";
+import { chooseAction } from "../agents.ts";
 import { deckGameSetup } from "../deck-setup.ts";
 import { FORMAT, type GameFile, replay } from "../game-file.ts";
+import { pickAction } from "../pick-action.ts";
+import { randomDecks } from "../random-decks.ts";
+import { nextRandom } from "../seeded-random.ts";
 import type { Check } from "./checks.ts";
-import { pickAction } from "./pick-action.ts";
 
 export type FuzzResult =
   | { ok: true; file: GameFile; state: GameState }
@@ -28,23 +30,29 @@ export type FailureFile = GameFile & { problem: string; failingAction: Action | 
 /** Per decision. Games run about 2,000 decisions, so about one game in ten ends in a concession. */
 const CONCEDE_CHANCE = 1 / 20_000;
 
-/** The prebuilt decks the fuzzer plays against each other, in turn. */
+/**
+ * The prebuilt decks the fuzzer plays against each other, in turn: mostly Magic 2010's pair, in both seats, and M1's
+ * (D-069).
+ */
 const PREBUILT_PAIRS = [
+  [DECKS["red-green-beats"], DECKS["blue-black-control"]],
+  [DECKS["blue-black-control"], DECKS["red-green-beats"]],
   [DECKS["red-aggro"], DECKS["green-stompy"]],
-  [DECKS["white-red"], DECKS["blue-green"]],
-  [DECKS["black-red"], DECKS["blue-green"]],
 ];
 
 /** Past this many turns a game is flagged as a likely loop (decks of 40 run out long before). */
 export const TURN_CAP = 200;
 
-/**
- * Plays the game for this seed. Even seeds are the prebuilt deck pairs, in turn; odd seeds, random decks from the pool.
- * The seed also seeds the agent, so one number reruns one game.
- */
+/** The decks for this seed: even seeds are the prebuilt deck pairs, in turn; odd seeds, random decks from the pool. */
+export function fuzzDecks(seed: number): DeckList[] {
+  return seed % 2 === 0
+    ? ((PREBUILT_PAIRS[(seed / 2) % PREBUILT_PAIRS.length] ?? []) as DeckList[])
+    : randomDecks(seed);
+}
+
+/** Plays the game for this seed, between `fuzzDecks`. The seed also seeds the agent, so one number reruns one game. */
 export function fuzzGame(seed: number, checks: readonly Check[], cards: CardDatabase, turnCap = TURN_CAP): FuzzResult {
-  const decks = seed % 2 === 0 ? (PREBUILT_PAIRS[(seed / 2) % PREBUILT_PAIRS.length] ?? []) : randomDecks(seed);
-  const setup = deckGameSetup(decks as DeckList[], seed, null);
+  const setup = deckGameSetup(fuzzDecks(seed), seed, null);
   const actions: Action[] = [];
   const fail = (problem: string, failingAction: Action | null): FuzzResult => ({
     ok: false,
@@ -125,43 +133,6 @@ export function fuzzGame(seed: number, checks: readonly Check[], cards: CardData
   }
   return { ok: true, file: { format: FORMAT, version: ENGINE_VERSION, setup, actions }, state };
 }
-
-/**
- * Two random 40-card decks from the pool: 23 random nonland cards and 17 basic lands, each of a random color among the
- * cards' colors (Mountains and Forests for a deck with no colored card). A deck can still draw lands that don't match
- * its spells, which tests that too.
- */
-function randomDecks(seed: number): DeckList[] {
-  // Not `seed` itself, which the agent's choices start from: the two would begin with the same numbers.
-  let rng = (seed ^ 0x9e3779b9) >>> 0;
-  const nextRandomValue = (): number => {
-    const r = nextRandom(rng);
-    rng = r.seed;
-    return r.value;
-  };
-  const pick = <T>(items: readonly T[]): T => items[Math.floor(nextRandomValue() * items.length)] as T;
-  const nonlands = POOL.cards.filter((c) => !c.typeLine.includes("Land")).map((c) => c.name);
-  return [1, 2].map((n) => {
-    const counts = new Map<string, number>();
-    for (let i = 0; i < 23; i++) {
-      const card = pick(nonlands);
-      counts.set(card, (counts.get(card) ?? 0) + 1);
-    }
-    const colors = [...counts.keys()].flatMap((name) => POOL.cards.find((c) => c.name === name)?.colors ?? []);
-    const lands = [...new Set(colors)]
-      .flatMap((color) => BASIC_LAND[color] ?? [])
-      .filter((land) => POOL.cards.some((c) => c.name === land));
-    for (let i = 0; i < 17; i++) {
-      const land = pick(lands.length > 0 ? lands : ["Mountain", "Forest"]);
-      counts.set(land, (counts.get(land) ?? 0) + 1);
-    }
-    const cards = [...counts].filter(([, count]) => count > 0).map(([card, count]) => ({ card, count }));
-    return { name: `random-${seed}-${n}`, cards };
-  });
-}
-
-/** The basic land that makes each color's mana (CR 305.6). */
-const BASIC_LAND: Record<string, string> = { W: "Plains", U: "Island", B: "Swamp", R: "Mountain", G: "Forest" };
 
 function message(error: unknown): string {
   return error instanceof Error ? error.message : String(error);

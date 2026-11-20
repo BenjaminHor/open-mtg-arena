@@ -25,9 +25,9 @@ Commands:
   show <file> [--as p2]      the board, stack, step and pending decision
   actions <file>             the numbered legal actions
   do <file> <n | step>       take action n, or a scenario step ("cast: Shock, targets: [p2], pay: auto")
-  ai <file> --until p1 [--agent random|first-legal] [--seed N]
+  ai <file> --until p1 [--agent random|first-legal|by-kind] [--seed N]
                              an agent decides for the other players until p1 must decide
-  auto <file> --ai both [--agent random|first-legal] [--seed N] [--max-turns 30] [--max-actions N]
+  auto <file> --ai both [--agent random|first-legal|by-kind] [--seed N] [--max-turns 30] [--max-actions N]
                              agents play everyone to the end; prints the log
   log <file> [--brief]       the events so far, one per line
   inspect <file> <ref>       a permanent's characteristics and what produced them ("p2:Grizzly Bears")

@@ -9,7 +9,7 @@ import { parseArgs } from "node:util";
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import { type Action, type CardDatabase, createGame, ENGINE_VERSION, type GameSetup } from "@mtg/engine";
 import { playAgents } from "./agent-play.ts";
-import type { AgentName } from "./agents.ts";
+import { type AgentName, agentNamed } from "./agents.ts";
 import { deckGameSetup } from "./deck-setup.ts";
 import { logUntilRejected } from "./event-log.ts";
 import { actionPerLineText, FORMAT, replay } from "./game-file.ts";
@@ -137,15 +137,22 @@ function writeIfChanged(path: string, text: string): boolean {
   return true;
 }
 
-/** Plays and writes a new golden game between prebuilt decks. Returns its path. */
-export function addGolden(
-  options: { decks: DeckList[]; seed: number; agentSeed: number; maxTurns: number; name: string; description: string },
-  dir: string,
-  cards: CardDatabase,
-): string {
+/** The decks, seeds, agent and turn cap of a game to add, and its file's name and description. */
+export type NewGolden = {
+  decks: DeckList[];
+  seed: number;
+  agent: AgentName;
+  agentSeed: number;
+  maxTurns: number;
+  name: string;
+  description: string;
+};
+
+/** Plays and writes a new golden game. Returns its path. */
+export function addGolden(options: NewGolden, dir: string, cards: CardDatabase): string {
   const recipe: GoldenRecipe = {
     setup: deckGameSetup(options.decks, options.seed, null),
-    agent: "random",
+    agent: options.agent,
     agentSeed: options.agentSeed,
     maxTurns: options.maxTurns,
   };
@@ -163,12 +170,23 @@ export function addGolden(
   return path;
 }
 
-/** `pnpm golden:add --decks red-aggro,green-stompy --seed 3 [--agent-seed N] [--max-turns 200] [--name ...]`. */
+/**
+ * `pnpm golden:add --decks red-aggro,green-stompy --seed 3 [--agent by-kind] [--agent-seed N] [--max-turns 200]
+ * [--name ...]`.
+ */
 function addCommand(argv: string[], cards: CardDatabase): string {
   const text = { type: "string" } as const;
   const { values } = parseArgs({
     args: argv,
-    options: { decks: text, seed: text, "agent-seed": text, "max-turns": text, name: text, description: text },
+    options: {
+      decks: text,
+      seed: text,
+      agent: text,
+      "agent-seed": text,
+      "max-turns": text,
+      name: text,
+      description: text,
+    },
     strict: true,
   });
   const option = (name: keyof typeof values): string | undefined => values[name];
@@ -181,11 +199,13 @@ function addCommand(argv: string[], cards: CardDatabase): string {
   });
   const seed = wholeNumber(option("seed"), 1, "seed");
   const name = option("name") ?? `${names.join("-vs-")}-${seed}`;
-  const description = option("description") ?? `${names.join(" against ")}, setup seed ${seed}, random agents.`;
+  const agent = agentNamed(option("agent") ?? "by-kind");
+  const description = option("description") ?? `${names.join(" against ")}, setup seed ${seed}, ${agent} agents.`;
   const path = addGolden(
     {
       decks,
       seed,
+      agent,
       agentSeed: wholeNumber(option("agent-seed"), seed, "agent-seed"),
       maxTurns: wholeNumber(option("max-turns"), 200, "max-turns"),
       name,
