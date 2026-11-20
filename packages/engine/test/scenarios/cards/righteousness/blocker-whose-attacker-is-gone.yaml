@@ -1,0 +1,29 @@
+name: A creature stays a blocking creature after the creature it blocked is gone, so Righteousness can target it
+rules: [CR 509.1g, CR 506.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears]
+  p2:
+    hand: [Lightning Bolt, Righteousness]
+    battlefield: [Grizzly Bears, Mountain, Plains]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Grizzly Bears }
+  - p1 pass: once
+  - p2 cast: Lightning Bolt
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+  # Its attacker left combat, but p2's Bears is still blocking until it's removed from combat itself (CR 509.1g).
+  - p1 pass: once
+  - p2 cast: Righteousness
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Grizzly Bears.power: 9

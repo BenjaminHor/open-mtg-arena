@@ -1,0 +1,13 @@
+name: Ignite Disorder takes at most three targets
+rules: [CR 601.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Ignite Disorder]
+    battlefield: [Mountain, Mountain]
+  p2:
+    battlefield: [Elite Vanguard, Elite Vanguard, Coral Merfolk, Coral Merfolk]
+steps:
+  - p1 cast: Ignite Disorder
+  - p1 choose: 4
+  - expect error: illegalAction

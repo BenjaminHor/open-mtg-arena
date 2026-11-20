@@ -19,7 +19,16 @@ import { goldenFiles, readGolden } from "../golden.ts";
 /** `run` does `count` operations (applyActions, games, ...); times are reported per operation. */
 export type Workload = { name: string; what: string; count: number; run: () => void };
 
-// The states come from the golden games: fixed, and as varied as real games get.
+// The states come from the golden games: fixed, and as varied as real games get. Only the games listed in
+// `BENCH_GAMES`, so adding a golden game for new cards doesn't quietly change what's measured (D-049); changing the
+// list means a new baseline, explained in its commit.
+/** The golden games the states come from: M1's four. */
+const BENCH_GAMES = [
+  "green-stompy-vs-green-stompy-33",
+  "green-stompy-vs-red-aggro-2",
+  "red-aggro-vs-green-stompy-1",
+  "red-aggro-vs-red-aggro-3",
+];
 /** Setup seeds for the whole-game measure: a few games, so one unusual game doesn't decide it. */
 const GAME_SEEDS = [11, 12, 13, 14, 15];
 
@@ -105,7 +114,10 @@ type Step = { state: GameState; action: Action };
 /** Each state of every golden game, with the action taken in it. */
 function gameSteps(cards: CardDatabase): Step[] {
   const steps: Step[] = [];
-  for (const file of goldenFiles()) {
+  const files = goldenFiles().filter((f) => BENCH_GAMES.some((name) => f.endsWith(`${name}.json`)));
+  if (files.length !== BENCH_GAMES.length)
+    throw new Error(`the bench needs the golden games ${BENCH_GAMES.join(", ")}`);
+  for (const file of files) {
     const game = readGolden(file);
     const created = createGame(game.setup, cards);
     if (!created.ok) throw new Error(created.error.message);

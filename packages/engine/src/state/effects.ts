@@ -4,7 +4,7 @@
 // `characteristics()` applies them in layer order (CR 613); nothing applies them once and stores the result.
 
 import type { ObjectId, PlayerId } from "./ids.ts";
-import type { Target } from "./objects.ts";
+import type { Share, Target } from "./objects.ts";
 
 /** How long an effect lasts (CR 611.2a). "Until end of turn" ends in the cleanup step (CR 514.2). */
 export type Duration = "endOfTurn";
@@ -48,4 +48,6 @@ export type EffectContext = {
    * (CR 608.2b). Illegal targets aren't affected by the effect.
    */
   targets: Target[][];
+  /** The shares of a divided effect whose targets are still legal (CR 601.2d, 608.2b); empty when nothing is divided. */
+  division: Share[];
 };

@@ -28,6 +28,10 @@ export type Answer =
   | { kind: "mulliganBottom"; object: ObjectId }
   | { kind: "discardToHandSize"; object: ObjectId }
   | { kind: "chooseTarget"; target: Target }
+  /** How many targets this instance will have (CR 601.2c). */
+  | { kind: "chooseTargetCount"; count: number }
+  /** The next target's share of a divided effect (CR 601.2d). */
+  | { kind: "divide"; amount: number }
   /** How much of each type of mana to spend (CR 601.2h). */
   | { kind: "payMana"; payment: ManaPool }
   /** Cancel the cast or activation in progress: the whole action is reversed (CR 734.1, D-035). */

@@ -1,0 +1,15 @@
+name: The same creature can't be chosen twice for Ignite Disorder's one instance of "target"
+rules: [CR 115.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Ignite Disorder]
+    battlefield: [Mountain, Mountain]
+  p2:
+    battlefield: [Elite Vanguard, Coral Merfolk]
+steps:
+  - p1 cast: Ignite Disorder
+    targets: [[p2:Elite Vanguard, p2:Elite Vanguard]]
+    divide: [1, 2]
+    pay: auto
+  - expect error: illegalAction

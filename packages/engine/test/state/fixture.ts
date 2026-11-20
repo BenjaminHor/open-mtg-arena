@@ -103,7 +103,7 @@ export function midTurnState(): GameState {
         cardId: "c10",
         oracleId: BOLT,
         owner: "p1",
-        choices: { modes: [], x: null, targets: [[{ kind: "object", object: "o6" }]] },
+        choices: { modes: [], x: null, targets: [[{ kind: "object", object: "o6" }]], division: null },
       }),
       o11: {
         kind: "ability",
@@ -113,7 +113,7 @@ export function midTurnState(): GameState {
         ability: { kind: "printed", index: 0 },
         baseController: "p1",
         timestamp: 11,
-        choices: { modes: [], x: null, targets: [] },
+        choices: { modes: [], x: null, targets: [], division: null },
       },
     },
     zones: {
@@ -145,7 +145,7 @@ export function midTurnState(): GameState {
       {
         kind: "runEffect",
         effect: { op: "dealDamage", amount: 3, from: "self", to: { target: 0 } },
-        context: { self: "o10", controller: "p1", targets: [[{ kind: "player", player: "p2" }]] },
+        context: { self: "o10", controller: "p1", targets: [[{ kind: "player", player: "p2" }]], division: [] },
       },
       { kind: "finishResolving", object: "o10" },
     ],

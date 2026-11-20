@@ -139,7 +139,7 @@ describe("an effect on an object that's gone", () => {
     const result = runEffect(
       gone,
       { op: "modifyPT", power: 3, toughness: 3, of: { target: 0 }, duration: "endOfTurn" },
-      { self: forest, controller: "p1", targets: [[{ kind: "object", object: forest }]] },
+      { self: forest, controller: "p1", targets: [[{ kind: "object", object: forest }]], division: [] },
       TEST_CARDS,
     );
     expect(result.state.effects).toStrictEqual([]);

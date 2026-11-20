@@ -5,7 +5,9 @@
 # English printing. Without one, the newest regular paper printing is used (D-029).
 
 Centaur Courser
+Coral Merfolk
 Craw Wurm
+Elite Vanguard
 Fire Elemental
 Forest
 Furnace Whelp
@@ -14,10 +16,15 @@ Giant Spider
 Gray Ogre
 Grizzly Bears
 Hill Giant
+Ignite Disorder
+Island
+Lava Axe
 Lightning Bolt
 Llanowar Elves
 Mountain
+Plains
 Raging Goblin
+Righteousness
 Shock
 Spined Wurm
 Volcanic Hammer

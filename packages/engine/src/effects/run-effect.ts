@@ -19,12 +19,11 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
       const [from, ...more] = objectsOf(subject(effect.from, context));
       if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
       if (from === undefined) return { state, events: [] };
-      const damage = subject(effect.to, context).map((to) => ({
-        source: from,
-        to,
-        amount: effect.amount,
-        combat: false,
-      }));
+      // Divided damage: each target still legal is dealt its announced share (CR 601.2d, 608.2b).
+      const damage =
+        effect.divided === "asYouChoose"
+          ? context.division.map(({ target, amount }) => ({ source: from, to: target, amount, combat: false }))
+          : subject(effect.to, context).map((to) => ({ source: from, to, amount: effect.amount, combat: false }));
       return happen(state, { kind: "dealDamage", damage }, cards);
     }
     case "addMana": {

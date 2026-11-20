@@ -16,6 +16,11 @@ export type Casting = {
   poolBefore: ManaPool;
   /** Permanents tapped for mana during this cast or activation, which untap if it's reversed (CR 734.1). */
   tappedForMana: ObjectId[];
+  /**
+   * How many targets each instance of "target" takes, so far: announced by the player when the number varies, the
+   * text's number otherwise (CR 601.2c).
+   */
+  targetCounts: number[];
 };
 
 export type CastingOrigin =

@@ -123,12 +123,52 @@ export type CostPart =
   /** {T}: "tap this permanent" (CR 107.5). */
   | { kind: "tap" };
 
-/** What one instance of "target" may choose (CR 115). */
-export type TargetSpec =
+/**
+ * What one instance of the word "target" may choose (CR 115), and how many (`count`, exactly one when left out).
+ * "Target creature" is a `permanent` whose types include creature (CR 109.2, 115.2).
+ */
+export type TargetSpec = TargetKind & { count?: TargetCount };
+
+export type TargetKind =
   /** "Any target": a creature, player, planeswalker or battle (CR 115.4). */
   | { kind: "anyTarget" }
-  /** "Target creature": a creature permanent on the battlefield (CR 109.2). */
-  | { kind: "creature" };
+  /** "Target player or planeswalker". */
+  | { kind: "playerOrPlaneswalker" }
+  /** "Target [filter] permanent", "target creature": an object on the battlefield (CR 115.2). */
+  | { kind: "permanent"; filter: ObjectFilter }
+  /** "Target [filter] spell": a spell on the stack, never an ability (CR 112.1) and never itself (CR 115.5). */
+  | { kind: "spell"; filter: ObjectFilter }
+  /** "Target [filter] card from your graveyard" or "from a graveyard": a zone, not control (CR 109.2a, 115.2). */
+  | { kind: "cardInGraveyard"; graveyard: "yours" | "any"; filter: ObjectFilter };
+
+/**
+ * How many targets an instance takes: "one, two, or three target creatures" is 1 to 3, "up to three" 0 to 3, "any
+ * number" 0 or more (`max: "any"`). A variable number is announced before the targets are chosen (CR 601.2c), and
+ * zero is allowed when the text says so (CR 115.6).
+ */
+export type TargetCount = { min: number; max: number | "any" };
+
+/**
+ * Restrictions on an object, all of which must hold. Each list means "any of": `colors: ["W", "U"]` is "white and/or
+ * blue", `notColors: ["B"]` is "nonblack", `notTypes: ["land"]` is "nonland". Read from its characteristics now
+ * (CR 109.3, 613).
+ */
+export type ObjectFilter = {
+  types?: CardType[];
+  notTypes?: CardType[];
+  colors?: Color[];
+  notColors?: Color[];
+  subtypes?: string[];
+  /** "Target tapped creature". */
+  tapped?: true;
+  /** "Target attacking creature", "blocking", "attacking or blocking" (CR 506.4, 508.1k, 509.1g). */
+  combat?: "attacking" | "blocking" | "attackingOrBlocking";
+  /**
+   * Relative to the spell's or ability's controller: "you control", "you don't control", "an opponent controls"
+   * (they differ once teams exist, CR 102.3).
+   */
+  controller?: "you" | "notYou" | "opponent";
+};
 
 /**
  * Which object or player an effect refers to. It's resolved to real ids when the effect begins, and a continuous
@@ -146,7 +186,17 @@ export type EffectSubject =
 
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
-  | { op: "dealDamage"; amount: number; from: EffectSubject; to: EffectSubject }
+  | {
+      op: "dealDamage";
+      amount: number;
+      from: EffectSubject;
+      to: EffectSubject;
+      /**
+       * "N damage divided as you choose among" the targets of `to`: each target's share is announced as it's cast
+       * (CR 601.2d), and `amount` is the total. Without it, each recipient is dealt `amount`.
+       */
+      divided?: "asYouChoose";
+    }
   /** "Add {G}." (CR 106.4). */
   | { op: "addMana"; mana: ManaType; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */

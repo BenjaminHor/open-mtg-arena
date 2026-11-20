@@ -95,7 +95,7 @@ export function resolveManaAbility(
   }
   // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana
   // ability can't have targets (CR 605.1a).
-  const context = { self: id, controller: player, targets: [] };
+  const context = { self: id, controller: player, targets: [], division: [] };
   for (const effect of ability.def.effects) {
     progress = andThen(progress, (s) => runEffect(s, effect, context, cards));
   }

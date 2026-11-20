@@ -11,7 +11,7 @@ import { allPass } from "./all-pass.ts";
 import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { combatAction } from "./combat-steps.ts";
 import { abilityNamed, cardIn, cardNamed, isHandCard, paymentFrom, targetNamed } from "./lookups.ts";
-import { paymentActions, targetAction, targetsAndPayment } from "./stack-steps.ts";
+import { paymentActions, stackAnswer, targetsAndPayment } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
 export type ActionStep = Extract<
@@ -124,15 +124,20 @@ export function firstRejection(
   let state = game.state;
   // A cast's payment is planned once, when the payment decision comes up, then carried out action by action.
   let payment: Action[] | null = null;
+  let paid = 0;
   for (let i = 0; ; i++) {
     let action: Action | null;
-    if ((step.kind === "cast" || step.kind === "activate") && i > step.targets.length) {
-      payment ??= paymentActions({ state, events: [] }, step, cards);
-      const next = payment[i - 1 - step.targets.length];
-      action =
-        next === undefined || next.type === "CONCEDE"
-          ? (next ?? null)
-          : { ...next, decisionId: state.pending?.id ?? "d0" };
+    if ((step.kind === "cast" || step.kind === "activate") && i > 0) {
+      // After the cast itself: the step's answers to targets and a division, then its payment.
+      const answer = stackAnswer(state, step, cards);
+      const decisionId = state.pending?.id ?? "d0";
+      if (answer !== null) {
+        action = { type: "ANSWER", decisionId, player: step.player as PlayerId, answer };
+      } else {
+        payment ??= paymentActions({ state, events: [] }, step, cards);
+        const next = payment[paid++];
+        action = next === undefined || next.type === "CONCEDE" ? (next ?? null) : { ...next, decisionId };
+      }
     } else {
       action = directAction(state, step, cards, i);
     }
@@ -167,7 +172,7 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
         const { object, ability } = abilityNamed(state, step, cards, "any");
         return { type: "ACTIVATE_ABILITY", decisionId, player, object, ability };
       }
-      return targetAction(state, step, cards, i);
+      return null;
     }
     case "play":
       return i === 0
@@ -178,8 +183,9 @@ function directAction(state: GameState, step: ActionStep, cards: CardDatabase, i
     case "assign":
       return combatAction(state, step, cards, i);
     case "cast":
-      if (i === 0) return { type: "CAST_SPELL", decisionId, player, object: cardIn(state, player, step.card, cards) };
-      return targetAction(state, step, cards, i);
+      return i === 0
+        ? { type: "CAST_SPELL", decisionId, player, object: cardIn(state, player, step.card, cards) }
+        : null;
   }
 }
 
@@ -207,6 +213,12 @@ function answerFor(
     case "chooseTarget":
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "chooseTarget", target: targetNamed(state, value, cards) };
+    case "chooseTargetCount":
+      if (value === "cancel") return { kind: "cancelCast" };
+      return { kind: "chooseTargetCount", count: Number(value) };
+    case "divide":
+      if (value === "cancel") return { kind: "cancelCast" };
+      return { kind: "divide", amount: Number(value) };
     case "payMana": {
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "payMana", payment: paymentFrom(value) };

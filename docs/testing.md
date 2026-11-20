@@ -103,8 +103,12 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   when which copy matters (an exact replay: it changes the hand's order, and a mulligan's shuffle with it).
 - `p1 concede: now`: p1 concedes and loses (CR 104.3a). A player may concede at any time, even without priority, so
   conceding is never listed by `legalActions()`; this step sends the action directly.
-- `p1 cast: <card>` with `targets: [...]` and `pay:`: cast a spell from hand. `targets` lists one target per instance of
-  "target", in order: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`). `pay: auto` pays with `autoPay`
+- `p1 cast: <card>` with `targets: [...]`, `divide: [...]` and `pay:`: cast a spell from hand. `targets` lists one entry
+  per instance of "target", in order: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`), or a list of them
+  when that instance has several (`targets: [[p2:Elite Vanguard, p2:Coral Merfolk]]`). For an instance whose number of
+  targets varies, the number announced (CR 601.2c) is the list's length (one for a single entry). `divide` gives each
+  target's share of a divided effect, in the order the targets were listed (`divide: [2, 1]`, CR 601.2d); without it,
+  the cast stops at the division, where `choose` gives one share at a time. `choose` also answers a number of targets. `pay: auto` pays with `autoPay`
   (activating mana abilities as needed); `pay: { R: 1 }` pays that from mana already in the pool; `pay: cancel` cancels
   the cast. Without `pay`, the cast stops at the payment decision, where the player can `activate` mana abilities and
   then `choose` a payment or `cancel`; without `targets`, it stops at the first target choice (`choose` a target or

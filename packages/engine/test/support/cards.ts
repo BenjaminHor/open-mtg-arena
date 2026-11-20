@@ -26,6 +26,12 @@ export const STATUE = "test-statue";
 export const HASTY_ELF = "test-hasty-elf";
 /** Not a real card: an activated ability with a target and a damage source, which nothing in the M1 pool has. */
 export const PINGER = "test-pinger";
+/** Not a real card: a white and blue creature with a subtype, for target restrictions by color and subtype. */
+export const KNIGHT = "test-white-blue-knight";
+/** Not a real card: "Up to two target creatures get +1/+1 until end of turn", which can have zero targets (CR 115.6). */
+export const UP_TO_TWO = "test-up-to-two";
+/** Not a real card: 2 damage divided as you choose among any number of target creatures, at least one (CR 601.2d). */
+export const SPLIT = "test-split";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -184,7 +190,7 @@ export const TEST_CARDS: CardDatabase = {
       name: "Giant Growth",
       oracle: "Target creature gets +3/+3 until end of turn.",
       spell: {
-        targets: [{ kind: "creature" }],
+        targets: [{ kind: "permanent", filter: { types: ["creature"] } }],
         effects: [{ op: "modifyPT", power: 3, toughness: 3, of: { target: 0 }, duration: "endOfTurn" }],
       },
     },
@@ -205,7 +211,7 @@ export const TEST_CARDS: CardDatabase = {
       name: "Shot and Boost",
       oracle: "Shot and Boost deals 1 damage to any target. Target creature gets +1/+1 until end of turn.",
       spell: {
-        targets: [{ kind: "anyTarget" }, { kind: "creature" }],
+        targets: [{ kind: "anyTarget" }, { kind: "permanent", filter: { types: ["creature"] } }],
         effects: [
           { op: "dealDamage", amount: 1, from: "self", to: { target: 0 } },
           { op: "modifyPT", power: 1, toughness: 1, of: { target: 1 }, duration: "endOfTurn" },
@@ -229,7 +235,7 @@ export const TEST_CARDS: CardDatabase = {
       name: "Bite",
       oracle: "Target creature deals 2 damage to any target.",
       spell: {
-        targets: [{ kind: "creature" }, { kind: "anyTarget" }],
+        targets: [{ kind: "permanent", filter: { types: ["creature"] } }, { kind: "anyTarget" }],
         effects: [{ op: "dealDamage", amount: 2, from: { target: 0 }, to: { target: 1 } }],
       },
     },
@@ -309,6 +315,65 @@ export const TEST_CARDS: CardDatabase = {
           effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
         },
       ],
+    },
+  }),
+  [KNIGHT]: card(KNIGHT, {
+    printed: {
+      name: "White-Blue Knight",
+      manaCost: [
+        { kind: "colored", color: "W" },
+        { kind: "colored", color: "U" },
+      ],
+      colors: ["W", "U"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: ["Human", "Knight"],
+      power: 2,
+      toughness: 2,
+    },
+    def: { name: "White-Blue Knight", oracle: "" },
+  }),
+  [UP_TO_TWO]: card(UP_TO_TWO, {
+    printed: {
+      name: "Up To Two",
+      manaCost: [{ kind: "colored", color: "G" }],
+      colors: ["G"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["sorcery"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Up To Two",
+      oracle: "Up to two target creatures get +1/+1 until end of turn.",
+      spell: {
+        targets: [{ kind: "permanent", filter: { types: ["creature"] }, count: { min: 0, max: 2 } }],
+        effects: [{ op: "modifyPT", power: 1, toughness: 1, of: { target: 0 }, duration: "endOfTurn" }],
+      },
+    },
+  }),
+  [SPLIT]: card(SPLIT, {
+    printed: {
+      name: "Split",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Split",
+      oracle: "Split deals 2 damage divided as you choose among any number of target creatures.",
+      spell: {
+        targets: [{ kind: "permanent", filter: { types: ["creature"] }, count: { min: 1, max: "any" } }],
+        effects: [{ op: "dealDamage", amount: 2, from: "self", to: { target: 0 }, divided: "asYouChoose" }],
+      },
     },
   }),
 };

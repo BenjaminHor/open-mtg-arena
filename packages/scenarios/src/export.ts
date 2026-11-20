@@ -99,6 +99,10 @@ function answerStep(
       return choose(handCardName(state, p, answer.object, cards));
     case "chooseTarget":
       return choose(targetName(state, answer.target, cards));
+    case "chooseTargetCount":
+      return choose(answer.count);
+    case "divide":
+      return choose(answer.amount);
     case "payMana":
       return choose(nonZero(answer.payment));
     case "cancelCast":

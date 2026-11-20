@@ -1,54 +1,37 @@
-// The steps shared by casting a spell (CR 601.2c, 601.2f–i) and activating an ability (CR 602.2b): choosing targets,
-// paying the cost, and cancelling. Progress is kept in `GameState.casting` and on the stack object, so every pause is
-// plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes and divisions come later
-// (later: CR 601.2b, 601.2d).
+// The steps shared by casting a spell (CR 601.2c, 601.2f–i) and activating an ability (CR 602.2b): targets and their
+// division (`choose-targets.ts`), paying the cost, and cancelling. Progress is kept in `GameState.casting` and on the
+// stack object, so every pause is plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes
+// come later (later: CR 601.2b).
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
 import { type ManaPayment, payFromPool } from "../mana/payment.ts";
 import { costOf } from "../rules/costs.ts";
-import { isLegalTarget, targetSpecsOf } from "../rules/targets.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import type { AbilityRef, GameObject, Target } from "../state/objects.ts";
+import type { AbilityRef, GameObject } from "../state/objects.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
+import { castingOf } from "./casting-state.ts";
+import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
 import { queueWork } from "./work.ts";
 
-/** The next decision: the next target (CR 601.2c), then paying the cost (CR 601.2g–h). */
+/** The next decision: targets and their division (CR 601.2c–d), then paying the cost (CR 601.2g–h). */
 export function nextCastingStep(state: GameState, cards: CardDatabase): GameState {
-  const casting = castingOf(state);
-  const obj = state.objects[casting.object];
-  if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
-  const chosen = obj.choices.targets.length;
-  if (chosen < targetSpecsOf(state, casting.object, cards).length) {
-    return waitFor(state, casting.player, { kind: "chooseTarget", object: casting.object, instance: chosen });
-  }
-  return waitFor(state, casting.player, {
+  // An answer that asked the next question already (the next share of a division) is waiting on it.
+  if (state.pending !== null) return state;
+  const targeted = targetStep(state, cards);
+  if (targeted.pending !== null) return targeted;
+  const casting = castingOf(targeted);
+  return waitFor(targeted, casting.player, {
     kind: "payMana",
     object: casting.object,
-    cost: costOf(state, casting.object, cards),
+    cost: costOf(targeted, casting.object, cards),
   });
-}
-
-/** Why this target can't be chosen for the pending instance, or null. */
-export function targetProblem(state: GameState, instance: number, target: Target, cards: CardDatabase): string | null {
-  const spec = targetSpecsOf(state, castingOf(state).object, cards)[instance];
-  if (spec === undefined || !isLegalTarget(state, spec, target, cards)) return "that isn't a legal target (CR 115)";
-  return null;
-}
-
-export function chooseTarget(state: GameState, target: Target, cards: CardDatabase): Progress {
-  const id = castingOf(state).object;
-  const obj = state.objects[id];
-  if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
-  const choices = { ...obj.choices, targets: [...obj.choices.targets, [target]] };
-  const next = { ...state, objects: { ...state.objects, [id]: { ...obj, choices } } };
-  return { state: nextCastingStep(next, cards), events: [] };
 }
 
 /**
@@ -160,9 +143,4 @@ function becameCastOrActivated(player: PlayerId, obj: GameObject): GameEvent {
     case "ability":
       return { type: "ABILITY_ACTIVATED", player, object: obj.id, source: obj.source };
   }
-}
-
-export function castingOf(state: GameState): Casting {
-  if (state.casting === null) throw new Error("Nothing is being cast or activated");
-  return state.casting;
 }

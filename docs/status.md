@@ -18,7 +18,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   effects (M2-08) and triggers (M2-07) plug in there. Reworked once after the rules-judge and code-reviewer reviews.
 - M2-04 Targeting and costs, split in two (plan, 2026-11-20; restrictions taken from the Oracle text of all 47 pool
   cards marked T or C).
-  - M2-04a Targeting (now). CR 115, 601.2c, 601.2d, 608.2b. Cards: Righteousness, Ignite Disorder, Lava Axe.
+  - M2-04a Targeting: built, in review (D-057). Righteousness, Ignite Disorder and Lava Axe scripted, with Elite
+    Vanguard, Coral Merfolk, Plains and Island; scenarios in `test/scenarios/cards/`, unit tests for every filter in
+    `test/rules/targets.test.ts`; interim decks white-red and blue-green with two golden games. The plan as built:
     - `TargetSpec` becomes a kind (`anyTarget`, `playerOrPlaneswalker`, `permanent`, `spell`, `cardInGraveyard`)
       with an `ObjectFilter` (card types any of / none of, colors any of / none of, subtypes any of, tapped,
       attacking / blocking / either, controller you / not you / an opponent) and a `count` (min, max or "any";

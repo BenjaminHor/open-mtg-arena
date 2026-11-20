@@ -6,6 +6,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { keywordsOf } from "./abilities.ts";
 import { cardTypesOf, subtypesOf, supertypesOf } from "./card-types.ts";
+import { colorsOf } from "./colors.ts";
 import { controllerOf } from "./controller.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 
@@ -31,7 +32,7 @@ export type Characteristics = {
  * A card's characteristics: its printed values (CR 613.1), with continuous effects applied in layer order. Each layer
  * is one reader, applied in the CR's order, so a missing layer is added in its place:
  * 1 copy (none yet), 2 control (`controllerOf`), 3 text (none yet), 4 type (`supertypesOf`, `cardTypesOf`, `subtypesOf`),
- * 5 color (printed for now), 6 abilities (`keywordsOf`; activated ones from `abilitiesOf`), 7 power and toughness
+ * 5 color (`colorsOf`), 6 abilities (`keywordsOf`; activated ones from `abilitiesOf`), 7 power and toughness
  * (`powerAndToughness`). The controller is included by decision (D-022): CR 109.3 says it isn't a characteristic. An ability on the stack has no card, so
  * ask `controllerOf` for its controller instead.
  */
@@ -48,7 +49,7 @@ export function characteristics(state: GameState, id: ObjectId, cards: CardDatab
     supertypes: supertypesOf(state, id, cards),
     types: cardTypesOf(state, id, cards),
     subtypes: subtypesOf(state, id, cards),
-    colors: data.printed.colors,
+    colors: colorsOf(state, id, cards),
     keywords: keywordsOf(state, id, cards),
     power,
     toughness,

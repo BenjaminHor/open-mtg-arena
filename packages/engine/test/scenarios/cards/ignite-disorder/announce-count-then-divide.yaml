@@ -1,0 +1,24 @@
+name: The caster announces how many targets first, then the targets, then the division
+rules: [CR 601.2c, CR 601.2d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Ignite Disorder]
+    battlefield: [Mountain, Mountain]
+  p2:
+    battlefield: [Elite Vanguard, Coral Merfolk, Grizzly Bears]
+steps:
+  - p1 cast: Ignite Disorder
+  # Only two creatures are white or blue, so two is the most that can be announced.
+  - expect:
+      pending: { player: p1, kind: chooseTargetCount, min: 1, max: 2 }
+  - p1 choose: 2
+  - p1 choose: p2:Elite Vanguard
+  - p1 choose: p2:Coral Merfolk
+  - expect:
+      pending: { player: p1, kind: divide, amount: 3 }
+  - p1 choose: 2
+  # The last target gets the rest.
+  - expect:
+      pending: { player: p1, kind: payMana }
+  - p1 choose: cancel

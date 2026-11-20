@@ -170,6 +170,7 @@ describe("the checks", () => {
         object: "o9999",
         origin: { kind: "card", card, handIndex: 0 },
         poolBefore: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
+        targetCounts: [],
         tappedForMana: [],
       },
     };
