@@ -266,20 +266,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
-     - Golden games rework (owner, D-082), built, in review: compact encoding and the mechanics cover; 19 games, 1.3 MB
-       (was 66, 5.4 MB). Plan, as built:
-       1. `cli/src/action-lines.ts`: `actionLines(setup, actions, cards)` and `actionsFromLines(setup, lines, cards)`,
-          one readable line per action (`pass 4`, `land o85`, `cast o12`, `activate o5 1 for G`, `chooseTarget p2`,
-          `declareBlocker o7 o5`, ...), an exhaustive switch on `Action` and `Answer`; decoding replays the game to fill
-          in each decision id and acting player. Card names for oracle ids in setups (`setupWithNames` and back).
-       2. Game files gain `"encoding": "lines"` (setup by names, `actions` as lines); `readGameFile` decodes either, so
-          `pnpm cli replay` still opens golden games. Golden games are written that way; `golden:update` converts.
-       3. `golden:cover` by features instead of cards: from each card whose script ran (D-069's "used"), its keywords,
-          effect ops, trigger conditions, statics, cost parts and target kinds; plus every decision kind and the
-          export tests' three choices. Interactions stay with the interaction matrix's scenarios.
-       4. A test that every pool card appears in at least one scenario (cards still each have their own).
-       5. Re-cover: the four bench games (D-049) stay, converted; the card-chosen games are replaced by a feature cover.
-       6. Docs: testing.md section 4, D-047/D-069 superseded notes, golden README; then reviews and a PR.
+     - Golden games rework (owner, D-082), built, in review: 25 games, 1.5 MB (was 66, 5.4 MB).
+       - `cli/src/action-lines.ts`: `actionLines(actions)` writes one readable line per action (`pass 4`, `land o85`,
+         `cast o12`, `activate o5 printed 0 for G`, `chooseTarget p2`, `declareBlocker o7 o5`); `actionsFromLines(setup,
+         lines, cards)` replays the game to fill in each decision id and acting player, and counts lines left after the
+         game ended. `setup-names.ts`: card names in setups. Game files with `"encoding": "lines"`; `readGameFile`
+         reads either encoding.
+       - `cli/src/mechanics.ts`: the cover's units: combat keywords and statics as creatures attack or block, flash and
+         shroud as a permanent enters, each field of a resolving spell, activated or triggered ability, every decision
+         kind answered (a cancel or take-back doesn't count), every event type agents can reach.
+       - A test that every pool card is in a scenario, by whole name.
      - M2-07c plan (2026-11-20), two PRs:
        - M2-07c1, done, merged (PR #41, D-079): 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal

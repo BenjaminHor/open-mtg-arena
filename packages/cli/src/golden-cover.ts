@@ -23,7 +23,15 @@ import { playAgents } from "./agent-play.ts";
 import { deckGameSetup } from "./deck-setup.ts";
 import { fuzzDecks, TURN_CAP } from "./fuzz/run-game.ts";
 import { addGolden, GOLDEN_DIR, goldenFiles, type NewGolden, playRecipe, readGolden } from "./golden.ts";
-import { abilityUnits, decisionUnit, effectUnits, permanentUnits, triggerUnits, wantedMechanics } from "./mechanics.ts";
+import {
+  abilityUnits,
+  decisionUnit,
+  eventUnit,
+  permanentUnits,
+  spellUnits,
+  triggerUnits,
+  wantedMechanics,
+} from "./mechanics.ts";
 import { wholeNumber } from "./numbers.ts";
 
 /**
@@ -54,12 +62,13 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
     // Every action so far was taken in this turn or before it.
     for (let t = lengthThrough.length; t < turnBefore; t++) lengthThrough[t] = i;
     for (const unit of featuresOf(state, action)) firstTurn[unit] ??= turnBefore;
-    if (state.pending !== null && action.type !== "CONCEDE") firstTurn[decisionUnit(state.pending.kind)] ??= turnBefore;
+    if (state.pending !== null && answers(action)) firstTurn[decisionUnit(state.pending.kind)] ??= turnBefore;
     const result = applyAction(state, action, cards);
     if (!result.ok) throw new Error(`action ${i + 1} is rejected: ${result.error.message}`);
     let turn = turnBefore;
     for (const event of result.events) {
       if (event.type === "TURN_BEGAN") turn = event.turn;
+      firstTurn[eventUnit(event.type)] ??= turn;
       for (const unit of mechanicsUsed(event, state, result.state, cards)) firstTurn[unit] ??= turn;
     }
     state = result.state;
@@ -70,47 +79,70 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
 }
 
 /**
- * The mechanics an event shows a card's script running (D-082): a spell resolving (its effects and targets, and the
- * keywords and statics of a permanent spell), an ability resolving (its costs, or its trigger condition, and its
- * effects and targets), or a mana ability making mana. A cast that's cancelled or countered never runs the script.
- * Objects that left are only in the state before.
+ * The mechanics an event shows a card's script running (D-082): a spell resolving (its fields, and the keywords a
+ * permanent spell brings as it enters), an ability resolving (its costs or trigger condition, targets and effects), a
+ * mana ability making mana, or creatures attacking and blocking (their combat keywords and statics, where those do
+ * something). A cast that's cancelled or countered never runs the script. Objects that left are only in the state
+ * before.
  */
 export function mechanicsUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string[] {
   const object = (id: ObjectId) => before.objects[id] ?? after.objects[id];
+  const cardDef = (id: ObjectId) => {
+    const obj = object(id);
+    return obj?.kind === "card" ? cards[obj.oracleId]?.def : undefined;
+  };
+  const inCombat = (ids: readonly ObjectId[]) =>
+    ids.flatMap((id) => {
+      const def = cardDef(id);
+      return def === undefined ? [] : permanentUnits(def, "combat");
+    });
   switch (event.type) {
     case "SPELL_RESOLVED": {
       const obj = object(event.object);
-      const def = obj?.kind === "card" ? cards[obj.oracleId]?.def : undefined;
-      if (def === undefined) return [];
-      return [
-        ...permanentUnits(def),
-        ...(def.spell === undefined ? [] : effectUnits(def.spell.targets, def.spell.effects)),
-      ];
+      const def = cardDef(event.object);
+      if (def === undefined || obj === undefined) return [];
+      const manyTargets = (obj.choices?.targets.flat().length ?? 0) > 1;
+      return [...permanentUnits(def, "enters"), ...(def.spell === undefined ? [] : spellUnits(def.spell, manyTargets))];
     }
     case "ABILITY_RESOLVED": {
       const obj = object(event.object);
       if (obj?.kind !== "ability") return [];
       const def = cards[obj.sourceOracleId]?.def;
       const ref = obj.ability;
-      if (ref.kind === "printed") {
-        const ability = def?.abilities?.[ref.index];
-        return ability === undefined ? [] : abilityUnits(ability);
-      }
-      if (ref.kind === "triggered") {
-        const trigger = def?.triggers?.[ref.index];
-        return trigger === undefined ? [] : triggerUnits(trigger);
+      switch (ref.kind) {
+        case "printed": {
+          const ability = def?.abilities?.[ref.index];
+          return ability === undefined ? [] : abilityUnits(ability);
+        }
+        case "triggered": {
+          const trigger = def?.triggers?.[ref.index];
+          return trigger === undefined ? [] : triggerUnits(trigger);
+        }
+        case "basicLandType":
+          // A basic land's mana ability never goes on the stack (CR 605.3b).
+          return [];
       }
       return [];
     }
     case "MANA_ADDED": {
-      // A printed mana ability (Birds of Paradise); a basic land's is intrinsic and shows nothing a card defines.
-      const obj = object(event.source);
-      const abilities = obj?.kind === "card" ? (cards[obj.oracleId]?.def.abilities ?? []) : [];
+      // A printed mana ability (Birds of Paradise); a basic land's is intrinsic and shows nothing a card defines. Coarse:
+      // every mana ability of the source counts, as no pool card has two.
+      const abilities = cardDef(event.source)?.abilities ?? [];
       return abilities.filter((a) => a.effects.some((e) => e.op === "addMana")).flatMap(abilityUnits);
     }
+    case "ATTACKERS_DECLARED":
+      return inCombat(event.attacks.map((a) => a.attacker));
+    case "BLOCKERS_DECLARED":
+      return inCombat(event.blocks.flatMap((b) => [b.blocker, b.attacker]));
     default:
       return [];
   }
+}
+
+/** Whether the action answers the pending decision: a concession, a cancel or a take-back only backs out of it. */
+function answers(action: Action): boolean {
+  if (action.type === "CONCEDE") return false;
+  return action.type !== "ANSWER" || (action.answer.kind !== "cancelCast" && action.answer.kind !== "takeBack");
 }
 
 /** The export tests' features this action shows. */

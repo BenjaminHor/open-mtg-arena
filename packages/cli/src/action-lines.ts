@@ -1,8 +1,8 @@
 // Golden games' compact action format (D-082): one readable line per action, such as `pass 4`, `land o85`, `cast o12`,
 // `activate o5 printed 0 for G`, `chooseTarget p2` or `declareBlocker o7 o5`. A line leaves out the decision id and the
 // acting player: both follow from the pending decision, so decoding replays the game to fill them in. A run of
-// passes, by either player, is one line. Each kind of action and answer is one case of a switch, so a new one can't be
-// left out.
+// passes, by either player, is one line. A new kind of action or answer can't be left out: encoding uses exhaustive
+// switches, and decoding tables keyed by every kind, both checked by the compiler.
 
 import {
   type AbilityRef,
@@ -13,8 +13,8 @@ import {
   type CardDatabase,
   type Color,
   createGame,
+  type DecisionId,
   type GameSetup,
-  type GameState,
   type ManaPool,
   type ObjectId,
   type PlayerId,
@@ -41,34 +41,41 @@ export function actionLines(actions: readonly Action[]): string[] {
   return lines;
 }
 
+/** What reading lines back gives: the actions, and how many lines were left unread because the game had ended. */
+export type ReadBack = { actions: Action[]; unread: number };
+
 /**
  * The actions these lines stand for, replayed from the setup to fill in each decision id and acting player. Once an
  * action is rejected (the engine changed), the game can't go on, so the actions end with that one: replaying them
- * stops there and says why, as a golden game's log does (D-047).
+ * stops there and says why, as a golden game's log does (D-047). Lines left after the game ended are counted, not
+ * dropped in silence, so `pnpm golden:update` can say the game ends earlier now.
  */
-export function actionsFromLines(setup: GameSetup, lines: readonly string[], cards: CardDatabase): Action[] {
+export function actionsFromLines(setup: GameSetup, lines: readonly string[], cards: CardDatabase): ReadBack {
   const created = createGame(setup, cards);
   if (!created.ok) throw new Error(`the setup is rejected: ${created.error.message}`);
   let state = created.state;
   const actions: Action[] = [];
-  /** Takes the action; false once one is rejected. */
-  const take = (action: Action): boolean => {
-    actions.push(action);
-    const result = applyAction(state, action, cards);
-    if (!result.ok) return false;
-    state = result.state;
-    return true;
-  };
   for (const [i, line] of lines.entries()) {
     const [word = "", ...rest] = line.split(" ");
-    const count = word === "pass" && rest.length > 0 ? Number(rest[0]) : 1;
+    const count = word === "pass" && rest.length > 0 ? count_(rest[0], i) : 1;
     for (let n = 0; n < count; n++) {
-      // A game that ended, or a decision gone, means the rest no longer fits the game: stop as at a rejection.
-      if (state.pending === null && word !== "concede") return actions;
-      if (!take(fromWords(state, word, rest, i))) return actions;
+      // The game has ended: what's left no longer fits it.
+      if (state.pending === null && word !== "concede") return { actions, unread: lines.length - i };
+      const asked = state.pending === null ? null : { decisionId: state.pending.id, player: state.pending.player };
+      const action = fromWords(asked, word, rest, i);
+      actions.push(action);
+      const result = applyAction(state, action, cards);
+      if (!result.ok) return { actions, unread: lines.length - i - 1 };
+      state = result.state;
     }
   }
-  return actions;
+  return { actions, unread: 0 };
+}
+
+function count_(word: string | undefined, line: number): number {
+  const n = Number(word);
+  if (!Number.isSafeInteger(n) || n < 1) throw new Error(`line ${line + 1}: "${word}" isn't a number of passes`);
+  return n;
 }
 
 function actionLine(action: Exclude<Action, { type: "PASS_PRIORITY" }>): string {
@@ -142,84 +149,90 @@ function manaWords(pool: ManaPool): string {
   return parts.length === 0 ? "none" : parts.join(" ");
 }
 
+/** Who an action answers: the pending decision's id and player. */
+export type Asked = { decisionId: DecisionId; player: PlayerId };
+
+/** The action one line stands for, answering `asked` (null when nothing is pending: only a concession fits). */
+export function actionFromLine(line: string, asked: Asked | null): Action {
+  const [word = "", ...rest] = line.split(" ");
+  return fromWords(asked, word, rest, 0);
+}
+
 /** The action a line's words stand for, answering the pending decision. */
-function fromWords(state: GameState, word: string, args: readonly string[], line: number): Action {
+function fromWords(asked: Asked | null, word: string, args: readonly string[], line: number): Action {
   if (word === "concede") return { type: "CONCEDE", player: args[0] as PlayerId };
-  const pending = state.pending;
-  if (pending === null) throw new Error(`line ${line + 1}: nothing is pending`);
-  const asked = { decisionId: pending.id, player: pending.player };
-  const object = (i = 0) => args[i] as ObjectId;
+  if (asked === null) throw new Error(`line ${line + 1}: nothing is pending`);
+  const object = args[0] as ObjectId;
   switch (word) {
     case "pass":
       return { type: "PASS_PRIORITY", ...asked };
     case "land":
-      return { type: "PLAY_LAND", ...asked, object: object() };
+      return { type: "PLAY_LAND", ...asked, object };
     case "cast":
-      return { type: "CAST_SPELL", ...asked, object: object() };
+      return { type: "CAST_SPELL", ...asked, object };
     case "activate": {
       const ability = abilityFrom(args[1], args[2], line);
       const color = args[3] === "for" ? (args[4] as Color) : undefined;
-      return {
-        type: "ACTIVATE_ABILITY",
-        ...asked,
-        object: object(),
-        ability,
-        ...(color === undefined ? {} : { color }),
-      };
+      return { type: "ACTIVATE_ABILITY", ...asked, object, ability, ...(color === undefined ? {} : { color }) };
     }
-    default:
-      return { type: "ANSWER", ...asked, answer: answerFrom(word, args, line) };
   }
+  const decode = ANSWERS[word as Answer["kind"]];
+  if (decode === undefined) throw new Error(`line ${line + 1}: no action "${word}"`);
+  return { type: "ANSWER", ...asked, answer: decode(args, line) };
 }
 
-function abilityFrom(kind: string | undefined, value: string | undefined, line: number): AbilityRef {
-  if (kind === "printed") return { kind: "printed", index: Number(value) };
-  if (kind === "land") return { kind: "basicLandType", landType: value as BasicLandType };
-  if (kind === "triggered") return { kind: "triggered", index: Number(value) };
-  throw new Error(`line ${line + 1}: no ability "${kind}"`);
+/** Each ability reference by its word in a line; a new `AbilityRef` kind must be added here. */
+const ABILITIES: { [K in AbilityRef["kind"]]: (value: string) => Extract<AbilityRef, { kind: K }> } = {
+  printed: (value) => ({ kind: "printed", index: Number(value) }),
+  basicLandType: (value) => ({ kind: "basicLandType", landType: value as BasicLandType }),
+  triggered: (value) => ({ kind: "triggered", index: Number(value) }),
+};
+const ABILITY_WORDS: Record<string, AbilityRef["kind"]> = {
+  printed: "printed",
+  land: "basicLandType",
+  triggered: "triggered",
+};
+
+function abilityFrom(word: string | undefined, value: string | undefined, line: number): AbilityRef {
+  const kind = ABILITY_WORDS[word ?? ""];
+  if (kind === undefined || value === undefined) throw new Error(`line ${line + 1}: no ability "${word} ${value}"`);
+  return ABILITIES[kind](value);
 }
 
-function answerFrom(kind: string, args: readonly string[], line: number): Answer {
-  const [a = "", b = ""] = args;
-  switch (kind) {
-    case "chooseStartingPlayer":
-      return { kind, player: a as PlayerId };
-    case "mulligan":
-      return { kind, choice: a === "keep" ? "keep" : "mulligan" };
-    case "mulliganBottom":
-    case "discardToHandSize":
-    case "chooseSacrifice":
-      return { kind, object: a as ObjectId };
-    case "chooseTarget":
-      return { kind, target: targetFrom(a) };
-    case "announceX":
-      return { kind, value: Number(a) };
-    case "chooseTargetCount":
-      return { kind, count: Number(a) };
-    case "divide":
-    case "assignDamage":
-      return { kind, amount: Number(a) };
-    case "payMana":
-      return { kind, payment: manaFrom(args) };
-    case "declareAttacker":
-      return { kind, attack: { attacker: a as ObjectId, defender: b as PlayerId } };
-    case "declareBlocker":
-      return { kind, block: { blocker: a as ObjectId, attacker: b as ObjectId } };
-    case "orderTrigger":
-      return { kind, index: Number(a) };
-    case "chooseCard":
-      return { kind, option: Number(a) };
-    case "chooseYesNo":
-      return { kind, yes: a === "yes" };
-    case "cancelCast":
-    case "finishDeclaring":
-    case "takeBack":
-    case "finishChoosing":
-      return { kind };
-    default:
-      throw new Error(`line ${line + 1}: no action "${kind}"`);
-  }
+/** One of these words, or the line is wrong. */
+function oneOf<T extends string>(word: string | undefined, allowed: readonly T[], line: number): T {
+  if (!allowed.includes(word as T)) throw new Error(`line ${line + 1}: "${word}" isn't one of ${allowed.join(", ")}`);
+  return word as T;
 }
+
+type Decode<K extends Answer["kind"]> = (args: readonly string[], line: number) => Extract<Answer, { kind: K }>;
+
+/** Each answer read back from its words; a new `Answer` kind must be added here, as in `answerLine`. */
+const ANSWERS: { [K in Answer["kind"]]: Decode<K> } = {
+  chooseStartingPlayer: ([a]) => ({ kind: "chooseStartingPlayer", player: a as PlayerId }),
+  mulligan: ([a], line) => ({ kind: "mulligan", choice: oneOf(a, ["keep", "mulligan"], line) }),
+  mulliganBottom: ([a]) => ({ kind: "mulliganBottom", object: a as ObjectId }),
+  discardToHandSize: ([a]) => ({ kind: "discardToHandSize", object: a as ObjectId }),
+  chooseSacrifice: ([a]) => ({ kind: "chooseSacrifice", object: a as ObjectId }),
+  chooseTarget: ([a = ""]) => ({ kind: "chooseTarget", target: targetFrom(a) }),
+  announceX: ([a]) => ({ kind: "announceX", value: Number(a) }),
+  chooseTargetCount: ([a]) => ({ kind: "chooseTargetCount", count: Number(a) }),
+  divide: ([a]) => ({ kind: "divide", amount: Number(a) }),
+  assignDamage: ([a]) => ({ kind: "assignDamage", amount: Number(a) }),
+  payMana: (args) => ({ kind: "payMana", payment: manaFrom(args) }),
+  declareAttacker: ([a, b]) => ({
+    kind: "declareAttacker",
+    attack: { attacker: a as ObjectId, defender: b as PlayerId },
+  }),
+  declareBlocker: ([a, b]) => ({ kind: "declareBlocker", block: { blocker: a as ObjectId, attacker: b as ObjectId } }),
+  orderTrigger: ([a]) => ({ kind: "orderTrigger", index: Number(a) }),
+  chooseCard: ([a]) => ({ kind: "chooseCard", option: Number(a) }),
+  chooseYesNo: ([a], line) => ({ kind: "chooseYesNo", yes: oneOf(a, ["yes", "no"], line) === "yes" }),
+  cancelCast: () => ({ kind: "cancelCast" }),
+  finishDeclaring: () => ({ kind: "finishDeclaring" }),
+  takeBack: () => ({ kind: "takeBack" }),
+  finishChoosing: () => ({ kind: "finishChoosing" }),
+};
 
 /** Object ids are `o<number>`, player ids `p<number>` (state/ids.ts). */
 function targetFrom(id: string): Target {

@@ -89,6 +89,17 @@ describe("updateGoldens", () => {
     expect(readFileSync(logPath(file), "utf8")).not.toContain("!!");
   });
 
+  it("says when stored action lines are left after the game ended, and plays it again from its recipe", () => {
+    const file = smallGameFile();
+    const original = readGolden(file, cards);
+    // A concession ends the game, so the line after it no longer fits: it's counted, not dropped in silence.
+    const text = goldenText(original, cards).replace(/\n {2}\]\n\}\n$/, ',\n    "concede p1",\n    "pass 3"\n  ]\n}\n');
+    writeFileSync(file, text);
+    const [line] = updateGoldens(path.dirname(file), cards);
+    expect(line).toMatch(/played again from its recipe \(the game now ends 1 stored action lines sooner; /);
+    expect(readGolden(file, cards).actions).toEqual(original.actions);
+  });
+
   it("plays a game again from its recipe when it no longer ends where it did", () => {
     const file = smallGameFile();
     const original = readGolden(file, cards);

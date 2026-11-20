@@ -57,11 +57,17 @@ export function replay(
  */
 type Stored = { encoding?: "lines"; setup: GameSetup; actions: unknown[] };
 
-/** The setup and actions a file stores, whichever encoding it uses. */
-export function decodeStored(stored: Stored, cards: CardDatabase): { setup: GameSetup; actions: Action[] } {
-  if (stored.encoding !== "lines") return { setup: stored.setup, actions: stored.actions as Action[] };
+/**
+ * The setup and actions a file stores, whichever encoding it uses. `unread` counts stored lines left after the game
+ * ended (an engine change ended it sooner); the JSON encoding keeps every action, so it has none.
+ */
+export function decodeStored(
+  stored: Stored,
+  cards: CardDatabase,
+): { setup: GameSetup; actions: Action[]; unread: number } {
+  if (stored.encoding !== "lines") return { setup: stored.setup, actions: stored.actions as Action[], unread: 0 };
   const setup = setupFromNames(stored.setup, cards);
-  return { setup, actions: actionsFromLines(setup, stored.actions as string[], cards) };
+  return { setup, ...actionsFromLines(setup, stored.actions as string[], cards) };
 }
 
 /** The setup and actions in the compact encoding (D-082). */
@@ -83,7 +89,8 @@ export function readGameFile(path: string, cards: CardDatabase = cardDatabase())
   if (file.version !== ENGINE_VERSION)
     throw new Error(`${path} is from engine version ${file.version}, not ${ENGINE_VERSION}`);
   const { encoding: _, ...rest } = file;
-  return { ...rest, ...decodeStored(file, cards) };
+  const { setup, actions } = decodeStored(file, cards);
+  return { ...rest, setup, actions };
 }
 
 /** The game's current state: the cache if there is one, otherwise a replay. */

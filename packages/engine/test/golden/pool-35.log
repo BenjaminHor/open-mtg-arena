@@ -1004,3 +1004,945 @@ T26 untaps: p1:Mountain#2
 T26 untaps: p1:Island#3
 T26 untaps: p1:Island#4
 T26 untaps: p1:Island#5
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 cancels activating p2:Wall of Faith
+T26 moves: Excommunicate, p1's library -> p1's hand
+T26 p1 draws
+T26 taps: p1:Island#2
+T26 p1 adds {U} (p1:Island#2)
+T26 p1 taps p1:Island#2 for mana
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 cancels activating p2:Wall of Faith
+T26 p1's unspent {U} empties
+T26 p2 cancels activating p2:Wall of Faith
+T26 taps: p1:Mountain#1
+T26 p1 adds {R} (p1:Mountain#1)
+T26 p1 taps p1:Mountain#1 for mana
+T26 taps: p1:Island#1
+T26 p1 adds {U} (p1:Island#1)
+T26 p1 taps p1:Island#1 for mana
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 cancels activating p2:Wall of Faith
+T26 p1's unspent {U}{R} empties
+T26 taps: p1:Horned Turtle
+T26 p1 attack: p1:Horned Turtle -> p2
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 block: p2:Wall of Faith -> p1:Horned Turtle
+T26 combat damage: p1:Horned Turtle -> p2:Wall of Faith 1
+T26 p2 cancels activating p2:Wall of Faith
+T26 taps: p1:Forest#1
+T26 p1 adds {G} (p1:Forest#1)
+T26 p1 taps p1:Forest#1 for mana
+T26 taps: p1:Mountain#2
+T26 p1 adds {R} (p1:Mountain#2)
+T26 p1 taps p1:Mountain#2 for mana
+T26 p2 cancels activating p2:Wall of Faith
+T26 p2 cancels activating p2:Wall of Faith
+T26 p1's unspent {R}{G} empties
+T26 taps: p1:Plains
+T26 p1 adds {W} (p1:Plains)
+T26 p1 taps p1:Plains for mana
+T26 p2 cancels activating p2:Wall of Faith
+T26 p1's unspent {W} empties
+T26 damage removed: p2:Wall of Faith (1)
+T27 turn 27 begins (p2)
+T27 untaps: p2:Mountain
+T27 untaps: p2:Plains#1
+T27 untaps: p2:Forest#1
+T27 untaps: p2:Plains#2
+T27 untaps: p2:Forest#2
+T27 untaps: p2:Swamp
+T27 untaps: p2:Plains#3
+T27 moves: Plains, p2's library -> p2's hand
+T27 p2 draws
+T27 taps: p2:Mountain
+T27 p2 adds {R} (p2:Mountain)
+T27 p2 taps p2:Mountain for mana
+T27 p2's unspent {R} empties
+T27 taps: p2:Swamp
+T27 p2 adds {B} (p2:Swamp)
+T27 p2 taps p2:Swamp for mana
+T27 p2's unspent {B} empties
+T27 taps: p1:Island#3
+T27 p1 adds {U} (p1:Island#3)
+T27 p1 taps p1:Island#3 for mana
+T27 p1's unspent {U} empties
+T27 p2 attack: nothing
+T27 taps: p1:Island#4
+T27 p1 adds {U} (p1:Island#4)
+T27 p1 taps p1:Island#4 for mana
+T27 taps: p1:Forest#2
+T27 p1 adds {G} (p1:Forest#2)
+T27 p1 taps p1:Forest#2 for mana
+T27 taps: p1:Island#5
+T27 p1 adds {U} (p1:Island#5)
+T27 p1 taps p1:Island#5 for mana
+T27 taps: p2:Forest#2
+T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
+T27 p2's unspent {G} empties
+T27 p1's unspent {U}{U}{G} empties
+T27 taps: p2:Plains#1
+T27 p2 adds {W} (p2:Plains#1)
+T27 p2 taps p2:Plains#1 for mana
+T27 taps: p2:Plains#3
+T27 p2 adds {W} (p2:Plains#3)
+T27 p2 taps p2:Plains#3 for mana
+T27 p2's unspent {W}{W} empties
+T27 moves: Bog Wraith, p2's hand -> stack
+T27 p2 cancels casting Bog Wraith
+T27 taps: p2:Forest#1
+T27 p2 adds {G} (p2:Forest#1)
+T27 p2 taps p2:Forest#1 for mana
+T27 taps: p2:Plains#2
+T27 p2 adds {W} (p2:Plains#2)
+T27 p2 taps p2:Plains#2 for mana
+T27 p2 activates p2:Wall of Faith
+T27 p2 cancels activating p2:Wall of Faith
+T27 effect: p2:Wall of Faith +0/+1 until end of turn
+T27 resolves: p2:Wall of Faith's ability
+T27 p2 cancels activating p2:Wall of Faith
+T27 moves: Plains, p2's hand -> battlefield
+T27 p2 plays p2:Plains#4
+T27 moves: Jackal Familiar, p2's hand -> stack
+T27 taps: p2:Plains#4
+T27 p2 adds {W} (p2:Plains#4)
+T27 p2 taps p2:Plains#4 for mana
+T27 p2 cancels casting Jackal Familiar
+T27 moves: Goblin Piker, p2's hand -> stack
+T27 taps: p2:Plains#4
+T27 p2 adds {W} (p2:Plains#4)
+T27 p2 taps p2:Plains#4 for mana
+T27 p2 cancels casting Goblin Piker
+T27 p2's unspent {G} empties
+T27 effect ends: p2:Wall of Faith +0/+1
+T28 turn 28 begins (p1)
+T28 untaps: p1:Mountain#1
+T28 untaps: p1:Forest#1
+T28 untaps: p1:Island#1
+T28 untaps: p1:Forest#2
+T28 untaps: p1:Plains
+T28 untaps: p1:Island#2
+T28 untaps: p1:Mountain#2
+T28 untaps: p1:Island#3
+T28 untaps: p1:Horned Turtle
+T28 untaps: p1:Island#4
+T28 untaps: p1:Island#5
+T28 taps: p1:Island#4
+T28 p1 adds {U} (p1:Island#4)
+T28 p1 taps p1:Island#4 for mana
+T28 taps: p1:Forest#1
+T28 p1 adds {G} (p1:Forest#1)
+T28 p1 taps p1:Forest#1 for mana
+T28 p1's unspent {U}{G} empties
+T28 moves: Giant Growth, p1's library -> p1's hand
+T28 p1 draws
+T28 taps: p1:Island#5
+T28 p1 adds {U} (p1:Island#5)
+T28 p1 taps p1:Island#5 for mana
+T28 moves: Giant Growth, p1's hand -> stack
+T28 taps: p1:Island#2
+T28 p1 adds {U} (p1:Island#2)
+T28 p1 taps p1:Island#2 for mana
+T28 taps: p1:Mountain#1
+T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
+T28 taps: p1:Island#3
+T28 p1 adds {U} (p1:Island#3)
+T28 p1 taps p1:Island#3 for mana
+T28 taps: p1:Mountain#2
+T28 p1 adds {R} (p1:Mountain#2)
+T28 p1 taps p1:Mountain#2 for mana
+T28 taps: p1:Island#1
+T28 p1 adds {U} (p1:Island#1)
+T28 p1 taps p1:Island#1 for mana
+T28 p1 cancels casting Giant Growth
+T28 taps: p1:Forest#2
+T28 p1 adds {G} (p1:Forest#2)
+T28 p1 taps p1:Forest#2 for mana
+T28 taps: p1:Mountain#2
+T28 p1 adds {R} (p1:Mountain#2)
+T28 p1 taps p1:Mountain#2 for mana
+T28 taps: p2:Plains#4
+T28 p2 adds {W} (p2:Plains#4)
+T28 p2 taps p2:Plains#4 for mana
+T28 p2 cancels activating p2:Wall of Faith
+T28 p1's unspent {U}{R}{G} empties
+T28 taps: p2:Plains#4
+T28 p2 adds {W} (p2:Plains#4)
+T28 p2 taps p2:Plains#4 for mana
+T28 p2 activates p2:Wall of Faith
+T28 p2 cancels activating p2:Wall of Faith
+T28 moves: Giant Growth, p1's hand -> stack
+T28 taps: p1:Island#1
+T28 p1 adds {U} (p1:Island#1)
+T28 p1 taps p1:Island#1 for mana
+T28 taps: p1:Island#3
+T28 p1 adds {U} (p1:Island#3)
+T28 p1 taps p1:Island#3 for mana
+T28 taps: p1:Island#2
+T28 p1 adds {U} (p1:Island#2)
+T28 p1 taps p1:Island#2 for mana
+T28 taps: p1:Mountain#1
+T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
+T28 taps: p1:Plains
+T28 p1 adds {W} (p1:Plains)
+T28 p1 taps p1:Plains for mana
+T28 p1 cancels casting Giant Growth
+T28 effect: p2:Wall of Faith +0/+1 until end of turn
+T28 resolves: p2:Wall of Faith's ability
+T28 p2 cancels activating p2:Wall of Faith
+T28 p2 cancels activating p2:Wall of Faith
+T28 p1 attack: nothing
+T28 p2 cancels activating p2:Wall of Faith
+T28 p2 cancels activating p2:Wall of Faith
+T28 p2 cancels activating p2:Wall of Faith
+T28 p2 cancels activating p2:Wall of Faith
+T28 moves: Giant Growth, p1's hand -> stack
+T28 taps: p1:Island#2
+T28 p1 adds {U} (p1:Island#2)
+T28 p1 taps p1:Island#2 for mana
+T28 taps: p1:Island#1
+T28 p1 adds {U} (p1:Island#1)
+T28 p1 taps p1:Island#1 for mana
+T28 taps: p1:Mountain#1
+T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
+T28 taps: p1:Island#3
+T28 p1 adds {U} (p1:Island#3)
+T28 p1 taps p1:Island#3 for mana
+T28 taps: p1:Plains
+T28 p1 adds {W} (p1:Plains)
+T28 p1 taps p1:Plains for mana
+T28 p1 cancels casting Giant Growth
+T28 moves: Giant Growth, p1's hand -> stack
+T28 p1 cancels casting Giant Growth
+T28 taps: p1:Island#2
+T28 p1 adds {U} (p1:Island#2)
+T28 p1 taps p1:Island#2 for mana
+T28 p2 cancels activating p2:Wall of Faith
+T28 p1's unspent {U} empties
+T28 p2 cancels activating p2:Wall of Faith
+T28 p2 cancels activating p2:Wall of Faith
+T28 moves: Giant Growth, p1's hand -> p1's graveyard
+T28 p1 discards Giant Growth
+T28 effect ends: p2:Wall of Faith +0/+1
+T29 turn 29 begins (p2)
+T29 untaps: p2:Mountain
+T29 untaps: p2:Plains#1
+T29 untaps: p2:Forest#1
+T29 untaps: p2:Plains#2
+T29 untaps: p2:Forest#2
+T29 untaps: p2:Swamp
+T29 untaps: p2:Plains#3
+T29 untaps: p2:Plains#4
+T29 moves: Disentomb, p2's library -> p2's hand
+T29 p2 draws
+T29 taps: p1:Island#1
+T29 p1 adds {U} (p1:Island#1)
+T29 p1 taps p1:Island#1 for mana
+T29 taps: p1:Mountain#1
+T29 p1 adds {R} (p1:Mountain#1)
+T29 p1 taps p1:Mountain#1 for mana
+T29 taps: p1:Plains
+T29 p1 adds {W} (p1:Plains)
+T29 p1 taps p1:Plains for mana
+T29 p1's unspent {W}{U}{R} empties
+T29 taps: p2:Swamp
+T29 p2 adds {B} (p2:Swamp)
+T29 p2 taps p2:Swamp for mana
+T29 taps: p2:Plains#1
+T29 p2 adds {W} (p2:Plains#1)
+T29 p2 taps p2:Plains#1 for mana
+T29 taps: p2:Plains#2
+T29 p2 adds {W} (p2:Plains#2)
+T29 p2 taps p2:Plains#2 for mana
+T29 taps: p2:Plains#4
+T29 p2 adds {W} (p2:Plains#4)
+T29 p2 taps p2:Plains#4 for mana
+T29 taps: p2:Forest#1
+T29 p2 adds {G} (p2:Forest#1)
+T29 p2 taps p2:Forest#1 for mana
+T29 taps: p2:Mountain
+T29 p2 adds {R} (p2:Mountain)
+T29 p2 taps p2:Mountain for mana
+T29 taps: p2:Forest#2
+T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
+T29 p2 activates p2:Wall of Faith
+T29 taps: p2:Plains#3
+T29 p2 adds {W} (p2:Plains#3)
+T29 p2 taps p2:Plains#3 for mana
+T29 p2 activates p2:Wall of Faith
+T29 effect: p2:Wall of Faith +0/+1 until end of turn
+T29 resolves: p2:Wall of Faith's ability
+T29 p2 activates p2:Wall of Faith
+T29 taps: p1:Island#3
+T29 p1 adds {U} (p1:Island#3)
+T29 p1 taps p1:Island#3 for mana
+T29 effect: p2:Wall of Faith +0/+1 until end of turn
+T29 resolves: p2:Wall of Faith's ability
+T29 effect: p2:Wall of Faith +0/+1 until end of turn
+T29 resolves: p2:Wall of Faith's ability
+T29 moves: Shivan Dragon, p2's hand -> stack
+T29 p2 cancels casting Shivan Dragon
+T29 moves: Haunting Echoes, p2's hand -> stack
+T29 p2 cancels casting Haunting Echoes
+T29 p2's unspent {W}{B}{R}{G}{G} empties
+T29 p1's unspent {U} empties
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 attack: nothing
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 cancels activating p2:Wall of Faith
+T29 p2 cancels activating p2:Wall of Faith
+T29 moves: Disentomb, p2's hand -> stack
+T29 p2 cancels casting Disentomb
+T29 moves: Haunting Echoes, p2's hand -> p2's graveyard
+T29 p2 discards Haunting Echoes
+T29 effect ends: p2:Wall of Faith +0/+1
+T29 effect ends: p2:Wall of Faith +0/+1
+T29 effect ends: p2:Wall of Faith +0/+1
+T30 turn 30 begins (p1)
+T30 untaps: p1:Mountain#1
+T30 untaps: p1:Forest#1
+T30 untaps: p1:Island#1
+T30 untaps: p1:Forest#2
+T30 untaps: p1:Plains
+T30 untaps: p1:Island#2
+T30 untaps: p1:Mountain#2
+T30 untaps: p1:Island#3
+T30 untaps: p1:Island#4
+T30 untaps: p1:Island#5
+T30 taps: p1:Forest#1
+T30 p1 adds {G} (p1:Forest#1)
+T30 p1 taps p1:Forest#1 for mana
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p1's unspent {G} empties
+T30 moves: Plains, p1's library -> p1's hand
+T30 p1 draws
+T30 moves: Acidic Slime, p1's hand -> stack
+T30 taps: p1:Mountain#1
+T30 p1 adds {R} (p1:Mountain#1)
+T30 p1 taps p1:Mountain#1 for mana
+T30 taps: p1:Island#5
+T30 p1 adds {U} (p1:Island#5)
+T30 p1 taps p1:Island#5 for mana
+T30 taps: p1:Island#1
+T30 p1 adds {U} (p1:Island#1)
+T30 p1 taps p1:Island#1 for mana
+T30 p1 cancels casting Acidic Slime
+T30 moves: Plains, p1's hand -> battlefield
+T30 p1 plays p1:Plains#2
+T30 moves: Royal Assassin, p1's hand -> stack
+T30 taps: p1:Plains#2
+T30 p1 adds {W} (p1:Plains#2)
+T30 p1 taps p1:Plains#2 for mana
+T30 taps: p1:Island#4
+T30 p1 adds {U} (p1:Island#4)
+T30 p1 taps p1:Island#4 for mana
+T30 taps: p1:Island#2
+T30 p1 adds {U} (p1:Island#2)
+T30 p1 taps p1:Island#2 for mana
+T30 taps: p1:Island#3
+T30 p1 adds {U} (p1:Island#3)
+T30 p1 taps p1:Island#3 for mana
+T30 taps: p1:Island#5
+T30 p1 adds {U} (p1:Island#5)
+T30 p1 taps p1:Island#5 for mana
+T30 p1 cancels casting Royal Assassin
+T30 moves: Berserkers of Blood Ridge, p1's hand -> stack
+T30 taps: p1:Mountain#2
+T30 p1 adds {R} (p1:Mountain#2)
+T30 p1 taps p1:Mountain#2 for mana
+T30 taps: p1:Island#5
+T30 p1 adds {U} (p1:Island#5)
+T30 p1 taps p1:Island#5 for mana
+T30 taps: p1:Plains#1
+T30 p1 adds {W} (p1:Plains#1)
+T30 p1 taps p1:Plains#1 for mana
+T30 taps: p1:Island#2
+T30 p1 adds {U} (p1:Island#2)
+T30 p1 taps p1:Island#2 for mana
+T30 taps: p1:Forest#2
+T30 p1 adds {G} (p1:Forest#2)
+T30 p1 taps p1:Forest#2 for mana
+T30 p1 casts Berserkers of Blood Ridge
+T30 resolves: Berserkers of Blood Ridge
+T30 moves: Berserkers of Blood Ridge, stack -> battlefield
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 taps: p1:Plains#2
+T30 p1 adds {W} (p1:Plains#2)
+T30 p1 taps p1:Plains#2 for mana
+T30 taps: p1:Island#3
+T30 p1 adds {U} (p1:Island#3)
+T30 p1 taps p1:Island#3 for mana
+T30 taps: p1:Mountain#1
+T30 p1 adds {R} (p1:Mountain#1)
+T30 p1 taps p1:Mountain#1 for mana
+T30 taps: p1:Island#1
+T30 p1 adds {U} (p1:Island#1)
+T30 p1 taps p1:Island#1 for mana
+T30 taps: p1:Island#4
+T30 p1 adds {U} (p1:Island#4)
+T30 p1 taps p1:Island#4 for mana
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p1's unspent {W}{U}{U}{U}{R} empties
+T30 taps: p1:Horned Turtle
+T30 taps: p1:Emerald Oryx
+T30 p1 attack: p1:Horned Turtle -> p2, p1:Emerald Oryx -> p2
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 block: p2:Wall of Faith -> p1:Horned Turtle
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 combat damage: p1:Horned Turtle -> p2:Wall of Faith 1
+T30 combat damage: p1:Emerald Oryx -> p2 2
+T30 p2 loses 2 life
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 p2 cancels activating p2:Wall of Faith
+T30 moves: Consume Spirit, p1's hand -> stack
+T30 p1 cancels casting Consume Spirit
+T30 moves: Excommunicate, p1's hand -> stack
+T30 p1 cancels casting Excommunicate
+T30 damage removed: p2:Wall of Faith (1)
+T31 turn 31 begins (p2)
+T31 untaps: p2:Mountain
+T31 untaps: p2:Plains#1
+T31 untaps: p2:Forest#1
+T31 untaps: p2:Plains#2
+T31 untaps: p2:Forest#2
+T31 untaps: p2:Swamp
+T31 untaps: p2:Plains#3
+T31 untaps: p2:Plains#4
+T31 moves: Mountain, p2's library -> p2's hand
+T31 p2 draws
+T31 taps: p2:Plains#4
+T31 p2 adds {W} (p2:Plains#4)
+T31 p2 taps p2:Plains#4 for mana
+T31 p2's unspent {W} empties
+T31 p2 attack: nothing
+T31 taps: p2:Forest#2
+T31 p2 adds {G} (p2:Forest#2)
+T31 p2 taps p2:Forest#2 for mana
+T31 taps: p2:Plains#2
+T31 p2 adds {W} (p2:Plains#2)
+T31 p2 taps p2:Plains#2 for mana
+T31 taps: p2:Mountain
+T31 p2 adds {R} (p2:Mountain)
+T31 p2 taps p2:Mountain for mana
+T31 p2 activates p2:Wall of Faith
+T31 taps: p2:Plains#1
+T31 p2 adds {W} (p2:Plains#1)
+T31 p2 taps p2:Plains#1 for mana
+T31 p2 activates p2:Wall of Faith
+T31 effect: p2:Wall of Faith +0/+1 until end of turn
+T31 resolves: p2:Wall of Faith's ability
+T31 effect: p2:Wall of Faith +0/+1 until end of turn
+T31 resolves: p2:Wall of Faith's ability
+T31 taps: p2:Forest#1
+T31 p2 adds {G} (p2:Forest#1)
+T31 p2 taps p2:Forest#1 for mana
+T31 p2's unspent {R}{G}{G} empties
+T31 taps: p2:Plains#3
+T31 p2 adds {W} (p2:Plains#3)
+T31 p2 taps p2:Plains#3 for mana
+T31 taps: p2:Swamp
+T31 p2 adds {B} (p2:Swamp)
+T31 p2 taps p2:Swamp for mana
+T31 p2 activates p2:Wall of Faith
+T31 p2 cancels activating p2:Wall of Faith
+T31 effect: p2:Wall of Faith +0/+1 until end of turn
+T31 resolves: p2:Wall of Faith's ability
+T31 p2's unspent {B} empties
+T31 p2 cancels activating p2:Wall of Faith
+T31 moves: Shivan Dragon, p2's hand -> p2's graveyard
+T31 p2 discards Shivan Dragon
+T31 effect ends: p2:Wall of Faith +0/+1
+T31 effect ends: p2:Wall of Faith +0/+1
+T31 effect ends: p2:Wall of Faith +0/+1
+T32 turn 32 begins (p1)
+T32 untaps: p1:Mountain#1
+T32 untaps: p1:Forest#1
+T32 untaps: p1:Island#1
+T32 untaps: p1:Forest#2
+T32 untaps: p1:Plains#1
+T32 untaps: p1:Island#2
+T32 untaps: p1:Mountain#2
+T32 untaps: p1:Island#3
+T32 untaps: p1:Horned Turtle
+T32 untaps: p1:Island#4
+T32 untaps: p1:Island#5
+T32 untaps: p1:Emerald Oryx
+T32 untaps: p1:Plains#2
+T32 taps: p1:Island#3
+T32 p1 adds {U} (p1:Island#3)
+T32 p1 taps p1:Island#3 for mana
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p1's unspent {U} empties
+T32 moves: Air Elemental, p1's library -> p1's hand
+T32 p1 draws
+T32 taps: p1:Mountain#2
+T32 p1 adds {R} (p1:Mountain#2)
+T32 p1 taps p1:Mountain#2 for mana
+T32 taps: p1:Island#1
+T32 p1 adds {U} (p1:Island#1)
+T32 p1 taps p1:Island#1 for mana
+T32 p1's unspent {U}{R} empties
+T32 taps: p1:Mountain#1
+T32 p1 adds {R} (p1:Mountain#1)
+T32 p1 taps p1:Mountain#1 for mana
+T32 moves: Looming Shade, p1's hand -> stack
+T32 taps: p1:Plains#2
+T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
+T32 p1 cancels casting Looming Shade
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p1's unspent {R} empties
+T32 taps: p1:Plains#1
+T32 p1 adds {W} (p1:Plains#1)
+T32 p1 taps p1:Plains#1 for mana
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p1's unspent {W} empties
+T32 taps: p1:Berserkers of Blood Ridge
+T32 taps: p1:Horned Turtle
+T32 p1 attack: p1:Berserkers of Blood Ridge -> p2, p1:Horned Turtle -> p2
+T32 taps: p1:Island#5
+T32 p1 adds {U} (p1:Island#5)
+T32 p1 taps p1:Island#5 for mana
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p2 cancels activating p2:Wall of Faith
+T32 p1's unspent {U} empties
+T32 p2 block: nothing
+T32 combat damage: p1:Berserkers of Blood Ridge -> p2 4
+T32 combat damage: p1:Horned Turtle -> p2 1
+T32 p2 loses 4 life
+T32 p2 loses 1 life
+T32 taps: p1:Island#4
+T32 p1 adds {U} (p1:Island#4)
+T32 p1 taps p1:Island#4 for mana
+T32 p2 cancels activating p2:Wall of Faith
+T32 p1's unspent {U} empties
+T32 moves: Acidic Slime, p1's hand -> stack
+T32 taps: p1:Island#2
+T32 p1 adds {U} (p1:Island#2)
+T32 p1 taps p1:Island#2 for mana
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 p1 taps p1:Forest#2 for mana
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 p1 taps p1:Forest#1 for mana
+T32 taps: p1:Plains#2
+T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
+T32 p1 cancels casting Acidic Slime
+T32 moves: Excommunicate, p1's hand -> stack
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 p1 taps p1:Forest#2 for mana
+T32 p1 cancels casting Excommunicate
+T32 moves: Consume Spirit, p1's hand -> stack
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 p1 taps p1:Forest#2 for mana
+T32 taps: p1:Island#2
+T32 p1 adds {U} (p1:Island#2)
+T32 p1 taps p1:Island#2 for mana
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 p1 taps p1:Forest#1 for mana
+T32 taps: p1:Plains#2
+T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
+T32 p1 cancels casting Consume Spirit
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 p1 taps p1:Forest#2 for mana
+T32 moves: Acidic Slime, p1's hand -> stack
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 p1 taps p1:Forest#1 for mana
+T32 taps: p1:Island#2
+T32 p1 adds {U} (p1:Island#2)
+T32 p1 taps p1:Island#2 for mana
+T32 taps: p1:Plains#2
+T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
+T32 p1 cancels casting Acidic Slime
+T32 moves: Consume Spirit, p1's hand -> stack
+T32 p1 cancels casting Consume Spirit
+T32 p2 cancels activating p2:Wall of Faith
+T32 p1's unspent {G} empties
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 p1 taps p1:Forest#1 for mana
+T32 p1's unspent {G} empties
+T33 turn 33 begins (p2)
+T33 untaps: p2:Mountain
+T33 untaps: p2:Plains#1
+T33 untaps: p2:Forest#1
+T33 untaps: p2:Plains#2
+T33 untaps: p2:Forest#2
+T33 untaps: p2:Swamp
+T33 untaps: p2:Plains#3
+T33 untaps: p2:Plains#4
+T33 moves: Forest, p2's library -> p2's hand
+T33 p2 draws
+T33 taps: p2:Swamp
+T33 p2 adds {B} (p2:Swamp)
+T33 p2 taps p2:Swamp for mana
+T33 taps: p2:Forest#1
+T33 p2 adds {G} (p2:Forest#1)
+T33 p2 taps p2:Forest#1 for mana
+T33 taps: p2:Plains#4
+T33 p2 adds {W} (p2:Plains#4)
+T33 p2 taps p2:Plains#4 for mana
+T33 taps: p2:Forest#2
+T33 p2 adds {G} (p2:Forest#2)
+T33 p2 taps p2:Forest#2 for mana
+T33 taps: p2:Plains#2
+T33 p2 adds {W} (p2:Plains#2)
+T33 p2 taps p2:Plains#2 for mana
+T33 taps: p2:Plains#3
+T33 p2 adds {W} (p2:Plains#3)
+T33 p2 taps p2:Plains#3 for mana
+T33 p2 activates p2:Wall of Faith
+T33 taps: p2:Plains#1
+T33 p2 adds {W} (p2:Plains#1)
+T33 p2 taps p2:Plains#1 for mana
+T33 taps: p1:Island#2
+T33 p1 adds {U} (p1:Island#2)
+T33 p1 taps p1:Island#2 for mana
+T33 taps: p1:Plains#2
+T33 p1 adds {W} (p1:Plains#2)
+T33 p1 taps p1:Plains#2 for mana
+T33 p2 activates p2:Wall of Faith
+T33 effect: p2:Wall of Faith +0/+1 until end of turn
+T33 resolves: p2:Wall of Faith's ability
+T33 effect: p2:Wall of Faith +0/+1 until end of turn
+T33 resolves: p2:Wall of Faith's ability
+T33 taps: p2:Mountain
+T33 p2 adds {R} (p2:Mountain)
+T33 p2 taps p2:Mountain for mana
+T33 p2 activates p2:Wall of Faith
+T33 effect: p2:Wall of Faith +0/+1 until end of turn
+T33 resolves: p2:Wall of Faith's ability
+T33 p2 activates p2:Wall of Faith
+T33 p2 cancels activating p2:Wall of Faith
+T33 p2 cancels activating p2:Wall of Faith
+T33 p2 cancels activating p2:Wall of Faith
+T33 effect: p2:Wall of Faith +0/+1 until end of turn
+T33 resolves: p2:Wall of Faith's ability
+T33 p2 cancels activating p2:Wall of Faith
+T33 p2 cancels activating p2:Wall of Faith
+T33 p2's unspent {B}{R}{G}{G} empties
+T33 p1's unspent {W}{U} empties
+T33 p2 attack: nothing
+T33 moves: Forest, p2's hand -> battlefield
+T33 p2 plays p2:Forest#3
+T33 taps: p2:Forest#3
+T33 p2 adds {G} (p2:Forest#3)
+T33 p2 taps p2:Forest#3 for mana
+T33 moves: Disentomb, p2's hand -> stack
+T33 p2 cancels casting Disentomb
+T33 p2's unspent {G} empties
+T33 p2 cancels activating p2:Wall of Faith
+T33 effect ends: p2:Wall of Faith +0/+1
+T33 effect ends: p2:Wall of Faith +0/+1
+T33 effect ends: p2:Wall of Faith +0/+1
+T33 effect ends: p2:Wall of Faith +0/+1
+T34 turn 34 begins (p1)
+T34 untaps: p1:Mountain#1
+T34 untaps: p1:Forest#1
+T34 untaps: p1:Island#1
+T34 untaps: p1:Forest#2
+T34 untaps: p1:Plains#1
+T34 untaps: p1:Island#2
+T34 untaps: p1:Mountain#2
+T34 untaps: p1:Island#3
+T34 untaps: p1:Horned Turtle
+T34 untaps: p1:Island#4
+T34 untaps: p1:Island#5
+T34 untaps: p1:Plains#2
+T34 untaps: p1:Berserkers of Blood Ridge
+T34 taps: p1:Island#3
+T34 p1 adds {U} (p1:Island#3)
+T34 p1 taps p1:Island#3 for mana
+T34 taps: p1:Mountain#1
+T34 p1 adds {R} (p1:Mountain#1)
+T34 p1 taps p1:Mountain#1 for mana
+T34 p2 cancels activating p2:Wall of Faith
+T34 p1's unspent {U}{R} empties
+T34 moves: Plains, p1's library -> p1's hand
+T34 p1 draws
+T34 p2 cancels activating p2:Wall of Faith
+T34 moves: Acidic Slime, p1's hand -> stack
+T34 taps: p1:Island#1
+T34 p1 adds {U} (p1:Island#1)
+T34 p1 taps p1:Island#1 for mana
+T34 p1 cancels casting Acidic Slime
+T34 moves: Plains, p1's hand -> battlefield
+T34 p1 plays p1:Plains#3
+T34 taps: p1:Mountain#2
+T34 p1 adds {R} (p1:Mountain#2)
+T34 p1 taps p1:Mountain#2 for mana
+T34 taps: p1:Plains#3
+T34 p1 adds {W} (p1:Plains#3)
+T34 p1 taps p1:Plains#3 for mana
+T34 p1's unspent {W}{R} empties
+T34 taps: p1:Island#2
+T34 p1 adds {U} (p1:Island#2)
+T34 p1 taps p1:Island#2 for mana
+T34 taps: p1:Island#5
+T34 p1 adds {U} (p1:Island#5)
+T34 p1 taps p1:Island#5 for mana
+T34 p1's unspent {U}{U} empties
+T34 taps: p1:Horned Turtle
+T34 taps: p1:Berserkers of Blood Ridge
+T34 p1 attack: p1:Horned Turtle -> p2, p1:Berserkers of Blood Ridge -> p2
+T34 taps: p1:Forest#1
+T34 p1 adds {G} (p1:Forest#1)
+T34 p1 taps p1:Forest#1 for mana
+T34 taps: p1:Plains#2
+T34 p1 adds {W} (p1:Plains#2)
+T34 p1 taps p1:Plains#2 for mana
+T34 p1's unspent {W}{G} empties
+T34 p2 block: p2:Wall of Faith -> p1:Horned Turtle
+T34 taps: p1:Forest#2
+T34 p1 adds {G} (p1:Forest#2)
+T34 p1 taps p1:Forest#2 for mana
+T34 p1's unspent {G} empties
+T34 combat damage: p1:Horned Turtle -> p2:Wall of Faith 1
+T34 combat damage: p1:Berserkers of Blood Ridge -> p2 4
+T34 p2 loses 4 life
+T34 taps: p1:Island#1
+T34 p1 adds {U} (p1:Island#1)
+T34 p1 taps p1:Island#1 for mana
+T34 p1's unspent {U} empties
+T34 taps: p1:Plains#1
+T34 p1 adds {W} (p1:Plains#1)
+T34 p1 taps p1:Plains#1 for mana
+T34 taps: p1:Island#4
+T34 p1 adds {U} (p1:Island#4)
+T34 p1 taps p1:Island#4 for mana
+T34 p2 cancels activating p2:Wall of Faith
+T34 p2 cancels activating p2:Wall of Faith
+T34 p1's unspent {W}{U} empties
+T34 p2 cancels activating p2:Wall of Faith
+T34 damage removed: p2:Wall of Faith (1)
+T35 turn 35 begins (p2)
+T35 untaps: p2:Mountain
+T35 untaps: p2:Plains#1
+T35 untaps: p2:Forest#1
+T35 untaps: p2:Plains#2
+T35 untaps: p2:Forest#2
+T35 untaps: p2:Swamp
+T35 untaps: p2:Plains#3
+T35 untaps: p2:Plains#4
+T35 untaps: p2:Forest#3
+T35 moves: Seismic Strike, p2's library -> p2's hand
+T35 p2 draws
+T35 moves: Seismic Strike, p2's hand -> stack
+T35 taps: p2:Plains#1
+T35 p2 adds {W} (p2:Plains#1)
+T35 p2 taps p2:Plains#1 for mana
+T35 p2 cancels casting Seismic Strike
+T35 p2 attack: nothing
+T35 moves: Bog Wraith, p2's hand -> stack
+T35 taps: p2:Forest#3
+T35 p2 adds {G} (p2:Forest#3)
+T35 p2 taps p2:Forest#3 for mana
+T35 taps: p2:Plains#4
+T35 p2 adds {W} (p2:Plains#4)
+T35 p2 taps p2:Plains#4 for mana
+T35 taps: p2:Forest#1
+T35 p2 adds {G} (p2:Forest#1)
+T35 p2 taps p2:Forest#1 for mana
+T35 taps: p2:Plains#2
+T35 p2 adds {W} (p2:Plains#2)
+T35 p2 taps p2:Plains#2 for mana
+T35 taps: p2:Plains#3
+T35 p2 adds {W} (p2:Plains#3)
+T35 p2 taps p2:Plains#3 for mana
+T35 taps: p2:Forest#2
+T35 p2 adds {G} (p2:Forest#2)
+T35 p2 taps p2:Forest#2 for mana
+T35 taps: p2:Mountain
+T35 p2 adds {R} (p2:Mountain)
+T35 p2 taps p2:Mountain for mana
+T35 taps: p2:Plains#1
+T35 p2 adds {W} (p2:Plains#1)
+T35 p2 taps p2:Plains#1 for mana
+T35 taps: p2:Swamp
+T35 p2 adds {B} (p2:Swamp)
+T35 p2 taps p2:Swamp for mana
+T35 p2 casts Bog Wraith
+T35 resolves: Bog Wraith
+T35 moves: Bog Wraith, stack -> battlefield
+T35 p2 activates p2:Wall of Faith
+T35 effect: p2:Wall of Faith +0/+1 until end of turn
+T35 resolves: p2:Wall of Faith's ability
+T35 moves: Seismic Strike, p2's hand -> stack
+T35 p2 casts Seismic Strike
+T35 p2 cancels activating p2:Wall of Faith
+T35 damage: Seismic Strike -> p1:Horned Turtle 1
+T35 resolves: Seismic Strike
+T35 moves: Seismic Strike, stack -> p2's graveyard
+T35 moves: Mountain, p2's hand -> battlefield
+T35 p2 plays p2:Mountain#2
+T35 p2's unspent {G} empties
+T35 damage removed: p1:Horned Turtle (1)
+T35 effect ends: p2:Wall of Faith +0/+1
+T36 turn 36 begins (p1)
+T36 untaps: p1:Mountain#1
+T36 untaps: p1:Forest#1
+T36 untaps: p1:Island#1
+T36 untaps: p1:Forest#2
+T36 untaps: p1:Plains#1
+T36 untaps: p1:Island#2
+T36 untaps: p1:Mountain#2
+T36 untaps: p1:Island#3
+T36 untaps: p1:Horned Turtle
+T36 untaps: p1:Island#4
+T36 untaps: p1:Island#5
+T36 untaps: p1:Plains#2
+T36 untaps: p1:Berserkers of Blood Ridge
+T36 untaps: p1:Plains#3
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 p2 taps p2:Mountain#2 for mana
+T36 p2 cancels activating p2:Wall of Faith
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 p2 taps p2:Mountain#2 for mana
+T36 p2 cancels activating p2:Wall of Faith
+T36 moves: Plains, p1's library -> p1's hand
+T36 p1 draws
+T36 taps: p1:Plains#1
+T36 p1 adds {W} (p1:Plains#1)
+T36 p1 taps p1:Plains#1 for mana
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 p2 taps p2:Mountain#2 for mana
+T36 p2's unspent {R} empties
+T36 p1's unspent {W} empties
+T36 moves: Excommunicate, p1's hand -> stack
+T36 taps: p1:Plains#3
+T36 p1 adds {W} (p1:Plains#3)
+T36 p1 taps p1:Plains#3 for mana
+T36 taps: p1:Forest#1
+T36 p1 adds {G} (p1:Forest#1)
+T36 p1 taps p1:Forest#1 for mana
+T36 taps: p1:Forest#2
+T36 p1 adds {G} (p1:Forest#2)
+T36 p1 taps p1:Forest#2 for mana
+T36 p1 casts Excommunicate
+T36 taps: p1:Plains#2
+T36 p1 adds {W} (p1:Plains#2)
+T36 p1 taps p1:Plains#2 for mana
+T36 moves: Cancel, p2's hand -> stack
+T36 p2 cancels casting Cancel
+T36 p2 cancels activating p2:Wall of Faith
+T36 p2 cancels activating p2:Wall of Faith
+T36 p2 cancels activating p2:Wall of Faith
+T36 p2 cancels activating p2:Wall of Faith
+T36 moves: Horned Turtle, battlefield -> p1's library
+T36 resolves: Excommunicate
+T36 moves: Excommunicate, stack -> p1's graveyard
+T36 p2 cancels activating p2:Wall of Faith
+T36 p1's unspent {W} empties
+T36 taps: p1:Berserkers of Blood Ridge
+T36 p1 attack: p1:Berserkers of Blood Ridge -> p2
+T36 p2 block: p2:Wall of Faith -> p1:Berserkers of Blood Ridge, p2:Bog Wraith -> p1:Berserkers of Blood Ridge
+T36 taps: p1:Island#3
+T36 p1 adds {U} (p1:Island#3)
+T36 p1 taps p1:Island#3 for mana
+T36 taps: p1:Island#5
+T36 p1 adds {U} (p1:Island#5)
+T36 p1 taps p1:Island#5 for mana
+T36 p2 cancels activating p2:Wall of Faith
+T36 p2 cancels activating p2:Wall of Faith
+T36 p1's unspent {U}{U} empties
+T36 combat damage: p1:Berserkers of Blood Ridge -> p2:Wall of Faith 4
+T36 combat damage: p2:Bog Wraith -> p1:Berserkers of Blood Ridge 3
+T36 p2 cancels activating p2:Wall of Faith
+T36 taps: p1:Island#2
+T36 p1 adds {U} (p1:Island#2)
+T36 p1 taps p1:Island#2 for mana
+T36 taps: p1:Island#1
+T36 p1 adds {U} (p1:Island#1)
+T36 p1 taps p1:Island#1 for mana
+T36 p2 cancels activating p2:Wall of Faith
+T36 p1's unspent {U}{U} empties
+T36 taps: p1:Mountain#2
+T36 p1 adds {R} (p1:Mountain#2)
+T36 p1 taps p1:Mountain#2 for mana
+T36 moves: Plains, p1's hand -> battlefield
+T36 p1 plays p1:Plains#4
+T36 moves: Consume Spirit, p1's hand -> stack
+T36 taps: p1:Island#4
+T36 p1 adds {U} (p1:Island#4)
+T36 p1 taps p1:Island#4 for mana
+T36 taps: p1:Plains#4
+T36 p1 adds {W} (p1:Plains#4)
+T36 p1 taps p1:Plains#4 for mana
+T36 taps: p1:Mountain#1
+T36 p1 adds {R} (p1:Mountain#1)
+T36 p1 taps p1:Mountain#1 for mana
+T36 p1 cancels casting Consume Spirit
+T36 p2 cancels activating p2:Wall of Faith
+T36 p1's unspent {R} empties
+T36 taps: p1:Plains#4
+T36 p1 adds {W} (p1:Plains#4)
+T36 p1 taps p1:Plains#4 for mana
+T36 taps: p1:Island#4
+T36 p1 adds {U} (p1:Island#4)
+T36 p1 taps p1:Island#4 for mana
+T36 taps: p1:Mountain#1
+T36 p1 adds {R} (p1:Mountain#1)
+T36 p1 taps p1:Mountain#1 for mana
+T36 p2 cancels activating p2:Wall of Faith
+T36 p2 cancels activating p2:Wall of Faith
+T36 p2 cancels activating p2:Wall of Faith
+T36 p1's unspent {W}{U}{R} empties
+T36 damage removed: p2:Wall of Faith (4)
+T36 damage removed: p1:Berserkers of Blood Ridge (3)
+T37 turn 37 begins (p2)
+T37 untaps: p2:Mountain#1
+T37 untaps: p2:Plains#1
+T37 untaps: p2:Forest#1
+T37 untaps: p2:Plains#2
+T37 untaps: p2:Forest#2
+T37 untaps: p2:Swamp
+T37 untaps: p2:Plains#3
+T37 untaps: p2:Plains#4
+T37 untaps: p2:Forest#3
+T37 untaps: p2:Mountain#2

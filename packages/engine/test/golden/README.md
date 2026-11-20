@@ -9,9 +9,10 @@ an engine change did to the game.
 
 - If the change is intended, run `pnpm golden:update` and explain the diff in the commit. Never regenerate just to
   make a failure go away.
-- Between them, the games must run every mechanic the pool's cards have (each keyword, static, effect op, trigger
-  condition, cost and target kind, as a spell or ability with it resolves; `cli/src/mechanics.ts`), answer every kind
-  of decision, and show the choices the export tests need (a test checks). When the pool grows, `pnpm golden:cover`
+- Between them, the games must run every mechanic the pool's cards have (each effect op, trigger condition, cost and
+  target kind as a spell or ability with it resolves; combat keywords and statics as a creature with them attacks or
+  blocks; `cli/src/mechanics.ts`), answer every kind of decision, show every kind of event agents can reach, and show
+  the choices the export tests need (a test checks). When the pool grows, `pnpm golden:cover`
   adds, greedily, the games running the most new mechanics per action, cut off at the turn they appear (D-082); each
   description's "Covered, when chosen" list is what the game was chosen for, and can go stale after `pnpm
   golden:update`. Each card is covered by its own scenarios (a test checks every pool card is in one). M1's four games

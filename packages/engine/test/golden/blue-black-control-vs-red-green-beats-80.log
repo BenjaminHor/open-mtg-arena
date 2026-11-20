@@ -1,0 +1,1187 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Shivan Dragon, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Berserkers of Blood Ridge, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Deadly Recluse, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Llanowar Elves, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Fireball, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Essence Scatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Dread Warlock, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Howling Banshee, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Hypnotic Specter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 keeps
+T0 p1 mulligans
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Essence Scatter, p1's hand -> p1's library
+T0 moves: Dread Warlock, p1's hand -> p1's library
+T0 moves: Howling Banshee, p1's hand -> p1's library
+T0 moves: Swamp, p1's hand -> p1's library
+T0 moves: Hypnotic Specter, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Sign in Blood, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Mountain, p2's hand -> battlefield
+T1 p2 plays p2:Mountain
+T1 moves: Shivan Dragon, p2's hand -> stack
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
+T1 p2 cancels casting Shivan Dragon
+T1 moves: Deadly Recluse, p2's hand -> stack
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
+T1 p2 cancels casting Deadly Recluse
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
+T1 moves: Shivan Dragon, p2's hand -> stack
+T1 p2 cancels casting Shivan Dragon
+T1 moves: Fireball, p2's hand -> stack
+T1 p2 cancels casting Fireball
+T1 moves: Prodigal Pyromancer, p2's hand -> stack
+T1 p2 cancels casting Prodigal Pyromancer
+T1 p2's unspent {R} empties
+T1 p2 attack: nothing
+T1 moves: Llanowar Elves, p2's hand -> stack
+T1 p2 cancels casting Llanowar Elves
+T1 moves: Prodigal Pyromancer, p2's hand -> stack
+T1 p2 cancels casting Prodigal Pyromancer
+T1 moves: Deadly Recluse, p2's hand -> stack
+T1 p2 cancels casting Deadly Recluse
+T1 moves: Llanowar Elves, p2's hand -> stack
+T1 p2 cancels casting Llanowar Elves
+T2 turn 2 begins (p1)
+T2 moves: Swamp, p1's library -> p1's hand
+T2 p1 draws
+T2 p1 attack: nothing
+T3 turn 3 begins (p2)
+T3 untaps: p2:Mountain
+T3 taps: p2:Mountain
+T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
+T3 p2's unspent {R} empties
+T3 moves: Prized Unicorn, p2's library -> p2's hand
+T3 p2 draws
+T3 p2 attack: nothing
+T4 turn 4 begins (p1)
+T4 moves: Alluring Siren, p1's library -> p1's hand
+T4 p1 draws
+T4 moves: Swamp, p1's hand -> battlefield
+T4 p1 plays p1:Swamp
+T4 taps: p1:Swamp
+T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
+T4 p1's unspent {B} empties
+T4 p1 attack: nothing
+T4 moves: Alluring Siren, p1's hand -> stack
+T4 p1 cancels casting Alluring Siren
+T5 turn 5 begins (p2)
+T5 untaps: p2:Mountain
+T5 moves: Forest, p2's library -> p2's hand
+T5 p2 draws
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
+T5 p2's unspent {R} empties
+T5 p2 attack: nothing
+T5 moves: Llanowar Elves, p2's hand -> stack
+T5 p2 cancels casting Llanowar Elves
+T5 moves: Berserkers of Blood Ridge, p2's hand -> p2's graveyard
+T5 p2 discards Berserkers of Blood Ridge
+T6 turn 6 begins (p1)
+T6 untaps: p1:Swamp
+T6 moves: Royal Assassin, p1's library -> p1's hand
+T6 p1 draws
+T6 p1 attack: nothing
+T6 taps: p1:Swamp
+T6 p1 adds {B} (p1:Swamp)
+T6 p1 taps p1:Swamp for mana
+T6 p1's unspent {B} empties
+T6 moves: Sign in Blood, p1's hand -> p1's graveyard
+T6 p1 discards Sign in Blood
+T7 turn 7 begins (p2)
+T7 untaps: p2:Mountain
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 p2 taps p2:Mountain for mana
+T7 p2's unspent {R} empties
+T7 moves: Panic Attack, p2's library -> p2's hand
+T7 p2 draws
+T7 moves: Forest, p2's hand -> battlefield
+T7 p2 plays p2:Forest
+T7 p2 attack: nothing
+T7 moves: Fireball, p2's hand -> stack
+T7 p2 cancels casting Fireball
+T7 moves: Prodigal Pyromancer, p2's hand -> stack
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
+T7 p2 cancels casting Prodigal Pyromancer
+T7 moves: Prodigal Pyromancer, p2's hand -> stack
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
+T7 p2 cancels casting Prodigal Pyromancer
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
+T7 p2's unspent {G} empties
+T8 turn 8 begins (p1)
+T8 untaps: p1:Swamp
+T8 taps: p1:Swamp
+T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
+T8 p1's unspent {B} empties
+T8 moves: Child of Night, p1's library -> p1's hand
+T8 p1 draws
+T8 moves: Swamp, p1's hand -> battlefield
+T8 p1 plays p1:Swamp#2
+T8 taps: p1:Swamp#2
+T8 p1 adds {B} (p1:Swamp#2)
+T8 p1 taps p1:Swamp#2 for mana
+T8 p1's unspent {B} empties
+T8 p1 attack: nothing
+T8 moves: Alluring Siren, p1's hand -> stack
+T8 p1 cancels casting Alluring Siren
+T9 turn 9 begins (p2)
+T9 untaps: p2:Mountain
+T9 untaps: p2:Forest
+T9 moves: Lurking Predators, p2's library -> p2's hand
+T9 p2 draws
+T9 taps: p2:Mountain
+T9 p2 adds {R} (p2:Mountain)
+T9 p2 taps p2:Mountain for mana
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 p2 taps p2:Forest for mana
+T9 p2's unspent {R}{G} empties
+T9 p2 attack: nothing
+T9 moves: Deadly Recluse, p2's hand -> p2's graveyard
+T9 p2 discards Deadly Recluse
+T10 turn 10 begins (p1)
+T10 untaps: p1:Swamp#1
+T10 untaps: p1:Swamp#2
+T10 moves: Divination, p1's library -> p1's hand
+T10 p1 draws
+T10 taps: p1:Swamp#2
+T10 p1 adds {B} (p1:Swamp#2)
+T10 p1 taps p1:Swamp#2 for mana
+T10 p1's unspent {B} empties
+T10 taps: p1:Swamp#1
+T10 p1 adds {B} (p1:Swamp#1)
+T10 p1 taps p1:Swamp#1 for mana
+T10 moves: Divination, p1's hand -> stack
+T10 p1 cancels casting Divination
+T10 moves: Divination, p1's hand -> stack
+T10 p1 cancels casting Divination
+T10 moves: Island, p1's hand -> battlefield
+T10 p1 plays p1:Island
+T10 moves: Royal Assassin, p1's hand -> stack
+T10 taps: p1:Island
+T10 p1 adds {U} (p1:Island)
+T10 p1 taps p1:Island for mana
+T10 p1 cancels casting Royal Assassin
+T10 taps: p1:Island
+T10 p1 adds {U} (p1:Island)
+T10 p1 taps p1:Island for mana
+T10 moves: Royal Assassin, p1's hand -> stack
+T10 p1 cancels casting Royal Assassin
+T10 p1's unspent {U}{B} empties
+T10 p1 attack: nothing
+T11 turn 11 begins (p2)
+T11 untaps: p2:Mountain
+T11 untaps: p2:Forest
+T11 taps: p2:Mountain
+T11 p2 adds {R} (p2:Mountain)
+T11 p2 taps p2:Mountain for mana
+T11 p2's unspent {R} empties
+T11 moves: Mountain, p2's library -> p2's hand
+T11 p2 draws
+T11 taps: p2:Forest
+T11 p2 adds {G} (p2:Forest)
+T11 p2 taps p2:Forest for mana
+T11 p2's unspent {G} empties
+T11 p2 attack: nothing
+T11 moves: Lurking Predators, p2's hand -> stack
+T11 p2 cancels casting Lurking Predators
+T11 moves: Prodigal Pyromancer, p2's hand -> p2's graveyard
+T11 p2 discards Prodigal Pyromancer
+T12 turn 12 begins (p1)
+T12 untaps: p1:Swamp#1
+T12 untaps: p1:Swamp#2
+T12 untaps: p1:Island
+T12 taps: p1:Swamp#1
+T12 p1 adds {B} (p1:Swamp#1)
+T12 p1 taps p1:Swamp#1 for mana
+T12 p1's unspent {B} empties
+T12 moves: Phantom Warrior, p1's library -> p1's hand
+T12 p1 draws
+T12 taps: p1:Swamp#2
+T12 p1 adds {B} (p1:Swamp#2)
+T12 p1 taps p1:Swamp#2 for mana
+T12 taps: p1:Island
+T12 p1 adds {U} (p1:Island)
+T12 p1 taps p1:Island for mana
+T12 p1's unspent {U}{B} empties
+T12 moves: Swamp, p1's hand -> battlefield
+T12 p1 plays p1:Swamp#3
+T12 taps: p1:Swamp#3
+T12 p1 adds {B} (p1:Swamp#3)
+T12 p1 taps p1:Swamp#3 for mana
+T12 p1's unspent {B} empties
+T12 p1 attack: nothing
+T13 turn 13 begins (p2)
+T13 untaps: p2:Mountain
+T13 untaps: p2:Forest
+T13 moves: Mountain, p2's library -> p2's hand
+T13 p2 draws
+T13 p2 attack: nothing
+T13 taps: p2:Mountain
+T13 p2 adds {R} (p2:Mountain)
+T13 p2 taps p2:Mountain for mana
+T13 taps: p2:Forest
+T13 p2 adds {G} (p2:Forest)
+T13 p2 taps p2:Forest for mana
+T13 p2's unspent {R}{G} empties
+T13 moves: Fireball, p2's hand -> p2's graveyard
+T13 p2 discards Fireball
+T14 turn 14 begins (p1)
+T14 untaps: p1:Swamp#1
+T14 untaps: p1:Swamp#2
+T14 untaps: p1:Island
+T14 untaps: p1:Swamp#3
+T14 moves: Swamp, p1's library -> p1's hand
+T14 p1 draws
+T14 taps: p1:Swamp#3
+T14 p1 adds {B} (p1:Swamp#3)
+T14 p1 taps p1:Swamp#3 for mana
+T14 taps: p1:Swamp#1
+T14 p1 adds {B} (p1:Swamp#1)
+T14 p1 taps p1:Swamp#1 for mana
+T14 taps: p1:Swamp#2
+T14 p1 adds {B} (p1:Swamp#2)
+T14 p1 taps p1:Swamp#2 for mana
+T14 p1's unspent {B}{B}{B} empties
+T14 taps: p1:Island
+T14 p1 adds {U} (p1:Island)
+T14 p1 taps p1:Island for mana
+T14 moves: Island, p1's hand -> battlefield
+T14 p1 plays p1:Island#2
+T14 p1's unspent {U} empties
+T14 p1 attack: nothing
+T14 taps: p1:Island#2
+T14 p1 adds {U} (p1:Island#2)
+T14 p1 taps p1:Island#2 for mana
+T14 p1's unspent {U} empties
+T14 moves: Royal Assassin, p1's hand -> stack
+T14 p1 cancels casting Royal Assassin
+T14 moves: Royal Assassin, p1's hand -> stack
+T14 p1 cancels casting Royal Assassin
+T14 moves: Divination, p1's hand -> stack
+T14 p1 cancels casting Divination
+T15 turn 15 begins (p2)
+T15 untaps: p2:Mountain
+T15 untaps: p2:Forest
+T15 taps: p2:Mountain
+T15 p2 adds {R} (p2:Mountain)
+T15 p2 taps p2:Mountain for mana
+T15 p2's unspent {R} empties
+T15 moves: Mountain, p2's library -> p2's hand
+T15 p2 draws
+T15 taps: p2:Forest
+T15 p2 adds {G} (p2:Forest)
+T15 p2 taps p2:Forest for mana
+T15 p2's unspent {G} empties
+T15 moves: Mountain, p2's hand -> battlefield
+T15 p2 plays p2:Mountain#2
+T15 moves: Lurking Predators, p2's hand -> stack
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
+T15 p2 cancels casting Lurking Predators
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
+T15 moves: Llanowar Elves, p2's hand -> stack
+T15 p2 cancels casting Llanowar Elves
+T15 p2's unspent {R} empties
+T15 p2 attack: nothing
+T16 turn 16 begins (p1)
+T16 untaps: p1:Swamp#1
+T16 untaps: p1:Swamp#2
+T16 untaps: p1:Island#1
+T16 untaps: p1:Swamp#3
+T16 untaps: p1:Island#2
+T16 moves: Swamp, p1's library -> p1's hand
+T16 p1 draws
+T16 taps: p1:Swamp#3
+T16 p1 adds {B} (p1:Swamp#3)
+T16 p1 taps p1:Swamp#3 for mana
+T16 p1's unspent {B} empties
+T16 taps: p1:Island#2
+T16 p1 adds {U} (p1:Island#2)
+T16 p1 taps p1:Island#2 for mana
+T16 taps: p1:Swamp#2
+T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
+T16 p1's unspent {U}{B} empties
+T16 p1 attack: nothing
+T16 taps: p1:Swamp#1
+T16 p1 adds {B} (p1:Swamp#1)
+T16 p1 taps p1:Swamp#1 for mana
+T16 moves: Island, p1's hand -> battlefield
+T16 p1 plays p1:Island#3
+T16 p1's unspent {B} empties
+T16 taps: p1:Island#1
+T16 p1 adds {U} (p1:Island#1)
+T16 p1 taps p1:Island#1 for mana
+T16 p1's unspent {U} empties
+T17 turn 17 begins (p2)
+T17 untaps: p2:Mountain#1
+T17 untaps: p2:Forest
+T17 untaps: p2:Mountain#2
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
+T17 taps: p1:Island#3
+T17 p1 adds {U} (p1:Island#3)
+T17 p1 taps p1:Island#3 for mana
+T17 p2's unspent {R}{R} empties
+T17 p1's unspent {U} empties
+T17 moves: Borderland Ranger, p2's library -> p2's hand
+T17 p2 draws
+T17 moves: Shivan Dragon, p2's hand -> stack
+T17 taps: p2:Forest
+T17 p2 adds {G} (p2:Forest)
+T17 p2 taps p2:Forest for mana
+T17 p2 cancels casting Shivan Dragon
+T17 moves: Mountain, p2's hand -> battlefield
+T17 p2 plays p2:Mountain#3
+T17 taps: p2:Mountain#3
+T17 p2 adds {R} (p2:Mountain#3)
+T17 p2 taps p2:Mountain#3 for mana
+T17 p2's unspent {R} empties
+T17 p2 attack: nothing
+T17 taps: p2:Forest
+T17 p2 adds {G} (p2:Forest)
+T17 p2 taps p2:Forest for mana
+T17 moves: Llanowar Elves, p2's hand -> stack
+T17 p2 casts Llanowar Elves
+T17 resolves: Llanowar Elves
+T17 moves: Llanowar Elves, stack -> battlefield
+T17 moves: Panic Attack, p2's hand -> stack
+T17 p2 cancels casting Panic Attack
+T17 moves: Prized Unicorn, p2's hand -> stack
+T17 p2 cancels casting Prized Unicorn
+T18 turn 18 begins (p1)
+T18 untaps: p1:Swamp#1
+T18 untaps: p1:Swamp#2
+T18 untaps: p1:Island#1
+T18 untaps: p1:Swamp#3
+T18 untaps: p1:Island#2
+T18 untaps: p1:Island#3
+T18 taps: p1:Swamp#3
+T18 p1 adds {B} (p1:Swamp#3)
+T18 p1 taps p1:Swamp#3 for mana
+T18 taps: p1:Island#2
+T18 p1 adds {U} (p1:Island#2)
+T18 p1 taps p1:Island#2 for mana
+T18 taps: p1:Swamp#2
+T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
+T18 p1's unspent {U}{B}{B} empties
+T18 moves: Island, p1's library -> p1's hand
+T18 p1 draws
+T18 moves: Child of Night, p1's hand -> stack
+T18 taps: p1:Island#1
+T18 p1 adds {U} (p1:Island#1)
+T18 p1 taps p1:Island#1 for mana
+T18 taps: p1:Swamp#1
+T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
+T18 p1 cancels casting Child of Night
+T18 taps: p1:Island#1
+T18 p1 adds {U} (p1:Island#1)
+T18 p1 taps p1:Island#1 for mana
+T18 p1's unspent {U} empties
+T18 p1 attack: nothing
+T18 taps: p1:Swamp#1
+T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
+T18 taps: p1:Island#3
+T18 p1 adds {U} (p1:Island#3)
+T18 p1 taps p1:Island#3 for mana
+T18 p1's unspent {U}{B} empties
+T18 moves: Swamp, p1's hand -> battlefield
+T18 p1 plays p1:Swamp#4
+T18 taps: p1:Swamp#4
+T18 p1 adds {B} (p1:Swamp#4)
+T18 p1 taps p1:Swamp#4 for mana
+T18 p1's unspent {B} empties
+T19 turn 19 begins (p2)
+T19 untaps: p2:Mountain#1
+T19 untaps: p2:Forest
+T19 untaps: p2:Mountain#2
+T19 untaps: p2:Mountain#3
+T19 taps: p2:Mountain#3
+T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
+T19 p2's unspent {R} empties
+T19 moves: Forest, p2's library -> p2's hand
+T19 p2 draws
+T19 taps: p2:Llanowar Elves
+T19 p2 adds {G} (p2:Llanowar Elves)
+T19 p2 taps p2:Llanowar Elves for mana
+T19 taps: p2:Forest
+T19 p2 adds {G} (p2:Forest)
+T19 p2 taps p2:Forest for mana
+T19 p2's unspent {G}{G} empties
+T19 taps: p2:Mountain#2
+T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
+T19 moves: Forest, p2's hand -> battlefield
+T19 p2 plays p2:Forest#2
+T19 p2's unspent {R} empties
+T19 taps: p2:Forest#2
+T19 p2 adds {G} (p2:Forest#2)
+T19 p2 taps p2:Forest#2 for mana
+T19 taps: p2:Mountain#1
+T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
+T19 p2's unspent {R}{G} empties
+T19 p2 attack: nothing
+T19 moves: Prized Unicorn, p2's hand -> stack
+T19 p2 cancels casting Prized Unicorn
+T19 moves: Shivan Dragon, p2's hand -> stack
+T19 p2 cancels casting Shivan Dragon
+T19 moves: Lurking Predators, p2's hand -> stack
+T19 p2 cancels casting Lurking Predators
+T19 moves: Lurking Predators, p2's hand -> stack
+T19 p2 cancels casting Lurking Predators
+T20 turn 20 begins (p1)
+T20 untaps: p1:Swamp#1
+T20 untaps: p1:Swamp#2
+T20 untaps: p1:Island#1
+T20 untaps: p1:Swamp#3
+T20 untaps: p1:Island#2
+T20 untaps: p1:Island#3
+T20 untaps: p1:Swamp#4
+T20 moves: Island, p1's library -> p1's hand
+T20 p1 draws
+T20 moves: Alluring Siren, p1's hand -> stack
+T20 taps: p1:Swamp#3
+T20 p1 adds {B} (p1:Swamp#3)
+T20 p1 taps p1:Swamp#3 for mana
+T20 taps: p1:Island#1
+T20 p1 adds {U} (p1:Island#1)
+T20 p1 taps p1:Island#1 for mana
+T20 taps: p1:Swamp#1
+T20 p1 adds {B} (p1:Swamp#1)
+T20 p1 taps p1:Swamp#1 for mana
+T20 p1 casts Alluring Siren
+T20 resolves: Alluring Siren
+T20 moves: Alluring Siren, stack -> battlefield
+T20 moves: Child of Night, p1's hand -> stack
+T20 taps: p1:Island#3
+T20 p1 adds {U} (p1:Island#3)
+T20 p1 taps p1:Island#3 for mana
+T20 p1 casts Child of Night
+T20 taps: p1:Swamp#4
+T20 p1 adds {B} (p1:Swamp#4)
+T20 p1 taps p1:Swamp#4 for mana
+T20 resolves: Child of Night
+T20 moves: Child of Night, stack -> battlefield
+T20 moves: Divination, p1's hand -> stack
+T20 taps: p1:Island#2
+T20 p1 adds {U} (p1:Island#2)
+T20 p1 taps p1:Island#2 for mana
+T20 taps: p1:Swamp#2
+T20 p1 adds {B} (p1:Swamp#2)
+T20 p1 taps p1:Swamp#2 for mana
+T20 p1 casts Divination
+T20 moves: Island, p1's library -> p1's hand
+T20 p1 draws
+T20 moves: Swamp, p1's library -> p1's hand
+T20 p1 draws
+T20 resolves: Divination
+T20 moves: Divination, stack -> p1's graveyard
+T20 moves: Swamp, p1's hand -> battlefield
+T20 p1 plays p1:Swamp#5
+T20 taps: p1:Swamp#5
+T20 p1 adds {B} (p1:Swamp#5)
+T20 p1 taps p1:Swamp#5 for mana
+T20 p1's unspent {B} empties
+T20 p1 attack: nothing
+T20 moves: Royal Assassin, p1's hand -> stack
+T20 p1 cancels casting Royal Assassin
+T20 moves: Royal Assassin, p1's hand -> stack
+T20 p1 cancels casting Royal Assassin
+T21 turn 21 begins (p2)
+T21 untaps: p2:Mountain#1
+T21 untaps: p2:Forest#1
+T21 untaps: p2:Mountain#2
+T21 untaps: p2:Mountain#3
+T21 untaps: p2:Llanowar Elves
+T21 untaps: p2:Forest#2
+T21 moves: Dragon's Claw, p2's library -> p2's hand
+T21 p2 draws
+T21 moves: Shivan Dragon, p2's hand -> stack
+T21 taps: p2:Forest#2
+T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
+T21 taps: p2:Mountain#2
+T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
+T21 taps: p2:Llanowar Elves
+T21 p2 adds {G} (p2:Llanowar Elves)
+T21 p2 taps p2:Llanowar Elves for mana
+T21 taps: p2:Mountain#3
+T21 p2 adds {R} (p2:Mountain#3)
+T21 p2 taps p2:Mountain#3 for mana
+T21 p2 cancels casting Shivan Dragon
+T21 taps: p2:Llanowar Elves
+T21 p2 attack: p2:Llanowar Elves -> p1
+T21 p1 block: p1:Alluring Siren -> p2:Llanowar Elves, p1:Child of Night -> p2:Llanowar Elves
+T21 taps: p2:Mountain#2
+T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
+T21 p2's unspent {R} empties
+T21 combat damage: p2:Llanowar Elves -> p1:Alluring Siren 1
+T21 combat damage: p1:Alluring Siren -> p2:Llanowar Elves 1
+T21 combat damage: p1:Child of Night -> p2:Llanowar Elves 2
+T21 p1 gains 2 life
+T21 state-based actions: p2:Llanowar Elves lethalDamage, p1:Alluring Siren lethalDamage
+T21 destroyed: p2:Llanowar Elves
+T21 moves: Llanowar Elves, battlefield -> p2's graveyard
+T21 destroyed: p1:Alluring Siren
+T21 moves: Alluring Siren, battlefield -> p1's graveyard
+T21 taps: p2:Forest#1
+T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
+T21 p2's unspent {G} empties
+T21 taps: p2:Forest#2
+T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
+T21 taps: p2:Mountain#3
+T21 p2 adds {R} (p2:Mountain#3)
+T21 p2 taps p2:Mountain#3 for mana
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
+T21 p2's unspent {R}{R}{G} empties
+T22 turn 22 begins (p1)
+T22 untaps: p1:Swamp#1
+T22 untaps: p1:Swamp#2
+T22 untaps: p1:Island#1
+T22 untaps: p1:Swamp#3
+T22 untaps: p1:Island#2
+T22 untaps: p1:Island#3
+T22 untaps: p1:Swamp#4
+T22 untaps: p1:Swamp#5
+T22 taps: p1:Island#2
+T22 p1 adds {U} (p1:Island#2)
+T22 p1 taps p1:Island#2 for mana
+T22 p1's unspent {U} empties
+T22 moves: Howling Mine, p1's library -> p1's hand
+T22 p1 draws
+T22 taps: p1:Island#1
+T22 p1 adds {U} (p1:Island#1)
+T22 p1 taps p1:Island#1 for mana
+T22 taps: p1:Swamp#1
+T22 p1 adds {B} (p1:Swamp#1)
+T22 p1 taps p1:Swamp#1 for mana
+T22 p1's unspent {U}{B} empties
+T22 moves: Island, p1's hand -> battlefield
+T22 p1 plays p1:Island#4
+T22 taps: p1:Swamp#5
+T22 p1 adds {B} (p1:Swamp#5)
+T22 p1 taps p1:Swamp#5 for mana
+T22 taps: p1:Swamp#2
+T22 p1 adds {B} (p1:Swamp#2)
+T22 p1 taps p1:Swamp#2 for mana
+T22 moves: Phantom Warrior, p1's hand -> stack
+T22 taps: p1:Island#4
+T22 p1 adds {U} (p1:Island#4)
+T22 p1 taps p1:Island#4 for mana
+T22 taps: p1:Swamp#4
+T22 p1 adds {B} (p1:Swamp#4)
+T22 p1 taps p1:Swamp#4 for mana
+T22 taps: p1:Swamp#3
+T22 p1 adds {B} (p1:Swamp#3)
+T22 p1 taps p1:Swamp#3 for mana
+T22 taps: p1:Island#3
+T22 p1 adds {U} (p1:Island#3)
+T22 p1 taps p1:Island#3 for mana
+T22 p1 casts Phantom Warrior
+T22 resolves: Phantom Warrior
+T22 moves: Phantom Warrior, stack -> battlefield
+T22 moves: Howling Mine, p1's hand -> stack
+T22 p1 casts Howling Mine
+T22 resolves: Howling Mine
+T22 moves: Howling Mine, stack -> battlefield
+T22 p1's unspent {B} empties
+T22 taps: p1:Child of Night
+T22 p1 attack: p1:Child of Night -> p2
+T22 p2 block: nothing
+T22 combat damage: p1:Child of Night -> p2 2
+T22 p2 loses 2 life
+T22 p1 gains 2 life
+T22 moves: Royal Assassin, p1's hand -> stack
+T22 p1 cancels casting Royal Assassin
+T22 moves: Royal Assassin, p1's hand -> stack
+T22 p1 cancels casting Royal Assassin
+T23 turn 23 begins (p2)
+T23 untaps: p2:Mountain#1
+T23 untaps: p2:Forest#1
+T23 untaps: p2:Mountain#2
+T23 untaps: p2:Mountain#3
+T23 untaps: p2:Forest#2
+T23 taps: p2:Mountain#2
+T23 p2 adds {R} (p2:Mountain#2)
+T23 p2 taps p2:Mountain#2 for mana
+T23 taps: p2:Mountain#3
+T23 p2 adds {R} (p2:Mountain#3)
+T23 p2 taps p2:Mountain#3 for mana
+T23 taps: p2:Forest#1
+T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
+T23 p2's unspent {R}{R}{G} empties
+T23 moves: Llanowar Elves, p2's library -> p2's hand
+T23 p2 draws
+T23 p1:Howling Mine triggers (p1)
+T23 moves: Inferno Elemental, p2's library -> p2's hand
+T23 p2 draws
+T23 resolves: p1:Howling Mine's ability
+T23 taps: p2:Mountain#1
+T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
+T23 taps: p2:Forest#2
+T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
+T23 p2's unspent {R}{G} empties
+T23 p2 attack: nothing
+T23 moves: Inferno Elemental, p2's hand -> p2's graveyard
+T23 p2 discards Inferno Elemental
+T23 moves: Panic Attack, p2's hand -> p2's graveyard
+T23 p2 discards Panic Attack
+T24 turn 24 begins (p1)
+T24 untaps: p1:Swamp#1
+T24 untaps: p1:Swamp#2
+T24 untaps: p1:Island#1
+T24 untaps: p1:Swamp#3
+T24 untaps: p1:Island#2
+T24 untaps: p1:Island#3
+T24 untaps: p1:Swamp#4
+T24 untaps: p1:Child of Night
+T24 untaps: p1:Swamp#5
+T24 untaps: p1:Island#4
+T24 moves: Howling Banshee, p1's library -> p1's hand
+T24 p1 draws
+T24 p1:Howling Mine triggers (p1)
+T24 moves: Swamp, p1's library -> p1's hand
+T24 p1 draws
+T24 resolves: p1:Howling Mine's ability
+T24 taps: p1:Swamp#3
+T24 p1 adds {B} (p1:Swamp#3)
+T24 p1 taps p1:Swamp#3 for mana
+T24 moves: Royal Assassin, p1's hand -> stack
+T24 taps: p1:Swamp#4
+T24 p1 adds {B} (p1:Swamp#4)
+T24 p1 taps p1:Swamp#4 for mana
+T24 taps: p1:Swamp#2
+T24 p1 adds {B} (p1:Swamp#2)
+T24 p1 taps p1:Swamp#2 for mana
+T24 p1 cancels casting Royal Assassin
+T24 moves: Royal Assassin, p1's hand -> stack
+T24 taps: p1:Swamp#2
+T24 p1 adds {B} (p1:Swamp#2)
+T24 p1 taps p1:Swamp#2 for mana
+T24 taps: p1:Island#3
+T24 p1 adds {U} (p1:Island#3)
+T24 p1 taps p1:Island#3 for mana
+T24 p1 casts Royal Assassin
+T24 resolves: Royal Assassin
+T24 moves: Royal Assassin, stack -> battlefield
+T24 moves: Howling Banshee, p1's hand -> stack
+T24 taps: p1:Island#2
+T24 p1 adds {U} (p1:Island#2)
+T24 p1 taps p1:Island#2 for mana
+T24 p1 cancels casting Howling Banshee
+T24 taps: p1:Swamp#1
+T24 p1 adds {B} (p1:Swamp#1)
+T24 p1 taps p1:Swamp#1 for mana
+T24 p1's unspent {B} empties
+T24 taps: p1:Island#2
+T24 p1 adds {U} (p1:Island#2)
+T24 p1 taps p1:Island#2 for mana
+T24 taps: p1:Swamp#5
+T24 p1 adds {B} (p1:Swamp#5)
+T24 p1 taps p1:Swamp#5 for mana
+T24 p1's unspent {U}{B} empties
+T24 p1 attack: nothing
+T24 moves: Island, p1's hand -> battlefield
+T24 p1 plays p1:Island#5
+T24 moves: Howling Banshee, p1's hand -> stack
+T24 taps: p1:Swamp#4
+T24 p1 adds {B} (p1:Swamp#4)
+T24 p1 taps p1:Swamp#4 for mana
+T24 taps: p1:Island#1
+T24 p1 adds {U} (p1:Island#1)
+T24 p1 taps p1:Island#1 for mana
+T24 taps: p1:Island#5
+T24 p1 adds {U} (p1:Island#5)
+T24 p1 taps p1:Island#5 for mana
+T24 taps: p1:Island#4
+T24 p1 adds {U} (p1:Island#4)
+T24 p1 taps p1:Island#4 for mana
+T24 p1 cancels casting Howling Banshee
+T25 turn 25 begins (p2)
+T25 untaps: p2:Mountain#1
+T25 untaps: p2:Forest#1
+T25 untaps: p2:Mountain#2
+T25 untaps: p2:Mountain#3
+T25 untaps: p2:Forest#2
+T25 taps: p2:Forest#2
+T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
+T25 taps: p2:Mountain#1
+T25 p2 adds {R} (p2:Mountain#1)
+T25 p2 taps p2:Mountain#1 for mana
+T25 p2's unspent {R}{G} empties
+T25 moves: Forest, p2's library -> p2's hand
+T25 p2 draws
+T25 p1:Howling Mine triggers (p1)
+T25 moves: Ball Lightning, p2's library -> p2's hand
+T25 p2 draws
+T25 resolves: p1:Howling Mine's ability
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 taps p2:Mountain#2 for mana
+T25 p2's unspent {R} empties
+T25 taps: p2:Mountain#3
+T25 p2 adds {R} (p2:Mountain#3)
+T25 p2 taps p2:Mountain#3 for mana
+T25 taps: p1:Swamp#4
+T25 p1 adds {B} (p1:Swamp#4)
+T25 p1 taps p1:Swamp#4 for mana
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 taps p1:Island#1 for mana
+T25 taps: p1:Island#5
+T25 p1 adds {U} (p1:Island#5)
+T25 p1 taps p1:Island#5 for mana
+T25 taps: p2:Forest#1
+T25 p2 adds {G} (p2:Forest#1)
+T25 p2 taps p2:Forest#1 for mana
+T25 moves: Dragon's Claw, p2's hand -> stack
+T25 p2 casts Dragon's Claw
+T25 taps: p1:Island#4
+T25 p1 adds {U} (p1:Island#4)
+T25 p1 taps p1:Island#4 for mana
+T25 resolves: Dragon's Claw
+T25 moves: Dragon's Claw, stack -> battlefield
+T25 moves: Borderland Ranger, p2's hand -> stack
+T25 p2 cancels casting Borderland Ranger
+T25 moves: Lurking Predators, p2's hand -> stack
+T25 p2 cancels casting Lurking Predators
+T25 moves: Shivan Dragon, p2's hand -> stack
+T25 p2 cancels casting Shivan Dragon
+T25 p1's unspent {U}{U}{U}{B} empties
+T25 p2 attack: nothing
+T25 moves: Shivan Dragon, p2's hand -> p2's graveyard
+T25 p2 discards Shivan Dragon
+T26 turn 26 begins (p1)
+T26 untaps: p1:Swamp#1
+T26 untaps: p1:Swamp#2
+T26 untaps: p1:Island#1
+T26 untaps: p1:Swamp#3
+T26 untaps: p1:Island#2
+T26 untaps: p1:Island#3
+T26 untaps: p1:Swamp#4
+T26 untaps: p1:Swamp#5
+T26 untaps: p1:Island#4
+T26 untaps: p1:Island#5
+T26 taps: p1:Island#3
+T26 p1 adds {U} (p1:Island#3)
+T26 p1 taps p1:Island#3 for mana
+T26 p1's unspent {U} empties
+T26 moves: Sanguine Bond, p1's library -> p1's hand
+T26 p1 draws
+T26 p1:Howling Mine triggers (p1)
+T26 moves: Vampire Aristocrat, p1's library -> p1's hand
+T26 p1 draws
+T26 resolves: p1:Howling Mine's ability
+T26 moves: Sanguine Bond, p1's hand -> stack
+T26 p1 cancels casting Sanguine Bond
+T26 taps: p1:Island#1
+T26 p1 adds {U} (p1:Island#1)
+T26 p1 taps p1:Island#1 for mana
+T26 p1's unspent {U} empties
+T26 taps: p1:Swamp#4
+T26 p1 adds {B} (p1:Swamp#4)
+T26 p1 taps p1:Swamp#4 for mana
+T26 taps: p1:Island#4
+T26 p1 adds {U} (p1:Island#4)
+T26 p1 taps p1:Island#4 for mana
+T26 p1's unspent {U}{B} empties
+T26 p1 attack: nothing
+T26 taps: p1:Island#5
+T26 p1 adds {U} (p1:Island#5)
+T26 p1 taps p1:Island#5 for mana
+T26 taps: p1:Swamp#5
+T26 p1 adds {B} (p1:Swamp#5)
+T26 p1 taps p1:Swamp#5 for mana
+T26 taps: p1:Swamp#2
+T26 p1 adds {B} (p1:Swamp#2)
+T26 p1 taps p1:Swamp#2 for mana
+T26 taps: p1:Swamp#1
+T26 p1 adds {B} (p1:Swamp#1)
+T26 p1 taps p1:Swamp#1 for mana
+T26 taps: p1:Swamp#3
+T26 p1 adds {B} (p1:Swamp#3)
+T26 p1 taps p1:Swamp#3 for mana
+T26 taps: p1:Island#2
+T26 p1 adds {U} (p1:Island#2)
+T26 p1 taps p1:Island#2 for mana
+T26 p1's unspent {U}{U}{B}{B}{B}{B} empties
+T27 turn 27 begins (p2)
+T27 untaps: p2:Mountain#1
+T27 untaps: p2:Forest#1
+T27 untaps: p2:Mountain#2
+T27 untaps: p2:Mountain#3
+T27 untaps: p2:Forest#2
+T27 taps: p2:Forest#1
+T27 p2 adds {G} (p2:Forest#1)
+T27 p2 taps p2:Forest#1 for mana
+T27 p2's unspent {G} empties
+T27 moves: Stampeding Rhino, p2's library -> p2's hand
+T27 p2 draws
+T27 p1:Howling Mine triggers (p1)
+T27 moves: Forest, p2's library -> p2's hand
+T27 p2 draws
+T27 resolves: p1:Howling Mine's ability
+T27 taps: p2:Mountain#2
+T27 p2 adds {R} (p2:Mountain#2)
+T27 p2 taps p2:Mountain#2 for mana
+T27 taps: p2:Mountain#3
+T27 p2 adds {R} (p2:Mountain#3)
+T27 p2 taps p2:Mountain#3 for mana
+T27 taps: p2:Mountain#1
+T27 p2 adds {R} (p2:Mountain#1)
+T27 p2 taps p2:Mountain#1 for mana
+T27 p2's unspent {R}{R}{R} empties
+T27 taps: p2:Forest#2
+T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
+T27 moves: Borderland Ranger, p2's hand -> stack
+T27 p2 cancels casting Borderland Ranger
+T27 moves: Llanowar Elves, p2's hand -> stack
+T27 p2 casts Llanowar Elves
+T27 resolves: Llanowar Elves
+T27 moves: Llanowar Elves, stack -> battlefield
+T27 moves: Lurking Predators, p2's hand -> stack
+T27 p2 cancels casting Lurking Predators
+T27 moves: Prized Unicorn, p2's hand -> stack
+T27 p2 cancels casting Prized Unicorn
+T27 moves: Prized Unicorn, p2's hand -> stack
+T27 p2 cancels casting Prized Unicorn
+T27 moves: Borderland Ranger, p2's hand -> stack
+T27 p2 cancels casting Borderland Ranger
+T27 moves: Borderland Ranger, p2's hand -> stack
+T27 p2 cancels casting Borderland Ranger
+T27 p2 attack: nothing
+T27 moves: Borderland Ranger, p2's hand -> p2's graveyard
+T27 p2 discards Borderland Ranger
+T28 turn 28 begins (p1)
+T28 untaps: p1:Swamp#1
+T28 untaps: p1:Swamp#2
+T28 untaps: p1:Island#1
+T28 untaps: p1:Swamp#3
+T28 untaps: p1:Island#2
+T28 untaps: p1:Island#3
+T28 untaps: p1:Swamp#4
+T28 untaps: p1:Swamp#5
+T28 untaps: p1:Island#4
+T28 untaps: p1:Island#5
+T28 taps: p1:Island#1
+T28 p1 adds {U} (p1:Island#1)
+T28 p1 taps p1:Island#1 for mana
+T28 p1's unspent {U} empties
+T28 moves: Essence Scatter, p1's library -> p1's hand
+T28 p1 draws
+T28 p1:Howling Mine triggers (p1)
+T28 taps: p1:Island#2
+T28 p1 adds {U} (p1:Island#2)
+T28 p1 taps p1:Island#2 for mana
+T28 taps: p1:Swamp#1
+T28 p1 adds {B} (p1:Swamp#1)
+T28 p1 taps p1:Swamp#1 for mana
+T28 taps: p1:Island#3
+T28 p1 adds {U} (p1:Island#3)
+T28 p1 taps p1:Island#3 for mana
+T28 taps: p1:Swamp#3
+T28 p1 adds {B} (p1:Swamp#3)
+T28 p1 taps p1:Swamp#3 for mana
+T28 moves: Underworld Dreams, p1's library -> p1's hand
+T28 p1 draws
+T28 resolves: p1:Howling Mine's ability
+T28 taps: p1:Swamp#2
+T28 p1 adds {B} (p1:Swamp#2)
+T28 p1 taps p1:Swamp#2 for mana
+T28 p1's unspent {U}{U}{B}{B}{B} empties
+T28 moves: Underworld Dreams, p1's hand -> stack
+T28 taps: p1:Island#4
+T28 p1 adds {U} (p1:Island#4)
+T28 p1 taps p1:Island#4 for mana
+T28 taps: p1:Swamp#5
+T28 p1 adds {B} (p1:Swamp#5)
+T28 p1 taps p1:Swamp#5 for mana
+T28 taps: p1:Swamp#4
+T28 p1 adds {B} (p1:Swamp#4)
+T28 p1 taps p1:Swamp#4 for mana
+T28 taps: p1:Island#5
+T28 p1 adds {U} (p1:Island#5)
+T28 p1 taps p1:Island#5 for mana
+T28 p1 cancels casting Underworld Dreams
+T28 moves: Underworld Dreams, p1's hand -> stack
+T28 taps: p1:Swamp#4
+T28 p1 adds {B} (p1:Swamp#4)
+T28 p1 taps p1:Swamp#4 for mana
+T28 taps: p1:Island#5
+T28 p1 adds {U} (p1:Island#5)
+T28 p1 taps p1:Island#5 for mana
+T28 taps: p1:Swamp#5
+T28 p1 adds {B} (p1:Swamp#5)
+T28 p1 taps p1:Swamp#5 for mana
+T28 taps: p1:Island#4
+T28 p1 adds {U} (p1:Island#4)
+T28 p1 taps p1:Island#4 for mana
+T28 p1 cancels casting Underworld Dreams
+T28 moves: Sanguine Bond, p1's hand -> stack
+T28 taps: p1:Island#4
+T28 p1 adds {U} (p1:Island#4)
+T28 p1 taps p1:Island#4 for mana
+T28 taps: p1:Swamp#4
+T28 p1 adds {B} (p1:Swamp#4)
+T28 p1 taps p1:Swamp#4 for mana
+T28 taps: p1:Island#5
+T28 p1 adds {U} (p1:Island#5)
+T28 p1 taps p1:Island#5 for mana
+T28 taps: p1:Swamp#5
+T28 p1 adds {B} (p1:Swamp#5)
+T28 p1 taps p1:Swamp#5 for mana
+T28 p1 cancels casting Sanguine Bond
+T28 taps: p1:Island#4
+T28 p1 adds {U} (p1:Island#4)
+T28 p1 taps p1:Island#4 for mana
+T28 p1's unspent {U} empties
+T28 taps: p1:Royal Assassin
+T28 p1 attack: p1:Royal Assassin -> p2
+T28 p2 block: nothing
+T28 taps: p1:Swamp#4
+T28 p1 adds {B} (p1:Swamp#4)
+T28 p1 taps p1:Swamp#4 for mana
+T28 taps: p1:Island#5
+T28 p1 adds {U} (p1:Island#5)
+T28 p1 taps p1:Island#5 for mana
+T28 taps: p1:Swamp#5
+T28 p1 adds {B} (p1:Swamp#5)
+T28 p1 taps p1:Swamp#5 for mana
+T28 p1's unspent {U}{B}{B} empties
+T28 combat damage: p1:Royal Assassin -> p2 1
+T28 p2 loses 1 life
+T28 moves: Swamp, p1's hand -> p1's graveyard
+T28 p1 discards Swamp
+T29 turn 29 begins (p2)
+T29 untaps: p2:Mountain#1
+T29 untaps: p2:Forest#1
+T29 untaps: p2:Mountain#2
+T29 untaps: p2:Mountain#3
+T29 untaps: p2:Forest#2
+T29 taps: p2:Mountain#3
+T29 p2 adds {R} (p2:Mountain#3)
+T29 p2 taps p2:Mountain#3 for mana
+T29 p2's unspent {R} empties
+T29 moves: Lightning Bolt, p2's library -> p2's hand
+T29 p2 draws
+T29 p1:Howling Mine triggers (p1)
+T29 moves: Forest, p2's library -> p2's hand
+T29 p2 draws
+T29 resolves: p1:Howling Mine's ability
+T29 moves: Lightning Bolt, p2's hand -> stack
+T29 p2 cancels casting Lightning Bolt
+T29 moves: Lightning Bolt, p2's hand -> stack
+T29 taps: p2:Llanowar Elves
+T29 p2 adds {G} (p2:Llanowar Elves)
+T29 p2 taps p2:Llanowar Elves for mana
+T29 taps: p2:Mountain#1
+T29 p2 adds {R} (p2:Mountain#1)
+T29 p2 taps p2:Mountain#1 for mana
+T29 p2 casts Lightning Bolt
+T29 p2:Dragon's Claw triggers (p2)
+T29 p2 gains 1 life
+T29 resolves: p2:Dragon's Claw's ability
+T29 damage: Lightning Bolt -> p2 3
+T29 p2 loses 3 life
+T29 resolves: Lightning Bolt
+T29 moves: Lightning Bolt, stack -> p2's graveyard
+T29 taps: p2:Forest#1
+T29 p2 adds {G} (p2:Forest#1)
+T29 p2 taps p2:Forest#1 for mana
+T29 p2's unspent {G}{G} empties
+T29 moves: Stampeding Rhino, p2's hand -> stack
+T29 taps: p2:Mountain#2
+T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
+T29 taps: p2:Forest#2
+T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
+T29 p2 cancels casting Stampeding Rhino
+T29 moves: Ball Lightning, p2's hand -> stack
+T29 taps: p2:Forest#2
+T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
+T29 taps: p2:Mountain#2
+T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
+T29 p2 cancels casting Ball Lightning
+T29 taps: p2:Forest#2
+T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
+T29 p2's unspent {G} empties
+T29 taps: p2:Mountain#2
+T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
+T29 p2's unspent {R} empties
+T29 p2 attack: nothing
+T29 moves: Stampeding Rhino, p2's hand -> stack
+T29 p2 cancels casting Stampeding Rhino
+T29 moves: Forest, p2's hand -> battlefield
+T29 p2 plays p2:Forest#3
+T29 taps: p2:Forest#3
+T29 p2 adds {G} (p2:Forest#3)
+T29 p2 taps p2:Forest#3 for mana
+T29 moves: Lurking Predators, p2's hand -> stack
+T29 p2 cancels casting Lurking Predators
+T29 p2's unspent {G} empties
+T30 turn 30 begins (p1)
+T30 untaps: p1:Swamp#1
+T30 untaps: p1:Swamp#2
+T30 untaps: p1:Island#1
+T30 untaps: p1:Swamp#3
+T30 untaps: p1:Island#2
+T30 untaps: p1:Island#3
+T30 untaps: p1:Swamp#4
+T30 untaps: p1:Swamp#5
+T30 untaps: p1:Island#4
+T30 untaps: p1:Royal Assassin
+T30 untaps: p1:Island#5
+T30 moves: Unsummon, p1's library -> p1's hand
+T30 p1 draws
+T30 p1:Howling Mine triggers (p1)
+T30 moves: Xathrid Demon, p1's library -> p1's hand
+T30 p1 draws
+T30 resolves: p1:Howling Mine's ability
+T30 taps: p1:Royal Assassin
+T30 p1 activates p1:Royal Assassin
+T30 moves: Unsummon, p1's hand -> stack
+T30 taps: p1:Island#2
+T30 p1 adds {U} (p1:Island#2)
+T30 p1 taps p1:Island#2 for mana
+T30 taps: p1:Swamp#1
+T30 p1 adds {B} (p1:Swamp#1)
+T30 p1 taps p1:Swamp#1 for mana
+T30 taps: p1:Island#1
+T30 p1 adds {U} (p1:Island#1)
+T30 p1 taps p1:Island#1 for mana
+T30 p1 casts Unsummon
+T30 moves: Llanowar Elves, battlefield -> p2's hand
+T30 resolves: Unsummon
+T30 moves: Unsummon, stack -> p1's graveyard
+T30 taps: p1:Swamp#2
+T30 p1 adds {B} (p1:Swamp#2)
+T30 p1 taps p1:Swamp#2 for mana
+T30 p1:Royal Assassin's ability doesn't resolve: its targets are illegal (CR 608.2b)
+T30 moves: Swamp, p1's hand -> battlefield
+T30 p1 plays p1:Swamp#6
+T30 taps: p1:Swamp#4
+T30 p1 adds {B} (p1:Swamp#4)
+T30 p1 taps p1:Swamp#4 for mana
+T30 taps: p1:Island#4
+T30 p1 adds {U} (p1:Island#4)
+T30 p1 taps p1:Island#4 for mana
+T30 p1's unspent {U}{U}{B}{B}{B} empties
+T30 taps: p1:Island#5
+T30 p1 adds {U} (p1:Island#5)
+T30 p1 taps p1:Island#5 for mana
+T30 p1's unspent {U} empties
+T30 p1 attack: nothing
+T30 taps: p1:Swamp#5
+T30 p1 adds {B} (p1:Swamp#5)
+T30 p1 taps p1:Swamp#5 for mana
+T30 taps: p1:Swamp#3
+T30 p1 adds {B} (p1:Swamp#3)
+T30 p1 taps p1:Swamp#3 for mana
+T30 taps: p1:Island#3
+T30 p1 adds {U} (p1:Island#3)
+T30 p1 taps p1:Island#3 for mana
+T30 taps: p1:Swamp#6
+T30 p1 adds {B} (p1:Swamp#6)
+T30 p1 taps p1:Swamp#6 for mana
+T30 p1's unspent {U}{B}{B}{B} empties
+T30 moves: Vampire Aristocrat, p1's hand -> stack
+T30 p1 cancels casting Vampire Aristocrat
+T30 moves: Underworld Dreams, p1's hand -> stack
+T30 p1 cancels casting Underworld Dreams
+T30 moves: Vampire Aristocrat, p1's hand -> stack
+T30 p1 cancels casting Vampire Aristocrat
+T31 turn 31 begins (p2)
+T31 untaps: p2:Mountain#1
+T31 untaps: p2:Forest#1
+T31 untaps: p2:Mountain#2
+T31 untaps: p2:Mountain#3
+T31 untaps: p2:Forest#2
+T31 untaps: p2:Forest#3

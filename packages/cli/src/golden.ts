@@ -28,6 +28,8 @@ export type GoldenGame = GoldenRecipe & {
   version: number;
   description: string;
   actions: Action[];
+  /** Read back only: stored action lines left after the game ended, as an engine change can end it sooner (D-082). */
+  unread?: number;
 };
 
 /** The agents play every player from the setup, until the game ends or passes `maxTurns`. */
@@ -75,7 +77,8 @@ export function readGolden(path: string, cards: CardDatabase): GoldenGame {
     throw new Error(`${path} has no recipe: it needs agent, agentSeed and maxTurns`);
   }
   const { encoding: _, ...game } = raw;
-  return { ...game, ...decodeStored(raw, cards) };
+  const { setup, actions, unread } = decodeStored(raw, cards);
+  return { ...game, setup, actions, ...(unread === 0 ? {} : { unread }) };
 }
 
 export const logPath = (jsonPath: string): string => jsonPath.replace(/\.json$/, ".log");
@@ -114,8 +117,10 @@ function playOutProblem(game: GoldenGame, cards: CardDatabase): string | null {
   try {
     state = replay(game.setup, game.actions, cards).state;
   } catch (error) {
+    // A rejected action, the likelier reason the stored lines stop early.
     return error instanceof Error ? error.message : String(error);
   }
+  if ((game.unread ?? 0) > 0) return `the game now ends ${game.unread} stored action lines sooner`;
   if (state.result !== null || (state.turn?.number ?? 0) > game.maxTurns) return null;
   return "the game no longer ends where it did";
 }

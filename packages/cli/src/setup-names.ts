@@ -15,7 +15,12 @@ export function setupWithNames(setup: GameSetup, cards: CardDatabase): GameSetup
 
 /** The setup with each card name back to its oracle id. */
 export function setupFromNames(setup: GameSetup, cards: CardDatabase): GameSetup {
-  const ids = new Map(Object.values(cards).map((c) => [c.printed.name, c.oracleId]));
+  const ids = new Map<string, string>();
+  for (const card of Object.values(cards)) {
+    // Split and double-faced cards (later: CR 709, 712) could share a name; a name must stand for one card.
+    if (ids.has(card.printed.name)) throw new Error(`two cards named "${card.printed.name}" in the pool`);
+    ids.set(card.printed.name, card.oracleId);
+  }
   const id = (name: string) => {
     const found = ids.get(name);
     if (found === undefined) throw new Error(`no card named "${name}" in the pool`);
