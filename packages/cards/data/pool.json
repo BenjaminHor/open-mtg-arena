@@ -1593,6 +1593,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Kalonian Behemoth",
+      "slug": "kalonian-behemoth",
+      "oracleId": "68d0b5c0-df6a-4eea-8dea-20358270f916",
+      "layout": "normal",
+      "manaCost": "{5}{G}{G}",
+      "manaValue": 7,
+      "typeLine": "Creature — Beast",
+      "oracleText": "Shroud (This creature can't be the target of spells or abilities.)",
+      "power": "9",
+      "toughness": "9",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Shroud"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/7/77064471-d0c1-4988-8c47-f767bf9635f3.jpg?1783942361",
+        "large": "https://cards.scryfall.io/large/front/7/7/77064471-d0c1-4988-8c47-f767bf9635f3.jpg?1783942361",
+        "png": "https://cards.scryfall.io/png/front/7/7/77064471-d0c1-4988-8c47-f767bf9635f3.png?1783942361",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/7/77064471-d0c1-4988-8c47-f767bf9635f3.jpg?1783942361"
+      },
+      "artist": "Daarken",
+      "set": "m10",
+      "collectorNumber": "188",
+      "scryfallUri": "https://scryfall.com/card/m10/188/kalonian-behemoth?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Kelinore Bat",
       "slug": "kelinore-bat",
       "oracleId": "552dcf9f-ff4a-4057-a93e-62f5527050c9",
@@ -1902,6 +1932,36 @@
       "set": "blb",
       "collectorNumber": "389",
       "scryfallUri": "https://scryfall.com/card/blb/389/mind-spring?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Mist Leopard",
+      "slug": "mist-leopard",
+      "oracleId": "49cade2f-92ab-48c8-aed3-d52ab3263506",
+      "layout": "normal",
+      "manaCost": "{3}{G}",
+      "manaValue": 4,
+      "typeLine": "Creature — Cat",
+      "oracleText": "Shroud (This creature can't be the target of spells or abilities.)",
+      "power": "3",
+      "toughness": "2",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Shroud"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/f/3f3a26c7-e028-4741-803d-6384925b8500.jpg?1783942360",
+        "large": "https://cards.scryfall.io/large/front/3/f/3f3a26c7-e028-4741-803d-6384925b8500.jpg?1783942360",
+        "png": "https://cards.scryfall.io/png/front/3/f/3f3a26c7-e028-4741-803d-6384925b8500.png?1783942360",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/f/3f3a26c7-e028-4741-803d-6384925b8500.jpg?1783942360"
+      },
+      "artist": "John Matson",
+      "set": "m10",
+      "collectorNumber": "193",
+      "scryfallUri": "https://scryfall.com/card/m10/193/mist-leopard?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

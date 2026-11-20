@@ -1,0 +1,15 @@
+name: Shroud works only on the battlefield, so a creature card with shroud in a graveyard can be targeted
+rules: [CR 702.18a, CR 113.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    graveyard: [Mist Leopard]
+    hand: [Disentomb]
+    battlefield: [Swamp]
+steps:
+  - p1 cast: Disentomb
+    targets: [graveyard:p1:Mist Leopard]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Mist Leopard]

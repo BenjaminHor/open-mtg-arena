@@ -1,0 +1,27 @@
+name: Panic Attack can't target a creature with shroud among its up to three targets, so that creature can still block
+rules: [CR 702.18a, CR 601.2c, CR 509.1b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Runeclaw Bear, Elite Vanguard, Mountain, Mountain, Mountain]
+    hand: [Panic Attack]
+  p2:
+    battlefield: [Mist Leopard, Siege Mastodon]
+steps:
+  - p1 cast: Panic Attack
+    targets: [[p2:Mist Leopard, p2:Siege Mastodon]]
+    pay: auto
+  - expect error: illegalAction
+  - p1 cast: Panic Attack
+    targets: [[p2:Siege Mastodon]]
+    pay: auto
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear, Elite Vanguard]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Siege Mastodon: Runeclaw Bear }
+  - expect error: illegalAction
+  - p2 block: { Mist Leopard: Elite Vanguard }
+  - all pass: until main2
+  - expect:
+      p1.graveyard: [Panic Attack, Elite Vanguard]

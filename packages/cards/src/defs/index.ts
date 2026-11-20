@@ -57,6 +57,7 @@ import { hornedTurtle } from "./h/horned-turtle.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
+import { kalonianBehemoth } from "./k/kalonian-behemoth.ts";
 import { kelinoreBat } from "./k/kelinore-bat.ts";
 import { lavaAxe } from "./l/lava-axe.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
@@ -68,6 +69,7 @@ import { mightOfOaks } from "./m/might-of-oaks.ts";
 import { mindRot } from "./m/mind-rot.ts";
 import { mindShatter } from "./m/mind-shatter.ts";
 import { mindSpring } from "./m/mind-spring.ts";
+import { mistLeopard } from "./m/mist-leopard.ts";
 import { mountain } from "./m/mountain.ts";
 import { naturalize } from "./n/naturalize.ts";
 import { naturesSpiral } from "./n/natures-spiral.ts";
@@ -179,6 +181,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   igniteDisorder,
   island,
   jackalFamiliar,
+  kalonianBehemoth,
   kelinoreBat,
   lavaAxe,
   lightningBolt,
@@ -190,6 +193,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   mindRot,
   mindShatter,
   mindSpring,
+  mistLeopard,
   mountain,
   naturalize,
   naturesSpiral,

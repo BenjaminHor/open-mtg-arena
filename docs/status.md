@@ -209,15 +209,18 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        this turn". Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior, Dread Warlock, Palace Guard,
        Panic Attack. Scenarios in `test/scenarios/cards/m2-06b/` and `interactions/block-any-number/`, five new matrix
        rows; three of the cards in the M10 pair.
-     - M2-06c, done, in review (D-072): "can't attack or block alone", "attacks each combat if able", "attacks you this
+     - M2-06c, done, merged (PR #37, D-072): "can't attack or block alone", "attacks each combat if able", "attacks you this
        turn if able", "all creatures able to block it do so"; `finishDeclaring` only when the declaration is legal, and a
        `takeBack` answer. Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren. Scenarios in
        `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
        (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair. Declarations list
        finishing first (no first-legal loop); the bench baseline reset.
-     - M2-06d targeting keywords: shroud (CR 702.18). Mist Leopard, Kalonian Behemoth. Protection's targeting and
-       blocking parts (CR 702.16b, 702.16f), flash (CR 702.8), indestructible (CR 702.12), "can't be countered": the
-       spec puts them here, but their Magic 2010 cards come later (M2-07, M2-08, M2-12).
+     - M2-06d, done, in review: shroud (CR 702.18), one check in `legalTargets` for permanents only (CR 113.6: a spell
+       or a graveyard card with shroud can be targeted), which resolution re-checks (CR 608.2b).
+       Mist Leopard, Kalonian Behemoth. Scenarios in `test/scenarios/cards/m2-06d/` and `interactions/shroud/`, a unit
+       test for a target gaining shroud before resolution, a Shroud matrix row; Mist Leopard in the M10 pair.
+       Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer
+       (Open questions): their Magic 2010 cards come in M2-07, M2-08 and M2-12.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -387,9 +390,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
   can be taken back or checked as a whole (06c's take-back answer may serve).
 - Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
-  Still, the folder is 3.8 MB after M2-06b (budget 4 MB), about 0.3 MB per task: it will pass the budget in M2-06c or
-  M2-07. Options then: raise the budget, a compact action format, or stop adding a game per card once a card's
-  mechanic is covered by scenarios.
+  Still, the folder is 4.0 MB (3.82 MiB) after M2-06d, at its 4 MB budget, growing about 0.1–0.3 MB per task with
+  112 cards to go: it passes the budget in M2-07. Options: raise the budget (to about 8 MB by the end of M2), a
+  compact action format (actions are about 90 bytes of JSON each), or stop adding a game per card once its mechanic
+  is covered by scenarios. Decide before M2-07's cover.
 - The bench drifted 10–29% over its baseline through M2-05–06b; reset in M2-06c (D-072), when the `random` agent's games
   changed with the declaration list. Measuring is noisy here (two runs of one commit can differ by 30%): compare paired
   against `main` before believing a failure.

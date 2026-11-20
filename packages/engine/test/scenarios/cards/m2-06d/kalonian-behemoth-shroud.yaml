@@ -1,0 +1,17 @@
+name: A creature with shroud can't be the target of abilities either
+rules: [CR 702.18a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Prodigal Pyromancer]
+  p2:
+    battlefield: [Kalonian Behemoth, Runeclaw Bear]
+steps:
+  - p1 activate: p1:Prodigal Pyromancer
+    targets: [p2:Kalonian Behemoth]
+  - expect error: illegalAction
+  - p1 activate: p1:Prodigal Pyromancer
+    targets: [p2:Runeclaw Bear]
+  - all pass: once
+  - expect:
+      p2:Runeclaw Bear.damage: 1
