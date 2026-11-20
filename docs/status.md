@@ -379,6 +379,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Known issues
 - Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
+  Still, the folder is 3.8 MB after M2-06b (budget 4 MB), about 0.3 MB per task: it will pass the budget in M2-06c or
+  M2-07. Options then: raise the budget, a compact action format, or stop adding a game per card once a card's
+  mechanic is covered by scenarios.
 - The bench drifts: on `main` (2026-11-20, after M2-05) some workloads run 10–18% over `bench/baseline.json`
   (`applyAction.emptyBoard`, `randomGame`, `legalActions.busyBoard`), near the failure threshold, so a noisy run can
   fail. It comes from M2's engine changes, not one PR. Before it fails for real: profile, or reset the baseline with
