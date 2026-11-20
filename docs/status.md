@@ -453,6 +453,26 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-08c, the CR 616.1 choice, no pool cards: superseded by the design above (D-087). The M2-03 review's cases are
        in Open questions; only the Homing Bear one (regeneration and a "would be put into a graveyard" replacement on
        one destroy) is tested now.
+     - Now: M2-08d (2026-11-20), in two PRs. Plan:
+       - Damage is replaced per recipient: a `dealDamage` event's entries (one per source and recipient) each get their
+         own candidates and their own chooser, the recipient player or the recipient object's controller (CR 616.1).
+         Choices become `{ affected, ref }`, so a global effect's choice for one recipient isn't used for another
+         (the M2-08c review). A prevented entry shrinks or goes; lifelink and "deals damage" triggers see what's left
+         (CR 615.6, 120.4c). State-held effects get an `id` (two Harm's Ways differ).
+       - M2-08d1: Fog ("prevent all combat damage that would be dealt this turn"), Safe Passage ("all damage that would
+         be dealt to you and creatures you control this turn", creatures arriving later too: its ruling), both kept in
+         `GameState.replacements` until cleanup; Guardian Seraph ("if a source an opponent controls would deal damage to
+         you, prevent 1 of that damage"; an ownerless source counts by its owner: its ruling; several add up), the first
+         replacement read from another permanent's text on the battlefield, not the moving card's. Choices arise
+         (Seraph with Fog or Safe Passage), though the result is the same; asked anyway (CR 616.1), skipping a choice
+         whose outcome can't differ being a later UX question.
+       - M2-08d2: Harm's Way: a source chosen as it resolves (any object, CR 609.7a; offered: permanents and spells),
+         then "the next 2 damage that source would deal to you and/or permanents you control this turn is dealt to its
+         target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
+         when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
+         stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
+       - Golden cover: `chooseReplacement` becomes required once Seraph meets Fog or Safe Passage in agent games, or
+         a deck runs both.
      - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
        (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
        a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
