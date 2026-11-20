@@ -5,11 +5,11 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { amountOf, isFixedAmount } from "../rules/amount.ts";
-import { effectsOf, legalTargets, type Targeting, targetCount, targetSpecsOf } from "../rules/targets.ts";
+import { effectsOf, legalTargets, sameTarget, type Targeting, targetCount, targetSpecsOf } from "../rules/targets.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import { type Division, type StackChoices, sameTarget, type Target } from "../state/objects.ts";
+import type { Division, StackChoices, Target } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { castingOf } from "./casting-state.ts";
 import { waitFor } from "./decide.ts";

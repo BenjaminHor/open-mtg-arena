@@ -19,7 +19,6 @@ import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
 import { largestShare, possibleTargets } from "./choose-targets.ts";
-import { redirectShareRange } from "./divide-redirect.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 import { nextSacrificeOptions } from "./sacrifice-costs.ts";
@@ -117,13 +116,6 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
         (target): Action => ({ ...answer, answer: { kind: "chooseTarget", target } }),
       );
       return [...targets, { ...answer, answer: { kind: "cancelCast" } }];
-    }
-    case "divideRedirect": {
-      const { min, max } = redirectShareRange(pending);
-      return Array.from(
-        { length: max - min + 1 },
-        (_, i): Action => ({ ...answer, answer: { kind: "redirectShare", amount: min + i } }),
-      );
     }
     case "divide": {
       const shares = Array.from(

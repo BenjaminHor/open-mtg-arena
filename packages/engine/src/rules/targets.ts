@@ -4,7 +4,7 @@
 import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { sameTarget, type Target } from "../state/objects.ts";
+import type { Target } from "../state/objects.ts";
 import { keywordsOf, stackAbilityText } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
@@ -93,6 +93,12 @@ export function isLegalTarget(
   cards: CardDatabase,
 ): boolean {
   return legalTargets(state, spec, by, cards).some((t) => sameTarget(t, target));
+}
+
+export function sameTarget(a: Target, b: Target): boolean {
+  return a.kind === "player"
+    ? b.kind === "player" && a.player === b.player
+    : b.kind === "object" && a.object === b.object;
 }
 
 /**

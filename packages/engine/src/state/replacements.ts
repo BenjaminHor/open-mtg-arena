@@ -3,7 +3,7 @@
 
 import type { GameState } from "./game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "./ids.ts";
-import { sameTarget, type Target } from "./objects.ts";
+import type { Target } from "./objects.ts";
 
 export type ReplacementEffect =
   /**
@@ -24,21 +24,6 @@ export type ReplacementEffect =
       controller: PlayerId;
       combatOnly: boolean;
       protects: "everyone" | "controllerAndCreatures";
-    }
-  /**
-   * "The next N damage that [from] would deal to you and/or permanents you control this turn is dealt to [to] instead"
-   * (Harm's Way; CR 614.9): `remaining` is how much it still redirects (like a shield; later: CR 615.7); it's used up as damage
-   * is redirected, and isn't when none is (CR 609.7b). `from` is the chosen source, followed from the stack onto the
-   * battlefield if it's a permanent spell (CR 609.7a).
-   */
-  | {
-      kind: "redirectDamage";
-      id: ObjectId;
-      sourceOracleId: OracleId;
-      controller: PlayerId;
-      from: ObjectId;
-      remaining: number;
-      to: Target;
     };
 
 /**
@@ -53,16 +38,10 @@ export type ReplacementRef =
   | { kind: "resolvedEffect"; id: ObjectId };
 
 /**
- * A choice made while replacing an event: which replacement effect applies first, and what that choice was for, so a
- * choice made for one event or damage entry isn't used for another (CR 616.1); or how a redirection effect with too
- * little left splits it among a source's damage entries (Harm's Way's ruling).
+ * A choice a player made between replacement effects, and what it was for, so a choice made for one event or damage
+ * entry isn't used for another (CR 616.1).
  */
-export type ReplacementChoice =
-  | { kind: "first"; for: ChoiceFor; ref: ReplacementRef }
-  | { kind: "redirectSplit"; effect: ObjectId; shares: RedirectShare[] };
-
-/** How much of one damage entry a redirection effect redirects. */
-export type RedirectShare = { entry: DamageEntryKey; amount: number };
+export type ReplacementChoice = { for: ChoiceFor; ref: ReplacementRef };
 
 /**
  * What a choice between replacement effects is for: the object an event affects, or one entry of a damage event (a
@@ -70,24 +49,23 @@ export type RedirectShare = { entry: DamageEntryKey; amount: number };
  * recipient twice in an event (Goblin Artillery targeting its own controller). Source and recipient say which damage
  * it is.
  */
-export type ChoiceFor = { kind: "object"; object: ObjectId } | DamageEntryKey;
-
-/**
- * One entry of a damage event, by its place in the event as proposed, its source and its recipient, and `hop`: 0 for
- * the entry as proposed, 1 for a part redirected from it, 2 for a part redirected back, and so on, so a part sent away
- * and back to the same recipient isn't the same entry (D-090).
- */
-export type DamageEntryKey = { kind: "damage"; index: number; hop: number; source: ObjectId; to: Target };
+export type ChoiceFor =
+  | { kind: "object"; object: ObjectId }
+  | { kind: "damage"; index: number; source: ObjectId; to: Target };
 
 export function sameChoiceFor(a: ChoiceFor, b: ChoiceFor): boolean {
   switch (a.kind) {
     case "object":
       return b.kind === "object" && a.object === b.object;
     case "damage":
-      return (
-        b.kind === "damage" && a.index === b.index && a.hop === b.hop && a.source === b.source && sameTarget(a.to, b.to)
-      );
+      return b.kind === "damage" && a.index === b.index && a.source === b.source && sameTarget(a.to, b.to);
   }
+}
+
+function sameTarget(a: Target, b: Target): boolean {
+  return a.kind === "player"
+    ? b.kind === "player" && a.player === b.player
+    : b.kind === "object" && a.object === b.object;
 }
 
 export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {
@@ -111,7 +89,6 @@ export function replacementEffectCard(state: GameState, id: ObjectId): OracleId 
   for (const effect of state.replacements) {
     switch (effect.kind) {
       case "preventAllDamage":
-      case "redirectDamage":
         if (effect.id === id) return effect.sourceOracleId;
         break;
       case "regenerationShield":

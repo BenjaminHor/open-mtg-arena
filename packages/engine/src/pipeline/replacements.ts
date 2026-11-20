@@ -18,7 +18,6 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import {
   type ChoiceFor,
-  type DamageEntryKey,
   hasRegenerationShield,
   type ReplacementChoice,
   type ReplacementRef,
@@ -28,20 +27,8 @@ import type { Destination } from "../zones/move-card.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { playLandDestination, type SingleEvent } from "./proposed.ts";
 
-/**
- * A choice needed before the event can be replaced: which replacement applies first (CR 616.1), and what the choice is
- * for; or how a redirection effect splits what it has left among a source's damage entries (`redirection.ts`).
- */
-export type Ask =
-  | { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] }
-  | {
-      kind: "divideRedirect";
-      player: PlayerId;
-      effect: ObjectId;
-      amount: number;
-      entries: DamageEntryKey[];
-      maxima: number[];
-    };
+/** Who must choose between which replacements first (CR 616.1), and what the choice is for. */
+export type Ask = { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] };
 
 /** The events in place of the event, or the choice needed first. */
 export type Replaced = { kind: "replaced"; events: SingleEvent[] } | Ask;
@@ -65,9 +52,7 @@ export function applyReplacements(
 ): Replaced {
   // Choices are for the object the event affects (`ReplacementChoice.for`).
   const object = affectedObject(event);
-  const choices = allChoices.flatMap((c) =>
-    c.kind === "first" && c.for.kind === "object" && c.for.object === object ? [c.ref] : [],
-  );
+  const choices = allChoices.filter((c) => c.for.kind === "object" && c.for.object === object).map((c) => c.ref);
   let replaced: Replacing = { before: [], event, after: [] };
   const applied: ReplacementRef[] = [];
   for (;;) {
@@ -147,7 +132,6 @@ function affectedObject(event: SingleEvent): ObjectId | null {
     // Damage is replaced per entry, with its own choices (`damage-replacements.ts`).
     case "dealDamage":
     case "damagePrevented":
-    case "damageRedirected":
     case "gainLife":
     case "loseLife":
     case "reveal":
@@ -172,7 +156,6 @@ function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
     case "playLand":
       return event.player;
     case "damagePrevented":
-    case "damageRedirected":
     case "draw":
     case "dealDamage":
     case "gainLife":
@@ -219,7 +202,6 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
     case "shuffle":
     case "regenerate":
     case "damagePrevented":
-    case "damageRedirected":
       return null;
   }
 }
@@ -316,7 +298,6 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "shuffle":
     case "regenerate":
     case "damagePrevented":
-    case "damageRedirected":
       throw new Error(`${event.kind} moves no card`);
   }
 }

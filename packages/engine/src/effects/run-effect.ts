@@ -27,7 +27,6 @@ import {
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 import { preventAllDamage } from "./prevention.ts";
 import { put } from "./put-effects.ts";
-import { redirectNextDamage } from "./redirection.ts";
 import { addRegenerationShields } from "./regeneration-shield.ts";
 import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
@@ -111,8 +110,6 @@ export function runEffect(
     }
     case "preventAllDamage":
       return preventAllDamage(state, effect, context);
-    case "redirectNextDamage":
-      return redirectNextDamage(state, effect, context, chosen, cards);
     case "regenerate":
       return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
     case "revealUntil": {

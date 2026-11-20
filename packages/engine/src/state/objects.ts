@@ -129,10 +129,3 @@ export type Division = { instance: number; shares: Share[] };
 
 /** A chosen target: a player or an object (CR 115.1). */
 export type Target = { kind: "player"; player: PlayerId } | { kind: "object"; object: ObjectId };
-
-/** Whether two targets (or damage recipients) are the same player or object. */
-export function sameTarget(a: Target, b: Target): boolean {
-  return a.kind === "player"
-    ? b.kind === "player" && a.player === b.player
-    : b.kind === "object" && a.object === b.object;
-}

@@ -25,7 +25,6 @@ the one place their effects become changes to the game.
 | `mustAttack` | "attacks you this turn if able" | Creates a continuous effect `declaration-rules.ts` reads as a requirement (CR 508.1d) on the targets still legal; targets only for now |
 | `cantBlock` | "can't block this turn" | Creates a continuous effect `canBlock` reads (CR 509.1b) on the targets still legal (CR 608.2b); targets only for now |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a); `noRegeneration`: "It can't be regenerated", so no shield is used (CR 701.19c) |
-| `redirectNextDamage` | "The next 2 damage that a source of your choice would deal to you and/or permanents you control this turn is dealt to any target instead" | Asks for the source (a permanent or a spell, CR 609.7a), then adds a redirection effect to `GameState.replacements` (`redirection.ts`, D-090) |
 | `regenerate` | "Regenerate target creature" | A regeneration shield on each permanent `of` names still on the battlefield, used the next time it would be destroyed this turn (CR 701.19a; `regeneration-shield.ts`, D-086) |
 | `destroyAll` | "Destroy all nonland permanents" | Destroys every permanent fitting `filter`, decided once, at the same time (CR 608.2f, 608.2h) |
 | `exile` | "Exile target permanent" | Moves each object `of` names to exile (CR 701.13a) |

@@ -29,7 +29,6 @@ import {
   targetCountProblem,
   targetProblem,
 } from "./choose-targets.ts";
-import { answerDivideRedirect, redirectShareRange } from "./divide-redirect.ts";
 import { playersLose } from "./game-end.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
@@ -147,17 +146,10 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         state: queueWork(answered, {
           kind: "resumeEvent",
           proposed,
-          choices: [...choices, { kind: "first", for: pending.for, ref: chosen }],
+          choices: [...choices, { for: pending.for, ref: chosen }],
         }),
         events: [],
       };
-    }
-    case "divideRedirect": {
-      if (answer.kind !== "redirectShare") return mismatch;
-      const { min, max } = redirectShareRange(pending);
-      if (!Number.isInteger(answer.amount) || answer.amount < min || answer.amount > max)
-        return error("illegalAction", `this damage's share must be from ${min} to ${max}`);
-      return { ok: true, state: answerDivideRedirect(answered, pending, answer.amount), events: [] };
     }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;

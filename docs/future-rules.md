@@ -36,13 +36,10 @@ order of replacements (CR 616.1) and resumes as a work item; only callers that d
 *Watch out:* every other caller (the list is in `engine/src/pipeline/README.md`) must queue its rest as work before it
 can wait, and mana abilities run outside the work queue. *Built (M2-08d1, D-088):* prevention per damage entry, each
 with its own choices and chooser, choices keyed by the entry (`ChoiceFor`), and an id for each state-held effect.
-*Built (M2-08d2, D-090):* redirection with an amount (Harm's Way), its split among entries settled per effect before
-the entries, the redirected part replaced again (CR 616.1f), amount-limited effects threaded through the event.
-*Watch out:* a share isn't reassigned when prevention empties its entry first. "Prevent the next N" shields (CR 615.7)
-can reuse the split and the threading. Planeswalkers and battles (CR 120.1) count as "permanents you control" for
-Harm's Way (`isYouOrYourPermanent`) but not as "creatures you control" for Safe Passage (`isYouOrYourCreature`): keep
-the two apart when they join `canBeDealtDamage`. Protection (M2-08e) adds a third source of candidates and makes the
-lost-share case less rare (protection empties an entry without anyone choosing it). Each member of a batch is replaced
+*Set aside (D-090):* redirection with an amount (Harm's Way) needs CR 616.1 choices per (effect, recipient), its
+split made when it applies against what earlier choices left, and amounts threaded through the event; per-entry
+choices (today) are finer than CR 616.1, and per-player ones coarser. D-090 lists what the reviews found. "Prevent the
+next N" shields (CR 615.7) will need the same. Each member of a batch is replaced
 against the state before the batch (built, D-085), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):

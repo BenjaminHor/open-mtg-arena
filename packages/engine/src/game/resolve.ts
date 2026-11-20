@@ -1,16 +1,15 @@
 // Resolving the top object of the stack (CR 608).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { effectsFollowSpellToPermanent } from "../effects/redirection.ts";
 import { happen } from "../pipeline/happen.ts";
 import { isTriggerRef, triggeredAbilityDef } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { effectsOf, stillLegalTargets } from "../rules/targets.ts";
+import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
 import type { DidNotResolve } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import { type GameObject, sameTarget, type Target } from "../state/objects.ts";
+import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
 import { holds } from "../triggers/match-event.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
@@ -131,16 +130,9 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
           : ({ zone: "battlefield", controller } as const);
       // The resolution is reported before the card moves; triggers on resolving come after both (later: CR 608.2p).
       const resolved = { type: "SPELL_RESOLVED", object: id, cardId: obj.cardId, controller } as const;
-      const moved = andThen({ state, events: [resolved] }, (s) =>
+      return andThen({ state, events: [resolved] }, (s) =>
         happen(s, { kind: "moveCard", object: id, to: destination }, cards),
       );
-      // A redirection effect whose chosen source was this spell applies to the permanent it becomes (CR 609.7a).
-      const entered = moved.events.find(
-        (e) => e.type === "ZONE_CHANGED" && e.oldId === id && e.to.zone === "battlefield",
-      );
-      return entered?.type === "ZONE_CHANGED"
-        ? { ...moved, state: effectsFollowSpellToPermanent(moved.state, id, entered.newId) }
-        : moved;
     }
   }
 }

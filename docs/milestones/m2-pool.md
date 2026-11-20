@@ -101,7 +101,7 @@ The exact lists are written when they're built (D-053's pool rule: only scripted
 | 11 | Glorious Charge | Instant | S | "creatures you control get +1/+1 until end of turn" (affected set locked, CR 611.2c) |
 | 12 | Griffin Sentinel | Creature — Griffin | KW | vigilance |
 | 13 | Guardian Seraph | Creature — Angel | R | damage prevention |
-| 14 | Harm's Way | Instant | R T | damage redirection; choose a source |
+| 14 | Harm's Way | Instant | R T | damage redirection; choose a source. Set aside (D-090, Open questions): not on Arena |
 | 15 | Holy Strength | Enchantment — Aura | A S |  |
 | 16 | Honor of the Pure | Enchantment | S | anthem for white creatures |
 | 17 | Indestructibility | Enchantment — Aura | A KW | indestructible |

@@ -491,8 +491,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          6fd7c9e; D-090 rewritten): 15 Harm's Way scenarios, unit tests in `test/game/divide-redirect.test.ts`;
          mutations 10 of 11 caught (the survivor only adds a zero-maximum entry to a split). Fuzz clean.
          Re-review (rules-judge, 2026-11-20): the three first findings are fixed, but settling shares before the
-         CR 616.1 choice gives two new wrong results, so a redesign comes next (one more cycle; if the judge still finds
-         a wrong result, revert M2-08d2 and ask the owner):
+         CR 616.1 choice gives two new wrong results. A paper redesign, reviewed by the judge, still had wrong results
+         and rests on unsettled readings, so M2-08d2 is reverted on the branch (D-090; Open questions). M2-08d ends
+         with M2-08d1. Next: M2-08e (protection). The findings, kept for when Harm's Way returns:
          - Two of one player's Harm's Ways on one source: the cast order decides, not the player's choice. Hill Giant
            (3) at p1, p1's Harm's Ways A (target p2) and B (target p2's Grizzly Bears); B first: the Bears die, p2 19.
          - Prevention first leaves a share unused: Earthquake X=2 with p1's Grizzly Bears, Guardian Seraph and Harm's
@@ -704,6 +705,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20, D-090) Harm's Way. Its redirection was built twice and each rules review found wrong results;
+  the reviews worked out what a correct model needs (D-090), which needs your call on three rules readings and a change
+  to D-088 (choices per recipient, not per damage entry). It isn't on MTG Arena, and no card your filter keeps uses
+  this redirection. Options: (a) leave Harm's Way out of the pool, like the M2-14 cards Arena doesn't have, and record
+  the design in `future-rules.md` (recommended; proceeding with this); (b) redesign damage replacement now (about a
+  milestone task of its own, with the three readings decided first); (c) keep it for M2-14's "special rules" batch.
 - (Asked 2026-11-20, D-089) Does "modern Magic" mean the Modern format? `game:arena -is:alchemy -is:digital` keeps 13,036
   of 23,012 Modern-legal cards, and 51 keywords on 596 Modern-legal cards appear on no card it keeps (Echo, Dredge,
   Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the

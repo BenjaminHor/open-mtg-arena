@@ -1268,42 +1268,25 @@ every schema change and every change D-024 lists bumps it.
   (all are CR rules on the same machinery); the filter only decides what's built first. Banding and phasing, the
   costly ones, aren't Modern-legal anyway.
 
-**D-090: Redirection with an amount (M2-08d2, Harm's Way); amounts threaded through one damage event** · 2026-11-20 · accepted
-- Harm's Way's source is chosen as it resolves (CR 609.7a) with the existing `chooseCards` decision, purpose
-  `damageSource`, among permanents, spells on the stack, and the sources of abilities on the stack, even ones that
-  left (a pinger bounced in response; named as it last existed, CR 113.7a). Objects referred to only by a waiting
-  effect or delayed trigger, and the command zone, aren't offered yet (later). A chosen permanent spell is followed
-  onto the battlefield as it resolves (`effectsFollowSpellToPermanent`, CR 609.7a, 400.7c), listed as a state change
-  outside the pipeline.
-- The effect is `redirectDamage` in `GameState.replacements`: source, target, controller, amount left. It applies to
-  damage from the source to its controller or a permanent they control, while the target can be dealt damage
-  (CR 614.9); when it can't, nothing is redirected or used up (its ruling, CR 609.7b). Damage the source would
-  already deal to the target isn't redirected: redirection deals the damage to *another* recipient (CR 614.9).
-- What each effect takes from the event's own entries is settled before they're replaced, effect after effect, each
-  seeing what earlier ones took (two Harm's Ways on one source don't both claim the same damage, CR 616.1f). Only when
-  the source would deal more to its controller and their permanents than is left, across more than one entry, does
-  its controller choose (`divideRedirect`, answered with `redirectShare`, one entry per answer; its ruling allows 1 and
-  1; the range forces enough that all that's left is used). Each entry then sees a fixed share, so it doesn't wait on
-  another entry's choice. A share whose entry a prevention effect empties first (one its recipient chose to apply
-  first) isn't given to another entry: that part stays for later damage this turn. The split's chooser and the
-  entry's chooser are the same player there, so it only follows from their own choice.
-- The redirected part is the same damage dealt to another recipient (CR 614.9): combat damage stays combat damage
-  (Fog prevents it at the new recipient), and it's an entry of its own, replaced again with its recipient's chooser
-  (CR 616.1f), without the effects already applied to the damage it came from (CR 614.5: a Harm's Way that sent damage
-  away doesn't apply to it when another sends it back). Its key adds `hop`, so a part sent away and back isn't the
-  entry it came from. Another player's Harm's Way can redirect it with what that effect has left beyond its shares.
-- Amount-limited effects are threaded through the event's entries in order (`Spent`): a permanent's "prevent N of that
-  damage" counts per source and recipient across all of them (Guardian Seraph, CR 615.10), and a redirection
-  effect's use on redirected parts is counted. An entry that asks leaves the count as it was; a choice an earlier
-  answer makes impossible is skipped when the event is replaced again, and that entry asks again. "Prevent all"
-  effects have no amount and apply to every entry and part.
-- After replacement, one source's damage to one recipient is merged (a redirected part joining damage the source was
-  already dealing there), so "deals damage" triggers see it once (CR 603.2c).
-- Choices made while replacing are a union (`ReplacementChoice`): `first` (which effect first) or `redirectSplit`. A
-  `damageRedirected` pipeline event uses the amount up in `perform` (an effect used up is removed), told as
-  `DAMAGE_REDIRECTED`.
-- Golden games: Harm's Way is cast in pool-167, but its redirect needs the randomly chosen source to damage the agent
-  afterwards, so `DAMAGE_REDIRECTED` and `divideRedirect` carry reasons instead of being required.
-- History: the first version settled shares only for the event's own entries and handled each entry in isolation. The
-  M2-08d2 rules review found it let Guardian Seraph prevent twice for one source and player, didn't offer a bounced
-  pinger, and resolved two players' Harm's Ways wrongly; settling once and threading what's created fixed all three.
+**D-090: Harm's Way is set aside; what redirection with an amount needs (M2-08d2)** · 2026-11-20 · proposed (owner to confirm)
+- Harm's Way ("The next 2 damage that a source of your choice would deal to you and/or permanents you control this
+  turn is dealt to any target instead") was built twice on the branch and reverted (commits 1c4fcda, 93f2c4d,
+  6fd7c9e, 1316d92, kept in history; reverted after the third rules review). Each review found wrong results reachable
+  with the pool. The card is out of the pool until the design below is settled.
+- Why it's hard: its split ("you choose which 2 damage", its ruling) has to be made when the effect applies, against
+  what earlier CR 616.1 choices left, and CR 616.1 choices are per affected object or player, made by each affected
+  player in APNAP order. Settling shares before those choices made the order choice meaningless (two of one player's
+  Harm's Ways) and lost shield (prevention first). Choosing once per player for all their recipients loses outcomes the
+  per-recipient choices reach (Safe Passage first for you, Harm's Way for your creature).
+- What a correct model needs, from the reviews: choices per (effect, recipient) for prevention; Harm's Way as one
+  option over all of its controller's affected recipients, split at application; CR 614.5's "one opportunity" for
+  replacement effects (Harm's Way) event-wide, and prevention ("prevent all") applying to any part it hasn't
+  prevented, including parts redirected later; Guardian Seraph's 1 counted per source and recipient across the
+  event (CR 615.10); APNAP order across the affected players, and which goes first when one player's lone effect
+  needs no choice (unsettled: CR 616.1, 101.4 don't say); the sources of abilities on the stack offered even after
+  they left (CR 609.7a); damage already headed for the target not redirected (CR 614.9 "another", 609.7b; no ruling
+  found online, D-080).
+- Why set aside rather than finish now: none of this is needed by another Magic 2010 card, Harm's Way isn't on MTG
+  Arena, and no card that filter keeps has "a source of your choice ... is dealt to ... instead" (Scryfall,
+  2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above need the owner (D-080, and
+  reversing D-088's per-entry choice). Fog, Safe Passage and Guardian Seraph (M2-08d1, D-088) are unaffected.
