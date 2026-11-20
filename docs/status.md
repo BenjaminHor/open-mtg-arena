@@ -25,25 +25,40 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       default exactly one). "Target creature" becomes `permanent` with types `creature`; the M1 definitions move to
       it. Planeswalkers come with M2-13; "target opponent" (Sanguine Bond, M2-07) and "toughness less than this
       creature's power" (Stone Giant, M2-09) come with their cards.
-    - `legalTargets` knows the spell or ability, its controller, and the zones: permanents, spells on the stack (not
-      itself, CR 115.5), cards in graveyards, players. Filters read `characteristics()`, combat from `state.combat`,
-      control from `controllerOf` (never the owner).
+    - `legalTargets` knows the spell or ability, its controller, and the zones: permanents, spells on the stack (cards
+      only, not abilities, CR 112.1; not itself, CR 115.5), cards in graveyards ("your graveyard" or "a graveyard" is a
+      zone restriction, CR 109.2a, not control), players. Filters read `characteristics()` in every zone (CR 613.1),
+      control from `controllerOf` (never the owner). "Blocking" means declared as a blocker and not removed from combat
+      (CR 509.1g, 506.4), even if its attacker is gone; not `blocksInCombat`. "Target player" (Mind Shatter, M2-05) and
+      "that player controls" (Lightwielder Paladin, M2-07) come with their cards.
     - A variable count is announced first (CR 601.2c): a `chooseTargetCount` decision, then that many `chooseTarget`
       answers for the instance, no object twice in one instance (CR 115.3). A fixed count of one keeps today's flow.
-      The announced counts live in `Casting`.
+      The announced counts live in `Casting`. The counts offered are capped by the distinct legal choices, and for a
+      division by the amount (each target needs one, CR 601.2d).
     - Division (CR 601.2d): an effect marked `divided: "asYouChoose"` asks, after the targets, for each target's
-      share in turn (at least one each; the last gets the rest), stored on the spell's `StackChoices`. With one
-      target there's nothing to ask. At resolution an illegal target's share isn't dealt (CR 608.2b); the others keep
-      theirs (checked against the cards' rulings).
-    - `castProblem` checks only instances whose minimum is above zero have enough legal choices (CR 115.6).
+      share in turn (at least one each, leaving one for each target still to come; the last gets the rest), stored
+      on the spell's `StackChoices` as target and amount pairs, so dropping an illegal target can't shift the shares.
+      With one target there's nothing to ask. At resolution an illegal target's share is lost and the others keep
+      theirs (CR 608.2b, 608.2d, 115.7f; Bogardan Hellkite's ruling). Fireball is different: "divided evenly" is
+      worked out at resolution among the targets still legal, with no announcement (its rulings), so it's
+      `divided: "evenly"` in M2-04b, and zero targets deals nothing.
+    - `castProblem` and `activationProblem` check each instance has at least its minimum of distinct legal choices
+      (CR 115.3, 115.6). Triggered abilities (M2-07) won't use this: with no legal target they're removed
+      (CR 603.3d).
+    - Ignite Disorder needs a white or blue creature in the pool: Elite Vanguard and Coral Merfolk (vanilla, already
+      playable) join it, with Plains and Island. The scenario runner gets `targets:` as a list per instance and a
+      `divide:` key.
     - Tests: scenarios for the three cards with negative cases (wrong color, not blocking, too many targets, the same
       creature twice, an illegal target at resolution); unit tests for every filter field with a positive and a
       negative case, since scenarios can only use pool cards and the other restrictions' cards need M2-05 effects.
   - M2-04b Costs (next). CR 601.2b, 601.2f–h, 107.3, 118, 701.21. Cards: Fireball, Vampire Aristocrat. Costs become
     a list of parts with the total computed in one place: X announced at CR 601.2b (`legalActions` needs a bound,
     recorded as a decision), increases (Fireball's per extra target, so the total comes after targets, CR 601.2f),
-    sacrifice as a cost (a new `sacrifice` event in the pipeline, performed with the mana payment so a cancel never
-    has to undo it, D-035). Fireball's "divided evenly, rounded down" follows its rulings.
+    sacrifice as a cost (CR 701.21a: a cost-payment step where the player picks what to sacrifice and can still
+    cancel; a new `sacrifice` event through `happen` once payment is final, so a cancel never undoes it, D-035). X is
+    any non-negative integer (CR 107.1b, 107.3a); the `legalActions` bound only lists choices. The total is locked
+    into the `payMana` decision (CR 601.2f, 601.2h). Consume Spirit's "spend only black mana on X" waits for mana
+    with restrictions (future-rules.md).
   - Dropped from M2-04: paying mana outside casting. No Magic 2010 card pays mana while a spell resolves (checked).
   - Future impact: Aura targets (M2-12) use `permanent` targets with the same filters; triggered abilities (M2-07)
     choose targets with the same decisions as they're put on the stack (CR 603.3d); protection and shroud (M2-06)
