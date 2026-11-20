@@ -911,8 +911,11 @@ every schema change and every change D-024 lists bumps it.
   new step name, since the CR calls both "combat damage step".
 - The `assignDamage` decision divides one creature's damage among `recipients` (targets: creatures, or the player),
   replacing `attacker`/`blockers`. A trampler's recipients end with the player it attacks, and `lethal` lists what each
-  blocker needs first (CR 702.19b; 1 from a deathtouch source, CR 702.2c). Asked only when there's a choice; the answer
-  for the last blocker is the one trample can refuse, so no partial division reaches a dead end. Palace Guard's division
+  blocker needs first (CR 702.19b; 1 from a deathtouch source, CR 702.2c). Asked only when there's a choice: a trampler
+  with no more damage than its blockers need together divides among them like any creature, and an answer with only
+  one legal amount (the last blocker after an earlier one got less than lethal) is filled in without asking
+  (`withForcedAnswers`, which the scenario runner and exporter use too). The answer for the last blocker is the one
+  trample can refuse, so no partial division reaches a dead end. Palace Guard's division
   among attackers (M2-06b) and planeswalkers (M2-13) use the same shape.
 - Lifelink's life gain and deathtouch's record are results of the damage event (CR 120.4c), performed with it in
   `effects/deal-damage.ts`; lifelink gains once per source (CR 702.15e). The deathtouch record is

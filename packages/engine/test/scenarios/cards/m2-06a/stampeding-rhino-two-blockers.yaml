@@ -14,7 +14,8 @@ steps:
   - all pass: until combat.damage
   - expect:
       pending: { kind: assignDamage, lethal: [1, 2] }
-  - p1 assign: { Elite Vanguard: 0, Runeclaw Bear: 2, p2: 2 }
+  # The Vanguard has lethal damage, the Bear only 1 of its 2: the player can't get any.
+  - p1 assign: { Elite Vanguard: 1, Runeclaw Bear: 1, p2: 2 }
   - expect error: illegalAction
   - p1 assign: { Elite Vanguard: 1, Runeclaw Bear: 2, p2: 1 }
   - expect:

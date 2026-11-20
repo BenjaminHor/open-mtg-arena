@@ -55,10 +55,7 @@ export function finishAttackers(state: GameState, chosen: readonly Attack[], car
   return andThen(progress, (s) => ({
     state: queueWork(
       { ...s, combat: { ...(s.combat ?? newCombat()), attacks: [...chosen] } },
-      {
-        kind: "givePriority",
-        player: active,
-      },
+      { kind: "givePriority", player: active },
     ),
     events: [{ type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] }],
   }));

@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { checkStateBasedActions } from "../../src/game/state-based-actions.ts";
-import type { GameEvent, GameState, ObjectId } from "../../src/index.ts";
+import { type GameEvent, type GameState, legalActions, type ObjectId } from "../../src/index.ts";
 import {
   BEARS,
   DEATHTOUCH_TRAMPLER,
@@ -50,6 +50,10 @@ function becomes(game: Game, id: ObjectId, oracleId: string): Game {
 }
 
 const since = (game: Game, before: number): GameEvent[] => game.events.slice(before);
+const amounts = (state: GameState) =>
+  legalActions(state, "p1", TEST_CARDS).flatMap((a) =>
+    a.type === "ANSWER" && a.answer.kind === "assignDamage" ? [a.answer.amount] : [],
+  );
 const hits = (events: GameEvent[], source: ObjectId) =>
   events.filter((e) => e.type === "DAMAGE_DEALT" && e.source === source).length;
 const life = (state: GameState, player: "p1" | "p2") => state.players[player]?.life;
@@ -153,10 +157,14 @@ describe("trample", () => {
       ),
     );
     expect(game.state.pending).toMatchObject({ kind: "assignDamage", lethal: [1, 1], amount: 5 });
-    // Giving the first blocker 0 means the last must take everything left: the player can't get any (CR 702.19b).
+    expect(amounts(game.state)).toStrictEqual([0, 1, 2, 3, 4, 5]);
+    // Giving the first blocker 0 means the last must take everything left, so it isn't asked (CR 702.19b).
     const zero = answer(game, { kind: "assignDamage", amount: 0 });
-    expect(() => answer(zero, { kind: "assignDamage", amount: 1 })).toThrow(/isn't a legal answer/);
+    expect(zero.state.pending?.kind).toBe("priority");
+    expect(life(zero.state, "p2")).toBe(20);
     game = answer(game, { kind: "assignDamage", amount: 1 });
+    // The last blocker: lethal (1) up to 3, so the player gets the rest, or all 4 of what's left.
+    expect(amounts(game.state)).toStrictEqual([1, 2, 3, 4]);
     game = answer(game, { kind: "assignDamage", amount: 1 });
     expect(life(game.state, "p2")).toBe(17);
     expect(game.state.zones.players.p2?.graveyard).toHaveLength(2);

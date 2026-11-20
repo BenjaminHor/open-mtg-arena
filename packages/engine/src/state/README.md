@@ -15,7 +15,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 | `game-state.ts` `Resolution` | What the resolving object did "this way" (CR 608.2c): found and exiled cards (D-064) |
 | `casting.ts` | `Casting`: a spell part way through being cast or an ability being activated, with its origin and what's needed to reverse it (CR 734.1) |
 | `work.ts` | `WorkItem`: work waiting in the queue (D-032) |
-| `combat.ts` | `Combat`, `Attack`, `Block`, `DamageDivision`, `AttackerDivision`: attacks and blocks during the combat phase (CR 506) |
+| `combat.ts` | `Combat` (with `newCombat()`), `Attack`, `Block`, `DamageDivision`, `CombatDivision`: attacks, blocks and first strike's steps during the combat phase (CR 506, 510.4) |
 | `state-based-actions.ts` | `StateBasedAction`: one state-based action a check found (CR 704) |
 | `effects.ts` | `ContinuousEffect`, `EffectChange`, `Duration` (CR 611); `EffectContext`, carried by `runEffect` work items (D-036) and by a `chooseCards` decision's `resume` (D-062) |
 | `pregame.ts` | `Pregame`: the start of a standard game (starting player, mulligans), before turn 1 |

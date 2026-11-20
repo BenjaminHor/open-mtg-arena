@@ -42,7 +42,9 @@ since M2-05b1 "draw N" is N single draws (D-060), and the container comes with t
 (M2-08). Since each event is performed whole, a "would die" or
 "would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
 `destroy`, `sacrifice`, `counterObject`, `discard`, ...): M2-08 needs a small "the zone change this event makes"
-helper. Lifelink, infect, wither
+helper. Lifelink's life gain (D-070) is performed inside the damage event, one gain per source (CR 702.15e), so a life
+gain replacement ("if you would gain life", Boon Reflection) or "can't gain life" must apply to those gains there,
+as results of the damage event (CR 120.4c), not as separate `gainLife` events. Lifelink, infect, wither
 and "a source you control deals damage" need the damage source's characteristics and controller as it dealt the damage
 (CR 120.3, 608.2h), so the last-known-information store must feed `dealDamage`. `DAMAGE_DEALT.source` and `ContinuousEffect.source` are object ids that die when the
 spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3") will want a `cardId` beside them.

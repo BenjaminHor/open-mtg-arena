@@ -11,7 +11,7 @@ import { keywordsOf } from "../rules/abilities.ts";
 import { attacksInCombat, blocksInCombat, isBlocked } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { powerAndToughness } from "../rules/power-toughness.ts";
-import type { CombatDivision } from "../state/combat.ts";
+import type { CombatDivision, DamageDivision } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { askToAssign, blockersOf, hasChoice, recipientsOf } from "./damage-assignment.ts";
@@ -27,9 +27,9 @@ export function combatDamage(state: GameState, divisions: CombatDivision[], card
   for (const { attacker, defender } of attacksInCombat(state, cards)) {
     if (!assignsDamageNow(state, attacker, cards) || !isBlocked(state, attacker)) continue;
     if (divisions.some((d) => d.source === attacker)) continue;
-    const recipients = recipientsOf(state, attacker, defender, divisions, cards);
     const amount = combatPower(state, attacker, cards);
-    if (!hasChoice(recipients.recipients, recipients.lethal, amount)) continue;
+    const recipients = recipientsOf(state, attacker, defender, amount, cards);
+    if (!hasChoice(recipients, amount)) continue;
     const asked = askToAssign(state, controllerOf(state, attacker), attacker, recipients, amount, divisions);
     return { state: asked, events: [] };
   }
@@ -60,11 +60,9 @@ function assignedDamage(state: GameState, divisions: readonly CombatDivision[], 
       if (keywordsOf(state, attacker, cards).includes("trample")) damage.push(toDefender);
       continue;
     }
-    // As divided, or with no choice, all to its one blocker (CR 510.1c).
-    const { recipients } = recipientsOf(state, attacker, defender, divisions, cards);
-    const division = divisions.find((d) => d.source === attacker)?.division ?? [
-      { to: recipients[0] as (typeof recipients)[number], amount },
-    ];
+    // As divided, or with no choice, all to its first recipient, its one blocker (CR 510.1c).
+    const division =
+      divisions.find((d) => d.source === attacker)?.division ?? onlyDivision(state, attacker, amount, cards);
     for (const part of division) {
       if (part.amount > 0) damage.push({ source: attacker, to: part.to, amount: part.amount, combat: true });
     }
@@ -76,6 +74,12 @@ function assignedDamage(state: GameState, divisions: readonly CombatDivision[], 
     if (amount > 0) damage.push({ source: blocker, to: { kind: "object", object: attacker }, amount, combat: true });
   }
   return damage;
+}
+
+/** A division with no choice in it: all of the damage to the attacker's one blocker. */
+function onlyDivision(state: GameState, attacker: ObjectId, amount: number, cards: CardDatabase): DamageDivision {
+  const blocker = blockersOf(state, attacker, cards)[0];
+  return blocker === undefined ? [] : [{ to: { kind: "object", object: blocker }, amount }];
 }
 
 /** The combat damage a creature assigns: its power, or none if that's 0 or less (CR 510.1a). */

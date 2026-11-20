@@ -12,7 +12,9 @@ steps:
   - all pass: until combat.declareBlockers
   - p2 block: { Elite Vanguard: Stampeding Rhino, Runeclaw Bear: Stampeding Rhino }
   - all pass: until combat.damage
+  # Only the Vanguard is asked: with less than lethal on it, the Bear must take the other 4, so it isn't asked.
   - p1 assign: { Elite Vanguard: 0, Runeclaw Bear: 4, p2: 0 }
   - expect:
+      pending: { kind: priority }
       p2.life: 20
       p2.battlefield: [Elite Vanguard]

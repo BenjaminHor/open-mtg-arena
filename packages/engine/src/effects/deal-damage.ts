@@ -45,8 +45,8 @@ export function dealDamage(state: GameState, damage: readonly Damage[], cards: C
 
 /**
  * Creatures dealt damage by a source with deathtouch are recorded for the next state-based action check, which destroys
- * them (CR 702.2b, 704.5h). The source is read as it deals the damage, from any zone (later: CR 702.2d, no source deals damage off the battlefield yet; a gone source's last
- * known information, later: CR 702.2e).
+ * them (CR 702.2b, 704.5h). The source's abilities are read with `keywordsOf`, which works in any zone; no source deals
+ * damage off the battlefield yet (later: CR 702.2d). A gone source needs its last known information (later: CR 702.2e).
  */
 function recordDeathtouch(state: GameState, before: GameState, dealt: readonly Damage[], cards: CardDatabase) {
   const touched = dealt.flatMap((d) =>
@@ -59,8 +59,8 @@ function recordDeathtouch(state: GameState, before: GameState, dealt: readonly D
 /**
  * The life each source with lifelink makes its controller gain: the total damage it dealt in this event (CR 120.3f,
  * 702.15b), one gain per source, since several sources with lifelink cause separate life gain events (CR 702.15e). The
- * source's abilities are read as the damage is dealt, from any zone (later: CR 702.15d). A source that's gone would need its
- * last known information (later: CR 702.15c), and one with no controller its owner's.
+ * source's abilities are read with `keywordsOf`, which works in any zone; no source deals damage off the battlefield yet
+ * (later: CR 702.15d). A gone source needs its last known information (later: CR 702.15c).
  */
 function lifelinkGains(state: GameState, dealt: readonly Damage[], cards: CardDatabase) {
   const gains: { source: ObjectId; player: PlayerId; amount: number }[] = [];

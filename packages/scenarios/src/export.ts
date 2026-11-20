@@ -16,6 +16,7 @@ import {
   type PlayerId,
   sameAbilityRef,
   type Target,
+  withForcedAnswers,
 } from "@mtg/engine";
 import { stringify } from "yaml";
 import { nameOf, refOf, scenarioStep } from "./names.ts";
@@ -179,12 +180,16 @@ function division(
 ): { step: Step; taken: number } {
   const pending = state.pending;
   if (pending?.kind !== "assignDamage") throw new Error("an assignDamage answer without its decision");
-  const count = pending.recipients.length - 1;
-  const amounts = actions
-    .slice(i, i + count)
-    .map((a) => (a.type === "ANSWER" && a.answer.kind === "assignDamage" ? a.answer.amount : -1));
-  if (amounts.length < count || amounts.includes(-1)) {
-    throw new Error("the game stops part way through dividing damage, which a scenario can't write");
+  // One answer per question; answers with only one legal amount the engine fills in, as it does for the game.
+  let amounts: number[] = [];
+  let count = 0;
+  while (amounts.length < pending.recipients.length - 1) {
+    const a = actions[i + count];
+    if (a?.type !== "ANSWER" || a.answer.kind !== "assignDamage") {
+      throw new Error("the game stops part way through dividing damage, which a scenario can't write");
+    }
+    amounts = withForcedAnswers({ ...pending, assigned: amounts }, [...amounts, a.answer.amount]);
+    count++;
   }
   const last = pending.amount - amounts.reduce((sum, n) => sum + n, 0);
   const name = (to: Target) => (to.kind === "player" ? to.player : local(state, to.object, cards));

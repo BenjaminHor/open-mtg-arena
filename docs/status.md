@@ -196,44 +196,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
   3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
-     - M2-06a combat damage, done, in review (D-070): 7 cards, 24 scenarios in `test/scenarios/cards/m2-06a/`, 4 in
-       `test/scenarios/interactions/`, unit tests in `test/combat/strikes-and-trample.test.ts`, the matrix with six new
-       rows; the M10 pair carries five of the cards (the fuzzer reaches first strike steps, trample and deathtouch).
-       Plan as written: first strike and the second combat damage step (CR 510.4, 702.7), trample (CR 702.19,
-       lethal damage CR 702.19b, 120.6, 702.2c), deathtouch (CR 702.2, SBA 704.5h), lifelink (CR 702.15), vigilance
-       (CR 702.20). Viashino Spearhunter, Razorfoot Griffin, Stampeding Rhino, Deadly Recluse, Child of Night, Serra
-       Angel, Griffin Sentinel. Double strike (CR 702.4) has no Magic 2010 card, but it's part of CR 510.4: built here,
-       tested by an engine unit test on a test card.
-       - Keywords: `firstStrike`, `doubleStrike`, `trample`, `deathtouch`, `lifelink`, `vigilance` (`cards/types.ts`).
-       - Vigilance: `finishAttackers` taps only attackers without it (CR 508.1f, 702.20b).
-       - Lifelink: `effects/deal-damage.ts` adds, to the damage event's results (CR 120.4c), one life gain per source
-         with lifelink for its controller (CR 120.3f, 702.15b, separate per source, 702.15e), so lifelink saves a
-         player the same damage would kill. Keywords read from the state before the event; a gone source's last known
-         information is later (later: CR 702.15c, 702.2e).
-       - Deathtouch: damage to a creature from a source with deathtouch is recorded in a state-level list
-         (`dealtDeathtouchDamage`, like `attemptedDrawFromEmptyLibrary`), listed by `stateBasedActions` as a destroy
-         (CR 704.5h, 702.2b) and cleared at every check so the check doesn't repeat (D-039). A state change: engine
-         version bump, replays' hashes updated.
-       - Trample: the `assignDamage` decision becomes "one source divides its damage among recipients" (creatures, or
-         the player): the last recipient isn't asked and gets the rest. A trampler's recipients are its blockers then
-         the defending player, and the player can get damage only once every blocker has lethal damage assigned,
-         counting damage already marked and assigned earlier in the step (CR 702.19b), 1 from a deathtouch source
-         (CR 702.2c). Blocked with no blockers left: all to the player (CR 702.19d). Asked only when there's a choice.
-         The same shape serves Palace Guard's blocker dividing among attackers (CR 510.1d, 06b) and planeswalkers.
-       - First and double strike: `Combat` gains `firstStrikers` (the creatures in combat with first or double strike
-         as the first combat damage step began, null without one) and `secondDamageStep`. Who assigns: in a first
-         strike step, those; in the second, the remaining creatures not in `firstStrikers`, plus those with double strike
-         now (CR 510.4, 702.7c, 702.4c–d); otherwise all. `endStep` begins `combatDamage` once more after a first strike
-         step (CR 510.4), so the turn sequence stays data with one walker.
-       - Tests first: scenarios per card and keyword in `test/scenarios/cards/m2-06/` and
-         `test/scenarios/interactions/`: lifelink at lethal, deathtouch with trample, trample over a damaged blocker,
-         trample with its blocker gone, first strike killing a blocker before it deals damage, an attacker whose blocker
-         died in the first step, gaining first strike between the steps (Giant Growth can't; only via a test card, so a
-         unit test), double strike. The interaction matrix gets rows for each keyword, every cell filled.
-       - Future impact: protection's damage prevention (M2-08) happens after assignment, so lethal ignores it (CR
-         702.19b example); planeswalkers (M2-13) are another recipient kind; regeneration's removal from combat (M2-08)
-         needs the removed-from-combat set; lifelink with the Lifelink Aura on Prodigal Pyromancer whose source left
-         needs last known information (M2-07).
+     - M2-06a combat damage, done, in review (D-070): first and double strike with a second combat damage step,
+       trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
+       result of the damage event), vigilance. Viashino Spearhunter, Razorfoot Griffin, Stampeding Rhino, Deadly
+       Recluse, Child of Night, Serra Angel, Griffin Sentinel. Scenarios in `test/scenarios/cards/m2-06a/` and
+       `test/scenarios/interactions/`, unit tests on test creatures in `test/combat/strikes-and-trample.test.ts`
+       (double strike has no Magic 2010 card), six new matrix rows; five of the cards in the M10 pair.
+       For 06b: trample's lethal damage must count damage other attackers assign to a blocker that blocks several
+       (Palace Guard; future-rules, "More combat").
      - M2-06b one creature's restrictions: defender (CR 702.3), landwalk (CR 702.14), "can't be blocked", "can't be
        blocked except by black creatures", "can block any number" (CR 509.1a), "can't block this turn" from a spell
        (Panic Attack, up to three targets). Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior,
