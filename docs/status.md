@@ -78,40 +78,45 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       questions). A 300-game fuzz found a false alarm in the leak check (a card drawn and discarded in one action
       looked hidden from its own drawer); the check now counts it as seen, with a test. The draw-several container
       (CR 121.2a) moves to M2-08.
-    - M2-05b2, choices at resolution (now), split in two. Plan (2026-11-20), to be reviewed by the rules-judge before
-      code:
+    - M2-05b2, choices at resolution (now), split in two. Plan (2026-11-20), rules-reviewed and revised (D-062):
       - Shared (built in b2a): an effect that needs choices stops with a `chooseCards` decision and, on each answer,
-        is queued again in front of the rest of the resolution (`queueWork`) with the cards chosen so far, as
-        `discardToHandSize` does; it does nothing until every answer is in (CR 608.2d). One card per answer, plus a
-        `finishChoosing` answer once the minimum is reached. The decision holds `from` (what may be chosen), `shown`
-        (what the chooser may see because of it: a revealed hand, a searched library), `min`, `max`, `chosen`, and
-        the player choosing, who isn't always the controller (Mind Rot: the target player, CR 701.9b). Counts are
-        clamped to what's there (CR 609.3); with nothing to choose there's no decision, so there's always a legal
-        answer. `playerView` shows a decision's `shown` cards only to its player; a `CARDS_REVEALED` event shows
-        revealed cards to everyone (CR 701.20a); the fuzz leak check takes both as "seen" from the decision and event
-        data. A step that must not repeat (a reveal) is its own effect, ahead of the one that waits.
-      - M2-05b2a, choices from a hand: Mind Rot (`discard` op: the player discards N of their choice, CR 701.9a-b),
-        Merfolk Looter (draw, then discard, nothing between: its ruling), Duress (`target opponent`, CR 102.2;
-        `revealHand`, then `discard` chosen by "you" with a filter, from the revealed hand; none fits, nothing
-        discarded), Elvish Piper (`putOntoBattlefield` from hand, "you may": min 0; enters under the controller's
-        control, CR 110.2a; not cast, so no spell and summoning sick).
-      - M2-05b2b, libraries: Fabricate, Diabolic Tutor, Rampant Growth, Terramorphic Expanse (`search`: look at the
-        whole library, CR 701.23a; with a stated quality the searcher may find none, CR 701.23b; "a card" must be
-        found if there's one, CR 701.23d; then reveal if the card says so, CR 701.23e, put it somewhere, shuffle,
-        CR 701.24a); "onto the battlefield tapped" enters tapped as part of the move, not by a tap event (CR 110.5b),
-        and isn't a land play (CR 305.4); "Sacrifice this land" as a cost part, paid after {T} (D-059). Ponder
-        (`lookAtTop` and put back in any order, one card per answer from the top, CR 701.20e; "you may shuffle" as a
-        yes/no decision; draw). Haunting Echoes (exile all but basic lands from the target's graveyard; search the
-        target's library for any number with those names, CR 701.23b and its ruling; exile them; the target shuffles):
-        "exiled this way" is the first effect's result read by the next, kept on the resolving object until it
-        finishes resolving; a two-worlds test that the searcher sees the target's library and the target doesn't.
-      - Constraints carried over: a re-queued effect runs before the work behind it (test first); nothing moves before
-        all answers are in; Birds of Paradise's color choice inside a mana ability (M2-05c) can't wait this way.
-      - Future impact: "whenever a player discards / searches / shuffles" (M2-07) read the events this adds; a
-        replacement on a discard or a move (M2-08) sees one event per instruction, the choices already made; multiple
-        searchers at once decide in APNAP order (CR 701.23i, not in the pool); "creature card" in a hand is read
-        through `cardTypesOf`. Shuffled cards keep their object ids: ids seen during a search or a look never surface
-        after the cards leave the library (D-054), so renumbering isn't needed yet.
+        is queued again in front of the rest of the resolution (`queueWork`) with the choices so far, as
+        `discardToHandSize` does; nothing happens until every answer is in (CR 608.2d), and answers emit no events.
+        One option per answer, plus `finishChoosing` once the minimum is reached; reaching the maximum finishes. The
+        chooser isn't always the controller (Mind Rot: the target player, CR 701.9b). Only its own answers are legal:
+        no mana abilities, no spells (CR 608.2g; Merfolk Looter's ruling). Counts are clamped (CR 609.3).
+      - Hidden information (D-062): options are stored in a fixed order (oracle id, then internal id) and answered by
+        position. `playerView` shows the decision's player each option's object id only if they can see that card
+        anyway (their own hand); any other option shows only what the card is. Other players see only that a choice
+        is being made. A choice over a hidden zone is always asked when the zone isn't empty, with min 0 where the CR
+        allows finding nothing (CR 701.23b; Elvish Piper's ruling): skipping it would tell the opponent the zone has
+        no such card. A `CARDS_REVEALED` event carries identities only, in the same order. `scrambleHidden` permutes
+        hidden ids instead of shifting them, and keeps the identity of cards a viewer is entitled to see; two-worlds
+        unit tests come first (Fabricate with and without an artifact, Piper declining against no creature, Tutor
+        finding A against B, Echoes leaving copies against none, Duress on a hand built in two orders).
+      - M2-05b2a, choices from a hand: Mind Rot (`discard`: the player discards N of their choice, CR 701.9a-b; a
+        smaller hand whole, CR 609.3), Merfolk Looter (draw, then discard, nothing between: CR 608.2g and its ruling;
+        CR 704.5b with an empty library), Duress (`target opponent`: a player target with an opponent restriction,
+        relative to the controller, checked on choosing and resolving, CR 115.1a, 115.2, 102.2, later: CR 102.3;
+        `revealHand` as its own effect, CR 701.20a-b; then `discard` chosen by "you" from the cards fitting
+        "noncreature, nonland", mandatory if any fits, nothing if none, CR 608.2d, 609.3), Elvish Piper
+        (`putOntoBattlefield` from hand, min 0; under the activator's control, CR 110.2a, 109.5; not cast; summoning
+        sick, CR 302.6; resolves with its source gone, CR 113.7a).
+      - M2-05b2b, libraries: an `ObjectFilter` supertype (basic, CR 205.4a) first. Search, move and shuffle are
+        separate steps passing a "found" result (CR 608.2c "this way"; Liliana Vess will need CR 701.24b), kept with
+        the resolving object until it finishes. Search: look at the whole zone (CR 701.23a); a stated quality may find
+        none (CR 701.23b), "a card" must be found if there's one (CR 701.23d); not revealed unless the card says so
+        (CR 701.23e). Fabricate, Diabolic Tutor, Rampant Growth and Terramorphic Expanse ("onto the battlefield
+        tapped": enters tapped as part of the move, CR 110.5b, so "becomes tapped" doesn't trigger, CR 603.2e; not a
+        land play, CR 305.4; "Sacrifice this land" as a cost part after {T}, CR 602.2, D-059; not a mana ability,
+        CR 605.1a). Ponder (look at the top three, CR 701.20e, put back in any order, CR 401.4, later: CR 701.20d;
+        "you may shuffle" yes/no; draw). Haunting Echoes (exile all but basic lands from the target's graveyard,
+        CR 406.3; one search for all those names, CR 701.23h, 201.2a, any number, its ruling; exile them; the target
+        shuffles): waits on the owner's answer in Open questions when nothing is exiled.
+      - Future impact: "whenever a player discards / searches / shuffles" (M2-07) read these events; a replacement on
+        a discard or move (M2-08) sees one event per instruction, the choices made; Telepathy and multiplayer reveals
+        need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
+        search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
@@ -262,6 +267,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Blocks only M2-05b2b's Haunting Echoes.) Haunting Echoes: "Exile all cards from target player's graveyard other
+  than basic land cards. For each card exiled this way, search that player's library for all cards with the same
+  name as that card and exile them. Then that player shuffles." If the graveyard has nothing to exile, does the caster
+  still search (look through) the target's library? Reading "for each card exiled this way" literally, zero cards
+  means zero searches. CR 701.23c's Lobotomy example points the other way: with nothing to match, the player
+  "searches the specified zones but doesn't exile any cards". The CR doesn't settle it for this wording. It decides
+  whether the caster gets to see the library, and later whether "whenever a player searches" triggers. The shuffle
+  happens either way.
 - (Not blocking yet.) Is losing 0 life an event? The CR says gaining 0 life isn't (CR 119.9, 119.10) but says nothing
   about losing 0. Today `loseLife` proposes any amount, so losing 0 would emit `LIFE_LOST` of 0; no pool card can do
   that yet. Needed before "whenever a player loses life" triggers (M2-07) or a card that loses X life
