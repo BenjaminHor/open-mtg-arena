@@ -1240,6 +1240,13 @@ every schema change and every change D-024 lists bumps it.
   mechanics such as "seek", "conjure" and "perpetually") and also paper cards that reached Arena only in digital
   reprint sets (Abbot of Keral Keep, from Arena's anthologies). Those paper cards use paper rules, so leaving them out
   costs no mechanic; the filter is a guide to which mechanics to build, not a ban on a card.
+- **Final (owner, 2026-11-20): `in:arena in:paper -is:alchemy`**, a card printed on paper that is on Arena in any
+  printing (option (a) of the question about `-is:digital`). It keeps the paper cards Arena had only through its
+  digital reprint sets, whose rules are all in the CR, and still drops digital-only designs, whose "conjure", "seek"
+  and "perpetually" aren't in the CR at all (searched), so they can't be built from the spec. 15,789 cards
+  (14,623 Modern-legal) on 2026-11-20. About a dozen digital designs printed on paper in Mystery Booster sets
+  (Oracle of the Alpha, the "Collector" cycle) slip through; they're skipped by name. The two bullets above record
+  how the filter got here; the measurements below were taken under `-is:digital`.
 - The pool figures above ("87 of 166", "51 of 76") were measured under the first filter (`game:arena` without
   Alchemy); Magic 2010 was never on Arena either way.
 - What the filter leaves out (owner's question, measured on Scryfall 2026-11-20; baseline: paper, not Un-sets):

@@ -27,10 +27,11 @@ API docs: https://scryfall.com/docs/api. Key points to follow:
 - Don't crop out, cover or alter the artist name and copyright on images. When showing an art crop,
   show the artist credit elsewhere in the same view. The long-press card view always shows the full card image.
 - Don't use the Scryfall name or logo in a way that implies endorsement.
-- Which cards come after M2 (D-089): Scryfall's `game:arena -is:alchemy -is:digital` (the owner's filter, and the
-  definition). Offline, the bulk `default-cards` file approximates it with no API calls: a card with a printing whose
-  `games` includes `"arena"`, whose `digital` is false, and which isn't Alchemy (names starting "A-", or sets whose
-  `set_type` is `"alchemy"`).
+- Which cards come after M2 (D-089): Scryfall's `in:arena in:paper -is:alchemy` (the owner's filter, and the
+  definition). Offline, the bulk `default-cards` file approximates it with no API calls: a card with some printing whose
+  `games` includes `"arena"` and some printing whose `games` includes `"paper"`, and which isn't Alchemy (names
+  starting "A-", or only in sets whose `set_type` is `"alchemy"`). Skip the few digital designs printed on paper
+  (Mystery Booster's Oracle of the Alpha and the like): conjure, seek and perpetually aren't in the CR.
 
 ## Wizards of the Coast
 
