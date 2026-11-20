@@ -194,7 +194,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      versions of two of m2-pool.md's decks, are the fuzzer's main pair (two prebuilt games in three). The fuzzer's 40-seed
      measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
-  3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
+  3. M2-06, keywords and attack or block restrictions (m2-rules-depth.md): done but for four keywords waiting on the
+     owner (Open questions); 21 cards, 136 of 234 playable with the M1-only cards. Next: M2-07 triggered abilities,
+     whose golden cover needs the owner's golden budget decision (Known issues). Plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
      - M2-06a combat damage, done, merged (PR #35, D-070): first and double strike with a second combat damage step,
        trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
@@ -215,7 +217,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
        (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair. Declarations list
        finishing first (no first-legal loop); the bench baseline reset.
-     - M2-06d, done, in review: shroud (CR 702.18), one check in `legalTargets` for permanents only (CR 113.6: a spell
+     - M2-06d, done, merged (PR #38): shroud (CR 702.18), one check in `legalTargets` for permanents only (CR 113.6: a spell
        or a graveyard card with shroud can be targeted), which resolution re-checks (CR 608.2b).
        Mist Leopard, Kalonian Behemoth. Scenarios in `test/scenarios/cards/m2-06d/` and `interactions/shroud/`, a unit
        test for a target gaining shroud before resolution, a Shroud matrix row; Mist Leopard in the M10 pair.
