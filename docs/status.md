@@ -664,6 +664,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the boundary: Arena's mechanics first, then a later milestone for the Modern-only ones (recommended; nothing needs
   deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) widen it now to
   `game:arena -is:alchemy`, which brings back paper cards Arena had only in digital reprint sets.
+- (Asked 2026-11-20, D-089) Drop `-is:digital`? Recommended: replace it with `in:paper`, i.e. `in:arena in:paper
+  -is:alchemy`: a card printed on paper that's on Arena in any printing. 15,789 cards (14,623 Modern-legal), against
+  14,010 (13,036). `-is:digital` drops ~1,700 paper cards Arena had only through its digital reprint sets (anthologies,
+  remasters), whose rules are all in the CR; `in:paper` still drops the digital-only designs (Jumpstart: Historic
+  Horizons and the like), whose "conjure", "seek" and "perpetually" aren't in the CR at all (searched), so they can't
+  be built from the spec. About a dozen paper printings of digital designs slip through (Mystery Booster's Oracle of
+  the Alpha, the "Collector" cycle); skip them by name. Options: (a) `in:arena in:paper -is:alchemy` (recommended);
+  (b) keep `-is:digital`; (c) `game:arena -is:alchemy`, which lets digital-only designs back in.
 - (Asked 2026-11-20, D-089) Magic 2010 cards still to script in M2-14 whose rules may have no counterpart on MTG Arena
   (Hive Mind, Telepathy, Warp World, Sphinx Ambassador's naming a card, Mirror of Fate, and any other M2-14 card): (a)
   check each against Arena when M2-14 starts and skip those whose mechanic no Arena card uses (recommended; proceeding
