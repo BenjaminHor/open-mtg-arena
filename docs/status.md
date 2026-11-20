@@ -508,6 +508,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          adds. Cards: Honor of the Pure, Veteran Armorsmith, Veteran Swordsmith, Elvish Archdruid, Merfolk Sovereign,
          Goblin Chieftain, Rhox Pikemaster, Levitation, Coat of Arms, Relentless Rats; Glorious Charge, Overrun,
          Trumpet Blast, Kindled Fury, Jump, Burst of Speed. A CR 613.8 dependency example as a unit test.
+       - Step 1 done (D-092): the readers read one pass in `rules/layers.ts`, no behavior change (no golden log
+         changed), kept per its inputs; a fuzz check compares it with a fresh pass. A random game is 98.5 ms against
+         its 100 ms budget (61 before): watch it as the slices add layers.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

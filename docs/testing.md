@@ -291,6 +291,7 @@ it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
   unchanged, and the events they're shown name no object or card id hidden from them before or after the action,
   unless they could see it then too (D-044, D-054)
 - no player has negative mana, and life totals change only through events
+- the layer pass kept for the state is what a fresh pass gives (D-092): the kept result can't go stale
 
 At the end of each game, replaying the action log from the setup must give an identical state (determinism), and a
 game past 200 turns (`--turn-cap`) is flagged as a likely loop.

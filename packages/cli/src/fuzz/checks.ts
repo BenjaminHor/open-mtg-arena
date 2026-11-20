@@ -6,6 +6,8 @@ import {
   eventsFor,
   type GameEvent,
   type GameState,
+  layered,
+  layeredFresh,
   type ObjectId,
   type PlayerId,
   playerView,
@@ -211,4 +213,18 @@ function hiddenObjects(state: GameState, viewer: PlayerId): ObjectId[] {
   ]);
 }
 
-export const ALL_CHECKS: readonly Check[] = [engineInvariants, lifeThroughEvents, viewsLeakNothing];
+/**
+ * The layer pass kept for a state (D-092) is what a fresh pass gives: the pass reads only its inputs, by which it's
+ * kept, and the state is never changed in place.
+ */
+export const layersMatchFreshPass: Check = (_before, after, _events, cards) =>
+  JSON.stringify(layered(after, cards)) === JSON.stringify(layeredFresh(after, cards))
+    ? []
+    : ["the layer pass kept for this state differs from a fresh one (D-092)"];
+
+export const ALL_CHECKS: readonly Check[] = [
+  engineInvariants,
+  lifeThroughEvents,
+  viewsLeakNothing,
+  layersMatchFreshPass,
+];

@@ -1317,3 +1317,25 @@ every schema change and every change D-024 lists bumps it.
   `keywordsOf`, and `isProtectedFrom` checks the battlefield (CR 113.6); protections are in `characteristics()` and
   `inspect`. The Oracle check compares `protections` with the text's "protection from A and from B".
 
+
+**D-092: One board-wide layer pass, kept per its inputs (M2-09a)** · 2026-11-20 · accepted
+- Characteristics come from one pass over the battlefield and the stack, layer by layer (`rules/layers.ts`, CR 613.1),
+  which every reader reads (`cardTypesOf`, `colorsOf`, `keywordsOf`, `protectionsOf`, `staticAbilitiesOf`,
+  `powerAndToughness`); a card in another zone is computed alone as it's asked for. Effects in one layer see the board
+  as the layers before left it, which per-object readers couldn't do (CR 613.6, 611.3a; future-rules).
+- `controllerOf` stays outside the pass: it takes no card database and is asked everywhere; layer 2 effects from
+  resolved spells (Act of Treason) need none. A static control effect (an Aura's "you control enchanted creature",
+  M2-12 or later) would need `controllerOf` to take the card database, a wide signature change.
+- The pass is kept, not stored in the state (architecture.md: "memoize per state object if profiling shows a need,
+  never by caching values inside the state"): module-level `WeakMap`s keyed by exactly what it reads (`LayerInputs`:
+  the objects, the effects, the battlefield, the stack, the rule modifiers, and the card database), plus the last
+  result. This is the one module-level value in the engine; CLAUDE.md's "no globals" means no hidden state that can
+  change a result, and this can't: the pass is pure, its type lets it read only its inputs, the state is never changed
+  in place, and the fuzzer checks after every action that the kept pass equals a fresh one (`layersMatchFreshPass`).
+  A new layer that reads more (combat, for "attacking creatures") adds it to `LayerInputs` and the key.
+- Measured: before keeping it, an action was about 5 times slower; keyed by state object, 2 to 3 times; keyed by its
+  inputs, with the last-result shortcut, 1.2 to 1.6 times (the pass reruns whenever an object changes). A profile then
+  showed `zoneOf` searching every library first; searching the battlefield and the stack first brought a random game
+  back under its 100 ms budget (98.5 ms on this machine, against 61 before the pass). The baseline is updated for that
+  (bench/README.md): the layer system's cost, which the next slices build on. The budget margin is thin; incremental
+  recomputation, or keeping unchanged objects' results, would be the next step if a benchmark asks.

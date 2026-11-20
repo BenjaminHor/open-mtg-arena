@@ -17,14 +17,13 @@ import type { ManaType } from "../state/mana.ts";
 import type { AbilityRef, BasicLandType } from "../state/objects.ts";
 import type { TriggerRef } from "../state/triggers.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
+import { layeredOf } from "./layers.ts";
 
 export type ActivatedAbility = { ref: AbilityRef; def: AbilityDef };
 
 /** An object's keyword abilities (CR 702): layer 6 of `characteristics()`, printed until effects grant or remove them. */
 export function keywordsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Keyword[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.keywords ?? [];
+  return layeredOf(state, id, cards)?.keywords ?? [];
 }
 
 const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
@@ -40,9 +39,7 @@ const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
  * or removed by effects (layer 6, later: CR 613.1f) will change this list, in this one place.
  */
 export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly StaticAbilityDef[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.statics ?? [];
+  return layeredOf(state, id, cards)?.statics ?? [];
 }
 
 /**
