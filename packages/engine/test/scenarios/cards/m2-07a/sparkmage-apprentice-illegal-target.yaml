@@ -20,5 +20,5 @@ steps:
   - all pass: once
   - all pass: once
   - expect:
-      events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]
+      events contains: [{ type: ABILITY_DID_NOT_RESOLVE, reason: illegalTargets }]
       p2.hand: [Runeclaw Bear]

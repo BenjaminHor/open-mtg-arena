@@ -13,6 +13,9 @@ import type { StateBasedAction } from "./state-based-actions.ts";
 import type { Step } from "./turn.ts";
 import type { ZoneRef } from "./zones.ts";
 
+/** Why a spell or ability didn't resolve. */
+export type DidNotResolve = "illegalTargets" | "condition";
+
 export type GameEvent =
   /**
    * An object moved between zones and became a new object (CR 400.7). `object` is the old object as it last
@@ -71,8 +74,11 @@ export type GameEvent =
   | { type: "ABILITY_TRIGGERED"; object: ObjectId; source: ObjectId; controller: PlayerId }
   /** The player cancelled an activation (D-035): the ability ceased to exist and `untapped` untapped (CR 734.1). */
   | { type: "ACTIVATION_CANCELLED"; player: PlayerId; object: ObjectId; source: ObjectId; untapped: ObjectId[] }
-  /** Every target was illegal, so the ability didn't resolve and was removed from the stack (CR 608.2b). */
-  | { type: "ABILITY_DID_NOT_RESOLVE"; object: ObjectId; source: ObjectId }
+  /**
+   * The ability didn't resolve and was removed from the stack: every target was illegal (CR 608.2b), or a triggered
+   * ability's "intervening if" was false (`condition`, CR 603.4, 608.2a).
+   */
+  | { type: "ABILITY_DID_NOT_RESOLVE"; object: ObjectId; source: ObjectId; reason: DidNotResolve }
   /** Every target was illegal, so the spell didn't resolve (CR 608.2b); it goes to its owner's graveyard. */
   | { type: "SPELL_DID_NOT_RESOLVE"; object: ObjectId; cardId: CardId }
   /** A spell resolved (CR 608.1). Its card then moves to the battlefield or a graveyard (`ZONE_CHANGED`). */

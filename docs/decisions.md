@@ -1004,10 +1004,13 @@ every schema change and every change D-024 lists bumps it.
 - A cancelled cast or activation drops the triggers that came up during it (`Casting.pendingTriggersBefore`,
   CR 734.1), since its mana abilities' events are undone.
 - Last known information: `GameState.lastKnown` keeps a card's object as it leaves the battlefield (CR 608.2h), read
-  by an ability whose source is gone (Howling Mine's intervening if, "sacrifice it"); emptied when the stack is empty and a
+  by an ability whose source is gone (Howling Mine's intervening if; "sacrifice it" instead checks the source is still
+  on the battlefield, CR 701.21a); emptied when the stack is empty and a
   player would receive priority, so it stays small and stays plain data. "Leaves the battlefield" triggers, which look
   back in time (CR 603.10), will use it (M2-14).
 - "You may" is asked as the ability resolves (`chooseYesNo` with purpose `optional`); yes runs the effects.
+- An ability removed on resolution says why: `ABILITY_DID_NOT_RESOLVE` has `reason` `illegalTargets` (CR 608.2b) or
+  `condition` (an intervening if, CR 608.2a).
 - Chosen for future rules: replacement effects (M2-08) come before detection in `happen`, so a replaced event triggers as
   replaced; delayed triggers (M2-07c) will be pending triggers whose source is not a permanent, with their own
   `AbilityRef`; tokens entering trigger the same way.

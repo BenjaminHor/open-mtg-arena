@@ -5,6 +5,7 @@ import { happen } from "../pipeline/happen.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
+import type { DidNotResolve } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
@@ -29,10 +30,11 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
   const { chosen, legal } = stillLegalTargets(state, top, cards);
   const allTargetsIllegal = chosen.some((group) => group.length > 0) && legal.every((group) => group.length === 0);
   // A triggered ability's "intervening if" is checked again: false, it's removed and does nothing (CR 608.2a, 603.4).
-  const removed = allTargetsIllegal || !interveningIfHolds(state, top, cards);
+  const reason = allTargetsIllegal ? "illegalTargets" : interveningIfHolds(state, top, cards) ? null : "condition";
+  const removed = reason !== null;
   const items: WorkItem[] = removed
     ? [
-        { kind: "doesNotResolve", object: top },
+        { kind: "doesNotResolve", object: top, reason },
         { kind: "givePriority", player: active },
       ]
     : [
@@ -46,10 +48,11 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
 }
 
 /**
- * Every target is illegal, so the spell or ability doesn't resolve (CR 608.2b): it does nothing and is removed from the
- * stack. A spell goes to its owner's graveyard; an ability ceases to exist. It isn't countered: nothing countered it.
+ * The spell or ability doesn't resolve: every target is illegal (CR 608.2b), or a triggered ability's intervening if is
+ * false (CR 608.2a). It does nothing and is removed from the stack. A spell goes to its owner's graveyard; an ability
+ * ceases to exist. It isn't countered: nothing countered it.
  */
-export function doesNotResolve(given: GameState, id: ObjectId, cards: CardDatabase): Progress {
+export function doesNotResolve(given: GameState, id: ObjectId, reason: DidNotResolve, cards: CardDatabase): Progress {
   const state = withoutResolution(given);
   const obj = state.objects[id];
   if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
@@ -63,7 +66,7 @@ export function doesNotResolve(given: GameState, id: ObjectId, cards: CardDataba
     case "ability":
       return {
         state: removeAbilityFromStack(state, id),
-        events: [{ type: "ABILITY_DID_NOT_RESOLVE", object: id, source: obj.source }],
+        events: [{ type: "ABILITY_DID_NOT_RESOLVE", object: id, source: obj.source, reason }],
       };
   }
 }

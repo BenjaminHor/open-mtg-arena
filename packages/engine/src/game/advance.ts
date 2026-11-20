@@ -40,7 +40,7 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
     case "finishResolving":
       return finishResolving(state, item.object, cards);
     case "doesNotResolve":
-      return doesNotResolve(state, item.object, cards);
+      return doesNotResolve(state, item.object, item.reason, cards);
     case "cleanupCheck":
       return cleanupCheck(state, cards);
     case "anotherCleanupStep":

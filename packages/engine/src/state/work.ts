@@ -5,6 +5,7 @@
 import type { Effect } from "../cards/types.ts";
 import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
+import type { DidNotResolve } from "./events.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { PendingTrigger } from "./triggers.ts";
 
@@ -26,7 +27,7 @@ export type WorkItem =
   /** The final part of an object's resolution (CR 608.2n, 608.3a). */
   | { kind: "finishResolving"; object: ObjectId }
   /** Every target of the spell is illegal: it doesn't resolve and goes to its owner's graveyard (CR 608.2b). */
-  | { kind: "doesNotResolve"; object: ObjectId }
+  | { kind: "doesNotResolve"; object: ObjectId; reason: DidNotResolve }
   /** The cleanup step's check for state-based actions (and later triggers), after the CR 514.2 action (CR 514.3a). */
   | { kind: "cleanupCheck" }
   /** All players passed in a cleanup step that gave them priority, so another cleanup step begins (CR 514.3a). */

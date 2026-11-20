@@ -139,6 +139,31 @@ describe("an intervening if (CR 603.4)", () => {
     expect(g.state.zones.stack).toStrictEqual([]);
     expect(hand(g.state, "p1")).toHaveLength(handSize);
     expect(g.events.filter((e) => e.type === "CARD_DRAWN")).toHaveLength(1);
+    expect(g.events).toContainEqual(expect.objectContaining({ type: "ABILITY_DID_NOT_RESOLVE", reason: "condition" }));
+  });
+
+  it("reads a source that left before its trigger went on the stack from its last known information (CR 608.2h)", () => {
+    let g = game("upkeep", { battlefield: [permanent(MINE)] });
+    const mine = onBattlefield(g.state, MINE)[0] as ObjectId;
+    const trigger: PendingTrigger = {
+      source: mine,
+      sourceOracleId: MINE,
+      index: 0,
+      controller: "p1",
+      event: { player: "p1", object: null },
+    };
+    // The Mine triggered, untapped, then went to the graveyard before anyone would receive priority.
+    const moved = moveCard(g.state, mine, { zone: "graveyard" });
+    const state = queueWork(
+      { ...moved.state, pending: null, pendingTriggers: [trigger] },
+      { kind: "givePriority", player: "p1" },
+    );
+    const put = advance({ state, events: [] }, TEST_CARDS);
+    expect(put.state.zones.stack).toHaveLength(1);
+    g = { state: put.state, events: [] };
+    const handSize = hand(g.state, "p1").length;
+    g = passBoth(g);
+    expect(hand(g.state, "p1")).toHaveLength(handSize + 1);
   });
 
   it("a Mine tapped as the draw step begins doesn't trigger at all", () => {

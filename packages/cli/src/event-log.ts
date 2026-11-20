@@ -103,7 +103,9 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "ACTIVATION_CANCELLED":
       return `${e.player} cancels activating ${name(e.source)}`;
     case "ABILITY_DID_NOT_RESOLVE":
-      return `${name(e.source)}'s ability doesn't resolve: its targets are illegal (CR 608.2b)`;
+      return e.reason === "illegalTargets"
+        ? `${name(e.source)}'s ability doesn't resolve: its targets are illegal (CR 608.2b)`
+        : `${name(e.source)}'s ability doesn't resolve: its condition is false (CR 603.4)`;
     case "SPELL_DID_NOT_RESOLVE":
       return `${name(e.object)} doesn't resolve: its targets are illegal (CR 608.2b)`;
     case "SPELL_RESOLVED":

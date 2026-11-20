@@ -236,7 +236,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07a: the machinery, entering and beginning-of-step triggers: Elvish Visionary, Howling Banshee, Sparkmage
        Apprentice, Gravedigger, Borderland Ranger, Sage Owl, Acidic Slime, Soul Warden, Ball Lightning, Howling Mine
        (intervening if), Bramble Creeper (attacks). Built (D-076), in review: the triggers README
-       (`engine/src/triggers/README.md`) explains the path; 32 scenarios in `test/scenarios/cards/m2-07a/` and
+       (`engine/src/triggers/README.md`) explains the path; 35 scenarios in `test/scenarios/cards/m2-07a/` and
        `interactions/triggers/`, unit tests in `test/triggers/triggers.test.ts`, a Triggers matrix column; nine of the
        cards in the M10 pair (Soul Warden and Acidic Slime only in pool decks); 9 golden games added (4.4 MB). The
        fuzzer's 40-seed measure doesn't reach `orderTriggers` (two triggers at once for one player); scenarios cover it.

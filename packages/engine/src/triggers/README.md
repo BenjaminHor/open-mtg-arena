@@ -44,4 +44,5 @@ intervening if turned false before resolving).
 
 Triggers on casting, drawing, discarding, damage, life gain and tapping for mana (M2-07b); delayed triggers (CR 603.7)
 and "becomes the target" (CR 601.2c, M2-07c); "leaves the battlefield" abilities, which look back in time (CR 603.10,
-M2-14); the cleanup step giving priority for a trigger (CR 514.3a, with Megrim in M2-07b).
+M2-14); the cleanup step giving priority for a trigger (CR 514.3a, with Megrim in M2-07b). A trigger removed for
+too few legal targets (CR 603.3d) emits no event yet, so a log or the UI doesn't show that it triggered.
