@@ -143,7 +143,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
   - M2-05c Life, damage to many, mana (now). Plan (2026-11-20), rules-reviewed and revised; split in two:
-    - M2-05c1, no new decisions: Angel's Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
+    - M2-05c1, no new decisions: built (D-067), in review. 21 scenarios in `test/scenarios/cards/m2-05c/`, unit tests
+      in `test/effects/damage-to-many.test.ts`; the interim decks carry the ten cards, five new golden games. Angel's
+      Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
       Corruption, Consume Spirit, Pyroclasm, Windstorm, Earthquake, Goblin Artillery.
       - An `Amount` counted from the battlefield, `{ count: ObjectFilter }`, worked out as the effect applies
         (CR 608.2h); "Mountains" and "Swamps" are land types read through characteristics (CR 205.3i). Tendrils' "where

@@ -52,8 +52,10 @@ now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the control
 every player in APNAP order (CR 101.4).
 
 `from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"found"` (what an earlier
-`search` of this resolution found, kept in `GameState.resolution`, D-064), or `{ target: i }` for the still-legal
-targets of the i-th instance of "target". A subject with no legal targets left means that part does nothing (CR 608.2b).
+`search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
+it now, CR 608.2h), or `{ target: i }` for the still-legal targets of the i-th instance of "target". A subject with no
+legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, or `{ count: filter }`.
+`subjects.ts` reads both (D-067).
 
 ## Primitives
 
