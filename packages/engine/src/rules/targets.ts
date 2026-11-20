@@ -35,6 +35,9 @@ export function legalTargets(state: GameState, spec: TargetSpec, by: Targeting, 
       return players;
     case "player":
       return players;
+    case "opponent":
+      // Relative to the controller, "you" (CR 109.5): checked as targets are chosen and again on resolving (CR 608.2b).
+      return players.filter((t) => t.kind === "player" && t.player !== by.controller);
     case "permanent":
       return objects(
         state.zones.battlefield.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards)),

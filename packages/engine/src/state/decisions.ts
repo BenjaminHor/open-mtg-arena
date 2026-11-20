@@ -3,8 +3,9 @@
 //
 // Each task adds the kinds it needs (casting choices, attackers, blockers, dividing damage, ...).
 
-import type { ManaCost } from "../cards/types.ts";
+import type { Effect, ManaCost } from "../cards/types.ts";
 import type { Attack, AttackerDivision, Block } from "./combat.ts";
+import type { EffectContext } from "./effects.ts";
 import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
 
@@ -83,4 +84,22 @@ export type DecisionKind =
    * While activating: choose a permanent to sacrifice for the cost (CR 601.2h, 701.21a). It's sacrificed when the whole
    * cost is paid; until then the player can cancel.
    */
-  | { kind: "chooseSacrifice"; object: ObjectId };
+  | { kind: "chooseSacrifice"; object: ObjectId }
+  /**
+   * While a spell or ability resolves: choose cards for one of its effects (CR 608.2d), one per answer, by position in
+   * `options`, which are in a fixed order (oracle id, then object id) that says nothing about how the cards got there
+   * (D-062). `chosen` holds the positions so far; once `max` are chosen, or the player finishes with at least `min`,
+   * `resume` runs with them. Nothing happens before that.
+   */
+  | {
+      kind: "chooseCards";
+      purpose: ChoosePurpose;
+      options: ObjectId[];
+      min: number;
+      max: number;
+      chosen: number[];
+      resume: { effect: Effect; context: EffectContext };
+    };
+
+/** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
+export type ChoosePurpose = "discard" | "putOntoBattlefield";

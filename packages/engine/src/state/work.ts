@@ -17,8 +17,11 @@ export type WorkItem =
   | { kind: "endStep" }
   /** The top object of the stack starts to resolve (CR 405.5, 608): this queues the steps of its resolution. */
   | { kind: "resolveTopOfStack" }
-  /** One effect of a resolving spell or ability, in the order written (CR 608.2c). */
-  | { kind: "runEffect"; effect: Effect; context: EffectContext }
+  /**
+   * One effect of a resolving spell or ability, in the order written (CR 608.2c). `chosen` is null when it first runs;
+   * an effect that asks for cards (`chooseCards`) runs again with the cards chosen (CR 608.2d).
+   */
+  | { kind: "runEffect"; effect: Effect; context: EffectContext; chosen: ObjectId[] | null }
   /** The final part of an object's resolution (CR 608.2n, 608.3a). */
   | { kind: "finishResolving"; object: ObjectId }
   /** Every target of the spell is illegal: it doesn't resolve and goes to its owner's graveyard (CR 608.2b). */

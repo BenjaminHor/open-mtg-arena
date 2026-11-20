@@ -1,0 +1,2704 @@
+T0 p2 goes first (chosen by p2)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Shatter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Solemn Offering, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Ignite Disorder, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Undead Slayer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Rod of Ruin, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Traumatize, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Essence Scatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Negate, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 keeps
+T0 p1 mulligans
+T0 moves: Traumatize, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Essence Scatter, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Negate, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Coral Merfolk, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Plains, p2's hand -> battlefield
+T1 p2 plays p2:Plains
+T1 taps: p2:Plains
+T1 p2 adds {W} (p2:Plains)
+T1 p2's unspent {W} empties
+T1 p2 attack: nothing
+T1 moves: Rod of Ruin, p2's hand -> stack
+T1 p2 cancels casting Rod of Ruin
+T2 turn 2 begins (p1)
+T2 moves: Island, p1's library -> p1's hand
+T2 p1 draws
+T2 moves: Llanowar Elves, p1's hand -> stack
+T2 p1 cancels casting Llanowar Elves
+T2 moves: Forest, p1's hand -> battlefield
+T2 p1 plays p1:Forest
+T2 moves: Llanowar Elves, p1's hand -> stack
+T2 p1 cancels casting Llanowar Elves
+T2 moves: Llanowar Elves, p1's hand -> stack
+T2 p1 cancels casting Llanowar Elves
+T2 p1 attack: nothing
+T2 taps: p1:Forest
+T2 p1 adds {G} (p1:Forest)
+T2 moves: Llanowar Elves, p1's hand -> stack
+T2 p1 casts Llanowar Elves
+T2 resolves: Llanowar Elves
+T2 moves: Llanowar Elves, stack -> battlefield
+T2 moves: Coral Merfolk, p1's hand -> stack
+T2 p1 cancels casting Coral Merfolk
+T3 turn 3 begins (p2)
+T3 untaps: p2:Plains
+T3 taps: p2:Plains
+T3 p2 adds {W} (p2:Plains)
+T3 p2's unspent {W} empties
+T3 moves: Elite Vanguard, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Undead Slayer, p2's hand -> stack
+T3 p2 cancels casting Undead Slayer
+T3 p2 attack: nothing
+T3 moves: Rod of Ruin, p2's hand -> stack
+T3 p2 cancels casting Rod of Ruin
+T3 moves: Elite Vanguard, p2's hand -> stack
+T3 p2 cancels casting Elite Vanguard
+T3 moves: Elite Vanguard, p2's hand -> stack
+T3 p2 cancels casting Elite Vanguard
+T4 turn 4 begins (p1)
+T4 untaps: p1:Forest
+T4 moves: Grizzly Bears, p1's library -> p1's hand
+T4 p1 draws
+T4 taps: p1:Llanowar Elves
+T4 p1 adds {G} (p1:Llanowar Elves)
+T4 p1's unspent {G} empties
+T4 moves: Forest, p1's hand -> battlefield
+T4 p1 plays p1:Forest#2
+T4 moves: Coral Merfolk, p1's hand -> stack
+T4 p1 cancels casting Coral Merfolk
+T4 taps: p1:Forest#1
+T4 p1 adds {G} (p1:Forest#1)
+T4 p1's unspent {G} empties
+T4 p1 attack: nothing
+T4 taps: p1:Forest#2
+T4 p1 adds {G} (p1:Forest#2)
+T4 p1's unspent {G} empties
+T4 moves: Grizzly Bears, p1's hand -> stack
+T4 p1 cancels casting Grizzly Bears
+T4 moves: Grizzly Bears, p1's hand -> stack
+T4 p1 cancels casting Grizzly Bears
+T4 moves: Grizzly Bears, p1's hand -> stack
+T4 p1 cancels casting Grizzly Bears
+T5 turn 5 begins (p2)
+T5 untaps: p2:Plains
+T5 taps: p2:Plains
+T5 p2 adds {W} (p2:Plains)
+T5 p2's unspent {W} empties
+T5 moves: Plains, p2's library -> p2's hand
+T5 p2 draws
+T5 moves: Mountain, p2's hand -> battlefield
+T5 p2 plays p2:Mountain
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2's unspent {R} empties
+T5 p2 attack: nothing
+T5 moves: Elite Vanguard, p2's hand -> stack
+T5 p2 cancels casting Elite Vanguard
+T5 moves: Undead Slayer, p2's hand -> stack
+T5 p2 cancels casting Undead Slayer
+T5 moves: Elite Vanguard, p2's hand -> stack
+T5 p2 cancels casting Elite Vanguard
+T5 moves: Rod of Ruin, p2's hand -> stack
+T5 p2 cancels casting Rod of Ruin
+T6 turn 6 begins (p1)
+T6 untaps: p1:Forest#1
+T6 untaps: p1:Llanowar Elves
+T6 untaps: p1:Forest#2
+T6 taps: p1:Llanowar Elves
+T6 p1 adds {G} (p1:Llanowar Elves)
+T6 taps: p1:Forest#1
+T6 p1 adds {G} (p1:Forest#1)
+T6 p1's unspent {G}{G} empties
+T6 moves: Centaur Courser, p1's library -> p1's hand
+T6 p1 draws
+T6 moves: Grizzly Bears, p1's hand -> stack
+T6 taps: p1:Forest#2
+T6 p1 adds {G} (p1:Forest#2)
+T6 p1 cancels casting Grizzly Bears
+T6 taps: p1:Forest#2
+T6 p1 adds {G} (p1:Forest#2)
+T6 p1's unspent {G} empties
+T6 p1 attack: nothing
+T6 moves: Centaur Courser, p1's hand -> stack
+T6 p1 cancels casting Centaur Courser
+T6 moves: Island, p1's hand -> battlefield
+T6 p1 plays p1:Island
+T6 moves: Grizzly Bears, p1's hand -> stack
+T6 p1 cancels casting Grizzly Bears
+T6 moves: Centaur Courser, p1's hand -> stack
+T6 p1 cancels casting Centaur Courser
+T6 moves: Coral Merfolk, p1's hand -> stack
+T6 taps: p1:Island
+T6 p1 adds {U} (p1:Island)
+T6 p1 cancels casting Coral Merfolk
+T6 taps: p1:Island
+T6 p1 adds {U} (p1:Island)
+T6 moves: Coral Merfolk, p1's hand -> stack
+T6 p1 cancels casting Coral Merfolk
+T6 moves: Centaur Courser, p1's hand -> stack
+T6 p1 cancels casting Centaur Courser
+T6 moves: Coral Merfolk, p1's hand -> stack
+T6 p1 cancels casting Coral Merfolk
+T6 moves: Coral Merfolk, p1's hand -> stack
+T6 p1 cancels casting Coral Merfolk
+T6 p1's unspent {U} empties
+T7 turn 7 begins (p2)
+T7 untaps: p2:Plains
+T7 untaps: p2:Mountain
+T7 taps: p2:Plains
+T7 p2 adds {W} (p2:Plains)
+T7 p2's unspent {W} empties
+T7 moves: Righteousness, p2's library -> p2's hand
+T7 p2 draws
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 p2's unspent {R} empties
+T7 moves: Rod of Ruin, p2's hand -> stack
+T7 p2 cancels casting Rod of Ruin
+T7 moves: Undead Slayer, p2's hand -> stack
+T7 p2 cancels casting Undead Slayer
+T7 p2 attack: nothing
+T7 moves: Plains, p2's hand -> battlefield
+T7 p2 plays p2:Plains#2
+T7 moves: Elite Vanguard, p2's hand -> stack
+T7 taps: p2:Plains#2
+T7 p2 adds {W} (p2:Plains#2)
+T7 p2 casts Elite Vanguard
+T7 resolves: Elite Vanguard
+T7 moves: Elite Vanguard, stack -> battlefield
+T7 moves: Ignite Disorder, p2's hand -> stack
+T7 p2 cancels casting Ignite Disorder
+T7 moves: Ignite Disorder, p2's hand -> stack
+T7 p2 cancels casting Ignite Disorder
+T7 moves: Undead Slayer, p2's hand -> stack
+T7 p2 cancels casting Undead Slayer
+T7 moves: Undead Slayer, p2's hand -> stack
+T7 p2 cancels casting Undead Slayer
+T7 moves: Undead Slayer, p2's hand -> stack
+T7 p2 cancels casting Undead Slayer
+T7 moves: Ignite Disorder, p2's hand -> stack
+T7 p2 cancels casting Ignite Disorder
+T7 moves: Ignite Disorder, p2's hand -> stack
+T7 p2 cancels casting Ignite Disorder
+T8 turn 8 begins (p1)
+T8 untaps: p1:Forest#1
+T8 untaps: p1:Llanowar Elves
+T8 untaps: p1:Forest#2
+T8 untaps: p1:Island
+T8 taps: p1:Island
+T8 p1 adds {U} (p1:Island)
+T8 taps: p1:Llanowar Elves
+T8 p1 adds {G} (p1:Llanowar Elves)
+T8 taps: p1:Forest#2
+T8 p1 adds {G} (p1:Forest#2)
+T8 taps: p1:Forest#1
+T8 p1 adds {G} (p1:Forest#1)
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 p1's unspent {U}{G}{G}{G} empties
+T8 moves: Cancel, p1's library -> p1's hand
+T8 p1 draws
+T8 moves: Grizzly Bears, p1's hand -> stack
+T8 p1 cancels casting Grizzly Bears
+T8 moves: Island, p1's hand -> battlefield
+T8 p1 plays p1:Island#2
+T8 taps: p1:Island#2
+T8 p1 adds {U} (p1:Island#2)
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 p1's unspent {U} empties
+T8 p1 attack: nothing
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T8 moves: Coral Merfolk, p1's hand -> stack
+T8 p1 cancels casting Coral Merfolk
+T8 moves: Coral Merfolk, p1's hand -> stack
+T8 p1 cancels casting Coral Merfolk
+T8 moves: Centaur Courser, p1's hand -> stack
+T8 p1 cancels casting Centaur Courser
+T8 moves: Coral Merfolk, p1's hand -> stack
+T8 p1 cancels casting Coral Merfolk
+T8 moves: Coral Merfolk, p1's hand -> stack
+T8 p1 cancels casting Coral Merfolk
+T8 moves: Centaur Courser, p1's hand -> stack
+T8 p1 cancels casting Centaur Courser
+T8 moves: Coral Merfolk, p1's hand -> stack
+T8 p1 cancels casting Coral Merfolk
+T8 moves: Ignite Disorder, p2's hand -> stack
+T8 p2 cancels casting Ignite Disorder
+T9 turn 9 begins (p2)
+T9 untaps: p2:Plains#1
+T9 untaps: p2:Mountain
+T9 untaps: p2:Plains#2
+T9 taps: p2:Plains#1
+T9 p2 adds {W} (p2:Plains#1)
+T9 taps: p2:Plains#2
+T9 p2 adds {W} (p2:Plains#2)
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 p2's unspent {W}{W} empties
+T9 moves: Divine Verdict, p2's library -> p2's hand
+T9 p2 draws
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 taps: p2:Mountain
+T9 p2 adds {R} (p2:Mountain)
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 p2's unspent {R} empties
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Rod of Ruin, p2's hand -> stack
+T9 p2 cancels casting Rod of Ruin
+T9 taps: p2:Elite Vanguard
+T9 p2 attack: p2:Elite Vanguard -> p1
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 p1 block: nothing
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Divine Verdict, p2's hand -> stack
+T9 p2 cancels casting Divine Verdict
+T9 combat damage: p2:Elite Vanguard -> p1 2
+T9 p1 loses 2 life
+T9 moves: Rod of Ruin, p2's hand -> stack
+T9 p2 cancels casting Rod of Ruin
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Undead Slayer, p2's hand -> stack
+T9 p2 cancels casting Undead Slayer
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Rod of Ruin, p2's hand -> stack
+T9 p2 cancels casting Rod of Ruin
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Undead Slayer, p2's hand -> stack
+T9 p2 cancels casting Undead Slayer
+T9 moves: Undead Slayer, p2's hand -> stack
+T9 p2 cancels casting Undead Slayer
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Undead Slayer, p2's hand -> stack
+T9 p2 cancels casting Undead Slayer
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T9 moves: Ignite Disorder, p2's hand -> stack
+T9 p2 cancels casting Ignite Disorder
+T10 turn 10 begins (p1)
+T10 untaps: p1:Forest#1
+T10 untaps: p1:Llanowar Elves
+T10 untaps: p1:Forest#2
+T10 untaps: p1:Island#1
+T10 untaps: p1:Island#2
+T10 moves: Forest, p1's library -> p1's hand
+T10 p1 draws
+T10 taps: p1:Island#1
+T10 p1 adds {U} (p1:Island#1)
+T10 taps: p1:Island#2
+T10 p1 adds {U} (p1:Island#2)
+T10 taps: p1:Llanowar Elves
+T10 p1 adds {G} (p1:Llanowar Elves)
+T10 p1's unspent {U}{U}{G} empties
+T10 moves: Grizzly Bears, p1's hand -> stack
+T10 p1 cancels casting Grizzly Bears
+T10 taps: p1:Forest#1
+T10 p1 adds {G} (p1:Forest#1)
+T10 moves: Coral Merfolk, p1's hand -> stack
+T10 taps: p1:Forest#2
+T10 p1 adds {G} (p1:Forest#2)
+T10 p1 cancels casting Coral Merfolk
+T10 moves: Island, p1's hand -> battlefield
+T10 p1 plays p1:Island#3
+T10 moves: Grizzly Bears, p1's hand -> stack
+T10 taps: p1:Island#3
+T10 p1 adds {U} (p1:Island#3)
+T10 p1 casts Grizzly Bears
+T10 moves: Cancel, p1's hand -> stack
+T10 p1 cancels casting Cancel
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 resolves: Grizzly Bears
+T10 moves: Grizzly Bears, stack -> battlefield
+T10 moves: Centaur Courser, p1's hand -> stack
+T10 taps: p1:Forest#2
+T10 p1 adds {G} (p1:Forest#2)
+T10 p1 cancels casting Centaur Courser
+T10 moves: Coral Merfolk, p1's hand -> stack
+T10 taps: p1:Forest#2
+T10 p1 adds {G} (p1:Forest#2)
+T10 p1 cancels casting Coral Merfolk
+T10 taps: p1:Forest#2
+T10 p1 adds {G} (p1:Forest#2)
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 p1's unspent {G} empties
+T10 p1 attack: nothing
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T10 moves: Coral Merfolk, p1's hand -> stack
+T10 p1 cancels casting Coral Merfolk
+T10 moves: Centaur Courser, p1's hand -> stack
+T10 p1 cancels casting Centaur Courser
+T10 moves: Coral Merfolk, p1's hand -> stack
+T10 p1 cancels casting Coral Merfolk
+T10 moves: Ignite Disorder, p2's hand -> stack
+T10 p2 cancels casting Ignite Disorder
+T11 turn 11 begins (p2)
+T11 untaps: p2:Plains#1
+T11 untaps: p2:Mountain
+T11 untaps: p2:Plains#2
+T11 untaps: p2:Elite Vanguard
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 taps: p2:Plains#2
+T11 p2 adds {W} (p2:Plains#2)
+T11 taps: p2:Plains#1
+T11 p2 adds {W} (p2:Plains#1)
+T11 taps: p2:Mountain
+T11 p2 adds {R} (p2:Mountain)
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 p2's unspent {W}{W}{R} empties
+T11 moves: Planar Cleansing, p2's library -> p2's hand
+T11 p2 draws
+T11 moves: Planar Cleansing, p2's hand -> stack
+T11 p2 cancels casting Planar Cleansing
+T11 moves: Planar Cleansing, p2's hand -> stack
+T11 p2 cancels casting Planar Cleansing
+T11 moves: Planar Cleansing, p2's hand -> stack
+T11 p2 cancels casting Planar Cleansing
+T11 moves: Rod of Ruin, p2's hand -> stack
+T11 p2 cancels casting Rod of Ruin
+T11 moves: Planar Cleansing, p2's hand -> stack
+T11 p2 cancels casting Planar Cleansing
+T11 moves: Undead Slayer, p2's hand -> stack
+T11 p2 cancels casting Undead Slayer
+T11 moves: Undead Slayer, p2's hand -> stack
+T11 p2 cancels casting Undead Slayer
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 taps: p2:Elite Vanguard
+T11 p2 attack: p2:Elite Vanguard -> p1
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 p1 block: nothing
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 combat damage: p2:Elite Vanguard -> p1 2
+T11 p1 loses 2 life
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 moves: Divine Verdict, p2's hand -> stack
+T11 p2 cancels casting Divine Verdict
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Rod of Ruin, p2's hand -> stack
+T11 p2 cancels casting Rod of Ruin
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Ignite Disorder, p2's hand -> stack
+T11 p2 cancels casting Ignite Disorder
+T11 moves: Rod of Ruin, p2's hand -> p2's graveyard
+T11 p2 discards Rod of Ruin
+T12 turn 12 begins (p1)
+T12 untaps: p1:Forest#1
+T12 untaps: p1:Llanowar Elves
+T12 untaps: p1:Forest#2
+T12 untaps: p1:Island#1
+T12 untaps: p1:Island#2
+T12 untaps: p1:Island#3
+T12 taps: p1:Forest#1
+T12 p1 adds {G} (p1:Forest#1)
+T12 taps: p1:Llanowar Elves
+T12 p1 adds {G} (p1:Llanowar Elves)
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 p1's unspent {G}{G} empties
+T12 moves: Mind Spring, p1's library -> p1's hand
+T12 p1 draws
+T12 taps: p1:Island#3
+T12 p1 adds {U} (p1:Island#3)
+T12 taps: p1:Island#2
+T12 p1 adds {U} (p1:Island#2)
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 p1's unspent {U}{U} empties
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 taps: p1:Island#1
+T12 p1 adds {U} (p1:Island#1)
+T12 moves: Coral Merfolk, p1's hand -> stack
+T12 p1 cancels casting Coral Merfolk
+T12 moves: Mind Spring, p1's hand -> stack
+T12 p1 cancels casting Mind Spring
+T12 moves: Coral Merfolk, p1's hand -> stack
+T12 p1 casts Coral Merfolk
+T12 resolves: Coral Merfolk
+T12 moves: Coral Merfolk, stack -> battlefield
+T12 moves: Forest, p1's hand -> battlefield
+T12 p1 plays p1:Forest#3
+T12 moves: Centaur Courser, p1's hand -> stack
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1 cancels casting Centaur Courser
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T12 taps: p1:Forest#3
+T12 p1 adds {G} (p1:Forest#3)
+T12 p1's unspent {G} empties
+T12 p1 attack: nothing
+T12 moves: Ignite Disorder, p2's hand -> stack
+T12 p2 cancels casting Ignite Disorder
+T13 turn 13 begins (p2)
+T13 untaps: p2:Plains#1
+T13 untaps: p2:Mountain
+T13 untaps: p2:Plains#2
+T13 untaps: p2:Elite Vanguard
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 moves: Blinding Mage, p2's library -> p2's hand
+T13 p2 draws
+T13 taps: p2:Mountain
+T13 p2 adds {R} (p2:Mountain)
+T13 taps: p2:Plains#1
+T13 p2 adds {W} (p2:Plains#1)
+T13 p2's unspent {W}{R} empties
+T13 moves: Planar Cleansing, p2's hand -> stack
+T13 taps: p2:Plains#2
+T13 p2 adds {W} (p2:Plains#2)
+T13 p2 cancels casting Planar Cleansing
+T13 taps: p2:Plains#2
+T13 p2 adds {W} (p2:Plains#2)
+T13 moves: Undead Slayer, p2's hand -> stack
+T13 p2 cancels casting Undead Slayer
+T13 p2's unspent {W} empties
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 moves: Ignite Disorder, p2's hand -> stack
+T13 p2 cancels casting Ignite Disorder
+T13 p2 attack: nothing
+T13 moves: Blinding Mage, p2's hand -> stack
+T13 p2 cancels casting Blinding Mage
+T13 moves: Divine Verdict, p2's hand -> p2's graveyard
+T13 p2 discards Divine Verdict
+T14 turn 14 begins (p1)
+T14 untaps: p1:Forest#1
+T14 untaps: p1:Llanowar Elves
+T14 untaps: p1:Forest#2
+T14 untaps: p1:Island#1
+T14 untaps: p1:Island#2
+T14 untaps: p1:Island#3
+T14 untaps: p1:Forest#3
+T14 taps: p1:Island#2
+T14 p1 adds {U} (p1:Island#2)
+T14 taps: p1:Llanowar Elves
+T14 p1 adds {G} (p1:Llanowar Elves)
+T14 taps: p1:Forest#1
+T14 p1 adds {G} (p1:Forest#1)
+T14 taps: p1:Island#3
+T14 p1 adds {U} (p1:Island#3)
+T14 taps: p1:Island#1
+T14 p1 adds {U} (p1:Island#1)
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 taps: p1:Forest#3
+T14 p1 adds {G} (p1:Forest#3)
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 p1's unspent {U}{U}{U}{G}{G}{G}{G} empties
+T14 moves: Centaur Courser, p1's library -> p1's hand
+T14 p1 draws
+T14 moves: Centaur Courser, p1's hand -> stack
+T14 p1 cancels casting Centaur Courser
+T14 moves: Mind Spring, p1's hand -> stack
+T14 p1 cancels casting Mind Spring
+T14 moves: Centaur Courser, p1's hand -> stack
+T14 p1 cancels casting Centaur Courser
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 p1 attack: nothing
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T14 moves: Ignite Disorder, p2's hand -> stack
+T14 p2 cancels casting Ignite Disorder
+T15 turn 15 begins (p2)
+T15 untaps: p2:Plains#1
+T15 untaps: p2:Mountain
+T15 untaps: p2:Plains#2
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 taps: p2:Plains#2
+T15 p2 adds {W} (p2:Plains#2)
+T15 taps: p2:Mountain
+T15 p2 adds {R} (p2:Mountain)
+T15 taps: p2:Plains#1
+T15 p2 adds {W} (p2:Plains#1)
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 p2's unspent {W}{W}{R} empties
+T15 moves: Mountain, p2's library -> p2's hand
+T15 p2 draws
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 p2 attack: nothing
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T15 moves: Mountain, p2's hand -> battlefield
+T15 p2 plays p2:Mountain#2
+T15 moves: Undead Slayer, p2's hand -> stack
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 cancels casting Undead Slayer
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2's unspent {R} empties
+T15 moves: Ignite Disorder, p2's hand -> stack
+T15 p2 cancels casting Ignite Disorder
+T16 turn 16 begins (p1)
+T16 untaps: p1:Forest#1
+T16 untaps: p1:Llanowar Elves
+T16 untaps: p1:Forest#2
+T16 untaps: p1:Island#1
+T16 untaps: p1:Island#2
+T16 untaps: p1:Island#3
+T16 untaps: p1:Forest#3
+T16 taps: p1:Island#2
+T16 p1 adds {U} (p1:Island#2)
+T16 taps: p1:Forest#2
+T16 p1 adds {G} (p1:Forest#2)
+T16 taps: p1:Island#1
+T16 p1 adds {U} (p1:Island#1)
+T16 taps: p1:Island#3
+T16 p1 adds {U} (p1:Island#3)
+T16 taps: p1:Forest#1
+T16 p1 adds {G} (p1:Forest#1)
+T16 moves: Ignite Disorder, p2's hand -> stack
+T16 p2 cancels casting Ignite Disorder
+T16 p1's unspent {U}{U}{U}{G}{G} empties
+T16 moves: Naturalize, p1's library -> p1's hand
+T16 p1 draws
+T16 taps: p1:Llanowar Elves
+T16 p1 adds {G} (p1:Llanowar Elves)
+T16 p1's unspent {G} empties
+T16 moves: Mind Spring, p1's hand -> stack
+T16 p1 cancels casting Mind Spring
+T16 moves: Centaur Courser, p1's hand -> stack
+T16 taps: p1:Forest#3
+T16 p1 adds {G} (p1:Forest#3)
+T16 p1 cancels casting Centaur Courser
+T16 taps: p1:Forest#3
+T16 p1 adds {G} (p1:Forest#3)
+T16 moves: Mind Spring, p1's hand -> stack
+T16 p1 cancels casting Mind Spring
+T16 moves: Mind Spring, p1's hand -> stack
+T16 p1 cancels casting Mind Spring
+T16 moves: Centaur Courser, p1's hand -> stack
+T16 p1 cancels casting Centaur Courser
+T16 moves: Mind Spring, p1's hand -> stack
+T16 p1 cancels casting Mind Spring
+T16 moves: Ignite Disorder, p2's hand -> stack
+T16 p2 cancels casting Ignite Disorder
+T16 p1's unspent {G} empties
+T16 p1 attack: nothing
+T17 turn 17 begins (p2)
+T17 untaps: p2:Plains#1
+T17 untaps: p2:Mountain#1
+T17 untaps: p2:Plains#2
+T17 untaps: p2:Mountain#2
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 p2's unspent {R} empties
+T17 moves: Plains, p2's library -> p2's hand
+T17 p2 draws
+T17 taps: p2:Plains#1
+T17 p2 adds {W} (p2:Plains#1)
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 taps: p2:Plains#2
+T17 p2 adds {W} (p2:Plains#2)
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 p2's unspent {W}{W}{R} empties
+T17 p2 attack: nothing
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 moves: Plains, p2's hand -> battlefield
+T17 p2 plays p2:Plains#3
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 taps: p2:Plains#3
+T17 p2 adds {W} (p2:Plains#3)
+T17 moves: Ignite Disorder, p2's hand -> stack
+T17 p2 cancels casting Ignite Disorder
+T17 p2's unspent {W} empties
+T18 turn 18 begins (p1)
+T18 untaps: p1:Forest#1
+T18 untaps: p1:Llanowar Elves
+T18 untaps: p1:Forest#2
+T18 untaps: p1:Island#1
+T18 untaps: p1:Island#2
+T18 untaps: p1:Island#3
+T18 untaps: p1:Forest#3
+T18 taps: p1:Llanowar Elves
+T18 p1 adds {G} (p1:Llanowar Elves)
+T18 p1's unspent {G} empties
+T18 moves: Flashfreeze, p1's library -> p1's hand
+T18 p1 draws
+T18 taps: p1:Forest#3
+T18 p1 adds {G} (p1:Forest#3)
+T18 taps: p1:Island#3
+T18 p1 adds {U} (p1:Island#3)
+T18 taps: p1:Island#1
+T18 p1 adds {U} (p1:Island#1)
+T18 taps: p1:Island#2
+T18 p1 adds {U} (p1:Island#2)
+T18 taps: p1:Forest#2
+T18 p1 adds {G} (p1:Forest#2)
+T18 p1's unspent {U}{U}{U}{G}{G} empties
+T18 moves: Mind Spring, p1's hand -> stack
+T18 p1 cancels casting Mind Spring
+T18 moves: Ignite Disorder, p2's hand -> stack
+T18 p2 cancels casting Ignite Disorder
+T18 moves: Ignite Disorder, p2's hand -> stack
+T18 p2 cancels casting Ignite Disorder
+T18 moves: Ignite Disorder, p2's hand -> stack
+T18 p2 cancels casting Ignite Disorder
+T18 taps: p1:Coral Merfolk
+T18 p1 attack: p1:Coral Merfolk -> p2
+T18 p2 block: p2:Elite Vanguard -> p1:Coral Merfolk
+T18 moves: Ignite Disorder, p2's hand -> stack
+T18 p2 cancels casting Ignite Disorder
+T18 moves: Righteousness, p2's hand -> stack
+T18 p2 cancels casting Righteousness
+T18 moves: Ignite Disorder, p2's hand -> stack
+T18 p2 cancels casting Ignite Disorder
+T18 combat damage: p1:Coral Merfolk -> p2:Elite Vanguard 2
+T18 combat damage: p2:Elite Vanguard -> p1:Coral Merfolk 2
+T18 state-based actions: p2:Elite Vanguard lethalDamage, p1:Coral Merfolk lethalDamage
+T18 destroyed: p2:Elite Vanguard
+T18 moves: Elite Vanguard, battlefield -> p2's graveyard
+T18 destroyed: p1:Coral Merfolk
+T18 moves: Coral Merfolk, battlefield -> p1's graveyard
+T18 taps: p1:Forest#1
+T18 p1 adds {G} (p1:Forest#1)
+T18 p1's unspent {G} empties
+T18 moves: Mind Spring, p1's hand -> stack
+T18 p1 cancels casting Mind Spring
+T18 moves: Centaur Courser, p1's hand -> stack
+T18 p1 cancels casting Centaur Courser
+T19 turn 19 begins (p2)
+T19 untaps: p2:Plains#1
+T19 untaps: p2:Mountain#1
+T19 untaps: p2:Plains#2
+T19 untaps: p2:Mountain#2
+T19 untaps: p2:Plains#3
+T19 taps: p2:Plains#1
+T19 p2 adds {W} (p2:Plains#1)
+T19 taps: p2:Plains#2
+T19 p2 adds {W} (p2:Plains#2)
+T19 taps: p2:Mountain#2
+T19 p2 adds {R} (p2:Mountain#2)
+T19 taps: p2:Mountain#1
+T19 p2 adds {R} (p2:Mountain#1)
+T19 p2's unspent {W}{W}{R}{R} empties
+T19 moves: Plains, p2's library -> p2's hand
+T19 p2 draws
+T19 moves: Planar Cleansing, p2's hand -> stack
+T19 taps: p2:Plains#3
+T19 p2 adds {W} (p2:Plains#3)
+T19 p2 cancels casting Planar Cleansing
+T19 moves: Plains, p2's hand -> battlefield
+T19 p2 plays p2:Plains#4
+T19 taps: p2:Plains#4
+T19 p2 adds {W} (p2:Plains#4)
+T19 moves: Planar Cleansing, p2's hand -> stack
+T19 taps: p2:Plains#3
+T19 p2 adds {W} (p2:Plains#3)
+T19 p2 cancels casting Planar Cleansing
+T19 moves: Blinding Mage, p2's hand -> stack
+T19 taps: p2:Plains#3
+T19 p2 adds {W} (p2:Plains#3)
+T19 p2 casts Blinding Mage
+T19 moves: Cancel, p1's hand -> stack
+T19 p1 cancels casting Cancel
+T19 moves: Cancel, p1's hand -> stack
+T19 p1 cancels casting Cancel
+T19 moves: Cancel, p1's hand -> stack
+T19 p1 cancels casting Cancel
+T19 moves: Cancel, p1's hand -> stack
+T19 p1 cancels casting Cancel
+T19 resolves: Blinding Mage
+T19 moves: Blinding Mage, stack -> battlefield
+T19 moves: Undead Slayer, p2's hand -> stack
+T19 p2 cancels casting Undead Slayer
+T19 moves: Ignite Disorder, p2's hand -> stack
+T19 p2 cancels casting Ignite Disorder
+T19 moves: Undead Slayer, p2's hand -> stack
+T19 p2 cancels casting Undead Slayer
+T19 moves: Undead Slayer, p2's hand -> stack
+T19 p2 cancels casting Undead Slayer
+T19 moves: Undead Slayer, p2's hand -> stack
+T19 p2 cancels casting Undead Slayer
+T19 moves: Ignite Disorder, p2's hand -> stack
+T19 p2 cancels casting Ignite Disorder
+T19 moves: Undead Slayer, p2's hand -> stack
+T19 p2 cancels casting Undead Slayer
+T19 moves: Ignite Disorder, p2's hand -> stack
+T19 p2 cancels casting Ignite Disorder
+T19 moves: Ignite Disorder, p2's hand -> stack
+T19 p2 cancels casting Ignite Disorder
+T19 p2 attack: nothing
+T19 moves: Ignite Disorder, p2's hand -> stack
+T19 p2 cancels casting Ignite Disorder
+T20 turn 20 begins (p1)
+T20 untaps: p1:Forest#1
+T20 untaps: p1:Llanowar Elves
+T20 untaps: p1:Forest#2
+T20 untaps: p1:Island#1
+T20 untaps: p1:Island#2
+T20 untaps: p1:Island#3
+T20 untaps: p1:Forest#3
+T20 taps: p1:Llanowar Elves
+T20 p1 adds {G} (p1:Llanowar Elves)
+T20 taps: p1:Island#1
+T20 p1 adds {U} (p1:Island#1)
+T20 p1's unspent {U}{G} empties
+T20 moves: Forest, p1's library -> p1's hand
+T20 p1 draws
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 taps: p1:Forest#2
+T20 p1 adds {G} (p1:Forest#2)
+T20 taps: p1:Island#3
+T20 p1 adds {U} (p1:Island#3)
+T20 taps: p1:Island#2
+T20 p1 adds {U} (p1:Island#2)
+T20 p1's unspent {U}{U}{G}{G} empties
+T20 taps: p1:Forest#3
+T20 p1 adds {G} (p1:Forest#3)
+T20 moves: Forest, p1's hand -> battlefield
+T20 p1 plays p1:Forest#4
+T20 taps: p1:Forest#4
+T20 p1 adds {G} (p1:Forest#4)
+T20 moves: Mind Spring, p1's hand -> stack
+T20 p1 cancels casting Mind Spring
+T20 moves: Centaur Courser, p1's hand -> stack
+T20 p1 cancels casting Centaur Courser
+T20 moves: Ignite Disorder, p2's hand -> stack
+T20 p2 cancels casting Ignite Disorder
+T20 p1's unspent {G}{G} empties
+T20 p1 attack: nothing
+T20 moves: Centaur Courser, p1's hand -> stack
+T20 p1 cancels casting Centaur Courser
+T20 moves: Mind Spring, p1's hand -> stack
+T20 p1 cancels casting Mind Spring
+T20 moves: Centaur Courser, p1's hand -> stack
+T20 p1 cancels casting Centaur Courser
+T20 moves: Ignite Disorder, p2's hand -> stack
+T20 p2 cancels casting Ignite Disorder
+T21 turn 21 begins (p2)
+T21 untaps: p2:Plains#1
+T21 untaps: p2:Mountain#1
+T21 untaps: p2:Plains#2
+T21 untaps: p2:Mountain#2
+T21 untaps: p2:Plains#3
+T21 untaps: p2:Plains#4
+T21 taps: p2:Plains#4
+T21 p2 adds {W} (p2:Plains#4)
+T21 taps: p2:Plains#1
+T21 p2 adds {W} (p2:Plains#1)
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2's unspent {W}{W}{R} empties
+T21 moves: Mountain, p2's library -> p2's hand
+T21 p2 draws
+T21 taps: p2:Plains#3
+T21 p2 adds {W} (p2:Plains#3)
+T21 taps: p2:Mountain#2
+T21 p2 adds {R} (p2:Mountain#2)
+T21 taps: p2:Plains#2
+T21 p2 adds {W} (p2:Plains#2)
+T21 taps: p2:Blinding Mage
+T21 p2 activates p2:Blinding Mage
+T21 resolves: p2:Blinding Mage's ability
+T21 p2's unspent {W}{R} empties
+T21 p2 attack: nothing
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T21 moves: Ignite Disorder, p2's hand -> stack
+T21 p2 cancels casting Ignite Disorder
+T22 turn 22 begins (p1)
+T22 untaps: p1:Forest#1
+T22 untaps: p1:Llanowar Elves
+T22 untaps: p1:Forest#2
+T22 untaps: p1:Island#1
+T22 untaps: p1:Island#2
+T22 untaps: p1:Island#3
+T22 untaps: p1:Forest#3
+T22 untaps: p1:Forest#4
+T22 taps: p1:Forest#2
+T22 p1 adds {G} (p1:Forest#2)
+T22 taps: p1:Forest#4
+T22 p1 adds {G} (p1:Forest#4)
+T22 p1's unspent {G}{G} empties
+T22 moves: Merfolk Looter, p1's library -> p1's hand
+T22 p1 draws
+T22 taps: p1:Island#1
+T22 p1 adds {U} (p1:Island#1)
+T22 taps: p1:Forest#1
+T22 p1 adds {G} (p1:Forest#1)
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T22 p1's unspent {U}{G} empties
+T22 taps: p1:Llanowar Elves
+T22 p1 adds {G} (p1:Llanowar Elves)
+T22 moves: Mind Spring, p1's hand -> stack
+T22 p1 cancels casting Mind Spring
+T22 taps: p1:Forest#3
+T22 p1 adds {G} (p1:Forest#3)
+T22 moves: Mind Spring, p1's hand -> stack
+T22 taps: p1:Island#2
+T22 p1 adds {U} (p1:Island#2)
+T22 p1 cancels casting Mind Spring
+T22 taps: p1:Island#3
+T22 p1 adds {U} (p1:Island#3)
+T22 taps: p1:Island#2
+T22 p1 adds {U} (p1:Island#2)
+T22 moves: Merfolk Looter, p1's hand -> stack
+T22 p1 casts Merfolk Looter
+T22 moves: Cancel, p1's hand -> stack
+T22 p1 cancels casting Cancel
+T22 moves: Cancel, p1's hand -> stack
+T22 p1 cancels casting Cancel
+T22 moves: Cancel, p1's hand -> stack
+T22 p1 cancels casting Cancel
+T22 moves: Cancel, p1's hand -> stack
+T22 p1 cancels casting Cancel
+T22 resolves: Merfolk Looter
+T22 moves: Merfolk Looter, stack -> battlefield
+T22 moves: Mind Spring, p1's hand -> stack
+T22 p1 cancels casting Mind Spring
+T22 moves: Centaur Courser, p1's hand -> stack
+T22 p1 cancels casting Centaur Courser
+T22 p1's unspent {U}{G} empties
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T22 p1 attack: nothing
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T22 moves: Mind Spring, p1's hand -> stack
+T22 p1 cancels casting Mind Spring
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T22 moves: Ignite Disorder, p2's hand -> stack
+T22 p2 cancels casting Ignite Disorder
+T23 turn 23 begins (p2)
+T23 untaps: p2:Plains#1
+T23 untaps: p2:Mountain#1
+T23 untaps: p2:Plains#2
+T23 untaps: p2:Mountain#2
+T23 untaps: p2:Plains#3
+T23 untaps: p2:Plains#4
+T23 untaps: p2:Blinding Mage
+T23 taps: p2:Mountain#1
+T23 p2 adds {R} (p2:Mountain#1)
+T23 p2's unspent {R} empties
+T23 moves: Celestial Purge, p2's library -> p2's hand
+T23 p2 draws
+T23 taps: p2:Plains#4
+T23 p2 adds {W} (p2:Plains#4)
+T23 taps: p2:Plains#3
+T23 p2 adds {W} (p2:Plains#3)
+T23 taps: p2:Plains#1
+T23 p2 adds {W} (p2:Plains#1)
+T23 taps: p2:Plains#2
+T23 p2 adds {W} (p2:Plains#2)
+T23 taps: p2:Mountain#2
+T23 p2 adds {R} (p2:Mountain#2)
+T23 p2's unspent {W}{W}{W}{W}{R} empties
+T23 moves: Undead Slayer, p2's hand -> stack
+T23 p2 cancels casting Undead Slayer
+T23 moves: Ignite Disorder, p2's hand -> stack
+T23 p2 cancels casting Ignite Disorder
+T23 moves: Undead Slayer, p2's hand -> stack
+T23 p2 cancels casting Undead Slayer
+T23 moves: Planar Cleansing, p2's hand -> stack
+T23 p2 cancels casting Planar Cleansing
+T23 p2 attack: nothing
+T23 p2 cancels activating p2:Blinding Mage
+T23 p2 cancels activating p2:Blinding Mage
+T23 p2 cancels activating p2:Blinding Mage
+T23 moves: Ignite Disorder, p2's hand -> stack
+T23 p2 cancels casting Ignite Disorder
+T23 p2 cancels activating p2:Blinding Mage
+T23 p2 cancels activating p2:Blinding Mage
+T23 p2 cancels activating p2:Blinding Mage
+T23 moves: Undead Slayer, p2's hand -> stack
+T23 p2 cancels casting Undead Slayer
+T23 moves: Undead Slayer, p2's hand -> stack
+T23 p2 cancels casting Undead Slayer
+T23 moves: Ignite Disorder, p2's hand -> stack
+T23 p2 cancels casting Ignite Disorder
+T23 moves: Ignite Disorder, p2's hand -> stack
+T23 p2 cancels casting Ignite Disorder
+T23 moves: Mountain, p2's hand -> p2's graveyard
+T23 p2 discards Mountain
+T24 turn 24 begins (p1)
+T24 untaps: p1:Forest#1
+T24 untaps: p1:Llanowar Elves
+T24 untaps: p1:Forest#2
+T24 untaps: p1:Island#1
+T24 untaps: p1:Island#2
+T24 untaps: p1:Island#3
+T24 untaps: p1:Forest#3
+T24 untaps: p1:Forest#4
+T24 taps: p1:Island#2
+T24 p1 adds {U} (p1:Island#2)
+T24 taps: p1:Forest#1
+T24 p1 adds {G} (p1:Forest#1)
+T24 taps: p1:Forest#4
+T24 p1 adds {G} (p1:Forest#4)
+T24 taps: p1:Llanowar Elves
+T24 p1 adds {G} (p1:Llanowar Elves)
+T24 taps: p1:Forest#3
+T24 p1 adds {G} (p1:Forest#3)
+T24 taps: p1:Island#3
+T24 p1 adds {U} (p1:Island#3)
+T24 taps: p1:Island#1
+T24 p1 adds {U} (p1:Island#1)
+T24 taps: p1:Forest#2
+T24 p1 adds {G} (p1:Forest#2)
+T24 p1's unspent {U}{U}{U}{G}{G}{G}{G}{G} empties
+T24 moves: Island, p1's library -> p1's hand
+T24 p1 draws
+T24 taps: p1:Merfolk Looter
+T24 p1 activates p1:Merfolk Looter
+T24 moves: Ignite Disorder, p2's hand -> stack
+T24 p2 cancels casting Ignite Disorder
+T24 p2 cancels activating p2:Blinding Mage
+T24 moves: Island, p1's library -> p1's hand
+T24 p1 draws
+T24 moves: Island, p1's hand -> p1's graveyard
+T24 p1 discards Island
+T24 resolves: p1:Merfolk Looter's ability
+T24 moves: Ignite Disorder, p2's hand -> stack
+T24 p2 cancels casting Ignite Disorder
+T24 p2 cancels activating p2:Blinding Mage
+T24 moves: Ignite Disorder, p2's hand -> stack
+T24 p2 cancels casting Ignite Disorder
+T24 p2 cancels activating p2:Blinding Mage
+T24 p2 cancels activating p2:Blinding Mage
+T24 moves: Ignite Disorder, p2's hand -> stack
+T24 p2 cancels casting Ignite Disorder
+T24 p2 cancels activating p2:Blinding Mage
+T24 moves: Island, p1's hand -> battlefield
+T24 p1 plays p1:Island#4
+T24 moves: Mind Spring, p1's hand -> stack
+T24 p1 cancels casting Mind Spring
+T24 moves: Mind Spring, p1's hand -> stack
+T24 taps: p1:Island#4
+T24 p1 adds {U} (p1:Island#4)
+T24 p1 cancels casting Mind Spring
+T24 p2 cancels activating p2:Blinding Mage
+T24 p1 attack: nothing
+T24 taps: p1:Island#4
+T24 p1 adds {U} (p1:Island#4)
+T24 p1's unspent {U} empties
+T25 turn 25 begins (p2)
+T25 untaps: p2:Plains#1
+T25 untaps: p2:Mountain#1
+T25 untaps: p2:Plains#2
+T25 untaps: p2:Mountain#2
+T25 untaps: p2:Plains#3
+T25 untaps: p2:Plains#4
+T25 taps: p2:Plains#1
+T25 p2 adds {W} (p2:Plains#1)
+T25 taps: p2:Mountain#1
+T25 p2 adds {R} (p2:Mountain#1)
+T25 taps: p2:Plains#3
+T25 p2 adds {W} (p2:Plains#3)
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 p2's unspent {W}{W}{R} empties
+T25 moves: Plains, p2's library -> p2's hand
+T25 p2 draws
+T25 taps: p2:Plains#4
+T25 p2 adds {W} (p2:Plains#4)
+T25 p2's unspent {W} empties
+T25 moves: Plains, p2's hand -> battlefield
+T25 p2 plays p2:Plains#5
+T25 taps: p2:Plains#5
+T25 p2 adds {W} (p2:Plains#5)
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 taps: p2:Plains#2
+T25 p2 adds {W} (p2:Plains#2)
+T25 moves: Undead Slayer, p2's hand -> stack
+T25 p2 cancels casting Undead Slayer
+T25 taps: p2:Blinding Mage
+T25 p2 activates p2:Blinding Mage
+T25 resolves: p2:Blinding Mage's ability
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 moves: Planar Cleansing, p2's hand -> stack
+T25 p2 cancels casting Planar Cleansing
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 moves: Planar Cleansing, p2's hand -> stack
+T25 p2 cancels casting Planar Cleansing
+T25 moves: Planar Cleansing, p2's hand -> stack
+T25 p2 cancels casting Planar Cleansing
+T25 moves: Undead Slayer, p2's hand -> stack
+T25 p2 cancels casting Undead Slayer
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 moves: Undead Slayer, p2's hand -> stack
+T25 p2 cancels casting Undead Slayer
+T25 moves: Planar Cleansing, p2's hand -> stack
+T25 p2 cancels casting Planar Cleansing
+T25 p2's unspent {W}{R} empties
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T25 p2 attack: nothing
+T25 moves: Ignite Disorder, p2's hand -> stack
+T25 p2 cancels casting Ignite Disorder
+T26 turn 26 begins (p1)
+T26 untaps: p1:Forest#1
+T26 untaps: p1:Llanowar Elves
+T26 untaps: p1:Forest#2
+T26 untaps: p1:Island#1
+T26 untaps: p1:Island#2
+T26 untaps: p1:Island#3
+T26 untaps: p1:Forest#3
+T26 untaps: p1:Forest#4
+T26 untaps: p1:Merfolk Looter
+T26 untaps: p1:Island#4
+T26 taps: p1:Island#4
+T26 p1 adds {U} (p1:Island#4)
+T26 taps: p1:Forest#4
+T26 p1 adds {G} (p1:Forest#4)
+T26 taps: p1:Island#1
+T26 p1 adds {U} (p1:Island#1)
+T26 taps: p1:Forest#1
+T26 p1 adds {G} (p1:Forest#1)
+T26 taps: p1:Merfolk Looter
+T26 p1 activates p1:Merfolk Looter
+T26 taps: p1:Forest#3
+T26 p1 adds {G} (p1:Forest#3)
+T26 taps: p1:Forest#2
+T26 p1 adds {G} (p1:Forest#2)
+T26 taps: p1:Llanowar Elves
+T26 p1 adds {G} (p1:Llanowar Elves)
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Nature's Spiral, p1's library -> p1's hand
+T26 p1 draws
+T26 moves: Flashfreeze, p1's hand -> p1's graveyard
+T26 p1 discards Flashfreeze
+T26 resolves: p1:Merfolk Looter's ability
+T26 taps: p1:Island#2
+T26 p1 adds {U} (p1:Island#2)
+T26 p1's unspent {U}{U}{U}{G}{G}{G}{G}{G} empties
+T26 moves: Forest, p1's library -> p1's hand
+T26 p1 draws
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Centaur Courser, p1's hand -> stack
+T26 taps: p1:Island#3
+T26 p1 adds {U} (p1:Island#3)
+T26 p1 cancels casting Centaur Courser
+T26 moves: Forest, p1's hand -> battlefield
+T26 p1 plays p1:Forest#5
+T26 moves: Centaur Courser, p1's hand -> stack
+T26 taps: p1:Island#3
+T26 p1 adds {U} (p1:Island#3)
+T26 p1 cancels casting Centaur Courser
+T26 taps: p1:Island#3
+T26 p1 adds {U} (p1:Island#3)
+T26 moves: Centaur Courser, p1's hand -> stack
+T26 p1 cancels casting Centaur Courser
+T26 moves: Mind Spring, p1's hand -> stack
+T26 p1 cancels casting Mind Spring
+T26 moves: Centaur Courser, p1's hand -> stack
+T26 taps: p1:Forest#5
+T26 p1 adds {G} (p1:Forest#5)
+T26 p1 cancels casting Centaur Courser
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 p1's unspent {U} empties
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 taps: p1:Grizzly Bears
+T26 p1 attack: p1:Grizzly Bears -> p2
+T26 taps: p1:Forest#5
+T26 p1 adds {G} (p1:Forest#5)
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 p1's unspent {G} empties
+T26 p2 block: nothing
+T26 combat damage: p1:Grizzly Bears -> p2 2
+T26 p2 loses 2 life
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T26 moves: Ignite Disorder, p2's hand -> stack
+T26 p2 cancels casting Ignite Disorder
+T27 turn 27 begins (p2)
+T27 untaps: p2:Plains#1
+T27 untaps: p2:Mountain#1
+T27 untaps: p2:Plains#2
+T27 untaps: p2:Mountain#2
+T27 untaps: p2:Plains#3
+T27 untaps: p2:Plains#4
+T27 untaps: p2:Blinding Mage
+T27 untaps: p2:Plains#5
+T27 moves: Divine Verdict, p2's library -> p2's hand
+T27 p2 draws
+T27 taps: p2:Plains#5
+T27 p2 adds {W} (p2:Plains#5)
+T27 taps: p2:Plains#1
+T27 p2 adds {W} (p2:Plains#1)
+T27 taps: p2:Blinding Mage
+T27 p2 activates p2:Blinding Mage
+T27 taps: p2:Mountain#1
+T27 p2 adds {R} (p2:Mountain#1)
+T27 resolves: p2:Blinding Mage's ability
+T27 taps: p2:Plains#4
+T27 p2 adds {W} (p2:Plains#4)
+T27 p2's unspent {W}{W}{R} empties
+T27 moves: Planar Cleansing, p2's hand -> stack
+T27 taps: p2:Plains#3
+T27 p2 adds {W} (p2:Plains#3)
+T27 taps: p2:Mountain#2
+T27 p2 adds {R} (p2:Mountain#2)
+T27 p2 cancels casting Planar Cleansing
+T27 taps: p2:Plains#2
+T27 p2 adds {W} (p2:Plains#2)
+T27 taps: p2:Plains#3
+T27 p2 adds {W} (p2:Plains#3)
+T27 moves: Planar Cleansing, p2's hand -> stack
+T27 p2 cancels casting Planar Cleansing
+T27 taps: p2:Mountain#2
+T27 p2 adds {R} (p2:Mountain#2)
+T27 moves: Planar Cleansing, p2's hand -> stack
+T27 p2 cancels casting Planar Cleansing
+T27 moves: Planar Cleansing, p2's hand -> stack
+T27 p2 cancels casting Planar Cleansing
+T27 p2's unspent {W}{W}{R} empties
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 p2 attack: nothing
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> stack
+T27 p2 cancels casting Ignite Disorder
+T27 moves: Ignite Disorder, p2's hand -> p2's graveyard
+T27 p2 discards Ignite Disorder
+T28 turn 28 begins (p1)
+T28 untaps: p1:Forest#1
+T28 untaps: p1:Llanowar Elves
+T28 untaps: p1:Forest#2
+T28 untaps: p1:Island#1
+T28 untaps: p1:Island#2
+T28 untaps: p1:Island#3
+T28 untaps: p1:Grizzly Bears
+T28 untaps: p1:Forest#3
+T28 untaps: p1:Forest#4
+T28 untaps: p1:Merfolk Looter
+T28 untaps: p1:Island#4
+T28 untaps: p1:Forest#5
+T28 taps: p1:Forest#3
+T28 p1 adds {G} (p1:Forest#3)
+T28 taps: p1:Merfolk Looter
+T28 p1 activates p1:Merfolk Looter
+T28 taps: p1:Island#2
+T28 p1 adds {U} (p1:Island#2)
+T28 taps: p1:Island#3
+T28 p1 adds {U} (p1:Island#3)
+T28 taps: p1:Llanowar Elves
+T28 p1 adds {G} (p1:Llanowar Elves)
+T28 taps: p1:Forest#5
+T28 p1 adds {G} (p1:Forest#5)
+T28 taps: p1:Island#1
+T28 p1 adds {U} (p1:Island#1)
+T28 taps: p1:Forest#2
+T28 p1 adds {G} (p1:Forest#2)
+T28 taps: p1:Forest#1
+T28 p1 adds {G} (p1:Forest#1)
+T28 taps: p1:Island#4
+T28 p1 adds {U} (p1:Island#4)
+T28 taps: p1:Forest#4
+T28 p1 adds {G} (p1:Forest#4)
+T28 moves: Island, p1's library -> p1's hand
+T28 p1 draws
+T28 moves: Naturalize, p1's hand -> p1's graveyard
+T28 p1 discards Naturalize
+T28 resolves: p1:Merfolk Looter's ability
+T28 p1's unspent {U}{U}{U}{U}{G}{G}{G}{G}{G}{G} empties
+T28 moves: Traumatize, p1's library -> p1's hand
+T28 p1 draws
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Island, p1's hand -> battlefield
+T28 p1 plays p1:Island#5
+T28 moves: Traumatize, p1's hand -> stack
+T28 p1 cancels casting Traumatize
+T28 moves: Mind Spring, p1's hand -> stack
+T28 p1 cancels casting Mind Spring
+T28 taps: p1:Island#5
+T28 p1 adds {U} (p1:Island#5)
+T28 moves: Traumatize, p1's hand -> stack
+T28 p1 cancels casting Traumatize
+T28 moves: Nature's Spiral, p1's hand -> stack
+T28 p1 cancels casting Nature's Spiral
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Nature's Spiral, p1's hand -> stack
+T28 p1 cancels casting Nature's Spiral
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Traumatize, p1's hand -> stack
+T28 p1 cancels casting Traumatize
+T28 moves: Traumatize, p1's hand -> stack
+T28 p1 cancels casting Traumatize
+T28 moves: Nature's Spiral, p1's hand -> stack
+T28 p1 cancels casting Nature's Spiral
+T28 p1's unspent {U} empties
+T28 taps: p1:Grizzly Bears
+T28 p1 attack: p1:Grizzly Bears -> p2
+T28 p2 block: nothing
+T28 moves: Divine Verdict, p2's hand -> stack
+T28 p2 cancels casting Divine Verdict
+T28 combat damage: p1:Grizzly Bears -> p2 2
+T28 p2 loses 2 life
+T28 moves: Divine Verdict, p2's hand -> stack
+T28 p2 cancels casting Divine Verdict
+T28 moves: Nature's Spiral, p1's hand -> stack
+T28 p1 cancels casting Nature's Spiral
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Nature's Spiral, p1's hand -> stack
+T28 p1 cancels casting Nature's Spiral
+T28 moves: Nature's Spiral, p1's hand -> stack
+T28 p1 cancels casting Nature's Spiral
+T28 moves: Centaur Courser, p1's hand -> stack
+T28 p1 cancels casting Centaur Courser
+T28 moves: Mind Spring, p1's hand -> stack
+T28 p1 cancels casting Mind Spring
+T29 turn 29 begins (p2)
+T29 untaps: p2:Plains#1
+T29 untaps: p2:Mountain#1
+T29 untaps: p2:Plains#2
+T29 untaps: p2:Mountain#2
+T29 untaps: p2:Plains#3
+T29 untaps: p2:Plains#4
+T29 untaps: p2:Blinding Mage
+T29 untaps: p2:Plains#5
+T29 taps: p2:Plains#2
+T29 p2 adds {W} (p2:Plains#2)
+T29 p2 cancels activating p2:Blinding Mage
+T29 taps: p2:Plains#4
+T29 p2 adds {W} (p2:Plains#4)
+T29 taps: p2:Plains#1
+T29 p2 adds {W} (p2:Plains#1)
+T29 taps: p2:Mountain#2
+T29 p2 adds {R} (p2:Mountain#2)
+T29 taps: p2:Mountain#1
+T29 p2 adds {R} (p2:Mountain#1)
+T29 taps: p2:Plains#2
+T29 p2 adds {W} (p2:Plains#2)
+T29 taps: p2:Plains#5
+T29 p2 adds {W} (p2:Plains#5)
+T29 p2's unspent {W}{W}{W}{W}{R}{R} empties
+T29 moves: Undead Slayer, p2's library -> p2's hand
+T29 p2 draws
+T29 moves: Undead Slayer, p2's hand -> stack
+T29 p2 cancels casting Undead Slayer
+T29 taps: p2:Plains#3
+T29 p2 adds {W} (p2:Plains#3)
+T29 moves: Planar Cleansing, p2's hand -> stack
+T29 p2 cancels casting Planar Cleansing
+T29 taps: p2:Blinding Mage
+T29 p2 activates p2:Blinding Mage
+T29 resolves: p2:Blinding Mage's ability
+T29 moves: Planar Cleansing, p2's hand -> stack
+T29 p2 cancels casting Planar Cleansing
+T29 p2 attack: nothing
+T29 moves: Undead Slayer, p2's hand -> p2's graveyard
+T29 p2 discards Undead Slayer
+T30 turn 30 begins (p1)
+T30 untaps: p1:Forest#1
+T30 untaps: p1:Llanowar Elves
+T30 untaps: p1:Forest#2
+T30 untaps: p1:Island#1
+T30 untaps: p1:Island#2
+T30 untaps: p1:Island#3
+T30 untaps: p1:Grizzly Bears
+T30 untaps: p1:Forest#3
+T30 untaps: p1:Forest#4
+T30 untaps: p1:Merfolk Looter
+T30 untaps: p1:Island#4
+T30 untaps: p1:Forest#5
+T30 untaps: p1:Island#5
+T30 taps: p1:Merfolk Looter
+T30 p1 activates p1:Merfolk Looter
+T30 taps: p1:Forest#4
+T30 p1 adds {G} (p1:Forest#4)
+T30 taps: p1:Forest#2
+T30 p1 adds {G} (p1:Forest#2)
+T30 taps: p1:Island#4
+T30 p1 adds {U} (p1:Island#4)
+T30 taps: p1:Forest#1
+T30 p1 adds {G} (p1:Forest#1)
+T30 taps: p1:Llanowar Elves
+T30 p1 adds {G} (p1:Llanowar Elves)
+T30 taps: p1:Forest#3
+T30 p1 adds {G} (p1:Forest#3)
+T30 taps: p1:Island#1
+T30 p1 adds {U} (p1:Island#1)
+T30 taps: p1:Island#2
+T30 p1 adds {U} (p1:Island#2)
+T30 taps: p1:Island#5
+T30 p1 adds {U} (p1:Island#5)
+T30 moves: Unsummon, p1's library -> p1's hand
+T30 p1 draws
+T30 moves: Traumatize, p1's hand -> p1's graveyard
+T30 p1 discards Traumatize
+T30 resolves: p1:Merfolk Looter's ability
+T30 moves: Unsummon, p1's hand -> stack
+T30 taps: p1:Island#3
+T30 p1 adds {U} (p1:Island#3)
+T30 taps: p1:Forest#5
+T30 p1 adds {G} (p1:Forest#5)
+T30 p1 cancels casting Unsummon
+T30 taps: p1:Forest#5
+T30 p1 adds {G} (p1:Forest#5)
+T30 moves: Unsummon, p1's hand -> stack
+T30 p1 cancels casting Unsummon
+T30 taps: p1:Island#3
+T30 p1 adds {U} (p1:Island#3)
+T30 p1's unspent {U}{U}{U}{U}{U}{G}{G}{G}{G}{G}{G} empties
+T30 moves: Essence Scatter, p1's library -> p1's hand
+T30 p1 draws
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Nature's Spiral, p1's hand -> stack
+T30 p1 cancels casting Nature's Spiral
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Unsummon, p1's hand -> stack
+T30 p1 cancels casting Unsummon
+T30 moves: Unsummon, p1's hand -> stack
+T30 p1 cancels casting Unsummon
+T30 moves: Mind Spring, p1's hand -> stack
+T30 p1 cancels casting Mind Spring
+T30 p1 attack: nothing
+T30 moves: Unsummon, p1's hand -> stack
+T30 p1 cancels casting Unsummon
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Mind Spring, p1's hand -> stack
+T30 p1 cancels casting Mind Spring
+T30 moves: Nature's Spiral, p1's hand -> stack
+T30 p1 cancels casting Nature's Spiral
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Nature's Spiral, p1's hand -> stack
+T30 p1 cancels casting Nature's Spiral
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Mind Spring, p1's hand -> stack
+T30 p1 cancels casting Mind Spring
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Unsummon, p1's hand -> stack
+T30 p1 cancels casting Unsummon
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T30 moves: Mind Spring, p1's hand -> stack
+T30 p1 cancels casting Mind Spring
+T30 moves: Centaur Courser, p1's hand -> stack
+T30 p1 cancels casting Centaur Courser
+T31 turn 31 begins (p2)
+T31 untaps: p2:Plains#1
+T31 untaps: p2:Mountain#1
+T31 untaps: p2:Plains#2
+T31 untaps: p2:Mountain#2
+T31 untaps: p2:Plains#3
+T31 untaps: p2:Plains#4
+T31 untaps: p2:Blinding Mage
+T31 untaps: p2:Plains#5
+T31 taps: p2:Plains#2
+T31 p2 adds {W} (p2:Plains#2)
+T31 taps: p2:Plains#3
+T31 p2 adds {W} (p2:Plains#3)
+T31 taps: p2:Plains#1
+T31 p2 adds {W} (p2:Plains#1)
+T31 taps: p2:Mountain#1
+T31 p2 adds {R} (p2:Mountain#1)
+T31 taps: p2:Blinding Mage
+T31 p2 activates p2:Blinding Mage
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 resolves: p2:Blinding Mage's ability
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 p2's unspent {W}{W}{R} empties
+T31 moves: Righteousness, p2's library -> p2's hand
+T31 p2 draws
+T31 taps: p2:Plains#5
+T31 p2 adds {W} (p2:Plains#5)
+T31 taps: p2:Mountain#2
+T31 p2 adds {R} (p2:Mountain#2)
+T31 p2's unspent {W}{R} empties
+T31 taps: p2:Plains#4
+T31 p2 adds {W} (p2:Plains#4)
+T31 p2's unspent {W} empties
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 p2 attack: nothing
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Planar Cleansing, p2's hand -> stack
+T31 p2 cancels casting Planar Cleansing
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Unsummon, p1's hand -> stack
+T31 p1 cancels casting Unsummon
+T31 moves: Shatter, p2's hand -> p2's graveyard
+T31 p2 discards Shatter
+T32 turn 32 begins (p1)
+T32 untaps: p1:Forest#1
+T32 untaps: p1:Llanowar Elves
+T32 untaps: p1:Forest#2
+T32 untaps: p1:Island#1
+T32 untaps: p1:Island#2
+T32 untaps: p1:Island#3
+T32 untaps: p1:Forest#3
+T32 untaps: p1:Forest#4
+T32 untaps: p1:Merfolk Looter
+T32 untaps: p1:Island#4
+T32 untaps: p1:Forest#5
+T32 untaps: p1:Island#5
+T32 taps: p1:Island#4
+T32 p1 adds {U} (p1:Island#4)
+T32 taps: p1:Island#5
+T32 p1 adds {U} (p1:Island#5)
+T32 p1's unspent {U}{U} empties
+T32 moves: Llanowar Elves, p1's library -> p1's hand
+T32 p1 draws
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 taps: p1:Forest#4
+T32 p1 adds {G} (p1:Forest#4)
+T32 p1's unspent {G}{G} empties
+T32 moves: Unsummon, p1's hand -> stack
+T32 taps: p1:Island#1
+T32 p1 adds {U} (p1:Island#1)
+T32 taps: p1:Forest#3
+T32 p1 adds {G} (p1:Forest#3)
+T32 taps: p1:Llanowar Elves
+T32 p1 adds {G} (p1:Llanowar Elves)
+T32 taps: p1:Island#3
+T32 p1 adds {U} (p1:Island#3)
+T32 taps: p1:Forest#5
+T32 p1 adds {G} (p1:Forest#5)
+T32 p1 casts Unsummon
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 taps: p1:Island#2
+T32 p1 adds {U} (p1:Island#2)
+T32 moves: Cancel, p1's hand -> stack
+T32 p1 cancels casting Cancel
+T32 moves: Grizzly Bears, battlefield -> p1's hand
+T32 resolves: Unsummon
+T32 moves: Unsummon, stack -> p1's graveyard
+T32 moves: Nature's Spiral, p1's hand -> stack
+T32 p1 cancels casting Nature's Spiral
+T32 moves: Centaur Courser, p1's hand -> stack
+T32 p1 casts Centaur Courser
+T32 moves: Cancel, p1's hand -> stack
+T32 p1 cancels casting Cancel
+T32 moves: Cancel, p1's hand -> stack
+T32 p1 cancels casting Cancel
+T32 resolves: Centaur Courser
+T32 moves: Centaur Courser, stack -> battlefield
+T32 taps: p1:Merfolk Looter
+T32 p1 activates p1:Merfolk Looter
+T32 moves: Elvish Piper, p1's library -> p1's hand
+T32 p1 draws
+T32 moves: Grizzly Bears, p1's hand -> p1's graveyard
+T32 p1 discards Grizzly Bears
+T32 resolves: p1:Merfolk Looter's ability
+T32 moves: Llanowar Elves, p1's hand -> stack
+T32 p1 cancels casting Llanowar Elves
+T32 moves: Mind Spring, p1's hand -> stack
+T32 p1 cancels casting Mind Spring
+T32 moves: Elvish Piper, p1's hand -> stack
+T32 p1 cancels casting Elvish Piper
+T32 p1's unspent {U}{G}{G} empties
+T32 p1 attack: nothing
+T33 turn 33 begins (p2)
+T33 untaps: p2:Plains#1
+T33 untaps: p2:Mountain#1
+T33 untaps: p2:Plains#2
+T33 untaps: p2:Mountain#2
+T33 untaps: p2:Plains#3
+T33 untaps: p2:Plains#4
+T33 untaps: p2:Blinding Mage
+T33 untaps: p2:Plains#5
+T33 taps: p2:Mountain#2
+T33 p2 adds {R} (p2:Mountain#2)
+T33 taps: p2:Mountain#1
+T33 p2 adds {R} (p2:Mountain#1)
+T33 taps: p2:Plains#3
+T33 p2 adds {W} (p2:Plains#3)
+T33 taps: p2:Plains#2
+T33 p2 adds {W} (p2:Plains#2)
+T33 p2 cancels activating p2:Blinding Mage
+T33 taps: p2:Plains#5
+T33 p2 adds {W} (p2:Plains#5)
+T33 taps: p2:Plains#1
+T33 p2 adds {W} (p2:Plains#1)
+T33 taps: p2:Plains#4
+T33 p2 adds {W} (p2:Plains#4)
+T33 taps: p2:Blinding Mage
+T33 p2 activates p2:Blinding Mage
+T33 taps: p2:Plains#2
+T33 p2 adds {W} (p2:Plains#2)
+T33 resolves: p2:Blinding Mage's ability
+T33 p2's unspent {W}{W}{W}{R}{R} empties
+T33 moves: Mountain, p2's library -> p2's hand
+T33 p2 draws
+T33 moves: Undead Slayer, p2's hand -> stack
+T33 p2 cancels casting Undead Slayer
+T33 moves: Mountain, p2's hand -> battlefield
+T33 p2 plays p2:Mountain#3
+T33 moves: Planar Cleansing, p2's hand -> stack
+T33 taps: p2:Plains#3
+T33 p2 adds {W} (p2:Plains#3)
+T33 p2 cancels casting Planar Cleansing
+T33 taps: p2:Plains#3
+T33 p2 adds {W} (p2:Plains#3)
+T33 moves: Planar Cleansing, p2's hand -> stack
+T33 taps: p2:Mountain#3
+T33 p2 adds {R} (p2:Mountain#3)
+T33 p2 cancels casting Planar Cleansing
+T33 p2's unspent {W} empties
+T33 taps: p2:Mountain#3
+T33 p2 adds {R} (p2:Mountain#3)
+T33 p2's unspent {R} empties
+T33 p2 attack: nothing
+T33 moves: Planar Cleansing, p2's hand -> stack
+T33 p2 cancels casting Planar Cleansing
+T33 moves: Planar Cleansing, p2's hand -> stack
+T33 p2 cancels casting Planar Cleansing
+T33 moves: Undead Slayer, p2's hand -> stack
+T33 p2 cancels casting Undead Slayer
+T33 moves: Planar Cleansing, p2's hand -> stack
+T33 p2 cancels casting Planar Cleansing
+T34 turn 34 begins (p1)
+T34 untaps: p1:Forest#1
+T34 untaps: p1:Llanowar Elves
+T34 untaps: p1:Forest#2
+T34 untaps: p1:Island#1
+T34 untaps: p1:Island#2
+T34 untaps: p1:Island#3
+T34 untaps: p1:Forest#3
+T34 untaps: p1:Forest#4
+T34 untaps: p1:Merfolk Looter
+T34 untaps: p1:Island#4
+T34 untaps: p1:Forest#5
+T34 untaps: p1:Island#5
+T34 taps: p1:Forest#2
+T34 p1 adds {G} (p1:Forest#2)
+T34 taps: p1:Island#5
+T34 p1 adds {U} (p1:Island#5)
+T34 taps: p1:Island#4
+T34 p1 adds {U} (p1:Island#4)
+T34 taps: p1:Island#3
+T34 p1 adds {U} (p1:Island#3)
+T34 taps: p1:Forest#1
+T34 p1 adds {G} (p1:Forest#1)
+T34 taps: p1:Forest#4
+T34 p1 adds {G} (p1:Forest#4)
+T34 taps: p1:Island#2
+T34 p1 adds {U} (p1:Island#2)
+T34 p1's unspent {U}{U}{U}{U}{G}{G}{G} empties
+T34 moves: Ornithopter, p1's library -> p1's hand
+T34 p1 draws
+T34 taps: p1:Merfolk Looter
+T34 p1 activates p1:Merfolk Looter
+T34 taps: p1:Island#1
+T34 p1 adds {U} (p1:Island#1)
+T34 taps: p1:Forest#3
+T34 p1 adds {G} (p1:Forest#3)
+T34 taps: p1:Llanowar Elves
+T34 p1 adds {G} (p1:Llanowar Elves)
+T34 taps: p1:Forest#5
+T34 p1 adds {G} (p1:Forest#5)
+T34 moves: Negate, p1's library -> p1's hand
+T34 p1 draws
+T34 moves: Centaur Courser, p1's hand -> p1's graveyard
+T34 p1 discards Centaur Courser
+T34 resolves: p1:Merfolk Looter's ability
+T34 p1's unspent {U}{G}{G}{G} empties
+T34 moves: Mind Spring, p1's hand -> stack
+T34 p1 cancels casting Mind Spring
+T34 moves: Llanowar Elves, p1's hand -> stack
+T34 p1 cancels casting Llanowar Elves
+T34 moves: Ornithopter, p1's hand -> stack
+T34 p1 casts Ornithopter
+T34 moves: Cancel, p1's hand -> stack
+T34 p1 cancels casting Cancel
+T34 moves: Essence Scatter, p1's hand -> stack
+T34 p1 cancels casting Essence Scatter
+T34 resolves: Ornithopter
+T34 moves: Ornithopter, stack -> battlefield
+T34 moves: Nature's Spiral, p1's hand -> stack
+T34 p1 cancels casting Nature's Spiral
+T34 moves: Llanowar Elves, p1's hand -> stack
+T34 p1 cancels casting Llanowar Elves
+T34 moves: Llanowar Elves, p1's hand -> stack
+T34 p1 cancels casting Llanowar Elves
+T34 moves: Llanowar Elves, p1's hand -> stack
+T34 p1 cancels casting Llanowar Elves
+T34 moves: Elvish Piper, p1's hand -> stack
+T34 p1 cancels casting Elvish Piper
+T34 moves: Llanowar Elves, p1's hand -> stack
+T34 p1 cancels casting Llanowar Elves
+T34 taps: p1:Centaur Courser
+T34 p1 attack: p1:Centaur Courser -> p2
+T34 p2 block: nothing
+T34 combat damage: p1:Centaur Courser -> p2 3
+T34 p2 loses 3 life
+T34 moves: Elvish Piper, p1's hand -> stack
+T34 p1 cancels casting Elvish Piper
+T34 moves: Nature's Spiral, p1's hand -> stack
+T34 p1 cancels casting Nature's Spiral
+T35 turn 35 begins (p2)
+T35 untaps: p2:Plains#1
+T35 untaps: p2:Mountain#1
+T35 untaps: p2:Plains#2
+T35 untaps: p2:Mountain#2
+T35 untaps: p2:Plains#3
+T35 untaps: p2:Plains#4
+T35 untaps: p2:Blinding Mage
+T35 untaps: p2:Plains#5
+T35 untaps: p2:Mountain#3
+T35 taps: p2:Mountain#2
+T35 p2 adds {R} (p2:Mountain#2)
+T35 taps: p2:Plains#5
+T35 p2 adds {W} (p2:Plains#5)
+T35 taps: p2:Plains#1
+T35 p2 adds {W} (p2:Plains#1)
+T35 taps: p2:Plains#3
+T35 p2 adds {W} (p2:Plains#3)
+T35 taps: p2:Mountain#1
+T35 p2 adds {R} (p2:Mountain#1)
+T35 p2 cancels activating p2:Blinding Mage
+T35 taps: p2:Plains#1
+T35 p2 adds {W} (p2:Plains#1)
+T35 p2 cancels activating p2:Blinding Mage
+T35 moves: Raging Goblin, p2's library -> p2's hand
+T35 p2 draws
+T35 taps: p2:Plains#5
+T35 p2 adds {W} (p2:Plains#5)
+T35 p2's unspent {W} empties
+T35 taps: p2:Plains#1
+T35 p2 adds {W} (p2:Plains#1)
+T35 taps: p2:Plains#2
+T35 p2 adds {W} (p2:Plains#2)
+T35 taps: p2:Mountain#3
+T35 p2 adds {R} (p2:Mountain#3)
+T35 taps: p2:Blinding Mage
+T35 p2 activates p2:Blinding Mage
+T35 taps: p2:Mountain#1
+T35 p2 adds {R} (p2:Mountain#1)
+T35 taps: p2:Plains#3
+T35 p2 adds {W} (p2:Plains#3)
+T35 taps: p2:Plains#4
+T35 p2 adds {W} (p2:Plains#4)
+T35 taps: p2:Mountain#2
+T35 p2 adds {R} (p2:Mountain#2)
+T35 resolves: p2:Blinding Mage's ability
+T35 p2's unspent {W}{W}{W}{R}{R}{R} empties
+T35 p2 attack: nothing
+T35 moves: Planar Cleansing, p2's hand -> stack
+T35 p2 cancels casting Planar Cleansing
+T35 moves: Righteousness, p2's hand -> p2's graveyard
+T35 p2 discards Righteousness
+T36 turn 36 begins (p1)
+T36 untaps: p1:Forest#1
+T36 untaps: p1:Llanowar Elves
+T36 untaps: p1:Forest#2
+T36 untaps: p1:Island#1
+T36 untaps: p1:Island#2
+T36 untaps: p1:Island#3
+T36 untaps: p1:Forest#3
+T36 untaps: p1:Forest#4
+T36 untaps: p1:Merfolk Looter
+T36 untaps: p1:Island#4
+T36 untaps: p1:Forest#5
+T36 untaps: p1:Island#5
+T36 untaps: p1:Centaur Courser
+T36 taps: p1:Merfolk Looter
+T36 p1 activates p1:Merfolk Looter
+T36 taps: p1:Forest#4
+T36 p1 adds {G} (p1:Forest#4)
+T36 taps: p1:Island#1
+T36 p1 adds {U} (p1:Island#1)
+T36 moves: Ornithopter, p1's library -> p1's hand
+T36 p1 draws
+T36 moves: Essence Scatter, p1's hand -> p1's graveyard
+T36 p1 discards Essence Scatter
+T36 resolves: p1:Merfolk Looter's ability
+T36 taps: p1:Forest#5
+T36 p1 adds {G} (p1:Forest#5)
+T36 taps: p1:Island#3
+T36 p1 adds {U} (p1:Island#3)
+T36 taps: p1:Island#4
+T36 p1 adds {U} (p1:Island#4)
+T36 taps: p1:Island#5
+T36 p1 adds {U} (p1:Island#5)
+T36 p1's unspent {U}{U}{U}{U}{G}{G} empties
+T36 moves: Tome Scour, p1's library -> p1's hand
+T36 p1 draws
+T36 taps: p1:Forest#2
+T36 p1 adds {G} (p1:Forest#2)
+T36 taps: p1:Forest#1
+T36 p1 adds {G} (p1:Forest#1)
+T36 p1's unspent {G}{G} empties
+T36 moves: Ornithopter, p1's hand -> stack
+T36 taps: p1:Island#2
+T36 p1 adds {U} (p1:Island#2)
+T36 taps: p1:Forest#3
+T36 p1 adds {G} (p1:Forest#3)
+T36 p1 casts Ornithopter
+T36 taps: p1:Llanowar Elves
+T36 p1 adds {G} (p1:Llanowar Elves)
+T36 resolves: Ornithopter
+T36 moves: Ornithopter, stack -> battlefield
+T36 moves: Mind Spring, p1's hand -> stack
+T36 p1 cancels casting Mind Spring
+T36 moves: Elvish Piper, p1's hand -> stack
+T36 p1 cancels casting Elvish Piper
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Mind Spring, p1's hand -> stack
+T36 p1 cancels casting Mind Spring
+T36 moves: Llanowar Elves, p1's hand -> stack
+T36 p1 casts Llanowar Elves
+T36 moves: Cancel, p1's hand -> stack
+T36 p1 cancels casting Cancel
+T36 resolves: Llanowar Elves
+T36 moves: Llanowar Elves, stack -> battlefield
+T36 p1's unspent {U}{G} empties
+T36 taps: p1:Centaur Courser
+T36 p1 attack: p1:Centaur Courser -> p2
+T36 moves: Divine Verdict, p2's hand -> stack
+T36 p2 cancels casting Divine Verdict
+T36 moves: Divine Verdict, p2's hand -> stack
+T36 p2 cancels casting Divine Verdict
+T36 p2 block: nothing
+T36 combat damage: p1:Centaur Courser -> p2 3
+T36 p2 loses 3 life
+T36 moves: Divine Verdict, p2's hand -> stack
+T36 p2 cancels casting Divine Verdict
+T36 moves: Divine Verdict, p2's hand -> stack
+T36 p2 cancels casting Divine Verdict
+T36 moves: Nature's Spiral, p1's hand -> stack
+T36 p1 cancels casting Nature's Spiral
+T36 moves: Elvish Piper, p1's hand -> stack
+T36 p1 cancels casting Elvish Piper
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Nature's Spiral, p1's hand -> stack
+T36 p1 cancels casting Nature's Spiral
+T36 moves: Mind Spring, p1's hand -> stack
+T36 p1 cancels casting Mind Spring
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Tome Scour, p1's hand -> stack
+T36 p1 cancels casting Tome Scour
+T36 moves: Mind Spring, p1's hand -> stack
+T36 p1 cancels casting Mind Spring
+T36 moves: Elvish Piper, p1's hand -> stack
+T36 p1 cancels casting Elvish Piper
+T36 moves: Mind Spring, p1's hand -> stack
+T36 p1 cancels casting Mind Spring
+T36 moves: Mind Spring, p1's hand -> stack
+T36 p1 cancels casting Mind Spring
+T36 moves: Nature's Spiral, p1's hand -> stack
+T36 p1 cancels casting Nature's Spiral
+T37 turn 37 begins (p2)
+T37 untaps: p2:Plains#1
+T37 untaps: p2:Mountain#1
+T37 untaps: p2:Plains#2
+T37 untaps: p2:Mountain#2
+T37 untaps: p2:Plains#3
+T37 untaps: p2:Plains#4
+T37 untaps: p2:Blinding Mage
+T37 untaps: p2:Plains#5
+T37 untaps: p2:Mountain#3
+T37 taps: p2:Plains#2
+T37 p2 adds {W} (p2:Plains#2)
+T37 taps: p2:Mountain#3
+T37 p2 adds {R} (p2:Mountain#3)
+T37 p2's unspent {W}{R} empties
+T37 moves: Excommunicate, p2's library -> p2's hand
+T37 p2 draws
+T37 taps: p2:Plains#3
+T37 p2 adds {W} (p2:Plains#3)
+T37 moves: Excommunicate, p2's hand -> stack
+T37 taps: p2:Plains#5
+T37 p2 adds {W} (p2:Plains#5)
+T37 taps: p2:Plains#1
+T37 p2 adds {W} (p2:Plains#1)
+T37 taps: p2:Mountain#1
+T37 p2 adds {R} (p2:Mountain#1)
+T37 p2 casts Excommunicate
+T37 taps: p2:Plains#4
+T37 p2 adds {W} (p2:Plains#4)
+T37 taps: p2:Mountain#2
+T37 p2 adds {R} (p2:Mountain#2)
+T37 taps: p2:Blinding Mage
+T37 p2 activates p2:Blinding Mage
+T37 moves: Negate, p1's hand -> stack
+T37 p1 cancels casting Negate
+T37 resolves: p2:Blinding Mage's ability
+T37 moves: Llanowar Elves, battlefield -> p1's library
+T37 resolves: Excommunicate
+T37 moves: Excommunicate, stack -> p2's graveyard
+T37 moves: Raging Goblin, p2's hand -> stack
+T37 p2 cancels casting Raging Goblin
+T37 moves: Raging Goblin, p2's hand -> stack
+T37 p2 casts Raging Goblin
+T37 resolves: Raging Goblin
+T37 moves: Raging Goblin, stack -> battlefield
+T37 moves: Undead Slayer, p2's hand -> stack
+T37 p2 cancels casting Undead Slayer
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Undead Slayer, p2's hand -> stack
+T37 p2 cancels casting Undead Slayer
+T37 moves: Celestial Purge, p2's hand -> stack
+T37 p2 cancels casting Celestial Purge
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Planar Cleansing, p2's hand -> stack
+T37 p2 cancels casting Planar Cleansing
+T37 moves: Undead Slayer, p2's hand -> stack
+T37 p2 cancels casting Undead Slayer
+T37 moves: Undead Slayer, p2's hand -> stack
+T37 p2 cancels casting Undead Slayer
+T37 p2's unspent {R} empties
+T37 moves: Celestial Purge, p2's hand -> stack
+T37 p2 cancels casting Celestial Purge
+T37 p2 attack: nothing
+T37 moves: Celestial Purge, p2's hand -> stack
+T37 p2 cancels casting Celestial Purge
+T37 moves: Celestial Purge, p2's hand -> stack
+T37 p2 cancels casting Celestial Purge
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Celestial Purge, p2's hand -> stack
+T37 p2 cancels casting Celestial Purge
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Solemn Offering, p2's hand -> stack
+T37 p2 cancels casting Solemn Offering
+T37 moves: Celestial Purge, p2's hand -> stack
+T37 p2 cancels casting Celestial Purge
+T38 turn 38 begins (p1)
+T38 untaps: p1:Forest#1
+T38 untaps: p1:Llanowar Elves
+T38 untaps: p1:Forest#2
+T38 untaps: p1:Island#1
+T38 untaps: p1:Island#2
+T38 untaps: p1:Island#3
+T38 untaps: p1:Forest#3
+T38 untaps: p1:Forest#4
+T38 untaps: p1:Merfolk Looter
+T38 untaps: p1:Island#4
+T38 untaps: p1:Forest#5
+T38 untaps: p1:Island#5
+T38 untaps: p1:Centaur Courser
+T38 taps: p1:Island#3
+T38 p1 adds {U} (p1:Island#3)
+T38 taps: p1:Island#4
+T38 p1 adds {U} (p1:Island#4)
+T38 taps: p1:Merfolk Looter
+T38 p1 activates p1:Merfolk Looter
+T38 moves: Llanowar Elves, p1's library -> p1's hand
+T38 p1 draws
+T38 moves: Mind Spring, p1's hand -> p1's graveyard
+T38 p1 discards Mind Spring
+T38 resolves: p1:Merfolk Looter's ability
+T38 taps: p1:Forest#4
+T38 p1 adds {G} (p1:Forest#4)
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 p1's unspent {U}{U}{G} empties
+T38 moves: Divination, p1's library -> p1's hand
+T38 p1 draws
+T38 taps: p1:Forest#2
+T38 p1 adds {G} (p1:Forest#2)
+T38 taps: p1:Forest#5
+T38 p1 adds {G} (p1:Forest#5)
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 p1's unspent {G}{G} empties
+T38 taps: p1:Forest#1
+T38 p1 adds {G} (p1:Forest#1)
+T38 moves: Nature's Spiral, p1's hand -> stack
+T38 p1 cancels casting Nature's Spiral
+T38 taps: p1:Island#1
+T38 p1 adds {U} (p1:Island#1)
+T38 moves: Divination, p1's hand -> stack
+T38 taps: p1:Island#5
+T38 p1 adds {U} (p1:Island#5)
+T38 p1 casts Divination
+T38 taps: p1:Island#2
+T38 p1 adds {U} (p1:Island#2)
+T38 moves: Negate, p1's hand -> stack
+T38 taps: p1:Forest#3
+T38 p1 adds {G} (p1:Forest#3)
+T38 p1 casts Negate
+T38 taps: p1:Llanowar Elves
+T38 p1 adds {G} (p1:Llanowar Elves)
+T38 countered: Divination
+T38 moves: Divination, stack -> p1's graveyard
+T38 resolves: Negate
+T38 moves: Negate, stack -> p1's graveyard
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 p1's unspent {G} empties
+T38 taps: p1:Ornithopter#2
+T38 p1 attack: p1:Ornithopter#2 -> p2
+T38 p2 block: nothing
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 moves: Divine Verdict, p2's hand -> stack
+T38 p2 cancels casting Divine Verdict
+T38 moves: Tome Scour, p1's hand -> stack
+T38 p1 cancels casting Tome Scour
+T38 moves: Nature's Spiral, p1's hand -> stack
+T38 p1 cancels casting Nature's Spiral
+T38 moves: Tome Scour, p1's hand -> stack
+T38 p1 cancels casting Tome Scour
+T38 moves: Nature's Spiral, p1's hand -> stack
+T38 p1 cancels casting Nature's Spiral
+T38 moves: Nature's Spiral, p1's hand -> stack
+T38 p1 cancels casting Nature's Spiral
+T38 moves: Llanowar Elves, p1's hand -> stack
+T38 p1 cancels casting Llanowar Elves
+T38 moves: Nature's Spiral, p1's hand -> stack
+T38 p1 cancels casting Nature's Spiral
+T38 moves: Nature's Spiral, p1's hand -> stack
+T38 p1 cancels casting Nature's Spiral
+T38 moves: Llanowar Elves, p1's hand -> stack
+T38 p1 cancels casting Llanowar Elves
+T38 moves: Llanowar Elves, p1's hand -> stack
+T38 p1 cancels casting Llanowar Elves
+T38 moves: Llanowar Elves, p1's hand -> stack
+T38 p1 cancels casting Llanowar Elves
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T38 moves: Celestial Purge, p2's hand -> stack
+T38 p2 cancels casting Celestial Purge
+T39 turn 39 begins (p2)
+T39 untaps: p2:Plains#1
+T39 untaps: p2:Mountain#1
+T39 untaps: p2:Plains#2
+T39 untaps: p2:Mountain#2
+T39 untaps: p2:Plains#3
+T39 untaps: p2:Plains#4
+T39 untaps: p2:Blinding Mage
+T39 untaps: p2:Plains#5
+T39 untaps: p2:Mountain#3
+T39 moves: Celestial Purge, p2's hand -> stack
+T39 taps: p2:Mountain#1
+T39 p2 adds {R} (p2:Mountain#1)
+T39 taps: p2:Plains#5
+T39 p2 adds {W} (p2:Plains#5)
+T39 taps: p2:Plains#3
+T39 p2 adds {W} (p2:Plains#3)
+T39 p2 cancels casting Celestial Purge
+T39 taps: p2:Mountain#2
+T39 p2 adds {R} (p2:Mountain#2)
+T39 taps: p2:Mountain#3
+T39 p2 adds {R} (p2:Mountain#3)
+T39 taps: p2:Plains#3
+T39 p2 adds {W} (p2:Plains#3)
+T39 taps: p2:Mountain#1
+T39 p2 adds {R} (p2:Mountain#1)
+T39 p2 cancels activating p2:Blinding Mage
+T39 taps: p2:Plains#4
+T39 p2 adds {W} (p2:Plains#4)
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2's unspent {W}{W}{R}{R} empties
+T39 moves: Lava Axe, p2's library -> p2's hand
+T39 p2 draws
+T39 taps: p2:Plains#1
+T39 p2 adds {W} (p2:Plains#1)
+T39 taps: p2:Plains#2
+T39 p2 adds {W} (p2:Plains#2)
+T39 p2's unspent {W}{W} empties
+T39 taps: p2:Plains#5
+T39 p2 adds {W} (p2:Plains#5)
+T39 taps: p2:Mountain#1
+T39 p2 adds {R} (p2:Mountain#1)
+T39 p2's unspent {W}{R} empties
+T39 p2 attack: nothing
+T39 moves: Celestial Purge, p2's hand -> stack
+T39 p2 cancels casting Celestial Purge
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2 cancels activating p2:Blinding Mage
+T39 moves: Lava Axe, p2's hand -> stack
+T39 p2 cancels casting Lava Axe
+T39 moves: Lava Axe, p2's hand -> stack
+T39 p2 cancels casting Lava Axe
+T39 moves: Planar Cleansing, p2's hand -> stack
+T39 p2 cancels casting Planar Cleansing
+T39 moves: Undead Slayer, p2's hand -> stack
+T39 p2 cancels casting Undead Slayer
+T39 moves: Lava Axe, p2's hand -> stack
+T39 p2 cancels casting Lava Axe
+T39 moves: Celestial Purge, p2's hand -> stack
+T39 p2 cancels casting Celestial Purge
+T39 p2 cancels activating p2:Blinding Mage
+T39 moves: Celestial Purge, p2's hand -> stack
+T39 p2 cancels casting Celestial Purge
+T39 moves: Planar Cleansing, p2's hand -> stack
+T39 p2 cancels casting Planar Cleansing
+T39 moves: Celestial Purge, p2's hand -> stack
+T39 p2 cancels casting Celestial Purge
+T39 p2 cancels activating p2:Blinding Mage
+T39 p2 cancels activating p2:Blinding Mage
+T39 moves: Celestial Purge, p2's hand -> stack
+T39 p2 cancels casting Celestial Purge
+T40 turn 40 begins (p1)
+T40 untaps: p1:Forest#1
+T40 untaps: p1:Llanowar Elves
+T40 untaps: p1:Forest#2
+T40 untaps: p1:Island#1
+T40 untaps: p1:Island#2
+T40 untaps: p1:Island#3
+T40 untaps: p1:Forest#3
+T40 untaps: p1:Forest#4
+T40 untaps: p1:Merfolk Looter
+T40 untaps: p1:Island#4
+T40 untaps: p1:Forest#5
+T40 untaps: p1:Island#5
+T40 untaps: p1:Ornithopter#2
+T40 taps: p1:Island#3
+T40 p1 adds {U} (p1:Island#3)
+T40 taps: p1:Forest#1
+T40 p1 adds {G} (p1:Forest#1)
+T40 taps: p1:Forest#2
+T40 p1 adds {G} (p1:Forest#2)
+T40 taps: p1:Island#5
+T40 p1 adds {U} (p1:Island#5)
+T40 taps: p1:Island#2
+T40 p1 adds {U} (p1:Island#2)
+T40 taps: p1:Merfolk Looter
+T40 p1 activates p1:Merfolk Looter
+T40 taps: p1:Forest#5
+T40 p1 adds {G} (p1:Forest#5)
+T40 taps: p1:Forest#3
+T40 p1 adds {G} (p1:Forest#3)
+T40 taps: p1:Island#4
+T40 p1 adds {U} (p1:Island#4)
+T40 taps: p1:Llanowar Elves
+T40 p1 adds {G} (p1:Llanowar Elves)
+T40 moves: Island, p1's library -> p1's hand
+T40 p1 draws
+T40 moves: Llanowar Elves, p1's hand -> p1's graveyard
+T40 p1 discards Llanowar Elves
+T40 resolves: p1:Merfolk Looter's ability
+T40 taps: p1:Forest#4
+T40 p1 adds {G} (p1:Forest#4)
+T40 p2 cancels activating p2:Blinding Mage
+T40 p1's unspent {U}{U}{U}{U}{G}{G}{G}{G}{G}{G} empties
+T40 moves: Island, p1's library -> p1's hand
+T40 p1 draws
+T40 taps: p1:Island#1
+T40 p1 adds {U} (p1:Island#1)
+T40 p2 cancels activating p2:Blinding Mage
+T40 p1's unspent {U} empties
+T40 moves: Island, p1's hand -> battlefield
+T40 p1 plays p1:Island#6
+T40 moves: Elvish Piper, p1's hand -> stack
+T40 taps: p1:Island#6
+T40 p1 adds {U} (p1:Island#6)
+T40 p1 cancels casting Elvish Piper
+T40 p2 cancels activating p2:Blinding Mage
+T40 p2 cancels activating p2:Blinding Mage
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 taps: p1:Island#6
+T40 p1 adds {U} (p1:Island#6)
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 p2 cancels activating p2:Blinding Mage
+T40 p1's unspent {U} empties
+T40 taps: p1:Ornithopter#1
+T40 p1 attack: p1:Ornithopter#1 -> p2
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 p2 block: nothing
+T40 moves: Divine Verdict, p2's hand -> stack
+T40 p2 cancels casting Divine Verdict
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 p2 cancels activating p2:Blinding Mage
+T40 moves: Divine Verdict, p2's hand -> stack
+T40 p2 cancels casting Divine Verdict
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 moves: Celestial Purge, p2's hand -> stack
+T40 p2 cancels casting Celestial Purge
+T40 moves: Nature's Spiral, p1's hand -> stack
+T40 p1 cancels casting Nature's Spiral
+T40 p2 cancels activating p2:Blinding Mage
+T40 p2 cancels activating p2:Blinding Mage
+T40 p2 cancels activating p2:Blinding Mage
+T40 p2 cancels activating p2:Blinding Mage
+T41 turn 41 begins (p2)
+T41 untaps: p2:Plains#1
+T41 untaps: p2:Mountain#1
+T41 untaps: p2:Plains#2
+T41 untaps: p2:Mountain#2
+T41 untaps: p2:Plains#3
+T41 untaps: p2:Plains#4
+T41 untaps: p2:Plains#5
+T41 untaps: p2:Mountain#3
+T41 taps: p2:Plains#3
+T41 p2 adds {W} (p2:Plains#3)
+T41 taps: p2:Plains#1
+T41 p2 adds {W} (p2:Plains#1)
+T41 taps: p2:Mountain#1
+T41 p2 adds {R} (p2:Mountain#1)
+T41 taps: p2:Plains#4
+T41 p2 adds {W} (p2:Plains#4)
+T41 taps: p2:Plains#2
+T41 p2 adds {W} (p2:Plains#2)
+T41 taps: p2:Mountain#2
+T41 p2 adds {R} (p2:Mountain#2)
+T41 taps: p2:Blinding Mage
+T41 p2 activates p2:Blinding Mage
+T41 taps: p2:Plains#5
+T41 p2 adds {W} (p2:Plains#5)
+T41 taps: p2:Mountain#3
+T41 p2 adds {R} (p2:Mountain#3)
+T41 moves: Celestial Purge, p2's hand -> stack
+T41 p2 cancels casting Celestial Purge
+T41 resolves: p2:Blinding Mage's ability
+T41 p2's unspent {W}{W}{W}{W}{R}{R}{R} empties
+T41 moves: Mountain, p2's library -> p2's hand
+T41 p2 draws
+T41 moves: Celestial Purge, p2's hand -> stack
+T41 p2 cancels casting Celestial Purge
+T41 moves: Mountain, p2's hand -> battlefield
+T41 p2 plays p2:Mountain#4
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 taps: p2:Mountain#4
+T41 p2 adds {R} (p2:Mountain#4)
+T41 p2 cancels casting Undead Slayer
+T41 moves: Planar Cleansing, p2's hand -> stack
+T41 taps: p2:Mountain#4
+T41 p2 adds {R} (p2:Mountain#4)
+T41 p2 cancels casting Planar Cleansing
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 p2 cancels casting Undead Slayer
+T41 moves: Celestial Purge, p2's hand -> stack
+T41 p2 cancels casting Celestial Purge
+T41 moves: Lava Axe, p2's hand -> stack
+T41 p2 cancels casting Lava Axe
+T41 moves: Lava Axe, p2's hand -> stack
+T41 taps: p2:Mountain#4
+T41 p2 adds {R} (p2:Mountain#4)
+T41 p2 cancels casting Lava Axe
+T41 moves: Planar Cleansing, p2's hand -> stack
+T41 p2 cancels casting Planar Cleansing
+T41 moves: Lava Axe, p2's hand -> stack
+T41 p2 cancels casting Lava Axe
+T41 moves: Planar Cleansing, p2's hand -> stack
+T41 p2 cancels casting Planar Cleansing
+T41 taps: p2:Mountain#4
+T41 p2 adds {R} (p2:Mountain#4)
+T41 moves: Celestial Purge, p2's hand -> stack
+T41 p2 cancels casting Celestial Purge
+T41 p2's unspent {R} empties
+T41 taps: p2:Raging Goblin
+T41 p2 attack: p2:Raging Goblin -> p1
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 p1 block: p1:Ornithopter#2 -> p2:Raging Goblin, p1:Centaur Courser -> p2:Raging Goblin
+T41 moves: Righteousness, p2's hand -> stack
+T41 p2 cancels casting Righteousness
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Righteousness, p2's hand -> stack
+T41 p2 cancels casting Righteousness
+T41 combat damage: p2:Raging Goblin -> p1:Centaur Courser 1
+T41 combat damage: p1:Centaur Courser -> p2:Raging Goblin 3
+T41 state-based actions: p2:Raging Goblin lethalDamage
+T41 destroyed: p2:Raging Goblin
+T41 moves: Raging Goblin, battlefield -> p2's graveyard
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Divine Verdict, p2's hand -> stack
+T41 p2 cancels casting Divine Verdict
+T41 moves: Righteousness, p2's hand -> stack
+T41 p2 cancels casting Righteousness
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 p2 cancels casting Undead Slayer
+T41 moves: Planar Cleansing, p2's hand -> stack
+T41 p2 cancels casting Planar Cleansing
+T41 moves: Lava Axe, p2's hand -> stack
+T41 p2 cancels casting Lava Axe
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 p2 cancels casting Undead Slayer
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 p2 cancels casting Undead Slayer
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 p2 cancels casting Undead Slayer
+T41 moves: Undead Slayer, p2's hand -> stack
+T41 p2 cancels casting Undead Slayer
+T41 damage removed: p1:Centaur Courser (1)
+T42 turn 42 begins (p1)
+T42 untaps: p1:Forest#1
+T42 untaps: p1:Llanowar Elves
+T42 untaps: p1:Forest#2
+T42 untaps: p1:Island#1
+T42 untaps: p1:Island#2
+T42 untaps: p1:Island#3
+T42 untaps: p1:Forest#3
+T42 untaps: p1:Forest#4
+T42 untaps: p1:Merfolk Looter
+T42 untaps: p1:Island#4
+T42 untaps: p1:Forest#5
+T42 untaps: p1:Island#5
+T42 untaps: p1:Ornithopter#1
+T42 untaps: p1:Island#6
+T42 taps: p1:Island#3
+T42 p1 adds {U} (p1:Island#3)
+T42 taps: p1:Island#5
+T42 p1 adds {U} (p1:Island#5)
+T42 taps: p1:Island#4
+T42 p1 adds {U} (p1:Island#4)
+T42 taps: p1:Island#6
+T42 p1 adds {U} (p1:Island#6)
+T42 taps: p1:Island#2
+T42 p1 adds {U} (p1:Island#2)
+T42 taps: p1:Forest#2
+T42 p1 adds {G} (p1:Forest#2)
+T42 taps: p1:Merfolk Looter
+T42 p1 activates p1:Merfolk Looter
+T42 taps: p1:Forest#3
+T42 p1 adds {G} (p1:Forest#3)
+T42 taps: p1:Forest#4
+T42 p1 adds {G} (p1:Forest#4)
+T42 taps: p1:Forest#1
+T42 p1 adds {G} (p1:Forest#1)
+T42 moves: Forest, p1's library -> p1's hand
+T42 p1 draws
+T42 moves: Cancel, p1's hand -> p1's graveyard
+T42 p1 discards Cancel
+T42 resolves: p1:Merfolk Looter's ability
+T42 taps: p1:Forest#5
+T42 p1 adds {G} (p1:Forest#5)
+T42 taps: p1:Llanowar Elves
+T42 p1 adds {G} (p1:Llanowar Elves)
+T42 p1's unspent {U}{U}{U}{U}{U}{G}{G}{G}{G}{G}{G} empties
+T42 moves: Giant Spider, p1's library -> p1's hand
+T42 p1 draws
+T42 moves: Elvish Piper, p1's hand -> stack
+T42 p1 cancels casting Elvish Piper
+T42 moves: Island, p1's hand -> battlefield
+T42 p1 plays p1:Island#7
+T42 moves: Elvish Piper, p1's hand -> stack
+T42 taps: p1:Island#7
+T42 p1 adds {U} (p1:Island#7)
+T42 taps: p1:Island#1
+T42 p1 adds {U} (p1:Island#1)
+T42 p1 cancels casting Elvish Piper
+T42 moves: Tome Scour, p1's hand -> stack
+T42 taps: p1:Island#7
+T42 p1 adds {U} (p1:Island#7)
+T42 p1 casts Tome Scour
+T42 moves: Forest, p1's library -> p1's graveyard
+T42 moves: Giant Spider, p1's library -> p1's graveyard
+T42 moves: Island, p1's library -> p1's graveyard
+T42 moves: Forest, p1's library -> p1's graveyard
+T42 resolves: Tome Scour
+T42 moves: Tome Scour, stack -> p1's graveyard
+T42 moves: Nature's Spiral, p1's hand -> stack
+T42 p1 cancels casting Nature's Spiral
+T42 moves: Nature's Spiral, p1's hand -> stack
+T42 p1 cancels casting Nature's Spiral
+T42 moves: Nature's Spiral, p1's hand -> stack
+T42 p1 cancels casting Nature's Spiral
+T42 moves: Giant Spider, p1's hand -> stack
+T42 p1 cancels casting Giant Spider
+T42 p1 attack: nothing
+T42 moves: Giant Spider, p1's hand -> stack
+T42 p1 cancels casting Giant Spider
+T42 moves: Giant Spider, p1's hand -> stack
+T42 p1 cancels casting Giant Spider
+T43 turn 43 begins (p2)
+T43 untaps: p2:Plains#1
+T43 untaps: p2:Mountain#1
+T43 untaps: p2:Plains#2
+T43 untaps: p2:Mountain#2
+T43 untaps: p2:Plains#3
+T43 untaps: p2:Plains#4
+T43 untaps: p2:Blinding Mage
+T43 untaps: p2:Plains#5
+T43 untaps: p2:Mountain#3
+T43 untaps: p2:Mountain#4
+T43 taps: p2:Plains#2
+T43 p2 adds {W} (p2:Plains#2)
+T43 taps: p2:Plains#1
+T43 p2 adds {W} (p2:Plains#1)
+T43 taps: p2:Plains#5
+T43 p2 adds {W} (p2:Plains#5)
+T43 taps: p2:Mountain#2
+T43 p2 adds {R} (p2:Mountain#2)
+T43 taps: p2:Mountain#1
+T43 p2 adds {R} (p2:Mountain#1)
+T43 taps: p2:Mountain#3
+T43 p2 adds {R} (p2:Mountain#3)
+T43 taps: p2:Plains#4
+T43 p2 adds {W} (p2:Plains#4)
+T43 taps: p2:Plains#3
+T43 p2 adds {W} (p2:Plains#3)
+T43 taps: p2:Blinding Mage
+T43 p2 activates p2:Blinding Mage
+T43 taps: p2:Mountain#4
+T43 p2 adds {R} (p2:Mountain#4)
+T43 resolves: p2:Blinding Mage's ability
+T43 p2's unspent {W}{W}{W}{W}{R}{R}{R}{R} empties
+T43 moves: Plains, p2's library -> p2's hand
+T43 p2 draws
+T43 taps: p1:Island#1
+T43 p1 adds {U} (p1:Island#1)
+T43 p1's unspent {U} empties
+T43 moves: Plains, p2's hand -> battlefield
+T43 p2 plays p2:Plains#6
+T43 p2 attack: nothing
+T43 taps: p2:Plains#6
+T43 p2 adds {W} (p2:Plains#6)
+T43 p2's unspent {W} empties
+T43 moves: Undead Slayer, p2's hand -> stack
+T43 p2 cancels casting Undead Slayer
+T43 moves: Undead Slayer, p2's hand -> stack
+T43 p2 cancels casting Undead Slayer
+T43 moves: Planar Cleansing, p2's hand -> stack
+T43 p2 cancels casting Planar Cleansing
+T43 moves: Solemn Offering, p2's hand -> stack
+T43 p2 cancels casting Solemn Offering
+T44 turn 44 begins (p1)
+T44 untaps: p1:Forest#1
+T44 untaps: p1:Llanowar Elves
+T44 untaps: p1:Forest#2
+T44 untaps: p1:Island#1
+T44 untaps: p1:Island#2
+T44 untaps: p1:Island#3
+T44 untaps: p1:Forest#3
+T44 untaps: p1:Forest#4
+T44 untaps: p1:Merfolk Looter
+T44 untaps: p1:Island#4
+T44 untaps: p1:Forest#5
+T44 untaps: p1:Island#5
+T44 untaps: p1:Island#6
+T44 untaps: p1:Island#7
+T44 taps: p1:Island#1
+T44 p1 adds {U} (p1:Island#1)
+T44 taps: p1:Island#2
+T44 p1 adds {U} (p1:Island#2)
+T44 taps: p1:Merfolk Looter
+T44 p1 activates p1:Merfolk Looter
+T44 taps: p1:Island#3
+T44 p1 adds {U} (p1:Island#3)
+T44 taps: p1:Llanowar Elves
+T44 p1 adds {G} (p1:Llanowar Elves)
+T44 taps: p1:Forest#4
+T44 p1 adds {G} (p1:Forest#4)
+T44 taps: p1:Forest#5
+T44 p1 adds {G} (p1:Forest#5)
+T44 taps: p1:Forest#3
+T44 p1 adds {G} (p1:Forest#3)
+T44 taps: p1:Island#4
+T44 p1 adds {U} (p1:Island#4)
+T44 taps: p1:Forest#2
+T44 p1 adds {G} (p1:Forest#2)
+T44 moves: Forest, p1's hand -> p1's graveyard
+T44 p1 discards Forest
+T44 resolves: p1:Merfolk Looter's ability
+T44 state-based actions: p1 drewFromEmptyLibrary
+T44 p1 loses the game (drewFromEmptyLibrary)
+T44 game over: p2 wins

@@ -5,7 +5,7 @@
 
 import type { Attack, Block } from "./combat.ts";
 import type { ContinuousEffect } from "./effects.ts";
-import type { CardId, ObjectId, PlayerId } from "./ids.ts";
+import type { CardId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { ManaPool, ManaType } from "./mana.ts";
 import type { CardObject, Target } from "./objects.ts";
 import type { GameResult, LossReason } from "./result.ts";
@@ -103,6 +103,11 @@ export type GameEvent =
   | { type: "EFFECT_ENDED"; effect: ContinuousEffect }
   /** Damage removed from a permanent in the cleanup step (CR 514.2). */
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
+  /**
+   * Cards revealed to every player (CR 701.20a), by what they are only, in a fixed order: never their ids, which would
+   * tell when and how they got there (D-062). They stay where they are (CR 701.20b).
+   */
+  | { type: "CARDS_REVEALED"; from: ZoneRef; cards: OracleId[] }
   /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */
   | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId; cardId: CardId }
   /** State-based actions performed together as one event (CR 704.3); their results follow. */

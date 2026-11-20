@@ -46,6 +46,7 @@ function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDataba
     case "tap":
     case "counterObject":
     case "loseLife":
+    case "reveal":
     case "untap":
     case "addMana":
     case "draw":

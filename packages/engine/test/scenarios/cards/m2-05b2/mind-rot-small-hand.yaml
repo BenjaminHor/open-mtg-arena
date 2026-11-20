@@ -1,0 +1,18 @@
+name: Mind Rot on a hand of one card discards it, with nothing to choose
+rules: [CR 609.3, CR 402.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Mind Rot]
+    battlefield: [Swamp, Swamp, Swamp]
+  p2:
+    hand: [Forest]
+steps:
+  - p1 cast: Mind Rot
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.hand: []
+      p2.graveyard: [Forest]
+      pending: { player: p1, kind: priority }

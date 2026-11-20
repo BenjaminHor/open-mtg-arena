@@ -10,6 +10,7 @@
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { Target } from "../state/objects.ts";
+import type { ZoneRef } from "../state/zones.ts";
 import type { Destination } from "../zones/move-card.ts";
 
 /** `source` deals `amount` damage to `to`; `combat` for combat damage (CR 120.2a), which some abilities care about. */
@@ -35,6 +36,8 @@ export type SingleEvent =
   | { kind: "gainLife"; player: PlayerId; amount: number }
   /** A player loses life (CR 119.3), other than from damage, whose life loss is part of the damage event. */
   | { kind: "loseLife"; player: PlayerId; amount: number }
+  /** Cards are revealed to every player (CR 701.20a); they stay where they are (CR 701.20b). */
+  | { kind: "reveal"; from: ZoneRef; objects: ObjectId[] }
   /** A permanent becomes tapped (CR 701.26a). */
   | { kind: "tap"; object: ObjectId }
   /** A permanent becomes untapped (CR 701.26b). */

@@ -2,7 +2,7 @@
 
 The event pipeline (docs/architecture.md, "Effects, events, replacements, triggers"; D-056). Every game event goes
 through `happen`: moving a card, destroying, sacrificing, countering, dealing damage, gaining and losing life, tapping,
-untapping, adding mana, drawing, discarding, shuffling, playing a land. One path means replacement and prevention effects (CR 614–616, M2-08) and triggered
+untapping, adding mana, drawing, discarding, revealing, shuffling, playing a land. One path means replacement and prevention effects (CR 614–616, M2-08) and triggered
 abilities (CR 603, M2-07) each plug in once, and see every event.
 
 ## How an event happens

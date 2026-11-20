@@ -110,6 +110,8 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   draw: (e) => (e as { who: EffectSubject }).who,
   discardAtRandom: (e) => (e as { who: EffectSubject }).who,
   mill: (e) => (e as { who: EffectSubject }).who,
+  discard: (e) => (e as { who: EffectSubject }).who,
+  revealHand: (e) => (e as { who: EffectSubject }).who,
 };
 
 /**
@@ -121,7 +123,9 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   const targetKind = (s: EffectSubject) => (typeof s === "object" ? targets[s.target]?.kind : undefined);
   const playerOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
-    return s === "you" || s === "eachPlayer" || kind === "player" || kind === "playerOrPlaneswalker";
+    return (
+      s === "you" || s === "eachPlayer" || kind === "player" || kind === "opponent" || kind === "playerOrPlaneswalker"
+    );
   };
   const objectOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
@@ -134,6 +138,18 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     const who = PLAYER_SUBJECTS[effect.op];
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
+    // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
+    if (effect.op === "discard" && effect.who === "eachPlayer")
+      problems.push(`${where}: a chosen discard names one player, not each player`);
+    // A filter, or "you" choosing from another player's hand, would show or hint at a hidden hand's cards unless it was
+    // just revealed (D-062).
+    if (effect.op === "discard" && (effect.filter !== undefined || effect.chosenBy !== undefined)) {
+      const revealed = effects
+        .slice(0, effects.indexOf(effect))
+        .some((e) => e.op === "revealHand" && JSON.stringify(e.who) === JSON.stringify(effect.who));
+      if (!revealed)
+        problems.push(`${where}: a discard with a filter or chosen by "you" must follow revealing that hand`);
+    }
   }
   return problems;
 }

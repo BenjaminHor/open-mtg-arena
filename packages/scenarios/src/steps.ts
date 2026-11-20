@@ -18,7 +18,16 @@ export type { Game } from "./apply.ts";
 import { allPass } from "./all-pass.ts";
 import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { combatAction } from "./combat-steps.ts";
-import { abilityNamed, cardIn, cardNamed, isHandCard, paymentFrom, permanentNamed, targetNamed } from "./lookups.ts";
+import {
+  abilityNamed,
+  cardIn,
+  cardNamed,
+  chooseCardsAnswer,
+  isHandCard,
+  paymentFrom,
+  permanentNamed,
+  targetNamed,
+} from "./lookups.ts";
 import { paymentActions, stackAnswer, targetsAndPayment, unusedListed } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
@@ -247,6 +256,8 @@ function answerFor(
       if (value === "cancel") return { kind: "cancelCast" };
       return { kind: "payMana", payment: paymentFrom(value) };
     }
+    case "chooseCards":
+      return chooseCardsAnswer(state, text, cards);
     case "declareAttackers":
     case "declareBlockers":
     case "assignDamage":

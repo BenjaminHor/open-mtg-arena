@@ -1,0 +1,14 @@
+name: Merfolk Looter with an empty library still discards, and its controller loses for the draw
+rules: [CR 121.4, CR 704.5b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Forest]
+    library: []
+    battlefield: [Merfolk Looter]
+steps:
+  - p1 activate: Merfolk Looter
+  - all pass: once
+  - expect:
+      p1.graveyard: [Forest]
+      winner: p2

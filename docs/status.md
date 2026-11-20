@@ -78,15 +78,54 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       questions). A 300-game fuzz found a false alarm in the leak check (a card drawn and discarded in one action
       looked hidden from its own drawer); the check now counts it as seen, with a test. The draw-several container
       (CR 121.2a) moves to M2-08.
-    - M2-05b2, choices at resolution (now; first profile a slow fuzz seed, then the plan reviewed): Merfolk Looter, Mind Rot, Duress, Ponder, Fabricate,
-      Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Haunting Echoes, Elvish Piper. Constraints from the advisor:
-      a re-queued effect must run before the work behind it (test first); nothing happens before all answers are in
-      (no doubled reveal or move); one card per answer, as `discardToHandSize`; always a legal answer (counts clamped,
-      a search may find nothing, check CR 701.23 for "a card"); the chooser isn't always the controller; the cards a
-      decision shows go on the decision, with visibility from one function shared by `playerView`, `eventsFor` and the
-      fuzz leak check, and a two-worlds test for Haunting Echoes; check whether "put onto the battlefield tapped"
-      becomes tapped; Rampant Growth isn't a land play; Birds of Paradise's choice inside a mana ability during payment
-      (M2-05c) can't use `waitFor` there. The slow fuzz is profiled (Known issues; D-061 for the picker, its own PR).
+    - M2-05b2, choices at resolution (now), split in two. Plan (2026-11-20), rules-reviewed and revised (D-062):
+      - Shared (built in b2a): an effect that needs choices stops with a `chooseCards` decision that keeps the effect
+        to resume; after the last answer it's queued once, with the cards chosen, in front of the rest of the
+        resolution; nothing happens until every answer is in (CR 608.2d), and answers emit no events.
+        One option per answer, plus `finishChoosing` once the minimum is reached; reaching the maximum finishes. The
+        chooser isn't always the controller (Mind Rot: the target player, CR 701.9b). Only its own answers are legal:
+        no mana abilities, no spells (CR 608.2g; Merfolk Looter's ruling). Counts are clamped (CR 609.3).
+      - Hidden information (D-062): options are stored in a fixed order (oracle id, then internal id) and answered by
+        position. `playerView` shows the decision's player each option's object id only if they can see that card
+        anyway (their own hand); any other option shows only what the card is. Other players see only that a choice
+        is being made. A choice over a hidden zone is always asked when the zone isn't empty, with min 0 where the CR
+        allows finding nothing (CR 701.23b; Elvish Piper's ruling): skipping it would tell the opponent the zone has
+        no such card. A `CARDS_REVEALED` event carries identities only, in the same order. `scrambleHidden` permutes
+        hidden ids instead of shifting them, and keeps the identity of cards a viewer is entitled to see; two-worlds
+        unit tests come first (Fabricate with and without an artifact, Piper declining against no creature, Tutor
+        finding A against B, Echoes leaving copies against none, Duress on a hand built in two orders).
+      - M2-05b2a, choices from a hand: done, merged (PR #29). 17 scenarios in `test/scenarios/cards/m2-05b2/`;
+        two-worlds, ordering and answer tests in `test/effects/choose-cards.test.ts` (checked to fail when the view
+        shows ids, the choice is skipped, or a whole hand is discarded in hand order); `scrambleHidden` permutes hidden
+        ids; the interim decks carry the four cards, four new golden games. The reviews found a leak this task brought
+        in (a whole-hand discard in hand order), fixed. M2-05b2b is next; first settle and review two design points:
+        a search shows the searcher the whole zone, privately, by identity (CR 701.23a), which also keeps Duress's
+        revealed hand in the view mid-choice; and where "found" / "exiled this way" live between effects (D-063 is one
+        condition on it). Two-worlds tests first (Fabricate with and without an artifact, Tutor finding A or B, Echoes
+        leaving copies or none, from the target's view).
+        Mind Rot (`discard`: the player discards N of their choice, CR 701.9a-b; a
+        smaller hand whole, CR 609.3), Merfolk Looter (draw, then discard, nothing between: CR 608.2g and its ruling;
+        CR 704.5b with an empty library), Duress (`target opponent`: a player target with an opponent restriction,
+        relative to the controller, checked on choosing and resolving, CR 115.1a, 115.2, 102.2, later: CR 102.3;
+        `revealHand` as its own effect, CR 701.20a-b; then `discard` chosen by "you" from the cards fitting
+        "noncreature, nonland", mandatory if any fits, nothing if none, CR 608.2d, 609.3), Elvish Piper
+        (`putOntoBattlefield` from hand, min 0; under the activator's control, CR 110.2a, 109.5; not cast; summoning
+        sick, CR 302.6; resolves with its source gone, CR 113.7a).
+      - M2-05b2b, libraries: an `ObjectFilter` supertype (basic, CR 205.4a) first. Search, move and shuffle are
+        separate steps passing a "found" result (CR 608.2c "this way"; Liliana Vess will need CR 701.24b), kept with
+        the resolving object until it finishes. Search: look at the whole zone (CR 701.23a); a stated quality may find
+        none (CR 701.23b), "a card" must be found if there's one (CR 701.23d); not revealed unless the card says so
+        (CR 701.23e). Fabricate, Diabolic Tutor, Rampant Growth and Terramorphic Expanse ("onto the battlefield
+        tapped": enters tapped as part of the move, CR 110.5b, so "becomes tapped" doesn't trigger, CR 603.2e; not a
+        land play, CR 305.4; "Sacrifice this land" as a cost part after {T}, CR 602.2, D-059; not a mana ability,
+        CR 605.1a). Ponder (look at the top three, CR 701.20e, put back in any order, CR 401.4, later: CR 701.20d;
+        "you may shuffle" yes/no; draw). Haunting Echoes (exile all but basic lands from the target's graveyard,
+        CR 406.3; one search for all those names, CR 701.23h, 201.2a, any number, its ruling; exile them; the target
+        shuffles). With nothing exiled there's no search at all, only the shuffle: the owner's ruling (D-063).
+      - Future impact: "whenever a player discards / searches / shuffles" (M2-07) read these events; a replacement on
+        a discard or move (M2-08) sees one event per instruction, the choices made; Telepathy and multiplayer reveals
+        need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
+        search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with

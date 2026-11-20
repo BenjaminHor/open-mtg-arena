@@ -39,6 +39,15 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         ...answer,
         answer: { kind: "mulliganBottom", object },
       }));
+    case "chooseCards": {
+      // Only answers: no spells and no other abilities during resolution (CR 608.2g).
+      const add = pending.options.flatMap((_, option): Action[] =>
+        pending.chosen.includes(option) ? [] : [{ ...answer, answer: { kind: "chooseCard", option } }],
+      );
+      const finish: Action[] =
+        pending.chosen.length >= pending.min ? [{ ...answer, answer: { kind: "finishChoosing" } }] : [];
+      return [...add, ...finish];
+    }
     case "discardToHandSize":
       return zoneList(state, { zone: "hand", player })
         .filter((object) => !pending.chosen.includes(object))

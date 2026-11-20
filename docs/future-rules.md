@@ -150,9 +150,14 @@ telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face dow
 cards (CR 701.20a), looking at cards (CR 701.20e) and scry (CR 701.22), and cards a player has seen
 in another's hand (a cancelled cast's card back in hand, CR 734.1) all change what `playerView` shows. *Watch out:*
 shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order. A move from a library to a public
-zone no longer shows the old object id or card id (D-054), but a "look at" or reveal in place would: give every
-shuffled card a new object id, as CR 701.20d already does for shuffled revealed cards. A reveal or "look at" must not
-show a hidden card's stored card id either: it may be one the other player saw before the card went into hiding. And
+zone no longer shows the old object id or card id (D-054), and since M2-05b2a a reveal and a choice's options show
+cards by identity only, in a fixed order, never by id or zone order (D-062): searches, "look at" and scry must do
+the same. So far a reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
+chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt from views mid-choice loses the rest of
+the revealed hand, though it stays revealed until the effect is done (CR 701.20a). That, Telepathy, and a third player
+who must see a revealed hand need revealed cards in the view, per object. Several players
+choosing at once for one effect choose in APNAP order, then it's done at once (CR 608.2e): `discard` names one
+player until a card needs more. And
 `moveCard` decides when to give a new card id by zone (`isHiddenZone`): face-down cards (CR 406.3, 708) need it to use
 the same per-object visibility as `canSee`. *Watch out:* `canSee` (`view/visibility.ts`) decides by zone; these need visibility
 per object, so `canSee` will take the object too. A partly known hand doesn't fit `hand: ObjectId[] | null`: another

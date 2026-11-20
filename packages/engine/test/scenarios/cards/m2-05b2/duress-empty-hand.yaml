@@ -1,0 +1,17 @@
+name: Duress on an empty hand reveals no cards and asks nothing
+rules: [CR 701.20a, CR 609.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Duress]
+    battlefield: [Swamp]
+  p2:
+    hand: []
+steps:
+  - p1 cast: Duress
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      events contains: [{ type: CARDS_REVEALED, cards: [] }]
+      pending: { player: p1, kind: priority }

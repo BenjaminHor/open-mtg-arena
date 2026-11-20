@@ -117,7 +117,8 @@ type PendingDecision = {
   kind: 'priority' | 'mulligan' | 'chooseTargets' | 'chooseMode' | 'payCost'
       | 'declareAttackers' | 'declareBlockers' | 'assignDamage'
       | 'orderTriggers' | 'orderReplacements' | 'chooseCards' | 'chooseYesNo' | ...
-  ...                        // fields for that kind: what is asked and its constraints (min/max, legal ids), as data.
+  ...                        // fields for that kind: what is asked and its constraints (min/max, legal ids or
+                             // option positions), as data.
 }                            // Priority stores none: legalActions() computes its options.
 
 type Action =
@@ -204,11 +205,14 @@ simple.
   the log. **The log is also the bug-report format.** One button in the app exports it, and a test
   can replay it exactly.
 - In the browser, the match host runs in a **Web Worker**. The UI sends actions and receives
-  `{ view, events, legalActions, pending }` messages. All of these are plain JSON.
+  `{ view, events, legalActions }` messages. All of these are plain JSON. The pending decision reaches the UI as
+  `view.decision` (a `ViewDecision`), never `state.pending`, which can hold the ids of another player's hidden cards
+  and the engine's bookkeeping (D-062).
 
 ## AI (`packages/ai`)
 
-- Input: a `PlayerView` plus the pending decision. Output: an action. It never reads full state.
+- Input: a `PlayerView`, with its pending decision in `view.decision`. Output: an action. It never reads full state or
+  `state.pending` (D-062).
 - v0 (M3): heuristics. Board evaluation, simple attack/block math, burn the best target,
   never make an illegal move.
 - Later: search (for example Monte Carlo tree search). Clone the state from a sampled "plausible

@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import type { CardDef, TargetSpec } from "@mtg/engine";
+import type { CardDef, Effect, TargetSpec } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
 import { parsePoolTxt } from "../src/pool-data.ts";
@@ -125,6 +125,27 @@ describe("definitionProblems", () => {
     expect(definitionProblems([def([{ op: "mill", who: "self", amount: 2 }])], [offering])).toStrictEqual([
       "Solemn Offering: mill is for players, not objects",
     ]);
+  });
+
+  it("reports a filtered or caster-chosen discard from a hand that wasn't revealed first (D-062)", () => {
+    const duress = POOL.cards.find((c) => c.name === "Duress");
+    if (duress === undefined) throw new Error("Duress missing from the pool");
+    const discard: Effect = {
+      op: "discard",
+      who: { target: 0 },
+      amount: 1,
+      chosenBy: "you",
+      filter: { notTypes: ["creature", "land"] },
+    };
+    const def = (effects: CardDef["spell"] extends infer S ? (S extends { effects: infer E } ? E : never) : never) => ({
+      name: "Duress",
+      oracle: duress.oracleText,
+      spell: { targets: [{ kind: "opponent" as const }], effects },
+    });
+    expect(definitionProblems([def([discard])], [duress])).toStrictEqual([
+      'Duress: a discard with a filter or chosen by "you" must follow revealing that hand',
+    ]);
+    expect(definitionProblems([def([{ op: "revealHand", who: { target: 0 } }, discard])], [duress])).toStrictEqual([]);
   });
 
   it("reports cards without definitions and definitions without cards", () => {

@@ -85,6 +85,8 @@ describe("discriminated unions", () => {
           return `blockers so far: ${decision.chosen.length}`;
         case "assignDamage":
           return `divide ${decision.amount}`;
+        case "chooseCards":
+          return `choose ${decision.min} to ${decision.max}`;
         default:
           return assertNever(decision);
       }
