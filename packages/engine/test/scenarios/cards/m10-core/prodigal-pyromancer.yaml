@@ -1,0 +1,25 @@
+name: Prodigal Pyromancer taps to deal 1 damage to any target, a creature or a player, but not while summoning sick
+rules: [CR 115.4, CR 302.6, CR 602.5a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Prodigal Pyromancer, { card: Prodigal Pyromancer, sick: true }]
+  p2:
+    battlefield: [Goblin Piker]
+steps:
+  - p1 activate: p1:Prodigal Pyromancer#2
+    targets: [p2]
+  - expect error: illegalAction
+  - p1 activate: p1:Prodigal Pyromancer
+    targets: [p2:Goblin Piker]
+  - all pass: once
+  - expect:
+      p2.graveyard: [Goblin Piker]
+  - all pass: until upkeep
+  - all pass: until main1
+  - all pass: until upkeep
+  - p1 activate: p1:Prodigal Pyromancer
+    targets: [p2]
+  - all pass: once
+  - expect:
+      p2.life: 19

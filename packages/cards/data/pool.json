@@ -35,6 +35,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Air Elemental",
+      "slug": "air-elemental",
+      "oracleId": "7744bae4-a8b7-44a5-9b4c-0048ad4cc448",
+      "layout": "normal",
+      "manaCost": "{3}{U}{U}",
+      "manaValue": 5,
+      "typeLine": "Creature — Elemental",
+      "oracleText": "Flying",
+      "power": "4",
+      "toughness": "4",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/2/a27efec0-40c4-48bc-a21a-3af28a6529b5.jpg?1783933018",
+        "large": "https://cards.scryfall.io/large/front/a/2/a27efec0-40c4-48bc-a21a-3af28a6529b5.jpg?1783933018",
+        "png": "https://cards.scryfall.io/png/front/a/2/a27efec0-40c4-48bc-a21a-3af28a6529b5.png?1783933018",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/2/a27efec0-40c4-48bc-a21a-3af28a6529b5.jpg?1783933018"
+      },
+      "artist": "Tomasz Jedruszek",
+      "set": "m20",
+      "collectorNumber": "44",
+      "scryfallUri": "https://scryfall.com/card/m20/44/air-elemental?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Angel's Mercy",
       "slug": "angels-mercy",
       "oracleId": "6b232bb7-d372-4174-a049-5f8d620810e6",
@@ -230,6 +260,34 @@
       "set": "fdn",
       "collectorNumber": "505",
       "scryfallUri": "https://scryfall.com/card/fdn/505/cancel?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Canyon Minotaur",
+      "slug": "canyon-minotaur",
+      "oracleId": "0c7163e6-f5a1-45a5-88c2-19dd9ef0a587",
+      "layout": "normal",
+      "manaCost": "{3}{R}",
+      "manaValue": 4,
+      "typeLine": "Creature — Minotaur Warrior",
+      "oracleText": "",
+      "power": "3",
+      "toughness": "3",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/4/3469d73e-6de1-4b91-83e3-b1714ac29268.jpg?1783939915",
+        "large": "https://cards.scryfall.io/large/front/3/4/3469d73e-6de1-4b91-83e3-b1714ac29268.jpg?1783939915",
+        "png": "https://cards.scryfall.io/png/front/3/4/3469d73e-6de1-4b91-83e3-b1714ac29268.png?1783939915",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/4/3469d73e-6de1-4b91-83e3-b1714ac29268.jpg?1783939915"
+      },
+      "artist": "Steve Prescott",
+      "set": "m14",
+      "collectorNumber": "131",
+      "scryfallUri": "https://scryfall.com/card/m14/131/canyon-minotaur?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -457,6 +515,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Disorient",
+      "slug": "disorient",
+      "oracleId": "33be346b-a232-4680-9b1b-a5eee57d2e75",
+      "layout": "normal",
+      "manaCost": "{3}{U}",
+      "manaValue": 4,
+      "typeLine": "Instant",
+      "oracleText": "Target creature gets -7/-0 until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/7/17965a3c-92b4-4f01-b076-e40c567eed33.jpg?1783942394",
+        "large": "https://cards.scryfall.io/large/front/1/7/17965a3c-92b4-4f01-b076-e40c567eed33.jpg?1783942394",
+        "png": "https://cards.scryfall.io/png/front/1/7/17965a3c-92b4-4f01-b076-e40c567eed33.png?1783942394",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/7/17965a3c-92b4-4f01-b076-e40c567eed33.jpg?1783942394"
+      },
+      "artist": "John Matson",
+      "set": "m10",
+      "collectorNumber": "48",
+      "scryfallUri": "https://scryfall.com/card/m10/48/disorient?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Divination",
       "slug": "divination",
       "oracleId": "273b339c-964b-4a18-8eb5-ceb8abcdfd9e",
@@ -653,6 +739,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Enormous Baloth",
+      "slug": "enormous-baloth",
+      "oracleId": "6189cd17-61aa-420a-ba53-5ddaf2bbc2ba",
+      "layout": "normal",
+      "manaCost": "{6}{G}",
+      "manaValue": 7,
+      "typeLine": "Creature — Beast",
+      "oracleText": "",
+      "power": "7",
+      "toughness": "7",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/4/54069e65-eef4-4fb8-bb0d-932a4c9889b3.jpg?1783942363",
+        "large": "https://cards.scryfall.io/large/front/5/4/54069e65-eef4-4fb8-bb0d-932a4c9889b3.jpg?1783942363",
+        "png": "https://cards.scryfall.io/png/front/5/4/54069e65-eef4-4fb8-bb0d-932a4c9889b3.png?1783942363",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/4/54069e65-eef4-4fb8-bb0d-932a4c9889b3.jpg?1783942363"
+      },
+      "artist": "Mark Tedin",
+      "set": "m10",
+      "collectorNumber": "180",
+      "scryfallUri": "https://scryfall.com/card/m10/180/enormous-baloth?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Essence Scatter",
       "slug": "essence-scatter",
       "oracleId": "46665089-aa3d-44c3-964d-6638dfbb5782",
@@ -734,6 +848,34 @@
       "set": "m10",
       "collectorNumber": "52",
       "scryfallUri": "https://scryfall.com/card/m10/52/fabricate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Fiery Hellhound",
+      "slug": "fiery-hellhound",
+      "oracleId": "ab71c8ba-c7ac-4ad2-a6db-29d903bbca78",
+      "layout": "normal",
+      "manaCost": "{1}{R}{R}",
+      "manaValue": 3,
+      "typeLine": "Creature — Elemental Dog",
+      "oracleText": "{R}: This creature gets +1/+0 until end of turn.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/9/8980efa5-bd21-4980-91a7-5e66528b1011.jpg?1783938297",
+        "large": "https://cards.scryfall.io/large/front/8/9/8980efa5-bd21-4980-91a7-5e66528b1011.jpg?1783938297",
+        "png": "https://cards.scryfall.io/png/front/8/9/8980efa5-bd21-4980-91a7-5e66528b1011.png?1783938297",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/9/8980efa5-bd21-4980-91a7-5e66528b1011.jpg?1783938297"
+      },
+      "artist": "Ted Galaday",
+      "set": "ori",
+      "collectorNumber": "284",
+      "scryfallUri": "https://scryfall.com/card/ori/284/fiery-hellhound?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -963,6 +1105,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Goblin Piker",
+      "slug": "goblin-piker",
+      "oracleId": "50608184-90d3-43d2-a221-deb186c78323",
+      "layout": "normal",
+      "manaCost": "{1}{R}",
+      "manaValue": 2,
+      "typeLine": "Creature — Goblin Warrior",
+      "oracleText": "",
+      "power": "2",
+      "toughness": "1",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/8/083ec3e7-950c-4e9d-aba5-02ed13d723f0.jpg?1783941070",
+        "large": "https://cards.scryfall.io/large/front/0/8/083ec3e7-950c-4e9d-aba5-02ed13d723f0.jpg?1783941070",
+        "png": "https://cards.scryfall.io/png/front/0/8/083ec3e7-950c-4e9d-aba5-02ed13d723f0.png?1783941070",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/8/083ec3e7-950c-4e9d-aba5-02ed13d723f0.jpg?1783941070"
+      },
+      "artist": "DiTerlizzi",
+      "set": "m12",
+      "collectorNumber": "141",
+      "scryfallUri": "https://scryfall.com/card/m12/141/goblin-piker?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Gray Ogre",
       "slug": "gray-ogre",
       "oracleId": "83c8a3a6-2e1a-4e26-8847-6d066f42d906",
@@ -1075,6 +1245,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Horned Turtle",
+      "slug": "horned-turtle",
+      "oracleId": "7a4ae76b-6241-4fa8-b239-5ec941a0e7df",
+      "layout": "normal",
+      "manaCost": "{2}{U}",
+      "manaValue": 3,
+      "typeLine": "Creature — Turtle",
+      "oracleText": "",
+      "power": "1",
+      "toughness": "4",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/a/faabd1d9-e1c0-4f5e-88d6-a8d480cf30ba.jpg?1783942393",
+        "large": "https://cards.scryfall.io/large/front/f/a/faabd1d9-e1c0-4f5e-88d6-a8d480cf30ba.jpg?1783942393",
+        "png": "https://cards.scryfall.io/png/front/f/a/faabd1d9-e1c0-4f5e-88d6-a8d480cf30ba.png?1783942393",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/a/faabd1d9-e1c0-4f5e-88d6-a8d480cf30ba.jpg?1783942393"
+      },
+      "artist": "DiTerlizzi",
+      "set": "m10",
+      "collectorNumber": "55",
+      "scryfallUri": "https://scryfall.com/card/m10/55/horned-turtle?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ignite Disorder",
       "slug": "ignite-disorder",
       "oracleId": "8f66317c-06fe-4320-9d98-eaedaef67c85",
@@ -1126,6 +1324,36 @@
       "set": "fra",
       "collectorNumber": "283",
       "scryfallUri": "https://scryfall.com/card/fra/283/island?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Kelinore Bat",
+      "slug": "kelinore-bat",
+      "oracleId": "552dcf9f-ff4a-4057-a93e-62f5527050c9",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Bat",
+      "oracleText": "Flying",
+      "power": "2",
+      "toughness": "1",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/4/542b3ec9-7800-4dea-bf39-b51a11b58339.jpg?1783942382",
+        "large": "https://cards.scryfall.io/large/front/5/4/542b3ec9-7800-4dea-bf39-b51a11b58339.jpg?1783942382",
+        "png": "https://cards.scryfall.io/png/front/5/4/542b3ec9-7800-4dea-bf39-b51a11b58339.png?1783942382",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/4/542b3ec9-7800-4dea-bf39-b51a11b58339.jpg?1783942382"
+      },
+      "artist": "Dave Kendall",
+      "set": "m10",
+      "collectorNumber": "101",
+      "scryfallUri": "https://scryfall.com/card/m10/101/kelinore-bat?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1185,6 +1413,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Lightning Elemental",
+      "slug": "lightning-elemental",
+      "oracleId": "58aee5cb-7b88-446e-ab10-9f83c10d7227",
+      "layout": "normal",
+      "manaCost": "{3}{R}",
+      "manaValue": 4,
+      "typeLine": "Creature — Elemental",
+      "oracleText": "Haste (This creature can attack and {T} as soon as it comes under your control.)",
+      "power": "4",
+      "toughness": "1",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Haste"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/1/e106b6af-a13c-42be-9368-9109795de517.jpg?1783941066",
+        "large": "https://cards.scryfall.io/large/front/e/1/e106b6af-a13c-42be-9368-9109795de517.jpg?1783941066",
+        "png": "https://cards.scryfall.io/png/front/e/1/e106b6af-a13c-42be-9368-9109795de517.png?1783941066",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/1/e106b6af-a13c-42be-9368-9109795de517.jpg?1783941066"
+      },
+      "artist": "Kev Walker",
+      "set": "m12",
+      "collectorNumber": "149",
+      "scryfallUri": "https://scryfall.com/card/m12/149/lightning-elemental?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Llanowar Elves",
       "slug": "llanowar-elves",
       "oracleId": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
@@ -1213,6 +1471,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Looming Shade",
+      "slug": "looming-shade",
+      "oracleId": "3ce8560d-dc68-4551-81c9-3a7b8d8da9a1",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Shade",
+      "oracleText": "{B}: This creature gets +1/+1 until end of turn.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/4/84a6703c-38d4-4c86-b5b0-ebfde81bb1bf.jpg?1783942381",
+        "large": "https://cards.scryfall.io/large/front/8/4/84a6703c-38d4-4c86-b5b0-ebfde81bb1bf.jpg?1783942381",
+        "png": "https://cards.scryfall.io/png/front/8/4/84a6703c-38d4-4c86-b5b0-ebfde81bb1bf.png?1783942381",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/4/84a6703c-38d4-4c86-b5b0-ebfde81bb1bf.jpg?1783942381"
+      },
+      "artist": "Kev Walker",
+      "set": "m10",
+      "collectorNumber": "103",
+      "scryfallUri": "https://scryfall.com/card/m10/103/looming-shade?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Merfolk Looter",
       "slug": "merfolk-looter",
       "oracleId": "67362406-b1ca-49e2-800d-9050bfe8742a",
@@ -1238,6 +1524,34 @@
       "set": "m12",
       "collectorNumber": "65",
       "scryfallUri": "https://scryfall.com/card/m12/65/merfolk-looter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Might of Oaks",
+      "slug": "might-of-oaks",
+      "oracleId": "8331f281-819b-4a0b-bad7-bd86dbedb877",
+      "layout": "normal",
+      "manaCost": "{3}{G}",
+      "manaValue": 4,
+      "typeLine": "Instant",
+      "oracleText": "Target creature gets +7/+7 until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/3/438a324b-cf3e-4a0f-95c4-cd548586f7e5.jpg?1783942360",
+        "large": "https://cards.scryfall.io/large/front/4/3/438a324b-cf3e-4a0f-95c4-cd548586f7e5.jpg?1783942360",
+        "png": "https://cards.scryfall.io/png/front/4/3/438a324b-cf3e-4a0f-95c4-cd548586f7e5.png?1783942360",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/3/438a324b-cf3e-4a0f-95c4-cd548586f7e5.jpg?1783942360"
+      },
+      "artist": "Jeremy Jarvis",
+      "set": "m10",
+      "collectorNumber": "192",
+      "scryfallUri": "https://scryfall.com/card/m10/192/might-of-oaks?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1545,6 +1859,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Prodigal Pyromancer",
+      "slug": "prodigal-pyromancer",
+      "oracleId": "29b3cb3e-aeb1-43eb-8095-9f7881aa34bd",
+      "layout": "normal",
+      "manaCost": "{2}{R}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Wizard",
+      "oracleText": "{T}: This creature deals 1 damage to any target.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/8/081dba98-2092-4225-8e9e-214fb9263b1c.jpg?1783941802",
+        "large": "https://cards.scryfall.io/large/front/0/8/081dba98-2092-4225-8e9e-214fb9263b1c.jpg?1783941802",
+        "png": "https://cards.scryfall.io/png/front/0/8/081dba98-2092-4225-8e9e-214fb9263b1c.png?1783941802",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/8/081dba98-2092-4225-8e9e-214fb9263b1c.jpg?1783941802"
+      },
+      "artist": "Jeremy Jarvis",
+      "set": "m11",
+      "collectorNumber": "152",
+      "scryfallUri": "https://scryfall.com/card/m11/152/prodigal-pyromancer?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Pyroclasm",
       "slug": "pyroclasm",
       "oracleId": "e4bcd4ea-e7cd-4471-8f3b-18bb51d3d70c",
@@ -1713,6 +2055,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Runeclaw Bear",
+      "slug": "runeclaw-bear",
+      "oracleId": "ec49dfcf-d16d-4621-af4b-4a6f09043221",
+      "layout": "normal",
+      "manaCost": "{1}{G}",
+      "manaValue": 2,
+      "typeLine": "Creature — Bear",
+      "oracleText": "",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/1/d1995238-79cc-4381-9595-71ef11ea1e36.jpg?1783939162",
+        "large": "https://cards.scryfall.io/large/front/d/1/d1995238-79cc-4381-9595-71ef11ea1e36.jpg?1783939162",
+        "png": "https://cards.scryfall.io/png/front/d/1/d1995238-79cc-4381-9595-71ef11ea1e36.png?1783939162",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/1/d1995238-79cc-4381-9595-71ef11ea1e36.jpg?1783939162"
+      },
+      "artist": "Jesper Ejsing",
+      "set": "m15",
+      "collectorNumber": "197",
+      "scryfallUri": "https://scryfall.com/card/m15/197/runeclaw-bear?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Seismic Strike",
       "slug": "seismic-strike",
       "oracleId": "3513d862-ef0d-4949-b33a-3fa9437cc444",
@@ -1769,6 +2139,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Shivan Dragon",
+      "slug": "shivan-dragon",
+      "oracleId": "711eea87-0fa3-46e0-a42b-fa5a86455f04",
+      "layout": "normal",
+      "manaCost": "{4}{R}{R}",
+      "manaValue": 6,
+      "typeLine": "Creature — Dragon",
+      "oracleText": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+      "power": "5",
+      "toughness": "5",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/0/702c4781-670b-49ae-b511-90ed119841b0.jpg?1787562519",
+        "large": "https://cards.scryfall.io/large/front/7/0/702c4781-670b-49ae-b511-90ed119841b0.jpg?1787562519",
+        "png": "https://cards.scryfall.io/png/front/7/0/702c4781-670b-49ae-b511-90ed119841b0.png?1787562519",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/0/702c4781-670b-49ae-b511-90ed119841b0.jpg?1787562519"
+      },
+      "artist": "Donato Giancola",
+      "set": "fdn",
+      "collectorNumber": "763",
+      "scryfallUri": "https://scryfall.com/card/fdn/763/shivan-dragon?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Shock",
       "slug": "shock",
       "oracleId": "a9d288b8-cdc1-4e55-a0c9-d6edfc95e65d",
@@ -1797,6 +2197,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Siege Mastodon",
+      "slug": "siege-mastodon",
+      "oracleId": "b4c404d8-9f2d-4429-ac36-449ae319abb7",
+      "layout": "normal",
+      "manaCost": "{4}{W}",
+      "manaValue": 5,
+      "typeLine": "Creature — Elephant",
+      "oracleText": "",
+      "power": "3",
+      "toughness": "5",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/1/71fd27a8-2de6-454f-8174-a60918bfe60e.jpg?1783932912",
+        "large": "https://cards.scryfall.io/large/front/7/1/71fd27a8-2de6-454f-8174-a60918bfe60e.jpg?1783932912",
+        "png": "https://cards.scryfall.io/png/front/7/1/71fd27a8-2de6-454f-8174-a60918bfe60e.png?1783932912",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/1/71fd27a8-2de6-454f-8174-a60918bfe60e.jpg?1783932912"
+      },
+      "artist": "Matt Cavotta",
+      "set": "m20",
+      "collectorNumber": "312",
+      "scryfallUri": "https://scryfall.com/card/m20/312/siege-mastodon?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Sign in Blood",
       "slug": "sign-in-blood",
       "oracleId": "c6207f6a-a624-4754-88f5-dbe700c841ff",
@@ -1822,6 +2250,64 @@
       "set": "m15",
       "collectorNumber": "114",
       "scryfallUri": "https://scryfall.com/card/m15/114/sign-in-blood?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Silvercoat Lion",
+      "slug": "silvercoat-lion",
+      "oracleId": "e3c0b11e-7340-4e0a-98b7-91b38439d4f9",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Creature — Cat",
+      "oracleText": "",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/d/9d33e866-cfd8-44e6-8070-df8df1ce965d.jpg?1783940511",
+        "large": "https://cards.scryfall.io/large/front/9/d/9d33e866-cfd8-44e6-8070-df8df1ce965d.jpg?1783940511",
+        "png": "https://cards.scryfall.io/png/front/9/d/9d33e866-cfd8-44e6-8070-df8df1ce965d.png?1783940511",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/d/9d33e866-cfd8-44e6-8070-df8df1ce965d.jpg?1783940511"
+      },
+      "artist": "Terese Nielsen",
+      "set": "m13",
+      "collectorNumber": "35",
+      "scryfallUri": "https://scryfall.com/card/m13/35/silvercoat-lion?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Snapping Drake",
+      "slug": "snapping-drake",
+      "oracleId": "e15060c3-3773-4548-8747-ff59dcf2b519",
+      "layout": "normal",
+      "manaCost": "{3}{U}",
+      "manaValue": 4,
+      "typeLine": "Creature — Drake",
+      "oracleText": "Flying (This creature can't be blocked except by creatures with flying or reach.)",
+      "power": "3",
+      "toughness": "2",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/f/ef46580c-a204-4b0b-8526-2310b1ca32b4.jpg?1783932908",
+        "large": "https://cards.scryfall.io/large/front/e/f/ef46580c-a204-4b0b-8526-2310b1ca32b4.jpg?1783932908",
+        "png": "https://cards.scryfall.io/png/front/e/f/ef46580c-a204-4b0b-8526-2310b1ca32b4.png?1783932908",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/f/ef46580c-a204-4b0b-8526-2310b1ca32b4.jpg?1783932908"
+      },
+      "artist": "Todd Lockwood",
+      "set": "m20",
+      "collectorNumber": "318",
+      "scryfallUri": "https://scryfall.com/card/m20/318/snapping-drake?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1878,6 +2364,36 @@
       "set": "m11",
       "collectorNumber": "197",
       "scryfallUri": "https://scryfall.com/card/m11/197/spined-wurm?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Stormfront Pegasus",
+      "slug": "stormfront-pegasus",
+      "oracleId": "b35c1b30-c1dc-489f-bd79-ad6566fb9389",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Creature — Pegasus",
+      "oracleText": "Flying",
+      "power": "2",
+      "toughness": "1",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/f/bf0ba2d2-09d5-4755-a18f-40cf19d88f25.jpg?1783941097",
+        "large": "https://cards.scryfall.io/large/front/b/f/bf0ba2d2-09d5-4755-a18f-40cf19d88f25.jpg?1783941097",
+        "png": "https://cards.scryfall.io/png/front/b/f/bf0ba2d2-09d5-4755-a18f-40cf19d88f25.png?1783941097",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/f/bf0ba2d2-09d5-4755-a18f-40cf19d88f25.jpg?1783941097"
+      },
+      "artist": "rk post",
+      "set": "m12",
+      "collectorNumber": "38",
+      "scryfallUri": "https://scryfall.com/card/m12/38/stormfront-pegasus?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -2161,6 +2677,64 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Warpath Ghoul",
+      "slug": "warpath-ghoul",
+      "oracleId": "17ae652c-b1c7-4dde-ae9e-50b9e286776c",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Zombie",
+      "oracleText": "",
+      "power": "3",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/4/94785274-fa79-47cc-9896-0f5f695abb21.jpg?1783941076",
+        "large": "https://cards.scryfall.io/large/front/9/4/94785274-fa79-47cc-9896-0f5f695abb21.jpg?1783941076",
+        "png": "https://cards.scryfall.io/png/front/9/4/94785274-fa79-47cc-9896-0f5f695abb21.png?1783941076",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/4/94785274-fa79-47cc-9896-0f5f695abb21.jpg?1783941076"
+      },
+      "artist": "rk post",
+      "set": "m12",
+      "collectorNumber": "117",
+      "scryfallUri": "https://scryfall.com/card/m12/117/warpath-ghoul?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Wind Drake",
+      "slug": "wind-drake",
+      "oracleId": "d6ffdaf0-ac08-4de9-bbce-2eab2f86bcca",
+      "layout": "normal",
+      "manaCost": "{2}{U}",
+      "manaValue": 3,
+      "typeLine": "Creature — Drake",
+      "oracleText": "Flying",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/e/5e227a63-abea-494e-9d66-6ff0a3da14ca.jpg?1783937211",
+        "large": "https://cards.scryfall.io/large/front/5/e/5e227a63-abea-494e-9d66-6ff0a3da14ca.jpg?1783937211",
+        "png": "https://cards.scryfall.io/png/front/5/e/5e227a63-abea-494e-9d66-6ff0a3da14ca.png?1783937211",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/e/5e227a63-abea-494e-9d66-6ff0a3da14ca.jpg?1783937211"
+      },
+      "artist": "Todd Lockwood",
+      "set": "kld",
+      "collectorNumber": "70",
+      "scryfallUri": "https://scryfall.com/card/kld/70/wind-drake?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Windstorm",
       "slug": "windstorm",
       "oracleId": "9969b822-2ead-4956-bac2-875ffd90e872",
@@ -2214,6 +2788,64 @@
       "set": "m10",
       "collectorNumber": "164",
       "scryfallUri": "https://scryfall.com/card/m10/164/yawning-fissure?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Zephyr Sprite",
+      "slug": "zephyr-sprite",
+      "oracleId": "11f77158-0240-4882-94a4-6bd6b3d94bcc",
+      "layout": "normal",
+      "manaCost": "{U}",
+      "manaValue": 1,
+      "typeLine": "Creature — Faerie",
+      "oracleText": "Flying",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/2/b256f91a-e797-41d7-82a6-3dcd691bbeed.jpg?1783942386",
+        "large": "https://cards.scryfall.io/large/front/b/2/b256f91a-e797-41d7-82a6-3dcd691bbeed.jpg?1783942386",
+        "png": "https://cards.scryfall.io/png/front/b/2/b256f91a-e797-41d7-82a6-3dcd691bbeed.png?1783942386",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/2/b256f91a-e797-41d7-82a6-3dcd691bbeed.jpg?1783942386"
+      },
+      "artist": "Kev Walker",
+      "set": "m10",
+      "collectorNumber": "82",
+      "scryfallUri": "https://scryfall.com/card/m10/82/zephyr-sprite?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Zombie Goliath",
+      "slug": "zombie-goliath",
+      "oracleId": "eadd88b6-e75a-4482-8382-561718121772",
+      "layout": "normal",
+      "manaCost": "{4}{B}",
+      "manaValue": 5,
+      "typeLine": "Creature — Zombie Giant",
+      "oracleText": "",
+      "power": "4",
+      "toughness": "3",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/6/8638edec-ddcd-4f50-9c2f-2e1668e3d175.jpg?1783940490",
+        "large": "https://cards.scryfall.io/large/front/8/6/8638edec-ddcd-4f50-9c2f-2e1668e3d175.jpg?1783940490",
+        "png": "https://cards.scryfall.io/png/front/8/6/8638edec-ddcd-4f50-9c2f-2e1668e3d175.png?1783940490",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/6/8638edec-ddcd-4f50-9c2f-2e1668e3d175.jpg?1783940490"
+      },
+      "artist": "E. M. Gist",
+      "set": "m13",
+      "collectorNumber": "119",
+      "scryfallUri": "https://scryfall.com/card/m13/119/zombie-goliath?utm_source=api",
       "printingChosenBy": "rule"
     }
   ]

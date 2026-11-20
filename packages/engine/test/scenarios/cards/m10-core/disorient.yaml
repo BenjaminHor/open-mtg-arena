@@ -1,0 +1,25 @@
+name: Disorient gives an attacker -7/-0, so with power 0 or less it deals no combat damage
+rules: [CR 510.1a, CR 613.4c]
+# Disorient's ruling: a creature with power 0 or less assigns no combat damage.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Enormous Baloth]
+  p2:
+    hand: [Disorient]
+    battlefield: [Island, Island, Island, Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Enormous Baloth]
+  - p1 pass: once
+  - p2 cast: Disorient
+    targets: [p1:Enormous Baloth]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Enormous Baloth.power: 0
+      p1:Enormous Baloth.toughness: 7
+  - all pass: until main2
+  - expect:
+      p2.life: 20
+      events lacks: [{ type: DAMAGE_DEALT }]

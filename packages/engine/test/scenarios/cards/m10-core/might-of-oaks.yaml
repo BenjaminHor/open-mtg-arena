@@ -1,0 +1,30 @@
+name: Might of Oaks gives +7/+7 until end of turn, so a blocked Runeclaw Bear survives and wins the fight
+rules: [CR 613.4c, CR 704.5g, CR 514.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Might of Oaks]
+    battlefield: [Runeclaw Bear, Forest, Forest, Forest, Forest]
+  p2:
+    battlefield: [Siege Mastodon]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Siege Mastodon: Runeclaw Bear }
+  - p1 cast: Might of Oaks
+    targets: [p1:Runeclaw Bear]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Runeclaw Bear.power: 9
+      p1:Runeclaw Bear.toughness: 9
+  - all pass: until main2
+  - expect:
+      p2.graveyard: [Siege Mastodon]
+      p1:Runeclaw Bear.damage: 3
+  - all pass: until upkeep
+  - expect:
+      p1.battlefield contains: [Runeclaw Bear]
+      p1:Runeclaw Bear.damage: 0
+      p1:Runeclaw Bear.power: 2
