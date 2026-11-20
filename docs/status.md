@@ -224,7 +224,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer
        (Open questions): their Magic 2010 cards come in M2-07, M2-08 and M2-12.
 
-  4. Now: M2-07 triggered abilities (CR 603; m2-rules-depth.md). 30 cards. Draft plan (2026-11-20), in three PRs:
+  4. Done: M2-07 triggered abilities (CR 603; m2-rules-depth.md), merged in PRs #39, #40, #41 and #44 (D-076–D-079,
+     D-084). The plan as it was made (2026-11-20), in three PRs:
      - Shared: `CardDef.triggers` (kept out of `abilities`, like `statics`, D-071), each a condition as data, targets,
        effects, "you may" and an "intervening if" (CR 603.4). Triggers are detected per batch in `checkTriggers` (see
        Settled), matched against result events; matches wait in `GameState.pendingTriggers`. `givePriority`, after state-based actions, puts
@@ -277,13 +278,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          kind answered (a cancel or take-back doesn't count), every event type agents can reach.
        - A test that every pool card is in a scenario, by whole name.
      - Golden action lines name the acting player (owner, D-083), done, merged (PR #43).
-     - Now: M2-07c2 (D-084). Done so far: engine, Dragon Whelp and Illusionary Servant, 15 scenarios in
+     - M2-07c2 (D-084): done, merged (PR #44). With it, M2-07 is done. Engine, Dragon Whelp and Illusionary Servant, 20 scenarios in
        `test/scenarios/cards/m2-07c2/`, unit tests (`test/game/activation-count.test.ts`: a removed activation still
        counts, the count starts again each turn; `test/triggers/delayed.test.ts`: a spell's delayed trigger, CR 603.7d,
        with the test-only instant Late Gift), definition checks, two matrix cells (Firebreathing × Triggers, Burn ×
        Triggers), golden logs with `targeted:` lines (additions only), pool-579 and pool-111 covering `trigger delayed`
        and `selfBecomesTarget`, docs. 152 cards; 144 of the 234 Magic 2010 cards. Not put in the M10 pair: each of its
-       slots carries a rule the pool needs. Fuzz (300 games), mutation pass (10 caught), bench, rules-judge and code-reviewer all done, fixes in. Next: the PR.
+       slots carries a rule the pool needs. Fuzz (300 games), mutation pass (10 caught), bench, rules-judge and code-reviewer all done, fixes in.
        Design (2026-11-20, with the advisor's review):
        - `GameState.delayedTriggers`: each `{ source, sourceOracleId, controller, ability }`, the ability a
          `TriggeredAbilityDef` (its `when` limited to the next "beginning of step" for now). Created by an effect
@@ -366,6 +367,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
        delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
        way; copies of abilities and "trigger an additional time" fit the pending list.
+  5. Now: M2-08 replacement and prevention effects (CR 614–616; m2-rules-depth.md). Next step: the plan, from the
+     pool cards `m2-pool.md` marks for M2-08, written here before any code.
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
