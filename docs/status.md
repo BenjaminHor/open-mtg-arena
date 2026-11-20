@@ -20,29 +20,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   cards marked T or C).
   - M2-04a Targeting: done, merged (PR #24, D-057). Righteousness, Ignite Disorder, Lava Axe, Elite Vanguard, Coral
     Merfolk, Plains, Island; interim decks white-red and blue-green.
-  - M2-04b Costs: built, in review (D-058). Fireball, Vampire Aristocrat and Swamp scripted with scenarios; unit tests
-    for X values legalActions doesn't list, the payment's event order, and sacrificing a target (CR 601.5); interim
-    deck black-red with a golden game. The rules-judge checked the plan; its corrections are in D-058. The plan as built:
-    - `{X}` is a mana symbol (`{ kind: "x" }`), worth 0 in the mana value off the stack (CR 202.3e). It's announced
-      first (CR 601.2b, 107.3a): an `announceX` decision, any non-negative integer accepted (CR 107.1b); `legalActions`
-      lists 0 up to the mana the player could make now minus the rest of the mana cost (an enumeration aid only, a
-      decision). Stored in `StackChoices.x`; effects read it through an amount of `"X"`.
-    - The total cost is computed once, after targets and division (CR 601.2f): the mana cost with X as generic mana,
-      plus increases, and locked into the `payMana` decision. Fireball's "costs {1} more for each target beyond the
-      first" is a `costIncrease` on its spell definition; it doesn't change its mana value (ruling).
-    - Fireball's "divided evenly, rounded down" is `divided: "evenly"`: worked out at resolution among the targets still
-      legal (rulings); more legal targets than X means 0 each, which is no damage (CR 120.8); zero targets resolves and
-      deals nothing.
-    - "Sacrifice a creature" is a `sacrifice` cost part with an `ObjectFilter`; only a permanent its controller
-      controls (CR 701.21a). After targets, the player chooses what to sacrifice (a `chooseSacrifice` decision, can
-      cancel); the sacrifice happens through `happen` (a new `sacrifice` event: the move to the graveyard, not a
-      destruction, so regeneration can't apply) when the payment is final, together with the mana, so a cancel never
-      undoes it (D-035). With no mana to pay, the cost is paid as soon as the sacrifice is chosen. Sacrificing Vampire
-      Aristocrat to itself is legal and its +2/+2 then does nothing (ruling, CR 400.7).
-    - Scenario runner: `x:` and `sacrifice:` options on `cast` and `activate`.
-    - Future impact: other additional costs (discard, tap an untapped creature, remove counters: Djinn of Wishes M2-10;
-      −X loyalty M2-13) are more cost parts chosen in the same step; cost reductions (later) join `costIncrease` in the
-      one total; Consume Spirit's "spend only black mana on X" waits for mana with restrictions.
+  - M2-04b Costs: done, merged (PR #25, D-058). Fireball, Vampire Aristocrat, Swamp; interim deck black-red.
   - Dropped from M2-04: paying mana outside casting. No Magic 2010 card pays mana while a spell resolves (checked).
   - Future impact: Aura targets (M2-12) use `permanent` targets with the same filters; triggered abilities (M2-07)
     choose targets with the same decisions as they're put on the stack (CR 603.3d); protection and shroud (M2-06)
