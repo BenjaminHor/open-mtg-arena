@@ -7,6 +7,36 @@
   },
   "cards": [
     {
+      "name": "Acidic Slime",
+      "slug": "acidic-slime",
+      "oracleId": "21f45043-5419-4019-8b6c-e5294bd5f549",
+      "layout": "normal",
+      "manaCost": "{3}{G}{G}",
+      "manaValue": 5,
+      "typeLine": "Creature — Ooze",
+      "oracleText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nWhen this creature enters, destroy target artifact, enchantment, or land.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Deathtouch"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/d/bd7bef5a-e0ab-46d3-a802-620bf2a7546f.jpg?1783940475",
+        "large": "https://cards.scryfall.io/large/front/b/d/bd7bef5a-e0ab-46d3-a802-620bf2a7546f.jpg?1783940475",
+        "png": "https://cards.scryfall.io/png/front/b/d/bd7bef5a-e0ab-46d3-a802-620bf2a7546f.png?1783940475",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/d/bd7bef5a-e0ab-46d3-a802-620bf2a7546f.jpg?1783940475"
+      },
+      "artist": "Karl Kopinski",
+      "set": "m13",
+      "collectorNumber": "159",
+      "scryfallUri": "https://scryfall.com/card/m13/159/acidic-slime?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Acolyte of Xathrid",
       "slug": "acolyte-of-xathrid",
       "oracleId": "62dca41b-58b0-45eb-ada7-568e80a2abec",
@@ -149,6 +179,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Ball Lightning",
+      "slug": "ball-lightning",
+      "oracleId": "7485cf25-eb41-4397-be13-7f0b8c10c70a",
+      "layout": "normal",
+      "manaCost": "{R}{R}{R}",
+      "manaValue": 3,
+      "typeLine": "Creature — Elemental",
+      "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nHaste (This creature can attack and {T} as soon as it comes under your control.)\nAt the beginning of the end step, sacrifice this creature.",
+      "power": "6",
+      "toughness": "1",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Haste",
+        "Trample"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/f/5f27dbf0-6818-40ea-832d-10686b4c2900.jpg?1783908925",
+        "large": "https://cards.scryfall.io/large/front/5/f/5f27dbf0-6818-40ea-832d-10686b4c2900.jpg?1783908925",
+        "png": "https://cards.scryfall.io/png/front/5/f/5f27dbf0-6818-40ea-832d-10686b4c2900.png?1783908925",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/f/5f27dbf0-6818-40ea-832d-10686b4c2900.jpg?1783908925"
+      },
+      "artist": "Trevor Claxton",
+      "set": "fdn",
+      "collectorNumber": "618",
+      "scryfallUri": "https://scryfall.com/card/fdn/618/ball-lightning?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Berserkers of Blood Ridge",
       "slug": "berserkers-of-blood-ridge",
       "oracleId": "9e8a2d53-3145-421a-aad1-8f2b2f6eaec8",
@@ -266,6 +327,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Borderland Ranger",
+      "slug": "borderland-ranger",
+      "oracleId": "ffe25048-0bd4-49b5-aecb-2b1b57fb8d8b",
+      "layout": "normal",
+      "manaCost": "{2}{G}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Scout Ranger",
+      "oracleText": "When this creature enters, you may search your library for a basic land card, reveal it, put it into your hand, then shuffle.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/f/8f067c26-c51d-44d0-a0af-106b5778f06a.jpg?1783940672",
+        "large": "https://cards.scryfall.io/large/front/8/f/8f067c26-c51d-44d0-a0af-106b5778f06a.jpg?1783940672",
+        "png": "https://cards.scryfall.io/png/front/8/f/8f067c26-c51d-44d0-a0af-106b5778f06a.png?1783940672",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/f/8f067c26-c51d-44d0-a0af-106b5778f06a.jpg?1783940672"
+      },
+      "artist": "Zoltan Boros",
+      "set": "avr",
+      "collectorNumber": "169",
+      "scryfallUri": "https://scryfall.com/card/avr/169/borderland-ranger?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Bountiful Harvest",
       "slug": "bountiful-harvest",
       "oracleId": "2dc94a25-4e35-4277-8eba-b8d0b293ff7b",
@@ -291,6 +380,34 @@
       "set": "m13",
       "collectorNumber": "163",
       "scryfallUri": "https://scryfall.com/card/m13/163/bountiful-harvest?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Bramble Creeper",
+      "slug": "bramble-creeper",
+      "oracleId": "33416979-2a3b-4184-818c-6a4e9ccb4580",
+      "layout": "normal",
+      "manaCost": "{4}{G}",
+      "manaValue": 5,
+      "typeLine": "Creature — Elemental",
+      "oracleText": "Whenever this creature attacks, it gets +5/+0 until end of turn.",
+      "power": "0",
+      "toughness": "3",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/4/74148e2e-ac21-414a-9b6c-410988d7fdd0.jpg?1783942365",
+        "large": "https://cards.scryfall.io/large/front/7/4/74148e2e-ac21-414a-9b6c-410988d7fdd0.jpg?1783942365",
+        "png": "https://cards.scryfall.io/png/front/7/4/74148e2e-ac21-414a-9b6c-410988d7fdd0.png?1783942365",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/4/74148e2e-ac21-414a-9b6c-410988d7fdd0.jpg?1783942365"
+      },
+      "artist": "Carl Critchlow",
+      "set": "m10",
+      "collectorNumber": "171",
+      "scryfallUri": "https://scryfall.com/card/m10/171/bramble-creeper?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -915,6 +1032,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Elvish Visionary",
+      "slug": "elvish-visionary",
+      "oracleId": "c6a3a882-a127-4590-93d7-679ef4313efe",
+      "layout": "normal",
+      "manaCost": "{1}{G}",
+      "manaValue": 2,
+      "typeLine": "Creature — Elf Shaman",
+      "oracleText": "When this creature enters, draw a card.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/6/367ef35a-528b-407c-8b8d-679109662bae.jpg?1783938323",
+        "large": "https://cards.scryfall.io/large/front/3/6/367ef35a-528b-407c-8b8d-679109662bae.jpg?1783938323",
+        "png": "https://cards.scryfall.io/png/front/3/6/367ef35a-528b-407c-8b8d-679109662bae.png?1783938323",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/6/367ef35a-528b-407c-8b8d-679109662bae.jpg?1783938323"
+      },
+      "artist": "D. Alexander Gregory",
+      "set": "ori",
+      "collectorNumber": "175",
+      "scryfallUri": "https://scryfall.com/card/ori/175/elvish-visionary?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Emerald Oryx",
       "slug": "emerald-oryx",
       "oracleId": "4c26c796-26ec-41f7-b9ca-58f4eb935c47",
@@ -1340,6 +1485,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Gravedigger",
+      "slug": "gravedigger",
+      "oracleId": "1a2030cc-d7ee-4059-b2d7-fb95ea8e267b",
+      "layout": "normal",
+      "manaCost": "{3}{B}",
+      "manaValue": 4,
+      "typeLine": "Creature — Zombie",
+      "oracleText": "When this creature enters, you may return target creature card from your graveyard to your hand.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/f/0fb714a0-e61b-4ccf-8de6-3a6bf87c8315.jpg?1783932993",
+        "large": "https://cards.scryfall.io/large/front/0/f/0fb714a0-e61b-4ccf-8de6-3a6bf87c8315.jpg?1783932993",
+        "png": "https://cards.scryfall.io/png/front/0/f/0fb714a0-e61b-4ccf-8de6-3a6bf87c8315.png?1783932993",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/f/0fb714a0-e61b-4ccf-8de6-3a6bf87c8315.jpg?1783932993"
+      },
+      "artist": "Tony Foti",
+      "set": "m20",
+      "collectorNumber": "103",
+      "scryfallUri": "https://scryfall.com/card/m20/103/gravedigger?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Gray Ogre",
       "slug": "gray-ogre",
       "oracleId": "83c8a3a6-2e1a-4e26-8847-6d066f42d906",
@@ -1508,6 +1681,62 @@
       "set": "m10",
       "collectorNumber": "55",
       "scryfallUri": "https://scryfall.com/card/m10/55/horned-turtle?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Howling Banshee",
+      "slug": "howling-banshee",
+      "oracleId": "6156bd59-d623-4612-8e86-b5228d5de750",
+      "layout": "normal",
+      "manaCost": "{2}{B}{B}",
+      "manaValue": 4,
+      "typeLine": "Creature — Spirit",
+      "oracleText": "Flying\nWhen this creature enters, each player loses 3 life.",
+      "power": "3",
+      "toughness": "3",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/2/e2d40f1e-bb2f-4de2-8481-c11eb5130fa1.jpg?1783941816",
+        "large": "https://cards.scryfall.io/large/front/e/2/e2d40f1e-bb2f-4de2-8481-c11eb5130fa1.jpg?1783941816",
+        "png": "https://cards.scryfall.io/png/front/e/2/e2d40f1e-bb2f-4de2-8481-c11eb5130fa1.png?1783941816",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/2/e2d40f1e-bb2f-4de2-8481-c11eb5130fa1.jpg?1783941816"
+      },
+      "artist": "Andrew Robinson",
+      "set": "m11",
+      "collectorNumber": "100",
+      "scryfallUri": "https://scryfall.com/card/m11/100/howling-banshee?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Howling Mine",
+      "slug": "howling-mine",
+      "oracleId": "d26b27db-a567-4631-b4b6-7294222fbdd1",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact",
+      "oracleText": "At the beginning of each player's draw step, if this artifact is untapped, that player draws an additional card.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/8/b87c9191-1408-4aca-9061-bfb5b101c3ad.jpg?1783942356",
+        "large": "https://cards.scryfall.io/large/front/b/8/b87c9191-1408-4aca-9061-bfb5b101c3ad.jpg?1783942356",
+        "png": "https://cards.scryfall.io/png/front/b/8/b87c9191-1408-4aca-9061-bfb5b101c3ad.png?1783942356",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/8/b87c9191-1408-4aca-9061-bfb5b101c3ad.jpg?1783942356"
+      },
+      "artist": "Ralph Horsley",
+      "set": "m10",
+      "collectorNumber": "212",
+      "scryfallUri": "https://scryfall.com/card/m10/212/howling-mine?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -2552,6 +2781,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Sage Owl",
+      "slug": "sage-owl",
+      "oracleId": "d47fc902-51f7-4ad1-8ee4-c973e32192b8",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Creature — Bird",
+      "oracleText": "Flying\nWhen this creature enters, look at the top four cards of your library, then put them back in any order.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/4/d48af662-25a3-46a0-a48c-ba8cc417490c.jpg?1783942390",
+        "large": "https://cards.scryfall.io/large/front/d/4/d48af662-25a3-46a0-a48c-ba8cc417490c.jpg?1783942390",
+        "png": "https://cards.scryfall.io/png/front/d/4/d48af662-25a3-46a0-a48c-ba8cc417490c.png?1783942390",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/4/d48af662-25a3-46a0-a48c-ba8cc417490c.jpg?1783942390"
+      },
+      "artist": "Cyril Van Der Haegen",
+      "set": "m10",
+      "collectorNumber": "69",
+      "scryfallUri": "https://scryfall.com/card/m10/69/sage-owl?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Seismic Strike",
       "slug": "seismic-strike",
       "oracleId": "3513d862-ef0d-4949-b33a-3fa9437cc444",
@@ -2836,6 +3095,62 @@
       "set": "m15",
       "collectorNumber": "33",
       "scryfallUri": "https://scryfall.com/card/m15/33/solemn-offering?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Soul Warden",
+      "slug": "soul-warden",
+      "oracleId": "f3fad295-1af2-4ecc-8546-b121ad6be27b",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Creature — Human Cleric",
+      "oracleText": "Whenever another creature enters, you gain 1 life.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/b/6bbdd169-958f-42df-812d-f75fbed9576f.jpg?1783942397",
+        "large": "https://cards.scryfall.io/large/front/6/b/6bbdd169-958f-42df-812d-f75fbed9576f.jpg?1783942397",
+        "png": "https://cards.scryfall.io/png/front/6/b/6bbdd169-958f-42df-812d-f75fbed9576f.png?1783942397",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/b/6bbdd169-958f-42df-812d-f75fbed9576f.jpg?1783942397"
+      },
+      "artist": "Randy Gallegos",
+      "set": "m10",
+      "collectorNumber": "34",
+      "scryfallUri": "https://scryfall.com/card/m10/34/soul-warden?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Sparkmage Apprentice",
+      "slug": "sparkmage-apprentice",
+      "oracleId": "69003cbc-8e5a-41dc-ac53-18f6e776217b",
+      "layout": "normal",
+      "manaCost": "{1}{R}",
+      "manaValue": 2,
+      "typeLine": "Creature — Human Wizard",
+      "oracleText": "When this creature enters, it deals 1 damage to any target.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/3/8344ac6f-8b79-440a-ad4d-3bd24b4d3229.jpg?1783942369",
+        "large": "https://cards.scryfall.io/large/front/8/3/8344ac6f-8b79-440a-ad4d-3bd24b4d3229.jpg?1783942369",
+        "png": "https://cards.scryfall.io/png/front/8/3/8344ac6f-8b79-440a-ad4d-3bd24b4d3229.png?1783942369",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/3/8344ac6f-8b79-440a-ad4d-3bd24b4d3229.jpg?1783942369"
+      },
+      "artist": "Jaime Jones",
+      "set": "m10",
+      "collectorNumber": "158",
+      "scryfallUri": "https://scryfall.com/card/m10/158/sparkmage-apprentice?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

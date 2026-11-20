@@ -5,6 +5,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 import { perform } from "./perform.ts";
 import type { ProposedEvent, SingleEvent } from "./proposed.ts";
 
@@ -60,9 +61,9 @@ function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDataba
 
 /**
  * Triggered abilities that the events trigger wait to be put on the stack the next time a player would receive
- * priority (later: CR 603.2, 603.3). `before` is the state before the events, for abilities that look back in time
- * (later: CR 603.10). None exist yet.
+ * priority (CR 603.2, 603.3). `before` is the state before the events, for abilities that look back in time
+ * (later: CR 603.10).
  */
-function checkTriggers(_before: GameState, after: Progress, _cards: CardDatabase): Progress {
-  return after;
+function checkTriggers(before: GameState, after: Progress, cards: CardDatabase): Progress {
+  return { state: detectTriggers(before, after.state, after.events, cards), events: after.events };
 }

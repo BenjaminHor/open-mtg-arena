@@ -1,0 +1,19 @@
+name: Acidic Slime's trigger destroys an artifact, enchantment or land; a creature isn't a legal target
+rules: [CR 603.6a, CR 701.8a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest, Forest, Forest]
+    hand: [Acidic Slime]
+  p2:
+    battlefield: [Runeclaw Bear, Rod of Ruin]
+steps:
+  - p1 cast: Acidic Slime
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Runeclaw Bear
+  - expect error: illegalAction
+  - p1 choose: p2:Rod of Ruin
+  - all pass: once
+  - expect:
+      p2.graveyard: [Rod of Ruin]

@@ -1,0 +1,19 @@
+name: Sage Owl's trigger looks at the top four cards and puts them back in any order
+rules: [CR 603.6a, CR 401.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Sage Owl]
+    library: [Forest, Island, Mountain, Swamp, Plains]
+steps:
+  - p1 cast: Sage Owl
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - p1 choose: Swamp
+  - p1 choose: Mountain
+  - p1 choose: Island
+  - p1 choose: Forest
+  - expect:
+      p1.library: [Swamp, Mountain, Island, Forest, Plains]

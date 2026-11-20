@@ -6,6 +6,7 @@
 
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { Share, Target } from "./objects.ts";
+import type { TriggerEvent } from "./triggers.ts";
 
 /** How long an effect lasts (CR 611.2a). "Until end of turn" ends in the cleanup step (CR 514.2). */
 export type Duration = "endOfTurn";
@@ -57,4 +58,6 @@ export type EffectContext = {
   division: Share[];
   /** The value announced for X, or null when there is none (CR 107.3a). */
   x: number | null;
+  /** For a triggered ability, what it knows of its triggering event ("that player", CR 603.2); otherwise null. */
+  trigger: TriggerEvent | null;
 };

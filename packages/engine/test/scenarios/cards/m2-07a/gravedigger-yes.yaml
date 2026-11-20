@@ -1,0 +1,19 @@
+name: Gravedigger's "you may" is asked as its trigger resolves; yes returns the target to hand
+rules: [CR 603.5, CR 603.3d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, Swamp, Swamp, Swamp]
+    hand: [Gravedigger]
+    graveyard: [Runeclaw Bear]
+steps:
+  - p1 cast: Gravedigger
+    pay: auto
+  - all pass: once
+  - p1 choose: graveyard:p1:Runeclaw Bear
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseYesNo }
+  - p1 choose: yes
+  - expect:
+      p1.hand: [Runeclaw Bear]

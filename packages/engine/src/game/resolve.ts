@@ -9,6 +9,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
+import { holds } from "../triggers/detect.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
@@ -27,18 +28,20 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
   // illegal, it doesn't resolve; otherwise its effects skip the illegal ones.
   const { chosen, legal } = stillLegalTargets(state, top, cards);
   const allTargetsIllegal = chosen.some((group) => group.length > 0) && legal.every((group) => group.length === 0);
-  const items: WorkItem[] = allTargetsIllegal
+  // A triggered ability's "intervening if" is checked again: false, it's removed and does nothing (CR 608.2a, 603.4).
+  const removed = allTargetsIllegal || !interveningIfHolds(state, top, cards);
+  const items: WorkItem[] = removed
     ? [
         { kind: "doesNotResolve", object: top },
         { kind: "givePriority", player: active },
       ]
     : [
-        ...effectWork(state, top, legal, cards),
+        ...optionally(state, top, effectWork(state, top, legal, cards), cards),
         { kind: "finishResolving", object: top },
         { kind: "givePriority", player: active },
       ];
   // "This way" (CR 608.2c) starts empty for each resolution; it's cleared as the resolution ends.
-  const resolution = allTargetsIllegal ? null : { object: top, found: [], exiled: [] };
+  const resolution = removed ? null : { object: top, found: [], exiled: [] };
   return { state: queueWork({ ...state, passesInSuccession: 0, resolution }, ...items), events: [] };
 }
 
@@ -81,7 +84,8 @@ function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: Ca
   const stillLegal = divided === null ? [] : (legal[divided.instance] ?? []);
   const division = (divided?.shares ?? []).filter((share) => stillLegal.some((t) => sameTarget(t, share.target)));
   const x = obj.choices?.x ?? null;
-  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division, x };
+  const trigger = obj.kind === "ability" ? obj.trigger : null;
+  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division, x, trigger };
   return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context, chosen: null }));
 }
 
@@ -132,4 +136,24 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
 /** The state with no "this way" record (CR 608.2c): the resolution is over. */
 function withoutResolution(state: GameState): GameState {
   return state.resolution === null ? state : { ...state, resolution: null };
+}
+
+/**
+ * A triggered ability's "you may" (CR 603.5): its controller chooses as it resolves, after its targets were checked
+ * (CR 608.2b), whether its effects happen.
+ */
+function optionally(state: GameState, id: ObjectId, effects: WorkItem[], cards: CardDatabase): WorkItem[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "ability" || obj.ability.kind !== "triggered" || effects.length === 0) return effects;
+  const def = cards[obj.sourceOracleId]?.def.triggers?.[obj.ability.index];
+  if (def?.optional !== true) return effects;
+  return [{ kind: "askOptional", player: controllerOf(state, id), resume: effects }];
+}
+
+/** Whether a triggered ability's "intervening if" still holds as it resolves (CR 603.4, 608.2a); true without one. */
+function interveningIfHolds(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  const obj = state.objects[id];
+  if (obj?.kind !== "ability" || obj.ability.kind !== "triggered") return true;
+  const check = cards[obj.sourceOracleId]?.def.triggers?.[obj.ability.index]?.onlyIf;
+  return check === undefined || holds(state, obj.source, check);
 }

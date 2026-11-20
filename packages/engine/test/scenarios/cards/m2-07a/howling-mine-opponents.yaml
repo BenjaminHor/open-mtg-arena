@@ -1,0 +1,18 @@
+name: An opponent's Howling Mine makes the player whose draw step it is draw; the trigger is the Mine's controller's
+rules: [CR 603.2b, CR 603.3a]
+setup:
+  turn: { active: p1, step: upkeep }
+  p1:
+    library: [Forest, Island, Mountain]
+  p2:
+    battlefield: [Howling Mine]
+    library: [Plains]
+steps:
+  - all pass: until draw
+  - expect:
+      stack: [Howling Mine ability]
+      events contains: [{ type: ABILITY_TRIGGERED, controller: p2 }]
+  - all pass: once
+  - expect:
+      p1.hand: [Forest, Island]
+      p2.hand: []

@@ -62,6 +62,12 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
     }
     if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
+    for (const [i, trigger] of (def.triggers ?? []).entries()) {
+      if (anyColor(trigger.effects))
+        problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
+      problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
+      problems.push(...subjectProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
+    }
   }
   for (const card of pool) {
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);

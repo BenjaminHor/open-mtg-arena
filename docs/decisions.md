@@ -984,3 +984,30 @@ every schema change and every change D-024 lists bumps it.
 - Goblin Artillery dealing 2 to a target and 3 to its own controller is one damage event with two parts: two
   `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3), as built (D-067). The owner kept it over one 5-point loss; a future
   "whenever you lose life" trigger fires twice.
+
+**D-076: Triggered abilities: detected per event batch, waiting in state, put on the stack before priority** · 2026-11-20 · accepted
+- A card's triggered abilities are data in `CardDef.triggers`, apart from `abilities` (like `statics`, D-071): a
+  condition, an optional intervening if (CR 603.4), "you may", targets and effects. Read only through `triggersOf`, so
+  layer 6 (CR 613.1f) can change them later in one place.
+- Detection is one function, `detectTriggers(before, after, events)` (`engine/src/triggers/`), called by
+  `checkTriggers` in `happen` (D-056) and where `STEP_BEGAN` and `ATTACKERS_DECLARED` are emitted, each place matching
+  only its own events. It exits early when no permanent has triggers (the benchmark). Only permanents trigger
+  (CR 113.6). An intervening if is checked as the event happens and again on resolution.
+- What triggered waits in `GameState.pendingTriggers`, each remembering its source, the oracle id and index of the
+  ability, its controller as it triggered (CR 603.3a), and what triggered it (`TriggerEvent`: the player and object
+  "that player" and "it" mean). The stack ability keeps that `TriggerEvent` (`AbilityObject.trigger`), so its effects
+  read it on resolution (CR 608.2b); no hidden ids reach a player's view.
+- `givePriority` puts them on the stack after state-based actions (CR 117.5): the whole list as one batch, APNAP
+  (CR 603.3b), a player with two or more ordering theirs (`orderTriggers`; one left is put on without asking), then
+  priority is given again, so new triggers form a new batch. Targets are chosen through the spell's target steps
+  (a `Casting` with origin `trigger`), with no cost and no cancel; too few legal targets removes it (CR 603.3d).
+- A cancelled cast or activation drops the triggers that came up during it (`Casting.pendingTriggersBefore`,
+  CR 734.1), since its mana abilities' events are undone.
+- Last known information: `GameState.lastKnown` keeps a card's object as it leaves the battlefield (CR 608.2h), read
+  by an ability whose source is gone (Howling Mine's intervening if, "sacrifice it"); emptied when the stack is empty and a
+  player would receive priority, so it stays small and stays plain data. "Leaves the battlefield" triggers, which look
+  back in time (CR 603.10), will use it (M2-14).
+- "You may" is asked as the ability resolves (`chooseYesNo` with purpose `optional`); yes runs the effects.
+- Chosen for future rules: replacement effects (M2-08) come before detection in `happen`, so a replaced event triggers as
+  replaced; delayed triggers (M2-07c) will be pending triggers whose source is not a permanent, with their own
+  `AbilityRef`; tokens entering trigger the same way.

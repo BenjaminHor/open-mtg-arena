@@ -1,0 +1,15 @@
+name: Howling Banshee's enters trigger makes each player lose 3 life
+rules: [CR 603.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, Swamp, Swamp, Swamp]
+    hand: [Howling Banshee]
+steps:
+  - p1 cast: Howling Banshee
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 17
+      p2.life: 17

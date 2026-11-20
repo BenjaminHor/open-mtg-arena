@@ -31,6 +31,7 @@ const context = (self: string, targets: string[][] = []) => ({
   targets: targets.map((g) => g.map((object) => ({ kind: "object" as const, object: object as `o${number}` }))),
   division: [],
   x: null,
+  trigger: null,
 });
 
 describe("removal goes to its owner's zones (CR 400.3)", () => {

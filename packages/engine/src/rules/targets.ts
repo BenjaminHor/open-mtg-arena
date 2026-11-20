@@ -5,7 +5,7 @@ import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/typ
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
-import { keywordsOf, stackAbilityDef } from "./abilities.ts";
+import { keywordsOf, stackAbilityText } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
@@ -150,7 +150,7 @@ export function effectsOf(state: GameState, id: ObjectId, cards: CardDatabase): 
       return data.def.spell?.effects ?? [];
     }
     case "ability":
-      return stackAbilityDef(state, id, cards).effects;
+      return stackAbilityText(state, id, cards).effects;
   }
 }
 
@@ -162,6 +162,6 @@ export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabas
     case "card":
       return cards[obj.oracleId]?.def.spell?.targets ?? [];
     case "ability":
-      return stackAbilityDef(state, id, cards).targets;
+      return stackAbilityText(state, id, cards).targets;
   }
 }

@@ -6,6 +6,7 @@ import type { Effect } from "../cards/types.ts";
 import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
+import type { PendingTrigger } from "./triggers.ts";
 
 export type WorkItem =
   /**
@@ -37,4 +38,8 @@ export type WorkItem =
   /** The combat damage step's turn-based action (CR 510.1–510.2), with the divisions chosen so far. */
   | { kind: "combatDamage"; divisions: CombatDivision[] }
   /** The rest of the cleanup step, once the active player has chosen any discards (CR 514). */
-  | { kind: "finishCleanup"; chosen: ObjectId[] };
+  | { kind: "finishCleanup"; chosen: ObjectId[] }
+  /** A triggered ability's "you may" as it resolves (CR 603.5): `player` chooses whether `then` happens. */
+  | { kind: "askOptional"; player: PlayerId; resume: WorkItem[] }
+  /** Triggered abilities of one batch still to be put on the stack, then priority for `player` (CR 603.3b). */
+  | { kind: "putTriggers"; batch: PendingTrigger[]; player: PlayerId };

@@ -89,6 +89,8 @@ describe("discriminated unions", () => {
           return `choose ${decision.min} to ${decision.max}`;
         case "chooseYesNo":
           return `yes or no: ${decision.purpose}`;
+        case "orderTriggers":
+          return `order ${decision.batch.length} triggered abilities`;
         default:
           return assertNever(decision);
       }

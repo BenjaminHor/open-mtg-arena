@@ -15,6 +15,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
+import { orderTriggersProblem, putOne } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
@@ -128,13 +129,19 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, state: answerChooseCards(answered, pending, answer), events: [] };
     }
+    case "orderTriggers": {
+      if (answer.kind !== "orderTrigger") return mismatch;
+      const problem = orderTriggersProblem(pending.batch, pending.player, answer.index);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, ...putOne(answered, pending.batch, answer.index, pending.priorityTo, cards) };
+    }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;
       // Yes runs the effect, ahead of the rest of the resolution; no does nothing (CR 608.2d).
       if (!answer.yes) return { ok: true, state: answered, events: [] };
       return {
         ok: true,
-        state: queueWork(answered, { kind: "runEffect", ...pending.resume, chosen: null }),
+        state: queueWork(answered, ...pending.resume),
         events: [],
       };
     }
@@ -150,28 +157,28 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
     }
     case "announceX": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "announceX") return mismatch;
       const problem = xProblem(answer.value);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...nextCastingStep(announceX(answered, answer.value), cards) };
     }
     case "chooseTargetCount": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "chooseTargetCount") return mismatch;
       const problem = targetCountProblem(pending, answer.count);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...nextCastingStep(chooseTargetCount(answered, answer.count), cards) };
     }
     case "chooseTarget": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "chooseTarget") return mismatch;
       const problem = targetProblem(answered, answer.target, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...nextCastingStep(chooseTarget(answered, answer.target), cards) };
     }
     case "divide": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "divide") return mismatch;
       const problem = shareProblem(pending, answer.amount);
       if (problem !== null) return error("illegalAction", problem);
@@ -181,14 +188,14 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return { ok: true, ...nextCastingStep(divided, cards) };
     }
     case "chooseSacrifice": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "chooseSacrifice") return mismatch;
       const problem = sacrificeProblem(answered, answer.object, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...nextCastingStep(chooseSacrifice(answered, answer.object), cards) };
     }
     case "payMana": {
-      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "payMana") return mismatch;
       const paid = payCost(answered, pending.cost, answer.payment, cards);
       return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
@@ -246,4 +253,12 @@ function error(code: EngineErrorCode, message: string): EngineResult {
 function isManaAbilityOf(state: GameState, object: ObjectId, ref: AbilityRef, cards: CardDatabase): boolean {
   const ability = findAbility(state, object, ref, cards);
   return ability !== null && isManaAbility(ability.def);
+}
+
+/** The player cancels a cast or an activation (D-035); a triggered ability being put on the stack can't be (CR 603.3d). */
+function cancel(state: GameState): EngineResult {
+  if (state.casting?.origin.kind === "trigger") {
+    return error("illegalAction", "a triggered ability can't be cancelled as it's put on the stack (CR 603.3d)");
+  }
+  return { ok: true, ...cancelCasting(state) };
 }

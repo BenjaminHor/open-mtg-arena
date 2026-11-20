@@ -47,7 +47,9 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     zoneList(state, from).filter((x) => x !== id),
   );
   const { [id]: _removed, ...objects } = next.objects;
-  next = { ...next, objects };
+  // A permanent leaving the battlefield is remembered as it last existed (CR 608.2h).
+  const lastKnown = from.zone === "battlefield" ? { ...next.lastKnown, [id]: old } : next.lastKnown;
+  next = { ...next, objects, lastKnown };
 
   const allocated = newObjectId(next);
   const stamped = newTimestamp(allocated.state);

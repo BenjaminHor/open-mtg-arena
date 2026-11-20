@@ -46,6 +46,12 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): Progress
   }
   const targeted = targetStep(state, cards);
   if (targeted.pending !== null) return wait(targeted);
+  // A triggered ability has nothing to pay: with its targets chosen, it's on the stack, and the rest of its batch goes
+  // on (CR 603.3d, 603.3b).
+  if (casting.origin.kind === "trigger") {
+    const { batch, priorityTo } = casting.origin;
+    return wait(queueWork({ ...targeted, casting: null }, { kind: "putTriggers", batch, player: priorityTo }));
+  }
   if (casting.sacrifices.length < sacrificeParts(targeted, casting.object, cards).length) {
     return wait(waitFor(targeted, casting.player, { kind: "chooseSacrifice", object: casting.object }));
   }
@@ -134,7 +140,8 @@ export function payCost(
  */
 export function cancelCasting(state: GameState): Progress {
   const casting = castingOf(state);
-  let next = untapAndRestorePool({ ...state, casting: null }, casting);
+  const pendingTriggers = state.pendingTriggers.slice(0, casting.pendingTriggersBefore);
+  let next = untapAndRestorePool({ ...state, casting: null, pendingTriggers }, casting);
   let event: GameEvent;
   switch (casting.origin.kind) {
     case "card": {
@@ -162,6 +169,8 @@ export function cancelCasting(state: GameState): Progress {
       };
       break;
     }
+    case "trigger":
+      throw new Error("a triggered ability being put on the stack can't be cancelled (CR 603.3d)");
     case "ability":
       next = removeAbilityFromStack(next, casting.object);
       event = {

@@ -49,6 +49,7 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
+    pendingTriggersBefore: state.pendingTriggers.length,
   };
   const next = nextCastingStep({ ...moved.state, casting }, cards);
   return { state: next.state, events: [...moved.events, ...next.events] };

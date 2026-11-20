@@ -1,0 +1,17 @@
+name: Howling Banshee with both players at 3 life makes both lose at once, a draw
+rules: [CR 104.4a, CR 704.5a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    life: 3
+    battlefield: [Swamp, Swamp, Swamp, Swamp]
+    hand: [Howling Banshee]
+  p2:
+    life: 3
+steps:
+  - p1 cast: Howling Banshee
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      winner: draw

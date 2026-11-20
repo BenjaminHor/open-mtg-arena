@@ -19,6 +19,9 @@ export type {
   StaticAbilityDef,
   Supertype,
   TargetSpec,
+  TriggerCheck,
+  TriggerCondition,
+  TriggeredAbilityDef,
 } from "./cards/types.ts";
 export { legalAmounts, withForcedAnswers } from "./combat/damage-assignment.ts";
 export { applyAction } from "./game/apply-action.ts";
@@ -63,6 +66,7 @@ export type {
 } from "./state/result.ts";
 export type { GameSetup, Opening, PermanentSetup, PlayerSetup, RuleModifier } from "./state/setup.ts";
 export type { StateBasedAction } from "./state/state-based-actions.ts";
+export type { PendingTrigger, TriggerEvent } from "./state/triggers.ts";
 export { type Phase, phaseOf, type Step, type Turn } from "./state/turn.ts";
 export type { WorkItem } from "./state/work.ts";
 export type { PlayerZoneName, SharedZoneName, ZoneName, ZoneRef, Zones } from "./state/zones.ts";

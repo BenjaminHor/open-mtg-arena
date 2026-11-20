@@ -51,13 +51,14 @@ spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3
 
 **Triggered abilities (CR 603), M2.** "When/whenever/at" abilities, including leaves-the-battlefield
 triggers that "look back in time" (CR 603.10), delayed triggers, and state triggers.
-*Needs now:* events carry enough information to match triggers later (for a zone change: the object as it
-last existed, both ids, from and to zones). Keep the last known information of objects that leave a zone.
-Events aren't state, so last known information (CR 608.2h, 603.10) needs its own store in `GameState`, added by
-the first effect that reads information from an object that may be gone (its power, its controller, lifelink on a
-damage source). Firebreathing after the Whelp dies reads nothing from it, so M1-14 didn't need one (D-041).
-Abilities on the stack carry `sourceOracleId` + `ability: AbilityRef`; granted abilities (layer 6) and delayed triggers
-(CR 603.7) will need another kind of reference.
+*Built (M2-07a, D-076):* entering, beginning-of-step and attack triggers, the intervening if, "you may", APNAP
+ordering, and last known information of a card leaving the battlefield (`GameState.lastKnown`, CR 608.2h).
+*Still to come:* casting, drawing, discarding, damage, life gain and mana triggers (M2-07b); delayed triggers
+(CR 603.7) and "becomes the target" (M2-07c), which need their own `AbilityRef` kind and a pending trigger whose source
+isn't a permanent; leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
+`lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through
+`triggersOf`. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
+delayed trigger "its power") must copy what it needs when it's created.
 
 **Continuous effects from static abilities (CR 604, 611).** "Other creatures you control get +1/+1", "can't attack".
 *Needs now:* effects know their source and are recomputed by the layer system, never applied once and stored.
@@ -119,11 +120,9 @@ the whole group. Players losing is still performed after that event; it's part o
 matters once triggers look back at it. Cards going to a graveyard together go in battlefield or hand order; CR 404.3 lets their
 owner choose, so once a card cares about graveyard order, ask with a `PendingDecision`.
 
-**Triggered abilities and the casting steps (CR 603, D-041).** A triggered ability's targets are chosen as it's put on
-the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
-`casting-steps.ts` will need an origin kind with no payment step and no cancel. Static abilities that aren't keywords got their own
-`def.statics` (D-071), so `def.abilities` stays activated only; once it holds triggered definitions, `activationProblem`
-and the activation list must check `def.kind === "activated"`.
+**Triggered abilities and the casting steps (CR 603, D-041).** Built (D-076): a `Casting` with origin `trigger` goes
+through the target steps with no payment and no cancel. Triggered abilities have their own `def.triggers`, so
+`def.abilities` stays activated only.
 A non-mana ability's {T} is paid only at the final payment (D-059), so cancelling never has to untap it. The activation events name the source by its id, which dies with the source; a UI that names it later will
 want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
 *Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`

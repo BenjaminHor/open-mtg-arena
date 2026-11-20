@@ -235,7 +235,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        triggering event's player, object and amount). "You may" asks as it resolves (`chooseYesNo`).
      - M2-07a: the machinery, entering and beginning-of-step triggers: Elvish Visionary, Howling Banshee, Sparkmage
        Apprentice, Gravedigger, Borderland Ranger, Sage Owl, Acidic Slime, Soul Warden, Ball Lightning, Howling Mine
-       (intervening if), Bramble Creeper (attacks).
+       (intervening if), Bramble Creeper (attacks). Built (D-076), in review: the triggers README
+       (`engine/src/triggers/README.md`) explains the path; 32 scenarios in `test/scenarios/cards/m2-07a/` and
+       `interactions/triggers/`, unit tests in `test/triggers/triggers.test.ts`, a Triggers matrix column; nine of the
+       cards in the M10 pair (Soul Warden and Acidic Slime only in pool decks); 9 golden games added (4.4 MB). The
+       fuzzer's 40-seed measure doesn't reach `orderTriggers` (two triggers at once for one player); scenarios cover it.
+       133 cards in the pool; 125 of the 234 Magic 2010 cards.
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.

@@ -1,0 +1,26 @@
+name: An enters trigger resolves even if its source is gone by then
+rules: [CR 113.7a, CR 603.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest]
+    hand: [Elvish Visionary]
+    library: [Island]
+  p2:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - p1 cast: Elvish Visionary
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Lightning Bolt
+    targets: [p1:Elvish Visionary]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Elvish Visionary]
+      stack: [Elvish Visionary ability]
+  - all pass: once
+  - expect:
+      p1.hand: [Island]

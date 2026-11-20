@@ -97,6 +97,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player} cancels casting ${name(e.restored)}`;
     case "ABILITY_ACTIVATED":
       return `${e.player} activates ${name(e.source)}`;
+    case "ABILITY_TRIGGERED":
+      return `${name(e.source)} triggers (${e.controller})`;
     case "ACTIVATION_CANCELLED":
       return `${e.player} cancels activating ${name(e.source)}`;
     case "ABILITY_DID_NOT_RESOLVE":

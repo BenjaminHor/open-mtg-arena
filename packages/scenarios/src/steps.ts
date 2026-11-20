@@ -9,6 +9,7 @@ import {
   type Color,
   type GameState,
   type ObjectId,
+  type PendingTrigger,
   type PlayerId,
 } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
@@ -267,6 +268,8 @@ function answerFor(
     case "chooseYesNo":
       if (text !== "yes" && text !== "no") throw new Error(`a yes or no decision takes yes or no, got ${text}`);
       return { kind: "chooseYesNo", yes: text === "yes" };
+    case "orderTriggers":
+      return { kind: "orderTrigger", index: triggerNamed(pending.batch, player, text, cards) };
     case "declareAttackers":
     case "declareBlockers":
       return declarationAnswer(state, player, text, cards);
@@ -275,4 +278,18 @@ function answerFor(
     case "priority":
       throw new Error("the player has priority: use pass, play, cast or activate");
   }
+}
+
+/**
+ * The trigger of the batch a `choose:` names, by its source's card name, with `#n` for the nth of the player's triggers
+ * from cards of that name: `p1 choose: Soul Warden`.
+ */
+function triggerNamed(batch: readonly PendingTrigger[], player: string, text: string, cards: CardDatabase): number {
+  const [name, nth] = text.split("#");
+  const theirs = batch.flatMap((t, i) =>
+    t.controller === player && cards[t.sourceOracleId]?.printed.name === name ? [i] : [],
+  );
+  const index = theirs[(nth === undefined ? 1 : Number(nth)) - 1];
+  if (index === undefined) throw new Error(`${player} has no triggered ability of ${text} waiting`);
+  return index;
 }

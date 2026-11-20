@@ -8,6 +8,8 @@ import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DecisionId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
+import type { PendingTrigger } from "./triggers.ts";
+import type { WorkItem } from "./work.ts";
 import type { ZoneRef } from "./zones.ts";
 
 export type PendingDecision = {
@@ -111,8 +113,16 @@ export type DecisionKind =
       seen: Seen | null;
       resume: { effect: Effect; context: EffectContext };
     }
-  /** While a spell or ability resolves: a "you may" choice (CR 608.2d); yes runs `resume`, no does nothing. */
-  | { kind: "chooseYesNo"; purpose: "shuffle"; resume: { effect: Effect; context: EffectContext } };
+  /**
+   * Several of this player's triggered abilities wait to go on the stack: which goes on next (CR 603.3b). The ones put
+   * on first resolve last. `batch` is every trigger still to be put on; `priorityTo`, who gets priority after.
+   */
+  | { kind: "orderTriggers"; batch: PendingTrigger[]; priorityTo: PlayerId }
+  /**
+   * While a spell or ability resolves: a "you may" choice (CR 608.2d): "you may shuffle", or a triggered ability's "you
+   * may" (CR 603.5). Yes runs `resume`, the work it chose to do; no does nothing.
+   */
+  | { kind: "chooseYesNo"; purpose: "shuffle" | "optional"; resume: WorkItem[] };
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
 export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice";

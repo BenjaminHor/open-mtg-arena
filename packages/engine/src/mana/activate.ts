@@ -132,7 +132,7 @@ export function resolveManaAbility(
   }
   // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana
   // ability can't have targets (CR 605.1a).
-  const context = { self: id, controller: player, targets: [], division: [], x: null };
+  const context = { self: id, controller: player, targets: [], division: [], x: null, trigger: null };
   for (const effect of ability.def.effects) {
     const chosen =
       effect.op === "addMana" && effect.mana === "anyColor" && color !== undefined

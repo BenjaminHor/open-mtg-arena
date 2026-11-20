@@ -1,0 +1,13 @@
+name: Ball Lightning's trigger is at the beginning of every end step, the opponent's turn's too
+rules: [CR 603.2b]
+setup:
+  turn: { active: p1, step: main2 }
+  p2:
+    battlefield: [Ball Lightning]
+steps:
+  - all pass: until end
+  - expect:
+      stack: [Ball Lightning ability]
+  - all pass: once
+  - expect:
+      p2.graveyard: [Ball Lightning]

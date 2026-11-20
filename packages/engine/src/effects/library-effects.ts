@@ -93,7 +93,8 @@ export function lookAtTop(
 
 /** "You may shuffle": `player` answers yes or no; yes queues the shuffle (CR 701.24a), no does nothing. */
 export function mayShuffle(state: GameState, player: PlayerId, effect: MayShuffle, context: EffectContext): Progress {
-  const resume = { effect: { op: "shuffle", who: effect.who } as const, context };
+  const shuffle = { op: "shuffle", who: effect.who } as const;
+  const resume = [{ kind: "runEffect", effect: shuffle, context, chosen: null } as const];
   return nothing(waitFor(state, player, { kind: "chooseYesNo", purpose: "shuffle", resume }));
 }
 

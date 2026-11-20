@@ -1,0 +1,19 @@
+name: A triggered ability can't target a creature with shroud
+rules: [CR 702.18a, CR 603.3d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain]
+    hand: [Sparkmage Apprentice]
+  p2:
+    battlefield: [Mist Leopard]
+steps:
+  - p1 cast: Sparkmage Apprentice
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Mist Leopard
+  - expect error: illegalAction
+  - p1 choose: p2
+  - all pass: once
+  - expect:
+      p2.life: 19

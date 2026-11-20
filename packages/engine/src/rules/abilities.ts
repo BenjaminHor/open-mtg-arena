@@ -1,7 +1,15 @@
-// An object's abilities as it has them now: keywords, static abilities that aren't keywords, and activated abilities,
-// with which of those are mana abilities.
+// An object's abilities as it has them now: keywords, static abilities that aren't keywords, triggered and activated
+// abilities, with which of those are mana abilities.
 
-import type { AbilityDef, CardDatabase, Keyword, StaticAbilityDef } from "../cards/types.ts";
+import type {
+  AbilityDef,
+  CardDatabase,
+  Effect,
+  Keyword,
+  StaticAbilityDef,
+  TargetSpec,
+  TriggeredAbilityDef,
+} from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -92,7 +100,40 @@ export function stackAbilityDef(state: GameState, id: ObjectId, cards: CardDatab
     case "basicLandType":
       // A mana ability never uses the stack (CR 605.3b): finding one here is an engine bug.
       throw new Error("A basic land's mana ability can't be on the stack");
+    case "triggered":
+      throw new Error("A triggered ability has no activation cost: read it with stackAbilityText");
   }
+}
+
+/**
+ * What an ability on the stack does: its targets and effects, read from its source's card like `stackAbilityDef`, for
+ * an activated or a triggered ability (CR 113.7a).
+ */
+export function stackAbilityText(
+  state: GameState,
+  id: ObjectId,
+  cards: CardDatabase,
+): { targets: readonly TargetSpec[]; effects: readonly Effect[] } {
+  const obj = state.objects[id];
+  if (obj?.kind !== "ability") throw new Error(`${id} isn't an ability on the stack`);
+  if (obj.ability.kind !== "triggered") return stackAbilityDef(state, id, cards);
+  const def = cards[obj.sourceOracleId]?.def.triggers?.[obj.ability.index];
+  if (def === undefined) throw new Error(`No triggered ability ${obj.ability.index} on ${obj.sourceOracleId}`);
+  return def;
+}
+
+/**
+ * The triggered abilities an object has now (CR 603): the ones written on its card, with their index. Abilities granted
+ * or removed by effects (layer 6, later: CR 613.1f, 603.6b) will change this list, in this one place.
+ */
+export function triggersOf(
+  state: GameState,
+  id: ObjectId,
+  cards: CardDatabase,
+): readonly { index: number; def: TriggeredAbilityDef }[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  return (cards[obj.oracleId]?.def.triggers ?? []).map((def, index) => ({ index, def }));
 }
 
 /** The ability of this object that `ref` names, or null if it has none. */
@@ -112,5 +153,7 @@ export function sameAbilityRef(a: AbilityRef, b: AbilityRef): boolean {
       return b.kind === "printed" && a.index === b.index;
     case "basicLandType":
       return b.kind === "basicLandType" && a.landType === b.landType;
+    case "triggered":
+      return b.kind === "triggered" && a.index === b.index;
   }
 }

@@ -25,6 +25,14 @@ import { nextSacrificeOptions } from "./sacrifice-costs.ts";
 import { canTapForCost, tapsForCost } from "./tap-costs.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
+  const actions = decisionActions(state, player, cards);
+  // A triggered ability being put on the stack can't be cancelled: it isn't the player's action to take back
+  // (CR 603.3d).
+  if (state.casting?.origin.kind !== "trigger") return actions;
+  return actions.filter((a) => a.type !== "ANSWER" || a.answer.kind !== "cancelCast");
+}
+
+function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
   if (state.result !== null || pending === null || pending.player !== player) return [];
   const answer = { type: "ANSWER", decisionId: pending.id, player } as const;
@@ -52,6 +60,10 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
     }
     case "chooseYesNo":
       return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
+    case "orderTriggers":
+      return pending.batch.flatMap((t, index): Action[] =>
+        t.controller === player ? [{ ...answer, answer: { kind: "orderTrigger", index } }] : [],
+      );
     case "discardToHandSize":
       return zoneList(state, { zone: "hand", player })
         .filter((object) => !pending.chosen.includes(object))

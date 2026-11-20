@@ -110,6 +110,7 @@ export function midTurnState(): GameState {
         id: "o11",
         source: "o5",
         sourceOracleId: WHELP,
+        trigger: null,
         ability: { kind: "printed", index: 0 },
         baseController: "p1",
         timestamp: 11,
@@ -143,6 +144,8 @@ export function midTurnState(): GameState {
     casting: null,
     resolution: null,
     dealtDeathtouchDamage: [],
+    pendingTriggers: [],
+    lastKnown: {},
     work: [
       {
         kind: "runEffect",
@@ -153,6 +156,7 @@ export function midTurnState(): GameState {
           targets: [[{ kind: "player", player: "p2" }]],
           division: [],
           x: null,
+          trigger: null,
         },
         chosen: null,
       },

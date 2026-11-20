@@ -1,0 +1,24 @@
+name: A trigger whose only target is gone by the time it resolves doesn't resolve
+rules: [CR 608.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain]
+    hand: [Sparkmage Apprentice]
+  p2:
+    battlefield: [Runeclaw Bear, Island]
+    hand: [Unsummon]
+steps:
+  - p1 cast: Sparkmage Apprentice
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Runeclaw Bear
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p2:Runeclaw Bear]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]
+      p2.hand: [Runeclaw Bear]

@@ -1,0 +1,251 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Razorfoot Griffin, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Kalonian Behemoth, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Borderland Ranger, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Shivan Dragon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Elvish Visionary, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Kalonian Behemoth, p2's hand -> stack
+T1 p2 cancels casting Kalonian Behemoth
+T1 moves: Kalonian Behemoth, p2's hand -> stack
+T1 p2 cancels casting Kalonian Behemoth
+T1 moves: Kalonian Behemoth, p2's hand -> stack
+T1 p2 cancels casting Kalonian Behemoth
+T1 p2 attack: nothing
+T2 turn 2 begins (p1)
+T2 moves: Looming Shade, p1's library -> p1's hand
+T2 p1 draws
+T2 p1 attack: nothing
+T2 moves: Mountain, p1's hand -> p1's graveyard
+T2 p1 discards Mountain
+T3 turn 3 begins (p2)
+T3 moves: Mountain, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Borderland Ranger, p2's hand -> stack
+T3 p2 cancels casting Borderland Ranger
+T3 p2 attack: nothing
+T3 moves: Island, p2's hand -> battlefield
+T3 p2 plays p2:Island
+T3 taps: p2:Island
+T3 p2 adds {U} (p2:Island)
+T3 p2's unspent {U} empties
+T4 turn 4 begins (p1)
+T4 moves: Forest, p1's library -> p1's hand
+T4 p1 draws
+T4 moves: Looming Shade, p1's hand -> stack
+T4 p1 cancels casting Looming Shade
+T4 moves: Elvish Visionary, p1's hand -> stack
+T4 p1 cancels casting Elvish Visionary
+T4 p1 attack: nothing
+T4 moves: Shivan Dragon, p1's hand -> stack
+T4 p1 cancels casting Shivan Dragon
+T4 moves: Elvish Visionary, p1's hand -> stack
+T4 p1 cancels casting Elvish Visionary
+T4 moves: Island, p1's hand -> battlefield
+T4 p1 plays p1:Island
+T4 taps: p1:Island
+T4 p1 adds {U} (p1:Island)
+T4 p1's unspent {U} empties
+T5 turn 5 begins (p2)
+T5 untaps: p2:Island
+T5 taps: p2:Island
+T5 p2 adds {U} (p2:Island)
+T5 p2's unspent {U} empties
+T5 moves: Mind Spring, p2's library -> p2's hand
+T5 p2 draws
+T5 moves: Plains, p2's hand -> battlefield
+T5 p2 plays p2:Plains
+T5 moves: Razorfoot Griffin, p2's hand -> stack
+T5 taps: p2:Plains
+T5 p2 adds {W} (p2:Plains)
+T5 p2 cancels casting Razorfoot Griffin
+T5 moves: Kalonian Behemoth, p2's hand -> stack
+T5 taps: p2:Plains
+T5 p2 adds {W} (p2:Plains)
+T5 p2 cancels casting Kalonian Behemoth
+T5 p2 attack: nothing
+T5 taps: p2:Plains
+T5 p2 adds {W} (p2:Plains)
+T5 p2's unspent {W} empties
+T5 moves: Razorfoot Griffin, p2's hand -> stack
+T5 p2 cancels casting Razorfoot Griffin
+T5 moves: Borderland Ranger, p2's hand -> stack
+T5 p2 cancels casting Borderland Ranger
+T5 moves: Mind Spring, p2's hand -> stack
+T5 p2 cancels casting Mind Spring
+T5 moves: Borderland Ranger, p2's hand -> stack
+T5 p2 cancels casting Borderland Ranger
+T6 turn 6 begins (p1)
+T6 untaps: p1:Island
+T6 taps: p1:Island
+T6 p1 adds {U} (p1:Island)
+T6 p1's unspent {U} empties
+T6 moves: Swamp, p1's library -> p1's hand
+T6 p1 draws
+T6 p1 attack: nothing
+T6 moves: Forest, p1's hand -> battlefield
+T6 p1 plays p1:Forest
+T6 moves: Shivan Dragon, p1's hand -> stack
+T6 taps: p1:Forest
+T6 p1 adds {G} (p1:Forest)
+T6 p1 cancels casting Shivan Dragon
+T6 taps: p1:Forest
+T6 p1 adds {G} (p1:Forest)
+T6 p1's unspent {G} empties
+T7 turn 7 begins (p2)
+T7 untaps: p2:Island
+T7 untaps: p2:Plains
+T7 moves: Plains, p2's library -> p2's hand
+T7 p2 draws
+T7 taps: p2:Island
+T7 p2 adds {U} (p2:Island)
+T7 taps: p2:Plains
+T7 p2 adds {W} (p2:Plains)
+T7 p2's unspent {W}{U} empties
+T7 p2 attack: nothing
+T7 moves: Forest, p2's hand -> battlefield
+T7 p2 plays p2:Forest
+T7 moves: Borderland Ranger, p2's hand -> stack
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 cancels casting Borderland Ranger
+T7 moves: Borderland Ranger, p2's hand -> stack
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 cancels casting Borderland Ranger
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2's unspent {G} empties
+T8 turn 8 begins (p1)
+T8 untaps: p1:Island
+T8 untaps: p1:Forest
+T8 moves: Hill Giant, p1's library -> p1's hand
+T8 p1 draws
+T8 taps: p1:Forest
+T8 p1 adds {G} (p1:Forest)
+T8 taps: p1:Island
+T8 p1 adds {U} (p1:Island)
+T8 p1's unspent {U}{G} empties
+T8 moves: Mind Spring, p1's hand -> stack
+T8 p1 cancels casting Mind Spring
+T8 moves: Swamp, p1's hand -> battlefield
+T8 p1 plays p1:Swamp
+T8 moves: Shivan Dragon, p1's hand -> stack
+T8 taps: p1:Swamp
+T8 p1 adds {B} (p1:Swamp)
+T8 p1 cancels casting Shivan Dragon
+T8 taps: p1:Swamp
+T8 p1 adds {B} (p1:Swamp)
+T8 p1's unspent {B} empties
+T8 p1 attack: nothing
+T9 turn 9 begins (p2)
+T9 untaps: p2:Island
+T9 untaps: p2:Plains
+T9 untaps: p2:Forest
+T9 moves: Forest, p2's library -> p2's hand
+T9 p2 draws
+T9 taps: p2:Plains
+T9 p2 adds {W} (p2:Plains)
+T9 p2's unspent {W} empties
+T9 moves: Borderland Ranger, p2's hand -> stack
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Borderland Ranger
+T9 p2 attack: nothing
+T9 moves: Kalonian Behemoth, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 p2 cancels casting Kalonian Behemoth
+T9 moves: Kalonian Behemoth, p2's hand -> stack
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Kalonian Behemoth
+T9 moves: Mind Spring, p2's hand -> stack
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Mind Spring
+T9 moves: Kalonian Behemoth, p2's hand -> stack
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Kalonian Behemoth
+T9 moves: Borderland Ranger, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 p2 cancels casting Borderland Ranger
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 moves: Kalonian Behemoth, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Kalonian Behemoth
+T9 moves: Borderland Ranger, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Borderland Ranger
+T9 moves: Plains, p2's hand -> battlefield
+T9 p2 plays p2:Plains#2
+T9 moves: Kalonian Behemoth, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 taps: p2:Plains#2
+T9 p2 adds {W} (p2:Plains#2)
+T9 p2 cancels casting Kalonian Behemoth
+T9 moves: Borderland Ranger, p2's hand -> stack
+T9 p2 cancels casting Borderland Ranger
+T9 taps: p2:Plains#2
+T9 p2 adds {W} (p2:Plains#2)
+T9 moves: Razorfoot Griffin, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Razorfoot Griffin
+T9 moves: Borderland Ranger, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 casts Borderland Ranger
+T9 resolves: Borderland Ranger
+T9 moves: Borderland Ranger, stack -> battlefield
+T9 p2:Borderland Ranger triggers (p2)
+T9 resolves: p2:Borderland Ranger's ability
+T10 turn 10 begins (p1)
+T10 untaps: p1:Island
+T10 untaps: p1:Forest
+T10 untaps: p1:Swamp

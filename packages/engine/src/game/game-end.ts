@@ -23,7 +23,16 @@ export function playersLose(state: GameState, losses: readonly Loss[]): Progress
   const result = { winner: left[0] ?? null, losses: [...losses], turn: state.turn?.number ?? 0 };
   return {
     // Nothing more happens: whatever was resolving ends with the game, its "this way" record too (CR 608.2c).
-    state: { ...state, result, pending: null, work: [], casting: null, combat: null, resolution: null },
+    state: {
+      ...state,
+      result,
+      pending: null,
+      work: [],
+      casting: null,
+      combat: null,
+      resolution: null,
+      pendingTriggers: [],
+    },
     events: [
       ...losses.map((l) => ({ type: "PLAYER_LOST", player: l.player, reason: l.reason }) as const),
       { type: "GAME_ENDED", result },

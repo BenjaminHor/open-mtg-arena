@@ -54,6 +54,8 @@ export type Answer =
   | { kind: "finishDeclaring" }
   /** Take back the last attacker or block added, so a declaration that can't be finished isn't stuck. */
   | { kind: "takeBack" }
+  /** Which of the player's triggered abilities goes on the stack next: an index into the decision's batch (CR 603.3b). */
+  | { kind: "orderTrigger"; index: number }
   /** How much of the attacker's combat damage goes to the next blocker in the decision's order (CR 510.1c). */
   | { kind: "assignDamage"; amount: number }
   /** One more card for a `chooseCards` decision, by its position in the decision's `options` (D-062). */

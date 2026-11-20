@@ -1,0 +1,24 @@
+name: Ball Lightning put onto the battlefield during the end step missed that step's beginning, so it stays until the next end step
+rules: [CR 603.2b, CR 513.1]
+setup:
+  turn: { active: p1, step: main2 }
+  p1:
+    hand: [Ball Lightning]
+    battlefield: [Elvish Piper, Forest]
+steps:
+  - all pass: until end
+  - p1 activate: Elvish Piper
+    pay: auto
+  - all pass: once
+  - p1 choose: Ball Lightning
+  - expect:
+      p1.battlefield contains: [Ball Lightning]
+      stack: []
+  - all pass: until upkeep
+  - expect:
+      active: p2
+  - expect:
+      p1.battlefield contains: [Ball Lightning]
+  - all pass: until end
+  - expect:
+      stack: [Ball Lightning ability]

@@ -57,6 +57,10 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
   if (resolving !== null && !state.work.some((w) => w.kind === "finishResolving" && w.object === resolving.object)) {
     problems.push(`a resolution record for ${resolving.object} outlives its resolution (CR 608.2c)`);
   }
+  // Triggered abilities go on the stack before anyone gets priority (CR 117.5, 603.3).
+  if (state.pending?.kind === "priority" && state.pendingTriggers.length > 0) {
+    problems.push("a player has priority while triggered abilities wait to go on the stack (CR 603.3)");
+  }
   const inCombat = state.turn !== null && phaseOf(state.turn.step) === "combat";
   if (state.result === null && (state.combat !== null) !== inCombat) {
     problems.push("combat state exists exactly during the combat phase (CR 506.1, 511.3)");
