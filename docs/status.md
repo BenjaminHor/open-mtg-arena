@@ -648,6 +648,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20, D-089) Magic 2010 cards still to script in M2-14 whose rules may have no counterpart on MTG Arena
+  (Hive Mind, Telepathy, Warp World, Sphinx Ambassador's naming a card, Mirror of Fate, and any other M2-14 card): (a)
+  check each against Arena when M2-14 starts and skip those whose mechanic no Arena card uses (recommended; proceeding
+  with this), (b) script all of Magic 2010 as the spec says, (c) drop every Magic 2010 card not on Arena from M2 (51 of
+  the 76 left, though their mechanics are on Arena).
 - (Asked 2026-11-20) The M2 spec's M2-08 acceptance list includes three cases from the M2-03 review that no Magic 2010
   card can produce: a dying creature's replacement still applying to the others in its state-based-action batch
   (CR 704.3), a "would die" replacement with regeneration (testable now with a test-only card, done in M2-08c), and

@@ -1221,3 +1221,15 @@ every schema change and every change D-024 lists bumps it.
 - Identical candidates (two Guardian Seraphs: the same text under the same controller) are applied without asking, all
   of them, each once; different ones are asked about even when the order can't change the result (Seraph and Fog),
   as CR 616.1 has the player choose. Skipping those is a later UX question.
+
+**D-089: Which cards and mechanics come after M2: what MTG Arena has, without Alchemy** · 2026-11-20 · accepted (owner)
+- The owner: Scryfall can filter cards that exist on MTG Arena (`game:arena`, a printing's `games` including
+  `"arena"`), which is a good guide so we don't spend time on mechanics even Arena doesn't handle; Alchemy cards should
+  be ignored.
+- So, beyond M2, cards are chosen from those with a non-Alchemy Arena printing, and a mechanic is built only if some
+  such card needs it. Alchemy means the rebalanced cards (names starting "A-") and cards printed only in Alchemy sets
+  (`set_type` "alchemy"); an ordinary card also reprinted in an Alchemy set still counts by its other printings.
+- Measured (2026-11-20): of 39,356 unique cards, 16,618 have an Arena printing, 15,742 outside Alchemy, 876 only in
+  Alchemy. Magic 2010 was never on Arena, so 87 of the pool's 166 cards and 51 of the 76 still to script aren't on it,
+  though their mechanics (Auras, Equipment, planeswalkers, tokens, protection) are. M2 finishes the Magic 2010 pool as
+  specified; each M2-14 special-rules card is checked against Arena first (Open questions).
