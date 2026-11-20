@@ -167,6 +167,11 @@ gzipped**. Definitions are small too: the M1 ones average about 230 bytes, and a
 would be roughly 20–30 MB of source and a few MB compressed. Art is never part of this; it's downloaded and cached at
 runtime (D-007).
 
+Measured again at 158 cards (2026-11-20, M2-08a, the owner asking again): per card, the pool data is about 1.1 KB
+(170 bytes gzipped), the definition about 440 bytes (80 gzipped), the rulings about 410 bytes (80 gzipped). At 30,000
+cards that's roughly 34 MB, 13 MB and 12 MB raw, about 10 MB gzipped all together: too much to ship on a phone's first
+load, but no game, deck or search needs it all at once (below), and rulings are only read in a card's details.
+
 So size isn't the hard part. The plan as the pool grows, none of it needed yet:
 - **Keep one file per card** (`src/defs/<letter>/<slug>.ts`): readable, reviewable, merges cleanly; git handles tens of
   thousands of small files. Generate `defs/index.ts` (and the pool files) instead of keeping them by hand, once that

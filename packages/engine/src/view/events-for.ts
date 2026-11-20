@@ -50,7 +50,8 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "CARD_DRAWN":
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };
     // Everything else names only public objects or facts: cards on the stack or battlefield, a discard (CR 701.9, the
-    // card goes to a public graveyard, with the card id it got coming out of the hand, D-054), players and numbers.
+    // card goes to a public graveyard, with the card id it got coming out of the hand, D-054; named by nothing if a
+    // replacement sent it somewhere hidden), players and numbers.
     // Revealed cards are shown to every player, by what they are only (CR 701.20a, D-062).
     case "CARDS_REVEALED":
     case "STARTING_PLAYER_CHOSEN":

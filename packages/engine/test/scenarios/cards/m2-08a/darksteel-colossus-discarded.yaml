@@ -1,5 +1,5 @@
 name: Darksteel Colossus discarded is shuffled into its owner's library instead, and it was still discarded; Megrim triggers
-rules: [CR 113.6b, CR 701.9a, CR 614.6]
+rules: [CR 113.6b, CR 701.9a, CR 614.6, CR 401.2]
 setup:
   turn: { active: p2, step: main1 }
   p1:
@@ -19,3 +19,5 @@ steps:
       p1.library count: 2
       p1.library contains: [Darksteel Colossus]
       stack: [Megrim ability, Megrim ability]
+      # Named nowhere: its new ids would let players follow it into the library (D-054).
+      events contains: [{ type: CARD_DISCARDED, player: p1, newId: null, cardId: null }]

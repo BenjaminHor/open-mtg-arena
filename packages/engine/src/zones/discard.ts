@@ -13,11 +13,13 @@ export function discardCard(state: GameState, id: ObjectId, to: Destination = { 
   const card = state.objects[id];
   if (card?.kind !== "card") throw new Error(`${id} isn't a card`);
   const moved = moveCard(state, id, to);
+  // Named where it went only if that's public: a library is hidden from everyone (CR 401.2).
+  const hidden = to.zone === "library" || to.zone === "hand";
   const discarded = {
     type: "CARD_DISCARDED",
     player: card.owner,
-    newId: moved.newId,
-    cardId: newCardIdOf(moved),
+    newId: hidden ? null : moved.newId,
+    cardId: hidden ? null : newCardIdOf(moved),
   } as const;
   return { state: moved.state, events: [...moved.events, discarded] };
 }

@@ -130,7 +130,11 @@ export type GameEvent =
    */
   | { type: "CARDS_REVEALED"; from: ZoneRef; cards: OracleId[] }
   /** A card discarded (CR 701.9), as well as its `ZONE_CHANGED`. */
-  | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId; cardId: CardId }
+  /**
+   * A card discarded (CR 701.9a), named in the graveyard it went to. A replacement can send it somewhere hidden instead
+   * (Darksteel Colossus, into a library): then `newId` and `cardId` are null, so no one can follow it there (D-054).
+   */
+  | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId | null; cardId: CardId | null }
   /** State-based actions performed together as one event (CR 704.3); their results follow. */
   | { type: "STATE_BASED_ACTIONS"; actions: StateBasedAction[] }
   /** A permanent was sacrificed by `player` (CR 701.21a): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
