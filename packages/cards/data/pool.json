@@ -750,6 +750,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Cudgel Troll",
+      "slug": "cudgel-troll",
+      "oracleId": "c2f86723-4765-4dac-a9f6-9cfa543613b2",
+      "layout": "normal",
+      "manaCost": "{2}{G}{G}",
+      "manaValue": 4,
+      "typeLine": "Creature — Troll",
+      "oracleText": "{G}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+      "power": "4",
+      "toughness": "3",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Heal",
+        "Regenerate"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/1/e156b8d8-5309-494e-9709-44f98826a69f.jpg?1783941061",
+        "large": "https://cards.scryfall.io/large/front/e/1/e156b8d8-5309-494e-9709-44f98826a69f.jpg?1783941061",
+        "png": "https://cards.scryfall.io/png/front/e/1/e156b8d8-5309-494e-9709-44f98826a69f.png?1783941061",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/1/e156b8d8-5309-494e-9709-44f98826a69f.jpg?1783941061"
+      },
+      "artist": "Jesper Ejsing",
+      "set": "m12",
+      "collectorNumber": "169",
+      "scryfallUri": "https://scryfall.com/card/m12/169/cudgel-troll?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Darksteel Colossus",
       "slug": "darksteel-colossus",
       "oracleId": "1b09d0cf-403c-4a15-aeee-602a1bdaf0c1",
@@ -1165,6 +1196,37 @@
       "set": "xln",
       "collectorNumber": "253",
       "scryfallUri": "https://scryfall.com/card/xln/253/drowned-catacomb?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Drudge Skeletons",
+      "slug": "drudge-skeletons",
+      "oracleId": "c180ed02-07f4-4538-9bea-8c249234a8e2",
+      "layout": "normal",
+      "manaCost": "{1}{B}",
+      "manaValue": 2,
+      "typeLine": "Creature — Skeleton",
+      "oracleText": "{B}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Heal",
+        "Regenerate"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/2/425836be-f5cd-4584-a2ff-a8cf166eccc0.jpg?1783942382",
+        "large": "https://cards.scryfall.io/large/front/4/2/425836be-f5cd-4584-a2ff-a8cf166eccc0.jpg?1783942382",
+        "png": "https://cards.scryfall.io/png/front/4/2/425836be-f5cd-4584-a2ff-a8cf166eccc0.png?1783942382",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/2/425836be-f5cd-4584-a2ff-a8cf166eccc0.jpg?1783942382"
+      },
+      "artist": "Daarken",
+      "set": "m10",
+      "collectorNumber": "95",
+      "scryfallUri": "https://scryfall.com/card/m10/95/drudge-skeletons?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3000,6 +3062,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Polymorph",
+      "slug": "polymorph",
+      "oracleId": "039115f2-6322-4674-bc64-f21883ed375a",
+      "layout": "normal",
+      "manaCost": "{3}{U}",
+      "manaValue": 4,
+      "typeLine": "Sorcery",
+      "oracleText": "Destroy target creature. It can't be regenerated. Its controller reveals cards from the top of their library until they reveal a creature card. The player puts that card onto the battlefield, then shuffles all other cards revealed this way into their library.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/3/83d274f4-452b-4ff2-b026-83667e9ba98f.jpg?1783942389",
+        "large": "https://cards.scryfall.io/large/front/8/3/83d274f4-452b-4ff2-b026-83667e9ba98f.jpg?1783942389",
+        "png": "https://cards.scryfall.io/png/front/8/3/83d274f4-452b-4ff2-b026-83667e9ba98f.png?1783942389",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/3/83d274f4-452b-4ff2-b026-83667e9ba98f.jpg?1783942389"
+      },
+      "artist": "Robert Bliss",
+      "set": "m10",
+      "collectorNumber": "67",
+      "scryfallUri": "https://scryfall.com/card/m10/67/polymorph?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ponder",
       "slug": "ponder",
       "oracleId": "02090581-61aa-4348-ad57-451be8ee91c2",
@@ -3198,6 +3288,37 @@
       "set": "m15",
       "collectorNumber": "27",
       "scryfallUri": "https://scryfall.com/card/m15/27/razorfoot-griffin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Regenerate",
+      "slug": "regenerate",
+      "oracleId": "4ce6c946-7a93-4a8d-a2c9-086cbd036e3c",
+      "layout": "normal",
+      "manaCost": "{1}{G}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Regenerate target creature. (The next time that creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Heal",
+        "Regenerate"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/a/9a1026f4-b11a-48aa-9191-e0bb51c515a6.jpg?1783942358",
+        "large": "https://cards.scryfall.io/large/front/9/a/9a1026f4-b11a-48aa-9191-e0bb51c515a6.jpg?1783942358",
+        "png": "https://cards.scryfall.io/png/front/9/a/9a1026f4-b11a-48aa-9191-e0bb51c515a6.png?1783942358",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/a/9a1026f4-b11a-48aa-9191-e0bb51c515a6.jpg?1783942358"
+      },
+      "artist": "Rebecca Guay",
+      "set": "m10",
+      "collectorNumber": "202",
+      "scryfallUri": "https://scryfall.com/card/m10/202/regenerate?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -4187,6 +4308,38 @@
       "set": "9ed",
       "collectorNumber": "226",
       "scryfallUri": "https://scryfall.com/card/9ed/226/volcanic-hammer?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Wall of Bone",
+      "slug": "wall-of-bone",
+      "oracleId": "8ffe4986-9e09-4421-ad26-296a4c0df9e4",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Skeleton Wall",
+      "oracleText": "Defender (This creature can't attack.)\n{B}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+      "power": "1",
+      "toughness": "4",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Heal",
+        "Regenerate",
+        "Defender"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/1/f19d80ce-284a-4d22-9ea8-f8d480377212.jpg?1783942378",
+        "large": "https://cards.scryfall.io/large/front/f/1/f19d80ce-284a-4d22-9ea8-f8d480377212.jpg?1783942378",
+        "png": "https://cards.scryfall.io/png/front/f/1/f19d80ce-284a-4d22-9ea8-f8d480377212.png?1783942378",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/1/f19d80ce-284a-4d22-9ea8-f8d480377212.jpg?1783942378"
+      },
+      "artist": "Jaime Jones",
+      "set": "m10",
+      "collectorNumber": "119",
+      "scryfallUri": "https://scryfall.com/card/m10/119/wall-of-bone?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

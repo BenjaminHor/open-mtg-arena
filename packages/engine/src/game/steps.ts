@@ -6,6 +6,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { anyAttackers } from "../combat/attackers.ts";
 import { beginCombatDamageStep, secondDamageStepFollows } from "../combat/first-strike.ts";
 import { endUntilEndOfTurnEffects } from "../effects/continuous-effect.ts";
+import { endReplacementEffects } from "../effects/regeneration-shield.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
 import { happen } from "../pipeline/happen.ts";
 import { controllerOf } from "../rules/controller.ts";
@@ -110,7 +111,8 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[], car
  * pass with the stack empty, another cleanup step begins (CR 514.3a, `passPriority`).
  */
 function endCleanup(state: GameState): Progress {
-  const removed = andThen(removeAllDamage(state), endUntilEndOfTurnEffects);
+  // Regeneration shields last "this turn" too (CR 701.19a).
+  const removed = andThen(removeAllDamage(state), (s) => endUntilEndOfTurnEffects(endReplacementEffects(s)));
   return { state: queueWork(removed.state, { kind: "cleanupCheck" }), events: removed.events };
 }
 

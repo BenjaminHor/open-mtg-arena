@@ -46,6 +46,8 @@ export const DUAL = "test-dual";
 export const HOMING_BEAR = "test-homing-bear";
 /** Not a real card: an indestructible 0/0, for CR 704.5f, which indestructible doesn't stop. */
 export const HOLLOW_STATUE = "test-hollow-statue";
+/** Not a real card: an indestructible 0/4, for a destroy that can't happen (CR 614.17c). */
+export const IRON_WALL = "test-iron-wall";
 /** Not a real card: an enchantment with no abilities, until the pool has one (M2-07), for "artifact or enchantment". */
 export const ENCHANTMENT = "test-enchantment";
 /** Not real cards: creatures with keywords no Magic 2010 card combines (CR 702.4, 702.2c), for unit tests. */
@@ -565,6 +567,20 @@ export const TEST_CARDS: CardDatabase = {
       toughness: 0,
     },
     def: { name: "Hollow Statue", oracle: "Indestructible", keywords: ["indestructible"] },
+  }),
+  [IRON_WALL]: card(IRON_WALL, {
+    printed: {
+      name: "Iron Wall",
+      manaCost: [{ kind: "generic", amount: 2 }],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["artifact", "creature"],
+      subtypes: ["Wall"],
+      power: 0,
+      toughness: 4,
+    },
+    def: { name: "Iron Wall", oracle: "Indestructible", keywords: ["indestructible"] },
   }),
   [ENCHANTMENT]: card(ENCHANTMENT, {
     printed: {

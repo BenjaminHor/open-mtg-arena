@@ -1,0 +1,23 @@
+name: Cudgel Troll dealt lethal damage and deathtouch damage at once is saved by one shield, and leaves combat
+rules: [CR 701.19a, CR 704.5g, CR 704.5h, CR 506.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Cudgel Troll, Forest]
+  p2:
+    battlefield: [Deadly Recluse, Hill Giant]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Cudgel Troll]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Deadly Recluse: Cudgel Troll, Hill Giant: Cudgel Troll }
+  - p1 activate: Cudgel Troll
+    pay: auto
+  - all pass: once
+  - all pass: until combat.damage
+  - p1 assign: { Deadly Recluse: 2, Hill Giant: 2 }
+  - expect:
+      p1.battlefield contains: [Cudgel Troll]
+      p1:Cudgel Troll.damage: 0
+      p1:Cudgel Troll.tapped: true
+      p2.graveyard: [Deadly Recluse]

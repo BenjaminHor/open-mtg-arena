@@ -18,6 +18,8 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
       return effect.effects;
     // Its ability's effects run later, as their own resolution: see `delayedAbilities`.
     case "createDelayedTrigger":
+    case "regenerate":
+    case "revealUntil":
     case "dealDamage":
     case "search":
     case "put":

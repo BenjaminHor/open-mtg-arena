@@ -8,6 +8,7 @@ import { countLandPlay } from "../game/land-played.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { addMana } from "../mana/pool.ts";
 import { destroy } from "../permanents/destroy.ts";
+import { regenerate } from "../permanents/regenerate.ts";
 import { sacrifice } from "../permanents/sacrifice.ts";
 import { tapPermanent } from "../permanents/tap.ts";
 import { untapPermanent } from "../permanents/untap.ts";
@@ -37,6 +38,8 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     }
     case "destroy":
       return destroy(state, event.object, event.to);
+    case "regenerate":
+      return regenerate(state, event.object);
     case "sacrifice":
       return sacrifice(state, event.object, event.to);
     case "dealDamage":

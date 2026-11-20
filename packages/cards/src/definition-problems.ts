@@ -14,12 +14,12 @@ import type { PoolCard } from "./pool-data.ts";
 import { triggerWordProblems, triggerWordProblemsOf } from "./trigger-words.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
-const KEYWORD_ACTIONS: readonly string[] = ["mill"];
+const KEYWORD_ACTIONS: readonly string[] = ["mill", "regenerate"];
 /**
  * Generic terms Scryfall lists beside the keyword itself, which name no ability of their own: "Landwalk" beside
- * "Swampwalk" (CR 702.14a).
+ * "Swampwalk" (CR 702.14a), and "Heal" beside "Regenerate", from its reminder text's "heal all damage on it".
  */
-const GENERIC_TERMS: readonly string[] = ["landwalk"];
+const GENERIC_TERMS: readonly string[] = ["landwalk", "heal"];
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
 export function definitionProblems(defs: readonly CardDef[], pool: readonly PoolCard[]): string[] {
@@ -184,6 +184,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   modifyPT: (e) => (e as { of: EffectSubject }).of,
   reveal: (e) => (e as { of: EffectSubject }).of,
   put: (e) => (e as { of: EffectSubject }).of,
+  regenerate: (e) => (e as { of: EffectSubject }).of,
 };
 
 /** Ops that act on players, and the subject each names them with. */
@@ -201,6 +202,7 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   exileGraveyard: (e) => (e as { of: EffectSubject }).of,
   sacrifice: (e) => (e as { who: EffectSubject }).who,
   revealTop: (e) => (e as { who: EffectSubject }).who,
+  revealUntil: (e) => (e as { who: EffectSubject }).who,
 };
 
 /**
@@ -219,6 +221,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       s === "triggeringPlayer" ||
       s === "eachPlayer" ||
       s === "eachOpponent" ||
+      (typeof s === "object" && "controllerOf" in s) ||
       kind === "player" ||
       kind === "opponent" ||
       kind === "playerOrPlaneswalker"
@@ -267,7 +270,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";
     const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
-    if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop"))
+    if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop" || e.op === "revealUntil"))
       problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
     const readsSacrificed =
       effect.op === "ifNothingSacrificed" || ("amount" in effect && effect.amount === "sacrificedPower");

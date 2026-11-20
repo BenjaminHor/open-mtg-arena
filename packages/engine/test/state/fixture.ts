@@ -138,6 +138,7 @@ export function midTurnState(): GameState {
         change: { kind: "modifyPT", power: 3, toughness: 3 },
       },
     ],
+    replacements: [],
     pregame: null,
     passesInSuccession: 1,
     combat: null,

@@ -155,6 +155,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `taps: ${name(e.object)}`;
     case "PERMANENT_UNTAPPED":
       return `untaps: ${name(e.object)}`;
+    case "PERMANENT_REGENERATED":
+      return `regenerates: ${name(e.object)}`;
     case "DAMAGE_REMOVED":
       return `damage removed: ${name(e.object)} (${e.amount})`;
     case "CARD_DISCARDED":

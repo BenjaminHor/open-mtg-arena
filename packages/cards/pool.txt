@@ -30,6 +30,7 @@ Child of Night
 Consume Spirit
 Coral Merfolk
 Craw Wurm
+Cudgel Troll
 Darksteel Colossus
 Deadly Recluse
 Deathmark
@@ -45,6 +46,7 @@ Dragon's Claw
 Dragonskull Summit
 Dread Warlock
 Drowned Catacomb
+Drudge Skeletons
 Duress
 Earthquake
 Elite Vanguard
@@ -110,6 +112,7 @@ Panic Attack
 Phantom Warrior
 Plains
 Planar Cleansing
+Polymorph
 Ponder
 Prized Unicorn
 Prodigal Pyromancer
@@ -117,6 +120,7 @@ Pyroclasm
 Raging Goblin
 Rampant Growth
 Razorfoot Griffin
+Regenerate
 Righteousness
 Rod of Ruin
 Rootbound Crag
@@ -152,6 +156,7 @@ Unsummon
 Vampire Aristocrat
 Viashino Spearhunter
 Volcanic Hammer
+Wall of Bone
 Wall of Faith
 Wall of Fire
 Warpath Ghoul

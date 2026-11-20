@@ -1,0 +1,26 @@
+name: Polymorph whose target left the battlefield doesn't resolve; nothing is revealed
+rules: [CR 608.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Polymorph]
+  p2:
+    battlefield: [Grizzly Bears, Island]
+    hand: [Unsummon]
+    library: [Forest, Hill Giant]
+steps:
+  - p1 cast: Polymorph
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      stack: []
+      p2.battlefield: [Island]
+      p2.library: [Forest, Hill Giant]
+      events contains: [{ type: SPELL_DID_NOT_RESOLVE }]

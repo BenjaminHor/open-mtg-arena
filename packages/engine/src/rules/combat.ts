@@ -97,12 +97,18 @@ function flyingAllowsBlock(state: GameState, blocker: ObjectId, attacker: Object
 }
 
 /**
- * The attacks still in combat (CR 506.4): a creature that left the battlefield is a new object (CR 400.7), so its old
- * id is no longer there; one that stopped being a creature is out too. A change of controller also removes it, which
- * needs control-changing effects (none yet) and the controller stored with the attack.
+ * Whether a creature declared in combat is still in it (CR 506.4): one that left the battlefield is a new object
+ * (CR 400.7), so its old id is no longer there; one that stopped being a creature is out too, and so is one an effect
+ * removed (regenerated, `Combat.removed`). A change of controller also removes it, which needs control-changing effects
+ * (none yet) and the controller stored with the attack.
  */
+function stillInCombat(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  return isCreaturePermanent(state, id, cards) && !(state.combat?.removed.includes(id) ?? false);
+}
+
+/** The attacks still in combat (CR 506.4). */
 export function attacksInCombat(state: GameState, cards: CardDatabase): Attack[] {
-  return (state.combat?.attacks ?? []).filter((a) => isCreaturePermanent(state, a.attacker, cards));
+  return (state.combat?.attacks ?? []).filter((a) => stillInCombat(state, a.attacker, cards));
 }
 
 /** Whether an attacker is blocked: it had a blocker declared for it, even if that blocker has gone (CR 509.1h). */
@@ -115,7 +121,7 @@ export function blocksInCombat(state: GameState, cards: CardDatabase): Block[] {
   const combat = state.combat;
   if (combat === null) return [];
   const attacking = attacksInCombat(state, cards).map((a) => a.attacker);
-  return combat.blocks.filter((b) => isCreaturePermanent(state, b.blocker, cards) && attacking.includes(b.attacker));
+  return combat.blocks.filter((b) => stillInCombat(state, b.blocker, cards) && attacking.includes(b.attacker));
 }
 
 /** Whether this is an attacking creature now (CR 508.1k): declared as an attacker and not removed from combat. */
@@ -128,5 +134,5 @@ export function isAttacking(state: GameState, id: ObjectId, cards: CardDatabase)
  * even if the creature it blocked has left combat. So not `blocksInCombat`, which drops those blocks.
  */
 export function isBlocking(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
-  return (state.combat?.blocks ?? []).some((b) => b.blocker === id) && isCreaturePermanent(state, id, cards);
+  return (state.combat?.blocks ?? []).some((b) => b.blocker === id) && stillInCombat(state, id, cards);
 }

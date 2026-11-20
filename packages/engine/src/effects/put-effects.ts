@@ -10,7 +10,7 @@ import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 import type { Destination } from "../zones/move-card.ts";
-import { objectsNamed } from "./subjects.ts";
+import { objectsNamed, onePlayer } from "./subjects.ts";
 
 type Put = Extract<Effect, { op: "put" }>;
 
@@ -31,7 +31,10 @@ export function put(state: GameState, effect: Put, context: EffectContext, cards
     const asked = waitFor(state, context.controller, { kind: "chooseYesNo", purpose: "optional", resume });
     return { state: asked, events: [] };
   }
-  const to = destinationOf(effect, context.controller);
+  // "The player puts that card onto the battlefield": that player controls it (CR 110.2a).
+  const by =
+    effect.by === undefined ? context.controller : (onePlayer(state, effect.by, context, cards) ?? context.controller);
+  const to = destinationOf(effect, by);
   return happen(
     state,
     { kind: "simultaneous", events: ids.map((object) => ({ kind: "moveCard", object, to })) },

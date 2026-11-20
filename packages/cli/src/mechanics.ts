@@ -87,6 +87,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   PERMANENT_TAPPED: true,
   PERMANENT_UNTAPPED: true,
   DAMAGE_REMOVED: true,
+  PERMANENT_REGENERATED: true,
   CARD_DISCARDED: true,
   CARDS_REVEALED: true,
 };

@@ -5,6 +5,7 @@
 import type { Amount, CardDatabase, EffectSubject, ObjectFilter } from "../cards/types.ts";
 import { apnapOrder } from "../game/turn-order.ts";
 import { amountOf } from "../rules/amount.ts";
+import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -32,7 +33,23 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
   // Every permanent fitting the filter now, as the effect applies (CR 608.2h).
   if ("each" in s)
     return permanentsFitting(state, s.each, context, cards).map((object) => ({ kind: "object", object }));
+  if ("controllerOf" in s) {
+    const player = controllerOfTarget(state, context.targets[s.controllerOf.target] ?? []);
+    return player === null ? [] : [{ kind: "player", player }];
+  }
   return context.targets[s.target] ?? [];
+}
+
+/**
+ * "Its controller": the controller of the targeted object now, or as it last was on the battlefield if it's gone
+ * (CR 608.2h). The targets here are those still legal as the spell began to resolve (CR 608.2b).
+ */
+function controllerOfTarget(state: GameState, targets: readonly Target[]): PlayerId | null {
+  const [object] = objectsOf(targets);
+  if (object === undefined) return null;
+  if (state.objects[object] !== undefined) return controllerOf(state, object);
+  // Last known information keeps the card as it left; control-changing effects will need its controller then (layer 2).
+  return state.lastKnown[object]?.baseController ?? null;
 }
 
 /**
