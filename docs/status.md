@@ -266,6 +266,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
+     - M2-07c plan (2026-11-20), two PRs:
+       - M2-07c1: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",
+         then a loss equal to the sacrificed creature's power, read from its last known characteristics, CR 608.2h:
+         `lastKnown` snapshots the computed power as a card leaves the battlefield, future-rules; "if you can't" taps
+         it and loses 7), Capricious Efreet (targets on both sides, "up to two"; destroy one of the still-legal targets
+         at random with the seeded RNG), Inferno Elemental (blocks or becomes blocked: one trigger per blocker/attacker
+         pair, matched where `BLOCKERS_DECLARED` is emitted; "that creature" is the trigger's object), Bogardan Hellkite
+         (flash, CR 702.8a: cast any time an instant could be; its entering trigger divides 5 damage among one to five
+         targets, the division chosen as the trigger goes on the stack, CR 603.3d, 601.2d).
+       - M2-07c2: delayed triggers (CR 603.7): created by a resolving effect, kept in `GameState.delayedTriggers` with
+         their own `AbilityRef`, removed once triggered ("the next end step"); Dragon Whelp's per-object, per-turn
+         activation count (D-078); "becomes the target" (CR 601.2c, 603.2) for spells, activations and triggers, as
+         targets are chosen, dropped on cancel (only what the cancelled cast caused): Illusionary Servant.
      - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
        Illusionary Servant ("becomes the target", CR 601.2c), Bogardan Hellkite (flash comes with it, D-074).
      - Settled before code (advisor, 2026-11-20):
