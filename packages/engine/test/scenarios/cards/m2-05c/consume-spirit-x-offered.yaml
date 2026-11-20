@@ -1,0 +1,12 @@
+name: Consume Spirit offers only an X its caster's black mana can pay
+rules: [CR 601.2h]
+# With two Swamps and three Mountains, X of 1 costs {B}{1}{B} and is payable; X of 2 would need a third black mana.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Consume Spirit]
+    battlefield: [Swamp, Swamp, Mountain, Mountain, Mountain]
+steps:
+  - p1 cast: Consume Spirit
+  - expect:
+      pending: { player: p1, kind: announceX, upTo: 1 }

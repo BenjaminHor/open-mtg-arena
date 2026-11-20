@@ -76,6 +76,8 @@ function targetProblems(
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
+    // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
+    if (typeof effect.amount === "object") problems.push(`${where}: divided damage can't be a counted amount`);
     const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
@@ -136,9 +138,18 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
   };
   const objectOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
-    return s === "self" || s === "found" || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
+    const each = typeof s === "object" && "each" in s;
+    return (
+      s === "self" || s === "found" || each || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard"
+    );
   };
   for (const effect of effects) {
+    // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
+    if (
+      effect.op === "dealDamage" &&
+      (playerOnly(effect.from) || (typeof effect.from === "object" && "each" in effect.from))
+    )
+      problems.push(`${where}: damage comes from one object`);
     const of = OBJECT_SUBJECTS[effect.op];
     if (of !== undefined && playerOnly(of(effect)))
       problems.push(`${where}: ${effect.op} acts on objects, not players`);

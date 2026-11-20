@@ -1,18 +1,17 @@
-// The number an effect's `Amount` stands for: written on the card, X (CR 107.3a), or a count of permanents.
+// The number a fixed `Amount` stands for: written on the card, or X as announced (CR 107.3a). A count of permanents
+// is worked out only as an effect applies, by `amountNow` (effects/subjects.ts).
 
-import type { Amount, ObjectFilter } from "../cards/types.ts";
+import type { Amount } from "../cards/types.ts";
+
+/** An amount that needs no game to work out: a number, or X. */
+export type FixedAmount = Exclude<Amount, { count: unknown }>;
 
 /**
  * `x` is the value announced as the spell was cast or the ability activated (CR 107.3a, 601.2b). An amount of X with
  * nothing announced is a definition bug: a card whose text uses X has an X to announce.
  */
-export function amountOf(amount: Amount, x: number | null, count?: (filter: ObjectFilter) => number): number {
+export function amountOf(amount: FixedAmount, x: number | null): number {
   if (typeof amount === "number") return amount;
-  if (amount !== "X") {
-    // A count needs the battlefield; only resolving effects have one to count (CR 608.2h).
-    if (count === undefined) throw new Error("a counted amount is only worked out as an effect applies");
-    return count(amount.count);
-  }
   if (x === null) throw new Error("X was never announced");
   return x;
 }

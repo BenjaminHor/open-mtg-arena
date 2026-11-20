@@ -5,7 +5,6 @@ import type { CardDatabase, Effect } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
-import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -14,7 +13,7 @@ import { createContinuousEffect } from "./continuous-effect.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { exileGraveyard, lookAtTop, mayShuffle, revealObjects, search, shuffleEach } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
-import { amountNow, objectsOf, onePlayer, playersOf, subject } from "./subjects.ts";
+import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
 /**
  * Carries out one effect of a resolving spell or ability (CR 608.2c). An effect that needs cards chosen waits for
@@ -31,7 +30,7 @@ export function runEffect(
     case "dealDamage": {
       // The damage's source is one object (CR 120.2b). If it was an illegal target, that part of the effect can't
       // happen (CR 608.2b: it "fails to determine any such information").
-      const [from, ...more] = objectsOf(subject(state, effect.from, context, cards));
+      const [from, ...more] = objectsNamed(state, effect.from, context, cards);
       if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
       if (from === undefined) return { state, events: [] };
       return happen(state, { kind: "dealDamage", damage: damageOf(state, effect, from, context, cards) }, cards);
@@ -44,7 +43,7 @@ export function runEffect(
     case "modifyPT": {
       // The affected objects are fixed now (CR 611.2c). An illegal target isn't among them (CR 608.2b), and neither is
       // one that left the battlefield since resolution began: affecting it is impossible (CR 101.3, 400.7).
-      const affected = onBattlefield(state, objectsOf(subject(state, effect.of, context, cards)));
+      const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (affected.length === 0) return { state, events: [] };
       const change = { kind: "modifyPT", power: effect.power, toughness: effect.toughness } as const;
       return createContinuousEffect(state, {
@@ -56,78 +55,50 @@ export function runEffect(
       });
     }
     case "destroy":
-      return toEach(
-        state,
-        onBattlefield(state, objectsOf(subject(state, effect.of, context, cards))),
-        cards,
-        (object) => ({
-          kind: "destroy",
-          object,
-        }),
-      );
+      return toEach(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
+        kind: "destroy",
+        object,
+      }));
     case "destroyAll": {
       // Every permanent that fits, decided once now (CR 608.2h), destroyed at the same time (CR 608.2f). Cards going to
       // one graveyard together go in battlefield order (D-039; later: CR 404.3 lets their owner choose).
-      const all = state.zones.battlefield.filter((id) =>
-        matchesFilter(state, id, effect.filter, context.controller, cards),
-      );
+      // (The same as `destroy` of `{ each: filter }`; card definitions use this name for "destroy all".)
+      const all = permanentsFitting(state, effect.filter, context, cards);
       return toEach(state, all, cards, (object) => ({ kind: "destroy", object }));
     }
     case "exile":
-      return toEach(
-        state,
-        stillThere(state, objectsOf(subject(state, effect.of, context, cards))),
-        cards,
-        (object) => ({
-          kind: "moveCard",
-          object,
-          to: { zone: "exile" },
-        }),
-      );
+      return toEach(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
+        kind: "moveCard",
+        object,
+        to: { zone: "exile" },
+      }));
     case "returnToHand":
       // Its owner's hand (CR 400.3): `moveCard` takes it there.
-      return toEach(
-        state,
-        stillThere(state, objectsOf(subject(state, effect.of, context, cards))),
-        cards,
-        (object) => ({
-          kind: "moveCard",
-          object,
-          to: { zone: "hand" },
-        }),
-      );
+      return toEach(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
+        kind: "moveCard",
+        object,
+        to: { zone: "hand" },
+      }));
     case "putOnTopOfLibrary":
-      return toEach(
-        state,
-        stillThere(state, objectsOf(subject(state, effect.of, context, cards))),
-        cards,
-        (object) => ({
-          kind: "moveCard",
-          object,
-          to: { zone: "library", position: "top" },
-        }),
-      );
+      return toEach(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
+        kind: "moveCard",
+        object,
+        to: { zone: "library", position: "top" },
+      }));
     case "tap":
-      return toEach(
-        state,
-        onBattlefield(state, objectsOf(subject(state, effect.of, context, cards))),
-        cards,
-        (object) => ({
-          kind: "tap",
-          object,
-        }),
-      );
+      return toEach(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
+        kind: "tap",
+        object,
+      }));
     case "counter": {
       // "Can't be countered" will make this do nothing for that spell, without stopping the rest (later: CR 101.2).
-      const onStack = objectsOf(subject(state, effect.of, context, cards)).filter((id) =>
-        state.zones.stack.includes(id),
-      );
+      const onStack = objectsNamed(state, effect.of, context, cards).filter((id) => state.zones.stack.includes(id));
       return toEach(state, onStack, cards, (object) => ({ kind: "counterObject", object }));
     }
     case "loseLife": {
       // Losing 0 life is still an event (D-065, the owner's ruling; the CR settles only gaining 0, CR 119.9).
       const amount = amountNow(state, effect.amount, context, cards);
-      return toEach(state, playersOf(subject(state, effect.who, context, cards)), cards, (player) => ({
+      return toEach(state, playersNamed(state, effect.who, context, cards), cards, (player) => ({
         kind: "loseLife",
         player,
         amount,
@@ -136,26 +107,26 @@ export function runEffect(
     case "draw":
       return drawEach(
         state,
-        playersOf(subject(state, effect.who, context, cards)),
+        playersNamed(state, effect.who, context, cards),
         amountNow(state, effect.amount, context, cards),
         cards,
       );
     case "discardAtRandom":
       return discardAtRandom(
         state,
-        playersOf(subject(state, effect.who, context, cards)),
+        playersNamed(state, effect.who, context, cards),
         amountNow(state, effect.amount, context, cards),
         cards,
       );
     case "mill": {
       const amount =
         effect.amount === "halfTheirLibrary" ? effect.amount : amountNow(state, effect.amount, context, cards);
-      return mill(state, playersOf(subject(state, effect.who, context, cards)), amount, cards);
+      return mill(state, playersNamed(state, effect.who, context, cards), amount, cards);
     }
     case "discard": {
       // One player's choice (`definition-problems.ts` refuses "each player"); several players discarding at once would
       // choose in APNAP order first (later: CR 608.2e).
-      const [player, ...more] = playersOf(subject(state, effect.who, context, cards));
+      const [player, ...more] = playersNamed(state, effect.who, context, cards);
       if (more.length > 0) throw new Error("a chosen discard names one player");
       if (player === undefined) return { state, events: [] };
       return discardChosen(
@@ -169,7 +140,7 @@ export function runEffect(
       );
     }
     case "revealHand":
-      return playersOf(subject(state, effect.who, context, cards)).reduce<Progress>(
+      return playersNamed(state, effect.who, context, cards).reduce<Progress>(
         (p, player) => andThen(p, (s) => revealHand(s, player, cards)),
         { state, events: [] },
       );
@@ -180,15 +151,15 @@ export function runEffect(
       return owner === null ? { state, events: [] } : search(state, owner, effect, context, chosen, cards);
     }
     case "reveal":
-      return revealObjects(state, stillThere(state, objectsOf(subject(state, effect.of, context, cards))), cards);
+      return revealObjects(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards);
     case "put": {
       // "Put it into your hand" (its owner's, CR 400.3); "onto the battlefield", under the controller (CR 110.2a).
       const to = destinationOf(effect, context.controller);
-      const ids = stillThere(state, objectsOf(subject(state, effect.of, context, cards)));
+      const ids = stillThere(state, objectsNamed(state, effect.of, context, cards));
       return toEach(state, ids, cards, (object) => ({ kind: "moveCard", object, to }));
     }
     case "shuffle":
-      return shuffleEach(state, playersOf(subject(state, effect.who, context, cards)), cards);
+      return shuffleEach(state, playersNamed(state, effect.who, context, cards), cards);
     case "mayShuffle": {
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : mayShuffle(state, player, effect, context);
@@ -202,7 +173,7 @@ export function runEffect(
     }
     case "gainLife": {
       const amount = amountNow(state, effect.amount, context, cards);
-      return toEach(state, playersOf(subject(state, effect.who, context, cards)), cards, (player) => ({
+      return toEach(state, playersNamed(state, effect.who, context, cards), cards, (player) => ({
         kind: "gainLife",
         player,
         amount,

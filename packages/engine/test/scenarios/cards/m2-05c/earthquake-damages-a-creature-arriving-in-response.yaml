@@ -1,6 +1,7 @@
-name: Earthquake checks for flying as it resolves, so a creature put onto the battlefield in response is dealt damage
+name: Earthquake decides what it damages as it resolves, so a creature put onto the battlefield in response is dealt damage
 rules: [CR 608.2h]
-# Earthquake's ruling: whether a creature is without flying is only checked on resolution.
+# Earthquake's ruling: whether a creature is without flying is only checked on resolution. Nothing can give or take
+# flying yet (layers, M2-09), so this shows the recipients are decided then.
 setup:
   turn: { active: p1, step: main1 }
   p1:

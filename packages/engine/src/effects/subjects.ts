@@ -49,7 +49,8 @@ export function objectsOf(targets: readonly Target[]): ObjectId[] {
 
 /** What an `Amount` is now: a number, X, or a count of permanents (CR 107.3a, 107.3c, 608.2h). */
 export function amountNow(state: GameState, amount: Amount, context: EffectContext, cards: CardDatabase): number {
-  return amountOf(amount, context.x, (filter) => permanentsFitting(state, filter, context, cards).length);
+  if (typeof amount === "object") return permanentsFitting(state, amount.count, context, cards).length;
+  return amountOf(amount, context.x);
 }
 
 /** The permanents fitting a filter right now, its `controller` relative to "you" (CR 109.5). */
@@ -60,4 +61,24 @@ export function permanentsFitting(
   cards: CardDatabase,
 ): ObjectId[] {
   return state.zones.battlefield.filter((id) => matchesFilter(state, id, filter, context.controller, cards));
+}
+
+/** The objects a subject names (its players left out). */
+export function objectsNamed(
+  state: GameState,
+  s: EffectSubject,
+  context: EffectContext,
+  cards: CardDatabase,
+): ObjectId[] {
+  return objectsOf(subject(state, s, context, cards));
+}
+
+/** The players a subject names (its objects left out). */
+export function playersNamed(
+  state: GameState,
+  s: EffectSubject,
+  context: EffectContext,
+  cards: CardDatabase,
+): PlayerId[] {
+  return playersOf(subject(state, s, context, cards));
 }

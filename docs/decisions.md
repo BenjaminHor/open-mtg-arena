@@ -859,5 +859,7 @@ every schema change and every change D-024 lists bumps it.
 - "Spend only black mana on X" is `xPaidWith` on the spell: only the cost to pay makes each X a {B}, so the same
   payments are legal (CR 601.2h) and the printed cost, color and mana value don't change (CR 107.4b). It doesn't
   generalize (cost reductions, CR 118.7a; Soul Burn's "black and/or red"): restricted mana in the pool replaces it when
-  a card needs that (future-rules).
-- Subjects and amounts live in `effects/subjects.ts`, out of `run-effect.ts`.
+  a card needs that (future-rules). The X a player is offered is lowered to what they could pay in that color now, so
+  it stays a guide to what's payable (D-058).
+- Subjects and amounts live in `effects/subjects.ts`, out of `run-effect.ts`; `amountOf` takes only fixed amounts, so
+  nothing that can't count (dividing as it's cast) can be handed a count.

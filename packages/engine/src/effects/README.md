@@ -78,6 +78,6 @@ that use it.
 `player-effects.ts` isn't a primitive: `drawEach`, `discardAtRandom` and `mill` propose several events for the players
 an effect names (one draw at a time; random picks, then one simultaneous discard; one simultaneous mill).
 
-Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts` and
-`library-effects.test.ts`, and the scenarios in
+Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts`,
+`library-effects.test.ts` and `damage-to-many.test.ts`, and the scenarios in
 `test/scenarios/effects/` and `test/scenarios/cards/`.

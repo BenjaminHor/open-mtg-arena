@@ -154,7 +154,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       - A subject `{ each: ObjectFilter }`: every permanent fitting it as the effect applies (Earthquake's ruling,
         CR 608.2h). Filters gain `keywords` / `notKeywords`, read through `keywordsOf` (CR 702.9a).
       - `dealDamage` gains `and: [{ to, amount }]`: one source, different damage to different recipients, as one damage
-        event (CR 608.2f, 120.4), backed by a unit test that one proposal carries every recipient. 0 damage isn't dealt
+        event (CR 608.2f, 120.4), backed by a unit test that both of Goblin Artillery's damages come before either life
+        loss. 0 damage isn't dealt
         (CR 120.8); gaining 0 life isn't an event (CR 119.9).
       - Consume Spirit's "Spend only black mana on X": X stays generic in the printed cost (CR 107.4b; color and mana
         value unchanged, CR 202.2, 202.3e); only the cost to pay (`totalCost`) makes each X a {B}, a payment

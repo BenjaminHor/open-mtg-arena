@@ -191,7 +191,10 @@ export type ObjectFilter = {
    * (they differ once teams exist, later: CR 102.3).
    */
   controller?: "you" | "notYou" | "opponent";
-  /** "Creature with flying" / "without flying": keyword abilities, as computed (`keywordsOf`, CR 702.9a). */
+  /**
+   * "Creature with flying" / "without flying": keyword abilities, as computed (`keywordsOf`, CR 702.9a). `keywords`
+   * means any of them; `notKeywords`, none of them. "With flying and first strike" would need an all-of form.
+   */
   keywords?: Keyword[];
   notKeywords?: Keyword[];
   /** "Basic land card": supertypes (CR 205.4a), as computed (`supertypesOf`). */
