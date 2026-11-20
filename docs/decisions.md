@@ -688,7 +688,7 @@ every schema change and every change D-024 lists bumps it.
   M2-08 tests it with a scenario (its acceptance list); the M10 pool may not have a card that shows it.
 - Events that happen at the same time are one `simultaneous` event of single events: the state-based actions of one
   check (CR 704.3), the untap step (CR 502.3), the attackers tapping (CR 508.1f), the cleanup discard (CR 514.1).
-  Every member is replaced against the state before the batch (CR 614.4, built with M2-08), then all are performed,
+  Every member is replaced against the state before the batch (built with M2-08; CR 614.4 was a wrong citation, D-085), then all are performed,
   and triggers see them together.
 - Replacing comes entirely before performing, so a replacement that needs a choice (CR 616.1) can stop before anything
   has changed. Making `happen` resumable is M2-08's: it becomes a work item, and the callers that do more after it
@@ -1152,7 +1152,8 @@ every schema change and every change D-024 lists bumps it.
 **D-085: Replacement effects from a card's own text; indestructible; two-color mana (M2-08a)** · 2026-11-20 · accepted
 - A card's own replacement effects are data, `CardDef.replacements`, read through `replacementsOf` (layer 6 later), and
   applied in the pipeline's `replace` (`pipeline/replacements.ts`) to each event against the state before its batch
-  (CR 614.4). Each kind says where it works: "enters tapped unless" as the card enters (CR 113.6h, 614.12), "if it would
+  (each watches for an event about to happen, CR 614.1; CR 614.4, once cited for this, says a replacement must exist
+  before its event). Each kind says where it works: "enters tapped unless" as the card enters (CR 113.6h, 614.12), "if it would
   be put into a graveyard from anywhere" in every zone (CR 113.6b), so the moving card's own text is read, not only the
   battlefield's.
 - A replacement changes where the card goes, not what happens to it: destroy, sacrifice, counter and discard carry the

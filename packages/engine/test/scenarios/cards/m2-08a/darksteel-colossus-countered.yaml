@@ -20,4 +20,5 @@ steps:
       stack: []
       p1.graveyard: []
       p1.library contains: [Darksteel Colossus]
+      events contains: [{ type: CARDS_REVEALED }, { type: LIBRARY_SHUFFLED, player: p1 }]
       p2.graveyard: [Cancel]

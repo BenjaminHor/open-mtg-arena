@@ -38,8 +38,10 @@ export const X_BOLT = "test-x-bolt";
 export const SAC_PUMP = "test-sac-pump";
 /** Not a real card: an instant whose delayed trigger is a spell's (CR 603.7d), which no Magic 2010 card has. */
 export const LATE_GIFT = "test-late-gift";
-/** Not a real card: "enters tapped unless you control a Forest", for lands entering together (CR 614.4). */
+/** Not a real card: "enters tapped unless you control a Forest", for lands entering together. */
 export const GROVE = "test-grove";
+/** Not a real card: a nonbasic land with the land types Forest and Plains, named neither (checklands' ruling). */
+export const DUAL = "test-dual";
 /** Not a real card: a 2/2 that goes to its owner's library instead of a graveyard, and can be destroyed. */
 export const HOMING_BEAR = "test-homing-bear";
 /** Not a real card: an indestructible 0/0, for CR 704.5f, which indestructible doesn't stop. */
@@ -516,6 +518,20 @@ export const TEST_CARDS: CardDatabase = {
       oracle: "This land enters tapped unless you control a Forest.",
       replacements: [{ kind: "entersTapped", unless: { subtypes: ["Forest"], controller: "you" } }],
     },
+  }),
+  [DUAL]: card(DUAL, {
+    printed: {
+      name: "Test Dual",
+      manaCost: null,
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["land"],
+      subtypes: ["Forest", "Plains"],
+      power: null,
+      toughness: null,
+    },
+    def: { name: "Test Dual", oracle: "({T}: Add {G} or {W}.)" },
   }),
   [HOMING_BEAR]: card(HOMING_BEAR, {
     printed: {

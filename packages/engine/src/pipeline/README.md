@@ -12,7 +12,8 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    `simultaneous` event: the state-based actions of a check, the untap step, the attackers tapping, the cleanup
    discard, a mulligan's hand going back.
 2. **Replace** (`happen.ts`, `replace`; `replacements.ts`): replacement and prevention effects modify each event,
-   every member of a batch against the state before the batch (CR 614.4). So far: 0 damage is dropped, so nothing can
+   every member of a batch against the state before the batch, as each watches for an event about to happen (CR 614.1;
+   a checkland's ruling: it doesn't see lands entering with it). So far: 0 damage is dropped, so nothing can
    replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b); and a card's own
    replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
    into a graveyard from anywhere, ... instead". Destroy, sacrifice, counter and discard carry where a replacement sends

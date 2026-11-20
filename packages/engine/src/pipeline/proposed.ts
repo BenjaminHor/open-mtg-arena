@@ -80,7 +80,7 @@ export type ProposedEvent =
   /**
    * Several events at the same time, as one: the state-based actions of one check (CR 704.3), a step's turn-based
    * action on several permanents (CR 502.3, 508.1f), the cleanup discard (CR 514.1). Every member is replaced against
-   * the state before any of them happens (later: CR 614.4, 616.1), then all are performed, and triggered abilities see
+   * the state before any of them happens (several replacements on one, later: CR 616.1), then all are performed, and triggered abilities see
    * them together (later: CR 603.2).
    */
   | { kind: "simultaneous"; events: SingleEvent[] };

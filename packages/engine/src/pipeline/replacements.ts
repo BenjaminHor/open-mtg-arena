@@ -1,5 +1,5 @@
 // Replacement effects (CR 614): they watch for an event about to happen and change it before it does. `happen.ts`'s
-// `replace` calls `applyReplacements` for each event, against the state before its batch (CR 614.4). So far the only
+// `replace` calls `applyReplacements` for each event, against the state before its batch (each watches for an event about to happen, CR 614.1). So far the only
 // replacements are an object's own text about where it goes (`CardDef.replacements`, read through `replacementsOf`):
 // "enters tapped unless ..." and "if it would be put into a graveyard from anywhere, ... instead".
 //
@@ -94,7 +94,8 @@ function replaceWith(
     case "graveyardToLibrary": {
       // "Reveal it and shuffle it into its owner's library", in the card's order: revealed where it is, put into the
       // library, then the library is shuffled. In a batch, the shuffle comes right after its own move, before the
-      // batch's later members; the library ends up just as random.
+      // batch's later members: a card another member puts on top at the same time would be shuffled too, where it should
+      // stay on top (later: CR 701.24g; no pool card can).
       const owner = ownerOf(state, move.object);
       return {
         before: [{ kind: "reveal", from: zoneOf(state, move.object), objects: [move.object] }],

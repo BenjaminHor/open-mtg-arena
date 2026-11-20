@@ -97,7 +97,8 @@ function choicesOf(mana: AddedMana): readonly Color[] {
 
 /**
  * Why the color sent with a mana ability's activation is wrong, or null: an "any color" ability needs one of the five
- * colors (CR 105.4), a "{G} or {W}" one one of its two (CR 106.1); any other ability takes none (D-068).
+ * colors (CR 105.4), a "{G} or {W}" one one of its two, the choice its text offers (CR 608.2d); any other ability
+ * takes none (D-068).
  */
 export function manaColorProblem(
   state: GameState,
@@ -111,7 +112,7 @@ export function manaColorProblem(
   if (choices.length === 0)
     return color === undefined ? null : "only a mana ability with a choice of color takes a color";
   if (color === undefined || !choices.includes(color))
-    return `choose one of ${choices.join(", ")} for that mana (CR 106.1)`;
+    return `choose one of ${choices.join(", ")} for that mana (CR 608.2d)`;
   return null;
 }
 

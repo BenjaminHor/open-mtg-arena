@@ -114,7 +114,10 @@ export type GameEvent =
   | { type: "DAMAGE_DEALT"; source: ObjectId; to: Target; amount: number; combat: boolean }
   | { type: "LIFE_LOST"; player: PlayerId; amount: number } // CR 119.3
   | { type: "LIFE_GAINED"; player: PlayerId; amount: number } // CR 119.3
-  /** A spell was countered (CR 701.6a): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
+  /**
+   * A spell was countered (CR 701.6a): it's moving to its owner's graveyard, or where a replacement sends it
+   * (`ZONE_CHANGED` follows).
+   */
   | { type: "SPELL_COUNTERED"; object: ObjectId; cardId: CardId }
   /** An ability was countered (CR 701.6a): it's removed from the stack and ceases to exist. */
   | { type: "ABILITY_COUNTERED"; object: ObjectId; source: ObjectId }
@@ -136,9 +139,15 @@ export type GameEvent =
   | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId | null; cardId: CardId | null }
   /** State-based actions performed together as one event (CR 704.3); their results follow. */
   | { type: "STATE_BASED_ACTIONS"; actions: StateBasedAction[] }
-  /** A permanent was sacrificed by `player` (CR 701.21a): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
+  /**
+   * A permanent was sacrificed by `player` (CR 701.21a): it's moving to its owner's graveyard, or where a replacement
+   * sends it (`ZONE_CHANGED` follows).
+   */
   | { type: "PERMANENT_SACRIFICED"; object: ObjectId; cardId: CardId; player: PlayerId }
-  /** A permanent was destroyed (CR 701.8): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
+  /**
+   * A permanent was destroyed (CR 701.8): it's moving to its owner's graveyard, or where a replacement sends it
+   * (`ZONE_CHANGED` follows).
+   */
   | { type: "PERMANENT_DESTROYED"; object: ObjectId; cardId: CardId }
   /**
    * A player lost the game (CR 104.3), including by conceding (reason `conceded`). `GAME_ENDED` follows when the game

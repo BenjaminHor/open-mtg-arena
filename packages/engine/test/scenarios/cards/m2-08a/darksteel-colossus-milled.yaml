@@ -16,3 +16,4 @@ steps:
       p2.graveyard: [Forest, Island, Plains, Swamp]
       p2.library count: 2
       p2.library contains: [Darksteel Colossus, Mountain]
+      events contains: [{ type: CARDS_REVEALED }, { type: LIBRARY_SHUFFLED, player: p2 }]

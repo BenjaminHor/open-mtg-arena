@@ -371,13 +371,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      the advisor's review), in five PRs. Three later cards shape the data now: Clone (M2-14, a copy as it enters,
      CR 616.1c), Protean Hydra (M2-10, a prevention that removes counters), Magebane Armor (M2-12, a granted
      noncombat-damage prevention).
-     - M2-08a: built (D-085), in review. 15 scenarios in `test/scenarios/cards/m2-08a/`, a CR 614.4 unit test
+     - M2-08a: built (D-085), reviews done and fixed; next the PR. 18 scenarios in `test/scenarios/cards/m2-08a/`, a unit test for lands entering together
        (`test/pipeline/replacements.test.ts`), an Indestructible matrix row, three golden games; the Magic 2010 decks
        run checklands. 158 cards; 150 of the 234 Magic 2010 cards. As built, unlike the plan below: one replacement per
        event, refusing two (CR 614.5 and 616.1f come with M2-08c's choice), and `autoPay` stays greedy (lands first,
        then fewest choices; no search). Owner (2026-11-20): carry on with M2-08b once this PR merges. Plan as made:
      - M2-08a, the framework, no player choice: replacement effects as data, applied in `pipeline/happen.ts`'s
-       `replace` to each event against the state before its batch (CR 614.4), each at most once per event
+       `replace` to each event against the state before its batch, each at most once per event
        (CR 614.5), the result replaced again (CR 616.1f). Until M2-08c, `replace` throws if two different effects
        apply to one event; it never picks. Where they come from: a permanent's static replacement on the battlefield,
        and the moving object's own (CR 113.6: Colossus from hand, library or stack; a land "as it enters", CR 113.6h,
@@ -390,7 +390,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        control a [type] or a [type]", land types read through `characteristics()`, Convincing Mirage later), with
        "{T}: Add {G} or {W}": the color carried on the action as for any color (D-068) but limited to two, and
        `autoPay` searching sources once one offers a restricted choice (D-068 said it would need to).
-     - M2-08b, regeneration (CR 701.19, 614.8): a shield in state bound to one object, used once, the next time it would
+     - M2-08b, regeneration (CR 701.19, 614.8), with a scenario for CR 614.17c (an indestructible creature's
+       destroy never uses up its shield; `happen.ts` cites it as later until then): a shield in state bound to one object, used once, the next time it would
        be destroyed this turn (destroy, lethal damage, deathtouch; not sacrifice): instead tap it, remove its damage,
        remove it from combat (a recorded removed-from-combat set, CR 506.4, which future-rules asks for). Identical
        shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:

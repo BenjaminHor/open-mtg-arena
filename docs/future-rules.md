@@ -35,11 +35,17 @@ is where they go.
 player must choose the order of replacements (CR 616.1), `happen` must stop before performing anything (it replaces
 everything first, so it can) and resume as a work item; every caller that does more after `happen` returns then has
 to queue that rest as work too (the list is in `engine/src/pipeline/README.md`). Each member of a batch is replaced
-against the state before the batch (CR 614.4), and the results of damage are replaced as part of the damage event
+against the state before the batch (built, D-085), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):
 since M2-05b1 "draw N" is N single draws (D-060), and the container comes with the first replacement that needs it
-(M2-08). Since each event is performed whole, a "would die" or
+(M2-08). *Built (M2-08a, D-085):* a card's own replacements about where it goes, read from the moving card in any zone.
+*Still to come:* replacements from other permanents ("If a card would be put into a graveyard from anywhere, exile it
+instead"), found by scanning the battlefield as well as the moving card; tokens and copies with such text
+(`replacementsOf` and `ownerOf` read only cards); a shuffle-into-library replacement in a batch with a card put on top at
+the same time, where the shuffle must come after the whole batch and leave that card on top (CR 701.24g, its Colossus
+example); a discard into a hidden zone with no reveal leaves the card's characteristics undefined (CR 701.9c), so a
+"discards a creature card" trigger must read them as they were in the hand. Since each event is performed whole, a "would die" or
 "would be put into a graveyard" replacement must recognize every event kind that makes that zone change (`moveCard`,
 `destroy`, `sacrifice`, `counterObject`, `discard`, ...): M2-08 needs a small "the zone change this event makes"
 helper. Lifelink's life gain (D-070) is performed inside the damage event, one gain per source (CR 702.15e), so a life

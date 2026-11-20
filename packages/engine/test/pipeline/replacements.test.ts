@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { checkStateBasedActions } from "../../src/game/state-based-actions.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { happen } from "../../src/pipeline/happen.ts";
-import { FOREST, GROVE, HOLLOW_STATUE, HOMING_BEAR, TEST_CARDS } from "../support/cards.ts";
+import { DUAL, FOREST, GROVE, HOLLOW_STATUE, HOMING_BEAR, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 function board(): GameState {
@@ -21,7 +21,7 @@ const permanent = (s: GameState, oracleId: string) =>
   s.zones.battlefield.map((id) => s.objects[id]).find((o) => o?.kind === "card" && o.oracleId === oracleId);
 
 describe("replacement effects", () => {
-  it("replace each event of a batch against the state before the batch: a land entering with a Forest doesn't see it (CR 614.4)", () => {
+  it("replace each event of a batch against the state before the batch: a land entering with a Forest doesn't see it (CR 614.1, the checklands' ruling)", () => {
     const state = board();
     const [forest, grove] = hand(state);
     const enter = (object: ObjectId) =>
@@ -32,6 +32,17 @@ describe("replacement effects", () => {
     const first = happen(state, enter(forest), TEST_CARDS);
     const then = happen(first.state, enter(grove), TEST_CARDS);
     expect(permanent(then.state, GROVE)).toMatchObject({ tapped: false });
+  });
+
+  it("check land types, not names: a nonbasic land that is a Forest counts (the checklands' ruling)", () => {
+    const state = withBattlefield([DUAL], [GROVE]);
+    const [grove] = hand(state);
+    const entered = happen(
+      state,
+      { kind: "moveCard", object: grove, to: { zone: "battlefield", controller: "p1" } },
+      TEST_CARDS,
+    );
+    expect(permanent(entered.state, GROVE)).toMatchObject({ tapped: false });
   });
 
   it("change where a destroyed card goes, not that it was destroyed (CR 614.1a, D-085)", () => {
@@ -62,13 +73,14 @@ describe("indestructible", () => {
   });
 });
 
-/** p1 with one Forest in their library and these permanents. */
-function withBattlefield(oracleIds: string[]): GameState {
+/** p1 with one Forest in their library, these permanents, and this hand. */
+function withBattlefield(oracleIds: string[], inHand: string[] = []): GameState {
   return start({
     seed: 1,
     players: [
       playerSetup("p1", {
         library: [FOREST],
+        hand: inHand,
         battlefield: oracleIds.map((oracleId) => ({
           oracleId,
           tapped: false,

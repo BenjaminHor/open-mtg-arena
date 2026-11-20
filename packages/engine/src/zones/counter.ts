@@ -1,6 +1,6 @@
 // Countering a spell or ability (CR 701.6a): it's removed from the stack, doesn't resolve, and none of its effects
 // happen. A countered spell goes to its owner's graveyard (CR 404.1) as part of the same event, so a replacement that
-// sends it elsewhere sees it (later: CR 614); an ability isn't a card, and ceases to exist. Nothing paid for it comes back
+// sends it elsewhere sees it (CR 614.1a, Darksteel Colossus); an ability isn't a card, and ceases to exist. Nothing paid for it comes back
 // (CR 701.6b).
 
 import type { Progress } from "../game/progress.ts";

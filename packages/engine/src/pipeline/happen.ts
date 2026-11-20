@@ -20,7 +20,8 @@ export function happen(state: GameState, proposed: ProposedEvent, cards: CardDat
 }
 
 /**
- * The members of a batch are each replaced against the same state, the one before the batch (CR 614.4). A replacement
+ * The members of a batch are each replaced against the same state, the one before the batch: each watches for an event
+ * about to happen (CR 614.1), and none of the batch has happened yet. A replacement
  * may turn one event into several (Darksteel Colossus's reveal, move and shuffle) or none (a destroy an indestructible
  * permanent ignores, CR 702.12b), so the result is a batch, unless it's exactly one event.
  */
@@ -44,8 +45,9 @@ function replaceOne(state: GameState, proposed: SingleEvent, cards: CardDatabase
       // Gaining 0 life isn't an event: nothing triggers on it (CR 119.9) and nothing replaces it (CR 119.10).
       return proposed.amount > 0 ? [proposed] : [];
     case "destroy":
-      // An indestructible permanent can't be destroyed (CR 702.12b): not a replacement, a rule; the event can't happen,
-      // so no replacement (regeneration) sees it either.
+      // An indestructible permanent can't be destroyed (CR 702.12b): the event can't happen, so no replacement or
+      // prevention effect, such as regeneration, may replace it (later: CR 614.17c, with M2-08b's shields). Only a
+      // self-replacement could (later: CR 614.15).
       if (keywordsOf(state, proposed.object, cards).includes("indestructible")) return [];
       return applyReplacements(state, proposed, cards);
     case "moveCard":
