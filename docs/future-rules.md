@@ -57,13 +57,17 @@ ordering, and last known information of a card leaving the battlefield (`GameSta
 triggers; "that much"; "that player controls" in a target; identical triggers put on unasked; cleanup priority for
 triggers (CR 514.3a). *Built (M2-07c1, D-079):* "your upkeep", blocks (one trigger per creature blocked or blocking).
 Blocks caused by an effect, or a creature put onto the battlefield blocking (CR 509.3b, 509.3d), will need their own
-event, matched with the same per-pair `matches`. *Still to come:* triggers on activating abilities; delayed triggers
-(CR 603.7) and "becomes the target" (M2-07c), which need their own `AbilityRef` kind and a pending trigger whose source
-isn't a permanent; leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
+event, matched with the same per-pair `matches`. *Built (M2-07c2, D-084):* delayed triggers (CR 603.7), with their
+own `AbilityRef` kind, waiting only for the next beginning of anyone's step with no targets; "becomes the target"
+(`BECAME_TARGET`, emitted once per object target as it's chosen). *Still to come:* triggers on activating abilities;
+a delayed trigger for "your next upkeep" must match against its own `controller`, not its source's (which may be
+gone), and one with targets chooses them as it's put on the stack like any trigger; one spell targeting the same
+object twice (no rule says whether it "becomes the target" once or twice, and no Magic 2010 card can: decide with
+the first card that does); leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
 `lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through
-`triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1), right while only mana abilities can trigger
-during one; "becomes the target" (M2-07c) triggers during a cast too, so cancel must then drop only what the cast's
-reversed parts caused. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
+`triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1). That stays right with "becomes the target" (M2-07c2),
+which triggers during a cast: a cast starts only when a player receives priority, which happens only once
+`pendingTriggers` is empty (CR 117.5), so everything pending then came from the cast itself. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,

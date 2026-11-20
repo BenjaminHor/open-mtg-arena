@@ -13,7 +13,8 @@ abilities are data in `CardDef.triggers` (`cards/types.ts`): a condition (`when`
    from the places that emit events outside it, each for its own event only: a step beginning (`game/steps.ts`),
    attackers declared (`combat/declare-attackers.ts`), blockers declared (`combat/declare-blockers.ts`, one trigger per
    creature blocked or blocking, CR 509.3), a spell becoming cast (`game/casting-steps.ts`, CR 601.2i), a
-   land tapped for mana (`TAPPED_FOR_MANA`, `mana/activate.ts`, CR 106.12a). An intervening if that's false as the event happens means no trigger. A match
+   land tapped for mana (`TAPPED_FOR_MANA`, `mana/activate.ts`, CR 106.12a), a permanent becoming a target as a target
+   is chosen (`BECAME_TARGET`, `game/choose-targets.ts`, CR 115.1). An intervening if that's false as the event happens means no trigger. A match
    becomes a `PendingTrigger` (`state/triggers.ts`) in `GameState.pendingTriggers`, remembering its source, the
    source's controller then (CR 603.3a) and what triggered it (the player and object "that player", "it" refer to).
 2. **Put on the stack** (`put-on-stack.ts`). The next time a player would receive priority, after state-based actions
@@ -28,23 +29,34 @@ abilities are data in `CardDef.triggers` (`cards/types.ts`): a condition (`when`
    it's false the ability is removed and does nothing (CR 603.4, 608.2a); "you may" asks its controller as it resolves
    (`chooseYesNo`, purpose `optional`).
 
+**Delayed triggers** (`delayed.ts`, CR 603.7). An effect (`createDelayedTrigger`) makes one as its spell or ability
+resolves, with that spell's or ability's source and controller (CR 603.7d, 603.7e), and it waits in
+`GameState.delayedTriggers`. `detectTriggers` matches those first, against the same events, whether or not their
+source is still around; one that matches moves to `pendingTriggers` and is gone (CR 603.7b: it triggers only once).
+Its `AbilityRef` is `delayed`, carrying its own text, as no card has it printed. For now one waits only for the next
+beginning of anyone's step (Dragon Whelp's "at the beginning of the next end step"); the card definitions refuse
+anything else.
+
 A source that left the battlefield is read from `GameState.lastKnown` (CR 608.2h): its last known information, kept
 from when it left until the stack is next empty. Howling Mine Shattered in response still makes its player draw.
 
 ## Entry points
 
 - `detectTriggers(before, after, events, cards)`: adds the triggers these events trigger to the pending list.
+- `createDelayedTrigger(state, ability, context)`, `detectDelayed`: make a delayed trigger; trigger the waiting ones.
 - `startPuttingTriggers(state, player)`, `putTriggers`, `putOne`: put a batch on the stack, then give `player` priority.
 - `orderTriggersProblem`: why a player can't put that trigger next (shared by `legalActions` and `applyAction`).
 
 ## Tests
 
-The m2-07a, m2-07b and m2-07c scenarios (`test/scenarios/cards/m2-07a/`, `m2-07b/`, `m2-07c/`) show each card and rule; `test/triggers/triggers.test.ts` covers
+The m2-07a, m2-07b, m2-07c and m2-07c2 scenarios (`test/scenarios/cards/m2-07a/` and so on) show each card and rule;
+`test/triggers/delayed.test.ts` a spell's delayed trigger (CR 603.7d); `test/triggers/triggers.test.ts` covers
 what the pool's cards can't reach (creatures entering together, a cancelled cast's triggers, the CR 603.3b repeat, an
 intervening if turned false before resolving).
 
 ## Not built yet
 
-Delayed triggers (CR 603.7) and "becomes the target" (CR 601.2c, M2-07c); "leaves the battlefield" abilities, which
+Delayed triggers waiting for anything but the next beginning of a step ("your next upkeep", "when that creature
+dies"), or with targets; "leaves the battlefield" abilities, which
 look back in time (CR 603.10, M2-14); triggers on activating an ability (no card yet). A trigger
 removed for too few legal targets (CR 603.3d) emits no event yet, so a log or the UI doesn't show that it triggered.
