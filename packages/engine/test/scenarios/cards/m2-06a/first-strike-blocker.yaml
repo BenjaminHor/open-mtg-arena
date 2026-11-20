@@ -1,0 +1,21 @@
+name: A first strike blocker kills its attacker before the attacker deals damage
+rules: [CR 510.4, CR 510.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Runeclaw Bear]
+  p2:
+    battlefield: [Viashino Spearhunter]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Viashino Spearhunter: Runeclaw Bear }
+  - all pass: until combat.damage
+  - expect:
+      p1.graveyard: [Runeclaw Bear]
+      p2:Viashino Spearhunter.damage: 0
+  - all pass: until main2
+  - expect:
+      p2.battlefield: [Viashino Spearhunter]
+      p2.life: 20

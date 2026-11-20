@@ -89,6 +89,19 @@ describe("double strike (CR 702.4b, 510.4)", () => {
   });
 });
 
+describe("a double striker without trample (CR 510.1c, 510.4)", () => {
+  it("deals nothing in the second step once its blocker died in the first", () => {
+    let game = board([DOUBLE_STRIKER], [BEARS]);
+    const [striker, bears] = game.state.zones.battlefield as [ObjectId, ObjectId];
+    game = passBoth(combat(game, [striker], [[bears, striker]]));
+    expect(game.state.zones.battlefield).not.toContain(bears);
+    const before = game.events.length;
+    game = passBoth(game);
+    expect(hits(since(game, before), striker)).toBe(0);
+    expect(life(game.state, "p2")).toBe(20);
+  });
+});
+
 describe("first strike gained or lost between the steps (CR 702.7c)", () => {
   it("gained after the first step: the creature still deals its damage in the second, and there's no third", () => {
     let game = board([FIRST_STRIKER, BEARS], []);
@@ -140,6 +153,9 @@ describe("trample", () => {
       ),
     );
     expect(game.state.pending).toMatchObject({ kind: "assignDamage", lethal: [1, 1], amount: 5 });
+    // Giving the first blocker 0 means the last must take everything left: the player can't get any (CR 702.19b).
+    const zero = answer(game, { kind: "assignDamage", amount: 0 });
+    expect(() => answer(zero, { kind: "assignDamage", amount: 1 })).toThrow(/isn't a legal answer/);
     game = answer(game, { kind: "assignDamage", amount: 1 });
     game = answer(game, { kind: "assignDamage", amount: 1 });
     expect(life(game.state, "p2")).toBe(17);

@@ -1,4 +1,4 @@
-name: Creatures with vigilance don't tap to attack, so they can block next turn; others do
+name: Creatures with vigilance don't tap when they attack; others do
 rules: [CR 702.20b, CR 508.1f]
 setup:
   turn: { active: p1, step: main1 }

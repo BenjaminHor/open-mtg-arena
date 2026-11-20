@@ -6,13 +6,15 @@ setup:
     life: 2
     battlefield: [Child of Night]
   p2:
-    battlefield: [Siege Mastodon]
+    battlefield: [Runeclaw Bear, Siege Mastodon]
 steps:
   - all pass: until combat.declareAttackers
-  - p2 attack: [Siege Mastodon]
+  - p2 attack: [Runeclaw Bear, Siege Mastodon]
   - all pass: until combat.declareBlockers
   - p1 block: { Child of Night: Siege Mastodon }
   - all pass: until main2
+  # 2 - 2 from the Bear + 2 from Child of Night's damage, all in one event: never at 0 when state-based actions look.
   - expect:
-      p1.life: 4
+      winner: (game not over)
+      p1.life: 2
       p1.graveyard: [Child of Night]

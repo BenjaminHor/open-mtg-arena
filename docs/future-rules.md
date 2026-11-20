@@ -100,15 +100,15 @@ controller changes, including when a control effect ends. A bare boolean can't s
 replace it with a `{ player, since }` record when control-changing effects arrive.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
-"at the beginning of the next end step". The second combat damage step for first strike (CR 510.4; `combatDamage` would
-then deal only some creatures' damage per step, D-040), and "no maximum hand size" (CR 402.2).
+"at the beginning of the next end step", and "no maximum hand size" (CR 402.2). (First strike's second combat damage
+step is built, D-070: `endStep` repeats `combatDamage` once, read from `Combat`.)
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 
-**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) needs a choice; deathtouch (704.5h) needs a
-"since the last check" record like `attemptedDrawFromEmptyLibrary`, cleared with it at every check.
+**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) needs a choice. (Deathtouch's 704.5h is
+built, D-070: `dealtDeathtouchDamage`, cleared at every check.)
 *Watch out (D-039):* a listed SBA counts as performed, and a performed check repeats. So anything that stops an SBA
 (indestructible ignoring lethal damage, CR 702.12b; "can't lose the game") must keep it off the list in
 `rules/state-based-actions.ts`, or the check repeats forever. Creatures dying together are one `simultaneous` event
