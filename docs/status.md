@@ -526,11 +526,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
+- (M2-07c2) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`), though
+  both players know of them (Dragon Whelp to be sacrificed at the next end step). The match UI (M3) should show them.
 - (D-083 review) A golden game's rejection names the action number (`!! action 78 is rejected`), not the stored line,
   and a run of passes folds many actions into one line, so finding it in the JSON takes counting. The decoder could
   report the line too.
 - The golden folder's budget is 16 MB through M2 (D-081). With the compact encoding and the mechanics cover (D-082) it's
-  1.3 MB for 150 cards, and grows with new mechanics, not new cards.
+  1.7 MB for 152 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
