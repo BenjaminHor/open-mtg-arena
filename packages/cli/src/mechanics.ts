@@ -104,6 +104,7 @@ const KEYWORD_WHEN: Record<Keyword, "combat" | "enters"> = {
   flying: "combat",
   forestwalk: "combat",
   haste: "combat",
+  // Coarse: it also works against "destroy" outside combat, which isn't credited.
   indestructible: "combat",
   lifelink: "combat",
   reach: "combat",
