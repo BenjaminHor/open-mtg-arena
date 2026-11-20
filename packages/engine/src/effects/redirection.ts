@@ -18,7 +18,7 @@ import { subject } from "./subjects.ts";
  * With no source chosen yet, asks for one (CR 609.7a): a permanent, a spell on the stack, or the source of an ability on
  * the stack, even one that has left (a pinger bounced in response: its ability deals the damage as it last existed,
  * CR 113.7a). Objects referred to otherwise (by a waiting effect or delayed trigger) or in the command zone aren't
- * offered yet (later: CR 609.7a). With the source chosen, makes the effect. Its target is read now: the effect deals the damage to it later even if it
+ * offered yet (later: objects referred to by a waiting effect, the command zone). With the source chosen, makes the effect. Its target is read now: the effect deals the damage to it later even if it
  * stops being a legal target (its ruling), as long as it can be dealt damage then (CR 614.9).
  */
 export function redirectNextDamage(
@@ -83,7 +83,7 @@ export function useRedirection(state: GameState, event: Extract<SingleEvent, { k
 }
 
 /**
- * A permanent spell chosen as a source, resolving: the effect applies to the permanent it becomes (CR 609.7a, 400.7c),
+ * A permanent spell chosen as a source, resolving: the effect applies to the permanent it becomes (CR 609.7a),
  * a new object (CR 400.7), so it follows it there. A state change outside the pipeline, listed in its README.
  */
 export function effectsFollowSpellToPermanent(state: GameState, spell: ObjectId, permanent: ObjectId): GameState {

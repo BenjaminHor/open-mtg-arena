@@ -54,7 +54,7 @@ anything can replace or trigger on:
 - declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2), prevention and
   redirection effects (CR 615.1, 614.9) and regeneration shields;
 - a redirection effect whose source was a permanent spell following it onto the battlefield as it resolves
-  (`effectsFollowSpellToPermanent`, CR 609.7a, 400.7c);
+  (`effectsFollowSpellToPermanent`, CR 609.7a);
 - triggered abilities waiting and going on the stack (`GameState.pendingTriggers`, CR 603.3), and the last known
   information kept as a card leaves the battlefield (`GameState.lastKnown`, CR 608.2h);
 - the resolving object's "this way" record (`GameState.resolution`, CR 608.2c, D-064): set as it starts to resolve,

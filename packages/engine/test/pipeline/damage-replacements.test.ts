@@ -101,7 +101,7 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
   });
 });
 
-describe("a redirection effect's amount (Harm's Way; CR 614.9, 615.7)", () => {
+describe("a redirection effect's amount (Harm's Way; CR 614.9; its ruling)", () => {
   it("redirects 1, keeps 1 for the source's next damage this turn, then is used up", () => {
     const { state: base, bears } = withTwoPreventions();
     const redirect: ReplacementEffect = {
