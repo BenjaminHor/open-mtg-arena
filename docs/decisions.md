@@ -538,7 +538,7 @@ every schema change and every change D-024 lists bumps it.
   D-033). `pnpm replays:update` rewrites the hashes after an intended change (say why in the commit), and fills in
   the hash of a game file newly copied there.
 
-**D-047: Golden games** · 2026-11-19 · accepted
+**D-047: Golden games** · 2026-11-19 · accepted (the format and what they cover changed in D-082)
 - A golden game is a game file in `packages/engine/test/golden/` (`<name>.json`: setup, actions, and the recipe that
   made them: agent, agent seed, turn cap, description) plus its log (`<name>.log`: the CLI's brief event log, one
   event per line). `cli/test/golden.test.ts` replays the actions and compares the log as text, so a failure is a
@@ -879,7 +879,7 @@ every schema change and every change D-024 lists bumps it.
   choosing in APNAP order before one simultaneous sacrifice is later (CR 101.4).
 - A subject `"eachOpponent"`: every opponent of "you" (CR 102.2; teams later, CR 102.3).
 
-**D-069: Golden games chosen by a cover; Magic 2010's first deck pair** · 2026-11-20 · accepted
+**D-069: Golden games chosen by a cover; Magic 2010's first deck pair** · 2026-11-20 · accepted (the cover is by mechanics since D-082, not cards)
 - Golden games come from `pnpm golden:cover`, not from hand-made decks. It plays the fuzzer's decks for each seed (its
   prebuilt pairs and seeded random pool decks) with `by-kind` agents, the fuzzer's picker (D-061), which cast more and
   cancel less than `random`; they aren't the fuzzer's games (no first-legal tenth, no concessions, no checks). It counts what the games already in the folder use, then keeps,
@@ -1101,3 +1101,18 @@ every schema change and every change D-024 lists bumps it.
   "cast o12", "chooseTarget p2"): 3.3 MB of actions become 0.44 MB. Setups name cards instead of oracle ids
   (0.23 MB to 0.09 MB). Logs stay as they are (the readable diff when a game changes).
 - Built as its own task before M2-07c2; the M1 bench games (D-049) are converted, not replaced.
+- Built (2026-11-20): `cli/src/action-lines.ts` and `setup-names.ts`, `readGameFile` reading either encoding, and
+  `cli/src/mechanics.ts` for the cover. Converting the 66 games left every log unchanged and took the folder from
+  5.4 MB to 2.5 MB. The mechanics test found 13 mechanics no golden game ran (a card counted as used when cast, even if
+  its trigger never fired), so the card-chosen games were replaced: the four bench games and the three the export tests
+  read stay, and 18 games chosen by mechanics cover the rest: 25 games, 1.5 MB. Centaur Courser and Fire Elemental, the
+  only pool cards in no scenario, got one each. Supersedes D-069's card cover.
+- Where a unit counts (code review): combat keywords and static abilities as the creature attacks or blocks, where
+  they do something (a creature that only entered on the last turn proves nothing); flash and shroud as the permanent
+  enters; each field of a spell, activated or triggered ability, through tables keyed by every field
+  (`Record<keyof SpellDef, ...>`), so Fireball's cost increase (with a second target) and Consume Spirit's "spend only
+  black mana on X" are units; every decision kind, not counting a cancel or take-back; every event type, but
+  `ABILITY_COUNTERED` (no pool card counters an ability).
+- Lines read back answer whatever decision is pending, so golden games no longer check which player gets priority
+  (CR 117.3b–d): the old JSON stored the acting player. Scenarios cover priority order instead. Lines left after the
+  game ended are counted, and `pnpm golden:update` says the game ends sooner.

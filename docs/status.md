@@ -266,13 +266,18 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
-     - Golden games rework (owner, D-082), next after M2-07c1's PR and before M2-07c2: a compact action format (game
-       file format 1: one line per action, no decision ids or acting player, pass runs, card names in setups; the
-       reader still loads format 0), conversion of every golden game, `golden:cover` by features (effect ops, trigger
-       conditions, keywords, statics, costs, targets, decision kinds, event types) instead of cards, a test that every
-       pool card has a scenario, then a re-cover with fewer games. The bench's games are converted, not replaced.
+     - Golden games rework (owner, D-082), built, in review: 25 games, 1.5 MB (was 66, 5.4 MB).
+       - `cli/src/action-lines.ts`: `actionLines(actions)` writes one readable line per action (`pass 4`, `land o85`,
+         `cast o12`, `activate o5 printed 0 for G`, `chooseTarget p2`, `declareBlocker o7 o5`); `actionsFromLines(setup,
+         lines, cards)` replays the game to fill in each decision id and acting player, and counts lines left after the
+         game ended. `setup-names.ts`: card names in setups. Game files with `"encoding": "lines"`; `readGameFile`
+         reads either encoding.
+       - `cli/src/mechanics.ts`: the cover's units: combat keywords and statics as creatures attack or block, flash and
+         shroud as a permanent enters, each field of a resolving spell, activated or triggered ability, every decision
+         kind answered (a cancel or take-back doesn't count), every event type agents can reach.
+       - A test that every pool card is in a scenario, by whole name.
      - M2-07c plan (2026-11-20), two PRs:
-       - M2-07c1, built (D-079), in review: 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
+       - M2-07c1, done, merged (PR #41, D-079): 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
          action; three of the cards in the M10 pair; 3 golden games (5.4 MB). 150 cards in the pool; 142 of the 234
          Magic 2010 cards. Plan: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",
@@ -492,9 +497,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
-- The golden folder's budget is 16 MB through M2 (D-081). It's 5.4 MB with 150 cards, about 36 KB per card; all 234
-  Magic 2010 cards come to about 9 MB. Before the pool grows past Magic 2010, change how golden games are stored
-  (D-081).
+- The golden folder's budget is 16 MB through M2 (D-081). With the compact encoding and the mechanics cover (D-082) it's
+  1.3 MB for 150 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with

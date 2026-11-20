@@ -28,3 +28,23 @@ describe("scenarios", () => {
     });
   }
 });
+
+// Golden games cover mechanics, not cards (D-082), so each card in the pool is covered by scenarios: at least one sets
+// it up or names it in a step, as a whole card name ("Shatter" isn't found in "Mind Shatter"), not in a title or comment.
+describe("every card in the pool", () => {
+  const bodies = files.map((f) =>
+    readFileSync(path.join(ROOT, f), "utf8")
+      .split("\n")
+      .filter((line) => !/^\s*#/.test(line) && !line.startsWith("name:"))
+      .join("\n"),
+  );
+  const named = (body: string, name: string) => {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // A YAML value or reference: after "[", ",", ":" or "- ", and before "]", ",", "#n", ":" or the line's end.
+    return new RegExp(`(^|[\\[,:]|- )\\s*${escaped}\\s*($|[\\],:#])`, "m").test(body);
+  };
+  it("appears in at least one scenario", () => {
+    const names = Object.values(cards).map((c) => c.printed.name);
+    expect(names.filter((name) => !bodies.some((b) => named(b, name)))).toStrictEqual([]);
+  });
+});

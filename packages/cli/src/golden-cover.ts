@@ -1,13 +1,14 @@
-// What the golden games cover, and `pnpm golden:cover`, which adds games until they cover the whole pool (D-069).
-// Between them the golden games must use every card in the pool (D-047), and the export tests need a few kinds of
-// choice in them. Rather than play long games between hand-made decks, the command plays the fuzzer's decks for each
-// seed (prebuilt pairs and seeded random pool decks) with `by-kind` agents, and keeps, greedily, the game that adds the most uncovered
-// cards per action, cut off (`maxTurns`) at the turn its last new card is used. The games already in the folder count,
-// and none is changed: it only adds.
+// What the golden games cover, and `pnpm golden:cover`, which adds games until they cover every mechanic in the pool
+// (D-082; D-069 covered every card). Between them the golden games must run every mechanic the pool's cards have
+// (`mechanics.ts`) and answer every kind of decision, and the export tests need a few kinds of choice in them. Rather
+// than play long games between hand-made decks, the command plays the fuzzer's decks for each seed (prebuilt pairs and
+// seeded random pool decks) with `by-kind` agents, and keeps, greedily, the game that adds the most uncovered units per
+// action, cut off (`maxTurns`) at the turn its last new unit appears. The games already in the folder count, and none
+// is changed: it only adds.
 
 import { basename } from "node:path";
 import { parseArgs } from "node:util";
-import { cardDatabase, POOL } from "@mtg/cards";
+import { cardDatabase } from "@mtg/cards";
 import {
   type Action,
   applyAction,
@@ -22,6 +23,15 @@ import { playAgents } from "./agent-play.ts";
 import { deckGameSetup } from "./deck-setup.ts";
 import { fuzzDecks, TURN_CAP } from "./fuzz/run-game.ts";
 import { addGolden, GOLDEN_DIR, goldenFiles, type NewGolden, playRecipe, readGolden } from "./golden.ts";
+import {
+  abilityUnits,
+  decisionUnit,
+  eventUnit,
+  permanentUnits,
+  spellUnits,
+  triggerUnits,
+  wantedMechanics,
+} from "./mechanics.ts";
 import { wholeNumber } from "./numbers.ts";
 
 /**
@@ -35,9 +45,8 @@ export const FEATURES = {
 } as const;
 
 /**
- * What a game covers: each card it uses and each feature, with the first turn it appears. A card is used when it's
- * played as a land, a spell of it resolves, or an ability of it resolves or makes mana: a cast that's cancelled or
- * countered doesn't run the card's script. `lengthThrough[t]` is how many actions the game takes up to the end of turn
+ * What a game covers: each mechanic it runs, each kind of decision answered, and each feature, with the first turn it
+ * appears (`mechanicsUsed`). `lengthThrough[t]` is how many actions the game takes up to the end of turn
  * `t`, so a game cut off at turn `t` is that long.
  */
 export type Coverage = { firstTurn: Record<string, number>; lengthThrough: number[] };
@@ -53,13 +62,14 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
     // Every action so far was taken in this turn or before it.
     for (let t = lengthThrough.length; t < turnBefore; t++) lengthThrough[t] = i;
     for (const unit of featuresOf(state, action)) firstTurn[unit] ??= turnBefore;
+    if (state.pending !== null && answers(action)) firstTurn[decisionUnit(state.pending.kind)] ??= turnBefore;
     const result = applyAction(state, action, cards);
     if (!result.ok) throw new Error(`action ${i + 1} is rejected: ${result.error.message}`);
     let turn = turnBefore;
     for (const event of result.events) {
       if (event.type === "TURN_BEGAN") turn = event.turn;
-      const card = cardUsed(event, state, result.state, cards);
-      if (card !== null) firstTurn[card] ??= turn;
+      firstTurn[eventUnit(event.type)] ??= turn;
+      for (const unit of mechanicsUsed(event, state, result.state, cards)) firstTurn[unit] ??= turn;
     }
     state = result.state;
   }
@@ -68,25 +78,71 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
   return { firstTurn, lengthThrough };
 }
 
-/** The card an event uses, by name, or null. Objects that left are only in the state before. */
-export function cardUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string | null {
-  const name = (id: ObjectId): string | null => {
-    const obj = before.objects[id] ?? after.objects[id];
-    if (obj === undefined) return null;
-    const oracleId = obj.kind === "ability" ? obj.sourceOracleId : obj.oracleId;
-    return cards[oracleId]?.printed.name ?? null;
+/**
+ * The mechanics an event shows a card's script running (D-082): a spell resolving (its fields, and the keywords a
+ * permanent spell brings as it enters), an ability resolving (its costs or trigger condition, targets and effects), a
+ * mana ability making mana, or creatures attacking and blocking (their combat keywords and statics, where those do
+ * something). A cast that's cancelled or countered never runs the script. Objects that left are only in the state
+ * before.
+ */
+export function mechanicsUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string[] {
+  const object = (id: ObjectId) => before.objects[id] ?? after.objects[id];
+  const cardDef = (id: ObjectId) => {
+    const obj = object(id);
+    return obj?.kind === "card" ? cards[obj.oracleId]?.def : undefined;
   };
+  const inCombat = (ids: readonly ObjectId[]) =>
+    ids.flatMap((id) => {
+      const def = cardDef(id);
+      return def === undefined ? [] : permanentUnits(def, "combat");
+    });
   switch (event.type) {
-    case "LAND_PLAYED":
-      return name(event.newId);
-    case "SPELL_RESOLVED":
-    case "ABILITY_RESOLVED":
-      return name(event.object);
-    case "MANA_ADDED":
-      return name(event.source);
+    case "SPELL_RESOLVED": {
+      const obj = object(event.object);
+      const def = cardDef(event.object);
+      if (def === undefined || obj === undefined) return [];
+      const manyTargets = (obj.choices?.targets.flat().length ?? 0) > 1;
+      return [...permanentUnits(def, "enters"), ...(def.spell === undefined ? [] : spellUnits(def.spell, manyTargets))];
+    }
+    case "ABILITY_RESOLVED": {
+      const obj = object(event.object);
+      if (obj?.kind !== "ability") return [];
+      const def = cards[obj.sourceOracleId]?.def;
+      const ref = obj.ability;
+      switch (ref.kind) {
+        case "printed": {
+          const ability = def?.abilities?.[ref.index];
+          return ability === undefined ? [] : abilityUnits(ability);
+        }
+        case "triggered": {
+          const trigger = def?.triggers?.[ref.index];
+          return trigger === undefined ? [] : triggerUnits(trigger);
+        }
+        case "basicLandType":
+          // A basic land's mana ability never goes on the stack (CR 605.3b).
+          return [];
+      }
+      return [];
+    }
+    case "MANA_ADDED": {
+      // A printed mana ability (Birds of Paradise); a basic land's is intrinsic and shows nothing a card defines. Coarse:
+      // every mana ability of the source counts, as no pool card has two.
+      const abilities = cardDef(event.source)?.abilities ?? [];
+      return abilities.filter((a) => a.effects.some((e) => e.op === "addMana")).flatMap(abilityUnits);
+    }
+    case "ATTACKERS_DECLARED":
+      return inCombat(event.attacks.map((a) => a.attacker));
+    case "BLOCKERS_DECLARED":
+      return inCombat(event.blocks.flatMap((b) => [b.blocker, b.attacker]));
     default:
-      return null;
+      return [];
   }
+}
+
+/** Whether the action answers the pending decision: a concession, a cancel or a take-back only backs out of it. */
+function answers(action: Action): boolean {
+  if (action.type === "CONCEDE") return false;
+  return action.type !== "ANSWER" || (action.answer.kind !== "cancelCast" && action.answer.kind !== "takeBack");
 }
 
 /** The export tests' features this action shows. */
@@ -138,7 +194,7 @@ export function chooseCover(candidates: readonly Candidate[], alreadyCovered: re
 /** Everything the golden games in `dir` cover between them. */
 export function coveredByGoldens(dir: string, cards: CardDatabase): string[] {
   const units = goldenFiles(dir).flatMap((file) => {
-    const game = readGolden(file);
+    const game = readGolden(file, cards);
     return Object.keys(coverageOf(game.setup, game.actions, cards).firstTurn);
   });
   return [...new Set(units)].sort();
@@ -198,7 +254,7 @@ export function addCover(
     added.push(`${path}: ${actions.length} actions, adds ${game.adds.join(", ")}`);
     covered.push(...game.adds);
   }
-  const wanted = [...POOL.cards.map((card) => card.name), ...Object.values(FEATURES)];
+  const wanted = [...wantedMechanics(cards), ...Object.values(FEATURES)];
   return { added, missing: wanted.filter((unit) => !covered.includes(unit)) };
 }
 

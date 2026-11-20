@@ -12,7 +12,7 @@ import { playAgents } from "./agent-play.ts";
 import { type AgentName, agentNamed } from "./agents.ts";
 import { deckGameSetup } from "./deck-setup.ts";
 import { logUntilRejected } from "./event-log.ts";
-import { actionPerLineText, FORMAT, replay } from "./game-file.ts";
+import { actionPerLineText, decodeStored, encodeLines, FORMAT, replay } from "./game-file.ts";
 import { wholeNumber } from "./numbers.ts";
 
 export const GOLDEN_DIR = join(import.meta.dirname, "../../engine/test/golden");
@@ -28,6 +28,8 @@ export type GoldenGame = GoldenRecipe & {
   version: number;
   description: string;
   actions: Action[];
+  /** Read back only: stored action lines left after the game ended, as an engine change can end it sooner (D-082). */
+  unread?: number;
 };
 
 /** The agents play every player from the setup, until the game ends or passes `maxTurns`. */
@@ -52,9 +54,11 @@ export function goldenLog(game: GoldenGame, cards: CardDatabase): string {
   return `${[...lines, ...(rejected === null ? [] : [`!! ${rejected}`])].join("\n")}\n`;
 }
 
-export function goldenText(game: GoldenGame): string {
-  const { format, version, description, agent, agentSeed, maxTurns, setup } = game;
-  return actionPerLineText({ format, version, description, agent, agentSeed, maxTurns, setup }, game.actions);
+/** The golden game's file: its recipe, then setup and actions in the compact encoding (D-082). */
+export function goldenText(game: GoldenGame, cards: CardDatabase): string {
+  const { format, version, description, agent, agentSeed, maxTurns } = game;
+  const { encoding, setup, actions } = encodeLines(game.setup, game.actions, cards);
+  return actionPerLineText({ format, version, description, agent, agentSeed, maxTurns, encoding, setup }, actions);
 }
 
 export function goldenFiles(dir = GOLDEN_DIR): string[] {
@@ -64,14 +68,17 @@ export function goldenFiles(dir = GOLDEN_DIR): string[] {
     .map((f) => join(dir, f));
 }
 
-export function readGolden(path: string): GoldenGame {
-  const game = JSON.parse(readFileSync(path, "utf8")) as GoldenGame;
-  if (game.format !== FORMAT) throw new Error(`${path} isn't a game file`);
+/** A golden game, in either encoding (D-082). */
+export function readGolden(path: string, cards: CardDatabase): GoldenGame {
+  const raw = JSON.parse(readFileSync(path, "utf8")) as GoldenGame & { encoding?: "lines" };
+  if (raw.format !== FORMAT) throw new Error(`${path} isn't a game file`);
   // Without these, playing the recipe again would run without a turn cap.
-  if (typeof game.agentSeed !== "number" || typeof game.maxTurns !== "number" || typeof game.agent !== "string") {
+  if (typeof raw.agentSeed !== "number" || typeof raw.maxTurns !== "number" || typeof raw.agent !== "string") {
     throw new Error(`${path} has no recipe: it needs agent, agentSeed and maxTurns`);
   }
-  return game;
+  const { encoding: _, ...game } = raw;
+  const { setup, actions, unread } = decodeStored(raw, cards);
+  return { ...game, setup, actions, ...(unread === 0 ? {} : { unread }) };
 }
 
 export const logPath = (jsonPath: string): string => jsonPath.replace(/\.json$/, ".log");
@@ -85,7 +92,7 @@ export const logPath = (jsonPath: string): string => jsonPath.replace(/\.json$/,
 export function updateGoldens(dir: string, cards: CardDatabase): string[] {
   const report: string[] = [];
   for (const path of goldenFiles(dir)) {
-    const old = readGolden(path);
+    const old = readGolden(path, cards);
     const fromRecipe = playRecipe(old, cards);
     const problem = playOutProblem(old, cards);
     const game: GoldenGame = { ...old, version: ENGINE_VERSION, actions: problem === null ? old.actions : fromRecipe };
@@ -96,7 +103,7 @@ export function updateGoldens(dir: string, cards: CardDatabase): string[] {
       changes.push(`actions kept; the recipe now plays differently (${actionsDiffer(old.actions, fromRecipe)})`);
     }
     if (writeIfChanged(logPath(path), goldenLog(game, cards))) changes.push("log changed");
-    const fileChanged = writeIfChanged(path, goldenText(game));
+    const fileChanged = writeIfChanged(path, goldenText(game, cards));
     // With the same actions, a changed file means only its version or its layout changed.
     if (fileChanged && problem === null) changes.push("file rewritten (version or layout)");
     if (changes.length > 0) report.push(`${path}: ${changes.join(", ")}`);
@@ -110,8 +117,10 @@ function playOutProblem(game: GoldenGame, cards: CardDatabase): string | null {
   try {
     state = replay(game.setup, game.actions, cards).state;
   } catch (error) {
+    // A rejected action, the likelier reason the stored lines stop early.
     return error instanceof Error ? error.message : String(error);
   }
+  if ((game.unread ?? 0) > 0) return `the game now ends ${game.unread} stored action lines sooner`;
   if (state.result !== null || (state.turn?.number ?? 0) > game.maxTurns) return null;
   return "the game no longer ends where it did";
 }
@@ -165,7 +174,7 @@ export function addGolden(options: NewGolden, dir: string, cards: CardDatabase):
   };
   const path = join(dir, `${options.name}.json`);
   if (existsSync(path)) throw new Error(`${path} exists; pnpm golden:update regenerates it`);
-  writeFileSync(path, goldenText(game));
+  writeFileSync(path, goldenText(game, cards));
   writeFileSync(logPath(path), goldenLog(game, cards));
   return path;
 }

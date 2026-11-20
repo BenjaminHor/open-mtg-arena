@@ -727,3 +727,85 @@ T26 untaps: p2:Mountain#1
 T26 untaps: p2:Mountain#2
 T26 untaps: p2:Island#1
 T26 untaps: p2:Island#2
+T26 moves: Runeclaw Bear, p2's library -> p2's hand
+T26 p2 draws
+T26 moves: Island, p2's hand -> battlefield
+T26 p2 plays p2:Island#3
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 p2 taps p2:Mountain#2 for mana
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 p2 taps p2:Mountain#1 for mana
+T26 taps: p2:Island#2
+T26 p2 adds {U} (p2:Island#2)
+T26 p2 taps p2:Island#2 for mana
+T26 taps: p2:Swamp
+T26 p2 adds {B} (p2:Swamp)
+T26 p2 taps p2:Swamp for mana
+T26 p2's unspent {U}{B}{R}{R} empties
+T26 taps: p2:Island#1
+T26 p2 adds {U} (p2:Island#1)
+T26 p2 taps p2:Island#1 for mana
+T26 taps: p2:Island#3
+T26 p2 adds {U} (p2:Island#3)
+T26 p2 taps p2:Island#3 for mana
+T26 p2's unspent {U}{U} empties
+T26 p2 attack: nothing
+T27 turn 27 begins (p1)
+T27 untaps: p1:Forest#1
+T27 untaps: p1:Mountain#1
+T27 untaps: p1:Plains#1
+T27 untaps: p1:Mountain#2
+T27 untaps: p1:Island
+T27 untaps: p1:Mountain#3
+T27 untaps: p1:Plains#2
+T27 untaps: p1:Forest#2
+T27 p1:Capricious Efreet triggers (p1)
+T27 taps: p1:Plains#2
+T27 p1 adds {W} (p1:Plains#2)
+T27 p1 taps p1:Plains#2 for mana
+T27 destroyed: p1:Capricious Efreet
+T27 moves: Capricious Efreet, battlefield -> p1's graveyard
+T27 resolves: p1:Capricious Efreet's ability
+T27 taps: p1:Plains#1
+T27 p1 adds {W} (p1:Plains#1)
+T27 p1 taps p1:Plains#1 for mana
+T27 taps: p1:Island
+T27 p1 adds {U} (p1:Island)
+T27 p1 taps p1:Island for mana
+T27 p1's unspent {W}{W}{U} empties
+T27 moves: Diabolic Tutor, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1 taps p1:Mountain#1 for mana
+T27 taps: p1:Mountain#2
+T27 p1 adds {R} (p1:Mountain#2)
+T27 p1 taps p1:Mountain#2 for mana
+T27 p1's unspent {R}{R} empties
+T27 moves: Forest, p1's hand -> battlefield
+T27 p1 plays p1:Forest#3
+T27 p1 attack: nothing
+T27 taps: p1:Forest#1
+T27 p1 adds {G} (p1:Forest#1)
+T27 p1 taps p1:Forest#1 for mana
+T27 p1's unspent {G} empties
+T27 taps: p1:Forest#3
+T27 p1 adds {G} (p1:Forest#3)
+T27 p1 taps p1:Forest#3 for mana
+T27 p1's unspent {G} empties
+T27 taps: p1:Mountain#3
+T27 p1 adds {R} (p1:Mountain#3)
+T27 p1 taps p1:Mountain#3 for mana
+T27 taps: p1:Forest#2
+T27 p1 adds {G} (p1:Forest#2)
+T27 p1 taps p1:Forest#2 for mana
+T27 p1's unspent {R}{G} empties
+T28 turn 28 begins (p2)
+T28 untaps: p2:Swamp
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Mountain#2
+T28 untaps: p2:Island#1
+T28 untaps: p2:Island#2
+T28 untaps: p2:Island#3

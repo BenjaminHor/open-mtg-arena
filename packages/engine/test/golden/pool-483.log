@@ -1,0 +1,196 @@
+T0 p2 goes first (chosen by p2)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lightning Elemental, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mind Spring, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Zephyr Sprite, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Celestial Purge, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Fire Elemental, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Spined Wurm, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Coral Merfolk, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 mulligans
+T0 p1 mulligans
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 moves: Lightning Elemental, p2's hand -> p2's library
+T0 moves: Mind Spring, p2's hand -> p2's library
+T0 moves: Zephyr Sprite, p2's hand -> p2's library
+T0 moves: Island, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Naturalize, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Deadly Recluse, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Fabricate, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Celestial Purge, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Fire Elemental, p1's hand -> p1's library
+T0 moves: Spined Wurm, p1's hand -> p1's library
+T0 moves: Coral Merfolk, p1's hand -> p1's library
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Llanowar Elves, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Stormfront Pegasus, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Angel's Feather, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Runeclaw Bear, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Angel's Feather, p1's hand -> p1's library
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Deadly Recluse, p2's hand -> stack
+T1 p2 cancels casting Deadly Recluse
+T1 moves: Forest, p2's hand -> battlefield
+T1 p2 plays p2:Forest
+T1 moves: Fabricate, p2's hand -> stack
+T1 taps: p2:Forest
+T1 p2 adds {G} (p2:Forest)
+T1 p2 taps p2:Forest for mana
+T1 p2 cancels casting Fabricate
+T1 taps: p2:Forest
+T1 p2 adds {G} (p2:Forest)
+T1 p2 taps p2:Forest for mana
+T1 p2's unspent {G} empties
+T1 p2 attack: nothing
+T1 moves: Deadly Recluse, p2's hand -> stack
+T1 p2 cancels casting Deadly Recluse
+T1 moves: Deadly Recluse, p2's hand -> stack
+T1 p2 cancels casting Deadly Recluse
+T1 moves: Fabricate, p2's hand -> stack
+T1 p2 cancels casting Fabricate
+T1 moves: Fabricate, p2's hand -> stack
+T1 p2 cancels casting Fabricate
+T2 turn 2 begins (p1)
+T2 moves: Coral Merfolk, p1's library -> p1's hand
+T2 p1 draws
+T2 p1 attack: nothing
+T3 turn 3 begins (p2)
+T3 untaps: p2:Forest
+T3 moves: Wall of Faith, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Mountain, p2's hand -> battlefield
+T3 p2 plays p2:Mountain
+T3 taps: p2:Forest
+T3 p2 adds {G} (p2:Forest)
+T3 p2 taps p2:Forest for mana
+T3 taps: p2:Mountain
+T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
+T3 p2's unspent {R}{G} empties
+T3 p2 attack: nothing
+T4 turn 4 begins (p1)
+T4 moves: Island, p1's library -> p1's hand
+T4 p1 draws
+T4 moves: Runeclaw Bear, p1's hand -> stack
+T4 p1 cancels casting Runeclaw Bear
+T4 p1 attack: nothing
+T4 moves: Coral Merfolk, p1's hand -> stack
+T4 p1 cancels casting Coral Merfolk
+T4 moves: Mountain, p1's hand -> battlefield
+T4 p1 plays p1:Mountain
+T4 taps: p1:Mountain
+T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
+T4 p1's unspent {R} empties
+T5 turn 5 begins (p2)
+T5 untaps: p2:Forest
+T5 untaps: p2:Mountain
+T5 moves: Island, p2's library -> p2's hand
+T5 p2 draws
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
+T5 taps: p2:Forest
+T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
+T5 moves: Fabricate, p2's hand -> stack
+T5 p2 cancels casting Fabricate
+T5 moves: Deadly Recluse, p2's hand -> stack
+T5 p2 casts Deadly Recluse
+T5 resolves: Deadly Recluse
+T5 moves: Deadly Recluse, stack -> battlefield
+T5 p2 attack: nothing
+T6 turn 6 begins (p1)
+T6 untaps: p1:Mountain
+T6 moves: Island, p1's library -> p1's hand
+T6 p1 draws
+T6 taps: p1:Mountain
+T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
+T6 p1's unspent {R} empties
+T6 p1 attack: nothing
+T6 moves: Coral Merfolk, p1's hand -> p1's graveyard
+T6 p1 discards Coral Merfolk
+T7 turn 7 begins (p2)
+T7 untaps: p2:Forest
+T7 untaps: p2:Mountain
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
+T7 p2's unspent {G} empties
+T7 moves: Hill Giant, p2's library -> p2's hand
+T7 p2 draws
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 p2 taps p2:Mountain for mana
+T7 p2's unspent {R} empties
+T7 moves: Mountain, p2's hand -> battlefield
+T7 p2 plays p2:Mountain#2
+T7 moves: Wall of Faith, p2's hand -> stack
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
+T7 p2 cancels casting Wall of Faith
+T7 taps: p2:Deadly Recluse
+T7 p2 attack: p2:Deadly Recluse -> p1
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
+T7 p2's unspent {R} empties
+T7 p1 block: nothing
+T7 combat damage: p2:Deadly Recluse -> p1 1
+T7 p1 loses 1 life
+T8 turn 8 begins (p1)
+T8 untaps: p1:Mountain

@@ -1,0 +1,14 @@
+name: Fire Elemental is cast for {3}{R}{R} and enters as a 5/4
+rules: [CR 608.3a, CR 208.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fire Elemental]
+    battlefield: [Mountain, Mountain, Forest, Forest, Forest]
+steps:
+  - p1 cast: Fire Elemental
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Fire Elemental.power: 5
+      p1:Fire Elemental.toughness: 4
