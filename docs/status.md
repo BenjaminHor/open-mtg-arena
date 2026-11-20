@@ -79,9 +79,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       looked hidden from its own drawer); the check now counts it as seen, with a test. The draw-several container
       (CR 121.2a) moves to M2-08.
     - M2-05b2, choices at resolution (now), split in two. Plan (2026-11-20), rules-reviewed and revised (D-062):
-      - Shared (built in b2a): an effect that needs choices stops with a `chooseCards` decision and, on each answer,
-        is queued again in front of the rest of the resolution (`queueWork`) with the choices so far, as
-        `discardToHandSize` does; nothing happens until every answer is in (CR 608.2d), and answers emit no events.
+      - Shared (built in b2a): an effect that needs choices stops with a `chooseCards` decision that keeps the effect
+        to resume; after the last answer it's queued once, with the cards chosen, in front of the rest of the
+        resolution; nothing happens until every answer is in (CR 608.2d), and answers emit no events.
         One option per answer, plus `finishChoosing` once the minimum is reached; reaching the maximum finishes. The
         chooser isn't always the controller (Mind Rot: the target player, CR 701.9b). Only its own answers are legal:
         no mana abilities, no spells (CR 608.2g; Merfolk Looter's ruling). Counts are clamped (CR 609.3).

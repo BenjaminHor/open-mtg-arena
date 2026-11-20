@@ -4,6 +4,7 @@
 import type { PendingDecision } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
+import { oracleIdOf } from "../zones/shown-order.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { canSee } from "./visibility.ts";
 
@@ -27,7 +28,5 @@ export function viewDecision(state: GameState, decision: PendingDecision, viewer
 }
 
 function shownOption(state: GameState, id: ObjectId, viewer: PlayerId): ShownOption {
-  const obj = state.objects[id];
-  const oracleId = obj?.kind === "card" ? obj.oracleId : "";
-  return { oracleId, object: canSee(zoneOf(state, id), viewer) ? id : null };
+  return { oracleId: oracleIdOf(state, id), object: canSee(zoneOf(state, id), viewer) ? id : null };
 }

@@ -1,0 +1,22 @@
+name: When a card fits, Duress's choice is mandatory, and its caster can take either copy of Shock
+rules: [CR 608.2d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Duress]
+    battlefield: [Swamp]
+  p2:
+    hand: [Shock, Grizzly Bears, Shock]
+steps:
+  - p1 cast: Duress
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, min: 1, max: 1 }
+  - p1 choose: finish
+  - expect error: illegalAction
+  - p1 choose: Shock#2
+  - expect:
+      p2.hand: [Shock, Grizzly Bears]
+      p2.graveyard: [Shock]

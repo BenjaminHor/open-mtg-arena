@@ -1,5 +1,5 @@
 name: Mind Rot on a hand of one card discards it, with nothing to choose
-rules: [CR 609.3]
+rules: [CR 609.3, CR 402.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:

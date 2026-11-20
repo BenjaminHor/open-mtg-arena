@@ -1,0 +1,15 @@
+name: Merfolk Looter with an empty hand discards the card it drew, with nothing to choose
+rules: [CR 609.3, CR 701.9b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: []
+    library: [Lightning Bolt, Island]
+    battlefield: [Merfolk Looter]
+steps:
+  - p1 activate: Merfolk Looter
+  - all pass: once
+  - expect:
+      p1.hand: []
+      p1.graveyard: [Lightning Bolt]
+      pending: { player: p1, kind: priority }

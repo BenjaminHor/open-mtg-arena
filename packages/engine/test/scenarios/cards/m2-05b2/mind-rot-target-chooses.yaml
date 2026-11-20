@@ -1,5 +1,5 @@
 name: Mind Rot's target player chooses the two cards they discard, then discards both together
-rules: [CR 701.9b, CR 608.2d]
+rules: [CR 701.9a, CR 701.9b, CR 608.2d]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -19,6 +19,8 @@ steps:
       pending: { player: p2, kind: chooseCards }
       p2.hand count: 3
       events lacks: [{ type: CARD_DISCARDED }]
+  - p2 choose: finish
+  - expect error: illegalAction
   - p2 choose: Island
   - expect:
       p2.hand: [Forest]

@@ -3,6 +3,8 @@
 // before the rest of the resolution.
 
 import { describe, expect, it } from "vitest";
+import { chooseCardsProblem } from "../../src/effects/choose-cards.ts";
+import { runEffect } from "../../src/effects/run-effect.ts";
 import {
   type Action,
   applyAction,
@@ -118,11 +120,68 @@ describe("a choice over a hidden hand tells no one what the hand holds (D-062)",
       pass,
     ]);
     expect(pending(x.state)).toBe("chooseCards");
-    // Its options are shown without ids, as what they are: Shock and Giant Growth, in the same order in both games.
-    const options = playerView(x.state, "p1").decision;
-    expect(options?.kind === "chooseCards" && options.options.every((o) => o.object === null)).toBe(true);
+    // The whole hand is revealed, by identity only, in a fixed order (CR 701.20a).
+    const revealed = x.events.find((e) => e.type === "CARDS_REVEALED");
+    expect(revealed).toMatchObject({ cards: [BEARS, GROWTH, SHOCK].sort() });
+    // The options are exactly the noncreature, nonland cards, shown without ids, the same in both games.
+    const decision = playerView(x.state, "p1").decision;
+    if (decision?.kind !== "chooseCards") throw new Error("no choice");
+    expect(decision.options).toStrictEqual([GROWTH, SHOCK].sort().map((oracleId) => ({ oracleId, object: null })));
     const [after] = sameToViewer(x, y, "p1", [firstOption]);
     expect(after.state.zones.players.p2?.graveyard).toHaveLength(1);
+  });
+});
+
+describe("discarding a whole hand (CR 609.3)", () => {
+  it("puts the cards in the graveyard in an order that doesn't show the hand's order (D-062)", () => {
+    const discardTwo = { op: "discard", who: { target: 0 }, amount: 2 } as const;
+    const graveyardAfter = (hand: string[]) => {
+      const { state } = game({ hand: [], battlefield: [] }, hand);
+      const context = { self: "o999" as const, controller: "p1" as const, division: [], x: null };
+      const targets = [[{ kind: "player" as const, player: "p2" as const }]];
+      const after = runEffect(state, discardTwo, { ...context, targets }, CARDS).state;
+      return (after.zones.players.p2?.graveyard ?? []).map(
+        (id) => after.objects[id]?.kind === "card" && after.objects[id].oracleId,
+      );
+    };
+    expect(graveyardAfter([SHOCK, BEARS])).toStrictEqual(graveyardAfter([BEARS, SHOCK]));
+  });
+});
+
+describe("Elvish Piper's options", () => {
+  it("are only the creature cards in hand, shown with their ids, as the hand is the chooser's own", () => {
+    const activate = (a: Action) => a.type === "ACTIVATE_ABILITY";
+    const g = act(act(act(game({ hand: [BEARS, SHOCK], battlefield: [HASTY_ELF] }, []), activate), pass), pass);
+    const decision = playerView(g.state, "p1").decision;
+    if (decision?.kind !== "chooseCards") throw new Error("no choice");
+    const bears = g.state.zones.players.p1?.hand[0];
+    expect(decision.options).toStrictEqual([{ oracleId: BEARS, object: bears }]);
+  });
+});
+
+describe("answers to a chooseCards decision", () => {
+  const decision = {
+    id: "d1" as const,
+    player: "p1" as const,
+    kind: "chooseCards" as const,
+    purpose: "discard" as const,
+    options: ["o1" as const, "o2" as const, "o3" as const],
+    min: 2,
+    max: 2,
+    chosen: [0],
+    resume: {
+      effect: { op: "discard", who: "you", amount: 2 } as const,
+      context: { self: "o9" as const, controller: "p1" as const, targets: [], division: [], x: null },
+    },
+  };
+  it("refuse an option already chosen, one that isn't there, and finishing below the minimum (CR 608.2d)", () => {
+    for (const option of [0, -1, 3, 0.5]) {
+      expect(chooseCardsProblem(decision, { kind: "chooseCard", option }), String(option)).not.toBeNull();
+    }
+    expect(chooseCardsProblem(decision, { kind: "chooseCard", option: 1 })).toBeNull();
+    expect(chooseCardsProblem(decision, { kind: "finishChoosing" })).toMatch(/at least 2/);
+    expect(chooseCardsProblem({ ...decision, chosen: [0, 1] }, { kind: "finishChoosing" })).toBeNull();
+    expect(chooseCardsProblem(decision, { kind: "cancelCast" })).not.toBeNull();
   });
 });
 

@@ -2,7 +2,7 @@
 // the options of a `chooseCards` decision (D-062).
 
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, OracleId } from "../state/ids.ts";
 
 /**
  * Sorted by oracle id, then by object id. A hand's or library's own order, like an object id, records how the cards
@@ -11,13 +11,17 @@ import type { ObjectId } from "../state/ids.ts";
  * on every machine, as replays depend on it.
  */
 export function inShownOrder(state: GameState, ids: readonly ObjectId[]): ObjectId[] {
-  const oracle = (id: ObjectId) => {
-    const obj = state.objects[id];
-    return obj?.kind === "card" ? obj.oracleId : "";
-  };
   return [...ids].sort((a, b) => {
-    const [x, y] = [oracle(a), oracle(b)];
+    const [x, y] = [oracleIdOf(state, a), oracleIdOf(state, b)];
     if (x !== y) return x < y ? -1 : 1;
+    // Object ids are `o` and a number (state/ids.ts): compare the numbers, so o9 comes before o10.
     return Number(a.slice(1)) - Number(b.slice(1));
   });
+}
+
+/** What a card is. Only cards are ever shown this way, so anything else is an engine bug. */
+export function oracleIdOf(state: GameState, id: ObjectId): OracleId {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
+  return obj.oracleId;
 }

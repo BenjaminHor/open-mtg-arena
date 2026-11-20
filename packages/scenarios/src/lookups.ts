@@ -172,14 +172,17 @@ export function permanentNamed(state: GameState, player: string, value: unknown,
 
 /**
  * The answer a `choose:` value names for a `chooseCards` decision: `finish` to stop choosing, or a card's name, the
- * first option not yet chosen with that name. Copies of one card are interchangeable: the options carry no history
- * (D-062).
+ * first option not yet chosen with that name, or `Shock#2` for the second option named Shock. Which copy can matter
+ * to an exact replay (a later random discard picks by position in the hand), so `export` writes `#n` when there are
+ * several.
  */
 export function chooseCardsAnswer(state: GameState, text: string, cards: CardDatabase): Answer {
   const pending = state.pending;
   if (pending?.kind !== "chooseCards") throw new Error("no chooseCards decision is pending");
   if (text === "finish") return { kind: "finishChoosing" };
-  const option = pending.options.findIndex((id, i) => !pending.chosen.includes(i) && nameOf(state, id, cards) === text);
-  if (option < 0) throw new Error(`no ${text} among the cards to choose`);
+  const [, name = text, nth] = /^(.+?)(?:#(\d+))?$/.exec(text) ?? [];
+  const named = pending.options.flatMap((id, i) => (nameOf(state, id, cards) === name ? [i] : []));
+  const option = nth === undefined ? named.find((i) => !pending.chosen.includes(i)) : named[Number(nth) - 1];
+  if (option === undefined) throw new Error(`no ${text} among the cards to choose`);
   return { kind: "chooseCard", option };
 }

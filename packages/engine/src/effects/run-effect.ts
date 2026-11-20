@@ -120,7 +120,8 @@ export function runEffect(
       return mill(state, playersOf(subject(state, effect.who, context)), amount, cards);
     }
     case "discard": {
-      // One player's choice; several players discarding at once would choose in APNAP order first (later: CR 608.2e).
+      // One player's choice (`definition-problems.ts` refuses "each player"); several players discarding at once would
+      // choose in APNAP order first (later: CR 608.2e).
       const [player, ...more] = playersOf(subject(state, effect.who, context));
       if (more.length > 0) throw new Error("a chosen discard names one player");
       if (player === undefined) return { state, events: [] };

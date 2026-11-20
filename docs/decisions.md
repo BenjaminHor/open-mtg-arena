@@ -786,9 +786,11 @@ every schema change and every change D-024 lists bumps it.
   play the same games. Golden generation can move to the picker when the golden games are regenerated (after M2-05c).
 
 **D-062: Choices at resolution, and cards shown from hidden zones** · 2026-11-20 · accepted (M2-05b2)
-- An effect that needs choices waits with a `chooseCards` decision and is queued again with each answer, ahead of the
-  rest of the resolution; nothing happens until all answers are in (CR 608.2d). Only its own answers are legal
-  (CR 608.2g).
+- An effect that needs choices waits with a `chooseCards` decision that keeps the effect and its context to resume.
+  Each answer but the last only asks again, with the choice added; after the last (or `finishChoosing`), the effect is
+  queued once, with the chosen cards, ahead of the rest of the resolution (D-032). Nothing happens until all answers
+  are in (CR 608.2d), answers emit no events, and only its own answers are legal (CR 608.2g). Keeping `resume` in the
+  decision keeps the min/max loop in one place, so ops never see a half-made choice; the view leaves it out.
 - A card shown to a player from a zone they can't see (a revealed hand, a searched library, a look at the top) is
   shown by what it is, never by its object id, card id or timestamp: those are numbered in order, so they'd tell when
   and how the card got there (which card was drawn on which turn, which was put on the bottom). Options are kept in a
@@ -796,7 +798,13 @@ every schema change and every change D-024 lists bumps it.
   shuffling doesn't need to renumber a library.
 - A choice over a hidden zone is asked whenever that zone isn't empty, even when nothing fits, with "find nothing"
   allowed where the CR allows it (CR 701.23b): skipping it would tell the opponent what the zone lacks.
-- The fuzzer's `scrambleHidden` permutes hidden ids rather than shifting them, so a view that leaks an order fails.
+- A whole hand discarded without a choice goes to the graveyard in the fixed order too, not the hand's. A discard with
+  a filter, or chosen by "you", must follow revealing that hand (`definition-problems.ts`): otherwise skipping the
+  choice, or showing "you" the options, would tell what a hidden hand holds.
+- The fuzzer's `scrambleHidden` permutes hidden ids rather than shifting them, so a view that shows hidden ids in their
+  order fails. It trusts the cards a viewer's own decision offers (keeps their identity), and it doesn't re-sort a
+  stored decision, so order and "should this be asked" leaks are caught by the two-worlds tests in
+  `test/effects/choose-cards.test.ts`, not by the fuzzer.
 
 **D-063: Haunting Echoes with nothing exiled doesn't search** · 2026-11-20 · accepted (owner)
 - "For each card exiled this way, search that player's library..." with no card exiled means no search: the caster

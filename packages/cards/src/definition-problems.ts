@@ -141,6 +141,15 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
     if (effect.op === "discard" && effect.who === "eachPlayer")
       problems.push(`${where}: a chosen discard names one player, not each player`);
+    // A filter, or "you" choosing from another player's hand, would show or hint at a hidden hand's cards unless it was
+    // just revealed (D-062).
+    if (effect.op === "discard" && (effect.filter !== undefined || effect.chosenBy !== undefined)) {
+      const revealed = effects
+        .slice(0, effects.indexOf(effect))
+        .some((e) => e.op === "revealHand" && JSON.stringify(e.who) === JSON.stringify(effect.who));
+      if (!revealed)
+        problems.push(`${where}: a discard with a filter or chosen by "you" must follow revealing that hand`);
+    }
   }
   return problems;
 }

@@ -10,7 +10,8 @@ the one place their effects become changes to the game.
    queues one `runEffect` work item per effect, in the order written (CR 608.2c). Each carries an `EffectContext`:
    the object "this" refers to, the controller ("you"), and the targets still legal, one group per instance of
    "target". Illegal targets aren't affected.
-2. `runEffect(state, effect, context, cards)` (`run-effect.ts`) switches on the effect's `op`.
+2. `runEffect(state, effect, context, cards, chosen)` (`run-effect.ts`) switches on the effect's `op`. `chosen` is
+   null, except when an effect that waited for a `chooseCards` decision runs again with the cards chosen.
 3. Mana abilities don't use the stack (CR 605.3b), so `mana/activate.ts` calls `runEffect` directly, with no targets.
 
 ## Effect ops

@@ -1,0 +1,14 @@
+name: Elvish Piper with an empty hand asks nothing, as an empty hand is public
+rules: [CR 402.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: []
+    battlefield: [Elvish Piper, Forest]
+steps:
+  - p1 activate: Elvish Piper
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      stack: []

@@ -150,7 +150,7 @@ export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
   });
   const scrambled = JSON.parse(json) as GameState;
   // Cards the viewer's own decision shows them keep what they are (D-062): only their ids and history change.
-  const shown = new Set(shownBy(state, viewer).map((id) => renamed.get(id)));
+  const shown = new Set(shownBy(state, viewer).flatMap((id) => renamed.get(id) ?? []));
   const objects = { ...scrambled.objects };
   for (const [i, id] of hidden.entries()) {
     const newId = renamed.get(id) as ObjectId;

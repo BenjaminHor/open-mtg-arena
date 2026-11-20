@@ -8,6 +8,7 @@ import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { askToChoose } from "./choose-cards.ts";
 
@@ -20,7 +21,9 @@ const nothing = (state: GameState): Progress => ({ state, events: [] });
  * `player` discards `amount` cards (CR 701.9a), chosen by them (CR 701.9b) or by "you", among the cards fitting the
  * effect's filter; fewer if there aren't enough, as much as possible (CR 609.3). When every card in the hand must go,
  * there's nothing to choose: the hand's size is public (CR 402.3), so not asking tells no one anything. Otherwise
- * the choice is mandatory (CR 608.2d). The chosen cards are discarded together.
+ * the choice is mandatory (CR 608.2d). The chosen cards are discarded together. A filter or "you" choosing is only
+ * safe on a hand that was just revealed (Duress): otherwise skipping the choice, or showing "you" the options, would
+ * tell what the hand holds; `definition-problems.ts` checks the reveal comes first.
  */
 export function discardChosen(
   state: GameState,
@@ -41,7 +44,8 @@ export function discardChosen(
   const fitting = fittingCards(state, hand, effect.filter, context.controller, cards);
   const count = Math.min(Math.max(0, amount), fitting.length);
   if (count === 0) return nothing(state);
-  if (count === hand.length) return discardAll(state, hand, cards);
+  // In a fixed order, not the hand's: a public graveyard in hand order would show which card arrived when (D-062).
+  if (count === hand.length) return discardAll(state, inShownOrder(state, hand), cards);
   const chooser = effect.chosenBy === "you" ? context.controller : player;
   return nothing(
     askToChoose(state, { chooser, purpose: "discard", options: fitting, min: count, max: count, effect, context }),

@@ -4,16 +4,13 @@ import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { ZoneRef } from "../state/zones.ts";
-import { inShownOrder } from "./shown-order.ts";
+import { inShownOrder, oracleIdOf } from "./shown-order.ts";
 
 /**
  * Emits `CARDS_REVEALED` with what the cards are, in a fixed order, never their ids (D-062). Nothing in the state
  * changes: a revealed card stays revealed only while its effect needs it (CR 701.20a), which is within one resolution.
  */
 export function reveal(state: GameState, from: ZoneRef, ids: readonly ObjectId[]): Progress {
-  const cards = inShownOrder(state, ids).flatMap((id) => {
-    const obj = state.objects[id];
-    return obj?.kind === "card" ? [obj.oracleId] : [];
-  });
+  const cards = inShownOrder(state, ids).map((id) => oracleIdOf(state, id));
   return { state, events: [{ type: "CARDS_REVEALED", from, cards }] };
 }
