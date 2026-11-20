@@ -21,7 +21,7 @@ import { castingOf } from "./casting-state.ts";
 import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
-import { sacrificeParts, sacrificesStillPossible } from "./sacrifice-costs.ts";
+import { sacrificeParts, sacrificesStillPossible, selfSacrificesForCost } from "./sacrifice-costs.ts";
 import { canTapForCost, tapsForCost } from "./tap-costs.ts";
 import { queueWork } from "./work.ts";
 
@@ -100,13 +100,16 @@ export function payCost(
   const taps = tapsForCost(state, cards);
   if (!taps.every((id) => canTapForCost(state, id)))
     return "a permanent to tap for the cost is tapped or gone (CR 107.5, 601.2h)";
+  const selfSacrifices = selfSacrificesForCost(state, cards);
+  if (!selfSacrifices.every((id) => state.zones.battlefield.includes(id)))
+    return "the permanent to sacrifice for the cost is gone (CR 601.2h)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
   // Taps first, then sacrifices: "{T}, Sacrifice this" taps it before it's gone (CR 601.2h lets the order be chosen).
   const costs: SingleEvent[] = [
     ...taps.map((object) => ({ kind: "tap", object }) as const),
-    ...casting.sacrifices.map((object) => ({ kind: "sacrifice", object }) as const),
+    ...[...selfSacrifices, ...casting.sacrifices].map((object) => ({ kind: "sacrifice", object }) as const),
   ];
   const paid = happen({ ...state, players }, { kind: "simultaneous", events: costs }, cards);
   const done: GameState = { ...paid.state, casting: null, passesInSuccession: 0 };

@@ -6,8 +6,9 @@
 import type { Effect, ManaCost } from "../cards/types.ts";
 import type { Attack, AttackerDivision, Block } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
-import type { DecisionId, ObjectId, PlayerId } from "./ids.ts";
+import type { DecisionId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
+import type { ZoneRef } from "./zones.ts";
 
 export type PendingDecision = {
   id: DecisionId;
@@ -98,8 +99,20 @@ export type DecisionKind =
       min: number;
       max: number;
       chosen: number[];
+      /**
+       * True for "any number" (a search for all copies): only `finishChoosing` ends it, never reaching `max`, which is
+       * hidden; ending there would tell the other players how many there were (D-062).
+       */
+      endsOnlyOnFinish: boolean;
+      /** The whole zone the chooser is shown, by identity only (a searched library, a revealed hand), or null. */
+      seen: Seen | null;
       resume: { effect: Effect; context: EffectContext };
-    };
+    }
+  /** While a spell or ability resolves: a "you may" choice (CR 608.2d); yes runs `resume`, no does nothing. */
+  | { kind: "chooseYesNo"; purpose: "shuffle"; resume: { effect: Effect; context: EffectContext } };
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
-export type ChoosePurpose = "discard" | "putOntoBattlefield";
+export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop";
+
+/** Cards shown to one player by what they are, in a fixed order (D-062), and the zone they're in. */
+export type Seen = { from: ZoneRef; cards: OracleId[] };

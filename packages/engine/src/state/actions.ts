@@ -51,4 +51,6 @@ export type Answer =
   /** One more card for a `chooseCards` decision, by its position in the decision's `options` (D-062). */
   | { kind: "chooseCard"; option: number }
   /** No more cards for a `chooseCards` decision: allowed once its minimum is chosen. */
-  | { kind: "finishChoosing" };
+  | { kind: "finishChoosing" }
+  /** The answer to a "you may" (`chooseYesNo`). */
+  | { kind: "chooseYesNo"; yes: boolean };

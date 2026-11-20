@@ -10,7 +10,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneList } from "../zones/zone-list.ts";
-import { askToChoose } from "./choose-cards.ts";
+import { askToChoose, seenOf } from "./choose-cards.ts";
 
 type Discard = Extract<Effect, { op: "discard" }>;
 type PutOntoBattlefield = Extract<Effect, { op: "putOntoBattlefield" }>;
@@ -48,9 +48,11 @@ export function discardChosen(
   // Their owner may choose the order instead (later: CR 404.3).
   if (count === hand.length) return discardAll(state, inShownOrder(state, hand), cards);
   const chooser = effect.chosenBy === "you" ? context.controller : player;
-  return nothing(
-    askToChoose(state, { chooser, purpose: "discard", options: fitting, min: count, max: count, effect, context }),
-  );
+  // "You", choosing from another player's hand that was just revealed, keep seeing all of it while choosing
+  // (CR 701.20a), by identity only (D-062).
+  const choice = { chooser, purpose: "discard", options: fitting, min: count, max: count, effect, context } as const;
+  if (chooser === player) return nothing(askToChoose(state, choice));
+  return nothing(askToChoose(state, { ...choice, seen: seenOf(state, { zone: "hand", player }, hand) }));
 }
 
 /** Shows `player`'s hand to every player (CR 701.20a), even an empty one; it stays in the hand (CR 701.20b). */

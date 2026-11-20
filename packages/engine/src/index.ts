@@ -67,4 +67,4 @@ export type { PlayerZoneName, SharedZoneName, ZoneName, ZoneRef, Zones } from ".
 export { ENGINE_VERSION } from "./version.ts";
 export { eventsFor, type ViewEvent } from "./view/events-for.ts";
 export { type PlayerView, playerView, type ViewZones } from "./view/player-view.ts";
-export type { ShownOption, ViewChooseCards, ViewDecision } from "./view/view-decision.ts";
+export type { ShownOption, ViewChooseCards, ViewChooseYesNo, ViewDecision } from "./view/view-decision.ts";

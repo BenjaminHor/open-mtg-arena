@@ -87,6 +87,8 @@ describe("discriminated unions", () => {
           return `divide ${decision.amount}`;
         case "chooseCards":
           return `choose ${decision.min} to ${decision.max}`;
+        case "chooseYesNo":
+          return `yes or no: ${decision.purpose}`;
         default:
           return assertNever(decision);
       }

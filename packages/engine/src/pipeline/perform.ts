@@ -16,6 +16,7 @@ import { counterObject } from "../zones/counter.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { moveCard } from "../zones/move-card.ts";
+import { reorderLibraryTop } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
 import type { ProposedEvent, SingleEvent } from "./proposed.ts";
@@ -42,6 +43,8 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return dealDamage(state, event.damage, cards);
     case "reveal":
       return reveal(state, event.from, event.objects);
+    case "reorderLibrary":
+      return reorderLibraryTop(state, event.player, event.top);
     case "tap":
       return tapPermanent(state, event.object);
     case "counterObject":

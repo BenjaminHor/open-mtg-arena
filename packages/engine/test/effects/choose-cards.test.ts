@@ -169,6 +169,8 @@ describe("answers to a chooseCards decision", () => {
     min: 2,
     max: 2,
     chosen: [0],
+    endsOnlyOnFinish: false,
+    seen: null,
     resume: {
       effect: { op: "discard", who: "you", amount: 2 } as const,
       context: { self: "o9" as const, controller: "p1" as const, targets: [], division: [], x: null },

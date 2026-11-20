@@ -30,6 +30,11 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
       problems.push(`${obj.id}: a card has casting choices exactly when it's on the stack`);
     }
   }
+  // "This way" results belong to one resolution: they exist only while that object's resolution is still to finish.
+  const resolving = state.resolution;
+  if (resolving !== null && !state.work.some((w) => w.kind === "finishResolving" && w.object === resolving.object)) {
+    problems.push(`a resolution record for ${resolving.object} outlives its resolution (CR 608.2c)`);
+  }
   const inCombat = state.turn !== null && phaseOf(state.turn.step) === "combat";
   if (state.result === null && (state.combat !== null) !== inCombat) {
     problems.push("combat state exists exactly during the combat phase (CR 506.1, 511.3)");

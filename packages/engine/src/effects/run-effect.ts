@@ -14,6 +14,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
+import { exileGraveyard, lookAtTop, mayShuffle, revealObjects, search, shuffleEach } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 
 /**
@@ -134,6 +135,37 @@ export function runEffect(
       );
     case "putOntoBattlefield":
       return putOntoBattlefieldFromHand(state, effect, context, chosen, cards);
+    case "search": {
+      const [owner] = playersOf(subject(state, effect.library, context));
+      return owner === undefined ? { state, events: [] } : search(state, owner, effect, context, chosen, cards);
+    }
+    case "reveal":
+      return revealObjects(state, stillThere(state, objectsOf(subject(state, effect.of, context))), cards);
+    case "put": {
+      // "Put it into your hand" (its owner's, CR 400.3); "onto the battlefield", under the controller (CR 110.2a).
+      const controller = context.controller;
+      const to =
+        effect.into === "hand"
+          ? ({ zone: "hand" } as const)
+          : effect.tapped === true
+            ? ({ zone: "battlefield", controller, tapped: true } as const)
+            : ({ zone: "battlefield", controller } as const);
+      const ids = stillThere(state, objectsOf(subject(state, effect.of, context)));
+      return toEach(state, ids, cards, (object) => ({ kind: "moveCard", object, to }));
+    }
+    case "shuffle":
+      return shuffleEach(state, playersOf(subject(state, effect.who, context)), cards);
+    case "mayShuffle": {
+      const [player] = playersOf(subject(state, effect.who, context));
+      return player === undefined ? { state, events: [] } : mayShuffle(state, player, effect, context);
+    }
+    case "lookAtTop":
+      return lookAtTop(state, context.controller, effect, context, chosen, cards);
+    case "exileGraveyard": {
+      const [player] = playersOf(subject(state, effect.of, context));
+      if (player === undefined) return { state, events: [] };
+      return exileGraveyard(state, player, effect.filter, context.controller, cards);
+    }
     case "gainLife": {
       const amount = amountOf(effect.amount, context.x);
       return toEach(state, playersOf(subject(state, effect.who, context)), cards, (player) => ({
@@ -202,6 +234,8 @@ function subject(state: GameState, s: EffectSubject, context: EffectContext): Ta
   if (s === "self") return [{ kind: "object", object: context.self }];
   if (s === "you") return [{ kind: "player", player: context.controller }];
   if (s === "eachPlayer") return apnapOrder(state).map((player) => ({ kind: "player", player }));
+  // What an earlier search of this resolution found (CR 608.2c).
+  if (s === "found") return (state.resolution?.found ?? []).map((object) => ({ kind: "object", object }));
   return context.targets[s.target] ?? [];
 }
 

@@ -64,3 +64,11 @@ export function chooseSacrifice(state: GameState, object: ObjectId): GameState {
   const casting = castingOf(state);
   return { ...state, casting: { ...casting, sacrifices: [...casting.sacrifices, object] } };
 }
+
+/** The source itself, when the cost says "Sacrifice this [permanent]": paid with the rest, after {T} (D-059). */
+export function selfSacrificesForCost(state: GameState, cards: CardDatabase): ObjectId[] {
+  const casting = state.casting;
+  if (casting === null || casting.origin.kind !== "ability") return [];
+  const def = stackAbilityDef(state, casting.object, cards);
+  return def.cost.some((part) => part.kind === "sacrificeSelf") ? [casting.origin.source] : [];
+}

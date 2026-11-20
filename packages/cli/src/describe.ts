@@ -111,6 +111,8 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
     }
     case "finishChoosing":
       return "done choosing";
+    case "chooseYesNo":
+      return answer.yes ? "yes" : "no";
   }
 }
 

@@ -111,7 +111,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         "noncreature, nonland", mandatory if any fits, nothing if none, CR 608.2d, 609.3), Elvish Piper
         (`putOntoBattlefield` from hand, min 0; under the activator's control, CR 110.2a, 109.5; not cast; summoning
         sick, CR 302.6; resolves with its source gone, CR 113.7a).
-      - M2-05b2b, libraries (design settled 2026-11-20 with the advisor; the rules-judge reviewed the cards): an
+      - M2-05b2b, libraries: built (D-064), in review. 13 scenarios in `test/scenarios/cards/m2-05b2/` (30 there in
+        all), two-worlds tests first in `test/effects/library-effects.test.ts` (each checked to fail when a search
+        skips an empty-of-matches library or an "any number" search ends at its maximum); the interim decks carry
+        the six cards, five new golden games; the fuzzer reaches searches and Ponder's look. Design (settled
+        2026-11-20 with the advisor; the rules-judge reviewed the cards): an
         `ObjectFilter` supertype (basic, CR 205.4a, read through `supertypesOf`) and a negated filter, since "other
         than basic land cards" means not (basic and land) (Haunting Echoes still exiles Terramorphic Expanse). A
         `GameState.resolution` record `{ object, found, exiled }` for "this way" (CR 608.2c), set as an object starts

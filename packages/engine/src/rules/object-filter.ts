@@ -5,7 +5,7 @@
 import type { CardDatabase, ObjectFilter } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { cardTypesOf, subtypesOf } from "./card-types.ts";
+import { cardTypesOf, subtypesOf, supertypesOf } from "./card-types.ts";
 import { colorsOf } from "./colors.ts";
 import { isAttacking, isBlocking } from "./combat.ts";
 import { controllerOf } from "./controller.ts";
@@ -34,6 +34,13 @@ export function matchesFilter(
     if (!anyOf(colors, filter.colors) || !noneOf(colors, filter.notColors)) return false;
   }
   if (filter.subtypes !== undefined && !anyOf(subtypesOf(state, id, cards), filter.subtypes)) return false;
+  // "Basic land card": every supertype listed (CR 205.4a), as computed.
+  if (filter.supertypes !== undefined) {
+    const supertypes = supertypesOf(state, id, cards);
+    if (!filter.supertypes.every((s) => supertypes.includes(s))) return false;
+  }
+  // "Other than basic land cards": not fitting the whole inner filter, so a nonbasic land still fits.
+  if (filter.not !== undefined && matchesFilter(state, id, filter.not, you, cards)) return false;
   if (filter.tapped === true && !obj.tapped) return false;
   if (filter.combat !== undefined && !inCombatAs(state, id, filter.combat, cards)) return false;
   if (filter.controller !== undefined) {

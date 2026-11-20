@@ -35,14 +35,21 @@ the one place their effects become changes to the game.
 | `discard` | "Target player discards two cards" | The player chooses (CR 701.9b), or "you" with `chosenBy` and a `filter` (Duress); a smaller hand is discarded whole without asking (CR 609.3) |
 | `revealHand` | "Target opponent reveals their hand" | Shows the hand's cards to everyone, by identity only (CR 701.20a, D-062) |
 | `putOntoBattlefield` | "You may put a creature card from your hand onto the battlefield" | Under the controller's control (CR 110.2a), not cast; asked whenever the hand isn't empty (D-062) |
+| `search` | "Search your library for a basic land card" | "You" choose among the library's cards fitting `filter` (or with the name of a card exiled this way), shown the whole library by identity (CR 701.23a, D-062); finds `"found"`, moves nothing |
+| `reveal` | "Reveal it" | Shows the cards to everyone, by identity (CR 701.20a) |
+| `put` | "Put that card onto the battlefield tapped" | Into the owner's hand, or onto the battlefield under the controller, `tapped` as part of the move (CR 110.2a, 110.5b) |
+| `shuffle` / `mayShuffle` | "Then shuffle" / "You may shuffle" | Shuffles (CR 701.24a); `mayShuffle` asks yes or no first |
+| `lookAtTop` | "Look at the top three cards of your library, then put them back in any order" | The player is shown them and puts them back top first (CR 701.20e, 401.4) |
+| `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
 now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5); `"eachPlayer"` names
 every player in APNAP order (CR 101.4).
 
-`from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, or `{ target: i }` for the
-still-legal targets of the i-th instance of "target". A subject with no legal targets left means that part does nothing (CR 608.2b).
+`from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"found"` (what an earlier
+`search` of this resolution found, kept in `GameState.resolution`, D-064), or `{ target: i }` for the still-legal
+targets of the i-th instance of "target". A subject with no legal targets left means that part does nothing (CR 608.2b).
 
 ## Primitives
 
@@ -59,10 +66,12 @@ events to it with `happen`, as do turn steps and casting.
 
 `choose-cards.ts` is how an effect waits for cards to be chosen (CR 608.2d): `askToChoose` sets a `chooseCards`
 decision; each answer either waits for the next card or queues the effect again with `chosen`, ahead of the rest of
-the resolution, so nothing happens until all are in (D-062). `hand-effects.ts` has the ops that use it.
+the resolution, so nothing happens until all are in (D-062). `hand-effects.ts` and `library-effects.ts` have the ops
+that use it.
 
 `player-effects.ts` isn't a primitive: `drawEach`, `discardAtRandom` and `mill` propose several events for the players
 an effect names (one draw at a time; random picks, then one simultaneous discard; one simultaneous mill).
 
-Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts` and `choose-cards.test.ts`, and the scenarios in
+Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts` and
+`library-effects.test.ts`, and the scenarios in
 `test/scenarios/effects/` and `test/scenarios/cards/`.

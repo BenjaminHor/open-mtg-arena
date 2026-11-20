@@ -76,7 +76,10 @@ export const furnaceWhelp: CardDef = {
   creature" as `{ kind: "sacrifice", filter: { types: ["creature"] } }` (a permanent its controller controls).
 - Effects name what they act on with a subject: `{ target: 0 }`, `"self"` (the spell, or the ability's source), or
   `"you"` (the controller: "you gain 4 life" is `{ op: "gainLife", who: "you", amount: 4 }`), or `"eachPlayer"` (in
-  APNAP order: Burning Inquiry). "Target player" is the target kind `player`; "target opponent" is `opponent`. The ops are listed in
+  APNAP order: Burning Inquiry). "Target player" is the target kind `player`; "target opponent" is `opponent`. `"found"` names
+  what an earlier `search` in the same text found ("put that card into your hand").
+- Filters: "basic land card" is `{ supertypes: ["basic"], types: ["land"] }`; "other than basic land cards" is
+  `{ not: { supertypes: ["basic"], types: ["land"] } }`. "Sacrifice this land" is the cost part `{ kind: "sacrificeSelf" }`. The ops are listed in
   `engine/src/effects/README.md`.
 - Keyword actions (CR 701) Scryfall lists among the keywords, such as Mill, go in `KEYWORD_ACTIONS` in
   `definition-problems.ts` as the first card using each arrives, not in the definition's `keywords`.

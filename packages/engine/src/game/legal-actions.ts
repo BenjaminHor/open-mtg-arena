@@ -48,6 +48,8 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         pending.chosen.length >= pending.min ? [{ ...answer, answer: { kind: "finishChoosing" } }] : [];
       return [...add, ...finish];
     }
+    case "chooseYesNo":
+      return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
     case "discardToHandSize":
       return zoneList(state, { zone: "hand", player })
         .filter((object) => !pending.chosen.includes(object))
