@@ -1,0 +1,15 @@
+name: Bountiful Harvest gains 1 life for each land its caster controls, not the opponent's
+rules: [CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Bountiful Harvest]
+    battlefield: [Forest, Forest, Forest, Forest, Forest, Island]
+  p2:
+    battlefield: [Mountain, Mountain]
+steps:
+  - p1 cast: Bountiful Harvest
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 26

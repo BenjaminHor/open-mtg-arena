@@ -1,0 +1,21 @@
+name: Earthquake damages each creature without flying and each player, sparing fliers
+rules: [CR 608.2f, CR 702.9a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Earthquake]
+    battlefield: [Mountain, Mountain, Mountain, Grizzly Bears]
+  p2:
+    battlefield: [Giant Spider, Ornithopter, Furnace Whelp]
+steps:
+  - p1 cast: Earthquake
+    x: 2
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Earthquake, Grizzly Bears]
+      p2:Giant Spider.damage: 2
+      p2:Ornithopter.damage: 0
+      p2:Furnace Whelp.damage: 0
+      p1.life: 18
+      p2.life: 18

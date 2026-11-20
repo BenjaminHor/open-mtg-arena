@@ -142,33 +142,34 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
-  - M2-05c Life, damage to many, mana (now). Plan (2026-11-20), for the rules-judge before code; split in two:
-    - M2-05c1, no new decisions: Angel's Mercy (gain 7), Bountiful Harvest, Acolyte of Xathrid ({1}{B}, {T}: target
-      player loses 1 life), Seismic Strike, Tendrils of Corruption, Consume Spirit, Pyroclasm, Windstorm, Earthquake,
-      Goblin Artillery.
-      - An `Amount` counted from the battlefield, `{ count: ObjectFilter }` ("1 life for each land you control", "the
-        number of Mountains you control"), worked out as the effect applies; Tendrils' "where X is the number of Swamps
-        you control" is that count, its value while it's on the stack (CR 107.3c).
-      - A subject `{ each: ObjectFilter }`: every permanent fitting it as the effect applies (Earthquake's ruling: "without
-        flying" is checked on resolution; CR 608.2h). Filters gain `keywords` and `notKeywords`, read through
-        `keywordsOf` (layer 6).
-      - `dealDamage` gains `and: [{ to, amount }]` for one source dealing different damage to different recipients in
-        the same action: Earthquake (each creature without flying and each player), Goblin Artillery (2 to any target
-        and 3 to you). Each is one damage event, processed simultaneously (CR 608.2f, 120.4).
-      - Consume Spirit's "Spend only black mana on X": a spell field `xPaidWith: "B"` makes each X a {B} in the total
-        cost (CR 601.2f), so only black mana pays it; it deals X damage and gains X life, X being the number chosen,
-        even if damage is prevented (its ruling). An illegal target means it doesn't resolve and no life is gained (its
-        ruling, CR 608.2b), as for Tendrils and Goblin Artillery.
-    - M2-05c2, choices: Yawning Fissure ("Each opponent sacrifices a land of their choice": a subject `"eachOpponent"`;
-      a `sacrifice` op where each opponent chooses with `chooseCards`, purpose "sacrifice", from lands they control;
-      the battlefield is public, so a forced choice isn't asked; in APNAP order, then all sacrificed at once, its
-      ruling, CR 608.2e; two players for now). Birds of Paradise ("{T}: Add one mana of any color", CR 106.1a): a mana
-      ability resolves as it's activated (CR 605.3b), so it can't wait for a decision; the color is part of the
-      activation (`ACTIVATE_ABILITY` gains a `color` for such abilities), `legalActions` lists one activation per color,
-      and `autoPay` picks the color the cost needs. Birds has flying (Windstorm, Earthquake).
-    - Future impact: "damage to each" and counted amounts reach every later card that uses them; the color on the
-      action is how any "one mana of any color" mana ability works (lands later); `{ each }` keeps working once layers
-      change keywords (M2-09).
+  - M2-05c Life, damage to many, mana (now). Plan (2026-11-20), rules-reviewed and revised; split in two:
+    - M2-05c1, no new decisions: Angel's Mercy, Bountiful Harvest, Acolyte of Xathrid, Seismic Strike, Tendrils of
+      Corruption, Consume Spirit, Pyroclasm, Windstorm, Earthquake, Goblin Artillery.
+      - An `Amount` counted from the battlefield, `{ count: ObjectFilter }`, worked out as the effect applies
+        (CR 608.2h); "Mountains" and "Swamps" are land types read through characteristics (CR 205.3i). Tendrils' "where
+        X is the number of Swamps you control" is that count, with no X announced (CR 107.3c); it's counted once per
+        effect, which can only differ once replacements move things mid-resolution (later: CR 107.3i, 608.2h, M2-08).
+      - A subject `{ each: ObjectFilter }`: every permanent fitting it as the effect applies (Earthquake's ruling,
+        CR 608.2h). Filters gain `keywords` / `notKeywords`, read through `keywordsOf` (CR 702.9a).
+      - `dealDamage` gains `and: [{ to, amount }]`: one source, different damage to different recipients, as one damage
+        event (CR 608.2f, 120.4), backed by a unit test that one proposal carries every recipient. 0 damage isn't dealt
+        (CR 120.8); gaining 0 life isn't an event (CR 119.9).
+      - Consume Spirit's "Spend only black mana on X": X stays generic in the printed cost (CR 107.4b; color and mana
+        value unchanged, CR 202.2, 202.3e); only the cost to pay (`totalCost`) makes each X a {B}, a payment
+        restriction (CR 601.2h). Equivalent today; reductions (CR 118.7a) and other restrictions (Soul Burn) need
+        restricted mana later (future-rules).
+    - M2-05c2, choices: Yawning Fissure (`sacrifice` op, each opponent choosing a land they control, filter relative to
+      the chooser; CR 701.21a, 608.2d; with two players one chooser, so APNAP choosing then one simultaneous
+      sacrifice stays `later: CR 101.4, 608.2e`; a forced choice isn't asked, the battlefield being public). Birds of
+      Paradise: the color travels on the `ACTIVATE_ABILITY` action (a design choice: the CR has it chosen as the
+      ability resolves, CR 608.2d, which for a mana ability is right after activation, CR 605.3b), checked as it
+      resolves, W/U/B/R/G only (CR 106.1a), in both paths (priority and while paying), refused when missing or sent to a
+      fixed-color ability; `legalActions` lists one activation per color; `autoPay` sees it and tries any-color sources
+      last.
+    - Tests from the review: counts on resolution (Seismic Strike, Tendrils after a fetched land), zero counts and X=0,
+      flying checked on resolution, Windstorm sparing reach and players, both players dying (a draw), Pyroclasm on
+      damaged creatures, Artillery with its target gone, source gone, on its controller, summoning sick, Acolyte,
+      Consume Spirit's black-only X and target gone, Fissure's choices, Birds' colors.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with

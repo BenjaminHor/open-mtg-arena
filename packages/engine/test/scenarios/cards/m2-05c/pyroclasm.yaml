@@ -1,0 +1,17 @@
+name: Pyroclasm deals 2 damage to each creature, its caster's too, counting damage already marked
+rules: [CR 120.3e, CR 704.5g]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Pyroclasm]
+    battlefield: [Mountain, Mountain, { card: Goblin Artillery, damage: 1 }, Grizzly Bears]
+  p2:
+    battlefield: [Giant Spider, Ornithopter]
+steps:
+  - p1 cast: Pyroclasm
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Pyroclasm, Goblin Artillery, Grizzly Bears]
+      p2.graveyard: [Ornithopter]
+      p2:Giant Spider.damage: 2

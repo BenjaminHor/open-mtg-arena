@@ -1,0 +1,17 @@
+name: Seismic Strike with no Mountains deals no damage at all
+rules: [CR 120.8]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Seismic Strike]
+    manaPool: { R: 3 }
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Seismic Strike
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Grizzly Bears.damage: 0
+      events lacks: [{ type: DAMAGE_DEALT }]

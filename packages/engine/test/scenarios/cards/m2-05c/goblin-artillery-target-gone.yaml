@@ -1,0 +1,23 @@
+name: Goblin Artillery's ability whose target is gone doesn't resolve, so its controller isn't dealt damage either
+rules: [CR 608.2b]
+# Goblin Artillery's ruling.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Goblin Artillery]
+  p2:
+    hand: [Unsummon]
+    battlefield: [Grizzly Bears, Island]
+steps:
+  - p1 activate: Goblin Artillery
+    targets: [p2:Grizzly Bears]
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 20
+      events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]
+      events lacks: [{ type: DAMAGE_DEALT }]

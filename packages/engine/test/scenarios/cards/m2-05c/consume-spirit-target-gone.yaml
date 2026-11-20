@@ -1,0 +1,25 @@
+name: Consume Spirit whose target is gone doesn't resolve, so its caster gains no life
+rules: [CR 608.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Consume Spirit]
+    manaPool: { B: 4 }
+  p2:
+    hand: [Unsummon]
+    battlefield: [Grizzly Bears, Island]
+steps:
+  - p1 cast: Consume Spirit
+    x: 2
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 20
+      events contains: [{ type: SPELL_DID_NOT_RESOLVE }]
+      events lacks: [{ type: LIFE_GAINED }]

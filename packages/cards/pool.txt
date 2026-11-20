@@ -4,12 +4,16 @@
 # Lines starting with # are comments. To choose which printing's art is shown, add its Scryfall set code (and a
 # The card pool: every card the engine supports, one name per line, exactly as in Oracle.
 # collector number if the set has several): `Lightning Bolt [m10]` or `Lightning Bolt [m10 146]`. A pin always names an
+Acolyte of Xathrid
+Angel's Mercy
 Assassinate
 Blinding Mage
+Bountiful Harvest
 Burning Inquiry
 Cancel
 Celestial Purge
 Centaur Courser
+Consume Spirit
 Coral Merfolk
 Craw Wurm
 Deathmark
@@ -19,6 +23,7 @@ Divination
 Divine Verdict
 Doom Blade
 Duress
+Earthquake
 Elite Vanguard
 Elvish Piper
 Essence Scatter
@@ -31,6 +36,7 @@ Forest
 Furnace Whelp
 Giant Growth
 Giant Spider
+Goblin Artillery
 Gray Ogre
 Grizzly Bears
 Haunting Echoes
@@ -52,11 +58,13 @@ Ornithopter
 Plains
 Planar Cleansing
 Ponder
+Pyroclasm
 Raging Goblin
 Rampant Growth
 Righteousness
 Rod of Ruin
 Royal Assassin
+Seismic Strike
 Shatter
 Shock
 Sign in Blood
@@ -64,6 +72,7 @@ Solemn Offering
 Spined Wurm
 Swamp
 Tempest of Light
+Tendrils of Corruption
 Terramorphic Expanse
 Tome Scour
 Traumatize
@@ -71,3 +80,4 @@ Undead Slayer
 Unsummon
 Vampire Aristocrat
 Volcanic Hammer
+Windstorm

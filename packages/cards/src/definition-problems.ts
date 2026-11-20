@@ -76,7 +76,7 @@ function targetProblems(
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
-    const spec = typeof effect.to === "string" ? undefined : targets[effect.to.target];
+    const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
     } else if (
@@ -126,7 +126,8 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
  */
 function subjectProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
   const problems: string[] = [];
-  const targetKind = (s: EffectSubject) => (typeof s === "object" ? targets[s.target]?.kind : undefined);
+  const targetKind = (s: EffectSubject) =>
+    typeof s === "object" && "target" in s ? targets[s.target]?.kind : undefined;
   const playerOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
     return (
