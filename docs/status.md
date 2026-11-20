@@ -456,7 +456,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - Now: M2-08d (2026-11-20), in two PRs. M2-08d1 built (D-088): Fog, Safe Passage, Guardian Seraph; 11 scenarios in
        `test/scenarios/cards/m2-08d/`; two golden games. 166 cards; 158 of the 234 Magic 2010 cards. Mutations (6/6
        caught) and a 200-game fuzz are clean; both reviews found no wrong result. Their findings are fixed (dbade33,
-       21 scenarios now; a second mutation pass caught 6/6 after one test was tightened); next the PR, then M2-08d2.
+       21 scenarios now; a second mutation pass caught 6/6 after one test was tightened). Merged as #48. The new effect
+       ids changed no golden log: pool-181 casts Fog as its last action, and no later id shows.
        What the fixes were:
        - Bug: identical candidates (two Seraphs) beside a different one (Fog) are offered as separate options. Group
          candidates by identity: one option per group, all its members applied when chosen.
@@ -680,8 +681,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the
   owner's final one, D-089, keeps 14,623.) Options: (a) the filter sets the order, not
   the boundary: Arena's mechanics first, then a later milestone for the Modern-only ones (recommended; nothing needs
-  deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) widen it now to
-  `game:arena -is:alchemy`, which brings back paper cards Arena had only in digital reprint sets.
+  deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) the owner's final filter
+  (`in:arena in:paper -is:alchemy`) already brings back the paper cards Arena had only in digital reprint sets, which
+  was the third option first offered here.
 - (Asked 2026-11-20, D-089) Magic 2010 cards still to script in M2-14 whose rules may have no counterpart on MTG Arena
   (Hive Mind, Telepathy, Warp World, Sphinx Ambassador's naming a card, Mirror of Fate, and any other M2-14 card): (a)
   check each against Arena when M2-14 starts and skip those whose mechanic no Arena card uses (recommended; proceeding
