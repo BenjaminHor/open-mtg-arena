@@ -66,23 +66,23 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       keywords.)
       Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
       mana, gainLife 0, destroy and tap on an object gone mid-resolution.
-  - M2-05b Cards moving (plan draft, 2026-11-20; advisor and rules-judge to read before code). Cards: Divination, Mind
-    Spring, Sign in Blood, Merfolk Looter, Mind Rot, Mind Shatter, Duress, Burning Inquiry, Tome Scour, Traumatize,
-    Ponder, Fabricate, Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Disentomb, Nature's Spiral, Haunting
-    Echoes, Elvish Piper (Oracle text and rulings in the pool data once extracted).
-    - The new mechanism: choices made while a spell or ability resolves (CR 608.2d): which cards to discard (the
-      discarding player chooses, CR 701.9b? check), which card to take from a revealed hand (Duress) or a searched
-      library (CR 701.23, finding nothing is allowed: Rampant Growth's ruling), the order of cards put back (Ponder),
-      "may" (Elvish Piper, Ponder's shuffle). Draft shape: an effect that needs a choice waits for a decision kind
-      (choose cards from a list, min to max; order cards; yes or no) and is run again with the answer, the answers kept
-      in its work item, so every pause is data (D-032) and nothing calls back.
-    - Hidden information: searching a library or looking at its top shows those cards to that player only (CR 401.2,
-      701.23); revealing shows a hand to everyone (CR 701.20). The decision lists the objects, and `playerView` and
-      `eventsFor` must let the chooser (and, for a reveal, everyone) see exactly those and no more (D-044, D-054).
-    - Other effects: draw N (a sequence of single draws, CR 121.2; a container for CR 121.2a replacements later),
-      discard at random (the seeded RNG), mill (CR 701.17), shuffle, put onto the battlefield (tapped), return from a
-      graveyard to hand, lose life, "each player", amounts of X and of "half, rounded down".
-    - Known issues to weigh first: golden games grow about 2 MB per task and the fuzz takes about 10 minutes.
+  - M2-05b Cards moving, split in two by the advisor's review (2026-11-20):
+    - M2-05b1, no choices at resolution (now): Divination, Mind Spring, Sign in Blood, Mind Shatter, Burning Inquiry,
+      Tome Scour, Traumatize, Disentomb, Nature's Spiral. A `player` target kind; a `loseLife` pipeline event back
+      (CR 119.3); ops draw N (separate single draws, CR 121.2; "each player" in APNAP order, CR 121.2c), lose life,
+      discard at random (the seeded RNG; Burning Inquiry: each player's random picks, then all discarded at once, its
+      ruling), mill (CR 701.17a; Traumatize's "half, rounded down", CR 107.1a; graveyard order later: CR 404.3);
+      return from your graveyard (`returnToHand`, already built). The draw-several container (CR 121.2a) moves to
+      M2-08 in future-rules, when a replacement needs it.
+    - M2-05b2, choices at resolution (next, plan reviewed first): Merfolk Looter, Mind Rot, Duress, Ponder, Fabricate,
+      Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Haunting Echoes, Elvish Piper. Constraints from the advisor:
+      a re-queued effect must run before the work behind it (test first); nothing happens before all answers are in
+      (no doubled reveal or move); one card per answer, as `discardToHandSize`; always a legal answer (counts clamped,
+      a search may find nothing, check CR 701.23 for "a card"); the chooser isn't always the controller; the cards a
+      decision shows go on the decision, with visibility from one function shared by `playerView`, `eventsFor` and the
+      fuzz leak check, and a two-worlds test for Haunting Echoes; check whether "put onto the battlefield tapped"
+      becomes tapped; Rampant Growth isn't a land play; Birds of Paradise's choice inside a mana ability during payment
+      (M2-05c) can't use `waitFor` there. Profile a slow fuzz seed first (the cause in Known issues is a guess).
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
