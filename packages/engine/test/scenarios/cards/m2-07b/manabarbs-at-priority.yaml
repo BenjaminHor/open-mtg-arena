@@ -1,0 +1,17 @@
+name: A land tapped for mana while holding priority triggers Manabarbs at once, under any player's control
+rules: [CR 106.12, CR 605.3a, CR 117.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest]
+  p2:
+    battlefield: [Manabarbs]
+steps:
+  - p1 activate: Forest
+  - expect:
+      stack: [Manabarbs ability]
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - expect:
+      p1.life: 19
+      p2.life: 20

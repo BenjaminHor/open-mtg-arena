@@ -1,0 +1,20 @@
+name: Life gained from Wurm's Tooth's ability triggers Sanguine Bond, which goes on the stack as a new batch above the spell
+rules: [CR 603.3b, CR 117.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sanguine Bond, Wurm's Tooth, Forest, Forest]
+    hand: [Grizzly Bears]
+steps:
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - all pass: once
+  - p1 choose: yes
+  - p1 choose: p2
+  - expect:
+      p1.life: 21
+      stack: [Grizzly Bears, Sanguine Bond ability]
+  - all pass: once
+  - expect:
+      p2.life: 19
+      stack: [Grizzly Bears]

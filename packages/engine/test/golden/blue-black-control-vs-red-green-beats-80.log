@@ -63,9 +63,11 @@ T1 p2 plays p2:Mountain
 T1 moves: Lightning Bolt, p2's hand -> stack
 T1 taps: p2:Mountain
 T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
 T1 p2 cancels casting Lightning Bolt
 T1 taps: p2:Mountain
 T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
 T1 p2's unspent {R} empties
 T1 p2 attack: nothing
 T1 moves: Lightning Bolt, p2's hand -> stack
@@ -83,6 +85,7 @@ T2 moves: Lightning Bolt, p2's hand -> stack
 T2 p2 cancels casting Lightning Bolt
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 p1's unspent {U} empties
 T2 p1 attack: nothing
 T2 moves: Lightning Bolt, p2's hand -> stack
@@ -95,6 +98,7 @@ T3 turn 3 begins (p2)
 T3 untaps: p2:Mountain
 T3 taps: p2:Mountain
 T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
 T3 moves: Lightning Bolt, p2's hand -> stack
 T3 p2 cancels casting Lightning Bolt
 T3 p2's unspent {R} empties
@@ -129,6 +133,7 @@ T4 moves: Merfolk Looter, p1's library -> p1's hand
 T4 p1 draws
 T4 taps: p1:Island
 T4 p1 adds {U} (p1:Island)
+T4 p1 taps p1:Island for mana
 T4 p1's unspent {U} empties
 T4 p1 attack: nothing
 T4 moves: Lightning Bolt, p2's hand -> stack
@@ -148,6 +153,7 @@ T5 p2 draws
 T5 moves: Lightning Bolt, p2's hand -> stack
 T5 taps: p2:Mountain
 T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
 T5 p2 casts Lightning Bolt
 T5 damage: Lightning Bolt -> p1 3
 T5 p1 loses 3 life
@@ -166,6 +172,7 @@ T6 moves: Cancel, p1's library -> p1's hand
 T6 p1 draws
 T6 taps: p1:Island
 T6 p1 adds {U} (p1:Island)
+T6 p1 taps p1:Island for mana
 T6 p1's unspent {U} empties
 T6 moves: Island, p1's hand -> battlefield
 T6 p1 plays p1:Island#2
@@ -177,6 +184,7 @@ T6 moves: Lightning Bolt, p2's hand -> stack
 T6 p2 cancels casting Lightning Bolt
 T6 taps: p1:Island#2
 T6 p1 adds {U} (p1:Island#2)
+T6 p1 taps p1:Island#2 for mana
 T6 moves: Lightning Bolt, p2's hand -> stack
 T6 p2 cancels casting Lightning Bolt
 T6 p1's unspent {U} empties
@@ -209,6 +217,7 @@ T7 moves: Lightning Bolt, p2's hand -> stack
 T7 p2 cancels casting Lightning Bolt
 T7 taps: p2:Mountain
 T7 p2 adds {R} (p2:Mountain)
+T7 p2 taps p2:Mountain for mana
 T7 moves: Lightning Bolt, p2's hand -> stack
 T7 p2 casts Lightning Bolt
 T7 moves: Cancel, p1's hand -> stack
@@ -230,9 +239,11 @@ T7 p2 plays p2:Forest
 T7 moves: Canyon Minotaur, p2's hand -> stack
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 p2 cancels casting Canyon Minotaur
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 p2's unspent {G} empties
 T7 p2 attack: nothing
 T7 moves: Llanowar Elves, p2's hand -> stack
@@ -245,19 +256,24 @@ T8 p1 draws
 T8 moves: Sign in Blood, p1's hand -> stack
 T8 taps: p1:Island#1
 T8 p1 adds {U} (p1:Island#1)
+T8 p1 taps p1:Island#1 for mana
 T8 taps: p1:Island#2
 T8 p1 adds {U} (p1:Island#2)
+T8 p1 taps p1:Island#2 for mana
 T8 p1 cancels casting Sign in Blood
 T8 moves: Swamp, p1's hand -> battlefield
 T8 p1 plays p1:Swamp
 T8 taps: p1:Island#1
 T8 p1 adds {U} (p1:Island#1)
+T8 p1 taps p1:Island#1 for mana
 T8 p1's unspent {U} empties
 T8 p1 attack: nothing
 T8 taps: p1:Swamp
 T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
 T8 taps: p1:Island#2
 T8 p1 adds {U} (p1:Island#2)
+T8 p1 taps p1:Island#2 for mana
 T8 p1's unspent {U}{B} empties
 T8 moves: Merfolk Looter, p1's hand -> stack
 T8 p1 cancels casting Merfolk Looter
@@ -268,8 +284,10 @@ T9 untaps: p2:Mountain
 T9 untaps: p2:Forest
 T9 taps: p2:Forest
 T9 p2 adds {G} (p2:Forest)
+T9 p2 taps p2:Forest for mana
 T9 taps: p2:Mountain
 T9 p2 adds {R} (p2:Mountain)
+T9 p2 taps p2:Mountain for mana
 T9 p2's unspent {R}{G} empties
 T9 moves: Runeclaw Bear, p2's library -> p2's hand
 T9 p2 draws
@@ -286,27 +304,33 @@ T10 moves: Divination, p1's library -> p1's hand
 T10 p1 draws
 T10 taps: p1:Swamp
 T10 p1 adds {B} (p1:Swamp)
+T10 p1 taps p1:Swamp for mana
 T10 taps: p1:Island#1
 T10 p1 adds {U} (p1:Island#1)
+T10 p1 taps p1:Island#1 for mana
 T10 taps: p1:Island#2
 T10 p1 adds {U} (p1:Island#2)
+T10 p1 taps p1:Island#2 for mana
 T10 p1's unspent {U}{U}{B} empties
 T10 moves: Island, p1's hand -> battlefield
 T10 p1 plays p1:Island#3
 T10 p1 attack: nothing
 T10 taps: p1:Island#3
 T10 p1 adds {U} (p1:Island#3)
+T10 p1 taps p1:Island#3 for mana
 T10 p1's unspent {U} empties
 T11 turn 11 begins (p2)
 T11 untaps: p2:Mountain
 T11 untaps: p2:Forest
 T11 taps: p2:Forest
 T11 p2 adds {G} (p2:Forest)
+T11 p2 taps p2:Forest for mana
 T11 p2's unspent {G} empties
 T11 moves: Mountain, p2's library -> p2's hand
 T11 p2 draws
 T11 taps: p2:Mountain
 T11 p2 adds {R} (p2:Mountain)
+T11 p2 taps p2:Mountain for mana
 T11 p2's unspent {R} empties
 T11 p2 attack: nothing
 T11 moves: Canyon Minotaur, p2's hand -> p2's graveyard
@@ -318,24 +342,29 @@ T12 untaps: p1:Swamp
 T12 untaps: p1:Island#3
 T12 taps: p1:Island#3
 T12 p1 adds {U} (p1:Island#3)
+T12 p1 taps p1:Island#3 for mana
 T12 p1's unspent {U} empties
 T12 moves: Kelinore Bat, p1's library -> p1's hand
 T12 p1 draws
 T12 taps: p1:Island#1
 T12 p1 adds {U} (p1:Island#1)
+T12 p1 taps p1:Island#1 for mana
 T12 p1's unspent {U} empties
 T12 moves: Swamp, p1's hand -> battlefield
 T12 p1 plays p1:Swamp#2
 T12 taps: p1:Island#2
 T12 p1 adds {U} (p1:Island#2)
+T12 p1 taps p1:Island#2 for mana
 T12 moves: Merfolk Looter, p1's hand -> stack
 T12 taps: p1:Swamp#1
 T12 p1 adds {B} (p1:Swamp#1)
+T12 p1 taps p1:Swamp#1 for mana
 T12 p1 casts Merfolk Looter
 T12 resolves: Merfolk Looter
 T12 moves: Merfolk Looter, stack -> battlefield
 T12 taps: p1:Swamp#2
 T12 p1 adds {B} (p1:Swamp#2)
+T12 p1 taps p1:Swamp#2 for mana
 T12 p1's unspent {B} empties
 T12 p1 attack: nothing
 T12 moves: Giant Growth, p2's hand -> stack
@@ -353,9 +382,11 @@ T13 untaps: p2:Mountain
 T13 untaps: p2:Forest
 T13 taps: p2:Mountain
 T13 p2 adds {R} (p2:Mountain)
+T13 p2 taps p2:Mountain for mana
 T13 moves: Giant Growth, p2's hand -> stack
 T13 taps: p2:Forest
 T13 p2 adds {G} (p2:Forest)
+T13 p2 taps p2:Forest for mana
 T13 p2 casts Giant Growth
 T13 effect: p1:Merfolk Looter +3/+3 until end of turn
 T13 resolves: Giant Growth
@@ -374,6 +405,7 @@ T13 moves: Mountain, p2's hand -> battlefield
 T13 p2 plays p2:Mountain#2
 T13 taps: p2:Mountain#2
 T13 p2 adds {R} (p2:Mountain#2)
+T13 p2 taps p2:Mountain#2 for mana
 T13 p2's unspent {R} empties
 T13 effect ends: p1:Merfolk Looter +3/+3
 T14 turn 14 begins (p1)
@@ -388,6 +420,7 @@ T14 taps: p1:Merfolk Looter
 T14 p1 activates p1:Merfolk Looter
 T14 taps: p1:Swamp#2
 T14 p1 adds {B} (p1:Swamp#2)
+T14 p1 taps p1:Swamp#2 for mana
 T14 moves: Swamp, p1's library -> p1's hand
 T14 p1 draws
 T14 moves: Swamp, p1's hand -> p1's graveyard
@@ -395,15 +428,19 @@ T14 p1 discards Swamp
 T14 resolves: p1:Merfolk Looter's ability
 T14 taps: p1:Island#1
 T14 p1 adds {U} (p1:Island#1)
+T14 p1 taps p1:Island#1 for mana
 T14 p1's unspent {U}{B} empties
 T14 taps: p1:Island#2
 T14 p1 adds {U} (p1:Island#2)
+T14 p1 taps p1:Island#2 for mana
 T14 p1's unspent {U} empties
 T14 p1 attack: nothing
 T14 taps: p1:Swamp#1
 T14 p1 adds {B} (p1:Swamp#1)
+T14 p1 taps p1:Swamp#1 for mana
 T14 taps: p1:Island#3
 T14 p1 adds {U} (p1:Island#3)
+T14 p1 taps p1:Island#3 for mana
 T14 p1's unspent {U}{B} empties
 T14 moves: Divination, p1's hand -> stack
 T14 p1 cancels casting Divination
@@ -411,6 +448,7 @@ T14 moves: Swamp, p1's hand -> battlefield
 T14 p1 plays p1:Swamp#3
 T14 taps: p1:Swamp#3
 T14 p1 adds {B} (p1:Swamp#3)
+T14 p1 taps p1:Swamp#3 for mana
 T14 p1's unspent {B} empties
 T15 turn 15 begins (p2)
 T15 untaps: p2:Mountain#1
@@ -418,19 +456,24 @@ T15 untaps: p2:Forest
 T15 untaps: p2:Mountain#2
 T15 taps: p2:Mountain#1
 T15 p2 adds {R} (p2:Mountain#1)
+T15 p2 taps p2:Mountain#1 for mana
 T15 p2's unspent {R} empties
 T15 moves: Forest, p2's library -> p2's hand
 T15 p2 draws
 T15 moves: Shivan Dragon, p2's hand -> stack
 T15 taps: p2:Mountain#2
 T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
 T15 taps: p2:Forest
 T15 p2 adds {G} (p2:Forest)
+T15 p2 taps p2:Forest for mana
 T15 p2 cancels casting Shivan Dragon
 T15 taps: p2:Mountain#2
 T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
 T15 taps: p2:Forest
 T15 p2 adds {G} (p2:Forest)
+T15 p2 taps p2:Forest for mana
 T15 p2's unspent {R}{G} empties
 T15 p2 attack: nothing
 T16 turn 16 begins (p1)
@@ -446,28 +489,36 @@ T16 p1 draws
 T16 moves: Sign in Blood, p1's hand -> stack
 T16 taps: p1:Island#2
 T16 p1 adds {U} (p1:Island#2)
+T16 p1 taps p1:Island#2 for mana
 T16 taps: p1:Island#1
 T16 p1 adds {U} (p1:Island#1)
+T16 p1 taps p1:Island#1 for mana
 T16 p1 cancels casting Sign in Blood
 T16 moves: Swamp, p1's hand -> battlefield
 T16 p1 plays p1:Swamp#4
 T16 moves: Kelinore Bat, p1's hand -> stack
 T16 taps: p1:Swamp#4
 T16 p1 adds {B} (p1:Swamp#4)
+T16 p1 taps p1:Swamp#4 for mana
 T16 taps: p1:Swamp#1
 T16 p1 adds {B} (p1:Swamp#1)
+T16 p1 taps p1:Swamp#1 for mana
 T16 taps: p1:Island#3
 T16 p1 adds {U} (p1:Island#3)
+T16 p1 taps p1:Island#3 for mana
 T16 p1 casts Kelinore Bat
 T16 taps: p1:Island#1
 T16 p1 adds {U} (p1:Island#1)
+T16 p1 taps p1:Island#1 for mana
 T16 resolves: Kelinore Bat
 T16 moves: Kelinore Bat, stack -> battlefield
 T16 taps: p1:Island#2
 T16 p1 adds {U} (p1:Island#2)
+T16 p1 taps p1:Island#2 for mana
 T16 moves: Divination, p1's hand -> stack
 T16 taps: p1:Swamp#3
 T16 p1 adds {B} (p1:Swamp#3)
+T16 p1 taps p1:Swamp#3 for mana
 T16 p1 casts Divination
 T16 moves: Island, p1's library -> p1's hand
 T16 p1 draws
@@ -478,9 +529,11 @@ T16 moves: Divination, stack -> p1's graveyard
 T16 moves: Sign in Blood, p1's hand -> stack
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 p1 cancels casting Sign in Blood
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 taps: p1:Merfolk Looter
 T16 p1 activates p1:Merfolk Looter
 T16 moves: Swamp, p1's library -> p1's hand
@@ -510,11 +563,14 @@ T17 moves: Centaur Courser, p2's library -> p2's hand
 T17 p2 draws
 T17 taps: p2:Mountain#1
 T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
 T17 p2's unspent {R} empties
 T17 taps: p2:Mountain#2
 T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
 T17 taps: p2:Forest
 T17 p2 adds {G} (p2:Forest)
+T17 p2 taps p2:Forest for mana
 T17 p2's unspent {R}{G} empties
 T17 p2 attack: nothing
 T17 moves: Llanowar Elves, p2's hand -> stack
@@ -523,6 +579,7 @@ T17 moves: Forest, p2's hand -> battlefield
 T17 p2 plays p2:Forest#2
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
+T17 p2 taps p2:Forest#2 for mana
 T17 p2's unspent {G} empties
 T18 turn 18 begins (p1)
 T18 untaps: p1:Island#1
@@ -535,22 +592,27 @@ T18 untaps: p1:Swamp#3
 T18 untaps: p1:Swamp#4
 T18 taps: p1:Island#2
 T18 p1 adds {U} (p1:Island#2)
+T18 p1 taps p1:Island#2 for mana
 T18 p1's unspent {U} empties
 T18 moves: Sign in Blood, p1's library -> p1's hand
 T18 p1 draws
 T18 taps: p1:Swamp#1
 T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
 T18 moves: Island, p1's hand -> battlefield
 T18 p1 plays p1:Island#4
 T18 p1's unspent {B} empties
 T18 p1 attack: nothing
 T18 taps: p1:Swamp#2
 T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
 T18 p1's unspent {B} empties
 T18 taps: p1:Island#3
 T18 p1 adds {U} (p1:Island#3)
+T18 p1 taps p1:Island#3 for mana
 T18 taps: p1:Swamp#4
 T18 p1 adds {B} (p1:Swamp#4)
+T18 p1 taps p1:Swamp#4 for mana
 T18 p1's unspent {U}{B} empties
 T19 turn 19 begins (p2)
 T19 untaps: p2:Mountain#1
@@ -559,10 +621,12 @@ T19 untaps: p2:Mountain#2
 T19 untaps: p2:Forest#2
 T19 taps: p1:Island#1
 T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
 T19 taps: p1:Merfolk Looter
 T19 p1 activates p1:Merfolk Looter
 T19 taps: p2:Forest#1
 T19 p2 adds {G} (p2:Forest#1)
+T19 p2 taps p2:Forest#1 for mana
 T19 moves: Snapping Drake, p1's library -> p1's hand
 T19 p1 draws
 T19 moves: Island, p1's hand -> p1's graveyard
@@ -570,10 +634,13 @@ T19 p1 discards Island
 T19 resolves: p1:Merfolk Looter's ability
 T19 taps: p2:Forest#2
 T19 p2 adds {G} (p2:Forest#2)
+T19 p2 taps p2:Forest#2 for mana
 T19 taps: p2:Mountain#1
 T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 p2's unspent {R}{R}{G}{G} empties
 T19 p1's unspent {U} empties
 T19 moves: Forest, p2's library -> p2's hand
@@ -582,14 +649,17 @@ T19 moves: Runeclaw Bear, p2's hand -> stack
 T19 p2 cancels casting Runeclaw Bear
 T19 taps: p1:Swamp#3
 T19 p1 adds {B} (p1:Swamp#3)
+T19 p1 taps p1:Swamp#3 for mana
 T19 taps: p1:Island#4
 T19 p1 adds {U} (p1:Island#4)
+T19 p1 taps p1:Island#4 for mana
 T19 p1's unspent {U}{B} empties
 T19 p2 attack: nothing
 T19 moves: Mountain, p2's hand -> battlefield
 T19 p2 plays p2:Mountain#3
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 p2's unspent {R} empties
 T20 turn 20 begins (p1)
 T20 untaps: p1:Island#1
@@ -603,10 +673,13 @@ T20 untaps: p1:Swamp#4
 T20 untaps: p1:Island#4
 T20 taps: p1:Swamp#2
 T20 p1 adds {B} (p1:Swamp#2)
+T20 p1 taps p1:Swamp#2 for mana
 T20 taps: p1:Swamp#1
 T20 p1 adds {B} (p1:Swamp#1)
+T20 p1 taps p1:Swamp#1 for mana
 T20 taps: p1:Swamp#4
 T20 p1 adds {B} (p1:Swamp#4)
+T20 p1 taps p1:Swamp#4 for mana
 T20 p1's unspent {B}{B}{B} empties
 T20 moves: Swamp, p1's library -> p1's hand
 T20 p1 draws
@@ -615,14 +688,19 @@ T20 p1 plays p1:Swamp#5
 T20 moves: Snapping Drake, p1's hand -> stack
 T20 taps: p1:Swamp#5
 T20 p1 adds {B} (p1:Swamp#5)
+T20 p1 taps p1:Swamp#5 for mana
 T20 taps: p1:Island#2
 T20 p1 adds {U} (p1:Island#2)
+T20 p1 taps p1:Island#2 for mana
 T20 taps: p1:Island#1
 T20 p1 adds {U} (p1:Island#1)
+T20 p1 taps p1:Island#1 for mana
 T20 taps: p1:Island#3
 T20 p1 adds {U} (p1:Island#3)
+T20 p1 taps p1:Island#3 for mana
 T20 taps: p1:Swamp#3
 T20 p1 adds {B} (p1:Swamp#3)
+T20 p1 taps p1:Swamp#3 for mana
 T20 p1 casts Snapping Drake
 T20 taps: p1:Merfolk Looter
 T20 p1 activates p1:Merfolk Looter
@@ -636,12 +714,14 @@ T20 moves: Snapping Drake, stack -> battlefield
 T20 moves: Wind Drake, p1's hand -> stack
 T20 taps: p1:Island#4
 T20 p1 adds {U} (p1:Island#4)
+T20 p1 taps p1:Island#4 for mana
 T20 p1 cancels casting Wind Drake
 T20 p1's unspent {B} empties
 T20 taps: p1:Kelinore Bat
 T20 p1 attack: p1:Kelinore Bat -> p2
 T20 taps: p1:Island#4
 T20 p1 adds {U} (p1:Island#4)
+T20 p1 taps p1:Island#4 for mana
 T20 p1's unspent {U} empties
 T20 p2 block: nothing
 T20 combat damage: p1:Kelinore Bat -> p2 2
@@ -656,23 +736,29 @@ T21 untaps: p2:Forest#2
 T21 untaps: p2:Mountain#3
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 taps: p2:Forest#1
 T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
 T21 taps: p2:Mountain#2
 T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
 T21 p2's unspent {R}{R}{G} empties
 T21 moves: Fireball, p2's library -> p2's hand
 T21 p2 draws
 T21 taps: p2:Mountain#3
 T21 p2 adds {R} (p2:Mountain#3)
+T21 p2 taps p2:Mountain#3 for mana
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
 T21 p2's unspent {R}{G} empties
 T21 p2 attack: nothing
 T21 moves: Forest, p2's hand -> battlefield
 T21 p2 plays p2:Forest#3
 T21 taps: p2:Forest#3
 T21 p2 adds {G} (p2:Forest#3)
+T21 p2 taps p2:Forest#3 for mana
 T21 p2's unspent {G} empties
 T22 turn 22 begins (p1)
 T22 untaps: p1:Island#1
@@ -688,28 +774,37 @@ T22 untaps: p1:Island#4
 T22 untaps: p1:Swamp#5
 T22 taps: p1:Swamp#2
 T22 p1 adds {B} (p1:Swamp#2)
+T22 p1 taps p1:Swamp#2 for mana
 T22 p1's unspent {B} empties
 T22 moves: Cancel, p1's library -> p1's hand
 T22 p1 draws
 T22 taps: p1:Swamp#3
 T22 p1 adds {B} (p1:Swamp#3)
+T22 p1 taps p1:Swamp#3 for mana
 T22 moves: Wind Drake, p1's hand -> stack
 T22 taps: p1:Island#1
 T22 p1 adds {U} (p1:Island#1)
+T22 p1 taps p1:Island#1 for mana
 T22 taps: p1:Swamp#4
 T22 p1 adds {B} (p1:Swamp#4)
+T22 p1 taps p1:Swamp#4 for mana
 T22 p1 casts Wind Drake
 T22 moves: Cancel, p1's hand -> stack
 T22 taps: p1:Swamp#5
 T22 p1 adds {B} (p1:Swamp#5)
+T22 p1 taps p1:Swamp#5 for mana
 T22 taps: p1:Island#4
 T22 p1 adds {U} (p1:Island#4)
+T22 p1 taps p1:Island#4 for mana
 T22 taps: p1:Swamp#1
 T22 p1 adds {B} (p1:Swamp#1)
+T22 p1 taps p1:Swamp#1 for mana
 T22 taps: p1:Island#2
 T22 p1 adds {U} (p1:Island#2)
+T22 p1 taps p1:Island#2 for mana
 T22 taps: p1:Island#3
 T22 p1 adds {U} (p1:Island#3)
+T22 p1 taps p1:Island#3 for mana
 T22 p1 casts Cancel
 T22 moves: Cancel, p1's hand -> stack
 T22 p1 cancels casting Cancel
@@ -732,6 +827,7 @@ T22 moves: Swamp, p1's hand -> battlefield
 T22 p1 plays p1:Swamp#6
 T22 taps: p1:Swamp#6
 T22 p1 adds {B} (p1:Swamp#6)
+T22 p1 taps p1:Swamp#6 for mana
 T22 moves: Sign in Blood, p1's hand -> stack
 T22 p1 casts Sign in Blood
 T22 moves: Negate, p1's hand -> stack
@@ -779,8 +875,10 @@ T23 moves: Terramorphic Expanse, p2's library -> p2's hand
 T23 p2 draws
 T23 taps: p2:Mountain#2
 T23 p2 adds {R} (p2:Mountain#2)
+T23 p2 taps p2:Mountain#2 for mana
 T23 taps: p2:Mountain#3
 T23 p2 adds {R} (p2:Mountain#3)
+T23 p2 taps p2:Mountain#3 for mana
 T23 moves: Unsummon, p1's hand -> stack
 T23 p1 cancels casting Unsummon
 T23 moves: Unsummon, p1's hand -> stack
@@ -791,18 +889,23 @@ T23 p2 plays p2:Terramorphic Expanse
 T23 moves: Centaur Courser, p2's hand -> stack
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 p2 cancels casting Centaur Courser
 T23 taps: p2:Forest#1
 T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
 T23 moves: Unsummon, p1's hand -> stack
 T23 p1 cancels casting Unsummon
 T23 p2's unspent {G} empties
 T23 taps: p2:Forest#3
 T23 p2 adds {G} (p2:Forest#3)
+T23 p2 taps p2:Forest#3 for mana
 T23 taps: p2:Forest#2
 T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 moves: Unsummon, p1's hand -> stack
 T23 p1 cancels casting Unsummon
 T23 moves: Unsummon, p1's hand -> stack
@@ -837,25 +940,32 @@ T24 p1 draws
 T24 moves: Unsummon, p1's hand -> stack
 T24 taps: p1:Swamp#5
 T24 p1 adds {B} (p1:Swamp#5)
+T24 p1 taps p1:Swamp#5 for mana
 T24 taps: p1:Swamp#6
 T24 p1 adds {B} (p1:Swamp#6)
+T24 p1 taps p1:Swamp#6 for mana
 T24 taps: p1:Island#2
 T24 p1 adds {U} (p1:Island#2)
+T24 p1 taps p1:Island#2 for mana
 T24 taps: p1:Swamp#3
 T24 p1 adds {B} (p1:Swamp#3)
+T24 p1 taps p1:Swamp#3 for mana
 T24 p1 casts Unsummon
 T24 moves: Negate, p1's hand -> stack
 T24 taps: p1:Island#3
 T24 p1 adds {U} (p1:Island#3)
+T24 p1 taps p1:Island#3 for mana
 T24 p1 casts Negate
 T24 taps: p1:Swamp#4
 T24 p1 adds {B} (p1:Swamp#4)
+T24 p1 taps p1:Swamp#4 for mana
 T24 countered: Unsummon
 T24 moves: Unsummon, stack -> p1's graveyard
 T24 resolves: Negate
 T24 moves: Negate, stack -> p1's graveyard
 T24 taps: p1:Island#1
 T24 p1 adds {U} (p1:Island#1)
+T24 p1 taps p1:Island#1 for mana
 T24 taps: p1:Merfolk Looter
 T24 p1 activates p1:Merfolk Looter
 T24 moves: Island, p1's library -> p1's hand
@@ -865,11 +975,14 @@ T24 p1 discards Essence Scatter
 T24 resolves: p1:Merfolk Looter's ability
 T24 taps: p1:Swamp#2
 T24 p1 adds {B} (p1:Swamp#2)
+T24 p1 taps p1:Swamp#2 for mana
 T24 p1's unspent {U}{B}{B}{B}{B} empties
 T24 taps: p1:Island#4
 T24 p1 adds {U} (p1:Island#4)
+T24 p1 taps p1:Island#4 for mana
 T24 taps: p1:Swamp#1
 T24 p1 adds {B} (p1:Swamp#1)
+T24 p1 taps p1:Swamp#1 for mana
 T24 p1's unspent {U}{B} empties
 T24 p1 attack: nothing
 T25 turn 25 begins (p2)
@@ -882,24 +995,31 @@ T25 untaps: p2:Forest#3
 T25 untaps: p2:Mountain#4
 T25 taps: p2:Mountain#4
 T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 taps p2:Mountain#4 for mana
 T25 p2's unspent {R} empties
 T25 moves: Mountain, p2's library -> p2's hand
 T25 p2 draws
 T25 taps: p2:Mountain#3
 T25 p2 adds {R} (p2:Mountain#3)
+T25 p2 taps p2:Mountain#3 for mana
 T25 taps: p2:Mountain#2
 T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 taps p2:Mountain#2 for mana
 T25 taps: p2:Mountain#1
 T25 p2 adds {R} (p2:Mountain#1)
+T25 p2 taps p2:Mountain#1 for mana
 T25 taps: p2:Forest#1
 T25 p2 adds {G} (p2:Forest#1)
+T25 p2 taps p2:Forest#1 for mana
 T25 p2's unspent {R}{R}{R}{G} empties
 T25 moves: Llanowar Elves, p2's hand -> stack
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 p2 casts Llanowar Elves
 T25 taps: p2:Forest#3
 T25 p2 adds {G} (p2:Forest#3)
+T25 p2 taps p2:Forest#3 for mana
 T25 resolves: Llanowar Elves
 T25 moves: Llanowar Elves, stack -> battlefield
 T25 moves: Runeclaw Bear, p2's hand -> stack
@@ -914,6 +1034,7 @@ T25 moves: Mountain, p2's hand -> battlefield
 T25 p2 plays p2:Mountain#5
 T25 taps: p2:Mountain#5
 T25 p2 adds {R} (p2:Mountain#5)
+T25 p2 taps p2:Mountain#5 for mana
 T25 p2's unspent {R} empties
 T26 turn 26 begins (p1)
 T26 untaps: p1:Island#1
@@ -929,6 +1050,7 @@ T26 untaps: p1:Swamp#5
 T26 untaps: p1:Swamp#6
 T26 taps: p1:Swamp#6
 T26 p1 adds {B} (p1:Swamp#6)
+T26 p1 taps p1:Swamp#6 for mana
 T26 p1's unspent {B} empties
 T26 moves: Mind Rot, p1's library -> p1's hand
 T26 p1 draws
@@ -936,6 +1058,7 @@ T26 taps: p1:Merfolk Looter
 T26 p1 activates p1:Merfolk Looter
 T26 taps: p1:Island#4
 T26 p1 adds {U} (p1:Island#4)
+T26 p1 taps p1:Island#4 for mana
 T26 moves: Doom Blade, p1's library -> p1's hand
 T26 p1 draws
 T26 moves: Mind Rot, p1's hand -> p1's graveyard
@@ -945,17 +1068,23 @@ T26 p1's unspent {U} empties
 T26 moves: Sign in Blood, p1's hand -> stack
 T26 taps: p1:Island#2
 T26 p1 adds {U} (p1:Island#2)
+T26 p1 taps p1:Island#2 for mana
 T26 taps: p1:Swamp#2
 T26 p1 adds {B} (p1:Swamp#2)
+T26 p1 taps p1:Swamp#2 for mana
 T26 taps: p1:Swamp#5
 T26 p1 adds {B} (p1:Swamp#5)
+T26 p1 taps p1:Swamp#5 for mana
 T26 p1 casts Sign in Blood
 T26 taps: p1:Island#3
 T26 p1 adds {U} (p1:Island#3)
+T26 p1 taps p1:Island#3 for mana
 T26 taps: p1:Swamp#4
 T26 p1 adds {B} (p1:Swamp#4)
+T26 p1 taps p1:Swamp#4 for mana
 T26 taps: p1:Island#1
 T26 p1 adds {U} (p1:Island#1)
+T26 p1 taps p1:Island#1 for mana
 T26 moves: Centaur Courser, p2's library -> p2's hand
 T26 p2 draws
 T26 moves: Craw Wurm, p2's library -> p2's hand
@@ -966,8 +1095,10 @@ T26 moves: Sign in Blood, stack -> p1's graveyard
 T26 p1's unspent {U}{U}{U}{B} empties
 T26 taps: p1:Swamp#3
 T26 p1 adds {B} (p1:Swamp#3)
+T26 p1 taps p1:Swamp#3 for mana
 T26 taps: p1:Swamp#1
 T26 p1 adds {B} (p1:Swamp#1)
+T26 p1 taps p1:Swamp#1 for mana
 T26 moves: Doom Blade, p1's hand -> stack
 T26 p1 casts Doom Blade
 T26 destroyed: p2:Llanowar Elves
@@ -989,17 +1120,21 @@ T26 p1 plays p1:Island#5
 T26 moves: Mind Rot, p1's hand -> stack
 T26 taps: p1:Island#5
 T26 p1 adds {U} (p1:Island#5)
+T26 p1 taps p1:Island#5 for mana
 T26 p1 cancels casting Mind Rot
 T26 moves: Mind Rot, p1's hand -> stack
 T26 taps: p1:Island#5
 T26 p1 adds {U} (p1:Island#5)
+T26 p1 taps p1:Island#5 for mana
 T26 p1 cancels casting Mind Rot
 T26 moves: Mind Rot, p1's hand -> stack
 T26 taps: p1:Island#5
 T26 p1 adds {U} (p1:Island#5)
+T26 p1 taps p1:Island#5 for mana
 T26 p1 cancels casting Mind Rot
 T26 taps: p1:Island#5
 T26 p1 adds {U} (p1:Island#5)
+T26 p1 taps p1:Island#5 for mana
 T26 moves: Mind Rot, p1's hand -> stack
 T26 p1 cancels casting Mind Rot
 T26 moves: Mind Rot, p1's hand -> stack
@@ -1032,11 +1167,13 @@ T27 untaps: p2:Mountain#4
 T27 untaps: p2:Mountain#5
 T27 taps: p2:Forest#2
 T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
 T27 p2's unspent {G} empties
 T27 moves: Forest, p2's library -> p2's hand
 T27 p2 draws
 T27 taps: p2:Mountain#3
 T27 p2 adds {R} (p2:Mountain#3)
+T27 p2 taps p2:Mountain#3 for mana
 T27 moves: Fireball, p2's hand -> stack
 T27 p2 casts Fireball
 T27 resolves: Fireball
@@ -1045,17 +1182,23 @@ T27 moves: Shivan Dragon, p2's hand -> stack
 T27 p2 cancels casting Shivan Dragon
 T27 taps: p2:Forest#3
 T27 p2 adds {G} (p2:Forest#3)
+T27 p2 taps p2:Forest#3 for mana
 T27 taps: p2:Forest#1
 T27 p2 adds {G} (p2:Forest#1)
+T27 p2 taps p2:Forest#1 for mana
 T27 moves: Shivan Dragon, p2's hand -> stack
 T27 taps: p2:Mountain#5
 T27 p2 adds {R} (p2:Mountain#5)
+T27 p2 taps p2:Mountain#5 for mana
 T27 taps: p2:Mountain#2
 T27 p2 adds {R} (p2:Mountain#2)
+T27 p2 taps p2:Mountain#2 for mana
 T27 taps: p2:Mountain#1
 T27 p2 adds {R} (p2:Mountain#1)
+T27 p2 taps p2:Mountain#1 for mana
 T27 taps: p2:Mountain#4
 T27 p2 adds {R} (p2:Mountain#4)
+T27 p2 taps p2:Mountain#4 for mana
 T27 p2 casts Shivan Dragon
 T27 resolves: Shivan Dragon
 T27 moves: Shivan Dragon, stack -> battlefield
@@ -1069,14 +1212,17 @@ T27 p2 plays p2:Forest#4
 T27 moves: Llanowar Elves, p2's hand -> stack
 T27 taps: p2:Forest#4
 T27 p2 adds {G} (p2:Forest#4)
+T27 p2 taps p2:Forest#4 for mana
 T27 p2 cancels casting Llanowar Elves
 T27 moves: Runeclaw Bear, p2's hand -> stack
 T27 taps: p2:Forest#4
 T27 p2 adds {G} (p2:Forest#4)
+T27 p2 taps p2:Forest#4 for mana
 T27 p2 cancels casting Runeclaw Bear
 T27 moves: Runeclaw Bear, p2's hand -> stack
 T27 taps: p2:Forest#4
 T27 p2 adds {G} (p2:Forest#4)
+T27 p2 taps p2:Forest#4 for mana
 T27 p2 cancels casting Runeclaw Bear
 T28 turn 28 begins (p1)
 T28 untaps: p1:Island#1
@@ -1097,22 +1243,29 @@ T28 moves: Tendrils of Corruption, p1's library -> p1's hand
 T28 p1 draws
 T28 taps: p2:Forest#4
 T28 p2 adds {G} (p2:Forest#4)
+T28 p2 taps p2:Forest#4 for mana
 T28 p2 cancels activating p2:Shivan Dragon
 T28 taps: p2:Forest#4
 T28 p2 adds {G} (p2:Forest#4)
+T28 p2 taps p2:Forest#4 for mana
 T28 p2 cancels activating p2:Shivan Dragon
 T28 taps: p2:Forest#4
 T28 p2 adds {G} (p2:Forest#4)
+T28 p2 taps p2:Forest#4 for mana
 T28 p2 cancels activating p2:Shivan Dragon
 T28 moves: Tendrils of Corruption, p1's hand -> stack
 T28 taps: p1:Swamp#3
 T28 p1 adds {B} (p1:Swamp#3)
+T28 p1 taps p1:Swamp#3 for mana
 T28 taps: p1:Island#5
 T28 p1 adds {U} (p1:Island#5)
+T28 p1 taps p1:Island#5 for mana
 T28 taps: p1:Swamp#5
 T28 p1 adds {B} (p1:Swamp#5)
+T28 p1 taps p1:Swamp#5 for mana
 T28 taps: p1:Swamp#6
 T28 p1 adds {B} (p1:Swamp#6)
+T28 p1 taps p1:Swamp#6 for mana
 T28 p1 casts Tendrils of Corruption
 T28 damage: Tendrils of Corruption -> p1:Kelinore Bat 6
 T28 p1 gains 6 life
@@ -1126,6 +1279,7 @@ T28 taps: p1:Merfolk Looter
 T28 p1 activates p1:Merfolk Looter
 T28 taps: p1:Island#3
 T28 p1 adds {U} (p1:Island#3)
+T28 p1 taps p1:Island#3 for mana
 T28 moves: Horned Turtle, p1's library -> p1's hand
 T28 p1 draws
 T28 moves: Mind Rot, p1's hand -> p1's graveyard
@@ -1136,17 +1290,23 @@ T28 p1's unspent {U} empties
 T28 p1 attack: nothing
 T28 taps: p1:Island#2
 T28 p1 adds {U} (p1:Island#2)
+T28 p1 taps p1:Island#2 for mana
 T28 taps: p1:Swamp#4
 T28 p1 adds {B} (p1:Swamp#4)
+T28 p1 taps p1:Swamp#4 for mana
 T28 p1's unspent {U}{B} empties
 T28 taps: p1:Swamp#1
 T28 p1 adds {B} (p1:Swamp#1)
+T28 p1 taps p1:Swamp#1 for mana
 T28 taps: p1:Island#1
 T28 p1 adds {U} (p1:Island#1)
+T28 p1 taps p1:Island#1 for mana
 T28 taps: p1:Island#4
 T28 p1 adds {U} (p1:Island#4)
+T28 p1 taps p1:Island#4 for mana
 T28 taps: p1:Swamp#2
 T28 p1 adds {B} (p1:Swamp#2)
+T28 p1 taps p1:Swamp#2 for mana
 T28 p1's unspent {U}{U}{B}{B} empties
 T28 moves: Horned Turtle, p1's hand -> stack
 T28 p1 cancels casting Horned Turtle
@@ -1164,21 +1324,26 @@ T29 moves: Terramorphic Expanse, p2's library -> p2's hand
 T29 p2 draws
 T29 taps: p2:Mountain#2
 T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
 T29 p2's unspent {R} empties
 T29 moves: Terramorphic Expanse, p2's hand -> battlefield
 T29 p2 plays p2:Terramorphic Expanse
 T29 taps: p2:Mountain#4
 T29 p2 adds {R} (p2:Mountain#4)
+T29 p2 taps p2:Mountain#4 for mana
 T29 p2's unspent {R} empties
 T29 taps: p2:Shivan Dragon
 T29 p2 attack: p2:Shivan Dragon -> p1
 T29 p1 block: p1:Snapping Drake -> p2:Shivan Dragon
 T29 taps: p2:Mountain#1
 T29 p2 adds {R} (p2:Mountain#1)
+T29 p2 taps p2:Mountain#1 for mana
 T29 taps: p2:Mountain#3
 T29 p2 adds {R} (p2:Mountain#3)
+T29 p2 taps p2:Mountain#3 for mana
 T29 taps: p2:Forest#4
 T29 p2 adds {G} (p2:Forest#4)
+T29 p2 taps p2:Forest#4 for mana
 T29 p2 activates p2:Shivan Dragon
 T29 effect: p2:Shivan Dragon +1/+0 until end of turn
 T29 resolves: p2:Shivan Dragon's ability
@@ -1190,13 +1355,17 @@ T29 destroyed: p1:Snapping Drake
 T29 moves: Snapping Drake, battlefield -> p1's graveyard
 T29 taps: p2:Forest#3
 T29 p2 adds {G} (p2:Forest#3)
+T29 p2 taps p2:Forest#3 for mana
 T29 taps: p2:Forest#2
 T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
 T29 taps: p2:Forest#1
 T29 p2 adds {G} (p2:Forest#1)
+T29 p2 taps p2:Forest#1 for mana
 T29 p2's unspent {G}{G}{G} empties
 T29 taps: p2:Mountain#5
 T29 p2 adds {R} (p2:Mountain#5)
+T29 p2 taps p2:Mountain#5 for mana
 T29 p2 activates p2:Shivan Dragon
 T29 effect: p2:Shivan Dragon +1/+0 until end of turn
 T29 resolves: p2:Shivan Dragon's ability
@@ -1231,12 +1400,15 @@ T30 moves: Doom Blade, p1's library -> p1's hand
 T30 p1 draws
 T30 taps: p1:Swamp#6
 T30 p1 adds {B} (p1:Swamp#6)
+T30 p1 taps p1:Swamp#6 for mana
 T30 moves: Doom Blade, p1's hand -> stack
 T30 taps: p1:Swamp#3
 T30 p1 adds {B} (p1:Swamp#3)
+T30 p1 taps p1:Swamp#3 for mana
 T30 p1 casts Doom Blade
 T30 taps: p1:Island#4
 T30 p1 adds {U} (p1:Island#4)
+T30 p1 taps p1:Island#4 for mana
 T30 p2 cancels activating p2:Shivan Dragon
 T30 p2 cancels activating p2:Shivan Dragon
 T30 p2 cancels activating p2:Shivan Dragon
@@ -1248,24 +1420,32 @@ T30 p2 cancels activating p2:Shivan Dragon
 T30 p1's unspent {U} empties
 T30 taps: p1:Island#3
 T30 p1 adds {U} (p1:Island#3)
+T30 p1 taps p1:Island#3 for mana
 T30 moves: Horned Turtle, p1's hand -> stack
 T30 taps: p1:Swamp#2
 T30 p1 adds {B} (p1:Swamp#2)
+T30 p1 taps p1:Swamp#2 for mana
 T30 taps: p1:Island#5
 T30 p1 adds {U} (p1:Island#5)
+T30 p1 taps p1:Island#5 for mana
 T30 taps: p1:Island#1
 T30 p1 adds {U} (p1:Island#1)
+T30 p1 taps p1:Island#1 for mana
 T30 taps: p1:Island#2
 T30 p1 adds {U} (p1:Island#2)
+T30 p1 taps p1:Island#2 for mana
 T30 taps: p1:Swamp#1
 T30 p1 adds {B} (p1:Swamp#1)
+T30 p1 taps p1:Swamp#1 for mana
 T30 p1 casts Horned Turtle
 T30 resolves: Horned Turtle
 T30 moves: Horned Turtle, stack -> battlefield
 T30 taps: p1:Swamp#5
 T30 p1 adds {B} (p1:Swamp#5)
+T30 p1 taps p1:Swamp#5 for mana
 T30 taps: p1:Swamp#4
 T30 p1 adds {B} (p1:Swamp#4)
+T30 p1 taps p1:Swamp#4 for mana
 T30 p2 cancels activating p2:Shivan Dragon
 T30 p1's unspent {U}{B}{B}{B}{B} empties
 T30 p2 cancels activating p2:Shivan Dragon

@@ -1,0 +1,14 @@
+name: Lurking Predators doesn't trigger on its controller's own spell
+rules: [CR 603.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Lurking Predators, Mountain]
+    hand: [Lightning Bolt]
+    library: [Craw Wurm]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - expect:
+      stack: [Lightning Bolt]

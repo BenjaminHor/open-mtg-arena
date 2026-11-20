@@ -37,6 +37,7 @@ T1 p1 plays p1:Plains
 T1 p1 attack: nothing
 T1 taps: p1:Plains
 T1 p1 adds {W} (p1:Plains)
+T1 p1 taps p1:Plains for mana
 T1 p1's unspent {W} empties
 T2 turn 2 begins (p2)
 T2 moves: Vampire Aristocrat, p2's library -> p2's hand
@@ -48,11 +49,13 @@ T2 moves: Forest, p2's hand -> battlefield
 T2 p2 plays p2:Forest
 T2 taps: p2:Forest
 T2 p2 adds {G} (p2:Forest)
+T2 p2 taps p2:Forest for mana
 T2 p2's unspent {G} empties
 T3 turn 3 begins (p1)
 T3 untaps: p1:Plains
 T3 taps: p1:Plains
 T3 p1 adds {W} (p1:Plains)
+T3 p1 taps p1:Plains for mana
 T3 p1's unspent {W} empties
 T3 moves: Swamp, p1's library -> p1's hand
 T3 p1 draws
@@ -62,9 +65,11 @@ T3 p1 attack: nothing
 T3 moves: Blinding Mage, p1's hand -> stack
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1 cancels casting Blinding Mage
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1's unspent {B} empties
 T4 turn 4 begins (p2)
 T4 untaps: p2:Forest
@@ -72,11 +77,13 @@ T4 moves: Swamp, p2's library -> p2's hand
 T4 p2 draws
 T4 taps: p2:Forest
 T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
 T4 p2's unspent {G} empties
 T4 moves: Mountain, p2's hand -> battlefield
 T4 p2 plays p2:Mountain
 T4 taps: p2:Mountain
 T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
 T4 moves: Bountiful Harvest, p2's hand -> stack
 T4 p2 cancels casting Bountiful Harvest
 T4 moves: Burning Inquiry, p2's hand -> stack

@@ -1,0 +1,610 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Earthquake, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Ornithopter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Llanowar Elves, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Siege Mastodon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Nature's Spiral, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Sage Owl, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Tendrils of Corruption, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Phantom Warrior, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Angel's Feather, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 mulligans
+T0 p1 mulligans
+T0 moves: Earthquake, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Island, p2's hand -> p2's library
+T0 moves: Ornithopter, p2's hand -> p2's library
+T0 moves: Llanowar Elves, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mind Spring, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Llanowar Elves, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Ornithopter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Siege Mastodon, p1's hand -> p1's library
+T0 moves: Nature's Spiral, p1's hand -> p1's library
+T0 moves: Sage Owl, p1's hand -> p1's library
+T0 moves: Tendrils of Corruption, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Phantom Warrior, p1's hand -> p1's library
+T0 moves: Angel's Feather, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Angel's Feather, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Kalonian Behemoth, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Acolyte of Xathrid, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Lurking Predators, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Mountain, p2's hand -> battlefield
+T1 p2 plays p2:Mountain
+T1 moves: Mind Spring, p2's hand -> stack
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
+T1 p2 cancels casting Mind Spring
+T1 moves: Ornithopter, p2's hand -> stack
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
+T1 p2 casts Ornithopter
+T1 resolves: Ornithopter
+T1 moves: Ornithopter, stack -> battlefield
+T1 p2's unspent {R} empties
+T1 p2 attack: nothing
+T1 moves: Mind Spring, p2's hand -> stack
+T1 p2 cancels casting Mind Spring
+T1 moves: Mind Spring, p2's hand -> stack
+T1 p2 cancels casting Mind Spring
+T2 turn 2 begins (p1)
+T2 moves: Swamp, p1's library -> p1's hand
+T2 p1 draws
+T2 moves: Swamp, p1's hand -> battlefield
+T2 p1 plays p1:Swamp
+T2 moves: Lurking Predators, p1's hand -> stack
+T2 taps: p1:Swamp
+T2 p1 adds {B} (p1:Swamp)
+T2 p1 taps p1:Swamp for mana
+T2 p1 cancels casting Lurking Predators
+T2 taps: p1:Swamp
+T2 p1 adds {B} (p1:Swamp)
+T2 p1 taps p1:Swamp for mana
+T2 p1's unspent {B} empties
+T2 p1 attack: nothing
+T2 moves: Kalonian Behemoth, p1's hand -> stack
+T2 p1 cancels casting Kalonian Behemoth
+T3 turn 3 begins (p2)
+T3 untaps: p2:Mountain
+T3 moves: Dragon's Claw, p2's library -> p2's hand
+T3 p2 draws
+T3 taps: p2:Mountain
+T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
+T3 moves: Llanowar Elves, p2's hand -> stack
+T3 p2 cancels casting Llanowar Elves
+T3 p2's unspent {R} empties
+T3 taps: p2:Ornithopter
+T3 p2 attack: p2:Ornithopter -> p1
+T3 p1 block: nothing
+T3 moves: Llanowar Elves, p2's hand -> stack
+T3 p2 cancels casting Llanowar Elves
+T3 moves: Forest, p2's hand -> battlefield
+T3 p2 plays p2:Forest
+T3 moves: Mind Spring, p2's hand -> stack
+T3 taps: p2:Forest
+T3 p2 adds {G} (p2:Forest)
+T3 p2 taps p2:Forest for mana
+T3 p2 cancels casting Mind Spring
+T3 taps: p2:Forest
+T3 p2 adds {G} (p2:Forest)
+T3 p2 taps p2:Forest for mana
+T3 moves: Dragon's Claw, p2's hand -> stack
+T3 p2 cancels casting Dragon's Claw
+T3 moves: Dragon's Claw, p2's hand -> stack
+T3 p2 cancels casting Dragon's Claw
+T3 moves: Dragon's Claw, p2's hand -> stack
+T3 p2 cancels casting Dragon's Claw
+T3 p2's unspent {G} empties
+T4 turn 4 begins (p1)
+T4 untaps: p1:Swamp
+T4 taps: p1:Swamp
+T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
+T4 p1's unspent {B} empties
+T4 moves: Lightning Elemental, p1's library -> p1's hand
+T4 p1 draws
+T4 moves: Acolyte of Xathrid, p1's hand -> stack
+T4 p1 cancels casting Acolyte of Xathrid
+T4 moves: Lurking Predators, p1's hand -> stack
+T4 p1 cancels casting Lurking Predators
+T4 p1 attack: nothing
+T4 moves: Angel's Feather, p1's hand -> stack
+T4 p1 cancels casting Angel's Feather
+T5 turn 5 begins (p2)
+T5 untaps: p2:Mountain
+T5 untaps: p2:Ornithopter
+T5 untaps: p2:Forest
+T5 taps: p2:Forest
+T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
+T5 p2's unspent {R}{G} empties
+T5 moves: Kalonian Behemoth, p2's library -> p2's hand
+T5 p2 draws
+T5 p2 attack: nothing
+T6 turn 6 begins (p1)
+T6 untaps: p1:Swamp
+T6 taps: p1:Swamp
+T6 p1 adds {B} (p1:Swamp)
+T6 p1 taps p1:Swamp for mana
+T6 p1's unspent {B} empties
+T6 moves: Duress, p1's library -> p1's hand
+T6 p1 draws
+T6 p1 attack: nothing
+T6 moves: Swamp, p1's hand -> p1's graveyard
+T6 p1 discards Swamp
+T7 turn 7 begins (p2)
+T7 untaps: p2:Mountain
+T7 untaps: p2:Forest
+T7 moves: Consume Spirit, p2's library -> p2's hand
+T7 p2 draws
+T7 taps: p2:Forest
+T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
+T7 p2's unspent {G} empties
+T7 moves: Llanowar Elves, p2's hand -> stack
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 p2 taps p2:Mountain for mana
+T7 p2 cancels casting Llanowar Elves
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 p2 taps p2:Mountain for mana
+T7 p2's unspent {R} empties
+T7 p2 attack: nothing
+T7 moves: Llanowar Elves, p2's hand -> stack
+T7 p2 cancels casting Llanowar Elves
+T8 turn 8 begins (p1)
+T8 untaps: p1:Swamp
+T8 taps: p1:Swamp
+T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
+T8 p1's unspent {B} empties
+T8 moves: Mountain, p1's library -> p1's hand
+T8 p1 draws
+T8 moves: Duress, p1's hand -> stack
+T8 p1 cancels casting Duress
+T8 moves: Forest, p1's hand -> battlefield
+T8 p1 plays p1:Forest
+T8 taps: p1:Forest
+T8 p1 adds {G} (p1:Forest)
+T8 p1 taps p1:Forest for mana
+T8 p1's unspent {G} empties
+T8 p1 attack: nothing
+T9 turn 9 begins (p2)
+T9 untaps: p2:Mountain
+T9 untaps: p2:Forest
+T9 taps: p2:Mountain
+T9 p2 adds {R} (p2:Mountain)
+T9 p2 taps p2:Mountain for mana
+T9 taps: p2:Forest
+T9 p2 adds {G} (p2:Forest)
+T9 p2 taps p2:Forest for mana
+T9 p2's unspent {R}{G} empties
+T9 moves: Disentomb, p2's library -> p2's hand
+T9 p2 draws
+T9 moves: Plains, p2's hand -> battlefield
+T9 p2 plays p2:Plains
+T9 moves: Kalonian Behemoth, p2's hand -> stack
+T9 taps: p2:Plains
+T9 p2 adds {W} (p2:Plains)
+T9 p2 taps p2:Plains for mana
+T9 p2 cancels casting Kalonian Behemoth
+T9 taps: p2:Plains
+T9 p2 adds {W} (p2:Plains)
+T9 p2 taps p2:Plains for mana
+T9 p2's unspent {W} empties
+T9 p2 attack: nothing
+T10 turn 10 begins (p1)
+T10 untaps: p1:Swamp
+T10 untaps: p1:Forest
+T10 moves: Forest, p1's library -> p1's hand
+T10 p1 draws
+T10 taps: p1:Forest
+T10 p1 adds {G} (p1:Forest)
+T10 p1 taps p1:Forest for mana
+T10 p1's unspent {G} empties
+T10 moves: Lurking Predators, p1's hand -> stack
+T10 taps: p1:Swamp
+T10 p1 adds {B} (p1:Swamp)
+T10 p1 taps p1:Swamp for mana
+T10 p1 cancels casting Lurking Predators
+T10 p1 attack: nothing
+T10 taps: p1:Swamp
+T10 p1 adds {B} (p1:Swamp)
+T10 p1 taps p1:Swamp for mana
+T10 moves: Acolyte of Xathrid, p1's hand -> stack
+T10 p1 casts Acolyte of Xathrid
+T10 resolves: Acolyte of Xathrid
+T10 moves: Acolyte of Xathrid, stack -> battlefield
+T10 moves: Lightning Elemental, p1's hand -> stack
+T10 p1 cancels casting Lightning Elemental
+T10 moves: Lightning Elemental, p1's hand -> stack
+T10 p1 cancels casting Lightning Elemental
+T11 turn 11 begins (p2)
+T11 untaps: p2:Mountain
+T11 untaps: p2:Forest
+T11 untaps: p2:Plains
+T11 moves: Plains, p2's library -> p2's hand
+T11 p2 draws
+T11 taps: p2:Mountain
+T11 p2 adds {R} (p2:Mountain)
+T11 p2 taps p2:Mountain for mana
+T11 p2's unspent {R} empties
+T11 moves: Plains, p2's hand -> battlefield
+T11 p2 plays p2:Plains#2
+T11 taps: p2:Plains#2
+T11 p2 adds {W} (p2:Plains#2)
+T11 p2 taps p2:Plains#2 for mana
+T11 moves: Mind Spring, p2's hand -> stack
+T11 p2 cancels casting Mind Spring
+T11 moves: Llanowar Elves, p2's hand -> stack
+T11 taps: p2:Plains#1
+T11 p2 adds {W} (p2:Plains#1)
+T11 p2 taps p2:Plains#1 for mana
+T11 taps: p2:Forest
+T11 p2 adds {G} (p2:Forest)
+T11 p2 taps p2:Forest for mana
+T11 p2 casts Llanowar Elves
+T11 resolves: Llanowar Elves
+T11 moves: Llanowar Elves, stack -> battlefield
+T11 moves: Consume Spirit, p2's hand -> stack
+T11 p2 cancels casting Consume Spirit
+T11 p2's unspent {W}{W} empties
+T11 taps: p2:Ornithopter
+T11 p2 attack: p2:Ornithopter -> p1
+T11 p1 block: nothing
+T12 turn 12 begins (p1)
+T12 untaps: p1:Swamp
+T12 untaps: p1:Forest
+T12 taps: p1:Swamp
+T12 p1 adds {B} (p1:Swamp)
+T12 p1 taps p1:Swamp for mana
+T12 taps: p1:Forest
+T12 p1 adds {G} (p1:Forest)
+T12 p1 taps p1:Forest for mana
+T12 taps: p1:Acolyte of Xathrid
+T12 p1 activates p1:Acolyte of Xathrid
+T12 p1 loses 1 life
+T12 resolves: p1:Acolyte of Xathrid's ability
+T12 moves: Negate, p1's library -> p1's hand
+T12 p1 draws
+T12 moves: Lurking Predators, p1's hand -> stack
+T12 p1 cancels casting Lurking Predators
+T12 moves: Kalonian Behemoth, p1's hand -> stack
+T12 p1 cancels casting Kalonian Behemoth
+T12 p1 attack: nothing
+T12 moves: Mountain, p1's hand -> battlefield
+T12 p1 plays p1:Mountain
+T13 turn 13 begins (p2)
+T13 untaps: p2:Mountain
+T13 untaps: p2:Ornithopter
+T13 untaps: p2:Forest
+T13 untaps: p2:Plains#1
+T13 untaps: p2:Plains#2
+T13 taps: p2:Llanowar Elves
+T13 p2 adds {G} (p2:Llanowar Elves)
+T13 p2 taps p2:Llanowar Elves for mana
+T13 taps: p1:Mountain
+T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
+T13 taps: p2:Plains#1
+T13 p2 adds {W} (p2:Plains#1)
+T13 p2 taps p2:Plains#1 for mana
+T13 taps: p2:Mountain
+T13 p2 adds {R} (p2:Mountain)
+T13 p2 taps p2:Mountain for mana
+T13 p2's unspent {W}{R}{G} empties
+T13 p1's unspent {R} empties
+T13 moves: Mountain, p2's library -> p2's hand
+T13 p2 draws
+T13 taps: p2:Forest
+T13 p2 adds {G} (p2:Forest)
+T13 p2 taps p2:Forest for mana
+T13 taps: p2:Plains#2
+T13 p2 adds {W} (p2:Plains#2)
+T13 p2 taps p2:Plains#2 for mana
+T13 p2's unspent {W}{G} empties
+T13 moves: Mountain, p2's hand -> battlefield
+T13 p2 plays p2:Mountain#2
+T13 taps: p2:Ornithopter
+T13 p2 attack: p2:Ornithopter -> p1
+T13 p1 block: nothing
+T13 taps: p2:Mountain#2
+T13 p2 adds {R} (p2:Mountain#2)
+T13 p2 taps p2:Mountain#2 for mana
+T13 p2's unspent {R} empties
+T14 turn 14 begins (p1)
+T14 untaps: p1:Swamp
+T14 untaps: p1:Forest
+T14 untaps: p1:Acolyte of Xathrid
+T14 untaps: p1:Mountain
+T14 taps: p1:Mountain
+T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 taps: p1:Forest
+T14 p1 adds {G} (p1:Forest)
+T14 p1 taps p1:Forest for mana
+T14 taps: p1:Swamp
+T14 p1 adds {B} (p1:Swamp)
+T14 p1 taps p1:Swamp for mana
+T14 p1's unspent {B}{G} empties
+T14 moves: Divine Verdict, p1's library -> p1's hand
+T14 p1 draws
+T14 taps: p1:Mountain
+T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 taps: p1:Mountain
+T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 moves: Duress, p1's hand -> stack
+T14 taps: p1:Mountain
+T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
+T14 p1 cancels casting Duress
+T14 taps: p1:Mountain
+T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
+T14 moves: Lightning Elemental, p1's hand -> stack
+T14 p1 cancels casting Lightning Elemental
+T14 moves: Forest, p1's hand -> battlefield
+T14 p1 plays p1:Forest#2
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 moves: Lightning Elemental, p1's hand -> stack
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
+T14 p1 cancels casting Lightning Elemental
+T14 p1's unspent {R} empties
+T14 p1 attack: nothing
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
+T14 p1's unspent {G} empties
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T14 p1 cancels activating p1:Acolyte of Xathrid
+T15 turn 15 begins (p2)
+T15 untaps: p2:Mountain#1
+T15 untaps: p2:Ornithopter
+T15 untaps: p2:Forest
+T15 untaps: p2:Plains#1
+T15 untaps: p2:Plains#2
+T15 untaps: p2:Llanowar Elves
+T15 untaps: p2:Mountain#2
+T15 taps: p2:Mountain#1
+T15 p2 adds {R} (p2:Mountain#1)
+T15 p2 taps p2:Mountain#1 for mana
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p2's unspent {R} empties
+T15 moves: Mesa Enchantress, p2's library -> p2's hand
+T15 p2 draws
+T15 taps: p2:Forest
+T15 p2 adds {G} (p2:Forest)
+T15 p2 taps p2:Forest for mana
+T15 taps: p2:Plains#2
+T15 p2 adds {W} (p2:Plains#2)
+T15 p2 taps p2:Plains#2 for mana
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
+T15 taps: p2:Plains#1
+T15 p2 adds {W} (p2:Plains#1)
+T15 p2 taps p2:Plains#1 for mana
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p2's unspent {W}{W}{R}{G} empties
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 taps: p2:Llanowar Elves
+T15 p2 attack: p2:Llanowar Elves -> p1
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 p1 block: nothing
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 combat damage: p2:Llanowar Elves -> p1 1
+T15 p1 loses 1 life
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 moves: Divine Verdict, p1's hand -> stack
+T15 p1 cancels casting Divine Verdict
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T15 p1 cancels activating p1:Acolyte of Xathrid
+T16 turn 16 begins (p1)
+T16 untaps: p1:Swamp
+T16 untaps: p1:Forest#1
+T16 untaps: p1:Mountain
+T16 untaps: p1:Forest#2
+T16 taps: p1:Forest#1
+T16 p1 adds {G} (p1:Forest#1)
+T16 p1 taps p1:Forest#1 for mana
+T16 p1 cancels activating p1:Acolyte of Xathrid
+T16 taps: p1:Forest#1
+T16 p1 adds {G} (p1:Forest#1)
+T16 p1 taps p1:Forest#1 for mana
+T16 p1's unspent {G} empties
+T16 moves: Forest, p1's library -> p1's hand
+T16 p1 draws
+T16 taps: p1:Mountain
+T16 p1 adds {R} (p1:Mountain)
+T16 p1 taps p1:Mountain for mana
+T16 p1's unspent {R} empties
+T16 taps: p1:Swamp
+T16 p1 adds {B} (p1:Swamp)
+T16 p1 taps p1:Swamp for mana
+T16 moves: Lurking Predators, p1's hand -> stack
+T16 taps: p1:Forest#2
+T16 p1 adds {G} (p1:Forest#2)
+T16 p1 taps p1:Forest#2 for mana
+T16 p1 cancels casting Lurking Predators
+T16 taps: p1:Forest#2
+T16 p1 adds {G} (p1:Forest#2)
+T16 p1 taps p1:Forest#2 for mana
+T16 moves: Lurking Predators, p1's hand -> stack
+T16 p1 cancels casting Lurking Predators
+T16 p1 cancels activating p1:Acolyte of Xathrid
+T16 taps: p1:Acolyte of Xathrid
+T16 p1 activates p1:Acolyte of Xathrid
+T16 p2 loses 1 life
+T16 resolves: p1:Acolyte of Xathrid's ability
+T16 p1 attack: nothing
+T16 moves: Lurking Predators, p1's hand -> stack
+T16 p1 cancels casting Lurking Predators
+T16 moves: Forest, p1's hand -> battlefield
+T16 p1 plays p1:Forest#3
+T16 taps: p1:Forest#3
+T16 p1 adds {G} (p1:Forest#3)
+T16 p1 taps p1:Forest#3 for mana
+T16 p1's unspent {G} empties
+T17 turn 17 begins (p2)
+T17 untaps: p2:Mountain#1
+T17 untaps: p2:Forest
+T17 untaps: p2:Plains#1
+T17 untaps: p2:Plains#2
+T17 untaps: p2:Llanowar Elves
+T17 untaps: p2:Mountain#2
+T17 moves: Plains, p2's library -> p2's hand
+T17 p2 draws
+T17 taps: p2:Forest
+T17 p2 adds {G} (p2:Forest)
+T17 p2 taps p2:Forest for mana
+T17 p2's unspent {G} empties
+T17 moves: Mind Spring, p2's hand -> stack
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
+T17 taps: p2:Plains#2
+T17 p2 adds {W} (p2:Plains#2)
+T17 p2 taps p2:Plains#2 for mana
+T17 taps: p2:Plains#1
+T17 p2 adds {W} (p2:Plains#1)
+T17 p2 taps p2:Plains#1 for mana
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
+T17 taps: p2:Llanowar Elves
+T17 p2 adds {G} (p2:Llanowar Elves)
+T17 p2 taps p2:Llanowar Elves for mana
+T17 p2 cancels casting Mind Spring
+T17 moves: Mesa Enchantress, p2's hand -> stack
+T17 taps: p2:Plains#1
+T17 p2 adds {W} (p2:Plains#1)
+T17 p2 taps p2:Plains#1 for mana
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
+T17 taps: p2:Plains#2
+T17 p2 adds {W} (p2:Plains#2)
+T17 p2 taps p2:Plains#2 for mana
+T17 p2 casts Mesa Enchantress
+T17 taps: p2:Llanowar Elves
+T17 p2 adds {G} (p2:Llanowar Elves)
+T17 p2 taps p2:Llanowar Elves for mana
+T17 resolves: Mesa Enchantress
+T17 moves: Mesa Enchantress, stack -> battlefield
+T17 moves: Plains, p2's hand -> battlefield
+T17 p2 plays p2:Plains#3
+T17 p2's unspent {G} empties
+T17 p2 attack: nothing
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
+T17 p2's unspent {R} empties
+T17 moves: Dragon's Claw, p2's hand -> stack
+T17 taps: p2:Plains#3
+T17 p2 adds {W} (p2:Plains#3)
+T17 p2 taps p2:Plains#3 for mana
+T17 p2 cancels casting Dragon's Claw
+T17 moves: Kalonian Behemoth, p2's hand -> stack
+T17 taps: p2:Plains#3
+T17 p2 adds {W} (p2:Plains#3)
+T17 p2 taps p2:Plains#3 for mana
+T17 p2 cancels casting Kalonian Behemoth
+T17 moves: Consume Spirit, p2's hand -> stack
+T17 p2 cancels casting Consume Spirit
+T17 taps: p2:Plains#3
+T17 p2 adds {W} (p2:Plains#3)
+T17 p2 taps p2:Plains#3 for mana
+T17 p2's unspent {W} empties
+T18 turn 18 begins (p1)
+T18 untaps: p1:Swamp
+T18 untaps: p1:Forest#1
+T18 untaps: p1:Acolyte of Xathrid
+T18 untaps: p1:Mountain
+T18 untaps: p1:Forest#2
+T18 untaps: p1:Forest#3

@@ -157,6 +157,7 @@ T1 moves: Forest, p2's hand -> battlefield
 T1 p2 plays p2:Forest
 T1 taps: p2:Forest
 T1 p2 adds {G} (p2:Forest)
+T1 p2 taps p2:Forest for mana
 T1 p2's unspent {G} empties
 T2 turn 2 begins (p1)
 T2 moves: Spined Wurm, p1's library -> p1's hand
@@ -166,9 +167,11 @@ T2 p1 plays p1:Forest
 T2 moves: Giant Spider, p1's hand -> stack
 T2 taps: p1:Forest
 T2 p1 adds {G} (p1:Forest)
+T2 p1 taps p1:Forest for mana
 T2 p1 cancels casting Giant Spider
 T2 taps: p1:Forest
 T2 p1 adds {G} (p1:Forest)
+T2 p1 taps p1:Forest for mana
 T2 moves: Spined Wurm, p1's hand -> stack
 T2 p1 cancels casting Spined Wurm
 T2 moves: Giant Spider, p1's hand -> stack
@@ -187,6 +190,7 @@ T3 turn 3 begins (p2)
 T3 untaps: p2:Forest
 T3 taps: p2:Forest
 T3 p2 adds {G} (p2:Forest)
+T3 p2 taps p2:Forest for mana
 T3 p2's unspent {G} empties
 T3 moves: Grizzly Bears, p2's library -> p2's hand
 T3 p2 draws
@@ -197,9 +201,11 @@ T3 p2 plays p2:Forest#2
 T3 moves: Grizzly Bears, p2's hand -> stack
 T3 taps: p2:Forest#2
 T3 p2 adds {G} (p2:Forest#2)
+T3 p2 taps p2:Forest#2 for mana
 T3 p2 cancels casting Grizzly Bears
 T3 taps: p2:Forest#2
 T3 p2 adds {G} (p2:Forest#2)
+T3 p2 taps p2:Forest#2 for mana
 T3 p2's unspent {G} empties
 T3 p2 attack: nothing
 T3 moves: Grizzly Bears, p2's hand -> stack
@@ -208,6 +214,7 @@ T4 turn 4 begins (p1)
 T4 untaps: p1:Forest
 T4 taps: p1:Forest
 T4 p1 adds {G} (p1:Forest)
+T4 p1 taps p1:Forest for mana
 T4 p1's unspent {G} empties
 T4 moves: Giant Growth, p1's library -> p1's hand
 T4 p1 draws
@@ -217,6 +224,7 @@ T4 moves: Forest, p1's hand -> battlefield
 T4 p1 plays p1:Forest#2
 T4 taps: p1:Forest#2
 T4 p1 adds {G} (p1:Forest#2)
+T4 p1 taps p1:Forest#2 for mana
 T4 moves: Centaur Courser, p1's hand -> stack
 T4 p1 cancels casting Centaur Courser
 T4 moves: Centaur Courser, p1's hand -> stack
@@ -250,14 +258,17 @@ T5 moves: Forest, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Forest#1
 T5 p2 adds {G} (p2:Forest#1)
+T5 p2 taps p2:Forest#1 for mana
 T5 p2's unspent {G} empties
 T5 taps: p2:Forest#2
 T5 p2 adds {G} (p2:Forest#2)
+T5 p2 taps p2:Forest#2 for mana
 T5 moves: Forest, p2's hand -> battlefield
 T5 p2 plays p2:Forest#3
 T5 p2's unspent {G} empties
 T5 taps: p2:Forest#3
 T5 p2 adds {G} (p2:Forest#3)
+T5 p2 taps p2:Forest#3 for mana
 T5 p2's unspent {G} empties
 T5 p2 attack: nothing
 T6 turn 6 begins (p1)
@@ -265,8 +276,10 @@ T6 untaps: p1:Forest#1
 T6 untaps: p1:Forest#2
 T6 taps: p1:Forest#1
 T6 p1 adds {G} (p1:Forest#1)
+T6 p1 taps p1:Forest#1 for mana
 T6 taps: p1:Forest#2
 T6 p1 adds {G} (p1:Forest#2)
+T6 p1 taps p1:Forest#2 for mana
 T6 p1's unspent {G}{G} empties
 T6 moves: Spined Wurm, p1's library -> p1's hand
 T6 p1 draws
@@ -309,34 +322,41 @@ T7 untaps: p2:Forest#2
 T7 untaps: p2:Forest#3
 T7 taps: p2:Forest#3
 T7 p2 adds {G} (p2:Forest#3)
+T7 p2 taps p2:Forest#3 for mana
 T7 p2's unspent {G} empties
 T7 moves: Giant Spider, p2's library -> p2's hand
 T7 p2 draws
 T7 taps: p2:Forest#1
 T7 p2 adds {G} (p2:Forest#1)
+T7 p2 taps p2:Forest#1 for mana
 T7 p2's unspent {G} empties
 T7 moves: Grizzly Bears, p2's hand -> stack
 T7 taps: p2:Forest#2
 T7 p2 adds {G} (p2:Forest#2)
+T7 p2 taps p2:Forest#2 for mana
 T7 p2 cancels casting Grizzly Bears
 T7 moves: Forest, p2's hand -> battlefield
 T7 p2 plays p2:Forest#4
 T7 taps: p2:Forest#2
 T7 p2 adds {G} (p2:Forest#2)
+T7 p2 taps p2:Forest#2 for mana
 T7 moves: Grizzly Bears, p2's hand -> stack
 T7 p2 cancels casting Grizzly Bears
 T7 p2's unspent {G} empties
 T7 p2 attack: nothing
 T7 taps: p2:Forest#4
 T7 p2 adds {G} (p2:Forest#4)
+T7 p2 taps p2:Forest#4 for mana
 T7 p2's unspent {G} empties
 T8 turn 8 begins (p1)
 T8 untaps: p1:Forest#1
 T8 untaps: p1:Forest#2
 T8 taps: p1:Forest#1
 T8 p1 adds {G} (p1:Forest#1)
+T8 p1 taps p1:Forest#1 for mana
 T8 taps: p1:Forest#2
 T8 p1 adds {G} (p1:Forest#2)
+T8 p1 taps p1:Forest#2 for mana
 T8 p1's unspent {G}{G} empties
 T8 moves: Forest, p1's library -> p1's hand
 T8 p1 draws
@@ -363,6 +383,7 @@ T8 moves: Forest, p1's hand -> battlefield
 T8 p1 plays p1:Forest#3
 T8 taps: p1:Forest#3
 T8 p1 adds {G} (p1:Forest#3)
+T8 p1 taps p1:Forest#3 for mana
 T8 moves: Spined Wurm, p1's hand -> stack
 T8 p1 cancels casting Spined Wurm
 T8 moves: Spined Wurm, p1's hand -> stack
@@ -375,16 +396,20 @@ T9 untaps: p2:Forest#3
 T9 untaps: p2:Forest#4
 T9 taps: p2:Forest#4
 T9 p2 adds {G} (p2:Forest#4)
+T9 p2 taps p2:Forest#4 for mana
 T9 p2's unspent {G} empties
 T9 moves: Giant Growth, p2's library -> p2's hand
 T9 p2 draws
 T9 taps: p2:Forest#3
 T9 p2 adds {G} (p2:Forest#3)
+T9 p2 taps p2:Forest#3 for mana
 T9 taps: p2:Forest#2
 T9 p2 adds {G} (p2:Forest#2)
+T9 p2 taps p2:Forest#2 for mana
 T9 p2's unspent {G}{G} empties
 T9 taps: p2:Forest#1
 T9 p2 adds {G} (p2:Forest#1)
+T9 p2 taps p2:Forest#1 for mana
 T9 moves: Grizzly Bears, p2's hand -> stack
 T9 p2 cancels casting Grizzly Bears
 T9 moves: Giant Spider, p2's hand -> stack
@@ -397,10 +422,13 @@ T10 untaps: p1:Forest#2
 T10 untaps: p1:Forest#3
 T10 taps: p1:Forest#2
 T10 p1 adds {G} (p1:Forest#2)
+T10 p1 taps p1:Forest#2 for mana
 T10 taps: p1:Forest#1
 T10 p1 adds {G} (p1:Forest#1)
+T10 p1 taps p1:Forest#1 for mana
 T10 taps: p1:Forest#3
 T10 p1 adds {G} (p1:Forest#3)
+T10 p1 taps p1:Forest#3 for mana
 T10 p1's unspent {G}{G}{G} empties
 T10 moves: Forest, p1's library -> p1's hand
 T10 p1 draws
@@ -432,12 +460,16 @@ T11 untaps: p2:Forest#3
 T11 untaps: p2:Forest#4
 T11 taps: p2:Forest#2
 T11 p2 adds {G} (p2:Forest#2)
+T11 p2 taps p2:Forest#2 for mana
 T11 taps: p2:Forest#1
 T11 p2 adds {G} (p2:Forest#1)
+T11 p2 taps p2:Forest#1 for mana
 T11 taps: p2:Forest#3
 T11 p2 adds {G} (p2:Forest#3)
+T11 p2 taps p2:Forest#3 for mana
 T11 taps: p2:Forest#4
 T11 p2 adds {G} (p2:Forest#4)
+T11 p2 taps p2:Forest#4 for mana
 T11 p2's unspent {G}{G}{G}{G} empties
 T11 moves: Forest, p2's library -> p2's hand
 T11 p2 draws
@@ -450,15 +482,18 @@ T11 p2 plays p2:Forest#5
 T11 moves: Grizzly Bears, p2's hand -> stack
 T11 taps: p2:Forest#5
 T11 p2 adds {G} (p2:Forest#5)
+T11 p2 taps p2:Forest#5 for mana
 T11 p2 cancels casting Grizzly Bears
 T11 moves: Giant Spider, p2's hand -> stack
 T11 taps: p2:Forest#5
 T11 p2 adds {G} (p2:Forest#5)
+T11 p2 taps p2:Forest#5 for mana
 T11 p2 cancels casting Giant Spider
 T11 moves: Grizzly Bears, p2's hand -> stack
 T11 p2 cancels casting Grizzly Bears
 T11 taps: p2:Forest#5
 T11 p2 adds {G} (p2:Forest#5)
+T11 p2 taps p2:Forest#5 for mana
 T11 p2's unspent {G} empties
 T11 p2 attack: nothing
 T11 moves: Grizzly Bears, p2's hand -> stack
@@ -471,10 +506,13 @@ T12 untaps: p1:Forest#2
 T12 untaps: p1:Forest#3
 T12 taps: p1:Forest#3
 T12 p1 adds {G} (p1:Forest#3)
+T12 p1 taps p1:Forest#3 for mana
 T12 taps: p1:Forest#2
 T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
 T12 taps: p1:Forest#1
 T12 p1 adds {G} (p1:Forest#1)
+T12 p1 taps p1:Forest#1 for mana
 T12 p1's unspent {G}{G}{G} empties
 T12 moves: Forest, p1's library -> p1's hand
 T12 p1 draws
@@ -493,19 +531,23 @@ T12 p1 cancels casting Centaur Courser
 T12 moves: Craw Wurm, p1's hand -> stack
 T12 taps: p1:Forest#4
 T12 p1 adds {G} (p1:Forest#4)
+T12 p1 taps p1:Forest#4 for mana
 T12 p1 cancels casting Craw Wurm
 T12 moves: Craw Wurm, p1's hand -> stack
 T12 p1 cancels casting Craw Wurm
 T12 moves: Spined Wurm, p1's hand -> stack
 T12 taps: p1:Forest#4
 T12 p1 adds {G} (p1:Forest#4)
+T12 p1 taps p1:Forest#4 for mana
 T12 p1 cancels casting Spined Wurm
 T12 moves: Centaur Courser, p1's hand -> stack
 T12 taps: p1:Forest#4
 T12 p1 adds {G} (p1:Forest#4)
+T12 p1 taps p1:Forest#4 for mana
 T12 p1 cancels casting Centaur Courser
 T12 taps: p1:Forest#4
 T12 p1 adds {G} (p1:Forest#4)
+T12 p1 taps p1:Forest#4 for mana
 T12 moves: Spined Wurm, p1's hand -> stack
 T12 p1 cancels casting Spined Wurm
 T12 moves: Giant Spider, p1's hand -> stack
@@ -532,28 +574,36 @@ T13 untaps: p2:Forest#4
 T13 untaps: p2:Forest#5
 T13 taps: p2:Forest#2
 T13 p2 adds {G} (p2:Forest#2)
+T13 p2 taps p2:Forest#2 for mana
 T13 taps: p2:Forest#5
 T13 p2 adds {G} (p2:Forest#5)
+T13 p2 taps p2:Forest#5 for mana
 T13 p2's unspent {G}{G} empties
 T13 moves: Forest, p2's library -> p2's hand
 T13 p2 draws
 T13 moves: Grizzly Bears, p2's hand -> stack
 T13 taps: p2:Forest#1
 T13 p2 adds {G} (p2:Forest#1)
+T13 p2 taps p2:Forest#1 for mana
 T13 taps: p2:Forest#3
 T13 p2 adds {G} (p2:Forest#3)
+T13 p2 taps p2:Forest#3 for mana
 T13 p2 cancels casting Grizzly Bears
 T13 taps: p2:Forest#1
 T13 p2 adds {G} (p2:Forest#1)
+T13 p2 taps p2:Forest#1 for mana
 T13 taps: p2:Forest#4
 T13 p2 adds {G} (p2:Forest#4)
+T13 p2 taps p2:Forest#4 for mana
 T13 moves: Forest, p2's hand -> battlefield
 T13 p2 plays p2:Forest#6
 T13 taps: p2:Forest#3
 T13 p2 adds {G} (p2:Forest#3)
+T13 p2 taps p2:Forest#3 for mana
 T13 p2's unspent {G}{G}{G} empties
 T13 taps: p2:Forest#6
 T13 p2 adds {G} (p2:Forest#6)
+T13 p2 taps p2:Forest#6 for mana
 T13 p2's unspent {G} empties
 T13 p2 attack: nothing
 T13 moves: Giant Spider, p2's hand -> stack
@@ -567,25 +617,32 @@ T14 moves: Llanowar Elves, p1's library -> p1's hand
 T14 p1 draws
 T14 taps: p1:Forest#4
 T14 p1 adds {G} (p1:Forest#4)
+T14 p1 taps p1:Forest#4 for mana
 T14 taps: p1:Forest#1
 T14 p1 adds {G} (p1:Forest#1)
+T14 p1 taps p1:Forest#1 for mana
 T14 taps: p1:Forest#3
 T14 p1 adds {G} (p1:Forest#3)
+T14 p1 taps p1:Forest#3 for mana
 T14 p1's unspent {G}{G}{G} empties
 T14 moves: Centaur Courser, p1's hand -> stack
 T14 taps: p1:Forest#2
 T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
 T14 p1 cancels casting Centaur Courser
 T14 moves: Craw Wurm, p1's hand -> stack
 T14 taps: p1:Forest#2
 T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
 T14 p1 cancels casting Craw Wurm
 T14 moves: Giant Spider, p1's hand -> stack
 T14 taps: p1:Forest#2
 T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
 T14 p1 cancels casting Giant Spider
 T14 taps: p1:Forest#2
 T14 p1 adds {G} (p1:Forest#2)
+T14 p1 taps p1:Forest#2 for mana
 T14 p1's unspent {G} empties
 T14 p1 attack: nothing
 T14 moves: Spined Wurm, p1's hand -> stack
@@ -609,9 +666,11 @@ T14 p1 plays p1:Forest#5
 T14 moves: Llanowar Elves, p1's hand -> stack
 T14 taps: p1:Forest#5
 T14 p1 adds {G} (p1:Forest#5)
+T14 p1 taps p1:Forest#5 for mana
 T14 p1 cancels casting Llanowar Elves
 T14 taps: p1:Forest#5
 T14 p1 adds {G} (p1:Forest#5)
+T14 p1 taps p1:Forest#5 for mana
 T14 moves: Llanowar Elves, p1's hand -> stack
 T14 p1 cancels casting Llanowar Elves
 T14 moves: Llanowar Elves, p1's hand -> stack
@@ -633,18 +692,24 @@ T15 moves: Craw Wurm, p2's library -> p2's hand
 T15 p2 draws
 T15 taps: p2:Forest#2
 T15 p2 adds {G} (p2:Forest#2)
+T15 p2 taps p2:Forest#2 for mana
 T15 taps: p2:Forest#3
 T15 p2 adds {G} (p2:Forest#3)
+T15 p2 taps p2:Forest#3 for mana
 T15 taps: p2:Forest#5
 T15 p2 adds {G} (p2:Forest#5)
+T15 p2 taps p2:Forest#5 for mana
 T15 taps: p2:Forest#6
 T15 p2 adds {G} (p2:Forest#6)
+T15 p2 taps p2:Forest#6 for mana
 T15 taps: p2:Forest#4
 T15 p2 adds {G} (p2:Forest#4)
+T15 p2 taps p2:Forest#4 for mana
 T15 moves: Giant Growth, p2's hand -> stack
 T15 p2 cancels casting Giant Growth
 T15 taps: p2:Forest#1
 T15 p2 adds {G} (p2:Forest#1)
+T15 p2 taps p2:Forest#1 for mana
 T15 p2's unspent {G}{G}{G}{G}{G}{G} empties
 T15 moves: Grizzly Bears, p2's hand -> stack
 T15 p2 cancels casting Grizzly Bears
@@ -694,13 +759,17 @@ T16 untaps: p1:Forest#5
 T16 moves: Giant Growth, p1's hand -> stack
 T16 taps: p1:Forest#2
 T16 p1 adds {G} (p1:Forest#2)
+T16 p1 taps p1:Forest#2 for mana
 T16 taps: p1:Llanowar Elves
 T16 p1 adds {G} (p1:Llanowar Elves)
+T16 p1 taps p1:Llanowar Elves for mana
 T16 p1 casts Giant Growth
 T16 taps: p1:Forest#3
 T16 p1 adds {G} (p1:Forest#3)
+T16 p1 taps p1:Forest#3 for mana
 T16 taps: p1:Forest#1
 T16 p1 adds {G} (p1:Forest#1)
+T16 p1 taps p1:Forest#1 for mana
 T16 moves: Giant Growth, p2's hand -> stack
 T16 p2 cancels casting Giant Growth
 T16 moves: Giant Growth, p2's hand -> stack
@@ -718,23 +787,29 @@ T16 p1 draws
 T16 moves: Centaur Courser, p1's hand -> stack
 T16 taps: p1:Forest#5
 T16 p1 adds {G} (p1:Forest#5)
+T16 p1 taps p1:Forest#5 for mana
 T16 taps: p1:Forest#4
 T16 p1 adds {G} (p1:Forest#4)
+T16 p1 taps p1:Forest#4 for mana
 T16 p1 cancels casting Centaur Courser
 T16 moves: Grizzly Bears, p1's hand -> stack
 T16 taps: p1:Forest#4
 T16 p1 adds {G} (p1:Forest#4)
+T16 p1 taps p1:Forest#4 for mana
 T16 taps: p1:Forest#5
 T16 p1 adds {G} (p1:Forest#5)
+T16 p1 taps p1:Forest#5 for mana
 T16 p1 cancels casting Grizzly Bears
 T16 p1 attack: nothing
 T16 taps: p1:Forest#4
 T16 p1 adds {G} (p1:Forest#4)
+T16 p1 taps p1:Forest#4 for mana
 T16 moves: Giant Growth, p2's hand -> stack
 T16 p2 cancels casting Giant Growth
 T16 p1's unspent {G} empties
 T16 taps: p1:Forest#5
 T16 p1 adds {G} (p1:Forest#5)
+T16 p1 taps p1:Forest#5 for mana
 T16 moves: Spined Wurm, p1's hand -> stack
 T16 p1 cancels casting Spined Wurm
 T16 moves: Spined Wurm, p1's hand -> stack
@@ -760,19 +835,24 @@ T17 untaps: p2:Forest#5
 T17 untaps: p2:Forest#6
 T17 taps: p2:Forest#6
 T17 p2 adds {G} (p2:Forest#6)
+T17 p2 taps p2:Forest#6 for mana
 T17 moves: Giant Growth, p2's hand -> stack
 T17 p2 cancels casting Giant Growth
 T17 taps: p2:Forest#5
 T17 p2 adds {G} (p2:Forest#5)
+T17 p2 taps p2:Forest#5 for mana
 T17 taps: p2:Forest#1
 T17 p2 adds {G} (p2:Forest#1)
+T17 p2 taps p2:Forest#1 for mana
 T17 taps: p2:Forest#4
 T17 p2 adds {G} (p2:Forest#4)
+T17 p2 taps p2:Forest#4 for mana
 T17 p2's unspent {G}{G}{G}{G} empties
 T17 moves: Llanowar Elves, p2's library -> p2's hand
 T17 p2 draws
 T17 taps: p2:Forest#3
 T17 p2 adds {G} (p2:Forest#3)
+T17 p2 taps p2:Forest#3 for mana
 T17 p2's unspent {G} empties
 T17 moves: Giant Growth, p2's hand -> stack
 T17 p2 cancels casting Giant Growth
@@ -783,6 +863,7 @@ T17 moves: Giant Growth, p2's hand -> stack
 T17 p2 cancels casting Giant Growth
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
+T17 p2 taps p2:Forest#2 for mana
 T17 p2's unspent {G} empties
 T17 moves: Giant Growth, p2's hand -> stack
 T17 p2 cancels casting Giant Growth
@@ -795,20 +876,26 @@ T18 untaps: p1:Forest#5
 T18 untaps: p1:Llanowar Elves
 T18 taps: p1:Forest#3
 T18 p1 adds {G} (p1:Forest#3)
+T18 p1 taps p1:Forest#3 for mana
 T18 taps: p1:Llanowar Elves
 T18 p1 adds {G} (p1:Llanowar Elves)
+T18 p1 taps p1:Llanowar Elves for mana
 T18 taps: p1:Forest#1
 T18 p1 adds {G} (p1:Forest#1)
+T18 p1 taps p1:Forest#1 for mana
 T18 taps: p1:Forest#5
 T18 p1 adds {G} (p1:Forest#5)
+T18 p1 taps p1:Forest#5 for mana
 T18 taps: p1:Forest#4
 T18 p1 adds {G} (p1:Forest#4)
+T18 p1 taps p1:Forest#4 for mana
 T18 p1's unspent {G}{G}{G}{G}{G} empties
 T18 moves: Llanowar Elves, p1's library -> p1's hand
 T18 p1 draws
 T18 moves: Centaur Courser, p1's hand -> stack
 T18 taps: p1:Forest#2
 T18 p1 adds {G} (p1:Forest#2)
+T18 p1 taps p1:Forest#2 for mana
 T18 p1 cancels casting Centaur Courser
 T18 moves: Giant Growth, p2's hand -> stack
 T18 p2 cancels casting Giant Growth
@@ -821,6 +908,7 @@ T18 moves: Giant Growth, p2's hand -> stack
 T18 p2 cancels casting Giant Growth
 T18 taps: p1:Forest#2
 T18 p1 adds {G} (p1:Forest#2)
+T18 p1 taps p1:Forest#2 for mana
 T18 moves: Giant Growth, p2's hand -> stack
 T18 p2 cancels casting Giant Growth
 T18 p1's unspent {G} empties
@@ -879,10 +967,13 @@ T19 untaps: p2:Forest#5
 T19 untaps: p2:Forest#6
 T19 taps: p2:Forest#1
 T19 p2 adds {G} (p2:Forest#1)
+T19 p2 taps p2:Forest#1 for mana
 T19 taps: p2:Forest#6
 T19 p2 adds {G} (p2:Forest#6)
+T19 p2 taps p2:Forest#6 for mana
 T19 taps: p2:Forest#2
 T19 p2 adds {G} (p2:Forest#2)
+T19 p2 taps p2:Forest#2 for mana
 T19 moves: Giant Growth, p2's hand -> stack
 T19 p2 cancels casting Giant Growth
 T19 p2's unspent {G}{G}{G} empties
@@ -890,11 +981,14 @@ T19 moves: Giant Growth, p2's library -> p2's hand
 T19 p2 draws
 T19 taps: p2:Forest#3
 T19 p2 adds {G} (p2:Forest#3)
+T19 p2 taps p2:Forest#3 for mana
 T19 p2's unspent {G} empties
 T19 taps: p2:Forest#5
 T19 p2 adds {G} (p2:Forest#5)
+T19 p2 taps p2:Forest#5 for mana
 T19 taps: p2:Forest#4
 T19 p2 adds {G} (p2:Forest#4)
+T19 p2 taps p2:Forest#4 for mana
 T19 p2's unspent {G}{G} empties
 T19 p2 attack: nothing
 T19 moves: Giant Growth, p2's hand -> stack
@@ -926,12 +1020,16 @@ T20 moves: Grizzly Bears, p1's library -> p1's hand
 T20 p1 draws
 T20 taps: p1:Forest#1
 T20 p1 adds {G} (p1:Forest#1)
+T20 p1 taps p1:Forest#1 for mana
 T20 taps: p1:Forest#5
 T20 p1 adds {G} (p1:Forest#5)
+T20 p1 taps p1:Forest#5 for mana
 T20 taps: p1:Forest#3
 T20 p1 adds {G} (p1:Forest#3)
+T20 p1 taps p1:Forest#3 for mana
 T20 taps: p1:Forest#4
 T20 p1 adds {G} (p1:Forest#4)
+T20 p1 taps p1:Forest#4 for mana
 T20 moves: Giant Growth, p2's hand -> stack
 T20 p2 cancels casting Giant Growth
 T20 p1's unspent {G}{G}{G}{G} empties
@@ -940,8 +1038,10 @@ T20 p1 cancels casting Centaur Courser
 T20 moves: Llanowar Elves, p1's hand -> stack
 T20 taps: p1:Forest#2
 T20 p1 adds {G} (p1:Forest#2)
+T20 p1 taps p1:Forest#2 for mana
 T20 taps: p1:Llanowar Elves
 T20 p1 adds {G} (p1:Llanowar Elves)
+T20 p1 taps p1:Llanowar Elves for mana
 T20 p1 casts Llanowar Elves
 T20 moves: Giant Growth, p2's hand -> stack
 T20 p2 cancels casting Giant Growth
@@ -1001,17 +1101,23 @@ T21 p2 draws
 T21 moves: Giant Growth, p2's hand -> stack
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
 T21 taps: p2:Forest#1
 T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
 T21 taps: p2:Forest#6
 T21 p2 adds {G} (p2:Forest#6)
+T21 p2 taps p2:Forest#6 for mana
 T21 taps: p2:Forest#4
 T21 p2 adds {G} (p2:Forest#4)
+T21 p2 taps p2:Forest#4 for mana
 T21 p2 casts Giant Growth
 T21 taps: p2:Forest#3
 T21 p2 adds {G} (p2:Forest#3)
+T21 p2 taps p2:Forest#3 for mana
 T21 taps: p2:Forest#5
 T21 p2 adds {G} (p2:Forest#5)
+T21 p2 taps p2:Forest#5 for mana
 T21 moves: Giant Growth, p2's hand -> stack
 T21 p2 casts Giant Growth
 T21 effect: p1:Llanowar Elves#1 +3/+3 until end of turn
@@ -1051,21 +1157,28 @@ T22 untaps: p1:Forest#5
 T22 untaps: p1:Llanowar Elves#1
 T22 taps: p1:Forest#1
 T22 p1 adds {G} (p1:Forest#1)
+T22 p1 taps p1:Forest#1 for mana
 T22 taps: p1:Forest#3
 T22 p1 adds {G} (p1:Forest#3)
+T22 p1 taps p1:Forest#3 for mana
 T22 taps: p1:Forest#2
 T22 p1 adds {G} (p1:Forest#2)
+T22 p1 taps p1:Forest#2 for mana
 T22 taps: p1:Llanowar Elves#2
 T22 p1 adds {G} (p1:Llanowar Elves#2)
+T22 p1 taps p1:Llanowar Elves#2 for mana
 T22 p1's unspent {G}{G}{G}{G} empties
 T22 moves: Centaur Courser, p1's library -> p1's hand
 T22 p1 draws
 T22 taps: p1:Forest#5
 T22 p1 adds {G} (p1:Forest#5)
+T22 p1 taps p1:Forest#5 for mana
 T22 taps: p1:Llanowar Elves#1
 T22 p1 adds {G} (p1:Llanowar Elves#1)
+T22 p1 taps p1:Llanowar Elves#1 for mana
 T22 taps: p1:Forest#4
 T22 p1 adds {G} (p1:Forest#4)
+T22 p1 taps p1:Forest#4 for mana
 T22 p1's unspent {G}{G}{G} empties
 T22 moves: Craw Wurm, p1's hand -> stack
 T22 p1 cancels casting Craw Wurm
@@ -1091,19 +1204,25 @@ T23 untaps: p2:Forest#5
 T23 untaps: p2:Forest#6
 T23 taps: p2:Forest#4
 T23 p2 adds {G} (p2:Forest#4)
+T23 p2 taps p2:Forest#4 for mana
 T23 taps: p2:Forest#3
 T23 p2 adds {G} (p2:Forest#3)
+T23 p2 taps p2:Forest#3 for mana
 T23 taps: p2:Forest#1
 T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
 T23 taps: p2:Forest#2
 T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
 T23 taps: p2:Forest#6
 T23 p2 adds {G} (p2:Forest#6)
+T23 p2 taps p2:Forest#6 for mana
 T23 p2's unspent {G}{G}{G}{G}{G} empties
 T23 moves: Forest, p2's library -> p2's hand
 T23 p2 draws
 T23 taps: p2:Forest#5
 T23 p2 adds {G} (p2:Forest#5)
+T23 p2 taps p2:Forest#5 for mana
 T23 moves: Llanowar Elves, p2's hand -> stack
 T23 p2 casts Llanowar Elves
 T23 resolves: Llanowar Elves
@@ -1119,6 +1238,7 @@ T23 p2 plays p2:Forest#7
 T23 p2 attack: nothing
 T23 taps: p2:Forest#7
 T23 p2 adds {G} (p2:Forest#7)
+T23 p2 taps p2:Forest#7 for mana
 T23 p2's unspent {G} empties
 T23 moves: Craw Wurm, p2's hand -> stack
 T23 p2 cancels casting Craw Wurm
@@ -1158,23 +1278,30 @@ T24 untaps: p1:Llanowar Elves#1
 T24 untaps: p1:Llanowar Elves#2
 T24 taps: p1:Forest#5
 T24 p1 adds {G} (p1:Forest#5)
+T24 p1 taps p1:Forest#5 for mana
 T24 taps: p1:Llanowar Elves#2
 T24 p1 adds {G} (p1:Llanowar Elves#2)
+T24 p1 taps p1:Llanowar Elves#2 for mana
 T24 taps: p1:Forest#3
 T24 p1 adds {G} (p1:Forest#3)
+T24 p1 taps p1:Forest#3 for mana
 T24 p1's unspent {G}{G}{G} empties
 T24 moves: Llanowar Elves, p1's library -> p1's hand
 T24 p1 draws
 T24 taps: p1:Forest#1
 T24 p1 adds {G} (p1:Forest#1)
+T24 p1 taps p1:Forest#1 for mana
 T24 taps: p1:Llanowar Elves#1
 T24 p1 adds {G} (p1:Llanowar Elves#1)
+T24 p1 taps p1:Llanowar Elves#1 for mana
 T24 taps: p1:Forest#2
 T24 p1 adds {G} (p1:Forest#2)
+T24 p1 taps p1:Forest#2 for mana
 T24 p1's unspent {G}{G}{G} empties
 T24 moves: Giant Spider, p1's hand -> stack
 T24 taps: p1:Forest#4
 T24 p1 adds {G} (p1:Forest#4)
+T24 p1 taps p1:Forest#4 for mana
 T24 p1 cancels casting Giant Spider
 T24 moves: Llanowar Elves, p1's hand -> stack
 T24 p1 cancels casting Llanowar Elves
@@ -1183,15 +1310,18 @@ T24 p1 cancels casting Spined Wurm
 T24 moves: Craw Wurm, p1's hand -> stack
 T24 taps: p1:Forest#4
 T24 p1 adds {G} (p1:Forest#4)
+T24 p1 taps p1:Forest#4 for mana
 T24 p1 cancels casting Craw Wurm
 T24 moves: Llanowar Elves, p1's hand -> stack
 T24 p1 cancels casting Llanowar Elves
 T24 moves: Craw Wurm, p1's hand -> stack
 T24 taps: p1:Forest#4
 T24 p1 adds {G} (p1:Forest#4)
+T24 p1 taps p1:Forest#4 for mana
 T24 p1 cancels casting Craw Wurm
 T24 taps: p1:Forest#4
 T24 p1 adds {G} (p1:Forest#4)
+T24 p1 taps p1:Forest#4 for mana
 T24 moves: Llanowar Elves, p1's hand -> stack
 T24 p1 cancels casting Llanowar Elves
 T24 moves: Craw Wurm, p1's hand -> stack
@@ -1240,23 +1370,31 @@ T25 untaps: p2:Forest#6
 T25 untaps: p2:Forest#7
 T25 taps: p2:Forest#3
 T25 p2 adds {G} (p2:Forest#3)
+T25 p2 taps p2:Forest#3 for mana
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 taps: p2:Forest#7
 T25 p2 adds {G} (p2:Forest#7)
+T25 p2 taps p2:Forest#7 for mana
 T25 taps: p2:Forest#6
 T25 p2 adds {G} (p2:Forest#6)
+T25 p2 taps p2:Forest#6 for mana
 T25 p2's unspent {G}{G}{G}{G} empties
 T25 moves: Centaur Courser, p2's library -> p2's hand
 T25 p2 draws
 T25 taps: p2:Forest#5
 T25 p2 adds {G} (p2:Forest#5)
+T25 p2 taps p2:Forest#5 for mana
 T25 taps: p2:Forest#1
 T25 p2 adds {G} (p2:Forest#1)
+T25 p2 taps p2:Forest#1 for mana
 T25 taps: p2:Forest#4
 T25 p2 adds {G} (p2:Forest#4)
+T25 p2 taps p2:Forest#4 for mana
 T25 taps: p2:Llanowar Elves
 T25 p2 adds {G} (p2:Llanowar Elves)
+T25 p2 taps p2:Llanowar Elves for mana
 T25 p2's unspent {G}{G}{G}{G} empties
 T25 moves: Centaur Courser, p2's hand -> stack
 T25 p2 cancels casting Centaur Courser
@@ -1281,21 +1419,28 @@ T26 untaps: p1:Llanowar Elves#1
 T26 untaps: p1:Llanowar Elves#2
 T26 taps: p1:Forest#2
 T26 p1 adds {G} (p1:Forest#2)
+T26 p1 taps p1:Forest#2 for mana
 T26 taps: p1:Forest#5
 T26 p1 adds {G} (p1:Forest#5)
+T26 p1 taps p1:Forest#5 for mana
 T26 taps: p1:Llanowar Elves#1
 T26 p1 adds {G} (p1:Llanowar Elves#1)
+T26 p1 taps p1:Llanowar Elves#1 for mana
 T26 taps: p1:Llanowar Elves#2
 T26 p1 adds {G} (p1:Llanowar Elves#2)
+T26 p1 taps p1:Llanowar Elves#2 for mana
 T26 p1's unspent {G}{G}{G}{G} empties
 T26 moves: Llanowar Elves, p1's library -> p1's hand
 T26 p1 draws
 T26 taps: p1:Forest#3
 T26 p1 adds {G} (p1:Forest#3)
+T26 p1 taps p1:Forest#3 for mana
 T26 taps: p1:Forest#4
 T26 p1 adds {G} (p1:Forest#4)
+T26 p1 taps p1:Forest#4 for mana
 T26 taps: p1:Forest#1
 T26 p1 adds {G} (p1:Forest#1)
+T26 p1 taps p1:Forest#1 for mana
 T26 p1's unspent {G}{G}{G} empties
 T26 moves: Grizzly Bears, p1's hand -> stack
 T26 p1 cancels casting Grizzly Bears
@@ -1335,21 +1480,28 @@ T27 untaps: p2:Llanowar Elves
 T27 untaps: p2:Forest#7
 T27 taps: p2:Forest#6
 T27 p2 adds {G} (p2:Forest#6)
+T27 p2 taps p2:Forest#6 for mana
 T27 taps: p2:Forest#4
 T27 p2 adds {G} (p2:Forest#4)
+T27 p2 taps p2:Forest#4 for mana
 T27 taps: p2:Forest#7
 T27 p2 adds {G} (p2:Forest#7)
+T27 p2 taps p2:Forest#7 for mana
 T27 taps: p2:Forest#3
 T27 p2 adds {G} (p2:Forest#3)
+T27 p2 taps p2:Forest#3 for mana
 T27 taps: p2:Forest#2
 T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
 T27 p2's unspent {G}{G}{G}{G}{G} empties
 T27 moves: Forest, p2's library -> p2's hand
 T27 p2 draws
 T27 taps: p2:Forest#5
 T27 p2 adds {G} (p2:Forest#5)
+T27 p2 taps p2:Forest#5 for mana
 T27 taps: p2:Llanowar Elves
 T27 p2 adds {G} (p2:Llanowar Elves)
+T27 p2 taps p2:Llanowar Elves for mana
 T27 p2's unspent {G}{G} empties
 T27 moves: Forest, p2's hand -> battlefield
 T27 p2 plays p2:Forest#8
@@ -1358,15 +1510,18 @@ T27 p2 cancels casting Craw Wurm
 T27 moves: Giant Spider, p2's hand -> stack
 T27 taps: p2:Forest#8
 T27 p2 adds {G} (p2:Forest#8)
+T27 p2 taps p2:Forest#8 for mana
 T27 p2 cancels casting Giant Spider
 T27 moves: Giant Spider, p2's hand -> stack
 T27 p2 cancels casting Giant Spider
 T27 taps: p2:Forest#1
 T27 p2 adds {G} (p2:Forest#1)
+T27 p2 taps p2:Forest#1 for mana
 T27 p2's unspent {G} empties
 T27 p2 attack: nothing
 T27 taps: p2:Forest#8
 T27 p2 adds {G} (p2:Forest#8)
+T27 p2 taps p2:Forest#8 for mana
 T27 p2's unspent {G} empties
 T28 turn 28 begins (p1)
 T28 untaps: p1:Forest#1
@@ -1378,27 +1533,35 @@ T28 untaps: p1:Llanowar Elves#1
 T28 untaps: p1:Llanowar Elves#2
 T28 taps: p1:Forest#1
 T28 p1 adds {G} (p1:Forest#1)
+T28 p1 taps p1:Forest#1 for mana
 T28 taps: p1:Forest#3
 T28 p1 adds {G} (p1:Forest#3)
+T28 p1 taps p1:Forest#3 for mana
 T28 p1's unspent {G}{G} empties
 T28 moves: Forest, p1's library -> p1's hand
 T28 p1 draws
 T28 taps: p1:Llanowar Elves#2
 T28 p1 adds {G} (p1:Llanowar Elves#2)
+T28 p1 taps p1:Llanowar Elves#2 for mana
 T28 p1's unspent {G} empties
 T28 moves: Spined Wurm, p1's hand -> stack
 T28 taps: p1:Forest#2
 T28 p1 adds {G} (p1:Forest#2)
+T28 p1 taps p1:Forest#2 for mana
 T28 p1 cancels casting Spined Wurm
 T28 taps: p1:Llanowar Elves#1
 T28 p1 adds {G} (p1:Llanowar Elves#1)
+T28 p1 taps p1:Llanowar Elves#1 for mana
 T28 taps: p1:Forest#5
 T28 p1 adds {G} (p1:Forest#5)
+T28 p1 taps p1:Forest#5 for mana
 T28 moves: Grizzly Bears, p1's hand -> stack
 T28 taps: p1:Forest#2
 T28 p1 adds {G} (p1:Forest#2)
+T28 p1 taps p1:Forest#2 for mana
 T28 taps: p1:Forest#4
 T28 p1 adds {G} (p1:Forest#4)
+T28 p1 taps p1:Forest#4 for mana
 T28 p1 casts Grizzly Bears
 T28 resolves: Grizzly Bears
 T28 moves: Grizzly Bears, stack -> battlefield
@@ -1417,6 +1580,7 @@ T28 p1 cancels casting Giant Spider
 T28 moves: Grizzly Bears, p1's hand -> stack
 T28 taps: p1:Forest#6
 T28 p1 adds {G} (p1:Forest#6)
+T28 p1 taps p1:Forest#6 for mana
 T28 p1 casts Grizzly Bears
 T28 resolves: Grizzly Bears
 T28 moves: Grizzly Bears, stack -> battlefield
@@ -1440,26 +1604,35 @@ T29 untaps: p2:Forest#7
 T29 untaps: p2:Forest#8
 T29 taps: p2:Forest#3
 T29 p2 adds {G} (p2:Forest#3)
+T29 p2 taps p2:Forest#3 for mana
 T29 taps: p2:Forest#8
 T29 p2 adds {G} (p2:Forest#8)
+T29 p2 taps p2:Forest#8 for mana
 T29 taps: p2:Forest#5
 T29 p2 adds {G} (p2:Forest#5)
+T29 p2 taps p2:Forest#5 for mana
 T29 p2's unspent {G}{G}{G} empties
 T29 moves: Centaur Courser, p2's library -> p2's hand
 T29 p2 draws
 T29 taps: p2:Forest#1
 T29 p2 adds {G} (p2:Forest#1)
+T29 p2 taps p2:Forest#1 for mana
 T29 moves: Centaur Courser, p2's hand -> stack
 T29 taps: p2:Forest#4
 T29 p2 adds {G} (p2:Forest#4)
+T29 p2 taps p2:Forest#4 for mana
 T29 taps: p2:Forest#7
 T29 p2 adds {G} (p2:Forest#7)
+T29 p2 taps p2:Forest#7 for mana
 T29 taps: p2:Llanowar Elves
 T29 p2 adds {G} (p2:Llanowar Elves)
+T29 p2 taps p2:Llanowar Elves for mana
 T29 taps: p2:Forest#6
 T29 p2 adds {G} (p2:Forest#6)
+T29 p2 taps p2:Forest#6 for mana
 T29 taps: p2:Forest#2
 T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
 T29 p2 casts Centaur Courser
 T29 resolves: Centaur Courser
 T29 moves: Centaur Courser, stack -> battlefield
@@ -1487,40 +1660,52 @@ T30 untaps: p1:Llanowar Elves#2
 T30 untaps: p1:Forest#6
 T30 taps: p1:Llanowar Elves#1
 T30 p1 adds {G} (p1:Llanowar Elves#1)
+T30 p1 taps p1:Llanowar Elves#1 for mana
 T30 taps: p1:Llanowar Elves#2
 T30 p1 adds {G} (p1:Llanowar Elves#2)
+T30 p1 taps p1:Llanowar Elves#2 for mana
 T30 taps: p1:Forest#1
 T30 p1 adds {G} (p1:Forest#1)
+T30 p1 taps p1:Forest#1 for mana
 T30 taps: p1:Forest#3
 T30 p1 adds {G} (p1:Forest#3)
+T30 p1 taps p1:Forest#3 for mana
 T30 taps: p1:Forest#4
 T30 p1 adds {G} (p1:Forest#4)
+T30 p1 taps p1:Forest#4 for mana
 T30 p1's unspent {G}{G}{G}{G}{G} empties
 T30 moves: Forest, p1's library -> p1's hand
 T30 p1 draws
 T30 taps: p1:Forest#5
 T30 p1 adds {G} (p1:Forest#5)
+T30 p1 taps p1:Forest#5 for mana
 T30 p1's unspent {G} empties
 T30 moves: Spined Wurm, p1's hand -> stack
 T30 taps: p1:Forest#6
 T30 p1 adds {G} (p1:Forest#6)
+T30 p1 taps p1:Forest#6 for mana
 T30 p1 cancels casting Spined Wurm
 T30 moves: Spined Wurm, p1's hand -> stack
 T30 taps: p1:Forest#2
 T30 p1 adds {G} (p1:Forest#2)
+T30 p1 taps p1:Forest#2 for mana
 T30 p1 cancels casting Spined Wurm
 T30 moves: Spined Wurm, p1's hand -> stack
 T30 taps: p1:Forest#2
 T30 p1 adds {G} (p1:Forest#2)
+T30 p1 taps p1:Forest#2 for mana
 T30 p1 cancels casting Spined Wurm
 T30 moves: Forest, p1's hand -> battlefield
 T30 p1 plays p1:Forest#7
 T30 taps: p1:Forest#2
 T30 p1 adds {G} (p1:Forest#2)
+T30 p1 taps p1:Forest#2 for mana
 T30 taps: p1:Forest#7
 T30 p1 adds {G} (p1:Forest#7)
+T30 p1 taps p1:Forest#7 for mana
 T30 taps: p1:Forest#6
 T30 p1 adds {G} (p1:Forest#6)
+T30 p1 taps p1:Forest#6 for mana
 T30 p1's unspent {G}{G}{G} empties
 T30 p1 attack: nothing
 T31 turn 31 begins (p2)
@@ -1537,37 +1722,49 @@ T31 moves: Forest, p2's library -> p2's hand
 T31 p2 draws
 T31 taps: p2:Forest#7
 T31 p2 adds {G} (p2:Forest#7)
+T31 p2 taps p2:Forest#7 for mana
 T31 p2's unspent {G} empties
 T31 moves: Grizzly Bears, p2's hand -> stack
 T31 taps: p2:Forest#8
 T31 p2 adds {G} (p2:Forest#8)
+T31 p2 taps p2:Forest#8 for mana
 T31 taps: p2:Forest#5
 T31 p2 adds {G} (p2:Forest#5)
+T31 p2 taps p2:Forest#5 for mana
 T31 taps: p2:Forest#6
 T31 p2 adds {G} (p2:Forest#6)
+T31 p2 taps p2:Forest#6 for mana
 T31 p2 cancels casting Grizzly Bears
 T31 taps: p2:Forest#4
 T31 p2 adds {G} (p2:Forest#4)
+T31 p2 taps p2:Forest#4 for mana
 T31 taps: p2:Forest#8
 T31 p2 adds {G} (p2:Forest#8)
+T31 p2 taps p2:Forest#8 for mana
 T31 moves: Giant Spider, p2's hand -> stack
 T31 taps: p2:Llanowar Elves
 T31 p2 adds {G} (p2:Llanowar Elves)
+T31 p2 taps p2:Llanowar Elves for mana
 T31 p2 cancels casting Giant Spider
 T31 taps: p2:Forest#6
 T31 p2 adds {G} (p2:Forest#6)
+T31 p2 taps p2:Forest#6 for mana
 T31 taps: p2:Forest#2
 T31 p2 adds {G} (p2:Forest#2)
+T31 p2 taps p2:Forest#2 for mana
 T31 p2's unspent {G}{G}{G}{G} empties
 T31 taps: p2:Forest#3
 T31 p2 adds {G} (p2:Forest#3)
+T31 p2 taps p2:Forest#3 for mana
 T31 p2's unspent {G} empties
 T31 taps: p2:Centaur Courser#2
 T31 p2 attack: p2:Centaur Courser#2 -> p1
 T31 taps: p2:Forest#1
 T31 p2 adds {G} (p2:Forest#1)
+T31 p2 taps p2:Forest#1 for mana
 T31 taps: p2:Forest#5
 T31 p2 adds {G} (p2:Forest#5)
+T31 p2 taps p2:Forest#5 for mana
 T31 p2's unspent {G}{G} empties
 T31 p1 block: p1:Grizzly Bears#2 -> p2:Centaur Courser#2
 T31 combat damage: p2:Centaur Courser#2 -> p1:Grizzly Bears#2 3
@@ -1577,6 +1774,7 @@ T31 destroyed: p1:Grizzly Bears#2
 T31 moves: Grizzly Bears, battlefield -> p1's graveyard
 T31 taps: p2:Llanowar Elves
 T31 p2 adds {G} (p2:Llanowar Elves)
+T31 p2 taps p2:Llanowar Elves for mana
 T31 p2's unspent {G} empties
 T31 damage removed: p2:Centaur Courser#2 (2)
 T32 turn 32 begins (p1)
@@ -1591,35 +1789,46 @@ T32 untaps: p1:Forest#6
 T32 untaps: p1:Forest#7
 T32 taps: p1:Forest#5
 T32 p1 adds {G} (p1:Forest#5)
+T32 p1 taps p1:Forest#5 for mana
 T32 taps: p1:Forest#1
 T32 p1 adds {G} (p1:Forest#1)
+T32 p1 taps p1:Forest#1 for mana
 T32 taps: p1:Forest#4
 T32 p1 adds {G} (p1:Forest#4)
+T32 p1 taps p1:Forest#4 for mana
 T32 taps: p1:Forest#2
 T32 p1 adds {G} (p1:Forest#2)
+T32 p1 taps p1:Forest#2 for mana
 T32 p1's unspent {G}{G}{G}{G} empties
 T32 moves: Forest, p1's library -> p1's hand
 T32 p1 draws
 T32 taps: p1:Forest#7
 T32 p1 adds {G} (p1:Forest#7)
+T32 p1 taps p1:Forest#7 for mana
 T32 taps: p1:Forest#6
 T32 p1 adds {G} (p1:Forest#6)
+T32 p1 taps p1:Forest#6 for mana
 T32 p1's unspent {G}{G} empties
 T32 taps: p1:Llanowar Elves#2
 T32 p1 adds {G} (p1:Llanowar Elves#2)
+T32 p1 taps p1:Llanowar Elves#2 for mana
 T32 moves: Spined Wurm, p1's hand -> stack
 T32 p1 cancels casting Spined Wurm
 T32 moves: Spined Wurm, p1's hand -> stack
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 taps: p1:Llanowar Elves#1
 T32 p1 adds {G} (p1:Llanowar Elves#1)
+T32 p1 taps p1:Llanowar Elves#1 for mana
 T32 p1 cancels casting Spined Wurm
 T32 moves: Giant Spider, p1's hand -> stack
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 taps: p1:Llanowar Elves#1
 T32 p1 adds {G} (p1:Llanowar Elves#1)
+T32 p1 taps p1:Llanowar Elves#1 for mana
 T32 p1 cancels casting Giant Spider
 T32 moves: Forest, p1's hand -> battlefield
 T32 p1 plays p1:Forest#8
@@ -1628,48 +1837,62 @@ T32 p1 cancels casting Centaur Courser
 T32 moves: Giant Spider, p1's hand -> stack
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 taps: p1:Forest#8
 T32 p1 adds {G} (p1:Forest#8)
+T32 p1 taps p1:Forest#8 for mana
 T32 p1 cancels casting Giant Spider
 T32 moves: Centaur Courser, p1's hand -> stack
 T32 p1 cancels casting Centaur Courser
 T32 moves: Spined Wurm, p1's hand -> stack
 T32 taps: p1:Llanowar Elves#1
 T32 p1 adds {G} (p1:Llanowar Elves#1)
+T32 p1 taps p1:Llanowar Elves#1 for mana
 T32 taps: p1:Forest#8
 T32 p1 adds {G} (p1:Forest#8)
+T32 p1 taps p1:Forest#8 for mana
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 p1 cancels casting Spined Wurm
 T32 moves: Centaur Courser, p1's hand -> stack
 T32 taps: p1:Llanowar Elves#1
 T32 p1 adds {G} (p1:Llanowar Elves#1)
+T32 p1 taps p1:Llanowar Elves#1 for mana
 T32 taps: p1:Forest#8
 T32 p1 adds {G} (p1:Forest#8)
+T32 p1 taps p1:Forest#8 for mana
 T32 p1 cancels casting Centaur Courser
 T32 moves: Spined Wurm, p1's hand -> stack
 T32 taps: p1:Forest#8
 T32 p1 adds {G} (p1:Forest#8)
+T32 p1 taps p1:Forest#8 for mana
 T32 taps: p1:Llanowar Elves#1
 T32 p1 adds {G} (p1:Llanowar Elves#1)
+T32 p1 taps p1:Llanowar Elves#1 for mana
 T32 p1 cancels casting Spined Wurm
 T32 taps: p1:Llanowar Elves#1
 T32 p1 adds {G} (p1:Llanowar Elves#1)
+T32 p1 taps p1:Llanowar Elves#1 for mana
 T32 moves: Spined Wurm, p1's hand -> stack
 T32 p1 cancels casting Spined Wurm
 T32 taps: p1:Forest#8
 T32 p1 adds {G} (p1:Forest#8)
+T32 p1 taps p1:Forest#8 for mana
 T32 moves: Spined Wurm, p1's hand -> stack
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 p1 cancels casting Spined Wurm
 T32 moves: Llanowar Elves, p1's hand -> stack
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 p1 cancels casting Llanowar Elves
 T32 p1's unspent {G}{G}{G} empties
 T32 taps: p1:Forest#3
 T32 p1 adds {G} (p1:Forest#3)
+T32 p1 taps p1:Forest#3 for mana
 T32 p1's unspent {G} empties
 T32 p1 attack: nothing
 T32 moves: Centaur Courser, p1's hand -> stack
@@ -1687,25 +1910,34 @@ T33 untaps: p2:Forest#8
 T33 untaps: p2:Centaur Courser#2
 T33 taps: p2:Llanowar Elves
 T33 p2 adds {G} (p2:Llanowar Elves)
+T33 p2 taps p2:Llanowar Elves for mana
 T33 taps: p2:Forest#5
 T33 p2 adds {G} (p2:Forest#5)
+T33 p2 taps p2:Forest#5 for mana
 T33 taps: p2:Forest#4
 T33 p2 adds {G} (p2:Forest#4)
+T33 p2 taps p2:Forest#4 for mana
 T33 taps: p2:Forest#2
 T33 p2 adds {G} (p2:Forest#2)
+T33 p2 taps p2:Forest#2 for mana
 T33 taps: p2:Forest#3
 T33 p2 adds {G} (p2:Forest#3)
+T33 p2 taps p2:Forest#3 for mana
 T33 taps: p2:Forest#6
 T33 p2 adds {G} (p2:Forest#6)
+T33 p2 taps p2:Forest#6 for mana
 T33 taps: p2:Forest#1
 T33 p2 adds {G} (p2:Forest#1)
+T33 p2 taps p2:Forest#1 for mana
 T33 taps: p2:Forest#7
 T33 p2 adds {G} (p2:Forest#7)
+T33 p2 taps p2:Forest#7 for mana
 T33 p2's unspent {G}{G}{G}{G}{G}{G}{G}{G} empties
 T33 moves: Forest, p2's library -> p2's hand
 T33 p2 draws
 T33 taps: p2:Forest#8
 T33 p2 adds {G} (p2:Forest#8)
+T33 p2 taps p2:Forest#8 for mana
 T33 p2's unspent {G} empties
 T33 moves: Llanowar Elves, p2's hand -> stack
 T33 p2 cancels casting Llanowar Elves
@@ -1715,6 +1947,7 @@ T33 moves: Forest, p2's hand -> battlefield
 T33 p2 plays p2:Forest#9
 T33 taps: p2:Forest#9
 T33 p2 adds {G} (p2:Forest#9)
+T33 p2 taps p2:Forest#9 for mana
 T33 p2's unspent {G} empties
 T33 p2 attack: nothing
 T33 moves: Craw Wurm, p2's hand -> stack
@@ -1742,26 +1975,35 @@ T34 untaps: p1:Forest#7
 T34 untaps: p1:Forest#8
 T34 taps: p1:Forest#2
 T34 p1 adds {G} (p1:Forest#2)
+T34 p1 taps p1:Forest#2 for mana
 T34 taps: p1:Forest#1
 T34 p1 adds {G} (p1:Forest#1)
+T34 p1 taps p1:Forest#1 for mana
 T34 taps: p1:Forest#6
 T34 p1 adds {G} (p1:Forest#6)
+T34 p1 taps p1:Forest#6 for mana
 T34 taps: p1:Forest#5
 T34 p1 adds {G} (p1:Forest#5)
+T34 p1 taps p1:Forest#5 for mana
 T34 taps: p1:Forest#7
 T34 p1 adds {G} (p1:Forest#7)
+T34 p1 taps p1:Forest#7 for mana
 T34 taps: p1:Forest#4
 T34 p1 adds {G} (p1:Forest#4)
+T34 p1 taps p1:Forest#4 for mana
 T34 p1's unspent {G}{G}{G}{G}{G}{G} empties
 T34 moves: Forest, p1's library -> p1's hand
 T34 p1 draws
 T34 taps: p1:Llanowar Elves#1
 T34 p1 adds {G} (p1:Llanowar Elves#1)
+T34 p1 taps p1:Llanowar Elves#1 for mana
 T34 taps: p1:Forest#3
 T34 p1 adds {G} (p1:Forest#3)
+T34 p1 taps p1:Forest#3 for mana
 T34 p1's unspent {G}{G} empties
 T34 taps: p1:Llanowar Elves#2
 T34 p1 adds {G} (p1:Llanowar Elves#2)
+T34 p1 taps p1:Llanowar Elves#2 for mana
 T34 moves: Forest, p1's hand -> battlefield
 T34 p1 plays p1:Forest#9
 T34 p1's unspent {G} empties
@@ -1769,17 +2011,21 @@ T34 p1 attack: nothing
 T34 moves: Centaur Courser, p1's hand -> stack
 T34 taps: p1:Forest#8
 T34 p1 adds {G} (p1:Forest#8)
+T34 p1 taps p1:Forest#8 for mana
 T34 taps: p1:Forest#9
 T34 p1 adds {G} (p1:Forest#9)
+T34 p1 taps p1:Forest#9 for mana
 T34 p1 cancels casting Centaur Courser
 T34 moves: Llanowar Elves, p1's hand -> stack
 T34 taps: p1:Forest#9
 T34 p1 adds {G} (p1:Forest#9)
+T34 p1 taps p1:Forest#9 for mana
 T34 p1 casts Llanowar Elves
 T34 resolves: Llanowar Elves
 T34 moves: Llanowar Elves, stack -> battlefield
 T34 taps: p1:Forest#8
 T34 p1 adds {G} (p1:Forest#8)
+T34 p1 taps p1:Forest#8 for mana
 T34 moves: Spined Wurm, p1's hand -> stack
 T34 p1 cancels casting Spined Wurm
 T34 moves: Spined Wurm, p1's hand -> stack
@@ -1806,33 +2052,43 @@ T35 untaps: p2:Forest#8
 T35 untaps: p2:Forest#9
 T35 taps: p2:Llanowar Elves
 T35 p2 adds {G} (p2:Llanowar Elves)
+T35 p2 taps p2:Llanowar Elves for mana
 T35 taps: p2:Forest#6
 T35 p2 adds {G} (p2:Forest#6)
+T35 p2 taps p2:Forest#6 for mana
 T35 taps: p2:Forest#1
 T35 p2 adds {G} (p2:Forest#1)
+T35 p2 taps p2:Forest#1 for mana
 T35 p2's unspent {G}{G}{G} empties
 T35 moves: Forest, p2's library -> p2's hand
 T35 p2 draws
 T35 moves: Llanowar Elves, p2's hand -> stack
 T35 taps: p2:Forest#9
 T35 p2 adds {G} (p2:Forest#9)
+T35 p2 taps p2:Forest#9 for mana
 T35 taps: p2:Forest#4
 T35 p2 adds {G} (p2:Forest#4)
+T35 p2 taps p2:Forest#4 for mana
 T35 taps: p2:Forest#5
 T35 p2 adds {G} (p2:Forest#5)
+T35 p2 taps p2:Forest#5 for mana
 T35 p2 casts Llanowar Elves
 T35 taps: p2:Forest#7
 T35 p2 adds {G} (p2:Forest#7)
+T35 p2 taps p2:Forest#7 for mana
 T35 taps: p2:Forest#8
 T35 p2 adds {G} (p2:Forest#8)
+T35 p2 taps p2:Forest#8 for mana
 T35 taps: p2:Forest#3
 T35 p2 adds {G} (p2:Forest#3)
+T35 p2 taps p2:Forest#3 for mana
 T35 resolves: Llanowar Elves
 T35 moves: Llanowar Elves, stack -> battlefield
 T35 moves: Forest, p2's hand -> battlefield
 T35 p2 plays p2:Forest#10
 T35 taps: p2:Forest#2
 T35 p2 adds {G} (p2:Forest#2)
+T35 p2 taps p2:Forest#2 for mana
 T35 moves: Craw Wurm, p2's hand -> stack
 T35 p2 casts Craw Wurm
 T35 resolves: Craw Wurm
@@ -1853,6 +2109,7 @@ T35 destroyed: p1:Llanowar Elves#3
 T35 moves: Llanowar Elves, battlefield -> p1's graveyard
 T35 taps: p2:Forest#10
 T35 p2 adds {G} (p2:Forest#10)
+T35 p2 taps p2:Forest#10 for mana
 T35 p2's unspent {G} empties
 T36 turn 36 begins (p1)
 T36 untaps: p1:Forest#1
@@ -1870,22 +2127,31 @@ T36 moves: Forest, p1's library -> p1's hand
 T36 p1 draws
 T36 taps: p1:Llanowar Elves#1
 T36 p1 adds {G} (p1:Llanowar Elves#1)
+T36 p1 taps p1:Llanowar Elves#1 for mana
 T36 taps: p1:Forest#1
 T36 p1 adds {G} (p1:Forest#1)
+T36 p1 taps p1:Forest#1 for mana
 T36 taps: p1:Forest#9
 T36 p1 adds {G} (p1:Forest#9)
+T36 p1 taps p1:Forest#9 for mana
 T36 taps: p1:Forest#2
 T36 p1 adds {G} (p1:Forest#2)
+T36 p1 taps p1:Forest#2 for mana
 T36 taps: p1:Forest#5
 T36 p1 adds {G} (p1:Forest#5)
+T36 p1 taps p1:Forest#5 for mana
 T36 taps: p1:Llanowar Elves#2
 T36 p1 adds {G} (p1:Llanowar Elves#2)
+T36 p1 taps p1:Llanowar Elves#2 for mana
 T36 taps: p1:Forest#3
 T36 p1 adds {G} (p1:Forest#3)
+T36 p1 taps p1:Forest#3 for mana
 T36 taps: p1:Forest#8
 T36 p1 adds {G} (p1:Forest#8)
+T36 p1 taps p1:Forest#8 for mana
 T36 taps: p1:Forest#7
 T36 p1 adds {G} (p1:Forest#7)
+T36 p1 taps p1:Forest#7 for mana
 T36 p1's unspent {G}{G}{G}{G}{G}{G}{G}{G}{G} empties
 T36 moves: Spined Wurm, p1's hand -> stack
 T36 p1 cancels casting Spined Wurm
@@ -1893,31 +2159,38 @@ T36 moves: Spined Wurm, p1's hand -> stack
 T36 p1 cancels casting Spined Wurm
 T36 taps: p1:Forest#4
 T36 p1 adds {G} (p1:Forest#4)
+T36 p1 taps p1:Forest#4 for mana
 T36 moves: Centaur Courser, p1's hand -> stack
 T36 taps: p1:Forest#6
 T36 p1 adds {G} (p1:Forest#6)
+T36 p1 taps p1:Forest#6 for mana
 T36 p1 cancels casting Centaur Courser
 T36 moves: Forest, p1's hand -> battlefield
 T36 p1 plays p1:Forest#10
 T36 taps: p1:Forest#10
 T36 p1 adds {G} (p1:Forest#10)
+T36 p1 taps p1:Forest#10 for mana
 T36 moves: Spined Wurm, p1's hand -> stack
 T36 taps: p1:Forest#6
 T36 p1 adds {G} (p1:Forest#6)
+T36 p1 taps p1:Forest#6 for mana
 T36 p1 cancels casting Spined Wurm
 T36 moves: Giant Spider, p1's hand -> stack
 T36 p1 cancels casting Giant Spider
 T36 moves: Spined Wurm, p1's hand -> stack
 T36 taps: p1:Forest#6
 T36 p1 adds {G} (p1:Forest#6)
+T36 p1 taps p1:Forest#6 for mana
 T36 p1 cancels casting Spined Wurm
 T36 moves: Spined Wurm, p1's hand -> stack
 T36 taps: p1:Forest#6
 T36 p1 adds {G} (p1:Forest#6)
+T36 p1 taps p1:Forest#6 for mana
 T36 p1 cancels casting Spined Wurm
 T36 moves: Centaur Courser, p1's hand -> stack
 T36 taps: p1:Forest#6
 T36 p1 adds {G} (p1:Forest#6)
+T36 p1 taps p1:Forest#6 for mana
 T36 p1 casts Centaur Courser
 T36 resolves: Centaur Courser
 T36 moves: Centaur Courser, stack -> battlefield
@@ -1947,28 +2220,40 @@ T37 untaps: p2:Forest#9
 T37 untaps: p2:Forest#10
 T37 taps: p2:Forest#6
 T37 p2 adds {G} (p2:Forest#6)
+T37 p2 taps p2:Forest#6 for mana
 T37 taps: p2:Forest#8
 T37 p2 adds {G} (p2:Forest#8)
+T37 p2 taps p2:Forest#8 for mana
 T37 taps: p2:Forest#1
 T37 p2 adds {G} (p2:Forest#1)
+T37 p2 taps p2:Forest#1 for mana
 T37 taps: p2:Llanowar Elves#1
 T37 p2 adds {G} (p2:Llanowar Elves#1)
+T37 p2 taps p2:Llanowar Elves#1 for mana
 T37 taps: p2:Forest#10
 T37 p2 adds {G} (p2:Forest#10)
+T37 p2 taps p2:Forest#10 for mana
 T37 taps: p2:Forest#3
 T37 p2 adds {G} (p2:Forest#3)
+T37 p2 taps p2:Forest#3 for mana
 T37 taps: p2:Llanowar Elves#2
 T37 p2 adds {G} (p2:Llanowar Elves#2)
+T37 p2 taps p2:Llanowar Elves#2 for mana
 T37 taps: p2:Forest#7
 T37 p2 adds {G} (p2:Forest#7)
+T37 p2 taps p2:Forest#7 for mana
 T37 taps: p2:Forest#4
 T37 p2 adds {G} (p2:Forest#4)
+T37 p2 taps p2:Forest#4 for mana
 T37 taps: p2:Forest#9
 T37 p2 adds {G} (p2:Forest#9)
+T37 p2 taps p2:Forest#9 for mana
 T37 taps: p2:Forest#5
 T37 p2 adds {G} (p2:Forest#5)
+T37 p2 taps p2:Forest#5 for mana
 T37 taps: p2:Forest#2
 T37 p2 adds {G} (p2:Forest#2)
+T37 p2 taps p2:Forest#2 for mana
 T37 p2's unspent {G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G} empties
 T37 moves: Spined Wurm, p2's library -> p2's hand
 T37 p2 draws
@@ -1978,6 +2263,7 @@ T37 moves: Forest, p2's hand -> battlefield
 T37 p2 plays p2:Forest#11
 T37 taps: p2:Forest#11
 T37 p2 adds {G} (p2:Forest#11)
+T37 p2 taps p2:Forest#11 for mana
 T37 moves: Grizzly Bears, p2's hand -> stack
 T37 p2 cancels casting Grizzly Bears
 T37 moves: Giant Spider, p2's hand -> stack
@@ -2015,48 +2301,64 @@ T38 untaps: p1:Forest#9
 T38 untaps: p1:Forest#10
 T38 taps: p1:Forest#10
 T38 p1 adds {G} (p1:Forest#10)
+T38 p1 taps p1:Forest#10 for mana
 T38 taps: p1:Llanowar Elves#1
 T38 p1 adds {G} (p1:Llanowar Elves#1)
+T38 p1 taps p1:Llanowar Elves#1 for mana
 T38 taps: p1:Forest#6
 T38 p1 adds {G} (p1:Forest#6)
+T38 p1 taps p1:Forest#6 for mana
 T38 taps: p1:Forest#9
 T38 p1 adds {G} (p1:Forest#9)
+T38 p1 taps p1:Forest#9 for mana
 T38 taps: p1:Forest#2
 T38 p1 adds {G} (p1:Forest#2)
+T38 p1 taps p1:Forest#2 for mana
 T38 taps: p1:Forest#3
 T38 p1 adds {G} (p1:Forest#3)
+T38 p1 taps p1:Forest#3 for mana
 T38 taps: p1:Forest#5
 T38 p1 adds {G} (p1:Forest#5)
+T38 p1 taps p1:Forest#5 for mana
 T38 taps: p1:Forest#7
 T38 p1 adds {G} (p1:Forest#7)
+T38 p1 taps p1:Forest#7 for mana
 T38 p1's unspent {G}{G}{G}{G}{G}{G}{G}{G} empties
 T38 moves: Giant Spider, p1's library -> p1's hand
 T38 p1 draws
 T38 moves: Spined Wurm, p1's hand -> stack
 T38 taps: p1:Forest#1
 T38 p1 adds {G} (p1:Forest#1)
+T38 p1 taps p1:Forest#1 for mana
 T38 taps: p1:Forest#4
 T38 p1 adds {G} (p1:Forest#4)
+T38 p1 taps p1:Forest#4 for mana
 T38 taps: p1:Forest#8
 T38 p1 adds {G} (p1:Forest#8)
+T38 p1 taps p1:Forest#8 for mana
 T38 taps: p1:Llanowar Elves#2
 T38 p1 adds {G} (p1:Llanowar Elves#2)
+T38 p1 taps p1:Llanowar Elves#2 for mana
 T38 p1 cancels casting Spined Wurm
 T38 taps: p1:Forest#1
 T38 p1 adds {G} (p1:Forest#1)
+T38 p1 taps p1:Forest#1 for mana
 T38 p1's unspent {G} empties
 T38 taps: p1:Grizzly Bears
 T38 p1 attack: p1:Grizzly Bears -> p2
 T38 p2 block: nothing
 T38 taps: p1:Forest#8
 T38 p1 adds {G} (p1:Forest#8)
+T38 p1 taps p1:Forest#8 for mana
 T38 taps: p1:Llanowar Elves#2
 T38 p1 adds {G} (p1:Llanowar Elves#2)
+T38 p1 taps p1:Llanowar Elves#2 for mana
 T38 p1's unspent {G}{G} empties
 T38 combat damage: p1:Grizzly Bears -> p2 2
 T38 p2 loses 2 life
 T38 taps: p1:Forest#4
 T38 p1 adds {G} (p1:Forest#4)
+T38 p1 taps p1:Forest#4 for mana
 T38 p1's unspent {G} empties
 T38 moves: Giant Spider, p1's hand -> stack
 T38 p1 cancels casting Giant Spider
@@ -2080,27 +2382,36 @@ T39 untaps: p2:Craw Wurm
 T39 untaps: p2:Forest#11
 T39 taps: p2:Forest#8
 T39 p2 adds {G} (p2:Forest#8)
+T39 p2 taps p2:Forest#8 for mana
 T39 p2's unspent {G} empties
 T39 moves: Grizzly Bears, p2's library -> p2's hand
 T39 p2 draws
 T39 taps: p2:Forest#2
 T39 p2 adds {G} (p2:Forest#2)
+T39 p2 taps p2:Forest#2 for mana
 T39 taps: p2:Forest#1
 T39 p2 adds {G} (p2:Forest#1)
+T39 p2 taps p2:Forest#1 for mana
 T39 p2's unspent {G}{G} empties
 T39 taps: p2:Forest#5
 T39 p2 adds {G} (p2:Forest#5)
+T39 p2 taps p2:Forest#5 for mana
 T39 moves: Giant Spider, p2's hand -> stack
 T39 taps: p2:Forest#3
 T39 p2 adds {G} (p2:Forest#3)
+T39 p2 taps p2:Forest#3 for mana
 T39 taps: p2:Llanowar Elves#1
 T39 p2 adds {G} (p2:Llanowar Elves#1)
+T39 p2 taps p2:Llanowar Elves#1 for mana
 T39 taps: p2:Forest#7
 T39 p2 adds {G} (p2:Forest#7)
+T39 p2 taps p2:Forest#7 for mana
 T39 taps: p2:Forest#11
 T39 p2 adds {G} (p2:Forest#11)
+T39 p2 taps p2:Forest#11 for mana
 T39 taps: p2:Forest#10
 T39 p2 adds {G} (p2:Forest#10)
+T39 p2 taps p2:Forest#10 for mana
 T39 p2 casts Giant Spider
 T39 resolves: Giant Spider
 T39 moves: Giant Spider, stack -> battlefield
@@ -2111,24 +2422,32 @@ T39 moves: Grizzly Bears, stack -> battlefield
 T39 moves: Spined Wurm, p2's hand -> stack
 T39 taps: p2:Forest#4
 T39 p2 adds {G} (p2:Forest#4)
+T39 p2 taps p2:Forest#4 for mana
 T39 taps: p2:Forest#6
 T39 p2 adds {G} (p2:Forest#6)
+T39 p2 taps p2:Forest#6 for mana
 T39 taps: p2:Forest#9
 T39 p2 adds {G} (p2:Forest#9)
+T39 p2 taps p2:Forest#9 for mana
 T39 p2 cancels casting Spined Wurm
 T39 taps: p2:Llanowar Elves#2
 T39 p2 adds {G} (p2:Llanowar Elves#2)
+T39 p2 taps p2:Llanowar Elves#2 for mana
 T39 taps: p2:Forest#9
 T39 p2 adds {G} (p2:Forest#9)
+T39 p2 taps p2:Forest#9 for mana
 T39 taps: p2:Forest#4
 T39 p2 adds {G} (p2:Forest#4)
+T39 p2 taps p2:Forest#4 for mana
 T39 moves: Spined Wurm, p2's hand -> stack
 T39 taps: p2:Forest#6
 T39 p2 adds {G} (p2:Forest#6)
+T39 p2 taps p2:Forest#6 for mana
 T39 p2 cancels casting Spined Wurm
 T39 moves: Grizzly Bears, p2's hand -> stack
 T39 taps: p2:Forest#6
 T39 p2 adds {G} (p2:Forest#6)
+T39 p2 taps p2:Forest#6 for mana
 T39 p2 casts Grizzly Bears
 T39 resolves: Grizzly Bears
 T39 moves: Grizzly Bears, stack -> battlefield
@@ -2152,35 +2471,47 @@ T40 untaps: p1:Forest#9
 T40 untaps: p1:Forest#10
 T40 taps: p1:Forest#9
 T40 p1 adds {G} (p1:Forest#9)
+T40 p1 taps p1:Forest#9 for mana
 T40 taps: p1:Forest#1
 T40 p1 adds {G} (p1:Forest#1)
+T40 p1 taps p1:Forest#1 for mana
 T40 taps: p1:Llanowar Elves#1
 T40 p1 adds {G} (p1:Llanowar Elves#1)
+T40 p1 taps p1:Llanowar Elves#1 for mana
 T40 taps: p1:Forest#2
 T40 p1 adds {G} (p1:Forest#2)
+T40 p1 taps p1:Forest#2 for mana
 T40 taps: p1:Forest#6
 T40 p1 adds {G} (p1:Forest#6)
+T40 p1 taps p1:Forest#6 for mana
 T40 taps: p1:Llanowar Elves#2
 T40 p1 adds {G} (p1:Llanowar Elves#2)
+T40 p1 taps p1:Llanowar Elves#2 for mana
 T40 p1's unspent {G}{G}{G}{G}{G}{G} empties
 T40 moves: Forest, p1's library -> p1's hand
 T40 p1 draws
 T40 taps: p1:Forest#5
 T40 p1 adds {G} (p1:Forest#5)
+T40 p1 taps p1:Forest#5 for mana
 T40 taps: p1:Forest#10
 T40 p1 adds {G} (p1:Forest#10)
+T40 p1 taps p1:Forest#10 for mana
 T40 p1's unspent {G}{G} empties
 T40 taps: p1:Forest#8
 T40 p1 adds {G} (p1:Forest#8)
+T40 p1 taps p1:Forest#8 for mana
 T40 p1's unspent {G} empties
 T40 taps: p1:Forest#7
 T40 p1 adds {G} (p1:Forest#7)
+T40 p1 taps p1:Forest#7 for mana
 T40 p1's unspent {G} empties
 T40 p1 attack: nothing
 T40 taps: p1:Forest#3
 T40 p1 adds {G} (p1:Forest#3)
+T40 p1 taps p1:Forest#3 for mana
 T40 taps: p1:Forest#4
 T40 p1 adds {G} (p1:Forest#4)
+T40 p1 taps p1:Forest#4 for mana
 T40 p1's unspent {G}{G} empties
 T40 moves: Spined Wurm, p1's hand -> stack
 T40 p1 cancels casting Spined Wurm
@@ -2205,10 +2536,12 @@ T40 p1 cancels casting Giant Spider
 T40 moves: Giant Spider, p1's hand -> stack
 T40 taps: p1:Forest#11
 T40 p1 adds {G} (p1:Forest#11)
+T40 p1 taps p1:Forest#11 for mana
 T40 p1 cancels casting Giant Spider
 T40 moves: Giant Spider, p1's hand -> stack
 T40 taps: p1:Forest#11
 T40 p1 adds {G} (p1:Forest#11)
+T40 p1 taps p1:Forest#11 for mana
 T40 p1 cancels casting Giant Spider
 T40 moves: Spined Wurm, p1's hand -> stack
 T40 p1 cancels casting Spined Wurm
@@ -2230,28 +2563,40 @@ T41 untaps: p2:Forest#10
 T41 untaps: p2:Forest#11
 T41 taps: p2:Forest#5
 T41 p2 adds {G} (p2:Forest#5)
+T41 p2 taps p2:Forest#5 for mana
 T41 taps: p1:Forest#11
 T41 p1 adds {G} (p1:Forest#11)
+T41 p1 taps p1:Forest#11 for mana
 T41 taps: p2:Forest#2
 T41 p2 adds {G} (p2:Forest#2)
+T41 p2 taps p2:Forest#2 for mana
 T41 taps: p2:Llanowar Elves#2
 T41 p2 adds {G} (p2:Llanowar Elves#2)
+T41 p2 taps p2:Llanowar Elves#2 for mana
 T41 taps: p2:Forest#4
 T41 p2 adds {G} (p2:Forest#4)
+T41 p2 taps p2:Forest#4 for mana
 T41 taps: p2:Forest#6
 T41 p2 adds {G} (p2:Forest#6)
+T41 p2 taps p2:Forest#6 for mana
 T41 taps: p2:Forest#3
 T41 p2 adds {G} (p2:Forest#3)
+T41 p2 taps p2:Forest#3 for mana
 T41 taps: p2:Forest#10
 T41 p2 adds {G} (p2:Forest#10)
+T41 p2 taps p2:Forest#10 for mana
 T41 taps: p2:Forest#11
 T41 p2 adds {G} (p2:Forest#11)
+T41 p2 taps p2:Forest#11 for mana
 T41 taps: p2:Forest#7
 T41 p2 adds {G} (p2:Forest#7)
+T41 p2 taps p2:Forest#7 for mana
 T41 taps: p2:Forest#8
 T41 p2 adds {G} (p2:Forest#8)
+T41 p2 taps p2:Forest#8 for mana
 T41 taps: p2:Forest#1
 T41 p2 adds {G} (p2:Forest#1)
+T41 p2 taps p2:Forest#1 for mana
 T41 p2's unspent {G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G} empties
 T41 p1's unspent {G} empties
 T41 moves: Giant Growth, p2's library -> p2's hand
@@ -2259,20 +2604,25 @@ T41 p2 draws
 T41 moves: Spined Wurm, p2's hand -> stack
 T41 taps: p2:Llanowar Elves#1
 T41 p2 adds {G} (p2:Llanowar Elves#1)
+T41 p2 taps p2:Llanowar Elves#1 for mana
 T41 taps: p2:Forest#9
 T41 p2 adds {G} (p2:Forest#9)
+T41 p2 taps p2:Forest#9 for mana
 T41 p2 cancels casting Spined Wurm
 T41 moves: Giant Growth, p2's hand -> stack
 T41 taps: p2:Forest#9
 T41 p2 adds {G} (p2:Forest#9)
+T41 p2 taps p2:Forest#9 for mana
 T41 p2 cancels casting Giant Growth
 T41 taps: p2:Llanowar Elves#1
 T41 p2 adds {G} (p2:Llanowar Elves#1)
+T41 p2 taps p2:Llanowar Elves#1 for mana
 T41 moves: Giant Growth, p2's hand -> stack
 T41 p2 cancels casting Giant Growth
 T41 moves: Giant Growth, p2's hand -> stack
 T41 taps: p2:Forest#9
 T41 p2 adds {G} (p2:Forest#9)
+T41 p2 taps p2:Forest#9 for mana
 T41 p2 casts Giant Growth
 T41 effect: p2:Craw Wurm +3/+3 until end of turn
 T41 resolves: Giant Growth
@@ -2302,49 +2652,66 @@ T42 untaps: p1:Forest#10
 T42 untaps: p1:Forest#11
 T42 taps: p1:Llanowar Elves#1
 T42 p1 adds {G} (p1:Llanowar Elves#1)
+T42 p1 taps p1:Llanowar Elves#1 for mana
 T42 taps: p1:Forest#8
 T42 p1 adds {G} (p1:Forest#8)
+T42 p1 taps p1:Forest#8 for mana
 T42 taps: p1:Forest#2
 T42 p1 adds {G} (p1:Forest#2)
+T42 p1 taps p1:Forest#2 for mana
 T42 taps: p1:Forest#7
 T42 p1 adds {G} (p1:Forest#7)
+T42 p1 taps p1:Forest#7 for mana
 T42 taps: p1:Forest#6
 T42 p1 adds {G} (p1:Forest#6)
+T42 p1 taps p1:Forest#6 for mana
 T42 taps: p1:Llanowar Elves#2
 T42 p1 adds {G} (p1:Llanowar Elves#2)
+T42 p1 taps p1:Llanowar Elves#2 for mana
 T42 taps: p1:Forest#9
 T42 p1 adds {G} (p1:Forest#9)
+T42 p1 taps p1:Forest#9 for mana
 T42 taps: p1:Forest#11
 T42 p1 adds {G} (p1:Forest#11)
+T42 p1 taps p1:Forest#11 for mana
 T42 taps: p1:Forest#4
 T42 p1 adds {G} (p1:Forest#4)
+T42 p1 taps p1:Forest#4 for mana
 T42 p1's unspent {G}{G}{G}{G}{G}{G}{G}{G}{G} empties
 T42 moves: Forest, p1's library -> p1's hand
 T42 p1 draws
 T42 moves: Spined Wurm, p1's hand -> stack
 T42 taps: p1:Forest#1
 T42 p1 adds {G} (p1:Forest#1)
+T42 p1 taps p1:Forest#1 for mana
 T42 taps: p1:Forest#10
 T42 p1 adds {G} (p1:Forest#10)
+T42 p1 taps p1:Forest#10 for mana
 T42 taps: p1:Forest#5
 T42 p1 adds {G} (p1:Forest#5)
+T42 p1 taps p1:Forest#5 for mana
 T42 taps: p1:Forest#3
 T42 p1 adds {G} (p1:Forest#3)
+T42 p1 taps p1:Forest#3 for mana
 T42 p1 cancels casting Spined Wurm
 T42 taps: p1:Forest#10
 T42 p1 adds {G} (p1:Forest#10)
+T42 p1 taps p1:Forest#10 for mana
 T42 moves: Forest, p1's hand -> battlefield
 T42 p1 plays p1:Forest#12
 T42 taps: p1:Forest#3
 T42 p1 adds {G} (p1:Forest#3)
+T42 p1 taps p1:Forest#3 for mana
 T42 moves: Giant Spider, p1's hand -> stack
 T42 taps: p1:Forest#1
 T42 p1 adds {G} (p1:Forest#1)
+T42 p1 taps p1:Forest#1 for mana
 T42 p1 cancels casting Giant Spider
 T42 p1's unspent {G}{G} empties
 T42 p1 attack: nothing
 T42 taps: p1:Forest#1
 T42 p1 adds {G} (p1:Forest#1)
+T42 p1 taps p1:Forest#1 for mana
 T42 p1's unspent {G} empties
 T43 turn 43 begins (p2)
 T43 untaps: p2:Forest#1
@@ -2363,34 +2730,49 @@ T43 untaps: p2:Forest#11
 T43 untaps: p2:Giant Spider
 T43 taps: p2:Forest#8
 T43 p2 adds {G} (p2:Forest#8)
+T43 p2 taps p2:Forest#8 for mana
 T43 taps: p2:Forest#7
 T43 p2 adds {G} (p2:Forest#7)
+T43 p2 taps p2:Forest#7 for mana
 T43 taps: p1:Forest#5
 T43 p1 adds {G} (p1:Forest#5)
+T43 p1 taps p1:Forest#5 for mana
 T43 taps: p1:Forest#12
 T43 p1 adds {G} (p1:Forest#12)
+T43 p1 taps p1:Forest#12 for mana
 T43 taps: p2:Forest#1
 T43 p2 adds {G} (p2:Forest#1)
+T43 p2 taps p2:Forest#1 for mana
 T43 taps: p2:Forest#6
 T43 p2 adds {G} (p2:Forest#6)
+T43 p2 taps p2:Forest#6 for mana
 T43 taps: p2:Forest#2
 T43 p2 adds {G} (p2:Forest#2)
+T43 p2 taps p2:Forest#2 for mana
 T43 taps: p2:Forest#3
 T43 p2 adds {G} (p2:Forest#3)
+T43 p2 taps p2:Forest#3 for mana
 T43 taps: p2:Llanowar Elves#2
 T43 p2 adds {G} (p2:Llanowar Elves#2)
+T43 p2 taps p2:Llanowar Elves#2 for mana
 T43 taps: p2:Llanowar Elves#1
 T43 p2 adds {G} (p2:Llanowar Elves#1)
+T43 p2 taps p2:Llanowar Elves#1 for mana
 T43 taps: p2:Forest#10
 T43 p2 adds {G} (p2:Forest#10)
+T43 p2 taps p2:Forest#10 for mana
 T43 taps: p2:Forest#5
 T43 p2 adds {G} (p2:Forest#5)
+T43 p2 taps p2:Forest#5 for mana
 T43 taps: p2:Forest#11
 T43 p2 adds {G} (p2:Forest#11)
+T43 p2 taps p2:Forest#11 for mana
 T43 taps: p2:Forest#4
 T43 p2 adds {G} (p2:Forest#4)
+T43 p2 taps p2:Forest#4 for mana
 T43 taps: p2:Forest#9
 T43 p2 adds {G} (p2:Forest#9)
+T43 p2 taps p2:Forest#9 for mana
 T43 p2's unspent {G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G}{G} empties
 T43 p1's unspent {G}{G} empties
 T43 moves: Grizzly Bears, p2's library -> p2's hand
@@ -2430,42 +2812,56 @@ T44 untaps: p1:Forest#11
 T44 untaps: p1:Forest#12
 T44 taps: p1:Llanowar Elves#1
 T44 p1 adds {G} (p1:Llanowar Elves#1)
+T44 p1 taps p1:Llanowar Elves#1 for mana
 T44 taps: p1:Forest#5
 T44 p1 adds {G} (p1:Forest#5)
+T44 p1 taps p1:Forest#5 for mana
 T44 p1's unspent {G}{G} empties
 T44 moves: Craw Wurm, p1's library -> p1's hand
 T44 p1 draws
 T44 taps: p1:Forest#12
 T44 p1 adds {G} (p1:Forest#12)
+T44 p1 taps p1:Forest#12 for mana
 T44 taps: p1:Forest#1
 T44 p1 adds {G} (p1:Forest#1)
+T44 p1 taps p1:Forest#1 for mana
 T44 taps: p1:Forest#11
 T44 p1 adds {G} (p1:Forest#11)
+T44 p1 taps p1:Forest#11 for mana
 T44 taps: p1:Forest#7
 T44 p1 adds {G} (p1:Forest#7)
+T44 p1 taps p1:Forest#7 for mana
 T44 p1's unspent {G}{G}{G}{G} empties
 T44 taps: p1:Forest#8
 T44 p1 adds {G} (p1:Forest#8)
+T44 p1 taps p1:Forest#8 for mana
 T44 taps: p1:Forest#3
 T44 p1 adds {G} (p1:Forest#3)
+T44 p1 taps p1:Forest#3 for mana
 T44 taps: p1:Forest#2
 T44 p1 adds {G} (p1:Forest#2)
+T44 p1 taps p1:Forest#2 for mana
 T44 moves: Giant Spider, p1's hand -> stack
 T44 p1 cancels casting Giant Spider
 T44 p1's unspent {G}{G}{G} empties
 T44 taps: p1:Forest#6
 T44 p1 adds {G} (p1:Forest#6)
+T44 p1 taps p1:Forest#6 for mana
 T44 taps: p1:Forest#4
 T44 p1 adds {G} (p1:Forest#4)
+T44 p1 taps p1:Forest#4 for mana
 T44 taps: p1:Llanowar Elves#2
 T44 p1 adds {G} (p1:Llanowar Elves#2)
+T44 p1 taps p1:Llanowar Elves#2 for mana
 T44 taps: p1:Forest#9
 T44 p1 adds {G} (p1:Forest#9)
+T44 p1 taps p1:Forest#9 for mana
 T44 p1's unspent {G}{G}{G}{G} empties
 T44 taps: p1:Centaur Courser
 T44 p1 attack: p1:Centaur Courser -> p2
 T44 taps: p1:Forest#10
 T44 p1 adds {G} (p1:Forest#10)
+T44 p1 taps p1:Forest#10 for mana
 T44 p1's unspent {G} empties
 T44 p2 block: p2:Grizzly Bears#1 -> p1:Centaur Courser, p2:Grizzly Bears#2 -> p1:Centaur Courser
 T44 combat damage: p1:Centaur Courser -> p2:Grizzly Bears#2 3
@@ -2494,33 +2890,45 @@ T45 untaps: p2:Craw Wurm
 T45 untaps: p2:Forest#11
 T45 taps: p2:Forest#4
 T45 p2 adds {G} (p2:Forest#4)
+T45 p2 taps p2:Forest#4 for mana
 T45 taps: p2:Forest#3
 T45 p2 adds {G} (p2:Forest#3)
+T45 p2 taps p2:Forest#3 for mana
 T45 taps: p2:Forest#1
 T45 p2 adds {G} (p2:Forest#1)
+T45 p2 taps p2:Forest#1 for mana
 T45 taps: p2:Forest#7
 T45 p2 adds {G} (p2:Forest#7)
+T45 p2 taps p2:Forest#7 for mana
 T45 taps: p2:Forest#6
 T45 p2 adds {G} (p2:Forest#6)
+T45 p2 taps p2:Forest#6 for mana
 T45 p2's unspent {G}{G}{G}{G}{G} empties
 T45 moves: Forest, p2's library -> p2's hand
 T45 p2 draws
 T45 taps: p2:Forest#10
 T45 p2 adds {G} (p2:Forest#10)
+T45 p2 taps p2:Forest#10 for mana
 T45 taps: p2:Forest#11
 T45 p2 adds {G} (p2:Forest#11)
+T45 p2 taps p2:Forest#11 for mana
 T45 p2's unspent {G}{G} empties
 T45 moves: Spined Wurm, p2's hand -> stack
 T45 taps: p2:Forest#8
 T45 p2 adds {G} (p2:Forest#8)
+T45 p2 taps p2:Forest#8 for mana
 T45 taps: p2:Llanowar Elves#1
 T45 p2 adds {G} (p2:Llanowar Elves#1)
+T45 p2 taps p2:Llanowar Elves#1 for mana
 T45 taps: p2:Forest#5
 T45 p2 adds {G} (p2:Forest#5)
+T45 p2 taps p2:Forest#5 for mana
 T45 taps: p2:Llanowar Elves#2
 T45 p2 adds {G} (p2:Llanowar Elves#2)
+T45 p2 taps p2:Llanowar Elves#2 for mana
 T45 taps: p2:Forest#2
 T45 p2 adds {G} (p2:Forest#2)
+T45 p2 taps p2:Forest#2 for mana
 T45 p2 casts Spined Wurm
 T45 resolves: Spined Wurm
 T45 moves: Spined Wurm, stack -> battlefield
@@ -2531,6 +2939,7 @@ T45 taps: p2:Giant Spider
 T45 p2 attack: p2:Centaur Courser -> p1, p2:Grizzly Bears -> p1, p2:Craw Wurm -> p1, p2:Giant Spider -> p1
 T45 taps: p2:Forest#9
 T45 p2 adds {G} (p2:Forest#9)
+T45 p2 taps p2:Forest#9 for mana
 T45 p2's unspent {G} empties
 T45 p1 block: nothing
 T45 combat damage: p2:Centaur Courser -> p1 3

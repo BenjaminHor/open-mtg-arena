@@ -51,6 +51,8 @@ export const SHROUDED = "test-shrouded";
 /** Not real cards: Soul Warden's and Howling Mine's triggered abilities on test bodies, for trigger unit tests. */
 export const WARDEN = "test-warden";
 export const MINE = "test-mine";
+/** Not a real card: Lightwielder Paladin's "target ... that player controls" on a test body, unit-testing CR 608.2b. */
+export const THAT_PLAYERS = "test-that-players";
 
 /** A test creature with only keywords: a vanilla body for combat tests. */
 function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
@@ -497,6 +499,20 @@ export const TEST_CARDS: CardDatabase = {
           when: { kind: "anotherEnters", filter: { types: ["creature"] } },
           targets: [],
           effects: [{ op: "gainLife", who: "you", amount: 1 }],
+        },
+      ],
+    },
+  },
+  [THAT_PLAYERS]: {
+    ...keywordCreature(THAT_PLAYERS, "That Player's", [2, 2], []),
+    def: {
+      name: "That Player's",
+      oracle: "Whenever this creature deals combat damage to a player, destroy target creature that player controls.",
+      triggers: [
+        {
+          when: { kind: "selfDealsDamageToPlayer", player: "anyPlayer", combatOnly: true },
+          targets: [{ kind: "permanent", filter: { types: ["creature"], controller: "triggeringPlayer" } }],
+          effects: [{ op: "destroy", of: { target: 0 } }],
         },
       ],
     },

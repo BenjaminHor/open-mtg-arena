@@ -186,17 +186,21 @@ T1 p2 attack: nothing
 T1 moves: Angel's Mercy, p2's hand -> stack
 T1 taps: p2:Swamp
 T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
 T1 p2 cancels casting Angel's Mercy
 T1 moves: Angel's Mercy, p2's hand -> stack
 T1 taps: p2:Swamp
 T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
 T1 p2 cancels casting Angel's Mercy
 T1 moves: Angel's Mercy, p2's hand -> stack
 T1 taps: p2:Swamp
 T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
 T1 p2 cancels casting Angel's Mercy
 T1 taps: p2:Swamp
 T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
 T1 p2's unspent {B} empties
 T1 moves: Angel's Mercy, p2's hand -> stack
 T1 p2 cancels casting Angel's Mercy
@@ -233,17 +237,21 @@ T3 untaps: p2:Swamp
 T3 moves: Angel's Mercy, p2's hand -> stack
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2 cancels casting Angel's Mercy
 T3 moves: Angel's Mercy, p2's hand -> stack
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2 cancels casting Angel's Mercy
 T3 moves: Angel's Mercy, p2's hand -> stack
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2 cancels casting Angel's Mercy
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2's unspent {B} empties
 T3 moves: Island, p2's library -> p2's hand
 T3 p2 draws
@@ -253,12 +261,14 @@ T3 moves: Island, p2's hand -> battlefield
 T3 p2 plays p2:Island
 T3 taps: p2:Island
 T3 p2 adds {U} (p2:Island)
+T3 p2 taps p2:Island for mana
 T3 moves: Zephyr Sprite, p2's hand -> stack
 T3 p2 casts Zephyr Sprite
 T3 moves: Angel's Mercy, p2's hand -> stack
 T3 p2 cancels casting Angel's Mercy
 T3 taps: p1:Mountain
 T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
 T3 moves: Cancel, p2's hand -> stack
 T3 p2 cancels casting Cancel
 T3 moves: Cancel, p2's hand -> stack

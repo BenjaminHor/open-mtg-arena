@@ -179,8 +179,9 @@ function dividedEffect(
     if (effect.op === "dealDamage" && effect.divided === "asYouChoose") {
       if (typeof effect.to !== "object" || !("target" in effect.to))
         throw new Error("A divided effect divides among targets");
-      // Divided as it's cast: a number or X, never a count, which is worked out on resolution (definition-problems.ts).
-      if (typeof effect.amount === "object") throw new Error("A divided amount can't be a count");
+      // Divided as it's cast: a number or X, never a count or "that much", worked out on resolution (definition-problems.ts).
+      if (typeof effect.amount === "object" || effect.amount === "thatMuch")
+        throw new Error("A divided amount is a number or X");
       return { instance: effect.to.target, amount: amountOf(effect.amount, choicesOf(state, id).x) };
     }
   }

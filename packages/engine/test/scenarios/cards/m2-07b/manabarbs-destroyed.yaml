@@ -1,0 +1,32 @@
+name: Manabarbs destroyed with triggers on the stack still deals their damage, as their source; paying for Naturalize triggers it too
+rules: [CR 113.7a, CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest]
+  p2:
+    battlefield: [Manabarbs, Forest, Forest]
+    hand: [Naturalize]
+steps:
+  - p1 activate: Forest
+  - expect:
+      stack: [Manabarbs ability]
+  - p1 pass: once
+  - p2 cast: Naturalize
+    targets: [p2:Manabarbs]
+    pay: auto
+  - expect:
+      stack: [Manabarbs ability, Naturalize, Manabarbs ability, Manabarbs ability]
+  - all pass: once
+  - all pass: once
+  - expect:
+      p2.life: 18
+      stack: [Manabarbs ability, Naturalize]
+  - all pass: once
+  - expect:
+      p2.graveyard: [Manabarbs, Naturalize]
+      stack: [Manabarbs ability]
+  - all pass: once
+  - expect:
+      p1.life: 19
+      stack: []

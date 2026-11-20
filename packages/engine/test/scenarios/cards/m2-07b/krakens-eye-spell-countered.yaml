@@ -1,0 +1,32 @@
+name: Kraken's Eye's trigger still resolves after its spell is countered; the blue counterspell triggers it again
+rules: [CR 601.2i, CR 603.3, CR 701.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Kraken's Eye, Island, Island, Island]
+    hand: [Divination]
+  p2:
+    battlefield: [Island, Island]
+    hand: [Negate]
+steps:
+  - p1 cast: Divination
+    pay: auto
+  - expect:
+      stack: [Divination, Kraken's Eye ability]
+  - p1 pass: once
+  - p2 cast: Negate
+    targets: [spell:p1:Divination]
+    pay: auto
+  - expect:
+      stack: [Divination, Kraken's Eye ability, Negate, Kraken's Eye ability]
+  - all pass: once
+  - p1 choose: yes
+  - all pass: once
+  - expect:
+      p1.graveyard: [Divination]
+      stack: [Kraken's Eye ability]
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      p1.life: 22
+      stack: []

@@ -1,0 +1,16 @@
+name: Angel's Feather triggers on a white spell
+rules: [CR 601.2i, CR 603.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Angel's Feather, Plains, Plains, Plains, Plains]
+    hand: [Angel's Mercy]
+steps:
+  - p1 cast: Angel's Mercy
+    pay: auto
+  - expect:
+      stack: [Angel's Mercy, Angel's Feather ability]
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      p1.life: 21

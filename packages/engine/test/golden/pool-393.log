@@ -71,9 +71,11 @@ T2 p1 plays p1:Mountain
 T2 moves: Acolyte of Xathrid, p1's hand -> stack
 T2 taps: p1:Mountain
 T2 p1 adds {R} (p1:Mountain)
+T2 p1 taps p1:Mountain for mana
 T2 p1 cancels casting Acolyte of Xathrid
 T2 taps: p1:Mountain
 T2 p1 adds {R} (p1:Mountain)
+T2 p1 taps p1:Mountain for mana
 T2 p1's unspent {R} empties
 T2 p1 attack: nothing
 T2 moves: Acolyte of Xathrid, p1's hand -> stack
@@ -92,6 +94,7 @@ T4 moves: Wind Drake, p1's library -> p1's hand
 T4 p1 draws
 T4 taps: p1:Mountain
 T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
 T4 moves: Goblin Piker, p1's hand -> stack
 T4 p1 cancels casting Goblin Piker
 T4 moves: Canyon Minotaur, p1's hand -> stack
@@ -100,6 +103,7 @@ T4 moves: Plains, p1's hand -> battlefield
 T4 p1 plays p1:Plains
 T4 taps: p1:Plains
 T4 p1 adds {W} (p1:Plains)
+T4 p1 taps p1:Plains for mana
 T4 moves: Canyon Minotaur, p1's hand -> stack
 T4 p1 cancels casting Canyon Minotaur
 T4 moves: Canyon Minotaur, p1's hand -> stack
@@ -122,8 +126,10 @@ T6 p1 draws
 T6 p1 attack: nothing
 T6 taps: p1:Plains
 T6 p1 adds {W} (p1:Plains)
+T6 p1 taps p1:Plains for mana
 T6 taps: p1:Mountain
 T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
 T6 p1's unspent {W}{R} empties
 T6 moves: Plains, p1's hand -> battlefield
 T6 p1 plays p1:Plains#2
@@ -131,6 +137,7 @@ T6 moves: Wind Drake, p1's hand -> stack
 T6 p1 cancels casting Wind Drake
 T6 taps: p1:Plains#2
 T6 p1 adds {W} (p1:Plains#2)
+T6 p1 taps p1:Plains#2 for mana
 T6 p1's unspent {W} empties
 T7 turn 7 begins (p2)
 T7 moves: Mountain, p2's library -> p2's hand
@@ -142,9 +149,11 @@ T7 p2 plays p2:Forest
 T7 moves: Nature's Spiral, p2's hand -> stack
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 p2 cancels casting Nature's Spiral
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 p2's unspent {G} empties
 T7 p2 attack: nothing
 T8 turn 8 begins (p1)
@@ -155,17 +164,21 @@ T8 moves: Cancel, p1's library -> p1's hand
 T8 p1 draws
 T8 taps: p1:Plains#1
 T8 p1 adds {W} (p1:Plains#1)
+T8 p1 taps p1:Plains#1 for mana
 T8 taps: p1:Mountain
 T8 p1 adds {R} (p1:Mountain)
+T8 p1 taps p1:Mountain for mana
 T8 p1's unspent {W}{R} empties
 T8 taps: p1:Plains#2
 T8 p1 adds {W} (p1:Plains#2)
+T8 p1 taps p1:Plains#2 for mana
 T8 p1's unspent {W} empties
 T8 p1 attack: nothing
 T9 turn 9 begins (p2)
 T9 untaps: p2:Forest
 T9 taps: p2:Forest
 T9 p2 adds {G} (p2:Forest)
+T9 p2 taps p2:Forest for mana
 T9 p2's unspent {G} empties
 T9 moves: Mountain, p2's library -> p2's hand
 T9 p2 draws
@@ -176,9 +189,11 @@ T9 p2 plays p2:Mountain
 T9 moves: Nature's Spiral, p2's hand -> stack
 T9 taps: p2:Mountain
 T9 p2 adds {R} (p2:Mountain)
+T9 p2 taps p2:Mountain for mana
 T9 p2 cancels casting Nature's Spiral
 T9 taps: p2:Mountain
 T9 p2 adds {R} (p2:Mountain)
+T9 p2 taps p2:Mountain for mana
 T9 p2's unspent {R} empties
 T9 p2 attack: nothing
 T9 moves: Horned Turtle, p2's hand -> stack
@@ -193,21 +208,26 @@ T10 moves: Mountain, p1's library -> p1's hand
 T10 p1 draws
 T10 taps: p1:Plains#1
 T10 p1 adds {W} (p1:Plains#1)
+T10 p1 taps p1:Plains#1 for mana
 T10 taps: p1:Plains#2
 T10 p1 adds {W} (p1:Plains#2)
+T10 p1 taps p1:Plains#2 for mana
 T10 p1's unspent {W}{W} empties
 T10 moves: Canyon Minotaur, p1's hand -> stack
 T10 p1 cancels casting Canyon Minotaur
 T10 taps: p1:Mountain
 T10 p1 adds {R} (p1:Mountain)
+T10 p1 taps p1:Mountain for mana
 T10 moves: Mountain, p1's hand -> battlefield
 T10 p1 plays p1:Mountain#2
 T10 moves: Acolyte of Xathrid, p1's hand -> stack
 T10 taps: p1:Mountain#2
 T10 p1 adds {R} (p1:Mountain#2)
+T10 p1 taps p1:Mountain#2 for mana
 T10 p1 cancels casting Acolyte of Xathrid
 T10 taps: p1:Mountain#2
 T10 p1 adds {R} (p1:Mountain#2)
+T10 p1 taps p1:Mountain#2 for mana
 T10 p1's unspent {R}{R} empties
 T10 p1 attack: nothing
 T11 turn 11 begins (p2)
@@ -215,6 +235,7 @@ T11 untaps: p2:Forest
 T11 untaps: p2:Mountain
 T11 taps: p2:Forest
 T11 p2 adds {G} (p2:Forest)
+T11 p2 taps p2:Forest for mana
 T11 p2's unspent {G} empties
 T11 moves: Mountain, p2's library -> p2's hand
 T11 p2 draws
@@ -222,10 +243,12 @@ T11 moves: Mountain, p2's hand -> battlefield
 T11 p2 plays p2:Mountain#2
 T11 taps: p2:Mountain#1
 T11 p2 adds {R} (p2:Mountain#1)
+T11 p2 taps p2:Mountain#1 for mana
 T11 p2's unspent {R} empties
 T11 p2 attack: nothing
 T11 taps: p2:Mountain#2
 T11 p2 adds {R} (p2:Mountain#2)
+T11 p2 taps p2:Mountain#2 for mana
 T11 p2's unspent {R} empties
 T12 turn 12 begins (p1)
 T12 untaps: p1:Mountain#1
@@ -236,14 +259,18 @@ T12 moves: Celestial Purge, p1's library -> p1's hand
 T12 p1 draws
 T12 taps: p1:Mountain#1
 T12 p1 adds {R} (p1:Mountain#1)
+T12 p1 taps p1:Mountain#1 for mana
 T12 taps: p1:Plains#1
 T12 p1 adds {W} (p1:Plains#1)
+T12 p1 taps p1:Plains#1 for mana
 T12 p1's unspent {W}{R} empties
 T12 moves: Goblin Piker, p1's hand -> stack
 T12 taps: p1:Mountain#2
 T12 p1 adds {R} (p1:Mountain#2)
+T12 p1 taps p1:Mountain#2 for mana
 T12 taps: p1:Plains#2
 T12 p1 adds {W} (p1:Plains#2)
+T12 p1 taps p1:Plains#2 for mana
 T12 p1 casts Goblin Piker
 T12 resolves: Goblin Piker
 T12 moves: Goblin Piker, stack -> battlefield
@@ -253,6 +280,7 @@ T12 moves: Wind Drake, p1's hand -> stack
 T12 p1 cancels casting Wind Drake
 T12 taps: p1:Mountain#3
 T12 p1 adds {R} (p1:Mountain#3)
+T12 p1 taps p1:Mountain#3 for mana
 T12 p1's unspent {R} empties
 T12 moves: Celestial Purge, p1's hand -> stack
 T12 p1 cancels casting Celestial Purge
@@ -269,13 +297,16 @@ T13 untaps: p2:Mountain#1
 T13 untaps: p2:Mountain#2
 T13 taps: p2:Mountain#1
 T13 p2 adds {R} (p2:Mountain#1)
+T13 p2 taps p2:Mountain#1 for mana
 T13 p2's unspent {R} empties
 T13 moves: Forest, p2's library -> p2's hand
 T13 p2 draws
 T13 taps: p2:Mountain#2
 T13 p2 adds {R} (p2:Mountain#2)
+T13 p2 taps p2:Mountain#2 for mana
 T13 taps: p2:Forest
 T13 p2 adds {G} (p2:Forest)
+T13 p2 taps p2:Forest for mana
 T13 p2's unspent {R}{G} empties
 T13 moves: Coral Merfolk, p2's hand -> stack
 T13 p2 cancels casting Coral Merfolk
@@ -283,6 +314,7 @@ T13 moves: Plains, p2's hand -> battlefield
 T13 p2 plays p2:Plains
 T13 taps: p2:Plains
 T13 p2 adds {W} (p2:Plains)
+T13 p2 taps p2:Plains for mana
 T13 p2's unspent {W} empties
 T13 p2 attack: nothing
 T13 moves: Celestial Purge, p1's hand -> stack
@@ -308,12 +340,16 @@ T14 p1 draws
 T14 moves: Celestial Purge, p1's hand -> stack
 T14 taps: p1:Plains#1
 T14 p1 adds {W} (p1:Plains#1)
+T14 p1 taps p1:Plains#1 for mana
 T14 taps: p1:Mountain#3
 T14 p1 adds {R} (p1:Mountain#3)
+T14 p1 taps p1:Mountain#3 for mana
 T14 taps: p1:Mountain#1
 T14 p1 adds {R} (p1:Mountain#1)
+T14 p1 taps p1:Mountain#1 for mana
 T14 taps: p1:Plains#2
 T14 p1 adds {W} (p1:Plains#2)
+T14 p1 taps p1:Plains#2 for mana
 T14 p1 casts Celestial Purge
 T14 moves: Goblin Piker, battlefield -> exile
 T14 resolves: Celestial Purge
@@ -322,6 +358,7 @@ T14 p1's unspent {R}{R} empties
 T14 p1 attack: nothing
 T14 taps: p1:Mountain#2
 T14 p1 adds {R} (p1:Mountain#2)
+T14 p1 taps p1:Mountain#2 for mana
 T14 p1's unspent {R} empties
 T15 turn 15 begins (p2)
 T15 untaps: p2:Forest
@@ -330,12 +367,16 @@ T15 untaps: p2:Mountain#2
 T15 untaps: p2:Plains
 T15 taps: p2:Mountain#1
 T15 p2 adds {R} (p2:Mountain#1)
+T15 p2 taps p2:Mountain#1 for mana
 T15 taps: p2:Plains
 T15 p2 adds {W} (p2:Plains)
+T15 p2 taps p2:Plains for mana
 T15 taps: p2:Forest
 T15 p2 adds {G} (p2:Forest)
+T15 p2 taps p2:Forest for mana
 T15 taps: p2:Mountain#2
 T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
 T15 p2's unspent {W}{R}{R}{G} empties
 T15 moves: Yawning Fissure, p2's library -> p2's hand
 T15 p2 draws
@@ -356,40 +397,51 @@ T16 moves: Forest, p1's hand -> battlefield
 T16 p1 plays p1:Forest
 T16 taps: p1:Plains#1
 T16 p1 adds {W} (p1:Plains#1)
+T16 p1 taps p1:Plains#1 for mana
 T16 p1's unspent {W} empties
 T16 taps: p1:Mountain#3
 T16 p1 adds {R} (p1:Mountain#3)
+T16 p1 taps p1:Mountain#3 for mana
 T16 p1's unspent {R} empties
 T16 p1 attack: nothing
 T16 taps: p1:Mountain#1
 T16 p1 adds {R} (p1:Mountain#1)
+T16 p1 taps p1:Mountain#1 for mana
 T16 p1's unspent {R} empties
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 p1's unspent {G} empties
 T16 moves: Canyon Minotaur, p1's hand -> stack
 T16 taps: p1:Plains#2
 T16 p1 adds {W} (p1:Plains#2)
+T16 p1 taps p1:Plains#2 for mana
 T16 taps: p1:Mountain#2
 T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
 T16 p1 cancels casting Canyon Minotaur
 T16 taps: p1:Plains#2
 T16 p1 adds {W} (p1:Plains#2)
+T16 p1 taps p1:Plains#2 for mana
 T16 moves: Wind Drake, p1's hand -> stack
 T16 taps: p1:Mountain#2
 T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
 T16 p1 cancels casting Wind Drake
 T16 moves: Wind Drake, p1's hand -> stack
 T16 taps: p1:Mountain#2
 T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
 T16 p1 cancels casting Wind Drake
 T16 moves: Acolyte of Xathrid, p1's hand -> stack
 T16 taps: p1:Mountain#2
 T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
 T16 p1 cancels casting Acolyte of Xathrid
 T16 moves: Acolyte of Xathrid, p1's hand -> stack
 T16 taps: p1:Mountain#2
 T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
 T16 p1 cancels casting Acolyte of Xathrid
 T16 p1's unspent {W} empties
 T17 turn 17 begins (p2)
@@ -401,29 +453,38 @@ T17 moves: Disorient, p2's library -> p2's hand
 T17 p2 draws
 T17 taps: p2:Plains
 T17 p2 adds {W} (p2:Plains)
+T17 p2 taps p2:Plains for mana
 T17 taps: p1:Mountain#2
 T17 p1 adds {R} (p1:Mountain#2)
+T17 p1 taps p1:Mountain#2 for mana
 T17 p2's unspent {W} empties
 T17 p1's unspent {R} empties
 T17 taps: p2:Mountain#2
 T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
 T17 moves: Forest, p2's hand -> battlefield
 T17 p2 plays p2:Forest#2
 T17 moves: Yawning Fissure, p2's hand -> stack
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
+T17 p2 taps p2:Forest#2 for mana
 T17 taps: p2:Mountain#1
 T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
 T17 taps: p2:Forest#1
 T17 p2 adds {G} (p2:Forest#1)
+T17 p2 taps p2:Forest#1 for mana
 T17 p2 cancels casting Yawning Fissure
 T17 p2's unspent {R} empties
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
+T17 p2 taps p2:Forest#2 for mana
 T17 taps: p2:Forest#1
 T17 p2 adds {G} (p2:Forest#1)
+T17 p2 taps p2:Forest#1 for mana
 T17 taps: p2:Mountain#1
 T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
 T17 p2's unspent {R}{G}{G} empties
 T17 p2 attack: nothing
 T17 moves: Coral Merfolk, p2's hand -> stack
@@ -437,20 +498,26 @@ T18 untaps: p1:Mountain#3
 T18 untaps: p1:Forest
 T18 taps: p1:Plains#1
 T18 p1 adds {W} (p1:Plains#1)
+T18 p1 taps p1:Plains#1 for mana
 T18 p1's unspent {W} empties
 T18 moves: Furnace Whelp, p1's library -> p1's hand
 T18 p1 draws
 T18 taps: p1:Forest
 T18 p1 adds {G} (p1:Forest)
+T18 p1 taps p1:Forest for mana
 T18 p1's unspent {G} empties
 T18 taps: p1:Mountain#3
 T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
 T18 taps: p1:Mountain#2
 T18 p1 adds {R} (p1:Mountain#2)
+T18 p1 taps p1:Mountain#2 for mana
 T18 taps: p1:Plains#2
 T18 p1 adds {W} (p1:Plains#2)
+T18 p1 taps p1:Plains#2 for mana
 T18 taps: p1:Mountain#1
 T18 p1 adds {R} (p1:Mountain#1)
+T18 p1 taps p1:Mountain#1 for mana
 T18 p1's unspent {W}{R}{R}{R} empties
 T18 p1 attack: nothing
 T19 turn 19 begins (p2)
@@ -463,18 +530,23 @@ T19 moves: Plains, p2's library -> p2's hand
 T19 p2 draws
 T19 taps: p2:Forest#2
 T19 p2 adds {G} (p2:Forest#2)
+T19 p2 taps p2:Forest#2 for mana
 T19 taps: p2:Forest#1
 T19 p2 adds {G} (p2:Forest#1)
+T19 p2 taps p2:Forest#1 for mana
 T19 p2's unspent {G}{G} empties
 T19 p2 attack: nothing
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 p2's unspent {R} empties
 T19 taps: p2:Plains
 T19 p2 adds {W} (p2:Plains)
+T19 p2 taps p2:Plains for mana
 T19 p2's unspent {W} empties
 T19 taps: p2:Mountain#1
 T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
 T19 p2's unspent {R} empties
 T19 moves: Mountain, p2's hand -> p2's graveyard
 T19 p2 discards Mountain
@@ -490,20 +562,26 @@ T20 p1 draws
 T20 p1 attack: nothing
 T20 taps: p1:Plains#2
 T20 p1 adds {W} (p1:Plains#2)
+T20 p1 taps p1:Plains#2 for mana
 T20 p1's unspent {W} empties
 T20 moves: Acolyte of Xathrid, p1's hand -> stack
 T20 taps: p1:Mountain#1
 T20 p1 adds {R} (p1:Mountain#1)
+T20 p1 taps p1:Mountain#1 for mana
 T20 taps: p1:Plains#1
 T20 p1 adds {W} (p1:Plains#1)
+T20 p1 taps p1:Plains#1 for mana
 T20 taps: p1:Mountain#2
 T20 p1 adds {R} (p1:Mountain#2)
+T20 p1 taps p1:Mountain#2 for mana
 T20 p1 cancels casting Acolyte of Xathrid
 T20 taps: p1:Mountain#3
 T20 p1 adds {R} (p1:Mountain#3)
+T20 p1 taps p1:Mountain#3 for mana
 T20 p1's unspent {R} empties
 T20 taps: p1:Mountain#2
 T20 p1 adds {R} (p1:Mountain#2)
+T20 p1 taps p1:Mountain#2 for mana
 T20 p1's unspent {R} empties
 T20 moves: Canyon Minotaur, p1's hand -> p1's graveyard
 T20 p1 discards Canyon Minotaur
@@ -520,51 +598,71 @@ T21 p2 plays p2:Plains#2
 T21 moves: Horned Turtle, p2's hand -> stack
 T21 taps: p2:Plains#2
 T21 p2 adds {W} (p2:Plains#2)
+T21 p2 taps p2:Plains#2 for mana
 T21 taps: p2:Plains#1
 T21 p2 adds {W} (p2:Plains#1)
+T21 p2 taps p2:Plains#1 for mana
 T21 taps: p2:Forest#1
 T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
 T21 taps: p2:Mountain#2
 T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 p2 cancels casting Horned Turtle
 T21 moves: Horned Turtle, p2's hand -> stack
 T21 taps: p2:Plains#2
 T21 p2 adds {W} (p2:Plains#2)
+T21 p2 taps p2:Plains#2 for mana
 T21 taps: p2:Forest#1
 T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
 T21 taps: p2:Plains#1
 T21 p2 adds {W} (p2:Plains#1)
+T21 p2 taps p2:Plains#1 for mana
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
 T21 p2 cancels casting Horned Turtle
 T21 taps: p1:Mountain#1
 T21 p1 adds {R} (p1:Mountain#1)
+T21 p1 taps p1:Mountain#1 for mana
 T21 taps: p1:Forest
 T21 p1 adds {G} (p1:Forest)
+T21 p1 taps p1:Forest for mana
 T21 taps: p1:Plains#1
 T21 p1 adds {W} (p1:Plains#1)
+T21 p1 taps p1:Plains#1 for mana
 T21 p1's unspent {W}{R}{G} empties
 T21 p2 attack: nothing
 T21 taps: p2:Forest#1
 T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
 T21 taps: p2:Plains#1
 T21 p2 adds {W} (p2:Plains#1)
+T21 p2 taps p2:Plains#1 for mana
 T21 p2's unspent {W}{G} empties
 T21 taps: p2:Mountain#2
 T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
 T21 p2's unspent {R}{G} empties
 T21 taps: p2:Plains#2
 T21 p2 adds {W} (p2:Plains#2)
+T21 p2 taps p2:Plains#2 for mana
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 p2's unspent {W}{R} empties
 T22 turn 22 begins (p1)
 T22 untaps: p1:Mountain#1
@@ -575,27 +673,34 @@ T22 untaps: p1:Mountain#3
 T22 untaps: p1:Forest
 T22 taps: p1:Plains#1
 T22 p1 adds {W} (p1:Plains#1)
+T22 p1 taps p1:Plains#1 for mana
 T22 p1's unspent {W} empties
 T22 moves: Mountain, p1's library -> p1's hand
 T22 p1 draws
 T22 taps: p1:Forest
 T22 p1 adds {G} (p1:Forest)
+T22 p1 taps p1:Forest for mana
 T22 p1's unspent {G} empties
 T22 taps: p1:Mountain#3
 T22 p1 adds {R} (p1:Mountain#3)
+T22 p1 taps p1:Mountain#3 for mana
 T22 taps: p1:Mountain#2
 T22 p1 adds {R} (p1:Mountain#2)
+T22 p1 taps p1:Mountain#2 for mana
 T22 taps: p1:Plains#2
 T22 p1 adds {W} (p1:Plains#2)
+T22 p1 taps p1:Plains#2 for mana
 T22 p1's unspent {W}{R}{R} empties
 T22 p1 attack: nothing
 T22 taps: p1:Mountain#1
 T22 p1 adds {R} (p1:Mountain#1)
+T22 p1 taps p1:Mountain#1 for mana
 T22 p1's unspent {R} empties
 T22 moves: Mountain, p1's hand -> battlefield
 T22 p1 plays p1:Mountain#4
 T22 taps: p1:Mountain#4
 T22 p1 adds {R} (p1:Mountain#4)
+T22 p1 taps p1:Mountain#4 for mana
 T22 moves: Furnace Whelp, p1's hand -> stack
 T22 p1 cancels casting Furnace Whelp
 T22 moves: Wind Drake, p1's hand -> stack
@@ -610,20 +715,26 @@ T23 untaps: p2:Forest#2
 T23 untaps: p2:Plains#2
 T23 taps: p2:Forest#2
 T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
 T23 p2's unspent {G} empties
 T23 moves: Plains, p2's library -> p2's hand
 T23 p2 draws
 T23 taps: p2:Mountain#2
 T23 p2 adds {R} (p2:Mountain#2)
+T23 p2 taps p2:Mountain#2 for mana
 T23 moves: Spined Wurm, p2's hand -> stack
 T23 taps: p2:Forest#1
 T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
 T23 taps: p2:Plains#1
 T23 p2 adds {W} (p2:Plains#1)
+T23 p2 taps p2:Plains#1 for mana
 T23 taps: p2:Plains#2
 T23 p2 adds {W} (p2:Plains#2)
+T23 p2 taps p2:Plains#2 for mana
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 p2 casts Spined Wurm
 T23 resolves: Spined Wurm
 T23 moves: Spined Wurm, stack -> battlefield
@@ -644,6 +755,7 @@ T23 moves: Disorient, p2's hand -> stack
 T23 p2 cancels casting Disorient
 T23 taps: p2:Plains#3
 T23 p2 adds {W} (p2:Plains#3)
+T23 p2 taps p2:Plains#3 for mana
 T23 moves: Disorient, p2's hand -> stack
 T23 p2 cancels casting Disorient
 T23 p2's unspent {W} empties
@@ -657,18 +769,25 @@ T24 untaps: p1:Forest
 T24 untaps: p1:Mountain#4
 T24 taps: p1:Mountain#1
 T24 p1 adds {R} (p1:Mountain#1)
+T24 p1 taps p1:Mountain#1 for mana
 T24 taps: p1:Plains#2
 T24 p1 adds {W} (p1:Plains#2)
+T24 p1 taps p1:Plains#2 for mana
 T24 taps: p1:Plains#1
 T24 p1 adds {W} (p1:Plains#1)
+T24 p1 taps p1:Plains#1 for mana
 T24 taps: p1:Mountain#3
 T24 p1 adds {R} (p1:Mountain#3)
+T24 p1 taps p1:Mountain#3 for mana
 T24 taps: p1:Mountain#4
 T24 p1 adds {R} (p1:Mountain#4)
+T24 p1 taps p1:Mountain#4 for mana
 T24 taps: p1:Mountain#2
 T24 p1 adds {R} (p1:Mountain#2)
+T24 p1 taps p1:Mountain#2 for mana
 T24 taps: p1:Forest
 T24 p1 adds {G} (p1:Forest)
+T24 p1 taps p1:Forest for mana
 T24 p1's unspent {W}{W}{R}{R}{R}{R}{G} empties
 T24 moves: Righteousness, p1's library -> p1's hand
 T24 p1 draws
@@ -678,6 +797,7 @@ T24 moves: Island, p1's hand -> battlefield
 T24 p1 plays p1:Island
 T24 taps: p1:Island
 T24 p1 adds {U} (p1:Island)
+T24 p1 taps p1:Island for mana
 T24 moves: Wind Drake, p1's hand -> stack
 T24 p1 cancels casting Wind Drake
 T24 moves: Acolyte of Xathrid, p1's hand -> stack
@@ -724,49 +844,67 @@ T25 moves: Island, p2's library -> p2's hand
 T25 p2 draws
 T25 taps: p2:Plains#1
 T25 p2 adds {W} (p2:Plains#1)
+T25 p2 taps p2:Plains#1 for mana
 T25 p2's unspent {W} empties
 T25 moves: Disorient, p2's hand -> stack
 T25 taps: p2:Plains#2
 T25 p2 adds {W} (p2:Plains#2)
+T25 p2 taps p2:Plains#2 for mana
 T25 taps: p2:Plains#3
 T25 p2 adds {W} (p2:Plains#3)
+T25 p2 taps p2:Plains#3 for mana
 T25 taps: p2:Mountain#1
 T25 p2 adds {R} (p2:Mountain#1)
+T25 p2 taps p2:Mountain#1 for mana
 T25 taps: p2:Forest#1
 T25 p2 adds {G} (p2:Forest#1)
+T25 p2 taps p2:Forest#1 for mana
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 taps: p2:Mountain#2
 T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 taps p2:Mountain#2 for mana
 T25 p2 cancels casting Disorient
 T25 taps: p2:Plains#2
 T25 p2 adds {W} (p2:Plains#2)
+T25 p2 taps p2:Plains#2 for mana
 T25 taps: p2:Mountain#2
 T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 taps p2:Mountain#2 for mana
 T25 taps: p2:Mountain#1
 T25 p2 adds {R} (p2:Mountain#1)
+T25 p2 taps p2:Mountain#1 for mana
 T25 moves: Disorient, p2's hand -> stack
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 taps: p2:Plains#3
 T25 p2 adds {W} (p2:Plains#3)
+T25 p2 taps p2:Plains#3 for mana
 T25 p2 cancels casting Disorient
 T25 moves: Disorient, p2's hand -> stack
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 taps: p2:Forest#1
 T25 p2 adds {G} (p2:Forest#1)
+T25 p2 taps p2:Forest#1 for mana
 T25 taps: p2:Plains#3
 T25 p2 adds {W} (p2:Plains#3)
+T25 p2 taps p2:Plains#3 for mana
 T25 p2 cancels casting Disorient
 T25 p2's unspent {W}{R}{R} empties
 T25 p2 attack: nothing
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 taps: p2:Plains#3
 T25 p2 adds {W} (p2:Plains#3)
+T25 p2 taps p2:Plains#3 for mana
 T25 taps: p2:Forest#1
 T25 p2 adds {G} (p2:Forest#1)
+T25 p2 taps p2:Forest#1 for mana
 T25 p2's unspent {W}{G}{G} empties
 T25 moves: Horned Turtle, p2's hand -> stack
 T25 p2 cancels casting Horned Turtle
@@ -795,10 +933,13 @@ T26 moves: Forest, p1's library -> p1's hand
 T26 p1 draws
 T26 taps: p1:Island
 T26 p1 adds {U} (p1:Island)
+T26 p1 taps p1:Island for mana
 T26 taps: p1:Plains#1
 T26 p1 adds {W} (p1:Plains#1)
+T26 p1 taps p1:Plains#1 for mana
 T26 taps: p1:Mountain#2
 T26 p1 adds {R} (p1:Mountain#2)
+T26 p1 taps p1:Mountain#2 for mana
 T26 moves: Disorient, p2's hand -> stack
 T26 p2 cancels casting Disorient
 T26 moves: Disorient, p2's hand -> stack
@@ -806,27 +947,36 @@ T26 p2 cancels casting Disorient
 T26 p1's unspent {W}{U}{R} empties
 T26 taps: p1:Mountain#3
 T26 p1 adds {R} (p1:Mountain#3)
+T26 p1 taps p1:Mountain#3 for mana
 T26 moves: Forest, p1's hand -> battlefield
 T26 p1 plays p1:Forest#2
 T26 taps: p1:Forest#1
 T26 p1 adds {G} (p1:Forest#1)
+T26 p1 taps p1:Forest#1 for mana
 T26 moves: Wind Drake, p1's hand -> stack
 T26 taps: p1:Mountain#1
 T26 p1 adds {R} (p1:Mountain#1)
+T26 p1 taps p1:Mountain#1 for mana
 T26 taps: p1:Forest#2
 T26 p1 adds {G} (p1:Forest#2)
+T26 p1 taps p1:Forest#2 for mana
 T26 taps: p1:Mountain#4
 T26 p1 adds {R} (p1:Mountain#4)
+T26 p1 taps p1:Mountain#4 for mana
 T26 taps: p1:Plains#2
 T26 p1 adds {W} (p1:Plains#2)
+T26 p1 taps p1:Plains#2 for mana
 T26 p1 cancels casting Wind Drake
 T26 p1's unspent {R}{G} empties
 T26 taps: p1:Plains#2
 T26 p1 adds {W} (p1:Plains#2)
+T26 p1 taps p1:Plains#2 for mana
 T26 taps: p1:Mountain#1
 T26 p1 adds {R} (p1:Mountain#1)
+T26 p1 taps p1:Mountain#1 for mana
 T26 taps: p1:Forest#2
 T26 p1 adds {G} (p1:Forest#2)
+T26 p1 taps p1:Forest#2 for mana
 T26 p1's unspent {W}{R}{G} empties
 T26 p1 attack: nothing
 T26 moves: Disorient, p2's hand -> stack
@@ -840,9 +990,11 @@ T26 p2 cancels casting Disorient
 T26 moves: Acolyte of Xathrid, p1's hand -> stack
 T26 taps: p1:Mountain#4
 T26 p1 adds {R} (p1:Mountain#4)
+T26 p1 taps p1:Mountain#4 for mana
 T26 p1 cancels casting Acolyte of Xathrid
 T26 taps: p1:Mountain#4
 T26 p1 adds {R} (p1:Mountain#4)
+T26 p1 taps p1:Mountain#4 for mana
 T26 moves: Acolyte of Xathrid, p1's hand -> stack
 T26 p1 cancels casting Acolyte of Xathrid
 T26 p1's unspent {R} empties
@@ -858,23 +1010,30 @@ T27 moves: Zombie Goliath, p2's library -> p2's hand
 T27 p2 draws
 T27 taps: p2:Mountain#1
 T27 p2 adds {R} (p2:Mountain#1)
+T27 p2 taps p2:Mountain#1 for mana
 T27 moves: Island, p2's hand -> battlefield
 T27 p2 plays p2:Island
 T27 p2's unspent {R} empties
 T27 moves: Disorient, p2's hand -> stack
 T27 taps: p2:Mountain#2
 T27 p2 adds {R} (p2:Mountain#2)
+T27 p2 taps p2:Mountain#2 for mana
 T27 taps: p2:Plains#2
 T27 p2 adds {W} (p2:Plains#2)
+T27 p2 taps p2:Plains#2 for mana
 T27 taps: p2:Plains#3
 T27 p2 adds {W} (p2:Plains#3)
+T27 p2 taps p2:Plains#3 for mana
 T27 taps: p2:Island
 T27 p2 adds {U} (p2:Island)
+T27 p2 taps p2:Island for mana
 T27 p2 casts Disorient
 T27 taps: p2:Forest#2
 T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
 T27 taps: p2:Plains#1
 T27 p2 adds {W} (p2:Plains#1)
+T27 p2 taps p2:Plains#1 for mana
 T27 moves: Cancel, p1's hand -> stack
 T27 p1 cancels casting Cancel
 T27 effect: p2:Spined Wurm -7/+0 until end of turn
@@ -884,6 +1043,7 @@ T27 p2's unspent {W}{G} empties
 T27 p2 attack: nothing
 T27 taps: p2:Forest#1
 T27 p2 adds {G} (p2:Forest#1)
+T27 p2 taps p2:Forest#1 for mana
 T27 p2's unspent {G} empties
 T27 moves: Bountiful Harvest, p2's hand -> stack
 T27 p2 cancels casting Bountiful Harvest
@@ -900,6 +1060,7 @@ T28 untaps: p1:Island
 T28 untaps: p1:Forest#2
 T28 taps: p1:Plains#2
 T28 p1 adds {W} (p1:Plains#2)
+T28 p1 taps p1:Plains#2 for mana
 T28 p1's unspent {W} empties
 T28 moves: Swamp, p1's library -> p1's hand
 T28 p1 draws
@@ -907,30 +1068,39 @@ T28 moves: Acolyte of Xathrid, p1's hand -> stack
 T28 p1 cancels casting Acolyte of Xathrid
 T28 taps: p1:Plains#1
 T28 p1 adds {W} (p1:Plains#1)
+T28 p1 taps p1:Plains#1 for mana
 T28 taps: p1:Mountain#4
 T28 p1 adds {R} (p1:Mountain#4)
+T28 p1 taps p1:Mountain#4 for mana
 T28 moves: Wind Drake, p1's hand -> stack
 T28 p1 cancels casting Wind Drake
 T28 moves: Swamp, p1's hand -> battlefield
 T28 p1 plays p1:Swamp
 T28 taps: p1:Mountain#1
 T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
 T28 p1's unspent {W}{R}{R} empties
 T28 p1 attack: nothing
 T28 taps: p1:Forest#2
 T28 p1 adds {G} (p1:Forest#2)
+T28 p1 taps p1:Forest#2 for mana
 T28 taps: p1:Mountain#2
 T28 p1 adds {R} (p1:Mountain#2)
+T28 p1 taps p1:Mountain#2 for mana
 T28 p1's unspent {R}{G} empties
 T28 moves: Furnace Whelp, p1's hand -> stack
 T28 taps: p1:Forest#1
 T28 p1 adds {G} (p1:Forest#1)
+T28 p1 taps p1:Forest#1 for mana
 T28 taps: p1:Island
 T28 p1 adds {U} (p1:Island)
+T28 p1 taps p1:Island for mana
 T28 taps: p1:Swamp
 T28 p1 adds {B} (p1:Swamp)
+T28 p1 taps p1:Swamp for mana
 T28 taps: p1:Mountain#3
 T28 p1 adds {R} (p1:Mountain#3)
+T28 p1 taps p1:Mountain#3 for mana
 T28 p1 cancels casting Furnace Whelp
 T29 turn 29 begins (p2)
 T29 untaps: p2:Forest#1
@@ -943,46 +1113,62 @@ T29 untaps: p2:Plains#3
 T29 untaps: p2:Island
 T29 taps: p2:Forest#2
 T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
 T29 taps: p2:Forest#1
 T29 p2 adds {G} (p2:Forest#1)
+T29 p2 taps p2:Forest#1 for mana
 T29 taps: p2:Island
 T29 p2 adds {U} (p2:Island)
+T29 p2 taps p2:Island for mana
 T29 taps: p2:Mountain#1
 T29 p2 adds {R} (p2:Mountain#1)
+T29 p2 taps p2:Mountain#1 for mana
 T29 taps: p2:Plains#3
 T29 p2 adds {W} (p2:Plains#3)
+T29 p2 taps p2:Plains#3 for mana
 T29 taps: p1:Mountain#3
 T29 p1 adds {R} (p1:Mountain#3)
+T29 p1 taps p1:Mountain#3 for mana
 T29 p2's unspent {W}{U}{R}{G}{G} empties
 T29 p1's unspent {R} empties
 T29 moves: Raging Goblin, p2's library -> p2's hand
 T29 p2 draws
 T29 taps: p1:Island
 T29 p1 adds {U} (p1:Island)
+T29 p1 taps p1:Island for mana
 T29 taps: p2:Plains#1
 T29 p2 adds {W} (p2:Plains#1)
+T29 p2 taps p2:Plains#1 for mana
 T29 p2's unspent {W} empties
 T29 p1's unspent {U} empties
 T29 moves: Zombie Goliath, p2's hand -> stack
 T29 taps: p2:Mountain#2
 T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
 T29 taps: p2:Plains#2
 T29 p2 adds {W} (p2:Plains#2)
+T29 p2 taps p2:Plains#2 for mana
 T29 p2 cancels casting Zombie Goliath
 T29 moves: Coral Merfolk, p2's hand -> stack
 T29 taps: p2:Plains#2
 T29 p2 adds {W} (p2:Plains#2)
+T29 p2 taps p2:Plains#2 for mana
 T29 taps: p2:Mountain#2
 T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
 T29 p2 cancels casting Coral Merfolk
 T29 taps: p1:Forest#1
 T29 p1 adds {G} (p1:Forest#1)
+T29 p1 taps p1:Forest#1 for mana
 T29 taps: p2:Mountain#2
 T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
 T29 taps: p2:Plains#2
 T29 p2 adds {W} (p2:Plains#2)
+T29 p2 taps p2:Plains#2 for mana
 T29 taps: p1:Swamp
 T29 p1 adds {B} (p1:Swamp)
+T29 p1 taps p1:Swamp for mana
 T29 p2's unspent {W}{R} empties
 T29 p1's unspent {B}{G} empties
 T29 p2 attack: nothing
@@ -1003,20 +1189,26 @@ T30 moves: Centaur Courser, p1's library -> p1's hand
 T30 p1 draws
 T30 taps: p1:Island
 T30 p1 adds {U} (p1:Island)
+T30 p1 taps p1:Island for mana
 T30 p1's unspent {U} empties
 T30 taps: p1:Mountain#1
 T30 p1 adds {R} (p1:Mountain#1)
+T30 p1 taps p1:Mountain#1 for mana
 T30 p1's unspent {R} empties
 T30 p1 attack: nothing
 T30 taps: p1:Plains#1
 T30 p1 adds {W} (p1:Plains#1)
+T30 p1 taps p1:Plains#1 for mana
 T30 taps: p1:Mountain#4
 T30 p1 adds {R} (p1:Mountain#4)
+T30 p1 taps p1:Mountain#4 for mana
 T30 taps: p1:Swamp
 T30 p1 adds {B} (p1:Swamp)
+T30 p1 taps p1:Swamp for mana
 T30 p1's unspent {W}{B}{R} empties
 T30 taps: p1:Plains#2
 T30 p1 adds {W} (p1:Plains#2)
+T30 p1 taps p1:Plains#2 for mana
 T30 p1's unspent {W} empties
 T30 moves: Furnace Whelp, p1's hand -> p1's graveyard
 T30 p1 discards Furnace Whelp
@@ -1033,26 +1225,35 @@ T31 moves: Furnace Whelp, p2's library -> p2's hand
 T31 p2 draws
 T31 taps: p1:Forest#2
 T31 p1 adds {G} (p1:Forest#2)
+T31 p1 taps p1:Forest#2 for mana
 T31 p1's unspent {G} empties
 T31 taps: p2:Mountain#2
 T31 p2 adds {R} (p2:Mountain#2)
+T31 p2 taps p2:Mountain#2 for mana
 T31 taps: p2:Forest#2
 T31 p2 adds {G} (p2:Forest#2)
+T31 p2 taps p2:Forest#2 for mana
 T31 taps: p2:Island
 T31 p2 adds {U} (p2:Island)
+T31 p2 taps p2:Island for mana
 T31 taps: p2:Plains#3
 T31 p2 adds {W} (p2:Plains#3)
+T31 p2 taps p2:Plains#3 for mana
 T31 taps: p2:Plains#2
 T31 p2 adds {W} (p2:Plains#2)
+T31 p2 taps p2:Plains#2 for mana
 T31 p2's unspent {W}{W}{U}{R}{G} empties
 T31 p2 attack: nothing
 T31 taps: p2:Plains#1
 T31 p2 adds {W} (p2:Plains#1)
+T31 p2 taps p2:Plains#1 for mana
 T31 p2's unspent {W} empties
 T31 taps: p2:Forest#1
 T31 p2 adds {G} (p2:Forest#1)
+T31 p2 taps p2:Forest#1 for mana
 T31 taps: p2:Mountain#1
 T31 p2 adds {R} (p2:Mountain#1)
+T31 p2 taps p2:Mountain#1 for mana
 T31 p2's unspent {R}{G} empties
 T31 moves: Bountiful Harvest, p2's hand -> p2's graveyard
 T31 p2 discards Bountiful Harvest
@@ -1068,32 +1269,43 @@ T32 moves: Deathmark, p1's library -> p1's hand
 T32 p1 draws
 T32 taps: p1:Mountain#3
 T32 p1 adds {R} (p1:Mountain#3)
+T32 p1 taps p1:Mountain#3 for mana
 T32 moves: Wind Drake, p1's hand -> stack
 T32 taps: p1:Mountain#1
 T32 p1 adds {R} (p1:Mountain#1)
+T32 p1 taps p1:Mountain#1 for mana
 T32 taps: p1:Mountain#4
 T32 p1 adds {R} (p1:Mountain#4)
+T32 p1 taps p1:Mountain#4 for mana
 T32 taps: p1:Mountain#2
 T32 p1 adds {R} (p1:Mountain#2)
+T32 p1 taps p1:Mountain#2 for mana
 T32 taps: p1:Forest#1
 T32 p1 adds {G} (p1:Forest#1)
+T32 p1 taps p1:Forest#1 for mana
 T32 taps: p1:Island
 T32 p1 adds {U} (p1:Island)
+T32 p1 taps p1:Island for mana
 T32 p1 casts Wind Drake
 T32 taps: p1:Swamp
 T32 p1 adds {B} (p1:Swamp)
+T32 p1 taps p1:Swamp for mana
 T32 taps: p1:Plains#1
 T32 p1 adds {W} (p1:Plains#1)
+T32 p1 taps p1:Plains#1 for mana
 T32 moves: Cancel, p1's hand -> stack
 T32 p1 cancels casting Cancel
 T32 taps: p1:Forest#2
 T32 p1 adds {G} (p1:Forest#2)
+T32 p1 taps p1:Forest#2 for mana
 T32 moves: Cancel, p1's hand -> stack
 T32 taps: p1:Plains#2
 T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
 T32 p1 cancels casting Cancel
 T32 taps: p1:Plains#2
 T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
 T32 moves: Cancel, p1's hand -> stack
 T32 p1 cancels casting Cancel
 T32 moves: Cancel, p1's hand -> stack
@@ -1123,42 +1335,57 @@ T33 moves: Mountain, p2's library -> p2's hand
 T33 p2 draws
 T33 taps: p2:Plains#3
 T33 p2 adds {W} (p2:Plains#3)
+T33 p2 taps p2:Plains#3 for mana
 T33 p2's unspent {W} empties
 T33 moves: Mountain, p2's hand -> battlefield
 T33 p2 plays p2:Mountain#3
 T33 taps: p2:Island
 T33 p2 adds {U} (p2:Island)
+T33 p2 taps p2:Island for mana
 T33 taps: p2:Plains#2
 T33 p2 adds {W} (p2:Plains#2)
+T33 p2 taps p2:Plains#2 for mana
 T33 p2's unspent {W}{U} empties
 T33 p2 attack: nothing
 T33 moves: Zombie Goliath, p2's hand -> stack
 T33 taps: p2:Mountain#3
 T33 p2 adds {R} (p2:Mountain#3)
+T33 p2 taps p2:Mountain#3 for mana
 T33 taps: p2:Mountain#2
 T33 p2 adds {R} (p2:Mountain#2)
+T33 p2 taps p2:Mountain#2 for mana
 T33 taps: p2:Mountain#1
 T33 p2 adds {R} (p2:Mountain#1)
+T33 p2 taps p2:Mountain#1 for mana
 T33 taps: p2:Plains#1
 T33 p2 adds {W} (p2:Plains#1)
+T33 p2 taps p2:Plains#1 for mana
 T33 taps: p2:Forest#1
 T33 p2 adds {G} (p2:Forest#1)
+T33 p2 taps p2:Forest#1 for mana
 T33 taps: p2:Forest#2
 T33 p2 adds {G} (p2:Forest#2)
+T33 p2 taps p2:Forest#2 for mana
 T33 p2 cancels casting Zombie Goliath
 T33 moves: Horned Turtle, p2's hand -> stack
 T33 taps: p2:Forest#1
 T33 p2 adds {G} (p2:Forest#1)
+T33 p2 taps p2:Forest#1 for mana
 T33 taps: p2:Mountain#3
 T33 p2 adds {R} (p2:Mountain#3)
+T33 p2 taps p2:Mountain#3 for mana
 T33 taps: p2:Forest#2
 T33 p2 adds {G} (p2:Forest#2)
+T33 p2 taps p2:Forest#2 for mana
 T33 taps: p2:Mountain#2
 T33 p2 adds {R} (p2:Mountain#2)
+T33 p2 taps p2:Mountain#2 for mana
 T33 taps: p2:Mountain#1
 T33 p2 adds {R} (p2:Mountain#1)
+T33 p2 taps p2:Mountain#1 for mana
 T33 taps: p2:Plains#1
 T33 p2 adds {W} (p2:Plains#1)
+T33 p2 taps p2:Plains#1 for mana
 T33 p2 cancels casting Horned Turtle
 T34 turn 34 begins (p1)
 T34 untaps: p1:Mountain#1
@@ -1173,83 +1400,112 @@ T34 untaps: p1:Forest#2
 T34 untaps: p1:Swamp
 T34 taps: p2:Mountain#2
 T34 p2 adds {R} (p2:Mountain#2)
+T34 p2 taps p2:Mountain#2 for mana
 T34 taps: p2:Mountain#1
 T34 p2 adds {R} (p2:Mountain#1)
+T34 p2 taps p2:Mountain#1 for mana
 T34 p2's unspent {R}{R} empties
 T34 moves: Forest, p1's library -> p1's hand
 T34 p1 draws
 T34 taps: p2:Forest#2
 T34 p2 adds {G} (p2:Forest#2)
+T34 p2 taps p2:Forest#2 for mana
 T34 taps: p1:Swamp
 T34 p1 adds {B} (p1:Swamp)
+T34 p1 taps p1:Swamp for mana
 T34 taps: p2:Forest#1
 T34 p2 adds {G} (p2:Forest#1)
+T34 p2 taps p2:Forest#1 for mana
 T34 p2's unspent {G}{G} empties
 T34 p1's unspent {B} empties
 T34 taps: p1:Mountain#2
 T34 p1 adds {R} (p1:Mountain#2)
+T34 p1 taps p1:Mountain#2 for mana
 T34 taps: p2:Mountain#3
 T34 p2 adds {R} (p2:Mountain#3)
+T34 p2 taps p2:Mountain#3 for mana
 T34 moves: Deathmark, p1's hand -> stack
 T34 taps: p1:Forest#2
 T34 p1 adds {G} (p1:Forest#2)
+T34 p1 taps p1:Forest#2 for mana
 T34 taps: p1:Forest#1
 T34 p1 adds {G} (p1:Forest#1)
+T34 p1 taps p1:Forest#1 for mana
 T34 p1 cancels casting Deathmark
 T34 moves: Forest, p1's hand -> battlefield
 T34 p1 plays p1:Forest#3
 T34 taps: p1:Island
 T34 p1 adds {U} (p1:Island)
+T34 p1 taps p1:Island for mana
 T34 p2's unspent {R} empties
 T34 p1's unspent {U}{R} empties
 T34 p1 attack: nothing
 T34 taps: p2:Plains#1
 T34 p2 adds {W} (p2:Plains#1)
+T34 p2 taps p2:Plains#1 for mana
 T34 taps: p1:Mountain#1
 T34 p1 adds {R} (p1:Mountain#1)
+T34 p1 taps p1:Mountain#1 for mana
 T34 taps: p1:Mountain#3
 T34 p1 adds {R} (p1:Mountain#3)
+T34 p1 taps p1:Mountain#3 for mana
 T34 taps: p1:Forest#2
 T34 p1 adds {G} (p1:Forest#2)
+T34 p1 taps p1:Forest#2 for mana
 T34 taps: p1:Forest#1
 T34 p1 adds {G} (p1:Forest#1)
+T34 p1 taps p1:Forest#1 for mana
 T34 taps: p1:Forest#3
 T34 p1 adds {G} (p1:Forest#3)
+T34 p1 taps p1:Forest#3 for mana
 T34 taps: p1:Mountain#4
 T34 p1 adds {R} (p1:Mountain#4)
+T34 p1 taps p1:Mountain#4 for mana
 T34 taps: p1:Plains#1
 T34 p1 adds {W} (p1:Plains#1)
+T34 p1 taps p1:Plains#1 for mana
 T34 taps: p1:Plains#2
 T34 p1 adds {W} (p1:Plains#2)
+T34 p1 taps p1:Plains#2 for mana
 T34 p1 cancels activating p1:Acolyte of Xathrid
 T34 taps: p1:Forest#1
 T34 p1 adds {G} (p1:Forest#1)
+T34 p1 taps p1:Forest#1 for mana
 T34 p2's unspent {W} empties
 T34 p1's unspent {G} empties
 T34 taps: p1:Mountain#3
 T34 p1 adds {R} (p1:Mountain#3)
+T34 p1 taps p1:Mountain#3 for mana
 T34 p1's unspent {R} empties
 T34 taps: p1:Forest#3
 T34 p1 adds {G} (p1:Forest#3)
+T34 p1 taps p1:Forest#3 for mana
 T34 moves: Deathmark, p1's hand -> stack
 T34 taps: p1:Plains#2
 T34 p1 adds {W} (p1:Plains#2)
+T34 p1 taps p1:Plains#2 for mana
 T34 taps: p1:Forest#2
 T34 p1 adds {G} (p1:Forest#2)
+T34 p1 taps p1:Forest#2 for mana
 T34 taps: p1:Mountain#1
 T34 p1 adds {R} (p1:Mountain#1)
+T34 p1 taps p1:Mountain#1 for mana
 T34 taps: p1:Mountain#4
 T34 p1 adds {R} (p1:Mountain#4)
+T34 p1 taps p1:Mountain#4 for mana
 T34 taps: p1:Plains#1
 T34 p1 adds {W} (p1:Plains#1)
+T34 p1 taps p1:Plains#1 for mana
 T34 p1 cancels casting Deathmark
 T34 taps: p1:Mountain#1
 T34 p1 adds {R} (p1:Mountain#1)
+T34 p1 taps p1:Mountain#1 for mana
 T34 moves: Centaur Courser, p1's hand -> stack
 T34 p1 cancels casting Centaur Courser
 T34 p1's unspent {R}{G} empties
 T34 taps: p1:Plains#2
 T34 p1 adds {W} (p1:Plains#2)
+T34 p1 taps p1:Plains#2 for mana
 T34 p1's unspent {W} empties
 T35 turn 35 begins (p2)
 T35 untaps: p2:Forest#1
@@ -1265,23 +1521,32 @@ T35 moves: Mind Rot, p2's library -> p2's hand
 T35 p2 draws
 T35 taps: p2:Forest#2
 T35 p2 adds {G} (p2:Forest#2)
+T35 p2 taps p2:Forest#2 for mana
 T35 moves: Furnace Whelp, p2's hand -> stack
 T35 taps: p2:Plains#2
 T35 p2 adds {W} (p2:Plains#2)
+T35 p2 taps p2:Plains#2 for mana
 T35 taps: p2:Forest#1
 T35 p2 adds {G} (p2:Forest#1)
+T35 p2 taps p2:Forest#1 for mana
 T35 taps: p2:Plains#1
 T35 p2 adds {W} (p2:Plains#1)
+T35 p2 taps p2:Plains#1 for mana
 T35 taps: p2:Mountain#1
 T35 p2 adds {R} (p2:Mountain#1)
+T35 p2 taps p2:Mountain#1 for mana
 T35 taps: p2:Island
 T35 p2 adds {U} (p2:Island)
+T35 p2 taps p2:Island for mana
 T35 taps: p2:Plains#3
 T35 p2 adds {W} (p2:Plains#3)
+T35 p2 taps p2:Plains#3 for mana
 T35 taps: p2:Mountain#3
 T35 p2 adds {R} (p2:Mountain#3)
+T35 p2 taps p2:Mountain#3 for mana
 T35 taps: p2:Mountain#2
 T35 p2 adds {R} (p2:Mountain#2)
+T35 p2 taps p2:Mountain#2 for mana
 T35 p2 casts Furnace Whelp
 T35 resolves: Furnace Whelp
 T35 moves: Furnace Whelp, stack -> battlefield
@@ -1291,13 +1556,17 @@ T35 p2 cancels activating p2:Furnace Whelp
 T35 p2 cancels activating p2:Furnace Whelp
 T35 taps: p1:Forest#2
 T35 p1 adds {G} (p1:Forest#2)
+T35 p1 taps p1:Forest#2 for mana
 T35 taps: p1:Mountain#4
 T35 p1 adds {R} (p1:Mountain#4)
+T35 p1 taps p1:Mountain#4 for mana
 T35 taps: p1:Plains#1
 T35 p1 adds {W} (p1:Plains#1)
+T35 p1 taps p1:Plains#1 for mana
 T35 p1 cancels activating p1:Acolyte of Xathrid
 T35 taps: p1:Mountain#4
 T35 p1 adds {R} (p1:Mountain#4)
+T35 p1 taps p1:Mountain#4 for mana
 T35 p2 cancels activating p2:Furnace Whelp
 T35 effect: p2:Furnace Whelp +1/+0 until end of turn
 T35 resolves: p2:Furnace Whelp's ability
@@ -1316,9 +1585,11 @@ T35 p2 cancels activating p2:Furnace Whelp
 T35 moves: Cancel, p1's hand -> stack
 T35 taps: p1:Plains#1
 T35 p1 adds {W} (p1:Plains#1)
+T35 p1 taps p1:Plains#1 for mana
 T35 p1 cancels casting Cancel
 T35 taps: p1:Plains#1
 T35 p1 adds {W} (p1:Plains#1)
+T35 p1 taps p1:Plains#1 for mana
 T35 p1 cancels activating p1:Acolyte of Xathrid
 T35 resolves: Coral Merfolk
 T35 moves: Coral Merfolk, stack -> battlefield
@@ -1343,6 +1614,7 @@ T35 moves: Righteousness, p1's hand -> stack
 T35 p1 cancels casting Righteousness
 T35 taps: p1:Plains#1
 T35 p1 adds {W} (p1:Plains#1)
+T35 p1 taps p1:Plains#1 for mana
 T35 moves: Righteousness, p1's hand -> stack
 T35 p1 casts Righteousness
 T35 moves: Cancel, p1's hand -> stack

@@ -123,6 +123,32 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Angel's Feather",
+      "slug": "angels-feather",
+      "oracleId": "3d0d4ba4-d5aa-4d9f-89ab-46687637fecf",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact",
+      "oracleText": "Whenever a player casts a white spell, you may gain 1 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/9/3992dc7c-61c0-4d5f-9c32-8febfad4ef6d.jpg?1783941053",
+        "large": "https://cards.scryfall.io/large/front/3/9/3992dc7c-61c0-4d5f-9c32-8febfad4ef6d.jpg?1783941053",
+        "png": "https://cards.scryfall.io/png/front/3/9/3992dc7c-61c0-4d5f-9c32-8febfad4ef6d.png?1783941053",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/9/3992dc7c-61c0-4d5f-9c32-8febfad4ef6d.jpg?1783941053"
+      },
+      "artist": "Alan Pollack",
+      "set": "m12",
+      "collectorNumber": "202",
+      "scryfallUri": "https://scryfall.com/card/m12/202/angels-feather?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Angel's Mercy",
       "slug": "angels-mercy",
       "oracleId": "6b232bb7-d372-4174-a049-5f8d620810e6",
@@ -724,6 +750,32 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Demon's Horn",
+      "slug": "demons-horn",
+      "oracleId": "ee38377f-8d3a-402e-a5d7-a01cfe3a5322",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact",
+      "oracleText": "Whenever a player casts a black spell, you may gain 1 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/f/3f56b129-fe2d-4061-b1c9-f1f5a4db564a.jpg?1783941051",
+        "large": "https://cards.scryfall.io/large/front/3/f/3f56b129-fe2d-4061-b1c9-f1f5a4db564a.jpg?1783941051",
+        "png": "https://cards.scryfall.io/png/front/3/f/3f56b129-fe2d-4061-b1c9-f1f5a4db564a.png?1783941051",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/f/3f56b129-fe2d-4061-b1c9-f1f5a4db564a.jpg?1783941051"
+      },
+      "artist": "Alan Pollack",
+      "set": "m12",
+      "collectorNumber": "205",
+      "scryfallUri": "https://scryfall.com/card/m12/205/demons-horn?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Diabolic Tutor",
       "slug": "diabolic-tutor",
       "oracleId": "14589b6b-1814-46f9-a364-83cc15dacac2",
@@ -889,6 +941,32 @@
       "set": "m14",
       "collectorNumber": "96",
       "scryfallUri": "https://scryfall.com/card/m14/96/doom-blade?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Dragon's Claw",
+      "slug": "dragons-claw",
+      "oracleId": "bd8d707d-1201-42c6-bce6-fbda12ce5ea8",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact",
+      "oracleText": "Whenever a player casts a red spell, you may gain 1 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/d/0d732b87-08e5-41b6-8448-62dd6bf20d9c.jpg?1783941052",
+        "large": "https://cards.scryfall.io/large/front/0/d/0d732b87-08e5-41b6-8448-62dd6bf20d9c.jpg?1783941052",
+        "png": "https://cards.scryfall.io/png/front/0/d/0d732b87-08e5-41b6-8448-62dd6bf20d9c.png?1783941052",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/d/0d732b87-08e5-41b6-8448-62dd6bf20d9c.jpg?1783941052"
+      },
+      "artist": "Alan Pollack",
+      "set": "m12",
+      "collectorNumber": "206",
+      "scryfallUri": "https://scryfall.com/card/m12/206/dragons-claw?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1740,6 +1818,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Hypnotic Specter",
+      "slug": "hypnotic-specter",
+      "oracleId": "759af941-f6a3-4726-91f2-9b1e4e55ea71",
+      "layout": "normal",
+      "manaCost": "{1}{B}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Specter",
+      "oracleText": "Flying\nWhenever this creature deals damage to an opponent, that player discards a card at random.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/6/9695f390-f791-4d64-90b2-731d6d37df1c.jpg?1783942383",
+        "large": "https://cards.scryfall.io/large/front/9/6/9695f390-f791-4d64-90b2-731d6d37df1c.jpg?1783942383",
+        "png": "https://cards.scryfall.io/png/front/9/6/9695f390-f791-4d64-90b2-731d6d37df1c.png?1783942383",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/6/9695f390-f791-4d64-90b2-731d6d37df1c.jpg?1783942383"
+      },
+      "artist": "Greg Staples",
+      "set": "m10",
+      "collectorNumber": "100",
+      "scryfallUri": "https://scryfall.com/card/m10/100/hypnotic-specter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ignite Disorder",
       "slug": "ignite-disorder",
       "oracleId": "8f66317c-06fe-4320-9d98-eaedaef67c85",
@@ -1882,6 +1990,32 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Kraken's Eye",
+      "slug": "krakens-eye",
+      "oracleId": "14a21d8a-2097-4150-8af5-8c155049477a",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact",
+      "oracleText": "Whenever a player casts a blue spell, you may gain 1 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/8/48052433-c4d3-434e-a609-e8400150a0f6.jpg?1783941049",
+        "large": "https://cards.scryfall.io/large/front/4/8/48052433-c4d3-434e-a609-e8400150a0f6.jpg?1783941049",
+        "png": "https://cards.scryfall.io/png/front/4/8/48052433-c4d3-434e-a609-e8400150a0f6.png?1783941049",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/8/48052433-c4d3-434e-a609-e8400150a0f6.jpg?1783941049"
+      },
+      "artist": "Alan Pollack",
+      "set": "m12",
+      "collectorNumber": "211",
+      "scryfallUri": "https://scryfall.com/card/m12/211/krakens-eye?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Lava Axe",
       "slug": "lava-axe",
       "oracleId": "387b6b07-a283-412d-94c3-f7f1dc76e858",
@@ -1968,6 +2102,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Lightwielder Paladin",
+      "slug": "lightwielder-paladin",
+      "oracleId": "ad62e9d6-61bc-485f-a9b8-2ef9ba98a4b0",
+      "layout": "normal",
+      "manaCost": "{3}{W}{W}",
+      "manaValue": 5,
+      "typeLine": "Creature — Human Knight",
+      "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nWhenever this creature deals combat damage to a player, you may exile target black or red permanent that player controls.",
+      "power": "4",
+      "toughness": "4",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "First strike"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/e/8e4146a2-08a2-4a9c-b208-a2d02c68e713.jpg?1783942401",
+        "large": "https://cards.scryfall.io/large/front/8/e/8e4146a2-08a2-4a9c-b208-a2d02c68e713.jpg?1783942401",
+        "png": "https://cards.scryfall.io/png/front/8/e/8e4146a2-08a2-4a9c-b208-a2d02c68e713.png?1783942401",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/e/8e4146a2-08a2-4a9c-b208-a2d02c68e713.jpg?1783942401"
+      },
+      "artist": "D. Alexander Gregory",
+      "set": "m10",
+      "collectorNumber": "19",
+      "scryfallUri": "https://scryfall.com/card/m10/19/lightwielder-paladin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Llanowar Elves",
       "slug": "llanowar-elves",
       "oracleId": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
@@ -2024,6 +2188,90 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Lurking Predators",
+      "slug": "lurking-predators",
+      "oracleId": "15fbb7b1-c62d-4f82-9f35-2c10299779f4",
+      "layout": "normal",
+      "manaCost": "{4}{G}{G}",
+      "manaValue": 6,
+      "typeLine": "Enchantment",
+      "oracleText": "Whenever an opponent casts a spell, reveal the top card of your library. If it's a creature card, put it onto the battlefield. Otherwise, you may put that card on the bottom of your library.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/8/e864c824-89a1-41f6-9481-83b2284471e0.jpg?1783942361",
+        "large": "https://cards.scryfall.io/large/front/e/8/e864c824-89a1-41f6-9481-83b2284471e0.jpg?1783942361",
+        "png": "https://cards.scryfall.io/png/front/e/8/e864c824-89a1-41f6-9481-83b2284471e0.png?1783942361",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/8/e864c824-89a1-41f6-9481-83b2284471e0.jpg?1783942361"
+      },
+      "artist": "Mike Bierek",
+      "set": "m10",
+      "collectorNumber": "190",
+      "scryfallUri": "https://scryfall.com/card/m10/190/lurking-predators?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Manabarbs",
+      "slug": "manabarbs",
+      "oracleId": "0f1afedd-c60f-454f-b84a-c8117aec0128",
+      "layout": "normal",
+      "manaCost": "{3}{R}",
+      "manaValue": 4,
+      "typeLine": "Enchantment",
+      "oracleText": "Whenever a player taps a land for mana, this enchantment deals 1 damage to that player.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/d/adf081d5-e644-4f46-8bc8-a754b089acb4.jpg?1783941067",
+        "large": "https://cards.scryfall.io/large/front/a/d/adf081d5-e644-4f46-8bc8-a754b089acb4.jpg?1783941067",
+        "png": "https://cards.scryfall.io/png/front/a/d/adf081d5-e644-4f46-8bc8-a754b089acb4.png?1783941067",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/d/adf081d5-e644-4f46-8bc8-a754b089acb4.jpg?1783941067"
+      },
+      "artist": "Jeff Miracola",
+      "set": "m12",
+      "collectorNumber": "150",
+      "scryfallUri": "https://scryfall.com/card/m12/150/manabarbs?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Megrim",
+      "slug": "megrim",
+      "oracleId": "633ad9e2-9f55-4a1c-9248-661ad4b0e1dc",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Enchantment",
+      "oracleText": "Whenever an opponent discards a card, this enchantment deals 2 damage to that player.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/b/3b04fca4-b4de-4343-ba58-d8aea39edc19.jpg?1783942380",
+        "large": "https://cards.scryfall.io/large/front/3/b/3b04fca4-b4de-4343-ba58-d8aea39edc19.jpg?1783942380",
+        "png": "https://cards.scryfall.io/png/front/3/b/3b04fca4-b4de-4343-ba58-d8aea39edc19.png?1783942380",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/b/3b04fca4-b4de-4343-ba58-d8aea39edc19.jpg?1783942380"
+      },
+      "artist": "Nick Percival",
+      "set": "m10",
+      "collectorNumber": "104",
+      "scryfallUri": "https://scryfall.com/card/m10/104/megrim?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Merfolk Looter",
       "slug": "merfolk-looter",
       "oracleId": "67362406-b1ca-49e2-800d-9050bfe8742a",
@@ -2049,6 +2297,34 @@
       "set": "m12",
       "collectorNumber": "65",
       "scryfallUri": "https://scryfall.com/card/m12/65/merfolk-looter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Mesa Enchantress",
+      "slug": "mesa-enchantress",
+      "oracleId": "8f4b8a19-72f4-48ed-ac05-62a7c7525797",
+      "layout": "normal",
+      "manaCost": "{1}{W}{W}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Druid",
+      "oracleText": "Whenever you cast an enchantment spell, you may draw a card.",
+      "power": "0",
+      "toughness": "2",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/9/691dcce5-ac3d-4970-b3ff-3db485f9f5c3.jpg?1783941101",
+        "large": "https://cards.scryfall.io/large/front/6/9/691dcce5-ac3d-4970-b3ff-3db485f9f5c3.jpg?1783941101",
+        "png": "https://cards.scryfall.io/png/front/6/9/691dcce5-ac3d-4970-b3ff-3db485f9f5c3.png?1783941101",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/9/691dcce5-ac3d-4970-b3ff-3db485f9f5c3.jpg?1783941101"
+      },
+      "artist": "Randy Gallegos",
+      "set": "m12",
+      "collectorNumber": "25",
+      "scryfallUri": "https://scryfall.com/card/m12/25/mesa-enchantress?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -2811,6 +3087,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Sanguine Bond",
+      "slug": "sanguine-bond",
+      "oracleId": "73089a39-a2f6-4aa2-a058-e6551475153d",
+      "layout": "normal",
+      "manaCost": "{3}{B}{B}",
+      "manaValue": 5,
+      "typeLine": "Enchantment",
+      "oracleText": "Whenever you gain life, target opponent loses that much life.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/5/e50e807d-b2eb-4b62-8663-8ad17eed2a39.jpg?1783939920",
+        "large": "https://cards.scryfall.io/large/front/e/5/e50e807d-b2eb-4b62-8663-8ad17eed2a39.jpg?1783939920",
+        "png": "https://cards.scryfall.io/png/front/e/5/e50e807d-b2eb-4b62-8663-8ad17eed2a39.png?1783939920",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/5/e50e807d-b2eb-4b62-8663-8ad17eed2a39.jpg?1783939920"
+      },
+      "artist": "Jaime Jones",
+      "set": "m14",
+      "collectorNumber": "112",
+      "scryfallUri": "https://scryfall.com/card/m14/112/sanguine-bond?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Seismic Strike",
       "slug": "seismic-strike",
       "oracleId": "3513d862-ef0d-4949-b33a-3fa9437cc444",
@@ -3438,6 +3742,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Underworld Dreams",
+      "slug": "underworld-dreams",
+      "oracleId": "967cf377-ae26-464d-85ac-8448b5a911f7",
+      "layout": "normal",
+      "manaCost": "{B}{B}{B}",
+      "manaValue": 3,
+      "typeLine": "Enchantment",
+      "oracleText": "Whenever an opponent draws a card, this enchantment deals 1 damage to that player.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/3/03919c86-1c4a-43b0-a2db-54ca6ae1ac57.jpg?1783931557",
+        "large": "https://cards.scryfall.io/large/front/0/3/03919c86-1c4a-43b0-a2db-54ca6ae1ac57.jpg?1783931557",
+        "png": "https://cards.scryfall.io/png/front/0/3/03919c86-1c4a-43b0-a2db-54ca6ae1ac57.png?1783931557",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/3/03919c86-1c4a-43b0-a2db-54ca6ae1ac57.jpg?1783931557"
+      },
+      "artist": "PINDURSKI",
+      "set": "thb",
+      "collectorNumber": "121",
+      "scryfallUri": "https://scryfall.com/card/thb/121/underworld-dreams?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Unsummon",
       "slug": "unsummon",
       "oracleId": "837182db-1bf3-4a2c-bd01-1af9d9873561",
@@ -3695,6 +4027,32 @@
       "set": "ktk",
       "collectorNumber": "157",
       "scryfallUri": "https://scryfall.com/card/ktk/157/windstorm?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Wurm's Tooth",
+      "slug": "wurms-tooth",
+      "oracleId": "69476326-fda5-48c8-a506-e71eb7c81c2f",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact",
+      "oracleText": "Whenever a player casts a green spell, you may gain 1 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/a/da965767-a8b1-4725-ae20-65c18e37ad27.jpg?1783941047",
+        "large": "https://cards.scryfall.io/large/front/d/a/da965767-a8b1-4725-ae20-65c18e37ad27.jpg?1783941047",
+        "png": "https://cards.scryfall.io/png/front/d/a/da965767-a8b1-4725-ae20-65c18e37ad27.png?1783941047",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/a/da965767-a8b1-4725-ae20-65c18e37ad27.jpg?1783941047"
+      },
+      "artist": "Alan Pollack",
+      "set": "m12",
+      "collectorNumber": "223",
+      "scryfallUri": "https://scryfall.com/card/m12/223/wurms-tooth?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

@@ -92,6 +92,7 @@ T1 p1 plays p1:Swamp
 T2 turn 2 begins (p2)
 T2 taps: p1:Swamp
 T2 p1 adds {B} (p1:Swamp)
+T2 p1 taps p1:Swamp for mana
 T2 p1's unspent {B} empties
 T2 moves: Raging Goblin, p2's library -> p2's hand
 T2 p2 draws
@@ -102,6 +103,7 @@ T3 turn 3 begins (p1)
 T3 untaps: p1:Swamp
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1's unspent {B} empties
 T3 moves: Disentomb, p1's library -> p1's hand
 T3 p1 draws
@@ -110,6 +112,7 @@ T3 p1 plays p1:Forest
 T3 p1 attack: nothing
 T3 taps: p1:Forest
 T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
 T3 p1's unspent {G} empties
 T4 turn 4 begins (p2)
 T4 moves: Zombie Goliath, p2's library -> p2's hand
@@ -119,9 +122,11 @@ T4 p2 plays p2:Forest
 T4 moves: Raging Goblin, p2's hand -> stack
 T4 taps: p2:Forest
 T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
 T4 p2 cancels casting Raging Goblin
 T4 taps: p2:Forest
 T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
 T4 moves: Zombie Goliath, p2's hand -> stack
 T4 p2 cancels casting Zombie Goliath
 T4 moves: Fabricate, p2's hand -> stack
@@ -139,13 +144,16 @@ T5 moves: Fireball, p1's library -> p1's hand
 T5 p1 draws
 T5 taps: p1:Swamp
 T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
 T5 moves: Burning Inquiry, p1's hand -> stack
 T5 taps: p1:Forest
 T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
 T5 p1 cancels casting Burning Inquiry
 T5 p1's unspent {B} empties
 T5 taps: p1:Forest
 T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
 T5 p1's unspent {G} empties
 T5 p1 attack: nothing
 T5 moves: Fireball, p1's hand -> stack
@@ -158,6 +166,7 @@ T6 moves: Mountain, p2's library -> p2's hand
 T6 p2 draws
 T6 taps: p2:Forest
 T6 p2 adds {G} (p2:Forest)
+T6 p2 taps p2:Forest for mana
 T6 p2's unspent {G} empties
 T6 p2 attack: nothing
 T6 moves: Sage Owl, p2's hand -> stack
@@ -167,9 +176,11 @@ T6 p2 plays p2:Island
 T6 moves: Raging Goblin, p2's hand -> stack
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 p2 cancels casting Raging Goblin
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 p2's unspent {U} empties
 T7 turn 7 begins (p1)
 T7 untaps: p1:Swamp
@@ -178,13 +189,16 @@ T7 moves: Swamp, p1's library -> p1's hand
 T7 p1 draws
 T7 taps: p1:Forest
 T7 p1 adds {G} (p1:Forest)
+T7 p1 taps p1:Forest for mana
 T7 p1's unspent {G} empties
 T7 moves: Mind Rot, p1's hand -> stack
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 p1 cancels casting Mind Rot
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 moves: Burning Inquiry, p1's hand -> stack
 T7 p1 cancels casting Burning Inquiry
 T7 moves: Swamp, p1's hand -> battlefield
@@ -192,9 +206,11 @@ T7 p1 plays p1:Swamp#2
 T7 moves: Fireball, p1's hand -> stack
 T7 taps: p1:Swamp#2
 T7 p1 adds {B} (p1:Swamp#2)
+T7 p1 taps p1:Swamp#2 for mana
 T7 p1 cancels casting Fireball
 T7 taps: p1:Swamp#2
 T7 p1 adds {B} (p1:Swamp#2)
+T7 p1 taps p1:Swamp#2 for mana
 T7 moves: Fireball, p1's hand -> stack
 T7 p1 cancels casting Fireball
 T7 moves: Burning Inquiry, p1's hand -> stack
@@ -210,13 +226,16 @@ T8 moves: Mountain, p2's library -> p2's hand
 T8 p2 draws
 T8 taps: p2:Island
 T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
 T8 p2's unspent {U} empties
 T8 moves: Island, p2's hand -> battlefield
 T8 p2 plays p2:Island#2
 T8 taps: p2:Island#2
 T8 p2 adds {U} (p2:Island#2)
+T8 p2 taps p2:Island#2 for mana
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 moves: Sage Owl, p2's hand -> stack
 T8 p2 casts Sage Owl
 T8 resolves: Sage Owl

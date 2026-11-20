@@ -8,6 +8,7 @@ Acidic Slime
 Acolyte of Xathrid
 Air Elemental
 Alluring Siren
+Angel's Feather
 Angel's Mercy
 Assassinate
 Ball Lightning
@@ -29,12 +30,14 @@ Coral Merfolk
 Craw Wurm
 Deadly Recluse
 Deathmark
+Demon's Horn
 Diabolic Tutor
 Disentomb
 Disorient
 Divination
 Divine Verdict
 Doom Blade
+Dragon's Claw
 Dread Warlock
 Duress
 Earthquake
@@ -65,17 +68,24 @@ Hill Giant
 Horned Turtle
 Howling Banshee
 Howling Mine
+Hypnotic Specter
 Ignite Disorder
 Island
 Jackal Familiar
 Kalonian Behemoth
 Kelinore Bat
+Kraken's Eye
 Lava Axe
 Lightning Bolt
 Lightning Elemental
+Lightwielder Paladin
 Llanowar Elves
 Looming Shade
+Lurking Predators
+Manabarbs
+Megrim
 Merfolk Looter
+Mesa Enchantress
 Might of Oaks
 Mind Rot
 Mind Shatter
@@ -103,6 +113,7 @@ Rod of Ruin
 Royal Assassin
 Runeclaw Bear
 Sage Owl
+Sanguine Bond
 Seismic Strike
 Serra Angel
 Shatter
@@ -125,6 +136,7 @@ Terramorphic Expanse
 Tome Scour
 Traumatize
 Undead Slayer
+Underworld Dreams
 Unsummon
 Vampire Aristocrat
 Viashino Spearhunter
@@ -134,6 +146,7 @@ Wall of Fire
 Warpath Ghoul
 Wind Drake
 Windstorm
+Wurm's Tooth
 Yawning Fissure
 Zephyr Sprite
 Zombie Goliath

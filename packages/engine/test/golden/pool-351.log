@@ -42,6 +42,7 @@ T2 moves: Giant Spider, p1's library -> p1's hand
 T2 p1 draws
 T2 taps: p2:Plains
 T2 p2 adds {W} (p2:Plains)
+T2 p2 taps p2:Plains for mana
 T2 p2's unspent {W} empties
 T2 p1 attack: nothing
 T2 moves: Giant Spider, p1's hand -> p1's graveyard
@@ -52,6 +53,7 @@ T3 moves: Plains, p2's library -> p2's hand
 T3 p2 draws
 T3 taps: p2:Plains
 T3 p2 adds {W} (p2:Plains)
+T3 p2 taps p2:Plains for mana
 T3 p2's unspent {W} empties
 T3 moves: Dread Warlock, p2's hand -> stack
 T3 p2 cancels casting Dread Warlock
@@ -60,13 +62,16 @@ T3 p2 plays p2:Swamp
 T3 moves: Birds of Paradise, p2's hand -> stack
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2 cancels casting Birds of Paradise
 T3 moves: Wind Drake, p2's hand -> stack
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2 cancels casting Wind Drake
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2's unspent {B} empties
 T3 p2 attack: nothing
 T4 turn 4 begins (p1)
@@ -79,6 +84,7 @@ T4 p1 plays p1:Plains
 T4 moves: Soul Warden, p1's hand -> stack
 T4 taps: p1:Plains
 T4 p1 adds {W} (p1:Plains)
+T4 p1 taps p1:Plains for mana
 T4 p1 casts Soul Warden
 T4 resolves: Soul Warden
 T4 moves: Soul Warden, stack -> battlefield

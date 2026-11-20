@@ -53,11 +53,15 @@ spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3
 triggers that "look back in time" (CR 603.10), delayed triggers, and state triggers.
 *Built (M2-07a, D-076):* entering, beginning-of-step and attack triggers, the intervening if, "you may", APNAP
 ordering, and last known information of a card leaving the battlefield (`GameState.lastKnown`, CR 608.2h).
-*Still to come:* casting, drawing, discarding, damage, life gain and mana triggers (M2-07b); delayed triggers
+*Built (M2-07b, D-077):* casting, drawing, discarding, tapping a land for mana, damage to a player and life gain
+triggers; "that much"; "that player controls" in a target; identical triggers put on unasked; cleanup priority for
+triggers (CR 514.3a). *Still to come:* triggers on activating abilities and declaring blockers; delayed triggers
 (CR 603.7) and "becomes the target" (M2-07c), which need their own `AbilityRef` kind and a pending trigger whose source
 isn't a permanent; leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
 `lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through
-`triggersOf`. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
+`triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1), right while only mana abilities can trigger
+during one; "becomes the target" (M2-07c) triggers during a cast too, so cancel must then drop only what the cast's
+reversed parts caused. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,
@@ -216,6 +220,11 @@ the pool before, and the permanents tapped for mana.
 must be discarded, never put on the stack (CR 734.1: no abilities trigger from an undone action). The snapshot stops
 being an exact reversal once a mana ability has another effect or cost (sacrifice, life, a library) or a triggered
 mana ability fires; CR 734.1 forbids reversing some of those, so cancel will need to refuse, or reverse less.
+A triggered mana ability ("whenever a player taps a land for mana, that player adds one mana of any type that land
+produced", CR 605.1b, 605.4a) must resolve at once inside `resolveManaAbility`, not wait in `pendingTriggers` as
+Manabarbs' does (D-077), and it reads the land: `landTappedForMana` keeps no land in its `TriggerEvent` so Manabarbs'
+triggers stay identical, so such an ability needs the land kept, and the identical-trigger check then must compare only
+what each ability reads.
 Modal spells and kicker change the target requirements after the mode or cost is chosen (CR 601.2b–c), so the
 "every target has a legal choice" pre-check in `castProblem` must then look at the chosen modes.
 

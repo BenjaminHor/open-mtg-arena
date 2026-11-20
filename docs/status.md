@@ -52,8 +52,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       leave out the activating source's own mana ability, or the fuzzer's "every listed action is accepted" breaks.
     - Citations: exile CR 701.13a; "target spell" can't be an ability CR 113.9, 112.1; Undead Slayer's target is a
       permanent (CR 109.2), subtypes only; "can't be countered" later (CR 101.2).
-    - Cards: the 19 in the spec, plus Ornithopter and Rod of Ruin (artifacts to target). Enchantments aren't in the pool
-      until M2-07: the enchantment half of Naturalize, Solemn Offering and Tempest of Light is unit-tested until then.
+    - Cards: the 19 in the spec, plus Ornithopter and Rod of Ruin (artifacts to target). Enchantments weren't in the pool
+      until M2-07b, which adds scenarios for the enchantment half of Naturalize, Solemn Offering and Tempest of Light.
     - Tests (from the rulings): Royal Assassin can't target itself, its ability resolving without its source (and Rod
       of Ruin's after Shatter); Solemn Offering whose target is gone gains no life; Ornithopter as an artifact creature
       spell for Essence Scatter but not Negate or Flashfreeze; a countered creature spell to the graveyard, no refund;
@@ -235,7 +235,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        triggering event's player, object and amount). "You may" asks as it resolves (`chooseYesNo`).
      - M2-07a: the machinery, entering and beginning-of-step triggers: Elvish Visionary, Howling Banshee, Sparkmage
        Apprentice, Gravedigger, Borderland Ranger, Sage Owl, Acidic Slime, Soul Warden, Ball Lightning, Howling Mine
-       (intervening if), Bramble Creeper (attacks). Built (D-076), in review: the triggers README
+       (intervening if), Bramble Creeper (attacks). Done, merged (PR #39, D-076): the triggers README
        (`engine/src/triggers/README.md`) explains the path; 35 scenarios in `test/scenarios/cards/m2-07a/` and
        `interactions/triggers/`, unit tests in `test/triggers/triggers.test.ts`, a Triggers matrix column; nine of the
        cards in the M10 pair (Soul Warden and Acidic Slime only in pool decks); 9 golden games added (4.4 MB). The
@@ -244,6 +244,28 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
+       Built (D-077), in review: 44 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
+       Solemn Offering and Tempest of Light), three new Triggers matrix cells; six of the cards in the M10 pair; 12
+       golden games added (5.1 MB; every golden log also gained a "taps ... for mana" line per land tapped). 146 cards
+       in the pool; 138 of the 234 Magic 2010 cards. Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:
+       - Slice 1, casting: `spellCast` with a filter on the spell as cast (colors, types; `controller` is the caster,
+         relative to the trigger's controller), matched where `SPELL_CAST` is emitted (CR 601.2i), so the triggers go
+         on the stack before the caster gets priority. The five artifacts ("you may gain 1 life"), Mesa Enchantress,
+         Lurking Predators (a `revealTop` op whose card is `found`; `put` with an `onlyIf` filter; "you may put it on
+         the bottom", a yes or no).
+       - Slice 2, drawing, discarding, mana: `playerDraws` and `playerDiscards` (`CARD_DRAWN`, `CARD_DISCARDED`, through
+         the pipeline), `landTappedForMana` (CR 106.12: a new `MANA_ABILITY_RESOLVED` event from `resolveManaAbility`,
+         land source, {T} in the cost, mana produced, CR 106.12a). Underworld Dreams, Megrim, Manabarbs. The cleanup
+         step gives priority when triggers wait (CR 514.3a: a discard to hand size triggers Megrim). Manabarbs triggered
+         while paying a cancelled cast is dropped (CR 734.1, built in 07a).
+       - Slice 3, damage and life: `selfDealsDamage` (to an opponent, or combat damage to a player), `playerGainsLife`
+         with "that much" (`TriggerEvent.amount`, an `Amount` "triggerAmount"). Target filters can name "that player"
+         (`controller: "triggeringPlayer"`, read from the ability's `trigger`, CR 603.3d, Lightwielder Paladin).
+         Hypnotic Specter, Sanguine Bond (one trigger per life-gain event: each lifelink source, CR 603.2c),
+         Lightwielder Paladin.
+       - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
+         filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
+         effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
      - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
        Illusionary Servant ("becomes the target", CR 601.2c), Bogardan Hellkite (flash comes with it, D-074).
      - Settled before code (advisor, 2026-11-20):

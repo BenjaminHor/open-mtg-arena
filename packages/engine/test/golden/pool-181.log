@@ -1,0 +1,186 @@
+T0 p2 goes first (chosen by p2)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Prized Unicorn, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Fiery Hellhound, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Dread Warlock, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Prized Unicorn, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Warpath Ghoul, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Shivan Dragon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Traumatize, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 mulligans
+T0 p1 keeps
+T0 moves: Prized Unicorn, p2's hand -> p2's library
+T0 moves: Fiery Hellhound, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 moves: Dread Warlock, p2's hand -> p2's library
+T0 moves: Prized Unicorn, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 moves: Island, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Celestial Purge, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Jackal Familiar, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Dread Warlock, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Dread Warlock, p2's hand -> p2's library
+T0 p2 mulligans
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Island, p2's hand -> p2's library
+T0 moves: Celestial Purge, p2's hand -> p2's library
+T0 moves: Jackal Familiar, p2's hand -> p2's library
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Fiery Hellhound, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Jackal Familiar, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Giant Growth, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Goblin Piker, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Dread Warlock, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Acidic Slime, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Goblin Piker, p2's hand -> p2's library
+T0 moves: Acidic Slime, p2's hand -> p2's library
+T0 p2 mulligans
+T0 moves: Fiery Hellhound, p2's hand -> p2's library
+T0 moves: Jackal Familiar, p2's hand -> p2's library
+T0 moves: Giant Growth, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 moves: Dread Warlock, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Acidic Slime, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Deathmark, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Giant Growth, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Palace Guard, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Fiery Hellhound, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Giant Growth, p2's hand -> p2's library
+T0 moves: Acidic Slime, p2's hand -> p2's library
+T0 moves: Deathmark, p2's hand -> p2's library
+T0 p2 keeps
+T1 turn 1 begins (p2)
+T1 moves: Plains, p2's hand -> battlefield
+T1 p2 plays p2:Plains
+T1 moves: Palace Guard, p2's hand -> stack
+T1 taps: p2:Plains
+T1 p2 adds {W} (p2:Plains)
+T1 p2 taps p2:Plains for mana
+T1 p2 cancels casting Palace Guard
+T1 taps: p2:Plains
+T1 p2 adds {W} (p2:Plains)
+T1 p2 taps p2:Plains for mana
+T1 p2's unspent {W} empties
+T1 p2 attack: nothing
+T2 turn 2 begins (p1)
+T2 moves: Blinding Mage, p1's library -> p1's hand
+T2 p1 draws
+T2 moves: Shivan Dragon, p1's hand -> stack
+T2 p1 cancels casting Shivan Dragon
+T2 p1 attack: nothing
+T2 moves: Traumatize, p1's hand -> stack
+T2 p1 cancels casting Traumatize
+T2 moves: Swamp, p1's hand -> p1's graveyard
+T2 p1 discards Swamp
+T3 turn 3 begins (p2)
+T3 untaps: p2:Plains
+T3 taps: p2:Plains
+T3 p2 adds {W} (p2:Plains)
+T3 p2 taps p2:Plains for mana
+T3 p2's unspent {W} empties
+T3 moves: Dragon's Claw, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Fiery Hellhound, p2's hand -> stack
+T3 p2 cancels casting Fiery Hellhound
+T3 moves: Plains, p2's hand -> battlefield
+T3 p2 plays p2:Plains#2
+T3 moves: Palace Guard, p2's hand -> stack
+T3 taps: p2:Plains#2
+T3 p2 adds {W} (p2:Plains#2)
+T3 p2 taps p2:Plains#2 for mana
+T3 p2 cancels casting Palace Guard
+T3 taps: p2:Plains#2
+T3 p2 adds {W} (p2:Plains#2)
+T3 p2 taps p2:Plains#2 for mana
+T3 moves: Dragon's Claw, p2's hand -> stack
+T3 p2 cancels casting Dragon's Claw
+T3 p2's unspent {W} empties
+T3 p2 attack: nothing
+T4 turn 4 begins (p1)
+T4 moves: Swamp, p1's library -> p1's hand
+T4 p1 draws
+T4 moves: Warpath Ghoul, p1's hand -> stack
+T4 p1 cancels casting Warpath Ghoul
+T4 moves: Swamp, p1's hand -> battlefield
+T4 p1 plays p1:Swamp
+T4 moves: Shivan Dragon, p1's hand -> stack
+T4 p1 cancels casting Shivan Dragon
+T4 p1 attack: nothing
+T4 taps: p1:Swamp
+T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
+T4 moves: Warpath Ghoul, p1's hand -> stack
+T4 p1 cancels casting Warpath Ghoul
+T4 p1's unspent {B} empties
+T5 turn 5 begins (p2)
+T5 untaps: p2:Plains#1
+T5 untaps: p2:Plains#2
+T5 moves: Deadly Recluse, p2's library -> p2's hand
+T5 p2 draws
+T5 moves: Dragon's Claw, p2's hand -> stack
+T5 taps: p2:Plains#1
+T5 p2 adds {W} (p2:Plains#1)
+T5 p2 taps p2:Plains#1 for mana
+T5 taps: p2:Plains#2
+T5 p2 adds {W} (p2:Plains#2)
+T5 p2 taps p2:Plains#2 for mana
+T5 p2 casts Dragon's Claw
+T5 resolves: Dragon's Claw
+T5 moves: Dragon's Claw, stack -> battlefield
+T5 p2 attack: nothing
+T6 turn 6 begins (p1)
+T6 untaps: p1:Swamp

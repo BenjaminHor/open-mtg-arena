@@ -1015,3 +1015,26 @@ every schema change and every change D-024 lists bumps it.
 - Chosen for future rules: replacement effects (M2-08) come before detection in `happen`, so a replaced event triggers as
   replaced; delayed triggers (M2-07c) will be pending triggers whose source is not a permanent, with their own
   `AbilityRef`; tokens entering trigger the same way.
+
+**D-077: Triggers on casting, drawing, discarding, mana, damage and life gain; identical triggers aren't ordered** · 2026-11-20 · accepted
+- New trigger conditions (M2-07b): `spellCast` (a filter on the spell as cast, its `controller` the caster), matched
+  where `SPELL_CAST` is emitted as the spell becomes cast (CR 601.2i), so the trigger goes on the stack above the spell;
+  `playerDraws`, `playerDiscards`, `selfDealsDamageToPlayer`, `playerGainsLife`, matched in the pipeline; and
+  `landTappedForMana`, on a new `TAPPED_FOR_MANA` event that `resolveManaAbility` emits when a mana ability with {T} in
+  its cost produced mana (CR 106.12, 106.12a), the one path every mana payment takes. "A player / you / an opponent"
+  is a `PlayerRelation`, relative to the trigger's controller.
+- `TriggerEvent.amount` ("that much", the `Amount` `"thatMuch"`) is the life gained; a gain of 0 has no event
+  (CR 119.9). Each lifelink source is its own life-gain event, so Sanguine Bond triggers once per source (its ruling).
+- "Target ... that player controls" is an `ObjectFilter.controller` of `"triggeringPlayer"`, read only by the target
+  checks (`rules/targets.ts` passes the ability's `TriggerEvent.player` to `matchesFilter`), as targets are chosen and
+  again on resolution; `definitionProblems` refuses it anywhere else.
+- When all of a player's triggers in a batch are identical (the same ability of the same source, with the same
+  `TriggerEvent`), they go on the stack without an `orderTriggers` question: no order can be told apart (CR 603.3b
+  lets the player choose, and every choice is the same). A trigger keeps from its event only what its effects read,
+  so Manabarbs' triggers from six lands are identical (it reads "that player", not the land).
+- The cleanup step gives priority when triggers are waiting, as when a state-based action was performed (CR 514.3a):
+  a discard to hand size triggers Megrim.
+- Lurking Predators: `revealTop` reveals the top card as `"found"`; `put` gains `onlyIf` (a filter: "if it's a
+  creature card"), `optional` ("you may put", asked only if there's a card to put) and `into: "libraryBottom"`.
+- The CLI log shows each `TAPPED_FOR_MANA` ("p1 taps Forest for mana"), so every golden log gained those lines and
+  nothing else.

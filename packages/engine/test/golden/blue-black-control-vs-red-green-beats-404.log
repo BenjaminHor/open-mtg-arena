@@ -60,6 +60,7 @@ T1 moves: Mountain, p2's hand -> battlefield
 T1 p2 plays p2:Mountain
 T1 taps: p2:Mountain
 T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
 T1 moves: Craw Wurm, p2's hand -> stack
 T1 p2 cancels casting Craw Wurm
 T1 moves: Centaur Courser, p2's hand -> stack
@@ -78,6 +79,7 @@ T3 turn 3 begins (p2)
 T3 untaps: p2:Mountain
 T3 taps: p2:Mountain
 T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
 T3 p2's unspent {R} empties
 T3 moves: Centaur Courser, p2's library -> p2's hand
 T3 p2 draws
@@ -87,10 +89,12 @@ T3 moves: Centaur Courser, p2's hand -> stack
 T3 p2 cancels casting Centaur Courser
 T3 taps: p2:Mountain#2
 T3 p2 adds {R} (p2:Mountain#2)
+T3 p2 taps p2:Mountain#2 for mana
 T3 p2's unspent {R} empties
 T3 p2 attack: nothing
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p1's unspent {U} empties
 T3 moves: Craw Wurm, p2's hand -> stack
 T3 p2 cancels casting Craw Wurm
@@ -100,15 +104,18 @@ T4 moves: Air Elemental, p1's library -> p1's hand
 T4 p1 draws
 T4 taps: p1:Island
 T4 p1 adds {U} (p1:Island)
+T4 p1 taps p1:Island for mana
 T4 p1's unspent {U} empties
 T4 moves: Island, p1's hand -> battlefield
 T4 p1 plays p1:Island#2
 T4 moves: Air Elemental, p1's hand -> stack
 T4 taps: p1:Island#2
 T4 p1 adds {U} (p1:Island#2)
+T4 p1 taps p1:Island#2 for mana
 T4 p1 cancels casting Air Elemental
 T4 taps: p1:Island#2
 T4 p1 adds {U} (p1:Island#2)
+T4 p1 taps p1:Island#2 for mana
 T4 moves: Air Elemental, p1's hand -> stack
 T4 p1 cancels casting Air Elemental
 T4 moves: Air Elemental, p1's hand -> stack
@@ -122,49 +129,59 @@ T5 untaps: p2:Mountain#1
 T5 untaps: p2:Mountain#2
 T5 taps: p2:Mountain#1
 T5 p2 adds {R} (p2:Mountain#1)
+T5 p2 taps p2:Mountain#1 for mana
 T5 p2's unspent {R} empties
 T5 moves: Viashino Spearhunter, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2's unspent {R} empties
 T5 moves: Forest, p2's hand -> battlefield
 T5 p2 plays p2:Forest
 T5 moves: Centaur Courser, p2's hand -> stack
 T5 taps: p2:Forest
 T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
 T5 p2 cancels casting Centaur Courser
 T5 moves: Llanowar Elves, p2's hand -> stack
 T5 taps: p2:Forest
 T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
 T5 p2 cancels casting Llanowar Elves
 T5 moves: Centaur Courser, p2's hand -> stack
 T5 taps: p2:Forest
 T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
 T5 p2 cancels casting Centaur Courser
 T5 p2 attack: nothing
 T5 taps: p2:Forest
 T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
 T5 p2's unspent {G} empties
 T6 turn 6 begins (p1)
 T6 untaps: p1:Island#1
 T6 untaps: p1:Island#2
 T6 taps: p1:Island#1
 T6 p1 adds {U} (p1:Island#1)
+T6 p1 taps p1:Island#1 for mana
 T6 p1's unspent {U} empties
 T6 moves: Horned Turtle, p1's library -> p1's hand
 T6 p1 draws
 T6 moves: Air Elemental, p1's hand -> stack
 T6 taps: p1:Island#2
 T6 p1 adds {U} (p1:Island#2)
+T6 p1 taps p1:Island#2 for mana
 T6 p1 cancels casting Air Elemental
 T6 moves: Island, p1's hand -> battlefield
 T6 p1 plays p1:Island#3
 T6 taps: p1:Island#3
 T6 p1 adds {U} (p1:Island#3)
+T6 p1 taps p1:Island#3 for mana
 T6 p1's unspent {U} empties
 T6 taps: p1:Island#2
 T6 p1 adds {U} (p1:Island#2)
+T6 p1 taps p1:Island#2 for mana
 T6 p1's unspent {U} empties
 T6 p1 attack: nothing
 T7 turn 7 begins (p2)
@@ -176,18 +193,24 @@ T7 p2 draws
 T7 moves: Fireball, p2's hand -> stack
 T7 taps: p2:Mountain#2
 T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 taps: p2:Mountain#1
 T7 p2 adds {R} (p2:Mountain#1)
+T7 p2 taps p2:Mountain#1 for mana
 T7 p2 cancels casting Fireball
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 moves: Viashino Spearhunter, p2's hand -> stack
 T7 taps: p2:Mountain#2
 T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
 T7 taps: p2:Mountain#1
 T7 p2 adds {R} (p2:Mountain#1)
+T7 p2 taps p2:Mountain#1 for mana
 T7 p2 casts Viashino Spearhunter
 T7 resolves: Viashino Spearhunter
 T7 moves: Viashino Spearhunter, stack -> battlefield

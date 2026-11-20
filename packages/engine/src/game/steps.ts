@@ -107,14 +107,16 @@ function endCleanup(state: GameState): Progress {
 }
 
 /**
- * The cleanup step's check (CR 514.3a), after the CR 514.2 action: state-based actions now, triggered abilities later. If none were performed, the step
- * ends with no one getting priority (CR 514.3); if any were, the active player gets priority (which checks again).
+ * The cleanup step's check (CR 514.3a), after the CR 514.2 action: state-based actions, and triggered abilities waiting
+ * (a discard to hand size triggers Megrim). If there are none, the step ends with no one getting priority (CR 514.3);
+ * otherwise the active player gets priority, which performs them and puts the triggers on the stack first.
  */
 export function cleanupCheck(state: GameState, cards: CardDatabase): Progress {
   const checked = checkStateBasedActions(state, cards);
   if (checked.state.result !== null) return { state: checked.state, events: checked.events };
   const active = currentTurn(checked.state).activePlayer;
-  const next = checked.performed ? ({ kind: "givePriority", player: active } as const) : ({ kind: "endStep" } as const);
+  const waiting = checked.performed || checked.state.pendingTriggers.length > 0;
+  const next = waiting ? ({ kind: "givePriority", player: active } as const) : ({ kind: "endStep" } as const);
   return { state: queueWork(checked.state, next), events: checked.events };
 }
 

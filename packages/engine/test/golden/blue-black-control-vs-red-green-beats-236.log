@@ -1,0 +1,208 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Gravedigger, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Doom Blade, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Sanguine Bond, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Doom Blade, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Terramorphic Expanse, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Seismic Strike, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lightning Bolt, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Stampeding Rhino, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 keeps
+T0 p2 mulligans
+T0 moves: Terramorphic Expanse, p2's hand -> p2's library
+T0 moves: Seismic Strike, p2's hand -> p2's library
+T0 moves: Prodigal Pyromancer, p2's hand -> p2's library
+T0 moves: Lightning Bolt, p2's hand -> p2's library
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Stampeding Rhino, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Seismic Strike, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lurking Predators, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Sparkmage Apprentice, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Panic Attack, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's hand -> p2's library
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 moves: Swamp, p1's hand -> battlefield
+T1 p1 plays p1:Swamp
+T1 taps: p1:Swamp
+T1 p1 adds {B} (p1:Swamp)
+T1 p1 taps p1:Swamp for mana
+T1 p1's unspent {B} empties
+T1 p1 attack: nothing
+T1 moves: Gravedigger, p1's hand -> stack
+T1 p1 cancels casting Gravedigger
+T2 turn 2 begins (p2)
+T2 moves: Forest, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Panic Attack, p2's hand -> stack
+T2 p2 cancels casting Panic Attack
+T2 moves: Forest, p2's hand -> battlefield
+T2 p2 plays p2:Forest
+T2 moves: Sparkmage Apprentice, p2's hand -> stack
+T2 taps: p2:Forest
+T2 p2 adds {G} (p2:Forest)
+T2 p2 taps p2:Forest for mana
+T2 p2 cancels casting Sparkmage Apprentice
+T2 taps: p2:Forest
+T2 p2 adds {G} (p2:Forest)
+T2 p2 taps p2:Forest for mana
+T2 p2's unspent {G} empties
+T2 p2 attack: nothing
+T3 turn 3 begins (p1)
+T3 untaps: p1:Swamp
+T3 moves: Essence Scatter, p1's library -> p1's hand
+T3 p1 draws
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 moves: Island, p1's hand -> battlefield
+T3 p1 plays p1:Island
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1's unspent {U}{B} empties
+T3 p1 attack: nothing
+T4 turn 4 begins (p2)
+T4 untaps: p2:Forest
+T4 taps: p2:Forest
+T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
+T4 p2's unspent {G} empties
+T4 moves: Forest, p2's library -> p2's hand
+T4 p2 draws
+T4 p2 attack: nothing
+T4 moves: Panic Attack, p2's hand -> stack
+T4 p2 cancels casting Panic Attack
+T4 moves: Forest, p2's hand -> battlefield
+T4 p2 plays p2:Forest#2
+T4 taps: p2:Forest#2
+T4 p2 adds {G} (p2:Forest#2)
+T4 p2 taps p2:Forest#2 for mana
+T4 p2's unspent {G} empties
+T5 turn 5 begins (p1)
+T5 untaps: p1:Swamp
+T5 untaps: p1:Island
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 p1's unspent {U} empties
+T5 moves: Island, p1's library -> p1's hand
+T5 p1 draws
+T5 taps: p1:Swamp
+T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
+T5 moves: Gravedigger, p1's hand -> stack
+T5 p1 cancels casting Gravedigger
+T5 moves: Gravedigger, p1's hand -> stack
+T5 p1 cancels casting Gravedigger
+T5 moves: Island, p1's hand -> battlefield
+T5 p1 plays p1:Island#2
+T5 taps: p1:Island#2
+T5 p1 adds {U} (p1:Island#2)
+T5 p1 taps p1:Island#2 for mana
+T5 p1's unspent {U}{B} empties
+T5 p1 attack: nothing
+T5 moves: Gravedigger, p1's hand -> stack
+T5 p1 cancels casting Gravedigger
+T5 moves: Sanguine Bond, p1's hand -> stack
+T5 p1 cancels casting Sanguine Bond
+T5 moves: Sanguine Bond, p1's hand -> stack
+T5 p1 cancels casting Sanguine Bond
+T5 moves: Sanguine Bond, p1's hand -> stack
+T5 p1 cancels casting Sanguine Bond
+T5 moves: Gravedigger, p1's hand -> stack
+T5 p1 cancels casting Gravedigger
+T6 turn 6 begins (p2)
+T6 untaps: p2:Forest#1
+T6 untaps: p2:Forest#2
+T6 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p2:Forest#2
+T6 p2 adds {G} (p2:Forest#2)
+T6 p2 taps p2:Forest#2 for mana
+T6 taps: p2:Forest#1
+T6 p2 adds {G} (p2:Forest#1)
+T6 p2 taps p2:Forest#1 for mana
+T6 p2's unspent {G}{G} empties
+T6 moves: Sparkmage Apprentice, p2's hand -> stack
+T6 p2 cancels casting Sparkmage Apprentice
+T6 moves: Panic Attack, p2's hand -> stack
+T6 p2 cancels casting Panic Attack
+T6 p2 attack: nothing
+T7 turn 7 begins (p1)
+T7 untaps: p1:Swamp
+T7 untaps: p1:Island#1
+T7 untaps: p1:Island#2
+T7 moves: Megrim, p1's library -> p1's hand
+T7 p1 draws
+T7 moves: Island, p1's hand -> battlefield
+T7 p1 plays p1:Island#3
+T7 moves: Megrim, p1's hand -> stack
+T7 taps: p1:Island#1
+T7 p1 adds {U} (p1:Island#1)
+T7 p1 taps p1:Island#1 for mana
+T7 taps: p1:Island#3
+T7 p1 adds {U} (p1:Island#3)
+T7 p1 taps p1:Island#3 for mana
+T7 taps: p1:Swamp
+T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
+T7 taps: p1:Island#2
+T7 p1 adds {U} (p1:Island#2)
+T7 p1 taps p1:Island#2 for mana
+T7 p1 casts Megrim
+T7 resolves: Megrim
+T7 moves: Megrim, stack -> battlefield
+T7 moves: Gravedigger, p1's hand -> stack
+T7 p1 cancels casting Gravedigger
+T7 p1's unspent {U} empties
+T7 p1 attack: nothing
+T7 moves: Sanguine Bond, p1's hand -> stack
+T7 p1 cancels casting Sanguine Bond
+T7 moves: Gravedigger, p1's hand -> stack
+T7 p1 cancels casting Gravedigger
+T7 moves: Sanguine Bond, p1's hand -> stack
+T7 p1 cancels casting Sanguine Bond
+T7 moves: Sanguine Bond, p1's hand -> stack
+T7 p1 cancels casting Sanguine Bond
+T7 moves: Sanguine Bond, p1's hand -> stack
+T7 p1 cancels casting Sanguine Bond
+T7 moves: Gravedigger, p1's hand -> stack
+T7 p1 cancels casting Gravedigger
+T8 turn 8 begins (p2)
+T8 untaps: p2:Forest#1
+T8 untaps: p2:Forest#2

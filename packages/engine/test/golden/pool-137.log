@@ -44,6 +44,7 @@ T2 moves: Island, p2's hand -> battlefield
 T2 p2 plays p2:Island
 T2 taps: p2:Island
 T2 p2 adds {U} (p2:Island)
+T2 p2 taps p2:Island for mana
 T2 p2's unspent {U} empties
 T2 p2 attack: nothing
 T2 moves: Fire Elemental, p2's hand -> stack
@@ -58,15 +59,18 @@ T3 p1 cancels casting Sign in Blood
 T3 moves: Sign in Blood, p1's hand -> stack
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p1 cancels casting Sign in Blood
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p1's unspent {U} empties
 T3 p1 attack: nothing
 T4 turn 4 begins (p2)
 T4 untaps: p2:Island
 T4 taps: p2:Island
 T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
 T4 p2's unspent {U} empties
 T4 moves: Solemn Offering, p2's library -> p2's hand
 T4 p2 draws
@@ -83,6 +87,7 @@ T5 moves: Goblin Artillery, p1's library -> p1's hand
 T5 p1 draws
 T5 taps: p1:Island
 T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
 T5 p1's unspent {U} empties
 T5 p1 attack: nothing
 T5 moves: Tome Scour, p1's hand -> stack
@@ -97,6 +102,7 @@ T6 turn 6 begins (p2)
 T6 untaps: p2:Island
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 p2's unspent {U} empties
 T6 moves: Acolyte of Xathrid, p2's library -> p2's hand
 T6 p2 draws
@@ -107,11 +113,13 @@ T6 moves: Plains, p2's hand -> battlefield
 T6 p2 plays p2:Plains
 T6 taps: p2:Plains
 T6 p2 adds {W} (p2:Plains)
+T6 p2 taps p2:Plains for mana
 T6 p2's unspent {W} empties
 T7 turn 7 begins (p1)
 T7 untaps: p1:Island
 T7 taps: p1:Island
 T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
 T7 p1's unspent {U} empties
 T7 moves: Swamp, p1's library -> p1's hand
 T7 p1 draws
@@ -123,11 +131,13 @@ T8 untaps: p2:Island
 T8 untaps: p2:Plains
 T8 taps: p2:Plains
 T8 p2 adds {W} (p2:Plains)
+T8 p2 taps p2:Plains for mana
 T8 p2's unspent {W} empties
 T8 moves: Swamp, p2's library -> p2's hand
 T8 p2 draws
 T8 taps: p2:Island
 T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
 T8 p2's unspent {U} empties
 T8 p2 attack: nothing
 T8 moves: Plains, p2's hand -> battlefield
@@ -135,9 +145,11 @@ T8 p2 plays p2:Plains#2
 T8 moves: Fire Elemental, p2's hand -> stack
 T8 taps: p2:Plains#2
 T8 p2 adds {W} (p2:Plains#2)
+T8 p2 taps p2:Plains#2 for mana
 T8 p2 cancels casting Fire Elemental
 T8 taps: p2:Plains#2
 T8 p2 adds {W} (p2:Plains#2)
+T8 p2 taps p2:Plains#2 for mana
 T8 moves: Serra Angel, p2's hand -> stack
 T8 p2 cancels casting Serra Angel
 T8 moves: Fire Elemental, p2's hand -> stack
@@ -147,6 +159,7 @@ T9 turn 9 begins (p1)
 T9 untaps: p1:Island
 T9 taps: p1:Island
 T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
 T9 p1's unspent {U} empties
 T9 moves: Razorfoot Griffin, p1's library -> p1's hand
 T9 p1 draws
@@ -155,10 +168,12 @@ T9 p1 plays p1:Island#2
 T9 moves: Zephyr Sprite, p1's hand -> stack
 T9 taps: p1:Island#2
 T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
 T9 p1 cancels casting Zephyr Sprite
 T9 p1 attack: nothing
 T9 taps: p1:Island#2
 T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
 T9 p1's unspent {U} empties
 T9 moves: Sign in Blood, p1's hand -> stack
 T9 p1 cancels casting Sign in Blood
@@ -175,41 +190,52 @@ T10 p2 plays p2:Swamp
 T10 moves: Rampant Growth, p2's hand -> stack
 T10 taps: p2:Plains#2
 T10 p2 adds {W} (p2:Plains#2)
+T10 p2 taps p2:Plains#2 for mana
 T10 taps: p2:Plains#1
 T10 p2 adds {W} (p2:Plains#1)
+T10 p2 taps p2:Plains#1 for mana
 T10 taps: p2:Island
 T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
 T10 taps: p2:Swamp
 T10 p2 adds {B} (p2:Swamp)
+T10 p2 taps p2:Swamp for mana
 T10 p2 cancels casting Rampant Growth
 T10 p2 attack: nothing
 T10 moves: Acolyte of Xathrid, p2's hand -> stack
 T10 taps: p2:Swamp
 T10 p2 adds {B} (p2:Swamp)
+T10 p2 taps p2:Swamp for mana
 T10 p2 casts Acolyte of Xathrid
 T10 taps: p2:Island
 T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
 T10 taps: p2:Plains#2
 T10 p2 adds {W} (p2:Plains#2)
+T10 p2 taps p2:Plains#2 for mana
 T10 resolves: Acolyte of Xathrid
 T10 moves: Acolyte of Xathrid, stack -> battlefield
 T10 moves: Fireball, p2's hand -> stack
 T10 taps: p2:Plains#1
 T10 p2 adds {W} (p2:Plains#1)
+T10 p2 taps p2:Plains#1 for mana
 T10 p2 cancels casting Fireball
 T10 taps: p2:Plains#1
 T10 p2 adds {W} (p2:Plains#1)
+T10 p2 taps p2:Plains#1 for mana
 T10 p2's unspent {W}{W}{U} empties
 T11 turn 11 begins (p1)
 T11 untaps: p1:Island#1
 T11 untaps: p1:Island#2
 T11 taps: p1:Island#1
 T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
 T11 p1's unspent {U} empties
 T11 moves: Rod of Ruin, p1's library -> p1's hand
 T11 p1 draws
 T11 taps: p1:Island#2
 T11 p1 adds {U} (p1:Island#2)
+T11 p1 taps p1:Island#2 for mana
 T11 p1's unspent {U} empties
 T11 moves: Sign in Blood, p1's hand -> stack
 T11 p1 cancels casting Sign in Blood
@@ -219,9 +245,11 @@ T11 p1 attack: nothing
 T11 moves: Sign in Blood, p1's hand -> stack
 T11 taps: p1:Mountain
 T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
 T11 p1 cancels casting Sign in Blood
 T11 taps: p1:Mountain
 T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
 T11 moves: Goblin Artillery, p1's hand -> stack
 T11 p1 cancels casting Goblin Artillery
 T11 moves: Razorfoot Griffin, p1's hand -> stack
@@ -240,16 +268,20 @@ T12 taps: p2:Acolyte of Xathrid
 T12 p2 attack: p2:Acolyte of Xathrid -> p1
 T12 taps: p2:Swamp
 T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
 T12 p2's unspent {B} empties
 T12 p1 block: nothing
 T12 taps: p2:Plains#2
 T12 p2 adds {W} (p2:Plains#2)
+T12 p2 taps p2:Plains#2 for mana
 T12 p2's unspent {W} empties
 T12 taps: p2:Plains#1
 T12 p2 adds {W} (p2:Plains#1)
+T12 p2 taps p2:Plains#1 for mana
 T12 p2's unspent {W} empties
 T12 taps: p2:Island
 T12 p2 adds {U} (p2:Island)
+T12 p2 taps p2:Island for mana
 T12 p2's unspent {U} empties
 T13 turn 13 begins (p1)
 T13 untaps: p1:Island#1
@@ -260,31 +292,41 @@ T13 p1 draws
 T13 moves: Sign in Blood, p1's hand -> stack
 T13 taps: p1:Island#1
 T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
 T13 taps: p1:Island#2
 T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
 T13 taps: p1:Mountain
 T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
 T13 p1 cancels casting Sign in Blood
 T13 moves: Rod of Ruin, p1's hand -> stack
 T13 taps: p1:Island#1
 T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
 T13 taps: p1:Mountain
 T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
 T13 p1 cancels casting Rod of Ruin
 T13 moves: Goblin Artillery, p1's hand -> stack
 T13 taps: p1:Mountain
 T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
 T13 taps: p1:Island#1
 T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
 T13 taps: p1:Island#2
 T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
 T13 p1 cancels casting Goblin Artillery
 T13 taps: p1:Island#2
 T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
 T13 p1's unspent {U} empties
 T13 p1 attack: nothing
 T13 taps: p1:Island#1
 T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
 T13 p1's unspent {U} empties
 T13 moves: Swamp, p1's hand -> p1's graveyard
 T13 p1 discards Swamp
@@ -299,17 +341,22 @@ T14 p2 draws
 T14 moves: Angel's Mercy, p2's hand -> stack
 T14 taps: p2:Island
 T14 p2 adds {U} (p2:Island)
+T14 p2 taps p2:Island for mana
 T14 taps: p2:Plains#2
 T14 p2 adds {W} (p2:Plains#2)
+T14 p2 taps p2:Plains#2 for mana
 T14 taps: p2:Plains#1
 T14 p2 adds {W} (p2:Plains#1)
+T14 p2 taps p2:Plains#1 for mana
 T14 taps: p2:Swamp
 T14 p2 adds {B} (p2:Swamp)
+T14 p2 taps p2:Swamp for mana
 T14 p2 casts Angel's Mercy
 T14 p2 cancels activating p2:Acolyte of Xathrid
 T14 p2 cancels activating p2:Acolyte of Xathrid
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 p2 cancels activating p2:Acolyte of Xathrid
 T14 p2 gains 7 life
 T14 resolves: Angel's Mercy
@@ -322,6 +369,7 @@ T14 taps: p2:Acolyte of Xathrid
 T14 p2 attack: p2:Acolyte of Xathrid -> p1
 T14 taps: p2:Forest
 T14 p2 adds {G} (p2:Forest)
+T14 p2 taps p2:Forest for mana
 T14 p2's unspent {G} empties
 T14 p1 block: nothing
 T14 moves: Rampant Growth, p2's hand -> stack
@@ -334,22 +382,27 @@ T15 untaps: p1:Island#2
 T15 untaps: p1:Mountain
 T15 taps: p1:Island#2
 T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
 T15 taps: p1:Mountain
 T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
 T15 p1's unspent {U}{R} empties
 T15 moves: Swamp, p1's library -> p1's hand
 T15 p1 draws
 T15 moves: Goblin Artillery, p1's hand -> stack
 T15 taps: p1:Island#1
 T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
 T15 p1 cancels casting Goblin Artillery
 T15 moves: Swamp, p1's hand -> battlefield
 T15 p1 plays p1:Swamp
 T15 p1 attack: nothing
 T15 taps: p1:Island#1
 T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
 T15 taps: p1:Swamp
 T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
 T15 p1's unspent {U}{B} empties
 T15 moves: Zephyr Sprite, p1's hand -> stack
 T15 p1 cancels casting Zephyr Sprite
@@ -362,18 +415,23 @@ T16 untaps: p2:Acolyte of Xathrid
 T16 untaps: p2:Forest
 T16 taps: p2:Island
 T16 p2 adds {U} (p2:Island)
+T16 p2 taps p2:Island for mana
 T16 p2's unspent {U} empties
 T16 moves: Mountain, p2's library -> p2's hand
 T16 p2 draws
 T16 taps: p2:Forest
 T16 p2 adds {G} (p2:Forest)
+T16 p2 taps p2:Forest for mana
 T16 p2's unspent {G} empties
 T16 taps: p2:Plains#1
 T16 p2 adds {W} (p2:Plains#1)
+T16 p2 taps p2:Plains#1 for mana
 T16 taps: p2:Plains#2
 T16 p2 adds {W} (p2:Plains#2)
+T16 p2 taps p2:Plains#2 for mana
 T16 taps: p2:Swamp
 T16 p2 adds {B} (p2:Swamp)
+T16 p2 taps p2:Swamp for mana
 T16 taps: p2:Acolyte of Xathrid
 T16 p2 activates p2:Acolyte of Xathrid
 T16 p1 loses 1 life
@@ -392,21 +450,27 @@ T17 p1 plays p1:Plains
 T17 moves: Sign in Blood, p1's hand -> stack
 T17 taps: p1:Swamp
 T17 p1 adds {B} (p1:Swamp)
+T17 p1 taps p1:Swamp for mana
 T17 p1 cancels casting Sign in Blood
 T17 taps: p1:Plains
 T17 p1 adds {W} (p1:Plains)
+T17 p1 taps p1:Plains for mana
 T17 p1's unspent {W} empties
 T17 taps: p1:Swamp
 T17 p1 adds {B} (p1:Swamp)
+T17 p1 taps p1:Swamp for mana
 T17 p1's unspent {B} empties
 T17 p1 attack: nothing
 T17 taps: p1:Island#2
 T17 p1 adds {U} (p1:Island#2)
+T17 p1 taps p1:Island#2 for mana
 T17 taps: p1:Island#1
 T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
 T17 p1's unspent {U}{U} empties
 T17 taps: p1:Mountain
 T17 p1 adds {R} (p1:Mountain)
+T17 p1 taps p1:Mountain for mana
 T17 p1's unspent {R} empties
 T18 turn 18 begins (p2)
 T18 untaps: p2:Island
@@ -420,34 +484,45 @@ T18 p2 draws
 T18 p2 attack: nothing
 T18 taps: p2:Swamp
 T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
 T18 taps: p2:Plains#2
 T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
 T18 taps: p2:Plains#1
 T18 p2 adds {W} (p2:Plains#1)
+T18 p2 taps p2:Plains#1 for mana
 T18 p2's unspent {W}{W}{B} empties
 T18 moves: Serra Angel, p2's hand -> stack
 T18 taps: p2:Island
 T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
 T18 taps: p2:Forest
 T18 p2 adds {G} (p2:Forest)
+T18 p2 taps p2:Forest for mana
 T18 p2 cancels casting Serra Angel
 T18 moves: Fire Elemental, p2's hand -> stack
 T18 taps: p2:Island
 T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
 T18 taps: p2:Forest
 T18 p2 adds {G} (p2:Forest)
+T18 p2 taps p2:Forest for mana
 T18 p2 cancels casting Fire Elemental
 T18 moves: Serra Angel, p2's hand -> stack
 T18 taps: p2:Forest
 T18 p2 adds {G} (p2:Forest)
+T18 p2 taps p2:Forest for mana
 T18 taps: p2:Island
 T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
 T18 p2 cancels casting Serra Angel
 T18 taps: p2:Island
 T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
 T18 moves: Fireball, p2's hand -> stack
 T18 taps: p2:Forest
 T18 p2 adds {G} (p2:Forest)
+T18 p2 taps p2:Forest for mana
 T18 p2 cancels casting Fireball
 T18 moves: Swamp, p2's hand -> battlefield
 T18 p2 plays p2:Swamp#2
@@ -463,42 +538,56 @@ T19 p1 draws
 T19 moves: Sign in Blood, p1's hand -> stack
 T19 taps: p1:Swamp
 T19 p1 adds {B} (p1:Swamp)
+T19 p1 taps p1:Swamp for mana
 T19 taps: p1:Mountain
 T19 p1 adds {R} (p1:Mountain)
+T19 p1 taps p1:Mountain for mana
 T19 taps: p1:Island#1
 T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
 T19 taps: p1:Plains
 T19 p1 adds {W} (p1:Plains)
+T19 p1 taps p1:Plains for mana
 T19 taps: p1:Island#2
 T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
 T19 p1 cancels casting Sign in Blood
 T19 taps: p1:Swamp
 T19 p1 adds {B} (p1:Swamp)
+T19 p1 taps p1:Swamp for mana
 T19 p1's unspent {B} empties
 T19 p1 attack: nothing
 T19 taps: p1:Plains
 T19 p1 adds {W} (p1:Plains)
+T19 p1 taps p1:Plains for mana
 T19 taps: p2:Forest
 T19 p2 adds {G} (p2:Forest)
+T19 p2 taps p2:Forest for mana
 T19 taps: p1:Mountain
 T19 p1 adds {R} (p1:Mountain)
+T19 p1 taps p1:Mountain for mana
 T19 p1's unspent {W}{R} empties
 T19 p2's unspent {G} empties
 T19 taps: p1:Island#1
 T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
 T19 taps: p1:Island#2
 T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
 T19 p1's unspent {U}{U} empties
 T19 moves: Zephyr Sprite, p1's hand -> stack
 T19 p1 cancels casting Zephyr Sprite
 T19 taps: p2:Swamp#2
 T19 p2 adds {B} (p2:Swamp#2)
+T19 p2 taps p2:Swamp#2 for mana
 T19 p2 cancels activating p2:Acolyte of Xathrid
 T19 taps: p2:Swamp#2
 T19 p2 adds {B} (p2:Swamp#2)
+T19 p2 taps p2:Swamp#2 for mana
 T19 p2 cancels activating p2:Acolyte of Xathrid
 T19 taps: p2:Swamp#2
 T19 p2 adds {B} (p2:Swamp#2)
+T19 p2 taps p2:Swamp#2 for mana
 T19 moves: Razorfoot Griffin, p1's hand -> stack
 T19 p1 cancels casting Razorfoot Griffin
 T19 p2's unspent {B} empties
@@ -515,26 +604,33 @@ T20 moves: Deathmark, p2's library -> p2's hand
 T20 p2 draws
 T20 taps: p2:Plains#1
 T20 p2 adds {W} (p2:Plains#1)
+T20 p2 taps p2:Plains#1 for mana
 T20 p2's unspent {W} empties
 T20 taps: p2:Acolyte of Xathrid
 T20 p2 attack: p2:Acolyte of Xathrid -> p1
 T20 p1 block: nothing
 T20 taps: p2:Island
 T20 p2 adds {U} (p2:Island)
+T20 p2 taps p2:Island for mana
 T20 taps: p2:Forest
 T20 p2 adds {G} (p2:Forest)
+T20 p2 taps p2:Forest for mana
 T20 taps: p2:Swamp#2
 T20 p2 adds {B} (p2:Swamp#2)
+T20 p2 taps p2:Swamp#2 for mana
 T20 taps: p2:Swamp#1
 T20 p2 adds {B} (p2:Swamp#1)
+T20 p2 taps p2:Swamp#1 for mana
 T20 p2's unspent {U}{B}{B}{G} empties
 T20 taps: p2:Plains#2
 T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
 T20 p2's unspent {W} empties
 T20 moves: Mountain, p2's hand -> battlefield
 T20 p2 plays p2:Mountain
 T20 taps: p2:Mountain
 T20 p2 adds {R} (p2:Mountain)
+T20 p2 taps p2:Mountain for mana
 T20 moves: Serra Angel, p2's hand -> stack
 T20 p2 cancels casting Serra Angel
 T20 moves: Rampant Growth, p2's hand -> stack
@@ -558,16 +654,21 @@ T21 moves: Island, p1's library -> p1's hand
 T21 p1 draws
 T21 taps: p1:Plains
 T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
 T21 p1's unspent {W} empties
 T21 taps: p1:Swamp
 T21 p1 adds {B} (p1:Swamp)
+T21 p1 taps p1:Swamp for mana
 T21 taps: p1:Island#2
 T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
 T21 taps: p1:Island#1
 T21 p1 adds {U} (p1:Island#1)
+T21 p1 taps p1:Island#1 for mana
 T21 p1's unspent {U}{U}{B} empties
 T21 taps: p1:Mountain
 T21 p1 adds {R} (p1:Mountain)
+T21 p1 taps p1:Mountain for mana
 T21 p1's unspent {R} empties
 T21 p1 attack: nothing
 T21 moves: Shivan Dragon, p1's hand -> stack
@@ -585,12 +686,16 @@ T22 untaps: p2:Swamp#2
 T22 untaps: p2:Mountain
 T22 taps: p2:Swamp#2
 T22 p2 adds {B} (p2:Swamp#2)
+T22 p2 taps p2:Swamp#2 for mana
 T22 taps: p2:Swamp#1
 T22 p2 adds {B} (p2:Swamp#1)
+T22 p2 taps p2:Swamp#1 for mana
 T22 taps: p2:Forest
 T22 p2 adds {G} (p2:Forest)
+T22 p2 taps p2:Forest for mana
 T22 taps: p2:Island
 T22 p2 adds {U} (p2:Island)
+T22 p2 taps p2:Island for mana
 T22 taps: p2:Acolyte of Xathrid
 T22 p2 activates p2:Acolyte of Xathrid
 T22 p2 loses 1 life
@@ -600,22 +705,28 @@ T22 moves: Forest, p2's library -> p2's hand
 T22 p2 draws
 T22 taps: p2:Mountain
 T22 p2 adds {R} (p2:Mountain)
+T22 p2 taps p2:Mountain for mana
 T22 p2's unspent {R} empties
 T22 moves: Rampant Growth, p2's hand -> stack
 T22 taps: p2:Plains#1
 T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
 T22 taps: p2:Plains#2
 T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
 T22 p2 cancels casting Rampant Growth
 T22 taps: p2:Plains#1
 T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
 T22 moves: Forest, p2's hand -> battlefield
 T22 p2 plays p2:Forest#2
 T22 moves: Rampant Growth, p2's hand -> stack
 T22 taps: p2:Plains#2
 T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
 T22 taps: p2:Forest#2
 T22 p2 adds {G} (p2:Forest#2)
+T22 p2 taps p2:Forest#2 for mana
 T22 p2 casts Rampant Growth
 T22 p2 shuffles their library
 T22 resolves: Rampant Growth
@@ -641,19 +752,25 @@ T23 moves: Island, p1's hand -> battlefield
 T23 p1 plays p1:Island#3
 T23 taps: p1:Swamp
 T23 p1 adds {B} (p1:Swamp)
+T23 p1 taps p1:Swamp for mana
 T23 taps: p1:Island#3
 T23 p1 adds {U} (p1:Island#3)
+T23 p1 taps p1:Island#3 for mana
 T23 taps: p1:Island#2
 T23 p1 adds {U} (p1:Island#2)
+T23 p1 taps p1:Island#2 for mana
 T23 moves: Royal Assassin, p1's hand -> stack
 T23 taps: p1:Plains
 T23 p1 adds {W} (p1:Plains)
+T23 p1 taps p1:Plains for mana
 T23 p1 cancels casting Royal Assassin
 T23 p1's unspent {U}{U}{B} empties
 T23 taps: p1:Plains
 T23 p1 adds {W} (p1:Plains)
+T23 p1 taps p1:Plains for mana
 T23 taps: p1:Mountain
 T23 p1 adds {R} (p1:Mountain)
+T23 p1 taps p1:Mountain for mana
 T23 p1's unspent {W}{R} empties
 T24 turn 24 begins (p2)
 T24 untaps: p2:Island
@@ -667,28 +784,37 @@ T24 untaps: p2:Mountain
 T24 untaps: p2:Forest#2
 T24 taps: p2:Forest#2
 T24 p2 adds {G} (p2:Forest#2)
+T24 p2 taps p2:Forest#2 for mana
 T24 taps: p1:Island#1
 T24 p1 adds {U} (p1:Island#1)
+T24 p1 taps p1:Island#1 for mana
 T24 p1's unspent {U} empties
 T24 p2's unspent {G} empties
 T24 moves: Mind Spring, p2's library -> p2's hand
 T24 p2 draws
 T24 taps: p2:Forest#1
 T24 p2 adds {G} (p2:Forest#1)
+T24 p2 taps p2:Forest#1 for mana
 T24 p2's unspent {G} empties
 T24 taps: p2:Island
 T24 p2 adds {U} (p2:Island)
+T24 p2 taps p2:Island for mana
 T24 moves: Serra Angel, p2's hand -> stack
 T24 taps: p2:Mountain
 T24 p2 adds {R} (p2:Mountain)
+T24 p2 taps p2:Mountain for mana
 T24 taps: p2:Swamp#1
 T24 p2 adds {B} (p2:Swamp#1)
+T24 p2 taps p2:Swamp#1 for mana
 T24 taps: p2:Plains#2
 T24 p2 adds {W} (p2:Plains#2)
+T24 p2 taps p2:Plains#2 for mana
 T24 taps: p2:Swamp#2
 T24 p2 adds {B} (p2:Swamp#2)
+T24 p2 taps p2:Swamp#2 for mana
 T24 taps: p2:Plains#1
 T24 p2 adds {W} (p2:Plains#1)
+T24 p2 taps p2:Plains#1 for mana
 T24 p2 casts Serra Angel
 T24 resolves: Serra Angel
 T24 moves: Serra Angel, stack -> battlefield
@@ -727,40 +853,53 @@ T25 untaps: p1:Plains
 T25 untaps: p1:Island#3
 T25 taps: p1:Plains
 T25 p1 adds {W} (p1:Plains)
+T25 p1 taps p1:Plains for mana
 T25 p1's unspent {W} empties
 T25 moves: Elite Vanguard, p1's library -> p1's hand
 T25 p1 draws
 T25 taps: p1:Island#1
 T25 p1 adds {U} (p1:Island#1)
+T25 p1 taps p1:Island#1 for mana
 T25 taps: p1:Island#3
 T25 p1 adds {U} (p1:Island#3)
+T25 p1 taps p1:Island#3 for mana
 T25 moves: Goblin Artillery, p1's hand -> stack
 T25 taps: p1:Mountain
 T25 p1 adds {R} (p1:Mountain)
+T25 p1 taps p1:Mountain for mana
 T25 taps: p1:Swamp
 T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
 T25 taps: p1:Island#2
 T25 p1 adds {U} (p1:Island#2)
+T25 p1 taps p1:Island#2 for mana
 T25 p1 cancels casting Goblin Artillery
 T25 taps: p1:Island#2
 T25 p1 adds {U} (p1:Island#2)
+T25 p1 taps p1:Island#2 for mana
 T25 moves: Furnace Whelp, p1's hand -> stack
 T25 taps: p1:Mountain
 T25 p1 adds {R} (p1:Mountain)
+T25 p1 taps p1:Mountain for mana
 T25 taps: p1:Swamp
 T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
 T25 p1 cancels casting Furnace Whelp
 T25 moves: Sign in Blood, p1's hand -> stack
 T25 taps: p1:Mountain
 T25 p1 adds {R} (p1:Mountain)
+T25 p1 taps p1:Mountain for mana
 T25 taps: p1:Swamp
 T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
 T25 p1 cancels casting Sign in Blood
 T25 p1's unspent {U}{U}{U} empties
 T25 taps: p1:Swamp
 T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
 T25 taps: p1:Mountain
 T25 p1 adds {R} (p1:Mountain)
+T25 p1 taps p1:Mountain for mana
 T25 p1's unspent {B}{R} empties
 T25 p1 attack: nothing
 T25 moves: Furnace Whelp, p1's hand -> stack
@@ -785,37 +924,49 @@ T26 untaps: p2:Mountain
 T26 untaps: p2:Forest#2
 T26 taps: p2:Swamp#2
 T26 p2 adds {B} (p2:Swamp#2)
+T26 p2 taps p2:Swamp#2 for mana
 T26 p2's unspent {B} empties
 T26 moves: Planar Cleansing, p2's library -> p2's hand
 T26 p2 draws
 T26 taps: p2:Island
 T26 p2 adds {U} (p2:Island)
+T26 p2 taps p2:Island for mana
 T26 p2's unspent {U} empties
 T26 taps: p2:Forest#1
 T26 p2 adds {G} (p2:Forest#1)
+T26 p2 taps p2:Forest#1 for mana
 T26 taps: p2:Forest#2
 T26 p2 adds {G} (p2:Forest#2)
+T26 p2 taps p2:Forest#2 for mana
 T26 moves: Fire Elemental, p2's hand -> stack
 T26 taps: p2:Plains#1
 T26 p2 adds {W} (p2:Plains#1)
+T26 p2 taps p2:Plains#1 for mana
 T26 taps: p2:Swamp#1
 T26 p2 adds {B} (p2:Swamp#1)
+T26 p2 taps p2:Swamp#1 for mana
 T26 taps: p2:Mountain
 T26 p2 adds {R} (p2:Mountain)
+T26 p2 taps p2:Mountain for mana
 T26 taps: p2:Plains#2
 T26 p2 adds {W} (p2:Plains#2)
+T26 p2 taps p2:Plains#2 for mana
 T26 p2 cancels casting Fire Elemental
 T26 p2's unspent {G}{G} empties
 T26 taps: p2:Mountain
 T26 p2 adds {R} (p2:Mountain)
+T26 p2 taps p2:Mountain for mana
 T26 p2's unspent {R} empties
 T26 p2 attack: nothing
 T26 taps: p2:Plains#2
 T26 p2 adds {W} (p2:Plains#2)
+T26 p2 taps p2:Plains#2 for mana
 T26 taps: p2:Plains#1
 T26 p2 adds {W} (p2:Plains#1)
+T26 p2 taps p2:Plains#1 for mana
 T26 taps: p2:Swamp#1
 T26 p2 adds {B} (p2:Swamp#1)
+T26 p2 taps p2:Swamp#1 for mana
 T26 taps: p2:Acolyte of Xathrid
 T26 p2 activates p2:Acolyte of Xathrid
 T26 p2 loses 1 life
@@ -830,20 +981,26 @@ T27 untaps: p1:Plains
 T27 untaps: p1:Island#3
 T27 taps: p1:Island#1
 T27 p1 adds {U} (p1:Island#1)
+T27 p1 taps p1:Island#1 for mana
 T27 p1's unspent {U} empties
 T27 moves: Negate, p1's library -> p1's hand
 T27 p1 draws
 T27 moves: Razorfoot Griffin, p1's hand -> stack
 T27 taps: p1:Plains
 T27 p1 adds {W} (p1:Plains)
+T27 p1 taps p1:Plains for mana
 T27 taps: p1:Island#2
 T27 p1 adds {U} (p1:Island#2)
+T27 p1 taps p1:Island#2 for mana
 T27 taps: p1:Mountain
 T27 p1 adds {R} (p1:Mountain)
+T27 p1 taps p1:Mountain for mana
 T27 taps: p1:Swamp
 T27 p1 adds {B} (p1:Swamp)
+T27 p1 taps p1:Swamp for mana
 T27 taps: p1:Island#3
 T27 p1 adds {U} (p1:Island#3)
+T27 p1 taps p1:Island#3 for mana
 T27 p1 casts Razorfoot Griffin
 T27 resolves: Razorfoot Griffin
 T27 moves: Razorfoot Griffin, stack -> battlefield

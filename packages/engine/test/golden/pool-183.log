@@ -133,6 +133,7 @@ T1 p2 plays p2:Plains
 T1 p2 attack: nothing
 T1 taps: p2:Plains
 T1 p2 adds {W} (p2:Plains)
+T1 p2 taps p2:Plains for mana
 T1 p2's unspent {W} empties
 T1 moves: Air Elemental, p2's hand -> stack
 T1 p2 cancels casting Air Elemental
@@ -162,6 +163,7 @@ T2 moves: Plains, p1's hand -> battlefield
 T2 p1 plays p1:Plains
 T2 taps: p1:Plains
 T2 p1 adds {W} (p1:Plains)
+T2 p1 taps p1:Plains for mana
 T2 moves: Pyroclasm, p1's hand -> stack
 T2 p1 cancels casting Pyroclasm
 T2 p1's unspent {W} empties
@@ -169,6 +171,7 @@ T3 turn 3 begins (p2)
 T3 untaps: p2:Plains
 T3 taps: p2:Plains
 T3 p2 adds {W} (p2:Plains)
+T3 p2 taps p2:Plains for mana
 T3 moves: Angel's Mercy, p1's hand -> stack
 T3 p1 cancels casting Angel's Mercy
 T3 moves: Angel's Mercy, p1's hand -> stack
@@ -201,6 +204,7 @@ T3 moves: Forest, p2's hand -> battlefield
 T3 p2 plays p2:Forest
 T3 taps: p2:Forest
 T3 p2 adds {G} (p2:Forest)
+T3 p2 taps p2:Forest for mana
 T3 moves: Angel's Mercy, p1's hand -> stack
 T3 p1 cancels casting Angel's Mercy
 T3 p2's unspent {G} empties
@@ -211,9 +215,11 @@ T4 untaps: p1:Plains
 T4 moves: Angel's Mercy, p1's hand -> stack
 T4 taps: p1:Plains
 T4 p1 adds {W} (p1:Plains)
+T4 p1 taps p1:Plains for mana
 T4 p1 cancels casting Angel's Mercy
 T4 taps: p1:Plains
 T4 p1 adds {W} (p1:Plains)
+T4 p1 taps p1:Plains for mana
 T4 moves: Angel's Mercy, p1's hand -> stack
 T4 p1 cancels casting Angel's Mercy
 T4 p1's unspent {W} empties
@@ -223,6 +229,7 @@ T4 moves: Swamp, p1's hand -> battlefield
 T4 p1 plays p1:Swamp
 T4 taps: p1:Swamp
 T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
 T4 moves: Angel's Mercy, p1's hand -> stack
 T4 p1 cancels casting Angel's Mercy
 T4 p1's unspent {B} empties
@@ -248,6 +255,7 @@ T5 moves: Grizzly Bears, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Plains
 T5 p2 adds {W} (p2:Plains)
+T5 p2 taps p2:Plains for mana
 T5 moves: Angel's Mercy, p1's hand -> stack
 T5 p1 cancels casting Angel's Mercy
 T5 moves: Angel's Mercy, p1's hand -> stack
@@ -265,6 +273,7 @@ T5 moves: Angel's Mercy, p1's hand -> stack
 T5 p1 cancels casting Angel's Mercy
 T5 taps: p2:Forest
 T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
 T5 p2's unspent {G} empties
 T5 p2 attack: nothing
 T5 moves: Angel's Mercy, p1's hand -> stack
@@ -278,13 +287,16 @@ T6 moves: Mountain, p1's library -> p1's hand
 T6 p1 draws
 T6 taps: p1:Plains
 T6 p1 adds {W} (p1:Plains)
+T6 p1 taps p1:Plains for mana
 T6 taps: p1:Swamp
 T6 p1 adds {B} (p1:Swamp)
+T6 p1 taps p1:Swamp for mana
 T6 p1's unspent {W}{B} empties
 T6 moves: Forest, p1's hand -> battlefield
 T6 p1 plays p1:Forest
 T6 taps: p1:Forest
 T6 p1 adds {G} (p1:Forest)
+T6 p1 taps p1:Forest for mana
 T6 p1's unspent {G} empties
 T6 moves: Angel's Mercy, p1's hand -> stack
 T6 p1 cancels casting Angel's Mercy
@@ -304,8 +316,10 @@ T7 untaps: p2:Plains
 T7 untaps: p2:Forest
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 taps: p2:Plains
 T7 p2 adds {W} (p2:Plains)
+T7 p2 taps p2:Plains for mana
 T7 p2's unspent {W}{G} empties
 T7 moves: Canyon Minotaur, p2's library -> p2's hand
 T7 p2 draws
@@ -330,17 +344,21 @@ T8 moves: Prodigal Pyromancer, p1's library -> p1's hand
 T8 p1 draws
 T8 taps: p1:Forest
 T8 p1 adds {G} (p1:Forest)
+T8 p1 taps p1:Forest for mana
 T8 taps: p1:Plains
 T8 p1 adds {W} (p1:Plains)
+T8 p1 taps p1:Plains for mana
 T8 moves: Angel's Mercy, p1's hand -> stack
 T8 taps: p1:Swamp
 T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
 T8 p1 cancels casting Angel's Mercy
 T8 p1's unspent {W}{G} empties
 T8 moves: Pyroclasm, p1's hand -> stack
 T8 p1 cancels casting Pyroclasm
 T8 taps: p1:Swamp
 T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
 T8 p1's unspent {B} empties
 T8 moves: Angel's Mercy, p1's hand -> stack
 T8 p1 cancels casting Angel's Mercy
@@ -362,11 +380,13 @@ T8 p1 plays p1:Swamp#2
 T8 moves: Royal Assassin, p1's hand -> stack
 T8 taps: p1:Swamp#2
 T8 p1 adds {B} (p1:Swamp#2)
+T8 p1 taps p1:Swamp#2 for mana
 T8 p1 cancels casting Royal Assassin
 T8 moves: Shivan Dragon, p1's hand -> stack
 T8 p1 cancels casting Shivan Dragon
 T8 taps: p1:Swamp#2
 T8 p1 adds {B} (p1:Swamp#2)
+T8 p1 taps p1:Swamp#2 for mana
 T8 moves: Royal Assassin, p1's hand -> stack
 T8 p1 cancels casting Royal Assassin
 T8 moves: Shivan Dragon, p1's hand -> stack
@@ -379,13 +399,16 @@ T9 moves: Forest, p2's library -> p2's hand
 T9 p2 draws
 T9 taps: p2:Forest
 T9 p2 adds {G} (p2:Forest)
+T9 p2 taps p2:Forest for mana
 T9 taps: p2:Plains
 T9 p2 adds {W} (p2:Plains)
+T9 p2 taps p2:Plains for mana
 T9 p2's unspent {W}{G} empties
 T9 moves: Forest, p2's hand -> battlefield
 T9 p2 plays p2:Forest#2
 T9 taps: p2:Forest#2
 T9 p2 adds {G} (p2:Forest#2)
+T9 p2 taps p2:Forest#2 for mana
 T9 moves: Angel's Mercy, p1's hand -> stack
 T9 p1 cancels casting Angel's Mercy
 T9 moves: Angel's Mercy, p1's hand -> stack
@@ -409,26 +432,33 @@ T10 untaps: p1:Forest
 T10 untaps: p1:Swamp#2
 T10 taps: p1:Swamp#2
 T10 p1 adds {B} (p1:Swamp#2)
+T10 p1 taps p1:Swamp#2 for mana
 T10 taps: p1:Forest
 T10 p1 adds {G} (p1:Forest)
+T10 p1 taps p1:Forest for mana
 T10 p1's unspent {B}{G} empties
 T10 moves: Bountiful Harvest, p1's library -> p1's hand
 T10 p1 draws
 T10 moves: Pyroclasm, p1's hand -> stack
 T10 taps: p1:Plains
 T10 p1 adds {W} (p1:Plains)
+T10 p1 taps p1:Plains for mana
 T10 taps: p1:Swamp#1
 T10 p1 adds {B} (p1:Swamp#1)
+T10 p1 taps p1:Swamp#1 for mana
 T10 p1 cancels casting Pyroclasm
 T10 moves: Mountain, p1's hand -> battlefield
 T10 p1 plays p1:Mountain
 T10 moves: Pyroclasm, p1's hand -> stack
 T10 taps: p1:Plains
 T10 p1 adds {W} (p1:Plains)
+T10 p1 taps p1:Plains for mana
 T10 taps: p1:Mountain
 T10 p1 adds {R} (p1:Mountain)
+T10 p1 taps p1:Mountain for mana
 T10 taps: p1:Swamp#1
 T10 p1 adds {B} (p1:Swamp#1)
+T10 p1 taps p1:Swamp#1 for mana
 T10 p1 casts Pyroclasm
 T10 moves: Angel's Mercy, p1's hand -> stack
 T10 p1 cancels casting Angel's Mercy
@@ -460,8 +490,10 @@ T11 untaps: p2:Forest#1
 T11 untaps: p2:Forest#2
 T11 taps: p2:Forest#2
 T11 p2 adds {G} (p2:Forest#2)
+T11 p2 taps p2:Forest#2 for mana
 T11 taps: p2:Plains
 T11 p2 adds {W} (p2:Plains)
+T11 p2 taps p2:Plains for mana
 T11 moves: Angel's Mercy, p1's hand -> stack
 T11 p1 cancels casting Angel's Mercy
 T11 moves: Angel's Mercy, p1's hand -> stack
@@ -474,6 +506,7 @@ T11 p2 draws
 T11 p2 attack: nothing
 T11 taps: p2:Forest#1
 T11 p2 adds {G} (p2:Forest#1)
+T11 p2 taps p2:Forest#1 for mana
 T11 moves: Angel's Mercy, p1's hand -> stack
 T11 p1 cancels casting Angel's Mercy
 T11 p2's unspent {G} empties
@@ -491,34 +524,45 @@ T12 moves: Raging Goblin, p1's library -> p1's hand
 T12 p1 draws
 T12 taps: p1:Swamp#1
 T12 p1 adds {B} (p1:Swamp#1)
+T12 p1 taps p1:Swamp#1 for mana
 T12 taps: p1:Plains
 T12 p1 adds {W} (p1:Plains)
+T12 p1 taps p1:Plains for mana
 T12 p1's unspent {W}{B} empties
 T12 p1 attack: nothing
 T12 moves: Angel's Mercy, p1's hand -> stack
 T12 taps: p1:Swamp#2
 T12 p1 adds {B} (p1:Swamp#2)
+T12 p1 taps p1:Swamp#2 for mana
 T12 taps: p1:Mountain
 T12 p1 adds {R} (p1:Mountain)
+T12 p1 taps p1:Mountain for mana
 T12 taps: p1:Forest
 T12 p1 adds {G} (p1:Forest)
+T12 p1 taps p1:Forest for mana
 T12 p1 cancels casting Angel's Mercy
 T12 taps: p1:Swamp#2
 T12 p1 adds {B} (p1:Swamp#2)
+T12 p1 taps p1:Swamp#2 for mana
 T12 moves: Angel's Mercy, p1's hand -> stack
 T12 taps: p1:Mountain
 T12 p1 adds {R} (p1:Mountain)
+T12 p1 taps p1:Mountain for mana
 T12 taps: p1:Forest
 T12 p1 adds {G} (p1:Forest)
+T12 p1 taps p1:Forest for mana
 T12 p1 cancels casting Angel's Mercy
 T12 taps: p1:Mountain
 T12 p1 adds {R} (p1:Mountain)
+T12 p1 taps p1:Mountain for mana
 T12 moves: Angel's Mercy, p1's hand -> stack
 T12 taps: p1:Forest
 T12 p1 adds {G} (p1:Forest)
+T12 p1 taps p1:Forest for mana
 T12 p1 cancels casting Angel's Mercy
 T12 taps: p1:Forest
 T12 p1 adds {G} (p1:Forest)
+T12 p1 taps p1:Forest for mana
 T12 p1's unspent {B}{R}{G} empties
 T12 moves: Angel's Mercy, p1's hand -> stack
 T12 p1 cancels casting Angel's Mercy
@@ -538,6 +582,7 @@ T13 untaps: p2:Forest#1
 T13 untaps: p2:Forest#2
 T13 taps: p2:Plains
 T13 p2 adds {W} (p2:Plains)
+T13 p2 taps p2:Plains for mana
 T13 moves: Angel's Mercy, p1's hand -> stack
 T13 p1 cancels casting Angel's Mercy
 T13 p2's unspent {W} empties
@@ -546,15 +591,19 @@ T13 p2 draws
 T13 moves: Siege Mastodon, p2's hand -> stack
 T13 taps: p2:Forest#1
 T13 p2 adds {G} (p2:Forest#1)
+T13 p2 taps p2:Forest#1 for mana
 T13 taps: p2:Forest#2
 T13 p2 adds {G} (p2:Forest#2)
+T13 p2 taps p2:Forest#2 for mana
 T13 p2 cancels casting Siege Mastodon
 T13 taps: p2:Forest#2
 T13 p2 adds {G} (p2:Forest#2)
+T13 p2 taps p2:Forest#2 for mana
 T13 moves: Air Elemental, p2's hand -> stack
 T13 p2 cancels casting Air Elemental
 T13 taps: p2:Forest#1
 T13 p2 adds {G} (p2:Forest#1)
+T13 p2 taps p2:Forest#1 for mana
 T13 p2's unspent {G}{G} empties
 T13 p2 attack: nothing
 T13 moves: Goblin Piker, p2's hand -> stack
@@ -571,15 +620,20 @@ T14 untaps: p1:Swamp#2
 T14 untaps: p1:Mountain
 T14 taps: p1:Forest
 T14 p1 adds {G} (p1:Forest)
+T14 p1 taps p1:Forest for mana
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 taps: p1:Swamp#2
 T14 p1 adds {B} (p1:Swamp#2)
+T14 p1 taps p1:Swamp#2 for mana
 T14 taps: p1:Swamp#1
 T14 p1 adds {B} (p1:Swamp#1)
+T14 p1 taps p1:Swamp#1 for mana
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 p1 cancels casting Angel's Mercy
@@ -587,54 +641,70 @@ T14 moves: Angel's Mercy, p1's hand -> stack
 T14 p1 cancels casting Angel's Mercy
 T14 taps: p1:Swamp#1
 T14 p1 adds {B} (p1:Swamp#1)
+T14 p1 taps p1:Swamp#1 for mana
 T14 p1's unspent {B}{G} empties
 T14 moves: Fiery Hellhound, p1's library -> p1's hand
 T14 p1 draws
 T14 taps: p1:Swamp#2
 T14 p1 adds {B} (p1:Swamp#2)
+T14 p1 taps p1:Swamp#2 for mana
 T14 p1's unspent {B} empties
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 p1 cancels casting Angel's Mercy
 T14 p1 attack: nothing
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Angel's Mercy, p1's hand -> stack
 T14 taps: p1:Mountain
 T14 p1 adds {R} (p1:Mountain)
+T14 p1 taps p1:Mountain for mana
 T14 taps: p1:Plains
 T14 p1 adds {W} (p1:Plains)
+T14 p1 taps p1:Plains for mana
 T14 p1 cancels casting Angel's Mercy
 T14 moves: Fiery Hellhound, p1's hand -> p1's graveyard
 T14 p1 discards Fiery Hellhound
@@ -644,24 +714,31 @@ T15 untaps: p2:Forest#1
 T15 untaps: p2:Forest#2
 T15 taps: p2:Plains
 T15 p2 adds {W} (p2:Plains)
+T15 p2 taps p2:Plains for mana
 T15 taps: p2:Forest#2
 T15 p2 adds {G} (p2:Forest#2)
+T15 p2 taps p2:Forest#2 for mana
 T15 taps: p2:Forest#1
 T15 p2 adds {G} (p2:Forest#1)
+T15 p2 taps p2:Forest#1 for mana
 T15 moves: Angel's Mercy, p1's hand -> stack
 T15 taps: p1:Plains
 T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
 T15 taps: p1:Mountain
 T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
 T15 p1 cancels casting Angel's Mercy
 T15 taps: p1:Plains
 T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
 T15 p2's unspent {W}{G}{G} empties
 T15 p1's unspent {W} empties
 T15 moves: Plains, p2's library -> p2's hand
 T15 p2 draws
 T15 taps: p1:Mountain
 T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
 T15 moves: Angel's Mercy, p1's hand -> stack
 T15 p1 cancels casting Angel's Mercy
 T15 p1's unspent {R} empties
@@ -678,6 +755,7 @@ T15 p1 cancels casting Angel's Mercy
 T15 p2 attack: nothing
 T15 taps: p2:Plains#2
 T15 p2 adds {W} (p2:Plains#2)
+T15 p2 taps p2:Plains#2 for mana
 T15 moves: Angel's Mercy, p1's hand -> stack
 T15 p1 cancels casting Angel's Mercy
 T15 moves: Angel's Mercy, p1's hand -> stack
@@ -700,61 +778,84 @@ T16 untaps: p1:Mountain
 T16 moves: Angel's Mercy, p1's hand -> stack
 T16 taps: p1:Plains
 T16 p1 adds {W} (p1:Plains)
+T16 p1 taps p1:Plains for mana
 T16 taps: p1:Swamp#1
 T16 p1 adds {B} (p1:Swamp#1)
+T16 p1 taps p1:Swamp#1 for mana
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 taps: p1:Mountain
 T16 p1 adds {R} (p1:Mountain)
+T16 p1 taps p1:Mountain for mana
 T16 p1 cancels casting Angel's Mercy
 T16 moves: Kelinore Bat, p1's library -> p1's hand
 T16 p1 draws
 T16 moves: Angel's Mercy, p1's hand -> stack
 T16 taps: p1:Mountain
 T16 p1 adds {R} (p1:Mountain)
+T16 p1 taps p1:Mountain for mana
 T16 taps: p1:Swamp#1
 T16 p1 adds {B} (p1:Swamp#1)
+T16 p1 taps p1:Swamp#1 for mana
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 taps: p1:Plains
 T16 p1 adds {W} (p1:Plains)
+T16 p1 taps p1:Plains for mana
 T16 p1 cancels casting Angel's Mercy
 T16 taps: p1:Swamp#1
 T16 p1 adds {B} (p1:Swamp#1)
+T16 p1 taps p1:Swamp#1 for mana
 T16 moves: Angel's Mercy, p1's hand -> stack
 T16 taps: p1:Plains
 T16 p1 adds {W} (p1:Plains)
+T16 p1 taps p1:Plains for mana
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 p1 cancels casting Angel's Mercy
 T16 moves: Angel's Mercy, p1's hand -> stack
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 taps: p1:Plains
 T16 p1 adds {W} (p1:Plains)
+T16 p1 taps p1:Plains for mana
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 taps: p1:Mountain
 T16 p1 adds {R} (p1:Mountain)
+T16 p1 taps p1:Mountain for mana
 T16 p1 cancels casting Angel's Mercy
 T16 taps: p1:Plains
 T16 p1 adds {W} (p1:Plains)
+T16 p1 taps p1:Plains for mana
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 moves: Angel's Mercy, p1's hand -> stack
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 taps: p1:Mountain
 T16 p1 adds {R} (p1:Mountain)
+T16 p1 taps p1:Mountain for mana
 T16 p1 cancels casting Angel's Mercy
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 taps: p1:Mountain
 T16 p1 adds {R} (p1:Mountain)
+T16 p1 taps p1:Mountain for mana
 T16 p1's unspent {W}{B}{B}{R}{G} empties
 T16 moves: Prodigal Pyromancer, p1's hand -> stack
 T16 p1 cancels casting Prodigal Pyromancer
@@ -787,20 +888,27 @@ T17 p2 plays p2:Island
 T17 moves: Goblin Piker, p2's hand -> stack
 T17 taps: p2:Plains#2
 T17 p2 adds {W} (p2:Plains#2)
+T17 p2 taps p2:Plains#2 for mana
 T17 taps: p2:Plains#1
 T17 p2 adds {W} (p2:Plains#1)
+T17 p2 taps p2:Plains#1 for mana
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
+T17 p2 taps p2:Forest#2 for mana
 T17 taps: p2:Forest#1
 T17 p2 adds {G} (p2:Forest#1)
+T17 p2 taps p2:Forest#1 for mana
 T17 taps: p2:Island
 T17 p2 adds {U} (p2:Island)
+T17 p2 taps p2:Island for mana
 T17 p2 cancels casting Goblin Piker
 T17 moves: Siege Mastodon, p2's hand -> stack
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
+T17 p2 taps p2:Forest#2 for mana
 T17 taps: p2:Plains#1
 T17 p2 adds {W} (p2:Plains#1)
+T17 p2 taps p2:Plains#1 for mana
 T17 p2 cancels casting Siege Mastodon
 T17 p2 attack: nothing
 T17 moves: Angel's Mercy, p1's hand -> stack
@@ -814,9 +922,11 @@ T17 p1 cancels casting Angel's Mercy
 T17 moves: Goblin Piker, p2's hand -> stack
 T17 taps: p2:Island
 T17 p2 adds {U} (p2:Island)
+T17 p2 taps p2:Island for mana
 T17 p2 cancels casting Goblin Piker
 T17 taps: p2:Plains#1
 T17 p2 adds {W} (p2:Plains#1)
+T17 p2 taps p2:Plains#1 for mana
 T17 moves: Angel's Mercy, p1's hand -> stack
 T17 p1 cancels casting Angel's Mercy
 T17 moves: Angel's Mercy, p1's hand -> stack
@@ -837,51 +947,69 @@ T18 untaps: p1:Mountain
 T18 moves: Angel's Mercy, p1's hand -> stack
 T18 taps: p1:Forest
 T18 p1 adds {G} (p1:Forest)
+T18 p1 taps p1:Forest for mana
 T18 taps: p1:Swamp#1
 T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
 T18 taps: p1:Plains
 T18 p1 adds {W} (p1:Plains)
+T18 p1 taps p1:Plains for mana
 T18 taps: p1:Swamp#2
 T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
 T18 taps: p1:Mountain
 T18 p1 adds {R} (p1:Mountain)
+T18 p1 taps p1:Mountain for mana
 T18 p1 cancels casting Angel's Mercy
 T18 taps: p2:Forest#2
 T18 p2 adds {G} (p2:Forest#2)
+T18 p2 taps p2:Forest#2 for mana
 T18 taps: p2:Forest#1
 T18 p2 adds {G} (p2:Forest#1)
+T18 p2 taps p2:Forest#1 for mana
 T18 p2's unspent {G}{G} empties
 T18 moves: Stormfront Pegasus, p1's library -> p1's hand
 T18 p1 draws
 T18 taps: p1:Plains
 T18 p1 adds {W} (p1:Plains)
+T18 p1 taps p1:Plains for mana
 T18 moves: Angel's Mercy, p1's hand -> stack
 T18 taps: p1:Forest
 T18 p1 adds {G} (p1:Forest)
+T18 p1 taps p1:Forest for mana
 T18 taps: p1:Swamp#1
 T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
 T18 taps: p1:Swamp#2
 T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
 T18 p1 cancels casting Angel's Mercy
 T18 taps: p2:Plains#2
 T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
 T18 taps: p2:Island
 T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
 T18 p2's unspent {W}{U} empties
 T18 p1's unspent {W} empties
 T18 p1 attack: nothing
 T18 taps: p1:Swamp#1
 T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
 T18 taps: p1:Mountain
 T18 p1 adds {R} (p1:Mountain)
+T18 p1 taps p1:Mountain for mana
 T18 taps: p1:Swamp#2
 T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
 T18 moves: Angel's Mercy, p1's hand -> stack
 T18 taps: p1:Forest
 T18 p1 adds {G} (p1:Forest)
+T18 p1 taps p1:Forest for mana
 T18 p1 cancels casting Angel's Mercy
 T18 taps: p1:Forest
 T18 p1 adds {G} (p1:Forest)
+T18 p1 taps p1:Forest for mana
 T18 p1's unspent {B}{B}{R}{G} empties
 T18 moves: Angel's Mercy, p1's hand -> stack
 T18 p1 cancels casting Angel's Mercy
@@ -903,26 +1031,34 @@ T19 moves: Gray Ogre, p2's library -> p2's hand
 T19 p2 draws
 T19 taps: p2:Plains#1
 T19 p2 adds {W} (p2:Plains#1)
+T19 p2 taps p2:Plains#1 for mana
 T19 moves: Siege Mastodon, p2's hand -> stack
 T19 taps: p2:Forest#1
 T19 p2 adds {G} (p2:Forest#1)
+T19 p2 taps p2:Forest#1 for mana
 T19 taps: p2:Plains#2
 T19 p2 adds {W} (p2:Plains#2)
+T19 p2 taps p2:Plains#2 for mana
 T19 taps: p2:Forest#2
 T19 p2 adds {G} (p2:Forest#2)
+T19 p2 taps p2:Forest#2 for mana
 T19 taps: p2:Island
 T19 p2 adds {U} (p2:Island)
+T19 p2 taps p2:Island for mana
 T19 p2 cancels casting Siege Mastodon
 T19 moves: Canyon Minotaur, p2's hand -> stack
 T19 taps: p2:Island
 T19 p2 adds {U} (p2:Island)
+T19 p2 taps p2:Island for mana
 T19 p2 cancels casting Canyon Minotaur
 T19 taps: p2:Island
 T19 p2 adds {U} (p2:Island)
+T19 p2 taps p2:Island for mana
 T19 p2's unspent {W}{U} empties
 T19 p2 attack: nothing
 T19 taps: p2:Forest#2
 T19 p2 adds {G} (p2:Forest#2)
+T19 p2 taps p2:Forest#2 for mana
 T19 p2's unspent {G} empties
 T20 turn 20 begins (p1)
 T20 untaps: p1:Plains
@@ -932,23 +1068,30 @@ T20 untaps: p1:Swamp#2
 T20 untaps: p1:Mountain
 T20 taps: p2:Plains#2
 T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
 T20 taps: p2:Forest#1
 T20 p2 adds {G} (p2:Forest#1)
+T20 p2 taps p2:Forest#1 for mana
 T20 p2's unspent {W}{G} empties
 T20 moves: Mountain, p1's library -> p1's hand
 T20 p1 draws
 T20 taps: p1:Forest
 T20 p1 adds {G} (p1:Forest)
+T20 p1 taps p1:Forest for mana
 T20 p1's unspent {G} empties
 T20 taps: p1:Swamp#1
 T20 p1 adds {B} (p1:Swamp#1)
+T20 p1 taps p1:Swamp#1 for mana
 T20 taps: p1:Swamp#2
 T20 p1 adds {B} (p1:Swamp#2)
+T20 p1 taps p1:Swamp#2 for mana
 T20 p1's unspent {B}{B} empties
 T20 taps: p1:Mountain
 T20 p1 adds {R} (p1:Mountain)
+T20 p1 taps p1:Mountain for mana
 T20 taps: p1:Plains
 T20 p1 adds {W} (p1:Plains)
+T20 p1 taps p1:Plains for mana
 T20 p1's unspent {W}{R} empties
 T20 p1 attack: nothing
 T20 moves: Bountiful Harvest, p1's hand -> stack
@@ -963,18 +1106,23 @@ T21 untaps: p2:Plains#2
 T21 untaps: p2:Island
 T21 taps: p2:Plains#2
 T21 p2 adds {W} (p2:Plains#2)
+T21 p2 taps p2:Plains#2 for mana
 T21 p2's unspent {W} empties
 T21 moves: Island, p2's library -> p2's hand
 T21 p2 draws
 T21 moves: Gray Ogre, p2's hand -> stack
 T21 taps: p2:Island
 T21 p2 adds {U} (p2:Island)
+T21 p2 taps p2:Island for mana
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
+T21 p2 taps p2:Forest#2 for mana
 T21 taps: p2:Forest#1
 T21 p2 adds {G} (p2:Forest#1)
+T21 p2 taps p2:Forest#1 for mana
 T21 taps: p2:Plains#1
 T21 p2 adds {W} (p2:Plains#1)
+T21 p2 taps p2:Plains#1 for mana
 T21 p2 cancels casting Gray Ogre
 T21 p2 attack: nothing
 T21 moves: Grizzly Bears, p2's hand -> p2's graveyard
@@ -987,34 +1135,44 @@ T22 untaps: p1:Swamp#2
 T22 untaps: p1:Mountain
 T22 taps: p2:Forest#2
 T22 p2 adds {G} (p2:Forest#2)
+T22 p2 taps p2:Forest#2 for mana
 T22 taps: p2:Forest#1
 T22 p2 adds {G} (p2:Forest#1)
+T22 p2 taps p2:Forest#1 for mana
 T22 taps: p1:Mountain
 T22 p1 adds {R} (p1:Mountain)
+T22 p1 taps p1:Mountain for mana
 T22 taps: p1:Swamp#1
 T22 p1 adds {B} (p1:Swamp#1)
+T22 p1 taps p1:Swamp#1 for mana
 T22 taps: p1:Forest
 T22 p1 adds {G} (p1:Forest)
+T22 p1 taps p1:Forest for mana
 T22 p2's unspent {G}{G} empties
 T22 p1's unspent {B}{R}{G} empties
 T22 moves: Plains, p1's library -> p1's hand
 T22 p1 draws
 T22 taps: p1:Swamp#2
 T22 p1 adds {B} (p1:Swamp#2)
+T22 p1 taps p1:Swamp#2 for mana
 T22 taps: p1:Plains
 T22 p1 adds {W} (p1:Plains)
+T22 p1 taps p1:Plains for mana
 T22 p1's unspent {W}{B} empties
 T22 taps: p2:Plains#1
 T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
 T22 moves: Mountain, p1's hand -> battlefield
 T22 p1 plays p1:Mountain#2
 T22 p2's unspent {W} empties
 T22 taps: p2:Island
 T22 p2 adds {U} (p2:Island)
+T22 p2 taps p2:Island for mana
 T22 p2's unspent {U} empties
 T22 p1 attack: nothing
 T22 taps: p1:Mountain#2
 T22 p1 adds {R} (p1:Mountain#2)
+T22 p1 taps p1:Mountain#2 for mana
 T22 p1's unspent {R} empties
 T23 turn 23 begins (p2)
 T23 untaps: p2:Plains#1
@@ -1024,12 +1182,16 @@ T23 untaps: p2:Plains#2
 T23 untaps: p2:Island
 T23 taps: p2:Plains#2
 T23 p2 adds {W} (p2:Plains#2)
+T23 p2 taps p2:Plains#2 for mana
 T23 taps: p2:Forest#2
 T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
 T23 taps: p2:Island
 T23 p2 adds {U} (p2:Island)
+T23 p2 taps p2:Island for mana
 T23 taps: p2:Plains#1
 T23 p2 adds {W} (p2:Plains#1)
+T23 p2 taps p2:Plains#1 for mana
 T23 p2's unspent {W}{W}{U}{G} empties
 T23 moves: Snapping Drake, p2's library -> p2's hand
 T23 p2 draws
@@ -1037,18 +1199,22 @@ T23 moves: Island, p2's hand -> battlefield
 T23 p2 plays p2:Island#2
 T23 taps: p2:Island#2
 T23 p2 adds {U} (p2:Island#2)
+T23 p2 taps p2:Island#2 for mana
 T23 p2's unspent {U} empties
 T23 p2 attack: nothing
 T23 moves: Gray Ogre, p2's hand -> stack
 T23 taps: p2:Forest#1
 T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
 T23 p2 cancels casting Gray Ogre
 T23 moves: Gray Ogre, p2's hand -> stack
 T23 taps: p2:Forest#1
 T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
 T23 p2 cancels casting Gray Ogre
 T23 taps: p2:Forest#1
 T23 p2 adds {G} (p2:Forest#1)
+T23 p2 taps p2:Forest#1 for mana
 T23 moves: Canyon Minotaur, p2's hand -> stack
 T23 p2 cancels casting Canyon Minotaur
 T23 moves: Air Elemental, p2's hand -> stack
@@ -1063,21 +1229,27 @@ T24 untaps: p1:Mountain#1
 T24 untaps: p1:Mountain#2
 T24 taps: p1:Mountain#1
 T24 p1 adds {R} (p1:Mountain#1)
+T24 p1 taps p1:Mountain#1 for mana
 T24 p1's unspent {R} empties
 T24 moves: Mountain, p1's library -> p1's hand
 T24 p1 draws
 T24 taps: p1:Plains
 T24 p1 adds {W} (p1:Plains)
+T24 p1 taps p1:Plains for mana
 T24 taps: p1:Forest
 T24 p1 adds {G} (p1:Forest)
+T24 p1 taps p1:Forest for mana
 T24 p1's unspent {W}{G} empties
 T24 moves: Royal Assassin, p1's hand -> stack
 T24 taps: p1:Swamp#2
 T24 p1 adds {B} (p1:Swamp#2)
+T24 p1 taps p1:Swamp#2 for mana
 T24 taps: p1:Swamp#1
 T24 p1 adds {B} (p1:Swamp#1)
+T24 p1 taps p1:Swamp#1 for mana
 T24 taps: p1:Mountain#2
 T24 p1 adds {R} (p1:Mountain#2)
+T24 p1 taps p1:Mountain#2 for mana
 T24 p1 casts Royal Assassin
 T24 resolves: Royal Assassin
 T24 moves: Royal Assassin, stack -> battlefield
@@ -1086,14 +1258,17 @@ T24 p1 plays p1:Mountain#3
 T24 moves: Giant Growth, p1's hand -> stack
 T24 taps: p1:Mountain#3
 T24 p1 adds {R} (p1:Mountain#3)
+T24 p1 taps p1:Mountain#3 for mana
 T24 p1 cancels casting Giant Growth
 T24 p1 attack: nothing
 T24 moves: Giant Growth, p1's hand -> stack
 T24 taps: p1:Mountain#3
 T24 p1 adds {R} (p1:Mountain#3)
+T24 p1 taps p1:Mountain#3 for mana
 T24 p1 cancels casting Giant Growth
 T24 taps: p1:Mountain#3
 T24 p1 adds {R} (p1:Mountain#3)
+T24 p1 taps p1:Mountain#3 for mana
 T24 moves: Shivan Dragon, p1's hand -> stack
 T24 p1 cancels casting Shivan Dragon
 T24 moves: Shivan Dragon, p1's hand -> stack
@@ -1128,6 +1303,7 @@ T25 moves: Acolyte of Xathrid, p2's library -> p2's hand
 T25 p2 draws
 T25 taps: p2:Plains#1
 T25 p2 adds {W} (p2:Plains#1)
+T25 p2 taps p2:Plains#1 for mana
 T25 moves: Giant Growth, p1's hand -> stack
 T25 p1 cancels casting Giant Growth
 T25 moves: Giant Growth, p1's hand -> stack
@@ -1148,13 +1324,16 @@ T25 p1 cancels casting Giant Growth
 T25 p2 attack: nothing
 T25 taps: p2:Forest#2
 T25 p2 adds {G} (p2:Forest#2)
+T25 p2 taps p2:Forest#2 for mana
 T25 taps: p2:Island#1
 T25 p2 adds {U} (p2:Island#1)
+T25 p2 taps p2:Island#1 for mana
 T25 p2's unspent {U}{G} empties
 T25 moves: Giant Growth, p1's hand -> stack
 T25 p1 cancels casting Giant Growth
 T25 taps: p2:Island#2
 T25 p2 adds {U} (p2:Island#2)
+T25 p2 taps p2:Island#2 for mana
 T25 moves: Giant Growth, p1's hand -> stack
 T25 p1 cancels casting Giant Growth
 T25 p2's unspent {U} empties
@@ -1170,27 +1349,36 @@ T26 untaps: p1:Mountain#2
 T26 untaps: p1:Mountain#3
 T26 taps: p2:Plains#2
 T26 p2 adds {W} (p2:Plains#2)
+T26 p2 taps p2:Plains#2 for mana
 T26 moves: Giant Growth, p1's hand -> stack
 T26 taps: p1:Mountain#3
 T26 p1 adds {R} (p1:Mountain#3)
+T26 p1 taps p1:Mountain#3 for mana
 T26 taps: p1:Swamp#1
 T26 p1 adds {B} (p1:Swamp#1)
+T26 p1 taps p1:Swamp#1 for mana
 T26 taps: p1:Mountain#1
 T26 p1 adds {R} (p1:Mountain#1)
+T26 p1 taps p1:Mountain#1 for mana
 T26 taps: p1:Plains
 T26 p1 adds {W} (p1:Plains)
+T26 p1 taps p1:Plains for mana
 T26 taps: p1:Forest
 T26 p1 adds {G} (p1:Forest)
+T26 p1 taps p1:Forest for mana
 T26 p1 casts Giant Growth
 T26 effect: p1:Royal Assassin +3/+3 until end of turn
 T26 resolves: Giant Growth
 T26 moves: Giant Growth, stack -> p1's graveyard
 T26 taps: p1:Swamp#2
 T26 p1 adds {B} (p1:Swamp#2)
+T26 p1 taps p1:Swamp#2 for mana
 T26 taps: p2:Forest#1
 T26 p2 adds {G} (p2:Forest#1)
+T26 p2 taps p2:Forest#1 for mana
 T26 taps: p1:Mountain#2
 T26 p1 adds {R} (p1:Mountain#2)
+T26 p1 taps p1:Mountain#2 for mana
 T26 p2's unspent {W}{G} empties
 T26 p1's unspent {W}{B}{B}{R}{R}{R} empties
 T26 moves: Plains, p1's library -> p1's hand
@@ -1202,9 +1390,11 @@ T26 p1 plays p1:Plains#2
 T26 moves: Bountiful Harvest, p1's hand -> stack
 T26 taps: p1:Plains#2
 T26 p1 adds {W} (p1:Plains#2)
+T26 p1 taps p1:Plains#2 for mana
 T26 p1 cancels casting Bountiful Harvest
 T26 taps: p1:Plains#2
 T26 p1 adds {W} (p1:Plains#2)
+T26 p1 taps p1:Plains#2 for mana
 T26 moves: Kelinore Bat, p1's hand -> stack
 T26 p1 cancels casting Kelinore Bat
 T26 moves: Stormfront Pegasus, p1's hand -> stack
@@ -1229,24 +1419,31 @@ T27 moves: Bountiful Harvest, p2's library -> p2's hand
 T27 p2 draws
 T27 taps: p2:Plains#2
 T27 p2 adds {W} (p2:Plains#2)
+T27 p2 taps p2:Plains#2 for mana
 T27 p2's unspent {W} empties
 T27 taps: p2:Plains#1
 T27 p2 adds {W} (p2:Plains#1)
+T27 p2 taps p2:Plains#1 for mana
 T27 taps: p2:Island#1
 T27 p2 adds {U} (p2:Island#1)
+T27 p2 taps p2:Island#1 for mana
 T27 taps: p2:Forest#1
 T27 p2 adds {G} (p2:Forest#1)
+T27 p2 taps p2:Forest#1 for mana
 T27 p2's unspent {W}{U}{G} empties
 T27 p2 attack: nothing
 T27 taps: p2:Island#2
 T27 p2 adds {U} (p2:Island#2)
+T27 p2 taps p2:Island#2 for mana
 T27 moves: Siege Mastodon, p2's hand -> stack
 T27 taps: p2:Forest#2
 T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
 T27 p2 cancels casting Siege Mastodon
 T27 moves: Goblin Piker, p2's hand -> stack
 T27 taps: p2:Forest#2
 T27 p2 adds {G} (p2:Forest#2)
+T27 p2 taps p2:Forest#2 for mana
 T27 p2 cancels casting Goblin Piker
 T27 p2's unspent {U} empties
 T27 moves: Air Elemental, p2's hand -> p2's graveyard
@@ -1263,34 +1460,44 @@ T28 untaps: p1:Mountain#3
 T28 untaps: p1:Plains#2
 T28 taps: p1:Plains#1
 T28 p1 adds {W} (p1:Plains#1)
+T28 p1 taps p1:Plains#1 for mana
 T28 taps: p2:Forest#2
 T28 p2 adds {G} (p2:Forest#2)
+T28 p2 taps p2:Forest#2 for mana
 T28 taps: p1:Mountain#2
 T28 p1 adds {R} (p1:Mountain#2)
+T28 p1 taps p1:Mountain#2 for mana
 T28 taps: p1:Forest
 T28 p1 adds {G} (p1:Forest)
+T28 p1 taps p1:Forest for mana
 T28 taps: p1:Plains#2
 T28 p1 adds {W} (p1:Plains#2)
+T28 p1 taps p1:Plains#2 for mana
 T28 p2's unspent {G} empties
 T28 p1's unspent {W}{W}{R}{G} empties
 T28 moves: Flashfreeze, p1's library -> p1's hand
 T28 p1 draws
 T28 taps: p1:Swamp#1
 T28 p1 adds {B} (p1:Swamp#1)
+T28 p1 taps p1:Swamp#1 for mana
 T28 p1's unspent {B} empties
 T28 moves: Plains, p1's hand -> battlefield
 T28 p1 plays p1:Plains#3
 T28 p1 attack: nothing
 T28 taps: p1:Mountain#3
 T28 p1 adds {R} (p1:Mountain#3)
+T28 p1 taps p1:Mountain#3 for mana
 T28 p1's unspent {R} empties
 T28 taps: p1:Mountain#1
 T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
 T28 p1's unspent {R} empties
 T28 taps: p1:Swamp#2
 T28 p1 adds {B} (p1:Swamp#2)
+T28 p1 taps p1:Swamp#2 for mana
 T28 taps: p1:Plains#3
 T28 p1 adds {W} (p1:Plains#3)
+T28 p1 taps p1:Plains#3 for mana
 T28 p1's unspent {W}{B} empties
 T29 turn 29 begins (p2)
 T29 untaps: p2:Plains#1
@@ -1301,23 +1508,30 @@ T29 untaps: p2:Island#1
 T29 untaps: p2:Island#2
 T29 taps: p2:Plains#1
 T29 p2 adds {W} (p2:Plains#1)
+T29 p2 taps p2:Plains#1 for mana
 T29 taps: p2:Island#1
 T29 p2 adds {U} (p2:Island#1)
+T29 p2 taps p2:Island#1 for mana
 T29 taps: p2:Plains#2
 T29 p2 adds {W} (p2:Plains#2)
+T29 p2 taps p2:Plains#2 for mana
 T29 p2's unspent {W}{W}{U} empties
 T29 moves: Flashfreeze, p2's library -> p2's hand
 T29 p2 draws
 T29 taps: p2:Forest#1
 T29 p2 adds {G} (p2:Forest#1)
+T29 p2 taps p2:Forest#1 for mana
 T29 taps: p2:Forest#2
 T29 p2 adds {G} (p2:Forest#2)
+T29 p2 taps p2:Forest#2 for mana
 T29 moves: Snapping Drake, p2's hand -> stack
 T29 taps: p2:Island#2
 T29 p2 adds {U} (p2:Island#2)
+T29 p2 taps p2:Island#2 for mana
 T29 p2 cancels casting Snapping Drake
 T29 taps: p2:Island#2
 T29 p2 adds {U} (p2:Island#2)
+T29 p2 taps p2:Island#2 for mana
 T29 moves: Siege Mastodon, p2's hand -> stack
 T29 p2 cancels casting Siege Mastodon
 T29 p2's unspent {U}{G}{G} empties
@@ -1336,33 +1550,42 @@ T30 untaps: p1:Plains#2
 T30 untaps: p1:Plains#3
 T30 taps: p1:Plains#2
 T30 p1 adds {W} (p1:Plains#2)
+T30 p1 taps p1:Plains#2 for mana
 T30 taps: p1:Mountain#3
 T30 p1 adds {R} (p1:Mountain#3)
+T30 p1 taps p1:Mountain#3 for mana
 T30 taps: p1:Swamp#2
 T30 p1 adds {B} (p1:Swamp#2)
+T30 p1 taps p1:Swamp#2 for mana
 T30 p1's unspent {W}{B}{R} empties
 T30 moves: Pyroclasm, p1's library -> p1's hand
 T30 p1 draws
 T30 moves: Kelinore Bat, p1's hand -> stack
 T30 taps: p1:Swamp#1
 T30 p1 adds {B} (p1:Swamp#1)
+T30 p1 taps p1:Swamp#1 for mana
 T30 taps: p1:Mountain#1
 T30 p1 adds {R} (p1:Mountain#1)
+T30 p1 taps p1:Mountain#1 for mana
 T30 taps: p1:Plains#1
 T30 p1 adds {W} (p1:Plains#1)
+T30 p1 taps p1:Plains#1 for mana
 T30 p1 casts Kelinore Bat
 T30 resolves: Kelinore Bat
 T30 moves: Kelinore Bat, stack -> battlefield
 T30 taps: p1:Mountain#2
 T30 p1 adds {R} (p1:Mountain#2)
+T30 p1 taps p1:Mountain#2 for mana
 T30 p1's unspent {R} empties
 T30 p1 attack: nothing
 T30 taps: p1:Forest
 T30 p1 adds {G} (p1:Forest)
+T30 p1 taps p1:Forest for mana
 T30 moves: Bountiful Harvest, p1's hand -> stack
 T30 p1 cancels casting Bountiful Harvest
 T30 taps: p1:Plains#3
 T30 p1 adds {W} (p1:Plains#3)
+T30 p1 taps p1:Plains#3 for mana
 T30 p1's unspent {W}{G} empties
 T31 turn 31 begins (p2)
 T31 untaps: p2:Plains#1
@@ -1375,29 +1598,39 @@ T31 moves: Divine Verdict, p2's library -> p2's hand
 T31 p2 draws
 T31 taps: p2:Island#2
 T31 p2 adds {U} (p2:Island#2)
+T31 p2 taps p2:Island#2 for mana
 T31 taps: p2:Island#1
 T31 p2 adds {U} (p2:Island#1)
+T31 p2 taps p2:Island#1 for mana
 T31 p2's unspent {U}{U} empties
 T31 moves: Snapping Drake, p2's hand -> stack
 T31 taps: p2:Plains#1
 T31 p2 adds {W} (p2:Plains#1)
+T31 p2 taps p2:Plains#1 for mana
 T31 taps: p2:Plains#2
 T31 p2 adds {W} (p2:Plains#2)
+T31 p2 taps p2:Plains#2 for mana
 T31 taps: p2:Forest#1
 T31 p2 adds {G} (p2:Forest#1)
+T31 p2 taps p2:Forest#1 for mana
 T31 taps: p2:Forest#2
 T31 p2 adds {G} (p2:Forest#2)
+T31 p2 taps p2:Forest#2 for mana
 T31 p2 cancels casting Snapping Drake
 T31 p2 attack: nothing
 T31 taps: p2:Plains#2
 T31 p2 adds {W} (p2:Plains#2)
+T31 p2 taps p2:Plains#2 for mana
 T31 p2's unspent {W} empties
 T31 taps: p2:Plains#1
 T31 p2 adds {W} (p2:Plains#1)
+T31 p2 taps p2:Plains#1 for mana
 T31 taps: p2:Forest#2
 T31 p2 adds {G} (p2:Forest#2)
+T31 p2 taps p2:Forest#2 for mana
 T31 taps: p2:Forest#1
 T31 p2 adds {G} (p2:Forest#1)
+T31 p2 taps p2:Forest#1 for mana
 T31 p2's unspent {W}{G}{G} empties
 T31 moves: Canyon Minotaur, p2's hand -> p2's graveyard
 T31 p2 discards Canyon Minotaur
@@ -1415,15 +1648,19 @@ T32 moves: Plains, p1's library -> p1's hand
 T32 p1 draws
 T32 taps: p1:Swamp#1
 T32 p1 adds {B} (p1:Swamp#1)
+T32 p1 taps p1:Swamp#1 for mana
 T32 p1's unspent {B} empties
 T32 taps: p1:Royal Assassin
 T32 p1 attack: p1:Royal Assassin -> p2
 T32 taps: p1:Plains#3
 T32 p1 adds {W} (p1:Plains#3)
+T32 p1 taps p1:Plains#3 for mana
 T32 taps: p1:Plains#2
 T32 p1 adds {W} (p1:Plains#2)
+T32 p1 taps p1:Plains#2 for mana
 T32 taps: p1:Mountain#3
 T32 p1 adds {R} (p1:Mountain#3)
+T32 p1 taps p1:Mountain#3 for mana
 T32 moves: Divine Verdict, p2's hand -> stack
 T32 p2 cancels casting Divine Verdict
 T32 p1's unspent {W}{W}{R} empties
@@ -1441,21 +1678,27 @@ T32 p2 cancels casting Divine Verdict
 T32 moves: Bountiful Harvest, p1's hand -> stack
 T32 taps: p1:Mountain#1
 T32 p1 adds {R} (p1:Mountain#1)
+T32 p1 taps p1:Mountain#1 for mana
 T32 taps: p1:Swamp#2
 T32 p1 adds {B} (p1:Swamp#2)
+T32 p1 taps p1:Swamp#2 for mana
 T32 taps: p1:Plains#1
 T32 p1 adds {W} (p1:Plains#1)
+T32 p1 taps p1:Plains#1 for mana
 T32 p1 cancels casting Bountiful Harvest
 T32 taps: p1:Plains#1
 T32 p1 adds {W} (p1:Plains#1)
+T32 p1 taps p1:Plains#1 for mana
 T32 moves: Stormfront Pegasus, p1's hand -> stack
 T32 taps: p1:Mountain#2
 T32 p1 adds {R} (p1:Mountain#2)
+T32 p1 taps p1:Mountain#2 for mana
 T32 p1 casts Stormfront Pegasus
 T32 resolves: Stormfront Pegasus
 T32 moves: Stormfront Pegasus, stack -> battlefield
 T32 taps: p1:Forest
 T32 p1 adds {G} (p1:Forest)
+T32 p1 taps p1:Forest for mana
 T32 moves: Plains, p1's hand -> battlefield
 T32 p1 plays p1:Plains#4
 T32 p1's unspent {G} empties
@@ -1468,16 +1711,22 @@ T33 untaps: p2:Island#1
 T33 untaps: p2:Island#2
 T33 taps: p2:Island#1
 T33 p2 adds {U} (p2:Island#1)
+T33 p2 taps p2:Island#1 for mana
 T33 taps: p2:Forest#2
 T33 p2 adds {G} (p2:Forest#2)
+T33 p2 taps p2:Forest#2 for mana
 T33 taps: p2:Plains#1
 T33 p2 adds {W} (p2:Plains#1)
+T33 p2 taps p2:Plains#1 for mana
 T33 taps: p1:Mountain#1
 T33 p1 adds {R} (p1:Mountain#1)
+T33 p1 taps p1:Mountain#1 for mana
 T33 taps: p1:Swamp#2
 T33 p1 adds {B} (p1:Swamp#2)
+T33 p1 taps p1:Swamp#2 for mana
 T33 taps: p1:Plains#4
 T33 p1 adds {W} (p1:Plains#4)
+T33 p1 taps p1:Plains#4 for mana
 T33 p2's unspent {W}{U}{G} empties
 T33 p1's unspent {W}{B}{R} empties
 T33 moves: Mountain, p2's library -> p2's hand
@@ -1487,24 +1736,32 @@ T33 p2 plays p2:Mountain
 T33 moves: Goblin Piker, p2's hand -> stack
 T33 taps: p2:Plains#2
 T33 p2 adds {W} (p2:Plains#2)
+T33 p2 taps p2:Plains#2 for mana
 T33 p2 cancels casting Goblin Piker
 T33 taps: p2:Forest#1
 T33 p2 adds {G} (p2:Forest#1)
+T33 p2 taps p2:Forest#1 for mana
 T33 moves: Acolyte of Xathrid, p2's hand -> stack
 T33 taps: p2:Mountain
 T33 p2 adds {R} (p2:Mountain)
+T33 p2 taps p2:Mountain for mana
 T33 taps: p2:Plains#2
 T33 p2 adds {W} (p2:Plains#2)
+T33 p2 taps p2:Plains#2 for mana
 T33 taps: p2:Island#2
 T33 p2 adds {U} (p2:Island#2)
+T33 p2 taps p2:Island#2 for mana
 T33 p2 cancels casting Acolyte of Xathrid
 T33 moves: Goblin Piker, p2's hand -> stack
 T33 taps: p2:Mountain
 T33 p2 adds {R} (p2:Mountain)
+T33 p2 taps p2:Mountain for mana
 T33 taps: p2:Plains#2
 T33 p2 adds {W} (p2:Plains#2)
+T33 p2 taps p2:Plains#2 for mana
 T33 taps: p2:Island#2
 T33 p2 adds {U} (p2:Island#2)
+T33 p2 taps p2:Island#2 for mana
 T33 p2 casts Goblin Piker
 T33 resolves: Goblin Piker
 T33 moves: Goblin Piker, stack -> battlefield
@@ -1524,30 +1781,40 @@ T34 untaps: p1:Plains#3
 T34 untaps: p1:Plains#4
 T34 taps: p1:Swamp#1
 T34 p1 adds {B} (p1:Swamp#1)
+T34 p1 taps p1:Swamp#1 for mana
 T34 taps: p1:Forest
 T34 p1 adds {G} (p1:Forest)
+T34 p1 taps p1:Forest for mana
 T34 taps: p1:Plains#1
 T34 p1 adds {W} (p1:Plains#1)
+T34 p1 taps p1:Plains#1 for mana
 T34 taps: p1:Mountain#1
 T34 p1 adds {R} (p1:Mountain#1)
+T34 p1 taps p1:Mountain#1 for mana
 T34 taps: p1:Swamp#2
 T34 p1 adds {B} (p1:Swamp#2)
+T34 p1 taps p1:Swamp#2 for mana
 T34 p1's unspent {W}{B}{B}{R}{G} empties
 T34 moves: Earthquake, p1's library -> p1's hand
 T34 p1 draws
 T34 taps: p1:Mountain#2
 T34 p1 adds {R} (p1:Mountain#2)
+T34 p1 taps p1:Mountain#2 for mana
 T34 p1's unspent {R} empties
 T34 taps: p1:Mountain#3
 T34 p1 adds {R} (p1:Mountain#3)
+T34 p1 taps p1:Mountain#3 for mana
 T34 p1's unspent {R} empties
 T34 p1 attack: nothing
 T34 taps: p1:Plains#4
 T34 p1 adds {W} (p1:Plains#4)
+T34 p1 taps p1:Plains#4 for mana
 T34 taps: p1:Plains#3
 T34 p1 adds {W} (p1:Plains#3)
+T34 p1 taps p1:Plains#3 for mana
 T34 taps: p1:Plains#2
 T34 p1 adds {W} (p1:Plains#2)
+T34 p1 taps p1:Plains#2 for mana
 T34 p1's unspent {W}{W}{W} empties
 T35 turn 35 begins (p2)
 T35 untaps: p2:Plains#1
@@ -1559,39 +1826,52 @@ T35 untaps: p2:Island#2
 T35 untaps: p2:Mountain
 T35 taps: p2:Mountain
 T35 p2 adds {R} (p2:Mountain)
+T35 p2 taps p2:Mountain for mana
 T35 p2's unspent {R} empties
 T35 moves: Elvish Piper, p2's library -> p2's hand
 T35 p2 draws
 T35 moves: Goblin Piker, p2's hand -> stack
 T35 taps: p2:Plains#2
 T35 p2 adds {W} (p2:Plains#2)
+T35 p2 taps p2:Plains#2 for mana
 T35 taps: p2:Forest#2
 T35 p2 adds {G} (p2:Forest#2)
+T35 p2 taps p2:Forest#2 for mana
 T35 taps: p2:Forest#1
 T35 p2 adds {G} (p2:Forest#1)
+T35 p2 taps p2:Forest#1 for mana
 T35 taps: p2:Island#1
 T35 p2 adds {U} (p2:Island#1)
+T35 p2 taps p2:Island#1 for mana
 T35 taps: p2:Plains#1
 T35 p2 adds {W} (p2:Plains#1)
+T35 p2 taps p2:Plains#1 for mana
 T35 taps: p2:Island#2
 T35 p2 adds {U} (p2:Island#2)
+T35 p2 taps p2:Island#2 for mana
 T35 p2 cancels casting Goblin Piker
 T35 taps: p2:Forest#2
 T35 p2 adds {G} (p2:Forest#2)
+T35 p2 taps p2:Forest#2 for mana
 T35 p2's unspent {G} empties
 T35 taps: p2:Island#2
 T35 p2 adds {U} (p2:Island#2)
+T35 p2 taps p2:Island#2 for mana
 T35 taps: p2:Plains#2
 T35 p2 adds {W} (p2:Plains#2)
+T35 p2 taps p2:Plains#2 for mana
 T35 p2's unspent {W}{U} empties
 T35 p2 attack: nothing
 T35 taps: p2:Island#1
 T35 p2 adds {U} (p2:Island#1)
+T35 p2 taps p2:Island#1 for mana
 T35 taps: p2:Plains#1
 T35 p2 adds {W} (p2:Plains#1)
+T35 p2 taps p2:Plains#1 for mana
 T35 p2's unspent {W}{U} empties
 T35 taps: p2:Forest#1
 T35 p2 adds {G} (p2:Forest#1)
+T35 p2 taps p2:Forest#1 for mana
 T35 p2's unspent {G} empties
 T36 turn 36 begins (p1)
 T36 untaps: p1:Plains#1
@@ -1606,18 +1886,23 @@ T36 untaps: p1:Plains#3
 T36 untaps: p1:Plains#4
 T36 taps: p1:Plains#3
 T36 p1 adds {W} (p1:Plains#3)
+T36 p1 taps p1:Plains#3 for mana
 T36 taps: p1:Plains#1
 T36 p1 adds {W} (p1:Plains#1)
+T36 p1 taps p1:Plains#1 for mana
 T36 p1's unspent {W}{W} empties
 T36 moves: Deathmark, p1's library -> p1's hand
 T36 p1 draws
 T36 taps: p1:Mountain#1
 T36 p1 adds {R} (p1:Mountain#1)
+T36 p1 taps p1:Mountain#1 for mana
 T36 moves: Earthquake, p1's hand -> stack
 T36 taps: p1:Mountain#2
 T36 p1 adds {R} (p1:Mountain#2)
+T36 p1 taps p1:Mountain#2 for mana
 T36 taps: p1:Swamp#2
 T36 p1 adds {B} (p1:Swamp#2)
+T36 p1 taps p1:Swamp#2 for mana
 T36 p1 casts Earthquake
 T36 damage: Earthquake -> p1:Royal Assassin 2
 T36 damage: Earthquake -> p2:Goblin Piker 2
@@ -1635,15 +1920,20 @@ T36 moves: Goblin Piker, battlefield -> p2's graveyard
 T36 moves: Deathmark, p1's hand -> stack
 T36 taps: p1:Mountain#3
 T36 p1 adds {R} (p1:Mountain#3)
+T36 p1 taps p1:Mountain#3 for mana
 T36 taps: p1:Swamp#1
 T36 p1 adds {B} (p1:Swamp#1)
+T36 p1 taps p1:Swamp#1 for mana
 T36 taps: p1:Forest
 T36 p1 adds {G} (p1:Forest)
+T36 p1 taps p1:Forest for mana
 T36 taps: p1:Plains#2
 T36 p1 adds {W} (p1:Plains#2)
+T36 p1 taps p1:Plains#2 for mana
 T36 p1 casts Deathmark
 T36 taps: p1:Plains#4
 T36 p1 adds {W} (p1:Plains#4)
+T36 p1 taps p1:Plains#4 for mana
 T36 destroyed: p1:Stormfront Pegasus
 T36 moves: Stormfront Pegasus, battlefield -> p1's graveyard
 T36 resolves: Deathmark
@@ -1660,18 +1950,25 @@ T37 untaps: p2:Island#2
 T37 untaps: p2:Mountain
 T37 taps: p2:Forest#2
 T37 p2 adds {G} (p2:Forest#2)
+T37 p2 taps p2:Forest#2 for mana
 T37 taps: p2:Island#1
 T37 p2 adds {U} (p2:Island#1)
+T37 p2 taps p2:Island#1 for mana
 T37 taps: p2:Plains#2
 T37 p2 adds {W} (p2:Plains#2)
+T37 p2 taps p2:Plains#2 for mana
 T37 taps: p2:Mountain
 T37 p2 adds {R} (p2:Mountain)
+T37 p2 taps p2:Mountain for mana
 T37 taps: p2:Forest#1
 T37 p2 adds {G} (p2:Forest#1)
+T37 p2 taps p2:Forest#1 for mana
 T37 taps: p2:Plains#1
 T37 p2 adds {W} (p2:Plains#1)
+T37 p2 taps p2:Plains#1 for mana
 T37 taps: p2:Island#2
 T37 p2 adds {U} (p2:Island#2)
+T37 p2 taps p2:Island#2 for mana
 T37 p2's unspent {W}{W}{U}{U}{R}{G}{G} empties
 T37 moves: Plains, p2's library -> p2's hand
 T37 p2 draws
@@ -1679,6 +1976,7 @@ T37 moves: Plains, p2's hand -> battlefield
 T37 p2 plays p2:Plains#3
 T37 taps: p2:Plains#3
 T37 p2 adds {W} (p2:Plains#3)
+T37 p2 taps p2:Plains#3 for mana
 T37 p2's unspent {W} empties
 T37 p2 attack: nothing
 T37 moves: Siege Mastodon, p2's hand -> stack
@@ -1696,46 +1994,62 @@ T38 untaps: p1:Plains#3
 T38 untaps: p1:Plains#4
 T38 taps: p1:Swamp#2
 T38 p1 adds {B} (p1:Swamp#2)
+T38 p1 taps p1:Swamp#2 for mana
 T38 p1's unspent {B} empties
 T38 moves: Plains, p1's library -> p1's hand
 T38 p1 draws
 T38 taps: p1:Mountain#1
 T38 p1 adds {R} (p1:Mountain#1)
+T38 p1 taps p1:Mountain#1 for mana
 T38 taps: p1:Mountain#3
 T38 p1 adds {R} (p1:Mountain#3)
+T38 p1 taps p1:Mountain#3 for mana
 T38 p1's unspent {R}{R} empties
 T38 moves: Shivan Dragon, p1's hand -> stack
 T38 taps: p1:Plains#2
 T38 p1 adds {W} (p1:Plains#2)
+T38 p1 taps p1:Plains#2 for mana
 T38 taps: p1:Forest
 T38 p1 adds {G} (p1:Forest)
+T38 p1 taps p1:Forest for mana
 T38 taps: p1:Plains#4
 T38 p1 adds {W} (p1:Plains#4)
+T38 p1 taps p1:Plains#4 for mana
 T38 taps: p1:Plains#3
 T38 p1 adds {W} (p1:Plains#3)
+T38 p1 taps p1:Plains#3 for mana
 T38 taps: p1:Plains#1
 T38 p1 adds {W} (p1:Plains#1)
+T38 p1 taps p1:Plains#1 for mana
 T38 taps: p1:Mountain#2
 T38 p1 adds {R} (p1:Mountain#2)
+T38 p1 taps p1:Mountain#2 for mana
 T38 p1 cancels casting Shivan Dragon
 T38 moves: Bountiful Harvest, p1's hand -> stack
 T38 taps: p1:Plains#3
 T38 p1 adds {W} (p1:Plains#3)
+T38 p1 taps p1:Plains#3 for mana
 T38 taps: p1:Swamp#1
 T38 p1 adds {B} (p1:Swamp#1)
+T38 p1 taps p1:Swamp#1 for mana
 T38 taps: p1:Mountain#2
 T38 p1 adds {R} (p1:Mountain#2)
+T38 p1 taps p1:Mountain#2 for mana
 T38 taps: p1:Plains#4
 T38 p1 adds {W} (p1:Plains#4)
+T38 p1 taps p1:Plains#4 for mana
 T38 taps: p1:Plains#2
 T38 p1 adds {W} (p1:Plains#2)
+T38 p1 taps p1:Plains#2 for mana
 T38 taps: p1:Forest
 T38 p1 adds {G} (p1:Forest)
+T38 p1 taps p1:Forest for mana
 T38 p1 casts Bountiful Harvest
 T38 moves: Flashfreeze, p1's hand -> stack
 T38 p1 cancels casting Flashfreeze
 T38 taps: p1:Plains#1
 T38 p1 adds {W} (p1:Plains#1)
+T38 p1 taps p1:Plains#1 for mana
 T38 moves: Flashfreeze, p2's hand -> stack
 T38 p2 cancels casting Flashfreeze
 T38 p1 gains 10 life
@@ -1746,16 +2060,19 @@ T38 p1 plays p1:Plains#5
 T38 moves: Pyroclasm, p1's hand -> stack
 T38 taps: p1:Plains#5
 T38 p1 adds {W} (p1:Plains#5)
+T38 p1 taps p1:Plains#5 for mana
 T38 p1 cancels casting Pyroclasm
 T38 moves: Pyroclasm, p1's hand -> stack
 T38 taps: p1:Plains#5
 T38 p1 adds {W} (p1:Plains#5)
+T38 p1 taps p1:Plains#5 for mana
 T38 p1 cancels casting Pyroclasm
 T38 p1's unspent {W}{B} empties
 T38 taps: p1:Kelinore Bat
 T38 p1 attack: p1:Kelinore Bat -> p2
 T38 taps: p1:Plains#5
 T38 p1 adds {W} (p1:Plains#5)
+T38 p1 taps p1:Plains#5 for mana
 T38 p1's unspent {W} empties
 T38 p2 block: nothing
 T38 combat damage: p1:Kelinore Bat -> p2 2
@@ -1775,26 +2092,34 @@ T39 untaps: p2:Mountain
 T39 untaps: p2:Plains#3
 T39 taps: p2:Island#2
 T39 p2 adds {U} (p2:Island#2)
+T39 p2 taps p2:Island#2 for mana
 T39 taps: p2:Plains#2
 T39 p2 adds {W} (p2:Plains#2)
+T39 p2 taps p2:Plains#2 for mana
 T39 taps: p2:Plains#1
 T39 p2 adds {W} (p2:Plains#1)
+T39 p2 taps p2:Plains#1 for mana
 T39 taps: p2:Plains#3
 T39 p2 adds {W} (p2:Plains#3)
+T39 p2 taps p2:Plains#3 for mana
 T39 p2's unspent {W}{W}{W}{U} empties
 T39 moves: Forest, p2's library -> p2's hand
 T39 p2 draws
 T39 taps: p2:Forest#2
 T39 p2 adds {G} (p2:Forest#2)
+T39 p2 taps p2:Forest#2 for mana
 T39 moves: Forest, p2's hand -> battlefield
 T39 p2 plays p2:Forest#3
 T39 taps: p2:Mountain
 T39 p2 adds {R} (p2:Mountain)
+T39 p2 taps p2:Mountain for mana
 T39 moves: Elvish Piper, p2's hand -> stack
 T39 taps: p2:Forest#3
 T39 p2 adds {G} (p2:Forest#3)
+T39 p2 taps p2:Forest#3 for mana
 T39 taps: p2:Island#1
 T39 p2 adds {U} (p2:Island#1)
+T39 p2 taps p2:Island#1 for mana
 T39 p2 casts Elvish Piper
 T39 moves: Flashfreeze, p1's hand -> stack
 T39 p1 cancels casting Flashfreeze
@@ -1802,6 +2127,7 @@ T39 resolves: Elvish Piper
 T39 moves: Elvish Piper, stack -> battlefield
 T39 taps: p2:Forest#1
 T39 p2 adds {G} (p2:Forest#1)
+T39 p2 taps p2:Forest#1 for mana
 T39 moves: Goblin Piker, p2's hand -> stack
 T39 p2 cancels casting Goblin Piker
 T39 p2's unspent {G} empties
@@ -1827,20 +2153,27 @@ T40 moves: Canyon Minotaur, p1's library -> p1's hand
 T40 p1 draws
 T40 taps: p1:Plains#4
 T40 p1 adds {W} (p1:Plains#4)
+T40 p1 taps p1:Plains#4 for mana
 T40 taps: p1:Mountain#2
 T40 p1 adds {R} (p1:Mountain#2)
+T40 p1 taps p1:Mountain#2 for mana
 T40 p1's unspent {W}{R} empties
 T40 p1 attack: nothing
 T40 taps: p1:Plains#3
 T40 p1 adds {W} (p1:Plains#3)
+T40 p1 taps p1:Plains#3 for mana
 T40 taps: p1:Plains#2
 T40 p1 adds {W} (p1:Plains#2)
+T40 p1 taps p1:Plains#2 for mana
 T40 taps: p1:Forest
 T40 p1 adds {G} (p1:Forest)
+T40 p1 taps p1:Forest for mana
 T40 taps: p1:Swamp#1
 T40 p1 adds {B} (p1:Swamp#1)
+T40 p1 taps p1:Swamp#1 for mana
 T40 taps: p1:Plains#1
 T40 p1 adds {W} (p1:Plains#1)
+T40 p1 taps p1:Plains#1 for mana
 T40 p1's unspent {W}{W}{W}{B}{G} empties
 T41 turn 41 begins (p2)
 T41 untaps: p2:Plains#1
@@ -1856,43 +2189,58 @@ T41 moves: Royal Assassin, p2's library -> p2's hand
 T41 p2 draws
 T41 taps: p2:Plains#2
 T41 p2 adds {W} (p2:Plains#2)
+T41 p2 taps p2:Plains#2 for mana
 T41 taps: p2:Island#1
 T41 p2 adds {U} (p2:Island#1)
+T41 p2 taps p2:Island#1 for mana
 T41 p2's unspent {W}{U} empties
 T41 p2 attack: nothing
 T41 taps: p2:Forest#1
 T41 p2 adds {G} (p2:Forest#1)
+T41 p2 taps p2:Forest#1 for mana
 T41 taps: p2:Forest#3
 T41 p2 adds {G} (p2:Forest#3)
+T41 p2 taps p2:Forest#3 for mana
 T41 taps: p2:Plains#3
 T41 p2 adds {W} (p2:Plains#3)
+T41 p2 taps p2:Plains#3 for mana
 T41 p2 cancels activating p2:Elvish Piper
 T41 taps: p2:Plains#3
 T41 p2 adds {W} (p2:Plains#3)
+T41 p2 taps p2:Plains#3 for mana
 T41 taps: p2:Plains#1
 T41 p2 adds {W} (p2:Plains#1)
+T41 p2 taps p2:Plains#1 for mana
 T41 taps: p1:Mountain#1
 T41 p1 adds {R} (p1:Mountain#1)
+T41 p1 taps p1:Mountain#1 for mana
 T41 taps: p1:Mountain#3
 T41 p1 adds {R} (p1:Mountain#3)
+T41 p1 taps p1:Mountain#3 for mana
 T41 taps: p1:Swamp#2
 T41 p1 adds {B} (p1:Swamp#2)
+T41 p1 taps p1:Swamp#2 for mana
 T41 p2's unspent {W}{W}{G}{G} empties
 T41 p1's unspent {B}{R}{R} empties
 T41 taps: p1:Plains#5
 T41 p1 adds {W} (p1:Plains#5)
+T41 p1 taps p1:Plains#5 for mana
 T41 p1's unspent {W} empties
 T41 taps: p2:Forest#2
 T41 p2 adds {G} (p2:Forest#2)
+T41 p2 taps p2:Forest#2 for mana
 T41 moves: Acolyte of Xathrid, p2's hand -> stack
 T41 taps: p2:Mountain
 T41 p2 adds {R} (p2:Mountain)
+T41 p2 taps p2:Mountain for mana
 T41 taps: p2:Island#2
 T41 p2 adds {U} (p2:Island#2)
+T41 p2 taps p2:Island#2 for mana
 T41 p2 cancels casting Acolyte of Xathrid
 T41 p2's unspent {G} empties
 T41 taps: p2:Mountain
 T41 p2 adds {R} (p2:Mountain)
+T41 p2 taps p2:Mountain for mana
 T41 p2's unspent {R} empties
 T42 turn 42 begins (p1)
 T42 untaps: p1:Plains#1
@@ -1908,38 +2256,50 @@ T42 untaps: p1:Plains#4
 T42 untaps: p1:Plains#5
 T42 taps: p2:Island#2
 T42 p2 adds {U} (p2:Island#2)
+T42 p2 taps p2:Island#2 for mana
 T42 p2 cancels activating p2:Elvish Piper
 T42 p2's unspent {U} empties
 T42 moves: Swamp, p1's library -> p1's hand
 T42 p1 draws
 T42 taps: p1:Swamp#2
 T42 p1 adds {B} (p1:Swamp#2)
+T42 p1 taps p1:Swamp#2 for mana
 T42 p2 cancels activating p2:Elvish Piper
 T42 p2 cancels activating p2:Elvish Piper
 T42 p1's unspent {B} empties
 T42 moves: Canyon Minotaur, p1's hand -> stack
 T42 taps: p1:Plains#1
 T42 p1 adds {W} (p1:Plains#1)
+T42 p1 taps p1:Plains#1 for mana
 T42 taps: p1:Plains#4
 T42 p1 adds {W} (p1:Plains#4)
+T42 p1 taps p1:Plains#4 for mana
 T42 taps: p1:Plains#5
 T42 p1 adds {W} (p1:Plains#5)
+T42 p1 taps p1:Plains#5 for mana
 T42 taps: p1:Forest
 T42 p1 adds {G} (p1:Forest)
+T42 p1 taps p1:Forest for mana
 T42 taps: p1:Mountain#2
 T42 p1 adds {R} (p1:Mountain#2)
+T42 p1 taps p1:Mountain#2 for mana
 T42 p1 casts Canyon Minotaur
 T42 moves: Flashfreeze, p1's hand -> stack
 T42 taps: p1:Swamp#1
 T42 p1 adds {B} (p1:Swamp#1)
+T42 p1 taps p1:Swamp#1 for mana
 T42 taps: p1:Mountain#3
 T42 p1 adds {R} (p1:Mountain#3)
+T42 p1 taps p1:Mountain#3 for mana
 T42 taps: p1:Plains#2
 T42 p1 adds {W} (p1:Plains#2)
+T42 p1 taps p1:Plains#2 for mana
 T42 taps: p1:Mountain#1
 T42 p1 adds {R} (p1:Mountain#1)
+T42 p1 taps p1:Mountain#1 for mana
 T42 taps: p1:Plains#3
 T42 p1 adds {W} (p1:Plains#3)
+T42 p1 taps p1:Plains#3 for mana
 T42 p1 cancels casting Flashfreeze
 T42 moves: Flashfreeze, p2's hand -> stack
 T42 p2 cancels casting Flashfreeze
@@ -1949,17 +2309,20 @@ T42 moves: Swamp, p1's hand -> battlefield
 T42 p1 plays p1:Swamp#3
 T42 taps: p1:Mountain#3
 T42 p1 adds {R} (p1:Mountain#3)
+T42 p1 taps p1:Mountain#3 for mana
 T42 p1's unspent {W}{R} empties
 T42 taps: p1:Kelinore Bat
 T42 p1 attack: p1:Kelinore Bat -> p2
 T42 taps: p1:Swamp#1
 T42 p1 adds {B} (p1:Swamp#1)
+T42 p1 taps p1:Swamp#1 for mana
 T42 moves: Divine Verdict, p2's hand -> stack
 T42 p2 cancels casting Divine Verdict
 T42 p1's unspent {B} empties
 T42 p2 block: nothing
 T42 taps: p1:Plains#2
 T42 p1 adds {W} (p1:Plains#2)
+T42 p1 taps p1:Plains#2 for mana
 T42 moves: Divine Verdict, p2's hand -> stack
 T42 p2 cancels casting Divine Verdict
 T42 p2 cancels activating p2:Elvish Piper
@@ -1985,13 +2348,16 @@ T42 combat damage: p1:Kelinore Bat -> p2 2
 T42 p2 loses 2 life
 T42 taps: p1:Plains#3
 T42 p1 adds {W} (p1:Plains#3)
+T42 p1 taps p1:Plains#3 for mana
 T42 taps: p1:Mountain#1
 T42 p1 adds {R} (p1:Mountain#1)
+T42 p1 taps p1:Mountain#1 for mana
 T42 moves: Divine Verdict, p2's hand -> stack
 T42 p2 cancels casting Divine Verdict
 T42 p1's unspent {W}{R} empties
 T42 taps: p1:Swamp#3
 T42 p1 adds {B} (p1:Swamp#3)
+T42 p1 taps p1:Swamp#3 for mana
 T42 moves: Divine Verdict, p2's hand -> stack
 T42 p2 cancels casting Divine Verdict
 T42 p2 cancels activating p2:Elvish Piper
@@ -2021,24 +2387,33 @@ T43 moves: Goblin Piker, p2's hand -> stack
 T43 p2 cancels casting Goblin Piker
 T43 taps: p2:Plains#3
 T43 p2 adds {W} (p2:Plains#3)
+T43 p2 taps p2:Plains#3 for mana
 T43 taps: p2:Plains#1
 T43 p2 adds {W} (p2:Plains#1)
+T43 p2 taps p2:Plains#1 for mana
 T43 moves: Siege Mastodon, p2's hand -> stack
 T43 taps: p2:Island#2
 T43 p2 adds {U} (p2:Island#2)
+T43 p2 taps p2:Island#2 for mana
 T43 taps: p2:Mountain
 T43 p2 adds {R} (p2:Mountain)
+T43 p2 taps p2:Mountain for mana
 T43 taps: p2:Forest#1
 T43 p2 adds {G} (p2:Forest#1)
+T43 p2 taps p2:Forest#1 for mana
 T43 taps: p2:Forest#2
 T43 p2 adds {G} (p2:Forest#2)
+T43 p2 taps p2:Forest#2 for mana
 T43 p2 casts Siege Mastodon
 T43 taps: p2:Island#1
 T43 p2 adds {U} (p2:Island#1)
+T43 p2 taps p2:Island#1 for mana
 T43 taps: p2:Forest#3
 T43 p2 adds {G} (p2:Forest#3)
+T43 p2 taps p2:Forest#3 for mana
 T43 taps: p2:Plains#2
 T43 p2 adds {W} (p2:Plains#2)
+T43 p2 taps p2:Plains#2 for mana
 T43 taps: p2:Elvish Piper
 T43 p2 activates p2:Elvish Piper
 T43 resolves: p2:Elvish Piper's ability
@@ -2054,6 +2429,7 @@ T43 moves: Forest, p2's hand -> battlefield
 T43 p2 plays p2:Forest#4
 T43 taps: p2:Forest#4
 T43 p2 adds {G} (p2:Forest#4)
+T43 p2 taps p2:Forest#4 for mana
 T43 moves: Goblin Piker, p2's hand -> stack
 T43 p2 cancels casting Goblin Piker
 T43 moves: Goblin Piker, p2's hand -> stack
@@ -2075,42 +2451,56 @@ T44 untaps: p1:Plains#5
 T44 untaps: p1:Swamp#3
 T44 taps: p1:Forest
 T44 p1 adds {G} (p1:Forest)
+T44 p1 taps p1:Forest for mana
 T44 p1's unspent {G} empties
 T44 moves: Duress, p1's library -> p1's hand
 T44 p1 draws
 T44 taps: p1:Mountain#2
 T44 p1 adds {R} (p1:Mountain#2)
+T44 p1 taps p1:Mountain#2 for mana
 T44 p1's unspent {R} empties
 T44 taps: p1:Mountain#3
 T44 p1 adds {R} (p1:Mountain#3)
+T44 p1 taps p1:Mountain#3 for mana
 T44 p1's unspent {R} empties
 T44 p1 attack: nothing
 T44 taps: p1:Plains#2
 T44 p1 adds {W} (p1:Plains#2)
+T44 p1 taps p1:Plains#2 for mana
 T44 taps: p1:Mountain#1
 T44 p1 adds {R} (p1:Mountain#1)
+T44 p1 taps p1:Mountain#1 for mana
 T44 taps: p1:Plains#1
 T44 p1 adds {W} (p1:Plains#1)
+T44 p1 taps p1:Plains#1 for mana
 T44 p1's unspent {W}{W}{R} empties
 T44 taps: p1:Swamp#1
 T44 p1 adds {B} (p1:Swamp#1)
+T44 p1 taps p1:Swamp#1 for mana
 T44 moves: Duress, p1's hand -> stack
 T44 taps: p1:Swamp#3
 T44 p1 adds {B} (p1:Swamp#3)
+T44 p1 taps p1:Swamp#3 for mana
 T44 taps: p1:Plains#4
 T44 p1 adds {W} (p1:Plains#4)
+T44 p1 taps p1:Plains#4 for mana
 T44 p1 cancels casting Duress
 T44 moves: Pyroclasm, p1's hand -> stack
 T44 taps: p1:Swamp#3
 T44 p1 adds {B} (p1:Swamp#3)
+T44 p1 taps p1:Swamp#3 for mana
 T44 taps: p1:Plains#5
 T44 p1 adds {W} (p1:Plains#5)
+T44 p1 taps p1:Plains#5 for mana
 T44 taps: p1:Plains#3
 T44 p1 adds {W} (p1:Plains#3)
+T44 p1 taps p1:Plains#3 for mana
 T44 taps: p1:Plains#4
 T44 p1 adds {W} (p1:Plains#4)
+T44 p1 taps p1:Plains#4 for mana
 T44 taps: p1:Swamp#2
 T44 p1 adds {B} (p1:Swamp#2)
+T44 p1 taps p1:Swamp#2 for mana
 T44 p1 cancels casting Pyroclasm
 T44 p1's unspent {B} empties
 T45 turn 45 begins (p2)
@@ -2127,15 +2517,18 @@ T45 untaps: p2:Elvish Piper
 T45 untaps: p2:Forest#4
 T45 taps: p1:Swamp#2
 T45 p1 adds {B} (p1:Swamp#2)
+T45 p1 taps p1:Swamp#2 for mana
 T45 p1's unspent {B} empties
 T45 moves: Island, p2's library -> p2's hand
 T45 p2 draws
 T45 taps: p2:Plains#1
 T45 p2 adds {W} (p2:Plains#1)
+T45 p2 taps p2:Plains#1 for mana
 T45 p2 cancels activating p2:Elvish Piper
 T45 p2's unspent {W} empties
 T45 taps: p2:Forest#3
 T45 p2 adds {G} (p2:Forest#3)
+T45 p2 taps p2:Forest#3 for mana
 T45 p2's unspent {G} empties
 T45 taps: p2:Siege Mastodon
 T45 taps: p2:Elvish Piper
@@ -2144,37 +2537,49 @@ T45 p1 block: nothing
 T45 moves: Divine Verdict, p2's hand -> stack
 T45 taps: p2:Island#1
 T45 p2 adds {U} (p2:Island#1)
+T45 p2 taps p2:Island#1 for mana
 T45 taps: p2:Plains#2
 T45 p2 adds {W} (p2:Plains#2)
+T45 p2 taps p2:Plains#2 for mana
 T45 taps: p2:Plains#3
 T45 p2 adds {W} (p2:Plains#3)
+T45 p2 taps p2:Plains#3 for mana
 T45 taps: p2:Island#2
 T45 p2 adds {U} (p2:Island#2)
+T45 p2 taps p2:Island#2 for mana
 T45 p2 casts Divine Verdict
 T45 taps: p1:Swamp#3
 T45 p1 adds {B} (p1:Swamp#3)
+T45 p1 taps p1:Swamp#3 for mana
 T45 taps: p1:Plains#4
 T45 p1 adds {W} (p1:Plains#4)
+T45 p1 taps p1:Plains#4 for mana
 T45 destroyed: p2:Siege Mastodon
 T45 moves: Siege Mastodon, battlefield -> p2's graveyard
 T45 resolves: Divine Verdict
 T45 moves: Divine Verdict, stack -> p2's graveyard
 T45 taps: p1:Plains#5
 T45 p1 adds {W} (p1:Plains#5)
+T45 p1 taps p1:Plains#5 for mana
 T45 taps: p1:Plains#3
 T45 p1 adds {W} (p1:Plains#3)
+T45 p1 taps p1:Plains#3 for mana
 T45 p1's unspent {W}{W}{W}{B} empties
 T45 combat damage: p2:Elvish Piper -> p1 1
 T45 p1 loses 1 life
 T45 taps: p2:Forest#1
 T45 p2 adds {G} (p2:Forest#1)
+T45 p2 taps p2:Forest#1 for mana
 T45 p2's unspent {G} empties
 T45 taps: p2:Forest#4
 T45 p2 adds {G} (p2:Forest#4)
+T45 p2 taps p2:Forest#4 for mana
 T45 taps: p2:Mountain
 T45 p2 adds {R} (p2:Mountain)
+T45 p2 taps p2:Mountain for mana
 T45 taps: p2:Forest#2
 T45 p2 adds {G} (p2:Forest#2)
+T45 p2 taps p2:Forest#2 for mana
 T45 p2's unspent {R}{G}{G} empties
 T46 turn 46 begins (p1)
 T46 untaps: p1:Plains#1

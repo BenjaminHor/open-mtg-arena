@@ -74,6 +74,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "PERMANENT_UNTAPPED":
     case "PERMANENT_TAPPED":
     case "MANA_ADDED":
+    case "TAPPED_FOR_MANA":
     case "DAMAGE_DEALT":
     case "LIFE_LOST":
     case "EFFECT_CREATED":

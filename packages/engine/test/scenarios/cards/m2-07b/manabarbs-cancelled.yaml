@@ -1,0 +1,20 @@
+name: A cast cancelled after tapping a land for mana drops Manabarbs' trigger, as the whole action is reversed
+rules: [CR 734.1, CR 106.12]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Manabarbs, Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Shock
+    targets: [p2]
+  - p1 activate: Mountain
+  - expect:
+      pending: { player: p1, kind: payMana }
+  - p1 choose: cancel
+  - expect:
+      stack: []
+      p1.hand: [Shock]
+      p1:Mountain.tapped: false
+      pending: { player: p1, kind: priority }
+      p1.life: 20

@@ -8,12 +8,20 @@ import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
 import { controllerOf } from "../rules/controller.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId, PlayerId } from "../state/ids.ts";
-import type { Destination } from "../zones/move-card.ts";
+import type { ObjectId } from "../state/ids.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
-import { exileGraveyard, lookAtTop, mayShuffle, revealObjects, search, shuffleEach } from "./library-effects.ts";
+import {
+  exileGraveyard,
+  lookAtTop,
+  mayShuffle,
+  revealObjects,
+  revealTop,
+  search,
+  shuffleEach,
+} from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
+import { put } from "./put-effects.ts";
 import { sacrificeChosen } from "./sacrifice-choice.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
@@ -180,11 +188,11 @@ export function runEffect(
     }
     case "reveal":
       return revealObjects(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards);
-    case "put": {
-      // "Put it into your hand" (its owner's, CR 400.3); "onto the battlefield", under the controller (CR 110.2a).
-      const to = destinationOf(effect, context.controller);
-      const ids = stillThere(state, objectsNamed(state, effect.of, context, cards));
-      return toEach(state, ids, cards, (object) => ({ kind: "moveCard", object, to }));
+    case "put":
+      return put(state, effect, context, cards);
+    case "revealTop": {
+      const player = onePlayer(state, effect.who, context, cards);
+      return player === null ? { state, events: [] } : revealTop(state, player, cards);
     }
     case "shuffle":
       return shuffleEach(state, playersNamed(state, effect.who, context, cards), cards);
@@ -281,12 +289,4 @@ function mainDamage(
       return to.map((t) => ({ source: from, to: t, amount: share, combat: false }));
     }
   }
-}
-
-/** Where `put` moves a card: its owner's hand (CR 400.3), or the battlefield under the controller (CR 110.2a). */
-function destinationOf(effect: Extract<Effect, { op: "put" }>, controller: PlayerId): Destination {
-  if (effect.into === "hand") return { zone: "hand" };
-  return effect.tapped === true
-    ? { zone: "battlefield", controller, tapped: true }
-    : { zone: "battlefield", controller };
 }

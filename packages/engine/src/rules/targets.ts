@@ -37,6 +37,9 @@ function hasShroud(state: GameState, id: ObjectId, cards: CardDatabase): boolean
 function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: CardDatabase): Target[] {
   const objects = (ids: readonly ObjectId[]): Target[] => ids.map((object) => ({ kind: "object", object }));
   const players: Target[] = state.turnOrder.map((player) => ({ kind: "player", player }));
+  // "That player controls": the triggering event's player, kept on the ability before its targets (CR 603.3d).
+  const self = state.objects[by.object];
+  const thatPlayer = self?.kind === "ability" ? (self.trigger?.player ?? null) : null;
   switch (spec.kind) {
     case "anyTarget": {
       // "Any target": a creature, player, planeswalker or battle (CR 115.4). There are no planeswalkers or battles yet.
@@ -53,7 +56,7 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       return players.filter((t) => t.kind === "player" && t.player !== by.controller);
     case "permanent":
       return objects(
-        state.zones.battlefield.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards)),
+        state.zones.battlefield.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer)),
       );
     case "spell": {
       // A spell is a card on the stack (CR 112.1); an ability on the stack isn't one. It can't target itself (CR 115.5).
@@ -61,7 +64,7 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
         (id) =>
           id !== by.object &&
           state.objects[id]?.kind === "card" &&
-          matchesFilter(state, id, spec.filter, by.controller, cards),
+          matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer),
       );
       return objects(spells);
     }
@@ -69,7 +72,9 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       // "Your graveyard" or "a graveyard" names the zone (CR 109.2a), not control: cards there have none (CR 109.4).
       const owners = spec.graveyard === "yours" ? [by.controller] : state.turnOrder;
       const inGraveyards = owners.flatMap((p) => state.zones.players[p]?.graveyard ?? []);
-      return objects(inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards)));
+      return objects(
+        inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer)),
+      );
     }
   }
 }

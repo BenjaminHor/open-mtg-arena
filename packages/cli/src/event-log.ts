@@ -144,6 +144,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player}'s unspent ${manaText(e.lost)} empties`;
     case "MANA_ADDED":
       return `${e.player} adds ${manaText({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, [e.mana]: e.amount })} (${name(e.source)})`;
+    case "TAPPED_FOR_MANA":
+      return `${e.player} taps ${name(e.object)} for mana`;
     case "PERMANENT_TAPPED":
       return `taps: ${name(e.object)}`;
     case "PERMANENT_UNTAPPED":

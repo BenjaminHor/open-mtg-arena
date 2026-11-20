@@ -1,0 +1,15 @@
+name: Mesa Enchantress doesn't trigger on an opponent's enchantment spell
+rules: [CR 603.2, CR 109.4]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Mesa Enchantress]
+  p2:
+    battlefield: [Forest, Forest, Forest, Forest, Forest, Forest]
+    hand: [Lurking Predators]
+steps:
+  - p2 cast: Lurking Predators
+    pay: auto
+  - expect:
+      stack: [Lurking Predators]
+      events lacks: [{ type: ABILITY_TRIGGERED }]

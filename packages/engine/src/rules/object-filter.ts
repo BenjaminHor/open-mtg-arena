@@ -13,8 +13,9 @@ import { controllerOf } from "./controller.ts";
 
 /**
  * Whether the card `id` fits every restriction in `filter`, read from its characteristics now (CR 109.3, 613), in any
- * zone. `you` is the player the text calls "you": the controller of the spell or ability (CR 109.5). Each restriction
- * asks only the layer reader it needs, as `characteristics()` would compute power and toughness too.
+ * zone. `you` is the player the text calls "you": the controller of the spell or ability (CR 109.5); `thatPlayer`, for a
+ * triggered ability's target, the player its event was about. Each restriction asks only the layer reader it needs, as
+ * `characteristics()` would compute power and toughness too.
  */
 export function matchesFilter(
   state: GameState,
@@ -22,6 +23,7 @@ export function matchesFilter(
   filter: ObjectFilter,
   you: PlayerId,
   cards: CardDatabase,
+  thatPlayer: PlayerId | null = null,
 ): boolean {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return false;
@@ -46,14 +48,14 @@ export function matchesFilter(
     if (!filter.supertypes.every((s) => supertypes.includes(s))) return false;
   }
   // "Other than basic land cards": not fitting the whole inner filter, so a nonbasic land still fits.
-  if (filter.not !== undefined && matchesFilter(state, id, filter.not, you, cards)) return false;
+  if (filter.not !== undefined && matchesFilter(state, id, filter.not, you, cards, thatPlayer)) return false;
   if (filter.tapped === true && !obj.tapped) return false;
   if (filter.combat !== undefined && !inCombatAs(state, id, filter.combat, cards)) return false;
   if (filter.controller !== undefined) {
     // Only permanents and spells have a controller; a card in any other zone has none, so it's controlled by no one
     // (CR 109.4), even though `controllerOf` names its owner for questions that need someone.
     const controlled = state.zones.battlefield.includes(id) || state.zones.stack.includes(id);
-    if (!controlled || !controlledAs(controllerOf(state, id), filter.controller, you)) return false;
+    if (!controlled || !controlledAs(controllerOf(state, id), filter.controller, you, thatPlayer)) return false;
   }
   return true;
 }
@@ -83,7 +85,12 @@ function inCombatAs(state: GameState, id: ObjectId, as: NonNullable<ObjectFilter
  * "You control", "you don't control", "an opponent controls". In a two-player game the opponent is the other player
  * (CR 102.2), so "an opponent" and "not you" agree; they differ once teams exist (later: CR 102.3).
  */
-function controlledAs(controller: PlayerId, as: NonNullable<ObjectFilter["controller"]>, you: PlayerId): boolean {
+function controlledAs(
+  controller: PlayerId,
+  as: NonNullable<ObjectFilter["controller"]>,
+  you: PlayerId,
+  thatPlayer: PlayerId | null,
+): boolean {
   switch (as) {
     case "you":
       return controller === you;
@@ -91,5 +98,7 @@ function controlledAs(controller: PlayerId, as: NonNullable<ObjectFilter["contro
       return controller !== you;
     case "opponent":
       return controller !== you;
+    case "triggeringPlayer":
+      return controller === thatPlayer;
   }
 }

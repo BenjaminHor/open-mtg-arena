@@ -1,0 +1,217 @@
+T0 p1 goes first (chosen by p2)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Centaur Courser, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Solemn Offering, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Wall of Fire, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Tendrils of Corruption, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Stormfront Pegasus, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Rampant Growth, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Deathmark, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Griffin Sentinel, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Centaur Courser, p1's hand -> p1's library
+T0 moves: Solemn Offering, p1's hand -> p1's library
+T0 moves: Wall of Fire, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Tendrils of Corruption, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Angel's Feather, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Consume Spirit, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Assassinate, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Consume Spirit, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 moves: Island, p1's hand -> battlefield
+T1 p1 plays p1:Island
+T1 p1 attack: nothing
+T1 taps: p1:Island
+T1 p1 adds {U} (p1:Island)
+T1 p1 taps p1:Island for mana
+T1 p1's unspent {U} empties
+T2 turn 2 begins (p2)
+T2 moves: Panic Attack, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Mountain, p2's hand -> battlefield
+T2 p2 plays p2:Mountain
+T2 taps: p2:Mountain
+T2 p2 adds {R} (p2:Mountain)
+T2 p2 taps p2:Mountain for mana
+T2 p2's unspent {R} empties
+T2 p2 attack: nothing
+T3 turn 3 begins (p1)
+T3 untaps: p1:Island
+T3 moves: Angel's Feather, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Angel's Feather, p1's hand -> stack
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1 cancels casting Angel's Feather
+T3 moves: Angel's Feather, p1's hand -> stack
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1 cancels casting Angel's Feather
+T3 moves: Angel's Feather, p1's hand -> stack
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1 cancels casting Angel's Feather
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 moves: Forest, p1's hand -> battlefield
+T3 p1 plays p1:Forest
+T3 p1's unspent {U} empties
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 p1's unspent {G} empties
+T3 p1 attack: nothing
+T3 moves: Angel's Feather, p1's hand -> stack
+T3 p1 cancels casting Angel's Feather
+T4 turn 4 begins (p2)
+T4 untaps: p2:Mountain
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
+T4 p2's unspent {R} empties
+T4 moves: Island, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Island, p2's hand -> battlefield
+T4 p2 plays p2:Island
+T4 moves: Griffin Sentinel, p2's hand -> stack
+T4 taps: p2:Island
+T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
+T4 p2 cancels casting Griffin Sentinel
+T4 moves: Panic Attack, p2's hand -> stack
+T4 taps: p2:Island
+T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
+T4 p2 cancels casting Panic Attack
+T4 taps: p2:Island
+T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
+T4 p2's unspent {U} empties
+T4 p2 attack: nothing
+T4 moves: Stormfront Pegasus, p2's hand -> stack
+T4 p2 cancels casting Stormfront Pegasus
+T4 moves: Rampant Growth, p2's hand -> stack
+T4 p2 cancels casting Rampant Growth
+T4 moves: Stormfront Pegasus, p2's hand -> stack
+T4 p2 cancels casting Stormfront Pegasus
+T4 moves: Griffin Sentinel, p2's hand -> stack
+T4 p2 cancels casting Griffin Sentinel
+T5 turn 5 begins (p1)
+T5 untaps: p1:Island
+T5 untaps: p1:Forest
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 taps: p1:Forest
+T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
+T5 p1's unspent {U}{G} empties
+T5 moves: Swamp, p1's library -> p1's hand
+T5 p1 draws
+T5 p1 attack: nothing
+T5 moves: Mountain, p1's hand -> battlefield
+T5 p1 plays p1:Mountain
+T5 moves: Angel's Feather, p1's hand -> stack
+T5 p1 cancels casting Angel's Feather
+T5 moves: Angel's Feather, p1's hand -> stack
+T5 taps: p1:Mountain
+T5 p1 adds {R} (p1:Mountain)
+T5 p1 taps p1:Mountain for mana
+T5 p1 cancels casting Angel's Feather
+T5 moves: Angel's Feather, p1's hand -> stack
+T5 p1 cancels casting Angel's Feather
+T6 turn 6 begins (p2)
+T6 untaps: p2:Mountain
+T6 untaps: p2:Island
+T6 taps: p2:Mountain
+T6 p2 adds {R} (p2:Mountain)
+T6 p2 taps p2:Mountain for mana
+T6 taps: p2:Island
+T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
+T6 p2's unspent {U}{R} empties
+T6 moves: Fabricate, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p1:Mountain
+T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
+T6 p1's unspent {R} empties
+T6 moves: Panic Attack, p2's hand -> stack
+T6 p2 cancels casting Panic Attack
+T6 p2 attack: nothing
+T6 moves: Stormfront Pegasus, p2's hand -> p2's graveyard
+T6 p2 discards Stormfront Pegasus
+T7 turn 7 begins (p1)
+T7 untaps: p1:Island
+T7 untaps: p1:Forest
+T7 untaps: p1:Mountain
+T7 taps: p1:Mountain
+T7 p1 adds {R} (p1:Mountain)
+T7 p1 taps p1:Mountain for mana
+T7 p1's unspent {R} empties
+T7 moves: Tendrils of Corruption, p1's library -> p1's hand
+T7 p1 draws
+T7 moves: Angel's Feather, p1's hand -> stack
+T7 taps: p1:Forest
+T7 p1 adds {G} (p1:Forest)
+T7 p1 taps p1:Forest for mana
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
+T7 p1 casts Angel's Feather
+T7 resolves: Angel's Feather
+T7 moves: Angel's Feather, stack -> battlefield
+T7 moves: Forest, p1's hand -> battlefield
+T7 p1 plays p1:Forest#2
+T7 p1 attack: nothing
+T7 taps: p1:Forest#2
+T7 p1 adds {G} (p1:Forest#2)
+T7 p1 taps p1:Forest#2 for mana
+T7 moves: Angel's Feather, p1's hand -> stack
+T7 p1 cancels casting Angel's Feather
+T7 p1's unspent {G} empties
+T8 turn 8 begins (p2)
+T8 untaps: p2:Mountain
+T8 untaps: p2:Island

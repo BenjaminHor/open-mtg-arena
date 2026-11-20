@@ -39,6 +39,7 @@ T1 p2 plays p2:Mountain
 T1 moves: Raging Goblin, p2's hand -> stack
 T1 taps: p2:Mountain
 T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
 T1 p2 casts Raging Goblin
 T1 resolves: Raging Goblin
 T1 moves: Raging Goblin, stack -> battlefield
@@ -63,6 +64,7 @@ T2 moves: Mountain, p1's hand -> battlefield
 T2 p1 plays p1:Mountain
 T2 taps: p1:Mountain
 T2 p1 adds {R} (p1:Mountain)
+T2 p1 taps p1:Mountain for mana
 T2 moves: Raging Goblin, p1's hand -> stack
 T2 p1 casts Raging Goblin
 T2 resolves: Raging Goblin
@@ -71,6 +73,7 @@ T3 turn 3 begins (p2)
 T3 untaps: p2:Mountain
 T3 taps: p2:Mountain
 T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
 T3 p2's unspent {R} empties
 T3 moves: Mountain, p2's library -> p2's hand
 T3 p2 draws
@@ -83,13 +86,16 @@ T3 p2 cancels casting Fire Elemental
 T3 moves: Furnace Whelp, p2's hand -> stack
 T3 taps: p2:Mountain#2
 T3 p2 adds {R} (p2:Mountain#2)
+T3 p2 taps p2:Mountain#2 for mana
 T3 p2 cancels casting Furnace Whelp
 T3 moves: Furnace Whelp, p2's hand -> stack
 T3 taps: p2:Mountain#2
 T3 p2 adds {R} (p2:Mountain#2)
+T3 p2 taps p2:Mountain#2 for mana
 T3 p2 cancels casting Furnace Whelp
 T3 taps: p2:Mountain#2
 T3 p2 adds {R} (p2:Mountain#2)
+T3 p2 taps p2:Mountain#2 for mana
 T3 moves: Fire Elemental, p2's hand -> stack
 T3 p2 cancels casting Fire Elemental
 T3 moves: Fire Elemental, p2's hand -> stack
@@ -124,6 +130,7 @@ T4 turn 4 begins (p1)
 T4 untaps: p1:Mountain
 T4 taps: p1:Mountain
 T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
 T4 p1's unspent {R} empties
 T4 moves: Shock, p1's library -> p1's hand
 T4 p1 draws
@@ -135,6 +142,7 @@ T4 moves: Shock, p1's hand -> stack
 T4 p1 cancels casting Shock
 T4 taps: p1:Mountain#2
 T4 p1 adds {R} (p1:Mountain#2)
+T4 p1 taps p1:Mountain#2 for mana
 T4 p1's unspent {R} empties
 T4 taps: p1:Raging Goblin
 T4 p1 attack: p1:Raging Goblin -> p2
@@ -150,6 +158,7 @@ T5 untaps: p2:Mountain#1
 T5 untaps: p2:Mountain#2
 T5 taps: p2:Mountain#1
 T5 p2 adds {R} (p2:Mountain#1)
+T5 p2 taps p2:Mountain#1 for mana
 T5 p2's unspent {R} empties
 T5 moves: Mountain, p2's library -> p2's hand
 T5 p2 draws
@@ -171,22 +180,28 @@ T5 p1 cancels casting Shock
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 taps: p2:Mountain#3
 T5 p2 adds {R} (p2:Mountain#3)
+T5 p2 taps p2:Mountain#3 for mana
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Fire Elemental
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 taps: p2:Mountain#3
 T5 p2 adds {R} (p2:Mountain#3)
+T5 p2 taps p2:Mountain#3 for mana
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Fire Elemental
 T5 taps: p2:Mountain#3
 T5 p2 adds {R} (p2:Mountain#3)
+T5 p2 taps p2:Mountain#3 for mana
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 p2 cancels casting Fire Elemental
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Fire Elemental
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 p2 cancels casting Fire Elemental
@@ -195,24 +210,29 @@ T5 p2 cancels casting Fire Elemental
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Fire Elemental
 T5 moves: Hill Giant, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Hill Giant
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Fire Elemental
 T5 moves: Furnace Whelp, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Furnace Whelp
 T5 moves: Hill Giant, p2's hand -> stack
 T5 p2 cancels casting Hill Giant
 T5 moves: Furnace Whelp, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Furnace Whelp
 T5 moves: Hill Giant, p2's hand -> stack
 T5 p2 cancels casting Hill Giant
@@ -221,9 +241,11 @@ T5 p2 cancels casting Hill Giant
 T5 moves: Hill Giant, p2's hand -> stack
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 p2 cancels casting Hill Giant
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 moves: Fire Elemental, p2's hand -> stack
 T5 p2 cancels casting Fire Elemental
 T5 p2's unspent {R}{R} empties
@@ -235,6 +257,7 @@ T6 untaps: p1:Raging Goblin
 T6 untaps: p1:Mountain#2
 T6 taps: p1:Mountain#1
 T6 p1 adds {R} (p1:Mountain#1)
+T6 p1 taps p1:Mountain#1 for mana
 T6 p1's unspent {R} empties
 T6 moves: Mountain, p1's library -> p1's hand
 T6 p1 draws
@@ -242,8 +265,10 @@ T6 moves: Mountain, p1's hand -> battlefield
 T6 p1 plays p1:Mountain#3
 T6 taps: p1:Mountain#3
 T6 p1 adds {R} (p1:Mountain#3)
+T6 p1 taps p1:Mountain#3 for mana
 T6 taps: p1:Mountain#2
 T6 p1 adds {R} (p1:Mountain#2)
+T6 p1 taps p1:Mountain#2 for mana
 T6 p1's unspent {R}{R} empties
 T6 p1 attack: nothing
 T6 moves: Shock, p1's hand -> stack
@@ -272,10 +297,13 @@ T7 untaps: p2:Mountain#2
 T7 untaps: p2:Mountain#3
 T7 taps: p2:Mountain#1
 T7 p2 adds {R} (p2:Mountain#1)
+T7 p2 taps p2:Mountain#1 for mana
 T7 taps: p2:Mountain#2
 T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
 T7 taps: p2:Mountain#3
 T7 p2 adds {R} (p2:Mountain#3)
+T7 p2 taps p2:Mountain#3 for mana
 T7 p2's unspent {R}{R}{R} empties
 T7 moves: Shock, p2's library -> p2's hand
 T7 p2 draws
@@ -323,8 +351,10 @@ T8 untaps: p1:Mountain#2
 T8 untaps: p1:Mountain#3
 T8 taps: p1:Mountain#1
 T8 p1 adds {R} (p1:Mountain#1)
+T8 p1 taps p1:Mountain#1 for mana
 T8 taps: p1:Mountain#2
 T8 p1 adds {R} (p1:Mountain#2)
+T8 p1 taps p1:Mountain#2 for mana
 T8 p1's unspent {R}{R} empties
 T8 moves: Raging Goblin, p1's library -> p1's hand
 T8 p1 draws
@@ -336,6 +366,7 @@ T8 moves: Mountain, p1's hand -> battlefield
 T8 p1 plays p1:Mountain#4
 T8 taps: p1:Mountain#4
 T8 p1 adds {R} (p1:Mountain#4)
+T8 p1 taps p1:Mountain#4 for mana
 T8 moves: Furnace Whelp, p1's hand -> stack
 T8 p1 cancels casting Furnace Whelp
 T8 p1's unspent {R} empties
@@ -364,6 +395,7 @@ T8 moves: Furnace Whelp, p1's hand -> stack
 T8 p1 cancels casting Furnace Whelp
 T8 taps: p1:Mountain#3
 T8 p1 adds {R} (p1:Mountain#3)
+T8 p1 taps p1:Mountain#3 for mana
 T8 moves: Shock, p1's hand -> stack
 T8 p1 casts Shock
 T8 moves: Shock, p2's hand -> stack
@@ -391,25 +423,33 @@ T9 p2 cancels casting Hill Giant
 T9 moves: Shock, p2's hand -> stack
 T9 taps: p2:Mountain#2
 T9 p2 adds {R} (p2:Mountain#2)
+T9 p2 taps p2:Mountain#2 for mana
 T9 p2 cancels casting Shock
 T9 moves: Shock, p2's hand -> stack
 T9 taps: p2:Mountain#1
 T9 p2 adds {R} (p2:Mountain#1)
+T9 p2 taps p2:Mountain#1 for mana
 T9 taps: p2:Mountain#2
 T9 p2 adds {R} (p2:Mountain#2)
+T9 p2 taps p2:Mountain#2 for mana
 T9 taps: p2:Mountain#3
 T9 p2 adds {R} (p2:Mountain#3)
+T9 p2 taps p2:Mountain#3 for mana
 T9 p2 cancels casting Shock
 T9 taps: p2:Mountain#2
 T9 p2 adds {R} (p2:Mountain#2)
+T9 p2 taps p2:Mountain#2 for mana
 T9 moves: Shock, p2's hand -> stack
 T9 taps: p2:Mountain#1
 T9 p2 adds {R} (p2:Mountain#1)
+T9 p2 taps p2:Mountain#1 for mana
 T9 p2 cancels casting Shock
 T9 taps: p2:Mountain#1
 T9 p2 adds {R} (p2:Mountain#1)
+T9 p2 taps p2:Mountain#1 for mana
 T9 taps: p2:Mountain#3
 T9 p2 adds {R} (p2:Mountain#3)
+T9 p2 taps p2:Mountain#3 for mana
 T9 p2's unspent {R}{R}{R} empties
 T9 p2 attack: nothing
 T9 moves: Shock, p2's hand -> stack
@@ -421,6 +461,7 @@ T9 p2 plays p2:Mountain#4
 T9 moves: Fire Elemental, p2's hand -> stack
 T9 taps: p2:Mountain#4
 T9 p2 adds {R} (p2:Mountain#4)
+T9 p2 taps p2:Mountain#4 for mana
 T9 p2 cancels casting Fire Elemental
 T9 moves: Shock, p2's hand -> stack
 T9 p2 cancels casting Shock
@@ -432,6 +473,7 @@ T9 moves: Shock, p2's hand -> stack
 T9 p2 cancels casting Shock
 T9 taps: p2:Mountain#4
 T9 p2 adds {R} (p2:Mountain#4)
+T9 p2 taps p2:Mountain#4 for mana
 T9 moves: Shock, p2's hand -> stack
 T9 p2 cancels casting Shock
 T9 p2's unspent {R} empties
@@ -442,8 +484,10 @@ T10 untaps: p1:Mountain#3
 T10 untaps: p1:Mountain#4
 T10 taps: p1:Mountain#2
 T10 p1 adds {R} (p1:Mountain#2)
+T10 p1 taps p1:Mountain#2 for mana
 T10 taps: p1:Mountain#4
 T10 p1 adds {R} (p1:Mountain#4)
+T10 p1 taps p1:Mountain#4 for mana
 T10 moves: Shock, p2's hand -> stack
 T10 p2 cancels casting Shock
 T10 p1's unspent {R}{R} empties
@@ -451,8 +495,10 @@ T10 moves: Mountain, p1's library -> p1's hand
 T10 p1 draws
 T10 taps: p1:Mountain#3
 T10 p1 adds {R} (p1:Mountain#3)
+T10 p1 taps p1:Mountain#3 for mana
 T10 taps: p1:Mountain#1
 T10 p1 adds {R} (p1:Mountain#1)
+T10 p1 taps p1:Mountain#1 for mana
 T10 moves: Shock, p2's hand -> stack
 T10 p2 cancels casting Shock
 T10 p1's unspent {R}{R} empties
@@ -463,6 +509,7 @@ T10 p1 plays p1:Mountain#5
 T10 p1 attack: nothing
 T10 taps: p1:Mountain#5
 T10 p1 adds {R} (p1:Mountain#5)
+T10 p1 taps p1:Mountain#5 for mana
 T10 p1's unspent {R} empties
 T10 moves: Furnace Whelp, p1's hand -> stack
 T10 p1 cancels casting Furnace Whelp
@@ -487,17 +534,21 @@ T11 untaps: p2:Mountain#3
 T11 untaps: p2:Mountain#4
 T11 taps: p2:Mountain#3
 T11 p2 adds {R} (p2:Mountain#3)
+T11 p2 taps p2:Mountain#3 for mana
 T11 taps: p2:Mountain#2
 T11 p2 adds {R} (p2:Mountain#2)
+T11 p2 taps p2:Mountain#2 for mana
 T11 p2's unspent {R}{R} empties
 T11 moves: Mountain, p2's library -> p2's hand
 T11 p2 draws
 T11 moves: Shock, p2's hand -> stack
 T11 taps: p2:Mountain#1
 T11 p2 adds {R} (p2:Mountain#1)
+T11 p2 taps p2:Mountain#1 for mana
 T11 p2 casts Shock
 T11 taps: p2:Mountain#4
 T11 p2 adds {R} (p2:Mountain#4)
+T11 p2 taps p2:Mountain#4 for mana
 T11 damage: Shock -> p1 2
 T11 p1 loses 2 life
 T11 resolves: Shock
@@ -508,6 +559,7 @@ T11 p2 plays p2:Mountain#5
 T11 p2 attack: nothing
 T11 taps: p2:Mountain#5
 T11 p2 adds {R} (p2:Mountain#5)
+T11 p2 taps p2:Mountain#5 for mana
 T11 p2's unspent {R} empties
 T11 moves: Hill Giant, p2's hand -> stack
 T11 p2 cancels casting Hill Giant
@@ -519,17 +571,22 @@ T12 untaps: p1:Mountain#4
 T12 untaps: p1:Mountain#5
 T12 taps: p1:Mountain#5
 T12 p1 adds {R} (p1:Mountain#5)
+T12 p1 taps p1:Mountain#5 for mana
 T12 taps: p1:Mountain#2
 T12 p1 adds {R} (p1:Mountain#2)
+T12 p1 taps p1:Mountain#2 for mana
 T12 taps: p1:Mountain#4
 T12 p1 adds {R} (p1:Mountain#4)
+T12 p1 taps p1:Mountain#4 for mana
 T12 p1's unspent {R}{R}{R} empties
 T12 moves: Gray Ogre, p1's library -> p1's hand
 T12 p1 draws
 T12 taps: p1:Mountain#1
 T12 p1 adds {R} (p1:Mountain#1)
+T12 p1 taps p1:Mountain#1 for mana
 T12 taps: p1:Mountain#3
 T12 p1 adds {R} (p1:Mountain#3)
+T12 p1 taps p1:Mountain#3 for mana
 T12 p1's unspent {R}{R} empties
 T12 moves: Furnace Whelp, p1's hand -> stack
 T12 p1 cancels casting Furnace Whelp
@@ -538,10 +595,12 @@ T12 p1 plays p1:Mountain#6
 T12 moves: Gray Ogre, p1's hand -> stack
 T12 taps: p1:Mountain#6
 T12 p1 adds {R} (p1:Mountain#6)
+T12 p1 taps p1:Mountain#6 for mana
 T12 p1 cancels casting Gray Ogre
 T12 moves: Raging Goblin, p1's hand -> stack
 T12 taps: p1:Mountain#6
 T12 p1 adds {R} (p1:Mountain#6)
+T12 p1 taps p1:Mountain#6 for mana
 T12 p1 casts Raging Goblin
 T12 resolves: Raging Goblin
 T12 moves: Raging Goblin, stack -> battlefield
@@ -570,29 +629,36 @@ T13 untaps: p2:Mountain#4
 T13 untaps: p2:Mountain#5
 T13 taps: p2:Mountain#2
 T13 p2 adds {R} (p2:Mountain#2)
+T13 p2 taps p2:Mountain#2 for mana
 T13 taps: p2:Mountain#3
 T13 p2 adds {R} (p2:Mountain#3)
+T13 p2 taps p2:Mountain#3 for mana
 T13 taps: p2:Mountain#5
 T13 p2 adds {R} (p2:Mountain#5)
+T13 p2 taps p2:Mountain#5 for mana
 T13 taps: p2:Mountain#4
 T13 p2 adds {R} (p2:Mountain#4)
+T13 p2 taps p2:Mountain#4 for mana
 T13 p2's unspent {R}{R}{R}{R} empties
 T13 moves: Mountain, p2's library -> p2's hand
 T13 p2 draws
 T13 moves: Furnace Whelp, p2's hand -> stack
 T13 taps: p2:Mountain#1
 T13 p2 adds {R} (p2:Mountain#1)
+T13 p2 taps p2:Mountain#1 for mana
 T13 p2 cancels casting Furnace Whelp
 T13 moves: Mountain, p2's hand -> battlefield
 T13 p2 plays p2:Mountain#6
 T13 taps: p2:Mountain#1
 T13 p2 adds {R} (p2:Mountain#1)
+T13 p2 taps p2:Mountain#1 for mana
 T13 moves: Furnace Whelp, p2's hand -> stack
 T13 p2 cancels casting Furnace Whelp
 T13 p2's unspent {R} empties
 T13 p2 attack: nothing
 T13 taps: p2:Mountain#6
 T13 p2 adds {R} (p2:Mountain#6)
+T13 p2 taps p2:Mountain#6 for mana
 T13 moves: Fire Elemental, p2's hand -> stack
 T13 p2 cancels casting Fire Elemental
 T13 moves: Fire Elemental, p2's hand -> stack
@@ -611,19 +677,25 @@ T14 untaps: p1:Mountain#5
 T14 untaps: p1:Mountain#6
 T14 taps: p1:Mountain#1
 T14 p1 adds {R} (p1:Mountain#1)
+T14 p1 taps p1:Mountain#1 for mana
 T14 taps: p1:Mountain#4
 T14 p1 adds {R} (p1:Mountain#4)
+T14 p1 taps p1:Mountain#4 for mana
 T14 p1's unspent {R}{R} empties
 T14 moves: Hill Giant, p1's library -> p1's hand
 T14 p1 draws
 T14 taps: p1:Mountain#5
 T14 p1 adds {R} (p1:Mountain#5)
+T14 p1 taps p1:Mountain#5 for mana
 T14 taps: p1:Mountain#2
 T14 p1 adds {R} (p1:Mountain#2)
+T14 p1 taps p1:Mountain#2 for mana
 T14 taps: p1:Mountain#6
 T14 p1 adds {R} (p1:Mountain#6)
+T14 p1 taps p1:Mountain#6 for mana
 T14 taps: p1:Mountain#3
 T14 p1 adds {R} (p1:Mountain#3)
+T14 p1 taps p1:Mountain#3 for mana
 T14 p1's unspent {R}{R}{R}{R} empties
 T14 moves: Furnace Whelp, p1's hand -> stack
 T14 p1 cancels casting Furnace Whelp
@@ -641,6 +713,7 @@ T14 p1 plays p1:Mountain#7
 T14 moves: Gray Ogre, p1's hand -> stack
 T14 taps: p1:Mountain#7
 T14 p1 adds {R} (p1:Mountain#7)
+T14 p1 taps p1:Mountain#7 for mana
 T14 p1 cancels casting Gray Ogre
 T14 moves: Hill Giant, p1's hand -> stack
 T14 p1 cancels casting Hill Giant
@@ -648,6 +721,7 @@ T14 moves: Gray Ogre, p1's hand -> stack
 T14 p1 cancels casting Gray Ogre
 T14 taps: p1:Mountain#7
 T14 p1 adds {R} (p1:Mountain#7)
+T14 p1 taps p1:Mountain#7 for mana
 T14 p1's unspent {R} empties
 T15 turn 15 begins (p2)
 T15 untaps: p2:Mountain#1
@@ -660,37 +734,47 @@ T15 moves: Mountain, p2's library -> p2's hand
 T15 p2 draws
 T15 taps: p2:Mountain#5
 T15 p2 adds {R} (p2:Mountain#5)
+T15 p2 taps p2:Mountain#5 for mana
 T15 taps: p2:Mountain#6
 T15 p2 adds {R} (p2:Mountain#6)
+T15 p2 taps p2:Mountain#6 for mana
 T15 taps: p2:Mountain#1
 T15 p2 adds {R} (p2:Mountain#1)
+T15 p2 taps p2:Mountain#1 for mana
 T15 p2's unspent {R}{R}{R} empties
 T15 moves: Fire Elemental, p2's hand -> stack
 T15 taps: p2:Mountain#4
 T15 p2 adds {R} (p2:Mountain#4)
+T15 p2 taps p2:Mountain#4 for mana
 T15 p2 cancels casting Fire Elemental
 T15 taps: p2:Mountain#4
 T15 p2 adds {R} (p2:Mountain#4)
+T15 p2 taps p2:Mountain#4 for mana
 T15 moves: Mountain, p2's hand -> battlefield
 T15 p2 plays p2:Mountain#7
 T15 moves: Fire Elemental, p2's hand -> stack
 T15 taps: p2:Mountain#2
 T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
 T15 p2 cancels casting Fire Elemental
 T15 moves: Fire Elemental, p2's hand -> stack
 T15 p2 cancels casting Fire Elemental
 T15 taps: p2:Mountain#7
 T15 p2 adds {R} (p2:Mountain#7)
+T15 p2 taps p2:Mountain#7 for mana
 T15 taps: p2:Mountain#2
 T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
 T15 moves: Furnace Whelp, p2's hand -> stack
 T15 p2 cancels casting Furnace Whelp
 T15 moves: Fire Elemental, p2's hand -> stack
 T15 taps: p2:Mountain#3
 T15 p2 adds {R} (p2:Mountain#3)
+T15 p2 taps p2:Mountain#3 for mana
 T15 p2 cancels casting Fire Elemental
 T15 taps: p2:Mountain#3
 T15 p2 adds {R} (p2:Mountain#3)
+T15 p2 taps p2:Mountain#3 for mana
 T15 moves: Fire Elemental, p2's hand -> stack
 T15 p2 cancels casting Fire Elemental
 T15 moves: Fire Elemental, p2's hand -> stack
@@ -728,21 +812,28 @@ T16 untaps: p1:Raging Goblin
 T16 untaps: p1:Mountain#7
 T16 taps: p1:Mountain#4
 T16 p1 adds {R} (p1:Mountain#4)
+T16 p1 taps p1:Mountain#4 for mana
 T16 taps: p1:Mountain#5
 T16 p1 adds {R} (p1:Mountain#5)
+T16 p1 taps p1:Mountain#5 for mana
 T16 taps: p1:Mountain#7
 T16 p1 adds {R} (p1:Mountain#7)
+T16 p1 taps p1:Mountain#7 for mana
 T16 taps: p1:Mountain#1
 T16 p1 adds {R} (p1:Mountain#1)
+T16 p1 taps p1:Mountain#1 for mana
 T16 taps: p1:Mountain#3
 T16 p1 adds {R} (p1:Mountain#3)
+T16 p1 taps p1:Mountain#3 for mana
 T16 p1's unspent {R}{R}{R}{R}{R} empties
 T16 moves: Mountain, p1's library -> p1's hand
 T16 p1 draws
 T16 taps: p1:Mountain#2
 T16 p1 adds {R} (p1:Mountain#2)
+T16 p1 taps p1:Mountain#2 for mana
 T16 taps: p1:Mountain#6
 T16 p1 adds {R} (p1:Mountain#6)
+T16 p1 taps p1:Mountain#6 for mana
 T16 p1's unspent {R}{R} empties
 T16 moves: Gray Ogre, p1's hand -> stack
 T16 p1 cancels casting Gray Ogre
@@ -752,6 +843,7 @@ T16 moves: Hill Giant, p1's hand -> stack
 T16 p1 cancels casting Hill Giant
 T16 taps: p1:Mountain#8
 T16 p1 adds {R} (p1:Mountain#8)
+T16 p1 taps p1:Mountain#8 for mana
 T16 p1's unspent {R} empties
 T16 taps: p1:Raging Goblin
 T16 p1 attack: p1:Raging Goblin -> p2
@@ -778,21 +870,28 @@ T17 untaps: p2:Mountain#6
 T17 untaps: p2:Mountain#7
 T17 taps: p2:Mountain#7
 T17 p2 adds {R} (p2:Mountain#7)
+T17 p2 taps p2:Mountain#7 for mana
 T17 taps: p2:Mountain#3
 T17 p2 adds {R} (p2:Mountain#3)
+T17 p2 taps p2:Mountain#3 for mana
 T17 p2's unspent {R}{R} empties
 T17 moves: Hill Giant, p2's library -> p2's hand
 T17 p2 draws
 T17 taps: p2:Mountain#1
 T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
 T17 taps: p2:Mountain#5
 T17 p2 adds {R} (p2:Mountain#5)
+T17 p2 taps p2:Mountain#5 for mana
 T17 taps: p2:Mountain#4
 T17 p2 adds {R} (p2:Mountain#4)
+T17 p2 taps p2:Mountain#4 for mana
 T17 taps: p2:Mountain#6
 T17 p2 adds {R} (p2:Mountain#6)
+T17 p2 taps p2:Mountain#6 for mana
 T17 taps: p2:Mountain#2
 T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
 T17 p2's unspent {R}{R}{R}{R}{R} empties
 T17 moves: Fire Elemental, p2's hand -> stack
 T17 p2 cancels casting Fire Elemental
@@ -801,6 +900,7 @@ T17 p2 plays p2:Mountain#8
 T17 p2 attack: nothing
 T17 taps: p2:Mountain#8
 T17 p2 adds {R} (p2:Mountain#8)
+T17 p2 taps p2:Mountain#8 for mana
 T17 p2's unspent {R} empties
 T18 turn 18 begins (p1)
 T18 untaps: p1:Mountain#1
@@ -814,65 +914,85 @@ T18 untaps: p1:Mountain#7
 T18 untaps: p1:Mountain#8
 T18 taps: p1:Mountain#4
 T18 p1 adds {R} (p1:Mountain#4)
+T18 p1 taps p1:Mountain#4 for mana
 T18 taps: p1:Mountain#6
 T18 p1 adds {R} (p1:Mountain#6)
+T18 p1 taps p1:Mountain#6 for mana
 T18 taps: p1:Mountain#2
 T18 p1 adds {R} (p1:Mountain#2)
+T18 p1 taps p1:Mountain#2 for mana
 T18 p1's unspent {R}{R}{R} empties
 T18 moves: Furnace Whelp, p1's library -> p1's hand
 T18 p1 draws
 T18 moves: Gray Ogre, p1's hand -> stack
 T18 taps: p1:Mountain#3
 T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
 T18 p1 cancels casting Gray Ogre
 T18 moves: Furnace Whelp, p1's hand -> stack
 T18 taps: p1:Mountain#1
 T18 p1 adds {R} (p1:Mountain#1)
+T18 p1 taps p1:Mountain#1 for mana
 T18 p1 cancels casting Furnace Whelp
 T18 moves: Gray Ogre, p1's hand -> stack
 T18 taps: p1:Mountain#5
 T18 p1 adds {R} (p1:Mountain#5)
+T18 p1 taps p1:Mountain#5 for mana
 T18 taps: p1:Mountain#7
 T18 p1 adds {R} (p1:Mountain#7)
+T18 p1 taps p1:Mountain#7 for mana
 T18 taps: p1:Mountain#8
 T18 p1 adds {R} (p1:Mountain#8)
+T18 p1 taps p1:Mountain#8 for mana
 T18 taps: p1:Mountain#3
 T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
 T18 p1 cancels casting Gray Ogre
 T18 moves: Gray Ogre, p1's hand -> stack
 T18 p1 cancels casting Gray Ogre
 T18 moves: Furnace Whelp, p1's hand -> stack
 T18 taps: p1:Mountain#5
 T18 p1 adds {R} (p1:Mountain#5)
+T18 p1 taps p1:Mountain#5 for mana
 T18 taps: p1:Mountain#3
 T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
 T18 taps: p1:Mountain#7
 T18 p1 adds {R} (p1:Mountain#7)
+T18 p1 taps p1:Mountain#7 for mana
 T18 p1 cancels casting Furnace Whelp
 T18 taps: p1:Mountain#1
 T18 p1 adds {R} (p1:Mountain#1)
+T18 p1 taps p1:Mountain#1 for mana
 T18 moves: Mountain, p1's hand -> battlefield
 T18 p1 plays p1:Mountain#9
 T18 taps: p1:Mountain#9
 T18 p1 adds {R} (p1:Mountain#9)
+T18 p1 taps p1:Mountain#9 for mana
 T18 moves: Hill Giant, p1's hand -> stack
 T18 taps: p1:Mountain#5
 T18 p1 adds {R} (p1:Mountain#5)
+T18 p1 taps p1:Mountain#5 for mana
 T18 taps: p1:Mountain#3
 T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
 T18 taps: p1:Mountain#8
 T18 p1 adds {R} (p1:Mountain#8)
+T18 p1 taps p1:Mountain#8 for mana
 T18 p1 cancels casting Hill Giant
 T18 taps: p1:Mountain#7
 T18 p1 adds {R} (p1:Mountain#7)
+T18 p1 taps p1:Mountain#7 for mana
 T18 taps: p1:Mountain#8
 T18 p1 adds {R} (p1:Mountain#8)
+T18 p1 taps p1:Mountain#8 for mana
 T18 moves: Furnace Whelp, p1's hand -> stack
 T18 p1 casts Furnace Whelp
 T18 resolves: Furnace Whelp
 T18 moves: Furnace Whelp, stack -> battlefield
 T18 taps: p1:Mountain#5
 T18 p1 adds {R} (p1:Mountain#5)
+T18 p1 taps p1:Mountain#5 for mana
 T18 moves: Furnace Whelp, p1's hand -> stack
 T18 p1 cancels casting Furnace Whelp
 T18 p1's unspent {R} empties
@@ -880,6 +1000,7 @@ T18 taps: p1:Raging Goblin
 T18 p1 attack: p1:Raging Goblin -> p2
 T18 taps: p1:Mountain#3
 T18 p1 adds {R} (p1:Mountain#3)
+T18 p1 taps p1:Mountain#3 for mana
 T18 p1 activates p1:Furnace Whelp
 T18 effect: p1:Furnace Whelp +1/+0 until end of turn
 T18 resolves: p1:Furnace Whelp's ability
@@ -906,12 +1027,16 @@ T19 untaps: p2:Mountain#7
 T19 untaps: p2:Mountain#8
 T19 taps: p2:Mountain#7
 T19 p2 adds {R} (p2:Mountain#7)
+T19 p2 taps p2:Mountain#7 for mana
 T19 taps: p2:Mountain#6
 T19 p2 adds {R} (p2:Mountain#6)
+T19 p2 taps p2:Mountain#6 for mana
 T19 taps: p2:Mountain#4
 T19 p2 adds {R} (p2:Mountain#4)
+T19 p2 taps p2:Mountain#4 for mana
 T19 taps: p2:Mountain#5
 T19 p2 adds {R} (p2:Mountain#5)
+T19 p2 taps p2:Mountain#5 for mana
 T19 p2's unspent {R}{R}{R}{R} empties
 T19 moves: Mountain, p2's library -> p2's hand
 T19 p2 draws
@@ -923,79 +1048,106 @@ T19 p2 plays p2:Mountain#9
 T19 moves: Hill Giant, p2's hand -> stack
 T19 taps: p2:Mountain#1
 T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
 T19 taps: p2:Mountain#8
 T19 p2 adds {R} (p2:Mountain#8)
+T19 p2 taps p2:Mountain#8 for mana
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 p2 cancels casting Hill Giant
 T19 moves: Furnace Whelp, p2's hand -> stack
 T19 taps: p2:Mountain#8
 T19 p2 adds {R} (p2:Mountain#8)
+T19 p2 taps p2:Mountain#8 for mana
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 taps: p2:Mountain#1
 T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
 T19 p2 cancels casting Furnace Whelp
 T19 moves: Hill Giant, p2's hand -> stack
 T19 taps: p2:Mountain#8
 T19 p2 adds {R} (p2:Mountain#8)
+T19 p2 taps p2:Mountain#8 for mana
 T19 p2 cancels casting Hill Giant
 T19 moves: Fire Elemental, p2's hand -> stack
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 p2 cancels casting Fire Elemental
 T19 moves: Fire Elemental, p2's hand -> stack
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 taps: p2:Mountain#8
 T19 p2 adds {R} (p2:Mountain#8)
+T19 p2 taps p2:Mountain#8 for mana
 T19 p2 cancels casting Fire Elemental
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 taps: p2:Mountain#8
 T19 p2 adds {R} (p2:Mountain#8)
+T19 p2 taps p2:Mountain#8 for mana
 T19 taps: p2:Mountain#1
 T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
 T19 moves: Fire Elemental, p2's hand -> stack
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 p2 cancels casting Fire Elemental
 T19 moves: Fire Elemental, p2's hand -> stack
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 p2 cancels casting Fire Elemental
 T19 moves: Hill Giant, p2's hand -> stack
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 p2 cancels casting Hill Giant
 T19 moves: Fire Elemental, p2's hand -> stack
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 p2 cancels casting Fire Elemental
 T19 moves: Hill Giant, p2's hand -> stack
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 p2 cancels casting Hill Giant
 T19 moves: Hill Giant, p2's hand -> stack
 T19 taps: p2:Mountain#9
 T19 p2 adds {R} (p2:Mountain#9)
+T19 p2 taps p2:Mountain#9 for mana
 T19 p2 casts Hill Giant
 T19 taps: p2:Mountain#3
 T19 p2 adds {R} (p2:Mountain#3)
+T19 p2 taps p2:Mountain#3 for mana
 T19 resolves: Hill Giant
 T19 moves: Hill Giant, stack -> battlefield
 T19 moves: Furnace Whelp, p2's hand -> stack
@@ -1034,51 +1186,68 @@ T20 untaps: p1:Mountain#8
 T20 untaps: p1:Mountain#9
 T20 taps: p1:Mountain#2
 T20 p1 adds {R} (p1:Mountain#2)
+T20 p1 taps p1:Mountain#2 for mana
 T20 taps: p1:Mountain#1
 T20 p1 adds {R} (p1:Mountain#1)
+T20 p1 taps p1:Mountain#1 for mana
 T20 taps: p1:Mountain#8
 T20 p1 adds {R} (p1:Mountain#8)
+T20 p1 taps p1:Mountain#8 for mana
 T20 taps: p1:Mountain#9
 T20 p1 adds {R} (p1:Mountain#9)
+T20 p1 taps p1:Mountain#9 for mana
 T20 taps: p1:Mountain#3
 T20 p1 adds {R} (p1:Mountain#3)
+T20 p1 taps p1:Mountain#3 for mana
 T20 p1's unspent {R}{R}{R}{R}{R} empties
 T20 moves: Mountain, p1's library -> p1's hand
 T20 p1 draws
 T20 taps: p1:Mountain#6
 T20 p1 adds {R} (p1:Mountain#6)
+T20 p1 taps p1:Mountain#6 for mana
 T20 moves: Mountain, p1's hand -> battlefield
 T20 p1 plays p1:Mountain#10
 T20 moves: Hill Giant, p1's hand -> stack
 T20 taps: p1:Mountain#10
 T20 p1 adds {R} (p1:Mountain#10)
+T20 p1 taps p1:Mountain#10 for mana
 T20 taps: p1:Mountain#4
 T20 p1 adds {R} (p1:Mountain#4)
+T20 p1 taps p1:Mountain#4 for mana
 T20 taps: p1:Mountain#5
 T20 p1 adds {R} (p1:Mountain#5)
+T20 p1 taps p1:Mountain#5 for mana
 T20 p1 cancels casting Hill Giant
 T20 moves: Gray Ogre, p1's hand -> stack
 T20 taps: p1:Mountain#7
 T20 p1 adds {R} (p1:Mountain#7)
+T20 p1 taps p1:Mountain#7 for mana
 T20 taps: p1:Mountain#4
 T20 p1 adds {R} (p1:Mountain#4)
+T20 p1 taps p1:Mountain#4 for mana
 T20 taps: p1:Mountain#5
 T20 p1 adds {R} (p1:Mountain#5)
+T20 p1 taps p1:Mountain#5 for mana
 T20 p1 cancels casting Gray Ogre
 T20 taps: p1:Mountain#5
 T20 p1 adds {R} (p1:Mountain#5)
+T20 p1 taps p1:Mountain#5 for mana
 T20 moves: Gray Ogre, p1's hand -> stack
 T20 taps: p1:Mountain#4
 T20 p1 adds {R} (p1:Mountain#4)
+T20 p1 taps p1:Mountain#4 for mana
 T20 p1 cancels casting Gray Ogre
 T20 moves: Hill Giant, p1's hand -> stack
 T20 taps: p1:Mountain#7
 T20 p1 adds {R} (p1:Mountain#7)
+T20 p1 taps p1:Mountain#7 for mana
 T20 taps: p1:Mountain#4
 T20 p1 adds {R} (p1:Mountain#4)
+T20 p1 taps p1:Mountain#4 for mana
 T20 p1 casts Hill Giant
 T20 taps: p1:Mountain#10
 T20 p1 adds {R} (p1:Mountain#10)
+T20 p1 taps p1:Mountain#10 for mana
 T20 p1 cancels activating p1:Furnace Whelp
 T20 resolves: Hill Giant
 T20 moves: Hill Giant, stack -> battlefield
@@ -1119,16 +1288,22 @@ T21 untaps: p2:Mountain#8
 T21 untaps: p2:Mountain#9
 T21 taps: p2:Mountain#3
 T21 p2 adds {R} (p2:Mountain#3)
+T21 p2 taps p2:Mountain#3 for mana
 T21 taps: p2:Mountain#6
 T21 p2 adds {R} (p2:Mountain#6)
+T21 p2 taps p2:Mountain#6 for mana
 T21 taps: p2:Mountain#2
 T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 taps: p2:Mountain#7
 T21 p2 adds {R} (p2:Mountain#7)
+T21 p2 taps p2:Mountain#7 for mana
 T21 taps: p2:Mountain#5
 T21 p2 adds {R} (p2:Mountain#5)
+T21 p2 taps p2:Mountain#5 for mana
 T21 p1 cancels activating p1:Furnace Whelp
 T21 p1 cancels activating p1:Furnace Whelp
 T21 p1 cancels activating p1:Furnace Whelp
@@ -1139,23 +1314,28 @@ T21 moves: Volcanic Hammer, p2's library -> p2's hand
 T21 p2 draws
 T21 taps: p2:Mountain#9
 T21 p2 adds {R} (p2:Mountain#9)
+T21 p2 taps p2:Mountain#9 for mana
 T21 taps: p2:Mountain#4
 T21 p2 adds {R} (p2:Mountain#4)
+T21 p2 taps p2:Mountain#4 for mana
 T21 p2's unspent {R}{R} empties
 T21 moves: Hill Giant, p2's hand -> stack
 T21 taps: p2:Mountain#8
 T21 p2 adds {R} (p2:Mountain#8)
+T21 p2 taps p2:Mountain#8 for mana
 T21 p2 cancels casting Hill Giant
 T21 moves: Volcanic Hammer, p2's hand -> stack
 T21 p2 cancels casting Volcanic Hammer
 T21 moves: Volcanic Hammer, p2's hand -> stack
 T21 taps: p2:Mountain#8
 T21 p2 adds {R} (p2:Mountain#8)
+T21 p2 taps p2:Mountain#8 for mana
 T21 p2 cancels casting Volcanic Hammer
 T21 moves: Hill Giant, p2's hand -> stack
 T21 p2 cancels casting Hill Giant
 T21 taps: p2:Mountain#8
 T21 p2 adds {R} (p2:Mountain#8)
+T21 p2 taps p2:Mountain#8 for mana
 T21 moves: Fire Elemental, p2's hand -> stack
 T21 p2 cancels casting Fire Elemental
 T21 moves: Hill Giant, p2's hand -> stack
@@ -1191,25 +1371,34 @@ T22 untaps: p1:Mountain#9
 T22 untaps: p1:Mountain#10
 T22 taps: p1:Mountain#3
 T22 p1 adds {R} (p1:Mountain#3)
+T22 p1 taps p1:Mountain#3 for mana
 T22 taps: p1:Mountain#2
 T22 p1 adds {R} (p1:Mountain#2)
+T22 p1 taps p1:Mountain#2 for mana
 T22 taps: p1:Mountain#4
 T22 p1 adds {R} (p1:Mountain#4)
+T22 p1 taps p1:Mountain#4 for mana
 T22 taps: p1:Mountain#8
 T22 p1 adds {R} (p1:Mountain#8)
+T22 p1 taps p1:Mountain#8 for mana
 T22 taps: p1:Mountain#6
 T22 p1 adds {R} (p1:Mountain#6)
+T22 p1 taps p1:Mountain#6 for mana
 T22 p1's unspent {R}{R}{R}{R}{R} empties
 T22 moves: Mountain, p1's library -> p1's hand
 T22 p1 draws
 T22 taps: p1:Mountain#9
 T22 p1 adds {R} (p1:Mountain#9)
+T22 p1 taps p1:Mountain#9 for mana
 T22 taps: p1:Mountain#1
 T22 p1 adds {R} (p1:Mountain#1)
+T22 p1 taps p1:Mountain#1 for mana
 T22 taps: p1:Mountain#5
 T22 p1 adds {R} (p1:Mountain#5)
+T22 p1 taps p1:Mountain#5 for mana
 T22 taps: p1:Mountain#7
 T22 p1 adds {R} (p1:Mountain#7)
+T22 p1 taps p1:Mountain#7 for mana
 T22 p1 activates p1:Furnace Whelp
 T22 p1 cancels activating p1:Furnace Whelp
 T22 p1 cancels activating p1:Furnace Whelp
@@ -1217,12 +1406,14 @@ T22 effect: p1:Furnace Whelp +1/+0 until end of turn
 T22 resolves: p1:Furnace Whelp's ability
 T22 taps: p1:Mountain#10
 T22 p1 adds {R} (p1:Mountain#10)
+T22 p1 taps p1:Mountain#10 for mana
 T22 p1's unspent {R}{R}{R}{R} empties
 T22 moves: Mountain, p1's hand -> battlefield
 T22 p1 plays p1:Mountain#11
 T22 moves: Gray Ogre, p1's hand -> stack
 T22 taps: p1:Mountain#11
 T22 p1 adds {R} (p1:Mountain#11)
+T22 p1 taps p1:Mountain#11 for mana
 T22 p1 cancels casting Gray Ogre
 T22 taps: p1:Hill Giant
 T22 taps: p1:Furnace Whelp
@@ -1230,11 +1421,13 @@ T22 p1 attack: p1:Hill Giant -> p2, p1:Furnace Whelp -> p2
 T22 p1 cancels activating p1:Furnace Whelp
 T22 taps: p1:Mountain#11
 T22 p1 adds {R} (p1:Mountain#11)
+T22 p1 taps p1:Mountain#11 for mana
 T22 p1 cancels activating p1:Furnace Whelp
 T22 p1 cancels activating p1:Furnace Whelp
 T22 p2 block: nothing
 T22 taps: p1:Mountain#11
 T22 p1 adds {R} (p1:Mountain#11)
+T22 p1 taps p1:Mountain#11 for mana
 T22 p1 activates p1:Furnace Whelp
 T22 effect: p1:Furnace Whelp +1/+0 until end of turn
 T22 resolves: p1:Furnace Whelp's ability
@@ -1262,14 +1455,19 @@ T23 untaps: p2:Mountain#9
 T23 untaps: p2:Hill Giant
 T23 taps: p2:Mountain#7
 T23 p2 adds {R} (p2:Mountain#7)
+T23 p2 taps p2:Mountain#7 for mana
 T23 taps: p2:Mountain#4
 T23 p2 adds {R} (p2:Mountain#4)
+T23 p2 taps p2:Mountain#4 for mana
 T23 taps: p2:Mountain#2
 T23 p2 adds {R} (p2:Mountain#2)
+T23 p2 taps p2:Mountain#2 for mana
 T23 taps: p2:Mountain#5
 T23 p2 adds {R} (p2:Mountain#5)
+T23 p2 taps p2:Mountain#5 for mana
 T23 taps: p2:Mountain#6
 T23 p2 adds {R} (p2:Mountain#6)
+T23 p2 taps p2:Mountain#6 for mana
 T23 p1 cancels activating p1:Furnace Whelp
 T23 p1 cancels activating p1:Furnace Whelp
 T23 p1 cancels activating p1:Furnace Whelp
@@ -1279,25 +1477,31 @@ T23 moves: Gray Ogre, p2's library -> p2's hand
 T23 p2 draws
 T23 taps: p2:Mountain#8
 T23 p2 adds {R} (p2:Mountain#8)
+T23 p2 taps p2:Mountain#8 for mana
 T23 taps: p2:Mountain#9
 T23 p2 adds {R} (p2:Mountain#9)
+T23 p2 taps p2:Mountain#9 for mana
 T23 p1 cancels activating p1:Furnace Whelp
 T23 p2's unspent {R}{R} empties
 T23 taps: p2:Mountain#3
 T23 p2 adds {R} (p2:Mountain#3)
+T23 p2 taps p2:Mountain#3 for mana
 T23 moves: Furnace Whelp, p2's hand -> stack
 T23 p2 cancels casting Furnace Whelp
 T23 moves: Gray Ogre, p2's hand -> stack
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 p2 cancels casting Gray Ogre
 T23 moves: Gray Ogre, p2's hand -> stack
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 p2 cancels casting Gray Ogre
 T23 moves: Volcanic Hammer, p2's hand -> stack
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 p2 casts Volcanic Hammer
 T23 damage: Volcanic Hammer -> p1:Hill Giant 3
 T23 resolves: Volcanic Hammer
@@ -1347,31 +1551,42 @@ T24 untaps: p1:Mountain#10
 T24 untaps: p1:Mountain#11
 T24 taps: p1:Mountain#8
 T24 p1 adds {R} (p1:Mountain#8)
+T24 p1 taps p1:Mountain#8 for mana
 T24 p1's unspent {R} empties
 T24 moves: Shock, p1's library -> p1's hand
 T24 p1 draws
 T24 taps: p1:Mountain#4
 T24 p1 adds {R} (p1:Mountain#4)
+T24 p1 taps p1:Mountain#4 for mana
 T24 moves: Shock, p1's hand -> stack
 T24 taps: p1:Mountain#9
 T24 p1 adds {R} (p1:Mountain#9)
+T24 p1 taps p1:Mountain#9 for mana
 T24 taps: p1:Mountain#6
 T24 p1 adds {R} (p1:Mountain#6)
+T24 p1 taps p1:Mountain#6 for mana
 T24 taps: p1:Mountain#7
 T24 p1 adds {R} (p1:Mountain#7)
+T24 p1 taps p1:Mountain#7 for mana
 T24 taps: p1:Mountain#5
 T24 p1 adds {R} (p1:Mountain#5)
+T24 p1 taps p1:Mountain#5 for mana
 T24 taps: p1:Mountain#1
 T24 p1 adds {R} (p1:Mountain#1)
+T24 p1 taps p1:Mountain#1 for mana
 T24 taps: p1:Mountain#10
 T24 p1 adds {R} (p1:Mountain#10)
+T24 p1 taps p1:Mountain#10 for mana
 T24 taps: p1:Mountain#3
 T24 p1 adds {R} (p1:Mountain#3)
+T24 p1 taps p1:Mountain#3 for mana
 T24 p1 casts Shock
 T24 taps: p1:Mountain#2
 T24 p1 adds {R} (p1:Mountain#2)
+T24 p1 taps p1:Mountain#2 for mana
 T24 taps: p1:Mountain#11
 T24 p1 adds {R} (p1:Mountain#11)
+T24 p1 taps p1:Mountain#11 for mana
 T24 p1 activates p1:Furnace Whelp
 T24 effect: p1:Furnace Whelp +1/+0 until end of turn
 T24 resolves: p1:Furnace Whelp's ability
@@ -1426,22 +1641,31 @@ T25 untaps: p2:Mountain#8
 T25 untaps: p2:Mountain#9
 T25 taps: p2:Mountain#8
 T25 p2 adds {R} (p2:Mountain#8)
+T25 p2 taps p2:Mountain#8 for mana
 T25 taps: p2:Mountain#5
 T25 p2 adds {R} (p2:Mountain#5)
+T25 p2 taps p2:Mountain#5 for mana
 T25 taps: p2:Mountain#3
 T25 p2 adds {R} (p2:Mountain#3)
+T25 p2 taps p2:Mountain#3 for mana
 T25 taps: p2:Mountain#4
 T25 p2 adds {R} (p2:Mountain#4)
+T25 p2 taps p2:Mountain#4 for mana
 T25 taps: p2:Mountain#2
 T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 taps p2:Mountain#2 for mana
 T25 taps: p2:Mountain#6
 T25 p2 adds {R} (p2:Mountain#6)
+T25 p2 taps p2:Mountain#6 for mana
 T25 taps: p2:Mountain#9
 T25 p2 adds {R} (p2:Mountain#9)
+T25 p2 taps p2:Mountain#9 for mana
 T25 taps: p2:Mountain#1
 T25 p2 adds {R} (p2:Mountain#1)
+T25 p2 taps p2:Mountain#1 for mana
 T25 taps: p2:Mountain#7
 T25 p2 adds {R} (p2:Mountain#7)
+T25 p2 taps p2:Mountain#7 for mana
 T25 p1 cancels activating p1:Furnace Whelp
 T25 p1 cancels activating p1:Furnace Whelp
 T25 p2's unspent {R}{R}{R}{R}{R}{R}{R}{R}{R} empties
@@ -1508,41 +1732,55 @@ T26 moves: Mountain, p1's library -> p1's hand
 T26 p1 draws
 T26 taps: p1:Mountain#1
 T26 p1 adds {R} (p1:Mountain#1)
+T26 p1 taps p1:Mountain#1 for mana
 T26 taps: p1:Mountain#3
 T26 p1 adds {R} (p1:Mountain#3)
+T26 p1 taps p1:Mountain#3 for mana
 T26 taps: p1:Mountain#7
 T26 p1 adds {R} (p1:Mountain#7)
+T26 p1 taps p1:Mountain#7 for mana
 T26 p1 activates p1:Furnace Whelp
 T26 taps: p1:Mountain#6
 T26 p1 adds {R} (p1:Mountain#6)
+T26 p1 taps p1:Mountain#6 for mana
 T26 taps: p1:Mountain#10
 T26 p1 adds {R} (p1:Mountain#10)
+T26 p1 taps p1:Mountain#10 for mana
 T26 taps: p1:Mountain#2
 T26 p1 adds {R} (p1:Mountain#2)
+T26 p1 taps p1:Mountain#2 for mana
 T26 taps: p1:Mountain#5
 T26 p1 adds {R} (p1:Mountain#5)
+T26 p1 taps p1:Mountain#5 for mana
 T26 p1 cancels activating p1:Furnace Whelp
 T26 taps: p1:Mountain#11
 T26 p1 adds {R} (p1:Mountain#11)
+T26 p1 taps p1:Mountain#11 for mana
 T26 p1 activates p1:Furnace Whelp
 T26 effect: p1:Furnace Whelp +1/+0 until end of turn
 T26 resolves: p1:Furnace Whelp's ability
 T26 p1 activates p1:Furnace Whelp
 T26 taps: p1:Mountain#8
 T26 p1 adds {R} (p1:Mountain#8)
+T26 p1 taps p1:Mountain#8 for mana
 T26 taps: p1:Mountain#10
 T26 p1 adds {R} (p1:Mountain#10)
+T26 p1 taps p1:Mountain#10 for mana
 T26 taps: p1:Mountain#2
 T26 p1 adds {R} (p1:Mountain#2)
+T26 p1 taps p1:Mountain#2 for mana
 T26 taps: p1:Mountain#9
 T26 p1 adds {R} (p1:Mountain#9)
+T26 p1 taps p1:Mountain#9 for mana
 T26 p1 activates p1:Furnace Whelp
 T26 effect: p1:Furnace Whelp +1/+0 until end of turn
 T26 resolves: p1:Furnace Whelp's ability
 T26 taps: p1:Mountain#5
 T26 p1 adds {R} (p1:Mountain#5)
+T26 p1 taps p1:Mountain#5 for mana
 T26 taps: p1:Mountain#4
 T26 p1 adds {R} (p1:Mountain#4)
+T26 p1 taps p1:Mountain#4 for mana
 T26 p1 cancels activating p1:Furnace Whelp
 T26 moves: Shock, p2's hand -> stack
 T26 p2 cancels casting Shock
@@ -1620,24 +1858,33 @@ T27 untaps: p2:Mountain#8
 T27 untaps: p2:Mountain#9
 T27 taps: p2:Mountain#8
 T27 p2 adds {R} (p2:Mountain#8)
+T27 p2 taps p2:Mountain#8 for mana
 T27 taps: p2:Mountain#6
 T27 p2 adds {R} (p2:Mountain#6)
+T27 p2 taps p2:Mountain#6 for mana
 T27 taps: p2:Mountain#1
 T27 p2 adds {R} (p2:Mountain#1)
+T27 p2 taps p2:Mountain#1 for mana
 T27 taps: p2:Mountain#7
 T27 p2 adds {R} (p2:Mountain#7)
+T27 p2 taps p2:Mountain#7 for mana
 T27 taps: p2:Mountain#4
 T27 p2 adds {R} (p2:Mountain#4)
+T27 p2 taps p2:Mountain#4 for mana
 T27 moves: Shock, p2's hand -> stack
 T27 taps: p2:Mountain#2
 T27 p2 adds {R} (p2:Mountain#2)
+T27 p2 taps p2:Mountain#2 for mana
 T27 p2 casts Shock
 T27 taps: p2:Mountain#5
 T27 p2 adds {R} (p2:Mountain#5)
+T27 p2 taps p2:Mountain#5 for mana
 T27 taps: p2:Mountain#3
 T27 p2 adds {R} (p2:Mountain#3)
+T27 p2 taps p2:Mountain#3 for mana
 T27 taps: p2:Mountain#9
 T27 p2 adds {R} (p2:Mountain#9)
+T27 p2 taps p2:Mountain#9 for mana
 T27 p1 cancels activating p1:Furnace Whelp
 T27 p1 cancels activating p1:Furnace Whelp
 T27 p1 cancels activating p1:Furnace Whelp
@@ -1704,36 +1951,48 @@ T28 untaps: p1:Mountain#10
 T28 untaps: p1:Mountain#11
 T28 taps: p1:Mountain#9
 T28 p1 adds {R} (p1:Mountain#9)
+T28 p1 taps p1:Mountain#9 for mana
 T28 taps: p1:Mountain#7
 T28 p1 adds {R} (p1:Mountain#7)
+T28 p1 taps p1:Mountain#7 for mana
 T28 taps: p1:Mountain#1
 T28 p1 adds {R} (p1:Mountain#1)
+T28 p1 taps p1:Mountain#1 for mana
 T28 taps: p1:Mountain#8
 T28 p1 adds {R} (p1:Mountain#8)
+T28 p1 taps p1:Mountain#8 for mana
 T28 taps: p1:Mountain#2
 T28 p1 adds {R} (p1:Mountain#2)
+T28 p1 taps p1:Mountain#2 for mana
 T28 taps: p1:Mountain#6
 T28 p1 adds {R} (p1:Mountain#6)
+T28 p1 taps p1:Mountain#6 for mana
 T28 taps: p1:Mountain#3
 T28 p1 adds {R} (p1:Mountain#3)
+T28 p1 taps p1:Mountain#3 for mana
 T28 taps: p1:Mountain#11
 T28 p1 adds {R} (p1:Mountain#11)
+T28 p1 taps p1:Mountain#11 for mana
 T28 taps: p1:Mountain#5
 T28 p1 adds {R} (p1:Mountain#5)
+T28 p1 taps p1:Mountain#5 for mana
 T28 p1's unspent {R}{R}{R}{R}{R}{R}{R}{R}{R} empties
 T28 moves: Mountain, p1's library -> p1's hand
 T28 p1 draws
 T28 taps: p1:Mountain#4
 T28 p1 adds {R} (p1:Mountain#4)
+T28 p1 taps p1:Mountain#4 for mana
 T28 p1's unspent {R} empties
 T28 moves: Furnace Whelp, p1's hand -> stack
 T28 taps: p1:Mountain#10
 T28 p1 adds {R} (p1:Mountain#10)
+T28 p1 taps p1:Mountain#10 for mana
 T28 p1 cancels casting Furnace Whelp
 T28 moves: Gray Ogre, p1's hand -> stack
 T28 p1 cancels casting Gray Ogre
 T28 taps: p1:Mountain#10
 T28 p1 adds {R} (p1:Mountain#10)
+T28 p1 taps p1:Mountain#10 for mana
 T28 moves: Mountain, p1's hand -> battlefield
 T28 p1 plays p1:Mountain#12
 T28 moves: Gray Ogre, p1's hand -> stack
@@ -1742,6 +2001,7 @@ T28 p1's unspent {R} empties
 T28 p1 attack: nothing
 T28 taps: p1:Mountain#12
 T28 p1 adds {R} (p1:Mountain#12)
+T28 p1 taps p1:Mountain#12 for mana
 T28 p1's unspent {R} empties
 T28 moves: Gray Ogre, p1's hand -> stack
 T28 p1 cancels casting Gray Ogre
@@ -1766,24 +2026,33 @@ T29 moves: Raging Goblin, p2's library -> p2's hand
 T29 p2 draws
 T29 taps: p2:Mountain#3
 T29 p2 adds {R} (p2:Mountain#3)
+T29 p2 taps p2:Mountain#3 for mana
 T29 taps: p2:Mountain#7
 T29 p2 adds {R} (p2:Mountain#7)
+T29 p2 taps p2:Mountain#7 for mana
 T29 taps: p2:Mountain#4
 T29 p2 adds {R} (p2:Mountain#4)
+T29 p2 taps p2:Mountain#4 for mana
 T29 p2's unspent {R}{R}{R} empties
 T29 moves: Fire Elemental, p2's hand -> stack
 T29 taps: p2:Mountain#1
 T29 p2 adds {R} (p2:Mountain#1)
+T29 p2 taps p2:Mountain#1 for mana
 T29 taps: p2:Mountain#2
 T29 p2 adds {R} (p2:Mountain#2)
+T29 p2 taps p2:Mountain#2 for mana
 T29 taps: p2:Mountain#5
 T29 p2 adds {R} (p2:Mountain#5)
+T29 p2 taps p2:Mountain#5 for mana
 T29 taps: p2:Mountain#9
 T29 p2 adds {R} (p2:Mountain#9)
+T29 p2 taps p2:Mountain#9 for mana
 T29 taps: p2:Mountain#6
 T29 p2 adds {R} (p2:Mountain#6)
+T29 p2 taps p2:Mountain#6 for mana
 T29 taps: p2:Mountain#8
 T29 p2 adds {R} (p2:Mountain#8)
+T29 p2 taps p2:Mountain#8 for mana
 T29 p2 casts Fire Elemental
 T29 resolves: Fire Elemental
 T29 moves: Fire Elemental, stack -> battlefield
@@ -1806,35 +2075,47 @@ T30 untaps: p1:Mountain#11
 T30 untaps: p1:Mountain#12
 T30 taps: p1:Mountain#10
 T30 p1 adds {R} (p1:Mountain#10)
+T30 p1 taps p1:Mountain#10 for mana
 T30 taps: p1:Mountain#12
 T30 p1 adds {R} (p1:Mountain#12)
+T30 p1 taps p1:Mountain#12 for mana
 T30 taps: p1:Mountain#5
 T30 p1 adds {R} (p1:Mountain#5)
+T30 p1 taps p1:Mountain#5 for mana
 T30 taps: p1:Mountain#9
 T30 p1 adds {R} (p1:Mountain#9)
+T30 p1 taps p1:Mountain#9 for mana
 T30 taps: p1:Mountain#7
 T30 p1 adds {R} (p1:Mountain#7)
+T30 p1 taps p1:Mountain#7 for mana
 T30 taps: p1:Mountain#3
 T30 p1 adds {R} (p1:Mountain#3)
+T30 p1 taps p1:Mountain#3 for mana
 T30 p1's unspent {R}{R}{R}{R}{R}{R} empties
 T30 moves: Gray Ogre, p1's library -> p1's hand
 T30 p1 draws
 T30 taps: p1:Mountain#2
 T30 p1 adds {R} (p1:Mountain#2)
+T30 p1 taps p1:Mountain#2 for mana
 T30 taps: p1:Mountain#1
 T30 p1 adds {R} (p1:Mountain#1)
+T30 p1 taps p1:Mountain#1 for mana
 T30 taps: p1:Mountain#8
 T30 p1 adds {R} (p1:Mountain#8)
+T30 p1 taps p1:Mountain#8 for mana
 T30 p1's unspent {R}{R}{R} empties
 T30 taps: p1:Mountain#4
 T30 p1 adds {R} (p1:Mountain#4)
+T30 p1 taps p1:Mountain#4 for mana
 T30 p1's unspent {R} empties
 T30 p1 attack: nothing
 T30 taps: p1:Mountain#11
 T30 p1 adds {R} (p1:Mountain#11)
+T30 p1 taps p1:Mountain#11 for mana
 T30 p1's unspent {R} empties
 T30 taps: p1:Mountain#6
 T30 p1 adds {R} (p1:Mountain#6)
+T30 p1 taps p1:Mountain#6 for mana
 T30 p1's unspent {R} empties
 T30 moves: Mountain, p1's hand -> battlefield
 T30 p1 plays p1:Mountain#13
@@ -1845,6 +2126,7 @@ T30 p1 cancels casting Gray Ogre
 T30 moves: Gray Ogre, p1's hand -> stack
 T30 taps: p1:Mountain#13
 T30 p1 adds {R} (p1:Mountain#13)
+T30 p1 taps p1:Mountain#13 for mana
 T30 p1 cancels casting Gray Ogre
 T30 moves: Gray Ogre, p1's hand -> stack
 T30 p1 cancels casting Gray Ogre
@@ -1854,6 +2136,7 @@ T30 moves: Gray Ogre, p1's hand -> stack
 T30 p1 cancels casting Gray Ogre
 T30 taps: p1:Mountain#13
 T30 p1 adds {R} (p1:Mountain#13)
+T30 p1 taps p1:Mountain#13 for mana
 T30 moves: Gray Ogre, p1's hand -> stack
 T30 p1 cancels casting Gray Ogre
 T30 moves: Furnace Whelp, p1's hand -> stack
@@ -1871,30 +2154,40 @@ T31 untaps: p2:Mountain#8
 T31 untaps: p2:Mountain#9
 T31 taps: p2:Mountain#5
 T31 p2 adds {R} (p2:Mountain#5)
+T31 p2 taps p2:Mountain#5 for mana
 T31 taps: p2:Mountain#9
 T31 p2 adds {R} (p2:Mountain#9)
+T31 p2 taps p2:Mountain#9 for mana
 T31 taps: p2:Mountain#7
 T31 p2 adds {R} (p2:Mountain#7)
+T31 p2 taps p2:Mountain#7 for mana
 T31 p2's unspent {R}{R}{R} empties
 T31 moves: Mountain, p2's library -> p2's hand
 T31 p2 draws
 T31 taps: p2:Mountain#3
 T31 p2 adds {R} (p2:Mountain#3)
+T31 p2 taps p2:Mountain#3 for mana
 T31 taps: p2:Mountain#6
 T31 p2 adds {R} (p2:Mountain#6)
+T31 p2 taps p2:Mountain#6 for mana
 T31 taps: p2:Mountain#4
 T31 p2 adds {R} (p2:Mountain#4)
+T31 p2 taps p2:Mountain#4 for mana
 T31 taps: p2:Mountain#8
 T31 p2 adds {R} (p2:Mountain#8)
+T31 p2 taps p2:Mountain#8 for mana
 T31 p2's unspent {R}{R}{R}{R} empties
 T31 taps: p2:Mountain#2
 T31 p2 adds {R} (p2:Mountain#2)
+T31 p2 taps p2:Mountain#2 for mana
 T31 moves: Furnace Whelp, p2's hand -> stack
 T31 taps: p2:Mountain#1
 T31 p2 adds {R} (p2:Mountain#1)
+T31 p2 taps p2:Mountain#1 for mana
 T31 p2 cancels casting Furnace Whelp
 T31 taps: p2:Mountain#1
 T31 p2 adds {R} (p2:Mountain#1)
+T31 p2 taps p2:Mountain#1 for mana
 T31 p2's unspent {R}{R} empties
 T31 p2 attack: nothing
 T32 turn 32 begins (p1)
@@ -1913,41 +2206,55 @@ T32 untaps: p1:Mountain#12
 T32 untaps: p1:Mountain#13
 T32 taps: p1:Mountain#9
 T32 p1 adds {R} (p1:Mountain#9)
+T32 p1 taps p1:Mountain#9 for mana
 T32 taps: p1:Mountain#6
 T32 p1 adds {R} (p1:Mountain#6)
+T32 p1 taps p1:Mountain#6 for mana
 T32 taps: p1:Mountain#11
 T32 p1 adds {R} (p1:Mountain#11)
+T32 p1 taps p1:Mountain#11 for mana
 T32 taps: p1:Mountain#2
 T32 p1 adds {R} (p1:Mountain#2)
+T32 p1 taps p1:Mountain#2 for mana
 T32 p1's unspent {R}{R}{R}{R} empties
 T32 moves: Fire Elemental, p1's library -> p1's hand
 T32 p1 draws
 T32 taps: p1:Mountain#1
 T32 p1 adds {R} (p1:Mountain#1)
+T32 p1 taps p1:Mountain#1 for mana
 T32 taps: p1:Mountain#7
 T32 p1 adds {R} (p1:Mountain#7)
+T32 p1 taps p1:Mountain#7 for mana
 T32 taps: p1:Mountain#8
 T32 p1 adds {R} (p1:Mountain#8)
+T32 p1 taps p1:Mountain#8 for mana
 T32 taps: p1:Mountain#4
 T32 p1 adds {R} (p1:Mountain#4)
+T32 p1 taps p1:Mountain#4 for mana
 T32 p1's unspent {R}{R}{R}{R} empties
 T32 taps: p1:Mountain#12
 T32 p1 adds {R} (p1:Mountain#12)
+T32 p1 taps p1:Mountain#12 for mana
 T32 taps: p1:Mountain#13
 T32 p1 adds {R} (p1:Mountain#13)
+T32 p1 taps p1:Mountain#13 for mana
 T32 taps: p1:Mountain#3
 T32 p1 adds {R} (p1:Mountain#3)
+T32 p1 taps p1:Mountain#3 for mana
 T32 moves: Fire Elemental, p1's hand -> stack
 T32 p1 cancels casting Fire Elemental
 T32 moves: Fire Elemental, p1's hand -> stack
 T32 taps: p1:Mountain#10
 T32 p1 adds {R} (p1:Mountain#10)
+T32 p1 taps p1:Mountain#10 for mana
 T32 p1 cancels casting Fire Elemental
 T32 moves: Furnace Whelp, p1's hand -> stack
 T32 taps: p1:Mountain#10
 T32 p1 adds {R} (p1:Mountain#10)
+T32 p1 taps p1:Mountain#10 for mana
 T32 taps: p1:Mountain#5
 T32 p1 adds {R} (p1:Mountain#5)
+T32 p1 taps p1:Mountain#5 for mana
 T32 p1 cancels casting Furnace Whelp
 T32 moves: Fire Elemental, p1's hand -> stack
 T32 p1 cancels casting Fire Elemental
@@ -1958,11 +2265,14 @@ T32 moves: Gray Ogre, stack -> battlefield
 T32 moves: Fire Elemental, p1's hand -> stack
 T32 taps: p1:Mountain#10
 T32 p1 adds {R} (p1:Mountain#10)
+T32 p1 taps p1:Mountain#10 for mana
 T32 taps: p1:Mountain#5
 T32 p1 adds {R} (p1:Mountain#5)
+T32 p1 taps p1:Mountain#5 for mana
 T32 p1 cancels casting Fire Elemental
 T32 taps: p1:Mountain#5
 T32 p1 adds {R} (p1:Mountain#5)
+T32 p1 taps p1:Mountain#5 for mana
 T32 p1's unspent {R} empties
 T32 p1 attack: nothing
 T32 moves: Fire Elemental, p1's hand -> stack
@@ -1970,6 +2280,7 @@ T32 p1 cancels casting Fire Elemental
 T32 moves: Gray Ogre, p1's hand -> stack
 T32 taps: p1:Mountain#10
 T32 p1 adds {R} (p1:Mountain#10)
+T32 p1 taps p1:Mountain#10 for mana
 T32 p1 cancels casting Gray Ogre
 T33 turn 33 begins (p2)
 T33 untaps: p2:Mountain#1
@@ -1983,27 +2294,37 @@ T33 untaps: p2:Mountain#8
 T33 untaps: p2:Mountain#9
 T33 taps: p2:Mountain#5
 T33 p2 adds {R} (p2:Mountain#5)
+T33 p2 taps p2:Mountain#5 for mana
 T33 taps: p2:Mountain#3
 T33 p2 adds {R} (p2:Mountain#3)
+T33 p2 taps p2:Mountain#3 for mana
 T33 taps: p2:Mountain#7
 T33 p2 adds {R} (p2:Mountain#7)
+T33 p2 taps p2:Mountain#7 for mana
 T33 taps: p2:Mountain#4
 T33 p2 adds {R} (p2:Mountain#4)
+T33 p2 taps p2:Mountain#4 for mana
 T33 taps: p2:Mountain#1
 T33 p2 adds {R} (p2:Mountain#1)
+T33 p2 taps p2:Mountain#1 for mana
 T33 p2's unspent {R}{R}{R}{R}{R} empties
 T33 moves: Mountain, p2's library -> p2's hand
 T33 p2 draws
 T33 taps: p1:Mountain#10
 T33 p1 adds {R} (p1:Mountain#10)
+T33 p1 taps p1:Mountain#10 for mana
 T33 taps: p2:Mountain#8
 T33 p2 adds {R} (p2:Mountain#8)
+T33 p2 taps p2:Mountain#8 for mana
 T33 taps: p2:Mountain#2
 T33 p2 adds {R} (p2:Mountain#2)
+T33 p2 taps p2:Mountain#2 for mana
 T33 taps: p2:Mountain#6
 T33 p2 adds {R} (p2:Mountain#6)
+T33 p2 taps p2:Mountain#6 for mana
 T33 taps: p2:Mountain#9
 T33 p2 adds {R} (p2:Mountain#9)
+T33 p2 taps p2:Mountain#9 for mana
 T33 p2's unspent {R}{R}{R}{R} empties
 T33 p1's unspent {R} empties
 T33 moves: Raging Goblin, p2's hand -> stack
@@ -2013,13 +2334,16 @@ T33 p2 plays p2:Mountain#10
 T33 moves: Furnace Whelp, p2's hand -> stack
 T33 taps: p2:Mountain#10
 T33 p2 adds {R} (p2:Mountain#10)
+T33 p2 taps p2:Mountain#10 for mana
 T33 p2 cancels casting Furnace Whelp
 T33 moves: Furnace Whelp, p2's hand -> stack
 T33 taps: p2:Mountain#10
 T33 p2 adds {R} (p2:Mountain#10)
+T33 p2 taps p2:Mountain#10 for mana
 T33 p2 cancels casting Furnace Whelp
 T33 taps: p2:Mountain#10
 T33 p2 adds {R} (p2:Mountain#10)
+T33 p2 taps p2:Mountain#10 for mana
 T33 moves: Furnace Whelp, p2's hand -> stack
 T33 p2 cancels casting Furnace Whelp
 T33 moves: Raging Goblin, p2's hand -> stack
@@ -2069,46 +2393,63 @@ T34 untaps: p1:Mountain#12
 T34 untaps: p1:Mountain#13
 T34 taps: p1:Mountain#2
 T34 p1 adds {R} (p1:Mountain#2)
+T34 p1 taps p1:Mountain#2 for mana
 T34 taps: p1:Mountain#7
 T34 p1 adds {R} (p1:Mountain#7)
+T34 p1 taps p1:Mountain#7 for mana
 T34 p1's unspent {R}{R} empties
 T34 moves: Mountain, p1's library -> p1's hand
 T34 p1 draws
 T34 taps: p1:Mountain#1
 T34 p1 adds {R} (p1:Mountain#1)
+T34 p1 taps p1:Mountain#1 for mana
 T34 taps: p1:Mountain#12
 T34 p1 adds {R} (p1:Mountain#12)
+T34 p1 taps p1:Mountain#12 for mana
 T34 taps: p1:Mountain#9
 T34 p1 adds {R} (p1:Mountain#9)
+T34 p1 taps p1:Mountain#9 for mana
 T34 taps: p1:Mountain#3
 T34 p1 adds {R} (p1:Mountain#3)
+T34 p1 taps p1:Mountain#3 for mana
 T34 taps: p1:Mountain#4
 T34 p1 adds {R} (p1:Mountain#4)
+T34 p1 taps p1:Mountain#4 for mana
 T34 taps: p1:Mountain#13
 T34 p1 adds {R} (p1:Mountain#13)
+T34 p1 taps p1:Mountain#13 for mana
 T34 taps: p1:Mountain#5
 T34 p1 adds {R} (p1:Mountain#5)
+T34 p1 taps p1:Mountain#5 for mana
 T34 taps: p1:Mountain#6
 T34 p1 adds {R} (p1:Mountain#6)
+T34 p1 taps p1:Mountain#6 for mana
 T34 taps: p1:Mountain#11
 T34 p1 adds {R} (p1:Mountain#11)
+T34 p1 taps p1:Mountain#11 for mana
 T34 p1's unspent {R}{R}{R}{R}{R}{R}{R}{R}{R} empties
 T34 moves: Fire Elemental, p1's hand -> stack
 T34 taps: p1:Mountain#8
 T34 p1 adds {R} (p1:Mountain#8)
+T34 p1 taps p1:Mountain#8 for mana
 T34 taps: p1:Mountain#10
 T34 p1 adds {R} (p1:Mountain#10)
+T34 p1 taps p1:Mountain#10 for mana
 T34 p1 cancels casting Fire Elemental
 T34 moves: Furnace Whelp, p1's hand -> stack
 T34 taps: p1:Mountain#8
 T34 p1 adds {R} (p1:Mountain#8)
+T34 p1 taps p1:Mountain#8 for mana
 T34 taps: p1:Mountain#10
 T34 p1 adds {R} (p1:Mountain#10)
+T34 p1 taps p1:Mountain#10 for mana
 T34 p1 cancels casting Furnace Whelp
 T34 taps: p1:Mountain#10
 T34 p1 adds {R} (p1:Mountain#10)
+T34 p1 taps p1:Mountain#10 for mana
 T34 taps: p1:Mountain#8
 T34 p1 adds {R} (p1:Mountain#8)
+T34 p1 taps p1:Mountain#8 for mana
 T34 p1's unspent {R}{R} empties
 T34 taps: p1:Gray Ogre
 T34 p1 attack: p1:Gray Ogre -> p2
@@ -2130,6 +2471,7 @@ T34 moves: Mountain, p1's hand -> battlefield
 T34 p1 plays p1:Mountain#14
 T34 taps: p1:Mountain#14
 T34 p1 adds {R} (p1:Mountain#14)
+T34 p1 taps p1:Mountain#14 for mana
 T34 moves: Furnace Whelp, p1's hand -> stack
 T34 p1 cancels casting Furnace Whelp
 T34 moves: Furnace Whelp, p1's hand -> stack
@@ -2150,30 +2492,40 @@ T35 untaps: p2:Mountain#9
 T35 untaps: p2:Mountain#10
 T35 taps: p2:Mountain#8
 T35 p2 adds {R} (p2:Mountain#8)
+T35 p2 taps p2:Mountain#8 for mana
 T35 taps: p2:Mountain#5
 T35 p2 adds {R} (p2:Mountain#5)
+T35 p2 taps p2:Mountain#5 for mana
 T35 taps: p2:Mountain#3
 T35 p2 adds {R} (p2:Mountain#3)
+T35 p2 taps p2:Mountain#3 for mana
 T35 taps: p2:Mountain#6
 T35 p2 adds {R} (p2:Mountain#6)
+T35 p2 taps p2:Mountain#6 for mana
 T35 taps: p2:Mountain#4
 T35 p2 adds {R} (p2:Mountain#4)
+T35 p2 taps p2:Mountain#4 for mana
 T35 taps: p2:Mountain#1
 T35 p2 adds {R} (p2:Mountain#1)
+T35 p2 taps p2:Mountain#1 for mana
 T35 p2's unspent {R}{R}{R}{R}{R}{R} empties
 T35 moves: Volcanic Hammer, p2's library -> p2's hand
 T35 p2 draws
 T35 taps: p2:Mountain#10
 T35 p2 adds {R} (p2:Mountain#10)
+T35 p2 taps p2:Mountain#10 for mana
 T35 p2's unspent {R} empties
 T35 taps: p2:Hill Giant
 T35 p2 attack: p2:Hill Giant -> p1
 T35 taps: p2:Mountain#7
 T35 p2 adds {R} (p2:Mountain#7)
+T35 p2 taps p2:Mountain#7 for mana
 T35 taps: p2:Mountain#9
 T35 p2 adds {R} (p2:Mountain#9)
+T35 p2 taps p2:Mountain#9 for mana
 T35 taps: p2:Mountain#2
 T35 p2 adds {R} (p2:Mountain#2)
+T35 p2 taps p2:Mountain#2 for mana
 T35 p2's unspent {R}{R}{R} empties
 T35 p1 block: nothing
 T35 combat damage: p2:Hill Giant -> p1 3
@@ -2201,46 +2553,62 @@ T36 untaps: p1:Mountain#13
 T36 untaps: p1:Mountain#14
 T36 taps: p1:Mountain#6
 T36 p1 adds {R} (p1:Mountain#6)
+T36 p1 taps p1:Mountain#6 for mana
 T36 taps: p1:Mountain#10
 T36 p1 adds {R} (p1:Mountain#10)
+T36 p1 taps p1:Mountain#10 for mana
 T36 taps: p1:Mountain#4
 T36 p1 adds {R} (p1:Mountain#4)
+T36 p1 taps p1:Mountain#4 for mana
 T36 taps: p1:Mountain#8
 T36 p1 adds {R} (p1:Mountain#8)
+T36 p1 taps p1:Mountain#8 for mana
 T36 taps: p1:Mountain#11
 T36 p1 adds {R} (p1:Mountain#11)
+T36 p1 taps p1:Mountain#11 for mana
 T36 taps: p1:Mountain#13
 T36 p1 adds {R} (p1:Mountain#13)
+T36 p1 taps p1:Mountain#13 for mana
 T36 taps: p1:Mountain#9
 T36 p1 adds {R} (p1:Mountain#9)
+T36 p1 taps p1:Mountain#9 for mana
 T36 p1's unspent {R}{R}{R}{R}{R}{R}{R} empties
 T36 moves: Gray Ogre, p1's library -> p1's hand
 T36 p1 draws
 T36 taps: p1:Mountain#3
 T36 p1 adds {R} (p1:Mountain#3)
+T36 p1 taps p1:Mountain#3 for mana
 T36 taps: p1:Mountain#12
 T36 p1 adds {R} (p1:Mountain#12)
+T36 p1 taps p1:Mountain#12 for mana
 T36 taps: p1:Mountain#7
 T36 p1 adds {R} (p1:Mountain#7)
+T36 p1 taps p1:Mountain#7 for mana
 T36 taps: p1:Mountain#1
 T36 p1 adds {R} (p1:Mountain#1)
+T36 p1 taps p1:Mountain#1 for mana
 T36 taps: p1:Mountain#14
 T36 p1 adds {R} (p1:Mountain#14)
+T36 p1 taps p1:Mountain#14 for mana
 T36 p1's unspent {R}{R}{R}{R}{R} empties
 T36 moves: Fire Elemental, p1's hand -> stack
 T36 p1 cancels casting Fire Elemental
 T36 moves: Gray Ogre, p1's hand -> stack
 T36 taps: p1:Mountain#2
 T36 p1 adds {R} (p1:Mountain#2)
+T36 p1 taps p1:Mountain#2 for mana
 T36 taps: p1:Mountain#5
 T36 p1 adds {R} (p1:Mountain#5)
+T36 p1 taps p1:Mountain#5 for mana
 T36 p1 cancels casting Gray Ogre
 T36 taps: p1:Mountain#2
 T36 p1 adds {R} (p1:Mountain#2)
+T36 p1 taps p1:Mountain#2 for mana
 T36 p1's unspent {R} empties
 T36 p1 attack: nothing
 T36 taps: p1:Mountain#5
 T36 p1 adds {R} (p1:Mountain#5)
+T36 p1 taps p1:Mountain#5 for mana
 T36 p1's unspent {R} empties
 T36 moves: Fire Elemental, p1's hand -> stack
 T36 p1 cancels casting Fire Elemental
@@ -2266,27 +2634,37 @@ T37 untaps: p2:Hill Giant
 T37 untaps: p2:Mountain#10
 T37 taps: p2:Mountain#6
 T37 p2 adds {R} (p2:Mountain#6)
+T37 p2 taps p2:Mountain#6 for mana
 T37 taps: p2:Mountain#4
 T37 p2 adds {R} (p2:Mountain#4)
+T37 p2 taps p2:Mountain#4 for mana
 T37 taps: p2:Mountain#3
 T37 p2 adds {R} (p2:Mountain#3)
+T37 p2 taps p2:Mountain#3 for mana
 T37 taps: p2:Mountain#2
 T37 p2 adds {R} (p2:Mountain#2)
+T37 p2 taps p2:Mountain#2 for mana
 T37 taps: p2:Mountain#1
 T37 p2 adds {R} (p2:Mountain#1)
+T37 p2 taps p2:Mountain#1 for mana
 T37 taps: p2:Mountain#8
 T37 p2 adds {R} (p2:Mountain#8)
+T37 p2 taps p2:Mountain#8 for mana
 T37 taps: p2:Mountain#5
 T37 p2 adds {R} (p2:Mountain#5)
+T37 p2 taps p2:Mountain#5 for mana
 T37 taps: p2:Mountain#10
 T37 p2 adds {R} (p2:Mountain#10)
+T37 p2 taps p2:Mountain#10 for mana
 T37 taps: p2:Mountain#9
 T37 p2 adds {R} (p2:Mountain#9)
+T37 p2 taps p2:Mountain#9 for mana
 T37 p2's unspent {R}{R}{R}{R}{R}{R}{R}{R}{R} empties
 T37 moves: Gray Ogre, p2's library -> p2's hand
 T37 p2 draws
 T37 taps: p2:Mountain#7
 T37 p2 adds {R} (p2:Mountain#7)
+T37 p2 taps p2:Mountain#7 for mana
 T37 p2's unspent {R} empties
 T37 taps: p2:Fire Elemental
 T37 p2 attack: p2:Fire Elemental -> p1
@@ -2328,30 +2706,43 @@ T38 untaps: p1:Mountain#13
 T38 untaps: p1:Mountain#14
 T38 taps: p1:Mountain#8
 T38 p1 adds {R} (p1:Mountain#8)
+T38 p1 taps p1:Mountain#8 for mana
 T38 taps: p1:Mountain#3
 T38 p1 adds {R} (p1:Mountain#3)
+T38 p1 taps p1:Mountain#3 for mana
 T38 taps: p1:Mountain#1
 T38 p1 adds {R} (p1:Mountain#1)
+T38 p1 taps p1:Mountain#1 for mana
 T38 taps: p1:Mountain#2
 T38 p1 adds {R} (p1:Mountain#2)
+T38 p1 taps p1:Mountain#2 for mana
 T38 taps: p1:Mountain#13
 T38 p1 adds {R} (p1:Mountain#13)
+T38 p1 taps p1:Mountain#13 for mana
 T38 taps: p1:Mountain#4
 T38 p1 adds {R} (p1:Mountain#4)
+T38 p1 taps p1:Mountain#4 for mana
 T38 taps: p1:Mountain#7
 T38 p1 adds {R} (p1:Mountain#7)
+T38 p1 taps p1:Mountain#7 for mana
 T38 taps: p1:Mountain#5
 T38 p1 adds {R} (p1:Mountain#5)
+T38 p1 taps p1:Mountain#5 for mana
 T38 taps: p1:Mountain#11
 T38 p1 adds {R} (p1:Mountain#11)
+T38 p1 taps p1:Mountain#11 for mana
 T38 taps: p1:Mountain#14
 T38 p1 adds {R} (p1:Mountain#14)
+T38 p1 taps p1:Mountain#14 for mana
 T38 taps: p1:Mountain#10
 T38 p1 adds {R} (p1:Mountain#10)
+T38 p1 taps p1:Mountain#10 for mana
 T38 taps: p1:Mountain#12
 T38 p1 adds {R} (p1:Mountain#12)
+T38 p1 taps p1:Mountain#12 for mana
 T38 taps: p1:Mountain#9
 T38 p1 adds {R} (p1:Mountain#9)
+T38 p1 taps p1:Mountain#9 for mana
 T38 p1's unspent {R}{R}{R}{R}{R}{R}{R}{R}{R}{R}{R}{R}{R} empties
 T38 moves: Lightning Bolt, p1's library -> p1's hand
 T38 p1 draws
@@ -2360,6 +2751,7 @@ T38 p1 cancels casting Lightning Bolt
 T38 p1 attack: nothing
 T38 taps: p1:Mountain#6
 T38 p1 adds {R} (p1:Mountain#6)
+T38 p1 taps p1:Mountain#6 for mana
 T38 moves: Lightning Bolt, p1's hand -> stack
 T38 p1 casts Lightning Bolt
 T38 damage: Lightning Bolt -> p2:Fire Elemental 3
@@ -2382,27 +2774,37 @@ T39 untaps: p2:Fire Elemental
 T39 untaps: p2:Mountain#10
 T39 taps: p2:Mountain#3
 T39 p2 adds {R} (p2:Mountain#3)
+T39 p2 taps p2:Mountain#3 for mana
 T39 taps: p2:Mountain#4
 T39 p2 adds {R} (p2:Mountain#4)
+T39 p2 taps p2:Mountain#4 for mana
 T39 taps: p2:Mountain#1
 T39 p2 adds {R} (p2:Mountain#1)
+T39 p2 taps p2:Mountain#1 for mana
 T39 taps: p2:Mountain#10
 T39 p2 adds {R} (p2:Mountain#10)
+T39 p2 taps p2:Mountain#10 for mana
 T39 taps: p2:Mountain#5
 T39 p2 adds {R} (p2:Mountain#5)
+T39 p2 taps p2:Mountain#5 for mana
 T39 taps: p2:Mountain#7
 T39 p2 adds {R} (p2:Mountain#7)
+T39 p2 taps p2:Mountain#7 for mana
 T39 taps: p2:Mountain#8
 T39 p2 adds {R} (p2:Mountain#8)
+T39 p2 taps p2:Mountain#8 for mana
 T39 taps: p2:Mountain#9
 T39 p2 adds {R} (p2:Mountain#9)
+T39 p2 taps p2:Mountain#9 for mana
 T39 taps: p2:Mountain#2
 T39 p2 adds {R} (p2:Mountain#2)
+T39 p2 taps p2:Mountain#2 for mana
 T39 p2's unspent {R}{R}{R}{R}{R}{R}{R}{R}{R} empties
 T39 moves: Mountain, p2's library -> p2's hand
 T39 p2 draws
 T39 taps: p2:Mountain#6
 T39 p2 adds {R} (p2:Mountain#6)
+T39 p2 taps p2:Mountain#6 for mana
 T39 p2's unspent {R} empties
 T39 taps: p2:Hill Giant
 T39 taps: p2:Fire Elemental

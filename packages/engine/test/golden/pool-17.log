@@ -109,10 +109,12 @@ T1 p1 plays p1:Mountain
 T1 moves: Mist Leopard, p1's hand -> stack
 T1 taps: p1:Mountain
 T1 p1 adds {R} (p1:Mountain)
+T1 p1 taps p1:Mountain for mana
 T1 p1 cancels casting Mist Leopard
 T1 p1 attack: nothing
 T1 taps: p1:Mountain
 T1 p1 adds {R} (p1:Mountain)
+T1 p1 taps p1:Mountain for mana
 T1 p1's unspent {R} empties
 T2 turn 2 begins (p2)
 T2 moves: Fiery Hellhound, p2's library -> p2's hand
@@ -124,15 +126,18 @@ T2 p2 plays p2:Island
 T2 moves: Shivan Dragon, p2's hand -> stack
 T2 taps: p2:Island
 T2 p2 adds {U} (p2:Island)
+T2 p2 taps p2:Island for mana
 T2 p2 cancels casting Shivan Dragon
 T2 p2 attack: nothing
 T2 taps: p2:Island
 T2 p2 adds {U} (p2:Island)
+T2 p2 taps p2:Island for mana
 T2 p2's unspent {U} empties
 T3 turn 3 begins (p1)
 T3 untaps: p1:Mountain
 T3 taps: p1:Mountain
 T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
 T3 p1's unspent {R} empties
 T3 moves: Celestial Purge, p1's library -> p1's hand
 T3 p1 draws
@@ -141,11 +146,13 @@ T3 p1 plays p1:Mountain#2
 T3 p1 attack: nothing
 T3 taps: p1:Mountain#2
 T3 p1 adds {R} (p1:Mountain#2)
+T3 p1 taps p1:Mountain#2 for mana
 T3 p1's unspent {R} empties
 T4 turn 4 begins (p2)
 T4 untaps: p2:Island
 T4 taps: p2:Island
 T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
 T4 p2's unspent {U} empties
 T4 moves: Forest, p2's library -> p2's hand
 T4 p2 draws
@@ -154,14 +161,17 @@ T4 p2 plays p2:Island#2
 T4 moves: Fiery Hellhound, p2's hand -> stack
 T4 taps: p2:Island#2
 T4 p2 adds {U} (p2:Island#2)
+T4 p2 taps p2:Island#2 for mana
 T4 p2 cancels casting Fiery Hellhound
 T4 moves: Shivan Dragon, p2's hand -> stack
 T4 taps: p2:Island#2
 T4 p2 adds {U} (p2:Island#2)
+T4 p2 taps p2:Island#2 for mana
 T4 p2 cancels casting Shivan Dragon
 T4 p2 attack: nothing
 T4 taps: p2:Island#2
 T4 p2 adds {U} (p2:Island#2)
+T4 p2 taps p2:Island#2 for mana
 T4 p2's unspent {U} empties
 T4 moves: Shivan Dragon, p2's hand -> stack
 T4 p2 cancels casting Shivan Dragon
@@ -172,8 +182,10 @@ T5 untaps: p1:Mountain#1
 T5 untaps: p1:Mountain#2
 T5 taps: p1:Mountain#2
 T5 p1 adds {R} (p1:Mountain#2)
+T5 p1 taps p1:Mountain#2 for mana
 T5 taps: p1:Mountain#1
 T5 p1 adds {R} (p1:Mountain#1)
+T5 p1 taps p1:Mountain#1 for mana
 T5 p1's unspent {R}{R} empties
 T5 moves: Horned Turtle, p1's library -> p1's hand
 T5 p1 draws
@@ -181,6 +193,7 @@ T5 moves: Mountain, p1's hand -> battlefield
 T5 p1 plays p1:Mountain#3
 T5 taps: p1:Mountain#3
 T5 p1 adds {R} (p1:Mountain#3)
+T5 p1 taps p1:Mountain#3 for mana
 T5 p1's unspent {R} empties
 T5 p1 attack: nothing
 T6 turn 6 begins (p2)
@@ -188,8 +201,10 @@ T6 untaps: p2:Island#1
 T6 untaps: p2:Island#2
 T6 taps: p2:Island#1
 T6 p2 adds {U} (p2:Island#1)
+T6 p2 taps p2:Island#1 for mana
 T6 taps: p2:Island#2
 T6 p2 adds {U} (p2:Island#2)
+T6 p2 taps p2:Island#2 for mana
 T6 p2's unspent {U}{U} empties
 T6 moves: Horned Turtle, p2's library -> p2's hand
 T6 p2 draws
@@ -202,12 +217,15 @@ T7 moves: Swamp, p1's library -> p1's hand
 T7 p1 draws
 T7 taps: p1:Mountain#2
 T7 p1 adds {R} (p1:Mountain#2)
+T7 p1 taps p1:Mountain#2 for mana
 T7 taps: p1:Mountain#1
 T7 p1 adds {R} (p1:Mountain#1)
+T7 p1 taps p1:Mountain#1 for mana
 T7 p1's unspent {R}{R} empties
 T7 p1 attack: nothing
 T7 taps: p1:Mountain#3
 T7 p1 adds {R} (p1:Mountain#3)
+T7 p1 taps p1:Mountain#3 for mana
 T7 p1's unspent {R} empties
 T7 moves: Mist Leopard, p1's hand -> stack
 T7 p1 cancels casting Mist Leopard
@@ -216,8 +234,10 @@ T8 untaps: p2:Island#1
 T8 untaps: p2:Island#2
 T8 taps: p2:Island#2
 T8 p2 adds {U} (p2:Island#2)
+T8 p2 taps p2:Island#2 for mana
 T8 taps: p2:Island#1
 T8 p2 adds {U} (p2:Island#1)
+T8 p2 taps p2:Island#1 for mana
 T8 p2's unspent {U}{U} empties
 T8 moves: Coral Merfolk, p2's library -> p2's hand
 T8 p2 draws
@@ -227,6 +247,7 @@ T8 moves: Island, p2's hand -> battlefield
 T8 p2 plays p2:Island#3
 T8 taps: p2:Island#3
 T8 p2 adds {U} (p2:Island#3)
+T8 p2 taps p2:Island#3 for mana
 T8 p2's unspent {U} empties
 T8 p2 attack: nothing
 T8 moves: Coral Merfolk, p2's hand -> stack
@@ -237,6 +258,7 @@ T9 untaps: p1:Mountain#2
 T9 untaps: p1:Mountain#3
 T9 taps: p1:Mountain#1
 T9 p1 adds {R} (p1:Mountain#1)
+T9 p1 taps p1:Mountain#1 for mana
 T9 p1's unspent {R} empties
 T9 moves: Forest, p1's library -> p1's hand
 T9 p1 draws
@@ -244,19 +266,24 @@ T9 moves: Forest, p1's hand -> battlefield
 T9 p1 plays p1:Forest
 T9 taps: p1:Forest
 T9 p1 adds {G} (p1:Forest)
+T9 p1 taps p1:Forest for mana
 T9 moves: Mist Leopard, p1's hand -> stack
 T9 taps: p1:Mountain#3
 T9 p1 adds {R} (p1:Mountain#3)
+T9 p1 taps p1:Mountain#3 for mana
 T9 taps: p1:Mountain#2
 T9 p1 adds {R} (p1:Mountain#2)
+T9 p1 taps p1:Mountain#2 for mana
 T9 p1 cancels casting Mist Leopard
 T9 p1's unspent {G} empties
 T9 taps: p1:Mountain#2
 T9 p1 adds {R} (p1:Mountain#2)
+T9 p1 taps p1:Mountain#2 for mana
 T9 p1's unspent {R} empties
 T9 p1 attack: nothing
 T9 taps: p1:Mountain#3
 T9 p1 adds {R} (p1:Mountain#3)
+T9 p1 taps p1:Mountain#3 for mana
 T9 p1's unspent {R} empties
 T9 moves: Planar Cleansing, p1's hand -> stack
 T9 p1 cancels casting Planar Cleansing
@@ -271,10 +298,13 @@ T10 p2 draws
 T10 p2 attack: nothing
 T10 taps: p2:Island#3
 T10 p2 adds {U} (p2:Island#3)
+T10 p2 taps p2:Island#3 for mana
 T10 taps: p2:Island#2
 T10 p2 adds {U} (p2:Island#2)
+T10 p2 taps p2:Island#2 for mana
 T10 taps: p2:Island#1
 T10 p2 adds {U} (p2:Island#1)
+T10 p2 taps p2:Island#1 for mana
 T10 p2's unspent {U}{U}{U} empties
 T10 moves: Horned Turtle, p2's hand -> stack
 T10 p2 cancels casting Horned Turtle
@@ -282,6 +312,7 @@ T10 moves: Forest, p2's hand -> battlefield
 T10 p2 plays p2:Forest
 T10 taps: p2:Forest
 T10 p2 adds {G} (p2:Forest)
+T10 p2 taps p2:Forest for mana
 T10 p2's unspent {G} empties
 T11 turn 11 begins (p1)
 T11 untaps: p1:Mountain#1
@@ -293,12 +324,16 @@ T11 p1 draws
 T11 moves: Mist Leopard, p1's hand -> stack
 T11 taps: p1:Forest
 T11 p1 adds {G} (p1:Forest)
+T11 p1 taps p1:Forest for mana
 T11 taps: p1:Mountain#1
 T11 p1 adds {R} (p1:Mountain#1)
+T11 p1 taps p1:Mountain#1 for mana
 T11 taps: p1:Mountain#3
 T11 p1 adds {R} (p1:Mountain#3)
+T11 p1 taps p1:Mountain#3 for mana
 T11 taps: p1:Mountain#2
 T11 p1 adds {R} (p1:Mountain#2)
+T11 p1 taps p1:Mountain#2 for mana
 T11 p1 casts Mist Leopard
 T11 resolves: Mist Leopard
 T11 moves: Mist Leopard, stack -> battlefield
@@ -312,6 +347,7 @@ T11 moves: Swamp, p1's hand -> battlefield
 T11 p1 plays p1:Swamp
 T11 taps: p1:Swamp
 T11 p1 adds {B} (p1:Swamp)
+T11 p1 taps p1:Swamp for mana
 T11 moves: Runeclaw Bear, p1's hand -> stack
 T11 p1 cancels casting Runeclaw Bear
 T11 moves: Wind Drake, p1's hand -> stack

@@ -133,6 +133,17 @@ export function exileGraveyard(
 }
 
 /**
+ * "Reveal the top card of your library": shown to every player, staying on top (CR 701.20a, 701.20b), and kept as
+ * `found` ("it", "that card") for the effects after it (CR 608.2c). An empty library reveals nothing.
+ */
+export function revealTop(state: GameState, player: PlayerId, cards: CardDatabase): Progress {
+  const top = zoneList(state, { zone: "library", player })[0];
+  if (top === undefined) return nothing(remember(state, { found: [] }));
+  const revealed = revealObjects(state, [top], cards);
+  return { state: remember(revealed.state, { found: [top] }), events: revealed.events };
+}
+
+/**
  * Reveals these objects (CR 701.20a); they stay where they are (CR 701.20b). They're in one zone, as everything a
  * search finds is in the library searched.
  */

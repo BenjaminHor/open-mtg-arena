@@ -1,0 +1,18 @@
+name: Hypnotic Specter blocked deals its damage to a creature, not an opponent, so it doesn't trigger
+rules: [CR 603.2, CR 510.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hypnotic Specter]
+  p2:
+    battlefield: [Giant Spider]
+    hand: [Forest]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hypnotic Specter]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Giant Spider: Hypnotic Specter }
+  - all pass: until combat.end
+  - expect:
+      p2.hand: [Forest]
+      events lacks: [{ type: ABILITY_TRIGGERED }]

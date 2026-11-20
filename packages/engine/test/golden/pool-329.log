@@ -85,9 +85,11 @@ T1 p1 plays p1:Mountain
 T1 moves: Furnace Whelp, p1's hand -> stack
 T1 taps: p1:Mountain
 T1 p1 adds {R} (p1:Mountain)
+T1 p1 taps p1:Mountain for mana
 T1 p1 cancels casting Furnace Whelp
 T1 taps: p1:Mountain
 T1 p1 adds {R} (p1:Mountain)
+T1 p1 taps p1:Mountain for mana
 T1 moves: Furnace Whelp, p1's hand -> stack
 T1 p1 cancels casting Furnace Whelp
 T1 moves: Goblin Piker, p1's hand -> stack
@@ -106,6 +108,7 @@ T3 moves: Seismic Strike, p1's library -> p1's hand
 T3 p1 draws
 T3 taps: p1:Mountain
 T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
 T3 p1's unspent {R} empties
 T3 moves: Goblin Piker, p1's hand -> stack
 T3 p1 cancels casting Goblin Piker
@@ -119,6 +122,7 @@ T4 moves: Island, p2's hand -> battlefield
 T4 p2 plays p2:Island
 T4 taps: p2:Island
 T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
 T4 p2's unspent {U} empties
 T4 p2 attack: nothing
 T4 moves: Royal Assassin, p2's hand -> stack
@@ -129,6 +133,7 @@ T5 moves: Rampant Growth, p1's library -> p1's hand
 T5 p1 draws
 T5 taps: p1:Mountain
 T5 p1 adds {R} (p1:Mountain)
+T5 p1 taps p1:Mountain for mana
 T5 p1's unspent {R} empties
 T5 p1 attack: nothing
 T5 moves: Rampant Growth, p1's hand -> stack
@@ -140,6 +145,7 @@ T6 p2 draws
 T6 p2 attack: nothing
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 p2's unspent {U} empties
 T6 moves: Coral Merfolk, p2's hand -> p2's graveyard
 T6 p2 discards Coral Merfolk
@@ -147,6 +153,7 @@ T7 turn 7 begins (p1)
 T7 untaps: p1:Mountain
 T7 taps: p1:Mountain
 T7 p1 adds {R} (p1:Mountain)
+T7 p1 taps p1:Mountain for mana
 T7 p1's unspent {R} empties
 T7 moves: Yawning Fissure, p1's library -> p1's hand
 T7 p1 draws
@@ -155,11 +162,13 @@ T7 moves: Swamp, p1's hand -> battlefield
 T7 p1 plays p1:Swamp
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 p1's unspent {B} empties
 T8 turn 8 begins (p2)
 T8 untaps: p2:Island
 T8 taps: p2:Island
 T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
 T8 p2's unspent {U} empties
 T8 moves: Island, p2's library -> p2's hand
 T8 p2 draws
@@ -168,9 +177,11 @@ T8 p2 plays p2:Island#2
 T8 moves: Nature's Spiral, p2's hand -> stack
 T8 taps: p2:Island#2
 T8 p2 adds {U} (p2:Island#2)
+T8 p2 taps p2:Island#2 for mana
 T8 p2 cancels casting Nature's Spiral
 T8 taps: p2:Island#2
 T8 p2 adds {U} (p2:Island#2)
+T8 p2 taps p2:Island#2 for mana
 T8 moves: Horned Turtle, p2's hand -> stack
 T8 p2 cancels casting Horned Turtle
 T8 p2's unspent {U} empties
@@ -182,8 +193,10 @@ T9 untaps: p1:Mountain
 T9 untaps: p1:Swamp
 T9 taps: p1:Mountain
 T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
 T9 taps: p1:Swamp
 T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
 T9 p1's unspent {B}{R} empties
 T9 moves: Rod of Ruin, p1's library -> p1's hand
 T9 p1 draws
@@ -195,16 +208,19 @@ T10 untaps: p2:Island#1
 T10 untaps: p2:Island#2
 T10 taps: p2:Island#2
 T10 p2 adds {U} (p2:Island#2)
+T10 p2 taps p2:Island#2 for mana
 T10 p2's unspent {U} empties
 T10 moves: Flashfreeze, p2's library -> p2's hand
 T10 p2 draws
 T10 taps: p2:Island#1
 T10 p2 adds {U} (p2:Island#1)
+T10 p2 taps p2:Island#1 for mana
 T10 p2's unspent {U} empties
 T10 moves: Forest, p2's hand -> battlefield
 T10 p2 plays p2:Forest
 T10 taps: p2:Forest
 T10 p2 adds {G} (p2:Forest)
+T10 p2 taps p2:Forest for mana
 T10 p2's unspent {G} empties
 T10 p2 attack: nothing
 T11 turn 11 begins (p1)
@@ -212,6 +228,7 @@ T11 untaps: p1:Mountain
 T11 untaps: p1:Swamp
 T11 taps: p1:Mountain
 T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
 T11 p1's unspent {R} empties
 T11 moves: Island, p1's library -> p1's hand
 T11 p1 draws
@@ -220,8 +237,10 @@ T11 p1 plays p1:Island
 T11 p1 attack: nothing
 T11 taps: p1:Swamp
 T11 p1 adds {B} (p1:Swamp)
+T11 p1 taps p1:Swamp for mana
 T11 taps: p1:Island
 T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
 T11 moves: Goblin Piker, p1's hand -> stack
 T11 p1 cancels casting Goblin Piker
 T11 moves: Goblin Piker, p1's hand -> stack
@@ -235,18 +254,22 @@ T12 moves: Excommunicate, p2's library -> p2's hand
 T12 p2 draws
 T12 taps: p2:Island#2
 T12 p2 adds {U} (p2:Island#2)
+T12 p2 taps p2:Island#2 for mana
 T12 p2's unspent {U} empties
 T12 taps: p2:Island#1
 T12 p2 adds {U} (p2:Island#1)
+T12 p2 taps p2:Island#1 for mana
 T12 p2's unspent {U} empties
 T12 p2 attack: nothing
 T12 taps: p2:Forest
 T12 p2 adds {G} (p2:Forest)
+T12 p2 taps p2:Forest for mana
 T12 p2's unspent {G} empties
 T12 moves: Swamp, p2's hand -> battlefield
 T12 p2 plays p2:Swamp
 T12 taps: p2:Swamp
 T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
 T12 p2's unspent {B} empties
 T13 turn 13 begins (p1)
 T13 untaps: p1:Mountain
@@ -254,6 +277,7 @@ T13 untaps: p1:Swamp
 T13 untaps: p1:Island
 T13 taps: p1:Island
 T13 p1 adds {U} (p1:Island)
+T13 p1 taps p1:Island for mana
 T13 p1's unspent {U} empties
 T13 moves: Swamp, p1's library -> p1's hand
 T13 p1 draws
@@ -262,10 +286,13 @@ T13 p1 plays p1:Swamp#2
 T13 moves: Mind Shatter, p1's hand -> stack
 T13 taps: p1:Mountain
 T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
 T13 taps: p1:Swamp#1
 T13 p1 adds {B} (p1:Swamp#1)
+T13 p1 taps p1:Swamp#1 for mana
 T13 taps: p1:Swamp#2
 T13 p1 adds {B} (p1:Swamp#2)
+T13 p1 taps p1:Swamp#2 for mana
 T13 p1 casts Mind Shatter
 T13 moves: Horned Turtle, p2's hand -> p2's graveyard
 T13 p2 discards Horned Turtle

@@ -16,6 +16,7 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { AbilityRef, GameObject } from "../state/objects.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
 import { castingOf } from "./casting-state.ts";
@@ -127,8 +128,11 @@ export function payCost(
   const paid = happen({ ...state, players }, { kind: "simultaneous", events: costs }, cards);
   const done: GameState = { ...paid.state, casting: null, passesInSuccession: 0 };
   const event = becameCastOrActivated(casting.player, obj);
+  // "Whenever a player casts ..." triggers now, so it goes on the stack above the spell (CR 601.2i). Only this event:
+  // the costs' events were matched as they went through `happen`.
+  const triggered = detectTriggers(done, done, [event], cards);
   return {
-    state: queueWork(done, { kind: "givePriority", player: casting.player }),
+    state: queueWork(triggered, { kind: "givePriority", player: casting.player }),
     events: [...paid.events, event],
   };
 }

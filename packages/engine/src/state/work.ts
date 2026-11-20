@@ -31,7 +31,7 @@ export type WorkItem =
    * is false (CR 608.2a). A spell goes to its owner's graveyard; an ability ceases to exist.
    */
   | { kind: "doesNotResolve"; object: ObjectId; reason: DidNotResolve }
-  /** The cleanup step's check for state-based actions (and later triggers), after the CR 514.2 action (CR 514.3a). */
+  /** The cleanup step's check for state-based actions and waiting triggers, after the CR 514.2 action (CR 514.3a). */
   | { kind: "cleanupCheck" }
   /** All players passed in a cleanup step that gave them priority, so another cleanup step begins (CR 514.3a). */
   | { kind: "anotherCleanupStep" }

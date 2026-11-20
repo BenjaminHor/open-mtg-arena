@@ -37,6 +37,7 @@ T1 moves: Island, p1's hand -> battlefield
 T1 p1 plays p1:Island
 T1 taps: p1:Island
 T1 p1 adds {U} (p1:Island)
+T1 p1 taps p1:Island for mana
 T1 p1's unspent {U} empties
 T2 turn 2 begins (p2)
 T2 moves: Swamp, p2's library -> p2's hand
@@ -46,23 +47,28 @@ T2 p2 plays p2:Swamp
 T2 moves: Traumatize, p2's hand -> stack
 T2 taps: p2:Swamp
 T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
 T2 p2 cancels casting Traumatize
 T2 moves: Traumatize, p2's hand -> stack
 T2 taps: p2:Swamp
 T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
 T2 p2 cancels casting Traumatize
 T2 moves: Traumatize, p2's hand -> stack
 T2 taps: p2:Swamp
 T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
 T2 p2 cancels casting Traumatize
 T2 taps: p2:Swamp
 T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
 T2 p2's unspent {B} empties
 T2 p2 attack: nothing
 T3 turn 3 begins (p1)
 T3 untaps: p1:Island
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p1's unspent {U} empties
 T3 moves: Forest, p1's library -> p1's hand
 T3 p1 draws
@@ -76,6 +82,7 @@ T4 p2 cancels casting Dread Warlock
 T4 p2 attack: nothing
 T4 taps: p2:Swamp
 T4 p2 adds {B} (p2:Swamp)
+T4 p2 taps p2:Swamp for mana
 T4 p2's unspent {B} empties
 T4 moves: Assassinate, p2's hand -> p2's graveyard
 T4 p2 discards Assassinate
@@ -83,6 +90,7 @@ T5 turn 5 begins (p1)
 T5 untaps: p1:Island
 T5 taps: p1:Island
 T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
 T5 p1's unspent {U} empties
 T5 moves: Planar Cleansing, p1's library -> p1's hand
 T5 p1 draws
@@ -91,17 +99,21 @@ T5 p1 plays p1:Forest
 T5 moves: Siege Mastodon, p1's hand -> stack
 T5 taps: p1:Forest
 T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
 T5 p1 cancels casting Siege Mastodon
 T5 moves: Divination, p1's hand -> stack
 T5 taps: p1:Forest
 T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
 T5 p1 cancels casting Divination
 T5 moves: Acolyte of Xathrid, p1's hand -> stack
 T5 taps: p1:Forest
 T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
 T5 p1 cancels casting Acolyte of Xathrid
 T5 taps: p1:Forest
 T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
 T5 moves: Deadly Recluse, p1's hand -> stack
 T5 p1 cancels casting Deadly Recluse
 T5 p1's unspent {G} empties
@@ -120,11 +132,13 @@ T6 moves: Swamp, p2's library -> p2's hand
 T6 p2 draws
 T6 taps: p2:Swamp
 T6 p2 adds {B} (p2:Swamp)
+T6 p2 taps p2:Swamp for mana
 T6 p2's unspent {B} empties
 T6 moves: Swamp, p2's hand -> battlefield
 T6 p2 plays p2:Swamp#2
 T6 taps: p2:Swamp#2
 T6 p2 adds {B} (p2:Swamp#2)
+T6 p2 taps p2:Swamp#2 for mana
 T6 p2's unspent {B} empties
 T6 p2 attack: nothing
 T6 moves: Dread Warlock, p2's hand -> stack
@@ -138,9 +152,11 @@ T7 moves: Solemn Offering, p1's library -> p1's hand
 T7 p1 draws
 T7 taps: p1:Forest
 T7 p1 adds {G} (p1:Forest)
+T7 p1 taps p1:Forest for mana
 T7 moves: Deadly Recluse, p1's hand -> stack
 T7 taps: p1:Island
 T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
 T7 p1 casts Deadly Recluse
 T7 resolves: Deadly Recluse
 T7 moves: Deadly Recluse, stack -> battlefield
@@ -152,6 +168,7 @@ T7 moves: Plains, p1's hand -> battlefield
 T7 p1 plays p1:Plains
 T7 taps: p1:Plains
 T7 p1 adds {W} (p1:Plains)
+T7 p1 taps p1:Plains for mana
 T7 moves: Giant Growth, p2's hand -> stack
 T7 p2 cancels casting Giant Growth
 T7 moves: Giant Growth, p2's hand -> stack
@@ -169,8 +186,10 @@ T8 untaps: p2:Swamp#1
 T8 untaps: p2:Swamp#2
 T8 taps: p2:Swamp#2
 T8 p2 adds {B} (p2:Swamp#2)
+T8 p2 taps p2:Swamp#2 for mana
 T8 taps: p2:Swamp#1
 T8 p2 adds {B} (p2:Swamp#1)
+T8 p2 taps p2:Swamp#1 for mana
 T8 moves: Giant Growth, p2's hand -> stack
 T8 p2 cancels casting Giant Growth
 T8 p2's unspent {B}{B} empties
@@ -181,19 +200,23 @@ T8 p2 plays p2:Forest
 T8 moves: Dread Warlock, p2's hand -> stack
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 p2 cancels casting Dread Warlock
 T8 moves: Dread Warlock, p2's hand -> stack
 T8 p2 cancels casting Dread Warlock
 T8 moves: Dread Warlock, p2's hand -> stack
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 p2 cancels casting Dread Warlock
 T8 moves: Dread Warlock, p2's hand -> stack
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 p2 cancels casting Dread Warlock
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 moves: Dread Warlock, p2's hand -> stack
 T8 p2 cancels casting Dread Warlock
 T8 p2's unspent {G} empties
@@ -224,6 +247,7 @@ T9 moves: Plains, p1's library -> p1's hand
 T9 p1 draws
 T9 taps: p1:Plains
 T9 p1 adds {W} (p1:Plains)
+T9 p1 taps p1:Plains for mana
 T9 moves: Giant Growth, p2's hand -> stack
 T9 p2 cancels casting Giant Growth
 T9 moves: Giant Growth, p2's hand -> stack
@@ -233,8 +257,10 @@ T9 taps: p1:Deadly Recluse
 T9 p1 attack: p1:Deadly Recluse -> p2
 T9 taps: p1:Island
 T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
 T9 taps: p1:Forest
 T9 p1 adds {G} (p1:Forest)
+T9 p1 taps p1:Forest for mana
 T9 p1's unspent {U}{G} empties
 T9 p2 block: nothing
 T9 moves: Giant Growth, p2's hand -> stack
@@ -258,12 +284,16 @@ T10 p2 plays p2:Mountain
 T10 moves: Giant Growth, p2's hand -> stack
 T10 taps: p2:Swamp#2
 T10 p2 adds {B} (p2:Swamp#2)
+T10 p2 taps p2:Swamp#2 for mana
 T10 taps: p2:Mountain
 T10 p2 adds {R} (p2:Mountain)
+T10 p2 taps p2:Mountain for mana
 T10 taps: p2:Forest
 T10 p2 adds {G} (p2:Forest)
+T10 p2 taps p2:Forest for mana
 T10 taps: p2:Swamp#1
 T10 p2 adds {B} (p2:Swamp#1)
+T10 p2 taps p2:Swamp#1 for mana
 T10 p2 casts Giant Growth
 T10 effect: p1:Deadly Recluse +3/+3 until end of turn
 T10 resolves: Giant Growth
@@ -285,15 +315,19 @@ T11 p1 draws
 T11 moves: Acolyte of Xathrid, p1's hand -> stack
 T11 taps: p1:Island
 T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
 T11 taps: p1:Plains
 T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
 T11 taps: p1:Forest
 T11 p1 adds {G} (p1:Forest)
+T11 p1 taps p1:Forest for mana
 T11 p1 cancels casting Acolyte of Xathrid
 T11 taps: p1:Deadly Recluse
 T11 p1 attack: p1:Deadly Recluse -> p2
 T11 taps: p1:Forest
 T11 p1 adds {G} (p1:Forest)
+T11 p1 taps p1:Forest for mana
 T11 p1's unspent {G} empties
 T11 p2 block: nothing
 T11 combat damage: p1:Deadly Recluse -> p2 1
@@ -301,32 +335,42 @@ T11 p2 loses 1 life
 T11 moves: Acolyte of Xathrid, p1's hand -> stack
 T11 taps: p1:Plains
 T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
 T11 taps: p1:Island
 T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
 T11 p1 cancels casting Acolyte of Xathrid
 T11 moves: Siege Mastodon, p1's hand -> stack
 T11 taps: p1:Island
 T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
 T11 taps: p1:Plains
 T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
 T11 p1 cancels casting Siege Mastodon
 T11 moves: Island, p1's hand -> battlefield
 T11 p1 plays p1:Island#2
 T11 moves: Planar Cleansing, p1's hand -> stack
 T11 taps: p1:Plains
 T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
 T11 taps: p1:Island#1
 T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
 T11 taps: p1:Island#2
 T11 p1 adds {U} (p1:Island#2)
+T11 p1 taps p1:Island#2 for mana
 T11 p1 cancels casting Planar Cleansing
 T11 moves: Divination, p1's hand -> stack
 T11 taps: p1:Plains
 T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
 T11 taps: p1:Island#1
 T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
 T11 taps: p1:Island#2
 T11 p1 adds {U} (p1:Island#2)
+T11 p1 taps p1:Island#2 for mana
 T11 p1 casts Divination
 T11 moves: Plains, p1's library -> p1's hand
 T11 p1 draws
@@ -347,8 +391,10 @@ T12 untaps: p2:Forest
 T12 untaps: p2:Mountain
 T12 taps: p2:Mountain
 T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
 T12 taps: p2:Swamp#2
 T12 p2 adds {B} (p2:Swamp#2)
+T12 p2 taps p2:Swamp#2 for mana
 T12 p2's unspent {B}{R} empties
 T12 moves: Centaur Courser, p2's library -> p2's hand
 T12 p2 draws
@@ -357,10 +403,13 @@ T12 p2 plays p2:Forest#2
 T12 moves: Centaur Courser, p2's hand -> stack
 T12 taps: p2:Swamp#1
 T12 p2 adds {B} (p2:Swamp#1)
+T12 p2 taps p2:Swamp#1 for mana
 T12 taps: p2:Forest#2
 T12 p2 adds {G} (p2:Forest#2)
+T12 p2 taps p2:Forest#2 for mana
 T12 taps: p2:Forest#1
 T12 p2 adds {G} (p2:Forest#1)
+T12 p2 taps p2:Forest#1 for mana
 T12 p2 casts Centaur Courser
 T12 moves: Essence Scatter, p1's hand -> stack
 T12 p1 cancels casting Essence Scatter
@@ -379,18 +428,22 @@ T13 untaps: p1:Plains
 T13 untaps: p1:Island#2
 T13 taps: p1:Plains
 T13 p1 adds {W} (p1:Plains)
+T13 p1 taps p1:Plains for mana
 T13 taps: p1:Island#1
 T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
 T13 p1's unspent {W}{U} empties
 T13 moves: Craw Wurm, p1's library -> p1's hand
 T13 p1 draws
 T13 taps: p1:Forest
 T13 p1 adds {G} (p1:Forest)
+T13 p1 taps p1:Forest for mana
 T13 p1's unspent {G} empties
 T13 taps: p1:Deadly Recluse
 T13 p1 attack: p1:Deadly Recluse -> p2
 T13 taps: p1:Island#2
 T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
 T13 p1's unspent {U} empties
 T13 p2 block: nothing
 T13 combat damage: p1:Deadly Recluse -> p2 1
@@ -410,24 +463,33 @@ T14 p2 plays p2:Swamp#3
 T14 moves: Snapping Drake, p2's hand -> stack
 T14 taps: p2:Swamp#3
 T14 p2 adds {B} (p2:Swamp#3)
+T14 p2 taps p2:Swamp#3 for mana
 T14 taps: p2:Swamp#2
 T14 p2 adds {B} (p2:Swamp#2)
+T14 p2 taps p2:Swamp#2 for mana
 T14 taps: p2:Forest#1
 T14 p2 adds {G} (p2:Forest#1)
+T14 p2 taps p2:Forest#1 for mana
 T14 taps: p2:Forest#2
 T14 p2 adds {G} (p2:Forest#2)
+T14 p2 taps p2:Forest#2 for mana
 T14 taps: p2:Mountain
 T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
 T14 taps: p2:Swamp#1
 T14 p2 adds {B} (p2:Swamp#1)
+T14 p2 taps p2:Swamp#1 for mana
 T14 p2 cancels casting Snapping Drake
 T14 taps: p2:Forest#1
 T14 p2 adds {G} (p2:Forest#1)
+T14 p2 taps p2:Forest#1 for mana
 T14 taps: p2:Swamp#3
 T14 p2 adds {B} (p2:Swamp#3)
+T14 p2 taps p2:Swamp#3 for mana
 T14 p2's unspent {B}{G} empties
 T14 taps: p2:Swamp#1
 T14 p2 adds {B} (p2:Swamp#1)
+T14 p2 taps p2:Swamp#1 for mana
 T14 p2's unspent {B} empties
 T14 taps: p2:Centaur Courser
 T14 p2 attack: p2:Centaur Courser -> p1
@@ -436,10 +498,13 @@ T14 combat damage: p2:Centaur Courser -> p1 3
 T14 p1 loses 3 life
 T14 taps: p2:Swamp#2
 T14 p2 adds {B} (p2:Swamp#2)
+T14 p2 taps p2:Swamp#2 for mana
 T14 taps: p2:Mountain
 T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
 T14 taps: p2:Forest#2
 T14 p2 adds {G} (p2:Forest#2)
+T14 p2 taps p2:Forest#2 for mana
 T14 p2's unspent {B}{R}{G} empties
 T15 turn 15 begins (p1)
 T15 untaps: p1:Island#1
@@ -452,9 +517,11 @@ T15 p1 draws
 T15 p1 attack: nothing
 T15 taps: p1:Island#1
 T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
 T15 p1's unspent {U} empties
 T15 taps: p1:Plains
 T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
 T15 p1's unspent {W} empties
 T15 moves: Essence Scatter, p1's hand -> p1's graveyard
 T15 p1 discards Essence Scatter
@@ -468,20 +535,28 @@ T16 untaps: p2:Centaur Courser
 T16 untaps: p2:Swamp#3
 T16 taps: p2:Forest#1
 T16 p2 adds {G} (p2:Forest#1)
+T16 p2 taps p2:Forest#1 for mana
 T16 taps: p1:Forest
 T16 p1 adds {G} (p1:Forest)
+T16 p1 taps p1:Forest for mana
 T16 taps: p2:Forest#2
 T16 p2 adds {G} (p2:Forest#2)
+T16 p2 taps p2:Forest#2 for mana
 T16 taps: p2:Swamp#3
 T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
 T16 taps: p2:Mountain
 T16 p2 adds {R} (p2:Mountain)
+T16 p2 taps p2:Mountain for mana
 T16 taps: p2:Swamp#1
 T16 p2 adds {B} (p2:Swamp#1)
+T16 p2 taps p2:Swamp#1 for mana
 T16 taps: p2:Swamp#2
 T16 p2 adds {B} (p2:Swamp#2)
+T16 p2 taps p2:Swamp#2 for mana
 T16 taps: p1:Island#2
 T16 p1 adds {U} (p1:Island#2)
+T16 p1 taps p1:Island#2 for mana
 T16 p1's unspent {U}{G} empties
 T16 p2's unspent {B}{B}{B}{R}{G}{G} empties
 T16 moves: Runeclaw Bear, p2's library -> p2's hand
@@ -493,6 +568,7 @@ T16 p2 attack: p2:Centaur Courser -> p1
 T16 p1 block: p1:Deadly Recluse -> p2:Centaur Courser
 T16 taps: p2:Plains
 T16 p2 adds {W} (p2:Plains)
+T16 p2 taps p2:Plains for mana
 T16 p2's unspent {W} empties
 T16 combat damage: p2:Centaur Courser -> p1:Deadly Recluse 3
 T16 combat damage: p1:Deadly Recluse -> p2:Centaur Courser 1
@@ -517,14 +593,19 @@ T17 p1 plays p1:Plains#2
 T17 moves: Siege Mastodon, p1's hand -> stack
 T17 taps: p1:Plains#1
 T17 p1 adds {W} (p1:Plains#1)
+T17 p1 taps p1:Plains#1 for mana
 T17 taps: p1:Plains#2
 T17 p1 adds {W} (p1:Plains#2)
+T17 p1 taps p1:Plains#2 for mana
 T17 taps: p1:Forest
 T17 p1 adds {G} (p1:Forest)
+T17 p1 taps p1:Forest for mana
 T17 taps: p1:Island#2
 T17 p1 adds {U} (p1:Island#2)
+T17 p1 taps p1:Island#2 for mana
 T17 taps: p1:Island#1
 T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
 T17 p1 casts Siege Mastodon
 T17 resolves: Siege Mastodon
 T17 moves: Siege Mastodon, stack -> battlefield
@@ -539,30 +620,39 @@ T18 untaps: p2:Swamp#3
 T18 untaps: p2:Plains
 T18 taps: p2:Forest#1
 T18 p2 adds {G} (p2:Forest#1)
+T18 p2 taps p2:Forest#1 for mana
 T18 p2's unspent {G} empties
 T18 moves: Kalonian Behemoth, p2's library -> p2's hand
 T18 p2 draws
 T18 taps: p2:Plains
 T18 p2 adds {W} (p2:Plains)
+T18 p2 taps p2:Plains for mana
 T18 taps: p2:Mountain
 T18 p2 adds {R} (p2:Mountain)
+T18 p2 taps p2:Mountain for mana
 T18 taps: p2:Forest#2
 T18 p2 adds {G} (p2:Forest#2)
+T18 p2 taps p2:Forest#2 for mana
 T18 taps: p2:Swamp#3
 T18 p2 adds {B} (p2:Swamp#3)
+T18 p2 taps p2:Swamp#3 for mana
 T18 taps: p2:Swamp#2
 T18 p2 adds {B} (p2:Swamp#2)
+T18 p2 taps p2:Swamp#2 for mana
 T18 taps: p2:Swamp#1
 T18 p2 adds {B} (p2:Swamp#1)
+T18 p2 taps p2:Swamp#1 for mana
 T18 p2's unspent {W}{B}{B}{B}{R}{G} empties
 T18 moves: Swamp, p2's hand -> battlefield
 T18 p2 plays p2:Swamp#4
 T18 moves: Dread Warlock, p2's hand -> stack
 T18 taps: p2:Swamp#4
 T18 p2 adds {B} (p2:Swamp#4)
+T18 p2 taps p2:Swamp#4 for mana
 T18 p2 cancels casting Dread Warlock
 T18 taps: p2:Swamp#4
 T18 p2 adds {B} (p2:Swamp#4)
+T18 p2 taps p2:Swamp#4 for mana
 T18 moves: Runeclaw Bear, p2's hand -> stack
 T18 p2 cancels casting Runeclaw Bear
 T18 p2's unspent {B} empties
@@ -575,18 +665,23 @@ T19 untaps: p1:Island#2
 T19 untaps: p1:Plains#2
 T19 taps: p1:Plains#2
 T19 p1 adds {W} (p1:Plains#2)
+T19 p1 taps p1:Plains#2 for mana
 T19 taps: p1:Island#1
 T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
 T19 p1's unspent {W}{U} empties
 T19 moves: Island, p1's library -> p1's hand
 T19 p1 draws
 T19 taps: p1:Plains#1
 T19 p1 adds {W} (p1:Plains#1)
+T19 p1 taps p1:Plains#1 for mana
 T19 taps: p1:Forest
 T19 p1 adds {G} (p1:Forest)
+T19 p1 taps p1:Forest for mana
 T19 p1's unspent {W}{G} empties
 T19 taps: p1:Island#2
 T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
 T19 moves: Serra Angel, p1's hand -> stack
 T19 p1 cancels casting Serra Angel
 T19 p1's unspent {U} empties
@@ -613,20 +708,28 @@ T20 p2 draws
 T20 moves: Kalonian Behemoth, p2's hand -> stack
 T20 taps: p2:Swamp#3
 T20 p2 adds {B} (p2:Swamp#3)
+T20 p2 taps p2:Swamp#3 for mana
 T20 taps: p2:Plains
 T20 p2 adds {W} (p2:Plains)
+T20 p2 taps p2:Plains for mana
 T20 taps: p2:Swamp#4
 T20 p2 adds {B} (p2:Swamp#4)
+T20 p2 taps p2:Swamp#4 for mana
 T20 taps: p2:Mountain
 T20 p2 adds {R} (p2:Mountain)
+T20 p2 taps p2:Mountain for mana
 T20 taps: p2:Forest#2
 T20 p2 adds {G} (p2:Forest#2)
+T20 p2 taps p2:Forest#2 for mana
 T20 taps: p2:Swamp#2
 T20 p2 adds {B} (p2:Swamp#2)
+T20 p2 taps p2:Swamp#2 for mana
 T20 taps: p2:Forest#1
 T20 p2 adds {G} (p2:Forest#1)
+T20 p2 taps p2:Forest#1 for mana
 T20 taps: p2:Swamp#1
 T20 p2 adds {B} (p2:Swamp#1)
+T20 p2 taps p2:Swamp#1 for mana
 T20 p2 casts Kalonian Behemoth
 T20 resolves: Kalonian Behemoth
 T20 moves: Kalonian Behemoth, stack -> battlefield

@@ -13,6 +13,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * What stops any activated ability of a permanent, mana ability or not: it works only on the battlefield (CR 113.6),
@@ -140,7 +141,16 @@ export function resolveManaAbility(
         : effect;
     progress = andThen(progress, (s) => runEffect(s, chosen, context, cards));
   }
-  return progress;
+  // "Taps [it] for mana": a {T} in the cost, and mana produced (CR 106.12, 106.12a). It's matched here, where it's
+  // emitted: the tap and the mana already went through `happen`.
+  const tapped = ability.def.cost.some((part) => part.kind === "tap");
+  const produced = progress.events.some((e) => e.type === "MANA_ADDED" && e.amount > 0);
+  if (!tapped || !produced) return progress;
+  const event = { type: "TAPPED_FOR_MANA", player, object: id } as const;
+  return {
+    state: detectTriggers(progress.state, progress.state, [event], cards),
+    events: [...progress.events, event],
+  };
 }
 
 /**

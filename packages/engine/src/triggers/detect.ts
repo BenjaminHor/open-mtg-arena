@@ -2,14 +2,15 @@
 // `GameState.pendingTriggers` until a player would receive priority (CR 603.3). Only permanents' abilities trigger
 // (CR 113.6): a card in a graveyard or a spell on the stack doesn't.
 
-import type { TriggerCheck, TriggerCondition } from "../cards/triggers.ts";
+import type { PlayerRelation, TriggerCheck, TriggerCondition } from "../cards/triggers.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { triggersOf } from "../rules/abilities.ts";
+import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { PendingTrigger, TriggerEvent } from "../state/triggers.ts";
 
 /**
@@ -53,23 +54,65 @@ function matches(
 ): TriggerEvent | null {
   switch (when.kind) {
     case "selfEnters":
-      return entered(event) === source ? { player: null, object: source } : null;
+      return entered(event) === source ? { player: null, object: source, amount: null } : null;
     case "anotherEnters": {
       const object = entered(event);
       if (object === null || object === source) return null;
       return matchesFilter(state, object, when.filter, controllerOf(state, source), cards)
-        ? { player: null, object }
+        ? { player: null, object, amount: null }
         : null;
     }
     case "beginningOfStep":
       // "Each player's draw step": "that player", in the card's text, is the player whose step it is.
       return event.type === "STEP_BEGAN" && event.step === when.step
-        ? { player: event.activePlayer, object: null }
+        ? { player: event.activePlayer, object: null, amount: null }
         : null;
     case "selfAttacks":
       return event.type === "ATTACKERS_DECLARED" && event.attacks.some((a) => a.attacker === source)
-        ? { player: null, object: source }
+        ? { player: null, object: source, amount: null }
         : null;
+    case "playerDraws":
+      return event.type === "CARD_DRAWN" && isRelated(state, source, event.player, when.player)
+        ? { player: event.player, object: null, amount: null }
+        : null;
+    case "playerDiscards":
+      return event.type === "CARD_DISCARDED" && isRelated(state, source, event.player, when.player)
+        ? { player: event.player, object: null, amount: null }
+        : null;
+    case "landTappedForMana":
+      // "That player" only: the land isn't kept, so lands tapped together give identical triggers (D-077).
+      return event.type === "TAPPED_FOR_MANA" && cardTypesOf(state, event.object, cards).includes("land")
+        ? { player: event.player, object: null, amount: null }
+        : null;
+    case "selfDealsDamageToPlayer": {
+      if (event.type !== "DAMAGE_DEALT" || event.source !== source || event.to.kind !== "player") return null;
+      if (when.combatOnly && !event.combat) return null;
+      return isRelated(state, source, event.to.player, when.player)
+        ? { player: event.to.player, object: null, amount: null }
+        : null;
+    }
+    case "playerGainsLife":
+      return event.type === "LIFE_GAINED" && isRelated(state, source, event.player, when.player)
+        ? { player: event.player, object: null, amount: event.amount }
+        : null;
+    case "spellCast":
+      return event.type === "SPELL_CAST" &&
+        matchesFilter(state, event.object, when.filter, controllerOf(state, source), cards)
+        ? { player: event.player, object: event.object, amount: null }
+        : null;
+  }
+}
+
+/** Whether `player` is one the trigger's "a player / you / an opponent" means, from its controller's side (CR 102.2). */
+function isRelated(state: GameState, source: ObjectId, player: PlayerId, relation: PlayerRelation): boolean {
+  const you = controllerOf(state, source);
+  switch (relation) {
+    case "anyPlayer":
+      return true;
+    case "you":
+      return player === you;
+    case "opponent":
+      return player !== you;
   }
 }
 

@@ -179,7 +179,8 @@ simple.
   3. **Perform** the event and emit `GameEvent`s. Each event is performed whole (destroying a permanent is its move to
      the graveyard), and all replacing is done before any performing, so a replacement's choice can pause the event.
   4. **Trigger**: check triggered abilities against the events and add `pendingTriggers` (CR 603.2), once per
-     proposed event, after everything it caused.
+     proposed event, after everything it caused. Events emitted outside the pipeline (a step beginning, attackers
+     declared, a spell cast, a land tapped for mana) are matched where they're emitted (`engine/src/triggers/README.md`).
   Only the pipeline calls the primitives that change the game; a test checks the imports.
 - Events returned from `applyAction` are the UI's animation script and the AI's and tests'
   record of what happened. They're never needed to rebuild state.

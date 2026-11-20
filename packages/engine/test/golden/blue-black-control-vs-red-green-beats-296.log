@@ -140,6 +140,7 @@ T2 moves: Island, p1's hand -> battlefield
 T2 p1 plays p1:Island
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 moves: Vampire Aristocrat, p1's hand -> stack
 T2 p1 cancels casting Vampire Aristocrat
 T2 moves: Vampire Aristocrat, p1's hand -> stack
@@ -158,6 +159,7 @@ T4 turn 4 begins (p1)
 T4 untaps: p1:Island
 T4 taps: p1:Island
 T4 p1 adds {U} (p1:Island)
+T4 p1 taps p1:Island for mana
 T4 p1's unspent {U} empties
 T4 moves: Cancel, p1's library -> p1's hand
 T4 p1 draws
@@ -172,6 +174,7 @@ T5 moves: Mountain, p2's hand -> battlefield
 T5 p2 plays p2:Mountain
 T5 taps: p2:Mountain
 T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
 T5 moves: Fireball, p2's hand -> stack
 T5 p2 casts Fireball
 T5 resolves: Fireball
@@ -184,6 +187,7 @@ T6 turn 6 begins (p1)
 T6 untaps: p1:Island
 T6 taps: p1:Island
 T6 p1 adds {U} (p1:Island)
+T6 p1 taps p1:Island for mana
 T6 p1's unspent {U} empties
 T6 moves: Swamp, p1's library -> p1's hand
 T6 p1 draws
@@ -195,6 +199,7 @@ T6 moves: Swamp, p1's hand -> battlefield
 T6 p1 plays p1:Swamp
 T6 taps: p1:Swamp
 T6 p1 adds {B} (p1:Swamp)
+T6 p1 taps p1:Swamp for mana
 T6 p1's unspent {B} empties
 T6 p1 attack: nothing
 T7 turn 7 begins (p2)
@@ -206,8 +211,10 @@ T7 p2 plays p2:Mountain#2
 T7 p2 attack: nothing
 T7 taps: p2:Mountain#1
 T7 p2 adds {R} (p2:Mountain#1)
+T7 p2 taps p2:Mountain#1 for mana
 T7 taps: p2:Mountain#2
 T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
 T7 p2's unspent {R}{R} empties
 T7 moves: Centaur Courser, p2's hand -> stack
 T7 p2 cancels casting Centaur Courser
@@ -218,11 +225,13 @@ T8 untaps: p1:Island
 T8 untaps: p1:Swamp
 T8 taps: p1:Island
 T8 p1 adds {U} (p1:Island)
+T8 p1 taps p1:Island for mana
 T8 p1's unspent {U} empties
 T8 moves: Sign in Blood, p1's library -> p1's hand
 T8 p1 draws
 T8 taps: p1:Swamp
 T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
 T8 p1's unspent {B} empties
 T8 p1 attack: nothing
 T8 moves: Swamp, p1's hand -> battlefield
@@ -230,9 +239,11 @@ T8 p1 plays p1:Swamp#2
 T8 moves: Sign in Blood, p1's hand -> stack
 T8 taps: p1:Swamp#2
 T8 p1 adds {B} (p1:Swamp#2)
+T8 p1 taps p1:Swamp#2 for mana
 T8 p1 cancels casting Sign in Blood
 T8 taps: p1:Swamp#2
 T8 p1 adds {B} (p1:Swamp#2)
+T8 p1 taps p1:Swamp#2 for mana
 T8 moves: Sign in Blood, p1's hand -> stack
 T8 p1 cancels casting Sign in Blood
 T8 p1's unspent {B} empties
@@ -243,10 +254,12 @@ T9 moves: Canyon Minotaur, p2's library -> p2's hand
 T9 p2 draws
 T9 taps: p2:Mountain#2
 T9 p2 adds {R} (p2:Mountain#2)
+T9 p2 taps p2:Mountain#2 for mana
 T9 p2's unspent {R} empties
 T9 p2 attack: nothing
 T9 taps: p2:Mountain#1
 T9 p2 adds {R} (p2:Mountain#1)
+T9 p2 taps p2:Mountain#1 for mana
 T9 p2's unspent {R} empties
 T10 turn 10 begins (p1)
 T10 untaps: p1:Island
@@ -258,13 +271,17 @@ T10 moves: Island, p1's hand -> battlefield
 T10 p1 plays p1:Island#2
 T10 taps: p1:Island#2
 T10 p1 adds {U} (p1:Island#2)
+T10 p1 taps p1:Island#2 for mana
 T10 taps: p1:Island#1
 T10 p1 adds {U} (p1:Island#1)
+T10 p1 taps p1:Island#1 for mana
 T10 taps: p1:Swamp#1
 T10 p1 adds {B} (p1:Swamp#1)
+T10 p1 taps p1:Swamp#1 for mana
 T10 moves: Sign in Blood, p1's hand -> stack
 T10 taps: p1:Swamp#2
 T10 p1 adds {B} (p1:Swamp#2)
+T10 p1 taps p1:Swamp#2 for mana
 T10 p1 casts Sign in Blood
 T10 moves: Prodigal Pyromancer, p2's library -> p2's hand
 T10 p2 draws
@@ -283,14 +300,18 @@ T11 p2 draws
 T11 moves: Centaur Courser, p2's hand -> stack
 T11 taps: p2:Mountain#2
 T11 p2 adds {R} (p2:Mountain#2)
+T11 p2 taps p2:Mountain#2 for mana
 T11 taps: p2:Mountain#1
 T11 p2 adds {R} (p2:Mountain#1)
+T11 p2 taps p2:Mountain#1 for mana
 T11 p2 cancels casting Centaur Courser
 T11 taps: p2:Mountain#1
 T11 p2 adds {R} (p2:Mountain#1)
+T11 p2 taps p2:Mountain#1 for mana
 T11 p2's unspent {R} empties
 T11 taps: p2:Mountain#2
 T11 p2 adds {R} (p2:Mountain#2)
+T11 p2 taps p2:Mountain#2 for mana
 T11 p2's unspent {R} empties
 T11 p2 attack: nothing
 T11 moves: Prodigal Pyromancer, p2's hand -> p2's graveyard
@@ -302,22 +323,27 @@ T12 untaps: p1:Swamp#2
 T12 untaps: p1:Island#2
 T12 taps: p1:Swamp#2
 T12 p1 adds {B} (p1:Swamp#2)
+T12 p1 taps p1:Swamp#2 for mana
 T12 p1's unspent {B} empties
 T12 moves: Swamp, p1's library -> p1's hand
 T12 p1 draws
 T12 p1 attack: nothing
 T12 taps: p1:Island#1
 T12 p1 adds {U} (p1:Island#1)
+T12 p1 taps p1:Island#1 for mana
 T12 p1's unspent {U} empties
 T12 moves: Swamp, p1's hand -> battlefield
 T12 p1 plays p1:Swamp#3
 T12 moves: Vampire Aristocrat, p1's hand -> stack
 T12 taps: p1:Swamp#3
 T12 p1 adds {B} (p1:Swamp#3)
+T12 p1 taps p1:Swamp#3 for mana
 T12 taps: p1:Swamp#1
 T12 p1 adds {B} (p1:Swamp#1)
+T12 p1 taps p1:Swamp#1 for mana
 T12 taps: p1:Island#2
 T12 p1 adds {U} (p1:Island#2)
+T12 p1 taps p1:Island#2 for mana
 T12 p1 casts Vampire Aristocrat
 T12 resolves: Vampire Aristocrat
 T12 moves: Vampire Aristocrat, stack -> battlefield
@@ -338,8 +364,10 @@ T13 p1 activates p1:Vampire Aristocrat
 T13 resolves: Vampire Aristocrat's ability
 T13 taps: p2:Mountain#1
 T13 p2 adds {R} (p2:Mountain#1)
+T13 p2 taps p2:Mountain#1 for mana
 T13 taps: p2:Mountain#2
 T13 p2 adds {R} (p2:Mountain#2)
+T13 p2 taps p2:Mountain#2 for mana
 T13 p2's unspent {R}{R} empties
 T13 moves: Mountain, p2's library -> p2's hand
 T13 p2 draws
@@ -362,17 +390,23 @@ T14 moves: Island, p1's hand -> battlefield
 T14 p1 plays p1:Island#3
 T14 taps: p1:Swamp#3
 T14 p1 adds {B} (p1:Swamp#3)
+T14 p1 taps p1:Swamp#3 for mana
 T14 moves: Air Elemental, p1's hand -> stack
 T14 taps: p1:Island#3
 T14 p1 adds {U} (p1:Island#3)
+T14 p1 taps p1:Island#3 for mana
 T14 taps: p1:Island#1
 T14 p1 adds {U} (p1:Island#1)
+T14 p1 taps p1:Island#1 for mana
 T14 taps: p1:Swamp#1
 T14 p1 adds {B} (p1:Swamp#1)
+T14 p1 taps p1:Swamp#1 for mana
 T14 taps: p1:Swamp#2
 T14 p1 adds {B} (p1:Swamp#2)
+T14 p1 taps p1:Swamp#2 for mana
 T14 taps: p1:Island#2
 T14 p1 adds {U} (p1:Island#2)
+T14 p1 taps p1:Island#2 for mana
 T14 p1 casts Air Elemental
 T14 resolves: Air Elemental
 T14 moves: Air Elemental, stack -> battlefield
@@ -385,10 +419,12 @@ T15 moves: Terramorphic Expanse, p2's library -> p2's hand
 T15 p2 draws
 T15 taps: p2:Mountain#2
 T15 p2 adds {R} (p2:Mountain#2)
+T15 p2 taps p2:Mountain#2 for mana
 T15 p2's unspent {R} empties
 T15 p2 attack: nothing
 T15 taps: p2:Mountain#1
 T15 p2 adds {R} (p2:Mountain#1)
+T15 p2 taps p2:Mountain#1 for mana
 T15 moves: Centaur Courser, p2's hand -> stack
 T15 p2 cancels casting Centaur Courser
 T15 p2's unspent {R} empties
@@ -407,34 +443,43 @@ T16 taps: p1:Air Elemental
 T16 p1 attack: p1:Air Elemental -> p2
 T16 taps: p1:Swamp#1
 T16 p1 adds {B} (p1:Swamp#1)
+T16 p1 taps p1:Swamp#1 for mana
 T16 taps: p1:Swamp#2
 T16 p1 adds {B} (p1:Swamp#2)
+T16 p1 taps p1:Swamp#2 for mana
 T16 p1's unspent {B}{B} empties
 T16 p2 block: nothing
 T16 combat damage: p1:Air Elemental -> p2 4
 T16 p2 loses 4 life
 T16 taps: p1:Swamp#3
 T16 p1 adds {B} (p1:Swamp#3)
+T16 p1 taps p1:Swamp#3 for mana
 T16 p1's unspent {B} empties
 T16 moves: Island, p1's hand -> battlefield
 T16 p1 plays p1:Island#4
 T16 taps: p1:Island#3
 T16 p1 adds {U} (p1:Island#3)
+T16 p1 taps p1:Island#3 for mana
 T16 taps: p1:Island#1
 T16 p1 adds {U} (p1:Island#1)
+T16 p1 taps p1:Island#1 for mana
 T16 p1's unspent {U}{U} empties
 T16 taps: p1:Island#4
 T16 p1 adds {U} (p1:Island#4)
+T16 p1 taps p1:Island#4 for mana
 T16 taps: p1:Island#2
 T16 p1 adds {U} (p1:Island#2)
+T16 p1 taps p1:Island#2 for mana
 T16 p1's unspent {U}{U} empties
 T17 turn 17 begins (p2)
 T17 untaps: p2:Mountain#1
 T17 untaps: p2:Mountain#2
 T17 taps: p2:Mountain#2
 T17 p2 adds {R} (p2:Mountain#2)
+T17 p2 taps p2:Mountain#2 for mana
 T17 taps: p2:Mountain#1
 T17 p2 adds {R} (p2:Mountain#1)
+T17 p2 taps p2:Mountain#1 for mana
 T17 p2's unspent {R}{R} empties
 T17 moves: Forest, p2's library -> p2's hand
 T17 p2 draws
@@ -446,6 +491,7 @@ T17 moves: Forest, p2's hand -> battlefield
 T17 p2 plays p2:Forest
 T17 taps: p2:Forest
 T17 p2 adds {G} (p2:Forest)
+T17 p2 taps p2:Forest for mana
 T17 p2's unspent {G} empties
 T17 p2 attack: nothing
 T17 moves: Canyon Minotaur, p2's hand -> stack
@@ -463,23 +509,30 @@ T18 moves: Kelinore Bat, p1's library -> p1's hand
 T18 p1 draws
 T18 taps: p1:Island#1
 T18 p1 adds {U} (p1:Island#1)
+T18 p1 taps p1:Island#1 for mana
 T18 p1's unspent {U} empties
 T18 taps: p1:Air Elemental
 T18 p1 attack: p1:Air Elemental -> p2
 T18 taps: p1:Swamp#3
 T18 p1 adds {B} (p1:Swamp#3)
+T18 p1 taps p1:Swamp#3 for mana
 T18 taps: p1:Island#4
 T18 p1 adds {U} (p1:Island#4)
+T18 p1 taps p1:Island#4 for mana
 T18 taps: p1:Island#3
 T18 p1 adds {U} (p1:Island#3)
+T18 p1 taps p1:Island#3 for mana
 T18 p1's unspent {U}{U}{B} empties
 T18 p2 block: nothing
 T18 taps: p1:Island#2
 T18 p1 adds {U} (p1:Island#2)
+T18 p1 taps p1:Island#2 for mana
 T18 taps: p1:Swamp#1
 T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
 T18 taps: p1:Swamp#2
 T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
 T18 p1's unspent {U}{B}{B} empties
 T18 combat damage: p1:Air Elemental -> p2 4
 T18 p2 loses 4 life
@@ -489,15 +542,18 @@ T19 untaps: p2:Mountain#2
 T19 untaps: p2:Forest
 T19 taps: p2:Forest
 T19 p2 adds {G} (p2:Forest)
+T19 p2 taps p2:Forest for mana
 T19 p2's unspent {G} empties
 T19 moves: Fireball, p2's library -> p2's hand
 T19 p2 draws
 T19 p2 attack: nothing
 T19 taps: p2:Mountain#1
 T19 p2 adds {R} (p2:Mountain#1)
+T19 p2 taps p2:Mountain#1 for mana
 T19 p2's unspent {R} empties
 T19 taps: p2:Mountain#2
 T19 p2 adds {R} (p2:Mountain#2)
+T19 p2 taps p2:Mountain#2 for mana
 T19 p2's unspent {R} empties
 T19 moves: Runeclaw Bear, p2's hand -> p2's graveyard
 T19 p2 discards Runeclaw Bear
@@ -515,21 +571,28 @@ T20 p1 draws
 T20 moves: Kelinore Bat, p1's hand -> stack
 T20 taps: p1:Swamp#1
 T20 p1 adds {B} (p1:Swamp#1)
+T20 p1 taps p1:Swamp#1 for mana
 T20 taps: p1:Swamp#2
 T20 p1 adds {B} (p1:Swamp#2)
+T20 p1 taps p1:Swamp#2 for mana
 T20 taps: p1:Island#1
 T20 p1 adds {U} (p1:Island#1)
+T20 p1 taps p1:Island#1 for mana
 T20 taps: p1:Island#4
 T20 p1 adds {U} (p1:Island#4)
+T20 p1 taps p1:Island#4 for mana
 T20 taps: p1:Island#3
 T20 p1 adds {U} (p1:Island#3)
+T20 p1 taps p1:Island#3 for mana
 T20 p1 casts Kelinore Bat
 T20 taps: p1:Island#2
 T20 p1 adds {U} (p1:Island#2)
+T20 p1 taps p1:Island#2 for mana
 T20 moves: Essence Scatter, p1's hand -> stack
 T20 p1 casts Essence Scatter
 T20 taps: p1:Swamp#3
 T20 p1 adds {B} (p1:Swamp#3)
+T20 p1 taps p1:Swamp#3 for mana
 T20 countered: Kelinore Bat
 T20 moves: Kelinore Bat, stack -> p1's graveyard
 T20 resolves: Essence Scatter
@@ -548,25 +611,31 @@ T21 untaps: p2:Mountain#2
 T21 untaps: p2:Forest
 T21 taps: p2:Forest
 T21 p2 adds {G} (p2:Forest)
+T21 p2 taps p2:Forest for mana
 T21 taps: p2:Mountain#2
 T21 p2 adds {R} (p2:Mountain#2)
+T21 p2 taps p2:Mountain#2 for mana
 T21 p2's unspent {R}{G} empties
 T21 moves: Centaur Courser, p2's library -> p2's hand
 T21 p2 draws
 T21 moves: Centaur Courser, p2's hand -> stack
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 p2 cancels casting Centaur Courser
 T21 moves: Centaur Courser, p2's hand -> stack
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 p2 cancels casting Centaur Courser
 T21 taps: p2:Mountain#1
 T21 p2 adds {R} (p2:Mountain#1)
+T21 p2 taps p2:Mountain#1 for mana
 T21 moves: Mountain, p2's hand -> battlefield
 T21 p2 plays p2:Mountain#3
 T21 taps: p2:Mountain#3
 T21 p2 adds {R} (p2:Mountain#3)
+T21 p2 taps p2:Mountain#3 for mana
 T21 moves: Centaur Courser, p2's hand -> stack
 T21 p2 cancels casting Centaur Courser
 T21 moves: Fireball, p2's hand -> stack
@@ -598,6 +667,7 @@ T22 untaps: p1:Air Elemental
 T22 untaps: p1:Island#4
 T22 taps: p1:Swamp#1
 T22 p1 adds {B} (p1:Swamp#1)
+T22 p1 taps p1:Swamp#1 for mana
 T22 p1's unspent {B} empties
 T22 moves: Swamp, p1's library -> p1's hand
 T22 p1 draws
@@ -605,11 +675,13 @@ T22 moves: Swamp, p1's hand -> battlefield
 T22 p1 plays p1:Swamp#4
 T22 taps: p1:Island#4
 T22 p1 adds {U} (p1:Island#4)
+T22 p1 taps p1:Island#4 for mana
 T22 p1's unspent {U} empties
 T22 taps: p1:Air Elemental
 T22 p1 attack: p1:Air Elemental -> p2
 T22 taps: p1:Island#3
 T22 p1 adds {U} (p1:Island#3)
+T22 p1 taps p1:Island#3 for mana
 T22 p1's unspent {U} empties
 T22 p2 block: nothing
 T22 combat damage: p1:Air Elemental -> p2 4
@@ -621,23 +693,30 @@ T23 untaps: p2:Forest
 T23 untaps: p2:Mountain#3
 T23 taps: p2:Mountain#1
 T23 p2 adds {R} (p2:Mountain#1)
+T23 p2 taps p2:Mountain#1 for mana
 T23 p2's unspent {R} empties
 T23 moves: Prodigal Pyromancer, p2's library -> p2's hand
 T23 p2 draws
 T23 taps: p1:Swamp#2
 T23 p1 adds {B} (p1:Swamp#2)
+T23 p1 taps p1:Swamp#2 for mana
 T23 p1's unspent {B} empties
 T23 taps: p1:Swamp#3
 T23 p1 adds {B} (p1:Swamp#3)
+T23 p1 taps p1:Swamp#3 for mana
 T23 taps: p1:Island#1
 T23 p1 adds {U} (p1:Island#1)
+T23 p1 taps p1:Island#1 for mana
 T23 moves: Prodigal Pyromancer, p2's hand -> stack
 T23 taps: p2:Forest
 T23 p2 adds {G} (p2:Forest)
+T23 p2 taps p2:Forest for mana
 T23 taps: p2:Mountain#3
 T23 p2 adds {R} (p2:Mountain#3)
+T23 p2 taps p2:Mountain#3 for mana
 T23 taps: p2:Mountain#2
 T23 p2 adds {R} (p2:Mountain#2)
+T23 p2 taps p2:Mountain#2 for mana
 T23 p2 casts Prodigal Pyromancer
 T23 resolves: Prodigal Pyromancer
 T23 moves: Prodigal Pyromancer, stack -> battlefield
@@ -645,14 +724,18 @@ T23 moves: Forest, p2's hand -> battlefield
 T23 p2 plays p2:Forest#2
 T23 taps: p1:Island#2
 T23 p1 adds {U} (p1:Island#2)
+T23 p1 taps p1:Island#2 for mana
 T23 taps: p1:Swamp#4
 T23 p1 adds {B} (p1:Swamp#4)
+T23 p1 taps p1:Swamp#4 for mana
 T23 moves: Centaur Courser, p2's hand -> stack
 T23 taps: p2:Forest#2
 T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
 T23 p2 cancels casting Centaur Courser
 T23 taps: p2:Forest#2
 T23 p2 adds {G} (p2:Forest#2)
+T23 p2 taps p2:Forest#2 for mana
 T23 p2's unspent {G} empties
 T23 p1's unspent {U}{U}{B}{B} empties
 T23 p2 attack: nothing
@@ -668,25 +751,33 @@ T24 untaps: p1:Island#4
 T24 untaps: p1:Swamp#4
 T24 taps: p1:Island#2
 T24 p1 adds {U} (p1:Island#2)
+T24 p1 taps p1:Island#2 for mana
 T24 taps: p1:Swamp#3
 T24 p1 adds {B} (p1:Swamp#3)
+T24 p1 taps p1:Swamp#3 for mana
 T24 p1's unspent {U}{B} empties
 T24 moves: Sign in Blood, p1's library -> p1's hand
 T24 p1 draws
 T24 taps: p1:Swamp#4
 T24 p1 adds {B} (p1:Swamp#4)
+T24 p1 taps p1:Swamp#4 for mana
 T24 p1's unspent {B} empties
 T24 taps: p1:Swamp#1
 T24 p1 adds {B} (p1:Swamp#1)
+T24 p1 taps p1:Swamp#1 for mana
 T24 moves: Wind Drake, p1's hand -> stack
 T24 taps: p1:Island#1
 T24 p1 adds {U} (p1:Island#1)
+T24 p1 taps p1:Island#1 for mana
 T24 taps: p1:Swamp#2
 T24 p1 adds {B} (p1:Swamp#2)
+T24 p1 taps p1:Swamp#2 for mana
 T24 taps: p1:Island#3
 T24 p1 adds {U} (p1:Island#3)
+T24 p1 taps p1:Island#3 for mana
 T24 taps: p1:Island#4
 T24 p1 adds {U} (p1:Island#4)
+T24 p1 taps p1:Island#4 for mana
 T24 p1 casts Wind Drake
 T24 moves: Cancel, p1's hand -> stack
 T24 p1 cancels casting Cancel

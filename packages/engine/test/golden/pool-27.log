@@ -37,9 +37,11 @@ T1 p1 plays p1:Plains
 T1 moves: Phantom Warrior, p1's hand -> stack
 T1 taps: p1:Plains
 T1 p1 adds {W} (p1:Plains)
+T1 p1 taps p1:Plains for mana
 T1 p1 cancels casting Phantom Warrior
 T1 taps: p1:Plains
 T1 p1 adds {W} (p1:Plains)
+T1 p1 taps p1:Plains for mana
 T1 moves: Phantom Warrior, p1's hand -> stack
 T1 p1 cancels casting Phantom Warrior
 T1 moves: Sparkmage Apprentice, p1's hand -> stack
@@ -55,6 +57,7 @@ T2 moves: Swamp, p2's hand -> battlefield
 T2 p2 plays p2:Swamp
 T2 taps: p2:Swamp
 T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
 T2 p2's unspent {B} empties
 T2 p2 attack: nothing
 T3 turn 3 begins (p1)
@@ -65,8 +68,10 @@ T3 moves: Plains, p1's hand -> battlefield
 T3 p1 plays p1:Plains#2
 T3 taps: p1:Plains#2
 T3 p1 adds {W} (p1:Plains#2)
+T3 p1 taps p1:Plains#2 for mana
 T3 taps: p1:Plains#1
 T3 p1 adds {W} (p1:Plains#1)
+T3 p1 taps p1:Plains#1 for mana
 T3 p1's unspent {W}{W} empties
 T3 p1 attack: nothing
 T4 turn 4 begins (p2)
@@ -75,6 +80,7 @@ T4 moves: Howling Mine, p2's library -> p2's hand
 T4 p2 draws
 T4 taps: p2:Swamp
 T4 p2 adds {B} (p2:Swamp)
+T4 p2 taps p2:Swamp for mana
 T4 p2's unspent {B} empties
 T4 p2 attack: nothing
 T4 moves: Bramble Creeper, p2's hand -> stack
@@ -89,19 +95,25 @@ T5 p1 draws
 T5 moves: Acidic Slime, p1's hand -> stack
 T5 taps: p1:Plains#2
 T5 p1 adds {W} (p1:Plains#2)
+T5 p1 taps p1:Plains#2 for mana
 T5 taps: p1:Plains#1
 T5 p1 adds {W} (p1:Plains#1)
+T5 p1 taps p1:Plains#1 for mana
 T5 p1 cancels casting Acidic Slime
 T5 moves: Phantom Warrior, p1's hand -> stack
 T5 taps: p1:Plains#1
 T5 p1 adds {W} (p1:Plains#1)
+T5 p1 taps p1:Plains#1 for mana
 T5 taps: p1:Plains#2
 T5 p1 adds {W} (p1:Plains#2)
+T5 p1 taps p1:Plains#2 for mana
 T5 p1 cancels casting Phantom Warrior
 T5 taps: p1:Plains#2
 T5 p1 adds {W} (p1:Plains#2)
+T5 p1 taps p1:Plains#2 for mana
 T5 taps: p1:Plains#1
 T5 p1 adds {W} (p1:Plains#1)
+T5 p1 taps p1:Plains#1 for mana
 T5 p1's unspent {W}{W} empties
 T5 p1 attack: nothing
 T6 turn 6 begins (p2)
@@ -110,11 +122,13 @@ T6 moves: Mind Rot, p2's library -> p2's hand
 T6 p2 draws
 T6 taps: p2:Swamp
 T6 p2 adds {B} (p2:Swamp)
+T6 p2 taps p2:Swamp for mana
 T6 p2's unspent {B} empties
 T6 moves: Swamp, p2's hand -> battlefield
 T6 p2 plays p2:Swamp#2
 T6 taps: p2:Swamp#2
 T6 p2 adds {B} (p2:Swamp#2)
+T6 p2 taps p2:Swamp#2 for mana
 T6 p2's unspent {B} empties
 T6 p2 attack: nothing
 T6 moves: Bramble Creeper, p2's hand -> stack
@@ -130,8 +144,10 @@ T7 untaps: p1:Plains#1
 T7 untaps: p1:Plains#2
 T7 taps: p1:Plains#1
 T7 p1 adds {W} (p1:Plains#1)
+T7 p1 taps p1:Plains#1 for mana
 T7 taps: p1:Plains#2
 T7 p1 adds {W} (p1:Plains#2)
+T7 p1 taps p1:Plains#2 for mana
 T7 p1's unspent {W}{W} empties
 T7 moves: Duress, p1's library -> p1's hand
 T7 p1 draws
@@ -145,8 +161,10 @@ T8 untaps: p2:Swamp#1
 T8 untaps: p2:Swamp#2
 T8 taps: p2:Swamp#1
 T8 p2 adds {B} (p2:Swamp#1)
+T8 p2 taps p2:Swamp#1 for mana
 T8 taps: p2:Swamp#2
 T8 p2 adds {B} (p2:Swamp#2)
+T8 p2 taps p2:Swamp#2 for mana
 T8 p2's unspent {B}{B} empties
 T8 moves: Forest, p2's library -> p2's hand
 T8 p2 draws
@@ -155,9 +173,11 @@ T8 p2 plays p2:Forest
 T8 moves: Craw Wurm, p2's hand -> stack
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 p2 cancels casting Craw Wurm
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 p2's unspent {G} empties
 T8 p2 attack: nothing
 T8 moves: Howling Mine, p2's hand -> stack
@@ -183,10 +203,13 @@ T9 p1 plays p1:Swamp
 T9 moves: Pyroclasm, p1's hand -> stack
 T9 taps: p1:Plains#2
 T9 p1 adds {W} (p1:Plains#2)
+T9 p1 taps p1:Plains#2 for mana
 T9 taps: p1:Swamp
 T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
 T9 taps: p1:Plains#1
 T9 p1 adds {W} (p1:Plains#1)
+T9 p1 taps p1:Plains#1 for mana
 T9 p1 cancels casting Pyroclasm
 T10 turn 10 begins (p2)
 T10 untaps: p2:Swamp#1
@@ -194,16 +217,22 @@ T10 untaps: p2:Swamp#2
 T10 untaps: p2:Forest
 T10 taps: p2:Swamp#1
 T10 p2 adds {B} (p2:Swamp#1)
+T10 p2 taps p2:Swamp#1 for mana
 T10 taps: p2:Swamp#2
 T10 p2 adds {B} (p2:Swamp#2)
+T10 p2 taps p2:Swamp#2 for mana
 T10 taps: p2:Forest
 T10 p2 adds {G} (p2:Forest)
+T10 p2 taps p2:Forest for mana
 T10 taps: p1:Plains#1
 T10 p1 adds {W} (p1:Plains#1)
+T10 p1 taps p1:Plains#1 for mana
 T10 taps: p1:Plains#2
 T10 p1 adds {W} (p1:Plains#2)
+T10 p1 taps p1:Plains#2 for mana
 T10 taps: p1:Swamp
 T10 p1 adds {B} (p1:Swamp)
+T10 p1 taps p1:Swamp for mana
 T10 p1's unspent {W}{W}{B} empties
 T10 p2's unspent {B}{B}{G} empties
 T10 moves: Gravedigger, p2's library -> p2's hand
@@ -219,11 +248,14 @@ T11 moves: Hill Giant, p1's library -> p1's hand
 T11 p1 draws
 T11 taps: p1:Plains#1
 T11 p1 adds {W} (p1:Plains#1)
+T11 p1 taps p1:Plains#1 for mana
 T11 taps: p1:Swamp
 T11 p1 adds {B} (p1:Swamp)
+T11 p1 taps p1:Swamp for mana
 T11 p1's unspent {W}{B} empties
 T11 taps: p1:Plains#2
 T11 p1 adds {W} (p1:Plains#2)
+T11 p1 taps p1:Plains#2 for mana
 T11 p1's unspent {W} empties
 T11 p1 attack: nothing
 T11 moves: Duress, p1's hand -> p1's graveyard
@@ -237,21 +269,27 @@ T12 p2 draws
 T12 moves: Howling Mine, p2's hand -> stack
 T12 taps: p2:Forest
 T12 p2 adds {G} (p2:Forest)
+T12 p2 taps p2:Forest for mana
 T12 taps: p2:Swamp#1
 T12 p2 adds {B} (p2:Swamp#1)
+T12 p2 taps p2:Swamp#1 for mana
 T12 p2 cancels casting Howling Mine
 T12 moves: Mountain, p2's hand -> battlefield
 T12 p2 plays p2:Mountain
 T12 taps: p2:Mountain
 T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
 T12 taps: p2:Swamp#1
 T12 p2 adds {B} (p2:Swamp#1)
+T12 p2 taps p2:Swamp#1 for mana
 T12 p2's unspent {B}{R} empties
 T12 p2 attack: nothing
 T12 taps: p2:Forest
 T12 p2 adds {G} (p2:Forest)
+T12 p2 taps p2:Forest for mana
 T12 taps: p2:Swamp#2
 T12 p2 adds {B} (p2:Swamp#2)
+T12 p2 taps p2:Swamp#2 for mana
 T12 moves: Child of Night, p2's hand -> stack
 T12 p2 casts Child of Night
 T12 resolves: Child of Night
@@ -264,19 +302,24 @@ T13 moves: Ignite Disorder, p1's library -> p1's hand
 T13 p1 draws
 T13 taps: p1:Plains#2
 T13 p1 adds {W} (p1:Plains#2)
+T13 p1 taps p1:Plains#2 for mana
 T13 taps: p1:Swamp
 T13 p1 adds {B} (p1:Swamp)
+T13 p1 taps p1:Swamp for mana
 T13 p1's unspent {W}{B} empties
 T13 moves: Pyroclasm, p1's hand -> stack
 T13 taps: p1:Plains#1
 T13 p1 adds {W} (p1:Plains#1)
+T13 p1 taps p1:Plains#1 for mana
 T13 p1 cancels casting Pyroclasm
 T13 moves: Plains, p1's hand -> battlefield
 T13 p1 plays p1:Plains#3
 T13 taps: p1:Plains#3
 T13 p1 adds {W} (p1:Plains#3)
+T13 p1 taps p1:Plains#3 for mana
 T13 taps: p1:Plains#1
 T13 p1 adds {W} (p1:Plains#1)
+T13 p1 taps p1:Plains#1 for mana
 T13 moves: Hill Giant, p1's hand -> stack
 T13 p1 cancels casting Hill Giant
 T13 p1's unspent {W}{W} empties
@@ -293,14 +336,19 @@ T14 p2 plays p2:Plains
 T14 moves: Gravedigger, p2's hand -> stack
 T14 taps: p2:Swamp#1
 T14 p2 adds {B} (p2:Swamp#1)
+T14 p2 taps p2:Swamp#1 for mana
 T14 taps: p2:Plains
 T14 p2 adds {W} (p2:Plains)
+T14 p2 taps p2:Plains for mana
 T14 taps: p2:Mountain
 T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
 T14 taps: p2:Swamp#2
 T14 p2 adds {B} (p2:Swamp#2)
+T14 p2 taps p2:Swamp#2 for mana
 T14 taps: p2:Forest
 T14 p2 adds {G} (p2:Forest)
+T14 p2 taps p2:Forest for mana
 T14 p2 casts Gravedigger
 T14 resolves: Gravedigger
 T14 moves: Gravedigger, stack -> battlefield
@@ -322,18 +370,23 @@ T15 moves: Mountain, p1's hand -> battlefield
 T15 p1 plays p1:Mountain
 T15 taps: p1:Plains#3
 T15 p1 adds {W} (p1:Plains#3)
+T15 p1 taps p1:Plains#3 for mana
 T15 p1's unspent {W} empties
 T15 p1 attack: nothing
 T15 taps: p1:Plains#2
 T15 p1 adds {W} (p1:Plains#2)
+T15 p1 taps p1:Plains#2 for mana
 T15 p1's unspent {W} empties
 T15 taps: p1:Plains#1
 T15 p1 adds {W} (p1:Plains#1)
+T15 p1 taps p1:Plains#1 for mana
 T15 taps: p1:Swamp
 T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
 T15 moves: Sparkmage Apprentice, p1's hand -> stack
 T15 taps: p1:Mountain
 T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
 T15 p1 casts Sparkmage Apprentice
 T15 resolves: Sparkmage Apprentice
 T15 moves: Sparkmage Apprentice, stack -> battlefield
