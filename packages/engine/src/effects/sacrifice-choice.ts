@@ -34,6 +34,7 @@ export function sacrificeChosen(
       cards,
     );
   const options = fittingCards(state, theirs, effect.filter, player, cards);
+  // None fits: nothing to sacrifice, as much as possible (CR 609.3).
   if (options.length <= 1) return sacrificeAll(state, options, cards);
   return nothing(
     askToChoose(state, { chooser: player, purpose: "sacrifice", options, min: 1, max: 1, effect, context }),

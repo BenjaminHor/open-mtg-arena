@@ -72,7 +72,7 @@ export function manaAbilityProblem(
   return null;
 }
 
-/** The colors "one mana of any color" can be (CR 106.1a): not colorless, which isn't a color (CR 106.1b). */
+/** The colors "one mana of any color" can be: one of the five colors, never colorless (CR 105.4, 105.1). */
 export const COLORS: readonly Color[] = ["W", "U", "B", "R", "G"];
 
 /** Whether this mana ability adds "one mana of any color", so its activation names a color (D-068). */
@@ -83,7 +83,7 @@ export function addsAnyColor(state: GameState, id: ObjectId, ref: AbilityRef, ca
 
 /**
  * Why the color sent with a mana ability's activation is wrong, or null: an "any color" ability needs one of the five
- * colors (CR 106.1a); any other ability takes none (D-068).
+ * colors (CR 105.4); any other ability takes none (D-068).
  */
 export function manaColorProblem(
   state: GameState,
@@ -94,7 +94,7 @@ export function manaColorProblem(
 ): string | null {
   if (!addsAnyColor(state, id, ref, cards))
     return color === undefined ? null : "that ability's mana has no color to choose";
-  if (color === undefined || !COLORS.includes(color)) return "choose one of the five colors for that mana (CR 106.1a)";
+  if (color === undefined || !COLORS.includes(color)) return "choose one of the five colors for that mana (CR 105.4)";
   return null;
 }
 

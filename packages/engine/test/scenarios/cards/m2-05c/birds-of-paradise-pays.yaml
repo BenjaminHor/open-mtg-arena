@@ -3,7 +3,7 @@ rules: [CR 605.3a, CR 601.2g]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    hand: [Unsummon, Divination]
+    hand: [Unsummon]
     battlefield: [Birds of Paradise, Forest, Forest]
   p2:
     battlefield: [Grizzly Bears]

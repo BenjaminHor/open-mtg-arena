@@ -869,9 +869,10 @@ every schema change and every change D-024 lists bumps it.
   and a mana ability resolves right after it's activated (CR 605.3b), so nothing can happen in between. The engine
   carries the color on the `ACTIVATE_ABILITY` action instead of a decision, a design choice: mana abilities can be
   activated while a payment is pending, where no other decision can wait. The color is checked as the ability
-  resolves: one of W/U/B/R/G (CR 106.1a, never colorless, CR 106.1b), and refused for an ability with a fixed color.
+  resolves: one of the five colors, never colorless (CR 105.4), and refused for an ability with a fixed color.
   `legalActions` lists one activation per color; `autoPay` uses any-color sources after fixed-color ones and records
-  the color. With costs of one color (today's pool) that always finds a payment; a two-color cost will need a search.
+  the color, which is always the best order with one-color and any-color sources; a search is needed only once a
+  source offers a restricted choice ("{R} or {G}"), makes more than one mana, or has a mana cost.
 - "Each opponent sacrifices a land of their choice" (Yawning Fissure): a `sacrifice` op; each sacrificing player
   chooses among the permanents they control (the filter read relative to them, CR 701.21a) with `chooseCards`, purpose
   "sacrifice". The battlefield is public, so a choice of one isn't asked. With two players there's one chooser; several

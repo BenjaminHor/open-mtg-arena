@@ -26,9 +26,9 @@ const GENERIC_ORDER: readonly ManaType[] = ["C", "W", "U", "B", "R", "G"];
 /**
  * A way for the player to pay the cost, or null if there's none. Mana already in the pool is used first. Then mana
  * abilities: lands before creatures (keeping creatures free to attack), each group in battlefield order. Colored symbols
- * are paid before generic. A source of any color (Birds of Paradise) is used only after the fixed-color ones, so with
- * today's costs (one color each) this finds a payment whenever one exists; a cost of two colors with such sources will
- * need a search (future-rules).
+ * are paid before generic. A source of any color (Birds of Paradise) is used only after the fixed-color ones, which
+ * always finds a payment when one exists with one-color and any-color sources; sources with a restricted choice
+ * ("{R} or {G}"), several mana or a mana cost will need a search (future-rules).
  */
 export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, cards: CardDatabase): AutoPayment | null {
   const pool = { ...(state.players[player]?.manaPool ?? { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }) };

@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { autoPay, type CardDatabase, legalActions } from "../../src/index.ts";
-import { FOREST, HASTY_ELF, TEST_CARDS } from "../support/cards.ts";
+import { ELVES, FOREST, HASTY_ELF, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -41,29 +41,24 @@ const board = (battlefield: string[]) =>
   }).state;
 
 describe("mana of any color (CR 106.1a, 605.3b)", () => {
-  it("is listed once per color, never colorless", () => {
+  it("is listed once per color, never colorless, and never without a color (CR 105.4)", () => {
     const state = board([HASTY_ELF]);
-    const colors = legalActions(state, "p1", CARDS).flatMap((a) =>
-      a.type === "ACTIVATE_ABILITY" && a.color !== undefined ? [a.color] : [],
+    const birds = state.zones.battlefield[0];
+    const activations = legalActions(state, "p1", CARDS).filter(
+      (a) => a.type === "ACTIVATE_ABILITY" && a.object === birds,
     );
-    expect(colors).toStrictEqual(["W", "U", "B", "R", "G"]);
+    expect(activations.map((a) => a.type === "ACTIVATE_ABILITY" && a.color)).toStrictEqual(["W", "U", "B", "R", "G"]);
   });
 
   it("is used by autoPay after the fixed-color sources, for the color they can't make", () => {
-    const state = board([HASTY_ELF, FOREST]);
-    const plan = autoPay(
-      state,
-      "p1",
-      [
-        { kind: "colored", color: "G" },
-        { kind: "colored", color: "U" },
-      ],
-      CARDS,
-    );
-    const [elfId, forestId] = state.zones.battlefield;
+    // Birds before Llanowar Elves, both creatures: without the preference, Birds would pay the {G} and nothing the {U}.
+    const state = board([HASTY_ELF, ELVES]);
+    const cost = [{ kind: "colored", color: "G" } as const, { kind: "colored", color: "U" } as const];
+    const plan = autoPay(state, "p1", cost, CARDS);
+    const [birdsId, elvesId] = state.zones.battlefield;
     expect(plan?.activations).toStrictEqual([
-      { object: forestId, ability: { kind: "basicLandType", landType: "Forest" } },
-      { object: elfId, ability: { kind: "printed", index: 0 }, color: "U" },
+      { object: elvesId, ability: { kind: "printed", index: 0 } },
+      { object: birdsId, ability: { kind: "printed", index: 0 }, color: "U" },
     ]);
   });
 });

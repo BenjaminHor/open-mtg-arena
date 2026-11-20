@@ -1,5 +1,5 @@
 name: Birds of Paradise adds one mana of the color chosen as it's activated, and it doesn't use the stack
-rules: [CR 106.1a, CR 605.3b]
+rules: [CR 106.1a, CR 605.3b, CR 608.2d]
 setup:
   turn: { active: p1, step: main1 }
   p1:

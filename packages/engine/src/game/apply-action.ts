@@ -71,7 +71,11 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     }
     // Other activated abilities use the stack and need priority (CR 602.2); mana abilities don't (CR 605.3a).
     if (pending.kind === "priority" && !isManaAbilityOf(answered, action.object, action.ability, cards)) {
-      const problem = activationProblem(answered, pending.player, action.object, action.ability, cards);
+      // Only "one mana of any color" takes a color (D-068); any other ability refuses one rather than dropping it.
+      const problem =
+        action.color !== undefined
+          ? "only a mana ability of any color takes a color"
+          : activationProblem(answered, pending.player, action.object, action.ability, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...startActivation(answered, pending.player, action.object, action.ability, cards) };
     }

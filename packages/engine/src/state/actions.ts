@@ -18,7 +18,7 @@ export type Action =
       /** Which of the object's abilities (D-028). */
       ability: AbilityRef;
       /**
-       * For a mana ability that adds "one mana of any color" only: the color chosen (CR 106.1a), since it resolves at
+       * For a mana ability that adds "one mana of any color" only: the color chosen (CR 105.4), since it resolves at
        * once (CR 605.3b, D-068). Left out for every other ability.
        */
       color?: Color;
