@@ -32,7 +32,12 @@ export type SingleEvent =
    * A permanent is destroyed: it moves to its owner's graveyard (CR 701.8a). `to`: where a replacement sends it instead;
    * it's still destroyed (see `Rerouted`).
    */
-  | { kind: "destroy"; object: ObjectId; to?: Rerouted }
+  | { kind: "destroy"; object: ObjectId; to?: Rerouted; noRegeneration?: true }
+  /**
+   * Regenerating a permanent, in place of its destruction (CR 701.19a): a shield is used up, all its damage removed, its
+   * controller taps it, and it leaves combat. Performed whole, as one event.
+   */
+  | { kind: "regenerate"; object: ObjectId }
   /** A permanent is sacrificed: its controller moves it to its owner's graveyard; it isn't destroyed (CR 701.21a). */
   | { kind: "sacrifice"; object: ObjectId; to?: Rerouted }
   /**

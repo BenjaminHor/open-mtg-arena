@@ -1167,3 +1167,19 @@ every schema change and every change D-024 lists bumps it.
 - "Add {G} or {W}": `addMana`'s `mana: { oneOf }`, the color sent with the activation like "any color" (D-068).
   `autoPay` takes the source with the fewest choices first, enough for costs of one color (every Magic 2010 cost).
 - The Magic 2010 decks run two checklands each in place of basics, so agents play them; random decks stay basic.
+
+**D-086: Regeneration shields, removed from combat, Polymorph (M2-08b)** · 2026-11-20 · accepted
+- Replacement effects made by resolving spells and abilities live in `GameState.replacements` (the list
+  architecture.md planned). The first is the regeneration shield, `{ kind: "regenerationShield", object }`, made by
+  the `regenerate` op outside the pipeline like a continuous effect (making one isn't regenerating, CR 701.19c), and
+  ended in cleanup (CR 514.2). A permanent no longer on the battlefield gets none.
+- `replacements.ts` gathers a destroy's candidates from the event: the moving card's own text and its shields. One
+  candidate stands for all of a permanent's shields, as they're interchangeable (like D-077); a shield and a different
+  replacement on one destroy still refuse until M2-08c. "It can't be regenerated" is `noRegeneration` on the destroy
+  (CR 701.19c). An indestructible permanent's destroy is dropped before any of this, so its shield stays (CR 614.17c).
+- Regenerating is one pipeline event, `regenerate`, performed whole (CR 701.19a): a shield used up, all damage removed,
+  tapped, removed from combat. `Combat.removed` records creatures an effect removed while they stayed on the
+  battlefield (CR 506.4), read through one helper in `rules/combat.ts`; a blocked attacker stays blocked (CR 509.1h).
+- Polymorph: `revealUntil` (cards stay in the library; the one that fits is "found"), the subject
+  `{ controllerOf: { target } }` (last known information once the target is gone, CR 608.2h), and `put`'s `by`, the
+  player who puts the card onto the battlefield and controls it (CR 110.2a).

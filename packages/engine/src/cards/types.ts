@@ -308,7 +308,12 @@ export type EffectSubject =
   /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
   | "found"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
-  | { each: ObjectFilter };
+  | { each: ObjectFilter }
+  /**
+   * "Its controller": the controller of that instance of "target" as the effect applies, or as it last was on the
+   * battlefield if an earlier effect of this resolution moved it (CR 608.2h). Polymorph.
+   */
+  | { controllerOf: { target: number } };
 
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
@@ -346,8 +351,18 @@ export type Effect =
    * (CR 701.21a).
    */
   | { op: "sacrificeSource" }
-  /** "Destroy [subject]" (CR 701.8a). */
-  | { op: "destroy"; of: EffectSubject }
+  /** "Destroy [of]" (CR 701.8a). `noRegeneration`: "It can't be regenerated" (CR 701.19c): no shield is used. */
+  | { op: "destroy"; of: EffectSubject; noRegeneration?: true }
+  /**
+   * "Regenerate [of]": a regeneration shield, used up the next time it would be destroyed this turn (CR 701.19a,
+   * 614.8). Making one isn't regenerating (CR 701.19c).
+   */
+  | { op: "regenerate"; of: EffectSubject }
+  /**
+   * "[who] reveals cards from the top of their library until they reveal a [filter] card" (CR 701.20a): the cards stay
+   * in the library, and the one that fits, if any, is `"found"` for the effects after it (CR 608.2c).
+   */
+  | { op: "revealUntil"; who: EffectSubject; filter: ObjectFilter }
   /** "Destroy one of them at random": one permanent among those named, picked with the seeded RNG as it resolves. */
   | { op: "destroyOneAtRandom"; among: EffectSubject[] }
   /**
@@ -414,6 +429,8 @@ export type Effect =
       op: "put";
       of: EffectSubject;
       into: "hand" | "battlefield" | "libraryBottom";
+      /** "The player puts that card onto the battlefield": who puts it, and so controls it (CR 110.2a); "you" if unsaid. */
+      by?: EffectSubject;
       tapped?: true;
       onlyIf?: ObjectFilter;
       optional?: true;

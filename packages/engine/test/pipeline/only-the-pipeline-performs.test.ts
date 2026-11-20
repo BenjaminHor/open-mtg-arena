@@ -28,11 +28,13 @@ const PRIMITIVES = [
   "countLandPlay",
   "reveal",
   "reorderLibraryTop",
+  "regenerate",
 ];
 
 /** The primitives a primitive's own file may use, because they're part of the event it performs. */
 const BUILT_FROM: Record<string, string[]> = {
   "permanents/destroy.ts": ["moveCard"], // destroying is the move to the graveyard (CR 701.8a)
+  "permanents/regenerate.ts": ["tapPermanent"], // regenerating taps it (CR 701.19a)
   "permanents/sacrifice.ts": ["moveCard"], // so is sacrificing (CR 701.21a)
   "zones/counter.ts": ["moveCard"], // a countered spell goes to its owner's graveyard (CR 701.6a)
   "zones/draw.ts": ["moveCard"], // the top card moves to the hand (CR 121.1)

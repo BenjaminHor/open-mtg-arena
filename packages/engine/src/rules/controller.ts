@@ -6,6 +6,16 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 
 /**
+ * The controller of an object that may have left the battlefield since: now if it's still an object, otherwise as it
+ * last was on the battlefield (CR 608.2h). Null if there's neither.
+ */
+export function controllerNowOrLastKnown(state: GameState, id: ObjectId): PlayerId | null {
+  if (state.objects[id] !== undefined) return controllerOf(state, id);
+  // Last known information keeps the card as it left; control-changing effects will need its controller then (layer 2).
+  return state.lastKnown[id]?.baseController ?? null;
+}
+
+/**
  * A permanent's or spell's controller (CR 110.2, 112.2), or an ability's (CR 113.8). A card in any other zone has no
  * controller, and anything that asks gets its owner (CR 108.4, 108.4a). No effects change control yet.
  */

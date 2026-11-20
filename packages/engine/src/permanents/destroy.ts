@@ -1,7 +1,7 @@
-// Destroying a permanent (CR 701.8). Its own event, so regeneration (later: CR 701.19), which replaces "destroy" and
-// not other ways of going to the graveyard, has one place to plug in. Indestructible (CR 702.12b) is handled before:
-// `pipeline/replacements.ts` drops a destroy it ignores, and `rules/state-based-actions.ts` doesn't list the
-// lethal-damage and deathtouch actions for it (listing them would make the check "perform" them forever).
+// Destroying a permanent (CR 701.8). Its own event, so regeneration (CR 701.19), which replaces "destroy" and not
+// other ways of going to the graveyard, has one place to plug in (`pipeline/replacements.ts`). Indestructible
+// (CR 702.12b) is handled before: `pipeline/happen.ts` drops a destroy it ignores, and `rules/state-based-actions.ts`
+// doesn't list the lethal-damage and deathtouch actions for it (listing them would make the check "perform" them forever).
 
 import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";

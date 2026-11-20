@@ -108,6 +108,7 @@ function emptyGame(setup: GameSetup): GameState {
       command: [],
     },
     effects: [],
+    replacements: [],
     pregame: null,
     passesInSuccession: 0,
     combat: null,

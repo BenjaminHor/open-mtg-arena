@@ -8,6 +8,7 @@ import { andThen, type Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
 import { zoneChangeOf } from "../pipeline/moved.ts";
 import { characteristics } from "../rules/characteristics.ts";
+import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState, Resolution } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -141,6 +142,21 @@ export function revealTop(state: GameState, player: PlayerId, cards: CardDatabas
   if (top === undefined) return nothing(remember(state, { found: [] }));
   const revealed = revealObjects(state, [top], cards);
   return { state: remember(revealed.state, { found: [top] }), events: revealed.events };
+}
+
+/**
+ * "Reveals cards from the top of their library until they reveal a [filter] card" (Polymorph): the cards from the top
+ * down to the first that fits, or the whole library if none does, revealed together (CR 701.20a); they stay in the
+ * library (CR 701.20b). The card that fits, if any, is `"found"` (CR 608.2c).
+ */
+export function revealUntil(state: GameState, player: PlayerId, filter: ObjectFilter, cards: CardDatabase): Progress {
+  const library = zoneList(state, { zone: "library", player });
+  // A card in a library has no controller; "you" is its owner, who reveals it (CR 108.4a).
+  const at = library.findIndex((id) => matchesFilter(state, id, filter, player, cards));
+  const revealed = at === -1 ? library : library.slice(0, at + 1);
+  const shown = revealObjects(state, revealed, cards);
+  const found = at === -1 ? [] : [library[at] as ObjectId];
+  return { state: remember(shown.state, { found }), events: shown.events };
 }
 
 /**

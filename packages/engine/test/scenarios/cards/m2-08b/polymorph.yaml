@@ -1,0 +1,27 @@
+name: Polymorph destroys an opponent's shielded creature, which can't be regenerated; its controller reveals until a creature card and puts it onto the battlefield, then shuffles
+rules: [CR 701.19c, CR 701.20a, CR 110.2a, CR 701.24a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Polymorph]
+  p2:
+    battlefield: [Cudgel Troll, Forest]
+    library: [Forest, Island, Grizzly Bears, Swamp]
+steps:
+  - p1 cast: Polymorph
+    targets: [p2:Cudgel Troll]
+    pay: auto
+  - p1 pass: once
+  - p2 activate: Cudgel Troll
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      stack: []
+      p2.graveyard: [Cudgel Troll]
+      p2.battlefield contains: [Grizzly Bears]
+      p2.library count: 3
+      p2.library contains: [Forest, Island, Swamp]
+      p1.battlefield: [Island, Island, Island, Island]
+      events contains: [{ type: CARDS_REVEALED }, { type: LIBRARY_SHUFFLED, player: p2 }]

@@ -6,6 +6,8 @@ import {
   characteristics,
   controllerOf,
   type GameState,
+  isAttacking,
+  isBlocking,
   isFreeOfSummoningSickness,
   legalActions,
   type ObjectId,
@@ -74,8 +76,9 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
     if (c.types.includes("creature") && !isFreeOfSummoningSickness(state, id, cards)) notes.push("sick");
     if (obj.damage > 0) notes.push(`${obj.damage} damage`);
   }
-  if (state.combat?.attacks.some((a) => a.attacker === id)) notes.push("attacking");
-  const blocking = (state.combat?.blocks ?? []).filter((b) => b.blocker === id);
+  // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
+  if (isAttacking(state, id, cards)) notes.push("attacking");
+  const blocking = isBlocking(state, id, cards) ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id) : [];
   if (blocking.length > 0)
     notes.push(`blocking ${blocking.map((b) => objectText(state, b.attacker, cards)).join(", ")}`);
   return `${c.name}${pt}${notes.length > 0 ? ` (${notes.join(", ")})` : ""}`;

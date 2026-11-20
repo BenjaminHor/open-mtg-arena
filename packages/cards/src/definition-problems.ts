@@ -14,12 +14,12 @@ import type { PoolCard } from "./pool-data.ts";
 import { triggerWordProblems, triggerWordProblemsOf } from "./trigger-words.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
-const KEYWORD_ACTIONS: readonly string[] = ["mill"];
+const KEYWORD_ACTIONS: readonly string[] = ["mill", "regenerate"];
 /**
  * Generic terms Scryfall lists beside the keyword itself, which name no ability of their own: "Landwalk" beside
- * "Swampwalk" (CR 702.14a).
+ * "Swampwalk" (CR 702.14a), and "Heal" beside "Regenerate", from its reminder text's "heal all damage on it".
  */
-const GENERIC_TERMS: readonly string[] = ["landwalk"];
+const GENERIC_TERMS: readonly string[] = ["landwalk", "heal"];
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
 export function definitionProblems(defs: readonly CardDef[], pool: readonly PoolCard[]): string[] {
@@ -184,6 +184,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   modifyPT: (e) => (e as { of: EffectSubject }).of,
   reveal: (e) => (e as { of: EffectSubject }).of,
   put: (e) => (e as { of: EffectSubject }).of,
+  regenerate: (e) => (e as { of: EffectSubject }).of,
 };
 
 /** Ops that act on players, and the subject each names them with. */
@@ -201,7 +202,18 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   exileGraveyard: (e) => (e as { of: EffectSubject }).of,
   sacrifice: (e) => (e as { who: EffectSubject }).who,
   revealTop: (e) => (e as { who: EffectSubject }).who,
+  revealUntil: (e) => (e as { who: EffectSubject }).who,
 };
+
+/** The target kinds that are objects, whose controller "its controller" can mean. */
+const OBJECT_TARGETS: readonly string[] = ["permanent", "spell", "cardInGraveyard"];
+
+/** Every subject an effect names, in any of its fields. */
+function subjectsOf(effect: Effect): EffectSubject[] {
+  return Object.values(effect).filter(
+    (v): v is EffectSubject => typeof v === "object" && v !== null && ("target" in v || "controllerOf" in v),
+  );
+}
 
 /**
  * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming a player ("you", "each player", a
@@ -219,6 +231,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       s === "triggeringPlayer" ||
       s === "eachPlayer" ||
       s === "eachOpponent" ||
+      (typeof s === "object" && "controllerOf" in s) ||
       kind === "player" ||
       kind === "opponent" ||
       kind === "playerOrPlaneswalker"
@@ -260,14 +273,35 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    const onePlayerOps: Effect["op"][] = ["discard", "search", "mayShuffle", "exileGraveyard", "sacrifice"];
+    const onePlayerOps: Effect["op"][] = [
+      "discard",
+      "search",
+      "mayShuffle",
+      "exileGraveyard",
+      "sacrifice",
+      "revealUntil",
+    ];
     if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
+    // "The player puts that card onto the battlefield": one player, who'd also be the one asked "you may".
+    if (effect.op === "put" && effect.by !== undefined) {
+      if (objectOnly(effect.by) || effect.by === "eachPlayer")
+        problems.push(`${where}: put is by one player, not ${JSON.stringify(effect.by)}`);
+      if (effect.optional === true) problems.push(`${where}: "you may" asks "you", not the player who puts`);
+    }
+    // "Its controller" reads an object's controller: the target it names must be an object.
+    for (const s of subjectsOf(effect))
+      if (
+        typeof s === "object" &&
+        "controllerOf" in s &&
+        !OBJECT_TARGETS.includes(targets[s.controllerOf.target]?.kind ?? "")
+      )
+        problems.push(`${where}: "its controller" names target ${s.controllerOf.target}, which isn't an object`);
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";
     const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
-    if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop"))
+    if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop" || e.op === "revealUntil"))
       problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
     const readsSacrificed =
       effect.op === "ifNothingSacrificed" || ("amount" in effect && effect.amount === "sacrificedPower");

@@ -46,7 +46,7 @@ function replaceOne(state: GameState, proposed: SingleEvent, cards: CardDatabase
       return proposed.amount > 0 ? [proposed] : [];
     case "destroy":
       // An indestructible permanent can't be destroyed (CR 702.12b): the event can't happen, so no replacement or
-      // prevention effect, such as regeneration, may replace it (later: CR 614.17c, with M2-08b's shields). Only a
+      // prevention effect may replace it, and a regeneration shield isn't used up (CR 614.17c). Only a
       // self-replacement could (later: CR 614.15).
       if (keywordsOf(state, proposed.object, cards).includes("indestructible")) return [];
       return applyReplacements(state, proposed, cards);
@@ -63,6 +63,7 @@ function replaceOne(state: GameState, proposed: SingleEvent, cards: CardDatabase
     case "discard":
     case "shuffle":
     case "playLand":
+    case "regenerate":
       return applyReplacements(state, proposed, cards);
   }
 }

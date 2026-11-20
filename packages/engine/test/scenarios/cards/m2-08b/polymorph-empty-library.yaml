@@ -1,0 +1,19 @@
+name: Polymorph with an empty library destroys the creature, reveals nothing, and still shuffles
+rules: [CR 701.24a, CR 608.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Polymorph]
+  p2:
+    battlefield: [Grizzly Bears]
+    library: []
+steps:
+  - p1 cast: Polymorph
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Grizzly Bears]
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p2 }]
+      events lacks: [{ type: CARDS_REVEALED }]

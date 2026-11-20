@@ -1,0 +1,21 @@
+name: A shield made after the creature was destroyed is too late; Regenerate's target is gone
+rules: [CR 614.4, CR 601.2c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, Forest, Forest]
+    hand: [Regenerate]
+  p2:
+    battlefield: [Swamp, Swamp]
+    hand: [Doom Blade]
+steps:
+  - p2 cast: Doom Blade
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+  - p2 pass: once
+  - p1 cast: Regenerate
+    targets: [p1:Grizzly Bears]
+  - expect error: illegalAction

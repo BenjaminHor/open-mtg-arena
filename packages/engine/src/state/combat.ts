@@ -20,6 +20,11 @@ export type Combat = {
   /** Every block declared (CR 509.1g). Empty until blockers are declared. */
   blocks: Block[];
   /**
+   * Creatures an effect removed from combat while they stayed on the battlefield: regenerated (CR 506.4, 701.19a).
+   * One that left the battlefield is out of combat anyway (`rules/combat.ts`).
+   */
+  removed: ObjectId[];
+  /**
    * The attacking and blocking creatures that had first strike or double strike as the first combat damage step began,
    * when any did (CR 510.4): then that step is a first strike step and a second one follows. Null otherwise.
    */
@@ -30,7 +35,7 @@ export type Combat = {
 
 /** Combat as the combat phase begins (CR 506.1): no attackers or blockers yet. */
 export function newCombat(): Combat {
-  return { attacks: [], blocks: [], firstStrikers: null, secondDamageStep: false };
+  return { attacks: [], blocks: [], removed: [], firstStrikers: null, secondDamageStep: false };
 }
 
 /**

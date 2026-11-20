@@ -1,0 +1,23 @@
+name: Wall of Bone regenerates from lethal combat damage while blocking
+rules: [CR 701.19a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Craw Wurm]
+  p2:
+    battlefield: [Wall of Bone, Swamp]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Craw Wurm]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Wall of Bone: Craw Wurm }
+  - p1 pass: once
+  - p2 activate: Wall of Bone
+    pay: auto
+  - all pass: once
+  - all pass: until main2
+  - expect:
+      p2.battlefield contains: [Wall of Bone]
+      p2:Wall of Bone.damage: 0
+      p2:Wall of Bone.tapped: true
+      p1:Craw Wurm.damage: 1

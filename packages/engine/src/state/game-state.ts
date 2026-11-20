@@ -11,6 +11,7 @@ import type { ObjectId, PlayerId } from "./ids.ts";
 import type { CardObject, GameObject } from "./objects.ts";
 import type { PlayerState } from "./players.ts";
 import type { Pregame } from "./pregame.ts";
+import type { ReplacementEffect } from "./replacements.ts";
 import type { GameResult } from "./result.ts";
 import type { GameSetup } from "./setup.ts";
 import type { DelayedTrigger, PendingTrigger } from "./triggers.ts";
@@ -64,6 +65,8 @@ export type GameState = {
    * something on the stack or waiting to go on it might need them; emptied when a player gets priority with both empty.
    */
   lastKnown: Record<ObjectId, CardObject>;
+  /** Replacement effects made by resolving spells and abilities (CR 614.1): regeneration shields. All end this turn. */
+  replacements: ReplacementEffect[];
   /** Delayed triggered abilities waiting for their event (CR 603.7), in the order they were made. */
   delayedTriggers: DelayedTrigger[];
   /** Facts about this turn later rules ask about (activations, D-078), emptied as each turn begins. */

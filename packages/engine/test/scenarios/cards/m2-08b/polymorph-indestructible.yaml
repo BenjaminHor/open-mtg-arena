@@ -1,0 +1,18 @@
+name: Polymorph on Darksteel Colossus doesn't destroy it, and the rest still happens
+rules: [CR 702.12b, CR 608.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Polymorph]
+  p2:
+    battlefield: [Darksteel Colossus]
+    library: [Forest, Grizzly Bears]
+steps:
+  - p1 cast: Polymorph
+    targets: [p2:Darksteel Colossus]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield: [Darksteel Colossus, Grizzly Bears]
+      p2.library: [Forest]

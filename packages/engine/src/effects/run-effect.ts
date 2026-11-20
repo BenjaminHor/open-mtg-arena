@@ -20,11 +20,13 @@ import {
   mayShuffle,
   revealObjects,
   revealTop,
+  revealUntil,
   search,
   shuffleEach,
 } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 import { put } from "./put-effects.ts";
+import { addRegenerationShields } from "./regeneration-shield.ts";
 import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
@@ -95,10 +97,17 @@ export function runEffect(
       return happen(state, { kind: "sacrifice", object: source }, cards);
     }
     case "destroy":
-      return toEach(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
-        kind: "destroy",
-        object,
-      }));
+      return toEach(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)), cards, (object) =>
+        effect.noRegeneration === true
+          ? { kind: "destroy", object, noRegeneration: true }
+          : { kind: "destroy", object },
+      );
+    case "regenerate":
+      return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
+    case "revealUntil": {
+      const player = onePlayer(state, effect.who, context, cards);
+      return player === null ? { state, events: [] } : revealUntil(state, player, effect.filter, cards);
+    }
     case "destroyOneAtRandom":
       return destroyOneAtRandom(state, effect.among, context, cards);
     case "destroyAll": {

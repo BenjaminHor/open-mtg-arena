@@ -14,6 +14,7 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { emptyManaPool, MANA_TYPES } from "../state/mana.ts";
+import { endReplacementEffects } from "../state/replacements.ts";
 import type { Step } from "../state/turn.ts";
 import { newTurnHistory } from "../state/turn-history.ts";
 import { detectTriggers } from "../triggers/detect.ts";
@@ -110,7 +111,8 @@ export function finishCleanup(state: GameState, chosen: readonly ObjectId[], car
  * pass with the stack empty, another cleanup step begins (CR 514.3a, `passPriority`).
  */
 function endCleanup(state: GameState): Progress {
-  const removed = andThen(removeAllDamage(state), endUntilEndOfTurnEffects);
+  // Regeneration shields last "this turn" too (CR 701.19a).
+  const removed = andThen(removeAllDamage(state), (s) => endUntilEndOfTurnEffects(endReplacementEffects(s)));
   return { state: queueWork(removed.state, { kind: "cleanupCheck" }), events: removed.events };
 }
 

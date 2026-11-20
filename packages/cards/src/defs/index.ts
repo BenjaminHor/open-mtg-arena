@@ -27,6 +27,7 @@ import { childOfNight } from "./c/child-of-night.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
+import { cudgelTroll } from "./c/cudgel-troll.ts";
 import { darksteelColossus } from "./d/darksteel-colossus.ts";
 import { deadlyRecluse } from "./d/deadly-recluse.ts";
 import { deathmark } from "./d/deathmark.ts";
@@ -42,6 +43,7 @@ import { dragonsClaw } from "./d/dragons-claw.ts";
 import { dragonskullSummit } from "./d/dragonskull-summit.ts";
 import { dreadWarlock } from "./d/dread-warlock.ts";
 import { drownedCatacomb } from "./d/drowned-catacomb.ts";
+import { drudgeSkeletons } from "./d/drudge-skeletons.ts";
 import { duress } from "./d/duress.ts";
 import { earthquake } from "./e/earthquake.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
@@ -107,6 +109,7 @@ import { panicAttack } from "./p/panic-attack.ts";
 import { phantomWarrior } from "./p/phantom-warrior.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
+import { polymorph } from "./p/polymorph.ts";
 import { ponder } from "./p/ponder.ts";
 import { prizedUnicorn } from "./p/prized-unicorn.ts";
 import { prodigalPyromancer } from "./p/prodigal-pyromancer.ts";
@@ -114,6 +117,7 @@ import { pyroclasm } from "./p/pyroclasm.ts";
 import { ragingGoblin } from "./r/raging-goblin.ts";
 import { rampantGrowth } from "./r/rampant-growth.ts";
 import { razorfootGriffin } from "./r/razorfoot-griffin.ts";
+import { regenerate } from "./r/regenerate.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { rootboundCrag } from "./r/rootbound-crag.ts";
@@ -149,6 +153,7 @@ import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { viashinoSpearhunter } from "./v/viashino-spearhunter.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
+import { wallOfBone } from "./w/wall-of-bone.ts";
 import { wallOfFaith } from "./w/wall-of-faith.ts";
 import { wallOfFire } from "./w/wall-of-fire.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
@@ -187,6 +192,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   consumeSpirit,
   coralMerfolk,
   crawWurm,
+  cudgelTroll,
   darksteelColossus,
   deadlyRecluse,
   deathmark,
@@ -202,6 +208,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   dragonskullSummit,
   dreadWarlock,
   drownedCatacomb,
+  drudgeSkeletons,
   duress,
   earthquake,
   eliteVanguard,
@@ -267,6 +274,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   phantomWarrior,
   plains,
   planarCleansing,
+  polymorph,
   ponder,
   prizedUnicorn,
   prodigalPyromancer,
@@ -274,6 +282,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   ragingGoblin,
   rampantGrowth,
   razorfootGriffin,
+  regenerate,
   righteousness,
   rodOfRuin,
   rootboundCrag,
@@ -309,6 +318,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   vampireAristocrat,
   viashinoSpearhunter,
   volcanicHammer,
+  wallOfBone,
   wallOfFaith,
   wallOfFire,
   warpathGhoul,
