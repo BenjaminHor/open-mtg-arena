@@ -1625,6 +1625,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Fog",
+      "slug": "fog",
+      "oracleId": "27e9db49-7af7-4bef-ad4c-bf5dfb92030d",
+      "layout": "normal",
+      "manaCost": "{G}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Prevent all combat damage that would be dealt this turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/b/8b55d04f-c52f-4b94-b25c-f5c7d8c1c18e.jpg?1783939906",
+        "large": "https://cards.scryfall.io/large/front/8/b/8b55d04f-c52f-4b94-b25c-f5c7d8c1c18e.jpg?1783939906",
+        "png": "https://cards.scryfall.io/png/front/8/b/8b55d04f-c52f-4b94-b25c-f5c7d8c1c18e.png?1783939906",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/b/8b55d04f-c52f-4b94-b25c-f5c7d8c1c18e.jpg?1783939906"
+      },
+      "artist": "Jaime Jones",
+      "set": "m14",
+      "collectorNumber": "171",
+      "scryfallUri": "https://scryfall.com/card/m14/171/fog?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Forest",
       "slug": "forest",
       "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
@@ -1933,6 +1961,36 @@
       "set": "10e",
       "collectorNumber": "268",
       "scryfallUri": "https://scryfall.com/card/10e/268/grizzly-bears?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Guardian Seraph",
+      "slug": "guardian-seraph",
+      "oracleId": "fe9106e3-c637-4995-9dc1-cae0be31f23b",
+      "layout": "normal",
+      "manaCost": "{2}{W}{W}",
+      "manaValue": 4,
+      "typeLine": "Creature — Angel",
+      "oracleText": "Flying\nIf a source an opponent controls would deal damage to you, prevent 1 of that damage.",
+      "power": "3",
+      "toughness": "4",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/8/a84613ce-9b59-4ef6-8c76-5b208ff9de88.jpg?1783942402",
+        "large": "https://cards.scryfall.io/large/front/a/8/a84613ce-9b59-4ef6-8c76-5b208ff9de88.jpg?1783942402",
+        "png": "https://cards.scryfall.io/png/front/a/8/a84613ce-9b59-4ef6-8c76-5b208ff9de88.png?1783942402",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/8/a84613ce-9b59-4ef6-8c76-5b208ff9de88.jpg?1783942402"
+      },
+      "artist": "Paul Bonner",
+      "set": "m10",
+      "collectorNumber": "13",
+      "scryfallUri": "https://scryfall.com/card/m10/13/guardian-seraph?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3455,6 +3513,34 @@
       "set": "m15",
       "collectorNumber": "197",
       "scryfallUri": "https://scryfall.com/card/m15/197/runeclaw-bear?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Safe Passage",
+      "slug": "safe-passage",
+      "oracleId": "dfa459a1-b065-4488-88d3-4da388261b52",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Instant",
+      "oracleText": "Prevent all damage that would be dealt to you and creatures you control this turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/f/9fc65c3f-ad29-4368-bf45-8345a7ec6f31.jpg?1783940514",
+        "large": "https://cards.scryfall.io/large/front/9/f/9fc65c3f-ad29-4368-bf45-8345a7ec6f31.jpg?1783940514",
+        "png": "https://cards.scryfall.io/png/front/9/f/9fc65c3f-ad29-4368-bf45-8345a7ec6f31.png?1783940514",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/f/9fc65c3f-ad29-4368-bf45-8345a7ec6f31.jpg?1783940514"
+      },
+      "artist": "Christopher Moeller",
+      "set": "m13",
+      "collectorNumber": "30",
+      "scryfallUri": "https://scryfall.com/card/m13/30/safe-passage?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

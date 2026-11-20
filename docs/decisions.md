@@ -1205,3 +1205,19 @@ every schema change and every change D-024 lists bumps it.
   works because every reference names its affected object; replacements from other permanents or players (Rest in
   Peace, Fog) will need choices keyed to the affected object or player (future-rules).
 - The decision kind isn't required of golden games until M2-08d's cards can reach it (`DECISION_KINDS` takes a reason).
+
+**D-088: Damage prevention, per damage entry (M2-08d1)** · 2026-11-20 · accepted
+- A damage event stays one event (CR 120.4, D-067); each entry (a source dealing damage to a recipient) is replaced
+  on its own inside it (`pipeline/damage-replacements.ts`), with its own candidates and its own chooser, the recipient
+  player or the recipient object's controller (CR 616.1). Choices are keyed to what they're for
+  (`ReplacementChoice.for`: the affected object, or the entry), so a choice made for one entry isn't used for another.
+- Prevention effects made by resolving spells (Fog, Safe Passage) live in `GameState.replacements`, named by the
+  spell's id and its card's oracle id (the spell is gone when it's offered as a choice), checked as each damage event
+  happens and ended in cleanup. A permanent's own prevention text (Guardian Seraph) is read from the battlefield, the
+  first replacement read from another permanent than the moving card; a gone source's controller is its last known
+  one (CR 608.2h).
+- Prevented damage is never dealt (CR 615.6): lifelink and "deals damage" triggers see only what's left. A
+  `DAMAGE_PREVENTED` event says what was prevented and by which card, for the log, the UI and the golden cover.
+- Identical candidates (two Guardian Seraphs: the same text under the same controller) are applied without asking, all
+  of them, each once; different ones are asked about even when the order can't change the result (Seraph and Fog),
+  as CR 616.1 has the player choose. Skipping those is a later UX question.

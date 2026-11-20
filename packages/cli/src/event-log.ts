@@ -157,6 +157,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `untaps: ${name(e.object)}`;
     case "PERMANENT_REGENERATED":
       return `regenerates: ${name(e.object)}`;
+    case "DAMAGE_PREVENTED":
+      return `prevented: ${name(e.source)} -> ${target(e.to, name)} ${e.amount} (${cards[e.by]?.printed.name ?? e.by})`;
     case "DAMAGE_REMOVED":
       return `damage removed: ${name(e.object)} (${e.amount})`;
     case "CARD_DISCARDED":

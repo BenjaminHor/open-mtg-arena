@@ -304,12 +304,20 @@ function triggerNamed(batch: readonly PendingTrigger[], player: string, text: st
   return index;
 }
 
-/** How a scenario names a replacement effect to choose (CR 616.1): "regeneration", or the card whose own text it is. */
+/**
+ * How a scenario names a replacement effect to choose (CR 616.1): "regeneration", the card whose own text it is
+ * (Guardian Seraph), or the card whose resolution made it (Fog).
+ */
 export function replacementWord(state: GameState, ref: ReplacementRef, cards: CardDatabase): string {
   switch (ref.kind) {
     case "regenerationShield":
       return "regeneration";
     case "ownText":
       return nameOf(state, ref.object, cards);
+    case "prevention": {
+      const effect = state.replacements.find((r) => r.kind === "preventAllDamage" && r.id === ref.id);
+      const oracleId = effect?.kind === "preventAllDamage" ? effect.sourceOracleId : undefined;
+      return (oracleId === undefined ? undefined : cards[oracleId]?.printed.name) ?? ref.id;
+    }
   }
 }

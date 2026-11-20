@@ -107,6 +107,20 @@ export function runEffect(
           : { kind: "destroy", object };
       return happenOrAsk(state, { kind: "simultaneous", events: objects.map(destroy) }, cards);
     }
+    case "preventAllDamage": {
+      // A prevention effect until cleanup (CR 615.1a, 514.2), named by the spell that made it (D-088).
+      const source = state.objects[context.self];
+      const sourceOracleId = source?.kind === "card" ? source.oracleId : (source?.sourceOracleId ?? "");
+      const effectMade = {
+        kind: "preventAllDamage",
+        id: context.self,
+        sourceOracleId,
+        controller: context.controller,
+        combatOnly: effect.combatOnly,
+        protects: effect.protects === "everyone" ? "everyone" : "controllerAndCreatures",
+      } as const;
+      return { state: { ...state, replacements: [...state.replacements, effectMade] }, events: [] };
+    }
     case "regenerate":
       return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
     case "revealUntil": {

@@ -7,7 +7,7 @@
 // graveyard (CR 701.8a), not a destruction followed by a separate zone change, so a "would die" replacement and a
 // "would be destroyed" one apply to the same event, in the order its controller chooses (CR 616.1, 616.1f).
 
-import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { Target } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
@@ -38,6 +38,11 @@ export type SingleEvent =
    * controller taps it, and it leaves combat. Performed whole, as one event.
    */
   | { kind: "regenerate"; object: ObjectId }
+  /**
+   * Damage prevented (CR 615.6): it's never dealt. An event of its own only so the game can say so (`by`: the card
+   * whose effect prevented it); the damage event itself is what's left after prevention.
+   */
+  | { kind: "damagePrevented"; source: ObjectId; to: Target; amount: number; by: OracleId }
   /** A permanent is sacrificed: its controller moves it to its owner's graveyard; it isn't destroyed (CR 701.21a). */
   | { kind: "sacrifice"; object: ObjectId; to?: Rerouted }
   /**

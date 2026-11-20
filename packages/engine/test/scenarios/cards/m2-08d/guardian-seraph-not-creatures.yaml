@@ -1,0 +1,23 @@
+name: Guardian Seraph prevents nothing dealt to its controller's creatures, or by its controller's own sources
+rules: [CR 615.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Guardian Seraph, Grizzly Bears, Rod of Ruin, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 activate: Rod of Ruin
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 19
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]

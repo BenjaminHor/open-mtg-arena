@@ -1,0 +1,22 @@
+name: Guardian Seraph reads a gone source's controller from last known information; the ping is prevented
+rules: [CR 615.10, CR 608.2h]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Guardian Seraph, Swamp, Swamp]
+    hand: [Doom Blade]
+  p2:
+    battlefield: [Prodigal Pyromancer]
+steps:
+  - p2 activate: Prodigal Pyromancer
+    targets: [p1]
+  - p2 pass: once
+  - p1 cast: Doom Blade
+    targets: [p2:Prodigal Pyromancer]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p2.graveyard: [Prodigal Pyromancer]
+      p1.life: 20
+      events lacks: [{ type: DAMAGE_DEALT }]

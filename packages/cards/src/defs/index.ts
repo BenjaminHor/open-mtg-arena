@@ -58,6 +58,7 @@ import { fieryHellhound } from "./f/fiery-hellhound.ts";
 import { fireElemental } from "./f/fire-elemental.ts";
 import { fireball } from "./f/fireball.ts";
 import { flashfreeze } from "./f/flashfreeze.ts";
+import { fog } from "./f/fog.ts";
 import { forest } from "./f/forest.ts";
 import { furnaceWhelp } from "./f/furnace-whelp.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
@@ -69,6 +70,7 @@ import { gravedigger } from "./g/gravedigger.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
 import { griffinSentinel } from "./g/griffin-sentinel.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
+import { guardianSeraph } from "./g/guardian-seraph.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
@@ -123,6 +125,7 @@ import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { rootboundCrag } from "./r/rootbound-crag.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
 import { runeclawBear } from "./r/runeclaw-bear.ts";
+import { safePassage } from "./s/safe-passage.ts";
 import { sageOwl } from "./s/sage-owl.ts";
 import { sanguineBond } from "./s/sanguine-bond.ts";
 import { seismicStrike } from "./s/seismic-strike.ts";
@@ -223,6 +226,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   fireElemental,
   fireball,
   flashfreeze,
+  fog,
   forest,
   furnaceWhelp,
   giantGrowth,
@@ -234,6 +238,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   grayOgre,
   griffinSentinel,
   grizzlyBears,
+  guardianSeraph,
   hauntingEchoes,
   hillGiant,
   hornedTurtle,
@@ -288,6 +293,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   rootboundCrag,
   royalAssassin,
   runeclawBear,
+  safePassage,
   sageOwl,
   sanguineBond,
   seismicStrike,

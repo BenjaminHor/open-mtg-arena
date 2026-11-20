@@ -5,14 +5,14 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
-import { apnapOrder } from "../game/turn-order.ts";
 import { keywordsOf } from "../rules/abilities.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ReplacementRef } from "../state/replacements.ts";
+import type { ReplacementChoice } from "../state/replacements.ts";
 import { detectTriggers } from "../triggers/detect.ts";
+import { replaceDamage } from "./damage-replacements.ts";
 import { perform } from "./perform.ts";
 import type { ProposedEvent, SingleEvent } from "./proposed.ts";
-import { applyReplacements, type Replaced } from "./replacements.ts";
+import { type Ask, applyReplacements, firstInApnapOrder, type Replaced } from "./replacements.ts";
 
 /**
  * Carries out an event. All of the replacing comes first, against the state before the event, and then all of the
@@ -37,13 +37,13 @@ export function happenOrAsk(
   state: GameState,
   proposed: ProposedEvent,
   cards: CardDatabase,
-  choices: readonly ReplacementRef[] = [],
+  choices: readonly ReplacementChoice[] = [],
 ): Progress {
   const replaced = replace(state, proposed, cards, choices);
   if (replaced.kind === "choose") {
     const resume = { proposed, choices: [...choices] };
-    const asked = waitFor(state, replaced.player, { kind: "chooseReplacement", options: replaced.options, resume });
-    return { state: asked, events: [] };
+    const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
+    return { state: waitFor(state, replaced.player, decision), events: [] };
   }
   return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
@@ -59,16 +59,15 @@ function replace(
   state: GameState,
   proposed: ProposedEvent,
   cards: CardDatabase,
-  choices: readonly ReplacementRef[],
-): { kind: "replaced"; event: ProposedEvent } | Extract<Replaced, { kind: "choose" }> {
+  choices: readonly ReplacementChoice[],
+): { kind: "replaced"; event: ProposedEvent } | Ask {
   const members = proposed.kind === "simultaneous" ? proposed.events : [proposed];
   const results = members.map((e) => replaceOne(state, e, cards, choices));
-  const asks = results.flatMap((r) => (r.kind === "choose" ? [r] : []));
-  if (asks.length > 0) {
-    const order = apnapOrder(state);
-    const [firstAsk] = [...asks].sort((x, y) => order.indexOf(x.player) - order.indexOf(y.player));
-    if (firstAsk !== undefined) return firstAsk;
-  }
+  const ask = firstInApnapOrder(
+    state,
+    results.flatMap((r) => (r.kind === "choose" ? [r] : [])),
+  );
+  if (ask !== null) return ask;
   const replaced = results.flatMap((r) => (r.kind === "replaced" ? r.events : []));
   const [only] = replaced;
   return {
@@ -80,19 +79,18 @@ function replace(
   };
 }
 
-/** Replacement and prevention effects modify the event (CR 614; prevention, later: CR 615). */
+/** Replacement and prevention effects modify the event (CR 614, 615). */
 function replaceOne(
   state: GameState,
   proposed: SingleEvent,
   cards: CardDatabase,
-  choices: readonly ReplacementRef[],
+  choices: readonly ReplacementChoice[],
 ): Replaced {
   const done = (events: SingleEvent[]): Replaced => ({ kind: "replaced", events });
   switch (proposed.kind) {
     case "dealDamage":
-      // A source that would deal 0 damage deals no damage at all, so there's nothing for a replacement or prevention
-      // effect to modify, not even one that would increase it (CR 120.8).
-      return done([{ kind: "dealDamage", damage: proposed.damage.filter((d) => d.amount > 0) }]);
+      // Prevention applies to each source's damage to each recipient (`damage-replacements.ts`).
+      return replaceDamage(state, proposed.damage, cards, choices);
     case "gainLife":
       // Gaining 0 life isn't an event: nothing triggers on it (CR 119.9) and nothing replaces it (CR 119.10).
       return done(proposed.amount > 0 ? [proposed] : []);
@@ -116,6 +114,7 @@ function replaceOne(
     case "shuffle":
     case "playLand":
     case "regenerate":
+    case "damagePrevented":
       return applyReplacements(state, proposed, cards, choices);
   }
 }

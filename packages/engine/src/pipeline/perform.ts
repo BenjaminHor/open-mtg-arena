@@ -40,6 +40,9 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return destroy(state, event.object, event.to);
     case "regenerate":
       return regenerate(state, event.object);
+    case "damagePrevented":
+      // Nothing changes: the damage is never dealt (CR 615.6). The event only tells what prevented it.
+      return { state, events: [{ type: "DAMAGE_PREVENTED", ...withoutKind(event) }] };
     case "sacrifice":
       return sacrifice(state, event.object, event.to);
     case "dealDamage":
@@ -71,4 +74,9 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return andThen(moved, (s) => countLandPlay(s, event.player, moved.newId));
     }
   }
+}
+
+function withoutKind<T extends { kind: string }>(event: T): Omit<T, "kind"> {
+  const { kind: _kind, ...rest } = event;
+  return rest;
 }

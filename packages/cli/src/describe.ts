@@ -166,12 +166,21 @@ function choiceText(purpose: ChoosePurpose, card: string): string {
   }
 }
 
-/** A replacement effect a player may choose, by what it is: a card's own text, or a regeneration shield. */
+/** A replacement effect a player may choose, by what it is: a card's own text, a regeneration shield, a prevention. */
 export function replacementText(state: GameState, ref: ReplacementRef, cards: CardDatabase): string {
   switch (ref.kind) {
     case "ownText":
       return `${nameOf(state, ref.object, cards)}'s replacement ${ref.index + 1}`;
     case "regenerationShield":
       return `regenerating ${nameOf(state, ref.object, cards)}`;
+    case "prevention":
+      return `${preventionName(state, ref.id, cards)}'s prevention`;
   }
+}
+
+/** The card a prevention effect in state came from, by name: its spell is usually gone (CR 400.7). */
+export function preventionName(state: GameState, id: ObjectId, cards: CardDatabase): string {
+  const effect = state.replacements.find((r) => r.kind === "preventAllDamage" && r.id === id);
+  const oracleId = effect?.kind === "preventAllDamage" ? effect.sourceOracleId : undefined;
+  return (oracleId === undefined ? undefined : cards[oracleId]?.printed.name) ?? id;
 }

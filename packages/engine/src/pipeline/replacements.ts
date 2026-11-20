@@ -10,20 +10,34 @@
 // first (CR 616.1): `choices` holds the choices made so far, and without one for this event the answer is to ask.
 
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
+import { apnapOrder } from "../game/turn-order.ts";
 import { replacementsOf } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { hasRegenerationShield, type ReplacementRef, sameReplacement } from "../state/replacements.ts";
+import {
+  hasRegenerationShield,
+  type ReplacementChoice,
+  type ReplacementRef,
+  sameReplacement,
+} from "../state/replacements.ts";
 import type { Destination } from "../zones/move-card.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { playLandDestination, type SingleEvent } from "./proposed.ts";
 
-/** The events in place of the event, or who must choose between which replacements first (CR 616.1). */
-export type Replaced =
-  | { kind: "replaced"; events: SingleEvent[] }
-  | { kind: "choose"; player: PlayerId; options: ReplacementRef[] };
+/** Who must choose between which replacements first (CR 616.1), and what the choice is for. */
+export type Ask = { kind: "choose"; player: PlayerId; for: string; options: ReplacementRef[] };
+
+/** The events in place of the event, or the choice needed first. */
+export type Replaced = { kind: "replaced"; events: SingleEvent[] } | Ask;
+
+/** The first of these choices to ask, in APNAP order of the players asked (CR 616.1, 101.4), or null if none. */
+export function firstInApnapOrder(state: GameState, asks: readonly Ask[]): Ask | null {
+  if (asks.length === 0) return null;
+  const order = apnapOrder(state);
+  return [...asks].sort((x, y) => order.indexOf(x.player) - order.indexOf(y.player))[0] ?? null;
+}
 
 /**
  * The event as the replacements that apply change it: none, one, or several events in its place. `choices` are the
@@ -33,8 +47,11 @@ export function applyReplacements(
   state: GameState,
   event: SingleEvent,
   cards: CardDatabase,
-  choices: readonly ReplacementRef[] = [],
+  allChoices: readonly ReplacementChoice[] = [],
 ): Replaced {
+  // Choices are for the object the event affects (`ReplacementChoice.for`).
+  const key = affectedKey(event);
+  const choices = allChoices.filter((c) => c.for === key).map((c) => c.ref);
   let replaced: Replacing = { before: [], event, after: [] };
   const applied: ReplacementRef[] = [];
   for (;;) {
@@ -53,7 +70,12 @@ export function applyReplacements(
     // Any of them may be chosen (CR 616.1e): no self-replacement or control, copy or face-up replacement exists yet,
     // which must come first (later: CR 616.1a–d).
     if (chosen === undefined)
-      return { kind: "choose", player: affectedPlayer(state, replaced.event), options: candidates.map((c) => c.ref) };
+      return {
+        kind: "choose",
+        player: affectedPlayer(state, replaced.event),
+        for: key,
+        options: candidates.map((c) => c.ref),
+      };
     applied.push(chosen.ref);
     replaced = replaceWith(state, chosen, replaced);
   }
@@ -91,6 +113,11 @@ function regeneration(state: GameState, event: SingleEvent): Candidate[] {
   return [{ kind: "regeneration", ref: { kind: "regenerationShield", object: event.object }, object: event.object }];
 }
 
+/** What a choice for this event is for: the object it affects. */
+function affectedKey(event: SingleEvent): string {
+  return "object" in event ? event.object : event.kind;
+}
+
 /** Who chooses among replacements for this event: the affected object's controller, or its owner (CR 616.1). */
 function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
   switch (event.kind) {
@@ -103,6 +130,7 @@ function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
       return controllerOf(state, event.object);
     case "playLand":
       return event.player;
+    case "damagePrevented":
     case "draw":
     case "dealDamage":
     case "gainLife":
@@ -148,6 +176,7 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
     case "addMana":
     case "shuffle":
     case "regenerate":
+    case "damagePrevented":
       return null;
   }
 }
@@ -164,6 +193,9 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
     }
     case "graveyardToLibrary":
       return move.to.zone === "graveyard";
+    // Prevention, read for damage (`damage-replacements.ts`), never for a move.
+    case "preventDamageToYou":
+      return false;
   }
 }
 
@@ -208,6 +240,8 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
         after: [{ kind: "shuffle", player: owner }],
       };
     }
+    case "preventDamageToYou":
+      throw new Error("a prevention effect never replaces a move");
   }
 }
 
@@ -238,6 +272,7 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "addMana":
     case "shuffle":
     case "regenerate":
+    case "damagePrevented":
       throw new Error(`${event.kind} moves no card`);
   }
 }
