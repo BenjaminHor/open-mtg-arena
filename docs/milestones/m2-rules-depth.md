@@ -60,7 +60,22 @@ cards), and those cards bring their scenarios.
 discard (chosen and at random), mill, search a library and shuffle, reveal, look at the top cards and reorder, return
 to hand or to the battlefield, tap and untap, gain and lose life, counter target spell (CR 701.6), damage to each
 creature or player, amounts from a count ("for each Swamp you control"), and mana of a chosen color. *Accept:*
-scenarios per effect; the cards that become playable are scripted.
+scenarios per effect; the cards that become playable are scripted. Split in three (2026-11-20), by what the 50 cards'
+Oracle text needs:
+- **M2-05a Removal, counters and {T} abilities:** destroy (one, or all that fit), exile, return to hand, put on top of
+  the library, tap, counter target spell, gain life, and {T} in the costs of abilities that use the stack. Divine
+  Verdict, Doom Blade, Deathmark, Assassinate, Royal Assassin, Shatter, Naturalize, Solemn Offering, Planar Cleansing,
+  Tempest of Light, Celestial Purge, Undead Slayer, Unsummon, Excommunicate, Blinding Mage, Cancel, Essence Scatter,
+  Flashfreeze, Negate; with Ornithopter and Rod of Ruin (already playable) as artifacts to target.
+- **M2-05b Cards moving:** draw (and draw several, CR 121.2), discard chosen and at random, reveal, mill, search a
+  library and shuffle, look at the top and reorder, return from a graveyard, put onto the battlefield from hand.
+  Divination, Mind Spring, Sign in Blood, Merfolk Looter, Mind Rot, Mind Shatter, Duress, Burning Inquiry, Tome Scour,
+  Traumatize, Ponder, Fabricate, Diabolic Tutor, Rampant Growth, Terramorphic Expanse, Disentomb, Nature's Spiral,
+  Haunting Echoes, Elvish Piper.
+- **M2-05c Life, damage to many, mana:** gain and lose life, damage to each creature or player, amounts from a count,
+  each opponent sacrificing of their choice, mana of a chosen color, spending restrictions. Angel's Mercy, Bountiful
+  Harvest, Acolyte of Xathrid, Consume Spirit, Tendrils of Corruption, Seismic Strike, Earthquake, Pyroclasm, Windstorm,
+  Goblin Artillery, Yawning Fissure, Birds of Paradise.
 
 **M2-06 Keywords and attack or block restrictions (CR 702, 506–511).** First strike and double strike with the extra
 damage step (CR 510.4), trample (with lethal damage, CR 702.19), deathtouch, lifelink, vigilance, defender, landwalk,

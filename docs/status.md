@@ -26,8 +26,24 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     choose targets with the same decisions as they're put on the stack (CR 603.3d); protection and shroud (M2-06)
     and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
     `playerOrPlaneswalker`.
-- Next: M2-05 Effects and keyword actions (CR 701). Plan first (from the Oracle text of the 50 cards it makes
-  playable), split it if it's too big for one task, and have the rules-judge read the plan before code.
+- M2-05 Effects and keyword actions: split in three by the 50 cards' Oracle text (the spec lists the cards).
+  - M2-05a Removal, counters and {T} abilities (now, plan 2026-11-20). CR 701.8 (destroy), 701.6 (counter), 406
+    (exile), 119.3 (gain life), 701.26a (tap), 602.5a, 601.2h.
+    - New effect ops: `destroy` (one subject), `destroyAll` (every permanent that fits an `ObjectFilter`, one
+      simultaneous event, CR 701.8), `exile`, `returnToHand` and `putOnTopOfLibrary` (the owner's, CR 400.3; all
+      zone changes through the pipeline), `tap`, `counter` (CR 701.6a: the spell goes to its owner's graveyard; a new
+      `counter` event so "can't be countered" and counter replacements have a place, later), `gainLife` (a new pipeline
+      event, CR 119.3; lifelink later). Each op takes a subject, so "this" or a target.
+    - {T} in the cost of an ability that uses the stack (Royal Assassin, Blinding Mage, Undead Slayer, Rod of Ruin): the
+      same checks as a mana ability's {T} (untapped, CR 107.5; a creature controlled since the turn began, CR 602.5a),
+      and the tap happens with the rest of the payment (CR 601.2h), rechecked, so a cancel has nothing to undo.
+    - Cards: the 19 listed in the spec, plus Ornithopter and Rod of Ruin as artifacts to target. Enchantments aren't in
+      the pool until M2-07, so the enchantment half of Naturalize, Solemn Offering and Tempest of Light is unit-tested
+      with a test card until then.
+    - Tests: scenarios per card with negative cases (wrong target kind, color, tapped or not, attacking or blocking;
+      a countered spell going to its owner's graveyard; counter target spell can't target an ability); unit tests for
+      what scenarios can't reach.
+  - M2-05b Cards moving, and M2-05c Life, damage to many, mana: after M2-05a, each planned the same way.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
