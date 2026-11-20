@@ -12,6 +12,8 @@ export type TriggerEvent = {
   player: PlayerId | null;
   /** The object the event was about: the creature that entered. */
   object: ObjectId | null;
+  /** How much, for "that much": the life gained (CR 119.3). */
+  amount: number | null;
 };
 
 /**

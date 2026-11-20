@@ -40,6 +40,7 @@ T2 moves: Forest, p1's hand -> battlefield
 T2 p1 plays p1:Forest
 T2 taps: p1:Forest
 T2 p1 adds {G} (p1:Forest)
+T2 p1 taps p1:Forest for mana
 T2 moves: Llanowar Elves, p1's hand -> stack
 T2 p1 casts Llanowar Elves
 T2 resolves: Llanowar Elves
@@ -52,6 +53,7 @@ T3 moves: Swamp, p2's hand -> battlefield
 T3 p2 plays p2:Swamp
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 moves: Air Elemental, p2's hand -> stack
 T3 p2 cancels casting Air Elemental
 T3 p2's unspent {B} empties
@@ -66,21 +68,26 @@ T4 moves: Berserkers of Blood Ridge, p1's library -> p1's hand
 T4 p1 draws
 T4 taps: p1:Forest
 T4 p1 adds {G} (p1:Forest)
+T4 p1 taps p1:Forest for mana
 T4 taps: p1:Llanowar Elves
 T4 p1 adds {G} (p1:Llanowar Elves)
+T4 p1 taps p1:Llanowar Elves for mana
 T4 p1's unspent {G}{G} empties
 T4 moves: Forest, p1's hand -> battlefield
 T4 p1 plays p1:Forest#2
 T4 moves: Sparkmage Apprentice, p1's hand -> stack
 T4 taps: p1:Forest#2
 T4 p1 adds {G} (p1:Forest#2)
+T4 p1 taps p1:Forest#2 for mana
 T4 p1 cancels casting Sparkmage Apprentice
 T4 moves: Sparkmage Apprentice, p1's hand -> stack
 T4 taps: p1:Forest#2
 T4 p1 adds {G} (p1:Forest#2)
+T4 p1 taps p1:Forest#2 for mana
 T4 p1 cancels casting Sparkmage Apprentice
 T4 taps: p1:Forest#2
 T4 p1 adds {G} (p1:Forest#2)
+T4 p1 taps p1:Forest#2 for mana
 T4 p1's unspent {G} empties
 T4 p1 attack: nothing
 T5 turn 5 begins (p2)
@@ -89,19 +96,23 @@ T5 moves: Divination, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Swamp
 T5 p2 adds {B} (p2:Swamp)
+T5 p2 taps p2:Swamp for mana
 T5 p2's unspent {B} empties
 T5 moves: Island, p2's hand -> battlefield
 T5 p2 plays p2:Island
 T5 moves: Howling Banshee, p2's hand -> stack
 T5 taps: p2:Island
 T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
 T5 p2 cancels casting Howling Banshee
 T5 moves: Air Elemental, p2's hand -> stack
 T5 taps: p2:Island
 T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
 T5 p2 cancels casting Air Elemental
 T5 taps: p2:Island
 T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
 T5 moves: Royal Assassin, p2's hand -> stack
 T5 p2 cancels casting Royal Assassin
 T5 moves: Air Elemental, p2's hand -> stack
@@ -118,10 +129,13 @@ T6 untaps: p1:Llanowar Elves
 T6 untaps: p1:Forest#2
 T6 taps: p1:Forest#1
 T6 p1 adds {G} (p1:Forest#1)
+T6 p1 taps p1:Forest#1 for mana
 T6 taps: p1:Forest#2
 T6 p1 adds {G} (p1:Forest#2)
+T6 p1 taps p1:Forest#2 for mana
 T6 taps: p1:Llanowar Elves
 T6 p1 adds {G} (p1:Llanowar Elves)
+T6 p1 taps p1:Llanowar Elves for mana
 T6 p1's unspent {G}{G}{G} empties
 T6 moves: Lightning Bolt, p1's library -> p1's hand
 T6 p1 draws
@@ -136,9 +150,11 @@ T6 p1 plays p1:Mountain
 T6 moves: Berserkers of Blood Ridge, p1's hand -> stack
 T6 taps: p1:Mountain
 T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
 T6 p1 cancels casting Berserkers of Blood Ridge
 T6 taps: p1:Mountain
 T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
 T6 moves: Lightning Bolt, p1's hand -> stack
 T6 p1 casts Lightning Bolt
 T6 moves: Negate, p2's hand -> stack
@@ -159,8 +175,10 @@ T7 untaps: p2:Swamp
 T7 untaps: p2:Island
 T7 taps: p2:Island
 T7 p2 adds {U} (p2:Island)
+T7 p2 taps p2:Island for mana
 T7 taps: p2:Swamp
 T7 p2 adds {B} (p2:Swamp)
+T7 p2 taps p2:Swamp for mana
 T7 p2's unspent {U}{B} empties
 T7 moves: Doom Blade, p2's library -> p2's hand
 T7 p2 draws
@@ -169,9 +187,11 @@ T7 p2 plays p2:Island#2
 T7 moves: Howling Banshee, p2's hand -> stack
 T7 taps: p2:Island#2
 T7 p2 adds {U} (p2:Island#2)
+T7 p2 taps p2:Island#2 for mana
 T7 p2 cancels casting Howling Banshee
 T7 taps: p2:Island#2
 T7 p2 adds {U} (p2:Island#2)
+T7 p2 taps p2:Island#2 for mana
 T7 p2's unspent {U} empties
 T7 p2 attack: nothing
 T7 moves: Royal Assassin, p2's hand -> stack
@@ -182,18 +202,22 @@ T8 untaps: p1:Forest#2
 T8 untaps: p1:Mountain
 T8 taps: p1:Mountain
 T8 p1 adds {R} (p1:Mountain)
+T8 p1 taps p1:Mountain for mana
 T8 p1's unspent {R} empties
 T8 moves: Forest, p1's library -> p1's hand
 T8 p1 draws
 T8 taps: p1:Forest#2
 T8 p1 adds {G} (p1:Forest#2)
+T8 p1 taps p1:Forest#2 for mana
 T8 taps: p1:Forest#1
 T8 p1 adds {G} (p1:Forest#1)
+T8 p1 taps p1:Forest#1 for mana
 T8 p1's unspent {G}{G} empties
 T8 moves: Forest, p1's hand -> battlefield
 T8 p1 plays p1:Forest#3
 T8 taps: p1:Forest#3
 T8 p1 adds {G} (p1:Forest#3)
+T8 p1 taps p1:Forest#3 for mana
 T8 p1's unspent {G} empties
 T8 p1 attack: nothing
 T9 turn 9 begins (p2)
@@ -202,6 +226,7 @@ T9 untaps: p2:Island#1
 T9 untaps: p2:Island#2
 T9 taps: p2:Island#1
 T9 p2 adds {U} (p2:Island#1)
+T9 p2 taps p2:Island#1 for mana
 T9 p2's unspent {U} empties
 T9 moves: Island, p2's library -> p2's hand
 T9 p2 draws
@@ -210,10 +235,13 @@ T9 p2 plays p2:Swamp#2
 T9 moves: Divination, p2's hand -> stack
 T9 taps: p2:Swamp#2
 T9 p2 adds {B} (p2:Swamp#2)
+T9 p2 taps p2:Swamp#2 for mana
 T9 taps: p2:Swamp#1
 T9 p2 adds {B} (p2:Swamp#1)
+T9 p2 taps p2:Swamp#1 for mana
 T9 taps: p2:Island#2
 T9 p2 adds {U} (p2:Island#2)
+T9 p2 taps p2:Island#2 for mana
 T9 p2 casts Divination
 T9 moves: Phantom Warrior, p2's library -> p2's hand
 T9 p2 draws
@@ -237,22 +265,27 @@ T10 untaps: p1:Mountain
 T10 untaps: p1:Forest#3
 T10 taps: p1:Forest#2
 T10 p1 adds {G} (p1:Forest#2)
+T10 p1 taps p1:Forest#2 for mana
 T10 p1's unspent {G} empties
 T10 moves: Forest, p1's library -> p1's hand
 T10 p1 draws
 T10 taps: p1:Forest#3
 T10 p1 adds {G} (p1:Forest#3)
+T10 p1 taps p1:Forest#3 for mana
 T10 taps: p1:Mountain
 T10 p1 adds {R} (p1:Mountain)
+T10 p1 taps p1:Mountain for mana
 T10 moves: Forest, p1's hand -> battlefield
 T10 p1 plays p1:Forest#4
 T10 moves: Berserkers of Blood Ridge, p1's hand -> stack
 T10 p1 cancels casting Berserkers of Blood Ridge
 T10 taps: p1:Forest#1
 T10 p1 adds {G} (p1:Forest#1)
+T10 p1 taps p1:Forest#1 for mana
 T10 p1's unspent {R}{G}{G} empties
 T10 taps: p1:Forest#4
 T10 p1 adds {G} (p1:Forest#4)
+T10 p1 taps p1:Forest#4 for mana
 T10 p1's unspent {G} empties
 T10 p1 attack: nothing
 T11 turn 11 begins (p2)
@@ -262,25 +295,32 @@ T11 untaps: p2:Island#2
 T11 untaps: p2:Swamp#2
 T11 taps: p2:Swamp#1
 T11 p2 adds {B} (p2:Swamp#1)
+T11 p2 taps p2:Swamp#1 for mana
 T11 p2's unspent {B} empties
 T11 moves: Horned Turtle, p2's library -> p2's hand
 T11 p2 draws
 T11 moves: Howling Banshee, p2's hand -> stack
 T11 taps: p2:Island#2
 T11 p2 adds {U} (p2:Island#2)
+T11 p2 taps p2:Island#2 for mana
 T11 taps: p2:Swamp#2
 T11 p2 adds {B} (p2:Swamp#2)
+T11 p2 taps p2:Swamp#2 for mana
 T11 taps: p2:Island#1
 T11 p2 adds {U} (p2:Island#1)
+T11 p2 taps p2:Island#1 for mana
 T11 p2 cancels casting Howling Banshee
 T11 p2 attack: nothing
 T11 taps: p2:Island#2
 T11 p2 adds {U} (p2:Island#2)
+T11 p2 taps p2:Island#2 for mana
 T11 p2's unspent {U} empties
 T11 taps: p2:Swamp#2
 T11 p2 adds {B} (p2:Swamp#2)
+T11 p2 taps p2:Swamp#2 for mana
 T11 taps: p2:Island#1
 T11 p2 adds {U} (p2:Island#1)
+T11 p2 taps p2:Island#1 for mana
 T11 p2's unspent {U}{B} empties
 T11 moves: Royal Assassin, p2's hand -> p2's graveyard
 T11 p2 discards Royal Assassin
@@ -292,22 +332,28 @@ T12 untaps: p1:Forest#3
 T12 untaps: p1:Forest#4
 T12 taps: p1:Forest#1
 T12 p1 adds {G} (p1:Forest#1)
+T12 p1 taps p1:Forest#1 for mana
 T12 taps: p1:Forest#2
 T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
 T12 taps: p1:Forest#3
 T12 p1 adds {G} (p1:Forest#3)
+T12 p1 taps p1:Forest#3 for mana
 T12 p1's unspent {G}{G}{G} empties
 T12 moves: Deadly Recluse, p1's library -> p1's hand
 T12 p1 draws
 T12 taps: p1:Mountain
 T12 p1 adds {R} (p1:Mountain)
+T12 p1 taps p1:Mountain for mana
 T12 p1's unspent {R} empties
 T12 moves: Sparkmage Apprentice, p1's hand -> stack
 T12 taps: p1:Forest#4
 T12 p1 adds {G} (p1:Forest#4)
+T12 p1 taps p1:Forest#4 for mana
 T12 p1 cancels casting Sparkmage Apprentice
 T12 taps: p1:Forest#4
 T12 p1 adds {G} (p1:Forest#4)
+T12 p1 taps p1:Forest#4 for mana
 T12 p1's unspent {G} empties
 T12 p1 attack: nothing
 T12 moves: Ball Lightning, p1's hand -> stack
@@ -323,15 +369,20 @@ T13 moves: Island, p2's hand -> battlefield
 T13 p2 plays p2:Island#3
 T13 taps: p2:Swamp#2
 T13 p2 adds {B} (p2:Swamp#2)
+T13 p2 taps p2:Swamp#2 for mana
 T13 moves: Howling Banshee, p2's hand -> stack
 T13 taps: p2:Swamp#1
 T13 p2 adds {B} (p2:Swamp#1)
+T13 p2 taps p2:Swamp#1 for mana
 T13 taps: p2:Island#1
 T13 p2 adds {U} (p2:Island#1)
+T13 p2 taps p2:Island#1 for mana
 T13 taps: p2:Island#3
 T13 p2 adds {U} (p2:Island#3)
+T13 p2 taps p2:Island#3 for mana
 T13 taps: p2:Island#2
 T13 p2 adds {U} (p2:Island#2)
+T13 p2 taps p2:Island#2 for mana
 T13 p2 casts Howling Banshee
 T13 resolves: Howling Banshee
 T13 moves: Howling Banshee, stack -> battlefield

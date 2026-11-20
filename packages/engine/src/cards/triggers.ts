@@ -27,7 +27,38 @@ export type TriggerCondition =
   /** "At the beginning of [the/each player's] [step]" (CR 603.2b): every such step, whoever's turn it is. */
   | { kind: "beginningOfStep"; step: Step }
   /** "Whenever this creature attacks": declared as an attacker (CR 508.3a). */
-  | { kind: "selfAttacks" };
+  | { kind: "selfAttacks" }
+  /**
+   * "Whenever [a player / you / an opponent] casts a [filter] spell": as the spell becomes cast (CR 601.2i), matched
+   * against it on the stack. The filter's `controller` is the caster, relative to this ability's controller. A spell
+   * put onto the stack or the battlefield without being cast doesn't trigger it.
+   */
+  | { kind: "spellCast"; filter: ObjectFilter }
+  /** "Whenever [a player / you / an opponent] draws a card": each card drawn (CR 121.1, 603.2c). */
+  | { kind: "playerDraws"; player: PlayerRelation }
+  /** "Whenever [a player / you / an opponent] discards a card": each card discarded (CR 701.9a, 603.2c). */
+  | { kind: "playerDiscards"; player: PlayerRelation }
+  /**
+   * "Whenever a player taps a land for mana": each time a land's mana ability with {T} in its cost resolves and produces
+   * mana (CR 106.12, 106.12a). "That player" is who activated it.
+   */
+  | { kind: "landTappedForMana" }
+  /**
+   * "Whenever this creature deals [combat] damage to [a player / an opponent]": each damage event from it to such a
+   * player (CR 120.2, 510.2). "That player" is the player dealt damage.
+   */
+  | { kind: "selfDealsDamageToPlayer"; player: PlayerRelation; combatOnly: boolean }
+  /**
+   * "Whenever [you / a player] gain life": once per life-gain event, whatever the amount (CR 119.9; each lifelink source
+   * is its own event). "That much" is the amount gained.
+   */
+  | { kind: "playerGainsLife"; player: PlayerRelation };
+
+/**
+ * Which players an event about a player counts for, relative to the ability's controller: anyone, "you", or "an
+ * opponent" (CR 102.2; later: CR 102.3 for teams).
+ */
+export type PlayerRelation = "anyPlayer" | "you" | "opponent";
 
 /** An "intervening if" condition (CR 603.4), about the ability's source. */
 export type TriggerCheck = { kind: "sourceUntapped" };

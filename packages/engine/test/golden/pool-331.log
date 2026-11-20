@@ -1,0 +1,138 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Kalonian Behemoth, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Kalonian Behemoth, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Fireball, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Zephyr Sprite, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Vampire Aristocrat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Coral Merfolk, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Acidic Slime, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Kalonian Behemoth, p1's hand -> p1's library
+T0 moves: Kalonian Behemoth, p1's hand -> p1's library
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Fireball, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Swamp, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Horned Turtle, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Unsummon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Demon's Horn, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 moves: Forest, p1's hand -> battlefield
+T1 p1 plays p1:Forest
+T1 taps: p1:Forest
+T1 p1 adds {G} (p1:Forest)
+T1 p1 taps p1:Forest for mana
+T1 p1's unspent {G} empties
+T1 p1 attack: nothing
+T1 moves: Horned Turtle, p1's hand -> stack
+T1 p1 cancels casting Horned Turtle
+T1 moves: Horned Turtle, p1's hand -> stack
+T1 p1 cancels casting Horned Turtle
+T2 turn 2 begins (p2)
+T2 moves: Razorfoot Griffin, p2's library -> p2's hand
+T2 p2 draws
+T2 p2 attack: nothing
+T2 moves: Zephyr Sprite, p2's hand -> stack
+T2 p2 cancels casting Zephyr Sprite
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Mountain, p2's hand -> battlefield
+T2 p2 plays p2:Mountain
+T2 taps: p2:Mountain
+T2 p2 adds {R} (p2:Mountain)
+T2 p2 taps p2:Mountain for mana
+T2 p2's unspent {R} empties
+T3 turn 3 begins (p1)
+T3 untaps: p1:Forest
+T3 moves: Divination, p1's library -> p1's hand
+T3 p1 draws
+T3 p1 attack: nothing
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 moves: Demon's Horn, p1's hand -> stack
+T3 p1 cancels casting Demon's Horn
+T3 moves: Swamp, p1's hand -> battlefield
+T3 p1 plays p1:Swamp
+T3 p1's unspent {G} empties
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1's unspent {B} empties
+T4 turn 4 begins (p2)
+T4 untaps: p2:Mountain
+T4 moves: Wurm's Tooth, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Acidic Slime, p2's hand -> stack
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
+T4 p2 cancels casting Acidic Slime
+T4 moves: Island, p2's hand -> battlefield
+T4 p2 plays p2:Island
+T4 taps: p2:Island
+T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Wurm's Tooth, p2's hand -> stack
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
+T4 p2 casts Wurm's Tooth
+T4 resolves: Wurm's Tooth
+T4 moves: Wurm's Tooth, stack -> battlefield
+T4 moves: Zephyr Sprite, p2's hand -> stack
+T4 p2 cancels casting Zephyr Sprite
+T4 p2 attack: nothing
+T4 moves: Razorfoot Griffin, p2's hand -> stack
+T4 p2 cancels casting Razorfoot Griffin
+T4 moves: Acidic Slime, p2's hand -> stack
+T4 p2 cancels casting Acidic Slime
+T5 turn 5 begins (p1)
+T5 untaps: p1:Forest
+T5 untaps: p1:Swamp

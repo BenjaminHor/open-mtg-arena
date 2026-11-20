@@ -53,7 +53,9 @@ spell resolves (CR 400.7); a UI that wants to name the card ("Giant Growth +3/+3
 triggers that "look back in time" (CR 603.10), delayed triggers, and state triggers.
 *Built (M2-07a, D-076):* entering, beginning-of-step and attack triggers, the intervening if, "you may", APNAP
 ordering, and last known information of a card leaving the battlefield (`GameState.lastKnown`, CR 608.2h).
-*Still to come:* casting, drawing, discarding, damage, life gain and mana triggers (M2-07b); delayed triggers
+*Built (M2-07b, D-077):* casting, drawing, discarding, tapping a land for mana, damage to a player and life gain
+triggers; "that much"; "that player controls" in a target; identical triggers put on unasked; cleanup priority for
+triggers (CR 514.3a). *Still to come:* triggers on activating abilities and declaring blockers; delayed triggers
 (CR 603.7) and "becomes the target" (M2-07c), which need their own `AbilityRef` kind and a pending trigger whose source
 isn't a permanent; leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
 `lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through

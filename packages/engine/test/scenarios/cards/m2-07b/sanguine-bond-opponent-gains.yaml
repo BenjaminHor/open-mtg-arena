@@ -1,0 +1,16 @@
+name: Sanguine Bond doesn't trigger when an opponent gains life
+rules: [CR 603.2]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Sanguine Bond]
+  p2:
+    battlefield: [Plains, Plains, Plains, Plains]
+    hand: [Angel's Mercy]
+steps:
+  - p2 cast: Angel's Mercy
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.life: 27
+      stack: []

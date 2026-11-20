@@ -84,6 +84,26 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it('reports "that player controls" in a target whose event has no player, or in an effect', () => {
+    const red: TargetSpec = { kind: "permanent", filter: { colors: ["R"], controller: "triggeringPlayer" } };
+    const enters: TriggeredAbilityDef = { when: { kind: "selfEnters" }, targets: [red], effects: [] };
+    const gains: TriggeredAbilityDef = {
+      when: { kind: "playerGainsLife", player: "you" },
+      targets: [],
+      effects: [{ op: "destroyAll", filter: { controller: "triggeringPlayer" } }],
+    };
+    const def: CardDef = {
+      name: "Furnace Whelp",
+      oracle: whelp.oracleText,
+      keywords: ["flying"],
+      triggers: [enters, gains],
+    };
+    expect(definitionProblems([def], [whelp])).toStrictEqual([
+      'Furnace Whelp trigger 1: its event has no "that player"',
+      'Furnace Whelp trigger 2: only a target can be limited to what "that player" controls',
+    ]);
+  });
+
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);
@@ -178,7 +198,7 @@ describe("definitionProblems", () => {
       spell: { targets: [], effects },
     });
     expect(definitionProblems([def([{ op: "put", of: "found", into: "hand" }])], [tutor])).toStrictEqual([
-      "Diabolic Tutor: put names the cards found, but no search comes before it",
+      "Diabolic Tutor: put names the cards found, but no search or reveal comes before it",
     ]);
     expect(
       definitionProblems(

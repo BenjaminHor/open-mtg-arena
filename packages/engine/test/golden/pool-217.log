@@ -163,6 +163,7 @@ T2 moves: Plains, p2's hand -> battlefield
 T2 p2 plays p2:Plains
 T2 taps: p2:Plains
 T2 p2 adds {W} (p2:Plains)
+T2 p2 taps p2:Plains for mana
 T2 p2's unspent {W} empties
 T3 turn 3 begins (p1)
 T3 moves: Diabolic Tutor, p1's library -> p1's hand
@@ -185,14 +186,17 @@ T4 p2 draws
 T4 moves: Shivan Dragon, p2's hand -> stack
 T4 taps: p2:Plains
 T4 p2 adds {W} (p2:Plains)
+T4 p2 taps p2:Plains for mana
 T4 p2 cancels casting Shivan Dragon
 T4 moves: Shivan Dragon, p2's hand -> stack
 T4 taps: p2:Plains
 T4 p2 adds {W} (p2:Plains)
+T4 p2 taps p2:Plains for mana
 T4 p2 cancels casting Shivan Dragon
 T4 p2 attack: nothing
 T4 taps: p2:Plains
 T4 p2 adds {W} (p2:Plains)
+T4 p2 taps p2:Plains for mana
 T4 p2's unspent {W} empties
 T4 moves: Shivan Dragon, p2's hand -> stack
 T4 p2 cancels casting Shivan Dragon
@@ -208,6 +212,7 @@ T6 moves: Enormous Baloth, p2's library -> p2's hand
 T6 p2 draws
 T6 taps: p2:Plains
 T6 p2 adds {W} (p2:Plains)
+T6 p2 taps p2:Plains for mana
 T6 p2's unspent {W} empties
 T6 moves: Enormous Baloth, p2's hand -> stack
 T6 p2 cancels casting Enormous Baloth
@@ -215,6 +220,7 @@ T6 moves: Mountain, p2's hand -> battlefield
 T6 p2 plays p2:Mountain
 T6 taps: p2:Mountain
 T6 p2 adds {R} (p2:Mountain)
+T6 p2 taps p2:Mountain for mana
 T6 p2's unspent {R} empties
 T6 p2 attack: nothing
 T6 moves: Shivan Dragon, p2's hand -> stack
@@ -227,36 +233,43 @@ T7 p1 plays p1:Swamp
 T7 moves: Centaur Courser, p1's hand -> stack
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 p1 cancels casting Centaur Courser
 T7 p1 attack: nothing
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 p1's unspent {B} empties
 T8 turn 8 begins (p2)
 T8 untaps: p2:Plains
 T8 untaps: p2:Mountain
 T8 taps: p2:Mountain
 T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
 T8 p2's unspent {R} empties
 T8 moves: Silvercoat Lion, p2's library -> p2's hand
 T8 p2 draws
 T8 taps: p2:Plains
 T8 p2 adds {W} (p2:Plains)
+T8 p2 taps p2:Plains for mana
 T8 p2's unspent {W} empties
 T8 moves: Mountain, p2's hand -> battlefield
 T8 p2 plays p2:Mountain#2
 T8 moves: Shivan Dragon, p2's hand -> stack
 T8 taps: p2:Mountain#2
 T8 p2 adds {R} (p2:Mountain#2)
+T8 p2 taps p2:Mountain#2 for mana
 T8 p2 cancels casting Shivan Dragon
 T8 p2 attack: nothing
 T8 taps: p2:Mountain#2
 T8 p2 adds {R} (p2:Mountain#2)
+T8 p2 taps p2:Mountain#2 for mana
 T8 p2's unspent {R} empties
 T9 turn 9 begins (p1)
 T9 untaps: p1:Swamp
 T9 taps: p1:Swamp
 T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
 T9 p1's unspent {B} empties
 T9 moves: Plains, p1's library -> p1's hand
 T9 p1 draws
@@ -264,6 +277,7 @@ T9 moves: Forest, p1's hand -> battlefield
 T9 p1 plays p1:Forest
 T9 taps: p1:Forest
 T9 p1 adds {G} (p1:Forest)
+T9 p1 taps p1:Forest for mana
 T9 p1's unspent {G} empties
 T9 p1 attack: nothing
 T10 turn 10 begins (p2)
@@ -272,14 +286,17 @@ T10 untaps: p2:Mountain#1
 T10 untaps: p2:Mountain#2
 T10 taps: p2:Plains
 T10 p2 adds {W} (p2:Plains)
+T10 p2 taps p2:Plains for mana
 T10 p2's unspent {W} empties
 T10 moves: Ignite Disorder, p2's library -> p2's hand
 T10 p2 draws
 T10 taps: p2:Mountain#2
 T10 p2 adds {R} (p2:Mountain#2)
+T10 p2 taps p2:Mountain#2 for mana
 T10 p2's unspent {R} empties
 T10 taps: p2:Mountain#1
 T10 p2 adds {R} (p2:Mountain#1)
+T10 p2 taps p2:Mountain#1 for mana
 T10 p2's unspent {R} empties
 T10 p2 attack: nothing
 T10 moves: Shivan Dragon, p2's hand -> stack
@@ -291,10 +308,12 @@ T11 moves: Horned Turtle, p1's library -> p1's hand
 T11 p1 draws
 T11 taps: p1:Forest
 T11 p1 adds {G} (p1:Forest)
+T11 p1 taps p1:Forest for mana
 T11 p1's unspent {G} empties
 T11 p1 attack: nothing
 T11 taps: p1:Swamp
 T11 p1 adds {B} (p1:Swamp)
+T11 p1 taps p1:Swamp for mana
 T11 p1's unspent {B} empties
 T11 moves: Disorient, p1's hand -> p1's graveyard
 T11 p1 discards Disorient
@@ -304,13 +323,16 @@ T12 untaps: p2:Mountain#1
 T12 untaps: p2:Mountain#2
 T12 taps: p2:Mountain#1
 T12 p2 adds {R} (p2:Mountain#1)
+T12 p2 taps p2:Mountain#1 for mana
 T12 p2's unspent {R} empties
 T12 moves: Plains, p2's library -> p2's hand
 T12 p2 draws
 T12 taps: p2:Mountain#2
 T12 p2 adds {R} (p2:Mountain#2)
+T12 p2 taps p2:Mountain#2 for mana
 T12 taps: p2:Plains
 T12 p2 adds {W} (p2:Plains)
+T12 p2 taps p2:Plains for mana
 T12 p2's unspent {W}{R} empties
 T12 p2 attack: nothing
 T12 moves: Enormous Baloth, p2's hand -> stack
@@ -319,6 +341,7 @@ T12 moves: Plains, p2's hand -> battlefield
 T12 p2 plays p2:Plains#2
 T12 taps: p2:Plains#2
 T12 p2 adds {W} (p2:Plains#2)
+T12 p2 taps p2:Plains#2 for mana
 T12 moves: Silvercoat Lion, p2's hand -> stack
 T12 p2 cancels casting Silvercoat Lion
 T12 moves: Shivan Dragon, p2's hand -> stack
@@ -329,8 +352,10 @@ T13 untaps: p1:Swamp
 T13 untaps: p1:Forest
 T13 taps: p1:Swamp
 T13 p1 adds {B} (p1:Swamp)
+T13 p1 taps p1:Swamp for mana
 T13 taps: p1:Forest
 T13 p1 adds {G} (p1:Forest)
+T13 p1 taps p1:Forest for mana
 T13 p1's unspent {B}{G} empties
 T13 moves: Windstorm, p1's library -> p1's hand
 T13 p1 draws
@@ -338,6 +363,7 @@ T13 moves: Forest, p1's hand -> battlefield
 T13 p1 plays p1:Forest#2
 T13 taps: p1:Forest#2
 T13 p1 adds {G} (p1:Forest#2)
+T13 p1 taps p1:Forest#2 for mana
 T13 moves: Windstorm, p1's hand -> stack
 T13 p1 cancels casting Windstorm
 T13 moves: Windstorm, p1's hand -> stack
@@ -354,18 +380,22 @@ T14 untaps: p2:Mountain#2
 T14 untaps: p2:Plains#2
 T14 taps: p2:Mountain#1
 T14 p2 adds {R} (p2:Mountain#1)
+T14 p2 taps p2:Mountain#1 for mana
 T14 p2's unspent {R} empties
 T14 moves: Haunting Echoes, p2's library -> p2's hand
 T14 p2 draws
 T14 taps: p2:Plains#1
 T14 p2 adds {W} (p2:Plains#1)
+T14 p2 taps p2:Plains#1 for mana
 T14 p2's unspent {W} empties
 T14 taps: p2:Plains#2
 T14 p2 adds {W} (p2:Plains#2)
+T14 p2 taps p2:Plains#2 for mana
 T14 p2's unspent {W} empties
 T14 p2 attack: nothing
 T14 taps: p2:Mountain#2
 T14 p2 adds {R} (p2:Mountain#2)
+T14 p2 taps p2:Mountain#2 for mana
 T14 p2's unspent {R} empties
 T14 moves: Haunting Echoes, p2's hand -> stack
 T14 p2 cancels casting Haunting Echoes
@@ -377,17 +407,22 @@ T15 moves: Blinding Mage, p1's library -> p1's hand
 T15 p1 draws
 T15 taps: p1:Forest#1
 T15 p1 adds {G} (p1:Forest#1)
+T15 p1 taps p1:Forest#1 for mana
 T15 p1's unspent {G} empties
 T15 moves: Diabolic Tutor, p1's hand -> stack
 T15 taps: p1:Forest#2
 T15 p1 adds {G} (p1:Forest#2)
+T15 p1 taps p1:Forest#2 for mana
 T15 taps: p1:Swamp
 T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
 T15 p1 cancels casting Diabolic Tutor
 T15 taps: p1:Forest#2
 T15 p1 adds {G} (p1:Forest#2)
+T15 p1 taps p1:Forest#2 for mana
 T15 taps: p1:Swamp
 T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
 T15 moves: Diabolic Tutor, p1's hand -> stack
 T15 p1 cancels casting Diabolic Tutor
 T15 moves: Blinding Mage, p1's hand -> stack
@@ -404,6 +439,7 @@ T15 moves: Swamp, p1's hand -> battlefield
 T15 p1 plays p1:Swamp#2
 T15 taps: p1:Swamp#2
 T15 p1 adds {B} (p1:Swamp#2)
+T15 p1 taps p1:Swamp#2 for mana
 T15 p1's unspent {B} empties
 T16 turn 16 begins (p2)
 T16 untaps: p2:Plains#1
@@ -414,13 +450,17 @@ T16 moves: Craw Wurm, p2's library -> p2's hand
 T16 p2 draws
 T16 taps: p2:Mountain#1
 T16 p2 adds {R} (p2:Mountain#1)
+T16 p2 taps p2:Mountain#1 for mana
 T16 taps: p2:Plains#2
 T16 p2 adds {W} (p2:Plains#2)
+T16 p2 taps p2:Plains#2 for mana
 T16 p2's unspent {W}{R} empties
 T16 taps: p2:Plains#1
 T16 p2 adds {W} (p2:Plains#1)
+T16 p2 taps p2:Plains#1 for mana
 T16 taps: p2:Mountain#2
 T16 p2 adds {R} (p2:Mountain#2)
+T16 p2 taps p2:Mountain#2 for mana
 T16 p2's unspent {W}{R} empties
 T16 p2 attack: nothing
 T17 turn 17 begins (p1)
@@ -433,18 +473,23 @@ T17 p1 draws
 T17 p1 attack: nothing
 T17 taps: p1:Forest#1
 T17 p1 adds {G} (p1:Forest#1)
+T17 p1 taps p1:Forest#1 for mana
 T17 taps: p1:Swamp#1
 T17 p1 adds {B} (p1:Swamp#1)
+T17 p1 taps p1:Swamp#1 for mana
 T17 p1's unspent {B}{G} empties
 T17 taps: p1:Forest#2
 T17 p1 adds {G} (p1:Forest#2)
+T17 p1 taps p1:Forest#2 for mana
 T17 moves: Plains, p1's hand -> battlefield
 T17 p1 plays p1:Plains
 T17 moves: Blinding Mage, p1's hand -> stack
 T17 taps: p1:Swamp#2
 T17 p1 adds {B} (p1:Swamp#2)
+T17 p1 taps p1:Swamp#2 for mana
 T17 taps: p1:Plains
 T17 p1 adds {W} (p1:Plains)
+T17 p1 taps p1:Plains for mana
 T17 p1 casts Blinding Mage
 T17 resolves: Blinding Mage
 T17 moves: Blinding Mage, stack -> battlefield
@@ -465,11 +510,14 @@ T18 untaps: p2:Plains#2
 T18 moves: Ignite Disorder, p2's hand -> stack
 T18 taps: p2:Mountain#1
 T18 p2 adds {R} (p2:Mountain#1)
+T18 p2 taps p2:Mountain#1 for mana
 T18 taps: p2:Plains#2
 T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
 T18 p2 casts Ignite Disorder
 T18 taps: p2:Mountain#2
 T18 p2 adds {R} (p2:Mountain#2)
+T18 p2 taps p2:Mountain#2 for mana
 T18 moves: Doom Blade, p1's hand -> stack
 T18 p1 cancels casting Doom Blade
 T18 damage: Ignite Disorder -> p1:Blinding Mage 3
@@ -483,6 +531,7 @@ T18 moves: Swamp, p2's library -> p2's hand
 T18 p2 draws
 T18 taps: p2:Plains#1
 T18 p2 adds {W} (p2:Plains#1)
+T18 p2 taps p2:Plains#1 for mana
 T18 p2's unspent {W} empties
 T18 p2 attack: nothing
 T18 moves: Silvercoat Lion, p2's hand -> stack
@@ -497,6 +546,7 @@ T18 moves: Swamp, p2's hand -> battlefield
 T18 p2 plays p2:Swamp
 T18 taps: p2:Swamp
 T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
 T18 p2's unspent {B} empties
 T19 turn 19 begins (p1)
 T19 untaps: p1:Swamp#1
@@ -506,14 +556,19 @@ T19 untaps: p1:Swamp#2
 T19 untaps: p1:Plains
 T19 taps: p1:Plains
 T19 p1 adds {W} (p1:Plains)
+T19 p1 taps p1:Plains for mana
 T19 taps: p1:Forest#1
 T19 p1 adds {G} (p1:Forest#1)
+T19 p1 taps p1:Forest#1 for mana
 T19 taps: p1:Swamp#2
 T19 p1 adds {B} (p1:Swamp#2)
+T19 p1 taps p1:Swamp#2 for mana
 T19 taps: p1:Forest#2
 T19 p1 adds {G} (p1:Forest#2)
+T19 p1 taps p1:Forest#2 for mana
 T19 taps: p1:Swamp#1
 T19 p1 adds {B} (p1:Swamp#1)
+T19 p1 taps p1:Swamp#1 for mana
 T19 p1's unspent {W}{B}{B}{G}{G} empties
 T19 moves: Grizzly Bears, p1's library -> p1's hand
 T19 p1 draws
@@ -528,21 +583,26 @@ T20 untaps: p2:Plains#2
 T20 untaps: p2:Swamp
 T20 taps: p2:Swamp
 T20 p2 adds {B} (p2:Swamp)
+T20 p2 taps p2:Swamp for mana
 T20 p2's unspent {B} empties
 T20 moves: Diabolic Tutor, p2's library -> p2's hand
 T20 p2 draws
 T20 taps: p2:Mountain#2
 T20 p2 adds {R} (p2:Mountain#2)
+T20 p2 taps p2:Mountain#2 for mana
 T20 moves: Silvercoat Lion, p2's hand -> stack
 T20 taps: p2:Plains#2
 T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
 T20 taps: p2:Plains#1
 T20 p2 adds {W} (p2:Plains#1)
+T20 p2 taps p2:Plains#1 for mana
 T20 p2 casts Silvercoat Lion
 T20 resolves: Silvercoat Lion
 T20 moves: Silvercoat Lion, stack -> battlefield
 T20 taps: p2:Mountain#1
 T20 p2 adds {R} (p2:Mountain#1)
+T20 p2 taps p2:Mountain#1 for mana
 T20 moves: Shivan Dragon, p2's hand -> stack
 T20 p2 cancels casting Shivan Dragon
 T20 moves: Doom Blade, p1's hand -> stack
@@ -571,11 +631,14 @@ T21 moves: Island, p1's library -> p1's hand
 T21 p1 draws
 T21 taps: p1:Swamp#2
 T21 p1 adds {B} (p1:Swamp#2)
+T21 p1 taps p1:Swamp#2 for mana
 T21 moves: Doom Blade, p1's hand -> stack
 T21 taps: p1:Swamp#1
 T21 p1 adds {B} (p1:Swamp#1)
+T21 p1 taps p1:Swamp#1 for mana
 T21 taps: p1:Plains
 T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
 T21 p1 casts Doom Blade
 T21 destroyed: p2:Silvercoat Lion
 T21 moves: Silvercoat Lion, battlefield -> p2's graveyard
@@ -585,14 +648,18 @@ T21 p1's unspent {W} empties
 T21 moves: Centaur Courser, p1's hand -> stack
 T21 taps: p1:Forest#2
 T21 p1 adds {G} (p1:Forest#2)
+T21 p1 taps p1:Forest#2 for mana
 T21 taps: p1:Forest#1
 T21 p1 adds {G} (p1:Forest#1)
+T21 p1 taps p1:Forest#1 for mana
 T21 p1 cancels casting Centaur Courser
 T21 p1 attack: nothing
 T21 taps: p1:Forest#1
 T21 p1 adds {G} (p1:Forest#1)
+T21 p1 taps p1:Forest#1 for mana
 T21 taps: p1:Forest#2
 T21 p1 adds {G} (p1:Forest#2)
+T21 p1 taps p1:Forest#2 for mana
 T21 p1's unspent {G}{G} empties
 T21 moves: Centaur Courser, p1's hand -> stack
 T21 p1 cancels casting Centaur Courser
@@ -604,6 +671,7 @@ T21 moves: Island, p1's hand -> battlefield
 T21 p1 plays p1:Island
 T21 taps: p1:Island
 T21 p1 adds {U} (p1:Island)
+T21 p1 taps p1:Island for mana
 T21 moves: Horned Turtle, p1's hand -> stack
 T21 p1 cancels casting Horned Turtle
 T21 p1's unspent {U} empties
@@ -615,20 +683,25 @@ T22 untaps: p2:Plains#2
 T22 untaps: p2:Swamp
 T22 taps: p2:Swamp
 T22 p2 adds {B} (p2:Swamp)
+T22 p2 taps p2:Swamp for mana
 T22 taps: p2:Mountain#2
 T22 p2 adds {R} (p2:Mountain#2)
+T22 p2 taps p2:Mountain#2 for mana
 T22 p2's unspent {B}{R} empties
 T22 moves: Stormfront Pegasus, p2's library -> p2's hand
 T22 p2 draws
 T22 p2 attack: nothing
 T22 taps: p2:Mountain#1
 T22 p2 adds {R} (p2:Mountain#1)
+T22 p2 taps p2:Mountain#1 for mana
 T22 moves: Stormfront Pegasus, p2's hand -> stack
 T22 taps: p2:Plains#2
 T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
 T22 p2 casts Stormfront Pegasus
 T22 taps: p2:Plains#1
 T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
 T22 resolves: Stormfront Pegasus
 T22 moves: Stormfront Pegasus, stack -> battlefield
 T22 moves: Diabolic Tutor, p2's hand -> stack
@@ -643,21 +716,27 @@ T23 untaps: p1:Plains
 T23 untaps: p1:Island
 T23 taps: p1:Plains
 T23 p1 adds {W} (p1:Plains)
+T23 p1 taps p1:Plains for mana
 T23 p1's unspent {W} empties
 T23 moves: Lava Axe, p1's library -> p1's hand
 T23 p1 draws
 T23 taps: p1:Forest#2
 T23 p1 adds {G} (p1:Forest#2)
+T23 p1 taps p1:Forest#2 for mana
 T23 p1's unspent {G} empties
 T23 moves: Centaur Courser, p1's hand -> stack
 T23 taps: p1:Swamp#2
 T23 p1 adds {B} (p1:Swamp#2)
+T23 p1 taps p1:Swamp#2 for mana
 T23 taps: p1:Island
 T23 p1 adds {U} (p1:Island)
+T23 p1 taps p1:Island for mana
 T23 taps: p1:Forest#1
 T23 p1 adds {G} (p1:Forest#1)
+T23 p1 taps p1:Forest#1 for mana
 T23 taps: p1:Swamp#1
 T23 p1 adds {B} (p1:Swamp#1)
+T23 p1 taps p1:Swamp#1 for mana
 T23 p1 casts Centaur Courser
 T23 resolves: Centaur Courser
 T23 moves: Centaur Courser, stack -> battlefield
@@ -671,25 +750,31 @@ T24 untaps: p2:Plains#2
 T24 untaps: p2:Swamp
 T24 taps: p2:Plains#2
 T24 p2 adds {W} (p2:Plains#2)
+T24 p2 taps p2:Plains#2 for mana
 T24 p2's unspent {W} empties
 T24 moves: Mountain, p2's library -> p2's hand
 T24 p2 draws
 T24 taps: p2:Swamp
 T24 p2 adds {B} (p2:Swamp)
+T24 p2 taps p2:Swamp for mana
 T24 taps: p2:Plains#1
 T24 p2 adds {W} (p2:Plains#1)
+T24 p2 taps p2:Plains#1 for mana
 T24 p2's unspent {W}{B} empties
 T24 moves: Haunting Echoes, p2's hand -> stack
 T24 p2 cancels casting Haunting Echoes
 T24 taps: p2:Mountain#2
 T24 p2 adds {R} (p2:Mountain#2)
+T24 p2 taps p2:Mountain#2 for mana
 T24 taps: p2:Mountain#1
 T24 p2 adds {R} (p2:Mountain#1)
+T24 p2 taps p2:Mountain#1 for mana
 T24 moves: Mountain, p2's hand -> battlefield
 T24 p2 plays p2:Mountain#3
 T24 p2's unspent {R}{R} empties
 T24 taps: p2:Mountain#3
 T24 p2 adds {R} (p2:Mountain#3)
+T24 p2 taps p2:Mountain#3 for mana
 T24 p2's unspent {R} empties
 T24 taps: p2:Stormfront Pegasus
 T24 p2 attack: p2:Stormfront Pegasus -> p1
@@ -705,21 +790,27 @@ T25 untaps: p1:Plains
 T25 untaps: p1:Island
 T25 taps: p1:Forest#1
 T25 p1 adds {G} (p1:Forest#1)
+T25 p1 taps p1:Forest#1 for mana
 T25 p1's unspent {G} empties
 T25 moves: Zephyr Sprite, p1's library -> p1's hand
 T25 p1 draws
 T25 moves: Disentomb, p1's hand -> stack
 T25 taps: p1:Plains
 T25 p1 adds {W} (p1:Plains)
+T25 p1 taps p1:Plains for mana
 T25 taps: p1:Forest#2
 T25 p1 adds {G} (p1:Forest#2)
+T25 p1 taps p1:Forest#2 for mana
 T25 taps: p1:Swamp#1
 T25 p1 adds {B} (p1:Swamp#1)
+T25 p1 taps p1:Swamp#1 for mana
 T25 p1 casts Disentomb
 T25 taps: p1:Swamp#2
 T25 p1 adds {B} (p1:Swamp#2)
+T25 p1 taps p1:Swamp#2 for mana
 T25 taps: p1:Island
 T25 p1 adds {U} (p1:Island)
+T25 p1 taps p1:Island for mana
 T25 moves: Blinding Mage, p1's graveyard -> p1's hand
 T25 resolves: Disentomb
 T25 moves: Disentomb, stack -> p1's graveyard

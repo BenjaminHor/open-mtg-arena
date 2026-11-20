@@ -111,6 +111,7 @@ T1 moves: Mountain, p1's hand -> battlefield
 T1 p1 plays p1:Mountain
 T1 taps: p1:Mountain
 T1 p1 adds {R} (p1:Mountain)
+T1 p1 taps p1:Mountain for mana
 T1 moves: Llanowar Elves, p1's hand -> stack
 T1 p1 cancels casting Llanowar Elves
 T1 moves: Coral Merfolk, p1's hand -> stack
@@ -135,22 +136,26 @@ T2 p2 attack: nothing
 T2 moves: Traumatize, p2's hand -> stack
 T2 taps: p2:Mountain
 T2 p2 adds {R} (p2:Mountain)
+T2 p2 taps p2:Mountain for mana
 T2 p2 cancels casting Traumatize
 T3 turn 3 begins (p1)
 T3 untaps: p1:Mountain
 T3 taps: p1:Mountain
 T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
 T3 p1's unspent {R} empties
 T3 moves: Siege Mastodon, p1's library -> p1's hand
 T3 p1 draws
 T3 taps: p2:Mountain
 T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
 T3 p2's unspent {R} empties
 T3 moves: Swamp, p1's hand -> battlefield
 T3 p1 plays p1:Swamp
 T3 p1 attack: nothing
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1's unspent {B} empties
 T4 turn 4 begins (p2)
 T4 untaps: p2:Mountain
@@ -158,6 +163,7 @@ T4 moves: Cancel, p2's library -> p2's hand
 T4 p2 draws
 T4 taps: p2:Mountain
 T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
 T4 moves: Emerald Oryx, p2's hand -> stack
 T4 p2 cancels casting Emerald Oryx
 T4 moves: Emerald Oryx, p2's hand -> stack
@@ -167,6 +173,7 @@ T4 p2 plays p2:Mountain#2
 T4 p2's unspent {R} empties
 T4 taps: p2:Mountain#2
 T4 p2 adds {R} (p2:Mountain#2)
+T4 p2 taps p2:Mountain#2 for mana
 T4 p2's unspent {R} empties
 T4 p2 attack: nothing
 T5 turn 5 begins (p1)
@@ -174,8 +181,10 @@ T5 untaps: p1:Mountain
 T5 untaps: p1:Swamp
 T5 taps: p1:Swamp
 T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
 T5 taps: p1:Mountain
 T5 p1 adds {R} (p1:Mountain)
+T5 p1 taps p1:Mountain for mana
 T5 p1's unspent {B}{R} empties
 T5 moves: Swamp, p1's library -> p1's hand
 T5 p1 draws
@@ -186,6 +195,7 @@ T5 moves: Swamp, p1's hand -> battlefield
 T5 p1 plays p1:Swamp#2
 T5 taps: p1:Swamp#2
 T5 p1 adds {B} (p1:Swamp#2)
+T5 p1 taps p1:Swamp#2 for mana
 T5 p1's unspent {B} empties
 T6 turn 6 begins (p2)
 T6 untaps: p2:Mountain#1
@@ -197,17 +207,22 @@ T6 p2 plays p2:Forest
 T6 p2 attack: nothing
 T6 taps: p2:Mountain#2
 T6 p2 adds {R} (p2:Mountain#2)
+T6 p2 taps p2:Mountain#2 for mana
 T6 p2's unspent {R} empties
 T6 moves: Bountiful Harvest, p2's hand -> stack
 T6 taps: p2:Mountain#1
 T6 p2 adds {R} (p2:Mountain#1)
+T6 p2 taps p2:Mountain#1 for mana
 T6 taps: p2:Forest
 T6 p2 adds {G} (p2:Forest)
+T6 p2 taps p2:Forest for mana
 T6 p2 cancels casting Bountiful Harvest
 T6 taps: p2:Forest
 T6 p2 adds {G} (p2:Forest)
+T6 p2 taps p2:Forest for mana
 T6 taps: p2:Mountain#1
 T6 p2 adds {R} (p2:Mountain#1)
+T6 p2 taps p2:Mountain#1 for mana
 T6 moves: Emerald Oryx, p2's hand -> stack
 T6 p2 cancels casting Emerald Oryx
 T6 moves: Bountiful Harvest, p2's hand -> stack
@@ -219,13 +234,16 @@ T7 untaps: p1:Swamp#1
 T7 untaps: p1:Swamp#2
 T7 taps: p1:Mountain
 T7 p1 adds {R} (p1:Mountain)
+T7 p1 taps p1:Mountain for mana
 T7 p1's unspent {R} empties
 T7 moves: Emerald Oryx, p1's library -> p1's hand
 T7 p1 draws
 T7 taps: p1:Swamp#1
 T7 p1 adds {B} (p1:Swamp#1)
+T7 p1 taps p1:Swamp#1 for mana
 T7 taps: p1:Swamp#2
 T7 p1 adds {B} (p1:Swamp#2)
+T7 p1 taps p1:Swamp#2 for mana
 T7 p1's unspent {B}{B} empties
 T7 moves: Siege Mastodon, p1's hand -> stack
 T7 p1 cancels casting Siege Mastodon
@@ -234,6 +252,7 @@ T7 p1 plays p1:Island
 T7 p1 attack: nothing
 T7 taps: p1:Island
 T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
 T7 p1's unspent {U} empties
 T7 moves: Siege Mastodon, p1's hand -> stack
 T7 p1 cancels casting Siege Mastodon
@@ -251,15 +270,19 @@ T8 moves: Vampire Aristocrat, p2's library -> p2's hand
 T8 p2 draws
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 taps: p2:Mountain#1
 T8 p2 adds {R} (p2:Mountain#1)
+T8 p2 taps p2:Mountain#1 for mana
 T8 moves: Island, p2's hand -> battlefield
 T8 p2 plays p2:Island
 T8 moves: Emerald Oryx, p2's hand -> stack
 T8 taps: p2:Island
 T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
 T8 taps: p2:Mountain#2
 T8 p2 adds {R} (p2:Mountain#2)
+T8 p2 taps p2:Mountain#2 for mana
 T8 p2 casts Emerald Oryx
 T8 moves: Cancel, p2's hand -> stack
 T8 p2 cancels casting Cancel

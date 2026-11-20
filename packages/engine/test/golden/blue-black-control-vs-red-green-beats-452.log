@@ -89,6 +89,7 @@ T1 moves: Swamp, p1's hand -> battlefield
 T1 p1 plays p1:Swamp
 T1 taps: p1:Swamp
 T1 p1 adds {B} (p1:Swamp)
+T1 p1 taps p1:Swamp for mana
 T1 p1's unspent {B} empties
 T2 turn 2 begins (p2)
 T2 moves: Forest, p2's library -> p2's hand
@@ -98,6 +99,7 @@ T3 turn 3 begins (p1)
 T3 untaps: p1:Swamp
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1's unspent {B} empties
 T3 moves: Doom Blade, p1's library -> p1's hand
 T3 p1 draws
@@ -110,6 +112,7 @@ T3 moves: Island, p1's hand -> battlefield
 T3 p1 plays p1:Island
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p1's unspent {U} empties
 T4 turn 4 begins (p2)
 T4 moves: Mist Leopard, p2's library -> p2's hand
@@ -122,13 +125,16 @@ T5 moves: Island, p1's library -> p1's hand
 T5 p1 draws
 T5 taps: p1:Island
 T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
 T5 p1's unspent {U} empties
 T5 moves: Island, p1's hand -> battlefield
 T5 p1 plays p1:Island#2
 T5 taps: p1:Swamp
 T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
 T5 taps: p1:Island#2
 T5 p1 adds {U} (p1:Island#2)
+T5 p1 taps p1:Island#2 for mana
 T5 moves: Howling Mine, p1's hand -> stack
 T5 p1 casts Howling Mine
 T5 moves: Cancel, p1's hand -> stack

@@ -1,10 +1,10 @@
 // The number a fixed `Amount` stands for: written on the card, or X as announced (CR 107.3a). A count of permanents
-// is worked out only as an effect applies, by `amountNow` (effects/subjects.ts).
+// and a trigger's "that much" are worked out only as an effect applies, by `amountNow` (effects/subjects.ts).
 
 import type { Amount } from "../cards/types.ts";
 
 /** An amount that needs no game to work out: a number, or X. */
-export type FixedAmount = Exclude<Amount, { count: unknown }>;
+export type FixedAmount = Exclude<Amount, { count: unknown } | "thatMuch">;
 
 /**
  * `x` is the value announced as the spell was cast or the ability activated (CR 107.3a, 601.2b). An amount of X with

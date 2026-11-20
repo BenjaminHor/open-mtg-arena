@@ -1,0 +1,18 @@
+name: Lightwielder Paladin's trigger can target only a black or red permanent the damaged player controls, not its controller's
+rules: [CR 603.3d, CR 115.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Lightwielder Paladin, Raging Goblin]
+  p2:
+    battlefield: [Raging Goblin]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Lightwielder Paladin]
+  - all pass: until combat.declareBlockers
+  - all pass: once
+  - p1 choose: p1:Raging Goblin
+  - expect error: illegalAction
+  - p1 choose: p2:Raging Goblin
+  - expect:
+      stack: [Lightwielder Paladin ability]

@@ -1,0 +1,15 @@
+name: Manabarbs doesn't trigger when a creature is tapped for mana, only a land
+rules: [CR 106.12]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Manabarbs, Llanowar Elves]
+    hand: [Giant Growth]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Giant Growth
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - expect:
+      stack: [Giant Growth]

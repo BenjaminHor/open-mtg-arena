@@ -40,14 +40,15 @@ the one place their effects become changes to the game.
 | `putOntoBattlefield` | "You may put a creature card from your hand onto the battlefield" | Under the controller's control (CR 110.2a), not cast; asked whenever the hand isn't empty (D-062) |
 | `search` | "Search your library for a basic land card" | "You" choose among the library's cards fitting `filter` (or with the name of a card exiled this way), shown the whole library by identity (CR 701.23a, D-062); finds `"found"`, moves nothing |
 | `reveal` | "Reveal it" | Shows the cards to everyone, by identity (CR 701.20a) |
-| `put` | "Put that card onto the battlefield tapped" | Into the owner's hand, or onto the battlefield under the controller, `tapped` as part of the move (CR 110.2a, 110.5b) |
+| `put` | "Put that card onto the battlefield tapped" | Into the owner's hand or library bottom, or onto the battlefield under the controller, `tapped` as part of the move (CR 110.2a, 110.5b); `onlyIf` puts only cards fitting a filter ("if it's a creature card"); `optional` asks first, if there's a card to put (`put-effects.ts`) |
+| `revealTop` | "Reveal the top card of your library" | Shows it to everyone, staying on top, as `"found"` for the effects after it (CR 701.20a, 701.20b) |
 | `shuffle` / `mayShuffle` | "Then shuffle" / "You may shuffle" | Shuffles (CR 701.24a); `mayShuffle` asks yes or no first |
 | `lookAtTop` | "Look at the top three cards of your library, then put them back in any order" | The player is shown them and puts them back top first (CR 701.20e, 401.4) |
 | `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
 Which move op to use: `returnToHand` for a target bounced to its owner's hand; `put` for cards an earlier `search`
-found (`"found"`), into the hand or onto the battlefield; `putOntoBattlefield` when the player chooses a card from
+or `revealTop` found (`"found"`), into the hand, onto the battlefield or on the bottom of the library; `putOntoBattlefield` when the player chooses a card from
 their hand as the effect resolves (Elvish Piper); `exile` for either.
 
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
@@ -57,7 +58,8 @@ every player in APNAP order (CR 101.4).
 `from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"found"` (what an earlier
 `search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
 it now, CR 608.2h), or `{ target: i }` for the still-legal targets of the i-th instance of "target". A subject with no
-legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, or `{ count: filter }`.
+legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, `{ count: filter }`, or
+`"thatMuch"` (a triggered ability's event amount: the life gained).
 `subjects.ts` reads both (D-067).
 
 ## Primitives

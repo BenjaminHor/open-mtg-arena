@@ -98,6 +98,11 @@ export type GameEvent =
    */
   | { type: "MANA_ADDED"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /**
+   * `player` tapped `object` for mana: a mana ability with {T} in its cost resolved and produced mana (CR 106.12,
+   * 106.12a). Emitted after its tap and mana, for "whenever a player taps a land for mana".
+   */
+  | { type: "TAPPED_FOR_MANA"; player: PlayerId; object: ObjectId }
+  /**
    * `source` dealt damage to a player or creature (CR 120.1). Its result follows: `LIFE_LOST` for a player
    * (CR 120.3a); for a creature, the damage is marked on it (CR 120.3e).
    */

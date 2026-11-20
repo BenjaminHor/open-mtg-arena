@@ -99,7 +99,7 @@ describe("putting triggers on the stack (CR 603.3)", () => {
       sourceOracleId: WARDEN,
       index: 0,
       controller: "p1",
-      event: { player: null, object: null },
+      event: { player: null, object: null, amount: null },
     };
     g = { ...g, state: { ...g.state, pendingTriggers: [fake] } };
     g = answer(g, { kind: "cancelCast" });
@@ -115,7 +115,7 @@ describe("putting triggers on the stack (CR 603.3)", () => {
       sourceOracleId: WARDEN,
       index: 0,
       controller: "p1",
-      event: { player: null, object: null },
+      event: { player: null, object: null, amount: null },
     };
     // The first batch is empty, and one trigger is waiting when it's done: priority isn't given until it's on too.
     const state: GameState = queueWork(
@@ -143,7 +143,7 @@ describe("ordering one's own triggers (CR 603.3b)", () => {
       sourceOracleId: WARDEN,
       index: 0,
       controller,
-      event: { player: null, object: null },
+      event: { player: null, object: null, amount: null },
     });
     // p2's trigger first in the batch: p1 still orders first, as the active player.
     const batch = [trigger(c, "p2"), trigger(a, "p1"), trigger(b, "p1")];
@@ -193,7 +193,7 @@ describe("an intervening if (CR 603.4)", () => {
       sourceOracleId: MINE,
       index: 0,
       controller: "p1",
-      event: { player: "p1", object: null },
+      event: { player: "p1", object: null, amount: null },
     };
     // The Mine triggered, untapped, then went to the graveyard before anyone would receive priority.
     const moved = moveCard(g.state, mine, { zone: "graveyard" });

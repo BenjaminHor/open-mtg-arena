@@ -227,9 +227,10 @@ export type ObjectFilter = {
   combat?: "attacking" | "blocking" | "attackingOrBlocking";
   /**
    * Relative to the spell's or ability's controller: "you control", "you don't control", "an opponent controls"
-   * (they differ once teams exist, later: CR 102.3).
+   * (they differ once teams exist, later: CR 102.3). `triggeringPlayer`: "that player controls", in a triggered
+   * ability's target, the player its event was about (CR 603.3d, Lightwielder Paladin); only targets can use it.
    */
-  controller?: "you" | "notYou" | "opponent";
+  controller?: "you" | "notYou" | "opponent" | "triggeringPlayer";
   /**
    * "Creature with flying" / "without flying": keyword abilities, as computed (`keywordsOf`, CR 702.9a). `keywords`
    * means any of them; `notKeywords`, none of them. "With flying and first strike" would need an all-of form.
@@ -251,7 +252,9 @@ export type Amount =
    * `controller` relative to "you"), counted as the effect applies (CR 608.2h). An X the text defines this way is
    * this count, not announced (CR 107.3c).
    */
-  | { count: ObjectFilter };
+  | { count: ObjectFilter }
+  /** "That much", in a triggered ability: the amount of its triggering event (the life gained, CR 603.2). */
+  | "thatMuch";
 
 /**
  * Which object or player an effect refers to. It's resolved to real ids when the effect begins, and a continuous
@@ -371,8 +374,21 @@ export type Effect =
     }
   /** "Reveal it": shows the cards to every player (CR 701.20a), staying where they are (CR 701.20b). */
   | { op: "reveal"; of: EffectSubject }
-  /** "Put it into your hand" / "onto the battlefield tapped": under the controller's control (CR 110.2a). */
-  | { op: "put"; of: EffectSubject; into: "hand" | "battlefield"; tapped?: true }
+  /**
+   * "Put it into your hand" / "onto the battlefield tapped" / "on the bottom of your library": under the controller's
+   * control (CR 110.2a); a library or hand is the card's owner's (CR 400.3). `onlyIf`: "if it's a creature card, put it
+   * ..." (the filter's `controller` relative to "you"). `optional`: "you may put", asked only if there's a card to put.
+   */
+  | {
+      op: "put";
+      of: EffectSubject;
+      into: "hand" | "battlefield" | "libraryBottom";
+      tapped?: true;
+      onlyIf?: ObjectFilter;
+      optional?: true;
+    }
+  /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
+  | { op: "revealTop"; who: EffectSubject }
   /** "[who] shuffles" (CR 701.24a). */
   | { op: "shuffle"; who: EffectSubject }
   /** "You may shuffle": a yes or no choice; yes shuffles (CR 701.24a). */

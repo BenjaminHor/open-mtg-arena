@@ -45,6 +45,7 @@ T2 p1 plays p1:Forest
 T2 p1 attack: nothing
 T2 taps: p1:Forest
 T2 p1 adds {G} (p1:Forest)
+T2 p1 taps p1:Forest for mana
 T2 moves: Prodigal Pyromancer, p1's hand -> stack
 T2 p1 cancels casting Prodigal Pyromancer
 T2 p1's unspent {G} empties
@@ -56,11 +57,13 @@ T3 moves: Swamp, p2's hand -> battlefield
 T3 p2 plays p2:Swamp
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2's unspent {B} empties
 T4 turn 4 begins (p1)
 T4 untaps: p1:Forest
 T4 taps: p1:Forest
 T4 p1 adds {G} (p1:Forest)
+T4 p1 taps p1:Forest for mana
 T4 p1's unspent {G} empties
 T4 moves: Mountain, p1's library -> p1's hand
 T4 p1 draws
@@ -68,6 +71,7 @@ T4 moves: Mountain, p1's hand -> battlefield
 T4 p1 plays p1:Mountain
 T4 taps: p1:Mountain
 T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
 T4 moves: Centaur Courser, p1's hand -> stack
 T4 p1 cancels casting Centaur Courser
 T4 p1's unspent {R} empties
@@ -82,15 +86,18 @@ T5 moves: Island, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Swamp
 T5 p2 adds {B} (p2:Swamp)
+T5 p2 taps p2:Swamp for mana
 T5 p2's unspent {B} empties
 T5 moves: Island, p2's hand -> battlefield
 T5 p2 plays p2:Island
 T5 moves: Phantom Warrior, p2's hand -> stack
 T5 taps: p2:Island
 T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
 T5 p2 cancels casting Phantom Warrior
 T5 taps: p2:Island
 T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
 T5 p2's unspent {U} empties
 T5 p2 attack: nothing
 T6 turn 6 begins (p1)
@@ -98,8 +105,10 @@ T6 untaps: p1:Forest
 T6 untaps: p1:Mountain
 T6 taps: p1:Mountain
 T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
 T6 taps: p1:Forest
 T6 p1 adds {G} (p1:Forest)
+T6 p1 taps p1:Forest for mana
 T6 p1's unspent {R}{G} empties
 T6 moves: Mountain, p1's library -> p1's hand
 T6 p1 draws
@@ -115,6 +124,7 @@ T6 moves: Forest, p1's hand -> battlefield
 T6 p1 plays p1:Forest#2
 T6 taps: p1:Forest#2
 T6 p1 adds {G} (p1:Forest#2)
+T6 p1 taps p1:Forest#2 for mana
 T6 p1's unspent {G} empties
 T6 p1 attack: nothing
 T6 moves: Prodigal Pyromancer, p1's hand -> stack
@@ -126,14 +136,17 @@ T7 moves: Island, p2's library -> p2's hand
 T7 p2 draws
 T7 taps: p2:Swamp
 T7 p2 adds {B} (p2:Swamp)
+T7 p2 taps p2:Swamp for mana
 T7 p2's unspent {B} empties
 T7 moves: Island, p2's hand -> battlefield
 T7 p2 plays p2:Island#2
 T7 moves: Alluring Siren, p2's hand -> stack
 T7 taps: p2:Island#1
 T7 p2 adds {U} (p2:Island#1)
+T7 p2 taps p2:Island#1 for mana
 T7 taps: p2:Island#2
 T7 p2 adds {U} (p2:Island#2)
+T7 p2 taps p2:Island#2 for mana
 T7 p2 casts Alluring Siren
 T7 resolves: Alluring Siren
 T7 moves: Alluring Siren, stack -> battlefield

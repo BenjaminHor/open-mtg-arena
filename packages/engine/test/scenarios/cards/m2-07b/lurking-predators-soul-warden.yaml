@@ -1,0 +1,21 @@
+name: A creature Lurking Predators puts onto the battlefield triggers Soul Warden, which goes on the stack as a new batch above the spell
+rules: [CR 603.3b, CR 117.5]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Lurking Predators, Soul Warden]
+    library: [Craw Wurm]
+  p2:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - p2 cast: Lightning Bolt
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Lightning Bolt, Soul Warden ability]
+  - all pass: once
+  - expect:
+      p1.life: 21
+      stack: [Lightning Bolt]

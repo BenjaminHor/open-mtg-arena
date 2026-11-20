@@ -89,6 +89,7 @@ T2 p1 plays p1:Mountain
 T2 p1 attack: nothing
 T2 taps: p1:Mountain
 T2 p1 adds {R} (p1:Mountain)
+T2 p1 taps p1:Mountain for mana
 T2 moves: Jackal Familiar, p1's hand -> stack
 T2 p1 casts Jackal Familiar
 T2 resolves: Jackal Familiar

@@ -1,7 +1,7 @@
 // Checks that the hand-written definitions agree with the card data. Run by the tests, so `pnpm check` fails
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
-import type { CardDef, Effect, EffectSubject, TargetSpec } from "@mtg/engine";
+import type { CardDef, Effect, EffectSubject, TargetSpec, TriggerCondition } from "@mtg/engine";
 import type { PoolCard } from "./pool-data.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
@@ -65,16 +65,18 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     // Words only a triggered ability can use, which would otherwise do nothing in silence.
     if (def.spell?.effects.some((e) => e.op === "sacrificeSource"))
       problems.push(`${def.name}: a spell has no source to sacrifice ("sacrifice it" is for an ability)`);
-    if (def.spell !== undefined && namesTriggeringPlayer(def.spell.effects))
+    if (def.spell !== undefined && (namesTriggeringPlayer(def.spell.effects) || limitsToThatPlayer(def.spell)))
       problems.push(`${def.name}: "that player" is only for a triggered ability`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
-      if (namesTriggeringPlayer(ability.effects))
+      if (namesTriggeringPlayer(ability.effects) || limitsToThatPlayer(ability))
         problems.push(`${def.name} ability ${i + 1}: "that player" is only for a triggered ability`);
     }
     for (const [i, trigger] of (def.triggers ?? []).entries()) {
-      // Only a beginning-of-step trigger has a player its event happened to (the player whose step it is).
-      if (trigger.when.kind !== "beginningOfStep" && namesTriggeringPlayer(trigger.effects))
+      if (!suppliesPlayer(trigger.when) && (namesTriggeringPlayer(trigger.effects) || limitsToThatPlayer(trigger)))
         problems.push(`${def.name} trigger ${i + 1}: its event has no "that player"`);
+      // "That player controls" is read only where targets are chosen and checked (rules/targets.ts).
+      if (limitsToThatPlayer({ targets: [], effects: trigger.effects }))
+        problems.push(`${def.name} trigger ${i + 1}: only a target can be limited to what "that player" controls`);
       if (anyColor(trigger.effects))
         problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
       problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
@@ -85,6 +87,30 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
   }
   return problems;
+}
+
+/** Whether the trigger's event has a player "that player" can mean (`TriggerEvent.player`). */
+function suppliesPlayer(when: TriggerCondition): boolean {
+  switch (when.kind) {
+    case "selfEnters":
+    case "anotherEnters":
+    case "selfAttacks":
+      return false;
+    // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.
+    case "beginningOfStep":
+    case "spellCast":
+    case "playerDraws":
+    case "playerDiscards":
+    case "landTappedForMana":
+    case "selfDealsDamageToPlayer":
+    case "playerGainsLife":
+      return true;
+  }
+}
+
+/** Whether a filter anywhere in these targets or effects says "that player controls". */
+function limitsToThatPlayer(text: { targets: readonly TargetSpec[]; effects: readonly Effect[] }): boolean {
+  return JSON.stringify(text).includes('"controller":"triggeringPlayer"');
 }
 
 /** Whether any of these effects names "that player" (the subject `triggeringPlayer`), in any of its subject fields. */
@@ -119,7 +145,8 @@ function targetProblems(
       problems.push(`${where}: ${effect.op} applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
-    if (typeof effect.amount === "object") problems.push(`${where}: divided damage can't be a counted amount`);
+    if (typeof effect.amount === "object" || effect.amount === "thatMuch")
+      problems.push(`${where}: divided damage can't be a counted amount`);
     const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);
@@ -163,6 +190,7 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   mayShuffle: (e) => (e as { who: EffectSubject }).who,
   exileGraveyard: (e) => (e as { of: EffectSubject }).of,
   sacrifice: (e) => (e as { who: EffectSubject }).who,
+  revealTop: (e) => (e as { who: EffectSubject }).who,
 };
 
 /**
@@ -212,8 +240,8 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";
     const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
-    if (foundNamed && !earlier.some((e) => e.op === "search"))
-      problems.push(`${where}: ${effect.op} names the cards found, but no search comes before it`);
+    if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop"))
+      problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
     if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileGraveyard"))
       problems.push(`${where}: a search for the cards exiled this way must follow exiling them`);
     // A filter, or "you" choosing from another player's hand, would show or hint at a hidden hand's cards unless it was

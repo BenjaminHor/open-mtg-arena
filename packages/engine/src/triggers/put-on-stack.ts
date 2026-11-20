@@ -42,7 +42,9 @@ export function putTriggers(
   const next = apnapOrder(state).find((p) => batch.some((t) => t.controller === p));
   if (next === undefined) throw new Error("a pending trigger's controller isn't in the game");
   const theirs = batch.filter((t) => t.controller === next);
-  if (theirs.length > 1) {
+  // Triggers that are the same ability of the same source, from the same event, can't be told apart on the stack, so
+  // any order is the same order: no question (D-077). Manabarbs and six lands tapped: six identical triggers.
+  if (theirs.length > 1 && !allIdentical(theirs)) {
     return {
       state: waitFor(state, next, { kind: "orderTriggers", batch: [...batch], priorityTo: player }),
       events: [],
@@ -90,6 +92,11 @@ export function putOne(
   };
   const targeting = nextCastingStep({ ...put.state, casting }, cards);
   return { state: targeting.state, events: [...events, ...targeting.events] };
+}
+
+function allIdentical(triggers: readonly PendingTrigger[]): boolean {
+  const first = JSON.stringify(triggers[0]);
+  return triggers.every((t) => JSON.stringify(t) === first);
 }
 
 /** Why this answer can't choose this trigger to go on the stack next, or null. */

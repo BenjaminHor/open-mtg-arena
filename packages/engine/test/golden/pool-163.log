@@ -65,21 +65,26 @@ T2 p1 plays p1:Island
 T2 moves: Haunting Echoes, p1's hand -> stack
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 p1 cancels casting Haunting Echoes
 T2 moves: Enormous Baloth, p1's hand -> stack
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 p1 cancels casting Enormous Baloth
 T2 moves: Enormous Baloth, p1's hand -> stack
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 p1 cancels casting Enormous Baloth
 T2 moves: Enormous Baloth, p1's hand -> stack
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 p1 cancels casting Enormous Baloth
 T2 taps: p1:Island
 T2 p1 adds {U} (p1:Island)
+T2 p1 taps p1:Island for mana
 T2 p1's unspent {U} empties
 T2 p1 attack: nothing
 T3 turn 3 begins (p2)
@@ -94,6 +99,7 @@ T3 moves: Mountain, p2's hand -> battlefield
 T3 p2 plays p2:Mountain
 T3 taps: p2:Mountain
 T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
 T3 moves: Might of Oaks, p2's hand -> stack
 T3 p2 cancels casting Might of Oaks
 T3 p2's unspent {R} empties
@@ -101,6 +107,7 @@ T4 turn 4 begins (p1)
 T4 untaps: p1:Island
 T4 taps: p1:Island
 T4 p1 adds {U} (p1:Island)
+T4 p1 taps p1:Island for mana
 T4 p1's unspent {U} empties
 T4 moves: Giant Growth, p1's library -> p1's hand
 T4 p1 draws
@@ -112,6 +119,7 @@ T4 moves: Mountain, p1's hand -> battlefield
 T4 p1 plays p1:Mountain
 T4 taps: p1:Mountain
 T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
 T4 moves: Giant Growth, p1's hand -> stack
 T4 p1 cancels casting Giant Growth
 T4 moves: Fireball, p1's hand -> stack
@@ -151,20 +159,24 @@ T5 untaps: p2:Mountain
 T5 moves: Shatter, p2's hand -> stack
 T5 taps: p2:Mountain
 T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
 T5 p2 cancels casting Shatter
 T5 moves: Might of Oaks, p2's hand -> stack
 T5 taps: p2:Mountain
 T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
 T5 p2 cancels casting Might of Oaks
 T5 moves: Disentomb, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Mountain
 T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
 T5 moves: Island, p2's hand -> battlefield
 T5 p2 plays p2:Island
 T5 moves: Shatter, p2's hand -> stack
 T5 taps: p2:Island
 T5 p2 adds {U} (p2:Island)
+T5 p2 taps p2:Island for mana
 T5 p2 casts Shatter
 T5 moves: Might of Oaks, p2's hand -> stack
 T5 p2 cancels casting Might of Oaks

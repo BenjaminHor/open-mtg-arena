@@ -163,6 +163,7 @@ T2 moves: Forest, p1's hand -> battlefield
 T2 p1 plays p1:Forest
 T2 taps: p1:Forest
 T2 p1 adds {G} (p1:Forest)
+T2 p1 taps p1:Forest for mana
 T2 moves: Elvish Visionary, p1's hand -> stack
 T2 p1 cancels casting Elvish Visionary
 T2 moves: Llanowar Elves, p1's hand -> stack
@@ -183,6 +184,7 @@ T4 turn 4 begins (p1)
 T4 untaps: p1:Forest
 T4 taps: p1:Llanowar Elves
 T4 p1 adds {G} (p1:Llanowar Elves)
+T4 p1 taps p1:Llanowar Elves for mana
 T4 p1's unspent {G} empties
 T4 moves: Prodigal Pyromancer, p1's library -> p1's hand
 T4 p1 draws
@@ -190,8 +192,10 @@ T4 moves: Forest, p1's hand -> battlefield
 T4 p1 plays p1:Forest#2
 T4 taps: p1:Forest#2
 T4 p1 adds {G} (p1:Forest#2)
+T4 p1 taps p1:Forest#2 for mana
 T4 taps: p1:Forest#1
 T4 p1 adds {G} (p1:Forest#1)
+T4 p1 taps p1:Forest#1 for mana
 T4 moves: Viashino Spearhunter, p1's hand -> stack
 T4 p1 cancels casting Viashino Spearhunter
 T4 moves: Elvish Visionary, p1's hand -> stack

@@ -52,8 +52,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       leave out the activating source's own mana ability, or the fuzzer's "every listed action is accepted" breaks.
     - Citations: exile CR 701.13a; "target spell" can't be an ability CR 113.9, 112.1; Undead Slayer's target is a
       permanent (CR 109.2), subtypes only; "can't be countered" later (CR 101.2).
-    - Cards: the 19 in the spec, plus Ornithopter and Rod of Ruin (artifacts to target). Enchantments aren't in the pool
-      until M2-07: the enchantment half of Naturalize, Solemn Offering and Tempest of Light is unit-tested until then.
+    - Cards: the 19 in the spec, plus Ornithopter and Rod of Ruin (artifacts to target). Enchantments weren't in the pool
+      until M2-07b, which adds scenarios for the enchantment half of Naturalize, Solemn Offering and Tempest of Light.
     - Tests (from the rulings): Royal Assassin can't target itself, its ability resolving without its source (and Rod
       of Ruin's after Shatter); Solemn Offering whose target is gone gains no life; Ornithopter as an artifact creature
       spell for Essence Scatter but not Negate or Flashfreeze; a countered creature spell to the graveyard, no refund;
@@ -244,7 +244,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
-       Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:
+       Built (D-077), in review: 37 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
+       Solemn Offering and Tempest of Light), three new Triggers matrix cells; seven of the cards in the M10 pair; 13
+       golden games added (5.1 MB; every golden log also gained a "taps ... for mana" line per land tapped). 146 cards
+       in the pool; 138 of the 234 Magic 2010 cards. Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:
        - Slice 1, casting: `spellCast` with a filter on the spell as cast (colors, types; `controller` is the caster,
          relative to the trigger's controller), matched where `SPELL_CAST` is emitted (CR 601.2i), so the triggers go
          on the stack before the caster gets priority. The five artifacts ("you may gain 1 life"), Mesa Enchantress,

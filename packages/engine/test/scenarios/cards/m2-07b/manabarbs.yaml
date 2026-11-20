@@ -1,0 +1,17 @@
+name: Manabarbs triggers as a land is tapped for mana to pay for a spell, and goes on the stack above the spell
+rules: [CR 106.12, CR 106.12a, CR 601.2i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Manabarbs, Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Shock
+    targets: [p2]
+    pay: auto
+  - expect:
+      stack: [Shock, Manabarbs ability]
+  - all pass: once
+  - expect:
+      p1.life: 19
+      stack: [Shock]

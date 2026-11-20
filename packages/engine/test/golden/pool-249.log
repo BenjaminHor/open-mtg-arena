@@ -41,9 +41,11 @@ T1 p1 plays p1:Island
 T1 moves: Furnace Whelp, p1's hand -> stack
 T1 taps: p1:Island
 T1 p1 adds {U} (p1:Island)
+T1 p1 taps p1:Island for mana
 T1 p1 cancels casting Furnace Whelp
 T1 taps: p1:Island
 T1 p1 adds {U} (p1:Island)
+T1 p1 taps p1:Island for mana
 T1 moves: Angel's Mercy, p1's hand -> stack
 T1 p1 cancels casting Angel's Mercy
 T1 moves: Angel's Mercy, p1's hand -> stack
@@ -72,6 +74,7 @@ T2 moves: Swamp, p2's hand -> battlefield
 T2 p2 plays p2:Swamp
 T2 taps: p2:Swamp
 T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
 T2 p2's unspent {B} empties
 T3 turn 3 begins (p1)
 T3 untaps: p1:Island
@@ -79,6 +82,7 @@ T3 moves: Runeclaw Bear, p1's library -> p1's hand
 T3 p1 draws
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p1's unspent {U} empties
 T3 moves: Spined Wurm, p1's hand -> stack
 T3 p1 cancels casting Spined Wurm
@@ -100,15 +104,18 @@ T3 p1 plays p1:Swamp
 T3 moves: Fireball, p1's hand -> stack
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1 cancels casting Fireball
 T3 moves: Fireball, p1's hand -> stack
 T3 p1 cancels casting Fireball
 T3 moves: Furnace Whelp, p1's hand -> stack
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 p1 cancels casting Furnace Whelp
 T3 taps: p1:Swamp
 T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
 T3 moves: Spined Wurm, p1's hand -> stack
 T3 p1 cancels casting Spined Wurm
 T3 moves: Runeclaw Bear, p1's hand -> stack
@@ -120,6 +127,7 @@ T4 turn 4 begins (p2)
 T4 untaps: p2:Swamp
 T4 taps: p2:Swamp
 T4 p2 adds {B} (p2:Swamp)
+T4 p2 taps p2:Swamp for mana
 T4 moves: Angel's Mercy, p1's hand -> stack
 T4 p1 cancels casting Angel's Mercy
 T4 moves: Angel's Mercy, p1's hand -> stack
@@ -144,6 +152,7 @@ T4 moves: Forest, p2's hand -> battlefield
 T4 p2 plays p2:Forest
 T4 taps: p2:Forest
 T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
 T4 moves: Angel's Mercy, p1's hand -> stack
 T4 p1 cancels casting Angel's Mercy
 T4 p2's unspent {G} empties
@@ -159,21 +168,26 @@ T5 p1 draws
 T5 moves: Runeclaw Bear, p1's hand -> stack
 T5 taps: p1:Island
 T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
 T5 p1 cancels casting Runeclaw Bear
 T5 taps: p1:Island
 T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
 T5 p1's unspent {U} empties
 T5 p1 attack: nothing
 T5 moves: Angel's Mercy, p1's hand -> stack
 T5 taps: p1:Swamp
 T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
 T5 p1 cancels casting Angel's Mercy
 T5 moves: Angel's Mercy, p1's hand -> stack
 T5 taps: p1:Swamp
 T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
 T5 p1 cancels casting Angel's Mercy
 T5 taps: p1:Swamp
 T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
 T5 p1's unspent {B} empties
 T5 moves: Furnace Whelp, p1's hand -> stack
 T5 p1 cancels casting Furnace Whelp
@@ -200,6 +214,7 @@ T6 untaps: p2:Swamp
 T6 untaps: p2:Forest
 T6 taps: p2:Swamp
 T6 p2 adds {B} (p2:Swamp)
+T6 p2 taps p2:Swamp for mana
 T6 moves: Angel's Mercy, p1's hand -> stack
 T6 p1 cancels casting Angel's Mercy
 T6 moves: Angel's Mercy, p1's hand -> stack
@@ -209,6 +224,7 @@ T6 moves: Island, p2's library -> p2's hand
 T6 p2 draws
 T6 taps: p2:Forest
 T6 p2 adds {G} (p2:Forest)
+T6 p2 taps p2:Forest for mana
 T6 p2's unspent {G} empties
 T6 moves: Siege Mastodon, p2's hand -> stack
 T6 p2 cancels casting Siege Mastodon
@@ -238,13 +254,16 @@ T6 p2 plays p2:Island
 T6 moves: Kelinore Bat, p2's hand -> stack
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 p2 cancels casting Kelinore Bat
 T6 moves: Kelinore Bat, p2's hand -> stack
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 p2 cancels casting Kelinore Bat
 T6 taps: p2:Island
 T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
 T6 moves: Kelinore Bat, p2's hand -> stack
 T6 p2 cancels casting Kelinore Bat
 T6 moves: Goblin Artillery, p2's hand -> stack
@@ -262,26 +281,33 @@ T7 untaps: p1:Swamp
 T7 moves: Angel's Mercy, p1's hand -> stack
 T7 taps: p1:Island
 T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 p1 cancels casting Angel's Mercy
 T7 moves: Angel's Mercy, p1's hand -> stack
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 taps: p1:Island
 T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
 T7 p1 cancels casting Angel's Mercy
 T7 moves: Tempest of Light, p1's library -> p1's hand
 T7 p1 draws
 T7 taps: p1:Island
 T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
 T7 p1's unspent {U} empties
 T7 moves: Angel's Mercy, p1's hand -> stack
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 p1 cancels casting Angel's Mercy
 T7 taps: p1:Swamp
 T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
 T7 moves: Tempest of Light, p1's hand -> stack
 T7 p1 cancels casting Tempest of Light
 T7 p1's unspent {B} empties
@@ -309,10 +335,13 @@ T8 p1 cancels casting Tempest of Light
 T8 moves: Goblin Artillery, p2's hand -> stack
 T8 taps: p2:Forest
 T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
 T8 taps: p2:Swamp
 T8 p2 adds {B} (p2:Swamp)
+T8 p2 taps p2:Swamp for mana
 T8 taps: p2:Island
 T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
 T8 p2 cancels casting Goblin Artillery
 T8 moves: Tempest of Light, p1's hand -> stack
 T8 p1 cancels casting Tempest of Light
@@ -326,15 +355,18 @@ T9 untaps: p1:Island
 T9 untaps: p1:Swamp
 T9 taps: p1:Island
 T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
 T9 p1's unspent {U} empties
 T9 moves: Seismic Strike, p1's library -> p1's hand
 T9 p1 draws
 T9 moves: Tempest of Light, p1's hand -> stack
 T9 taps: p1:Swamp
 T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
 T9 p1 cancels casting Tempest of Light
 T9 taps: p1:Swamp
 T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
 T9 p1's unspent {B} empties
 T9 p1 attack: nothing
 T9 moves: Tempest of Light, p1's hand -> stack
@@ -345,10 +377,13 @@ T9 moves: Angel's Mercy, p1's hand -> stack
 T9 p1 cancels casting Angel's Mercy
 T9 taps: p2:Island
 T9 p2 adds {U} (p2:Island)
+T9 p2 taps p2:Island for mana
 T9 taps: p2:Swamp
 T9 p2 adds {B} (p2:Swamp)
+T9 p2 taps p2:Swamp for mana
 T9 taps: p2:Forest
 T9 p2 adds {G} (p2:Forest)
+T9 p2 taps p2:Forest for mana
 T9 moves: Tempest of Light, p1's hand -> stack
 T9 p1 cancels casting Tempest of Light
 T9 p2's unspent {U}{B}{G} empties
@@ -377,9 +412,11 @@ T10 p2 draws
 T10 moves: Ornithopter, p2's hand -> stack
 T10 taps: p2:Island
 T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
 T10 p2 casts Ornithopter
 T10 taps: p2:Forest
 T10 p2 adds {G} (p2:Forest)
+T10 p2 taps p2:Forest for mana
 T10 resolves: Ornithopter
 T10 moves: Ornithopter, stack -> battlefield
 T10 moves: Naturalize, p2's hand -> stack
@@ -394,8 +431,10 @@ T10 moves: Island, p2's hand -> battlefield
 T10 p2 plays p2:Island#2
 T10 taps: p2:Swamp
 T10 p2 adds {B} (p2:Swamp)
+T10 p2 taps p2:Swamp for mana
 T10 taps: p2:Island#2
 T10 p2 adds {U} (p2:Island#2)
+T10 p2 taps p2:Island#2 for mana
 T10 p2's unspent {U}{B} empties
 T10 moves: Tempest of Light, p1's hand -> stack
 T10 p1 cancels casting Tempest of Light

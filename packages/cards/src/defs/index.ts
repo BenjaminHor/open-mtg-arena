@@ -5,6 +5,7 @@ import { acidicSlime } from "./a/acidic-slime.ts";
 import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
 import { airElemental } from "./a/air-elemental.ts";
 import { alluringSiren } from "./a/alluring-siren.ts";
+import { angelsFeather } from "./a/angels-feather.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
 import { ballLightning } from "./b/ball-lightning.ts";
@@ -26,12 +27,14 @@ import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
 import { deadlyRecluse } from "./d/deadly-recluse.ts";
 import { deathmark } from "./d/deathmark.ts";
+import { demonsHorn } from "./d/demons-horn.ts";
 import { diabolicTutor } from "./d/diabolic-tutor.ts";
 import { disentomb } from "./d/disentomb.ts";
 import { disorient } from "./d/disorient.ts";
 import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
 import { doomBlade } from "./d/doom-blade.ts";
+import { dragonsClaw } from "./d/dragons-claw.ts";
 import { dreadWarlock } from "./d/dread-warlock.ts";
 import { duress } from "./d/duress.ts";
 import { earthquake } from "./e/earthquake.ts";
@@ -62,17 +65,24 @@ import { hillGiant } from "./h/hill-giant.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
 import { howlingBanshee } from "./h/howling-banshee.ts";
 import { howlingMine } from "./h/howling-mine.ts";
+import { hypnoticSpecter } from "./h/hypnotic-specter.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
 import { kalonianBehemoth } from "./k/kalonian-behemoth.ts";
 import { kelinoreBat } from "./k/kelinore-bat.ts";
+import { krakensEye } from "./k/krakens-eye.ts";
 import { lavaAxe } from "./l/lava-axe.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
 import { lightningElemental } from "./l/lightning-elemental.ts";
+import { lightwielderPaladin } from "./l/lightwielder-paladin.ts";
 import { llanowarElves } from "./l/llanowar-elves.ts";
 import { loomingShade } from "./l/looming-shade.ts";
+import { lurkingPredators } from "./l/lurking-predators.ts";
+import { manabarbs } from "./m/manabarbs.ts";
+import { megrim } from "./m/megrim.ts";
 import { merfolkLooter } from "./m/merfolk-looter.ts";
+import { mesaEnchantress } from "./m/mesa-enchantress.ts";
 import { mightOfOaks } from "./m/might-of-oaks.ts";
 import { mindRot } from "./m/mind-rot.ts";
 import { mindShatter } from "./m/mind-shatter.ts";
@@ -100,6 +110,7 @@ import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
 import { runeclawBear } from "./r/runeclaw-bear.ts";
 import { sageOwl } from "./s/sage-owl.ts";
+import { sanguineBond } from "./s/sanguine-bond.ts";
 import { seismicStrike } from "./s/seismic-strike.ts";
 import { serraAngel } from "./s/serra-angel.ts";
 import { shatter } from "./s/shatter.ts";
@@ -122,6 +133,7 @@ import { terramorphicExpanse } from "./t/terramorphic-expanse.ts";
 import { tomeScour } from "./t/tome-scour.ts";
 import { traumatize } from "./t/traumatize.ts";
 import { undeadSlayer } from "./u/undead-slayer.ts";
+import { underworldDreams } from "./u/underworld-dreams.ts";
 import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { viashinoSpearhunter } from "./v/viashino-spearhunter.ts";
@@ -131,6 +143,7 @@ import { wallOfFire } from "./w/wall-of-fire.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { windDrake } from "./w/wind-drake.ts";
 import { windstorm } from "./w/windstorm.ts";
+import { wurmsTooth } from "./w/wurms-tooth.ts";
 import { yawningFissure } from "./y/yawning-fissure.ts";
 import { zephyrSprite } from "./z/zephyr-sprite.ts";
 import { zombieGoliath } from "./z/zombie-goliath.ts";
@@ -140,6 +153,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   acolyteOfXathrid,
   airElemental,
   alluringSiren,
+  angelsFeather,
   angelsMercy,
   assassinate,
   ballLightning,
@@ -161,12 +175,14 @@ export const CARD_DEFS: readonly CardDef[] = [
   crawWurm,
   deadlyRecluse,
   deathmark,
+  demonsHorn,
   diabolicTutor,
   disentomb,
   disorient,
   divination,
   divineVerdict,
   doomBlade,
+  dragonsClaw,
   dreadWarlock,
   duress,
   earthquake,
@@ -179,8 +195,8 @@ export const CARD_DEFS: readonly CardDef[] = [
   excommunicate,
   fabricate,
   fieryHellhound,
-  fireball,
   fireElemental,
+  fireball,
   flashfreeze,
   forest,
   furnaceWhelp,
@@ -197,17 +213,24 @@ export const CARD_DEFS: readonly CardDef[] = [
   hornedTurtle,
   howlingBanshee,
   howlingMine,
+  hypnoticSpecter,
   igniteDisorder,
   island,
   jackalFamiliar,
   kalonianBehemoth,
   kelinoreBat,
+  krakensEye,
   lavaAxe,
   lightningBolt,
   lightningElemental,
+  lightwielderPaladin,
   llanowarElves,
   loomingShade,
+  lurkingPredators,
+  manabarbs,
+  megrim,
   merfolkLooter,
+  mesaEnchantress,
   mightOfOaks,
   mindRot,
   mindShatter,
@@ -235,6 +258,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   royalAssassin,
   runeclawBear,
   sageOwl,
+  sanguineBond,
   seismicStrike,
   serraAngel,
   shatter,
@@ -257,6 +281,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   tomeScour,
   traumatize,
   undeadSlayer,
+  underworldDreams,
   unsummon,
   vampireAristocrat,
   viashinoSpearhunter,
@@ -266,6 +291,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   warpathGhoul,
   windDrake,
   windstorm,
+  wurmsTooth,
   yawningFissure,
   zephyrSprite,
   zombieGoliath,

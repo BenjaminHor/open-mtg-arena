@@ -1,0 +1,20 @@
+name: Sanguine Bond makes the target opponent lose as much life as its controller gained
+rules: [CR 119.3, CR 603.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sanguine Bond, Plains, Plains, Plains, Plains]
+    hand: [Angel's Mercy]
+steps:
+  - p1 cast: Angel's Mercy
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 27
+      pending: { player: p1, kind: chooseTarget }
+  - p1 choose: p2
+  - expect:
+      stack: [Sanguine Bond ability]
+  - all pass: once
+  - expect:
+      p2.life: 13

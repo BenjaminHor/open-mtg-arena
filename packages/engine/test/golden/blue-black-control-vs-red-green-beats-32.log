@@ -85,6 +85,7 @@ T1 p2 plays p2:Mountain
 T1 p2 attack: nothing
 T1 taps: p2:Mountain
 T1 p2 adds {R} (p2:Mountain)
+T1 p2 taps p2:Mountain for mana
 T1 p2's unspent {R} empties
 T2 turn 2 begins (p1)
 T2 moves: Unsummon, p1's library -> p1's hand
@@ -96,8 +97,10 @@ T3 turn 3 begins (p2)
 T3 untaps: p2:Mountain
 T3 taps: p2:Mountain
 T3 p2 adds {R} (p2:Mountain)
+T3 p2 taps p2:Mountain for mana
 T3 taps: p1:Island
 T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
 T3 p2's unspent {R} empties
 T3 p1's unspent {U} empties
 T3 moves: Runeclaw Bear, p2's library -> p2's hand
@@ -107,11 +110,13 @@ T3 moves: Forest, p2's hand -> battlefield
 T3 p2 plays p2:Forest
 T3 taps: p2:Forest
 T3 p2 adds {G} (p2:Forest)
+T3 p2 taps p2:Forest for mana
 T3 p2's unspent {G} empties
 T4 turn 4 begins (p1)
 T4 untaps: p1:Island
 T4 taps: p1:Island
 T4 p1 adds {U} (p1:Island)
+T4 p1 taps p1:Island for mana
 T4 p1's unspent {U} empties
 T4 moves: Doom Blade, p1's library -> p1's hand
 T4 p1 draws
@@ -120,23 +125,27 @@ T4 p1 plays p1:Swamp
 T4 p1 attack: nothing
 T4 taps: p1:Swamp
 T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
 T4 p1's unspent {B} empties
 T5 turn 5 begins (p2)
 T5 untaps: p2:Mountain
 T5 untaps: p2:Forest
 T5 taps: p2:Forest
 T5 p2 adds {G} (p2:Forest)
+T5 p2 taps p2:Forest for mana
 T5 p2's unspent {G} empties
 T5 moves: Lightning Bolt, p2's library -> p2's hand
 T5 p2 draws
 T5 taps: p2:Mountain
 T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
 T5 p2's unspent {R} empties
 T5 moves: Mountain, p2's hand -> battlefield
 T5 p2 plays p2:Mountain#2
 T5 p2 attack: nothing
 T5 taps: p2:Mountain#2
 T5 p2 adds {R} (p2:Mountain#2)
+T5 p2 taps p2:Mountain#2 for mana
 T5 moves: Lightning Bolt, p2's hand -> stack
 T5 p2 casts Lightning Bolt
 T5 moves: Cancel, p1's hand -> stack
@@ -158,8 +167,10 @@ T6 moves: Island, p1's library -> p1's hand
 T6 p1 draws
 T6 taps: p1:Island
 T6 p1 adds {U} (p1:Island)
+T6 p1 taps p1:Island for mana
 T6 taps: p1:Swamp
 T6 p1 adds {B} (p1:Swamp)
+T6 p1 taps p1:Swamp for mana
 T6 p1's unspent {U}{B} empties
 T6 p1 attack: nothing
 T6 moves: Island, p1's hand -> battlefield
@@ -172,8 +183,10 @@ T7 moves: Mountain, p2's library -> p2's hand
 T7 p2 draws
 T7 taps: p2:Mountain#2
 T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 taps p2:Mountain#2 for mana
 T7 taps: p1:Island#2
 T7 p1 adds {U} (p1:Island#2)
+T7 p1 taps p1:Island#2 for mana
 T7 p2's unspent {R} empties
 T7 p1's unspent {U} empties
 T7 moves: Mountain, p2's hand -> battlefield
@@ -181,10 +194,13 @@ T7 p2 plays p2:Mountain#3
 T7 moves: Prodigal Pyromancer, p2's hand -> stack
 T7 taps: p2:Mountain#1
 T7 p2 adds {R} (p2:Mountain#1)
+T7 p2 taps p2:Mountain#1 for mana
 T7 taps: p2:Mountain#3
 T7 p2 adds {R} (p2:Mountain#3)
+T7 p2 taps p2:Mountain#3 for mana
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
+T7 p2 taps p2:Forest for mana
 T7 p2 casts Prodigal Pyromancer
 T7 moves: Cancel, p1's hand -> stack
 T7 p1 cancels casting Cancel
@@ -222,10 +238,13 @@ T8 p1 draws
 T8 moves: Phantom Warrior, p1's hand -> stack
 T8 taps: p1:Island#2
 T8 p1 adds {U} (p1:Island#2)
+T8 p1 taps p1:Island#2 for mana
 T8 taps: p1:Island#1
 T8 p1 adds {U} (p1:Island#1)
+T8 p1 taps p1:Island#1 for mana
 T8 taps: p1:Swamp
 T8 p1 adds {B} (p1:Swamp)
+T8 p1 taps p1:Swamp for mana
 T8 p1 casts Phantom Warrior
 T8 moves: Cancel, p1's hand -> stack
 T8 p1 cancels casting Cancel
@@ -248,6 +267,7 @@ T8 p1 plays p1:Island#3
 T8 moves: Unsummon, p1's hand -> stack
 T8 taps: p1:Island#3
 T8 p1 adds {U} (p1:Island#3)
+T8 p1 taps p1:Island#3 for mana
 T8 p1 casts Unsummon
 T8 moves: Prodigal Pyromancer, battlefield -> p2's hand
 T8 resolves: Unsummon

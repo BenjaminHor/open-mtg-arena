@@ -1,0 +1,21 @@
+name: Underworld Dreams triggers once for each card drawn; identical triggers go on the stack without an ordering question
+rules: [CR 603.2c, CR 603.3b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Underworld Dreams]
+  p2:
+    battlefield: [Island, Island, Island]
+    hand: [Divination]
+    library: [Forest, Island]
+steps:
+  - p2 cast: Divination
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Underworld Dreams ability, Underworld Dreams ability]
+      pending: { player: p2, kind: priority }
+  - all pass: once
+  - all pass: once
+  - expect:
+      p2.life: 18

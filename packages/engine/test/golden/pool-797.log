@@ -36,6 +36,7 @@ T1 moves: Swamp, p2's hand -> battlefield
 T1 p2 plays p2:Swamp
 T1 taps: p2:Swamp
 T1 p2 adds {B} (p2:Swamp)
+T1 p2 taps p2:Swamp for mana
 T1 p2's unspent {B} empties
 T1 p2 attack: nothing
 T2 turn 2 begins (p1)
@@ -46,11 +47,13 @@ T2 p1 plays p1:Swamp
 T2 p1 attack: nothing
 T2 taps: p1:Swamp
 T2 p1 adds {B} (p1:Swamp)
+T2 p1 taps p1:Swamp for mana
 T2 p1's unspent {B} empties
 T3 turn 3 begins (p2)
 T3 untaps: p2:Swamp
 T3 taps: p2:Swamp
 T3 p2 adds {B} (p2:Swamp)
+T3 p2 taps p2:Swamp for mana
 T3 p2's unspent {B} empties
 T3 moves: Swamp, p2's library -> p2's hand
 T3 p2 draws
@@ -70,26 +73,31 @@ T4 p1 draws
 T4 moves: Mind Rot, p1's hand -> stack
 T4 taps: p1:Swamp
 T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
 T4 p1 cancels casting Mind Rot
 T4 moves: Fiery Hellhound, p1's hand -> stack
 T4 p1 cancels casting Fiery Hellhound
 T4 p1 attack: nothing
 T4 taps: p1:Swamp
 T4 p1 adds {B} (p1:Swamp)
+T4 p1 taps p1:Swamp for mana
 T4 p1's unspent {B} empties
 T4 moves: Mountain, p1's hand -> battlefield
 T4 p1 plays p1:Mountain
 T4 moves: Fabricate, p1's hand -> stack
 T4 taps: p1:Mountain
 T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
 T4 p1 cancels casting Fabricate
 T4 taps: p1:Mountain
 T4 p1 adds {R} (p1:Mountain)
+T4 p1 taps p1:Mountain for mana
 T4 p1's unspent {R} empties
 T5 turn 5 begins (p2)
 T5 untaps: p2:Swamp
 T5 taps: p2:Swamp
 T5 p2 adds {B} (p2:Swamp)
+T5 p2 taps p2:Swamp for mana
 T5 p2's unspent {B} empties
 T5 moves: Goblin Piker, p2's library -> p2's hand
 T5 p2 draws
@@ -97,6 +105,7 @@ T5 moves: Swamp, p2's hand -> battlefield
 T5 p2 plays p2:Swamp#2
 T5 taps: p2:Swamp#2
 T5 p2 adds {B} (p2:Swamp#2)
+T5 p2 taps p2:Swamp#2 for mana
 T5 moves: Siege Mastodon, p2's hand -> stack
 T5 p2 cancels casting Siege Mastodon
 T5 p2's unspent {B} empties
@@ -110,14 +119,17 @@ T6 moves: Craw Wurm, p1's library -> p1's hand
 T6 p1 draws
 T6 taps: p1:Swamp
 T6 p1 adds {B} (p1:Swamp)
+T6 p1 taps p1:Swamp for mana
 T6 taps: p1:Mountain
 T6 p1 adds {R} (p1:Mountain)
+T6 p1 taps p1:Mountain for mana
 T6 p1's unspent {B}{R} empties
 T6 moves: Swamp, p1's hand -> battlefield
 T6 p1 plays p1:Swamp#2
 T6 p1 attack: nothing
 T6 taps: p1:Swamp#2
 T6 p1 adds {B} (p1:Swamp#2)
+T6 p1 taps p1:Swamp#2 for mana
 T6 p1's unspent {B} empties
 T6 moves: Fiery Hellhound, p1's hand -> stack
 T6 p1 cancels casting Fiery Hellhound
@@ -129,21 +141,27 @@ T7 p2 draws
 T7 moves: Craw Wurm, p2's hand -> stack
 T7 taps: p2:Swamp#2
 T7 p2 adds {B} (p2:Swamp#2)
+T7 p2 taps p2:Swamp#2 for mana
 T7 taps: p2:Swamp#1
 T7 p2 adds {B} (p2:Swamp#1)
+T7 p2 taps p2:Swamp#1 for mana
 T7 p2 cancels casting Craw Wurm
 T7 moves: Siege Mastodon, p2's hand -> stack
 T7 taps: p2:Swamp#1
 T7 p2 adds {B} (p2:Swamp#1)
+T7 p2 taps p2:Swamp#1 for mana
 T7 taps: p2:Swamp#2
 T7 p2 adds {B} (p2:Swamp#2)
+T7 p2 taps p2:Swamp#2 for mana
 T7 p2 cancels casting Siege Mastodon
 T7 p2 attack: nothing
 T7 taps: p2:Swamp#2
 T7 p2 adds {B} (p2:Swamp#2)
+T7 p2 taps p2:Swamp#2 for mana
 T7 p2's unspent {B} empties
 T7 taps: p2:Swamp#1
 T7 p2 adds {B} (p2:Swamp#1)
+T7 p2 taps p2:Swamp#1 for mana
 T7 p2's unspent {B} empties
 T7 moves: Birds of Paradise, p2's hand -> p2's graveyard
 T7 p2 discards Birds of Paradise
@@ -155,8 +173,10 @@ T8 moves: Mountain, p1's library -> p1's hand
 T8 p1 draws
 T8 taps: p1:Mountain
 T8 p1 adds {R} (p1:Mountain)
+T8 p1 taps p1:Mountain for mana
 T8 taps: p1:Swamp#1
 T8 p1 adds {B} (p1:Swamp#1)
+T8 p1 taps p1:Swamp#1 for mana
 T8 moves: Mountain, p1's hand -> battlefield
 T8 p1 plays p1:Mountain#2
 T8 moves: Craw Wurm, p1's hand -> stack
@@ -164,18 +184,22 @@ T8 p1 cancels casting Craw Wurm
 T8 p1's unspent {B}{R} empties
 T8 taps: p1:Mountain#2
 T8 p1 adds {R} (p1:Mountain#2)
+T8 p1 taps p1:Mountain#2 for mana
 T8 p1's unspent {R} empties
 T8 p1 attack: nothing
 T8 taps: p1:Swamp#2
 T8 p1 adds {B} (p1:Swamp#2)
+T8 p1 taps p1:Swamp#2 for mana
 T8 p1's unspent {B} empties
 T9 turn 9 begins (p2)
 T9 untaps: p2:Swamp#1
 T9 untaps: p2:Swamp#2
 T9 taps: p2:Swamp#2
 T9 p2 adds {B} (p2:Swamp#2)
+T9 p2 taps p2:Swamp#2 for mana
 T9 taps: p2:Swamp#1
 T9 p2 adds {B} (p2:Swamp#1)
+T9 p2 taps p2:Swamp#1 for mana
 T9 p2's unspent {B}{B} empties
 T9 moves: Horned Turtle, p2's library -> p2's hand
 T9 p2 draws
@@ -197,17 +221,22 @@ T10 moves: Hill Giant, p1's library -> p1's hand
 T10 p1 draws
 T10 taps: p2:Swamp#3
 T10 p2 adds {B} (p2:Swamp#3)
+T10 p2 taps p2:Swamp#3 for mana
 T10 taps: p1:Swamp#1
 T10 p1 adds {B} (p1:Swamp#1)
+T10 p1 taps p1:Swamp#1 for mana
 T10 taps: p1:Swamp#2
 T10 p1 adds {B} (p1:Swamp#2)
+T10 p1 taps p1:Swamp#2 for mana
 T10 p2's unspent {B} empties
 T10 p1's unspent {B}{B} empties
 T10 taps: p1:Mountain#1
 T10 p1 adds {R} (p1:Mountain#1)
+T10 p1 taps p1:Mountain#1 for mana
 T10 p1's unspent {R} empties
 T10 taps: p1:Mountain#2
 T10 p1 adds {R} (p1:Mountain#2)
+T10 p1 taps p1:Mountain#2 for mana
 T10 p1's unspent {R} empties
 T10 p1 attack: nothing
 T10 moves: Fiery Hellhound, p1's hand -> stack
@@ -220,10 +249,13 @@ T11 untaps: p2:Swamp#2
 T11 untaps: p2:Swamp#3
 T11 taps: p2:Swamp#3
 T11 p2 adds {B} (p2:Swamp#3)
+T11 p2 taps p2:Swamp#3 for mana
 T11 taps: p2:Swamp#1
 T11 p2 adds {B} (p2:Swamp#1)
+T11 p2 taps p2:Swamp#1 for mana
 T11 taps: p2:Swamp#2
 T11 p2 adds {B} (p2:Swamp#2)
+T11 p2 taps p2:Swamp#2 for mana
 T11 p2's unspent {B}{B}{B} empties
 T11 moves: Planar Cleansing, p2's library -> p2's hand
 T11 p2 draws
@@ -237,9 +269,11 @@ T11 p2 plays p2:Island
 T11 moves: Merfolk Looter, p2's hand -> stack
 T11 taps: p2:Island
 T11 p2 adds {U} (p2:Island)
+T11 p2 taps p2:Island for mana
 T11 p2 cancels casting Merfolk Looter
 T11 taps: p2:Island
 T11 p2 adds {U} (p2:Island)
+T11 p2 taps p2:Island for mana
 T11 moves: Duress, p2's hand -> stack
 T11 p2 cancels casting Duress
 T11 moves: Merfolk Looter, p2's hand -> stack
@@ -252,6 +286,7 @@ T12 untaps: p1:Swamp#2
 T12 untaps: p1:Mountain#2
 T12 taps: p1:Swamp#2
 T12 p1 adds {B} (p1:Swamp#2)
+T12 p1 taps p1:Swamp#2 for mana
 T12 p1's unspent {B} empties
 T12 moves: Mountain, p1's library -> p1's hand
 T12 p1 draws
@@ -259,15 +294,19 @@ T12 moves: Mountain, p1's hand -> battlefield
 T12 p1 plays p1:Mountain#3
 T12 taps: p1:Mountain#2
 T12 p1 adds {R} (p1:Mountain#2)
+T12 p1 taps p1:Mountain#2 for mana
 T12 p1's unspent {R} empties
 T12 p1 attack: nothing
 T12 taps: p1:Swamp#1
 T12 p1 adds {B} (p1:Swamp#1)
+T12 p1 taps p1:Swamp#1 for mana
 T12 taps: p1:Mountain#3
 T12 p1 adds {R} (p1:Mountain#3)
+T12 p1 taps p1:Mountain#3 for mana
 T12 p1's unspent {B}{R} empties
 T12 taps: p1:Mountain#1
 T12 p1 adds {R} (p1:Mountain#1)
+T12 p1 taps p1:Mountain#1 for mana
 T12 p1's unspent {R} empties
 T13 turn 13 begins (p2)
 T13 untaps: p2:Swamp#1
@@ -278,14 +317,18 @@ T13 moves: Ornithopter, p2's library -> p2's hand
 T13 p2 draws
 T13 taps: p2:Swamp#3
 T13 p2 adds {B} (p2:Swamp#3)
+T13 p2 taps p2:Swamp#3 for mana
 T13 taps: p2:Island
 T13 p2 adds {U} (p2:Island)
+T13 p2 taps p2:Island for mana
 T13 p2's unspent {U}{B} empties
 T13 taps: p2:Swamp#1
 T13 p2 adds {B} (p2:Swamp#1)
+T13 p2 taps p2:Swamp#1 for mana
 T13 p2's unspent {B} empties
 T13 taps: p2:Swamp#2
 T13 p2 adds {B} (p2:Swamp#2)
+T13 p2 taps p2:Swamp#2 for mana
 T13 p2's unspent {B} empties
 T13 p2 attack: nothing
 T13 moves: Craw Wurm, p2's hand -> stack
@@ -302,18 +345,23 @@ T14 untaps: p1:Mountain#2
 T14 untaps: p1:Mountain#3
 T14 taps: p1:Swamp#2
 T14 p1 adds {B} (p1:Swamp#2)
+T14 p1 taps p1:Swamp#2 for mana
 T14 p1's unspent {B} empties
 T14 moves: Enormous Baloth, p1's library -> p1's hand
 T14 p1 draws
 T14 moves: Fiery Hellhound, p1's hand -> stack
 T14 taps: p1:Mountain#2
 T14 p1 adds {R} (p1:Mountain#2)
+T14 p1 taps p1:Mountain#2 for mana
 T14 taps: p1:Mountain#1
 T14 p1 adds {R} (p1:Mountain#1)
+T14 p1 taps p1:Mountain#1 for mana
 T14 taps: p1:Mountain#3
 T14 p1 adds {R} (p1:Mountain#3)
+T14 p1 taps p1:Mountain#3 for mana
 T14 taps: p1:Swamp#1
 T14 p1 adds {B} (p1:Swamp#1)
+T14 p1 taps p1:Swamp#1 for mana
 T14 p1 casts Fiery Hellhound
 T14 resolves: Fiery Hellhound
 T14 moves: Fiery Hellhound, stack -> battlefield

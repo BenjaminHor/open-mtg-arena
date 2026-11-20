@@ -100,7 +100,14 @@ export const furnaceWhelp: CardDef = {
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's
   controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw" }` ("each
-  end step" likewise, `step: "end"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "If this artifact
+  end step" likewise, `step: "end"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
+  player casts a green spell" is `{ kind: "spellCast", filter: { colors: ["G"] } }` ("you cast" adds `controller:
+  "you"`, the caster); "whenever an opponent draws / discards a card" is `{ kind: "playerDraws" / "playerDiscards",
+  player: "opponent" }` (`"anyPlayer"`, `"you"`); "whenever a player taps a land for mana" is `{ kind:
+  "landTappedForMana" }`; "whenever this creature deals [combat] damage to [an opponent / a player]" is `{ kind:
+  "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
+  "you" }`, with "that much" the amount `"thatMuch"`. "Target permanent that player controls" is a target filter with
+  `controller: "triggeringPlayer"` (targets only). "If this artifact
   is untapped" right after the condition is an intervening if, `onlyIf: { kind: "sourceUntapped" }` (CR 603.4). "You
   may" is `optional: true` (asked as it resolves). "That player" is the subject `"triggeringPlayer"`; "sacrifice it"
   (the source) is `{ op: "sacrificeSource" }`. The engine reads them only through `triggersOf`.

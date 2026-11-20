@@ -1,0 +1,21 @@
+name: Lurking Predators reveals a creature card on an opponent's spell and puts it onto the battlefield, before the spell resolves
+rules: [CR 701.20a, CR 608.2c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Lurking Predators]
+    library: [Craw Wurm, Island]
+  p2:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - p2 cast: Lightning Bolt
+    targets: [p1]
+    pay: auto
+  - expect:
+      stack: [Lightning Bolt, Lurking Predators ability]
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Craw Wurm]
+      events contains: [{ type: CARDS_REVEALED }]
+      stack: [Lightning Bolt]

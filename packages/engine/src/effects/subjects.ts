@@ -58,6 +58,11 @@ export function objectsOf(targets: readonly Target[]): ObjectId[] {
 /** What an `Amount` is now: a number, X, or a count of permanents (CR 107.3a, 107.3c, 608.2h). */
 export function amountNow(state: GameState, amount: Amount, context: EffectContext, cards: CardDatabase): number {
   if (typeof amount === "object") return permanentsFitting(state, amount.count, context, cards).length;
+  if (amount === "thatMuch") {
+    const known = context.trigger?.amount ?? null;
+    if (known === null) throw new Error('"that much" outside a triggered ability whose event has an amount');
+    return known;
+  }
   return amountOf(amount, context.x);
 }
 
