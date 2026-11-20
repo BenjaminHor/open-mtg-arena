@@ -487,8 +487,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
          stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
          Built (D-090): Harm's Way, 6 scenarios (`harms-way*.yaml`) and a unit test of the amount used up; golden
-         pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Next: mutations, fuzz, reviews, PR.
-         Plan (2026-11-20, after #48 merged):
+         pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Fuzz clean. Reviews found (fixing now):
+         - Rules: Guardian Seraph prevents twice when redirected damage joins the same source's damage to the same
+           player (CR 615.10: per source, per event): thread what's used across the event's entries and merge the
+           dealt entries by source and recipient. Sources only referred to by a stack object (a pinger bounced in
+           response) aren't offered (CR 609.7a): offer abilities' sources. Two players' Harm's Ways on one source give a
+           wrong result: let a redirected part meet the other effects not yet applied (CR 616.1f, 614.5).
+         - Tests: other source / opponent's things not redirected, Earthquake with a forced minimum share, an
+           out-of-range answer, the shield not used when Fog goes first then used later (CR 609.7b), Harm's Way at its
+           controller's own creature (CR 614.5), damage already headed for the target.
+         - Code: CR 615.7 cited only by analogy (`later:`); "you and your permanents" in `rules/damage-recipients.ts`;
+           the decision's range and answer to `game/`; its own answer kind; one `sameTarget`; flat shares; the
+           spell-to-permanent link listed as a pipeline exception; docs (this plan is superseded by D-090).
+         Plan (2026-11-20, after #48 merged; superseded by D-090 where they differ):
          - One op, `redirectNextDamage { amount, to }`: with nothing chosen it asks (`chooseCards`, purpose
            `damageSource`, among permanents and spells on the stack, CR 609.7a); with the source chosen it adds
            `{ kind: "redirectDamage", id, sourceOracleId, controller, from, remaining, to }` to `GameState.replacements`.
