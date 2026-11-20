@@ -1,0 +1,20 @@
+name: A block can be declared one pick at a time and the last pick taken back
+rules: [CR 509.1a, CR 509.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Runeclaw Bear, Elite Vanguard]
+  p2:
+    battlefield: [Siege Mastodon]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear, Elite Vanguard]
+  - all pass: until combat.declareBlockers
+  - p2 choose: Siege Mastodon blocks Runeclaw Bear
+  - p2 choose: take back
+  - p2 choose: Siege Mastodon blocks Elite Vanguard
+  - p2 choose: done
+  - all pass: until main2
+  - expect:
+      p1.graveyard: [Elite Vanguard]
+      p2.life: 18

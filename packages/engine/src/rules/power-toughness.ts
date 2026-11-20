@@ -72,6 +72,7 @@ function layer7c(state: GameState, obj: CardObject, isCreature: boolean, onBattl
         break;
       }
       case "cantBlock":
+      case "mustAttack":
         break;
     }
   }

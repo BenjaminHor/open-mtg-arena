@@ -3,8 +3,10 @@
 import type { CardDef } from "@mtg/engine";
 import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
 import { airElemental } from "./a/air-elemental.ts";
+import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
+import { berserkersOfBloodRidge } from "./b/berserkers-of-blood-ridge.ts";
 import { birdsOfParadise } from "./b/birds-of-paradise.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
 import { bogWraith } from "./b/bog-wraith.ts";
@@ -54,6 +56,7 @@ import { hillGiant } from "./h/hill-giant.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { island } from "./i/island.ts";
+import { jackalFamiliar } from "./j/jackal-familiar.ts";
 import { kelinoreBat } from "./k/kelinore-bat.ts";
 import { lavaAxe } from "./l/lava-axe.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
@@ -76,6 +79,7 @@ import { phantomWarrior } from "./p/phantom-warrior.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
 import { ponder } from "./p/ponder.ts";
+import { prizedUnicorn } from "./p/prized-unicorn.ts";
 import { prodigalPyromancer } from "./p/prodigal-pyromancer.ts";
 import { pyroclasm } from "./p/pyroclasm.ts";
 import { ragingGoblin } from "./r/raging-goblin.ts";
@@ -121,8 +125,10 @@ import { zombieGoliath } from "./z/zombie-goliath.ts";
 export const CARD_DEFS: readonly CardDef[] = [
   acolyteOfXathrid,
   airElemental,
+  alluringSiren,
   angelsMercy,
   assassinate,
+  berserkersOfBloodRidge,
   birdsOfParadise,
   blindingMage,
   bogWraith,
@@ -172,6 +178,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   hornedTurtle,
   igniteDisorder,
   island,
+  jackalFamiliar,
   kelinoreBat,
   lavaAxe,
   lightningBolt,
@@ -194,6 +201,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   plains,
   planarCleansing,
   ponder,
+  prizedUnicorn,
   prodigalPyromancer,
   pyroclasm,
   ragingGoblin,

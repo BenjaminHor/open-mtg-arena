@@ -1,0 +1,18 @@
+name: A lone Jackal Familiar can't block Prized Unicorn alone, so blocking with nothing is legal despite the requirement
+rules: [CR 506.5, CR 509.1b, CR 509.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Prized Unicorn]
+  p2:
+    battlefield: [Jackal Familiar, { card: Runeclaw Bear, tapped: true }]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Prized Unicorn]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Jackal Familiar: Prized Unicorn }
+  - expect error: illegalAction
+  - p2 block: {}
+  - all pass: until main2
+  - expect:
+      p2.life: 18

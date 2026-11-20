@@ -65,6 +65,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Alluring Siren",
+      "slug": "alluring-siren",
+      "oracleId": "5f358544-7319-4f8e-9d60-a410c4feb774",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Creature — Siren",
+      "oracleText": "{T}: Target creature an opponent controls attacks you this turn if able.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/6/a6434841-6cca-4397-b1fa-5ce34dc0b7f3.jpg?1783941097",
+        "large": "https://cards.scryfall.io/large/front/a/6/a6434841-6cca-4397-b1fa-5ce34dc0b7f3.jpg?1783941097",
+        "png": "https://cards.scryfall.io/png/front/a/6/a6434841-6cca-4397-b1fa-5ce34dc0b7f3.png?1783941097",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/6/a6434841-6cca-4397-b1fa-5ce34dc0b7f3.jpg?1783941097"
+      },
+      "artist": "Chippy",
+      "set": "m12",
+      "collectorNumber": "42",
+      "scryfallUri": "https://scryfall.com/card/m12/42/alluring-siren?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Angel's Mercy",
       "slug": "angels-mercy",
       "oracleId": "6b232bb7-d372-4174-a049-5f8d620810e6",
@@ -118,6 +146,34 @@
       "set": "m11",
       "collectorNumber": "81",
       "scryfallUri": "https://scryfall.com/card/m11/81/assassinate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Berserkers of Blood Ridge",
+      "slug": "berserkers-of-blood-ridge",
+      "oracleId": "9e8a2d53-3145-421a-aad1-8f2b2f6eaec8",
+      "layout": "normal",
+      "manaCost": "{4}{R}",
+      "manaValue": 5,
+      "typeLine": "Creature — Human Berserker",
+      "oracleText": "This creature attacks each combat if able.",
+      "power": "4",
+      "toughness": "4",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/3/033fce45-20d8-48cc-96d3-7f16c99da83d.jpg?1783941809",
+        "large": "https://cards.scryfall.io/large/front/0/3/033fce45-20d8-48cc-96d3-7f16c99da83d.jpg?1783941809",
+        "png": "https://cards.scryfall.io/png/front/0/3/033fce45-20d8-48cc-96d3-7f16c99da83d.png?1783941809",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/3/033fce45-20d8-48cc-96d3-7f16c99da83d.jpg?1783941809"
+      },
+      "artist": "Karl Kopinski",
+      "set": "m11",
+      "collectorNumber": "124",
+      "scryfallUri": "https://scryfall.com/card/m11/124/berserkers-of-blood-ridge?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1509,6 +1565,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Jackal Familiar",
+      "slug": "jackal-familiar",
+      "oracleId": "e4d5d666-fd55-4c1a-89c8-2348288f6b30",
+      "layout": "normal",
+      "manaCost": "{R}",
+      "manaValue": 1,
+      "typeLine": "Creature — Jackal",
+      "oracleText": "This creature can't attack or block alone.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/a/0a47a2dc-f7f2-4103-9ebe-8cd8b83915ae.jpg?1783942372",
+        "large": "https://cards.scryfall.io/large/front/0/a/0a47a2dc-f7f2-4103-9ebe-8cd8b83915ae.jpg?1783942372",
+        "png": "https://cards.scryfall.io/png/front/0/a/0a47a2dc-f7f2-4103-9ebe-8cd8b83915ae.png?1783942372",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/a/0a47a2dc-f7f2-4103-9ebe-8cd8b83915ae.jpg?1783942372"
+      },
+      "artist": "Alex Horley-Orlandelli",
+      "set": "m10",
+      "collectorNumber": "143",
+      "scryfallUri": "https://scryfall.com/card/m10/143/jackal-familiar?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Kelinore Bat",
       "slug": "kelinore-bat",
       "oracleId": "552dcf9f-ff4a-4057-a93e-62f5527050c9",
@@ -2122,6 +2206,34 @@
       "set": "m12",
       "collectorNumber": "73",
       "scryfallUri": "https://scryfall.com/card/m12/73/ponder?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Prized Unicorn",
+      "slug": "prized-unicorn",
+      "oracleId": "766787ef-654a-4544-b5d7-d2f96949edf1",
+      "layout": "normal",
+      "manaCost": "{3}{G}",
+      "manaValue": 4,
+      "typeLine": "Creature — Unicorn",
+      "oracleText": "All creatures able to block this creature do so.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/a/baac1604-379f-4f03-97ae-9ec10921167c.jpg?1783932900",
+        "large": "https://cards.scryfall.io/large/front/b/a/baac1604-379f-4f03-97ae-9ec10921167c.jpg?1783932900",
+        "png": "https://cards.scryfall.io/png/front/b/a/baac1604-379f-4f03-97ae-9ec10921167c.png?1783932900",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/a/baac1604-379f-4f03-97ae-9ec10921167c.jpg?1783932900"
+      },
+      "artist": "Rudy Siswanto",
+      "set": "m20",
+      "collectorNumber": "342",
+      "scryfallUri": "https://scryfall.com/card/m20/342/prized-unicorn?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

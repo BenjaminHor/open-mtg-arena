@@ -1,8 +1,7 @@
 // Combat rules questions (CR 506–510): who can attack, who can block what, and who's still in combat. Restrictions on
 // one creature (defender, evasion, "can't block"; protection, later: CR 702.16f) are named checks here (CR 508.1c,
-// 509.1b). Rules about the whole declaration will be checked at `finishDeclaring`: restrictions like menace and "can't
-// attack alone"
-// (later: CR 508.1c, 509.1b, 702.111b) and requirements like "attacks each combat if able" (later: CR 508.1d, 509.1c).
+// 509.1b). Rules about the whole declaration ("can't attack alone", requirements; menace, later: CR 702.111b) are in
+// combat/declaration-rules.ts, checked as a declaration is finished.
 
 import type { CardDatabase, Keyword } from "../cards/types.ts";
 import type { Attack, Block } from "../state/combat.ts";

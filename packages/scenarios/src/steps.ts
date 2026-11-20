@@ -18,7 +18,7 @@ export type { Game } from "./apply.ts";
 
 import { allPass } from "./all-pass.ts";
 import { type AfterEach, apply, type Game, legal } from "./apply.ts";
-import { combatAction } from "./combat-steps.ts";
+import { combatAction, declarationAnswer } from "./combat-steps.ts";
 import {
   abilityNamed,
   cardIn,
@@ -269,8 +269,9 @@ function answerFor(
       return { kind: "chooseYesNo", yes: text === "yes" };
     case "declareAttackers":
     case "declareBlockers":
+      return declarationAnswer(state, player, text, cards);
     case "assignDamage":
-      throw new Error(`for ${pending.kind}, use the attack, block or assign step`);
+      throw new Error(`for ${pending.kind}, use the assign step`);
     case "priority":
       throw new Error("the player has priority: use pass, play, cast or activate");
   }

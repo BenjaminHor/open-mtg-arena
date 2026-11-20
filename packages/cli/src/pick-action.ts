@@ -7,7 +7,10 @@
 import type { Action } from "@mtg/engine";
 import { nextRandom } from "./seeded-random.ts";
 
-/** Cancelling a cast or an activation is still tried, a tenth as often as any other kind of action. */
+/**
+ * Cancelling a cast or an activation, and taking back a pick in a declaration, are still tried, a tenth as often as any
+ * other kind of action: both undo work, so at full weight games would spend most of their time going back.
+ */
 const CANCEL_WEIGHT = 0.1;
 
 /** What kind of choice an action is: its type, and for an answer to a decision, the answer's kind. */
@@ -17,7 +20,8 @@ export function actionKind(action: Action): string {
 
 /** A kind's weight, read from one of its actions so the compiler checks the answer kind's name. */
 function weightOf(action: Action): number {
-  return action.type === "ANSWER" && action.answer.kind === "cancelCast" ? CANCEL_WEIGHT : 1;
+  const undoes = action.type === "ANSWER" && (action.answer.kind === "cancelCast" || action.answer.kind === "takeBack");
+  return undoes ? CANCEL_WEIGHT : 1;
 }
 
 /** A kind of action, by weight, then one action of that kind, uniformly. Seeded, so one seed is one game. */

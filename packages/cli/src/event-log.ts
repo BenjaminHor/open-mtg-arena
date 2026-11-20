@@ -162,5 +162,7 @@ function effectChangeText(change: EffectChange): string {
       return `${sign(change.power)}/${sign(change.toughness)}`;
     case "cantBlock":
       return "can't block";
+    case "mustAttack":
+      return `attacks ${change.player} if able`;
   }
 }

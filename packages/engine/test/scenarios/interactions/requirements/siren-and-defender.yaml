@@ -1,0 +1,19 @@
+name: A creature with defender that must attack if able isn't able, so its controller needn't attack
+rules: [CR 508.1d, CR 702.3b]
+setup:
+  turn: { active: p2, step: upkeep }
+  p1:
+    battlefield: [Alluring Siren]
+  p2:
+    battlefield: [Wall of Faith, Runeclaw Bear]
+steps:
+  - p2 pass: once
+  - p1 activate: p1:Alluring Siren
+    targets: [p2:Wall of Faith]
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  # The Bear could attack, but nothing requires it; the Wall can't: attacking with nothing is legal.
+  - p2 attack: []
+  - expect:
+      step: combat.declareAttackers
+      pending: { player: p2, kind: priority }

@@ -1,0 +1,17 @@
+name: A creature that must attack but can't attack alone, with nothing to attack beside it, doesn't attack
+rules: [CR 508.1c, CR 508.1d]
+setup:
+  turn: { active: p2, step: upkeep }
+  p1:
+    battlefield: [Alluring Siren]
+  p2:
+    battlefield: [Jackal Familiar]
+steps:
+  - p2 pass: once
+  - p1 activate: p1:Alluring Siren
+    targets: [p2:Jackal Familiar]
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p2 attack: []
+  - expect:
+      pending: { kind: priority }

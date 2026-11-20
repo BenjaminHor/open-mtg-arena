@@ -22,6 +22,7 @@ the one place their effects become changes to the game.
 | `addMana` | "Add {G}." | Adds `amount` of `mana` to the controller's pool (CR 106.4, 109.5), naming `self` as its source; `"anyColor"` is replaced by the color the activation chose (D-068) |
 | `sacrifice` | "Each opponent sacrifices a land of their choice" | The player chooses one permanent they control that fits, then sacrifices it (CR 701.21a, D-068) |
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
+| `mustAttack` | "attacks you this turn if able" | Creates a continuous effect `declaration-rules.ts` reads as a requirement (CR 508.1d) on the targets still legal; targets only for now |
 | `cantBlock` | "can't block this turn" | Creates a continuous effect `canBlock` reads (CR 509.1b) on the targets still legal (CR 608.2b); targets only for now |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a) |
 | `destroyAll` | "Destroy all nonland permanents" | Destroys every permanent fitting `filter`, decided once, at the same time (CR 608.2f, 608.2h) |

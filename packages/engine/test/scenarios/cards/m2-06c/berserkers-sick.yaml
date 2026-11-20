@@ -1,0 +1,11 @@
+name: A summoning-sick creature that attacks each combat if able isn't able, so it needn't attack
+rules: [CR 508.1d, CR 302.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Berserkers of Blood Ridge, sick: true }, Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: []
+  - expect:
+      pending: { player: p1, kind: priority }

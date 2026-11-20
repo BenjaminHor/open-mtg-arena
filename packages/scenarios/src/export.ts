@@ -16,9 +16,9 @@ import {
   type PlayerId,
   sameAbilityRef,
   type Target,
-  withForcedAnswers,
 } from "@mtg/engine";
 import { stringify } from "yaml";
+import { declaration, division } from "./export-declarations.ts";
 import { nameOf, refOf, scenarioStep } from "./names.ts";
 
 type Step = Record<string, unknown>;
@@ -117,6 +117,7 @@ function answerStep(
     case "declareAttacker":
     case "declareBlocker":
     case "finishDeclaring":
+    case "takeBack":
       return declaration(state, actions, i, cards);
     case "assignDamage":
       return division(state, actions, i, cards);
@@ -134,72 +135,6 @@ function answerStep(
     case "chooseYesNo":
       return choose(answer.yes ? "yes" : "no");
   }
-}
-
-/** A permanent named relative to its controller, as `attack`, `block` and `assign` steps name it (`Grizzly Bears#2`). */
-function local(state: GameState, id: ObjectId, cards: CardDatabase): string {
-  return (refOf(state, id, cards) ?? nameOf(state, id, cards)).replace(/^p\d+:/, "");
-}
-
-/** One declaration's answers, up to and including `finishDeclaring`, as one `attack` or `block` step. */
-function declaration(
-  state: GameState,
-  actions: readonly Action[],
-  i: number,
-  cards: CardDatabase,
-): { step: Step; taken: number } {
-  const pending = state.pending;
-  const p = (actions[i] as Action & { player: PlayerId }).player;
-  const end = actions.findIndex((a, j) => j >= i && a.type === "ANSWER" && a.answer.kind === "finishDeclaring");
-  if (end < 0) throw new Error("the game stops part way through a declaration, which a scenario can't write");
-  const answers = actions.slice(i, end).map((a) => (a.type === "ANSWER" ? a.answer : null));
-  // Scenario steps attack the one other player; several defending players can't be written yet.
-  const others = state.turnOrder.filter((x) => x !== p);
-  if (pending?.kind === "declareAttackers") {
-    const attackers = answers.map((a) => {
-      if (a?.kind !== "declareAttacker") throw new Error("an unexpected answer in a declaration of attackers");
-      if (others.length !== 1 || a.attack.defender !== others[0])
-        throw new Error("attacks on several players can't be written");
-      return local(state, a.attack.attacker, cards);
-    });
-    return { step: { [`${p} attack`]: attackers }, taken: end - i + 1 };
-  }
-  const blocks = answers.map((a): [string, string] => {
-    if (a?.kind !== "declareBlocker") throw new Error("an unexpected answer in a declaration of blockers");
-    return [local(state, a.block.blocker, cards), local(state, a.block.attacker, cards)];
-  });
-  // A blocker of several attackers gets a list (Palace Guard). Grouping can reorder blocks across blockers, which only
-  // changes the order an attacker's blockers are listed in; `assign` names them in any order.
-  const byBlocker: Record<string, string[]> = {};
-  for (const [blocker, attacker] of blocks) byBlocker[blocker] = [...(byBlocker[blocker] ?? []), attacker];
-  const map = Object.fromEntries(Object.entries(byBlocker).map(([b, as]) => [b, as.length === 1 ? as[0] : as]));
-  return { step: { [`${p} block`]: map }, taken: end - i + 1 };
-}
-
-/** One attacker's division of damage: an answer per recipient but the last, which gets the rest. */
-function division(
-  state: GameState,
-  actions: readonly Action[],
-  i: number,
-  cards: CardDatabase,
-): { step: Step; taken: number } {
-  const pending = state.pending;
-  if (pending?.kind !== "assignDamage") throw new Error("an assignDamage answer without its decision");
-  // One answer per question; answers with only one legal amount the engine fills in, as it does for the game.
-  let amounts: number[] = [];
-  let count = 0;
-  while (amounts.length < pending.recipients.length - 1) {
-    const a = actions[i + count];
-    if (a?.type !== "ANSWER" || a.answer.kind !== "assignDamage") {
-      throw new Error("the game stops part way through dividing damage, which a scenario can't write");
-    }
-    amounts = withForcedAnswers({ ...pending, assigned: amounts }, [...amounts, a.answer.amount]);
-    count++;
-  }
-  const last = pending.amount - amounts.reduce((sum, n) => sum + n, 0);
-  const name = (to: Target) => (to.kind === "player" ? to.player : local(state, to.object, cards));
-  const map = Object.fromEntries(pending.recipients.map((to, j) => [name(to), amounts[j] ?? last]));
-  return { step: { [`${pending.player} assign`]: map }, taken: count };
 }
 
 /** A card in hand by name, with `#n` when the hand holds several copies (which copy can matter, CR 103.5). */

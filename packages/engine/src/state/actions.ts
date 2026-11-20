@@ -52,6 +52,8 @@ export type Answer =
   | { kind: "declareBlocker"; block: Block }
   /** The declaration of attackers or blockers is complete (it may be empty). */
   | { kind: "finishDeclaring" }
+  /** Take back the last attacker or block added, so a declaration that can't be finished isn't stuck. */
+  | { kind: "takeBack" }
   /** How much of the attacker's combat damage goes to the next blocker in the decision's order (CR 510.1c). */
   | { kind: "assignDamage"; amount: number }
   /** One more card for a `chooseCards` decision, by its position in the decision's `options` (D-062). */

@@ -109,7 +109,13 @@ export type StaticAbilityDef =
    */
   | { kind: "cantBeBlocked"; except?: ObjectFilter }
   /** "This creature can block any number of creatures": card text overriding CR 509.1a's one each (CR 101.1). */
-  | { kind: "canBlockAnyNumber" };
+  | { kind: "canBlockAnyNumber" }
+  /** "This creature can't attack or block alone": a restriction on the whole declaration (CR 506.5, 508.1c, 509.1b). */
+  | { kind: "cantAttackOrBlockAlone" }
+  /** "This creature attacks each combat if able": a requirement (CR 508.1d). */
+  | { kind: "attacksEachCombat" }
+  /** "All creatures able to block this creature do so": a requirement on each of them (CR 509.1c). */
+  | { kind: "mustBeBlockedByAllAble" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =
@@ -291,6 +297,8 @@ export type Effect =
   | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration }
   /** "[subject] can't block this turn": a restriction on declaring blockers (CR 509.1b) for as long as it lasts. */
   | { op: "cantBlock"; of: EffectSubject; duration: Duration }
+  /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
+  | { op: "mustAttack"; of: EffectSubject; duration: Duration }
   /** "Destroy [subject]" (CR 701.8a). */
   | { op: "destroy"; of: EffectSubject }
   /**

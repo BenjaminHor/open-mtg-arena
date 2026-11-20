@@ -63,9 +63,9 @@ export function blockProblem(state: GameState, chosen: readonly Block[], block: 
 }
 
 /**
- * The declaration is complete (no restrictions or requirements beyond evasion in the pool: CR 509.1b;
- * later: CR 509.1c). Each attacker is now blocked or unblocked for good (CR 509.1h); then the active player gets
- * priority (CR 509.2).
+ * The declaration is complete, and legal: the whole-declaration rules were checked as it was finished
+ * (`declaration-rules.ts`, CR 509.1b–c). Each attacker is now blocked or unblocked for good (CR 509.1h); then the active
+ * player gets priority (CR 509.2).
  */
 export function finishBlockers(state: GameState, defender: PlayerId | null, chosen: readonly Block[]): Progress {
   const active = currentTurn(state).activePlayer;
