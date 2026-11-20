@@ -221,8 +221,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        or a graveyard card with shroud can be targeted), which resolution re-checks (CR 608.2b).
        Mist Leopard, Kalonian Behemoth. Scenarios in `test/scenarios/cards/m2-06d/` and `interactions/shroud/`, a unit
        test for a target gaining shroud before resolution, a Shroud matrix row; Mist Leopard in the M10 pair.
-       Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer
-       (Open questions): their Magic 2010 cards come in M2-07, M2-08 and M2-12.
+       Protection's targeting and blocking, flash, indestructible and "can't be countered" waited for the owner's answer,
+       settled by D-074: flash came in M2-07, indestructible in M2-08a, the rest come in M2-08e and M2-12.
 
   4. Done: M2-07 triggered abilities (CR 603; m2-rules-depth.md), merged in PRs #39, #40, #41 and #44 (D-076–D-079,
      D-084). The plan as it was made (2026-11-20), in three PRs:
@@ -373,7 +373,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      noncombat-damage prevention).
      - M2-08a: built (D-085), in review. 15 scenarios in `test/scenarios/cards/m2-08a/`, a CR 614.4 unit test
        (`test/pipeline/replacements.test.ts`), an Indestructible matrix row, three golden games; the Magic 2010 decks
-       run checklands. 158 cards; 150 of the 234 Magic 2010 cards. Plan as made:
+       run checklands. 158 cards; 150 of the 234 Magic 2010 cards. As built, unlike the plan below: one replacement per
+       event, refusing two (CR 614.5 and 616.1f come with M2-08c's choice), and `autoPay` stays greedy (lands first,
+       then fewest choices; no search). Owner (2026-11-20): carry on with M2-08b once this PR merges. Plan as made:
      - M2-08a, the framework, no player choice: replacement effects as data, applied in `pipeline/happen.ts`'s
        `replace` to each event against the state before its batch (CR 614.4), each at most once per event
        (CR 614.5), the result replaced again (CR 616.1f). Until M2-08c, `replace` throws if two different effects
