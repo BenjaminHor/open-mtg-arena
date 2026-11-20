@@ -141,9 +141,7 @@ scenario `block` step.
 **Milling and losing life, as triggers and replacements arrive (M2-07, M2-08).** Mill is plain `moveCard` events from
 library to graveyard (D-060), so "whenever a player mills", "the milled card" (CR 701.17c, 701.17d) and replacements
 that change how many are milled can't tell it from another such move (surveil): mark it, as discard is marked, with a
-`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Whether losing 0 life is an
-event isn't settled by the CR (CR 119.9 and 119.10 cover only gaining 0): no pool card loses a variable amount yet, so
-`loseLife` proposes whatever amount it's given; ask the owner when "whenever a player loses life" or X life loss arrives.
+`CARD_MILLED` event or a cause on the batch, when its first trigger or replacement arrives. Losing 0 life is an event (D-065, the owner's ruling): a "whenever a player loses life" trigger sees it.
 
 **Hidden information beyond hands and libraries (D-044).** Face-down permanents (CR 708.2; who may look, CR 708.5;
 telling them apart, CR 708.6), face-down exile (CR 406.3), a card drawn face down while casting (CR 121.8), revealed

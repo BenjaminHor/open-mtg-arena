@@ -99,7 +99,7 @@ export function runEffect(
       return toEach(state, onStack, cards, (object) => ({ kind: "counterObject", object }));
     }
     case "loseLife": {
-      // Whether losing 0 life is an event isn't settled until a card can lose a variable amount (docs/future-rules.md).
+      // Losing 0 life is still an event (D-065, the owner's ruling; the CR settles only gaining 0, CR 119.9).
       const amount = amountOf(effect.amount, context.x);
       return toEach(state, playersOf(subject(state, effect.who, context)), cards, (player) => ({
         kind: "loseLife",

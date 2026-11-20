@@ -33,7 +33,7 @@ fails on a gap that isn't listed here; close these.
 | 113.1c | packages/engine/src/state/objects.ts | packages/engine/test/state/definitions.test.ts |
 | 113.6 | packages/engine/src/mana/activate.ts | packages/engine/test/mana/activation.test.ts |
 | 113.8 | packages/engine/src/rules/controller.ts<br>packages/engine/src/state/objects.ts<br>packages/engine/src/zones/stack-abilities.ts | packages/engine/test/game/activate-ability.test.ts |
-| 119.9 | packages/engine/src/effects/life.ts<br>packages/engine/src/pipeline/happen.ts | packages/engine/test/effects/removal.test.ts |
+| 119.9 | packages/engine/src/effects/life.ts<br>packages/engine/src/effects/run-effect.ts<br>packages/engine/src/pipeline/happen.ts | packages/engine/test/effects/removal.test.ts |
 | 119.10 | packages/engine/src/effects/life.ts<br>packages/engine/src/pipeline/happen.ts | packages/engine/test/effects/removal.test.ts |
 | 120.1 | packages/engine/src/state/events.ts | packages/engine/test/effects/effects.test.ts |
 | 120.1a | packages/engine/src/effects/deal-damage.ts | packages/engine/test/effects/effects.test.ts |

@@ -829,3 +829,10 @@ every schema change and every change D-024 lists bumps it.
 - "Sacrifice this land" is a `sacrificeSelf` cost part, sacrificed with the rest of the cost after {T} (D-059).
 - The new state field changes the saved replays' final-state hashes and nothing else (checked: each final state
   minus `resolution: null` has the old hash), so `pnpm replays:update` rewrote them.
+
+**D-065: Losing 0 life is an event** · 2026-11-20 · accepted (owner)
+- "A player loses 0 life" (Xathrid Demon sacrificing a 0-power creature, a "loses X life" with X of 0) is a life-loss
+  event: `loseLife` proposes it, it emits `LIFE_LOST` with amount 0, and "whenever a player loses life" triggers and
+  life-loss replacements (M2-07, M2-08) will see it. The CR settles this only for gaining 0 life (CR 119.9, 119.10)
+  and dealing 0 damage (CR 120.8), not for losing 0. The owner's ruling: "Treat losing 0 life as an event because we
+  may encounter a card(s) that take advantage of that."
