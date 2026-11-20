@@ -797,3 +797,10 @@ every schema change and every change D-024 lists bumps it.
 - A choice over a hidden zone is asked whenever that zone isn't empty, even when nothing fits, with "find nothing"
   allowed where the CR allows it (CR 701.23b): skipping it would tell the opponent what the zone lacks.
 - The fuzzer's `scrambleHidden` permutes hidden ids rather than shifting them, so a view that leaks an order fails.
+
+**D-063: Haunting Echoes with nothing exiled doesn't search** · 2026-11-20 · accepted (owner)
+- "For each card exiled this way, search that player's library..." with no card exiled means no search: the caster
+  doesn't look at the library, and "whenever a player searches" won't trigger. The target still shuffles. The owner's
+  ruling, asked because the CR doesn't settle this wording (CR 701.23c's Lobotomy example reads the other way for
+  Lobotomy's own text): "for each card exiled do xyz. If the graveyard is empty then the for each is basically 0 so it
+  would be 0 xyz actions. Aka no searches."

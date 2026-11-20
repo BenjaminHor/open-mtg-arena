@@ -112,7 +112,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         CR 605.1a). Ponder (look at the top three, CR 701.20e, put back in any order, CR 401.4, later: CR 701.20d;
         "you may shuffle" yes/no; draw). Haunting Echoes (exile all but basic lands from the target's graveyard,
         CR 406.3; one search for all those names, CR 701.23h, 201.2a, any number, its ruling; exile them; the target
-        shuffles): waits on the owner's answer in Open questions when nothing is exiled.
+        shuffles). With nothing exiled there's no search at all, only the shuffle: the owner's ruling (D-063).
       - Future impact: "whenever a player discards / searches / shuffles" (M2-07) read these events; a replacement on
         a discard or move (M2-08) sees one event per instruction, the choices made; Telepathy and multiplayer reveals
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
@@ -267,14 +267,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Blocks only M2-05b2b's Haunting Echoes.) Haunting Echoes: "Exile all cards from target player's graveyard other
-  than basic land cards. For each card exiled this way, search that player's library for all cards with the same
-  name as that card and exile them. Then that player shuffles." If the graveyard has nothing to exile, does the caster
-  still search (look through) the target's library? Reading "for each card exiled this way" literally, zero cards
-  means zero searches. CR 701.23c's Lobotomy example points the other way: with nothing to match, the player
-  "searches the specified zones but doesn't exile any cards". The CR doesn't settle it for this wording. It decides
-  whether the caster gets to see the library, and later whether "whenever a player searches" triggers. The shuffle
-  happens either way.
 - (Not blocking yet.) Is losing 0 life an event? The CR says gaining 0 life isn't (CR 119.9, 119.10) but says nothing
   about losing 0. Today `loseLife` proposes any amount, so losing 0 would emit `LIFE_LOST` of 0; no pool card can do
   that yet. Needed before "whenever a player loses life" triggers (M2-07) or a card that loses X life
