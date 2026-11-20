@@ -61,6 +61,18 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
       player: "p1",
       for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } },
     });
+    // Once chosen, nothing is prevented for the gone recipient: the Fog-like effect isn't used on it.
+    const choice = { for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } } } as const;
+    const replaced = replaceDamage(state, [gone, toP1(bears, 2)], TEST_CARDS, [
+      { ...choice, ref: { kind: "resolvedEffect", id: "o902" } },
+    ]);
+    expect(replaced).toStrictEqual({
+      kind: "replaced",
+      events: [
+        { kind: "damagePrevented", source: bears, to: { kind: "player", player: "p1" }, amount: 2, by: MOUNTAIN },
+        { kind: "dealDamage", damage: [] },
+      ],
+    });
   });
 
   it("doesn't use a choice made for one entry on another with the same source and recipient", () => {
