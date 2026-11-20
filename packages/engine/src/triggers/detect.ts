@@ -2,7 +2,8 @@
 // `GameState.pendingTriggers` until a player would receive priority (CR 603.3). Only permanents' abilities trigger
 // (CR 113.6): a card in a graveyard or a spell on the stack doesn't.
 
-import type { CardDatabase, TriggerCheck, TriggerCondition } from "../cards/types.ts";
+import type { TriggerCheck, TriggerCondition } from "../cards/triggers.ts";
+import type { CardDatabase } from "../cards/types.ts";
 import { triggersOf } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
@@ -61,7 +62,7 @@ function matches(
         : null;
     }
     case "beginningOfStep":
-      // "That player" is the player whose step it is (CR 603.2b).
+      // "Each player's draw step": "that player", in the card's text, is the player whose step it is.
       return event.type === "STEP_BEGAN" && event.step === when.step
         ? { player: event.activePlayer, object: null }
         : null;

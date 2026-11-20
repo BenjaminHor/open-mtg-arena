@@ -2,6 +2,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
+import { triggeredAbilityDef } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
@@ -148,8 +149,7 @@ function withoutResolution(state: GameState): GameState {
 function optionally(state: GameState, id: ObjectId, effects: WorkItem[], cards: CardDatabase): WorkItem[] {
   const obj = state.objects[id];
   if (obj?.kind !== "ability" || obj.ability.kind !== "triggered" || effects.length === 0) return effects;
-  const def = cards[obj.sourceOracleId]?.def.triggers?.[obj.ability.index];
-  if (def?.optional !== true) return effects;
+  if (triggeredAbilityDef(obj.sourceOracleId, obj.ability.index, cards).optional !== true) return effects;
   return [{ kind: "askOptional", player: controllerOf(state, id), resume: effects }];
 }
 
@@ -157,6 +157,6 @@ function optionally(state: GameState, id: ObjectId, effects: WorkItem[], cards: 
 function interveningIfHolds(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[id];
   if (obj?.kind !== "ability" || obj.ability.kind !== "triggered") return true;
-  const check = cards[obj.sourceOracleId]?.def.triggers?.[obj.ability.index]?.onlyIf;
+  const check = triggeredAbilityDef(obj.sourceOracleId, obj.ability.index, cards).onlyIf;
   return check === undefined || holds(state, obj.source, check);
 }

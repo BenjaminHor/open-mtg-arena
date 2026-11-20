@@ -1,6 +1,7 @@
 // Public API of the engine. See docs/architecture.md, "Engine API".
 // Nothing is exported here without a reason in docs/decisions.md (types: D-023).
 
+export type { TriggerCheck, TriggerCondition, TriggeredAbilityDef } from "./cards/triggers.ts";
 export type {
   AbilityDef,
   CardData,
@@ -19,9 +20,6 @@ export type {
   StaticAbilityDef,
   Supertype,
   TargetSpec,
-  TriggerCheck,
-  TriggerCondition,
-  TriggeredAbilityDef,
 } from "./cards/types.ts";
 export { legalAmounts, withForcedAnswers } from "./combat/damage-assignment.ts";
 export { applyAction } from "./game/apply-action.ts";

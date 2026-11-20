@@ -24,11 +24,6 @@ export type Casting = {
   targetCounts: number[];
   /** The permanents chosen so far to sacrifice for the cost, one per sacrifice it calls for, sacrificed as it's paid. */
   sacrifices: ObjectId[];
-  /**
-   * How many triggered abilities were waiting as it began: if it's reversed, those that triggered during it (from its
-   * mana abilities) are dropped, since nothing triggers from a reversed action (CR 734.1).
-   */
-  pendingTriggersBefore: number;
 };
 
 export type CastingOrigin =

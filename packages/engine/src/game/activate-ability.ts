@@ -57,7 +57,6 @@ export function startActivation(
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
-    pendingTriggersBefore: state.pendingTriggers.length,
   };
   return nextCastingStep({ ...created.state, casting }, cards);
 }

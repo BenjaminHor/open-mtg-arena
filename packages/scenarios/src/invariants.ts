@@ -61,6 +61,10 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
   if (state.pending?.kind === "priority" && state.pendingTriggers.length > 0) {
     problems.push("a player has priority while triggered abilities wait to go on the stack (CR 603.3)");
   }
+  // Last known information is kept only while something could still read it: an ability on the stack or waiting.
+  if (state.pending?.kind === "priority" && state.zones.stack.length === 0 && Object.keys(state.lastKnown).length > 0) {
+    problems.push("last known information outlives the stack emptying (CR 608.2h)");
+  }
   const inCombat = state.turn !== null && phaseOf(state.turn.step) === "combat";
   if (state.result === null && (state.combat !== null) !== inCombat) {
     problems.push("combat state exists exactly during the combat phase (CR 506.1, 511.3)");

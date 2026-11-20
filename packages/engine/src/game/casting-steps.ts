@@ -140,8 +140,9 @@ export function payCost(
  */
 export function cancelCasting(state: GameState): Progress {
   const casting = castingOf(state);
-  const pendingTriggers = state.pendingTriggers.slice(0, casting.pendingTriggersBefore);
-  let next = untapAndRestorePool({ ...state, casting: null, pendingTriggers }, casting);
+  // A cast or activation starts only when a player has priority, with no triggers waiting (CR 117.5), so any waiting now
+  // came from its mana abilities, and nothing triggers from a reversed action (CR 734.1).
+  let next = untapAndRestorePool({ ...state, casting: null, pendingTriggers: [] }, casting);
   let event: GameEvent;
   switch (casting.origin.kind) {
     case "card": {

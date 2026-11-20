@@ -1,17 +1,10 @@
 // An object's abilities as it has them now: keywords, static abilities that aren't keywords, triggered and activated
 // abilities, with which of those are mana abilities.
 
-import type {
-  AbilityDef,
-  CardDatabase,
-  Effect,
-  Keyword,
-  StaticAbilityDef,
-  TargetSpec,
-  TriggeredAbilityDef,
-} from "../cards/types.ts";
+import type { TriggeredAbilityDef } from "../cards/triggers.ts";
+import type { AbilityDef, CardDatabase, Effect, Keyword, StaticAbilityDef, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { AbilityRef, BasicLandType } from "../state/objects.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
@@ -117,8 +110,17 @@ export function stackAbilityText(
   const obj = state.objects[id];
   if (obj?.kind !== "ability") throw new Error(`${id} isn't an ability on the stack`);
   if (obj.ability.kind !== "triggered") return stackAbilityDef(state, id, cards);
-  const def = cards[obj.sourceOracleId]?.def.triggers?.[obj.ability.index];
-  if (def === undefined) throw new Error(`No triggered ability ${obj.ability.index} on ${obj.sourceOracleId}`);
+  return triggeredAbilityDef(obj.sourceOracleId, obj.ability.index, cards);
+}
+
+/**
+ * A triggered ability by its card and index, for one that already triggered (a pending trigger, an ability on the
+ * stack). Detection reads the triggers a permanent has now through `triggersOf`; granted triggered abilities
+ * (layer 6, later: CR 613.1f) will need a reference that doesn't index the printed list, changed here.
+ */
+export function triggeredAbilityDef(oracleId: OracleId, index: number, cards: CardDatabase): TriggeredAbilityDef {
+  const def = cards[oracleId]?.def.triggers?.[index];
+  if (def === undefined) throw new Error(`No triggered ability ${index} on ${oracleId}`);
   return def;
 }
 

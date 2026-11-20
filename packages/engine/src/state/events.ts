@@ -70,7 +70,10 @@ export type GameEvent =
     }
   /** An activated ability was put on the stack, with its targets chosen and costs paid (CR 602.2b, 601.2i). */
   | { type: "ABILITY_ACTIVATED"; player: PlayerId; object: ObjectId; source: ObjectId }
-  /** A triggered ability was put on the stack (CR 603.3), controlled by who controlled its source as it triggered. */
+  /**
+   * A triggered ability was put on the stack (CR 603.3), controlled by who controlled its source as it triggered
+   * (CR 603.3a). Emitted as it goes on, before its targets are chosen; `ABILITY_ACTIVATED` comes after them.
+   */
   | { type: "ABILITY_TRIGGERED"; object: ObjectId; source: ObjectId; controller: PlayerId }
   /** The player cancelled an activation (D-035): the ability ceased to exist and `untapped` untapped (CR 734.1). */
   | { type: "ACTIVATION_CANCELLED"; player: PlayerId; object: ObjectId; source: ObjectId; untapped: ObjectId[] }

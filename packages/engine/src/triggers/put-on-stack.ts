@@ -8,8 +8,9 @@ import type { CardDatabase } from "../cards/types.ts";
 import { nextCastingStep } from "../game/casting-steps.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
-import { currentTurn } from "../game/turn.ts";
+import { apnapOrder } from "../game/turn-order.ts";
 import { queueWork } from "../game/work.ts";
+import { triggeredAbilityDef } from "../rules/abilities.ts";
 import { targetsProblem } from "../rules/targets.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -66,12 +67,12 @@ export function putOne(
   if (trigger === undefined) throw new Error(`no trigger ${index} in the batch`);
   const rest = batch.filter((_, i) => i !== index);
   const goOn = (s: GameState) => queueWork(s, { kind: "putTriggers", batch: rest, player });
-  const def = cards[trigger.sourceOracleId]?.def.triggers?.[trigger.index];
-  if (def === undefined) throw new Error(`no triggered ability ${trigger.index} on ${trigger.sourceOracleId}`);
-  const by = { object: trigger.source, controller: trigger.controller };
-  if (targetsProblem(state, def.targets, by, cards) !== null) return { state: goOn(state), events: [] };
+  const def = triggeredAbilityDef(trigger.sourceOracleId, trigger.index, cards);
   const ref = { kind: "triggered", index: trigger.index } as const;
   const put = putAbilityOnStack(state, trigger.source, trigger.sourceOracleId, ref, trigger.controller, trigger.event);
+  // Checked for the ability itself, the object that targets (CR 115.5); too few legal targets, and it's removed.
+  const by = { object: put.id, controller: trigger.controller };
+  if (targetsProblem(put.state, def.targets, by, cards) !== null) return { state: goOn(state), events: [] };
   const events = [
     { type: "ABILITY_TRIGGERED", object: put.id, source: trigger.source, controller: trigger.controller } as const,
   ];
@@ -86,17 +87,9 @@ export function putOne(
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
-    pendingTriggersBefore: put.state.pendingTriggers.length,
   };
   const targeting = nextCastingStep({ ...put.state, casting }, cards);
   return { state: targeting.state, events: [...events, ...targeting.events] };
-}
-
-/** Players in APNAP order: the active player, then the others in turn order (CR 101.4). */
-function apnapOrder(state: GameState): PlayerId[] {
-  const active = currentTurn(state).activePlayer;
-  const start = state.turnOrder.indexOf(active);
-  return [...state.turnOrder.slice(start), ...state.turnOrder.slice(0, start)];
 }
 
 /** Why this answer can't choose this trigger to go on the stack next, or null. */

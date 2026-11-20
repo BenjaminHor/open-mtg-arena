@@ -15,6 +15,7 @@ import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
+import { orderTriggersProblem } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
@@ -61,8 +62,10 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
     case "chooseYesNo":
       return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
     case "orderTriggers":
-      return pending.batch.flatMap((t, index): Action[] =>
-        t.controller === player ? [{ ...answer, answer: { kind: "orderTrigger", index } }] : [],
+      return pending.batch.flatMap((_, index): Action[] =>
+        orderTriggersProblem(pending.batch, player, index) === null
+          ? [{ ...answer, answer: { kind: "orderTrigger", index } }]
+          : [],
       );
     case "discardToHandSize":
       return zoneList(state, { zone: "hand", player })

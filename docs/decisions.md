@@ -1001,8 +1001,9 @@ every schema change and every change D-024 lists bumps it.
   (CR 603.3b), a player with two or more ordering theirs (`orderTriggers`; one left is put on without asking), then
   priority is given again, so new triggers form a new batch. Targets are chosen through the spell's target steps
   (a `Casting` with origin `trigger`), with no cost and no cancel; too few legal targets removes it (CR 603.3d).
-- A cancelled cast or activation drops the triggers that came up during it (`Casting.pendingTriggersBefore`,
-  CR 734.1), since its mana abilities' events are undone.
+- A cancelled cast or activation drops the triggers that came up during it, since its mana abilities' events are undone
+  (CR 734.1). That's every waiting trigger: a cast starts only at priority, with none waiting (CR 117.5). A cast that
+  could start while triggers wait (casting a card as part of a resolution) would have to record how many were waiting.
 - Last known information: `GameState.lastKnown` keeps a card's object as it leaves the battlefield (CR 608.2h), read
   by an ability whose source is gone (Howling Mine's intervening if; "sacrifice it" instead checks the source is still
   on the battlefield, CR 701.21a); emptied when the stack is empty and a

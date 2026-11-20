@@ -252,8 +252,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (casting-steps.ts), `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`. One `detectTriggers(before, after, events)`.
          Early exit when no permanent has triggers.
        - Only permanents' triggers fire (CR 113.6): not a card in a graveyard, not a spell on the stack.
-       - A cancelled cast drops the triggers its mana abilities caused (CR 734.1): `Casting` records how many were
-         pending as it began, and cancel cuts the list back.
+       - A cancelled cast drops the triggers its mana abilities caused (CR 734.1): all waiting ones, as a cast starts
+         only at priority with none waiting (code review: no count needed).
        - Pending triggers make cleanup give priority, like a state-based action did (CR 514.3a); `playersLose` clears
          them; an invariant: nothing pending while a player has priority.
        - Trigger target decisions offer no cancel; ordering is asked only of a player with two or more, the last

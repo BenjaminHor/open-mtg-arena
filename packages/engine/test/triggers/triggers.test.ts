@@ -5,7 +5,15 @@
 import { describe, expect, it } from "vitest";
 import { advance } from "../../src/game/advance.ts";
 import { queueWork } from "../../src/game/work.ts";
-import type { GameEvent, GameState, ObjectId, PendingTrigger, PlayerId } from "../../src/index.ts";
+import {
+  applyAction,
+  type GameEvent,
+  type GameState,
+  legalActions,
+  type ObjectId,
+  type PendingTrigger,
+  type PlayerId,
+} from "../../src/index.ts";
 import { detectTriggers } from "../../src/triggers/detect.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
 import { BEARS, FOREST, MINE, MOUNTAIN, SHOCK, TEST_CARDS, WARDEN } from "../support/cards.ts";
@@ -85,8 +93,6 @@ describe("putting triggers on the stack (CR 603.3)", () => {
   it("cancelling a cast drops the triggers that came up during it, as the cast is undone (CR 734.1)", () => {
     let g = game("precombatMain", { hand: [SHOCK], battlefield: [permanent(MOUNTAIN)] });
     g = take(g, (a) => a.type === "CAST_SPELL");
-    const casting = g.state.casting;
-    expect(casting?.pendingTriggersBefore).toBe(0);
     // As if a mana ability activated while paying had triggered something.
     const fake: PendingTrigger = {
       source: onBattlefield(g.state, MOUNTAIN)[0] as ObjectId,
@@ -121,6 +127,43 @@ describe("putting triggers on the stack (CR 603.3)", () => {
     expect(done.state.zones.stack).toHaveLength(1);
     expect(done.state.pendingTriggers).toStrictEqual([]);
     expect(done.state.pending).toMatchObject({ kind: "priority", player: "p1" });
+  });
+});
+
+describe("ordering one's own triggers (CR 603.3b)", () => {
+  it("lists and accepts only the deciding player's own triggers of the batch", () => {
+    const g = game(
+      "precombatMain",
+      { battlefield: [permanent(WARDEN), permanent(WARDEN)] },
+      { battlefield: [permanent(WARDEN)] },
+    );
+    const [a, b, c] = onBattlefield(g.state, WARDEN) as [ObjectId, ObjectId, ObjectId];
+    const trigger = (source: ObjectId, controller: PlayerId): PendingTrigger => ({
+      source,
+      sourceOracleId: WARDEN,
+      index: 0,
+      controller,
+      event: { player: null, object: null },
+    });
+    // p2's trigger first in the batch: p1 still orders first, as the active player.
+    const batch = [trigger(c, "p2"), trigger(a, "p1"), trigger(b, "p1")];
+    const state = queueWork({ ...g.state, pending: null }, { kind: "putTriggers", batch, player: "p1" });
+    const asked = advance({ state, events: [] }, TEST_CARDS).state;
+    expect(asked.pending).toMatchObject({ kind: "orderTriggers", player: "p1" });
+    const listed = legalActions(asked, "p1", TEST_CARDS).map((x) => x.type === "ANSWER" && x.answer);
+    expect(listed).toStrictEqual([
+      { kind: "orderTrigger", index: 1 },
+      { kind: "orderTrigger", index: 2 },
+    ]);
+    const decisionId = asked.pending?.id ?? "d0";
+    for (const index of [0, -1, 3]) {
+      const result = applyAction(
+        asked,
+        { type: "ANSWER", decisionId, player: "p1", answer: { kind: "orderTrigger", index } },
+        TEST_CARDS,
+      );
+      expect(result.ok ? null : result.error.code).toBe("illegalAction");
+    }
   });
 });
 
