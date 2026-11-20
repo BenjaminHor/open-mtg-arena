@@ -3,6 +3,7 @@
 
 import {
   type Action,
+  type Answer,
   type CardDatabase,
   type GameState,
   legalAmounts,
@@ -126,4 +127,27 @@ function sameTarget(a: Target, b: Target | undefined): boolean {
   return a.kind === "player"
     ? b.kind === "player" && b.player === a.player
     : b.kind === "object" && b.object === a.object;
+}
+
+/**
+ * One answer of a declaration, for a scenario that takes a pick back (the exporter writes those): "take back", "done",
+ * an attacker of the player's, or "<blocker> blocks <attacker>". A whole declaration is simpler as an `attack` or `block`
+ * step.
+ */
+export function declarationAnswer(state: GameState, player: string, text: string, cards: CardDatabase): Answer {
+  if (text === "take back") return { kind: "takeBack" };
+  if (text === "done") return { kind: "finishDeclaring" };
+  const self = player as PlayerId;
+  const other = otherPlayer(state, self);
+  if (state.pending?.kind === "declareAttackers") {
+    return { kind: "declareAttacker", attack: { attacker: permanent(state, self, text, cards), defender: other } };
+  }
+  const [blocker, attacker] = text.split(" blocks ");
+  if (blocker === undefined || attacker === undefined) {
+    throw new Error(`a block is "<blocker> blocks <attacker>", got ${text}`);
+  }
+  return {
+    kind: "declareBlocker",
+    block: { blocker: permanent(state, self, blocker, cards), attacker: permanent(state, other, attacker, cards) },
+  };
 }

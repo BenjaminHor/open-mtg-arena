@@ -1,5 +1,5 @@
 name: Alluring Siren can target only a creature an opponent controls
-rules: [CR 115.1, CR 601.2c]
+rules: [CR 115.1, CR 602.2b, CR 601.2c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

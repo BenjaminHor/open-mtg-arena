@@ -213,7 +213,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        turn if able", "all creatures able to block it do so"; `finishDeclaring` only when the declaration is legal, and a
        `takeBack` answer. Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren. Scenarios in
        `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
-       (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair.
+       (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair. Declarations list
+       finishing first (no first-legal loop); the bench baseline reset.
      - M2-06d targeting keywords: shroud (CR 702.18). Mist Leopard, Kalonian Behemoth. Protection's targeting and
        blocking parts (CR 702.16b, 702.16f), flash (CR 702.8), indestructible (CR 702.12), "can't be countered": the
        spec puts them here, but their Magic 2010 cards come later (M2-07, M2-08, M2-12).
@@ -389,10 +390,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Still, the folder is 3.8 MB after M2-06b (budget 4 MB), about 0.3 MB per task: it will pass the budget in M2-06c or
   M2-07. Options then: raise the budget, a compact action format, or stop adding a game per card once a card's
   mechanic is covered by scenarios.
-- The bench drifts: on `main` (2026-11-20, after M2-05) some workloads run 10–18% over `bench/baseline.json`
-  (`applyAction.emptyBoard`, `randomGame`, `legalActions.busyBoard`), near the failure threshold, so a noisy run can
-  fail. It comes from M2's engine changes, not one PR. Before it fails for real: profile, or reset the baseline with
-  an explained commit. M2-06a touches combat, so it's measured paired against `main`.
+- The bench drifted 10–29% over its baseline through M2-05–06b; reset in M2-06c (D-072), when the `random` agent's games
+  changed with the declaration list. Measuring is noisy here (two runs of one commit can differ by 30%): compare paired
+  against `main` before believing a failure.
 - `pnpm fuzz --games 300` takes about 7–8 minutes (it was 2–3 in M1). Profiled (2026-11-20): the engine isn't slower
   (a bare game takes 100–200 ms; the bench is within its baseline). The time is the checks after every action, about
   19 times the games themselves: the leak check (`scrambleHidden` and comparing whole views, ~60%) and the legal-action

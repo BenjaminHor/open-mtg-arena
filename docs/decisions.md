@@ -954,11 +954,16 @@ every schema change and every change D-024 lists bumps it.
 - A declaration is still built one pick at a time, but `finishDeclaring` is offered and accepted only when the whole
   declaration obeys every restriction and as many requirements as any legal declaration could (CR 508.1c–d, 509.1b–c;
   `combat/declaration-rules.ts`). Since that can leave a pick that no finish allows (a lone "can't attack alone"
-  creature), a new answer `takeBack` removes the last pick. The fuzzer weights it like cancel (D-061); the exporter
-  writes the declaration as finished.
+  creature), a new answer `takeBack` removes the last pick. `legalActions` lists finishing first, then the picks, then
+  take-back, so an agent taking the first action declares nothing instead of adding and taking back one pick forever
+  (`first-legal` now never attacks or blocks, as its description says). The fuzzer weights take-back like cancel
+  (D-061); the bench's `random` games changed with the new list, so its baseline was reset (D-049). The exporter
+  writes a declaration with a take-back one answer at a time, as `choose:` steps, so the replay takes the same
+  decisions.
 - The maximum is worked out directly, not by searching declarations: every requirement a creature able to attack (or
   block) has, a creature blocking one attacker obeying at most one "block it" requirement (Palace Guard, all of them),
   less the requirements of a lone "alone" creature nothing else can join. That's exact while "alone" is the only
   whole-declaration restriction, since adding a creature never breaks it. Menace and "no more than one creature can
   attack" will need a search (future-rules).
+- "Attacks you this turn if able" counts only for an attack on that player, and its most only over attacks on them.
 - A scenario step that's rejected is rolled back whole, so a scenario re-declares the full set after `expect error`.

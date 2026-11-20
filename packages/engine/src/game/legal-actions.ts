@@ -64,14 +64,14 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         (attack): Action => ({ ...answer, answer: { kind: "declareAttacker", attack } }),
       );
       const finish = attackDeclarationProblem(state, pending.chosen, cards) === null;
-      return [...add, ...declarationEnds(answer, finish, pending.chosen.length > 0)];
+      return declarationActions(answer, add, finish, pending.chosen.length > 0);
     }
     case "declareBlockers": {
       const add = possibleBlocks(state, pending.chosen, cards).map(
         (block): Action => ({ ...answer, answer: { kind: "declareBlocker", block } }),
       );
       const finish = blockDeclarationProblem(state, pending.chosen, cards) === null;
-      return [...add, ...declarationEnds(answer, finish, pending.chosen.length > 0)];
+      return declarationActions(answer, add, finish, pending.chosen.length > 0);
     }
     case "assignDamage": {
       // 0 up to what's left, but those trample forbids: one answer per amount, so the list grows with power, not with
@@ -178,16 +178,17 @@ function castActions(state: GameState, player: PlayerId, decisionId: DecisionId,
 }
 
 /**
- * Finishing a declaration, offered only when it's legal (CR 508.1c–d, 509.1b–c), and taking back the last pick, so a
- * declaration that can't be finished isn't stuck.
+ * A declaration's actions: finishing it first, offered only when it's legal (CR 508.1c–d, 509.1b–c); then each pick that
+ * can be added; then taking back the last pick, so a declaration that can't be finished isn't stuck. Finishing comes
+ * first so an agent taking the first action declares nothing, rather than adding and taking back the same pick forever.
  */
-function declarationEnds(
+function declarationActions(
   answer: { type: "ANSWER"; decisionId: DecisionId; player: PlayerId },
-  finish: boolean,
-  any: boolean,
-) {
-  const ends: Action[] = [];
-  if (finish) ends.push({ ...answer, answer: { kind: "finishDeclaring" } });
-  if (any) ends.push({ ...answer, answer: { kind: "takeBack" } });
-  return ends;
+  picks: Action[],
+  canFinish: boolean,
+  canTakeBack: boolean,
+): Action[] {
+  const finish: Action[] = canFinish ? [{ ...answer, answer: { kind: "finishDeclaring" } }] : [];
+  const takeBack: Action[] = canTakeBack ? [{ ...answer, answer: { kind: "takeBack" } }] : [];
+  return [...finish, ...picks, ...takeBack];
 }

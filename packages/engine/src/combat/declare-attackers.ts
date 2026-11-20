@@ -45,9 +45,9 @@ export function attackProblem(state: GameState, chosen: readonly Attack[], attac
 }
 
 /**
- * The declaration is complete. With no restrictions or requirements in the pool, any set of creatures that can each
- * attack is legal (restrictions and requirements, later: CR 508.1c–d). The attackers tap (CR 508.1f) and become
- * attacking creatures (CR 508.1k); then the active player gets priority (CR 508.2).
+ * The declaration is complete, and legal: the whole-declaration rules were checked as it was finished
+ * (`declaration-rules.ts`, CR 508.1c–d). The attackers tap (CR 508.1f) and become attacking creatures (CR 508.1k); then
+ * the active player gets priority (CR 508.2).
  */
 export function finishAttackers(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;

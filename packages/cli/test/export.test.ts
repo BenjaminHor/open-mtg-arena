@@ -72,11 +72,32 @@ describe("export --scenario", () => {
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   });
 
+  it("writes a declaration with a pick taken back one answer at a time, so it replays the same decisions", () => {
+    const cards = cardDatabase();
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-06c/jackal-familiar-alone", "--out", file);
+    cli("do", file, "all pass: until combat.declareAttackers");
+    for (const pick of ["Jackal Familiar", "Runeclaw Bear", "take back", "Runeclaw Bear", "done"]) {
+      cli("do", file, `p1 choose: ${pick}`);
+    }
+    const yaml = cli("export", file, "--scenario", "--name", "take back", "--rules", "CR 508.1c");
+    expect(yaml).toContain("p1 choose: take back");
+    expect(yaml).toContain("p1 choose: done");
+    expect(yaml).not.toContain("p1 attack:");
+    let last: unknown = null;
+    const replayed = runScenario(yaml, cards, (state) => {
+      last = state;
+      return [];
+    });
+    expect(replayed.problems).toStrictEqual([]);
+    expect(last).toStrictEqual(readGameFile(file).state);
+  });
+
   it("refuses a game that stops part way through a declaration", () => {
     const file = tempFile();
     cli("new", "--scenario", "combat/blocked-creatures-trade", "--out", file);
     cli("do", file, "all pass: until combat.declareAttackers");
-    cli("do", file, "1"); // declare one attacker, not finished
+    cli("do", file, "p1 choose: Grizzly Bears"); // one attacker declared, not finished
     expect(() => cli("export", file, "--scenario")).toThrow(/part way through a declaration/);
   });
 });

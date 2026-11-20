@@ -1,0 +1,18 @@
+name: Alluring Siren used on its controller's own turn has no effect on the opponent's next turn, since it lasts only this turn
+rules: [CR 514.2, CR 508.1d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Alluring Siren]
+  p2:
+    battlefield: [Runeclaw Bear]
+steps:
+  - p1 activate: p1:Alluring Siren
+    targets: [p2:Runeclaw Bear]
+  - all pass: once
+  - all pass: until end
+  - all pass: until combat.declareAttackers
+  - p2 attack: []
+  - expect:
+      active: p2
+      pending: { player: p2, kind: priority }

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { chooseAction } from "../src/agents.ts";
 import { readGameFile } from "../src/game-file.ts";
 import { nextRandom } from "../src/seeded-random.ts";
-import { cli, deckGame } from "./helpers.ts";
+import { cli, deckGame, tempFile } from "./helpers.ts";
 
 describe("agents", () => {
   it("are reproducible: the same seed makes the same game", () => {
@@ -21,6 +21,12 @@ describe("agents", () => {
     expect(cli("auto", file, "--ai", "both", "--agent", "first-legal")).toMatch(
       /game over: p\d wins \(p\d: drewFromEmptyLibrary\)/,
     );
+  });
+
+  it("first-legal declares nothing rather than adding and taking back a lone creature that can't attack alone", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-06c/jackal-familiar-take-back", "--out", file);
+    expect(cli("auto", file, "--ai", "both", "--agent", "first-legal", "--max-turns", "3")).not.toMatch(/action limit/);
   });
 
   it("ai decides for the other players and stops when the named player must decide", () => {

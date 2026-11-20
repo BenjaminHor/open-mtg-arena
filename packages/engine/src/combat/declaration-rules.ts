@@ -18,34 +18,46 @@ import { possibleAttacks } from "./declare-attackers.ts";
 import { possibleBlocks } from "./declare-blockers.ts";
 
 /** Why this declaration of attackers can't be finished, or null (CR 508.1c–d). */
-export function attackDeclarationProblem(state: GameState, chosen: readonly Attack[], cards: CardDatabase) {
+export function attackDeclarationProblem(
+  state: GameState,
+  chosen: readonly Attack[],
+  cards: CardDatabase,
+): string | null {
   const attackers = chosen.map((a) => a.attacker);
-  if (declaredAlone(state, attackers, cards))
+  if (declaredAlone(state, attackers, cards)) {
     return "a creature that can't attack alone is the only attacker (CR 508.1c)";
-  const able = unique(possibleAttacks(state, [], cards).map((a) => a.attacker));
-  const most = mostObeyable(
-    state,
-    able.map((id) => ({ creature: id, count: attackRequirements(state, id, cards) })),
-    able,
-    cards,
-  );
-  const obeyed = attackers.reduce((sum, id) => sum + attackRequirements(state, id, cards), 0);
+  }
+  const options = possibleAttacks(state, [], cards);
+  const able = unique(options.map((a) => a.attacker));
+  // Each creature's best: the most requirements one of its possible attacks obeys.
+  const obeyable = able.map((creature) => ({
+    creature,
+    count: Math.max(...options.filter((a) => a.attacker === creature).map((a) => attackRequirements(state, a, cards))),
+  }));
+  const most = mostObeyable(state, obeyable, able, cards);
+  const obeyed = chosen.reduce((sum, attack) => sum + attackRequirements(state, attack, cards), 0);
   return obeyed < most
     ? `${most - obeyed} more requirement${most - obeyed === 1 ? "" : "s"} to attack could be obeyed (CR 508.1d)`
     : null;
 }
 
 /** Why this declaration of blockers can't be finished, or null (CR 509.1b–c). */
-export function blockDeclarationProblem(state: GameState, chosen: readonly Block[], cards: CardDatabase) {
+export function blockDeclarationProblem(
+  state: GameState,
+  chosen: readonly Block[],
+  cards: CardDatabase,
+): string | null {
   const blockers = unique(chosen.map((b) => b.blocker));
   if (declaredAlone(state, blockers, cards)) return "a creature that can't block alone is the only blocker (CR 509.1b)";
   const options = possibleBlocks(state, [], cards);
   const able = unique(options.map((b) => b.blocker));
+  const lures = unique(options.map((b) => b.attacker)).filter((attacker) => isLure(state, attacker, cards));
+  const isLureAttacker = (attacker: ObjectId) => lures.includes(attacker);
   const obeyable = able.map((creature) => {
     // "All creatures able to block it do so": one requirement for each such attacker this creature could block. A
     // creature blocks one attacker (Palace Guard, any number), so that's how many it can obey at once.
-    const lures = options.filter((b) => b.blocker === creature && isLure(state, b.attacker, cards)).length;
-    return { creature, count: canBlockMany(state, creature, cards) ? lures : Math.min(lures, 1) };
+    const canBlockLures = options.filter((b) => b.blocker === creature && isLureAttacker(b.attacker)).length;
+    return { creature, count: canBlockMany(state, creature, cards) ? canBlockLures : Math.min(canBlockLures, 1) };
   });
   const most = mostObeyable(state, obeyable, able, cards);
   const obeyed = chosen.filter((b) => isLure(state, b.attacker, cards)).length;
@@ -72,10 +84,16 @@ function mostObeyable(
   return able.some((id) => id !== only.creature) ? total : total - only.count;
 }
 
-/** How many requirements to attack this creature has: "attacks each combat if able", and each "attacks you this turn". */
-function attackRequirements(state: GameState, creature: ObjectId, cards: CardDatabase): number {
-  const own = staticAbilitiesOf(state, creature, cards).filter((a) => a.kind === "attacksEachCombat").length;
-  const effects = state.effects.filter((e) => e.change.kind === "mustAttack" && e.affected.includes(creature)).length;
+/**
+ * How many requirements this attack obeys: the creature's "attacks each combat if able", and each "attacks [player] this
+ * turn if able" when it attacks that player.
+ */
+function attackRequirements(state: GameState, attack: Attack, cards: CardDatabase): number {
+  const own = staticAbilitiesOf(state, attack.attacker, cards).filter((a) => a.kind === "attacksEachCombat").length;
+  const effects = state.effects.filter(
+    (e) =>
+      e.change.kind === "mustAttack" && e.change.player === attack.defender && e.affected.includes(attack.attacker),
+  ).length;
   return own + effects;
 }
 

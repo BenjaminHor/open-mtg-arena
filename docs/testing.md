@@ -272,7 +272,9 @@ seeds two random decks from the pool, with basic lands of their cards' colors. E
 action, picked by kind first (pass, cast, activate an ability, play a land, an answer of each kind; cancelling a tenth
 as often), then one of that kind (D-061); one in ten is the first legal one, which passes or declines where it can
 (while paying, it's a payment, or cancel when nothing can be paid). (The `random` agent of `ai` and `auto` still
-picks uniformly, so M1's golden games and the bench don't change; the `by-kind` agent picks the fuzzer's way.) About one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
+picks uniformly; the `by-kind` agent picks the fuzzer's way. Stored golden games replay their actions, so a change to
+what an agent sees only shows as "the recipe now plays differently" on `golden:update`; the bench plays `random` live, so
+it needs a new baseline then, explained in its commit.) About one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
 it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
 
 - the state round-trips through JSON unchanged

@@ -59,7 +59,8 @@ export function runEffect(
     }
     case "cantBlock":
     case "mustAttack": {
-      // "Attacks you" is the controller of the ability, its "you" (CR 109.5). A rules effect, not a change to characteristics, so it could reach creatures arriving later (later: CR 611.2c, 613.11);
+      // "Attacks you" is the controller of the ability, its "you" (CR 109.5). A rules effect, not a change to
+      // characteristics, so it could reach creatures arriving later (later: CR 611.2c, 613.11);
       // on its targets it applies only to those still legal (CR 608.2b), as the objects they were (CR 400.7). Only targets
       // are allowed (definition-problems.ts).
       const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
