@@ -1,18 +1,17 @@
-// Dealing damage (CR 120): performs the pipeline's `dealDamage` event (pipeline/, D-056). Prevention and replacement
-// effects modify the event before it gets here (later: CR 614–615); source abilities like lifelink, infect and wither
-// (CR 120.3) change its results here.
+// Dealing damage (CR 120): performs the pipeline's `dealDamage` event (pipeline/, D-056). Prevention effects modify
+// the event before it gets here (`pipeline/damage-replacements.ts`, CR 615); source abilities like lifelink, infect and
+// wither (CR 120.3) change its results here.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { markDamage } from "../permanents/damage.ts";
 import type { Damage } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
-import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
+import { canBeDealtDamage } from "../rules/damage-recipients.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import type { Target } from "../state/objects.ts";
 import { gainLife, loseLife } from "./life.ts";
 
 /**
@@ -23,7 +22,9 @@ import { gainLife, loseLife } from "./life.ts";
  * (later: CR 120.3c, 120.3h).
  */
 export function dealDamage(state: GameState, damage: readonly Damage[], cards: CardDatabase): Progress {
-  // Damage of 0 is already gone: the pipeline drops it before replacement (CR 120.8, happen.ts).
+  // Damage of 0, and damage to a recipient that can't be dealt it, are already gone: the pipeline drops them before
+  // prevention (CR 120.8, damage-replacements.ts). A recipient can still leave between that and this, when an earlier
+  // event of the same batch is performed first, so it's checked again.
   const dealt = damage.filter((d) => canBeDealtDamage(state, d.to, cards));
   const events: GameEvent[] = dealt.map((d) => ({
     type: "DAMAGE_DEALT",
@@ -80,19 +81,5 @@ function damageResult(state: GameState, d: Damage): Progress {
       return loseLife(state, d.to.player, d.amount);
     case "object":
       return markDamage(state, d.to.object, d.amount);
-  }
-}
-
-/**
- * Whether the recipient can be dealt damage: a player, or a creature on the battlefield (CR 120.1a; no planeswalkers or
- * battles yet). A recipient that left between the start of resolution and this effect is a new object (CR 400.7), so
- * dealing it damage is impossible and is ignored (CR 101.3).
- */
-function canBeDealtDamage(state: GameState, to: Target, cards: CardDatabase): boolean {
-  switch (to.kind) {
-    case "player":
-      return state.players[to.player] !== undefined;
-    case "object":
-      return state.zones.battlefield.includes(to.object) && cardTypesOf(state, to.object, cards).includes("creature");
   }
 }

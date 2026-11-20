@@ -143,7 +143,11 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       const { proposed, choices } = pending.resume;
       return {
         ok: true,
-        state: queueWork(answered, { kind: "resumeEvent", proposed, choices: [...choices, chosen] }),
+        state: queueWork(answered, {
+          kind: "resumeEvent",
+          proposed,
+          choices: [...choices, { for: pending.for, ref: chosen }],
+        }),
         events: [],
       };
     }

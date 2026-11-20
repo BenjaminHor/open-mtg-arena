@@ -1205,3 +1205,65 @@ every schema change and every change D-024 lists bumps it.
   works because every reference names its affected object; replacements from other permanents or players (Rest in
   Peace, Fog) will need choices keyed to the affected object or player (future-rules).
 - The decision kind isn't required of golden games until M2-08d's cards can reach it (`DECISION_KINDS` takes a reason).
+
+**D-088: Damage prevention, per damage entry (M2-08d1)** · 2026-11-20 · accepted
+- A damage event stays one event (CR 120.4, D-067); each entry (a source dealing damage to a recipient) is replaced
+  on its own inside it (`pipeline/damage-replacements.ts`), with its own candidates and its own chooser, the recipient
+  player or the recipient object's controller (CR 616.1). Choices are keyed to what they're for
+  (`ChoiceFor`: the affected object, or the entry by its place in the event as proposed, with its source and
+  recipient), so a choice made for one entry isn't used for another, even one with the same source and recipient.
+  Entries of 0 damage or to a recipient that can't be dealt damage are dropped first, so no effect is used on them.
+- Prevention effects made by resolving spells (Fog, Safe Passage) live in `GameState.replacements`, each with its own
+  id (from `newObjectId`, so two from one source are two effects) and its card's oracle id (the spell is gone when
+  it's offered as a choice), checked as each damage event happens and ended in cleanup. A permanent's own prevention
+  text (Guardian Seraph) is read from the battlefield, the first replacement read from another permanent than the
+  moving card; a gone source's controller is its last known one (CR 113.7a, 608.2h).
+- Prevented damage is never dealt (CR 615.6): lifelink and "deals damage" triggers see only what's left. A
+  `DAMAGE_PREVENTED` event says what was prevented and by which card, for the log, the UI and the golden cover.
+- Identical candidates (two Guardian Seraphs: the same text under the same controller; a Fog from each player, whose
+  controller doesn't matter) are one option: choosing it applies one of them, and the rest are checked again
+  (CR 616.1f), so every order the rules allow can still be chosen (Seraph, Fog, and the second Seraph never applies),
+  while the player never sees two options that are the same. With no different candidate, they're applied without
+  asking. Different ones are asked about even when the order can't change the result (Seraph and Fog), as CR 616.1
+  has the player choose, and which effect prevented the damage will matter to CR 615.5 extra effects. Skipping those
+  is a later UX question. (The first version applied all identical ones at once; the M2-08d1 review found duplicate
+  options and an ambiguous scenario choice.)
+
+**D-089: Which cards and mechanics come after M2: what MTG Arena has, without Alchemy** · 2026-11-20 · accepted (owner)
+- The owner: Scryfall can filter cards that exist on MTG Arena (`game:arena`, a printing's `games` including
+  `"arena"`), which is a good guide so we don't spend time on mechanics even Arena doesn't handle; Alchemy cards should
+  be ignored.
+- So, beyond M2, cards are chosen from those with a non-Alchemy Arena printing, and a mechanic is built only if some
+  such card needs it. Alchemy means the rebalanced cards (names starting "A-") and cards printed only in Alchemy sets
+  (`set_type` "alchemy"); an ordinary card also reprinted in an Alchemy set still counts by its other printings.
+- Measured (2026-11-20): of 39,356 unique cards, 16,618 have an Arena printing, 15,742 outside Alchemy, 876 only in
+  Alchemy. Magic 2010 was never on Arena, so 87 of the pool's 166 cards and 51 of the 76 still to script aren't on it,
+  though their mechanics (Auras, Equipment, planeswalkers, tokens, protection) are. M2 finishes the Magic 2010 pool as
+  specified; each M2-14 special-rules card is checked against Arena first (Open questions).
+- The owner, later the same day: the filter is Scryfall's `game:arena -is:alchemy -is:digital`. That query is the
+  definition, and the site decides when a card's status is in doubt. It keeps a card with a printing that is on Arena,
+  not Alchemy and not digital-only: 14,010 cards on 2026-11-20 (15,702 without `-is:digital`). The 2,248 it drops more
+  than `-is:alchemy` alone are digital-only designs (Jumpstart: Historic Horizons and the like, with digital-only
+  mechanics such as "seek", "conjure" and "perpetually") and also paper cards that reached Arena only in digital
+  reprint sets (Abbot of Keral Keep, from Arena's anthologies). Those paper cards use paper rules, so leaving them out
+  costs no mechanic; the filter is a guide to which mechanics to build, not a ban on a card.
+- **Final (owner, 2026-11-20): `in:arena in:paper -is:alchemy`**, a card printed on paper that is on Arena in any
+  printing (option (a) of the question about `-is:digital`). It keeps the paper cards Arena had only through its
+  digital reprint sets, whose rules are all in the CR, and still drops digital-only designs, whose "conjure", "seek"
+  and "perpetually" aren't in the CR at all (searched), so they can't be built from the spec. 15,789 cards
+  (14,623 Modern-legal) on 2026-11-20. About a dozen digital designs printed on paper in Mystery Booster sets
+  (Oracle of the Alpha, the "Collector" cycle) slip through; they're skipped by name. The two bullets above record
+  how the filter got here; the measurements below were taken under `-is:digital`.
+- The pool figures above ("87 of 166", "51 of 76") were measured under the first filter (`game:arena` without
+  Alchemy); Magic 2010 was never on Arena either way.
+- What the filter leaves out (owner's question, measured on Scryfall 2026-11-20; baseline: paper, not Un-sets):
+  14,010 of 33,375 cards; 13,036 of 23,012 Modern-legal; 11,946 of 15,381 Pioneer-legal; 13,554 of 23,041 printed
+  since 2018. 215 of Scryfall's 304 keyword abilities and actions appear on a card it keeps. Of the 84 that don't,
+  about 30 are digital-only or from products Arena never had (conjure, spellbook, Attractions, Backgrounds, Planechase);
+  51 appear on 596 Modern-legal cards: Fear, Megamorph, Clash, Soulshift, Level Up, Monstrosity, Bloodthirst,
+  Intimidate, Echo, Renown, Soulbond, Undying, Multikicker, Embalm, Fuse, Awaken, Transmute, Unleash, Cipher,
+  Flanking, Dredge, Buyback, Scavenge, Freerunning, Detain, Forecast, Miracle, Tribute, Surge, Haunt, Conspire,
+  Ingest, Afflict, Prowl, landwalk variants, Recover, Ripple, Epic, Offering and a few singletons. Flip cards
+  (Kamigawa) have none; split cards 50 of 123; Auras 359 of 1,244. None of these is hard for the engine's design
+  (all are CR rules on the same machinery); the filter only decides what's built first. Banding and phasing, the
+  costly ones, aren't Modern-legal anyway.

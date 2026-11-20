@@ -1,0 +1,17 @@
+name: Two Guardian Seraphs prevent 1 each, unasked, as their effects are the same
+rules: [CR 615.10, CR 616.1]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Guardian Seraph, Guardian Seraph]
+  p2:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - p2 cast: Lightning Bolt
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 19
+      stack: []

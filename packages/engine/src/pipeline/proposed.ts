@@ -1,13 +1,13 @@
 // What can happen in the game: each change a rule or effect makes is proposed as one of these and carried out by
-// `happen` (happen.ts), so replacement and prevention effects (later: CR 614–616) and triggered abilities
-// (later: CR 603.2) have one place to see it.
+// `happen` (happen.ts), so replacement and prevention effects (CR 614, 615) and triggered abilities (CR 603.2) have
+// one place to see it.
 //
 // Each event changes one object or player (or, for damage, is one damage event, CR 120.4); events that happen at the
 // same time are one `simultaneous` event. An event is performed whole: destroying a permanent is moving it to the
 // graveyard (CR 701.8a), not a destruction followed by a separate zone change, so a "would die" replacement and a
 // "would be destroyed" one apply to the same event, in the order its controller chooses (CR 616.1, 616.1f).
 
-import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { Target } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
@@ -38,6 +38,11 @@ export type SingleEvent =
    * controller taps it, and it leaves combat. Performed whole, as one event.
    */
   | { kind: "regenerate"; object: ObjectId }
+  /**
+   * Damage prevented (CR 615.6): it's never dealt. An event of its own only so the game can say so (`by`: the card
+   * whose effect prevented it); the damage event itself is what's left after prevention.
+   */
+  | { kind: "damagePrevented"; source: ObjectId; to: Target; amount: number; by: OracleId }
   /** A permanent is sacrificed: its controller moves it to its owner's graveyard; it isn't destroyed (CR 701.21a). */
   | { kind: "sacrifice"; object: ObjectId; to?: Rerouted }
   /**

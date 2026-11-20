@@ -61,6 +61,7 @@ Fiery Hellhound
 Fire Elemental
 Fireball
 Flashfreeze
+Fog
 Forest
 Furnace Whelp
 Giant Growth
@@ -72,6 +73,7 @@ Gravedigger
 Gray Ogre
 Griffin Sentinel
 Grizzly Bears
+Guardian Seraph
 Haunting Echoes
 Hill Giant
 Horned Turtle
@@ -126,6 +128,7 @@ Rod of Ruin
 Rootbound Crag
 Royal Assassin
 Runeclaw Bear
+Safe Passage
 Sage Owl
 Sanguine Bond
 Seismic Strike

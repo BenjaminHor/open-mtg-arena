@@ -25,6 +25,7 @@ import {
   shuffleEach,
 } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
+import { preventAllDamage } from "./prevention.ts";
 import { put } from "./put-effects.ts";
 import { addRegenerationShields } from "./regeneration-shield.ts";
 import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
@@ -107,6 +108,8 @@ export function runEffect(
           : { kind: "destroy", object };
       return happenOrAsk(state, { kind: "simultaneous", events: objects.map(destroy) }, cards);
     }
+    case "preventAllDamage":
+      return preventAllDamage(state, effect, context);
     case "regenerate":
       return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
     case "revealUntil": {

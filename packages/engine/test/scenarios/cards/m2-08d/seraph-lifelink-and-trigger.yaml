@@ -1,0 +1,28 @@
+name: Damage partly prevented is dealt as what's left; lifelink gains that, and a "deals combat damage" trigger still triggers
+rules: [CR 615.6, CR 120.4c, CR 702.15b, CR 615.10]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Guardian Seraph, Drudge Skeletons]
+  p2:
+    life: 10
+    battlefield: [Lightwielder Paladin, Child of Night]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Lightwielder Paladin, Child of Night]
+  - all pass: until combat.declareBlockers
+  - p1 block: {}
+  - all pass: once
+  # First strike: the Paladin deals 3 of its 4, which is combat damage to a player, so it triggers.
+  - expect:
+      p1.life: 17
+      pending: { player: p2, kind: chooseTarget }
+  - p2 choose: p1:Drudge Skeletons
+  - all pass: once
+  - p2 choose: yes
+  - all pass: once
+  # Regular damage: Child of Night deals 1 of its 2, and its controller gains 1.
+  - expect:
+      p1.life: 16
+      p2.life: 11
+      exile: [Drudge Skeletons]

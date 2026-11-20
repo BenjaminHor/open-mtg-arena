@@ -17,7 +17,9 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b); and a card's own
    replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
    into a graveyard from anywhere, ... instead"; and a regeneration shield on a permanent about to be destroyed
-   (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Destroy, sacrifice, counter and discard carry where a replacement sends
+   (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Damage is prevented per entry
+   (a source dealing damage to a recipient) inside its one event (`damage-replacements.ts`, D-088): Fog and Safe
+   Passage from `GameState.replacements`, Guardian Seraph from the battlefield; a `damagePrevented` event tells it. Destroy, sacrifice, counter and discard carry where a replacement sends
    the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is

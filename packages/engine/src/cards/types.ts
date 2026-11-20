@@ -125,7 +125,13 @@ export type ReplacementDef =
    * "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's library instead"
    * (Darksteel Colossus): works in every zone, as it says (CR 113.6b).
    */
-  | { kind: "graveyardToLibrary" };
+  | { kind: "graveyardToLibrary" }
+  /**
+   * "If a source an opponent controls would deal damage to you, prevent N of that damage" (Guardian Seraph, CR 615.10):
+   * while this permanent is on the battlefield, N of each such source's damage to its controller in each damage event.
+   * A source with no controller counts by its owner (its ruling).
+   */
+  | { kind: "preventDamageToYou"; amount: number };
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
@@ -353,6 +359,11 @@ export type Effect =
   | { op: "sacrificeSource" }
   /** "Destroy [of]" (CR 701.8a). `noRegeneration`: "It can't be regenerated" (CR 701.19c): no shield is used. */
   | { op: "destroy"; of: EffectSubject; noRegeneration?: true }
+  /**
+   * "Prevent all [combat] damage that would be dealt [to you and creatures you control] this turn" (Fog, Safe Passage;
+   * CR 615.1a): a prevention effect until the cleanup step, checked as each damage event happens.
+   */
+  | { op: "preventAllDamage"; combatOnly: boolean; protects: "everyone" | "youAndYourCreatures" }
   /**
    * "Regenerate [of]": a regeneration shield, used up the next time it would be destroyed this turn (CR 701.19a,
    * 614.8). Making one isn't regenerating (CR 701.19c).

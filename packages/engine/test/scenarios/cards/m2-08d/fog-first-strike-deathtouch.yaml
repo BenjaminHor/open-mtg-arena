@@ -1,0 +1,23 @@
+name: Fog cast before combat damage prevents both damage steps; a deathtouch creature that deals no damage kills nothing
+rules: [CR 615.1a, CR 510.4, CR 702.2b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Deadly Recluse, Forest]
+    hand: [Fog]
+  p2:
+    battlefield: [Lightwielder Paladin, Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Lightwielder Paladin, Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p1 block: { Deadly Recluse: Grizzly Bears }
+  - p2 pass: once
+  - p1 cast: Fog
+    pay: auto
+  - all pass: once
+  - all pass: until main2
+  - expect:
+      p1.life: 20
+      p1.battlefield contains: [Deadly Recluse]
+      p2.battlefield contains: [Grizzly Bears]

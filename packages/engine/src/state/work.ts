@@ -8,7 +8,7 @@ import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DidNotResolve } from "./events.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
-import type { ReplacementRef } from "./replacements.ts";
+import type { ReplacementChoice } from "./replacements.ts";
 import type { PendingTrigger } from "./triggers.ts";
 
 export type WorkItem =
@@ -50,4 +50,4 @@ export type WorkItem =
   /** Triggered abilities of one batch still to be put on the stack, then priority for `player` (CR 603.3b). */
   | { kind: "putTriggers"; batch: PendingTrigger[]; player: PlayerId }
   /** An event waiting on a choice of replacement effect (CR 616.1), replaced again with the choices made so far. */
-  | { kind: "resumeEvent"; proposed: ProposedEvent; choices: ReplacementRef[] };
+  | { kind: "resumeEvent"; proposed: ProposedEvent; choices: ReplacementChoice[] };

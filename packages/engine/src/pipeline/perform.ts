@@ -40,6 +40,12 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return destroy(state, event.object, event.to);
     case "regenerate":
       return regenerate(state, event.object);
+    case "damagePrevented":
+      // Nothing changes: the damage is never dealt (CR 615.6). The event only tells what prevented it.
+      return {
+        state,
+        events: [{ type: "DAMAGE_PREVENTED", source: event.source, to: event.to, amount: event.amount, by: event.by }],
+      };
     case "sacrifice":
       return sacrifice(state, event.object, event.to);
     case "dealDamage":

@@ -12,6 +12,7 @@ import {
   type PendingTrigger,
   type PlayerId,
   type ReplacementRef,
+  replacementEffectCard,
 } from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
@@ -273,7 +274,8 @@ function answerFor(
     case "orderTriggers":
       return { kind: "orderTrigger", index: triggerNamed(pending.batch, player, text, cards) };
     case "chooseReplacement": {
-      // "regeneration" for a regeneration shield, or the name of the card whose own replacement it is.
+      // "regeneration" for a regeneration shield, the card whose own text it is (Guardian Seraph), or the card whose
+      // resolution made it (Fog). Identical effects are one option.
       const matching = pending.options.flatMap((ref, i) => (replacementWord(state, ref, cards) === text ? [i] : []));
       const [option, another] = matching;
       if (option === undefined) throw new Error(`no replacement effect "${text}" to choose`);
@@ -304,12 +306,19 @@ function triggerNamed(batch: readonly PendingTrigger[], player: string, text: st
   return index;
 }
 
-/** How a scenario names a replacement effect to choose (CR 616.1): "regeneration", or the card whose own text it is. */
+/**
+ * How a scenario names a replacement effect to choose (CR 616.1): "regeneration", the card whose own text it is
+ * (Guardian Seraph), or the card whose resolution made it (Fog).
+ */
 export function replacementWord(state: GameState, ref: ReplacementRef, cards: CardDatabase): string {
   switch (ref.kind) {
     case "regenerationShield":
       return "regeneration";
     case "ownText":
       return nameOf(state, ref.object, cards);
+    case "resolvedEffect": {
+      const oracleId = replacementEffectCard(state, ref.id);
+      return (oracleId === null ? undefined : cards[oracleId]?.printed.name) ?? ref.id;
+    }
   }
 }

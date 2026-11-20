@@ -132,6 +132,11 @@ export const furnaceWhelp: CardDef = {
   card" is `{ op: "revealUntil", who: { controllerOf: { target: 0 } }, filter: { types: ["creature"] } }`, and "the
   player puts that card onto the battlefield" `{ op: "put", of: "found", into: "battlefield", by: { controllerOf:
   { target: 0 } } }`.
+- "Prevent all combat damage that would be dealt this turn" is `{ op: "preventAllDamage", combatOnly: true, protects:
+  "everyone" }`; "prevent all damage that would be dealt to you and creatures you control this turn" `{ op:
+  "preventAllDamage", combatOnly: false, protects: "youAndYourCreatures" }` (D-088). "If a source an opponent controls
+  would deal damage to you, prevent 1 of that damage" is the replacement `{ kind: "preventDamageToYou", amount: 1,
+  fromOpponents: true }`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).

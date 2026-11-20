@@ -427,9 +427,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
        Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
        isn't destroyed: its ruling).
-     - Now: M2-08c (2026-11-20). Built (D-087): `happenOrAsk`, the `chooseReplacement` decision and its plumbing (legal
+     - M2-08c: done, merged (PR #47, D-087). Built: `happenOrAsk`, the `chooseReplacement` decision and its plumbing (legal
        actions, view, CLI action lines and describe, scenario `choose:` "regeneration" or a card's name, export), unit
-       tests in `test/pipeline/replacement-choice.test.ts`, an import guard. Next: mutations, fuzz, reviews, PR.
+       tests in `test/pipeline/replacement-choice.test.ts`, an import guard. Next: M2-08d.
        Design, with the advisor's review:
        - `happenOrAsk`: like `happen`, but when the affected player (or the affected object's controller, CR 616.1)
          must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
@@ -453,6 +453,40 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-08c, the CR 616.1 choice, no pool cards: superseded by the design above (D-087). The M2-03 review's cases are
        in Open questions; only the Homing Bear one (regeneration and a "would be put into a graveyard" replacement on
        one destroy) is tested now.
+     - Now: M2-08d (2026-11-20), in two PRs. M2-08d1 built (D-088): Fog, Safe Passage, Guardian Seraph; 11 scenarios in
+       `test/scenarios/cards/m2-08d/`; two golden games. 166 cards; 158 of the 234 Magic 2010 cards. Mutations (6/6
+       caught) and a 200-game fuzz are clean; both reviews found no wrong result. Their findings are fixed (dbade33,
+       21 scenarios now; a second mutation pass caught 6/6 after one test was tightened); next the PR, then M2-08d2.
+       What the fixes were:
+       - Bug: identical candidates (two Seraphs) beside a different one (Fog) are offered as separate options. Group
+         candidates by identity: one option per group, all its members applied when chosen.
+       - A choice's `for` becomes a union (an object, or a damage entry by its index in the event, source and
+         recipient), so the CLI can say which damage is asked about; `affectedKey` becomes a switch.
+       - Tests: Seraph against two attackers (per-entry choices, CR 615.10), the creature chooser and APNAP across
+         entries, partial prevention with lifelink and a damage trigger, Fog with first strike and deathtouch, Fog
+         ending at cleanup, Safe Passage after damage, sharper Seraph-and-Fog expectations.
+       - State effect ids from `newObjectId`, the op moved to `effects/prevention.ts`; entries that can't be dealt
+         damage dropped before prevention (shields must not be used up by them, CR 609.7b); drop the unread
+         `fromOpponents`; one engine helper naming a state effect's card; citations (CR 120.2b); stale docs.
+       - Damage is replaced per recipient: a `dealDamage` event's entries (one per source and recipient) each get their
+         own candidates and their own chooser, the recipient player or the recipient object's controller (CR 616.1).
+         Choices become `{ for, ref }` (`for`: an object, or a damage entry), so a global effect's choice for one recipient isn't used for another
+         (the M2-08c review). A prevented entry shrinks or goes; lifelink and "deals damage" triggers see what's left
+         (CR 615.6, 120.4c). State-held effects get an `id` (two Harm's Ways differ).
+       - M2-08d1: Fog ("prevent all combat damage that would be dealt this turn"), Safe Passage ("all damage that would
+         be dealt to you and creatures you control this turn", creatures arriving later too: its ruling), both kept in
+         `GameState.replacements` until cleanup; Guardian Seraph ("if a source an opponent controls would deal damage to
+         you, prevent 1 of that damage"; a source without a controller counts by its owner: its ruling; several add up), the first
+         replacement read from another permanent's text on the battlefield, not the moving card's. Choices arise
+         (Seraph with Fog or Safe Passage), though the result is the same; asked anyway (CR 616.1), skipping a choice
+         whose outcome can't differ being a later UX question.
+       - M2-08d2: Harm's Way: a source chosen as it resolves (any object, CR 609.7a; offered: permanents and spells),
+         then "the next 2 damage that source would deal to you and/or permanents you control this turn is dealt to its
+         target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
+         when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
+         stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
+       - Golden cover: `chooseReplacement` becomes required once Seraph meets Fog or Safe Passage in agent games, or
+         a deck runs both.
      - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
        (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
        a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
@@ -626,6 +660,18 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20, D-089) Does "modern Magic" mean the Modern format? `game:arena -is:alchemy -is:digital` keeps 13,036
+  of 23,012 Modern-legal cards, and 51 keywords on 596 Modern-legal cards appear on no card it keeps (Echo, Dredge,
+  Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the
+  owner's final one, D-089, keeps 14,623.) Options: (a) the filter sets the order, not
+  the boundary: Arena's mechanics first, then a later milestone for the Modern-only ones (recommended; nothing needs
+  deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) widen it now to
+  `game:arena -is:alchemy`, which brings back paper cards Arena had only in digital reprint sets.
+- (Asked 2026-11-20, D-089) Magic 2010 cards still to script in M2-14 whose rules may have no counterpart on MTG Arena
+  (Hive Mind, Telepathy, Warp World, Sphinx Ambassador's naming a card, Mirror of Fate, and any other M2-14 card): (a)
+  check each against Arena when M2-14 starts and skip those whose mechanic no Arena card uses (recommended; proceeding
+  with this), (b) script all of Magic 2010 as the spec says, (c) drop every Magic 2010 card not on Arena from M2 (51 of
+  the 76 left, though their mechanics are on Arena).
 - (Asked 2026-11-20) The M2 spec's M2-08 acceptance list includes three cases from the M2-03 review that no Magic 2010
   card can produce: a dying creature's replacement still applying to the others in its state-based-action batch
   (CR 704.3), a "would die" replacement with regeneration (testable now with a test-only card, done in M2-08c), and

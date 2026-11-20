@@ -1,24 +1,72 @@
-// Replacement effects made by resolving spells and abilities (CR 614.1), kept until used or until they end. A card's own
-// replacements are in its text instead (`CardDef.replacements`).
+// Replacement and prevention effects made by resolving spells and abilities (CR 614.1, 615.1), kept until used or
+// until they end. A card's own replacements are in its text instead (`CardDef.replacements`).
 
 import type { GameState } from "./game-state.ts";
-import type { ObjectId } from "./ids.ts";
+import type { ObjectId, OracleId, PlayerId } from "./ids.ts";
+import type { Target } from "./objects.ts";
 
 export type ReplacementEffect =
   /**
    * A regeneration shield on `object`: the next time it would be destroyed this turn, it's regenerated instead
    * (CR 701.19a, 614.8). Ends in the cleanup step if unused (CR 514.2).
    */
-  { kind: "regenerationShield"; object: ObjectId };
+  | { kind: "regenerationShield"; object: ObjectId }
+  /**
+   * "Prevent all [combat] damage that would be dealt [to you and creatures you control] this turn" (Fog, Safe Passage;
+   * CR 615.1a): checked as each damage event happens, so a creature arriving later is protected too (Safe Passage's
+   * ruling). `id` is its own, so a choice can name it (CR 616.1); `sourceOracleId` is the card that made it, which names
+   * it to players.
+   */
+  | {
+      kind: "preventAllDamage";
+      id: ObjectId;
+      sourceOracleId: OracleId;
+      controller: PlayerId;
+      combatOnly: boolean;
+      protects: "everyone" | "controllerAndCreatures";
+    };
 
 /**
- * One replacement effect that would apply to an event, named so a player can choose it and so it's applied once
- * (CR 616.1; later: CR 614.5): a card's own replacement by its object and place in `replacementsOf` (stable while a choice waits), or an object's
- * regeneration shields (interchangeable, so one reference stands for them all, D-086).
+ * One replacement effect that would apply to an event, named so a player can choose it (CR 616.1) and so it applies
+ * once (later: CR 614.5): a card's own replacement by its object and place in `replacementsOf` (stable while a choice waits), an
+ * object's regeneration shields (interchangeable, so one reference stands for them all, D-086), or an effect
+ * in `GameState.replacements` (made by a resolving spell or ability) by its id.
  */
 export type ReplacementRef =
   | { kind: "ownText"; object: ObjectId; index: number }
-  | { kind: "regenerationShield"; object: ObjectId };
+  | { kind: "regenerationShield"; object: ObjectId }
+  | { kind: "resolvedEffect"; id: ObjectId };
+
+/**
+ * A choice a player made between replacement effects, and what it was for, so a choice made for one event or damage
+ * entry isn't used for another (CR 616.1).
+ */
+export type ReplacementChoice = { for: ChoiceFor; ref: ReplacementRef };
+
+/**
+ * What a choice between replacement effects is for: the object an event affects, or one entry of a damage event (a
+ * source dealing damage to a recipient), by its place in the event as proposed, since one source can deal damage to one
+ * recipient twice in an event (Goblin Artillery targeting its own controller). Source and recipient say which damage
+ * it is.
+ */
+export type ChoiceFor =
+  | { kind: "object"; object: ObjectId }
+  | { kind: "damage"; index: number; source: ObjectId; to: Target };
+
+export function sameChoiceFor(a: ChoiceFor, b: ChoiceFor): boolean {
+  switch (a.kind) {
+    case "object":
+      return b.kind === "object" && a.object === b.object;
+    case "damage":
+      return b.kind === "damage" && a.index === b.index && a.source === b.source && sameTarget(a.to, b.to);
+  }
+}
+
+function sameTarget(a: Target, b: Target): boolean {
+  return a.kind === "player"
+    ? b.kind === "player" && a.player === b.player
+    : b.kind === "object" && a.object === b.object;
+}
 
 export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {
   switch (a.kind) {
@@ -26,12 +74,28 @@ export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {
       return b.kind === "ownText" && a.object === b.object && a.index === b.index;
     case "regenerationShield":
       return b.kind === "regenerationShield" && a.object === b.object;
+    case "resolvedEffect":
+      return b.kind === "resolvedEffect" && a.id === b.id;
   }
 }
 
 /** Whether this permanent has a regeneration shield (CR 701.19a). */
 export function hasRegenerationShield(state: GameState, object: ObjectId): boolean {
   return state.replacements.some((r) => r.kind === "regenerationShield" && r.object === object);
+}
+
+/** The card whose resolution made this effect in `GameState.replacements`, to name it to players, or null if none has the id. */
+export function replacementEffectCard(state: GameState, id: ObjectId): OracleId | null {
+  for (const effect of state.replacements) {
+    switch (effect.kind) {
+      case "preventAllDamage":
+        if (effect.id === id) return effect.sourceOracleId;
+        break;
+      case "regenerationShield":
+        break;
+    }
+  }
+  return null;
 }
 
 /** Every replacement effect ends in the cleanup step: all of them last "this turn" so far (CR 514.2). */

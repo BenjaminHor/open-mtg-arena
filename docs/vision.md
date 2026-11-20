@@ -48,3 +48,8 @@ outer screen and a 7.6-inch inner screen), and also desktop browsers.
 
 Start with 17 simple cards (M1), then about 200 (M2, rules depth), then grow by sets or themes. A card is in the pool only when
 it's fully scripted and has tests. Cards with unsupported rules are left out rather than half-working.
+
+After M2, cards and mechanics come from what MTG Arena has (the owner, D-089): Scryfall's `in:arena in:paper
+-is:alchemy`, a card printed on paper that's on Arena in some printing, never Alchemy and never digital-only designs
+(their mechanics aren't in the Comprehensive Rules). A mechanic is built only when such a card needs it. Whether
+Modern-only mechanics come later is an open question (`docs/status.md`).

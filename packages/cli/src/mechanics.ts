@@ -44,7 +44,8 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   chooseCards: true,
   chooseYesNo: true,
   orderTriggers: true,
-  chooseReplacement: "no two replacement effects in the pool apply to one event until M2-08d's prevention",
+  // Reachable since M2-08d1, only when Guardian Seraph meets Fog or Safe Passage in one game: rare in agent games.
+  chooseReplacement: "two different prevention effects on one damage event are too rare in agent games",
 };
 
 /**
@@ -92,6 +93,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   PERMANENT_UNTAPPED: true,
   DAMAGE_REMOVED: true,
   PERMANENT_REGENERATED: true,
+  DAMAGE_PREVENTED: true,
   CARD_DISCARDED: true,
   CARDS_REVEALED: true,
 };
@@ -128,17 +130,21 @@ export const DELAYED_TRIGGER = "trigger delayed";
 /**
  * Where each kind of replacement effect does something: it's credited as its card moves there, outside the pregame
  * (coarse, like `effectOps`: entering untapped still checked the condition, and Darksteel Colossus put into a library
- * some other way would count). A new kind must be placed.
+ * some other way would count), or, for a prevention, as it prevents damage (`DAMAGE_PREVENTED` by that card). A new
+ * kind must be placed.
  */
-const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library"> = {
+const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library" | "prevented"> = {
   entersTapped: "battlefield",
   // Instead of a graveyard.
   graveyardToLibrary: "library",
+  preventDamageToYou: "prevented",
 };
 
 /** The replacement effects a card's own text makes that apply as it moves to `zone`. */
-export function replacementUnits(def: CardDef, zone: string): string[] {
-  return (def.replacements ?? []).filter((r) => REPLACEMENT_WHERE[r.kind] === zone).map((r) => `replacement ${r.kind}`);
+export function replacementUnits(def: CardDef, where: string): string[] {
+  return (def.replacements ?? [])
+    .filter((r) => REPLACEMENT_WHERE[r.kind] === where)
+    .map((r) => `replacement ${r.kind}`);
 }
 
 export const decisionUnit = (kind: DecisionKind["kind"]): string => `decision ${kind}`;

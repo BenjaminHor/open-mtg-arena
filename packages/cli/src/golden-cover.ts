@@ -140,6 +140,11 @@ export function mechanicsUsed(event: GameEvent, before: GameState, after: GameSt
       const def = cards[event.object.oracleId]?.def;
       return def === undefined || before.pregame !== null ? [] : replacementUnits(def, event.to.zone);
     }
+    case "DAMAGE_PREVENTED": {
+      // A permanent's own prevention text, credited only when it prevented something.
+      const def = cards[event.by]?.def;
+      return def === undefined ? [] : replacementUnits(def, "prevented");
+    }
     case "ATTACKERS_DECLARED":
       return inCombat(event.attacks.map((a) => a.attacker));
     case "BLOCKERS_DECLARED":
