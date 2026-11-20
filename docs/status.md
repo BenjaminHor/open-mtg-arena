@@ -266,7 +266,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
-     - Golden games rework (owner, D-082), built, in review: 25 games, 1.5 MB (was 66, 5.4 MB).
+     - Golden games rework (owner, D-082), done, merged (PR #42): 25 games, 1.5 MB (was 66, 5.4 MB).
        - `cli/src/action-lines.ts`: `actionLines(actions)` writes one readable line per action (`pass 4`, `land o85`,
          `cast o12`, `activate o5 printed 0 for G`, `chooseTarget p2`, `declareBlocker o7 o5`); `actionsFromLines(setup,
          lines, cards)` replays the game to fill in each decision id and acting player, and counts lines left after the
