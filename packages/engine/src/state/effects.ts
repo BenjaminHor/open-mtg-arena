@@ -1,7 +1,8 @@
 // Continuous effects (CR 611) and what a resolving effect knows about where it came from.
 //
 // A continuous effect is stored as data: what it changes, which objects, from when (its timestamp), and for how long.
-// `characteristics()` applies them in layer order (CR 613); nothing applies them once and stores the result.
+// `characteristics()` applies those that change characteristics in layer order (CR 613); the rules questions read the
+// rest ("can't block": `canBlock`). Nothing applies them once and stores the result.
 
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { Share, Target } from "./objects.ts";
@@ -26,7 +27,7 @@ export type ContinuousEffect = {
   change: EffectChange;
 };
 
-/** What a continuous effect changes, by layer (CR 613.1). Later layers add kinds. */
+/** What a continuous effect changes: a characteristic, by layer (CR 613.1), or a rule for the affected objects. */
 export type EffectChange =
   /** Layer 7c (CR 613.4c): power and toughness go up or down by these amounts. */
   | { kind: "modifyPT"; power: number; toughness: number }

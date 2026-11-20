@@ -1,0 +1,26 @@
+name: An attacker without trample is divided before a trampler sharing its blocker, whatever the order they were declared in, and the trampler's lethal damage counts that division
+rules: [CR 702.19b, CR 510.1c]
+# The Rhino is declared first. Runeclaw Bear is blocked by Palace Guard (1/4) and Elite Vanguard; p1 is asked about the
+# Bear first, gives the Guard 2, and then the Rhino needs only 2 more on the Guard before trampling over.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino, Runeclaw Bear]
+  p2:
+    battlefield: [Palace Guard, Elite Vanguard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino, Runeclaw Bear]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Stampeding Rhino, Runeclaw Bear], Elite Vanguard: Runeclaw Bear }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: assignDamage, amount: 2, lethal: null }
+  - p1 assign: { Palace Guard: 2, Elite Vanguard: 0 }
+  - expect:
+      pending: { player: p1, kind: assignDamage, amount: 4, lethal: [2] }
+  - p1 assign: { Palace Guard: 2, p2: 2 }
+  - p2 assign: { Stampeding Rhino: 1, Runeclaw Bear: 0 }
+  - expect:
+      p2.life: 18
+      p2.graveyard: [Palace Guard]

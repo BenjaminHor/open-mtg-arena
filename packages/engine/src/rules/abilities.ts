@@ -1,4 +1,5 @@
-// An object's activated abilities, and which of them are mana abilities.
+// An object's abilities as it has them now: keywords, static abilities that aren't keywords, and activated abilities,
+// with which of those are mana abilities.
 
 import type { AbilityDef, CardDatabase, Keyword, StaticAbilityDef } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";

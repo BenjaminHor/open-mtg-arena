@@ -10,7 +10,7 @@ import type { Damage } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
 import { attacksInCombat, isBlocked } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
-import type { CombatDivision, DamageDivision } from "../state/combat.ts";
+import type { Attack, CombatDivision, DamageDivision } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
@@ -46,8 +46,8 @@ export function combatDamage(state: GameState, divisions: CombatDivision[], card
     const blocked = attackersBlockedBy(state, blocker, cards);
     const amount = combatPower(state, blocker, cards);
     if (!assignsDamageNow(state, blocker, cards) || divisionOf(blocker, divisions) !== undefined) continue;
-    if (blocked.length < 2 || amount === 0) continue;
     const recipients = { recipients: blocked.map((object): Target => ({ kind: "object", object })), lethal: null };
+    if (!hasChoice(recipients, amount)) continue;
     return {
       state: askToAssign(state, controllerOf(state, blocker), blocker, recipients, amount, divisions),
       events: [],
@@ -88,7 +88,7 @@ function settleAttackers(
 }
 
 /** The attacks in combat, those without trample first, otherwise in the order declared. */
-function attackersInOrder(state: GameState, cards: CardDatabase) {
+function attackersInOrder(state: GameState, cards: CardDatabase): Attack[] {
   const tramples = (a: { attacker: ObjectId }) => keywordsOf(state, a.attacker, cards).includes("trample");
   const attacks = attacksInCombat(state, cards);
   return [...attacks.filter((a) => !tramples(a)), ...attacks.filter(tramples)];
@@ -114,13 +114,16 @@ function assignedDamage(
     if (!assignsDamageNow(state, attacker, cards)) continue;
     const amount = combatPower(state, attacker, cards);
     const toDefender: DamageDivision = [{ to: { kind: "player", player: defender }, amount }];
-    // An unblocked creature assigns its damage to the player it attacks (CR 510.1b).
-    if (!isBlocked(state, attacker)) deal(attacker, toDefender);
-    // A blocked creature with no blockers left assigns no damage (CR 510.1c), unless it has trample: then all of it goes
-    // to the player, as though every blocker had lethal damage (CR 702.19d).
-    else if (blockersOf(state, attacker, cards).length === 0) {
+    if (!isBlocked(state, attacker)) {
+      // An unblocked creature assigns its damage to the player it attacks (CR 510.1b).
+      deal(attacker, toDefender);
+    } else if (blockersOf(state, attacker, cards).length === 0) {
+      // A blocked creature with no blockers left assigns no damage (CR 510.1c), unless it has trample: then all of it
+      // goes to the player, as though every blocker had lethal damage (CR 702.19d).
       if (keywordsOf(state, attacker, cards).includes("trample")) deal(attacker, toDefender);
-    } else deal(attacker, divisionOf(attacker, attackerDivisions) ?? []);
+    } else {
+      deal(attacker, divisionOf(attacker, attackerDivisions) ?? []);
+    }
   }
   // Each blocker assigns its damage to the attackers it blocks that are still in combat: as divided, or all to its one
   // attacker (CR 510.1d).
