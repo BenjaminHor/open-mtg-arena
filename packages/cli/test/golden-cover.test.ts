@@ -13,11 +13,11 @@ import {
   addCover,
   type Candidate,
   type Coverage,
-  cardUsed,
   chooseCover,
   coverageOf,
   FEATURES,
   featuresOf,
+  mechanicsUsed,
 } from "../src/golden-cover.ts";
 
 const cards = cardDatabase();
@@ -62,15 +62,15 @@ describe("coverageOf", () => {
     }
   });
 
-  it("finds each card used, played as a land or resolved, in the turn it's first used", () => {
+  it("finds each mechanic run and decision answered, in the turn it first appears", () => {
     const actions = playRecipe({ setup, agent: "by-kind", agentSeed: 5, maxTurns: 8 }, cards);
     const { firstTurn } = coverageOf(setup, actions, cards);
-    expect(firstTurn.Mountain).toBeTypeOf("number");
-    expect(firstTurn.Forest).toBeTypeOf("number");
-    // Each card's turn is when it's first used: cut off there, the game still uses it.
-    for (const [card, turn] of Object.entries(firstTurn)) {
+    expect(firstTurn["decision priority"]).toBeTypeOf("number");
+    expect(firstTurn["effect dealDamage"]).toBeTypeOf("number");
+    // Each unit's turn is when it first appears: cut off there, the game still has it.
+    for (const [unit, turn] of Object.entries(firstTurn)) {
       const cut = playRecipe({ setup, agent: "by-kind", agentSeed: 5, maxTurns: turn }, cards);
-      expect(coverageOf(setup, cut, cards).firstTurn[card], card).toBe(turn);
+      expect(coverageOf(setup, cut, cards).firstTurn[unit], unit).toBe(turn);
     }
   });
 });
@@ -86,7 +86,11 @@ function fakeState(): GameState {
       elves: card("Llanowar Elves"),
       forest: card("Forest"),
       bears: card("Grizzly Bears"),
-      shot: { kind: "ability", sourceOracleId: oracleIdOf("Prodigal Pyromancer") },
+      shot: {
+        kind: "ability",
+        sourceOracleId: oracleIdOf("Prodigal Pyromancer"),
+        ability: { kind: "printed", index: 0 },
+      },
     },
     zones: {
       stack: ["bolt"],
@@ -95,27 +99,35 @@ function fakeState(): GameState {
   } as unknown as GameState;
 }
 
-describe("cardUsed", () => {
+describe("mechanicsUsed", () => {
   const state = fakeState();
-  const used = (event: object) => cardUsed(event as GameEvent, state, state, cards);
+  const used = (event: object) => mechanicsUsed(event as GameEvent, state, state, cards);
   const p1 = "p1" as PlayerId;
 
-  it("counts a land played, a spell resolved, an ability resolved (for its source) and mana made", () => {
-    expect(used({ type: "LAND_PLAYED", player: p1, newId: "forest", cardId: "c1" })).toBe("Forest");
-    expect(used({ type: "SPELL_RESOLVED", object: "bolt", cardId: "c2", controller: p1 })).toBe("Lightning Bolt");
-    expect(used({ type: "ABILITY_RESOLVED", object: "shot", source: "gone", controller: p1 })).toBe(
-      "Prodigal Pyromancer",
-    );
-    expect(used({ type: "MANA_ADDED", player: p1, mana: "G", amount: 1, source: "elves" })).toBe("Llanowar Elves");
+  it("sees a spell resolved, an ability resolved and mana made run their card's mechanics", () => {
+    expect(used({ type: "SPELL_RESOLVED", object: "bolt", cardId: "c2", controller: p1 })).toStrictEqual([
+      "target anyTarget",
+      "effect dealDamage",
+    ]);
+    expect(used({ type: "ABILITY_RESOLVED", object: "shot", source: "gone", controller: p1 })).toStrictEqual([
+      "cost tap",
+      "target anyTarget",
+      "effect dealDamage",
+    ]);
+    expect(used({ type: "MANA_ADDED", player: p1, mana: "G", amount: 1, source: "elves" })).toStrictEqual([
+      "cost tap",
+      "effect addMana",
+    ]);
   });
 
-  it("doesn't count a cast that's cancelled, countered or doesn't resolve: the card's script never ran", () => {
-    expect(used({ type: "SPELL_CAST", player: p1, object: "bolt", cardId: "c2" })).toBeNull();
+  it("sees nothing in a land played, or a cast that's cancelled, countered or doesn't resolve: no script ran", () => {
+    expect(used({ type: "LAND_PLAYED", player: p1, newId: "forest", cardId: "c1" })).toStrictEqual([]);
+    expect(used({ type: "SPELL_CAST", player: p1, object: "bolt", cardId: "c2" })).toStrictEqual([]);
     expect(
       used({ type: "CAST_CANCELLED", player: p1, spell: "bolt", cardId: "c2", restored: "x", untapped: [] }),
-    ).toBeNull();
-    expect(used({ type: "SPELL_COUNTERED", object: "bolt", cardId: "c2" })).toBeNull();
-    expect(used({ type: "SPELL_DID_NOT_RESOLVE", object: "bolt", cardId: "c2" })).toBeNull();
+    ).toStrictEqual([]);
+    expect(used({ type: "SPELL_COUNTERED", object: "bolt", cardId: "c2" })).toStrictEqual([]);
+    expect(used({ type: "SPELL_DID_NOT_RESOLVE", object: "bolt", cardId: "c2" })).toStrictEqual([]);
   });
 });
 

@@ -266,7 +266,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
-     - Now: golden games rework (owner, D-082), before M2-07c2. Plan, in order:
+     - Golden games rework (owner, D-082), built, in review: compact encoding and the mechanics cover; 19 games, 1.3 MB
+       (was 66, 5.4 MB). Plan, as built:
        1. `cli/src/action-lines.ts`: `actionLines(setup, actions, cards)` and `actionsFromLines(setup, lines, cards)`,
           one readable line per action (`pass 4`, `land o85`, `cast o12`, `activate o5 1 for G`, `chooseTarget p2`,
           `declareBlocker o7 o5`, ...), an exhaustive switch on `Action` and `Answer`; decoding replays the game to fill
@@ -500,9 +501,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
-- The golden folder's budget is 16 MB through M2 (D-081). It's 5.4 MB with 150 cards, about 36 KB per card; all 234
-  Magic 2010 cards come to about 9 MB. Before the pool grows past Magic 2010, change how golden games are stored
-  (D-081).
+- The golden folder's budget is 16 MB through M2 (D-081). With the compact encoding and the mechanics cover (D-082) it's
+  1.3 MB for 150 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with

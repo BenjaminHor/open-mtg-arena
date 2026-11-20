@@ -1101,3 +1101,9 @@ every schema change and every change D-024 lists bumps it.
   "cast o12", "chooseTarget p2"): 3.3 MB of actions become 0.44 MB. Setups name cards instead of oracle ids
   (0.23 MB to 0.09 MB). Logs stay as they are (the readable diff when a game changes).
 - Built as its own task before M2-07c2; the M1 bench games (D-049) are converted, not replaced.
+- Built (2026-11-20): `cli/src/action-lines.ts` and `setup-names.ts`, `readGameFile` reading either encoding, and
+  `cli/src/mechanics.ts` for the cover. Converting the 66 games left every log unchanged and took the folder from
+  5.4 MB to 2.5 MB. The mechanics test found 13 mechanics no golden game ran (a card counted as used when cast, even if
+  its trigger never fired), so the card-chosen games were replaced: the four bench games and the three the export tests
+  read stay, and 12 games chosen by mechanics cover the rest: 19 games, 1.3 MB. Centaur Courser and Fire Elemental, the
+  only pool cards in no scenario, got one each. Supersedes D-069's card cover.

@@ -313,9 +313,13 @@ background.
 ### Golden games
 
 `packages/engine/test/golden/` holds agent-vs-agent games (D-047), M1's four whole games between its prebuilt decks
-(the benchmark's) and games chosen by `pnpm golden:cover` (D-069), so that between them every card in the pool is used
-(played as a land, or a spell or ability of it resolved). Each is stored as its replay **and** its readable event log,
-one event per line (the CLI's brief log). Until the AI exists (M3) the players are the `random` and `by-kind` agents:
+(the benchmark's) and games chosen by `pnpm golden:cover` (D-082), so that between them every mechanic the pool's
+cards have runs (each keyword, static, effect op, trigger condition, cost and target kind) and every kind of decision
+is answered. Each card is covered by its own scenarios instead (a test checks each pool card is in one). Each game is
+stored as its replay **and** its readable event log, one event per line (the CLI's brief log). The replay is compact
+(`"encoding": "lines"`, D-082): the setup names cards, and each action is one line, `pass 4`, `land o85`, `cast o12`,
+`activate o5 printed 0 for G`, `chooseTarget p2`, `declareBlocker o7 o5`, without decision ids or the acting player,
+which follow from the pending decision as the lines are read back (`cli/src/action-lines.ts`). Until the AI exists (M3) the players are the `random` and `by-kind` agents:
 
 ```
 T36 p1 attack: p1:Hill Giant -> p2
@@ -338,10 +342,10 @@ differently", or "file rewritten (version or layout)".
 `pnpm golden:add --decks red-aggro,green-stompy --seed N [--agent by-kind]` adds a game. Never regenerate golden files
 just to make a failure go away.
 
-When the pool grows, `pnpm golden:cover [--from 1] [--to 800]` adds games until every card is used (a test checks). It
+When the pool grows, `pnpm golden:cover [--from 1] [--to 800]` adds games until every mechanic runs (a test checks). It
 plays the fuzzer's decks for each seed (its prebuilt pairs and random pool decks) with `by-kind` agents,
-counts what the folder's games already use, and keeps, greedily, the game adding the most unused cards per action, cut
-off at the turn its last new card is used. It also covers three choices the export tests read: a spell on the stack
+counts what the folder's games already run, and keeps, greedily, the game adding the most new mechanics per action, cut
+off at the turn its last new one appears. It also covers three choices the export tests read: a spell on the stack
 targeted, a card in a graveyard targeted, cards chosen as a spell or ability resolves. It only adds games, never changes one, and skips seeds whose game
 is already there; it lists what's still not covered and fails if anything is.
 Keep the folder under 16 MB through M2 (D-081, was 8 MB in D-073).

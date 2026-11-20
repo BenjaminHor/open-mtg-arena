@@ -5,7 +5,7 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { cardDatabase, DECKS, type DeckList, POOL } from "@mtg/cards";
+import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import { type Action, ENGINE_VERSION } from "@mtg/engine";
 import { afterEach, describe, expect, it } from "vitest";
 import {
@@ -20,20 +20,21 @@ import {
   updateGoldens,
 } from "../src/golden.ts";
 import { coveredByGoldens, FEATURES } from "../src/golden-cover.ts";
+import { wantedMechanics } from "../src/mechanics.ts";
 
 const cards = cardDatabase();
 
 describe("the golden games", () => {
   const files = goldenFiles();
 
-  it("exist, and between them use every card in the pool and show the export tests' choices", {
+  it("exist, and between them run every mechanic in the pool, answer every kind of decision and show the export tests' choices", {
     timeout: 60_000,
   }, () => {
     expect(files.length).toBeGreaterThanOrEqual(4);
-    // A card is used when it's played as a land, or a spell or ability of it resolves (pnpm golden:cover adds games
-    // until this holds, D-069).
+    // A mechanic runs when a card's spell or ability with it resolves (pnpm golden:cover adds games until this holds,
+    // D-082); each card is covered by its own scenarios.
     const covered = new Set(coveredByGoldens(GOLDEN_DIR, cards));
-    const wanted = [...POOL.cards.map((c) => c.name), ...Object.values(FEATURES)];
+    const wanted = [...wantedMechanics(cards), ...Object.values(FEATURES)];
     expect(wanted.filter((unit) => !covered.has(unit))).toEqual([]);
   });
 

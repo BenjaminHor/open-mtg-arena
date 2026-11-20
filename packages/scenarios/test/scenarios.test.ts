@@ -28,3 +28,12 @@ describe("scenarios", () => {
     });
   }
 });
+
+// Golden games cover mechanics, not cards (D-082), so each card in the pool is covered by scenarios: at least one names it.
+describe("every card in the pool", () => {
+  const texts = files.map((f) => readFileSync(path.join(ROOT, f), "utf8"));
+  it("appears in at least one scenario", () => {
+    const names = Object.values(cards).map((c) => c.printed.name);
+    expect(names.filter((name) => !texts.some((t) => t.includes(name)))).toStrictEqual([]);
+  });
+});
