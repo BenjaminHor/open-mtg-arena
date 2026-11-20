@@ -39,6 +39,7 @@ function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDataba
       return [{ kind: "dealDamage", damage: proposed.damage.filter((d) => d.amount > 0) }];
     case "moveCard":
     case "destroy":
+    case "sacrifice":
     case "tap":
     case "untap":
     case "addMana":

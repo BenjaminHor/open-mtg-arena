@@ -50,6 +50,7 @@ export function parseManaCost(text: string): ManaCost {
   return symbols.map((s): ManaSymbol => {
     const inner = s.slice(1, -1);
     if (/^\d+$/.test(inner)) return { kind: "generic", amount: Number(inner) };
+    if (inner === "X") return { kind: "x" };
     if (COLORS.includes(inner)) return { kind: "colored", color: inner as Color };
     throw new Error(`Mana symbol ${s} isn't supported yet`);
   });

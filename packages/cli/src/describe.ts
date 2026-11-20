@@ -76,6 +76,10 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return `target ${targetText(state, answer.target, cards)}`;
     case "chooseTargetCount":
       return `${answer.count} target${answer.count === 1 ? "" : "s"}`;
+    case "announceX":
+      return `X = ${answer.value}`;
+    case "chooseSacrifice":
+      return `sacrifice ${objectText(state, answer.object, cards)}`;
     case "divide": {
       const pending = state.pending;
       const target = pending?.kind === "divide" ? pending.targets[pending.shares.length] : undefined;

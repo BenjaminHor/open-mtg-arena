@@ -105,7 +105,7 @@ describe("layer 7c (CR 613.4c)", () => {
     const pumped = runEffect(
       state,
       { op: "modifyPT", power: 3, toughness: 3, of: { target: 0 }, duration: "endOfTurn" },
-      { self: forest, controller: "p1", targets: [[{ kind: "object", object: forest }]], division: [] },
+      { self: forest, controller: "p1", targets: [[{ kind: "object", object: forest }]], division: [], x: null },
       TEST_CARDS,
     ).state;
     expect(characteristics(pumped, forest, TEST_CARDS)).toMatchObject({ power: 3, toughness: 3 });
@@ -139,7 +139,7 @@ describe("an effect on an object that's gone (CR 400.7)", () => {
     const pumped = runEffect(
       entered,
       { op: "modifyPT", power: 3, toughness: 3, of: { target: 0 }, duration: "endOfTurn" },
-      { self: bears, controller: "p1", targets: [[{ kind: "object", object: bears }]], division: [] },
+      { self: bears, controller: "p1", targets: [[{ kind: "object", object: bears }]], division: [], x: null },
       TEST_CARDS,
     ).state;
     expect(characteristics(pumped, bears, TEST_CARDS)).toMatchObject({ power: 6, toughness: 6 });

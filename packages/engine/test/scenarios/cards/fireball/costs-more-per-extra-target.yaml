@@ -1,0 +1,34 @@
+name: Fireball costs {1} more for each target beyond the first, and divides X evenly among them
+rules: [CR 601.2f, CR 107.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fireball]
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Grizzly Bears, Giant Spider]
+steps:
+  # X = 5 and three targets: {5}{R} plus {1}{1}, a total of {7}{R} (its rulings).
+  - p1 cast: Fireball
+    x: 5
+    targets: [[p2:Grizzly Bears, p2:Giant Spider, p2]]
+  - expect:
+      pending:
+        player: p1
+        kind: payMana
+        cost:
+          - { kind: generic, amount: 5 }
+          - { kind: colored, color: R }
+          - { kind: generic, amount: 1 }
+          - { kind: generic, amount: 1 }
+  - p1 choose: cancel
+  - p1 cast: Fireball
+    x: 5
+    targets: [[p2:Grizzly Bears, p2:Giant Spider, p2]]
+    pay: auto
+  - all pass: once
+  # 5 divided evenly among three, rounded down: 1 each.
+  - expect:
+      p2.life: 19
+      p2:Grizzly Bears.damage: 1
+      p2:Giant Spider.damage: 1

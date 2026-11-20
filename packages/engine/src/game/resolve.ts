@@ -77,7 +77,8 @@ function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: Ca
   const divided = obj.choices?.division ?? null;
   const stillLegal = divided === null ? [] : (legal[divided.instance] ?? []);
   const division = (divided?.shares ?? []).filter((share) => stillLegal.some((t) => sameTarget(t, share.target)));
-  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division };
+  const x = obj.choices?.x ?? null;
+  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division, x };
   return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context }));
 }
 

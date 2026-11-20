@@ -145,7 +145,13 @@ export function midTurnState(): GameState {
       {
         kind: "runEffect",
         effect: { op: "dealDamage", amount: 3, from: "self", to: { target: 0 } },
-        context: { self: "o10", controller: "p1", targets: [[{ kind: "player", player: "p2" }]], division: [] },
+        context: {
+          self: "o10",
+          controller: "p1",
+          targets: [[{ kind: "player", player: "p2" }]],
+          division: [],
+          x: null,
+        },
       },
       { kind: "finishResolving", object: "o10" },
     ],

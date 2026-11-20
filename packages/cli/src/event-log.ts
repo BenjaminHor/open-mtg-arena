@@ -123,6 +123,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `state-based actions: ${e.actions.map((a) => ("player" in a ? `${a.player} ${a.kind}` : `${name(a.object)} ${a.kind}`)).join(", ")}`;
     case "PERMANENT_DESTROYED":
       return `destroyed: ${name(e.object)}`;
+    case "PERMANENT_SACRIFICED":
+      return `${e.player} sacrifices ${name(e.object)}`;
     case "PLAYER_LOST":
       return `${e.player} loses the game (${e.reason})`;
     case "GAME_ENDED":

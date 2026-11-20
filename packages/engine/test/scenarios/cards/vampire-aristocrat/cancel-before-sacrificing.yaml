@@ -1,0 +1,15 @@
+name: Cancelling while choosing what to sacrifice puts everything back; nothing was sacrificed
+rules: [CR 734.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Aristocrat, Grizzly Bears]
+steps:
+  - p1 activate: Vampire Aristocrat
+  - expect:
+      pending: { player: p1, kind: chooseSacrifice }
+  - p1 choose: cancel
+  - expect:
+      stack: []
+      p1.battlefield: [Vampire Aristocrat, Grizzly Bears]
+      pending: { player: p1, kind: priority }

@@ -102,6 +102,8 @@ export type GameEvent =
   | { type: "CARD_DISCARDED"; player: PlayerId; newId: ObjectId; cardId: CardId }
   /** State-based actions performed together as one event (CR 704.3); their results follow. */
   | { type: "STATE_BASED_ACTIONS"; actions: StateBasedAction[] }
+  /** A permanent was sacrificed by `player` (CR 701.21a): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
+  | { type: "PERMANENT_SACRIFICED"; object: ObjectId; cardId: CardId; player: PlayerId }
   /** A permanent was destroyed (CR 701.8): it's moving to its owner's graveyard (`ZONE_CHANGED` follows). */
   | { type: "PERMANENT_DESTROYED"; object: ObjectId; cardId: CardId }
   /**

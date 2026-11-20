@@ -1,0 +1,10 @@
+name: A land isn't a creature, so it can't be sacrificed for "Sacrifice a creature"
+rules: [CR 701.21a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Aristocrat, Swamp]
+steps:
+  - p1 activate: Vampire Aristocrat
+    sacrifice: Swamp
+  - expect error: illegalAction

@@ -196,6 +196,16 @@ pays" and ward (CR 702.21a). Today `ACTIVATE_ABILITY` is accepted only with a `p
 pending, and paying (`casting-steps.ts`) assumes something is being cast and finishes by making it cast. These need a
 payment context that isn't `Casting`.
 
+**Costs paid while something waits (CR 616.1, 118.11).** `payCost` performs the sacrifices with `happen` at once.
+When a replacement effect needs a choice (M2-08), the sacrifice must be able to wait, and the cost still counts as paid
+even if the sacrifice is replaced (CR 118.11): make the payment and "becomes cast or activated" (CR 601.2i) work items
+then. A spell or ability that targets a creature and sacrifices one (Siege-Gang Commander, M2-11) needs a scenario for
+sacrificing its own target (CR 601.5; a unit test covers it now). The sacrifice is chosen before the mana abilities'
+window (CR 601.2g); a mana ability that sacrifices (none in the pool) could take a creature already chosen, leaving
+only cancel: then choose sacrifices after the window, or let the player choose again. "Divided as you choose" with an
+amount of X must cap the number of targets at X (CR 601.2d), and casting without paying the mana cost forces X = 0
+(CR 107.3b).
+
 **Casting from other zones (CR 601.2a, 734.1, 702.34a flashback).** Casting checks the hand
 (`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
 the hand. A card cast from a graveyard or exile must go back where it came from. The check before casting
@@ -205,8 +215,7 @@ your graveyard" spell would count itself as a choice before it moves to the stac
 **Smaller rules noted while closing the coverage gaps (later: in the code).** Power or toughness of `*`
 (CR 208.2) needs characteristic-defining abilities; "another target" (CR 115.4, Arc Trail) needs targets distinct
 across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule
-modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions);
-X costs (CR 107.3).
+modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions).
 
 **Small keywords that touch M1 code.** Vigilance (CR 702.20b): `finishAttackers` taps every attacker
 (`combat/declare-attackers.ts`). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`

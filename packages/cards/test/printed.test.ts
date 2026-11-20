@@ -13,8 +13,12 @@ describe("parseManaCost", () => {
     expect(parseManaCost("{0}")).toStrictEqual([{ kind: "generic", amount: 0 }]);
   });
 
+  it("reads {X} (CR 107.3a)", () => {
+    expect(parseManaCost("{X}{R}")).toStrictEqual([{ kind: "x" }, { kind: "colored", color: "R" }]);
+  });
+
   it("rejects symbols that aren't supported yet, and text that isn't a cost", () => {
-    for (const bad of ["{X}{R}", "{W/U}", "{C}", "{G/P}", "2R", "{2}R"]) {
+    for (const bad of ["{W/U}", "{C}", "{G/P}", "2R", "{2}R"]) {
       expect(() => parseManaCost(bad)).toThrow();
     }
   });

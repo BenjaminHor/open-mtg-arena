@@ -60,6 +60,11 @@ export type DecisionKind =
   /** While casting a spell or activating an ability: choose the target for this instance of "target" (CR 601.2c). */
   | { kind: "chooseTarget"; object: ObjectId; instance: number }
   /**
+   * While casting or activating, first: announce the value of X (CR 601.2b, 107.3a). Any whole number from 0 is
+   * accepted; `upTo` is only how far `legalActions` lists them, the most the player could pay for now.
+   */
+  | { kind: "announceX"; object: ObjectId; upTo: number }
+  /**
    * While casting or activating: announce how many targets this instance of "target" will have, when the text
    * allows a range, before choosing them (CR 601.2c). `max` is already limited to what can be chosen.
    */
@@ -73,4 +78,9 @@ export type DecisionKind =
    * While casting or activating: pay the mana cost (CR 601.2g–h). Mana abilities may be activated while this is
    * pending (CR 605.3a); then the answer is a payment from the pool, or cancelling the cast or activation.
    */
-  | { kind: "payMana"; object: ObjectId; cost: ManaCost };
+  | { kind: "payMana"; object: ObjectId; cost: ManaCost }
+  /**
+   * While activating: choose a permanent to sacrifice for the cost (CR 601.2h, 701.21a). It's sacrificed when the whole
+   * cost is paid; until then the player can cancel.
+   */
+  | { kind: "chooseSacrifice"; object: ObjectId };

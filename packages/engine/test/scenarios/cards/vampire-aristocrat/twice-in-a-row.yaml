@@ -1,0 +1,16 @@
+name: Two activations, each sacrificing a creature, give Vampire Aristocrat +4/+4
+rules: [CR 701.21a, CR 602.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Aristocrat, Grizzly Bears, Llanowar Elves]
+steps:
+  - p1 activate: Vampire Aristocrat
+    sacrifice: Grizzly Bears
+  - p1 activate: Vampire Aristocrat
+    sacrifice: Llanowar Elves
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1:Vampire Aristocrat.power: 6
+      p1.graveyard: [Grizzly Bears, Llanowar Elves]

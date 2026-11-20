@@ -110,7 +110,11 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   target's share of a divided effect, in the order the targets were listed (`divide: [2, 1]`, CR 601.2d): one share per
   target, adding up to the whole, or the step fails (the last share isn't asked for: it gets the rest); without it,
   the cast stops at the division, where `choose` gives one share at a time. `choose` also answers a number of targets.
-  Listing a target or share the spell never takes fails the step. `pay: auto` pays with `autoPay` (activating mana
+  `x: 3` announces X first, for a spell or ability with X in its cost (CR 107.3a), at most what `legalActions` lists
+  (larger values are legal, D-058, and covered by unit tests). `sacrifice: Grizzly Bears` (or a
+  list) names what to sacrifice for the cost, a permanent the player controls or a reference like `p2:Grizzly Bears`
+  (CR 701.21a). Listing a target, share, X or sacrifice the spell never takes fails the step. `pay: auto` pays with
+  `autoPay` (activating mana
   abilities as needed); `pay: { R: 1 }` pays that from mana already in the pool; `pay: cancel` cancels
   the cast. Without `pay`, the cast stops at the payment decision, where the player can `activate` mana abilities and
   then `choose` a payment or `cancel`; without `targets`, it stops at the first target choice (`choose` a target or
@@ -137,7 +141,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - Passing through combat (`all pass`) declares no attackers and no blockers when asked, the "do nothing" answer;
   `all pass: until combat.declareAttackers` (or `.declareBlockers`, `.damage`) stops there when that step's own decision
   is pending. A division of damage has no "do nothing", so it stops `all pass` with an error.
-- `cast` and `activate` gain `modes` and `x` with the first card that has them.
+- `cast` and `activate` gain `modes` with the first card that has them.
 
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).
@@ -154,6 +158,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
   the last step that changed the game. Nested maps match on their keys given too: `{ type: EFFECT_CREATED, effect:
   { controller: p1 } }`. `pending:` matches the same way.
+- `events lacks: [{ type: DAMAGE_DEALT }]`: no event matching any listed one happened during that step.
 - `winner: p1` once the game is over; `winner: draw` when it ended in a draw (CR 104.4a); `winner: (game not over)`
   while it's still going.
 - Expectations that arrive later and fail until then: `.counters` (M1-13).

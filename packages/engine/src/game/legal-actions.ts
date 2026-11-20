@@ -1,6 +1,7 @@
 // legalActions: every action a player may take right now (docs/architecture.md, "Engine API"), except `CONCEDE`,
-// which is always allowed and never listed (D-042). Each one is accepted by applyAction, and the scenario runner, the
-// CLI and the AI choose from this list.
+// which is always allowed and never listed (D-042), and values of X above the decision's `upTo`, which are legal but
+// endless (D-058). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
+// list.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { damageLeft } from "../combat/combat-damage.ts";
@@ -18,6 +19,7 @@ import { castProblem } from "./cast.ts";
 import { largestShare, possibleTargets } from "./choose-targets.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
+import { nextSacrificeOptions } from "./sacrifice-costs.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
@@ -66,6 +68,14 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         }),
       );
     }
+    case "announceX": {
+      // Any whole number is legal (CR 107.3a); these are the ones the player could pay for now, from 0.
+      const values = Array.from(
+        { length: pending.upTo + 1 },
+        (_, value): Action => ({ ...answer, answer: { kind: "announceX", value } }),
+      );
+      return [...values, { ...answer, answer: { kind: "cancelCast" } }];
+    }
     case "chooseTargetCount": {
       const { min, max } = pending;
       const counts = Array.from(
@@ -87,6 +97,12 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         (_, i): Action => ({ ...answer, answer: { kind: "divide", amount: i + 1 } }),
       );
       return [...shares, { ...answer, answer: { kind: "cancelCast" } }];
+    }
+    case "chooseSacrifice": {
+      const options = nextSacrificeOptions(state, cards).map(
+        (object): Action => ({ ...answer, answer: { kind: "chooseSacrifice", object } }),
+      );
+      return [...options, { ...answer, answer: { kind: "cancelCast" } }];
     }
     case "payMana": {
       // Every payment the pool covers, since which mana pays is the player's choice (CR 601.2h); mana abilities to make

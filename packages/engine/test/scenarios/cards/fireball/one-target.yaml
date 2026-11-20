@@ -1,0 +1,21 @@
+name: Fireball with one target deals X damage to it, for a total cost of its mana cost with X announced
+rules: [CR 107.3a, CR 601.2b, CR 601.2f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fireball]
+    battlefield: [Mountain, Mountain, Mountain, Mountain]
+steps:
+  - p1 cast: Fireball
+    x: 3
+    targets: [[p2]]
+  - expect:
+      pending: { player: p1, kind: payMana, cost: [{ kind: generic, amount: 3 }, { kind: colored, color: R }] }
+  - p1 choose: cancel
+  - p1 cast: Fireball
+    x: 3
+    targets: [[p2]]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.life: 17

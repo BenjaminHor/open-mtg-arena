@@ -7,6 +7,8 @@ events (`pipeline/`, D-056) and are called only by it; everything else proposes 
 - `untap.ts`: `untapPermanent(state, id)`, emitting `PERMANENT_UNTAPPED`. The untap step untaps them all as one
   `simultaneous` event (CR 502.3).
 - `destroy.ts`: `destroy(state, id)` (CR 701.8): the move to the graveyard, emitting `PERMANENT_DESTROYED` first.
+- `sacrifice.ts`: `sacrifice(state, id)` (CR 701.21a): the move to its owner's graveyard, not a destruction, emitting
+  `PERMANENT_SACRIFICED` (with who sacrificed it) first.
 - `damage.ts`: `markDamage(state, id, amount)` (CR 120.3e), called only by `effects/deal-damage.ts`, which emits
   `DAMAGE_DEALT`; `removeAllDamage(state)` for the cleanup step (CR 514.2), emitting `DAMAGE_REMOVED`.
 

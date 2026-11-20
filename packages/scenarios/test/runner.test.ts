@@ -78,6 +78,26 @@ describe("the scenario runner fails a scenario that's wrong", () => {
     expect(first(`${castBolt("    targets: [p2, p1]\n")}  - expect error: illegalAction\n`)).toMatch(/targets lists/);
   });
 
+  it("checks 'events lacks': it fails when a listed event happened", () => {
+    expect(
+      problems(`${main1}  - p1 pass: once\n  - expect: { events lacks: [{ type: DAMAGE_DEALT }] }\n`),
+    ).toStrictEqual([]);
+    expect(first(`${main1}  - p1 pass: once\n  - expect: { events lacks: [{ type: PRIORITY_PASSED }] }\n`)).toMatch(
+      /events lacks/,
+    );
+  });
+
+  it("fails sacrifices listed that the cost never took, even when the cost has no mana and is paid at once", () => {
+    const aristocrat = at("main1", "  p1: { battlefield: [Vampire Aristocrat, Grizzly Bears, Llanowar Elves] }\n");
+    const activate = (sacrifice: string) =>
+      `${aristocrat}  - p1 activate: Vampire Aristocrat\n    sacrifice: ${sacrifice}\n`;
+    expect(problems(activate("Grizzly Bears"))).toStrictEqual([]);
+    expect(first(activate("[Grizzly Bears, Llanowar Elves]"))).toMatch(/sacrifice lists 2, but its cost took 1/);
+    expect(first(`${activate("[Grizzly Bears, Llanowar Elves]")}  - expect error: illegalAction\n`)).toMatch(
+      /sacrifice lists 2/,
+    );
+  });
+
   it("matches every key of pending, not just one", () => {
     expect(first(`${main1}  - expect: { pending: { player: p2, kind: priority } }\n`)).toMatch(
       /^step 1: pending: expected/,

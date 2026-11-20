@@ -23,7 +23,16 @@ export type ScenarioStep =
    * instance has several), then the shares of a divided effect (CR 601.2d), then the payment: `auto` (autoPay), a
    * payment from the pool like `{ R: 1 }`, or `cancel`. Without `pay`, the cast stops at the payment decision.
    */
-  | { kind: "cast"; player: string; card: string; targets: unknown[]; divide: number[] | null; pay: unknown }
+  | {
+      kind: "cast";
+      player: string;
+      card: string;
+      x: number | null;
+      targets: unknown[];
+      divide: number[] | null;
+      sacrifice: string[] | null;
+      pay: unknown;
+    }
   /**
    * Activate an ability of a permanent: `p1 activate: Mountain`, or a reference like `p2:Mountain`. An ability that uses
    * the stack then takes `targets` and `pay`, as `cast` does.
@@ -33,8 +42,10 @@ export type ScenarioStep =
       player: string;
       card: string;
       ability: number | null;
+      x: number | null;
       targets: unknown[];
       divide: number[] | null;
+      sacrifice: string[] | null;
       pay: unknown;
     }
   /** Declare attackers (CR 508.1): the player's creatures by name or reference (`Grizzly Bears#2`), maybe none. */
@@ -65,8 +76,8 @@ export const COMING_STEP_WORDS: Record<string, string> = {}; // none now; a task
 
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
-  cast: ["targets", "divide", "pay"],
-  activate: ["ability", "targets", "divide", "pay"],
+  cast: ["x", "targets", "divide", "sacrifice", "pay"],
+  activate: ["ability", "x", "targets", "divide", "sacrifice", "pay"],
 };
 
 export function parseScenario(text: string): Scenario {
@@ -149,7 +160,16 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       if (!(STEP_OPTIONS.cast ?? []).includes(option)) throw new Error(`${where}: "cast" has no option "${option}"`);
     const targets = raw.targets ?? [];
     if (!Array.isArray(targets)) throw new Error(`${where}: targets is a list`);
-    return { kind: "cast", player, card: String(value), targets, divide: shares(raw.divide, where), pay: raw.pay };
+    return {
+      kind: "cast",
+      player,
+      card: String(value),
+      x: xValue(raw.x, where),
+      targets,
+      divide: shares(raw.divide, where),
+      sacrifice: sacrifices(raw.sacrifice),
+      pay: raw.pay,
+    };
   }
   if (word === "concede") {
     noOptions();
@@ -193,8 +213,10 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       player,
       card: String(value),
       ability: typeof ability === "number" ? ability : null,
+      x: xValue(raw.x, where),
       targets,
       divide: shares(raw.divide, where),
+      sacrifice: sacrifices(raw.sacrifice),
       pay: raw.pay,
     };
   }
@@ -230,4 +252,17 @@ function shares(value: unknown, where: string): number[] | null {
   if (!Array.isArray(value) || !value.every((n) => typeof n === "number" && Number.isInteger(n)))
     throw new Error(`${where}: divide is a list of whole numbers, one per target, like [2, 1]`);
   return value;
+}
+
+/** An `x:` option: the value of X to announce (CR 107.3a). */
+function xValue(value: unknown, where: string): number | null {
+  if (value === undefined) return null;
+  if (typeof value !== "number" || !Number.isInteger(value)) throw new Error(`${where}: x is a whole number`);
+  return value;
+}
+
+/** A `sacrifice:` option: what to sacrifice for the cost, one name or a list (CR 701.21a). */
+function sacrifices(value: unknown): string[] | null {
+  if (value === undefined) return null;
+  return (Array.isArray(value) ? value : [value]).map(String);
 }

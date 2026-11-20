@@ -715,3 +715,21 @@ every schema change and every change D-024 lists bumps it.
   later: 115.7f for changed targets). Fireball's "divided evenly" is different (worked out at resolution, per its rulings) and comes with M2-04b.
 - Interim prebuilt decks `white-red` and `blue-green` bring the new cards into the golden games until the first M10
   deck pair (after M2-05) replaces them. The bench reads states only from M1's four golden games (D-049).
+
+**D-058: X, cost increases and sacrifice costs** · 2026-11-20 · accepted (M2-04b)
+- `{X}` is a mana symbol. It's announced first, as the cast or activation begins (`announceX`, CR 601.2b, 107.3a): any
+  whole number from 0 is accepted; `legalActions` lists 0 up to what the player could pay for now (the pool plus one
+  for each mana ability they could activate, minus the rest of the mana cost), a guide rather than a rule, so the
+  fuzzer and the AI have a finite list. An X too big to pay ends in a cancel (D-035). X counts as 0 in the mana value
+  off the stack (CR 107.3g); the stack's value comes with its first reader (later: CR 202.3e).
+- The total cost is worked out once, after targets and division (CR 601.2f): the mana cost with X as generic mana, plus
+  increases (Fireball's per target beyond the first, read only for a spell with one instance of "target"), and locked
+  into the `payMana` decision.
+- "Sacrifice a creature" is a cost part with an `ObjectFilter`. After the cost is locked, the player chooses what to
+  sacrifice (`chooseSacrifice`; a target can be chosen too, CR 601.5). Nothing moves until the whole cost is paid:
+  mana abilities come first (CR 601.2g), then the mana and the sacrifices together, rechecked, in one step, the
+  sacrifices' events before the spell becomes cast or the ability activated (CR 601.2h–i). So a cancel never undoes a
+  sacrifice (D-035). A cost with no mana is paid as soon as its choices are made.
+- Whether anything can be sacrificed isn't checked before activating, as payability isn't (D-035).
+- Fireball's "divided evenly" is worked out at resolution among the targets still legal (its rulings). An interim
+  black-red deck brings Fireball, Swamp and Vampire Aristocrat into the golden games and the fuzzer.

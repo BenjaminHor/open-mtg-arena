@@ -1,0 +1,12 @@
+name: Only a creature its controller controls can be sacrificed for the cost
+rules: [CR 701.21a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Aristocrat, Swamp]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 activate: Vampire Aristocrat
+    sacrifice: p2:Grizzly Bears
+  - expect error: illegalAction

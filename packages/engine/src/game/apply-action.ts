@@ -17,7 +17,7 @@ import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
 import { castProblem, startCast } from "./cast.ts";
-import { activateWhilePaying, cancelCasting, nextCastingStep, payCost } from "./casting-steps.ts";
+import { activateWhilePaying, announceX, cancelCasting, nextCastingStep, payCost, xProblem } from "./casting-steps.ts";
 import {
   chooseTarget,
   chooseTargetCount,
@@ -30,6 +30,7 @@ import { playersLose } from "./game-end.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
+import { chooseSacrifice, sacrificeProblem } from "./sacrifice-costs.ts";
 import { queueWork } from "./work.ts";
 
 export function applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
@@ -125,19 +126,26 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       const chosen = [...pending.chosen, answer.object];
       return { ok: true, state: queueWork(answered, { kind: "finishCleanup", chosen }), events: [] };
     }
+    case "announceX": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind !== "announceX") return mismatch;
+      const problem = xProblem(answer.value);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, ...nextCastingStep(announceX(answered, answer.value), cards) };
+    }
     case "chooseTargetCount": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "chooseTargetCount") return mismatch;
       const problem = targetCountProblem(pending, answer.count);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, state: nextCastingStep(chooseTargetCount(answered, answer.count), cards), events: [] };
+      return { ok: true, ...nextCastingStep(chooseTargetCount(answered, answer.count), cards) };
     }
     case "chooseTarget": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "chooseTarget") return mismatch;
       const problem = targetProblem(answered, answer.target, cards);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, state: nextCastingStep(chooseTarget(answered, answer.target), cards), events: [] };
+      return { ok: true, ...nextCastingStep(chooseTarget(answered, answer.target), cards) };
     }
     case "divide": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
@@ -146,13 +154,20 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (problem !== null) return error("illegalAction", problem);
       // The next share is asked for here; once the last target gets the rest, casting goes on.
       const divided = divide(answered, pending, answer.amount);
-      const state = divided.pending === null ? nextCastingStep(divided, cards) : divided;
-      return { ok: true, state, events: [] };
+      if (divided.pending !== null) return { ok: true, state: divided, events: [] };
+      return { ok: true, ...nextCastingStep(divided, cards) };
+    }
+    case "chooseSacrifice": {
+      if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
+      if (answer.kind !== "chooseSacrifice") return mismatch;
+      const problem = sacrificeProblem(answered, answer.object, cards);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, ...nextCastingStep(chooseSacrifice(answered, answer.object), cards) };
     }
     case "payMana": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "payMana") return mismatch;
-      const paid = payCost(answered, pending.cost, answer.payment);
+      const paid = payCost(answered, pending.cost, answer.payment, cards);
       return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
     }
     case "declareAttackers": {

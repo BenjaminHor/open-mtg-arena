@@ -4,6 +4,8 @@
 import type { CardDatabase, Effect, EffectSubject } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
+import type { Damage } from "../pipeline/proposed.ts";
+import { amountOf } from "../rules/amount.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -19,12 +21,7 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
       const [from, ...more] = objectsOf(subject(effect.from, context));
       if (more.length > 0) throw new Error("dealDamage's `from` must name exactly one object");
       if (from === undefined) return { state, events: [] };
-      // Divided damage: each target still legal is dealt its announced share (CR 601.2d, 608.2b).
-      const damage =
-        effect.divided === "asYouChoose"
-          ? context.division.map(({ target, amount }) => ({ source: from, to: target, amount, combat: false }))
-          : subject(effect.to, context).map((to) => ({ source: from, to, amount: effect.amount, combat: false }));
-      return happen(state, { kind: "dealDamage", damage }, cards);
+      return happen(state, { kind: "dealDamage", damage: damageOf(effect, from, context) }, cards);
     }
     case "addMana": {
       // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5).
@@ -44,6 +41,25 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
         affected,
         change,
       });
+    }
+  }
+}
+
+/** Who a damage effect deals how much to, as it resolves. */
+function damageOf(effect: Extract<Effect, { op: "dealDamage" }>, from: ObjectId, context: EffectContext): Damage[] {
+  const amount = amountOf(effect.amount, context.x);
+  const to = subject(effect.to, context);
+  if (effect.divided === undefined) return to.map((t) => ({ source: from, to: t, amount, combat: false }));
+  switch (effect.divided) {
+    case "asYouChoose":
+      // Each target still legal is dealt its announced share (CR 601.2d, 608.2b).
+      return context.division.map((share) => ({ source: from, to: share.target, amount: share.amount, combat: false }));
+    case "evenly": {
+      // Divided evenly, rounded down as the text says (CR 107.1a), among the targets still legal as it resolves
+      // (Fireball's rulings). With more targets than damage each share is 0, which isn't dealt at all (CR 120.8); with
+      // no targets nothing is.
+      const share = to.length === 0 ? 0 : Math.floor(amount / to.length);
+      return to.map((t) => ({ source: from, to: t, amount: share, combat: false }));
     }
   }
 }

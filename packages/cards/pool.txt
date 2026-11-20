@@ -9,6 +9,7 @@ Coral Merfolk
 Craw Wurm
 Elite Vanguard
 Fire Elemental
+Fireball
 Forest
 Furnace Whelp
 Giant Growth
@@ -27,4 +28,6 @@ Raging Goblin
 Righteousness
 Shock
 Spined Wurm
+Swamp
+Vampire Aristocrat
 Volcanic Hammer

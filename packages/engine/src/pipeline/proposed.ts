@@ -21,6 +21,8 @@ export type SingleEvent =
   | { kind: "moveCard"; object: ObjectId; to: Destination }
   /** A permanent is destroyed: it moves to its owner's graveyard (CR 701.8a). */
   | { kind: "destroy"; object: ObjectId }
+  /** A permanent is sacrificed: its controller moves it to its owner's graveyard; it isn't destroyed (CR 701.21a). */
+  | { kind: "sacrifice"; object: ObjectId }
   /**
    * One damage event (CR 120.4): spells deal damage to one recipient, combat damage to many at once (CR 510.2). Its
    * results (life loss, marked damage) are part of it: replacements that change them modify this event

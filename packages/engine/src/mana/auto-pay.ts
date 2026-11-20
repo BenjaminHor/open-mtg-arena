@@ -51,15 +51,35 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
     return true;
   };
 
-  for (const symbol of cost) if (symbol.kind === "colored" && !take([symbol.color])) return null;
+  // Colored symbols first, then generic, so generic doesn't use up a color a symbol needs.
+  const generic: number[] = [];
   for (const symbol of cost) {
-    if (symbol.kind !== "generic") continue;
-    for (let i = 0; i < symbol.amount; i++) if (!take(GENERIC_ORDER)) return null;
+    switch (symbol.kind) {
+      case "colored":
+        if (!take([symbol.color])) return null;
+        break;
+      case "generic":
+        generic.push(symbol.amount);
+        break;
+      case "x":
+        throw new Error("X must be announced before the cost is paid (CR 107.3a)");
+    }
   }
+  for (const amount of generic) for (let i = 0; i < amount; i++) if (!take(GENERIC_ORDER)) return null;
   return { activations, payment };
 }
 
 type Source = { object: ObjectId; ability: AbilityRef; mana: ManaType };
+
+/**
+ * The most mana the player could have right now: what's in their pool, and one for each permanent whose mana ability
+ * they could activate. Only a guide (`legalActions` lists values of X up to it), not a rule.
+ */
+export function manaAvailable(state: GameState, player: PlayerId, cards: CardDatabase): number {
+  const pool = state.players[player]?.manaPool;
+  const inPool = pool === undefined ? 0 : MANA_TYPES.reduce((sum, t) => sum + pool[t], 0);
+  return inPool + manaSources(state, player, cards).length;
+}
 
 /** The player's permanents that can make one mana now, lands first, each group in battlefield order. */
 function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): Source[] {

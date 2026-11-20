@@ -168,7 +168,7 @@ describe("activations the engine refuses rather than half-does (D-041)", () => {
       targets: [{ kind: "anyTarget" }],
       effects: [{ op: "dealDamage", amount: 1, from: "self", to: { target: 0 } }],
     }) as typeof TEST_CARDS;
-    expect(activationProblem(game.state, "p1", pinger, ref, cards)).toMatch(/costs other than mana/);
+    expect(activationProblem(game.state, "p1", pinger, ref, cards)).toMatch(/\{T\} in such a cost/);
   });
 
   it("refuses a mana ability with mana in its cost", () => {
@@ -179,7 +179,7 @@ describe("activations the engine refuses rather than half-does (D-041)", () => {
       targets: [],
       effects: [{ op: "addMana", mana: "G", amount: 1 }],
     }) as typeof TEST_CARDS;
-    expect(manaAbilityProblem(game.state, "p1", pinger, ref, cards)).toMatch(/mana abilities with mana costs/);
+    expect(manaAbilityProblem(game.state, "p1", pinger, ref, cards)).toMatch(/mana abilities with costs other than/);
   });
 
   it("refuses an ability whose target requirement has no legal choice (CR 601.2c, 602.2b)", () => {

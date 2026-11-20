@@ -32,6 +32,10 @@ export const KNIGHT = "test-white-blue-knight";
 export const UP_TO_TWO = "test-up-to-two";
 /** Not a real card: 2 damage divided as you choose among one or more target creatures (CR 601.2d). */
 export const SPLIT = "test-split";
+/** Not a real card: "{X}{R}: X damage to any target", for X costs (CR 107.3a). */
+export const X_BOLT = "test-x-bolt";
+/** Not a real card: "Sacrifice a creature: this creature gets +1/+1 until end of turn", for sacrifice costs. */
+export const SAC_PUMP = "test-sac-pump";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -374,6 +378,52 @@ export const TEST_CARDS: CardDatabase = {
         targets: [{ kind: "permanent", filter: { types: ["creature"] }, count: { min: 1, max: "any" } }],
         effects: [{ op: "dealDamage", amount: 2, from: "self", to: { target: 0 }, divided: "asYouChoose" }],
       },
+    },
+  }),
+  [X_BOLT]: card(X_BOLT, {
+    printed: {
+      name: "X Bolt",
+      manaCost: [{ kind: "x" }, { kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "X Bolt",
+      oracle: "X Bolt deals X damage to any target.",
+      spell: {
+        targets: [{ kind: "anyTarget" }],
+        effects: [{ op: "dealDamage", amount: "X", from: "self", to: { target: 0 } }],
+      },
+    },
+  }),
+  [SAC_PUMP]: card(SAC_PUMP, {
+    printed: {
+      name: "Sac Pump",
+      manaCost: [{ kind: "colored", color: "B" }],
+      colors: ["B"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["creature"],
+      subtypes: [],
+      power: 1,
+      toughness: 1,
+    },
+    def: {
+      name: "Sac Pump",
+      oracle: "Sacrifice a creature: This creature gets +1/+1 until end of turn.",
+      abilities: [
+        {
+          kind: "activated",
+          cost: [{ kind: "sacrifice", filter: { types: ["creature"] } }],
+          targets: [],
+          effects: [{ op: "modifyPT", power: 1, toughness: 1, of: "self", duration: "endOfTurn" }],
+        },
+      ],
     },
   }),
 };

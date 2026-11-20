@@ -147,6 +147,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Fireball",
+      "slug": "fireball",
+      "oracleId": "aa7714b0-2bfb-458a-8ebf-37ec2c53383e",
+      "layout": "normal",
+      "manaCost": "{X}{R}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "This spell costs {1} more to cast for each target beyond the first.\nFireball deals X damage divided evenly, rounded down, among any number of targets.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/6/f6a86f5d-cfbf-4d8e-9f8e-0f8288907396.jpg?1783941072",
+        "large": "https://cards.scryfall.io/large/front/f/6/f6a86f5d-cfbf-4d8e-9f8e-0f8288907396.jpg?1783941072",
+        "png": "https://cards.scryfall.io/png/front/f/6/f6a86f5d-cfbf-4d8e-9f8e-0f8288907396.png?1783941072",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/6/f6a86f5d-cfbf-4d8e-9f8e-0f8288907396.jpg?1783941072"
+      },
+      "artist": "Dave Dorman",
+      "set": "m12",
+      "collectorNumber": "131",
+      "scryfallUri": "https://scryfall.com/card/m12/131/fireball?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Forest",
       "slug": "forest",
       "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
@@ -646,6 +674,60 @@
       "set": "m11",
       "collectorNumber": "197",
       "scryfallUri": "https://scryfall.com/card/m11/197/spined-wurm?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Swamp",
+      "slug": "swamp",
+      "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Basic Land — Swamp",
+      "oracleText": "({T}: Add {B}.)",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/0/30693b85-550d-4c98-8c5b-4fd4e91c9f28.jpg?1789599699",
+        "large": "https://cards.scryfall.io/large/front/3/0/30693b85-550d-4c98-8c5b-4fd4e91c9f28.jpg?1789599699",
+        "png": "https://cards.scryfall.io/png/front/3/0/30693b85-550d-4c98-8c5b-4fd4e91c9f28.png?1789599699",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/0/30693b85-550d-4c98-8c5b-4fd4e91c9f28.jpg?1789599699"
+      },
+      "artist": "Josu Solano",
+      "set": "fra",
+      "collectorNumber": "285",
+      "scryfallUri": "https://scryfall.com/card/fra/285/swamp?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Vampire Aristocrat",
+      "slug": "vampire-aristocrat",
+      "oracleId": "c14739b0-5c19-4873-b027-314225a10f7b",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Vampire Rogue Noble",
+      "oracleText": "Sacrifice a creature: This creature gets +2/+2 until end of turn.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.jpg?1783942378",
+        "large": "https://cards.scryfall.io/large/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.jpg?1783942378",
+        "png": "https://cards.scryfall.io/png/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.png?1783942378",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.jpg?1783942378"
+      },
+      "artist": "Austin Hsu",
+      "set": "m10",
+      "collectorNumber": "117",
+      "scryfallUri": "https://scryfall.com/card/m10/117/vampire-aristocrat?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

@@ -1,12 +1,14 @@
 // The steps shared by casting a spell (CR 601.2c, 601.2f–i) and activating an ability (CR 602.2b): targets and their
 // division (`choose-targets.ts`), paying the cost, and cancelling. Progress is kept in `GameState.casting` and on the
 // stack object, so every pause is plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes
-// come later (later: CR 601.2b).
+// come later (later: CR 700.2).
 
 import type { CardDatabase, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
-import { type ManaPayment, payFromPool } from "../mana/payment.ts";
-import { costOf } from "../rules/costs.ts";
+import { manaAvailable } from "../mana/auto-pay.ts";
+import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
+import { happen } from "../pipeline/happen.ts";
+import { announcesX, costOf } from "../rules/costs.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -18,18 +20,38 @@ import { castingOf } from "./casting-state.ts";
 import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
+import { sacrificeParts, sacrificesStillPossible } from "./sacrifice-costs.ts";
 import { queueWork } from "./work.ts";
 
-/** The next decision: targets and their division (CR 601.2c–d), then paying the cost (CR 601.2g–h). */
-export function nextCastingStep(state: GameState, cards: CardDatabase): GameState {
+/**
+ * The next decision: the value of X (CR 601.2b), targets and their division (CR 601.2c–d), then, with the total cost
+ * locked in (CR 601.2f), what to sacrifice for it and the mana (CR 601.2g–h). A cost with no mana in it is paid as soon
+ * as its other choices are made.
+ */
+export function nextCastingStep(state: GameState, cards: CardDatabase): Progress {
+  const casting = castingOf(state);
+  const obj = state.objects[casting.object];
+  if (obj?.choices?.x === null && announcesX(state, casting.object, cards)) {
+    const available = manaAvailable(state, casting.player, cards);
+    const upTo = Math.max(0, available - manaValue(costOf(state, casting.object, cards)));
+    return wait(waitFor(state, casting.player, { kind: "announceX", object: casting.object, upTo }));
+  }
   const targeted = targetStep(state, cards);
-  if (targeted.pending !== null) return targeted;
-  const casting = castingOf(targeted);
-  return waitFor(targeted, casting.player, {
-    kind: "payMana",
-    object: casting.object,
-    cost: costOf(targeted, casting.object, cards),
-  });
+  if (targeted.pending !== null) return wait(targeted);
+  if (casting.sacrifices.length < sacrificeParts(targeted, casting.object, cards).length) {
+    return wait(waitFor(targeted, casting.player, { kind: "chooseSacrifice", object: casting.object }));
+  }
+  const cost = costOf(targeted, casting.object, cards);
+  if (cost.length === 0) {
+    const paid = payCost(targeted, cost, { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, cards);
+    if (typeof paid === "string") throw new Error(paid);
+    return paid;
+  }
+  return wait(waitFor(targeted, casting.player, { kind: "payMana", object: casting.object, cost }));
+}
+
+function wait(state: GameState): Progress {
+  return { state, events: [] };
 }
 
 /**
@@ -55,21 +77,35 @@ export function activateWhilePaying(
 }
 
 /**
- * CR 601.2h: the player pays the cost in full from their pool; then the spell becomes cast (CR 601.2i) or the ability
- * activated (CR 602.2b). They receive priority (CR 117.3c), and everyone has to pass again (CR 117.4).
+ * CR 601.2h: the player pays the whole cost at once, after any mana abilities (CR 601.2g): the mana from their pool,
+ * then the sacrifices chosen, which must still be possible, since partial payments aren't allowed and unpayable costs
+ * can't be paid. Then the spell becomes cast (CR 601.2i) or the ability activated (CR 602.2b), so the sacrifices'
+ * events come first. They receive priority (CR 117.3c), and everyone has to pass again (CR 117.4).
  */
-export function payCost(state: GameState, cost: ManaCost, payment: ManaPayment): Progress | string {
+export function payCost(
+  state: GameState,
+  cost: ManaCost,
+  payment: ManaPayment,
+  cards: CardDatabase,
+): Progress | string {
   const casting = castingOf(state);
   const ps = state.players[casting.player];
   if (ps === undefined) throw new Error(`No player ${casting.player}`);
   const rest = payFromPool(ps.manaPool, cost, payment);
   if (rest === null) return "that payment doesn't pay the cost (CR 601.2h)";
+  if (!sacrificesStillPossible(state, cards))
+    return "a permanent chosen to sacrifice can't be sacrificed now (CR 601.2h)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
-  const done: GameState = { ...state, players, casting: null, passesInSuccession: 0 };
+  const sacrifices = casting.sacrifices.map((object) => ({ kind: "sacrifice", object }) as const);
+  const sacrificed = happen({ ...state, players }, { kind: "simultaneous", events: sacrifices }, cards);
+  const done: GameState = { ...sacrificed.state, casting: null, passesInSuccession: 0 };
   const event = becameCastOrActivated(casting.player, obj);
-  return { state: queueWork(done, { kind: "givePriority", player: casting.player }), events: [event] };
+  return {
+    state: queueWork(done, { kind: "givePriority", player: casting.player }),
+    events: [...sacrificed.events, event],
+  };
 }
 
 /**
@@ -141,4 +177,22 @@ function becameCastOrActivated(player: PlayerId, obj: GameObject): GameEvent {
     case "ability":
       return { type: "ABILITY_ACTIVATED", player, object: obj.id, source: obj.source };
   }
+}
+
+/**
+ * Why this value of X can't be announced, or null: a whole number (CR 107.1a), not negative (CR 107.1b), as the caster
+ * chooses (CR 107.3a).
+ */
+export function xProblem(value: number): string | null {
+  // A safe integer, so the state stays exact as JSON.
+  return Number.isSafeInteger(value) && value >= 0 ? null : "X is a whole number from 0 (CR 107.1a, 107.1b, 107.3a)";
+}
+
+/** The player announces X; it's kept on the spell or ability (CR 107.3a). The casting steps then go on. */
+export function announceX(state: GameState, value: number): GameState {
+  const casting = castingOf(state);
+  const obj = state.objects[casting.object];
+  if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
+  const choices = { ...obj.choices, x: value };
+  return { ...state, objects: { ...state.objects, [casting.object]: { ...obj, choices } } };
 }

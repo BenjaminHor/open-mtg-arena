@@ -129,3 +129,12 @@ export function targetNamed(state: GameState, value: unknown, cards: CardDatabas
   if (object === null) throw new Error(`no target "${text}": name a player (p2) or a permanent (p2:Grizzly Bears)`);
   return { kind: "object", object };
 }
+
+/** A permanent named for a player: `Grizzly Bears` (one they control, `#2` for the second) or `p2:Grizzly Bears`. */
+export function permanentNamed(state: GameState, player: string, value: unknown, cards: CardDatabase): ObjectId {
+  const text = String(value);
+  const ref = parseRef(/^p\d+:/.test(text) ? text : `${player}:${text}`);
+  const id = ref === null ? null : resolveRef(state, ref, cards);
+  if (id === null) throw new Error(`no permanent "${text}"`);
+  return id;
+}

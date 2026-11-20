@@ -1,7 +1,7 @@
 // The prebuilt decks, by card name and count. 40 cards each. The fuzzer, the CLI, the golden games and the M3 app play
 // with these. red-aggro and green-stompy are M1's (docs/milestones/m1-engine-foundations.md, "Card pool");
-// white-red and blue-green are interim decks that bring M2's new cards into the golden games until the first M10
-// deck pair replaces them after M2-05 (docs/milestones/m2-pool.md, "Prebuilt decks").
+// white-red, blue-green and black-red are interim decks that bring M2's new cards into the golden games until the
+// first M10 deck pair replaces them after M2-05 (docs/milestones/m2-pool.md, "Prebuilt decks").
 
 import type { OracleId } from "@mtg/engine";
 import { POOL } from "../database.ts";
@@ -64,6 +64,21 @@ export const DECKS: Record<string, DeckList> = {
       { card: "Giant Spider", count: 3 },
       { card: "Craw Wurm", count: 2 },
       { card: "Giant Growth", count: 3 },
+    ],
+  },
+  "black-red": {
+    name: "black-red",
+    cards: [
+      { card: "Swamp", count: 8 },
+      { card: "Mountain", count: 9 },
+      { card: "Vampire Aristocrat", count: 4 },
+      { card: "Raging Goblin", count: 4 },
+      { card: "Gray Ogre", count: 4 },
+      { card: "Hill Giant", count: 3 },
+      { card: "Fireball", count: 3 },
+      { card: "Lava Axe", count: 1 },
+      { card: "Lightning Bolt", count: 2 },
+      { card: "Shock", count: 2 },
     ],
   },
 };

@@ -48,6 +48,8 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
     poolBefore: ps.manaPool,
     tappedForMana: [],
     targetCounts: [],
+    sacrifices: [],
   };
-  return { state: nextCastingStep({ ...moved.state, casting }, cards), events: moved.events };
+  const next = nextCastingStep({ ...moved.state, casting }, cards);
+  return { state: next.state, events: [...moved.events, ...next.events] };
 }
