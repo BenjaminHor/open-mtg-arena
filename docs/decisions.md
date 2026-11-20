@@ -1060,8 +1060,9 @@ every schema change and every change D-024 lists bumps it.
   object or an amount, each an exhaustive switch.
 - Sacrificing during a resolution records each permanent with its power computed just before it leaves (its last
   known information, CR 608.2h) in the resolution's "this way" record (`Resolution.sacrificed`, CR 608.2c), where
-  `cards` is in scope; `"sacrificedPower"` reads it, never below 0 (CR 107.1b), and `ifNothingSacrificed` ("if you can't
-  sacrifice") reads whether anything was. `GameState.lastKnown` stays the raw object.
+  `cards` is in scope; `"sacrificedPower"` reads it, 0 if nothing was (CR 107.2), never below 0 (CR 107.1b), and `ifNothingSacrificed`
+  ("if you can't sacrifice") reads whether anything was started (CR 118.12). With nothing sacrificed, each opponent
+  loses 0 life, an event (D-065). `GameState.lastKnown` stays the raw object.
 - `destroyOneAtRandom` picks among the still-legal targets with the seeded RNG as the effect resolves.
 - Flash (CR 702.8a) is a keyword read in the hand by `castTimingProblem`, the one timing check legal actions and
   `applyAction` share.

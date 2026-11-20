@@ -267,7 +267,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
      - M2-07c plan (2026-11-20), two PRs:
-       - M2-07c1, built (D-079), in review: 19 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
+       - M2-07c1, built (D-079), in review: 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
          action; three of the cards in the M10 pair; 3 golden games (5.4 MB). 150 cards in the pool; 142 of the 234
          Magic 2010 cards. Plan: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",

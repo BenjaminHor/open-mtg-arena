@@ -63,7 +63,8 @@ export function objectsOf(targets: readonly Target[]): ObjectId[] {
 export function amountNow(state: GameState, amount: Amount, context: EffectContext, cards: CardDatabase): number {
   if (typeof amount === "object") return permanentsFitting(state, amount.count, context, cards).length;
   if (amount === "sacrificedPower") {
-    // Never below 0: a creature with negative power makes no one lose life (CR 107.1b).
+    // Nothing sacrificed: a number that can't be determined is 0 (CR 107.2). Never below 0: a creature with negative
+    // power makes no one lose life (CR 107.1b).
     const powers = (state.resolution?.sacrificed ?? []).map((s) => s.power ?? 0);
     return Math.max(
       0,

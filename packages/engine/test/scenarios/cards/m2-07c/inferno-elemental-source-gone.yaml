@@ -1,0 +1,23 @@
+name: Inferno Elemental returned to hand in response still deals its trigger's 3 damage, as its last known information
+rules: [CR 113.7a, CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Inferno Elemental]
+  p2:
+    battlefield: [Giant Spider, Island]
+    hand: [Unsummon]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Inferno Elemental]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Giant Spider: Inferno Elemental }
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p1:Inferno Elemental]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.hand: [Inferno Elemental]
+      p2:Giant Spider.damage: 3

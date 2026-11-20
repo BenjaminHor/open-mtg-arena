@@ -68,7 +68,8 @@ function sacrificeEach(state: GameState, ids: readonly ObjectId[], cards: CardDa
 
 /**
  * "If you can't sacrifice [one], [effects]": queues the effects, ahead of the rest of the resolution, only if nothing
- * was sacrificed this way (CR 608.2c).
+ * was sacrificed this way (CR 118.12, 608.2c). `sacrificeEach` records what it started to sacrifice, not what moved,
+ * so a replacement effect changing the move (later: CR 614) won't change the answer.
  */
 export function ifNothingSacrificed(state: GameState, effects: readonly Effect[], context: EffectContext): Progress {
   if ((state.resolution?.sacrificed.length ?? 0) > 0) return nothing(state);

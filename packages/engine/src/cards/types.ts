@@ -258,7 +258,7 @@ export type Amount =
   | "thatMuch"
   /**
    * "Equal to the sacrificed creature's power": its power as it last existed on the battlefield (CR 608.2h), sacrificed
-   * by an earlier `sacrifice` of this resolution; 0 if nothing was, and never below 0 (CR 107.1b).
+   * by an earlier `sacrifice` of this resolution; 0 if nothing was (CR 107.2), and never below 0 (CR 107.1b).
    */
   | "sacrificedPower";
 
@@ -415,6 +415,7 @@ export type Effect =
   | { op: "sacrifice"; who: EffectSubject; filter: ObjectFilter; otherThanSelf?: true }
   /**
    * "If you can't sacrifice a creature, [effects]": the effects happen only if no earlier `sacrifice` of this
-   * resolution sacrificed anything (CR 608.2c).
+   * resolution started to sacrifice anything (CR 118.12: the sacrifice is a cost paid on resolution, and "can't" asks
+   * whether it was started, whatever then happened; CR 608.2c).
    */
   | { op: "ifNothingSacrificed"; effects: Effect[] };

@@ -21,3 +21,4 @@ steps:
       p1.graveyard: [Grizzly Bears]
       p2.life: 20
       p1.life: 20
+      events contains: [{ type: LIFE_LOST, player: p2, amount: 0 }]
