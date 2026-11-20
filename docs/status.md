@@ -371,7 +371,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      the advisor's review), in five PRs. Three later cards shape the data now: Clone (M2-14, a copy as it enters,
      CR 616.1c), Protean Hydra (M2-10, a prevention that removes counters), Magebane Armor (M2-12, a granted
      noncombat-damage prevention).
-     - M2-08a: built (D-085), reviews done and fixed; next the PR. 18 scenarios in `test/scenarios/cards/m2-08a/`, a unit test for lands entering together
+     - M2-08a: done, merged (PR #45, D-085). 18 scenarios in `test/scenarios/cards/m2-08a/`, a unit test for lands entering together
        (`test/pipeline/replacements.test.ts`), an Indestructible matrix row, three golden games; the Magic 2010 decks
        run checklands. 158 cards; 150 of the 234 Magic 2010 cards. As built, unlike the plan below: one replacement per
        event, refusing two (CR 614.5 and 616.1f come with M2-08c's choice), and `autoPay` stays greedy (lands first,
@@ -390,6 +390,32 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        control a [type] or a [type]", land types read through `characteristics()`, Convincing Mirage later), with
        "{T}: Add {G} or {W}": the color carried on the action as for any color (D-068) but limited to two, and
        `autoPay` searching sources once one offers a restricted choice (D-068 said it would need to).
+     - Now: M2-08b (2026-11-20). Design, built on M2-08a's `replacements.ts`:
+       - `GameState.replacements` (the list architecture.md plans): replacement effects made by resolving spells and
+         abilities, here `{ kind: "regenerationShield", object }`, all "this turn": emptied in cleanup with the
+         continuous effects (CR 514.2). Made by the op `regenerate` (of: a subject), outside the pipeline like
+         continuous effects; making one isn't regenerating (CR 701.19c).
+       - `replace` gathers a destroy's candidates from the event, not only the moving card's own text: the object's
+         shields, unless the destroy says it can't be regenerated (`destroy` op and event `noRegeneration`, CR
+         701.19c). Several shields of one object are interchangeable: one is used, unasked (like D-077). A shield and a
+         different replacement on one destroy still refuse until M2-08c.
+       - The destroy becomes a `regenerate` event, performed whole (CR 701.19a): the shield used up, all damage removed,
+         tapped by its controller, removed from combat (`Combat.removed`, CR 506.4; `rules/combat.ts` reads it). Events:
+         `PERMANENT_REGENERATED`, then `DAMAGE_REMOVED` and `PERMANENT_TAPPED` as they happen. Lethal damage and
+         deathtouch destroy, so they're regenerated (CR 704.5g–h); sacrifice and toughness 0 aren't destruction.
+       - Polymorph: `destroy` with `noRegeneration`, then `revealUntil` (who: the target's controller, a new subject
+         `{ controllerOf: { target: 0 } }`, read from last known information if it's gone, CR 608.2h; filter: a
+         creature card) making the card `found`, `put` it onto the battlefield under that player, then that player
+         shuffles; revealed cards never leave the library. The reveal happens even if the creature isn't destroyed
+         (its ruling); an illegal target means nothing happens (CR 608.2b).
+       - Tests: each card's basic use; regenerating in combat (a blocker regenerated: the attacker stays blocked, no
+         trample, deals no damage to the player; an attacker regenerated after first-strike damage deals no regular
+         damage); a shield unused ends in cleanup; two shields, one used; sacrifice not replaced; deathtouch;
+         Polymorph on a shielded creature, on Darksteel Colossus (not destroyed, still reveals), with no creature card
+         left; CR 614.17c: Regenerate on Darksteel Colossus, then Doom Blade: the shield is still there.
+       - Future impact: M2-08c's choice between a shield and a "would die" replacement; static regeneration
+         (CR 701.19b) and "can't be regenerated" as a continuous effect later; `Combat.removed` serves "remove from
+         combat" effects and control changes later.
      - M2-08b, regeneration (CR 701.19, 614.8), with a scenario for CR 614.17c (an indestructible creature's
        destroy never uses up its shield; `happen.ts` cites it as later until then): a shield in state bound to one object, used once, the next time it would
        be destroyed this turn (destroy, lethal damage, deathtouch; not sacrifice): instead tap it, remove its damage,
