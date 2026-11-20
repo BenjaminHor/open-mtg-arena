@@ -304,7 +304,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          "taps a land for mana" per activation of a land's {T} mana ability (CR 106.12; not Terramorphic Expanse).
        - Intervening if re-checked in `resolveTopOfStack`, beside CR 608.2b: false removes it (CR 608.2a).
        - Delayed triggers (07c) live in state, not on a permanent; their own `AbilityRef`; Dragon Whelp needs a
-         per-object, per-turn activation count (not resolutions; cancel doesn't count; CR 400.7 resets).
+         per-object, per-turn activation count (not resolutions; cancel doesn't count; CR 400.7 resets; D-078).
        - CR 514.3a (cleanup with triggers) has no 07a card: built with Megrim (07b).
        - Read a permanent's triggers through one function (layer 6 later, CR 603.6b), like `keywordsOf`.
        - Test list: ETB in APNAP order, ordering one's own, Soul Warden negatives, source gone before and after going on
@@ -467,11 +467,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 ## Open questions for the owner
 - (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
   Artillery's two losses kept.)
-- Dragon Whelp (M2-07c), asked 2026-11-20: "If this ability has been activated four or more times this turn" is checked
-  as each activation resolves, and the CR doesn't define the count. Activated four times in a row with all four on the
-  stack, the literal reading has every resolution see four activations (four sacrifice triggers); the Gatherer ruling
-  ("the first three times will do nothing other than give it +1/+0") reads as each activation knowing its own number
-  (one trigger). The Whelp is sacrificed once either way; only the number of triggers at the end step differs.
+- (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
+  activation resolves.)
 
 ## Known issues
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are

@@ -1038,3 +1038,15 @@ every schema change and every change D-024 lists bumps it.
   creature card"), `optional` ("you may put", asked only if there's a card to put) and `into: "libraryBottom"`.
 - The CLI log shows each `TAPPED_FOR_MANA` ("p1 taps Forest for mana"), so every golden log gained those lines and
   nothing else.
+
+**D-078: Dragon Whelp counts activations as they're made and checks the count on each resolution** · 2026-11-20 · accepted (owner)
+- "If this ability has been activated four or more times this turn": an activation counts the moment it's activated,
+  its cost paid and the ability on the stack (CR 602.2), whether or not it resolves: one countered (Stifle) still
+  counts. A cancelled activation is reversed (CR 734.1, D-035), so it was never activated and doesn't count.
+- Each activation, as it resolves, checks the count so far this turn; four or more creates a delayed trigger to
+  sacrifice the creature at the beginning of the next end step (CR 603.7). So four activations stacked before any
+  resolves make four delayed triggers; the creature is sacrificed once, and the others do nothing.
+- A 4th activation during the end step sacrifices it at the next turn's end step (its ruling; "the next end step" has
+  begun already, CR 603.7). The count is per object: a creature that leaves and returns is a new object with a count of
+  0 (CR 400.7).
+- Owner's answer to the open question, 2026-11-20. Built in M2-07c.
