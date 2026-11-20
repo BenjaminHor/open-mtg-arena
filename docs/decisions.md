@@ -1113,9 +1113,8 @@ every schema change and every change D-024 lists bumps it.
   (`Record<keyof SpellDef, ...>`), so Fireball's cost increase (with a second target) and Consume Spirit's "spend only
   black mana on X" are units; every decision kind, not counting a cancel or take-back; every event type, but
   `ABILITY_COUNTERED` (no pool card counters an ability).
-- Lines read back answer whatever decision is pending, so golden games no longer check which player gets priority
-  (CR 117.3b–d): the old JSON stored the acting player. Scenarios cover priority order instead. Lines left after the
-  game ended are counted, and `pnpm golden:update` says the game ends sooner.
+- Lines left after the game ended are counted, and `pnpm golden:update` says the game ends sooner. (Lines first left
+  out the acting player too, so golden games stopped checking priority order; D-083 put it back.)
 
 **D-083: Golden action lines name the acting player** · 2026-11-20 · accepted (owner)
 - The owner: the compact format should have a compact way to show which player acted. Each line starts with the

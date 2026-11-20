@@ -2,7 +2,8 @@
 
 Games between agents, M1's four whole and the rest cut off at a turn (docs/testing.md, section 4; D-047, D-082). Each
 is `<name>.json`, a game file with the recipe that made it (agent, agent seed, turn cap), its setup with cards named,
-and its actions one readable line each (`"encoding": "lines"`: `pass 4`, `cast o12`, `chooseTarget p2`), and
+and its actions one readable line each, starting with the player who acted (`"encoding": "lines"`: `pass p1 p2`,
+`p2 cast o12`, `p2 chooseTarget p1`), and
 `<name>.log`, its brief event log, one event per line.
 `packages/cli/test/golden.test.ts` replays each game and compares the log, so a failing test shows, line by line, what
 an engine change did to the game.

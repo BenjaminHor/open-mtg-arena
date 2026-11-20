@@ -93,7 +93,10 @@ describe("updateGoldens", () => {
     const file = smallGameFile();
     const original = readGolden(file, cards);
     // A concession ends the game, so the line after it no longer fits: it's counted, not dropped in silence.
-    const text = goldenText(original, cards).replace(/\n {2}\]\n\}\n$/, ',\n    "concede p1",\n    "pass 3"\n  ]\n}\n');
+    const text = goldenText(original, cards).replace(
+      /\n {2}\]\n\}\n$/,
+      ',\n    "p1 concede",\n    "pass p1"\n  ]\n}\n',
+    );
     writeFileSync(file, text);
     const [line] = updateGoldens(path.dirname(file), cards);
     expect(line).toMatch(/played again from its recipe \(the game now ends 1 stored action lines sooner; /);
