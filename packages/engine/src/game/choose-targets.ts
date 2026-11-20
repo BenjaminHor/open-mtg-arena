@@ -4,7 +4,7 @@
 // `choices`, so every pause is plain data and a cancel can reverse it (D-035).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { amountOf } from "../rules/amount.ts";
+import { amountOf, isFixedAmount } from "../rules/amount.ts";
 import { effectsOf, legalTargets, sameTarget, type Targeting, targetCount, targetSpecsOf } from "../rules/targets.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -180,8 +180,7 @@ function dividedEffect(
       if (typeof effect.to !== "object" || !("target" in effect.to))
         throw new Error("A divided effect divides among targets");
       // Divided as it's cast: a number or X, never a count or "that much", worked out on resolution (definition-problems.ts).
-      if (typeof effect.amount === "object" || effect.amount === "thatMuch")
-        throw new Error("A divided amount is a number or X");
+      if (!isFixedAmount(effect.amount)) throw new Error("A divided amount is a number or X");
       return { instance: effect.to.target, amount: amountOf(effect.amount, choicesOf(state, id).x) };
     }
   }

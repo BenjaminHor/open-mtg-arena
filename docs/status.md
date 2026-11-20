@@ -267,7 +267,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
      - M2-07c plan (2026-11-20), two PRs:
-       - M2-07c1: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",
+       - M2-07c1, built (D-079), in review: 19 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
+         destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
+         action; three of the cards in the M10 pair; 3 golden games (5.4 MB). 150 cards in the pool; 142 of the 234
+         Magic 2010 cards. Plan: Xathrid Demon ("your upkeep": `beginningOfStep` gains `whose`; "sacrifice a creature other than this",
          then a loss equal to the sacrificed creature's power, read from its last known characteristics, CR 608.2h:
          `lastKnown` snapshots the computed power as a card leaves the battlefield, future-rules; "if you can't" taps
          it and loses 7), Capricious Efreet (targets on both sides, "up to two"; destroy one of the still-legal targets
@@ -484,6 +487,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
+- The golden folder is 5.1 MB of its 8 MB budget (D-073) after M2-07b, with about 96 Magic 2010 cards still to script;
+  at the recent rate (about 0.3 MB per batch of a dozen cards, plus log lines each new event type adds) it passes
+  8 MB before M2 ends. Before then: a more compact log, fewer games per card, or a higher budget (an owner decision).
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with

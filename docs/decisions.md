@@ -1050,3 +1050,20 @@ every schema change and every change D-024 lists bumps it.
   begun already, CR 603.7). The count is per object: a creature that leaves and returns is a new object with a count of
   0 (CR 400.7).
 - Owner's answer to the open question, 2026-11-20. Built in M2-07c.
+
+**D-079: Upkeep, block and sacrifice triggers; flash; destroy at random** · 2026-11-20 · accepted
+- `beginningOfStep` states `whose` step: `each` (Howling Mine, Ball Lightning) or `yours` (Xathrid Demon, Capricious
+  Efreet), so every card says which.
+- `selfBlocksOrBlocked` triggers once per creature blocked or blocking (CR 509.3b, 509.3d), matched where
+  `BLOCKERS_DECLARED` is emitted; the detector's `matches` returns one `TriggerEvent` per occurrence (CR 603.2c), and
+  "that creature" is the subject `triggeringObject`. `definitionProblems` checks which conditions supply a player, an
+  object or an amount, each an exhaustive switch.
+- Sacrificing during a resolution records each permanent with its power computed just before it leaves (its last
+  known information, CR 608.2h) in the resolution's "this way" record (`Resolution.sacrificed`, CR 608.2c), where
+  `cards` is in scope; `"sacrificedPower"` reads it, never below 0 (CR 107.1b), and `ifNothingSacrificed` ("if you can't
+  sacrifice") reads whether anything was. `GameState.lastKnown` stays the raw object.
+- `destroyOneAtRandom` picks among the still-legal targets with the seeded RNG as the effect resolves.
+- Flash (CR 702.8a) is a keyword read in the hand by `castTimingProblem`, the one timing check legal actions and
+  `applyAction` share.
+- A scenario invariant: a pending decision always has a legal action (a trigger's targeting has no cancel, so a count
+  or division that can't be completed would stall the game).

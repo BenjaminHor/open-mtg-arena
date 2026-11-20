@@ -130,6 +130,7 @@ export type Keyword =
   | "defender" // CR 702.3
   | "double strike" // CR 702.4
   | "first strike" // CR 702.7
+  | "flash" // CR 702.8
   | "flying" // CR 702.9
   | "forestwalk" // CR 702.14
   | "haste" // CR 702.10
@@ -254,7 +255,12 @@ export type Amount =
    */
   | { count: ObjectFilter }
   /** "That much", in a triggered ability: the amount of its triggering event (the life gained, CR 603.2). */
-  | "thatMuch";
+  | "thatMuch"
+  /**
+   * "Equal to the sacrificed creature's power": its power as it last existed on the battlefield (CR 608.2h), sacrificed
+   * by an earlier `sacrifice` of this resolution; 0 if nothing was, and never below 0 (CR 107.1b).
+   */
+  | "sacrificedPower";
 
 /**
  * Which object or player an effect refers to. It's resolved to real ids when the effect begins, and a continuous
@@ -277,6 +283,8 @@ export type EffectSubject =
   | "eachOpponent"
   /** "That player" in a triggered ability: the player its triggering event was about (CR 603.2). */
   | "triggeringPlayer"
+  /** "That creature" in a triggered ability: the object its triggering event was about (CR 603.2). */
+  | "triggeringObject"
   /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
   | "found"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
@@ -319,6 +327,8 @@ export type Effect =
   | { op: "sacrificeSource" }
   /** "Destroy [subject]" (CR 701.8a). */
   | { op: "destroy"; of: EffectSubject }
+  /** "Destroy one of them at random": one permanent among those named, picked with the seeded RNG as it resolves. */
+  | { op: "destroyOneAtRandom"; among: EffectSubject[] }
   /**
    * "Destroy all [filter]": every permanent that fits, decided once as the effect applies (CR 608.2h), destroyed at the
    * same time (CR 608.2f).
@@ -399,6 +409,12 @@ export type Effect =
   | { op: "exileGraveyard"; of: EffectSubject; filter?: ObjectFilter }
   /**
    * "[who] sacrifices a [filter] of their choice": the player chooses one permanent they control that fits, its
-   * `controller` read relative to that player (CR 701.21a, 608.2d).
+   * `controller` read relative to that player (CR 701.21a, 608.2d). `otherThanSelf`: "other than this creature", the
+   * ability's source. What's sacrificed is kept, with its power, for the effects after it (`"sacrificedPower"`).
    */
-  | { op: "sacrifice"; who: EffectSubject; filter: ObjectFilter };
+  | { op: "sacrifice"; who: EffectSubject; filter: ObjectFilter; otherThanSelf?: true }
+  /**
+   * "If you can't sacrifice a creature, [effects]": the effects happen only if no earlier `sacrifice` of this
+   * resolution sacrificed anything (CR 608.2c).
+   */
+  | { op: "ifNothingSacrificed"; effects: Effect[] };

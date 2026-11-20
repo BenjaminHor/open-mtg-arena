@@ -221,7 +221,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (answer.kind === "finishDeclaring") {
         const problem = blockDeclarationProblem(answered, pending.chosen, cards);
         if (problem !== null) return error("illegalAction", problem);
-        return { ok: true, ...finishBlockers(answered, pending.player, pending.chosen) };
+        return { ok: true, ...finishBlockers(answered, pending.player, pending.chosen, cards) };
       }
       if (answer.kind === "takeBack") {
         if (pending.chosen.length === 0) return error("illegalAction", "nothing has been declared to take back");

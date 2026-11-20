@@ -1,0 +1,20 @@
+name: A creature pumped in response is sacrificed with its pumped power, its last known information
+rules: [CR 608.2h, CR 613.4c]
+setup:
+  turn: { active: p2, step: end }
+  p1:
+    battlefield: [Xathrid Demon, Grizzly Bears, Forest]
+    hand: [Giant Growth]
+steps:
+  - all pass: until upkeep
+  - p1 cast: Giant Growth
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 5
+      stack: [Xathrid Demon ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Giant Growth, Grizzly Bears]
+      p2.life: 15

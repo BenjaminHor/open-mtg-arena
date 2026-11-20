@@ -535,7 +535,7 @@ export const TEST_CARDS: CardDatabase = {
         "At the beginning of each player's draw step, if this artifact is untapped, that player draws an additional card.",
       triggers: [
         {
-          when: { kind: "beginningOfStep", step: "draw" },
+          when: { kind: "beginningOfStep", step: "draw", whose: "each" },
           onlyIf: { kind: "sourceUntapped" },
           targets: [],
           effects: [{ op: "draw", who: "triggeringPlayer", amount: 1 }],

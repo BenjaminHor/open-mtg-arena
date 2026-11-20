@@ -44,6 +44,8 @@ the one place their effects become changes to the game.
 | `revealTop` | "Reveal the top card of your library" | Shows it to everyone, staying on top, as `"found"` for the effects after it (CR 701.20a, 701.20b) |
 | `shuffle` / `mayShuffle` | "Then shuffle" / "You may shuffle" | Shuffles (CR 701.24a); `mayShuffle` asks yes or no first |
 | `lookAtTop` | "Look at the top three cards of your library, then put them back in any order" | The player is shown them and puts them back top first (CR 701.20e, 401.4) |
+| `destroyOneAtRandom` | "Destroy one of them at random" | One of the permanents its subjects name, still legal and on the battlefield, picked with the seeded RNG (`destroy-at-random.ts`) |
+| `ifNothingSacrificed` | "If you can't sacrifice a creature, tap this creature and you lose 7 life" | Its `effects` happen only if no earlier `sacrifice` of this resolution sacrificed anything (CR 608.2c) |
 | `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
@@ -59,7 +61,8 @@ every player in APNAP order (CR 101.4).
 `search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
 it now, CR 608.2h), or `{ target: i }` for the still-legal targets of the i-th instance of "target". A subject with no
 legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, `{ count: filter }`, or
-`"thatMuch"` (a triggered ability's event amount: the life gained).
+`"thatMuch"` (a triggered ability's event amount: the life gained), or `"sacrificedPower"` (the power of what an earlier
+`sacrifice` sacrificed, as it last was on the battlefield, CR 608.2h, never below 0, CR 107.1b).
 `subjects.ts` reads both (D-067).
 
 ## Primitives

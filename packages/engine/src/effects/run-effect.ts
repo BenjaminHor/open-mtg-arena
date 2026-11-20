@@ -10,6 +10,7 @@ import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
+import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import {
   exileGraveyard,
@@ -22,7 +23,7 @@ import {
 } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 import { put } from "./put-effects.ts";
-import { sacrificeChosen } from "./sacrifice-choice.ts";
+import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
 /**
@@ -95,6 +96,8 @@ export function runEffect(
         kind: "destroy",
         object,
       }));
+    case "destroyOneAtRandom":
+      return destroyOneAtRandom(state, effect.among, context, cards);
     case "destroyAll": {
       // Every permanent that fits, decided once now (CR 608.2h), destroyed at the same time (CR 608.2f). Cards going to
       // one graveyard together go in battlefield order (D-039; later: CR 404.3 lets their owner choose).
@@ -206,6 +209,8 @@ export function runEffect(
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : sacrificeChosen(state, player, effect, context, chosen, cards);
     }
+    case "ifNothingSacrificed":
+      return ifNothingSacrificed(state, effect.effects, context);
     case "exileGraveyard": {
       const player = onePlayer(state, effect.of, context, cards);
       if (player === null) return { state, events: [] };

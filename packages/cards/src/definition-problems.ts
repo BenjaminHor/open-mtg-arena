@@ -52,7 +52,8 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (def.spell?.xPaidWith !== undefined && !card.manaCost.includes("{X}"))
       problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
     // "Add one mana of any color" takes its color from the activation, which only a mana ability has (CR 605.1a, D-068).
-    const anyColor = (effects: readonly Effect[]) => effects.some((e) => e.op === "addMana" && e.mana === "anyColor");
+    const anyColor = (effects: readonly Effect[]) =>
+      flatEffects(effects).some((e) => e.op === "addMana" && e.mana === "anyColor");
     if (def.spell !== undefined && anyColor(def.spell.effects))
       problems.push(`${def.name}: mana of any color is only for a mana ability`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
@@ -69,11 +70,15 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(`${def.name}: "that player" is only for a triggered ability`);
     if (def.spell !== undefined && namesThatMuch(def.spell.effects))
       problems.push(`${def.name}: "that much" is only for a triggered ability`);
+    if (def.spell !== undefined && namesTriggering(def.spell.effects, "triggeringObject"))
+      problems.push(`${def.name}: "that creature" is only for a triggered ability`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
       if (namesTriggeringPlayer(ability.effects) || limitsToThatPlayer(ability))
         problems.push(`${def.name} ability ${i + 1}: "that player" is only for a triggered ability`);
       if (namesThatMuch(ability.effects))
         problems.push(`${def.name} ability ${i + 1}: "that much" is only for a triggered ability`);
+      if (namesTriggering(ability.effects, "triggeringObject"))
+        problems.push(`${def.name} ability ${i + 1}: "that creature" is only for a triggered ability`);
     }
     for (const [i, trigger] of (def.triggers ?? []).entries()) {
       if (!suppliesPlayer(trigger.when) && (namesTriggeringPlayer(trigger.effects) || limitsToThatPlayer(trigger)))
@@ -81,6 +86,8 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       // "That player controls" is read only where targets are chosen and checked (rules/targets.ts).
       if (limitsToThatPlayer({ when: trigger.when, effects: trigger.effects }))
         problems.push(`${def.name} trigger ${i + 1}: only a target can be limited to what "that player" controls`);
+      if (!suppliesObject(trigger.when) && namesTriggering(trigger.effects, "triggeringObject"))
+        problems.push(`${def.name} trigger ${i + 1}: its event has no "that creature"`);
       if (!suppliesAmount(trigger.when) && namesThatMuch(trigger.effects))
         problems.push(`${def.name} trigger ${i + 1}: its event has no "that much"`);
       if (anyColor(trigger.effects))
@@ -109,13 +116,34 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "playerDiscards":
     case "landTappedForMana":
     case "selfDealsDamageToPlayer":
+    case "selfBlocksOrBlocked":
+      return false;
+  }
+}
+
+/** Whether the trigger's event has an object "that creature" can mean (`TriggerEvent.object`). */
+function suppliesObject(when: TriggerCondition): boolean {
+  switch (when.kind) {
+    // The creature that entered or attacked, the spell cast, the creature on the other side of a block.
+    case "selfEnters":
+    case "anotherEnters":
+    case "selfAttacks":
+    case "spellCast":
+    case "selfBlocksOrBlocked":
+      return true;
+    case "beginningOfStep":
+    case "playerDraws":
+    case "playerDiscards":
+    case "landTappedForMana":
+    case "selfDealsDamageToPlayer":
+    case "playerGainsLife":
       return false;
   }
 }
 
 /** Whether any of these effects' amounts is "that much". */
 function namesThatMuch(effects: readonly Effect[]): boolean {
-  return effects.some((e) => "amount" in e && e.amount === "thatMuch");
+  return flatEffects(effects).some((e) => "amount" in e && e.amount === "thatMuch");
 }
 
 /** Whether the trigger's event has a player "that player" can mean (`TriggerEvent.player`). */
@@ -124,6 +152,7 @@ function suppliesPlayer(when: TriggerCondition): boolean {
     case "selfEnters":
     case "anotherEnters":
     case "selfAttacks":
+    case "selfBlocksOrBlocked":
       return false;
     // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.
     case "beginningOfStep":
@@ -137,6 +166,11 @@ function suppliesPlayer(when: TriggerCondition): boolean {
   }
 }
 
+/** The effects with those nested in `ifNothingSacrificed` listed after it, in order, for the checks that read each. */
+function flatEffects(effects: readonly Effect[]): Effect[] {
+  return effects.flatMap((e) => (e.op === "ifNothingSacrificed" ? [e, ...flatEffects(e.effects)] : [e]));
+}
+
 /** Whether a filter anywhere in this text (targets, effects, a trigger condition) says "that player controls". */
 function limitsToThatPlayer(text: object): boolean {
   return JSON.stringify(text).includes('"controller":"triggeringPlayer"');
@@ -144,7 +178,12 @@ function limitsToThatPlayer(text: object): boolean {
 
 /** Whether any of these effects names "that player" (the subject `triggeringPlayer`), in any of its subject fields. */
 function namesTriggeringPlayer(effects: readonly Effect[]): boolean {
-  return effects.some((e) => Object.values(e).includes("triggeringPlayer"));
+  return namesTriggering(effects, "triggeringPlayer");
+}
+
+/** Whether any of these effects names "that player" or "that creature", in any of its subject fields. */
+function namesTriggering(effects: readonly Effect[], subject: "triggeringPlayer" | "triggeringObject"): boolean {
+  return flatEffects(effects).some((e) => Object.values(e).includes(subject));
 }
 
 /**
@@ -155,9 +194,10 @@ function namesTriggeringPlayer(effects: readonly Effect[]): boolean {
 function targetProblems(
   where: string,
   targets: readonly TargetSpec[],
-  effects: readonly Effect[],
+  written: readonly Effect[],
   costIncrease = false,
 ): string[] {
+  const effects = flatEffects(written);
   const problems: string[] = [];
   for (const [i, spec] of targets.entries()) {
     const count = spec.count;
@@ -174,7 +214,7 @@ function targetProblems(
       problems.push(`${where}: ${effect.op} applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
-    if (typeof effect.amount === "object" || effect.amount === "thatMuch")
+    if (typeof effect.amount === "object" || (typeof effect.amount === "string" && effect.amount !== "X"))
       problems.push(`${where}: a divided amount is a number or X`);
     const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
@@ -226,7 +266,8 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
  * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming a player ("you", "each player", a
  * player target), or an op on players naming an object ("self", an object target).
  */
-function subjectProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
+function subjectProblems(where: string, targets: readonly TargetSpec[], written: readonly Effect[]): string[] {
+  const effects = flatEffects(written);
   const problems: string[] = [];
   const targetKind = (s: EffectSubject) =>
     typeof s === "object" && "target" in s ? targets[s.target]?.kind : undefined;
@@ -271,6 +312,10 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], effects:
     const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
     if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop"))
       problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
+    const readsSacrificed =
+      effect.op === "ifNothingSacrificed" || ("amount" in effect && effect.amount === "sacrificedPower");
+    if (readsSacrificed && !earlier.some((e) => e.op === "sacrifice"))
+      problems.push(`${where}: ${effect.op} reads what was sacrificed, but no sacrifice comes before it`);
     if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileGraveyard"))
       problems.push(`${where}: a search for the cards exiled this way must follow exiling them`);
     // A filter, or "you" choosing from another player's hand, would show or hint at a hidden hand's cards unless it was

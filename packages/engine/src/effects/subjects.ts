@@ -19,6 +19,10 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
     const player = context.trigger?.player ?? null;
     return player === null ? [] : [{ kind: "player", player }];
   }
+  if (s === "triggeringObject") {
+    const object = context.trigger?.object ?? null;
+    return object === null ? [] : [{ kind: "object", object }];
+  }
   if (s === "eachPlayer") return apnapOrder(state).map((player) => ({ kind: "player", player }));
   // Every opponent of "you" (CR 102.2; teams later: CR 102.3), in APNAP order.
   if (s === "eachOpponent")
@@ -58,6 +62,14 @@ export function objectsOf(targets: readonly Target[]): ObjectId[] {
 /** What an `Amount` is now: a number, X, or a count of permanents (CR 107.3a, 107.3c, 608.2h). */
 export function amountNow(state: GameState, amount: Amount, context: EffectContext, cards: CardDatabase): number {
   if (typeof amount === "object") return permanentsFitting(state, amount.count, context, cards).length;
+  if (amount === "sacrificedPower") {
+    // Never below 0: a creature with negative power makes no one lose life (CR 107.1b).
+    const powers = (state.resolution?.sacrificed ?? []).map((s) => s.power ?? 0);
+    return Math.max(
+      0,
+      powers.reduce((sum, p) => sum + p, 0),
+    );
+  }
   if (amount === "thatMuch") {
     const known = context.trigger?.amount ?? null;
     if (known === null) throw new Error('"that much" outside a triggered ability whose event has an amount');

@@ -16,12 +16,14 @@ Berserkers of Blood Ridge
 Birds of Paradise
 Blinding Mage
 Bog Wraith
+Bogardan Hellkite
 Borderland Ranger
 Bountiful Harvest
 Bramble Creeper
 Burning Inquiry
 Cancel
 Canyon Minotaur
+Capricious Efreet
 Celestial Purge
 Centaur Courser
 Child of Night
@@ -70,6 +72,7 @@ Howling Banshee
 Howling Mine
 Hypnotic Specter
 Ignite Disorder
+Inferno Elemental
 Island
 Jackal Familiar
 Kalonian Behemoth
@@ -147,6 +150,7 @@ Warpath Ghoul
 Wind Drake
 Windstorm
 Wurm's Tooth
+Xathrid Demon
 Yawning Fissure
 Zephyr Sprite
 Zombie Goliath

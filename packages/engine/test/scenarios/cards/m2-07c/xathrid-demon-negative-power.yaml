@@ -1,0 +1,23 @@
+name: A creature with negative power sacrificed to Xathrid Demon makes no one lose or gain life
+rules: [CR 107.1b, CR 608.2h]
+setup:
+  turn: { active: p2, step: end }
+  p1:
+    battlefield: [Xathrid Demon, Grizzly Bears]
+  p2:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Disorient]
+steps:
+  - all pass: until upkeep
+  - p1 pass: once
+  - p2 cast: Disorient
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: -5
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+      p2.life: 20
+      p1.life: 20

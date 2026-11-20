@@ -96,4 +96,10 @@ export type GameState = {
 };
 
 /** See `GameState.resolution`. */
-export type Resolution = { object: ObjectId; found: ObjectId[]; exiled: ObjectId[] };
+export type Resolution = { object: ObjectId; found: ObjectId[]; exiled: ObjectId[]; sacrificed: Sacrificed[] };
+
+/**
+ * A permanent sacrificed this way (CR 608.2c), with its power as it last existed on the battlefield (CR 608.2h), for
+ * "loses life equal to the sacrificed creature's power". Null for a permanent with no power.
+ */
+export type Sacrificed = { object: ObjectId; power: number | null };

@@ -65,7 +65,8 @@ reversed parts caused. `lastKnown` is emptied when the stack is empty, so an eff
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,
-702.15c; Xathrid Demon; leaves-the-battlefield triggers) must snapshot `characteristics()` in `moveCard` beside it, not
+702.15c; leaves-the-battlefield triggers; Xathrid Demon reads only the sacrificed creature's power, kept in the
+resolution's "this way" record as it's sacrificed, D-079) must snapshot `characteristics()` in `moveCard` beside it, not
 recompute later with the effects as they are then. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a
 controller who left the game; multiplayer (CR 800.4a) must drop that player's triggers instead.
