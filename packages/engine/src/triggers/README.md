@@ -18,8 +18,8 @@ abilities are data in `CardDef.triggers` (`cards/types.ts`): a condition (`when`
 2. **Put on the stack** (`put-on-stack.ts`). The next time a player would receive priority, after state-based actions
    (CR 117.5), `givePriority` (`game/priority.ts`) takes all the waiting triggers as one batch. The active player's go
    on first, then each other player's in turn order (APNAP, CR 603.3b); a player with two or more orders theirs (the
-   `orderTriggers` decision), unless they're identical: the same ability of the same source from the same event, which
-   no order can tell apart (D-077). Each chooses its targets as it goes on (CR 603.3d), through the same target steps as a
+   `orderTriggers` decision), unless they're identical: the same ability of the same source with the same event data,
+   which no order can tell apart (D-077). Each chooses its targets as it goes on (CR 603.3d), through the same target steps as a
    spell (`game/casting-steps.ts`, a `Casting` with origin `trigger`) but with no cost, no `ABILITY_ACTIVATED` and no
    cancel; one with too few legal targets is removed instead. Then priority is given again, so state-based actions
    and triggers that came up meanwhile are dealt with first, as a new batch.

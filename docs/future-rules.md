@@ -218,6 +218,11 @@ the pool before, and the permanents tapped for mana.
 must be discarded, never put on the stack (CR 734.1: no abilities trigger from an undone action). The snapshot stops
 being an exact reversal once a mana ability has another effect or cost (sacrifice, life, a library) or a triggered
 mana ability fires; CR 734.1 forbids reversing some of those, so cancel will need to refuse, or reverse less.
+A triggered mana ability ("whenever a player taps a land for mana, that player adds one mana of any type that land
+produced", CR 605.1b, 605.4a) must resolve at once inside `resolveManaAbility`, not wait in `pendingTriggers` as
+Manabarbs' does (D-077), and it reads the land: `landTappedForMana` keeps no land in its `TriggerEvent` so Manabarbs'
+triggers stay identical, so such an ability needs the land kept, and the identical-trigger check then must compare only
+what each ability reads.
 Modal spells and kicker change the target requirements after the mode or cost is chosen (CR 601.2b–c), so the
 "every target has a legal choice" pre-check in `castProblem` must then look at the chosen modes.
 

@@ -290,5 +290,3 @@ function mainDamage(
     }
   }
 }
-
-/** Where `put` moves a card: its owner's hand (CR 400.3), or the battlefield under the controller (CR 110.2a). */

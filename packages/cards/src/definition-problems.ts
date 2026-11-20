@@ -67,16 +67,22 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(`${def.name}: a spell has no source to sacrifice ("sacrifice it" is for an ability)`);
     if (def.spell !== undefined && (namesTriggeringPlayer(def.spell.effects) || limitsToThatPlayer(def.spell)))
       problems.push(`${def.name}: "that player" is only for a triggered ability`);
+    if (def.spell !== undefined && namesThatMuch(def.spell.effects))
+      problems.push(`${def.name}: "that much" is only for a triggered ability`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
       if (namesTriggeringPlayer(ability.effects) || limitsToThatPlayer(ability))
         problems.push(`${def.name} ability ${i + 1}: "that player" is only for a triggered ability`);
+      if (namesThatMuch(ability.effects))
+        problems.push(`${def.name} ability ${i + 1}: "that much" is only for a triggered ability`);
     }
     for (const [i, trigger] of (def.triggers ?? []).entries()) {
       if (!suppliesPlayer(trigger.when) && (namesTriggeringPlayer(trigger.effects) || limitsToThatPlayer(trigger)))
         problems.push(`${def.name} trigger ${i + 1}: its event has no "that player"`);
       // "That player controls" is read only where targets are chosen and checked (rules/targets.ts).
-      if (limitsToThatPlayer({ targets: [], effects: trigger.effects }))
+      if (limitsToThatPlayer({ when: trigger.when, effects: trigger.effects }))
         problems.push(`${def.name} trigger ${i + 1}: only a target can be limited to what "that player" controls`);
+      if (!suppliesAmount(trigger.when) && namesThatMuch(trigger.effects))
+        problems.push(`${def.name} trigger ${i + 1}: its event has no "that much"`);
       if (anyColor(trigger.effects))
         problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
       problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
@@ -87,6 +93,29 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
   }
   return problems;
+}
+
+/** Whether the trigger's event has an amount "that much" can mean (`TriggerEvent.amount`): only life gained so far. */
+function suppliesAmount(when: TriggerCondition): boolean {
+  switch (when.kind) {
+    case "playerGainsLife":
+      return true;
+    case "selfEnters":
+    case "anotherEnters":
+    case "selfAttacks":
+    case "beginningOfStep":
+    case "spellCast":
+    case "playerDraws":
+    case "playerDiscards":
+    case "landTappedForMana":
+    case "selfDealsDamageToPlayer":
+      return false;
+  }
+}
+
+/** Whether any of these effects' amounts is "that much". */
+function namesThatMuch(effects: readonly Effect[]): boolean {
+  return effects.some((e) => "amount" in e && e.amount === "thatMuch");
 }
 
 /** Whether the trigger's event has a player "that player" can mean (`TriggerEvent.player`). */
@@ -108,8 +137,8 @@ function suppliesPlayer(when: TriggerCondition): boolean {
   }
 }
 
-/** Whether a filter anywhere in these targets or effects says "that player controls". */
-function limitsToThatPlayer(text: { targets: readonly TargetSpec[]; effects: readonly Effect[] }): boolean {
+/** Whether a filter anywhere in this text (targets, effects, a trigger condition) says "that player controls". */
+function limitsToThatPlayer(text: object): boolean {
   return JSON.stringify(text).includes('"controller":"triggeringPlayer"');
 }
 
@@ -146,7 +175,7 @@ function targetProblems(
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
     if (typeof effect.amount === "object" || effect.amount === "thatMuch")
-      problems.push(`${where}: divided damage can't be a counted amount`);
+      problems.push(`${where}: a divided amount is a number or X`);
     const spec = typeof effect.to === "object" && "target" in effect.to ? targets[effect.to.target] : undefined;
     if (spec === undefined) {
       problems.push(`${where}: divided damage must divide among an instance of "target"`);

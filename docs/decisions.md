@@ -1024,7 +1024,7 @@ every schema change and every change D-024 lists bumps it.
   its cost produced mana (CR 106.12, 106.12a), the one path every mana payment takes. "A player / you / an opponent"
   is a `PlayerRelation`, relative to the trigger's controller.
 - `TriggerEvent.amount` ("that much", the `Amount` `"thatMuch"`) is the life gained; a gain of 0 has no event
-  (CR 119.10). Each lifelink source is its own life-gain event, so Sanguine Bond triggers once per source (its ruling).
+  (CR 119.9). Each lifelink source is its own life-gain event, so Sanguine Bond triggers once per source (its ruling).
 - "Target ... that player controls" is an `ObjectFilter.controller` of `"triggeringPlayer"`, read only by the target
   checks (`rules/targets.ts` passes the ability's `TriggerEvent.player` to `matchesFilter`), as targets are chosen and
   again on resolution; `definitionProblems` refuses it anywhere else.

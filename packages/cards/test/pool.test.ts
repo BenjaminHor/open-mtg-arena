@@ -84,7 +84,7 @@ describe("definitionProblems", () => {
     ]);
   });
 
-  it('reports "that player controls" in a target whose event has no player, or in an effect', () => {
+  it('reports "that player controls" or "that much" where nothing supplies them', () => {
     const red: TargetSpec = { kind: "permanent", filter: { colors: ["R"], controller: "triggeringPlayer" } };
     const enters: TriggeredAbilityDef = { when: { kind: "selfEnters" }, targets: [red], effects: [] };
     const gains: TriggeredAbilityDef = {
@@ -92,15 +92,20 @@ describe("definitionProblems", () => {
       targets: [],
       effects: [{ op: "destroyAll", filter: { controller: "triggeringPlayer" } }],
     };
+    const lose: Effect = { op: "loseLife", who: "you", amount: "thatMuch" };
+    const attacks: TriggeredAbilityDef = { when: { kind: "selfAttacks" }, targets: [], effects: [lose] };
     const def: CardDef = {
       name: "Furnace Whelp",
       oracle: whelp.oracleText,
       keywords: ["flying"],
-      triggers: [enters, gains],
+      triggers: [enters, gains, attacks],
+      abilities: [{ kind: "activated", cost: [], targets: [], effects: [lose] }],
     };
     expect(definitionProblems([def], [whelp])).toStrictEqual([
+      'Furnace Whelp ability 1: "that much" is only for a triggered ability',
       'Furnace Whelp trigger 1: its event has no "that player"',
       'Furnace Whelp trigger 2: only a target can be limited to what "that player" controls',
+      'Furnace Whelp trigger 3: its event has no "that much"',
     ]);
   });
 
@@ -232,7 +237,7 @@ describe("definitionProblems", () => {
       divided: "asYouChoose",
     };
     expect(definitionProblems([def([divided], [{ kind: "anyTarget" }])], [quake])).toContain(
-      "Earthquake: divided damage can't be a counted amount",
+      "Earthquake: a divided amount is a number or X",
     );
     expect(
       definitionProblems([def([{ op: "dealDamage", amount: 1, from: "you", to: "eachPlayer" }])], [quake]),

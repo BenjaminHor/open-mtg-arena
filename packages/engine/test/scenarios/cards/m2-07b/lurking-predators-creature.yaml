@@ -19,3 +19,4 @@ steps:
       p1.battlefield contains: [Craw Wurm]
       events contains: [{ type: CARDS_REVEALED }]
       stack: [Lightning Bolt]
+      pending: { player: p2, kind: priority }

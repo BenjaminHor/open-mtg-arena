@@ -64,7 +64,7 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
         (id) =>
           id !== by.object &&
           state.objects[id]?.kind === "card" &&
-          matchesFilter(state, id, spec.filter, by.controller, cards),
+          matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer),
       );
       return objects(spells);
     }
@@ -72,7 +72,9 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       // "Your graveyard" or "a graveyard" names the zone (CR 109.2a), not control: cards there have none (CR 109.4).
       const owners = spec.graveyard === "yours" ? [by.controller] : state.turnOrder;
       const inGraveyards = owners.flatMap((p) => state.zones.players[p]?.graveyard ?? []);
-      return objects(inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards)));
+      return objects(
+        inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer)),
+      );
     }
   }
 }

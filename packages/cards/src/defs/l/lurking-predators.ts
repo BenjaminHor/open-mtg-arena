@@ -11,8 +11,8 @@ export const lurkingPredators: CardDef = {
       effects: [
         { op: "revealTop", who: "you" },
         { op: "put", of: "found", into: "battlefield", onlyIf: { types: ["creature"] } },
-        // "Otherwise": a creature card has left the library by now, so only another card is left to put.
-        { op: "put", of: "found", into: "libraryBottom", optional: true },
+        // "Otherwise": only a card that isn't a creature card.
+        { op: "put", of: "found", into: "libraryBottom", optional: true, onlyIf: { not: { types: ["creature"] } } },
       ],
     },
   ],
