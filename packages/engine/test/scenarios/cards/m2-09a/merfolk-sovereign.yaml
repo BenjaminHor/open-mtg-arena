@@ -3,9 +3,9 @@ rules: [CR 613.4c, CR 509.1b]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [Merfolk Sovereign, Coral Merfolk]
+    battlefield: [Merfolk Sovereign, Coral Merfolk, Grizzly Bears]
   p2:
-    battlefield: [Grizzly Bears]
+    battlefield: [Runeclaw Bear]
 steps:
   - expect:
       p1:Coral Merfolk.power: 3
@@ -13,8 +13,11 @@ steps:
     targets: [p1:Coral Merfolk]
   - all pass: once
   - all pass: until combat.declareAttackers
-  - p1 attack: [Coral Merfolk]
-  # Nothing can block it, so no blocks are asked for.
+  - p1 attack: [Coral Merfolk, Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Runeclaw Bear: Coral Merfolk }
+  - expect error: illegalAction
+  - p2 block: { Runeclaw Bear: Grizzly Bears }
   - all pass: until main2
   - expect:
       p2.life: 17
