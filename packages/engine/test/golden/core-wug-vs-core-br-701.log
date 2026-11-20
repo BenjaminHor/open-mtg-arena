@@ -1,0 +1,2250 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Zombie Goliath, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lightning Elemental, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Looming Shade, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Looming Shade, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Enormous Baloth, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Siege Mastodon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Siege Mastodon, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 mulligans
+T0 p1 mulligans
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Zombie Goliath, p2's hand -> p2's library
+T0 moves: Lightning Elemental, p2's hand -> p2's library
+T0 moves: Looming Shade, p2's hand -> p2's library
+T0 moves: Looming Shade, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 moves: Prodigal Pyromancer, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Fiery Hellhound, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Warpath Ghoul, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Kelinore Bat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Enormous Baloth, p1's hand -> p1's library
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Siege Mastodon, p1's hand -> p1's library
+T0 moves: Siege Mastodon, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Stormfront Pegasus, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Air Elemental, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Air Elemental, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Wind Drake, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Silvercoat Lion, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Wind Drake, p1's hand -> p1's library
+T0 p2 mulligans
+T0 p1 keeps
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 moves: Fiery Hellhound, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Warpath Ghoul, p2's hand -> p2's library
+T0 moves: Kelinore Bat, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Goblin Piker, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Kelinore Bat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Canyon Minotaur, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Zombie Goliath, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Kelinore Bat, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 p2 keeps
+T1 turn 1 begins (p2)
+T1 p2 attack: nothing
+T1 moves: Mountain, p2's hand -> battlefield
+T1 p2 plays p2:Mountain
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2's unspent {R} empties
+T2 turn 2 begins (p1)
+T2 moves: Plains, p1's library -> p1's hand
+T2 p1 draws
+T2 p1 attack: nothing
+T2 moves: Air Elemental, p1's hand -> stack
+T2 p1 cancels casting Air Elemental
+T2 moves: Plains, p1's hand -> battlefield
+T2 p1 plays p1:Plains
+T2 moves: Air Elemental, p1's hand -> stack
+T2 p1 cancels casting Air Elemental
+T2 moves: Stormfront Pegasus, p1's hand -> stack
+T2 p1 cancels casting Stormfront Pegasus
+T2 taps: p1:Plains
+T2 p1 adds {W} (p1:Plains)
+T2 p1's unspent {W} empties
+T3 turn 3 begins (p2)
+T3 untaps: p2:Mountain
+T3 taps: p2:Mountain
+T3 p2 adds {R} (p2:Mountain)
+T3 p2's unspent {R} empties
+T3 moves: Swamp, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Zombie Goliath, p2's hand -> stack
+T3 p2 cancels casting Zombie Goliath
+T3 moves: Swamp, p2's hand -> battlefield
+T3 p2 plays p2:Swamp
+T3 taps: p2:Swamp
+T3 p2 adds {B} (p2:Swamp)
+T3 p2's unspent {B} empties
+T3 p2 attack: nothing
+T4 turn 4 begins (p1)
+T4 untaps: p1:Plains
+T4 taps: p1:Plains
+T4 p1 adds {W} (p1:Plains)
+T4 p1's unspent {W} empties
+T4 moves: Plains, p1's library -> p1's hand
+T4 p1 draws
+T4 moves: Plains, p1's hand -> battlefield
+T4 p1 plays p1:Plains#2
+T4 moves: Stormfront Pegasus, p1's hand -> stack
+T4 taps: p1:Plains#2
+T4 p1 adds {W} (p1:Plains#2)
+T4 p1 cancels casting Stormfront Pegasus
+T4 moves: Silvercoat Lion, p1's hand -> stack
+T4 taps: p1:Plains#2
+T4 p1 adds {W} (p1:Plains#2)
+T4 p1 cancels casting Silvercoat Lion
+T4 moves: Stormfront Pegasus, p1's hand -> stack
+T4 p1 cancels casting Stormfront Pegasus
+T4 p1 attack: nothing
+T4 taps: p1:Plains#2
+T4 p1 adds {W} (p1:Plains#2)
+T4 moves: Air Elemental, p1's hand -> stack
+T4 p1 cancels casting Air Elemental
+T4 moves: Stormfront Pegasus, p1's hand -> stack
+T4 p1 cancels casting Stormfront Pegasus
+T4 p1's unspent {W} empties
+T5 turn 5 begins (p2)
+T5 untaps: p2:Mountain
+T5 untaps: p2:Swamp
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2's unspent {R} empties
+T5 moves: Looming Shade, p2's library -> p2's hand
+T5 p2 draws
+T5 taps: p2:Swamp
+T5 p2 adds {B} (p2:Swamp)
+T5 p2's unspent {B} empties
+T5 p2 attack: nothing
+T5 moves: Zombie Goliath, p2's hand -> stack
+T5 p2 cancels casting Zombie Goliath
+T5 moves: Goblin Piker, p2's hand -> stack
+T5 p2 cancels casting Goblin Piker
+T5 moves: Swamp, p2's hand -> battlefield
+T5 p2 plays p2:Swamp#2
+T5 moves: Goblin Piker, p2's hand -> stack
+T5 p2 cancels casting Goblin Piker
+T5 taps: p2:Swamp#2
+T5 p2 adds {B} (p2:Swamp#2)
+T5 p2's unspent {B} empties
+T6 turn 6 begins (p1)
+T6 untaps: p1:Plains#1
+T6 untaps: p1:Plains#2
+T6 taps: p1:Plains#2
+T6 p1 adds {W} (p1:Plains#2)
+T6 taps: p1:Plains#1
+T6 p1 adds {W} (p1:Plains#1)
+T6 p1's unspent {W}{W} empties
+T6 moves: Island, p1's library -> p1's hand
+T6 p1 draws
+T6 moves: Plains, p1's hand -> battlefield
+T6 p1 plays p1:Plains#3
+T6 moves: Silvercoat Lion, p1's hand -> stack
+T6 taps: p1:Plains#3
+T6 p1 adds {W} (p1:Plains#3)
+T6 p1 cancels casting Silvercoat Lion
+T6 moves: Stormfront Pegasus, p1's hand -> stack
+T6 p1 cancels casting Stormfront Pegasus
+T6 p1 attack: nothing
+T7 turn 7 begins (p2)
+T7 untaps: p2:Mountain
+T7 untaps: p2:Swamp#1
+T7 untaps: p2:Swamp#2
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 taps: p2:Swamp#2
+T7 p2 adds {B} (p2:Swamp#2)
+T7 taps: p2:Swamp#1
+T7 p2 adds {B} (p2:Swamp#1)
+T7 p2's unspent {B}{B}{R} empties
+T7 moves: Mountain, p2's library -> p2's hand
+T7 p2 draws
+T7 moves: Goblin Piker, p2's hand -> stack
+T7 p2 cancels casting Goblin Piker
+T7 moves: Mountain, p2's hand -> battlefield
+T7 p2 plays p2:Mountain#2
+T7 moves: Zombie Goliath, p2's hand -> stack
+T7 p2 cancels casting Zombie Goliath
+T7 moves: Canyon Minotaur, p2's hand -> stack
+T7 p2 cancels casting Canyon Minotaur
+T7 taps: p1:Plains#3
+T7 p1 adds {W} (p1:Plains#3)
+T7 moves: Canyon Minotaur, p2's hand -> stack
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 cancels casting Canyon Minotaur
+T7 moves: Zombie Goliath, p2's hand -> stack
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 cancels casting Zombie Goliath
+T7 moves: Zombie Goliath, p2's hand -> stack
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 p2 cancels casting Zombie Goliath
+T7 taps: p2:Mountain#2
+T7 p2 adds {R} (p2:Mountain#2)
+T7 moves: Goblin Piker, p2's hand -> stack
+T7 p2 cancels casting Goblin Piker
+T7 moves: Canyon Minotaur, p2's hand -> stack
+T7 p2 cancels casting Canyon Minotaur
+T7 moves: Goblin Piker, p2's hand -> stack
+T7 p2 cancels casting Goblin Piker
+T7 moves: Canyon Minotaur, p2's hand -> stack
+T7 p2 cancels casting Canyon Minotaur
+T7 p2's unspent {R} empties
+T7 p1's unspent {W} empties
+T7 p2 attack: nothing
+T7 moves: Goblin Piker, p2's hand -> stack
+T7 p2 cancels casting Goblin Piker
+T8 turn 8 begins (p1)
+T8 untaps: p1:Plains#1
+T8 untaps: p1:Plains#2
+T8 untaps: p1:Plains#3
+T8 taps: p1:Plains#3
+T8 p1 adds {W} (p1:Plains#3)
+T8 p1's unspent {W} empties
+T8 moves: Forest, p1's library -> p1's hand
+T8 p1 draws
+T8 taps: p1:Plains#1
+T8 p1 adds {W} (p1:Plains#1)
+T8 taps: p1:Plains#2
+T8 p1 adds {W} (p1:Plains#2)
+T8 p1's unspent {W}{W} empties
+T8 moves: Forest, p1's hand -> battlefield
+T8 p1 plays p1:Forest
+T8 moves: Silvercoat Lion, p1's hand -> stack
+T8 p1 cancels casting Silvercoat Lion
+T8 taps: p1:Forest
+T8 p1 adds {G} (p1:Forest)
+T8 moves: Air Elemental, p1's hand -> stack
+T8 p1 cancels casting Air Elemental
+T8 p1's unspent {G} empties
+T8 p1 attack: nothing
+T8 moves: Silvercoat Lion, p1's hand -> stack
+T8 p1 cancels casting Silvercoat Lion
+T8 moves: Air Elemental, p1's hand -> stack
+T8 p1 cancels casting Air Elemental
+T8 moves: Air Elemental, p1's hand -> stack
+T8 p1 cancels casting Air Elemental
+T8 moves: Air Elemental, p1's hand -> stack
+T8 p1 cancels casting Air Elemental
+T8 moves: Stormfront Pegasus, p1's hand -> stack
+T8 p1 cancels casting Stormfront Pegasus
+T8 moves: Stormfront Pegasus, p1's hand -> stack
+T8 p1 cancels casting Stormfront Pegasus
+T8 moves: Stormfront Pegasus, p1's hand -> stack
+T8 p1 cancels casting Stormfront Pegasus
+T9 turn 9 begins (p2)
+T9 untaps: p2:Mountain#1
+T9 untaps: p2:Swamp#1
+T9 untaps: p2:Swamp#2
+T9 untaps: p2:Mountain#2
+T9 taps: p2:Mountain#1
+T9 p2 adds {R} (p2:Mountain#1)
+T9 taps: p2:Swamp#1
+T9 p2 adds {B} (p2:Swamp#1)
+T9 taps: p2:Swamp#2
+T9 p2 adds {B} (p2:Swamp#2)
+T9 taps: p2:Mountain#2
+T9 p2 adds {R} (p2:Mountain#2)
+T9 p2's unspent {B}{B}{R}{R} empties
+T9 moves: Fiery Hellhound, p2's library -> p2's hand
+T9 p2 draws
+T9 moves: Goblin Piker, p2's hand -> stack
+T9 p2 cancels casting Goblin Piker
+T9 moves: Zombie Goliath, p2's hand -> stack
+T9 p2 cancels casting Zombie Goliath
+T9 moves: Looming Shade, p2's hand -> stack
+T9 p2 cancels casting Looming Shade
+T9 moves: Looming Shade, p2's hand -> stack
+T9 p2 cancels casting Looming Shade
+T9 moves: Canyon Minotaur, p2's hand -> stack
+T9 p2 cancels casting Canyon Minotaur
+T9 moves: Fiery Hellhound, p2's hand -> stack
+T9 p2 cancels casting Fiery Hellhound
+T9 p2 attack: nothing
+T9 moves: Canyon Minotaur, p2's hand -> stack
+T9 p2 cancels casting Canyon Minotaur
+T9 moves: Canyon Minotaur, p2's hand -> stack
+T9 p2 cancels casting Canyon Minotaur
+T9 moves: Canyon Minotaur, p2's hand -> stack
+T9 p2 cancels casting Canyon Minotaur
+T9 moves: Fiery Hellhound, p2's hand -> stack
+T9 p2 cancels casting Fiery Hellhound
+T9 moves: Zombie Goliath, p2's hand -> stack
+T9 p2 cancels casting Zombie Goliath
+T9 moves: Looming Shade, p2's hand -> stack
+T9 p2 cancels casting Looming Shade
+T10 turn 10 begins (p1)
+T10 untaps: p1:Plains#1
+T10 untaps: p1:Plains#2
+T10 untaps: p1:Plains#3
+T10 untaps: p1:Forest
+T10 moves: Horned Turtle, p1's library -> p1's hand
+T10 p1 draws
+T10 taps: p1:Plains#1
+T10 p1 adds {W} (p1:Plains#1)
+T10 taps: p1:Forest
+T10 p1 adds {G} (p1:Forest)
+T10 taps: p1:Plains#3
+T10 p1 adds {W} (p1:Plains#3)
+T10 p1's unspent {W}{W}{G} empties
+T10 taps: p1:Plains#2
+T10 p1 adds {W} (p1:Plains#2)
+T10 p1's unspent {W} empties
+T10 p1 attack: nothing
+T10 moves: Stormfront Pegasus, p1's hand -> stack
+T10 p1 cancels casting Stormfront Pegasus
+T10 moves: Forest, p1's hand -> battlefield
+T10 p1 plays p1:Forest#2
+T10 taps: p1:Forest#2
+T10 p1 adds {G} (p1:Forest#2)
+T10 moves: Horned Turtle, p1's hand -> stack
+T10 p1 cancels casting Horned Turtle
+T10 moves: Air Elemental, p1's hand -> stack
+T10 p1 cancels casting Air Elemental
+T10 moves: Silvercoat Lion, p1's hand -> stack
+T10 p1 cancels casting Silvercoat Lion
+T10 p1's unspent {G} empties
+T11 turn 11 begins (p2)
+T11 untaps: p2:Mountain#1
+T11 untaps: p2:Swamp#1
+T11 untaps: p2:Swamp#2
+T11 untaps: p2:Mountain#2
+T11 taps: p2:Swamp#2
+T11 p2 adds {B} (p2:Swamp#2)
+T11 taps: p2:Mountain#2
+T11 p2 adds {R} (p2:Mountain#2)
+T11 p2's unspent {B}{R} empties
+T11 moves: Mountain, p2's library -> p2's hand
+T11 p2 draws
+T11 taps: p2:Swamp#1
+T11 p2 adds {B} (p2:Swamp#1)
+T11 taps: p2:Mountain#1
+T11 p2 adds {R} (p2:Mountain#1)
+T11 p2's unspent {B}{R} empties
+T11 moves: Looming Shade, p2's hand -> stack
+T11 p2 cancels casting Looming Shade
+T11 moves: Fiery Hellhound, p2's hand -> stack
+T11 p2 cancels casting Fiery Hellhound
+T11 p2 attack: nothing
+T11 moves: Mountain, p2's hand -> battlefield
+T11 p2 plays p2:Mountain#3
+T11 moves: Canyon Minotaur, p2's hand -> stack
+T11 p2 cancels casting Canyon Minotaur
+T11 moves: Fiery Hellhound, p2's hand -> stack
+T11 taps: p2:Mountain#3
+T11 p2 adds {R} (p2:Mountain#3)
+T11 p2 cancels casting Fiery Hellhound
+T12 turn 12 begins (p1)
+T12 untaps: p1:Plains#1
+T12 untaps: p1:Plains#2
+T12 untaps: p1:Plains#3
+T12 untaps: p1:Forest#1
+T12 untaps: p1:Forest#2
+T12 taps: p2:Mountain#3
+T12 p2 adds {R} (p2:Mountain#3)
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 taps: p1:Plains#2
+T12 p1 adds {W} (p1:Plains#2)
+T12 taps: p1:Plains#3
+T12 p1 adds {W} (p1:Plains#3)
+T12 p2's unspent {R} empties
+T12 p1's unspent {W}{W}{G} empties
+T12 moves: Disorient, p1's library -> p1's hand
+T12 p1 draws
+T12 taps: p1:Plains#1
+T12 p1 adds {W} (p1:Plains#1)
+T12 p1's unspent {W} empties
+T12 p1 attack: nothing
+T12 taps: p1:Forest#1
+T12 p1 adds {G} (p1:Forest#1)
+T12 p1's unspent {G} empties
+T12 moves: Air Elemental, p1's hand -> stack
+T12 p1 cancels casting Air Elemental
+T13 turn 13 begins (p2)
+T13 untaps: p2:Mountain#1
+T13 untaps: p2:Swamp#1
+T13 untaps: p2:Swamp#2
+T13 untaps: p2:Mountain#2
+T13 untaps: p2:Mountain#3
+T13 taps: p2:Mountain#3
+T13 p2 adds {R} (p2:Mountain#3)
+T13 taps: p2:Mountain#1
+T13 p2 adds {R} (p2:Mountain#1)
+T13 taps: p2:Mountain#2
+T13 p2 adds {R} (p2:Mountain#2)
+T13 taps: p2:Swamp#1
+T13 p2 adds {B} (p2:Swamp#1)
+T13 taps: p2:Swamp#2
+T13 p2 adds {B} (p2:Swamp#2)
+T13 p2's unspent {B}{B}{R}{R}{R} empties
+T13 moves: Mountain, p2's library -> p2's hand
+T13 p2 draws
+T13 moves: Zombie Goliath, p2's hand -> stack
+T13 p2 cancels casting Zombie Goliath
+T13 moves: Zombie Goliath, p2's hand -> stack
+T13 p2 cancels casting Zombie Goliath
+T13 p2 attack: nothing
+T13 moves: Looming Shade, p2's hand -> stack
+T13 p2 cancels casting Looming Shade
+T13 moves: Mountain, p2's hand -> battlefield
+T13 p2 plays p2:Mountain#4
+T13 moves: Looming Shade, p2's hand -> stack
+T13 p2 cancels casting Looming Shade
+T13 moves: Fiery Hellhound, p2's hand -> stack
+T13 taps: p2:Mountain#4
+T13 p2 adds {R} (p2:Mountain#4)
+T13 p2 cancels casting Fiery Hellhound
+T13 moves: Fiery Hellhound, p2's hand -> stack
+T13 p2 cancels casting Fiery Hellhound
+T13 moves: Looming Shade, p2's hand -> stack
+T13 p2 cancels casting Looming Shade
+T13 moves: Goblin Piker, p2's hand -> stack
+T13 taps: p2:Mountain#4
+T13 p2 adds {R} (p2:Mountain#4)
+T13 p2 cancels casting Goblin Piker
+T13 taps: p2:Mountain#4
+T13 p2 adds {R} (p2:Mountain#4)
+T13 p2's unspent {R} empties
+T14 turn 14 begins (p1)
+T14 untaps: p1:Plains#1
+T14 untaps: p1:Plains#2
+T14 untaps: p1:Plains#3
+T14 untaps: p1:Forest#1
+T14 untaps: p1:Forest#2
+T14 taps: p1:Forest#1
+T14 p1 adds {G} (p1:Forest#1)
+T14 taps: p1:Plains#3
+T14 p1 adds {W} (p1:Plains#3)
+T14 taps: p1:Plains#1
+T14 p1 adds {W} (p1:Plains#1)
+T14 taps: p1:Plains#2
+T14 p1 adds {W} (p1:Plains#2)
+T14 p1's unspent {W}{W}{W}{G} empties
+T14 moves: Zephyr Sprite, p1's library -> p1's hand
+T14 p1 draws
+T14 moves: Air Elemental, p1's hand -> stack
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 p1 cancels casting Air Elemental
+T14 moves: Island, p1's hand -> battlefield
+T14 p1 plays p1:Island
+T14 taps: p1:Island
+T14 p1 adds {U} (p1:Island)
+T14 p1's unspent {U} empties
+T14 p1 attack: nothing
+T14 taps: p1:Forest#2
+T14 p1 adds {G} (p1:Forest#2)
+T14 p1's unspent {G} empties
+T14 moves: Silvercoat Lion, p1's hand -> stack
+T14 p1 cancels casting Silvercoat Lion
+T14 moves: Air Elemental, p1's hand -> stack
+T14 p1 cancels casting Air Elemental
+T14 moves: Silvercoat Lion, p1's hand -> stack
+T14 p1 cancels casting Silvercoat Lion
+T14 moves: Zephyr Sprite, p1's hand -> stack
+T14 p1 cancels casting Zephyr Sprite
+T14 moves: Air Elemental, p1's hand -> stack
+T14 p1 cancels casting Air Elemental
+T14 moves: Stormfront Pegasus, p1's hand -> stack
+T14 p1 cancels casting Stormfront Pegasus
+T14 moves: Horned Turtle, p1's hand -> stack
+T14 p1 cancels casting Horned Turtle
+T14 moves: Horned Turtle, p1's hand -> stack
+T14 p1 cancels casting Horned Turtle
+T14 moves: Zephyr Sprite, p1's hand -> stack
+T14 p1 cancels casting Zephyr Sprite
+T14 moves: Horned Turtle, p1's hand -> stack
+T14 p1 cancels casting Horned Turtle
+T14 moves: Air Elemental, p1's hand -> stack
+T14 p1 cancels casting Air Elemental
+T14 moves: Horned Turtle, p1's hand -> stack
+T14 p1 cancels casting Horned Turtle
+T14 moves: Zephyr Sprite, p1's hand -> stack
+T14 p1 cancels casting Zephyr Sprite
+T14 moves: Horned Turtle, p1's hand -> stack
+T14 p1 cancels casting Horned Turtle
+T14 moves: Air Elemental, p1's hand -> stack
+T14 p1 cancels casting Air Elemental
+T15 turn 15 begins (p2)
+T15 untaps: p2:Mountain#1
+T15 untaps: p2:Swamp#1
+T15 untaps: p2:Swamp#2
+T15 untaps: p2:Mountain#2
+T15 untaps: p2:Mountain#3
+T15 untaps: p2:Mountain#4
+T15 taps: p2:Mountain#4
+T15 p2 adds {R} (p2:Mountain#4)
+T15 taps: p2:Mountain#3
+T15 p2 adds {R} (p2:Mountain#3)
+T15 taps: p2:Swamp#2
+T15 p2 adds {B} (p2:Swamp#2)
+T15 taps: p2:Swamp#1
+T15 p2 adds {B} (p2:Swamp#1)
+T15 p2's unspent {B}{B}{R}{R} empties
+T15 moves: Warpath Ghoul, p2's library -> p2's hand
+T15 p2 draws
+T15 taps: p2:Mountain#1
+T15 p2 adds {R} (p2:Mountain#1)
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 p2's unspent {R}{R} empties
+T15 moves: Zombie Goliath, p2's hand -> stack
+T15 p2 cancels casting Zombie Goliath
+T15 moves: Zombie Goliath, p2's hand -> stack
+T15 p2 cancels casting Zombie Goliath
+T15 moves: Fiery Hellhound, p2's hand -> stack
+T15 p2 cancels casting Fiery Hellhound
+T15 moves: Goblin Piker, p2's hand -> stack
+T15 p2 cancels casting Goblin Piker
+T15 moves: Goblin Piker, p2's hand -> stack
+T15 p2 cancels casting Goblin Piker
+T15 moves: Goblin Piker, p2's hand -> stack
+T15 p2 cancels casting Goblin Piker
+T15 moves: Looming Shade, p2's hand -> stack
+T15 p2 cancels casting Looming Shade
+T15 moves: Goblin Piker, p2's hand -> stack
+T15 p2 cancels casting Goblin Piker
+T15 moves: Looming Shade, p2's hand -> stack
+T15 p2 cancels casting Looming Shade
+T15 p2 attack: nothing
+T15 moves: Zombie Goliath, p2's hand -> stack
+T15 p2 cancels casting Zombie Goliath
+T16 turn 16 begins (p1)
+T16 untaps: p1:Plains#1
+T16 untaps: p1:Plains#2
+T16 untaps: p1:Plains#3
+T16 untaps: p1:Forest#1
+T16 untaps: p1:Forest#2
+T16 untaps: p1:Island
+T16 taps: p1:Plains#2
+T16 p1 adds {W} (p1:Plains#2)
+T16 taps: p1:Plains#3
+T16 p1 adds {W} (p1:Plains#3)
+T16 taps: p1:Plains#1
+T16 p1 adds {W} (p1:Plains#1)
+T16 taps: p1:Forest#2
+T16 p1 adds {G} (p1:Forest#2)
+T16 p1's unspent {W}{W}{W}{G} empties
+T16 moves: Runeclaw Bear, p1's library -> p1's hand
+T16 p1 draws
+T16 taps: p1:Forest#1
+T16 p1 adds {G} (p1:Forest#1)
+T16 p1's unspent {G} empties
+T16 moves: Stormfront Pegasus, p1's hand -> stack
+T16 taps: p1:Island
+T16 p1 adds {U} (p1:Island)
+T16 p1 cancels casting Stormfront Pegasus
+T16 moves: Silvercoat Lion, p1's hand -> stack
+T16 taps: p1:Island
+T16 p1 adds {U} (p1:Island)
+T16 p1 cancels casting Silvercoat Lion
+T16 taps: p1:Island
+T16 p1 adds {U} (p1:Island)
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Silvercoat Lion, p1's hand -> stack
+T16 p1 cancels casting Silvercoat Lion
+T16 moves: Silvercoat Lion, p1's hand -> stack
+T16 p1 cancels casting Silvercoat Lion
+T16 moves: Runeclaw Bear, p1's hand -> stack
+T16 p1 cancels casting Runeclaw Bear
+T16 moves: Silvercoat Lion, p1's hand -> stack
+T16 p1 cancels casting Silvercoat Lion
+T16 moves: Stormfront Pegasus, p1's hand -> stack
+T16 p1 cancels casting Stormfront Pegasus
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Zephyr Sprite, p1's hand -> stack
+T16 p1 casts Zephyr Sprite
+T16 resolves: Zephyr Sprite
+T16 moves: Zephyr Sprite, stack -> battlefield
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Horned Turtle, p1's hand -> stack
+T16 p1 cancels casting Horned Turtle
+T16 p1 attack: nothing
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Disorient, p1's hand -> stack
+T16 p1 cancels casting Disorient
+T16 moves: Runeclaw Bear, p1's hand -> stack
+T16 p1 cancels casting Runeclaw Bear
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T16 moves: Stormfront Pegasus, p1's hand -> stack
+T16 p1 cancels casting Stormfront Pegasus
+T16 moves: Runeclaw Bear, p1's hand -> stack
+T16 p1 cancels casting Runeclaw Bear
+T16 moves: Silvercoat Lion, p1's hand -> stack
+T16 p1 cancels casting Silvercoat Lion
+T16 moves: Air Elemental, p1's hand -> stack
+T16 p1 cancels casting Air Elemental
+T17 turn 17 begins (p2)
+T17 untaps: p2:Mountain#1
+T17 untaps: p2:Swamp#1
+T17 untaps: p2:Swamp#2
+T17 untaps: p2:Mountain#2
+T17 untaps: p2:Mountain#3
+T17 untaps: p2:Mountain#4
+T17 taps: p2:Mountain#3
+T17 p2 adds {R} (p2:Mountain#3)
+T17 taps: p2:Mountain#4
+T17 p2 adds {R} (p2:Mountain#4)
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 taps: p2:Swamp#1
+T17 p2 adds {B} (p2:Swamp#1)
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 taps: p2:Swamp#2
+T17 p2 adds {B} (p2:Swamp#2)
+T17 p2's unspent {B}{B}{R}{R}{R}{R} empties
+T17 moves: Swamp, p2's library -> p2's hand
+T17 p2 draws
+T17 moves: Swamp, p2's hand -> battlefield
+T17 p2 plays p2:Swamp#3
+T17 moves: Goblin Piker, p2's hand -> stack
+T17 taps: p2:Swamp#3
+T17 p2 adds {B} (p2:Swamp#3)
+T17 p2 cancels casting Goblin Piker
+T17 taps: p2:Swamp#3
+T17 p2 adds {B} (p2:Swamp#3)
+T17 moves: Looming Shade, p2's hand -> stack
+T17 p2 cancels casting Looming Shade
+T17 moves: Goblin Piker, p2's hand -> stack
+T17 p2 cancels casting Goblin Piker
+T17 moves: Canyon Minotaur, p2's hand -> stack
+T17 p2 cancels casting Canyon Minotaur
+T17 moves: Looming Shade, p2's hand -> stack
+T17 p2 cancels casting Looming Shade
+T17 moves: Goblin Piker, p2's hand -> stack
+T17 p2 cancels casting Goblin Piker
+T17 p2's unspent {B} empties
+T17 moves: Disorient, p1's hand -> stack
+T17 p1 cancels casting Disorient
+T17 p2 attack: nothing
+T17 moves: Canyon Minotaur, p2's hand -> stack
+T17 p2 cancels casting Canyon Minotaur
+T17 moves: Disorient, p1's hand -> stack
+T17 p1 cancels casting Disorient
+T17 moves: Disorient, p1's hand -> stack
+T17 p1 cancels casting Disorient
+T18 turn 18 begins (p1)
+T18 untaps: p1:Plains#1
+T18 untaps: p1:Plains#2
+T18 untaps: p1:Plains#3
+T18 untaps: p1:Forest#1
+T18 untaps: p1:Forest#2
+T18 untaps: p1:Island
+T18 moves: Disorient, p1's hand -> stack
+T18 taps: p1:Island
+T18 p1 adds {U} (p1:Island)
+T18 taps: p1:Plains#3
+T18 p1 adds {W} (p1:Plains#3)
+T18 taps: p1:Plains#1
+T18 p1 adds {W} (p1:Plains#1)
+T18 taps: p1:Forest#1
+T18 p1 adds {G} (p1:Forest#1)
+T18 taps: p1:Plains#2
+T18 p1 adds {W} (p1:Plains#2)
+T18 p1 casts Disorient
+T18 taps: p1:Forest#2
+T18 p1 adds {G} (p1:Forest#2)
+T18 effect: p1:Zephyr Sprite -7/+0 until end of turn
+T18 resolves: Disorient
+T18 moves: Disorient, stack -> p1's graveyard
+T18 p1's unspent {G}{G} empties
+T18 moves: Zephyr Sprite, p1's library -> p1's hand
+T18 p1 draws
+T18 moves: Horned Turtle, p1's hand -> stack
+T18 p1 cancels casting Horned Turtle
+T18 moves: Horned Turtle, p1's hand -> stack
+T18 p1 cancels casting Horned Turtle
+T18 moves: Silvercoat Lion, p1's hand -> stack
+T18 p1 cancels casting Silvercoat Lion
+T18 moves: Stormfront Pegasus, p1's hand -> stack
+T18 p1 cancels casting Stormfront Pegasus
+T18 moves: Runeclaw Bear, p1's hand -> stack
+T18 p1 cancels casting Runeclaw Bear
+T18 moves: Air Elemental, p1's hand -> stack
+T18 p1 cancels casting Air Elemental
+T18 moves: Stormfront Pegasus, p1's hand -> stack
+T18 p1 cancels casting Stormfront Pegasus
+T18 moves: Runeclaw Bear, p1's hand -> stack
+T18 p1 cancels casting Runeclaw Bear
+T18 moves: Horned Turtle, p1's hand -> stack
+T18 p1 cancels casting Horned Turtle
+T18 moves: Horned Turtle, p1's hand -> stack
+T18 p1 cancels casting Horned Turtle
+T18 moves: Air Elemental, p1's hand -> stack
+T18 p1 cancels casting Air Elemental
+T18 taps: p1:Zephyr Sprite
+T18 p1 attack: p1:Zephyr Sprite -> p2
+T18 p2 block: nothing
+T18 moves: Zephyr Sprite, p1's hand -> stack
+T18 p1 cancels casting Zephyr Sprite
+T18 effect ends: p1:Zephyr Sprite -7/+0
+T19 turn 19 begins (p2)
+T19 untaps: p2:Mountain#1
+T19 untaps: p2:Swamp#1
+T19 untaps: p2:Swamp#2
+T19 untaps: p2:Mountain#2
+T19 untaps: p2:Mountain#3
+T19 untaps: p2:Mountain#4
+T19 untaps: p2:Swamp#3
+T19 taps: p2:Swamp#2
+T19 p2 adds {B} (p2:Swamp#2)
+T19 taps: p2:Swamp#3
+T19 p2 adds {B} (p2:Swamp#3)
+T19 taps: p2:Swamp#1
+T19 p2 adds {B} (p2:Swamp#1)
+T19 taps: p2:Mountain#2
+T19 p2 adds {R} (p2:Mountain#2)
+T19 p2's unspent {B}{B}{B}{R} empties
+T19 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T19 p2 draws
+T19 taps: p2:Mountain#3
+T19 p2 adds {R} (p2:Mountain#3)
+T19 taps: p2:Mountain#1
+T19 p2 adds {R} (p2:Mountain#1)
+T19 moves: Canyon Minotaur, p2's hand -> stack
+T19 p2 cancels casting Canyon Minotaur
+T19 p2's unspent {R}{R} empties
+T19 taps: p2:Mountain#4
+T19 p2 adds {R} (p2:Mountain#4)
+T19 p2's unspent {R} empties
+T19 p2 attack: nothing
+T19 moves: Looming Shade, p2's hand -> stack
+T19 p2 cancels casting Looming Shade
+T20 turn 20 begins (p1)
+T20 untaps: p1:Plains#1
+T20 untaps: p1:Plains#2
+T20 untaps: p1:Plains#3
+T20 untaps: p1:Forest#1
+T20 untaps: p1:Forest#2
+T20 untaps: p1:Island
+T20 untaps: p1:Zephyr Sprite
+T20 taps: p1:Forest#2
+T20 p1 adds {G} (p1:Forest#2)
+T20 p1's unspent {G} empties
+T20 moves: Siege Mastodon, p1's library -> p1's hand
+T20 p1 draws
+T20 taps: p1:Plains#2
+T20 p1 adds {W} (p1:Plains#2)
+T20 taps: p1:Plains#3
+T20 p1 adds {W} (p1:Plains#3)
+T20 p1's unspent {W}{W} empties
+T20 moves: Horned Turtle, p1's hand -> stack
+T20 taps: p1:Plains#1
+T20 p1 adds {W} (p1:Plains#1)
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1 cancels casting Horned Turtle
+T20 taps: p1:Island
+T20 p1 adds {U} (p1:Island)
+T20 moves: Air Elemental, p1's hand -> stack
+T20 taps: p1:Plains#1
+T20 p1 adds {W} (p1:Plains#1)
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1 cancels casting Air Elemental
+T20 moves: Air Elemental, p1's hand -> stack
+T20 p1 cancels casting Air Elemental
+T20 moves: Air Elemental, p1's hand -> stack
+T20 p1 cancels casting Air Elemental
+T20 moves: Horned Turtle, p1's hand -> stack
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 taps: p1:Plains#1
+T20 p1 adds {W} (p1:Plains#1)
+T20 p1 casts Horned Turtle
+T20 resolves: Horned Turtle
+T20 moves: Horned Turtle, stack -> battlefield
+T20 moves: Air Elemental, p1's hand -> stack
+T20 p1 cancels casting Air Elemental
+T20 moves: Runeclaw Bear, p1's hand -> stack
+T20 p1 cancels casting Runeclaw Bear
+T20 moves: Air Elemental, p1's hand -> stack
+T20 p1 cancels casting Air Elemental
+T20 moves: Air Elemental, p1's hand -> stack
+T20 p1 cancels casting Air Elemental
+T20 moves: Zephyr Sprite, p1's hand -> stack
+T20 p1 cancels casting Zephyr Sprite
+T20 moves: Siege Mastodon, p1's hand -> stack
+T20 p1 cancels casting Siege Mastodon
+T20 moves: Zephyr Sprite, p1's hand -> stack
+T20 p1 cancels casting Zephyr Sprite
+T20 moves: Silvercoat Lion, p1's hand -> stack
+T20 p1 cancels casting Silvercoat Lion
+T20 moves: Silvercoat Lion, p1's hand -> stack
+T20 p1 cancels casting Silvercoat Lion
+T20 moves: Runeclaw Bear, p1's hand -> stack
+T20 p1 cancels casting Runeclaw Bear
+T20 moves: Stormfront Pegasus, p1's hand -> stack
+T20 p1 cancels casting Stormfront Pegasus
+T20 moves: Silvercoat Lion, p1's hand -> stack
+T20 p1 cancels casting Silvercoat Lion
+T20 moves: Zephyr Sprite, p1's hand -> stack
+T20 p1 cancels casting Zephyr Sprite
+T20 p1 attack: nothing
+T20 moves: Air Elemental, p1's hand -> stack
+T20 p1 cancels casting Air Elemental
+T20 moves: Runeclaw Bear, p1's hand -> stack
+T20 p1 cancels casting Runeclaw Bear
+T20 moves: Runeclaw Bear, p1's hand -> stack
+T20 p1 cancels casting Runeclaw Bear
+T20 moves: Silvercoat Lion, p1's hand -> stack
+T20 p1 cancels casting Silvercoat Lion
+T20 moves: Zephyr Sprite, p1's hand -> stack
+T20 p1 cancels casting Zephyr Sprite
+T20 moves: Stormfront Pegasus, p1's hand -> stack
+T20 p1 cancels casting Stormfront Pegasus
+T20 moves: Runeclaw Bear, p1's hand -> stack
+T20 p1 cancels casting Runeclaw Bear
+T21 turn 21 begins (p2)
+T21 untaps: p2:Mountain#1
+T21 untaps: p2:Swamp#1
+T21 untaps: p2:Swamp#2
+T21 untaps: p2:Mountain#2
+T21 untaps: p2:Mountain#3
+T21 untaps: p2:Mountain#4
+T21 untaps: p2:Swamp#3
+T21 taps: p2:Mountain#4
+T21 p2 adds {R} (p2:Mountain#4)
+T21 taps: p2:Mountain#2
+T21 p2 adds {R} (p2:Mountain#2)
+T21 taps: p2:Swamp#3
+T21 p2 adds {B} (p2:Swamp#3)
+T21 taps: p2:Swamp#2
+T21 p2 adds {B} (p2:Swamp#2)
+T21 p2's unspent {B}{B}{R}{R} empties
+T21 moves: Swamp, p2's library -> p2's hand
+T21 p2 draws
+T21 taps: p2:Mountain#3
+T21 p2 adds {R} (p2:Mountain#3)
+T21 taps: p2:Swamp#1
+T21 p2 adds {B} (p2:Swamp#1)
+T21 taps: p2:Mountain#1
+T21 p2 adds {R} (p2:Mountain#1)
+T21 p2's unspent {B}{R}{R} empties
+T21 moves: Prodigal Pyromancer, p2's hand -> stack
+T21 p2 cancels casting Prodigal Pyromancer
+T21 moves: Swamp, p2's hand -> battlefield
+T21 p2 plays p2:Swamp#4
+T21 moves: Looming Shade, p2's hand -> stack
+T21 p2 cancels casting Looming Shade
+T21 taps: p2:Swamp#4
+T21 p2 adds {B} (p2:Swamp#4)
+T21 moves: Warpath Ghoul, p2's hand -> stack
+T21 p2 cancels casting Warpath Ghoul
+T21 moves: Goblin Piker, p2's hand -> stack
+T21 p2 cancels casting Goblin Piker
+T21 moves: Canyon Minotaur, p2's hand -> stack
+T21 p2 cancels casting Canyon Minotaur
+T21 moves: Fiery Hellhound, p2's hand -> stack
+T21 p2 cancels casting Fiery Hellhound
+T21 moves: Looming Shade, p2's hand -> stack
+T21 p2 cancels casting Looming Shade
+T21 moves: Goblin Piker, p2's hand -> stack
+T21 p2 cancels casting Goblin Piker
+T21 moves: Zombie Goliath, p2's hand -> stack
+T21 p2 cancels casting Zombie Goliath
+T21 moves: Prodigal Pyromancer, p2's hand -> stack
+T21 p2 cancels casting Prodigal Pyromancer
+T21 moves: Looming Shade, p2's hand -> stack
+T21 p2 cancels casting Looming Shade
+T21 moves: Warpath Ghoul, p2's hand -> stack
+T21 p2 cancels casting Warpath Ghoul
+T21 p2's unspent {B} empties
+T21 p2 attack: nothing
+T21 moves: Warpath Ghoul, p2's hand -> stack
+T21 p2 cancels casting Warpath Ghoul
+T21 moves: Zombie Goliath, p2's hand -> stack
+T21 p2 cancels casting Zombie Goliath
+T21 moves: Fiery Hellhound, p2's hand -> stack
+T21 p2 cancels casting Fiery Hellhound
+T21 moves: Goblin Piker, p2's hand -> stack
+T21 p2 cancels casting Goblin Piker
+T21 moves: Prodigal Pyromancer, p2's hand -> stack
+T21 p2 cancels casting Prodigal Pyromancer
+T21 moves: Zombie Goliath, p2's hand -> stack
+T21 p2 cancels casting Zombie Goliath
+T22 turn 22 begins (p1)
+T22 untaps: p1:Plains#1
+T22 untaps: p1:Plains#2
+T22 untaps: p1:Plains#3
+T22 untaps: p1:Forest#1
+T22 untaps: p1:Forest#2
+T22 untaps: p1:Island
+T22 taps: p1:Plains#1
+T22 p1 adds {W} (p1:Plains#1)
+T22 taps: p1:Island
+T22 p1 adds {U} (p1:Island)
+T22 taps: p1:Plains#3
+T22 p1 adds {W} (p1:Plains#3)
+T22 taps: p1:Forest#2
+T22 p1 adds {G} (p1:Forest#2)
+T22 p1's unspent {W}{W}{U}{G} empties
+T22 moves: Might of Oaks, p1's library -> p1's hand
+T22 p1 draws
+T22 taps: p1:Forest#1
+T22 p1 adds {G} (p1:Forest#1)
+T22 p1's unspent {G} empties
+T22 taps: p1:Plains#2
+T22 p1 adds {W} (p1:Plains#2)
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Stormfront Pegasus, p1's hand -> stack
+T22 p1 cancels casting Stormfront Pegasus
+T22 moves: Siege Mastodon, p1's hand -> stack
+T22 p1 cancels casting Siege Mastodon
+T22 moves: Siege Mastodon, p1's hand -> stack
+T22 p1 cancels casting Siege Mastodon
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Silvercoat Lion, p1's hand -> stack
+T22 p1 cancels casting Silvercoat Lion
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Stormfront Pegasus, p1's hand -> stack
+T22 p1 cancels casting Stormfront Pegasus
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Stormfront Pegasus, p1's hand -> stack
+T22 p1 cancels casting Stormfront Pegasus
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Silvercoat Lion, p1's hand -> stack
+T22 p1 cancels casting Silvercoat Lion
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Zephyr Sprite, p1's hand -> stack
+T22 p1 cancels casting Zephyr Sprite
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Siege Mastodon, p1's hand -> stack
+T22 p1 cancels casting Siege Mastodon
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Silvercoat Lion, p1's hand -> stack
+T22 p1 cancels casting Silvercoat Lion
+T22 moves: Stormfront Pegasus, p1's hand -> stack
+T22 p1 cancels casting Stormfront Pegasus
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 p1's unspent {W} empties
+T22 taps: p1:Horned Turtle
+T22 taps: p1:Zephyr Sprite
+T22 p1 attack: p1:Horned Turtle -> p2, p1:Zephyr Sprite -> p2
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 p2 block: nothing
+T22 combat damage: p1:Horned Turtle -> p2 1
+T22 combat damage: p1:Zephyr Sprite -> p2 1
+T22 p2 loses 1 life
+T22 p2 loses 1 life
+T22 moves: Might of Oaks, p1's hand -> stack
+T22 p1 cancels casting Might of Oaks
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Siege Mastodon, p1's hand -> stack
+T22 p1 cancels casting Siege Mastodon
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Siege Mastodon, p1's hand -> stack
+T22 p1 cancels casting Siege Mastodon
+T22 moves: Stormfront Pegasus, p1's hand -> stack
+T22 p1 cancels casting Stormfront Pegasus
+T22 moves: Runeclaw Bear, p1's hand -> stack
+T22 p1 cancels casting Runeclaw Bear
+T22 moves: Air Elemental, p1's hand -> stack
+T22 p1 cancels casting Air Elemental
+T22 moves: Zephyr Sprite, p1's hand -> stack
+T22 p1 cancels casting Zephyr Sprite
+T22 moves: Air Elemental, p1's hand -> p1's graveyard
+T22 p1 discards Air Elemental
+T23 turn 23 begins (p2)
+T23 untaps: p2:Mountain#1
+T23 untaps: p2:Swamp#1
+T23 untaps: p2:Swamp#2
+T23 untaps: p2:Mountain#2
+T23 untaps: p2:Mountain#3
+T23 untaps: p2:Mountain#4
+T23 untaps: p2:Swamp#3
+T23 untaps: p2:Swamp#4
+T23 taps: p2:Swamp#4
+T23 p2 adds {B} (p2:Swamp#4)
+T23 taps: p2:Swamp#2
+T23 p2 adds {B} (p2:Swamp#2)
+T23 taps: p2:Mountain#1
+T23 p2 adds {R} (p2:Mountain#1)
+T23 taps: p2:Swamp#1
+T23 p2 adds {B} (p2:Swamp#1)
+T23 taps: p2:Swamp#3
+T23 p2 adds {B} (p2:Swamp#3)
+T23 taps: p2:Mountain#2
+T23 p2 adds {R} (p2:Mountain#2)
+T23 taps: p2:Mountain#3
+T23 p2 adds {R} (p2:Mountain#3)
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 p2's unspent {B}{B}{B}{B}{R}{R}{R} empties
+T23 moves: Kelinore Bat, p2's library -> p2's hand
+T23 p2 draws
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 moves: Warpath Ghoul, p2's hand -> stack
+T23 p2 cancels casting Warpath Ghoul
+T23 moves: Kelinore Bat, p2's hand -> stack
+T23 taps: p2:Mountain#4
+T23 p2 adds {R} (p2:Mountain#4)
+T23 p2 cancels casting Kelinore Bat
+T23 moves: Fiery Hellhound, p2's hand -> stack
+T23 p2 cancels casting Fiery Hellhound
+T23 moves: Fiery Hellhound, p2's hand -> stack
+T23 p2 cancels casting Fiery Hellhound
+T23 taps: p2:Mountain#4
+T23 p2 adds {R} (p2:Mountain#4)
+T23 moves: Looming Shade, p2's hand -> stack
+T23 p2 cancels casting Looming Shade
+T23 p2's unspent {R} empties
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 p2 attack: nothing
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 moves: Warpath Ghoul, p2's hand -> stack
+T23 p2 cancels casting Warpath Ghoul
+T23 moves: Canyon Minotaur, p2's hand -> stack
+T23 p2 cancels casting Canyon Minotaur
+T23 moves: Zombie Goliath, p2's hand -> stack
+T23 p2 cancels casting Zombie Goliath
+T23 moves: Warpath Ghoul, p2's hand -> stack
+T23 p2 cancels casting Warpath Ghoul
+T23 moves: Goblin Piker, p2's hand -> stack
+T23 p2 cancels casting Goblin Piker
+T23 moves: Kelinore Bat, p2's hand -> stack
+T23 p2 cancels casting Kelinore Bat
+T23 moves: Warpath Ghoul, p2's hand -> stack
+T23 p2 cancels casting Warpath Ghoul
+T23 moves: Looming Shade, p2's hand -> stack
+T23 p2 cancels casting Looming Shade
+T23 moves: Kelinore Bat, p2's hand -> stack
+T23 p2 cancels casting Kelinore Bat
+T23 moves: Fiery Hellhound, p2's hand -> stack
+T23 p2 cancels casting Fiery Hellhound
+T23 moves: Kelinore Bat, p2's hand -> stack
+T23 p2 cancels casting Kelinore Bat
+T23 moves: Kelinore Bat, p2's hand -> stack
+T23 p2 cancels casting Kelinore Bat
+T23 moves: Fiery Hellhound, p2's hand -> stack
+T23 p2 cancels casting Fiery Hellhound
+T23 moves: Kelinore Bat, p2's hand -> stack
+T23 p2 cancels casting Kelinore Bat
+T23 moves: Looming Shade, p2's hand -> stack
+T23 p2 cancels casting Looming Shade
+T23 moves: Prodigal Pyromancer, p2's hand -> stack
+T23 p2 cancels casting Prodigal Pyromancer
+T23 moves: Goblin Piker, p2's hand -> stack
+T23 p2 cancels casting Goblin Piker
+T23 moves: Might of Oaks, p1's hand -> stack
+T23 p1 cancels casting Might of Oaks
+T23 moves: Warpath Ghoul, p2's hand -> p2's graveyard
+T23 p2 discards Warpath Ghoul
+T24 turn 24 begins (p1)
+T24 untaps: p1:Plains#1
+T24 untaps: p1:Plains#2
+T24 untaps: p1:Plains#3
+T24 untaps: p1:Forest#1
+T24 untaps: p1:Forest#2
+T24 untaps: p1:Island
+T24 untaps: p1:Zephyr Sprite
+T24 untaps: p1:Horned Turtle
+T24 taps: p1:Forest#2
+T24 p1 adds {G} (p1:Forest#2)
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 p1's unspent {G} empties
+T24 moves: Snapping Drake, p1's library -> p1's hand
+T24 p1 draws
+T24 moves: Zephyr Sprite, p1's hand -> stack
+T24 taps: p1:Plains#2
+T24 p1 adds {W} (p1:Plains#2)
+T24 p1 cancels casting Zephyr Sprite
+T24 moves: Runeclaw Bear, p1's hand -> stack
+T24 taps: p1:Plains#2
+T24 p1 adds {W} (p1:Plains#2)
+T24 taps: p1:Plains#1
+T24 p1 adds {W} (p1:Plains#1)
+T24 taps: p1:Forest#1
+T24 p1 adds {G} (p1:Forest#1)
+T24 p1 casts Runeclaw Bear
+T24 taps: p1:Plains#3
+T24 p1 adds {W} (p1:Plains#3)
+T24 taps: p1:Island
+T24 p1 adds {U} (p1:Island)
+T24 resolves: Runeclaw Bear
+T24 moves: Runeclaw Bear, stack -> battlefield
+T24 moves: Siege Mastodon, p1's hand -> stack
+T24 p1 cancels casting Siege Mastodon
+T24 moves: Zephyr Sprite, p1's hand -> stack
+T24 p1 casts Zephyr Sprite
+T24 resolves: Zephyr Sprite
+T24 moves: Zephyr Sprite, stack -> battlefield
+T24 moves: Snapping Drake, p1's hand -> stack
+T24 p1 cancels casting Snapping Drake
+T24 moves: Air Elemental, p1's hand -> stack
+T24 p1 cancels casting Air Elemental
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 p1's unspent {W}{W} empties
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 p1 attack: nothing
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Siege Mastodon, p1's hand -> stack
+T24 p1 cancels casting Siege Mastodon
+T24 moves: Air Elemental, p1's hand -> stack
+T24 p1 cancels casting Air Elemental
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Stormfront Pegasus, p1's hand -> stack
+T24 p1 cancels casting Stormfront Pegasus
+T24 moves: Snapping Drake, p1's hand -> stack
+T24 p1 cancels casting Snapping Drake
+T24 moves: Snapping Drake, p1's hand -> stack
+T24 p1 cancels casting Snapping Drake
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Siege Mastodon, p1's hand -> stack
+T24 p1 cancels casting Siege Mastodon
+T24 moves: Stormfront Pegasus, p1's hand -> stack
+T24 p1 cancels casting Stormfront Pegasus
+T24 moves: Air Elemental, p1's hand -> stack
+T24 p1 cancels casting Air Elemental
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Stormfront Pegasus, p1's hand -> stack
+T24 p1 cancels casting Stormfront Pegasus
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Stormfront Pegasus, p1's hand -> stack
+T24 p1 cancels casting Stormfront Pegasus
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Snapping Drake, p1's hand -> stack
+T24 p1 cancels casting Snapping Drake
+T24 moves: Stormfront Pegasus, p1's hand -> stack
+T24 p1 cancels casting Stormfront Pegasus
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Might of Oaks, p1's hand -> stack
+T24 p1 cancels casting Might of Oaks
+T24 moves: Air Elemental, p1's hand -> stack
+T24 p1 cancels casting Air Elemental
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Stormfront Pegasus, p1's hand -> stack
+T24 p1 cancels casting Stormfront Pegasus
+T24 moves: Air Elemental, p1's hand -> stack
+T24 p1 cancels casting Air Elemental
+T24 moves: Snapping Drake, p1's hand -> stack
+T24 p1 cancels casting Snapping Drake
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Silvercoat Lion, p1's hand -> stack
+T24 p1 cancels casting Silvercoat Lion
+T24 moves: Snapping Drake, p1's hand -> stack
+T24 p1 cancels casting Snapping Drake
+T24 moves: Air Elemental, p1's hand -> stack
+T24 p1 cancels casting Air Elemental
+T24 moves: Siege Mastodon, p1's hand -> stack
+T24 p1 cancels casting Siege Mastodon
+T25 turn 25 begins (p2)
+T25 untaps: p2:Mountain#1
+T25 untaps: p2:Swamp#1
+T25 untaps: p2:Swamp#2
+T25 untaps: p2:Mountain#2
+T25 untaps: p2:Mountain#3
+T25 untaps: p2:Mountain#4
+T25 untaps: p2:Swamp#3
+T25 untaps: p2:Swamp#4
+T25 taps: p2:Mountain#1
+T25 p2 adds {R} (p2:Mountain#1)
+T25 taps: p2:Swamp#3
+T25 p2 adds {B} (p2:Swamp#3)
+T25 taps: p2:Mountain#3
+T25 p2 adds {R} (p2:Mountain#3)
+T25 p2's unspent {B}{R}{R} empties
+T25 moves: Mountain, p2's library -> p2's hand
+T25 p2 draws
+T25 taps: p2:Swamp#1
+T25 p2 adds {B} (p2:Swamp#1)
+T25 taps: p2:Mountain#4
+T25 p2 adds {R} (p2:Mountain#4)
+T25 taps: p2:Swamp#2
+T25 p2 adds {B} (p2:Swamp#2)
+T25 taps: p2:Swamp#4
+T25 p2 adds {B} (p2:Swamp#4)
+T25 moves: Might of Oaks, p1's hand -> stack
+T25 p1 cancels casting Might of Oaks
+T25 p2's unspent {B}{B}{B}{R} empties
+T25 moves: Looming Shade, p2's hand -> stack
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Looming Shade
+T25 moves: Mountain, p2's hand -> battlefield
+T25 p2 plays p2:Mountain#5
+T25 moves: Prodigal Pyromancer, p2's hand -> stack
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Prodigal Pyromancer
+T25 moves: Kelinore Bat, p2's hand -> stack
+T25 p2 cancels casting Kelinore Bat
+T25 moves: Goblin Piker, p2's hand -> stack
+T25 p2 cancels casting Goblin Piker
+T25 moves: Fiery Hellhound, p2's hand -> stack
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Fiery Hellhound
+T25 moves: Kelinore Bat, p2's hand -> stack
+T25 p2 cancels casting Kelinore Bat
+T25 moves: Looming Shade, p2's hand -> stack
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Looming Shade
+T25 moves: Looming Shade, p2's hand -> stack
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Looming Shade
+T25 moves: Goblin Piker, p2's hand -> stack
+T25 p2 cancels casting Goblin Piker
+T25 moves: Fiery Hellhound, p2's hand -> stack
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Fiery Hellhound
+T25 moves: Kelinore Bat, p2's hand -> stack
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 p2 cancels casting Kelinore Bat
+T25 moves: Looming Shade, p2's hand -> stack
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 p2 cancels casting Looming Shade
+T25 taps: p2:Mountain#2
+T25 p2 adds {R} (p2:Mountain#2)
+T25 moves: Prodigal Pyromancer, p2's hand -> stack
+T25 p2 cancels casting Prodigal Pyromancer
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 moves: Looming Shade, p2's hand -> stack
+T25 p2 cancels casting Looming Shade
+T25 moves: Looming Shade, p2's hand -> stack
+T25 p2 cancels casting Looming Shade
+T25 p2's unspent {R}{R} empties
+T25 p2 attack: nothing
+T25 moves: Prodigal Pyromancer, p2's hand -> stack
+T25 p2 cancels casting Prodigal Pyromancer
+T25 moves: Prodigal Pyromancer, p2's hand -> stack
+T25 p2 cancels casting Prodigal Pyromancer
+T25 moves: Prodigal Pyromancer, p2's hand -> stack
+T25 p2 cancels casting Prodigal Pyromancer
+T25 moves: Looming Shade, p2's hand -> stack
+T25 p2 cancels casting Looming Shade
+T25 moves: Goblin Piker, p2's hand -> stack
+T25 p2 cancels casting Goblin Piker
+T25 moves: Zombie Goliath, p2's hand -> stack
+T25 p2 cancels casting Zombie Goliath
+T25 moves: Kelinore Bat, p2's hand -> stack
+T25 p2 cancels casting Kelinore Bat
+T25 moves: Fiery Hellhound, p2's hand -> stack
+T25 p2 cancels casting Fiery Hellhound
+T25 moves: Looming Shade, p2's hand -> stack
+T25 p2 cancels casting Looming Shade
+T25 moves: Looming Shade, p2's hand -> stack
+T25 p2 cancels casting Looming Shade
+T25 moves: Prodigal Pyromancer, p2's hand -> stack
+T25 p2 cancels casting Prodigal Pyromancer
+T25 moves: Canyon Minotaur, p2's hand -> stack
+T25 p2 cancels casting Canyon Minotaur
+T25 moves: Looming Shade, p2's hand -> stack
+T25 p2 cancels casting Looming Shade
+T25 moves: Goblin Piker, p2's hand -> stack
+T25 p2 cancels casting Goblin Piker
+T26 turn 26 begins (p1)
+T26 untaps: p1:Plains#1
+T26 untaps: p1:Plains#2
+T26 untaps: p1:Plains#3
+T26 untaps: p1:Forest#1
+T26 untaps: p1:Forest#2
+T26 untaps: p1:Island
+T26 taps: p1:Plains#3
+T26 p1 adds {W} (p1:Plains#3)
+T26 taps: p1:Plains#2
+T26 p1 adds {W} (p1:Plains#2)
+T26 taps: p1:Plains#1
+T26 p1 adds {W} (p1:Plains#1)
+T26 taps: p1:Forest#1
+T26 p1 adds {G} (p1:Forest#1)
+T26 moves: Might of Oaks, p1's hand -> stack
+T26 taps: p1:Forest#2
+T26 p1 adds {G} (p1:Forest#2)
+T26 p1 casts Might of Oaks
+T26 effect: p1:Zephyr Sprite#2 +7/+7 until end of turn
+T26 resolves: Might of Oaks
+T26 moves: Might of Oaks, stack -> p1's graveyard
+T26 p1's unspent {G} empties
+T26 moves: Enormous Baloth, p1's library -> p1's hand
+T26 p1 draws
+T26 taps: p1:Island
+T26 p1 adds {U} (p1:Island)
+T26 p1's unspent {U} empties
+T26 taps: p1:Zephyr Sprite#2
+T26 p1 attack: p1:Zephyr Sprite#2 -> p2
+T26 p2 block: nothing
+T26 combat damage: p1:Zephyr Sprite#2 -> p2 8
+T26 p2 loses 8 life
+T26 moves: Enormous Baloth, p1's hand -> stack
+T26 p1 cancels casting Enormous Baloth
+T26 moves: Air Elemental, p1's hand -> stack
+T26 p1 cancels casting Air Elemental
+T26 moves: Siege Mastodon, p1's hand -> stack
+T26 p1 cancels casting Siege Mastodon
+T26 moves: Stormfront Pegasus, p1's hand -> stack
+T26 p1 cancels casting Stormfront Pegasus
+T26 moves: Siege Mastodon, p1's hand -> stack
+T26 p1 cancels casting Siege Mastodon
+T26 moves: Stormfront Pegasus, p1's hand -> stack
+T26 p1 cancels casting Stormfront Pegasus
+T26 effect ends: p1:Zephyr Sprite#2 +7/+7
+T27 turn 27 begins (p2)
+T27 untaps: p2:Mountain#1
+T27 untaps: p2:Swamp#1
+T27 untaps: p2:Swamp#2
+T27 untaps: p2:Mountain#2
+T27 untaps: p2:Mountain#3
+T27 untaps: p2:Mountain#4
+T27 untaps: p2:Swamp#3
+T27 untaps: p2:Swamp#4
+T27 untaps: p2:Mountain#5
+T27 taps: p2:Mountain#4
+T27 p2 adds {R} (p2:Mountain#4)
+T27 taps: p2:Mountain#5
+T27 p2 adds {R} (p2:Mountain#5)
+T27 taps: p2:Swamp#4
+T27 p2 adds {B} (p2:Swamp#4)
+T27 taps: p2:Mountain#3
+T27 p2 adds {R} (p2:Mountain#3)
+T27 taps: p2:Swamp#2
+T27 p2 adds {B} (p2:Swamp#2)
+T27 taps: p2:Swamp#3
+T27 p2 adds {B} (p2:Swamp#3)
+T27 taps: p2:Mountain#2
+T27 p2 adds {R} (p2:Mountain#2)
+T27 p2's unspent {B}{B}{B}{R}{R}{R}{R} empties
+T27 moves: Fiery Hellhound, p2's library -> p2's hand
+T27 p2 draws
+T27 taps: p2:Mountain#1
+T27 p2 adds {R} (p2:Mountain#1)
+T27 p2's unspent {R} empties
+T27 moves: Canyon Minotaur, p2's hand -> stack
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 p2 cancels casting Canyon Minotaur
+T27 moves: Fiery Hellhound, p2's hand -> stack
+T27 p2 cancels casting Fiery Hellhound
+T27 moves: Looming Shade, p2's hand -> stack
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 p2 cancels casting Looming Shade
+T27 moves: Prodigal Pyromancer, p2's hand -> stack
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 p2 cancels casting Prodigal Pyromancer
+T27 moves: Fiery Hellhound, p2's hand -> stack
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 p2 cancels casting Fiery Hellhound
+T27 taps: p2:Swamp#1
+T27 p2 adds {B} (p2:Swamp#1)
+T27 moves: Prodigal Pyromancer, p2's hand -> stack
+T27 p2 cancels casting Prodigal Pyromancer
+T27 moves: Canyon Minotaur, p2's hand -> stack
+T27 p2 cancels casting Canyon Minotaur
+T27 moves: Kelinore Bat, p2's hand -> stack
+T27 p2 cancels casting Kelinore Bat
+T27 moves: Zombie Goliath, p2's hand -> stack
+T27 p2 cancels casting Zombie Goliath
+T27 moves: Prodigal Pyromancer, p2's hand -> stack
+T27 p2 cancels casting Prodigal Pyromancer
+T27 moves: Prodigal Pyromancer, p2's hand -> stack
+T27 p2 cancels casting Prodigal Pyromancer
+T27 moves: Goblin Piker, p2's hand -> stack
+T27 p2 cancels casting Goblin Piker
+T27 moves: Kelinore Bat, p2's hand -> stack
+T27 p2 cancels casting Kelinore Bat
+T27 moves: Zombie Goliath, p2's hand -> stack
+T27 p2 cancels casting Zombie Goliath
+T27 p2's unspent {B} empties
+T27 p2 attack: nothing
+T27 moves: Goblin Piker, p2's hand -> stack
+T27 p2 cancels casting Goblin Piker
+T27 moves: Prodigal Pyromancer, p2's hand -> stack
+T27 p2 cancels casting Prodigal Pyromancer
+T27 moves: Goblin Piker, p2's hand -> stack
+T27 p2 cancels casting Goblin Piker
+T27 moves: Kelinore Bat, p2's hand -> stack
+T27 p2 cancels casting Kelinore Bat
+T27 moves: Fiery Hellhound, p2's hand -> p2's graveyard
+T27 p2 discards Fiery Hellhound
+T28 turn 28 begins (p1)
+T28 untaps: p1:Plains#1
+T28 untaps: p1:Plains#2
+T28 untaps: p1:Plains#3
+T28 untaps: p1:Forest#1
+T28 untaps: p1:Forest#2
+T28 untaps: p1:Island
+T28 untaps: p1:Zephyr Sprite#2
+T28 moves: Snapping Drake, p1's library -> p1's hand
+T28 p1 draws
+T28 taps: p1:Island
+T28 p1 adds {U} (p1:Island)
+T28 taps: p1:Plains#3
+T28 p1 adds {W} (p1:Plains#3)
+T28 taps: p1:Forest#1
+T28 p1 adds {G} (p1:Forest#1)
+T28 p1's unspent {W}{U}{G} empties
+T28 taps: p1:Horned Turtle
+T28 taps: p1:Zephyr Sprite#1
+T28 taps: p1:Runeclaw Bear
+T28 p1 attack: p1:Horned Turtle -> p2, p1:Zephyr Sprite#1 -> p2, p1:Runeclaw Bear -> p2
+T28 p2 block: nothing
+T28 taps: p1:Forest#2
+T28 p1 adds {G} (p1:Forest#2)
+T28 taps: p1:Plains#1
+T28 p1 adds {W} (p1:Plains#1)
+T28 p1's unspent {W}{G} empties
+T28 combat damage: p1:Horned Turtle -> p2 1
+T28 combat damage: p1:Zephyr Sprite#1 -> p2 1
+T28 combat damage: p1:Runeclaw Bear -> p2 2
+T28 p2 loses 1 life
+T28 p2 loses 1 life
+T28 p2 loses 2 life
+T28 moves: Siege Mastodon, p1's hand -> stack
+T28 taps: p1:Plains#2
+T28 p1 adds {W} (p1:Plains#2)
+T28 p1 cancels casting Siege Mastodon
+T28 taps: p1:Plains#2
+T28 p1 adds {W} (p1:Plains#2)
+T28 moves: Air Elemental, p1's hand -> stack
+T28 p1 cancels casting Air Elemental
+T28 moves: Snapping Drake, p1's hand -> stack
+T28 p1 cancels casting Snapping Drake
+T28 p1's unspent {W} empties
+T29 turn 29 begins (p2)
+T29 untaps: p2:Mountain#1
+T29 untaps: p2:Swamp#1
+T29 untaps: p2:Swamp#2
+T29 untaps: p2:Mountain#2
+T29 untaps: p2:Mountain#3
+T29 untaps: p2:Mountain#4
+T29 untaps: p2:Swamp#3
+T29 untaps: p2:Swamp#4
+T29 untaps: p2:Mountain#5
+T29 moves: Swamp, p2's library -> p2's hand
+T29 p2 draws
+T29 taps: p2:Swamp#1
+T29 p2 adds {B} (p2:Swamp#1)
+T29 taps: p2:Mountain#3
+T29 p2 adds {R} (p2:Mountain#3)
+T29 taps: p2:Swamp#3
+T29 p2 adds {B} (p2:Swamp#3)
+T29 taps: p2:Mountain#2
+T29 p2 adds {R} (p2:Mountain#2)
+T29 taps: p2:Mountain#1
+T29 p2 adds {R} (p2:Mountain#1)
+T29 taps: p2:Mountain#5
+T29 p2 adds {R} (p2:Mountain#5)
+T29 p2's unspent {B}{B}{R}{R}{R}{R} empties
+T29 moves: Looming Shade, p2's hand -> stack
+T29 taps: p2:Mountain#4
+T29 p2 adds {R} (p2:Mountain#4)
+T29 taps: p2:Swamp#4
+T29 p2 adds {B} (p2:Swamp#4)
+T29 taps: p2:Swamp#2
+T29 p2 adds {B} (p2:Swamp#2)
+T29 p2 cancels casting Looming Shade
+T29 moves: Fiery Hellhound, p2's hand -> stack
+T29 taps: p2:Swamp#4
+T29 p2 adds {B} (p2:Swamp#4)
+T29 taps: p2:Mountain#4
+T29 p2 adds {R} (p2:Mountain#4)
+T29 p2 cancels casting Fiery Hellhound
+T29 p2 attack: nothing
+T29 taps: p2:Mountain#4
+T29 p2 adds {R} (p2:Mountain#4)
+T29 taps: p2:Swamp#4
+T29 p2 adds {B} (p2:Swamp#4)
+T29 taps: p2:Swamp#2
+T29 p2 adds {B} (p2:Swamp#2)
+T29 p2's unspent {B}{B}{R} empties
+T29 moves: Goblin Piker, p2's hand -> stack
+T29 p2 cancels casting Goblin Piker
+T29 moves: Zombie Goliath, p2's hand -> stack
+T29 p2 cancels casting Zombie Goliath
+T29 moves: Kelinore Bat, p2's hand -> stack
+T29 p2 cancels casting Kelinore Bat
+T29 moves: Zombie Goliath, p2's hand -> stack
+T29 p2 cancels casting Zombie Goliath
+T29 moves: Fiery Hellhound, p2's hand -> stack
+T29 p2 cancels casting Fiery Hellhound
+T29 moves: Fiery Hellhound, p2's hand -> stack
+T29 p2 cancels casting Fiery Hellhound
+T29 moves: Looming Shade, p2's hand -> stack
+T29 p2 cancels casting Looming Shade
+T29 moves: Kelinore Bat, p2's hand -> stack
+T29 p2 cancels casting Kelinore Bat
+T29 moves: Looming Shade, p2's hand -> stack
+T29 p2 cancels casting Looming Shade
+T29 moves: Swamp, p2's hand -> battlefield
+T29 p2 plays p2:Swamp#5
+T29 moves: Fiery Hellhound, p2's hand -> stack
+T29 p2 cancels casting Fiery Hellhound
+T29 moves: Fiery Hellhound, p2's hand -> stack
+T29 taps: p2:Swamp#5
+T29 p2 adds {B} (p2:Swamp#5)
+T29 p2 cancels casting Fiery Hellhound
+T29 moves: Zombie Goliath, p2's hand -> stack
+T29 p2 cancels casting Zombie Goliath
+T30 turn 30 begins (p1)
+T30 untaps: p1:Plains#1
+T30 untaps: p1:Plains#2
+T30 untaps: p1:Plains#3
+T30 untaps: p1:Forest#1
+T30 untaps: p1:Forest#2
+T30 untaps: p1:Island
+T30 untaps: p1:Zephyr Sprite#1
+T30 untaps: p1:Horned Turtle
+T30 untaps: p1:Runeclaw Bear
+T30 taps: p1:Island
+T30 p1 adds {U} (p1:Island)
+T30 taps: p1:Plains#1
+T30 p1 adds {W} (p1:Plains#1)
+T30 taps: p1:Plains#3
+T30 p1 adds {W} (p1:Plains#3)
+T30 taps: p1:Forest#1
+T30 p1 adds {G} (p1:Forest#1)
+T30 taps: p1:Plains#2
+T30 p1 adds {W} (p1:Plains#2)
+T30 taps: p1:Forest#2
+T30 p1 adds {G} (p1:Forest#2)
+T30 p1's unspent {W}{W}{W}{U}{G}{G} empties
+T30 moves: Stormfront Pegasus, p1's library -> p1's hand
+T30 p1 draws
+T30 moves: Silvercoat Lion, p1's hand -> stack
+T30 p1 cancels casting Silvercoat Lion
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 taps: p2:Swamp#5
+T30 p2 adds {B} (p2:Swamp#5)
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Air Elemental, p1's hand -> stack
+T30 p1 cancels casting Air Elemental
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Air Elemental, p1's hand -> stack
+T30 p1 cancels casting Air Elemental
+T30 moves: Silvercoat Lion, p1's hand -> stack
+T30 p1 cancels casting Silvercoat Lion
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Enormous Baloth, p1's hand -> stack
+T30 p1 cancels casting Enormous Baloth
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Silvercoat Lion, p1's hand -> stack
+T30 p1 cancels casting Silvercoat Lion
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Silvercoat Lion, p1's hand -> stack
+T30 p1 cancels casting Silvercoat Lion
+T30 moves: Enormous Baloth, p1's hand -> stack
+T30 p1 cancels casting Enormous Baloth
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Enormous Baloth, p1's hand -> stack
+T30 p1 cancels casting Enormous Baloth
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Stormfront Pegasus, p1's hand -> stack
+T30 p1 cancels casting Stormfront Pegasus
+T30 moves: Enormous Baloth, p1's hand -> stack
+T30 p1 cancels casting Enormous Baloth
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 moves: Air Elemental, p1's hand -> stack
+T30 p1 cancels casting Air Elemental
+T30 moves: Siege Mastodon, p1's hand -> stack
+T30 p1 cancels casting Siege Mastodon
+T30 p2's unspent {B} empties
+T30 p1 attack: nothing
+T30 moves: Air Elemental, p1's hand -> stack
+T30 p1 cancels casting Air Elemental
+T30 moves: Snapping Drake, p1's hand -> stack
+T30 p1 cancels casting Snapping Drake
+T30 moves: Snapping Drake, p1's hand -> p1's graveyard
+T30 p1 discards Snapping Drake
+T31 turn 31 begins (p2)
+T31 untaps: p2:Mountain#1
+T31 untaps: p2:Swamp#1
+T31 untaps: p2:Swamp#2
+T31 untaps: p2:Mountain#2
+T31 untaps: p2:Mountain#3
+T31 untaps: p2:Mountain#4
+T31 untaps: p2:Swamp#3
+T31 untaps: p2:Swamp#4
+T31 untaps: p2:Mountain#5
+T31 untaps: p2:Swamp#5
+T31 taps: p2:Swamp#4
+T31 p2 adds {B} (p2:Swamp#4)
+T31 taps: p2:Swamp#1
+T31 p2 adds {B} (p2:Swamp#1)
+T31 taps: p2:Swamp#2
+T31 p2 adds {B} (p2:Swamp#2)
+T31 taps: p2:Swamp#5
+T31 p2 adds {B} (p2:Swamp#5)
+T31 p2's unspent {B}{B}{B}{B} empties
+T31 moves: Mountain, p2's library -> p2's hand
+T31 p2 draws
+T31 moves: Canyon Minotaur, p2's hand -> stack
+T31 p2 cancels casting Canyon Minotaur
+T31 moves: Goblin Piker, p2's hand -> stack
+T31 taps: p2:Mountain#2
+T31 p2 adds {R} (p2:Mountain#2)
+T31 taps: p2:Swamp#3
+T31 p2 adds {B} (p2:Swamp#3)
+T31 p2 cancels casting Goblin Piker
+T31 taps: p2:Mountain#3
+T31 p2 adds {R} (p2:Mountain#3)
+T31 taps: p2:Mountain#5
+T31 p2 adds {R} (p2:Mountain#5)
+T31 moves: Mountain, p2's hand -> battlefield
+T31 p2 plays p2:Mountain#6
+T31 p2's unspent {R}{R} empties
+T31 taps: p2:Mountain#2
+T31 p2 adds {R} (p2:Mountain#2)
+T31 taps: p2:Mountain#6
+T31 p2 adds {R} (p2:Mountain#6)
+T31 taps: p2:Mountain#1
+T31 p2 adds {R} (p2:Mountain#1)
+T31 taps: p2:Swamp#3
+T31 p2 adds {B} (p2:Swamp#3)
+T31 taps: p2:Mountain#4
+T31 p2 adds {R} (p2:Mountain#4)
+T31 p2's unspent {B}{R}{R}{R}{R} empties
+T31 p2 attack: nothing
+T31 moves: Fiery Hellhound, p2's hand -> stack
+T31 p2 cancels casting Fiery Hellhound
+T31 moves: Looming Shade, p2's hand -> stack
+T31 p2 cancels casting Looming Shade
+T31 moves: Fiery Hellhound, p2's hand -> stack
+T31 p2 cancels casting Fiery Hellhound
+T31 moves: Looming Shade, p2's hand -> stack
+T31 p2 cancels casting Looming Shade
+T31 moves: Kelinore Bat, p2's hand -> stack
+T31 p2 cancels casting Kelinore Bat
+T31 moves: Goblin Piker, p2's hand -> stack
+T31 p2 cancels casting Goblin Piker
+T31 moves: Canyon Minotaur, p2's hand -> stack
+T31 p2 cancels casting Canyon Minotaur
+T31 moves: Prodigal Pyromancer, p2's hand -> stack
+T31 p2 cancels casting Prodigal Pyromancer
+T31 moves: Kelinore Bat, p2's hand -> stack
+T31 p2 cancels casting Kelinore Bat
+T31 moves: Canyon Minotaur, p2's hand -> stack
+T31 p2 cancels casting Canyon Minotaur
+T31 moves: Looming Shade, p2's hand -> stack
+T31 p2 cancels casting Looming Shade
+T31 moves: Zombie Goliath, p2's hand -> stack
+T31 p2 cancels casting Zombie Goliath
+T31 moves: Goblin Piker, p2's hand -> stack
+T31 p2 cancels casting Goblin Piker
+T32 turn 32 begins (p1)
+T32 untaps: p1:Plains#1
+T32 untaps: p1:Plains#2
+T32 untaps: p1:Plains#3
+T32 untaps: p1:Forest#1
+T32 untaps: p1:Forest#2
+T32 untaps: p1:Island
+T32 taps: p1:Forest#1
+T32 p1 adds {G} (p1:Forest#1)
+T32 taps: p1:Plains#2
+T32 p1 adds {W} (p1:Plains#2)
+T32 taps: p1:Island
+T32 p1 adds {U} (p1:Island)
+T32 taps: p1:Forest#2
+T32 p1 adds {G} (p1:Forest#2)
+T32 taps: p1:Plains#1
+T32 p1 adds {W} (p1:Plains#1)
+T32 p1's unspent {W}{W}{U}{G}{G} empties
+T32 moves: Plains, p1's library -> p1's hand
+T32 p1 draws
+T32 taps: p1:Plains#3
+T32 p1 adds {W} (p1:Plains#3)
+T32 p1's unspent {W} empties
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Air Elemental, p1's hand -> stack
+T32 p1 cancels casting Air Elemental
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 taps: p1:Horned Turtle
+T32 taps: p1:Zephyr Sprite#1
+T32 p1 attack: p1:Horned Turtle -> p2, p1:Zephyr Sprite#1 -> p2
+T32 p2 block: nothing
+T32 combat damage: p1:Horned Turtle -> p2 1
+T32 combat damage: p1:Zephyr Sprite#1 -> p2 1
+T32 p2 loses 1 life
+T32 p2 loses 1 life
+T32 moves: Air Elemental, p1's hand -> stack
+T32 p1 cancels casting Air Elemental
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Plains, p1's hand -> battlefield
+T32 p1 plays p1:Plains#4
+T32 moves: Air Elemental, p1's hand -> stack
+T32 p1 cancels casting Air Elemental
+T32 moves: Enormous Baloth, p1's hand -> stack
+T32 p1 cancels casting Enormous Baloth
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 taps: p1:Plains#4
+T32 p1 adds {W} (p1:Plains#4)
+T32 p1 cancels casting Stormfront Pegasus
+T32 taps: p1:Plains#4
+T32 p1 adds {W} (p1:Plains#4)
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Snapping Drake, p1's hand -> stack
+T32 p1 cancels casting Snapping Drake
+T32 moves: Stormfront Pegasus, p1's hand -> stack
+T32 p1 cancels casting Stormfront Pegasus
+T32 moves: Air Elemental, p1's hand -> stack
+T32 p1 cancels casting Air Elemental
+T32 moves: Siege Mastodon, p1's hand -> stack
+T32 p1 cancels casting Siege Mastodon
+T32 moves: Silvercoat Lion, p1's hand -> stack
+T32 p1 cancels casting Silvercoat Lion
+T32 p1's unspent {W} empties
+T33 turn 33 begins (p2)
+T33 untaps: p2:Mountain#1
+T33 untaps: p2:Swamp#1
+T33 untaps: p2:Swamp#2
+T33 untaps: p2:Mountain#2
+T33 untaps: p2:Mountain#3
+T33 untaps: p2:Mountain#4
+T33 untaps: p2:Swamp#3
+T33 untaps: p2:Swamp#4
+T33 untaps: p2:Mountain#5
+T33 untaps: p2:Swamp#5
+T33 untaps: p2:Mountain#6
+T33 taps: p2:Swamp#3
+T33 p2 adds {B} (p2:Swamp#3)
+T33 taps: p2:Mountain#1
+T33 p2 adds {R} (p2:Mountain#1)
+T33 taps: p2:Mountain#6
+T33 p2 adds {R} (p2:Mountain#6)
+T33 taps: p2:Swamp#2
+T33 p2 adds {B} (p2:Swamp#2)
+T33 taps: p2:Mountain#3
+T33 p2 adds {R} (p2:Mountain#3)
+T33 taps: p2:Swamp#1
+T33 p2 adds {B} (p2:Swamp#1)
+T33 taps: p2:Swamp#5
+T33 p2 adds {B} (p2:Swamp#5)
+T33 taps: p2:Mountain#2
+T33 p2 adds {R} (p2:Mountain#2)
+T33 p2's unspent {B}{B}{B}{B}{R}{R}{R}{R} empties
+T33 moves: Goblin Piker, p2's library -> p2's hand
+T33 p2 draws
+T33 taps: p2:Mountain#5
+T33 p2 adds {R} (p2:Mountain#5)
+T33 taps: p2:Swamp#4
+T33 p2 adds {B} (p2:Swamp#4)
+T33 taps: p2:Mountain#4
+T33 p2 adds {R} (p2:Mountain#4)
+T33 p2's unspent {B}{R}{R} empties
+T33 moves: Prodigal Pyromancer, p2's hand -> stack
+T33 p2 cancels casting Prodigal Pyromancer
+T33 moves: Zombie Goliath, p2's hand -> stack
+T33 p2 cancels casting Zombie Goliath
+T33 moves: Goblin Piker, p2's hand -> stack
+T33 p2 cancels casting Goblin Piker
+T33 p2 attack: nothing
+T33 moves: Goblin Piker, p2's hand -> stack
+T33 p2 cancels casting Goblin Piker
+T33 moves: Looming Shade, p2's hand -> stack
+T33 p2 cancels casting Looming Shade
+T33 moves: Prodigal Pyromancer, p2's hand -> stack
+T33 p2 cancels casting Prodigal Pyromancer
+T33 moves: Canyon Minotaur, p2's hand -> stack
+T33 p2 cancels casting Canyon Minotaur
+T33 moves: Kelinore Bat, p2's hand -> p2's graveyard
+T33 p2 discards Kelinore Bat
+T34 turn 34 begins (p1)
+T34 untaps: p1:Plains#1
+T34 untaps: p1:Plains#2
+T34 untaps: p1:Plains#3
+T34 untaps: p1:Forest#1
+T34 untaps: p1:Forest#2
+T34 untaps: p1:Island
+T34 untaps: p1:Zephyr Sprite#1
+T34 untaps: p1:Horned Turtle
+T34 untaps: p1:Plains#4
+T34 taps: p1:Island
+T34 p1 adds {U} (p1:Island)
+T34 taps: p1:Plains#1
+T34 p1 adds {W} (p1:Plains#1)
+T34 p1's unspent {W}{U} empties
+T34 moves: Horned Turtle, p1's library -> p1's hand
+T34 p1 draws
+T34 taps: p1:Plains#4
+T34 p1 adds {W} (p1:Plains#4)
+T34 taps: p1:Forest#1
+T34 p1 adds {G} (p1:Forest#1)
+T34 p1's unspent {W}{G} empties
+T34 moves: Silvercoat Lion, p1's hand -> stack
+T34 taps: p1:Plains#2
+T34 p1 adds {W} (p1:Plains#2)
+T34 p1 cancels casting Silvercoat Lion
+T34 taps: p1:Plains#2
+T34 p1 adds {W} (p1:Plains#2)
+T34 taps: p1:Forest#2
+T34 p1 adds {G} (p1:Forest#2)
+T34 taps: p1:Plains#3
+T34 p1 adds {W} (p1:Plains#3)
+T34 p1's unspent {W}{W}{G} empties
+T34 taps: p1:Horned Turtle
+T34 taps: p1:Runeclaw Bear
+T34 p1 attack: p1:Horned Turtle -> p2, p1:Runeclaw Bear -> p2
+T34 p2 block: nothing
+T34 combat damage: p1:Horned Turtle -> p2 1
+T34 combat damage: p1:Runeclaw Bear -> p2 2
+T34 p2 loses 1 life
+T34 p2 loses 2 life
+T34 moves: Stormfront Pegasus, p1's hand -> stack
+T34 p1 cancels casting Stormfront Pegasus
+T34 moves: Stormfront Pegasus, p1's hand -> stack
+T34 p1 cancels casting Stormfront Pegasus
+T34 moves: Silvercoat Lion, p1's hand -> stack
+T34 p1 cancels casting Silvercoat Lion
+T34 moves: Air Elemental, p1's hand -> stack
+T34 p1 cancels casting Air Elemental
+T34 moves: Stormfront Pegasus, p1's hand -> p1's graveyard
+T34 p1 discards Stormfront Pegasus
+T35 turn 35 begins (p2)
+T35 untaps: p2:Mountain#1
+T35 untaps: p2:Swamp#1
+T35 untaps: p2:Swamp#2
+T35 untaps: p2:Mountain#2
+T35 untaps: p2:Mountain#3
+T35 untaps: p2:Mountain#4
+T35 untaps: p2:Swamp#3
+T35 untaps: p2:Swamp#4
+T35 untaps: p2:Mountain#5
+T35 untaps: p2:Swamp#5
+T35 untaps: p2:Mountain#6
+T35 taps: p2:Swamp#4
+T35 p2 adds {B} (p2:Swamp#4)
+T35 taps: p2:Mountain#4
+T35 p2 adds {R} (p2:Mountain#4)
+T35 taps: p2:Swamp#1
+T35 p2 adds {B} (p2:Swamp#1)
+T35 taps: p2:Mountain#1
+T35 p2 adds {R} (p2:Mountain#1)
+T35 taps: p2:Swamp#3
+T35 p2 adds {B} (p2:Swamp#3)
+T35 p2's unspent {B}{B}{B}{R}{R} empties
+T35 moves: Swamp, p2's library -> p2's hand
+T35 p2 draws
+T35 taps: p2:Mountain#5
+T35 p2 adds {R} (p2:Mountain#5)
+T35 p2's unspent {R} empties
+T35 moves: Canyon Minotaur, p2's hand -> stack
+T35 taps: p2:Mountain#2
+T35 p2 adds {R} (p2:Mountain#2)
+T35 taps: p2:Mountain#6
+T35 p2 adds {R} (p2:Mountain#6)
+T35 taps: p2:Swamp#2
+T35 p2 adds {B} (p2:Swamp#2)
+T35 p2 cancels casting Canyon Minotaur
+T35 taps: p2:Mountain#3
+T35 p2 adds {R} (p2:Mountain#3)
+T35 taps: p2:Swamp#5
+T35 p2 adds {B} (p2:Swamp#5)
+T35 taps: p2:Mountain#2
+T35 p2 adds {R} (p2:Mountain#2)
+T35 taps: p2:Swamp#2
+T35 p2 adds {B} (p2:Swamp#2)
+T35 moves: Prodigal Pyromancer, p2's hand -> stack
+T35 p2 cancels casting Prodigal Pyromancer
+T35 moves: Zombie Goliath, p2's hand -> stack
+T35 p2 cancels casting Zombie Goliath
+T35 moves: Looming Shade, p2's hand -> stack
+T35 p2 cancels casting Looming Shade
+T35 moves: Looming Shade, p2's hand -> stack
+T35 p2 casts Looming Shade
+T35 resolves: Looming Shade
+T35 moves: Looming Shade, stack -> battlefield
+T35 p2's unspent {B} empties
+T35 taps: p2:Mountain#6
+T35 p2 adds {R} (p2:Mountain#6)
+T35 p2 cancels activating p2:Looming Shade
+T35 taps: p2:Mountain#6
+T35 p2 adds {R} (p2:Mountain#6)
+T35 p2's unspent {R} empties
+T35 p2 attack: nothing
+T35 p2 cancels activating p2:Looming Shade
+T35 p2 cancels activating p2:Looming Shade
+T35 p2 cancels activating p2:Looming Shade
+T35 p2 cancels activating p2:Looming Shade
+T35 moves: Canyon Minotaur, p2's hand -> stack
+T35 p2 cancels casting Canyon Minotaur
+T35 moves: Canyon Minotaur, p2's hand -> stack
+T35 p2 cancels casting Canyon Minotaur
+T35 moves: Goblin Piker, p2's hand -> stack
+T35 p2 cancels casting Goblin Piker
+T35 moves: Swamp, p2's hand -> battlefield
+T35 p2 plays p2:Swamp#6
+T35 moves: Prodigal Pyromancer, p2's hand -> stack
+T35 p2 cancels casting Prodigal Pyromancer
+T35 taps: p2:Swamp#6
+T35 p2 adds {B} (p2:Swamp#6)
+T35 moves: Goblin Piker, p2's hand -> stack
+T35 p2 cancels casting Goblin Piker
+T35 p2 activates p2:Looming Shade
+T35 effect: p2:Looming Shade +1/+1 until end of turn
+T35 resolves: p2:Looming Shade's ability
+T35 moves: Prodigal Pyromancer, p2's hand -> stack
+T35 p2 cancels casting Prodigal Pyromancer
+T35 moves: Canyon Minotaur, p2's hand -> stack
+T35 p2 cancels casting Canyon Minotaur
+T35 moves: Goblin Piker, p2's hand -> stack
+T35 p2 cancels casting Goblin Piker
+T35 moves: Zombie Goliath, p2's hand -> stack
+T35 p2 cancels casting Zombie Goliath
+T35 moves: Zombie Goliath, p2's hand -> stack
+T35 p2 cancels casting Zombie Goliath
+T35 p2 cancels activating p2:Looming Shade
+T35 effect ends: p2:Looming Shade +1/+1
+T36 turn 36 begins (p1)
+T36 untaps: p1:Plains#1
+T36 untaps: p1:Plains#2
+T36 untaps: p1:Plains#3
+T36 untaps: p1:Forest#1
+T36 untaps: p1:Forest#2
+T36 untaps: p1:Island
+T36 untaps: p1:Horned Turtle
+T36 untaps: p1:Runeclaw Bear
+T36 untaps: p1:Plains#4
+T36 taps: p1:Plains#2
+T36 p1 adds {W} (p1:Plains#2)
+T36 taps: p1:Plains#3
+T36 p1 adds {W} (p1:Plains#3)
+T36 taps: p1:Island
+T36 p1 adds {U} (p1:Island)
+T36 taps: p1:Forest#1
+T36 p1 adds {G} (p1:Forest#1)
+T36 taps: p1:Plains#4
+T36 p1 adds {W} (p1:Plains#4)
+T36 taps: p1:Forest#2
+T36 p1 adds {G} (p1:Forest#2)
+T36 p2 cancels activating p2:Looming Shade
+T36 p2 cancels activating p2:Looming Shade
+T36 p2 cancels activating p2:Looming Shade
+T36 p1's unspent {W}{W}{W}{U}{G}{G} empties
+T36 moves: Island, p1's library -> p1's hand
+T36 p1 draws
+T36 moves: Enormous Baloth, p1's hand -> stack
+T36 p1 cancels casting Enormous Baloth
+T36 moves: Air Elemental, p1's hand -> stack
+T36 taps: p1:Plains#1
+T36 p1 adds {W} (p1:Plains#1)
+T36 p1 cancels casting Air Elemental
+T36 moves: Enormous Baloth, p1's hand -> stack
+T36 taps: p1:Plains#1
+T36 p1 adds {W} (p1:Plains#1)
+T36 p1 cancels casting Enormous Baloth
+T36 taps: p1:Plains#1
+T36 p1 adds {W} (p1:Plains#1)
+T36 moves: Enormous Baloth, p1's hand -> stack
+T36 p1 cancels casting Enormous Baloth
+T36 moves: Air Elemental, p1's hand -> stack
+T36 p1 cancels casting Air Elemental
+T36 moves: Silvercoat Lion, p1's hand -> stack
+T36 p1 cancels casting Silvercoat Lion
+T36 moves: Siege Mastodon, p1's hand -> stack
+T36 p1 cancels casting Siege Mastodon
+T36 moves: Silvercoat Lion, p1's hand -> stack
+T36 p1 cancels casting Silvercoat Lion
+T36 moves: Siege Mastodon, p1's hand -> stack
+T36 p1 cancels casting Siege Mastodon
+T36 moves: Silvercoat Lion, p1's hand -> stack
+T36 p1 cancels casting Silvercoat Lion
+T36 moves: Enormous Baloth, p1's hand -> stack
+T36 p1 cancels casting Enormous Baloth
+T36 moves: Island, p1's hand -> battlefield
+T36 p1 plays p1:Island#2
+T36 taps: p1:Island#2
+T36 p1 adds {U} (p1:Island#2)
+T36 p1's unspent {W}{U} empties
+T36 taps: p1:Horned Turtle
+T36 taps: p1:Zephyr Sprite#1
+T36 p1 attack: p1:Horned Turtle -> p2, p1:Zephyr Sprite#1 -> p2
+T36 p2 block: p2:Looming Shade -> p1:Horned Turtle
+T36 combat damage: p1:Horned Turtle -> p2:Looming Shade 1
+T36 combat damage: p1:Zephyr Sprite#1 -> p2 1
+T36 combat damage: p2:Looming Shade -> p1:Horned Turtle 1
+T36 p2 loses 1 life
+T36 state-based actions: p2 zeroLife, p2:Looming Shade lethalDamage
+T36 destroyed: p2:Looming Shade
+T36 moves: Looming Shade, battlefield -> p2's graveyard
+T36 p2 loses the game (zeroLife)
+T36 game over: p1 wins

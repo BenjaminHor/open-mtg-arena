@@ -1,10 +1,11 @@
-
-# After changing it, run `pnpm cards:extract` and add a definition in src/defs/ (see docs/card-scripting.md).
-# English printing. Without one, the newest regular paper printing is used (D-029).
-# Lines starting with # are comments. To choose which printing's art is shown, add its Scryfall set code (and a
 # The card pool: every card the engine supports, one name per line, exactly as in Oracle.
+# After changing it, run `pnpm cards:extract` and add a definition in src/defs/ (see docs/card-scripting.md).
+# Lines starting with # are comments. To choose which printing's art is shown, add its Scryfall set code (and a
 # collector number if the set has several): `Lightning Bolt [m10]` or `Lightning Bolt [m10 146]`. A pin always names an
+# English printing. Without one, the newest regular paper printing is used (D-029).
+
 Acolyte of Xathrid
+Air Elemental
 Angel's Mercy
 Assassinate
 Birds of Paradise
@@ -12,6 +13,7 @@ Blinding Mage
 Bountiful Harvest
 Burning Inquiry
 Cancel
+Canyon Minotaur
 Celestial Purge
 Centaur Courser
 Consume Spirit
@@ -20,6 +22,7 @@ Craw Wurm
 Deathmark
 Diabolic Tutor
 Disentomb
+Disorient
 Divination
 Divine Verdict
 Doom Blade
@@ -27,9 +30,11 @@ Duress
 Earthquake
 Elite Vanguard
 Elvish Piper
+Enormous Baloth
 Essence Scatter
 Excommunicate
 Fabricate
+Fiery Hellhound
 Fire Elemental
 Fireball
 Flashfreeze
@@ -38,16 +43,22 @@ Furnace Whelp
 Giant Growth
 Giant Spider
 Goblin Artillery
+Goblin Piker
 Gray Ogre
 Grizzly Bears
 Haunting Echoes
 Hill Giant
+Horned Turtle
 Ignite Disorder
 Island
+Kelinore Bat
 Lava Axe
 Lightning Bolt
+Lightning Elemental
 Llanowar Elves
+Looming Shade
 Merfolk Looter
+Might of Oaks
 Mind Rot
 Mind Shatter
 Mind Spring
@@ -59,18 +70,25 @@ Ornithopter
 Plains
 Planar Cleansing
 Ponder
+Prodigal Pyromancer
 Pyroclasm
 Raging Goblin
 Rampant Growth
 Righteousness
 Rod of Ruin
 Royal Assassin
+Runeclaw Bear
 Seismic Strike
 Shatter
+Shivan Dragon
 Shock
+Siege Mastodon
 Sign in Blood
+Silvercoat Lion
+Snapping Drake
 Solemn Offering
 Spined Wurm
+Stormfront Pegasus
 Swamp
 Tempest of Light
 Tendrils of Corruption
@@ -81,5 +99,9 @@ Undead Slayer
 Unsummon
 Vampire Aristocrat
 Volcanic Hammer
+Warpath Ghoul
+Wind Drake
 Windstorm
 Yawning Fissure
+Zephyr Sprite
+Zombie Goliath

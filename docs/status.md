@@ -144,11 +144,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 
   - M2-05c Life, damage to many, mana: done.
 - Next, before M2-06 (plan from the advisor, 2026-11-20):
-  1. Script the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
+  1. Done, in review: the 22 Magic 2010 cards the pool table marks playable since M1 but that were never scripted (Siege
      Mastodon, Silvercoat Lion, Stormfront Pegasus, Air Elemental, Disorient, Horned Turtle, Snapping Drake, Wind
      Drake, Zephyr Sprite, Kelinore Bat, Looming Shade, Warpath Ghoul, Zombie Goliath, Canyon Minotaur, Fiery
      Hellhound, Goblin Piker, Lightning Elemental, Prodigal Pyromancer, Shivan Dragon, Enormous Baloth, Might of Oaks,
-     Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says.
+     Runeclaw Bear), its own `add-cards` PR, so 93 are playable as the spec says. 9 scenarios in
+     `test/scenarios/cards/m10-core/`, seven golden games from two throwaway deck lists (replaced by the fresh golden set
+     in step 2). The pool's comment header, scrambled by sorting the file in earlier tasks, is restored.
   2. Then the first M10 deck pair, for play (the fuzzer's prebuilt rotation, the CLI), and a fresh, smaller golden set:
      coverage from seeded random pool decks, a greedy covering set chosen anew (most uncovered cards per action), made
      with the fuzzer's picker; M1's four games (the bench) and `red-aggro` / `green-stompy` stay; the export tests'

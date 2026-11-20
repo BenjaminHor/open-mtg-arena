@@ -1,0 +1,28 @@
+name: The vanilla creatures have their printed power and toughness
+rules: [CR 208.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield:
+      [Siege Mastodon, Silvercoat Lion, Horned Turtle, Warpath Ghoul, Zombie Goliath, Canyon Minotaur, Goblin Piker,
+       Enormous Baloth, Runeclaw Bear]
+steps:
+  - expect:
+      p1:Siege Mastodon.power: 3
+      p1:Siege Mastodon.toughness: 5
+      p1:Silvercoat Lion.power: 2
+      p1:Silvercoat Lion.toughness: 2
+      p1:Horned Turtle.power: 1
+      p1:Horned Turtle.toughness: 4
+      p1:Warpath Ghoul.power: 3
+      p1:Warpath Ghoul.toughness: 2
+      p1:Zombie Goliath.power: 4
+      p1:Zombie Goliath.toughness: 3
+      p1:Canyon Minotaur.power: 3
+      p1:Canyon Minotaur.toughness: 3
+      p1:Goblin Piker.power: 2
+      p1:Goblin Piker.toughness: 1
+      p1:Enormous Baloth.power: 7
+      p1:Enormous Baloth.toughness: 7
+      p1:Runeclaw Bear.power: 2
+      p1:Runeclaw Bear.toughness: 2

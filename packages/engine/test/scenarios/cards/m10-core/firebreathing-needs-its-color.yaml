@@ -1,0 +1,11 @@
+name: Looming Shade's ability can't be paid with red mana
+rules: [CR 601.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Looming Shade]
+    manaPool: { R: 1 }
+steps:
+  - p1 activate: Looming Shade
+    pay: { R: 1 }
+  - expect error: illegalAction

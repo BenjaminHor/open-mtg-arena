@@ -1,0 +1,34 @@
+name: Fiery Hellhound and Shivan Dragon get +1/+0 for each {R}, Looming Shade +1/+1 for each {B}, until end of turn
+rules: [CR 602.2, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Fiery Hellhound, Shivan Dragon, Looming Shade]
+    manaPool: { R: 3, B: 2 }
+steps:
+  - p1 activate: Fiery Hellhound
+    pay: { R: 1 }
+  - all pass: once
+  - p1 activate: Shivan Dragon
+    pay: { R: 1 }
+  - all pass: once
+  - p1 activate: Shivan Dragon
+    pay: { R: 1 }
+  - all pass: once
+  - p1 activate: Looming Shade
+    pay: { B: 1 }
+  - all pass: once
+  - p1 activate: Looming Shade
+    pay: { B: 1 }
+  - all pass: once
+  - expect:
+      p1:Fiery Hellhound.power: 3
+      p1:Fiery Hellhound.toughness: 2
+      p1:Shivan Dragon.power: 7
+      p1:Shivan Dragon.toughness: 5
+      p1:Looming Shade.power: 3
+      p1:Looming Shade.toughness: 3
+  - all pass: until upkeep
+  - expect:
+      p1:Shivan Dragon.power: 5
+      p1:Looming Shade.toughness: 1
