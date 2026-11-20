@@ -1,0 +1,26 @@
+name: A trampler whose only blocker regenerated out of combat assigns all its damage to the player
+rules: [CR 702.19d, CR 509.1h, CR 506.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino, Mountain]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Drudge Skeletons, Swamp]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Drudge Skeletons: Stampeding Rhino }
+  - p1 pass: once
+  - p2 activate: Drudge Skeletons
+    pay: auto
+  - all pass: once
+  - p1 cast: Lightning Bolt
+    targets: [p2:Drudge Skeletons]
+    pay: auto
+  - all pass: once
+  - all pass: until main2
+  - expect:
+      p2.life: 16
+      p2.battlefield contains: [Drudge Skeletons]

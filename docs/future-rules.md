@@ -160,10 +160,10 @@ reads it from the source's card each time. Copies (layer 1), text changes (layer
 need the text fixed when it's activated.
 
 **More combat (CR 506–511, D-040).**
-*Watch out:* removal from combat is read from the battlefield (an id that's gone left combat). That can't represent
-regeneration, phasing, "remove from combat" effects or control changes, which leave the id on the battlefield, and a
-permanent that stops and starts being a creature would rejoin combat: those need a recorded removed-from-combat set
-(CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
+*Built (M2-08b, D-086):* `Combat.removed`, the creatures an effect removed while they stayed on the battlefield
+(regeneration), read through `stillInCombat` in `rules/combat.ts`. *Watch out:* phasing, "remove from combat" effects
+and control changes must add to it too, and a permanent that stops and starts being a creature would rejoin combat
+unless it's added then (CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
 removes the last pick (M2-06c, D-072). The most requirements obeyable is worked out directly, which is exact while the
 only whole-declaration restriction is "alone"; menace (CR 702.111b) and "no more than one creature can attack"
 (CR 508.1d's example) need a search over declarations. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,

@@ -16,7 +16,8 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    a checkland's ruling: it doesn't see lands entering with it). So far: 0 damage is dropped, so nothing can
    replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b); and a card's own
    replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
-   into a graveyard from anywhere, ... instead". Destroy, sacrifice, counter and discard carry where a replacement sends
+   into a graveyard from anywhere, ... instead"; and a regeneration shield on a permanent about to be destroyed
+   (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Destroy, sacrifice, counter and discard carry where a replacement sends
    the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is

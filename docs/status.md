@@ -390,7 +390,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        control a [type] or a [type]", land types read through `characteristics()`, Convincing Mirage later), with
        "{T}: Add {G} or {W}": the color carried on the action as for any color (D-068) but limited to two, and
        `autoPay` searching sources once one offers a restricted choice (D-068 said it would need to).
-     - Now: M2-08b (2026-11-20). Design, built on M2-08a's `replacements.ts`:
+     - Now: M2-08b (2026-11-20). Built (D-086): 16 scenarios in `test/scenarios/cards/m2-08b/`, unit tests
+       (`test/permanents/regeneration.test.ts`, `test/effects/reveal-until.test.ts`), a Regeneration matrix row, two
+       golden games. 163 cards; 155 of the 234 Magic 2010 cards. Next: fuzz, reviews, PR. Design:
        - `GameState.replacements` (the list architecture.md plans): replacement effects made by resolving spells and
          abilities, here `{ kind: "regenerationShield", object }`, all "this turn": emptied in cleanup with the
          continuous effects (CR 514.2). Made by the op `regenerate` (of: a subject), outside the pipeline like
@@ -605,8 +607,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
-- (M2-07c2) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`), though
-  both players know of them (Dragon Whelp to be sacrificed at the next end step). The match UI (M3) should show them.
+- (M2-07c2, M2-08b) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`)
+  or regeneration shields (`GameState.replacements`), though both players know of them (Dragon Whelp to be sacrificed
+  at the next end step, Drudge Skeletons shielded). The match UI (M3) should show them.
 - (D-083 review) A golden game's rejection names the action number (`!! action 78 is rejected`), not the stored line,
   and a run of passes folds many actions into one line, so finding it in the JSON takes counting. The decoder could
   report the line too.

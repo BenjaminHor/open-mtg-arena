@@ -126,6 +126,12 @@ export const furnaceWhelp: CardDef = {
   unless: { subtypes: ["Forest", "Plains"], controller: "you" } }` (land types, not names; "you" is the player it
   enters under); "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's
   library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12).
+- "Regenerate this creature" / "Regenerate target creature" is `{ op: "regenerate", of: "self" }` / `of: { target: 0 }`
+  (a shield, D-086); "Destroy target creature. It can't be regenerated." is `{ op: "destroy", of: { target: 0 },
+  noRegeneration: true }`. "Its controller reveals cards from the top of their library until they reveal a creature
+  card" is `{ op: "revealUntil", who: { controllerOf: { target: 0 } }, filter: { types: ["creature"] } }`, and "the
+  player puts that card onto the battlefield" `{ op: "put", of: "found", into: "battlefield", by: { controllerOf:
+  { target: 0 } } }`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).
