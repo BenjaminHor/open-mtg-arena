@@ -1,0 +1,16 @@
+name: A checkland's mana is one of its two colors; any other is refused
+rules: [CR 106.1, CR 605.3b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Dragonskull Summit]
+steps:
+  - p1 activate: Dragonskull Summit
+    color: G
+  - expect error: illegalAction
+  - p1 activate: Dragonskull Summit
+  - expect error: illegalAction
+  - p1 activate: Dragonskull Summit
+    color: R
+  - expect:
+      p1.manaPool: { R: 1 }

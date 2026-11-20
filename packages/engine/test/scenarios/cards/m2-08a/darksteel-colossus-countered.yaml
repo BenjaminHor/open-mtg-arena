@@ -1,0 +1,23 @@
+name: Darksteel Colossus countered on the stack is shuffled into its owner's library
+rules: [CR 113.6b, CR 701.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Plains, Plains, Plains, Plains, Plains]
+    hand: [Darksteel Colossus]
+  p2:
+    battlefield: [Island, Island, Island]
+    hand: [Cancel]
+steps:
+  - p1 cast: Darksteel Colossus
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [p1:Darksteel Colossus]
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: []
+      p1.graveyard: []
+      p1.library contains: [Darksteel Colossus]
+      p2.graveyard: [Cancel]

@@ -8,13 +8,12 @@ import { legalAmounts } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
 import { possibleAttacks } from "../combat/declare-attackers.ts";
 import { possibleBlocks } from "../combat/declare-blockers.ts";
-import { addsAnyColor, manaAbilityProblem } from "../mana/activate.ts";
+import { manaAbilityProblem, manaChoices } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
-import { COLORS } from "../state/mana.ts";
 import { orderTriggersProblem } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
@@ -156,8 +155,8 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
 }
 
 /**
- * Every mana ability the player could activate now (CR 605.3a), on permanents in battlefield order; "one mana of any
- * color" once per color, the color being part of the activation (D-068).
+ * Every mana ability the player could activate now (CR 605.3a), on permanents in battlefield order; one with a choice of
+ * color ("any color", "{G} or {W}") once per color, the color being part of the activation (D-068).
  */
 function manaAbilityActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
   return state.zones.battlefield.flatMap((object) =>
@@ -165,8 +164,9 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
       .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
       .flatMap(({ ref, def }): Action[] => {
         const action = { type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref } as const;
-        if (!addsAnyColor(def)) return [action];
-        return COLORS.map((color) => ({ ...action, color }));
+        const choices = manaChoices(def);
+        if (choices.length === 0) return [action];
+        return choices.map((color) => ({ ...action, color }));
       }),
   );
 }

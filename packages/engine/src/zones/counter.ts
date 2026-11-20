@@ -6,16 +6,16 @@
 import type { Progress } from "../game/progress.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
-import { moveCard } from "./move-card.ts";
+import { type Destination, moveCard } from "./move-card.ts";
 import { removeAbilityFromStack } from "./stack-abilities.ts";
 
-export function counterObject(state: GameState, id: ObjectId): Progress {
+export function counterObject(state: GameState, id: ObjectId, to: Destination = { zone: "graveyard" }): Progress {
   const obj = state.objects[id];
   if (obj === undefined || !state.zones.stack.includes(id)) throw new Error(`${id} isn't on the stack`);
   switch (obj.kind) {
     case "card": {
       const countered = { type: "SPELL_COUNTERED", object: id, cardId: obj.cardId } as const;
-      const moved = moveCard(state, id, { zone: "graveyard" });
+      const moved = moveCard(state, id, to);
       return { state: moved.state, events: [countered, ...moved.events] };
     }
     case "ability":

@@ -106,7 +106,26 @@ export type CardDef = {
    * this list.
    */
   triggers?: TriggeredAbilityDef[];
+  /**
+   * Replacement effects in its own text (CR 614.1), such as "This land enters tapped unless ..." Read only through
+   * `replacementsOf`. Each works from the zones its text says (CR 113.6b, 113.6h), not only from the battlefield.
+   */
+  replacements?: ReplacementDef[];
 };
+
+/** A replacement effect an object's own text makes, for itself (CR 614.1, 614.12). */
+export type ReplacementDef =
+  /**
+   * "This land enters tapped unless you control a Forest or a Plains" (CR 614.1d): checked as it would enter, against the
+   * permanents already on the battlefield (CR 614.12; lands entering with it aren't seen: its ruling). `unless` is read
+   * with "you" being the player it would enter under. Without `unless`, it always enters tapped.
+   */
+  | { kind: "entersTapped"; unless?: ObjectFilter }
+  /**
+   * "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's library instead"
+   * (Darksteel Colossus): works in every zone, as it says (CR 113.6b).
+   */
+  | { kind: "graveyardToLibrary" };
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
@@ -134,6 +153,7 @@ export type Keyword =
   | "flying" // CR 702.9
   | "forestwalk" // CR 702.14
   | "haste" // CR 702.10
+  | "indestructible" // CR 702.12
   | "lifelink" // CR 702.15
   | "reach" // CR 702.17
   | "shroud" // CR 702.18
@@ -310,10 +330,11 @@ export type Effect =
       and?: { to: EffectSubject; amount: Amount }[];
     }
   /**
-   * "Add {G}." (CR 106.4). "Add one mana of any color" is `"anyColor"`: the color is chosen as the ability resolves
-   * (CR 608.2d), right after it's activated (CR 605.3b), so it comes with the activation (D-068).
+   * "Add {G}." (CR 106.4). "Add one mana of any color" is `"anyColor"`, and "Add {G} or {W}" is `{ oneOf: ["G", "W"] }`:
+   * the color is chosen as the ability resolves (CR 608.2d), right after it's activated (CR 605.3b), so it comes with the
+   * activation (D-068).
    */
-  | { op: "addMana"; mana: ManaType | "anyColor"; amount: number }
+  | { op: "addMana"; mana: ManaType | "anyColor" | { oneOf: Color[] }; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */
   | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration }
   /** "[subject] can't block this turn": a restriction on declaring blockers (CR 509.1b) for as long as it lasts. */

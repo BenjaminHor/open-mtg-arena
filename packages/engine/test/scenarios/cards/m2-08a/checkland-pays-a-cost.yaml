@@ -1,0 +1,15 @@
+name: Paying {1}{W} with a Forest and Sunpetal Grove taps the Grove for white and the Forest for the generic
+rules: [CR 601.2g, CR 106.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Sunpetal Grove]
+    hand: [Blinding Mage]
+steps:
+  - p1 cast: Blinding Mage
+    pay: auto
+  - expect:
+      stack: [Blinding Mage]
+      p1:Forest.tapped: true
+      p1:Sunpetal Grove.tapped: true
+      p1.manaPool: {}

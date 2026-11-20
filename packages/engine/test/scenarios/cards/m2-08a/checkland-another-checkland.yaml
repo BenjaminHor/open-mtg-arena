@@ -1,0 +1,11 @@
+name: Rootbound Crag with a Mountain enters untapped; another checkland on the battlefield neither helps nor hurts
+rules: [CR 614.12, CR 305.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Glacial Fortress, Mountain]
+    hand: [Rootbound Crag]
+steps:
+  - p1 play: Rootbound Crag
+  - expect:
+      p1:Rootbound Crag.tapped: false

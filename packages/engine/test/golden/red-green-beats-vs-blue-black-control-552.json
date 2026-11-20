@@ -1,0 +1,18 @@
+{
+  "format": "open-mtg-arena game",
+  "version": 0,
+  "description": "red-green-beats against blue-black-control, setup seed 552, by-kind agents, to turn 1. Covered, when chosen: replacement entersTapped.",
+  "agent": "by-kind",
+  "agentSeed": 552,
+  "maxTurns": 1,
+  "encoding": "lines",
+  "setup": {"seed":552,"players":[{"id":"p1","life":20,"library":["Forest","Forest","Forest","Forest","Forest","Forest","Mountain","Mountain","Mountain","Mountain","Mountain","Mountain","Rootbound Crag","Rootbound Crag","Terramorphic Expanse","Terramorphic Expanse","Llanowar Elves","Llanowar Elves","Prized Unicorn","Deadly Recluse","Lurking Predators","Elvish Visionary","Borderland Ranger","Bramble Creeper","Mist Leopard","Prodigal Pyromancer","Prodigal Pyromancer","Sparkmage Apprentice","Ball Lightning","Inferno Elemental","Panic Attack","Stampeding Rhino","Berserkers of Blood Ridge","Shivan Dragon","Lightning Bolt","Dragon's Claw","Fireball","Giant Growth","Ignite Disorder","Bogardan Hellkite"],"hand":[],"battlefield":[],"graveyard":[],"exile":[],"manaPool":{"W":0,"U":0,"B":0,"R":0,"G":0,"C":0}},{"id":"p2","life":20,"library":["Island","Island","Island","Island","Island","Island","Island","Island","Swamp","Swamp","Swamp","Swamp","Swamp","Swamp","Swamp","Drowned Catacomb","Drowned Catacomb","Alluring Siren","Hypnotic Specter","Dread Warlock","Sanguine Bond","Sage Owl","Howling Banshee","Gravedigger","Phantom Warrior","Megrim","Child of Night","Vampire Aristocrat","Royal Assassin","Underworld Dreams","Essence Scatter","Negate","Doom Blade","Xathrid Demon","Mind Rot","Sign in Blood","Howling Mine","Divination","Unsummon","Tendrils of Corruption"],"hand":[],"battlefield":[],"graveyard":[],"exile":[],"manaPool":{"W":0,"U":0,"B":0,"R":0,"G":0,"C":0}}],"opening":{"kind":"standard","firstPlayer":null},"ruleModifiers":[]},
+  "actions": [
+    "p2 chooseStartingPlayer p2",
+    "p2 mulligan keep",
+    "p1 mulligan keep",
+    "pass p2 p1",
+    "p2 land o88",
+    "pass p2 p1 p2 p1 p2 p1 p2 p1 p2 p1 p2 p1"
+  ]
+}

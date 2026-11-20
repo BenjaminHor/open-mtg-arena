@@ -750,6 +750,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Darksteel Colossus",
+      "slug": "darksteel-colossus",
+      "oracleId": "1b09d0cf-403c-4a15-aeee-602a1bdaf0c1",
+      "layout": "normal",
+      "manaCost": "{11}",
+      "manaValue": 11,
+      "typeLine": "Artifact Creature — Golem",
+      "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nIndestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nIf Darksteel Colossus would be put into a graveyard from anywhere, reveal Darksteel Colossus and shuffle it into its owner's library instead.",
+      "power": "11",
+      "toughness": "11",
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [
+        "Indestructible",
+        "Trample"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/7/0/70197723-c61b-4600-b61d-41380c8f3067.jpg?1783908906",
+        "large": "https://cards.scryfall.io/large/front/7/0/70197723-c61b-4600-b61d-41380c8f3067.jpg?1783908906",
+        "png": "https://cards.scryfall.io/png/front/7/0/70197723-c61b-4600-b61d-41380c8f3067.png?1783908906",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/7/0/70197723-c61b-4600-b61d-41380c8f3067.jpg?1783908906"
+      },
+      "artist": "Carl Critchlow",
+      "set": "fdn",
+      "collectorNumber": "671",
+      "scryfallUri": "https://scryfall.com/card/fdn/671/darksteel-colossus?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Deadly Recluse",
       "slug": "deadly-recluse",
       "oracleId": "6b941291-1802-4ced-9869-39fa43825550",
@@ -1059,6 +1088,32 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Dragonskull Summit",
+      "slug": "dragonskull-summit",
+      "oracleId": "63398c02-6fb1-481d-9d9f-81063532fbc0",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "This land enters tapped unless you control a Swamp or a Mountain.\n{T}: Add {B} or {R}.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/1/91570836-9e36-4774-8d5d-7cbcee0012ba.jpg?1783935698",
+        "large": "https://cards.scryfall.io/large/front/9/1/91570836-9e36-4774-8d5d-7cbcee0012ba.jpg?1783935698",
+        "png": "https://cards.scryfall.io/png/front/9/1/91570836-9e36-4774-8d5d-7cbcee0012ba.png?1783935698",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/1/91570836-9e36-4774-8d5d-7cbcee0012ba.jpg?1783935698"
+      },
+      "artist": "Alayna Danner",
+      "set": "xln",
+      "collectorNumber": "252",
+      "scryfallUri": "https://scryfall.com/card/xln/252/dragonskull-summit?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Dread Warlock",
       "slug": "dread-warlock",
       "oracleId": "5791710d-c718-4f64-9c14-3668154716f1",
@@ -1084,6 +1139,32 @@
       "set": "m10",
       "collectorNumber": "94",
       "scryfallUri": "https://scryfall.com/card/m10/94/dread-warlock?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Drowned Catacomb",
+      "slug": "drowned-catacomb",
+      "oracleId": "819fc966-434e-470f-91e9-a38df974ad17",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "This land enters tapped unless you control an Island or a Swamp.\n{T}: Add {U} or {B}.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/e/8ef728f1-5153-47d6-8f9c-dfd473ee0750.jpg?1783935697",
+        "large": "https://cards.scryfall.io/large/front/8/e/8ef728f1-5153-47d6-8f9c-dfd473ee0750.jpg?1783935697",
+        "png": "https://cards.scryfall.io/png/front/8/e/8ef728f1-5153-47d6-8f9c-dfd473ee0750.png?1783935697",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/e/8ef728f1-5153-47d6-8f9c-dfd473ee0750.jpg?1783935697"
+      },
+      "artist": "Jung Park",
+      "set": "xln",
+      "collectorNumber": "253",
+      "scryfallUri": "https://scryfall.com/card/xln/253/drowned-catacomb?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1593,6 +1674,32 @@
       "set": "m19",
       "collectorNumber": "183",
       "scryfallUri": "https://scryfall.com/card/m19/183/giant-spider?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Glacial Fortress",
+      "slug": "glacial-fortress",
+      "oracleId": "027dd013-baa7-4111-b3c9-f4d1414e9c45",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "This land enters tapped unless you control a Plains or an Island.\n{T}: Add {W} or {U}.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/e/cef133d9-26d2-4a1e-8d6a-829f1067c169.jpg?1783935697",
+        "large": "https://cards.scryfall.io/large/front/c/e/cef133d9-26d2-4a1e-8d6a-829f1067c169.jpg?1783935697",
+        "png": "https://cards.scryfall.io/png/front/c/e/cef133d9-26d2-4a1e-8d6a-829f1067c169.png?1783935697",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/e/cef133d9-26d2-4a1e-8d6a-829f1067c169.jpg?1783935697"
+      },
+      "artist": "James Paick",
+      "set": "xln",
+      "collectorNumber": "255",
+      "scryfallUri": "https://scryfall.com/card/xln/255/glacial-fortress?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3148,6 +3255,32 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Rootbound Crag",
+      "slug": "rootbound-crag",
+      "oracleId": "9516c4c1-d72d-434f-97e1-6a862434a169",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "This land enters tapped unless you control a Mountain or a Forest.\n{T}: Add {R} or {G}.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/6/b6f59e19-9ac1-4f86-893e-5b3364122fc6.jpg?1783935697",
+        "large": "https://cards.scryfall.io/large/front/b/6/b6f59e19-9ac1-4f86-893e-5b3364122fc6.jpg?1783935697",
+        "png": "https://cards.scryfall.io/png/front/b/6/b6f59e19-9ac1-4f86-893e-5b3364122fc6.png?1783935697",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/6/b6f59e19-9ac1-4f86-893e-5b3364122fc6.jpg?1783935697"
+      },
+      "artist": "Grzegorz Rutkowski",
+      "set": "xln",
+      "collectorNumber": "256",
+      "scryfallUri": "https://scryfall.com/card/xln/256/rootbound-crag?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Royal Assassin",
       "slug": "royal-assassin",
       "oracleId": "9ed6f28f-a3db-48c5-9ab0-b90a7fba5f57",
@@ -3690,6 +3823,32 @@
       "set": "m12",
       "collectorNumber": "38",
       "scryfallUri": "https://scryfall.com/card/m12/38/stormfront-pegasus?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Sunpetal Grove",
+      "slug": "sunpetal-grove",
+      "oracleId": "402ec768-76fb-474e-ae74-babc90d833c4",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "This land enters tapped unless you control a Forest or a Plains.\n{T}: Add {G} or {W}.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/f/0f234312-00e8-49f7-a489-f4c316b0a81a.jpg?1783935696",
+        "large": "https://cards.scryfall.io/large/front/0/f/0f234312-00e8-49f7-a489-f4c316b0a81a.jpg?1783935696",
+        "png": "https://cards.scryfall.io/png/front/0/f/0f234312-00e8-49f7-a489-f4c316b0a81a.png?1783935696",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/f/0f234312-00e8-49f7-a489-f4c316b0a81a.jpg?1783935696"
+      },
+      "artist": "Dimitar Marinski",
+      "set": "xln",
+      "collectorNumber": "257",
+      "scryfallUri": "https://scryfall.com/card/xln/257/sunpetal-grove?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

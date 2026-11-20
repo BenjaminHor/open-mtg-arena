@@ -1,0 +1,11 @@
+name: A checkland isn't a basic land type's land; with only Glacial Fortress out, Sunpetal Grove enters tapped
+rules: [CR 614.12, CR 205.3i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Glacial Fortress]
+    hand: [Sunpetal Grove]
+steps:
+  - p1 play: Sunpetal Grove
+  - expect:
+      p1:Sunpetal Grove.tapped: true
