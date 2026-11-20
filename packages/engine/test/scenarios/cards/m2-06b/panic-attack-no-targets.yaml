@@ -1,5 +1,5 @@
 name: Panic Attack can be cast with no targets, "up to three" allowing none; it resolves and does nothing
-rules: [CR 601.2c, CR 608.2b]
+rules: [CR 115.6]
 setup:
   turn: { active: p1, step: main1 }
   p1:

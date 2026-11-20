@@ -105,7 +105,7 @@ export type CardDef = {
 export type StaticAbilityDef =
   /**
    * "This creature can't be blocked" (an evasion ability, CR 509.1b), or "can't be blocked except by [filter]" with
-   * `except`, read relative to the blocker's controller.
+   * `except`, read relative to the attacker's controller, the ability's "you" (CR 109.5).
    */
   | { kind: "cantBeBlocked"; except?: ObjectFilter }
   /** "This creature can block any number of creatures": card text overriding CR 509.1a's one each (CR 101.1). */

@@ -17,6 +17,8 @@ steps:
   - all pass: until combat.damage
   - expect:
       pending: { player: p1, kind: assignDamage, lethal: [2] }
+  - p1 assign: { Palace Guard: 1, p2: 3 }
+  - expect error: illegalAction
   - p1 assign: { Palace Guard: 2, p2: 2 }
   - expect:
       pending: { player: p2, kind: assignDamage }

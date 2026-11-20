@@ -58,7 +58,9 @@ export function runEffect(
       });
     }
     case "cantBlock": {
-      // Fixed as it resolves, like any effect from a resolved spell (CR 611.2c).
+      // A rules effect, not a change to characteristics, so it could reach creatures arriving later (later: CR 611.2c, 613.11);
+      // on its targets it applies only to those still legal (CR 608.2b), as the objects they were (CR 400.7). Only targets
+      // are allowed (definition-problems.ts).
       const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (affected.length === 0) return { state, events: [] };
       return createContinuousEffect(state, {

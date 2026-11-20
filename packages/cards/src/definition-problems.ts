@@ -89,6 +89,10 @@ function targetProblems(
   if (costIncrease && targets.length !== 1)
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
+    // "Can't block" is a rules effect: on targets its set is fixed by them (CR 608.2b), but on "each creature ..." it
+    // would apply to creatures arriving later (later: CR 611.2c, 613.11), which nothing reads yet.
+    if (effect.op === "cantBlock" && !(typeof effect.of === "object" && "target" in effect.of))
+      problems.push(`${where}: "can't block" applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
     if (typeof effect.amount === "object") problems.push(`${where}: divided damage can't be a counted amount`);

@@ -75,8 +75,9 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
     if (obj.damage > 0) notes.push(`${obj.damage} damage`);
   }
   if (state.combat?.attacks.some((a) => a.attacker === id)) notes.push("attacking");
-  const blocking = state.combat?.blocks.find((b) => b.blocker === id);
-  if (blocking !== undefined) notes.push(`blocking ${objectText(state, blocking.attacker, cards)}`);
+  const blocking = (state.combat?.blocks ?? []).filter((b) => b.blocker === id);
+  if (blocking.length > 0)
+    notes.push(`blocking ${blocking.map((b) => objectText(state, b.attacker, cards)).join(", ")}`);
   return `${c.name}${pt}${notes.length > 0 ? ` (${notes.join(", ")})` : ""}`;
 }
 

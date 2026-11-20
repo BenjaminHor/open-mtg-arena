@@ -935,10 +935,14 @@ every schema change and every change D-024 lists bumps it.
 - Landwalk keywords name their land type (`swampwalk`, `forestwalk`); defender is a keyword checked in `canAttack`.
   Scryfall's generic "Landwalk" is left out by the definition check (CR 702.14a).
 - "Can't block this turn" (Panic Attack) is a continuous effect with `EffectChange` `cantBlock`: not a layer, a
-  restriction `canBlock` reads (CR 509.1b), with the affected set locked as it resolves (CR 611.2c).
+  restriction `canBlock` reads (CR 509.1b). It's a rules effect, which may reach objects arriving later (CR 611.2c,
+  613.11), but on targets it reaches only those legal as it resolves (CR 608.2b), as those objects (CR 400.7); the
+  definition check allows it only on targets until an effect read live at declaration is needed.
 - A creature that can block any number of attackers gets one `Block` per attacker. Combat damage takes each blocker
   once: blocking two or more attackers, it divides its damage with an `assignDamage` decision for the defending player,
   after the active player's (CR 510.1, 510.1d). Trample's lethal damage counts the damage other attackers assign to the
-  blocker, chosen or forced (CR 702.19b's first example is a scenario); attackers without trample are asked first so
-  theirs is known. Two tramplers on one blocker would need the whole assignment checked at once (later: CR 510.1e).
+  blocker (CR 702.19b's first example is a scenario), with any from a deathtouch source lethal (CR 702.2c): the attackers'
+  divisions are worked out in order, without trample first, each known before the next, forced ones filled in. With
+  two tramplers on one blocker, the first can't count the second's damage, so a split where both trample over can't be
+  chosen, though the same totals can be dealt to the player (later: CR 510.1e, checking the whole assignment at once).
 - The `block` scenario step takes a list for such a blocker: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`.

@@ -14,7 +14,6 @@ import type { PendingDecision } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
-import { assignsDamageNow } from "./first-strike.ts";
 
 type AssignDamage = Extract<PendingDecision, { kind: "assignDamage" }>;
 
@@ -88,11 +87,9 @@ function lethalDamage(
 }
 
 /**
- * The damage other attackers assign this blocker in this step (it blocks several: Palace Guard), whatever order they're
- * asked in: as already divided, or all of an attacker's damage when this is its one blocker and it has no trample, so no
- * choice. Attackers without trample are asked before tramplers (`combatDamage`), so their divisions are known. Two
- * tramplers on one blocker would each need the other's division; the whole assignment would then be checked at once
- * (later: CR 510.1e).
+ * The damage other attackers assign this blocker in this step (it blocks several: Palace Guard), from the divisions
+ * known so far (chosen, or with no choice: `settleAttackers` works them out in order). Any from a source with
+ * deathtouch counts as lethal (CR 702.2c), so the blocker then needs nothing more: `Infinity`.
  */
 function otherDamageTo(
   state: GameState,
@@ -102,19 +99,13 @@ function otherDamageTo(
   cards: CardDatabase,
 ): number {
   let total = 0;
-  for (const attacker of attackersBlockedBy(state, blocker, cards)) {
-    if (attacker === source || !assignsDamageNow(state, attacker, cards)) continue;
-    const division = divisions.find((d) => d.source === attacker)?.division;
-    if (division !== undefined) {
-      total += division
-        .filter((p) => p.to.kind === "object" && p.to.object === blocker)
-        .reduce((s, p) => s + p.amount, 0);
-    } else if (
-      blockersOf(state, attacker, cards).length === 1 &&
-      !keywordsOf(state, attacker, cards).includes("trample")
-    ) {
-      total += combatPower(state, attacker, cards);
-    }
+  for (const { source: other, division } of divisions) {
+    if (other === source) continue;
+    const amount = division
+      .filter((p) => p.to.kind === "object" && p.to.object === blocker)
+      .reduce((sum, p) => sum + p.amount, 0);
+    if (amount > 0 && keywordsOf(state, other, cards).includes("deathtouch")) return Number.POSITIVE_INFINITY;
+    total += amount;
   }
   return total;
 }

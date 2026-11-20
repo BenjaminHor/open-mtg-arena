@@ -378,6 +378,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   and how prevention shields count against it.
 
 ## Known issues
+- (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
+  worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
+  the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
+  lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
+  can be taken back or checked as a whole (06c's take-back answer may serve).
 - Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
   Still, the folder is 3.8 MB after M2-06b (budget 4 MB), about 0.3 MB per task: it will pass the budget in M2-06c or
   M2-07. Options then: raise the budget, a compact action format, or stop adding a game per card once a card's

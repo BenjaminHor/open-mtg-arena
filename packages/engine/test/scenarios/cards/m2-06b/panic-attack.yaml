@@ -1,5 +1,5 @@
 name: Panic Attack's targets can't block this turn; other creatures still can
-rules: [CR 509.1b, CR 611.2c]
+rules: [CR 509.1b, CR 608.2b]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -16,6 +16,10 @@ steps:
   - p1 attack: [Siege Mastodon, Runeclaw Bear]
   - all pass: until combat.declareBlockers
   - p2 block: { Giant Spider: Siege Mastodon }
+  - expect error: illegalAction
+  - p2 block: { Elite Vanguard: Runeclaw Bear }
+  - expect error: illegalAction
+  - p2 block: { Coral Merfolk: Runeclaw Bear }
   - expect error: illegalAction
   - p2 block: { Horned Turtle: Runeclaw Bear }
   - all pass: until main2
