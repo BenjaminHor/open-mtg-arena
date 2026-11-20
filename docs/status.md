@@ -367,42 +367,52 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
        delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
        way; copies of abilities and "trigger an additional time" fit the pending list.
-  5. Now: M2-08 replacement and prevention effects (CR 614–616; m2-rules-depth.md). 19 cards. Draft plan
-     (2026-11-20), before the advisor's review, in four PRs:
-     - M2-08a, the framework, with no player choice yet: replacement effects as data, applied in `pipeline/happen.ts`'s
-       `replace` to each event against the state before its batch (CR 614.4), each at most once per event (CR 614.5),
-       the result replaced again (CR 616.1f). Sources: a permanent's static replacement (`CardDef.replacements`, read
-       through one function, layer 6 later), and replacement effects in state made by resolving spells and abilities
-       (shields). A "the zone change this event makes" helper, so "would be put into a graveyard from anywhere"
-       recognizes destroy, sacrifice, counter, discard, mill and moves. Cards: the five checklands ("enters tapped
-       unless you control a [type] or a [type]", CR 614.1c, 614.12: checked as it would enter), Darksteel Colossus
-       (indestructible, CR 702.12: `destroy` does nothing and CR 704.5g lethal damage isn't listed, D-039; its
-       graveyard replacement reveals it and shuffles it into its owner's library). Their mana abilities ("Add {G} or
-       {W}") exist already (D-068).
-     - M2-08b, regeneration (CR 701.19, 614.8): a shield, made by a resolving ability or spell, used up the next time
-       that permanent would be destroyed this turn (destroy, lethal damage and deathtouch, CR 704.5g–h; not sacrifice):
-       instead tap it, remove all its damage, and remove it from combat (needs the recorded removed-from-combat set
-       future-rules asks for, CR 506.4). "Can't be regenerated" (Polymorph, with its reveal-until and put onto the
-       battlefield). Identical shields are used unasked (like D-077). Cards: Drudge Skeletons, Wall of Bone, Cudgel
-       Troll, Regenerate, Polymorph.
-     - M2-08c, prevention and redirection, and the CR 616.1 choice: `happen` stops before performing anything and
-       resumes as a work item when the affected player must choose which replacement applies; every caller that does
-       more after `happen` must queue the rest (the list in the pipeline README). Prevention (CR 615): Fog (all combat
-       damage this turn), Safe Passage (you and your creatures), Guardian Seraph (1 from a source an opponent controls,
-       static), Harm's Way (the next 2 from a source of your choice, redirected to any target, CR 614.9; the source
-       chosen as it resolves). Lifelink and "deals damage" triggers read the damage as dealt after prevention
-       (CR 120.4c). Plus the M2-03 review's tests with test-only cards: a dying source's replacement still applying in
-       its SBA batch (CR 704.3, 614.4), regeneration and a "would die" replacement on one destruction (CR 616.1),
-       damage results replaced as one event (CR 120.4c, the Worship example), 0 damage an increase can't touch
-       (CR 120.8).
-     - M2-08d, protection (CR 702.16, D-074: its damage prevention, targeting and blocking; "can't be enchanted"
-       waits for M2-12): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons: creature
-       types), Great Sable Stag (from blue and from black; "this spell can't be countered", CR 101.2: a counter effect
-       does nothing to it, and it's still a legal target).
-     - Future impact: "if you would draw" replacements need the draw-several container (D-060, CR 121.2a), not built
-       until a card needs it (no Magic 2010 card does); copies entering (Clone, M2-14) are a CR 616.1c choice in the
-       same machinery; Auras' protection part (M2-12); layers (M2-09) granting or removing replacement abilities read
-       them through the one function; tokens (M2-11) go through the same zone-change helper.
+  5. Now: M2-08 replacement and prevention effects (CR 614–616; m2-rules-depth.md). 19 cards. Plan (2026-11-20, with
+     the advisor's review), in five PRs. Three later cards shape the data now: Clone (M2-14, a copy as it enters,
+     CR 616.1c), Protean Hydra (M2-10, a prevention that removes counters), Magebane Armor (M2-12, a granted
+     noncombat-damage prevention).
+     - M2-08a, the framework, no player choice: replacement effects as data, applied in `pipeline/happen.ts`'s
+       `replace` to each event against the state before its batch (CR 614.4), each at most once per event
+       (CR 614.5), the result replaced again (CR 616.1f). Until M2-08c, `replace` throws if two different effects
+       apply to one event; it never picks. Where they come from: a permanent's static replacement on the battlefield,
+       and the moving object's own (CR 113.6: Colossus from hand, library or stack; a land "as it enters", CR 113.6h,
+       614.12, read as it would exist on the battlefield). A "the zone change this event makes" helper that changes
+       the destination, not the action: a sacrificed, discarded or countered Colossus was still sacrificed, discarded
+       or countered (check the CR and rulings; Xathrid Demon, Vampire Aristocrat's cost, `ifNothingSacrificed` and
+       Megrim depend on it). Cards: Darksteel Colossus (indestructible, CR 702.12: `destroy` does nothing, and lethal
+       damage and deathtouch, CR 704.5g–h, aren't listed, D-039; "if it would be put into a graveyard from anywhere,
+       reveal it and shuffle it into its owner's library instead"); the five checklands ("enters tapped unless you
+       control a [type] or a [type]", land types read through `characteristics()`, Convincing Mirage later), with
+       "{T}: Add {G} or {W}": the color carried on the action as for any color (D-068) but limited to two, and
+       `autoPay` searching sources once one offers a restricted choice (D-068 said it would need to).
+     - M2-08b, regeneration (CR 701.19, 614.8): a shield in state bound to one object, used once, the next time it would
+       be destroyed this turn (destroy, lethal damage, deathtouch; not sacrifice): instead tap it, remove its damage,
+       remove it from combat (a recorded removed-from-combat set, CR 506.4, which future-rules asks for). Identical
+       shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
+       Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
+       isn't destroyed: its ruling).
+     - M2-08c, the CR 616.1 choice, no pool cards: `happen` stops before performing anything and resumes as a work item
+       (the pattern mid-resolution decisions use) when the affected player must choose which effect applies; every
+       caller that does more after `happen` queues the rest (the pipeline README's list). Tested with test-only cards
+       and the M2-03 review's cases: a dying source's replacement still applying in its SBA batch (CR 704.3, 614.4),
+       regeneration and a "would die" replacement on one destruction (CR 616.1), damage results replaced as one event
+       (CR 120.4c, the Worship example), 0 damage an increase can't touch (CR 120.8). Golden logs unchanged. The new
+       decision kind can't be reached by pool cards until M2-08d: `DECISION_KINDS` gains a reason like `EVENT_TYPES`.
+     - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
+       (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
+       a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
+       chosen as it resolves, redirected to its target; 2 in all across one event, its controller choosing which:
+       its ruling). Lifelink and "deals damage" triggers read the damage as dealt after prevention (CR 120.4c).
+     - M2-08e, protection (CR 702.16, D-074: damage prevention, targeting, blocking; "can't be enchanted" in M2-12),
+       reading the source's characteristics, from last known information if it's gone (snapshot `characteristics()`,
+       future-rules): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons), Great Sable Stag
+       (from blue and from black; "can't be countered", CR 101.2, 113.6g: a counter effect does nothing to it, and
+       it's still a legal target).
+     - Visibility: shields and prevention effects in state are public and end at cleanup: shown in `playerView` with
+       the delayed triggers (Known issues), or added to that issue.
+     - Future impact: "if you would draw" needs the draw-several container (D-060, CR 121.2a), when a card needs it (none
+       in Magic 2010); copies entering (Clone) are a CR 616.1c choice in the same machinery; layers (M2-09) granting or
+       removing replacement abilities read them through one function; tokens (M2-11) use the zone-change helper.
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
