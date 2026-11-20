@@ -10,8 +10,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
   spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
 - M2-01 Hidden information fix: done, merged (PR #21, D-054).
-- M2-02 The Magic 2010 pool and its mechanics: done, waiting on the owner to read the mechanics table (its
-  acceptance). `docs/milestones/m2-pool.md` maps all 234 cards (none left out) to the systems they need and the task
+- M2-02 The Magic 2010 pool and its mechanics: done and accepted (the owner read it: "Looks good so far",
+  2026-11-20). `docs/milestones/m2-pool.md` maps all 234 cards (none left out) to the systems they need and the task
   after which each is playable; the M2 tasks are reordered by it (D-055). The table is kept by hand from now on: when a
   task scripts a card, check its row.
 - Next: M2-03 events and last known information (`docs/milestones/m2-rules-depth.md`).
