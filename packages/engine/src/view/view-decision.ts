@@ -10,6 +10,7 @@ import { canSee } from "./visibility.ts";
 
 type ChooseCards = Extract<PendingDecision, { kind: "chooseCards" }>;
 type ChooseYesNo = Extract<PendingDecision, { kind: "chooseYesNo" }>;
+type ChooseReplacement = Extract<PendingDecision, { kind: "chooseReplacement" }>;
 
 /**
  * One option of a `chooseCards` decision as shown: what the card is, and its object id only if the viewer sees it
@@ -22,7 +23,13 @@ export type ViewChooseCards = Omit<ChooseCards, "options" | "resume"> & { option
 
 export type ViewChooseYesNo = Omit<ChooseYesNo, "resume">;
 
-export type ViewDecision = Exclude<PendingDecision, ChooseCards | ChooseYesNo> | ViewChooseCards | ViewChooseYesNo;
+export type ViewChooseReplacement = Omit<ChooseReplacement, "resume">;
+
+export type ViewDecision =
+  | Exclude<PendingDecision, ChooseCards | ChooseYesNo | ChooseReplacement>
+  | ViewChooseCards
+  | ViewChooseYesNo
+  | ViewChooseReplacement;
 
 export function viewDecision(state: GameState, decision: PendingDecision, viewer: PlayerId): ViewDecision {
   switch (decision.kind) {
@@ -30,7 +37,8 @@ export function viewDecision(state: GameState, decision: PendingDecision, viewer
       const { resume: _resume, options, ...rest } = decision;
       return { ...rest, options: options.map((id) => shownOption(state, id, viewer)) };
     }
-    case "chooseYesNo": {
+    case "chooseYesNo":
+    case "chooseReplacement": {
       const { resume: _resume, ...rest } = decision;
       return rest;
     }

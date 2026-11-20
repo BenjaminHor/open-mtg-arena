@@ -48,6 +48,10 @@ export const HOMING_BEAR = "test-homing-bear";
 export const HOLLOW_STATUE = "test-hollow-statue";
 /** Not a real card: an indestructible 0/4, for a destroy that can't happen (CR 614.17c). */
 export const IRON_WALL = "test-iron-wall";
+/** Not a real card: "Destroy target creature" for {R}, an instant, for replacement choices as a spell resolves. */
+export const UNMAKE = "test-unmake";
+/** Not a real card: "Destroy all creatures" for {R}, an instant: one event destroying both players' creatures. */
+export const WRATH = "test-wrath";
 /** Not a real card: an enchantment with no abilities, until the pool has one (M2-07), for "artifact or enchantment". */
 export const ENCHANTMENT = "test-enchantment";
 /** Not real cards: creatures with keywords no Magic 2010 card combines (CR 702.4, 702.2c), for unit tests. */
@@ -550,7 +554,7 @@ export const TEST_CARDS: CardDatabase = {
     def: {
       name: "Homing Bear",
       oracle:
-        "If this creature would be put into a graveyard from anywhere, shuffle it into its owner's library instead.",
+        "If this creature would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's library instead.",
       replacements: [{ kind: "graveyardToLibrary" }],
     },
   }),
@@ -581,6 +585,45 @@ export const TEST_CARDS: CardDatabase = {
       toughness: 4,
     },
     def: { name: "Iron Wall", oracle: "Indestructible", keywords: ["indestructible"] },
+  }),
+  [UNMAKE]: card(UNMAKE, {
+    printed: {
+      name: "Unmake",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Unmake",
+      oracle: "Destroy target creature.",
+      spell: {
+        targets: [{ kind: "permanent", filter: { types: ["creature"] } }],
+        effects: [{ op: "destroy", of: { target: 0 } }],
+      },
+    },
+  }),
+  [WRATH]: card(WRATH, {
+    printed: {
+      name: "Wrath",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Wrath",
+      oracle: "Destroy all creatures.",
+      spell: { targets: [], effects: [{ op: "destroyAll", filter: { types: ["creature"] } }] },
+    },
   }),
   [ENCHANTMENT]: card(ENCHANTMENT, {
     printed: {

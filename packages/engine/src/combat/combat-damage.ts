@@ -2,10 +2,10 @@
 // first-strike.ts (CR 510.4); dividing a creature's damage is damage-assignment.ts.
 
 import type { CardDatabase } from "../cards/types.ts";
-import { andThen, type Progress } from "../game/progress.ts";
+import type { Progress } from "../game/progress.ts";
 import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
-import { happen } from "../pipeline/happen.ts";
+import { happenOrAsk } from "../pipeline/happen.ts";
 import type { Damage } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
 import { attacksInCombat, isBlocked } from "../rules/combat.ts";
@@ -55,10 +55,9 @@ export function combatDamage(state: GameState, divisions: CombatDivision[], card
   }
   const active = currentTurn(state).activePlayer;
   const damage = assignedDamage(state, attackers.divisions, divisions, cards);
-  return andThen(happen(state, { kind: "dealDamage", damage }, cards), (s) => ({
-    state: queueWork(s, { kind: "givePriority", player: active }),
-    events: [],
-  }));
+  // Priority is queued first: the damage may wait for a choice between replacement effects (CR 616.1), and priority
+  // must come after it either way.
+  return happenOrAsk(queueWork(state, { kind: "givePriority", player: active }), { kind: "dealDamage", damage }, cards);
 }
 
 /**

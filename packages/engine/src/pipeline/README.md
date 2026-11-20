@@ -26,8 +26,8 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    look back in time (CR 603.10). It calls `detectTriggers` (`triggers/`), which adds what triggered to
    `GameState.pendingTriggers`; they go on the stack the next time a player would receive priority (CR 117.5, 603.3).
 
-All replacing comes before any performing, so when a replacement needs a player's choice (CR 616.1), `happen` can stop
-with nothing changed yet.
+All replacing comes before any performing, so when a replacement needs a player's choice (CR 616.1), `happenOrAsk` can
+stop with nothing changed yet (D-087).
 
 A caller that needs the new object a move made (the spell being cast) reads it from the `ZONE_CHANGED` event with
 `zoneChangeOf` (`moved.ts`), not from the proposal: a replacement may send the card elsewhere.
@@ -58,13 +58,16 @@ anything can replace or trigger on:
 
 ## Not built yet
 
-- **Several replacements on one event** (M2-08c): `replacements.ts` refuses when two apply; the affected player chooses
-  (CR 616.1), each applies once (CR 614.5), the rest are checked again (CR 616.1f).
-- **Pausing for a choice** (M2-08c). `happen` becomes a work item that can wait for a decision; every caller that does
-  more after `happen` returns must then queue the rest as work: `startCast` (`game/cast.ts`), `playLand`, `putOnBottom`
-  and the pregame loops, `finishAttackers`, `combatDamage`, `checkStateBasedActions`, `finishCleanup`, resolution
-  (`game/resolve.ts`), `drawEach` and `discardAtRandom` (`effects/player-effects.ts`), the draw and untap steps, and mana abilities (`mana/activate.ts`), which resolve at once
-  (CR 605.3b) and may need their own path.
+- **Pausing anywhere.** Since M2-08c (D-087), `happenOrAsk` waits for a choice between replacement effects (CR 616.1):
+  it performs nothing, asks, and a `resumeEvent` work item replaces the event again with the choices so far. Only callers
+  that do nothing after the event use it: resolving effects' destroy and damage (`effects/run-effect.ts`) and combat
+  damage, which queues its priority first; a test lists them. Every other caller uses `happen`, which refuses a choice:
+  unreachable with the pool, where only damage meets two different effects. A caller that does more after its event
+  (`startCast` in `game/cast.ts`, `playLand`, `putOnBottom` and the pregame loops, `finishAttackers`,
+  `checkStateBasedActions`, `finishCleanup`, resolution's own steps in `game/resolve.ts`, `drawEach` and
+  `discardAtRandom`, the draw and untap steps, and mana abilities, which resolve at once, CR 605.3b) must queue that
+  rest as work before it can switch. Clone's "as it enters" choice (M2-14) will be the first. A replacement applied once
+  is kept in `applied`, though none so far could apply again to its own result (later: CR 614.5).
 - **Moves that go elsewhere or nowhere.** `startCast` throws if its card didn't move to the stack; a replacement that
   changes that (CR 614.6) needs a real path.
 - **Drawing several cards** as one instruction (CR 121.2a): "draw N" is N single draws for now (D-060); the container

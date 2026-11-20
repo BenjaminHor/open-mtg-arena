@@ -1183,3 +1183,25 @@ every schema change and every change D-024 lists bumps it.
 - Polymorph: `revealUntil` (cards stay in the library; the one that fits is "found"), the subject
   `{ controllerOf: { target } }` (last known information once the target is gone, CR 608.2h), and `put`'s `by`, the
   player who puts the card onto the battlefield and controls it (CR 110.2a).
+
+**D-087: Choosing between replacement effects; an event that waits (M2-08c)** · 2026-11-20 · accepted
+- When two different replacement effects would apply to one event, the affected player or the affected object's
+  controller chooses which applies first (CR 616.1), several players in APNAP order. `happenOrAsk` then performs
+  nothing, sets a `chooseReplacement` decision, and the answer queues a `resumeEvent` work item: the event is replaced again
+  from the start with the choices so far, as nothing has happened yet. Candidates are named by stable references
+  (`ReplacementRef`: a card's own text by object and index, or an object's regeneration shields), and applied one at a
+  time, the rest checked again against the changed event (CR 616.1f).
+- Only callers that do nothing after the event may wait: resolving effects' destroy and damage (one work item each)
+  and combat damage, which queues its priority first. Plain `happen` refuses a choice; a test lists who may import
+  `happenOrAsk`. Converting the other callers waits for the first card that needs one (Clone, M2-14). With the pool,
+  only damage meets two different effects (M2-08d).
+- A replacement that swaps the event for another (regeneration for a destroy) replaces the whole modified event, so
+  what earlier replacements put around it goes too (CR 614.6). Proven with the test-only Homing Bear and a shield.
+  The rules review found a credible counter-reading: CR 701.24c shuffles a library "even if ... an effect causes all
+  of those objects to ... remain in their current zone", so library-first then regeneration might still shuffle. We
+  read 701.24c as about instructions carried out (its examples are a trigger and a spell), not an event replaced;
+  no ruling or judge source settled it (the review couldn't reach any). Unreachable with the pool. Open question.
+- Choices are applied in the order made (the earliest choice still among the candidates). One flat list of choices
+  works because every reference names its affected object; replacements from other permanents or players (Rest in
+  Peace, Fog) will need choices keyed to the affected object or player (future-rules).
+- The decision kind isn't required of golden games until M2-08d's cards can reach it (`DECISION_KINDS` takes a reason).

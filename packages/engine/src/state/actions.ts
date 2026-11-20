@@ -63,4 +63,6 @@ export type Answer =
   /** No more cards for a `chooseCards` decision: allowed once its minimum is chosen. */
   | { kind: "finishChoosing" }
   /** The answer to a "you may" (`chooseYesNo`). */
-  | { kind: "chooseYesNo"; yes: boolean };
+  | { kind: "chooseYesNo"; yes: boolean }
+  /** Which replacement effect applies first, by its position in the decision's `options` (CR 616.1). */
+  | { kind: "chooseReplacement"; option: number };

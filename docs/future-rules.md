@@ -31,10 +31,12 @@ through the single propose → replace → perform → trigger pipeline. Nothing
 outside it, so replacements can be added in one place later. Built in M2-03 (`engine/src/pipeline/`, D-056): `replace`
 is where they go.
 
-*Watch out (D-056):* `happen` returns at once, and mana abilities call it outside the work queue. When the affected
-player must choose the order of replacements (CR 616.1), `happen` must stop before performing anything (it replaces
-everything first, so it can) and resume as a work item; every caller that does more after `happen` returns then has
-to queue that rest as work too (the list is in `engine/src/pipeline/README.md`). Each member of a batch is replaced
+*Built (M2-08c, D-087):* `happenOrAsk` stops before performing anything when the affected player must choose the
+order of replacements (CR 616.1) and resumes as a work item; only callers that do nothing after the event use it.
+*Watch out:* every other caller (the list is in `engine/src/pipeline/README.md`) must queue its rest as work before it
+can wait, and mana abilities run outside the work queue. M2-08d's prevention needs choices per damage recipient
+(a damage event has many), choices scoped to the recipient (a global effect like Fog names none), an identity for
+state-held effects (two Harm's Ways), and a second kind of recorded choice (which damage Harm's Way redirects). Each member of a batch is replaced
 against the state before the batch (built, D-085), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):

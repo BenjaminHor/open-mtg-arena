@@ -390,10 +390,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        control a [type] or a [type]", land types read through `characteristics()`, Convincing Mirage later), with
        "{T}: Add {G} or {W}": the color carried on the action as for any color (D-068) but limited to two, and
        `autoPay` searching sources once one offers a restricted choice (D-068 said it would need to).
-     - Now: M2-08b (2026-11-20). Built (D-086): 23 scenarios in `test/scenarios/cards/m2-08b/`, unit tests
+     - M2-08b: done, merged (PR #46, D-086). Built: 23 scenarios in `test/scenarios/cards/m2-08b/`, unit tests
        (`test/permanents/regeneration.test.ts`, with CR 614.17c on a test-only indestructible wall;
        `test/effects/reveal-until.test.ts`), a Regeneration matrix row, two golden games. 163 cards; 155 of the 234
-       Magic 2010 cards. Fuzz (300 games), mutation pass, rules-judge and code-reviewer done, fixes in; next the PR.
+       Magic 2010 cards. Next: M2-08c, the CR 616.1 choice (plan below).
        Design (as planned; CR 614.17c is the unit test above, not a Colossus scenario):
        - `GameState.replacements` (the list architecture.md plans): replacement effects made by resolving spells and
          abilities, here `{ kind: "regenerationShield", object }`, all "this turn": emptied in cleanup with the
@@ -427,13 +427,32 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
        Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
        isn't destroyed: its ruling).
-     - M2-08c, the CR 616.1 choice, no pool cards: `happen` stops before performing anything and resumes as a work item
-       (the pattern mid-resolution decisions use) when the affected player must choose which effect applies; every
-       caller that does more after `happen` queues the rest (the pipeline README's list). Tested with test-only cards
-       and the M2-03 review's cases: a dying source's replacement still applying in its SBA batch (CR 704.3, 614.4),
-       regeneration and a "would die" replacement on one destruction (CR 616.1), damage results replaced as one event
-       (CR 120.4c, the Worship example), 0 damage an increase can't touch (CR 120.8). Golden logs unchanged. The new
-       decision kind can't be reached by pool cards until M2-08d: `DECISION_KINDS` gains a reason like `EVENT_TYPES`.
+     - Now: M2-08c (2026-11-20). Built (D-087): `happenOrAsk`, the `chooseReplacement` decision and its plumbing (legal
+       actions, view, CLI action lines and describe, scenario `choose:` "regeneration" or a card's name, export), unit
+       tests in `test/pipeline/replacement-choice.test.ts`, an import guard. Next: mutations, fuzz, reviews, PR.
+       Design, with the advisor's review:
+       - `happenOrAsk`: like `happen`, but when the affected player (or the affected object's controller, CR 616.1)
+         must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
+         decision, and queues a `resumeEvent` work item holding the proposed event and the choices so far. On the answer,
+         `replace` runs again from the top with the choices in order; nothing was performed, so the state is as it
+         was, and the others are checked again after each (CR 616.1f; CR 614.5 later). Several players choose in APNAP order (CR 616.1).
+         Candidates are named by stable references (`{ kind: "ownText", object, index }`, `{ kind:
+         "regenerationShield", object }`). Identical candidates aren't asked about (D-086).
+       - Only callers that do nothing after the event may pause: a resolving effect's damage and destroy
+         (`run-effect.ts`, one work item per effect) and combat damage, which queues its priority before the event. A
+         test checks no other file imports `happenOrAsk`; plain `happen` still refuses a choice (unreachable with the
+         pool: only damage, from these two places, can meet two effects; Homing Bear's tests use a destroy spell).
+       - Applying candidates in order rebuilds the event: a replacement that swaps the core event for another
+         (regeneration) drops what earlier ones added around it (CR 614.6: a replaced event never happens). Homing
+         Bear (test-only: "would be put into a graveyard ... library instead") with a regeneration shield on one
+         destroy: shield first, it regenerates; library first, it's still a destroy, so the shield then applies
+         (CR 616.1f) and it regenerates, with no reveal or shuffle.
+       - Plumbing: the decision kind in `legalActions`, the view, the scenario syntax, the CLI's action lines, the
+         fuzz picker, and `DECISION_KINDS` with a reason until M2-08d's cards reach it.
+       - Future impact: Clone's "as it enters" (M2-14) is a choice pausing a zone change from `resolve.ts`, not built.
+     - M2-08c, the CR 616.1 choice, no pool cards: superseded by the design above (D-087). The M2-03 review's cases are
+       in Open questions; only the Homing Bear one (regeneration and a "would be put into a graveyard" replacement on
+       one destroy) is tested now.
      - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
        (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
        a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
@@ -455,6 +474,15 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
+- **Owner's preference (2026-11-20):** keep looking for ways to speed up iteration, so features land quickly while
+  staying accurate and high quality. Slow spots seen so far, to work on as they bite: the 300-game fuzz (about 10
+  minutes, one process: could run seeds across worker processes), `golden:cover` (plays up to 800 candidate games:
+  could stop at the first game covering each missing unit), the mutation pass (a vitest run per mutant: could run only
+  the engine and scenario projects, already done), and reviews waiting on each other (run mutations, fuzz and reviews
+  at once, but never edit while mutating).
+- **Owner's instruction (2026-11-20):** continue all the way to the end of M2; the owner won't be available much.
+  For a decision that needs the owner, notify them with suggestions to choose from, and meanwhile carry on with the
+  recommended option (recorded in Open questions, marked "proceeding with ...") so work doesn't stall.
 - **Owner's standing instruction (2026-11-19):** keep working through milestone 1, task after task, without waiting for
   a go-ahead. Stop only for a decision that needs the owner (put it in Open questions and ask). Merge each PR once it
   checks out (D-027), restart the branch from `main`, then start the next task.
@@ -598,6 +626,18 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20) The M2 spec's M2-08 acceptance list includes three cases from the M2-03 review that no Magic 2010
+  card can produce: a dying creature's replacement still applying to the others in its state-based-action batch
+  (CR 704.3), a "would die" replacement with regeneration (testable now with a test-only card, done in M2-08c), and
+  Worship-style damage results replaced as one event (CR 120.4c). The first and third would need replacement kinds
+  written only for tests, which CLAUDE.md treats as speculative. Proposed: defer those two to the first card that
+  needs them (noted in future-rules), and count M2-08 done without them. Options: (a) defer them (recommended;
+  proceeding with this), (b) add minimal test-only replacement kinds to the engine to test them now, (c) drop them
+  from the spec.
+- (Asked 2026-11-20, D-087) A regeneration shield and a "would be put into a graveyard ... shuffle into library"
+  replacement on one destroy, library one first: the shield still applies and the creature regenerates. Is the library
+  still shuffled? (a) No: regeneration replaces the whole modified event, CR 614.6 (recommended; proceeding with
+  this). (b) Yes: CR 701.24c shuffles even when the card stays where it is. No Magic 2010 card can reach this.
 - (Asked 2026-11-20) The owner asked whether card definitions' raw strings (`op: "dealDamage"`, `step: "end"`...)
   should become enums. Recommended: no TypeScript `enum` (D-018 runs TypeScript by type stripping, and
   `erasableSyntaxOnly` refuses `enum`); the strings are already checked literal unions. Offered instead: named

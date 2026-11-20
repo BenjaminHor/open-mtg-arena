@@ -102,7 +102,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   choosing once the minimum is chosen ("you may" declined, a search that finds nothing); `yes` or `no` for a "you
   may" decision (`chooseYesNo`, Ponder's shuffle, a "you may" trigger); for ordering one's triggers as they go on the
   stack (`orderTriggers`, CR 603.3b), the source's card name of the one to put on next (`p1 choose: Soul Warden`, or
-  `Soul Warden#2` for the player's second waiting trigger from a card of that name);
+  `Soul Warden#2` for the player's second waiting trigger from a card of that name); for choosing which replacement
+  effect applies first (`chooseReplacement`, CR 616.1), `regeneration` for a regeneration shield or the name of the card
+  whose own replacement it is (a name matching two options is refused);
   a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
   `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.

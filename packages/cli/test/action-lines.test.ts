@@ -46,6 +46,7 @@ describe("action lines", () => {
       chooseCard: { kind: "chooseCard", option: 2 },
       finishChoosing: { kind: "finishChoosing" },
       chooseYesNo: { kind: "chooseYesNo", yes: false },
+      chooseReplacement: { kind: "chooseReplacement", option: 1 },
     };
     const lines = actionLines([
       ...Object.values(answers).map((answer): Action => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),

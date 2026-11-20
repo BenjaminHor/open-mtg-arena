@@ -135,6 +135,18 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...putOne(answered, pending.batch, answer.index, pending.priorityTo, cards) };
     }
+    case "chooseReplacement": {
+      if (answer.kind !== "chooseReplacement") return mismatch;
+      const chosen = pending.options[answer.option];
+      if (chosen === undefined) return error("illegalAction", "no such replacement effect to choose");
+      // The event is replaced again from the start with this choice added (CR 616.1, 616.1f).
+      const { proposed, choices } = pending.resume;
+      return {
+        ok: true,
+        state: queueWork(answered, { kind: "resumeEvent", proposed, choices: [...choices, chosen] }),
+        events: [],
+      };
+    }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;
       // Yes runs the effect, ahead of the rest of the resolution; no does nothing (CR 608.2d).
