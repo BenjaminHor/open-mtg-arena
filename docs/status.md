@@ -196,7 +196,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
   3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
-     - M2-06a combat damage, done, in review (D-070): first and double strike with a second combat damage step,
+     - M2-06a combat damage, done, merged (PR #35, D-070): first and double strike with a second combat damage step,
        trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
        result of the damage event), vigilance. Viashino Spearhunter, Razorfoot Griffin, Stampeding Rhino, Deadly
        Recluse, Child of Night, Serra Angel, Griffin Sentinel. Scenarios in `test/scenarios/cards/m2-06a/` and
