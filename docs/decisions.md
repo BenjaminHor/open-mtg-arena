@@ -1285,7 +1285,8 @@ every schema change and every change D-024 lists bumps it.
   event (CR 615.10); APNAP order across the affected players, and which goes first when one player's lone effect
   needs no choice (unsettled: CR 616.1, 101.4 don't say); the sources of abilities on the stack offered even after
   they left (CR 609.7a); damage already headed for the target not redirected (CR 614.9 "another", 609.7b; no ruling
-  found online, D-080).
+  found online, D-080). The paper model also merged one source's damage to one recipient into one part, which would
+  reverse D-075 (Goblin Artillery's 2 and 3 to its controller stay two parts), an owner decision.
 - Why set aside rather than finish now: none of this is needed by another Magic 2010 card, Harm's Way isn't on MTG
   Arena, and no card that filter keeps has "a source of your choice ... is dealt to ... instead" (Scryfall,
   2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above need the owner (D-080, and

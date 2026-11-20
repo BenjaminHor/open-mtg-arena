@@ -486,11 +486,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
          when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
          stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
-         Built (D-090): Harm's Way, 6 scenarios (`harms-way*.yaml`) and a unit test of the amount used up; golden
-         pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Fuzz clean. Review fixes done (93f2c4d,
-         6fd7c9e; D-090 rewritten): 15 Harm's Way scenarios, unit tests in `test/game/divide-redirect.test.ts`;
-         mutations 10 of 11 caught (the survivor only adds a zero-maximum entry to a split). Fuzz clean.
-         Re-review (rules-judge, 2026-11-20): the three first findings are fixed, but settling shares before the
+         Harm's Way was built (1c4fcda, then review fixes 93f2c4d and 6fd7c9e) and reverted (98b08ed): it is not in
+         the pool, which stays at 166 cards, 158 of the 234 Magic 2010 cards. Re-review (rules-judge, 2026-11-20): the three first findings are fixed, but settling shares before the
          CR 616.1 choice gives two new wrong results. A paper redesign, reviewed by the judge, still had wrong results
          and rests on unsettled readings, so M2-08d2 is reverted on the branch (D-090; Open questions). M2-08d ends
          with M2-08d1. Next: M2-08e (protection). The findings, kept for when Harm's Way returns:
@@ -765,6 +762,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
+- (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is
+  finer than CR 616.1's "the way an event affects an object or player": with two attackers, Guardian Seraph and Fog,
+  the player is asked once per attacker and can order them differently. Life totals can't differ with today's pool;
+  only how `DAMAGE_PREVENTED` splits. Changing it reverses D-088, so it waits for the owner with D-090's question.
 - (M2-07c2, M2-08b) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`)
   or regeneration shields (`GameState.replacements`), though both players know of them (Dragon Whelp to be sacrificed
   at the next end step, Drudge Skeletons shielded). The match UI (M3) should show them.
