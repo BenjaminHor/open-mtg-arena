@@ -967,3 +967,20 @@ every schema change and every change D-024 lists bumps it.
   attack" will need a search (future-rules).
 - "Attacks you this turn if able" counts only for an attack on that player, and its most only over attacks on them.
 - A scenario step that's rejected is rolled back whole, so a scenario re-declares the full set after `expect error`.
+
+**D-073: The golden folder's budget is 8 MB through M2** · 2026-11-20 · accepted (owner)
+- The owner chose to raise the budget (D-069 set 4 MB) to about 8 MB by the end of M2, over a compact action format or
+  fewer games, when the folder reached 4 MB after M2-06d. One game per card stays (D-047).
+
+**D-074: Keywords are built with their first card** · 2026-11-20 · accepted (owner)
+- The M2-06 spec listed protection's targeting and blocking parts, flash, indestructible and "can't be countered", but
+  their Magic 2010 cards arrive later. The owner chose to build each in the task that brings its first card, with
+  real-card scenarios: flash with Bogardan Hellkite (M2-07c); protection, indestructible and "can't be countered" with
+  White Knight, Black Knight, Baneslayer Angel, Darksteel Colossus and Great Sable Stag (M2-08); indestructible again
+  with Indestructibility (M2-12). Double strike, with no Magic 2010 card, stays as built (D-070). The same goes for
+  "dies" triggers (Magma Phoenix, M2-14), though last known information comes now (M2-07a, Howling Mine).
+
+**D-075: Damage from one source to one player in two parts stays two parts** · 2026-11-20 · accepted (owner)
+- Goblin Artillery dealing 2 to a target and 3 to its own controller is one damage event with two parts: two
+  `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3), as built (D-067). The owner kept it over one 5-point loss; a future
+  "whenever you lose life" trigger fires twice.

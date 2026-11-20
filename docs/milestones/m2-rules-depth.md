@@ -81,14 +81,14 @@ Oracle text needs:
 
 **M2-06 Keywords and attack or block restrictions (CR 702, 506–511).** First strike and double strike with the extra
 damage step (CR 510.4), trample (with lethal damage, CR 702.19), deathtouch, lifelink, vigilance, defender, landwalk,
-flash, shroud, indestructible, "can't be countered"; "can't be blocked (except by ...)", "can block any number",
-"can't attack or block alone", and requirements ("attacks each combat if able", lure; CR 508.1c–d, 509.1b–c).
-Protection's targeting and blocking parts (CR 702.16b, 702.16f); its damage prevention comes with M2-08, and
-"can't be enchanted or equipped" with M2-12. *Accept:* scenarios
+shroud; "can't be blocked (except by ...)", "can block any number", "can't attack or block alone", and requirements
+("attacks each combat if able", lure; CR 508.1c–d, 509.1b–c). Flash, indestructible, "can't be countered" and
+protection (its targeting and blocking parts, CR 702.16b, 702.16f) come with their first cards (D-074): flash in M2-07,
+the rest in M2-08 with protection's damage prevention, and "can't be enchanted or equipped" in M2-12. *Accept:* scenarios
 per keyword and the interaction matrix filled in for every pair.
 
-**M2-07 Triggered abilities (CR 603).** "When", "whenever" and "at" triggers: entering, dying and leaving the
-battlefield (looking back in time, CR 603.10), attacking and blocking, casting, drawing and discarding, damage,
+**M2-07 Triggered abilities (CR 603).** "When", "whenever" and "at" triggers: entering (dying and leaving the
+battlefield, looking back in time, CR 603.10, with their first card, D-074; last known information comes now), attacking and blocking, casting, drawing and discarding, damage,
 beginning-of-step triggers, "becomes the target", delayed triggers (CR 603.7). Putting them on the stack in APNAP order
 with each player ordering their own (CR 603.3b), targets chosen as they're put on the stack, "intervening if"
 (CR 603.4), "may". *Accept:* scenarios per trigger kind, including two triggering together, a trigger whose source is

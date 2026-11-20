@@ -341,7 +341,7 @@ counts what the folder's games already use, and keeps, greedily, the game adding
 off at the turn its last new card is used. It also covers three choices the export tests read: a spell on the stack
 targeted, a card in a graveyard targeted, cards chosen as a spell or ability resolves. It only adds games, never changes one, and skips seeds whose game
 is already there; it lists what's still not covered and fails if anything is.
-Keep the folder under 4 MB.
+Keep the folder under 8 MB through M2 (D-073).
 
 ## 5. Rules coverage report
 

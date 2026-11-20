@@ -194,9 +194,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      versions of two of m2-pool.md's decks, are the fuzzer's main pair (two prebuilt games in three). The fuzzer's 40-seed
      measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
-  3. M2-06, keywords and attack or block restrictions (m2-rules-depth.md): done but for four keywords waiting on the
-     owner (Open questions); 21 cards; 114 of the 234 Magic 2010 cards now (the pool's 122 include 8 M1-only cards). Next: M2-07 triggered abilities,
-     whose golden cover needs the owner's golden budget decision (Known issues). Plan (2026-11-20), in
+  3. M2-06, keywords and attack or block restrictions (m2-rules-depth.md): done; four keywords come with their first
+     cards (D-074); 21 cards; 114 of the 234 Magic 2010 cards now (the pool's 122 include 8 M1-only cards). Next: M2-07 triggered abilities,
+     (the golden budget is 8 MB, D-073). Plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
      - M2-06a combat damage, done, merged (PR #35, D-070): first and double strike with a second combat damage step,
        trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
@@ -240,7 +240,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
      - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
-       Illusionary Servant ("becomes the target", CR 603.2), Bogardan Hellkite (needs flash: owner question).
+       Illusionary Servant ("becomes the target", CR 601.2c), Bogardan Hellkite (flash comes with it, D-074).
      - Settled before code (advisor, 2026-11-20):
        - Detection stays `checkTriggers` in `happen` (D-056: it has the state before each batch), plus the four places
          that emit events outside the pipeline: `STEP_BEGAN` (steps.ts), `SPELL_CAST` / `ABILITY_ACTIVATED`
@@ -438,17 +438,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Not blocking until M2-06d.) The M2-06 spec puts protection's targeting and blocking, flash, indestructible and
-  "can't be countered" in M2-06 and asks for a scenario per keyword, but their Magic 2010 cards come later (Bogardan
-  Hellkite in M2-07; White Knight, Black Knight, Baneslayer Angel, Great Sable Stag, Darksteel Colossus in M2-08;
-  Indestructibility in M2-12). Scenarios name real cards. Build them now with engine unit tests on test cards, and add
-  the scenarios with the cards? Or build each keyword with its first card? (Claude's lean: with its first card: one
-  task, a real scenario, nothing built before it's used.)
-- (Not blocking until M2-07 triggers or M2-08 prevention.) Goblin Artillery targeting its own controller deals them
-  2 damage and 3 damage from the same source in the same action. The engine records it as one damage event with two
-  parts: two `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3). Should that be one 5-point loss instead? The CR doesn't
-  say. It decides how often "whenever you lose life" or "whenever a source deals damage to you" trigger (once or twice),
-  and how prevention shields count against it.
+- (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
+  Artillery's two losses kept.)
 
 ## Known issues
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
@@ -456,11 +447,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
   lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
   can be taken back or checked as a whole (06c's take-back answer may serve).
-- Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
-  Still, the folder is 4.0 MB (3.82 MiB) after M2-06d, at its 4 MB budget, growing about 0.1–0.3 MB per task with
-  112 cards to go: it passes the budget in M2-07. Options: raise the budget (to about 8 MB by the end of M2), a
-  compact action format (actions are about 90 bytes of JSON each), or stop adding a game per card once its mechanic
-  is covered by scenarios. Decide before M2-07's cover.
+- Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games. The
+  folder is 4.0 MB after M2-06d; the owner raised the budget to 8 MB for M2 (D-073).
 - The bench drifted 10–29% over its baseline through M2-05–06b; reset in M2-06c (D-072), when the `random` agent's games
   changed with the declaration list. Measuring is noisy here (two runs of one commit can differ by 30%): compare paired
   against `main` before believing a failure.
