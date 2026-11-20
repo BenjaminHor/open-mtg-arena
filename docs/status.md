@@ -266,11 +266,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
          filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
          effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
-     - Golden games rework (owner, D-082), next after M2-07c1's PR and before M2-07c2: a compact action format (game
-       file format 1: one line per action, no decision ids or acting player, pass runs, card names in setups; the
-       reader still loads format 0), conversion of every golden game, `golden:cover` by features (effect ops, trigger
-       conditions, keywords, statics, costs, targets, decision kinds, event types) instead of cards, a test that every
-       pool card has a scenario, then a re-cover with fewer games. The bench's games are converted, not replaced.
+     - Now: golden games rework (owner, D-082), before M2-07c2. Plan, in order:
+       1. `cli/src/action-lines.ts`: `actionLines(setup, actions, cards)` and `actionsFromLines(setup, lines, cards)`,
+          one readable line per action (`pass 4`, `land o85`, `cast o12`, `activate o5 1 for G`, `chooseTarget p2`,
+          `declareBlocker o7 o5`, ...), an exhaustive switch on `Action` and `Answer`; decoding replays the game to fill
+          in each decision id and acting player. Card names for oracle ids in setups (`setupWithNames` and back).
+       2. Game files gain `"encoding": "lines"` (setup by names, `actions` as lines); `readGameFile` decodes either, so
+          `pnpm cli replay` still opens golden games. Golden games are written that way; `golden:update` converts.
+       3. `golden:cover` by features instead of cards: from each card whose script ran (D-069's "used"), its keywords,
+          effect ops, trigger conditions, statics, cost parts and target kinds; plus every decision kind and the
+          export tests' three choices. Interactions stay with the interaction matrix's scenarios.
+       4. A test that every pool card appears in at least one scenario (cards still each have their own).
+       5. Re-cover: the four bench games (D-049) stay, converted; the card-chosen games are replaced by a feature cover.
+       6. Docs: testing.md section 4, D-047/D-069 superseded notes, golden README; then reviews and a PR.
      - M2-07c plan (2026-11-20), two PRs:
        - M2-07c1, done, merged (PR #41, D-079): 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
