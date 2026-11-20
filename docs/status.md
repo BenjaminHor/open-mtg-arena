@@ -226,9 +226,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 
   4. Now: M2-07 triggered abilities (CR 603; m2-rules-depth.md). 30 cards. Draft plan (2026-11-20), in three PRs:
      - Shared: `CardDef.triggers` (kept out of `abilities`, like `statics`, D-071), each a condition as data, targets,
-       effects, "you may" and an "intervening if" (CR 603.4). Triggers are detected in one place, the work loop: after
-       every action or work item, its events are matched against the state before it (looking back, CR 603.10) and
-       after (entering); matches wait in `GameState.pendingTriggers`. `givePriority`, after state-based actions, puts
+       effects, "you may" and an "intervening if" (CR 603.4). Triggers are detected per batch in `checkTriggers` (see
+       Settled), matched against result events; matches wait in `GameState.pendingTriggers`. `givePriority`, after state-based actions, puts
        them on the stack (CR 117.5, 603.3): active player's first in APNAP order (CR 603.3b), a player with several
        ordering theirs (a decision), each choosing its targets as it goes on (CR 603.3d; none legal: removed), with no
        cost and no cancel (future-rules: an origin kind in `casting-steps.ts`). An ability on the stack refers to its
@@ -256,8 +255,37 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          forced; the stack ability stores only what its effects read from the triggering event (no hidden ids).
        - Slices of 07a: machinery and untargeted entering triggers; then targets and "may"; then step and attack
          triggers. A mutation pass before review; trigger cards into the M10 pair and the 40-seed measure.
-     - No pool card has a "leaves the battlefield" trigger and the first "dies" one is Magma Phoenix (M2-14), so looking
-       back (CR 603.10) and last known information come with it: an owner question, like the four keywords.
+     - Rules review of the plan (2026-11-20), to build in:
+       - Last known information is needed now (CR 608.2h, 603.4): Howling Mine Shattered in response still makes the
+         player draw (ruling); Xathrid Demon reads the sacrificed creature's power. A store of objects' last known
+         information as they leave, read by the intervening-if re-check and "self" when gone. "Dies" triggers (Magma
+         Phoenix, M2-14) will use the same store.
+       - CR 603.3b / 117.5 repeat: after a batch is on the stack, `givePriority` runs again (state-based actions, then
+         triggers that came up meanwhile, a fresh batch). The `givePriority` work keeps the player who'd get priority;
+         putting triggers never gives it to the trigger's controller (CR 603.3b).
+       - "Becomes the target" (CR 601.2c, not 603.2): an event as targets are chosen, for spells, activations and
+         triggers, dropped on cancel. (07c, Illusionary Servant.)
+       - Each emission point matches only its own event: `payCost`, the draw step and declaring attackers already
+         passed their other events through `happen`.
+       - A pending trigger stores its source id, oracle id, trigger index and controller as it triggered (CR 603.3a):
+         the source may be gone before it goes on the stack.
+       - The triggering event's data goes on the ability before targets ("target ... that player controls", Lightwielder
+         Paladin) and is read again on resolution (CR 608.2b).
+       - Triggers go on the stack through the target steps but not `payCost`: no `ABILITY_ACTIVATED`, no priority to
+         the trigger's controller, no cancel.
+       - Match result events: one `LIFE_GAINED` per lifelink source (Sanguine Bond), `ZONE_CHANGED` for a played land,
+         "taps a land for mana" per activation of a land's {T} mana ability (CR 106.12; not Terramorphic Expanse).
+       - Intervening if re-checked in `resolveTopOfStack`, beside CR 608.2b: false removes it (CR 608.2a).
+       - Delayed triggers (07c) live in state, not on a permanent; their own `AbilityRef`; Dragon Whelp needs a
+         per-object, per-turn activation count (not resolutions; cancel doesn't count; CR 400.7 resets).
+       - CR 514.3a (cleanup with triggers) has no 07a card: built with Megrim (07b).
+       - Read a permanent's triggers through one function (layer 6 later, CR 603.6b), like `keywordsOf`.
+       - Test list: ETB in APNAP order, ordering one's own, Soul Warden negatives, source gone before and after going on
+         the stack, illegal target, shroud, Acidic Slime forced onto its controller's land, Gravedigger with no target
+         and "may" both ways, Banshee draw, Visionary on an empty library, Howling Mine (its own, the opponent's,
+         tapped, first turn, Shattered in response), Ball Lightning (sacrificed, Unsummoned, put in by Elvish Piper in
+         the end step), Bramble Creeper; unit tests for creatures entering together, the repeat, cancel dropping
+         triggers, a Mine tapped before resolution, the no-pending-while-priority invariant.
      - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
        delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
        way; copies of abilities and "trigger an additional time" fit the pending list.
