@@ -27,7 +27,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
     `playerOrPlaneswalker`.
 - M2-05 Effects and keyword actions: split in three by the 50 cards' Oracle text (the spec lists the cards).
-  - M2-05a Removal, counters and {T} abilities (now, plan 2026-11-20, corrected by the rules-judge's plan review).
+  - M2-05a Removal, counters and {T} abilities: built, in review (D-059). The 19 cards plus Ornithopter and Rod of
+    Ruin scripted; 31 scenarios in `test/scenarios/cards/m2-05a/`; unit tests in `test/effects/removal.test.ts`; the
+    interim decks carry the new cards, with eight new golden games. The plan as built:
     - New effect ops, each skipping an object no longer where the effect expects it (CR 101.3, 400.7), never
       throwing: `destroy` (CR 701.8a), `destroyAll` (every permanent fitting an `ObjectFilter`, decided once as the
       effect applies, one simultaneous event, CR 608.2f, 608.2h; graveyard order later: CR 404.3), `exile`
@@ -218,4 +220,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- (none)
+- Golden games grow by about 3 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
+  must appear in one). Before the pool reaches all 234 cards, make them smaller: a compact action format, shorter
+  games, or targeted games per card. Not blocking yet.

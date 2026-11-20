@@ -135,6 +135,13 @@ describe("the checks", () => {
     };
     expect(lifeThroughEvents(before, after, [], cards)).toEqual([`${p1}'s life changed by -3, but the events say 0`]);
     expect(lifeThroughEvents(before, after, [{ type: "LIFE_LOST", player: p1, amount: 3 }], cards)).toEqual([]);
+    // Life gained counts too.
+    const gained = {
+      ...before,
+      players: { ...before.players, [p1]: { ...(before.players[p1] as PlayerState), life: 24 } },
+    };
+    expect(lifeThroughEvents(before, gained, [{ type: "LIFE_GAINED", player: p1, amount: 4 }], cards)).toEqual([]);
+    expect(lifeThroughEvents(before, gained, [], cards)).toEqual([`${p1}'s life changed by 4, but the events say 0`]);
   });
 
   it("viewsLeakNothing: an event naming another player's hidden card, by card id or object id, is a problem", () => {

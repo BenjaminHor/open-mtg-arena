@@ -1,0 +1,18 @@
+name: Planar Cleansing destroys every nonland permanent on both sides at once; lands stay
+rules: [CR 608.2f, CR 701.8a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Planar Cleansing]
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Grizzly Bears]
+  p2:
+    battlefield: [Ornithopter, Rod of Ruin, Mountain]
+steps:
+  - p1 cast: Planar Cleansing
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears, Planar Cleansing]
+      p2.graveyard: [Ornithopter, Rod of Ruin]
+      p2.battlefield: [Mountain]
+      p1.battlefield count: 6

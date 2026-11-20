@@ -36,6 +36,8 @@ export const SPLIT = "test-split";
 export const X_BOLT = "test-x-bolt";
 /** Not a real card: "Sacrifice a creature: this creature gets +1/+1 until end of turn", for sacrifice costs. */
 export const SAC_PUMP = "test-sac-pump";
+/** Not a real card: an enchantment with no abilities, until the pool has one (M2-07), for "artifact or enchantment". */
+export const ENCHANTMENT = "test-enchantment";
 
 export const TEST_CARDS: CardDatabase = {
   [FOREST]: card(FOREST, {
@@ -425,5 +427,19 @@ export const TEST_CARDS: CardDatabase = {
         },
       ],
     },
+  }),
+  [ENCHANTMENT]: card(ENCHANTMENT, {
+    printed: {
+      name: "Test Enchantment",
+      manaCost: [{ kind: "colored", color: "W" }],
+      colors: ["W"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["enchantment"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: { name: "Test Enchantment", oracle: "" },
   }),
 };

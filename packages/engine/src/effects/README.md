@@ -20,6 +20,17 @@ the one place their effects become changes to the game.
 | `dealDamage` | "[from] deals N damage to [to]" | `from` (one object) deals `amount` to each player or creature `to` names, through `dealDamage` |
 | `addMana` | "Add {G}." | Adds `amount` of `mana` to the controller's pool (CR 106.4, 109.5), naming `self` as its source |
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
+| `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a) |
+| `destroyAll` | "Destroy all nonland permanents" | Destroys every permanent fitting `filter`, decided once, at the same time (CR 608.2f, 608.2h) |
+| `exile` | "Exile target permanent" | Moves each object `of` names to exile (CR 701.13a) |
+| `returnToHand` | "Return target creature to its owner's hand" | Moves it to its owner's hand (CR 400.3) |
+| `putOnTopOfLibrary` | "Put target creature on top of its owner's library" | Moves it to the top of its owner's library |
+| `tap` | "Tap target creature" | Taps each permanent `of` names; a tapped one stays as it is (CR 701.26a) |
+| `counter` | "Counter target spell" | Counters each spell or ability `of` names (CR 701.6a) |
+| `gainLife` | "You gain 4 life" | The players `who` names gain `amount` (CR 119.3) |
+
+Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
+now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5).
 
 `from`, `to` and `of` are `EffectSubject`s: `"self"`, or `{ target: i }` for the still-legal targets of the i-th
 instance of "target". A subject with no legal targets left means that part does nothing (CR 608.2b).

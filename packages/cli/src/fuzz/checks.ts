@@ -23,16 +23,19 @@ export type Check = (
 export const engineInvariants: Check = (_before, after, _events, cards) => invariantProblems(after, cards);
 
 /**
- * Life totals change only through events (CR 119.3): each player's change equals the life lost in the events. In the
- * M1 pool all of it is damage (CR 120.3a); paying life (CR 119.4), setting a total (CR 119.5) and life gain will need
- * their events counted too.
+ * Life totals change only through events (CR 119.3): each player's change equals the life gained less the life lost in
+ * the events. Paying life (CR 119.4) and setting a total (CR 119.5) will need their events counted too.
  */
 export const lifeThroughEvents: Check = (before, after, events) => {
   const problems: string[] = [];
   for (const p of after.turnOrder) {
-    const lost = events.reduce((n, e) => n + (e.type === "LIFE_LOST" && e.player === p ? e.amount : 0), 0);
+    const said = events.reduce((n, e) => {
+      if (e.type === "LIFE_LOST" && e.player === p) return n - e.amount;
+      if (e.type === "LIFE_GAINED" && e.player === p) return n + e.amount;
+      return n;
+    }, 0);
     const change = (after.players[p]?.life ?? 0) - (before.players[p]?.life ?? 0);
-    if (change !== -lost) problems.push(`${p}'s life changed by ${change}, but the events say ${-lost}`);
+    if (change !== said) problems.push(`${p}'s life changed by ${change}, but the events say ${said}`);
   }
   return problems;
 };

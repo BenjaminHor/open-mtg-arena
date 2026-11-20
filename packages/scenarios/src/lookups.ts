@@ -4,6 +4,7 @@ import {
   type AbilityRef,
   abilitiesOf,
   type CardDatabase,
+  controllerOf,
   type GameState,
   legalActions,
   type ManaPool,
@@ -14,7 +15,7 @@ import {
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
 import { isRecord } from "./format.ts";
-import { battlefieldOf, nameOf, parseRef, resolveRef } from "./names.ts";
+import { battlefieldOf, nameOf, type PermanentRef, parseRef, resolveRef } from "./names.ts";
 
 /** The card with this name in the player's hand (the first one), for an attempt that may be illegal. */
 export function cardIn(state: GameState, player: PlayerId, name: string, cards: CardDatabase): ObjectId {
@@ -120,14 +121,28 @@ export function abilityNamed(
   return which === "legal" ? (usable ?? first) : first;
 }
 
-/** A target a scenario names: a player (`p2`) or a permanent reference (`p2:Grizzly Bears`). */
+/**
+ * A target a scenario names: a player (`p2`), a permanent reference (`p2:Grizzly Bears`), or, when no such permanent
+ * exists, a spell on the stack its controller cast (`p1:Lightning Bolt`, `#2` counting from the bottom).
+ */
 export function targetNamed(state: GameState, value: unknown, cards: CardDatabase): Target {
   const text = String(value);
   if (/^p\d+$/.test(text)) return { kind: "player", player: text as PlayerId };
   const ref = parseRef(text);
-  const object = ref === null ? null : resolveRef(state, ref, cards);
-  if (object === null) throw new Error(`no target "${text}": name a player (p2) or a permanent (p2:Grizzly Bears)`);
+  const object = ref === null ? null : (resolveRef(state, ref, cards) ?? spellNamed(state, ref, cards));
+  if (object === null)
+    throw new Error(`no target "${text}": name a player (p2), a permanent or a spell (p2:Grizzly Bears)`);
   return { kind: "object", object };
+}
+
+function spellNamed(state: GameState, ref: PermanentRef, cards: CardDatabase): ObjectId | null {
+  const spells = state.zones.stack.filter(
+    (id) =>
+      state.objects[id]?.kind === "card" &&
+      controllerOf(state, id) === ref.player &&
+      nameOf(state, id, cards) === ref.card,
+  );
+  return spells[ref.nth - 1] ?? null;
 }
 
 /** A permanent named for a player: `Grizzly Bears` (one they control, `#2` for the second) or `p2:Grizzly Bears`. */

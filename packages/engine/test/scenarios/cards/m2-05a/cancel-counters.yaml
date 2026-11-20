@@ -1,0 +1,24 @@
+name: "Cancel counters a spell: it goes to its owner's graveyard, and the mana spent on it isn't refunded"
+rules: [CR 701.6a, CR 701.6b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Grizzly Bears]
+    battlefield: [Forest, Forest]
+  p2:
+    hand: [Cancel]
+    battlefield: [Island, Island, Island]
+steps:
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+      p1.battlefield: [Forest, Forest]
+      p1:Forest.tapped: true
+      stack: []
+      events contains: [{ type: SPELL_COUNTERED }]
