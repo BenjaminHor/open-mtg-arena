@@ -204,7 +204,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        (double strike has no Magic 2010 card), six new matrix rows; five of the cards in the M10 pair.
        For 06b: trample's lethal damage must count damage other attackers assign to a blocker that blocks several
        (Palace Guard; future-rules, "More combat").
-     - M2-06b, done, in review (D-071): defender, swampwalk and forestwalk, "can't be blocked (except by ...)", "can block
+     - M2-06b, done, merged (PR #36, D-071): defender, swampwalk and forestwalk, "can't be blocked (except by ...)", "can block
        any number" (Palace Guard dividing its damage, trample's lethal counting other attackers' damage), "can't block
        this turn". Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior, Dread Warlock, Palace Guard,
        Panic Attack. Scenarios in `test/scenarios/cards/m2-06b/` and `interactions/block-any-number/`, five new matrix
