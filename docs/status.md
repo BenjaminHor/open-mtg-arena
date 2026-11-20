@@ -542,6 +542,24 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        future-rules): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons), Great Sable Stag
        (from blue and from black; "can't be countered", CR 101.2, 113.6g: a counter effect does nothing to it, and
        it's still a legal target).
+       Plan (2026-11-20, now):
+       - `CardDef.protections: ProtectionQuality[]` (a color, or a subtype like Demon), one per "from" (CR 702.16g),
+         read through `protectionsOf` (layer 6, like `keywordsOf`); `rules/protection.ts`: `isProtectedFrom(state,
+         protected, source)`, reading the source's colors and subtypes as it is, or as it last existed if gone
+         (printed values: nothing changes colors or types yet). A subtype counts for permanents with it and for
+         sources not on the battlefield with it (CR 702.16a).
+       - Targeting (CR 702.16b): `legalTargets` drops a permanent protected from the targeting spell, or from an
+         ability's source; checked again on resolution (CR 608.2b), so gaining protection makes it an illegal target.
+       - Blocking (CR 702.16f): `canBlock` refuses a blocker with the quality.
+       - Damage (CR 702.16e): a "prevent all" candidate in `damage-replacements.ts` for damage to a protected
+         permanent from a source with the quality; like the others, asked about when another applies too (D-088).
+       - "This spell can't be countered" (Great Sable Stag): a counter does nothing to it (CR 101.2, its ruling);
+         the spell is still a legal target, and the counterspell's other effects happen.
+       - Cards: White Knight, Black Knight, Baneslayer Angel, Great Sable Stag. Scenarios per CR line and ruling, plus
+         negatives (other colors, a protected creature still blocking, a gone source's last color).
+       - Future impact: protection from players, from everything (CR 702.16j-k), Auras/Equipment (M2-12) and
+         granted protection (layers, M2-09) read `protectionsOf`; the source's characteristics move to snapshot
+         `characteristics()` when effects can change them.
      - Visibility: shields and prevention effects in state are public and end at cleanup: shown in `playerView` with
        the delayed triggers (Known issues), or added to that issue.
      - Future impact: "if you would draw" needs the draw-several container (D-060, CR 121.2a), when a card needs it (none
