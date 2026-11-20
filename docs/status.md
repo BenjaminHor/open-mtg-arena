@@ -27,22 +27,40 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
     `playerOrPlaneswalker`.
 - M2-05 Effects and keyword actions: split in three by the 50 cards' Oracle text (the spec lists the cards).
-  - M2-05a Removal, counters and {T} abilities (now, plan 2026-11-20). CR 701.8 (destroy), 701.6 (counter), 406
-    (exile), 119.3 (gain life), 701.26a (tap), 602.5a, 601.2h.
-    - New effect ops: `destroy` (one subject), `destroyAll` (every permanent that fits an `ObjectFilter`, one
-      simultaneous event, CR 701.8), `exile`, `returnToHand` and `putOnTopOfLibrary` (the owner's, CR 400.3; all
-      zone changes through the pipeline), `tap`, `counter` (CR 701.6a: the spell goes to its owner's graveyard; a new
-      `counter` event so "can't be countered" and counter replacements have a place, later), `gainLife` (a new pipeline
-      event, CR 119.3; lifelink later). Each op takes a subject, so "this" or a target.
-    - {T} in the cost of an ability that uses the stack (Royal Assassin, Blinding Mage, Undead Slayer, Rod of Ruin): the
-      same checks as a mana ability's {T} (untapped, CR 107.5; a creature controlled since the turn began, CR 602.5a),
-      and the tap happens with the rest of the payment (CR 601.2h), rechecked, so a cancel has nothing to undo.
-    - Cards: the 19 listed in the spec, plus Ornithopter and Rod of Ruin as artifacts to target. Enchantments aren't in
-      the pool until M2-07, so the enchantment half of Naturalize, Solemn Offering and Tempest of Light is unit-tested
-      with a test card until then.
-    - Tests: scenarios per card with negative cases (wrong target kind, color, tapped or not, attacking or blocking;
-      a countered spell going to its owner's graveyard; counter target spell can't target an ability); unit tests for
-      what scenarios can't reach.
+  - M2-05a Removal, counters and {T} abilities (now, plan 2026-11-20, corrected by the rules-judge's plan review).
+    - New effect ops, each skipping an object no longer where the effect expects it (CR 101.3, 400.7), never
+      throwing: `destroy` (CR 701.8a), `destroyAll` (every permanent fitting an `ObjectFilter`, decided once as the
+      effect applies, one simultaneous event, CR 608.2f, 608.2h; graveyard order later: CR 404.3), `exile`
+      (CR 701.13a, 406.2), `returnToHand` and `putOnTopOfLibrary` (the owner's zone, CR 400.3, 404.1), `tap`
+      (CR 701.26a: a tapped one does nothing), `counterObject` (CR 701.6a; named so it won't collide with CR 122
+      counters), `gainLife` (CR 119.3).
+    - Subjects: `"you"` joins `"self"` and targets for player effects, the spell's or ability's controller
+      (CR 109.5, 115.10b); "you gain 4 life" is `gainLife` to `"you"`.
+    - Pipeline events: `counterObject` (any stack object: a spell goes to its owner's graveyard as part of the event,
+      an ability ceases to exist; emits a countered event, not SPELL_DID_NOT_RESOLVE; no refund, CR 701.6b) and
+      `gainLife` (player, amount; 0 is dropped before replacement, CR 119.9; lifelink is a result of damage, not a
+      gainLife proposal, CR 120.3f). Exile, hand and library moves are `moveCard`. future-rules: the M2-08 "zone change
+      this event makes" helper must list `counterObject`.
+    - {T} in the cost of an ability that uses the stack (Royal Assassin, Blinding Mage, Undead Slayer, Rod of Ruin):
+      untapped (CR 107.5); controlled since the turn began only for creatures (CR 602.5a; Rod of Ruin can activate at
+      once); tapped at the final payment (CR 601.2h, after targets, so Royal Assassin can't target itself: its ruling),
+      before any sacrifice (for "{T}, Sacrifice this" later), rechecked. If the source was tapped for mana meanwhile,
+      the cost can't be paid (CR 107.5, 601.2h) and only cancel remains: `autoPay` and the `payMana` legal actions must
+      leave out the activating source's own mana ability, or the fuzzer's "every listed action is accepted" breaks.
+    - Citations: exile CR 701.13a; "target spell" can't be an ability CR 113.9, 112.1; Undead Slayer's target is a
+      permanent (CR 109.2), subtypes only; "can't be countered" later (CR 101.2).
+    - Cards: the 19 in the spec, plus Ornithopter and Rod of Ruin (artifacts to target). Enchantments aren't in the pool
+      until M2-07: the enchantment half of Naturalize, Solemn Offering and Tempest of Light is unit-tested until then.
+    - Tests (from the rulings): Royal Assassin can't target itself, its ability resolving without its source (and Rod
+      of Ruin's after Shatter); Solemn Offering whose target is gone gains no life; Ornithopter as an artifact creature
+      spell for Essence Scatter but not Negate or Flashfreeze; a countered creature spell to the graveyard, no refund;
+      Cancel can't target an ability or itself, and a Cancel whose target was countered first doesn't resolve; Divine
+      Verdict in the end of combat step, not in main 2, and a blocked attacker staying blocked; Celestial Purge not on a
+      land; Undead Slayer exiling a Vampire, not a Bear, not a card in a graveyard; Blinding Mage tapping a would-be
+      blocker, a declared blocker staying in combat (CR 506.4b), itself, sick; Assassinate untapped refused; Planar
+      Cleansing both sides, lands stay; Tempest of Light with nothing; Excommunicate on an attacker (owner draws it).
+      Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
+      mana, gainLife 0, destroy and tap on an object gone mid-resolution.
   - M2-05b Cards moving, and M2-05c Life, damage to many, mana: after M2-05a, each planned the same way.
 
 ## Handoff notes
