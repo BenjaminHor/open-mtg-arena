@@ -57,7 +57,8 @@ export type {
 } from "./state/objects.ts";
 export type { PlayerState } from "./state/players.ts";
 export type { Pregame } from "./state/pregame.ts";
-export type { ReplacementEffect, ReplacementRef } from "./state/replacements.ts";
+export type { ChoiceFor, ReplacementEffect, ReplacementRef } from "./state/replacements.ts";
+export { replacementEffectCard } from "./state/replacements.ts";
 export type {
   EngineError,
   EngineErrorCode,

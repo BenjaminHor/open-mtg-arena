@@ -9,7 +9,7 @@ import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DecisionId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
-import type { ReplacementChoice, ReplacementRef } from "./replacements.ts";
+import type { ChoiceFor, ReplacementChoice, ReplacementRef } from "./replacements.ts";
 import type { PendingTrigger } from "./triggers.ts";
 import type { WorkItem } from "./work.ts";
 import type { ZoneRef } from "./zones.ts";
@@ -132,8 +132,8 @@ export type DecisionKind =
    */
   | {
       kind: "chooseReplacement";
-      /** What the choice is for: the affected object, or one damage entry (`ReplacementChoice.for`). */
-      for: string;
+      /** What the choice is for: the affected object, or one damage entry. */
+      for: ChoiceFor;
       options: ReplacementRef[];
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     };

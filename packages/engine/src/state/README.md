@@ -16,7 +16,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 | `casting.ts` | `Casting`: a spell part way through being cast or an ability being activated, with its origin and what's needed to reverse it (CR 734.1) |
 | `work.ts` | `WorkItem`: work waiting in the queue (D-032) |
 | `combat.ts` | `Combat` (with `newCombat()`), `Attack`, `Block`, `DamageDivision`, `CombatDivision`: attacks, blocks, creatures removed from combat (`removed`, CR 506.4) and first strike's steps during the combat phase (CR 506, 510.4) |
-| `replacements.ts` | `ReplacementEffect`: replacement effects made by resolving spells and abilities, regeneration shields so far (CR 614.1, 701.19a, D-086); `hasRegenerationShield`, `endReplacementEffects` |
+| `replacements.ts` | `ReplacementEffect`: replacement and prevention effects made by resolving spells and abilities: regeneration shields and "prevent all damage" (CR 614.1, 615.1a, 701.19a, D-086, D-088); `ReplacementRef` and `ChoiceFor`, what a CR 616.1 choice names and is for; `hasRegenerationShield`, `replacementEffectCard`, `endReplacementEffects` |
 | `state-based-actions.ts` | `StateBasedAction`: one state-based action a check found (CR 704) |
 | `effects.ts` | `ContinuousEffect`, `EffectChange`, `Duration` (CR 611); `EffectContext`, carried by `runEffect` work items (D-036) and by a `chooseCards` decision's `resume` (D-062) |
 | `pregame.ts` | `Pregame`: the start of a standard game (starting player, mulligans), before turn 1 |

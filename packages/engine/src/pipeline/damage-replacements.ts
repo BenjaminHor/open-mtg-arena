@@ -4,17 +4,25 @@
 // so lifelink and "deals damage" triggers see only what's left; it's still told, as a `damagePrevented` event.
 //
 // Candidates: prevention effects made by resolving spells (`GameState.replacements`: Fog, Safe Passage), and those in
-// the text of permanents on the battlefield (Guardian Seraph). Identical ones (two Guardian Seraphs) are applied
-// without asking, as no order between them can differ (like D-077); all of them still apply, each once.
+// the text of permanents on the battlefield (Guardian Seraph). Identical ones (two Guardian Seraphs) are one option:
+// no order among them can differ (like D-077). Choosing it applies one of them, and the rest are checked again
+// (CR 616.1f), so every order the rules allow can still be chosen.
 
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
 import { replacementsOf } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerNowOrLastKnown, controllerOf } from "../rules/controller.ts";
+import { canBeDealtDamage } from "../rules/damage-recipients.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
-import { type ReplacementChoice, type ReplacementRef, sameReplacement } from "../state/replacements.ts";
+import {
+  type ChoiceFor,
+  type ReplacementChoice,
+  type ReplacementRef,
+  sameChoiceFor,
+  sameReplacement,
+} from "../state/replacements.ts";
 import type { Damage, SingleEvent } from "./proposed.ts";
 import { type Ask, firstInApnapOrder, type Replaced } from "./replacements.ts";
 
@@ -28,33 +36,29 @@ export function replaceDamage(
   const prevented: SingleEvent[] = [];
   const dealt: Damage[] = [];
   const asks: Ask[] = [];
-  for (const entry of damage) {
-    // A source that would deal 0 damage deals none, so there's nothing to prevent (CR 120.8).
-    if (entry.amount <= 0) continue;
-    const key = damageKey(entry);
-    const refs = choices.filter((c) => c.for === key).map((c) => c.ref);
+  damage.forEach((entry, index) => {
+    // A source that would deal 0 damage deals none (CR 120.8), and damage to a recipient that can't be dealt it (one
+    // that left) isn't dealt (CR 101.3): neither is there to prevent, so no effect is used up on it (later: CR 609.7b).
+    if (entry.amount <= 0 || !canBeDealtDamage(state, entry.to, cards)) return;
+    const key: ChoiceFor = { kind: "damage", index, source: entry.source, to: entry.to };
+    const refs = choices.filter((c) => sameChoiceFor(c.for, key)).map((c) => c.ref);
     const result = preventEntry(state, entry, cards, refs);
-    if (result.kind === "choose")
+    if (result.kind === "choose") {
       asks.push({ kind: "choose", player: result.player, for: key, options: result.options });
-    else {
-      prevented.push(...result.prevented);
-      if (result.amount > 0) dealt.push({ ...entry, amount: result.amount });
+      return;
     }
-  }
+    prevented.push(...result.prevented);
+    if (result.amount > 0) dealt.push({ ...entry, amount: result.amount });
+  });
   const ask = firstInApnapOrder(state, asks);
   if (ask !== null) return ask;
   return { kind: "replaced", events: [...prevented, { kind: "dealDamage", damage: dealt }] };
 }
 
-/** What a choice for this damage entry is for: its source and recipient. */
-function damageKey(entry: Damage): string {
-  return `damage:${entry.source}>${entry.to.kind === "player" ? entry.to.player : entry.to.object}`;
-}
-
 /** A prevention effect that would apply to a damage entry. */
 type Candidate = {
   ref: ReplacementRef;
-  /** Effects with the same identity can't differ in order: the same text, under the same controller. */
+  /** Effects with the same identity can't differ in order: the same text, with the same "you" where it matters. */
   identity: string;
   /** How much it prevents: all of it, or up to a number. */
   prevents: number | "all";
@@ -83,16 +87,19 @@ function preventEntry(
     const candidates = candidatesFor(state, entry, cards).filter(
       (c) => !applied.some((done) => sameReplacement(done, c.ref)),
     );
-    const [first] = candidates;
-    if (first === undefined) break;
-    const allIdentical = candidates.every((c) => c.identity === first.identity);
-    // The earliest choice not yet applied that's among the candidates: choices are applied in the order made.
+    // One option for each identity: its first candidate stands for the others.
+    const options = candidates.filter((c, i) => candidates.findIndex((d) => d.identity === c.identity) === i);
+    const [only, second] = options;
+    if (only === undefined) break;
+    // The earliest choice not yet applied that's among the options: choices are applied in the order made.
     const next = choices.find(
-      (ch) => !applied.some((a) => sameReplacement(a, ch)) && candidates.some((c) => sameReplacement(c.ref, ch)),
+      (ch) => !applied.some((a) => sameReplacement(a, ch)) && options.some((c) => sameReplacement(c.ref, ch)),
     );
-    const chosen = allIdentical ? first : candidates.find((c) => next !== undefined && sameReplacement(c.ref, next));
+    const chosen =
+      second === undefined ? only : options.find((c) => next !== undefined && sameReplacement(c.ref, next));
+    // Any of them may be chosen first (CR 616.1e): none is a self-replacement (later: CR 616.1a).
     if (chosen === undefined)
-      return { kind: "choose", player: recipientChooser(state, entry.to), options: candidates.map((c) => c.ref) };
+      return { kind: "choose", player: recipientChooser(state, entry.to), options: options.map((c) => c.ref) };
     applied.push(chosen.ref);
     const stopped = chosen.prevents === "all" ? amount : Math.min(amount, chosen.prevents);
     amount -= stopped;
@@ -114,10 +121,12 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
     if (effect.protects === "controllerAndCreatures" && !isYouOrYourCreature(state, entry.to, effect.controller, cards))
       return [];
     const { combatOnly, protects, controller } = effect;
+    // Whose effect it is matters only when it protects its controller's things: two players' Fogs are the same.
+    const you = protects === "everyone" ? null : controller;
     return [
       {
-        ref: { kind: "prevention", id: effect.id },
-        identity: JSON.stringify({ kind: "preventAllDamage", combatOnly, protects, controller }),
+        ref: { kind: "resolvedEffect", id: effect.id },
+        identity: JSON.stringify({ kind: "preventAllDamage", combatOnly, protects, you }),
         prevents: "all",
         by: effect.sourceOracleId,
       },
@@ -125,14 +134,14 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
   });
   const fromPermanents = state.zones.battlefield.flatMap((permanent) =>
     replacementsOf(state, permanent, cards).flatMap((def, index): Candidate[] => {
-      if (!preventsForPermanent(state, def, permanent, entry)) return [];
+      const prevents = preventsForPermanent(state, def, permanent, entry);
       const obj = state.objects[permanent];
-      if (obj?.kind !== "card" || def.kind !== "preventDamageToYou") return [];
+      if (prevents === null || obj?.kind !== "card") return [];
       return [
         {
           ref: { kind: "ownText", object: permanent, index },
-          identity: JSON.stringify({ def, controller: controllerOf(state, permanent) }),
-          prevents: def.amount,
+          identity: JSON.stringify({ def, you: controllerOf(state, permanent) }),
+          prevents,
           by: obj.oracleId,
         },
       ];
@@ -141,22 +150,27 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
   return [...fromSpells, ...fromPermanents];
 }
 
-/** Whether a permanent's own prevention text applies to this damage entry. */
-function preventsForPermanent(state: GameState, def: ReplacementDef, permanent: ObjectId, entry: Damage): boolean {
+/** How much of this damage entry a permanent's own text prevents, or null if it doesn't apply. */
+function preventsForPermanent(
+  state: GameState,
+  def: ReplacementDef,
+  permanent: ObjectId,
+  entry: Damage,
+): number | null {
   switch (def.kind) {
     case "preventDamageToYou": {
       // "If a source an opponent controls would deal damage to you": to its controller, from an opponent's source.
       const you = controllerOf(state, permanent);
-      if (entry.to.kind !== "player" || entry.to.player !== you) return false;
-      // A gone source's controller is as it last was (CR 608.2h); one without a controller counts by its owner (its
-      // ruling), which `controllerOf` gives for a card outside the battlefield and the stack.
+      if (entry.to.kind !== "player" || entry.to.player !== you) return null;
+      // A source that left is as it last existed (CR 113.7a, 608.2h); one without a controller counts by its owner
+      // (its ruling), which `controllerOf` gives for a card outside the battlefield and the stack.
       const sourceController = controllerNowOrLastKnown(state, entry.source);
       // An opponent (CR 102.2); teams would change this (later: CR 102.3).
-      return sourceController !== null && sourceController !== you;
+      return sourceController !== null && sourceController !== you ? def.amount : null;
     }
     case "entersTapped":
     case "graveyardToLibrary":
-      return false;
+      return null;
   }
 }
 

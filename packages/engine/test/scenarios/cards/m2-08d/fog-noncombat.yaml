@@ -1,5 +1,5 @@
 name: Fog prevents only combat damage; Lightning Bolt still deals its damage
-rules: [CR 615.1a, CR 120.2a]
+rules: [CR 615.1a, CR 120.2b]
 setup:
   turn: { active: p2, step: main1 }
   p1:

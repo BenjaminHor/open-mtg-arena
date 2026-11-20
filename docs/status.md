@@ -468,13 +468,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          `fromOpponents`; one engine helper naming a state effect's card; citations (CR 120.2b); stale docs.
        - Damage is replaced per recipient: a `dealDamage` event's entries (one per source and recipient) each get their
          own candidates and their own chooser, the recipient player or the recipient object's controller (CR 616.1).
-         Choices become `{ affected, ref }`, so a global effect's choice for one recipient isn't used for another
+         Choices become `{ for, ref }` (`for`: an object, or a damage entry), so a global effect's choice for one recipient isn't used for another
          (the M2-08c review). A prevented entry shrinks or goes; lifelink and "deals damage" triggers see what's left
          (CR 615.6, 120.4c). State-held effects get an `id` (two Harm's Ways differ).
        - M2-08d1: Fog ("prevent all combat damage that would be dealt this turn"), Safe Passage ("all damage that would
          be dealt to you and creatures you control this turn", creatures arriving later too: its ruling), both kept in
          `GameState.replacements` until cleanup; Guardian Seraph ("if a source an opponent controls would deal damage to
-         you, prevent 1 of that damage"; an ownerless source counts by its owner: its ruling; several add up), the first
+         you, prevent 1 of that damage"; a source without a controller counts by its owner: its ruling; several add up), the first
          replacement read from another permanent's text on the battlefield, not the moving card's. Choices arise
          (Seraph with Fog or Safe Passage), though the result is the same; asked anyway (CR 616.1), skipping a choice
          whose outcome can't differ being a later UX question.

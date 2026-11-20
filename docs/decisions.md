@@ -1210,17 +1210,24 @@ every schema change and every change D-024 lists bumps it.
 - A damage event stays one event (CR 120.4, D-067); each entry (a source dealing damage to a recipient) is replaced
   on its own inside it (`pipeline/damage-replacements.ts`), with its own candidates and its own chooser, the recipient
   player or the recipient object's controller (CR 616.1). Choices are keyed to what they're for
-  (`ReplacementChoice.for`: the affected object, or the entry), so a choice made for one entry isn't used for another.
-- Prevention effects made by resolving spells (Fog, Safe Passage) live in `GameState.replacements`, named by the
-  spell's id and its card's oracle id (the spell is gone when it's offered as a choice), checked as each damage event
-  happens and ended in cleanup. A permanent's own prevention text (Guardian Seraph) is read from the battlefield, the
-  first replacement read from another permanent than the moving card; a gone source's controller is its last known
-  one (CR 608.2h).
+  (`ChoiceFor`: the affected object, or the entry by its place in the event as proposed, with its source and
+  recipient), so a choice made for one entry isn't used for another, even one with the same source and recipient.
+  Entries of 0 damage or to a recipient that can't be dealt damage are dropped first, so no effect is used on them.
+- Prevention effects made by resolving spells (Fog, Safe Passage) live in `GameState.replacements`, each with its own
+  id (from `newObjectId`, so two from one source are two effects) and its card's oracle id (the spell is gone when
+  it's offered as a choice), checked as each damage event happens and ended in cleanup. A permanent's own prevention
+  text (Guardian Seraph) is read from the battlefield, the first replacement read from another permanent than the
+  moving card; a gone source's controller is its last known one (CR 113.7a, 608.2h).
 - Prevented damage is never dealt (CR 615.6): lifelink and "deals damage" triggers see only what's left. A
   `DAMAGE_PREVENTED` event says what was prevented and by which card, for the log, the UI and the golden cover.
-- Identical candidates (two Guardian Seraphs: the same text under the same controller) are applied without asking, all
-  of them, each once; different ones are asked about even when the order can't change the result (Seraph and Fog),
-  as CR 616.1 has the player choose. Skipping those is a later UX question.
+- Identical candidates (two Guardian Seraphs: the same text under the same controller; a Fog from each player, whose
+  controller doesn't matter) are one option: choosing it applies one of them, and the rest are checked again
+  (CR 616.1f), so every order the rules allow can still be chosen (Seraph, Fog, and the second Seraph never applies),
+  while the player never sees two options that are the same. With no different candidate, they're applied without
+  asking. Different ones are asked about even when the order can't change the result (Seraph and Fog), as CR 616.1
+  has the player choose, and which effect prevented the damage will matter to CR 615.5 extra effects. Skipping those
+  is a later UX question. (The first version applied all identical ones at once; the M2-08d1 review found duplicate
+  options and an ambiguous scenario choice.)
 
 **D-089: Which cards and mechanics come after M2: what MTG Arena has, without Alchemy** · 2026-11-20 · accepted (owner)
 - The owner: Scryfall can filter cards that exist on MTG Arena (`game:arena`, a printing's `games` including

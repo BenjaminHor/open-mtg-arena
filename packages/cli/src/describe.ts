@@ -6,6 +6,7 @@ import type {
   Action,
   Answer,
   CardDatabase,
+  ChoiceFor,
   ChoosePurpose,
   Duration,
   GameState,
@@ -14,6 +15,7 @@ import type {
   ReplacementRef,
   Target,
 } from "@mtg/engine";
+import { replacementEffectCard } from "@mtg/engine";
 import { nameOf, refOf } from "@mtg/scenarios";
 
 /** A permanent's reference, or the object's name if it isn't on the battlefield. */
@@ -129,8 +131,10 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return answer.yes ? "yes" : "no";
     case "chooseReplacement": {
       const pending = state.pending;
-      const ref = pending?.kind === "chooseReplacement" ? pending.options[answer.option] : undefined;
-      return ref === undefined ? `replacement ${answer.option} first` : `${replacementText(state, ref, cards)} first`;
+      if (pending?.kind !== "chooseReplacement") return `replacement ${answer.option} first`;
+      const ref = pending.options[answer.option];
+      const first = ref === undefined ? `replacement ${answer.option}` : replacementText(state, ref, cards);
+      return `${first} first, for ${choiceForText(state, pending.for, cards)}`;
     }
     case "orderTrigger": {
       const pending = state.pending;
@@ -173,14 +177,20 @@ export function replacementText(state: GameState, ref: ReplacementRef, cards: Ca
       return `${nameOf(state, ref.object, cards)}'s replacement ${ref.index + 1}`;
     case "regenerationShield":
       return `regenerating ${nameOf(state, ref.object, cards)}`;
-    case "prevention":
-      return `${preventionName(state, ref.id, cards)}'s prevention`;
+    case "resolvedEffect": {
+      // Named by the card that made it: its spell is usually gone (CR 400.7).
+      const oracleId = replacementEffectCard(state, ref.id);
+      return `${(oracleId === null ? undefined : cards[oracleId]?.printed.name) ?? ref.id}'s effect`;
+    }
   }
 }
 
-/** The card a prevention effect in state came from, by name: its spell is usually gone (CR 400.7). */
-export function preventionName(state: GameState, id: ObjectId, cards: CardDatabase): string {
-  const effect = state.replacements.find((r) => r.kind === "preventAllDamage" && r.id === id);
-  const oracleId = effect?.kind === "preventAllDamage" ? effect.sourceOracleId : undefined;
-  return (oracleId === undefined ? undefined : cards[oracleId]?.printed.name) ?? id;
+/** What a choice between replacement effects is for: the event's object, or one source's damage to one recipient. */
+function choiceForText(state: GameState, choiceFor: ChoiceFor, cards: CardDatabase): string {
+  switch (choiceFor.kind) {
+    case "object":
+      return nameOf(state, choiceFor.object, cards);
+    case "damage":
+      return `${nameOf(state, choiceFor.source, cards)}'s damage to ${targetText(state, choiceFor.to, cards)}`;
+  }
 }

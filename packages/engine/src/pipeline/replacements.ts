@@ -17,6 +17,7 @@ import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import {
+  type ChoiceFor,
   hasRegenerationShield,
   type ReplacementChoice,
   type ReplacementRef,
@@ -27,7 +28,7 @@ import { zoneOf } from "../zones/zone-list.ts";
 import { playLandDestination, type SingleEvent } from "./proposed.ts";
 
 /** Who must choose between which replacements first (CR 616.1), and what the choice is for. */
-export type Ask = { kind: "choose"; player: PlayerId; for: string; options: ReplacementRef[] };
+export type Ask = { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] };
 
 /** The events in place of the event, or the choice needed first. */
 export type Replaced = { kind: "replaced"; events: SingleEvent[] } | Ask;
@@ -50,8 +51,8 @@ export function applyReplacements(
   allChoices: readonly ReplacementChoice[] = [],
 ): Replaced {
   // Choices are for the object the event affects (`ReplacementChoice.for`).
-  const key = affectedKey(event);
-  const choices = allChoices.filter((c) => c.for === key).map((c) => c.ref);
+  const object = affectedObject(event);
+  const choices = allChoices.filter((c) => c.for.kind === "object" && c.for.object === object).map((c) => c.ref);
   let replaced: Replacing = { before: [], event, after: [] };
   const applied: ReplacementRef[] = [];
   for (;;) {
@@ -69,13 +70,15 @@ export function applyReplacements(
       second === undefined ? first : candidates.find((c) => next !== undefined && sameReplacement(c.ref, next));
     // Any of them may be chosen (CR 616.1e): no self-replacement or control, copy or face-up replacement exists yet,
     // which must come first (later: CR 616.1a–d).
-    if (chosen === undefined)
+    if (chosen === undefined) {
+      if (object === null) throw new Error(`no replacement offers a choice on ${event.kind} yet`);
       return {
         kind: "choose",
         player: affectedPlayer(state, replaced.event),
-        for: key,
+        for: { kind: "object", object },
         options: candidates.map((c) => c.ref),
       };
+    }
     applied.push(chosen.ref);
     replaced = replaceWith(state, chosen, replaced);
   }
@@ -113,9 +116,31 @@ function regeneration(state: GameState, event: SingleEvent): Candidate[] {
   return [{ kind: "regeneration", ref: { kind: "regenerationShield", object: event.object }, object: event.object }];
 }
 
-/** What a choice for this event is for: the object it affects. */
-function affectedKey(event: SingleEvent): string {
-  return "object" in event ? event.object : event.kind;
+/** The object this event affects, which a choice for it is for, or null for an event no choice is made on yet. */
+function affectedObject(event: SingleEvent): ObjectId | null {
+  switch (event.kind) {
+    case "moveCard":
+    case "destroy":
+    case "sacrifice":
+    case "discard":
+    case "counterObject":
+    case "regenerate":
+    case "playLand":
+    case "tap":
+    case "untap":
+      return event.object;
+    // Damage is replaced per entry, with its own choices (`damage-replacements.ts`).
+    case "dealDamage":
+    case "damagePrevented":
+    case "gainLife":
+    case "loseLife":
+    case "reveal":
+    case "reorderLibrary":
+    case "addMana":
+    case "draw":
+    case "shuffle":
+      return null;
+  }
 }
 
 /** Who chooses among replacements for this event: the affected object's controller, or its owner (CR 616.1). */

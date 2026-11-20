@@ -1,6 +1,6 @@
 // What can happen in the game: each change a rule or effect makes is proposed as one of these and carried out by
-// `happen` (happen.ts), so replacement and prevention effects (later: CR 614–616) and triggered abilities
-// (later: CR 603.2) have one place to see it.
+// `happen` (happen.ts), so replacement and prevention effects (CR 614, 615) and triggered abilities (CR 603.2) have
+// one place to see it.
 //
 // Each event changes one object or player (or, for damage, is one damage event, CR 120.4); events that happen at the
 // same time are one `simultaneous` event. An event is performed whole: destroying a permanent is moving it to the

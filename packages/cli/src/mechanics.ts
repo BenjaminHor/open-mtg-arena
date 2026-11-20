@@ -141,8 +141,10 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
 };
 
 /** The replacement effects a card's own text makes that apply as it moves to `zone`. */
-export function replacementUnits(def: CardDef, zone: string): string[] {
-  return (def.replacements ?? []).filter((r) => REPLACEMENT_WHERE[r.kind] === zone).map((r) => `replacement ${r.kind}`);
+export function replacementUnits(def: CardDef, where: string): string[] {
+  return (def.replacements ?? [])
+    .filter((r) => REPLACEMENT_WHERE[r.kind] === where)
+    .map((r) => `replacement ${r.kind}`);
 }
 
 export const decisionUnit = (kind: DecisionKind["kind"]): string => `decision ${kind}`;

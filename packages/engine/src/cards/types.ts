@@ -131,7 +131,7 @@ export type ReplacementDef =
    * while this permanent is on the battlefield, N of each such source's damage to its controller in each damage event.
    * A source with no controller counts by its owner (its ruling).
    */
-  | { kind: "preventDamageToYou"; amount: number; fromOpponents: true };
+  | { kind: "preventDamageToYou"; amount: number };
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =

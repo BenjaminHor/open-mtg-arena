@@ -34,9 +34,10 @@ is where they go.
 *Built (M2-08c, D-087):* `happenOrAsk` stops before performing anything when the affected player must choose the
 order of replacements (CR 616.1) and resumes as a work item; only callers that do nothing after the event use it.
 *Watch out:* every other caller (the list is in `engine/src/pipeline/README.md`) must queue its rest as work before it
-can wait, and mana abilities run outside the work queue. M2-08d's prevention needs choices per damage recipient
-(a damage event has many), choices scoped to the recipient (a global effect like Fog names none), an identity for
-state-held effects (two Harm's Ways), and a second kind of recorded choice (which damage Harm's Way redirects). Each member of a batch is replaced
+can wait, and mana abilities run outside the work queue. *Built (M2-08d1, D-088):* prevention per damage entry, each
+with its own choices and chooser, choices keyed by the entry (`ChoiceFor`), and an id for each state-held effect.
+Still needed for Harm's Way (M2-08d2): a second kind of recorded choice (which damage it redirects), an amount left
+shared across one event's entries, and a redirected entry checked again for prevention (CR 616.1f). Each member of a batch is replaced
 against the state before the batch (built, D-085), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):

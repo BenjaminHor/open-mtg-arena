@@ -25,6 +25,7 @@ import {
   shuffleEach,
 } from "./library-effects.ts";
 import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
+import { preventAllDamage } from "./prevention.ts";
 import { put } from "./put-effects.ts";
 import { addRegenerationShields } from "./regeneration-shield.ts";
 import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
@@ -107,20 +108,8 @@ export function runEffect(
           : { kind: "destroy", object };
       return happenOrAsk(state, { kind: "simultaneous", events: objects.map(destroy) }, cards);
     }
-    case "preventAllDamage": {
-      // A prevention effect until cleanup (CR 615.1a, 514.2), named by the spell that made it (D-088).
-      const source = state.objects[context.self];
-      const sourceOracleId = source?.kind === "card" ? source.oracleId : (source?.sourceOracleId ?? "");
-      const effectMade = {
-        kind: "preventAllDamage",
-        id: context.self,
-        sourceOracleId,
-        controller: context.controller,
-        combatOnly: effect.combatOnly,
-        protects: effect.protects === "everyone" ? "everyone" : "controllerAndCreatures",
-      } as const;
-      return { state: { ...state, replacements: [...state.replacements, effectMade] }, events: [] };
-    }
+    case "preventAllDamage":
+      return preventAllDamage(state, effect, context);
     case "regenerate":
       return addRegenerationShields(state, objectsNamed(state, effect.of, context, cards));
     case "revealUntil": {

@@ -1,0 +1,33 @@
+name: With Guardian Seraph and Fog, its controller chooses for each attacker's damage on its own; a choice for one isn't used for the other
+rules: [CR 616.1, CR 616.1f, CR 615.10]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Guardian Seraph, Forest]
+    hand: [Fog]
+  p2:
+    battlefield: [Craw Wurm, Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Craw Wurm, Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p1 block: {}
+  - p2 pass: once
+  - p1 cast: Fog
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseReplacement, for: { kind: damage, index: 0 } }
+  # The Wurm's damage: Seraph first, then Fog prevents the 5 left.
+  - p1 choose: Guardian Seraph
+  - expect:
+      pending: { player: p1, kind: chooseReplacement, for: { kind: damage, index: 1 } }
+  # The Bears' damage: Fog first prevents all 2, and the Seraph has nothing left to prevent.
+  - p1 choose: Fog
+  - expect:
+      p1.life: 20
+      events contains:
+        - { type: DAMAGE_PREVENTED, amount: 1 }
+        - { type: DAMAGE_PREVENTED, amount: 5 }
+        - { type: DAMAGE_PREVENTED, amount: 2 }

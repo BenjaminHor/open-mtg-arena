@@ -20,6 +20,7 @@ steps:
   - expect:
       pending: { player: p1, kind: chooseReplacement }
   - p1 choose: Guardian Seraph
-  - all pass: until main2
+  # Seraph first prevents 1, then Fog the rest.
   - expect:
       p1.life: 20
+      events contains: [{ type: DAMAGE_PREVENTED, amount: 1 }, { type: DAMAGE_PREVENTED, amount: 5 }]
