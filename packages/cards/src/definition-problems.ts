@@ -6,6 +6,11 @@ import type { PoolCard } from "./pool-data.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
 const KEYWORD_ACTIONS: readonly string[] = ["mill"];
+/**
+ * Generic terms Scryfall lists beside the keyword itself, which name no ability of their own: "Landwalk" beside
+ * "Swampwalk" (CR 702.14a).
+ */
+const GENERIC_TERMS: readonly string[] = ["landwalk"];
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
 export function definitionProblems(defs: readonly CardDef[], pool: readonly PoolCard[]): string[] {
@@ -33,7 +38,7 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     // (Landfall, later: CR 207.2c); see docs/future-rules.md before adding a card with those.
     const expected = card.keywords
       .map((k) => k.toLowerCase())
-      .filter((k) => !KEYWORD_ACTIONS.includes(k))
+      .filter((k) => !KEYWORD_ACTIONS.includes(k) && !GENERIC_TERMS.includes(k))
       .sort();
     const actual = [...(def.keywords ?? [])].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
@@ -84,6 +89,10 @@ function targetProblems(
   if (costIncrease && targets.length !== 1)
     problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
+    // "Can't block" is a rules effect: on targets its set is fixed by them (CR 608.2b), but on "each creature ..." it
+    // would apply to creatures arriving later (later: CR 611.2c, 613.11), which nothing reads yet.
+    if (effect.op === "cantBlock" && !(typeof effect.of === "object" && "target" in effect.of))
+      problems.push(`${where}: "can't block" applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
     if (typeof effect.amount === "object") problems.push(`${where}: divided damage can't be a counted amount`);

@@ -1,0 +1,26 @@
+name: Palace Guard blocking a first striker and another attacker takes the first striker's damage first, then divides its own in the second step
+rules: [CR 510.4, CR 510.1d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Viashino Spearhunter, Elite Vanguard]
+  p2:
+    battlefield: [Palace Guard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Viashino Spearhunter, Elite Vanguard]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Viashino Spearhunter, Elite Vanguard] }
+  - all pass: until combat.damage
+  # The first strike step: only the Viashino deals damage; the Guard isn't asked yet.
+  - expect:
+      pending: { player: p1, kind: priority }
+      p2:Palace Guard.damage: 2
+  - all pass: once
+  # The second step: the Vanguard and the Guard deal damage; the Guard's 1 kills either 2/1 attacker.
+  - expect:
+      pending: { player: p2, kind: assignDamage, amount: 1 }
+  - p2 assign: { Viashino Spearhunter: 1, Elite Vanguard: 0 }
+  - expect:
+      p1.graveyard: [Viashino Spearhunter]
+      p2.graveyard: [Palace Guard]

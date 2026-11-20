@@ -1,0 +1,22 @@
+name: Any damage from another attacker with deathtouch is lethal, so a trampler blocked by the same creature can put all its damage on the player
+rules: [CR 702.2c, CR 702.19b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Deadly Recluse, Stampeding Rhino]
+  p2:
+    battlefield: [Palace Guard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Deadly Recluse, Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Deadly Recluse, Stampeding Rhino] }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: assignDamage, lethal: [0] }
+  - p1 assign: { Palace Guard: 0, p2: 4 }
+  - p2 assign: { Deadly Recluse: 1, Stampeding Rhino: 0 }
+  - expect:
+      p2.life: 16
+      p2.graveyard: [Palace Guard]
+      p1:Deadly Recluse.damage: 1

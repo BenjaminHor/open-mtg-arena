@@ -121,8 +121,9 @@ owner choose, so once a card cares about graveyard order, ask with a `PendingDec
 
 **Triggered abilities and the casting steps (CR 603, D-041).** A triggered ability's targets are chosen as it's put on
 the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
-`casting-steps.ts` will need an origin kind with no payment step and no cancel. Once `def.abilities` holds triggered or
-static definitions, `activationProblem` and the activation list must check `def.kind === "activated"`.
+`casting-steps.ts` will need an origin kind with no payment step and no cancel. Static abilities that aren't keywords got their own
+`def.statics` (D-071), so `def.abilities` stays activated only; once it holds triggered definitions, `activationProblem`
+and the activation list must check `def.kind === "activated"`.
 A non-mana ability's {T} is paid only at the final payment (D-059), so cancelling never has to untap it. The activation events name the source by its id, which dies with the source; a UI that names it later will
 want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
 *Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`
@@ -135,12 +136,11 @@ regeneration, phasing, "remove from combat" effects or control changes, which le
 permanent that stops and starts being a creature would rejoin combat: those need a recorded removed-from-combat set
 (CR 506.4). Rules about a whole declaration (menace, "can't attack alone", requirements, CR 508.1c–d, 509.1b–c) are
 checked at `finishDeclaring`, so a partial declaration can reach a dead end: then `finishDeclaring` must be offered only
-when legal, and the player needs a way to take a pick back. Trample and first strike are built (M2-06a, D-070). A creature blocking several attackers (Palace Guard, M2-06b) needs
-a list form for the scenario `block` step, and its division among them a decision for the defending player (CR 510.1d,
-recipients never a player: trample does nothing for a blocker, CR 702.19a). Then trample's lethal damage must count
-every other damage assigned to a blocker in the step, forced assignments included, whatever order the decisions come
-in (CR 702.19b, 510.1e): today it counts only divisions already chosen, which is exact while a blocker blocks one
-attacker. The second step's "remaining attackers and blockers" (CR 510.4) needs the removed-from-combat set too.
+when legal, and the player needs a way to take a pick back. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,
+D-071). Two tramplers on one blocker are worked out one after the other, so a split where both trample over can't be
+chosen: checking the whole assignment at once (CR 510.1e) needs a decision that can be taken back or checked as a whole.
+A "can't block" effect not on targets ("creatures without flying can't block this turn") is a rules effect read live
+at declaration (CR 611.2c, 613.11), not an `affected` list. The second step's "remaining attackers and blockers" (CR 510.4) needs the removed-from-combat set too.
 
 **Milling and losing life, as triggers and replacements arrive (M2-07, M2-08).** Mill is plain `moveCard` events from
 library to graveyard (D-060), so "whenever a player mills", "the milled card" (CR 701.17c, 701.17d) and replacements

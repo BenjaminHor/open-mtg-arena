@@ -10,6 +10,7 @@ Angel's Mercy
 Assassinate
 Birds of Paradise
 Blinding Mage
+Bog Wraith
 Bountiful Harvest
 Burning Inquiry
 Cancel
@@ -28,10 +29,12 @@ Disorient
 Divination
 Divine Verdict
 Doom Blade
+Dread Warlock
 Duress
 Earthquake
 Elite Vanguard
 Elvish Piper
+Emerald Oryx
 Enormous Baloth
 Essence Scatter
 Excommunicate
@@ -70,6 +73,9 @@ Naturalize
 Nature's Spiral
 Negate
 Ornithopter
+Palace Guard
+Panic Attack
+Phantom Warrior
 Plains
 Planar Cleansing
 Ponder
@@ -106,6 +112,8 @@ Unsummon
 Vampire Aristocrat
 Viashino Spearhunter
 Volcanic Hammer
+Wall of Faith
+Wall of Fire
 Warpath Ghoul
 Wind Drake
 Windstorm

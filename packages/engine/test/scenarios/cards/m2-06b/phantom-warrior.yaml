@@ -1,0 +1,19 @@
+name: A creature that can't be blocked can't be blocked by anything, flying or reach included
+rules: [CR 509.1b, CR 604.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Phantom Warrior]
+  p2:
+    battlefield: [Giant Spider, Air Elemental]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Phantom Warrior]
+  # No block is possible, so p2 isn't asked.
+  - all pass: until combat.declareBlockers
+  - expect:
+      pending: { player: p1, kind: priority }
+      events contains: [{ type: BLOCKERS_DECLARED, player: p2, blocks: [] }]
+  - all pass: until main2
+  - expect:
+      p2.life: 18

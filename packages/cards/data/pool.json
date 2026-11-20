@@ -179,6 +179,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Bog Wraith",
+      "slug": "bog-wraith",
+      "oracleId": "508248d1-09a4-4e41-a4c9-286618e5061e",
+      "layout": "normal",
+      "manaCost": "{3}{B}",
+      "manaValue": 4,
+      "typeLine": "Creature — Wraith",
+      "oracleText": "Swampwalk (This creature can't be blocked as long as defending player controls a Swamp.)",
+      "power": "3",
+      "toughness": "3",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Landwalk",
+        "Swampwalk"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/d/5d17210c-be39-4abc-9d4d-4f2eca9573bd.jpg?1783942386",
+        "large": "https://cards.scryfall.io/large/front/5/d/5d17210c-be39-4abc-9d4d-4f2eca9573bd.jpg?1783942386",
+        "png": "https://cards.scryfall.io/png/front/5/d/5d17210c-be39-4abc-9d4d-4f2eca9573bd.png?1783942386",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/d/5d17210c-be39-4abc-9d4d-4f2eca9573bd.jpg?1783942386"
+      },
+      "artist": "Daarken",
+      "set": "m10",
+      "collectorNumber": "86",
+      "scryfallUri": "https://scryfall.com/card/m10/86/bog-wraith?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Bountiful Harvest",
       "slug": "bountiful-harvest",
       "oracleId": "2dc94a25-4e35-4277-8eba-b8d0b293ff7b",
@@ -688,6 +719,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Dread Warlock",
+      "slug": "dread-warlock",
+      "oracleId": "5791710d-c718-4f64-9c14-3668154716f1",
+      "layout": "normal",
+      "manaCost": "{1}{B}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Wizard Warlock",
+      "oracleText": "This creature can't be blocked except by black creatures.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/f/4f964660-c2db-4995-bb16-65383362cf19.jpg?1783942384",
+        "large": "https://cards.scryfall.io/large/front/4/f/4f964660-c2db-4995-bb16-65383362cf19.jpg?1783942384",
+        "png": "https://cards.scryfall.io/png/front/4/f/4f964660-c2db-4995-bb16-65383362cf19.png?1783942384",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/f/4f964660-c2db-4995-bb16-65383362cf19.jpg?1783942384"
+      },
+      "artist": "Daarken",
+      "set": "m10",
+      "collectorNumber": "94",
+      "scryfallUri": "https://scryfall.com/card/m10/94/dread-warlock?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Duress",
       "slug": "duress",
       "oracleId": "33d405ea-7a9a-4970-b70f-9c05d90dd6f0",
@@ -797,6 +856,37 @@
       "set": "m10",
       "collectorNumber": "177",
       "scryfallUri": "https://scryfall.com/card/m10/177/elvish-piper?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Emerald Oryx",
+      "slug": "emerald-oryx",
+      "oracleId": "4c26c796-26ec-41f7-b9ca-58f4eb935c47",
+      "layout": "normal",
+      "manaCost": "{3}{G}",
+      "manaValue": 4,
+      "typeLine": "Creature — Antelope",
+      "oracleText": "Forestwalk (This creature can't be blocked as long as defending player controls a Forest.)",
+      "power": "2",
+      "toughness": "3",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Landwalk",
+        "Forestwalk"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/0/10bf14b5-31d0-42e3-a319-2622b489f7c4.jpg?1783942364",
+        "large": "https://cards.scryfall.io/large/front/1/0/10bf14b5-31d0-42e3-a319-2622b489f7c4.jpg?1783942364",
+        "png": "https://cards.scryfall.io/png/front/1/0/10bf14b5-31d0-42e3-a319-2622b489f7c4.png?1783942364",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/0/10bf14b5-31d0-42e3-a319-2622b489f7c4.jpg?1783942364"
+      },
+      "artist": "Daren Bader",
+      "set": "m10",
+      "collectorNumber": "179",
+      "scryfallUri": "https://scryfall.com/card/m10/179/emerald-oryx?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1869,6 +1959,90 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Palace Guard",
+      "slug": "palace-guard",
+      "oracleId": "5c92f375-ae6a-4be5-a499-ab87d6bdc49b",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Soldier",
+      "oracleText": "This creature can block any number of creatures.",
+      "power": "1",
+      "toughness": "4",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/1/51e73c28-bf82-413e-bec2-adbb52fa6993.jpg?1783941833",
+        "large": "https://cards.scryfall.io/large/front/5/1/51e73c28-bf82-413e-bec2-adbb52fa6993.jpg?1783941833",
+        "png": "https://cards.scryfall.io/png/front/5/1/51e73c28-bf82-413e-bec2-adbb52fa6993.png?1783941833",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/1/51e73c28-bf82-413e-bec2-adbb52fa6993.jpg?1783941833"
+      },
+      "artist": "Volkan Baǵa",
+      "set": "m11",
+      "collectorNumber": "24",
+      "scryfallUri": "https://scryfall.com/card/m11/24/palace-guard?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Panic Attack",
+      "slug": "panic-attack",
+      "oracleId": "c1346677-d89e-49d0-9819-08805f00bb64",
+      "layout": "normal",
+      "manaCost": "{2}{R}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Up to three target creatures can't block this turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/9/e9c6cbc8-e33a-4692-aff0-4de9bb65421d.jpg?1783942371",
+        "large": "https://cards.scryfall.io/large/front/e/9/e9c6cbc8-e33a-4692-aff0-4de9bb65421d.jpg?1783942371",
+        "png": "https://cards.scryfall.io/png/front/e/9/e9c6cbc8-e33a-4692-aff0-4de9bb65421d.png?1783942371",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/9/e9c6cbc8-e33a-4692-aff0-4de9bb65421d.jpg?1783942371"
+      },
+      "artist": "Izzy",
+      "set": "m10",
+      "collectorNumber": "150",
+      "scryfallUri": "https://scryfall.com/card/m10/150/panic-attack?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Phantom Warrior",
+      "slug": "phantom-warrior",
+      "oracleId": "23745133-e5e2-4ce3-b94a-73d0d3d8a013",
+      "layout": "normal",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3,
+      "typeLine": "Creature — Illusion Warrior",
+      "oracleText": "This creature can't be blocked.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/1/11cbdf06-f6b5-4bd8-80bf-6d7e57649684.jpg?1783932908",
+        "large": "https://cards.scryfall.io/large/front/1/1/11cbdf06-f6b5-4bd8-80bf-6d7e57649684.jpg?1783932908",
+        "png": "https://cards.scryfall.io/png/front/1/1/11cbdf06-f6b5-4bd8-80bf-6d7e57649684.png?1783932908",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/1/11cbdf06-f6b5-4bd8-80bf-6d7e57649684.jpg?1783932908"
+      },
+      "artist": "Anna Podedworna",
+      "set": "m20",
+      "collectorNumber": "316",
+      "scryfallUri": "https://scryfall.com/card/m20/316/phantom-warrior?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Plains",
       "slug": "plains",
       "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
@@ -2888,6 +3062,66 @@
       "set": "9ed",
       "collectorNumber": "226",
       "scryfallUri": "https://scryfall.com/card/9ed/226/volcanic-hammer?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Wall of Faith",
+      "slug": "wall-of-faith",
+      "oracleId": "918d6cd4-76d5-4e21-b92b-1ecf35eb6cff",
+      "layout": "normal",
+      "manaCost": "{3}{W}",
+      "manaValue": 4,
+      "typeLine": "Creature — Wall",
+      "oracleText": "Defender (This creature can't attack.)\n{W}: This creature gets +0/+1 until end of turn.",
+      "power": "0",
+      "toughness": "5",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Defender"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/5/05f30f77-75ea-4145-a4a1-106cc547f482.jpg?1783942396",
+        "large": "https://cards.scryfall.io/large/front/0/5/05f30f77-75ea-4145-a4a1-106cc547f482.jpg?1783942396",
+        "png": "https://cards.scryfall.io/png/front/0/5/05f30f77-75ea-4145-a4a1-106cc547f482.png?1783942396",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/5/05f30f77-75ea-4145-a4a1-106cc547f482.jpg?1783942396"
+      },
+      "artist": "Martina Pilcerova",
+      "set": "m10",
+      "collectorNumber": "40",
+      "scryfallUri": "https://scryfall.com/card/m10/40/wall-of-faith?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Wall of Fire",
+      "slug": "wall-of-fire",
+      "oracleId": "f38c8b47-e8e0-4d2f-b1da-d8d986805a48",
+      "layout": "normal",
+      "manaCost": "{1}{R}{R}",
+      "manaValue": 3,
+      "typeLine": "Creature — Wall",
+      "oracleText": "Defender (This creature can't attack.)\n{R}: This creature gets +1/+0 until end of turn.",
+      "power": "0",
+      "toughness": "5",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Defender"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/f/6f8ac968-3d00-40d8-80b5-e6fe08025de2.jpg?1783939169",
+        "large": "https://cards.scryfall.io/large/front/6/f/6f8ac968-3d00-40d8-80b5-e6fe08025de2.jpg?1783939169",
+        "png": "https://cards.scryfall.io/png/front/6/f/6f8ac968-3d00-40d8-80b5-e6fe08025de2.png?1783939169",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/f/6f8ac968-3d00-40d8-80b5-e6fe08025de2.jpg?1783939169"
+      },
+      "artist": "Dan Dos Santos",
+      "set": "m15",
+      "collectorNumber": "167",
+      "scryfallUri": "https://scryfall.com/card/m15/167/wall-of-fire?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

@@ -196,7 +196,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
   3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
-     - M2-06a combat damage, done, in review (D-070): first and double strike with a second combat damage step,
+     - M2-06a combat damage, done, merged (PR #35, D-070): first and double strike with a second combat damage step,
        trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
        result of the damage event), vigilance. Viashino Spearhunter, Razorfoot Griffin, Stampeding Rhino, Deadly
        Recluse, Child of Night, Serra Angel, Griffin Sentinel. Scenarios in `test/scenarios/cards/m2-06a/` and
@@ -204,10 +204,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        (double strike has no Magic 2010 card), six new matrix rows; five of the cards in the M10 pair.
        For 06b: trample's lethal damage must count damage other attackers assign to a blocker that blocks several
        (Palace Guard; future-rules, "More combat").
-     - M2-06b one creature's restrictions: defender (CR 702.3), landwalk (CR 702.14), "can't be blocked", "can't be
-       blocked except by black creatures", "can block any number" (CR 509.1a), "can't block this turn" from a spell
-       (Panic Attack, up to three targets). Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior,
-       Dread Warlock, Palace Guard, Panic Attack.
+     - M2-06b, done, in review (D-071): defender, swampwalk and forestwalk, "can't be blocked (except by ...)", "can block
+       any number" (Palace Guard dividing its damage, trample's lethal counting other attackers' damage), "can't block
+       this turn". Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior, Dread Warlock, Palace Guard,
+       Panic Attack. Scenarios in `test/scenarios/cards/m2-06b/` and `interactions/block-any-number/`, five new matrix
+       rows; three of the cards in the M10 pair.
      - M2-06c whole-declaration rules: "can't attack or block alone" (CR 508.1c, 509.1b), requirements and their
        maximum (CR 508.1d, 509.1c): "attacks each combat if able", "all creatures able to block it do so", "attacks
        you this turn if able". Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren.
@@ -377,7 +378,15 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   and how prevention shields count against it.
 
 ## Known issues
+- (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
+  worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
+  the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
+  lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
+  can be taken back or checked as a whole (06c's take-back answer may serve).
 - Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
+  Still, the folder is 3.8 MB after M2-06b (budget 4 MB), about 0.3 MB per task: it will pass the budget in M2-06c or
+  M2-07. Options then: raise the budget, a compact action format, or stop adding a game per card once a card's
+  mechanic is covered by scenarios.
 - The bench drifts: on `main` (2026-11-20, after M2-05) some workloads run 10–18% over `bench/baseline.json`
   (`applyAction.emptyBoard`, `randomGame`, `legalActions.busyBoard`), near the failure threshold, so a noisy run can
   fail. It comes from M2's engine changes, not one PR. Before it fails for real: profile, or reset the baseline with

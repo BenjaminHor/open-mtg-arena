@@ -168,7 +168,12 @@ function declaration(
     if (a?.kind !== "declareBlocker") throw new Error("an unexpected answer in a declaration of blockers");
     return [local(state, a.block.blocker, cards), local(state, a.block.attacker, cards)];
   });
-  return { step: { [`${p} block`]: Object.fromEntries(blocks) }, taken: end - i + 1 };
+  // A blocker of several attackers gets a list (Palace Guard). Grouping can reorder blocks across blockers, which only
+  // changes the order an attacker's blockers are listed in; `assign` names them in any order.
+  const byBlocker: Record<string, string[]> = {};
+  for (const [blocker, attacker] of blocks) byBlocker[blocker] = [...(byBlocker[blocker] ?? []), attacker];
+  const map = Object.fromEntries(Object.entries(byBlocker).map(([b, as]) => [b, as.length === 1 ? as[0] : as]));
+  return { step: { [`${p} block`]: map }, taken: end - i + 1 };
 }
 
 /** One attacker's division of damage: an answer per recipient but the last, which gets the rest. */

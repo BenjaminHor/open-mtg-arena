@@ -71,6 +71,8 @@ function layer7c(state: GameState, obj: CardObject, isCreature: boolean, onBattl
         changes.push({ kind: "effect", source, timestamp, duration, power, toughness });
         break;
       }
+      case "cantBlock":
+        break;
     }
   }
   // +X/+Y and -X/-Y counters count on a creature or a creature card in another zone, not on a noncreature card

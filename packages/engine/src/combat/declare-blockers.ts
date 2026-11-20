@@ -5,7 +5,7 @@ import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
 import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
-import { attacksInCombat, canBlock } from "../rules/combat.ts";
+import { attacksInCombat, canBlock, canBlockAnyNumber } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { type Block, newCombat } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -25,7 +25,8 @@ export function defendingPlayer(state: GameState): PlayerId | null {
 
 /**
  * Every block the defending player could still add: each of their creatures not chosen yet, against each attacker
- * attacking them that it can block (CR 509.1a–b). A creature blocks only one attacker (CR 509.1a).
+ * attacking them that it can block (CR 509.1a–b). A creature blocks only one attacker (CR 509.1a), unless it can block
+ * any number (Palace Guard, CR 101.1): then any attacker it isn't blocking yet.
  */
 export function possibleBlocks(state: GameState, chosen: readonly Block[], cards: CardDatabase): Block[] {
   const defender = defendingPlayer(state);
@@ -34,12 +35,14 @@ export function possibleBlocks(state: GameState, chosen: readonly Block[], cards
     .filter((a) => a.defender === defender)
     .map((a) => a.attacker);
   return state.zones.battlefield
-    .filter((id) => controllerOf(state, id) === defender && !chosen.some((b) => b.blocker === id))
-    .flatMap((blocker) =>
-      attackers
-        .filter((attacker) => canBlock(state, blocker, attacker, cards))
-        .map((attacker) => ({ blocker, attacker })),
-    );
+    .filter((id) => controllerOf(state, id) === defender)
+    .flatMap((blocker) => {
+      const blocking = chosen.filter((b) => b.blocker === blocker).map((b) => b.attacker);
+      if (blocking.length > 0 && !canBlockAnyNumber(state, blocker, cards)) return [];
+      return attackers
+        .filter((attacker) => !blocking.includes(attacker) && canBlock(state, blocker, attacker, cards))
+        .map((attacker) => ({ blocker, attacker }));
+    });
 }
 
 /** Asks the defending player for blocks, one at a time, until they finish (CR 509.1). No one is asked if none could. */

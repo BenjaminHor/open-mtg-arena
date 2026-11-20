@@ -16,6 +16,7 @@ export type {
   ManaSymbol,
   PrintedCard,
   SpellDef,
+  StaticAbilityDef,
   Supertype,
   TargetSpec,
 } from "./cards/types.ts";

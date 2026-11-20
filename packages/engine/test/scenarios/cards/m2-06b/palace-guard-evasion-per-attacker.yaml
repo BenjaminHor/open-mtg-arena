@@ -1,0 +1,21 @@
+name: Palace Guard obeys each attacker's evasion; it can't block the same attacker twice
+rules: [CR 509.1a, CR 509.1b, CR 702.14c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Runeclaw Bear, Bog Wraith]
+  p2:
+    battlefield: [Palace Guard, Swamp]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear, Bog Wraith]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Runeclaw Bear, Bog Wraith] }
+  - expect error: illegalAction
+  - p2 block: { Palace Guard: [Runeclaw Bear, Runeclaw Bear] }
+  - expect error: illegalAction
+  - p2 block: { Palace Guard: Runeclaw Bear }
+  - all pass: until main2
+  - expect:
+      p2.life: 17
+      p2:Palace Guard.damage: 2

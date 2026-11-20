@@ -1,0 +1,17 @@
+name: Without a Swamp on the defending player's side, a swampwalker can be blocked; the attacker's own Swamps don't count
+rules: [CR 702.14c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Bog Wraith, Swamp]
+  p2:
+    battlefield: [Siege Mastodon, Forest]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Bog Wraith]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Siege Mastodon: Bog Wraith }
+  - all pass: until main2
+  - expect:
+      p2.life: 20
+      p2:Siege Mastodon.damage: 3

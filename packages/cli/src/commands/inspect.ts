@@ -40,8 +40,8 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
   lines.push(`  under its controller's control since their turn began: ${obj.controlledSinceTurnStart ? "yes" : "no"}`);
   const attack = state.combat?.attacks.find((a) => a.attacker === id);
   if (attack !== undefined) lines.push(`  attacking ${attack.defender}`);
-  const block = state.combat?.blocks.find((b) => b.blocker === id);
-  if (block !== undefined) lines.push(`  blocking ${objectText(state, block.attacker, cards)}`);
+  const blocks = (state.combat?.blocks ?? []).filter((b) => b.blocker === id);
+  if (blocks.length > 0) lines.push(`  blocking ${blocks.map((b) => objectText(state, b.attacker, cards)).join(", ")}`);
   return lines.join("\n");
 
   /** One layer 7c change in words. Returns from each case, so a new kind of change fails to compile here. */

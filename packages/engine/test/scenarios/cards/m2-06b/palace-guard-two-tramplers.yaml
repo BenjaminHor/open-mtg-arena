@@ -1,0 +1,25 @@
+name: Two tramplers blocked by one Palace Guard; the first's damage counts toward lethal for the second, which can trample over
+rules: [CR 702.19b, CR 510.1c]
+# The 1/4 Guard: the first Rhino has no excess on its own, so all 4 go to the Guard; that's lethal, so the second Rhino
+# may put all of its damage on the player.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino, Stampeding Rhino]
+  p2:
+    battlefield: [Palace Guard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino#1, Stampeding Rhino#2]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Stampeding Rhino#1, Stampeding Rhino#2] }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: assignDamage, lethal: [0] }
+  - p1 assign: { Palace Guard: 0, p2: 4 }
+  - expect:
+      pending: { player: p2, kind: assignDamage }
+  - p2 assign: { Stampeding Rhino#1: 1, Stampeding Rhino#2: 0 }
+  - expect:
+      p2.life: 16
+      p2.graveyard: [Palace Guard]

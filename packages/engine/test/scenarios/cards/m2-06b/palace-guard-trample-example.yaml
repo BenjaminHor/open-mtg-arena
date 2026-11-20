@@ -1,0 +1,28 @@
+name: CR 702.19b's example, a trampler and another attacker blocked by one creature, counts the other attacker's damage as lethal
+rules: [CR 702.19b, CR 510.1c]
+# A 2/2 that can block an additional creature blocks a 1/1 and a trampler: 1 from the first and 1 from the trampler
+# are lethal together, so the trampler can give the rest to the player. Here: Palace Guard (1/4) blocks Runeclaw Bear
+# (2/2) and Stampeding Rhino (4/4); the Bear's 2 counts, so the Rhino needs to give it only 2.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Runeclaw Bear, Stampeding Rhino]
+  p2:
+    battlefield: [Palace Guard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear, Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Runeclaw Bear, Stampeding Rhino] }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: assignDamage, lethal: [2] }
+  - p1 assign: { Palace Guard: 1, p2: 3 }
+  - expect error: illegalAction
+  - p1 assign: { Palace Guard: 2, p2: 2 }
+  - expect:
+      pending: { player: p2, kind: assignDamage }
+  - p2 assign: { Runeclaw Bear: 1, Stampeding Rhino: 0 }
+  - expect:
+      p2.life: 18
+      p2.graveyard: [Palace Guard]
