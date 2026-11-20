@@ -276,6 +276,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          shroud as a permanent enters, each field of a resolving spell, activated or triggered ability, every decision
          kind answered (a cancel or take-back doesn't count), every event type agents can reach.
        - A test that every pool card is in a scenario, by whole name.
+     - Now: golden action lines name the acting player (owner, D-083), a small PR before M2-07c2.
      - M2-07c plan (2026-11-20), two PRs:
        - M2-07c1, done, merged (PR #41, D-079): 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal

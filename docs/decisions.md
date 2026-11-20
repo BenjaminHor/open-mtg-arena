@@ -1116,3 +1116,10 @@ every schema change and every change D-024 lists bumps it.
 - Lines read back answer whatever decision is pending, so golden games no longer check which player gets priority
   (CR 117.3b–d): the old JSON stored the acting player. Scenarios cover priority order instead. Lines left after the
   game ended are counted, and `pnpm golden:update` says the game ends sooner.
+
+**D-083: Golden action lines name the acting player** · 2026-11-20 · accepted (owner)
+- The owner: the compact format should have a compact way to show which player acted. Each line starts with the
+  player (`p1 cast o12`, `p2 chooseTarget p1`, `p1 concede`), and a run of passes lists who passed, in order
+  (`pass p1 p2 p1 p2`). Reading back checks each line's player against the pending decision's, so golden games again
+  catch a change in who gets priority or who decides (CR 117.3b–d), which D-082 had given up. Only the decision id
+  is still left out.
