@@ -27,76 +27,86 @@ cards drive which rules are built, so the first task maps every card to the mech
 
 ## Tasks
 
-Roughly in order: the foundations first (M2-01 to M2-04), then each system with the cards that need it. Each should
-fit in one or a few focused sessions; split any that don't.
+In order: the foundations first (M2-01 to M2-04), then each system. The order comes from M2-02's mechanics map
+(`m2-pool.md`): plain effects and keywords come early because most cards wait only on them. **Each system task also
+scripts the pool cards that become playable with it** (`m2-pool.md`, "Playable after"), with scenarios, so the pool and
+the fuzzer's decks grow task by task. Each task should fit in one or a few focused sessions; split any that don't.
 
-**M2-01 Hidden information fix.** The known issue in `status.md`: a card's ids let a player follow it through another
-player's hidden hand (CR 402.3, 734.1). Done (D-054): a card coming out of a hand or library into a public zone gets a
-new card id, `eventsFor` shows only the side of a move the viewer can see, and another player's cancel hides the
-restored id. *Accept:* engine tests with two worlds (YAML can't compare views) show a cancelled card can't be told
-apart from another copy, nor a played land or a discarded card; the fuzzer's leak check covers it.
+**M2-01 Hidden information fix.** Done (D-054): a card coming out of a hand or library into a public zone gets a new
+card id, `eventsFor` shows only the side of a move the viewer can see, and another player's cancel hides the restored
+id. *Accept:* engine tests with two worlds (YAML can't compare views) show a cancelled card can't be told apart from
+another copy, nor a played land or a discarded card; the fuzzer's leak check covers it.
 
-**M2-02 The pool and its mechanics.** Fetch the set's Oracle data (`pnpm cards:fetch` / `cards:extract`), and write
-`docs/milestones/m2-pool.md`: every card, the rules and mechanics it needs, which task builds them, and the cards left
-out with the reason. Pick two or three prebuilt decks from the pool for the fuzzer and the golden games. *Accept:* the
-owner has read the mechanics table; every card maps to a task or to "left out".
+**M2-02 The pool and its mechanics.** `docs/milestones/m2-pool.md`: every Magic 2010 card, the systems it needs, the
+task after which it's playable, the special rules some cards need, and the prebuilt decks. *Accept:* the owner has read
+the mechanics table; every card maps to a task.
 
 **M2-03 Events and last known information.** Every game event goes through one propose → replace → perform → trigger
 pipeline (future-rules.md), and a last-known-information store keeps objects as they last existed (CR 608.2h, 603.10).
 No card behavior changes yet. *Accept:* the golden games and replays are unchanged; unit tests for the pipeline and
 the store.
 
-**M2-04 Targeting and costs with context.** Targeting knows its source and controller (CR 115, 601.2c; needed for
-hexproof, shroud, protection and "target creature an opponent controls"). Costs become a list of parts with the total
-computed in one place (CR 601.2f–h, 118): X, additional costs (sacrifice, discard, pay life), cost reductions and
-increases. Paying mana outside casting (CR 117.1d, 605.3a) where the pool needs it. *Accept:* scenarios for each cost
-kind the pool uses, and targeting restrictions with negative cases.
+**M2-04 Targeting and costs with context.** Targeting knows its source and controller, and targets can be restricted
+(CR 115, 601.2c: "target nonblack creature", "attacking or blocking", a card in a graveyard, a spell), with a variable
+number of targets and divided damage (CR 601.2d). Costs become a list of parts with the total computed in one place
+(CR 601.2f–h, 118): X, sacrifice and other additional costs, cost increases. Paying mana outside casting (CR 117.1d,
+605.3a) where the pool needs it. *Accept:* scenarios for each target restriction and cost kind the pool uses, with
+negative cases.
 
-**M2-05 Triggered abilities (CR 603).** "When", "whenever" and "at" triggers: entering, dying and leaving the
-battlefield (looking back in time, CR 603.10), attacking and blocking, beginning-of-step triggers, state triggers,
-delayed triggers (CR 603.7). Putting them on the stack in APNAP order with each player ordering their own (CR 603.3b),
-targets chosen as they're put on the stack, "intervening if" (CR 603.4). *Accept:* scenarios per trigger kind,
-including two triggering together, a trigger whose source is gone, and an illegal target on resolution.
+**M2-05 Effects and keyword actions (CR 701).** The effects most cards are made of: destroy, exile, sacrifice, draw,
+discard (chosen and at random), mill, search a library and shuffle, reveal, look at the top cards and reorder, return
+to hand or to the battlefield, tap and untap, gain and lose life, counter target spell (CR 701.6), damage to each
+creature or player, amounts from a count ("for each Swamp you control"), and mana of a chosen color. *Accept:*
+scenarios per effect; the cards that become playable are scripted.
 
-**M2-06 Replacement and prevention effects (CR 614–616).** "Enters tapped", "if it would die, ... instead",
-regeneration (CR 701.19), damage prevention, and the affected player ordering several replacements (CR 616.1).
-*Accept:* scenarios for each kind the pool uses, two replacements on one event, and a replacement applying only once
-(CR 614.5).
+**M2-06 Keywords and attack or block restrictions (CR 702, 506–511).** First strike and double strike with the extra
+damage step (CR 510.4), trample (with lethal damage, CR 702.19), deathtouch, lifelink, vigilance, defender, landwalk,
+flash, shroud, indestructible, "can't be countered"; "can't be blocked (except by ...)", "can block any number",
+"can't attack or block alone", and requirements ("attacks each combat if able", lure; CR 508.1c–d, 509.1b–c).
+Protection's targeting and blocking parts (CR 702.16b, 702.16f); its damage prevention comes with M2-08, and
+"can't be enchanted or equipped" with M2-12. *Accept:* scenarios
+per keyword and the interaction matrix filled in for every pair.
 
-**M2-07 The full layer system and static abilities (CR 613, 604, 611).** Layers 1 to 7 as one board-wide pass with
-timestamps and dependencies (CR 613.7, 613.8): control, type, color, ability adding and removing, setting and
-modifying power and toughness, switching. Static abilities ("other creatures you control get +1/+1", "can't block").
-"Can't" beats "can" (CR 101.2). *Accept:* scenarios for each layer the pool reaches, timestamp order where it matters,
-and at least one dependency example from the CR.
+**M2-07 Triggered abilities (CR 603).** "When", "whenever" and "at" triggers: entering, dying and leaving the
+battlefield (looking back in time, CR 603.10), attacking and blocking, casting, drawing and discarding, damage,
+beginning-of-step triggers, "becomes the target", delayed triggers (CR 603.7). Putting them on the stack in APNAP order
+with each player ordering their own (CR 603.3b), targets chosen as they're put on the stack, "intervening if"
+(CR 603.4), "may". *Accept:* scenarios per trigger kind, including two triggering together, a trigger whose source is
+gone, and an illegal target on resolution.
 
-**M2-08 Counters (CR 122).** +1/+1 and -1/-1 counters and their annihilation (CR 704.5q), other counters the pool
-uses, counters leaving with the object (CR 122.2). *Accept:* scenarios, including a creature with both kinds.
+**M2-08 Replacement and prevention effects (CR 614–616).** "Enters tapped (unless)", "as it enters, choose"
+(CR 614.12), "if it would ..., ... instead", regeneration (CR 701.19), damage prevention and redirection, protection's
+damage prevention (CR 702.16e), and the affected player ordering several replacements (CR 616.1). *Accept:* scenarios
+for each kind the pool uses, two replacements on one event, and a replacement applying only once (CR 614.5).
 
-**M2-09 Tokens (CR 111).** Token objects with their own characteristics source, tokens leaving the battlefield and
+**M2-09 The full layer system and static abilities (CR 613, 604, 611).** Layers 1 to 7 as one board-wide pass with
+timestamps and dependencies (CR 613.7, 613.8): control, type, color, ability adding and removing,
+characteristic-defining and modified power and toughness. Static abilities (anthems, "creatures you control have
+flying", "can't cast spells"); "can't" beats "can" (CR 101.2); effects from resolved spells lock their affected set
+(CR 611.2c). *Accept:* scenarios for each layer the pool reaches, timestamp order where it matters, and at least one
+dependency example from the CR.
+
+**M2-10 Counters (CR 122).** +1/+1 and -1/-1 counters and their annihilation (CR 704.5q), other counters the pool uses
+(wish counters), entering with counters, counters leaving with the object (CR 122.2). *Accept:* scenarios, including a
+creature with both kinds.
+
+**M2-11 Tokens (CR 111).** Token objects with their own characteristics source, tokens leaving the battlefield and
 ceasing to exist (CR 704.5d), and every rules check that skips non-cards today handling them (future-rules.md).
-*Accept:* scenarios for creating, dying and copying where the pool does it.
+*Accept:* scenarios for creating tokens and a token dying.
 
-**M2-10 Auras and equipment (CR 303.4, 301.5, 702.6).** Casting an Aura with its enchant target, attaching,
-unattaching, equip, and the state-based actions for illegal attachments (CR 704.5m, 704.5n). *Accept:* scenarios for
-attaching, the enchanted creature dying, and an illegal attachment.
-
-**M2-11 Combat keywords and restrictions (CR 702, 506–511).** First strike and double strike with the extra damage
-step (CR 510.4), trample (with the lethal-damage assignment, CR 702.19), deathtouch (with trample), lifelink,
-vigilance, menace, defender, reach and flying already done, landwalk or other evasion the set has, attack and block
-restrictions and requirements (CR 508.1c–d, 509.1b–c). *Accept:* scenarios per keyword and the interaction matrix
-filled in for every pair.
-
-**M2-12 Other keywords and keyword actions the pool uses.** Flash, hexproof, shroud, protection (the four parts of
-CR 702.16), counter, destroy, exile, sacrifice, discard, mill, scry, regenerate, and whatever else M2-02 lists.
-*Accept:* scenarios per keyword, interaction matrix updated.
+**M2-12 Auras and equipment (CR 303.4, 301.5, 702.6).** Casting an Aura with its enchant target, attaching,
+unattaching, equip, protection's "can't be enchanted or equipped" (CR 702.16c–d), and the state-based actions for
+illegal attachments (CR 704.5m, 704.5n). *Accept:* scenarios for attaching, the enchanted creature dying, and an
+illegal attachment.
 
 **M2-13 Planeswalkers (CR 306, 606, 704.5i).** M10 has five. Loyalty abilities once per turn at sorcery speed,
-damage to planeswalkers, attacking a planeswalker (several possible defenders, CR 508.1b). *Accept:* scenarios for
-activating, attacking, and a planeswalker with no loyalty.
+damage to planeswalkers ("any target" includes them, CR 115.4), attacking a planeswalker (several possible defenders,
+CR 508.1b). *Accept:* scenarios for activating, attacking, and a planeswalker with no loyalty.
 
-**M2-14 Scripting the pool.** The remaining cards in batches with the `add-cards` skill, each with scenarios. New
-golden games with the pool's prebuilt decks; the fuzzer plays them and random pool decks. *Accept:* every card in
-`m2-pool.md` scripted and tested, or listed as left out with the reason.
+**M2-14 Special rules and the rest of the pool.** The rules only a few cards need (`m2-pool.md`, "Special rules"):
+copies (CR 707), extra turns (CR 500.7), revealed hands and library tops, naming a card, "doesn't untap", "can't lose",
+no maximum hand size, and the rest. Then any card not yet scripted. New golden games with the pool's prebuilt decks;
+the fuzzer plays them and random pool decks. *Accept:* every card in `m2-pool.md` scripted and tested.
 
 **M2-15 Hardening.** Mutation testing on the engine (StrykerJS, testing.md section 7) with surviving mutants in rules
 code addressed; `pnpm fuzz --games 10000` clean; `pnpm bench` against the budgets; a CR progress report for the
