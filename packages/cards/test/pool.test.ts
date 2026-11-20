@@ -198,6 +198,23 @@ describe("definitionProblems", () => {
     ).toStrictEqual(["Earthquake: damage comes from one object"]);
   });
 
+  it("reports xPaidWith on a spell whose mana cost has no {X}", () => {
+    const bolt = POOL.cards.find((c) => c.name === "Lightning Bolt");
+    if (bolt === undefined) throw new Error("Lightning Bolt missing from the pool");
+    const def: CardDef = {
+      name: "Lightning Bolt",
+      oracle: bolt.oracleText,
+      spell: {
+        targets: [{ kind: "anyTarget" }],
+        effects: [{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }],
+        xPaidWith: "R",
+      },
+    };
+    expect(definitionProblems([def], [bolt])).toStrictEqual([
+      "Lightning Bolt: xPaidWith restricts paying X, but the mana cost has no {X}",
+    ]);
+  });
+
   it("reports cards without definitions and definitions without cards", () => {
     expect(definitionProblems([{ name: "Black Lotus", oracle: "" }], [bolt])).toStrictEqual([
       "Black Lotus: has a definition but isn't in pool.txt / data/pool.json",

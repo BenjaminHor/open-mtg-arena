@@ -323,6 +323,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Not blocking until M2-07 triggers or M2-08 prevention.) Goblin Artillery targeting its own controller deals them
+  2 damage and 3 damage from the same source in the same action. The engine records it as one damage event with two
+  parts: two `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3). Should that be one 5-point loss instead? The CR doesn't
+  say. It decides how often "whenever you lose life" or "whenever a source deals damage to you" trigger (once or twice),
+  and how prevention shields count against it.
 
 ## Known issues
 - Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card

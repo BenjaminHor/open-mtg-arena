@@ -1,0 +1,16 @@
+name: Seismic Strike counts only the Mountains its caster controls, tapped ones included, and no other lands
+rules: [CR 608.2h, CR 205.3i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Seismic Strike]
+    battlefield: [Mountain, Mountain, Mountain, Forest]
+  p2:
+    battlefield: [Mountain, Mountain, Giant Spider]
+steps:
+  - p1 cast: Seismic Strike
+    targets: [p2:Giant Spider]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Giant Spider.damage: 3

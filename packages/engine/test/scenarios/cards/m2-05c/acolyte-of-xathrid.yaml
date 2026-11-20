@@ -1,5 +1,5 @@
 name: Acolyte of Xathrid can make its own controller lose 1 life
-rules: [CR 115.1a, CR 119.3]
+rules: [CR 115.1c, CR 119.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:

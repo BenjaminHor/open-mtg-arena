@@ -43,6 +43,9 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
       );
+    // "Spend only black mana on X" needs an {X} to restrict.
+    if (def.spell?.xPaidWith !== undefined && !card.manaCost.includes("{X}"))
+      problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
       problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
       problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));

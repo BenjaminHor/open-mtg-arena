@@ -13,8 +13,8 @@ import type { Target } from "../state/objects.ts";
 import { loseLife } from "./life.ts";
 
 /**
- * Deals damage as one damage event (CR 120.4): spells deal it to one recipient, combat damage to many at once
- * (CR 510.2). All of it is dealt first (CR 120.4b, when "whenever ... is dealt damage" triggers), then all of it turns
+ * Deals damage as one damage event (CR 120.4): to one recipient, or to many at once, as combat damage (CR 510.2) and
+ * a spell or ability dealing damage to several recipients in one action do (Earthquake, CR 608.2f). All of it is dealt first (CR 120.4b, when "whenever ... is dealt damage" triggers), then all of it turns
  * into its results (CR 120.4c): life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e). There are
  * no planeswalkers or battles yet (later: CR 120.3c, 120.3h).
  */

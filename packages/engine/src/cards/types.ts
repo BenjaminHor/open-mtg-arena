@@ -112,8 +112,9 @@ export type SpellDef = {
    */
   costIncrease?: { perTargetBeyondFirst: ManaCost };
   /**
-   * "Spend only black mana on X" (Consume Spirit): a restriction on paying (CR 601.2h), so only the cost to pay makes
-   * each X a mana of this color; the mana cost itself, its color and its mana value don't change (CR 107.4b, 202.2).
+   * "Spend only black mana on X" (Consume Spirit): the card's text overrides the rule that generic mana can be paid
+   * with any mana (CR 101.1, 107.4b), as a restriction on paying (CR 601.2h). Only the cost to pay reads it, making each
+   * X a mana of this color; the mana cost itself is never changed.
    */
   xPaidWith?: Color;
 };

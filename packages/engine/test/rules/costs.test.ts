@@ -1,5 +1,5 @@
 // The cost to pay (CR 601.2f): "spend only black mana on X" (Consume Spirit, D-067). Only `totalCost` reads
-// `xPaidWith`; the card's mana cost isn't touched, so its color and mana value can't change (CR 107.4b).
+// `xPaidWith`; nothing changes the card's mana cost, which color and mana value are read from.
 
 import { describe, expect, it } from "vitest";
 import type { CardDatabase, ObjectId } from "../../src/index.ts";

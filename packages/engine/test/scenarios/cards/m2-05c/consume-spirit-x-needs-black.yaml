@@ -1,5 +1,5 @@
 name: Consume Spirit's X can't be paid with red mana, only black
-rules: [CR 601.2h]
+rules: [CR 601.2h, CR 101.1]
 # X of 1 costs {B}{1}{B} to pay: one black for X, one for the {B}, and any mana for the {1}.
 setup:
   turn: { active: p1, step: main1 }

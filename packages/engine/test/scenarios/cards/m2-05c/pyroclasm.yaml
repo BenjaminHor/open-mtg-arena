@@ -15,3 +15,5 @@ steps:
       p1.graveyard: [Pyroclasm, Goblin Artillery, Grizzly Bears]
       p2.graveyard: [Ornithopter]
       p2:Giant Spider.damage: 2
+      p1.life: 20
+      p2.life: 20
