@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { replaceDamage } from "../../src/pipeline/damage-replacements.ts";
+import { happen } from "../../src/pipeline/happen.ts";
 import type { Damage } from "../../src/pipeline/proposed.ts";
 import type { ReplacementEffect } from "../../src/state/replacements.ts";
 import { BEARS, FOREST, MOUNTAIN, TEST_CARDS } from "../support/cards.ts";
@@ -62,7 +63,10 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
       for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } },
     });
     // Once chosen, nothing is prevented for the gone recipient: the Fog-like effect isn't used on it.
-    const choice = { for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } } } as const;
+    const choice = {
+      kind: "first",
+      for: { kind: "damage", index: 1, source: bears, to: { kind: "player", player: "p1" } },
+    } as const;
     const replaced = replaceDamage(state, [gone, toP1(bears, 2)], TEST_CARDS, [
       { ...choice, ref: { kind: "resolvedEffect", id: "o902" } },
     ]);
@@ -78,6 +82,7 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
   it("doesn't use a choice made for one entry on another with the same source and recipient", () => {
     const { state, bears } = withTwoPreventions();
     const firstChoice = {
+      kind: "first",
       for: { kind: "damage", index: 0, source: bears, to: { kind: "player", player: "p1" } },
       ref: { kind: "resolvedEffect", id: "o902" },
     } as const;
@@ -93,5 +98,27 @@ describe("prevention per damage entry (CR 616.1, D-088)", () => {
         { kind: "dealDamage", damage: [] },
       ],
     });
+  });
+});
+
+describe("a redirection effect's amount (Harm's Way; CR 614.9, 615.7)", () => {
+  it("redirects 1, keeps 1 for the source's next damage this turn, then is used up", () => {
+    const { state: base, bears } = withTwoPreventions();
+    const redirect: ReplacementEffect = {
+      kind: "redirectDamage",
+      id: "o903",
+      sourceOracleId: FOREST,
+      controller: "p1",
+      from: bears,
+      remaining: 2,
+      to: { kind: "player", player: "p2" },
+    };
+    const state = { ...base, replacements: [redirect] };
+    const first = happen(state, { kind: "dealDamage", damage: [toP1(bears, 1)] }, TEST_CARDS).state;
+    expect([first.players.p1?.life, first.players.p2?.life]).toStrictEqual([20, 19]);
+    expect(first.replacements).toStrictEqual([{ ...redirect, remaining: 1 }]);
+    const second = happen(first, { kind: "dealDamage", damage: [toP1(bears, 2)] }, TEST_CARDS).state;
+    expect([second.players.p1?.life, second.players.p2?.life]).toStrictEqual([19, 18]);
+    expect(second.replacements).toStrictEqual([]);
   });
 });

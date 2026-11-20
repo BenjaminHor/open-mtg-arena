@@ -46,6 +46,8 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   orderTriggers: true,
   // Reachable since M2-08d1, only when Guardian Seraph meets Fog or Safe Passage in one game: rare in agent games.
   chooseReplacement: "two different prevention effects on one damage event are too rare in agent games",
+  // Only when Harm's Way's source would deal more than 2 to its controller and their creatures in one event.
+  divideRedirect: "a chosen source hitting several of its controller's things in one event is too rare in agent games",
 };
 
 /**
@@ -94,6 +96,8 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   DAMAGE_REMOVED: true,
   PERMANENT_REGENERATED: true,
   DAMAGE_PREVENTED: true,
+  // Agents choose Harm's Way's source at random among every permanent and spell; that source seldom damages them after.
+  DAMAGE_REDIRECTED: "Harm's Way redirects only if the source an agent picks at random then damages it that turn",
   CARD_DISCARDED: true,
   CARDS_REVEALED: true,
 };

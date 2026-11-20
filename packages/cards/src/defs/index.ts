@@ -71,6 +71,7 @@ import { grayOgre } from "./g/gray-ogre.ts";
 import { griffinSentinel } from "./g/griffin-sentinel.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { guardianSeraph } from "./g/guardian-seraph.ts";
+import { harmsWay } from "./h/harms-way.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
@@ -239,6 +240,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   griffinSentinel,
   grizzlyBears,
   guardianSeraph,
+  harmsWay,
   hauntingEchoes,
   hillGiant,
   hornedTurtle,

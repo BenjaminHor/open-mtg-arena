@@ -1267,3 +1267,31 @@ every schema change and every change D-024 lists bumps it.
   (Kamigawa) have none; split cards 50 of 123; Auras 359 of 1,244. None of these is hard for the engine's design
   (all are CR rules on the same machinery); the filter only decides what's built first. Banding and phasing, the
   costly ones, aren't Modern-legal anyway.
+
+**D-090: Redirection with an amount, settled per effect before the entries (M2-08d2, Harm's Way)** · 2026-11-20 · accepted
+- Harm's Way's source is chosen as it resolves (CR 609.7a) with the existing `chooseCards` decision, purpose
+  `damageSource`, among permanents and spells on the stack. CR 609.7a also allows objects only referred to by something
+  on the stack or by a waiting effect, and face-up objects in the command zone; no pool card needs those (later). A
+  chosen permanent spell is followed onto the battlefield when it resolves (`finishResolving`, CR 609.7a, 400.7).
+- The effect is `redirectDamage` in `GameState.replacements`: its source, target, controller and the amount left. It
+  applies to damage from the source to its controller or a creature they control, while the target can be dealt
+  damage (CR 614.9); when it can't, nothing is redirected and nothing is used up (its ruling, CR 609.7b). Damage
+  already headed for the target isn't redirected (nothing would change, so nothing is used).
+- What each effect takes from which entry of a damage event is settled before the entries are replaced, one decision
+  per effect: only when the source would deal more to its controller and their creatures than is left, across more
+  than one entry, does its controller choose (`divideRedirect`, one share per answer, like `divide`; its ruling allows
+  1 and 1). The shares add up to all that's left. Each entry then sees a fixed share, so entries stay independent and a
+  choice for one doesn't wait on another (the advisor's point; threading the amount through entries while their own
+  choices were open would have needed the unknown outcome of an earlier entry's choice). The cost: a share whose entry
+  is emptied first by a prevention effect its recipient chose to apply first isn't given to another entry, so that
+  part stays unused for later damage this turn. Rare, and the player chose it.
+- The redirected part is the same damage dealt to another recipient (CR 614.9): combat damage stays combat damage
+  (Fog prevents it at the new recipient), and it becomes an entry of its own, replaced again with its recipient's
+  chooser (CR 616.1f), without the effects already applied to the damage it came from. Another redirection effect
+  doesn't apply to already-redirected damage (shares are settled for the event's own entries only); two players'
+  Harm's Ways on one source would need it (later).
+- Choices made while replacing an event are a union (`ReplacementChoice`): which effect first (`first`), or a split
+  (`redirectSplit`). A `damageRedirected` pipeline event uses the amount up in `perform` (an effect used up is
+  removed) and is told as `DAMAGE_REDIRECTED`.
+- Golden games: Harm's Way is cast in pool-167, but its redirect needs the randomly chosen source to damage the agent
+  afterwards, so `DAMAGE_REDIRECTED` and `divideRedirect` carry reasons instead of being required.

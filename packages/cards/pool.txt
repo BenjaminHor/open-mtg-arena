@@ -74,6 +74,7 @@ Gray Ogre
 Griffin Sentinel
 Grizzly Bears
 Guardian Seraph
+Harm's Way
 Haunting Echoes
 Hill Giant
 Horned Turtle

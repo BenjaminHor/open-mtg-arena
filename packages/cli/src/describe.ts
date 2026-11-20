@@ -92,6 +92,10 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return `sacrifice ${objectText(state, answer.object, cards)}`;
     case "divide": {
       const pending = state.pending;
+      if (pending?.kind === "divideRedirect") {
+        const entry = pending.entries[pending.shares.length];
+        return `redirect ${answer.amount} of ${entry === undefined ? "the next damage" : choiceForText(state, entry, cards)}`;
+      }
       const target = pending?.kind === "divide" ? pending.targets[pending.shares.length] : undefined;
       return `give ${answer.amount} to ${target === undefined ? "the next target" : targetText(state, target, cards)}`;
     }
@@ -167,6 +171,8 @@ function choiceText(purpose: ChoosePurpose, card: string): string {
       return `find ${card}`;
     case "putOnTop":
       return `put ${card} back next from the top`;
+    case "damageSource":
+      return `choose ${card} as the source`;
   }
 }
 

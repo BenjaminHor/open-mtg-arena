@@ -486,6 +486,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
          when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
          stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
+         Built (D-090): Harm's Way, 6 scenarios (`harms-way*.yaml`) and a unit test of the amount used up; golden
+         pool-167 casts it. 167 cards; 159 of the 234 Magic 2010 cards. Next: mutations, fuzz, reviews, PR.
          Plan (2026-11-20, after #48 merged):
          - One op, `redirectNextDamage { amount, to }`: with nothing chosen it asks (`chooseCards`, purpose
            `damageSource`, among permanents and spells on the stack, CR 609.7a); with the source chosen it adds

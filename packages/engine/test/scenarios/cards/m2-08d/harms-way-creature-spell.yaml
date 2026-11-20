@@ -1,0 +1,28 @@
+name: A creature spell chosen as Harm's Way's source is followed onto the battlefield, where its damage is redirected
+rules: [CR 609.7a, CR 400.7]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Plains]
+    hand: [Harm's Way]
+  p2:
+    battlefield: [Mountain]
+    hand: [Raging Goblin]
+steps:
+  - p2 cast: Raging Goblin
+    pay: auto
+  - p2 pass: once
+  - p1 cast: Harm's Way
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - p1 choose: Raging Goblin
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Raging Goblin]
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Raging Goblin]
+  - all pass: until main2
+  - expect:
+      p1.life: 20
+      p2.life: 19

@@ -129,6 +129,11 @@ export type GameEvent =
   | { type: "DAMAGE_REMOVED"; object: ObjectId; amount: number }
   /** Damage prevented, so never dealt (CR 615.6): `by` is the card whose effect prevented it. */
   | { type: "DAMAGE_PREVENTED"; source: ObjectId; to: Target; amount: number; by: OracleId }
+  /**
+   * Damage that would have been dealt to `from` is dealt to `to` instead (CR 614.9), by the card `by`'s effect; the
+   * damage event says what's dealt.
+   */
+  | { type: "DAMAGE_REDIRECTED"; source: ObjectId; from: Target; to: Target; amount: number; by: OracleId }
   /** A permanent regenerated instead of being destroyed (CR 701.19a): a shield used up, then the rest as events. */
   | { type: "PERMANENT_REGENERATED"; object: ObjectId }
   /**

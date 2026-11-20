@@ -6,6 +6,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
 import { keywordsOf } from "../rules/abilities.ts";
+import type { DecisionKind } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ReplacementChoice } from "../state/replacements.ts";
 import { detectTriggers } from "../triggers/detect.ts";
@@ -21,7 +22,7 @@ import { type Ask, applyReplacements, firstInApnapOrder, type Replaced } from ".
  */
 export function happen(state: GameState, proposed: ProposedEvent, cards: CardDatabase): Progress {
   const replaced = replace(state, proposed, cards, []);
-  if (replaced.kind === "choose")
+  if (replaced.kind !== "replaced")
     throw new Error("a choice between replacement effects can only be asked where happenOrAsk is used");
   return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
@@ -40,12 +41,28 @@ export function happenOrAsk(
   choices: readonly ReplacementChoice[] = [],
 ): Progress {
   const replaced = replace(state, proposed, cards, choices);
-  if (replaced.kind === "choose") {
-    const resume = { proposed, choices: [...choices] };
-    const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
-    return { state: waitFor(state, replaced.player, decision), events: [] };
+  const resume = { proposed, choices: [...choices] };
+  switch (replaced.kind) {
+    case "replaced":
+      return checkTriggers(state, perform(state, replaced.event, cards), cards);
+    case "choose": {
+      const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
+    case "divideRedirect": {
+      const { effect, amount, entries, maxima } = replaced;
+      const decision = {
+        kind: "divideRedirect",
+        effect,
+        amount,
+        entries,
+        maxima,
+        shares: [],
+        resume,
+      } satisfies DecisionKind;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
   }
-  return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
 
 /**
@@ -65,7 +82,7 @@ function replace(
   const results = members.map((e) => replaceOne(state, e, cards, choices));
   const ask = firstInApnapOrder(
     state,
-    results.flatMap((r) => (r.kind === "choose" ? [r] : [])),
+    results.flatMap((r) => (r.kind === "replaced" ? [] : [r])),
   );
   if (ask !== null) return ask;
   const replaced = results.flatMap((r) => (r.kind === "replaced" ? r.events : []));
@@ -115,6 +132,7 @@ function replaceOne(
     case "playLand":
     case "regenerate":
     case "damagePrevented":
+    case "damageRedirected":
       return applyReplacements(state, proposed, cards, choices);
   }
 }

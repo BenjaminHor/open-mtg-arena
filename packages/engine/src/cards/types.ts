@@ -365,6 +365,12 @@ export type Effect =
    */
   | { op: "preventAllDamage"; combatOnly: boolean; protects: "everyone" | "youAndYourCreatures" }
   /**
+   * "The next [amount] damage that a source of your choice would deal to you and/or permanents you control this turn is
+   * dealt to [to] instead" (Harm's Way; CR 614.9, 609.7a): the source is chosen as it resolves, then a redirection
+   * effect until it's used up or the cleanup step.
+   */
+  | { op: "redirectNextDamage"; amount: number; to: EffectSubject }
+  /**
    * "Regenerate [of]": a regeneration shield, used up the next time it would be destroyed this turn (CR 701.19a,
    * 614.8). Making one isn't regenerating (CR 701.19c).
    */

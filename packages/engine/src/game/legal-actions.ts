@@ -10,6 +10,7 @@ import { possibleAttacks } from "../combat/declare-attackers.ts";
 import { possibleBlocks } from "../combat/declare-blockers.ts";
 import { manaAbilityProblem, manaChoices } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
+import { redirectShareRange } from "../pipeline/redirection.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -116,6 +117,13 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
         (target): Action => ({ ...answer, answer: { kind: "chooseTarget", target } }),
       );
       return [...targets, { ...answer, answer: { kind: "cancelCast" } }];
+    }
+    case "divideRedirect": {
+      const { min, max } = redirectShareRange(pending);
+      return Array.from(
+        { length: max - min + 1 },
+        (_, i): Action => ({ ...answer, answer: { kind: "divide", amount: min + i } }),
+      );
     }
     case "divide": {
       const shares = Array.from(

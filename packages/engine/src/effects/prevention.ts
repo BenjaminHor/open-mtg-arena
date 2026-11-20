@@ -28,7 +28,7 @@ export function preventAllDamage(
 }
 
 /** The card whose spell or ability made the effect, which names it: the spell, or the ability's source as it last was. */
-function cardOf(state: GameState, context: EffectContext): OracleId {
+export function cardOf(state: GameState, context: EffectContext): OracleId {
   const self = state.objects[context.self] ?? state.lastKnown[context.self];
   switch (self?.kind) {
     case "card":

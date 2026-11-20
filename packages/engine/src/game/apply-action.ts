@@ -9,6 +9,7 @@ import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.ts";
 import { activateManaAbility, manaAbilityProblem, manaColorProblem } from "../mana/activate.ts";
+import { answerDivideRedirect, redirectShareRange } from "../pipeline/redirection.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -146,10 +147,17 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         state: queueWork(answered, {
           kind: "resumeEvent",
           proposed,
-          choices: [...choices, { for: pending.for, ref: chosen }],
+          choices: [...choices, { kind: "first", for: pending.for, ref: chosen }],
         }),
         events: [],
       };
+    }
+    case "divideRedirect": {
+      if (answer.kind !== "divide") return mismatch;
+      const { min, max } = redirectShareRange(pending);
+      if (!Number.isInteger(answer.amount) || answer.amount < min || answer.amount > max)
+        return error("illegalAction", `this damage's share must be from ${min} to ${max}`);
+      return { ok: true, state: answerDivideRedirect(answered, pending, answer.amount), events: [] };
     }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;

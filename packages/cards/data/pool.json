@@ -1994,6 +1994,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Harm's Way",
+      "slug": "harms-way",
+      "oracleId": "4c34a882-3786-4d3c-9ca4-04fa85d5e51b",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "The next 2 damage that a source of your choice would deal to you and/or permanents you control this turn is dealt to any target instead.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/7/d7e8a22d-a94e-4dfa-86a3-edb80a03d82a.jpg?1783942402",
+        "large": "https://cards.scryfall.io/large/front/d/7/d7e8a22d-a94e-4dfa-86a3-edb80a03d82a.jpg?1783942402",
+        "png": "https://cards.scryfall.io/png/front/d/7/d7e8a22d-a94e-4dfa-86a3-edb80a03d82a.png?1783942402",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/7/d7e8a22d-a94e-4dfa-86a3-edb80a03d82a.jpg?1783942402"
+      },
+      "artist": "Dan Murayama Scott",
+      "set": "m10",
+      "collectorNumber": "14",
+      "scryfallUri": "https://scryfall.com/card/m10/14/harms-way?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Haunting Echoes",
       "slug": "haunting-echoes",
       "oracleId": "3abd345a-69a5-486e-ada9-dd1ca0decc28",

@@ -20,6 +20,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "createDelayedTrigger":
     case "regenerate":
     case "preventAllDamage":
+    case "redirectNextDamage":
     case "revealUntil":
     case "dealDamage":
     case "search":

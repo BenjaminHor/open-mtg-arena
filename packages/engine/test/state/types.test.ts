@@ -93,6 +93,8 @@ describe("discriminated unions", () => {
           return `order ${decision.batch.length} triggered abilities`;
         case "chooseReplacement":
           return `choose one of ${decision.options.length} replacement effects`;
+        case "divideRedirect":
+          return `split ${decision.amount} redirected damage`;
         default:
           return assertNever(decision);
       }

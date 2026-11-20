@@ -4,6 +4,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { dealDamage } from "../effects/deal-damage.ts";
 import { gainLife, loseLife } from "../effects/life.ts";
+import { useRedirection } from "../effects/redirection.ts";
 import { countLandPlay } from "../game/land-played.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { addMana } from "../mana/pool.ts";
@@ -46,6 +47,8 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
         state,
         events: [{ type: "DAMAGE_PREVENTED", source: event.source, to: event.to, amount: event.amount, by: event.by }],
       };
+    case "damageRedirected":
+      return useRedirection(state, event);
     case "sacrifice":
       return sacrifice(state, event.object, event.to);
     case "dealDamage":

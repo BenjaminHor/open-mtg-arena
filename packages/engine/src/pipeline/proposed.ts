@@ -43,6 +43,19 @@ export type SingleEvent =
    * whose effect prevented it); the damage event itself is what's left after prevention.
    */
   | { kind: "damagePrevented"; source: ObjectId; to: Target; amount: number; by: OracleId }
+  /**
+   * Damage redirected (CR 614.9) by the effect `effect`, which uses up that much of it (like a shield, CR 615.7); the damage
+   * event itself holds the redirected damage. An event of its own so the amount is used where events are performed.
+   */
+  | {
+      kind: "damageRedirected";
+      effect: ObjectId;
+      source: ObjectId;
+      from: Target;
+      to: Target;
+      amount: number;
+      by: OracleId;
+    }
   /** A permanent is sacrificed: its controller moves it to its owner's graveyard; it isn't destroyed (CR 701.21a). */
   | { kind: "sacrifice"; object: ObjectId; to?: Rerouted }
   /**

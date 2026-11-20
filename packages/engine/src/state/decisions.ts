@@ -9,7 +9,7 @@ import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DecisionId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
-import type { ChoiceFor, ReplacementChoice, ReplacementRef } from "./replacements.ts";
+import type { ChoiceFor, DamageEntryKey, ReplacementChoice, ReplacementRef } from "./replacements.ts";
 import type { PendingTrigger } from "./triggers.ts";
 import type { WorkItem } from "./work.ts";
 import type { ZoneRef } from "./zones.ts";
@@ -136,10 +136,25 @@ export type DecisionKind =
       for: ChoiceFor;
       options: ReplacementRef[];
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
+    }
+  /**
+   * A redirection effect's controller chooses which of a source's damage it redirects, when that source would deal more
+   * to them and their creatures in one event than it has left (Harm's Way's ruling, like CR 615.7): how much of each
+   * damage entry in `entries`, one entry per answer, each at most `maxima` there; `shares` are the answers so far, and
+   * the last entry gets the rest. As with `chooseReplacement`, nothing has happened yet: the event is replaced again.
+   */
+  | {
+      kind: "divideRedirect";
+      effect: ObjectId;
+      amount: number;
+      entries: DamageEntryKey[];
+      maxima: number[];
+      shares: number[];
+      resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     };
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
-export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice";
+export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice" | "damageSource";
 
 /** Cards shown to one player by what they are, in a fixed order (D-062), and the zone they're in. */
 export type Seen = { from: ZoneRef; cards: OracleId[] };

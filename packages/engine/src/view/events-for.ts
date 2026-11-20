@@ -84,6 +84,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "DAMAGE_REMOVED":
     case "PERMANENT_REGENERATED":
     case "DAMAGE_PREVENTED":
+    case "DAMAGE_REDIRECTED":
     case "CARD_DISCARDED":
     case "STATE_BASED_ACTIONS":
     case "PERMANENT_DESTROYED":

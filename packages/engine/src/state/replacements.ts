@@ -24,6 +24,21 @@ export type ReplacementEffect =
       controller: PlayerId;
       combatOnly: boolean;
       protects: "everyone" | "controllerAndCreatures";
+    }
+  /**
+   * "The next N damage that [from] would deal to you and/or permanents you control this turn is dealt to [to] instead"
+   * (Harm's Way; CR 614.9): `remaining` is how much it still redirects, like a shield (CR 615.7); it's used up as damage
+   * is redirected, and isn't when none is (CR 609.7b). `from` is the chosen source, followed from the stack onto the
+   * battlefield if it's a permanent spell (CR 609.7a).
+   */
+  | {
+      kind: "redirectDamage";
+      id: ObjectId;
+      sourceOracleId: OracleId;
+      controller: PlayerId;
+      from: ObjectId;
+      remaining: number;
+      to: Target;
     };
 
 /**
@@ -38,10 +53,16 @@ export type ReplacementRef =
   | { kind: "resolvedEffect"; id: ObjectId };
 
 /**
- * A choice a player made between replacement effects, and what it was for, so a choice made for one event or damage
- * entry isn't used for another (CR 616.1).
+ * A choice made while replacing an event: which replacement effect applies first, and what that choice was for, so a
+ * choice made for one event or damage entry isn't used for another (CR 616.1); or how a redirection effect with too
+ * little left splits it among a source's damage entries (Harm's Way's ruling).
  */
-export type ReplacementChoice = { for: ChoiceFor; ref: ReplacementRef };
+export type ReplacementChoice =
+  | { kind: "first"; for: ChoiceFor; ref: ReplacementRef }
+  | { kind: "redirectSplit"; effect: ObjectId; shares: RedirectShare[] };
+
+/** How much of one damage entry a redirection effect redirects. */
+export type RedirectShare = { entry: DamageEntryKey; amount: number };
 
 /**
  * What a choice between replacement effects is for: the object an event affects, or one entry of a damage event (a
@@ -49,9 +70,10 @@ export type ReplacementChoice = { for: ChoiceFor; ref: ReplacementRef };
  * recipient twice in an event (Goblin Artillery targeting its own controller). Source and recipient say which damage
  * it is.
  */
-export type ChoiceFor =
-  | { kind: "object"; object: ObjectId }
-  | { kind: "damage"; index: number; source: ObjectId; to: Target };
+export type ChoiceFor = { kind: "object"; object: ObjectId } | DamageEntryKey;
+
+/** One entry of a damage event, by its place in the event as proposed, its source and its recipient. */
+export type DamageEntryKey = { kind: "damage"; index: number; source: ObjectId; to: Target };
 
 export function sameChoiceFor(a: ChoiceFor, b: ChoiceFor): boolean {
   switch (a.kind) {
@@ -89,6 +111,7 @@ export function replacementEffectCard(state: GameState, id: ObjectId): OracleId 
   for (const effect of state.replacements) {
     switch (effect.kind) {
       case "preventAllDamage":
+      case "redirectDamage":
         if (effect.id === id) return effect.sourceOracleId;
         break;
       case "regenerationShield":

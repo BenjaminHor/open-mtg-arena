@@ -36,8 +36,10 @@ order of replacements (CR 616.1) and resumes as a work item; only callers that d
 *Watch out:* every other caller (the list is in `engine/src/pipeline/README.md`) must queue its rest as work before it
 can wait, and mana abilities run outside the work queue. *Built (M2-08d1, D-088):* prevention per damage entry, each
 with its own choices and chooser, choices keyed by the entry (`ChoiceFor`), and an id for each state-held effect.
-Still needed for Harm's Way (M2-08d2): a second kind of recorded choice (which damage it redirects), an amount left
-shared across one event's entries, and a redirected entry checked again for prevention (CR 616.1f). Each member of a batch is replaced
+*Built (M2-08d2, D-090):* redirection with an amount (Harm's Way), its split among entries settled per effect before
+the entries, the redirected part replaced again (CR 616.1f). *Watch out:* a share isn't reassigned when prevention
+empties its entry first, and already-redirected damage isn't redirected again by another effect (two players'
+Harm's Ways on one source, later); "prevent the next N" shields (CR 615.7) can reuse the same split. Each member of a batch is replaced
 against the state before the batch (built, D-085), and the results of damage are replaced as part of the damage event
 (CR 120.4c), not as life-loss events of their own; a replacement applies once per event (CR 614.5). An instruction to
 draw several cards needs a container event, replaced as a whole before the single draws (CR 121.2a, 616.1g, 614.11a):

@@ -1,0 +1,32 @@
+name: When the source would deal more than 2 to Harm's Way's controller's creatures at once, they choose which 2, 1 to each if they like
+rules: [CR 614.9, CR 615.7, CR 510.1c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, Hill Giant, Plains]
+    hand: [Harm's Way]
+  p2:
+    battlefield: [Craw Wurm]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Craw Wurm]
+  - all pass: until combat.declareBlockers
+  - p1 block: { Grizzly Bears: Craw Wurm, Hill Giant: Craw Wurm }
+  - p2 pass: once
+  - p1 cast: Harm's Way
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - p1 choose: Craw Wurm
+  - all pass: until combat.damage
+  - p2 assign: { Grizzly Bears: 2, Hill Giant: 4 }
+  - expect:
+      pending: { player: p1, kind: divideRedirect, amount: 2 }
+  # 1 of the first entry's damage; the last entry gets the other 1.
+  - p1 choose: 1
+  - expect:
+      p2.life: 18
+      p1.battlefield contains: [Grizzly Bears]
+      p1:Grizzly Bears.damage: 1
+      p1.graveyard: [Harm's Way, Hill Giant]
+      p2.graveyard: [Craw Wurm]

@@ -19,7 +19,9 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    into a graveyard from anywhere, ... instead"; and a regeneration shield on a permanent about to be destroyed
    (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Damage is prevented per entry
    (a source dealing damage to a recipient) inside its one event (`damage-replacements.ts`, D-088): Fog and Safe
-   Passage from `GameState.replacements`, Guardian Seraph from the battlefield; a `damagePrevented` event tells it. Destroy, sacrifice, counter and discard carry where a replacement sends
+   Passage from `GameState.replacements`, Guardian Seraph from the battlefield; a `damagePrevented` event tells it.
+   Redirection (Harm's Way, `redirection.ts`, D-090): what each effect takes from which entry is settled first, the
+   redirected part becomes an entry of its own, replaced again, and a `damageRedirected` event uses the amount up. Destroy, sacrifice, counter and discard carry where a replacement sends
    the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is
