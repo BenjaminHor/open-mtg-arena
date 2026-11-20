@@ -47,12 +47,14 @@ own replacement pass, and room to pause for a choice. No card behavior changes y
 (CR 608.2h, 603.10) comes with its first reader. *Accept:* the golden games and replays are unchanged, `pnpm bench`
 passes, and unit tests cover the pipeline.
 
-**M2-04 Targeting and costs with context.** Targeting knows its source and controller, and targets can be restricted
-(CR 115, 601.2c: "target nonblack creature", "attacking or blocking", a card in a graveyard, a spell), with a variable
-number of targets and divided damage (CR 601.2d). Costs become a list of parts with the total computed in one place
-(CR 601.2f–h, 118): X, sacrifice and other additional costs, cost increases. Paying mana outside casting (CR 117.1d,
-605.3a) where the pool needs it. *Accept:* scenarios for each target restriction and cost kind the pool uses, with
-negative cases.
+**M2-04 Targeting and costs with context.** Split in two (2026-11-20). **M2-04a:** targeting knows its source and
+controller, and targets can be restricted (CR 115, 601.2c: "target nonblack creature", "attacking or blocking", a card
+in a graveyard, a spell), with a variable number of targets and divided damage (CR 601.2d). **M2-04b:** costs become a
+list of parts with the total computed in one place (CR 601.2f–h, 118): X, sacrifice and other additional costs, cost
+increases. (Paying mana outside casting was dropped: no Magic 2010 card pays mana while a spell resolves.) *Accept:*
+scenarios with negative cases for the restrictions and cost kinds of the cards each part scripts; unit tests, with a
+positive and a negative case each, for the restrictions whose cards need later effects (scenarios can only use pool
+cards), and those cards bring their scenarios.
 
 **M2-05 Effects and keyword actions (CR 701).** The effects most cards are made of: destroy, exile, sacrifice, draw,
 discard (chosen and at random), mill, search a library and shuffle, reveal, look at the top cards and reorder, return

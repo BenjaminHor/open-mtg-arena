@@ -14,15 +14,41 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   2026-11-20). `docs/milestones/m2-pool.md` maps all 234 cards (none left out) to the systems they need and the task
   after which each is playable; the M2 tasks are reordered by it (D-055). The table is kept by hand from now on: when a
   task scripts a card, check its row.
-- M2-03 The event pipeline: built, in review (PR #23, D-056). `engine/src/pipeline/`: every game event is a
-  `ProposedEvent` carried out by `happen` (replace, perform, check triggers). Each event changes one object or player
-  and is performed whole; events at the same time are one `simultaneous` event (state-based actions, untap step,
-  attackers tapping, cleanup discard, a mulligan's hand); all replacing comes before any performing, so M2-08 can
-  pause for a choice. Only `perform.ts` imports the primitives (`test/pipeline/only-the-pipeline-performs.test.ts`).
-  Reworked after the first reviews (rules-judge and code-reviewer both found batches replaced one member at a time and
-  continuations that couldn't pause). Golden games and replays unchanged, bench within budget, fuzz clean. Last known
-  information is deferred to its first reader (future-rules.md, "Triggered abilities").
-- Next: M2-04 Targeting and costs with context.
+- M2-03 The event pipeline: done, merged (PR #23, D-056). Every game event goes through `happen`; replacement
+  effects (M2-08) and triggers (M2-07) plug in there. Reworked once after the rules-judge and code-reviewer reviews.
+- M2-04 Targeting and costs, split in two (plan, 2026-11-20; restrictions taken from the Oracle text of all 47 pool
+  cards marked T or C).
+  - M2-04a Targeting (now). CR 115, 601.2c, 601.2d, 608.2b. Cards: Righteousness, Ignite Disorder, Lava Axe.
+    - `TargetSpec` becomes a kind (`anyTarget`, `playerOrPlaneswalker`, `permanent`, `spell`, `cardInGraveyard`)
+      with an `ObjectFilter` (card types any of / none of, colors any of / none of, subtypes any of, tapped,
+      attacking / blocking / either, controller you / not you / an opponent) and a `count` (min, max or "any";
+      default exactly one). "Target creature" becomes `permanent` with types `creature`; the M1 definitions move to
+      it. Planeswalkers come with M2-13; "target opponent" (Sanguine Bond, M2-07) and "toughness less than this
+      creature's power" (Stone Giant, M2-09) come with their cards.
+    - `legalTargets` knows the spell or ability, its controller, and the zones: permanents, spells on the stack (not
+      itself, CR 115.5), cards in graveyards, players. Filters read `characteristics()`, combat from `state.combat`,
+      control from `controllerOf` (never the owner).
+    - A variable count is announced first (CR 601.2c): a `chooseTargetCount` decision, then that many `chooseTarget`
+      answers for the instance, no object twice in one instance (CR 115.3). A fixed count of one keeps today's flow.
+      The announced counts live in `Casting`.
+    - Division (CR 601.2d): an effect marked `divided: "asYouChoose"` asks, after the targets, for each target's
+      share in turn (at least one each; the last gets the rest), stored on the spell's `StackChoices`. With one
+      target there's nothing to ask. At resolution an illegal target's share isn't dealt (CR 608.2b); the others keep
+      theirs (checked against the cards' rulings).
+    - `castProblem` checks only instances whose minimum is above zero have enough legal choices (CR 115.6).
+    - Tests: scenarios for the three cards with negative cases (wrong color, not blocking, too many targets, the same
+      creature twice, an illegal target at resolution); unit tests for every filter field with a positive and a
+      negative case, since scenarios can only use pool cards and the other restrictions' cards need M2-05 effects.
+  - M2-04b Costs (next). CR 601.2b, 601.2f–h, 107.3, 118, 701.21. Cards: Fireball, Vampire Aristocrat. Costs become
+    a list of parts with the total computed in one place: X announced at CR 601.2b (`legalActions` needs a bound,
+    recorded as a decision), increases (Fireball's per extra target, so the total comes after targets, CR 601.2f),
+    sacrifice as a cost (a new `sacrifice` event in the pipeline, performed with the mana payment so a cancel never
+    has to undo it, D-035). Fireball's "divided evenly, rounded down" follows its rulings.
+  - Dropped from M2-04: paying mana outside casting. No Magic 2010 card pays mana while a spell resolves (checked).
+  - Future impact: Aura targets (M2-12) use `permanent` targets with the same filters; triggered abilities (M2-07)
+    choose targets with the same decisions as they're put on the stack (CR 603.3d); protection and shroud (M2-06)
+    and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
+    `playerOrPlaneswalker`.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
