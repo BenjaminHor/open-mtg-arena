@@ -1,10 +1,10 @@
 // Playing a land: a special action that doesn't use the stack (CR 116.2a, 305.1).
 
 import type { CardDatabase } from "../cards/types.ts";
+import { happen } from "../pipeline/happen.ts";
 import { landPlayProblem } from "../rules/timing.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { moveCard, newCardIdOf } from "../zones/move-card.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import type { Progress } from "./progress.ts";
 import { queueWork } from "./work.ts";
@@ -21,17 +21,11 @@ export function playLandProblem(
 }
 
 /**
- * The land enters the battlefield under the player's control and counts toward their lands this turn (CR 305.2).
- * Taking an action restarts the passes (CR 117.4), and the player gets priority again (CR 116.3, 117.3c).
+ * The land is played (the `playLand` event: it enters the battlefield, CR 305.1, and counts, CR 305.2). Taking an
+ * action restarts the passes (CR 117.4), and the player gets priority again (CR 116.3, 117.3c).
  */
-export function playLand(state: GameState, player: PlayerId, card: ObjectId): Progress {
-  const moved = moveCard(state, card, { zone: "battlefield", controller: player });
-  const ps = moved.state.players[player];
-  if (ps === undefined) throw new Error(`No player ${player}`);
-  const players = { ...moved.state.players, [player]: { ...ps, landsPlayedThisTurn: ps.landsPlayedThisTurn + 1 } };
-  const next = queueWork({ ...moved.state, players, passesInSuccession: 0 }, { kind: "givePriority", player });
-  return {
-    state: next,
-    events: [...moved.events, { type: "LAND_PLAYED", player, newId: moved.newId, cardId: newCardIdOf(moved) }],
-  };
+export function playLand(state: GameState, player: PlayerId, card: ObjectId, cards: CardDatabase): Progress {
+  const played = happen(state, { kind: "playLand", player, object: card }, cards);
+  const next = queueWork({ ...played.state, passesInSuccession: 0 }, { kind: "givePriority", player });
+  return { state: next, events: played.events };
 }

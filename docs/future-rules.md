@@ -28,7 +28,8 @@ asks "is this a creature?", "who controls this?" or "does it have flying?" must 
 "prevent the next 3 damage", "enters tapped", "if you would draw a card, ...".
 *Needs now:* every game event (draw, damage, life change, zone change, counter placement, tapping) goes
 through the single propose → replace → perform → trigger pipeline. Nothing changes state directly
-outside it, so replacements can be added in one place later.
+outside it, so replacements can be added in one place later. Built in M2-03 (`engine/src/pipeline/`, D-056): `replace`
+is where they go.
 
 *Watch out (D-036):* `dealDamage`, `loseLife` and `runEffect` are synchronous, and mana abilities call `runEffect`
 outside the work queue. When the affected player must choose the order of replacements (CR 616.1), damage needs to

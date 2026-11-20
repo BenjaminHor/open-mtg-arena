@@ -30,7 +30,7 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
     case "givePriority":
       return givePriority(state, item.player, cards);
     case "endStep":
-      return endStep(state);
+      return endStep(state, cards);
     case "resolveTopOfStack":
       return resolveTopOfStack(state, cards);
     case "runEffect":
@@ -38,11 +38,11 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
     case "finishResolving":
       return finishResolving(state, item.object, cards);
     case "doesNotResolve":
-      return doesNotResolve(state, item.object);
+      return doesNotResolve(state, item.object, cards);
     case "cleanupCheck":
       return cleanupCheck(state, cards);
     case "anotherCleanupStep":
-      return anotherCleanupStep(state);
+      return anotherCleanupStep(state, cards);
     case "declareAttackers":
       return declareAttackers(state, item.chosen, cards);
     case "declareBlockers":
@@ -50,6 +50,6 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
     case "combatDamage":
       return combatDamage(state, item.divisions, cards);
     case "finishCleanup":
-      return finishCleanup(state, item.chosen);
+      return finishCleanup(state, item.chosen, cards);
   }
 }

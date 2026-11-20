@@ -13,7 +13,8 @@ The design and its invariants are in [`docs/architecture.md`](../../docs/archite
   `layerSevenCChanges` (what makes up a power and toughness, for explaining it), `phaseOf`, `autoPay`, `payFromPool`,
   `allPayments`, `manaValue`, and `playerView` and `eventsFor` (what one player may know, `view/`).
 - Folders: `state/` (types), `game/` (the flow of a game), `effects/` (the effects interpreter: damage, mana,
-  continuous effects), `zones/` (moving cards), `permanents/` (tapping, untapping, damage, destroying), `view/` (player views and event filtering), `mana/` (mana abilities,
+  continuous effects), `zones/` (moving cards), `permanents/` (tapping, untapping, damage, destroying), `pipeline/` (the one path every game event takes: propose,
+replace, perform, trigger), `view/` (player views and event filtering), `mana/` (mana abilities,
   paying), `combat/` (declaring attackers and blockers, combat damage), `rules/` (rules questions such as who controls an object), `cards/` (card data types), `rng/`.
 
 ## Tests

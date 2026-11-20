@@ -660,3 +660,25 @@ every schema change and every change D-024 lists bumps it.
   through the milestone (38 cards playable now, 93 after M2-05, 144 after M2-07, all 234 after M2-14).
 - Protection is split across tasks by its parts (CR 702.16): targeting and blocking with keywords, damage prevention
   with M2-08, "can't be enchanted or equipped" with M2-12.
+
+**D-056: One event pipeline, with compound events proposing their parts** · 2026-11-20 · accepted (M2-03)
+- Everything that changes the game is a `ProposedEvent` carried out by `happen(state, proposed, cards)`
+  (`engine/src/pipeline/`): replace (identity until M2-08), perform, check triggers (identity until M2-07). Only
+  `perform.ts` calls the primitives; a test fails if another engine file imports one. Tests may still call them.
+- Compound events propose their parts back through the replacement step (`next`): destroy proposes the zone change,
+  draw and discard propose zone changes, damage proposes life loss and marked damage. Regeneration replaces the
+  destruction, "exile it instead" the zone change, and each needs its own pass. Triggers are checked once per `happen`,
+  after everything it caused.
+- Events that happen at the same time are one `simultaneous` event: the state-based actions of one check (CR 704.3),
+  attackers tapping as they're declared (CR 508.1f). Each member gets its own replacement pass; triggers will see the
+  batch together.
+- Playing a land is its own event (`playLand`) so `LAND_PLAYED` is emitted inside the pipeline where triggers can see
+  it. Events emitted outside the pipeline (`STEP_BEGAN`, `SPELL_CAST`, `ATTACKERS_DECLARED`, `SPELL_RESOLVED`) are
+  M2-07's to route when the first trigger needs one.
+- Callers read the new object a move made from its `ZONE_CHANGED` event (`zoneChangeOf`), not the proposal, since a
+  replacement may change the destination. `happen` returns at once; when a replacement needs a choice (CR 616.1) it will
+  have to pause as work, and the callers that read results right away (casting, land play) are the ones to change.
+- Bookkeeping stays outside: emptying mana pools, cleanup's damage removal and effect ending, turn and step changes, and
+  reversing a cancelled cast. The pregame's shuffles, draws and mulligan moves go through the pipeline, so nothing but
+  the reversal needs an exception.
+- Done with no behavior change: the golden games and replays are identical, and `pnpm bench` passes.

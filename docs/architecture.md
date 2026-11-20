@@ -165,12 +165,17 @@ simple.
   `{ op: "dealDamage", amount: 3, from: "self", to: { target: 0 } }` (the draft shapes are in
   `engine/src/cards/types.ts`, D-026). The engine has one
   interpreter that turns effect nodes into work items. Card definitions never contain functions.
-- Anything that happens in the game goes through one pipeline:
-  1. **Propose** an event (draw a card, deal damage, move to a zone).
+- Anything that happens in the game goes through one pipeline (`engine/src/pipeline/`, D-056), `happen(state,
+  proposed, cards)`:
+  1. **Propose** an event (draw a card, deal damage, move to a zone). Events that happen together are one
+     `simultaneous` event.
   2. **Replace**: apply replacement and prevention effects (CR 614–616). If several apply, the
      affected player or controller chooses the order (CR 616.1), which is a decision.
-  3. **Perform** the event and emit `GameEvent`s.
-  4. **Trigger**: check triggered abilities against the events and add `pendingTriggers` (CR 603.2).
+  3. **Perform** the event and emit `GameEvent`s. An event that leads to others (destroying moves the permanent)
+     proposes them back through step 2, so each gets its own replacement pass.
+  4. **Trigger**: check triggered abilities against the events and add `pendingTriggers` (CR 603.2), once per
+     proposed event, after everything it caused.
+  Only the pipeline calls the primitives that change the game; a test checks the imports.
 - Events returned from `applyAction` are the UI's animation script and the AI's and tests'
   record of what happened. They're never needed to rebuild state.
 

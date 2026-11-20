@@ -2,13 +2,14 @@
 // (targets, paying, cancelling) are shared with activating abilities, in `casting-steps.ts`.
 
 import type { CardDatabase } from "../cards/types.ts";
+import { happen } from "../pipeline/happen.ts";
+import { zoneChangeOf } from "../pipeline/moved.ts";
 import { totalCost } from "../rules/costs.ts";
 import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
 import { castTimingProblem } from "../rules/timing.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { moveCard } from "../zones/move-card.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { nextCastingStep } from "./casting-steps.ts";
 import type { Progress } from "./progress.ts";
@@ -38,10 +39,12 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
   const ps = state.players[player];
   if (obj?.kind !== "card" || ps === undefined) throw new Error(`Can't cast ${card}`);
   const handIndex = zoneList(state, { zone: "hand", player }).indexOf(card);
-  const moved = moveCard(state, card, { zone: "stack", controller: player });
+  const moved = happen(state, { kind: "moveCard", object: card, to: { zone: "stack", controller: player } }, cards);
+  const change = zoneChangeOf(moved.events, card);
+  if (change === null) throw new Error(`${card} didn't move to the stack`);
   const casting: Casting = {
     player,
-    object: moved.newId,
+    object: change.newId,
     origin: { kind: "card", card: obj, handIndex },
     poolBefore: ps.manaPool,
     tappedForMana: [],

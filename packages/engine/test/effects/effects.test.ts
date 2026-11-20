@@ -3,9 +3,10 @@
 // "target", and 0 damage.
 
 import { describe, expect, it } from "vitest";
-import { dealDamage } from "../../src/effects/deal-damage.ts";
 import { runEffect } from "../../src/effects/run-effect.ts";
 import { type Action, type GameState, legalActions, type ObjectId } from "../../src/index.ts";
+import { happen } from "../../src/pipeline/happen.ts";
+import type { Damage } from "../../src/pipeline/proposed.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
 import { BITE, GROWTH, SHOT_AND_BOOST, TEST_CARDS } from "../support/cards.ts";
 import { act, type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
@@ -202,3 +203,8 @@ describe("dealing damage (CR 120)", () => {
     expect(result.state.objects[mountain]).toMatchObject({ damage: 0 });
   });
 });
+
+/** Deals damage as one event through the pipeline (CR 120.4). */
+function dealDamage(state: GameState, damage: Damage[], cards: typeof TEST_CARDS) {
+  return happen(state, { kind: "dealDamage", damage }, cards);
+}

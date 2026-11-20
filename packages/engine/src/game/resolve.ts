@@ -1,6 +1,7 @@
 // Resolving the top object of the stack (CR 608).
 
 import type { CardDatabase } from "../cards/types.ts";
+import { happen } from "../pipeline/happen.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, stillLegalTargets } from "../rules/targets.ts";
@@ -8,7 +9,6 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
-import { moveCard } from "../zones/move-card.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
@@ -44,13 +44,15 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
  * Every target is illegal, so the spell or ability doesn't resolve (CR 608.2b): it does nothing and is removed from the
  * stack. A spell goes to its owner's graveyard; an ability ceases to exist. It isn't countered: nothing countered it.
  */
-export function doesNotResolve(state: GameState, id: ObjectId): Progress {
+export function doesNotResolve(state: GameState, id: ObjectId, cards: CardDatabase): Progress {
   const obj = state.objects[id];
   if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
   switch (obj.kind) {
     case "card": {
       const event = { type: "SPELL_DID_NOT_RESOLVE", object: id, cardId: obj.cardId } as const;
-      return andThen({ state, events: [event] }, (s) => moveCard(s, id, { zone: "graveyard" }));
+      return andThen({ state, events: [event] }, (s) =>
+        happen(s, { kind: "moveCard", object: id, to: { zone: "graveyard" } }, cards),
+      );
     }
     case "ability":
       return {
@@ -109,7 +111,9 @@ export function finishResolving(state: GameState, id: ObjectId, cards: CardDatab
           : ({ zone: "battlefield", controller } as const);
       // The resolution is reported before the card moves; triggers on resolving come after both (later: CR 608.2p).
       const resolved = { type: "SPELL_RESOLVED", object: id, cardId: obj.cardId, controller } as const;
-      return andThen({ state, events: [resolved] }, (s) => moveCard(s, id, destination));
+      return andThen({ state, events: [resolved] }, (s) =>
+        happen(s, { kind: "moveCard", object: id, to: destination }, cards),
+      );
     }
   }
 }

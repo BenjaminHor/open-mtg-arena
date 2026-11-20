@@ -28,12 +28,13 @@ instance of "target". A subject with no legal targets left means that part does 
 
 | File | What it does |
 | --- | --- |
-| `deal-damage.ts` | `dealDamage(state, damage[], cards)`: every damage in the game goes through it (CR 120.4). Life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e); 0 damage isn't dealt (CR 120.8); only players and creatures can be dealt damage (CR 120.1a). Emits `DAMAGE_DEALT` |
+| `deal-damage.ts` | `dealDamage(state, damage[], cards, next)`, performing the pipeline's `dealDamage` event: every damage in the game goes through it (CR 120.4), and each result is proposed again through `next`. Life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e); 0 damage isn't dealt (CR 120.8); only players and creatures can be dealt damage (CR 120.1a). Emits `DAMAGE_DEALT` |
 | `life.ts` | `loseLife(state, player, amount)` (CR 119.3), emitting `LIFE_LOST`. Reaching 0 life is checked later, as a state-based action (CR 704.5a) |
 | `continuous-effect.ts` | `createContinuousEffect(state, effect)`: gives it a timestamp (CR 613.7b) and adds it to `GameState.effects`, emitting `EFFECT_CREATED`. `characteristics()` applies it (`rules/power-toughness.ts`). `endUntilEndOfTurnEffects` ends them in cleanup (CR 514.2), emitting `EFFECT_ENDED` |
 
-Turn steps and casting use other primitives directly: `zones/draw.ts` (drawing, CR 121), `zones/move-card.ts`
-(zone changes, CR 400.7), `permanents/` (tapping, marked damage) and `mana/pool.ts` (adding mana). Each becomes an
-effect op when a card first needs it ("draw a card", "destroy", "exile"), so the op is one line here.
+`dealDamage` and `loseLife` are called only by the event pipeline (`pipeline/`, D-056); `runEffect` proposes
+`dealDamage` and `addMana` events to it with `happen`. Turn steps and casting propose the other events (draw, zone
+changes, tapping). Each becomes an effect op when a card first needs it ("draw a card", "destroy", "exile"), so the op
+is one line here.
 
 Tests: `test/effects/effects.test.ts`, and the scenarios in `test/scenarios/effects/`.

@@ -1,11 +1,12 @@
 // The combat damage step's turn-based action (CR 510.1–510.2).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { type Damage, dealDamage } from "../effects/deal-damage.ts";
 import { waitFor } from "../game/decide.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { currentTurn } from "../game/turn.ts";
 import { queueWork } from "../game/work.ts";
+import { happen } from "../pipeline/happen.ts";
+import type { Damage } from "../pipeline/proposed.ts";
 import { attacksInCombat, blocksInCombat, isBlocked } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { powerAndToughness } from "../rules/power-toughness.ts";
@@ -30,7 +31,8 @@ export function combatDamage(state: GameState, divisions: Divisions, cards: Card
     return { state: waitFor(state, controllerOf(state, attacker), decision), events: [] };
   }
   const active = currentTurn(state).activePlayer;
-  return andThen(dealDamage(state, assignedDamage(state, divisions, cards), cards), (s) => ({
+  const damage = assignedDamage(state, divisions, cards);
+  return andThen(happen(state, { kind: "dealDamage", damage }, cards), (s) => ({
     state: queueWork(s, { kind: "givePriority", player: active }),
     events: [],
   }));
