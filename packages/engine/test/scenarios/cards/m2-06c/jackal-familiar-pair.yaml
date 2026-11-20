@@ -1,0 +1,12 @@
+name: CR 508.1c's example, two creatures that can't attack alone attack together legally
+rules: [CR 508.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Jackal Familiar, Jackal Familiar]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Jackal Familiar#1, Jackal Familiar#2]
+  - all pass: until main2
+  - expect:
+      p2.life: 16

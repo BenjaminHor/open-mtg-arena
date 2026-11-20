@@ -44,6 +44,8 @@ export const DOUBLE_LIFELINKER = "test-double-lifelinker";
 export const FIRST_STRIKER = "test-first-striker";
 export const DEATHTOUCH_TRAMPLER = "test-deathtouch-trampler";
 export const DOUBLE_TRAMPLER = "test-double-trampler";
+/** Not a real card: a creature that can't attack or block alone (Jackal Familiar's ability on a test body). */
+export const LONER = "test-loner";
 
 /** A test creature with only keywords: a vanilla body for combat tests. */
 function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
@@ -471,4 +473,12 @@ export const TEST_CARDS: CardDatabase = {
   [FIRST_STRIKER]: keywordCreature(FIRST_STRIKER, "First Striker", [2, 2], ["first strike"]),
   [DEATHTOUCH_TRAMPLER]: keywordCreature(DEATHTOUCH_TRAMPLER, "Deathtouch Trampler", [5, 5], ["deathtouch", "trample"]),
   [DOUBLE_TRAMPLER]: keywordCreature(DOUBLE_TRAMPLER, "Double Trampler", [4, 4], ["double strike", "trample"]),
+  [LONER]: {
+    ...keywordCreature(LONER, "Loner", [2, 2], []),
+    def: {
+      name: "Loner",
+      oracle: "This creature can't attack or block alone.",
+      statics: [{ kind: "cantAttackOrBlockAlone" }],
+    },
+  },
 };

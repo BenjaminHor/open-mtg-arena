@@ -92,7 +92,9 @@ export const furnaceWhelp: CardDef = {
   it lists beside a keyword ("Landwalk" beside "Swampwalk", `GENERIC_TERMS`).
 - Static abilities that aren't keywords go in `statics` (D-071): "This creature can't be blocked" is
   `{ kind: "cantBeBlocked" }`, "can't be blocked except by black creatures" adds `except: { types: ["creature"],
-  colors: ["B"] }`, "can block any number of creatures" is `{ kind: "canBlockAnyNumber" }`. The engine reads them only
+  colors: ["B"] }`, "can block any number of creatures" is `{ kind: "canBlockAnyNumber" }`, "can't attack or block
+  alone" is `{ kind: "cantAttackOrBlockAlone" }`, "attacks each combat if able" is `{ kind: "attacksEachCombat" }`, "all
+  creatures able to block this creature do so" is `{ kind: "mustBeBlockedByAllAble" }`. The engine reads them only
   through `staticAbilitiesOf`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change

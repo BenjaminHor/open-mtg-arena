@@ -1,0 +1,98 @@
+T0 p2 goes first (chosen by p2)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Wind Drake, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lightning Bolt, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Duress, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Tendrils of Corruption, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Jackal Familiar, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Seismic Strike, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 mulligans
+T0 p1 mulligans
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Wind Drake, p2's hand -> p2's library
+T0 moves: Lightning Bolt, p2's hand -> p2's library
+T0 moves: Duress, p2's hand -> p2's library
+T0 moves: Tendrils of Corruption, p2's hand -> p2's library
+T0 moves: Island, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Spined Wurm, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Stampeding Rhino, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Sign in Blood, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Nature's Spiral, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Negate, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Wind Drake, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Jackal Familiar, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Seismic Strike, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Fiery Hellhound, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Birds of Paradise, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Solemn Offering, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Elite Vanguard, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Jackal Familiar, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Stampeding Rhino, p2's hand -> p2's library
+T0 moves: Island, p1's hand -> p1's library
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 p2 attack: nothing
+T2 turn 2 begins (p1)
+T2 moves: Mountain, p1's library -> p1's hand
+T2 p1 draws
+T2 moves: Mountain, p1's hand -> battlefield
+T2 p1 plays p1:Mountain
+T2 p1 attack: nothing
+T2 taps: p1:Mountain
+T2 p1 adds {R} (p1:Mountain)
+T2 moves: Jackal Familiar, p1's hand -> stack
+T2 p1 casts Jackal Familiar
+T2 resolves: Jackal Familiar
+T2 moves: Jackal Familiar, stack -> battlefield
+T2 moves: Elite Vanguard, p1's hand -> stack
+T2 p1 cancels casting Elite Vanguard
+T3 turn 3 begins (p2)

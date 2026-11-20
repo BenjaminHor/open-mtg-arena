@@ -32,7 +32,9 @@ export type EffectChange =
   /** Layer 7c (CR 613.4c): power and toughness go up or down by these amounts. */
   | { kind: "modifyPT"; power: number; toughness: number }
   /** Not a layer: a rule for the affected creatures, that they can't block (CR 509.1b). */
-  | { kind: "cantBlock" };
+  | { kind: "cantBlock" }
+  /** Not a layer: the affected creatures attack `player` this turn if able (CR 508.1d). */
+  | { kind: "mustAttack"; player: PlayerId };
 
 /**
  * What a resolving effect needs to know about the spell or ability it's part of. It's built once, as resolution begins,

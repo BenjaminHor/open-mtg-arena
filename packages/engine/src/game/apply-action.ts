@@ -4,6 +4,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextRecipient } from "../combat/damage-assignment.ts";
+import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
 import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.ts";
@@ -193,7 +194,16 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       return typeof paid === "string" ? error("illegalAction", paid) : { ok: true, ...paid };
     }
     case "declareAttackers": {
-      if (answer.kind === "finishDeclaring") return { ok: true, ...finishAttackers(answered, pending.chosen, cards) };
+      if (answer.kind === "finishDeclaring") {
+        const problem = attackDeclarationProblem(answered, pending.chosen, cards);
+        if (problem !== null) return error("illegalAction", problem);
+        return { ok: true, ...finishAttackers(answered, pending.chosen, cards) };
+      }
+      if (answer.kind === "takeBack") {
+        if (pending.chosen.length === 0) return error("illegalAction", "nothing has been declared to take back");
+        const chosen = pending.chosen.slice(0, -1);
+        return { ok: true, state: queueWork(answered, { kind: "declareAttackers", chosen }), events: [] };
+      }
       if (answer.kind !== "declareAttacker") return mismatch;
       const problem = attackProblem(answered, pending.chosen, answer.attack, cards);
       if (problem !== null) return error("illegalAction", problem);
@@ -202,7 +212,14 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     }
     case "declareBlockers": {
       if (answer.kind === "finishDeclaring") {
+        const problem = blockDeclarationProblem(answered, pending.chosen, cards);
+        if (problem !== null) return error("illegalAction", problem);
         return { ok: true, ...finishBlockers(answered, pending.player, pending.chosen) };
+      }
+      if (answer.kind === "takeBack") {
+        if (pending.chosen.length === 0) return error("illegalAction", "nothing has been declared to take back");
+        const chosen = pending.chosen.slice(0, -1);
+        return { ok: true, state: queueWork(answered, { kind: "declareBlockers", chosen }), events: [] };
       }
       if (answer.kind !== "declareBlocker") return mismatch;
       const problem = blockProblem(answered, pending.chosen, answer.block, cards);

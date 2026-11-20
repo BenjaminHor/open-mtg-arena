@@ -209,24 +209,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        this turn". Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior, Dread Warlock, Palace Guard,
        Panic Attack. Scenarios in `test/scenarios/cards/m2-06b/` and `interactions/block-any-number/`, five new matrix
        rows; three of the cards in the M10 pair.
-     - M2-06c, now. Plan (2026-11-20): whole-declaration rules, checked as `finishDeclaring` is answered.
-       - Statics: `cantAttackOrBlockAlone` (Jackal Familiar; CR 506.5, 508.1c, 509.1b), `attacksEachCombat`
-         (Berserkers of Blood Ridge; a requirement, CR 508.1d), `mustBeBlockedByAllAble` (Prized Unicorn: a
-         requirement on each creature able to block it, CR 509.1c). Alluring Siren's ability makes a continuous
-         effect `mustAttack` on its target, "attacks you this turn if able" (CR 508.1d), on targets only.
-       - A declaration is legal if it obeys every restriction and obeys as many requirements as any legal declaration
-         could (CR 508.1d, 509.1c). The pool's only whole-declaration restriction is "alone", which adding a creature
-         never breaks, so the maximum is worked out directly, not by searching every declaration: each requirement
-         that can be obeyed, unless obeying them needs a creature declared alone that nothing else can join. Skipped
-         entirely when no requirement or "alone" restriction is in play.
-       - `finishDeclaring` is offered only when the declaration is legal; a new answer `takeBack` removes the last
-         creature declared, so a declaration can't get stuck (future-rules, "More combat"). The fuzzer weights it
-         like cancel. The scenario exporter replays take-backs.
-       - Tests: scenarios per card in `test/scenarios/cards/m2-06c/`, including CR 508.1c's example (two "can't attack
-         alone" creatures attack together), a lure with two blockers, a Siren target that can't attack (tapped), and
-         Jackal forced by a requirement to attack with a partner. Matrix rows: Alone, Requirements.
-       - Future impact: menace (CR 702.111b) and "no more than one creature can attack" are restrictions that adding a
-         creature can break; they need the general search (CR 508.1d's example), which this shape allows.
+     - M2-06c, done, in review (D-072): "can't attack or block alone", "attacks each combat if able", "attacks you this
+       turn if able", "all creatures able to block it do so"; `finishDeclaring` only when the declaration is legal, and a
+       `takeBack` answer. Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren. Scenarios in
+       `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
+       (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair.
      - M2-06d targeting keywords: shroud (CR 702.18). Mist Leopard, Kalonian Behemoth. Protection's targeting and
        blocking parts (CR 702.16b, 702.16f), flash (CR 702.8), indestructible (CR 702.12), "can't be countered": the
        spec puts them here, but their Magic 2010 cards come later (M2-07, M2-08, M2-12).

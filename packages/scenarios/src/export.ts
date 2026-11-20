@@ -4,6 +4,7 @@
 
 import {
   type Action,
+  type Answer,
   abilitiesOf,
   applyAction,
   type CardDatabase,
@@ -117,6 +118,7 @@ function answerStep(
     case "declareAttacker":
     case "declareBlocker":
     case "finishDeclaring":
+    case "takeBack":
       return declaration(state, actions, i, cards);
     case "assignDamage":
       return division(state, actions, i, cards);
@@ -153,6 +155,10 @@ function declaration(
   const end = actions.findIndex((a, j) => j >= i && a.type === "ANSWER" && a.answer.kind === "finishDeclaring");
   if (end < 0) throw new Error("the game stops part way through a declaration, which a scenario can't write");
   const answers = actions.slice(i, end).map((a) => (a.type === "ANSWER" ? a.answer : null));
+  // A declaration with a pick taken back is written one answer at a time, as `choose:` steps, so the replay takes the
+  // same decisions.
+  if (answers.some((a) => a?.kind === "takeBack"))
+    return { step: { [`${p} choose`]: declarationChoice(state, answers[0] ?? null, cards) }, taken: 1 };
   // Scenario steps attack the one other player; several defending players can't be written yet.
   const others = state.turnOrder.filter((x) => x !== p);
   if (pending?.kind === "declareAttackers") {
@@ -307,4 +313,20 @@ function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, un
     out[player.id] = p;
   }
   return out;
+}
+
+/** One answer of a declaration as a `choose:` value: "Runeclaw Bear", "Giant Spider blocks Craw Wurm", "take back". */
+function declarationChoice(state: GameState, answer: Answer | null, cards: CardDatabase): string {
+  switch (answer?.kind) {
+    case "declareAttacker":
+      return local(state, answer.attack.attacker, cards);
+    case "declareBlocker":
+      return `${local(state, answer.block.blocker, cards)} blocks ${local(state, answer.block.attacker, cards)}`;
+    case "takeBack":
+      return "take back";
+    case "finishDeclaring":
+      return "done";
+    default:
+      throw new Error("an unexpected answer in a declaration");
+  }
 }

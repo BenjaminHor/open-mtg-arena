@@ -29,6 +29,7 @@ import {
   permanentNamed,
   targetNamed,
 } from "./lookups.ts";
+import { parseRef, resolveRef } from "./names.ts";
 import { paymentActions, stackAnswer, targetsAndPayment, unusedListed } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
@@ -269,9 +270,33 @@ function answerFor(
       return { kind: "chooseYesNo", yes: text === "yes" };
     case "declareAttackers":
     case "declareBlockers":
+      return declarationAnswer(state, player, text, cards);
     case "assignDamage":
-      throw new Error(`for ${pending.kind}, use the attack, block or assign step`);
+      throw new Error(`for ${pending.kind}, use the assign step`);
     case "priority":
       throw new Error("the player has priority: use pass, play, cast or activate");
   }
+}
+
+/**
+ * One answer of a declaration, for a scenario that takes a pick back (the exporter writes those): "take back", "done",
+ * an attacker's name, or "<blocker> blocks <attacker>". A whole declaration is simpler as an `attack` or `block` step.
+ */
+function declarationAnswer(state: GameState, player: string, text: string, cards: CardDatabase): Answer {
+  if (text === "take back") return { kind: "takeBack" };
+  if (text === "done") return { kind: "finishDeclaring" };
+  const other = state.turnOrder.find((p) => p !== player) as PlayerId;
+  const own = (name: string, controller: string) => {
+    const ref = parseRef(`${controller}:${name}`);
+    const id = ref === null ? null : resolveRef(state, ref, cards);
+    if (id === null) throw new Error(`${controller} controls no ${name}`);
+    return id;
+  };
+  if (state.pending?.kind === "declareAttackers") {
+    return { kind: "declareAttacker", attack: { attacker: own(text, player), defender: other } };
+  }
+  const [blocker, attacker] = text.split(" blocks ");
+  if (blocker === undefined || attacker === undefined)
+    throw new Error(`a block is "<blocker> blocks <attacker>", got ${text}`);
+  return { kind: "declareBlocker", block: { blocker: own(blocker, player), attacker: own(attacker, other) } };
 }

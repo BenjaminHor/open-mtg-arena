@@ -8,6 +8,7 @@ who's still in combat) are in `rules/combat.ts`; the state is `GameState.combat`
 | `attackers.ts` | `anyAttackers()`: whether any creature was declared as an attacker, so the blockers and damage steps happen (CR 508.8) |
 | `declare-attackers.ts` | The declare attackers step (CR 508.1): `possibleAttacks`, one decision per attacker, then `finishAttackers` taps them (but not those with vigilance, CR 702.20b) |
 | `declare-blockers.ts` | The declare blockers step (CR 509.1): `possibleBlocks` (one attacker per blocker, any number for Palace Guard), one decision per block, then `finishBlockers` |
+| `declaration-rules.ts` | Rules about a whole declaration, checked as it's finished: "can't attack or block alone" and requirements, with the most requirements obeyable (CR 508.1c–d, 509.1b–c): `attackDeclarationProblem`, `blockDeclarationProblem` |
 | `combat-damage.ts` | The combat damage step (CR 510): an `assignDamage` decision per attacker with a choice, then per blocker of several attackers (CR 510.1d), then all of the step's damage at once (`combatDamage`) |
 | `damage-assignment.ts` | Dividing a creature's damage among its recipients (CR 510.1c), trample's lethal damage first (CR 702.19b): `recipientsOf`, `hasChoice`, `assignProblem`, `assignToNextRecipient`; `blockersOf`, `attackersBlockedBy`, `blockingCreatures`, `combatPower` |
 | `first-strike.ts` | First and double strike's two damage steps (CR 510.4): `beginCombatDamageStep`, `secondDamageStepFollows`, `assignsDamageNow` |

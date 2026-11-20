@@ -1,0 +1,12 @@
+name: A tapped creature that attacks each combat if able isn't able, so attacking with nothing is legal
+rules: [CR 508.1d, CR 508.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Berserkers of Blood Ridge, tapped: true }, Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: []
+  - expect:
+      step: combat.declareAttackers
+      pending: { player: p1, kind: priority }

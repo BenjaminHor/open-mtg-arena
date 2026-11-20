@@ -142,7 +142,10 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   `declareAttackers` decision per creature, then finishes.
 - `p2 block: { Giant Spider: Craw Wurm }`: declare blockers (CR 509.1), blocker (p2's) to attacker (p1's); `{}` declares
   none. A creature that can block several attackers names them in a list: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`;
-  its controller then divides its damage with `p2 assign: { Grizzly Bears: 1, Hill Giant: 0 }` (CR 510.1d).
+  its controller then divides its damage with `p2 assign: { Grizzly Bears: 1, Hill Giant: 0 }` (CR 510.1d). A
+  declaration can also be answered one pick at a time with `choose:` (`p1 choose: Grizzly Bears`, `p2 choose: Giant
+  Spider blocks Craw Wurm`, `choose: take back`, `choose: done`); the exporter writes a declaration that way when a
+  pick was taken back. A rejected step is rolled back whole, so after `expect error` declare the full set again.
 - `p1 assign: { Grizzly Bears: 2, Giant Spider: 4 }`: divide an attacker's combat damage among its blockers (CR 510.1c),
   when an `assignDamage` decision is pending, naming each blocker once in any order; a trampler names the player it
   attacks too, by id (`{ Grizzly Bears: 2, p2: 2 }`, CR 702.19b). Any division that adds up to its power is legal,

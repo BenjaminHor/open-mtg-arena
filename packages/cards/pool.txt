@@ -6,8 +6,10 @@
 
 Acolyte of Xathrid
 Air Elemental
+Alluring Siren
 Angel's Mercy
 Assassinate
+Berserkers of Blood Ridge
 Birds of Paradise
 Blinding Mage
 Bog Wraith
@@ -57,6 +59,7 @@ Hill Giant
 Horned Turtle
 Ignite Disorder
 Island
+Jackal Familiar
 Kelinore Bat
 Lava Axe
 Lightning Bolt
@@ -79,6 +82,7 @@ Phantom Warrior
 Plains
 Planar Cleansing
 Ponder
+Prized Unicorn
 Prodigal Pyromancer
 Pyroclasm
 Raging Goblin

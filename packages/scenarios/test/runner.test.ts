@@ -223,10 +223,10 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     );
     // A division has no "do nothing", so passing through it fails.
     expect(first(`${blocked}  - all pass: until main2\n`)).toMatch(/waits for assignDamage/);
-    // A declaration is answered with the attack step, not choose.
+    // A declaration answered one pick at a time with choose names the player's own creature.
     const twoBears = at("main1", "  p1: { battlefield: [Grizzly Bears, Hill Giant] }\n");
     expect(first(`${twoBears}  - all pass: until combat.declareAttackers\n  - p1 choose: x\n`)).toMatch(
-      /use the attack, block or assign step/,
+      /p1 controls no x/,
     );
   });
 

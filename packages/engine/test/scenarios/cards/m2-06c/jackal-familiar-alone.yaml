@@ -1,0 +1,14 @@
+name: A creature that can't attack alone can't be the only attacker, but can attack with another
+rules: [CR 506.5, CR 508.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Jackal Familiar, Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Jackal Familiar]
+  - expect error: illegalAction
+  - p1 attack: [Jackal Familiar, Runeclaw Bear]
+  - all pass: until main2
+  - expect:
+      p2.life: 16

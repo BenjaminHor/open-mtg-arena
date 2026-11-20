@@ -1,0 +1,21 @@
+name: Every creature able to block Prized Unicorn must block it; a tapped one isn't able
+rules: [CR 509.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Prized Unicorn]
+  p2:
+    battlefield: [Runeclaw Bear, Elite Vanguard, { card: Giant Spider, tapped: true }]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Prized Unicorn]
+  - all pass: until combat.declareBlockers
+  - p2 block: {}
+  - expect error: illegalAction
+  - p2 block: { Runeclaw Bear: Prized Unicorn }
+  - expect error: illegalAction
+  - p2 block: { Runeclaw Bear: Prized Unicorn, Elite Vanguard: Prized Unicorn }
+  - all pass: until combat.damage
+  - p1 assign: { Runeclaw Bear: 2, Elite Vanguard: 0 }
+  - expect:
+      p1.graveyard: [Prized Unicorn]

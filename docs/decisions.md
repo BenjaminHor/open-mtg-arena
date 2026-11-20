@@ -946,3 +946,19 @@ every schema change and every change D-024 lists bumps it.
   two tramplers on one blocker, the first can't count the second's damage, so a split where both trample over can't be
   chosen, though the same totals can be dealt to the player (later: CR 510.1e, checking the whole assignment at once).
 - The `block` scenario step takes a list for such a blocker: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`.
+
+**D-072: Whole-declaration rules: checked at `finishDeclaring`, a `takeBack` answer, the most requirements worked out directly** · 2026-11-20 · accepted (M2-06c)
+- "Can't attack or block alone" (CR 506.5), "attacks each combat if able", "all creatures able to block it do so" are
+  statics (`cantAttackOrBlockAlone`, `attacksEachCombat`, `mustBeBlockedByAllAble`); Alluring Siren's "attacks you this
+  turn if able" is a continuous effect `mustAttack` (targets only, like `cantBlock`, D-071).
+- A declaration is still built one pick at a time, but `finishDeclaring` is offered and accepted only when the whole
+  declaration obeys every restriction and as many requirements as any legal declaration could (CR 508.1c–d, 509.1b–c;
+  `combat/declaration-rules.ts`). Since that can leave a pick that no finish allows (a lone "can't attack alone"
+  creature), a new answer `takeBack` removes the last pick. The fuzzer weights it like cancel (D-061); the exporter
+  writes the declaration as finished.
+- The maximum is worked out directly, not by searching declarations: every requirement a creature able to attack (or
+  block) has, a creature blocking one attacker obeying at most one "block it" requirement (Palace Guard, all of them),
+  less the requirements of a lone "alone" creature nothing else can join. That's exact while "alone" is the only
+  whole-declaration restriction, since adding a creature never breaks it. Menace and "no more than one creature can
+  attack" will need a search (future-rules).
+- A scenario step that's rejected is rolled back whole, so a scenario re-declares the full set after `expect error`.

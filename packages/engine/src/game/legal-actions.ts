@@ -5,6 +5,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { legalAmounts } from "../combat/damage-assignment.ts";
+import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
 import { possibleAttacks } from "../combat/declare-attackers.ts";
 import { possibleBlocks } from "../combat/declare-blockers.ts";
 import { addsAnyColor, manaAbilityProblem } from "../mana/activate.ts";
@@ -62,13 +63,15 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
       const add = possibleAttacks(state, pending.chosen, cards).map(
         (attack): Action => ({ ...answer, answer: { kind: "declareAttacker", attack } }),
       );
-      return [...add, { ...answer, answer: { kind: "finishDeclaring" } }];
+      const finish = attackDeclarationProblem(state, pending.chosen, cards) === null;
+      return [...add, ...declarationEnds(answer, finish, pending.chosen.length > 0)];
     }
     case "declareBlockers": {
       const add = possibleBlocks(state, pending.chosen, cards).map(
         (block): Action => ({ ...answer, answer: { kind: "declareBlocker", block } }),
       );
-      return [...add, { ...answer, answer: { kind: "finishDeclaring" } }];
+      const finish = blockDeclarationProblem(state, pending.chosen, cards) === null;
+      return [...add, ...declarationEnds(answer, finish, pending.chosen.length > 0)];
     }
     case "assignDamage": {
       // 0 up to what's left, but those trample forbids: one answer per amount, so the list grows with power, not with
@@ -172,4 +175,19 @@ function castActions(state: GameState, player: PlayerId, decisionId: DecisionId,
   return zoneList(state, { zone: "hand", player })
     .filter((object) => castProblem(state, player, object, cards) === null)
     .map((object) => ({ type: "CAST_SPELL", decisionId, player, object }) as const);
+}
+
+/**
+ * Finishing a declaration, offered only when it's legal (CR 508.1c–d, 509.1b–c), and taking back the last pick, so a
+ * declaration that can't be finished isn't stuck.
+ */
+function declarationEnds(
+  answer: { type: "ANSWER"; decisionId: DecisionId; player: PlayerId },
+  finish: boolean,
+  any: boolean,
+) {
+  const ends: Action[] = [];
+  if (finish) ends.push({ ...answer, answer: { kind: "finishDeclaring" } });
+  if (any) ends.push({ ...answer, answer: { kind: "takeBack" } });
+  return ends;
 }

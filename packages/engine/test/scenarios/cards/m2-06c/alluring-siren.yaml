@@ -1,0 +1,20 @@
+name: Alluring Siren's target must attack this turn if able
+rules: [CR 508.1d, CR 109.5]
+setup:
+  turn: { active: p2, step: upkeep }
+  p1:
+    battlefield: [Alluring Siren]
+  p2:
+    battlefield: [Siege Mastodon, Runeclaw Bear]
+steps:
+  - p2 pass: once
+  - p1 activate: p1:Alluring Siren
+    targets: [p2:Siege Mastodon]
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Runeclaw Bear]
+  - expect error: illegalAction
+  - p2 attack: [Siege Mastodon]
+  - all pass: until main2
+  - expect:
+      p1.life: 17

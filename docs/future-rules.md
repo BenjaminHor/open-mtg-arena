@@ -134,9 +134,10 @@ need the text fixed when it's activated.
 *Watch out:* removal from combat is read from the battlefield (an id that's gone left combat). That can't represent
 regeneration, phasing, "remove from combat" effects or control changes, which leave the id on the battlefield, and a
 permanent that stops and starts being a creature would rejoin combat: those need a recorded removed-from-combat set
-(CR 506.4). Rules about a whole declaration (menace, "can't attack alone", requirements, CR 508.1c–d, 509.1b–c) are
-checked at `finishDeclaring`, so a partial declaration can reach a dead end: then `finishDeclaring` must be offered only
-when legal, and the player needs a way to take a pick back. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,
+(CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
+removes the last pick (M2-06c, D-072). The most requirements obeyable is worked out directly, which is exact while the
+only whole-declaration restriction is "alone"; menace (CR 702.111b) and "no more than one creature can attack"
+(CR 508.1d's example) need a search over declarations. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,
 D-071). Two tramplers on one blocker are worked out one after the other, so a split where both trample over can't be
 chosen: checking the whole assignment at once (CR 510.1e) needs a decision that can be taken back or checked as a whole.
 A "can't block" effect not on targets ("creatures without flying can't block this turn") is a rules effect read live

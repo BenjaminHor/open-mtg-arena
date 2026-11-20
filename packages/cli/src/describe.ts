@@ -98,6 +98,8 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return `block ${objectText(state, answer.block.attacker, cards)} with ${objectText(state, answer.block.blocker, cards)}`;
     case "finishDeclaring":
       return "done declaring";
+    case "takeBack":
+      return "take back the last one declared";
     case "assignDamage": {
       const pending = state.pending;
       const to = pending?.kind === "assignDamage" ? pending.recipients[pending.assigned.length] : undefined;
