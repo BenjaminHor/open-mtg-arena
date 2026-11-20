@@ -6,12 +6,15 @@
 
 Assassinate
 Blinding Mage
+Burning Inquiry
 Cancel
 Celestial Purge
 Centaur Courser
 Coral Merfolk
 Craw Wurm
 Deathmark
+Disentomb
+Divination
 Divine Verdict
 Doom Blade
 Elite Vanguard
@@ -32,8 +35,11 @@ Island
 Lava Axe
 Lightning Bolt
 Llanowar Elves
+Mind Shatter
+Mind Spring
 Mountain
 Naturalize
+Nature's Spiral
 Negate
 Ornithopter
 Plains
@@ -44,10 +50,13 @@ Rod of Ruin
 Royal Assassin
 Shatter
 Shock
+Sign in Blood
 Solemn Offering
 Spined Wurm
 Swamp
 Tempest of Light
+Tome Scour
+Traumatize
 Undead Slayer
 Unsummon
 Vampire Aristocrat

@@ -147,18 +147,8 @@ describe("the committed report", () => {
   });
 
   it("gets worse when a scenario is removed, even if a unit test still cites the rule", () => {
-    // A rule only one scenario covers, which a unit test also cites.
-    const found = Object.entries(current.byScenario).find(
-      ([rule, files]) => files.length === 1 && Object.keys(inputs.unitTests).some((t) => covers(t, rule)),
-    );
-    if (found === undefined) throw new Error("no rule with one scenario and a unit test: pick another example");
-    const [rule, [scenario]] = found as [string, string[]];
-    const scenarios = Object.fromEntries(
-      Object.entries(inputs.scenarios).map(([r, files]) => [r, files.filter((f) => f !== scenario)]),
-    );
-    expect(newGaps(committed, coverage({ ...inputs, scenarios }))).toContain(
-      `CR ${rule} is no longer tested by a scenario`,
-    );
+    const { rule, fewer } = soleScenarioExample(inputs);
+    expect(newGaps(committed, fewer)).toContain(`CR ${rule} is no longer tested by a scenario`);
   });
 
   it("gets worse when a cited rule has no test at all", () => {
@@ -187,13 +177,7 @@ describe("writeReport", () => {
   });
 
   it("refuses a rule losing its last scenario unless that's accepted, as a unit test still covers it", () => {
-    const [rule, [scenario]] = Object.entries(current.byScenario).find(
-      ([r, files]) => files.length === 1 && Object.keys(inputs.unitTests).some((t) => covers(t, r)),
-    ) as [string, string[]];
-    const scenarios = Object.fromEntries(
-      Object.entries(inputs.scenarios).map(([r, files]) => [r, files.filter((f) => f !== scenario)]),
-    );
-    const fewer = coverage({ ...inputs, scenarios });
+    const { rule, fewer } = soleScenarioExample(inputs);
     expect(writeReport(fewer, committed, false).report).toBeNull();
     expect(writeReport(fewer, committed, true).output).toContain(
       `accepted: CR ${rule} is no longer tested by a scenario`,
@@ -205,3 +189,24 @@ describe("writeReport", () => {
     expect(writeReport(typo, committed, true).report).toBeNull();
   });
 });
+
+/**
+ * A rule only one scenario covers, which a unit test also cites, and the coverage with that scenario gone. The scenario
+ * is one whose removal leaves no rule with nothing, so the only change is the rule losing its scenario.
+ */
+function soleScenarioExample(inputs: ReturnType<typeof collectInputs>): {
+  rule: string;
+  fewer: ReturnType<typeof coverage>;
+} {
+  const current = coverage(inputs);
+  for (const [rule, files] of Object.entries(current.byScenario)) {
+    const [scenario] = files;
+    if (files.length !== 1 || !Object.keys(inputs.unitTests).some((t) => covers(t, rule))) continue;
+    const scenarios = Object.fromEntries(
+      Object.entries(inputs.scenarios).map(([r, fs]) => [r, fs.filter((f) => f !== scenario)]),
+    );
+    const fewer = coverage({ ...inputs, scenarios });
+    if (gaps(fewer).length === gaps(current).length) return { rule, fewer };
+  }
+  throw new Error("no rule with one scenario and a unit test whose scenario can go: pick another example");
+}

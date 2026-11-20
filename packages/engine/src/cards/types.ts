@@ -146,6 +146,8 @@ export type TargetKind =
   | { kind: "anyTarget" }
   /** "Target player or planeswalker". */
   | { kind: "playerOrPlaneswalker" }
+  /** "Target player" (CR 115.1; "target opponent" comes with its card). */
+  | { kind: "player" }
   /** "Target [filter] permanent", "target creature": an object on the battlefield (CR 115.2). */
   | { kind: "permanent"; filter: ObjectFilter }
   /** "Target [filter] spell": a spell on the stack, never an ability (CR 112.1) and never itself (CR 115.5). */
@@ -199,7 +201,9 @@ export type EffectSubject =
    */
   | "self"
   /** The player the text calls "you": the spell's or ability's controller (CR 109.5). It isn't a target (CR 115.10b). */
-  | "you";
+  | "you"
+  /** "Each player": every player, in APNAP order (CR 101.4). */
+  | "eachPlayer";
 
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
@@ -237,4 +241,15 @@ export type Effect =
   /** "Counter [subject]": a spell or ability on the stack (CR 701.6a). */
   | { op: "counter"; of: EffectSubject }
   /** "[who] gain(s) N life" (CR 119.3). */
-  | { op: "gainLife"; who: EffectSubject; amount: Amount };
+  | { op: "gainLife"; who: EffectSubject; amount: Amount }
+  /** "[who] lose(s) N life" (CR 119.3). */
+  | { op: "loseLife"; who: EffectSubject; amount: Amount }
+  /** "[who] draw(s) N cards": one draw at a time (CR 121.2), each player's in turn, from the active player (CR 121.2c). */
+  | { op: "draw"; who: EffectSubject; amount: Amount }
+  /** "[who] discard(s) N cards at random" (CR 701.9b). */
+  | { op: "discardAtRandom"; who: EffectSubject; amount: Amount }
+  /**
+   * "[who] mill(s) N cards": the top N of their library to their graveyard (CR 701.17a); "half their library, rounded
+   * down" (CR 107.1a) is `"halfTheirLibrary"`.
+   */
+  | { op: "mill"; who: EffectSubject; amount: Amount | "halfTheirLibrary" };

@@ -124,11 +124,18 @@ export function abilityNamed(
 /**
  * A target a scenario names: a player (`p2`), a permanent reference (`p2:Grizzly Bears`), or, when no such permanent
  * exists, a spell on the stack its controller cast (`p1:Lightning Bolt`, `#2` counting from the bottom). A permanent
- * comes first; `spell:p1:Grizzly Bears` names only a spell, for when a permanent has the same name.
+ * comes first; `spell:p1:Grizzly Bears` names only a spell, for when a permanent has the same name;
+ * `graveyard:p1:Grizzly Bears` names a card in p1's graveyard (`#2` counting from the bottom).
  */
 export function targetNamed(state: GameState, value: unknown, cards: CardDatabase): Target {
   const text = String(value);
   if (/^p\d+$/.test(text)) return { kind: "player", player: text as PlayerId };
+  if (text.startsWith("graveyard:")) {
+    const ref = parseRef(text.slice("graveyard:".length));
+    const card = ref === null ? null : graveyardCardNamed(state, ref, cards);
+    if (card === null) throw new Error(`no target "${text}": name a card in a graveyard (graveyard:p1:Grizzly Bears)`);
+    return { kind: "object", object: card };
+  }
   const onlySpell = text.startsWith("spell:");
   const ref = parseRef(onlySpell ? text.slice("spell:".length) : text);
   const permanent = ref === null || onlySpell ? null : resolveRef(state, ref, cards);
@@ -136,6 +143,11 @@ export function targetNamed(state: GameState, value: unknown, cards: CardDatabas
   if (object === null)
     throw new Error(`no target "${text}": name a player (p2), a permanent or a spell (p2:Grizzly Bears)`);
   return { kind: "object", object };
+}
+
+function graveyardCardNamed(state: GameState, ref: PermanentRef, cards: CardDatabase): ObjectId | null {
+  const graveyard = state.zones.players[ref.player]?.graveyard ?? [];
+  return graveyard.filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
 }
 
 function spellNamed(state: GameState, ref: PermanentRef, cards: CardDatabase): ObjectId | null {

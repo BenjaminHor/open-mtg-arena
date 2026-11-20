@@ -28,9 +28,14 @@ the one place their effects become changes to the game.
 | `tap` | "Tap target creature" | Taps each permanent `of` names; a tapped one stays as it is (CR 701.26a) |
 | `counter` | "Counter target spell" | Counters each spell or ability `of` names (CR 701.6a) |
 | `gainLife` | "You gain 4 life" | The players `who` names gain `amount` (CR 119.3) |
+| `loseLife` | "Target player loses 2 life" | The players `who` names lose `amount` (CR 119.3); 0 isn't proposed |
+| `draw` | "Draw two cards" | One draw at a time (CR 121.2), all of one player's before the next player's, in APNAP order (CR 121.2c) |
+| `discardAtRandom` | "Discards X cards at random" | Picks with the seeded RNG, each player in APNAP order, then discards them all at once (CR 701.9b; Burning Inquiry's ruling) |
+| `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
-now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5).
+now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5); `"eachPlayer"` names
+every player in APNAP order (CR 101.4).
 
 `from`, `to` and `of` are `EffectSubject`s: `"self"`, or `{ target: i }` for the still-legal targets of the i-th
 instance of "target". A subject with no legal targets left means that part does nothing (CR 608.2b).
@@ -41,10 +46,11 @@ instance of "target". A subject with no legal targets left means that part does 
 | --- | --- |
 | `deal-damage.ts` | `dealDamage(state, damage[], cards)`, performing the pipeline's `dealDamage` event: every damage in the game goes through it (CR 120.4), its results included. Life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e); 0 damage is dropped before it gets here (CR 120.8); only players and creatures can be dealt damage (CR 120.1a). Emits `DAMAGE_DEALT` |
 | `life.ts` | `loseLife(state, player, amount)` (CR 119.3), emitting `LIFE_LOST`. Reaching 0 life is checked later, as a state-based action (CR 704.5a) |
+| `player-effects.ts` | `drawEach`, `discardAtRandom` and `mill`: several events for the players an effect names, and `apnapOrder` (CR 101.4) |
 | `continuous-effect.ts` | `createContinuousEffect(state, effect)`: gives it a timestamp (CR 613.7b) and adds it to `GameState.effects`, emitting `EFFECT_CREATED`. `characteristics()` applies it (`rules/power-toughness.ts`). `endUntilEndOfTurnEffects` ends them in cleanup (CR 514.2), emitting `EFFECT_ENDED` |
 
 `dealDamage` and `loseLife` are called only by the event pipeline (`pipeline/`, D-056); `runEffect` proposes
-`dealDamage` and `addMana` events to it with `happen`. Turn steps and casting propose the other events (draw, zone
+its events to it with `happen`. Turn steps and casting propose the other events (draw, zone
 changes, tapping). Each becomes an effect op when a card first needs it ("draw a card", "destroy", "exile"), so the op
 is one line here.
 

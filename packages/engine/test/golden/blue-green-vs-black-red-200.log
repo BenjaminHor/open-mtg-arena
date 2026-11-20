@@ -1,0 +1,4573 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Centaur Courser, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Grizzly Bears, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Unsummon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Tome Scour, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Gray Ogre, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Vampire Aristocrat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Vampire Aristocrat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Centaur Courser, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Grizzly Bears, p1's hand -> p1's library
+T0 moves: Unsummon, p1's hand -> p1's library
+T0 moves: Tome Scour, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Llanowar Elves, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Centaur Courser, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Coral Merfolk, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Naturalize, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Cancel, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's hand -> p1's library
+T0 p1 mulligans
+T0 moves: Llanowar Elves, p1's hand -> p1's library
+T0 moves: Centaur Courser, p1's hand -> p1's library
+T0 moves: Coral Merfolk, p1's hand -> p1's library
+T0 moves: Naturalize, p1's hand -> p1's library
+T0 moves: Cancel, p1's hand -> p1's library
+T0 moves: Mind Spring, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Grizzly Bears, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Giant Spider, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Tome Scour, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Tome Scour, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Mind Spring, p1's hand -> stack
+T1 p1 cancels casting Mind Spring
+T1 moves: Forest, p1's hand -> battlefield
+T1 p1 plays p1:Forest
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 taps: p1:Forest
+T1 p1 adds {G} (p1:Forest)
+T1 moves: Mind Spring, p1's hand -> stack
+T1 p1 cancels casting Mind Spring
+T1 moves: Grizzly Bears, p1's hand -> stack
+T1 p1 cancels casting Grizzly Bears
+T1 moves: Mind Spring, p1's hand -> stack
+T1 p1 cancels casting Mind Spring
+T1 moves: Mind Spring, p1's hand -> stack
+T1 p1 cancels casting Mind Spring
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Giant Spider, p1's hand -> stack
+T1 p1 cancels casting Giant Spider
+T1 moves: Mind Spring, p1's hand -> stack
+T1 p1 cancels casting Mind Spring
+T1 p1's unspent {G} empties
+T1 p1 attack: nothing
+T2 turn 2 begins (p2)
+T2 moves: Swamp, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Swamp, p2's hand -> battlefield
+T2 p2 plays p2:Swamp
+T2 taps: p2:Swamp
+T2 p2 adds {B} (p2:Swamp)
+T2 moves: Gray Ogre, p2's hand -> stack
+T2 p2 cancels casting Gray Ogre
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Gray Ogre, p2's hand -> stack
+T2 p2 cancels casting Gray Ogre
+T2 p2's unspent {B} empties
+T2 p2 attack: nothing
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T2 moves: Vampire Aristocrat, p2's hand -> stack
+T2 p2 cancels casting Vampire Aristocrat
+T3 turn 3 begins (p1)
+T3 untaps: p1:Forest
+T3 moves: Forest, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Mind Spring, p1's hand -> stack
+T3 p1 cancels casting Mind Spring
+T3 moves: Mind Spring, p1's hand -> stack
+T3 p1 cancels casting Mind Spring
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1's unspent {G} empties
+T3 p1 attack: nothing
+T3 moves: Mind Spring, p1's hand -> stack
+T3 p1 cancels casting Mind Spring
+T3 moves: Grizzly Bears, p1's hand -> stack
+T3 p1 cancels casting Grizzly Bears
+T3 moves: Grizzly Bears, p1's hand -> stack
+T3 p1 cancels casting Grizzly Bears
+T3 moves: Island, p1's hand -> battlefield
+T3 p1 plays p1:Island
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1's unspent {U} empties
+T4 turn 4 begins (p2)
+T4 untaps: p2:Swamp
+T4 taps: p2:Swamp
+T4 p2 adds {B} (p2:Swamp)
+T4 p2's unspent {B} empties
+T4 moves: Disentomb, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Swamp, p2's hand -> battlefield
+T4 p2 plays p2:Swamp#2
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 taps: p2:Swamp#2
+T4 p2 adds {B} (p2:Swamp#2)
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Gray Ogre, p2's hand -> stack
+T4 taps: p2:Swamp#2
+T4 p2 adds {B} (p2:Swamp#2)
+T4 p2 cancels casting Gray Ogre
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 taps: p2:Swamp#2
+T4 p2 adds {B} (p2:Swamp#2)
+T4 p2 cancels casting Vampire Aristocrat
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 taps: p2:Swamp#2
+T4 p2 adds {B} (p2:Swamp#2)
+T4 p2 cancels casting Vampire Aristocrat
+T4 p2 attack: nothing
+T4 taps: p2:Swamp#2
+T4 p2 adds {B} (p2:Swamp#2)
+T4 p2's unspent {B} empties
+T4 moves: Gray Ogre, p2's hand -> stack
+T4 p2 cancels casting Gray Ogre
+T4 moves: Vampire Aristocrat, p2's hand -> stack
+T4 p2 cancels casting Vampire Aristocrat
+T5 turn 5 begins (p1)
+T5 untaps: p1:Forest
+T5 untaps: p1:Island
+T5 taps: p1:Forest
+T5 p1 adds {G} (p1:Forest)
+T5 p1's unspent {G} empties
+T5 moves: Divination, p1's library -> p1's hand
+T5 p1 draws
+T5 moves: Mind Spring, p1's hand -> stack
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 cancels casting Mind Spring
+T5 moves: Mind Spring, p1's hand -> stack
+T5 p1 cancels casting Mind Spring
+T5 p1 attack: nothing
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1's unspent {U} empties
+T5 moves: Mind Spring, p1's hand -> stack
+T5 p1 cancels casting Mind Spring
+T6 turn 6 begins (p2)
+T6 untaps: p2:Swamp#1
+T6 untaps: p2:Swamp#2
+T6 moves: Mind Shatter, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p2:Swamp#2
+T6 p2 adds {B} (p2:Swamp#2)
+T6 p2's unspent {B} empties
+T6 taps: p2:Swamp#1
+T6 p2 adds {B} (p2:Swamp#1)
+T6 p2's unspent {B} empties
+T6 p2 attack: nothing
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 moves: Mountain, p2's hand -> battlefield
+T6 p2 plays p2:Mountain
+T6 taps: p2:Mountain
+T6 p2 adds {R} (p2:Mountain)
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 moves: Gray Ogre, p2's hand -> stack
+T6 p2 cancels casting Gray Ogre
+T6 moves: Gray Ogre, p2's hand -> stack
+T6 p2 cancels casting Gray Ogre
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 moves: Gray Ogre, p2's hand -> stack
+T6 p2 cancels casting Gray Ogre
+T6 moves: Mind Shatter, p2's hand -> stack
+T6 p2 cancels casting Mind Shatter
+T6 moves: Mind Shatter, p2's hand -> stack
+T6 p2 cancels casting Mind Shatter
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 moves: Vampire Aristocrat, p2's hand -> stack
+T6 p2 cancels casting Vampire Aristocrat
+T6 p2's unspent {R} empties
+T7 turn 7 begins (p1)
+T7 untaps: p1:Forest
+T7 untaps: p1:Island
+T7 moves: Island, p1's library -> p1's hand
+T7 p1 draws
+T7 moves: Divination, p1's hand -> stack
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 taps: p1:Forest
+T7 p1 adds {G} (p1:Forest)
+T7 p1 cancels casting Divination
+T7 moves: Giant Spider, p1's hand -> stack
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 taps: p1:Forest
+T7 p1 adds {G} (p1:Forest)
+T7 p1 cancels casting Giant Spider
+T7 moves: Island, p1's hand -> battlefield
+T7 p1 plays p1:Island#2
+T7 moves: Divination, p1's hand -> stack
+T7 p1 cancels casting Divination
+T7 taps: p1:Forest
+T7 p1 adds {G} (p1:Forest)
+T7 p1's unspent {G} empties
+T7 p1 attack: nothing
+T7 taps: p1:Island#2
+T7 p1 adds {U} (p1:Island#2)
+T7 taps: p1:Island#1
+T7 p1 adds {U} (p1:Island#1)
+T7 p1's unspent {U}{U} empties
+T7 moves: Divination, p1's hand -> stack
+T7 p1 cancels casting Divination
+T7 moves: Divination, p1's hand -> stack
+T7 p1 cancels casting Divination
+T7 moves: Giant Spider, p1's hand -> stack
+T7 p1 cancels casting Giant Spider
+T7 moves: Giant Spider, p1's hand -> stack
+T7 p1 cancels casting Giant Spider
+T8 turn 8 begins (p2)
+T8 untaps: p2:Swamp#1
+T8 untaps: p2:Swamp#2
+T8 untaps: p2:Mountain
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2's unspent {R} empties
+T8 moves: Assassinate, p2's library -> p2's hand
+T8 p2 draws
+T8 taps: p2:Swamp#1
+T8 p2 adds {B} (p2:Swamp#1)
+T8 p2's unspent {B} empties
+T8 p2 attack: nothing
+T8 moves: Vampire Aristocrat, p2's hand -> stack
+T8 p2 cancels casting Vampire Aristocrat
+T8 taps: p2:Swamp#2
+T8 p2 adds {B} (p2:Swamp#2)
+T8 moves: Gray Ogre, p2's hand -> stack
+T8 p2 cancels casting Gray Ogre
+T8 p2's unspent {B} empties
+T8 moves: Vampire Aristocrat, p2's hand -> p2's graveyard
+T8 p2 discards Vampire Aristocrat
+T9 turn 9 begins (p1)
+T9 untaps: p1:Forest
+T9 untaps: p1:Island#1
+T9 untaps: p1:Island#2
+T9 moves: Unsummon, p1's library -> p1's hand
+T9 p1 draws
+T9 taps: p1:Forest
+T9 p1 adds {G} (p1:Forest)
+T9 taps: p1:Island#1
+T9 p1 adds {U} (p1:Island#1)
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1's unspent {U}{U}{G} empties
+T9 moves: Divination, p1's hand -> stack
+T9 p1 cancels casting Divination
+T9 moves: Divination, p1's hand -> stack
+T9 p1 cancels casting Divination
+T9 p1 attack: nothing
+T9 moves: Mind Spring, p1's hand -> stack
+T9 p1 cancels casting Mind Spring
+T10 turn 10 begins (p2)
+T10 untaps: p2:Swamp#1
+T10 untaps: p2:Swamp#2
+T10 untaps: p2:Mountain
+T10 taps: p2:Mountain
+T10 p2 adds {R} (p2:Mountain)
+T10 taps: p2:Swamp#2
+T10 p2 adds {B} (p2:Swamp#2)
+T10 p2's unspent {B}{R} empties
+T10 moves: Swamp, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Swamp#1
+T10 p2 adds {B} (p2:Swamp#1)
+T10 p2's unspent {B} empties
+T10 moves: Vampire Aristocrat, p2's hand -> stack
+T10 p2 cancels casting Vampire Aristocrat
+T10 p2 attack: nothing
+T10 moves: Vampire Aristocrat, p2's hand -> stack
+T10 p2 cancels casting Vampire Aristocrat
+T10 moves: Swamp, p2's hand -> p2's graveyard
+T10 p2 discards Swamp
+T11 turn 11 begins (p1)
+T11 untaps: p1:Forest
+T11 untaps: p1:Island#1
+T11 untaps: p1:Island#2
+T11 taps: p1:Island#1
+T11 p1 adds {U} (p1:Island#1)
+T11 p1's unspent {U} empties
+T11 moves: Island, p1's library -> p1's hand
+T11 p1 draws
+T11 taps: p1:Island#2
+T11 p1 adds {U} (p1:Island#2)
+T11 taps: p1:Forest
+T11 p1 adds {G} (p1:Forest)
+T11 p1's unspent {U}{G} empties
+T11 moves: Divination, p1's hand -> stack
+T11 p1 cancels casting Divination
+T11 moves: Grizzly Bears, p1's hand -> stack
+T11 p1 cancels casting Grizzly Bears
+T11 moves: Divination, p1's hand -> stack
+T11 p1 cancels casting Divination
+T11 moves: Island, p1's hand -> battlefield
+T11 p1 plays p1:Island#3
+T11 taps: p1:Island#3
+T11 p1 adds {U} (p1:Island#3)
+T11 p1's unspent {U} empties
+T11 p1 attack: nothing
+T11 moves: Mind Spring, p1's hand -> stack
+T11 p1 cancels casting Mind Spring
+T11 moves: Divination, p1's hand -> stack
+T11 p1 cancels casting Divination
+T11 moves: Divination, p1's hand -> stack
+T11 p1 cancels casting Divination
+T11 moves: Divination, p1's hand -> stack
+T11 p1 cancels casting Divination
+T11 moves: Giant Spider, p1's hand -> stack
+T11 p1 cancels casting Giant Spider
+T12 turn 12 begins (p2)
+T12 untaps: p2:Swamp#1
+T12 untaps: p2:Swamp#2
+T12 untaps: p2:Mountain
+T12 moves: Mountain, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 taps: p2:Swamp#1
+T12 p2 adds {B} (p2:Swamp#1)
+T12 p2's unspent {B}{R} empties
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 moves: Mountain, p2's hand -> battlefield
+T12 p2 plays p2:Mountain#2
+T12 taps: p2:Mountain#2
+T12 p2 adds {R} (p2:Mountain#2)
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 taps: p2:Swamp#2
+T12 p2 adds {B} (p2:Swamp#2)
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 moves: Gray Ogre, p2's hand -> stack
+T12 p2 cancels casting Gray Ogre
+T12 moves: Mind Shatter, p2's hand -> stack
+T12 p2 cancels casting Mind Shatter
+T12 moves: Vampire Aristocrat, p2's hand -> stack
+T12 p2 cancels casting Vampire Aristocrat
+T12 moves: Gray Ogre, p2's hand -> stack
+T12 p2 cancels casting Gray Ogre
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 p2's unspent {B}{R} empties
+T12 p2 attack: nothing
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 moves: Gray Ogre, p2's hand -> stack
+T12 p2 cancels casting Gray Ogre
+T12 moves: Disentomb, p2's hand -> stack
+T12 p2 cancels casting Disentomb
+T12 moves: Gray Ogre, p2's hand -> stack
+T12 p2 cancels casting Gray Ogre
+T13 turn 13 begins (p1)
+T13 untaps: p1:Forest
+T13 untaps: p1:Island#1
+T13 untaps: p1:Island#2
+T13 untaps: p1:Island#3
+T13 moves: Essence Scatter, p1's library -> p1's hand
+T13 p1 draws
+T13 moves: Mind Spring, p1's hand -> stack
+T13 p1 cancels casting Mind Spring
+T13 taps: p1:Forest
+T13 p1 adds {G} (p1:Forest)
+T13 taps: p1:Island#2
+T13 p1 adds {U} (p1:Island#2)
+T13 taps: p1:Island#3
+T13 p1 adds {U} (p1:Island#3)
+T13 p1's unspent {U}{U}{G} empties
+T13 p1 attack: nothing
+T13 taps: p1:Island#1
+T13 p1 adds {U} (p1:Island#1)
+T13 p1's unspent {U} empties
+T14 turn 14 begins (p2)
+T14 untaps: p2:Swamp#1
+T14 untaps: p2:Swamp#2
+T14 untaps: p2:Mountain#1
+T14 untaps: p2:Mountain#2
+T14 taps: p2:Swamp#1
+T14 p2 adds {B} (p2:Swamp#1)
+T14 taps: p2:Mountain#2
+T14 p2 adds {R} (p2:Mountain#2)
+T14 taps: p2:Mountain#1
+T14 p2 adds {R} (p2:Mountain#1)
+T14 taps: p2:Swamp#2
+T14 p2 adds {B} (p2:Swamp#2)
+T14 p2's unspent {B}{B}{R}{R} empties
+T14 moves: Mountain, p2's library -> p2's hand
+T14 p2 draws
+T14 moves: Mountain, p2's hand -> battlefield
+T14 p2 plays p2:Mountain#3
+T14 taps: p2:Mountain#3
+T14 p2 adds {R} (p2:Mountain#3)
+T14 p2's unspent {R} empties
+T14 p2 attack: nothing
+T15 turn 15 begins (p1)
+T15 untaps: p1:Forest
+T15 untaps: p1:Island#1
+T15 untaps: p1:Island#2
+T15 untaps: p1:Island#3
+T15 taps: p1:Forest
+T15 p1 adds {G} (p1:Forest)
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1's unspent {U}{G} empties
+T15 moves: Centaur Courser, p1's library -> p1's hand
+T15 p1 draws
+T15 moves: Centaur Courser, p1's hand -> stack
+T15 p1 cancels casting Centaur Courser
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 moves: Grizzly Bears, p1's hand -> stack
+T15 p1 cancels casting Grizzly Bears
+T15 taps: p1:Island#3
+T15 p1 adds {U} (p1:Island#3)
+T15 moves: Giant Spider, p1's hand -> stack
+T15 p1 cancels casting Giant Spider
+T15 moves: Centaur Courser, p1's hand -> stack
+T15 p1 cancels casting Centaur Courser
+T15 p1's unspent {U}{U} empties
+T15 p1 attack: nothing
+T15 moves: Giant Spider, p1's hand -> p1's graveyard
+T15 p1 discards Giant Spider
+T16 turn 16 begins (p2)
+T16 untaps: p2:Swamp#1
+T16 untaps: p2:Swamp#2
+T16 untaps: p2:Mountain#1
+T16 untaps: p2:Mountain#2
+T16 untaps: p2:Mountain#3
+T16 taps: p2:Mountain#2
+T16 p2 adds {R} (p2:Mountain#2)
+T16 taps: p2:Swamp#2
+T16 p2 adds {B} (p2:Swamp#2)
+T16 taps: p2:Swamp#1
+T16 p2 adds {B} (p2:Swamp#1)
+T16 p2's unspent {B}{B}{R} empties
+T16 moves: Mountain, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Mountain#1
+T16 p2 adds {R} (p2:Mountain#1)
+T16 taps: p2:Mountain#3
+T16 p2 adds {R} (p2:Mountain#3)
+T16 p2's unspent {R}{R} empties
+T16 moves: Vampire Aristocrat, p2's hand -> stack
+T16 p2 cancels casting Vampire Aristocrat
+T16 moves: Mind Shatter, p2's hand -> stack
+T16 p2 cancels casting Mind Shatter
+T16 moves: Swamp, p2's hand -> battlefield
+T16 p2 plays p2:Swamp#3
+T16 moves: Mind Shatter, p2's hand -> stack
+T16 p2 cancels casting Mind Shatter
+T16 moves: Disentomb, p2's hand -> stack
+T16 p2 cancels casting Disentomb
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 moves: Mind Shatter, p2's hand -> stack
+T16 p2 cancels casting Mind Shatter
+T16 moves: Disentomb, p2's hand -> stack
+T16 p2 cancels casting Disentomb
+T16 moves: Disentomb, p2's hand -> stack
+T16 p2 cancels casting Disentomb
+T16 moves: Mind Shatter, p2's hand -> stack
+T16 p2 cancels casting Mind Shatter
+T16 moves: Vampire Aristocrat, p2's hand -> stack
+T16 p2 cancels casting Vampire Aristocrat
+T16 moves: Disentomb, p2's hand -> stack
+T16 p2 casts Disentomb
+T16 moves: Vampire Aristocrat, p2's graveyard -> p2's hand
+T16 resolves: Disentomb
+T16 moves: Disentomb, stack -> p2's graveyard
+T16 p2 attack: nothing
+T17 turn 17 begins (p1)
+T17 untaps: p1:Forest
+T17 untaps: p1:Island#1
+T17 untaps: p1:Island#2
+T17 untaps: p1:Island#3
+T17 taps: p1:Island#2
+T17 p1 adds {U} (p1:Island#2)
+T17 taps: p1:Island#3
+T17 p1 adds {U} (p1:Island#3)
+T17 p1's unspent {U}{U} empties
+T17 moves: Forest, p1's library -> p1's hand
+T17 p1 draws
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 taps: p1:Forest
+T17 p1 adds {G} (p1:Forest)
+T17 p1's unspent {U}{G} empties
+T17 moves: Divination, p1's hand -> stack
+T17 p1 cancels casting Divination
+T17 moves: Divination, p1's hand -> stack
+T17 p1 cancels casting Divination
+T17 moves: Forest, p1's hand -> battlefield
+T17 p1 plays p1:Forest#2
+T17 moves: Grizzly Bears, p1's hand -> stack
+T17 p1 cancels casting Grizzly Bears
+T17 moves: Mind Spring, p1's hand -> stack
+T17 taps: p1:Forest#2
+T17 p1 adds {G} (p1:Forest#2)
+T17 p1 cancels casting Mind Spring
+T17 moves: Mind Spring, p1's hand -> stack
+T17 p1 cancels casting Mind Spring
+T17 moves: Centaur Courser, p1's hand -> stack
+T17 p1 cancels casting Centaur Courser
+T17 moves: Grizzly Bears, p1's hand -> stack
+T17 p1 cancels casting Grizzly Bears
+T17 moves: Centaur Courser, p1's hand -> stack
+T17 p1 cancels casting Centaur Courser
+T17 moves: Divination, p1's hand -> stack
+T17 taps: p1:Forest#2
+T17 p1 adds {G} (p1:Forest#2)
+T17 p1 cancels casting Divination
+T17 taps: p1:Forest#2
+T17 p1 adds {G} (p1:Forest#2)
+T17 p1's unspent {G} empties
+T17 p1 attack: nothing
+T18 turn 18 begins (p2)
+T18 untaps: p2:Swamp#1
+T18 untaps: p2:Swamp#2
+T18 untaps: p2:Mountain#1
+T18 untaps: p2:Mountain#2
+T18 untaps: p2:Mountain#3
+T18 untaps: p2:Swamp#3
+T18 moves: Raging Goblin, p2's library -> p2's hand
+T18 p2 draws
+T18 taps: p2:Swamp#1
+T18 p2 adds {B} (p2:Swamp#1)
+T18 taps: p2:Mountain#2
+T18 p2 adds {R} (p2:Mountain#2)
+T18 taps: p2:Mountain#1
+T18 p2 adds {R} (p2:Mountain#1)
+T18 p2's unspent {B}{R}{R} empties
+T18 moves: Swamp, p2's hand -> battlefield
+T18 p2 plays p2:Swamp#4
+T18 taps: p2:Swamp#3
+T18 p2 adds {B} (p2:Swamp#3)
+T18 p2's unspent {B} empties
+T18 taps: p2:Mountain#3
+T18 p2 adds {R} (p2:Mountain#3)
+T18 p2's unspent {R} empties
+T18 p2 attack: nothing
+T18 taps: p2:Swamp#2
+T18 p2 adds {B} (p2:Swamp#2)
+T18 p2's unspent {B} empties
+T18 taps: p2:Swamp#4
+T18 p2 adds {B} (p2:Swamp#4)
+T18 p2's unspent {B} empties
+T19 turn 19 begins (p1)
+T19 untaps: p1:Forest#1
+T19 untaps: p1:Island#1
+T19 untaps: p1:Island#2
+T19 untaps: p1:Island#3
+T19 untaps: p1:Forest#2
+T19 moves: Ornithopter, p1's library -> p1's hand
+T19 p1 draws
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 taps: p1:Forest#1
+T19 p1 adds {G} (p1:Forest#1)
+T19 p1's unspent {U}{U}{G} empties
+T19 moves: Ornithopter, p1's hand -> stack
+T19 taps: p1:Forest#2
+T19 p1 adds {G} (p1:Forest#2)
+T19 p1 casts Ornithopter
+T19 moves: Essence Scatter, p1's hand -> stack
+T19 taps: p1:Island#3
+T19 p1 adds {U} (p1:Island#3)
+T19 p1 casts Essence Scatter
+T19 countered: Ornithopter
+T19 moves: Ornithopter, stack -> p1's graveyard
+T19 resolves: Essence Scatter
+T19 moves: Essence Scatter, stack -> p1's graveyard
+T19 moves: Divination, p1's hand -> stack
+T19 p1 cancels casting Divination
+T19 moves: Centaur Courser, p1's hand -> stack
+T19 p1 cancels casting Centaur Courser
+T19 p1 attack: nothing
+T19 moves: Centaur Courser, p1's hand -> stack
+T19 p1 cancels casting Centaur Courser
+T19 moves: Forest, p1's hand -> battlefield
+T19 p1 plays p1:Forest#3
+T19 taps: p1:Forest#3
+T19 p1 adds {G} (p1:Forest#3)
+T19 p1's unspent {G} empties
+T20 turn 20 begins (p2)
+T20 untaps: p2:Swamp#1
+T20 untaps: p2:Swamp#2
+T20 untaps: p2:Mountain#1
+T20 untaps: p2:Mountain#2
+T20 untaps: p2:Mountain#3
+T20 untaps: p2:Swamp#3
+T20 untaps: p2:Swamp#4
+T20 taps: p2:Mountain#1
+T20 p2 adds {R} (p2:Mountain#1)
+T20 taps: p2:Mountain#3
+T20 p2 adds {R} (p2:Mountain#3)
+T20 p2's unspent {R}{R} empties
+T20 moves: Swamp, p2's library -> p2's hand
+T20 p2 draws
+T20 taps: p2:Swamp#2
+T20 p2 adds {B} (p2:Swamp#2)
+T20 taps: p2:Swamp#1
+T20 p2 adds {B} (p2:Swamp#1)
+T20 taps: p2:Mountain#2
+T20 p2 adds {R} (p2:Mountain#2)
+T20 taps: p2:Swamp#4
+T20 p2 adds {B} (p2:Swamp#4)
+T20 p2's unspent {B}{B}{B}{R} empties
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 taps: p2:Swamp#3
+T20 p2 adds {B} (p2:Swamp#3)
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 taps: p2:Swamp#3
+T20 p2 adds {B} (p2:Swamp#3)
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Raging Goblin, p2's hand -> stack
+T20 taps: p2:Swamp#3
+T20 p2 adds {B} (p2:Swamp#3)
+T20 p2 cancels casting Raging Goblin
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 taps: p2:Swamp#3
+T20 p2 adds {B} (p2:Swamp#3)
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Mountain, p2's hand -> battlefield
+T20 p2 plays p2:Mountain#4
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 taps: p2:Mountain#4
+T20 p2 adds {R} (p2:Mountain#4)
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 taps: p2:Mountain#4
+T20 p2 adds {R} (p2:Mountain#4)
+T20 p2 cancels casting Vampire Aristocrat
+T20 taps: p2:Swamp#3
+T20 p2 adds {B} (p2:Swamp#3)
+T20 moves: Raging Goblin, p2's hand -> stack
+T20 taps: p2:Mountain#4
+T20 p2 adds {R} (p2:Mountain#4)
+T20 p2 cancels casting Raging Goblin
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 taps: p2:Mountain#4
+T20 p2 adds {R} (p2:Mountain#4)
+T20 p2 cancels casting Vampire Aristocrat
+T20 taps: p2:Mountain#4
+T20 p2 adds {R} (p2:Mountain#4)
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Mind Shatter, p2's hand -> stack
+T20 p2 cancels casting Mind Shatter
+T20 moves: Raging Goblin, p2's hand -> stack
+T20 p2 cancels casting Raging Goblin
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Raging Goblin, p2's hand -> stack
+T20 p2 casts Raging Goblin
+T20 resolves: Raging Goblin
+T20 moves: Raging Goblin, stack -> battlefield
+T20 p2's unspent {B} empties
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 taps: p2:Raging Goblin
+T20 p2 attack: p2:Raging Goblin -> p1
+T20 p1 block: nothing
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 combat damage: p2:Raging Goblin -> p1 1
+T20 p1 loses 1 life
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Assassinate, p2's hand -> stack
+T20 p2 cancels casting Assassinate
+T20 moves: Assassinate, p2's hand -> stack
+T20 p2 cancels casting Assassinate
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Vampire Aristocrat, p2's hand -> stack
+T20 p2 cancels casting Vampire Aristocrat
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T20 moves: Unsummon, p1's hand -> stack
+T20 p1 cancels casting Unsummon
+T21 turn 21 begins (p1)
+T21 untaps: p1:Forest#1
+T21 untaps: p1:Island#1
+T21 untaps: p1:Island#2
+T21 untaps: p1:Island#3
+T21 untaps: p1:Forest#2
+T21 untaps: p1:Forest#3
+T21 taps: p1:Island#1
+T21 p1 adds {U} (p1:Island#1)
+T21 p1's unspent {U} empties
+T21 moves: Island, p1's library -> p1's hand
+T21 p1 draws
+T21 taps: p1:Forest#2
+T21 p1 adds {G} (p1:Forest#2)
+T21 moves: Centaur Courser, p1's hand -> stack
+T21 taps: p1:Island#3
+T21 p1 adds {U} (p1:Island#3)
+T21 taps: p1:Forest#3
+T21 p1 adds {G} (p1:Forest#3)
+T21 p1 casts Centaur Courser
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 moves: Unsummon, p1's hand -> stack
+T21 p1 casts Unsummon
+T21 taps: p1:Forest#1
+T21 p1 adds {G} (p1:Forest#1)
+T21 moves: Raging Goblin, battlefield -> p2's hand
+T21 resolves: Unsummon
+T21 moves: Unsummon, stack -> p1's graveyard
+T21 resolves: Centaur Courser
+T21 moves: Centaur Courser, stack -> battlefield
+T21 p1's unspent {G} empties
+T21 p1 attack: nothing
+T21 moves: Mind Spring, p1's hand -> stack
+T21 p1 cancels casting Mind Spring
+T21 moves: Divination, p1's hand -> stack
+T21 p1 cancels casting Divination
+T22 turn 22 begins (p2)
+T22 untaps: p2:Swamp#1
+T22 untaps: p2:Swamp#2
+T22 untaps: p2:Mountain#1
+T22 untaps: p2:Mountain#2
+T22 untaps: p2:Mountain#3
+T22 untaps: p2:Swamp#3
+T22 untaps: p2:Swamp#4
+T22 untaps: p2:Mountain#4
+T22 taps: p2:Swamp#4
+T22 p2 adds {B} (p2:Swamp#4)
+T22 taps: p2:Mountain#1
+T22 p2 adds {R} (p2:Mountain#1)
+T22 taps: p2:Mountain#2
+T22 p2 adds {R} (p2:Mountain#2)
+T22 taps: p2:Mountain#3
+T22 p2 adds {R} (p2:Mountain#3)
+T22 taps: p2:Swamp#1
+T22 p2 adds {B} (p2:Swamp#1)
+T22 taps: p2:Swamp#2
+T22 p2 adds {B} (p2:Swamp#2)
+T22 taps: p2:Mountain#4
+T22 p2 adds {R} (p2:Mountain#4)
+T22 p2's unspent {B}{B}{B}{R}{R}{R}{R} empties
+T22 moves: Sign in Blood, p2's library -> p2's hand
+T22 p2 draws
+T22 taps: p2:Swamp#3
+T22 p2 adds {B} (p2:Swamp#3)
+T22 p2's unspent {B} empties
+T22 moves: Raging Goblin, p2's hand -> stack
+T22 p2 cancels casting Raging Goblin
+T22 moves: Mind Shatter, p2's hand -> stack
+T22 p2 cancels casting Mind Shatter
+T22 p2 attack: nothing
+T22 moves: Sign in Blood, p2's hand -> stack
+T22 p2 cancels casting Sign in Blood
+T22 moves: Vampire Aristocrat, p2's hand -> stack
+T22 p2 cancels casting Vampire Aristocrat
+T22 moves: Raging Goblin, p2's hand -> stack
+T22 p2 cancels casting Raging Goblin
+T22 moves: Vampire Aristocrat, p2's hand -> stack
+T22 p2 cancels casting Vampire Aristocrat
+T22 moves: Gray Ogre, p2's hand -> stack
+T22 p2 cancels casting Gray Ogre
+T22 moves: Raging Goblin, p2's hand -> stack
+T22 p2 cancels casting Raging Goblin
+T22 moves: Swamp, p2's hand -> battlefield
+T22 p2 plays p2:Swamp#5
+T23 turn 23 begins (p1)
+T23 untaps: p1:Forest#1
+T23 untaps: p1:Island#1
+T23 untaps: p1:Island#2
+T23 untaps: p1:Island#3
+T23 untaps: p1:Forest#2
+T23 untaps: p1:Forest#3
+T23 taps: p1:Island#1
+T23 p1 adds {U} (p1:Island#1)
+T23 taps: p1:Forest#1
+T23 p1 adds {G} (p1:Forest#1)
+T23 taps: p1:Forest#3
+T23 p1 adds {G} (p1:Forest#3)
+T23 taps: p1:Island#2
+T23 p1 adds {U} (p1:Island#2)
+T23 taps: p1:Forest#2
+T23 p1 adds {G} (p1:Forest#2)
+T23 taps: p2:Swamp#5
+T23 p2 adds {B} (p2:Swamp#5)
+T23 taps: p1:Island#3
+T23 p1 adds {U} (p1:Island#3)
+T23 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T23 p2's unspent {B} empties
+T23 moves: Nature's Spiral, p1's library -> p1's hand
+T23 p1 draws
+T23 moves: Island, p1's hand -> battlefield
+T23 p1 plays p1:Island#4
+T23 p1 attack: nothing
+T23 taps: p1:Island#4
+T23 p1 adds {U} (p1:Island#4)
+T23 p1's unspent {U} empties
+T23 moves: Grizzly Bears, p1's hand -> stack
+T23 p1 cancels casting Grizzly Bears
+T24 turn 24 begins (p2)
+T24 untaps: p2:Swamp#1
+T24 untaps: p2:Swamp#2
+T24 untaps: p2:Mountain#1
+T24 untaps: p2:Mountain#2
+T24 untaps: p2:Mountain#3
+T24 untaps: p2:Swamp#3
+T24 untaps: p2:Swamp#4
+T24 untaps: p2:Mountain#4
+T24 untaps: p2:Swamp#5
+T24 taps: p2:Mountain#4
+T24 p2 adds {R} (p2:Mountain#4)
+T24 taps: p2:Mountain#3
+T24 p2 adds {R} (p2:Mountain#3)
+T24 taps: p2:Swamp#5
+T24 p2 adds {B} (p2:Swamp#5)
+T24 taps: p2:Swamp#2
+T24 p2 adds {B} (p2:Swamp#2)
+T24 p2's unspent {B}{B}{R}{R} empties
+T24 moves: Mountain, p2's library -> p2's hand
+T24 p2 draws
+T24 taps: p2:Swamp#3
+T24 p2 adds {B} (p2:Swamp#3)
+T24 taps: p2:Mountain#2
+T24 p2 adds {R} (p2:Mountain#2)
+T24 taps: p2:Mountain#1
+T24 p2 adds {R} (p2:Mountain#1)
+T24 taps: p2:Swamp#1
+T24 p2 adds {B} (p2:Swamp#1)
+T24 taps: p2:Swamp#4
+T24 p2 adds {B} (p2:Swamp#4)
+T24 p2's unspent {B}{B}{B}{R}{R} empties
+T24 p2 attack: nothing
+T24 moves: Mind Shatter, p2's hand -> stack
+T24 p2 cancels casting Mind Shatter
+T24 moves: Gray Ogre, p2's hand -> stack
+T24 p2 cancels casting Gray Ogre
+T24 moves: Mountain, p2's hand -> battlefield
+T24 p2 plays p2:Mountain#5
+T24 moves: Vampire Aristocrat, p2's hand -> stack
+T24 p2 cancels casting Vampire Aristocrat
+T24 moves: Mind Shatter, p2's hand -> stack
+T24 p2 cancels casting Mind Shatter
+T24 moves: Vampire Aristocrat, p2's hand -> stack
+T24 p2 cancels casting Vampire Aristocrat
+T25 turn 25 begins (p1)
+T25 untaps: p1:Forest#1
+T25 untaps: p1:Island#1
+T25 untaps: p1:Island#2
+T25 untaps: p1:Island#3
+T25 untaps: p1:Forest#2
+T25 untaps: p1:Forest#3
+T25 untaps: p1:Island#4
+T25 taps: p1:Island#2
+T25 p1 adds {U} (p1:Island#2)
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 taps: p1:Forest#3
+T25 p1 adds {G} (p1:Forest#3)
+T25 taps: p1:Island#3
+T25 p1 adds {U} (p1:Island#3)
+T25 taps: p2:Mountain#5
+T25 p2 adds {R} (p2:Mountain#5)
+T25 p1's unspent {U}{U}{U}{G} empties
+T25 p2's unspent {R} empties
+T25 moves: Grizzly Bears, p1's library -> p1's hand
+T25 p1 draws
+T25 taps: p1:Forest#2
+T25 p1 adds {G} (p1:Forest#2)
+T25 taps: p1:Forest#1
+T25 p1 adds {G} (p1:Forest#1)
+T25 p1's unspent {G}{G} empties
+T25 moves: Grizzly Bears, p1's hand -> stack
+T25 taps: p1:Island#4
+T25 p1 adds {U} (p1:Island#4)
+T25 p1 cancels casting Grizzly Bears
+T25 p1 attack: nothing
+T26 turn 26 begins (p2)
+T26 untaps: p2:Swamp#1
+T26 untaps: p2:Swamp#2
+T26 untaps: p2:Mountain#1
+T26 untaps: p2:Mountain#2
+T26 untaps: p2:Mountain#3
+T26 untaps: p2:Swamp#3
+T26 untaps: p2:Swamp#4
+T26 untaps: p2:Mountain#4
+T26 untaps: p2:Swamp#5
+T26 untaps: p2:Mountain#5
+T26 taps: p2:Swamp#4
+T26 p2 adds {B} (p2:Swamp#4)
+T26 taps: p2:Mountain#3
+T26 p2 adds {R} (p2:Mountain#3)
+T26 taps: p2:Swamp#1
+T26 p2 adds {B} (p2:Swamp#1)
+T26 taps: p2:Swamp#3
+T26 p2 adds {B} (p2:Swamp#3)
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 taps: p2:Swamp#2
+T26 p2 adds {B} (p2:Swamp#2)
+T26 taps: p2:Mountain#5
+T26 p2 adds {R} (p2:Mountain#5)
+T26 p2's unspent {B}{B}{B}{B}{R}{R}{R} empties
+T26 moves: Shock, p2's library -> p2's hand
+T26 p2 draws
+T26 taps: p2:Swamp#5
+T26 p2 adds {B} (p2:Swamp#5)
+T26 taps: p1:Island#4
+T26 p1 adds {U} (p1:Island#4)
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T26 p1's unspent {U} empties
+T26 p2's unspent {B} empties
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 taps: p2:Mountain#4
+T26 p2 adds {R} (p2:Mountain#4)
+T26 moves: Sign in Blood, p2's hand -> stack
+T26 p2 cancels casting Sign in Blood
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 p2's unspent {R}{R} empties
+T26 p2 attack: nothing
+T26 moves: Gray Ogre, p2's hand -> stack
+T26 p2 cancels casting Gray Ogre
+T26 moves: Mind Shatter, p2's hand -> stack
+T26 p2 cancels casting Mind Shatter
+T26 moves: Sign in Blood, p2's hand -> stack
+T26 p2 cancels casting Sign in Blood
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Shock, p2's hand -> stack
+T26 p2 cancels casting Shock
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Gray Ogre, p2's hand -> stack
+T26 p2 cancels casting Gray Ogre
+T26 moves: Sign in Blood, p2's hand -> stack
+T26 p2 cancels casting Sign in Blood
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Mind Shatter, p2's hand -> stack
+T26 p2 cancels casting Mind Shatter
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Raging Goblin, p2's hand -> stack
+T26 p2 cancels casting Raging Goblin
+T26 moves: Mind Shatter, p2's hand -> stack
+T26 p2 cancels casting Mind Shatter
+T26 moves: Gray Ogre, p2's hand -> stack
+T26 p2 cancels casting Gray Ogre
+T26 moves: Vampire Aristocrat, p2's hand -> stack
+T26 p2 cancels casting Vampire Aristocrat
+T26 moves: Vampire Aristocrat, p2's hand -> p2's graveyard
+T26 p2 discards Vampire Aristocrat
+T27 turn 27 begins (p1)
+T27 untaps: p1:Forest#1
+T27 untaps: p1:Island#1
+T27 untaps: p1:Island#2
+T27 untaps: p1:Island#3
+T27 untaps: p1:Forest#2
+T27 untaps: p1:Forest#3
+T27 untaps: p1:Island#4
+T27 taps: p1:Island#1
+T27 p1 adds {U} (p1:Island#1)
+T27 taps: p1:Forest#1
+T27 p1 adds {G} (p1:Forest#1)
+T27 taps: p1:Forest#3
+T27 p1 adds {G} (p1:Forest#3)
+T27 taps: p1:Island#4
+T27 p1 adds {U} (p1:Island#4)
+T27 taps: p1:Island#2
+T27 p1 adds {U} (p1:Island#2)
+T27 taps: p1:Forest#2
+T27 p1 adds {G} (p1:Forest#2)
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T27 moves: Forest, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p1:Island#3
+T27 p1 adds {U} (p1:Island#3)
+T27 p1's unspent {U} empties
+T27 moves: Nature's Spiral, p1's hand -> stack
+T27 p1 cancels casting Nature's Spiral
+T27 moves: Mind Spring, p1's hand -> stack
+T27 p1 cancels casting Mind Spring
+T27 moves: Nature's Spiral, p1's hand -> stack
+T27 p1 cancels casting Nature's Spiral
+T27 moves: Nature's Spiral, p1's hand -> stack
+T27 p1 cancels casting Nature's Spiral
+T27 taps: p1:Centaur Courser
+T27 p1 attack: p1:Centaur Courser -> p2
+T27 p2 block: nothing
+T27 combat damage: p1:Centaur Courser -> p2 3
+T27 p2 loses 3 life
+T27 moves: Grizzly Bears, p1's hand -> stack
+T27 p1 cancels casting Grizzly Bears
+T27 moves: Grizzly Bears, p1's hand -> stack
+T27 p1 cancels casting Grizzly Bears
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T27 moves: Shock, p2's hand -> stack
+T27 p2 cancels casting Shock
+T28 turn 28 begins (p2)
+T28 untaps: p2:Swamp#1
+T28 untaps: p2:Swamp#2
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Mountain#2
+T28 untaps: p2:Mountain#3
+T28 untaps: p2:Swamp#3
+T28 untaps: p2:Swamp#4
+T28 untaps: p2:Mountain#4
+T28 untaps: p2:Swamp#5
+T28 untaps: p2:Mountain#5
+T28 taps: p2:Swamp#2
+T28 p2 adds {B} (p2:Swamp#2)
+T28 taps: p2:Mountain#5
+T28 p2 adds {R} (p2:Mountain#5)
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 taps: p2:Swamp#5
+T28 p2 adds {B} (p2:Swamp#5)
+T28 taps: p2:Mountain#3
+T28 p2 adds {R} (p2:Mountain#3)
+T28 taps: p2:Swamp#1
+T28 p2 adds {B} (p2:Swamp#1)
+T28 p2's unspent {B}{B}{B}{R}{R}{R} empties
+T28 moves: Mountain, p2's library -> p2's hand
+T28 p2 draws
+T28 taps: p2:Swamp#4
+T28 p2 adds {B} (p2:Swamp#4)
+T28 p2's unspent {B} empties
+T28 moves: Mind Shatter, p2's hand -> stack
+T28 p2 cancels casting Mind Shatter
+T28 moves: Mind Shatter, p2's hand -> stack
+T28 p2 cancels casting Mind Shatter
+T28 moves: Raging Goblin, p2's hand -> stack
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 taps: p2:Swamp#3
+T28 p2 adds {B} (p2:Swamp#3)
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 p2 cancels casting Raging Goblin
+T28 moves: Mountain, p2's hand -> battlefield
+T28 p2 plays p2:Mountain#6
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 moves: Mind Shatter, p2's hand -> stack
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 p2 cancels casting Mind Shatter
+T28 moves: Mind Shatter, p2's hand -> stack
+T28 taps: p2:Swamp#3
+T28 p2 adds {B} (p2:Swamp#3)
+T28 taps: p2:Mountain#6
+T28 p2 adds {R} (p2:Mountain#6)
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 p2 cancels casting Mind Shatter
+T28 moves: Sign in Blood, p2's hand -> stack
+T28 taps: p2:Mountain#6
+T28 p2 adds {R} (p2:Mountain#6)
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 taps: p2:Swamp#3
+T28 p2 adds {B} (p2:Swamp#3)
+T28 p2 cancels casting Sign in Blood
+T28 moves: Raging Goblin, p2's hand -> stack
+T28 p2 casts Raging Goblin
+T28 taps: p2:Mountain#6
+T28 p2 adds {R} (p2:Mountain#6)
+T28 resolves: Raging Goblin
+T28 moves: Raging Goblin, stack -> battlefield
+T28 moves: Vampire Aristocrat, p2's hand -> stack
+T28 taps: p2:Swamp#3
+T28 p2 adds {B} (p2:Swamp#3)
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 p2 cancels casting Vampire Aristocrat
+T28 moves: Assassinate, p2's hand -> stack
+T28 p2 cancels casting Assassinate
+T28 taps: p2:Swamp#3
+T28 p2 adds {B} (p2:Swamp#3)
+T28 moves: Assassinate, p2's hand -> stack
+T28 p2 cancels casting Assassinate
+T28 moves: Shock, p2's hand -> stack
+T28 taps: p2:Mountain#4
+T28 p2 adds {R} (p2:Mountain#4)
+T28 p2 casts Shock
+T28 damage: Shock -> p2:Raging Goblin 2
+T28 resolves: Shock
+T28 moves: Shock, stack -> p2's graveyard
+T28 state-based actions: p2:Raging Goblin lethalDamage
+T28 destroyed: p2:Raging Goblin
+T28 moves: Raging Goblin, battlefield -> p2's graveyard
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Assassinate, p2's hand -> stack
+T28 p2 cancels casting Assassinate
+T28 moves: Gray Ogre, p2's hand -> stack
+T28 p2 cancels casting Gray Ogre
+T28 moves: Vampire Aristocrat, p2's hand -> stack
+T28 p2 cancels casting Vampire Aristocrat
+T28 p2's unspent {B}{R} empties
+T28 p2 attack: nothing
+T28 moves: Mind Shatter, p2's hand -> stack
+T28 p2 cancels casting Mind Shatter
+T29 turn 29 begins (p1)
+T29 untaps: p1:Forest#1
+T29 untaps: p1:Island#1
+T29 untaps: p1:Island#2
+T29 untaps: p1:Island#3
+T29 untaps: p1:Forest#2
+T29 untaps: p1:Forest#3
+T29 untaps: p1:Centaur Courser
+T29 untaps: p1:Island#4
+T29 taps: p1:Island#2
+T29 p1 adds {U} (p1:Island#2)
+T29 taps: p1:Forest#1
+T29 p1 adds {G} (p1:Forest#1)
+T29 taps: p1:Forest#3
+T29 p1 adds {G} (p1:Forest#3)
+T29 p1's unspent {U}{G}{G} empties
+T29 moves: Island, p1's library -> p1's hand
+T29 p1 draws
+T29 taps: p1:Island#4
+T29 p1 adds {U} (p1:Island#4)
+T29 taps: p1:Forest#2
+T29 p1 adds {G} (p1:Forest#2)
+T29 taps: p1:Island#3
+T29 p1 adds {U} (p1:Island#3)
+T29 p1's unspent {U}{U}{G} empties
+T29 p1 attack: nothing
+T29 taps: p1:Island#1
+T29 p1 adds {U} (p1:Island#1)
+T29 p1's unspent {U} empties
+T30 turn 30 begins (p2)
+T30 untaps: p2:Swamp#1
+T30 untaps: p2:Swamp#2
+T30 untaps: p2:Mountain#1
+T30 untaps: p2:Mountain#2
+T30 untaps: p2:Mountain#3
+T30 untaps: p2:Swamp#3
+T30 untaps: p2:Swamp#4
+T30 untaps: p2:Mountain#4
+T30 untaps: p2:Swamp#5
+T30 untaps: p2:Mountain#5
+T30 untaps: p2:Mountain#6
+T30 taps: p2:Mountain#2
+T30 p2 adds {R} (p2:Mountain#2)
+T30 taps: p2:Swamp#3
+T30 p2 adds {B} (p2:Swamp#3)
+T30 taps: p2:Swamp#1
+T30 p2 adds {B} (p2:Swamp#1)
+T30 taps: p2:Swamp#5
+T30 p2 adds {B} (p2:Swamp#5)
+T30 taps: p2:Mountain#5
+T30 p2 adds {R} (p2:Mountain#5)
+T30 taps: p2:Swamp#4
+T30 p2 adds {B} (p2:Swamp#4)
+T30 taps: p2:Mountain#4
+T30 p2 adds {R} (p2:Mountain#4)
+T30 p2's unspent {B}{B}{B}{B}{R}{R}{R} empties
+T30 moves: Lightning Bolt, p2's library -> p2's hand
+T30 p2 draws
+T30 moves: Lightning Bolt, p2's hand -> stack
+T30 taps: p2:Mountain#3
+T30 p2 adds {R} (p2:Mountain#3)
+T30 p2 cancels casting Lightning Bolt
+T30 moves: Lightning Bolt, p2's hand -> stack
+T30 taps: p2:Mountain#6
+T30 p2 adds {R} (p2:Mountain#6)
+T30 p2 casts Lightning Bolt
+T30 taps: p2:Mountain#3
+T30 p2 adds {R} (p2:Mountain#3)
+T30 damage: Lightning Bolt -> p1 3
+T30 p1 loses 3 life
+T30 resolves: Lightning Bolt
+T30 moves: Lightning Bolt, stack -> p2's graveyard
+T30 p2's unspent {R} empties
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 taps: p2:Swamp#2
+T30 p2 adds {B} (p2:Swamp#2)
+T30 p2 cancels casting Sign in Blood
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 taps: p2:Swamp#2
+T30 p2 adds {B} (p2:Swamp#2)
+T30 p2 cancels casting Vampire Aristocrat
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 p2 cancels casting Sign in Blood
+T30 taps: p2:Swamp#2
+T30 p2 adds {B} (p2:Swamp#2)
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 p2 cancels casting Vampire Aristocrat
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 p2 cancels casting Sign in Blood
+T30 moves: Gray Ogre, p2's hand -> stack
+T30 p2 cancels casting Gray Ogre
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 p2 cancels casting Vampire Aristocrat
+T30 moves: Gray Ogre, p2's hand -> stack
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 p2 cancels casting Gray Ogre
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 moves: Gray Ogre, p2's hand -> stack
+T30 p2 cancels casting Gray Ogre
+T30 moves: Mind Shatter, p2's hand -> stack
+T30 p2 cancels casting Mind Shatter
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 p2 cancels casting Sign in Blood
+T30 p2's unspent {B}{R} empties
+T30 p2 attack: nothing
+T30 moves: Gray Ogre, p2's hand -> stack
+T30 p2 cancels casting Gray Ogre
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 p2 cancels casting Sign in Blood
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 p2 cancels casting Sign in Blood
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 p2 cancels casting Vampire Aristocrat
+T30 moves: Sign in Blood, p2's hand -> stack
+T30 p2 cancels casting Sign in Blood
+T30 moves: Mind Shatter, p2's hand -> stack
+T30 p2 cancels casting Mind Shatter
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 p2 cancels casting Vampire Aristocrat
+T30 moves: Gray Ogre, p2's hand -> stack
+T30 p2 cancels casting Gray Ogre
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 p2 cancels casting Vampire Aristocrat
+T30 moves: Gray Ogre, p2's hand -> stack
+T30 p2 cancels casting Gray Ogre
+T30 moves: Vampire Aristocrat, p2's hand -> stack
+T30 p2 cancels casting Vampire Aristocrat
+T31 turn 31 begins (p1)
+T31 untaps: p1:Forest#1
+T31 untaps: p1:Island#1
+T31 untaps: p1:Island#2
+T31 untaps: p1:Island#3
+T31 untaps: p1:Forest#2
+T31 untaps: p1:Forest#3
+T31 untaps: p1:Island#4
+T31 taps: p1:Forest#3
+T31 p1 adds {G} (p1:Forest#3)
+T31 taps: p1:Island#1
+T31 p1 adds {U} (p1:Island#1)
+T31 taps: p1:Forest#2
+T31 p1 adds {G} (p1:Forest#2)
+T31 taps: p1:Forest#1
+T31 p1 adds {G} (p1:Forest#1)
+T31 taps: p1:Island#3
+T31 p1 adds {U} (p1:Island#3)
+T31 taps: p1:Island#2
+T31 p1 adds {U} (p1:Island#2)
+T31 taps: p1:Island#4
+T31 p1 adds {U} (p1:Island#4)
+T31 p1's unspent {U}{U}{U}{U}{G}{G}{G} empties
+T31 moves: Llanowar Elves, p1's library -> p1's hand
+T31 p1 draws
+T31 moves: Llanowar Elves, p1's hand -> stack
+T31 p1 cancels casting Llanowar Elves
+T31 moves: Island, p1's hand -> battlefield
+T31 p1 plays p1:Island#5
+T31 moves: Nature's Spiral, p1's hand -> stack
+T31 taps: p1:Island#5
+T31 p1 adds {U} (p1:Island#5)
+T31 p1 cancels casting Nature's Spiral
+T31 p1 attack: nothing
+T31 taps: p1:Island#5
+T31 p1 adds {U} (p1:Island#5)
+T31 p1's unspent {U} empties
+T31 moves: Llanowar Elves, p1's hand -> stack
+T31 p1 cancels casting Llanowar Elves
+T31 moves: Divination, p1's hand -> stack
+T31 p1 cancels casting Divination
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 p1 cancels casting Grizzly Bears
+T31 moves: Nature's Spiral, p1's hand -> stack
+T31 p1 cancels casting Nature's Spiral
+T31 moves: Mind Spring, p1's hand -> stack
+T31 p1 cancels casting Mind Spring
+T31 moves: Nature's Spiral, p1's hand -> stack
+T31 p1 cancels casting Nature's Spiral
+T31 moves: Mind Spring, p1's hand -> stack
+T31 p1 cancels casting Mind Spring
+T31 moves: Divination, p1's hand -> stack
+T31 p1 cancels casting Divination
+T31 moves: Mind Spring, p1's hand -> stack
+T31 p1 cancels casting Mind Spring
+T31 moves: Llanowar Elves, p1's hand -> stack
+T31 p1 cancels casting Llanowar Elves
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 p1 cancels casting Grizzly Bears
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 p1 cancels casting Grizzly Bears
+T31 moves: Mind Spring, p1's hand -> stack
+T31 p1 cancels casting Mind Spring
+T31 moves: Grizzly Bears, p1's hand -> stack
+T31 p1 cancels casting Grizzly Bears
+T32 turn 32 begins (p2)
+T32 untaps: p2:Swamp#1
+T32 untaps: p2:Swamp#2
+T32 untaps: p2:Mountain#1
+T32 untaps: p2:Mountain#2
+T32 untaps: p2:Mountain#3
+T32 untaps: p2:Swamp#3
+T32 untaps: p2:Swamp#4
+T32 untaps: p2:Mountain#4
+T32 untaps: p2:Swamp#5
+T32 untaps: p2:Mountain#5
+T32 untaps: p2:Mountain#6
+T32 taps: p2:Mountain#4
+T32 p2 adds {R} (p2:Mountain#4)
+T32 p2's unspent {R} empties
+T32 moves: Royal Assassin, p2's library -> p2's hand
+T32 p2 draws
+T32 taps: p2:Mountain#2
+T32 p2 adds {R} (p2:Mountain#2)
+T32 taps: p2:Mountain#6
+T32 p2 adds {R} (p2:Mountain#6)
+T32 taps: p2:Mountain#5
+T32 p2 adds {R} (p2:Mountain#5)
+T32 taps: p2:Swamp#1
+T32 p2 adds {B} (p2:Swamp#1)
+T32 taps: p2:Mountain#1
+T32 p2 adds {R} (p2:Mountain#1)
+T32 taps: p2:Mountain#3
+T32 p2 adds {R} (p2:Mountain#3)
+T32 p2's unspent {B}{R}{R}{R}{R}{R} empties
+T32 taps: p2:Swamp#5
+T32 p2 adds {B} (p2:Swamp#5)
+T32 taps: p2:Swamp#3
+T32 p2 adds {B} (p2:Swamp#3)
+T32 moves: Royal Assassin, p2's hand -> stack
+T32 p2 cancels casting Royal Assassin
+T32 taps: p2:Swamp#4
+T32 p2 adds {B} (p2:Swamp#4)
+T32 moves: Sign in Blood, p2's hand -> stack
+T32 p2 cancels casting Sign in Blood
+T32 moves: Mind Shatter, p2's hand -> stack
+T32 p2 casts Mind Shatter
+T32 taps: p2:Swamp#2
+T32 p2 adds {B} (p2:Swamp#2)
+T32 moves: Royal Assassin, p2's hand -> p2's graveyard
+T32 p2 discards Royal Assassin
+T32 resolves: Mind Shatter
+T32 moves: Mind Shatter, stack -> p2's graveyard
+T32 moves: Vampire Aristocrat, p2's hand -> stack
+T32 p2 cancels casting Vampire Aristocrat
+T32 p2's unspent {B} empties
+T32 p2 attack: nothing
+T32 moves: Sign in Blood, p2's hand -> stack
+T32 p2 cancels casting Sign in Blood
+T32 moves: Gray Ogre, p2's hand -> stack
+T32 p2 cancels casting Gray Ogre
+T32 moves: Vampire Aristocrat, p2's hand -> stack
+T32 p2 cancels casting Vampire Aristocrat
+T32 moves: Vampire Aristocrat, p2's hand -> stack
+T32 p2 cancels casting Vampire Aristocrat
+T33 turn 33 begins (p1)
+T33 untaps: p1:Forest#1
+T33 untaps: p1:Island#1
+T33 untaps: p1:Island#2
+T33 untaps: p1:Island#3
+T33 untaps: p1:Forest#2
+T33 untaps: p1:Forest#3
+T33 untaps: p1:Island#4
+T33 untaps: p1:Island#5
+T33 taps: p1:Island#3
+T33 p1 adds {U} (p1:Island#3)
+T33 taps: p1:Forest#2
+T33 p1 adds {G} (p1:Forest#2)
+T33 taps: p1:Forest#1
+T33 p1 adds {G} (p1:Forest#1)
+T33 taps: p1:Island#4
+T33 p1 adds {U} (p1:Island#4)
+T33 taps: p1:Forest#3
+T33 p1 adds {G} (p1:Forest#3)
+T33 taps: p1:Island#1
+T33 p1 adds {U} (p1:Island#1)
+T33 taps: p1:Island#5
+T33 p1 adds {U} (p1:Island#5)
+T33 p1's unspent {U}{U}{U}{U}{G}{G}{G} empties
+T33 moves: Island, p1's library -> p1's hand
+T33 p1 draws
+T33 taps: p1:Island#2
+T33 p1 adds {U} (p1:Island#2)
+T33 p1's unspent {U} empties
+T33 moves: Nature's Spiral, p1's hand -> stack
+T33 p1 cancels casting Nature's Spiral
+T33 moves: Nature's Spiral, p1's hand -> stack
+T33 p1 cancels casting Nature's Spiral
+T33 moves: Grizzly Bears, p1's hand -> stack
+T33 p1 cancels casting Grizzly Bears
+T33 moves: Island, p1's hand -> battlefield
+T33 p1 plays p1:Island#6
+T33 moves: Nature's Spiral, p1's hand -> stack
+T33 taps: p1:Island#6
+T33 p1 adds {U} (p1:Island#6)
+T33 p1 cancels casting Nature's Spiral
+T33 moves: Grizzly Bears, p1's hand -> stack
+T33 taps: p1:Island#6
+T33 p1 adds {U} (p1:Island#6)
+T33 p1 cancels casting Grizzly Bears
+T33 taps: p1:Island#6
+T33 p1 adds {U} (p1:Island#6)
+T33 p1's unspent {U} empties
+T33 p1 attack: nothing
+T33 moves: Nature's Spiral, p1's hand -> stack
+T33 p1 cancels casting Nature's Spiral
+T33 moves: Grizzly Bears, p1's hand -> stack
+T33 p1 cancels casting Grizzly Bears
+T33 moves: Llanowar Elves, p1's hand -> stack
+T33 p1 cancels casting Llanowar Elves
+T34 turn 34 begins (p2)
+T34 untaps: p2:Swamp#1
+T34 untaps: p2:Swamp#2
+T34 untaps: p2:Mountain#1
+T34 untaps: p2:Mountain#2
+T34 untaps: p2:Mountain#3
+T34 untaps: p2:Swamp#3
+T34 untaps: p2:Swamp#4
+T34 untaps: p2:Mountain#4
+T34 untaps: p2:Swamp#5
+T34 untaps: p2:Mountain#5
+T34 untaps: p2:Mountain#6
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 taps: p2:Swamp#3
+T34 p2 adds {B} (p2:Swamp#3)
+T34 taps: p2:Mountain#3
+T34 p2 adds {R} (p2:Mountain#3)
+T34 taps: p2:Mountain#6
+T34 p2 adds {R} (p2:Mountain#6)
+T34 taps: p2:Mountain#5
+T34 p2 adds {R} (p2:Mountain#5)
+T34 taps: p2:Mountain#4
+T34 p2 adds {R} (p2:Mountain#4)
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 taps: p2:Swamp#2
+T34 p2 adds {B} (p2:Swamp#2)
+T34 p2's unspent {B}{B}{R}{R}{R}{R}{R}{R} empties
+T34 moves: Deathmark, p2's library -> p2's hand
+T34 p2 draws
+T34 taps: p2:Swamp#1
+T34 p2 adds {B} (p2:Swamp#1)
+T34 taps: p2:Swamp#4
+T34 p2 adds {B} (p2:Swamp#4)
+T34 p2's unspent {B}{B} empties
+T34 moves: Vampire Aristocrat, p2's hand -> stack
+T34 p2 cancels casting Vampire Aristocrat
+T34 moves: Deathmark, p2's hand -> stack
+T34 p2 cancels casting Deathmark
+T34 moves: Deathmark, p2's hand -> stack
+T34 p2 cancels casting Deathmark
+T34 moves: Vampire Aristocrat, p2's hand -> stack
+T34 p2 cancels casting Vampire Aristocrat
+T34 moves: Sign in Blood, p2's hand -> stack
+T34 taps: p2:Swamp#5
+T34 p2 adds {B} (p2:Swamp#5)
+T34 p2 cancels casting Sign in Blood
+T34 taps: p2:Swamp#5
+T34 p2 adds {B} (p2:Swamp#5)
+T34 p2's unspent {B} empties
+T34 p2 attack: nothing
+T35 turn 35 begins (p1)
+T35 untaps: p1:Forest#1
+T35 untaps: p1:Island#1
+T35 untaps: p1:Island#2
+T35 untaps: p1:Island#3
+T35 untaps: p1:Forest#2
+T35 untaps: p1:Forest#3
+T35 untaps: p1:Island#4
+T35 untaps: p1:Island#5
+T35 untaps: p1:Island#6
+T35 taps: p1:Island#2
+T35 p1 adds {U} (p1:Island#2)
+T35 taps: p1:Forest#2
+T35 p1 adds {G} (p1:Forest#2)
+T35 taps: p1:Island#5
+T35 p1 adds {U} (p1:Island#5)
+T35 taps: p1:Island#6
+T35 p1 adds {U} (p1:Island#6)
+T35 taps: p1:Island#3
+T35 p1 adds {U} (p1:Island#3)
+T35 taps: p1:Forest#3
+T35 p1 adds {G} (p1:Forest#3)
+T35 p1's unspent {U}{U}{U}{U}{G}{G} empties
+T35 moves: Island, p1's library -> p1's hand
+T35 p1 draws
+T35 moves: Nature's Spiral, p1's hand -> stack
+T35 taps: p1:Forest#1
+T35 p1 adds {G} (p1:Forest#1)
+T35 taps: p1:Island#4
+T35 p1 adds {U} (p1:Island#4)
+T35 taps: p1:Island#1
+T35 p1 adds {U} (p1:Island#1)
+T35 p1 cancels casting Nature's Spiral
+T35 taps: p1:Island#1
+T35 p1 adds {U} (p1:Island#1)
+T35 moves: Divination, p1's hand -> stack
+T35 taps: p1:Forest#1
+T35 p1 adds {G} (p1:Forest#1)
+T35 p1 cancels casting Divination
+T35 taps: p1:Island#4
+T35 p1 adds {U} (p1:Island#4)
+T35 taps: p1:Forest#1
+T35 p1 adds {G} (p1:Forest#1)
+T35 moves: Llanowar Elves, p1's hand -> stack
+T35 p1 cancels casting Llanowar Elves
+T35 moves: Island, p1's hand -> battlefield
+T35 p1 plays p1:Island#7
+T35 taps: p1:Island#7
+T35 p1 adds {U} (p1:Island#7)
+T35 moves: Nature's Spiral, p1's hand -> stack
+T35 p1 casts Nature's Spiral
+T35 moves: Ornithopter, p1's graveyard -> p1's hand
+T35 resolves: Nature's Spiral
+T35 moves: Nature's Spiral, stack -> p1's graveyard
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Ornithopter, p1's hand -> stack
+T35 p1 cancels casting Ornithopter
+T35 moves: Ornithopter, p1's hand -> stack
+T35 p1 casts Ornithopter
+T35 resolves: Ornithopter
+T35 moves: Ornithopter, stack -> battlefield
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Mind Spring, p1's hand -> stack
+T35 p1 cancels casting Mind Spring
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Mind Spring, p1's hand -> stack
+T35 p1 cancels casting Mind Spring
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Llanowar Elves, p1's hand -> stack
+T35 p1 cancels casting Llanowar Elves
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Mind Spring, p1's hand -> stack
+T35 p1 cancels casting Mind Spring
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Llanowar Elves, p1's hand -> stack
+T35 p1 cancels casting Llanowar Elves
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Llanowar Elves, p1's hand -> stack
+T35 p1 cancels casting Llanowar Elves
+T35 moves: Mind Spring, p1's hand -> stack
+T35 p1 cancels casting Mind Spring
+T35 moves: Llanowar Elves, p1's hand -> stack
+T35 p1 cancels casting Llanowar Elves
+T35 moves: Mind Spring, p1's hand -> stack
+T35 p1 cancels casting Mind Spring
+T35 p1's unspent {U}{U} empties
+T35 taps: p1:Centaur Courser
+T35 p1 attack: p1:Centaur Courser -> p2
+T35 p2 block: nothing
+T35 combat damage: p1:Centaur Courser -> p2 3
+T35 p2 loses 3 life
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Llanowar Elves, p1's hand -> stack
+T35 p1 cancels casting Llanowar Elves
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Grizzly Bears, p1's hand -> stack
+T35 p1 cancels casting Grizzly Bears
+T35 moves: Divination, p1's hand -> stack
+T35 p1 cancels casting Divination
+T36 turn 36 begins (p2)
+T36 untaps: p2:Swamp#1
+T36 untaps: p2:Swamp#2
+T36 untaps: p2:Mountain#1
+T36 untaps: p2:Mountain#2
+T36 untaps: p2:Mountain#3
+T36 untaps: p2:Swamp#3
+T36 untaps: p2:Swamp#4
+T36 untaps: p2:Mountain#4
+T36 untaps: p2:Swamp#5
+T36 untaps: p2:Mountain#5
+T36 untaps: p2:Mountain#6
+T36 taps: p2:Mountain#5
+T36 p2 adds {R} (p2:Mountain#5)
+T36 taps: p2:Mountain#6
+T36 p2 adds {R} (p2:Mountain#6)
+T36 taps: p2:Mountain#3
+T36 p2 adds {R} (p2:Mountain#3)
+T36 taps: p2:Mountain#4
+T36 p2 adds {R} (p2:Mountain#4)
+T36 p2's unspent {R}{R}{R}{R} empties
+T36 moves: Hill Giant, p2's library -> p2's hand
+T36 p2 draws
+T36 taps: p2:Swamp#5
+T36 p2 adds {B} (p2:Swamp#5)
+T36 taps: p2:Swamp#4
+T36 p2 adds {B} (p2:Swamp#4)
+T36 taps: p2:Swamp#3
+T36 p2 adds {B} (p2:Swamp#3)
+T36 taps: p2:Swamp#1
+T36 p2 adds {B} (p2:Swamp#1)
+T36 taps: p2:Swamp#2
+T36 p2 adds {B} (p2:Swamp#2)
+T36 taps: p2:Mountain#1
+T36 p2 adds {R} (p2:Mountain#1)
+T36 taps: p2:Mountain#2
+T36 p2 adds {R} (p2:Mountain#2)
+T36 p2's unspent {B}{B}{B}{B}{B}{R}{R} empties
+T36 moves: Deathmark, p2's hand -> stack
+T36 p2 cancels casting Deathmark
+T36 moves: Deathmark, p2's hand -> stack
+T36 p2 cancels casting Deathmark
+T36 p2 attack: nothing
+T36 moves: Assassinate, p2's hand -> stack
+T36 p2 cancels casting Assassinate
+T37 turn 37 begins (p1)
+T37 untaps: p1:Forest#1
+T37 untaps: p1:Island#1
+T37 untaps: p1:Island#2
+T37 untaps: p1:Island#3
+T37 untaps: p1:Forest#2
+T37 untaps: p1:Forest#3
+T37 untaps: p1:Centaur Courser
+T37 untaps: p1:Island#4
+T37 untaps: p1:Island#5
+T37 untaps: p1:Island#6
+T37 untaps: p1:Island#7
+T37 taps: p1:Forest#2
+T37 p1 adds {G} (p1:Forest#2)
+T37 taps: p1:Island#3
+T37 p1 adds {U} (p1:Island#3)
+T37 taps: p1:Island#4
+T37 p1 adds {U} (p1:Island#4)
+T37 taps: p1:Island#2
+T37 p1 adds {U} (p1:Island#2)
+T37 taps: p1:Island#5
+T37 p1 adds {U} (p1:Island#5)
+T37 taps: p1:Forest#1
+T37 p1 adds {G} (p1:Forest#1)
+T37 taps: p1:Island#6
+T37 p1 adds {U} (p1:Island#6)
+T37 taps: p1:Forest#3
+T37 p1 adds {G} (p1:Forest#3)
+T37 taps: p1:Island#7
+T37 p1 adds {U} (p1:Island#7)
+T37 taps: p1:Island#1
+T37 p1 adds {U} (p1:Island#1)
+T37 p1's unspent {U}{U}{U}{U}{U}{U}{U}{G}{G}{G} empties
+T37 moves: Flashfreeze, p1's library -> p1's hand
+T37 p1 draws
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Divination, p1's hand -> stack
+T37 p1 cancels casting Divination
+T37 moves: Forest, p1's hand -> battlefield
+T37 p1 plays p1:Forest#4
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 taps: p1:Forest#4
+T37 p1 adds {G} (p1:Forest#4)
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Mind Spring, p1's hand -> stack
+T37 p1 cancels casting Mind Spring
+T37 p1 attack: nothing
+T37 taps: p1:Forest#4
+T37 p1 adds {G} (p1:Forest#4)
+T37 p1's unspent {G} empties
+T37 moves: Mind Spring, p1's hand -> stack
+T37 p1 cancels casting Mind Spring
+T37 moves: Mind Spring, p1's hand -> stack
+T37 p1 cancels casting Mind Spring
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Divination, p1's hand -> stack
+T37 p1 cancels casting Divination
+T37 moves: Llanowar Elves, p1's hand -> stack
+T37 p1 cancels casting Llanowar Elves
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Llanowar Elves, p1's hand -> stack
+T37 p1 cancels casting Llanowar Elves
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Grizzly Bears, p1's hand -> stack
+T37 p1 cancels casting Grizzly Bears
+T37 moves: Llanowar Elves, p1's hand -> stack
+T37 p1 cancels casting Llanowar Elves
+T38 turn 38 begins (p2)
+T38 untaps: p2:Swamp#1
+T38 untaps: p2:Swamp#2
+T38 untaps: p2:Mountain#1
+T38 untaps: p2:Mountain#2
+T38 untaps: p2:Mountain#3
+T38 untaps: p2:Swamp#3
+T38 untaps: p2:Swamp#4
+T38 untaps: p2:Mountain#4
+T38 untaps: p2:Swamp#5
+T38 untaps: p2:Mountain#5
+T38 untaps: p2:Mountain#6
+T38 taps: p2:Mountain#5
+T38 p2 adds {R} (p2:Mountain#5)
+T38 p2's unspent {R} empties
+T38 moves: Royal Assassin, p2's library -> p2's hand
+T38 p2 draws
+T38 taps: p2:Swamp#2
+T38 p2 adds {B} (p2:Swamp#2)
+T38 taps: p2:Mountain#2
+T38 p2 adds {R} (p2:Mountain#2)
+T38 taps: p2:Swamp#5
+T38 p2 adds {B} (p2:Swamp#5)
+T38 taps: p2:Mountain#3
+T38 p2 adds {R} (p2:Mountain#3)
+T38 taps: p2:Swamp#1
+T38 p2 adds {B} (p2:Swamp#1)
+T38 taps: p2:Mountain#4
+T38 p2 adds {R} (p2:Mountain#4)
+T38 taps: p2:Mountain#1
+T38 p2 adds {R} (p2:Mountain#1)
+T38 p2's unspent {B}{B}{B}{R}{R}{R}{R} empties
+T38 taps: p2:Swamp#3
+T38 p2 adds {B} (p2:Swamp#3)
+T38 taps: p2:Mountain#6
+T38 p2 adds {R} (p2:Mountain#6)
+T38 taps: p2:Swamp#4
+T38 p2 adds {B} (p2:Swamp#4)
+T38 p2's unspent {B}{B}{R} empties
+T38 p2 attack: nothing
+T38 moves: Hill Giant, p2's hand -> stack
+T38 p2 cancels casting Hill Giant
+T38 moves: Vampire Aristocrat, p2's hand -> stack
+T38 p2 cancels casting Vampire Aristocrat
+T39 turn 39 begins (p1)
+T39 untaps: p1:Forest#1
+T39 untaps: p1:Island#1
+T39 untaps: p1:Island#2
+T39 untaps: p1:Island#3
+T39 untaps: p1:Forest#2
+T39 untaps: p1:Forest#3
+T39 untaps: p1:Island#4
+T39 untaps: p1:Island#5
+T39 untaps: p1:Island#6
+T39 untaps: p1:Island#7
+T39 untaps: p1:Forest#4
+T39 taps: p1:Island#7
+T39 p1 adds {U} (p1:Island#7)
+T39 taps: p1:Island#4
+T39 p1 adds {U} (p1:Island#4)
+T39 taps: p1:Island#3
+T39 p1 adds {U} (p1:Island#3)
+T39 taps: p1:Island#2
+T39 p1 adds {U} (p1:Island#2)
+T39 taps: p1:Island#1
+T39 p1 adds {U} (p1:Island#1)
+T39 p1's unspent {U}{U}{U}{U}{U} empties
+T39 moves: Coral Merfolk, p1's library -> p1's hand
+T39 p1 draws
+T39 taps: p1:Island#6
+T39 p1 adds {U} (p1:Island#6)
+T39 taps: p1:Forest#4
+T39 p1 adds {G} (p1:Forest#4)
+T39 taps: p1:Island#5
+T39 p1 adds {U} (p1:Island#5)
+T39 taps: p1:Forest#3
+T39 p1 adds {G} (p1:Forest#3)
+T39 taps: p1:Forest#1
+T39 p1 adds {G} (p1:Forest#1)
+T39 p1's unspent {U}{U}{G}{G}{G} empties
+T39 moves: Divination, p1's hand -> stack
+T39 p1 cancels casting Divination
+T39 moves: Llanowar Elves, p1's hand -> stack
+T39 p1 cancels casting Llanowar Elves
+T39 moves: Grizzly Bears, p1's hand -> stack
+T39 taps: p1:Forest#2
+T39 p1 adds {G} (p1:Forest#2)
+T39 p1 cancels casting Grizzly Bears
+T39 moves: Divination, p1's hand -> stack
+T39 taps: p1:Forest#2
+T39 p1 adds {G} (p1:Forest#2)
+T39 p1 cancels casting Divination
+T39 moves: Grizzly Bears, p1's hand -> stack
+T39 taps: p1:Forest#2
+T39 p1 adds {G} (p1:Forest#2)
+T39 p1 cancels casting Grizzly Bears
+T39 moves: Coral Merfolk, p1's hand -> stack
+T39 p1 cancels casting Coral Merfolk
+T39 taps: p1:Forest#2
+T39 p1 adds {G} (p1:Forest#2)
+T39 moves: Grizzly Bears, p1's hand -> stack
+T39 p1 cancels casting Grizzly Bears
+T39 moves: Mind Spring, p1's hand -> stack
+T39 p1 cancels casting Mind Spring
+T39 moves: Llanowar Elves, p1's hand -> stack
+T39 p1 cancels casting Llanowar Elves
+T39 p1's unspent {G} empties
+T39 taps: p1:Centaur Courser
+T39 p1 attack: p1:Centaur Courser -> p2
+T39 p2 block: nothing
+T39 combat damage: p1:Centaur Courser -> p2 3
+T39 p2 loses 3 life
+T39 moves: Grizzly Bears, p1's hand -> stack
+T39 p1 cancels casting Grizzly Bears
+T40 turn 40 begins (p2)
+T40 untaps: p2:Swamp#1
+T40 untaps: p2:Swamp#2
+T40 untaps: p2:Mountain#1
+T40 untaps: p2:Mountain#2
+T40 untaps: p2:Mountain#3
+T40 untaps: p2:Swamp#3
+T40 untaps: p2:Swamp#4
+T40 untaps: p2:Mountain#4
+T40 untaps: p2:Swamp#5
+T40 untaps: p2:Mountain#5
+T40 untaps: p2:Mountain#6
+T40 taps: p2:Mountain#1
+T40 p2 adds {R} (p2:Mountain#1)
+T40 taps: p2:Mountain#3
+T40 p2 adds {R} (p2:Mountain#3)
+T40 taps: p2:Swamp#2
+T40 p2 adds {B} (p2:Swamp#2)
+T40 taps: p2:Swamp#5
+T40 p2 adds {B} (p2:Swamp#5)
+T40 p2's unspent {B}{B}{R}{R} empties
+T40 moves: Gray Ogre, p2's library -> p2's hand
+T40 p2 draws
+T40 taps: p2:Mountain#5
+T40 p2 adds {R} (p2:Mountain#5)
+T40 taps: p2:Swamp#4
+T40 p2 adds {B} (p2:Swamp#4)
+T40 taps: p2:Mountain#2
+T40 p2 adds {R} (p2:Mountain#2)
+T40 taps: p2:Mountain#4
+T40 p2 adds {R} (p2:Mountain#4)
+T40 taps: p2:Swamp#3
+T40 p2 adds {B} (p2:Swamp#3)
+T40 taps: p2:Mountain#6
+T40 p2 adds {R} (p2:Mountain#6)
+T40 taps: p2:Swamp#1
+T40 p2 adds {B} (p2:Swamp#1)
+T40 p2's unspent {B}{B}{B}{R}{R}{R}{R} empties
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Deathmark, p2's hand -> stack
+T40 p2 cancels casting Deathmark
+T40 moves: Deathmark, p2's hand -> stack
+T40 p2 cancels casting Deathmark
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Deathmark, p2's hand -> stack
+T40 p2 cancels casting Deathmark
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 p2 attack: nothing
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Assassinate, p2's hand -> stack
+T40 p2 cancels casting Assassinate
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Royal Assassin, p2's hand -> stack
+T40 p2 cancels casting Royal Assassin
+T40 moves: Sign in Blood, p2's hand -> stack
+T40 p2 cancels casting Sign in Blood
+T40 moves: Vampire Aristocrat, p2's hand -> stack
+T40 p2 cancels casting Vampire Aristocrat
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Deathmark, p2's hand -> stack
+T40 p2 cancels casting Deathmark
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Gray Ogre, p2's hand -> stack
+T40 p2 cancels casting Gray Ogre
+T40 moves: Hill Giant, p2's hand -> stack
+T40 p2 cancels casting Hill Giant
+T40 moves: Gray Ogre, p2's hand -> p2's graveyard
+T40 p2 discards Gray Ogre
+T41 turn 41 begins (p1)
+T41 untaps: p1:Forest#1
+T41 untaps: p1:Island#1
+T41 untaps: p1:Island#2
+T41 untaps: p1:Island#3
+T41 untaps: p1:Forest#2
+T41 untaps: p1:Forest#3
+T41 untaps: p1:Centaur Courser
+T41 untaps: p1:Island#4
+T41 untaps: p1:Island#5
+T41 untaps: p1:Island#6
+T41 untaps: p1:Island#7
+T41 untaps: p1:Forest#4
+T41 taps: p1:Forest#1
+T41 p1 adds {G} (p1:Forest#1)
+T41 taps: p1:Island#6
+T41 p1 adds {U} (p1:Island#6)
+T41 taps: p1:Forest#2
+T41 p1 adds {G} (p1:Forest#2)
+T41 taps: p1:Island#2
+T41 p1 adds {U} (p1:Island#2)
+T41 taps: p1:Forest#4
+T41 p1 adds {G} (p1:Forest#4)
+T41 p1's unspent {U}{U}{G}{G}{G} empties
+T41 moves: Llanowar Elves, p1's library -> p1's hand
+T41 p1 draws
+T41 taps: p1:Island#5
+T41 p1 adds {U} (p1:Island#5)
+T41 taps: p1:Island#7
+T41 p1 adds {U} (p1:Island#7)
+T41 taps: p1:Island#3
+T41 p1 adds {U} (p1:Island#3)
+T41 taps: p1:Island#1
+T41 p1 adds {U} (p1:Island#1)
+T41 taps: p1:Island#4
+T41 p1 adds {U} (p1:Island#4)
+T41 taps: p1:Forest#3
+T41 p1 adds {G} (p1:Forest#3)
+T41 p1's unspent {U}{U}{U}{U}{U}{G} empties
+T41 moves: Grizzly Bears, p1's hand -> stack
+T41 p1 cancels casting Grizzly Bears
+T41 moves: Grizzly Bears, p1's hand -> stack
+T41 p1 cancels casting Grizzly Bears
+T41 moves: Coral Merfolk, p1's hand -> stack
+T41 p1 cancels casting Coral Merfolk
+T41 moves: Grizzly Bears, p1's hand -> stack
+T41 p1 cancels casting Grizzly Bears
+T41 moves: Divination, p1's hand -> stack
+T41 p1 cancels casting Divination
+T41 moves: Divination, p1's hand -> stack
+T41 p1 cancels casting Divination
+T41 moves: Llanowar Elves, p1's hand -> stack
+T41 p1 cancels casting Llanowar Elves
+T41 moves: Llanowar Elves, p1's hand -> stack
+T41 p1 cancels casting Llanowar Elves
+T41 moves: Divination, p1's hand -> stack
+T41 p1 cancels casting Divination
+T41 moves: Coral Merfolk, p1's hand -> stack
+T41 p1 cancels casting Coral Merfolk
+T41 moves: Mind Spring, p1's hand -> stack
+T41 p1 cancels casting Mind Spring
+T41 moves: Grizzly Bears, p1's hand -> stack
+T41 p1 cancels casting Grizzly Bears
+T41 moves: Mind Spring, p1's hand -> stack
+T41 p1 cancels casting Mind Spring
+T41 taps: p1:Ornithopter
+T41 p1 attack: p1:Ornithopter -> p2
+T41 p2 block: nothing
+T41 moves: Grizzly Bears, p1's hand -> stack
+T41 p1 cancels casting Grizzly Bears
+T41 moves: Llanowar Elves, p1's hand -> p1's graveyard
+T41 p1 discards Llanowar Elves
+T42 turn 42 begins (p2)
+T42 untaps: p2:Swamp#1
+T42 untaps: p2:Swamp#2
+T42 untaps: p2:Mountain#1
+T42 untaps: p2:Mountain#2
+T42 untaps: p2:Mountain#3
+T42 untaps: p2:Swamp#3
+T42 untaps: p2:Swamp#4
+T42 untaps: p2:Mountain#4
+T42 untaps: p2:Swamp#5
+T42 untaps: p2:Mountain#5
+T42 untaps: p2:Mountain#6
+T42 taps: p2:Mountain#3
+T42 p2 adds {R} (p2:Mountain#3)
+T42 taps: p2:Mountain#4
+T42 p2 adds {R} (p2:Mountain#4)
+T42 taps: p2:Mountain#6
+T42 p2 adds {R} (p2:Mountain#6)
+T42 p2's unspent {R}{R}{R} empties
+T42 moves: Lightning Bolt, p2's library -> p2's hand
+T42 p2 draws
+T42 taps: p2:Swamp#4
+T42 p2 adds {B} (p2:Swamp#4)
+T42 taps: p2:Swamp#2
+T42 p2 adds {B} (p2:Swamp#2)
+T42 taps: p2:Mountain#1
+T42 p2 adds {R} (p2:Mountain#1)
+T42 taps: p2:Swamp#1
+T42 p2 adds {B} (p2:Swamp#1)
+T42 taps: p2:Swamp#3
+T42 p2 adds {B} (p2:Swamp#3)
+T42 p2's unspent {B}{B}{B}{B}{R} empties
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Royal Assassin, p2's hand -> stack
+T42 p2 cancels casting Royal Assassin
+T42 moves: Gray Ogre, p2's hand -> stack
+T42 p2 cancels casting Gray Ogre
+T42 moves: Royal Assassin, p2's hand -> stack
+T42 taps: p2:Swamp#5
+T42 p2 adds {B} (p2:Swamp#5)
+T42 p2 cancels casting Royal Assassin
+T42 taps: p2:Mountain#2
+T42 p2 adds {R} (p2:Mountain#2)
+T42 moves: Hill Giant, p2's hand -> stack
+T42 taps: p2:Mountain#5
+T42 p2 adds {R} (p2:Mountain#5)
+T42 p2 cancels casting Hill Giant
+T42 moves: Vampire Aristocrat, p2's hand -> stack
+T42 p2 cancels casting Vampire Aristocrat
+T42 moves: Vampire Aristocrat, p2's hand -> stack
+T42 taps: p2:Mountain#5
+T42 p2 adds {R} (p2:Mountain#5)
+T42 taps: p2:Swamp#5
+T42 p2 adds {B} (p2:Swamp#5)
+T42 p2 casts Vampire Aristocrat
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 resolves: Vampire Aristocrat
+T42 moves: Vampire Aristocrat, stack -> battlefield
+T42 moves: Sign in Blood, p2's hand -> stack
+T42 p2 cancels casting Sign in Blood
+T42 moves: Royal Assassin, p2's hand -> stack
+T42 p2 cancels casting Royal Assassin
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Gray Ogre, p2's hand -> stack
+T42 p2 cancels casting Gray Ogre
+T42 moves: Deathmark, p2's hand -> stack
+T42 p2 cancels casting Deathmark
+T42 moves: Gray Ogre, p2's hand -> stack
+T42 p2 cancels casting Gray Ogre
+T42 moves: Royal Assassin, p2's hand -> stack
+T42 p2 cancels casting Royal Assassin
+T42 p2 sacrifices p2:Vampire Aristocrat
+T42 moves: Vampire Aristocrat, battlefield -> p2's graveyard
+T42 p2 activates p2:Vampire Aristocrat
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 resolves: (gone o2667)'s ability
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Royal Assassin, p2's hand -> stack
+T42 p2 cancels casting Royal Assassin
+T42 moves: Deathmark, p2's hand -> stack
+T42 p2 cancels casting Deathmark
+T42 p2 attack: nothing
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T42 moves: Lightning Bolt, p2's hand -> stack
+T42 p2 cancels casting Lightning Bolt
+T43 turn 43 begins (p1)
+T43 untaps: p1:Forest#1
+T43 untaps: p1:Island#1
+T43 untaps: p1:Island#2
+T43 untaps: p1:Island#3
+T43 untaps: p1:Forest#2
+T43 untaps: p1:Forest#3
+T43 untaps: p1:Island#4
+T43 untaps: p1:Island#5
+T43 untaps: p1:Island#6
+T43 untaps: p1:Island#7
+T43 untaps: p1:Ornithopter
+T43 untaps: p1:Forest#4
+T43 taps: p1:Forest#3
+T43 p1 adds {G} (p1:Forest#3)
+T43 taps: p1:Island#3
+T43 p1 adds {U} (p1:Island#3)
+T43 taps: p1:Island#4
+T43 p1 adds {U} (p1:Island#4)
+T43 taps: p1:Forest#2
+T43 p1 adds {G} (p1:Forest#2)
+T43 taps: p1:Island#1
+T43 p1 adds {U} (p1:Island#1)
+T43 taps: p1:Forest#1
+T43 p1 adds {G} (p1:Forest#1)
+T43 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T43 moves: Forest, p1's library -> p1's hand
+T43 p1 draws
+T43 taps: p1:Island#2
+T43 p1 adds {U} (p1:Island#2)
+T43 p1's unspent {U} empties
+T43 taps: p1:Forest#4
+T43 p1 adds {G} (p1:Forest#4)
+T43 taps: p1:Island#5
+T43 p1 adds {U} (p1:Island#5)
+T43 moves: Grizzly Bears, p1's hand -> stack
+T43 p1 casts Grizzly Bears
+T43 taps: p1:Island#7
+T43 p1 adds {U} (p1:Island#7)
+T43 moves: Flashfreeze, p1's hand -> stack
+T43 p1 cancels casting Flashfreeze
+T43 moves: Flashfreeze, p1's hand -> stack
+T43 taps: p1:Island#6
+T43 p1 adds {U} (p1:Island#6)
+T43 p1 cancels casting Flashfreeze
+T43 moves: Flashfreeze, p1's hand -> stack
+T43 taps: p1:Island#6
+T43 p1 adds {U} (p1:Island#6)
+T43 p1 cancels casting Flashfreeze
+T43 taps: p1:Island#6
+T43 p1 adds {U} (p1:Island#6)
+T43 moves: Flashfreeze, p1's hand -> stack
+T43 p1 casts Flashfreeze
+T43 countered: Grizzly Bears
+T43 moves: Grizzly Bears, stack -> p1's graveyard
+T43 resolves: Flashfreeze
+T43 moves: Flashfreeze, stack -> p1's graveyard
+T43 moves: Llanowar Elves, p1's hand -> stack
+T43 p1 cancels casting Llanowar Elves
+T43 taps: p1:Centaur Courser
+T43 p1 attack: p1:Centaur Courser -> p2
+T43 p2 block: nothing
+T43 combat damage: p1:Centaur Courser -> p2 3
+T43 p2 loses 3 life
+T43 moves: Lightning Bolt, p2's hand -> stack
+T43 p2 cancels casting Lightning Bolt
+T43 moves: Lightning Bolt, p2's hand -> stack
+T43 p2 cancels casting Lightning Bolt
+T44 turn 44 begins (p2)
+T44 untaps: p2:Swamp#1
+T44 untaps: p2:Swamp#2
+T44 untaps: p2:Mountain#1
+T44 untaps: p2:Mountain#2
+T44 untaps: p2:Mountain#3
+T44 untaps: p2:Swamp#3
+T44 untaps: p2:Swamp#4
+T44 untaps: p2:Mountain#4
+T44 untaps: p2:Swamp#5
+T44 untaps: p2:Mountain#5
+T44 untaps: p2:Mountain#6
+T44 taps: p2:Swamp#5
+T44 p2 adds {B} (p2:Swamp#5)
+T44 taps: p2:Swamp#2
+T44 p2 adds {B} (p2:Swamp#2)
+T44 taps: p2:Mountain#6
+T44 p2 adds {R} (p2:Mountain#6)
+T44 taps: p2:Mountain#1
+T44 p2 adds {R} (p2:Mountain#1)
+T44 p2's unspent {B}{B}{R}{R} empties
+T44 moves: Mountain, p2's library -> p2's hand
+T44 p2 draws
+T44 taps: p2:Mountain#4
+T44 p2 adds {R} (p2:Mountain#4)
+T44 taps: p2:Swamp#1
+T44 p2 adds {B} (p2:Swamp#1)
+T44 taps: p2:Mountain#5
+T44 p2 adds {R} (p2:Mountain#5)
+T44 taps: p2:Swamp#4
+T44 p2 adds {B} (p2:Swamp#4)
+T44 taps: p2:Mountain#2
+T44 p2 adds {R} (p2:Mountain#2)
+T44 moves: Lightning Bolt, p2's hand -> stack
+T44 p2 cancels casting Lightning Bolt
+T44 taps: p2:Mountain#3
+T44 p2 adds {R} (p2:Mountain#3)
+T44 taps: p2:Swamp#3
+T44 p2 adds {B} (p2:Swamp#3)
+T44 p2's unspent {B}{B}{B}{R}{R}{R}{R} empties
+T44 moves: Lightning Bolt, p2's hand -> stack
+T44 p2 cancels casting Lightning Bolt
+T44 moves: Assassinate, p2's hand -> stack
+T44 p2 cancels casting Assassinate
+T44 moves: Royal Assassin, p2's hand -> stack
+T44 p2 cancels casting Royal Assassin
+T44 moves: Royal Assassin, p2's hand -> stack
+T44 p2 cancels casting Royal Assassin
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Sign in Blood, p2's hand -> stack
+T44 p2 cancels casting Sign in Blood
+T44 moves: Lightning Bolt, p2's hand -> stack
+T44 p2 cancels casting Lightning Bolt
+T44 moves: Mountain, p2's hand -> battlefield
+T44 p2 plays p2:Mountain#7
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T44 moves: Assassinate, p2's hand -> stack
+T44 p2 cancels casting Assassinate
+T44 moves: Royal Assassin, p2's hand -> stack
+T44 p2 cancels casting Royal Assassin
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T44 moves: Assassinate, p2's hand -> stack
+T44 taps: p2:Mountain#7
+T44 p2 adds {R} (p2:Mountain#7)
+T44 p2 cancels casting Assassinate
+T44 moves: Lightning Bolt, p2's hand -> stack
+T44 taps: p2:Mountain#7
+T44 p2 adds {R} (p2:Mountain#7)
+T44 p2 cancels casting Lightning Bolt
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T44 moves: Lightning Bolt, p2's hand -> stack
+T44 taps: p2:Mountain#7
+T44 p2 adds {R} (p2:Mountain#7)
+T44 p2 casts Lightning Bolt
+T44 damage: Lightning Bolt -> p1:Centaur Courser 3
+T44 resolves: Lightning Bolt
+T44 moves: Lightning Bolt, stack -> p2's graveyard
+T44 state-based actions: p1:Centaur Courser lethalDamage
+T44 destroyed: p1:Centaur Courser
+T44 moves: Centaur Courser, battlefield -> p1's graveyard
+T44 moves: Royal Assassin, p2's hand -> stack
+T44 p2 cancels casting Royal Assassin
+T44 moves: Sign in Blood, p2's hand -> stack
+T44 p2 cancels casting Sign in Blood
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Royal Assassin, p2's hand -> stack
+T44 p2 cancels casting Royal Assassin
+T44 p2 attack: nothing
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Hill Giant, p2's hand -> stack
+T44 p2 cancels casting Hill Giant
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Sign in Blood, p2's hand -> stack
+T44 p2 cancels casting Sign in Blood
+T44 moves: Gray Ogre, p2's hand -> stack
+T44 p2 cancels casting Gray Ogre
+T44 moves: Sign in Blood, p2's hand -> stack
+T44 p2 cancels casting Sign in Blood
+T44 moves: Sign in Blood, p2's hand -> stack
+T44 p2 cancels casting Sign in Blood
+T44 moves: Royal Assassin, p2's hand -> stack
+T44 p2 cancels casting Royal Assassin
+T45 turn 45 begins (p1)
+T45 untaps: p1:Forest#1
+T45 untaps: p1:Island#1
+T45 untaps: p1:Island#2
+T45 untaps: p1:Island#3
+T45 untaps: p1:Forest#2
+T45 untaps: p1:Forest#3
+T45 untaps: p1:Island#4
+T45 untaps: p1:Island#5
+T45 untaps: p1:Island#6
+T45 untaps: p1:Island#7
+T45 untaps: p1:Forest#4
+T45 taps: p1:Island#3
+T45 p1 adds {U} (p1:Island#3)
+T45 taps: p1:Forest#3
+T45 p1 adds {G} (p1:Forest#3)
+T45 taps: p1:Island#2
+T45 p1 adds {U} (p1:Island#2)
+T45 taps: p1:Forest#1
+T45 p1 adds {G} (p1:Forest#1)
+T45 taps: p1:Island#6
+T45 p1 adds {U} (p1:Island#6)
+T45 taps: p1:Forest#2
+T45 p1 adds {G} (p1:Forest#2)
+T45 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T45 moves: Cancel, p1's library -> p1's hand
+T45 p1 draws
+T45 taps: p1:Forest#4
+T45 p1 adds {G} (p1:Forest#4)
+T45 taps: p1:Island#4
+T45 p1 adds {U} (p1:Island#4)
+T45 taps: p1:Island#7
+T45 p1 adds {U} (p1:Island#7)
+T45 p1's unspent {U}{U}{G} empties
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 taps: p1:Island#5
+T45 p1 adds {U} (p1:Island#5)
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 taps: p1:Island#5
+T45 p1 adds {U} (p1:Island#5)
+T45 taps: p1:Island#1
+T45 p1 adds {U} (p1:Island#1)
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Llanowar Elves, p1's hand -> stack
+T45 taps: p1:Island#1
+T45 p1 adds {U} (p1:Island#1)
+T45 p1 cancels casting Llanowar Elves
+T45 taps: p1:Ornithopter
+T45 p1 attack: p1:Ornithopter -> p2
+T45 taps: p1:Island#1
+T45 p1 adds {U} (p1:Island#1)
+T45 p1's unspent {U} empties
+T45 p2 block: nothing
+T45 taps: p1:Island#5
+T45 p1 adds {U} (p1:Island#5)
+T45 p1's unspent {U} empties
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 p1 cancels casting Grizzly Bears
+T45 moves: Divination, p1's hand -> stack
+T45 p1 cancels casting Divination
+T45 moves: Forest, p1's hand -> battlefield
+T45 p1 plays p1:Forest#5
+T45 moves: Coral Merfolk, p1's hand -> stack
+T45 taps: p1:Forest#5
+T45 p1 adds {G} (p1:Forest#5)
+T45 p1 cancels casting Coral Merfolk
+T45 moves: Grizzly Bears, p1's hand -> stack
+T45 taps: p1:Forest#5
+T45 p1 adds {G} (p1:Forest#5)
+T45 p1 cancels casting Grizzly Bears
+T46 turn 46 begins (p2)
+T46 untaps: p2:Swamp#1
+T46 untaps: p2:Swamp#2
+T46 untaps: p2:Mountain#1
+T46 untaps: p2:Mountain#2
+T46 untaps: p2:Mountain#3
+T46 untaps: p2:Swamp#3
+T46 untaps: p2:Swamp#4
+T46 untaps: p2:Mountain#4
+T46 untaps: p2:Swamp#5
+T46 untaps: p2:Mountain#5
+T46 untaps: p2:Mountain#6
+T46 untaps: p2:Mountain#7
+T46 taps: p2:Mountain#7
+T46 p2 adds {R} (p2:Mountain#7)
+T46 taps: p2:Mountain#4
+T46 p2 adds {R} (p2:Mountain#4)
+T46 taps: p2:Mountain#1
+T46 p2 adds {R} (p2:Mountain#1)
+T46 taps: p2:Swamp#2
+T46 p2 adds {B} (p2:Swamp#2)
+T46 taps: p2:Swamp#4
+T46 p2 adds {B} (p2:Swamp#4)
+T46 taps: p2:Swamp#3
+T46 p2 adds {B} (p2:Swamp#3)
+T46 taps: p2:Swamp#1
+T46 p2 adds {B} (p2:Swamp#1)
+T46 taps: p2:Swamp#5
+T46 p2 adds {B} (p2:Swamp#5)
+T46 taps: p2:Mountain#6
+T46 p2 adds {R} (p2:Mountain#6)
+T46 taps: p2:Mountain#5
+T46 p2 adds {R} (p2:Mountain#5)
+T46 p2's unspent {B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T46 moves: Doom Blade, p2's library -> p2's hand
+T46 p2 draws
+T46 taps: p1:Forest#5
+T46 p1 adds {G} (p1:Forest#5)
+T46 taps: p2:Mountain#2
+T46 p2 adds {R} (p2:Mountain#2)
+T46 p1's unspent {G} empties
+T46 p2's unspent {R} empties
+T46 moves: Hill Giant, p2's hand -> stack
+T46 p2 cancels casting Hill Giant
+T46 moves: Doom Blade, p2's hand -> stack
+T46 p2 cancels casting Doom Blade
+T46 moves: Doom Blade, p2's hand -> stack
+T46 p2 cancels casting Doom Blade
+T46 taps: p2:Mountain#3
+T46 p2 adds {R} (p2:Mountain#3)
+T46 p2's unspent {R} empties
+T46 p2 attack: nothing
+T46 moves: Doom Blade, p2's hand -> stack
+T46 p2 cancels casting Doom Blade
+T46 moves: Doom Blade, p2's hand -> stack
+T46 p2 cancels casting Doom Blade
+T47 turn 47 begins (p1)
+T47 untaps: p1:Forest#1
+T47 untaps: p1:Island#1
+T47 untaps: p1:Island#2
+T47 untaps: p1:Island#3
+T47 untaps: p1:Forest#2
+T47 untaps: p1:Forest#3
+T47 untaps: p1:Island#4
+T47 untaps: p1:Island#5
+T47 untaps: p1:Island#6
+T47 untaps: p1:Island#7
+T47 untaps: p1:Ornithopter
+T47 untaps: p1:Forest#4
+T47 untaps: p1:Forest#5
+T47 taps: p1:Island#5
+T47 p1 adds {U} (p1:Island#5)
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 p1's unspent {U} empties
+T47 moves: Forest, p1's library -> p1's hand
+T47 p1 draws
+T47 taps: p1:Island#2
+T47 p1 adds {U} (p1:Island#2)
+T47 taps: p1:Island#6
+T47 p1 adds {U} (p1:Island#6)
+T47 taps: p1:Island#7
+T47 p1 adds {U} (p1:Island#7)
+T47 taps: p1:Island#4
+T47 p1 adds {U} (p1:Island#4)
+T47 taps: p1:Forest#4
+T47 p1 adds {G} (p1:Forest#4)
+T47 taps: p1:Island#1
+T47 p1 adds {U} (p1:Island#1)
+T47 taps: p1:Forest#5
+T47 p1 adds {G} (p1:Forest#5)
+T47 taps: p1:Forest#1
+T47 p1 adds {G} (p1:Forest#1)
+T47 taps: p1:Island#3
+T47 p1 adds {U} (p1:Island#3)
+T47 taps: p1:Forest#3
+T47 p1 adds {G} (p1:Forest#3)
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 p1's unspent {U}{U}{U}{U}{U}{U}{G}{G}{G}{G} empties
+T47 taps: p1:Forest#2
+T47 p1 adds {G} (p1:Forest#2)
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 p1's unspent {G} empties
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 taps: p1:Ornithopter
+T47 p1 attack: p1:Ornithopter -> p2
+T47 p2 block: nothing
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Mind Spring, p1's hand -> stack
+T47 p1 cancels casting Mind Spring
+T47 moves: Coral Merfolk, p1's hand -> stack
+T47 p1 cancels casting Coral Merfolk
+T47 moves: Forest, p1's hand -> battlefield
+T47 p1 plays p1:Forest#6
+T47 moves: Grizzly Bears, p1's hand -> stack
+T47 taps: p1:Forest#6
+T47 p1 adds {G} (p1:Forest#6)
+T47 p1 cancels casting Grizzly Bears
+T47 moves: Divination, p1's hand -> stack
+T47 taps: p1:Forest#6
+T47 p1 adds {G} (p1:Forest#6)
+T47 p1 cancels casting Divination
+T47 moves: Mind Spring, p1's hand -> stack
+T47 p1 cancels casting Mind Spring
+T47 moves: Mind Spring, p1's hand -> stack
+T47 taps: p1:Forest#6
+T47 p1 adds {G} (p1:Forest#6)
+T47 p1 cancels casting Mind Spring
+T47 taps: p1:Forest#6
+T47 p1 adds {G} (p1:Forest#6)
+T47 moves: Llanowar Elves, p1's hand -> stack
+T47 p1 cancels casting Llanowar Elves
+T47 moves: Coral Merfolk, p1's hand -> stack
+T47 p1 cancels casting Coral Merfolk
+T47 moves: Grizzly Bears, p1's hand -> stack
+T47 p1 cancels casting Grizzly Bears
+T47 moves: Coral Merfolk, p1's hand -> stack
+T47 p1 cancels casting Coral Merfolk
+T47 moves: Mind Spring, p1's hand -> stack
+T47 p1 cancels casting Mind Spring
+T47 moves: Mind Spring, p1's hand -> stack
+T47 p1 cancels casting Mind Spring
+T47 moves: Grizzly Bears, p1's hand -> stack
+T47 p1 cancels casting Grizzly Bears
+T47 p1's unspent {G} empties
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T47 moves: Doom Blade, p2's hand -> stack
+T47 p2 cancels casting Doom Blade
+T48 turn 48 begins (p2)
+T48 untaps: p2:Swamp#1
+T48 untaps: p2:Swamp#2
+T48 untaps: p2:Mountain#1
+T48 untaps: p2:Mountain#2
+T48 untaps: p2:Mountain#3
+T48 untaps: p2:Swamp#3
+T48 untaps: p2:Swamp#4
+T48 untaps: p2:Mountain#4
+T48 untaps: p2:Swamp#5
+T48 untaps: p2:Mountain#5
+T48 untaps: p2:Mountain#6
+T48 untaps: p2:Mountain#7
+T48 taps: p2:Mountain#2
+T48 p2 adds {R} (p2:Mountain#2)
+T48 taps: p2:Mountain#5
+T48 p2 adds {R} (p2:Mountain#5)
+T48 taps: p2:Swamp#5
+T48 p2 adds {B} (p2:Swamp#5)
+T48 taps: p2:Mountain#6
+T48 p2 adds {R} (p2:Mountain#6)
+T48 taps: p2:Swamp#1
+T48 p2 adds {B} (p2:Swamp#1)
+T48 taps: p2:Swamp#4
+T48 p2 adds {B} (p2:Swamp#4)
+T48 taps: p2:Mountain#4
+T48 p2 adds {R} (p2:Mountain#4)
+T48 taps: p2:Swamp#3
+T48 p2 adds {B} (p2:Swamp#3)
+T48 moves: Doom Blade, p2's hand -> stack
+T48 taps: p2:Mountain#1
+T48 p2 adds {R} (p2:Mountain#1)
+T48 p2 cancels casting Doom Blade
+T48 taps: p2:Swamp#2
+T48 p2 adds {B} (p2:Swamp#2)
+T48 moves: Doom Blade, p2's hand -> stack
+T48 p2 cancels casting Doom Blade
+T48 taps: p2:Mountain#1
+T48 p2 adds {R} (p2:Mountain#1)
+T48 moves: Doom Blade, p2's hand -> stack
+T48 p2 cancels casting Doom Blade
+T48 moves: Doom Blade, p2's hand -> stack
+T48 taps: p2:Mountain#3
+T48 p2 adds {R} (p2:Mountain#3)
+T48 p2 casts Doom Blade
+T48 taps: p2:Mountain#7
+T48 p2 adds {R} (p2:Mountain#7)
+T48 destroyed: p1:Ornithopter
+T48 moves: Ornithopter, battlefield -> p1's graveyard
+T48 resolves: Doom Blade
+T48 moves: Doom Blade, stack -> p2's graveyard
+T48 p2's unspent {B}{B}{B}{B}{R}{R}{R}{R}{R}{R} empties
+T48 moves: Raging Goblin, p2's library -> p2's hand
+T48 p2 draws
+T48 moves: Raging Goblin, p2's hand -> stack
+T48 p2 cancels casting Raging Goblin
+T48 moves: Hill Giant, p2's hand -> stack
+T48 p2 cancels casting Hill Giant
+T48 moves: Raging Goblin, p2's hand -> stack
+T48 p2 cancels casting Raging Goblin
+T48 moves: Sign in Blood, p2's hand -> stack
+T48 p2 cancels casting Sign in Blood
+T48 moves: Sign in Blood, p2's hand -> stack
+T48 p2 cancels casting Sign in Blood
+T48 moves: Gray Ogre, p2's hand -> stack
+T48 p2 cancels casting Gray Ogre
+T48 moves: Sign in Blood, p2's hand -> stack
+T48 p2 cancels casting Sign in Blood
+T48 moves: Sign in Blood, p2's hand -> stack
+T48 p2 cancels casting Sign in Blood
+T48 p2 attack: nothing
+T48 moves: Gray Ogre, p2's hand -> stack
+T48 p2 cancels casting Gray Ogre
+T48 moves: Raging Goblin, p2's hand -> stack
+T48 p2 cancels casting Raging Goblin
+T48 moves: Raging Goblin, p2's hand -> stack
+T48 p2 cancels casting Raging Goblin
+T48 moves: Raging Goblin, p2's hand -> stack
+T48 p2 cancels casting Raging Goblin
+T48 moves: Raging Goblin, p2's hand -> stack
+T48 p2 cancels casting Raging Goblin
+T48 moves: Royal Assassin, p2's hand -> stack
+T48 p2 cancels casting Royal Assassin
+T49 turn 49 begins (p1)
+T49 untaps: p1:Forest#1
+T49 untaps: p1:Island#1
+T49 untaps: p1:Island#2
+T49 untaps: p1:Island#3
+T49 untaps: p1:Forest#2
+T49 untaps: p1:Forest#3
+T49 untaps: p1:Island#4
+T49 untaps: p1:Island#5
+T49 untaps: p1:Island#6
+T49 untaps: p1:Island#7
+T49 untaps: p1:Forest#4
+T49 untaps: p1:Forest#5
+T49 untaps: p1:Forest#6
+T49 taps: p1:Forest#2
+T49 p1 adds {G} (p1:Forest#2)
+T49 taps: p1:Island#7
+T49 p1 adds {U} (p1:Island#7)
+T49 taps: p1:Forest#6
+T49 p1 adds {G} (p1:Forest#6)
+T49 taps: p1:Island#4
+T49 p1 adds {U} (p1:Island#4)
+T49 taps: p1:Forest#1
+T49 p1 adds {G} (p1:Forest#1)
+T49 taps: p1:Island#1
+T49 p1 adds {U} (p1:Island#1)
+T49 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T49 moves: Negate, p1's library -> p1's hand
+T49 p1 draws
+T49 taps: p1:Island#2
+T49 p1 adds {U} (p1:Island#2)
+T49 taps: p1:Forest#3
+T49 p1 adds {G} (p1:Forest#3)
+T49 p1's unspent {U}{G} empties
+T49 taps: p1:Forest#5
+T49 p1 adds {G} (p1:Forest#5)
+T49 p1's unspent {G} empties
+T49 p1 attack: nothing
+T49 taps: p1:Island#5
+T49 p1 adds {U} (p1:Island#5)
+T49 p1's unspent {U} empties
+T49 taps: p1:Island#3
+T49 p1 adds {U} (p1:Island#3)
+T49 p1's unspent {U} empties
+T49 taps: p1:Island#6
+T49 p1 adds {U} (p1:Island#6)
+T49 moves: Grizzly Bears, p1's hand -> stack
+T49 taps: p1:Forest#4
+T49 p1 adds {G} (p1:Forest#4)
+T49 p1 cancels casting Grizzly Bears
+T49 moves: Mind Spring, p1's hand -> stack
+T49 taps: p1:Forest#4
+T49 p1 adds {G} (p1:Forest#4)
+T49 p1 cancels casting Mind Spring
+T49 moves: Divination, p1's hand -> stack
+T49 p1 cancels casting Divination
+T49 moves: Grizzly Bears, p1's hand -> stack
+T49 taps: p1:Forest#4
+T49 p1 adds {G} (p1:Forest#4)
+T49 p1 casts Grizzly Bears
+T49 moves: Cancel, p1's hand -> stack
+T49 p1 cancels casting Cancel
+T49 resolves: Grizzly Bears
+T49 moves: Grizzly Bears, stack -> battlefield
+T49 moves: Coral Merfolk, p1's hand -> stack
+T49 p1 cancels casting Coral Merfolk
+T49 moves: Mind Spring, p1's hand -> stack
+T49 p1 cancels casting Mind Spring
+T49 moves: Mind Spring, p1's hand -> stack
+T49 p1 cancels casting Mind Spring
+T49 moves: Coral Merfolk, p1's hand -> stack
+T49 p1 cancels casting Coral Merfolk
+T49 moves: Llanowar Elves, p1's hand -> stack
+T49 p1 cancels casting Llanowar Elves
+T50 turn 50 begins (p2)
+T50 untaps: p2:Swamp#1
+T50 untaps: p2:Swamp#2
+T50 untaps: p2:Mountain#1
+T50 untaps: p2:Mountain#2
+T50 untaps: p2:Mountain#3
+T50 untaps: p2:Swamp#3
+T50 untaps: p2:Swamp#4
+T50 untaps: p2:Mountain#4
+T50 untaps: p2:Swamp#5
+T50 untaps: p2:Mountain#5
+T50 untaps: p2:Mountain#6
+T50 untaps: p2:Mountain#7
+T50 taps: p2:Swamp#5
+T50 p2 adds {B} (p2:Swamp#5)
+T50 taps: p2:Mountain#1
+T50 p2 adds {R} (p2:Mountain#1)
+T50 taps: p2:Mountain#4
+T50 p2 adds {R} (p2:Mountain#4)
+T50 taps: p2:Swamp#2
+T50 p2 adds {B} (p2:Swamp#2)
+T50 taps: p2:Mountain#3
+T50 p2 adds {R} (p2:Mountain#3)
+T50 taps: p2:Swamp#1
+T50 p2 adds {B} (p2:Swamp#1)
+T50 p2's unspent {B}{B}{B}{R}{R}{R} empties
+T50 moves: Swamp, p2's library -> p2's hand
+T50 p2 draws
+T50 taps: p2:Mountain#7
+T50 p2 adds {R} (p2:Mountain#7)
+T50 taps: p2:Mountain#6
+T50 p2 adds {R} (p2:Mountain#6)
+T50 taps: p2:Mountain#5
+T50 p2 adds {R} (p2:Mountain#5)
+T50 taps: p2:Swamp#4
+T50 p2 adds {B} (p2:Swamp#4)
+T50 taps: p2:Mountain#2
+T50 p2 adds {R} (p2:Mountain#2)
+T50 p2's unspent {B}{R}{R}{R}{R} empties
+T50 taps: p2:Swamp#3
+T50 p2 adds {B} (p2:Swamp#3)
+T50 p2's unspent {B} empties
+T50 p2 attack: nothing
+T50 moves: Deathmark, p2's hand -> stack
+T50 p2 cancels casting Deathmark
+T50 moves: Hill Giant, p2's hand -> stack
+T50 p2 cancels casting Hill Giant
+T50 moves: Deathmark, p2's hand -> stack
+T50 p2 cancels casting Deathmark
+T50 moves: Deathmark, p2's hand -> stack
+T50 p2 cancels casting Deathmark
+T50 moves: Royal Assassin, p2's hand -> stack
+T50 p2 cancels casting Royal Assassin
+T50 moves: Sign in Blood, p2's hand -> stack
+T50 p2 cancels casting Sign in Blood
+T50 moves: Raging Goblin, p2's hand -> stack
+T50 p2 cancels casting Raging Goblin
+T50 moves: Sign in Blood, p2's hand -> p2's graveyard
+T50 p2 discards Sign in Blood
+T51 turn 51 begins (p1)
+T51 untaps: p1:Forest#1
+T51 untaps: p1:Island#1
+T51 untaps: p1:Island#2
+T51 untaps: p1:Island#3
+T51 untaps: p1:Forest#2
+T51 untaps: p1:Forest#3
+T51 untaps: p1:Island#4
+T51 untaps: p1:Island#5
+T51 untaps: p1:Island#6
+T51 untaps: p1:Island#7
+T51 untaps: p1:Forest#4
+T51 untaps: p1:Forest#5
+T51 untaps: p1:Forest#6
+T51 taps: p1:Forest#3
+T51 p1 adds {G} (p1:Forest#3)
+T51 taps: p1:Island#2
+T51 p1 adds {U} (p1:Island#2)
+T51 taps: p1:Forest#6
+T51 p1 adds {G} (p1:Forest#6)
+T51 taps: p1:Island#6
+T51 p1 adds {U} (p1:Island#6)
+T51 taps: p1:Island#7
+T51 p1 adds {U} (p1:Island#7)
+T51 taps: p1:Island#3
+T51 p1 adds {U} (p1:Island#3)
+T51 taps: p1:Forest#5
+T51 p1 adds {G} (p1:Forest#5)
+T51 taps: p1:Forest#4
+T51 p1 adds {G} (p1:Forest#4)
+T51 taps: p1:Forest#2
+T51 p1 adds {G} (p1:Forest#2)
+T51 p1's unspent {U}{U}{U}{U}{G}{G}{G}{G}{G} empties
+T51 moves: Giant Spider, p1's library -> p1's hand
+T51 p1 draws
+T51 taps: p1:Island#1
+T51 p1 adds {U} (p1:Island#1)
+T51 taps: p1:Island#4
+T51 p1 adds {U} (p1:Island#4)
+T51 taps: p1:Forest#1
+T51 p1 adds {G} (p1:Forest#1)
+T51 taps: p1:Island#5
+T51 p1 adds {U} (p1:Island#5)
+T51 moves: Mind Spring, p1's hand -> stack
+T51 p1 cancels casting Mind Spring
+T51 p1's unspent {U}{U}{U}{G} empties
+T51 p1 attack: nothing
+T51 moves: Coral Merfolk, p1's hand -> stack
+T51 p1 cancels casting Coral Merfolk
+T51 moves: Coral Merfolk, p1's hand -> stack
+T51 p1 cancels casting Coral Merfolk
+T51 moves: Llanowar Elves, p1's hand -> stack
+T51 p1 cancels casting Llanowar Elves
+T51 moves: Giant Spider, p1's hand -> stack
+T51 p1 cancels casting Giant Spider
+T52 turn 52 begins (p2)
+T52 untaps: p2:Swamp#1
+T52 untaps: p2:Swamp#2
+T52 untaps: p2:Mountain#1
+T52 untaps: p2:Mountain#2
+T52 untaps: p2:Mountain#3
+T52 untaps: p2:Swamp#3
+T52 untaps: p2:Swamp#4
+T52 untaps: p2:Mountain#4
+T52 untaps: p2:Swamp#5
+T52 untaps: p2:Mountain#5
+T52 untaps: p2:Mountain#6
+T52 untaps: p2:Mountain#7
+T52 taps: p2:Mountain#1
+T52 p2 adds {R} (p2:Mountain#1)
+T52 taps: p2:Swamp#5
+T52 p2 adds {B} (p2:Swamp#5)
+T52 taps: p2:Mountain#5
+T52 p2 adds {R} (p2:Mountain#5)
+T52 taps: p2:Swamp#3
+T52 p2 adds {B} (p2:Swamp#3)
+T52 taps: p2:Mountain#4
+T52 p2 adds {R} (p2:Mountain#4)
+T52 taps: p2:Swamp#1
+T52 p2 adds {B} (p2:Swamp#1)
+T52 taps: p2:Swamp#4
+T52 p2 adds {B} (p2:Swamp#4)
+T52 p2's unspent {B}{B}{B}{B}{R}{R}{R} empties
+T52 moves: Swamp, p2's library -> p2's hand
+T52 p2 draws
+T52 taps: p2:Mountain#7
+T52 p2 adds {R} (p2:Mountain#7)
+T52 p2's unspent {R} empties
+T52 taps: p2:Mountain#2
+T52 p2 adds {R} (p2:Mountain#2)
+T52 moves: Gray Ogre, p2's hand -> stack
+T52 taps: p2:Mountain#6
+T52 p2 adds {R} (p2:Mountain#6)
+T52 taps: p2:Swamp#2
+T52 p2 adds {B} (p2:Swamp#2)
+T52 p2 cancels casting Gray Ogre
+T52 moves: Swamp, p2's hand -> battlefield
+T52 p2 plays p2:Swamp#6
+T52 moves: Deathmark, p2's hand -> stack
+T52 p2 cancels casting Deathmark
+T52 moves: Raging Goblin, p2's hand -> stack
+T52 taps: p2:Mountain#3
+T52 p2 adds {R} (p2:Mountain#3)
+T52 p2 cancels casting Raging Goblin
+T52 moves: Hill Giant, p2's hand -> stack
+T52 taps: p2:Swamp#2
+T52 p2 adds {B} (p2:Swamp#2)
+T52 p2 cancels casting Hill Giant
+T52 moves: Deathmark, p2's hand -> stack
+T52 taps: p2:Swamp#2
+T52 p2 adds {B} (p2:Swamp#2)
+T52 p2 casts Deathmark
+T52 taps: p2:Mountain#3
+T52 p2 adds {R} (p2:Mountain#3)
+T52 moves: Cancel, p1's hand -> stack
+T52 p1 cancels casting Cancel
+T52 destroyed: p1:Grizzly Bears
+T52 moves: Grizzly Bears, battlefield -> p1's graveyard
+T52 resolves: Deathmark
+T52 moves: Deathmark, stack -> p2's graveyard
+T52 taps: p2:Swamp#6
+T52 p2 adds {B} (p2:Swamp#6)
+T52 moves: Royal Assassin, p2's hand -> stack
+T52 taps: p2:Mountain#6
+T52 p2 adds {R} (p2:Mountain#6)
+T52 p2 cancels casting Royal Assassin
+T52 moves: Royal Assassin, p2's hand -> stack
+T52 p2 cancels casting Royal Assassin
+T52 moves: Royal Assassin, p2's hand -> stack
+T52 p2 cancels casting Royal Assassin
+T52 moves: Royal Assassin, p2's hand -> stack
+T52 taps: p2:Mountain#6
+T52 p2 adds {R} (p2:Mountain#6)
+T52 p2 cancels casting Royal Assassin
+T52 moves: Raging Goblin, p2's hand -> stack
+T52 p2 casts Raging Goblin
+T52 moves: Cancel, p1's hand -> stack
+T52 p1 cancels casting Cancel
+T52 moves: Cancel, p1's hand -> stack
+T52 p1 cancels casting Cancel
+T52 moves: Cancel, p1's hand -> stack
+T52 p1 cancels casting Cancel
+T52 resolves: Raging Goblin
+T52 moves: Raging Goblin, stack -> battlefield
+T52 p2's unspent {B}{R} empties
+T52 taps: p2:Mountain#6
+T52 p2 adds {R} (p2:Mountain#6)
+T52 p2's unspent {R} empties
+T52 taps: p2:Raging Goblin
+T52 p2 attack: p2:Raging Goblin -> p1
+T52 p1 block: nothing
+T52 combat damage: p2:Raging Goblin -> p1 1
+T52 p1 loses 1 life
+T52 moves: Hill Giant, p2's hand -> stack
+T52 p2 cancels casting Hill Giant
+T53 turn 53 begins (p1)
+T53 untaps: p1:Forest#1
+T53 untaps: p1:Island#1
+T53 untaps: p1:Island#2
+T53 untaps: p1:Island#3
+T53 untaps: p1:Forest#2
+T53 untaps: p1:Forest#3
+T53 untaps: p1:Island#4
+T53 untaps: p1:Island#5
+T53 untaps: p1:Island#6
+T53 untaps: p1:Island#7
+T53 untaps: p1:Forest#4
+T53 untaps: p1:Forest#5
+T53 untaps: p1:Forest#6
+T53 taps: p1:Forest#3
+T53 p1 adds {G} (p1:Forest#3)
+T53 p1's unspent {G} empties
+T53 moves: Traumatize, p1's library -> p1's hand
+T53 p1 draws
+T53 taps: p1:Island#7
+T53 p1 adds {U} (p1:Island#7)
+T53 taps: p1:Island#3
+T53 p1 adds {U} (p1:Island#3)
+T53 taps: p1:Forest#4
+T53 p1 adds {G} (p1:Forest#4)
+T53 taps: p1:Forest#6
+T53 p1 adds {G} (p1:Forest#6)
+T53 taps: p1:Island#5
+T53 p1 adds {U} (p1:Island#5)
+T53 taps: p1:Island#6
+T53 p1 adds {U} (p1:Island#6)
+T53 taps: p1:Island#2
+T53 p1 adds {U} (p1:Island#2)
+T53 p1's unspent {U}{U}{U}{U}{U}{G}{G} empties
+T53 taps: p1:Island#4
+T53 p1 adds {U} (p1:Island#4)
+T53 taps: p1:Forest#2
+T53 p1 adds {G} (p1:Forest#2)
+T53 taps: p1:Forest#5
+T53 p1 adds {G} (p1:Forest#5)
+T53 taps: p1:Island#1
+T53 p1 adds {U} (p1:Island#1)
+T53 p1's unspent {U}{U}{G}{G} empties
+T53 p1 attack: nothing
+T53 taps: p1:Forest#1
+T53 p1 adds {G} (p1:Forest#1)
+T53 p1's unspent {G} empties
+T53 moves: Divination, p1's hand -> stack
+T53 p1 cancels casting Divination
+T53 moves: Coral Merfolk, p1's hand -> stack
+T53 p1 cancels casting Coral Merfolk
+T53 moves: Mind Spring, p1's hand -> stack
+T53 p1 cancels casting Mind Spring
+T53 moves: Traumatize, p1's hand -> stack
+T53 p1 cancels casting Traumatize
+T53 moves: Giant Spider, p1's hand -> stack
+T53 p1 cancels casting Giant Spider
+T53 moves: Mind Spring, p1's hand -> p1's graveyard
+T53 p1 discards Mind Spring
+T54 turn 54 begins (p2)
+T54 untaps: p2:Swamp#1
+T54 untaps: p2:Swamp#2
+T54 untaps: p2:Mountain#1
+T54 untaps: p2:Mountain#2
+T54 untaps: p2:Mountain#3
+T54 untaps: p2:Swamp#3
+T54 untaps: p2:Swamp#4
+T54 untaps: p2:Mountain#4
+T54 untaps: p2:Swamp#5
+T54 untaps: p2:Mountain#5
+T54 untaps: p2:Mountain#6
+T54 untaps: p2:Mountain#7
+T54 untaps: p2:Swamp#6
+T54 untaps: p2:Raging Goblin
+T54 taps: p2:Mountain#5
+T54 p2 adds {R} (p2:Mountain#5)
+T54 taps: p2:Mountain#1
+T54 p2 adds {R} (p2:Mountain#1)
+T54 taps: p2:Mountain#6
+T54 p2 adds {R} (p2:Mountain#6)
+T54 taps: p2:Swamp#4
+T54 p2 adds {B} (p2:Swamp#4)
+T54 taps: p2:Mountain#7
+T54 p2 adds {R} (p2:Mountain#7)
+T54 p2's unspent {B}{R}{R}{R}{R} empties
+T54 moves: Doom Blade, p2's library -> p2's hand
+T54 p2 draws
+T54 taps: p2:Swamp#2
+T54 p2 adds {B} (p2:Swamp#2)
+T54 p2's unspent {B} empties
+T54 taps: p2:Swamp#6
+T54 p2 adds {B} (p2:Swamp#6)
+T54 taps: p2:Mountain#3
+T54 p2 adds {R} (p2:Mountain#3)
+T54 p2's unspent {B}{R} empties
+T54 taps: p2:Swamp#1
+T54 p2 adds {B} (p2:Swamp#1)
+T54 taps: p2:Swamp#3
+T54 p2 adds {B} (p2:Swamp#3)
+T54 taps: p2:Mountain#2
+T54 p2 adds {R} (p2:Mountain#2)
+T54 taps: p2:Mountain#4
+T54 p2 adds {R} (p2:Mountain#4)
+T54 p2's unspent {B}{B}{R}{R} empties
+T54 taps: p2:Raging Goblin
+T54 p2 attack: p2:Raging Goblin -> p1
+T54 taps: p2:Swamp#5
+T54 p2 adds {B} (p2:Swamp#5)
+T54 p2's unspent {B} empties
+T54 p1 block: nothing
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 combat damage: p2:Raging Goblin -> p1 1
+T54 p1 loses 1 life
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Swamp, p2's hand -> battlefield
+T54 p2 plays p2:Swamp#7
+T54 moves: Assassinate, p2's hand -> stack
+T54 p2 cancels casting Assassinate
+T54 taps: p2:Swamp#7
+T54 p2 adds {B} (p2:Swamp#7)
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Doom Blade, p2's hand -> stack
+T54 p2 cancels casting Doom Blade
+T54 moves: Royal Assassin, p2's hand -> stack
+T54 p2 cancels casting Royal Assassin
+T54 p2's unspent {B} empties
+T55 turn 55 begins (p1)
+T55 untaps: p1:Forest#1
+T55 untaps: p1:Island#1
+T55 untaps: p1:Island#2
+T55 untaps: p1:Island#3
+T55 untaps: p1:Forest#2
+T55 untaps: p1:Forest#3
+T55 untaps: p1:Island#4
+T55 untaps: p1:Island#5
+T55 untaps: p1:Island#6
+T55 untaps: p1:Island#7
+T55 untaps: p1:Forest#4
+T55 untaps: p1:Forest#5
+T55 untaps: p1:Forest#6
+T55 taps: p1:Island#6
+T55 p1 adds {U} (p1:Island#6)
+T55 taps: p1:Island#7
+T55 p1 adds {U} (p1:Island#7)
+T55 taps: p1:Forest#2
+T55 p1 adds {G} (p1:Forest#2)
+T55 p1's unspent {U}{U}{G} empties
+T55 moves: Island, p1's library -> p1's hand
+T55 p1 draws
+T55 taps: p1:Forest#3
+T55 p1 adds {G} (p1:Forest#3)
+T55 taps: p1:Island#4
+T55 p1 adds {U} (p1:Island#4)
+T55 taps: p1:Forest#4
+T55 p1 adds {G} (p1:Forest#4)
+T55 taps: p1:Forest#1
+T55 p1 adds {G} (p1:Forest#1)
+T55 taps: p1:Forest#5
+T55 p1 adds {G} (p1:Forest#5)
+T55 taps: p1:Forest#6
+T55 p1 adds {G} (p1:Forest#6)
+T55 taps: p1:Island#1
+T55 p1 adds {U} (p1:Island#1)
+T55 taps: p1:Island#3
+T55 p1 adds {U} (p1:Island#3)
+T55 moves: Doom Blade, p2's hand -> stack
+T55 p2 cancels casting Doom Blade
+T55 p1's unspent {U}{U}{U}{G}{G}{G}{G}{G} empties
+T55 taps: p1:Island#2
+T55 p1 adds {U} (p1:Island#2)
+T55 moves: Llanowar Elves, p1's hand -> stack
+T55 taps: p1:Island#5
+T55 p1 adds {U} (p1:Island#5)
+T55 p1 cancels casting Llanowar Elves
+T55 moves: Llanowar Elves, p1's hand -> stack
+T55 taps: p1:Island#5
+T55 p1 adds {U} (p1:Island#5)
+T55 p1 cancels casting Llanowar Elves
+T55 moves: Giant Spider, p1's hand -> stack
+T55 taps: p1:Island#5
+T55 p1 adds {U} (p1:Island#5)
+T55 p1 cancels casting Giant Spider
+T55 moves: Coral Merfolk, p1's hand -> stack
+T55 p1 cancels casting Coral Merfolk
+T55 moves: Traumatize, p1's hand -> stack
+T55 p1 cancels casting Traumatize
+T55 taps: p1:Island#5
+T55 p1 adds {U} (p1:Island#5)
+T55 moves: Island, p1's hand -> battlefield
+T55 p1 plays p1:Island#8
+T55 taps: p1:Island#8
+T55 p1 adds {U} (p1:Island#8)
+T55 moves: Llanowar Elves, p1's hand -> stack
+T55 p1 cancels casting Llanowar Elves
+T55 moves: Giant Spider, p1's hand -> stack
+T55 p1 cancels casting Giant Spider
+T55 p1's unspent {U}{U}{U} empties
+T55 moves: Doom Blade, p2's hand -> stack
+T55 p2 cancels casting Doom Blade
+T55 p1 attack: nothing
+T55 moves: Doom Blade, p2's hand -> stack
+T55 p2 cancels casting Doom Blade
+T55 moves: Doom Blade, p2's hand -> stack
+T55 p2 cancels casting Doom Blade
+T55 moves: Giant Spider, p1's hand -> stack
+T55 p1 cancels casting Giant Spider
+T55 moves: Divination, p1's hand -> stack
+T55 p1 cancels casting Divination
+T55 moves: Divination, p1's hand -> stack
+T55 p1 cancels casting Divination
+T55 moves: Divination, p1's hand -> stack
+T55 p1 cancels casting Divination
+T55 moves: Divination, p1's hand -> stack
+T55 p1 cancels casting Divination
+T55 moves: Traumatize, p1's hand -> stack
+T55 p1 cancels casting Traumatize
+T55 moves: Llanowar Elves, p1's hand -> stack
+T55 p1 cancels casting Llanowar Elves
+T55 moves: Coral Merfolk, p1's hand -> stack
+T55 p1 cancels casting Coral Merfolk
+T55 moves: Traumatize, p1's hand -> stack
+T55 p1 cancels casting Traumatize
+T55 moves: Divination, p1's hand -> stack
+T55 p1 cancels casting Divination
+T55 moves: Doom Blade, p2's hand -> stack
+T55 p2 cancels casting Doom Blade
+T55 moves: Doom Blade, p2's hand -> stack
+T55 p2 cancels casting Doom Blade
+T56 turn 56 begins (p2)
+T56 untaps: p2:Swamp#1
+T56 untaps: p2:Swamp#2
+T56 untaps: p2:Mountain#1
+T56 untaps: p2:Mountain#2
+T56 untaps: p2:Mountain#3
+T56 untaps: p2:Swamp#3
+T56 untaps: p2:Swamp#4
+T56 untaps: p2:Mountain#4
+T56 untaps: p2:Swamp#5
+T56 untaps: p2:Mountain#5
+T56 untaps: p2:Mountain#6
+T56 untaps: p2:Mountain#7
+T56 untaps: p2:Swamp#6
+T56 untaps: p2:Raging Goblin
+T56 untaps: p2:Swamp#7
+T56 taps: p2:Swamp#3
+T56 p2 adds {B} (p2:Swamp#3)
+T56 taps: p2:Swamp#7
+T56 p2 adds {B} (p2:Swamp#7)
+T56 taps: p2:Mountain#6
+T56 p2 adds {R} (p2:Mountain#6)
+T56 taps: p2:Mountain#4
+T56 p2 adds {R} (p2:Mountain#4)
+T56 taps: p2:Mountain#1
+T56 p2 adds {R} (p2:Mountain#1)
+T56 taps: p2:Swamp#5
+T56 p2 adds {B} (p2:Swamp#5)
+T56 taps: p2:Mountain#5
+T56 p2 adds {R} (p2:Mountain#5)
+T56 taps: p2:Swamp#2
+T56 p2 adds {B} (p2:Swamp#2)
+T56 taps: p2:Swamp#4
+T56 p2 adds {B} (p2:Swamp#4)
+T56 taps: p2:Mountain#2
+T56 p2 adds {R} (p2:Mountain#2)
+T56 taps: p2:Mountain#3
+T56 p2 adds {R} (p2:Mountain#3)
+T56 taps: p2:Swamp#1
+T56 p2 adds {B} (p2:Swamp#1)
+T56 taps: p2:Mountain#7
+T56 p2 adds {R} (p2:Mountain#7)
+T56 p2's unspent {B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R}{R}{R} empties
+T56 moves: Mountain, p2's library -> p2's hand
+T56 p2 draws
+T56 taps: p2:Swamp#6
+T56 p2 adds {B} (p2:Swamp#6)
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 p2's unspent {B} empties
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Mountain, p2's hand -> battlefield
+T56 p2 plays p2:Mountain#8
+T56 taps: p2:Mountain#8
+T56 p2 adds {R} (p2:Mountain#8)
+T56 p2's unspent {R} empties
+T56 taps: p2:Raging Goblin
+T56 p2 attack: p2:Raging Goblin -> p1
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 p1 block: nothing
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 combat damage: p2:Raging Goblin -> p1 1
+T56 p1 loses 1 life
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Assassinate, p2's hand -> stack
+T56 p2 cancels casting Assassinate
+T56 moves: Assassinate, p2's hand -> stack
+T56 p2 cancels casting Assassinate
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T56 moves: Doom Blade, p2's hand -> stack
+T56 p2 cancels casting Doom Blade
+T57 turn 57 begins (p1)
+T57 untaps: p1:Forest#1
+T57 untaps: p1:Island#1
+T57 untaps: p1:Island#2
+T57 untaps: p1:Island#3
+T57 untaps: p1:Forest#2
+T57 untaps: p1:Forest#3
+T57 untaps: p1:Island#4
+T57 untaps: p1:Island#5
+T57 untaps: p1:Island#6
+T57 untaps: p1:Island#7
+T57 untaps: p1:Forest#4
+T57 untaps: p1:Forest#5
+T57 untaps: p1:Forest#6
+T57 untaps: p1:Island#8
+T57 taps: p1:Forest#2
+T57 p1 adds {G} (p1:Forest#2)
+T57 taps: p1:Forest#6
+T57 p1 adds {G} (p1:Forest#6)
+T57 taps: p1:Forest#4
+T57 p1 adds {G} (p1:Forest#4)
+T57 taps: p1:Forest#3
+T57 p1 adds {G} (p1:Forest#3)
+T57 taps: p1:Island#3
+T57 p1 adds {U} (p1:Island#3)
+T57 taps: p1:Forest#1
+T57 p1 adds {G} (p1:Forest#1)
+T57 p1's unspent {U}{G}{G}{G}{G}{G} empties
+T57 moves: Naturalize, p1's library -> p1's hand
+T57 p1 draws
+T57 taps: p1:Island#2
+T57 p1 adds {U} (p1:Island#2)
+T57 p1's unspent {U} empties
+T57 moves: Giant Spider, p1's hand -> stack
+T57 taps: p1:Island#8
+T57 p1 adds {U} (p1:Island#8)
+T57 taps: p1:Island#5
+T57 p1 adds {U} (p1:Island#5)
+T57 taps: p1:Island#1
+T57 p1 adds {U} (p1:Island#1)
+T57 taps: p1:Island#7
+T57 p1 adds {U} (p1:Island#7)
+T57 taps: p1:Forest#5
+T57 p1 adds {G} (p1:Forest#5)
+T57 taps: p1:Island#4
+T57 p1 adds {U} (p1:Island#4)
+T57 p1 casts Giant Spider
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 resolves: Giant Spider
+T57 moves: Giant Spider, stack -> battlefield
+T57 moves: Llanowar Elves, p1's hand -> stack
+T57 taps: p1:Island#6
+T57 p1 adds {U} (p1:Island#6)
+T57 p1 cancels casting Llanowar Elves
+T57 moves: Divination, p1's hand -> stack
+T57 taps: p1:Island#6
+T57 p1 adds {U} (p1:Island#6)
+T57 p1 casts Divination
+T57 moves: Negate, p1's hand -> stack
+T57 p1 cancels casting Negate
+T57 moves: Negate, p1's hand -> stack
+T57 p1 cancels casting Negate
+T57 moves: Negate, p1's hand -> stack
+T57 p1 cancels casting Negate
+T57 moves: Negate, p1's hand -> stack
+T57 p1 cancels casting Negate
+T57 moves: Negate, p1's hand -> stack
+T57 p1 cancels casting Negate
+T57 moves: Cancel, p1's hand -> stack
+T57 p1 cancels casting Cancel
+T57 moves: Negate, p1's hand -> stack
+T57 p1 cancels casting Negate
+T57 moves: Centaur Courser, p1's library -> p1's hand
+T57 p1 draws
+T57 moves: Ornithopter, p1's library -> p1's hand
+T57 p1 draws
+T57 resolves: Divination
+T57 moves: Divination, stack -> p1's graveyard
+T57 moves: Coral Merfolk, p1's hand -> stack
+T57 p1 cancels casting Coral Merfolk
+T57 moves: Centaur Courser, p1's hand -> stack
+T57 p1 cancels casting Centaur Courser
+T57 moves: Centaur Courser, p1's hand -> stack
+T57 p1 cancels casting Centaur Courser
+T57 moves: Llanowar Elves, p1's hand -> stack
+T57 p1 cancels casting Llanowar Elves
+T57 moves: Coral Merfolk, p1's hand -> stack
+T57 p1 cancels casting Coral Merfolk
+T57 moves: Centaur Courser, p1's hand -> stack
+T57 p1 cancels casting Centaur Courser
+T57 moves: Traumatize, p1's hand -> stack
+T57 p1 cancels casting Traumatize
+T57 moves: Ornithopter, p1's hand -> stack
+T57 p1 casts Ornithopter
+T57 moves: Cancel, p1's hand -> stack
+T57 p1 cancels casting Cancel
+T57 moves: Cancel, p1's hand -> stack
+T57 p1 cancels casting Cancel
+T57 moves: Cancel, p1's hand -> stack
+T57 p1 cancels casting Cancel
+T57 moves: Cancel, p1's hand -> stack
+T57 p1 cancels casting Cancel
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 resolves: Ornithopter
+T57 moves: Ornithopter, stack -> battlefield
+T57 moves: Coral Merfolk, p1's hand -> stack
+T57 p1 cancels casting Coral Merfolk
+T57 moves: Traumatize, p1's hand -> stack
+T57 p1 cancels casting Traumatize
+T57 moves: Llanowar Elves, p1's hand -> stack
+T57 p1 cancels casting Llanowar Elves
+T57 moves: Naturalize, p1's hand -> stack
+T57 p1 cancels casting Naturalize
+T57 moves: Naturalize, p1's hand -> stack
+T57 p1 cancels casting Naturalize
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 p1 attack: nothing
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T57 moves: Centaur Courser, p1's hand -> stack
+T57 p1 cancels casting Centaur Courser
+T57 moves: Naturalize, p1's hand -> stack
+T57 p1 cancels casting Naturalize
+T57 moves: Naturalize, p1's hand -> stack
+T57 p1 cancels casting Naturalize
+T57 moves: Llanowar Elves, p1's hand -> stack
+T57 p1 cancels casting Llanowar Elves
+T57 moves: Coral Merfolk, p1's hand -> stack
+T57 p1 cancels casting Coral Merfolk
+T57 moves: Llanowar Elves, p1's hand -> stack
+T57 p1 cancels casting Llanowar Elves
+T57 moves: Naturalize, p1's hand -> stack
+T57 p1 cancels casting Naturalize
+T57 moves: Coral Merfolk, p1's hand -> stack
+T57 p1 cancels casting Coral Merfolk
+T57 moves: Naturalize, p1's hand -> stack
+T57 p1 cancels casting Naturalize
+T57 moves: Doom Blade, p2's hand -> stack
+T57 p2 cancels casting Doom Blade
+T58 turn 58 begins (p2)
+T58 untaps: p2:Swamp#1
+T58 untaps: p2:Swamp#2
+T58 untaps: p2:Mountain#1
+T58 untaps: p2:Mountain#2
+T58 untaps: p2:Mountain#3
+T58 untaps: p2:Swamp#3
+T58 untaps: p2:Swamp#4
+T58 untaps: p2:Mountain#4
+T58 untaps: p2:Swamp#5
+T58 untaps: p2:Mountain#5
+T58 untaps: p2:Mountain#6
+T58 untaps: p2:Mountain#7
+T58 untaps: p2:Swamp#6
+T58 untaps: p2:Raging Goblin
+T58 untaps: p2:Swamp#7
+T58 untaps: p2:Mountain#8
+T58 taps: p2:Mountain#4
+T58 p2 adds {R} (p2:Mountain#4)
+T58 taps: p2:Mountain#8
+T58 p2 adds {R} (p2:Mountain#8)
+T58 p2's unspent {R}{R} empties
+T58 moves: Fireball, p2's library -> p2's hand
+T58 p2 draws
+T58 taps: p2:Mountain#2
+T58 p2 adds {R} (p2:Mountain#2)
+T58 taps: p2:Swamp#7
+T58 p2 adds {B} (p2:Swamp#7)
+T58 taps: p2:Mountain#5
+T58 p2 adds {R} (p2:Mountain#5)
+T58 taps: p2:Mountain#1
+T58 p2 adds {R} (p2:Mountain#1)
+T58 taps: p2:Swamp#5
+T58 p2 adds {B} (p2:Swamp#5)
+T58 moves: Naturalize, p1's hand -> stack
+T58 p1 cancels casting Naturalize
+T58 p2's unspent {B}{B}{R}{R}{R} empties
+T58 taps: p2:Mountain#7
+T58 p2 adds {R} (p2:Mountain#7)
+T58 taps: p2:Swamp#1
+T58 p2 adds {B} (p2:Swamp#1)
+T58 taps: p2:Swamp#4
+T58 p2 adds {B} (p2:Swamp#4)
+T58 taps: p2:Mountain#6
+T58 p2 adds {R} (p2:Mountain#6)
+T58 taps: p2:Mountain#3
+T58 p2 adds {R} (p2:Mountain#3)
+T58 moves: Naturalize, p1's hand -> stack
+T58 p1 cancels casting Naturalize
+T58 moves: Naturalize, p1's hand -> stack
+T58 p1 cancels casting Naturalize
+T58 p2's unspent {B}{B}{R}{R}{R} empties
+T58 p2 attack: nothing
+T58 taps: p2:Swamp#6
+T58 p2 adds {B} (p2:Swamp#6)
+T58 taps: p2:Swamp#3
+T58 p2 adds {B} (p2:Swamp#3)
+T58 taps: p2:Swamp#2
+T58 p2 adds {B} (p2:Swamp#2)
+T58 p2's unspent {B}{B}{B} empties
+T58 moves: Doom Blade, p2's hand -> stack
+T58 p2 cancels casting Doom Blade
+T58 moves: Doom Blade, p2's hand -> stack
+T58 p2 cancels casting Doom Blade
+T58 moves: Naturalize, p1's hand -> stack
+T58 p1 cancels casting Naturalize
+T58 moves: Fireball, p2's hand -> stack
+T58 p2 cancels casting Fireball
+T58 moves: Fireball, p2's hand -> stack
+T58 p2 cancels casting Fireball
+T58 moves: Gray Ogre, p2's hand -> stack
+T58 p2 cancels casting Gray Ogre
+T58 moves: Gray Ogre, p2's hand -> stack
+T58 p2 cancels casting Gray Ogre
+T58 moves: Doom Blade, p2's hand -> stack
+T58 p2 cancels casting Doom Blade
+T58 moves: Royal Assassin, p2's hand -> stack
+T58 p2 cancels casting Royal Assassin
+T58 moves: Royal Assassin, p2's hand -> stack
+T58 p2 cancels casting Royal Assassin
+T58 moves: Naturalize, p1's hand -> stack
+T58 p1 cancels casting Naturalize
+T58 moves: Naturalize, p1's hand -> stack
+T58 p1 cancels casting Naturalize
+T59 turn 59 begins (p1)
+T59 untaps: p1:Forest#1
+T59 untaps: p1:Island#1
+T59 untaps: p1:Island#2
+T59 untaps: p1:Island#3
+T59 untaps: p1:Forest#2
+T59 untaps: p1:Forest#3
+T59 untaps: p1:Island#4
+T59 untaps: p1:Island#5
+T59 untaps: p1:Island#6
+T59 untaps: p1:Island#7
+T59 untaps: p1:Forest#4
+T59 untaps: p1:Forest#5
+T59 untaps: p1:Forest#6
+T59 untaps: p1:Island#8
+T59 moves: Naturalize, p1's hand -> stack
+T59 taps: p1:Forest#4
+T59 p1 adds {G} (p1:Forest#4)
+T59 taps: p1:Island#2
+T59 p1 adds {U} (p1:Island#2)
+T59 p1 cancels casting Naturalize
+T59 taps: p1:Island#7
+T59 p1 adds {U} (p1:Island#7)
+T59 taps: p1:Forest#1
+T59 p1 adds {G} (p1:Forest#1)
+T59 taps: p1:Island#5
+T59 p1 adds {U} (p1:Island#5)
+T59 taps: p1:Forest#4
+T59 p1 adds {G} (p1:Forest#4)
+T59 taps: p1:Island#2
+T59 p1 adds {U} (p1:Island#2)
+T59 taps: p1:Island#3
+T59 p1 adds {U} (p1:Island#3)
+T59 taps: p1:Island#4
+T59 p1 adds {U} (p1:Island#4)
+T59 p1's unspent {U}{U}{U}{U}{U}{G}{G} empties
+T59 moves: Coral Merfolk, p1's library -> p1's hand
+T59 p1 draws
+T59 taps: p1:Island#1
+T59 p1 adds {U} (p1:Island#1)
+T59 p1's unspent {U} empties
+T59 moves: Llanowar Elves, p1's hand -> stack
+T59 taps: p1:Forest#6
+T59 p1 adds {G} (p1:Forest#6)
+T59 taps: p1:Forest#3
+T59 p1 adds {G} (p1:Forest#3)
+T59 taps: p1:Island#8
+T59 p1 adds {U} (p1:Island#8)
+T59 taps: p1:Island#6
+T59 p1 adds {U} (p1:Island#6)
+T59 taps: p1:Forest#5
+T59 p1 adds {G} (p1:Forest#5)
+T59 taps: p1:Forest#2
+T59 p1 adds {G} (p1:Forest#2)
+T59 p1 cancels casting Llanowar Elves
+T59 taps: p1:Forest#2
+T59 p1 adds {G} (p1:Forest#2)
+T59 taps: p1:Island#6
+T59 p1 adds {U} (p1:Island#6)
+T59 taps: p1:Forest#3
+T59 p1 adds {G} (p1:Forest#3)
+T59 taps: p1:Forest#5
+T59 p1 adds {G} (p1:Forest#5)
+T59 taps: p1:Island#8
+T59 p1 adds {U} (p1:Island#8)
+T59 moves: Naturalize, p1's hand -> stack
+T59 p1 casts Naturalize
+T59 destroyed: p1:Ornithopter
+T59 moves: Ornithopter, battlefield -> p1's graveyard
+T59 resolves: Naturalize
+T59 moves: Naturalize, stack -> p1's graveyard
+T59 taps: p1:Forest#6
+T59 p1 adds {G} (p1:Forest#6)
+T59 p1's unspent {U}{U}{G}{G} empties
+T59 taps: p1:Giant Spider
+T59 p1 attack: p1:Giant Spider -> p2
+T59 p2 block: p2:Raging Goblin -> p1:Giant Spider
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 combat damage: p1:Giant Spider -> p2:Raging Goblin 2
+T59 combat damage: p2:Raging Goblin -> p1:Giant Spider 1
+T59 state-based actions: p2:Raging Goblin lethalDamage
+T59 destroyed: p2:Raging Goblin
+T59 moves: Raging Goblin, battlefield -> p2's graveyard
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Traumatize, p1's hand -> stack
+T59 p1 cancels casting Traumatize
+T59 moves: Coral Merfolk, p1's hand -> stack
+T59 p1 cancels casting Coral Merfolk
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Traumatize, p1's hand -> stack
+T59 p1 cancels casting Traumatize
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Coral Merfolk, p1's hand -> stack
+T59 p1 cancels casting Coral Merfolk
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Llanowar Elves, p1's hand -> stack
+T59 p1 cancels casting Llanowar Elves
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Coral Merfolk, p1's hand -> stack
+T59 p1 cancels casting Coral Merfolk
+T59 moves: Traumatize, p1's hand -> stack
+T59 p1 cancels casting Traumatize
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Centaur Courser, p1's hand -> stack
+T59 p1 cancels casting Centaur Courser
+T59 moves: Coral Merfolk, p1's hand -> stack
+T59 p1 cancels casting Coral Merfolk
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 moves: Doom Blade, p2's hand -> stack
+T59 p2 cancels casting Doom Blade
+T59 damage removed: p1:Giant Spider (1)
+T60 turn 60 begins (p2)
+T60 untaps: p2:Swamp#1
+T60 untaps: p2:Swamp#2
+T60 untaps: p2:Mountain#1
+T60 untaps: p2:Mountain#2
+T60 untaps: p2:Mountain#3
+T60 untaps: p2:Swamp#3
+T60 untaps: p2:Swamp#4
+T60 untaps: p2:Mountain#4
+T60 untaps: p2:Swamp#5
+T60 untaps: p2:Mountain#5
+T60 untaps: p2:Mountain#6
+T60 untaps: p2:Mountain#7
+T60 untaps: p2:Swamp#6
+T60 untaps: p2:Swamp#7
+T60 untaps: p2:Mountain#8
+T60 taps: p2:Swamp#5
+T60 p2 adds {B} (p2:Swamp#5)
+T60 taps: p2:Mountain#3
+T60 p2 adds {R} (p2:Mountain#3)
+T60 taps: p2:Mountain#7
+T60 p2 adds {R} (p2:Mountain#7)
+T60 taps: p2:Swamp#4
+T60 p2 adds {B} (p2:Swamp#4)
+T60 taps: p2:Mountain#1
+T60 p2 adds {R} (p2:Mountain#1)
+T60 taps: p2:Swamp#1
+T60 p2 adds {B} (p2:Swamp#1)
+T60 taps: p2:Swamp#6
+T60 p2 adds {B} (p2:Swamp#6)
+T60 taps: p2:Swamp#2
+T60 p2 adds {B} (p2:Swamp#2)
+T60 taps: p2:Swamp#3
+T60 p2 adds {B} (p2:Swamp#3)
+T60 taps: p2:Mountain#8
+T60 p2 adds {R} (p2:Mountain#8)
+T60 taps: p2:Mountain#5
+T60 p2 adds {R} (p2:Mountain#5)
+T60 p2's unspent {B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R} empties
+T60 moves: Fireball, p2's library -> p2's hand
+T60 p2 draws
+T60 taps: p2:Mountain#4
+T60 p2 adds {R} (p2:Mountain#4)
+T60 taps: p2:Mountain#6
+T60 p2 adds {R} (p2:Mountain#6)
+T60 taps: p2:Swamp#7
+T60 p2 adds {B} (p2:Swamp#7)
+T60 taps: p2:Mountain#2
+T60 p2 adds {R} (p2:Mountain#2)
+T60 p2's unspent {B}{R}{R}{R} empties
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Royal Assassin, p2's hand -> stack
+T60 p2 cancels casting Royal Assassin
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Gray Ogre, p2's hand -> stack
+T60 p2 cancels casting Gray Ogre
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Assassinate, p2's hand -> stack
+T60 p2 cancels casting Assassinate
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Assassinate, p2's hand -> stack
+T60 p2 cancels casting Assassinate
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 p2 attack: nothing
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Royal Assassin, p2's hand -> stack
+T60 p2 cancels casting Royal Assassin
+T60 moves: Assassinate, p2's hand -> stack
+T60 p2 cancels casting Assassinate
+T60 moves: Royal Assassin, p2's hand -> stack
+T60 p2 cancels casting Royal Assassin
+T60 moves: Royal Assassin, p2's hand -> stack
+T60 p2 cancels casting Royal Assassin
+T60 moves: Hill Giant, p2's hand -> stack
+T60 p2 cancels casting Hill Giant
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Hill Giant, p2's hand -> stack
+T60 p2 cancels casting Hill Giant
+T60 moves: Gray Ogre, p2's hand -> stack
+T60 p2 cancels casting Gray Ogre
+T60 moves: Royal Assassin, p2's hand -> stack
+T60 p2 cancels casting Royal Assassin
+T60 moves: Hill Giant, p2's hand -> stack
+T60 p2 cancels casting Hill Giant
+T60 moves: Hill Giant, p2's hand -> stack
+T60 p2 cancels casting Hill Giant
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T60 moves: Fireball, p2's hand -> stack
+T60 p2 cancels casting Fireball
+T60 moves: Doom Blade, p2's hand -> stack
+T60 p2 cancels casting Doom Blade
+T61 turn 61 begins (p1)
+T61 untaps: p1:Forest#1
+T61 untaps: p1:Island#1
+T61 untaps: p1:Island#2
+T61 untaps: p1:Island#3
+T61 untaps: p1:Forest#2
+T61 untaps: p1:Forest#3
+T61 untaps: p1:Island#4
+T61 untaps: p1:Island#5
+T61 untaps: p1:Island#6
+T61 untaps: p1:Island#7
+T61 untaps: p1:Forest#4
+T61 untaps: p1:Forest#5
+T61 untaps: p1:Forest#6
+T61 untaps: p1:Island#8
+T61 untaps: p1:Giant Spider
+T61 taps: p1:Island#8
+T61 p1 adds {U} (p1:Island#8)
+T61 taps: p1:Forest#1
+T61 p1 adds {G} (p1:Forest#1)
+T61 taps: p1:Forest#2
+T61 p1 adds {G} (p1:Forest#2)
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 p1's unspent {U}{G}{G} empties
+T61 moves: Forest, p1's library -> p1's hand
+T61 p1 draws
+T61 taps: p1:Island#5
+T61 p1 adds {U} (p1:Island#5)
+T61 taps: p1:Island#4
+T61 p1 adds {U} (p1:Island#4)
+T61 taps: p1:Island#1
+T61 p1 adds {U} (p1:Island#1)
+T61 taps: p1:Island#6
+T61 p1 adds {U} (p1:Island#6)
+T61 taps: p1:Forest#4
+T61 p1 adds {G} (p1:Forest#4)
+T61 taps: p1:Forest#5
+T61 p1 adds {G} (p1:Forest#5)
+T61 p1's unspent {U}{U}{U}{U}{G}{G} empties
+T61 taps: p1:Island#2
+T61 p1 adds {U} (p1:Island#2)
+T61 moves: Coral Merfolk, p1's hand -> stack
+T61 taps: p1:Island#3
+T61 p1 adds {U} (p1:Island#3)
+T61 taps: p1:Forest#3
+T61 p1 adds {G} (p1:Forest#3)
+T61 taps: p1:Island#7
+T61 p1 adds {U} (p1:Island#7)
+T61 p1 casts Coral Merfolk
+T61 resolves: Coral Merfolk
+T61 moves: Coral Merfolk, stack -> battlefield
+T61 moves: Centaur Courser, p1's hand -> stack
+T61 taps: p1:Forest#6
+T61 p1 adds {G} (p1:Forest#6)
+T61 p1 cancels casting Centaur Courser
+T61 moves: Traumatize, p1's hand -> stack
+T61 taps: p1:Forest#6
+T61 p1 adds {G} (p1:Forest#6)
+T61 p1 cancels casting Traumatize
+T61 taps: p1:Forest#6
+T61 p1 adds {G} (p1:Forest#6)
+T61 moves: Centaur Courser, p1's hand -> stack
+T61 p1 casts Centaur Courser
+T61 moves: Cancel, p1's hand -> stack
+T61 p1 cancels casting Cancel
+T61 moves: Cancel, p1's hand -> stack
+T61 p1 cancels casting Cancel
+T61 moves: Cancel, p1's hand -> stack
+T61 p1 cancels casting Cancel
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 resolves: Centaur Courser
+T61 moves: Centaur Courser, stack -> battlefield
+T61 moves: Forest, p1's hand -> battlefield
+T61 p1 plays p1:Forest#7
+T61 moves: Llanowar Elves, p1's hand -> stack
+T61 taps: p1:Forest#7
+T61 p1 adds {G} (p1:Forest#7)
+T61 p1 casts Llanowar Elves
+T61 moves: Cancel, p1's hand -> stack
+T61 p1 cancels casting Cancel
+T61 moves: Cancel, p1's hand -> stack
+T61 p1 cancels casting Cancel
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 resolves: Llanowar Elves
+T61 moves: Llanowar Elves, stack -> battlefield
+T61 moves: Coral Merfolk, p1's hand -> stack
+T61 p1 cancels casting Coral Merfolk
+T61 moves: Coral Merfolk, p1's hand -> stack
+T61 p1 cancels casting Coral Merfolk
+T61 moves: Coral Merfolk, p1's hand -> stack
+T61 p1 cancels casting Coral Merfolk
+T61 p1 attack: nothing
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T61 moves: Doom Blade, p2's hand -> stack
+T61 p2 cancels casting Doom Blade
+T62 turn 62 begins (p2)
+T62 untaps: p2:Swamp#1
+T62 untaps: p2:Swamp#2
+T62 untaps: p2:Mountain#1
+T62 untaps: p2:Mountain#2
+T62 untaps: p2:Mountain#3
+T62 untaps: p2:Swamp#3
+T62 untaps: p2:Swamp#4
+T62 untaps: p2:Mountain#4
+T62 untaps: p2:Swamp#5
+T62 untaps: p2:Mountain#5
+T62 untaps: p2:Mountain#6
+T62 untaps: p2:Mountain#7
+T62 untaps: p2:Swamp#6
+T62 untaps: p2:Swamp#7
+T62 untaps: p2:Mountain#8
+T62 taps: p2:Swamp#3
+T62 p2 adds {B} (p2:Swamp#3)
+T62 taps: p2:Swamp#5
+T62 p2 adds {B} (p2:Swamp#5)
+T62 p2's unspent {B}{B} empties
+T62 moves: Swamp, p2's library -> p2's hand
+T62 p2 draws
+T62 moves: Doom Blade, p2's hand -> stack
+T62 p2 cancels casting Doom Blade
+T62 taps: p2:Swamp#4
+T62 p2 adds {B} (p2:Swamp#4)
+T62 taps: p2:Mountain#2
+T62 p2 adds {R} (p2:Mountain#2)
+T62 taps: p2:Mountain#8
+T62 p2 adds {R} (p2:Mountain#8)
+T62 taps: p2:Swamp#6
+T62 p2 adds {B} (p2:Swamp#6)
+T62 taps: p2:Mountain#7
+T62 p2 adds {R} (p2:Mountain#7)
+T62 p2's unspent {B}{B}{R}{R}{R} empties
+T62 taps: p2:Swamp#1
+T62 p2 adds {B} (p2:Swamp#1)
+T62 moves: Royal Assassin, p2's hand -> stack
+T62 taps: p2:Mountain#6
+T62 p2 adds {R} (p2:Mountain#6)
+T62 taps: p2:Mountain#1
+T62 p2 adds {R} (p2:Mountain#1)
+T62 taps: p2:Swamp#7
+T62 p2 adds {B} (p2:Swamp#7)
+T62 taps: p2:Swamp#2
+T62 p2 adds {B} (p2:Swamp#2)
+T62 p2 casts Royal Assassin
+T62 taps: p2:Mountain#5
+T62 p2 adds {R} (p2:Mountain#5)
+T62 taps: p2:Mountain#3
+T62 p2 adds {R} (p2:Mountain#3)
+T62 taps: p2:Mountain#4
+T62 p2 adds {R} (p2:Mountain#4)
+T62 resolves: Royal Assassin
+T62 moves: Royal Assassin, stack -> battlefield
+T62 moves: Fireball, p2's hand -> stack
+T62 p2 cancels casting Fireball
+T62 moves: Doom Blade, p2's hand -> stack
+T62 p2 cancels casting Doom Blade
+T62 moves: Fireball, p2's hand -> stack
+T62 p2 cancels casting Fireball
+T62 moves: Fireball, p2's hand -> stack
+T62 p2 cancels casting Fireball
+T62 moves: Doom Blade, p2's hand -> stack
+T62 p2 casts Doom Blade
+T62 moves: Negate, p1's hand -> stack
+T62 p1 cancels casting Negate
+T62 moves: Cancel, p1's hand -> stack
+T62 p1 cancels casting Cancel
+T62 moves: Negate, p1's hand -> stack
+T62 p1 cancels casting Negate
+T62 moves: Negate, p1's hand -> stack
+T62 p1 cancels casting Negate
+T62 moves: Cancel, p1's hand -> stack
+T62 p1 cancels casting Cancel
+T62 moves: Negate, p1's hand -> stack
+T62 p1 cancels casting Negate
+T62 moves: Negate, p1's hand -> stack
+T62 p1 cancels casting Negate
+T62 destroyed: p1:Llanowar Elves
+T62 moves: Llanowar Elves, battlefield -> p1's graveyard
+T62 resolves: Doom Blade
+T62 moves: Doom Blade, stack -> p2's graveyard
+T62 moves: Swamp, p2's hand -> battlefield
+T62 p2 plays p2:Swamp#8
+T62 moves: Hill Giant, p2's hand -> stack
+T62 taps: p2:Swamp#8
+T62 p2 adds {B} (p2:Swamp#8)
+T62 p2 cancels casting Hill Giant
+T62 moves: Gray Ogre, p2's hand -> stack
+T62 taps: p2:Swamp#8
+T62 p2 adds {B} (p2:Swamp#8)
+T62 p2 casts Gray Ogre
+T62 moves: Cancel, p1's hand -> stack
+T62 p1 cancels casting Cancel
+T62 resolves: Gray Ogre
+T62 moves: Gray Ogre, stack -> battlefield
+T62 moves: Hill Giant, p2's hand -> stack
+T62 p2 cancels casting Hill Giant
+T62 moves: Hill Giant, p2's hand -> stack
+T62 p2 cancels casting Hill Giant
+T62 p2's unspent {B} empties
+T62 p2 attack: nothing
+T63 turn 63 begins (p1)
+T63 untaps: p1:Forest#1
+T63 untaps: p1:Island#1
+T63 untaps: p1:Island#2
+T63 untaps: p1:Island#3
+T63 untaps: p1:Forest#2
+T63 untaps: p1:Forest#3
+T63 untaps: p1:Island#4
+T63 untaps: p1:Island#5
+T63 untaps: p1:Island#6
+T63 untaps: p1:Island#7
+T63 untaps: p1:Forest#4
+T63 untaps: p1:Forest#5
+T63 untaps: p1:Forest#6
+T63 untaps: p1:Island#8
+T63 untaps: p1:Forest#7
+T63 taps: p1:Forest#5
+T63 p1 adds {G} (p1:Forest#5)
+T63 p1's unspent {G} empties
+T63 moves: Island, p1's library -> p1's hand
+T63 p1 draws
+T63 taps: p1:Island#5
+T63 p1 adds {U} (p1:Island#5)
+T63 taps: p1:Forest#6
+T63 p1 adds {G} (p1:Forest#6)
+T63 taps: p1:Island#6
+T63 p1 adds {U} (p1:Island#6)
+T63 taps: p1:Island#8
+T63 p1 adds {U} (p1:Island#8)
+T63 taps: p1:Forest#2
+T63 p1 adds {G} (p1:Forest#2)
+T63 taps: p1:Island#7
+T63 p1 adds {U} (p1:Island#7)
+T63 taps: p1:Forest#7
+T63 p1 adds {G} (p1:Forest#7)
+T63 p1's unspent {U}{U}{U}{U}{G}{G}{G} empties
+T63 taps: p1:Forest#1
+T63 p1 adds {G} (p1:Forest#1)
+T63 taps: p1:Island#3
+T63 p1 adds {U} (p1:Island#3)
+T63 taps: p1:Island#2
+T63 p1 adds {U} (p1:Island#2)
+T63 taps: p1:Forest#4
+T63 p1 adds {G} (p1:Forest#4)
+T63 moves: Island, p1's hand -> battlefield
+T63 p1 plays p1:Island#9
+T63 taps: p1:Island#4
+T63 p1 adds {U} (p1:Island#4)
+T63 moves: Coral Merfolk, p1's hand -> stack
+T63 p1 cancels casting Coral Merfolk
+T63 moves: Traumatize, p1's hand -> stack
+T63 p1 cancels casting Traumatize
+T63 taps: p1:Forest#3
+T63 p1 adds {G} (p1:Forest#3)
+T63 taps: p1:Island#1
+T63 p1 adds {U} (p1:Island#1)
+T63 taps: p1:Island#9
+T63 p1 adds {U} (p1:Island#9)
+T63 moves: Traumatize, p1's hand -> stack
+T63 p1 cancels casting Traumatize
+T63 p1's unspent {U}{U}{U}{U}{U}{G}{G}{G} empties
+T63 taps: p1:Centaur Courser
+T63 taps: p1:Giant Spider
+T63 taps: p1:Coral Merfolk
+T63 p1 attack: p1:Centaur Courser -> p2, p1:Giant Spider -> p2, p1:Coral Merfolk -> p2
+T63 p2 block: p2:Royal Assassin -> p1:Centaur Courser
+T63 combat damage: p1:Centaur Courser -> p2:Royal Assassin 3
+T63 combat damage: p1:Giant Spider -> p2 2
+T63 combat damage: p1:Coral Merfolk -> p2 2
+T63 combat damage: p2:Royal Assassin -> p1:Centaur Courser 1
+T63 p2 loses 2 life
+T63 p2 loses 2 life
+T63 state-based actions: p2:Royal Assassin lethalDamage
+T63 destroyed: p2:Royal Assassin
+T63 moves: Royal Assassin, battlefield -> p2's graveyard
+T63 moves: Traumatize, p1's hand -> stack
+T63 p1 cancels casting Traumatize
+T63 moves: Coral Merfolk, p1's hand -> stack
+T63 p1 cancels casting Coral Merfolk
+T63 moves: Traumatize, p1's hand -> stack
+T63 p1 cancels casting Traumatize
+T63 moves: Coral Merfolk, p1's hand -> stack
+T63 p1 cancels casting Coral Merfolk
+T63 moves: Traumatize, p1's hand -> stack
+T63 p1 cancels casting Traumatize
+T63 moves: Traumatize, p1's hand -> stack
+T63 p1 cancels casting Traumatize
+T63 damage removed: p1:Centaur Courser (1)
+T64 turn 64 begins (p2)
+T64 untaps: p2:Swamp#1
+T64 untaps: p2:Swamp#2
+T64 untaps: p2:Mountain#1
+T64 untaps: p2:Mountain#2
+T64 untaps: p2:Mountain#3
+T64 untaps: p2:Swamp#3
+T64 untaps: p2:Swamp#4
+T64 untaps: p2:Mountain#4
+T64 untaps: p2:Swamp#5
+T64 untaps: p2:Mountain#5
+T64 untaps: p2:Mountain#6
+T64 untaps: p2:Mountain#7
+T64 untaps: p2:Swamp#6
+T64 untaps: p2:Swamp#7
+T64 untaps: p2:Mountain#8
+T64 untaps: p2:Swamp#8
+T64 taps: p2:Mountain#3
+T64 p2 adds {R} (p2:Mountain#3)
+T64 taps: p2:Swamp#2
+T64 p2 adds {B} (p2:Swamp#2)
+T64 taps: p2:Mountain#8
+T64 p2 adds {R} (p2:Mountain#8)
+T64 taps: p2:Mountain#6
+T64 p2 adds {R} (p2:Mountain#6)
+T64 taps: p2:Swamp#1
+T64 p2 adds {B} (p2:Swamp#1)
+T64 taps: p2:Mountain#2
+T64 p2 adds {R} (p2:Mountain#2)
+T64 taps: p2:Mountain#1
+T64 p2 adds {R} (p2:Mountain#1)
+T64 taps: p2:Mountain#4
+T64 p2 adds {R} (p2:Mountain#4)
+T64 taps: p2:Mountain#7
+T64 p2 adds {R} (p2:Mountain#7)
+T64 taps: p2:Swamp#3
+T64 p2 adds {B} (p2:Swamp#3)
+T64 taps: p2:Mountain#5
+T64 p2 adds {R} (p2:Mountain#5)
+T64 p2's unspent {B}{B}{B}{R}{R}{R}{R}{R}{R}{R}{R} empties
+T64 moves: Burning Inquiry, p2's library -> p2's hand
+T64 p2 draws
+T64 taps: p2:Swamp#6
+T64 p2 adds {B} (p2:Swamp#6)
+T64 taps: p2:Swamp#8
+T64 p2 adds {B} (p2:Swamp#8)
+T64 taps: p2:Swamp#7
+T64 p2 adds {B} (p2:Swamp#7)
+T64 p2's unspent {B}{B}{B} empties
+T64 moves: Assassinate, p2's hand -> stack
+T64 p2 cancels casting Assassinate
+T64 moves: Fireball, p2's hand -> stack
+T64 p2 cancels casting Fireball
+T64 moves: Fireball, p2's hand -> stack
+T64 p2 cancels casting Fireball
+T64 moves: Hill Giant, p2's hand -> stack
+T64 taps: p2:Swamp#4
+T64 p2 adds {B} (p2:Swamp#4)
+T64 taps: p2:Swamp#5
+T64 p2 adds {B} (p2:Swamp#5)
+T64 p2 cancels casting Hill Giant
+T64 moves: Burning Inquiry, p2's hand -> stack
+T64 p2 cancels casting Burning Inquiry
+T64 moves: Fireball, p2's hand -> stack
+T64 taps: p2:Swamp#4
+T64 p2 adds {B} (p2:Swamp#4)
+T64 p2 cancels casting Fireball
+T64 moves: Assassinate, p2's hand -> stack
+T64 p2 cancels casting Assassinate
+T64 moves: Fireball, p2's hand -> stack
+T64 taps: p2:Swamp#5
+T64 p2 adds {B} (p2:Swamp#5)
+T64 p2 cancels casting Fireball
+T64 taps: p2:Swamp#5
+T64 p2 adds {B} (p2:Swamp#5)
+T64 moves: Hill Giant, p2's hand -> stack
+T64 taps: p2:Swamp#4
+T64 p2 adds {B} (p2:Swamp#4)
+T64 p2 cancels casting Hill Giant
+T64 moves: Fireball, p2's hand -> stack
+T64 taps: p2:Swamp#4
+T64 p2 adds {B} (p2:Swamp#4)
+T64 p2 cancels casting Fireball
+T64 moves: Assassinate, p2's hand -> stack
+T64 p2 cancels casting Assassinate
+T64 moves: Assassinate, p2's hand -> stack
+T64 p2 cancels casting Assassinate
+T64 moves: Fireball, p2's hand -> stack
+T64 p2 cancels casting Fireball
+T64 p2's unspent {B} empties
+T64 taps: p2:Swamp#4
+T64 p2 adds {B} (p2:Swamp#4)
+T64 p2's unspent {B} empties
+T64 taps: p2:Gray Ogre
+T64 p2 attack: p2:Gray Ogre -> p1
+T64 p1 block: nothing
+T64 combat damage: p2:Gray Ogre -> p1 2
+T64 p1 loses 2 life
+T64 moves: Burning Inquiry, p2's hand -> stack
+T64 p2 cancels casting Burning Inquiry
+T64 moves: Assassinate, p2's hand -> stack
+T64 p2 cancels casting Assassinate
+T64 moves: Assassinate, p2's hand -> stack
+T64 p2 cancels casting Assassinate
+T64 moves: Hill Giant, p2's hand -> stack
+T64 p2 cancels casting Hill Giant
+T64 moves: Hill Giant, p2's hand -> stack
+T64 p2 cancels casting Hill Giant
+T65 turn 65 begins (p1)
+T65 untaps: p1:Forest#1
+T65 untaps: p1:Island#1
+T65 untaps: p1:Island#2
+T65 untaps: p1:Island#3
+T65 untaps: p1:Forest#2
+T65 untaps: p1:Forest#3
+T65 untaps: p1:Island#4
+T65 untaps: p1:Island#5
+T65 untaps: p1:Island#6
+T65 untaps: p1:Island#7
+T65 untaps: p1:Forest#4
+T65 untaps: p1:Forest#5
+T65 untaps: p1:Forest#6
+T65 untaps: p1:Island#8
+T65 untaps: p1:Giant Spider
+T65 untaps: p1:Coral Merfolk
+T65 untaps: p1:Centaur Courser
+T65 untaps: p1:Forest#7
+T65 untaps: p1:Island#9
+T65 taps: p1:Island#3
+T65 p1 adds {U} (p1:Island#3)
+T65 taps: p1:Island#9
+T65 p1 adds {U} (p1:Island#9)
+T65 taps: p1:Forest#4
+T65 p1 adds {G} (p1:Forest#4)
+T65 taps: p1:Island#4
+T65 p1 adds {U} (p1:Island#4)
+T65 taps: p1:Forest#2
+T65 p1 adds {G} (p1:Forest#2)
+T65 taps: p1:Island#2
+T65 p1 adds {U} (p1:Island#2)
+T65 taps: p1:Island#7
+T65 p1 adds {U} (p1:Island#7)
+T65 taps: p1:Island#8
+T65 p1 adds {U} (p1:Island#8)
+T65 p1's unspent {U}{U}{U}{U}{U}{U}{G}{G} empties
+T65 moves: Forest, p1's library -> p1's hand
+T65 p1 draws
+T65 taps: p1:Island#6
+T65 p1 adds {U} (p1:Island#6)
+T65 taps: p1:Island#1
+T65 p1 adds {U} (p1:Island#1)
+T65 taps: p1:Forest#3
+T65 p1 adds {G} (p1:Forest#3)
+T65 taps: p1:Island#5
+T65 p1 adds {U} (p1:Island#5)
+T65 taps: p1:Forest#7
+T65 p1 adds {G} (p1:Forest#7)
+T65 taps: p1:Forest#1
+T65 p1 adds {G} (p1:Forest#1)
+T65 p1's unspent {U}{U}{U}{G}{G}{G} empties
+T65 p1 attack: nothing
+T65 taps: p1:Forest#6
+T65 p1 adds {G} (p1:Forest#6)
+T65 p1's unspent {G} empties
+T65 moves: Forest, p1's hand -> battlefield
+T65 p1 plays p1:Forest#8
+T65 taps: p1:Forest#5
+T65 p1 adds {G} (p1:Forest#5)
+T65 moves: Traumatize, p1's hand -> stack
+T65 p1 cancels casting Traumatize
+T65 taps: p1:Forest#8
+T65 p1 adds {G} (p1:Forest#8)
+T65 p1's unspent {G}{G} empties
+T66 turn 66 begins (p2)
+T66 untaps: p2:Swamp#1
+T66 untaps: p2:Swamp#2
+T66 untaps: p2:Mountain#1
+T66 untaps: p2:Mountain#2
+T66 untaps: p2:Mountain#3
+T66 untaps: p2:Swamp#3
+T66 untaps: p2:Swamp#4
+T66 untaps: p2:Mountain#4
+T66 untaps: p2:Swamp#5
+T66 untaps: p2:Mountain#5
+T66 untaps: p2:Mountain#6
+T66 untaps: p2:Mountain#7
+T66 untaps: p2:Swamp#6
+T66 untaps: p2:Swamp#7
+T66 untaps: p2:Mountain#8
+T66 untaps: p2:Swamp#8
+T66 untaps: p2:Gray Ogre
+T66 taps: p2:Swamp#5
+T66 p2 adds {B} (p2:Swamp#5)
+T66 taps: p2:Swamp#1
+T66 p2 adds {B} (p2:Swamp#1)
+T66 taps: p2:Swamp#3
+T66 p2 adds {B} (p2:Swamp#3)
+T66 taps: p2:Swamp#4
+T66 p2 adds {B} (p2:Swamp#4)
+T66 taps: p2:Mountain#1
+T66 p2 adds {R} (p2:Mountain#1)
+T66 taps: p2:Mountain#8
+T66 p2 adds {R} (p2:Mountain#8)
+T66 taps: p2:Mountain#7
+T66 p2 adds {R} (p2:Mountain#7)
+T66 taps: p2:Mountain#2
+T66 p2 adds {R} (p2:Mountain#2)
+T66 taps: p2:Swamp#8
+T66 p2 adds {B} (p2:Swamp#8)
+T66 taps: p2:Swamp#2
+T66 p2 adds {B} (p2:Swamp#2)
+T66 taps: p2:Mountain#4
+T66 p2 adds {R} (p2:Mountain#4)
+T66 taps: p2:Mountain#3
+T66 p2 adds {R} (p2:Mountain#3)
+T66 taps: p2:Mountain#6
+T66 p2 adds {R} (p2:Mountain#6)
+T66 taps: p2:Mountain#5
+T66 p2 adds {R} (p2:Mountain#5)
+T66 p2's unspent {B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R}{R}{R}{R} empties
+T66 moves: Lava Axe, p2's library -> p2's hand
+T66 p2 draws
+T66 moves: Hill Giant, p2's hand -> stack
+T66 taps: p2:Swamp#6
+T66 p2 adds {B} (p2:Swamp#6)
+T66 taps: p2:Swamp#7
+T66 p2 adds {B} (p2:Swamp#7)
+T66 p2 cancels casting Hill Giant
+T66 moves: Fireball, p2's hand -> stack
+T66 taps: p2:Swamp#7
+T66 p2 adds {B} (p2:Swamp#7)
+T66 taps: p2:Swamp#6
+T66 p2 adds {B} (p2:Swamp#6)
+T66 p2 cancels casting Fireball
+T66 taps: p2:Swamp#6
+T66 p2 adds {B} (p2:Swamp#6)
+T66 moves: Hill Giant, p2's hand -> stack
+T66 p2 cancels casting Hill Giant
+T66 moves: Fireball, p2's hand -> stack
+T66 p2 cancels casting Fireball
+T66 moves: Fireball, p2's hand -> stack
+T66 taps: p2:Swamp#7
+T66 p2 adds {B} (p2:Swamp#7)
+T66 p2 cancels casting Fireball
+T66 moves: Fireball, p2's hand -> stack
+T66 p2 cancels casting Fireball
+T66 moves: Fireball, p2's hand -> stack
+T66 p2 cancels casting Fireball
+T66 p2's unspent {B} empties
+T66 p2 attack: nothing
+T66 taps: p2:Swamp#7
+T66 p2 adds {B} (p2:Swamp#7)
+T66 p2's unspent {B} empties
+T66 moves: Hill Giant, p2's hand -> stack
+T66 p2 cancels casting Hill Giant
+T67 turn 67 begins (p1)
+T67 untaps: p1:Forest#1
+T67 untaps: p1:Island#1
+T67 untaps: p1:Island#2
+T67 untaps: p1:Island#3
+T67 untaps: p1:Forest#2
+T67 untaps: p1:Forest#3
+T67 untaps: p1:Island#4
+T67 untaps: p1:Island#5
+T67 untaps: p1:Island#6
+T67 untaps: p1:Island#7
+T67 untaps: p1:Forest#4
+T67 untaps: p1:Forest#5
+T67 untaps: p1:Forest#6
+T67 untaps: p1:Island#8
+T67 untaps: p1:Forest#7
+T67 untaps: p1:Island#9
+T67 untaps: p1:Forest#8
+T67 taps: p1:Island#5
+T67 p1 adds {U} (p1:Island#5)
+T67 taps: p1:Island#9
+T67 p1 adds {U} (p1:Island#9)
+T67 taps: p1:Forest#8
+T67 p1 adds {G} (p1:Forest#8)
+T67 taps: p1:Island#3
+T67 p1 adds {U} (p1:Island#3)
+T67 taps: p1:Forest#1
+T67 p1 adds {G} (p1:Forest#1)
+T67 taps: p1:Forest#7
+T67 p1 adds {G} (p1:Forest#7)
+T67 taps: p1:Forest#4
+T67 p1 adds {G} (p1:Forest#4)
+T67 taps: p1:Island#6
+T67 p1 adds {U} (p1:Island#6)
+T67 taps: p1:Island#8
+T67 p1 adds {U} (p1:Island#8)
+T67 taps: p1:Island#4
+T67 p1 adds {U} (p1:Island#4)
+T67 taps: p1:Island#7
+T67 p1 adds {U} (p1:Island#7)
+T67 taps: p1:Forest#6
+T67 p1 adds {G} (p1:Forest#6)
+T67 taps: p1:Forest#2
+T67 p1 adds {G} (p1:Forest#2)
+T67 taps: p1:Island#2
+T67 p1 adds {U} (p1:Island#2)
+T67 p1's unspent {U}{U}{U}{U}{U}{U}{U}{U}{G}{G}{G}{G}{G}{G} empties
+T67 moves: Tome Scour, p1's library -> p1's hand
+T67 p1 draws
+T67 taps: p1:Island#1
+T67 p1 adds {U} (p1:Island#1)
+T67 taps: p1:Forest#5
+T67 p1 adds {G} (p1:Forest#5)
+T67 p1's unspent {U}{G} empties
+T67 moves: Coral Merfolk, p1's hand -> stack
+T67 taps: p1:Forest#3
+T67 p1 adds {G} (p1:Forest#3)
+T67 p1 cancels casting Coral Merfolk
+T67 taps: p1:Forest#3
+T67 p1 adds {G} (p1:Forest#3)
+T67 p1's unspent {G} empties
+T67 p1 attack: nothing
+T68 turn 68 begins (p2)
+T68 untaps: p2:Swamp#1
+T68 untaps: p2:Swamp#2
+T68 untaps: p2:Mountain#1
+T68 untaps: p2:Mountain#2
+T68 untaps: p2:Mountain#3
+T68 untaps: p2:Swamp#3
+T68 untaps: p2:Swamp#4
+T68 untaps: p2:Mountain#4
+T68 untaps: p2:Swamp#5
+T68 untaps: p2:Mountain#5
+T68 untaps: p2:Mountain#6
+T68 untaps: p2:Mountain#7
+T68 untaps: p2:Swamp#6
+T68 untaps: p2:Swamp#7
+T68 untaps: p2:Mountain#8
+T68 untaps: p2:Swamp#8
+T68 taps: p2:Swamp#3
+T68 p2 adds {B} (p2:Swamp#3)
+T68 taps: p2:Mountain#2
+T68 p2 adds {R} (p2:Mountain#2)
+T68 taps: p2:Swamp#1
+T68 p2 adds {B} (p2:Swamp#1)
+T68 taps: p2:Mountain#5
+T68 p2 adds {R} (p2:Mountain#5)
+T68 taps: p2:Mountain#3
+T68 p2 adds {R} (p2:Mountain#3)
+T68 taps: p2:Swamp#6
+T68 p2 adds {B} (p2:Swamp#6)
+T68 taps: p2:Mountain#8
+T68 p2 adds {R} (p2:Mountain#8)
+T68 taps: p2:Mountain#4
+T68 p2 adds {R} (p2:Mountain#4)
+T68 taps: p2:Mountain#7
+T68 p2 adds {R} (p2:Mountain#7)
+T68 taps: p2:Swamp#7
+T68 p2 adds {B} (p2:Swamp#7)
+T68 taps: p2:Swamp#8
+T68 p2 adds {B} (p2:Swamp#8)
+T68 taps: p2:Swamp#5
+T68 p2 adds {B} (p2:Swamp#5)
+T68 taps: p2:Swamp#2
+T68 p2 adds {B} (p2:Swamp#2)
+T68 p2's unspent {B}{B}{B}{B}{B}{B}{B}{R}{R}{R}{R}{R}{R} empties
+T68 state-based actions: p2 drewFromEmptyLibrary
+T68 p2 loses the game (drewFromEmptyLibrary)
+T68 game over: p1 wins

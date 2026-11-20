@@ -73,8 +73,9 @@ A spell copy has no card and is owned by whoever put it on the stack (CR 707.10,
 Choices a permanent remembers from its spell (kicked, X; CR 400.7d) must be copied when it enters the battlefield.
 
 **Keyword actions and ability words.** Scryfall's `keywords` list (which the definition check compares with
-`CardDef.keywords`) also holds keyword actions (scry, CR 701) and ability words (landfall, CR 207.2c). *Needs before
-the first such card:* filter Scryfall's list to keyword abilities (CR 702) before comparing, so those don't end up in `Keyword`.
+`CardDef.keywords`) also holds keyword actions (mill, scry, CR 701) and ability words (landfall, CR 207.2c). Keyword
+actions are left out of the comparison by name (`KEYWORD_ACTIONS` in `definition-problems.ts`, since M2-05b); ability
+words will need the same before the first card with one.
 
 **Card types beyond the M1 pool.** Tokens (CR 111), auras and equipment (CR 303.4, 301.5), planeswalkers and
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down

@@ -67,7 +67,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
       mana, gainLife 0, destroy and tap on an object gone mid-resolution.
   - M2-05b Cards moving, split in two by the advisor's review (2026-11-20):
-    - M2-05b1, no choices at resolution (now): Divination, Mind Spring, Sign in Blood, Mind Shatter, Burning Inquiry,
+    - M2-05b1, no choices at resolution: built (D-060), in review. 12 scenarios in `test/scenarios/cards/m2-05b/`, the
+      interim decks carry the nine cards, five new golden games. Divination, Mind Spring, Sign in Blood, Mind Shatter, Burning Inquiry,
       Tome Scour, Traumatize, Disentomb, Nature's Spiral. A `player` target kind; a `loseLife` pipeline event back
       (CR 119.3); ops draw N (separate single draws, CR 121.2; "each player" in APNAP order, CR 121.2c), lose life,
       discard at random (the seeded RNG; Burning Inquiry: each player's random picks, then all discarded at once, its

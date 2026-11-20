@@ -4,6 +4,9 @@
 import type { CardDef, Effect, EffectSubject, TargetSpec } from "@mtg/engine";
 import type { PoolCard } from "./pool-data.ts";
 
+/** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
+const KEYWORD_ACTIONS: readonly string[] = ["mill"];
+
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
 export function definitionProblems(defs: readonly CardDef[], pool: readonly PoolCard[]): string[] {
   const problems: string[] = [];
@@ -26,9 +29,12 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       );
     }
     // Scryfall lists the card's keywords, which catches a missing "flying" or "reach". Its list also has keyword
-    // actions (Scry, CR 701) and ability words (Landfall, later: CR 207.2c), which aren't keyword abilities; see
-    // docs/future-rules.md before adding a card with those.
-    const expected = card.keywords.map((k) => k.toLowerCase()).sort();
+    // actions (Mill, Scry: CR 701), which aren't keyword abilities (CR 702), so those are left out, and ability words
+    // (Landfall, later: CR 207.2c); see docs/future-rules.md before adding a card with those.
+    const expected = card.keywords
+      .map((k) => k.toLowerCase())
+      .filter((k) => !KEYWORD_ACTIONS.includes(k))
+      .sort();
     const actual = [...(def.keywords ?? [])].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);
@@ -98,25 +104,36 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
 };
 
 /**
- * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming "you" or a target that can only
- * be a player, or gaining life naming "self" or a target that can only be an object.
+ * Subjects of the wrong kind, which would quietly do nothing: an op on objects naming a player ("you", "each player", a
+ * player target), or an op on players naming an object ("self", an object target).
  */
 function subjectProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
   const problems: string[] = [];
-  const playerOnly = (s: EffectSubject) =>
-    s === "you" || (typeof s === "object" && targets[s.target]?.kind === "playerOrPlaneswalker");
+  const targetKind = (s: EffectSubject) => (typeof s === "object" ? targets[s.target]?.kind : undefined);
+  const playerOnly = (s: EffectSubject) => {
+    const kind = targetKind(s);
+    return s === "you" || s === "eachPlayer" || kind === "player" || kind === "playerOrPlaneswalker";
+  };
   const objectOnly = (s: EffectSubject) => {
-    if (s === "self") return true;
-    if (s === "you") return false;
-    const kind = targets[s.target]?.kind;
-    return kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
+    const kind = targetKind(s);
+    return s === "self" || kind === "permanent" || kind === "spell" || kind === "cardInGraveyard";
   };
   for (const effect of effects) {
     const of = OBJECT_SUBJECTS[effect.op];
     if (of !== undefined && playerOnly(of(effect)))
       problems.push(`${where}: ${effect.op} acts on objects, not players`);
-    if (effect.op === "gainLife" && objectOnly(effect.who))
-      problems.push(`${where}: gainLife is for players, not objects`);
+    const who = PLAYER_SUBJECTS[effect.op];
+    if (who !== undefined && objectOnly(who(effect)))
+      problems.push(`${where}: ${effect.op} is for players, not objects`);
   }
   return problems;
 }
+
+/** Ops that act on players, and the subject each names them with. */
+const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject>> = {
+  gainLife: (e) => (e as { who: EffectSubject }).who,
+  loseLife: (e) => (e as { who: EffectSubject }).who,
+  draw: (e) => (e as { who: EffectSubject }).who,
+  discardAtRandom: (e) => (e as { who: EffectSubject }).who,
+  mill: (e) => (e as { who: EffectSubject }).who,
+};
