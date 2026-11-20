@@ -27,7 +27,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
     `playerOrPlaneswalker`.
 - M2-05 Effects and keyword actions: split in three by the 50 cards' Oracle text (the spec lists the cards).
-  - M2-05a Removal, counters and {T} abilities: built, in review (D-059). The 19 cards plus Ornithopter and Rod of
+  - M2-05a Removal, counters and {T} abilities: done, merged (PR #26, D-059). The 19 cards plus Ornithopter and Rod of
     Ruin scripted; 31 scenarios in `test/scenarios/cards/m2-05a/`; unit tests in `test/effects/removal.test.ts`; the
     interim decks carry the new cards, with five new golden games. Code-reviewed and rules-reviewed; fixes in. The plan
     as built:
@@ -66,7 +66,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       keywords.)
       Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
       mana, gainLife 0, destroy and tap on an object gone mid-resolution.
-  - M2-05b Cards moving, and M2-05c Life, damage to many, mana: after M2-05a, each planned the same way.
+  - Next: M2-05b Cards moving (plan from the cards' Oracle text and rulings, rules-judge reads it before code), then
+    M2-05c Life, damage to many, mana. Consider the golden-game size and fuzz-time known issues before or with M2-05b:
+    each new task adds games.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
