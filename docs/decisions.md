@@ -1268,7 +1268,7 @@ every schema change and every change D-024 lists bumps it.
   (all are CR rules on the same machinery); the filter only decides what's built first. Banding and phasing, the
   costly ones, aren't Modern-legal anyway.
 
-**D-090: Harm's Way is set aside; what redirection with an amount needs (M2-08d2)** · 2026-11-20 · proposed (owner to confirm)
+**D-090: Harm's Way is left out; what redirection with an amount needs (M2-08d2)** · 2026-11-20 · accepted (owner)
 - Harm's Way ("The next 2 damage that a source of your choice would deal to you and/or permanents you control this
   turn is dealt to any target instead") was built twice on the branch and reverted (commits 1c4fcda, 93f2c4d,
   6fd7c9e, 1316d92, kept in history; reverted after the third rules review). Each review found wrong results reachable
@@ -1291,6 +1291,9 @@ every schema change and every change D-024 lists bumps it.
   Arena, and no card that filter keeps has "a source of your choice ... is dealt to ... instead" (Scryfall,
   2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above need the owner (D-080, and
   reversing D-088's per-entry choice). Fog, Safe Passage and Guardian Seraph (M2-08d1, D-088) are unaffected.
+- The owner chose (a), 2026-11-20: leave Harm's Way out of the pool, like the M2-14 cards Arena doesn't have. M2
+  finishes without it; this entry is the design record if a card ever needs redirection with an amount. The per-entry
+  choice (Known issues) stays as built until a card makes it matter.
 
 **D-091: Protection, and "can't be countered" (M2-08e)** · 2026-11-20 · accepted
 - `CardDef.protections` lists the qualities, one per "from" (CR 702.16g): a color or a subtype (Baneslayer Angel's

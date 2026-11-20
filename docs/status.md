@@ -723,12 +723,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Asked 2026-11-20, D-090) Harm's Way. Its redirection was built twice and each rules review found wrong results;
-  the reviews worked out what a correct model needs (D-090), which needs your call on three rules readings and a change
-  to D-088 (choices per recipient, not per damage entry). It isn't on MTG Arena, and no card your filter keeps uses
-  this redirection. Options: (a) leave Harm's Way out of the pool, like the M2-14 cards Arena doesn't have, and record
-  the design in `future-rules.md` (recommended; proceeding with this); (b) redesign damage replacement now (about a
-  milestone task of its own, with the three readings decided first); (c) keep it for M2-14's "special rules" batch.
 - (Asked 2026-11-20, D-089) Does "modern Magic" mean the Modern format? `game:arena -is:alchemy -is:digital` keeps 13,036
   of 23,012 Modern-legal cards, and 51 keywords on 596 Modern-legal cards appear on no card it keeps (Echo, Dredge,
   Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the
@@ -768,7 +762,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is
   finer than CR 616.1's "the way an event affects an object or player": with two attackers, Guardian Seraph and Fog,
   the player is asked once per attacker and can order them differently. Life totals can't differ with today's pool;
-  only how `DAMAGE_PREVENTED` splits. Changing it reverses D-088, so it waits for the owner with D-090's question.
+  only how `DAMAGE_PREVENTED` splits. Changing it reverses D-088; the owner left Harm's Way out (D-090), so it stays as built until a card needs it.
 - (M2-07c2, M2-08b) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`)
   or regeneration shields (`GameState.replacements`), though both players know of them (Dragon Whelp to be sacrificed
   at the next end step, Drudge Skeletons shielded). The match UI (M3) should show them.
