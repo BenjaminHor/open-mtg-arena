@@ -134,6 +134,17 @@ function answerStep(
       return choose("finish");
     case "chooseYesNo":
       return choose(answer.yes ? "yes" : "no");
+    case "orderTrigger": {
+      const pending = state.pending;
+      if (pending?.kind !== "orderTriggers") throw new Error("an orderTrigger answer without its decision");
+      const chosen = pending.batch[answer.index];
+      if (chosen === undefined) throw new Error(`no trigger ${answer.index}`);
+      const name = cards[chosen.sourceOracleId]?.printed.name ?? chosen.sourceOracleId;
+      const same = pending.batch.flatMap((t, i) =>
+        t.controller === chosen.controller && cards[t.sourceOracleId]?.printed.name === name ? [i] : [],
+      );
+      return choose(same.length > 1 ? `${name}#${same.indexOf(answer.index) + 1}` : name);
+    }
   }
 }
 

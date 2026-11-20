@@ -74,6 +74,7 @@ type GameState = {
   replacements: ReplacementEffect[]// CR 614-616
   delayedTriggers: DelayedTrigger[]
   pendingTriggers: PendingTrigger[] // triggered, waiting to be put on the stack (CR 603.3)
+  lastKnown: Record<ObjectId, CardObject> // cards as they last were on the battlefield (CR 608.2h), until the stack empties
   turnHistory: TurnHistory          // facts later rules ask about ("a creature died this turn")
 
   pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1
@@ -148,9 +149,11 @@ type Action =
 3. An empty queue with nothing pending is an engine bug: `advance` throws.
 
 The work items so far: `givePriority` (state-based actions are checked first, CR 117.5, and it re-queues itself
-while any are performed, D-039; triggers will join that check), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it
-queues the resolution's effects, `finishResolving`, then priority for the active player), `runEffect` (one effect of a
-resolving spell or ability, CR 608.2c), `finishResolving`, `doesNotResolve` (CR 608.2b), `finishCleanup`,
+while any are performed, D-039; then it starts putting waiting triggers on the stack, D-076), `putTriggers` (one batch
+of triggered abilities, APNAP, CR 603.3b), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it queues the
+resolution's effects, `finishResolving`, then priority for the active player), `runEffect` (one effect of a resolving
+spell or ability, CR 608.2c), `askOptional` (a triggered ability's "you may", CR 603.5), `finishResolving`,
+`doesNotResolve` (CR 608.2b, 608.2a), `finishCleanup`,
 `cleanupCheck` and `anotherCleanupStep` (CR 514.3a), and combat's turn-based actions `declareAttackers`,
 `declareBlockers` and `combatDamage` (D-040). When all players pass in succession, the top of the stack
 resolves; with an empty stack the step ends, or after a cleanup step that gave players priority, another cleanup step

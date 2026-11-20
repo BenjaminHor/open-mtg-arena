@@ -62,6 +62,8 @@ function abilityText(ref: AbilityRef): string {
       return `ability ${ref.index + 1}`;
     case "basicLandType":
       return "{T}: add mana";
+    case "triggered":
+      return `triggered ability ${ref.index + 1}`;
   }
 }
 
@@ -122,6 +124,13 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return "done choosing";
     case "chooseYesNo":
       return answer.yes ? "yes" : "no";
+    case "orderTrigger": {
+      const pending = state.pending;
+      const trigger = pending?.kind === "orderTriggers" ? pending.batch[answer.index] : undefined;
+      const name =
+        trigger === undefined ? `trigger ${answer.index}` : (cards[trigger.sourceOracleId]?.printed.name ?? "?");
+      return `put ${name}'s triggered ability on the stack next`;
+    }
   }
 }
 

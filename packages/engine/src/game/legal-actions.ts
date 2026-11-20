@@ -15,6 +15,7 @@ import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
+import { orderTriggersProblem } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
@@ -25,6 +26,14 @@ import { nextSacrificeOptions } from "./sacrifice-costs.ts";
 import { canTapForCost, tapsForCost } from "./tap-costs.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
+  const actions = decisionActions(state, player, cards);
+  // A triggered ability being put on the stack can't be cancelled: it isn't the player's action to take back
+  // (CR 603.3d).
+  if (state.casting?.origin.kind !== "trigger") return actions;
+  return actions.filter((a) => a.type !== "ANSWER" || a.answer.kind !== "cancelCast");
+}
+
+function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
   if (state.result !== null || pending === null || pending.player !== player) return [];
   const answer = { type: "ANSWER", decisionId: pending.id, player } as const;
@@ -52,6 +61,12 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
     }
     case "chooseYesNo":
       return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
+    case "orderTriggers":
+      return pending.batch.flatMap((_, index): Action[] =>
+        orderTriggersProblem(pending.batch, player, index) === null
+          ? [{ ...answer, answer: { kind: "orderTrigger", index } }]
+          : [],
+      );
     case "discardToHandSize":
       return zoneList(state, { zone: "hand", player })
         .filter((object) => !pending.chosen.includes(object))

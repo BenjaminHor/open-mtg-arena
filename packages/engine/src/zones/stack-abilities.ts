@@ -6,14 +6,19 @@ import { newObjectId, newTimestamp } from "../game/ids.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { AbilityObject, AbilityRef } from "../state/objects.ts";
+import type { TriggerEvent } from "../state/triggers.ts";
 
-/** Creates an ability on top of the stack, controlled by the player who activated it (CR 602.2a, 113.8). */
+/**
+ * Creates an ability on top of the stack, controlled by the player who activated it (CR 602.2a, 113.8) or who controlled
+ * its source as it triggered (CR 603.3a), with what it knows of its triggering event.
+ */
 export function putAbilityOnStack(
   state: GameState,
   source: ObjectId,
   sourceOracleId: OracleId,
   ability: AbilityRef,
   controller: PlayerId,
+  trigger: TriggerEvent | null = null,
 ): { state: GameState; id: ObjectId } {
   const allocated = newObjectId(state);
   const stamped = newTimestamp(allocated.state);
@@ -26,6 +31,7 @@ export function putAbilityOnStack(
     baseController: controller,
     timestamp: stamped.timestamp,
     choices: { modes: [], x: null, targets: [], division: null },
+    trigger,
   };
   const next = stamped.state;
   return {

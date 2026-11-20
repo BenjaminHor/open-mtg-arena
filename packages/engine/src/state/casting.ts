@@ -5,6 +5,7 @@
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";
 import type { CardObject } from "./objects.ts";
+import type { PendingTrigger } from "./triggers.ts";
 
 export type Casting = {
   player: PlayerId;
@@ -29,4 +30,9 @@ export type CastingOrigin =
   /** A spell cast from hand: the card as it was, and where it was in the hand. */
   | { kind: "card"; card: CardObject; handIndex: number }
   /** An activated ability of a permanent (CR 602.2a): it was created on the stack, and simply ceases to exist. */
-  | { kind: "ability"; source: ObjectId };
+  | { kind: "ability"; source: ObjectId }
+  /**
+   * A triggered ability being put on the stack, its targets chosen as it goes on (CR 603.3d): no cost and no cancel.
+   * `batch` is the rest of its batch still to go on, and `priorityTo` who gets priority after (CR 603.3b).
+   */
+  | { kind: "trigger"; batch: PendingTrigger[]; priorityTo: PlayerId };

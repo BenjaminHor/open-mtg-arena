@@ -65,6 +65,8 @@ export function costOf(state: GameState, id: ObjectId, cards: CardDatabase): Man
       return cost;
     }
     case "ability":
+      // A triggered ability has no cost to pay as it's put on the stack (CR 603.3d).
+      if (obj.ability.kind === "triggered") return [];
       return withX(activationManaCost(stackAbilityDef(state, id, cards)), obj.choices.x ?? 0);
   }
 }
@@ -77,6 +79,6 @@ export function announcesX(state: GameState, id: ObjectId, cards: CardDatabase):
     case "card":
       return hasX(cards[obj.oracleId]?.printed.manaCost ?? null);
     case "ability":
-      return hasX(activationManaCost(stackAbilityDef(state, id, cards)));
+      return obj.ability.kind !== "triggered" && hasX(activationManaCost(stackAbilityDef(state, id, cards)));
   }
 }

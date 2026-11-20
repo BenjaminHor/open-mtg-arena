@@ -64,6 +64,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "BLOCKERS_DECLARED":
     case "SPELL_CAST":
     case "ABILITY_ACTIVATED":
+    case "ABILITY_TRIGGERED":
     case "ACTIVATION_CANCELLED":
     case "ABILITY_DID_NOT_RESOLVE":
     case "SPELL_DID_NOT_RESOLVE":

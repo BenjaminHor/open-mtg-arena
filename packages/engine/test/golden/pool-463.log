@@ -2034,7 +2034,7 @@ T49 state-based actions: p1:Acolyte of Xathrid lethalDamage
 T49 destroyed: p1:Acolyte of Xathrid
 T49 moves: Acolyte of Xathrid, battlefield -> p1's graveyard
 T49 p2 loses 1 life
-T49 resolves: (gone o1799)'s ability
+T49 resolves: Acolyte of Xathrid's ability
 T49 resolves: Goblin Artillery
 T49 moves: Goblin Artillery, stack -> battlefield
 T49 moves: Nature's Spiral, p1's hand -> stack

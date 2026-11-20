@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import type { CardDef, Effect, TargetSpec } from "@mtg/engine";
+import type { CardDef, Effect, TargetSpec, TriggeredAbilityDef } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
 import { parsePoolTxt } from "../src/pool-data.ts";
@@ -61,6 +61,27 @@ describe("definitionProblems", () => {
     const [problem, ...rest] = definitionProblems([outdated], [bolt]);
     expect(rest).toStrictEqual([]);
     expect(problem).toContain("Lightning Bolt: Oracle text changed");
+  });
+
+  it('reports "that player" and "sacrifice it" where nothing supplies them', () => {
+    const draw: Effect = { op: "draw", who: "triggeringPlayer", amount: 1 };
+    const enters: TriggeredAbilityDef = { when: { kind: "selfEnters" }, targets: [], effects: [draw] };
+    const spell: CardDef = {
+      name: "Lightning Bolt",
+      oracle: bolt.oracleText,
+      spell: { targets: [], effects: [draw, { op: "sacrificeSource" }] },
+    };
+    const trigger: CardDef = {
+      name: "Furnace Whelp",
+      oracle: whelp.oracleText,
+      keywords: ["flying"],
+      triggers: [enters],
+    };
+    expect(definitionProblems([spell, trigger], [bolt, whelp])).toStrictEqual([
+      'Lightning Bolt: a spell has no source to sacrifice ("sacrifice it" is for an ability)',
+      'Lightning Bolt: "that player" is only for a triggered ability',
+      'Furnace Whelp trigger 1: its event has no "that player"',
+    ]);
   });
 
   it("reports a missing keyword", () => {

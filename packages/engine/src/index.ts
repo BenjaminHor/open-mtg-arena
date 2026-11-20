@@ -1,6 +1,7 @@
 // Public API of the engine. See docs/architecture.md, "Engine API".
 // Nothing is exported here without a reason in docs/decisions.md (types: D-023).
 
+export type { TriggerCheck, TriggerCondition, TriggeredAbilityDef } from "./cards/triggers.ts";
 export type {
   AbilityDef,
   CardData,
@@ -37,7 +38,7 @@ export type { Casting } from "./state/casting.ts";
 export type { Attack, Block, Combat, CombatDivision, DamageDivision } from "./state/combat.ts";
 export type { ChoosePurpose, DecisionKind, PendingDecision, Seen } from "./state/decisions.ts";
 export type { ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
-export type { GameEvent } from "./state/events.ts";
+export type { DidNotResolve, GameEvent } from "./state/events.ts";
 export type { GameState, Resolution } from "./state/game-state.ts";
 export type { CardId, DecisionId, ObjectId, OracleId, PlayerId } from "./state/ids.ts";
 export type { ManaPool, ManaType } from "./state/mana.ts";
@@ -63,6 +64,7 @@ export type {
 } from "./state/result.ts";
 export type { GameSetup, Opening, PermanentSetup, PlayerSetup, RuleModifier } from "./state/setup.ts";
 export type { StateBasedAction } from "./state/state-based-actions.ts";
+export type { PendingTrigger, TriggerEvent } from "./state/triggers.ts";
 export { type Phase, phaseOf, type Step, type Turn } from "./state/turn.ts";
 export type { WorkItem } from "./state/work.ts";
 export type { PlayerZoneName, SharedZoneName, ZoneName, ZoneRef, Zones } from "./state/zones.ts";

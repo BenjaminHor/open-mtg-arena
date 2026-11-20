@@ -4,6 +4,7 @@
 // current controller come from `characteristics()` (CR 613), never from these fields directly.
 
 import type { CardId, ObjectId, OracleId, PlayerId } from "./ids.ts";
+import type { TriggerEvent } from "./triggers.ts";
 
 export type GameObject = CardObject | AbilityObject;
 
@@ -73,6 +74,8 @@ export type AbilityObject = {
   timestamp: number;
   /** The choices made while activating it (CR 602.2b, which follows CR 601.2c). */
   choices: StackChoices;
+  /** For a triggered ability, what it knows of the event that triggered it (CR 603.2); null for an activated one. */
+  trigger: TriggerEvent | null;
 };
 
 /**
@@ -84,7 +87,9 @@ export type AbilityRef =
   /** An ability written on the card: an index into its definition's `abilities`. */
   | { kind: "printed"; index: number }
   /** The intrinsic "{T}: Add [mana]" of a land with that basic land type (CR 305.6). */
-  | { kind: "basicLandType"; landType: BasicLandType };
+  | { kind: "basicLandType"; landType: BasicLandType }
+  /** A triggered ability written on the card: an index into its definition's `triggers` (CR 603). */
+  | { kind: "triggered"; index: number };
 
 /** The basic land types (CR 305.6). */
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";

@@ -967,3 +967,51 @@ every schema change and every change D-024 lists bumps it.
   attack" will need a search (future-rules).
 - "Attacks you this turn if able" counts only for an attack on that player, and its most only over attacks on them.
 - A scenario step that's rejected is rolled back whole, so a scenario re-declares the full set after `expect error`.
+
+**D-073: The golden folder's budget is 8 MB through M2** · 2026-11-20 · accepted (owner)
+- The owner chose to raise the budget (D-069 set 4 MB) to about 8 MB by the end of M2, over a compact action format or
+  fewer games, when the folder reached 4 MB after M2-06d. One game per card stays (D-047).
+
+**D-074: Keywords are built with their first card** · 2026-11-20 · accepted (owner)
+- The M2-06 spec listed protection's targeting and blocking parts, flash, indestructible and "can't be countered", but
+  their Magic 2010 cards arrive later. The owner chose to build each in the task that brings its first card, with
+  real-card scenarios: flash with Bogardan Hellkite (M2-07c); protection, indestructible and "can't be countered" with
+  White Knight, Black Knight, Baneslayer Angel, Darksteel Colossus and Great Sable Stag (M2-08); indestructible again
+  with Indestructibility (M2-12). Double strike, with no Magic 2010 card, stays as built (D-070). The same goes for
+  "dies" triggers (Magma Phoenix, M2-14), though last known information comes now (M2-07a, Howling Mine).
+
+**D-075: Damage from one source to one player in two parts stays two parts** · 2026-11-20 · accepted (owner)
+- Goblin Artillery dealing 2 to a target and 3 to its own controller is one damage event with two parts: two
+  `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3), as built (D-067). The owner kept it over one 5-point loss; a future
+  "whenever you lose life" trigger fires twice.
+
+**D-076: Triggered abilities: detected per event batch, waiting in state, put on the stack before priority** · 2026-11-20 · accepted
+- A card's triggered abilities are data in `CardDef.triggers`, apart from `abilities` (like `statics`, D-071): a
+  condition, an optional intervening if (CR 603.4), "you may", targets and effects. Read only through `triggersOf`, so
+  layer 6 (CR 613.1f) can change them later in one place.
+- Detection is one function, `detectTriggers(before, after, events)` (`engine/src/triggers/`), called by
+  `checkTriggers` in `happen` (D-056) and where `STEP_BEGAN` and `ATTACKERS_DECLARED` are emitted, each place matching
+  only its own events. It exits early when no permanent has triggers (the benchmark). Only permanents trigger
+  (CR 113.6). An intervening if is checked as the event happens and again on resolution.
+- What triggered waits in `GameState.pendingTriggers`, each remembering its source, the oracle id and index of the
+  ability, its controller as it triggered (CR 603.3a), and what triggered it (`TriggerEvent`: the player and object
+  "that player" and "it" mean). The stack ability keeps that `TriggerEvent` (`AbilityObject.trigger`), so its effects
+  read it on resolution (CR 608.2b); no hidden ids reach a player's view.
+- `givePriority` puts them on the stack after state-based actions (CR 117.5): the whole list as one batch, APNAP
+  (CR 603.3b), a player with two or more ordering theirs (`orderTriggers`; one left is put on without asking), then
+  priority is given again, so new triggers form a new batch. Targets are chosen through the spell's target steps
+  (a `Casting` with origin `trigger`), with no cost and no cancel; too few legal targets removes it (CR 603.3d).
+- A cancelled cast or activation drops the triggers that came up during it, since its mana abilities' events are undone
+  (CR 734.1). That's every waiting trigger: a cast starts only at priority, with none waiting (CR 117.5). A cast that
+  could start while triggers wait (casting a card as part of a resolution) would have to record how many were waiting.
+- Last known information: `GameState.lastKnown` keeps a card's object as it leaves the battlefield (CR 608.2h), read
+  by an ability whose source is gone (Howling Mine's intervening if; "sacrifice it" instead checks the source is still
+  on the battlefield, CR 701.21a); emptied when the stack is empty and a
+  player would receive priority, so it stays small and stays plain data. "Leaves the battlefield" triggers, which look
+  back in time (CR 603.10), will use it (M2-14).
+- "You may" is asked as the ability resolves (`chooseYesNo` with purpose `optional`); yes runs the effects.
+- An ability removed on resolution says why: `ABILITY_DID_NOT_RESOLVE` has `reason` `illegalTargets` (CR 608.2b) or
+  `condition` (an intervening if, CR 608.2a).
+- Chosen for future rules: replacement effects (M2-08) come before detection in `happen`, so a replaced event triggers as
+  replaced; delayed triggers (M2-07c) will be pending triggers whose source is not a permanent, with their own
+  `AbilityRef`; tokens entering trigger the same way.

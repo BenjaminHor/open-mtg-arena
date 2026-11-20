@@ -4,16 +4,20 @@
 # collector number if the set has several): `Lightning Bolt [m10]` or `Lightning Bolt [m10 146]`. A pin always names an
 # English printing. Without one, the newest regular paper printing is used (D-029).
 
+Acidic Slime
 Acolyte of Xathrid
 Air Elemental
 Alluring Siren
 Angel's Mercy
 Assassinate
+Ball Lightning
 Berserkers of Blood Ridge
 Birds of Paradise
 Blinding Mage
 Bog Wraith
+Borderland Ranger
 Bountiful Harvest
+Bramble Creeper
 Burning Inquiry
 Cancel
 Canyon Minotaur
@@ -36,6 +40,7 @@ Duress
 Earthquake
 Elite Vanguard
 Elvish Piper
+Elvish Visionary
 Emerald Oryx
 Enormous Baloth
 Essence Scatter
@@ -51,12 +56,15 @@ Giant Growth
 Giant Spider
 Goblin Artillery
 Goblin Piker
+Gravedigger
 Gray Ogre
 Griffin Sentinel
 Grizzly Bears
 Haunting Echoes
 Hill Giant
 Horned Turtle
+Howling Banshee
+Howling Mine
 Ignite Disorder
 Island
 Jackal Familiar
@@ -94,6 +102,7 @@ Righteousness
 Rod of Ruin
 Royal Assassin
 Runeclaw Bear
+Sage Owl
 Seismic Strike
 Serra Angel
 Shatter
@@ -104,6 +113,8 @@ Sign in Blood
 Silvercoat Lion
 Snapping Drake
 Solemn Offering
+Soul Warden
+Sparkmage Apprentice
 Spined Wurm
 Stampeding Rhino
 Stormfront Pegasus

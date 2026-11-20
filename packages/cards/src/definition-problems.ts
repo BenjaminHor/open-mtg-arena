@@ -62,11 +62,34 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(...subjectProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
     }
     if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
+    // Words only a triggered ability can use, which would otherwise do nothing in silence.
+    if (def.spell?.effects.some((e) => e.op === "sacrificeSource"))
+      problems.push(`${def.name}: a spell has no source to sacrifice ("sacrifice it" is for an ability)`);
+    if (def.spell !== undefined && namesTriggeringPlayer(def.spell.effects))
+      problems.push(`${def.name}: "that player" is only for a triggered ability`);
+    for (const [i, ability] of (def.abilities ?? []).entries()) {
+      if (namesTriggeringPlayer(ability.effects))
+        problems.push(`${def.name} ability ${i + 1}: "that player" is only for a triggered ability`);
+    }
+    for (const [i, trigger] of (def.triggers ?? []).entries()) {
+      // Only a beginning-of-step trigger has a player its event happened to (the player whose step it is).
+      if (trigger.when.kind !== "beginningOfStep" && namesTriggeringPlayer(trigger.effects))
+        problems.push(`${def.name} trigger ${i + 1}: its event has no "that player"`);
+      if (anyColor(trigger.effects))
+        problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
+      problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
+      problems.push(...subjectProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
+    }
   }
   for (const card of pool) {
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
   }
   return problems;
+}
+
+/** Whether any of these effects names "that player" (the subject `triggeringPlayer`), in any of its subject fields. */
+function namesTriggeringPlayer(effects: readonly Effect[]): boolean {
+  return effects.some((e) => Object.values(e).includes("triggeringPlayer"));
 }
 
 /**

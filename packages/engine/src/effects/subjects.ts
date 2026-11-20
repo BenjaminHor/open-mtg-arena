@@ -15,6 +15,10 @@ import type { Target } from "../state/objects.ts";
 export function subject(state: GameState, s: EffectSubject, context: EffectContext, cards: CardDatabase): Target[] {
   if (s === "self") return [{ kind: "object", object: context.self }];
   if (s === "you") return [{ kind: "player", player: context.controller }];
+  if (s === "triggeringPlayer") {
+    const player = context.trigger?.player ?? null;
+    return player === null ? [] : [{ kind: "player", player }];
+  }
   if (s === "eachPlayer") return apnapOrder(state).map((player) => ({ kind: "player", player }));
   // Every opponent of "you" (CR 102.2; teams later: CR 102.3), in APNAP order.
   if (s === "eachOpponent")

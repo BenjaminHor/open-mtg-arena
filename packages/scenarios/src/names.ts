@@ -67,9 +67,12 @@ export function oracleIdOf(cards: CardDatabase, name: string): string {
   return found.oracleId;
 }
 
-/** How a scenario names an object: its card name, or "<source> ability" for an ability on the stack. */
+/**
+ * How a scenario names an object: its card name, or "<source> ability" for an ability on the stack. A card that left
+ * the battlefield is named from its last known information while the engine keeps it (CR 608.2h).
+ */
 export function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): string {
-  const obj = state.objects[id];
+  const obj = state.objects[id] ?? state.lastKnown[id];
   if (obj === undefined) return `(gone ${id})`;
   if (obj.kind === "ability") return `${cards[obj.sourceOracleId]?.printed.name ?? obj.sourceOracleId} ability`;
   return cards[obj.oracleId]?.printed.name ?? obj.oracleId;

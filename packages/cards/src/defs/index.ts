@@ -1,16 +1,20 @@
 // Every card definition, one per card in pool.txt. A test checks the two lists match exactly.
 
 import type { CardDef } from "@mtg/engine";
+import { acidicSlime } from "./a/acidic-slime.ts";
 import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
 import { airElemental } from "./a/air-elemental.ts";
 import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
+import { ballLightning } from "./b/ball-lightning.ts";
 import { berserkersOfBloodRidge } from "./b/berserkers-of-blood-ridge.ts";
 import { birdsOfParadise } from "./b/birds-of-paradise.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
 import { bogWraith } from "./b/bog-wraith.ts";
+import { borderlandRanger } from "./b/borderland-ranger.ts";
 import { bountifulHarvest } from "./b/bountiful-harvest.ts";
+import { brambleCreeper } from "./b/bramble-creeper.ts";
 import { burningInquiry } from "./b/burning-inquiry.ts";
 import { cancel } from "./c/cancel.ts";
 import { canyonMinotaur } from "./c/canyon-minotaur.ts";
@@ -33,6 +37,7 @@ import { duress } from "./d/duress.ts";
 import { earthquake } from "./e/earthquake.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
 import { elvishPiper } from "./e/elvish-piper.ts";
+import { elvishVisionary } from "./e/elvish-visionary.ts";
 import { emeraldOryx } from "./e/emerald-oryx.ts";
 import { enormousBaloth } from "./e/enormous-baloth.ts";
 import { essenceScatter } from "./e/essence-scatter.ts";
@@ -48,12 +53,15 @@ import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
 import { goblinArtillery } from "./g/goblin-artillery.ts";
 import { goblinPiker } from "./g/goblin-piker.ts";
+import { gravedigger } from "./g/gravedigger.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
 import { griffinSentinel } from "./g/griffin-sentinel.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
+import { howlingBanshee } from "./h/howling-banshee.ts";
+import { howlingMine } from "./h/howling-mine.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
@@ -91,6 +99,7 @@ import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
 import { runeclawBear } from "./r/runeclaw-bear.ts";
+import { sageOwl } from "./s/sage-owl.ts";
 import { seismicStrike } from "./s/seismic-strike.ts";
 import { serraAngel } from "./s/serra-angel.ts";
 import { shatter } from "./s/shatter.ts";
@@ -101,6 +110,8 @@ import { signInBlood } from "./s/sign-in-blood.ts";
 import { silvercoatLion } from "./s/silvercoat-lion.ts";
 import { snappingDrake } from "./s/snapping-drake.ts";
 import { solemnOffering } from "./s/solemn-offering.ts";
+import { soulWarden } from "./s/soul-warden.ts";
+import { sparkmageApprentice } from "./s/sparkmage-apprentice.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { stampedingRhino } from "./s/stampeding-rhino.ts";
 import { stormfrontPegasus } from "./s/stormfront-pegasus.ts";
@@ -125,16 +136,20 @@ import { zephyrSprite } from "./z/zephyr-sprite.ts";
 import { zombieGoliath } from "./z/zombie-goliath.ts";
 
 export const CARD_DEFS: readonly CardDef[] = [
+  acidicSlime,
   acolyteOfXathrid,
   airElemental,
   alluringSiren,
   angelsMercy,
   assassinate,
+  ballLightning,
   berserkersOfBloodRidge,
   birdsOfParadise,
   blindingMage,
   bogWraith,
+  borderlandRanger,
   bountifulHarvest,
+  brambleCreeper,
   burningInquiry,
   cancel,
   canyonMinotaur,
@@ -157,6 +172,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   earthquake,
   eliteVanguard,
   elvishPiper,
+  elvishVisionary,
   emeraldOryx,
   enormousBaloth,
   essenceScatter,
@@ -172,12 +188,15 @@ export const CARD_DEFS: readonly CardDef[] = [
   giantSpider,
   goblinArtillery,
   goblinPiker,
+  gravedigger,
   grayOgre,
   griffinSentinel,
   grizzlyBears,
   hauntingEchoes,
   hillGiant,
   hornedTurtle,
+  howlingBanshee,
+  howlingMine,
   igniteDisorder,
   island,
   jackalFamiliar,
@@ -215,6 +234,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   rodOfRuin,
   royalAssassin,
   runeclawBear,
+  sageOwl,
   seismicStrike,
   serraAngel,
   shatter,
@@ -225,6 +245,8 @@ export const CARD_DEFS: readonly CardDef[] = [
   silvercoatLion,
   snappingDrake,
   solemnOffering,
+  soulWarden,
+  sparkmageApprentice,
   spinedWurm,
   stampedingRhino,
   stormfrontPegasus,

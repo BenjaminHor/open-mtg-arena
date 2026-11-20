@@ -61,7 +61,8 @@ export function logUntilRejected(
 }
 
 function nameIn(before: GameState, after: GameState, id: ObjectId, cards: CardDatabase): string {
-  return before.objects[id] !== undefined ? nameOf(before, id, cards) : nameOf(after, id, cards);
+  const known = (s: GameState) => s.objects[id] !== undefined || s.lastKnown[id] !== undefined;
+  return known(before) ? nameOf(before, id, cards) : nameOf(after, id, cards);
 }
 
 function target(t: Target, name: Namer): string {
@@ -97,10 +98,14 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player} cancels casting ${name(e.restored)}`;
     case "ABILITY_ACTIVATED":
       return `${e.player} activates ${name(e.source)}`;
+    case "ABILITY_TRIGGERED":
+      return `${name(e.source)} triggers (${e.controller})`;
     case "ACTIVATION_CANCELLED":
       return `${e.player} cancels activating ${name(e.source)}`;
     case "ABILITY_DID_NOT_RESOLVE":
-      return `${name(e.source)}'s ability doesn't resolve: its targets are illegal (CR 608.2b)`;
+      return e.reason === "illegalTargets"
+        ? `${name(e.source)}'s ability doesn't resolve: its targets are illegal (CR 608.2b)`
+        : `${name(e.source)}'s ability doesn't resolve: its condition is false (CR 603.4)`;
     case "SPELL_DID_NOT_RESOLVE":
       return `${name(e.object)} doesn't resolve: its targets are illegal (CR 608.2b)`;
     case "SPELL_RESOLVED":

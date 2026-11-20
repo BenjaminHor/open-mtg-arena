@@ -194,7 +194,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      versions of two of m2-pool.md's decks, are the fuzzer's main pair (two prebuilt games in three). The fuzzer's 40-seed
      measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
-  3. Now: M2-06, keywords and attack or block restrictions (m2-rules-depth.md). 21 cards. Draft plan (2026-11-20), in
+  3. M2-06, keywords and attack or block restrictions (m2-rules-depth.md): done; four keywords come with their first
+     cards (D-074); 21 cards; 114 of the 234 Magic 2010 cards now (the pool's 122 include 8 M1-only cards). Next: M2-07 triggered abilities,
+     (the golden budget is 8 MB, D-073). Plan (2026-11-20), in
      four PRs, each with its cards, scenarios and interaction matrix rows:
      - M2-06a combat damage, done, merged (PR #35, D-070): first and double strike with a second combat damage step,
        trample (lethal damage first; forced answers filled in, not asked), deathtouch (CR 704.5h record), lifelink (a
@@ -215,13 +217,83 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
        (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair. Declarations list
        finishing first (no first-legal loop); the bench baseline reset.
-     - M2-06d, done, in review: shroud (CR 702.18), one check in `legalTargets` for permanents only (CR 113.6: a spell
+     - M2-06d, done, merged (PR #38): shroud (CR 702.18), one check in `legalTargets` for permanents only (CR 113.6: a spell
        or a graveyard card with shroud can be targeted), which resolution re-checks (CR 608.2b).
        Mist Leopard, Kalonian Behemoth. Scenarios in `test/scenarios/cards/m2-06d/` and `interactions/shroud/`, a unit
        test for a target gaining shroud before resolution, a Shroud matrix row; Mist Leopard in the M10 pair.
        Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer
        (Open questions): their Magic 2010 cards come in M2-07, M2-08 and M2-12.
 
+  4. Now: M2-07 triggered abilities (CR 603; m2-rules-depth.md). 30 cards. Draft plan (2026-11-20), in three PRs:
+     - Shared: `CardDef.triggers` (kept out of `abilities`, like `statics`, D-071), each a condition as data, targets,
+       effects, "you may" and an "intervening if" (CR 603.4). Triggers are detected per batch in `checkTriggers` (see
+       Settled), matched against result events; matches wait in `GameState.pendingTriggers`. `givePriority`, after state-based actions, puts
+       them on the stack (CR 117.5, 603.3): active player's first in APNAP order (CR 603.3b), a player with several
+       ordering theirs (a decision), each choosing its targets as it goes on (CR 603.3d; none legal: removed), with no
+       cost and no cancel (future-rules: an origin kind in `casting-steps.ts`). An ability on the stack refers to its
+       trigger (`AbilityRef` gains `triggered`) and carries what triggered it ("that player", "that much": the
+       triggering event's player, object and amount). "You may" asks as it resolves (`chooseYesNo`).
+     - M2-07a: the machinery, entering and beginning-of-step triggers: Elvish Visionary, Howling Banshee, Sparkmage
+       Apprentice, Gravedigger, Borderland Ranger, Sage Owl, Acidic Slime, Soul Warden, Ball Lightning, Howling Mine
+       (intervening if), Bramble Creeper (attacks). Built (D-076), in review: the triggers README
+       (`engine/src/triggers/README.md`) explains the path; 35 scenarios in `test/scenarios/cards/m2-07a/` and
+       `interactions/triggers/`, unit tests in `test/triggers/triggers.test.ts`, a Triggers matrix column; nine of the
+       cards in the M10 pair (Soul Warden and Acidic Slime only in pool decks); 9 golden games added (4.4 MB). The
+       fuzzer's 40-seed measure doesn't reach `orderTriggers` (two triggers at once for one player); scenarios cover it.
+       133 cards in the pool; 125 of the 234 Magic 2010 cards.
+     - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
+       Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
+       Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
+     - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
+       Illusionary Servant ("becomes the target", CR 601.2c), Bogardan Hellkite (flash comes with it, D-074).
+     - Settled before code (advisor, 2026-11-20):
+       - Detection stays `checkTriggers` in `happen` (D-056: it has the state before each batch), plus the four places
+         that emit events outside the pipeline: `STEP_BEGAN` (steps.ts), `SPELL_CAST` / `ABILITY_ACTIVATED`
+         (casting-steps.ts), `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`. One `detectTriggers(before, after, events)`.
+         Early exit when no permanent has triggers.
+       - Only permanents' triggers fire (CR 113.6): not a card in a graveyard, not a spell on the stack.
+       - A cancelled cast drops the triggers its mana abilities caused (CR 734.1): all waiting ones, as a cast starts
+         only at priority with none waiting (code review: no count needed).
+       - Pending triggers make cleanup give priority, like a state-based action did (CR 514.3a); `playersLose` clears
+         them; an invariant: nothing pending while a player has priority.
+       - Trigger target decisions offer no cancel; ordering is asked only of a player with two or more, the last
+         forced; the stack ability stores only what its effects read from the triggering event (no hidden ids).
+       - Slices of 07a: machinery and untargeted entering triggers; then targets and "may"; then step and attack
+         triggers. A mutation pass before review; trigger cards into the M10 pair and the 40-seed measure.
+     - Rules review of the plan (2026-11-20), to build in:
+       - Last known information is needed now (CR 608.2h, 603.4): Howling Mine Shattered in response still makes the
+         player draw (ruling); Xathrid Demon reads the sacrificed creature's power. A store of objects' last known
+         information as they leave, read by the intervening-if re-check and "self" when gone. "Dies" triggers (Magma
+         Phoenix, M2-14) will use the same store.
+       - CR 603.3b / 117.5 repeat: after a batch is on the stack, `givePriority` runs again (state-based actions, then
+         triggers that came up meanwhile, a fresh batch). The `givePriority` work keeps the player who'd get priority;
+         putting triggers never gives it to the trigger's controller (CR 603.3b).
+       - "Becomes the target" (CR 601.2c, not 603.2): an event as targets are chosen, for spells, activations and
+         triggers, dropped on cancel. (07c, Illusionary Servant.)
+       - Each emission point matches only its own event: `payCost`, the draw step and declaring attackers already
+         passed their other events through `happen`.
+       - A pending trigger stores its source id, oracle id, trigger index and controller as it triggered (CR 603.3a):
+         the source may be gone before it goes on the stack.
+       - The triggering event's data goes on the ability before targets ("target ... that player controls", Lightwielder
+         Paladin) and is read again on resolution (CR 608.2b).
+       - Triggers go on the stack through the target steps but not `payCost`: no `ABILITY_ACTIVATED`, no priority to
+         the trigger's controller, no cancel.
+       - Match result events: one `LIFE_GAINED` per lifelink source (Sanguine Bond), `ZONE_CHANGED` for a played land,
+         "taps a land for mana" per activation of a land's {T} mana ability (CR 106.12; not Terramorphic Expanse).
+       - Intervening if re-checked in `resolveTopOfStack`, beside CR 608.2b: false removes it (CR 608.2a).
+       - Delayed triggers (07c) live in state, not on a permanent; their own `AbilityRef`; Dragon Whelp needs a
+         per-object, per-turn activation count (not resolutions; cancel doesn't count; CR 400.7 resets).
+       - CR 514.3a (cleanup with triggers) has no 07a card: built with Megrim (07b).
+       - Read a permanent's triggers through one function (layer 6 later, CR 603.6b), like `keywordsOf`.
+       - Test list: ETB in APNAP order, ordering one's own, Soul Warden negatives, source gone before and after going on
+         the stack, illegal target, shroud, Acidic Slime forced onto its controller's land, Gravedigger with no target
+         and "may" both ways, Banshee draw, Visionary on an empty library, Howling Mine (its own, the opponent's,
+         tapped, first turn, Shattered in response), Ball Lightning (sacrificed, Unsummoned, put in by Elvish Piper in
+         the end step), Bramble Creeper; unit tests for creatures entering together, the repeat, cancel dropping
+         triggers, a Mine tapped before resolution, the no-pending-while-priority invariant.
+     - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
+       delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
+       way; copies of abilities and "trigger an additional time" fit the pending list.
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
@@ -371,17 +443,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Not blocking until M2-06d.) The M2-06 spec puts protection's targeting and blocking, flash, indestructible and
-  "can't be countered" in M2-06 and asks for a scenario per keyword, but their Magic 2010 cards come later (Bogardan
-  Hellkite in M2-07; White Knight, Black Knight, Baneslayer Angel, Great Sable Stag, Darksteel Colossus in M2-08;
-  Indestructibility in M2-12). Scenarios name real cards. Build them now with engine unit tests on test cards, and add
-  the scenarios with the cards? Or build each keyword with its first card? (Claude's lean: with its first card: one
-  task, a real scenario, nothing built before it's used.)
-- (Not blocking until M2-07 triggers or M2-08 prevention.) Goblin Artillery targeting its own controller deals them
-  2 damage and 3 damage from the same source in the same action. The engine records it as one damage event with two
-  parts: two `DAMAGE_DEALT` and two `LIFE_LOST` (2, then 3). Should that be one 5-point loss instead? The CR doesn't
-  say. It decides how often "whenever you lose life" or "whenever a source deals damage to you" trigger (once or twice),
-  and how prevention shields count against it.
+- (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
+  Artillery's two losses kept.)
 
 ## Known issues
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
@@ -389,11 +452,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
   lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
   can be taken back or checked as a whole (06c's take-back answer may serve).
-- Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games.
-  Still, the folder is 4.0 MB (3.82 MiB) after M2-06d, at its 4 MB budget, growing about 0.1–0.3 MB per task with
-  112 cards to go: it passes the budget in M2-07. Options: raise the budget (to about 8 MB by the end of M2), a
-  compact action format (actions are about 90 bytes of JSON each), or stop adding a game per card once its mechanic
-  is covered by scenarios. Decide before M2-07's cover.
+- Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games. The
+  folder is 4.0 MB after M2-06d; the owner raised the budget to 8 MB for M2 (D-073).
 - The bench drifted 10–29% over its baseline through M2-05–06b; reset in M2-06c (D-072), when the `random` agent's games
   changed with the declaration list. Measuring is noisy here (two runs of one commit can differ by 30%): compare paired
   against `main` before believing a failure.

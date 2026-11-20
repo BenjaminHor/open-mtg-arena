@@ -1,0 +1,25 @@
+name: A trigger put on the stack first chooses its target, then the rest of the batch goes on
+rules: [CR 603.3b, CR 603.3d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Soul Warden]
+    hand: [Sparkmage Apprentice]
+steps:
+  - p1 cast: Sparkmage Apprentice
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: orderTriggers }
+  - p1 choose: Sparkmage Apprentice
+  - expect:
+      pending: { player: p1, kind: chooseTarget }
+  - p1 choose: p2
+  - expect:
+      stack: [Sparkmage Apprentice ability, Soul Warden ability]
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 21
+      p2.life: 19

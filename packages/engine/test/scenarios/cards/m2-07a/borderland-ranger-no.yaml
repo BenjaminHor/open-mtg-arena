@@ -1,0 +1,18 @@
+name: Declining Borderland Ranger's "you may" searches nothing and doesn't shuffle
+rules: [CR 603.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest]
+    hand: [Borderland Ranger]
+    library: [Runeclaw Bear, Plains]
+steps:
+  - p1 cast: Borderland Ranger
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - p1 choose: no
+  - expect:
+      p1.hand: []
+      p1.library: [Runeclaw Bear, Plains]
+      events lacks: [{ type: LIBRARY_SHUFFLED }]

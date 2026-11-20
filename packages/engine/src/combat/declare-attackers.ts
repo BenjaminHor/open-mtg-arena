@@ -10,7 +10,9 @@ import type { ProposedEvent } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
 import { canAttack } from "../rules/combat.ts";
 import { type Attack, newCombat } from "../state/combat.ts";
+import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * Every attack the active player could still add to the declaration: each creature that can attack and isn't chosen
@@ -52,13 +54,14 @@ export function attackProblem(state: GameState, chosen: readonly Attack[], attac
 export function finishAttackers(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
   const progress = happen(state, attackersTap(state, chosen, cards), cards);
-  return andThen(progress, (s) => ({
-    state: queueWork(
-      { ...s, combat: { ...(s.combat ?? newCombat()), attacks: [...chosen] } },
-      { kind: "givePriority", player: active },
-    ),
-    events: [{ type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] }],
-  }));
+  const declared: GameEvent = { type: "ATTACKERS_DECLARED", player: active, attacks: [...chosen] };
+  return andThen(progress, (s) => {
+    const withCombat = { ...s, combat: { ...(s.combat ?? newCombat()), attacks: [...chosen] } };
+    // "Whenever this creature attacks" triggers as it's declared (CR 508.3a); only this event is matched here, the
+    // tapping already went through the pipeline.
+    const triggered = detectTriggers(s, withCombat, [declared], cards);
+    return { state: queueWork(triggered, { kind: "givePriority", player: active }), events: [declared] };
+  });
 }
 
 /**

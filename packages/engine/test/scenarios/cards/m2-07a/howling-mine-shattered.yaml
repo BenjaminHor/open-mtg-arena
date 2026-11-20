@@ -1,0 +1,23 @@
+name: Howling Mine destroyed in response still makes the player draw, its last known information being untapped
+rules: [CR 603.4, CR 608.2h]
+setup:
+  turn: { active: p1, step: upkeep }
+  p1:
+    battlefield: [Howling Mine]
+    library: [Forest, Island, Mountain]
+  p2:
+    battlefield: [Mountain, Mountain]
+    hand: [Shatter]
+steps:
+  - all pass: until draw
+  - p1 pass: once
+  - p2 cast: Shatter
+    targets: [p1:Howling Mine]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Howling Mine]
+      stack: [Howling Mine ability]
+  - all pass: once
+  - expect:
+      p1.hand: [Forest, Island]

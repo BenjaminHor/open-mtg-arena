@@ -1,0 +1,21 @@
+name: Bramble Creeper's attack trigger resolves before blockers are declared, so it deals 5 damage to its blocker
+rules: [CR 508.3a, CR 509.1, CR 510.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Bramble Creeper]
+  p2:
+    battlefield: [Giant Spider]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Bramble Creeper]
+  - all pass: once
+  - expect:
+      p1:Bramble Creeper.power: 5
+  - all pass: until combat.declareBlockers
+  - p2 block: { Giant Spider: Bramble Creeper }
+  - all pass: until combat.end
+  - expect:
+      p2.graveyard: [Giant Spider]
+      p1:Bramble Creeper.damage: 2
+      p2.life: 20

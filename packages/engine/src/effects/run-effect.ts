@@ -5,6 +5,7 @@ import type { CardDatabase, Effect } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
+import { controllerOf } from "../rules/controller.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -72,6 +73,14 @@ export function runEffect(
         affected,
         change: effect.op === "cantBlock" ? { kind: "cantBlock" } : { kind: "mustAttack", player: context.controller },
       });
+    }
+    case "sacrificeSource": {
+      // Only its controller can sacrifice it, and only from the battlefield (CR 701.21a): gone or given away, nothing.
+      const source = context.self;
+      if (!state.zones.battlefield.includes(source) || controllerOf(state, source) !== context.controller) {
+        return { state, events: [] };
+      }
+      return happen(state, { kind: "sacrifice", object: source }, cards);
     }
     case "destroy":
       return toEach(state, onBattlefield(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({

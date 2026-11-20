@@ -1,0 +1,15 @@
+name: Howling Mine triggers as the draw step begins; its trigger goes on the stack after the turn's draw and draws another
+rules: [CR 603.2b, CR 504.1, CR 603.4]
+setup:
+  turn: { active: p1, step: upkeep }
+  p1:
+    battlefield: [Howling Mine]
+    library: [Forest, Island, Mountain]
+steps:
+  - all pass: until draw
+  - expect:
+      stack: [Howling Mine ability]
+      p1.hand: [Forest]
+  - all pass: once
+  - expect:
+      p1.hand: [Forest, Island]

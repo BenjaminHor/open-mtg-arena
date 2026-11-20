@@ -100,7 +100,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   a card's name for a `chooseCards` decision while a spell or ability resolves (the first option not yet chosen with
   that name, or `Shock#2` for the second option named Shock, in the decision's fixed order, D-062), or `finish` to stop
   choosing once the minimum is chosen ("you may" declined, a search that finds nothing); `yes` or `no` for a "you
-  may" decision (`chooseYesNo`, Ponder's shuffle);
+  may" decision (`chooseYesNo`, Ponder's shuffle, a "you may" trigger); for ordering one's triggers as they go on the
+  stack (`orderTriggers`, CR 603.3b), the source's card name of the one to put on next (`p1 choose: Soul Warden`, or
+  `Soul Warden#2` for the player's second waiting trigger from a card of that name);
   a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
   `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.
@@ -341,7 +343,7 @@ counts what the folder's games already use, and keeps, greedily, the game adding
 off at the turn its last new card is used. It also covers three choices the export tests read: a spell on the stack
 targeted, a card in a graveyard targeted, cards chosen as a spell or ability resolves. It only adds games, never changes one, and skips seeds whose game
 is already there; it lists what's still not covered and fails if anything is.
-Keep the folder under 4 MB.
+Keep the folder under 8 MB through M2 (D-073).
 
 ## 5. Rules coverage report
 

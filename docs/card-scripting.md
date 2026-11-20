@@ -96,6 +96,14 @@ export const furnaceWhelp: CardDef = {
   alone" is `{ kind: "cantAttackOrBlockAlone" }`, "attacks each combat if able" is `{ kind: "attacksEachCombat" }`, "all
   creatures able to block this creature do so" is `{ kind: "mustBeBlockedByAllAble" }`. The engine reads them only
   through `staticAbilitiesOf`.
+- Triggered abilities go in `triggers` (D-076), each `{ when, onlyIf?, optional?, targets, effects }`. `when` is the
+  trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
+  `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's
+  controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw" }` ("each
+  end step" likewise, `step: "end"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "If this artifact
+  is untapped" right after the condition is an intervening if, `onlyIf: { kind: "sourceUntapped" }` (CR 603.4). "You
+  may" is `optional: true` (asked as it resolves). "That player" is the subject `"triggeringPlayer"`; "sacrifice it"
+  (the source) is `{ op: "sacrificeSource" }`. The engine reads them only through `triggersOf`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).

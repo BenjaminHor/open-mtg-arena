@@ -22,7 +22,14 @@ function p2Active(hands: { p1: string[]; p2: string[] } = { p1: [], p2: [] }): G
   }).state;
 }
 
-const context = { self: "o999" as ObjectId, controller: "p1" as PlayerId, targets: [], division: [], x: null };
+const context = {
+  self: "o999" as ObjectId,
+  controller: "p1" as PlayerId,
+  targets: [],
+  division: [],
+  x: null,
+  trigger: null,
+};
 
 describe("each player, in APNAP order (CR 101.4)", () => {
   it("starts with the active player, then the others in turn order", () => {

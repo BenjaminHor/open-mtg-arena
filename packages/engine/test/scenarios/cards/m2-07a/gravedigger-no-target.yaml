@@ -1,0 +1,15 @@
+name: With no creature card in its controller's graveyard, Gravedigger's trigger is removed without asking anything
+rules: [CR 603.3d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, Swamp, Swamp, Swamp]
+    hand: [Gravedigger]
+    graveyard: [Lightning Bolt]
+steps:
+  - p1 cast: Gravedigger
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: []
+      pending: { player: p1, kind: priority }

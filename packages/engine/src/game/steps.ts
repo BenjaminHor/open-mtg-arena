@@ -15,6 +15,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { emptyManaPool, MANA_TYPES } from "../state/mana.ts";
 import type { Step } from "../state/turn.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
 import { andThen, type Progress } from "./progress.ts";
@@ -143,10 +144,9 @@ function isSkipped(state: GameState, step: Step): boolean {
 function beginStep(state: GameState, step: Step, cards: CardDatabase): Progress {
   const turn = currentTurn(state);
   const started: GameState = { ...state, turn: { ...turn, step }, passesInSuccession: 0 };
-  const progress: Progress = {
-    state: started,
-    events: [{ type: "STEP_BEGAN", turn: turn.number, step, activePlayer: turn.activePlayer }],
-  };
+  const began: GameEvent = { type: "STEP_BEGAN", turn: turn.number, step, activePlayer: turn.activePlayer };
+  // "At the beginning of [step]" abilities trigger as it begins, before its turn-based actions (CR 603.2b).
+  const progress: Progress = { state: detectTriggers(state, started, [began], cards), events: [began] };
   switch (step) {
     case "untap":
       // CR 502.3, then no one gets priority (CR 502.4) and the step ends.

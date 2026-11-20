@@ -113,6 +113,8 @@ function emptyGame(setup: GameSetup): GameState {
     casting: null,
     resolution: null,
     dealtDeathtouchDamage: [],
+    pendingTriggers: [],
+    lastKnown: {},
     work: [],
     pending: null,
     result: null,

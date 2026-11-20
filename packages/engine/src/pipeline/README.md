@@ -18,7 +18,8 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is
    its move to the graveyard (CR 701.8a), not a second event.
 4. **Trigger** (`happen.ts`, `checkTriggers`): once, after everything, with the state from before, for abilities that
-   look back in time (CR 603.10). Nothing triggers yet.
+   look back in time (CR 603.10). It calls `detectTriggers` (`triggers/`), which adds what triggered to
+   `GameState.pendingTriggers`; they go on the stack the next time a player would receive priority (CR 117.5, 603.3).
 
 All replacing comes before any performing, so when a replacement needs a player's choice (CR 616.1), `happen` can stop
 with nothing changed yet.
@@ -41,6 +42,8 @@ anything can replace or trigger on:
   on the stack and removing it (CR 602.2a, 608.2n), and putting a cancelled cast back (CR 734.1, D-035), which
   undoes events rather than causing them;
 - declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2);
+- triggered abilities waiting and going on the stack (`GameState.pendingTriggers`, CR 603.3), and the last known
+  information kept as a card leaves the battlefield (`GameState.lastKnown`, CR 608.2h);
 - the resolving object's "this way" record (`GameState.resolution`, CR 608.2c, D-064): set as it starts to resolve,
   results added by `remember` in `effects/library-effects.ts` after their events went through `happen`, cleared when
   it finishes, doesn't resolve, or the game ends;
@@ -59,10 +62,11 @@ anything can replace or trigger on:
   changes that (CR 614.6) needs a real path.
 - **Drawing several cards** as one instruction (CR 121.2a): "draw N" is N single draws for now (D-060); the container
   comes with the first replacement that needs it (M2-08).
-- **Events triggers will match that are emitted outside the pipeline:** `TURN_BEGAN`, `STEP_BEGAN`, `SPELL_CAST`,
-  `ABILITY_ACTIVATED`, `ATTACKERS_DECLARED`, `BLOCKERS_DECLARED`, `SPELL_RESOLVED`, `PLAYER_LOST`; "becomes the
-  target" has no event yet. M2-07 routes them.
-- Last known information (CR 608.2h, 603.10), with its first reader.
+- **Events triggers will match that are emitted outside the pipeline:** `STEP_BEGAN` and `ATTACKERS_DECLARED` are
+  matched where they're emitted (M2-07a, `triggers/README.md`); `SPELL_CAST`, `ABILITY_ACTIVATED` (M2-07b) and
+  `BLOCKERS_DECLARED` will be too, and "becomes the target" has no event yet (M2-07c).
+- Looking back in time for "leaves the battlefield" abilities (CR 603.10, M2-14). Last known information
+  (`GameState.lastKnown`, CR 608.2h) is kept as a card leaves the battlefield (`zones/move-card.ts`).
 
 Tests: `test/pipeline/pipeline.test.ts` (what each event does, and which events the engine batches),
 `only-the-pipeline-performs.test.ts`, and every scenario, golden game and replay, which this path runs through

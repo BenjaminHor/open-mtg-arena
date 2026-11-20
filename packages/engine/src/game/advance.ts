@@ -8,6 +8,8 @@ import { declareBlockers } from "../combat/declare-blockers.ts";
 import { runEffect } from "../effects/run-effect.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { WorkItem } from "../state/work.ts";
+import { putTriggers } from "../triggers/put-on-stack.ts";
+import { waitFor } from "./decide.ts";
 import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { doesNotResolve, finishResolving, resolveTopOfStack } from "./resolve.ts";
@@ -38,7 +40,7 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
     case "finishResolving":
       return finishResolving(state, item.object, cards);
     case "doesNotResolve":
-      return doesNotResolve(state, item.object, cards);
+      return doesNotResolve(state, item.object, item.reason, cards);
     case "cleanupCheck":
       return cleanupCheck(state, cards);
     case "anotherCleanupStep":
@@ -51,5 +53,12 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       return combatDamage(state, item.divisions, cards);
     case "finishCleanup":
       return finishCleanup(state, item.chosen, cards);
+    case "askOptional":
+      return {
+        state: waitFor(state, item.player, { kind: "chooseYesNo", purpose: "optional", resume: item.resume }),
+        events: [],
+      };
+    case "putTriggers":
+      return putTriggers(state, item.batch, item.player, cards);
   }
 }

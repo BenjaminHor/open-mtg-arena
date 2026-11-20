@@ -139,7 +139,7 @@ describe("discarding a whole hand (CR 609.3)", () => {
     const discardTwo = { op: "discard", who: { target: 0 }, amount: 2 } as const;
     const graveyardAfter = (hand: string[]) => {
       const { state } = game({ hand: [], battlefield: [] }, hand);
-      const context = { self: "o999" as const, controller: "p1" as const, division: [], x: null };
+      const context = { self: "o999" as const, controller: "p1" as const, division: [], x: null, trigger: null };
       const targets = [[{ kind: "player" as const, player: "p2" as const }]];
       const after = runEffect(state, discardTwo, { ...context, targets }, CARDS).state;
       return (after.zones.players.p2?.graveyard ?? []).map(
@@ -177,7 +177,7 @@ describe("answers to a chooseCards decision", () => {
     seen: null,
     resume: {
       effect: { op: "discard", who: "you", amount: 2 } as const,
-      context: { self: "o9" as const, controller: "p1" as const, targets: [], division: [], x: null },
+      context: { self: "o9" as const, controller: "p1" as const, targets: [], division: [], x: null, trigger: null },
     },
   };
   it("refuse an option already chosen, one that isn't there, and finishing below the minimum (CR 608.2d)", () => {

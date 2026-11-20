@@ -7,6 +7,7 @@
 import type { Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
+import type { TriggeredAbilityDef } from "./triggers.ts";
 
 /** Everything the engine knows about one card, keyed by `oracleId` in the `CardDatabase`. */
 export type CardData = {
@@ -99,6 +100,12 @@ export type CardDef = {
    * `staticAbilitiesOf`, so effects that grant or remove abilities (layer 6, later: CR 613.1f) change them in one place.
    */
   statics?: StaticAbilityDef[];
+  /**
+   * Triggered abilities (CR 603), in the order printed. Read only through `triggersOf`, so effects that grant or remove
+   * abilities (layer 6, later: CR 613.1f, 603.6b) change them in one place. `{ kind: "triggered", index }` refers to
+   * this list.
+   */
+  triggers?: TriggeredAbilityDef[];
 };
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
@@ -265,6 +272,8 @@ export type EffectSubject =
   | "eachPlayer"
   /** "Each opponent": every opponent of "you" (CR 102.2; later: CR 102.3), in APNAP order. */
   | "eachOpponent"
+  /** "That player" in a triggered ability: the player its triggering event was about (CR 603.2). */
+  | "triggeringPlayer"
   /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
   | "found"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
@@ -300,6 +309,11 @@ export type Effect =
   | { op: "cantBlock"; of: EffectSubject; duration: Duration }
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
+  /**
+   * "Sacrifice this creature": its source, if it's still on the battlefield under the ability's controller
+   * (CR 701.21a).
+   */
+  | { op: "sacrificeSource" }
   /** "Destroy [subject]" (CR 701.8a). */
   | { op: "destroy"; of: EffectSubject }
   /**

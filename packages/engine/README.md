@@ -16,7 +16,8 @@ The design and its invariants are in [`docs/architecture.md`](../../docs/archite
   replace, perform, trigger), `effects/` (the effects interpreter: damage, mana, continuous effects), `zones/` (moving
   cards), `permanents/` (tapping, untapping, damage, destroying), `view/` (player views and event filtering), `mana/`
   (mana abilities, paying), `combat/` (declaring attackers and blockers, combat damage), `rules/` (rules questions such
-  as who controls an object), `cards/` (card data types), `rng/`.
+  as who controls an object), `triggers/` (triggered abilities: detecting them, putting them on the stack), `cards/`
+  (card data types), `rng/`.
 
 ## Tests
 

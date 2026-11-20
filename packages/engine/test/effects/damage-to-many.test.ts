@@ -21,7 +21,7 @@ function board(): GameState {
   }).state;
 }
 
-const context = { self: "o999" as ObjectId, controller: "p1" as const, targets: [], division: [], x: 2 };
+const context = { self: "o999" as ObjectId, controller: "p1" as const, targets: [], division: [], x: 2, trigger: null };
 
 describe("one action dealing damage to many is one damage event (CR 608.2f, 120.4)", () => {
   it("Goblin Artillery's 2 to a player and 3 to its controller are both dealt before either loses life", () => {

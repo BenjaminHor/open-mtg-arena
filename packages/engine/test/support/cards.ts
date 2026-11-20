@@ -48,6 +48,9 @@ export const DOUBLE_TRAMPLER = "test-double-trampler";
 export const LONER = "test-loner";
 /** Not a real card: a 2/2 with shroud, to swap in for Grizzly Bears when a target gains shroud. */
 export const SHROUDED = "test-shrouded";
+/** Not real cards: Soul Warden's and Howling Mine's triggered abilities on test bodies, for trigger unit tests. */
+export const WARDEN = "test-warden";
+export const MINE = "test-mine";
 
 /** A test creature with only keywords: a vanilla body for combat tests. */
 function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
@@ -484,4 +487,44 @@ export const TEST_CARDS: CardDatabase = {
     },
   },
   [SHROUDED]: keywordCreature(SHROUDED, "Shrouded", [2, 2], ["shroud"]),
+  [WARDEN]: {
+    ...keywordCreature(WARDEN, "Warden", [1, 1], []),
+    def: {
+      name: "Warden",
+      oracle: "Whenever another creature enters, you gain 1 life.",
+      triggers: [
+        {
+          when: { kind: "anotherEnters", filter: { types: ["creature"] } },
+          targets: [],
+          effects: [{ op: "gainLife", who: "you", amount: 1 }],
+        },
+      ],
+    },
+  },
+  [MINE]: card(MINE, {
+    printed: {
+      name: "Mine",
+      manaCost: [{ kind: "generic", amount: 2 }],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["artifact"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Mine",
+      oracle:
+        "At the beginning of each player's draw step, if this artifact is untapped, that player draws an additional card.",
+      triggers: [
+        {
+          when: { kind: "beginningOfStep", step: "draw" },
+          onlyIf: { kind: "sourceUntapped" },
+          targets: [],
+          effects: [{ op: "draw", who: "triggeringPlayer", amount: 1 }],
+        },
+      ],
+    },
+  }),
 };
