@@ -1,0 +1,25 @@
+name: Great Sable Stag can be the target of Cancel, but isn't countered; Cancel still resolves
+rules: [CR 113.6g, CR 101.2, CR 701.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest]
+    hand: [Great Sable Stag]
+  p2:
+    battlefield: [Island, Island, Island]
+    hand: [Cancel]
+steps:
+  - p1 cast: Great Sable Stag
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [spell:p1:Great Sable Stag]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Cancel]
+      stack: [Great Sable Stag]
+      events lacks: [{ type: SPELL_COUNTERED }]
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Great Sable Stag]

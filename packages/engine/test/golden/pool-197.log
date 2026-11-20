@@ -1,0 +1,424 @@
+T0 p1 goes first (chosen by p2)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Snapping Drake, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Essence Scatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Essence Scatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Shivan Dragon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Consume Spirit, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Shivan Dragon, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Burning Inquiry, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Elite Vanguard, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Rampant Growth, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Dragon Whelp, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Snapping Drake, p1's hand -> p1's library
+T0 moves: Essence Scatter, p1's hand -> p1's library
+T0 moves: Essence Scatter, p1's hand -> p1's library
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Shivan Dragon, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Consume Spirit, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: White Knight, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Duress, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Consume Spirit, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Alluring Siren, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Phantom Warrior, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: White Knight, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 moves: Consume Spirit, p1's hand -> stack
+T1 p1 cancels casting Consume Spirit
+T1 moves: Phantom Warrior, p1's hand -> stack
+T1 p1 cancels casting Phantom Warrior
+T1 moves: Island, p1's hand -> battlefield
+T1 p1 plays p1:Island
+T1 taps: p1:Island
+T1 p1 adds {U} (p1:Island)
+T1 p1 taps p1:Island for mana
+T1 p1's unspent {U} empties
+T1 p1 attack: nothing
+T2 turn 2 begins (p2)
+T2 moves: Kelinore Bat, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Forest, p2's hand -> battlefield
+T2 p2 plays p2:Forest
+T2 moves: Elite Vanguard, p2's hand -> stack
+T2 taps: p2:Forest
+T2 p2 adds {G} (p2:Forest)
+T2 p2 taps p2:Forest for mana
+T2 p2 cancels casting Elite Vanguard
+T2 taps: p2:Forest
+T2 p2 adds {G} (p2:Forest)
+T2 p2 taps p2:Forest for mana
+T2 moves: Burning Inquiry, p2's hand -> stack
+T2 p2 cancels casting Burning Inquiry
+T2 p2's unspent {G} empties
+T2 p2 attack: nothing
+T3 turn 3 begins (p1)
+T3 untaps: p1:Island
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1's unspent {U} empties
+T3 moves: Shatter, p1's library -> p1's hand
+T3 p1 draws
+T3 p1 attack: nothing
+T3 moves: Forest, p1's hand -> battlefield
+T3 p1 plays p1:Forest
+T3 moves: Alluring Siren, p1's hand -> stack
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 p1 cancels casting Alluring Siren
+T3 moves: Duress, p1's hand -> stack
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 p1 cancels casting Duress
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 p1's unspent {G} empties
+T4 turn 4 begins (p2)
+T4 untaps: p2:Forest
+T4 moves: Yawning Fissure, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Swamp, p2's hand -> battlefield
+T4 p2 plays p2:Swamp
+T4 moves: Kelinore Bat, p2's hand -> stack
+T4 taps: p2:Swamp
+T4 p2 adds {B} (p2:Swamp)
+T4 p2 taps p2:Swamp for mana
+T4 taps: p2:Forest
+T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
+T4 p2 cancels casting Kelinore Bat
+T4 taps: p2:Forest
+T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
+T4 moves: Kelinore Bat, p2's hand -> stack
+T4 taps: p2:Swamp
+T4 p2 adds {B} (p2:Swamp)
+T4 p2 taps p2:Swamp for mana
+T4 p2 cancels casting Kelinore Bat
+T4 p2's unspent {G} empties
+T4 p2 attack: nothing
+T5 turn 5 begins (p1)
+T5 untaps: p1:Island
+T5 untaps: p1:Forest
+T5 taps: p1:Forest
+T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
+T5 p1's unspent {G} empties
+T5 moves: Forest, p1's library -> p1's hand
+T5 p1 draws
+T5 taps: p2:Swamp
+T5 p2 adds {B} (p2:Swamp)
+T5 p2 taps p2:Swamp for mana
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 p1's unspent {U} empties
+T5 p2's unspent {B} empties
+T5 p1 attack: nothing
+T5 moves: Forest, p1's hand -> battlefield
+T5 p1 plays p1:Forest#2
+T5 taps: p1:Forest#2
+T5 p1 adds {G} (p1:Forest#2)
+T5 p1 taps p1:Forest#2 for mana
+T5 moves: Consume Spirit, p1's hand -> stack
+T5 p1 cancels casting Consume Spirit
+T5 p1's unspent {G} empties
+T6 turn 6 begins (p2)
+T6 untaps: p2:Forest
+T6 untaps: p2:Swamp
+T6 taps: p2:Forest
+T6 p2 adds {G} (p2:Forest)
+T6 p2 taps p2:Forest for mana
+T6 taps: p2:Swamp
+T6 p2 adds {B} (p2:Swamp)
+T6 p2 taps p2:Swamp for mana
+T6 p2's unspent {B}{G} empties
+T6 moves: Wall of Fire, p2's library -> p2's hand
+T6 p2 draws
+T6 p2 attack: nothing
+T6 moves: Rampant Growth, p2's hand -> stack
+T6 p2 cancels casting Rampant Growth
+T6 moves: Dragon Whelp, p2's hand -> stack
+T6 p2 cancels casting Dragon Whelp
+T6 moves: Burning Inquiry, p2's hand -> stack
+T6 p2 cancels casting Burning Inquiry
+T6 moves: Kelinore Bat, p2's hand -> stack
+T6 p2 cancels casting Kelinore Bat
+T6 moves: Shivan Dragon, p2's hand -> stack
+T6 p2 cancels casting Shivan Dragon
+T6 moves: Burning Inquiry, p2's hand -> stack
+T6 p2 cancels casting Burning Inquiry
+T6 moves: Wall of Fire, p2's hand -> p2's graveyard
+T6 p2 discards Wall of Fire
+T7 turn 7 begins (p1)
+T7 untaps: p1:Island
+T7 untaps: p1:Forest#1
+T7 untaps: p1:Forest#2
+T7 taps: p1:Forest#2
+T7 p1 adds {G} (p1:Forest#2)
+T7 p1 taps p1:Forest#2 for mana
+T7 p1's unspent {G} empties
+T7 moves: Mountain, p1's library -> p1's hand
+T7 p1 draws
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
+T7 p1's unspent {U} empties
+T7 moves: Mountain, p1's hand -> battlefield
+T7 p1 plays p1:Mountain
+T7 moves: Consume Spirit, p1's hand -> stack
+T7 p1 cancels casting Consume Spirit
+T7 taps: p1:Mountain
+T7 p1 adds {R} (p1:Mountain)
+T7 p1 taps p1:Mountain for mana
+T7 moves: Phantom Warrior, p1's hand -> stack
+T7 taps: p1:Forest#1
+T7 p1 adds {G} (p1:Forest#1)
+T7 p1 taps p1:Forest#1 for mana
+T7 p1 cancels casting Phantom Warrior
+T7 p1's unspent {R} empties
+T7 p1 attack: nothing
+T7 taps: p1:Forest#1
+T7 p1 adds {G} (p1:Forest#1)
+T7 p1 taps p1:Forest#1 for mana
+T7 p1's unspent {G} empties
+T8 turn 8 begins (p2)
+T8 untaps: p2:Forest
+T8 untaps: p2:Swamp
+T8 moves: Deathmark, p2's library -> p2's hand
+T8 p2 draws
+T8 taps: p2:Swamp
+T8 p2 adds {B} (p2:Swamp)
+T8 p2 taps p2:Swamp for mana
+T8 taps: p2:Forest
+T8 p2 adds {G} (p2:Forest)
+T8 p2 taps p2:Forest for mana
+T8 p2's unspent {B}{G} empties
+T8 moves: Yawning Fissure, p2's hand -> stack
+T8 p2 cancels casting Yawning Fissure
+T8 p2 attack: nothing
+T8 moves: Elite Vanguard, p2's hand -> stack
+T8 p2 cancels casting Elite Vanguard
+T8 moves: Kelinore Bat, p2's hand -> p2's graveyard
+T8 p2 discards Kelinore Bat
+T9 turn 9 begins (p1)
+T9 untaps: p1:Island
+T9 untaps: p1:Forest#1
+T9 untaps: p1:Forest#2
+T9 untaps: p1:Mountain
+T9 moves: Manabarbs, p1's library -> p1's hand
+T9 p1 draws
+T9 taps: p1:Forest#1
+T9 p1 adds {G} (p1:Forest#1)
+T9 p1 taps p1:Forest#1 for mana
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 taps: p1:Forest#2
+T9 p1 adds {G} (p1:Forest#2)
+T9 p1 taps p1:Forest#2 for mana
+T9 taps: p1:Island
+T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
+T9 p1's unspent {U}{R}{G}{G} empties
+T9 p1 attack: nothing
+T10 turn 10 begins (p2)
+T10 untaps: p2:Forest
+T10 untaps: p2:Swamp
+T10 moves: Swamp, p2's library -> p2's hand
+T10 p2 draws
+T10 moves: Swamp, p2's hand -> battlefield
+T10 p2 plays p2:Swamp#2
+T10 taps: p2:Swamp#1
+T10 p2 adds {B} (p2:Swamp#1)
+T10 p2 taps p2:Swamp#1 for mana
+T10 p2's unspent {B} empties
+T10 p2 attack: nothing
+T10 taps: p2:Forest
+T10 p2 adds {G} (p2:Forest)
+T10 p2 taps p2:Forest for mana
+T10 p2's unspent {G} empties
+T10 taps: p2:Swamp#2
+T10 p2 adds {B} (p2:Swamp#2)
+T10 p2 taps p2:Swamp#2 for mana
+T10 moves: Rampant Growth, p2's hand -> stack
+T10 p2 cancels casting Rampant Growth
+T10 moves: Burning Inquiry, p2's hand -> stack
+T10 p2 cancels casting Burning Inquiry
+T10 moves: Elite Vanguard, p2's hand -> stack
+T10 p2 cancels casting Elite Vanguard
+T10 p2's unspent {B} empties
+T11 turn 11 begins (p1)
+T11 untaps: p1:Island
+T11 untaps: p1:Forest#1
+T11 untaps: p1:Forest#2
+T11 untaps: p1:Mountain
+T11 moves: Forest, p1's library -> p1's hand
+T11 p1 draws
+T11 taps: p1:Island
+T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
+T11 p1's unspent {U} empties
+T11 moves: Forest, p1's hand -> battlefield
+T11 p1 plays p1:Forest#3
+T11 taps: p1:Forest#3
+T11 p1 adds {G} (p1:Forest#3)
+T11 p1 taps p1:Forest#3 for mana
+T11 taps: p1:Mountain
+T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
+T11 taps: p1:Forest#1
+T11 p1 adds {G} (p1:Forest#1)
+T11 p1 taps p1:Forest#1 for mana
+T11 p1's unspent {R}{G}{G} empties
+T11 p1 attack: nothing
+T11 moves: Duress, p1's hand -> stack
+T11 taps: p1:Forest#2
+T11 p1 adds {G} (p1:Forest#2)
+T11 p1 taps p1:Forest#2 for mana
+T11 p1 cancels casting Duress
+T11 moves: Duress, p1's hand -> stack
+T11 taps: p1:Forest#2
+T11 p1 adds {G} (p1:Forest#2)
+T11 p1 taps p1:Forest#2 for mana
+T11 p1 cancels casting Duress
+T11 moves: Alluring Siren, p1's hand -> stack
+T11 taps: p1:Forest#2
+T11 p1 adds {G} (p1:Forest#2)
+T11 p1 taps p1:Forest#2 for mana
+T11 p1 cancels casting Alluring Siren
+T11 moves: Alluring Siren, p1's hand -> stack
+T11 taps: p1:Forest#2
+T11 p1 adds {G} (p1:Forest#2)
+T11 p1 taps p1:Forest#2 for mana
+T11 p1 cancels casting Alluring Siren
+T12 turn 12 begins (p2)
+T12 untaps: p2:Forest
+T12 untaps: p2:Swamp#1
+T12 untaps: p2:Swamp#2
+T12 moves: Black Knight, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Swamp#1
+T12 p2 adds {B} (p2:Swamp#1)
+T12 p2 taps p2:Swamp#1 for mana
+T12 taps: p1:Forest#2
+T12 p1 adds {G} (p1:Forest#2)
+T12 p1 taps p1:Forest#2 for mana
+T12 taps: p2:Swamp#2
+T12 p2 adds {B} (p2:Swamp#2)
+T12 p2 taps p2:Swamp#2 for mana
+T12 taps: p2:Forest
+T12 p2 adds {G} (p2:Forest)
+T12 p2 taps p2:Forest for mana
+T12 moves: Black Knight, p2's hand -> stack
+T12 p2 casts Black Knight
+T12 resolves: Black Knight
+T12 moves: Black Knight, stack -> battlefield
+T12 moves: Burning Inquiry, p2's hand -> stack
+T12 p2 cancels casting Burning Inquiry
+T12 moves: Elite Vanguard, p2's hand -> stack
+T12 p2 cancels casting Elite Vanguard
+T12 p1's unspent {G} empties
+T12 p2's unspent {G} empties
+T12 p2 attack: nothing
+T13 turn 13 begins (p1)
+T13 untaps: p1:Island
+T13 untaps: p1:Forest#1
+T13 untaps: p1:Forest#2
+T13 untaps: p1:Mountain
+T13 untaps: p1:Forest#3
+T13 moves: Forest, p1's library -> p1's hand
+T13 p1 draws
+T13 taps: p1:Mountain
+T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
+T13 taps: p1:Forest#1
+T13 p1 adds {G} (p1:Forest#1)
+T13 p1 taps p1:Forest#1 for mana
+T13 taps: p1:Island
+T13 p1 adds {U} (p1:Island)
+T13 p1 taps p1:Island for mana
+T13 p1's unspent {U}{R}{G} empties
+T13 moves: Manabarbs, p1's hand -> stack
+T13 p1 cancels casting Manabarbs
+T13 moves: Forest, p1's hand -> battlefield
+T13 p1 plays p1:Forest#4
+T13 taps: p1:Forest#4
+T13 p1 adds {G} (p1:Forest#4)
+T13 p1 taps p1:Forest#4 for mana
+T13 taps: p1:Forest#2
+T13 p1 adds {G} (p1:Forest#2)
+T13 p1 taps p1:Forest#2 for mana
+T13 taps: p1:Forest#3
+T13 p1 adds {G} (p1:Forest#3)
+T13 p1 taps p1:Forest#3 for mana
+T13 p1's unspent {G}{G}{G} empties
+T13 p1 attack: nothing
+T14 turn 14 begins (p2)
+T14 untaps: p2:Forest
+T14 untaps: p2:Swamp#1
+T14 untaps: p2:Swamp#2
+T14 taps: p2:Swamp#1
+T14 p2 adds {B} (p2:Swamp#1)
+T14 p2 taps p2:Swamp#1 for mana
+T14 taps: p2:Swamp#2
+T14 p2 adds {B} (p2:Swamp#2)
+T14 p2 taps p2:Swamp#2 for mana
+T14 taps: p2:Forest
+T14 p2 adds {G} (p2:Forest)
+T14 p2 taps p2:Forest for mana
+T14 p2's unspent {B}{B}{G} empties
+T14 moves: Bramble Creeper, p2's library -> p2's hand
+T14 p2 draws
+T14 taps: p2:Black Knight
+T14 p2 attack: p2:Black Knight -> p1
+T14 p1 block: nothing
+T14 combat damage: p2:Black Knight -> p1 2
+T14 p1 loses 2 life
+T14 moves: Burning Inquiry, p2's hand -> stack
+T14 p2 cancels casting Burning Inquiry
+T14 moves: Burning Inquiry, p2's hand -> p2's graveyard
+T14 p2 discards Burning Inquiry
+T15 turn 15 begins (p1)
+T15 untaps: p1:Island
+T15 untaps: p1:Forest#1
+T15 untaps: p1:Forest#2
+T15 untaps: p1:Mountain
+T15 untaps: p1:Forest#3
+T15 untaps: p1:Forest#4

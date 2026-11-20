@@ -314,6 +314,8 @@ export function replacementWord(state: GameState, ref: ReplacementRef, cards: Ca
   switch (ref.kind) {
     case "regenerationShield":
       return "regeneration";
+    case "protection":
+      return "protection";
     case "ownText":
       return nameOf(state, ref.object, cards);
     case "resolvedEffect": {

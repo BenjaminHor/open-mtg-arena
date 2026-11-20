@@ -88,6 +88,11 @@ export type CardDef = {
    */
   oracle: string;
   keywords?: Keyword[];
+  /**
+   * "Protection from [quality]" (CR 702.16), one entry per quality: "protection from blue and from black" is two
+   * (CR 702.16g). Read only through `protectionsOf`, like `keywords`.
+   */
+  protections?: ProtectionQuality[];
   /** For instants and sorceries: what the spell does when it resolves (CR 608.2). */
   spell?: SpellDef;
   /**
@@ -147,7 +152,9 @@ export type StaticAbilityDef =
   /** "This creature attacks each combat if able": a requirement (CR 508.1d). */
   | { kind: "attacksEachCombat" }
   /** "All creatures able to block this creature do so": a requirement on each of them (CR 509.1c). */
-  | { kind: "mustBeBlockedByAllAble" };
+  | { kind: "mustBeBlockedByAllAble" }
+  /** "This spell can't be countered" (Great Sable Stag): works on the stack (CR 113.6g); a counter does nothing (CR 101.2). */
+  | { kind: "cantBeCountered" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =
@@ -166,6 +173,12 @@ export type Keyword =
   | "swampwalk" // CR 702.14
   | "trample" // CR 702.19
   | "vigilance"; // CR 702.20
+
+/**
+ * What a protection ability is from (CR 702.16a): a color, or a subtype ("protection from Demons", Baneslayer Angel),
+ * which counts for permanents with it and for sources not on the battlefield with it.
+ */
+export type ProtectionQuality = { kind: "color"; color: Color } | { kind: "subtype"; subtype: string };
 
 export type SpellDef = {
   /** One entry per instance of the word "target" (CR 601.2c), matching `StackChoices.targets`. */

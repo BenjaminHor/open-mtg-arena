@@ -539,7 +539,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        future-rules): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons), Great Sable Stag
        (from blue and from black; "can't be countered", CR 101.2, 113.6g: a counter effect does nothing to it, and
        it's still a legal target).
-       Plan (2026-11-20, now):
+       Built (D-091): White Knight, Black Knight, Baneslayer Angel, Great Sable Stag; 11 scenarios in
+       `test/scenarios/cards/m2-08e/`, a unit test for a source that left; golden pool-197 and pool-537. 170 cards;
+       162 of the 234 Magic 2010 cards. Next: mutations, fuzz, reviews, PR (with the M2-08d docs).
+       Plan (2026-11-20):
        - `CardDef.protections: ProtectionQuality[]` (a color, or a subtype like Demon), one per "from" (CR 702.16g),
          read through `protectionsOf` (layer 6, like `keywordsOf`); `rules/protection.ts`: `isProtectedFrom(state,
          protected, source)`, reading the source's colors and subtypes as it is, or as it last existed if gone

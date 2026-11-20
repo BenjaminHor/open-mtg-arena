@@ -49,7 +49,8 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       .map((k) => k.toLowerCase())
       .filter((k) => !KEYWORD_ACTIONS.includes(k) && !GENERIC_TERMS.includes(k))
       .sort();
-    const actual = [...(def.keywords ?? [])].sort();
+    // Protection's qualities are in `protections`; Scryfall lists just "Protection" (CR 702.16).
+    const actual = [...(def.keywords ?? []), ...((def.protections?.length ?? 0) > 0 ? ["protection"] : [])].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);
     }

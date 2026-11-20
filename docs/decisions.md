@@ -1291,3 +1291,21 @@ every schema change and every change D-024 lists bumps it.
   Arena, and no card that filter keeps has "a source of your choice ... is dealt to ... instead" (Scryfall,
   2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above need the owner (D-080, and
   reversing D-088's per-entry choice). Fog, Safe Passage and Guardian Seraph (M2-08d1, D-088) are unaffected.
+
+**D-091: Protection, and "can't be countered" (M2-08e)** · 2026-11-20 · accepted
+- `CardDef.protections` lists the qualities, one per "from" (CR 702.16g): a color or a subtype (Baneslayer Angel's
+  Demons and Dragons), read through `protectionsOf` (layer 6, like `keywordsOf`), on the battlefield only (CR 113.6).
+  Protection is parameterized, so it's its own field rather than a `Keyword` string; the Oracle check counts it as
+  Scryfall's "Protection" keyword. `rules/protection.ts`'s `isProtectedFrom(state, permanent, source)` reads the
+  source as it is, or as it last existed if it left; for an ability, its source's card (CR 702.16b, 113.7a). Printed
+  colors and subtypes, as nothing changes them yet; a snapshot `characteristics()` replaces that when effects can.
+- What it stops: targeting (`legalTargets`, so also on resolution, CR 608.2b), blocking (`canBlock`), and damage: a
+  "prevent all" candidate in `damage-replacements.ts` with its own `ReplacementRef` (`protection`), so it's ordered
+  with Fog and the others like any prevention (D-088). Being enchanted or equipped comes with Auras and Equipment
+  (M2-12, CR 702.16c-d); protection from players or from everything when a card needs it.
+- "This spell can't be countered" is a static (`cantBeCountered`) read on the stack (CR 113.6g): `happen` drops a
+  counter event aimed at it, as it drops a destroy aimed at an indestructible permanent (CR 101.2). The spell is
+  still a legal target, and the counterspell resolves and does its other parts (Great Sable Stag's ruling).
+- Golden cover: "keyword protection" is credited in combat (coarse, like indestructible); static abilities now have a
+  `STATIC_WHEN` table like keywords, "can't be countered" credited as the spell resolves.
+

@@ -1,5 +1,5 @@
-// What a target requirement may choose (CR 115), in one place, so rules that stop targeting (shroud; hexproof and
-// protection, later: CR 702.11b, 702.16b) have one function to change.
+// What a target requirement may choose (CR 115), in one place, so rules that stop targeting (shroud, protection;
+// hexproof, later: CR 702.11b) have one function to change.
 
 import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -9,6 +9,7 @@ import { keywordsOf, stackAbilityText } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
+import { isProtectedFrom } from "./protection.ts";
 
 /**
  * Who is choosing targets, and for what: the spell or ability that targets (`object`, which can't target itself,
@@ -22,11 +23,16 @@ export type Targeting = { object: ObjectId; controller: PlayerId };
  * players in turn order. Only permanents can be chosen unless the text says otherwise (CR 115.2). A permanent with
  * shroud can't be the target of spells or abilities (CR 702.18a), so it's never one; this list is also what's checked
  * on resolution (CR 608.2b), so a target that gained shroud since is illegal then. Shroud works only on the battlefield
- * (CR 113.6): a spell with shroud on the stack or a card with it in a graveyard can be targeted. A player with shroud
- * needs player abilities (later: CR 702.18a).
+ * (CR 113.6): a spell with shroud on the stack or a card with it in a graveyard can be targeted. Nor is a permanent
+ * with protection from the spell, or from the ability's source (CR 702.16b), likewise only on the battlefield. A player
+ * with shroud or protection needs player abilities (later: CR 702.18a, 702.16b).
  */
 export function legalTargets(state: GameState, spec: TargetSpec, by: Targeting, cards: CardDatabase): Target[] {
-  return candidates(state, spec, by, cards).filter((t) => t.kind !== "object" || !hasShroud(state, t.object, cards));
+  return candidates(state, spec, by, cards).filter(
+    (t) =>
+      t.kind !== "object" ||
+      (!hasShroud(state, t.object, cards) && !isProtectedFrom(state, t.object, by.object, cards)),
+  );
 }
 
 function hasShroud(state: GameState, id: ObjectId, cards: CardDatabase): boolean {

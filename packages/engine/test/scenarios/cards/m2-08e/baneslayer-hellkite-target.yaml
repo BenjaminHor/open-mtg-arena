@@ -1,0 +1,20 @@
+name: A Dragon's triggered ability can't target Baneslayer Angel
+rules: [CR 702.16b, CR 702.16a, CR 603.3d]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Baneslayer Angel]
+  p2:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+    hand: [Bogardan Hellkite]
+steps:
+  - p2 cast: Bogardan Hellkite
+    pay: auto
+  - all pass: once
+  - p2 choose: 1
+  - p2 choose: p1:Baneslayer Angel
+  - expect error: illegalAction
+  - p2 choose: p1
+  - all pass: once
+  - expect:
+      p1.life: 15

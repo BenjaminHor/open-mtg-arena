@@ -1,0 +1,19 @@
+name: Baneslayer Angel can't be blocked by a Dragon; another flyer can block it
+rules: [CR 702.16f, CR 702.16a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Baneslayer Angel]
+  p2:
+    battlefield: [Shivan Dragon, Serra Angel]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Baneslayer Angel]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Shivan Dragon: Baneslayer Angel }
+  - expect error: illegalAction
+  - p2 block: { Serra Angel: Baneslayer Angel }
+  - all pass: until main2
+  - expect:
+      p2.graveyard: [Serra Angel]
+      p1.life: 25

@@ -18,6 +18,7 @@ import type {
   Keyword,
   ReplacementDef,
   SpellDef,
+  StaticAbilityDef,
   TargetSpec,
   TriggeredAbilityDef,
 } from "@mtg/engine";
@@ -188,9 +189,24 @@ function allEffects(def: CardDef): (readonly Effect[])[] {
  */
 export function permanentUnits(def: CardDef, when: "combat" | "enters"): string[] {
   const keywords = (def.keywords ?? []).filter((k) => KEYWORD_WHEN[k] === when).map((k) => `keyword ${k}`);
-  const statics = when === "combat" ? (def.statics ?? []).map((s) => `static ${s.kind}`) : [];
-  return [...keywords, ...statics];
+  // Coarse, like indestructible: protection also stops targeting outside combat, which isn't credited.
+  const protection = when === "combat" && (def.protections ?? []).length > 0 ? ["keyword protection"] : [];
+  const statics = (def.statics ?? []).filter((s) => STATIC_WHEN[s.kind] === when).map((s) => `static ${s.kind}`);
+  return [...keywords, ...protection, ...statics];
 }
+
+/**
+ * When a static ability is credited, like `KEYWORD_WHEN`: most are about attacking or blocking; "can't be countered"
+ * as the spell resolves (coarse: it did something only if a counter was tried). A new kind must be placed.
+ */
+const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
+  cantBeBlocked: "combat",
+  canBlockAnyNumber: "combat",
+  cantAttackOrBlockAlone: "combat",
+  attacksEachCombat: "combat",
+  mustBeBlockedByAllAble: "combat",
+  cantBeCountered: "enters",
+};
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */
 const SPELL_FIELDS: { [F in keyof SpellDef]-?: (spell: SpellDef, manyTargets: boolean) => string[] } = {

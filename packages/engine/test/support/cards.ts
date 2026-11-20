@@ -70,6 +70,9 @@ export const MINE = "test-mine";
 /** Not a real card: Lightwielder Paladin's "target ... that player controls" on a test body, unit-testing CR 608.2b. */
 export const THAT_PLAYERS = "test-that-players";
 
+/** Not a real card: a 2/2 with protection from black (White Knight's protection without its first strike). */
+export const PRO_BLACK = "test-pro-black";
+
 /** A test creature with only keywords: a vanilla body for combat tests. */
 function keywordCreature(oracleId: string, name: string, size: [number, number], keywords: Keyword[]): CardData {
   return card(oracleId, {
@@ -639,6 +642,13 @@ export const TEST_CARDS: CardDatabase = {
     },
     def: { name: "Test Enchantment", oracle: "" },
   }),
+  [PRO_BLACK]: (() => {
+    const base = keywordCreature(PRO_BLACK, "Pro Black", [2, 2], []);
+    return {
+      ...base,
+      def: { ...base.def, oracle: "Protection from black", protections: [{ kind: "color", color: "B" }] },
+    };
+  })(),
   [DOUBLE_STRIKER]: keywordCreature(DOUBLE_STRIKER, "Double Striker", [2, 2], ["double strike"]),
   [DOUBLE_LIFELINKER]: keywordCreature(DOUBLE_LIFELINKER, "Double Lifelinker", [2, 2], ["double strike", "lifelink"]),
   [FIRST_STRIKER]: keywordCreature(FIRST_STRIKER, "First Striker", [2, 2], ["first strike"]),

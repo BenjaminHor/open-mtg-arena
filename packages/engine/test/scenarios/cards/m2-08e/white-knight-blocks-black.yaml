@@ -1,0 +1,17 @@
+name: White Knight can block a black creature; that creature's damage to it is prevented, and its own isn't
+rules: [CR 702.16e, CR 702.16f]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [White Knight]
+  p2:
+    battlefield: [Vampire Aristocrat]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Vampire Aristocrat]
+  - all pass: until combat.declareBlockers
+  - p1 block: { White Knight: Vampire Aristocrat }
+  - all pass: until main2
+  - expect:
+      p1:White Knight.damage: 0
+      p2.graveyard: [Vampire Aristocrat]

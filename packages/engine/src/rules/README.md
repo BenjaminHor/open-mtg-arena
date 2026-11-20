@@ -28,6 +28,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/f/g).
 - `damage-recipients.ts`: `canBeDealtDamage`, who can be dealt damage now (CR 120.1a).
 - `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1).
+- `protection.ts`: `protectionsOf`, `isProtectedFrom`: protection (CR 702.16) and whether a source has the quality,
+  as it is or as it last existed (D-091).
 - `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes
   types yet).
 - `characteristics.ts`: `characteristics(state, id, cards)`, an object's characteristics through the layers (CR 613),
