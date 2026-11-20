@@ -244,6 +244,25 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
+       Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:
+       - Slice 1, casting: `spellCast` with a filter on the spell as cast (colors, types; `controller` is the caster,
+         relative to the trigger's controller), matched where `SPELL_CAST` is emitted (CR 601.2i), so the triggers go
+         on the stack before the caster gets priority. The five artifacts ("you may gain 1 life"), Mesa Enchantress,
+         Lurking Predators (a `revealTop` op whose card is `found`; `put` with an `onlyIf` filter; "you may put it on
+         the bottom", a yes or no).
+       - Slice 2, drawing, discarding, mana: `playerDraws` and `playerDiscards` (`CARD_DRAWN`, `CARD_DISCARDED`, through
+         the pipeline), `landTappedForMana` (CR 106.12: a new `MANA_ABILITY_RESOLVED` event from `resolveManaAbility`,
+         land source, {T} in the cost, mana produced, CR 106.12a). Underworld Dreams, Megrim, Manabarbs. The cleanup
+         step gives priority when triggers wait (CR 514.3a: a discard to hand size triggers Megrim). Manabarbs triggered
+         while paying a cancelled cast is dropped (CR 734.1, built in 07a).
+       - Slice 3, damage and life: `selfDealsDamage` (to an opponent, or combat damage to a player), `playerGainsLife`
+         with "that much" (`TriggerEvent.amount`, an `Amount` "triggerAmount"). Target filters can name "that player"
+         (`controller: "triggeringPlayer"`, read from the ability's `trigger`, CR 603.3d, Lightwielder Paladin).
+         Hypnotic Specter, Sanguine Bond (one trigger per life-gain event: each lifelink source, CR 603.2c),
+         Lightwielder Paladin.
+       - Future impact: "whenever a player casts" also matches copies later (no: copies aren't cast, CR 707.10); the
+         filter reads the spell's characteristics through `characteristics()` so layer effects apply; replacement
+         effects (M2-08) change draw and life gain events before detection; a 0-life gain has no event (CR 119.10).
      - M2-07c: Xathrid Demon, Capricious Efreet, Dragon Whelp (a delayed trigger, CR 603.7), Inferno Elemental,
        Illusionary Servant ("becomes the target", CR 601.2c), Bogardan Hellkite (flash comes with it, D-074).
      - Settled before code (advisor, 2026-11-20):
