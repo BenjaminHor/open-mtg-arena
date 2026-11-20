@@ -49,10 +49,11 @@ export function runEffect(
       return happen(state, { kind: "dealDamage", damage: damageOf(state, effect, from, context, cards) }, cards);
     }
     case "addMana": {
-      // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5). "Any color" was replaced
-      // by the color chosen as the mana ability resolved (`resolveManaAbility`, D-068).
+      // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5). A choice of color was
+      // replaced by the color chosen as the mana ability resolved (`resolveManaAbility`, D-068).
       const { mana, amount } = effect;
-      if (mana === "anyColor") throw new Error("mana of any color needs the color chosen as its ability resolves");
+      if (typeof mana !== "string" || mana === "anyColor")
+        throw new Error("a choice of mana needs the color chosen as its ability resolves");
       return happen(state, { kind: "addMana", player: context.controller, mana, amount, source: context.self }, cards);
     }
     case "modifyPT": {

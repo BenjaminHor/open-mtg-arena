@@ -41,8 +41,9 @@ export const DECKS: Record<string, DeckList> = {
   "red-green-beats": {
     name: "red-green-beats",
     cards: [
-      { card: "Forest", count: 7 },
-      { card: "Mountain", count: 7 },
+      { card: "Forest", count: 6 },
+      { card: "Mountain", count: 6 },
+      { card: "Rootbound Crag", count: 2 },
       { card: "Terramorphic Expanse", count: 2 },
       { card: "Llanowar Elves", count: 2 },
       { card: "Prized Unicorn", count: 1 },
@@ -71,8 +72,9 @@ export const DECKS: Record<string, DeckList> = {
   "blue-black-control": {
     name: "blue-black-control",
     cards: [
-      { card: "Island", count: 9 },
-      { card: "Swamp", count: 8 },
+      { card: "Island", count: 8 },
+      { card: "Swamp", count: 7 },
+      { card: "Drowned Catacomb", count: 2 },
       { card: "Alluring Siren", count: 1 },
       { card: "Hypnotic Specter", count: 1 },
       { card: "Dread Warlock", count: 1 },

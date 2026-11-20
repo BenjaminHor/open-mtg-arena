@@ -120,7 +120,7 @@ describe("the card id each event names is the public one (D-054)", () => {
     const before = cardIdOf(g.state, card);
     g = take(g, (a) => a.type === "ANSWER" && a.answer.kind === "discardToHandSize" && a.answer.object === card);
     const event = lastEvent(g, "CARD_DISCARDED");
-    expect(event.cardId).toBe(cardIdOf(g.state, event.newId));
+    expect(event.cardId).toBe(cardIdOf(g.state, event.newId as ObjectId));
     expect(event.cardId).not.toBe(before);
   });
 

@@ -1,0 +1,16 @@
+name: Sunpetal Grove played while its controller controls a Plains enters untapped, and taps for green or white
+rules: [CR 614.1d, CR 614.12, CR 106.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains]
+    hand: [Sunpetal Grove]
+steps:
+  - p1 play: Sunpetal Grove
+  - expect:
+      p1:Sunpetal Grove.tapped: false
+  - p1 activate: Sunpetal Grove
+    color: W
+  - expect:
+      p1.manaPool: { W: 1 }
+      p1:Sunpetal Grove.tapped: true

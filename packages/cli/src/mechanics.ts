@@ -16,6 +16,7 @@ import type {
   Effect,
   GameEvent,
   Keyword,
+  ReplacementDef,
   SpellDef,
   TargetSpec,
   TriggeredAbilityDef,
@@ -103,6 +104,8 @@ const KEYWORD_WHEN: Record<Keyword, "combat" | "enters"> = {
   flying: "combat",
   forestwalk: "combat",
   haste: "combat",
+  // Coarse: it also works against "destroy" outside combat, which isn't credited.
+  indestructible: "combat",
   lifelink: "combat",
   reach: "combat",
   shroud: "enters",
@@ -117,6 +120,22 @@ const KEYWORD_WHEN: Record<Keyword, "combat" | "enters"> = {
  */
 export const DELAYED_TRIGGER = "trigger delayed";
 
+/**
+ * Where each kind of replacement effect does something: it's credited as its card moves there, outside the pregame
+ * (coarse, like `effectOps`: entering untapped still checked the condition, and Darksteel Colossus put into a library
+ * some other way would count). A new kind must be placed.
+ */
+const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library"> = {
+  entersTapped: "battlefield",
+  // Instead of a graveyard.
+  graveyardToLibrary: "library",
+};
+
+/** The replacement effects a card's own text makes that apply as it moves to `zone`. */
+export function replacementUnits(def: CardDef, zone: string): string[] {
+  return (def.replacements ?? []).filter((r) => REPLACEMENT_WHERE[r.kind] === zone).map((r) => `replacement ${r.kind}`);
+}
+
 export const decisionUnit = (kind: DecisionKind["kind"]): string => `decision ${kind}`;
 export const eventUnit = (type: GameEvent["type"]): string => `event ${type}`;
 
@@ -128,6 +147,7 @@ export function wantedMechanics(cards: CardDatabase): string[] {
     ...(card.def.spell === undefined ? [] : spellUnits(card.def.spell, true)),
     ...(card.def.abilities ?? []).flatMap(abilityUnits),
     ...(card.def.triggers ?? []).flatMap(triggerUnits),
+    ...(card.def.replacements ?? []).map((r) => `replacement ${r.kind}`),
     // A delayed triggered ability: wanted, but credited as it resolves.
     ...allEffects(card.def).flatMap((effects) =>
       delayedAbilities(effects).flatMap((ability) => [DELAYED_TRIGGER, ...triggerUnits(ability)]),

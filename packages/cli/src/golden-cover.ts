@@ -29,6 +29,7 @@ import {
   decisionUnit,
   eventUnit,
   permanentUnits,
+  replacementUnits,
   spellUnits,
   triggerUnits,
   wantedMechanics,
@@ -82,8 +83,8 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
 /**
  * The mechanics an event shows a card's script running (D-082): a spell resolving (its fields, and the keywords a
  * permanent spell brings as it enters), an ability resolving (its costs or trigger condition, targets and effects), a
- * mana ability making mana, or creatures attacking and blocking (their combat keywords and statics, where those do
- * something). A cast that's cancelled or countered never runs the script. Objects that left are only in the state
+ * mana ability making mana, a card moving where its own replacement effect applies, or creatures attacking and blocking
+ * (their combat keywords and statics, where those do something). A cast that's cancelled or countered never runs the script. Objects that left are only in the state
  * before.
  */
 export function mechanicsUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string[] {
@@ -133,6 +134,11 @@ export function mechanicsUsed(event: GameEvent, before: GameState, after: GameSt
       // every mana ability of the source counts, as no pool card has two.
       const abilities = cardDef(event.source)?.abilities ?? [];
       return abilities.filter((a) => a.effects.some((e) => e.op === "addMana")).flatMap(abilityUnits);
+    }
+    case "ZONE_CHANGED": {
+      // A mulligan puts the hand back into the library: no replacement does that (CR 103.5).
+      const def = cards[event.object.oracleId]?.def;
+      return def === undefined || before.pregame !== null ? [] : replacementUnits(def, event.to.zone);
     }
     case "ATTACKERS_DECLARED":
       return inCombat(event.attacks.map((a) => a.attacker));

@@ -158,7 +158,7 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "DAMAGE_REMOVED":
       return `damage removed: ${name(e.object)} (${e.amount})`;
     case "CARD_DISCARDED":
-      return `${e.player} discards ${name(e.newId)}`;
+      return `${e.player} discards ${e.newId === null ? "a card, which went somewhere hidden" : name(e.newId)}`;
     case "CARDS_REVEALED": {
       const owner = "player" in e.from ? `${e.from.player}'s ` : "";
       const shown = e.cards.map((oracleId) => cards[oracleId]?.printed.name ?? oracleId);

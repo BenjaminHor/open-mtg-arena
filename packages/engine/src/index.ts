@@ -16,6 +16,7 @@ export type {
   ManaCost,
   ManaSymbol,
   PrintedCard,
+  ReplacementDef,
   SpellDef,
   StaticAbilityDef,
   Supertype,

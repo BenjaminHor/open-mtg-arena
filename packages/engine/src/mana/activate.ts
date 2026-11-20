@@ -1,7 +1,7 @@
 // Activating abilities of permanents, and mana abilities in particular (CR 602, 605). A mana ability doesn't use the
 // stack: it resolves at once (CR 605.3b).
 
-import type { AbilityDef, CardDatabase, Color } from "../cards/types.ts";
+import type { AbilityDef, CardDatabase, Color, Effect } from "../cards/types.ts";
 import { runEffect } from "../effects/run-effect.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
@@ -11,7 +11,7 @@ import { controllerOf } from "../rules/controller.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { COLORS } from "../state/mana.ts";
+import { COLORS, type ManaType } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 
@@ -74,14 +74,31 @@ export function manaAbilityProblem(
   return null;
 }
 
-/** Whether this ability's text adds "one mana of any color", so its activation names a color (D-068). */
-export function addsAnyColor(def: AbilityDef): boolean {
-  return def.effects.some((e) => e.op === "addMana" && e.mana === "anyColor");
+/**
+ * The colors a mana ability lets its activation choose from: all five for "one mana of any color", two for "{G} or {W}"
+ * (D-068), none for an ability that makes one kind of mana, whose activation names no color.
+ */
+export function manaChoices(def: AbilityDef): readonly Color[] {
+  return def.effects.flatMap((e) => (e.op === "addMana" ? choicesOf(e.mana) : []));
+}
+
+/** The kinds of mana an "add mana" effect can make, and whether its activation chooses one (D-068). */
+export function manaKinds(mana: AddedMana): { makes: readonly ManaType[]; chooses: boolean } {
+  if (mana === "anyColor" || typeof mana === "object") return { makes: choicesOf(mana), chooses: true };
+  return { makes: [mana], chooses: false };
+}
+
+type AddedMana = Extract<Effect, { op: "addMana" }>["mana"];
+
+function choicesOf(mana: AddedMana): readonly Color[] {
+  if (mana === "anyColor") return COLORS;
+  return typeof mana === "object" ? mana.oneOf : [];
 }
 
 /**
  * Why the color sent with a mana ability's activation is wrong, or null: an "any color" ability needs one of the five
- * colors (CR 105.4); any other ability takes none (D-068).
+ * colors (CR 105.4), a "{G} or {W}" one one of its two, the choice its text offers (CR 608.2d); any other ability
+ * takes none (D-068).
  */
 export function manaColorProblem(
   state: GameState,
@@ -91,9 +108,11 @@ export function manaColorProblem(
   cards: CardDatabase,
 ): string | null {
   const ability = findAbility(state, id, ref, cards);
-  if (ability === null || !addsAnyColor(ability.def))
-    return color === undefined ? null : "only a mana ability of any color takes a color";
-  if (color === undefined || !COLORS.includes(color)) return "choose one of the five colors for that mana (CR 105.4)";
+  const choices = ability === null ? [] : manaChoices(ability.def);
+  if (choices.length === 0)
+    return color === undefined ? null : "only a mana ability with a choice of color takes a color";
+  if (color === undefined || !choices.includes(color))
+    return `choose one of ${choices.join(", ")} for that mana (CR 608.2d)`;
   return null;
 }
 
@@ -136,7 +155,7 @@ export function resolveManaAbility(
   const context = { self: id, controller: player, targets: [], division: [], x: null, trigger: null };
   for (const effect of ability.def.effects) {
     const chosen =
-      effect.op === "addMana" && effect.mana === "anyColor" && color !== undefined
+      effect.op === "addMana" && choicesOf(effect.mana).length > 0 && color !== undefined
         ? { ...effect, mana: color }
         : effect;
     progress = andThen(progress, (s) => runEffect(s, chosen, context, cards));

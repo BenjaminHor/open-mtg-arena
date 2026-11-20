@@ -1,8 +1,16 @@
-// An object's abilities as it has them now: keywords, static abilities that aren't keywords, triggered and activated
-// abilities, with which of those are mana abilities.
+// An object's abilities as it has them now: keywords, static abilities that aren't keywords, replacement effects,
+// triggered and activated abilities, with which of those are mana abilities.
 
 import type { TriggeredAbilityDef } from "../cards/triggers.ts";
-import type { AbilityDef, CardDatabase, Effect, Keyword, StaticAbilityDef, TargetSpec } from "../cards/types.ts";
+import type {
+  AbilityDef,
+  CardDatabase,
+  Effect,
+  Keyword,
+  ReplacementDef,
+  StaticAbilityDef,
+  TargetSpec,
+} from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -35,6 +43,17 @@ export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDat
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
   return cards[obj.oracleId]?.def.statics ?? [];
+}
+
+/**
+ * The replacement effects an object's own text makes (CR 614.1), in any zone: each kind says where it works
+ * (CR 113.6b, 113.6h), and `pipeline/replacements.ts` checks that. Abilities granted or removed by effects (layer 6,
+ * later: CR 613.1f) will change this list, in this one place.
+ */
+export function replacementsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ReplacementDef[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  return cards[obj.oracleId]?.def.replacements ?? [];
 }
 
 /**

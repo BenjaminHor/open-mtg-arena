@@ -19,7 +19,7 @@ import { moveCard } from "../zones/move-card.ts";
 import { reorderLibraryTop } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
-import type { ProposedEvent, SingleEvent } from "./proposed.ts";
+import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
   if (event.kind !== "simultaneous") return performOne(state, event, cards);
@@ -36,9 +36,9 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return { state: moved, events };
     }
     case "destroy":
-      return destroy(state, event.object);
+      return destroy(state, event.object, event.to);
     case "sacrifice":
-      return sacrifice(state, event.object);
+      return sacrifice(state, event.object, event.to);
     case "dealDamage":
       return dealDamage(state, event.damage, cards);
     case "reveal":
@@ -48,7 +48,7 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     case "tap":
       return tapPermanent(state, event.object);
     case "counterObject":
-      return counterObject(state, event.object);
+      return counterObject(state, event.object, event.to);
     case "gainLife":
       return gainLife(state, event.player, event.amount);
     case "loseLife":
@@ -60,11 +60,11 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     case "draw":
       return drawCard(state, event.player);
     case "discard":
-      return discardCard(state, event.object);
+      return discardCard(state, event.object, event.to);
     case "shuffle":
       return shuffleLibrary(state, event.player);
     case "playLand": {
-      const moved = moveCard(state, event.object, { zone: "battlefield", controller: event.player });
+      const moved = moveCard(state, event.object, playLandDestination(event));
       return andThen(moved, (s) => countLandPlay(s, event.player, moved.newId));
     }
   }

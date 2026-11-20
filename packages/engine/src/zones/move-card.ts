@@ -13,8 +13,10 @@ import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
 export type Destination =
   /** The owner's library (CR 400.3). Index 0 is the top. */
   | { zone: "library"; position: "top" | "bottom" }
-  /** The owner's hand or graveyard (CR 400.3). A graveyard card goes on top (CR 404.1), the end of the list. */
-  | { zone: "hand" | "graveyard" }
+  /** The owner's hand (CR 400.3). */
+  | { zone: "hand" }
+  /** The owner's graveyard (CR 400.3). A card goes on top (CR 404.1), the end of the list. */
+  | { zone: "graveyard" }
   /** Permanents and spells have a controller (CR 110.2, 112.2). */
   | { zone: "battlefield" | "stack"; controller: PlayerId }
   /**
@@ -93,7 +95,7 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
 }
 
 /** Hands and libraries: zones some player can't see into (CR 400.2). */
-function isHiddenZone(zone: ZoneRef): boolean {
+export function isHiddenZone(zone: Pick<ZoneRef, "zone">): boolean {
   return zone.zone === "hand" || zone.zone === "library";
 }
 

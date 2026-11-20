@@ -10,7 +10,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { MANA_TYPES, type ManaType } from "../state/mana.ts";
 import type { AbilityRef } from "../state/objects.ts";
-import { manaAbilityProblem } from "./activate.ts";
+import { manaAbilityProblem, manaKinds } from "./activate.ts";
 import type { ManaPayment } from "./payment.ts";
 
 export type AutoPayment = {
@@ -26,9 +26,10 @@ const GENERIC_ORDER: readonly ManaType[] = ["C", "W", "U", "B", "R", "G"];
 /**
  * A way for the player to pay the cost, or null if there's none. Mana already in the pool is used first. Then mana
  * abilities: lands before creatures (keeping creatures free to attack), each group in battlefield order. Colored symbols
- * are paid before generic. A source of any color (Birds of Paradise) is used only after the fixed-color ones, which
- * always finds a payment when one exists with one-color and any-color sources; sources with a restricted choice
- * ("{R} or {G}"), several mana or a mana cost will need a search (future-rules).
+ * are paid before generic. A source with a choice of color is used only after the fixed-color ones, and a two-color one
+ * ("{G} or {W}") before one of any color (Birds of Paradise). That always finds a payment when one exists for a cost of
+ * one color, which every Magic 2010 cost is; a cost of two colors with two-color sources, or a source of several mana
+ * or with a mana cost, will need a search (future-rules).
  */
 export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, cards: CardDatabase): AutoPayment | null {
   const pool = { ...(state.players[player]?.manaPool ?? { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }) };
@@ -44,21 +45,21 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
       payment[fromPool] += 1;
       return true;
     }
-    // A source of one fixed color first; one of any color last, so it stays free for a color nothing else makes.
-    const fixed = sources.findIndex((s, i) => !used.includes(i) && s.mana !== "anyColor" && allowed.includes(s.mana));
-    const color = allowed.find((t): t is Color => t !== "C");
-    const anyColor = color === undefined ? -1 : sources.findIndex((s, i) => !used.includes(i) && s.mana === "anyColor");
-    const at = fixed >= 0 ? fixed : anyColor;
-    const source = sources[at];
-    if (source === undefined) return false;
-    used.push(at);
-    if (source.mana !== "anyColor") {
-      activations.push({ object: source.object, ability: source.ability });
-      payment[source.mana] += 1;
-    } else if (color !== undefined) {
-      activations.push({ object: source.object, ability: source.ability, color });
-      payment[color] += 1;
-    }
+    // Lands before creatures, keeping creatures free to attack; then the source with the fewest choices: one fixed
+    // color, then two ("{G} or {W}"), then any color, so a source keeps its choice for a color nothing else makes.
+    const candidates = sources
+      .map((s, i) => ({ s, i }))
+      .filter(({ s, i }) => !used.includes(i) && s.makes.some((t) => allowed.includes(t)))
+      .sort((a, b) => Number(!a.s.land) - Number(!b.s.land) || a.s.makes.length - b.s.makes.length);
+    const best = candidates[0];
+    if (best === undefined) return false;
+    used.push(best.i);
+    const mana = allowed.find((t) => best.s.makes.includes(t));
+    if (mana === undefined) return false;
+    const { object, ability } = best.s;
+    // A choice of color comes with the activation (D-068); colorless is never a choice.
+    activations.push(best.s.chooses && mana !== "C" ? { object, ability, color: mana } : { object, ability });
+    payment[mana] += 1;
     return true;
   };
 
@@ -80,7 +81,11 @@ export function autoPay(state: GameState, player: PlayerId, cost: ManaCost, card
   return { activations, payment };
 }
 
-type Source = { object: ObjectId; ability: AbilityRef; mana: ManaType | "anyColor" };
+/**
+ * A permanent's mana ability that makes one mana: the kinds it can make, whether its activation chooses one, and
+ * whether the permanent is a land.
+ */
+type Source = { object: ObjectId; ability: AbilityRef; makes: readonly ManaType[]; chooses: boolean; land: boolean };
 
 /**
  * The most mana the player could have right now: what's in their pool, and one for each permanent whose mana ability
@@ -94,7 +99,7 @@ export function manaAvailable(state: GameState, player: PlayerId, cards: CardDat
 
 /** The player's permanents that can make one mana now, lands first, each group in battlefield order. */
 function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): Source[] {
-  const sources: (Source & { land: boolean })[] = [];
+  const sources: Source[] = [];
   // A permanent the cost being paid taps can't be tapped for mana for it too (CR 107.5).
   const tappedByCost = tapsForCost(state, cards);
   for (const object of state.zones.battlefield) {
@@ -106,11 +111,11 @@ function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): S
       sources.push({
         object,
         ability: ref,
-        mana: effect.mana,
+        ...manaKinds(effect.mana),
         land: cardTypesOf(state, object, cards).includes("land"),
       });
       break; // one mana ability per permanent: activating it taps the permanent
     }
   }
-  return [...sources.filter((s) => s.land), ...sources.filter((s) => !s.land)].map(({ land: _land, ...s }) => s);
+  return [...sources.filter((s) => s.land), ...sources.filter((s) => !s.land)];
 }

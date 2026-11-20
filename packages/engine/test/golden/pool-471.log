@@ -1,0 +1,63 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Runeclaw Bear, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Child of Night, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Merfolk Looter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Gravedigger, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Sparkmage Apprentice, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Phantom Warrior, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Spined Wurm, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Capricious Efreet, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mesa Enchantress, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 keeps
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Island, p2's hand -> battlefield
+T1 p2 plays p2:Island
+T1 taps: p2:Island
+T1 p2 adds {U} (p2:Island)
+T1 p2 taps p2:Island for mana
+T1 moves: Sparkmage Apprentice, p2's hand -> stack
+T1 p2 cancels casting Sparkmage Apprentice
+T1 moves: Sparkmage Apprentice, p2's hand -> stack
+T1 p2 cancels casting Sparkmage Apprentice
+T1 moves: Child of Night, p2's hand -> stack
+T1 p2 cancels casting Child of Night
+T1 p2's unspent {U} empties
+T1 p2 attack: nothing
+T1 moves: Runeclaw Bear, p2's hand -> stack
+T1 p2 cancels casting Runeclaw Bear
+T1 moves: Merfolk Looter, p2's hand -> stack
+T1 p2 cancels casting Merfolk Looter
+T2 turn 2 begins (p1)
+T2 moves: Darksteel Colossus, p1's library -> p1's hand
+T2 p1 draws
+T2 moves: Darksteel Colossus, p1's hand -> stack
+T2 p1 cancels casting Darksteel Colossus
+T2 p1 attack: nothing
+T2 p1's hand is revealed: Darksteel Colossus
+T2 moves: Darksteel Colossus, p1's hand -> p1's library
+T2 p1 discards a card, which went somewhere hidden
+T2 p1 shuffles their library
+T3 turn 3 begins (p2)
+T3 untaps: p2:Island

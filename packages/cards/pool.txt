@@ -30,6 +30,7 @@ Child of Night
 Consume Spirit
 Coral Merfolk
 Craw Wurm
+Darksteel Colossus
 Deadly Recluse
 Deathmark
 Demon's Horn
@@ -41,7 +42,9 @@ Divine Verdict
 Doom Blade
 Dragon Whelp
 Dragon's Claw
+Dragonskull Summit
 Dread Warlock
+Drowned Catacomb
 Duress
 Earthquake
 Elite Vanguard
@@ -60,6 +63,7 @@ Forest
 Furnace Whelp
 Giant Growth
 Giant Spider
+Glacial Fortress
 Goblin Artillery
 Goblin Piker
 Gravedigger
@@ -115,6 +119,7 @@ Rampant Growth
 Razorfoot Griffin
 Righteousness
 Rod of Ruin
+Rootbound Crag
 Royal Assassin
 Runeclaw Bear
 Sage Owl
@@ -134,6 +139,7 @@ Sparkmage Apprentice
 Spined Wurm
 Stampeding Rhino
 Stormfront Pegasus
+Sunpetal Grove
 Swamp
 Tempest of Light
 Tendrils of Corruption

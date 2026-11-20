@@ -4,10 +4,12 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
+import { keywordsOf } from "../rules/abilities.ts";
 import type { GameState } from "../state/game-state.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { perform } from "./perform.ts";
 import type { ProposedEvent, SingleEvent } from "./proposed.ts";
+import { applyReplacements } from "./replacements.ts";
 
 /**
  * Carries out an event. All of the replacing comes first, against the state before the event, and then all of the
@@ -18,9 +20,10 @@ export function happen(state: GameState, proposed: ProposedEvent, cards: CardDat
 }
 
 /**
- * The members of a batch are each replaced against the same state, the one before the batch (later: CR 614.4). A
- * replacement may turn one event into several (regeneration, later: CR 701.19a) or none (a skip, later: CR 614.1b), so
- * the result is a batch, unless it's exactly one event.
+ * The members of a batch are each replaced against the same state, the one before the batch: each watches for an event
+ * about to happen (CR 614.1), and none of the batch has happened yet. A replacement
+ * may turn one event into several (Darksteel Colossus's reveal, move and shuffle) or none (a destroy an indestructible
+ * permanent ignores, CR 702.12b), so the result is a batch, unless it's exactly one event.
  */
 function replace(state: GameState, proposed: ProposedEvent, cards: CardDatabase): ProposedEvent {
   const members = proposed.kind === "simultaneous" ? proposed.events : [proposed];
@@ -31,8 +34,8 @@ function replace(state: GameState, proposed: ProposedEvent, cards: CardDatabase)
     : { kind: "simultaneous", events: replaced };
 }
 
-/** Replacement and prevention effects modify the event (later: CR 614–616). None exist yet. */
-function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDatabase): SingleEvent[] {
+/** Replacement and prevention effects modify the event (CR 614; prevention, later: CR 615). */
+function replaceOne(state: GameState, proposed: SingleEvent, cards: CardDatabase): SingleEvent[] {
   switch (proposed.kind) {
     case "dealDamage":
       // A source that would deal 0 damage deals no damage at all, so there's nothing for a replacement or prevention
@@ -41,8 +44,13 @@ function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDataba
     case "gainLife":
       // Gaining 0 life isn't an event: nothing triggers on it (CR 119.9) and nothing replaces it (CR 119.10).
       return proposed.amount > 0 ? [proposed] : [];
-    case "moveCard":
     case "destroy":
+      // An indestructible permanent can't be destroyed (CR 702.12b): the event can't happen, so no replacement or
+      // prevention effect, such as regeneration, may replace it (later: CR 614.17c, with M2-08b's shields). Only a
+      // self-replacement could (later: CR 614.15).
+      if (keywordsOf(state, proposed.object, cards).includes("indestructible")) return [];
+      return applyReplacements(state, proposed, cards);
+    case "moveCard":
     case "sacrifice":
     case "tap":
     case "counterObject":
@@ -55,7 +63,7 @@ function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDataba
     case "discard":
     case "shuffle":
     case "playLand":
-      return [proposed];
+      return applyReplacements(state, proposed, cards);
   }
 }
 

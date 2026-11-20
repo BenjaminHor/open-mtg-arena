@@ -27,6 +27,7 @@ import { childOfNight } from "./c/child-of-night.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
+import { darksteelColossus } from "./d/darksteel-colossus.ts";
 import { deadlyRecluse } from "./d/deadly-recluse.ts";
 import { deathmark } from "./d/deathmark.ts";
 import { demonsHorn } from "./d/demons-horn.ts";
@@ -38,7 +39,9 @@ import { divineVerdict } from "./d/divine-verdict.ts";
 import { doomBlade } from "./d/doom-blade.ts";
 import { dragonWhelp } from "./d/dragon-whelp.ts";
 import { dragonsClaw } from "./d/dragons-claw.ts";
+import { dragonskullSummit } from "./d/dragonskull-summit.ts";
 import { dreadWarlock } from "./d/dread-warlock.ts";
+import { drownedCatacomb } from "./d/drowned-catacomb.ts";
 import { duress } from "./d/duress.ts";
 import { earthquake } from "./e/earthquake.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
@@ -57,6 +60,7 @@ import { forest } from "./f/forest.ts";
 import { furnaceWhelp } from "./f/furnace-whelp.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
+import { glacialFortress } from "./g/glacial-fortress.ts";
 import { goblinArtillery } from "./g/goblin-artillery.ts";
 import { goblinPiker } from "./g/goblin-piker.ts";
 import { gravedigger } from "./g/gravedigger.ts";
@@ -112,6 +116,7 @@ import { rampantGrowth } from "./r/rampant-growth.ts";
 import { razorfootGriffin } from "./r/razorfoot-griffin.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
+import { rootboundCrag } from "./r/rootbound-crag.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
 import { runeclawBear } from "./r/runeclaw-bear.ts";
 import { sageOwl } from "./s/sage-owl.ts";
@@ -131,6 +136,7 @@ import { sparkmageApprentice } from "./s/sparkmage-apprentice.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { stampedingRhino } from "./s/stampeding-rhino.ts";
 import { stormfrontPegasus } from "./s/stormfront-pegasus.ts";
+import { sunpetalGrove } from "./s/sunpetal-grove.ts";
 import { swamp } from "./s/swamp.ts";
 import { tempestOfLight } from "./t/tempest-of-light.ts";
 import { tendrilsOfCorruption } from "./t/tendrils-of-corruption.ts";
@@ -181,6 +187,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   consumeSpirit,
   coralMerfolk,
   crawWurm,
+  darksteelColossus,
   deadlyRecluse,
   deathmark,
   demonsHorn,
@@ -192,7 +199,9 @@ export const CARD_DEFS: readonly CardDef[] = [
   doomBlade,
   dragonWhelp,
   dragonsClaw,
+  dragonskullSummit,
   dreadWarlock,
+  drownedCatacomb,
   duress,
   earthquake,
   eliteVanguard,
@@ -211,6 +220,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   furnaceWhelp,
   giantGrowth,
   giantSpider,
+  glacialFortress,
   goblinArtillery,
   goblinPiker,
   gravedigger,
@@ -266,6 +276,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   razorfootGriffin,
   righteousness,
   rodOfRuin,
+  rootboundCrag,
   royalAssassin,
   runeclawBear,
   sageOwl,
@@ -285,6 +296,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   spinedWurm,
   stampedingRhino,
   stormfrontPegasus,
+  sunpetalGrove,
   swamp,
   tempestOfLight,
   tendrilsOfCorruption,

@@ -221,10 +221,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        or a graveyard card with shroud can be targeted), which resolution re-checks (CR 608.2b).
        Mist Leopard, Kalonian Behemoth. Scenarios in `test/scenarios/cards/m2-06d/` and `interactions/shroud/`, a unit
        test for a target gaining shroud before resolution, a Shroud matrix row; Mist Leopard in the M10 pair.
-       Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer
-       (Open questions): their Magic 2010 cards come in M2-07, M2-08 and M2-12.
+       Protection's targeting and blocking, flash, indestructible and "can't be countered" waited for the owner's answer,
+       settled by D-074: flash came in M2-07, indestructible in M2-08a, the rest come in M2-08e and M2-12.
 
-  4. Now: M2-07 triggered abilities (CR 603; m2-rules-depth.md). 30 cards. Draft plan (2026-11-20), in three PRs:
+  4. Done: M2-07 triggered abilities (CR 603; m2-rules-depth.md), merged in PRs #39, #40, #41 and #44 (D-076–D-079,
+     D-084). The plan as it was made (2026-11-20), in three PRs:
      - Shared: `CardDef.triggers` (kept out of `abilities`, like `statics`, D-071), each a condition as data, targets,
        effects, "you may" and an "intervening if" (CR 603.4). Triggers are detected per batch in `checkTriggers` (see
        Settled), matched against result events; matches wait in `GameState.pendingTriggers`. `givePriority`, after state-based actions, puts
@@ -277,13 +278,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          kind answered (a cancel or take-back doesn't count), every event type agents can reach.
        - A test that every pool card is in a scenario, by whole name.
      - Golden action lines name the acting player (owner, D-083), done, merged (PR #43).
-     - Now: M2-07c2 (D-084). Done so far: engine, Dragon Whelp and Illusionary Servant, 15 scenarios in
+     - M2-07c2 (D-084): done, merged (PR #44). With it, M2-07 is done. Engine, Dragon Whelp and Illusionary Servant, 20 scenarios in
        `test/scenarios/cards/m2-07c2/`, unit tests (`test/game/activation-count.test.ts`: a removed activation still
        counts, the count starts again each turn; `test/triggers/delayed.test.ts`: a spell's delayed trigger, CR 603.7d,
        with the test-only instant Late Gift), definition checks, two matrix cells (Firebreathing × Triggers, Burn ×
        Triggers), golden logs with `targeted:` lines (additions only), pool-579 and pool-111 covering `trigger delayed`
        and `selfBecomesTarget`, docs. 152 cards; 144 of the 234 Magic 2010 cards. Not put in the M10 pair: each of its
-       slots carries a rule the pool needs. Fuzz (300 games), mutation pass (10 caught), bench, rules-judge and code-reviewer all done, fixes in. Next: the PR.
+       slots carries a rule the pool needs. Fuzz (300 games), mutation pass (10 caught), bench, rules-judge and code-reviewer all done, fixes in.
        Design (2026-11-20, with the advisor's review):
        - `GameState.delayedTriggers`: each `{ source, sourceOracleId, controller, ability }`, the ability a
          `TriggeredAbilityDef` (its `when` limited to the next "beginning of step" for now). Created by an effect
@@ -366,6 +367,58 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - Future impact: replacement effects (M2-08) sit before detection, so a replaced event triggers as replaced;
        delayed triggers and "until" durations share the turn's step hooks; tokens (M2-11) entering trigger the same
        way; copies of abilities and "trigger an additional time" fit the pending list.
+  5. Now: M2-08 replacement and prevention effects (CR 614–616; m2-rules-depth.md). 19 cards. Plan (2026-11-20, with
+     the advisor's review), in five PRs. Three later cards shape the data now: Clone (M2-14, a copy as it enters,
+     CR 616.1c), Protean Hydra (M2-10, a prevention that removes counters), Magebane Armor (M2-12, a granted
+     noncombat-damage prevention).
+     - M2-08a: built (D-085), reviews done and fixed; next the PR. 18 scenarios in `test/scenarios/cards/m2-08a/`, a unit test for lands entering together
+       (`test/pipeline/replacements.test.ts`), an Indestructible matrix row, three golden games; the Magic 2010 decks
+       run checklands. 158 cards; 150 of the 234 Magic 2010 cards. As built, unlike the plan below: one replacement per
+       event, refusing two (CR 614.5 and 616.1f come with M2-08c's choice), and `autoPay` stays greedy (lands first,
+       then fewest choices; no search). Owner (2026-11-20): carry on with M2-08b once this PR merges. Plan as made:
+     - M2-08a, the framework, no player choice: replacement effects as data, applied in `pipeline/happen.ts`'s
+       `replace` to each event against the state before its batch, each at most once per event
+       (CR 614.5), the result replaced again (CR 616.1f). Until M2-08c, `replace` throws if two different effects
+       apply to one event; it never picks. Where they come from: a permanent's static replacement on the battlefield,
+       and the moving object's own (CR 113.6: Colossus from hand, library or stack; a land "as it enters", CR 113.6h,
+       614.12, read as it would exist on the battlefield). A "the zone change this event makes" helper that changes
+       the destination, not the action: a sacrificed, discarded or countered Colossus was still sacrificed, discarded
+       or countered (check the CR and rulings; Xathrid Demon, Vampire Aristocrat's cost, `ifNothingSacrificed` and
+       Megrim depend on it). Cards: Darksteel Colossus (indestructible, CR 702.12: `destroy` does nothing, and lethal
+       damage and deathtouch, CR 704.5g–h, aren't listed, D-039; "if it would be put into a graveyard from anywhere,
+       reveal it and shuffle it into its owner's library instead"); the five checklands ("enters tapped unless you
+       control a [type] or a [type]", land types read through `characteristics()`, Convincing Mirage later), with
+       "{T}: Add {G} or {W}": the color carried on the action as for any color (D-068) but limited to two, and
+       `autoPay` searching sources once one offers a restricted choice (D-068 said it would need to).
+     - M2-08b, regeneration (CR 701.19, 614.8), with a scenario for CR 614.17c (an indestructible creature's
+       destroy never uses up its shield; `happen.ts` cites it as later until then): a shield in state bound to one object, used once, the next time it would
+       be destroyed this turn (destroy, lethal damage, deathtouch; not sacrifice): instead tap it, remove its damage,
+       remove it from combat (a recorded removed-from-combat set, CR 506.4, which future-rules asks for). Identical
+       shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
+       Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
+       isn't destroyed: its ruling).
+     - M2-08c, the CR 616.1 choice, no pool cards: `happen` stops before performing anything and resumes as a work item
+       (the pattern mid-resolution decisions use) when the affected player must choose which effect applies; every
+       caller that does more after `happen` queues the rest (the pipeline README's list). Tested with test-only cards
+       and the M2-03 review's cases: a dying source's replacement still applying in its SBA batch (CR 704.3, 614.4),
+       regeneration and a "would die" replacement on one destruction (CR 616.1), damage results replaced as one event
+       (CR 120.4c, the Worship example), 0 damage an increase can't touch (CR 120.8). Golden logs unchanged. The new
+       decision kind can't be reached by pool cards until M2-08d: `DECISION_KINDS` gains a reason like `EVENT_TYPES`.
+     - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
+       (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
+       a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
+       chosen as it resolves, redirected to its target; 2 in all across one event, its controller choosing which:
+       its ruling). Lifelink and "deals damage" triggers read the damage as dealt after prevention (CR 120.4c).
+     - M2-08e, protection (CR 702.16, D-074: damage prevention, targeting, blocking; "can't be enchanted" in M2-12),
+       reading the source's characteristics, from last known information if it's gone (snapshot `characteristics()`,
+       future-rules): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons), Great Sable Stag
+       (from blue and from black; "can't be countered", CR 101.2, 113.6g: a counter effect does nothing to it, and
+       it's still a legal target).
+     - Visibility: shields and prevention effects in state are public and end at cleanup: shown in `playerView` with
+       the delayed triggers (Known issues), or added to that issue.
+     - Future impact: "if you would draw" needs the draw-several container (D-060, CR 121.2a), when a card needs it (none
+       in Magic 2010); copies entering (Clone) are a CR 616.1c choice in the same machinery; layers (M2-09) granting or
+       removing replacement abilities read them through one function; tokens (M2-11) use the zone-change helper.
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`

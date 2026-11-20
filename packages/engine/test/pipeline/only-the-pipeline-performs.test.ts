@@ -107,7 +107,8 @@ describe("only the pipeline performs events (D-056)", () => {
 
   it("every function perform.ts calls from outside the pipeline is a guarded primitive", () => {
     const perform = files.find((f) => f.name === "pipeline/perform.ts");
-    const helpers = ["andThen"]; // joins steps; changes nothing itself
+    // Change nothing themselves: joining steps, and reading where a land played goes.
+    const helpers = ["andThen", "playLandDestination"];
     const unguarded = importedValues(perform?.source ?? "").filter(
       (name) => !PRIMITIVES.includes(name) && !helpers.includes(name),
     );

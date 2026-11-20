@@ -81,7 +81,8 @@ export const furnaceWhelp: CardDef = {
 - Amounts: a number, `"X"`, or `{ count: { subtypes: ["Swamp"], controller: "you" } }` ("the number of Swamps you
   control"). "Each creature without flying" is the subject `{ each: { types: ["creature"], notKeywords: ["flying"] } }`;
   "...and 3 damage to you" is `and: [{ to: "you", amount: 3 }]` on `dealDamage`. "Spend only black mana on X" is
-  `xPaidWith: "B"` on the spell. "Add one mana of any color" is `{ op: "addMana", mana: "anyColor", amount: 1 }`;
+  `xPaidWith: "B"` on the spell. "Add one mana of any color" is `{ op: "addMana", mana: "anyColor", amount: 1 }`, and
+  "Add {G} or {W}" is `mana: { oneOf: ["G", "W"] }` (the color comes with the activation, D-068);
   "each opponent sacrifices a land of their choice" is `{ op: "sacrifice", who: "eachOpponent", filter: { types:
   ["land"] } }`.
 - Filters: "basic land card" is `{ supertypes: ["basic"], types: ["land"] }`; "other than basic land cards" is
@@ -120,6 +121,11 @@ export const furnaceWhelp: CardDef = {
   is untapped" right after the condition is an intervening if, `onlyIf: { kind: "sourceUntapped" }` (CR 603.4). "You
   may" is `optional: true` (asked as it resolves). "That player" is the subject `"triggeringPlayer"`; "sacrifice it"
   (the source) is `{ op: "sacrificeSource" }`. The engine reads them only through `triggersOf`.
+- Replacement effects in a card's own text are `def.replacements` (CR 614.1, D-085), read only through
+  `replacementsOf`: "This land enters tapped unless you control a Forest or a Plains" is `{ kind: "entersTapped",
+  unless: { subtypes: ["Forest", "Plains"], controller: "you" } }` (land types, not names; "you" is the player it
+  enters under); "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's
+  library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12).
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).
@@ -160,6 +166,11 @@ entries; their rules data (name, cost, types, text, power and toughness, faces) 
 gzipped**. Definitions are small too: the M1 ones average about 230 bytes, and a long card might reach 2 KB, so 30,000
 would be roughly 20–30 MB of source and a few MB compressed. Art is never part of this; it's downloaded and cached at
 runtime (D-007).
+
+Measured again at 158 cards (2026-11-20, M2-08a, the owner asking again): per card, the pool data is about 1.1 KB
+(170 bytes gzipped), the definition about 440 bytes (80 gzipped), the rulings about 410 bytes (80 gzipped). At 30,000
+cards that's roughly 34 MB, 13 MB and 12 MB raw, about 10 MB gzipped all together: too much to ship on a phone's first
+load, but no game, deck or search needs it all at once (below), and rulings are only read in a card's details.
 
 So size isn't the hard part. The plan as the pool grows, none of it needed yet:
 - **Keep one file per card** (`src/defs/<letter>/<slug>.ts`): readable, reviewable, merges cleanly; git handles tens of
