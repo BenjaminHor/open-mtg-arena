@@ -746,6 +746,8 @@ every schema change and every change D-024 lists bumps it.
   controlled since the turn began, CR 602.5a) and paid with the rest of the cost, before any sacrifice, after the
   targets (so Royal Assassin can't target itself, its ruling). The permanent a cost taps isn't offered as a mana source
   for that cost (CR 107.5).
-- Scenario targets can name a spell on the stack (`p1:Lightning Bolt`).
-- The three interim decks now carry the M2-05a cards, with eight new golden games found by a seed search so that every
-  pool card is played. Golden games grow by about 3 MB per task this way (status, Known issues).
+- The three interim decks now carry the M2-05a cards, with five new golden games found by a seed search so that every
+  pool card is played (three more that added no card were dropped). Golden games grow by about 2 MB per task this way
+  (status, Known issues).
+- A scenario names a spell on the stack like a permanent (`p1:Lightning Bolt`) or, when a permanent has the same name,
+  `spell:p1:Grizzly Bears`; `export --scenario` always writes the second form.

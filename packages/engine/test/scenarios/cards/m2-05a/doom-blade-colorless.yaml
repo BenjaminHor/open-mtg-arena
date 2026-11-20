@@ -1,0 +1,16 @@
+name: Doom Blade can target a colorless creature, which isn't black
+rules: [CR 105.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Doom Blade]
+    battlefield: [Swamp, Swamp]
+  p2:
+    battlefield: [Ornithopter]
+steps:
+  - p1 cast: Doom Blade
+    targets: [p2:Ornithopter]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Ornithopter]

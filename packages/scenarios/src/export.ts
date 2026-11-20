@@ -7,6 +7,7 @@ import {
   abilitiesOf,
   applyAction,
   type CardDatabase,
+  controllerOf,
   createGame,
   type GameSetup,
   type GameState,
@@ -184,9 +185,21 @@ function handCardName(state: GameState, player: PlayerId, id: ObjectId, cards: C
 }
 
 function targetName(state: GameState, target: Target, cards: CardDatabase): string {
-  return target.kind === "player"
-    ? target.player
-    : (refOf(state, target.object, cards) ?? nameOf(state, target.object, cards));
+  if (target.kind === "player") return target.player;
+  return (
+    refOf(state, target.object, cards) ?? spellRef(state, target.object, cards) ?? nameOf(state, target.object, cards)
+  );
+}
+
+/** A spell on the stack, named only as a spell (`spell:p1:Lightning Bolt`, `#2` counting from the bottom). */
+function spellRef(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
+  if (!state.zones.stack.includes(id) || state.objects[id]?.kind !== "card") return null;
+  const player = controllerOf(state, id);
+  const name = nameOf(state, id, cards);
+  const same = state.zones.stack.filter(
+    (x) => state.objects[x]?.kind === "card" && controllerOf(state, x) === player && nameOf(state, x, cards) === name,
+  );
+  return same.length > 1 ? `spell:${player}:${name}#${same.indexOf(id) + 1}` : `spell:${player}:${name}`;
 }
 
 function nonZero(pool: ManaPool): Record<string, number> {

@@ -1,0 +1,19 @@
+name: Cancel can't target itself
+rules: [CR 115.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Lightning Bolt]
+    battlefield: [Mountain]
+  p2:
+    hand: [Cancel]
+    battlefield: [Island, Island, Island]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [spell:p2:Cancel]
+    pay: auto
+  - expect error: illegalAction

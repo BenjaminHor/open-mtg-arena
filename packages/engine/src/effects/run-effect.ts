@@ -32,7 +32,7 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
     case "modifyPT": {
       // The affected objects are fixed now (CR 611.2c). An illegal target isn't among them (CR 608.2b), and neither is
       // one that left the battlefield since resolution began: affecting it is impossible (CR 101.3, 400.7).
-      const affected = objectsOf(subject(effect.of, context)).filter((id) => state.zones.battlefield.includes(id));
+      const affected = onBattlefield(state, objectsOf(subject(effect.of, context)));
       if (affected.length === 0) return { state, events: [] };
       const change = { kind: "modifyPT", power: effect.power, toughness: effect.toughness } as const;
       return createContinuousEffect(state, {
@@ -49,7 +49,8 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
         object,
       }));
     case "destroyAll": {
-      // Every permanent that fits, decided once now (CR 608.2h), destroyed at the same time (CR 608.2f).
+      // Every permanent that fits, decided once now (CR 608.2h), destroyed at the same time (CR 608.2f). Cards going to
+      // one graveyard together go in battlefield order (D-039; later: CR 404.3 lets their owner choose).
       const all = state.zones.battlefield.filter((id) =>
         matchesFilter(state, id, effect.filter, context.controller, cards),
       );
@@ -80,6 +81,7 @@ export function runEffect(state: GameState, effect: Effect, context: EffectConte
         object,
       }));
     case "counter": {
+      // "Can't be countered" will make this do nothing for that spell, without stopping the rest (later: CR 101.2).
       const onStack = objectsOf(subject(effect.of, context)).filter((id) => state.zones.stack.includes(id));
       return toEach(state, onStack, cards, (object) => ({ kind: "counterObject", object }));
     }
@@ -108,11 +110,16 @@ function toEach<T>(
   return happen(state, { kind: "simultaneous", events: items.map(event) }, cards);
 }
 
-/** The objects still in the game under these ids: one that changed zones is a new object (CR 400.7). */
+/**
+ * The objects still in the zone they were in under these ids: one that changed zones is a new object with a new id
+ * (CR 400.7), so its old id is gone. For the moves, whose subject may be a permanent now and a spell or a card in a
+ * graveyard later (M2-05b).
+ */
 function stillThere(state: GameState, ids: readonly ObjectId[]): ObjectId[] {
   return ids.filter((id) => state.objects[id] !== undefined);
 }
 
+/** The objects still on the battlefield: what destroying, tapping and changing power can act on. */
 function onBattlefield(state: GameState, ids: readonly ObjectId[]): ObjectId[] {
   return ids.filter((id) => state.zones.battlefield.includes(id));
 }

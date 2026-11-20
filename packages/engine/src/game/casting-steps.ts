@@ -22,7 +22,7 @@ import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
 import { sacrificeParts, sacrificesStillPossible } from "./sacrifice-costs.ts";
-import { tapsForCost } from "./tap-costs.ts";
+import { canTapForCost, tapsForCost } from "./tap-costs.ts";
 import { queueWork } from "./work.ts";
 
 /**
@@ -80,9 +80,9 @@ export function activateWhilePaying(
 
 /**
  * CR 601.2h: the player pays the whole cost at once, after any mana abilities (CR 601.2g): the mana from their pool,
- * then the sacrifices chosen, which must still be possible, since partial payments aren't allowed and unpayable costs
- * can't be paid. Then the spell becomes cast (CR 601.2i) or the ability activated (CR 602.2b), so the sacrifices'
- * events come first. They receive priority (CR 117.3c), and everyone has to pass again (CR 117.4).
+ * then the {T} and the sacrifices chosen, which must all still be possible, since partial payments aren't allowed and
+ * unpayable costs can't be paid. Then the spell becomes cast (CR 601.2i) or the ability activated (CR 602.2b), so the
+ * cost's events come first. They receive priority (CR 117.3c), and everyone has to pass again (CR 117.4).
  */
 export function payCost(
   state: GameState,
@@ -98,8 +98,8 @@ export function payCost(
   if (!sacrificesStillPossible(state, cards))
     return "a permanent chosen to sacrifice can't be sacrificed now (CR 601.2h)";
   const taps = tapsForCost(state, cards);
-  if (taps.some((id) => !state.zones.battlefield.includes(id) || isTapped(state, id)))
-    return "a permanent to tap for the cost is already tapped (CR 107.5, 601.2h)";
+  if (!taps.every((id) => canTapForCost(state, id)))
+    return "a permanent to tap for the cost is tapped or gone (CR 107.5, 601.2h)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
@@ -108,12 +108,12 @@ export function payCost(
     ...taps.map((object) => ({ kind: "tap", object }) as const),
     ...casting.sacrifices.map((object) => ({ kind: "sacrifice", object }) as const),
   ];
-  const sacrificed = happen({ ...state, players }, { kind: "simultaneous", events: costs }, cards);
-  const done: GameState = { ...sacrificed.state, casting: null, passesInSuccession: 0 };
+  const paid = happen({ ...state, players }, { kind: "simultaneous", events: costs }, cards);
+  const done: GameState = { ...paid.state, casting: null, passesInSuccession: 0 };
   const event = becameCastOrActivated(casting.player, obj);
   return {
     state: queueWork(done, { kind: "givePriority", player: casting.player }),
-    events: [...sacrificed.events, event],
+    events: [...paid.events, event],
   };
 }
 
@@ -204,9 +204,4 @@ export function announceX(state: GameState, value: number): GameState {
   if (obj === undefined || obj.choices === null) throw new Error("Nothing is being put on the stack");
   const choices = { ...obj.choices, x: value };
   return { ...state, objects: { ...state.objects, [casting.object]: { ...obj, choices } } };
-}
-
-function isTapped(state: GameState, id: ObjectId): boolean {
-  const obj = state.objects[id];
-  return obj?.kind !== "card" || obj.tapped;
 }

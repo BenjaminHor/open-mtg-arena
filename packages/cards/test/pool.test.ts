@@ -103,6 +103,24 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it("reports a subject of the wrong kind, which would quietly do nothing", () => {
+    const offering = POOL.cards.find((c) => c.name === "Solemn Offering");
+    if (offering === undefined) throw new Error("Solemn Offering missing from the pool");
+    const def = (
+      effects: CardDef["spell"] extends infer S ? (S extends { effects: infer E } ? E : never) : never,
+    ): CardDef => ({
+      name: "Solemn Offering",
+      oracle: offering.oracleText,
+      spell: { targets: [{ kind: "permanent", filter: { types: ["artifact", "enchantment"] } }], effects },
+    });
+    expect(definitionProblems([def([{ op: "destroy", of: "you" }])], [offering])).toStrictEqual([
+      "Solemn Offering: destroy acts on objects, not players",
+    ]);
+    expect(definitionProblems([def([{ op: "gainLife", who: { target: 0 }, amount: 4 }])], [offering])).toStrictEqual([
+      "Solemn Offering: gainLife is for players, not objects",
+    ]);
+  });
+
   it("reports cards without definitions and definitions without cards", () => {
     expect(definitionProblems([{ name: "Black Lotus", oracle: "" }], [bolt])).toStrictEqual([
       "Black Lotus: has a definition but isn't in pool.txt / data/pool.json",

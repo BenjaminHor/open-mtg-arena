@@ -105,7 +105,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   conceding is never listed by `legalActions()`; this step sends the action directly.
 - `p1 cast: <card>` with `targets: [...]`, `divide: [...]` and `pay:`: cast a spell from hand. `targets` lists one entry
   per instance of "target", in order: a player (`p2`), a permanent reference (`p2:Grizzly Bears`) or a spell on the stack named the
-  same way (`p1:Lightning Bolt`), or a list of them
+  same way (`p1:Lightning Bolt`; `spell:p1:Grizzly Bears` when a permanent has the same name), or a list of them
   when that instance has several (`targets: [[p2:Elite Vanguard, p2:Coral Merfolk]]`). For an instance whose number of
   targets varies, the number announced (CR 601.2c) is the list's length (one for a single entry). `divide` gives each
   target's share of a divided effect, in the order the targets were listed (`divide: [2, 1]`, CR 601.2d): one share per

@@ -1,0 +1,19 @@
+name: Essence Scatter can't target a noncreature spell
+rules: [CR 601.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Lightning Bolt]
+    battlefield: [Mountain]
+  p2:
+    hand: [Essence Scatter]
+    battlefield: [Island, Island]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Essence Scatter
+    targets: [p1:Lightning Bolt]
+    pay: auto
+  - expect error: illegalAction

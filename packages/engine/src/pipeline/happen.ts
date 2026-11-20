@@ -38,7 +38,7 @@ function replaceOne(_state: GameState, proposed: SingleEvent, _cards: CardDataba
       // effect to modify, not even one that would increase it (CR 120.8).
       return [{ kind: "dealDamage", damage: proposed.damage.filter((d) => d.amount > 0) }];
     case "gainLife":
-      // Gaining 0 life isn't an event (CR 119.9), so nothing can replace or trigger on it.
+      // Gaining 0 life isn't an event: nothing triggers on it (CR 119.9) and nothing replaces it (CR 119.10).
       return proposed.amount > 0 ? [proposed] : [];
     case "moveCard":
     case "destroy":

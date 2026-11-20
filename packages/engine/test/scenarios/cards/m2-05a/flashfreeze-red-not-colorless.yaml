@@ -19,6 +19,8 @@ steps:
   - all pass: once
   - expect:
       p2.life: 20
+      p1.graveyard: [Lightning Bolt]
+      stack: []
   - p1 cast: Ornithopter
     pay: auto
   - p1 pass: once

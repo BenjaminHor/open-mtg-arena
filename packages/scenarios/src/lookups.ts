@@ -123,13 +123,16 @@ export function abilityNamed(
 
 /**
  * A target a scenario names: a player (`p2`), a permanent reference (`p2:Grizzly Bears`), or, when no such permanent
- * exists, a spell on the stack its controller cast (`p1:Lightning Bolt`, `#2` counting from the bottom).
+ * exists, a spell on the stack its controller cast (`p1:Lightning Bolt`, `#2` counting from the bottom). A permanent
+ * comes first; `spell:p1:Grizzly Bears` names only a spell, for when a permanent has the same name.
  */
 export function targetNamed(state: GameState, value: unknown, cards: CardDatabase): Target {
   const text = String(value);
   if (/^p\d+$/.test(text)) return { kind: "player", player: text as PlayerId };
-  const ref = parseRef(text);
-  const object = ref === null ? null : (resolveRef(state, ref, cards) ?? spellNamed(state, ref, cards));
+  const onlySpell = text.startsWith("spell:");
+  const ref = parseRef(onlySpell ? text.slice("spell:".length) : text);
+  const permanent = ref === null || onlySpell ? null : resolveRef(state, ref, cards);
+  const object = ref === null ? null : (permanent ?? spellNamed(state, ref, cards));
   if (object === null)
     throw new Error(`no target "${text}": name a player (p2), a permanent or a spell (p2:Grizzly Bears)`);
   return { kind: "object", object };

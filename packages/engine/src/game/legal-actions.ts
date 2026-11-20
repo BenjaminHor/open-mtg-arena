@@ -20,7 +20,7 @@ import { largestShare, possibleTargets } from "./choose-targets.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 import { nextSacrificeOptions } from "./sacrifice-costs.ts";
-import { tapsForCost } from "./tap-costs.ts";
+import { canTapForCost, tapsForCost } from "./tap-costs.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
@@ -109,19 +109,16 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
       // Every payment the pool covers, since which mana pays is the player's choice (CR 601.2h); mana abilities to make
       // more; and cancelling, always possible, so a cast can never get stuck (D-035).
       const cancel: Action = { ...answer, answer: { kind: "cancelCast" } };
+      // Once a permanent the cost taps is tapped or gone, no payment can succeed (CR 107.5, 601.2h): only cancel.
       const pool = state.players[player]?.manaPool;
+      const payable = tapsForCost(state, cards).every((id) => canTapForCost(state, id));
       const pay: Action[] =
-        pool === undefined
+        pool === undefined || !payable
           ? []
           : allPayments(pool, pending.cost).map(
               (payment): Action => ({ ...answer, answer: { kind: "payMana", payment } }),
             );
-      // Not the mana abilities of a permanent the cost itself taps: the cost couldn't then be paid (CR 107.5).
-      const tappedByCost = tapsForCost(state, cards);
-      const abilities = manaAbilityActions(state, player, pending.id, cards).filter(
-        (a) => a.type !== "ACTIVATE_ABILITY" || !tappedByCost.includes(a.object),
-      );
-      return [...pay, cancel, ...abilities];
+      return [...pay, cancel, ...manaAbilityActions(state, player, pending.id, cards)];
     }
     case "priority":
       return [

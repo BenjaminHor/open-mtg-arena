@@ -1,5 +1,5 @@
 name: Tempest of Light with no enchantments on the battlefield still resolves
-rules: [CR 608.2f]
+rules: [CR 608.2h]
 setup:
   turn: { active: p1, step: main1 }
   p1:

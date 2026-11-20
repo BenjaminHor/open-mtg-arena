@@ -26,6 +26,14 @@ describe("export --scenario", () => {
     }
   }, 60_000);
 
+  it("names a spell on the stack as a target, so games with counterspells export too", () => {
+    const cards = cardDatabase();
+    // A golden game in which Negate, Cancel and Essence Scatter target spells.
+    const golden = new URL("../../engine/test/golden/blue-green-vs-white-red-104.json", import.meta.url).pathname;
+    const yaml = cli("export", golden, "--scenario", "--name", "counterspells", "--rules", "CR 100.1");
+    expect(runScenario(yaml, cards).problems).toStrictEqual([]);
+  }, 60_000);
+
   it("refuses a game that stops part way through a declaration", () => {
     const file = tempFile();
     cli("new", "--scenario", "combat/blocked-creatures-trade", "--out", file);

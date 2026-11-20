@@ -1,5 +1,5 @@
-name: "Cancel can only target a spell: an ability on the stack isn't one, and Cancel can't target itself"
-rules: [CR 113.9, CR 115.5]
+name: "Cancel can only target a spell: an ability on the stack isn't one"
+rules: [CR 113.9, CR 112.1]
 setup:
   turn: { active: p1, step: main1 }
   p1:

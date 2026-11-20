@@ -29,13 +29,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
 - M2-05 Effects and keyword actions: split in three by the 50 cards' Oracle text (the spec lists the cards).
   - M2-05a Removal, counters and {T} abilities: built, in review (D-059). The 19 cards plus Ornithopter and Rod of
     Ruin scripted; 31 scenarios in `test/scenarios/cards/m2-05a/`; unit tests in `test/effects/removal.test.ts`; the
-    interim decks carry the new cards, with eight new golden games. The plan as built:
+    interim decks carry the new cards, with five new golden games. Code-reviewed and rules-reviewed; fixes in. The plan
+    as built:
     - New effect ops, each skipping an object no longer where the effect expects it (CR 101.3, 400.7), never
       throwing: `destroy` (CR 701.8a), `destroyAll` (every permanent fitting an `ObjectFilter`, decided once as the
       effect applies, one simultaneous event, CR 608.2f, 608.2h; graveyard order later: CR 404.3), `exile`
       (CR 701.13a, 406.2), `returnToHand` and `putOnTopOfLibrary` (the owner's zone, CR 400.3, 404.1), `tap`
-      (CR 701.26a: a tapped one does nothing), `counterObject` (CR 701.6a; named so it won't collide with CR 122
-      counters), `gainLife` (CR 119.3).
+      (CR 701.26a: a tapped one does nothing), `counter` (CR 701.6a; its pipeline event is `counterObject`, which won't
+      collide with CR 122 counters), `gainLife` (CR 119.3).
     - Subjects: `"you"` joins `"self"` and targets for player effects, the spell's or ability's controller
       (CR 109.5, 115.10b); "you gain 4 life" is `gainLife` to `"you"`.
     - Pipeline events: `counterObject` (any stack object: a spell goes to its owner's graveyard as part of the event,
@@ -57,10 +58,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
       of Ruin's after Shatter); Solemn Offering whose target is gone gains no life; Ornithopter as an artifact creature
       spell for Essence Scatter but not Negate or Flashfreeze; a countered creature spell to the graveyard, no refund;
       Cancel can't target an ability or itself, and a Cancel whose target was countered first doesn't resolve; Divine
-      Verdict in the end of combat step, not in main 2, and a blocked attacker staying blocked; Celestial Purge not on a
-      land; Undead Slayer exiling a Vampire, not a Bear, not a card in a graveyard; Blinding Mage tapping a would-be
-      blocker, a declared blocker staying in combat (CR 506.4b), itself, sick; Assassinate untapped refused; Planar
-      Cleansing both sides, lands stay; Tempest of Light with nothing; Excommunicate on an attacker (owner draws it).
+      Verdict in the end of combat step, not in main 2; Celestial Purge not on a land; Undead Slayer exiling a Vampire,
+      not a Bear, not a card in a graveyard; Blinding Mage tapping a would-be blocker, a declared blocker staying in
+      combat (CR 506.4b), itself, sick; Assassinate untapped refused; Planar Cleansing both sides, lands stay; Tempest
+      of Light with nothing; Excommunicate to the owner's library; a counter war; Doom Blade on a colorless creature.
+      (Excommunicate is a sorcery, so it can't meet an attacker; Divine Verdict on a blocker is left to M2-06's combat
+      keywords.)
       Unit tests: controller isn't owner (CR 400.3), Royal Assassin's target untapped first, the {T} source tapped for
       mana, gainLife 0, destroy and tap on an object gone mid-resolution.
   - M2-05b Cards moving, and M2-05c Life, damage to many, mana: after M2-05a, each planned the same way.
@@ -220,6 +223,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   about graveyard order arrive?
 
 ## Known issues
-- Golden games grow by about 3 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
+- Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
   must appear in one). Before the pool reaches all 234 cards, make them smaller: a compact action format, shorter
   games, or targeted games per card. Not blocking yet.
+- `pnpm fuzz --games 300` took about 10 minutes after M2-05a (it was 2–3): the new interim decks make longer games,
+  and the random agent starts many casts it can't pay for. Look at it with the golden-game size issue.

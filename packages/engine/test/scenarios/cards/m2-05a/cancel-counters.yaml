@@ -20,5 +20,6 @@ steps:
       p1.graveyard: [Grizzly Bears]
       p1.battlefield: [Forest, Forest]
       p1:Forest.tapped: true
+      p1.manaPool: {}
       stack: []
       events contains: [{ type: SPELL_COUNTERED }]
