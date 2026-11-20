@@ -64,9 +64,9 @@ export function chooseTargetCount(state: GameState, count: number): GameState {
   return withTargetCount(state, count);
 }
 
-/** Why this number of targets can't be announced, or null. */
-export function targetCountProblem(state: GameState, instance: number, count: number, cards: CardDatabase) {
-  const { min, max } = targetCountRange(state, instance, targetingOf(state), cards);
+/** Why this number of targets can't be announced, or null: it must be in the decision's range. */
+export function targetCountProblem(pending: { min: number; max: number }, count: number): string | null {
+  const { min, max } = pending;
   return Number.isInteger(count) && count >= min && count <= max
     ? null
     : `choose from ${min} to ${max} targets (CR 601.2c)`;
@@ -120,7 +120,7 @@ export function largestShare(pending: { amount: number; targets: Target[]; share
 
 /**
  * The next target gets `amount`, and the next share is asked for. When only the last target is left, it gets the rest
- * and the division is announced; the casting steps then go on.
+ * and the division is announced, with nothing pending: the caller goes on with the casting steps.
  */
 export function divide(
   state: GameState,

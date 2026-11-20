@@ -15,7 +15,7 @@ import type { DecisionId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
-import { largestShare, possibleTargets, targetCountRange } from "./choose-targets.ts";
+import { largestShare, possibleTargets } from "./choose-targets.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 
@@ -67,10 +67,7 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
       );
     }
     case "chooseTargetCount": {
-      const casting = state.casting;
-      if (casting === null) return [];
-      const by = { object: casting.object, controller: casting.player };
-      const { min, max } = targetCountRange(state, pending.instance, by, cards);
+      const { min, max } = pending;
       const counts = Array.from(
         { length: Math.max(0, max - min + 1) },
         (_, i): Action => ({ ...answer, answer: { kind: "chooseTargetCount", count: min + i } }),

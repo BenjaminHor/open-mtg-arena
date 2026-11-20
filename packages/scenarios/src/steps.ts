@@ -11,7 +11,7 @@ import { allPass } from "./all-pass.ts";
 import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { combatAction } from "./combat-steps.ts";
 import { abilityNamed, cardIn, cardNamed, isHandCard, paymentFrom, targetNamed } from "./lookups.ts";
-import { paymentActions, stackAnswer, targetsAndPayment } from "./stack-steps.ts";
+import { paymentActions, stackAnswer, targetsAndPayment, unusedListed } from "./stack-steps.ts";
 
 /** A step that changes the game: passing or choosing. */
 export type ActionStep = Extract<
@@ -129,11 +129,16 @@ export function firstRejection(
     let action: Action | null;
     if ((step.kind === "cast" || step.kind === "activate") && i > 0) {
       // After the cast itself: the step's answers to targets and a division, then its payment.
-      const answer = stackAnswer(state, step, cards);
+      const found = stackAnswer(state, step, cards);
       const decisionId = state.pending?.id ?? "d0";
-      if (answer !== null) {
-        action = { type: "ANSWER", decisionId, player: step.player as PlayerId, answer };
+      if (found !== null) {
+        action = { type: "ANSWER", decisionId, player: step.player as PlayerId, answer: found.answer };
       } else {
+        if (payment === null) {
+          // The step's answers are used up: check it listed nothing the spell didn't take.
+          const unused = unusedListed(state, step);
+          if (unused !== null) throw new Error(unused);
+        }
         payment ??= paymentActions({ state, events: [] }, step, cards);
         const next = payment[paid++];
         action = next === undefined || next.type === "CONCEDE" ? (next ?? null) : { ...next, decisionId };

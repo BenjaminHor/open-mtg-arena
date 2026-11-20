@@ -16,19 +16,9 @@ export type StackStep = Extract<ScenarioStep, { kind: "cast" | "activate" }>;
  */
 export function targetsAndPayment(game: Game, step: StackStep, cards: CardDatabase, afterEach: AfterEach): Game {
   let next = game;
-  for (
-    let answer = stackAnswer(next.state, step, cards);
-    answer !== null;
-    answer = stackAnswer(next.state, step, cards)
-  ) {
-    const wanted = answer;
-    const action = legal(
-      next,
-      step.player,
-      cards,
-      (a) => a.type === "ANSWER" && deepEqual(a.answer, wanted),
-      answerText(wanted),
-    );
+  for (let found = stackAnswer(next.state, step, cards); found !== null; found = stackAnswer(next.state, step, cards)) {
+    const { answer, label } = found;
+    const action = legal(next, step.player, cards, (a) => a.type === "ANSWER" && deepEqual(a.answer, answer), label);
     next = apply(next, action, cards, afterEach);
   }
   const pending = next.state.pending?.kind;
@@ -38,6 +28,8 @@ export function targetsAndPayment(game: Game, step: StackStep, cards: CardDataba
   if (step.divide !== null && pending === "divide") {
     throw new Error(`${step.kind} ${step.card}: it needs more shares than the ${step.divide.length} listed`);
   }
+  const unused = unusedListed(next.state, step);
+  if (unused !== null) throw new Error(unused);
   if (step.pay !== undefined && pending !== "payMana") {
     throw new Error(`${step.kind} ${step.card}: "pay" was given, but it isn't waiting for a payment`);
   }
@@ -56,16 +48,22 @@ export function targetsAndPayment(game: Game, step: StackStep, cards: CardDataba
 
 /**
  * The answer this step gives the pending decision about targets or a division, or null when it has none: how many
- * targets an instance has (its list's length, or one), the next listed target, the next share.
+ * targets an instance has (its list's length, or one), the next listed target, the next share. `label` says it as the
+ * scenario wrote it, for messages.
  */
-export function stackAnswer(state: GameState, step: StackStep, cards: CardDatabase): Answer | null {
+export function stackAnswer(
+  state: GameState,
+  step: StackStep,
+  cards: CardDatabase,
+): { answer: Answer; label: string } | null {
   const pending = state.pending;
   if (pending === null) return null;
   switch (pending.kind) {
     case "chooseTargetCount": {
       const listed = step.targets[pending.instance];
       if (listed === undefined) return null;
-      return { kind: "chooseTargetCount", count: Array.isArray(listed) ? listed.length : 1 };
+      const count = Array.isArray(listed) ? listed.length : 1;
+      return { answer: { kind: "chooseTargetCount", count }, label: `${count} targets` };
     }
     case "chooseTarget": {
       const listed = step.targets[pending.instance];
@@ -73,7 +71,11 @@ export function stackAnswer(state: GameState, step: StackStep, cards: CardDataba
       const names: unknown[] = Array.isArray(listed) ? listed : [listed];
       const chosen = state.objects[pending.object]?.choices?.targets[pending.instance]?.length ?? 0;
       const name = names[chosen];
-      return name === undefined ? null : { kind: "chooseTarget", target: targetNamed(state, name, cards) };
+      if (name === undefined) return null;
+      return {
+        answer: { kind: "chooseTarget", target: targetNamed(state, name, cards) },
+        label: `target ${String(name)}`,
+      };
     }
     case "divide": {
       if (step.divide === null) return null;
@@ -86,24 +88,30 @@ export function stackAnswer(state: GameState, step: StackStep, cards: CardDataba
         );
       }
       const amount = step.divide[pending.shares.length];
-      return amount === undefined ? null : { kind: "divide", amount };
+      return amount === undefined ? null : { answer: { kind: "divide", amount }, label: `a share of ${amount}` };
     }
     default:
       return null;
   }
 }
 
-function answerText(answer: Answer): string {
-  switch (answer.kind) {
-    case "chooseTargetCount":
-      return `${answer.count} targets`;
-    case "chooseTarget":
-      return `target ${answer.target.kind === "player" ? answer.target.player : answer.target.object}`;
-    case "divide":
-      return `a share of ${answer.amount}`;
-    default:
-      return answer.kind;
+/**
+ * What the step listed that the spell or ability never used, or null: more targets than it took (for any instance), or
+ * a division it didn't ask for. Checked once the answers stop, so a scenario can't claim a choice that didn't happen.
+ */
+export function unusedListed(state: GameState, step: StackStep): string | null {
+  const object = state.casting?.object ?? null;
+  const choices = object === null ? null : (state.objects[object]?.choices ?? null);
+  if (choices === null) return null;
+  const listed = step.targets.map((entry) => (Array.isArray(entry) ? entry.length : 1));
+  const chosen = choices.targets.map((group) => group.length);
+  if (step.targets.length > 0 && JSON.stringify(listed) !== JSON.stringify(chosen)) {
+    return `${step.kind} ${step.card}: targets lists ${JSON.stringify(listed)} per instance, but it took ${JSON.stringify(chosen)}`;
   }
+  if (step.divide !== null && (choices.division?.shares.length ?? 0) !== step.divide.length) {
+    return `${step.kind} ${step.card}: divide is listed, but nothing was divided among ${step.divide.length} targets`;
+  }
+  return null;
 }
 
 /**

@@ -30,7 +30,7 @@ export const PINGER = "test-pinger";
 export const KNIGHT = "test-white-blue-knight";
 /** Not a real card: "Up to two target creatures get +1/+1 until end of turn", which can have zero targets (CR 115.6). */
 export const UP_TO_TWO = "test-up-to-two";
-/** Not a real card: 2 damage divided as you choose among any number of target creatures, at least one (CR 601.2d). */
+/** Not a real card: 2 damage divided as you choose among one or more target creatures (CR 601.2d). */
 export const SPLIT = "test-split";
 
 export const TEST_CARDS: CardDatabase = {
@@ -369,7 +369,7 @@ export const TEST_CARDS: CardDatabase = {
     },
     def: {
       name: "Split",
-      oracle: "Split deals 2 damage divided as you choose among any number of target creatures.",
+      oracle: "Split deals 2 damage divided as you choose among one or more target creatures.",
       spell: {
         targets: [{ kind: "permanent", filter: { types: ["creature"] }, count: { min: 1, max: "any" } }],
         effects: [{ op: "dealDamage", amount: 2, from: "self", to: { target: 0 }, divided: "asYouChoose" }],

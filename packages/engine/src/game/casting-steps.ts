@@ -22,8 +22,6 @@ import { queueWork } from "./work.ts";
 
 /** The next decision: targets and their division (CR 601.2c–d), then paying the cost (CR 601.2g–h). */
 export function nextCastingStep(state: GameState, cards: CardDatabase): GameState {
-  // An answer that asked the next question already (the next share of a division) is waiting on it.
-  if (state.pending !== null) return state;
   const targeted = targetStep(state, cards);
   if (targeted.pending !== null) return targeted;
   const casting = castingOf(targeted);

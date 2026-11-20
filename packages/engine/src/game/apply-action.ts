@@ -128,7 +128,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     case "chooseTargetCount": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };
       if (answer.kind !== "chooseTargetCount") return mismatch;
-      const problem = targetCountProblem(answered, pending.instance, answer.count, cards);
+      const problem = targetCountProblem(pending, answer.count);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, state: nextCastingStep(chooseTargetCount(answered, answer.count), cards), events: [] };
     }
@@ -144,7 +144,10 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       if (answer.kind !== "divide") return mismatch;
       const problem = shareProblem(pending, answer.amount);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, state: nextCastingStep(divide(answered, pending, answer.amount), cards), events: [] };
+      // The next share is asked for here; once the last target gets the rest, casting goes on.
+      const divided = divide(answered, pending, answer.amount);
+      const state = divided.pending === null ? nextCastingStep(divided, cards) : divided;
+      return { ok: true, state, events: [] };
     }
     case "payMana": {
       if (answer.kind === "cancelCast") return { ok: true, ...cancelCasting(answered) };

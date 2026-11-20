@@ -204,8 +204,9 @@ your graveyard" spell would count itself as a choice before it moves to the stac
 
 **Smaller rules noted while closing the coverage gaps (later: in the code).** Power or toughness of `*`
 (CR 208.2) needs characteristic-defining abilities; "another target" (CR 115.4, Arc Trail) needs targets distinct
-across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule modifiers already behave
-like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions); X costs (CR 107.3).
+across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule
+modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions);
+X costs (CR 107.3).
 
 **Small keywords that touch M1 code.** Vigilance (CR 702.20b): `finishAttackers` taps every attacker
 (`combat/declare-attackers.ts`). Flash (CR 702.8a): `castTimingProblem` checks only the printed type `instant`

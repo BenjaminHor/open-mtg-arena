@@ -106,8 +106,8 @@ export type StackChoices = {
   targets: Target[][];
   /**
    * How an effect is divided among the targets of one instance, announced as it was cast (CR 601.2d): each share is
-   * kept with its target, so a target that becomes illegal loses its own share and no other (CR 608.2b); changing targets will keep the division too (later: CR 115.7f).
-   * Null when nothing is divided.
+   * kept with its target, so a target that becomes illegal loses its own share and no other (CR 608.2b). Changing
+   * targets will keep the division too (later: CR 115.7f). Null when nothing is divided.
    */
   division: Division | null;
 };
