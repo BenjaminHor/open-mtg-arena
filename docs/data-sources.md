@@ -27,9 +27,9 @@ API docs: https://scryfall.com/docs/api. Key points to follow:
 - Don't crop out, cover or alter the artist name and copyright on images. When showing an art crop,
   show the artist credit elsewhere in the same view. The long-press card view always shows the full card image.
 - Don't use the Scryfall name or logo in a way that implies endorsement.
-- Which cards come after M2 (D-089): those with a printing on MTG Arena (`games` includes `"arena"`; on the site,
-  `game:arena`), not Alchemy (names starting "A-", or printed only in sets whose `set_type` is `"alchemy"`). The bulk
-  `default-cards` file has `games` per printing, so this needs no API calls.
+- Which cards come after M2 (D-089): Scryfall's `game:arena -is:alchemy` (the owner's filter, and the definition).
+  Offline, the bulk `default-cards` file approximates it with no API calls: a printing whose `games` includes
+  `"arena"`, not Alchemy (names starting "A-", or printed only in sets whose `set_type` is `"alchemy"`).
 
 ## Wizards of the Coast
 

@@ -1233,3 +1233,7 @@ every schema change and every change D-024 lists bumps it.
   Alchemy. Magic 2010 was never on Arena, so 87 of the pool's 166 cards and 51 of the 76 still to script aren't on it,
   though their mechanics (Auras, Equipment, planeswalkers, tokens, protection) are. M2 finishes the Magic 2010 pool as
   specified; each M2-14 special-rules card is checked against Arena first (Open questions).
+- The owner, later the same day: the filter is Scryfall's `game:arena -is:alchemy`. That query is the definition;
+  the bulk-data count above approximates it (Scryfall's site counted 15,702 for it and 855 for `game:arena is:alchemy`
+  on 2026-11-20; the small gap is in how each counts Alchemy-reprinted and extra cards). When a card's status is in
+  doubt, the site query decides.
