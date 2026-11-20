@@ -78,8 +78,8 @@ export function fuzzGame(seed: number, checks: readonly Check[], cards: CardData
     if ((state.turn?.number ?? 0) > turnCap) return fail(`the game passed ${turnCap} turns: a likely loop`, null);
     const pending = state.pending;
     if (pending === null) return fail("the engine stalled: nothing pending and no result", null);
-    // Mostly random by kind of action (D-061); one decision in ten the first legal action, which passes and declines, so games move on. Rarely
-    // a player concedes, which can happen at any time (CR 104.3a) and isn't among the legal actions (D-042).
+    // Mostly random by kind of action (D-061); one decision in ten the first legal action, which passes or declines
+    // where it can, so games move on. Rarely a player concedes, which can happen at any time (CR 104.3a) and isn't among the legal actions (D-042).
     const roll = nextRandom(rng);
     rng = roll.seed;
     let action: Action;

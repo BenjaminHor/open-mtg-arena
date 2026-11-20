@@ -1,6 +1,6 @@
 // How the fuzzer picks among the legal actions (D-061). Picking uniformly among actions spends most of a game on casts
-// that end in a cancel: every card in hand is listed whether it can be paid for or not (D-035), so a hand of five
-// uncastable cards leaves passing one choice in seven. Picking a kind of action first, then one of that kind, keeps
+// that end in a cancel: every card in hand is listed whether it can be paid for or not (D-035), so with a hand of
+// uncastable cards, passing is one choice among many. Picking a kind of action first, then one of that kind, keeps
 // every listed action possible while letting games move on. It reads only the listed actions, never whether a cost can
 // be paid, so the fuzzer doesn't trust the code it tests.
 
@@ -15,31 +15,30 @@ export function actionKind(action: Action): string {
   return action.type === "ANSWER" ? `ANSWER ${action.answer.kind}` : action.type;
 }
 
-function weightOf(kind: string): number {
-  return kind === "ANSWER cancelCast" ? CANCEL_WEIGHT : 1;
+/** A kind's weight, read from one of its actions so the compiler checks the answer kind's name. */
+function weightOf(action: Action): number {
+  return action.type === "ANSWER" && action.answer.kind === "cancelCast" ? CANCEL_WEIGHT : 1;
 }
 
 /** A kind of action, by weight, then one action of that kind, uniformly. Seeded, so one seed is one game. */
 export function pickAction(actions: readonly Action[], seed: number): { action: Action; seed: number } {
-  const byKind = new Map<string, Action[]>();
-  for (const action of actions) {
-    const kind = actionKind(action);
-    byKind.set(kind, [...(byKind.get(kind) ?? []), action]);
-  }
-  const kinds = [...byKind.entries()];
+  // Kinds in the order they're first listed, so the same list always gives the same pick.
+  const kinds = [...Map.groupBy(actions, actionKind).values()];
   if (kinds.length === 0) throw new Error("no legal actions to choose from");
-  const total = kinds.reduce((sum, [kind]) => sum + weightOf(kind), 0);
+  const weights = kinds.map((ofKind) => weightOf(ofKind[0] as Action));
+  const total = weights.reduce((sum, w) => sum + w, 0);
   const first = nextRandom(seed);
-  let left = first.value * total;
-  let chosen = kinds[kinds.length - 1] as [string, Action[]];
-  for (const entry of kinds) {
-    left -= weightOf(entry[0]);
-    if (left < 0) {
-      chosen = entry;
+  let roll = first.value * total;
+  // The last kind is the fallback only if rounding leaves the roll at the very end of the range.
+  let chosen = kinds.length - 1;
+  for (const [i, weight] of weights.entries()) {
+    if (roll < weight) {
+      chosen = i;
       break;
     }
+    roll -= weight;
   }
+  const ofKind = kinds[chosen] as Action[];
   const second = nextRandom(first.seed);
-  const ofKind = chosen[1];
   return { action: ofKind[Math.floor(second.value * ofKind.length)] as Action, seed: second.seed };
 }
