@@ -204,33 +204,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        (double strike has no Magic 2010 card), six new matrix rows; five of the cards in the M10 pair.
        For 06b: trample's lethal damage must count damage other attackers assign to a blocker that blocks several
        (Palace Guard; future-rules, "More combat").
-     - M2-06b, now. Plan (2026-11-20):
-       - Keywords `defender` (CR 702.3b: `canAttack` refuses), `swampwalk`, `forestwalk` (CR 702.14c: can't be blocked
-         while the defending player controls a land of that type, read through characteristics). Scryfall also lists
-         the generic "Landwalk" (CR 702.14a), which the definition check leaves out.
-       - Static abilities that aren't keywords go in a new `CardDef.statics`, read only through `staticAbilitiesOf`
-         (rules/abilities.ts), so layer 6 (M2-09) can grant or remove them in one place: `cantBeBlocked` with an
-         optional `except` filter (Phantom Warrior; Dread Warlock's "except by black creatures", read relative to the
-         blocker's controller), and `canBlockAnyNumber` (Palace Guard: card text overriding CR 509.1a, CR 101.1).
-         `canBlock` checks them as restrictions (CR 509.1b).
-       - Panic Attack: an effect op `cantBlock` making a continuous effect (`EffectChange` `cantBlock`, not a layer:
-         a restriction, CR 509.1b, 611.2c's locked set) until end of turn, on up to three targets (none allowed).
-       - Palace Guard blocking several attackers: `possibleBlocks` lets it block more than one; the `block` scenario step
-         gains a list form; combat damage takes one entry per blocker, and a blocker blocking two or more attackers
-         divides its damage, the defending player's decision after the active player's (CR 510.1, 510.1d; recipients
-         never a player, CR 702.19a). Trample's lethal damage then counts damage other attackers assign to that
-         blocker, chosen or forced (CR 702.19b, its first example as a test); attackers without trample are asked
-         first.
-       - Wall of Faith, Wall of Fire: defender plus a pump ability (existing `modifyPT`).
-       - Tests: scenarios per card in `test/scenarios/cards/m2-06b/`, interaction rows (Defender, Landwalk,
-         Unblockable, Block any number, Can't block), the CR 702.19b example with Palace Guard.
-       - Future impact: Auras and equipment granting "can't be blocked" (Whispersilk Cloak, M2-12) and layer 6
-         (M2-09) go through `staticAbilitiesOf`; protection's blocking part (06d) is another restriction in `canBlock`;
-         06c's whole-declaration rules check the set at `finishDeclaring`.
-     - M2-06b one creature's restrictions: defender (CR 702.3), landwalk (CR 702.14), "can't be blocked", "can't be
-       blocked except by black creatures", "can block any number" (CR 509.1a), "can't block this turn" from a spell
-       (Panic Attack, up to three targets). Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior,
-       Dread Warlock, Palace Guard, Panic Attack.
+     - M2-06b, done, in review (D-071): defender, swampwalk and forestwalk, "can't be blocked (except by ...)", "can block
+       any number" (Palace Guard dividing its damage, trample's lethal counting other attackers' damage), "can't block
+       this turn". Wall of Faith, Wall of Fire, Bog Wraith, Emerald Oryx, Phantom Warrior, Dread Warlock, Palace Guard,
+       Panic Attack. Scenarios in `test/scenarios/cards/m2-06b/` and `interactions/block-any-number/`, five new matrix
+       rows; three of the cards in the M10 pair.
      - M2-06c whole-declaration rules: "can't attack or block alone" (CR 508.1c, 509.1b), requirements and their
        maximum (CR 508.1d, 509.1c): "attacks each combat if able", "all creatures able to block it do so", "attacks
        you this turn if able". Jackal Familiar, Berserkers of Blood Ridge, Prized Unicorn, Alluring Siren.

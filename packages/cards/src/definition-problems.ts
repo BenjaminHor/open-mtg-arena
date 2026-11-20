@@ -6,6 +6,11 @@ import type { PoolCard } from "./pool-data.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
 const KEYWORD_ACTIONS: readonly string[] = ["mill"];
+/**
+ * Generic terms Scryfall lists beside the keyword itself, which name no ability of their own: "Landwalk" beside
+ * "Swampwalk" (CR 702.14a).
+ */
+const GENERIC_TERMS: readonly string[] = ["landwalk"];
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
 export function definitionProblems(defs: readonly CardDef[], pool: readonly PoolCard[]): string[] {
@@ -33,7 +38,7 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     // (Landfall, later: CR 207.2c); see docs/future-rules.md before adding a card with those.
     const expected = card.keywords
       .map((k) => k.toLowerCase())
-      .filter((k) => !KEYWORD_ACTIONS.includes(k))
+      .filter((k) => !KEYWORD_ACTIONS.includes(k) && !GENERIC_TERMS.includes(k))
       .sort();
     const actual = [...(def.keywords ?? [])].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {

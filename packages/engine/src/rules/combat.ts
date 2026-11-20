@@ -1,15 +1,17 @@
 // Combat rules questions (CR 506–510): who can attack, who can block what, and who's still in combat. Restrictions on
-// one creature ("can't block", protection) are named checks here (CR 509.1b; "can't attack", later: CR 508.1c). Rules
+// one creature (defender, evasion, "can't block"; protection, later: CR 702.16f) are named checks here (CR 508.1c,
+// 509.1b). Rules
 // about the whole declaration will be checked at `finishDeclaring`: restrictions like menace and "can't attack alone"
 // (later: CR 508.1c, 509.1b, 702.111b) and requirements like "attacks each combat if able" (later: CR 508.1d, 509.1c).
 
-import type { CardDatabase } from "../cards/types.ts";
+import type { CardDatabase, Keyword } from "../cards/types.ts";
 import type { Attack, Block } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
-import { keywordsOf } from "./abilities.ts";
-import { cardTypesOf } from "./card-types.ts";
+import { keywordsOf, staticAbilitiesOf } from "./abilities.ts";
+import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
+import { matchesFilter } from "./object-filter.ts";
 import { isFreeOfSummoningSickness } from "./summoning-sickness.ts";
 
 /** A creature permanent (CR 506.3: only creatures attack or block). */
@@ -25,14 +27,67 @@ export function canAttack(state: GameState, id: ObjectId, player: PlayerId, card
   const obj = state.objects[id];
   if (obj?.kind !== "card" || !isCreaturePermanent(state, id, cards)) return false;
   if (controllerOf(state, id) !== player || obj.tapped) return false;
+  // Defender: a restriction on attacking (CR 702.3b, 508.1c).
+  if (keywordsOf(state, id, cards).includes("defender")) return false;
   return isFreeOfSummoningSickness(state, id, cards);
 }
 
-/** Whether `blocker` may block `attacker` (CR 509.1a–b): an untapped creature, obeying evasion abilities. */
+/**
+ * Whether `blocker` may block `attacker` (CR 509.1a–b): an untapped creature, obeying the restrictions on it and the
+ * attacker's evasion abilities, which are cumulative (CR 509.1b).
+ */
 export function canBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[blocker];
   if (obj?.kind !== "card" || !isCreaturePermanent(state, blocker, cards) || obj.tapped) return false;
-  return flyingAllowsBlock(state, blocker, attacker, cards);
+  if (cantBlockNow(state, blocker)) return false;
+  return (
+    flyingAllowsBlock(state, blocker, attacker, cards) &&
+    landwalkAllowsBlock(state, blocker, attacker, cards) &&
+    cantBeBlockedAllowsBlock(state, blocker, attacker, cards)
+  );
+}
+
+/** "Can't block this turn" from a resolved spell (Panic Attack): a restriction on the creature (CR 509.1b). */
+function cantBlockNow(state: GameState, blocker: ObjectId): boolean {
+  return state.effects.some((e) => e.change.kind === "cantBlock" && e.affected.includes(blocker));
+}
+
+/** The land type each landwalk keyword in the pool names (CR 702.14a). */
+const LANDWALK: Partial<Record<Keyword, string>> = { swampwalk: "Swamp", forestwalk: "Forest" };
+
+/**
+ * A creature with landwalk can't be blocked while the defending player controls a land of that type (CR 702.14c): the
+ * blocker's controller, the player it blocks for. Each landwalk ability is checked on its own.
+ */
+function landwalkAllowsBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase): boolean {
+  const defender = controllerOf(state, blocker);
+  const landTypes = keywordsOf(state, attacker, cards).flatMap((k) => LANDWALK[k] ?? []);
+  return !landTypes.some((landType) =>
+    state.zones.battlefield.some(
+      (id) =>
+        controllerOf(state, id) === defender &&
+        cardTypesOf(state, id, cards).includes("land") &&
+        subtypesOf(state, id, cards).includes(landType),
+    ),
+  );
+}
+
+/**
+ * "Can't be blocked", or "can't be blocked except by [filter]" (Dread Warlock), an evasion ability (CR 509.1b). The
+ * filter is read relative to the attacker's controller, the ability's "you" (CR 109.5).
+ */
+function cantBeBlockedAllowsBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase) {
+  return staticAbilitiesOf(state, attacker, cards).every(
+    (ability) =>
+      ability.kind !== "cantBeBlocked" ||
+      (ability.except !== undefined &&
+        matchesFilter(state, blocker, ability.except, controllerOf(state, attacker), cards)),
+  );
+}
+
+/** Whether this creature may block more than one attacker (Palace Guard; CR 509.1a gives each blocker one, CR 101.1). */
+export function canBlockAnyNumber(state: GameState, blocker: ObjectId, cards: CardDatabase): boolean {
+  return staticAbilitiesOf(state, blocker, cards).some((ability) => ability.kind === "canBlockAnyNumber");
 }
 
 /** A creature with flying can't be blocked except by creatures with flying or reach (CR 702.9b, 702.17b). */

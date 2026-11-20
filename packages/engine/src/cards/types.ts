@@ -94,17 +94,35 @@ export type CardDef = {
    * rules give a card, such as a basic land's mana ability (CR 305.6), aren't written here.
    */
   abilities?: AbilityDef[];
+  /**
+   * Static abilities that aren't keywords (CR 604), such as "This creature can't be blocked". Read only through
+   * `staticAbilitiesOf`, so effects that grant or remove abilities (layer 6, later: CR 613.1f) change them in one place.
+   */
+  statics?: StaticAbilityDef[];
 };
+
+/** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
+export type StaticAbilityDef =
+  /**
+   * "This creature can't be blocked" (an evasion ability, CR 509.1b), or "can't be blocked except by [filter]" with
+   * `except`, read relative to the blocker's controller.
+   */
+  | { kind: "cantBeBlocked"; except?: ObjectFilter }
+  /** "This creature can block any number of creatures": card text overriding CR 509.1a's one each (CR 101.1). */
+  | { kind: "canBlockAnyNumber" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =
   | "deathtouch" // CR 702.2
+  | "defender" // CR 702.3
   | "double strike" // CR 702.4
   | "first strike" // CR 702.7
   | "flying" // CR 702.9
+  | "forestwalk" // CR 702.14
   | "haste" // CR 702.10
   | "lifelink" // CR 702.15
   | "reach" // CR 702.17
+  | "swampwalk" // CR 702.14
   | "trample" // CR 702.19
   | "vigilance"; // CR 702.20
 
@@ -271,6 +289,8 @@ export type Effect =
   | { op: "addMana"; mana: ManaType | "anyColor"; amount: number }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */
   | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration }
+  /** "[subject] can't block this turn": a restriction on declaring blockers (CR 509.1b) for as long as it lasts. */
+  | { op: "cantBlock"; of: EffectSubject; duration: Duration }
   /** "Destroy [subject]" (CR 701.8a). */
   | { op: "destroy"; of: EffectSubject }
   /**

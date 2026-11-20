@@ -14,6 +14,7 @@ import type { PendingDecision } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
+import { assignsDamageNow } from "./first-strike.ts";
 
 type AssignDamage = Extract<PendingDecision, { kind: "assignDamage" }>;
 
@@ -31,12 +32,13 @@ export function recipientsOf(
   attacker: ObjectId,
   defender: PlayerId,
   amount: number,
+  divisions: readonly CombatDivision[],
   cards: CardDatabase,
 ): Recipients {
   const blockers = blockersOf(state, attacker, cards);
   const creatures = blockers.map((object): Target => ({ kind: "object", object }));
   if (!keywordsOf(state, attacker, cards).includes("trample")) return { recipients: creatures, lethal: null };
-  const lethal = blockers.map((blocker) => lethalDamage(state, blocker, attacker, cards));
+  const lethal = blockers.map((blocker) => lethalDamage(state, blocker, attacker, divisions, cards));
   if (amount <= lethal.reduce((sum, n) => sum + n, 0)) return { recipients: creatures, lethal: null };
   return { recipients: [...creatures, { kind: "player", player: defender }], lethal };
 }
@@ -48,17 +50,73 @@ export function blockersOf(state: GameState, attacker: ObjectId, cards: CardData
     .map((b) => b.blocker);
 }
 
+/** The attackers still in combat this creature blocks, in the order the blocks were declared. */
+export function attackersBlockedBy(state: GameState, blocker: ObjectId, cards: CardDatabase): ObjectId[] {
+  return blocksInCombat(state, cards)
+    .filter((b) => b.blocker === blocker)
+    .map((b) => b.attacker);
+}
+
+/** The creatures blocking an attacker still in combat, each once, in the order their first block was declared. */
+export function blockingCreatures(state: GameState, cards: CardDatabase): ObjectId[] {
+  const blockers = blocksInCombat(state, cards).map((b) => b.blocker);
+  return blockers.filter((b, i) => blockers.indexOf(b) === i);
+}
+
+/** The combat damage a creature assigns: its power, or none if that's 0 or less (CR 510.1a). */
+export function combatPower(state: GameState, id: ObjectId, cards: CardDatabase): number {
+  return Math.max(0, powerAndToughness(state, id, cards).power ?? 0);
+}
+
 /**
- * Lethal damage for a blocker, as trample counts it (CR 702.19b): its toughness less the damage already marked on it,
- * ignoring anything that would change the damage actually dealt. From a source with deathtouch, any damage is lethal
- * (CR 702.2c). Damage other creatures are assigned to it in the same step counts too, which needs a blocker that blocks
- * several attackers (Palace Guard, later: M2-06b).
+ * Lethal damage for a blocker, as trample counts it (CR 702.19b): its toughness less the damage already marked on it
+ * and the damage other attackers are assigned to it in this step, ignoring anything that would change the damage
+ * actually dealt. From a source with deathtouch, any damage is lethal (CR 702.2c).
  */
-function lethalDamage(state: GameState, blocker: ObjectId, source: ObjectId, cards: CardDatabase): number {
+function lethalDamage(
+  state: GameState,
+  blocker: ObjectId,
+  source: ObjectId,
+  divisions: readonly CombatDivision[],
+  cards: CardDatabase,
+): number {
   const obj = state.objects[blocker];
   const marked = obj?.kind === "card" ? obj.damage : 0;
-  const needed = Math.max(0, (powerAndToughness(state, blocker, cards).toughness ?? 0) - marked);
+  const others = otherDamageTo(state, blocker, source, divisions, cards);
+  const needed = Math.max(0, (powerAndToughness(state, blocker, cards).toughness ?? 0) - marked - others);
   return keywordsOf(state, source, cards).includes("deathtouch") ? Math.min(needed, 1) : needed;
+}
+
+/**
+ * The damage other attackers assign this blocker in this step (it blocks several: Palace Guard), whatever order they're
+ * asked in: as already divided, or all of an attacker's damage when this is its one blocker and it has no trample, so no
+ * choice. Attackers without trample are asked before tramplers (`combatDamage`), so their divisions are known. Two
+ * tramplers on one blocker would each need the other's division; the whole assignment would then be checked at once
+ * (later: CR 510.1e).
+ */
+function otherDamageTo(
+  state: GameState,
+  blocker: ObjectId,
+  source: ObjectId,
+  divisions: readonly CombatDivision[],
+  cards: CardDatabase,
+): number {
+  let total = 0;
+  for (const attacker of attackersBlockedBy(state, blocker, cards)) {
+    if (attacker === source || !assignsDamageNow(state, attacker, cards)) continue;
+    const division = divisions.find((d) => d.source === attacker)?.division;
+    if (division !== undefined) {
+      total += division
+        .filter((p) => p.to.kind === "object" && p.to.object === blocker)
+        .reduce((s, p) => s + p.amount, 0);
+    } else if (
+      blockersOf(state, attacker, cards).length === 1 &&
+      !keywordsOf(state, attacker, cards).includes("trample")
+    ) {
+      total += combatPower(state, attacker, cards);
+    }
+  }
+  return total;
 }
 
 /**

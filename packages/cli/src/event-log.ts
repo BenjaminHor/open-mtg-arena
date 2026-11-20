@@ -116,9 +116,9 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "LIFE_LOST":
       return `${e.player} loses ${e.amount} life`;
     case "EFFECT_CREATED":
-      return `effect: ${e.effect.affected.map(name).join(", ")} ${ptChange(e.effect.change)} ${durationText(e.effect.duration)}`;
+      return `effect: ${e.effect.affected.map(name).join(", ")} ${effectChangeText(e.effect.change)} ${durationText(e.effect.duration)}`;
     case "EFFECT_ENDED":
-      return `effect ends: ${e.effect.affected.map(name).join(", ")} ${ptChange(e.effect.change)}`;
+      return `effect ends: ${e.effect.affected.map(name).join(", ")} ${effectChangeText(e.effect.change)}`;
     case "STATE_BASED_ACTIONS":
       return `state-based actions: ${e.actions.map((a) => ("player" in a ? `${a.player} ${a.kind}` : `${name(a.object)} ${a.kind}`)).join(", ")}`;
     case "PERMANENT_DESTROYED":
@@ -155,10 +155,12 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
   }
 }
 
-function ptChange(change: EffectChange): string {
+function effectChangeText(change: EffectChange): string {
   const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
   switch (change.kind) {
     case "modifyPT":
       return `${sign(change.power)}/${sign(change.toughness)}`;
+    case "cantBlock":
+      return "can't block";
   }
 }

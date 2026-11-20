@@ -1,0 +1,23 @@
+name: Palace Guard blocks two attackers, and its controller divides its damage between them
+rules: [CR 101.1, CR 509.1a, CR 510.1d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Runeclaw Bear, Elite Vanguard]
+  p2:
+    battlefield: [Palace Guard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Runeclaw Bear, Elite Vanguard]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Runeclaw Bear, Elite Vanguard] }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p2, kind: assignDamage, amount: 1 }
+  - p2 assign: { Runeclaw Bear: 0, Elite Vanguard: 1 }
+  # The Bear's 2 and the Vanguard's 2 are lethal to the 1/4 Guard; its 1 kills the 2/1 Vanguard.
+  - expect:
+      p2.life: 20
+      p2.graveyard: [Palace Guard]
+      p1.graveyard: [Elite Vanguard]
+      p1.battlefield: [Runeclaw Bear]

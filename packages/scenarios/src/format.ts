@@ -190,7 +190,11 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
     noOptions();
     if (!isRecord(value))
       throw new Error(`${where}: block takes a map of blocker to attacker, like { Giant Spider: Craw Wurm }`);
-    return { kind: "block", player, blocks: Object.entries(value).map(([b, a]): [string, string] => [b, String(a)]) };
+    // A creature that can block several attackers names them in a list: { Palace Guard: [Grizzly Bears, Hill Giant] }.
+    const blocks = Object.entries(value).flatMap(([b, a]): [string, string][] =>
+      (Array.isArray(a) ? a : [a]).map((one) => [b, String(one)]),
+    );
+    return { kind: "block", player, blocks };
   }
   if (word === "assign") {
     noOptions();

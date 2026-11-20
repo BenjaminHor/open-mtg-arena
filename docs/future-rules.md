@@ -121,8 +121,9 @@ owner choose, so once a card cares about graveyard order, ask with a `PendingDec
 
 **Triggered abilities and the casting steps (CR 603, D-041).** A triggered ability's targets are chosen as it's put on
 the stack (CR 603.3d), but it pays nothing and can't be cancelled, and with no legal target it's simply removed. So
-`casting-steps.ts` will need an origin kind with no payment step and no cancel. Once `def.abilities` holds triggered or
-static definitions, `activationProblem` and the activation list must check `def.kind === "activated"`.
+`casting-steps.ts` will need an origin kind with no payment step and no cancel. Static abilities that aren't keywords got their own
+`def.statics` (D-071), so `def.abilities` stays activated only; once it holds triggered definitions, `activationProblem`
+and the activation list must check `def.kind === "activated"`.
 A non-mana ability's {T} is paid only at the final payment (D-059), so cancelling never has to untap it. The activation events name the source by its id, which dies with the source; a UI that names it later will
 want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
 *Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`

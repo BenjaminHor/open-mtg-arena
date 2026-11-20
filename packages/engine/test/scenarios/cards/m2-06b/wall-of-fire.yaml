@@ -1,0 +1,25 @@
+name: Wall of Fire can't attack, and its ability pumps its power while it blocks
+rules: [CR 702.3b, CR 613.4c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Wall of Fire, Mountain, Mountain]
+  p2:
+    battlefield: [Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Runeclaw Bear]
+  - all pass: until combat.declareBlockers
+  - p1 block: { Wall of Fire: Runeclaw Bear }
+  - p2 pass: once
+  - p1 activate: p1:Wall of Fire
+    pay: auto
+  - all pass: once
+  - p2 pass: once
+  - p1 activate: p1:Wall of Fire
+    pay: auto
+  - all pass: once
+  - all pass: until combat.damage
+  - expect:
+      p2.graveyard: [Runeclaw Bear]
+      p1:Wall of Fire.damage: 2

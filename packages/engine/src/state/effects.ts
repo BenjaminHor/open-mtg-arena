@@ -29,7 +29,9 @@ export type ContinuousEffect = {
 /** What a continuous effect changes, by layer (CR 613.1). Later layers add kinds. */
 export type EffectChange =
   /** Layer 7c (CR 613.4c): power and toughness go up or down by these amounts. */
-  { kind: "modifyPT"; power: number; toughness: number };
+  | { kind: "modifyPT"; power: number; toughness: number }
+  /** Not a layer: a rule for the affected creatures, that they can't block (CR 509.1b). */
+  | { kind: "cantBlock" };
 
 /**
  * What a resolving effect needs to know about the spell or ability it's part of. It's built once, as resolution begins,

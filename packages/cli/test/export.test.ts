@@ -56,6 +56,22 @@ describe("export --scenario", () => {
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 
+  it("writes a creature blocking several attackers as a list, and its division of damage", () => {
+    const cards = cardDatabase();
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-06b/palace-guard", "--out", file);
+    cli("do", file, "all pass: until combat.declareAttackers");
+    cli("do", file, "p1 attack: [Runeclaw Bear, Elite Vanguard]");
+    cli("do", file, "all pass: until combat.declareBlockers");
+    cli("do", file, "p2 block: { Palace Guard: [Runeclaw Bear, Elite Vanguard] }");
+    cli("do", file, "all pass: until combat.damage");
+    cli("do", file, "p2 assign: { Runeclaw Bear: 1, Elite Vanguard: 0 }");
+    const yaml = cli("export", file, "--scenario", "--name", "palace guard", "--rules", "CR 510.1d");
+    expect(yaml).toContain("Palace Guard:\n        - Runeclaw Bear\n        - Elite Vanguard");
+    expect(yaml).toMatch(/p2 assign:\n\s+Runeclaw Bear: 1\n\s+Elite Vanguard: 0/);
+    expect(runScenario(yaml, cards).problems).toStrictEqual([]);
+  });
+
   it("refuses a game that stops part way through a declaration", () => {
     const file = tempFile();
     cli("new", "--scenario", "combat/blocked-creatures-trade", "--out", file);

@@ -7,6 +7,7 @@ import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
 import { birdsOfParadise } from "./b/birds-of-paradise.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
+import { bogWraith } from "./b/bog-wraith.ts";
 import { bountifulHarvest } from "./b/bountiful-harvest.ts";
 import { burningInquiry } from "./b/burning-inquiry.ts";
 import { cancel } from "./c/cancel.ts";
@@ -25,10 +26,12 @@ import { disorient } from "./d/disorient.ts";
 import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
 import { doomBlade } from "./d/doom-blade.ts";
+import { dreadWarlock } from "./d/dread-warlock.ts";
 import { duress } from "./d/duress.ts";
 import { earthquake } from "./e/earthquake.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
 import { elvishPiper } from "./e/elvish-piper.ts";
+import { emeraldOryx } from "./e/emerald-oryx.ts";
 import { enormousBaloth } from "./e/enormous-baloth.ts";
 import { essenceScatter } from "./e/essence-scatter.ts";
 import { excommunicate } from "./e/excommunicate.ts";
@@ -67,6 +70,9 @@ import { naturalize } from "./n/naturalize.ts";
 import { naturesSpiral } from "./n/natures-spiral.ts";
 import { negate } from "./n/negate.ts";
 import { ornithopter } from "./o/ornithopter.ts";
+import { palaceGuard } from "./p/palace-guard.ts";
+import { panicAttack } from "./p/panic-attack.ts";
+import { phantomWarrior } from "./p/phantom-warrior.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
 import { ponder } from "./p/ponder.ts";
@@ -103,6 +109,8 @@ import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { viashinoSpearhunter } from "./v/viashino-spearhunter.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
+import { wallOfFaith } from "./w/wall-of-faith.ts";
+import { wallOfFire } from "./w/wall-of-fire.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { windDrake } from "./w/wind-drake.ts";
 import { windstorm } from "./w/windstorm.ts";
@@ -117,6 +125,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   assassinate,
   birdsOfParadise,
   blindingMage,
+  bogWraith,
   bountifulHarvest,
   burningInquiry,
   cancel,
@@ -135,10 +144,12 @@ export const CARD_DEFS: readonly CardDef[] = [
   divination,
   divineVerdict,
   doomBlade,
+  dreadWarlock,
   duress,
   earthquake,
   eliteVanguard,
   elvishPiper,
+  emeraldOryx,
   enormousBaloth,
   essenceScatter,
   excommunicate,
@@ -177,6 +188,9 @@ export const CARD_DEFS: readonly CardDef[] = [
   naturesSpiral,
   negate,
   ornithopter,
+  palaceGuard,
+  panicAttack,
+  phantomWarrior,
   plains,
   planarCleansing,
   ponder,
@@ -213,6 +227,8 @@ export const CARD_DEFS: readonly CardDef[] = [
   vampireAristocrat,
   viashinoSpearhunter,
   volcanicHammer,
+  wallOfFaith,
+  wallOfFire,
   warpathGhoul,
   windDrake,
   windstorm,

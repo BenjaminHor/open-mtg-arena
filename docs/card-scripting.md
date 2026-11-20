@@ -88,7 +88,12 @@ export const furnaceWhelp: CardDef = {
   `{ not: { supertypes: ["basic"], types: ["land"] } }`. "Sacrifice this land" is the cost part `{ kind: "sacrificeSelf" }`. The ops are listed in
   `engine/src/effects/README.md`.
 - Keyword actions (CR 701) Scryfall lists among the keywords, such as Mill, go in `KEYWORD_ACTIONS` in
-  `definition-problems.ts` as the first card using each arrives, not in the definition's `keywords`.
+  `definition-problems.ts` as the first card using each arrives, not in the definition's `keywords`; so do generic terms
+  it lists beside a keyword ("Landwalk" beside "Swampwalk", `GENERIC_TERMS`).
+- Static abilities that aren't keywords go in `statics` (D-071): "This creature can't be blocked" is
+  `{ kind: "cantBeBlocked" }`, "can't be blocked except by black creatures" adds `except: { types: ["creature"],
+  colors: ["B"] }`, "can block any number of creatures" is `{ kind: "canBlockAnyNumber" }`. The engine reads them only
+  through `staticAbilitiesOf`.
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).

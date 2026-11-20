@@ -141,7 +141,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   p1's (`Grizzly Bears#2` for the second), each attacking the other player; `[]` declares none. It answers one
   `declareAttackers` decision per creature, then finishes.
 - `p2 block: { Giant Spider: Craw Wurm }`: declare blockers (CR 509.1), blocker (p2's) to attacker (p1's); `{}` declares
-  none.
+  none. A creature that can block several attackers names them in a list: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`;
+  its controller then divides its damage with `p2 assign: { Grizzly Bears: 1, Hill Giant: 0 }` (CR 510.1d).
 - `p1 assign: { Grizzly Bears: 2, Giant Spider: 4 }`: divide an attacker's combat damage among its blockers (CR 510.1c),
   when an `assignDamage` decision is pending, naming each blocker once in any order; a trampler names the player it
   attacks too, by id (`{ Grizzly Bears: 2, p2: 2 }`, CR 702.19b). Any division that adds up to its power is legal,

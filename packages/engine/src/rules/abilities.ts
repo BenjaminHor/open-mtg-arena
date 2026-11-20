@@ -1,6 +1,6 @@
 // An object's activated abilities, and which of them are mana abilities.
 
-import type { AbilityDef, CardDatabase, Keyword } from "../cards/types.ts";
+import type { AbilityDef, CardDatabase, Keyword, StaticAbilityDef } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -23,6 +23,16 @@ const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
   Mountain: "R",
   Forest: "G",
 };
+
+/**
+ * The static abilities an object has now that aren't keywords (CR 604): the ones written on its card. Abilities granted
+ * or removed by effects (layer 6, later: CR 613.1f) will change this list, in this one place.
+ */
+export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly StaticAbilityDef[] {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  return cards[obj.oracleId]?.def.statics ?? [];
+}
 
 /**
  * The activated abilities an object has now: the ones written on its card, in printed order, then the intrinsic
