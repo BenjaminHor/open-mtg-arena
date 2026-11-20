@@ -5,13 +5,15 @@ setup:
   p1:
     battlefield: [White Knight]
   p2:
-    battlefield: [Vampire Aristocrat]
+    battlefield: [Bog Wraith]
 steps:
   - all pass: until combat.declareAttackers
-  - p2 attack: [Vampire Aristocrat]
+  - p2 attack: [Bog Wraith]
   - all pass: until combat.declareBlockers
-  - p1 block: { White Knight: Vampire Aristocrat }
+  - p1 block: { White Knight: Bog Wraith }
   - all pass: until main2
+  # First strike: the Knight deals 2, which the 3/3 survives; then the Wraith's 3 to the Knight is prevented.
   - expect:
       p1:White Knight.damage: 0
-      p2.graveyard: [Vampire Aristocrat]
+      p1.battlefield contains: [White Knight]
+      p2:Bog Wraith.damage: 2

@@ -1,5 +1,5 @@
-name: A Dragon's damage to Baneslayer Angel is prevented; Baneslayer's first strike and lifelink still work
-rules: [CR 702.16e, CR 702.16a, CR 702.15b]
+name: Baneslayer Angel may block a Dragon; its first strike kills the Dragon before it deals damage, and lifelink gains 5
+rules: [CR 702.16f, CR 702.7b, CR 702.15b]
 setup:
   turn: { active: p2, step: main1 }
   p1:
@@ -12,6 +12,8 @@ steps:
   - all pass: until combat.declareBlockers
   - p1 block: { Baneslayer Angel: Shivan Dragon }
   - all pass: until main2
+  # Protection doesn't stop Baneslayer blocking a Dragon (CR 702.16f is about blocking it). No Dragon in the pool can
+  # damage it: none survives its first strike, and their abilities can't target it; White Knight shows the prevention.
   - expect:
       p1:Baneslayer Angel.damage: 0
       p2.graveyard: [Shivan Dragon]
