@@ -495,7 +495,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        it's still a legal target).
        Built (D-091): White Knight, Black Knight, Baneslayer Angel, Great Sable Stag; 11 scenarios in
        `test/scenarios/cards/m2-08e/`, a unit test for a source that left; golden pool-197 and pool-537. 170 cards;
-       162 of the 234 Magic 2010 cards. Next: mutations, fuzz, reviews, PR (with the M2-08d docs).
+       162 of the 234 Magic 2010 cards. Mutations 7/7, fuzz clean, reviews (no wrong results) fixed in e5d7287:
+       15 scenarios, unit tests in `test/rules/protection.test.ts`, protection in the interaction matrix. PR next, with
+       the M2-08d docs; then M2-09 (layers).
        Plan (2026-11-20):
        - `CardDef.protections: ProtectionQuality[]` (a color, or a subtype like Demon), one per "from" (CR 702.16g),
          read through `protectionsOf` (layer 6, like `keywordsOf`); `rules/protection.ts`: `isProtectedFrom(state,
