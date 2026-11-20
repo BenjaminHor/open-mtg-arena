@@ -32,7 +32,7 @@ that depends on rules the engine doesn't support yet.
 6. Run `pnpm fuzz --games 300` with a random deck containing the new cards.
 7. **Golden games.** If any existing golden game changed, read the diff. Changes are expected only where the old
    games couldn't have involved the new cards, so any change to an old game is a red flag: investigate before
-   regenerating. Then run `pnpm golden:cover`, which adds the shortest games that use the new cards (D-069); the golden
+   regenerating. Then run `pnpm golden:cover`, which adds, greedily, the games using the most new cards per action (D-069); the golden
    test fails until every card in the pool is used.
 8. For anything beyond vanilla effects, ask the `rules-judge` agent to review the batch.
 9. Update `docs/status.md` with the cards added, any that were deferred (and why), and any new coverage gaps.

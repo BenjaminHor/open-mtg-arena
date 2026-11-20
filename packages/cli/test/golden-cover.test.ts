@@ -1,10 +1,24 @@
 // `pnpm golden:cover` (D-069): what a game covers, and the greedy choice of games.
 
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
-import { describe, expect, it } from "vitest";
+import type { Action, GameEvent, GameState, ObjectId, PlayerId } from "@mtg/engine";
+import { afterEach, describe, expect, it } from "vitest";
 import { deckGameSetup } from "../src/deck-setup.ts";
-import { playRecipe } from "../src/golden.ts";
-import { type Candidate, type Coverage, chooseCover, coverageOf } from "../src/golden-cover.ts";
+import { fuzzDecks } from "../src/fuzz/run-game.ts";
+import { addGolden, goldenFiles, playRecipe } from "../src/golden.ts";
+import {
+  addCover,
+  type Candidate,
+  type Coverage,
+  cardUsed,
+  chooseCover,
+  coverageOf,
+  FEATURES,
+  featuresOf,
+} from "../src/golden-cover.ts";
 
 const cards = cardDatabase();
 
@@ -58,5 +72,95 @@ describe("coverageOf", () => {
       const cut = playRecipe({ setup, agent: "by-kind", agentSeed: 5, maxTurns: turn }, cards);
       expect(coverageOf(setup, cut, cards).firstTurn[card], card).toBe(turn);
     }
+  });
+});
+
+const oracleIdOf = (name: string) => Object.values(cards).find((c) => c.printed.name === name)?.oracleId;
+
+/** Just enough of a state for naming objects: a few cards and one ability, a stack and graveyards. */
+function fakeState(): GameState {
+  const card = (name: string) => ({ kind: "card", oracleId: oracleIdOf(name) });
+  return {
+    objects: {
+      bolt: card("Lightning Bolt"),
+      elves: card("Llanowar Elves"),
+      forest: card("Forest"),
+      bears: card("Grizzly Bears"),
+      shot: { kind: "ability", sourceOracleId: oracleIdOf("Prodigal Pyromancer") },
+    },
+    zones: {
+      stack: ["bolt"],
+      players: { p1: { graveyard: ["bears"] }, p2: { graveyard: [] } },
+    },
+  } as unknown as GameState;
+}
+
+describe("cardUsed", () => {
+  const state = fakeState();
+  const used = (event: object) => cardUsed(event as GameEvent, state, state, cards);
+  const p1 = "p1" as PlayerId;
+
+  it("counts a land played, a spell resolved, an ability resolved (for its source) and mana made", () => {
+    expect(used({ type: "LAND_PLAYED", player: p1, newId: "forest", cardId: "c1" })).toBe("Forest");
+    expect(used({ type: "SPELL_RESOLVED", object: "bolt", cardId: "c2", controller: p1 })).toBe("Lightning Bolt");
+    expect(used({ type: "ABILITY_RESOLVED", object: "shot", source: "gone", controller: p1 })).toBe(
+      "Prodigal Pyromancer",
+    );
+    expect(used({ type: "MANA_ADDED", player: p1, mana: "G", amount: 1, source: "elves" })).toBe("Llanowar Elves");
+  });
+
+  it("doesn't count a cast that's cancelled, countered or doesn't resolve: the card's script never ran", () => {
+    expect(used({ type: "SPELL_CAST", player: p1, object: "bolt", cardId: "c2" })).toBeNull();
+    expect(
+      used({ type: "CAST_CANCELLED", player: p1, spell: "bolt", cardId: "c2", restored: "x", untapped: [] }),
+    ).toBeNull();
+    expect(used({ type: "SPELL_COUNTERED", object: "bolt", cardId: "c2" })).toBeNull();
+    expect(used({ type: "SPELL_DID_NOT_RESOLVE", object: "bolt", cardId: "c2" })).toBeNull();
+  });
+});
+
+describe("featuresOf", () => {
+  const state = fakeState();
+  const answer = (answer: object) => featuresOf(state, { type: "ANSWER", answer } as unknown as Action);
+  const target = (object: string) => ({ kind: "chooseTarget", target: { kind: "object", object: object as ObjectId } });
+
+  it("sees a spell on the stack targeted, a card in a graveyard targeted, and cards chosen", () => {
+    expect(answer(target("bolt"))).toStrictEqual([FEATURES.stackTarget]);
+    expect(answer(target("bears"))).toStrictEqual([FEATURES.graveyardTarget]);
+    expect(answer({ kind: "chooseCard", option: 0 })).toStrictEqual([FEATURES.cardsChosen]);
+  });
+
+  it("sees nothing in other targets and answers", () => {
+    expect(answer(target("elves"))).toStrictEqual([]);
+    expect(answer({ kind: "chooseTarget", target: { kind: "player", player: "p2" } })).toStrictEqual([]);
+    expect(answer({ kind: "finishChoosing" })).toStrictEqual([]);
+  });
+});
+
+describe("addCover", () => {
+  const dirs: string[] = [];
+  afterEach(() => {
+    for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("adds games for what's not covered, says what's still missing, and leaves a seed whose game exists alone", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "mtg-cover-"));
+    dirs.push(dir);
+    // pool-793 already exists, cut off at turn 1: it isn't played again or overwritten.
+    const decks = fuzzDecks(793);
+    addGolden(
+      { decks, seed: 793, agent: "by-kind", agentSeed: 793, maxTurns: 1, name: "pool-793", description: "" },
+      dir,
+      cards,
+    );
+    const { added, missing } = addCover(dir, [791, 793, 795], cards);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((line) => /pool-79[15]\.json: \d+ actions, adds /.test(line))).toBe(true);
+    expect(goldenFiles(dir).map((f) => path.basename(f))).toStrictEqual(
+      ["pool-793.json", ...added.map((line) => path.basename(line.split(":")[0] as string))].sort(),
+    );
+    // Three games can't use the whole pool.
+    expect(missing.length).toBeGreaterThan(0);
+    expect(addCover(dir, [791, 793, 795], cards).added).toStrictEqual([]);
   });
 });

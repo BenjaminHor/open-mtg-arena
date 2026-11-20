@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 793, by-kind agents, to turn 4. Covers: Burning Inquiry.",
+  "description": "Random pool decks, setup seed 793, by-kind agents, to turn 4. Covered, when chosen: Burning Inquiry.",
   "agent": "by-kind",
   "agentSeed": 793,
   "maxTurns": 4,

@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 247, by-kind agents, to turn 42. Covers: Bountiful Harvest, Celestial Purge, Consume Spirit, Disorient, Enormous Baloth, Flashfreeze, Goblin Piker, Looming Shade, Mind Rot, Rampant Growth, Solemn Offering.",
+  "description": "Random pool decks, setup seed 247, by-kind agents, to turn 42. Covered, when chosen: Bountiful Harvest, Celestial Purge, Consume Spirit, Disorient, Enormous Baloth, Flashfreeze, Goblin Piker, Looming Shade, Mind Rot, Rampant Growth, Solemn Offering.",
   "agent": "by-kind",
   "agentSeed": 247,
   "maxTurns": 42,

@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "blue-black-control against red-green-beats, setup seed 296, by-kind agents, to turn 24. Covers: Air Elemental, Essence Scatter, Fireball, Sign in Blood, Vampire Aristocrat, Wind Drake.",
+  "description": "blue-black-control against red-green-beats, setup seed 296, by-kind agents, to turn 24. Covered, when chosen: Air Elemental, Essence Scatter, Fireball, Sign in Blood, Vampire Aristocrat, Wind Drake.",
   "agent": "by-kind",
   "agentSeed": 296,
   "maxTurns": 24,

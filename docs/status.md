@@ -186,12 +186,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      `test/scenarios/cards/m10-core/`, seven golden games from two throwaway deck lists (replaced by the fresh golden set
      in step 2). The pool's comment header, scrambled by sorting the file in earlier tasks, is restored.
   2. Done, in review: the golden set rebuilt and Magic 2010's first deck pair (D-069). A `by-kind` agent (the fuzzer's
-     picker); `pnpm golden:cover` (`packages/cli/src/golden-cover.ts`) plays the fuzzer's games for seeds 1 to 800 and
+     picker); `pnpm golden:cover` (`packages/cli/src/golden-cover.ts`) plays the fuzzer's decks for seeds 1 to 800 and
      adds, greedily, the games using the most unused cards per action, each cut off at the turn its last new card is
      used; a card counts as used when played as a land or a spell or ability of it resolves, and three choices the
      export tests read are covered too. The interim decks and their 36 golden games are gone; M1's four (the bench)
      stay; 20 new games, the folder 3.2 MB (was 15 MB; budget 4 MB). `red-green-beats` and `blue-black-control`, first
-     versions of two of m2-pool.md's decks, are the fuzzer's main pair (two games in three). The fuzzer's 40-seed
+     versions of two of m2-pool.md's decks, are the fuzzer's main pair (two prebuilt games in three). The fuzzer's 40-seed
      measure lost no decision kind or event type (Ignite Disorder is in red-green-beats for `divide`). Export tests
      repointed to `blue-black-control-vs-red-green-beats-644`, `pool-463`, `pool-707`.
   3. Next: M2-06 (combat keywords).

@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 249, by-kind agents, to turn 10. Covers: Naturalize.",
+  "description": "Random pool decks, setup seed 249, by-kind agents, to turn 10. Covered, when chosen: Naturalize.",
   "agent": "by-kind",
   "agentSeed": 249,
   "maxTurns": 10,

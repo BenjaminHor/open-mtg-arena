@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "blue-black-control against red-green-beats, setup seed 80, by-kind agents, to turn 30. Covers: Cancel, Divination, Horned Turtle, Kelinore Bat, Merfolk Looter, Negate, Shivan Dragon, Tendrils of Corruption.",
+  "description": "blue-black-control against red-green-beats, setup seed 80, by-kind agents, to turn 30. Covered, when chosen: Cancel, Divination, Horned Turtle, Kelinore Bat, Merfolk Looter, Negate, Shivan Dragon, Tendrils of Corruption.",
   "agent": "by-kind",
   "agentSeed": 80,
   "maxTurns": 30,

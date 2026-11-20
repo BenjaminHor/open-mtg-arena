@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 707, by-kind agents, to turn 17. Covers: Acolyte of Xathrid, Elite Vanguard, Island, Might of Oaks, Plains, Ponder, Seismic Strike, Swamp, Warpath Ghoul, cards chosen as a spell resolves.",
+  "description": "Random pool decks, setup seed 707, by-kind agents, to turn 17. Covered, when chosen: Acolyte of Xathrid, Elite Vanguard, Island, Might of Oaks, Plains, Ponder, Seismic Strike, Swamp, Warpath Ghoul, cards chosen as a spell or ability resolves.",
   "agent": "by-kind",
   "agentSeed": 707,
   "maxTurns": 17,

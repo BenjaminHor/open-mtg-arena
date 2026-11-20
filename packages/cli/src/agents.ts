@@ -14,7 +14,7 @@ export const AGENTS: readonly AgentName[] = ["first-legal", "random", "by-kind"]
 /**
  * The action this agent takes. `first-legal` takes the first legal action (pass, keep, no attackers...), so its games
  * are dull but always end. `random` picks uniformly among the legal actions. `by-kind` picks a kind of action, then one
-of that kind (the fuzzer's picker, D-061), so its games cast more and cancel less.
+ * of that kind (the fuzzer's picker, D-061), so its games cast more and cancel less.
  */
 export function chooseAction(
   agent: AgentName,

@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 393, by-kind agents, to turn 35. Covers: Righteousness.",
+  "description": "Random pool decks, setup seed 393, by-kind agents, to turn 35. Covered, when chosen: Righteousness.",
   "agent": "by-kind",
   "agentSeed": 393,
   "maxTurns": 35,

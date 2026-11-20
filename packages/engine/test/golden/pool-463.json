@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 463, by-kind agents, to turn 50. Covers: Angel's Mercy, Assassinate, Birds of Paradise, Canyon Minotaur, Coral Merfolk, Duress, Fabricate, Goblin Artillery, Haunting Echoes, Lightning Elemental, Mind Spring, Nature's Spiral, Ornithopter, Royal Assassin, Stormfront Pegasus, Tempest of Light, Tome Scour, Zombie Goliath, a card in a graveyard targeted.",
+  "description": "Random pool decks, setup seed 463, by-kind agents, to turn 50. Covered, when chosen: Angel's Mercy, Assassinate, Birds of Paradise, Canyon Minotaur, Coral Merfolk, Duress, Fabricate, Goblin Artillery, Haunting Echoes, Lightning Elemental, Mind Spring, Nature's Spiral, Ornithopter, Royal Assassin, Stormfront Pegasus, Tempest of Light, Tome Scour, Zombie Goliath, a card in a graveyard targeted.",
   "agent": "by-kind",
   "agentSeed": 463,
   "maxTurns": 50,

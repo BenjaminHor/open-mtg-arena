@@ -327,10 +327,11 @@ differently", or "file rewritten (version or layout)".
 just to make a failure go away.
 
 When the pool grows, `pnpm golden:cover [--from 1] [--to 800]` adds games until every card is used (a test checks). It
-plays the fuzzer's game for each seed (its prebuilt pairs and random pool decks, `by-kind` agents, no concessions),
+plays the fuzzer's decks for each seed (its prebuilt pairs and random pool decks) with `by-kind` agents,
 counts what the folder's games already use, and keeps, greedily, the game adding the most unused cards per action, cut
 off at the turn its last new card is used. It also covers three choices the export tests read: a spell on the stack
-targeted, a card in a graveyard targeted, cards chosen as a spell resolves. It only adds games, never changes one.
+targeted, a card in a graveyard targeted, cards chosen as a spell or ability resolves. It only adds games, never changes one, and skips seeds whose game
+is already there; it lists what's still not covered and fails if anything is.
 Keep the folder under 4 MB.
 
 ## 5. Rules coverage report

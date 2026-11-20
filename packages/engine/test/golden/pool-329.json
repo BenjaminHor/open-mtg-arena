@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 329, by-kind agents, to turn 13. Covers: Mind Shatter.",
+  "description": "Random pool decks, setup seed 329, by-kind agents, to turn 13. Covered, when chosen: Mind Shatter.",
   "agent": "by-kind",
   "agentSeed": 329,
   "maxTurns": 13,

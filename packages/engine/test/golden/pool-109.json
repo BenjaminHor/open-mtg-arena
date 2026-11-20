@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 109, by-kind agents, to turn 3. Covers: Zephyr Sprite.",
+  "description": "Random pool decks, setup seed 109, by-kind agents, to turn 3. Covered, when chosen: Zephyr Sprite.",
   "agent": "by-kind",
   "agentSeed": 109,
   "maxTurns": 3,

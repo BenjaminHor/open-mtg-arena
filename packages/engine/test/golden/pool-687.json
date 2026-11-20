@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 687, by-kind agents, to turn 38. Covers: Excommunicate, Lava Axe, Rod of Ruin, Traumatize, Undead Slayer.",
+  "description": "Random pool decks, setup seed 687, by-kind agents, to turn 38. Covered, when chosen: Excommunicate, Lava Axe, Rod of Ruin, Traumatize, Undead Slayer.",
   "agent": "by-kind",
   "agentSeed": 687,
   "maxTurns": 38,

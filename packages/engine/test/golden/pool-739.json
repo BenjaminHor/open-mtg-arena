@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 739, by-kind agents, to turn 24. Covers: Planar Cleansing.",
+  "description": "Random pool decks, setup seed 739, by-kind agents, to turn 24. Covered, when chosen: Planar Cleansing.",
   "agent": "by-kind",
   "agentSeed": 739,
   "maxTurns": 24,

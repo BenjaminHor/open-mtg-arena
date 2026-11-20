@@ -43,8 +43,16 @@ describe("prebuilt decks", () => {
 
   it("of Magic 2010 hold only Magic 2010 cards: none of the pool's cards that came only for M1", () => {
     // The pool's cards that aren't in Magic 2010 (docs/milestones/m2-pool.md, "Every card", lists the 234 that are).
-    const m1Only = ["Shock", "Volcanic Hammer", "Grizzly Bears", "Gray Ogre", "Hill Giant", "Fire Elemental"];
-    m1Only.push("Spined Wurm", "Furnace Whelp");
+    const m1Only = [
+      "Shock",
+      "Volcanic Hammer",
+      "Grizzly Bears",
+      "Gray Ogre",
+      "Hill Giant",
+      "Fire Elemental",
+      "Spined Wurm",
+      "Furnace Whelp",
+    ];
     for (const name of ["red-green-beats", "blue-black-control"]) {
       const cardNames = DECKS[name]?.cards.map((c) => c.card) ?? [];
       expect(cardNames, name).not.toHaveLength(0);

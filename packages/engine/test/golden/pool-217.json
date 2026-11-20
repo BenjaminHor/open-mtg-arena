@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 217, by-kind agents, to turn 25. Covers: Blinding Mage, Disentomb, Ignite Disorder, Silvercoat Lion, Windstorm.",
+  "description": "Random pool decks, setup seed 217, by-kind agents, to turn 25. Covered, when chosen: Blinding Mage, Disentomb, Ignite Disorder, Silvercoat Lion, Windstorm.",
   "agent": "by-kind",
   "agentSeed": 217,
   "maxTurns": 25,

@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 183, by-kind agents, to turn 45. Covers: Deathmark, Divine Verdict, Elvish Piper, Pyroclasm, Siege Mastodon.",
+  "description": "Random pool decks, setup seed 183, by-kind agents, to turn 45. Covered, when chosen: Deathmark, Divine Verdict, Elvish Piper, Pyroclasm, Siege Mastodon.",
   "agent": "by-kind",
   "agentSeed": 183,
   "maxTurns": 45,

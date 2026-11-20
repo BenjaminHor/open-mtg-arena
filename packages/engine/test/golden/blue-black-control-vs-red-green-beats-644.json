@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "blue-black-control against red-green-beats, setup seed 644, by-kind agents, to turn 15. Covers: Doom Blade, Prodigal Pyromancer, Runeclaw Bear, Snapping Drake, Terramorphic Expanse, Unsummon, a spell on the stack targeted.",
+  "description": "blue-black-control against red-green-beats, setup seed 644, by-kind agents, to turn 15. Covered, when chosen: Doom Blade, Prodigal Pyromancer, Runeclaw Bear, Snapping Drake, Terramorphic Expanse, Unsummon, a spell on the stack targeted.",
   "agent": "by-kind",
   "agentSeed": 644,
   "maxTurns": 15,

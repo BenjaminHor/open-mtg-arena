@@ -1,12 +1,13 @@
 // What the golden games cover, and `pnpm golden:cover`, which adds games until they cover the whole pool (D-069).
 // Between them the golden games must use every card in the pool (D-047), and the export tests need a few kinds of
-// choice in them. Rather than play long games between hand-made decks, the command plays the fuzzer's games (prebuilt
-// pairs and seeded random pool decks, without concessions) and keeps, greedily, the game that adds the most uncovered
+// choice in them. Rather than play long games between hand-made decks, the command plays the fuzzer's decks for each
+// seed (prebuilt pairs and seeded random pool decks) with `by-kind` agents, and keeps, greedily, the game that adds the most uncovered
 // cards per action, cut off (`maxTurns`) at the turn its last new card is used. The games already in the folder count,
 // and none is changed: it only adds.
 
+import { basename } from "node:path";
 import { parseArgs } from "node:util";
-import { cardDatabase } from "@mtg/cards";
+import { cardDatabase, POOL } from "@mtg/cards";
 import {
   type Action,
   applyAction,
@@ -20,7 +21,7 @@ import {
 import { playAgents } from "./agent-play.ts";
 import { deckGameSetup } from "./deck-setup.ts";
 import { fuzzDecks, TURN_CAP } from "./fuzz/run-game.ts";
-import { addGolden, GOLDEN_DIR, goldenFiles, readGolden } from "./golden.ts";
+import { addGolden, GOLDEN_DIR, goldenFiles, type NewGolden, playRecipe, readGolden } from "./golden.ts";
 import { wholeNumber } from "./numbers.ts";
 
 /**
@@ -30,7 +31,7 @@ import { wholeNumber } from "./numbers.ts";
 export const FEATURES = {
   stackTarget: "a spell on the stack targeted",
   graveyardTarget: "a card in a graveyard targeted",
-  cardsChosen: "cards chosen as a spell resolves",
+  cardsChosen: "cards chosen as a spell or ability resolves",
 } as const;
 
 /**
@@ -68,7 +69,7 @@ export function coverageOf(setup: GameSetup, actions: readonly Action[], cards: 
 }
 
 /** The card an event uses, by name, or null. Objects that left are only in the state before. */
-function cardUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string | null {
+export function cardUsed(event: GameEvent, before: GameState, after: GameState, cards: CardDatabase): string | null {
   const name = (id: ObjectId): string | null => {
     const obj = before.objects[id] ?? after.objects[id];
     if (obj === undefined) return null;
@@ -89,7 +90,7 @@ function cardUsed(event: GameEvent, before: GameState, after: GameState, cards: 
 }
 
 /** The export tests' features this action shows. */
-function featuresOf(state: GameState, action: Action): string[] {
+export function featuresOf(state: GameState, action: Action): string[] {
   if (action.type !== "ANSWER") return [];
   const answer = action.answer;
   if (answer.kind === "chooseCard") return [FEATURES.cardsChosen];
@@ -153,38 +154,52 @@ export function playCandidate(seed: number, cards: CardDatabase): Candidate {
   return { seed, coverage: coverageOf(setup, played.actions, cards) };
 }
 
+/** The golden game for this seed's decks, cut off at `maxTurns`; its name says the decks and the seed. */
+function goldenFor(seed: number, maxTurns: number, adds: readonly string[]): NewGolden {
+  const decks = fuzzDecks(seed);
+  const random = decks.some((deck) => deck.name.startsWith("random-"));
+  return {
+    decks,
+    seed,
+    agent: "by-kind",
+    agentSeed: seed,
+    maxTurns,
+    name: random ? `pool-${seed}` : `${decks.map((d) => d.name).join("-vs-")}-${seed}`,
+    description:
+      `${random ? "Random pool decks" : decks.map((d) => d.name).join(" against ")}, setup seed ${seed}, by-kind ` +
+      `agents, to turn ${maxTurns}. Covered, when chosen: ${adds.join(", ")}.`,
+  };
+}
+
 /**
- * Adds the cover's games to `dir`, and checks each written game really covers what it was chosen for (the turn cut-off
- * is where an off-by-one would hide). Returns one line per game, for the commit message.
+ * Adds the cover's games to `dir`. Seeds whose game is already in `dir` aren't candidates: a pool or deck change can
+ * make the same name a different game, which `pnpm golden:update` handles. Each game is checked, before it's written,
+ * to cover what it was chosen for (the turn cut-off is where an off-by-one would hide). Returns one line per game, for
+ * the commit message, and what's still not covered.
  */
-export function addCover(dir: string, seeds: readonly number[], cards: CardDatabase): string[] {
-  const candidates = seeds.map((seed) => playCandidate(seed, cards));
-  const report: string[] = [];
-  for (const game of chooseCover(candidates, coveredByGoldens(dir, cards))) {
-    const decks = fuzzDecks(game.seed);
-    const random = game.seed % 2 === 1;
-    const path = addGolden(
-      {
-        decks,
-        seed: game.seed,
-        agent: "by-kind",
-        agentSeed: game.seed,
-        maxTurns: game.maxTurns,
-        name: random ? `pool-${game.seed}` : `${decks.map((d) => d.name).join("-vs-")}-${game.seed}`,
-        description:
-          `${random ? "Random pool decks" : decks.map((d) => d.name).join(" against ")}, setup seed ${game.seed}, ` +
-          `by-kind agents, to turn ${game.maxTurns}. Covers: ${game.adds.join(", ")}.`,
-      },
-      dir,
-      cards,
-    );
-    const written = readGolden(path);
-    const covers = coverageOf(written.setup, written.actions, cards).firstTurn;
-    const missing = game.adds.filter((unit) => covers[unit] === undefined);
-    if (missing.length > 0) throw new Error(`${path} doesn't cover ${missing.join(", ")} (a turn cut-off bug)`);
-    report.push(`${path}: ${written.actions.length} actions, adds ${game.adds.join(", ")}`);
+export function addCover(
+  dir: string,
+  seeds: readonly number[],
+  cards: CardDatabase,
+): { added: string[]; missing: string[] } {
+  const taken = new Set(goldenFiles(dir).map((file) => basename(file, ".json")));
+  const free = seeds.filter((seed) => !taken.has(goldenFor(seed, 0, []).name));
+  const candidates = free.map((seed) => playCandidate(seed, cards));
+  const covered = coveredByGoldens(dir, cards);
+  const added: string[] = [];
+  for (const game of chooseCover(candidates, covered)) {
+    const golden = goldenFor(game.seed, game.maxTurns, game.adds);
+    const setup = deckGameSetup(golden.decks, golden.seed, null);
+    const actions = playRecipe({ ...golden, setup }, cards);
+    const covers = coverageOf(setup, actions, cards).firstTurn;
+    const lost = game.adds.filter((unit) => covers[unit] === undefined);
+    if (lost.length > 0) throw new Error(`${golden.name} doesn't cover ${lost.join(", ")} (a turn cut-off bug)`);
+    const path = addGolden(golden, dir, cards);
+    added.push(`${path}: ${actions.length} actions, adds ${game.adds.join(", ")}`);
+    covered.push(...game.adds);
   }
-  return report;
+  const wanted = [...POOL.cards.map((card) => card.name), ...Object.values(FEATURES)];
+  return { added, missing: wanted.filter((unit) => !covered.includes(unit)) };
 }
 
 /** `pnpm golden:cover [--from 1] [--to 800]`: the candidates' setup seeds. */
@@ -195,10 +210,13 @@ if (import.meta.main) {
     const from = wholeNumber(values.from, 1, "from");
     const to = wholeNumber(values.to, 800, "to");
     const seeds = Array.from({ length: Math.max(to - from + 1, 0) }, (_, i) => from + i);
-    const report = addCover(GOLDEN_DIR, seeds, cardDatabase());
-    console.log(
-      report.length === 0 ? "the golden games already cover everything these seeds can add" : report.join("\n"),
-    );
+    const { added, missing } = addCover(GOLDEN_DIR, seeds, cardDatabase());
+    console.log(added.length === 0 ? "these seeds add nothing the golden games don't already cover" : added.join("\n"));
+    if (missing.length > 0) {
+      // The golden test fails until these are covered: try more seeds, or a prebuilt deck with the card.
+      console.error(`still not covered: ${missing.join(", ")}`);
+      process.exitCode = 1;
+    }
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
