@@ -427,9 +427,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        shields are used unasked (like D-077). "Can't be regenerated": the shield isn't applied (CR 701.19c). Cards:
        Drudge Skeletons, Wall of Bone, Cudgel Troll, Regenerate, Polymorph (its reveal happens even if the creature
        isn't destroyed: its ruling).
-     - Now: M2-08c (2026-11-20). Built (D-087): `happenOrAsk`, the `chooseReplacement` decision and its plumbing (legal
+     - M2-08c: done, merged (PR #47, D-087). Built: `happenOrAsk`, the `chooseReplacement` decision and its plumbing (legal
        actions, view, CLI action lines and describe, scenario `choose:` "regeneration" or a card's name, export), unit
-       tests in `test/pipeline/replacement-choice.test.ts`, an import guard. Next: mutations, fuzz, reviews, PR.
+       tests in `test/pipeline/replacement-choice.test.ts`, an import guard. Next: M2-08d.
        Design, with the advisor's review:
        - `happenOrAsk`: like `happen`, but when the affected player (or the affected object's controller, CR 616.1)
          must choose between two different replacement candidates, it performs nothing, sets a `chooseReplacement`
