@@ -142,6 +142,34 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         need revealed cards in the view, not only an event (CR 701.20a); several searchers at once (CR 701.23i), "may
         search" (CR 701.23g) and searching another player's library (Sphinx Ambassador) fit the same steps.
 
+  - M2-05c Life, damage to many, mana (now). Plan (2026-11-20), for the rules-judge before code; split in two:
+    - M2-05c1, no new decisions: Angel's Mercy (gain 7), Bountiful Harvest, Acolyte of Xathrid ({1}{B}, {T}: target
+      player loses 1 life), Seismic Strike, Tendrils of Corruption, Consume Spirit, Pyroclasm, Windstorm, Earthquake,
+      Goblin Artillery.
+      - An `Amount` counted from the battlefield, `{ count: ObjectFilter }` ("1 life for each land you control", "the
+        number of Mountains you control"), worked out as the effect applies; Tendrils' "where X is the number of Swamps
+        you control" is that count, its value while it's on the stack (CR 107.3c).
+      - A subject `{ each: ObjectFilter }`: every permanent fitting it as the effect applies (Earthquake's ruling: "without
+        flying" is checked on resolution; CR 608.2h). Filters gain `keywords` and `notKeywords`, read through
+        `keywordsOf` (layer 6).
+      - `dealDamage` gains `and: [{ to, amount }]` for one source dealing different damage to different recipients in
+        the same action: Earthquake (each creature without flying and each player), Goblin Artillery (2 to any target
+        and 3 to you). Each is one damage event, processed simultaneously (CR 608.2f, 120.4).
+      - Consume Spirit's "Spend only black mana on X": a spell field `xPaidWith: "B"` makes each X a {B} in the total
+        cost (CR 601.2f), so only black mana pays it; it deals X damage and gains X life, X being the number chosen,
+        even if damage is prevented (its ruling). An illegal target means it doesn't resolve and no life is gained (its
+        ruling, CR 608.2b), as for Tendrils and Goblin Artillery.
+    - M2-05c2, choices: Yawning Fissure ("Each opponent sacrifices a land of their choice": a subject `"eachOpponent"`;
+      a `sacrifice` op where each opponent chooses with `chooseCards`, purpose "sacrifice", from lands they control;
+      the battlefield is public, so a forced choice isn't asked; in APNAP order, then all sacrificed at once, its
+      ruling, CR 608.2e; two players for now). Birds of Paradise ("{T}: Add one mana of any color", CR 106.1a): a mana
+      ability resolves as it's activated (CR 605.3b), so it can't wait for a decision; the color is part of the
+      activation (`ACTIVATE_ABILITY` gains a `color` for such abilities), `legalActions` lists one activation per color,
+      and `autoPay` picks the color the cost needs. Birds has flying (Windstorm, Earthquake).
+    - Future impact: "damage to each" and counted amounts reach every later card that uses them; the color on the
+      action is how any "one mana of any color" mana ability works (lands later); `{ each }` keeps working once layers
+      change keywords (M2-09).
+
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
   `git push -u origin <branch>`: `checkout -B` from `origin/main` makes `main` the upstream, and a plain `git push`
