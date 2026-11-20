@@ -215,7 +215,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        `test/scenarios/cards/m2-06c/` and `interactions/requirements/`, a unit test for take-back
        (`test/combat/declarations.test.ts`), two new matrix rows; three of the cards in the M10 pair. Declarations list
        finishing first (no first-legal loop); the bench baseline reset.
-     - M2-06d, done, in review: shroud (CR 702.18), one check in `legalTargets`, which resolution re-checks (CR 608.2b).
+     - M2-06d, done, in review: shroud (CR 702.18), one check in `legalTargets` for permanents only (CR 113.6: a spell
+       or a graveyard card with shroud can be targeted), which resolution re-checks (CR 608.2b).
        Mist Leopard, Kalonian Behemoth. Scenarios in `test/scenarios/cards/m2-06d/` and `interactions/shroud/`, a unit
        test for a target gaining shroud before resolution, a Shroud matrix row; Mist Leopard in the M10 pair.
        Protection's targeting and blocking, flash, indestructible and "can't be countered" wait for the owner's answer

@@ -1,5 +1,5 @@
-name: Alluring Siren can't target a creature with shroud, so nothing makes it attack
-rules: [CR 702.18a, CR 508.1d]
+name: Alluring Siren can't target a creature with shroud
+rules: [CR 702.18a, CR 601.2c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

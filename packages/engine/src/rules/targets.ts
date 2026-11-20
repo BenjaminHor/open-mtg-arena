@@ -21,12 +21,16 @@ export type Targeting = { object: ObjectId; controller: PlayerId };
  * Every legal choice for this target requirement right now, in a fixed order: objects in their zone's order, then
  * players in turn order. Only permanents can be chosen unless the text says otherwise (CR 115.2). A permanent with
  * shroud can't be the target of spells or abilities (CR 702.18a), so it's never one; this list is also what's checked
- * on resolution (CR 608.2b), so a target that gained shroud since is illegal then.
+ * on resolution (CR 608.2b), so a target that gained shroud since is illegal then. Shroud works only on the battlefield
+ * (CR 113.6): a spell with shroud on the stack or a card with it in a graveyard can be targeted. A player with shroud
+ * needs player abilities (later: CR 702.18a).
  */
 export function legalTargets(state: GameState, spec: TargetSpec, by: Targeting, cards: CardDatabase): Target[] {
-  return candidates(state, spec, by, cards).filter(
-    (t) => t.kind !== "object" || !keywordsOf(state, t.object, cards).includes("shroud"),
-  );
+  return candidates(state, spec, by, cards).filter((t) => t.kind !== "object" || !hasShroud(state, t.object, cards));
+}
+
+function hasShroud(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  return state.zones.battlefield.includes(id) && keywordsOf(state, id, cards).includes("shroud");
 }
 
 /** What the requirement's words allow, before abilities that stop targeting (shroud). */

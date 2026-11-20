@@ -1,5 +1,5 @@
 name: A creature with shroud can't be the target of spells, its controller's or an opponent's, but untargeted damage still hits it
-rules: [CR 702.18a, CR 115.1]
+rules: [CR 702.18a, CR 115.10a]
 setup:
   turn: { active: p1, step: main1 }
   p1:
