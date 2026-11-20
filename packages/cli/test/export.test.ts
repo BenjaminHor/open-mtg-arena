@@ -43,6 +43,16 @@ describe("export --scenario", () => {
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 
+  it("names cards chosen while a spell resolves, so games with Mind Rot export too", () => {
+    const cards = cardDatabase();
+    // A golden game in which p2's Mind Rot makes p1 choose two discards (a chooseCards decision, D-062).
+    const golden = new URL("../../engine/test/golden/blue-green-vs-black-red-300.json", import.meta.url).pathname;
+    const yaml = cli("export", golden, "--scenario", "--name", "card choices", "--rules", "CR 100.1");
+    expect(yaml).toContain("p2 cast: Mind Rot");
+    expect(yaml).toContain("p1 choose: Centaur Courser");
+    expect(runScenario(yaml, cards).problems).toStrictEqual([]);
+  }, 60_000);
+
   it("refuses a game that stops part way through a declaration", () => {
     const file = tempFile();
     cli("new", "--scenario", "combat/blocked-creatures-trade", "--out", file);

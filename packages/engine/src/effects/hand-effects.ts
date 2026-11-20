@@ -45,6 +45,7 @@ export function discardChosen(
   const count = Math.min(Math.max(0, amount), fitting.length);
   if (count === 0) return nothing(state);
   // In a fixed order, not the hand's: a public graveyard in hand order would show which card arrived when (D-062).
+  // Their owner may choose the order instead (later: CR 404.3).
   if (count === hand.length) return discardAll(state, inShownOrder(state, hand), cards);
   const chooser = effect.chosenBy === "you" ? context.controller : player;
   return nothing(

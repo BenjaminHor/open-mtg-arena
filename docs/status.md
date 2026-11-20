@@ -94,9 +94,15 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         hidden ids instead of shifting them, and keeps the identity of cards a viewer is entitled to see; two-worlds
         unit tests come first (Fabricate with and without an artifact, Piper declining against no creature, Tutor
         finding A against B, Echoes leaving copies against none, Duress on a hand built in two orders).
-      - M2-05b2a, choices from a hand: built, in review. 10 scenarios in `test/scenarios/cards/m2-05b2/`, two-worlds and
-        ordering tests in `test/effects/choose-cards.test.ts` (checked to fail when the view shows ids or the choice is
-        skipped); `scrambleHidden` permutes hidden ids; the interim decks carry the four cards, four new golden games.
+      - M2-05b2a, choices from a hand: done, merged (PR #29). 17 scenarios in `test/scenarios/cards/m2-05b2/`;
+        two-worlds, ordering and answer tests in `test/effects/choose-cards.test.ts` (checked to fail when the view
+        shows ids, the choice is skipped, or a whole hand is discarded in hand order); `scrambleHidden` permutes hidden
+        ids; the interim decks carry the four cards, four new golden games. The reviews found a leak this task brought
+        in (a whole-hand discard in hand order), fixed. M2-05b2b is next; first settle and review two design points:
+        a search shows the searcher the whole zone, privately, by identity (CR 701.23a), which also keeps Duress's
+        revealed hand in the view mid-choice; and where "found" / "exiled this way" live between effects (D-063 is one
+        condition on it). Two-worlds tests first (Fabricate with and without an artifact, Tutor finding A or B, Echoes
+        leaving copies or none, from the target's view).
         Mind Rot (`discard`: the player discards N of their choice, CR 701.9a-b; a
         smaller hand whole, CR 609.3), Merfolk Looter (draw, then discard, nothing between: CR 608.2g and its ruling;
         CR 704.5b with an empty library), Duress (`target opponent`: a player target with an opponent restriction,

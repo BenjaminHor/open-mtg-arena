@@ -326,7 +326,7 @@ Written `later: CR 614` in the code, and not counted above. Check that each real
 - CR 305.7 — in `packages/engine/src/rules/card-types.ts`
 - CR 306 — in `packages/engine/src/rules/targets.ts`
 - CR 310 — in `packages/cards/src/printed.ts`
-- CR 404.3 — in `packages/engine/src/effects/player-effects.ts`, `packages/engine/src/effects/run-effect.ts`, `packages/engine/src/game/state-based-actions.ts`
+- CR 404.3 — in `packages/engine/src/effects/hand-effects.ts`, `packages/engine/src/effects/player-effects.ts`, `packages/engine/src/effects/run-effect.ts`, `packages/engine/src/game/state-based-actions.ts`
 - CR 500.7 — in `packages/engine/src/game/turn-steps.ts`
 - CR 500.8 — in `packages/engine/src/game/turn-steps.ts`
 - CR 500.9 — in `packages/engine/src/game/turn-steps.ts`
