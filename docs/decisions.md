@@ -840,3 +840,9 @@ every schema change and every change D-024 lists bumps it.
   life-loss replacements (M2-07, M2-08) will see it. The CR settles this only for gaining 0 life (CR 119.9, 119.10)
   and dealing 0 damage (CR 120.8), not for losing 0. The owner's ruling: "Treat losing 0 life as an event because we
   may encounter a card(s) that take advantage of that."
+
+**D-066: The app never asks for graveyard order** · 2026-11-20 · accepted (owner)
+- When several cards go to a graveyard at the same time, CR 404.3 lets their owner arrange them. The app never asks:
+  they go in the engine's fixed order (D-039; a whole hand discarded at once in the shown order, D-062), as Arena
+  does. The owner: "Don't ask about graveyard order." The code's `later: CR 404.3` marks stay, since the rule's choice
+  isn't offered.

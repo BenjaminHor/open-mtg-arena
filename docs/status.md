@@ -291,10 +291,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Not blocking.) CR 404.3 lets a player choose the order of their cards that go to the graveyard at the same time
-  (creatures dying together, a cleanup discard). The engine uses battlefield (or hand) order and doesn't ask, as Arena
-  doesn't; nothing in the M1 pool cares about graveyard order (D-039). Should the app ever ask, once cards that care
-  about graveyard order arrive?
 
 ## Known issues
 - Golden games grow by about 2 MB per M2 task (each is a full random game, 300–400 KB as JSON, and every pool card
