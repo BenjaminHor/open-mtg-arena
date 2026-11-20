@@ -91,12 +91,15 @@ export const furnaceWhelp: CardDef = {
 - Keyword actions (CR 701) Scryfall lists among the keywords, such as Mill, go in `KEYWORD_ACTIONS` in
   `definition-problems.ts` as the first card using each arrives, not in the definition's `keywords`; so do generic terms
   it lists beside a keyword ("Landwalk" beside "Swampwalk", `GENERIC_TERMS`).
+- "Protection from [quality]" goes in `protections`, one entry per quality (a color, or a subtype like Demon;
+  CR 702.16g), not in `keywords`; the Oracle check counts it as Scryfall's "Protection" keyword (D-091).
 - Static abilities that aren't keywords go in `statics` (D-071): "This creature can't be blocked" is
   `{ kind: "cantBeBlocked" }`, "can't be blocked except by black creatures" adds `except: { types: ["creature"],
   colors: ["B"] }`, "can block any number of creatures" is `{ kind: "canBlockAnyNumber" }`, "can't attack or block
   alone" is `{ kind: "cantAttackOrBlockAlone" }`, "attacks each combat if able" is `{ kind: "attacksEachCombat" }`, "all
-  creatures able to block this creature do so" is `{ kind: "mustBeBlockedByAllAble" }`. The engine reads them only
-  through `staticAbilitiesOf`.
+  creatures able to block this creature do so" is `{ kind: "mustBeBlockedByAllAble" }`, "this spell can't be
+  countered" is `{ kind: "cantBeCountered" }` (it works on the stack, CR 113.6g). The engine reads them only through
+  `staticAbilitiesOf`.
 - Triggered abilities go in `triggers` (D-076), each `{ when, onlyIf?, optional?, targets, effects }`. `when` is the
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's

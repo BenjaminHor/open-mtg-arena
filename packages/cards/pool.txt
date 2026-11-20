@@ -12,8 +12,10 @@ Angel's Feather
 Angel's Mercy
 Assassinate
 Ball Lightning
+Baneslayer Angel
 Berserkers of Blood Ridge
 Birds of Paradise
+Black Knight
 Blinding Mage
 Bog Wraith
 Bogardan Hellkite
@@ -71,6 +73,7 @@ Goblin Artillery
 Goblin Piker
 Gravedigger
 Gray Ogre
+Great Sable Stag
 Griffin Sentinel
 Grizzly Bears
 Guardian Seraph
@@ -163,6 +166,7 @@ Wall of Bone
 Wall of Faith
 Wall of Fire
 Warpath Ghoul
+White Knight
 Wind Drake
 Windstorm
 Wurm's Tooth

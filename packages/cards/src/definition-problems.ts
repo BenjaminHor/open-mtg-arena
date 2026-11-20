@@ -3,6 +3,7 @@
 
 import {
   type CardDef,
+  type Color,
   type Effect,
   type EffectSubject,
   isFixedAmount,
@@ -49,10 +50,13 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       .map((k) => k.toLowerCase())
       .filter((k) => !KEYWORD_ACTIONS.includes(k) && !GENERIC_TERMS.includes(k))
       .sort();
-    const actual = [...(def.keywords ?? [])].sort();
+    // Protection's qualities are in `protections`; Scryfall lists just "Protection" (CR 702.16).
+    const actual = [...(def.keywords ?? []), ...((def.protections?.length ?? 0) > 0 ? ["protection"] : [])].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);
     }
+    const protections = protectionProblem(def);
+    if (protections !== null) problems.push(protections);
     if (def.spell !== undefined)
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
@@ -320,4 +324,22 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     }
   }
   return problems;
+}
+
+const COLOR_WORDS: Record<string, Color> = { white: "W", blue: "U", black: "B", red: "R", green: "G" };
+
+/**
+ * Whether `protections` says what the Oracle text's "protection from A and from B" says (CR 702.16g): colors by
+ * their words, creature types by their plural ("Demons"). Null when they agree.
+ */
+function protectionProblem(def: CardDef): string | null {
+  const match = /protection from ([^(.\n]+)/i.exec(def.oracle);
+  const words = match?.[1] === undefined ? [] : match[1].split(/,? and from |, from /).map((w) => w.trim());
+  const expected = words.map((w) => {
+    const color = COLOR_WORDS[w.toLowerCase()];
+    return color === undefined ? `subtype ${w.replace(/s$/, "")}` : `color ${color}`;
+  });
+  const actual = (def.protections ?? []).map((q) => (q.kind === "color" ? `color ${q.color}` : `subtype ${q.subtype}`));
+  if (JSON.stringify([...expected].sort()) === JSON.stringify([...actual].sort())) return null;
+  return `${def.name}: protections ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`;
 }

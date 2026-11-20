@@ -9,8 +9,10 @@ import { angelsFeather } from "./a/angels-feather.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
 import { ballLightning } from "./b/ball-lightning.ts";
+import { baneslayerAngel } from "./b/baneslayer-angel.ts";
 import { berserkersOfBloodRidge } from "./b/berserkers-of-blood-ridge.ts";
 import { birdsOfParadise } from "./b/birds-of-paradise.ts";
+import { blackKnight } from "./b/black-knight.ts";
 import { blindingMage } from "./b/blinding-mage.ts";
 import { bogWraith } from "./b/bog-wraith.ts";
 import { bogardanHellkite } from "./b/bogardan-hellkite.ts";
@@ -68,6 +70,7 @@ import { goblinArtillery } from "./g/goblin-artillery.ts";
 import { goblinPiker } from "./g/goblin-piker.ts";
 import { gravedigger } from "./g/gravedigger.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
+import { greatSableStag } from "./g/great-sable-stag.ts";
 import { griffinSentinel } from "./g/griffin-sentinel.ts";
 import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { guardianSeraph } from "./g/guardian-seraph.ts";
@@ -160,6 +163,7 @@ import { wallOfBone } from "./w/wall-of-bone.ts";
 import { wallOfFaith } from "./w/wall-of-faith.ts";
 import { wallOfFire } from "./w/wall-of-fire.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
+import { whiteKnight } from "./w/white-knight.ts";
 import { windDrake } from "./w/wind-drake.ts";
 import { windstorm } from "./w/windstorm.ts";
 import { wurmsTooth } from "./w/wurms-tooth.ts";
@@ -177,8 +181,10 @@ export const CARD_DEFS: readonly CardDef[] = [
   angelsMercy,
   assassinate,
   ballLightning,
+  baneslayerAngel,
   berserkersOfBloodRidge,
   birdsOfParadise,
+  blackKnight,
   blindingMage,
   bogWraith,
   bogardanHellkite,
@@ -236,6 +242,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   goblinPiker,
   gravedigger,
   grayOgre,
+  greatSableStag,
   griffinSentinel,
   grizzlyBears,
   guardianSeraph,
@@ -328,6 +335,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   wallOfFaith,
   wallOfFire,
   warpathGhoul,
+  whiteKnight,
   windDrake,
   windstorm,
   wurmsTooth,

@@ -177,6 +177,8 @@ export function replacementText(state: GameState, ref: ReplacementRef, cards: Ca
       return `${nameOf(state, ref.object, cards)}'s replacement ${ref.index + 1}`;
     case "regenerationShield":
       return `regenerating ${nameOf(state, ref.object, cards)}`;
+    case "protection":
+      return `${nameOf(state, ref.object, cards)}'s protection`;
     case "resolvedEffect": {
       // Named by the card that made it: its spell is usually gone (CR 400.7).
       const oracleId = replacementEffectCard(state, ref.id);

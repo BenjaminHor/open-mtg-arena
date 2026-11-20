@@ -1267,3 +1267,53 @@ every schema change and every change D-024 lists bumps it.
   (Kamigawa) have none; split cards 50 of 123; Auras 359 of 1,244. None of these is hard for the engine's design
   (all are CR rules on the same machinery); the filter only decides what's built first. Banding and phasing, the
   costly ones, aren't Modern-legal anyway.
+
+**D-090: Harm's Way is left out; what redirection with an amount needs (M2-08d2)** · 2026-11-20 · accepted (owner)
+- Harm's Way ("The next 2 damage that a source of your choice would deal to you and/or permanents you control this
+  turn is dealt to any target instead") was built twice on the branch and reverted (commits 1c4fcda, 93f2c4d,
+  6fd7c9e, 1316d92, kept in history; reverted after the third rules review). Each review found wrong results reachable
+  with the pool, so the card was taken out of the pool.
+- Why it's hard: its split ("you choose which 2 damage", its ruling) has to be made when the effect applies, against
+  what earlier CR 616.1 choices left, and CR 616.1 choices are per affected object or player, made by each affected
+  player in APNAP order. Settling shares before those choices made the order choice meaningless (two of one player's
+  Harm's Ways) and lost shield (prevention first). Choosing once per player for all their recipients loses outcomes the
+  per-recipient choices reach (Safe Passage first for you, Harm's Way for your creature).
+- What a correct model needs, from the reviews: choices per (effect, recipient) for prevention; Harm's Way as one
+  option over all of its controller's affected recipients, split at application; CR 614.5's "one opportunity" for
+  replacement effects (Harm's Way) event-wide, and prevention ("prevent all") applying to any part it hasn't
+  prevented, including parts redirected later; Guardian Seraph's 1 counted per source and recipient across the
+  event (CR 615.10); APNAP order across the affected players, and which goes first when one player's lone effect
+  needs no choice (unsettled: CR 616.1, 101.4 don't say); the sources of abilities on the stack offered even after
+  they left (CR 609.7a); damage already headed for the target not redirected (CR 614.9 "another", 609.7b; no ruling
+  found online, D-080). The paper model also merged one source's damage to one recipient into one part, which would
+  reverse D-075 (Goblin Artillery's 2 and 3 to its controller stay two parts), an owner decision.
+- Why set aside rather than finish now: none of this is needed by another Magic 2010 card, Harm's Way isn't on MTG
+  Arena, and no card that filter keeps has "a source of your choice ... is dealt to ... instead" (Scryfall,
+  2026-11-20, `in:arena in:paper -is:alchemy`, D-089). Three of the readings above needed the owner (D-080, and
+  reversing D-088's per-entry choice), who chose to leave the card out (below). Fog, Safe Passage and Guardian Seraph (M2-08d1, D-088) are unaffected.
+- The owner chose (a), 2026-11-20: leave Harm's Way out of the pool, like the M2-14 cards Arena doesn't have. M2
+  finishes without it; this entry is the design record if a card ever needs redirection with an amount. The per-entry
+  choice (Known issues) stays as built until a card makes it matter.
+
+**D-091: Protection, and "can't be countered" (M2-08e)** · 2026-11-20 · accepted
+- `CardDef.protections` lists the qualities, one per "from" (CR 702.16g): a color or a subtype (Baneslayer Angel's
+  Demons and Dragons), read through `protectionsOf` (layer 6, like `keywordsOf`), on the battlefield only (CR 113.6).
+  Protection is parameterized, so it's its own field rather than a `Keyword` string; the Oracle check counts it as
+  Scryfall's "Protection" keyword. `rules/protection.ts`'s `isProtectedFrom(state, permanent, source)` reads the
+  source as it is, or as it last existed if it left; for an ability, its source's card (CR 702.16b, 113.7a). Printed
+  colors and subtypes, as nothing changes them yet; a snapshot `characteristics()` replaces that when effects can.
+- What it stops: targeting (`legalTargets`, so also on resolution, CR 608.2b), blocking (`canBlock`), and damage: a
+  "prevent all" candidate in `damage-replacements.ts` with its own `ReplacementRef` (`protection`), so it's ordered
+  with Fog and the others like any prevention (D-088). Being enchanted or equipped comes with Auras and Equipment
+  (M2-12, CR 702.16c-d); protection from players or from everything when a card needs it.
+- "This spell can't be countered" is a static (`cantBeCountered`) read on the stack (CR 113.6g): `happen` drops a
+  counter event aimed at it, as it drops a destroy aimed at an indestructible permanent (CR 101.2). The spell is
+  still a legal target, and the counterspell resolves and does its other parts (Great Sable Stag's ruling).
+- Golden cover: "keyword protection" is credited in combat (coarse, like indestructible); static abilities now have a
+  `STATIC_WHEN` table like keywords, "can't be countered" credited as the spell resolves, whether or not a counter was
+  tried (coarse too).
+- After the M2-08e reviews: the source's colors and subtypes are read through `colorsOf` and `subtypesOf` while it
+  exists, and printed values only for a gone source (the snapshot is later). `protectionsOf` works in any zone, like
+  `keywordsOf`, and `isProtectedFrom` checks the battlefield (CR 113.6); protections are in `characteristics()` and
+  `inspect`. The Oracle check compares `protections` with the text's "protection from A and from B".
+

@@ -1,0 +1,27 @@
+name: Baneslayer Angel blocks Xathrid Demon; the Demon must assign lethal 5 to it though it's prevented, and 2 tramples over
+rules: [CR 702.16e, CR 702.16a, CR 702.19b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Baneslayer Angel]
+  p2:
+    battlefield: [Xathrid Demon]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Xathrid Demon]
+  - all pass: until combat.declareBlockers
+  - p1 block: { Baneslayer Angel: Xathrid Demon }
+  - all pass: until combat.damage
+  # The first-strike step: Baneslayer deals 5 (the 7/7 lives), gaining 5. Then the regular step asks the Demon.
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: assignDamage }
+  # Lethal damage ignores what would prevent it (CR 702.19b): 4 to Baneslayer isn't enough.
+  - p2 assign: { Baneslayer Angel: 4, p1: 3 }
+  - expect error: illegalAction
+  - p2 assign: { Baneslayer Angel: 5, p1: 2 }
+  - expect:
+      p1:Baneslayer Angel.damage: 0
+      p2:Xathrid Demon.damage: 5
+      p1.life: 23
+      events contains: [{ type: DAMAGE_PREVENTED, amount: 5 }]

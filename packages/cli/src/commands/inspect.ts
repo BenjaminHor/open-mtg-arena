@@ -3,12 +3,15 @@
 
 import {
   type CardDatabase,
+  type Characteristics,
+  type Color,
   characteristics,
   isAttacking,
   isBlocking,
   type LayerSevenCChange,
   layerSevenCChanges,
   type ObjectId,
+  type ProtectionQuality,
 } from "@mtg/engine";
 import { nameOf, parseRef, resolveRef } from "@mtg/scenarios";
 import { durationText, objectText } from "../describe.ts";
@@ -27,7 +30,7 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
   const lines = [
     `${objectText(state, id, cards)} (object ${id}, card ${obj.cardId})`,
     `  types: ${[...c.supertypes, ...c.types].join(" ")}${c.subtypes.length > 0 ? ` — ${c.subtypes.join(" ")}` : ""}`,
-    `  colors: ${c.colors.length > 0 ? c.colors.join("") : "colorless"}; keywords: ${c.keywords.length > 0 ? c.keywords.join(", ") : "none"}`,
+    `  colors: ${c.colors.length > 0 ? c.colors.join("") : "colorless"}; keywords: ${keywordText(c)}`,
     `  controller: ${c.controller}; owner: ${obj.owner}`,
   ];
   if (c.power !== null && c.toughness !== null) {
@@ -69,4 +72,22 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
 
 function sign(n: number): string {
   return n >= 0 ? `+${n}` : `${n}`;
+}
+
+/** The keywords, with each protection as "protection from black" or "protection from Demons" (CR 702.16). */
+function keywordText(c: Characteristics): string {
+  const protections = c.protections.map((q) => `protection from ${qualityText(q)}`);
+  const all = [...c.keywords, ...protections];
+  return all.length > 0 ? all.join(", ") : "none";
+}
+
+const COLOR_WORDS: Record<Color, string> = { W: "white", U: "blue", B: "black", R: "red", G: "green" };
+
+function qualityText(quality: ProtectionQuality): string {
+  switch (quality.kind) {
+    case "color":
+      return COLOR_WORDS[quality.color];
+    case "subtype":
+      return `${quality.subtype}s`;
+  }
 }

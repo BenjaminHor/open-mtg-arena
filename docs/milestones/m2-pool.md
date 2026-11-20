@@ -43,7 +43,7 @@ after M2-12, all 234 after M2-14.
 | M2-05 | 50 | Angel's Mercy, Blinding Mage, Celestial Purge, Divine Verdict, Excommunicate, Planar Cleansing, Solemn Offering, Tempest of Light, Undead Slayer, Cancel, Divination, Essence Scatter, Fabricate, Flashfreeze, Merfolk Looter, Mind Spring, Negate, Ponder, Tome Scour, Traumatize, Unsummon, Acolyte of Xathrid, Assassinate, Consume Spirit, Deathmark, Diabolic Tutor, Disentomb, Doom Blade, Duress, Haunting Echoes, Mind Rot, Mind Shatter, Royal Assassin, Sign in Blood, Tendrils of Corruption, Burning Inquiry, Earthquake, Goblin Artillery, Pyroclasm, Seismic Strike, Shatter, Yawning Fissure, Birds of Paradise, Bountiful Harvest, Elvish Piper, Naturalize, Nature's Spiral, Rampant Growth, Windstorm, Terramorphic Expanse |
 | M2-06 | 21 | Griffin Sentinel, Palace Guard, Razorfoot Griffin, Serra Angel, Wall of Faith, Alluring Siren, Phantom Warrior, Bog Wraith, Child of Night, Dread Warlock, Berserkers of Blood Ridge, Jackal Familiar, Panic Attack, Viashino Spearhunter, Wall of Fire, Deadly Recluse, Emerald Oryx, Kalonian Behemoth, Mist Leopard, Prized Unicorn, Stampeding Rhino |
 | M2-07 | 30 | Lightwielder Paladin, Mesa Enchantress, Soul Warden, Illusionary Servant, Sage Owl, Gravedigger, Howling Banshee, Hypnotic Specter, Megrim, Sanguine Bond, Underworld Dreams, Xathrid Demon, Ball Lightning, Bogardan Hellkite, Capricious Efreet, Dragon Whelp, Inferno Elemental, Manabarbs, Sparkmage Apprentice, Acidic Slime, Borderland Ranger, Bramble Creeper, Elvish Visionary, Lurking Predators, Angel's Feather, Demon's Horn, Dragon's Claw, Howling Mine, Kraken's Eye, Wurm's Tooth |
-| M2-08 | 19 | Baneslayer Angel, Guardian Seraph, Harm's Way, Safe Passage, White Knight, Polymorph, Black Knight, Drudge Skeletons, Wall of Bone, Cudgel Troll, Fog, Great Sable Stag, Regenerate, Darksteel Colossus, Dragonskull Summit, Drowned Catacomb, Glacial Fortress, Rootbound Crag, Sunpetal Grove |
+| M2-08 | 18 (Harm's Way left out, D-090) | Baneslayer Angel, Guardian Seraph, Safe Passage, White Knight, Polymorph, Black Knight, Drudge Skeletons, Wall of Bone, Cudgel Troll, Fog, Great Sable Stag, Regenerate, Darksteel Colossus, Dragonskull Summit, Drowned Catacomb, Glacial Fortress, Rootbound Crag, Sunpetal Grove |
 | M2-09 | 24 | Glorious Charge, Honor of the Pure, Rhox Pikemaster, Silence, Veteran Armorsmith, Veteran Swordsmith, Jump, Levitation, Merfolk Sovereign, Serpent of the Endless Sea, Nightmare, Relentless Rats, Rise from the Grave, Act of Treason, Burst of Speed, Goblin Chieftain, Kindled Fury, Stone Giant, Trumpet Blast, Awakener Druid, Elvish Archdruid, Overrun, Coat of Arms, Spellbook |
 | M2-10 | 2 | Mold Adder, Protean Hydra |
 | M2-11 | 6 | Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack, Gargoyle Castle |
@@ -101,7 +101,7 @@ The exact lists are written when they're built (D-053's pool rule: only scripted
 | 11 | Glorious Charge | Instant | S | "creatures you control get +1/+1 until end of turn" (affected set locked, CR 611.2c) |
 | 12 | Griffin Sentinel | Creature — Griffin | KW | vigilance |
 | 13 | Guardian Seraph | Creature — Angel | R | damage prevention |
-| 14 | Harm's Way | Instant | R T | damage redirection; choose a source |
+| 14 | Harm's Way | Instant | R T | damage redirection; choose a source. Left out (owner, D-090): not on Arena |
 | 15 | Holy Strength | Enchantment — Aura | A S |  |
 | 16 | Honor of the Pure | Enchantment | S | anthem for white creatures |
 | 17 | Indestructibility | Enchantment — Aura | A KW | indestructible |

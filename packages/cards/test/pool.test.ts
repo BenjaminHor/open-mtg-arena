@@ -210,6 +210,20 @@ describe("definitionProblems", () => {
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);
   });
 
+  it("reports protections that don't match the Oracle text (CR 702.16g)", () => {
+    const knight = POOL.cards.find((c) => c.name === "White Knight");
+    if (knight === undefined) throw new Error("White Knight isn't in the pool");
+    const swapped: CardDef = {
+      name: "White Knight",
+      oracle: knight.oracleText,
+      keywords: ["first strike"],
+      protections: [{ kind: "color", color: "W" }],
+    };
+    expect(definitionProblems([swapped], [knight])).toStrictEqual([
+      'White Knight: protections ["color W"], but Oracle has ["color B"]',
+    ]);
+  });
+
   it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {
     const ignite = POOL.cards.find((c) => c.name === "Ignite Disorder");
     if (ignite === undefined) throw new Error("Ignite Disorder missing from the pool");

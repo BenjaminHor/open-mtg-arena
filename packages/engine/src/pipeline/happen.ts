@@ -5,7 +5,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
-import { keywordsOf } from "../rules/abilities.ts";
+import { keywordsOf, staticAbilitiesOf } from "../rules/abilities.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ReplacementChoice } from "../state/replacements.ts";
 import { detectTriggers } from "../triggers/detect.ts";
@@ -100,10 +100,14 @@ function replaceOne(
       // self-replacement could (later: CR 614.15).
       if (keywordsOf(state, proposed.object, cards).includes("indestructible")) return done([]);
       return applyReplacements(state, proposed, cards, choices);
+    case "counterObject":
+      // "This spell can't be countered" works on the stack (CR 113.6g), and a counter effect does nothing to it
+      // (CR 101.2; Great Sable Stag's ruling): the event can't happen, so nothing replaces it.
+      if (staticAbilitiesOf(state, proposed.object, cards).some((a) => a.kind === "cantBeCountered")) return done([]);
+      return applyReplacements(state, proposed, cards, choices);
     case "moveCard":
     case "sacrifice":
     case "tap":
-    case "counterObject":
     case "loseLife":
     case "reveal":
     case "reorderLibrary":

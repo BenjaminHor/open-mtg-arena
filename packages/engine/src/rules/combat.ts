@@ -1,5 +1,5 @@
 // Combat rules questions (CR 506–510): who can attack, who can block what, and who's still in combat. Restrictions on
-// one creature (defender, evasion, "can't block"; protection, later: CR 702.16f) are named checks here (CR 508.1c,
+// one creature (defender, evasion, "can't block"; protection, CR 702.16f) are named checks here (CR 508.1c,
 // 509.1b). Rules about the whole declaration ("can't attack alone", requirements; menace, later: CR 702.111b) are in
 // combat/declaration-rules.ts, checked as a declaration is finished.
 
@@ -11,6 +11,7 @@ import { keywordsOf, staticAbilitiesOf } from "./abilities.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
+import { isProtectedFrom } from "./protection.ts";
 import { isFreeOfSummoningSickness } from "./summoning-sickness.ts";
 
 /** A creature permanent (CR 506.3: only creatures attack or block). */
@@ -42,7 +43,9 @@ export function canBlock(state: GameState, blocker: ObjectId, attacker: ObjectId
   return (
     flyingAllowsBlock(state, blocker, attacker, cards) &&
     landwalkAllowsBlock(state, blocker, attacker, cards) &&
-    cantBeBlockedAllowsBlock(state, blocker, attacker, cards)
+    cantBeBlockedAllowsBlock(state, blocker, attacker, cards) &&
+    // An attacker with protection can't be blocked by creatures with the quality (CR 702.16f).
+    !isProtectedFrom(state, attacker, blocker, cards)
   );
 }
 

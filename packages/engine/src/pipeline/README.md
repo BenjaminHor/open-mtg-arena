@@ -14,13 +14,16 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
 2. **Replace** (`happen.ts`, `replace`; `replacements.ts`): replacement and prevention effects modify each event,
    every member of a batch against the state before the batch, as each watches for an event about to happen (CR 614.1;
    a checkland's ruling: it doesn't see lands entering with it). So far: 0 damage is dropped, so nothing can
-   replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b); and a card's own
+   replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b), and so is a counter
+   aimed at a spell that can't be countered (CR 101.2, 113.6g); and a card's own
    replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
    into a graveyard from anywhere, ... instead"; and a regeneration shield on a permanent about to be destroyed
    (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Damage is prevented per entry
    (a source dealing damage to a recipient) inside its one event (`damage-replacements.ts`, D-088): Fog and Safe
-   Passage from `GameState.replacements`, Guardian Seraph from the battlefield; a `damagePrevented` event tells it. Destroy, sacrifice, counter and discard carry where a replacement sends
-   the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library instead was discarded.
+   Passage from `GameState.replacements`, Guardian Seraph from the battlefield, and the recipient's protection
+   (CR 702.16e, D-091); a `damagePrevented` event tells it. Destroy, sacrifice, counter and discard carry where a
+   replacement sends the card (`Rerouted`), and are still what they were: a discarded card shuffled into a library
+   instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is
    its move to the graveyard (CR 701.8a), not a second event.

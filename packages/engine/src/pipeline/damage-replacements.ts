@@ -3,8 +3,8 @@
 // the recipient player or the recipient object's controller (CR 616.1). What's prevented is never dealt (CR 615.6),
 // so lifelink and "deals damage" triggers see only what's left; it's still told, as a `damagePrevented` event.
 //
-// Candidates: prevention effects made by resolving spells (`GameState.replacements`: Fog, Safe Passage), and those in
-// the text of permanents on the battlefield (Guardian Seraph). Identical ones (two Guardian Seraphs) are one option:
+// Candidates: prevention effects made by resolving spells (`GameState.replacements`: Fog, Safe Passage), those in the
+// text of permanents on the battlefield (Guardian Seraph), and the recipient's protection (CR 702.16e). Identical ones (two Guardian Seraphs) are one option:
 // no order among them can differ (like D-077). Choosing it applies one of them, and the rest are checked again
 // (CR 616.1f), so every order the rules allow can still be chosen.
 
@@ -13,6 +13,7 @@ import { replacementsOf } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerNowOrLastKnown, controllerOf } from "../rules/controller.ts";
 import { canBeDealtDamage } from "../rules/damage-recipients.ts";
+import { isProtectedFrom } from "../rules/protection.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
@@ -147,7 +148,27 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
       ];
     }),
   );
-  return [...fromSpells, ...fromPermanents];
+  return [...fromSpells, ...fromPermanents, ...protectionCandidates(state, entry, cards)];
+}
+
+/**
+ * Damage from a source with the quality to a permanent with protection from it is prevented (CR 702.16e): one candidate
+ * however many of its protections match, as they'd prevent the same.
+ */
+function protectionCandidates(state: GameState, entry: Damage, cards: CardDatabase): Candidate[] {
+  if (entry.to.kind !== "object" || !isProtectedFrom(state, entry.to.object, entry.source, cards)) return [];
+  const obj = state.objects[entry.to.object];
+  // Always a card here: only permanents have protection; this gets its oracle id to name it.
+  if (obj?.kind !== "card") return [];
+  const object = entry.to.object;
+  return [
+    {
+      ref: { kind: "protection", object },
+      identity: JSON.stringify({ kind: "protection", object }),
+      prevents: "all",
+      by: obj.oracleId,
+    },
+  ];
 }
 
 /** How much of this damage entry a permanent's own text prevents, or null if it doesn't apply. */

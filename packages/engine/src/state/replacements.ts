@@ -35,7 +35,9 @@ export type ReplacementEffect =
 export type ReplacementRef =
   | { kind: "ownText"; object: ObjectId; index: number }
   | { kind: "regenerationShield"; object: ObjectId }
-  | { kind: "resolvedEffect"; id: ObjectId };
+  | { kind: "resolvedEffect"; id: ObjectId }
+  /** A permanent's protection, preventing damage from a source with its quality (CR 702.16e). */
+  | { kind: "protection"; object: ObjectId };
 
 /**
  * A choice a player made between replacement effects, and what it was for, so a choice made for one event or damage
@@ -76,6 +78,8 @@ export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {
       return b.kind === "regenerationShield" && a.object === b.object;
     case "resolvedEffect":
       return b.kind === "resolvedEffect" && a.id === b.id;
+    case "protection":
+      return b.kind === "protection" && a.object === b.object;
   }
 }
 

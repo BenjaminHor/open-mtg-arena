@@ -456,7 +456,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - Now: M2-08d (2026-11-20), in two PRs. M2-08d1 built (D-088): Fog, Safe Passage, Guardian Seraph; 11 scenarios in
        `test/scenarios/cards/m2-08d/`; two golden games. 166 cards; 158 of the 234 Magic 2010 cards. Mutations (6/6
        caught) and a 200-game fuzz are clean; both reviews found no wrong result. Their findings are fixed (dbade33,
-       21 scenarios now; a second mutation pass caught 6/6 after one test was tightened); next the PR, then M2-08d2.
+       21 scenarios now; a second mutation pass caught 6/6 after one test was tightened). Merged as #48. The new effect
+       ids changed no golden log: pool-181 casts Fog as its last action, and no later id shows.
        What the fixes were:
        - Bug: identical candidates (two Seraphs) beside a different one (Fog) are offered as separate options. Group
          candidates by identity: one option per group, all its members applied when chosen.
@@ -472,7 +473,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          own candidates and their own chooser, the recipient player or the recipient object's controller (CR 616.1).
          Choices become `{ for, ref }` (`for`: an object, or a damage entry), so a global effect's choice for one recipient isn't used for another
          (the M2-08c review). A prevented entry shrinks or goes; lifelink and "deals damage" triggers see what's left
-         (CR 615.6, 120.4c). State-held effects get an `id` (two Harm's Ways differ).
+         (CR 615.6, 120.4c). State-held effects get an `id` (two Fogs differ, D-088).
        - M2-08d1: Fog ("prevent all combat damage that would be dealt this turn"), Safe Passage ("all damage that would
          be dealt to you and creatures you control this turn", creatures arriving later too: its ruling), both kept in
          `GameState.replacements` until cleanup; Guardian Seraph ("if a source an opponent controls would deal damage to
@@ -480,23 +481,41 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          replacement read from another permanent's text on the battlefield, not the moving card's. Choices arise
          (Seraph with Fog or Safe Passage), though the result is the same; asked anyway (CR 616.1), skipping a choice
          whose outcome can't differ being a later UX question.
-       - M2-08d2: Harm's Way: a source chosen as it resolves (any object, CR 609.7a; offered: permanents and spells),
-         then "the next 2 damage that source would deal to you and/or permanents you control this turn is dealt to its
-         target instead" (CR 614.9, 615.7-like shield of 2 shared across one event, its controller choosing which
-         when one event hits several of theirs: its ruling); if the target can't be dealt damage then, the damage
-         stays (its ruling). Choices of how much to redirect are recorded with the replacement choices.
+       - M2-08d2, Harm's Way: built twice and reverted (1c4fcda, 93f2c4d, 6fd7c9e; reverted in 98b08ed); the owner left
+         it out of the pool (D-090, which records what the rules reviews found and what a correct model needs).
        - Golden cover: `chooseReplacement` becomes required once Seraph meets Fog or Safe Passage in agent games, or
          a deck runs both.
-     - M2-08d, prevention and redirection (CR 615, 614.9), three shapes in state: a filter checked as each event happens
-       (Fog: all combat damage this turn; Safe Passage: you and your creatures, those arriving later too: its ruling),
-       a static (Guardian Seraph: 1 from a source an opponent controls), and "the next N" (Harm's Way: 2 from a source
-       chosen as it resolves, redirected to its target; 2 in all across one event, its controller choosing which:
-       its ruling). Lifelink and "deals damage" triggers read the damage as dealt after prevention (CR 120.4c).
+     - M2-08d, prevention (CR 615), two shapes in state: a filter checked as each event happens (Fog: all combat damage
+       this turn; Safe Passage: you and your creatures, those arriving later too: its ruling), and a static (Guardian
+       Seraph: 1 from a source an opponent controls); Harm's Way's "the next N" redirection is left out (D-090). Lifelink and "deals damage" triggers read the damage as dealt after prevention (CR 120.4c).
      - M2-08e, protection (CR 702.16, D-074: damage prevention, targeting, blocking; "can't be enchanted" in M2-12),
        reading the source's characteristics, from last known information if it's gone (snapshot `characteristics()`,
        future-rules): White Knight, Black Knight, Baneslayer Angel (from Demons and from Dragons), Great Sable Stag
        (from blue and from black; "can't be countered", CR 101.2, 113.6g: a counter effect does nothing to it, and
        it's still a legal target).
+       Built (D-091): White Knight, Black Knight, Baneslayer Angel, Great Sable Stag; 11 scenarios in
+       `test/scenarios/cards/m2-08e/`, a unit test for a source that left; golden pool-197 and pool-537. 170 cards;
+       162 of the 234 Magic 2010 cards. Mutations 7/7, fuzz clean, reviews (no wrong results) fixed in e5d7287:
+       15 scenarios, unit tests in `test/rules/protection.test.ts`, protection in the interaction matrix. PR next, with
+       the M2-08d docs; then M2-09 (layers).
+       Plan (2026-11-20):
+       - `CardDef.protections: ProtectionQuality[]` (a color, or a subtype like Demon), one per "from" (CR 702.16g),
+         read through `protectionsOf` (layer 6, like `keywordsOf`); `rules/protection.ts`: `isProtectedFrom(state,
+         protected, source)`, reading the source's colors and subtypes as it is, or as it last existed if gone
+         (printed values: nothing changes colors or types yet). A subtype counts for permanents with it and for
+         sources not on the battlefield with it (CR 702.16a).
+       - Targeting (CR 702.16b): `legalTargets` drops a permanent protected from the targeting spell, or from an
+         ability's source; checked again on resolution (CR 608.2b), so gaining protection makes it an illegal target.
+       - Blocking (CR 702.16f): `canBlock` refuses a blocker with the quality.
+       - Damage (CR 702.16e): a "prevent all" candidate in `damage-replacements.ts` for damage to a protected
+         permanent from a source with the quality; like the others, asked about when another applies too (D-088).
+       - "This spell can't be countered" (Great Sable Stag): a counter does nothing to it (CR 101.2, its ruling);
+         the spell is still a legal target, and the counterspell's other effects happen.
+       - Cards: White Knight, Black Knight, Baneslayer Angel, Great Sable Stag. Scenarios per CR line and ruling, plus
+         negatives (other colors, a protected creature still blocking, a gone source's last color).
+       - Future impact: protection from players, from everything (CR 702.16j-k), Auras/Equipment (M2-12) and
+         granted protection (layers, M2-09) read `protectionsOf`; the source's characteristics move to snapshot
+         `characteristics()` when effects can change them.
      - Visibility: shields and prevention effects in state are public and end at cleanup: shown in `playerView` with
        the delayed triggers (Known issues), or added to that issue.
      - Future impact: "if you would draw" needs the draw-several container (D-060, CR 121.2a), when a card needs it (none
@@ -665,8 +684,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the
   owner's final one, D-089, keeps 14,623.) Options: (a) the filter sets the order, not
   the boundary: Arena's mechanics first, then a later milestone for the Modern-only ones (recommended; nothing needs
-  deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) widen it now to
-  `game:arena -is:alchemy`, which brings back paper cards Arena had only in digital reprint sets.
+  deciding before M3); (b) the filter is the boundary: those mechanics are never built; (c) the owner's final filter
+  (`in:arena in:paper -is:alchemy`) already brings back the paper cards Arena had only in digital reprint sets, which
+  was the third option first offered here.
 - (Asked 2026-11-20, D-089) Magic 2010 cards still to script in M2-14 whose rules may have no counterpart on MTG Arena
   (Hive Mind, Telepathy, Warp World, Sphinx Ambassador's naming a card, Mirror of Fate, and any other M2-14 card): (a)
   check each against Arena when M2-14 starts and skip those whose mechanic no Arena card uses (recommended; proceeding
@@ -695,6 +715,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   activation resolves.)
 
 ## Known issues
+- (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is
+  finer than CR 616.1's "the way an event affects an object or player": with two attackers, Guardian Seraph and Fog,
+  the player is asked once per attacker and can order them differently. Life totals can't differ with today's pool;
+  only how `DAMAGE_PREVENTED` splits. Changing it reverses D-088; the owner left Harm's Way out (D-090), so it stays as built until a card needs it.
 - (M2-07c2, M2-08b) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`)
   or regeneration shields (`GameState.replacements`), though both players know of them (Dragon Whelp to be sacrificed
   at the next end step, Drudge Skeletons shielded). The match UI (M3) should show them.

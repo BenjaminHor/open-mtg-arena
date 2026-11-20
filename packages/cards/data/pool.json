@@ -236,6 +236,39 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Baneslayer Angel",
+      "slug": "baneslayer-angel",
+      "oracleId": "0e11792b-7fe5-4208-aa0b-e5d09b2b65fe",
+      "layout": "normal",
+      "manaCost": "{3}{W}{W}",
+      "manaValue": 5,
+      "typeLine": "Creature — Angel",
+      "oracleText": "Flying, first strike, lifelink, protection from Demons and from Dragons",
+      "power": "5",
+      "toughness": "5",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying",
+        "Lifelink",
+        "First strike",
+        "Protection"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/b/4bd3014b-94bb-4a9f-92cf-239a2dcc7e97.jpg?1783930746",
+        "large": "https://cards.scryfall.io/large/front/4/b/4bd3014b-94bb-4a9f-92cf-239a2dcc7e97.jpg?1783930746",
+        "png": "https://cards.scryfall.io/png/front/4/b/4bd3014b-94bb-4a9f-92cf-239a2dcc7e97.png?1783930746",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/b/4bd3014b-94bb-4a9f-92cf-239a2dcc7e97.jpg?1783930746"
+      },
+      "artist": "Greg Staples",
+      "set": "m21",
+      "collectorNumber": "6",
+      "scryfallUri": "https://scryfall.com/card/m21/6/baneslayer-angel?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Berserkers of Blood Ridge",
       "slug": "berserkers-of-blood-ridge",
       "oracleId": "9e8a2d53-3145-421a-aad1-8f2b2f6eaec8",
@@ -291,6 +324,37 @@
       "set": "m12",
       "collectorNumber": "165",
       "scryfallUri": "https://scryfall.com/card/m12/165/birds-of-paradise?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Black Knight",
+      "slug": "black-knight",
+      "oracleId": "9456c5b6-946d-403a-8ed0-dff9f921d98c",
+      "layout": "normal",
+      "manaCost": "{B}{B}",
+      "manaValue": 2,
+      "typeLine": "Creature — Human Knight",
+      "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nProtection from white (This creature can't be blocked, targeted, dealt damage, or enchanted by anything white.)",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "First strike",
+        "Protection"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/c/0c198d94-248c-4f81-b8d5-e1b5a0623ee7.jpg?1783941819",
+        "large": "https://cards.scryfall.io/large/front/0/c/0c198d94-248c-4f81-b8d5-e1b5a0623ee7.jpg?1783941819",
+        "png": "https://cards.scryfall.io/png/front/0/c/0c198d94-248c-4f81-b8d5-e1b5a0623ee7.png?1783941819",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/c/0c198d94-248c-4f81-b8d5-e1b5a0623ee7.jpg?1783941819"
+      },
+      "artist": "Christopher Moeller",
+      "set": "m11",
+      "collectorNumber": "83",
+      "scryfallUri": "https://scryfall.com/card/m11/83/black-knight?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1902,6 +1966,36 @@
       "set": "4ed",
       "collectorNumber": "200",
       "scryfallUri": "https://scryfall.com/card/4ed/200/gray-ogre?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Great Sable Stag",
+      "slug": "great-sable-stag",
+      "oracleId": "d6dbb83d-3215-4446-8480-8f1bf8cf2938",
+      "layout": "normal",
+      "manaCost": "{1}{G}{G}",
+      "manaValue": 3,
+      "typeLine": "Creature — Elk",
+      "oracleText": "This spell can't be countered.\nProtection from blue and from black (This creature can't be blocked, targeted, dealt damage, or enchanted by anything blue or black.)",
+      "power": "3",
+      "toughness": "3",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Protection"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/5/451c8a79-1e8a-437d-836f-31155914c551.jpg?1783942362",
+        "large": "https://cards.scryfall.io/large/front/4/5/451c8a79-1e8a-437d-836f-31155914c551.jpg?1783942362",
+        "png": "https://cards.scryfall.io/png/front/4/5/451c8a79-1e8a-437d-836f-31155914c551.png?1783942362",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/5/451c8a79-1e8a-437d-836f-31155914c551.jpg?1783942362"
+      },
+      "artist": "Matt Cavotta",
+      "set": "m10",
+      "collectorNumber": "186",
+      "scryfallUri": "https://scryfall.com/card/m10/186/great-sable-stag?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -4514,6 +4608,37 @@
       "set": "m12",
       "collectorNumber": "117",
       "scryfallUri": "https://scryfall.com/card/m12/117/warpath-ghoul?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "White Knight",
+      "slug": "white-knight",
+      "oracleId": "ddb021df-ae4a-4ac1-8353-d0b375761714",
+      "layout": "normal",
+      "manaCost": "{W}{W}",
+      "manaValue": 2,
+      "typeLine": "Creature — Human Knight",
+      "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nProtection from black (This creature can't be blocked, targeted, dealt damage, or enchanted by anything black.)",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "First strike",
+        "Protection"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/0/a07a02b6-2c33-40d8-ad97-39b192d7e82d.jpg?1783941831",
+        "large": "https://cards.scryfall.io/large/front/a/0/a07a02b6-2c33-40d8-ad97-39b192d7e82d.jpg?1783941831",
+        "png": "https://cards.scryfall.io/png/front/a/0/a07a02b6-2c33-40d8-ad97-39b192d7e82d.png?1783941831",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/0/a07a02b6-2c33-40d8-ad97-39b192d7e82d.jpg?1783941831"
+      },
+      "artist": "Christopher Moeller",
+      "set": "m11",
+      "collectorNumber": "39",
+      "scryfallUri": "https://scryfall.com/card/m11/39/white-knight?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
