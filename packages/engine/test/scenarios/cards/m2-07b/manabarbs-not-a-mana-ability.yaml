@@ -1,0 +1,11 @@
+name: A land's {T} ability that isn't a mana ability (Terramorphic Expanse) doesn't tap it for mana, so Manabarbs doesn't trigger
+rules: [CR 106.12, CR 605.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Manabarbs, Terramorphic Expanse]
+    library: [Forest]
+steps:
+  - p1 activate: Terramorphic Expanse
+  - expect:
+      stack: [Terramorphic Expanse ability]

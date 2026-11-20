@@ -1,4 +1,4 @@
-name: Mesa Enchantress doesn't trigger on an opponent's enchantment spell, nor on its controller's creature spell
+name: Mesa Enchantress doesn't trigger on an opponent's enchantment spell
 rules: [CR 603.2, CR 109.4]
 setup:
   turn: { active: p2, step: main1 }

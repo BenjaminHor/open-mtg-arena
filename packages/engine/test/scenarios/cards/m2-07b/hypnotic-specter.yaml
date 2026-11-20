@@ -5,7 +5,7 @@ setup:
   p1:
     battlefield: [Hypnotic Specter]
   p2:
-    hand: [Forest]
+    hand: [Forest, Island, Swamp]
 steps:
   - all pass: until combat.declareAttackers
   - p1 attack: [Hypnotic Specter]
@@ -15,5 +15,6 @@ steps:
       stack: [Hypnotic Specter ability]
   - all pass: once
   - expect:
-      p2.graveyard: [Forest]
-      p2.hand: []
+      p2.hand count: 2
+      p2.graveyard count: 1
+      events contains: [{ type: CARD_DISCARDED, player: p2 }]

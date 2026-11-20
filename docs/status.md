@@ -244,7 +244,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
      - M2-07b: triggers on casting, drawing, discarding, damage, life gain and tapping for mana: Wurm's Tooth, Dragon's
        Claw, Kraken's Eye, Angel's Feather, Demon's Horn, Mesa Enchantress, Lurking Predators, Underworld Dreams,
        Megrim, Manabarbs, Hypnotic Specter, Sanguine Bond, Lightwielder Paladin.
-       Built (D-077), in review: 37 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
+       Built (D-077), in review: 44 scenarios in `test/scenarios/cards/m2-07b/` (with real enchantments for Naturalize,
        Solemn Offering and Tempest of Light), three new Triggers matrix cells; six of the cards in the M10 pair; 12
        golden games added (5.1 MB; every golden log also gained a "taps ... for mana" line per land tapped). 146 cards
        in the pool; 138 of the 234 Magic 2010 cards. Plan (2026-11-20), one PR in three slices, each with its cards and scenarios:

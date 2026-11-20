@@ -93,8 +93,8 @@ export type GameEvent =
   | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3
   | { type: "PERMANENT_TAPPED"; object: ObjectId } // CR 701.26a
   /**
-   * Mana added to a player's mana pool (CR 106.4), by an ability of `source` (for "tapped for mana" rules,
-   * later: CR 106.12).
+   * Mana added to a player's mana pool (CR 106.4), by an ability of `source`. "Tapped for mana" is its own event,
+   * `TAPPED_FOR_MANA`, after the ability's tap and mana.
    */
   | { type: "MANA_ADDED"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /**

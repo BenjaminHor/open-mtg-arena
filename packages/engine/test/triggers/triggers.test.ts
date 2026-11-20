@@ -14,9 +14,11 @@ import {
   type PendingTrigger,
   type PlayerId,
 } from "../../src/index.ts";
+import { stillLegalTargets } from "../../src/rules/targets.ts";
 import { detectTriggers } from "../../src/triggers/detect.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
-import { BEARS, FOREST, MINE, MOUNTAIN, SHOCK, TEST_CARDS, WARDEN } from "../support/cards.ts";
+import { putAbilityOnStack } from "../../src/zones/stack-abilities.ts";
+import { BEARS, FOREST, MINE, MOUNTAIN, SHOCK, TEST_CARDS, THAT_PLAYERS, WARDEN } from "../support/cards.ts";
 import { answer, type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 const permanent = (oracleId: string, tapped = false) => ({
@@ -86,6 +88,23 @@ describe("detecting triggers (CR 603.2)", () => {
     const moved = moveCard(before, bears, { zone: "battlefield", controller: "p2" });
     const detected = detectTriggers(before, moved.state, moved.events, TEST_CARDS);
     expect(detected.pendingTriggers.map((t) => t.controller)).toStrictEqual(["p1"]);
+  });
+});
+
+describe("damage triggers (CR 603.2, 510.2)", () => {
+  it('"deals combat damage to a player" doesn\'t trigger on noncombat damage', () => {
+    const g = game("precombatMain", { battlefield: [permanent(THAT_PLAYERS)] });
+    const source = onBattlefield(g.state, THAT_PLAYERS)[0] as ObjectId;
+    const damage = (combat: boolean): GameEvent => ({
+      type: "DAMAGE_DEALT",
+      source,
+      to: { kind: "player", player: "p2" },
+      amount: 2,
+      combat,
+    });
+    const after = (combat: boolean) => detectTriggers(g.state, g.state, [damage(combat)], TEST_CARDS).pendingTriggers;
+    expect(after(false)).toStrictEqual([]);
+    expect(after(true).map((t) => t.event.player)).toStrictEqual(["p2"]);
   });
 });
 
@@ -164,6 +183,58 @@ describe("ordering one's own triggers (CR 603.3b)", () => {
       );
       expect(result.ok ? null : result.error.code).toBe("illegalAction");
     }
+  });
+});
+
+describe("identical triggers (D-077)", () => {
+  it("still asks for an order when the same ability's triggers know different things of their events", () => {
+    const g = game("precombatMain", { battlefield: [permanent(WARDEN)] }, { battlefield: [permanent(BEARS)] });
+    const warden = onBattlefield(g.state, WARDEN)[0] as ObjectId;
+    const bears = onBattlefield(g.state, BEARS)[0] as ObjectId;
+    const trigger = (object: ObjectId): PendingTrigger => ({
+      source: warden,
+      sourceOracleId: WARDEN,
+      index: 0,
+      controller: "p1",
+      event: { player: null, object, amount: null },
+    });
+    const ask = (batch: PendingTrigger[]) =>
+      advance(
+        { state: queueWork({ ...g.state, pending: null }, { kind: "putTriggers", batch, player: "p1" }), events: [] },
+        TEST_CARDS,
+      ).state;
+    expect(ask([trigger(warden), trigger(bears)]).pending).toMatchObject({ kind: "orderTriggers", player: "p1" });
+    // The same again, knowing the same: no question, both go on.
+    const same = ask([trigger(bears), trigger(bears)]);
+    expect(same.pending).toMatchObject({ kind: "priority", player: "p1" });
+    expect(same.zones.stack).toHaveLength(2);
+  });
+});
+
+describe('"that player controls" (CR 603.3d, 608.2b)', () => {
+  it("is checked again on resolution: a target that changed controller since is illegal", () => {
+    const g = game("precombatMain", { battlefield: [permanent(THAT_PLAYERS)] }, { battlefield: [permanent(BEARS)] });
+    const source = onBattlefield(g.state, THAT_PLAYERS)[0] as ObjectId;
+    const bears = onBattlefield(g.state, BEARS)[0] as ObjectId;
+    const ref = { kind: "triggered", index: 0 } as const;
+    const put = putAbilityOnStack(g.state, source, THAT_PLAYERS, ref, "p1", {
+      player: "p2",
+      object: null,
+      amount: null,
+    });
+    const ability = put.state.objects[put.id];
+    if (ability?.kind !== "ability") throw new Error("no ability");
+    const targets = [[{ kind: "object", object: bears } as const]];
+    const onStack: GameState = {
+      ...put.state,
+      objects: { ...put.state.objects, [put.id]: { ...ability, choices: { ...ability.choices, targets } } },
+    };
+    expect(stillLegalTargets(onStack, put.id, TEST_CARDS).legal).toStrictEqual(targets);
+    // The Bears come under p1's control: no longer a creature "that player" (p2) controls.
+    const obj = onStack.objects[bears];
+    if (obj?.kind !== "card") throw new Error("no Bears");
+    const moved = { ...onStack, objects: { ...onStack.objects, [bears]: { ...obj, baseController: "p1" as const } } };
+    expect(stillLegalTargets(moved, put.id, TEST_CARDS).legal).toStrictEqual([[]]);
   });
 });
 

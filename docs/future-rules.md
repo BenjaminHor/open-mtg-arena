@@ -59,7 +59,9 @@ triggers (CR 514.3a). *Still to come:* triggers on activating abilities and decl
 (CR 603.7) and "becomes the target" (M2-07c), which need their own `AbilityRef` kind and a pending trigger whose source
 isn't a permanent; leaves-the-battlefield triggers (CR 603.10), which match against `before` in `detectTriggers`, and
 `lastKnown` for a card leaving other zones; state triggers (CR 603.8); granted triggered abilities (layer 6) through
-`triggersOf`. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
+`triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1), right while only mana abilities can trigger
+during one; "becomes the target" (M2-07c) triggers during a cast too, so cancel must then drop only what the cast's
+reversed parts caused. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,
