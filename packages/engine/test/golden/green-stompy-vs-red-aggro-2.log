@@ -192,10 +192,12 @@ T5 p2 cancels casting Hill Giant
 T5 moves: Giant Growth, p1's hand -> stack
 T5 p1 cancels casting Giant Growth
 T5 moves: Giant Growth, p1's hand -> stack
+T5 targeted: p2:Raging Goblin by Giant Growth
 T5 p1 cancels casting Giant Growth
 T5 p2's unspent {R}{R} empties
 T5 p2 attack: nothing
 T5 moves: Giant Growth, p1's hand -> stack
+T5 targeted: p2:Raging Goblin by Giant Growth
 T5 p1 cancels casting Giant Growth
 T5 moves: Hill Giant, p2's hand -> stack
 T5 p2 cancels casting Hill Giant
@@ -204,6 +206,7 @@ T5 p2 cancels casting Furnace Whelp
 T5 moves: Hill Giant, p2's hand -> stack
 T5 p2 cancels casting Hill Giant
 T5 moves: Volcanic Hammer, p2's hand -> stack
+T5 targeted: p2:Raging Goblin by Volcanic Hammer
 T5 p2 cancels casting Volcanic Hammer
 T5 moves: Volcanic Hammer, p2's hand -> stack
 T5 p2 cancels casting Volcanic Hammer
@@ -218,6 +221,7 @@ T6 p1 taps p1:Forest#2 for mana
 T6 moves: Giant Growth, p1's hand -> stack
 T6 p1 cancels casting Giant Growth
 T6 moves: Giant Growth, p1's hand -> stack
+T6 targeted: p2:Raging Goblin by Giant Growth
 T6 taps: p1:Forest#1
 T6 p1 adds {G} (p1:Forest#1)
 T6 p1 taps p1:Forest#1 for mana
@@ -465,14 +469,17 @@ T11 moves: Lightning Bolt, p2's hand -> stack
 T11 p2 cancels casting Lightning Bolt
 T11 p2 attack: nothing
 T11 moves: Lightning Bolt, p2's hand -> stack
+T11 targeted: p2:Raging Goblin by Lightning Bolt
 T11 p2 cancels casting Lightning Bolt
 T11 moves: Lightning Bolt, p2's hand -> stack
 T11 p2 cancels casting Lightning Bolt
 T11 moves: Lightning Bolt, p2's hand -> stack
 T11 p2 cancels casting Lightning Bolt
 T11 moves: Lightning Bolt, p2's hand -> stack
+T11 targeted: p2:Raging Goblin by Lightning Bolt
 T11 p2 cancels casting Lightning Bolt
 T11 moves: Lightning Bolt, p2's hand -> stack
+T11 targeted: p2:Raging Goblin by Lightning Bolt
 T11 p2 cancels casting Lightning Bolt
 T11 moves: Lightning Bolt, p2's hand -> stack
 T11 p2 cancels casting Lightning Bolt
@@ -487,12 +494,14 @@ T11 p2 cancels casting Gray Ogre
 T11 moves: Gray Ogre, p2's hand -> stack
 T11 p2 cancels casting Gray Ogre
 T11 moves: Volcanic Hammer, p2's hand -> stack
+T11 targeted: p2:Raging Goblin by Volcanic Hammer
 T11 p2 cancels casting Volcanic Hammer
 T11 moves: Gray Ogre, p2's hand -> stack
 T11 p2 cancels casting Gray Ogre
 T11 moves: Volcanic Hammer, p2's hand -> stack
 T11 p2 cancels casting Volcanic Hammer
 T11 moves: Volcanic Hammer, p2's hand -> stack
+T11 targeted: p2:Raging Goblin by Volcanic Hammer
 T11 p2 cancels casting Volcanic Hammer
 T11 moves: Furnace Whelp, p2's hand -> stack
 T11 p2 cancels casting Furnace Whelp
@@ -503,6 +512,7 @@ T11 p2 cancels casting Furnace Whelp
 T11 moves: Gray Ogre, p2's hand -> stack
 T11 p2 cancels casting Gray Ogre
 T11 moves: Lightning Bolt, p2's hand -> stack
+T11 targeted: p2:Raging Goblin by Lightning Bolt
 T11 p2 cancels casting Lightning Bolt
 T11 moves: Hill Giant, p2's hand -> stack
 T11 p2 cancels casting Hill Giant
@@ -586,8 +596,10 @@ T12 taps: p1:Forest#3
 T12 p1 adds {G} (p1:Forest#3)
 T12 p1 taps p1:Forest#3 for mana
 T12 moves: Lightning Bolt, p2's hand -> stack
+T12 targeted: p2:Hill Giant by Lightning Bolt
 T12 p2 cancels casting Lightning Bolt
 T12 moves: Lightning Bolt, p2's hand -> stack
+T12 targeted: p2:Raging Goblin by Lightning Bolt
 T12 p2 cancels casting Lightning Bolt
 T12 p1's unspent {G} empties
 T12 p1 attack: nothing
@@ -637,6 +649,7 @@ T13 moves: Lightning Bolt, p2's hand -> stack
 T13 p2 cancels casting Lightning Bolt
 T13 p2 attack: nothing
 T13 moves: Lightning Bolt, p2's hand -> stack
+T13 targeted: p2:Raging Goblin by Lightning Bolt
 T13 p2 cancels casting Lightning Bolt
 T13 moves: Lightning Bolt, p2's hand -> stack
 T13 p2 cancels casting Lightning Bolt
@@ -647,6 +660,7 @@ T13 p2 cancels casting Gray Ogre
 T13 moves: Gray Ogre, p2's hand -> stack
 T13 p2 cancels casting Gray Ogre
 T13 moves: Volcanic Hammer, p2's hand -> stack
+T13 targeted: p2:Raging Goblin by Volcanic Hammer
 T13 p2 cancels casting Volcanic Hammer
 T13 moves: Furnace Whelp, p2's hand -> stack
 T13 p2 cancels casting Furnace Whelp
@@ -665,12 +679,15 @@ T13 p2 cancels casting Gray Ogre
 T13 moves: Volcanic Hammer, p2's hand -> stack
 T13 p2 cancels casting Volcanic Hammer
 T13 moves: Lightning Bolt, p2's hand -> stack
+T13 targeted: p2:Raging Goblin by Lightning Bolt
 T13 p2 cancels casting Lightning Bolt
 T13 moves: Hill Giant, p2's hand -> stack
 T13 p2 cancels casting Hill Giant
 T13 moves: Volcanic Hammer, p2's hand -> stack
+T13 targeted: p2:Raging Goblin by Volcanic Hammer
 T13 p2 cancels casting Volcanic Hammer
 T13 moves: Lightning Bolt, p2's hand -> stack
+T13 targeted: p2:Hill Giant by Lightning Bolt
 T13 p2 cancels casting Lightning Bolt
 T13 moves: Lightning Bolt, p2's hand -> stack
 T13 p2 cancels casting Lightning Bolt
@@ -709,8 +726,10 @@ T14 p2 cancels casting Lightning Bolt
 T14 moves: Lightning Bolt, p2's hand -> stack
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Lightning Bolt, p2's hand -> stack
+T14 targeted: p2:Raging Goblin by Lightning Bolt
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Lightning Bolt, p2's hand -> stack
+T14 targeted: p2:Raging Goblin by Lightning Bolt
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Lightning Bolt, p2's hand -> stack
 T14 p2 cancels casting Lightning Bolt
@@ -718,6 +737,7 @@ T14 p1 attack: nothing
 T14 moves: Lightning Bolt, p2's hand -> stack
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Lightning Bolt, p2's hand -> stack
+T14 targeted: p2:Hill Giant by Lightning Bolt
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Craw Wurm, p1's hand -> stack
 T14 p1 cancels casting Craw Wurm
@@ -742,8 +762,10 @@ T14 p1 cancels casting Grizzly Bears
 T14 moves: Giant Spider, p1's hand -> stack
 T14 p1 cancels casting Giant Spider
 T14 moves: Lightning Bolt, p2's hand -> stack
+T14 targeted: p2:Raging Goblin by Lightning Bolt
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Lightning Bolt, p2's hand -> stack
+T14 targeted: p2:Raging Goblin by Lightning Bolt
 T14 p2 cancels casting Lightning Bolt
 T14 moves: Llanowar Elves, p1's hand -> p1's graveyard
 T14 p1 discards Llanowar Elves
@@ -801,6 +823,7 @@ T15 p2 cancels casting Lightning Bolt
 T15 moves: Lightning Bolt, p2's hand -> stack
 T15 p2 cancels casting Lightning Bolt
 T15 moves: Lightning Bolt, p2's hand -> stack
+T15 targeted: p2:Hill Giant by Lightning Bolt
 T15 p2 cancels casting Lightning Bolt
 T15 moves: Fire Elemental, p2's hand -> stack
 T15 p2 cancels casting Fire Elemental
@@ -818,6 +841,7 @@ T15 p2 cancels casting Lightning Bolt
 T15 moves: Lightning Bolt, p2's hand -> stack
 T15 p2 cancels casting Lightning Bolt
 T15 moves: Lightning Bolt, p2's hand -> stack
+T15 targeted: p2:Hill Giant by Lightning Bolt
 T15 p2 casts Lightning Bolt
 T15 damage: Lightning Bolt -> p2:Hill Giant 3
 T15 resolves: Lightning Bolt
@@ -1748,6 +1772,7 @@ T28 taps: p1:Forest#2
 T28 p1 adds {G} (p1:Forest#2)
 T28 p1 taps p1:Forest#2 for mana
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Centaur Courser by Shock
 T28 p2 cancels casting Shock
 T28 resolves: Llanowar Elves
 T28 moves: Llanowar Elves, stack -> battlefield
@@ -1786,19 +1811,24 @@ T28 p1 cancels casting Centaur Courser
 T28 moves: Grizzly Bears, p1's hand -> stack
 T28 p1 cancels casting Grizzly Bears
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Llanowar Elves#2 by Shock
 T28 p2 cancels casting Shock
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Centaur Courser by Shock
 T28 p2 cancels casting Shock
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Llanowar Elves#1 by Shock
 T28 p2 cancels casting Shock
 T28 taps: p1:Centaur Courser
 T28 p1 attack: p1:Centaur Courser -> p2
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Centaur Courser by Shock
 T28 p2 cancels casting Shock
 T28 moves: Shock, p2's hand -> stack
 T28 p2 cancels casting Shock
 T28 p2 block: nothing
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Llanowar Elves#1 by Shock
 T28 p2 cancels casting Shock
 T28 combat damage: p1:Centaur Courser -> p2 3
 T28 p2 loses 3 life
@@ -1813,10 +1843,12 @@ T28 p1 cancels casting Giant Spider
 T28 moves: Giant Spider, p1's hand -> stack
 T28 p1 cancels casting Giant Spider
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Centaur Courser by Shock
 T28 p2 cancels casting Shock
 T28 moves: Shock, p2's hand -> stack
 T28 p2 cancels casting Shock
 T28 moves: Shock, p2's hand -> stack
+T28 targeted: p1:Centaur Courser by Shock
 T28 p2 cancels casting Shock
 T29 turn 29 begins (p2)
 T29 untaps: p2:Mountain#1
@@ -1826,6 +1858,7 @@ T29 untaps: p2:Mountain#4
 T29 untaps: p2:Mountain#5
 T29 untaps: p2:Mountain#6
 T29 moves: Shock, p2's hand -> stack
+T29 targeted: p1:Llanowar Elves#1 by Shock
 T29 taps: p2:Mountain#5
 T29 p2 adds {R} (p2:Mountain#5)
 T29 p2 taps p2:Mountain#5 for mana
@@ -1837,6 +1870,7 @@ T29 taps: p2:Mountain#1
 T29 p2 adds {R} (p2:Mountain#1)
 T29 p2 taps p2:Mountain#1 for mana
 T29 moves: Shock, p2's hand -> stack
+T29 targeted: p1:Centaur Courser by Shock
 T29 p2 cancels casting Shock
 T29 taps: p2:Mountain#3
 T29 p2 adds {R} (p2:Mountain#3)
@@ -1852,6 +1886,7 @@ T29 p2 adds {R} (p2:Mountain#4)
 T29 p2 taps p2:Mountain#4 for mana
 T29 p2's unspent {R} empties
 T29 moves: Shock, p2's hand -> stack
+T29 targeted: p1:Llanowar Elves#1 by Shock
 T29 taps: p2:Mountain#5
 T29 p2 adds {R} (p2:Mountain#5)
 T29 p2 taps p2:Mountain#5 for mana
@@ -2016,6 +2051,7 @@ T31 p2's unspent {R} empties
 T31 moves: Lightning Bolt, p2's library -> p2's hand
 T31 p2 draws
 T31 moves: Lightning Bolt, p2's hand -> stack
+T31 targeted: p1:Centaur Courser by Lightning Bolt
 T31 taps: p2:Mountain#6
 T31 p2 adds {R} (p2:Mountain#6)
 T31 p2 taps p2:Mountain#6 for mana
@@ -2057,6 +2093,7 @@ T31 p2 cancels casting Furnace Whelp
 T31 moves: Fire Elemental, p2's hand -> stack
 T31 p2 cancels casting Fire Elemental
 T31 moves: Volcanic Hammer, p2's hand -> stack
+T31 targeted: p2:Gray Ogre by Volcanic Hammer
 T31 p2 cancels casting Volcanic Hammer
 T31 p2's unspent {R} empties
 T31 p2 attack: nothing
@@ -2228,6 +2265,7 @@ T34 taps: p1:Forest#5
 T34 p1 adds {G} (p1:Forest#5)
 T34 p1 taps p1:Forest#5 for mana
 T34 moves: Giant Growth, p1's hand -> stack
+T34 targeted: p2:Gray Ogre by Giant Growth
 T34 p1 casts Giant Growth
 T34 taps: p1:Forest#7
 T34 p1 adds {G} (p1:Forest#7)
@@ -2332,6 +2370,7 @@ T35 p2 cancels casting Fire Elemental
 T35 moves: Fire Elemental, p2's hand -> stack
 T35 p2 cancels casting Fire Elemental
 T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 targeted: p2:Gray Ogre by Volcanic Hammer
 T35 p2 cancels casting Volcanic Hammer
 T35 moves: Furnace Whelp, p2's hand -> stack
 T35 p2 cancels casting Furnace Whelp
@@ -2370,6 +2409,7 @@ T35 p2 cancels casting Fire Elemental
 T35 moves: Hill Giant, p2's hand -> stack
 T35 p2 cancels casting Hill Giant
 T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 targeted: p2:Gray Ogre by Volcanic Hammer
 T35 p2 cancels casting Volcanic Hammer
 T35 moves: Fire Elemental, p2's hand -> stack
 T35 p2 cancels casting Fire Elemental
@@ -2398,6 +2438,7 @@ T35 p2 cancels casting Hill Giant
 T35 moves: Hill Giant, p2's hand -> stack
 T35 p2 cancels casting Hill Giant
 T35 moves: Volcanic Hammer, p2's hand -> stack
+T35 targeted: p1:Llanowar Elves by Volcanic Hammer
 T35 p2 cancels casting Volcanic Hammer
 T35 moves: Furnace Whelp, p2's hand -> stack
 T35 p2 cancels casting Furnace Whelp
@@ -2515,6 +2556,7 @@ T37 p2 adds {R} (p2:Mountain#8)
 T37 p2 taps p2:Mountain#8 for mana
 T37 p2 cancels casting Fire Elemental
 T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 targeted: p1:Grizzly Bears by Volcanic Hammer
 T37 p2 cancels casting Volcanic Hammer
 T37 taps: p2:Mountain#8
 T37 p2 adds {R} (p2:Mountain#8)
@@ -2548,6 +2590,7 @@ T37 p2 taps p2:Mountain#9 for mana
 T37 moves: Fire Elemental, p2's hand -> stack
 T37 p2 cancels casting Fire Elemental
 T37 moves: Volcanic Hammer, p2's hand -> stack
+T37 targeted: p1:Llanowar Elves by Volcanic Hammer
 T37 p2 cancels casting Volcanic Hammer
 T37 moves: Furnace Whelp, p2's hand -> stack
 T37 p2 cancels casting Furnace Whelp
@@ -2703,6 +2746,7 @@ T39 p2 taps p2:Mountain#1 for mana
 T39 p2's unspent {R} empties
 T39 p1 block: p1:Giant Spider#2 -> p2:Gray Ogre, p1:Giant Spider#1 -> p2:Gray Ogre
 T39 moves: Shock, p2's hand -> stack
+T39 targeted: p2:Gray Ogre by Shock
 T39 p2 cancels casting Shock
 T39 combat damage: p2:Gray Ogre -> p1:Giant Spider#2 1
 T39 combat damage: p2:Gray Ogre -> p1:Giant Spider#1 1
@@ -2714,10 +2758,12 @@ T39 moves: Gray Ogre, battlefield -> p2's graveyard
 T39 moves: Shock, p2's hand -> stack
 T39 p2 cancels casting Shock
 T39 moves: Shock, p2's hand -> stack
+T39 targeted: p1:Giant Spider#1 by Shock
 T39 p2 cancels casting Shock
 T39 moves: Shock, p2's hand -> stack
 T39 p2 cancels casting Shock
 T39 moves: Volcanic Hammer, p2's hand -> stack
+T39 targeted: p1:Giant Spider#2 by Volcanic Hammer
 T39 p2 cancels casting Volcanic Hammer
 T39 moves: Fire Elemental, p2's hand -> stack
 T39 p2 cancels casting Fire Elemental
@@ -2728,8 +2774,10 @@ T39 p2 cancels casting Volcanic Hammer
 T39 moves: Shock, p2's hand -> stack
 T39 p2 cancels casting Shock
 T39 moves: Shock, p2's hand -> stack
+T39 targeted: p1:Giant Spider#1 by Shock
 T39 p2 cancels casting Shock
 T39 moves: Shock, p2's hand -> stack
+T39 targeted: p1:Giant Spider#1 by Shock
 T39 p2 cancels casting Shock
 T39 damage removed: p1:Giant Spider#1 (1)
 T39 damage removed: p1:Giant Spider#2 (1)
@@ -2799,16 +2847,20 @@ T40 taps: p1:Forest#1
 T40 p1 adds {G} (p1:Forest#1)
 T40 p1 taps p1:Forest#1 for mana
 T40 moves: Shock, p2's hand -> stack
+T40 targeted: p1:Centaur Courser by Shock
 T40 p2 cancels casting Shock
 T40 p1's unspent {G}{G} empties
 T40 p1 attack: nothing
 T40 moves: Shock, p2's hand -> stack
+T40 targeted: p1:Giant Spider#1 by Shock
 T40 p2 cancels casting Shock
 T40 moves: Llanowar Elves, p1's hand -> stack
 T40 p1 cancels casting Llanowar Elves
 T40 moves: Shock, p2's hand -> stack
+T40 targeted: p1:Centaur Courser by Shock
 T40 p2 cancels casting Shock
 T40 moves: Shock, p2's hand -> stack
+T40 targeted: p1:Centaur Courser by Shock
 T40 p2 cancels casting Shock
 T41 turn 41 begins (p2)
 T41 untaps: p2:Mountain#1
@@ -2908,6 +2960,7 @@ T41 p2 cancels casting Fire Elemental
 T41 moves: Volcanic Hammer, p2's hand -> stack
 T41 p2 cancels casting Volcanic Hammer
 T41 moves: Volcanic Hammer, p2's hand -> stack
+T41 targeted: p1:Llanowar Elves by Volcanic Hammer
 T41 p2 cancels casting Volcanic Hammer
 T41 moves: Furnace Whelp, p2's hand -> stack
 T41 p2 cancels casting Furnace Whelp

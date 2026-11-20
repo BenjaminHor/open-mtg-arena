@@ -236,17 +236,23 @@ T6 p1 cancels casting Dread Warlock
 T6 moves: Dread Warlock, p1's hand -> stack
 T6 p1 cancels casting Dread Warlock
 T6 moves: Doom Blade, p1's hand -> stack
+T6 targeted: p1:Sage Owl by Doom Blade
 T6 p1 cancels casting Doom Blade
 T6 moves: Doom Blade, p1's hand -> stack
+T6 targeted: p1:Sage Owl by Doom Blade
 T6 p1 cancels casting Doom Blade
 T6 moves: Doom Blade, p1's hand -> stack
+T6 targeted: p1:Sage Owl by Doom Blade
 T6 p1 cancels casting Doom Blade
 T6 moves: Doom Blade, p1's hand -> stack
+T6 targeted: p1:Sage Owl by Doom Blade
 T6 p1 cancels casting Doom Blade
 T6 p1 attack: nothing
 T6 moves: Doom Blade, p1's hand -> stack
+T6 targeted: p1:Sage Owl by Doom Blade
 T6 p1 cancels casting Doom Blade
 T6 moves: Doom Blade, p1's hand -> stack
+T6 targeted: p1:Sage Owl by Doom Blade
 T6 p1 cancels casting Doom Blade
 T7 turn 7 begins (p2)
 T7 untaps: p2:Forest
@@ -327,6 +333,7 @@ T7 p2 adds {G} (p2:Forest)
 T7 p2 taps p2:Forest for mana
 T7 p2 cancels casting Shivan Dragon
 T7 moves: Doom Blade, p1's hand -> stack
+T7 targeted: p1:Sage Owl by Doom Blade
 T7 p1 cancels casting Doom Blade
 T7 moves: Doom Blade, p1's hand -> stack
 T7 p1 cancels casting Doom Blade
@@ -338,22 +345,27 @@ T7 taps: p2:Mountain#1
 T7 p2 adds {R} (p2:Mountain#1)
 T7 p2 taps p2:Mountain#1 for mana
 T7 moves: Doom Blade, p1's hand -> stack
+T7 targeted: p1:Sage Owl by Doom Blade
 T7 p1 cancels casting Doom Blade
 T7 p2's unspent {R}{R} empties
 T7 moves: Doom Blade, p1's hand -> stack
+T7 targeted: p1:Sage Owl by Doom Blade
 T7 p1 cancels casting Doom Blade
 T7 taps: p2:Forest
 T7 p2 adds {G} (p2:Forest)
 T7 p2 taps p2:Forest for mana
 T7 moves: Doom Blade, p1's hand -> stack
+T7 targeted: p1:Sage Owl by Doom Blade
 T7 p1 cancels casting Doom Blade
 T7 moves: Doom Blade, p1's hand -> stack
+T7 targeted: p1:Sage Owl by Doom Blade
 T7 p1 cancels casting Doom Blade
 T7 p2's unspent {G} empties
 T8 turn 8 begins (p1)
 T8 untaps: p1:Island
 T8 untaps: p1:Swamp
 T8 moves: Doom Blade, p1's hand -> stack
+T8 targeted: p1:Sage Owl by Doom Blade
 T8 taps: p1:Swamp
 T8 p1 adds {B} (p1:Swamp)
 T8 p1 taps p1:Swamp for mana
@@ -744,6 +756,7 @@ T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
 T17 p2 taps p2:Forest#2 for mana
 T17 moves: Negate, p1's hand -> stack
+T17 targeted: Fireball by Negate
 T17 p1 cancels casting Negate
 T17 resolves: Fireball
 T17 moves: Fireball, stack -> p2's graveyard
@@ -1023,26 +1036,34 @@ T23 p2 cancels casting Inferno Elemental
 T23 moves: Tendrils of Corruption, p1's hand -> stack
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 p2's unspent {R}{G} empties
 T23 p2 attack: nothing
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Prodigal Pyromancer, p2's hand -> stack
 T23 p2 cancels casting Prodigal Pyromancer
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T23 moves: Tendrils of Corruption, p1's hand -> stack
+T23 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T23 p1 cancels casting Tendrils of Corruption
 T24 turn 24 begins (p1)
 T24 untaps: p1:Island#1
@@ -1060,6 +1081,7 @@ T24 taps: p1:Swamp#4
 T24 p1 adds {B} (p1:Swamp#4)
 T24 p1 taps p1:Swamp#4 for mana
 T24 moves: Tendrils of Corruption, p1's hand -> stack
+T24 targeted: p2:Prodigal Pyromancer by Tendrils of Corruption
 T24 taps: p1:Swamp#2
 T24 p1 adds {B} (p1:Swamp#2)
 T24 p1 taps p1:Swamp#2 for mana
@@ -1148,6 +1170,7 @@ T25 p2 cancels casting Shivan Dragon
 T25 moves: Prodigal Pyromancer, p2's hand -> stack
 T25 p2 cancels casting Prodigal Pyromancer
 T25 moves: Panic Attack, p2's hand -> stack
+T25 targeted: p2:Inferno Elemental by Panic Attack
 T25 p2 cancels casting Panic Attack
 T25 p2's unspent {G} empties
 T25 p2 attack: nothing

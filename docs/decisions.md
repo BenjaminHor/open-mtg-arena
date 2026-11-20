@@ -1122,3 +1122,29 @@ every schema change and every change D-024 lists bumps it.
   (`pass p1 p2 p1 p2`). Reading back checks each line's player against the pending decision's, so golden games again
   catch a change in who gets priority or who decides (CR 117.3b–d), which D-082 had given up. Only the decision id
   is still left out.
+
+**D-084: Delayed triggers, activation counts and "becomes the target" (M2-07c2)** · 2026-11-20 · accepted
+- Delayed triggered abilities (CR 603.7) live in `GameState.delayedTriggers`, each with its source, the source's
+  oracle id, its controller and its own `TriggeredAbilityDef` (the source and controller of the spell or ability that
+  made it, CR 603.7d, 603.7e). `detectTriggers` matches them before the battlefield's, without looking their source up
+  (it may be gone), and one that triggers is removed (CR 603.7b). A pending trigger and a stack ability name them by
+  `AbilityRef` `{ kind: "delayed", ability }`, carrying the text itself, since no card prints it; two identical ones go
+  on the stack unasked (D-077). For now a delayed trigger waits only for the next beginning of anyone's step and has
+  no targets; the card definitions refuse anything else, since "your next upkeep" would need its own controller, not
+  its source's (future-rules).
+- Activations are counted per object, per printed ability, as each becomes activated (where `ABILITY_ACTIVATED` is
+  emitted), in `GameState.turnHistory.activations` (the "this turn" container architecture.md planned), emptied as a turn
+  begins (D-078). The effect
+  `ifActivatedThisTurn { atLeast, effects }` reads its own ability's count as it resolves, so it's for activated
+  abilities only.
+- "Becomes the target" is an event, `BECAME_TARGET`, emitted as each object target is chosen (spells, activated and
+  triggered abilities alike) and matched where it's emitted, like `SPELL_CAST`. Cancelling a cast still drops every
+  pending trigger: a cast starts only with none waiting, so all of them came from it.
+- Golden cover: a delayed trigger is its own unit, `trigger delayed`, credited only as one resolves, since the effect
+  that makes it is credited whether or not its condition held.
+- The card definition checks read a delayed ability as its own triggered ability (its effects run apart, with its own
+  targets and trigger event), named "<card> ability 1 delayed trigger"; a condition's effects are read with the
+  effects around them. Which ops nest other effects is one exhaustive switch (`cards/src/flat-effects.ts`), which the
+  golden cover imports too (code review).
+- Waiting delayed triggers aren't in `playerView` yet, nor is making one an event; the match UI (M3) adds both
+  (status, Known issues).

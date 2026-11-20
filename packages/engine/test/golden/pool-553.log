@@ -470,11 +470,14 @@ T16 resolves: Elite Vanguard
 T16 moves: Elite Vanguard, stack -> battlefield
 T16 p1's unspent {U}{B}{R}{R}{R} empties
 T16 moves: Disorient, p1's hand -> stack
+T16 targeted: p1:Elite Vanguard by Disorient
 T16 p1 cancels casting Disorient
 T16 moves: Disorient, p1's hand -> stack
+T16 targeted: p1:Elite Vanguard by Disorient
 T16 p1 cancels casting Disorient
 T16 p1 attack: nothing
 T16 moves: Deathmark, p1's hand -> stack
+T16 targeted: p1:Elite Vanguard by Deathmark
 T16 p1 cancels casting Deathmark
 T17 turn 17 begins (p2)
 T17 untaps: p2:Forest#1
@@ -491,6 +494,7 @@ T17 p2's unspent {U}{B} empties
 T17 moves: Forest, p2's library -> p2's hand
 T17 p2 draws
 T17 moves: Disorient, p1's hand -> stack
+T17 targeted: p1:Elite Vanguard by Disorient
 T17 p1 cancels casting Disorient
 T17 moves: Plains, p2's hand -> battlefield
 T17 p2 plays p2:Plains
@@ -509,18 +513,22 @@ T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
 T17 p2 taps p2:Forest#2 for mana
 T17 moves: Disorient, p1's hand -> stack
+T17 targeted: p1:Elite Vanguard by Disorient
 T17 p1 cancels casting Disorient
 T17 p2's unspent {G} empties
 T17 p2 attack: nothing
 T17 moves: Disorient, p1's hand -> stack
+T17 targeted: p1:Elite Vanguard by Disorient
 T17 p1 cancels casting Disorient
 T17 moves: Disorient, p1's hand -> stack
+T17 targeted: p1:Elite Vanguard by Disorient
 T17 p1 cancels casting Disorient
 T17 taps: p2:Plains
 T17 p2 adds {W} (p2:Plains)
 T17 p2 taps p2:Plains for mana
 T17 p2's unspent {W} empties
 T17 moves: Disorient, p1's hand -> stack
+T17 targeted: p1:Elite Vanguard by Disorient
 T17 p1 cancels casting Disorient
 T18 turn 18 begins (p1)
 T18 untaps: p1:Swamp
@@ -530,6 +538,7 @@ T18 untaps: p1:Island
 T18 untaps: p1:Plains
 T18 untaps: p1:Mountain#3
 T18 moves: Disorient, p1's hand -> stack
+T18 targeted: p1:Elite Vanguard by Disorient
 T18 taps: p1:Island
 T18 p1 adds {U} (p1:Island)
 T18 p1 taps p1:Island for mana
@@ -566,20 +575,24 @@ T18 taps: p1:Plains#2
 T18 p1 adds {W} (p1:Plains#2)
 T18 p1 taps p1:Plains#2 for mana
 T18 moves: Deathmark, p1's hand -> stack
+T18 targeted: p1:Elite Vanguard by Deathmark
 T18 p1 cancels casting Deathmark
 T18 moves: Lava Axe, p1's hand -> stack
 T18 p1 cancels casting Lava Axe
 T18 moves: Deathmark, p1's hand -> stack
+T18 targeted: p1:Elite Vanguard by Deathmark
 T18 p1 cancels casting Deathmark
 T18 p1's unspent {W} empties
 T18 p1 attack: nothing
 T18 moves: Lava Axe, p1's hand -> stack
 T18 p1 cancels casting Lava Axe
 T18 moves: Deathmark, p1's hand -> stack
+T18 targeted: p1:Elite Vanguard by Deathmark
 T18 p1 cancels casting Deathmark
 T18 moves: Lava Axe, p1's hand -> stack
 T18 p1 cancels casting Lava Axe
 T18 moves: Deathmark, p1's hand -> stack
+T18 targeted: p1:Elite Vanguard by Deathmark
 T18 p1 cancels casting Deathmark
 T18 moves: Elvish Visionary, p1's hand -> stack
 T18 p1 cancels casting Elvish Visionary
@@ -1314,10 +1327,12 @@ T32 p1 adds {W} (p1:Plains#2)
 T32 p1 taps p1:Plains#2 for mana
 T32 p1 cancels casting Grizzly Bears
 T32 moves: Deathmark, p1's hand -> stack
+T32 targeted: p2:Razorfoot Griffin by Deathmark
 T32 taps: p1:Plains#2
 T32 p1 adds {W} (p1:Plains#2)
 T32 p1 taps p1:Plains#2 for mana
 T32 p1 cancels casting Deathmark
+T32 targeted: p1:Razorfoot Griffin by Blinding Mage ability
 T32 taps: p1:Plains#2
 T32 p1 adds {W} (p1:Plains#2)
 T32 p1 taps p1:Plains#2 for mana
@@ -1445,6 +1460,7 @@ T34 p2 taps p2:Island for mana
 T34 taps: p2:Forest#5
 T34 p2 adds {G} (p2:Forest#5)
 T34 p2 taps p2:Forest#5 for mana
+T34 targeted: p1:Razorfoot Griffin by Blinding Mage ability
 T34 p1 cancels activating p1:Blinding Mage
 T34 p2's unspent {U}{G} empties
 T34 taps: p1:Blinding Mage
@@ -1583,6 +1599,7 @@ T36 p1 attack: p1:Razorfoot Griffin -> p2
 T36 p2 block: nothing
 T36 combat damage: p1:Razorfoot Griffin -> p2 2
 T36 p2 loses 2 life
+T36 targeted: p2:Razorfoot Griffin by Blinding Mage ability
 T36 p1 cancels activating p1:Blinding Mage
 T36 taps: p1:Plains#2
 T36 p1 adds {W} (p1:Plains#2)
@@ -1602,6 +1619,7 @@ T36 p1 taps p1:Mountain#3 for mana
 T36 taps: p1:Mountain#2
 T36 p1 adds {R} (p1:Mountain#2)
 T36 p1 taps p1:Mountain#2 for mana
+T36 targeted: p2:Razorfoot Griffin by Blinding Mage ability
 T36 taps: p1:Island
 T36 p1 adds {U} (p1:Island)
 T36 p1 taps p1:Island for mana
@@ -1617,6 +1635,7 @@ T36 taps: p1:Mountain#1
 T36 p1 adds {R} (p1:Mountain#1)
 T36 p1 taps p1:Mountain#1 for mana
 T36 p1's unspent {R} empties
+T36 targeted: p2:Bramble Creeper by Blinding Mage ability
 T36 taps: p1:Island
 T36 p1 adds {U} (p1:Island)
 T36 p1 taps p1:Island for mana
@@ -1666,7 +1685,9 @@ T37 p1:Howling Mine triggers (p1)
 T37 moves: Mind Spring, p2's library -> p2's hand
 T37 p2 draws
 T37 resolves: p1:Howling Mine's ability
+T37 targeted: p1:Razorfoot Griffin by Blinding Mage ability
 T37 p1 cancels activating p1:Blinding Mage
+T37 targeted: p2:Spined Wurm by Blinding Mage ability
 T37 p1 cancels activating p1:Blinding Mage
 T37 taps: p2:Bramble Creeper
 T37 taps: p2:Soul Warden
@@ -1680,9 +1701,13 @@ T37 p2 taps p2:Forest#2 for mana
 T37 taps: p2:Plains#3
 T37 p2 adds {W} (p2:Plains#3)
 T37 p2 taps p2:Plains#3 for mana
+T37 targeted: p2:Razorfoot Griffin by Blinding Mage ability
 T37 p1 cancels activating p1:Blinding Mage
+T37 targeted: p1:Blinding Mage by Blinding Mage ability
 T37 p1 cancels activating p1:Blinding Mage
+T37 targeted: p2:Razorfoot Griffin by Blinding Mage ability
 T37 p1 cancels activating p1:Blinding Mage
+T37 targeted: p1:Razorfoot Griffin by Blinding Mage ability
 T37 p1 cancels activating p1:Blinding Mage
 T37 p2's unspent {W}{G} empties
 T37 p1 block: p1:Blinding Mage -> p2:Bramble Creeper

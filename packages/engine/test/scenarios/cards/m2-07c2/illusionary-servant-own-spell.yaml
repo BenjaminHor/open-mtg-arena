@@ -1,0 +1,16 @@
+name: Illusionary Servant targeted by its controller's own spell is sacrificed too
+rules: [CR 601.2c, CR 603.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Illusionary Servant, Forest]
+    hand: [Giant Growth]
+steps:
+  - p1 cast: Giant Growth
+    targets: [p1:Illusionary Servant]
+    pay: auto
+  - expect:
+      stack: [Giant Growth, Illusionary Servant ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Illusionary Servant]

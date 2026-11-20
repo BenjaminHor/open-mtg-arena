@@ -19,6 +19,7 @@ import type { AbilityRef, GameObject } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { withZoneList, zoneList } from "../zones/zone-list.ts";
+import { countActivation } from "./activation-count.ts";
 import { castingOf } from "./casting-state.ts";
 import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
@@ -126,7 +127,12 @@ export function payCost(
     ...[...selfSacrifices, ...casting.sacrifices].map((object) => ({ kind: "sacrifice", object }) as const),
   ];
   const paid = happen({ ...state, players }, { kind: "simultaneous", events: costs }, cards);
-  const done: GameState = { ...paid.state, casting: null, passesInSuccession: 0 };
+  const finished: GameState = { ...paid.state, casting: null, passesInSuccession: 0 };
+  // An activated ability counts as activated now, whether or not it resolves (D-078).
+  const done =
+    obj.kind === "ability" && obj.ability.kind === "printed"
+      ? countActivation(finished, obj.source, obj.ability.index)
+      : finished;
   const event = becameCastOrActivated(casting.player, obj);
   // "Whenever a player casts ..." triggers now, so it goes on the stack above the spell (CR 601.2i). Only this event:
   // the costs' events were matched as they went through `happen`.
@@ -145,7 +151,9 @@ export function payCost(
 export function cancelCasting(state: GameState): Progress {
   const casting = castingOf(state);
   // A cast or activation starts only when a player has priority, with no triggers waiting (CR 117.5), so any waiting now
-  // came from its mana abilities, and nothing triggers from a reversed action (CR 734.1).
+  // came from it (its mana abilities, its targets becoming targets), and nothing triggers from a reversed action
+  // (CR 734.1). Delayed triggers aren't restored: they can't trigger during a cast while they wait only for the
+  // beginning of a step (future-rules).
   let next = untapAndRestorePool({ ...state, casting: null, pendingTriggers: [] }, casting);
   let event: GameEvent;
   switch (casting.origin.kind) {

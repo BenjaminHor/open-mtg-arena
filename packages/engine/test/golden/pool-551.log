@@ -715,8 +715,10 @@ T25 p1 adds {G} (p1:Forest#2)
 T25 p1 taps p1:Forest#2 for mana
 T25 p1 casts Capricious Efreet
 T25 moves: Essence Scatter, p1's hand -> stack
+T25 targeted: Capricious Efreet by Essence Scatter
 T25 p1 cancels casting Essence Scatter
 T25 moves: Essence Scatter, p1's hand -> stack
+T25 targeted: Capricious Efreet by Essence Scatter
 T25 p1 cancels casting Essence Scatter
 T25 resolves: Capricious Efreet
 T25 moves: Capricious Efreet, stack -> battlefield
@@ -762,6 +764,7 @@ T27 untaps: p1:Mountain#3
 T27 untaps: p1:Plains#2
 T27 untaps: p1:Forest#2
 T27 p1:Capricious Efreet triggers (p1)
+T27 targeted: p1:Capricious Efreet by Capricious Efreet ability
 T27 taps: p1:Plains#2
 T27 p1 adds {W} (p1:Plains#2)
 T27 p1 taps p1:Plains#2 for mana

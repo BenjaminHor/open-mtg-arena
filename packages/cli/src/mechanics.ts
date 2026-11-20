@@ -7,6 +7,7 @@
 // Each field of a card's definition is mapped to its units in a table the compiler checks (`Record<keyof ...>`), so a
 // new field, keyword, decision or event kind can't quietly go uncovered.
 
+import { conditionalEffects, delayedAbilities } from "@mtg/cards";
 import type {
   AbilityDef,
   CardDatabase,
@@ -81,6 +82,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   MANA_EMPTIED: true,
   MANA_ADDED: true,
   TAPPED_FOR_MANA: true,
+  BECAME_TARGET: true,
   PERMANENT_TAPPED: true,
   PERMANENT_UNTAPPED: true,
   DAMAGE_REMOVED: true,
@@ -109,6 +111,12 @@ const KEYWORD_WHEN: Record<Keyword, "combat" | "enters"> = {
   vigilance: "combat",
 };
 
+/**
+ * A delayed triggered ability resolving: its own unit, as its trigger and effects are usually other cards' units too,
+ * and the effect making it is credited whether or not its condition held (`effectOps`).
+ */
+export const DELAYED_TRIGGER = "trigger delayed";
+
 export const decisionUnit = (kind: DecisionKind["kind"]): string => `decision ${kind}`;
 export const eventUnit = (type: GameEvent["type"]): string => `event ${type}`;
 
@@ -120,12 +128,25 @@ export function wantedMechanics(cards: CardDatabase): string[] {
     ...(card.def.spell === undefined ? [] : spellUnits(card.def.spell, true)),
     ...(card.def.abilities ?? []).flatMap(abilityUnits),
     ...(card.def.triggers ?? []).flatMap(triggerUnits),
+    // A delayed triggered ability: wanted, but credited as it resolves.
+    ...allEffects(card.def).flatMap((effects) =>
+      delayedAbilities(effects).flatMap((ability) => [DELAYED_TRIGGER, ...triggerUnits(ability)]),
+    ),
   ]);
   const decisions = (Object.keys(DECISION_KINDS) as DecisionKind["kind"][]).map(decisionUnit);
   const events = (Object.entries(EVENT_TYPES) as [GameEvent["type"], true | string][])
     .filter(([, wanted]) => wanted === true)
     .map(([type]) => eventUnit(type));
   return [...new Set([...units, ...decisions, ...events])].sort();
+}
+
+/** Every list of effects a card's definition has: its spell's, its abilities' and its triggers'. */
+function allEffects(def: CardDef): (readonly Effect[])[] {
+  return [
+    ...(def.spell === undefined ? [] : [def.spell.effects]),
+    ...(def.abilities ?? []).map((a) => a.effects),
+    ...(def.triggers ?? []).map((t) => t.effects),
+  ];
 }
 
 /**
@@ -180,9 +201,9 @@ export function triggerUnits(trigger: TriggeredAbilityDef): string[] {
 const targetUnit = (t: TargetSpec): string => `target ${t.kind}`;
 
 /**
- * Each effect op, those nested in `ifNothingSacrificed` too. Coarse on purpose: a nested op counts when its ability
- * resolves, whether or not its branch ran.
+ * Each effect op, those inside a condition too (`conditionalEffects`). Coarse on purpose: a nested op counts when its
+ * ability resolves, whether or not its branch ran.
  */
 function effectOps(effects: readonly Effect[]): string[] {
-  return effects.flatMap((e) => [`effect ${e.op}`, ...(e.op === "ifNothingSacrificed" ? effectOps(e.effects) : [])]);
+  return effects.flatMap((e) => [`effect ${e.op}`, ...effectOps(conditionalEffects(e))]);
 }

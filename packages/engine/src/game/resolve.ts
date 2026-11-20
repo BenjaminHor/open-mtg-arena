@@ -2,7 +2,7 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
-import { triggeredAbilityDef } from "../rules/abilities.ts";
+import { isTriggerRef, triggeredAbilityDef } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
@@ -11,7 +11,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
-import { holds } from "../triggers/detect.ts";
+import { holds } from "../triggers/match-event.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
@@ -148,15 +148,15 @@ function withoutResolution(state: GameState): GameState {
  */
 function optionally(state: GameState, id: ObjectId, effects: WorkItem[], cards: CardDatabase): WorkItem[] {
   const obj = state.objects[id];
-  if (obj?.kind !== "ability" || obj.ability.kind !== "triggered" || effects.length === 0) return effects;
-  if (triggeredAbilityDef(obj.sourceOracleId, obj.ability.index, cards).optional !== true) return effects;
+  if (obj?.kind !== "ability" || !isTriggerRef(obj.ability) || effects.length === 0) return effects;
+  if (triggeredAbilityDef(obj.sourceOracleId, obj.ability, cards).optional !== true) return effects;
   return [{ kind: "askOptional", player: controllerOf(state, id), resume: effects }];
 }
 
 /** Whether a triggered ability's "intervening if" still holds as it resolves (CR 603.4, 608.2a); true without one. */
 function interveningIfHolds(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[id];
-  if (obj?.kind !== "ability" || obj.ability.kind !== "triggered") return true;
-  const check = triggeredAbilityDef(obj.sourceOracleId, obj.ability.index, cards).onlyIf;
+  if (obj?.kind !== "ability" || !isTriggerRef(obj.ability)) return true;
+  const check = triggeredAbilityDef(obj.sourceOracleId, obj.ability, cards).onlyIf;
   return check === undefined || holds(state, obj.source, check);
 }

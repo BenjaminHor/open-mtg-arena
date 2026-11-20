@@ -146,6 +146,8 @@ export function midTurnState(): GameState {
     dealtDeathtouchDamage: [],
     pendingTriggers: [],
     lastKnown: {},
+    delayedTriggers: [],
+    turnHistory: { activations: [] },
     work: [
       {
         kind: "runEffect",

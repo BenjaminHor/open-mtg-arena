@@ -107,6 +107,9 @@ function abilityWords(ref: AbilityRef): string {
       return `land ${ref.landType}`;
     case "triggered":
       return `triggered ${ref.index}`;
+    case "delayed":
+      // Only `ACTIVATE_ABILITY` names an ability, and a triggered ability is never activated (CR 603.1).
+      throw new Error("a delayed triggered ability is never activated");
   }
 }
 
@@ -199,6 +202,9 @@ const ABILITIES: { [K in AbilityRef["kind"]]: (value: string) => Extract<Ability
   printed: (value) => ({ kind: "printed", index: Number(value) }),
   basicLandType: (value) => ({ kind: "basicLandType", landType: value as BasicLandType }),
   triggered: (value) => ({ kind: "triggered", index: Number(value) }),
+  delayed: () => {
+    throw new Error("a delayed triggered ability is never activated");
+  },
 };
 const ABILITY_WORDS: Record<string, AbilityRef["kind"]> = {
   printed: "printed",

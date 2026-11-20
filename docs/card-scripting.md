@@ -107,7 +107,12 @@ export const furnaceWhelp: CardDef = {
   "landTappedForMana" }`; "whenever this creature deals [combat] damage to [an opponent / a player]" is `{ kind:
   "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
   "you" }`, with "that much" the amount `"thatMuch"`. "Whenever this creature blocks or becomes blocked by a creature"
-  is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "Sacrifice a creature
+  is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "When this creature
+  becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`. "At the beginning of the next end step,
+  [effects]" is `{ op: "createDelayedTrigger", ability: { when: { kind: "beginningOfStep", step: "end", whose: "each"
+  }, targets: [], effects } }` (CR 603.7; only the next beginning of anyone's step, with no targets, for now); "if this
+  ability has been activated four or more times this turn, [effects]" is `{ op: "ifActivatedThisTurn", atLeast: 4,
+  effects }`, for an activated ability only (D-078). "Sacrifice a creature
   other than this creature" is `{ op: "sacrifice", ..., otherThanSelf: true }`, "equal to the sacrificed creature's
   power" the amount `"sacrificedPower"`, "if you can't sacrifice a creature, ..." `{ op: "ifNothingSacrificed",
   effects }`; "destroy one of them at random" is `{ op: "destroyOneAtRandom", among: [{ target: 0 }, { target: 1 }] }`. "Target permanent that player controls" is a target filter with

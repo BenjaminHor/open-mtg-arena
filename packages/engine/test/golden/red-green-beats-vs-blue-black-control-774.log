@@ -461,6 +461,7 @@ T15 taps: p1:Mountain#2
 T15 p1 adds {R} (p1:Mountain#2)
 T15 p1 taps p1:Mountain#2 for mana
 T15 p1 casts Prized Unicorn
+T15 targeted: p1:Prodigal Pyromancer by Prodigal Pyromancer ability
 T15 taps: p1:Prodigal Pyromancer
 T15 p1 activates p1:Prodigal Pyromancer
 T15 damage: p1:Prodigal Pyromancer -> p1:Prodigal Pyromancer 1
@@ -495,6 +496,7 @@ T16 p2 draws
 T16 taps: p2:Island#4
 T16 p2 adds {U} (p2:Island#4)
 T16 p2 taps p2:Island#4 for mana
+T16 targeted: p1:Prized Unicorn by Alluring Siren ability
 T16 taps: p2:Alluring Siren
 T16 p2 activates p2:Alluring Siren
 T16 effect: p1:Prized Unicorn attacks p2 if able until end of turn
@@ -569,6 +571,7 @@ T17 p1 casts Sparkmage Apprentice
 T17 resolves: Sparkmage Apprentice
 T17 moves: Sparkmage Apprentice, stack -> battlefield
 T17 p1:Sparkmage Apprentice triggers (p1)
+T17 targeted: p1:Prized Unicorn by Sparkmage Apprentice ability
 T17 damage: p1:Sparkmage Apprentice -> p1:Prized Unicorn 1
 T17 resolves: p1:Sparkmage Apprentice's ability
 T17 p1's unspent {G} empties
@@ -608,6 +611,7 @@ T18 p2 draws
 T18 taps: p2:Island#4
 T18 p2 adds {U} (p2:Island#4)
 T18 p2 taps p2:Island#4 for mana
+T18 targeted: p1:Prized Unicorn by Alluring Siren ability
 T18 taps: p2:Alluring Siren
 T18 p2 activates p2:Alluring Siren
 T18 taps: p2:Island#2
@@ -645,6 +649,7 @@ T19 p1's unspent {R}{G} empties
 T19 moves: Terramorphic Expanse, p1's hand -> battlefield
 T19 p1 plays p1:Terramorphic Expanse
 T19 moves: Fireball, p1's hand -> stack
+T19 targeted: p2:Alluring Siren by Fireball
 T19 taps: p1:Mountain#3
 T19 p1 adds {R} (p1:Mountain#3)
 T19 p1 taps p1:Mountain#3 for mana
@@ -660,11 +665,13 @@ T19 p1 sacrifices p1:Terramorphic Expanse
 T19 moves: Terramorphic Expanse, battlefield -> p1's graveyard
 T19 p1 activates p1:Terramorphic Expanse
 T19 moves: Negate, p2's hand -> stack
+T19 targeted: Fireball by Negate
 T19 p2 cancels casting Negate
 T19 moves: Forest, p1's library -> battlefield
 T19 p1 shuffles their library
 T19 resolves: Terramorphic Expanse's ability
 T19 moves: Negate, p2's hand -> stack
+T19 targeted: Fireball by Negate
 T19 p2 cancels casting Negate
 T19 damage: Fireball -> p2:Alluring Siren 2
 T19 resolves: Fireball

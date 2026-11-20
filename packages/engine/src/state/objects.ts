@@ -3,6 +3,7 @@
 // Objects store state, not derived characteristics. Power, toughness, types, abilities and the
 // current controller come from `characteristics()` (CR 613), never from these fields directly.
 
+import type { TriggeredAbilityDef } from "../cards/triggers.ts";
 import type { CardId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { TriggerEvent } from "./triggers.ts";
 
@@ -81,7 +82,7 @@ export type AbilityObject = {
 /**
  * Names one ability of an object, in a way that stays right when effects add or remove other abilities (D-028).
  * The object's current abilities come from `characteristics()`; each one carries the ref that names it.
- * Abilities granted by effects (layer 6) and delayed triggers (later: CR 603.7) will add kinds when they arrive.
+ * Abilities granted by effects (layer 6) will add a kind when they arrive.
  */
 export type AbilityRef =
   /** An ability written on the card: an index into its definition's `abilities`. */
@@ -89,7 +90,12 @@ export type AbilityRef =
   /** The intrinsic "{T}: Add [mana]" of a land with that basic land type (CR 305.6). */
   | { kind: "basicLandType"; landType: BasicLandType }
   /** A triggered ability written on the card: an index into its definition's `triggers` (CR 603). */
-  | { kind: "triggered"; index: number };
+  | { kind: "triggered"; index: number }
+  /**
+   * A delayed triggered ability (CR 603.7): written on no card, but made by an effect as a spell or ability resolved,
+   * so it carries its own text.
+   */
+  | { kind: "delayed"; ability: TriggeredAbilityDef };
 
 /** The basic land types (CR 305.6). */
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";

@@ -103,6 +103,11 @@ export type GameEvent =
    */
   | { type: "TAPPED_FOR_MANA"; player: PlayerId; object: ObjectId }
   /**
+   * `object` became a target of the spell or ability `by`, as its targets were chosen (CR 601.2c, 603.3d), for "when
+   * this creature becomes the target of a spell or ability".
+   */
+  | { type: "BECAME_TARGET"; object: ObjectId; by: ObjectId }
+  /**
    * `source` dealt damage to a player or creature (CR 120.1). Its result follows: `LIFE_LOST` for a player
    * (CR 120.3a); for a creature, the damage is marked on it (CR 120.3e).
    */

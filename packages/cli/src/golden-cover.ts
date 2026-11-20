@@ -25,6 +25,7 @@ import { fuzzDecks, TURN_CAP } from "./fuzz/run-game.ts";
 import { addGolden, GOLDEN_DIR, goldenFiles, type NewGolden, playRecipe, readGolden } from "./golden.ts";
 import {
   abilityUnits,
+  DELAYED_TRIGGER,
   decisionUnit,
   eventUnit,
   permanentUnits,
@@ -118,6 +119,9 @@ export function mechanicsUsed(event: GameEvent, before: GameState, after: GameSt
           const trigger = def?.triggers?.[ref.index];
           return trigger === undefined ? [] : triggerUnits(trigger);
         }
+        case "delayed":
+          // Credited as the delayed ability itself resolves, not as the effect that made it does.
+          return [DELAYED_TRIGGER, ...triggerUnits(ref.ability)];
         case "basicLandType":
           // A basic land's mana ability never goes on the stack (CR 605.3b).
           return [];

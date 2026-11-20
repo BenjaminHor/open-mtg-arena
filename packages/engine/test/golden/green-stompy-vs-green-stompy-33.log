@@ -680,6 +680,7 @@ T14 moves: Llanowar Elves, stack -> battlefield
 T14 moves: Giant Growth, p2's hand -> stack
 T14 p2 cancels casting Giant Growth
 T14 moves: Giant Growth, p2's hand -> stack
+T14 targeted: p1:Llanowar Elves by Giant Growth
 T14 p2 cancels casting Giant Growth
 T15 turn 15 begins (p2)
 T15 untaps: p2:Forest#1
@@ -727,6 +728,7 @@ T15 p2 attack: nothing
 T15 moves: Giant Growth, p1's hand -> stack
 T15 p1 cancels casting Giant Growth
 T15 moves: Giant Growth, p1's hand -> stack
+T15 targeted: p1:Llanowar Elves by Giant Growth
 T15 p1 cancels casting Giant Growth
 T15 moves: Grizzly Bears, p2's hand -> stack
 T15 p2 cancels casting Grizzly Bears
@@ -741,14 +743,18 @@ T15 p2 cancels casting Craw Wurm
 T15 moves: Giant Growth, p1's hand -> stack
 T15 p1 cancels casting Giant Growth
 T15 moves: Giant Growth, p2's hand -> stack
+T15 targeted: p1:Llanowar Elves by Giant Growth
 T15 p2 cancels casting Giant Growth
 T15 moves: Giant Growth, p2's hand -> stack
+T15 targeted: p1:Llanowar Elves by Giant Growth
 T15 p2 cancels casting Giant Growth
 T15 moves: Giant Growth, p1's hand -> stack
+T15 targeted: p1:Llanowar Elves by Giant Growth
 T15 p1 cancels casting Giant Growth
 T15 moves: Giant Growth, p1's hand -> stack
 T15 p1 cancels casting Giant Growth
 T15 moves: Giant Growth, p1's hand -> stack
+T15 targeted: p1:Llanowar Elves by Giant Growth
 T15 p1 cancels casting Giant Growth
 T16 turn 16 begins (p1)
 T16 untaps: p1:Forest#1
@@ -757,6 +763,7 @@ T16 untaps: p1:Forest#3
 T16 untaps: p1:Forest#4
 T16 untaps: p1:Forest#5
 T16 moves: Giant Growth, p1's hand -> stack
+T16 targeted: p1:Llanowar Elves by Giant Growth
 T16 taps: p1:Forest#2
 T16 p1 adds {G} (p1:Forest#2)
 T16 p1 taps p1:Forest#2 for mana
@@ -773,6 +780,7 @@ T16 p1 taps p1:Forest#1 for mana
 T16 moves: Giant Growth, p2's hand -> stack
 T16 p2 cancels casting Giant Growth
 T16 moves: Giant Growth, p2's hand -> stack
+T16 targeted: p1:Llanowar Elves by Giant Growth
 T16 p2 cancels casting Giant Growth
 T16 moves: Giant Growth, p2's hand -> stack
 T16 p2 cancels casting Giant Growth
@@ -805,6 +813,7 @@ T16 taps: p1:Forest#4
 T16 p1 adds {G} (p1:Forest#4)
 T16 p1 taps p1:Forest#4 for mana
 T16 moves: Giant Growth, p2's hand -> stack
+T16 targeted: p1:Llanowar Elves by Giant Growth
 T16 p2 cancels casting Giant Growth
 T16 p1's unspent {G} empties
 T16 taps: p1:Forest#5
@@ -817,13 +826,16 @@ T16 p1 cancels casting Spined Wurm
 T16 moves: Grizzly Bears, p1's hand -> stack
 T16 p1 cancels casting Grizzly Bears
 T16 moves: Giant Growth, p2's hand -> stack
+T16 targeted: p1:Llanowar Elves by Giant Growth
 T16 p2 cancels casting Giant Growth
 T16 p1's unspent {G} empties
 T16 moves: Giant Growth, p2's hand -> stack
 T16 p2 cancels casting Giant Growth
 T16 moves: Giant Growth, p2's hand -> stack
+T16 targeted: p1:Llanowar Elves by Giant Growth
 T16 p2 cancels casting Giant Growth
 T16 moves: Giant Growth, p2's hand -> stack
+T16 targeted: p1:Llanowar Elves by Giant Growth
 T16 p2 cancels casting Giant Growth
 T16 effect ends: p1:Llanowar Elves +3/+3
 T17 turn 17 begins (p2)
@@ -860,6 +872,7 @@ T17 moves: Giant Growth, p2's hand -> stack
 T17 p2 cancels casting Giant Growth
 T17 p2 attack: nothing
 T17 moves: Giant Growth, p2's hand -> stack
+T17 targeted: p1:Llanowar Elves by Giant Growth
 T17 p2 cancels casting Giant Growth
 T17 taps: p2:Forest#2
 T17 p2 adds {G} (p2:Forest#2)
@@ -898,6 +911,7 @@ T18 p1 adds {G} (p1:Forest#2)
 T18 p1 taps p1:Forest#2 for mana
 T18 p1 cancels casting Centaur Courser
 T18 moves: Giant Growth, p2's hand -> stack
+T18 targeted: p1:Llanowar Elves by Giant Growth
 T18 p2 cancels casting Giant Growth
 T18 moves: Giant Growth, p2's hand -> stack
 T18 p2 cancels casting Giant Growth
@@ -905,6 +919,7 @@ T18 moves: Giant Growth, p2's hand -> stack
 T18 p2 cancels casting Giant Growth
 T18 p1 attack: nothing
 T18 moves: Giant Growth, p2's hand -> stack
+T18 targeted: p1:Llanowar Elves by Giant Growth
 T18 p2 cancels casting Giant Growth
 T18 taps: p1:Forest#2
 T18 p1 adds {G} (p1:Forest#2)
@@ -955,8 +970,10 @@ T18 p2 cancels casting Giant Growth
 T18 moves: Giant Growth, p2's hand -> stack
 T18 p2 cancels casting Giant Growth
 T18 moves: Giant Growth, p2's hand -> stack
+T18 targeted: p1:Llanowar Elves by Giant Growth
 T18 p2 cancels casting Giant Growth
 T18 moves: Giant Growth, p2's hand -> stack
+T18 targeted: p1:Llanowar Elves by Giant Growth
 T18 p2 cancels casting Giant Growth
 T19 turn 19 begins (p2)
 T19 untaps: p2:Forest#1
@@ -975,6 +992,7 @@ T19 taps: p2:Forest#2
 T19 p2 adds {G} (p2:Forest#2)
 T19 p2 taps p2:Forest#2 for mana
 T19 moves: Giant Growth, p2's hand -> stack
+T19 targeted: p1:Llanowar Elves by Giant Growth
 T19 p2 cancels casting Giant Growth
 T19 p2's unspent {G}{G}{G} empties
 T19 moves: Giant Growth, p2's library -> p2's hand
@@ -1000,8 +1018,10 @@ T19 p2 cancels casting Giant Growth
 T19 moves: Giant Growth, p2's hand -> stack
 T19 p2 cancels casting Giant Growth
 T19 moves: Giant Growth, p2's hand -> stack
+T19 targeted: p1:Llanowar Elves by Giant Growth
 T19 p2 cancels casting Giant Growth
 T19 moves: Giant Growth, p2's hand -> stack
+T19 targeted: p1:Llanowar Elves by Giant Growth
 T19 p2 cancels casting Giant Growth
 T20 turn 20 begins (p1)
 T20 untaps: p1:Forest#1
@@ -1048,30 +1068,39 @@ T20 p2 cancels casting Giant Growth
 T20 resolves: Llanowar Elves
 T20 moves: Llanowar Elves, stack -> battlefield
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
 T20 p2 cancels casting Giant Growth
 T20 p1's unspent {G} empties
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
+T20 p2 cancels casting Giant Growth
+T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
-T20 p2 cancels casting Giant Growth
-T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#2 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 p1 attack: nothing
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#2 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
 T20 p2 cancels casting Giant Growth
@@ -1086,8 +1115,10 @@ T20 p1 cancels casting Grizzly Bears
 T20 moves: Craw Wurm, p1's hand -> stack
 T20 p1 cancels casting Craw Wurm
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#2 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T20 moves: Giant Growth, p2's hand -> stack
+T20 targeted: p1:Llanowar Elves#1 by Giant Growth
 T20 p2 cancels casting Giant Growth
 T21 turn 21 begins (p2)
 T21 untaps: p2:Forest#1
@@ -1099,6 +1130,7 @@ T21 untaps: p2:Forest#6
 T21 moves: Llanowar Elves, p2's library -> p2's hand
 T21 p2 draws
 T21 moves: Giant Growth, p2's hand -> stack
+T21 targeted: p1:Llanowar Elves#1 by Giant Growth
 T21 taps: p2:Forest#2
 T21 p2 adds {G} (p2:Forest#2)
 T21 p2 taps p2:Forest#2 for mana
@@ -1119,6 +1151,7 @@ T21 taps: p2:Forest#5
 T21 p2 adds {G} (p2:Forest#5)
 T21 p2 taps p2:Forest#5 for mana
 T21 moves: Giant Growth, p2's hand -> stack
+T21 targeted: p1:Llanowar Elves#1 by Giant Growth
 T21 p2 casts Giant Growth
 T21 effect: p1:Llanowar Elves#1 +3/+3 until end of turn
 T21 resolves: Giant Growth
@@ -2610,6 +2643,7 @@ T41 p2 adds {G} (p2:Forest#9)
 T41 p2 taps p2:Forest#9 for mana
 T41 p2 cancels casting Spined Wurm
 T41 moves: Giant Growth, p2's hand -> stack
+T41 targeted: p2:Grizzly Bears#1 by Giant Growth
 T41 taps: p2:Forest#9
 T41 p2 adds {G} (p2:Forest#9)
 T41 p2 taps p2:Forest#9 for mana
@@ -2618,8 +2652,10 @@ T41 taps: p2:Llanowar Elves#1
 T41 p2 adds {G} (p2:Llanowar Elves#1)
 T41 p2 taps p2:Llanowar Elves#1 for mana
 T41 moves: Giant Growth, p2's hand -> stack
+T41 targeted: p1:Llanowar Elves#2 by Giant Growth
 T41 p2 cancels casting Giant Growth
 T41 moves: Giant Growth, p2's hand -> stack
+T41 targeted: p2:Craw Wurm by Giant Growth
 T41 taps: p2:Forest#9
 T41 p2 adds {G} (p2:Forest#9)
 T41 p2 taps p2:Forest#9 for mana

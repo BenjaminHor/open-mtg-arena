@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import type { CardDef, Effect, TargetSpec, TriggeredAbilityDef } from "@mtg/engine";
+import type { AbilityDef, CardDef, Effect, TargetSpec, TriggeredAbilityDef } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
 import { parsePoolTxt } from "../src/pool-data.ts";
@@ -160,10 +160,48 @@ describe("definitionProblems", () => {
       "Furnace Whelp ability 1: loseLife is for players, not objects",
       "Furnace Whelp ability 1: destroyOneAtRandom is for objects, not players",
       "Furnace Whelp ability 2: a divided amount is a number or X",
-      "Furnace Whelp ability 2: a divided effect, mana or another ifNothingSacrificed can't be inside ifNothingSacrificed",
+      "Furnace Whelp ability 2: a divided effect, mana or ifNothingSacrificed can't be inside ifNothingSacrificed",
       'Furnace Whelp ability 1: "that creature" is only for a triggered ability',
       'Furnace Whelp ability 2: "that much" is only for a triggered ability',
       'Furnace Whelp trigger 1: its event has no "that creature"',
+    ]);
+  });
+
+  it("checks a delayed trigger as its own triggered ability, and an activation count only in an activated ability (D-078)", () => {
+    const sacrifice: Effect[] = [{ op: "sacrificeSource" }];
+    const endStep = { kind: "beginningOfStep", step: "end", whose: "each" } as const;
+    const delayed = (fields: Partial<TriggeredAbilityDef>): Effect => ({
+      op: "createDelayedTrigger",
+      ability: { when: endStep, targets: [], effects: sacrifice, ...fields },
+    });
+    const counted: Effect = { op: "ifActivatedThisTurn", atLeast: 4, effects: [delayed({})] };
+    const activated = (effects: Effect[]): AbilityDef => ({ kind: "activated", cost: [], targets: [], effects });
+    const def: CardDef = {
+      name: "Furnace Whelp",
+      oracle: whelp.oracleText,
+      keywords: ["flying"],
+      spell: { targets: [], effects: [counted] },
+      triggers: [{ when: { kind: "selfAttacks" }, targets: [], effects: [counted] }],
+      abilities: [
+        activated([counted]),
+        activated([delayed({ when: { ...endStep, whose: "yours" } })]),
+        activated([delayed({ when: { kind: "selfAttacks" } })]),
+        activated([delayed({ targets: [{ kind: "anyTarget" }] })]),
+        activated([delayed({ onlyIf: { kind: "sourceUntapped" } })]),
+        activated([delayed({ optional: true })]),
+        // "That player" is the player whose end step it is: the delayed trigger's own event supplies one.
+        activated([delayed({ effects: [{ op: "loseLife", who: "triggeringPlayer", amount: 1 }] })]),
+        // Its own resolution is a delayed trigger's, not an activated ability's: no activations to count.
+        activated([delayed({ effects: [counted] })]),
+      ],
+    };
+    const problems = definitionProblems([def], [whelp]);
+    const cantWait = 'waits for the beginning of anyone\'s step, with no targets, intervening if or "you may"';
+    expect(problems).toStrictEqual([
+      "Furnace Whelp: ifActivatedThisTurn is only for an activated ability",
+      "Furnace Whelp trigger 1: ifActivatedThisTurn is only for an activated ability",
+      ...[2, 3, 4, 5, 6].map((i) => `Furnace Whelp ability ${i} delayed trigger: ${cantWait}`),
+      "Furnace Whelp ability 8 delayed trigger: ifActivatedThisTurn is only for an activated ability",
     ]);
   });
 

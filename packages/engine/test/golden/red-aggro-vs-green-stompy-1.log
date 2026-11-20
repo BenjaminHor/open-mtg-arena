@@ -707,6 +707,7 @@ T17 taps: p2:Forest#3
 T17 p2 adds {G} (p2:Forest#3)
 T17 p2 taps p2:Forest#3 for mana
 T17 moves: Giant Growth, p2's hand -> stack
+T17 targeted: p2:Grizzly Bears by Giant Growth
 T17 p2 casts Giant Growth
 T17 effect: p2:Grizzly Bears +3/+3 until end of turn
 T17 resolves: Giant Growth
@@ -759,6 +760,7 @@ T18 p1 taps p1:Mountain#2 for mana
 T18 moves: Furnace Whelp, p1's hand -> stack
 T18 p1 cancels casting Furnace Whelp
 T18 moves: Volcanic Hammer, p1's hand -> stack
+T18 targeted: p2:Grizzly Bears by Volcanic Hammer
 T18 p1 cancels casting Volcanic Hammer
 T18 moves: Gray Ogre, p1's hand -> stack
 T18 p1 cancels casting Gray Ogre
@@ -825,6 +827,7 @@ T19 taps: p2:Forest#1
 T19 p2 adds {G} (p2:Forest#1)
 T19 p2 taps p2:Forest#1 for mana
 T19 moves: Giant Growth, p2's hand -> stack
+T19 targeted: p2:Grizzly Bears by Giant Growth
 T19 taps: p2:Forest#3
 T19 p2 adds {G} (p2:Forest#3)
 T19 p2 taps p2:Forest#3 for mana
@@ -889,6 +892,7 @@ T20 taps: p1:Mountain#7
 T20 p1 adds {R} (p1:Mountain#7)
 T20 p1 taps p1:Mountain#7 for mana
 T20 moves: Volcanic Hammer, p1's hand -> stack
+T20 targeted: p2:Grizzly Bears by Volcanic Hammer
 T20 p1 casts Volcanic Hammer
 T20 damage: Volcanic Hammer -> p2:Grizzly Bears 3
 T20 resolves: Volcanic Hammer
@@ -1219,6 +1223,7 @@ T24 taps: p1:Mountain#5
 T24 p1 adds {R} (p1:Mountain#5)
 T24 p1 taps p1:Mountain#5 for mana
 T24 moves: Shock, p1's hand -> stack
+T24 targeted: p2:Llanowar Elves by Shock
 T24 p1 cancels casting Shock
 T24 moves: Shock, p1's hand -> stack
 T24 p1 cancels casting Shock
@@ -1259,6 +1264,7 @@ T24 p1 cancels casting Hill Giant
 T24 moves: Hill Giant, p1's hand -> stack
 T24 p1 cancels casting Hill Giant
 T24 moves: Shock, p1's hand -> stack
+T24 targeted: p2:Llanowar Elves by Shock
 T24 taps: p1:Mountain#9
 T24 p1 adds {R} (p1:Mountain#9)
 T24 p1 taps p1:Mountain#9 for mana
@@ -1284,6 +1290,7 @@ T24 p1 cancels casting Furnace Whelp
 T24 moves: Hill Giant, p1's hand -> stack
 T24 p1 cancels casting Hill Giant
 T24 moves: Shock, p1's hand -> stack
+T24 targeted: p2:Llanowar Elves by Shock
 T24 p1 cancels casting Shock
 T25 turn 25 begins (p2)
 T25 untaps: p2:Forest#1
@@ -1414,6 +1421,7 @@ T26 taps: p1:Mountain#6
 T26 p1 adds {R} (p1:Mountain#6)
 T26 p1 taps p1:Mountain#6 for mana
 T26 moves: Shock, p1's hand -> stack
+T26 targeted: p2:Llanowar Elves by Shock
 T26 p1 cancels casting Shock
 T26 p1's unspent {R} empties
 T26 p1 attack: nothing
@@ -1436,6 +1444,7 @@ T26 p1 cancels casting Hill Giant
 T26 moves: Volcanic Hammer, p1's hand -> stack
 T26 p1 cancels casting Volcanic Hammer
 T26 moves: Shock, p1's hand -> stack
+T26 targeted: p2:Llanowar Elves by Shock
 T26 p1 cancels casting Shock
 T27 turn 27 begins (p2)
 T27 untaps: p2:Forest#1
@@ -1480,8 +1489,10 @@ T27 taps: p2:Llanowar Elves
 T27 p2 adds {G} (p2:Llanowar Elves)
 T27 p2 taps p2:Llanowar Elves for mana
 T27 moves: Shock, p1's hand -> stack
+T27 targeted: p2:Llanowar Elves by Shock
 T27 p1 cancels casting Shock
 T27 moves: Shock, p1's hand -> stack
+T27 targeted: p2:Llanowar Elves by Shock
 T27 p1 cancels casting Shock
 T27 p2's unspent {G}{G}{G}{G}{G}{G} empties
 T27 moves: Shock, p1's hand -> stack
@@ -1508,10 +1519,12 @@ T27 p2 cancels casting Centaur Courser
 T27 moves: Craw Wurm, p2's hand -> stack
 T27 p2 cancels casting Craw Wurm
 T27 moves: Shock, p1's hand -> stack
+T27 targeted: p2:Llanowar Elves by Shock
 T27 p1 cancels casting Shock
 T27 moves: Shock, p1's hand -> stack
 T27 p1 cancels casting Shock
 T27 moves: Shock, p1's hand -> stack
+T27 targeted: p2:Llanowar Elves by Shock
 T27 p1 cancels casting Shock
 T27 moves: Shock, p1's hand -> stack
 T27 p1 cancels casting Shock
@@ -1551,6 +1564,7 @@ T28 taps: p1:Mountain#9
 T28 p1 adds {R} (p1:Mountain#9)
 T28 p1 taps p1:Mountain#9 for mana
 T28 moves: Shock, p1's hand -> stack
+T28 targeted: p2:Llanowar Elves by Shock
 T28 p1 casts Shock
 T28 damage: Shock -> p2:Llanowar Elves 2
 T28 resolves: Shock
@@ -2920,6 +2934,7 @@ T44 taps: p1:Mountain#10
 T44 p1 adds {R} (p1:Mountain#10)
 T44 p1 taps p1:Mountain#10 for mana
 T44 moves: Shock, p1's hand -> stack
+T44 targeted: p2:Llanowar Elves by Shock
 T44 p1 casts Shock
 T44 taps: p1:Mountain#13
 T44 p1 adds {R} (p1:Mountain#13)

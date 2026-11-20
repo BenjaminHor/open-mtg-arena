@@ -1,10 +1,10 @@
 // Words only a triggered ability can use ("that player", "that creature", "that much", "sacrifice it"), each read from
 // what its trigger event supplies: misused, the engine would quietly do nothing, so the definition is refused instead.
 
-import type { CardDef, Effect, TriggerCondition } from "@mtg/engine";
+import type { CardDef, Effect, TriggerCondition, TriggeredAbilityDef } from "@mtg/engine";
 import { flatEffects } from "./flat-effects.ts";
 
-/** Problems with the trigger-only words in this definition's spell, abilities and triggers. */
+/** Problems with the trigger-only words in this definition's spell and activated abilities (triggers: `...Of`). */
 export function triggerWordProblems(def: CardDef): string[] {
   const problems: string[] = [];
   // Words only a triggered ability can use, which would otherwise do nothing in silence.
@@ -24,17 +24,21 @@ export function triggerWordProblems(def: CardDef): string[] {
     if (namesTriggering(ability.effects, "triggeringObject"))
       problems.push(`${def.name} ability ${i + 1}: "that creature" is only for a triggered ability`);
   }
-  for (const [i, trigger] of (def.triggers ?? []).entries()) {
-    if (!suppliesPlayer(trigger.when) && (namesTriggeringPlayer(trigger.effects) || limitsToThatPlayer(trigger)))
-      problems.push(`${def.name} trigger ${i + 1}: its event has no "that player"`);
-    // "That player controls" is read only where targets are chosen and checked (rules/targets.ts).
-    if (limitsToThatPlayer({ when: trigger.when, effects: trigger.effects }))
-      problems.push(`${def.name} trigger ${i + 1}: only a target can be limited to what "that player" controls`);
-    if (!suppliesObject(trigger.when) && namesTriggering(trigger.effects, "triggeringObject"))
-      problems.push(`${def.name} trigger ${i + 1}: its event has no "that creature"`);
-    if (!suppliesAmount(trigger.when) && namesThatMuch(trigger.effects))
-      problems.push(`${def.name} trigger ${i + 1}: its event has no "that much"`);
-  }
+  return problems;
+}
+
+/** Problems with the trigger-only words in one triggered ability, printed or delayed, named `where`. */
+export function triggerWordProblemsOf(where: string, trigger: TriggeredAbilityDef): string[] {
+  const problems: string[] = [];
+  if (!suppliesPlayer(trigger.when) && (namesTriggeringPlayer(trigger.effects) || limitsToThatPlayer(trigger)))
+    problems.push(`${where}: its event has no "that player"`);
+  // "That player controls" is read only where targets are chosen and checked (rules/targets.ts).
+  if (limitsToThatPlayer({ when: trigger.when, effects: trigger.effects }))
+    problems.push(`${where}: only a target can be limited to what "that player" controls`);
+  if (!suppliesObject(trigger.when) && namesTriggering(trigger.effects, "triggeringObject"))
+    problems.push(`${where}: its event has no "that creature"`);
+  if (!suppliesAmount(trigger.when) && namesThatMuch(trigger.effects))
+    problems.push(`${where}: its event has no "that much"`);
   return problems;
 }
 
@@ -53,6 +57,7 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "landTappedForMana":
     case "selfDealsDamageToPlayer":
     case "selfBlocksOrBlocked":
+    case "selfBecomesTarget":
       return false;
   }
 }
@@ -67,6 +72,7 @@ function suppliesObject(when: TriggerCondition): boolean {
     case "spellCast":
     case "selfBlocksOrBlocked":
       return true;
+    case "selfBecomesTarget":
     case "beginningOfStep":
     case "playerDraws":
     case "playerDiscards":
@@ -89,6 +95,7 @@ function suppliesPlayer(when: TriggerCondition): boolean {
     case "anotherEnters":
     case "selfAttacks":
     case "selfBlocksOrBlocked":
+    case "selfBecomesTarget":
       return false;
     // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.
     case "beginningOfStep":

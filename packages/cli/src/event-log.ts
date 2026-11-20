@@ -98,8 +98,11 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player} cancels casting ${name(e.restored)}`;
     case "ABILITY_ACTIVATED":
       return `${e.player} activates ${name(e.source)}`;
-    case "ABILITY_TRIGGERED":
-      return `${name(e.source)} triggers (${e.controller})`;
+    case "ABILITY_TRIGGERED": {
+      // A delayed trigger's source may be long gone: then it's named by the ability itself ("Dragon Whelp ability").
+      const source = name(e.source);
+      return `${source.startsWith("(gone") ? name(e.object) : source} triggers (${e.controller})`;
+    }
     case "ACTIVATION_CANCELLED":
       return `${e.player} cancels activating ${name(e.source)}`;
     case "ABILITY_DID_NOT_RESOLVE":
@@ -144,6 +147,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player}'s unspent ${manaText(e.lost)} empties`;
     case "MANA_ADDED":
       return `${e.player} adds ${manaText({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, [e.mana]: e.amount })} (${name(e.source)})`;
+    case "BECAME_TARGET":
+      return `targeted: ${name(e.object)} by ${name(e.by)}`;
     case "TAPPED_FOR_MANA":
       return `${e.player} taps ${name(e.object)} for mana`;
     case "PERMANENT_TAPPED":

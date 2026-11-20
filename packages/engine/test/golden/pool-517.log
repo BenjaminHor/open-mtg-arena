@@ -494,6 +494,7 @@ T16 p1 adds {B} (p1:Swamp)
 T16 p1 taps p1:Swamp for mana
 T16 p1 casts Mind Rot
 T16 moves: Cancel, p1's hand -> stack
+T16 targeted: Mind Rot by Cancel
 T16 p1 cancels casting Cancel
 T16 moves: Plains, p2's hand -> p2's graveyard
 T16 p2 discards Plains
@@ -619,16 +620,21 @@ T19 p2 adds {G} (p2:Forest)
 T19 p2 taps p2:Forest for mana
 T19 p2 casts Elvish Piper
 T19 moves: Cancel, p1's hand -> stack
+T19 targeted: Elvish Piper by Cancel
 T19 p1 cancels casting Cancel
 T19 resolves: Elvish Piper
 T19 moves: Elvish Piper, stack -> battlefield
 T19 moves: Unsummon, p2's hand -> stack
+T19 targeted: p2:Elvish Piper by Unsummon
 T19 p2 cancels casting Unsummon
 T19 moves: Unsummon, p2's hand -> stack
+T19 targeted: p2:Elvish Piper by Unsummon
 T19 p2 cancels casting Unsummon
 T19 moves: Unsummon, p2's hand -> stack
+T19 targeted: p2:Elvish Piper by Unsummon
 T19 p2 cancels casting Unsummon
 T19 moves: Unsummon, p2's hand -> stack
+T19 targeted: p2:Elvish Piper by Unsummon
 T19 p2 cancels casting Unsummon
 T20 turn 20 begins (p1)
 T20 untaps: p1:Plains
@@ -645,8 +651,10 @@ T20 taps: p1:Forest#2
 T20 p1 adds {G} (p1:Forest#2)
 T20 p1 taps p1:Forest#2 for mana
 T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
 T20 p2 cancels casting Unsummon
 T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
 T20 p2 cancels casting Unsummon
 T20 p1's unspent {G}{G} empties
 T20 moves: Acolyte of Xathrid, p1's library -> p1's hand
@@ -672,41 +680,57 @@ T20 p1 adds {W} (p1:Plains)
 T20 p1 taps p1:Plains for mana
 T20 p1's unspent {W}{R}{R}{G} empties
 T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p1:Acolyte of Xathrid by Unsummon
 T20 p2 cancels casting Unsummon
 T20 p1 attack: nothing
 T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p1:Acolyte of Xathrid by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p1:Acolyte of Xathrid by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
 T20 p2 cancels casting Unsummon
 T20 moves: Unsummon, p2's hand -> stack
 T20 p2 cancels casting Unsummon
 T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p1:Acolyte of Xathrid by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p1:Acolyte of Xathrid by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p1:Acolyte of Xathrid by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
 T20 p2 cancels casting Unsummon
 T20 moves: Unsummon, p2's hand -> stack
 T20 p2 cancels casting Unsummon
 T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
-T20 p2 cancels casting Unsummon
-T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Elvish Piper by Unsummon
 T20 p2 cancels casting Unsummon
 T21 turn 21 begins (p2)
 T21 untaps: p2:Plains#1
@@ -719,6 +743,7 @@ T21 untaps: p2:Swamp
 T21 moves: Negate, p2's library -> p2's hand
 T21 p2 draws
 T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Elvish Piper by Unsummon
 T21 taps: p2:Island#1
 T21 p2 adds {U} (p2:Island#1)
 T21 p2 taps p2:Island#1 for mana
@@ -744,12 +769,15 @@ T21 taps: p2:Mountain
 T21 p2 adds {R} (p2:Mountain)
 T21 p2 taps p2:Mountain for mana
 T21 moves: Cancel, p1's hand -> stack
+T21 targeted: Unsummon by Cancel
 T21 p1 cancels casting Cancel
 T21 moves: Cancel, p1's hand -> stack
+T21 targeted: Unsummon by Cancel
 T21 p1 cancels casting Cancel
 T21 moves: Bramble Creeper, p2's hand -> battlefield
 T21 resolves: p2:Elvish Piper's ability
 T21 moves: Negate, p2's hand -> stack
+T21 targeted: Unsummon by Negate
 T21 p2 casts Negate
 T21 countered: Unsummon
 T21 moves: Unsummon, stack -> p2's graveyard

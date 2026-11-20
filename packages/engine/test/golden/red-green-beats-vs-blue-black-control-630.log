@@ -420,20 +420,26 @@ T15 taps: p1:Forest#3
 T15 p1 adds {G} (p1:Forest#3)
 T15 p1 taps p1:Forest#3 for mana
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p1:Borderland Ranger by Unsummon
 T15 p2 cancels casting Unsummon
 T15 p1's unspent {G} empties
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p1:Borderland Ranger by Unsummon
 T15 p2 cancels casting Unsummon
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p1:Borderland Ranger by Unsummon
 T15 p2 cancels casting Unsummon
 T15 p1 attack: nothing
 T15 moves: Ball Lightning, p1's hand -> stack
 T15 p1 cancels casting Ball Lightning
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p1:Borderland Ranger by Unsummon
 T15 p2 cancels casting Unsummon
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p1:Borderland Ranger by Unsummon
 T15 p2 cancels casting Unsummon
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p1:Borderland Ranger by Unsummon
 T15 p2 cancels casting Unsummon
 T16 turn 16 begins (p2)
 T16 untaps: p2:Island#1

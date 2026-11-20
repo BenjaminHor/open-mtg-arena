@@ -276,7 +276,30 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          shroud as a permanent enters, each field of a resolving spell, activated or triggered ability, every decision
          kind answered (a cancel or take-back doesn't count), every event type agents can reach.
        - A test that every pool card is in a scenario, by whole name.
-     - Golden action lines name the acting player (owner, D-083), built, in review; a small PR before M2-07c2.
+     - Golden action lines name the acting player (owner, D-083), done, merged (PR #43).
+     - Now: M2-07c2 (D-084). Done so far: engine, Dragon Whelp and Illusionary Servant, 15 scenarios in
+       `test/scenarios/cards/m2-07c2/`, unit tests (`test/game/activation-count.test.ts`: a removed activation still
+       counts, the count starts again each turn; `test/triggers/delayed.test.ts`: a spell's delayed trigger, CR 603.7d,
+       with the test-only instant Late Gift), definition checks, two matrix cells (Firebreathing × Triggers, Burn ×
+       Triggers), golden logs with `targeted:` lines (additions only), pool-579 and pool-111 covering `trigger delayed`
+       and `selfBecomesTarget`, docs. 152 cards; 144 of the 234 Magic 2010 cards. Not put in the M10 pair: each of its
+       slots carries a rule the pool needs. Fuzz (300 games), mutation pass (10 caught), bench, rules-judge and code-reviewer all done, fixes in. Next: the PR.
+       Design (2026-11-20, with the advisor's review):
+       - `GameState.delayedTriggers`: each `{ source, sourceOracleId, controller, ability }`, the ability a
+         `TriggeredAbilityDef` (its `when` limited to the next "beginning of step" for now). Created by an effect
+         `createDelayedTrigger`; source and controller those of the ability that made it (CR 603.7e). Matched in
+         `detectTriggers` apart from the battlefield's (no early exit, no source lookup), and removed as it triggers
+         (CR 603.7b). A pending trigger refers to its ability by `{ kind: "triggered", index }` or
+         `{ kind: "delayed", ability }`; one lookup resolves both, and identical delayed triggers stay unasked (D-077).
+       - Dragon Whelp: `GameState.turnHistory.activations` counts each object's printed ability as it becomes activated
+         (where `ABILITY_ACTIVATED` is emitted: a cancel never counts, a countered activation does, D-078), reset as a
+         turn begins; the effect `ifActivatedThisTurn { atLeast, effects }` reads its own ability's count through the
+         resolving stack object.
+       - Illusionary Servant: a `BECAME_TARGET` event as each object target is chosen, for spells, activations and
+         triggers, matched where it's emitted; `selfBecomesTarget`. A cancelled cast drops its pending triggers, all of
+         which it caused (a cast starts only with none waiting). No pool card targets one object twice in one spell, so
+         one trigger per target chosen is enough for now (future-rules).
+       - Golden credit: the delayed ability's units when it resolves, not when it's created.
      - M2-07c plan (2026-11-20), two PRs:
        - M2-07c1, done, merged (PR #41, D-079): 27 scenarios in `test/scenarios/cards/m2-07c/`, a unit test for the random
          destroy over seeds, an Inferno Elemental matrix cell, an invariant that a pending decision always has a legal
@@ -492,17 +515,24 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20) The owner asked whether card definitions' raw strings (`op: "dealDamage"`, `step: "end"`...)
+  should become enums. Recommended: no TypeScript `enum` (D-018 runs TypeScript by type stripping, and
+  `erasableSyntaxOnly` refuses `enum`); the strings are already checked literal unions. Offered instead: named
+  constants for whole phrases repeated across cards ("target creature", "until end of turn", "at the beginning of
+  the next end step"), in one shared file. Waiting on the owner's answer.
 - (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
   Artillery's two losses kept.)
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
   activation resolves.)
 
 ## Known issues
+- (M2-07c2) `playerView` and `pnpm cli show` don't list waiting delayed triggers (`GameState.delayedTriggers`), though
+  both players know of them (Dragon Whelp to be sacrificed at the next end step). The match UI (M3) should show them.
 - (D-083 review) A golden game's rejection names the action number (`!! action 78 is rejected`), not the stored line,
   and a run of passes folds many actions into one line, so finding it in the JSON takes counting. The decoder could
   report the line too.
 - The golden folder's budget is 16 MB through M2 (D-081). With the compact encoding and the mechanics cover (D-082) it's
-  1.3 MB for 150 cards, and grows with new mechanics, not new cards.
+  1.7 MB for 152 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
   the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with

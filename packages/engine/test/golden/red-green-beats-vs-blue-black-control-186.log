@@ -421,10 +421,12 @@ T14 taps: p2:Swamp#3
 T14 p2 adds {B} (p2:Swamp#3)
 T14 p2 taps p2:Swamp#3 for mana
 T14 moves: Ignite Disorder, p1's hand -> stack
+T14 targeted: p2:Alluring Siren by Ignite Disorder
 T14 p1 cancels casting Ignite Disorder
 T14 moves: Ignite Disorder, p1's hand -> stack
 T14 p1 cancels casting Ignite Disorder
 T14 moves: Ignite Disorder, p1's hand -> stack
+T14 targeted: p2:Alluring Siren by Ignite Disorder
 T14 p1 cancels casting Ignite Disorder
 T14 moves: Ignite Disorder, p1's hand -> stack
 T14 p1 cancels casting Ignite Disorder
@@ -442,14 +444,17 @@ T14 p2 taps p2:Swamp#1 for mana
 T14 p2's unspent {U}{U}{B} empties
 T14 p2 attack: nothing
 T14 moves: Doom Blade, p2's hand -> stack
+T14 targeted: p2:Alluring Siren by Doom Blade
 T14 p2 cancels casting Doom Blade
 T14 moves: Tendrils of Corruption, p2's hand -> stack
 T14 p2 cancels casting Tendrils of Corruption
 T14 moves: Unsummon, p2's hand -> stack
+T14 targeted: p2:Alluring Siren by Unsummon
 T14 p2 cancels casting Unsummon
 T14 moves: Ignite Disorder, p1's hand -> stack
 T14 p1 cancels casting Ignite Disorder
 T14 moves: Ignite Disorder, p1's hand -> stack
+T14 targeted: p2:Alluring Siren by Ignite Disorder
 T14 p1 cancels casting Ignite Disorder
 T15 turn 15 begins (p1)
 T15 untaps: p1:Forest#1
@@ -469,12 +474,16 @@ T15 p1 cancels casting Bogardan Hellkite
 T15 moves: Doom Blade, p2's hand -> stack
 T15 p2 cancels casting Doom Blade
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p2:Alluring Siren by Unsummon
 T15 p2 cancels casting Unsummon
 T15 moves: Doom Blade, p2's hand -> stack
+T15 targeted: p2:Alluring Siren by Doom Blade
 T15 p2 cancels casting Doom Blade
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p2:Alluring Siren by Unsummon
 T15 p2 cancels casting Unsummon
 T15 moves: Tendrils of Corruption, p2's hand -> stack
+T15 targeted: p2:Alluring Siren by Tendrils of Corruption
 T15 p2 cancels casting Tendrils of Corruption
 T15 p1 attack: nothing
 T15 taps: p1:Mountain#1
@@ -487,6 +496,7 @@ T15 p1 taps p1:Mountain#2 for mana
 T15 moves: Tendrils of Corruption, p2's hand -> stack
 T15 p2 cancels casting Tendrils of Corruption
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p2:Alluring Siren by Unsummon
 T15 p2 cancels casting Unsummon
 T15 p1's unspent {R} empties
 T15 taps: p1:Forest#2
@@ -499,6 +509,7 @@ T15 taps: p1:Forest#1
 T15 p1 adds {G} (p1:Forest#1)
 T15 p1 taps p1:Forest#1 for mana
 T15 moves: Unsummon, p2's hand -> stack
+T15 targeted: p2:Alluring Siren by Unsummon
 T15 p2 cancels casting Unsummon
 T15 p1's unspent {G}{G}{G} empties
 T16 turn 16 begins (p2)
@@ -512,6 +523,7 @@ T16 taps: p2:Swamp#2
 T16 p2 adds {B} (p2:Swamp#2)
 T16 p2 taps p2:Swamp#2 for mana
 T16 moves: Unsummon, p2's hand -> stack
+T16 targeted: p2:Alluring Siren by Unsummon
 T16 taps: p2:Island#3
 T16 p2 adds {U} (p2:Island#3)
 T16 p2 taps p2:Island#3 for mana
@@ -520,11 +532,13 @@ T16 taps: p2:Island#1
 T16 p2 adds {U} (p2:Island#1)
 T16 p2 taps p2:Island#1 for mana
 T16 moves: Doom Blade, p2's hand -> stack
+T16 targeted: p2:Alluring Siren by Doom Blade
 T16 taps: p2:Island#2
 T16 p2 adds {U} (p2:Island#2)
 T16 p2 taps p2:Island#2 for mana
 T16 p2 casts Doom Blade
 T16 moves: Tendrils of Corruption, p2's hand -> stack
+T16 targeted: p2:Alluring Siren by Tendrils of Corruption
 T16 taps: p2:Swamp#3
 T16 p2 adds {B} (p2:Swamp#3)
 T16 p2 taps p2:Swamp#3 for mana
@@ -533,6 +547,7 @@ T16 p2 adds {B} (p2:Swamp#1)
 T16 p2 taps p2:Swamp#1 for mana
 T16 p2 cancels casting Tendrils of Corruption
 T16 moves: Tendrils of Corruption, p2's hand -> stack
+T16 targeted: p2:Alluring Siren by Tendrils of Corruption
 T16 taps: p2:Swamp#3
 T16 p2 adds {B} (p2:Swamp#3)
 T16 p2 taps p2:Swamp#3 for mana
@@ -548,8 +563,10 @@ T16 p1 cancels casting Bogardan Hellkite
 T16 moves: Bogardan Hellkite, p1's hand -> stack
 T16 p1 cancels casting Bogardan Hellkite
 T16 moves: Ignite Disorder, p1's hand -> stack
+T16 targeted: p2:Alluring Siren by Ignite Disorder
 T16 p1 cancels casting Ignite Disorder
 T16 moves: Ignite Disorder, p1's hand -> stack
+T16 targeted: p2:Alluring Siren by Ignite Disorder
 T16 p1 cancels casting Ignite Disorder
 T16 moves: Bogardan Hellkite, p1's hand -> stack
 T16 p1 cancels casting Bogardan Hellkite
@@ -698,6 +715,7 @@ T18 moves: Bogardan Hellkite, p1's hand -> stack
 T18 p1 cancels casting Bogardan Hellkite
 T18 p2 attack: nothing
 T18 moves: Tendrils of Corruption, p2's hand -> stack
+T18 targeted: p2:Xathrid Demon by Tendrils of Corruption
 T18 p2 cancels casting Tendrils of Corruption
 T18 moves: Bogardan Hellkite, p1's hand -> stack
 T18 p1 cancels casting Bogardan Hellkite
@@ -715,6 +733,7 @@ T19 untaps: p1:Mountain#2
 T19 moves: Tendrils of Corruption, p2's hand -> stack
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p2:Xathrid Demon by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Deadly Recluse, p1's library -> p1's hand
 T19 p1 draws
@@ -735,10 +754,13 @@ T19 p1 casts Prized Unicorn
 T19 moves: Tendrils of Corruption, p2's hand -> stack
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p2:Xathrid Demon by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p2:Xathrid Demon by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p2:Xathrid Demon by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Tendrils of Corruption, p2's hand -> stack
 T19 p2 cancels casting Tendrils of Corruption
@@ -760,16 +782,20 @@ T19 p1 casts Sparkmage Apprentice
 T19 resolves: Sparkmage Apprentice
 T19 moves: Sparkmage Apprentice, stack -> battlefield
 T19 p1:Sparkmage Apprentice triggers (p1)
+T19 targeted: p1:Prized Unicorn by Sparkmage Apprentice ability
 T19 moves: Bogardan Hellkite, p1's hand -> stack
 T19 p1 cancels casting Bogardan Hellkite
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p1:Sparkmage Apprentice by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 damage: p1:Sparkmage Apprentice -> p1:Prized Unicorn 1
 T19 resolves: p1:Sparkmage Apprentice's ability
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p1:Prized Unicorn by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 p1 attack: nothing
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p1:Prized Unicorn by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Bogardan Hellkite, p1's hand -> stack
 T19 p1 cancels casting Bogardan Hellkite
@@ -784,8 +810,10 @@ T19 p1 cancels casting Mist Leopard
 T19 moves: Mist Leopard, p1's hand -> stack
 T19 p1 cancels casting Mist Leopard
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p1:Prized Unicorn by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 moves: Tendrils of Corruption, p2's hand -> stack
+T19 targeted: p1:Prized Unicorn by Tendrils of Corruption
 T19 p2 cancels casting Tendrils of Corruption
 T19 damage removed: p1:Prized Unicorn (1)
 T20 turn 20 begins (p2)
@@ -797,6 +825,7 @@ T20 untaps: p2:Swamp#3
 T20 untaps: p2:Island#3
 T20 p2:Xathrid Demon triggers (p2)
 T20 moves: Tendrils of Corruption, p2's hand -> stack
+T20 targeted: p1:Prized Unicorn by Tendrils of Corruption
 T20 taps: p2:Island#1
 T20 p2 adds {U} (p2:Island#1)
 T20 p2 taps p2:Island#1 for mana

@@ -578,6 +578,7 @@ T19 p1 taps p1:Plains for mana
 T19 p1's unspent {W}{B}{B} empties
 T19 p1 attack: nothing
 T19 moves: Nature's Spiral, p1's hand -> stack
+T19 targeted: Runeclaw Bear by Nature's Spiral
 T19 p1 cancels casting Nature's Spiral
 T19 moves: Birds of Paradise, p1's hand -> stack
 T19 p1 cancels casting Birds of Paradise
@@ -672,11 +673,13 @@ T21 taps: p1:Plains
 T21 p1 adds {W} (p1:Plains)
 T21 p1 taps p1:Plains for mana
 T21 moves: Giant Growth, p2's hand -> stack
+T21 targeted: p1:Ornithopter by Giant Growth
 T21 p2 cancels casting Giant Growth
 T21 resolves: Birds of Paradise
 T21 moves: Birds of Paradise, stack -> battlefield
 T21 p1's unspent {W}{U}{B}{B} empties
 T21 moves: Doom Blade, p2's hand -> stack
+T21 targeted: p1:Birds of Paradise by Doom Blade
 T21 p2 cancels casting Doom Blade
 T21 moves: Doom Blade, p2's hand -> stack
 T21 p2 cancels casting Doom Blade
@@ -688,12 +691,14 @@ T21 p1 cancels casting Lightning Elemental
 T21 moves: Lightning Elemental, p1's hand -> stack
 T21 p1 cancels casting Lightning Elemental
 T21 moves: Nature's Spiral, p1's hand -> stack
+T21 targeted: Runeclaw Bear by Nature's Spiral
 T21 p1 cancels casting Nature's Spiral
 T21 moves: Goblin Artillery, p1's hand -> stack
 T21 p1 cancels casting Goblin Artillery
 T21 moves: Solemn Offering, p1's hand -> stack
 T21 p1 cancels casting Solemn Offering
 T21 moves: Solemn Offering, p1's hand -> stack
+T21 targeted: p1:Ornithopter by Solemn Offering
 T21 p1 cancels casting Solemn Offering
 T21 moves: Lightning Elemental, p1's hand -> stack
 T21 p1 cancels casting Lightning Elemental
@@ -704,6 +709,7 @@ T22 untaps: p2:Plains#1
 T22 untaps: p2:Plains#2
 T22 untaps: p2:Island
 T22 moves: Doom Blade, p2's hand -> stack
+T22 targeted: p1:Ornithopter by Doom Blade
 T22 taps: p2:Plains#2
 T22 p2 adds {W} (p2:Plains#2)
 T22 p2 taps p2:Plains#2 for mana
@@ -726,6 +732,7 @@ T22 taps: p2:Plains#2
 T22 p2 adds {W} (p2:Plains#2)
 T22 p2 taps p2:Plains#2 for mana
 T22 moves: Doom Blade, p2's hand -> stack
+T22 targeted: p1:Ornithopter by Doom Blade
 T22 taps: p2:Island
 T22 p2 adds {U} (p2:Island)
 T22 p2 taps p2:Island for mana
@@ -741,6 +748,7 @@ T22 moves: Ornithopter, battlefield -> p1's graveyard
 T22 resolves: Doom Blade
 T22 moves: Doom Blade, stack -> p2's graveyard
 T22 moves: Giant Growth, p2's hand -> stack
+T22 targeted: p1:Birds of Paradise by Giant Growth
 T22 p2 casts Giant Growth
 T22 effect: p1:Birds of Paradise +3/+3 until end of turn
 T22 resolves: Giant Growth
@@ -980,6 +988,7 @@ T26 taps: p2:Swamp
 T26 p2 adds {B} (p2:Swamp)
 T26 p2 taps p2:Swamp for mana
 T26 moves: Assassinate, p2's hand -> stack
+T26 targeted: p1:Birds of Paradise by Assassinate
 T26 taps: p2:Plains#1
 T26 p2 adds {W} (p2:Plains#1)
 T26 p2 taps p2:Plains#1 for mana
@@ -2294,6 +2303,7 @@ T47 taps: p1:Island#2
 T47 p1 adds {U} (p1:Island#2)
 T47 p1 taps p1:Island#2 for mana
 T47 p1 casts Coral Merfolk
+T47 targeted: p1:Lightning Elemental by Prodigal Pyromancer ability
 T47 taps: p2:Prodigal Pyromancer
 T47 p2 activates p2:Prodigal Pyromancer
 T47 damage: p2:Prodigal Pyromancer -> p1:Lightning Elemental 1
@@ -2470,6 +2480,7 @@ T49 p1 taps p1:Island#2 for mana
 T49 taps: p2:Plains#1
 T49 p2 adds {W} (p2:Plains#1)
 T49 p2 taps p2:Plains#1 for mana
+T49 targeted: p1:Acolyte of Xathrid by Prodigal Pyromancer ability
 T49 taps: p2:Prodigal Pyromancer
 T49 p2 activates p2:Prodigal Pyromancer
 T49 damage: p2:Prodigal Pyromancer -> p1:Acolyte of Xathrid 1
@@ -2482,6 +2493,7 @@ T49 resolves: Acolyte of Xathrid's ability
 T49 resolves: Goblin Artillery
 T49 moves: Goblin Artillery, stack -> battlefield
 T49 moves: Nature's Spiral, p1's hand -> stack
+T49 targeted: Lightning Elemental by Nature's Spiral
 T49 p1 casts Nature's Spiral
 T49 moves: Lightning Elemental, p1's graveyard -> p1's hand
 T49 resolves: Nature's Spiral
@@ -2565,6 +2577,7 @@ T50 p2 adds {G} (p2:Forest#1)
 T50 p2 taps p2:Forest#1 for mana
 T50 p2's unspent {W}{U}{U}{U}{B}{B}{R}{G} empties
 T50 p2 attack: nothing
+T50 targeted: p1:Zombie Goliath#2 by Prodigal Pyromancer ability
 T50 taps: p2:Prodigal Pyromancer
 T50 p2 activates p2:Prodigal Pyromancer
 T50 damage: p2:Prodigal Pyromancer -> p1:Zombie Goliath#2 1

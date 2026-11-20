@@ -1,10 +1,17 @@
 // Checks that the hand-written definitions agree with the card data. Run by the tests, so `pnpm check` fails
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
-import { type CardDef, type Effect, type EffectSubject, isFixedAmount, type TargetSpec } from "@mtg/engine";
-import { flatEffects } from "./flat-effects.ts";
+import {
+  type CardDef,
+  type Effect,
+  type EffectSubject,
+  isFixedAmount,
+  type TargetSpec,
+  type TriggeredAbilityDef,
+} from "@mtg/engine";
+import { conditionalEffects, delayedAbilities, flatEffects } from "./flat-effects.ts";
 import type { PoolCard } from "./pool-data.ts";
-import { triggerWordProblems } from "./trigger-words.ts";
+import { triggerWordProblems, triggerWordProblemsOf } from "./trigger-words.ts";
 
 /** Keyword actions (CR 701) Scryfall lists among a card's keywords, as the pool's cards use them; add each as it comes. */
 const KEYWORD_ACTIONS: readonly string[] = ["mill"];
@@ -53,9 +60,6 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     // "Spend only black mana on X" needs an {X} to restrict.
     if (def.spell?.xPaidWith !== undefined && !card.manaCost.includes("{X}"))
       problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
-    // "Add one mana of any color" takes its color from the activation, which only a mana ability has (CR 605.1a, D-068).
-    const anyColor = (effects: readonly Effect[]) =>
-      flatEffects(effects).some((e) => e.op === "addMana" && e.mana === "anyColor");
     if (def.spell !== undefined && anyColor(def.spell.effects))
       problems.push(`${def.name}: mana of any color is only for a mana ability`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
@@ -66,17 +70,62 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
     problems.push(...triggerWordProblems(def));
-    for (const [i, trigger] of (def.triggers ?? []).entries()) {
-      if (anyColor(trigger.effects))
-        problems.push(`${def.name} trigger ${i + 1}: mana of any color is only for a mana ability`);
-      problems.push(...targetProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
-      problems.push(...subjectProblems(`${def.name} trigger ${i + 1}`, trigger.targets, trigger.effects));
-    }
+    if (def.spell !== undefined && countsActivations(def.spell.effects))
+      problems.push(`${def.name}: ifActivatedThisTurn is only for an activated ability`);
+    for (const [i, trigger] of (def.triggers ?? []).entries())
+      problems.push(...triggerProblems(`${def.name} trigger ${i + 1}`, trigger));
+    // A delayed triggered ability is checked as its own triggered ability: its effects run apart from the effects that
+    // made it, with its own targets and trigger event.
+    for (const [where, delayed] of delayedOf(def))
+      problems.push(...delayedProblems(where, delayed), ...triggerProblems(where, delayed));
   }
   for (const card of pool) {
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
   }
   return problems;
+}
+
+/** "Add one mana of any color" takes its color from the activation, which only a mana ability has (CR 605.1a, D-068). */
+const anyColor = (effects: readonly Effect[]) =>
+  flatEffects(effects).some((e) => e.op === "addMana" && e.mana === "anyColor");
+
+/** Only an activated ability has activations to count (D-078). */
+const countsActivations = (effects: readonly Effect[]) =>
+  flatEffects(effects).some((e) => e.op === "ifActivatedThisTurn");
+
+/** A triggered ability's problems, printed or delayed. */
+function triggerProblems(where: string, trigger: TriggeredAbilityDef): string[] {
+  return [
+    ...(countsActivations(trigger.effects) ? [`${where}: ifActivatedThisTurn is only for an activated ability`] : []),
+    ...(anyColor(trigger.effects) ? [`${where}: mana of any color is only for a mana ability`] : []),
+    ...targetProblems(where, trigger.targets, trigger.effects),
+    ...subjectProblems(where, trigger.targets, trigger.effects),
+    ...triggerWordProblemsOf(where, trigger),
+  ];
+}
+
+/** Each delayed triggered ability the card's spell, abilities and triggers make, named by what makes it. */
+function delayedOf(def: CardDef): [string, TriggeredAbilityDef][] {
+  const makers: [string, readonly Effect[]][] = [
+    ...(def.spell === undefined ? [] : [[def.name, def.spell.effects] as [string, readonly Effect[]]]),
+    ...(def.abilities ?? []).map((a, i): [string, readonly Effect[]] => [`${def.name} ability ${i + 1}`, a.effects]),
+    ...(def.triggers ?? []).map((t, i): [string, readonly Effect[]] => [`${def.name} trigger ${i + 1}`, t.effects]),
+  ];
+  return makers.flatMap(([where, effects]) =>
+    delayedAbilities(effects).map((ability): [string, TriggeredAbilityDef] => [`${where} delayed trigger`, ability]),
+  );
+}
+
+/**
+ * What a delayed trigger can't do yet. It waits for the next beginning of anyone's step, with no targets: "your next
+ * upkeep" would read its source's controller, and the source may be gone. It has no "intervening if" or "you may":
+ * matching it doesn't check one (CR 603.4). Later, with a card that needs them (CR 603.7).
+ */
+function delayedProblems(where: string, delayed: TriggeredAbilityDef): string[] {
+  const waitsForAStep = delayed.when.kind === "beginningOfStep" && delayed.when.whose === "each";
+  return waitsForAStep && delayed.targets.length === 0 && delayed.onlyIf === undefined && delayed.optional !== true
+    ? []
+    : [`${where}: waits for the beginning of anyone's step, with no targets, intervening if or "you may"`];
 }
 
 /**
@@ -193,14 +242,11 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       problems.push(`${where}: destroyOneAtRandom is for objects, not players`);
     // The engine reads a division and mana only from an ability's own effects, never from nested ones.
     if (
-      effect.op === "ifNothingSacrificed" &&
-      effect.effects.some(
+      conditionalEffects(effect).some(
         (e) => e.op === "addMana" || e.op === "ifNothingSacrificed" || ("divided" in e && e.divided !== undefined),
       )
     )
-      problems.push(
-        `${where}: a divided effect, mana or another ifNothingSacrificed can't be inside ifNothingSacrificed`,
-      );
+      problems.push(`${where}: a divided effect, mana or ifNothingSacrificed can't be inside ${effect.op}`);
     // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
     if (
       effect.op === "dealDamage" &&

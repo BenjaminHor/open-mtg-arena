@@ -1,0 +1,42 @@
+name: Dragon Whelp bounced after its fourth activation and cast again is a new object; the old delayed trigger doesn't sacrifice it, and its count starts again
+rules: [CR 400.7, CR 603.7c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Dragon Whelp, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Island]
+    hand: [Unsummon]
+steps:
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p1:Dragon Whelp]
+    pay: auto
+  - all pass: once
+  - p1 cast: Dragon Whelp
+    pay: auto
+  - all pass: once
+  # The new Whelp's first activation: one this turn, so it makes no delayed trigger.
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - all pass: until end
+  - expect:
+      stack: [Dragon Whelp ability]
+  - all pass: once
+  - expect:
+      stack: []
+      p1.battlefield contains: [Dragon Whelp]
+      p1.graveyard: []

@@ -957,6 +957,7 @@ T24 untaps: p2:Swamp#5
 T24 moves: Tendrils of Corruption, p2's library -> p2's hand
 T24 p2 draws
 T24 moves: Tendrils of Corruption, p2's hand -> stack
+T24 targeted: p2:Hypnotic Specter by Tendrils of Corruption
 T24 taps: p2:Swamp#5
 T24 p2 adds {B} (p2:Swamp#5)
 T24 p2 taps p2:Swamp#5 for mana
@@ -976,6 +977,7 @@ T24 p2 taps p2:Island for mana
 T24 moves: Tendrils of Corruption, p2's hand -> stack
 T24 p2 cancels casting Tendrils of Corruption
 T24 moves: Tendrils of Corruption, p2's hand -> stack
+T24 targeted: p2:Hypnotic Specter by Tendrils of Corruption
 T24 taps: p2:Swamp#4
 T24 p2 adds {B} (p2:Swamp#4)
 T24 p2 taps p2:Swamp#4 for mana
@@ -1157,6 +1159,7 @@ T28 taps: p2:Island#1
 T28 p2 adds {U} (p2:Island#1)
 T28 p2 taps p2:Island#1 for mana
 T28 moves: Unsummon, p2's hand -> stack
+T28 targeted: p1:Llanowar Elves by Unsummon
 T28 taps: p2:Swamp#1
 T28 p2 adds {B} (p2:Swamp#1)
 T28 p2 taps p2:Swamp#1 for mana
@@ -1166,6 +1169,7 @@ T28 p2 taps p2:Island#2 for mana
 T28 p2 casts Unsummon
 T28 p1:Lurking Predators triggers (p1)
 T28 moves: Negate, p2's hand -> stack
+T28 targeted: Unsummon by Negate
 T28 p2 casts Negate
 T28 p1:Lurking Predators triggers (p1)
 T28 taps: p2:Swamp#3
@@ -1462,6 +1466,8 @@ T31 resolves: p1:Dragon's Claw's ability
 T31 resolves: Bogardan Hellkite
 T31 moves: Bogardan Hellkite, stack -> battlefield
 T31 p1:Bogardan Hellkite triggers (p1)
+T31 targeted: p1:Llanowar Elves by Bogardan Hellkite ability
+T31 targeted: p1:Bogardan Hellkite by Bogardan Hellkite ability
 T31 damage: p1:Bogardan Hellkite -> p1:Llanowar Elves 2
 T31 damage: p1:Bogardan Hellkite -> p2 1
 T31 damage: p1:Bogardan Hellkite -> p1:Bogardan Hellkite 1
@@ -1487,10 +1493,12 @@ T31 p2 block: nothing
 T31 combat damage: p1:Mist Leopard -> p2 3
 T31 p2 loses 3 life
 T31 moves: Lightning Bolt, p1's hand -> stack
+T31 targeted: p1:Bogardan Hellkite by Lightning Bolt
 T31 p1 cancels casting Lightning Bolt
 T31 moves: Stampeding Rhino, p1's hand -> stack
 T31 p1 cancels casting Stampeding Rhino
 T31 moves: Lightning Bolt, p1's hand -> stack
+T31 targeted: p1:Bogardan Hellkite by Lightning Bolt
 T31 p1 cancels casting Lightning Bolt
 T31 damage removed: p1:Bogardan Hellkite (1)
 T32 turn 32 begins (p2)
@@ -1519,6 +1527,7 @@ T32 p2's unspent {U}{B} empties
 T32 moves: Lightning Bolt, p1's hand -> stack
 T32 p1 cancels casting Lightning Bolt
 T32 moves: Lightning Bolt, p1's hand -> stack
+T32 targeted: p1:Bogardan Hellkite by Lightning Bolt
 T32 p1 cancels casting Lightning Bolt
 T32 moves: Lightning Bolt, p1's hand -> stack
 T32 p1 cancels casting Lightning Bolt
@@ -1539,8 +1548,10 @@ T32 taps: p2:Swamp#5
 T32 p2 adds {B} (p2:Swamp#5)
 T32 p2 taps p2:Swamp#5 for mana
 T32 moves: Lightning Bolt, p1's hand -> stack
+T32 targeted: p1:Bogardan Hellkite by Lightning Bolt
 T32 p1 cancels casting Lightning Bolt
 T32 moves: Lightning Bolt, p1's hand -> stack
+T32 targeted: p1:Bogardan Hellkite by Lightning Bolt
 T32 p1 cancels casting Lightning Bolt
 T32 moves: Lightning Bolt, p1's hand -> stack
 T32 p1 cancels casting Lightning Bolt

@@ -1,0 +1,32 @@
+name: A fourth activation in the end step makes a delayed trigger for the next turn's end step; the Whelp lives until then
+rules: [CR 603.7, CR 603.2b]
+setup:
+  turn: { active: p1, step: main2 }
+  p1:
+    battlefield: [Dragon Whelp, Mountain, Mountain, Mountain, Mountain]
+steps:
+  - all pass: until end
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: []
+  - all pass: until upkeep
+  - expect:
+      active: p2
+      p1.battlefield contains: [Dragon Whelp]
+  - all pass: until end
+  - expect:
+      stack: [Dragon Whelp ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Dragon Whelp]

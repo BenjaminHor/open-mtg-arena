@@ -18,6 +18,7 @@ The engine's entry points and the flow of a game.
 | `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |
 | `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): `nextCastingStep` (X, targets, sacrifices, then the mana; a cost with no mana is paid at once), `announceX` and `xProblem` (CR 107.3a), `payCost`, `cancelCasting` |
 | `choose-targets.ts` | Targets and their division (CR 601.2c–d): how many for a range, each target (no repeats in an instance, CR 115.3), each target's share of a divided effect |
+| `activation-count.ts` | `countActivation`, `activationsThisTurn`: each object's activations this turn, in `GameState.turnHistory` (D-078) |
 | `casting-state.ts` | `castingOf`: the cast or activation in progress |
 | `sacrifice-costs.ts` | Choosing what to sacrifice for a cost (CR 601.2h, 701.21a); the sacrifice happens with the rest of the payment, in `payCost` |
 | `tap-costs.ts` | `tapsForCost`: the permanent an ability's {T} taps, paid with the rest of the cost (CR 107.5, 601.2h) and never offered as mana for that cost |

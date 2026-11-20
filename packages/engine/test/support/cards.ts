@@ -36,6 +36,8 @@ export const SPLIT = "test-split";
 export const X_BOLT = "test-x-bolt";
 /** Not a real card: "Sacrifice a creature: this creature gets +1/+1 until end of turn", for sacrifice costs. */
 export const SAC_PUMP = "test-sac-pump";
+/** Not a real card: an instant whose delayed trigger is a spell's (CR 603.7d), which no Magic 2010 card has. */
+export const LATE_GIFT = "test-late-gift";
 /** Not a real card: an enchantment with no abilities, until the pool has one (M2-07), for "artifact or enchantment". */
 export const ENCHANTMENT = "test-enchantment";
 /** Not real cards: creatures with keywords no Magic 2010 card combines (CR 702.4, 702.2c), for unit tests. */
@@ -459,6 +461,36 @@ export const TEST_CARDS: CardDatabase = {
           effects: [{ op: "modifyPT", power: 1, toughness: 1, of: "self", duration: "endOfTurn" }],
         },
       ],
+    },
+  }),
+  [LATE_GIFT]: card(LATE_GIFT, {
+    printed: {
+      name: "Late Gift",
+      manaCost: [{ kind: "colored", color: "R" }],
+      colors: ["R"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["instant"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Late Gift",
+      oracle: "At the beginning of the next end step, you gain 1 life.",
+      spell: {
+        targets: [],
+        effects: [
+          {
+            op: "createDelayedTrigger",
+            ability: {
+              when: { kind: "beginningOfStep", step: "end", whose: "each" },
+              targets: [],
+              effects: [{ op: "gainLife", who: "you", amount: 1 }],
+            },
+          },
+        ],
+      },
     },
   }),
   [ENCHANTMENT]: card(ENCHANTMENT, {

@@ -6,11 +6,14 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { amountOf, isFixedAmount } from "../rules/amount.ts";
 import { effectsOf, legalTargets, sameTarget, type Targeting, targetCount, targetSpecsOf } from "../rules/targets.ts";
+import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { Division, StackChoices, Target } from "../state/objects.ts";
+import { detectTriggers } from "../triggers/detect.ts";
 import { castingOf } from "./casting-state.ts";
 import { waitFor } from "./decide.ts";
+import type { Progress } from "./progress.ts";
 
 /**
  * Settles every target choice that needs no player, and waits for the first that does. Returns the state with a pending
@@ -92,14 +95,22 @@ export function possibleTargets(state: GameState, cards: CardDatabase): Target[]
   return legalTargets(state, spec, targetingOf(state), cards).filter((t) => !chosen.some((c) => sameTarget(c, t)));
 }
 
-/** The player chooses a target for the instance being chosen. The casting steps then go on. */
-export function chooseTarget(state: GameState, target: Target): GameState {
+/**
+ * The player chooses a target for the instance being chosen. An object chosen becomes a target of the spell or ability
+ * now, which triggers "becomes the target" abilities; they wait until it's cast or put on the stack (CR 601.2c). The
+ * casting steps then go on.
+ */
+export function chooseTarget(state: GameState, target: Target, cards: CardDatabase): Progress {
   const casting = castingOf(state);
   const instance = casting.targetCounts.length - 1;
   const choices = choicesOf(state, casting.object);
   const targets = [...choices.targets];
   targets[instance] = [...(targets[instance] ?? []), target];
-  return withChoices(state, casting.object, { ...choices, targets });
+  const chosen = withChoices(state, casting.object, { ...choices, targets });
+  if (target.kind !== "object") return { state: chosen, events: [] };
+  // Matched here, where it's emitted.
+  const event: GameEvent = { type: "BECAME_TARGET", object: target.object, by: casting.object };
+  return { state: detectTriggers(chosen, chosen, [event], cards), events: [event] };
 }
 
 /**

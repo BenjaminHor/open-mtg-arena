@@ -313,27 +313,38 @@ T12 moves: Griffin Sentinel, stack -> battlefield
 T12 moves: Stampeding Rhino, p1's hand -> stack
 T12 p1 cancels casting Stampeding Rhino
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 p1 attack: nothing
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Panic Attack, p1's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Panic Attack
 T12 p1 cancels casting Panic Attack
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T12 moves: Might of Oaks, p2's hand -> stack
+T12 targeted: p1:Griffin Sentinel by Might of Oaks
 T12 p2 cancels casting Might of Oaks
 T13 turn 13 begins (p2)
 T13 untaps: p2:Mountain#1
@@ -342,6 +353,7 @@ T13 taps: p2:Mountain#2
 T13 p2 adds {R} (p2:Mountain#2)
 T13 p2 taps p2:Mountain#2 for mana
 T13 moves: Might of Oaks, p2's hand -> stack
+T13 targeted: p1:Griffin Sentinel by Might of Oaks
 T13 taps: p2:Mountain#1
 T13 p2 adds {R} (p2:Mountain#1)
 T13 p2 taps p2:Mountain#1 for mana
@@ -353,13 +365,16 @@ T13 p2's unspent {R}{R} empties
 T13 moves: Bountiful Harvest, p2's library -> p2's hand
 T13 p2 draws
 T13 moves: Might of Oaks, p2's hand -> stack
+T13 targeted: p1:Griffin Sentinel by Might of Oaks
 T13 p2 cancels casting Might of Oaks
 T13 p2 attack: nothing
 T13 moves: Might of Oaks, p2's hand -> stack
+T13 targeted: p1:Griffin Sentinel by Might of Oaks
 T13 p2 cancels casting Might of Oaks
 T13 moves: Bountiful Harvest, p2's hand -> stack
 T13 p2 cancels casting Bountiful Harvest
 T13 moves: Might of Oaks, p2's hand -> stack
+T13 targeted: p1:Griffin Sentinel by Might of Oaks
 T13 p2 cancels casting Might of Oaks
 T13 moves: Solemn Offering, p2's hand -> p2's graveyard
 T13 p2 discards Solemn Offering
@@ -388,20 +403,26 @@ T14 p1's unspent {W}{U}{U}{G}{G} empties
 T14 moves: Diabolic Tutor, p1's library -> p1's hand
 T14 p1 draws
 T14 moves: Might of Oaks, p2's hand -> stack
+T14 targeted: p1:Griffin Sentinel by Might of Oaks
 T14 p2 cancels casting Might of Oaks
 T14 p1 attack: p1:Griffin Sentinel -> p2
 T14 p2 block: nothing
 T14 moves: Might of Oaks, p2's hand -> stack
+T14 targeted: p1:Griffin Sentinel by Might of Oaks
 T14 p2 cancels casting Might of Oaks
 T14 moves: Might of Oaks, p2's hand -> stack
+T14 targeted: p1:Griffin Sentinel by Might of Oaks
 T14 p2 cancels casting Might of Oaks
 T14 moves: Might of Oaks, p2's hand -> stack
+T14 targeted: p1:Griffin Sentinel by Might of Oaks
 T14 p2 cancels casting Might of Oaks
 T14 combat damage: p1:Griffin Sentinel -> p2 1
 T14 p2 loses 1 life
 T14 moves: Might of Oaks, p2's hand -> stack
+T14 targeted: p1:Griffin Sentinel by Might of Oaks
 T14 p2 cancels casting Might of Oaks
 T14 moves: Might of Oaks, p2's hand -> stack
+T14 targeted: p1:Griffin Sentinel by Might of Oaks
 T14 p2 cancels casting Might of Oaks
 T15 turn 15 begins (p2)
 T15 untaps: p2:Mountain#1
@@ -414,14 +435,17 @@ T15 p2 taps p2:Mountain#2 for mana
 T15 p2's unspent {R} empties
 T15 p2 attack: nothing
 T15 moves: Might of Oaks, p2's hand -> stack
+T15 targeted: p1:Griffin Sentinel by Might of Oaks
 T15 p2 cancels casting Might of Oaks
 T15 taps: p2:Mountain#1
 T15 p2 adds {R} (p2:Mountain#1)
 T15 p2 taps p2:Mountain#1 for mana
 T15 p2's unspent {R} empties
 T15 moves: Might of Oaks, p2's hand -> stack
+T15 targeted: p1:Griffin Sentinel by Might of Oaks
 T15 p2 cancels casting Might of Oaks
 T15 moves: Might of Oaks, p2's hand -> stack
+T15 targeted: p1:Griffin Sentinel by Might of Oaks
 T15 p2 cancels casting Might of Oaks
 T15 moves: Diabolic Tutor, p2's hand -> p2's graveyard
 T15 p2 discards Diabolic Tutor
@@ -438,24 +462,32 @@ T16 p1 adds {G} (p1:Forest#1)
 T16 p1 taps p1:Forest#1 for mana
 T16 p1's unspent {G} empties
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 p1 attack: nothing
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 taps: p1:Island#1
 T16 p1 adds {U} (p1:Island#1)
 T16 p1 taps p1:Island#1 for mana
 T16 moves: Excommunicate, p1's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Excommunicate
 T16 taps: p1:Forest#2
 T16 p1 adds {G} (p1:Forest#2)
 T16 p1 taps p1:Forest#2 for mana
@@ -464,6 +496,7 @@ T16 taps: p1:Forest#2
 T16 p1 adds {G} (p1:Forest#2)
 T16 p1 taps p1:Forest#2 for mana
 T16 moves: Excommunicate, p1's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Excommunicate
 T16 taps: p1:Island#2
 T16 p1 adds {U} (p1:Island#2)
 T16 p1 taps p1:Island#2 for mana
@@ -472,6 +505,7 @@ T16 p1 adds {W} (p1:Plains)
 T16 p1 taps p1:Plains for mana
 T16 p1 casts Excommunicate
 T16 moves: Might of Oaks, p2's hand -> stack
+T16 targeted: p1:Griffin Sentinel by Might of Oaks
 T16 p2 cancels casting Might of Oaks
 T16 moves: Griffin Sentinel, battlefield -> p1's library
 T16 resolves: Excommunicate
