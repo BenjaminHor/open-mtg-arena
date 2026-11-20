@@ -317,11 +317,12 @@ background.
 cards have runs (each keyword, static, effect op, trigger condition, cost and target kind) and every kind of decision
 is answered. Each card is covered by its own scenarios instead (a test checks each pool card is in one). Each game is
 stored as its replay **and** its readable event log, one event per line (the CLI's brief log). The replay is compact
-(`"encoding": "lines"`, D-082): the setup names cards, and each action is one line, `pass 4`, `land o85`, `cast o12`,
-`activate o5 printed 0 for G`, `chooseTarget p2`, `declareBlocker o7 o5`, without decision ids or the acting player,
-which follow from the pending decision as the lines are read back (`cli/src/action-lines.ts`). So golden games don't
-check which player gets priority (scenarios do); lines left after the game ended are counted, and `pnpm golden:update`
-says the game now ends sooner. Until the AI exists (M3) the players are the `random` and `by-kind` agents:
+(`"encoding": "lines"`, D-082, D-083): the setup names cards, and each action is one line starting with the player who
+acted, `p1 land o85`, `p2 cast o12`, `p1 activate o5 printed 0 for G`, `p2 chooseTarget p1`, `p2 declareBlocker o7 o5`,
+with a run of passes as one line naming who passed, `pass p1 p2 p1 p2`. Only decision ids are left out: they follow
+from the pending decision as the lines are read back (`cli/src/action-lines.ts`), and the engine refuses a line whose
+player isn't the one being asked, so a change in who gets priority shows. Lines left after the game ended are
+counted, and `pnpm golden:update` says the game now ends sooner. Until the AI exists (M3) the players are the `random` and `by-kind` agents:
 
 ```
 T36 p1 attack: p1:Hill Giant -> p2

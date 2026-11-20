@@ -1096,7 +1096,7 @@ every schema change and every change D-024 lists bumps it.
   each effect op, trigger condition, keyword, static ability, cost kind and target kind of a card whose script runs
   (D-069's "used"), each decision kind and event type, plus the choices the export tests read. Each card is still
   covered by its own scenarios (the add-cards skill; a test will check every pool card appears in one).
-- Format, measured on the current 66 games: actions drop the decision id and the acting player (both follow from the
+- Format (changed by D-083: lines name the acting player), measured on the current 66 games: actions drop the decision id and the acting player (both follow from the
   pending decision when replaying), runs of passes are one line, and each action is one readable line ("pass 4",
   "cast o12", "chooseTarget p2"): 3.3 MB of actions become 0.44 MB. Setups name cards instead of oracle ids
   (0.23 MB to 0.09 MB). Logs stay as they are (the readable diff when a game changes).
@@ -1113,6 +1113,12 @@ every schema change and every change D-024 lists bumps it.
   (`Record<keyof SpellDef, ...>`), so Fireball's cost increase (with a second target) and Consume Spirit's "spend only
   black mana on X" are units; every decision kind, not counting a cancel or take-back; every event type, but
   `ABILITY_COUNTERED` (no pool card counters an ability).
-- Lines read back answer whatever decision is pending, so golden games no longer check which player gets priority
-  (CR 117.3b–d): the old JSON stored the acting player. Scenarios cover priority order instead. Lines left after the
-  game ended are counted, and `pnpm golden:update` says the game ends sooner.
+- Lines left after the game ended are counted, and `pnpm golden:update` says the game ends sooner. (Lines first left
+  out the acting player too, so golden games stopped checking priority order; D-083 put it back.)
+
+**D-083: Golden action lines name the acting player** · 2026-11-20 · accepted (owner)
+- The owner: the compact format should have a compact way to show which player acted. Each line starts with the
+  player (`p1 cast o12`, `p2 chooseTarget p1`, `p1 concede`), and a run of passes lists who passed, in order
+  (`pass p1 p2 p1 p2`). Reading back checks each line's player against the pending decision's, so golden games again
+  catch a change in who gets priority or who decides (CR 117.3b–d), which D-082 had given up. Only the decision id
+  is still left out.

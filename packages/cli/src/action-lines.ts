@@ -1,8 +1,10 @@
-// Golden games' compact action format (D-082): one readable line per action, such as `pass 4`, `land o85`, `cast o12`,
-// `activate o5 printed 0 for G`, `chooseTarget p2` or `declareBlocker o7 o5`. A line leaves out the decision id and the
-// acting player: both follow from the pending decision, so decoding replays the game to fill them in. A run of
-// passes, by either player, is one line. A new kind of action or answer can't be left out: encoding uses exhaustive
-// switches, and decoding tables keyed by every kind, both checked by the compiler.
+// Golden games' compact action format (D-082, D-083): one readable line per action, starting with the player who acted,
+// such as `p1 land o85`, `p2 cast o12`, `p1 activate o5 printed 0 for G`, `p2 chooseTarget p1` or `p2 declareBlocker
+// o7 o5`; a run of passes is one line naming who passed, in order: `pass p1 p2 p1 p2`. Only the decision id is left
+// out: it follows from the pending decision, so decoding replays the game to fill it in, and the engine refuses a line
+// whose player isn't the one being asked, so a change in who gets priority shows. A new kind of action or answer
+// can't be left out: encoding uses exhaustive switches, and decoding tables keyed by every kind, both checked by the
+// compiler.
 
 import {
   type AbilityRef,
@@ -21,21 +23,21 @@ import {
   type Target,
 } from "@mtg/engine";
 
-/** The actions as lines: each one in words, runs of passes counted. */
+/** The actions as lines: each one in words after its player, a run of passes as one line naming who passed. */
 export function actionLines(actions: readonly Action[]): string[] {
   const lines: string[] = [];
-  let passes = 0;
+  let passes: PlayerId[] = [];
   const flush = () => {
-    if (passes > 0) lines.push(passes === 1 ? "pass" : `pass ${passes}`);
-    passes = 0;
+    if (passes.length > 0) lines.push(`pass ${passes.join(" ")}`);
+    passes = [];
   };
   for (const action of actions) {
     if (action.type === "PASS_PRIORITY") {
-      passes++;
+      passes.push(action.player);
       continue;
     }
     flush();
-    lines.push(actionLine(action));
+    lines.push(`${action.player} ${actionLine(action)}`);
   }
   flush();
   return lines;
@@ -45,7 +47,8 @@ export function actionLines(actions: readonly Action[]): string[] {
 export type ReadBack = { actions: Action[]; unread: number };
 
 /**
- * The actions these lines stand for, replayed from the setup to fill in each decision id and acting player. Once an
+ * The actions these lines stand for, replayed from the setup to fill in each decision id; the engine checks each line's
+ * player is the one being asked (D-083). Once an
  * action is rejected (the engine changed), the game can't go on, so the actions end with that one: replaying them
  * stops there and says why, as a golden game's log does (D-047). Lines left after the game ended are counted, not
  * dropped in silence, so `pnpm golden:update` can say the game ends earlier now.
@@ -56,13 +59,17 @@ export function actionsFromLines(setup: GameSetup, lines: readonly string[], car
   let state = created.state;
   const actions: Action[] = [];
   for (const [i, line] of lines.entries()) {
-    const [word = "", ...rest] = line.split(" ");
-    const count = word === "pass" && rest.length > 0 ? count_(rest[0], i) : 1;
-    for (let n = 0; n < count; n++) {
+    // Each action of the line, as its player and its words: one per player of a run of passes.
+    const words = line.split(" ");
+    const steps: [string, string[]][] =
+      words[0] === "pass" ? words.slice(1).map((player) => [player, ["pass"]]) : [[words[0] ?? "", words.slice(1)]];
+    if (steps.length === 0) throw new Error(`line ${i + 1}: a pass names no player`);
+    // One way to write a pass, so files written the same way compare the same.
+    if (words[0] !== "pass" && words[1] === "pass") throw new Error(`line ${i + 1}: write passes as "pass p1 p2 ..."`);
+    for (const [player, [word = "", ...rest]] of steps) {
       // The game has ended: what's left no longer fits it.
       if (state.pending === null && word !== "concede") return { actions, unread: lines.length - i };
-      const asked = state.pending === null ? null : { decisionId: state.pending.id, player: state.pending.player };
-      const action = fromWords(asked, word, rest, i);
+      const action = fromWords(playerFrom(player, i), state.pending?.id ?? null, word, rest, i);
       actions.push(action);
       const result = applyAction(state, action, cards);
       if (!result.ok) return { actions, unread: lines.length - i - 1 };
@@ -72,10 +79,9 @@ export function actionsFromLines(setup: GameSetup, lines: readonly string[], car
   return { actions, unread: 0 };
 }
 
-function count_(word: string | undefined, line: number): number {
-  const n = Number(word);
-  if (!Number.isSafeInteger(n) || n < 1) throw new Error(`line ${line + 1}: "${word}" isn't a number of passes`);
-  return n;
+function playerFrom(word: string, line: number): PlayerId {
+  if (!/^p\d+$/.test(word)) throw new Error(`line ${line + 1}: "${word}" isn't a player`);
+  return word as PlayerId;
 }
 
 function actionLine(action: Exclude<Action, { type: "PASS_PRIORITY" }>): string {
@@ -87,7 +93,7 @@ function actionLine(action: Exclude<Action, { type: "PASS_PRIORITY" }>): string 
     case "ACTIVATE_ABILITY":
       return `activate ${action.object} ${abilityWords(action.ability)}${action.color === undefined ? "" : ` for ${action.color}`}`;
     case "CONCEDE":
-      return `concede ${action.player}`;
+      return "concede";
     case "ANSWER":
       return answerLine(action.answer);
   }
@@ -149,19 +155,26 @@ function manaWords(pool: ManaPool): string {
   return parts.length === 0 ? "none" : parts.join(" ");
 }
 
-/** Who an action answers: the pending decision's id and player. */
-export type Asked = { decisionId: DecisionId; player: PlayerId };
-
-/** The action one line stands for, answering `asked` (null when nothing is pending: only a concession fits). */
-export function actionFromLine(line: string, asked: Asked | null): Action {
-  const [word = "", ...rest] = line.split(" ");
-  return fromWords(asked, word, rest, 0);
+/**
+ * The action one line (not a run of passes) stands for, answering decision `decisionId` (null when nothing is pending:
+ * only a concession fits).
+ */
+export function actionFromLine(line: string, decisionId: DecisionId | null): Action {
+  const [player = "", word = "", ...rest] = line.split(" ");
+  return fromWords(playerFrom(player, 0), decisionId, word, rest, 0);
 }
 
-/** The action a line's words stand for, answering the pending decision. */
-function fromWords(asked: Asked | null, word: string, args: readonly string[], line: number): Action {
-  if (word === "concede") return { type: "CONCEDE", player: args[0] as PlayerId };
-  if (asked === null) throw new Error(`line ${line + 1}: nothing is pending`);
+/** The action a line's words stand for, by `player`, answering decision `decisionId`. */
+function fromWords(
+  player: PlayerId,
+  decisionId: DecisionId | null,
+  word: string,
+  args: readonly string[],
+  line: number,
+): Action {
+  if (word === "concede") return { type: "CONCEDE", player };
+  if (decisionId === null) throw new Error(`line ${line + 1}: nothing is pending`);
+  const asked = { decisionId, player };
   const object = args[0] as ObjectId;
   switch (word) {
     case "pass":

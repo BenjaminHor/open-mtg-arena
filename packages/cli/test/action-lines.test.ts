@@ -1,4 +1,4 @@
-// The compact action format (D-082): actions survive being written as lines and read back, every kind of them.
+// The compact action format (D-082, D-083): actions survive being written as lines and read back, every kind of them.
 
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import type { Action, Answer } from "@mtg/engine";
@@ -51,11 +51,11 @@ describe("action lines", () => {
       ...Object.values(answers).map((answer): Action => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),
       { type: "CONCEDE", player: "p2" },
     ]);
-    expect(lines).toContain("payMana B1 R2 C1");
-    expect(lines).toContain("chooseTarget o14");
-    expect(lines).toContain("concede p2");
+    expect(lines).toContain("p1 payMana B1 R2 C1");
+    expect(lines).toContain("p1 chooseTarget o14");
+    expect(lines).toContain("p2 concede");
     // Each line read back as answering p1's decision d1: the words alone, not the rules, so no game is needed.
-    const back = lines.map((line) => actionFromLine(line, { decisionId: "d1", player: "p1" }));
+    const back = lines.map((line) => actionFromLine(line, "d1"));
     expect(back).toStrictEqual([
       ...Object.values(answers).map((answer) => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),
       { type: "CONCEDE", player: "p2" },
@@ -65,15 +65,43 @@ describe("action lines", () => {
   it("counts the lines left once the game has ended, rather than dropping them in silence", () => {
     const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
     const actions = playRecipe({ setup, agent: "random", agentSeed: 3, maxTurns: 200 }, cards);
-    const back = actionsFromLines(setup, [...actionLines(actions), "cast o99", "pass 7"], cards);
+    const back = actionsFromLines(setup, [...actionLines(actions), "p1 cast o99", "pass p1 p2"], cards);
     expect(back.actions).toStrictEqual(actions);
     expect(back.unread).toBe(2);
   });
 
   it("refuses a line it can't read", () => {
     const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
-    expect(() => actionsFromLines(setup, ["pass x"], cards)).toThrow('"x" isn\'t a number of passes');
-    expect(() => actionsFromLines(setup, ["teleport o1"], cards)).toThrow('no action "teleport"');
+    expect(() => actionsFromLines(setup, ["pass x"], cards)).toThrow('"x" isn\'t a player');
+    expect(() => actionsFromLines(setup, ["p1 teleport o1"], cards)).toThrow('no action "teleport"');
+    expect(() => actionsFromLines(setup, ["pass"], cards)).toThrow("a pass names no player");
+    expect(() => actionsFromLines(setup, ["p1 pass"], cards)).toThrow('write passes as "pass p1 p2 ..."');
+  });
+
+  it("stops at a line whose player isn't the one being asked: the engine refuses it, so who acts is checked (D-083)", () => {
+    const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
+    const actions = playRecipe({ setup, agent: "by-kind", agentSeed: 3, maxTurns: 3 }, cards);
+    const lines = actionLines(actions);
+    // The first decision is the starting player's choice, asked of one player: give it to the other.
+    const [first = "", ...rest] = lines;
+    const other = first.startsWith("p1 ") ? `p2${first.slice(2)}` : `p1${first.slice(2)}`;
+    const back = actionsFromLines(setup, [other, ...rest], cards);
+    expect(back.actions).toHaveLength(1);
+    expect(back.actions.at(-1)?.player).toBe(other.slice(0, 2));
+    expect(back.unread).toBe(rest.length);
+  });
+
+  it("stops at a pass by the player who doesn't have priority (CR 117.3d)", () => {
+    const setup = deckGameSetup([DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[], 3, null);
+    const actions = playRecipe({ setup, agent: "by-kind", agentSeed: 3, maxTurns: 3 }, cards);
+    const lines = actionLines(actions);
+    const at = lines.findIndex((l) => /^pass p\d+ p\d+/.test(l));
+    const run = (lines[at] ?? "").split(" ");
+    // The run's second pass given to the player who passed first: they don't have priority then.
+    const swapped = ["pass", run[1], run[1], ...run.slice(3)].join(" ");
+    const back = actionsFromLines(setup, [...lines.slice(0, at), swapped, ...lines.slice(at + 1)], cards);
+    expect(back.actions.at(-1)).toMatchObject({ type: "PASS_PRIORITY", player: run[1] });
+    expect(back.unread).toBe(lines.length - at - 1);
   });
 });
 
