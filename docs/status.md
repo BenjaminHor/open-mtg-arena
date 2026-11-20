@@ -16,8 +16,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   task scripts a card, check its row.
 - M2-03 The event pipeline: done, merged (PR #23, D-056). Every game event goes through `happen`; replacement
   effects (M2-08) and triggers (M2-07) plug in there. Reworked once after the rules-judge and code-reviewer reviews.
-- M2-04 Targeting and costs, split in two (plan, 2026-11-20; restrictions taken from the Oracle text of all 47 pool
-  cards marked T or C).
+- M2-04 Targeting and costs: done (both halves merged), split in two (restrictions taken from the Oracle text of all
+  47 pool cards marked T or C).
   - M2-04a Targeting: done, merged (PR #24, D-057). Righteousness, Ignite Disorder, Lava Axe, Elite Vanguard, Coral
     Merfolk, Plains, Island; interim decks white-red and blue-green.
   - M2-04b Costs: done, merged (PR #25, D-058). Fireball, Vampire Aristocrat, Swamp; interim deck black-red.
@@ -26,6 +26,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
     choose targets with the same decisions as they're put on the stack (CR 603.3d); protection and shroud (M2-06)
     and hexproof plug into `legalTargets` as one more check; planeswalkers extend `anyTarget` and
     `playerOrPlaneswalker`.
+- Next: M2-05 Effects and keyword actions (CR 701). Plan first (from the Oracle text of the 50 cards it makes
+  playable), split it if it's too big for one task, and have the rules-judge read the plan before code.
 
 ## Handoff notes
 - After merging a PR, restart the branch with `git checkout -B <branch> origin/main` and then push with
