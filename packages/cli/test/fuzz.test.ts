@@ -16,11 +16,11 @@ import {
 } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { ALL_CHECKS, type Check, lifeThroughEvents, scrambleHidden, viewsLeakNothing } from "../src/fuzz/checks.ts";
-import { pickAction } from "../src/fuzz/pick-action.ts";
 import { runFuzz } from "../src/fuzz/run-fuzz.ts";
 import { fuzzGame } from "../src/fuzz/run-game.ts";
 import { fuzz } from "../src/fuzz.ts";
 import { readGameFile, replay } from "../src/game-file.ts";
+import { pickAction } from "../src/pick-action.ts";
 import { cli } from "./helpers.ts";
 
 const cards = cardDatabase();

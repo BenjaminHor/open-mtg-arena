@@ -1,0 +1,152 @@
+T0 p1 goes first (chosen by p2)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Giant Spider, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Sign in Blood, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Angel's Mercy, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Warpath Ghoul, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Angel's Mercy, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Goblin Artillery, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mind Rot, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Earthquake, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 mulligans
+T0 moves: Giant Spider, p1's hand -> p1's library
+T0 moves: Sign in Blood, p1's hand -> p1's library
+T0 moves: Angel's Mercy, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Warpath Ghoul, p1's hand -> p1's library
+T0 moves: Angel's Mercy, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Furnace Whelp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Bountiful Harvest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Birds of Paradise, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Shivan Dragon, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Planar Cleansing, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Centaur Courser, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Goblin Artillery, p2's hand -> p2's library
+T0 moves: Mind Rot, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Earthquake, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 moves: Plains, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Earthquake, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Excommunicate, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Shatter, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Centaur Courser, p1's hand -> p1's library
+T0 moves: Excommunicate, p2's hand -> p2's library
+T0 p1 keeps
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 moves: Shivan Dragon, p1's hand -> stack
+T1 p1 cancels casting Shivan Dragon
+T1 p1 attack: nothing
+T1 moves: Planar Cleansing, p1's hand -> stack
+T1 p1 cancels casting Planar Cleansing
+T1 moves: Mountain, p1's hand -> battlefield
+T1 p1 plays p1:Mountain
+T1 taps: p1:Mountain
+T1 p1 adds {R} (p1:Mountain)
+T1 moves: Planar Cleansing, p1's hand -> stack
+T1 p1 cancels casting Planar Cleansing
+T1 moves: Bountiful Harvest, p1's hand -> stack
+T1 p1 cancels casting Bountiful Harvest
+T1 moves: Furnace Whelp, p1's hand -> stack
+T1 p1 cancels casting Furnace Whelp
+T1 moves: Furnace Whelp, p1's hand -> stack
+T1 p1 cancels casting Furnace Whelp
+T1 p1's unspent {R} empties
+T2 turn 2 begins (p2)
+T2 moves: Mountain, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Earthquake, p2's hand -> stack
+T2 p2 cancels casting Earthquake
+T2 moves: Earthquake, p2's hand -> stack
+T2 p2 cancels casting Earthquake
+T2 moves: Earthquake, p2's hand -> stack
+T2 p2 cancels casting Earthquake
+T2 moves: Mountain, p2's hand -> battlefield
+T2 p2 plays p2:Mountain
+T2 taps: p2:Mountain
+T2 p2 adds {R} (p2:Mountain)
+T2 p2's unspent {R} empties
+T2 p2 attack: nothing
+T3 turn 3 begins (p1)
+T3 untaps: p1:Mountain
+T3 moves: Plains, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Plains, p1's hand -> battlefield
+T3 p1 plays p1:Plains
+T3 moves: Bountiful Harvest, p1's hand -> stack
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 taps: p1:Plains
+T3 p1 adds {W} (p1:Plains)
+T3 p1 cancels casting Bountiful Harvest
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 taps: p1:Plains
+T3 p1 adds {W} (p1:Plains)
+T3 p1's unspent {W}{R} empties
+T3 p1 attack: nothing
+T4 turn 4 begins (p2)
+T4 untaps: p2:Mountain
+T4 moves: Goblin Artillery, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Earthquake, p2's hand -> stack
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 p2 casts Earthquake
+T4 resolves: Earthquake
+T4 moves: Earthquake, stack -> p2's graveyard
+T4 moves: Mountain, p2's hand -> battlefield
+T4 p2 plays p2:Mountain#2
+T4 p2 attack: nothing
+T4 taps: p2:Mountain#2
+T4 p2 adds {R} (p2:Mountain#2)
+T4 p2's unspent {R} empties
+T5 turn 5 begins (p1)
+T5 untaps: p1:Mountain
+T5 untaps: p1:Plains

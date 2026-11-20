@@ -245,8 +245,9 @@ p1  life 20  hand 4  library 32  graveyard 0
 pending: priority (p1) — 6 legal actions; run `pnpm cli actions`
 ```
 
-The agents (`--agent random`, the default, or `first-legal`) choose only among `legalActions()`, from their own seed, so
-the same seed plays the same game. `first-legal` passes whenever it can, so its games end by a library running out.
+The agents (`--agent random`, the default, `first-legal` or `by-kind`) choose only among `legalActions()`, from their own
+seed, so the same seed plays the same game. `first-legal` passes whenever it can, so its games end by a library running
+out. `by-kind` picks a kind of action, then one of that kind (the fuzzer's picker, D-061), so it casts more.
 `ai` and `auto` stop at `--max-actions` (default 10,000) or `--max-turns` (default 200) and say so. `export` names each
 permanent exactly (`p1:Mountain#2`) and each card in hand when it matters (`Forest#2`), writes each payment and
 division in full, and ends with an `expect` of where the game ended up; it checks the scenario passes before printing it; it can't write a game that stops part way through declaring attackers or blockers or dividing damage.
@@ -258,12 +259,13 @@ the CR. Then make that path a scenario test with `export`, so it stays checked.
 
 ## 3. Invariant fuzzing
 
-`pnpm fuzz --games N --seed S` plays one game per seed from `S` (D-046): even seeds the prebuilt deck pairs in turn, odd
+`pnpm fuzz --games N --seed S` plays one game per seed from `S` (D-046): even seeds the prebuilt deck pairs in turn
+(Magic 2010's pair in both seats, then M1's, D-069), odd
 seeds two random decks from the pool, with basic lands of their cards' colors. Every decision is a random legal
 action, picked by kind first (pass, cast, activate an ability, play a land, an answer of each kind; cancelling a tenth
 as often), then one of that kind (D-061); one in ten is the first legal one, which passes or declines where it can
 (while paying, it's a payment, or cancel when nothing can be paid). (The `random` agent of `ai` and `auto` still
-picks uniformly, so golden games and the bench don't change.) About one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
+picks uniformly, so M1's golden games and the bench don't change; the `by-kind` agent picks the fuzzer's way.) About one game in ten ends in a concession. Without `--seed`, each run starts from a new seed and prints
 it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
 
 - the state round-trips through JSON unchanged
@@ -298,9 +300,10 @@ background.
 
 ### Golden games
 
-`packages/engine/test/golden/` holds full agent-vs-agent games (one or more per prebuilt deck pairing, and between them
-every card in the pool played, cast or activated; D-047), each stored as its replay **and** its readable event log,
-one event per line (the CLI's brief log). Until the AI exists (M3) the players are the random agents:
+`packages/engine/test/golden/` holds agent-vs-agent games (D-047), M1's four whole games between its prebuilt decks
+(the benchmark's) and games chosen by `pnpm golden:cover` (D-069), so that between them every card in the pool is used
+(played as a land, or a spell or ability of it resolved). Each is stored as its replay **and** its readable event log,
+one event per line (the CLI's brief log). Until the AI exists (M3) the players are the `random` and `by-kind` agents:
 
 ```
 T36 p1 attack: p1:Hill Giant -> p2
@@ -320,9 +323,15 @@ in the same commit and explain the diff in the commit message. It keeps a game's
 and otherwise plays the game again from its recipe (setup, agent and seeds). For each game it says what changed and
 why: "log changed", "played again from its recipe (action N is rejected: ...)", "actions kept; the recipe now plays
 differently", or "file rewritten (version or layout)".
-`pnpm golden:add --decks red-aggro,green-stompy --seed N` adds a game. Never regenerate golden files just to make a failure go away.
+`pnpm golden:add --decks red-aggro,green-stompy --seed N [--agent by-kind]` adds a game. Never regenerate golden files
+just to make a failure go away.
 
-Regenerate and add new golden games when the pool grows, so every card appears in at least one.
+When the pool grows, `pnpm golden:cover [--from 1] [--to 800]` adds games until every card is used (a test checks). It
+plays the fuzzer's game for each seed (its prebuilt pairs and random pool decks, `by-kind` agents, no concessions),
+counts what the folder's games already use, and keeps, greedily, the game adding the most unused cards per action, cut
+off at the turn its last new card is used. It also covers three choices the export tests read: a spell on the stack
+targeted, a card in a graveyard targeted, cards chosen as a spell resolves. It only adds games, never changes one.
+Keep the folder under 4 MB.
 
 ## 5. Rules coverage report
 

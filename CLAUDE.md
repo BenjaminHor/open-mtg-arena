@@ -147,7 +147,8 @@ The M1 scaffolding task creates these scripts. Keep these names stable.
 - `pnpm test:scenarios` — scenario tests only
 - `pnpm fuzz --games 500` — random legal games checking invariants
 - `pnpm replays:update` — rewrite the saved replays' final-state hashes (only with an explained diff)
-- `pnpm golden:update` / `pnpm golden:add` — regenerate or add golden games (only with an explained diff)
+- `pnpm golden:update` / `pnpm golden:add` — regenerate or add golden games (only with an explained diff);
+  `pnpm golden:cover` — add golden games until every card in the pool is used
 - `pnpm coverage:rules` — the rules coverage report; it refuses to write one with an untested rule
 - `pnpm bench` — engine benchmarks against `bench/baseline.json`
 - `pnpm cli <command>` — the headless game CLI (see `docs/testing.md`)

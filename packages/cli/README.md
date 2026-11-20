@@ -11,21 +11,23 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
 - `src/game-file.ts`: the game file (setup, actions, cached state) and `replay` (D-043).
 - `src/commands/`: one file per command: `new`, `show`, `actions`, `do`, `ai` (with `auto`), `log`, `inspect`, `export`,
   `replay`.
-- `src/agents.ts`, `src/agent-play.ts`: the `first-legal` and `random` agents and the loop that lets them play.
+- `src/agents.ts`, `src/agent-play.ts`: the `first-legal`, `random` and `by-kind` agents and the loop that lets them
+  play. `src/pick-action.ts`: the `by-kind` pick, a kind of action first (the fuzzer's, D-061). `src/seeded-random.ts`:
+  the seeded random numbers. `src/random-decks.ts`: random 40-card decks from the pool.
 - `src/event-log.ts`: events in words, by turn (`log`, `auto`). `src/deck-setup.ts`: a game between prebuilt decks.
 - `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
   actions, targets and mana in words.
 - `src/fuzz.ts`: the `pnpm fuzz` command (docs/testing.md, section 3; D-046). `src/fuzz/`: `checks.ts` (what's
-  checked after every action, including `scrambleHidden` for views), `run-game.ts` (`fuzzGame`: one seed, one game),
-  `pick-action.ts` (how the fuzzer picks an action, by kind first, D-061),
-  `run-fuzz.ts` (many games, failures written to `fuzz-failures/`).
+  checked after every action, including `scrambleHidden` for views), `run-game.ts` (`fuzzDecks`, `fuzzGame`: one seed,
+  one game), `run-fuzz.ts` (many games, failures written to `fuzz-failures/`).
 - `src/replays.ts`: the saved replays in `packages/engine/test/replays/` and `pnpm replays:update`.
 - `src/rules-coverage.ts`: `pnpm coverage:rules`, the rules coverage report (D-048). `src/coverage/`: reading
   citations (`citations.ts`), what's cited and tested (`collect.ts`), the report and its gaps (`report.ts`).
 - `src/bench.ts`: `pnpm bench [--update]` against `bench/baseline.json` (D-049). `src/bench/`: the workloads
   (`workloads.ts`) and the interleaved timing with its reference loop (`timing.ts`).
 - `src/golden.ts`: the golden games in `packages/engine/test/golden/`, `pnpm golden:update` and `pnpm golden:add`
-  (D-047).
+  (D-047). `src/golden-cover.ts`: what a game uses, and `pnpm golden:cover`, which adds games until the golden games
+  use the whole pool (D-069).
 
 ```sh
 pnpm cli --help

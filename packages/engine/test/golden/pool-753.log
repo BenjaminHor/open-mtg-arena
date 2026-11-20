@@ -1,0 +1,525 @@
+T0 p2 goes first (chosen by p1)
+T0 p2 shuffles their library
+T0 p1 shuffles their library
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Prodigal Pyromancer, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Yawning Fissure, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Warpath Ghoul, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Prodigal Pyromancer, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Duress, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 p2 keeps
+T0 p1 mulligans
+T0 moves: Warpath Ghoul, p1's hand -> p1's library
+T0 moves: Prodigal Pyromancer, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Mind Spring, p1's hand -> p1's library
+T0 moves: Duress, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Divination, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Burning Inquiry, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Vampire Aristocrat, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Horned Turtle, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's hand -> p1's library
+T0 p1 mulligans
+T0 moves: Divination, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Burning Inquiry, p1's hand -> p1's library
+T0 moves: Mind Spring, p1's hand -> p1's library
+T0 moves: Vampire Aristocrat, p1's hand -> p1's library
+T0 moves: Horned Turtle, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Warpath Ghoul, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's hand -> p1's library
+T0 moves: Mountain, p1's hand -> p1's library
+T0 p1 mulligans
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Warpath Ghoul, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Ponder, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Rot, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Duress, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Royal Assassin, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Duress, p1's hand -> p1's library
+T0 moves: Ponder, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p2)
+T1 moves: Mountain, p2's hand -> battlefield
+T1 p2 plays p2:Mountain
+T1 moves: Yawning Fissure, p2's hand -> stack
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 p2 cancels casting Yawning Fissure
+T1 taps: p2:Mountain
+T1 p2 adds {R} (p2:Mountain)
+T1 moves: Prodigal Pyromancer, p2's hand -> stack
+T1 p2 cancels casting Prodigal Pyromancer
+T1 p2's unspent {R} empties
+T1 p2 attack: nothing
+T1 moves: Prodigal Pyromancer, p2's hand -> stack
+T1 p2 cancels casting Prodigal Pyromancer
+T1 moves: Prodigal Pyromancer, p2's hand -> stack
+T1 p2 cancels casting Prodigal Pyromancer
+T2 turn 2 begins (p1)
+T2 moves: Mind Rot, p1's library -> p1's hand
+T2 p1 draws
+T2 moves: Royal Assassin, p1's hand -> stack
+T2 p1 cancels casting Royal Assassin
+T2 p1 attack: nothing
+T3 turn 3 begins (p2)
+T3 untaps: p2:Mountain
+T3 taps: p2:Mountain
+T3 p2 adds {R} (p2:Mountain)
+T3 p2's unspent {R} empties
+T3 moves: Horned Turtle, p2's library -> p2's hand
+T3 p2 draws
+T3 moves: Plains, p2's hand -> battlefield
+T3 p2 plays p2:Plains
+T3 p2 attack: nothing
+T3 taps: p2:Plains
+T3 p2 adds {W} (p2:Plains)
+T3 p2's unspent {W} empties
+T3 moves: Horned Turtle, p2's hand -> stack
+T3 p2 cancels casting Horned Turtle
+T3 moves: Prodigal Pyromancer, p2's hand -> stack
+T3 p2 cancels casting Prodigal Pyromancer
+T3 moves: Horned Turtle, p2's hand -> stack
+T3 p2 cancels casting Horned Turtle
+T3 moves: Prodigal Pyromancer, p2's hand -> stack
+T3 p2 cancels casting Prodigal Pyromancer
+T3 moves: Horned Turtle, p2's hand -> stack
+T3 p2 cancels casting Horned Turtle
+T3 moves: Prodigal Pyromancer, p2's hand -> stack
+T3 p2 cancels casting Prodigal Pyromancer
+T4 turn 4 begins (p1)
+T4 moves: Forest, p1's library -> p1's hand
+T4 p1 draws
+T4 p1 attack: nothing
+T5 turn 5 begins (p2)
+T5 untaps: p2:Mountain
+T5 untaps: p2:Plains
+T5 moves: Mountain, p2's library -> p2's hand
+T5 p2 draws
+T5 taps: p2:Plains
+T5 p2 adds {W} (p2:Plains)
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2's unspent {W}{R} empties
+T5 p2 attack: nothing
+T5 moves: Swamp, p2's hand -> battlefield
+T5 p2 plays p2:Swamp
+T5 moves: Horned Turtle, p2's hand -> stack
+T5 taps: p2:Swamp
+T5 p2 adds {B} (p2:Swamp)
+T5 p2 cancels casting Horned Turtle
+T5 taps: p2:Swamp
+T5 p2 adds {B} (p2:Swamp)
+T5 p2's unspent {B} empties
+T6 turn 6 begins (p1)
+T6 moves: Swamp, p1's library -> p1's hand
+T6 p1 draws
+T6 moves: Island, p1's hand -> battlefield
+T6 p1 plays p1:Island
+T6 moves: Royal Assassin, p1's hand -> stack
+T6 taps: p1:Island
+T6 p1 adds {U} (p1:Island)
+T6 p1 cancels casting Royal Assassin
+T6 taps: p1:Island
+T6 p1 adds {U} (p1:Island)
+T6 moves: Mind Rot, p1's hand -> stack
+T6 p1 cancels casting Mind Rot
+T6 moves: Mind Rot, p1's hand -> stack
+T6 p1 cancels casting Mind Rot
+T6 moves: Royal Assassin, p1's hand -> stack
+T6 p1 cancels casting Royal Assassin
+T6 moves: Royal Assassin, p1's hand -> stack
+T6 p1 cancels casting Royal Assassin
+T6 moves: Mind Spring, p1's hand -> stack
+T6 p1 cancels casting Mind Spring
+T6 p1's unspent {U} empties
+T6 p1 attack: nothing
+T7 turn 7 begins (p2)
+T7 untaps: p2:Mountain
+T7 untaps: p2:Plains
+T7 untaps: p2:Swamp
+T7 moves: Fiery Hellhound, p2's library -> p2's hand
+T7 p2 draws
+T7 moves: Island, p2's hand -> battlefield
+T7 p2 plays p2:Island
+T7 taps: p2:Plains
+T7 p2 adds {W} (p2:Plains)
+T7 moves: Yawning Fissure, p2's hand -> stack
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 taps: p2:Island
+T7 p2 adds {U} (p2:Island)
+T7 taps: p2:Swamp
+T7 p2 adds {B} (p2:Swamp)
+T7 p2 cancels casting Yawning Fissure
+T7 taps: p2:Island
+T7 p2 adds {U} (p2:Island)
+T7 moves: Horned Turtle, p2's hand -> stack
+T7 taps: p2:Mountain
+T7 p2 adds {R} (p2:Mountain)
+T7 taps: p2:Swamp
+T7 p2 adds {B} (p2:Swamp)
+T7 p2 casts Horned Turtle
+T7 resolves: Horned Turtle
+T7 moves: Horned Turtle, stack -> battlefield
+T7 moves: Yawning Fissure, p2's hand -> stack
+T7 p2 cancels casting Yawning Fissure
+T7 moves: Prodigal Pyromancer, p2's hand -> stack
+T7 p2 cancels casting Prodigal Pyromancer
+T7 p2's unspent {W} empties
+T7 p2 attack: nothing
+T7 moves: Yawning Fissure, p2's hand -> stack
+T7 p2 cancels casting Yawning Fissure
+T8 turn 8 begins (p1)
+T8 untaps: p1:Island
+T8 moves: Righteousness, p1's library -> p1's hand
+T8 p1 draws
+T8 taps: p1:Island
+T8 p1 adds {U} (p1:Island)
+T8 p1's unspent {U} empties
+T8 p1 attack: nothing
+T9 turn 9 begins (p2)
+T9 untaps: p2:Mountain
+T9 untaps: p2:Plains
+T9 untaps: p2:Swamp
+T9 untaps: p2:Island
+T9 taps: p2:Swamp
+T9 p2 adds {B} (p2:Swamp)
+T9 p2's unspent {B} empties
+T9 moves: Plains, p2's library -> p2's hand
+T9 p2 draws
+T9 taps: p2:Mountain
+T9 p2 adds {R} (p2:Mountain)
+T9 p2's unspent {R} empties
+T9 p2 attack: nothing
+T9 taps: p2:Plains
+T9 p2 adds {W} (p2:Plains)
+T9 p2's unspent {W} empties
+T9 moves: Fiery Hellhound, p2's hand -> stack
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 p2 cancels casting Fiery Hellhound
+T9 moves: Mountain, p2's hand -> battlefield
+T9 p2 plays p2:Mountain#2
+T9 taps: p2:Island
+T9 p2 adds {U} (p2:Island)
+T9 taps: p2:Mountain#2
+T9 p2 adds {R} (p2:Mountain#2)
+T9 p2's unspent {U}{R} empties
+T10 turn 10 begins (p1)
+T10 untaps: p1:Island
+T10 moves: Prodigal Pyromancer, p1's library -> p1's hand
+T10 p1 draws
+T10 taps: p1:Island
+T10 p1 adds {U} (p1:Island)
+T10 moves: Mind Spring, p1's hand -> stack
+T10 p1 cancels casting Mind Spring
+T10 p1's unspent {U} empties
+T10 p1 attack: nothing
+T10 moves: Prodigal Pyromancer, p1's hand -> p1's graveyard
+T10 p1 discards Prodigal Pyromancer
+T11 turn 11 begins (p2)
+T11 untaps: p2:Mountain#1
+T11 untaps: p2:Plains
+T11 untaps: p2:Swamp
+T11 untaps: p2:Island
+T11 untaps: p2:Mountain#2
+T11 taps: p2:Mountain#1
+T11 p2 adds {R} (p2:Mountain#1)
+T11 p2's unspent {R} empties
+T11 moves: Island, p2's library -> p2's hand
+T11 p2 draws
+T11 moves: Fiery Hellhound, p2's hand -> stack
+T11 taps: p2:Swamp
+T11 p2 adds {B} (p2:Swamp)
+T11 taps: p2:Plains
+T11 p2 adds {W} (p2:Plains)
+T11 taps: p2:Island
+T11 p2 adds {U} (p2:Island)
+T11 taps: p2:Mountain#2
+T11 p2 adds {R} (p2:Mountain#2)
+T11 p2 cancels casting Fiery Hellhound
+T11 taps: p2:Plains
+T11 p2 adds {W} (p2:Plains)
+T11 taps: p2:Island
+T11 p2 adds {U} (p2:Island)
+T11 p2's unspent {W}{U} empties
+T11 taps: p2:Horned Turtle
+T11 p2 attack: p2:Horned Turtle -> p1
+T11 taps: p2:Swamp
+T11 p2 adds {B} (p2:Swamp)
+T11 p2's unspent {B} empties
+T11 p1 block: nothing
+T11 combat damage: p2:Horned Turtle -> p1 1
+T11 p1 loses 1 life
+T11 taps: p2:Mountain#2
+T11 p2 adds {R} (p2:Mountain#2)
+T11 p2's unspent {R} empties
+T11 moves: Island, p2's hand -> battlefield
+T11 p2 plays p2:Island#2
+T12 turn 12 begins (p1)
+T12 untaps: p1:Island
+T12 taps: p1:Island
+T12 p1 adds {U} (p1:Island)
+T12 taps: p2:Island#2
+T12 p2 adds {U} (p2:Island#2)
+T12 p2's unspent {U} empties
+T12 p1's unspent {U} empties
+T12 moves: Vampire Aristocrat, p1's library -> p1's hand
+T12 p1 draws
+T12 p1 attack: nothing
+T12 moves: Swamp, p1's hand -> battlefield
+T12 p1 plays p1:Swamp
+T13 turn 13 begins (p2)
+T13 untaps: p2:Mountain#1
+T13 untaps: p2:Plains
+T13 untaps: p2:Swamp
+T13 untaps: p2:Island#1
+T13 untaps: p2:Horned Turtle
+T13 untaps: p2:Mountain#2
+T13 untaps: p2:Island#2
+T13 taps: p2:Island#2
+T13 p2 adds {U} (p2:Island#2)
+T13 p2's unspent {U} empties
+T13 moves: Tendrils of Corruption, p2's library -> p2's hand
+T13 p2 draws
+T13 taps: p2:Plains
+T13 p2 adds {W} (p2:Plains)
+T13 moves: Forest, p2's hand -> battlefield
+T13 p2 plays p2:Forest
+T13 p2's unspent {W} empties
+T13 taps: p2:Island#1
+T13 p2 adds {U} (p2:Island#1)
+T13 moves: Tendrils of Corruption, p2's hand -> stack
+T13 taps: p2:Mountain#1
+T13 p2 adds {R} (p2:Mountain#1)
+T13 p2 cancels casting Tendrils of Corruption
+T13 moves: Tendrils of Corruption, p2's hand -> stack
+T13 taps: p2:Forest
+T13 p2 adds {G} (p2:Forest)
+T13 taps: p2:Mountain#1
+T13 p2 adds {R} (p2:Mountain#1)
+T13 taps: p2:Mountain#2
+T13 p2 adds {R} (p2:Mountain#2)
+T13 taps: p2:Swamp
+T13 p2 adds {B} (p2:Swamp)
+T13 p2 casts Tendrils of Corruption
+T13 damage: Tendrils of Corruption -> p2:Horned Turtle 1
+T13 p2 gains 1 life
+T13 resolves: Tendrils of Corruption
+T13 moves: Tendrils of Corruption, stack -> p2's graveyard
+T13 p2's unspent {U} empties
+T13 p2 attack: nothing
+T13 moves: Fiery Hellhound, p2's hand -> stack
+T13 p2 cancels casting Fiery Hellhound
+T13 moves: Fiery Hellhound, p2's hand -> stack
+T13 p2 cancels casting Fiery Hellhound
+T13 moves: Prodigal Pyromancer, p2's hand -> stack
+T13 p2 cancels casting Prodigal Pyromancer
+T13 moves: Fiery Hellhound, p2's hand -> stack
+T13 p2 cancels casting Fiery Hellhound
+T13 moves: Prodigal Pyromancer, p2's hand -> stack
+T13 p2 cancels casting Prodigal Pyromancer
+T13 damage removed: p2:Horned Turtle (1)
+T14 turn 14 begins (p1)
+T14 untaps: p1:Island
+T14 taps: p1:Island
+T14 p1 adds {U} (p1:Island)
+T14 p1's unspent {U} empties
+T14 moves: Island, p1's library -> p1's hand
+T14 p1 draws
+T14 taps: p1:Swamp
+T14 p1 adds {B} (p1:Swamp)
+T14 p1's unspent {B} empties
+T14 moves: Mind Rot, p1's hand -> stack
+T14 p1 cancels casting Mind Rot
+T14 p1 attack: nothing
+T14 moves: Island, p1's hand -> battlefield
+T14 p1 plays p1:Island#2
+T14 taps: p1:Island#2
+T14 p1 adds {U} (p1:Island#2)
+T14 p1's unspent {U} empties
+T15 turn 15 begins (p2)
+T15 untaps: p2:Mountain#1
+T15 untaps: p2:Plains
+T15 untaps: p2:Swamp
+T15 untaps: p2:Island#1
+T15 untaps: p2:Mountain#2
+T15 untaps: p2:Island#2
+T15 untaps: p2:Forest
+T15 moves: Fireball, p2's library -> p2's hand
+T15 p2 draws
+T15 taps: p2:Mountain#1
+T15 p2 adds {R} (p2:Mountain#1)
+T15 p2's unspent {R} empties
+T15 taps: p2:Swamp
+T15 p2 adds {B} (p2:Swamp)
+T15 taps: p2:Mountain#2
+T15 p2 adds {R} (p2:Mountain#2)
+T15 taps: p2:Island#1
+T15 p2 adds {U} (p2:Island#1)
+T15 taps: p2:Island#2
+T15 p2 adds {U} (p2:Island#2)
+T15 taps: p2:Forest
+T15 p2 adds {G} (p2:Forest)
+T15 taps: p2:Plains
+T15 p2 adds {W} (p2:Plains)
+T15 p2's unspent {W}{U}{U}{B}{R}{G} empties
+T15 p2 attack: nothing
+T15 moves: Plains, p2's hand -> battlefield
+T15 p2 plays p2:Plains#2
+T15 taps: p2:Plains#2
+T15 p2 adds {W} (p2:Plains#2)
+T15 moves: Yawning Fissure, p2's hand -> stack
+T15 p2 cancels casting Yawning Fissure
+T15 moves: Yawning Fissure, p2's hand -> stack
+T15 p2 cancels casting Yawning Fissure
+T15 moves: Fiery Hellhound, p2's hand -> stack
+T15 p2 cancels casting Fiery Hellhound
+T15 moves: Fireball, p2's hand -> stack
+T15 p2 cancels casting Fireball
+T15 p2's unspent {W} empties
+T16 turn 16 begins (p1)
+T16 untaps: p1:Island#1
+T16 untaps: p1:Swamp
+T16 untaps: p1:Island#2
+T16 moves: Mountain, p1's library -> p1's hand
+T16 p1 draws
+T16 moves: Royal Assassin, p1's hand -> stack
+T16 taps: p1:Swamp
+T16 p1 adds {B} (p1:Swamp)
+T16 taps: p1:Island#2
+T16 p1 adds {U} (p1:Island#2)
+T16 taps: p1:Island#1
+T16 p1 adds {U} (p1:Island#1)
+T16 p1 cancels casting Royal Assassin
+T16 taps: p1:Island#1
+T16 p1 adds {U} (p1:Island#1)
+T16 p1's unspent {U} empties
+T16 p1 attack: nothing
+T16 taps: p1:Swamp
+T16 p1 adds {B} (p1:Swamp)
+T16 moves: Royal Assassin, p1's hand -> stack
+T16 taps: p1:Island#2
+T16 p1 adds {U} (p1:Island#2)
+T16 p1 cancels casting Royal Assassin
+T16 moves: Mountain, p1's hand -> battlefield
+T16 p1 plays p1:Mountain
+T16 taps: p1:Island#2
+T16 p1 adds {U} (p1:Island#2)
+T16 taps: p1:Mountain
+T16 p1 adds {R} (p1:Mountain)
+T16 moves: Mind Spring, p1's hand -> stack
+T16 p1 cancels casting Mind Spring
+T16 p1's unspent {U}{B}{R} empties
+T17 turn 17 begins (p2)
+T17 untaps: p2:Mountain#1
+T17 untaps: p2:Plains#1
+T17 untaps: p2:Swamp
+T17 untaps: p2:Island#1
+T17 untaps: p2:Mountain#2
+T17 untaps: p2:Island#2
+T17 untaps: p2:Forest
+T17 untaps: p2:Plains#2
+T17 moves: Bountiful Harvest, p2's library -> p2's hand
+T17 p2 draws
+T17 moves: Yawning Fissure, p2's hand -> stack
+T17 taps: p2:Swamp
+T17 p2 adds {B} (p2:Swamp)
+T17 taps: p2:Mountain#2
+T17 p2 adds {R} (p2:Mountain#2)
+T17 taps: p2:Island#1
+T17 p2 adds {U} (p2:Island#1)
+T17 taps: p2:Forest
+T17 p2 adds {G} (p2:Forest)
+T17 taps: p2:Mountain#1
+T17 p2 adds {R} (p2:Mountain#1)
+T17 taps: p2:Island#2
+T17 p2 adds {U} (p2:Island#2)
+T17 p2 casts Yawning Fissure
+T17 taps: p2:Plains#1
+T17 p2 adds {W} (p2:Plains#1)
+T17 p1 sacrifices p1:Island#1
+T17 moves: Island, battlefield -> p1's graveyard
+T17 resolves: Yawning Fissure
+T17 moves: Yawning Fissure, stack -> p2's graveyard
+T17 moves: Fireball, p2's hand -> stack
+T17 p2 casts Fireball
+T17 resolves: Fireball
+T17 moves: Fireball, stack -> p2's graveyard
+T17 p2 attack: nothing
+T17 moves: Prodigal Pyromancer, p2's hand -> stack
+T17 taps: p2:Plains#2
+T17 p2 adds {W} (p2:Plains#2)
+T17 p2 cancels casting Prodigal Pyromancer
+T17 taps: p2:Plains#2
+T17 p2 adds {W} (p2:Plains#2)
+T17 p2's unspent {W} empties
+T18 turn 18 begins (p1)
+T18 untaps: p1:Swamp
+T18 untaps: p1:Island
+T18 untaps: p1:Mountain

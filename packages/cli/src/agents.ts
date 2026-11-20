@@ -1,26 +1,20 @@
-// Simple agents for `ai` and `auto` until the real AI arrives in M3 (the fuzzer uses `first-legal` and `nextRandom`, and
-// picks its own way, D-061). Each is pure: the state,
+// Simple agents for `ai` and `auto` until the real AI arrives in M3 (the fuzzer uses `first-legal` and the `by-kind`
+// picker, D-061; the golden games use `by-kind`, D-069). Each is pure: the state,
 // the legal actions and a random state in, an action and the next random state out. They choose only from
 // `legalActions`, so they never concede (D-042).
 
 import type { Action, GameState } from "@mtg/engine";
+import { pickAction } from "./pick-action.ts";
+import { nextRandom } from "./seeded-random.ts";
 
-export type AgentName = "first-legal" | "random";
+export type AgentName = "first-legal" | "random" | "by-kind";
 
-export const AGENTS: readonly AgentName[] = ["first-legal", "random"];
-
-/** A tiny seeded PRNG (mulberry32): one 32-bit number of state, enough for picking actions reproducibly. */
-export function nextRandom(seed: number): { value: number; seed: number } {
-  const next = (seed + 0x6d2b79f5) >>> 0;
-  let t = next;
-  t = Math.imul(t ^ (t >>> 15), t | 1);
-  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-  return { value: ((t ^ (t >>> 14)) >>> 0) / 4294967296, seed: next };
-}
+export const AGENTS: readonly AgentName[] = ["first-legal", "random", "by-kind"];
 
 /**
  * The action this agent takes. `first-legal` takes the first legal action (pass, keep, no attackers...), so its games
- * are dull but always end. `random` picks uniformly among the legal actions.
+ * are dull but always end. `random` picks uniformly among the legal actions. `by-kind` picks a kind of action, then one
+of that kind (the fuzzer's picker, D-061), so its games cast more and cancel less.
  */
 export function chooseAction(
   agent: AgentName,
@@ -36,6 +30,8 @@ export function chooseAction(
       const r = nextRandom(seed);
       return { action: actions[Math.floor(r.value * actions.length)] as Action, seed: r.seed };
     }
+    case "by-kind":
+      return pickAction(actions, seed);
   }
 }
 
