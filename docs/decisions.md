@@ -649,3 +649,14 @@ every schema change and every change D-024 lists bumps it.
 - Tested by two worlds (p2 cancels a Shock, then casts the same one or the other: p1's events and views must be
   identical), and the fuzzer's leak check now flags any id of a card hidden from the viewer before or after an
   action, unless they could see it then too.
+
+**D-055: M2's task order follows the pool's needs** · 2026-11-20 · accepted (M2-02)
+- Mapping every Magic 2010 card to the systems it needs (`docs/milestones/m2-pool.md`) showed 86 cards need plain
+  effects (destroy, draw, discard, counter target spell, search) and 45 need keywords, while the spec put both near
+  the end: 88 cards would have waited until late in M2. So the tasks are reordered: effects and keyword actions
+  (M2-05) and keywords (M2-06) right after targeting and costs, then triggers, replacement and prevention, layers,
+  counters, tokens, Auras and Equipment, planeswalkers, and the special rules last.
+- Each system task also scripts the cards that become playable with it, so the pool and the fuzzer's decks grow
+  through the milestone (38 cards playable now, 93 after M2-05, 144 after M2-07, all 234 after M2-14).
+- Protection is split across tasks by its parts (CR 702.16): targeting and blocking with keywords, damage prevention
+  with M2-08, "can't be enchanted or equipped" with M2-12.
