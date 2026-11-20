@@ -33,7 +33,10 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);
     }
-    if (def.spell !== undefined) problems.push(...targetProblems(def.name, def.spell.targets, def.spell.effects));
+    if (def.spell !== undefined)
+      problems.push(
+        ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
+      );
     for (const [i, ability] of (def.abilities ?? []).entries()) {
       problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));
     }
@@ -49,13 +52,20 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
  * a divided effect that doesn't divide among an instance of "target", or divides less than that instance's minimum,
  * since each target needs at least one (CR 601.2d).
  */
-function targetProblems(where: string, targets: readonly TargetSpec[], effects: readonly Effect[]): string[] {
+function targetProblems(
+  where: string,
+  targets: readonly TargetSpec[],
+  effects: readonly Effect[],
+  costIncrease = false,
+): string[] {
   const problems: string[] = [];
   for (const [i, spec] of targets.entries()) {
     const count = spec.count;
     if (count !== undefined && count.max !== "any" && count.min > count.max)
       problems.push(`${where}: target ${i} has a minimum above its maximum`);
   }
+  if (costIncrease && targets.length !== 1)
+    problems.push(`${where}: a cost increase per target is only read for a spell with one instance of "target"`);
   for (const effect of effects) {
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     const spec = effect.to === "self" ? undefined : targets[effect.to.target];

@@ -21,6 +21,8 @@ export type Casting = {
    * text's number otherwise (CR 601.2c).
    */
   targetCounts: number[];
+  /** The permanents chosen so far to sacrifice for the cost, one per sacrifice it calls for, sacrificed as it's paid. */
+  sacrifices: ObjectId[];
 };
 
 export type CastingOrigin =

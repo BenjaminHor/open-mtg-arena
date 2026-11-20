@@ -26,6 +26,7 @@ import { righteousness } from "./r/righteousness.ts";
 import { shock } from "./s/shock.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { swamp } from "./s/swamp.ts";
+import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
 
 export const CARD_DEFS: readonly CardDef[] = [
@@ -54,5 +55,6 @@ export const CARD_DEFS: readonly CardDef[] = [
   shock,
   spinedWurm,
   swamp,
+  vampireAristocrat,
   volcanicHammer,
 ];

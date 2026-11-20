@@ -39,6 +39,7 @@ export function activationBasicsProblem(
           return `${id} hasn't been controlled since the turn began (CR 602.5a)`;
         break;
       case "mana":
+      case "sacrifice":
         break;
     }
   }
@@ -57,9 +58,10 @@ export function manaAbilityProblem(
   if (problem !== null) return problem;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null || !isManaAbility(ability.def)) return "that isn't a mana ability";
-  // A mana ability with mana in its cost would need a payment while it resolves at once; none is in the pool yet.
-  if (ability.def.cost.some((part) => part.kind === "mana"))
-    return "mana abilities with mana costs aren't supported yet";
+  // A mana ability with mana or a sacrifice in its cost would need a payment while it resolves at once; none is in the
+  // pool yet.
+  if (ability.def.cost.some((part) => part.kind !== "tap"))
+    return "mana abilities with costs other than {T} aren't supported yet";
   // A mana ability can do more than add mana (CR 605.1a). Cancelling a cast can't reverse anything but mana and
   // tapping yet (D-035, future-rules.md), so mana abilities with other effects wait for a card that needs one.
   if (ability.def.effects.some((e) => e.op !== "addMana"))
@@ -91,6 +93,8 @@ export function resolveManaAbility(
         break;
       case "mana":
         throw new Error("mana abilities with mana costs aren't supported yet");
+      case "sacrifice":
+        throw new Error("mana abilities with sacrifice costs aren't supported yet");
     }
   }
   // It doesn't use the stack, so its effects run now, through the same interpreter as spells (CR 605.3b). A mana

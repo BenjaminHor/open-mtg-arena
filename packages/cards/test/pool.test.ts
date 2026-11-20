@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import type { CardDef } from "@mtg/engine";
+import type { CardDef, TargetSpec } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
 import { parsePoolTxt } from "../src/pool-data.ts";
@@ -71,6 +71,7 @@ describe("definitionProblems", () => {
   it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {
     const ignite = POOL.cards.find((c) => c.name === "Ignite Disorder");
     if (ignite === undefined) throw new Error("Ignite Disorder missing from the pool");
+    const creatures = (): TargetSpec => ({ kind: "permanent", filter: { types: ["creature"] } });
     const def = (count: { min: number; max: number }, to: { target: number } | "self", amount = 3): CardDef => ({
       name: "Ignite Disorder",
       oracle: ignite.oracleText,
@@ -85,6 +86,17 @@ describe("definitionProblems", () => {
     ]);
     expect(definitionProblems([def({ min: 1, max: 3 }, "self")], [ignite])).toStrictEqual([
       'Ignite Disorder: divided damage must divide among an instance of "target"',
+    ]);
+    const twoInstances: CardDef = {
+      ...def({ min: 1, max: 3 }, { target: 0 }),
+      spell: {
+        targets: [creatures(), creatures()],
+        effects: [],
+        costIncrease: { perTargetBeyondFirst: [{ kind: "generic", amount: 1 }] },
+      },
+    };
+    expect(definitionProblems([twoInstances], [ignite])).toStrictEqual([
+      'Ignite Disorder: a cost increase per target is only read for a spell with one instance of "target"',
     ]);
     expect(definitionProblems([def({ min: 4, max: 4 }, { target: 0 })], [ignite])).toStrictEqual([
       "Ignite Disorder: divided damage of 3 can't give each of at least 4 targets 1",

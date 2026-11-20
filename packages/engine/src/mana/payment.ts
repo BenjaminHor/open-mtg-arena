@@ -1,7 +1,7 @@
 // Paying a mana cost from a mana pool (CR 601.2h, 107.4). Which mana pays is the player's choice, so a payment is data
 // the engine checks: how much of each type of mana is spent.
 
-import type { ManaCost } from "../cards/types.ts";
+import type { ManaCost, ManaSymbol } from "../cards/types.ts";
 import { MANA_TYPES, type ManaPool, type ManaType } from "../state/mana.ts";
 
 /** How much of each type of mana a payment spends. */
@@ -42,20 +42,22 @@ export function payFromPool(pool: ManaPool, cost: ManaCost, payment: ManaPayment
 }
 
 /**
- * The total mana in a cost: its mana value (CR 202.3). X counts as 0, as it does anywhere but on the stack (CR 202.3e);
- * a spell on the stack counts its announced X (later: in a stack-aware reader, when a card needs one).
+ * The total mana in a cost: its mana value (CR 202.3). X counts as 0 here, as it does for a card anywhere but the stack
+ * (CR 107.3g); a spell on the stack counts its announced X (later: CR 202.3e, a stack-aware reader when a card needs one).
  */
 export function manaValue(cost: ManaCost | null): number {
-  return (cost ?? []).reduce((sum, s) => {
-    switch (s.kind) {
-      case "generic":
-        return sum + s.amount;
-      case "colored":
-        return sum + 1;
-      case "x":
-        return sum;
-    }
-  }, 0);
+  return (cost ?? []).reduce((sum, s) => sum + symbolValue(s), 0);
+}
+
+function symbolValue(symbol: ManaSymbol): number {
+  switch (symbol.kind) {
+    case "generic":
+      return symbol.amount;
+    case "colored":
+      return 1;
+    case "x":
+      return 0;
+  }
 }
 
 /**

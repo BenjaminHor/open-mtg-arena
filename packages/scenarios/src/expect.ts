@@ -36,6 +36,7 @@ export const EXPECTATIONS = [
   "toughness",
   "abilities contains",
   "events contains",
+  "events lacks",
   "winner",
 ];
 
@@ -158,6 +159,16 @@ function check(
       const wanted = expected.map((want) => withEngineStep(want));
       const matches = containsAll(events as unknown[], wanted, (e, w) =>
         partialMatch(e as Record<string, unknown>, w as Record<string, unknown>),
+      );
+      return { value: events.map((e) => e.type), matches };
+    }
+    case "events lacks": {
+      if (!Array.isArray(expected) || expected.length === 0 || !expected.every(isRecord)) {
+        return { error: "events lacks takes a non-empty list of events like { type: DAMAGE_DEALT }" };
+      }
+      const unwanted = expected.map((e) => withEngineStep(e));
+      const matches = !events.some((e) =>
+        unwanted.some((u) => partialMatch(e as unknown as Record<string, unknown>, u as Record<string, unknown>)),
       );
       return { value: events.map((e) => e.type), matches };
     }

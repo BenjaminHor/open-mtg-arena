@@ -34,6 +34,8 @@ export type Answer =
   | { kind: "chooseTargetCount"; count: number }
   /** The next target's share of a divided effect (CR 601.2d). */
   | { kind: "divide"; amount: number }
+  /** The permanent to sacrifice for the cost (CR 701.21a). */
+  | { kind: "chooseSacrifice"; object: ObjectId }
   /** How much of each type of mana to spend (CR 601.2h). */
   | { kind: "payMana"; payment: ManaPool }
   /** Cancel the cast or activation in progress: the whole action is reversed (CR 734.1, D-035). */

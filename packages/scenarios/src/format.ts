@@ -30,6 +30,7 @@ export type ScenarioStep =
       x: number | null;
       targets: unknown[];
       divide: number[] | null;
+      sacrifice: string[] | null;
       pay: unknown;
     }
   /**
@@ -44,6 +45,7 @@ export type ScenarioStep =
       x: number | null;
       targets: unknown[];
       divide: number[] | null;
+      sacrifice: string[] | null;
       pay: unknown;
     }
   /** Declare attackers (CR 508.1): the player's creatures by name or reference (`Grizzly Bears#2`), maybe none. */
@@ -74,8 +76,8 @@ export const COMING_STEP_WORDS: Record<string, string> = {}; // none now; a task
 
 /** Option keys that may sit next to a step word in the same step (docs/testing.md, "Steps"). */
 export const STEP_OPTIONS: Record<string, string[]> = {
-  cast: ["x", "targets", "divide", "pay"],
-  activate: ["ability", "x", "targets", "divide", "pay"],
+  cast: ["x", "targets", "divide", "sacrifice", "pay"],
+  activate: ["ability", "x", "targets", "divide", "sacrifice", "pay"],
 };
 
 export function parseScenario(text: string): Scenario {
@@ -165,6 +167,7 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       x: xValue(raw.x, where),
       targets,
       divide: shares(raw.divide, where),
+      sacrifice: sacrifices(raw.sacrifice),
       pay: raw.pay,
     };
   }
@@ -213,6 +216,7 @@ function parseStep(raw: unknown, where: string): ScenarioStep {
       x: xValue(raw.x, where),
       targets,
       divide: shares(raw.divide, where),
+      sacrifice: sacrifices(raw.sacrifice),
       pay: raw.pay,
     };
   }
@@ -255,4 +259,10 @@ function xValue(value: unknown, where: string): number | null {
   if (value === undefined) return null;
   if (typeof value !== "number" || !Number.isInteger(value)) throw new Error(`${where}: x is a whole number`);
   return value;
+}
+
+/** A `sacrifice:` option: what to sacrifice for the cost, one name or a list (CR 701.21a). */
+function sacrifices(value: unknown): string[] | null {
+  if (value === undefined) return null;
+  return (Array.isArray(value) ? value : [value]).map(String);
 }

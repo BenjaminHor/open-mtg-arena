@@ -5,7 +5,7 @@ import { type Action, type Answer, autoPay, type CardDatabase, type GameState, t
 import { type AfterEach, apply, type Game, legal } from "./apply.ts";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
-import { paymentFrom, targetNamed } from "./lookups.ts";
+import { paymentFrom, permanentNamed, targetNamed } from "./lookups.ts";
 
 export type StackStep = Extract<ScenarioStep, { kind: "cast" | "activate" }>;
 
@@ -64,6 +64,12 @@ export function stackAnswer(
   switch (pending.kind) {
     case "announceX":
       return step.x === null ? null : { answer: { kind: "announceX", value: step.x }, label: `X = ${step.x}` };
+    case "chooseSacrifice": {
+      const name = step.sacrifice?.[state.casting?.sacrifices.length ?? 0];
+      if (name === undefined) return null;
+      const object = permanentNamed(state, step.player, name, cards);
+      return { answer: { kind: "chooseSacrifice", object }, label: `sacrifice ${name}` };
+    }
     case "chooseTargetCount": {
       const listed = step.targets[pending.instance];
       if (listed === undefined) return null;
@@ -115,6 +121,10 @@ export function unusedListed(state: GameState, step: StackStep): string | null {
   }
   if (step.x !== null && choices.x === null)
     return `${step.kind} ${step.card}: x is listed, but it has no X to announce`;
+  const sacrificed = state.casting?.sacrifices.length ?? 0;
+  if (step.sacrifice !== null && sacrificed !== step.sacrifice.length) {
+    return `${step.kind} ${step.card}: sacrifice lists ${step.sacrifice.length}, but its cost took ${sacrificed}`;
+  }
   if (step.divide !== null && (choices.division?.shares.length ?? 0) !== step.divide.length) {
     return `${step.kind} ${step.card}: divide is listed, but nothing was divided among ${step.divide.length} targets`;
   }

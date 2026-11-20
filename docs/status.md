@@ -20,8 +20,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   cards marked T or C).
   - M2-04a Targeting: done, merged (PR #24, D-057). Righteousness, Ignite Disorder, Lava Axe, Elite Vanguard, Coral
     Merfolk, Plains, Island; interim decks white-red and blue-green.
-  - M2-04b Costs (now, plan 2026-11-20). CR 601.2b, 601.2f–i, 602.2b, 107.3, 118, 202.3e, 701.21a. Cards: Fireball,
-    Vampire Aristocrat (rulings read).
+  - M2-04b Costs: built, in review (D-058). Fireball, Vampire Aristocrat and Swamp scripted with scenarios; unit tests
+    for X values legalActions doesn't list, the payment's event order, and sacrificing a target (CR 601.5); interim
+    deck black-red with a golden game. The rules-judge checked the plan; its corrections are in D-058. The plan as built:
     - `{X}` is a mana symbol (`{ kind: "x" }`), worth 0 in the mana value off the stack (CR 202.3e). It's announced
       first (CR 601.2b, 107.3a): an `announceX` decision, any non-negative integer accepted (CR 107.1b); `legalActions`
       lists 0 up to the mana the player could make now minus the rest of the mana cost (an enumeration aid only, a

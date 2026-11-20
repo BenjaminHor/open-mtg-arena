@@ -1,0 +1,18 @@
+name: Vampire Aristocrat sacrifices another creature as its cost and gets +2/+2 until end of turn
+rules: [CR 701.21a, CR 601.2h, CR 602.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Aristocrat, Grizzly Bears]
+steps:
+  - p1 activate: Vampire Aristocrat
+    sacrifice: Grizzly Bears
+  # The cost has no mana, so it's paid as soon as the sacrifice is chosen, and the ability is activated.
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+      stack: [Vampire Aristocrat ability]
+      events contains: [{ type: PERMANENT_SACRIFICED, player: p1 }, { type: ABILITY_ACTIVATED }]
+  - all pass: once
+  - expect:
+      p1:Vampire Aristocrat.power: 4
+      p1:Vampire Aristocrat.toughness: 4

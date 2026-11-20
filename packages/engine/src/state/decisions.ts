@@ -78,4 +78,9 @@ export type DecisionKind =
    * While casting or activating: pay the mana cost (CR 601.2g–h). Mana abilities may be activated while this is
    * pending (CR 605.3a); then the answer is a payment from the pool, or cancelling the cast or activation.
    */
-  | { kind: "payMana"; object: ObjectId; cost: ManaCost };
+  | { kind: "payMana"; object: ObjectId; cost: ManaCost }
+  /**
+   * While activating: choose a permanent to sacrifice for the cost (CR 601.2h, 701.21a). It's sacrificed when the whole
+   * cost is paid; until then the player can cancel.
+   */
+  | { kind: "chooseSacrifice"; object: ObjectId };

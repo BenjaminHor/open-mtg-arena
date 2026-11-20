@@ -196,6 +196,12 @@ pays" and ward (CR 702.21a). Today `ACTIVATE_ABILITY` is accepted only with a `p
 pending, and paying (`casting-steps.ts`) assumes something is being cast and finishes by making it cast. These need a
 payment context that isn't `Casting`.
 
+**Costs paid while something waits (CR 616.1, 118.11).** `payCost` performs the sacrifices with `happen` at once.
+When a replacement effect needs a choice (M2-08), the sacrifice must be able to wait, and the cost still counts as paid
+even if the sacrifice is replaced (CR 118.11): make the payment and "becomes cast or activated" (CR 601.2i) work items
+then. A spell or ability that targets a creature and sacrifices one (Siege-Gang Commander, M2-11) needs a scenario for
+sacrificing its own target (CR 601.5; a unit test covers it now).
+
 **Casting from other zones (CR 601.2a, 734.1, 702.34a flashback).** Casting checks the hand
 (`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
 the hand. A card cast from a graveyard or exile must go back where it came from. The check before casting

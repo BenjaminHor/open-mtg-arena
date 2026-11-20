@@ -31,6 +31,7 @@ const CONCEDE_CHANCE = 1 / 20_000;
 const PREBUILT_PAIRS = [
   [DECKS["red-aggro"], DECKS["green-stompy"]],
   [DECKS["white-red"], DECKS["blue-green"]],
+  [DECKS["black-red"], DECKS["blue-green"]],
 ];
 
 /** Past this many turns a game is flagged as a likely loop (decks of 40 run out long before). */

@@ -18,6 +18,7 @@ import { castProblem } from "./cast.ts";
 import { largestShare, possibleTargets } from "./choose-targets.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
+import { possibleSacrifices, sacrificeParts } from "./sacrifice-costs.ts";
 
 export function legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[] {
   const pending = state.pending;
@@ -95,6 +96,17 @@ export function legalActions(state: GameState, player: PlayerId, cards: CardData
         (_, i): Action => ({ ...answer, answer: { kind: "divide", amount: i + 1 } }),
       );
       return [...shares, { ...answer, answer: { kind: "cancelCast" } }];
+    }
+    case "chooseSacrifice": {
+      const casting = state.casting;
+      const filter =
+        casting === null ? undefined : sacrificeParts(state, casting.object, cards)[casting.sacrifices.length];
+      const options =
+        casting === null || filter === undefined
+          ? []
+          : possibleSacrifices(state, casting.player, filter, casting.sacrifices, cards);
+      const choices = options.map((object): Action => ({ ...answer, answer: { kind: "chooseSacrifice", object } }));
+      return [...choices, { ...answer, answer: { kind: "cancelCast" } }];
     }
     case "payMana": {
       // Every payment the pool covers, since which mana pays is the player's choice (CR 601.2h); mana abilities to make

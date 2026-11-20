@@ -1,5 +1,6 @@
 // Sacrificing a permanent (CR 701.21a): its controller moves it from the battlefield to its owner's graveyard. It isn't
-// destroyed, so regeneration and other effects that replace destruction can't affect it.
+// destroyed, so regeneration and other effects that replace destruction can't affect it. A creature sacrificed dies
+// (later: CR 700.4, when the first "dies" trigger reads it).
 
 import type { Progress } from "../game/progress.ts";
 import { controllerOf } from "../rules/controller.ts";

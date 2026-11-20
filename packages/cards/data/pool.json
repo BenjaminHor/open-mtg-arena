@@ -703,6 +703,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Vampire Aristocrat",
+      "slug": "vampire-aristocrat",
+      "oracleId": "c14739b0-5c19-4873-b027-314225a10f7b",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Vampire Rogue Noble",
+      "oracleText": "Sacrifice a creature: This creature gets +2/+2 until end of turn.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.jpg?1783942378",
+        "large": "https://cards.scryfall.io/large/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.jpg?1783942378",
+        "png": "https://cards.scryfall.io/png/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.png?1783942378",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/b/9bac0b9c-0077-44c8-8982-4e7b7e7ad398.jpg?1783942378"
+      },
+      "artist": "Austin Hsu",
+      "set": "m10",
+      "collectorNumber": "117",
+      "scryfallUri": "https://scryfall.com/card/m10/117/vampire-aristocrat?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Volcanic Hammer",
       "slug": "volcanic-hammer",
       "oracleId": "98fa5a06-0553-40fd-999c-bc31c9b3f4db",

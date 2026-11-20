@@ -69,7 +69,11 @@ export const furnaceWhelp: CardDef = {
   opponent controls": `controller: "opponent"`). Other kinds: `anyTarget`, `playerOrPlaneswalker`, `spell`,
   `cardInGraveyard` (yours or any). "One, two, or three target ..." adds `count: { min: 1, max: 3 }`; "up to three" is
   `{ min: 0, max: 3 }`; "any number" is `max: "any"`. Damage "divided as you choose" is `divided: "asYouChoose"` on the
-  effect (Ignite Disorder).
+  effect (Ignite Disorder); "divided evenly, rounded down" is `divided: "evenly"` (Fireball).
+- X: `{X}` in the mana cost comes from the card data; an effect's amount of X is `amount: "X"`. "This spell costs {1}
+  more to cast for each target beyond the first" is `costIncrease: { perTargetBeyondFirst: [...] }` on the spell.
+- Costs of activated abilities are a list of parts: `{ kind: "mana", cost }`, `{ kind: "tap" }`, and "Sacrifice a
+  creature" as `{ kind: "sacrifice", filter: { types: ["creature"] } }` (a permanent its controller controls).
 - Basic lands have no abilities in their definition: a land with a basic land type has its mana ability intrinsically
   (CR 305.6), so the engine derives it from its land types as computed in layer 4. That keeps working when effects change
   a land's type (CR 305.7). It's referred to as `{ kind: "basicLandType", landType }` (D-028).

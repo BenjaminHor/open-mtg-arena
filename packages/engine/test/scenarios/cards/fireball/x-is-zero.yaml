@@ -1,0 +1,22 @@
+name: X can be 0; then Fireball costs only {R} and deals no damage
+rules: [CR 107.3a, CR 120.8]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Fireball]
+    battlefield: [Mountain]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Fireball
+    x: 0
+    targets: [[p2:Grizzly Bears]]
+  - expect:
+      pending: { player: p1, kind: payMana, cost: [{ kind: colored, color: R }] }
+  - p1 activate: Mountain
+  - p1 choose: { R: 1 }
+  - all pass: once
+  - expect:
+      p2:Grizzly Bears.damage: 0
+      events contains: [{ type: SPELL_RESOLVED }]
+      events lacks: [{ type: DAMAGE_DEALT }]

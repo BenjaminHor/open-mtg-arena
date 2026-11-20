@@ -128,7 +128,12 @@ export type AbilityDef = {
 export type CostPart =
   | { kind: "mana"; cost: ManaCost }
   /** {T}: "tap this permanent" (CR 107.5). */
-  | { kind: "tap" };
+  | { kind: "tap" }
+  /**
+   * "Sacrifice a creature": one permanent its controller controls that fits `filter` (CR 701.21a), chosen as the cost
+   * is paid (CR 601.2h).
+   */
+  | { kind: "sacrifice"; filter: ObjectFilter };
 
 /**
  * What one instance of the word "target" may choose (CR 115), and how many (`count`, exactly one when left out).

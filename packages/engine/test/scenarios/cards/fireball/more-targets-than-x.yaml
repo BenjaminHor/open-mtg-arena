@@ -17,3 +17,4 @@ steps:
       p2.life: 20
       p2:Grizzly Bears.damage: 0
       events contains: [{ type: SPELL_RESOLVED }]
+      events lacks: [{ type: DAMAGE_DEALT }]
