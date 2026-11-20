@@ -508,6 +508,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-20) The owner asked whether card definitions' raw strings (`op: "dealDamage"`, `step: "end"`...)
+  should become enums. Recommended: no TypeScript `enum` (D-018 runs TypeScript by type stripping, and
+  `erasableSyntaxOnly` refuses `enum`); the strings are already checked literal unions. Offered instead: named
+  constants for whole phrases repeated across cards ("target creature", "until end of turn", "at the beginning of
+  the next end step"), in one shared file. Waiting on the owner's answer.
 - (Answered 2026-11-20, D-073–D-075: the golden budget raised, the four keywords with their first cards, Goblin
   Artillery's two losses kept.)
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
