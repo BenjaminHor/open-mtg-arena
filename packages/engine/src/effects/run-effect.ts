@@ -56,8 +56,8 @@ function damageOf(effect: Extract<Effect, { op: "dealDamage" }>, from: ObjectId,
       return context.division.map((share) => ({ source: from, to: share.target, amount: share.amount, combat: false }));
     case "evenly": {
       // Divided evenly, rounded down as the text says (CR 107.1a), among the targets still legal as it resolves
-      // (Fireball's rulings). With more
-      // targets than damage each share is 0, which isn't dealt at all (CR 120.8); with no targets nothing is.
+      // (Fireball's rulings). With more targets than damage each share is 0, which isn't dealt at all (CR 120.8); with
+      // no targets nothing is.
       const share = to.length === 0 ? 0 : Math.floor(amount / to.length);
       return to.map((t) => ({ source: from, to: t, amount: share, combat: false }));
     }

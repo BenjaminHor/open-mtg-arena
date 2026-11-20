@@ -20,8 +20,8 @@ export function sacrificeParts(state: GameState, id: ObjectId, cards: CardDataba
 /**
  * The permanents the player may sacrifice for this part of the cost: only permanents they control (CR 701.21a) that fit
  * it, each at most once. A creature chosen as a target can still be sacrificed: nothing forbids it, and the player may
- * plan for it while choosing targets (CR 601.5); it's an illegal target by
- * the time the spell or ability resolves (CR 608.2b).
+ * plan for it while choosing targets (CR 601.5); it's an illegal target by the time the spell or ability resolves
+ * (CR 608.2b).
  */
 export function possibleSacrifices(
   state: GameState,
@@ -35,12 +35,16 @@ export function possibleSacrifices(
   );
 }
 
-/** Why this permanent can't be chosen for the next sacrifice, or null. */
-export function sacrificeProblem(state: GameState, object: ObjectId, cards: CardDatabase): string | null {
+/** What the player may choose for the next sacrifice the cost calls for; empty when there's no such sacrifice. */
+export function nextSacrificeOptions(state: GameState, cards: CardDatabase): ObjectId[] {
   const casting = castingOf(state);
   const filter = sacrificeParts(state, casting.object, cards)[casting.sacrifices.length];
-  if (filter === undefined) return "nothing more is to be sacrificed";
-  return possibleSacrifices(state, casting.player, filter, casting.sacrifices, cards).includes(object)
+  return filter === undefined ? [] : possibleSacrifices(state, casting.player, filter, casting.sacrifices, cards);
+}
+
+/** Why this permanent can't be chosen for the next sacrifice, or null. */
+export function sacrificeProblem(state: GameState, object: ObjectId, cards: CardDatabase): string | null {
+  return nextSacrificeOptions(state, cards).includes(object)
     ? null
     : `${object} can't be sacrificed for this cost (CR 701.21a)`;
 }

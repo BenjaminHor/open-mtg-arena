@@ -35,7 +35,7 @@ export function withX(cost: ManaCost, x: number): ManaCost {
 }
 
 /** Whether a mana cost has an {X} the caster announces (CR 107.3a). */
-export function hasX(cost: ManaCost | null): boolean {
+function hasX(cost: ManaCost | null): boolean {
   return (cost ?? []).some((symbol) => symbol.kind === "x");
 }
 

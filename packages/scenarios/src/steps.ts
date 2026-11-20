@@ -1,7 +1,15 @@
 // Turning scenario steps into engine actions (docs/testing.md, "Steps"). Every action comes from `legalActions()`, so
 // a step that names something illegal fails, unless the next step is `expect error`.
 
-import { type Action, type Answer, applyAction, type CardDatabase, type GameState, type PlayerId } from "@mtg/engine";
+import {
+  type Action,
+  type Answer,
+  applyAction,
+  type CardDatabase,
+  type GameState,
+  type ObjectId,
+  type PlayerId,
+} from "@mtg/engine";
 import { deepEqual } from "./compare.ts";
 import type { ScenarioStep } from "./format.ts";
 
@@ -125,18 +133,23 @@ export function firstRejection(
   // A cast's payment is planned once, when the payment decision comes up, then carried out action by action.
   let payment: Action[] | null = null;
   let paid = 0;
+  // The spell or ability being cast or activated, and the sacrifices given, for the check that nothing listed went unused.
+  let stackObject: ObjectId | null = null;
+  let sacrificed = 0;
   for (let i = 0; ; i++) {
     let action: Action | null;
     if ((step.kind === "cast" || step.kind === "activate") && i > 0) {
       // After the cast itself: the step's answers to targets and a division, then its payment.
+      stackObject ??= state.casting?.object ?? null;
       const found = stackAnswer(state, step, cards);
       const decisionId = state.pending?.id ?? "d0";
+      if (found?.answer.kind === "chooseSacrifice") sacrificed++;
       if (found !== null) {
         action = { type: "ANSWER", decisionId, player: step.player as PlayerId, answer: found.answer };
       } else {
         if (payment === null) {
           // The step's answers are used up: check it listed nothing the spell didn't take.
-          const unused = unusedListed(state, step);
+          const unused = unusedListed(state, step, stackObject, sacrificed);
           if (unused !== null) throw new Error(unused);
         }
         payment ??= paymentActions({ state, events: [] }, step, cards);

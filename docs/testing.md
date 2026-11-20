@@ -110,7 +110,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   target's share of a divided effect, in the order the targets were listed (`divide: [2, 1]`, CR 601.2d): one share per
   target, adding up to the whole, or the step fails (the last share isn't asked for: it gets the rest); without it,
   the cast stops at the division, where `choose` gives one share at a time. `choose` also answers a number of targets.
-  `x: 3` announces X first, for a spell or ability with X in its cost (CR 107.3a). `sacrifice: Grizzly Bears` (or a
+  `x: 3` announces X first, for a spell or ability with X in its cost (CR 107.3a), at most what `legalActions` lists
+  (larger values are legal, D-058, and covered by unit tests). `sacrifice: Grizzly Bears` (or a
   list) names what to sacrifice for the cost, a permanent the player controls or a reference like `p2:Grizzly Bears`
   (CR 701.21a). Listing a target, share, X or sacrifice the spell never takes fails the step. `pay: auto` pays with
   `autoPay` (activating mana

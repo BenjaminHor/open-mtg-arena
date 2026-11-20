@@ -16,13 +16,13 @@ The engine's entry points and the flow of a game.
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
 | `cast.ts` | Casting a spell (CR 601.2): `castProblem`, `startCast` (D-035) |
 | `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |
-| `casting-steps.ts` | The steps both share (CR 601.2c, 601.2f–i, 602.2b): `nextCastingStep`, paying, `cancelCasting` |
+| `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): `nextCastingStep` (X, targets, sacrifices, then the mana; a cost with no mana is paid at once), `announceX` and `xProblem` (CR 107.3a), `payCost`, `cancelCasting` |
 | `choose-targets.ts` | Targets and their division (CR 601.2c–d): how many for a range, each target (no repeats in an instance, CR 115.3), each target's share of a divided effect |
 | `casting-state.ts` | `castingOf`: the cast or activation in progress |
 | `sacrifice-costs.ts` | Choosing what to sacrifice for a cost (CR 601.2h, 701.21a); the sacrifice happens with the rest of the payment, in `payCost` |
 | `pass-priority.ts` | `passPriority()`: the next player gets priority; when all have passed, the top of the stack resolves, the step ends, or another cleanup step begins (CR 117.3d, 117.4, 514.3a) |
 | `apply-action.ts` | `applyAction(state, action, cards)`: checks an action answers the pending decision (or is a concession, any time, CR 104.3a), then applies it |
-| `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now |
+| `legal-actions.ts` | `legalActions(state, player, cards)`: every action `applyAction` would accept right now, except `CONCEDE` (D-042) and values of X above what the player could pay for (D-058) |
 | `decide.ts` | `waitFor()`: sets the pending decision, with a new id |
 | `priority.ts` | `givePriority()`: every place that gives a player priority goes through it; state-based actions are checked first (CR 117.5) |
 | `state-based-actions.ts` | `checkStateBasedActions()`: performs every SBA that applies as one event (CR 704.3) (D-039) |
