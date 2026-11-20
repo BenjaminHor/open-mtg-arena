@@ -20,12 +20,14 @@ import { borderlandRanger } from "./b/borderland-ranger.ts";
 import { bountifulHarvest } from "./b/bountiful-harvest.ts";
 import { brambleCreeper } from "./b/bramble-creeper.ts";
 import { burningInquiry } from "./b/burning-inquiry.ts";
+import { burstOfSpeed } from "./b/burst-of-speed.ts";
 import { cancel } from "./c/cancel.ts";
 import { canyonMinotaur } from "./c/canyon-minotaur.ts";
 import { capriciousEfreet } from "./c/capricious-efreet.ts";
 import { celestialPurge } from "./c/celestial-purge.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
 import { childOfNight } from "./c/child-of-night.ts";
+import { coatOfArms } from "./c/coat-of-arms.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
@@ -49,6 +51,7 @@ import { drudgeSkeletons } from "./d/drudge-skeletons.ts";
 import { duress } from "./d/duress.ts";
 import { earthquake } from "./e/earthquake.ts";
 import { eliteVanguard } from "./e/elite-vanguard.ts";
+import { elvishArchdruid } from "./e/elvish-archdruid.ts";
 import { elvishPiper } from "./e/elvish-piper.ts";
 import { elvishVisionary } from "./e/elvish-visionary.ts";
 import { emeraldOryx } from "./e/emerald-oryx.ts";
@@ -66,7 +69,9 @@ import { furnaceWhelp } from "./f/furnace-whelp.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
 import { glacialFortress } from "./g/glacial-fortress.ts";
+import { gloriousCharge } from "./g/glorious-charge.ts";
 import { goblinArtillery } from "./g/goblin-artillery.ts";
+import { goblinChieftain } from "./g/goblin-chieftain.ts";
 import { goblinPiker } from "./g/goblin-piker.ts";
 import { gravedigger } from "./g/gravedigger.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
@@ -76,6 +81,7 @@ import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { guardianSeraph } from "./g/guardian-seraph.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
+import { honorOfThePure } from "./h/honor-of-the-pure.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
 import { howlingBanshee } from "./h/howling-banshee.ts";
 import { howlingMine } from "./h/howling-mine.ts";
@@ -85,10 +91,13 @@ import { illusionaryServant } from "./i/illusionary-servant.ts";
 import { infernoElemental } from "./i/inferno-elemental.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
+import { jump } from "./j/jump.ts";
 import { kalonianBehemoth } from "./k/kalonian-behemoth.ts";
 import { kelinoreBat } from "./k/kelinore-bat.ts";
+import { kindledFury } from "./k/kindled-fury.ts";
 import { krakensEye } from "./k/krakens-eye.ts";
 import { lavaAxe } from "./l/lava-axe.ts";
+import { levitation } from "./l/levitation.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
 import { lightningElemental } from "./l/lightning-elemental.ts";
 import { lightwielderPaladin } from "./l/lightwielder-paladin.ts";
@@ -98,6 +107,7 @@ import { lurkingPredators } from "./l/lurking-predators.ts";
 import { manabarbs } from "./m/manabarbs.ts";
 import { megrim } from "./m/megrim.ts";
 import { merfolkLooter } from "./m/merfolk-looter.ts";
+import { merfolkSovereign } from "./m/merfolk-sovereign.ts";
 import { mesaEnchantress } from "./m/mesa-enchantress.ts";
 import { mightOfOaks } from "./m/might-of-oaks.ts";
 import { mindRot } from "./m/mind-rot.ts";
@@ -109,6 +119,7 @@ import { naturalize } from "./n/naturalize.ts";
 import { naturesSpiral } from "./n/natures-spiral.ts";
 import { negate } from "./n/negate.ts";
 import { ornithopter } from "./o/ornithopter.ts";
+import { overrun } from "./o/overrun.ts";
 import { palaceGuard } from "./p/palace-guard.ts";
 import { panicAttack } from "./p/panic-attack.ts";
 import { phantomWarrior } from "./p/phantom-warrior.ts";
@@ -123,6 +134,8 @@ import { ragingGoblin } from "./r/raging-goblin.ts";
 import { rampantGrowth } from "./r/rampant-growth.ts";
 import { razorfootGriffin } from "./r/razorfoot-griffin.ts";
 import { regenerate } from "./r/regenerate.ts";
+import { relentlessRats } from "./r/relentless-rats.ts";
+import { rhoxPikemaster } from "./r/rhox-pikemaster.ts";
 import { righteousness } from "./r/righteousness.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { rootboundCrag } from "./r/rootbound-crag.ts";
@@ -153,10 +166,13 @@ import { tendrilsOfCorruption } from "./t/tendrils-of-corruption.ts";
 import { terramorphicExpanse } from "./t/terramorphic-expanse.ts";
 import { tomeScour } from "./t/tome-scour.ts";
 import { traumatize } from "./t/traumatize.ts";
+import { trumpetBlast } from "./t/trumpet-blast.ts";
 import { undeadSlayer } from "./u/undead-slayer.ts";
 import { underworldDreams } from "./u/underworld-dreams.ts";
 import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
+import { veteranArmorsmith } from "./v/veteran-armorsmith.ts";
+import { veteranSwordsmith } from "./v/veteran-swordsmith.ts";
 import { viashinoSpearhunter } from "./v/viashino-spearhunter.ts";
 import { volcanicHammer } from "./v/volcanic-hammer.ts";
 import { wallOfBone } from "./w/wall-of-bone.ts";
@@ -192,12 +208,14 @@ export const CARD_DEFS: readonly CardDef[] = [
   bountifulHarvest,
   brambleCreeper,
   burningInquiry,
+  burstOfSpeed,
   cancel,
   canyonMinotaur,
   capriciousEfreet,
   celestialPurge,
   centaurCourser,
   childOfNight,
+  coatOfArms,
   consumeSpirit,
   coralMerfolk,
   crawWurm,
@@ -221,6 +239,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   duress,
   earthquake,
   eliteVanguard,
+  elvishArchdruid,
   elvishPiper,
   elvishVisionary,
   emeraldOryx,
@@ -238,7 +257,9 @@ export const CARD_DEFS: readonly CardDef[] = [
   giantGrowth,
   giantSpider,
   glacialFortress,
+  gloriousCharge,
   goblinArtillery,
+  goblinChieftain,
   goblinPiker,
   gravedigger,
   grayOgre,
@@ -248,6 +269,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   guardianSeraph,
   hauntingEchoes,
   hillGiant,
+  honorOfThePure,
   hornedTurtle,
   howlingBanshee,
   howlingMine,
@@ -257,10 +279,13 @@ export const CARD_DEFS: readonly CardDef[] = [
   infernoElemental,
   island,
   jackalFamiliar,
+  jump,
   kalonianBehemoth,
   kelinoreBat,
+  kindledFury,
   krakensEye,
   lavaAxe,
+  levitation,
   lightningBolt,
   lightningElemental,
   lightwielderPaladin,
@@ -270,6 +295,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   manabarbs,
   megrim,
   merfolkLooter,
+  merfolkSovereign,
   mesaEnchantress,
   mightOfOaks,
   mindRot,
@@ -281,6 +307,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   naturesSpiral,
   negate,
   ornithopter,
+  overrun,
   palaceGuard,
   panicAttack,
   phantomWarrior,
@@ -295,6 +322,8 @@ export const CARD_DEFS: readonly CardDef[] = [
   rampantGrowth,
   razorfootGriffin,
   regenerate,
+  relentlessRats,
+  rhoxPikemaster,
   righteousness,
   rodOfRuin,
   rootboundCrag,
@@ -325,10 +354,13 @@ export const CARD_DEFS: readonly CardDef[] = [
   terramorphicExpanse,
   tomeScour,
   traumatize,
+  trumpetBlast,
   undeadSlayer,
   underworldDreams,
   unsummon,
   vampireAristocrat,
+  veteranArmorsmith,
+  veteranSwordsmith,
   viashinoSpearhunter,
   volcanicHammer,
   wallOfBone,

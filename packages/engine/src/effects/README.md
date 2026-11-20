@@ -23,6 +23,8 @@ the one place their effects become changes to the game.
 | `sacrifice` | "Each opponent sacrifices a land of their choice" | The player chooses one permanent they control that fits, then sacrifices it (CR 701.21a, D-068) |
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
 | `mustAttack` | "attacks you this turn if able" | Creates a continuous effect `declaration-rules.ts` reads as a requirement (CR 508.1d) on the targets still legal; targets only for now |
+| `gainKeywords` | "Target creature gains flying until end of turn", "creatures you control gain haste" | A layer 6 effect (CR 613.1f) on the objects `of` names, fixed now (CR 611.2c) |
+| `cantBeBlocked` | "Target Merfolk creature can't be blocked this turn" | A continuous effect `canBlock` reads (CR 509.1b) on the targets still legal; targets only |
 | `cantBlock` | "can't block this turn" | Creates a continuous effect `canBlock` reads (CR 509.1b) on the targets still legal (CR 608.2b); targets only for now |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a); `noRegeneration`: "It can't be regenerated", so no shield is used (CR 701.19c) |
 | `regenerate` | "Regenerate target creature" | A regeneration shield on each permanent `of` names still on the battlefield, used the next time it would be destroyed this turn (CR 701.19a; `regeneration-shield.ts`, D-086) |

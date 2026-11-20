@@ -60,6 +60,8 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
         return `${pt} from ${change.count} ${change.counter} counter${change.count === 1 ? "" : "s"}`;
       case "ruleModifier":
         return `${pt} from rule modifier ${change.index + 1} of the game`;
+      case "static":
+        return `${pt} from ${sourceName(change.source)}'s static ability`;
     }
   }
 

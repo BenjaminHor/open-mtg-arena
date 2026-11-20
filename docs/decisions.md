@@ -1339,3 +1339,21 @@ every schema change and every change D-024 lists bumps it.
   back under its 100 ms budget (98.5 ms on this machine, against 61 before the pass). The baseline is updated for that
   (bench/README.md): the layer system's cost, which the next slices build on. The budget margin is thin; incremental
   recomputation, or keeping unchanged objects' results, would be the next step if a benchmark asks.
+
+**D-093: Anthems and granted keywords in the layer pass (M2-09a)** · 2026-11-20 · accepted
+- Static abilities that change other objects are `StaticAbilityDef`s read inside the pass (`rules/static-effects.ts`):
+  `creaturesGet` ("[other] [filter] creatures [you control] get +P/+T [and have K]", Honor of the Pure, Veteran
+  Armorsmith and Swordsmith, Elvish Archdruid, Merfolk Sovereign, Goblin Chieftain, Rhox Pikemaster, Levitation),
+  `plusPerSharedCreatureType` (Coat of Arms) and `plusPerOtherSameName` (Relentless Rats). They apply only from the
+  battlefield (CR 113.6, 611.3b) to what fits as they apply (CR 611.3a), found from the board as the earlier layers
+  left it (`fitsOnBoard`; the readers read the finished pass, so the pass can't call them). One with keywords finds its
+  set in layer 6 and keeps it for 7c (CR 613.6; `later:` there, as nothing between those layers can change a set yet).
+- Resolved effects: `gainKeywords` (layer 6, `addKeywords`) beside `modifyPT`, both on the objects fixed as they begin
+  (CR 611.2c): Glorious Charge, Overrun, Trumpet Blast (the attacking creatures then), Kindled Fury, Jump, Burst of
+  Speed. "Can't be blocked this turn" (Merfolk Sovereign) is a rules effect `canBlock` reads, like "can't block".
+- Order inside layers 6 and 7c: they only add, so timestamps can't change the result (the paper review found no case
+  in the pool); dependency (CR 613.8) is left for the first card that needs it (Open questions).
+- "Add {G} for each Elf you control" (Elvish Archdruid): a mana ability's amount may be a count, as it resolves. Auto
+  pay skips it (it pays only with 1-mana sources).
+- Golden cover credits the anthem statics as their permanent resolves (coarse: many are on noncreatures).
+

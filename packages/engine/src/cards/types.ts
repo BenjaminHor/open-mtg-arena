@@ -154,7 +154,28 @@ export type StaticAbilityDef =
   /** "All creatures able to block this creature do so": a requirement on each of them (CR 509.1c). */
   | { kind: "mustBeBlockedByAllAble" }
   /** "This spell can't be countered" (Great Sable Stag): works on the stack (CR 113.6g); a counter does nothing (CR 101.2). */
-  | { kind: "cantBeCountered" };
+  | { kind: "cantBeCountered" }
+  /**
+   * "[Other] [filter] creatures [you control] get +P/+T [and have K]" (Honor of the Pure, Goblin Chieftain, Levitation): a
+   * continuous effect on whatever fits as it applies (CR 611.3a), in layer 6 for the keywords and 7c for the bonus
+   * (CR 613.1f, 613.4c), the same objects in both. `filter` is read relative to this permanent's controller ("you");
+   * `others`: not this permanent itself.
+   */
+  | {
+      kind: "creaturesGet";
+      filter: ObjectFilter;
+      others?: true;
+      power: number;
+      toughness: number;
+      keywords?: Keyword[];
+    }
+  /**
+   * "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with
+   * it" (Coat of Arms): every creature, whoever controls it (CR 109.2), layer 7c.
+   */
+  | { kind: "plusPerSharedCreatureType" }
+  /** "This creature gets +1/+1 for each other creature on the battlefield named [this]" (Relentless Rats), layer 7c. */
+  | { kind: "plusPerOtherSameName" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =
@@ -358,11 +379,15 @@ export type Effect =
    * the color is chosen as the ability resolves (CR 608.2d), right after it's activated (CR 605.3b), so it comes with the
    * activation (D-068).
    */
-  | { op: "addMana"; mana: ManaType | "anyColor" | { oneOf: Color[] }; amount: number }
+  | { op: "addMana"; mana: ManaType | "anyColor" | { oneOf: Color[] }; amount: number | { count: ObjectFilter } }
   /** "gets +N/+N until end of turn": a layer 7c effect (CR 613.4c) that ends in the cleanup step (CR 514.2). */
   | { op: "modifyPT"; power: number; toughness: number; of: EffectSubject; duration: Duration }
   /** "[subject] can't block this turn": a restriction on declaring blockers (CR 509.1b) for as long as it lasts. */
   | { op: "cantBlock"; of: EffectSubject; duration: Duration }
+  /** "[subject] gains [keywords] until end of turn": a layer 6 effect (CR 613.1f) on the objects fixed now (CR 611.2c). */
+  | { op: "gainKeywords"; keywords: Keyword[]; of: EffectSubject; duration: Duration }
+  /** "[subject] can't be blocked this turn" (Merfolk Sovereign): a restriction on blocking it (CR 509.1b). */
+  | { op: "cantBeBlocked"; of: EffectSubject; duration: Duration }
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
   /**

@@ -525,6 +525,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          information must be the computed characteristics, snapshotted as it leaves (CR 608.2h): Polymorph on a
          stolen creature, Inferno Elemental risen black against White Knight, Stone Giant's power. The judge's
          scenario list is in its report; the ones for each slice are written with it.
+       - Step 2 done (D-093): 16 cards (Honor of the Pure, Veteran Armorsmith, Veteran Swordsmith, Elvish Archdruid,
+         Merfolk Sovereign, Goblin Chieftain, Rhox Pikemaster, Levitation, Coat of Arms, Relentless Rats, Glorious
+         Charge, Overrun, Trumpet Blast, Kindled Fury, Jump, Burst of Speed); 16 scenarios in
+         `test/scenarios/cards/m2-09a/`; the Anthems row of the interaction matrix; golden pool-329 and pool-685. 186
+         cards. Next: mutations, fuzz, reviews, PR.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

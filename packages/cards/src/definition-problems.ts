@@ -156,7 +156,10 @@ function targetProblems(
     // "Can't block" is a rules effect: on targets its set is fixed by them (CR 608.2b), but on "each creature ..." it
     // would apply to creatures arriving later (later: CR 611.2c, 613.11), which nothing reads yet.
     const onTargets = (of: unknown) => typeof of === "object" && of !== null && "target" in of;
-    if ((effect.op === "cantBlock" || effect.op === "mustAttack") && !onTargets(effect.of))
+    if (
+      (effect.op === "cantBlock" || effect.op === "mustAttack" || effect.op === "cantBeBlocked") &&
+      !onTargets(effect.of)
+    )
       problems.push(`${where}: ${effect.op} applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.

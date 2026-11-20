@@ -3,9 +3,10 @@
 // (`controllerOf`, `cardTypesOf`, `colorsOf`, `keywordsOf`, `powerAndToughness`, ...) reads this pass; nothing stores
 // a computed value in the state (architecture.md). The pass is computed at most once per state object (D-092).
 //
-// Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 7c
-// (CR 613.4c), from resolved effects on the objects they locked in (CR 611.2c), counters and rule modifiers. Layers
-// 1-6 and 7a, 7b, 7d have none yet; each comes in its place below as its first card does (M2-09).
+// Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
+// granted) and 7c (CR 613.4c), from resolved effects on the objects they locked in (CR 611.2c), static abilities
+// (`static-effects.ts`), counters and rule modifiers. Layers 1-5 and 7a, 7b, 7d have none yet; each comes in its place
+// below as its first card does (M2-09).
 
 import type {
   CardDatabase,
@@ -20,6 +21,7 @@ import type { Duration } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
+import { type StaticPT, staticKeywordGrants, staticPTChanges, staticSources } from "./static-effects.ts";
 
 /** One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. */
 export type Layered = {
@@ -45,6 +47,8 @@ export type LayerSevenCChange =
   | { kind: "effect"; source: ObjectId; timestamp: number; duration: Duration; power: number; toughness: number }
   /** All the counters of one kind on it (CR 122.1a). */
   | { kind: "counters"; counter: string; count: number; power: number; toughness: number }
+  /** A static ability of a permanent on the battlefield (CR 611.3), by that permanent. */
+  | { kind: "static"; source: ObjectId; power: number; toughness: number }
   /** A rule modifier of the game (`GameSetup.ruleModifiers`, by index). */
   | { kind: "ruleModifier"; index: number; power: number; toughness: number };
 
@@ -172,10 +176,23 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
   }
   // The printed values (CR 613.1), and the controller as stored (CR 110.2); no control-changing effects yet (layer 2).
   for (const obj of objects) board[obj.id] = start(obj, obj.baseController, cards);
+  // Layer 6 (CR 613.1f): keywords granted by resolved effects, on the objects they locked in (CR 611.2c), and by static
+  // abilities, on what fits now (CR 611.3a). Only adding so far, so the order within the layer can't matter.
+  const sources = staticSources(input, board);
+  const { grants, sets } = staticKeywordGrants(input, board, sources);
+  for (const effect of input.effects) {
+    if (effect.change.kind !== "addKeywords") continue;
+    for (const id of effect.affected) grants[id] = [...(grants[id] ?? []), ...effect.change.keywords];
+  }
+  for (const [id, keywords] of Object.entries(grants) as [ObjectId, Keyword[]][]) {
+    const card = board[id];
+    if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]) };
+  }
   // Layer 7 (CR 613.4): a creature's printed power and toughness, then 7c.
+  const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
     const card = board[obj.id];
-    if (card !== undefined) board[obj.id] = layerSeven(input, obj, card, cards);
+    if (card !== undefined) board[obj.id] = layerSeven(input, obj, card, cards, statics[obj.id] ?? []);
   }
   return board;
 }
@@ -203,13 +220,22 @@ function start(obj: CardObject, controller: PlayerId, cards: CardDatabase): Laye
  * its printed ones (CR 208.3). Then 7c adds (7a, 7b, 7d have no effects yet; when they do, they apply in timestamp
  * order, CR 613.7). 7c only adds and subtracts, so its order never changes the result.
  */
-function layerSeven(input: LayerInputs, obj: CardObject, card: Layered, cards: CardDatabase): Layered {
+function layerSeven(
+  input: LayerInputs,
+  obj: CardObject,
+  card: Layered,
+  cards: CardDatabase,
+  statics: readonly StaticPT[] = [],
+): Layered {
   const printed = cards[obj.oracleId]?.printed;
   const onBattlefield = input.battlefield.includes(obj.id);
   const isCreature = card.types.includes("creature");
   if (printed === undefined || printed.power === null || printed.toughness === null || (onBattlefield && !isCreature))
     return card;
-  const sevenC = layer7c(input, obj, card, isCreature, onBattlefield);
+  const sevenC = [
+    ...layer7c(input, obj, card, isCreature, onBattlefield),
+    ...statics.map((s): LayerSevenCChange => ({ kind: "static", ...s })),
+  ];
   const bonus = sevenC.reduce((sum, c) => ({ power: sum.power + c.power, toughness: sum.toughness + c.toughness }), {
     power: 0,
     toughness: 0,
@@ -238,6 +264,8 @@ function layer7c(
       }
       case "cantBlock":
       case "mustAttack":
+      case "addKeywords":
+      case "cantBeBlocked":
         break;
     }
   }
@@ -274,4 +302,9 @@ function ptCounter(name: string): { power: number; toughness: number } | null {
   const match = /^([+-]\d+)\/([+-]\d+)$/.exec(name);
   if (match === null) return null;
   return { power: Number(match[1]), toughness: Number(match[2]) };
+}
+
+/** A keyword granted twice is listed once: each keyword's own rules say several instances are redundant. */
+function withoutRepeats<T>(items: readonly T[]): T[] {
+  return items.filter((item, i) => items.indexOf(item) === i);
 }

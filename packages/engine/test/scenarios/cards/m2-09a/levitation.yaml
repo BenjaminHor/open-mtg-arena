@@ -1,0 +1,15 @@
+name: Levitation gives its controller's creatures flying, so a creature without flying or reach can't block them
+rules: [CR 613.1f, CR 702.9b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Levitation, Grizzly Bears]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  # p2's Bears can't block a flyer, so no blocks are asked for, and the attacker's damage is dealt.
+  - all pass: until main2
+  - expect:
+      p2.life: 18

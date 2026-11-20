@@ -98,7 +98,10 @@ export const furnaceWhelp: CardDef = {
   colors: ["B"] }`, "can block any number of creatures" is `{ kind: "canBlockAnyNumber" }`, "can't attack or block
   alone" is `{ kind: "cantAttackOrBlockAlone" }`, "attacks each combat if able" is `{ kind: "attacksEachCombat" }`, "all
   creatures able to block this creature do so" is `{ kind: "mustBeBlockedByAllAble" }`, "this spell can't be
-  countered" is `{ kind: "cantBeCountered" }` (it works on the stack, CR 113.6g). The engine reads them only through
+  countered" is `{ kind: "cantBeCountered" }` (it works on the stack, CR 113.6g). Anthems (D-093): "[other] white
+  creatures you control get +1/+1 [and have haste]" is `{ kind: "creaturesGet", filter, others?, power, toughness,
+  keywords? }`, the filter read relative to the permanent's controller; Coat of Arms is `{ kind:
+  "plusPerSharedCreatureType" }`, Relentless Rats `{ kind: "plusPerOtherSameName" }`. The engine reads them only through
   `staticAbilitiesOf`.
 - Triggered abilities go in `triggers` (D-076), each `{ when, onlyIf?, optional?, targets, effects }`. `when` is the
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
