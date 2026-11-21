@@ -104,9 +104,9 @@ function alone(input: LayerInputs, obj: CardObject, cards: CardDatabase): Layere
 }
 
 /**
- * The pass computed afresh, without the kept results, for one card object or for the board: the fuzzer checks after
+ * The pass computed afresh, without the kept passes, for one card object or for the board: the fuzzer checks after
  * every action that they equal what the readers see (`layersMatchFreshPass`), which catches a state changed in place
- * after its pass was kept.
+ * after its pass was kept. Both share the printed starts (`start`), which are frozen instead.
  */
 export function layeredFresh(state: GameState, cards: CardDatabase): Readonly<Record<ObjectId, Layered>> {
   return pass(inputsOf(state), cards);
@@ -207,7 +207,9 @@ function start(obj: CardObject, controller: PlayerId, cards: CardDatabase): Laye
   const kept = startsKept.get(data) ?? {};
   const known = kept[controller];
   if (known !== undefined) return known;
-  const made = printedWith(data, controller);
+  // Frozen, so changing a shared start in place throws rather than quietly changing every card that shares it: the
+  // fresh pass shares these too, so the fuzzer's comparison couldn't catch it.
+  const made = Object.freeze(printedWith(data, controller));
   startsKept.set(data, { ...kept, [controller]: made });
   return made;
 }
@@ -226,8 +228,8 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     statics: data.def.statics ?? [],
     power: null,
     toughness: null,
-    sevenC: [],
-    granted: [],
+    sevenC: Object.freeze([]),
+    granted: Object.freeze([]),
   };
 }
 

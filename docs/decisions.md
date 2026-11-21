@@ -1330,10 +1330,11 @@ every schema change and every change D-024 lists bumps it.
   never by caching values inside the state"): module-level `WeakMap`s keyed by exactly what it reads (`LayerInputs`:
   the objects, the effects, the battlefield, the stack, the rule modifiers, and the card database), plus the last
   result. These kept values (`computedFor`, `last`, `zonesKept`, and `startsKept`, each card's printed values with a
-  controller) are the engine's only module-level values; CLAUDE.md's "no globals" means no hidden state that can change
-  a result, and these can't: the pass is pure, its type lets it read only its inputs, the state is never changed in
-  place, a `Layered` is read-only (shared results are only ever copied to change), and the fuzzer checks after every
-  action that the kept pass equals a fresh one (`layersMatchFreshPass`). The owner is asked to confirm this reading of
+  controller) are the engine's only module-level values that change after it loads (constants such as `MANA_TYPES`
+  don't); CLAUDE.md's "no globals" means no hidden state that can change a result, and these can't: the pass is pure,
+  its type lets it read only its inputs, the state is never changed in place, and the fuzzer checks after every action
+  that the kept pass equals a fresh one (`layersMatchFreshPass`). The shared starts are the one part the fresh pass
+  shares too, so they're frozen (`Layered` is read-only in its type, and a change in place throws). The owner is asked to confirm this reading of
   "no globals" (status.md, Open questions).
   A new layer that reads more (combat, for "attacking creatures") adds it to `LayerInputs` and the key.
 - Measured: before keeping it, an action was about 5 times slower; keyed by state object, 2 to 3 times; keyed by its
@@ -1342,8 +1343,10 @@ every schema change and every change D-024 lists bumps it.
   back under its 100 ms budget (98.5 ms on this machine, against 61 before the pass); anthems and the review fixes
   took it to 103. A profile then found three cheap fixes outside the pass's logic: each card's printed values made
   once and shared (most permanents are lands nothing changes), the basic land types' mana abilities made once, and
-  legal actions asking only the player's own permanents for abilities. A random game is now 82 ms; the baseline is
-  updated for that, with a new measure of a fresh pass (`layers.freshPass`). Incremental recomputation would be the
+  legal actions asking only the player's own permanents for abilities (the basic land abilities frozen, as every caller
+  shares them). A random game is now 78 to 82 ms (78 in the baseline's run); the baseline is updated for that, with a
+  new measure of a fresh pass (`layers.freshPass`). Two measures got slightly slower in that run, within the bench's
+  noise (`applyAction.deepStack` +7%, `characteristics.busyBoard` +8%). Incremental recomputation would be the
   next step if a benchmark asks.
 
 **D-093: Anthems and granted keywords in the layer pass (M2-09a)** · 2026-11-20 · accepted

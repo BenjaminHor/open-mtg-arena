@@ -1,12 +1,12 @@
 // autoPay: a deterministic way to pay a mana cost, for the scenario runner (`pay: auto`), the CLI and the AI (D-034).
 // The rules don't choose for a player; this proposes a choice, and the engine still checks it.
 
-import type { CardDatabase, Color, ManaCost } from "../cards/types.ts";
+import type { CardDatabase, Color, Effect, ManaCost } from "../cards/types.ts";
+import { permanentsFittingFor } from "../effects/subjects.ts";
 import { tapsForCost } from "../game/tap-costs.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { matchesFilter } from "../rules/object-filter.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { MANA_TYPES, type ManaType } from "../state/mana.ts";
@@ -91,49 +91,61 @@ type Source = { object: ObjectId; ability: AbilityRef; makes: readonly ManaType[
 /**
  * The most mana the player could have right now: what's in their pool, and what each permanent whose mana ability they
  * could activate makes, counted now ("{G} for each Elf you control", Elvish Archdruid). Only a guide (`legalActions`
- * lists values of X up to it), not a rule. Auto pay uses only the sources that make one mana (`manaSources`).
+ * lists values of X up to it), not a rule. Auto pay uses only the sources that make one mana (`manaSources`). A
+ * permanent counts once, by the mana ability that makes the most: activating one taps it.
  */
 export function manaAvailable(state: GameState, player: PlayerId, cards: CardDatabase): number {
   const pool = state.players[player]?.manaPool;
   const inPool = pool === undefined ? 0 : MANA_TYPES.reduce((sum, t) => sum + pool[t], 0);
-  const tappedByCost = tapsForCost(state, cards);
   let fromPermanents = 0;
-  for (const object of state.zones.battlefield) {
-    if (controllerOf(state, object) !== player || tappedByCost.includes(object)) continue;
-    const usable = abilitiesOf(state, object, cards).find(
-      ({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null,
+  for (const object of usablePermanents(state, player, cards)) {
+    const amounts = usableManaAbilities(state, player, object, cards).map(({ effect }) =>
+      typeof effect.amount === "number"
+        ? effect.amount
+        : permanentsFittingFor(state, effect.amount.count, player, cards).length,
     );
-    const effect = usable?.def.effects.find((e) => e.op === "addMana");
-    if (effect?.op !== "addMana") continue;
-    // One mana ability per permanent: activating it taps the permanent.
-    const { amount } = effect;
-    fromPermanents +=
-      typeof amount === "number"
-        ? amount
-        : state.zones.battlefield.filter((id) => matchesFilter(state, id, amount.count, player, cards)).length;
+    fromPermanents += Math.max(0, ...amounts);
   }
   return inPool + fromPermanents;
+}
+
+/** The player's permanents whose mana abilities could be activated now: not ones the cost being paid taps (CR 107.5). */
+function usablePermanents(state: GameState, player: PlayerId, cards: CardDatabase): ObjectId[] {
+  const tappedByCost = tapsForCost(state, cards);
+  return state.zones.battlefield.filter(
+    (object) => controllerOf(state, object) === player && !tappedByCost.includes(object),
+  );
+}
+
+type AddMana = Extract<Effect, { op: "addMana" }>;
+
+/** A permanent's mana abilities the player could activate now, each with its "add mana" effect. */
+function usableManaAbilities(
+  state: GameState,
+  player: PlayerId,
+  object: ObjectId,
+  cards: CardDatabase,
+): { ref: AbilityRef; effect: AddMana }[] {
+  return abilitiesOf(state, object, cards).flatMap(({ ref, def }) => {
+    if (!isManaAbility(def) || manaAbilityProblem(state, player, object, ref, cards) !== null) return [];
+    const effect = def.effects.find((e): e is AddMana => e.op === "addMana");
+    return effect === undefined ? [] : [{ ref, effect }];
+  });
 }
 
 /** The player's permanents that can make one mana now, lands first, each group in battlefield order. */
 function manaSources(state: GameState, player: PlayerId, cards: CardDatabase): Source[] {
   const sources: Source[] = [];
-  // A permanent the cost being paid taps can't be tapped for mana for it too (CR 107.5).
-  const tappedByCost = tapsForCost(state, cards);
-  for (const object of state.zones.battlefield) {
-    if (controllerOf(state, object) !== player || tappedByCost.includes(object)) continue;
-    for (const { ref, def } of abilitiesOf(state, object, cards)) {
-      if (!isManaAbility(def) || manaAbilityProblem(state, player, object, ref, cards) !== null) continue;
-      const effect = def.effects.find((e) => e.op === "addMana");
-      if (effect?.op !== "addMana" || effect.amount !== 1) continue;
-      sources.push({
-        object,
-        ability: ref,
-        ...manaKinds(effect.mana),
-        land: cardTypesOf(state, object, cards).includes("land"),
-      });
-      break; // one mana ability per permanent: activating it taps the permanent
-    }
+  for (const object of usablePermanents(state, player, cards)) {
+    // One mana ability per permanent: activating it taps the permanent.
+    const one = usableManaAbilities(state, player, object, cards).find(({ effect }) => effect.amount === 1);
+    if (one === undefined) continue;
+    sources.push({
+      object,
+      ability: one.ref,
+      ...manaKinds(one.effect.mana),
+      land: cardTypesOf(state, object, cards).includes("land"),
+    });
   }
   return [...sources.filter((s) => s.land), ...sources.filter((s) => !s.land)];
 }

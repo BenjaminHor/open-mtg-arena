@@ -80,7 +80,7 @@ function basicLandAbilities(state: GameState, id: ObjectId, cards: CardDatabase)
 }
 
 /** Made once: legal actions list every land's abilities at every priority (measured, D-092). */
-const BASIC_LAND_ABILITY: Record<BasicLandType, ActivatedAbility> = {
+const BASIC_LAND_ABILITY: Readonly<Record<BasicLandType, ActivatedAbility>> = {
   Plains: tapForMana("Plains"),
   Island: tapForMana("Island"),
   Swamp: tapForMana("Swamp"),
@@ -88,8 +88,9 @@ const BASIC_LAND_ABILITY: Record<BasicLandType, ActivatedAbility> = {
   Forest: tapForMana("Forest"),
 };
 
+/** Frozen throughout, as every caller shares it (and actions carry its `ref`): a change in place throws. */
 function tapForMana(landType: BasicLandType): ActivatedAbility {
-  return {
+  return deepFrozen<ActivatedAbility>({
     ref: { kind: "basicLandType", landType },
     def: {
       kind: "activated",
@@ -97,7 +98,16 @@ function tapForMana(landType: BasicLandType): ActivatedAbility {
       targets: [],
       effects: [{ op: "addMana", mana: BASIC_LAND_MANA[landType], amount: 1 }],
     },
-  };
+  });
+}
+
+/** Freezes plain data and everything inside it. */
+function deepFrozen<T>(value: T): T {
+  if (typeof value === "object" && value !== null) {
+    for (const inner of Object.values(value)) deepFrozen(inner);
+    Object.freeze(value);
+  }
+  return value;
 }
 
 /**

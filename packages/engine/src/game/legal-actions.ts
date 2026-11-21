@@ -186,6 +186,7 @@ function activationActions(state: GameState, player: PlayerId, decisionId: Decis
 /**
  * The player's permanents, in battlefield order: only a permanent's controller activates its abilities (CR 602.2). The
  * problem functions check that too; leaving out the others first halves the work done at every priority (measured).
+ * An ability any player may activate ("unless the object specifically says otherwise", later: CR 602.2) must skip this.
  */
 function controlled(state: GameState, player: PlayerId): ObjectId[] {
   return state.zones.battlefield.filter((object) => controllerOf(state, object) === player);

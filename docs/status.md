@@ -553,7 +553,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Part 2: Elvish Archdruid counted by `manaAvailable` (scenario `elvish-archdruid-x.yaml`); the
          `layers.freshPass` measure; docs (D-092, architecture.md, future-rules, rules README, reader comments); a
          random game back from 103 ms to 82 ms (D-092: printed values shared, basic land abilities made once, legal
-         actions ask only the player's permanents), baseline updated. Next: re-mutate, fuzz, PR.
+         actions ask only the player's permanents), baseline updated. Code review of part 2 (no wrong results): freeze
+         the shared starts and basic land abilities (the fresh pass shares them), one usable-mana-ability search and
+         one count for `manaAvailable` and auto pay, a payable Archdruid X and an "only yours" scenario, doc wording,
+         `later: CR 602.2` on the controller pre-filter; all fixed. Next: fuzz, PR.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

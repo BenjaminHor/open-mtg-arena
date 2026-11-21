@@ -107,8 +107,9 @@ state like counters, damage, tapped, face-down. The stored controller is only th
 computed by `characteristics()`, which applies continuous effects in layer order (CR 613.1),
 using timestamps (CR 613.7) and dependencies (CR 613.8). Memoize per state object if profiling
 shows a need, never by caching values inside the state. The layer pass (`rules/layers.ts`) is kept this way, in
-module-level `WeakMap`s keyed by exactly the inputs it reads: the engine's one exception to "no module-level values",
-allowed because a kept result can never differ from a fresh one, which the fuzzer checks after every action (D-092).
+module-level `WeakMap`s keyed by exactly the inputs it reads, and the last result used: the engine's one exception to
+"no globals", allowed because a kept result can never differ from a fresh one, which the fuzzer checks after every
+action (D-092; pending the owner's confirmation, status.md).
 
 ## Actions and decisions
 
