@@ -1,0 +1,19 @@
+name: Putting the creature onto the battlefield is optional (its ruling)
+rules: [CR 603.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+  p2:
+    library: [Craw Wurm]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - p1 choose: Craw Wurm
+  - p2 choose: Grizzly Bears
+  - p1 choose: no
+  - expect:
+      p1.battlefield: [Sphinx Ambassador]
+      p2.library count: 1

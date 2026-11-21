@@ -1,0 +1,19 @@
+name: If the player names the card searched for, it stays in their library, which they shuffle
+rules: [CR 701.23a, CR 701.24a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+  p2:
+    library: [Craw Wurm, Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - p1 choose: Craw Wurm
+  - p2 choose: Craw Wurm
+  - expect:
+      p1.battlefield: [Sphinx Ambassador]
+      p2.library count: 2
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p2 }]

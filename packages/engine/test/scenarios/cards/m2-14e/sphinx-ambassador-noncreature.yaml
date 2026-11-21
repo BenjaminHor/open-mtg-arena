@@ -1,0 +1,19 @@
+name: A noncreature card found stays in the library whatever the player names (its ruling)
+rules: [CR 701.23a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+  p2:
+    library: [Lightning Bolt, Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - p1 choose: Lightning Bolt
+  - p2 choose: Grizzly Bears
+  - expect:
+      p1.battlefield: [Sphinx Ambassador]
+      p2.library count: 2
+      stack: []

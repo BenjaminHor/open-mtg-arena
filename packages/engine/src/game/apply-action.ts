@@ -12,7 +12,8 @@ import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.t
 import { activateManaAbility, manaAbilityProblem, manaColorProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
-import type { ChooseWhat } from "../state/decisions.ts";
+import type { ChooseWhat, PendingDecision } from "../state/decisions.ts";
+import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
@@ -39,6 +40,7 @@ import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
 import { answerKeepLegend } from "./priority.ts";
+import type { Progress } from "./progress.ts";
 import { chooseSacrifice, sacrificeProblem } from "./sacrifice-costs.ts";
 import { queueWork } from "./work.ts";
 
@@ -170,20 +172,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       // The name of a card (CR 201.4), from the card database (D-114), or a basic land type (CR 205.3i).
       const problem = nameProblem(pending.what, answer.name, cards);
       if (problem !== null) return error("illegalAction", problem);
-      // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
-      // Told to everyone, so a player choosing after knows it (CR 101.4b).
-      const { proposed, choices } = pending.resume;
-      const object = pending.for.kind === "object" ? pending.for.object : null;
-      if (object === null) throw new Error("a card name is chosen for an object");
-      return {
-        ok: true,
-        state: queueWork(answered, {
-          kind: "resumeEvent",
-          proposed,
-          choices: [...choices, { kind: "asEnters", for: pending.for, ref: pending.ref, chosen: answer.name }],
-        }),
-        events: [{ type: "NAME_CHOSEN", player: pending.player, object, what: pending.what, name: answer.name }],
-      };
+      return { ok: true, ...answerName(answered, pending, answer.name) };
     }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;
@@ -322,5 +311,43 @@ function nameProblem(what: ChooseWhat, name: string, cards: CardDatabase): strin
       return isCardName(name, cards) ? null : `no card is named ${name}`;
     case "basicLandType":
       return isBasicLandType(name) ? null : `${name} isn't a basic land type`;
+  }
+}
+
+/**
+ * A name chosen, told to everyone so a player choosing after knows it (CR 101.4b). As a permanent enters (CR 614.12a),
+ * the event is replaced again from the start with it kept; during a resolution, it's kept for the effects after it.
+ */
+function answerName(
+  state: GameState,
+  pending: Extract<PendingDecision, { kind: "chooseName" }>,
+  name: string,
+): Progress {
+  const answering = pending.answering;
+  switch (answering.kind) {
+    case "asEnters": {
+      if (answering.for.kind !== "object") throw new Error("a name as it enters is chosen for an object");
+      const { proposed, choices } = answering.resume;
+      const choice = { kind: "asEnters", for: answering.for, ref: answering.ref, chosen: name } as const;
+      const event: GameEvent = {
+        type: "NAME_CHOSEN",
+        player: pending.player,
+        object: answering.for.object,
+        what: pending.what,
+        name,
+      };
+      return {
+        state: queueWork(state, { kind: "resumeEvent", proposed, choices: [...choices, choice] }),
+        events: [event],
+      };
+    }
+    case "resolution": {
+      const resolution = state.resolution;
+      if (resolution === null) throw new Error("a name chosen while nothing resolves");
+      return {
+        state: { ...state, resolution: { ...resolution, named: name } },
+        events: [{ type: "NAME_CHOSEN", player: pending.player, object: resolution.object, what: pending.what, name }],
+      };
+    }
   }
 }

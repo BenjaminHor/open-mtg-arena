@@ -740,6 +740,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14e built (2026-11-21, D-121): Sphinx Ambassador (232 cards): `nameCard` at resolution (the `chooseName`
+         decision with `answering: resolution`), `Resolution.named`, the `notNamedThisWay` filter. 4 scenarios (a creature
+         not named put under your control, the named card left, a noncreature found, declined), a test that the
+         naming player's view holds nothing of the found card; mutants 3/3. Next: reviews, PR.
        - M2-14d2 built (2026-11-21, D-120): Convincing Mirage (231 cards): a basic land type chosen as it enters (the
          `chooseName` decision with `what`), layer 4 setting the enchanted land's type (`rules/land-type.ts`), its rules
          text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type
@@ -1127,6 +1131,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
+- **Owner (2026-11-21, later):** "Continue with the rest of M2"; looking forward to trying it (the CLI commands were
+  given: `pnpm cli new --decks ...`, `show --as p1`, `actions`, `do`, `ai`).
 - **Owner's request (2026-11-21):** run the fuzz games in parallel (a 60-game run took over 5 minutes on one core).
   Done (D-117): `pnpm fuzz` uses a worker thread per core; 60 games in 2 minutes on this 4-core machine.
 - **Owner's preference (2026-11-20):** keep looking for ways to speed up iteration, so features land quickly while

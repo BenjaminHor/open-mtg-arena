@@ -6,6 +6,7 @@
 import type { CardDatabase, ObjectFilter } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { characteristics } from "./characteristics.ts";
 import { isAttacking, isBlocking } from "./combat.ts";
 import { fits } from "./filter-fit.ts";
 import { layeredOf } from "./layers.ts";
@@ -29,6 +30,10 @@ export function matchesFilter(
   const controlled = state.zones.battlefield.includes(id) || state.zones.stack.includes(id);
   // The pass's controller is `controllerOf`'s (layer 2 is its own, D-092; the fuzzer checks they agree).
   const inCombat = (as: NonNullable<ObjectFilter["combat"]>) => inCombatAs(state, id, as, cards);
+  // "That doesn't have that name": the name chosen while this resolves (Sphinx Ambassador), read here as the pass
+  // has no name (no effect changes one yet, later: CR 707.2).
+  if (filter.notNamedThisWay === true && characteristics(state, id, cards).name === state.resolution?.named)
+    return false;
   return fits({ obj, card, controlled, inCombat }, filter, you, thatPlayer);
 }
 

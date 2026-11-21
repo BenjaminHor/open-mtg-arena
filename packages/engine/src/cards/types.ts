@@ -407,6 +407,8 @@ export type TargetCount = { min: number; max: number | "any" };
  * (later: CR 613.8).
  */
 export type ObjectFilter = {
+  /** "That doesn't have that name": a name other than the one chosen this way (`nameCard`, Sphinx Ambassador). */
+  notNamedThisWay?: true;
   types?: CardType[];
   notTypes?: CardType[];
   colors?: Color[];
@@ -688,6 +690,11 @@ export type Effect =
       count: "one" | "anyNumber";
       sameNameAsExiled?: true;
     }
+  /**
+   * "That player chooses a card name" (Sphinx Ambassador, CR 201.4): one player names a card while it resolves, kept as
+   * `Resolution.named` for the effects after it (a filter's `notNamedThisWay`).
+   */
+  | { op: "nameCard"; who: EffectSubject }
   /** "Reveal it": shows the cards to every player (CR 701.20a), staying where they are (CR 701.20b). */
   | { op: "reveal"; of: EffectSubject }
   /**

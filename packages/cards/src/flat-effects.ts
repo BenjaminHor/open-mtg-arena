@@ -35,6 +35,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "untap":
     case "doesntUntap":
     case "extraTurn":
+    case "nameCard":
     case "createTokens":
     case "attachSelf":
     case "putCounters":

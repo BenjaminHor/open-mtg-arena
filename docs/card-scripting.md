@@ -208,6 +208,9 @@ export const furnaceWhelp: CardDef = {
   `{ kind: "asEntersChooseBasicLandType" }` (kept as `chosenLandType`), and "enchanted land is the chosen type" the
   static `{ kind: "attachedSetsLandType" }`: layer 4 sets the land type, and the land loses its rules text's
   abilities (CR 305.7, D-120).
+- "That player chooses a card name" while it resolves is `{ op: "nameCard", who: "triggeringPlayer" }`, and "a
+  creature card that doesn't have that name" the filter `{ types: ["creature"], notNamedThisWay: true }` (Sphinx
+  Ambassador, D-121).
 - "Regenerate this creature" / "Regenerate target creature" is `{ op: "regenerate", of: "self" }` / `of: { target: 0 }`
   (a shield, D-086); "Destroy target creature. It can't be regenerated." is `{ op: "destroy", of: { target: 0 },
   noRegeneration: true }`. "Its controller reveals cards from the top of their library until they reveal a creature

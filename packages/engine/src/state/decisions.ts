@@ -151,17 +151,24 @@ export type DecisionKind =
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     }
   /**
-   * "As this enters, choose a card name" (CR 614.12a, 201.4) or "a basic land type" (CR 205.3i): the player it enters
-   * under names one, a card from the card database or one of the five types (`what`). `resume` is as for
-   * `chooseReplacement`: the answer is kept with the choices, and the event replaced again.
+   * A card name (CR 201.4) or a basic land type (CR 205.3i) to choose (`what`), and what the answer is for (`answering`):
+   * "as this enters, choose" (CR 614.12a), by the player it enters under, or "that player chooses a card name" while
+   * a spell or ability resolves (Sphinx Ambassador), kept in `Resolution.named` for the effects after it.
    */
+  | { kind: "chooseName"; what: ChooseWhat; answering: NameFor };
+
+/**
+ * What a `chooseName` answer is for. As a permanent enters, `resume` is as for `chooseReplacement`: the answer is kept
+ * with the choices, and the event replaced again. During a resolution, the rest of it is already queued.
+ */
+export type NameFor =
   | {
-      kind: "chooseName";
-      what: ChooseWhat;
+      kind: "asEnters";
       for: ChoiceFor;
       ref: ReplacementRef;
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
-    };
+    }
+  | { kind: "resolution" };
 
 /** What a `chooseName` decision names: a card (CR 201.4) or a basic land type (CR 205.3i). */
 export type ChooseWhat = "cardName" | "basicLandType";

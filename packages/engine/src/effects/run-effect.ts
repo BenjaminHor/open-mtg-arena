@@ -2,6 +2,7 @@
 // place that turns them into changes to the game.
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
+import { waitFor } from "../game/decide.ts";
 import { addExtraTurns } from "../game/extra-turns.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { happen, happenOrAsk } from "../pipeline/happen.ts";
@@ -303,6 +304,15 @@ export function runEffect(
       return revealObjects(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards);
     case "put":
       return put(state, effect, context, cards);
+    case "nameCard": {
+      // "That player chooses a card name" (CR 201.4): the rest of the resolution waits behind it.
+      const player = onePlayer(state, effect.who, context, cards);
+      if (player === null) return { state, events: [] };
+      return {
+        state: waitFor(state, player, { kind: "chooseName", what: "cardName", answering: { kind: "resolution" } }),
+        events: [],
+      };
+    }
     case "revealTop": {
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : revealTop(state, player, cards);

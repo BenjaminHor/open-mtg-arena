@@ -195,6 +195,7 @@ import { soulBleed } from "./s/soul-bleed.ts";
 import { soulWarden } from "./s/soul-warden.ts";
 import { sparkmageApprentice } from "./s/sparkmage-apprentice.ts";
 import { spellbook } from "./s/spellbook.ts";
+import { sphinxAmbassador } from "./s/sphinx-ambassador.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { stampedingRhino } from "./s/stampeding-rhino.ts";
 import { stoneGiant } from "./s/stone-giant.ts";
@@ -338,6 +339,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   illusionaryServant,
   indestructibility,
   infernoElemental,
+  sphinxAmbassador,
   convincingMirage,
   pithingNeedle,
   platinumAngel,

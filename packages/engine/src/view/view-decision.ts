@@ -4,6 +4,7 @@
 import type { PendingDecision } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
+import type { ChoiceFor, ReplacementRef } from "../state/replacements.ts";
 import { oracleIdOf } from "../zones/shown-order.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { canSee } from "./visibility.ts";
@@ -26,7 +27,9 @@ export type ViewChooseYesNo = Omit<ChooseYesNo, "resume">;
 
 export type ViewChooseReplacement = Omit<ChooseReplacement, "resume">;
 
-export type ViewChooseName = Omit<ChooseName, "resume">;
+export type ViewChooseName = Omit<ChooseName, "answering"> & {
+  answering: { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef } | { kind: "resolution" };
+};
 
 export type ViewDecision =
   | Exclude<PendingDecision, ChooseCards | ChooseYesNo | ChooseReplacement | ChooseName>
@@ -42,11 +45,15 @@ export function viewDecision(state: GameState, decision: PendingDecision, viewer
       return { ...rest, options: options.map((id) => shownOption(state, id, viewer)) };
     }
     case "chooseYesNo":
-    case "chooseReplacement":
-    case "chooseName": {
+    case "chooseReplacement": {
       const { resume: _resume, ...rest } = decision;
       return rest;
     }
+    case "chooseName":
+      // The event to resume is the engine's bookkeeping; what it's for stays.
+      return decision.answering.kind === "asEnters"
+        ? { ...decision, answering: { kind: "asEnters", for: decision.answering.for, ref: decision.answering.ref } }
+        : { ...decision, answering: { kind: "resolution" } };
     default:
       return decision;
   }

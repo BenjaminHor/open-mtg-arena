@@ -198,6 +198,7 @@ Soul Bleed
 Soul Warden
 Sparkmage Apprentice
 Spellbook
+Sphinx Ambassador
 Spined Wurm
 Stampeding Rhino
 Stone Giant
