@@ -191,6 +191,7 @@ function addCard(
     controlledSinceTurnStart: permanent !== null && !permanent.summoningSick,
     choices: null,
     ...(permanent?.chosenName === undefined ? {} : { chosenName: permanent.chosenName }),
+    ...(permanent?.chosenLandType === undefined ? {} : { chosenLandType: permanent.chosenLandType }),
   };
   const next = { ...stamped.state, objects: { ...stamped.state.objects, [obj.id]: obj } };
   return withZoneList(next, ref, [...zoneList(next, ref), obj.id]);

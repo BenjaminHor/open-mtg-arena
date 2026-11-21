@@ -740,6 +740,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14d2 built (2026-11-21, D-120): Convincing Mirage (231 cards): a basic land type chosen as it enters (the
+         `chooseName` decision with `what`), layer 4 setting the enchanted land's type (`rules/land-type.ts`), its rules
+         text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type
+         refused, a Forest made an Island paying {U} and back once the Aura goes, a checkland made a Swamp, Gargoyle
+         Castle made a Mountain, swampwalk, Nightmare's count, Awakener Druid's Treefolk staying a Treefolk), unit tests
+         for the lost abilities; mutants 3/4 (the land guard unreachable). 1 golden game. Next: reviews, PR.
        - M2-14d1 built (2026-11-21, D-119): Pithing Needle (230 cards) and "as it enters, choose a card name": a
          replacement asking through `happenOrAsk` (a `chooseName` decision, kept in the resumed event's choices), the
          name on the permanent, `finishResolving` and Open the Vaults able to wait. 7 scenarios (naming as it enters and

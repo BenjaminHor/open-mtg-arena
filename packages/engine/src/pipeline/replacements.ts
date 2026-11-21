@@ -16,8 +16,10 @@ import { apnapOrder } from "../game/turn-order.ts";
 import { replacementsOf } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
+import type { ChooseWhat } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { isBasicLandType } from "../state/objects.ts";
 import {
   type ChoiceFor,
   hasRegenerationShield,
@@ -35,7 +37,7 @@ import { playLandDestination, type SingleEvent } from "./proposed.ts";
  */
 export type Ask =
   | { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] }
-  | { kind: "chooseName"; player: PlayerId; for: ChoiceFor; ref: ReplacementRef };
+  | { kind: "chooseName"; what: ChooseWhat; player: PlayerId; for: ChoiceFor; ref: ReplacementRef };
 
 /** The events in place of the event, or the choice needed first. */
 export type Replaced = { kind: "replaced"; events: SingleEvent[] } | Ask;
@@ -92,20 +94,35 @@ export function applyReplacements(
     // again finds it.
     const answer = forObject.find((c) => c.kind === "asEnters" && sameReplacement(c.ref, chosen.ref));
     const answered = answer?.kind === "asEnters" ? answer.chosen : null;
-    if (needsChoice(chosen) && answered === null) {
+    const what = choiceAsEnters(chosen);
+    if (what !== null && chosen.kind === "ownText" && answered === null) {
       const to = chosen.move.to;
       if (object === null || to.zone !== "battlefield")
         throw new Error("only a permanent entering chooses as it enters");
-      return { kind: "chooseName", player: to.controller, for: { kind: "object", object }, ref: chosen.ref };
+      return { kind: "chooseName", what, player: to.controller, for: { kind: "object", object }, ref: chosen.ref };
     }
     applied.push(chosen.ref);
     replaced = replaceWith(state, chosen, replaced, answered);
   }
 }
 
-/** Whether this replacement makes a choice of its own as the permanent enters (CR 614.12a). */
-function needsChoice(candidate: Candidate): candidate is Extract<Candidate, { kind: "ownText" }> {
-  return candidate.kind === "ownText" && candidate.def.kind === "asEntersChooseName";
+/** What this replacement has its player choose as the permanent enters, if anything (CR 614.12a). */
+function choiceAsEnters(candidate: Candidate): ChooseWhat | null {
+  if (candidate.kind !== "ownText") return null;
+  switch (candidate.def.kind) {
+    case "asEntersChooseName":
+      return "cardName";
+    case "asEntersChooseBasicLandType":
+      return "basicLandType";
+    case "entersTapped":
+    case "graveyardToLibrary":
+    case "entersWithCounters":
+    case "entersWithLoyalty":
+    case "preventDamageToYou":
+    case "preventDamageToSelfRemovingCounters":
+    case "preventNoncombatDamageToAttached":
+      return null;
+  }
 }
 
 /** The event so far: what earlier replacements put before and after it, and the event itself as changed. */
@@ -264,6 +281,7 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
     case "entersWithCounters":
     case "entersWithLoyalty":
     case "asEntersChooseName":
+    case "asEntersChooseBasicLandType":
       // Once per event like every replacement: the `applied` list sees to that.
       return move.to.zone === "battlefield";
     // Prevention, read for damage (`damage-replacements.ts`), never for a move.
@@ -342,6 +360,12 @@ function replaceByOwnText(
       // The name chosen before it enters (CR 614.12a), which `applyReplacements` asked for first.
       if (move.to.zone !== "battlefield" || chosen === null) throw new Error("only a permanent entering with a name");
       return { before: [], event: rerouted(event, { ...move.to, chosenName: chosen }), after: [] };
+    }
+    case "asEntersChooseBasicLandType": {
+      // Likewise, a basic land type (CR 205.3i), checked as it was answered.
+      if (move.to.zone !== "battlefield" || chosen === null || !isBasicLandType(chosen))
+        throw new Error("only a permanent entering with a basic land type");
+      return { before: [], event: rerouted(event, { ...move.to, chosenLandType: chosen }), after: [] };
     }
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":

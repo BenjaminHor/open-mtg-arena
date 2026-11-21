@@ -204,7 +204,10 @@ export const furnaceWhelp: CardDef = {
   library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12). "As this enters,
   choose a card name" is `{ kind: "asEntersChooseName" }` (CR 614.12a, D-119): the permanent keeps the name as
   `chosenName`, and "activated abilities of sources with the chosen name can't be activated unless they're mana
-  abilities" is the static `{ kind: "chosenNameCantActivate" }`.
+  abilities" is the static `{ kind: "chosenNameCantActivate" }`. "As this Aura enters, choose a basic land type" is
+  `{ kind: "asEntersChooseBasicLandType" }` (kept as `chosenLandType`), and "enchanted land is the chosen type" the
+  static `{ kind: "attachedSetsLandType" }`: layer 4 sets the land type, and the land loses its rules text's
+  abilities (CR 305.7, D-120).
 - "Regenerate this creature" / "Regenerate target creature" is `{ op: "regenerate", of: "self" }` / `of: { target: 0 }`
   (a shield, D-086); "Destroy target creature. It can't be regenerated." is `{ op: "destroy", of: { target: 0 },
   noRegeneration: true }`. "Its controller reveals cards from the top of their library until they reveal a creature

@@ -57,7 +57,8 @@ export function replacementsOf(state: GameState, id: ObjectId, cards: CardDataba
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
   const data = cardDataOf(obj, cards);
-  const written = data?.def.replacements ?? [];
+  // A land whose subtype was set has lost its rules text's abilities, replacements too (CR 305.7).
+  const written = rulesTextLost(state, id, cards) ? [] : (data?.def.replacements ?? []);
   const loyalty = data?.printed.loyalty;
   return loyalty === undefined ? written : [...written, { kind: "entersWithLoyalty", loyalty }];
 }
@@ -70,11 +71,18 @@ export function replacementsOf(state: GameState, id: ObjectId, cards: CardDataba
 export function abilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): ActivatedAbility[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
+  // A land whose subtype was set has only its basic land types' mana abilities (CR 305.7).
+  if (rulesTextLost(state, id, cards)) return basicLandAbilities(state, id, cards);
   const printed = (cardDataOf(obj, cards)?.def.abilities ?? []).map((def, index) => ({
     ref: { kind: "printed", index } as const,
     def,
   }));
   return [...printed, ...basicLandAbilities(state, id, cards)];
+}
+
+/** Whether a land's set subtype took away its rules text's abilities (CR 305.7, `land-type.ts`). */
+function rulesTextLost(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  return layeredOf(state, id, cards)?.rulesTextLost === true;
 }
 
 /** CR 305.6: an object with the land card type and a basic land type has "{T}: Add [mana symbol]". */
@@ -200,7 +208,7 @@ export function triggersOf(
   cards: CardDatabase,
 ): readonly { index: number; def: TriggeredAbilityDef }[] {
   const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
+  if (obj?.kind !== "card" || rulesTextLost(state, id, cards)) return [];
   return (cardDataOf(obj, cards)?.def.triggers ?? []).map((def, index) => ({ index, def }));
 }
 

@@ -27,6 +27,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
 import type { CardObject } from "../state/objects.ts";
 import { layerTwo } from "./control-effects.ts";
+import { setLandTypes } from "./land-type.ts";
 import { layerSeven } from "./layer-seven.ts";
 import { layerSix } from "./layer-six.ts";
 import { type KeywordGrant, staticPTChanges, staticSources } from "./static-effects.ts";
@@ -69,6 +70,11 @@ export type Layered = Readonly<{
   cantActivate: boolean;
   /** Likewise, "doesn't untap during its controller's untap step" (Entangling Vines, CR 502.3). */
   doesntUntap: boolean;
+  /**
+   * A land whose subtype an effect set: it has lost the abilities from its rules text (CR 305.7), which the ability
+   * readers (`abilitiesOf`, `triggersOf`, `replacementsOf`) leave out.
+   */
+  rulesTextLost: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -266,6 +272,8 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
       if (card !== undefined) board[id] = withTypesAdded(card, effect.change);
     }
   }
+  // Then statics that set a land's subtype, still layer 4 (CR 305.7).
+  setLandTypes(input, board);
   for (const effect of input.effects) {
     if (effect.change.kind !== "becomes" || effect.change.colors === undefined) continue;
     for (const id of effect.affected) {
@@ -325,6 +333,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     cantBeBlocked: false,
     cantActivate: false,
     doesntUntap: false,
+    rulesTextLost: false,
   };
 }
 

@@ -151,15 +151,20 @@ export type DecisionKind =
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     }
   /**
-   * "As this enters, choose a card name" (CR 614.12a, 201.4): the player it enters under names a card from the card
-   * database. `resume` is as for `chooseReplacement`: the answer is kept with the choices, and the event replaced again.
+   * "As this enters, choose a card name" (CR 614.12a, 201.4) or "a basic land type" (CR 205.3i): the player it enters
+   * under names one, a card from the card database or one of the five types (`what`). `resume` is as for
+   * `chooseReplacement`: the answer is kept with the choices, and the event replaced again.
    */
   | {
       kind: "chooseName";
+      what: ChooseWhat;
       for: ChoiceFor;
       ref: ReplacementRef;
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     };
+
+/** What a `chooseName` decision names: a card (CR 201.4) or a basic land type (CR 205.3i). */
+export type ChooseWhat = "cardName" | "basicLandType";
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
 export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice" | "enchant";

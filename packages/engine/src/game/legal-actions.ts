@@ -16,6 +16,7 @@ import { controllerOf } from "../rules/controller.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, ObjectId, PlayerId } from "../state/ids.ts";
+import { BASIC_LAND_TYPES } from "../state/objects.ts";
 import { orderTriggersProblem } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
@@ -64,8 +65,10 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
       return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
     case "chooseReplacement":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseReplacement", option } }));
-    case "chooseName":
-      return cardNames(cards).map((name): Action => ({ ...answer, answer: { kind: "chooseName", name } }));
+    case "chooseName": {
+      const names = pending.what === "cardName" ? cardNames(cards) : BASIC_LAND_TYPES;
+      return names.map((name): Action => ({ ...answer, answer: { kind: "chooseName", name } }));
+    }
     case "keepLegend":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseCard", option } }));
     case "orderTriggers":

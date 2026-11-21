@@ -1076,6 +1076,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Convincing Mirage",
+      "slug": "convincing-mirage",
+      "oracleId": "685c4665-e04c-4012-aa5b-888a042c2a21",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant land\nAs this Aura enters, choose a basic land type.\nEnchanted land is the chosen type.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/b/fb757102-4636-46ae-b202-c2095aeb187c.jpg?1783942394",
+        "large": "https://cards.scryfall.io/large/front/f/b/fb757102-4636-46ae-b202-c2095aeb187c.jpg?1783942394",
+        "png": "https://cards.scryfall.io/png/front/f/b/fb757102-4636-46ae-b202-c2095aeb187c.png?1783942394",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/b/fb757102-4636-46ae-b202-c2095aeb187c.jpg?1783942394"
+      },
+      "artist": "Ryan Pancoast",
+      "set": "m10",
+      "collectorNumber": "46",
+      "scryfallUri": "https://scryfall.com/card/m10/46/convincing-mirage?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Coral Merfolk",
       "slug": "coral-merfolk",
       "oracleId": "4ed27607-21a8-4bc3-997e-6d2242313f6d",

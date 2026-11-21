@@ -58,6 +58,8 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "attachedDoesntUntap":
         board[host] = { ...card, doesntUntap: true };
         break;
+      // Layer 4, in `land-type.ts`.
+      case "attachedSetsLandType":
       case "attachedControl":
       case "attachedGets":
       case "creaturesGet":

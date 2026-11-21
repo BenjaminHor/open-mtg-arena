@@ -153,6 +153,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   entersWithCounters: "battlefield",
   entersWithLoyalty: "battlefield",
   asEntersChooseName: "battlefield",
+  asEntersChooseBasicLandType: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
   preventNoncombatDamageToAttached: "prevented",
 };
@@ -238,6 +239,8 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   cantLoseOpponentsCantWin: "enters",
   // Coarse, like anthems: its permanent's resolving shows it.
   chosenNameCantActivate: "enters",
+  // Coarse, like anthems: an Aura's resolving shows it.
+  attachedSetsLandType: "enters",
   // As its Aura resolves, like anthems. Pacifism's restriction is on the Aura, which never attacks or blocks, so
   // crediting it in combat would never count; its Aura resolving is when it starts to apply.
   attachedGets: "enters",

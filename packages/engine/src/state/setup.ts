@@ -3,7 +3,7 @@
 
 import type { OracleId, PlayerId } from "./ids.ts";
 import type { ManaPool } from "./mana.ts";
-import type { Counters } from "./objects.ts";
+import type { BasicLandType, Counters } from "./objects.ts";
 import type { Turn } from "./turn.ts";
 
 export type GameSetup = {
@@ -60,6 +60,8 @@ export type PermanentSetup = {
   attachedTo?: { player: PlayerId; index: number };
   /** The card name it chose as it entered (CR 614.12a; Pithing Needle), when it has one. Left out otherwise. */
   chosenName?: string;
+  /** The basic land type it chose as it entered (Convincing Mirage), when it has one. Left out otherwise. */
+  chosenLandType?: BasicLandType;
 };
 
 /**

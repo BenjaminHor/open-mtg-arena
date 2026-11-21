@@ -49,6 +49,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (`{ count }`) is worked out only as an effect applies, by `amountNow` in `effects/subjects.ts` (D-067).
 - `casting-prohibitions.ts`: `cantCastSpells`, whether an effect forbids a player to cast spells (Silence, CR 601.3).
 - `hand-size.ts`: `maximumHandSize`, seven unless a static says otherwise (Spellbook, CR 402.2, D-097).
+- `land-type.ts`: `setLandTypes`, layer 4's "enchanted land is the chosen type" (Convincing Mirage): the land types set,
+  the rules text's abilities lost (`Layered.rulesTextLost`, CR 305.7, D-120).
 - `chosen-name.ts`: `namedCantActivate`, whether a permanent's chosen name stops a source's activated abilities
   (Pithing Needle, CR 602.5, D-119).
 - `game-loss.ts`: `cantLose`, whether a static stops a player losing to a state-based action (Platinum Angel, CR 104.3,

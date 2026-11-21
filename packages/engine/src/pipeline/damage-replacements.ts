@@ -207,6 +207,7 @@ function preventsForPermanent(
     }
     // Not a prevention.
     case "asEntersChooseName":
+    case "asEntersChooseBasicLandType":
       return null;
     case "preventDamageToSelfRemovingCounters":
       // "If damage would be dealt to this creature": all of it (its ruling).

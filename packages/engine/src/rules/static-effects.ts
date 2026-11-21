@@ -81,6 +81,7 @@ export function staticKeywordGrants(
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
       case "attachedDoesntUntap":
+      case "attachedSetsLandType":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
       case "attachedControl":
@@ -193,6 +194,7 @@ export function staticPTChanges(
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
       case "attachedDoesntUntap":
+      case "attachedSetsLandType":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
       case "attachedControl":

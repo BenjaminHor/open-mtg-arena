@@ -80,6 +80,7 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
     if (c.types.includes("planeswalker")) notes.push(`loyalty ${loyaltyOf(state, id)}`);
     // The name it chose as it entered (Pithing Needle, CR 614.12a).
     if (obj.chosenName !== undefined) notes.push(`named ${obj.chosenName}`);
+    if (obj.chosenLandType !== undefined) notes.push(`chose ${obj.chosenLandType}`);
   }
   // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
   if (isAttacking(state, id, cards)) notes.push("attacking");

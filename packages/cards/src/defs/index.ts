@@ -37,6 +37,7 @@ import { chandraNalaar } from "./c/chandra-nalaar.ts";
 import { childOfNight } from "./c/child-of-night.ts";
 import { coatOfArms } from "./c/coat-of-arms.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
+import { convincingMirage } from "./c/convincing-mirage.ts";
 import { coralMerfolk } from "./c/coral-merfolk.ts";
 import { crawWurm } from "./c/craw-wurm.ts";
 import { cudgelTroll } from "./c/cudgel-troll.ts";
@@ -337,6 +338,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   illusionaryServant,
   indestructibility,
   infernoElemental,
+  convincingMirage,
   pithingNeedle,
   platinumAngel,
   magmaPhoenix,

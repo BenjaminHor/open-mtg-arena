@@ -15,6 +15,7 @@ import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
+import { isBasicLandType } from "../state/objects.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
 import { orderTriggersProblem, putOne } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
@@ -165,8 +166,11 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     }
     case "chooseName": {
       if (answer.kind !== "chooseName") return mismatch;
-      // The name of a card (CR 201.4), from the card database (D-114).
-      if (!isCardName(answer.name, cards)) return error("illegalAction", `no card is named ${answer.name}`);
+      // The name of a card (CR 201.4), from the card database (D-114), or a basic land type (CR 205.3i).
+      if (pending.what === "cardName" && !isCardName(answer.name, cards))
+        return error("illegalAction", `no card is named ${answer.name}`);
+      if (pending.what === "basicLandType" && !isBasicLandType(answer.name))
+        return error("illegalAction", `${answer.name} isn't a basic land type`);
       // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
       // Told to everyone, so a player choosing after knows it (CR 101.4b).
       const { proposed, choices } = pending.resume;
@@ -179,7 +183,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
           proposed,
           choices: [...choices, { kind: "asEnters", for: pending.for, ref: pending.ref, chosen: answer.name }],
         }),
-        events: [{ type: "NAME_CHOSEN", player: pending.player, object, name: answer.name }],
+        events: [{ type: "NAME_CHOSEN", player: pending.player, object, what: pending.what, name: answer.name }],
       };
     }
     case "chooseYesNo": {

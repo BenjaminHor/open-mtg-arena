@@ -166,6 +166,11 @@ export type ReplacementDef =
    */
   | { kind: "asEntersChooseName" }
   /**
+   * "As this Aura enters, choose a basic land type" (Convincing Mirage): asked the same way (CR 614.12a), from the five
+   * basic land types (CR 205.3i). The permanent keeps it as `chosenLandType`.
+   */
+  | { kind: "asEntersChooseBasicLandType" }
+  /**
    * "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it"
    * (Protean Hydra): all of it prevented, then the counters removed right after (CR 615.5), as many as it has.
    */
@@ -210,6 +215,11 @@ export type StaticAbilityDef =
    * Needle): sources in any zone (its ruling), named this permanent's `chosenName` (CR 602.5, 605.1a).
    */
   | { kind: "chosenNameCantActivate" }
+  /**
+   * "Enchanted land is the chosen type" (Convincing Mirage): layer 4 sets the host's land types to this permanent's
+   * `chosenLandType`, and the land loses the abilities from its rules text and gains the type's mana ability (CR 305.7).
+   */
+  | { kind: "attachedSetsLandType" }
   /**
    * "Its activated abilities can't be activated" (Ice Cage): the attached permanent's, mana abilities too (CR 602.5,
    * 605.3a).

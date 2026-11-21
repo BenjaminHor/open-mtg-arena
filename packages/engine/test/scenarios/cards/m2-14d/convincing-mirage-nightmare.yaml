@@ -1,0 +1,10 @@
+name: A land made a Swamp counts toward Nightmare's power and toughness, and one made something else doesn't
+rules: [CR 305.7, CR 604.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Nightmare, Plains, { card: Convincing Mirage, attachedTo: p1:Plains, chosenLandType: Swamp }, Swamp, { card: Convincing Mirage, attachedTo: p1:Swamp, chosenLandType: Forest }]
+steps:
+  - expect:
+      p1:Nightmare.power: 1
+      p1:Nightmare.toughness: 1

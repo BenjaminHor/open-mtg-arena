@@ -65,6 +65,8 @@ export type CardObject = {
   attachedTo?: ObjectId;
   /** The card name chosen as it entered the battlefield (CR 614.12a; Pithing Needle). Left out when it chose none. */
   chosenName?: string;
+  /** The basic land type chosen as it entered (CR 614.12a; Convincing Mirage). Left out when it chose none. */
+  chosenLandType?: BasicLandType;
 };
 
 /** An activated or triggered ability on the stack (CR 113.1c, 405.1). It isn't a card and has no `cardId`. */
@@ -113,6 +115,13 @@ export type AbilityRef =
 
 /** The basic land types (CR 305.6). */
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";
+
+/** The basic land types (CR 205.3i), in WUBRG order. */
+export const BASIC_LAND_TYPES: readonly BasicLandType[] = ["Plains", "Island", "Swamp", "Mountain", "Forest"];
+
+export function isBasicLandType(word: string): word is BasicLandType {
+  return (BASIC_LAND_TYPES as readonly string[]).includes(word);
+}
 
 /**
  * Choices announced while casting a spell or activating an ability (CR 601.2c; modes, later: CR 700.2), kept on the

@@ -3,6 +3,7 @@
 import { cardDataByOracleId, isCardName } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { MANA_TYPES } from "../state/mana.ts";
+import { isBasicLandType } from "../state/objects.ts";
 import type { GameSetup } from "../state/setup.ts";
 import type { Step } from "../state/turn.ts";
 import { skipsFirstDrawStep } from "./turn-steps.ts";
@@ -69,6 +70,15 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
         if (!chooses) problems.push(`${player.id}: only a permanent that chooses a card name as it enters has one`);
         if (!isCardName(permanent.chosenName, cards))
           problems.push(`${player.id}: no card is named ${permanent.chosenName} (CR 201.4)`);
+      }
+      // Likewise a basic land type (CR 205.3i), only for a permanent that chooses one as it enters.
+      if (permanent.chosenLandType !== undefined) {
+        const chooses = (cardDataByOracleId(permanent.oracleId, cards)?.def.replacements ?? []).some(
+          (r) => r.kind === "asEntersChooseBasicLandType",
+        );
+        if (!chooses) problems.push(`${player.id}: only a permanent that chooses a land type as it enters has one`);
+        if (!isBasicLandType(permanent.chosenLandType))
+          problems.push(`${player.id}: ${permanent.chosenLandType} isn't a basic land type (CR 205.3i)`);
       }
       const host = permanent.attachedTo;
       if (host === undefined) continue;

@@ -1812,3 +1812,14 @@ owner's answer to the D-089 open question, option (a))
   `SPELL_RESOLVED` is emitted before the choice, while the card is still on the stack: a UI must not read it as "left
   the stack", and "when it resolves" triggers (later: CR 608.2p) must be detected after the move. `isManaAbility`
   doesn't yet check CR 605.1a's "doesn't move a card to or from a library" (no pool card can tell).
+
+**D-120: Convincing Mirage: a basic land type chosen, and a land's subtype set (M2-14d2)** · 2026-11-21 · accepted
+- The choice reuses D-119's: the replacement `asEntersChooseBasicLandType` asks a `chooseName` decision whose `what` is
+  `"basicLandType"` (the answer kind stays `chooseName`, its `name` one of the five types, CR 205.3i, so saved games
+  still replay); the permanent keeps `chosenLandType`. `NAME_CHOSEN` says which `what` too.
+- "Enchanted land is the chosen type" is the static `attachedSetsLandType`, applied in layer 4 (`rules/land-type.ts`)
+  right after the resolved layer 4 effects: the land's land types (CR 205.3i's list) become the chosen one, its other
+  types, subtypes and supertypes stay (a Treefolk stays a Treefolk; basic stays basic, its ruling). It loses the
+  abilities of its rules text (CR 305.7): printed keywords, protections and statics are cleared before layer 6, so
+  granted ones still come; `Layered.rulesTextLost` makes `abilitiesOf` give only the basic land type's mana ability,
+  and `triggersOf` and `replacementsOf` nothing.
