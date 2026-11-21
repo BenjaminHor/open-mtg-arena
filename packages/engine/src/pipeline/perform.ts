@@ -35,7 +35,12 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
       ? performOne(state, event, cards)
       : // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
         event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
-  return withNewTopsShown(state, { state: keepLastKnown(state, done.state, before), events: done.events }, cards);
+  return withNewTopsShown(
+    state,
+    event,
+    { state: keepLastKnown(state, done.state, before), events: done.events },
+    cards,
+  );
 }
 
 /**
@@ -43,10 +48,11 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
  * moment within one resolution, between a search taking the top card and the shuffle after it, or between two draws
  * (the card's ruling: "reveal each one before you draw it"). A view comes only between actions, so each new top is
  * told with `CARDS_REVEALED` after the event that made it the top: a simultaneous batch is one event, and shows only
- * the top it leaves. A top changed while casting would wait until the spell is cast, as in `playerView`
- * (later: CR 401.5); no card in the pool changes it then.
+ * the top it leaves. But a top changed while a spell is being cast waits until it's cast (CR 401.5): a card moving to
+ * the stack is being cast (CR 601.2a), and its cast tells the new top once it's done (`payCost`).
  */
-function withNewTopsShown(before: GameState, after: Progress, cards: CardDatabase): Progress {
+function withNewTopsShown(before: GameState, event: ProposedEvent, after: Progress, cards: CardDatabase): Progress {
+  if (isCast(event)) return after;
   const topOf = (s: GameState, p: PlayerId) => s.zones.players[p]?.library[0];
   const changed = after.state.turnOrder.filter((p) => topOf(before, p) !== topOf(after.state, p));
   if (changed.length === 0) return after;
@@ -58,6 +64,11 @@ function withNewTopsShown(before: GameState, after: Progress, cards: CardDatabas
       : reveal(after.state, { zone: "library", player }, [top]).events;
   });
   return { state: after.state, events: [...after.events, ...shown] };
+}
+
+/** A card moving to the stack: the first step of casting it (CR 601.2a). */
+function isCast(event: ProposedEvent): boolean {
+  return event.kind === "moveCard" && event.to.zone === "stack";
 }
 
 /**

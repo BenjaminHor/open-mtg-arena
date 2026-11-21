@@ -1,0 +1,16 @@
+name: If Djinn of Wishes's controller doesn't play the card, it's exiled
+rules: [CR 608.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+    library: [Craw Wurm, Island]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: no
+  - expect:
+      exile: [Craw Wurm]
+      p1.library: [Island]
+      stack: []

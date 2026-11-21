@@ -21,12 +21,21 @@ export function totalCost(state: GameState, id: ObjectId, cards: CardDatabase): 
   const printed = data?.printed.manaCost ?? null;
   if (printed === null) return null;
   const x = obj.choices?.x ?? 0;
-  const cost = withX(printed, x, data?.def.spell?.xPaidWith);
-  const increase = data?.def.spell?.costIncrease;
-  if (increase === undefined) return cost;
+  return [...withX(printed, x, data?.def.spell?.xPaidWith), ...costIncreases(state, id, cards)];
+}
+
+/**
+ * A spell's cost increases: Fireball's "{1} more for each target beyond the first" (CR 601.2f). Also all that's paid
+ * for a spell cast "without paying its mana cost", an alternative cost of nothing, to which they still apply (CR 118.9d).
+ */
+export function costIncreases(state: GameState, id: ObjectId, cards: CardDatabase): ManaCost {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") return [];
+  const increase = cardDataOf(obj, cards)?.def.spell?.costIncrease;
+  if (increase === undefined) return [];
   const targets = (obj.choices?.targets ?? []).reduce((n, group) => n + group.length, 0);
   const extra = Math.max(0, targets - 1);
-  return [...cost, ...Array.from({ length: extra }, () => increase.perTargetBeyondFirst).flat()];
+  return Array.from({ length: extra }, () => increase.perTargetBeyondFirst).flat();
 }
 
 /**

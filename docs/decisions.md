@@ -1882,8 +1882,9 @@ owner's answer to the D-089 open question, option (a))
   life totals' (`topsFrom`), measured back to the plain cost. `playerView` walks the battlefield once for both
   reveals (`revealedBy`).
 - Not built, as nothing in the pool can cause them (future-rules): CR 401.5's delay while casting (only mana, tap,
-  loyalty and sacrifice costs exist), CR 401.6's new object; and a library becoming revealed mid-action (Nocturnus
-  entering) whose top then changes in the same action before a view.
+  loyalty and sacrifice costs exist; built in M2-14g after all, D-124, as Djinn of Wishes casts the top card), CR
+  401.6's new object; and a library becoming revealed mid-action (Nocturnus entering) whose top then changes in the
+  same action before a view.
 
 **D-123: The bench baseline reset on a quiet run** · 2026-11-21 · accepted (the owner's choice)
 - `pnpm bench` failed on main on this cloud machine: measures over their +20% gates and `randomGame` near its 100 ms
@@ -1896,4 +1897,28 @@ owner's answer to the D-089 open question, option (a))
   1.34–1.68 ms), more than the 20% gate, so a single failing gate on this machine isn't a finding; alternating runs
   stay the test of a change. `randomGame` took 100–130 ms in every run, at or over its 100 ms budget: whether a laptop
   meets it isn't known from here (open question).
+
+**D-124: Playing a card while an ability resolves (M2-14g: Djinn of Wishes)** · 2026-11-21 · accepted
+- "You may play that card without paying its mana cost" is the op `mayPlayWithoutPaying`. The controller is asked (a yes/no) only if
+  the card can be played: a land on their own turn with a land play left (CR 305.3, 305.2b; a land and another type
+  only as a land, CR 305.9), a spell if nothing forbids casting (Silence, CR 601.3) and each "target" has a choice
+  (CR 601.2c). Timing permissions don't apply (CR 608.2g; its ruling). The card was revealed, so not asking hides
+  nothing. Yes plays a land (`playLand`, counted, CR 305.2a) or casts the spell: the work item `playWithoutPaying`.
+- The cast follows the casting steps from the library (`Casting.origin` "resolution"): X is 0 (CR 107.3b), no mana cost
+  is paid but the cost increases are (Fireball's per extra target, CR 118.9d, `costIncreases`), and no one gets priority
+  after it's cast: the resolution goes on (CR 608.2g). A cancel puts the card back on top as the same object; "if you don't, exile it" is the next op, `exile` of `found`, which finds a card played gone (a new
+  object, CR 400.7) and exiles one declined. (Amended by the rules review:) a cancelled cast returns to the moment before
+  it was proposed (CR 601.2, 734.1), the "you may play" choice with the card back on top, which the player may redo, at
+  one target for Fireball say, or decline (CR 734.2). A "whenever a player casts" trigger waits until the ability is
+  done and goes on above the spell.
+- `Casting` records the triggered abilities waiting as it began (`triggersBefore`, restored by a cancel: mid-resolution
+  some may be waiting, CR 117.5 holds only from priority) and each library's top (`libraryTops`). A top changed while a
+  spell is cast isn't revealed until it's cast (CR 401.5): `perform` doesn't announce a top changed by a card moving to
+  the stack (the first step of casting, CR 601.2a), `playerView` shows no `revealedTop` for a changed library while
+  casting, and `payCost` reveals it once the spell is cast. Vampire Nocturnus's bonus reads the real top meanwhile
+  (CR 611.3a), so its power can hint at the hidden card's color, as it would in paper.
+- Costs: "remove a wish counter from this creature" is `{ kind: "removeCounters", counter, amount }`, refused at
+  activation without the counters (CR 118.3) and paid with the rest (`counter-costs.ts`); `entersWithCounters` takes any
+  counter and a fixed number. `CAST_CANCELLED.restored` is null for a card put back in a library: its id isn't shown,
+  so no one can follow it there (D-054), though everyone saw it revealed.
 

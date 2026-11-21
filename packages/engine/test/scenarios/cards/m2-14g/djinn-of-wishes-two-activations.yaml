@@ -1,0 +1,27 @@
+name: Two activations stacked; the second resolves first and its cast spell resolves before the first ability
+rules: [CR 608.2g, CR 405.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island, Island, Island, Island, Island]
+    library: [Craw Wurm, Divination, Island, Island, Island]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - expect:
+      stack: [Djinn of Wishes ability, Djinn of Wishes ability]
+      p1:Djinn of Wishes.counters: { wish: 1 }
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      stack: [Djinn of Wishes ability, Craw Wurm]
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Craw Wurm]
+      stack: [Djinn of Wishes ability]
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      stack: [Divination]

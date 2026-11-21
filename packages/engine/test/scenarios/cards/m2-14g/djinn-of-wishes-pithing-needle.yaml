@@ -1,0 +1,12 @@
+name: Pithing Needle naming Djinn of Wishes stops its ability
+rules: [CR 602.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+  p2:
+    battlefield: [{ card: Pithing Needle, chosenName: Djinn of Wishes }]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - expect error: illegalAction

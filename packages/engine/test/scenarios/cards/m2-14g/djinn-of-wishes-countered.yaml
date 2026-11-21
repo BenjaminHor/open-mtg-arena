@@ -1,0 +1,23 @@
+name: A spell cast for free and then countered goes to the graveyard, not exile
+rules: [CR 701.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+    library: [Craw Wurm, Island]
+  p2:
+    battlefield: [Island, Island, Island]
+    hand: [Cancel]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: yes
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [p1:Craw Wurm]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Craw Wurm]
+      exile: []

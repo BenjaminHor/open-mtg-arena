@@ -50,7 +50,14 @@ export function landPlayProblem(
 ): string | null {
   if (!cardTypesOf(state, card, cards).includes("land")) return "only a land can be played";
   if (!mainPhaseEmptyStack(state, player)) return "only in your main phase with an empty stack (CR 305.1)";
-  if ((state.players[player]?.landsPlayedThisTurn ?? 0) >= 1)
-    return "you've already played a land this turn (CR 305.2)";
+  if (!hasLandPlayLeft(state, player)) return "you've already played a land this turn (CR 305.2)";
   return null;
+}
+
+/**
+ * Whether the player has played fewer lands this turn than they may play, normally one (CR 305.2, 305.2a): as a special
+ * action or while a spell or ability resolves (Djinn of Wishes). An effect raising the number changes it here.
+ */
+export function hasLandPlayLeft(state: GameState, player: PlayerId): boolean {
+  return (state.players[player]?.landsPlayedThisTurn ?? 0) < 1;
 }

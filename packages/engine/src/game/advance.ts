@@ -13,6 +13,7 @@ import type { WorkItem } from "../state/work.ts";
 import { putTriggers } from "../triggers/put-on-stack.ts";
 import { recordControlChanges } from "./control-changes.ts";
 import { waitFor } from "./decide.ts";
+import { playWithoutPaying } from "./play-during-resolution.ts";
 import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { doesNotResolve, finishResolving, resolveTopOfStack } from "./resolve.ts";
@@ -60,6 +61,8 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       return combatDamage(state, item.divisions, cards);
     case "finishCleanup":
       return finishCleanup(state, item.chosen, cards);
+    case "playWithoutPaying":
+      return playWithoutPaying(state, item.player, item.card, cards);
     case "askOptional":
       return {
         state: waitFor(state, item.player, {

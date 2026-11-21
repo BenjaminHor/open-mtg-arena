@@ -1,0 +1,18 @@
+name: A land revealed may be played on its controller's turn with a land play left, and it counts as the land play
+rules: [CR 305.2a, CR 305.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+    hand: [Mountain]
+    library: [Forest, Island]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      p1.battlefield contains: [Forest]
+      exile: []
+  - p1 play: Mountain
+  - expect error: illegalAction

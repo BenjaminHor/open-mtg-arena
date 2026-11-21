@@ -19,8 +19,9 @@ import { orderTriggersProblem, putOne } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
+import { cancelCasting } from "./cancel-casting.ts";
 import { castProblem, startCast } from "./cast.ts";
-import { activateWhilePaying, announceX, cancelCasting, nextCastingStep, payCost, xProblem } from "./casting-steps.ts";
+import { activateWhilePaying, announceX, nextCastingStep, payCost, xProblem } from "./casting-steps.ts";
 import { answerName, nameProblem } from "./choose-name.ts";
 import {
   chooseTarget,

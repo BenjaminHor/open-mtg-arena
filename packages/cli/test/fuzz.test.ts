@@ -353,6 +353,8 @@ describe("the checks", () => {
         targetCounts: [],
         sacrifices: [],
         tappedForMana: [],
+        triggersBefore: [],
+        libraryTops: {},
       },
     };
     const leak: GameEvent = { type: "SPELL_CAST", player: p2, object: "o9999", cardId: card.cardId };

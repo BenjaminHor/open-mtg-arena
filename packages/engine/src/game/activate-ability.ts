@@ -12,7 +12,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
 import { putAbilityOnStack } from "../zones/stack-abilities.ts";
-import { nextCastingStep } from "./casting-steps.ts";
+import { castingBegins, nextCastingStep } from "./casting-steps.ts";
 import { loyaltyAbilityProblem } from "./loyalty-abilities.ts";
 import type { Progress } from "./progress.ts";
 
@@ -69,6 +69,7 @@ export function startActivation(
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
+    ...castingBegins(state),
   };
   return nextCastingStep({ ...created.state, casting }, cards);
 }

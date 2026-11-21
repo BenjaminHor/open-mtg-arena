@@ -60,6 +60,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "putOntoBattlefield":
     case "reveal":
     case "revealTop":
+    case "mayPlayWithoutPaying":
     case "shuffle":
     case "mayShuffle":
     case "lookAtTop":

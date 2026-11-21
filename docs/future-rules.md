@@ -287,9 +287,10 @@ the revealed hand, though it stays revealed until the effect is done (CR 701.20a
 "play with ... revealed" ability shows is in the view by identity only (`revealedHand`, `revealedTop`), read from the
 battlefield by `rules/revealed.ts`; Duress's revealed hand and a third player who must see it can fill the same fields.
 A top card revealed only for a moment within one resolution (between a search and the shuffle) is announced with
-`CARDS_REVEALED` after each event that changes it. Not built, as no pool card can cause them: CR 401.5's new top card
-that stays hidden until a spell is cast (record the top as casting starts); CR 401.6's new object (the view shows no id,
-so nothing can follow it); a library that becomes revealed mid-action and changes before a view. Several players
+`CARDS_REVEALED` after each event that changes it, but a top changed while a spell is cast waits until it's cast
+(CR 401.5, built in M2-14g for Djinn of Wishes, D-124: `Casting.libraryTops`). Not built, as no pool card can cause
+them: CR 401.6's new object (the view shows no id, so nothing can follow it); a library that becomes revealed mid-action
+and changes before a view; the same delay for a special action (CR 116, none changes a library). Several players
 choosing at once for one effect choose in APNAP order, then it's done at once (CR 608.2e): `discard` and
 `sacrifice` name one player until a card needs more (Yawning Fissure in multiplayer: each opponent's choice collected,
 then one simultaneous sacrifice). And
@@ -392,18 +393,23 @@ then. A spell or ability that targets a creature and sacrifices one: Siege-Gang 
 nothing (CR 601.5, 608.2b; `cards/m2-11b/siege-gang-sacrifices-its-target.yaml`). The sacrifice is chosen before the mana abilities'
 window (CR 601.2g); a mana ability that sacrifices (none in the pool) could take a creature already chosen, leaving
 only cancel: then choose sacrifices after the window, or let the player choose again. "Divided as you choose" with an
-amount of X must cap the number of targets at X (CR 601.2d), and casting without paying the mana cost forces X = 0
-(CR 107.3b).
+amount of X must cap the number of targets at X (CR 601.2d). Casting without paying the mana cost forces X = 0
+(CR 107.3b; built in M2-14g, D-124). A free cast pays only `costIncreases` (CR 118.9d): additional costs (kicker),
+reductions and a check against a second alternative cost (CR 118.9a) join `castingCost` with their first cards.
 
 **Casting from other zones (CR 601.2a, 734.1, 702.34a flashback).** Casting checks the hand
 (`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
-the hand. A card cast from a graveyard or exile must go back where it came from. The check before casting
+the hand. *Built (M2-14g, D-124):* a cast from the top of a library while an ability resolves (`origin` "resolution"),
+a cancel putting it back on top and returning to the "you may play" choice. A card cast from a graveyard or exile
+(cascade, flashback) must go back where it came from: generalise that origin from "a library" to a zone. The origin now
+also stands for "free" and "no priority after": `withoutPayingManaCost` and `givesPriorityAfter` in `casting-steps.ts`
+are the one place each is asked, for a free cast outside a resolution (Omniscience-like) or cascade to split apart. The check before casting
 (`targetsProblem` in `castProblem`) uses the card in its zone as what targets; cast from a graveyard, a "target card in
 your graveyard" spell would count itself as a choice before it moves to the stack (CR 115.5), so exclude it there.
 
 **Casting prohibitions (M2-09c1, D-097).** Silence's `cantCastSpells` is asked by `castProblem`, after the "it's in
-your hand" check. Casting from other zones, and "cast without paying its mana cost" from a resolving effect (cascade),
-must ask it before any zone check; suspend (CR 702.62a) asks the same "could begin to cast" question (Silence's ruling).
+your hand" check, and by `mayPlayWithoutPaying` for a cast while something resolves (D-124). Casting from other zones must ask it
+before any zone check; suspend (CR 702.62a) asks the same "could begin to cast" question (Silence's ruling).
 
 **Smaller rules noted while closing the coverage gaps (later: in the code).** "Another target" (CR 115.4, Arc Trail) needs targets distinct
 across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule

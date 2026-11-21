@@ -1460,6 +1460,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Djinn of Wishes",
+      "slug": "djinn-of-wishes",
+      "oracleId": "a34c3012-f787-4998-93c7-89c4decaa1ba",
+      "layout": "normal",
+      "manaCost": "{3}{U}{U}",
+      "manaValue": 5,
+      "typeLine": "Creature — Djinn",
+      "oracleText": "Flying\nThis creature enters with three wish counters on it.\n{2}{U}{U}, Remove a wish counter from this creature: Reveal the top card of your library. You may play that card without paying its mana cost. If you don't, exile it.",
+      "power": "4",
+      "toughness": "4",
+      "loyalty": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/7/27d38bba-6eb9-4dd8-81aa-722def89b163.jpg?1783934589",
+        "large": "https://cards.scryfall.io/large/front/2/7/27d38bba-6eb9-4dd8-81aa-722def89b163.jpg?1783934589",
+        "png": "https://cards.scryfall.io/png/front/2/7/27d38bba-6eb9-4dd8-81aa-722def89b163.png?1783934589",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/7/27d38bba-6eb9-4dd8-81aa-722def89b163.jpg?1783934589"
+      },
+      "artist": "Kev Walker",
+      "set": "m19",
+      "collectorNumber": "52",
+      "scryfallUri": "https://scryfall.com/card/m19/52/djinn-of-wishes?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Doom Blade",
       "slug": "doom-blade",
       "oracleId": "59e7f2ae-4535-4191-98be-3e65b6b2befa",

@@ -58,6 +58,11 @@ export function activationBasicsProblem(
       // ability (CR 605.1a).
       case "loyalty":
         break;
+      // Counters that aren't there can't be removed to pay a cost (CR 118.3).
+      case "removeCounters":
+        if ((obj.counters[part.counter] ?? 0) < part.amount)
+          return `${id} doesn't have ${part.amount} ${part.counter} counter(s) to remove (CR 118.3)`;
+        break;
       default:
         return assertNever(part);
     }
@@ -162,6 +167,8 @@ export function resolveManaAbility(
         throw new Error("mana abilities with sacrifice costs aren't supported yet");
       case "loyalty":
         throw new Error("a loyalty ability is never a mana ability (CR 605.1a)");
+      case "removeCounters":
+        throw new Error("mana abilities with counter costs aren't supported yet");
       default:
         return assertNever(part);
     }

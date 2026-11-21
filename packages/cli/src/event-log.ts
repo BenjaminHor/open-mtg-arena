@@ -100,7 +100,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "SPELL_CAST":
       return `${e.player} casts ${name(e.object)}`;
     case "CAST_CANCELLED":
-      return `${e.player} cancels casting ${name(e.restored)}`;
+      // A card put back on top of a library has no name there; the spell it was had one.
+      return `${e.player} cancels casting ${e.restored === null ? name(e.spell) : name(e.restored)}`;
     case "ABILITY_ACTIVATED":
       return `${e.player} activates ${name(e.source)}`;
     case "ABILITY_TRIGGERED": {

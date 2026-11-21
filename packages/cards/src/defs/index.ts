@@ -50,6 +50,7 @@ import { disentomb } from "./d/disentomb.ts";
 import { disorient } from "./d/disorient.ts";
 import { divination } from "./d/divination.ts";
 import { divineVerdict } from "./d/divine-verdict.ts";
+import { djinnOfWishes } from "./d/djinn-of-wishes.ts";
 import { doomBlade } from "./d/doom-blade.ts";
 import { dragonWhelp } from "./d/dragon-whelp.ts";
 import { dragonsClaw } from "./d/dragons-claw.ts";
@@ -282,6 +283,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   demonsHorn,
   diabolicTutor,
   disentomb,
+  djinnOfWishes,
   disorient,
   divination,
   divineVerdict,

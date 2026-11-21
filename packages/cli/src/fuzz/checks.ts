@@ -109,12 +109,18 @@ function visibleNames(state: GameState, viewer: PlayerId): string[] {
   return [...namesOf(state, visibleTo(state, viewer)), ...(casting?.player === viewer ? casting.names : [])];
 }
 
-/** The ids hidden from `viewer`: of hidden objects, and of another player's card being cast (it's in no zone). */
+/**
+ * The ids hidden from `viewer`: of hidden objects, of another player's card being cast from hand (it's in no zone), and
+ * of a card being cast from a library while something resolves, kept aside to go back there if it's cancelled: hidden
+ * from everyone, as libraries are, its caster's too (CR 401.2).
+ */
 function hiddenNames(state: GameState, viewer: PlayerId): string[] {
   const casting = castingCard(state);
+  const origin = state.casting?.origin;
   return [
     ...namesOf(state, hiddenFrom(state, viewer)),
     ...(casting !== null && casting.player !== viewer ? casting.names : []),
+    ...(origin?.kind === "resolution" ? [origin.card.id, origin.card.cardId] : []),
   ];
 }
 
@@ -145,7 +151,7 @@ function hiddenFrom(state: GameState, viewer: PlayerId): ObjectId[] {
  * The same state with everything `viewer` can't see changed: hidden cards' ids, names and card ids, the order of every
  * library and of other hands, another player's casting details and pending choices, the seed, RNG and internals. What
  * an ability reveals keeps what it is (`rules/revealed.ts`): a revealed hand's cards, and a revealed top card, which
- * stays on top.
+ * stays on top, even one held back while a spell is cast (`heldBackTopsHidden` checks that one instead).
  */
 export function scrambleHidden(state: GameState, viewer: PlayerId, cards: CardDatabase): GameState {
   const hidden = hiddenObjects(state, viewer);
@@ -228,6 +234,24 @@ function hiddenObjects(state: GameState, viewer: PlayerId): ObjectId[] {
 }
 
 /**
+ * A library's new top card stays unrevealed while a spell is being cast (CR 401.5): no viewer is shown it. Checked
+ * apart from the scramble, which keeps every revealed top's identity, a held-back one too: Vampire Nocturnus's bonus
+ * reads the real top meanwhile (D-124), so scrambling it would change what the board shows.
+ */
+export const heldBackTopsHidden: Check = (_before, after, _events, cards) => {
+  const casting = after.casting;
+  if (casting === null) return [];
+  const held = after.turnOrder.filter((p) => (after.zones.players[p]?.library[0] ?? null) !== casting.libraryTops[p]);
+  return after.turnOrder.flatMap((viewer) =>
+    held.flatMap((p) =>
+      playerView(after, viewer, cards).zones.players[p]?.revealedTop == null
+        ? []
+        : [`${viewer} is shown ${p}'s new top card while a spell is being cast (CR 401.5)`],
+    ),
+  );
+};
+
+/**
  * The layer pass kept for a state (D-092) is what a fresh pass gives: the pass reads only its inputs, by which it's
  * kept, and the state is never changed in place.
  */
@@ -276,6 +300,7 @@ export const ALL_CHECKS: readonly Check[] = [
   engineInvariants,
   lifeThroughEvents,
   viewsLeakNothing,
+  heldBackTopsHidden,
   layersMatchFreshPass,
   controlChangesRecorded,
 ];

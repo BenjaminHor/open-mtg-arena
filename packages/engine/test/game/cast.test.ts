@@ -2,7 +2,9 @@
 // casting/target-died-does-not-resolve.yaml shows CR 608.2b with a creature that really died.
 
 import { describe, expect, it } from "vitest";
+import { cancelCasting } from "../../src/game/cancel-casting.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
+import type { PendingTrigger } from "../../src/state/triggers.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
 import { BEARS, SPLIT } from "../support/cards.ts";
 import { type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
@@ -74,6 +76,29 @@ describe("cancelling a cast (CR 734.1)", () => {
     expect(game.state.objects).toStrictEqual(before.objects);
     expect(game.state.players).toStrictEqual(before.players);
     expect(game.state.casting).toBeNull();
+  });
+
+  it("keeps the triggers that were waiting as the cast began, and drops those it made (CR 734.1)", () => {
+    // From priority none can be waiting (CR 117.5), but a cast while something resolves may begin with some (CR 608.2g):
+    // set here by hand, as no pool card reaches it.
+    let game = setup();
+    game = take(game, (a) => a.type === "CAST_SPELL");
+    const casting = game.state.casting;
+    if (casting === null) throw new Error("not casting");
+    const waiting: PendingTrigger = {
+      source: game.state.zones.battlefield[0] as ObjectId,
+      sourceOracleId: "mountain",
+      ref: { kind: "triggered", index: 0 },
+      controller: "p1",
+      event: { type: "TURN_BEGAN", player: "p1", turn: 3, extra: false },
+    } as unknown as PendingTrigger;
+    const made = { ...waiting, controller: "p2" } as PendingTrigger;
+    const state = {
+      ...game.state,
+      casting: { ...casting, triggersBefore: [waiting] },
+      pendingTriggers: [waiting, made],
+    };
+    expect(cancelCasting(state).state.pendingTriggers).toStrictEqual([waiting]);
   });
 
   /** p1 can cast Split (2 damage divided among one or more target creatures) at p2's two Grizzly Bears. */

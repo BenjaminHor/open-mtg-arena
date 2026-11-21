@@ -11,18 +11,18 @@ import { type ManaPayment, manaValue, payFromPool } from "../mana/payment.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { SingleEvent } from "../pipeline/proposed.ts";
 import { controllerOf } from "../rules/controller.ts";
-import { announcesX, costOf, withX } from "../rules/costs.ts";
+import { announcesX, costIncreases, costOf, withX } from "../rules/costs.ts";
+import { revealedBy } from "../rules/revealed.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { AbilityRef, GameObject } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
-import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
-import { withZoneList, zoneList } from "../zones/zone-list.ts";
 import { countActivation } from "./activation-count.ts";
 import { castingOf } from "./casting-state.ts";
 import { targetStep } from "./choose-targets.ts";
+import { counterPayments } from "./counter-costs.ts";
 import { waitFor } from "./decide.ts";
 import { loyaltyPayment, loyaltyXMost } from "./loyalty-abilities.ts";
 import type { Progress } from "./progress.ts";
@@ -39,11 +39,13 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): Progress
   const casting = castingOf(state);
   const obj = state.objects[casting.object];
   if (obj?.choices?.x === null && announcesX(state, casting.object, cards)) {
+    // Cast without paying its mana cost, X can only be 0 (CR 107.3b): nothing to announce.
+    if (withoutPayingManaCost(casting)) return nextCastingStep(withXZero(state, casting.object), cards);
     const available = manaAvailable(state, casting.player, cards);
     // [−X]: at most the loyalty counters there are (CR 606.6); {X}: what the mana could pay.
     const upTo =
       loyaltyXMost(state, cards) ??
-      payableX(state, casting.object, Math.max(0, available - manaValue(costOf(state, casting.object, cards))), cards);
+      payableX(state, casting.object, Math.max(0, available - manaValue(castingCost(state, casting, cards))), cards);
     return wait(waitFor(state, casting.player, { kind: "announceX", object: casting.object, upTo }));
   }
   const targeted = targetStep(state, cards);
@@ -57,13 +59,53 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): Progress
   if (casting.sacrifices.length < sacrificeParts(targeted, casting.object, cards).length) {
     return wait(waitFor(targeted, casting.player, { kind: "chooseSacrifice", object: casting.object }));
   }
-  const cost = costOf(targeted, casting.object, cards);
+  const cost = castingCost(targeted, casting, cards);
   if (cost.length === 0) {
     const paid = payCost(targeted, cost, { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, cards);
     if (typeof paid === "string") throw new Error(paid);
     return paid;
   }
   return wait(waitFor(targeted, casting.player, { kind: "payMana", object: casting.object, cost }));
+}
+
+/**
+ * What a cast or activation keeps of the game as it begins: the triggered abilities already waiting, which a cancel
+ * leaves waiting, and each library's top card, so a new one stays unrevealed until the spell is cast (CR 401.5).
+ */
+export function castingBegins(state: GameState): Pick<Casting, "triggersBefore" | "libraryTops"> {
+  const libraryTops: Record<PlayerId, ObjectId | null> = {};
+  for (const p of state.turnOrder) libraryTops[p] = state.zones.players[p]?.library[0] ?? null;
+  return { triggersBefore: state.pendingTriggers, libraryTops };
+}
+
+/**
+ * What's paid: the spell's or ability's cost (CR 601.2f), or for a spell cast "without paying its mana cost" only its
+ * cost increases (CR 118.9, 118.9d).
+ */
+function castingCost(state: GameState, casting: Casting, cards: CardDatabase): ManaCost {
+  return withoutPayingManaCost(casting)
+    ? costIncreases(state, casting.object, cards)
+    : costOf(state, casting.object, cards);
+}
+
+/**
+ * Whether this spell is cast without paying its mana cost: one cast while a resolving ability lets its controller play
+ * it free (Djinn of Wishes). Asked apart from where the card came from, which a free cast from elsewhere will change.
+ */
+function withoutPayingManaCost(casting: Casting): boolean {
+  return casting.origin.kind === "resolution";
+}
+
+/** Whether a player receives priority once it's cast: not after a spell cast while something resolves (CR 608.2g). */
+function givesPriorityAfter(casting: Casting): boolean {
+  return casting.origin.kind !== "resolution";
+}
+
+/** The spell with X announced as 0 (CR 107.3b). */
+function withXZero(state: GameState, id: ObjectId): GameState {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card" || obj.choices === null) throw new Error(`${id} isn't a spell`);
+  return { ...state, objects: { ...state.objects, [id]: { ...obj, choices: { ...obj.choices, x: 0 } } } };
 }
 
 function wait(state: GameState): Progress {
@@ -95,9 +137,10 @@ export function activateWhilePaying(
 
 /**
  * CR 601.2h: the player pays the whole cost at once, after any mana abilities (CR 601.2g): the mana from their pool,
- * then the loyalty counters (CR 606.4), the {T} and the sacrifices chosen, which must all still be possible, since partial payments aren't allowed and
- * unpayable costs can't be paid. Then the spell becomes cast (CR 601.2i) or the ability activated (CR 602.2b), so the
- * cost's events come first. They receive priority (CR 117.3c), and everyone has to pass again (CR 117.4).
+ * then the loyalty and other counters removed (CR 606.4, 118.3), the {T} and the sacrifices chosen, which must all still
+ * be possible, since partial payments aren't allowed and unpayable costs can't be paid. Then the spell becomes cast
+ * (CR 601.2i) or the ability activated (CR 602.2b), so the cost's events come first. They receive priority (CR 117.3c),
+ * and everyone has to pass again (CR 117.4), unless it was cast while something resolves (CR 608.2g).
  */
 export function payCost(
   state: GameState,
@@ -124,6 +167,8 @@ export function payCost(
     return "the permanent to sacrifice for the cost is gone or no longer the player's (CR 601.2h, 701.21a)";
   const loyalty = loyaltyPayment(state, cards);
   if (loyalty === "unpayable") return "the loyalty counters to remove for the cost aren't there (CR 601.2h, 606.6)";
+  const counters = counterPayments(state, cards);
+  if (counters === "unpayable") return "the counters to remove for the cost aren't there (CR 118.3, 601.2h)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
@@ -131,6 +176,7 @@ export function payCost(
   // order be chosen).
   const costs: SingleEvent[] = [
     ...(loyalty === null ? [] : [loyalty]),
+    ...counters,
     ...taps.map((object) => ({ kind: "tap", object }) as const),
     ...[...selfSacrifices, ...casting.sacrifices].map((object) => ({ kind: "sacrifice", object }) as const),
   ];
@@ -145,77 +191,26 @@ export function payCost(
   // "Whenever a player casts ..." triggers now, so it goes on the stack above the spell (CR 601.2i). Only this event:
   // the costs' events were matched as they went through `happen`.
   const triggered = detectTriggers(done, done, [event], cards);
-  return {
-    state: queueWork(triggered, { kind: "givePriority", player: casting.player }),
-    events: [...paid.events, event],
-  };
+  const shown = newTopsShown(triggered, casting, cards);
+  // A spell cast while something resolves gives no one priority: the resolution goes on (CR 608.2g).
+  const after = !givesPriorityAfter(casting)
+    ? shown.state
+    : queueWork(shown.state, { kind: "givePriority", player: casting.player });
+  return { state: after, events: [...paid.events, event, ...shown.events] };
 }
 
 /**
- * The player cancels: the whole action is reversed (CR 734.1). A spell's card returns to where it was in the hand as the
- * same object; an ability ceases to exist. The pool is as it was, and permanents tapped for mana during it untap;
- * nothing triggers. The player keeps priority (CR 734.2), and the passes don't restart: nothing was done.
+ * A revealed library's new top card, held back while the spell was being cast, is revealed once it's cast (CR 401.5):
+ * the cast moved the card on top to the stack (Djinn of Wishes with Vampire Nocturnus).
  */
-export function cancelCasting(state: GameState): Progress {
-  const casting = castingOf(state);
-  // A cast or activation starts only when a player has priority, with no triggers waiting (CR 117.5), so any waiting now
-  // came from it (its mana abilities, its targets becoming targets), and nothing triggers from a reversed action
-  // (CR 734.1). Delayed triggers aren't restored: they can't trigger during a cast while they wait only for the
-  // beginning of a step (future-rules).
-  let next = untapAndRestorePool({ ...state, casting: null, pendingTriggers: [] }, casting);
-  let event: GameEvent;
-  switch (casting.origin.kind) {
-    case "card": {
-      const { card, handIndex } = casting.origin;
-      const spell = next.objects[casting.object];
-      if (spell?.kind !== "card") throw new Error(`${casting.object} isn't a spell`);
-      const { [casting.object]: _spell, ...rest } = next.objects;
-      next = { ...next, objects: { ...rest, [card.id]: card } };
-      next = withZoneList(
-        next,
-        { zone: "stack" },
-        next.zones.stack.filter((id) => id !== casting.object),
-      );
-      const hand = [...zoneList(next, { zone: "hand", player: casting.player })];
-      hand.splice(handIndex, 0, card.id);
-      next = withZoneList(next, { zone: "hand", player: casting.player }, hand);
-      event = {
-        type: "CAST_CANCELLED",
-        player: casting.player,
-        // The spell's card id, which everyone saw on the stack, not the restored card's, which is hidden (D-054).
-        cardId: spell.cardId,
-        spell: casting.object,
-        restored: card.id,
-        untapped: casting.tappedForMana,
-      };
-      break;
-    }
-    case "trigger":
-      throw new Error("a triggered ability being put on the stack can't be cancelled (CR 603.3d)");
-    case "ability":
-      next = removeAbilityFromStack(next, casting.object);
-      event = {
-        type: "ACTIVATION_CANCELLED",
-        player: casting.player,
-        object: casting.object,
-        source: casting.origin.source,
-        untapped: casting.tappedForMana,
-      };
-      break;
-  }
-  return { state: queueWork(next, { kind: "givePriority", player: casting.player }), events: [event] };
-}
-
-function untapAndRestorePool(state: GameState, casting: Casting): GameState {
-  const objects = { ...state.objects };
-  for (const id of casting.tappedForMana) {
-    const obj = objects[id];
-    if (obj?.kind === "card") objects[id] = { ...obj, tapped: false };
-  }
-  const ps = state.players[casting.player];
-  const players =
-    ps === undefined ? state.players : { ...state.players, [casting.player]: { ...ps, manaPool: casting.poolBefore } };
-  return { ...state, objects, players };
+function newTopsShown(state: GameState, casting: Casting, cards: CardDatabase): Progress {
+  const reveals = revealedBy(state, cards).tops.flatMap((player): SingleEvent[] => {
+    const top = state.zones.players[player]?.library[0];
+    return top === undefined || top === casting.libraryTops[player]
+      ? []
+      : [{ kind: "reveal", from: { zone: "library", player }, objects: [top] }];
+  });
+  return reveals.length === 0 ? { state, events: [] } : happen(state, { kind: "simultaneous", events: reveals }, cards);
 }
 
 /** CR 601.2i: the spell becomes cast; CR 602.2b: the ability becomes activated. */
