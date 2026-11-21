@@ -1,0 +1,26 @@
+name: Djinn of Wishes's three wish counters give three activations, and no fourth
+rules: [CR 118.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island, Island]
+    library: [Grizzly Bears, Grizzly Bears, Grizzly Bears, Island]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: no
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: no
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: no
+  - expect:
+      p1:Djinn of Wishes.counters: {}
+      exile: [Grizzly Bears, Grizzly Bears, Grizzly Bears]
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - expect error: illegalAction

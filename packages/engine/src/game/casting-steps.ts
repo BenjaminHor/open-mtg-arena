@@ -233,8 +233,9 @@ export function cancelCasting(state: GameState): Progress {
       break;
     }
     case "resolution": {
-      // Back on top of the library it came from, as the same object; the resolution goes on, and no one gets
-      // priority (CR 608.2g), so "if you don't, exile it" finds it there.
+      // Back on top of the library it came from, as the same object, and the game is back at the moment before the cast
+      // was proposed (CR 601.2, 734.1): the "you may play" choice, which the player may redo or decline (CR 734.2).
+      // No one gets priority meanwhile (CR 608.2g).
       const { card, library } = casting.origin;
       const spell = next.objects[casting.object];
       if (spell?.kind !== "card") throw new Error(`${casting.object} isn't a spell`);
@@ -252,11 +253,19 @@ export function cancelCasting(state: GameState): Progress {
         player: casting.player,
         cardId: spell.cardId,
         spell: casting.object,
-        // No one sees into a library, not even its owner (CR 401.2).
+        // Its object id isn't shown: an id in a library would let a player follow the card later (D-054), though
+        // everyone saw it revealed.
         restored: null,
         untapped: casting.tappedForMana,
       };
-      return { state: next, events: [cancelled] };
+      const resume = [{ kind: "playWithoutPaying", player: casting.player, card: card.id } as const];
+      const asked = waitFor(next, casting.player, {
+        kind: "chooseYesNo",
+        purpose: "optional",
+        canSayYes: true,
+        resume,
+      });
+      return { state: asked, events: [cancelled] };
     }
     case "trigger":
       throw new Error("a triggered ability being put on the stack can't be cancelled (CR 603.3d)");

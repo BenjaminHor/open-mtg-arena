@@ -1,7 +1,8 @@
 // "You may play that card without paying its mana cost" (Djinn of Wishes): playing a card while a spell or ability
 // resolves. A land is played, counting toward the land plays (CR 305.2a); a spell is cast, following the casting steps
 // with no priority after (CR 608.2g), for no mana cost (CR 118.9) and so with X as 0 (CR 107.3b). The resolution goes on
-// once it's done: "if you don't, exile it" then finds the card gone, a new object (CR 400.7).
+// once it's done: "if you don't, exile it" then finds the card gone, a new object (CR 400.7). A cast cancelled goes back
+// to the choice (`cancelCasting`).
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { objectsNamed } from "../effects/subjects.ts";
@@ -39,7 +40,7 @@ export function mayPlay(state: GameState, effect: MayPlay, context: EffectContex
 
 /**
  * Whether the player may play this card while something resolves: still in a library; a land only on their own turn
- * (CR 305.3) with a land play left (CR 305.2b), and a card that's also a land only as a land (CR 305.9); a spell only if
+ * (CR 305.3) with a land play left (CR 305.2b), and a card that's also a land only as a land (later: CR 305.9); a spell only if
  * no effect forbids casting (CR 601.3) and each instance of "target" has a legal choice (CR 601.2c, 115.6). The
  * timing permissions don't apply (CR 608.2g; its ruling).
  */

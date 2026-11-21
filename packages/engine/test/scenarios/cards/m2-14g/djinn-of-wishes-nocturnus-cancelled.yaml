@@ -1,4 +1,4 @@
-name: With Vampire Nocturnus out, a free cast cancelled shows nothing of the card under it until the card cast is exiled
+name: With Vampire Nocturnus out, a free cast cancelled shows nothing of the card under it until the card it put back is exiled
 rules: [CR 401.5, CR 734.1]
 setup:
   turn: { active: p1, step: main1 }
@@ -10,7 +10,14 @@ steps:
     pay: auto
   - all pass: once
   - p1 choose: yes
+  - expect:
+      p1.revealedTop: null
   - p1 choose: cancel
+  - expect:
+      pending: { player: p1, kind: chooseYesNo }
+      p1.revealedTop: Lightning Bolt
+      events lacks: [{ type: CARDS_REVEALED, cards: [Sign in Blood] }]
+  - p1 choose: no
   - expect:
       exile: [Lightning Bolt]
       p1.revealedTop: Sign in Blood

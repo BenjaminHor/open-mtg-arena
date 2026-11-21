@@ -3,7 +3,7 @@ rules: [CR 608.2g, CR 118.9, CR 118.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island, Forest]
     library: [Craw Wurm, Island]
 steps:
   - p1 activate: Djinn of Wishes
@@ -18,6 +18,8 @@ steps:
   - expect:
       stack: [Craw Wurm]
       pending: { player: p1, kind: priority }
+      p1:Forest.tapped: false
+      p1.manaPool: {}
       events contains: [{ type: SPELL_CAST, player: p1 }]
   - all pass: once
   - expect:

@@ -41,6 +41,8 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
   const ps = state.players[player];
   if (obj?.kind !== "card" || ps === undefined) throw new Error(`Can't cast ${card}`);
   const handIndex = zoneList(state, { zone: "hand", player }).indexOf(card);
+  // As the cast begins, before the card moves (a card cast from the top of a library would change it, CR 401.5).
+  const begins = castingBegins(state);
   const moved = happen(state, { kind: "moveCard", object: card, to: { zone: "stack", controller: player } }, cards);
   const change = zoneChangeOf(moved.events, card);
   if (change === null) throw new Error(`${card} didn't move to the stack`);
@@ -52,7 +54,7 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
-    ...castingBegins(moved.state),
+    ...begins,
   };
   const next = nextCastingStep({ ...moved.state, casting }, cards);
   return { state: next.state, events: [...moved.events, ...next.events] };

@@ -1906,9 +1906,10 @@ owner's answer to the D-089 open question, option (a))
   nothing. Yes plays a land (`playLand`, counted, CR 305.2a) or casts the spell: the work item `playWithoutPaying`.
 - The cast follows the casting steps from the library (`Casting.origin` "resolution"): X is 0 (CR 107.3b), no mana cost
   is paid but the cost increases are (Fireball's per extra target, CR 118.9d, `costIncreases`), and no one gets priority
-  after it's cast: the resolution goes on (CR 608.2g). A cancel puts the card back on top as the same object and the
-  resolution goes on; "if you don't, exile it" is the next op, `exile` of `found`, which finds a card played gone (a new
-  object, CR 400.7) and exiles one declined or cancelled. A "whenever a player casts" trigger waits until the ability is
+  after it's cast: the resolution goes on (CR 608.2g). A cancel puts the card back on top as the same object; "if you don't, exile it" is the next op, `exile` of `found`, which finds a card played gone (a new
+  object, CR 400.7) and exiles one declined. (Amended by the rules review:) a cancelled cast returns to the moment before
+  it was proposed (CR 601.2, 734.1), the "you may play" choice with the card back on top, which the player may redo, at
+  one target for Fireball say, or decline (CR 734.2). A "whenever a player casts" trigger waits until the ability is
   done and goes on above the spell.
 - `Casting` records the triggered abilities waiting as it began (`triggersBefore`, restored by a cancel: mid-resolution
   some may be waiting, CR 117.5 holds only from priority) and each library's top (`libraryTops`). A top changed while a
@@ -1918,5 +1919,6 @@ owner's answer to the D-089 open question, option (a))
   (CR 611.3a), so its power can hint at the hidden card's color, as it would in paper.
 - Costs: "remove a wish counter from this creature" is `{ kind: "removeCounters", counter, amount }`, refused at
   activation without the counters (CR 118.3) and paid with the rest (`counter-costs.ts`); `entersWithCounters` takes any
-  counter and a fixed number. `CAST_CANCELLED.restored` is null for a card put back in a library, which no one sees into.
+  counter and a fixed number. `CAST_CANCELLED.restored` is null for a card put back in a library: its id isn't shown,
+  so no one can follow it there (D-054), though everyone saw it revealed.
 

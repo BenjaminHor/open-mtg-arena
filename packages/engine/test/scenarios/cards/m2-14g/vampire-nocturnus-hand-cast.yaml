@@ -1,0 +1,18 @@
+name: Nocturnus, casting from hand and activating keep the top shown
+rules: [CR 401.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Vampire Nocturnus, Island, Island, Island, Island, Mountain]
+    hand: [Lightning Bolt]
+    library: [Sign in Blood, Island]
+steps:
+  - p1 cast: Lightning Bolt
+  - expect:
+      pending: { player: p1, kind: chooseTarget }
+      p1.revealedTop: Sign in Blood
+  - p1 choose: cancel
+  - p1 activate: Djinn of Wishes
+  - expect:
+      pending: { player: p1, kind: payMana }
+      p1.revealedTop: Sign in Blood
