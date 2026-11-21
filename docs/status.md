@@ -564,8 +564,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - A static ability `powerToughnessEachEqual { to: { count: filter } }` ("power and toughness are each equal to
            the number of [filter] you control"), applied in layer 7a for its own object in every zone (CR 604.3): the
            base is the CDA's value, else printed; 7c adds as before. "You" is the controller, or the owner elsewhere
-           (CR 108.4a, as `alone`). The count is read from the board as layers 1-6 left it (`fitsOnBoard`); a CDA's
-           filter may not read power, toughness or combat (definition check). A card outside the battlefield and the
+           (CR 108.4a, 109.5). The count is read from the board as layers 1-6 left it (`fitsOnBoard`); a CDA's filter
+           can't read combat (definition check), nor power or toughness (`ObjectFilter` has no such field). A card outside the battlefield and the
            stack is computed with the board, so Nightmare in hand is X/X (its ruling).
          - `cantAttackUnlessDefenderControls { filter }` (Serpent; CR 508.1c), checked per attacker and defending player
            in `possibleAttacks`.
@@ -577,8 +577,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - b1 built (D-094): Nightmare, Serpent of the Endless Sea; 8 scenarios in `test/scenarios/cards/m2-09b/`
            (Nightmare growing and dying, a pump keeping it alive, in hand and graveyard; Serpent's restriction, its
            count, and Alluring Siren), unit tests for the printed "*" and the definition checks, `inspect` showing
-           7a, the Defined P/T column of the interaction matrix, golden pool-231. 188 cards. Next: mutations, reviews,
-           fuzz, PR.
+           7a, the Defined P/T column of the interaction matrix, golden pool-231. 188 cards. Mutations 5/5, fuzz 200
+           clean. Rules and code reviews (no wrong results): 5 more scenarios (stack, opponent's hand, Coat of Arms,
+           damage as it shrinks, Siren when able; 69e40a2); `Layered.base` records 7a's base so `inspect` doesn't
+           subtract (7b will set it); both printed P/T must be "*"; stale comments, the 508.1c message, a tripwire on
+           `ObjectFilter`, docs (future-rules, card-scripting, rules README). Next: PR.
          b2: Awakener Druid, Rise from the Grave, Stone Giant; subtypes by kind; last known characteristics snapshot.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,

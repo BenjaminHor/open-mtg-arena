@@ -186,7 +186,6 @@ function check(
   }
 }
 
-/** Each wanted item matches a different item of `have` (a match is used only once). */
 /**
  * The card a reference names in a player's hand or graveyard, or a spell they control on the stack (`#2`: the second
  * with that name, in zone order, the stack's from the bottom).
@@ -204,6 +203,7 @@ function cardInZone(
   return ids.filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
 }
 
+/** Each wanted item matches a different item of `have` (a match is used only once). */
 function containsAll(
   have: readonly unknown[],
   wanted: readonly unknown[],

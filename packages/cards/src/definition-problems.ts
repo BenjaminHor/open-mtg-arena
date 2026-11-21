@@ -85,9 +85,11 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       if (filter !== null && filterUses(filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
         problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
     }
-    // A printed "*" is set by a characteristic-defining ability, and only a "*" is (CR 208.2a, 604.3).
+    // A printed "*" is set by a characteristic-defining ability, and only a "*" is (CR 208.2a, 604.3). The one kind so
+    // far sets both, so both must be "*"; any other mix is refused until a card needs it.
     const definesPT = (def.statics ?? []).some((s) => s.kind === "powerToughnessEachEqual");
-    if ((card.power === "*" || card.toughness === "*") !== definesPT)
+    const stars = [card.power, card.toughness].filter((v) => v === "*").length;
+    if (stars === 1 || (stars === 2) !== definesPT)
       problems.push(`${def.name}: a printed "*" needs an ability that defines it, and that ability needs a "*"`);
     for (const s of def.statics ?? [])
       if (s.kind === "cantAttackUnlessDefenderControls" && s.filter.controller !== undefined)

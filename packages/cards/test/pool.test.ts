@@ -251,6 +251,13 @@ describe("definitionProblems", () => {
       'Nightmare: a printed "*" needs an ability that defines it, and that ability needs a "*"',
       'Grizzly Bears: a printed "*" needs an ability that defines it, and that ability needs a "*"',
     ]);
+    // "*/3" with an ability that sets both: its toughness would be overwritten.
+    const halfStar = { ...nightmare, toughness: "3" };
+    const nightmareDef = CARD_DEFS.find((d) => d.name === "Nightmare");
+    if (nightmareDef === undefined) throw new Error("Nightmare has no definition");
+    expect(definitionProblems([nightmareDef], [halfStar])).toStrictEqual([
+      'Nightmare: a printed "*" needs an ability that defines it, and that ability needs a "*"',
+    ]);
   });
 
   it("reports a characteristic-defining count that asks about combat, and a defending player's filter with a controller", () => {

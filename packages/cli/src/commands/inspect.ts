@@ -40,13 +40,10 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
   if (c.power !== null && c.toughness !== null) {
     lines.push(`  power/toughness: ${c.power}/${c.toughness}`);
     lines.push(`    printed: ${data?.printed.power}/${data?.printed.toughness}`);
-    const sevenC = layerSevenCChanges(state, id, cards);
-    // A "*" is set by its characteristic-defining ability (CR 208.2a): what 7c started from.
-    if (data?.printed.power === "*" || data?.printed.toughness === "*") {
-      const added = sevenC.reduce((sum, ch) => ({ p: sum.p + ch.power, t: sum.t + ch.toughness }), { p: 0, t: 0 });
-      lines.push(`    layer 7a, its ability: ${c.power - added.p}/${c.toughness - added.t}`);
-    }
-    for (const change of sevenC) lines.push(`    layer 7c: ${changeText(change)}`);
+    // A "*" is set by its characteristic-defining ability: what 7c started from.
+    const base = layeredOf(state, id, cards)?.base;
+    if (base?.from === "ability") lines.push(`    layer 7a, its ability: ${base.power}/${base.toughness}`);
+    for (const change of layerSevenCChanges(state, id, cards)) lines.push(`    layer 7c: ${changeText(change)}`);
   }
   const counters = Object.entries(obj.counters).map(([k, n]) => `${n} ${k}`);
   lines.push(

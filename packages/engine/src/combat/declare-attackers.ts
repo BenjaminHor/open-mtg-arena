@@ -16,8 +16,9 @@ import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * Every attack the active player could still add to the declaration: each creature that can attack and isn't chosen
- * yet, against each other player (CR 508.1a; a choice of defenders, later: CR 508.1b). Players in turn order, creatures
- * in battlefield order.
+ * yet, against each other player it may attack (CR 508.1a; restrictions on attacking a player, such as "unless
+ * defending player controls an Island", CR 508.1c; a choice of defenders, later: CR 508.1b). Players in turn order,
+ * creatures in battlefield order.
  */
 export function possibleAttacks(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Attack[] {
   const active = currentTurn(state).activePlayer;
@@ -45,7 +46,7 @@ export function attackProblem(state: GameState, chosen: readonly Attack[], attac
   const ok = possibleAttacks(state, chosen, cards).some(
     (a) => a.attacker === attack.attacker && a.defender === attack.defender,
   );
-  return ok ? null : `${attack.attacker} can't attack ${attack.defender} (CR 508.1a)`;
+  return ok ? null : `${attack.attacker} can't attack ${attack.defender} (CR 508.1a, 508.1c)`;
 }
 
 /**

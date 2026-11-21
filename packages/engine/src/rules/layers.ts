@@ -4,9 +4,9 @@
 // a computed value in the state (architecture.md). The pass is computed at most once per state object (D-092).
 //
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
-// granted) and 7c (CR 613.4c), from resolved effects on the objects they locked in (CR 611.2c), static abilities
-// (`static-effects.ts`), counters and rule modifiers. Layers 1-5 and 7a, 7b, 7d have none yet; each comes in its place
-// below as its first card does (M2-09).
+// granted), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
+// on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
+// Layers 1-5, 7b and 7d have none yet; each comes in its place below as its first card does (M2-09).
 
 import type {
   CardData,
@@ -48,11 +48,16 @@ export type Layered = Readonly<{
   /** Null when it has none: a noncreature permanent, or a card without printed ones (CR 208.3). */
   power: number | null;
   toughness: number | null;
+  /** What 7c started from: 7a's characteristic-defining ability, or the printed values; null with no P/T. */
+  base: BasePT | null;
   /** Each layer 7c change, in the order applied (CR 613.4c). */
   sevenC: readonly LayerSevenCChange[];
   /** Each layer 6 grant of keywords, and its source, for explaining them (the printed ones are in `keywords` too). */
   granted: readonly KeywordGrant[];
 }>;
+
+/** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
+export type BasePT = Readonly<{ from: "printed" | "ability"; power: number; toughness: number }>;
 
 /** What changes an object's power and toughness in layer 7c, and by how much (CR 613.4c). */
 export type LayerSevenCChange =
@@ -94,13 +99,16 @@ export function layeredOf(state: GameState, id: ObjectId, cards: CardDatabase): 
   if (known !== undefined) return known;
   const obj = computed.input.objects[id];
   if (obj?.kind !== "card") return null;
-  const card = alone(computed.input, computed.board, obj, cards);
+  const card = offBoard(computed.input, computed.board, obj, cards);
   computed.elsewhere[id] = card;
   return card;
 }
 
-/** A card in another zone: no controller, so "controller" is its owner (CR 108.4a); its printed values otherwise. */
-function alone(
+/**
+ * A card in another zone: no controller, so "controller", and the "you" of its abilities, is its owner (CR 108.4a,
+ * 109.5). Its printed values, but for 7a, whose counts read the finished board (CR 604.3).
+ */
+function offBoard(
   input: LayerInputs,
   board: Readonly<Record<ObjectId, Layered>>,
   obj: CardObject,
@@ -124,7 +132,7 @@ export function layeredOfFresh(state: GameState, id: ObjectId, cards: CardDataba
   const onBoard = board[id];
   if (onBoard !== undefined) return onBoard;
   const obj = input.objects[id];
-  return obj?.kind === "card" ? alone(input, board, obj, cards) : null;
+  return obj?.kind === "card" ? offBoard(input, board, obj, cards) : null;
 }
 
 /** The characteristics of everything on the battlefield and the stack, the objects effects apply to. */
@@ -195,7 +203,7 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
     const keywords = granted.flatMap((g) => g.keywords);
     if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
   }
-  // Layer 7 (CR 613.4): a creature's printed power and toughness, then 7c.
+  // Layer 7 (CR 613.4): a creature's base power and toughness (7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
     const card = board[obj.id];
@@ -235,6 +243,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     statics: data.def.statics ?? [],
     power: null,
     toughness: null,
+    base: null,
     sevenC: Object.freeze([]),
     granted: Object.freeze([]),
   };
@@ -259,7 +268,11 @@ function layerSeven(
   const isCreature = card.types.includes("creature");
   if (printed === undefined || printed.power === null || printed.toughness === null || (onBattlefield && !isCreature))
     return card;
-  const base = layer7a(input, board, card) ?? { power: printed.power, toughness: printed.toughness };
+  const base: BasePT = layer7a(input, board, card) ?? {
+    from: "printed",
+    power: knownOrZero(printed.power),
+    toughness: knownOrZero(printed.toughness),
+  };
   const sevenC = [
     ...layer7c(input, obj, card, isCreature, onBattlefield),
     ...statics.map((s): LayerSevenCChange => ({ kind: "static", ...s })),
@@ -268,32 +281,29 @@ function layerSeven(
     power: 0,
     toughness: 0,
   });
-  return {
-    ...card,
-    power: value(base.power) + bonus.power,
-    toughness: value(base.toughness) + bonus.toughness,
-    sevenC,
-  };
+  return { ...card, power: base.power + bonus.power, toughness: base.toughness + bonus.toughness, base, sevenC };
+}
+
+type DefinesPT = Extract<StaticAbilityDef, { kind: "powerToughnessEachEqual" }>;
+
+/**
+ * Layer 7a (CR 613.4a): a characteristic-defining ability's power and toughness, in every zone (CR 604.3), or null. "You"
+ * is the object's controller, or its owner where it has none (CR 109.5). It counts what the board has after layers 1-6:
+ * layer 7, which the pass finishes object by object, changes only power and toughness, and `ObjectFilter` has no field
+ * that reads them, so the order the pass goes in can't change a count.
+ */
+function layer7a(input: LayerInputs, board: Readonly<Record<ObjectId, Layered>>, card: Layered): BasePT | null {
+  const cda = card.statics.find((s): s is DefinesPT => s.kind === "powerToughnessEachEqual");
+  if (cda === undefined) return null;
+  const n = countOnBoard(input, board, cda.to.count, card.controller);
+  return { from: "ability", power: n, toughness: n };
 }
 
 /**
- * Layer 7a (CR 613.4a): a characteristic-defining ability's power and toughness, in every zone (CR 604.3), or null. It
- * counts what the board has after layers 1-6; layer 7, which the pass finishes object by object, changes only power and
- * toughness, which a count can't ask about (the definition check refuses it).
+ * A printed "*" is set by an ability, which every such card has (the definition check). Without one, it could only be 0
+ * (the usual reading), which needs an effect that removes abilities first (later: CR 613.1f).
  */
-function layer7a(
-  input: LayerInputs,
-  board: Readonly<Record<ObjectId, Layered>>,
-  card: Layered,
-): { power: number; toughness: number } | null {
-  const cda = card.statics.find((s) => s.kind === "powerToughnessEachEqual");
-  if (cda?.kind !== "powerToughnessEachEqual") return null;
-  const n = countOnBoard(input, board, cda.to.count, card.controller);
-  return { power: n, toughness: n };
-}
-
-/** A printed "*" with no characteristic-defining ability to set it can't be determined, so it's 0 (CR 208.2a). */
-function value(printed: number | "*"): number {
+function knownOrZero(printed: number | "*"): number {
   return printed === "*" ? 0 : printed;
 }
 

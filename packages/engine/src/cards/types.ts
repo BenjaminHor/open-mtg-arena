@@ -286,7 +286,9 @@ export type TargetCount = { min: number; max: number | "any" };
 /**
  * Restrictions on an object, all of which must hold. Each list means "any of": `colors: ["W", "U"]` is "white and/or
  * blue", `notColors: ["B"]` is "nonblack", `notTypes: ["land"]` is "nonland". Read from its characteristics now
- * (CR 109.3, 613).
+ * (CR 109.3, 613). No field reads power or toughness: layer 7a's counts (`layers.ts`) read the board part way through
+ * layer 7, so a field that did would need refusing in the definition check's `passFilter`, or dependency order
+ * (later: CR 613.8).
  */
 export type ObjectFilter = {
   types?: CardType[];
