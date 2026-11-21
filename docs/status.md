@@ -704,7 +704,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            creature dying in the batch with CR 704.5q leaves with its counters as before (CR 704.3; `lastKnown` from
            before the batch too); 5 more scenarios (black, declined, the spell countered, a noncreature, more counters),
            unit tests (the clamp, the batch); the SBA renamed `plusAndMinusCounters`; docs (future-rules: poison, who
-           puts counters, entering with them, CR 615.5 for the Hydra). Next: fuzz, PR; then M2-10b.
+           puts counters, entering with them, CR 615.5 for the Hydra). Fuzz 200 clean. Merged as #56. Next: M2-10b.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
