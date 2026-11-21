@@ -1533,3 +1533,9 @@ every schema change and every change D-024 lists bumps it.
 - Whispersilk Cloak's "can't be blocked" is marked on its host by the pass like Pacifism's (`Layered.cantBeBlocked`);
   Magebane Armor's prevention is a replacement of its own text on what it's attached to; an Aura's own ability names
   "enchanted creature" with the subject `"attached"` (Firebreathing).
+- An Aura's ability naming "enchanted creature" reads what the Aura last enchanted if the Aura left before the ability
+  resolves (CR 608.2h, 113.7a): Firebreathing destroyed in response still pumps its creature. No printed ruling covers
+  it; CR 608.2h settles it (D-080).
+- Magebane Armor's ruling says a Levitation "that comes under your control later" gives flying back. Under CR 613.7a its
+  effect has Levitation's timestamp, and no rule gives a new one on a change of control (CR 613.7d-k), so the engine
+  follows the CR (D-020). Nothing in the pool can steal an enchantment yet.

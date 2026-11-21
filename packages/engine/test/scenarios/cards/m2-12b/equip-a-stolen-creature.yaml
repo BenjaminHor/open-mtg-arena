@@ -1,0 +1,25 @@
+name: A creature stolen and equipped keeps its Equipment when control returns, as control matters only for equip
+rules: [CR 301.5b, CR 301.5d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Gorgon Flail, Mountain, Mountain, Mountain, Forest, Forest]
+    hand: [Act of Treason]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Act of Treason
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - p1 activate: Gorgon Flail
+    targets: [p1:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Hill Giant.power: 4
+  - all pass: until main1
+  - expect:
+      p2:Hill Giant.power: 4
+      p2:Hill Giant.abilities contains: [deathtouch]
+      events lacks: [{ type: UNATTACHED }]

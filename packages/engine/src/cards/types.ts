@@ -415,7 +415,8 @@ export type EffectSubject =
   | "remembered"
   /**
    * "Enchanted creature", "equipped creature" in an ability of an Aura or Equipment: what its source is attached to as
-   * the effect applies (CR 303.4m, 301.5f); nothing if it's attached to nothing.
+   * the effect applies (CR 303.4m, 301.5f), or as it last existed if the source has left (CR 608.2h); nothing if it's
+   * attached to nothing.
    */
   | "attached"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */

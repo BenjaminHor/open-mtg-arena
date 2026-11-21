@@ -73,9 +73,9 @@ function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDa
 }
 
 /**
- * An Equipment attached to something that isn't a creature, that has protection from it, or that has left the
- * battlefield (CR 704.5n, 301.5c, 702.16d). It stays on the battlefield, unattached. An Equipment that's also a
- * creature can't equip anything (later: CR 301.5c; nothing in the pool makes one a creature).
+ * An Equipment attached to something that isn't a creature, to itself, to something with protection from it, or to
+ * something that has left the battlefield (CR 704.5n, 301.5c, 702.16d). It stays on the battlefield, unattached. An
+ * Equipment that's also a creature can't equip anything either; nothing in the pool makes one a creature.
  */
 function isEquipmentIllegallyAttached(state: GameState, equipment: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[equipment];

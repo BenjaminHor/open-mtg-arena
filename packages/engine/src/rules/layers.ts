@@ -51,7 +51,10 @@ export type Layered = Readonly<{
   base: BasePT | null;
   /** Each layer 7c change, in the order applied (CR 613.4c). */
   sevenC: readonly LayerSevenCChange[];
-  /** Each layer 6 grant of keywords, and its source, for explaining them (the printed ones are in `keywords` too). */
+  /**
+   * Each layer 6 change to keywords, granted or removed, in the timestamp order applied, with its source, for explaining
+   * them (the printed ones are in `keywords` too).
+   */
   granted: readonly KeywordGrant[];
   /**
    * Not a characteristic: "enchanted creature can't attack or block" (Pacifism, CR 508.1c, 509.1b) from a permanent

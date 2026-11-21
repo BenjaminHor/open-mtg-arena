@@ -1,0 +1,22 @@
+name: Firebreathing destroyed in response to its ability still pumps the creature it last enchanted (last known information)
+rules: [CR 608.2h, CR 113.7a]
+# No printed ruling covers the Aura leaving first; CR 608.2h settles it: "enchanted creature" is read from the Aura as it
+# last existed, so the creature it enchanted then gets the bonus. Its ruling ("whichever creature is enchanted at the time
+# the ability resolves") is that creature here.
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, { card: Firebreathing, attachedTo: p1:Grizzly Bears }, Mountain, Forest, Forest]
+    hand: [Naturalize]
+steps:
+  - p1 activate: Firebreathing
+    pay: auto
+  - p1 cast: Naturalize
+    targets: [p1:Firebreathing]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Firebreathing]
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 3

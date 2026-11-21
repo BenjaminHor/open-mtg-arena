@@ -35,9 +35,12 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
     `  colors: ${c.colors.length > 0 ? c.colors.join("") : "colorless"}; keywords: ${keywordText(c)}`,
     `  controller: ${c.controller}; owner: ${obj.owner}`,
   ];
-  // Keywords granted by effects (layer 6), each with where it came from.
-  for (const grant of layeredOf(state, id, cards)?.granted ?? [])
-    lines.push(`    granted ${grant.keywords.join(", ")} by ${sourceName(grant.source)}`);
+  // Keywords granted or removed by effects (layer 6), in timestamp order, each with where it came from.
+  for (const grant of layeredOf(state, id, cards)?.granted ?? []) {
+    if (grant.keywords.length > 0)
+      lines.push(`    granted ${grant.keywords.join(", ")} by ${sourceName(grant.source)}`);
+    if (grant.lose.length > 0) lines.push(`    loses ${grant.lose.join(", ")} by ${sourceName(grant.source)}`);
+  }
   if (c.power !== null && c.toughness !== null) {
     lines.push(`  power/toughness: ${c.power}/${c.toughness}`);
     const printed = data?.printed;

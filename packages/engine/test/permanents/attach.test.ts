@@ -45,13 +45,13 @@ function board(host = 0): { state: GameState; bears: ObjectId; proBlack: ObjectI
 
 describe("attaching (CR 701.3)", () => {
   it("moves the Equipment onto another creature, with a new timestamp (CR 701.3a, 701.3c, 613.7e)", () => {
-    const { state, equipment, proBlack } = board();
+    const { state, equipment, proBlack, bears } = board();
     const before = state.objects[equipment];
     const done = attach(state, equipment, proBlack);
     const after = done.state.objects[equipment];
     expect(attachedHost(done.state, equipment)).toBe(proBlack);
     expect(after?.timestamp).toBeGreaterThan(before?.timestamp ?? Number.POSITIVE_INFINITY);
-    expect(done.events).toStrictEqual([{ type: "ATTACHED", object: equipment, to: proBlack }]);
+    expect(done.events).toStrictEqual([{ type: "ATTACHED", object: equipment, to: proBlack, from: bears }]);
   });
 
   it("does nothing when it's already attached there, not even a new timestamp (CR 701.3b)", () => {
@@ -82,6 +82,14 @@ describe("protection from the Equipment's quality (CR 702.16d)", () => {
     };
     const done = attachSelf(state, { target: 0 }, context, TEST_CARDS);
     expect(attachedHost(done.state, equipment)).toBe(bears);
+  });
+
+  it("an Equipment attached to itself becomes unattached too (CR 301.5c, 704.5n)", () => {
+    const { state, equipment } = board();
+    const obj = state.objects[equipment];
+    if (obj?.kind !== "card") throw new Error("no Equipment");
+    const self = { ...state, objects: { ...state.objects, [equipment]: { ...obj, attachedTo: equipment } } };
+    expect(attachedHost(checkStateBasedActions(self, TEST_CARDS).state, equipment)).toBeNull();
   });
 
   it("an Equipment already on it becomes unattached as a state-based action, and stays (CR 704.5n)", () => {

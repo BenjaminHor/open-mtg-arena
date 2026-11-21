@@ -23,7 +23,8 @@ pass's `controller` then, so layer 2 lives in one place), and a central check in
 before and after each piece of work, for summoning sickness (CR 302.6) and removal from combat (CR 506.4), rather than
 `recordControlChanges` at each place an effect begins or ends. Layers 4, 5 and 7b have resolved effects
 (M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
-merged into that order (CR 613.7a). In a simultaneous batch the cards move one by one, so a Druid moving first ends
+merged into that order (CR 613.7a), as layer 6 does since M2-12b (D-103). Layer 2 too: Mind Control's static control
+effect takes its Aura's timestamp, renewed when it's attached (CR 613.7e), against Act of Treason's. In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch
 (CR 603.10a, 608.2h). "endOfGame" effects stay in `state.effects` after their object is gone; drop them once nothing
 can read them (after the last-known-information snapshot). A gone object's power is read from the snapshot taken as it left (D-096), not worked out from

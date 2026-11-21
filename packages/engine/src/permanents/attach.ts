@@ -18,7 +18,7 @@ export function attach(state: GameState, object: ObjectId, to: ObjectId): Progre
   const attached: CardObject = { ...obj, attachedTo: to, timestamp: stamped.timestamp };
   return {
     state: { ...stamped.state, objects: { ...stamped.state.objects, [object]: attached } },
-    events: [{ type: "ATTACHED", object, to }],
+    events: [{ type: "ATTACHED", object, to, from: obj.attachedTo ?? null }],
   };
 }
 

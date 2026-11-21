@@ -85,8 +85,8 @@ function hasLifelink(state: GameState, source: ObjectId, cards: CardDatabase): b
 }
 
 /**
- * A damage source's keywords: now, or from its last known information if it has left the battlefield (CR 702.15c;
- * 702.2e for deathtouch: a Pyromancer with Gorgon Flail killed in response). None if neither.
+ * A damage source's keywords: now, or from its last known information if it has left the battlefield, for lifelink and
+ * deathtouch alike (CR 702.15c, 702.2e). None if neither.
  */
 function sourceKeywords(state: GameState, source: ObjectId, cards: CardDatabase): readonly Keyword[] {
   if (state.objects[source] !== undefined) return keywordsOf(state, source, cards);
