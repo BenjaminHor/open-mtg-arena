@@ -308,6 +308,7 @@ describe("definitionProblems", () => {
           { op: "doesntUntap", of: { target: 0 }, during: { target: 0 } },
           { op: "doesntUntap", of: "self", during: "eachPlayer" },
           { op: "doesntUntap", of: "self", during: "self" },
+          { op: "doesntUntap", of: "self", during: "eachOpponent" },
         ],
       },
     };
@@ -321,7 +322,7 @@ describe("definitionProblems", () => {
       definitionProblems([bad], [sleepCard]).filter(
         (p) => p === "Sleep: doesntUntap is during one player's untap step",
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
   });
 
   it("reports a missing keyword", () => {

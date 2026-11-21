@@ -746,13 +746,17 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          yourself, a slept creature borrowed by Act of Treason; Wall of Frost, defender, its effect following the
          creature under Mind Control; Vines, its untapped target refused, the Aura falling off once untapped), 2 unit tests
          (another player's untap step, the effect ending on an untapped creature), definition checks; mutants 5/5 after
-         the unit test; 2 golden games. Rules review: no wrong ruling a pool card reaches; a latent bug fixed (an "its
+         the unit test; 2 golden games (they create the effects; neither reaches an untap step that keeps something tapped).
+         Rules review: no wrong ruling a pool card reaches; a latent bug fixed (an "its
          controller" effect trimmed to some of its permanents was thrown away, so the rest would stay tapped again a turn
          later; unit test); citations fixed (CR 611.2c doesn't fix a rules effect's objects, the words do; CR 614.10a for
          skipped steps); 7 more scenarios (Wall of Frost gone before the untap step, vigilance attackers tapped later or
          never, Sleep then Mind Control, a creature arriving after Sleep, Vines under Mind Control, the Wall's controller
          stealing the blocked creature), a unit test for one blocker blocking two (CR 509.3b). Vines's second ruling (its
-         target untapped in response) waits for an instant-speed untap in the pool. Next: code review, PR.
+         target untapped in response) waits for an instant-speed untap in the pool. Code review: no invariant broken; the
+         same bug; effects chosen by their duration too; the switches given the new kinds; 2 scenarios (the blocked
+         creature dying before the untap step, or before the trigger resolves), a definition test (`eachOpponent`); both
+         surviving mutants now caught. Next: PR.
        - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
          refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
          turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing

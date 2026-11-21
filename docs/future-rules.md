@@ -298,6 +298,8 @@ field paths the same as the state's for that), or have the host send each visibl
 the view. Never let the UI read `baseController` or printed power and toughness directly.
 
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
+An effect lasting until a player's next untap step (Sleep's `doesntUntap`, D-115) never ends if that player leaves:
+leaving must end or drop the effects that name them (later: CR 800.4a).
 *Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
 the player from `turnOrder` (or mark them) so they can't concede twice, and pass priority on if they had it (CR 800.4a).
 `GameResult.winner` is one player: team games (CR 104.2c) and draws for only some players (CR 104.4e) will need a

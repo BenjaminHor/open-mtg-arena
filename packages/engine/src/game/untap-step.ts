@@ -49,25 +49,38 @@ function endDoesntUntapEffects(state: GameState, active: PlayerId, cards: CardDa
   const events: GameEvent[] = [];
   let changed = false;
   for (const effect of state.effects) {
-    if (effect.change.kind !== "doesntUntap") {
+    if (effect.duration !== "nextUntapStep" || effect.change.kind !== "doesntUntap") {
       effects.push(effect);
       continue;
     }
-    const during = effect.change.during;
-    const left =
-      during === active
-        ? []
-        : during === "itsController"
-          ? effect.affected.filter((id) => state.objects[id] !== undefined && controllerOf(state, id, cards) !== active)
-          : effect.affected;
-    if (left.length === effect.affected.length) effects.push(effect);
+    const left = stillWaiting(state, effect.affected, effect.change.during, active, cards);
+    if (left.length === 0) {
+      changed = true;
+      events.push({ type: "EFFECT_ENDED", effect });
+    } else if (left.length === effect.affected.length) effects.push(effect);
     else {
       changed = true;
-      if (left.length === 0) events.push({ type: "EFFECT_ENDED", effect });
-      else effects.push({ ...effect, affected: left });
+      effects.push({ ...effect, affected: left });
     }
   }
   return changed ? { state: { ...state, effects }, events } : { state, events: [] };
+}
+
+/**
+ * The permanents a "next untap step" effect still waits on after the active player's untap step: none if it named that
+ * player; for "its controller", those another player controls now (one that has left the battlefield has no untap step
+ * to wait for, CR 400.7); otherwise all of them.
+ */
+function stillWaiting(
+  state: GameState,
+  affected: readonly ObjectId[],
+  during: PlayerId | "itsController",
+  active: PlayerId,
+  cards: CardDatabase,
+): ObjectId[] {
+  if (during === active) return [];
+  if (during !== "itsController") return [...affected];
+  return affected.filter((id) => state.objects[id] !== undefined && controllerOf(state, id, cards) !== active);
 }
 
 function isTapped(state: GameState, id: ObjectId): boolean {

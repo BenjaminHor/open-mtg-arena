@@ -80,6 +80,7 @@ export function staticKeywordGrants(
       case "attachedCantAttackOrBlock":
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
+      case "attachedDoesntUntap":
       case "attachedControl":
       case "plusPerSharedCreatureType":
       case "plusPerOtherSameName":
@@ -189,6 +190,7 @@ export function staticPTChanges(
       case "attachedCantAttackOrBlock":
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
+      case "attachedDoesntUntap":
       case "attachedControl":
         break;
     }
