@@ -618,7 +618,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            `is`, `putTargetOntoBattlefield` dropped); a creature with no P/T is 0/0 (CR 208.5); unit tests for
            timestamp order in layers 5 and 7b; 8 more scenarios (no Forest, sick Forest can't attack, a blocking
            Forest, Earthquake killing both, Undead Slayer and the Zombie, a noncreature target, statics after layers
-           4-5, colors after death); citations, stale comments and READMEs. Next: fuzz, bench, PR.
+           4-5, colors after death); citations, stale comments and READMEs. A re-check: a blocker staying out of
+           combat (`awakener-druid-reblocker`), D-095 corrected for tokens. Fuzz 3×200 clean. Merged as #52.
          b2b: Stone Giant (a target compared with the source's power; a delayed trigger that remembers "that
          creature", CR 603.7c) and last known characteristics snapshotted as an object leaves (CR 608.2h).
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
