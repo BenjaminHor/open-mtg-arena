@@ -32,40 +32,46 @@ export function copySpell(state: GameState, effect: CopySpell, context: EffectCo
   const put = happen(state, { kind: "copySpell", player: context.controller, spell: copied }, cards);
   const copy = put.events.find((e) => e.type === "SPELL_COPIED")?.object;
   if (copy === undefined) throw new Error("the copy wasn't put on the stack");
-  const asked = askFrom(put.state, context.controller, copy, 0, 0);
-  const next = "done" in asked ? becameTargets(asked.state, copy, cards) : asked;
+  const kept = { targets: spell.choices.targets, division: spell.choices.division };
+  const next = askFrom(
+    put.state,
+    { player: context.controller, object: copy, instance: 0, index: 0, original: kept },
+    cards,
+  );
   return { state: next.state, events: [...put.events, ...next.events] };
 }
 
+type Slot = Omit<ChooseNewTarget, "kind" | "id">;
+
 /**
- * The next target of the copy from `instance`/`index` on, asked of its controller; once there are none left, its
- * targets are fixed, and each object it targets becomes the target of the copy, a new spell, kept or new (D-125).
+ * The copy's target at `slot`, or the next one after it, asked of its controller. Once none is left, the final set is
+ * judged (CR 115.7e): naming one object twice in an instance (CR 601.2c), it isn't a legal choice, and the player starts
+ * over from what the copy had; else its targets are fixed, and each object it targets becomes the target of the copy.
  */
-function askFrom(state: GameState, player: ChooseNewTarget["player"], copy: ObjectId, instance: number, index: number) {
-  const targets = state.objects[copy]?.choices?.targets ?? [];
-  for (let i = instance; i < targets.length; i++) {
-    const group = targets[i] ?? [];
-    const j = i === instance ? index : 0;
-    if (j < group.length) {
-      const decision = { kind: "chooseNewTarget", object: copy, instance: i, index: j } as const;
-      return { state: waitFor(state, player, decision), events: [] as GameEvent[] };
+function askFrom(state: GameState, slot: Slot, cards: CardDatabase): Progress {
+  const targets = state.objects[slot.object]?.choices?.targets ?? [];
+  for (let i = slot.instance; i < targets.length; i++) {
+    const j = i === slot.instance ? slot.index : 0;
+    if (j < (targets[i] ?? []).length) {
+      const decision = { kind: "chooseNewTarget", ...slot, instance: i, index: j } as const;
+      return { state: waitFor(state, slot.player, decision), events: [] };
     }
   }
-  return { state, events: [] as GameEvent[], done: true };
+  if (targets.some((group) => group.some((t, j) => group.findIndex((u) => sameTarget(t, u)) !== j))) {
+    const restored = withChoices(state, slot.object, slot.original);
+    return askFrom(restored, { ...slot, instance: 0, index: 0 }, cards);
+  }
+  return becameTargets(state, slot.object, cards);
 }
 
 /**
- * The targets the copy's controller may choose instead (CR 115.7d): the legal ones for that instance of "target", but
- * not one another target of the same instance already has (CR 601.2c).
+ * The targets the copy's controller may choose instead (CR 115.7d): the legal ones for that instance of "target", with
+ * the copy as the source. Another target of the copy may be chosen: only the final set is judged (CR 115.7e).
  */
 export function newTargetOptions(state: GameState, pending: ChooseNewTarget, cards: CardDatabase): Target[] {
-  const copy = state.objects[pending.object];
-  const choices = copy?.choices;
   const spec = targetSpecsOf(state, pending.object, cards)[pending.instance];
-  if (copy === undefined || choices == null || spec === undefined) return [];
-  const others = (choices.targets[pending.instance] ?? []).filter((_, j) => j !== pending.index);
-  const by = { object: pending.object, controller: pending.player };
-  return legalTargets(state, spec, by, cards).filter((t) => !others.some((o) => sameTarget(o, t)));
+  if (spec === undefined) return [];
+  return legalTargets(state, spec, { object: pending.object, controller: pending.player }, cards);
 }
 
 /** Why this can't be the new target, or null: keeping it (null) is always allowed. */
@@ -81,50 +87,50 @@ export function newTargetProblem(
     : "not a legal new target for the copy (CR 115.7d)";
 }
 
-/** The target is kept or changed (its share of a division goes with it, CR 115.7f); then the next one. */
+/** The target is kept or changed, its share of a division going with its place (CR 115.7f); then the next one. */
 export function answerNewTarget(
   state: GameState,
   pending: ChooseNewTarget,
   target: Target | null,
   cards: CardDatabase,
 ): Progress {
-  const copy = state.objects[pending.object];
-  const choices = copy?.choices;
-  if (copy?.kind !== "card" || choices == null) throw new Error(`${pending.object} isn't a copy of a spell`);
-  const changed = target === null ? state : withTarget(state, copy.id, choices, pending, target);
-  const next = askFrom(changed, pending.player, copy.id, pending.instance, pending.index + 1);
-  if (!("done" in next)) return next;
-  return becameTargets(next.state, copy.id, cards);
+  const choices = state.objects[pending.object]?.choices;
+  if (choices == null) throw new Error(`${pending.object} isn't a copy of a spell`);
+  const changed = target === null ? state : withChoices(state, pending.object, withTarget(choices, pending, target));
+  return askFrom(changed, { ...pending, index: pending.index + 1 }, cards);
 }
 
+/** The target at `at` replaced; the share of a division at that place now goes to it (CR 115.7f). */
 function withTarget(
-  state: GameState,
-  id: ObjectId,
   choices: StackChoices,
   at: ChooseNewTarget,
   target: Target,
-): GameState {
-  const old = choices.targets[at.instance]?.[at.index];
+): Pick<StackChoices, "targets" | "division"> {
   const targets = choices.targets.map((group, i) =>
     i === at.instance ? group.map((t, j) => (j === at.index ? target : t)) : group,
   );
-  const division =
-    choices.division === null || choices.division.instance !== at.instance || old === undefined
-      ? choices.division
-      : {
-          ...choices.division,
-          shares: choices.division.shares.map((s) => (sameTarget(s.target, old) ? { ...s, target } : s)),
-        };
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return state;
-  return { ...state, objects: { ...state.objects, [id]: { ...obj, choices: { ...choices, targets, division } } } };
+  const division = choices.division;
+  if (division === null || division.instance !== at.instance) return { targets, division };
+  const shares = division.shares.map((s, j) => (j === at.index ? { ...s, target } : s));
+  return { targets, division: { ...division, shares } };
 }
 
-/** Each object the copy targets, once, becomes the target of a spell (CR 601.2c's "become the target"; D-125). */
+function withChoices(state: GameState, id: ObjectId, change: Pick<StackChoices, "targets" | "division">): GameState {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card" || obj.choices === null) return state;
+  return { ...state, objects: { ...state.objects, [id]: { ...obj, choices: { ...obj.choices, ...change } } } };
+}
+
+/**
+ * Each object the copy targets becomes the target of a spell, kept or new: the copy is a new spell targeting it (judge
+ * forum, D-125). Once per object, as when casting (CR 603.2c); not one gone since (CR 400.7).
+ */
 function becameTargets(state: GameState, copy: ObjectId, cards: CardDatabase): Progress {
   const targets = state.objects[copy]?.choices?.targets ?? [];
   const objects: ObjectId[] = [];
-  for (const t of targets.flat()) if (t.kind === "object" && !objects.includes(t.object)) objects.push(t.object);
+  for (const t of targets.flat())
+    if (t.kind === "object" && state.objects[t.object] !== undefined && !objects.includes(t.object))
+      objects.push(t.object);
   const events: GameEvent[] = objects.map((object) => ({ type: "BECAME_TARGET", object, by: copy }));
   return { state: events.length === 0 ? state : detectTriggers(state, state, events, cards), events };
 }

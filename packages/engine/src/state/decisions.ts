@@ -8,7 +8,7 @@ import type { ProposedEvent } from "../pipeline/proposed.ts";
 import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DecisionId, ObjectId, OracleId, PlayerId } from "./ids.ts";
-import type { Target } from "./objects.ts";
+import type { StackChoices, Target } from "./objects.ts";
 import type { ChoiceFor, ReplacementChoice, ReplacementRef } from "./replacements.ts";
 import type { PendingTrigger } from "./triggers.ts";
 import type { WorkItem } from "./work.ts";
@@ -161,9 +161,16 @@ export type DecisionKind =
   /**
    * "You may choose new targets for the copy" (CR 707.10c, 115.7d): for target `index` of instance `instance` of the
    * copy `object`, keep it (even if illegal) or choose a new legal one. Asked for each target in turn; the number of
-   * targets and the division stay (CR 115.7f).
+   * targets and the division stay (CR 115.7f). Only the final set is judged (CR 115.7e): `original` is what the copy
+   * had, to start over from if the final set names one object twice in an instance (CR 601.2c).
    */
-  | { kind: "chooseNewTarget"; object: ObjectId; instance: number; index: number };
+  | {
+      kind: "chooseNewTarget";
+      object: ObjectId;
+      instance: number;
+      index: number;
+      original: Pick<StackChoices, "targets" | "division">;
+    };
 
 /**
  * What a `chooseName` answer is for. As a permanent enters, `resume` is as for `chooseReplacement`: the answer is kept

@@ -84,7 +84,8 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       );
     }
     case "spell": {
-      // A spell is a card on the stack (CR 112.1); an ability on the stack isn't one. It can't target itself (CR 115.5).
+      // A spell is a card on the stack (CR 112.1), or a copy of one (CR 707.10); an ability on the stack isn't one. It
+      // can't target itself (CR 115.5).
       const spells = state.zones.stack.filter(
         (id) =>
           id !== by.object &&
@@ -100,7 +101,8 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       // A token there isn't a card (CR 111.6), for the moment before it ceases to exist (CR 704.5d).
       const isCard = (id: ObjectId) => {
         const obj = state.objects[id];
-        return obj?.kind === "card" && !isToken(obj);
+        // Nor is a copy of a spell, for the moment before it ceases to exist there (CR 707.10a, 704.5e).
+        return obj?.kind === "card" && !isToken(obj) && obj.copy !== true;
       };
       return objects(
         inGraveyards.filter(

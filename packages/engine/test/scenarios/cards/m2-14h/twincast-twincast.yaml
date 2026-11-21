@@ -1,0 +1,37 @@
+name: A Twincast copies a Twincast; the copy copies the Bolt
+rules: [CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Island, Island, Island, Island]
+    hand: [Lightning Bolt, Twincast, Twincast]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Lightning Bolt]
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Twincast]
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Lightning Bolt, Twincast, Twincast, Twincast copy]
+      pending: { player: p1, kind: chooseNewTarget }
+  - p1 choose: keep
+  - expect:
+      stack: [Lightning Bolt, Twincast, Twincast copy]
+  - all pass: once
+  - expect:
+      stack: [Lightning Bolt, Twincast, Twincast copy, Lightning Bolt copy]
+  - p1 choose: keep
+  - all pass: once
+  - expect:
+      stack: [Lightning Bolt, Twincast]
+      p2.life: 17
+  - all pass: once
+  - p1 choose: keep
+  - all pass: until main2
+  - expect:
+      p2.life: 11

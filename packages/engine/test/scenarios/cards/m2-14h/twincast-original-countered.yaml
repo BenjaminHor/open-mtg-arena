@@ -1,0 +1,31 @@
+name: Twincast whose spell was countered in response does nothing (CR 608.2b)
+rules: [CR 608.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Island, Island]
+    hand: [Lightning Bolt, Twincast]
+  p2:
+    battlefield: [Island, Island, Island]
+    hand: [Cancel]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Lightning Bolt]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [spell:p1:Lightning Bolt]
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Twincast]
+  - all pass: once
+  - expect:
+      stack: []
+      pending: { player: p1, kind: priority }
+      p1.graveyard: [Lightning Bolt, Twincast]
+      events lacks: [{ type: SPELL_COPIED }]
+      p2.life: 20

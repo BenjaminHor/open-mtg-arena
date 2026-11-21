@@ -12,7 +12,7 @@ import { withZoneList, zoneList } from "./zone-list.ts";
 
 /**
  * The copy becomes the topmost object of the stack, owned and controlled by `player`, who put it there (CR 707.10), with
- * a timestamp of its own (CR 613.7d).
+ * a timestamp of its own, as an object entering a zone gets.
  */
 export function putSpellCopy(state: GameState, player: PlayerId, spell: SpellCopied): Progress {
   const allocated = newObjectId(state);

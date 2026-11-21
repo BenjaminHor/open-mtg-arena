@@ -1,0 +1,23 @@
+name: A copy of Seismic Strike counts the copy controller's Mountains ("you" is its controller)
+rules: [CR 707.10]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Island, Island, Mountain, Craw Wurm]
+    hand: [Twincast]
+  p2:
+    battlefield: [Mountain, Mountain, Mountain]
+    hand: [Seismic Strike]
+steps:
+  - p2 cast: Seismic Strike
+    targets: [p1:Craw Wurm]
+    pay: auto
+  - p2 pass: once
+  - p1 cast: Twincast
+    targets: [spell:p2:Seismic Strike]
+    pay: auto
+  - all pass: once
+  - p1 choose: keep
+  - all pass: once
+  - expect:
+      p1:Craw Wurm.damage: 1

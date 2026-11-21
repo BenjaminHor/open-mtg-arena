@@ -1937,7 +1937,11 @@ owner's answer to the D-089 open question, option (a))
   (`chooseNewTarget`: keep it, even if illegal, or a new legal one, CR 115.7d), with the copy as the source (its color
   for protection, its controller, and never itself, CR 115.5): the same as choosing before it's put there (CR 707.10c),
   as nothing can happen between. The number of targets stays, and a changed target takes its share of a division
-  (CR 115.7f). Twincast is still on the stack, resolving, while they're chosen.
+  (CR 115.7f). Twincast is still on the stack, resolving, while they're chosen. (Amended by the rules review:) only the
+  final set is judged (CR 115.7e), so two targets may be swapped, each share going with its place, not its target; a
+  final set naming one object twice in an instance (CR 601.2c) isn't a legal choice, and the player starts over from
+  the copy's targets (keeping them all is always legal). `SPELL_COPIED` comes before the targets are final: a card that
+  triggers on copying a spell (none in the pool) would need it after them.
 - Once they're fixed, each object the copy targets becomes the target of a spell, kept or new: it's a new spell
   targeting it (judge forum, apps.magicjudges.org/forum/post/65270), so Illusionary Servant's ability triggers.
 

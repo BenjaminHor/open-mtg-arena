@@ -802,7 +802,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          SBA CR 704.5e, the `chooseNewTarget` decision (keep or a new legal target, the share moving with it), a
          copy's targets becoming its targets (Illusionary Servant). 10 scenarios (Bolt kept and retargeted, the
          opponent's spell, Divination's "you", a copy countered, the division, Servant, Cancel on the Cancel it copies,
-         a copy of a copy, an illegal target kept). 1 golden game. Next: fuzz, reviews, PR; then Hive Mind.
+         a copy of a copy, an illegal target kept). 1 golden game. Rules review: one wrong ruling, new targets couldn't
+         be swapped (CR 115.7e judges only the final set), and shares moved by target, not place; fixed, with a
+         start over on a final set naming one object twice; BECAME_TARGET skips a target gone and cites D-125; copies
+         left out of graveyard card targets; 17 scenarios from it (shroud, protection, Fireball, Earthquake, owner,
+         Dragon's Claw, Duress, Seismic Strike, Servant kept and not targeted, the original countered, Cancel copying
+         itself, not cast). PR #81.
        - M2-14g built (2026-11-21, D-124): Djinn of Wishes (235 cards): the `removeCounters` cost, `entersWithCounters`
          with a fixed number, the `mayPlayWithoutPaying` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
          cost increases paid, no priority after, a cancel back to the library); CR 401.5's casting delay built
