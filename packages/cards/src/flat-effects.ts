@@ -31,7 +31,6 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "cantBeBlocked":
     case "mustAttack":
     case "becomes":
-    case "putTargetOntoBattlefield":
     case "sacrificeSource":
     case "destroy":
     case "destroyOneAtRandom":

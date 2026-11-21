@@ -2,7 +2,7 @@
 // inputs, the rule modifiers included; a static ability's set found in layer 6 is kept for 7c (CR 613.6).
 
 import { describe, expect, it } from "vitest";
-import type { GameState, ObjectId } from "../../src/index.ts";
+import type { Becomes, GameState, ObjectId } from "../../src/index.ts";
 import { layeredOf, layeredOfFresh } from "../../src/rules/layers.ts";
 import { powerAndToughness } from "../../src/rules/power-toughness.ts";
 import { BEARS, FOREST, FOREST_COUNTER, GROUNDED_ANTHEM, TEST_CARDS } from "../support/cards.ts";
@@ -90,5 +90,66 @@ describe("the base power and toughness: 7b over 7a over printed (CR 613.4a, 613.
       power: 4,
       toughness: 5,
     });
+  });
+});
+
+describe("effects in one layer apply in timestamp order (CR 613.7)", () => {
+  // Effects from resolved abilities on `id`, made in this order: `state.effects` is in timestamp order.
+  const withEffects = (state: GameState, id: ObjectId, ...changes: Becomes[]): GameState => ({
+    ...state,
+    effects: changes.map((change, i) => ({
+      source: id,
+      controller: "p1",
+      timestamp: 900 + i,
+      duration: "endOfTurn",
+      affected: [id],
+      change: { kind: "becomes", ...change },
+    })),
+  });
+  const plain = { addTypes: [], addSubtypes: [] };
+
+  it("in layer 5, a later 'becomes green' replaces an earlier added black, and a later added black adds to green", () => {
+    const { state, bears } = withBears();
+    const setG = { ...plain, colors: { set: ["G" as const] } };
+    const addB = { ...plain, colors: { add: ["B" as const] } };
+    expect(layeredOf(withEffects(state, bears, addB, setG), bears, TEST_CARDS)?.colors).toStrictEqual(["G"]);
+    expect(layeredOf(withEffects(state, bears, setG, addB), bears, TEST_CARDS)?.colors).toStrictEqual(["B", "G"]);
+  });
+
+  it("in layer 7b, the later of two set effects stands", () => {
+    const { state, bears } = withBears();
+    const small = { ...plain, setPT: { power: 1, toughness: 1 } };
+    const big = { ...plain, setPT: { power: 4, toughness: 5 } };
+    expect(powerAndToughness(withEffects(state, bears, small, big), bears, TEST_CARDS)).toStrictEqual({
+      power: 4,
+      toughness: 5,
+    });
+    expect(powerAndToughness(withEffects(state, bears, big, small), bears, TEST_CARDS)).toStrictEqual({
+      power: 1,
+      toughness: 1,
+    });
+  });
+});
+
+describe("a creature with no power or toughness has 0 (CR 208.5)", () => {
+  it("is 0/0 when a land becomes a creature with none set", () => {
+    const { state } = withBears(FOREST);
+    const forest = state.zones.battlefield[1];
+    if (forest === undefined) throw new Error("no Forest");
+    const animated: GameState = {
+      ...state,
+      effects: [
+        {
+          source: forest,
+          controller: "p1",
+          timestamp: 900,
+          duration: "endOfTurn",
+          affected: [forest],
+          change: { kind: "becomes", addTypes: ["creature"], addSubtypes: [] },
+        },
+      ],
+    };
+    expect(powerAndToughness(state, forest, TEST_CARDS)).toStrictEqual({ power: null, toughness: null });
+    expect(powerAndToughness(animated, forest, TEST_CARDS)).toStrictEqual({ power: 0, toughness: 0 });
   });
 });

@@ -190,7 +190,7 @@ function effectChangeText(change: EffectChange): string {
   }
 }
 
-/** "becomes a 4/5 G land creature — Forest Treefolk" style: what each layer sets or adds. */
+/** "becomes 4/5, colors G, also creature, also Treefolk": what each layer sets or adds. */
 export function becomesText(change: Becomes): string {
   const parts = [
     change.setPT === undefined ? null : `${change.setPT.power}/${change.setPT.toughness}`,

@@ -49,6 +49,13 @@ export type EffectChange =
   | ({ kind: "becomes" } & Becomes);
 
 /**
+ * What a permanent is as it enters (CR 611.2e): "that creature is a black Zombie in addition to its other colors and
+ * types" (Rise from the Grave). The effect is made by the move itself, from this source and controller, before anything
+ * sees the permanent enter; it lasts for the rest of the game (CR 611.2a).
+ */
+export type EntersAs = { source: ObjectId; controller: PlayerId; change: Becomes };
+
+/**
  * "Becomes a 4/5 green Treefolk creature ... it's still a land", "is a black Zombie in addition to its other colors and
  * types": card types and subtypes added in layer 4 (keeping the others, CR 205.1b), colors set or added in layer 5,
  * base power and toughness set in layer 7b (CR 613.1d, 613.1e, 613.4b).

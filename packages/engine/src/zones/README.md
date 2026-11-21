@@ -6,6 +6,9 @@ events (`pipeline/`, D-056) and are called only by it: code that moves a card pr
 
 - `move-card.ts`: `moveCard(state, id, destination)`. The card becomes a new object with a new id (CR 400.7) and goes to
   its owner's library, hand or graveyard (CR 400.3), or a shared zone under a given controller. Emits `ZONE_CHANGED`.
+  It also ends the effects lasting "for as long as [it] remains on the battlefield" as a permanent leaves (CR 611.2b), and
+  makes the effect a permanent "is" as it enters (`Destination.is`, CR 611.2e), emitting `EFFECT_ENDED` and
+  `EFFECT_CREATED` (D-095).
 - `draw.ts`: `drawCard` (CR 121): one card. Drawing from an empty library records the attempt (CR 121.4).
 - `discard.ts`: `discardCard` (CR 701.9), emitting `CARD_DISCARDED`. Several cards discarded together are one
   `simultaneous` event.

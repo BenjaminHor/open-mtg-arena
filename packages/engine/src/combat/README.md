@@ -11,6 +11,7 @@ who's still in combat) are in `rules/combat.ts`; the state is `GameState.combat`
 | `declaration-rules.ts` | Rules about a whole declaration, checked as it's finished: "can't attack or block alone" and requirements, with the most requirements obeyable (CR 508.1c–d, 509.1b–c): `attackDeclarationProblem`, `blockDeclarationProblem` |
 | `combat-damage.ts` | The combat damage step (CR 510): an `assignDamage` decision per attacker with a choice, then per blocker of several attackers (CR 510.1d), then all of the step's damage at once (`combatDamage`) |
 | `damage-assignment.ts` | Dividing a creature's damage among its recipients (CR 510.1c), trample's lethal damage first (CR 702.19b): `recipientsOf`, `hasChoice`, `assignProblem`, `assignToNextRecipient`; `blockersOf`, `attackersBlockedBy`, `blockingCreatures`, `combatPower` |
+| `removed-from-combat.ts` | Leaving combat while staying on the battlefield (CR 506.4): `removedFromCombat` (regeneration) and `removeNoncreaturesFromCombat`, run by `advance` after each piece of work, recorded in `Combat.removed` for good |
 | `first-strike.ts` | First and double strike's two damage steps (CR 510.4): `beginCombatDamageStep`, `secondDamageStepFollows`, `assignsDamageNow` |
 
 Lifelink and deathtouch are results of the damage event, in `effects/deal-damage.ts`.

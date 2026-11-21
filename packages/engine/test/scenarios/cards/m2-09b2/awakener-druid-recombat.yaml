@@ -1,0 +1,38 @@
+name: A Forest removed from combat as it stopped being a creature stays out of combat when a second Druid animates it again
+rules: [CR 506.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Elvish Piper, Birds of Paradise]
+    hand: [Awakener Druid, Awakener Druid]
+    manaPool: { G: 3 }
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Forest
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Forest]
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Awakener Druid]
+    pay: auto
+  - all pass: once
+  # The Forest has left combat. Elvish Piper puts the second Druid onto the battlefield, animating it again.
+  - p1 activate: Birds of Paradise
+    color: G
+  - p1 activate: Elvish Piper
+    pay: auto
+  - all pass: once
+  - p1 choose: Awakener Druid
+  - p1 choose: p1:Forest
+  - all pass: once
+  - expect:
+      p1:Forest.power: 4
+  - all pass: until main2
+  - expect:
+      p2.life: 20

@@ -25,8 +25,10 @@ export function layerSeven(
 ): Layered {
   const isCreature = card.types.includes("creature");
   if (onBattlefield && !isCreature) return card;
-  const base = layer7b(input, obj) ?? layer7a(input, board, card) ?? printedPT(cards, obj);
-  // No power or toughness from any of them (a land made a creature without one being set): none (CR 208.3).
+  const found = layer7b(input, obj) ?? layer7a(input, board, card) ?? printedPT(cards, obj);
+  // A creature with no value for its power or toughness (a land made a creature without one being set) has 0 (CR 208.5);
+  // a noncreature card with none has none (CR 208.3).
+  const base: BasePT | null = found ?? (isCreature ? { from: "none", power: 0, toughness: 0 } : null);
   if (base === null) return card;
   const sevenC = [
     ...layer7c(input, obj, card, isCreature, onBattlefield),

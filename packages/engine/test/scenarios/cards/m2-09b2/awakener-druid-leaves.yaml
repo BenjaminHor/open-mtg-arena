@@ -1,5 +1,5 @@
 name: Awakener Druid's Forest stops being a creature when the Druid leaves the battlefield
-rules: [CR 611.2a, CR 613.4b]
+rules: [CR 611.2b, CR 613.4b]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -26,5 +26,6 @@ steps:
       p1.graveyard: [Awakener Druid]
       p1:Forest.power: null
       p1:Forest.types: [basic, land]
+      p1:Forest.subtypes: [Forest]
       p1:Forest.colors: []
       events contains: [{ type: EFFECT_ENDED }]

@@ -1,5 +1,5 @@
 name: A creature Rise from the Grave stole goes to its owner's graveyard when it dies
-rules: [CR 400.3, CR 704.5g]
+rules: [CR 400.3, CR 704.5g, CR 400.7]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -22,3 +22,6 @@ steps:
   - expect:
       p1.battlefield: []
       p2.graveyard contains: [Grizzly Bears, Shock]
+      # A new object, which the effect never affects (CR 400.7).
+      graveyard:p2:Grizzly Bears.colors: [G]
+      graveyard:p2:Grizzly Bears.subtypes: [Bear]

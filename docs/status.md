@@ -611,7 +611,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - b2a built (D-095): Awakener Druid, Rise from the Grave; 12 scenarios in `test/scenarios/cards/m2-09b2/`, a
            unit test for CR 613.7n, `.colors`/`.types`/`.subtypes` expectations, `inspect` and the log showing 7b,
            the Becomes column of the interaction matrix, golden pool-563 and pool-655 (no old one changed). Layer 7
-           moved to `rules/layer-seven.ts`. 190 cards. Next: mutations, reviews, fuzz, bench, PR.
+           moved to `rules/layer-seven.ts`. 190 cards. Mutations 6/6 (one after a unit test of 7b's order, 106245b).
+           Rules and code reviews: one wrong result, found by both: a Forest removed from combat came back when a
+           second Druid animated it again (CR 506.4); now recorded in `Combat.removed` as it happens, scenario
+           `awakener-druid-recombat`. Also fixed: "is" applies as the card enters, before triggers (CR 611.2e, `put`'s
+           `is`, `putTargetOntoBattlefield` dropped); a creature with no P/T is 0/0 (CR 208.5); unit tests for
+           timestamp order in layers 5 and 7b; 8 more scenarios (no Forest, sick Forest can't attack, a blocking
+           Forest, Earthquake killing both, Undead Slayer and the Zombie, a noncreature target, statics after layers
+           4-5, colors after death); citations, stale comments and READMEs. Next: fuzz, bench, PR.
          b2b: Stone Giant (a target compared with the source's power; a delayed trigger that remembers "that
          creature", CR 603.7c) and last known characteristics snapshotted as an object leaves (CR 608.2h).
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

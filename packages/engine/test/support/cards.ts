@@ -82,6 +82,8 @@ export const GROUNDED_ANTHEM = "test-grounded-anthem";
  * 7a).
  */
 export const FOREST_COUNTER = "test-forest-counter";
+/** Not a real card: "Whenever another Zombie enters, you gain 1 life", to see what an entering creature is (CR 611.2e). */
+export const ZOMBIE_WATCHER = "test-zombie-watcher";
 /** Not a real card: a black 1/1 with deathtouch (the pool's deathtouch creatures are green). */
 export const BLACK_DEATHTOUCH = "test-black-deathtouch";
 
@@ -714,6 +716,20 @@ export const TEST_CARDS: CardDatabase = {
       triggers: [
         {
           when: { kind: "anotherEnters", filter: { types: ["creature"] } },
+          targets: [],
+          effects: [{ op: "gainLife", who: "you", amount: 1 }],
+        },
+      ],
+    },
+  },
+  [ZOMBIE_WATCHER]: {
+    ...keywordCreature(ZOMBIE_WATCHER, "Zombie Watcher", [1, 1], []),
+    def: {
+      name: "Zombie Watcher",
+      oracle: "Whenever another Zombie enters, you gain 1 life.",
+      triggers: [
+        {
+          when: { kind: "anotherEnters", filter: { subtypes: ["Zombie"] } },
           targets: [],
           effects: [{ op: "gainLife", who: "you", amount: 1 }],
         },

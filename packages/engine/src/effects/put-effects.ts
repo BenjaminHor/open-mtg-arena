@@ -35,7 +35,7 @@ export function put(state: GameState, effect: Put, context: EffectContext, cards
   // If no such player is left, no one puts it anywhere.
   const by = effect.by === undefined ? context.controller : onePlayer(state, effect.by, context, cards);
   if (by === null) return { state, events: [] };
-  const to = destinationOf(effect, by);
+  const to = destinationOf(effect, by, context);
   return happen(
     state,
     { kind: "simultaneous", events: ids.map((object) => ({ kind: "moveCard", object, to })) },
@@ -43,16 +43,24 @@ export function put(state: GameState, effect: Put, context: EffectContext, cards
   );
 }
 
-/** Where "put" takes a card: its owner's hand or library (CR 400.3), or the battlefield under the controller (CR 110.2a). */
-function destinationOf(effect: Put, controller: PlayerId): Destination {
+/**
+ * Where "put" takes a card: its owner's hand or library (CR 400.3), or the battlefield under the controller (CR 110.2a),
+ * with what it is as it enters, an effect of this spell or ability (CR 611.2e).
+ */
+function destinationOf(effect: Put, controller: PlayerId, context: EffectContext): Destination {
   switch (effect.into) {
     case "hand":
       return { zone: "hand" };
     case "libraryBottom":
       return { zone: "library", position: "bottom" };
-    case "battlefield":
+    case "battlefield": {
+      const is =
+        effect.is === undefined
+          ? {}
+          : { is: { source: context.self, controller: context.controller, change: effect.is } };
       return effect.tapped === true
-        ? { zone: "battlefield", controller, tapped: true }
-        : { zone: "battlefield", controller };
+        ? { zone: "battlefield", controller, tapped: true, ...is }
+        : { zone: "battlefield", controller, ...is };
+    }
   }
 }

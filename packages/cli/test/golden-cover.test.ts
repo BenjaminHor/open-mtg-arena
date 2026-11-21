@@ -174,5 +174,5 @@ describe("addCover", () => {
     // Three games can't use the whole pool.
     expect(missing.length).toBeGreaterThan(0);
     expect(addCover(dir, [791, 793, 795], cards).added).toStrictEqual([]);
-  });
+  }, 30_000); // Plays whole games: seconds alone, longer beside the rest of the suite.
 });

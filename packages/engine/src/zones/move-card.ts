@@ -1,9 +1,9 @@
 // Moving a card between zones. Every zone change goes through `moveCard`, so the replacement and trigger steps of
 // the event pipeline (docs/architecture.md, "Effects, events, replacements, triggers") have one place to plug in.
 
-import { endEffectsOfSourceLeaving } from "../effects/continuous-effect.ts";
 import { newCardId, newObjectId, newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
+import type { ContinuousEffect, EntersAs } from "../state/effects.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { CardId, ObjectId, PlayerId } from "../state/ids.ts";
@@ -18,13 +18,15 @@ export type Destination =
   | { zone: "hand" }
   /** The owner's graveyard (CR 400.3). A card goes on top (CR 404.1), the end of the list. */
   | { zone: "graveyard" }
-  /** Permanents and spells have a controller (CR 110.2, 112.2). */
-  | { zone: "battlefield" | "stack"; controller: PlayerId }
+  /** A spell has a controller (CR 112.2). */
+  | { zone: "stack"; controller: PlayerId }
+  /** A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e). */
+  | { zone: "battlefield"; controller: PlayerId; is?: EntersAs }
   /**
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
    * (CR 603.2e): no `PERMANENT_TAPPED` event, the one such triggers will see.
    */
-  | { zone: "battlefield"; controller: PlayerId; tapped: true }
+  | { zone: "battlefield"; controller: PlayerId; tapped: true; is?: EntersAs }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
 
@@ -81,10 +83,13 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
   const list = zoneList(next, toRef);
   const toTop = to.zone === "library" && to.position === "top";
   next = withZoneList(next, toRef, toTop ? [card.id, ...list] : [...list, card.id]);
+  // What it "is" as it enters applies as it enters (CR 611.2e), its timestamp after the object's (CR 613.7n).
+  const entering = to.zone === "battlefield" && to.is !== undefined ? enteringAs(next, card.id, to.is) : null;
+  if (entering !== null) next = entering.state;
 
   // "For as long as this creature remains on the battlefield" ends as it leaves (CR 611.2b).
-  const ended = from.zone === "battlefield" ? endEffectsOfSourceLeaving(next, id) : { state: next, events: [] };
-  next = ended.state;
+  const ending = from.zone === "battlefield" ? effectsEndingWith(next, id) : [];
+  if (ending.length > 0) next = { ...next, effects: next.effects.filter((e) => !ending.includes(e)) };
 
   const event: GameEvent = {
     type: "ZONE_CHANGED",
@@ -96,7 +101,28 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     newCardId: card.cardId,
     object: old,
   };
-  return { state: next, events: [event, ...ended.events], newId: card.id };
+  const ended = ending.map((effect): GameEvent => ({ type: "EFFECT_ENDED", effect }));
+  const created: GameEvent[] = entering === null ? [] : [{ type: "EFFECT_CREATED", effect: entering.effect }];
+  return { state: next, events: [event, ...ended, ...created], newId: card.id };
+}
+
+/** The effects lasting "for as long as [this] remains on the battlefield", ending as `source` leaves (CR 611.2b). */
+function effectsEndingWith(state: GameState, source: ObjectId): ContinuousEffect[] {
+  return state.effects.filter((e) => e.duration === "whileSourceOnBattlefield" && e.source === source);
+}
+
+/** The effect a permanent enters with (CR 611.2e), made now, after its own timestamp (CR 613.7n). */
+function enteringAs(state: GameState, id: ObjectId, as: EntersAs): { state: GameState; effect: ContinuousEffect } {
+  const stamped = newTimestamp(state);
+  const effect: ContinuousEffect = {
+    source: as.source,
+    controller: as.controller,
+    timestamp: stamped.timestamp,
+    duration: "endOfGame",
+    affected: [id],
+    change: { kind: "becomes", ...as.change },
+  };
+  return { state: { ...stamped.state, effects: [...stamped.state.effects, effect] }, effect };
 }
 
 /** Hands and libraries: zones some player can't see into (CR 400.2). */

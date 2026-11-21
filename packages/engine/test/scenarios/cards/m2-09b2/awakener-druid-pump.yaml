@@ -1,4 +1,4 @@
-name: A +1/+1 effect adds to the 4/5 the Druid's effect sets, whatever their order (layer 7b, then 7c)
+name: A +1/+1 effect adds to the 4/5 the Druid's effect sets (layer 7b, then 7c)
 rules: [CR 613.4b, CR 613.4c]
 setup:
   turn: { active: p1, step: main1 }

@@ -10,7 +10,7 @@ import type { EffectChange, EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { createDelayedTrigger } from "../triggers/delayed.ts";
-import { becomes, putTargetOntoBattlefield } from "./becomes.ts";
+import { becomes } from "./becomes.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
@@ -222,8 +222,6 @@ export function runEffect(
       );
     case "putOntoBattlefield":
       return putOntoBattlefieldFromHand(state, effect, context, chosen, cards);
-    case "putTargetOntoBattlefield":
-      return putTargetOntoBattlefield(state, effect, context, cards);
     case "becomes":
       return becomes(state, effect, context, cards);
     case "search": {

@@ -6,7 +6,8 @@
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
 // granted), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
-// Layers 1-5, 7b and 7d have none yet; each comes in its place below as its first card does (M2-09).
+// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095). Layers 1-3 and 7d have none yet;
+// each comes in its place below as its first card does (M2-09).
 
 import type {
   CardData,
@@ -54,6 +55,8 @@ export type Layered = Readonly<{
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
 export type BasePT = Readonly<
   | { from: "printed" | "ability"; power: number; toughness: number }
+  /** A creature with none: 0 (CR 208.5). */
+  | { from: "none"; power: 0; toughness: 0 }
   /** Set by a resolved effect (layer 7b), from this source. */
   | { from: "effect"; source: ObjectId; power: number; toughness: number }
 >;
@@ -218,7 +221,7 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
     const keywords = granted.flatMap((g) => g.keywords);
     if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
   }
-  // Layer 7 (CR 613.4): a creature's base power and toughness (7a's, else printed), then 7c.
+  // Layer 7 (CR 613.4): a creature's base power and toughness (7b's, else 7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
     const card = board[obj.id];

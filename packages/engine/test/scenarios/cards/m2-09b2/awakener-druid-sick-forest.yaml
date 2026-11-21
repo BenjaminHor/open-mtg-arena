@@ -1,9 +1,9 @@
-name: A Forest that entered this turn and becomes a creature is summoning sick, so it can't tap for mana (its ruling)
+name: A Forest that entered this turn and becomes a creature is summoning sick, so it can't tap for mana or attack (its ruling)
 rules: [CR 302.6, CR 602.5a]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [{ card: Forest, sick: true }]
+    battlefield: [{ card: Forest, sick: true }, Grizzly Bears]
     hand: [Awakener Druid]
     manaPool: { G: 3 }
 steps:
@@ -13,4 +13,7 @@ steps:
   - p1 choose: p1:Forest
   - all pass: once
   - p1 activate: Forest
+  - expect error: illegalAction
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Forest]
   - expect error: illegalAction

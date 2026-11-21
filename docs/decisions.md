@@ -1391,9 +1391,15 @@ every schema change and every change D-024 lists bumps it.
 - Durations: `"endOfTurn"`, `"endOfGame"` (none stated, CR 611.2a) and `"whileSourceOnBattlefield"`. The last ends in
   `moveCard` as its source leaves, with EFFECT_ENDED, and none is made if the source has already left (CR 611.2b). An
   "endOfGame" effect stays in the state after its object is gone; it can't apply again, as ids are never reused.
-- Rise from the Grave's "is a black Zombie" is `putTargetOntoBattlefield { target, is }`: the effect is made with the
-  move, on the new object, its timestamp after the object's (CR 611.2e, 613.7n). Nothing in the pool would notice it
-  entering that way rather than becoming so a moment later; the shape is right for one that does.
+- Rise from the Grave's "is a black Zombie" is `put { into: "battlefield", is }`: the move itself makes the effect
+  (`Destination.is`, `moveCard`), on the new object, its timestamp after the object's, before triggers look at what
+  entered (CR 611.2e, 613.7n; a unit test with a "whenever a Zombie enters" test card). Tokens made "with"
+  characteristics (M2-11) can use the same field. `moveCard` also ends "while on the battlefield" effects, so `zones/`
+  doesn't import `effects/`.
+- A creature with no power or toughness (a land made a creature without one set) is 0/0 (CR 208.5).
+- Removal from combat (CR 506.4) is recorded in `Combat.removed` as it happens: `advance` checks after each piece of
+  work for an attacker or blocker that stopped being a creature, so becoming one again doesn't bring it back (both
+  reviews found this; a second Awakener Druid did). Control changes (M2-09c) will add to the same record.
 - Layer 7 moved to `rules/layer-seven.ts`. A land made a creature gets its P/T from 7b although none is printed;
   `Layered.base` says where the base came from, and `inspect` shows it.
 - Not built: subtypes by kind (Coat of Arms counting creature types only, CR 205.3m). An animated Forest shares no land

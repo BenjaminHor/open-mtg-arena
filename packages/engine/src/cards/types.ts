@@ -475,13 +475,6 @@ export type Effect =
    */
   | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean }
   /**
-   * "Put target creature card from a graveyard onto the battlefield under your control. That creature is a black Zombie in
-   * addition to its other colors and types." (Rise from the Grave): the target enters under the controller's control
-   * (CR 110.2a), and `is`, if given, is an effect on the new object that applies as it enters (CR 611.2e), lasting until
-   * the end of the game (CR 611.2a).
-   */
-  | { op: "putTargetOntoBattlefield"; target: number; is?: Becomes }
-  /**
    * "Search [whose] library for [a card / a [filter] card / all cards with the same name as a card exiled this way]":
    * "you" look at the whole library (CR 701.23a) and choose; the cards found are `"found"` for the effects after it.
    * With a stated quality the searcher may find none (CR 701.23b); "a card" must be found if there is one
@@ -510,6 +503,11 @@ export type Effect =
       tapped?: true;
       onlyIf?: ObjectFilter;
       optional?: true;
+      /**
+       * Onto the battlefield only: what it is as it enters, "that creature is a black Zombie in addition to its other
+       * colors and types" (Rise from the Grave), applying as it enters (CR 611.2e) for the rest of the game.
+       */
+      is?: Becomes;
     }
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject }
