@@ -1668,3 +1668,11 @@ every schema change and every change D-024 lists bumps it.
   (`activationProblem`), not with mana abilities' basics, as a loyalty ability is never a mana ability (CR 605.1a).
   Definitions can't write `entersWithLoyalty`, two loyalty parts in one cost, or a `timing` on a loyalty ability.
 
+**D-111: Garruk Wildspeaker and Liliana Vess (M2-13c1)** · 2026-11-21 · accepted
+- `returnAllToBattlefield` takes a required `under: "owners" | "you"` (Open the Vaults, Liliana Vess's −8): no default,
+  so every card says whose control its cards enter under. One controller-to-be decides the move's controller, the
+  Aura's chooser and what it can enchant (CR 303.4f, 110.2), amending D-107's "its owner".
+- "Put that card on top" is `put` into `libraryTop`. A card already in that library moves up by a reorder, not a zone
+  change, so it stays the same object (CR 400.7). Liliana's −2 is search, shuffle, put on top: the same odds as
+  shuffling the rest without it (CR 701.24b).
+

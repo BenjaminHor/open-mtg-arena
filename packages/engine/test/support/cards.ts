@@ -40,6 +40,10 @@ export const SAC_PUMP = "test-sac-pump";
 export const TEST_AURA = "test-aura";
 /** Not a real card: a planeswalker with no abilities, for attacking and damaging one before the pool has any. */
 export const TEST_WALKER = "test-walker";
+/** Not a real card: a free sorcery, "Put all enchantment cards from all graveyards onto the battlefield under your control". */
+export const TAKE_ENCHANTMENTS = "test-take-enchantments";
+/** Not a real card: "Enchant creature you control / Enchanted creature gets +1/+1." */
+export const YOUR_AURA = "test-your-aura";
 /** Not real cards: two legendary 2/2 creatures with different names, for the legend rule (CR 704.5j). */
 export const LEGEND = "test-legend";
 export const OTHER_LEGEND = "test-other-legend";
@@ -558,6 +562,48 @@ export const TEST_CARDS: CardDatabase = {
       loyalty: 5,
     },
     def: { name: "Test Walker", oracle: "" },
+  }),
+  [TAKE_ENCHANTMENTS]: card(TAKE_ENCHANTMENTS, {
+    printed: {
+      name: "Take Enchantments",
+      manaCost: [],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["sorcery"],
+      subtypes: [],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Take Enchantments",
+      oracle: "Put all enchantment cards from all graveyards onto the battlefield under your control.",
+      spell: {
+        targets: [],
+        effects: [
+          { op: "returnAllToBattlefield", from: "allGraveyards", filter: { types: ["enchantment"] }, under: "you" },
+        ],
+      },
+    },
+  }),
+  [YOUR_AURA]: card(YOUR_AURA, {
+    printed: {
+      name: "Your Aura",
+      manaCost: [{ kind: "colored", color: "W" }],
+      colors: ["W"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["enchantment"],
+      subtypes: ["Aura"],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Your Aura",
+      oracle: "Enchant creature you control\nEnchanted creature gets +1/+1.",
+      enchant: { types: ["creature"], controller: "you" },
+      statics: [{ kind: "attachedGets", power: 1, toughness: 1 }],
+    },
   }),
   [TEST_AURA]: card(TEST_AURA, {
     printed: {

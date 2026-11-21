@@ -613,11 +613,12 @@ export type Effect =
    */
   | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean }
   /**
-   * "Return all [filter] cards from all graveyards to the battlefield under their owners' control" (Open the Vaults):
-   * all at once (CR 608.2f, 110.2). An Aura's owner chooses what it will enchant, not targeting (CR 303.4f); one with
-   * nothing it could enchant stays in its graveyard (CR 303.4g).
+   * "Return all [filter] cards from all graveyards to the battlefield under their owners' control" (Open the Vaults),
+   * or "put ... under your control" (Liliana Vess, `under: "you"`): all at once (CR 608.2f, 110.2). An Aura's
+   * controller-to-be chooses what it will enchant, not targeting (CR 303.4f); one with nothing it could enchant stays in
+   * its graveyard (CR 303.4g).
    */
-  | { op: "returnAllToBattlefield"; from: "allGraveyards"; filter: ObjectFilter }
+  | { op: "returnAllToBattlefield"; from: "allGraveyards"; filter: ObjectFilter; under: "owners" | "you" }
   /**
    * "Search [whose] library for [a card / a [filter] card / all cards with the same name as a card exiled this way]":
    * "you" look at the whole library (CR 701.23a) and choose; the cards found are `"found"` for the effects after it.
@@ -634,14 +635,15 @@ export type Effect =
   /** "Reveal it": shows the cards to every player (CR 701.20a), staying where they are (CR 701.20b). */
   | { op: "reveal"; of: EffectSubject }
   /**
-   * "Put it into your hand" / "onto the battlefield tapped" / "on the bottom of your library": under the controller's
+   * "Put it into your hand" / "onto the battlefield tapped" / "on top of" or "on the bottom of your library": under
+   * the controller's
    * control (CR 110.2a); a library or hand is the card's owner's (CR 400.3). `onlyIf`: "if it's a creature card, put it
    * ..." (the filter's `controller` relative to "you"). `optional`: "you may put", asked only if there's a card to put.
    */
   | {
       op: "put";
       of: EffectSubject;
-      into: "hand" | "battlefield" | "libraryBottom";
+      into: "hand" | "battlefield" | "libraryTop" | "libraryBottom";
       /** "The player puts that card onto the battlefield": who puts it, and so controls it (CR 110.2a); "you" if unsaid. */
       by?: EffectSubject;
       tapped?: true;

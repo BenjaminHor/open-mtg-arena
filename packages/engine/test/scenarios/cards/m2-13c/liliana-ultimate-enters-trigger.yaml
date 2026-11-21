@@ -1,0 +1,26 @@
+name: A creature Liliana Vess puts onto the battlefield from an opponent's graveyard triggers for its new controller
+rules: [CR 603.3a, CR 110.2, CR 400.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Liliana Vess, counters: { loyalty: 9 } }, Mountain]
+    hand: [Shock]
+  p2:
+    graveyard: [Elvish Visionary]
+steps:
+  - p1 activate: Liliana Vess
+    ability: 3
+  - all pass: once
+  - expect:
+      stack: [Elvish Visionary ability]
+  - all pass: once
+  - expect:
+      p1.hand count: 2
+      p2.hand count: 0
+  # It dies and goes to its owner's graveyard (CR 400.3).
+  - p1 cast: Shock
+    targets: [p1:Elvish Visionary]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Elvish Visionary]

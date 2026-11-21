@@ -262,8 +262,11 @@ in another's hand (a cancelled cast's card back in hand, CR 734.1) all change wh
 shuffling keeps object ids (`zones/shuffle.ts`), and they're numbered in setup order. A move from a library to a public
 zone no longer shows the old object id or card id (D-054), and since M2-05b2 a reveal, a choice's options, a search
 and a "look at" show cards by identity only, in a fixed order, never by id or zone order (D-062): scry must do the
-same. Liliana Vess's "search, then shuffle and put that card on top" leaves the found card out of the shuffle
-(CR 701.24b): search, move and shuffle are separate steps passing `"found"` (D-064), so it's one more op. So far a reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
+same. Liliana Vess's "search, then shuffle and put that card on top" (CR 701.24b leaves the found card out of the
+shuffle) is built as search, shuffle the whole library, then move the found card to the top by reordering, which gives
+the same odds (M2-13c1). Moving a card within its own library is a reorder, not a zone change (CR 400.7); "put on the
+bottom" (Lurking Predators) still goes through `moveCard`, a new object, and should become a reorder too when a
+library trigger (CR 603.10a) or CR 701.20d needs it. So far a reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
 chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt from views mid-choice loses the rest of
 the revealed hand, though it stays revealed until the effect is done (CR 701.20a). That, Telepathy, and a third player
 who must see a revealed hand need revealed cards in the view, per object. Several players
@@ -392,9 +395,8 @@ uses to track a card between zones.
 **Auras entering without being cast, beyond Open the Vaults (CR 303.4f-g, D-107).** Other effects that put an Aura
 onto the battlefield (Academy Researchers, Aura tokens such as Roles, CR 111.10j) choose its host through the same
 steps as `returnAllToBattlefield`: `canEnchant`, a `chooseCards` decision with purpose `enchant` and `for`, and
-`Destination.attachedTo`. The chooser is the Aura's owner today, right for "under their owners' control"; an effect
-putting it under another player's control, or a replacement changing who controls it, needs the controller-to-be
-(CR 110.2a). An Aura that enchants a player (Curses, later: CR 303.4, 702.5d) needs players among the options, which
+`Destination.attachedTo`. The chooser is the controller-to-be (`under: "owners" | "you"`, M2-13c1); a replacement
+changing who controls it as it enters still needs reading there (CR 110.2a). An Aura that enchants a player (Curses, later: CR 303.4, 702.5d) needs players among the options, which
 `chooseCards` can't offer, and `AuraHost.host` to take a player. The host's legality is judged on the Aura as it is in
 the graveyard; an effect that changes it as it enters (CR 614.12) would need it judged as it will be. *Needs now:*
 nothing.

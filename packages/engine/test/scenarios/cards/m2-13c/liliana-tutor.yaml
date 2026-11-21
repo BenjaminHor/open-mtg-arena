@@ -1,0 +1,24 @@
+name: Liliana Vess's -2 finds a card, shuffles, and puts the card on top of the library
+rules: [CR 701.23a, CR 701.23d, CR 701.23e, CR 701.24a, CR 701.24b, CR 606.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Liliana Vess]
+    library: [Forest, Shock, Mountain]
+steps:
+  - p1 activate: Liliana Vess
+    ability: 2
+  - all pass: once
+  - p1 choose: Shock
+  - expect:
+      p1.library count: 3
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }]
+      # Not revealed (CR 701.23e), and moving it up its own library isn't a zone change (CR 400.7).
+      events lacks: [{ type: CARDS_REVEALED }, { type: ZONE_CHANGED }]
+      p1:Liliana Vess.counters: { loyalty: 3 }
+  # Shock is on top: p1 draws it next turn.
+  - all pass: until draw
+  - all pass: until draw
+  - expect:
+      active: p1
+      p1.hand: [Shock]

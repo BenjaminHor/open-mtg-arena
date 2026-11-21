@@ -10,6 +10,7 @@ import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 import type { Destination } from "../zones/move-card.ts";
+import { zoneOf } from "../zones/zone-list.ts";
 import { objectsNamed, onePlayer } from "./subjects.ts";
 
 type Put = Extract<Effect, { op: "put" }>;
@@ -35,6 +36,12 @@ export function put(state: GameState, effect: Put, context: EffectContext, cards
   // If no such player is left, no one puts it anywhere.
   const by = effect.by === undefined ? context.controller : onePlayer(state, effect.by, context, cards);
   if (by === null) return { state, events: [] };
+  // One card on top of the library it's already in isn't a zone change (CR 400.7): the same object, moved up
+  // (Liliana Vess). Moving several, or from elsewhere, is a move.
+  const [only, ...more] = ids;
+  const from = only === undefined ? null : zoneOf(state, only);
+  if (effect.into === "libraryTop" && more.length === 0 && from?.zone === "library" && "player" in from)
+    return happen(state, { kind: "reorderLibrary", player: from.player, top: ids }, cards);
   const to = destinationOf(effect, by, context);
   return happen(
     state,
@@ -51,6 +58,8 @@ function destinationOf(effect: Put, controller: PlayerId, context: EffectContext
   switch (effect.into) {
     case "hand":
       return { zone: "hand" };
+    case "libraryTop":
+      return { zone: "library", position: "top" };
     case "libraryBottom":
       return { zone: "library", position: "bottom" };
     case "battlefield": {
