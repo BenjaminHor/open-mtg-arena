@@ -51,7 +51,7 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
   if ("each" in s)
     return permanentsFitting(state, s.each, context, cards).map((object) => ({ kind: "object", object }));
   if ("controllerOf" in s) {
-    const player = controllerOfTarget(state, context.targets[s.controllerOf.target] ?? []);
+    const player = controllerOfTarget(state, context.targets[s.controllerOf.target] ?? [], cards);
     return player === null ? [] : [{ kind: "player", player }];
   }
   return context.targets[s.target] ?? [];
@@ -61,9 +61,9 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
  * "Its controller": the controller of the targeted object now, or as it last was on the battlefield if it's gone
  * (CR 608.2h). The targets here are those still legal as the spell began to resolve (CR 608.2b).
  */
-function controllerOfTarget(state: GameState, targets: readonly Target[]): PlayerId | null {
+function controllerOfTarget(state: GameState, targets: readonly Target[], cards: CardDatabase): PlayerId | null {
   const [object] = objectsOf(targets);
-  return object === undefined ? null : controllerNowOrLastKnown(state, object);
+  return object === undefined ? null : controllerNowOrLastKnown(state, object, cards);
 }
 
 /**

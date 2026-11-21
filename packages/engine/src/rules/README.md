@@ -2,8 +2,9 @@
 
 Answers to rules questions that many parts of the engine ask, each in one place so later rules change it once.
 
-- `controller.ts`: `controllerOf(state, id)`: who controls an object (CR 110.2, 112.2, 113.8; a card in another zone
-  has no controller and the owner answers for it, CR 108.4a), with layer 2 applied (`control-effects.ts`).
+- `controller.ts`: `controllerOf(state, id, cards)`: who controls an object (CR 110.2, 112.2, 113.8; a card in another
+  zone has no controller and the owner answers for it, CR 108.4a); a permanent's comes from the layer pass, which does
+  layer 2 (`control-effects.ts`, D-104).
 
 - `layers.ts`: the layer pass (CR 613, D-092): `layeredOf`, `layered`, every object's characteristics computed once
   per state for the battlefield and the stack, kept per its inputs; `layeredFresh` and `layeredOfFresh`, computed
@@ -19,7 +20,7 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
   `matchesFilter` and the pass.
 - `control-effects.ts`: `controlFromEffects`, layer 2 from resolved effects (Act of Treason, CR 613.1b, D-098), read
-  by `controllerOf` and the layer pass.
+  only by the layer pass (D-104).
 - `abilities.ts`: `keywordsOf` and `staticAbilitiesOf` (layer 6: printed and granted); `findAbility` (by its ref); `stackAbilityDef` (an ability on the stack, from its source's
   card, CR 113.7a); `abilitiesOf(state, id, cards)`: an object's activated abilities with their refs (printed, then a basic
   land type's intrinsic mana ability, CR 305.6); `isManaAbility` (CR 605.1a).

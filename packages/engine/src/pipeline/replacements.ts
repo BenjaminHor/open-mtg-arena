@@ -74,7 +74,7 @@ export function applyReplacements(
       if (object === null) throw new Error(`no replacement offers a choice on ${event.kind} yet`);
       return {
         kind: "choose",
-        player: affectedPlayer(state, replaced.event),
+        player: affectedPlayer(state, replaced.event, cards),
         for: { kind: "object", object },
         options: candidates.map((c) => c.ref),
       };
@@ -151,7 +151,7 @@ function affectedObject(event: SingleEvent): ObjectId | null {
 }
 
 /** Who chooses among replacements for this event: the affected object's controller, or its owner (CR 616.1). */
-function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
+function affectedPlayer(state: GameState, event: SingleEvent, cards: CardDatabase): PlayerId {
   switch (event.kind) {
     case "destroy":
     case "sacrifice":
@@ -159,7 +159,7 @@ function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
     case "counterObject":
     case "moveCard":
     case "regenerate":
-      return controllerOf(state, event.object);
+      return controllerOf(state, event.object, cards);
     case "playLand":
       return event.player;
     case "damagePrevented":

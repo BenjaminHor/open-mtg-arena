@@ -27,7 +27,7 @@ function isCreaturePermanent(state: GameState, id: ObjectId, cards: CardDatabase
 export function canAttack(state: GameState, id: ObjectId, player: PlayerId, cards: CardDatabase): boolean {
   const obj = state.objects[id];
   if (obj?.kind !== "card" || !isCreaturePermanent(state, id, cards)) return false;
-  if (controllerOf(state, id) !== player || obj.tapped) return false;
+  if (controllerOf(state, id, cards) !== player || obj.tapped) return false;
   // Defender: a restriction on attacking (CR 702.3b, 508.1c).
   if (keywordsOf(state, id, cards).includes("defender")) return false;
   if (attachedCantAttackOrBlock(state, id, cards)) return false;
@@ -39,13 +39,13 @@ export function canAttack(state: GameState, id: ObjectId, player: PlayerId, card
  * Island" (Serpent of the Endless Sea), a restriction (CR 508.1c) checked for each player it could attack.
  */
 export function canAttackPlayer(state: GameState, id: ObjectId, defender: PlayerId, cards: CardDatabase): boolean {
-  const attackerController = controllerOf(state, id);
+  const attackerController = controllerOf(state, id, cards);
   return staticAbilitiesOf(state, id, cards).every(
     (a) =>
       a.kind !== "cantAttackUnlessDefenderControls" ||
       state.zones.battlefield.some(
         (permanent) =>
-          controllerOf(state, permanent) === defender &&
+          controllerOf(state, permanent, cards) === defender &&
           matchesFilter(state, permanent, a.filter, attackerController, cards),
       ),
   );
@@ -89,12 +89,12 @@ const LANDWALK: Partial<Record<Keyword, string>> = { swampwalk: "Swamp", forestw
  * blocker's controller, the player it blocks for. Each landwalk ability is checked on its own.
  */
 function landwalkAllowsBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase): boolean {
-  const defender = controllerOf(state, blocker);
+  const defender = controllerOf(state, blocker, cards);
   const landTypes = keywordsOf(state, attacker, cards).flatMap((k) => LANDWALK[k] ?? []);
   return !landTypes.some((landType) =>
     state.zones.battlefield.some(
       (id) =>
-        controllerOf(state, id) === defender &&
+        controllerOf(state, id, cards) === defender &&
         cardTypesOf(state, id, cards).includes("land") &&
         subtypesOf(state, id, cards).includes(landType),
     ),
@@ -114,7 +114,7 @@ function cantBeBlockedAllowsBlock(state: GameState, blocker: ObjectId, attacker:
     (ability) =>
       ability.kind !== "cantBeBlocked" ||
       (ability.except !== undefined &&
-        matchesFilter(state, blocker, ability.except, controllerOf(state, attacker), cards)),
+        matchesFilter(state, blocker, ability.except, controllerOf(state, attacker, cards), cards)),
   );
 }
 

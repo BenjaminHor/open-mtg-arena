@@ -11,6 +11,7 @@ import { happenOrAsk } from "../pipeline/happen.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { WorkItem } from "../state/work.ts";
 import { putTriggers } from "../triggers/put-on-stack.ts";
+import { recordControlChanges } from "./control-changes.ts";
 import { waitFor } from "./decide.ts";
 import { givePriority } from "./priority.ts";
 import { andThen, type Progress } from "./progress.ts";
@@ -26,7 +27,10 @@ export function advance(progress: Progress, cards: CardDatabase): Progress {
     // Nothing to wait for and nothing to do would leave the game stuck: always an engine bug.
     if (item === undefined) throw new Error("The game has nothing pending and no work queued");
     current = andThen(current, (s) => runWorkItem({ ...s, work: rest }, item, cards));
-    current = { ...current, state: removeNoncreaturesFromCombat(current.state, cards) };
+    // What changed as the work was done, with no event of its own: control (CR 302.6, 506.4), and a creature ceasing to
+    // be one (CR 506.4).
+    const controlled = recordControlChanges(state, current.state, cards);
+    current = { ...current, state: removeNoncreaturesFromCombat(controlled, cards) };
   }
 }
 

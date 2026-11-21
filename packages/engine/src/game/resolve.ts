@@ -91,7 +91,14 @@ function effectWork(state: GameState, id: ObjectId, legal: Target[][], cards: Ca
   const division = (divided?.shares ?? []).filter((share) => stillLegal.some((t) => sameTarget(t, share.target)));
   const x = obj.choices?.x ?? null;
   const trigger = obj.kind === "ability" ? obj.trigger : null;
-  const context = { self: thisObject(obj), controller: controllerOf(state, id), targets: legal, division, x, trigger };
+  const context = {
+    self: thisObject(obj),
+    controller: controllerOf(state, id, cards),
+    targets: legal,
+    division,
+    x,
+    trigger,
+  };
   return effectsOf(state, id, cards).map((effect) => ({ kind: "runEffect", effect, context, chosen: null }));
 }
 
@@ -116,7 +123,7 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
   const state = withoutResolution(given);
   const obj = state.objects[id];
   if (obj === undefined || !state.zones.stack.includes(id)) return { state, events: [] };
-  const controller = controllerOf(state, id);
+  const controller = controllerOf(state, id, cards);
   switch (obj.kind) {
     case "ability":
       // Not a card, so this isn't a zone change: it's removed from the stack and ceases to exist.
@@ -162,7 +169,7 @@ function optionally(state: GameState, id: ObjectId, effects: WorkItem[], cards: 
   const obj = state.objects[id];
   if (obj?.kind !== "ability" || !isTriggerRef(obj.ability) || effects.length === 0) return effects;
   if (triggeredAbilityDef(obj.sourceOracleId, obj.ability, cards).optional !== true) return effects;
-  return [{ kind: "askOptional", player: controllerOf(state, id), resume: effects }];
+  return [{ kind: "askOptional", player: controllerOf(state, id, cards), resume: effects }];
 }
 
 /** Whether a triggered ability's "intervening if" still holds as it resolves (CR 603.4, 608.2a); true without one. */

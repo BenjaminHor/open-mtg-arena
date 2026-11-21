@@ -29,7 +29,7 @@ export function activationBasicsProblem(
 ): string | null {
   const obj = state.objects[id];
   if (obj?.kind !== "card" || !state.zones.battlefield.includes(id)) return `${id} isn't a permanent`;
-  if (controllerOf(state, id) !== player) return `${player} doesn't control ${id}`;
+  if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null) return `${id} has no such ability`;
   for (const part of ability.def.cost) {

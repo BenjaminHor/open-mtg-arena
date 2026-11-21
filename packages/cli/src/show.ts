@@ -92,7 +92,7 @@ function stackText(state: GameState, cards: CardDatabase): string {
       const obj = state.objects[id];
       const targets = (obj?.choices?.targets ?? []).flat().map((t) => targetText(state, t, cards));
       const arrow = targets.length > 0 ? ` → ${targets.join(", ")}` : "";
-      return `${nameOf(state, id, cards)}${arrow} (${controllerOf(state, id)})`;
+      return `${nameOf(state, id, cards)}${arrow} (${controllerOf(state, id, cards)})`;
     })
     .join(", ");
 }

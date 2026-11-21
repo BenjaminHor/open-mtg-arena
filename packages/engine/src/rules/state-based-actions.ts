@@ -68,7 +68,8 @@ function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDa
   const host = attachedHost(state, aura);
   if (host === null || host === aura) return true;
   return (
-    !matchesFilter(state, host, enchant, controllerOf(state, aura), cards) || isProtectedFrom(state, host, aura, cards)
+    !matchesFilter(state, host, enchant, controllerOf(state, aura, cards), cards) ||
+    isProtectedFrom(state, host, aura, cards)
   );
 }
 

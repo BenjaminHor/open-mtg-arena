@@ -18,6 +18,7 @@ import { describe, expect, it } from "vitest";
 import {
   ALL_CHECKS,
   type Check,
+  controlChangesRecorded,
   layersMatchFreshPass,
   lifeThroughEvents,
   scrambleHidden,
@@ -193,6 +194,44 @@ describe("the checks", () => {
     expect(layersMatchFreshPass(after, after, [], cards)).toContain(
       `${id}'s characteristics kept for this state differ from fresh ones (D-092)`,
     );
+  });
+
+  it("controlChangesRecorded: a permanent that changed controller must be summoning sick again", () => {
+    const before = state();
+    const id = before.zones.battlefield[0];
+    const obj = id === undefined ? undefined : before.objects[id];
+    if (id === undefined || obj?.kind !== "card") throw new Error("the test state needs a permanent");
+    const owner = before.turnOrder.find((p) => p !== obj.baseController) as PlayerId;
+    const effect = {
+      source: id,
+      controller: owner,
+      timestamp: 9999,
+      duration: "endOfTurn" as const,
+      affected: [id],
+      change: { kind: "gainControl" as const, player: owner },
+    };
+    const taken = { ...before, effects: [...before.effects, effect] };
+    const settled = { ...taken, objects: { ...taken.objects, [id]: { ...obj, controlledSinceTurnStart: true } } };
+    expect(controlChangesRecorded(before, settled, [], cards)).toEqual([
+      `${id} changed controller but isn't summoning sick again (CR 302.6)`,
+    ]);
+    const sick = { ...taken, objects: { ...taken.objects, [id]: { ...obj, controlledSinceTurnStart: false } } };
+    expect(controlChangesRecorded(before, sick, [], cards)).toEqual([]);
+    // Its new controller's turn beginning in the same action makes it controlled since then; the other player's doesn't.
+    const began = (activePlayer: PlayerId) => [{ type: "TURN_BEGAN", turn: 9, activePlayer }] as const;
+    expect(controlChangesRecorded(before, settled, [...began(owner)], cards)).toEqual([]);
+    expect(controlChangesRecorded(before, settled, [...began(obj.baseController)], cards)).toHaveLength(1);
+    // Still in combat is a problem (CR 506.4); recorded as removed isn't.
+    const attacks = [{ attacker: id, defender: obj.baseController }];
+    const fighting = {
+      ...sick,
+      combat: { attacks, blocks: [], removed: [], firstStrikers: null, secondDamageStep: false },
+    };
+    expect(controlChangesRecorded(before, fighting, [], cards)).toEqual([
+      `${id} changed controller but is still in combat (CR 506.4)`,
+    ]);
+    const removed = { ...fighting, combat: { ...fighting.combat, removed: [id] } };
+    expect(controlChangesRecorded(before, removed, [], cards)).toEqual([]);
   });
 
   it("lifeThroughEvents: a life change with no event is a problem", () => {

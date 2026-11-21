@@ -117,7 +117,11 @@ export function payCost(
   if (!taps.every((id) => canTapForCost(state, id)))
     return "a permanent to tap for the cost is tapped or gone (CR 107.5, 601.2h)";
   const selfSacrifices = selfSacrificesForCost(state, cards);
-  if (!selfSacrifices.every((id) => state.zones.battlefield.includes(id) && controllerOf(state, id) === casting.player))
+  if (
+    !selfSacrifices.every(
+      (id) => state.zones.battlefield.includes(id) && controllerOf(state, id, cards) === casting.player,
+    )
+  )
     return "the permanent to sacrifice for the cost is gone or no longer the player's (CR 601.2h, 701.21a)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");

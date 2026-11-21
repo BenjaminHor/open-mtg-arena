@@ -48,13 +48,15 @@ export function parseRef(text: string): PermanentRef | null {
 }
 
 /** The permanents a player controls, in battlefield order (asking the engine who controls each). */
-export function battlefieldOf(state: GameState, player: PlayerId): ObjectId[] {
-  return state.zones.battlefield.filter((id) => controllerOf(state, id) === player);
+export function battlefieldOf(state: GameState, player: PlayerId, cards: CardDatabase): ObjectId[] {
+  return state.zones.battlefield.filter((id) => controllerOf(state, id, cards) === player);
 }
 
 /** The permanent a reference names, or null. */
 export function resolveRef(state: GameState, ref: PermanentRef, cards: CardDatabase): ObjectId | null {
-  return battlefieldOf(state, ref.player).filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
+  return (
+    battlefieldOf(state, ref.player, cards).filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null
+  );
 }
 
 /**
@@ -63,9 +65,9 @@ export function resolveRef(state: GameState, ref: PermanentRef, cards: CardDatab
  */
 export function refOf(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
   if (!state.zones.battlefield.includes(id)) return null;
-  const player = controllerOf(state, id);
+  const player = controllerOf(state, id, cards);
   const name = nameOf(state, id, cards);
-  const same = battlefieldOf(state, player).filter((x) => nameOf(state, x, cards) === name);
+  const same = battlefieldOf(state, player, cards).filter((x) => nameOf(state, x, cards) === name);
   return same.length > 1 ? `${player}:${name}#${same.indexOf(id) + 1}` : `${player}:${name}`;
 }
 

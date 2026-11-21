@@ -1540,3 +1540,22 @@ every schema change and every change D-024 lists bumps it.
 - Magebane Armor's ruling says a Levitation "that comes under your control later" gives flying back. Under CR 613.7a its
   effect has Levitation's timestamp, and no rule gives a new one on a change of control (CR 613.7d-k), so the engine
   follows the CR (D-020). Nothing in the pool can steal an enchantment yet.
+
+**D-104: One layer 2, read through the pass (M2-12c1)** · 2026-11-21 · accepted
+- `controllerOf(state, id, cards)` takes the card database (D-092 and D-098 foresaw this) and reads a permanent's
+  controller from the layer pass, which does layer 2; nothing else computes it, so nothing can disagree. A spell's and
+  an ability's controller, and a card elsewhere's owner, are read as before. The pass never calls `controllerOf`.
+- A control change is noticed in one place, `game/control-changes.ts`: after the action's own handler (a cost
+  sacrificed, a land played) and after each piece of work, who controls each permanent is compared before and after
+  (`recordControlChanges`). It's skipped when neither state has a control-changing effect (`anyControlEffects`; a
+  static one, Mind Control, must count there too), or when the objects, effects and battlefield, all a controller is
+  computed from, are the same: measured, it otherwise cost a quarter of deepStack's time per action. `controllerOf` skips
+  the pass the same way, with no control effect in the game reading the stored controller, which the pass would give
+  (measured too); the fuzzer checks the two agree (`layersMatchFreshPass`). A permanent whose controller
+  changed is summoning sick again (CR 302.6) and removed from combat (CR 506.4). This replaces the checks where a
+  resolved effect began or ended, and covers static control effects, which change with no event (Mind Control).
+- A fuzz check (`controlChangesRecorded`) checks it across each action, so a path that misses it shows.
+- Neutral on its own: every scenario, replay and golden game is unchanged. Removal from combat on a control change
+  (CR 506.4) is new but unreachable until a control effect can happen in combat (Mind Control destroyed mid-combat,
+  M2-12c2). D-098's refusal of a "for as long as" `gainControl` can now be lifted, as its ending is noticed too; no
+  card asks for it yet.

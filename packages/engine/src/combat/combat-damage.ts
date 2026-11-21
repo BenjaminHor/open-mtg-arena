@@ -38,7 +38,7 @@ export function combatDamage(state: GameState, divisions: CombatDivision[], card
   if (attackers.ask !== null) {
     const { attacker, recipients, amount } = attackers.ask;
     return {
-      state: askToAssign(state, controllerOf(state, attacker), attacker, recipients, amount, divisions),
+      state: askToAssign(state, controllerOf(state, attacker, cards), attacker, recipients, amount, divisions),
       events: [],
     };
   }
@@ -49,7 +49,7 @@ export function combatDamage(state: GameState, divisions: CombatDivision[], card
     const recipients = { recipients: blocked.map((object): Target => ({ kind: "object", object })), lethal: null };
     if (!hasChoice(recipients, amount)) continue;
     return {
-      state: askToAssign(state, controllerOf(state, blocker), blocker, recipients, amount, divisions),
+      state: askToAssign(state, controllerOf(state, blocker, cards), blocker, recipients, amount, divisions),
       events: [],
     };
   }

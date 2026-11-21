@@ -29,6 +29,7 @@ import {
   targetCountProblem,
   targetProblem,
 } from "./choose-targets.ts";
+import { recordControlChanges } from "./control-changes.ts";
 import { playersLose } from "./game-end.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
@@ -39,8 +40,10 @@ import { queueWork } from "./work.ts";
 export function applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult {
   const result = handleAction(state, action, cards);
   if (!result.ok) return result;
-  // Every action is followed by running the queued work until the next decision (docs/architecture.md).
-  return { ok: true, ...advance({ state: result.state, events: result.events }, cards) };
+  // What the action itself did (a cost sacrificed, a land played) is checked for control changes as each piece of work
+  // is (D-104); then the queued work runs until the next decision (docs/architecture.md).
+  const checked = recordControlChanges(state, result.state, cards);
+  return { ok: true, ...advance({ state: checked, events: result.events }, cards) };
 }
 
 /**
