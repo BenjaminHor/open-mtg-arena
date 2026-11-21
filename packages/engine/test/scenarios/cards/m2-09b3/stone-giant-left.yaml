@@ -20,7 +20,10 @@ steps:
     pay: auto
   - all pass: once
   - all pass: until end
+  - expect:
+      stack: [Stone Giant ability]
   - all pass: once
   - expect:
+      events contains: [{ type: ABILITY_RESOLVED }]
       p1.battlefield contains: [Grizzly Bears]
       p1.graveyard: []

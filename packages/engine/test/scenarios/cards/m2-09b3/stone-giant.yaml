@@ -1,5 +1,5 @@
 name: Stone Giant gives flying to a creature you control with toughness less than its power, then destroys it at the next end step
-rules: [CR 603.7, CR 603.7c, CR 702.9b]
+rules: [CR 603.7, CR 603.7c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

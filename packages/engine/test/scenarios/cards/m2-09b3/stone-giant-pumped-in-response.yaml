@@ -1,0 +1,21 @@
+name: A Stone Giant target pumped in response is illegal as the ability resolves, so nothing gains flying and nothing is destroyed later
+rules: [CR 608.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stone Giant, Grizzly Bears, Forest]
+    hand: [Giant Growth]
+steps:
+  - p1 activate: Stone Giant
+    targets: [p1:Grizzly Bears]
+  - p1 cast: Giant Growth
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]
+  - all pass: until end
+  - expect:
+      p1.battlefield contains: [Grizzly Bears]
+      stack: []
