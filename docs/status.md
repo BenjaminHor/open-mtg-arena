@@ -715,6 +715,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12c plan (2026-11-21, with the advisor's review), three PRs.
+         - M2-12c1, a refactor with no new card: `controllerOf(state, id, cards)`, a battlefield permanent's controller
+           read from the layer pass, which does layer 2 itself (resolved `gainControl` effects and, next, static control
+           effects, sorted by timestamp, before the starts are built); one layer 2, no second path; the pass never calls
+           `controllerOf`. A central check in `advance` (beside `removeNoncreaturesFromCombat`) replaces
+           `recordControlChanges`: a permanent whose controller changed is summoning sick again (CR 302.6) and leaves
+           combat (CR 506.4). A fuzz check for it. Proof it's neutral: every scenario, replay hash and golden log
+           unchanged. Bench by alternating base and head.
+         - M2-12c2: Mind Control (a static "you control enchanted creature", timestamped by its Aura, CR 613.7a, 613.7e),
+           scenarios against Act of Treason both ways, two Mind Controls, destroyed while its creature attacks or blocks,
+           anthems, Equipment, the Cloak, Firebreathing.
+         - M2-12c3: Soul Bleed (its creature's controller's upkeep), Ice Cage ("its activated abilities can't be
+           activated", mana abilities too, where both activation paths meet; "when enchanted creature becomes the target",
+           read its rulings).
        - M2-12b built (2026-11-21, D-103): `attach` / `unattach` events, equip (`timing: "sorcery"`, `attachSelf`), CR 704.5n
          (protection too), layer 6 in timestamp order ("loses flying"), Whispersilk's "can't be blocked", Magebane's
          prevention, the `"attached"` subject; Gorgon Flail, Whispersilk Cloak, Magebane Armor, Firebreathing (214 cards);
@@ -988,6 +1002,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-21) `pnpm bench` fails on main too on this machine: the last two code reviews measured the base over
+  its +20% gates (busyCombat, deepStack) and randomGame near or over 100 ms, so each slice's bench is judged by
+  alternating base and head runs instead. CI doesn't run it. Options: (a) re-baseline `bench/baseline.json` on this
+  cloud machine with `pnpm bench --update`, and keep alternating runs for close calls (recommended; proceeding with this
+  at the next slice that needs it); (b) keep the old baseline and judge by alternating runs only; (c) run the bench in
+  CI on a fixed runner, with its own baseline.
 - (Asked 2026-11-21, D-092) CLAUDE.md says the engine has "no globals". The layer pass is kept in module-level
   `WeakMap`s (and a last-result value), outside the state, as architecture.md's "memoize per state object" allows: a
   kept result can never differ from a fresh one, and the fuzzer checks that after every action. Options: (a) read "no
