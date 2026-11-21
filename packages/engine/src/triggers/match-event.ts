@@ -36,9 +36,7 @@ export function matches(
     case "beginningOfStep":
       // "Each player's draw step": "that player", in the card's text, is the player whose step it is.
       if (event.type !== "STEP_BEGAN" || event.step !== when.step) return [];
-      if (when.whose === "yours" && event.activePlayer !== controllerOf(state, source, cards)) return [];
-      if (when.whose === "attachedController" && event.activePlayer !== attachedController(state, source, cards))
-        return [];
+      if (!isWhoseStep(state, source, when.whose, event.activePlayer, cards)) return [];
       return [{ player: event.activePlayer, object: null, amount: null }];
     case "selfAttacks":
       return event.type === "ATTACKERS_DECLARED" && event.attacks.some((a) => a.attacker === source)
@@ -135,6 +133,24 @@ export function holds(state: GameState, source: ObjectId, check: TriggerCheck): 
       const obj = state.objects[source] ?? state.lastKnown[source];
       return obj?.kind === "card" && !obj.tapped;
     }
+  }
+}
+
+/** Whether a step in `activePlayer`'s turn is one the trigger's "at the beginning of [whose] [step]" names. */
+function isWhoseStep(
+  state: GameState,
+  source: ObjectId,
+  whose: Extract<TriggerCondition, { kind: "beginningOfStep" }>["whose"],
+  activePlayer: PlayerId,
+  cards: CardDatabase,
+): boolean {
+  switch (whose) {
+    case "each":
+      return true;
+    case "yours":
+      return activePlayer === controllerOf(state, source, cards);
+    case "attachedController":
+      return activePlayer === attachedController(state, source, cards);
   }
 }
 

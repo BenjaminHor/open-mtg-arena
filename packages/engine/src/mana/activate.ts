@@ -18,7 +18,8 @@ import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * What stops any activated ability of a permanent, mana ability or not: it works only on the battlefield (CR 113.6),
- * only its controller activates it (CR 602.2), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
+ * only its controller activates it (CR 602.2), nothing says its activated abilities can't be activated (Ice Cage,
+ * CR 602.5), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
  * is paid later, while the ability is put on the stack (CR 601.2g–h, 602.2b). Null if nothing stops it.
  */
 export function activationBasicsProblem(

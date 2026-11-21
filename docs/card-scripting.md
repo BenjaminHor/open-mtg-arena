@@ -150,7 +150,8 @@ export const furnaceWhelp: CardDef = {
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's
   controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw", whose:
-  "each" }` ("the end step" likewise, `step: "end"`; "your upkeep" is `step: "upkeep", whose: "yours"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
+  "each" }` ("the end step" likewise, `step: "end"`; "your upkeep" is `step: "upkeep", whose: "yours"`; "enchanted creature's controller's upkeep" is `whose:
+  "attachedController"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
   player casts a green spell" is `{ kind: "spellCast", filter: { colors: ["G"] } }` ("you cast" adds `controller:
   "you"`, the caster); "whenever an opponent draws / discards a card" is `{ kind: "playerDraws" / "playerDiscards",
   player: "opponent" }` (`"anyPlayer"`, `"you"`); "whenever a player taps a land for mana" is `{ kind:
@@ -158,7 +159,8 @@ export const furnaceWhelp: CardDef = {
   "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
   "you" }`, with "that much" the amount `"thatMuch"`. "Whenever this creature blocks or becomes blocked by a creature"
   is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "When this creature
-  becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`. "At the beginning of the next end step,
+  becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`; "when enchanted creature becomes the target
+  of a spell or ability" is `{ kind: "attachedBecomesTarget" }`. "At the beginning of the next end step,
   [effects]" is `{ op: "createDelayedTrigger", ability: { when: { kind: "beginningOfStep", step: "end", whose: "each"
   }, targets: [], effects } }` (CR 603.7; only the next beginning of anyone's step, with no targets, for now); "destroy
   that creature" in it adds `about: { target: 0 }` to the maker and uses the subject `"remembered"` (CR 603.7c, Stone

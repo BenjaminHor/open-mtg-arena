@@ -1591,3 +1591,5 @@ every schema change and every change D-024 lists bumps it.
 - A spell or ability that chooses the same object for two instances of "target" makes it become the target once, so
   such an ability triggers once (CR 601.2c, 603.2c): Bonecrusher Giant's and Tectonic Giant's rulings say so; no card in
   the pool can do it, so a unit test shows it.
+- Future impact: a resolved "can't be activated" effect (Pithing Needle's kind, M2-14) would mark the same
+  `Layered.cantActivate` from `input.effects`, checked in the same place.

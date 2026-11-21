@@ -1,7 +1,7 @@
 // Layer 6 of the layer pass (CR 613.1f): keywords granted by resolved effects, on the objects they locked in
 // (CR 611.2c), and granted or removed by static abilities, on what fits now (CR 611.3a), all applied in timestamp order
 // (CR 613.7, 613.7a). Also, though not a layer, the restrictions an attached permanent puts on its host (Pacifism,
-// Whispersilk Cloak), marked here because the pass already finds what each static applies to.
+// Whispersilk Cloak, Ice Cage), marked here because the pass already finds what each static applies to.
 
 import type { Keyword } from "../cards/types.ts";
 import type { ObjectId } from "../state/ids.ts";

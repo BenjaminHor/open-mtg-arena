@@ -14,7 +14,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `static-effects.ts`: static abilities that change other objects (anthems, D-093, and "enchanted creature gets",
   D-102): their sets (CR 611.3a), the keywords they grant or remove in layer 6 and what they add in 7c;
   `staticTimestamp` (CR 613.7a). `layer-six.ts`: layer 6 in timestamp order (CR 613.7, D-103), and the restrictions
-  marked on a creature an attachment puts them on (`Layered.cantAttackOrBlock`, `Layered.cantBeBlocked`).
+  marked on a creature an attachment puts them on (`Layered.cantAttackOrBlock`, `Layered.cantBeBlocked`,
+  `Layered.cantActivate`).
 - `attachment.ts`: `attachedHost` (and `attachedHostIn`, for the pass), the one reader of what an Aura is attached to,
   null once that object has left (CR 303.4b, 400.7); `attachmentsOf`; `enchantFilterOf` and `isAura` (CR 702.5a, 303.4).
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
