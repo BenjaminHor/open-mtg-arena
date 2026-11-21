@@ -3748,6 +3748,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Protean Hydra",
+      "slug": "protean-hydra",
+      "oracleId": "6e32b958-70d3-4f3d-b10e-d6c8cb27dd93",
+      "layout": "normal",
+      "manaCost": "{X}{G}",
+      "manaValue": 1,
+      "typeLine": "Creature — Hydra",
+      "oracleText": "This creature enters with X +1/+1 counters on it.\nIf damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it.\nWhenever a +1/+1 counter is removed from this creature, put two +1/+1 counters on it at the beginning of the next end step.",
+      "power": "0",
+      "toughness": "0",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/6/f63d54c1-1b20-48c4-871d-0bb15e608996.jpg?1783941793",
+        "large": "https://cards.scryfall.io/large/front/f/6/f63d54c1-1b20-48c4-871d-0bb15e608996.jpg?1783941793",
+        "png": "https://cards.scryfall.io/png/front/f/6/f63d54c1-1b20-48c4-871d-0bb15e608996.png?1783941793",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/6/f63d54c1-1b20-48c4-871d-0bb15e608996.jpg?1783941793"
+      },
+      "artist": "Jim Murray",
+      "set": "m11",
+      "collectorNumber": "194",
+      "scryfallUri": "https://scryfall.com/card/m11/194/protean-hydra?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Pyroclasm",
       "slug": "pyroclasm",
       "oracleId": "e4bcd4ea-e7cd-4471-8f3b-18bb51d3d70c",

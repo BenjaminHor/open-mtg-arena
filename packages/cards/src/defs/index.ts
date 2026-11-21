@@ -133,6 +133,7 @@ import { polymorph } from "./p/polymorph.ts";
 import { ponder } from "./p/ponder.ts";
 import { prizedUnicorn } from "./p/prized-unicorn.ts";
 import { prodigalPyromancer } from "./p/prodigal-pyromancer.ts";
+import { proteanHydra } from "./p/protean-hydra.ts";
 import { pyroclasm } from "./p/pyroclasm.ts";
 import { ragingGoblin } from "./r/raging-goblin.ts";
 import { rampantGrowth } from "./r/rampant-growth.ts";
@@ -330,6 +331,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   ponder,
   prizedUnicorn,
   prodigalPyromancer,
+  proteanHydra,
   pyroclasm,
   ragingGoblin,
   rampantGrowth,

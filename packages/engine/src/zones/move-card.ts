@@ -20,13 +20,16 @@ export type Destination =
   | { zone: "graveyard" }
   /** A spell has a controller (CR 112.2). */
   | { zone: "stack"; controller: PlayerId }
-  /** A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e). */
-  | { zone: "battlefield"; controller: PlayerId; is?: EntersAs }
+  /**
+   * A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e); `counters`: what it enters with
+   * (CR 614.1c, 122.6).
+   */
+  | { zone: "battlefield"; controller: PlayerId; is?: EntersAs; counters?: Record<string, number> }
   /**
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
    * (CR 603.2e): no `PERMANENT_TAPPED` event, the one such triggers will see.
    */
-  | { zone: "battlefield"; controller: PlayerId; tapped: true; is?: EntersAs }
+  | { zone: "battlefield"; controller: PlayerId; tapped: true; is?: EntersAs; counters?: Record<string, number> }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
 
@@ -72,7 +75,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     timestamp: stamped.timestamp,
     tapped: "tapped" in to && to.tapped,
     damage: 0,
-    counters: {},
+    // What it enters with (CR 614.1c); otherwise none, the old object's having stayed with it (CR 122.2).
+    counters: to.zone === "battlefield" && to.counters !== undefined ? { ...to.counters } : {},
     controlledSinceTurnStart: false,
     // A spell on the stack carries its casting choices (CR 601.2c; modes, later: CR 700.2); casting (M1-09) fills
     // them in.
@@ -103,7 +107,11 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
   };
   const ended = ending.map((effect): GameEvent => ({ type: "EFFECT_ENDED", effect }));
   const created: GameEvent[] = entering === null ? [] : [{ type: "EFFECT_CREATED", effect: entering.effect }];
-  return { state: next, events: [event, ...ended, ...created], newId: card.id };
+  // Entering with counters is putting them on it (CR 122.6).
+  const put = Object.entries(card.counters).map(
+    ([counter, amount]): GameEvent => ({ type: "COUNTERS_PUT", object: card.id, counter, amount }),
+  );
+  return { state: next, events: [event, ...ended, ...created, ...put], newId: card.id };
 }
 
 /** The effects lasting "for as long as [this] remains on the battlefield", ending as `source` leaves (CR 611.2b). */

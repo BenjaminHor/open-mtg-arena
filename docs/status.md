@@ -705,6 +705,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            before the batch too); 5 more scenarios (black, declined, the spell countered, a noncreature, more counters),
            unit tests (the clamp, the batch); the SBA renamed `plusAndMinusCounters`; docs (future-rules: poison, who
            puts counters, entering with them, CR 615.5 for the Hydra). Fuzz 200 clean. Merged as #56. Next: M2-10b.
+         - M2-10b built (D-100): Protean Hydra; 5 scenarios (entering with X, prevention and the counters back at end
+           step, more damage than counters, X of 0 when not cast, the Hydra gone before the end step), golden pool-509.
+           196 cards. Next: mutations, review, fuzz, PR; then M2-10 is done.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

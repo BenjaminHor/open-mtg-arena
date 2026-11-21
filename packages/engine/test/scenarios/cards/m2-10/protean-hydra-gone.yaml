@@ -1,0 +1,27 @@
+name: Protean Hydra's delayed ability puts nothing on a Hydra that left the battlefield before the end step
+rules: [CR 603.7c, CR 400.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Protean Hydra, counters: { +1/+1: 3 } }]
+  p2:
+    battlefield: [Mountain, Island]
+    hand: [Shock, Unsummon]
+steps:
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Protean Hydra]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p1:Protean Hydra]
+    pay: auto
+  - all pass: once
+  - all pass: until end
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.hand: [Protean Hydra]

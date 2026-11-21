@@ -1,0 +1,16 @@
+name: Protean Hydra enters with X +1/+1 counters, X as it was cast
+rules: [CR 614.1c, CR 107.3m, CR 122.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Protean Hydra]
+    manaPool: { G: 4 }
+steps:
+  - p1 cast: Protean Hydra
+    x: 3
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Protean Hydra.counters: { +1/+1: 3 }
+      p1:Protean Hydra.power: 3
+      events contains: [{ type: COUNTERS_PUT, counter: +1/+1, amount: 3 }]

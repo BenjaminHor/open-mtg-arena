@@ -35,6 +35,7 @@ export function replaceDamage(
   choices: readonly ReplacementChoice[],
 ): Replaced {
   const prevented: SingleEvent[] = [];
+  const afterwards: SingleEvent[] = [];
   const dealt: Damage[] = [];
   const asks: Ask[] = [];
   damage.forEach((entry, index) => {
@@ -49,11 +50,13 @@ export function replaceDamage(
       return;
     }
     prevented.push(...result.prevented);
+    afterwards.push(...result.afterwards);
     if (result.amount > 0) dealt.push({ ...entry, amount: result.amount });
   });
   const ask = firstInApnapOrder(state, asks);
   if (ask !== null) return ask;
-  return { kind: "replaced", events: [...prevented, { kind: "dealDamage", damage: dealt }] };
+  // What a prevention also does comes right after the damage event (CR 615.5).
+  return { kind: "replaced", events: [...prevented, { kind: "dealDamage", damage: dealt }, ...afterwards] };
 }
 
 /** A prevention effect that would apply to a damage entry. */
@@ -65,10 +68,12 @@ type Candidate = {
   prevents: number | "all";
   /** The card whose effect it is, to say what prevented the damage. */
   by: OracleId;
+  /** What it does right after the prevention, with the amount it prevented (CR 615.5): Protean Hydra's counters. */
+  afterwards?: { kind: "removeCounters"; object: ObjectId; counter: string };
 };
 
 type EntryResult =
-  | { kind: "prevented"; amount: number; prevented: SingleEvent[] }
+  | { kind: "prevented"; amount: number; prevented: SingleEvent[]; afterwards: SingleEvent[] }
   | { kind: "choose"; player: PlayerId; options: ReplacementRef[] };
 
 /**
@@ -84,6 +89,7 @@ function preventEntry(
   let amount = entry.amount;
   const applied: ReplacementRef[] = [];
   const prevented: SingleEvent[] = [];
+  const afterwards: SingleEvent[] = [];
   while (amount > 0) {
     const candidates = candidatesFor(state, entry, cards).filter(
       (c) => !applied.some((done) => sameReplacement(done, c.ref)),
@@ -105,8 +111,9 @@ function preventEntry(
     const stopped = chosen.prevents === "all" ? amount : Math.min(amount, chosen.prevents);
     amount -= stopped;
     prevented.push({ kind: "damagePrevented", source: entry.source, to: entry.to, amount: stopped, by: chosen.by });
+    if (chosen.afterwards !== undefined) afterwards.push({ ...chosen.afterwards, amount: stopped });
   }
-  return { kind: "prevented", amount, prevented };
+  return { kind: "prevented", amount, prevented, afterwards };
 }
 
 /** Who chooses for damage to this recipient: the player, or the object's controller (CR 616.1). */
@@ -138,12 +145,17 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
       const prevents = preventsForPermanent(state, def, permanent, entry);
       const obj = state.objects[permanent];
       if (prevents === null || obj?.kind !== "card") return [];
+      const afterwards =
+        def.kind === "preventDamageToSelfRemovingCounters"
+          ? { afterwards: { kind: "removeCounters", object: permanent, counter: def.counter } as const }
+          : {};
       return [
         {
           ref: { kind: "ownText", object: permanent, index },
           identity: JSON.stringify({ def, you: controllerOf(state, permanent) }),
           prevents,
           by: obj.oracleId,
+          ...afterwards,
         },
       ];
     }),
@@ -177,7 +189,7 @@ function preventsForPermanent(
   def: ReplacementDef,
   permanent: ObjectId,
   entry: Damage,
-): number | null {
+): number | "all" | null {
   switch (def.kind) {
     case "preventDamageToYou": {
       // "If a source an opponent controls would deal damage to you": to its controller, from an opponent's source.
@@ -189,8 +201,12 @@ function preventsForPermanent(
       // An opponent (CR 102.2); teams would change this (later: CR 102.3).
       return sourceController !== null && sourceController !== you ? def.amount : null;
     }
+    case "preventDamageToSelfRemovingCounters":
+      // "If damage would be dealt to this creature": all of it (its ruling).
+      return entry.to.kind === "object" && entry.to.object === permanent ? "all" : null;
     case "entersTapped":
     case "graveyardToLibrary":
+    case "entersWithCounters":
       return null;
   }
 }

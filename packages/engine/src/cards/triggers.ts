@@ -37,6 +37,8 @@ export type TriggerCondition =
    * put onto the stack or the battlefield without being cast doesn't trigger it.
    */
   | { kind: "spellCast"; filter: ObjectFilter }
+  /** "Whenever a +1/+1 counter is removed from this creature": once for each counter removed (CR 603.2c, its ruling). */
+  | { kind: "selfCountersRemoved"; counter: string }
   /** "Whenever [a player / you / an opponent] draws a card": each card drawn (CR 121.1, 603.2c). */
   | { kind: "playerDraws"; player: PlayerRelation }
   /** "Whenever [a player / you / an opponent] discards a card": each card discarded (CR 701.9a, 603.2c). */
