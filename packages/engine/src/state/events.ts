@@ -91,6 +91,10 @@ export type GameEvent =
   /** Unspent mana emptied from a pool as a step ended (CR 500.5). Only for pools that weren't empty. */
   | { type: "MANA_EMPTIED"; player: PlayerId; lost: ManaPool }
   | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3
+  /** An Aura or Equipment became attached to `to` (CR 701.3a), with a new timestamp (CR 613.7e). */
+  | { type: "ATTACHED"; object: ObjectId; to: ObjectId }
+  /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */
+  | { type: "UNATTACHED"; object: ObjectId; from: ObjectId }
   /**
    * A token was created (CR 111.1): it entered the battlefield under `player`, its owner (CR 111.2), as `object`. It
    * was never in another zone, so no `ZONE_CHANGED`; "enters" triggers see this instead (CR 603.6a).

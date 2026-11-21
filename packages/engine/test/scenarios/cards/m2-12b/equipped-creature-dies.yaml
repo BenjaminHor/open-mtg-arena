@@ -1,0 +1,22 @@
+name: When the equipped creature dies, the Equipment stays on the battlefield, unattached, and can be equipped again
+rules: [CR 704.5n, CR 301.5c, CR 701.3d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, { card: Gorgon Flail, attachedTo: p1:Grizzly Bears }, Runeclaw Bear, Swamp, Swamp, Forest, Forest]
+    hand: [Doom Blade]
+steps:
+  - p1 cast: Doom Blade
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Gorgon Flail, Runeclaw Bear]
+      p1.graveyard: [Grizzly Bears, Doom Blade]
+      events contains: [{ type: UNATTACHED }]
+  - p1 activate: Gorgon Flail
+    targets: [p1:Runeclaw Bear]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Runeclaw Bear.power: 3

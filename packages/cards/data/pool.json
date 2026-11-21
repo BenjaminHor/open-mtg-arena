@@ -1915,6 +1915,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Firebreathing",
+      "slug": "firebreathing",
+      "oracleId": "8603bf74-faab-4910-8e45-0f2e3b318efb",
+      "layout": "normal",
+      "manaCost": "{R}",
+      "manaValue": 1,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\n{R}: Enchanted creature gets +1/+0 until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/f/6fbcc269-aaa3-42aa-9898-3f908aaae272.jpg?1783941071",
+        "large": "https://cards.scryfall.io/large/front/6/f/6fbcc269-aaa3-42aa-9898-3f908aaae272.jpg?1783941071",
+        "png": "https://cards.scryfall.io/png/front/6/f/6fbcc269-aaa3-42aa-9898-3f908aaae272.png?1783941071",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/f/6fbcc269-aaa3-42aa-9898-3f908aaae272.jpg?1783941071"
+      },
+      "artist": "Aleksi Briclot",
+      "set": "m12",
+      "collectorNumber": "132",
+      "scryfallUri": "https://scryfall.com/card/m12/132/firebreathing?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Flashfreeze",
       "slug": "flashfreeze",
       "oracleId": "eaf98e03-729b-4145-b2af-c910c415c15d",
@@ -2248,6 +2278,34 @@
       "set": "m12",
       "collectorNumber": "141",
       "scryfallUri": "https://scryfall.com/card/m12/141/goblin-piker?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Gorgon Flail",
+      "slug": "gorgon-flail",
+      "oracleId": "91dab3e2-039e-4db9-94e3-1146bced18ed",
+      "layout": "normal",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "typeLine": "Artifact — Equipment",
+      "oracleText": "Equipped creature gets +1/+1 and has deathtouch. (Any amount of damage it deals to a creature is enough to destroy that creature.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [
+        "Equip"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/e/eefc48cb-79aa-4e28-a736-ae9e4e2bc97b.jpg?1783942356",
+        "large": "https://cards.scryfall.io/large/front/e/e/eefc48cb-79aa-4e28-a736-ae9e4e2bc97b.jpg?1783942356",
+        "png": "https://cards.scryfall.io/png/front/e/e/eefc48cb-79aa-4e28-a736-ae9e4e2bc97b.png?1783942356",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/e/eefc48cb-79aa-4e28-a736-ae9e4e2bc97b.jpg?1783942356"
+      },
+      "artist": "Lars Grant-West",
+      "set": "m10",
+      "collectorNumber": "211",
+      "scryfallUri": "https://scryfall.com/card/m10/211/gorgon-flail?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3249,6 +3307,34 @@
       "set": "m10",
       "collectorNumber": "190",
       "scryfallUri": "https://scryfall.com/card/m10/190/lurking-predators?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Magebane Armor",
+      "slug": "magebane-armor",
+      "oracleId": "fc24af7b-f3d0-41d0-aaac-d83424455717",
+      "layout": "normal",
+      "manaCost": "{3}",
+      "manaValue": 3,
+      "typeLine": "Artifact — Equipment",
+      "oracleText": "Equipped creature gets +2/+4 and loses flying.\nPrevent all noncombat damage that would be dealt to equipped creature.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [
+        "Equip"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/9/5/95b0f586-a100-4817-93f8-1ee2df39ce03.jpg?1783942356",
+        "large": "https://cards.scryfall.io/large/front/9/5/95b0f586-a100-4817-93f8-1ee2df39ce03.jpg?1783942356",
+        "png": "https://cards.scryfall.io/png/front/9/5/95b0f586-a100-4817-93f8-1ee2df39ce03.png?1783942356",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/9/5/95b0f586-a100-4817-93f8-1ee2df39ce03.jpg?1783942356"
+      },
+      "artist": "Izzy",
+      "set": "m10",
+      "collectorNumber": "214",
+      "scryfallUri": "https://scryfall.com/card/m10/214/magebane-armor?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -5746,6 +5832,34 @@
       "set": "m10",
       "collectorNumber": "121",
       "scryfallUri": "https://scryfall.com/card/m10/121/weakness?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Whispersilk Cloak",
+      "slug": "whispersilk-cloak",
+      "oracleId": "9ad4f730-a18e-4a7c-a468-a926c718c741",
+      "layout": "normal",
+      "manaCost": "{3}",
+      "manaValue": 3,
+      "typeLine": "Artifact — Equipment",
+      "oracleText": "Equipped creature can't be blocked and has shroud. (It can't be the target of spells or abilities.)\nEquip {2}",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [
+        "Equip"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/8/d83821b3-a6a6-4a15-9169-5c6d1942903d.jpg?1783941788",
+        "large": "https://cards.scryfall.io/large/front/d/8/d83821b3-a6a6-4a15-9169-5c6d1942903d.jpg?1783941788",
+        "png": "https://cards.scryfall.io/png/front/d/8/d83821b3-a6a6-4a15-9169-5c6d1942903d.png?1783941788",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/8/d83821b3-a6a6-4a15-9169-5c6d1942903d.jpg?1783941788"
+      },
+      "artist": "Daren Bader",
+      "set": "m11",
+      "collectorNumber": "221",
+      "scryfallUri": "https://scryfall.com/card/m11/221/whispersilk-cloak?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

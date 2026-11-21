@@ -7,6 +7,7 @@ import { gainLife, loseLife } from "../effects/life.ts";
 import { countLandPlay } from "../game/land-played.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { addMana } from "../mana/pool.ts";
+import { attach, unattach } from "../permanents/attach.ts";
 import { putCounters, removeCounters } from "../permanents/counters.ts";
 import { destroy } from "../permanents/destroy.ts";
 import { regenerate } from "../permanents/regenerate.ts";
@@ -73,6 +74,8 @@ function leavingObjects(event: SingleEvent): ObjectId[] {
     case "putCounters":
     case "removeCounters":
     case "createToken":
+    case "attach":
+    case "unattach":
     // A token leaves the game from a zone that isn't the battlefield (CR 111.7).
     case "ceaseToExist":
     case "gainLife":
@@ -164,6 +167,10 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return removeCounters(state, event.object, event.counter, event.amount);
     case "createToken":
       return createToken(state, event.token, event.player);
+    case "attach":
+      return attach(state, event.object, event.to);
+    case "unattach":
+      return unattach(state, event.object);
     case "ceaseToExist":
       return ceaseToExist(state, event.object);
     case "addMana":

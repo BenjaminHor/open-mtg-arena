@@ -99,7 +99,7 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     // A token stays a token wherever it goes, until it ceases to exist (CR 111.7, 704.5d).
     ...(old.token === undefined ? {} : { token: old.token }),
     // Attached as it enters, so it's never seen unattached (CR 608.3c); its timestamp is its entering one (attaching
-    // later gives it a new one, later: CR 613.7e).
+    // it later gives it a new one, CR 613.7e).
     ...(to.zone === "battlefield" && to.attachedTo !== undefined ? { attachedTo: to.attachedTo } : {}),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };

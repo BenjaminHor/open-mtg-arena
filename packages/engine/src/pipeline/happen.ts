@@ -116,6 +116,8 @@ function replaceOne(
     case "removeCounters":
     case "createToken":
     case "ceaseToExist":
+    case "attach":
+    case "unattach":
     case "addMana":
     case "draw":
     case "discard":

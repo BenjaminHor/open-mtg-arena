@@ -50,16 +50,27 @@ export function staticKeywordGrants(
   sources: readonly StaticSource[],
 ): { grants: Record<ObjectId, KeywordGrant[]>; sets: (ObjectId[] | undefined)[] } {
   const grants: Record<ObjectId, KeywordGrant[]> = {};
+  // A static ability's effects have its permanent's timestamp (CR 613.7a), which an Aura or Equipment renews each time
+  // it's attached (CR 613.7e).
+  const timestampOf = (id: ObjectId) => {
+    const obj = input.objects[id];
+    return obj?.kind === "card" ? obj.timestamp : 0;
+  };
   // By source's place in `sources`: the set each effect found here, if it started in this layer.
   const sets: (ObjectId[] | undefined)[] = sources.map(() => undefined);
   for (const [i, s] of sources.entries()) {
     switch (s.def.kind) {
       case "attachedGets": {
-        // "Enchanted creature has flying" (CR 303.4m): the permanent it's attached to, whatever that is now.
+        // "Enchanted creature has flying", "equipped creature loses flying" (CR 303.4m, 301.5f): the permanent it's
+        // attached to, whatever that is now.
         const host = attachedHostIn(input.objects, input.battlefield, s.source);
         const keywords = s.def.keywords ?? [];
-        if (host !== null && keywords.length > 0)
-          grants[host] = [...(grants[host] ?? []), { source: s.source, keywords }];
+        const lose = s.def.loseKeywords ?? [];
+        if (host !== null && (keywords.length > 0 || lose.length > 0))
+          grants[host] = [
+            ...(grants[host] ?? []),
+            { source: s.source, timestamp: timestampOf(s.source), keywords, lose },
+          ];
         break;
       }
       case "creaturesGet": {
@@ -67,10 +78,12 @@ export function staticKeywordGrants(
         if (keywords.length === 0) break;
         const affected = creaturesGetSet(input, board, s.source, s.def);
         sets[i] = affected;
-        for (const id of affected) grants[id] = [...(grants[id] ?? []), { source: s.source, keywords }];
+        const grant = { source: s.source, timestamp: timestampOf(s.source), keywords, lose: [] };
+        for (const id of affected) grants[id] = [...(grants[id] ?? []), grant];
         break;
       }
       case "attachedCantAttackOrBlock":
+      case "attachedCantBeBlocked":
       case "plusPerSharedCreatureType":
       case "plusPerOtherSameName":
       case "cantBeBlocked":
@@ -88,8 +101,16 @@ export function staticKeywordGrants(
   return { grants, sets };
 }
 
-/** Keywords granted in layer 6, and by what: a static ability's permanent, or a resolved effect's source. */
-export type KeywordGrant = { source: ObjectId; keywords: readonly Keyword[] };
+/**
+ * Keywords granted or removed in layer 6, and by what: a static ability's permanent, or a resolved effect's source. Applied
+ * in timestamp order (CR 613.7), so "loses flying" and "gains flying" end with the later one.
+ */
+export type KeywordGrant = {
+  source: ObjectId;
+  timestamp: number;
+  keywords: readonly Keyword[];
+  lose: readonly Keyword[];
+};
 
 /** One static ability's change to a permanent's power and toughness in layer 7c (CR 613.4c). */
 export type StaticPT = { source: ObjectId; power: number; toughness: number };
@@ -160,6 +181,7 @@ export function staticPTChanges(
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
       case "attachedCantAttackOrBlock":
+      case "attachedCantBeBlocked":
         break;
     }
   }

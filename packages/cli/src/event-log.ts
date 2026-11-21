@@ -162,6 +162,10 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} put on ${name(e.object)}`;
     case "COUNTERS_REMOVED":
       return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} removed from ${name(e.object)}`;
+    case "ATTACHED":
+      return `attaches: ${name(e.object)} to ${name(e.to)}`;
+    case "UNATTACHED":
+      return `unattached: ${name(e.object)} from ${name(e.from)}`;
     case "TOKEN_CREATED":
       return `${e.player} creates ${name(e.object)}`;
     case "TOKEN_CEASED_TO_EXIST":

@@ -10,6 +10,7 @@
 
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
 import { replacementsOf } from "../rules/abilities.ts";
+import { attachedHost } from "../rules/attachment.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerNowOrLastKnown, controllerOf } from "../rules/controller.ts";
 import { canBeDealtDamage } from "../rules/damage-recipients.ts";
@@ -206,6 +207,12 @@ function preventsForPermanent(
     case "preventDamageToSelfRemovingCounters":
       // "If damage would be dealt to this creature": all of it (its ruling).
       return entry.to.kind === "object" && entry.to.object === permanent ? "all" : null;
+    case "preventNoncombatDamageToAttached":
+      // "All noncombat damage that would be dealt to equipped creature" (CR 615.1a): any damage that isn't combat
+      // damage (CR 120.2a), to what this is attached to now.
+      return !entry.combat && entry.to.kind === "object" && entry.to.object === attachedHost(state, permanent)
+        ? "all"
+        : null;
     case "entersTapped":
     case "graveyardToLibrary":
     case "entersWithCounters":

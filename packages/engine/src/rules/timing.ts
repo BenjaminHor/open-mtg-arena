@@ -7,7 +7,7 @@ import { keywordsOf } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 
 /** Whether it's this player's own main phase with an empty stack: "sorcery speed" (CR 117.1a). */
-function mainPhaseEmptyStack(state: GameState, player: PlayerId): boolean {
+export function mainPhaseEmptyStack(state: GameState, player: PlayerId): boolean {
   const turn = state.turn;
   return (
     turn !== null &&

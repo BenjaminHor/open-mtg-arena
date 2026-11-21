@@ -59,6 +59,8 @@ export type Layered = Readonly<{
    * creature instead of searching the battlefield for every pair of attacker and blocker (measured).
    */
   cantAttackOrBlock: boolean;
+  /** Likewise, "equipped creature can't be blocked" (Whispersilk Cloak, CR 509.1b). */
+  cantBeBlocked: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -220,26 +222,33 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
       if (card !== undefined) board[id] = withColors(card, effect.change.colors);
     }
   }
-  // Layer 6 (CR 613.1f): keywords granted by resolved effects, on the objects they locked in (CR 611.2c), and by static
-  // abilities, on what fits now (CR 611.3a). Only adding so far, so the order within the layer can't matter.
+  // Layer 6 (CR 613.1f): keywords granted by resolved effects, on the objects they locked in (CR 611.2c), and granted or
+  // removed by static abilities, on what fits now (CR 611.3a), all in timestamp order (CR 613.7).
   const sources = staticSources(input, board);
   const { grants, sets } = staticKeywordGrants(input, board, sources);
   for (const effect of input.effects) {
     if (effect.change.kind !== "addKeywords") continue;
-    const grant = { source: effect.source, keywords: effect.change.keywords };
+    const grant = { source: effect.source, timestamp: effect.timestamp, keywords: effect.change.keywords, lose: [] };
     for (const id of effect.affected) grants[id] = [...(grants[id] ?? []), grant];
   }
-  for (const [id, granted] of Object.entries(grants) as [ObjectId, KeywordGrant[]][]) {
+  for (const [id, unordered] of Object.entries(grants) as [ObjectId, KeywordGrant[]][]) {
     const card = board[id];
-    const keywords = granted.flatMap((g) => g.keywords);
-    if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
+    if (card === undefined) continue;
+    const granted = [...unordered].sort((x, y) => x.timestamp - y.timestamp);
+    let keywords: readonly Keyword[] = card.keywords;
+    for (const g of granted) keywords = withoutRepeats([...keywords, ...g.keywords]).filter((k) => !g.lose.includes(k));
+    board[id] = { ...card, keywords, granted };
   }
   // Restrictions from attached permanents' statics (CR 303.4m), not a layer: kept on the host for combat to read.
   for (const s of sources) {
-    if (s.def.kind !== "attachedCantAttackOrBlock") continue;
+    if (s.def.kind !== "attachedCantAttackOrBlock" && s.def.kind !== "attachedCantBeBlocked") continue;
     const host = attachedHostIn(input.objects, input.battlefield, s.source);
     const card = host === null ? undefined : board[host];
-    if (host !== null && card !== undefined) board[host] = { ...card, cantAttackOrBlock: true };
+    if (host === null || card === undefined) continue;
+    board[host] =
+      s.def.kind === "attachedCantAttackOrBlock"
+        ? { ...card, cantAttackOrBlock: true }
+        : { ...card, cantBeBlocked: true };
   }
   // Layer 7 (CR 613.4): a creature's base power and toughness (7b's, else 7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
@@ -287,6 +296,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     sevenC: Object.freeze([]),
     granted: Object.freeze([]),
     cantAttackOrBlock: false,
+    cantBeBlocked: false,
   };
 }
 

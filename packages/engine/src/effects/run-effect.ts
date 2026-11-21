@@ -10,6 +10,7 @@ import type { EffectChange, EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { createDelayedTrigger } from "../triggers/delayed.ts";
+import { attachSelf } from "./attach-self.ts";
 import { becomes } from "./becomes.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { recordControlChanges } from "./control-change.ts";
@@ -130,6 +131,8 @@ export function runEffect(
       const events = ids.map((object) => ({ kind: "putCounters", object, counter, amount }) as const);
       return happen(state, { kind: "simultaneous", events }, cards);
     }
+    case "attachSelf":
+      return attachSelf(state, effect.to, context, cards);
     case "createTokens":
       return createTokens(state, effect.token, effect.amount, context, cards);
     case "untap": {

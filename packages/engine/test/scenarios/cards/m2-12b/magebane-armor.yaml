@@ -1,0 +1,30 @@
+name: Magebane Armor makes Serra Angel lose flying (so it can be blocked), gives +2/+4 and prevents noncombat damage
+rules: [CR 613.1f, CR 615.1a, CR 120.2a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Serra Angel, { card: Magebane Armor, attachedTo: p1:Serra Angel }, Mountain]
+    hand: [Shock]
+  p2:
+    battlefield: [Grizzly Bears, Mountain]
+    hand: [Shock]
+steps:
+  - expect:
+      p1:Serra Angel.power: 6
+      p1:Serra Angel.toughness: 8
+  - p2 cast: Shock
+    targets: [p1:Serra Angel]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Serra Angel.damage: 0
+      events contains: [{ type: DAMAGE_PREVENTED }]
+  - all pass: until main1
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Serra Angel]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Serra Angel }
+  - all pass: until combat.end
+  - expect:
+      p1:Serra Angel.damage: 2
+      p2.graveyard contains: [Grizzly Bears]

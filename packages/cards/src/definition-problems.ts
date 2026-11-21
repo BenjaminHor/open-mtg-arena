@@ -34,6 +34,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
     case "attachedGets":
       return s.perCount ?? null;
     case "attachedCantAttackOrBlock":
+    case "attachedCantBeBlocked":
       return null;
     case "cantBeBlocked":
     case "cantAttackUnlessDefenderControls":
@@ -82,6 +83,7 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       ...(def.keywords ?? []),
       ...((def.protections?.length ?? 0) > 0 ? ["protection"] : []),
       ...(def.enchant === undefined ? [] : ["enchant"]),
+      ...((def.abilities ?? []).some((a) => a.keyword === "equip") ? ["equip"] : []),
     ].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);

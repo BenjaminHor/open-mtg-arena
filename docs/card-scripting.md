@@ -120,6 +120,14 @@ export const furnaceWhelp: CardDef = {
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
   is `{ kind: "attachedCantAttackOrBlock" }` (D-102).
+- "Equip {2}" is an activated ability `{ kind: "activated", keyword: "equip", timing: "sorcery", cost: [{ kind: "mana",
+  cost: [{ kind: "generic", amount: 2 }] }], targets: [{ kind: "permanent", filter: { types: ["creature"], controller:
+  "you" } }], effects: [{ op: "attachSelf", to: { target: 0 } }] }` (CR 702.6a); `timing: "sorcery"` is any "activate
+  only as a sorcery" (CR 602.5d). "Equipped creature gets +1/+1 and has deathtouch" is `attachedGets`, as for an Aura;
+  "and loses flying" adds `loseKeywords`; "equipped creature can't be blocked" is `{ kind: "attachedCantBeBlocked" }`;
+  "prevent all noncombat damage that would be dealt to equipped creature" is the replacement
+  `{ kind: "preventNoncombatDamageToAttached" }`. "Enchanted creature" in an Aura's own ability is the subject
+  `"attached"` (D-103).
 - "Create a 1/1 green Insect creature token" is `{ op: "createTokens", token: { colors: ["G"], types: ["creature"],
   subtypes: ["Insect"], power: 1, toughness: 1 }, amount: 1 }`; "for each Forest you control" is `amount: { count: {
   subtypes: ["Forest"], controller: "you" } }`. `name` only when the text names the token (CR 111.4); `keywords` for

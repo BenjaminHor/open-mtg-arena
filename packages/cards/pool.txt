@@ -71,6 +71,7 @@ Fabricate
 Fiery Hellhound
 Fire Elemental
 Fireball
+Firebreathing
 Flashfreeze
 Fog
 Forest
@@ -83,6 +84,7 @@ Glorious Charge
 Goblin Artillery
 Goblin Chieftain
 Goblin Piker
+Gorgon Flail
 Gravedigger
 Gray Ogre
 Great Sable Stag
@@ -118,6 +120,7 @@ Lightwielder Paladin
 Llanowar Elves
 Looming Shade
 Lurking Predators
+Magebane Armor
 Manabarbs
 Megrim
 Merfolk Looter
@@ -206,6 +209,7 @@ Wall of Faith
 Wall of Fire
 Warpath Ghoul
 Weakness
+Whispersilk Cloak
 White Knight
 Wind Drake
 Windstorm

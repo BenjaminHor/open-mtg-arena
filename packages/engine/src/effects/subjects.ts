@@ -5,6 +5,7 @@
 import type { Amount, CardDatabase, EffectSubject, ObjectFilter } from "../cards/types.ts";
 import { apnapOrder } from "../game/turn-order.ts";
 import { amountOf } from "../rules/amount.ts";
+import { attachedHost } from "../rules/attachment.ts";
 import { controllerNowOrLastKnown } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
@@ -39,6 +40,11 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
   if (s === "remembered") return rememberedObjects(state).map((object) => ({ kind: "object", object }));
   // What an earlier search of this resolution found (CR 608.2c).
   if (s === "found") return (state.resolution?.found ?? []).map((object) => ({ kind: "object", object }));
+  // "Enchanted creature" in its Aura's ability: what the source is attached to now (CR 303.4m).
+  if (s === "attached") {
+    const host = attachedHost(state, context.self);
+    return host === null ? [] : [{ kind: "object", object: host }];
+  }
   // Every permanent fitting the filter now, as the effect applies (CR 608.2h).
   if ("each" in s)
     return permanentsFitting(state, s.each, context, cards).map((object) => ({ kind: "object", object }));

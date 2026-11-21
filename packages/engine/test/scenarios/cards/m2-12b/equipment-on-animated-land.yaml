@@ -1,0 +1,26 @@
+name: An Equipment on a Forest made a creature becomes unattached when the Forest stops being a creature, and stays
+rules: [CR 704.5n, CR 301.5c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest, Forest, Forest, Forest, Mountain, Gorgon Flail]
+    hand: [Awakener Druid, Shock]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Forest#6
+  - all pass: once
+  - p1 activate: Gorgon Flail
+    targets: [p1:Forest#6]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Forest#6.power: 5
+  - p1 cast: Shock
+    targets: [p1:Awakener Druid]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Gorgon Flail, Forest, Forest, Forest, Forest, Forest, Forest]
+      events contains: [{ type: UNATTACHED }]

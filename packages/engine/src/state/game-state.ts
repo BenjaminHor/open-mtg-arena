@@ -126,6 +126,6 @@ export type LastKnownCharacteristics = {
   colors: Color[];
   power: number | null;
   toughness: number | null;
-  /** Its keyword abilities, for lifelink on a source that's gone (CR 702.15c; deathtouch, later: CR 702.2e). */
+  /** Its keyword abilities, for lifelink on a source that's gone (CR 702.15c, 702.2e). */
   keywords: Keyword[];
 };

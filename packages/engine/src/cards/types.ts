@@ -152,18 +152,33 @@ export type ReplacementDef =
    * "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it"
    * (Protean Hydra): all of it prevented, then the counters removed right after (CR 615.5), as many as it has.
    */
-  | { kind: "preventDamageToSelfRemovingCounters"; counter: "+1/+1" };
+  | { kind: "preventDamageToSelfRemovingCounters"; counter: "+1/+1" }
+  /**
+   * "Prevent all noncombat damage that would be dealt to equipped creature" (Magebane Armor, CR 615.1a): while this is
+   * on the battlefield, all damage that isn't combat damage (CR 120.2a) to what it's attached to.
+   */
+  | { kind: "preventNoncombatDamageToAttached" };
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
   /**
    * "Enchanted creature gets +1/+2", "has lifelink", "gets +1/+1 for each Plains you control and has flying" (Armored
-   * Ascension): the permanent this one is attached to (CR 303.4m; "equipped creature", later: CR 301.5f), layers 6 and 7c. `perCount` multiplies the
+   * Ascension): the permanent this one is attached to (CR 303.4m, 301.5f), layers 6 and 7c. `perCount` multiplies the
    * bonus by how many permanents fit it, "you" being this permanent's controller.
    */
-  | { kind: "attachedGets"; power: number; toughness: number; keywords?: Keyword[]; perCount?: ObjectFilter }
+  | {
+      kind: "attachedGets";
+      power: number;
+      toughness: number;
+      keywords?: Keyword[];
+      /** "And loses flying" (Magebane Armor): removed in layer 6, in timestamp order with what adds them (CR 613.7). */
+      loseKeywords?: Keyword[];
+      perCount?: ObjectFilter;
+    }
   /** "Enchanted creature can't attack or block" (Pacifism): restrictions on the attached creature (CR 508.1c, 509.1b). */
   | { kind: "attachedCantAttackOrBlock" }
+  /** "Equipped creature can't be blocked" (Whispersilk Cloak): an evasion restriction on the attached creature (CR 509.1b). */
+  | { kind: "attachedCantBeBlocked" }
   /**
    * "This creature can't be blocked" (an evasion ability, CR 509.1b), or "can't be blocked except by [filter]" with
    * `except`, read relative to the attacker's controller, the ability's "you" (CR 109.5).
@@ -264,6 +279,10 @@ export type AbilityDef = {
   cost: CostPart[];
   targets: TargetSpec[];
   effects: Effect[];
+  /** "Activate only as a sorcery" (CR 602.5d): its controller's main phase, with an empty stack. */
+  timing?: "sorcery";
+  /** The keyword ability this is, when it is one: "Equip {2}" is an activated ability (CR 702.6a). */
+  keyword?: "equip";
 };
 
 /** One part of a cost (CR 118, 602.1a). */
@@ -394,6 +413,11 @@ export type EffectSubject =
    * `about`, CR 603.7c), still affected if they changed, but not once they've left their zone (a new object, CR 400.7).
    */
   | "remembered"
+  /**
+   * "Enchanted creature", "equipped creature" in an ability of an Aura or Equipment: what its source is attached to as
+   * the effect applies (CR 303.4m, 301.5f); nothing if it's attached to nothing.
+   */
+  | "attached"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
   | { each: ObjectFilter }
   /**
@@ -472,6 +496,11 @@ export type Effect =
    * by "you", the ability's controller, who owns and controls them (CR 111.2), all at once.
    */
   | { op: "createTokens"; token: TokenDef; amount: Amount }
+  /**
+   * "Attach this permanent to target creature you control" (equip, CR 702.6a, 701.3): the ability's source, if it's still
+   * on the battlefield, moves to `to`; nothing if it's already there or can't be attached to it (CR 701.3b).
+   */
+  | { op: "attachSelf"; to: EffectSubject }
   /** "Untap that creature" (CR 701.26b). */
   | { op: "untap"; of: EffectSubject }
   /** "Put a +1/+1 counter on this creature" (CR 122.6): `amount` counters of the kind on each permanent `of` names. */

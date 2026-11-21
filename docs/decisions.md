@@ -1517,3 +1517,19 @@ every schema change and every change D-024 lists bumps it.
   pass then (future-rules, "Layers").
 - Pacifism's restriction is marked on its host by the layer pass (`Layered.cantAttackOrBlock`), not searched for per
   attacker and blocker: the search made combat measurably slower (code review).
+
+**D-103: Equipment, equip and layer 6 in timestamp order (M2-12b)** · 2026-11-21 · accepted
+- Attaching and unattaching are pipeline events, `attach` and `unattach` (`permanents/attach.ts`): attaching gives the
+  Aura or Equipment a new timestamp (CR 613.7e, 701.3c) and does nothing where it's already attached (CR 701.3b);
+  unattaching deletes the `attachedTo` key, so state stays plain JSON.
+- "Equip [cost]" is a printed activated ability marked `keyword: "equip"` and `timing: "sorcery"` (CR 702.6a, 602.5d),
+  with the op `attachSelf`, which moves the source unless the creature has protection from it (CR 702.16d, 701.3b).
+  `timing: "sorcery"` is checked in `activationProblem` for any ability.
+- An Equipment attached to a noncreature, to a creature with protection from it, or to one that's gone becomes
+  unattached as a state-based action and stays (`equipmentIllegallyAttached`, CR 704.5n, 301.5c).
+- Layer 6 now applies keyword grants and removals in timestamp order (CR 613.7): a static ability's effects have its
+  permanent's timestamp (CR 613.7a), a resolved effect its own. Magebane Armor's "loses flying" loses to a later Jump
+  and wins over an earlier one, as its ruling says.
+- Whispersilk Cloak's "can't be blocked" is marked on its host by the pass like Pacifism's (`Layered.cantBeBlocked`);
+  Magebane Armor's prevention is a replacement of its own text on what it's attached to; an Aura's own ability names
+  "enchanted creature" with the subject `"attached"` (Firebreathing).
