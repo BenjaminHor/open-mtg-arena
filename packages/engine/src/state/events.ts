@@ -19,7 +19,7 @@ export type DidNotResolve = "illegalTargets" | "condition";
 export type GameEvent =
   /**
    * An object moved between zones and became a new object (CR 400.7). `object` is the old object as it last
-   * existed, so triggers that look back in time (later: CR 603.10) can use it later. Abilities never change zones: they
+   * existed, so triggers that look back in time (CR 603.10a) can use it later. Abilities never change zones: they
    * leave the stack and cease to exist. Events can carry hidden information (a drawn card's `oracleId`), so hosts
    * filter them per player before the UI or AI sees them, as `playerView` does for state. `cardId` is the card's id
    * before the move and `newCardId` after it: they differ when a card comes out of a hand or library into a public

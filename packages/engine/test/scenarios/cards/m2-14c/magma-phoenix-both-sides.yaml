@@ -1,0 +1,21 @@
+name: Planar Cleansing kills a Phoenix on each side; both trigger, APNAP
+rules: [CR 603.10a, CR 603.3b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Magma Phoenix]
+    hand: [Planar Cleansing]
+  p2:
+    battlefield: [Magma Phoenix]
+steps:
+  - p1 cast: Planar Cleansing
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Magma Phoenix ability, Magma Phoenix ability]
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.life: 14
+      p2.life: 14
+      stack: []

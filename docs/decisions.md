@@ -1779,5 +1779,8 @@ owner's answer to the D-089 open question, option (a))
 - "When this creature dies" is the trigger `selfDies`, the first that looks back in time: `detectTriggers` matches a
   permanent an event moved off the battlefield against the state before the event (CR 603.10a), with that controller.
   Its "it deals 3 damage" reads the gone source from last known information, which lasts until the stack is empty.
-- Future impact: "when this leaves the battlefield" and "whenever another creature dies" join `leavesTheBattlefield`;
-  Pithing Needle (M2-14d) stops graveyard abilities too.
+- Future impact: "when this leaves the battlefield" joins `leavesTheBattlefield`. "Whenever another creature dies" is
+  different: the watcher isn't the permanent that left, so `lookingBack` must then scan every permanent of `before`'s
+  battlefield (CR 603.10a's example: a watcher leaving at the same time still sees it). A dies trigger that returns "it"
+  will need `ZONE_CHANGED.newId` in its trigger event (CR 400.7e). A "loses the game" effect (CR 104.3e) must ask
+  `cantLose`; conceding must not. Pithing Needle (M2-14d) stops graveyard abilities too.

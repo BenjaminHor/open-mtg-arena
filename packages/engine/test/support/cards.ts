@@ -41,6 +41,8 @@ export const TEST_AURA = "test-aura";
 /** Not a real card: a planeswalker with no abilities, for attacking and damaging one before the pool has any. */
 export const TEST_WALKER = "test-walker";
 /** Not a real card: a free sorcery, "Put all enchantment cards from all graveyards onto the battlefield under your control". */
+/** Not a real card: a 0/1 artifact creature, "You can't lose the game and your opponents can't win the game." */
+export const TEST_ANGEL = "test-angel";
 export const TAKE_ENCHANTMENTS = "test-take-enchantments";
 /** Not a real card: "Enchant creature you control / Enchanted creature gets +1/+1." */
 export const YOUR_AURA = "test-your-aura";
@@ -564,6 +566,24 @@ export const TEST_CARDS: CardDatabase = {
       loyalty: 5,
     },
     def: { name: "Test Walker", oracle: "" },
+  }),
+  [TEST_ANGEL]: card(TEST_ANGEL, {
+    printed: {
+      name: "Test Angel",
+      manaCost: [],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["artifact", "creature"],
+      subtypes: ["Angel"],
+      power: 0,
+      toughness: 1,
+    },
+    def: {
+      name: "Test Angel",
+      oracle: "You can't lose the game and your opponents can't win the game.",
+      statics: [{ kind: "cantLoseOpponentsCantWin" }],
+    },
   }),
   [TAKE_ENCHANTMENTS]: card(TAKE_ENCHANTMENTS, {
     printed: {

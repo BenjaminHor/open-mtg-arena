@@ -58,6 +58,7 @@ function triggered(
 ): PendingTrigger[] {
   const obj = state.objects[source];
   if (obj?.kind !== "card") return [];
+  // Its controller when it triggered (CR 603.3a): for a look-back trigger, as the permanent last was.
   const controller = controllerOf(state, source, cards);
   return triggersOf(state, source, cards).flatMap(({ index, def }) => {
     if (leavesTheBattlefield(def.when) !== looksBack) return [];

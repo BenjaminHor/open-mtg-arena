@@ -1,4 +1,4 @@
-name: Platinum Angel protects only its controller, and changes sides with it
+name: Platinum Angel changes sides with Mind Control, and then protects its new controller
 rules: [CR 104.3b, CR 704.5a]
 setup:
   turn: { active: p1, step: main1 }

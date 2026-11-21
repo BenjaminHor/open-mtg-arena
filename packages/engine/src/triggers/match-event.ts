@@ -32,7 +32,8 @@ export function matches(
     case "selfEnters":
       return entered(event) === source ? [{ player: null, object: source, amount: null }] : [];
     case "selfDies":
-      // From the battlefield to a graveyard, while a creature (CR 700.4), read as it was before (CR 603.10a).
+      // From the battlefield to a graveyard, while a creature (CR 700.4 and the glossary's "Dies"), read as it was before
+      // (CR 603.10a).
       return event.type === "ZONE_CHANGED" &&
         event.oldId === source &&
         event.from.zone === "battlefield" &&

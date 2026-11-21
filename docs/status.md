@@ -746,7 +746,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (Angel: 0 life then the Angel destroyed, an empty-library draw that never counts later, concession, stolen
          both ways; Phoenix: dies, bounced doesn't die, returns from the graveyard only, not from another's graveyard,
          activated twice); mutants 6/6 after two more scenarios. 3 golden games (`golden:cover` also proposed a fourth,
-         pool-695, for a decision already covered; left out). Next: reviews, PR.
+         pool-695, for a decision already covered; left out). Rules review: no wrong ruling; 21 more scenarios (Phoenix
+         sacrificed, stolen with lifelink, with Gorgon Flail's deathtouch, returned in response, both sides wrathed, a
+         chain, regenerated, exiled, 0 toughness, instant speed, combat trade, two of one player's; Angel: both players
+         at 0, a draw without it, it dying in the same check, two Angels, not for the opponent, a later draw, Act of
+         Treason's cleanup), 3 unit tests for the empty-library record with the Angel; stale "later:" marks (CR 700.4,
+         603.10a), CR 603.3a cited; D-118 corrected on "whenever another creature dies". Fuzz 80 clean. Next: code
+         review, PR.
        - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
          `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the

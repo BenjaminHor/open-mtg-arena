@@ -1,0 +1,21 @@
+name: One Phoenix's trigger kills the other, which triggers too
+rules: [CR 603.6c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Magma Phoenix, Magma Phoenix]
+    hand: [Lightning Bolt]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Magma Phoenix, Magma Phoenix]
+      stack: [Magma Phoenix ability]
+      p1.life: 17
+  - all pass: once
+  - expect:
+      p1.life: 14
+      p2.life: 14

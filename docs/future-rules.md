@@ -106,9 +106,10 @@ or ability") will need `BECAME_TARGET.by` kept in the `TriggerEvent`. Activation
 printed ability's index; a granted activated ability (layer 6) will need an `AbilityRef` key. A cancelled cast's
 `BECAME_TARGET` is still in the log before `CAST_CANCELLED`, though its trigger is dropped (CR 734.1); a UI may want to
 hide both. Leaves-the-battlefield triggers (CR 603.10a) are built for "when this creature dies" (D-118): `detectTriggers`
-reads a permanent the event moved off the battlefield in `before`. Other leaves-the-battlefield conditions ("when this
-leaves the battlefield", "whenever another creature dies") go through the same `leavesTheBattlefield` test, and
-`lastKnown` for a card leaving other zones remains; state triggers (CR 603.8); granted triggered abilities (layer 6) through
+reads a permanent the event moved off the battlefield in `before`. "When this leaves the battlefield" goes through the
+same `leavesTheBattlefield` test; "whenever another creature dies" needs `lookingBack` to scan all of `before`'s
+battlefield, not only the permanent that left (D-118). A "loses the game" effect (CR 104.3e) must ask `cantLose`.
+`lastKnown` for a card leaving other zones remains to do; state triggers (CR 603.8); granted triggered abilities (layer 6) through
 `triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1). That stays right with "becomes the target" (M2-07c2),
 which triggers during a cast: a cast starts only when a player receives priority, which happens only once
 `pendingTriggers` is empty (CR 117.5), so everything pending then came from the cast itself. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a

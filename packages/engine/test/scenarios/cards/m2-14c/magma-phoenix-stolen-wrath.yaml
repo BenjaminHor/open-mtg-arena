@@ -1,0 +1,20 @@
+name: Planar Cleansing destroys a stolen Phoenix with its Auras; it looks back for controller and lifelink
+rules: [CR 603.10a, CR 603.3a, CR 702.15c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Mind Control, attachedTo: p2:Magma Phoenix }, { card: Lifelink, attachedTo: p2:Magma Phoenix }]
+  p2:
+    battlefield: [Magma Phoenix, Plains, Plains, Plains, Plains, Plains, Plains]
+    hand: [Planar Cleansing]
+steps:
+  - p2 cast: Planar Cleansing
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Magma Phoenix ability]
+      events contains: [{ type: ABILITY_TRIGGERED, controller: p1 }]
+  - all pass: once
+  - expect:
+      p1.life: 23
+      p2.life: 17
