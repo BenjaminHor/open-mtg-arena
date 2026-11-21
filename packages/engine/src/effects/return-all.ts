@@ -3,10 +3,10 @@
 // this way isn't cast, so the player who'll control it (CR 110.2) chooses what it will enchant (CR 303.4f): any
 // permanent already on the battlefield it could legally enchant, not one entering with it (its ruling), and without
 // targeting. With nothing to enchant, it stays in the graveyard (CR 303.4g). Equipment enters unattached (CR 301.5b).
-// The active player announces for their Auras first, then each other player in turn order (CR 101.4); under "you",
-// one player announces for all, each knowing the choices before theirs (CR 101.4b). A
-// player's own Auras are announced in their graveyard's order, not one the player picks (later: CR 101.4c): the
-// choices don't depend on each other, so the order changes nothing. Each answer runs the effect again; the choices so
+// The active player announces for their Auras first, then each other player in turn order (CR 101.4), each knowing
+// the choices before theirs (CR 101.4b); under "you", one player announces for all. A player's own Auras are announced
+// in their graveyard's order, not one the player picks (later: CR 101.4c): the choices don't depend on each other, so
+// the order changes nothing. Each answer runs the effect again; the choices so
 // far are kept in `state.resolution.auraHosts`.
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
