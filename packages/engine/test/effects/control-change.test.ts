@@ -65,6 +65,17 @@ describe("a control change (CR 302.6, 613.1b)", () => {
     expect(sick(back, bears)).toBe(true);
   });
 
+  it("gives it to the latest control effect's player, in timestamp order (CR 613.7)", () => {
+    const { state, bears } = bearsOfP2();
+    const first = stolen(state, bears).effects[0] as GameState["effects"][number];
+    const twice: GameState = {
+      ...state,
+      effects: [first, { ...first, timestamp: 901, change: { kind: "gainControl", player: "p2" } }],
+    };
+    expect(controllerOf(twice, bears)).toBe("p2");
+    expect(controllerOf({ ...twice, effects: [...twice.effects].reverse() }, bears)).toBe("p1");
+  });
+
   it("changes nothing when the permanent's controller stays the same", () => {
     const { state, bears } = bearsOfP2();
     const own: GameState = {
