@@ -107,26 +107,45 @@ describe("runFuzz", () => {
 });
 
 describe("pnpm fuzz", () => {
-  it("reports the seeds it played and exits 0 when all pass", { timeout: 20_000 }, () => {
+  it("reports the seeds it played and exits 0 when all pass", { timeout: 20_000 }, async () => {
     const outDir = tempDir();
-    expect(fuzz(["--games", "1", "--seed", "4", "--out", outDir], 0)).toEqual({
+    expect(await fuzz(["--games", "1", "--seed", "4", "--out", outDir], 0)).toEqual({
       output: "1 games, seeds 4–4: 0 failed",
       code: 0,
     });
   });
 
-  it("exits 1 on a failure, printing the seed and how to rerun it", { timeout: 20_000 }, () => {
+  it("exits 1 on a failure, printing the seed and how to rerun it", { timeout: 20_000 }, async () => {
     const outDir = tempDir();
-    const { output, code } = fuzz(["--games", "1", "--seed", "4", "--turn-cap", "1", "--out", outDir], 0);
+    const { output, code } = await fuzz(["--games", "1", "--seed", "4", "--turn-cap", "1", "--out", outDir], 0);
     expect(code).toBe(1);
     expect(output).toContain("seed 4: the game passed 1 turns");
     expect(output).toContain("pnpm fuzz --games 1 --seed 4");
   });
 
-  it("refuses bad options", () => {
-    expect(fuzz(["--games", "ten"], 0)).toEqual({ output: "--games is a whole number, 0 or more", code: 1 });
-    expect(fuzz(["--games", "0"], 0)).toEqual({ output: "--games is 1 or more", code: 1 });
-    expect(fuzz(["--colour"], 0).code).toBe(1);
+  it("refuses bad options", async () => {
+    expect(await fuzz(["--games", "ten"], 0)).toEqual({ output: "--games is a whole number, 0 or more", code: 1 });
+    expect(await fuzz(["--games", "0"], 0)).toEqual({ output: "--games is 1 or more", code: 1 });
+    expect((await fuzz(["--games", "2", "--jobs", "0"], 0)).output).toMatch(/^--jobs is 1 or more/);
+    expect((await fuzz(["--colour"], 0)).code).toBe(1);
+  });
+});
+
+describe("pnpm fuzz --jobs (D-117)", () => {
+  it("plays the same games on worker threads, writing failures in seed order", { timeout: 60_000 }, async () => {
+    const outDir = tempDir();
+    const { output, code } = await fuzz(
+      ["--games", "3", "--seed", "4", "--turn-cap", "1", "--jobs", "2", "--out", outDir],
+      0,
+    );
+    expect(code).toBe(1);
+    expect(output.split("\n")[0]).toBe("3 games, seeds 4–6: 3 failed");
+    expect([...output.matchAll(/seed (\d+): /g)].map((m) => m[1])).toEqual(["4", "5", "6"]);
+    expect(readdirSync(outDir).sort()).toEqual(["seed-4.json", "seed-5.json", "seed-6.json"]);
+    // The same failure file as one thread writes.
+    const alone = tempDir();
+    await fuzz(["--games", "1", "--seed", "5", "--turn-cap", "1", "--out", alone], 0);
+    expect(readGameFile(path.join(outDir, "seed-5.json"))).toEqual(readGameFile(path.join(alone, "seed-5.json")));
   });
 });
 

@@ -1064,6 +1064,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
+- **Owner's request (2026-11-21):** run the fuzz games in parallel (a 60-game run took over 5 minutes on one core).
+  Done (D-117): `pnpm fuzz` uses a worker thread per core; 60 games in 2 minutes on this 4-core machine.
 - **Owner's preference (2026-11-20):** keep looking for ways to speed up iteration, so features land quickly while
   staying accurate and high quality. Slow spots seen so far, to work on as they bite: the 300-game fuzz (about 10
   minutes, one process: could run seeds across worker processes), `golden:cover` (plays up to 800 candidate games:

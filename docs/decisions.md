@@ -1753,3 +1753,14 @@ owner's answer to the D-089 open question, option (a))
   `pass-priority.ts` both use.
 - Future impact: "skip your next turn" goes beside `nextTurn`; extra combat phases (CR 500.8) still need a per-turn
   step list (future-rules).
+
+**D-117: The fuzzer runs on worker threads** · 2026-11-21 · accepted (the owner asked for parallel fuzz games)
+- `pnpm fuzz` shares its seeds among worker threads (Node's built-in `worker_threads`, no new dependency), one per core
+  by default (`availableParallelism()`), `--jobs J` to choose. Each worker takes the next seed when it finishes one, so a
+  long game doesn't hold up the rest; it sends back only whether the game failed, with the failure's game file, and the
+  main thread writes the files and the report in seed order.
+- The games are independent and each is decided by its seed, so the results are exactly one thread's (a test compares
+  a failure file from both). One game, or `--jobs 1`, runs in the main thread, as before.
+- Workers run every check (`ALL_CHECKS`): check functions can't be sent to a thread, so `runFuzz` with custom checks
+  stays in-process for tests.
+- Measured: 60 games in 2m00s on 4 cores, against 5m17s on one.

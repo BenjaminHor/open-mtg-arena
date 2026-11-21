@@ -19,7 +19,8 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
   actions, targets and mana in words.
 - `src/fuzz.ts`: the `pnpm fuzz` command (docs/testing.md, section 3; D-046). `src/fuzz/`: `checks.ts` (what's
   checked after every action, including `scrambleHidden` for views), `run-game.ts` (`fuzzDecks`, `fuzzGame`: one seed,
-  one game), `run-fuzz.ts` (many games, failures written to `fuzz-failures/`).
+  one game), `run-fuzz.ts` (many games, failures written to `fuzz-failures/`), `parallel.ts` and `worker.ts` (the same
+  games on worker threads, `--jobs`, D-117).
 - `src/replays.ts`: the saved replays in `packages/engine/test/replays/` and `pnpm replays:update`.
 - `src/rules-coverage.ts`: `pnpm coverage:rules`, the rules coverage report (D-048). `src/coverage/`: reading
   citations (`citations.ts`), what's cited and tested (`collect.ts`), the report and its gaps (`report.ts`).
