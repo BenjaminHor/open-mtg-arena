@@ -194,6 +194,12 @@ export type StaticAbilityDef =
    */
   | { kind: "attachedDoesntUntap" }
   /**
+   * "You can't lose the game and your opponents can't win the game" (Platinum Angel): its controller doesn't lose to a
+   * state-based action (CR 104.3b-c, 704.5a-b; "can't" wins, CR 101.2); conceding still loses (CR 104.3a, its ruling).
+   * Opponents winning only by this player losing in a two-player game, their half needs no rule yet (later: CR 104.2b).
+   */
+  | { kind: "cantLoseOpponentsCantWin" }
+  /**
    * "Its activated abilities can't be activated" (Ice Cage): the attached permanent's, mana abilities too (CR 602.5,
    * 605.3a).
    */
@@ -312,6 +318,11 @@ export type AbilityDef = {
   timing?: "sorcery";
   /** The keyword ability this is, when it is one: "Equip {2}" is an activated ability (CR 702.6a). */
   keyword?: "equip";
+  /**
+   * Where it functions, if not the battlefield: "Return this card from your graveyard to your hand" works only from its
+   * owner's graveyard (CR 113.6m), and its owner activates it (CR 602.2: the object has no controller there).
+   */
+  zone?: "graveyard";
 };
 
 /** One part of a cost (CR 118, 602.1a). */

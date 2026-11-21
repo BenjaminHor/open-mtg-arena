@@ -81,6 +81,7 @@ export function staticKeywordGrants(
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
       case "attachedDoesntUntap":
+      case "cantLoseOpponentsCantWin":
       case "attachedControl":
       case "plusPerSharedCreatureType":
       case "plusPerOtherSameName":
@@ -191,6 +192,7 @@ export function staticPTChanges(
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
       case "attachedDoesntUntap":
+      case "cantLoseOpponentsCantWin":
       case "attachedControl":
         break;
     }

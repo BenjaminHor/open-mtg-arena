@@ -740,6 +740,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14c built (2026-11-21, D-118): Platinum Angel and Magma Phoenix (229 cards). `cantLose` stops the zero-life
+         and empty-library losses (CR 101.2, 704.5a-b); abilities with `zone: "graveyard"` (CR 113.6m), activated by
+         the owner, offered from the graveyard; the first look-back trigger, `selfDies` (CR 603.10a). 10 scenarios
+         (Angel: 0 life then the Angel destroyed, an empty-library draw that never counts later, concession, stolen
+         both ways; Phoenix: dies, bounced doesn't die, returns from the graveyard only, not from another's graveyard,
+         activated twice); mutants 6/6 after two more scenarios. 3 golden games (`golden:cover` also proposed a fourth,
+         pool-695, for a decision already covered; left out). Next: reviews, PR.
        - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
          `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the

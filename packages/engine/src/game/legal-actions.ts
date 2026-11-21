@@ -177,9 +177,15 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
   );
 }
 
-/** Every other activated ability the player could begin activating now (CR 602.2), in battlefield order. */
+/**
+ * Every other activated ability the player could begin activating now (CR 602.2), in battlefield order, then those of
+ * cards in their graveyard that work from there (CR 113.6m).
+ */
 function activationActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
-  return controlled(state, player, cards).flatMap((object) =>
+  const graveyard = zoneList(state, { zone: "graveyard", player }).filter((object) =>
+    abilitiesOf(state, object, cards).some(({ def }) => def.zone === "graveyard"),
+  );
+  return [...controlled(state, player, cards), ...graveyard].flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => !isManaAbility(def) && activationProblem(state, player, object, ref, cards) === null)
       .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),

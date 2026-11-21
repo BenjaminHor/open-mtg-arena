@@ -125,6 +125,7 @@ import { llanowarElves } from "./l/llanowar-elves.ts";
 import { loomingShade } from "./l/looming-shade.ts";
 import { lurkingPredators } from "./l/lurking-predators.ts";
 import { magebaneArmor } from "./m/magebane-armor.ts";
+import { magmaPhoenix } from "./m/magma-phoenix.ts";
 import { manabarbs } from "./m/manabarbs.ts";
 import { megrim } from "./m/megrim.ts";
 import { merfolkLooter } from "./m/merfolk-looter.ts";
@@ -152,6 +153,7 @@ import { panicAttack } from "./p/panic-attack.ts";
 import { phantomWarrior } from "./p/phantom-warrior.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
+import { platinumAngel } from "./p/platinum-angel.ts";
 import { polymorph } from "./p/polymorph.ts";
 import { ponder } from "./p/ponder.ts";
 import { prizedUnicorn } from "./p/prized-unicorn.ts";
@@ -334,6 +336,8 @@ export const CARD_DEFS: readonly CardDef[] = [
   illusionaryServant,
   indestructibility,
   infernoElemental,
+  platinumAngel,
+  magmaPhoenix,
   timeWarp,
   entanglingVines,
   wallOfFrost,

@@ -22,6 +22,11 @@ export type TriggeredAbilityDef = {
 export type TriggerCondition =
   /** "When this creature enters" (CR 603.6a). */
   | { kind: "selfEnters" }
+  /**
+   * "When this creature dies": put into a graveyard from the battlefield (CR 700.4). A leaves-the-battlefield ability,
+   * so it looks back in time: it triggers from the creature as it last existed there (CR 603.6c, 603.10a).
+   */
+  | { kind: "selfDies" }
   /** "Whenever another [filter] enters", relative to this permanent's controller (CR 603.6a). */
   | { kind: "anotherEnters"; filter: ObjectFilter }
   /**

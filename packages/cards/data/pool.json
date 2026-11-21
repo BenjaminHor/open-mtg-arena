@@ -3664,6 +3664,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Magma Phoenix",
+      "slug": "magma-phoenix",
+      "oracleId": "9c6edb99-2625-4d80-a2e8-1b6039c0a960",
+      "layout": "normal",
+      "manaCost": "{3}{R}{R}",
+      "manaValue": 5,
+      "typeLine": "Creature — Phoenix",
+      "oracleText": "Flying\nWhen this creature dies, it deals 3 damage to each creature and each player.\n{3}{R}{R}: Return this card from your graveyard to your hand.",
+      "power": "3",
+      "toughness": "3",
+      "loyalty": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/3/b3857c9b-136d-4e6a-bd3b-92dab1b71947.jpg?1783941803",
+        "large": "https://cards.scryfall.io/large/front/b/3/b3857c9b-136d-4e6a-bd3b-92dab1b71947.jpg?1783941803",
+        "png": "https://cards.scryfall.io/png/front/b/3/b3857c9b-136d-4e6a-bd3b-92dab1b71947.png?1783941803",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/3/b3857c9b-136d-4e6a-bd3b-92dab1b71947.jpg?1783941803"
+      },
+      "artist": "Raymond Swanland",
+      "set": "m11",
+      "collectorNumber": "150",
+      "scryfallUri": "https://scryfall.com/card/m11/150/magma-phoenix?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Manabarbs",
       "slug": "manabarbs",
       "oracleId": "0f1afedd-c60f-454f-b84a-c8117aec0128",
@@ -4450,6 +4481,35 @@
       "set": "m20",
       "collectorNumber": "33",
       "scryfallUri": "https://scryfall.com/card/m20/33/planar-cleansing?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Platinum Angel",
+      "slug": "platinum-angel",
+      "oracleId": "b148578c-c0bf-4785-b97c-4b6f83028008",
+      "layout": "normal",
+      "manaCost": "{7}",
+      "manaValue": 7,
+      "typeLine": "Artifact Creature — Angel",
+      "oracleText": "Flying\nYou can't lose the game and your opponents can't win the game.",
+      "power": "4",
+      "toughness": "4",
+      "loyalty": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/9/a9a561bf-bddc-4ea7-bf71-9cdc07a71456.jpg?1783941789",
+        "large": "https://cards.scryfall.io/large/front/a/9/a9a561bf-bddc-4ea7-bf71-9cdc07a71456.jpg?1783941789",
+        "png": "https://cards.scryfall.io/png/front/a/9/a9a561bf-bddc-4ea7-bf71-9cdc07a71456.png?1783941789",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/9/a9a561bf-bddc-4ea7-bf71-9cdc07a71456.jpg?1783941789"
+      },
+      "artist": "Brom",
+      "set": "m11",
+      "collectorNumber": "212",
+      "scryfallUri": "https://scryfall.com/card/m11/212/platinum-angel?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

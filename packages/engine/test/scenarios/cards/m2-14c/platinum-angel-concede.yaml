@@ -1,0 +1,10 @@
+name: A player with Platinum Angel can still concede, and loses (its ruling)
+rules: [CR 104.3a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Platinum Angel]
+steps:
+  - p1 concede: now
+  - expect:
+      winner: p2

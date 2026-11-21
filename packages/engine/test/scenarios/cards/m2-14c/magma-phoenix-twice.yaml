@@ -1,0 +1,22 @@
+name: Magma Phoenix's ability activated twice returns it once; the second finds it gone from the graveyard
+rules: [CR 400.7, CR 113.6m]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+    graveyard: [Magma Phoenix]
+steps:
+  - p1 activate: graveyard:p1:Magma Phoenix
+    ability: 1
+    pay: auto
+  - p1 activate: graveyard:p1:Magma Phoenix
+    ability: 1
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Magma Phoenix]
+  - all pass: once
+  - expect:
+      p1.hand: [Magma Phoenix]
+      p1.graveyard: []
+      stack: []

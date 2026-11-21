@@ -11,6 +11,7 @@ import { attachedHost, isAura } from "./attachment.ts";
 import { canEnchant } from "./can-enchant.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
+import { cantLose } from "./game-loss.ts";
 import { legendRuleGroups } from "./legend-rule.ts";
 import { loyaltyOf } from "./loyalty.ts";
 import { powerAndToughness } from "./power-toughness.ts";
@@ -30,6 +31,8 @@ export function stateBasedActions(
   for (const player of state.turnOrder) {
     const ps = state.players[player];
     if (ps === undefined) continue;
+    // A player who can't lose doesn't (CR 101.2): the action isn't listed, so the check doesn't repeat it forever.
+    if ((ps.life <= 0 || ps.attemptedDrawFromEmptyLibrary) && cantLose(state, player, cards)) continue;
     if (ps.life <= 0) actions.push({ kind: "zeroLife", player });
     if (ps.attemptedDrawFromEmptyLibrary) actions.push({ kind: "drewFromEmptyLibrary", player });
   }

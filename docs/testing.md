@@ -143,7 +143,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   runner then sends the action directly, without looking it up in `legalActions()`.
 - `p1 activate: <card>`: activate an ability of a permanent. A plain name means one the acting player controls (the
   first, in battlefield order, whose ability can be activated now; before an `expect error`, simply the first); a reference like `p2:Mountain` names exactly one, for
-  example to show p1 can't activate p2's land. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
+  example to show p1 can't activate p2's land; `graveyard:p1:Magma Phoenix` names a card in a graveyard, for an
+  ability that works from there. Add `ability: <n>`, counting from 1 in the order `abilitiesOf` lists
   them (printed abilities, then a basic land's mana ability), when the permanent has more than one. A mana ability
   resolves at once. Any other ability goes on the stack and takes `targets` and `pay` exactly as `cast` does (without
   `pay`, it stops at the payment decision). On the stack it's named after its source: `stack: [Furnace Whelp ability]`. For a mana ability that adds "one mana of any color", `color: U` names the color, part of

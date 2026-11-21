@@ -17,8 +17,9 @@ import type { AbilityRef } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 
 /**
- * What stops any activated ability of a permanent, mana ability or not: it works only on the battlefield (CR 113.6),
- * only its controller activates it (CR 602.2), nothing says its activated abilities can't be activated (Ice Cage,
+ * What stops any activated ability, mana ability or not: it works only on the battlefield (CR 113.6), or only from its
+ * owner's graveyard if it says so (CR 113.6m); only its controller activates it, or its owner where it has no controller
+ * (CR 602.2); nothing says its activated abilities can't be activated (Ice Cage,
  * CR 602.5), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
  * is paid later, while the ability is put on the stack (CR 601.2g–h, 602.2b). Null if nothing stops it.
  */
@@ -30,10 +31,15 @@ export function activationBasicsProblem(
   cards: CardDatabase,
 ): string | null {
   const obj = state.objects[id];
-  if (obj?.kind !== "card" || !state.zones.battlefield.includes(id)) return `${id} isn't a permanent`;
-  if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
+  if (obj?.kind !== "card") return `${id} isn't a card or token`;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null) return `${id} has no such ability`;
+  if (ability.def.zone === "graveyard") {
+    if (!(state.zones.players[player]?.graveyard ?? []).includes(id)) return `${id} isn't in ${player}'s graveyard`;
+  } else {
+    if (!state.zones.battlefield.includes(id)) return `${id} isn't a permanent`;
+    if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
+  }
   // "Its activated abilities can't be activated" (Ice Cage): all of them, mana abilities included (CR 602.5, 605.1a).
   if (layeredOf(state, id, cards)?.cantActivate === true) return `${id}'s activated abilities can't be activated`;
   for (const part of ability.def.cost) {
