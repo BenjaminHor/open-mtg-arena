@@ -24,6 +24,8 @@ the one place their effects become changes to the game.
 | `modifyPT` | "gets +N/+N until end of turn" | Creates a layer 7c continuous effect (CR 613.4c) on the objects `of` names, fixed now (CR 611.2c) |
 | `mustAttack` | "attacks you this turn if able" | Creates a continuous effect `declaration-rules.ts` reads as a requirement (CR 508.1d) on the targets still legal; targets only for now |
 | `gainKeywords` | "Target creature gains flying until end of turn", "creatures you control gain haste" | A layer 6 effect (CR 613.1f) on the objects `of` names, fixed now (CR 611.2c) |
+| `gainControl` | "Gain control of target creature until end of turn" | A layer 2 effect (CR 613.1b) on the permanents fixed now, to "you"; the control change makes them summoning sick (CR 302.6, D-098) |
+| `untap` | "Untap that creature" | Untaps the permanents `of` names (CR 701.26b) |
 | `cantBeBlocked` | "Target Merfolk creature can't be blocked this turn" | A continuous effect `canBlock` reads (CR 509.1b) on the targets still legal; targets only |
 | `cantBlock` | "can't block this turn" | Creates a continuous effect `canBlock` reads (CR 509.1b) on the targets still legal (CR 608.2b); targets only for now |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a); `noRegeneration`: "It can't be regenerated", so no shield is used (CR 701.19c) |
@@ -81,6 +83,7 @@ legal targets left means that part does nothing (CR 608.2b). Amounts are a numbe
 | `deal-damage.ts` | `dealDamage(state, damage[], cards)`, performing the pipeline's `dealDamage` event: every damage in the game goes through it (CR 120.4), its results included. Life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e); 0 damage is dropped before it gets here (CR 120.8); only players and creatures can be dealt damage (CR 120.1a). Emits `DAMAGE_DEALT` |
 | `life.ts` | `loseLife(state, player, amount)` (CR 119.3), emitting `LIFE_LOST`. Reaching 0 life is checked later, as a state-based action (CR 704.5a) |
 | `continuous-effect.ts` | `createContinuousEffect(state, effect)`: gives it a timestamp (CR 613.7b) and adds it to `GameState.effects`, emitting `EFFECT_CREATED`. The layer pass applies it (`rules/layers.ts`). `endUntilEndOfTurnEffects` ends them in cleanup (CR 514.2), emitting `EFFECT_ENDED`; "while its source remains on the battlefield" ones end in `moveCard` (D-095) |
+| `control-change.ts` | `recordControlChanges`: a permanent whose controller changes is summoning sick again (CR 302.6), as a control effect begins or ends (D-098) |
 | `becomes.ts` | `becomes`: Awakener Druid's "becomes a 4/5 green Treefolk creature", one effect in layers 4, 5 and 7b (D-095); none if a "for as long as" duration never starts (CR 611.2b). What a card "is" as it enters is `put`'s `is`, made by the move (CR 611.2e) |
 
 `dealDamage` and `loseLife` are called only by the event pipeline (`pipeline/`, D-056); `runEffect` proposes its
@@ -97,5 +100,5 @@ that use it.
 an effect names (one draw at a time; random picks, then one simultaneous discard; one simultaneous mill).
 
 Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts`,
-`library-effects.test.ts` and `damage-to-many.test.ts`, and the scenarios in
+`library-effects.test.ts`, `damage-to-many.test.ts`, `becomes.test.ts` and `control-change.test.ts`, and the scenarios in
 `test/scenarios/effects/` and `test/scenarios/cards/`.

@@ -1443,6 +1443,10 @@ every schema change and every change D-024 lists bumps it.
   Aura's "you control enchanted creature", M2-12) will need the database and the signature change then.
 - A control change makes the permanent summoning sick again (CR 302.6): `recordControlChanges` clears
   `controlledSinceTurnStart` when the effect begins and when it ends, only if the controller really changes (Act of
-  Treason on your own creature changes nothing). Any later way to change control must call it too.
+  Treason on your own creature changes nothing). That works while control changes only as a resolved effect begins or
+  ends; static control effects (M2-12) change it with whatever moves their permanent, so then the check moves to
+  `advance`, beside `removeNoncreaturesFromCombat`, comparing controllers before and after each piece of work, and
+  removing attackers and blockers whose controller changed (CR 506.4). Until then `gainControl`'s duration can't be
+  "for as long as" (the type refuses it), as that would end in `moveCard` with no check.
 - New ops `gainControl` and `untap`. Removal from combat on a control change (CR 506.4) can't happen in the pool (Act of
   Treason is a sorcery whose effect ends in cleanup), so it waits (later: CR 506.4 for control).

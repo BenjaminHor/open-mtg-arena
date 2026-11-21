@@ -18,8 +18,10 @@ it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies 
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Sorting within a sublayer by timestamp and dependency
 arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
 *Watch out:* layer 2 is built for resolved effects (M2-09c2, D-098): `controlFromEffects`, read by `controllerOf` and
-the pass alike; a static control effect (an Aura, M2-12) needs the card database in `controllerOf`, a signature change,
-and every control change must call `recordControlChanges` (CR 302.6) and, in combat, remove the creature (CR 506.4). Layers 4, 5 and 7b have resolved effects
+the pass alike; a static control effect (an Aura, M2-12) needs the card database in `controllerOf` (read the kept
+pass's `controller` then, so layer 2 lives in one place), and a central check in `advance` comparing controllers
+before and after each piece of work, for summoning sickness (CR 302.6) and removal from combat (CR 506.4), rather than
+`recordControlChanges` at each place an effect begins or ends. Layers 4, 5 and 7b have resolved effects
 (M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
 merged into that order (CR 613.7a). In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch
@@ -146,7 +148,7 @@ permanents such as morph and manifest (CR 708).
 single card record; tokens are objects without a deck card. *Watch out* (rules-judge, M1 exit review): many rules
 checks skip any object whose `kind` isn't `"card"` (`rules/state-based-actions.ts`, `rules/combat.ts`,
 `rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`, and since M2-04 `rules/targets.ts` and
-`rules/object-filter.ts`). If tokens or spell copies (CR 707.10) become a new object kind, a 0/0 token would quietly
+`rules/object-filter.ts`, and since M2-09c `effects/control-change.ts`: a stolen token wouldn't become summoning sick). If tokens or spell copies (CR 707.10) become a new object kind, a 0/0 token would quietly
 not die, token creatures couldn't attack, and a copy couldn't be targeted as a spell or match any filter. Make those
 checks handle every kind, or fail loudly.
 

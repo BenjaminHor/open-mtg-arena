@@ -38,6 +38,12 @@ const stolen = (state: GameState, bears: ObjectId): GameState => ({
   ],
 });
 
+function withControlledSinceTurnStart(state: GameState, id: ObjectId): GameState {
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
+  return { ...state, objects: { ...state.objects, [id]: { ...obj, controlledSinceTurnStart: true } } };
+}
+
 const sick = (state: GameState, id: ObjectId) => {
   const obj = state.objects[id];
   return obj?.kind === "card" && !obj.controlledSinceTurnStart;
@@ -56,10 +62,7 @@ describe("a control change (CR 302.6, 613.1b)", () => {
     const { state, bears } = bearsOfP2();
     // As if p1's turn had begun under the effect: p1 has controlled it since.
     const taken = stolen(state, bears);
-    const settled: GameState = {
-      ...taken,
-      objects: { ...taken.objects, [bears]: { ...(taken.objects[bears] as object), controlledSinceTurnStart: true } },
-    } as GameState;
+    const settled = withControlledSinceTurnStart(taken, bears);
     const back = endUntilEndOfTurnEffects(settled).state;
     expect(controllerOf(back, bears)).toBe("p2");
     expect(sick(back, bears)).toBe(true);
@@ -74,6 +77,8 @@ describe("a control change (CR 302.6, 613.1b)", () => {
     };
     expect(controllerOf(twice, bears)).toBe("p2");
     expect(controllerOf({ ...twice, effects: [...twice.effects].reverse() }, bears)).toBe("p1");
+    // The later one ending leaves the earlier one's player in control, not the owner.
+    expect(controllerOf({ ...twice, effects: [first] }, bears)).toBe("p1");
   });
 
   it("changes nothing when the permanent's controller stays the same", () => {

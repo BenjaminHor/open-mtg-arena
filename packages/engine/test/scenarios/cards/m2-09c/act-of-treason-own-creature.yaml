@@ -1,15 +1,19 @@
 name: Act of Treason can target its caster's own creature, untapping it and giving it haste (its ruling)
-rules: [CR 702.10b]
+rules: [CR 702.10b, CR 302.6]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [Mountain, Mountain, Mountain, { card: Grizzly Bears, sick: true, tapped: true }]
+    battlefield: [Mountain, Mountain, Mountain, { card: Grizzly Bears, tapped: true }]
     hand: [Act of Treason]
 steps:
   - p1 cast: Act of Treason
     targets: [p1:Grizzly Bears]
     pay: auto
   - all pass: once
+  # Its controller doesn't change, so it isn't summoning sick (CR 302.6).
+  - expect:
+      p1:Grizzly Bears.sick: false
+      p1:Grizzly Bears.tapped: false
   - all pass: until combat.declareAttackers
   - p1 attack: [Grizzly Bears]
   - all pass: until main2

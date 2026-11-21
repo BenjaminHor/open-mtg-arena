@@ -673,7 +673,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            stolen creature reveals from the thief's library (last known controller, D-096); anthems follow the new
            controller.
          - c2 built (D-098): Act of Treason; 7 scenarios, a unit test of the control change and summoning sickness,
-           golden pool-571. 194 cards. Bench ok (91.7 ms). Next: mutations, reviews, fuzz, PR.
+           golden pool-571. 194 cards. Bench ok (91.7 ms). Mutations 4/4 (one after a latest-wins unit test).
+           Rules and code reviews (no rules bug): 7 more scenarios (the thief's summoning sickness and the owner's next
+           turn, a stolen lord, mana creature and trigger, control through the end step, damage at reversion, Safe
+           Passage); `gainControl` can't last "for as long as" (it would end in `moveCard` unrecorded); control changes
+           should move to a central check in `advance` with static control effects (M2-12, D-098, future-rules);
+           docs, READMEs, citations. Fuzz 200 clean. Next: PR; then M2-09 is done.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

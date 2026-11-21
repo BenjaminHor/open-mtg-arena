@@ -418,7 +418,15 @@ export type Effect =
    * "Gain control of target creature until end of turn" (Act of Treason): a layer 2 effect giving the affected permanents
    * to the controller, "you" (CR 613.1b, 109.5).
    */
-  | { op: "gainControl"; of: EffectSubject; duration: Duration }
+  | {
+      op: "gainControl";
+      of: EffectSubject;
+      /**
+       * Not "for as long as": ending as its source leaves would need the control change recorded there (CR 302.6) and,
+       * in combat, the creature removed (CR 506.4). Allowed once a card needs it and that's built.
+       */
+      duration: "endOfTurn" | "endOfGame";
+    }
   /** "Untap that creature" (CR 701.26b). */
   | { op: "untap"; of: EffectSubject }
   /**
