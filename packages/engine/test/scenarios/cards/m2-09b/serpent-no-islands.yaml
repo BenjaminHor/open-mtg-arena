@@ -1,5 +1,5 @@
 name: Serpent of the Endless Sea in hand counts only its owner's Islands, not an opponent's, so with none it's 0/0
-rules: [CR 604.3, CR 208.2a]
+rules: [CR 604.3, CR 208.2a, CR 109.5]
 setup:
   turn: { active: p1, step: main1 }
   p1:

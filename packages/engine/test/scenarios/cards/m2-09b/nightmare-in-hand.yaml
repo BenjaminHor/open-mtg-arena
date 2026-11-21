@@ -1,5 +1,5 @@
 name: Nightmare's ability works in every zone, so in its owner's hand it counts the Swamps its owner controls
-rules: [CR 604.3, CR 208.2a]
+rules: [CR 604.3, CR 208.2a, CR 109.5]
 setup:
   turn: { active: p1, step: main1 }
   p1:

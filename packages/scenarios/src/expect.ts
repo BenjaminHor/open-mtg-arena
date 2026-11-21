@@ -3,6 +3,7 @@
 import {
   type CardDatabase,
   characteristics,
+  controllerOf,
   type GameEvent,
   type GameState,
   type ObjectId,
@@ -96,17 +97,18 @@ function check(
     if (life[2] === "life") return same(ps?.life);
     return same(Object.fromEntries(Object.entries(ps?.manaPool ?? {}).filter(([, n]) => n !== 0)));
   }
-  const property = /^((?:hand:|graveyard:)?p\d+:.+?)\.(\w+(?: contains)?)$/.exec(key);
+  const property = /^((?:hand:|graveyard:|stack:)?p\d+:.+?)\.(\w+(?: contains)?)$/.exec(key);
   if (property !== null) {
     const [, refText = "", prop = ""] = property;
     const coming = COMING_EXPECTATIONS[prop];
     if (coming !== undefined) return { error: `arrives in ${coming}` };
-    // `hand:p1:Nightmare` and `graveyard:p1:Nightmare` name a card in that zone, for what works there (CR 604.3).
-    const zoned = /^(hand|graveyard):(.+)$/.exec(refText);
+    // `hand:p1:Nightmare`, `graveyard:p1:Nightmare` and `stack:p1:Nightmare` (a spell p1 controls) name a card in that
+    // zone, for what works there (CR 604.3).
+    const zoned = /^(hand|graveyard|stack):(.+)$/.exec(refText);
     const ref = parseRef(zoned?.[2] ?? refText);
     if (ref === null || player(ref.player) === null)
       return { error: `"${refText}" isn't a reference like p2:Grizzly Bears or hand:p1:Nightmare` };
-    const inZone = zoned?.[1] as "hand" | "graveyard" | undefined;
+    const inZone = zoned?.[1] as "hand" | "graveyard" | "stack" | undefined;
     const id = inZone === undefined ? resolveRef(state, ref, cards) : cardInZone(state, inZone, ref, cards);
     const obj = id === null ? undefined : state.objects[id];
     if (obj?.kind !== "card")
@@ -185,14 +187,20 @@ function check(
 }
 
 /** Each wanted item matches a different item of `have` (a match is used only once). */
-/** The card a reference names in a player's hand or graveyard (`#2`: the second with that name, in zone order). */
+/**
+ * The card a reference names in a player's hand or graveyard, or a spell they control on the stack (`#2`: the second
+ * with that name, in zone order, the stack's from the bottom).
+ */
 function cardInZone(
   state: GameState,
-  zone: "hand" | "graveyard",
+  zone: "hand" | "graveyard" | "stack",
   ref: PermanentRef,
   cards: CardDatabase,
 ): ObjectId | null {
-  const ids = state.zones.players[ref.player]?.[zone] ?? [];
+  const ids =
+    zone === "stack"
+      ? state.zones.stack.filter((id) => controllerOf(state, id) === ref.player)
+      : (state.zones.players[ref.player]?.[zone] ?? []);
   return ids.filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
 }
 

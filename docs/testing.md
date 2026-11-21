@@ -174,7 +174,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   `pending: null` for nothing pending.
 - `p1:Grizzly Bears.tapped`, `.damage`, `.sick`; `.power` and `.toughness` as computed by `characteristics()` (`null`
   for a noncreature permanent); `.abilities contains: [reach]` checks its keyword abilities (CR 702), by their lowercase
-  names. `hand:p1:Nightmare.power` and `graveyard:p1:Nightmare.power` ask about a card in that zone (`#2` for the
+  names. `hand:p1:Nightmare.power`, `graveyard:p1:Nightmare.power` and `stack:p1:Nightmare.power` (a spell p1 controls) ask
+  about a card in that zone (`#2` for the
   second with that name), for what works outside the battlefield (CR 604.3).
 - `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
   the last step that changed the game. Nested maps match on their keys given too: `{ type: EFFECT_CREATED, effect:

@@ -1,0 +1,15 @@
+name: Nightmare as a spell on the stack counts the Swamps its controller controls
+rules: [CR 604.3, CR 109.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, Swamp, Swamp, Swamp, Swamp, Swamp]
+    hand: [Nightmare]
+  p2:
+    battlefield: [Swamp]
+steps:
+  - p1 cast: Nightmare
+    pay: auto
+  - expect:
+      stack:p1:Nightmare.power: 6
+      stack:p1:Nightmare.toughness: 6
