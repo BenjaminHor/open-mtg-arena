@@ -14,5 +14,6 @@ steps:
   - all pass: once
   - expect:
       p1.battlefield contains: [Siege-Gang Commander, Goblin Token, Goblin Token, Goblin Token]
+      p1.battlefield count: 9
       p1:Goblin Token#3.colors: [R]
       p1:Goblin Token#3.power: 1

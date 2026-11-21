@@ -334,8 +334,8 @@ payment context that isn't `Casting`.
 **Costs paid while something waits (CR 616.1, 118.11).** `payCost` performs the sacrifices with `happen` at once.
 When a replacement effect needs a choice (M2-08), the sacrifice must be able to wait, and the cost still counts as paid
 even if the sacrifice is replaced (CR 118.11): make the payment and "becomes cast or activated" (CR 601.2i) work items
-then. A spell or ability that targets a creature and sacrifices one (Siege-Gang Commander, M2-11) needs a scenario for
-sacrificing its own target (CR 601.5; a unit test covers it now). The sacrifice is chosen before the mana abilities'
+then. A spell or ability that targets a creature and sacrifices one: Siege-Gang Commander sacrificing its own target does
+nothing (CR 601.5, 608.2b; `cards/m2-11b/siege-gang-sacrifices-its-target.yaml`). The sacrifice is chosen before the mana abilities'
 window (CR 601.2g); a mana ability that sacrifices (none in the pool) could take a creature already chosen, leaving
 only cancel: then choose sacrifices after the window, or let the player choose again. "Divided as you choose" with an
 amount of X must cap the number of targets at X (CR 601.2d), and casting without paying the mana cost forces X = 0

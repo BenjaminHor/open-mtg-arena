@@ -1,5 +1,5 @@
 name: Cemetery Reaper can't target a card in a graveyard that isn't a creature card
-rules: [CR 115.2]
+rules: [CR 109.2a, CR 601.2c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

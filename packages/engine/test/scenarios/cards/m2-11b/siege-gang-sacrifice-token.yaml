@@ -14,8 +14,12 @@ steps:
     sacrifice: p1:Goblin Token#1
     targets: [p2]
     pay: auto
+  # Sacrificed as a cost (CR 602.2b), so it's gone before the ability resolves.
+  - expect:
+      events contains: [{ type: PERMANENT_SACRIFICED }, { type: TOKEN_CEASED_TO_EXIST, from: { zone: graveyard, player: p1 } }]
   - all pass: once
   - expect:
       p2.life: 18
       p1.graveyard: []
       p1.battlefield contains: [Siege-Gang Commander, Goblin Token, Goblin Token]
+      p1.battlefield count: 10

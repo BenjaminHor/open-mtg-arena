@@ -12,6 +12,7 @@ steps:
   - all pass: once
   - expect:
       p1.battlefield contains: [Captain of the Watch, Soldier Token, Soldier Token, Soldier Token]
+      p1.battlefield count: 10
       p1:Soldier Token#2.power: 2
       p1:Soldier Token#2.toughness: 2
       p1:Soldier Token#2.colors: [W]

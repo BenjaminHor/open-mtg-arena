@@ -1,5 +1,5 @@
 name: Siege-Gang Commander's ability can't sacrifice a creature that isn't a Goblin
-rules: [CR 601.2h, CR 602.2b]
+rules: [CR 601.2h, CR 602.2b, CR 109.2, CR 701.21a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

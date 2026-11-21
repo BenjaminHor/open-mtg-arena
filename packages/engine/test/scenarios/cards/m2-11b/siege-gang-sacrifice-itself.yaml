@@ -4,6 +4,8 @@ setup:
   turn: { active: p1, step: main1 }
   p1:
     battlefield: [Siege-Gang Commander, Mountain, Mountain]
+  p2:
+    battlefield: [Guardian Seraph]
 steps:
   - p1 activate: Siege-Gang Commander
     sacrifice: Siege-Gang Commander
@@ -11,5 +13,6 @@ steps:
     pay: auto
   - all pass: once
   - expect:
-      p2.life: 18
+      # Guardian Seraph prevents 1 of it: the source is an opponent's as it last existed (CR 615.10).
+      p2.life: 19
       p1.graveyard: [Siege-Gang Commander]

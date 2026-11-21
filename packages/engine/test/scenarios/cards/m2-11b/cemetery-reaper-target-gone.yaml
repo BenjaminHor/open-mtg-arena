@@ -18,5 +18,6 @@ steps:
   - expect:
       exile: [Grizzly Bears]
       p1.battlefield contains: [Zombie Token]
+      p1.battlefield count: 9
       p1:Zombie Token.power: 4
       events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]
