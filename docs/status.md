@@ -529,7 +529,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Merfolk Sovereign, Goblin Chieftain, Rhox Pikemaster, Levitation, Coat of Arms, Relentless Rats, Glorious
          Charge, Overrun, Trumpet Blast, Kindled Fury, Jump, Burst of Speed); 16 scenarios in
          `test/scenarios/cards/m2-09a/`; the Anthems row of the interaction matrix; golden pool-329 and pool-685. 186
-         cards. Next: mutations, fuzz, reviews, PR.
+         cards. Mutations 10/10 (two scenarios strengthened), fuzz 200 clean. Code review (no wrong results) found, to
+         fix with the rules review's findings: the cache key misses the rule modifiers (reproduced: a pass kept across
+         a changed modifier); a bad anthem filter throws inside the pass (definition check, and `creaturesGet` should
+         require creatures itself); `fitsOnBoard` duplicates `matchesFilter` (extract a pure core); `controllerOf`
+         and `Layered.controller` are two sources (a fuzz check now; layer 2 and the signature change in 09c, as
+         Mind Control in M2-12 needs the card database); the `alone` cache is outside the safety check (replace it);
+         no tests of the memo itself; benchmarks time only cache hits (add a fresh-pass measure); stale reader
+         comments and docs (future-rules, architecture.md, rules README); `inspect` doesn't say where a granted
+         keyword came from; scenario gaps (Coat of Arms across players, Levitation not on p2's creatures, effects
+         ending at cleanup, Archdruid and auto-pay, Anthems with protection and shroud).
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).
