@@ -16,4 +16,7 @@ steps:
   - expect:
       p1.graveyard: [Shock]
       p1.battlefield: [Ant Queen, Forest, Forest, Mountain]
-      events contains: [{ type: ZONE_CHANGED }, { type: TOKEN_CEASED_TO_EXIST }]
+      # It really died, battlefield to graveyard (CR 700.4), before it ceased to exist there.
+      events contains:
+        - { type: ZONE_CHANGED, from: { zone: battlefield }, to: { zone: graveyard, player: p1 } }
+        - { type: TOKEN_CEASED_TO_EXIST, from: { zone: graveyard, player: p1 } }

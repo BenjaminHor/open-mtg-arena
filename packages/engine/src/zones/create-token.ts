@@ -15,6 +15,7 @@ import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
  */
 export function createToken(state: GameState, token: CardData, player: PlayerId): Progress {
   const allocated = newObjectId(state);
+  // A timestamp as it enters (CR 613.7d); tokens made together get theirs in order (later: CR 613.7m).
   const stamped = newTimestamp(allocated.state);
   // A token has no physical card, but the UI follows objects by card id (D-054), so it gets one of its own.
   const minted = newCardId(stamped.state);

@@ -15,4 +15,5 @@ steps:
   - all pass: once
   - expect:
       p1.hand: []
+      events contains: [{ type: TOKEN_CEASED_TO_EXIST, from: { zone: hand, player: p1 } }]
       p1.battlefield: [Ant Queen, Forest, Forest, Island]

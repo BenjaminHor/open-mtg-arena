@@ -149,7 +149,14 @@ single card record; tokens are objects without a deck card. *Built (M2-11a, D-10
 carrying their own `CardData` (read through `cardDataOf`), so the `kind` checks below hold for them; "card" filters ask
 `token === undefined` (CR 111.6). *Still to come:* a token's own activated or triggered abilities (the ability object
 names its source only by `sourceOracleId`); a token that left the battlefield staying put (CR 111.8); a token in a hidden
-zone shown by identity (D-062 shows only an oracle id); copies of permanents (CR 707). *Watch out* (rules-judge, M1 exit review): many rules
+zone shown by identity (D-062 shows only an oracle id); copies of permanents (CR 707). Replacements on entering from
+other permanents' text ("creatures enter tapped", CR 614.12) and "if you would create" (CR 614.1) must watch the
+`createToken` event as well as moves (`moveOf` and `affectedObject` give null for it today). Two different tokens may
+share an oracle id (`token:Soldier Token`), so nothing may treat equal oracle ids as the same card (D-077's identical
+triggers, name comparisons). Still to come too: a token that can't enter isn't created (CR 111.5); a token created by
+a card's name uses that card's Oracle text (CR 111.11); a copy of a permanent spell becomes a token without being
+"created" (CR 111.13), so that path must not emit `TOKEN_CREATED`; other "card" filters (in hands, libraries, a count
+of creature cards in a graveyard) asking `token === undefined` once a token can be there when they're read. *Watch out* (rules-judge, M1 exit review): many rules
 checks skip any object whose `kind` isn't `"card"` (`rules/state-based-actions.ts`, `rules/combat.ts`,
 `rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`, and since M2-04 `rules/targets.ts` and
 `rules/object-filter.ts`, and since M2-09c `effects/control-change.ts`: a stolen token wouldn't become summoning sick). If tokens or spell copies (CR 707.10) become a new object kind, a 0/0 token would quietly

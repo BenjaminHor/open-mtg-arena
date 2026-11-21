@@ -66,6 +66,17 @@ describe("a token's characteristics are what the effect defines (CR 111.3, 111.4
     expect(controllerOf(state, id)).toBe("p2");
   });
 
+  it("enters as a new permanent does: untapped, no damage or counters, summoning sick (CR 110.5d, 302.6)", () => {
+    const { state, id } = withToken();
+    const obj = state.objects[id];
+    expect(obj?.kind === "card" && [obj.tapped, obj.damage, obj.counters, obj.controlledSinceTurnStart]).toStrictEqual([
+      false,
+      0,
+      {},
+      false,
+    ]);
+  });
+
   it("keeps them through a JSON round trip, as plain data", () => {
     const { state, id } = withToken();
     const copy = JSON.parse(JSON.stringify(state)) as GameState;
