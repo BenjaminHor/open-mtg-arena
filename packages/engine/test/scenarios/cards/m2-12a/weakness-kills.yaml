@@ -1,0 +1,18 @@
+name: Weakness on a creature with toughness 1 kills it (toughness 0), and then Weakness goes too
+rules: [CR 704.5f, CR 704.5m, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp]
+    hand: [Weakness]
+  p2:
+    battlefield: [Raging Goblin]
+steps:
+  - p1 cast: Weakness
+    targets: [p2:Raging Goblin]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Raging Goblin]
+      p1.graveyard: [Weakness]
+      p1.battlefield: [Swamp]

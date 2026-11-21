@@ -115,6 +115,11 @@ export const furnaceWhelp: CardDef = {
   amount: "X" }`; "if damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters
   from it" is `{ kind: "preventDamageToSelfRemovingCounters", counter: "+1/+1" }`; "whenever a +1/+1 counter is removed
   from this creature" is the trigger `{ kind: "selfCountersRemoved", counter: "+1/+1" }`, once per counter (D-100).
+- "Enchant creature" is `enchant: { types: ["creature"] }`, "Enchant permanent" `enchant: {}` (CR 702.5a): the Aura
+  spell's target (CR 303.4a), and what it may stay attached to (CR 704.5m). "Enchanted creature gets +1/+2" is the
+  static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
+  for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
+  is `{ kind: "attachedCantAttackOrBlock" }` (D-102).
 - "Create a 1/1 green Insect creature token" is `{ op: "createTokens", token: { colors: ["G"], types: ["creature"],
   subtypes: ["Insect"], power: 1, toughness: 1 }, amount: 1 }`; "for each Forest you control" is `amount: { count: {
   subtypes: ["Forest"], controller: "you" } }`. `name` only when the text names the token (CR 111.4); `keywords` for

@@ -1,0 +1,12 @@
+name: Holy Strength can't target a land
+rules: [CR 303.4a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, Plains]
+    hand: [Holy Strength]
+steps:
+  - p1 cast: Holy Strength
+    targets: [p1:Plains]
+    pay: auto
+  - expect error: illegalAction

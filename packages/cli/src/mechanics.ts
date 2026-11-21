@@ -222,6 +222,10 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   cantAttackUnlessDefenderControls: "combat",
   // As its permanent resolves, like anthems: it does something only at a cleanup with too many cards.
   noMaximumHandSize: "enters",
+  // As its Aura resolves, like anthems. Pacifism's restriction is on the Aura, which never attacks or blocks, so
+  // crediting it in combat would never count; its Aura resolving is when it starts to apply.
+  attachedGets: "enters",
+  attachedCantAttackOrBlock: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

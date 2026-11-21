@@ -86,7 +86,15 @@ function leavingObjects(event: SingleEvent): ObjectId[] {
 
 function lastKnownOf(c: Characteristics): LastKnownCharacteristics {
   const { controller, power, toughness } = c;
-  return { controller, types: [...c.types], subtypes: [...c.subtypes], colors: [...c.colors], power, toughness };
+  return {
+    controller,
+    types: [...c.types],
+    subtypes: [...c.subtypes],
+    colors: [...c.colors],
+    power,
+    toughness,
+    keywords: [...c.keywords],
+  };
 }
 
 /**

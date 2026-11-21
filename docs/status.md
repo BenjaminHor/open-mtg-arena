@@ -715,6 +715,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12a built (2026-11-21, D-102): `attachedTo` and its one reader, `enchant` as the Aura spell's target, entering
+         attached, `attachedGets` / `attachedCantAttackOrBlock`, CR 704.5m (protection too), setup `attachedTo`, the
+         invariant; Holy Strength, Unholy Strength, Weakness, Oakenform, Lifelink, Armored Ascension, Indestructibility,
+         Pacifism (210 cards); 15 scenarios in `cards/m2-12a/` (each ruling, shroud, protection, an animated Forest), an
+         Auras column in the matrix, two golden games. Rules review: a gone source's lifelink gave no life (CR 702.15c;
+         Siege-Gang with Lifelink sacrificed for its own ability): last known information keeps keywords now; 13 more
+         scenarios from its probes; Equipment citations marked later. Code review: Pacifism's check searched the
+         battlefield per attacker and blocker and the Aura check was a second loop over it (bench over): now marked by
+         the pass and folded into the one loop; `isAura`; only an Aura or Equipment can start attached (CR 303.4h); four
+         more scenarios (the chosen target, pump, anthem, Nightmare); docs. Next: fuzz, PR.
        - M2-12 plan (2026-11-21, with the advisor's review), four PRs. Auras and Equipment (CR 303.4, 301.5, 702.5,
          702.6), 16 cards.
          - Model: an attached permanent records what it's attached to, `CardObject.attachedTo?: ObjectId` (left out
@@ -754,7 +764,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          artifact Gargoyle), 202 cards, 13 scenarios in `cards/m2-11b/` with Goblin Chieftain, Veteran Armorsmith and two
          Reapers; no engine change; the golden games already cover their mechanics. Rules review: no bug; counts and
          events tightened, four more scenarios (sacrificing its own target, the Reaper killed in response or summoning
-         sick, the Castle tapped for {C} mid-payment), citations fixed. Fuzz 200 clean.
+         sick, the Castle tapped for {C} mid-payment), citations fixed. Fuzz 200 clean. Merged as #59: **M2-11 done** (202 cards).
        - M2-11a built (2026-11-21, D-101): `cardDataOf` everywhere (a source scan forbids `cards[...]`), tokens as card
          objects carrying their data, `createToken` / `ceaseToExist` events, CR 704.5d, `createTokens`, Ant Queen and
          Howl of the Night Pack (198 cards), 9 scenarios in `cards/m2-11/` (enters triggers, dies, bounced, stolen,

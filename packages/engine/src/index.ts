@@ -34,6 +34,7 @@ export { allPayments, type ManaPayment, manaValue, payFromPool } from "./mana/pa
 export type { RngState } from "./rng/xoshiro128.ts";
 export { type ActivatedAbility, abilitiesOf, isManaAbility, sameAbilityRef } from "./rules/abilities.ts";
 export { isFixedAmount } from "./rules/amount.ts";
+export { attachedHost, enchantFilterOf, isAura } from "./rules/attachment.ts";
 export { type Characteristics, characteristics } from "./rules/characteristics.ts";
 export { isAttacking, isBlocking } from "./rules/combat.ts";
 export { controllerOf } from "./rules/controller.ts";

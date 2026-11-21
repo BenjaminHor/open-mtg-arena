@@ -1,0 +1,22 @@
+name: Two Auras on one creature both apply; Auras cast on an opponent's creature stay under their caster's control
+rules: [CR 613.4c, CR 608.3c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, Swamp, Plains]
+    hand: [Weakness, Holy Strength]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Weakness
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - p1 cast: Holy Strength
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Hill Giant.power: 2
+      p2:Hill Giant.toughness: 4
+      p1.battlefield contains: [Weakness, Holy Strength]

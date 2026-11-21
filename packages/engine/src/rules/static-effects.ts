@@ -7,6 +7,7 @@ import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, Keyword, ObjectFilter, StaticAbilityDef } from "../cards/types.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
+import { attachedHostIn } from "./attachment.ts";
 import { fits } from "./filter-fit.ts";
 import type { Layered, LayerInputs } from "./layers.ts";
 
@@ -52,11 +53,37 @@ export function staticKeywordGrants(
   // By source's place in `sources`: the set each effect found here, if it started in this layer.
   const sets: (ObjectId[] | undefined)[] = sources.map(() => undefined);
   for (const [i, s] of sources.entries()) {
-    if (s.def.kind !== "creaturesGet" || (s.def.keywords ?? []).length === 0) continue;
-    const affected = creaturesGetSet(input, board, s.source, s.def);
-    sets[i] = affected;
-    const keywords = s.def.keywords ?? [];
-    for (const id of affected) grants[id] = [...(grants[id] ?? []), { source: s.source, keywords }];
+    switch (s.def.kind) {
+      case "attachedGets": {
+        // "Enchanted creature has flying" (CR 303.4m): the permanent it's attached to, whatever that is now.
+        const host = attachedHostIn(input.objects, input.battlefield, s.source);
+        const keywords = s.def.keywords ?? [];
+        if (host !== null && keywords.length > 0)
+          grants[host] = [...(grants[host] ?? []), { source: s.source, keywords }];
+        break;
+      }
+      case "creaturesGet": {
+        const keywords = s.def.keywords ?? [];
+        if (keywords.length === 0) break;
+        const affected = creaturesGetSet(input, board, s.source, s.def);
+        sets[i] = affected;
+        for (const id of affected) grants[id] = [...(grants[id] ?? []), { source: s.source, keywords }];
+        break;
+      }
+      case "attachedCantAttackOrBlock":
+      case "plusPerSharedCreatureType":
+      case "plusPerOtherSameName":
+      case "cantBeBlocked":
+      case "canBlockAnyNumber":
+      case "cantAttackOrBlockAlone":
+      case "attacksEachCombat":
+      case "mustBeBlockedByAllAble":
+      case "cantBeCountered":
+      case "powerToughnessEachEqual":
+      case "cantAttackUnlessDefenderControls":
+      case "noMaximumHandSize":
+        break;
+    }
   }
   return { grants, sets };
 }
@@ -93,6 +120,17 @@ export function staticPTChanges(
         for (const id of affected) add(id, { source: s.source, power, toughness });
         break;
       }
+      case "attachedGets": {
+        // "Enchanted creature gets +1/+2" (CR 303.4m), and "+1/+1 for each Plains you control" counted now (CR 611.3a).
+        const host = attachedHostIn(input.objects, input.battlefield, s.source);
+        const you = board[s.source]?.controller;
+        if (host === null || you === undefined || !creatures.includes(host)) break;
+        const times = s.def.perCount === undefined ? 1 : countOnBoard(input, board, s.def.perCount, you);
+        const { power, toughness } = s.def;
+        if (times * power !== 0 || times * toughness !== 0)
+          add(host, { source: s.source, power: times * power, toughness: times * toughness });
+        break;
+      }
       case "plusPerSharedCreatureType":
         // Each creature, whoever controls it (CR 109.2), counting the others that share a creature type with it. The
         // subtypes are one list today; once a creature can also have land types (an animated Forest), compare only
@@ -121,6 +159,7 @@ export function staticPTChanges(
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
+      case "attachedCantAttackOrBlock":
         break;
     }
   }

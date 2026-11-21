@@ -1,5 +1,6 @@
-// Protection (CR 702.16): what a permanent's "protection from [quality]" stops (targeting, blocking, damage; being
-// enchanted or equipped comes with Auras and Equipment, later: CR 702.16c-d), and whether a source has the quality.
+// Protection (CR 702.16): what a permanent's "protection from [quality]" stops (targeting, blocking, damage, being
+// enchanted, CR 702.16c, read by the Auras' state-based action; being equipped, later: CR 702.16d), and whether a source
+// has the quality.
 
 import type { CardDatabase, Color, ProtectionQuality } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";

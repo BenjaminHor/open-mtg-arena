@@ -7,8 +7,12 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { keywordsOf } from "./abilities.ts";
+import { attachedHost, enchantFilterOf, isAura } from "./attachment.ts";
 import { cardTypesOf } from "./card-types.ts";
+import { controllerOf } from "./controller.ts";
+import { matchesFilter } from "./object-filter.ts";
 import { powerAndToughness } from "./power-toughness.ts";
+import { isProtectedFrom } from "./protection.ts";
 
 /**
  * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then permanents
@@ -32,6 +36,7 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
   }
   for (const object of state.zones.battlefield) {
     const obj = state.objects[object];
+    if (isAuraIllegallyAttached(state, object, cards)) actions.push({ kind: "auraIllegallyAttached", object });
     // Any permanent with both kinds, creature or not (CR 704.5q).
     const count = obj?.kind === "card" ? Math.min(obj.counters["+1/+1"] ?? 0, obj.counters["-1/-1"] ?? 0) : 0;
     if (count > 0) actions.push({ kind: "plusAndMinusCounters", object, count });
@@ -48,4 +53,19 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     else if (state.dealtDeathtouchDamage.includes(object)) actions.push({ kind: "deathtouchDamage", object });
   }
   return actions;
+}
+
+/**
+ * An Aura attached to nothing, to something its enchant ability doesn't allow, or to something with protection from it
+ * (CR 704.5m, 303.4c, 702.16c); or to itself, which the setup refuses and nothing in the pool can cause (an Aura that's
+ * also a creature, later: CR 303.4d). The enchant filter is read with the Aura's controller as "you".
+ */
+function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDatabase): boolean {
+  const enchant = enchantFilterOf(state, aura, cards);
+  if (enchant === null || !isAura(state, aura, cards)) return false;
+  const host = attachedHost(state, aura);
+  if (host === null || host === aura) return true;
+  return (
+    !matchesFilter(state, host, enchant, controllerOf(state, aura), cards) || isProtectedFrom(state, host, aura, cards)
+  );
 }

@@ -10,8 +10,11 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   afresh, for the fuzzer's check that the kept pass is right. Every reader below reads it.
 - `layer-seven.ts`: layer 7 of the pass, power and toughness (CR 613.4): the base from 7a (characteristic-defining
   abilities), 7b (effects that set it, D-095) or the printed values, then 7c adds.
-- `static-effects.ts`: static abilities that change other objects (anthems, D-093): their sets (CR 611.3a), the
-  keywords they grant in layer 6 and what they add in 7c.
+- `static-effects.ts`: static abilities that change other objects (anthems, D-093, and "enchanted creature gets",
+  D-102): their sets (CR 611.3a), the keywords they grant in layer 6 and what they add in 7c. The pass also marks a
+  creature Pacifism enchants (`Layered.cantAttackOrBlock`).
+- `attachment.ts`: `attachedHost` (and `attachedHostIn`, for the pass), the one reader of what an Aura is attached to,
+  null once that object has left (CR 303.4b, 400.7); `attachmentsOf`; `enchantFilterOf` and `isAura` (CR 702.5a, 303.4).
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
   `matchesFilter` and the pass.
 - `control-effects.ts`: `controlFromEffects`, layer 2 from resolved effects (Act of Treason, CR 613.1b, D-098), read
@@ -29,7 +32,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `colors.ts`: `colorsOf`, an object's colors (layer 5; printed for now).
 - `combat.ts`: `canAttack` (with defender, CR 702.3b), `canAttackPlayer` ("can't attack unless defending player
   controls ...", CR 508.1c), `canBlock` (flying and reach, landwalk, "can't be blocked (except
-  by ...)", "can't block": CR 702.9b, 702.17b, 702.14c, 509.1b), `canBlockAnyNumber`, `attacksInCombat`,
+  by ...)", "can't block": CR 702.9b, 702.17b, 702.14c, 509.1b; Pacifism's "can't attack or block", CR 508.1c),
+  `canBlockAnyNumber`, `attacksInCombat`,
   `blocksInCombat`, `isBlocked` (CR 506.4, 508.1a, 509.1a, 509.1h), `isAttacking` and `isBlocking` (CR 508.1k,
   509.1g: a blocker stays one after its attacker is gone).
 - `costs.ts`: `costOf` (what to pay to put a spell or ability on the stack), from `totalCost` (a spell, CR 601.2f: X as
@@ -39,7 +43,7 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (`{ count }`) is worked out only as an effect applies, by `amountNow` in `effects/subjects.ts` (D-067).
 - `casting-prohibitions.ts`: `cantCastSpells`, whether an effect forbids a player to cast spells (Silence, CR 601.3).
 - `hand-size.ts`: `maximumHandSize`, seven unless a static says otherwise (Spellbook, CR 402.2, D-097).
-- `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/f/g).
+- `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/d/f/g/h/m/q).
 - `damage-recipients.ts`: `canBeDealtDamage`, who can be dealt damage now (CR 120.1a).
 - `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1).
 - `protection.ts`: `protectionsOf`, `isProtectedFrom`: protection (CR 702.16) and whether a source has the quality,

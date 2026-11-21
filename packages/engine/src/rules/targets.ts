@@ -7,6 +7,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 import { keywordsOf, stackAbilityText } from "./abilities.ts";
+import { enchantFilterOf, isAura } from "./attachment.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
@@ -199,8 +200,13 @@ export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabas
   const obj = state.objects[id];
   if (obj === undefined) return [];
   switch (obj.kind) {
-    case "card":
+    case "card": {
+      // An Aura spell targets what it can enchant (CR 303.4a, 702.5a): a permanent, as no Aura in the pool enchants a
+      // player (later: CR 702.5d).
+      const enchant = isAura(state, id, cards) ? enchantFilterOf(state, id, cards) : null;
+      if (enchant !== null) return [{ kind: "permanent", filter: enchant }];
       return cardDataOf(obj, cards)?.def.spell?.targets ?? [];
+    }
     case "ability":
       return stackAbilityText(state, id, cards).targets;
   }

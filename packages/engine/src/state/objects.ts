@@ -58,6 +58,11 @@ export type CardObject = {
    * for a card, whose come from the `CardDatabase`. Read through `cardDataOf`, never `cards[oracleId]`.
    */
   token?: CardData;
+  /**
+   * The object an Aura or Equipment on the battlefield is attached to (CR 303.4b; Equipment, later: CR 301.5a). Left out when it's attached to
+   * nothing. It goes stale when that object leaves (a new object, CR 400.7): read it through `attachedHost`.
+   */
+  attachedTo?: ObjectId;
 };
 
 /** An activated or triggered ability on the stack (CR 113.1c, 405.1). It isn't a card and has no `cardId`. */

@@ -34,6 +34,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
   const cardIds = [...numbered.cardIds];
   const standard = setup.opening.kind === "standard";
   for (const player of setup.players) state = createCards(state, player, standard, cardIds);
+  state = attachPermanents(state, setup);
 
   const opening = setup.opening;
   switch (opening.kind) {
@@ -195,4 +196,30 @@ function nextCardId(cardIds: CardId[]): CardId {
   const id = cardIds.shift();
   if (id === undefined) throw new Error("more cards than card ids: shuffledCardIds counts every setup zone");
   return id;
+}
+
+/**
+ * Attaches the permanents the setup says start attached (CR 303.4b; Equipment, later: CR 301.5a). Each player's permanents were created in
+ * their setup order, so the index into a player's `battlefield` names one of them. Whether the attachment is legal is the
+ * state-based actions' to judge (CR 704.5m), as for any other permanent.
+ */
+function attachPermanents(state: GameState, setup: GameSetup): GameState {
+  const owned = (player: PlayerId) =>
+    state.zones.battlefield.filter((id) => {
+      const obj = state.objects[id];
+      return obj?.kind === "card" && obj.owner === player;
+    });
+  const objects = { ...state.objects };
+  for (const player of setup.players) {
+    const mine = owned(player.id);
+    for (const [i, permanent] of player.battlefield.entries()) {
+      if (permanent.attachedTo === undefined) continue;
+      const id = mine[i];
+      const host = owned(permanent.attachedTo.player)[permanent.attachedTo.index];
+      const obj = id === undefined ? undefined : objects[id];
+      if (obj?.kind !== "card" || host === undefined) throw new Error(`${player.id}: no permanent to attach to`);
+      objects[obj.id] = { ...obj, attachedTo: host };
+    }
+  }
+  return { ...state, objects };
 }
