@@ -581,7 +581,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            clean. Rules and code reviews (no wrong results): 5 more scenarios (stack, opponent's hand, Coat of Arms,
            damage as it shrinks, Siren when able; 69e40a2); `Layered.base` records 7a's base so `inspect` doesn't
            subtract (7b will set it); both printed P/T must be "*"; stale comments, the 508.1c message, a tripwire on
-           `ObjectFilter`, docs (future-rules, card-scripting, rules README). Next: PR.
+           `ObjectFilter`, docs (future-rules, card-scripting, rules README). Bench baseline rewritten: the busy-board
+           measures take their states from the golden games, which now include pool-231, so `legalActions.busyBoard`
+           measures different boards (+12-23%); a random game (fixed decks) is about 3-7% slower, `layerSeven`
+           recording the base (main 80 ms, this branch 86 ms standalone, under the 100 ms budget). Next: PR.
          b2: Awakener Druid, Rise from the Grave, Stone Giant; subtypes by kind; last known characteristics snapshot.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
