@@ -5,7 +5,7 @@ export { COMING_EXPECTATIONS } from "./expect.ts";
 export { scenarioFromGame } from "./export.ts";
 export { COMING_STEP_WORDS, parseScenario, parseStepText, type Scenario, type ScenarioStep } from "./format.ts";
 export { invariantProblems, plainJsonProblems } from "./invariants.ts";
-export { nameOf, parseRef, refOf, resolveRef, STEP_NAMES, scenarioStep } from "./names.ts";
+export { graveyardRef, nameOf, parseRef, refOf, resolveRef, STEP_NAMES, scenarioStep } from "./names.ts";
 export { runScenario, type ScenarioResult } from "./run.ts";
 export { buildSetup } from "./setup.ts";
 export { type ActionStep, takeStep } from "./steps.ts";

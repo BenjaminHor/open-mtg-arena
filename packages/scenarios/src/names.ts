@@ -89,3 +89,12 @@ export function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): str
     return `${cardDataByOracleId(obj.sourceOracleId, cards)?.printed.name ?? obj.sourceOracleId} ability`;
   return cardDataOf(obj, cards)?.printed.name ?? obj.oracleId;
 }
+
+/** A card in a graveyard, named as `targets:` names it (`graveyard:p1:Grizzly Bears`, `#2` counting from the bottom). */
+export function graveyardRef(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
+  const player = state.turnOrder.find((p) => state.zones.players[p]?.graveyard.includes(id));
+  if (player === undefined) return null;
+  const name = nameOf(state, id, cards);
+  const same = (state.zones.players[player]?.graveyard ?? []).filter((x) => nameOf(state, x, cards) === name);
+  return same.length > 1 ? `graveyard:${player}:${name}#${same.indexOf(id) + 1}` : `graveyard:${player}:${name}`;
+}

@@ -48,6 +48,7 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "playerGainsLife":
       return true;
     case "selfEnters":
+    case "selfDies":
     case "anotherEnters":
     case "selfAttacks":
     case "beginningOfStep":
@@ -76,6 +77,9 @@ function suppliesObject(when: TriggerCondition): boolean {
     case "selfBlocksOrBlocked":
     case "selfBlocks":
       return true;
+    // "It" is the source itself ("self"), not the event's object.
+    case "selfDies":
+      return false;
     case "selfBecomesTarget":
     case "attachedBecomesTarget":
     case "beginningOfStep":
@@ -98,6 +102,7 @@ function namesThatMuch(effects: readonly Effect[]): boolean {
 function suppliesPlayer(when: TriggerCondition): boolean {
   switch (when.kind) {
     case "selfEnters":
+    case "selfDies":
     case "anotherEnters":
     case "selfAttacks":
     case "selfBlocksOrBlocked":

@@ -1,0 +1,33 @@
+name: A borrowed Angel goes back in cleanup; the borrower at 0 life loses then
+rules: [CR 514.3a, CR 704.5a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    life: 3
+    battlefield: [Mountain, Mountain, Mountain]
+    hand: [Act of Treason]
+  p2:
+    battlefield: [Platinum Angel, Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - p1 cast: Act of Treason
+    targets: [p2:Platinum Angel]
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Lightning Bolt
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 0
+      winner: (game not over)
+  - all pass: until end
+  - expect:
+      winner: (game not over)
+      p1.battlefield contains: [Platinum Angel]
+  - all pass: once
+  - expect:
+      winner: p2
+      step: cleanup
+      turn: 3

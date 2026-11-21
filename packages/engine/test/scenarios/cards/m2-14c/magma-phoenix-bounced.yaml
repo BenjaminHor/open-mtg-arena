@@ -1,0 +1,17 @@
+name: Magma Phoenix returned to its owner's hand doesn't die, so its ability doesn't trigger
+rules: [CR 700.4, CR 603.6c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Magma Phoenix, Grizzly Bears]
+    hand: [Unsummon]
+steps:
+  - p1 cast: Unsummon
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Magma Phoenix]
+      stack: []
+      p1.life: 20
+      p1:Grizzly Bears.damage: 0

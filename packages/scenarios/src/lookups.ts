@@ -99,10 +99,14 @@ export function abilityNamed(
   cards: CardDatabase,
   which: "legal" | "any" = "legal",
 ): { object: ObjectId; ability: AbilityRef } {
-  const ref = parseRef(step.card);
+  // `graveyard:p1:Magma Phoenix`: an ability that works from a graveyard (CR 113.6m).
+  const inGraveyard = step.card.startsWith("graveyard:");
+  const ref = parseRef(inGraveyard ? step.card.slice("graveyard:".length) : step.card);
+  const found =
+    ref === null ? null : inGraveyard ? graveyardCardNamed(state, ref, cards) : resolveRef(state, ref, cards);
   const candidates =
     ref !== null
-      ? [resolveRef(state, ref, cards)].filter((x): x is ObjectId => x !== null)
+      ? [found].filter((x): x is ObjectId => x !== null)
       : battlefieldOf(state, step.player as PlayerId, cards).filter((id) => nameOf(state, id, cards) === step.card);
   if (candidates.length === 0) throw new Error(`no ${step.card} for ${step.player} to activate`);
   const options = candidates.map((object) => {

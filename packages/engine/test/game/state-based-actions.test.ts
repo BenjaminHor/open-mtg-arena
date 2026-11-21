@@ -3,6 +3,7 @@
 // make them.
 
 import { describe, expect, it } from "vitest";
+import { checkStateBasedActions } from "../../src/game/state-based-actions.ts";
 import {
   type Action,
   applyAction,
@@ -12,7 +13,7 @@ import {
   type ObjectId,
 } from "../../src/index.ts";
 import { stateBasedActions } from "../../src/rules/state-based-actions.ts";
-import { BEARS, HILL_GIANT, SHOT_AND_BOOST, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, HILL_GIANT, SHOT_AND_BOOST, TEST_ANGEL, TEST_CARDS } from "../support/cards.ts";
 import { type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -213,5 +214,36 @@ describe("another cleanup step (CR 514.3a)", () => {
     const types = g.events.slice(before).map((e) => (e.type === "STEP_BEGAN" ? `STEP_BEGAN ${e.step}` : e.type));
     expect(types.indexOf("MANA_EMPTIED")).toBeLessThan(types.indexOf("STEP_BEGAN cleanup"));
     expect(types).toContain("MANA_EMPTIED");
+  });
+});
+
+describe('drawing from an empty library under "you can\'t lose the game" (CR 704.5b, 104.3c)', () => {
+  /** p1's turn, p1 having tried to draw from an empty library since the last check, controlling the test Angel. */
+  function triedToDraw(angelDamage: number): GameState {
+    const g = game("precombatMain", [TEST_ANGEL]);
+    const angel = g.state.zones.battlefield[0] as ObjectId;
+    const players = { ...g.state.players, p1: { ...g.state.players.p1, attemptedDrawFromEmptyLibrary: true } };
+    return edit({ ...g.state, players } as GameState, angel, { damage: angelDamage });
+  }
+
+  it("doesn't lose while the Angel is there at the check, and the attempt is cleared, so it never counts later", () => {
+    const checked = checkStateBasedActions(triedToDraw(0), TEST_CARDS);
+    expect(checked.performed).toBe(false);
+    expect(checked.state.players.p1?.attemptedDrawFromEmptyLibrary).toBe(false);
+    expect(checked.state.result).toBeNull();
+  });
+
+  it("dies in the same check as the attempt is looked at: the attempt is cleared then, so the repeated check finds no loss", () => {
+    const first = checkStateBasedActions(triedToDraw(1), TEST_CARDS);
+    expect(first.performed).toBe(true); // the Angel, with lethal damage, is destroyed
+    const again = checkStateBasedActions(first.state, TEST_CARDS);
+    expect(again.state.result).toBeNull();
+  });
+
+  it("loses if the Angel is gone by the check", () => {
+    const state = triedToDraw(0);
+    const gone = { ...state, zones: { ...state.zones, battlefield: [] } };
+    const checked = checkStateBasedActions(gone, TEST_CARDS);
+    expect(checked.state.result?.winner).toBe("p2");
   });
 });

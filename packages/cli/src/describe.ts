@@ -17,11 +17,11 @@ import type {
   Target,
 } from "@mtg/engine";
 import { cardDataByOracleId, replacementEffectCard } from "@mtg/engine";
-import { nameOf, refOf } from "@mtg/scenarios";
+import { graveyardRef, nameOf, refOf } from "@mtg/scenarios";
 
-/** A permanent's reference, or the object's name if it isn't on the battlefield. */
+/** A permanent's reference, a graveyard card's (`graveyard:p1:Name`), or else the object's name. */
 export function objectText(state: GameState, id: ObjectId, cards: CardDatabase): string {
-  return refOf(state, id, cards) ?? nameOf(state, id, cards);
+  return refOf(state, id, cards) ?? graveyardRef(state, id, cards) ?? nameOf(state, id, cards);
 }
 
 /** What an attack was declared against: the defending player, or the planeswalker of theirs (CR 508.1b). */

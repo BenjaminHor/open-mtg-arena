@@ -1764,3 +1764,26 @@ owner's answer to the D-089 open question, option (a))
 - Workers run every check (`ALL_CHECKS`): check functions can't be sent to a thread, so `runFuzz` with custom checks
   stays in-process for tests.
 - Measured: 60 games in 2m00s on 4 cores, against 5m17s on one.
+
+**D-118: Platinum Angel, Magma Phoenix: can't lose, abilities from the graveyard, "dies" triggers (M2-14c)** ·
+2026-11-21 · accepted
+- "You can't lose the game" is the static `cantLoseOpponentsCantWin`, read by `cantLose` (`rules/game-loss.ts`) for the
+  permanents a player controls, like Spellbook's hand size. A player who can't lose has their zero-life and empty-library
+  state-based actions left out of the list (CR 101.2), so the check doesn't repeat forever; the empty-library record
+  still clears at the check, so a draw attempted while the Angel was there never counts later (CR 704.5b). Conceding
+  still loses (CR 104.3a, its ruling). "Your opponents can't win" needs no rule while games have two players and no
+  "win the game" effect: an opponent wins only by this player losing (later: CR 104.2b).
+- An activated ability with `zone: "graveyard"` works only from its owner's graveyard, and its owner activates it
+  (CR 113.6m, 602.2): `activationBasicsProblem` checks where the card is before reading anything of it (so a card in a
+  hidden zone is refused the same whatever it is), then the ability's zone, then the controller; `legalActions` offers
+  the graveyard cards with a printed one, after the permanents. Scenarios and their export name them
+  `graveyard:p1:<card>`.
+- "When this creature dies" is the trigger `selfDies`, the first that looks back in time: `detectTriggers` matches a
+  permanent an event moved off the battlefield against the state before the event (CR 603.10a), with that controller.
+  It doesn't ask that the permanent still be a creature: "this creature" names the object (CR 700.7).
+  Its "it deals 3 damage" reads the gone source from last known information, which lasts until the stack is empty.
+- Future impact: "when this leaves the battlefield" joins `leavesTheBattlefield`. "Whenever another creature dies" is
+  different: the watcher isn't the permanent that left, so `lookingBack` must then scan every permanent of `before`'s
+  battlefield (CR 603.10a's example: a watcher leaving at the same time still sees it). A dies trigger that returns "it"
+  will need `ZONE_CHANGED.newId` in its trigger event (CR 400.7e). A "loses the game" effect (CR 104.3e) must ask
+  `cantLose`; conceding must not. Pithing Needle (M2-14d) stops graveyard abilities too.

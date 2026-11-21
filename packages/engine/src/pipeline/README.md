@@ -82,7 +82,8 @@ anything can replace or trigger on:
 - **Events triggers will match that are emitted outside the pipeline:** `STEP_BEGAN`, `ATTACKERS_DECLARED`,
   `BLOCKERS_DECLARED`, `SPELL_CAST`, `TAPPED_FOR_MANA` and `BECAME_TARGET` are matched where they're emitted
   (`triggers/README.md`); `ABILITY_ACTIVATED` will be when a card needs it.
-- Looking back in time for "leaves the battlefield" abilities (CR 603.10, M2-14). Last known information
+- Looking back in time for leaves-the-battlefield abilities beyond "when this creature dies" (built, D-118;
+  CR 603.10a). Last known information
   (`GameState.lastKnown`, CR 608.2h) is kept as a card leaves the battlefield (`zones/move-card.ts`).
 
 Tests: `test/pipeline/pipeline.test.ts` (what each event does, and which events the engine batches),

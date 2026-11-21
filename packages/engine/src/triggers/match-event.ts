@@ -12,6 +12,30 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { TriggerEvent } from "../state/triggers.ts";
 
+/** Whether a trigger condition is a leaves-the-battlefield one, which looks back in time (CR 603.6c, 603.10a). */
+export function leavesTheBattlefield(when: TriggerCondition): boolean {
+  switch (when.kind) {
+    case "selfDies":
+      return true;
+    case "selfEnters":
+    case "anotherEnters":
+    case "beginningOfStep":
+    case "selfAttacks":
+    case "spellCast":
+    case "selfCountersRemoved":
+    case "playerDraws":
+    case "playerDiscards":
+    case "landTappedForMana":
+    case "selfDealsDamageToPlayer":
+    case "selfBlocksOrBlocked":
+    case "selfBlocks":
+    case "selfBecomesTarget":
+    case "attachedBecomesTarget":
+    case "playerGainsLife":
+      return false;
+  }
+}
+
 /**
  * What the ability knows of each occurrence of its trigger event in this event: none if it doesn't match, or one per
  * occurrence (CR 603.2c: a creature blocked by two creatures "becomes blocked by a creature" twice, CR 509.3d).
@@ -26,6 +50,15 @@ export function matches(
   switch (when.kind) {
     case "selfEnters":
       return entered(event) === source ? [{ player: null, object: source, amount: null }] : [];
+    case "selfDies":
+      // From the battlefield to a graveyard (CR 700.4), read as it was before (CR 603.10a). "This creature" is this
+      // object even if it isn't a creature then (CR 700.7).
+      return event.type === "ZONE_CHANGED" &&
+        event.oldId === source &&
+        event.from.zone === "battlefield" &&
+        event.to.zone === "graveyard"
+        ? [{ player: null, object: null, amount: null }]
+        : [];
     case "anotherEnters": {
       const object = entered(event);
       if (object === null || object === source) return [];

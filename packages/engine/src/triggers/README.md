@@ -8,7 +8,8 @@ abilities are data in `CardDef.triggers` (`cards/types.ts`): a condition (`when`
 ## From event to stack
 
 1. **Detect** (`detect.ts`, `detectTriggers`). Each batch of events is matched against the triggered abilities of the
-   permanents on the battlefield (only permanents' abilities trigger, CR 113.6). Called from `checkTriggers` in
+   permanents on the battlefield (only permanents' abilities trigger, CR 113.6), and a leaves-the-battlefield ability
+   ("when this creature dies") against the permanent as it was before the event moved it (CR 603.10a). Called from `checkTriggers` in
    `pipeline/happen.ts` for every event that goes through the pipeline (drawing, discarding, damage, life gain), and
    from the places that emit events outside it, each for its own event only: a step beginning (`game/steps.ts`),
    attackers declared (`combat/declare-attackers.ts`), blockers declared (`combat/declare-blockers.ts`, one trigger per
@@ -58,6 +59,6 @@ intervening if turned false before resolving).
 ## Not built yet
 
 Delayed triggers waiting for anything but the next beginning of a step ("your next upkeep", "when that creature
-dies"), or with targets; "leaves the battlefield" abilities, which
-look back in time (CR 603.10, M2-14); triggers on activating an ability (no card yet). A trigger
+dies"), or with targets; leaves-the-battlefield abilities other than "when this creature dies" (built, D-118), such as
+"whenever another creature dies" (CR 603.10a); triggers on activating an ability (no card yet). A trigger
 removed for too few legal targets (CR 603.3d) emits no event yet, so a log or the UI doesn't show that it triggered.

@@ -1,0 +1,30 @@
+name: Returned to hand in response, Magma Phoenix's dies trigger still deals damage (LKI)
+rules: [CR 113.7a, CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Magma Phoenix]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Craw Wurm]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Magma Phoenix ability]
+  - p1 activate: graveyard:p1:Magma Phoenix
+    ability: 1
+    pay: auto
+  - expect:
+      stack: [Magma Phoenix ability, Magma Phoenix ability]
+  - all pass: once
+  - expect:
+      p1.hand: [Magma Phoenix]
+  - all pass: once
+  - expect:
+      p1.life: 17
+      p2.life: 17
+      p2:Craw Wurm.damage: 3
+      stack: []

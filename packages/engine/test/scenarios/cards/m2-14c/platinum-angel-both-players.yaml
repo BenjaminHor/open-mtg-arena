@@ -1,0 +1,24 @@
+name: Both control an Angel, both at 0, the game goes on
+rules: [CR 704.5a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    life: 3
+    battlefield: [Mountain, Platinum Angel, Magma Phoenix]
+    hand: [Lightning Bolt]
+  p2:
+    life: 3
+    battlefield: [Platinum Angel]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      winner: (game not over)
+      p1.life: 0
+      p2.life: 0
+  - all pass: until end
+  - expect:
+      winner: (game not over)

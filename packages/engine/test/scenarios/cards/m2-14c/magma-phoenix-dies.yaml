@@ -1,0 +1,24 @@
+name: When Magma Phoenix dies, it deals 3 damage to each creature and each player
+rules: [CR 603.6c, CR 603.10a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Magma Phoenix, Hill Giant]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Craw Wurm, Grizzly Bears]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Magma Phoenix, Lightning Bolt]
+      stack: [Magma Phoenix ability]
+  - all pass: once
+  - expect:
+      p1.life: 17
+      p2.life: 17
+      p1.graveyard contains: [Hill Giant]
+      p2.graveyard contains: [Grizzly Bears]
+      p2:Craw Wurm.damage: 3

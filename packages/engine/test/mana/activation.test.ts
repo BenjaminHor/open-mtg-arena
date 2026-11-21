@@ -51,6 +51,16 @@ describe("activating mana abilities", () => {
     });
   });
 
+  it("says the same of any card in a hidden zone, whatever abilities it has, so the refusal shows nothing of it", () => {
+    const g = game(["forest", "furnace-whelp"], []);
+    const [forest, whelp] = g.state.zones.players.p1?.hand ?? [];
+    const problem = (object: ObjectId | undefined) =>
+      manaAbilityProblem(g.state, "p1", object as ObjectId, { kind: "printed", index: 0 }, TEST_CARDS);
+    // The Whelp has a printed ability 0 and the Forest none; both are refused for where they are, not what they are.
+    expect(problem(forest)).toMatch(/isn't a permanent/);
+    expect(problem(whelp)).toMatch(/isn't a permanent/);
+  });
+
   it("refuses firebreathing because it isn't a mana ability, not because of its cost (CR 605.1a)", () => {
     const g = game([], ["furnace-whelp"]);
     const whelp = g.state.zones.battlefield[0] as ObjectId;

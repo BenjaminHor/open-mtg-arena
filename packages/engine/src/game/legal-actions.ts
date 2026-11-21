@@ -3,6 +3,7 @@
 // legal but endless (D-058; a [−X] loyalty cost's `upTo` is a real limit, CR 606.6). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
 // list.
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { legalAmounts } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
@@ -177,9 +178,17 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
   );
 }
 
-/** Every other activated ability the player could begin activating now (CR 602.2), in battlefield order. */
+/**
+ * Every other activated ability the player could begin activating now (CR 602.2), in battlefield order, then those of
+ * cards in their graveyard that work from there (CR 113.6m).
+ */
 function activationActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
-  return controlled(state, player, cards).flatMap((object) =>
+  // Only printed abilities can work from a graveyard (a basic land's mana ability never does), so read just those.
+  const graveyard = zoneList(state, { zone: "graveyard", player }).filter((object) => {
+    const obj = state.objects[object];
+    return obj?.kind === "card" && (cardDataOf(obj, cards)?.def.abilities ?? []).some((a) => a.zone === "graveyard");
+  });
+  return [...controlled(state, player, cards), ...graveyard].flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => !isManaAbility(def) && activationProblem(state, player, object, ref, cards) === null)
       .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),

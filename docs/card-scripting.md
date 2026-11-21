@@ -108,7 +108,8 @@ export const furnaceWhelp: CardDef = {
   total" is `to: "yourLifeTotal"`), and a card has one exactly when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
   engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
-  (D-097).
+  (D-097); "you can't lose the game and your opponents can't win the game" is `{ kind: "cantLoseOpponentsCantWin" }`
+  (D-118).
 - "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn." is
   `gainControl` (with `duration`), `untap` and `gainKeywords` on `{ target: 0 }` (D-098).
 - "Put a +1/+1 counter on this creature" is `{ op: "putCounters", of: "self", counter: "+1/+1", amount: 1 }` (D-099).
@@ -142,6 +143,8 @@ export const furnaceWhelp: CardDef = {
   "player" }], effects: [...] }`. Their timing and once-per-turn limit come from the cost part (CR 606.3, 606.6), with
   no `timing` field. Printed loyalty comes from Scryfall, and entering with it is intrinsic (CR 306.5b): a definition
   writes neither.
+- An activated ability that works only from its owner's graveyard ("{3}{R}{R}: Return this card from your graveyard to
+  your hand", CR 113.6m) has `zone: "graveyard"`; `returnToHand` of `"self"` moves the card (D-118).
 - "Equip {2}" is an activated ability `{ kind: "activated", keyword: "equip", timing: "sorcery", cost: [{ kind: "mana",
   cost: [{ kind: "generic", amount: 2 }] }], targets: [{ kind: "permanent", filter: { types: ["creature"], controller:
   "you" } }], effects: [{ op: "attachSelf", to: { target: 0 } }] }` (CR 702.6a); `timing: "sorcery"` is any "activate
@@ -164,7 +167,8 @@ export const furnaceWhelp: CardDef = {
   addition to its other colors and types" is `{ op: "putTargetOntoBattlefield", target: 0, is: { addTypes: [],
   addSubtypes: ["Zombie"], colors: { add: ["B"] } } }`.
 - Triggered abilities go in `triggers` (D-076), each `{ when, onlyIf?, optional?, targets, effects }`. `when` is the
-  trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
+  trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "when this creature dies" is `{ kind:
+  "selfDies" }` (it looks back in time, CR 603.10a; "it" is `"self"`, its last known information), "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's
   controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw", whose:
   "each" }` ("the end step" likewise, `step: "end"`; "your upkeep" is `step: "upkeep", whose: "yours"`; "enchanted creature's controller's upkeep" is `whose:

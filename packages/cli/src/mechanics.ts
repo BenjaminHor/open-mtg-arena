@@ -231,6 +231,8 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   noMaximumHandSize: "enters",
   // Coarse, like anthems: an Aura's resolving shows it; it does something only in an untap step.
   attachedDoesntUntap: "enters",
+  // Coarse, like anthems: it does something only when its controller would lose.
+  cantLoseOpponentsCantWin: "enters",
   // As its Aura resolves, like anthems. Pacifism's restriction is on the Aura, which never attacks or blocks, so
   // crediting it in combat would never count; its Aura resolving is when it starts to apply.
   attachedGets: "enters",
@@ -257,6 +259,7 @@ const ABILITY_FIELDS: { [F in keyof AbilityDef]-?: (ability: AbilityDef) => stri
   effects: (ability) => effectOps(ability.effects),
   timing: (ability) => (ability.timing === undefined ? [] : [`timing ${ability.timing}`]),
   keyword: (ability) => (ability.keyword === undefined ? [] : [`keyword ${ability.keyword}`]),
+  zone: (ability) => (ability.zone === undefined ? [] : [`zone ${ability.zone}`]),
 };
 
 const TRIGGER_FIELDS: { [F in keyof TriggeredAbilityDef]-?: (trigger: TriggeredAbilityDef) => string[] } = {

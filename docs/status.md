@@ -740,6 +740,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14c built (2026-11-21, D-118): Platinum Angel and Magma Phoenix (229 cards). `cantLose` stops the zero-life
+         and empty-library losses (CR 101.2, 704.5a-b); abilities with `zone: "graveyard"` (CR 113.6m), activated by
+         the owner, offered from the graveyard; the first look-back trigger, `selfDies` (CR 603.10a). 10 scenarios
+         (Angel: 0 life then the Angel destroyed, an empty-library draw that never counts later, concession, stolen
+         both ways; Phoenix: dies, bounced doesn't die, returns from the graveyard only, not from another's graveyard,
+         activated twice); mutants 6/6 after two more scenarios. 3 golden games (`golden:cover` also proposed a fourth,
+         pool-695, for a decision already covered; left out). Rules review: no wrong ruling; 21 more scenarios (Phoenix
+         sacrificed, stolen with lifelink, with Gorgon Flail's deathtouch, returned in response, both sides wrathed, a
+         chain, regenerated, exiled, 0 toughness, instant speed, combat trade, two of one player's; Angel: both players
+         at 0, a draw without it, it dying in the same check, two Angels, not for the opponent, a later draw, Act of
+         Treason's cleanup), 3 unit tests for the empty-library record with the Angel; stale "later:" marks (CR 700.4,
+         603.10a), CR 603.3a cited; D-118 corrected on "whenever another creature dies". Fuzz 80 clean. Code review: the
+         scenario exporter couldn't replay a graveyard activation (fixed, round-trip test); "dies" no longer asks for a
+         creature (CR 700.7, unit test); the activation check looks at where a card is before what it is (a hidden card's
+         refusal showed its abilities; test); `leavesTheBattlefield` an exhaustive switch; the short fuzz test's timeout
+         120 s (random decks grew with the pool); a cheaper graveyard scan; stale READMEs. Next: PR.
        - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
          `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the
@@ -752,7 +768,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          stale "later:" marks and comments; a player leaving the game noted for extra turns (CR 800.4k). Fuzz 60 clean.
          Code review: no bug, the replay hash changes checked (removing the two fields gives the old hashes); the player
          view shows `extraTurns`, `TURN_BEGAN` says whether a turn is extra (one golden log line: "extra turn 20"),
-         `nextTurn` throws instead of falling back, architecture.md's state shape, a definition test. Next: PR.
+         `nextTurn` throws instead of falling back, architecture.md's state shape, a definition test. Merged as #73 (with
+         the parallel fuzzer, D-117). Next: M2-14c, Platinum Angel and Magma Phoenix.
        - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
          `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
          static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on
