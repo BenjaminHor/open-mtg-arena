@@ -1,0 +1,18 @@
+name: An equip ability targeting the caged creature triggers Ice Cage too
+rules: [CR 603.3, CR 702.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hill Giant, { card: Ice Cage, attachedTo: p1:Hill Giant }, Gorgon Flail, Forest, Forest]
+steps:
+  - p1 activate: Gorgon Flail
+    targets: [p1:Hill Giant]
+    pay: auto
+  - expect:
+      stack: [Gorgon Flail ability, Ice Cage ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Ice Cage]
+  - all pass: once
+  - expect:
+      p1:Hill Giant.power: 4

@@ -178,6 +178,11 @@ export type StaticAbilityDef =
   /** "Enchanted creature can't attack or block" (Pacifism): restrictions on the attached creature (CR 508.1c, 509.1b). */
   | { kind: "attachedCantAttackOrBlock" }
   /**
+   * "Its activated abilities can't be activated" (Ice Cage): the attached permanent's, mana abilities too (CR 602.5,
+   * 605.3a).
+   */
+  | { kind: "attachedCantActivate" }
+  /**
    * "You control enchanted creature" (Mind Control): layer 2 (CR 613.1b) on what it's attached to, "you" being this
    * permanent's controller, in timestamp order with other control effects (CR 613.7a, 613.7e).
    */

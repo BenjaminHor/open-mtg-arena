@@ -1,0 +1,19 @@
+name: Ice Cage's own Aura spell targeting a creature doesn't trigger it, as it isn't on the battlefield yet
+rules: [CR 113.6, CR 603.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island]
+    hand: [Ice Cage]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Ice Cage
+    targets: [p2:Hill Giant]
+    pay: auto
+  - expect:
+      stack: [Ice Cage]
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Ice Cage]
+      stack: []

@@ -1,0 +1,20 @@
+name: Soul Bleed makes the enchanted creature's controller lose 1 life at the beginning of their upkeep, not anyone else's
+rules: [CR 603.2b, CR 303.4m, CR 503.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Soul Bleed, attachedTo: p2:Grizzly Bears }]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - all pass: until upkeep
+  - expect:
+      stack: [Soul Bleed ability]
+  - all pass: once
+  - expect:
+      p2.life: 19
+      p1.life: 20
+  - all pass: until upkeep
+  - expect:
+      stack: []
+      p1.life: 20

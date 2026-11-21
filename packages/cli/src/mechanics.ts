@@ -232,6 +232,7 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   // Evasion, like "can't be blocked": its creature attacking shows it.
   attachedCantBeBlocked: "enters",
   attachedControl: "enters",
+  attachedCantActivate: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

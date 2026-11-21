@@ -1,0 +1,787 @@
+T0 p1 goes first (chosen by p2)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Veteran Swordsmith, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Ice Cage, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Awakener Druid, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Magebane Armor, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Inferno Elemental, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Palace Guard, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Serra Angel, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Seismic Strike, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Negate, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 keeps
+T0 p2 mulligans
+T0 moves: Island, p2's hand -> p2's library
+T0 moves: Inferno Elemental, p2's hand -> p2's library
+T0 moves: Palace Guard, p2's hand -> p2's library
+T0 moves: Serra Angel, p2's hand -> p2's library
+T0 moves: Seismic Strike, p2's hand -> p2's library
+T0 moves: Forest, p2's hand -> p2's library
+T0 moves: Negate, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Veteran Armorsmith, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Guardian Seraph, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Yawning Fissure, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Fire Elemental, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Inferno Elemental, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Negate, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Guardian Seraph, p2's hand -> p2's library
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 p1 attack: nothing
+T1 moves: Magebane Armor, p1's hand -> stack
+T1 p1 cancels casting Magebane Armor
+T1 moves: Veteran Swordsmith, p1's hand -> stack
+T1 p1 cancels casting Veteran Swordsmith
+T1 moves: Awakener Druid, p1's hand -> stack
+T1 p1 cancels casting Awakener Druid
+T2 turn 2 begins (p2)
+T2 moves: Swamp, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Fire Elemental, p2's hand -> stack
+T2 p2 cancels casting Fire Elemental
+T2 moves: Yawning Fissure, p2's hand -> stack
+T2 p2 cancels casting Yawning Fissure
+T2 moves: Veteran Armorsmith, p2's hand -> stack
+T2 p2 cancels casting Veteran Armorsmith
+T2 moves: Inferno Elemental, p2's hand -> stack
+T2 p2 cancels casting Inferno Elemental
+T2 moves: Veteran Armorsmith, p2's hand -> stack
+T2 p2 cancels casting Veteran Armorsmith
+T2 moves: Swamp, p2's hand -> battlefield
+T2 p2 plays p2:Swamp
+T2 moves: Veteran Armorsmith, p2's hand -> stack
+T2 taps: p2:Swamp
+T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
+T2 p2 cancels casting Veteran Armorsmith
+T2 p2 attack: nothing
+T2 taps: p2:Swamp
+T2 p2 adds {B} (p2:Swamp)
+T2 p2 taps p2:Swamp for mana
+T2 p2's unspent {B} empties
+T3 turn 3 begins (p1)
+T3 moves: Island, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Forest, p1's hand -> battlefield
+T3 p1 plays p1:Forest
+T3 moves: Awakener Druid, p1's hand -> stack
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 p1 cancels casting Awakener Druid
+T3 taps: p1:Forest
+T3 p1 adds {G} (p1:Forest)
+T3 p1 taps p1:Forest for mana
+T3 p1's unspent {G} empties
+T3 p1 attack: nothing
+T4 turn 4 begins (p2)
+T4 untaps: p2:Swamp
+T4 moves: Black Knight, p2's library -> p2's hand
+T4 p2 draws
+T4 taps: p2:Swamp
+T4 p2 adds {B} (p2:Swamp)
+T4 p2 taps p2:Swamp for mana
+T4 p2's unspent {B} empties
+T4 moves: Fire Elemental, p2's hand -> stack
+T4 p2 cancels casting Fire Elemental
+T4 p2 attack: nothing
+T4 moves: Yawning Fissure, p2's hand -> stack
+T4 p2 cancels casting Yawning Fissure
+T5 turn 5 begins (p1)
+T5 untaps: p1:Forest
+T5 moves: Pyroclasm, p1's library -> p1's hand
+T5 p1 draws
+T5 taps: p1:Forest
+T5 p1 adds {G} (p1:Forest)
+T5 p1 taps p1:Forest for mana
+T5 moves: Awakener Druid, p1's hand -> stack
+T5 p1 cancels casting Awakener Druid
+T5 moves: Island, p1's hand -> battlefield
+T5 p1 plays p1:Island
+T5 p1's unspent {G} empties
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 p1's unspent {U} empties
+T5 p1 attack: nothing
+T5 moves: Awakener Druid, p1's hand -> stack
+T5 p1 cancels casting Awakener Druid
+T5 moves: Pyroclasm, p1's hand -> stack
+T5 p1 cancels casting Pyroclasm
+T6 turn 6 begins (p2)
+T6 untaps: p2:Swamp
+T6 moves: Mountain, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p2:Swamp
+T6 p2 adds {B} (p2:Swamp)
+T6 p2 taps p2:Swamp for mana
+T6 p2's unspent {B} empties
+T6 moves: Island, p2's hand -> battlefield
+T6 p2 plays p2:Island
+T6 taps: p2:Island
+T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
+T6 moves: Yawning Fissure, p2's hand -> stack
+T6 p2 cancels casting Yawning Fissure
+T6 moves: Veteran Armorsmith, p2's hand -> stack
+T6 p2 cancels casting Veteran Armorsmith
+T6 p2's unspent {U} empties
+T6 p2 attack: nothing
+T6 moves: Yawning Fissure, p2's hand -> stack
+T6 p2 cancels casting Yawning Fissure
+T6 moves: Yawning Fissure, p2's hand -> stack
+T6 p2 cancels casting Yawning Fissure
+T7 turn 7 begins (p1)
+T7 untaps: p1:Forest
+T7 untaps: p1:Island
+T7 moves: Mind Rot, p1's library -> p1's hand
+T7 p1 draws
+T7 taps: p1:Forest
+T7 p1 adds {G} (p1:Forest)
+T7 p1 taps p1:Forest for mana
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
+T7 p1's unspent {U}{G} empties
+T7 moves: Plains, p1's hand -> battlefield
+T7 p1 plays p1:Plains
+T7 moves: Veteran Swordsmith, p1's hand -> stack
+T7 p1 cancels casting Veteran Swordsmith
+T7 p1 attack: nothing
+T7 taps: p1:Plains
+T7 p1 adds {W} (p1:Plains)
+T7 p1 taps p1:Plains for mana
+T7 p1's unspent {W} empties
+T7 moves: Mind Rot, p1's hand -> stack
+T7 p1 cancels casting Mind Rot
+T7 moves: Mind Rot, p1's hand -> stack
+T7 p1 cancels casting Mind Rot
+T7 moves: Veteran Swordsmith, p1's hand -> stack
+T7 p1 cancels casting Veteran Swordsmith
+T7 moves: Mind Rot, p1's hand -> stack
+T7 p1 cancels casting Mind Rot
+T7 moves: Pyroclasm, p1's hand -> stack
+T7 p1 cancels casting Pyroclasm
+T8 turn 8 begins (p2)
+T8 untaps: p2:Swamp
+T8 untaps: p2:Island
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2's unspent {U} empties
+T8 moves: Elite Vanguard, p2's library -> p2's hand
+T8 p2 draws
+T8 taps: p2:Swamp
+T8 p2 adds {B} (p2:Swamp)
+T8 p2 taps p2:Swamp for mana
+T8 p2's unspent {B} empties
+T8 moves: Mountain, p2's hand -> battlefield
+T8 p2 plays p2:Mountain
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
+T8 p2's unspent {R} empties
+T8 p2 attack: nothing
+T8 moves: Veteran Armorsmith, p2's hand -> stack
+T8 p2 cancels casting Veteran Armorsmith
+T8 moves: Elite Vanguard, p2's hand -> stack
+T8 p2 cancels casting Elite Vanguard
+T8 moves: Black Knight, p2's hand -> stack
+T8 p2 cancels casting Black Knight
+T9 turn 9 begins (p1)
+T9 untaps: p1:Forest
+T9 untaps: p1:Island
+T9 untaps: p1:Plains
+T9 taps: p1:Plains
+T9 p1 adds {W} (p1:Plains)
+T9 p1 taps p1:Plains for mana
+T9 taps: p1:Island
+T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
+T9 p1's unspent {W}{U} empties
+T9 moves: Wall of Fire, p1's library -> p1's hand
+T9 p1 draws
+T9 p1 attack: nothing
+T9 taps: p1:Forest
+T9 p1 adds {G} (p1:Forest)
+T9 p1 taps p1:Forest for mana
+T9 p1's unspent {G} empties
+T9 moves: Forest, p1's hand -> battlefield
+T9 p1 plays p1:Forest#2
+T9 moves: Mind Rot, p1's hand -> stack
+T9 taps: p1:Forest#2
+T9 p1 adds {G} (p1:Forest#2)
+T9 p1 taps p1:Forest#2 for mana
+T9 p1 cancels casting Mind Rot
+T9 taps: p1:Forest#2
+T9 p1 adds {G} (p1:Forest#2)
+T9 p1 taps p1:Forest#2 for mana
+T9 p1's unspent {G} empties
+T10 turn 10 begins (p2)
+T10 untaps: p2:Swamp
+T10 untaps: p2:Island
+T10 untaps: p2:Mountain
+T10 moves: Island, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Mountain
+T10 p2 adds {R} (p2:Mountain)
+T10 p2 taps p2:Mountain for mana
+T10 p2's unspent {R} empties
+T10 p2 attack: nothing
+T10 taps: p2:Swamp
+T10 p2 adds {B} (p2:Swamp)
+T10 p2 taps p2:Swamp for mana
+T10 taps: p2:Island
+T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
+T10 p2's unspent {U}{B} empties
+T10 moves: Island, p2's hand -> p2's graveyard
+T10 p2 discards Island
+T11 turn 11 begins (p1)
+T11 untaps: p1:Forest#1
+T11 untaps: p1:Island
+T11 untaps: p1:Plains
+T11 untaps: p1:Forest#2
+T11 moves: Jump, p1's library -> p1's hand
+T11 p1 draws
+T11 taps: p1:Plains
+T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
+T11 taps: p1:Forest#1
+T11 p1 adds {G} (p1:Forest#1)
+T11 p1 taps p1:Forest#1 for mana
+T11 p1's unspent {W}{G} empties
+T11 p1 attack: nothing
+T11 taps: p1:Island
+T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
+T11 p1's unspent {U} empties
+T11 taps: p1:Forest#2
+T11 p1 adds {G} (p1:Forest#2)
+T11 p1 taps p1:Forest#2 for mana
+T11 p1's unspent {G} empties
+T11 moves: Jump, p1's hand -> p1's graveyard
+T11 p1 discards Jump
+T12 turn 12 begins (p2)
+T12 untaps: p2:Swamp
+T12 untaps: p2:Island
+T12 untaps: p2:Mountain
+T12 moves: Plains, p2's library -> p2's hand
+T12 p2 draws
+T12 moves: Elite Vanguard, p2's hand -> stack
+T12 taps: p2:Island
+T12 p2 adds {U} (p2:Island)
+T12 p2 taps p2:Island for mana
+T12 taps: p2:Swamp
+T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
+T12 p2 cancels casting Elite Vanguard
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
+T12 p2's unspent {R} empties
+T12 p2 attack: nothing
+T12 taps: p2:Swamp
+T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
+T12 p2's unspent {B} empties
+T12 moves: Black Knight, p2's hand -> stack
+T12 p2 cancels casting Black Knight
+T12 taps: p2:Island
+T12 p2 adds {U} (p2:Island)
+T12 p2 taps p2:Island for mana
+T12 moves: Fire Elemental, p2's hand -> stack
+T12 p2 cancels casting Fire Elemental
+T12 p2's unspent {U} empties
+T12 moves: Veteran Armorsmith, p2's hand -> p2's graveyard
+T12 p2 discards Veteran Armorsmith
+T13 turn 13 begins (p1)
+T13 untaps: p1:Forest#1
+T13 untaps: p1:Island
+T13 untaps: p1:Plains
+T13 untaps: p1:Forest#2
+T13 moves: Island, p1's library -> p1's hand
+T13 p1 draws
+T13 moves: Mind Rot, p1's hand -> stack
+T13 taps: p1:Plains
+T13 p1 adds {W} (p1:Plains)
+T13 p1 taps p1:Plains for mana
+T13 taps: p1:Forest#2
+T13 p1 adds {G} (p1:Forest#2)
+T13 p1 taps p1:Forest#2 for mana
+T13 taps: p1:Forest#1
+T13 p1 adds {G} (p1:Forest#1)
+T13 p1 taps p1:Forest#1 for mana
+T13 taps: p1:Island
+T13 p1 adds {U} (p1:Island)
+T13 p1 taps p1:Island for mana
+T13 p1 cancels casting Mind Rot
+T13 moves: Island, p1's hand -> battlefield
+T13 p1 plays p1:Island#2
+T13 moves: Magebane Armor, p1's hand -> stack
+T13 taps: p1:Forest#2
+T13 p1 adds {G} (p1:Forest#2)
+T13 p1 taps p1:Forest#2 for mana
+T13 taps: p1:Island#2
+T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
+T13 taps: p1:Plains
+T13 p1 adds {W} (p1:Plains)
+T13 p1 taps p1:Plains for mana
+T13 taps: p1:Forest#1
+T13 p1 adds {G} (p1:Forest#1)
+T13 p1 taps p1:Forest#1 for mana
+T13 taps: p1:Island#1
+T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
+T13 p1 casts Magebane Armor
+T13 moves: Negate, p2's hand -> stack
+T13 targeted: Magebane Armor by Negate
+T13 p2 cancels casting Negate
+T13 resolves: Magebane Armor
+T13 moves: Magebane Armor, stack -> battlefield
+T13 moves: Awakener Druid, p1's hand -> stack
+T13 p1 cancels casting Awakener Druid
+T13 p1's unspent {W}{U} empties
+T13 p1 attack: nothing
+T13 moves: Pyroclasm, p1's hand -> stack
+T13 p1 cancels casting Pyroclasm
+T13 moves: Wall of Fire, p1's hand -> stack
+T13 p1 cancels casting Wall of Fire
+T14 turn 14 begins (p2)
+T14 untaps: p2:Swamp
+T14 untaps: p2:Island
+T14 untaps: p2:Mountain
+T14 taps: p2:Island
+T14 p2 adds {U} (p2:Island)
+T14 p2 taps p2:Island for mana
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2's unspent {U}{R} empties
+T14 moves: Forest, p2's library -> p2's hand
+T14 p2 draws
+T14 taps: p2:Swamp
+T14 p2 adds {B} (p2:Swamp)
+T14 p2 taps p2:Swamp for mana
+T14 p2's unspent {B} empties
+T14 moves: Black Knight, p2's hand -> stack
+T14 p2 cancels casting Black Knight
+T14 p2 attack: nothing
+T14 moves: Plains, p2's hand -> battlefield
+T14 p2 plays p2:Plains
+T14 taps: p2:Plains
+T14 p2 adds {W} (p2:Plains)
+T14 p2 taps p2:Plains for mana
+T14 moves: Elite Vanguard, p2's hand -> stack
+T14 p2 casts Elite Vanguard
+T14 resolves: Elite Vanguard
+T14 moves: Elite Vanguard, stack -> battlefield
+T15 turn 15 begins (p1)
+T15 untaps: p1:Forest#1
+T15 untaps: p1:Island#1
+T15 untaps: p1:Plains
+T15 untaps: p1:Forest#2
+T15 untaps: p1:Island#2
+T15 moves: Stampeding Rhino, p1's library -> p1's hand
+T15 p1 draws
+T15 moves: Ice Cage, p1's hand -> stack
+T15 targeted: p2:Elite Vanguard by Ice Cage
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 taps: p1:Forest#1
+T15 p1 adds {G} (p1:Forest#1)
+T15 p1 taps p1:Forest#1 for mana
+T15 p1 casts Ice Cage
+T15 moves: Negate, p2's hand -> stack
+T15 targeted: Ice Cage by Negate
+T15 p2 cancels casting Negate
+T15 resolves: Ice Cage
+T15 moves: Ice Cage, stack -> battlefield
+T15 p1 attack: nothing
+T15 taps: p1:Forest#2
+T15 p1 adds {G} (p1:Forest#2)
+T15 p1 taps p1:Forest#2 for mana
+T15 p1's unspent {G} empties
+T15 moves: Veteran Swordsmith, p1's hand -> stack
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
+T15 taps: p1:Plains
+T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
+T15 p1 cancels casting Veteran Swordsmith
+T16 turn 16 begins (p2)
+T16 untaps: p2:Swamp
+T16 untaps: p2:Island
+T16 untaps: p2:Mountain
+T16 untaps: p2:Plains
+T16 taps: p2:Mountain
+T16 p2 adds {R} (p2:Mountain)
+T16 p2 taps p2:Mountain for mana
+T16 taps: p1:Island#2
+T16 p1 adds {U} (p1:Island#2)
+T16 p1 taps p1:Island#2 for mana
+T16 taps: p1:Plains
+T16 p1 adds {W} (p1:Plains)
+T16 p1 taps p1:Plains for mana
+T16 p1's unspent {W}{U} empties
+T16 p2's unspent {R} empties
+T16 moves: Serra Angel, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Island
+T16 p2 adds {U} (p2:Island)
+T16 p2 taps p2:Island for mana
+T16 taps: p2:Swamp
+T16 p2 adds {B} (p2:Swamp)
+T16 p2 taps p2:Swamp for mana
+T16 taps: p2:Plains
+T16 p2 adds {W} (p2:Plains)
+T16 p2 taps p2:Plains for mana
+T16 p2's unspent {W}{U}{B} empties
+T16 moves: Yawning Fissure, p2's hand -> stack
+T16 p2 cancels casting Yawning Fissure
+T16 p2 attack: nothing
+T17 turn 17 begins (p1)
+T17 untaps: p1:Forest#1
+T17 untaps: p1:Island#1
+T17 untaps: p1:Plains
+T17 untaps: p1:Forest#2
+T17 untaps: p1:Island#2
+T17 moves: Hypnotic Specter, p1's library -> p1's hand
+T17 p1 draws
+T17 moves: Pyroclasm, p1's hand -> stack
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
+T17 p1 cancels casting Pyroclasm
+T17 taps: p1:Forest#2
+T17 p1 adds {G} (p1:Forest#2)
+T17 p1 taps p1:Forest#2 for mana
+T17 taps: p1:Forest#1
+T17 p1 adds {G} (p1:Forest#1)
+T17 p1 taps p1:Forest#1 for mana
+T17 p1's unspent {G}{G} empties
+T17 p1 attack: nothing
+T17 taps: p1:Island#2
+T17 p1 adds {U} (p1:Island#2)
+T17 p1 taps p1:Island#2 for mana
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
+T17 taps: p1:Plains
+T17 p1 adds {W} (p1:Plains)
+T17 p1 taps p1:Plains for mana
+T17 p1's unspent {W}{U}{U} empties
+T17 moves: Wall of Fire, p1's hand -> stack
+T17 p1 cancels casting Wall of Fire
+T18 turn 18 begins (p2)
+T18 untaps: p2:Swamp
+T18 untaps: p2:Island
+T18 untaps: p2:Mountain
+T18 untaps: p2:Plains
+T18 moves: Plains, p2's library -> p2's hand
+T18 p2 draws
+T18 taps: p2:Mountain
+T18 p2 adds {R} (p2:Mountain)
+T18 p2 taps p2:Mountain for mana
+T18 p2's unspent {R} empties
+T18 taps: p2:Island
+T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
+T18 moves: Plains, p2's hand -> battlefield
+T18 p2 plays p2:Plains#2
+T18 taps: p2:Plains#1
+T18 p2 adds {W} (p2:Plains#1)
+T18 p2 taps p2:Plains#1 for mana
+T18 moves: Inferno Elemental, p2's hand -> stack
+T18 taps: p2:Swamp
+T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Inferno Elemental
+T18 moves: Black Knight, p2's hand -> stack
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 taps: p2:Swamp
+T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
+T18 p2 cancels casting Black Knight
+T18 moves: Yawning Fissure, p2's hand -> stack
+T18 taps: p2:Swamp
+T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Yawning Fissure
+T18 p2's unspent {W}{U} empties
+T18 p2 attack: nothing
+T18 taps: p2:Swamp
+T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2's unspent {W}{B} empties
+T18 moves: Inferno Elemental, p2's hand -> stack
+T18 p2 cancels casting Inferno Elemental
+T19 turn 19 begins (p1)
+T19 untaps: p1:Forest#1
+T19 untaps: p1:Island#1
+T19 untaps: p1:Plains
+T19 untaps: p1:Forest#2
+T19 untaps: p1:Island#2
+T19 moves: Black Knight, p1's library -> p1's hand
+T19 p1 draws
+T19 moves: Wall of Fire, p1's hand -> stack
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
+T19 taps: p1:Plains
+T19 p1 adds {W} (p1:Plains)
+T19 p1 taps p1:Plains for mana
+T19 taps: p1:Forest#1
+T19 p1 adds {G} (p1:Forest#1)
+T19 p1 taps p1:Forest#1 for mana
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
+T19 taps: p1:Forest#2
+T19 p1 adds {G} (p1:Forest#2)
+T19 p1 taps p1:Forest#2 for mana
+T19 p1 cancels casting Wall of Fire
+T19 moves: Mind Rot, p1's hand -> stack
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
+T19 taps: p1:Forest#1
+T19 p1 adds {G} (p1:Forest#1)
+T19 p1 taps p1:Forest#1 for mana
+T19 taps: p1:Forest#2
+T19 p1 adds {G} (p1:Forest#2)
+T19 p1 taps p1:Forest#2 for mana
+T19 taps: p1:Plains
+T19 p1 adds {W} (p1:Plains)
+T19 p1 taps p1:Plains for mana
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
+T19 p1 cancels casting Mind Rot
+T19 p1 attack: nothing
+T19 moves: Mind Rot, p1's hand -> stack
+T19 p1 cancels casting Mind Rot
+T19 moves: Wall of Fire, p1's hand -> p1's graveyard
+T19 p1 discards Wall of Fire
+T20 turn 20 begins (p2)
+T20 untaps: p2:Swamp
+T20 untaps: p2:Island
+T20 untaps: p2:Mountain
+T20 untaps: p2:Plains#1
+T20 untaps: p2:Plains#2
+T20 taps: p2:Mountain
+T20 p2 adds {R} (p2:Mountain)
+T20 p2 taps p2:Mountain for mana
+T20 taps: p2:Island
+T20 p2 adds {U} (p2:Island)
+T20 p2 taps p2:Island for mana
+T20 p2's unspent {U}{R} empties
+T20 moves: Pacifism, p2's library -> p2's hand
+T20 p2 draws
+T20 taps: p2:Swamp
+T20 p2 adds {B} (p2:Swamp)
+T20 p2 taps p2:Swamp for mana
+T20 taps: p2:Plains#1
+T20 p2 adds {W} (p2:Plains#1)
+T20 p2 taps p2:Plains#1 for mana
+T20 taps: p2:Plains#2
+T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
+T20 taps: p1:Forest#2
+T20 p1 adds {G} (p1:Forest#2)
+T20 p1 taps p1:Forest#2 for mana
+T20 p1's unspent {G} empties
+T20 p2's unspent {W}{W}{B} empties
+T20 moves: Forest, p2's hand -> battlefield
+T20 p2 plays p2:Forest
+T20 taps: p2:Forest
+T20 p2 adds {G} (p2:Forest)
+T20 p2 taps p2:Forest for mana
+T20 moves: Yawning Fissure, p2's hand -> stack
+T20 p2 cancels casting Yawning Fissure
+T20 p2's unspent {G} empties
+T20 taps: p1:Island#1
+T20 p1 adds {U} (p1:Island#1)
+T20 p1 taps p1:Island#1 for mana
+T20 p1's unspent {U} empties
+T20 p2 attack: nothing
+T20 taps: p1:Plains
+T20 p1 adds {W} (p1:Plains)
+T20 p1 taps p1:Plains for mana
+T20 p1's unspent {W} empties
+T20 taps: p1:Island#2
+T20 p1 adds {U} (p1:Island#2)
+T20 p1 taps p1:Island#2 for mana
+T20 taps: p1:Forest#1
+T20 p1 adds {G} (p1:Forest#1)
+T20 p1 taps p1:Forest#1 for mana
+T20 p1's unspent {U}{G} empties
+T21 turn 21 begins (p1)
+T21 untaps: p1:Forest#1
+T21 untaps: p1:Island#1
+T21 untaps: p1:Plains
+T21 untaps: p1:Forest#2
+T21 untaps: p1:Island#2
+T21 taps: p1:Forest#2
+T21 p1 adds {G} (p1:Forest#2)
+T21 p1 taps p1:Forest#2 for mana
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
+T21 taps: p1:Island#1
+T21 p1 adds {U} (p1:Island#1)
+T21 p1 taps p1:Island#1 for mana
+T21 p1's unspent {U}{U}{G} empties
+T21 moves: Underworld Dreams, p1's library -> p1's hand
+T21 p1 draws
+T21 moves: Veteran Swordsmith, p1's hand -> stack
+T21 taps: p1:Forest#1
+T21 p1 adds {G} (p1:Forest#1)
+T21 p1 taps p1:Forest#1 for mana
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 p1 cancels casting Veteran Swordsmith
+T21 taps: p1:Forest#1
+T21 p1 adds {G} (p1:Forest#1)
+T21 p1 taps p1:Forest#1 for mana
+T21 p1's unspent {G} empties
+T21 p1 attack: nothing
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 moves: Stampeding Rhino, p1's hand -> stack
+T21 p1 cancels casting Stampeding Rhino
+T21 moves: Pyroclasm, p1's hand -> stack
+T21 p1 cancels casting Pyroclasm
+T21 moves: Black Knight, p1's hand -> stack
+T21 p1 cancels casting Black Knight
+T21 moves: Hypnotic Specter, p1's hand -> stack
+T21 p1 cancels casting Hypnotic Specter
+T21 p1's unspent {W} empties
+T21 moves: Pyroclasm, p1's hand -> p1's graveyard
+T21 p1 discards Pyroclasm
+T22 turn 22 begins (p2)
+T22 untaps: p2:Swamp
+T22 untaps: p2:Island
+T22 untaps: p2:Mountain
+T22 untaps: p2:Plains#1
+T22 untaps: p2:Plains#2
+T22 untaps: p2:Forest
+T22 taps: p2:Forest
+T22 p2 adds {G} (p2:Forest)
+T22 p2 taps p2:Forest for mana
+T22 p2's unspent {G} empties
+T22 moves: Enormous Baloth, p2's library -> p2's hand
+T22 p2 draws
+T22 taps: p2:Plains#1
+T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
+T22 p2's unspent {W} empties
+T22 moves: Serra Angel, p2's hand -> stack
+T22 taps: p2:Mountain
+T22 p2 adds {R} (p2:Mountain)
+T22 p2 taps p2:Mountain for mana
+T22 taps: p2:Swamp
+T22 p2 adds {B} (p2:Swamp)
+T22 p2 taps p2:Swamp for mana
+T22 taps: p2:Island
+T22 p2 adds {U} (p2:Island)
+T22 p2 taps p2:Island for mana
+T22 taps: p2:Plains#2
+T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
+T22 p2 cancels casting Serra Angel
+T22 p2 attack: nothing
+T22 taps: p2:Swamp
+T22 p2 adds {B} (p2:Swamp)
+T22 p2 taps p2:Swamp for mana
+T22 taps: p2:Island
+T22 p2 adds {U} (p2:Island)
+T22 p2 taps p2:Island for mana
+T22 p2's unspent {U}{B} empties
+T22 moves: Pacifism, p2's hand -> stack
+T22 targeted: p2:Elite Vanguard by Pacifism
+T22 taps: p2:Plains#2
+T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
+T22 taps: p2:Mountain
+T22 p2 adds {R} (p2:Mountain)
+T22 p2 taps p2:Mountain for mana
+T22 p2 casts Pacifism
+T22 p1:Ice Cage triggers (p1)
+T22 destroyed: p1:Ice Cage
+T22 moves: Ice Cage, battlefield -> p1's graveyard
+T22 resolves: p1:Ice Cage's ability
+T22 moves: Negate, p2's hand -> stack
+T22 targeted: Pacifism by Negate
+T22 p2 cancels casting Negate
+T22 moves: Negate, p2's hand -> stack
+T22 targeted: Pacifism by Negate
+T22 p2 cancels casting Negate
+T22 moves: Negate, p2's hand -> stack
+T22 targeted: Pacifism by Negate
+T22 p2 cancels casting Negate
+T22 moves: Negate, p2's hand -> stack
+T22 targeted: Pacifism by Negate
+T22 p2 cancels casting Negate
+T22 moves: Negate, p2's hand -> stack
+T22 targeted: Pacifism by Negate
+T22 p2 cancels casting Negate
+T22 moves: Negate, p2's hand -> stack
+T22 targeted: Pacifism by Negate
+T22 p2 cancels casting Negate
+T22 resolves: Pacifism
+T22 moves: Pacifism, stack -> battlefield
+T23 turn 23 begins (p1)
+T23 untaps: p1:Forest#1
+T23 untaps: p1:Island#1
+T23 untaps: p1:Plains
+T23 untaps: p1:Forest#2
+T23 untaps: p1:Island#2

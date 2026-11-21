@@ -1,0 +1,25 @@
+name: Soul Bleed's trigger still makes that player lose life after the creature and the Aura are gone
+rules: [CR 113.7a, CR 603.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Soul Bleed, attachedTo: p2:Grizzly Bears }]
+  p2:
+    battlefield: [Grizzly Bears, Mountain]
+    hand: [Shock]
+steps:
+  - all pass: until upkeep
+  - expect:
+      stack: [Soul Bleed ability]
+      active: p2
+  - p2 cast: Shock
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Soul Bleed ability]
+      p1.graveyard: [Soul Bleed]
+  - all pass: once
+  - expect:
+      p2.life: 19
+      p1.life: 20

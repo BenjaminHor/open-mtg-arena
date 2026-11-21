@@ -1,0 +1,19 @@
+name: Ice Cage on an opponent's creature triggers under Ice Cage's controller, whoever targets the creature
+rules: [CR 603.3a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Ice Cage, attachedTo: p2:Hill Giant }]
+  p2:
+    battlefield: [Hill Giant, Plains]
+    hand: [Holy Strength]
+steps:
+  - p2 cast: Holy Strength
+    targets: [p2:Hill Giant]
+    pay: auto
+  - expect:
+      stack: [Holy Strength, Ice Cage ability]
+      events contains: [{ type: ABILITY_TRIGGERED, controller: p1 }]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Ice Cage]

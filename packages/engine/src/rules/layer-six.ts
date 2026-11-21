@@ -1,7 +1,7 @@
 // Layer 6 of the layer pass (CR 613.1f): keywords granted by resolved effects, on the objects they locked in
 // (CR 611.2c), and granted or removed by static abilities, on what fits now (CR 611.3a), all applied in timestamp order
 // (CR 613.7, 613.7a). Also, though not a layer, the restrictions an attached permanent puts on its host (Pacifism,
-// Whispersilk Cloak), marked here because the pass already finds what each static applies to.
+// Whispersilk Cloak, Ice Cage), marked here because the pass already finds what each static applies to.
 
 import type { Keyword } from "../cards/types.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -36,7 +36,10 @@ export function layerSix(
   return sets;
 }
 
-/** "Enchanted creature can't attack or block", "equipped creature can't be blocked" (CR 303.4m, 301.5f), on the host. */
+/**
+ * "Enchanted creature can't attack or block", "can't be blocked", "its activated abilities can't be activated"
+ * (CR 303.4m, 301.5f), on the host.
+ */
 function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, sources: readonly StaticSource[]) {
   for (const s of sources) {
     const host = attachedHostIn(input.objects, input.battlefield, s.source);
@@ -48,6 +51,9 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
         break;
       case "attachedCantBeBlocked":
         board[host] = { ...card, cantBeBlocked: true };
+        break;
+      case "attachedCantActivate":
+        board[host] = { ...card, cantActivate: true };
         break;
       case "attachedControl":
       case "attachedGets":

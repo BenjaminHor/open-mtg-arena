@@ -58,6 +58,7 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "selfDealsDamageToPlayer":
     case "selfBlocksOrBlocked":
     case "selfBecomesTarget":
+    case "attachedBecomesTarget":
     case "selfCountersRemoved":
       return false;
   }
@@ -74,6 +75,7 @@ function suppliesObject(when: TriggerCondition): boolean {
     case "selfBlocksOrBlocked":
       return true;
     case "selfBecomesTarget":
+    case "attachedBecomesTarget":
     case "beginningOfStep":
     case "playerDraws":
     case "playerDiscards":
@@ -98,6 +100,7 @@ function suppliesPlayer(when: TriggerCondition): boolean {
     case "selfAttacks":
     case "selfBlocksOrBlocked":
     case "selfBecomesTarget":
+    case "attachedBecomesTarget":
     case "selfCountersRemoved":
       return false;
     // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.

@@ -1,0 +1,28 @@
+name: Soul Bleed's creature stolen with Mind Control drains the thief at their upkeep, not its owner at theirs
+rules: [CR 303.4m, CR 613.1b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Mind Control]
+  p2:
+    battlefield: [Grizzly Bears, { card: Soul Bleed, attachedTo: p2:Grizzly Bears }]
+steps:
+  - p1 cast: Mind Control
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Grizzly Bears]
+  - all pass: until upkeep
+  - expect:
+      active: p2
+      stack: []
+  - all pass: until upkeep
+  - expect:
+      active: p1
+      stack: [Soul Bleed ability]
+  - all pass: once
+  - expect:
+      p1.life: 19
+      p2.life: 20

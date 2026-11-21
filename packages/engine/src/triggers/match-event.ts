@@ -3,6 +3,7 @@
 
 import type { PlayerRelation, TriggerCheck, TriggerCondition } from "../cards/triggers.ts";
 import type { CardDatabase } from "../cards/types.ts";
+import { attachedHost } from "../rules/attachment.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
@@ -35,7 +36,7 @@ export function matches(
     case "beginningOfStep":
       // "Each player's draw step": "that player", in the card's text, is the player whose step it is.
       if (event.type !== "STEP_BEGAN" || event.step !== when.step) return [];
-      if (when.whose === "yours" && event.activePlayer !== controllerOf(state, source, cards)) return [];
+      if (!isWhoseStep(state, source, when.whose, event.activePlayer, cards)) return [];
       return [{ player: event.activePlayer, object: null, amount: null }];
     case "selfAttacks":
       return event.type === "ATTACKERS_DECLARED" && event.attacks.some((a) => a.attacker === source)
@@ -84,6 +85,10 @@ export function matches(
       return event.type === "BECAME_TARGET" && event.object === source
         ? [{ player: null, object: null, amount: null }]
         : [];
+    case "attachedBecomesTarget":
+      return event.type === "BECAME_TARGET" && event.object === attachedHost(state, source)
+        ? [{ player: null, object: null, amount: null }]
+        : [];
     case "spellCast":
       return event.type === "SPELL_CAST" &&
         matchesFilter(state, event.object, when.filter, controllerOf(state, source, cards), cards)
@@ -129,4 +134,28 @@ export function holds(state: GameState, source: ObjectId, check: TriggerCheck): 
       return obj?.kind === "card" && !obj.tapped;
     }
   }
+}
+
+/** Whether a step in `activePlayer`'s turn is one the trigger's "at the beginning of [whose] [step]" names. */
+function isWhoseStep(
+  state: GameState,
+  source: ObjectId,
+  whose: Extract<TriggerCondition, { kind: "beginningOfStep" }>["whose"],
+  activePlayer: PlayerId,
+  cards: CardDatabase,
+): boolean {
+  switch (whose) {
+    case "each":
+      return true;
+    case "yours":
+      return activePlayer === controllerOf(state, source, cards);
+    case "attachedController":
+      return activePlayer === attachedController(state, source, cards);
+  }
+}
+
+/** Who controls what this permanent is attached to ("enchanted creature's controller", CR 303.4m), or null. */
+function attachedController(state: GameState, source: ObjectId, cards: CardDatabase): PlayerId | null {
+  const host = attachedHost(state, source);
+  return host === null ? null : controllerOf(state, host, cards);
 }

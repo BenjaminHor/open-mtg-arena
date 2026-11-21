@@ -26,9 +26,10 @@ export type TriggerCondition =
   | { kind: "anotherEnters"; filter: ObjectFilter }
   /**
    * "At the beginning of [the / each player's / your] [step]" (CR 603.2b): `each`, every such step, whoever's turn it
-   * is ("the end step" too); `yours`, only in turns of the trigger's controller.
+   * is ("the end step" too); `yours`, only in turns of the trigger's controller; `attachedController`, "the upkeep of
+   * enchanted creature's controller" (Soul Bleed), in turns of whoever controls what this is attached to then.
    */
-  | { kind: "beginningOfStep"; step: Step; whose: "each" | "yours" }
+  | { kind: "beginningOfStep"; step: Step; whose: "each" | "yours" | "attachedController" }
   /** "Whenever this creature attacks": declared as an attacker (CR 508.3a). */
   | { kind: "selfAttacks" }
   /**
@@ -63,6 +64,11 @@ export type TriggerCondition =
    * activated ability or a triggered ability (CR 603.3d).
    */
   | { kind: "selfBecomesTarget" }
+  /**
+   * "When enchanted creature becomes the target of a spell or ability" (Ice Cage): what this is attached to, as the
+   * target is chosen (CR 601.2c, 603.3d).
+   */
+  | { kind: "attachedBecomesTarget" }
   /**
    * "Whenever [you / a player] gain life": once per life-gain event, whatever the amount (CR 119.9; each lifelink source
    * is its own event). "That much" is the amount gained.

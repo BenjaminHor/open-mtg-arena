@@ -1577,3 +1577,19 @@ every schema change and every change D-024 lists bumps it.
   but dealt and took no damage: `Combat.removed` was one list of creatures "out for good". It's now kept by role
   (`{ attackers, blockers }`): removal takes a creature out of the declarations it's in, and a block declared after
   that is a new one (CR 506.4, 509.1a).
+
+**D-106: Soul Bleed and Ice Cage (M2-12c3)** · 2026-11-21 · accepted
+- "At the beginning of the upkeep of enchanted creature's controller" is `beginningOfStep` with `whose:
+  "attachedController"`: it triggers in the turn of whoever controls the creature as the step begins, so under a Mind
+  Control it drains the thief (CR 303.4m, 613.1b); "that player" is the player whose step it is.
+- "Its activated abilities can't be activated" is marked on the host by the layer pass (`Layered.cantActivate`), like
+  Pacifism's restriction, and read where every activation, mana abilities included, is checked
+  (`activationBasicsProblem`, CR 602.5, 605.3a), so a caged Llanowar Elves can't pay for anything either.
+- "When enchanted creature becomes the target of a spell or ability" is `attachedBecomesTarget`, matched on
+  `BECAME_TARGET` for what the Aura is attached to: its trigger goes on the stack above the spell and resolves first
+  (its ruling). Ice Cage's own Aura spell can't trigger it: it isn't on the battlefield yet.
+- A spell or ability that chooses the same object for two instances of "target" makes it become the target once, so
+  such an ability triggers once (CR 601.2c, 603.2c): Bonecrusher Giant's and Tectonic Giant's rulings say so; no card in
+  the pool can do it, so a unit test shows it.
+- Future impact: a resolved "can't be activated" effect (Pithing Needle's kind, M2-14) would mark the same
+  `Layered.cantActivate` from `input.effects`, checked in the same place.

@@ -94,8 +94,7 @@ own `AbilityRef` kind, waiting only for the next beginning of anyone's step with
 (`BECAME_TARGET`, emitted once per object target as it's chosen). *Still to come:* triggers on activating abilities;
 a delayed trigger for "your next upkeep" must match against its own `controller`, not its source's (which may be
 gone), and one with targets chooses them as it's put on the stack like any trigger; one spell targeting the same
-object twice (no rule says whether it "becomes the target" once or twice, and no Magic 2010 card can: decide with
-the first card that does). A delayed trigger is matched with its `source` and checked with `onlyIf` against it: a
+object twice makes it "become the target" once (CR 601.2c; Bonecrusher Giant's and Tectonic Giant's rulings, D-106). A delayed trigger is matched with its `source` and checked with `onlyIf` against it: a
 condition about "this creature" or an intervening if would read an object that may be gone, so such delayed triggers
 need their own reading. Cancelling a cast doesn't restore `delayedTriggers`: one that triggered during the cast would
 be lost; that can't happen while they wait only for the beginning of a step. Ward (CR 702.21a, "counter that spell

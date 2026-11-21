@@ -120,6 +120,11 @@ export const furnaceWhelp: CardDef = {
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
   is `{ kind: "attachedCantAttackOrBlock" }` (D-102).
+- "At the beginning of the upkeep of enchanted creature's controller, that player loses 1 life" (Soul Bleed) is the
+  trigger `{ kind: "beginningOfStep", step: "upkeep", whose: "attachedController" }` with `loseLife` of
+  `"triggeringPlayer"`; "its activated abilities can't be activated" (Ice Cage) is the static
+  `{ kind: "attachedCantActivate" }`, mana abilities included; "when enchanted creature becomes the target of a spell
+  or ability" is the trigger `{ kind: "attachedBecomesTarget" }` (D-106).
 - "You control enchanted creature" (Mind Control) is the static `{ kind: "attachedControl" }`, layer 2 (D-105).
 - "Equip {2}" is an activated ability `{ kind: "activated", keyword: "equip", timing: "sorcery", cost: [{ kind: "mana",
   cost: [{ kind: "generic", amount: 2 }] }], targets: [{ kind: "permanent", filter: { types: ["creature"], controller:
@@ -145,7 +150,8 @@ export const furnaceWhelp: CardDef = {
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's
   controller), "at the beginning of each player's draw step" is `{ kind: "beginningOfStep", step: "draw", whose:
-  "each" }` ("the end step" likewise, `step: "end"`; "your upkeep" is `step: "upkeep", whose: "yours"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
+  "each" }` ("the end step" likewise, `step: "end"`; "your upkeep" is `step: "upkeep", whose: "yours"`; "enchanted creature's controller's upkeep" is `whose:
+  "attachedController"`), "whenever this creature attacks" is `{ kind: "selfAttacks" }`. "Whenever a
   player casts a green spell" is `{ kind: "spellCast", filter: { colors: ["G"] } }` ("you cast" adds `controller:
   "you"`, the caster); "whenever an opponent draws / discards a card" is `{ kind: "playerDraws" / "playerDiscards",
   player: "opponent" }` (`"anyPlayer"`, `"you"`); "whenever a player taps a land for mana" is `{ kind:
@@ -153,7 +159,8 @@ export const furnaceWhelp: CardDef = {
   "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
   "you" }`, with "that much" the amount `"thatMuch"`. "Whenever this creature blocks or becomes blocked by a creature"
   is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "When this creature
-  becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`. "At the beginning of the next end step,
+  becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`; "when enchanted creature becomes the target
+  of a spell or ability" is `{ kind: "attachedBecomesTarget" }`. "At the beginning of the next end step,
   [effects]" is `{ op: "createDelayedTrigger", ability: { when: { kind: "beginningOfStep", step: "end", whose: "each"
   }, targets: [], effects } }` (CR 603.7; only the next beginning of anyone's step, with no targets, for now); "destroy
   that creature" in it adds `about: { target: 0 }` to the maker and uses the subject `"remembered"` (CR 603.7c, Stone

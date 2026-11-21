@@ -2740,6 +2740,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Ice Cage",
+      "slug": "ice-cage",
+      "oracleId": "e37416cc-f343-44cd-8676-4ce4d4068e85",
+      "layout": "normal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature can't attack or block, and its activated abilities can't be activated.\nWhen enchanted creature becomes the target of a spell or ability, destroy this Aura.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/5/a5e14b62-c050-4d43-aeee-873f46d1e295.jpg?1783941091",
+        "large": "https://cards.scryfall.io/large/front/a/5/a5e14b62-c050-4d43-aeee-873f46d1e295.jpg?1783941091",
+        "png": "https://cards.scryfall.io/png/front/a/5/a5e14b62-c050-4d43-aeee-873f46d1e295.png?1783941091",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/5/a5e14b62-c050-4d43-aeee-873f46d1e295.jpg?1783941091"
+      },
+      "artist": "Mike Bierek",
+      "set": "m12",
+      "collectorNumber": "57",
+      "scryfallUri": "https://scryfall.com/card/m12/57/ice-cage?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ignite Disorder",
       "slug": "ignite-disorder",
       "oracleId": "8f66317c-06fe-4320-9d98-eaedaef67c85",
@@ -5036,6 +5066,36 @@
       "set": "m15",
       "collectorNumber": "33",
       "scryfallUri": "https://scryfall.com/card/m15/33/solemn-offering?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Soul Bleed",
+      "slug": "soul-bleed",
+      "oracleId": "e4f1acd6-b883-470b-88c2-3989011869d7",
+      "layout": "normal",
+      "manaCost": "{2}{B}",
+      "manaValue": 3,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nAt the beginning of the upkeep of enchanted creature's controller, that player loses 1 life.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/4/54800a5a-33fe-4291-a7b4-a1eb256dfa8f.jpg?1783942379",
+        "large": "https://cards.scryfall.io/large/front/5/4/54800a5a-33fe-4291-a7b4-a1eb256dfa8f.jpg?1783942379",
+        "png": "https://cards.scryfall.io/png/front/5/4/54800a5a-33fe-4291-a7b4-a1eb256dfa8f.png?1783942379",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/4/54800a5a-33fe-4291-a7b4-a1eb256dfa8f.jpg?1783942379"
+      },
+      "artist": "Zoltan Boros & Gabor Szikszai",
+      "set": "m10",
+      "collectorNumber": "113",
+      "scryfallUri": "https://scryfall.com/card/m10/113/soul-bleed?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

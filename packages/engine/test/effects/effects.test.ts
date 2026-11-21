@@ -53,6 +53,20 @@ const removed = (game: Game, id: ObjectId): Game => ({
   events: game.events,
 });
 
+describe("becoming the target (CR 601.2c)", () => {
+  it('an object chosen for two instances of "target" becomes the target once, so triggers once (CR 603.2c)', () => {
+    const { game, bears } = setup(SHOT_AND_BOOST);
+    const first = take(
+      take(game, (a) => a.type === "CAST_SPELL"),
+      targetIs(bears),
+    );
+    expect(first.events.filter((e) => e.type === "BECAME_TARGET")).toHaveLength(1);
+    // Events accumulate: still one, not two.
+    const second = take(first, targetIs(bears));
+    expect(second.events.filter((e) => e.type === "BECAME_TARGET")).toHaveLength(1);
+  });
+});
+
 describe("CR 608.2b: illegal targets aren't affected", () => {
   it("skips the illegal target but still affects the legal one", () => {
     const { game, bears } = setup(SHOT_AND_BOOST);

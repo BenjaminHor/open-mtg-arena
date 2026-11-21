@@ -8,6 +8,7 @@ import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
+import { layeredOf } from "../rules/layers.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -17,7 +18,8 @@ import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * What stops any activated ability of a permanent, mana ability or not: it works only on the battlefield (CR 113.6),
- * only its controller activates it (CR 602.2), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
+ * only its controller activates it (CR 602.2), nothing says its activated abilities can't be activated (Ice Cage,
+ * CR 602.5), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
  * is paid later, while the ability is put on the stack (CR 601.2g–h, 602.2b). Null if nothing stops it.
  */
 export function activationBasicsProblem(
@@ -32,6 +34,8 @@ export function activationBasicsProblem(
   if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null) return `${id} has no such ability`;
+  // "Its activated abilities can't be activated" (Ice Cage): all of them, mana abilities included (CR 602.5, 605.1a).
+  if (layeredOf(state, id, cards)?.cantActivate === true) return `${id}'s activated abilities can't be activated`;
   for (const part of ability.def.cost) {
     switch (part.kind) {
       case "tap":

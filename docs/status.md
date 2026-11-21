@@ -715,6 +715,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12c3 built (2026-11-21, D-106): Soul Bleed (`whose: "attachedController"`), Ice Cage (`attachedCantActivate`,
+         `attachedBecomesTarget`), 217 cards; 7 scenarios in `cards/m2-12c3/` (Soul Bleed under Mind Control, a caged
+         Pyromancer and Llanowar Elves, the trigger on a Shock, an Aura and an equip, its own spell not triggering it). Rules review: no wrong result; 10 more scenarios from
+         its probes (an Aura, a trigger and Naturalize targeting, the trigger's controller, two triggers, a cancelled
+         cast, an animated Forest, Soul Bleed after its creature dies and when stolen mid-game); a spell choosing the same
+         object twice makes it the target once (unit test); citations fixed. Next: code review, PR; then M2-12d.
        - M2-12c2 built (2026-11-21, D-105): Mind Control, the static `attachedControl` in the pass's layer 2 with timestamp
          order, `anyControlEffects` counting it (215 cards); 10 scenarios in `cards/m2-12c/` (Act of Treason after it and
          before it, two Mind Controls, destroyed while attacking and while blocking, an anthem, Equipment, the Cloak,
@@ -724,7 +730,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          permanent's controller on every board (the pass a quarter slower): it returns nothing without a control effect;
          an Aura's "you" is plain data; the rationale for reading the static from printed text corrected (layer 6 is after
          layer 2), with a future-rules watch-out; the anthem scenario made uneven; a unit test of the cache. Bench equal to
-         or faster than the base. Next: PR; then M2-12c3.
+         or faster than the base. Fuzz 80 clean. Merged as #63. Next: M2-12c3 (Soul Bleed, Ice Cage).
        - M2-12c1 built (2026-11-21, D-104): `controllerOf(state, id, cards)` (56 calls in 31 files), layer 2 only in the
          pass, the control-change check in `advance` (CR 302.6, 506.4), the `controlChangesRecorded` fuzz check. Every
          scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`

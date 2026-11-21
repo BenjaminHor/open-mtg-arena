@@ -36,6 +36,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
       return s.perCount ?? null;
     case "attachedCantAttackOrBlock":
     case "attachedCantBeBlocked":
+    case "attachedCantActivate":
     case "attachedControl":
       return null;
     case "cantBeBlocked":
