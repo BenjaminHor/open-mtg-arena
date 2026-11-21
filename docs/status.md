@@ -711,7 +711,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            none; counters a permanent enters with add up (no overwrite, no extra guard); 12 more scenarios (Fog, Safe
            Passage or the Hydra chosen first, CR 616.1; the -1/-1 ruling; the end-step ruling; dying; trample's lethal
            ignoring prevention, CR 702.19b; a new object after a bounce; no counters; two blockers; X of 0 cast and put).
-           Next: fuzz, PR; then M2-10 is done.
+           Fuzz 200 clean. Merged as #57.
+       - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
+         (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
+         Gargoyle Castle.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
