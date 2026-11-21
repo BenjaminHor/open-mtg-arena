@@ -1,0 +1,23 @@
+name: Burning Inquiry, each of the three draws shows the next top, and nothing of the other library
+rules: [CR 701.20a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Nocturnus, Mountain]
+    hand: [Burning Inquiry]
+    library: [Swamp, Island, Sign in Blood, Forest, Plains]
+  p2:
+    library: [Swamp, Island, Forest, Plains]
+steps:
+  - p1 cast: Burning Inquiry
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.revealedTop: Forest
+      p2.revealedTop: null
+      events contains:
+        - { type: CARDS_REVEALED, cards: [Island] }
+        - { type: CARDS_REVEALED, cards: [Sign in Blood] }
+        - { type: CARDS_REVEALED, cards: [Forest] }
+      events lacks:
+        - { type: CARDS_REVEALED, from: { zone: library, player: p2 } }

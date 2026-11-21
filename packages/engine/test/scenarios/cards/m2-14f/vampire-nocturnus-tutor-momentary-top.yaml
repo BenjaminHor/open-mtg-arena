@@ -1,5 +1,5 @@
 name: Diabolic Tutor takes the revealed top card; the next card is on top until the shuffle, so it's revealed (Vampire Nocturnus's ruling)
-rules: [CR 701.20a]
+rules: [CR 401.5, CR 701.20a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

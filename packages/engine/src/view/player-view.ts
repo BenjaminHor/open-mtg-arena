@@ -110,7 +110,7 @@ export function playerView(state: GameState, viewer: PlayerId, cards: CardDataba
       handSize: z.hand.length,
       hand: canSee({ zone: "hand", player: p }, viewer) ? z.hand : null,
       revealedHand: hands.includes(p) ? inShownOrder(state, z.hand).map((id) => oracleIdOf(state, id)) : null,
-      // A new top card waits until a spell is cast (later: CR 601.2i); no card in the pool changes it while casting.
+      // A new top card waits until a spell is cast (later: CR 401.5); no card in the pool changes it while casting.
       revealedTop: tops.includes(p) && top !== undefined ? oracleIdOf(state, top) : null,
       graveyard: z.graveyard,
     };

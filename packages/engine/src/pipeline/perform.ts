@@ -43,7 +43,8 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
  * moment within one resolution, between a search taking the top card and the shuffle after it, or between two draws
  * (the card's ruling: "reveal each one before you draw it"). A view comes only between actions, so each new top is
  * told with `CARDS_REVEALED` after the event that made it the top: a simultaneous batch is one event, and shows only
- * the top it leaves.
+ * the top it leaves. A top changed while casting would wait until the spell is cast, as in `playerView`
+ * (later: CR 401.5); no card in the pool changes it then.
  */
 function withNewTopsShown(before: GameState, after: Progress, cards: CardDatabase): Progress {
   const topOf = (s: GameState, p: PlayerId) => s.zones.players[p]?.library[0];
