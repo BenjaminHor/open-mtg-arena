@@ -222,6 +222,9 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   cantAttackUnlessDefenderControls: "combat",
   // As its permanent resolves, like anthems: it does something only at a cleanup with too many cards.
   noMaximumHandSize: "enters",
+  // As its Aura resolves, like anthems: the Aura itself never attacks or blocks, and what it stops never happens.
+  attachedGets: "enters",
+  attachedCantAttackOrBlock: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

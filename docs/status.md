@@ -715,6 +715,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12a built (2026-11-21, D-102): `attachedTo` and its one reader, `enchant` as the Aura spell's target, entering
+         attached, `attachedGets` / `attachedCantAttackOrBlock`, CR 704.5m (protection too), setup `attachedTo`, the
+         invariant; Holy Strength, Unholy Strength, Weakness, Oakenform, Lifelink, Armored Ascension, Indestructibility,
+         Pacifism (210 cards); 15 scenarios in `cards/m2-12a/` (each ruling, shroud, protection, an animated Forest), an
+         Auras column in the matrix, two golden games. Next: reviews, fuzz, bench, PR.
        - M2-12 plan (2026-11-21, with the advisor's review), four PRs. Auras and Equipment (CR 303.4, 301.5, 702.5,
          702.6), 16 cards.
          - Model: an attached permanent records what it's attached to, `CardObject.attachedTo?: ObjectId` (left out

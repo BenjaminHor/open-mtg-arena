@@ -1,0 +1,24 @@
+name: Lifelink on an opponent's creature gains life for the creature's controller, not the Aura's (its ruling)
+rules: [CR 702.15b, CR 303.4e, CR 613.1f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains]
+    hand: [Lifelink]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Lifelink
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Grizzly Bears.abilities contains: [lifelink]
+      p1.battlefield contains: [Lifelink]
+  - all pass: until main1
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Grizzly Bears]
+  - all pass: until main2
+  - expect:
+      p1.life: 18
+      p2.life: 22

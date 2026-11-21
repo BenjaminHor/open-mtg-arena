@@ -9,6 +9,8 @@ export type StateBasedAction =
   | { kind: "drewFromEmptyLibrary"; player: PlayerId }
   /** CR 704.5d: a token in a zone other than the battlefield ceases to exist. */
   | { kind: "tokenOutsideBattlefield"; object: ObjectId }
+  /** CR 704.5m: an Aura attached to an illegal object, or to nothing, is put into its owner's graveyard. */
+  | { kind: "auraIllegallyAttached"; object: ObjectId }
   /** CR 704.5f: a creature with toughness 0 or less is put into its owner's graveyard. */
   | { kind: "zeroToughness"; object: ObjectId }
   /** CR 704.5g: a creature with toughness above 0 and lethal damage marked on it is destroyed. */

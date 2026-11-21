@@ -22,9 +22,15 @@ export type Destination =
   | { zone: "stack"; controller: PlayerId }
   /**
    * A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e); `counters`: what it enters with
-   * (CR 614.1c, 122.6).
+   * (CR 614.1c, 122.6); `attachedTo`: the permanent an Aura enters attached to (CR 608.3c).
    */
-  | { zone: "battlefield"; controller: PlayerId; is?: EntersAs; counters?: Record<string, number> }
+  | {
+      zone: "battlefield";
+      controller: PlayerId;
+      is?: EntersAs;
+      counters?: Record<string, number>;
+      attachedTo?: ObjectId;
+    }
   /**
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
    * (CR 603.2e): no `PERMANENT_TAPPED` event, the one such triggers will see.
@@ -85,6 +91,11 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     choices: to.zone === "stack" ? { modes: [], x: null, targets: [], division: null } : null,
     // A token stays a token wherever it goes, until it ceases to exist (CR 111.7, 704.5d).
     ...(old.token === undefined ? {} : { token: old.token }),
+    // Attached as it enters, so it's never seen unattached (CR 608.3c); its timestamp is its entering one (attaching
+    // later gives it a new one, later: CR 613.7e).
+    ...(to.zone === "battlefield" && "attachedTo" in to && to.attachedTo !== undefined
+      ? { attachedTo: to.attachedTo }
+      : {}),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

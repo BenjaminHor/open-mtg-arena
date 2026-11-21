@@ -8,6 +8,7 @@ import type { Attack, Block } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { keywordsOf, staticAbilitiesOf } from "./abilities.ts";
+import { attachmentsOf } from "./attachment.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
@@ -29,6 +30,7 @@ export function canAttack(state: GameState, id: ObjectId, player: PlayerId, card
   if (controllerOf(state, id) !== player || obj.tapped) return false;
   // Defender: a restriction on attacking (CR 702.3b, 508.1c).
   if (keywordsOf(state, id, cards).includes("defender")) return false;
+  if (enchantedCantAttackOrBlock(state, id, cards)) return false;
   return isFreeOfSummoningSickness(state, id, cards);
 }
 
@@ -56,13 +58,23 @@ export function canAttackPlayer(state: GameState, id: ObjectId, defender: Player
 export function canBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[blocker];
   if (obj?.kind !== "card" || !isCreaturePermanent(state, blocker, cards) || obj.tapped) return false;
-  if (cantBlockNow(state, blocker)) return false;
+  if (cantBlockNow(state, blocker) || enchantedCantAttackOrBlock(state, blocker, cards)) return false;
   return (
     flyingAllowsBlock(state, blocker, attacker, cards) &&
     landwalkAllowsBlock(state, blocker, attacker, cards) &&
     cantBeBlockedAllowsBlock(state, blocker, attacker, cards) &&
     // An attacker with protection can't be blocked by creatures with the quality (CR 702.16f).
     !isProtectedFrom(state, attacker, blocker, cards)
+  );
+}
+
+/**
+ * "Enchanted creature can't attack or block" (Pacifism): a restriction from a permanent attached to it (CR 303.4m,
+ * 508.1c, 509.1b).
+ */
+function enchantedCantAttackOrBlock(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  return attachmentsOf(state, id).some((a) =>
+    staticAbilitiesOf(state, a, cards).some((s) => s.kind === "attachedCantAttackOrBlock"),
   );
 }
 

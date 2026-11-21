@@ -1,0 +1,16 @@
+name: Destroying Indestructibility and its creature at once destroys only the Aura (its ruling)
+rules: [CR 702.12b, CR 704.5m]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains]
+    hand: [Planar Cleansing]
+  p2:
+    battlefield: [Grizzly Bears, { card: Indestructibility, attachedTo: p2:Grizzly Bears }]
+steps:
+  - p1 cast: Planar Cleansing
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield: [Grizzly Bears]
+      p2.graveyard: [Indestructibility]

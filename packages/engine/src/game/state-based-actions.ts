@@ -38,6 +38,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
     case "drewFromEmptyLibrary":
       return { player: action.player, reason: action.kind };
     case "tokenOutsideBattlefield":
+    case "auraIllegallyAttached":
     case "zeroToughness":
     case "lethalDamage":
     case "deathtouchDamage":
@@ -62,6 +63,8 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
       return []; // players lose together, after the objects move
     case "tokenOutsideBattlefield":
       return [{ kind: "ceaseToExist", object: action.object }];
+    // Put into its owner's graveyard, not destroyed (CR 704.5m).
+    case "auraIllegallyAttached":
     case "zeroToughness":
       return [{ kind: "moveCard", object: action.object, to: { zone: "graveyard" } }]; // not "destroyed" (CR 704.5f)
     case "lethalDamage":

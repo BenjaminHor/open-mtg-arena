@@ -3,6 +3,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
 import { isTriggerRef, triggeredAbilityDef } from "../rules/abilities.ts";
+import { enchantFilterOf } from "../rules/attachment.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
@@ -12,6 +13,7 @@ import type { ObjectId } from "../state/ids.ts";
 import type { GameObject, Target } from "../state/objects.ts";
 import type { WorkItem } from "../state/work.ts";
 import { holds } from "../triggers/match-event.ts";
+import type { Destination } from "../zones/move-card.ts";
 import { removeAbilityFromStack } from "../zones/stack-abilities.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { currentTurn } from "./turn.ts";
@@ -124,10 +126,10 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
       };
     case "card": {
       const types = cardTypesOf(state, id, cards);
-      const destination =
+      const destination: Destination =
         types.includes("instant") || types.includes("sorcery")
-          ? ({ zone: "graveyard" } as const)
-          : ({ zone: "battlefield", controller } as const);
+          ? { zone: "graveyard" }
+          : { zone: "battlefield", controller, ...auraHost(state, id, cards) };
       // The resolution is reported before the card moves; triggers on resolving come after both (later: CR 608.2p).
       const resolved = { type: "SPELL_RESOLVED", object: id, cardId: obj.cardId, controller } as const;
       return andThen({ state, events: [resolved] }, (s) =>
@@ -135,6 +137,16 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
       );
     }
   }
+}
+
+/**
+ * An Aura spell enters attached to the object it targets (CR 608.3c), its target checked legal as it began to resolve
+ * (CR 608.3b). Nothing else here enters attached.
+ */
+function auraHost(state: GameState, id: ObjectId, cards: CardDatabase): { attachedTo?: ObjectId } {
+  if (enchantFilterOf(state, id, cards) === null) return {};
+  const target = state.objects[id]?.choices?.targets[0]?.[0];
+  return target?.kind === "object" ? { attachedTo: target.object } : {};
 }
 
 /** The state with no "this way" record (CR 608.2c): the resolution is over. */

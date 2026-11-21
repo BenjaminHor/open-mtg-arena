@@ -24,13 +24,17 @@ export const PLAYERS: readonly PlayerId[] = ["p1", "p2"];
 export const SETUP_KEYS = ["seed", "opening", "first", "turn", "p1", "p2", "rules"];
 export const TURN_KEYS = ["active", "step", "number"];
 export const PLAYER_KEYS = ["life", "library", "hand", "battlefield", "graveyard", "exile", "manaPool"];
-export const PERMANENT_KEYS = ["card", "tapped", "sick", "damage", "counters"];
+export const PERMANENT_KEYS = ["card", "tapped", "sick", "damage", "counters", "attachedTo"];
 
 export function buildSetup(setup: Record<string, unknown>, cards: CardDatabase): GameSetup {
   keysIn(setup, SETUP_KEYS, "setup");
   const ruleModifiers = ruleModifiersFrom(setup.rules);
   const standard = setup.opening === "standard";
-  const players = PLAYERS.map((id) => playerSetup(id, setup[id], cards, standard));
+  const players = withAttachments(
+    PLAYERS.map((id) => playerSetup(id, setup[id], cards, standard)),
+    setup,
+    cards,
+  );
   const seed = setup.seed === undefined ? 1 : integer(setup.seed, "seed");
   if (standard) {
     if (setup.turn !== undefined) throw new Error("A standard opening starts before turn 1, so it takes no turn");
@@ -53,6 +57,41 @@ export function buildSetup(setup: Record<string, unknown>, cards: CardDatabase):
     opening: { kind: "fixed", turn: { number, activePlayer: active as PlayerId, step: engineStep(String(turn.step)) } },
     ruleModifiers,
   };
+}
+
+/**
+ * `attachedTo: p1:Grizzly Bears` (or `#2` for the second) in a battlefield entry: the permanent it starts attached to,
+ * among the permanents that player starts with, as the engine's `{ player, index }`.
+ */
+function withAttachments(players: PlayerSetup[], setup: Record<string, unknown>, cards: CardDatabase): PlayerSetup[] {
+  return players.map((player) => {
+    const raw = setup[player.id];
+    const entries = isRecord(raw) && Array.isArray(raw.battlefield) ? raw.battlefield : [];
+    const battlefield = player.battlefield.map((permanent, i) => {
+      const entry: unknown = entries[i];
+      if (!isRecord(entry) || entry.attachedTo === undefined) return permanent;
+      return { ...permanent, attachedTo: hostOf(String(entry.attachedTo), players, cards) };
+    });
+    return { ...player, battlefield };
+  });
+}
+
+function hostOf(
+  ref: string,
+  players: readonly PlayerSetup[],
+  cards: CardDatabase,
+): { player: PlayerId; index: number } {
+  const match = /^(p[12]):([^#]+)(?:#(\d+))?$/.exec(ref);
+  if (match === null) throw new Error(`attachedTo names a permanent like p1:Grizzly Bears, got ${ref}`);
+  const player = match[1] as PlayerId;
+  const oracleId = oracleIdOf(cards, match[2] ?? "");
+  const nth = Number(match[3] ?? 1);
+  const indexes = (players.find((p) => p.id === player)?.battlefield ?? []).flatMap((perm, i) =>
+    perm.oracleId === oracleId ? [i] : [],
+  );
+  const index = indexes[nth - 1];
+  if (index === undefined) throw new Error(`attachedTo: ${player} starts with no ${ref.slice(3)}`);
+  return { player, index };
 }
 
 /** `rules:` in a setup: rule modifiers, written like the engine's `RuleModifier` (one kind so far). */

@@ -12,6 +12,7 @@ Alluring Siren
 Angel's Feather
 Angel's Mercy
 Ant Queen
+Armored Ascension
 Assassinate
 Awakener Druid
 Ball Lightning
@@ -90,6 +91,7 @@ Grizzly Bears
 Guardian Seraph
 Haunting Echoes
 Hill Giant
+Holy Strength
 Honor of the Pure
 Horned Turtle
 Howl of the Night Pack
@@ -98,6 +100,7 @@ Howling Mine
 Hypnotic Specter
 Ignite Disorder
 Illusionary Servant
+Indestructibility
 Inferno Elemental
 Island
 Jackal Familiar
@@ -108,6 +111,7 @@ Kindled Fury
 Kraken's Eye
 Lava Axe
 Levitation
+Lifelink
 Lightning Bolt
 Lightning Elemental
 Lightwielder Paladin
@@ -130,8 +134,10 @@ Naturalize
 Nature's Spiral
 Negate
 Nightmare
+Oakenform
 Ornithopter
 Overrun
+Pacifism
 Palace Guard
 Panic Attack
 Phantom Warrior
@@ -188,6 +194,7 @@ Traumatize
 Trumpet Blast
 Undead Slayer
 Underworld Dreams
+Unholy Strength
 Unsummon
 Vampire Aristocrat
 Veteran Armorsmith
@@ -198,6 +205,7 @@ Wall of Bone
 Wall of Faith
 Wall of Fire
 Warpath Ghoul
+Weakness
 White Knight
 Wind Drake
 Windstorm

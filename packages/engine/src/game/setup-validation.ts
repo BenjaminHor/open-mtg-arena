@@ -50,10 +50,17 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       if (!Number.isSafeInteger(amount) || amount < 0)
         problems.push(`${player.id}: mana pool ${type} must be 0 or more`);
     }
-    for (const permanent of player.battlefield) {
+    for (const [i, permanent] of player.battlefield.entries()) {
       if (!Number.isSafeInteger(permanent.damage) || permanent.damage < 0) {
         problems.push(`${player.id}: damage must be 0 or more`);
       }
+      const host = permanent.attachedTo;
+      if (host === undefined) continue;
+      const hosts = setup.players.find((p) => p.id === host.player)?.battlefield ?? [];
+      if (!Number.isSafeInteger(host.index) || host.index < 0 || host.index >= hosts.length)
+        problems.push(`${player.id}: a permanent is attached to nothing on ${host.player}'s battlefield`);
+      else if (host.player === player.id && host.index === i)
+        problems.push(`${player.id}: a permanent can't be attached to itself (CR 303.4d, 301.5c)`);
     }
     if (setup.opening.kind === "standard") {
       if (player.hand.length > 0)

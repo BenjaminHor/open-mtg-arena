@@ -199,8 +199,13 @@ export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabas
   const obj = state.objects[id];
   if (obj === undefined) return [];
   switch (obj.kind) {
-    case "card":
-      return cardDataOf(obj, cards)?.def.spell?.targets ?? [];
+    case "card": {
+      const def = cardDataOf(obj, cards)?.def;
+      // An Aura spell targets what it can enchant (CR 303.4a, 702.5a): a permanent, as no Aura in the pool enchants a
+      // player (later: CR 702.5d).
+      if (def?.enchant !== undefined) return [{ kind: "permanent", filter: def.enchant }];
+      return def?.spell?.targets ?? [];
+    }
     case "ability":
       return stackAbilityText(state, id, cards).targets;
   }

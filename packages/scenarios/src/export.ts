@@ -253,6 +253,7 @@ function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, un
         if (perm.summoningSick) entry.sick = true;
         if (perm.damage > 0) entry.damage = perm.damage;
         if (Object.keys(perm.counters).length > 0) entry.counters = perm.counters;
+        if (perm.attachedTo !== undefined) entry.attachedTo = hostRef(setup, perm.attachedTo, card);
         return entry;
       });
     }
@@ -263,4 +264,16 @@ function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, un
     out[player.id] = p;
   }
   return out;
+}
+
+/** `p1:Grizzly Bears#2`: the permanent an attachment starts on, as the setup format names it (`attachedTo`). */
+function hostRef(
+  setup: GameSetup,
+  host: { player: PlayerId; index: number },
+  card: (oracleId: string) => string,
+): string {
+  const battlefield = setup.players.find((p) => p.id === host.player)?.battlefield ?? [];
+  const oracleId = battlefield[host.index]?.oracleId ?? "";
+  const nth = battlefield.slice(0, host.index + 1).filter((p) => p.oracleId === oracleId).length;
+  return `${host.player}:${card(oracleId)}${nth > 1 ? `#${nth}` : ""}`;
 }

@@ -9,6 +9,7 @@ import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsFeather } from "./a/angels-feather.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { antQueen } from "./a/ant-queen.ts";
+import { armoredAscension } from "./a/armored-ascension.ts";
 import { assassinate } from "./a/assassinate.ts";
 import { awakenerDruid } from "./a/awakener-druid.ts";
 import { ballLightning } from "./b/ball-lightning.ts";
@@ -87,6 +88,7 @@ import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { guardianSeraph } from "./g/guardian-seraph.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
+import { holyStrength } from "./h/holy-strength.ts";
 import { honorOfThePure } from "./h/honor-of-the-pure.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
 import { howlOfTheNightPack } from "./h/howl-of-the-night-pack.ts";
@@ -95,6 +97,7 @@ import { howlingMine } from "./h/howling-mine.ts";
 import { hypnoticSpecter } from "./h/hypnotic-specter.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { illusionaryServant } from "./i/illusionary-servant.ts";
+import { indestructibility } from "./i/indestructibility.ts";
 import { infernoElemental } from "./i/inferno-elemental.ts";
 import { island } from "./i/island.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
@@ -105,6 +108,7 @@ import { kindledFury } from "./k/kindled-fury.ts";
 import { krakensEye } from "./k/krakens-eye.ts";
 import { lavaAxe } from "./l/lava-axe.ts";
 import { levitation } from "./l/levitation.ts";
+import { lifelink } from "./l/lifelink.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
 import { lightningElemental } from "./l/lightning-elemental.ts";
 import { lightwielderPaladin } from "./l/lightwielder-paladin.ts";
@@ -127,8 +131,10 @@ import { naturalize } from "./n/naturalize.ts";
 import { naturesSpiral } from "./n/natures-spiral.ts";
 import { negate } from "./n/negate.ts";
 import { nightmare } from "./n/nightmare.ts";
+import { oakenform } from "./o/oakenform.ts";
 import { ornithopter } from "./o/ornithopter.ts";
 import { overrun } from "./o/overrun.ts";
+import { pacifism } from "./p/pacifism.ts";
 import { palaceGuard } from "./p/palace-guard.ts";
 import { panicAttack } from "./p/panic-attack.ts";
 import { phantomWarrior } from "./p/phantom-warrior.ts";
@@ -185,6 +191,7 @@ import { traumatize } from "./t/traumatize.ts";
 import { trumpetBlast } from "./t/trumpet-blast.ts";
 import { undeadSlayer } from "./u/undead-slayer.ts";
 import { underworldDreams } from "./u/underworld-dreams.ts";
+import { unholyStrength } from "./u/unholy-strength.ts";
 import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
 import { veteranArmorsmith } from "./v/veteran-armorsmith.ts";
@@ -195,6 +202,7 @@ import { wallOfBone } from "./w/wall-of-bone.ts";
 import { wallOfFaith } from "./w/wall-of-faith.ts";
 import { wallOfFire } from "./w/wall-of-fire.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
+import { weakness } from "./w/weakness.ts";
 import { whiteKnight } from "./w/white-knight.ts";
 import { windDrake } from "./w/wind-drake.ts";
 import { windstorm } from "./w/windstorm.ts";
@@ -213,6 +221,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   angelsFeather,
   angelsMercy,
   antQueen,
+  armoredAscension,
   assassinate,
   awakenerDruid,
   ballLightning,
@@ -291,6 +300,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   guardianSeraph,
   hauntingEchoes,
   hillGiant,
+  holyStrength,
   honorOfThePure,
   hornedTurtle,
   howlOfTheNightPack,
@@ -299,6 +309,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   hypnoticSpecter,
   igniteDisorder,
   illusionaryServant,
+  indestructibility,
   infernoElemental,
   island,
   jackalFamiliar,
@@ -309,6 +320,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   krakensEye,
   lavaAxe,
   levitation,
+  lifelink,
   lightningBolt,
   lightningElemental,
   lightwielderPaladin,
@@ -331,8 +343,10 @@ export const CARD_DEFS: readonly CardDef[] = [
   naturesSpiral,
   negate,
   nightmare,
+  oakenform,
   ornithopter,
   overrun,
+  pacifism,
   palaceGuard,
   panicAttack,
   phantomWarrior,
@@ -389,6 +403,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   trumpetBlast,
   undeadSlayer,
   underworldDreams,
+  unholyStrength,
   unsummon,
   vampireAristocrat,
   veteranArmorsmith,
@@ -399,6 +414,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   wallOfFaith,
   wallOfFire,
   warpathGhoul,
+  weakness,
   whiteKnight,
   windDrake,
   windstorm,

@@ -1491,3 +1491,22 @@ every schema change and every change D-024 lists bumps it.
 - A token's own activated or triggered abilities would need its data on the ability object (`sourceOracleId` names no
   card); none in the pool has one yet. A token that has left the battlefield can't move again (later: CR 111.8).
 - The effect op: `createTokens { token: TokenDef, amount }`.
+
+**D-102: Attachments and Aura spells (M2-12a)** · 2026-11-21 · accepted
+- An attached permanent records its host, `CardObject.attachedTo?: ObjectId` (left out otherwise, like `token`; fresh
+  on every new object, CR 400.7). One reader, `attachedHost` (`rules/attachment.ts`), gives the host only while it's on
+  the battlefield, so a host that left is never read as still enchanted; the layer pass, combat and the state-based
+  actions all use it or its layer-pass twin `attachedHostIn`.
+- "Enchant [quality]" is `CardDef.enchant`, a filter. It's the Aura spell's one target (`targetSpecsOf`, CR 303.4a), so
+  shroud, protection and an illegal target on resolution (CR 608.3b) work as for any targeted spell. A resolving Aura
+  enters attached as part of its move (`Destination.attachedTo`, CR 608.3c), never seen unattached, with its entering
+  timestamp (CR 613.7e).
+- "Enchanted creature gets/has" is the static `attachedGets` (layers 6 and 7c, read from the host the pass finds);
+  Pacifism's restriction is `attachedCantAttackOrBlock`, read in `canAttack` and `canBlock`.
+- An Aura attached to nothing, to itself, to what its enchant ability doesn't allow, or to a permanent with protection
+  from it goes to its owner's graveyard as a state-based action (`auraIllegallyAttached`, CR 704.5m, 303.4c-d, 702.16c).
+- Scenario setups can start a permanent attached (`attachedTo` in a battlefield entry; `PermanentSetup.attachedTo` as a
+  player and an index into their battlefield), validated and exported.
+- Future impact: Equipment (M2-12b) reuses `attachedTo` and the reader, with an `attach` event for equip (a new
+  timestamp, CR 613.7e); Auras put onto the battlefield without being cast choose a host (M2-12d, CR 303.4f-g); an Aura
+  enchanting a player (later: CR 702.5d) needs `attachedTo` to name a player.

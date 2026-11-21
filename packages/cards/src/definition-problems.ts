@@ -31,6 +31,10 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
       return s.filter;
     case "powerToughnessEachEqual":
       return s.to.count;
+    case "attachedGets":
+      return s.perCount ?? null;
+    case "attachedCantAttackOrBlock":
+      return null;
     case "cantBeBlocked":
     case "cantAttackUnlessDefenderControls":
     case "noMaximumHandSize":
@@ -74,7 +78,11 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       .filter((k) => !KEYWORD_ACTIONS.includes(k) && !GENERIC_TERMS.includes(k))
       .sort();
     // Protection's qualities are in `protections`; Scryfall lists just "Protection" (CR 702.16).
-    const actual = [...(def.keywords ?? []), ...((def.protections?.length ?? 0) > 0 ? ["protection"] : [])].sort();
+    const actual = [
+      ...(def.keywords ?? []),
+      ...((def.protections?.length ?? 0) > 0 ? ["protection"] : []),
+      ...(def.enchant === undefined ? [] : ["enchant"]),
+    ].sort();
     if (JSON.stringify(expected) !== JSON.stringify(actual)) {
       problems.push(`${def.name}: keywords ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`);
     }

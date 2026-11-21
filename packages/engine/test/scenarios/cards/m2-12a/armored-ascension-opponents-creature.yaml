@@ -1,0 +1,11 @@
+name: Armored Ascension on an opponent's creature counts its own controller's Plains, not the creature's controller's
+rules: [CR 109.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, { card: Armored Ascension, attachedTo: p2:Grizzly Bears }]
+  p2:
+    battlefield: [Grizzly Bears, Plains]
+steps:
+  - expect:
+      p2:Grizzly Bears.power: 6

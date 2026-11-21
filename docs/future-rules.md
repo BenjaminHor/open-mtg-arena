@@ -318,7 +318,7 @@ whole, which is right while a creature has only creature types; an animated Fore
 "Forest Treefolk", and a Forest shared with another animated land would count. Split subtypes by type when a card can
 reach that. *Needs now:* nothing (every animated land in the pool is also a Treefolk).
 
-**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** Auras and Equipment (M2-12): "can't be enchanted or equipped"
+**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** *Built for Auras (M2-12a, D-102):* an Aura on a permanent with protection from it goes to the graveyard (CR 704.5m). Auras and Equipment (M2-12): "can't be enchanted or equipped"
 needs `isProtectedFrom(state, permanent, auraOrEquipment)` where an Aura is attached without targeting (put onto the
 battlefield, CR 303.4f) and in the state-based actions that put such an Aura into its owner's graveyard and unattach
 such Equipment (CR 704.5m-n); Aura spells and equip abilities that target are covered by `legalTargets`. Layers (M2-09):

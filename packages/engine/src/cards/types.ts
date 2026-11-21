@@ -117,6 +117,11 @@ export type CardDef = {
    * `replacementsOf`. Each works from the zones its text says (CR 113.6b, 113.6h), not only from the battlefield.
    */
   replacements?: ReplacementDef[];
+  /**
+   * "Enchant creature" (CR 702.5a): what this Aura can enchant, which is also its target as an Aura spell (CR 303.4a).
+   * `{ types: ["creature"] }` for "enchant creature", `{}` for "enchant permanent". Read only through `enchantFilterOf`.
+   */
+  enchant?: ObjectFilter;
 };
 
 /** A replacement effect an object's own text makes, for itself (CR 614.1, 614.12). */
@@ -151,6 +156,14 @@ export type ReplacementDef =
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
+  /**
+   * "Enchanted creature gets +1/+2", "has lifelink", "gets +1/+1 for each Plains you control and has flying" (Armored
+   * Ascension): the permanent this one is attached to (CR 303.4m; "equipped creature", later: CR 301.5f), layers 6 and 7c. `perCount` multiplies the
+   * bonus by how many permanents fit it, "you" being this permanent's controller.
+   */
+  | { kind: "attachedGets"; power: number; toughness: number; keywords?: Keyword[]; perCount?: ObjectFilter }
+  /** "Enchanted creature can't attack or block" (Pacifism): restrictions on the attached creature (CR 508.1c, 509.1b). */
+  | { kind: "attachedCantAttackOrBlock" }
   /**
    * "This creature can't be blocked" (an evasion ability, CR 509.1b), or "can't be blocked except by [filter]" with
    * `except`, read relative to the attacker's controller, the ability's "you" (CR 109.5).

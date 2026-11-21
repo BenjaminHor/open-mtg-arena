@@ -233,6 +233,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Armored Ascension",
+      "slug": "armored-ascension",
+      "oracleId": "916db499-7f0a-45f7-8abe-94818a53e494",
+      "layout": "normal",
+      "manaCost": "{3}{W}",
+      "manaValue": 4,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature gets +1/+1 for each Plains you control and has flying.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/6/5647c21e-5926-462c-8b01-862f8cedf777.jpg?1783941838",
+        "large": "https://cards.scryfall.io/large/front/5/6/5647c21e-5926-462c-8b01-862f8cedf777.jpg?1783941838",
+        "png": "https://cards.scryfall.io/png/front/5/6/5647c21e-5926-462c-8b01-862f8cedf777.png?1783941838",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/6/5647c21e-5926-462c-8b01-862f8cedf777.jpg?1783941838"
+      },
+      "artist": "Jesper Ejsing",
+      "set": "m11",
+      "collectorNumber": "5",
+      "scryfallUri": "https://scryfall.com/card/m11/5/armored-ascension?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Assassinate",
       "slug": "assassinate",
       "oracleId": "ce979f36-84f2-4419-b400-971263494cc6",
@@ -2452,6 +2482,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Holy Strength",
+      "slug": "holy-strength",
+      "oracleId": "9357de36-f8be-4f49-b2c8-9fe9eaf82b07",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature gets +1/+2.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/c/ac0987b8-755e-42f1-bd6d-1401fecd4171.jpg?1783941836",
+        "large": "https://cards.scryfall.io/large/front/a/c/ac0987b8-755e-42f1-bd6d-1401fecd4171.jpg?1783941836",
+        "png": "https://cards.scryfall.io/png/front/a/c/ac0987b8-755e-42f1-bd6d-1401fecd4171.png?1783941836",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/c/ac0987b8-755e-42f1-bd6d-1401fecd4171.jpg?1783941836"
+      },
+      "artist": "Terese Nielsen",
+      "set": "m11",
+      "collectorNumber": "16",
+      "scryfallUri": "https://scryfall.com/card/m11/16/holy-strength?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Honor of the Pure",
       "slug": "honor-of-the-pure",
       "oracleId": "eb4188bb-62df-4309-bde1-f66318fe2f05",
@@ -2677,6 +2737,36 @@
       "set": "m10",
       "collectorNumber": "57",
       "scryfallUri": "https://scryfall.com/card/m10/57/illusionary-servant?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Indestructibility",
+      "slug": "indestructibility",
+      "oracleId": "9aaa0a28-e342-48bd-8f59-0cd289491f98",
+      "layout": "normal",
+      "manaCost": "{3}{W}",
+      "manaValue": 4,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant permanent\nEnchanted permanent has indestructible. (Effects that say \"destroy\" don't destroy that permanent. A creature with indestructible can't be destroyed by damage.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/0/e086a062-d39b-4e2a-bde0-f4d6d1797a5f.jpg?1783939942",
+        "large": "https://cards.scryfall.io/large/front/e/0/e086a062-d39b-4e2a-bde0-f4d6d1797a5f.jpg?1783939942",
+        "png": "https://cards.scryfall.io/png/front/e/0/e086a062-d39b-4e2a-bde0-f4d6d1797a5f.png?1783939942",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/0/e086a062-d39b-4e2a-bde0-f4d6d1797a5f.jpg?1783939942"
+      },
+      "artist": "Darrell Riche",
+      "set": "m14",
+      "collectorNumber": "23",
+      "scryfallUri": "https://scryfall.com/card/m14/23/indestructibility?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -2957,6 +3047,36 @@
       "set": "m12",
       "collectorNumber": "61",
       "scryfallUri": "https://scryfall.com/card/m12/61/levitation?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Lifelink",
+      "slug": "lifelink",
+      "oracleId": "4fe8316a-9cff-43e9-a1d5-993a0c9daf3a",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature has lifelink. (Damage dealt by the creature also causes its controller to gain that much life.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/8/a8e207d4-9930-4aff-a7c8-b53bd1b5d566.jpg?1783941102",
+        "large": "https://cards.scryfall.io/large/front/a/8/a8e207d4-9930-4aff-a7c8-b53bd1b5d566.jpg?1783941102",
+        "png": "https://cards.scryfall.io/png/front/a/8/a8e207d4-9930-4aff-a7c8-b53bd1b5d566.png?1783941102",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/8/a8e207d4-9930-4aff-a7c8-b53bd1b5d566.jpg?1783941102"
+      },
+      "artist": "Terese Nielsen",
+      "set": "m12",
+      "collectorNumber": "24",
+      "scryfallUri": "https://scryfall.com/card/m12/24/lifelink?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3582,6 +3702,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Oakenform",
+      "slug": "oakenform",
+      "oracleId": "b254fefb-11d2-4369-ae5c-0c3bd48ae580",
+      "layout": "normal",
+      "manaCost": "{2}{G}",
+      "manaValue": 3,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature gets +3/+3.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/1/d1ca08a0-c58d-4c13-bf63-0401d89839b4.jpg?1783932899",
+        "large": "https://cards.scryfall.io/large/front/d/1/d1ca08a0-c58d-4c13-bf63-0401d89839b4.jpg?1783932899",
+        "png": "https://cards.scryfall.io/png/front/d/1/d1ca08a0-c58d-4c13-bf63-0401d89839b4.png?1783932899",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/1/d1ca08a0-c58d-4c13-bf63-0401d89839b4.jpg?1783932899"
+      },
+      "artist": "Wayne Reynolds",
+      "set": "m20",
+      "collectorNumber": "341",
+      "scryfallUri": "https://scryfall.com/card/m20/341/oakenform?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ornithopter",
       "slug": "ornithopter",
       "oracleId": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",
@@ -3635,6 +3785,36 @@
       "set": "fdn",
       "collectorNumber": "230",
       "scryfallUri": "https://scryfall.com/card/fdn/230/overrun?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Pacifism",
+      "slug": "pacifism",
+      "oracleId": "5f5e0b10-c8cf-450c-bfd3-bcb0528ec330",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature can't attack or block.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/3/839160d2-44a3-4566-be9d-558d043beac8.jpg?1783908964",
+        "large": "https://cards.scryfall.io/large/front/8/3/839160d2-44a3-4566-be9d-558d043beac8.jpg?1783908964",
+        "png": "https://cards.scryfall.io/png/front/8/3/839160d2-44a3-4566-be9d-558d043beac8.png?1783908964",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/3/839160d2-44a3-4566-be9d-558d043beac8.jpg?1783908964"
+      },
+      "artist": "Kev Walker",
+      "set": "fdn",
+      "collectorNumber": "501",
+      "scryfallUri": "https://scryfall.com/card/fdn/501/pacifism?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -5219,6 +5399,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Unholy Strength",
+      "slug": "unholy-strength",
+      "oracleId": "090d88a9-7f2d-4bd1-a30a-7c48d05068be",
+      "layout": "normal",
+      "manaCost": "{B}",
+      "manaValue": 1,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature gets +2/+1.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/2/521652cf-96f7-46a6-9b25-3e988b605a10.jpg?1783941810",
+        "large": "https://cards.scryfall.io/large/front/5/2/521652cf-96f7-46a6-9b25-3e988b605a10.jpg?1783941810",
+        "png": "https://cards.scryfall.io/png/front/5/2/521652cf-96f7-46a6-9b25-3e988b605a10.png?1783941810",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/2/521652cf-96f7-46a6-9b25-3e988b605a10.jpg?1783941810"
+      },
+      "artist": "Terese Nielsen",
+      "set": "m11",
+      "collectorNumber": "119",
+      "scryfallUri": "https://scryfall.com/card/m11/119/unholy-strength?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Unsummon",
       "slug": "unsummon",
       "oracleId": "837182db-1bf3-4a2c-bd01-1af9d9873561",
@@ -5506,6 +5716,36 @@
       "set": "m12",
       "collectorNumber": "117",
       "scryfallUri": "https://scryfall.com/card/m12/117/warpath-ghoul?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Weakness",
+      "slug": "weakness",
+      "oracleId": "f07a24c0-bf3c-4733-9473-c6be3b16950e",
+      "layout": "normal",
+      "manaCost": "{B}",
+      "manaValue": 1,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nEnchanted creature gets -2/-1.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/e/ceb8322c-63e1-4618-8ee3-7e635cc8bf5e.jpg?1783942376",
+        "large": "https://cards.scryfall.io/large/front/c/e/ceb8322c-63e1-4618-8ee3-7e635cc8bf5e.jpg?1783942376",
+        "png": "https://cards.scryfall.io/png/front/c/e/ceb8322c-63e1-4618-8ee3-7e635cc8bf5e.png?1783942376",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/e/ceb8322c-63e1-4618-8ee3-7e635cc8bf5e.jpg?1783942376"
+      },
+      "artist": "Kev Walker",
+      "set": "m10",
+      "collectorNumber": "121",
+      "scryfallUri": "https://scryfall.com/card/m10/121/weakness?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

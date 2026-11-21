@@ -7,12 +7,16 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { keywordsOf } from "./abilities.ts";
-import { cardTypesOf } from "./card-types.ts";
+import { attachedHost, enchantFilterOf } from "./attachment.ts";
+import { cardTypesOf, subtypesOf } from "./card-types.ts";
+import { controllerOf } from "./controller.ts";
+import { matchesFilter } from "./object-filter.ts";
 import { powerAndToughness } from "./power-toughness.ts";
+import { isProtectedFrom } from "./protection.ts";
 
 /**
- * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then permanents
- * in battlefield order.
+ * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then Auras
+ * attached illegally, then permanents in battlefield order.
  */
 export function stateBasedActions(state: GameState, cards: CardDatabase): StateBasedAction[] {
   const actions: StateBasedAction[] = [];
@@ -29,6 +33,9 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     const obj = state.objects[object];
     if (obj?.kind === "card" && isToken(obj) && !state.zones.battlefield.includes(object))
       actions.push({ kind: "tokenOutsideBattlefield", object });
+  }
+  for (const object of state.zones.battlefield) {
+    if (isAuraIllegallyAttached(state, object, cards)) actions.push({ kind: "auraIllegallyAttached", object });
   }
   for (const object of state.zones.battlefield) {
     const obj = state.objects[object];
@@ -48,4 +55,18 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     else if (state.dealtDeathtouchDamage.includes(object)) actions.push({ kind: "deathtouchDamage", object });
   }
   return actions;
+}
+
+/**
+ * An Aura attached to nothing, to itself, to something its enchant ability doesn't allow, or to something with
+ * protection from it (CR 704.5m, 303.4c-d, 702.16c). The enchant filter is read with the Aura's controller as "you".
+ */
+function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDatabase): boolean {
+  const enchant = enchantFilterOf(state, aura, cards);
+  if (enchant === null || !subtypesOf(state, aura, cards).includes("Aura")) return false;
+  const host = attachedHost(state, aura);
+  if (host === null || host === aura) return true;
+  return (
+    !matchesFilter(state, host, enchant, controllerOf(state, aura), cards) || isProtectedFrom(state, host, aura, cards)
+  );
 }

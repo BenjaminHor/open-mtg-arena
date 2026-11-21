@@ -76,6 +76,9 @@ can't make it pass.
 - A battlefield entry is a card name or a map: `{ card: Grizzly Bears, tapped: true, sick: true, damage: 1 }`.
   `sick: true` means it hasn't been under its controller's control continuously since their most recent turn began
   (CR 302.6). In a standard opening every permanent starts sick. `counters` is a map like `{ +1/+1: 2 }`; +X/+Y and -X/-Y counters change power and toughness (CR 122.1a).
+  `attachedTo: p2:Grizzly Bears` (or `#2` for the second) starts an Aura or Equipment attached to a permanent that player
+  starts with (CR 303.4b), so a scenario needn't cast it; one attached illegally goes as state-based actions are first
+  checked (CR 704.5m).
 - `rules: [...]`: rule modifiers for the whole game, like `{ kind: creaturesGetPT, controller: p2, power: 1, toughness: 1 }`
   ("creatures p2 controls get +1/+1", layer 7c).
 
@@ -189,7 +192,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, a pending decision always has a legal
 action (a trigger's targeting can't be cancelled), every listed legal action accepted, no token outside the battlefield
-when a player has priority (CR 704.5d).
+and no Aura attached to nothing when a player has priority (CR 704.5d, 704.5m).
 
 When the runner needs a new step or expectation, add it, document it here in the same commit (a test checks every word
 the runner knows appears here), and keep the vocabulary small.
