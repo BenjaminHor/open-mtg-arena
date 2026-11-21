@@ -750,7 +750,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          keyword kept, two Mirages from Open the Vaults in both APNAP orders, Serpent of the Endless Sea, Terramorphic
          Expanse, two Mirages on one land, swampwalk turned off); land-type statics in timestamp order (CR 613.7); a unit
          test with test cards for the replacements, triggers, keywords and statics lost; exhaustive switches on what is
-         chosen; citations trimmed; CR 305.7's copiable effects noted for later. Next: code review, PR.
+         chosen; citations trimmed; CR 305.7's copiable effects noted for later. Code review: no invariant broken; the three
+         ability readers asked the layer pass for every object, about 13% slower on `applyAction` (bench, alternating
+         against main); they now ask only for a card with written abilities of that kind, which recovers it; setup tests
+         for `chosenLandType`; stale comments. Next: PR.
        - M2-14d1 built (2026-11-21, D-119): Pithing Needle (230 cards) and "as it enters, choose a card name": a
          replacement asking through `happenOrAsk` (a `chooseName` decision, kept in the resumed event's choices), the
          name on the permanent, `finishResolving` and Open the Vaults able to wait. 7 scenarios (naming as it enters and

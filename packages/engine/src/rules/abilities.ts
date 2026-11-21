@@ -40,8 +40,8 @@ const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
 };
 
 /**
- * The static abilities an object has now that aren't keywords (CR 604): the ones written on its card. Abilities granted
- * or removed by effects (layer 6, later: CR 613.1f) will change this list, in this one place.
+ * The static abilities an object has now that aren't keywords (CR 604): the ones written on its card, unless a set land
+ * type took them away (CR 305.7, in the layer pass). Granting them by effects (later: CR 613.1f) will change this list.
  */
 export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly StaticAbilityDef[] {
   return layeredOf(state, id, cards)?.statics ?? [];
@@ -50,30 +50,34 @@ export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDat
 /**
  * The replacement effects an object's own text makes (CR 614.1), in any zone: each kind says where it works
  * (CR 113.6b, 113.6h), and `pipeline/replacements.ts` checks that. Then a planeswalker's intrinsic one, entering with
- * its printed loyalty (CR 306.5b), last, so the written ones keep their places. Abilities granted or removed by effects
- * (layer 6, later: CR 613.1f) will change this list, in this one place.
+ * its printed loyalty (CR 306.5b), last, so the written ones keep their places. A land whose subtype was set has none
+ * of the written ones (CR 305.7). Abilities granted by effects (later: CR 613.1f) will change this list, in this one place.
  */
 export function replacementsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ReplacementDef[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
   const data = cardDataOf(obj, cards);
-  // A land whose subtype was set has lost its rules text's abilities, replacements too (CR 305.7).
-  const written = rulesTextLost(state, id, cards) ? [] : (data?.def.replacements ?? []);
+  // A land whose subtype was set has lost its rules text's abilities, replacements too (CR 305.7). Only a card with
+  // some asks the layer pass: this runs for every object an event moves (measured).
+  const own = data?.def.replacements ?? [];
+  const written = own.length > 0 && rulesTextLost(state, id, cards) ? [] : own;
   const loyalty = data?.printed.loyalty;
   return loyalty === undefined ? written : [...written, { kind: "entersWithLoyalty", loyalty }];
 }
 
 /**
- * The activated abilities an object has now: the ones written on its card, in printed order, then the intrinsic
- * "{T}: Add [mana]" of each of its basic land types (CR 305.6). Abilities granted or removed by effects (layer 6, none
- * yet) will change this list, in this one place.
+ * The activated abilities an object has now: the ones written on its card, in printed order (none on a land whose
+ * subtype was set, CR 305.7), then the intrinsic "{T}: Add [mana]" of each of its basic land types (CR 305.6).
+ * Abilities granted by effects (layer 6, none yet) will change this list, in this one place.
  */
 export function abilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): ActivatedAbility[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
-  // A land whose subtype was set has only its basic land types' mana abilities (CR 305.7).
-  if (rulesTextLost(state, id, cards)) return basicLandAbilities(state, id, cards);
-  const printed = (cardDataOf(obj, cards)?.def.abilities ?? []).map((def, index) => ({
+  // A land whose subtype was set has only its basic land types' mana abilities (CR 305.7). Only a card with written
+  // ones asks the layer pass: this runs for every permanent at every priority (measured).
+  const own = cardDataOf(obj, cards)?.def.abilities ?? [];
+  if (own.length > 0 && rulesTextLost(state, id, cards)) return basicLandAbilities(state, id, cards);
+  const printed = own.map((def, index) => ({
     ref: { kind: "printed", index } as const,
     def,
   }));
@@ -208,8 +212,12 @@ export function triggersOf(
   cards: CardDatabase,
 ): readonly { index: number; def: TriggeredAbilityDef }[] {
   const obj = state.objects[id];
-  if (obj?.kind !== "card" || rulesTextLost(state, id, cards)) return [];
-  return (cardDataOf(obj, cards)?.def.triggers ?? []).map((def, index) => ({ index, def }));
+  if (obj?.kind !== "card") return [];
+  // None on a land whose subtype was set (CR 305.7); only a card with some asks the layer pass, as this runs for every
+  // permanent after every event (measured).
+  const own = cardDataOf(obj, cards)?.def.triggers ?? [];
+  if (own.length === 0 || rulesTextLost(state, id, cards)) return [];
+  return own.map((def, index) => ({ index, def }));
 }
 
 /** The ability of this object that `ref` names, or null if it has none. */

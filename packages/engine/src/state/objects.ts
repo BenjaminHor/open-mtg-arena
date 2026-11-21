@@ -113,7 +113,7 @@ export type AbilityRef =
    */
   | { kind: "delayed"; ability: TriggeredAbilityDef; objects?: ObjectId[] };
 
-/** The basic land types (CR 305.6). */
+/** The basic land types (CR 205.3i), each with its intrinsic mana ability (CR 305.6). */
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";
 
 /** The basic land types (CR 205.3i), in WUBRG order. */

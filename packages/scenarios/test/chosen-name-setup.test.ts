@@ -1,5 +1,6 @@
-// A setup's `chosenName` (Pithing Needle, CR 614.12a): only for a permanent that names a card as it enters, and only a
-// card's name (CR 201.4). The engine's setup validation refuses the others.
+// A setup's `chosenName` (Pithing Needle, CR 614.12a) and `chosenLandType` (Convincing Mirage): only for a permanent
+// that makes that choice as it enters, and only a card's name (CR 201.4) or a basic land type (CR 205.3i). The engine's
+// setup validation refuses the others.
 
 import { cardDatabase } from "@mtg/cards";
 import { createGame } from "@mtg/engine";
@@ -27,5 +28,21 @@ describe("a set-up chosen name", () => {
 
   it("is refused when no card has that name, a token's included (CR 201.4)", () => {
     expect(problem({ card: "Pithing Needle", chosenName: "Beast Token" })).toMatch(/no card is named Beast Token/);
+  });
+});
+
+describe("a set-up chosen land type", () => {
+  it("is kept on a Convincing Mirage", () => {
+    expect(problem({ card: "Convincing Mirage", chosenLandType: "Island" })).toBeNull();
+  });
+
+  it("is refused on a permanent that chooses no land type as it enters", () => {
+    expect(problem({ card: "Grizzly Bears", chosenLandType: "Island" })).toMatch(
+      /only a permanent that chooses a land type/,
+    );
+  });
+
+  it("is refused when it isn't a basic land type (CR 205.3i)", () => {
+    expect(problem({ card: "Convincing Mirage", chosenLandType: "Desert" })).toMatch(/Desert isn't a basic land type/);
   });
 });

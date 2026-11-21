@@ -6,7 +6,8 @@
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
 // granted or removed, `layer-six.ts`), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
-// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), and layer 2 resolved and static ones
+// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), layer 4 a static setting a land's
+// subtype (`land-type.ts`, D-120), and layer 2 resolved and static ones
 // (D-098, D-105, `control-effects.ts`; `controllerOf` reads the pass, D-104). Layers 1, 3 and 7d have none yet; each comes in its place
 // below as its first card does.
 
@@ -338,8 +339,8 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
 }
 
 /**
- * Layer 4: card types and subtypes added, the others kept ("it's still a land", "in addition to its other types",
- * CR 205.1b). Setting types without keeping them waits for a card that does it.
+ * Layer 4: card types and subtypes added by resolved effects, the others kept ("it's still a land", "in addition to
+ * its other types", CR 205.1b). A land's subtype set by a static is `land-type.ts`.
  */
 function withTypesAdded(card: Layered, change: Becomes): Layered {
   if (change.addTypes.length === 0 && change.addSubtypes.length === 0) return card;

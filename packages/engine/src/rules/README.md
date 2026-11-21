@@ -67,8 +67,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (sorcery speed, also for "activate only as a sorcery", CR 602.5d).
 - `protection.ts`: `protectionsOf`, `isProtectedFrom`: protection (CR 702.16) and whether a source has the quality,
   as it is or as it last existed (D-091).
-- `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes
-  types yet).
+- `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types, read from the layer pass (layer 4:
+  types added by resolved effects, a land's subtype set by Convincing Mirage).
 - `characteristics.ts`: `characteristics(state, id, cards)`, an object's characteristics through the layers (CR 613),
   composing the readers above. `power-toughness.ts`: `powerAndToughness`, layer 7 (CR 613.4): the base from 7a's
   characteristic-defining abilities, else printed, then 7c effects, static abilities, counters and rule modifiers. Read power and toughness only through these.

@@ -109,7 +109,8 @@ export type GameEvent =
    */
   | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId; host: ObjectId }
   /**
-   * As a permanent is about to enter, the player it enters under chose a card name for it (CR 614.12a; Pithing Needle).
+   * As a permanent is about to enter, the player it enters under chose a card name (Pithing Needle) or a basic land type
+   * (Convincing Mirage) for it (CR 614.12a), as `what` says.
    * Public, so the players choosing after know it (CR 101.4b). `object` is the card as it was, before it entered.
    */
   | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId; what: ChooseWhat; name: string }

@@ -141,7 +141,9 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
     case "chooseYesNo":
       return answer.yes ? "yes" : "no";
     case "chooseName":
-      return `name ${answer.name}`;
+      return state.pending?.kind === "chooseName" && state.pending.what === "basicLandType"
+        ? `choose ${answer.name}`
+        : `name ${answer.name}`;
     case "chooseReplacement": {
       const pending = state.pending;
       if (pending?.kind !== "chooseReplacement") return `replacement ${answer.option} first`;
