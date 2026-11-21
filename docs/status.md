@@ -776,7 +776,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          shortcut, `topsFrom`); one battlefield walk for both reveals (`revealedBy`); fuzz tests for the leak check
          with revealed cards (killing the scramble-weakening mutants); the CLI reads reveals from `playerView`, with a
          test; the definition check reads `asLongAs`'s filter and refuses `self` with `others`; docs. Bench within
-         noise of main; fuzz 100 clean. PR #78.
+         noise of main; fuzz 100 clean. Merged as #78. M2-14f done. The bench baseline reset after it (D-123). Next: M2-14g,
+         Djinn of Wishes.
        - M2-14e built (2026-11-21, D-121): Sphinx Ambassador (232 cards): `nameCard` at resolution (the `chooseName`
          decision with `answering: resolution`), `Resolution.named`, the `notNamedThisWay` filter. 4 scenarios (a creature
          not named put under your control, the named card left, a noncreature found, declined), a test that the
@@ -1332,6 +1333,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-21, D-123) A full random game takes 100–130 ms on this cloud machine, even idle, against the 100 ms
+  budget "on a laptop" (architecture.md), and the bench varies by up to about 30% between idle runs here. Options: (a)
+  run `pnpm bench` once on the owner's laptop to see whether the budget holds there, and keep it (recommended); (b)
+  profile and speed up the random game in M2-15 regardless; (c) set a separate budget for this machine. Proceeding
+  with M2-14 meanwhile; the bench is judged by alternating runs.
 - (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
   creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
   by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
@@ -1385,7 +1391,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
   activation resolves.)
 - (Answered 2026-11-21, D-123: `pnpm bench` failed on main on this machine. The owner chose to reset the baseline on a
-  quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.)
+  quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
+  Done: the median of five idle runs.)
 
 ## Known issues
 - (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is

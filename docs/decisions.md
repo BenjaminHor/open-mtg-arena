@@ -1891,4 +1891,9 @@ owner's answer to the D-089 open question, option (a))
   reset `bench/baseline.json` with `pnpm bench --update` on a quieter run: nothing else running, the best of several
   runs. Close calls are still judged by alternating base and head runs. The 100 ms budget (architecture.md, "on a
   laptop") stays a hard limit.
+- Done after #78, on an idle machine: five `--update` runs, the baseline written from each measure's median. Even idle,
+  the measures relative to the reference loop vary by up to about 30% between runs (the reference loop itself took
+  1.34–1.68 ms), more than the 20% gate, so a single failing gate on this machine isn't a finding; alternating runs
+  stay the test of a change. `randomGame` took 100–130 ms in every run, at or over its 100 ms budget: whether a laptop
+  meets it isn't known from here (open question).
 
