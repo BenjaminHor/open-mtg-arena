@@ -55,6 +55,9 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "attachedCantActivate":
         board[host] = { ...card, cantActivate: true };
         break;
+      case "attachedDoesntUntap":
+        board[host] = { ...card, doesntUntap: true };
+        break;
       case "attachedControl":
       case "attachedGets":
       case "creaturesGet":

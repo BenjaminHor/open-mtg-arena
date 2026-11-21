@@ -1866,6 +1866,37 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Entangling Vines",
+      "slug": "entangling-vines",
+      "oracleId": "51e7405e-a714-4c76-8913-10d626d2361e",
+      "layout": "normal",
+      "manaCost": "{3}{G}",
+      "manaValue": 4,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant tapped creature\nEnchanted creature doesn't untap during its controller's untap step.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/7/f717a468-696c-4a84-b943-75046138f2bf.jpg?1783942364",
+        "large": "https://cards.scryfall.io/large/front/f/7/f717a468-696c-4a84-b943-75046138f2bf.jpg?1783942364",
+        "png": "https://cards.scryfall.io/png/front/f/7/f717a468-696c-4a84-b943-75046138f2bf.png?1783942364",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/7/f717a468-696c-4a84-b943-75046138f2bf.jpg?1783942364"
+      },
+      "artist": "Thomas M. Baxa",
+      "set": "m10",
+      "collectorNumber": "181",
+      "scryfallUri": "https://scryfall.com/card/m10/181/entangling-vines?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Essence Scatter",
       "slug": "essence-scatter",
       "oracleId": "46665089-aa3d-44c3-964d-6638dfbb5782",
@@ -5363,6 +5394,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Sleep",
+      "slug": "sleep",
+      "oracleId": "9b93ff69-f195-4d72-8e1d-574c3e53bca8",
+      "layout": "normal",
+      "manaCost": "{2}{U}{U}",
+      "manaValue": 4,
+      "typeLine": "Sorcery",
+      "oracleText": "Tap all creatures target player controls. Those creatures don't untap during that player's next untap step.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/0/e0c53e64-69cf-4296-8a1e-f8817f25c0b4.jpg?1783934580",
+        "large": "https://cards.scryfall.io/large/front/e/0/e0c53e64-69cf-4296-8a1e-f8817f25c0b4.jpg?1783934580",
+        "png": "https://cards.scryfall.io/png/front/e/0/e0c53e64-69cf-4296-8a1e-f8817f25c0b4.png?1783934580",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/0/e0c53e64-69cf-4296-8a1e-f8817f25c0b4.jpg?1783934580"
+      },
+      "artist": "Chris Rahn",
+      "set": "m19",
+      "collectorNumber": "74",
+      "scryfallUri": "https://scryfall.com/card/m19/74/sleep?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Snapping Drake",
       "slug": "snapping-drake",
       "oracleId": "e15060c3-3773-4548-8747-ff59dcf2b519",
@@ -6246,6 +6306,37 @@
       "set": "m15",
       "collectorNumber": "167",
       "scryfallUri": "https://scryfall.com/card/m15/167/wall-of-fire?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Wall of Frost",
+      "slug": "wall-of-frost",
+      "oracleId": "741e4f32-0587-40fa-a73d-5bcf66b52348",
+      "layout": "normal",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3,
+      "typeLine": "Creature — Wall",
+      "oracleText": "Defender\nWhenever this creature blocks a creature, that creature doesn't untap during its controller's next untap step.",
+      "power": "0",
+      "toughness": "7",
+      "loyalty": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Defender"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/5/65a80677-0d0e-440f-a64f-10ebdb5014a2.jpg?1783939187",
+        "large": "https://cards.scryfall.io/large/front/6/5/65a80677-0d0e-440f-a64f-10ebdb5014a2.jpg?1783939187",
+        "png": "https://cards.scryfall.io/png/front/6/5/65a80677-0d0e-440f-a64f-10ebdb5014a2.png?1783939187",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/5/65a80677-0d0e-440f-a64f-10ebdb5014a2.jpg?1783939187"
+      },
+      "artist": "Mike Bierek",
+      "set": "m15",
+      "collectorNumber": "83",
+      "scryfallUri": "https://scryfall.com/card/m15/83/wall-of-frost?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

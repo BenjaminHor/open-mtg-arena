@@ -64,6 +64,7 @@ import { elvishPiper } from "./e/elvish-piper.ts";
 import { elvishVisionary } from "./e/elvish-visionary.ts";
 import { emeraldOryx } from "./e/emerald-oryx.ts";
 import { enormousBaloth } from "./e/enormous-baloth.ts";
+import { entanglingVines } from "./e/entangling-vines.ts";
 import { essenceScatter } from "./e/essence-scatter.ts";
 import { excommunicate } from "./e/excommunicate.ts";
 import { fabricate } from "./f/fabricate.ts";
@@ -183,6 +184,7 @@ import { siegeMastodon } from "./s/siege-mastodon.ts";
 import { signInBlood } from "./s/sign-in-blood.ts";
 import { silence } from "./s/silence.ts";
 import { silvercoatLion } from "./s/silvercoat-lion.ts";
+import { sleep } from "./s/sleep.ts";
 import { snappingDrake } from "./s/snapping-drake.ts";
 import { solemnOffering } from "./s/solemn-offering.ts";
 import { soulBleed } from "./s/soul-bleed.ts";
@@ -213,6 +215,7 @@ import { volcanicHammer } from "./v/volcanic-hammer.ts";
 import { wallOfBone } from "./w/wall-of-bone.ts";
 import { wallOfFaith } from "./w/wall-of-faith.ts";
 import { wallOfFire } from "./w/wall-of-fire.ts";
+import { wallOfFrost } from "./w/wall-of-frost.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { weakness } from "./w/weakness.ts";
 import { whispersilkCloak } from "./w/whispersilk-cloak.ts";
@@ -330,6 +333,9 @@ export const CARD_DEFS: readonly CardDef[] = [
   illusionaryServant,
   indestructibility,
   infernoElemental,
+  entanglingVines,
+  wallOfFrost,
+  sleep,
   island,
   jaceBeleren,
   jackalFamiliar,

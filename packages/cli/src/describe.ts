@@ -168,6 +168,8 @@ export function durationText(duration: Duration): string {
       return "for the rest of the game";
     case "whileSourceOnBattlefield":
       return "while its source remains on the battlefield";
+    case "nextUntapStep":
+      return "until its untap step";
   }
 }
 

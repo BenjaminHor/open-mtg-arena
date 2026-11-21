@@ -740,6 +740,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
+         `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
+         static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on
+         yourself, a slept creature borrowed by Act of Treason; Wall of Frost, defender, its effect following the
+         creature under Mind Control; Vines, its untapped target refused, the Aura falling off once untapped), 2 unit tests
+         (another player's untap step, the effect ending on an untapped creature), definition checks; mutants 5/5 after
+         the unit test; 2 golden games. Next: reviews, PR.
        - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
          refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
          turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing

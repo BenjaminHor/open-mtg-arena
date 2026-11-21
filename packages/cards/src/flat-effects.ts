@@ -33,6 +33,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "cantCastSpells":
     case "gainControl":
     case "untap":
+    case "doesntUntap":
     case "createTokens":
     case "attachSelf":
     case "putCounters":

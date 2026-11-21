@@ -207,6 +207,10 @@ function effectChangeText(change: EffectChange): string {
       return `controlled by ${change.player}`;
     case "cantCastSpells":
       return `${change.players.join(" and ")} can't cast spells`;
+    case "doesntUntap":
+      return change.during === "itsController"
+        ? "doesn't untap during its controller's next untap step"
+        : `doesn't untap during ${change.during}'s next untap step`;
   }
 }
 

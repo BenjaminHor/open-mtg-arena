@@ -57,6 +57,7 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "landTappedForMana":
     case "selfDealsDamageToPlayer":
     case "selfBlocksOrBlocked":
+    case "selfBlocks":
     case "selfBecomesTarget":
     case "attachedBecomesTarget":
     case "selfCountersRemoved":
@@ -73,6 +74,7 @@ function suppliesObject(when: TriggerCondition): boolean {
     case "selfAttacks":
     case "spellCast":
     case "selfBlocksOrBlocked":
+    case "selfBlocks":
       return true;
     case "selfBecomesTarget":
     case "attachedBecomesTarget":
@@ -99,6 +101,7 @@ function suppliesPlayer(when: TriggerCondition): boolean {
     case "anotherEnters":
     case "selfAttacks":
     case "selfBlocksOrBlocked":
+    case "selfBlocks":
     case "selfBecomesTarget":
     case "attachedBecomesTarget":
     case "selfCountersRemoved":

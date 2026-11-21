@@ -1721,3 +1721,19 @@ owner's answer to the D-089 open question, option (a))
   every "as it enters" choice at once), then the three final decks.
 - Names chosen for Pithing Needle and Sphinx Ambassador: any card name in the card database (CR 201.4 lets a player
   name any card in the Oracle card reference; a game only knows its own database). Open question to the owner.
+
+**D-115: "Doesn't untap" (M2-14a: Sleep, Wall of Frost, Entangling Vines)** · 2026-11-21 · accepted
+- The untap step's turn-based action moved to its own file, `game/untap-step.ts` (CR 502.3): the active player's
+  permanents untap together, except those kept tapped.
+- An Aura's "doesn't untap during its controller's untap step" is the static `attachedDoesntUntap`, marked on the host by
+  the layer pass like `cantAttackOrBlock` (so the untap step asks once per permanent).
+- "Doesn't untap during [that player's / its controller's] next untap step" is a continuous effect, `doesntUntap`, with
+  the new duration `"nextUntapStep"`: `during` is a player (Sleep: that player's untap step only, so a slept creature
+  another player controls first still untaps in theirs), or `"itsController"` (Wall of Frost: the first untap step of
+  whoever controls each permanent then, its ruling that the effect follows the creature). After each untap step the
+  effects it used up end, whether or not their permanents were tapped (Wall of Frost's ruling): the whole effect for a
+  player, each permanent the active player controls for "its controller".
+- Sleep's "those creatures" is every creature the player controls as it resolves, tapped by it or not (its ruling), read
+  with the same subject as the tap.
+- "Whenever this creature blocks a creature" is the trigger `selfBlocks`, once per creature it blocks (CR 509.3b).
+- Future impact: "skip your next untap step" must leave these effects for the untap step that does happen.

@@ -1,0 +1,23 @@
+name: Sleep can target its caster, whose creatures then miss their own next untap step
+rules: [CR 502.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Grizzly Bears]
+    hand: [Sleep]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Sleep
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.tapped: true
+      p2:Hill Giant.tapped: false
+  - all pass: until upkeep
+  - all pass: until upkeep
+  - expect:
+      active: p1
+      p1:Grizzly Bears.tapped: true
+      p1:Island.tapped: false

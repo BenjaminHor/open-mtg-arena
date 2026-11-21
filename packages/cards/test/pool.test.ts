@@ -296,6 +296,34 @@ describe("definitionProblems", () => {
     );
   });
 
+  it("refuses a doesntUntap on a player, or during more than one player's untap step", () => {
+    const sleepCard = POOL.cards.find((c) => c.name === "Sleep");
+    const sleepDef = CARD_DEFS.find((d) => d.name === "Sleep");
+    if (sleepCard === undefined || sleepDef?.spell === undefined) throw new Error("Sleep isn't in the pool");
+    const bad: CardDef = {
+      ...sleepDef,
+      spell: {
+        ...sleepDef.spell,
+        effects: [
+          { op: "doesntUntap", of: { target: 0 }, during: { target: 0 } },
+          { op: "doesntUntap", of: "self", during: "eachPlayer" },
+          { op: "doesntUntap", of: "self", during: "self" },
+        ],
+      },
+    };
+    expect(definitionProblems([bad], [sleepCard])).toEqual(
+      expect.arrayContaining([
+        "Sleep: doesntUntap acts on objects, not players",
+        "Sleep: doesntUntap is during one player's untap step",
+      ]),
+    );
+    expect(
+      definitionProblems([bad], [sleepCard]).filter(
+        (p) => p === "Sleep: doesntUntap is during one player's untap step",
+      ),
+    ).toHaveLength(2);
+  });
+
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);

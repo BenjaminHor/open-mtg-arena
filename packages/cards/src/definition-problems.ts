@@ -37,6 +37,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
     case "attachedCantAttackOrBlock":
     case "attachedCantBeBlocked":
     case "attachedCantActivate":
+    case "attachedDoesntUntap":
     case "attachedControl":
       return null;
     case "cantBeBlocked":
@@ -305,6 +306,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   returnToHand: (e) => (e as { of: EffectSubject }).of,
   putOnTopOfLibrary: (e) => (e as { of: EffectSubject }).of,
   tap: (e) => (e as { of: EffectSubject }).of,
+  doesntUntap: (e) => (e as { of: EffectSubject }).of,
   counter: (e) => (e as { of: EffectSubject }).of,
   modifyPT: (e) => (e as { of: EffectSubject }).of,
   reveal: (e) => (e as { of: EffectSubject }).of,
@@ -417,6 +419,13 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     ];
     if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
+    // "That player's next untap step" names one player (or "its controller", each permanent's own).
+    if (
+      effect.op === "doesntUntap" &&
+      effect.during !== "itsController" &&
+      (objectOnly(effect.during) || effect.during === "eachPlayer" || effect.during === "eachOpponent")
+    )
+      problems.push(`${where}: doesntUntap is during one player's untap step`);
     // "The player puts that card onto the battlefield": one player, who'd also be the one asked "you may".
     if (effect.op === "put" && effect.by !== undefined) {
       if (objectOnly(effect.by) || effect.by === "eachPlayer")
