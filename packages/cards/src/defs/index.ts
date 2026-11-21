@@ -155,11 +155,13 @@ import { shivanDragon } from "./s/shivan-dragon.ts";
 import { shock } from "./s/shock.ts";
 import { siegeMastodon } from "./s/siege-mastodon.ts";
 import { signInBlood } from "./s/sign-in-blood.ts";
+import { silence } from "./s/silence.ts";
 import { silvercoatLion } from "./s/silvercoat-lion.ts";
 import { snappingDrake } from "./s/snapping-drake.ts";
 import { solemnOffering } from "./s/solemn-offering.ts";
 import { soulWarden } from "./s/soul-warden.ts";
 import { sparkmageApprentice } from "./s/sparkmage-apprentice.ts";
+import { spellbook } from "./s/spellbook.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { stampedingRhino } from "./s/stampeding-rhino.ts";
 import { stoneGiant } from "./s/stone-giant.ts";
@@ -348,11 +350,13 @@ export const CARD_DEFS: readonly CardDef[] = [
   shock,
   siegeMastodon,
   signInBlood,
+  silence,
   silvercoatLion,
   snappingDrake,
   solemnOffering,
   soulWarden,
   sparkmageApprentice,
+  spellbook,
   spinedWurm,
   stampedingRhino,
   stoneGiant,

@@ -24,6 +24,9 @@ import type { Progress } from "./progress.ts";
  */
 export function castProblem(state: GameState, player: PlayerId, card: ObjectId, cards: CardDatabase): string | null {
   if (!zoneList(state, { zone: "hand", player }).includes(card)) return `${card} isn't in ${player}'s hand`;
+  // "Can't" beats "can" (CR 101.2): Silence's opponents can't cast spells at all.
+  if (state.effects.some((e) => e.change.kind === "cantCastSpells" && e.change.players.includes(player)))
+    return `${player} can't cast spells this turn (CR 101.2)`;
   const timing = castTimingProblem(state, player, card, cards);
   if (timing !== null) return timing;
   const targets = targetsProblem(state, targetSpecsOf(state, card, cards), { object: card, controller: player }, cards);

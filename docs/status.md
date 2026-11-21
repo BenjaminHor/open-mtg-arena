@@ -647,6 +647,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            docs. "Flying given after blockers does nothing" is plain evasion (CR 509.1b), already covered; not added.
            Fuzz 200 clean. Bench ok (a random game 94.5 ms: the margin to 100 is thin). Merged as #53; M2-09b is done.
            Next: M2-09c (Act of Treason, Silence, Spellbook).
+       - M2-09c, split in two PRs (2026-11-21). c1, rules effects (CR 101.2, 613.10-11): Silence ("your opponents can't
+         cast spells this turn": a resolved effect on players, fixed as it resolves; `castProblem` refuses; abilities,
+         land plays and spells already cast are untouched, its rulings) and Spellbook ("you have no maximum hand size":
+         a static read by the cleanup step's hand-size check, CR 402.2, 514.1). c2: Act of Treason, layer 2 inside the
+         pass and `controllerOf` reading it (a signature change: it takes the card database), control changes
+         recorded for summoning sickness (CR 302.6) and removing a creature from combat (CR 506.4).
+         - c1 built (D-097): Silence, Spellbook; 5 scenarios in `test/scenarios/cards/m2-09c/`, golden pool-55 and
+           pool-167. 193 cards. Next: mutations, reviews, fuzz, PR.
          - Future impact: the snapshot is what M2-09c's Polymorph-on-a-stolen-creature and every "dies" trigger
            reading characteristics need; tokens (M2-11) leave a snapshot too.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

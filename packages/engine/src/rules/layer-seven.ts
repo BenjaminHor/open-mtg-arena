@@ -108,6 +108,7 @@ function layer7c(
       case "mustAttack":
       case "addKeywords":
       case "cantBeBlocked":
+      case "cantCastSpells":
       case "becomes":
         break;
     }

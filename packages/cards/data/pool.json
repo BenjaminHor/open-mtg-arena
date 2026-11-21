@@ -4377,6 +4377,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Silence",
+      "slug": "silence",
+      "oracleId": "8aed54cb-d1bb-45ad-adbe-38e55d84ff31",
+      "layout": "normal",
+      "manaCost": "{W}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Your opponents can't cast spells this turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/c/1c2b13b1-31f0-4676-88a7-53f3a190e9a2.jpg?1783939940",
+        "large": "https://cards.scryfall.io/large/front/1/c/1c2b13b1-31f0-4676-88a7-53f3a190e9a2.jpg?1783939940",
+        "png": "https://cards.scryfall.io/png/front/1/c/1c2b13b1-31f0-4676-88a7-53f3a190e9a2.png?1783939940",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/c/1c2b13b1-31f0-4676-88a7-53f3a190e9a2.jpg?1783939940"
+      },
+      "artist": "Wayne Reynolds",
+      "set": "m14",
+      "collectorNumber": "35",
+      "scryfallUri": "https://scryfall.com/card/m14/35/silence?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Silvercoat Lion",
       "slug": "silvercoat-lion",
       "oracleId": "e3c0b11e-7340-4e0a-98b7-91b38439d4f9",
@@ -4516,6 +4544,32 @@
       "set": "m10",
       "collectorNumber": "158",
       "scryfallUri": "https://scryfall.com/card/m10/158/sparkmage-apprentice?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Spellbook",
+      "slug": "spellbook",
+      "oracleId": "83133f51-bfbd-4db5-9be0-f660e3b66435",
+      "layout": "normal",
+      "manaCost": "{0}",
+      "manaValue": 0,
+      "typeLine": "Artifact — Book",
+      "oracleText": "You have no maximum hand size.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/6/26f4d2b1-31d7-40d8-bd4e-cdd128076d0f.jpg?1783942354",
+        "large": "https://cards.scryfall.io/large/front/2/6/26f4d2b1-31d7-40d8-bd4e-cdd128076d0f.jpg?1783942354",
+        "png": "https://cards.scryfall.io/png/front/2/6/26f4d2b1-31d7-40d8-bd4e-cdd128076d0f.png?1783942354",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/6/26f4d2b1-31d7-40d8-bd4e-cdd128076d0f.jpg?1783942354"
+      },
+      "artist": "Andrew Goldhawk",
+      "set": "m10",
+      "collectorNumber": "220",
+      "scryfallUri": "https://scryfall.com/card/m10/220/spellbook?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

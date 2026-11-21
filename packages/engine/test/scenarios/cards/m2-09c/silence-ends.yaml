@@ -1,0 +1,21 @@
+name: Silence lasts only this turn, so its controller's opponent can cast spells on their own turn
+rules: [CR 514.2, CR 611.2a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains]
+    hand: [Silence]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Silence
+    pay: auto
+  - all pass: once
+  - all pass: until upkeep
+  - p2 cast: Shock
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 18

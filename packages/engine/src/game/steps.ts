@@ -9,6 +9,7 @@ import { endUntilEndOfTurnEffects } from "../effects/continuous-effect.ts";
 import { removeAllDamage } from "../permanents/damage.ts";
 import { happen } from "../pipeline/happen.ts";
 import { controllerOf } from "../rules/controller.ts";
+import { maximumHandSize } from "../rules/hand-size.ts";
 import { newCombat } from "../state/combat.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -25,9 +26,6 @@ import { checkStateBasedActions } from "./state-based-actions.ts";
 import { currentTurn } from "./turn.ts";
 import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
 import { queueWork } from "./work.ts";
-
-/** The maximum hand size (CR 402.2). A different rule from the starting hand size, though both are normally seven. */
-export const MAXIMUM_HAND_SIZE = 7;
 
 /** Begins a player's turn with its untap step (CR 501.1). Each player's land count starts again (CR 305.2). */
 export function beginTurn(state: GameState, player: PlayerId, number: number, cards: CardDatabase): Progress {
@@ -83,7 +81,8 @@ export function endStep(state: GameState, cards: CardDatabase): Progress {
 export function finishCleanup(state: GameState, chosen: readonly ObjectId[], cards: CardDatabase): Progress {
   const turn = currentTurn(state);
   const hand = zoneList(state, { zone: "hand", player: turn.activePlayer });
-  const excess = hand.length - MAXIMUM_HAND_SIZE;
+  const maximum = maximumHandSize(state, turn.activePlayer, cards);
+  const excess = maximum === null ? 0 : hand.length - maximum;
   if (chosen.length < excess) {
     const remaining = excess - chosen.length;
     return {
