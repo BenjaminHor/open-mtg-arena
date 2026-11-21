@@ -117,7 +117,8 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       ...(def.abilities ?? []).flatMap((a) => a.effects),
       ...(def.triggers ?? []).flatMap((t) => t.effects),
     ];
-    for (const e of flatEffects(allEffects)) {
+    const delayedEffects = delayedOf(def).flatMap(([, delayed]) => delayed.effects);
+    for (const e of flatEffects([...allEffects, ...delayedEffects])) {
       if (e.op !== "createTokens") continue;
       const statics = e.token.statics ?? [];
       const tokenDefines = statics.some((s) => s.kind === "powerToughnessEachEqual");

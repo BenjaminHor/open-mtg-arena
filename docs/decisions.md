@@ -1683,6 +1683,9 @@ every schema change and every change D-024 lists bumps it.
   "your" being its controller (CR 109.5), in layer 7a (CR 613.4a).
 - The life totals join the layer pass's inputs, and the kept pass is reused only for the same totals, but only if the
   pass read one (`lifeRead`, set in layer 7a): a mana-pool change, which replaces `state.players` far more often, still
-  reuses the pass, and a game without such a creature pays nothing (measured: equal to main). An off-battlefield card
-  that reads one, under a pass that didn't, is computed again from the state's own totals.
+  reuses the pass. An off-battlefield card that reads one, under a pass that didn't, is computed again from the
+  state's own totals. Measured: the other benchmarks within noise of main, `characteristics.busyBoard` about 12-15%
+  slower per read (0.3 µs), the cost of the comparison; accepted. Life is read only through `lifeTotalOf`, which marks
+  the pass; that mark is the pass's one write, and only ever makes the match stricter. The players record's identity
+  (the shortcut before comparing) is kept beside the pass, not in its inputs, which stay what the pass may read.
 

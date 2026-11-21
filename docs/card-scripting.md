@@ -103,8 +103,8 @@ export const furnaceWhelp: CardDef = {
   keywords? }`, the filter read relative to the permanent's controller; Coat of Arms is `{ kind:
   "plusPerSharedCreatureType" }`, Relentless Rats `{ kind: "plusPerOtherSameName" }`. Characteristic-defining abilities
   (D-094): "[this]'s power and toughness are each equal to the number of Swamps you control" is `{ kind:
-  "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }` ("equal to your life total"
-  is `to: "yourLifeTotal"`), and a card has one exactly when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
+  "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }` ("equal to your life
+  total" is `to: "yourLifeTotal"`), and a card has one exactly when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
   engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
   (D-097).

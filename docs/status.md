@@ -718,11 +718,15 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
        - M2-13c2a built (2026-11-21, D-112): Ajani Goldmane (222 cards): tokens with statics and "*", the "yourLifeTotal"
          CDA, life totals in the layer pass only once read (bench equal to main after two fixes: an identity test, then
-         a `lifeRead` flag); 4 scenarios (gain life, counters and vigilance, the Avatar growing and shrinking with lethal
+         a `lifeRead` flag; see the code review below); 4 scenarios (gain life, counters and vigilance, the Avatar growing and shrinking with lethal
          damage, stolen by Mind Control with Giant Growth), a cache unit test; a golden game reaching the legend rule.
          Rules review: no wrong ruling; tests for the off-battlefield life read, the token "*" and statics checks (and
          nested effects), 3 more scenarios (both at no life in one check, life gain saving a damaged Avatar, a creature
-         cast after the −1). Next: code review, PR; then M2-13c2b (Chandra).
+         cast after the −1). Code review: no stale-life path found; a scenario where combat damage changes life while
+         the objects stay the same (the case the cache exists for: two mutants survived the scenarios); life read only
+         through `lifeTotalOf`; the players record's identity kept beside the pass, not in its inputs; tokens from
+         delayed triggers checked; the cost recorded honestly (characteristics reads ~12-15% slower, 0.3 µs). Next: PR;
+         then M2-13c2b (Chandra).
        - M2-13c2 plan (2026-11-21, with the advisor's review), two PRs.
          - M2-13c2a, Ajani Goldmane: +1 gain 2 life; −1 a +1/+1 counter on each creature you control, then those gain
            vigilance (the same set, nothing changes between); −6 a white Avatar token whose power and toughness are each
