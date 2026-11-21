@@ -38,6 +38,8 @@ export const X_BOLT = "test-x-bolt";
 export const SAC_PUMP = "test-sac-pump";
 /** Not a real card: an Aura, "Enchant creature / Enchanted creature gets +1/+1", for attachments below the scenarios. */
 export const TEST_AURA = "test-aura";
+/** Not a real card: a planeswalker with no abilities, for attacking and damaging one before the pool has any. */
+export const TEST_WALKER = "test-walker";
 /** Not a real card: Mind Control's "you control enchanted creature" on a test Aura, for layer 2 order below the scenarios. */
 export const CONTROL_AURA = "test-control-aura";
 /** Not a real card: a black Equipment, which no M10 card is, for protection's "can't be equipped" (CR 702.16d). */
@@ -531,6 +533,20 @@ export const TEST_CARDS: CardDatabase = {
       enchant: { types: ["creature"] },
       statics: [{ kind: "attachedControl" }],
     },
+  }),
+  [TEST_WALKER]: card(TEST_WALKER, {
+    printed: {
+      name: "Test Walker",
+      manaCost: [{ kind: "colored", color: "W" }],
+      colors: ["W"],
+      colorIndicator: [],
+      supertypes: ["legendary"],
+      types: ["planeswalker"],
+      subtypes: ["Test"],
+      power: null,
+      toughness: null,
+    },
+    def: { name: "Test Walker", oracle: "" },
   }),
   [TEST_AURA]: card(TEST_AURA, {
     printed: {

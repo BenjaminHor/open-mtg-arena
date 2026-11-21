@@ -147,7 +147,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   `pay`, it stops at the payment decision). On the stack it's named after its source: `stack: [Furnace Whelp ability]`. For a mana ability that adds "one mana of any color", `color: U` names the color, part of
   the activation (D-068).
 - `p1 attack: [Grizzly Bears, Hill Giant]`: declare attackers (CR 508.1), each creature by name or reference among
-  p1's (`Grizzly Bears#2` for the second), each attacking the other player; `[]` declares none. It answers one
+  p1's (`Grizzly Bears#2` for the second), each attacking the other player, or `Hill Giant -> Jace Beleren` to attack a
+  planeswalker the other player controls (CR 508.1b); `[]` declares none. It answers one
   `declareAttackers` decision per creature, then finishes.
 - `p2 block: { Giant Spider: Craw Wurm }`: declare blockers (CR 509.1), blocker (p2's) to attacker (p1's); `{}` declares
   none. A creature that can block several attackers names them in a list: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`;

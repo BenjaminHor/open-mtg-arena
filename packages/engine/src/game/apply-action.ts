@@ -5,7 +5,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextRecipient } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
-import { attackProblem, finishAttackers } from "../combat/declare-attackers.ts";
+import { finishAttackers, possibleAttack } from "../combat/declare-attackers.ts";
 import { blockProblem, finishBlockers } from "../combat/declare-blockers.ts";
 import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.ts";
 import { activateManaAbility, manaAbilityProblem, manaColorProblem } from "../mana/activate.ts";
@@ -233,9 +233,9 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         return { ok: true, state: queueWork(answered, { kind: "declareAttackers", chosen }), events: [] };
       }
       if (answer.kind !== "declareAttacker") return mismatch;
-      const problem = attackProblem(answered, pending.chosen, answer.attack, cards);
-      if (problem !== null) return error("illegalAction", problem);
-      const chosen = [...pending.chosen, answer.attack];
+      const attack = possibleAttack(answered, pending.chosen, answer.attack, cards);
+      if (typeof attack === "string") return error("illegalAction", attack);
+      const chosen = [...pending.chosen, attack];
       return { ok: true, state: queueWork(answered, { kind: "declareAttackers", chosen }), events: [] };
     }
     case "declareBlockers": {

@@ -5,6 +5,7 @@ import type {
   AbilityRef,
   Action,
   Answer,
+  Attack,
   CardDatabase,
   ChoiceFor,
   ChoosePurpose,
@@ -21,6 +22,11 @@ import { nameOf, refOf } from "@mtg/scenarios";
 /** A permanent's reference, or the object's name if it isn't on the battlefield. */
 export function objectText(state: GameState, id: ObjectId, cards: CardDatabase): string {
   return refOf(state, id, cards) ?? nameOf(state, id, cards);
+}
+
+/** What an attack was declared against: the defending player, or the planeswalker of theirs (CR 508.1b). */
+export function attackedText(state: GameState, attack: Attack, cards: CardDatabase): string {
+  return attack.attacked === undefined ? attack.defender : objectText(state, attack.attacked, cards);
 }
 
 export function targetText(state: GameState, target: Target, cards: CardDatabase): string {
@@ -100,7 +106,7 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
     case "cancelCast":
       return "cancel";
     case "declareAttacker":
-      return `attack ${answer.attack.defender} with ${objectText(state, answer.attack.attacker, cards)}`;
+      return `attack ${attackedText(state, answer.attack, cards)} with ${objectText(state, answer.attack.attacker, cards)}`;
     case "declareBlocker":
       return `block ${objectText(state, answer.block.attacker, cards)} with ${objectText(state, answer.block.blocker, cards)}`;
     case "finishDeclaring":

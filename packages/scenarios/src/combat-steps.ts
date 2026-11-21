@@ -4,6 +4,7 @@
 import {
   type Action,
   type Answer,
+  type Attack,
   type CardDatabase,
   type GameState,
   legalAmounts,
@@ -28,7 +29,7 @@ export function combatAction(state: GameState, step: CombatStep, cards: CardData
       if (i === step.attackers.length) return finish;
       const name = step.attackers[i];
       if (name === undefined) return null;
-      const attack = { attacker: permanent(state, player, name, cards), defender: other };
+      const attack = attackOf(state, player, other, name, cards);
       return { type: "ANSWER", decisionId, player, answer: { kind: "declareAttacker", attack } };
     }
     case "block": {
@@ -71,7 +72,9 @@ function checkDivision(
     named.length !== pending.recipients.length ||
     pending.recipients.some((r) => !named.some((n) => sameTarget(n, r)))
   ) {
-    throw new Error("assign names each blocking creature (and for a trampler, the player) exactly once");
+    throw new Error(
+      "assign names each blocking creature (and for a trampler, the player or planeswalker it attacks) exactly once",
+    );
   }
   const total = step.division.reduce((sum, [, n]) => sum + n, 0);
   if (total !== pending.amount) throw new Error(`the division must add up to ${pending.amount}, not ${total}`);
@@ -108,6 +111,16 @@ function otherPlayer(state: GameState, player: PlayerId): PlayerId {
   return others[0] as PlayerId;
 }
 
+/**
+ * An attack as a step names it: "Grizzly Bears" attacks the other player; "Grizzly Bears -> Jace Beleren" attacks that
+ * planeswalker of theirs (CR 508.1b).
+ */
+function attackOf(state: GameState, player: PlayerId, other: PlayerId, text: string, cards: CardDatabase): Attack {
+  const [attacker = text, attacked] = text.split(" -> ");
+  const attack = { attacker: permanent(state, player, attacker, cards), defender: other };
+  return attacked === undefined ? attack : { ...attack, attacked: permanent(state, other, attacked, cards) };
+}
+
 /** A permanent `controller` controls, by name or reference (`Grizzly Bears#2`). */
 function permanent(state: GameState, controller: PlayerId, name: string, cards: CardDatabase): ObjectId {
   const ref = parseRef(`${controller}:${name}`);
@@ -140,7 +153,7 @@ export function declarationAnswer(state: GameState, player: string, text: string
   const self = player as PlayerId;
   const other = otherPlayer(state, self);
   if (state.pending?.kind === "declareAttackers") {
-    return { kind: "declareAttacker", attack: { attacker: permanent(state, self, text, cards), defender: other } };
+    return { kind: "declareAttacker", attack: attackOf(state, self, other, text, cards) };
   }
   const [blocker, attacker] = text.split(" blocks ");
   if (blocker === undefined || attacker === undefined) {

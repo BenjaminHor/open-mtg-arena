@@ -48,17 +48,21 @@ describe("action lines", () => {
       chooseYesNo: { kind: "chooseYesNo", yes: false },
       chooseReplacement: { kind: "chooseReplacement", option: 1 },
     };
+    // An attack on a planeswalker names it last (CR 508.1b).
+    const onWalker: Answer = { kind: "declareAttacker", attack: { attacker: "o16", defender: "p2", attacked: "o18" } };
+    const all = [...Object.values(answers), onWalker];
     const lines = actionLines([
-      ...Object.values(answers).map((answer): Action => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),
+      ...all.map((answer): Action => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),
       { type: "CONCEDE", player: "p2" },
     ]);
+    expect(lines).toContain("p1 declareAttacker o16 p2 o18");
     expect(lines).toContain("p1 payMana B1 R2 C1");
     expect(lines).toContain("p1 chooseTarget o14");
     expect(lines).toContain("p2 concede");
     // Each line read back as answering p1's decision d1: the words alone, not the rules, so no game is needed.
     const back = lines.map((line) => actionFromLine(line, "d1"));
     expect(back).toStrictEqual([
-      ...Object.values(answers).map((answer) => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),
+      ...all.map((answer) => ({ type: "ANSWER", decisionId: "d1", player: "p1", answer })),
       { type: "CONCEDE", player: "p2" },
     ]);
   });

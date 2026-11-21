@@ -22,14 +22,14 @@ export type Recipients = { recipients: Target[]; lethal: number[] | null };
 
 /**
  * Who a blocked attacker's damage can go to: the creatures blocking it, in the order they were declared, and with
- * trample, then the player it attacks (CR 702.19b), with `lethal` the damage each blocker needs first. A trampler with
- * no more damage than its blockers need together can't give the player any, so it divides among them like any other
- * creature.
+ * trample, then the player or planeswalker it attacks (CR 702.19b), with `lethal` the damage each blocker needs first.
+ * A trampler with no more damage than its blockers need together can't give the player any, so it divides among them
+ * like any other creature; nor can one attacking a planeswalker that's gone, which attacks nothing (CR 702.19f).
  */
 export function recipientsOf(
   state: GameState,
   attacker: ObjectId,
-  defender: PlayerId,
+  attacked: Target | null,
   amount: number,
   divisions: readonly CombatDivision[],
   cards: CardDatabase,
@@ -38,8 +38,9 @@ export function recipientsOf(
   const creatures = blockers.map((object): Target => ({ kind: "object", object }));
   if (!keywordsOf(state, attacker, cards).includes("trample")) return { recipients: creatures, lethal: null };
   const lethal = blockers.map((blocker) => lethalDamage(state, blocker, attacker, divisions, cards));
-  if (amount <= lethal.reduce((sum, n) => sum + n, 0)) return { recipients: creatures, lethal: null };
-  return { recipients: [...creatures, { kind: "player", player: defender }], lethal };
+  if (attacked === null || amount <= lethal.reduce((sum, n) => sum + n, 0))
+    return { recipients: creatures, lethal: null };
+  return { recipients: [...creatures, attacked], lethal };
 }
 
 /** The blockers still blocking this attacker, in the order they were declared. */
@@ -157,7 +158,7 @@ export function assignProblem(pending: AssignDamage, amount: number): string | n
   if (lethal === null || !lastBlocker || amount === left) return null;
   const short = [...pending.assigned, amount].some((n, i) => n < (lethal[i] ?? 0));
   return short
-    ? `the player gets damage only once every blocker has lethal damage: give this one ${left} (CR 702.19b)`
+    ? `the player or planeswalker attacked gets damage only once every blocker has lethal damage: give this one ${left} (CR 702.19b)`
     : null;
 }
 

@@ -85,14 +85,17 @@ function mostObeyable(
 }
 
 /**
- * How many requirements this attack obeys: the creature's "attacks each combat if able", and each "attacks [player] this
- * turn if able" when it attacks that player.
+ * How many requirements this attack obeys: the creature's "attacks each combat if able" (attacking a planeswalker obeys
+ * it too), and each "attacks [player] this turn if able" when it attacks that player, not one of their planeswalkers.
  */
 function attackRequirements(state: GameState, attack: Attack, cards: CardDatabase): number {
   const own = staticAbilitiesOf(state, attack.attacker, cards).filter((a) => a.kind === "attacksEachCombat").length;
   const effects = state.effects.filter(
     (e) =>
-      e.change.kind === "mustAttack" && e.change.player === attack.defender && e.affected.includes(attack.attacker),
+      e.change.kind === "mustAttack" &&
+      e.change.player === attack.defender &&
+      attack.attacked === undefined &&
+      e.affected.includes(attack.attacker),
   ).length;
   return own + effects;
 }

@@ -1613,3 +1613,22 @@ every schema change and every change D-024 lists bumps it.
 - Future impact: other effects that put an Aura onto the battlefield (Academy Researchers, Aura tokens such as Roles,
   CR 111.10j) choose through the same steps; an Aura that enchants a player (Curses, later: CR 303.4) adds players
   to the options, which `chooseCards` can't offer today.
+
+**D-108: Attacking a planeswalker (M2-13a)** · 2026-11-21 · accepted
+- An attack on a planeswalker is the `Attack` with `attacked`, the planeswalker; `defender` stays the defending player,
+  its controller (CR 506.2, 508.1b). `attacked` is left out, not null, for an attack on the player, and
+  `Combat.removed.attacked` exists only once a planeswalker is removed: a game with no planeswalker is stored exactly as
+  before, so no saved replay hash or golden log changed. The name is the role, not the card type, so a battle (later:
+  CR 310) can use it.
+- `attackedNow` is the one reader of what an attack attacks now: null once the planeswalker is removed from combat
+  (left the battlefield, stopped being a planeswalker, or changed controller, CR 506.4). The creature still attacks,
+  but deals no combat damage unblocked (CR 506.4c, 510.1b), and a trampler can't give the player its excess
+  (CR 702.19f). It's exported because the CLI's inspect shows it.
+- Removal from combat is by role (attacker, blocker, attacked): every caller names its roles. A control change removes
+  all; regeneration only attacking and blocking creatures (CR 701.19a); a type change the role it no longer fits
+  (later: CR 506.4d for a creature planeswalker).
+- Damage to a planeswalker removes loyalty counters (CR 120.3c), checked apart from damage marked on a creature, so a
+  creature planeswalker gets both; the recipients' types are read once per damage event, before its results, which
+  happen at once (CR 120.4c).
+- The engine stores its own listed attack, not the answer as sent, so an answer can't add keys or an `undefined`.
+

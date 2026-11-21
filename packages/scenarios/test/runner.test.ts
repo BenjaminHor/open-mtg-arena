@@ -213,7 +213,7 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
       first(`${blocked}  - all pass: until combat.damage\n  - p1 assign: { Grizzly Bears: 2, Giant Spider: 3 }\n`),
     ).toMatch(/must add up to 6, not 5/);
     expect(first(`${blocked}  - all pass: until combat.damage\n  - p1 assign: { Grizzly Bears: 6 }\n`)).toMatch(
-      /each blocking creature \(and for a trampler, the player\) exactly once/,
+      /each blocking creature \(and for a trampler, the player or planeswalker it attacks\) exactly once/,
     );
     // The engine fills in a trampler's forced answer: a division naming another amount there is refused.
     const rhino = at(

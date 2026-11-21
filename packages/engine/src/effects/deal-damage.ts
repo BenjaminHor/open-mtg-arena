@@ -2,11 +2,13 @@
 // the event before it gets here (`pipeline/damage-replacements.ts`, CR 615); source abilities like lifelink, infect and
 // wither (CR 120.3) change its results here.
 
-import type { CardDatabase, Keyword } from "../cards/types.ts";
+import type { CardDatabase, CardType, Keyword } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
+import { removeCounters } from "../permanents/counters.ts";
 import { markDamage } from "../permanents/damage.ts";
 import type { Damage } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
+import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerNowOrLastKnown } from "../rules/controller.ts";
 import { canBeDealtDamage } from "../rules/damage-recipients.ts";
 import type { GameEvent } from "../state/events.ts";
@@ -18,14 +20,15 @@ import { gainLife, loseLife } from "./life.ts";
  * Deals damage as one damage event (CR 120.4): to one recipient, or to many at once, as combat damage (CR 510.2) and
  * a spell or ability dealing damage to several recipients in one action do (Earthquake, CR 608.2f). All of it is dealt first (CR 120.4b, when "whenever ... is dealt damage" triggers), then all of it turns
  * into its results (CR 120.4c): life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e), and life
- * gained from lifelink (CR 120.3f), all before state-based actions look. There are no planeswalkers or battles yet
- * (later: CR 120.3c, 120.3h).
+ * gained from lifelink (CR 120.3f), all before state-based actions look; loyalty counters removed from a planeswalker
+ * (CR 120.3c). There are no battles yet (later: CR 120.3h).
  */
 export function dealDamage(state: GameState, damage: readonly Damage[], cards: CardDatabase): Progress {
   // Damage of 0, and damage to a recipient that can't be dealt it, are already gone: the pipeline drops them before
   // prevention (CR 120.8, damage-replacements.ts). A recipient can still leave between that and this, when an earlier
   // event of the same batch is performed first, so it's checked again.
   const dealt = damage.filter((d) => canBeDealtDamage(state, d.to, cards));
+  const types = (d: Damage) => (d.to.kind === "object" ? cardTypesOf(state, d.to.object, cards) : []);
   const events: GameEvent[] = dealt.map((d) => ({
     type: "DAMAGE_DEALT",
     source: d.source,
@@ -33,7 +36,9 @@ export function dealDamage(state: GameState, damage: readonly Damage[], cards: C
     amount: d.amount,
     combat: d.combat,
   }));
-  const results = dealt.reduce<Progress>((progress, d) => andThen(progress, (s) => damageResult(s, d)), {
+  // Every result happens at once (CR 120.4c), so what each recipient is comes from the state before any of them; read
+  // after each one, the layer pass would run again for every damaged permanent.
+  const results = dealt.reduce<Progress>((progress, d) => andThen(progress, (s) => damageResult(s, d, types(d))), {
     state,
     events,
   });
@@ -93,12 +98,20 @@ function sourceKeywords(state: GameState, source: ObjectId, cards: CardDatabase)
   return state.lastKnownCharacteristics[source]?.keywords ?? [];
 }
 
-/** What dealt damage does (CR 120.3, 120.4c). */
-function damageResult(state: GameState, d: Damage): Progress {
+/**
+ * What dealt damage does (CR 120.3, 120.4c). A permanent's results are checked one by one, not chosen by its type: a
+ * creature that's also a planeswalker gets both (CR 120.3c, 120.3e).
+ */
+function damageResult(state: GameState, d: Damage, types: readonly CardType[]): Progress {
   switch (d.to.kind) {
     case "player":
       return loseLife(state, d.to.player, d.amount);
-    case "object":
-      return markDamage(state, d.to.object, d.amount);
+    case "object": {
+      const id = d.to.object;
+      const marked = types.includes("creature") ? markDamage(state, id, d.amount) : { state, events: [] };
+      return types.includes("planeswalker")
+        ? andThen(marked, (s) => removeCounters(s, id, "loyalty", d.amount))
+        : marked;
+    }
   }
 }
