@@ -724,7 +724,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          permanent's controller on every board (the pass a quarter slower): it returns nothing without a control effect;
          an Aura's "you" is plain data; the rationale for reading the static from printed text corrected (layer 6 is after
          layer 2), with a future-rules watch-out; the anthem scenario made uneven; a unit test of the cache. Bench equal to
-         or faster than the base. Next: PR; then M2-12c3.
+         or faster than the base. Fuzz 80 clean. Merged as #63. Next: M2-12c3 (Soul Bleed, Ice Cage).
        - M2-12c1 built (2026-11-21, D-104): `controllerOf(state, id, cards)` (56 calls in 31 files), layer 2 only in the
          pass, the control-change check in `advance` (CR 302.6, 506.4), the `controlChangesRecorded` fuzz check. Every
          scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`
