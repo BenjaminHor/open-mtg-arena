@@ -556,7 +556,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          actions ask only the player's permanents), baseline updated. Code review of part 2 (no wrong results): freeze
          the shared starts and basic land abilities (the fresh pass shares them), one usable-mana-ability search and
          one count for `manaAvailable` and auto pay, a payable Archdruid X and an "only yours" scenario, doc wording,
-         `later: CR 602.2` on the controller pre-filter; all fixed. Next: fuzz, PR.
+         `later: CR 602.2` on the controller pre-filter; all fixed (4feab84). Fuzz 200 + 150 clean. Merged as #50.
+         Next: M2-09b.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).
