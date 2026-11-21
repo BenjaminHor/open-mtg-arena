@@ -6,6 +6,7 @@ import {
   controllerOf,
   type GameEvent,
   type GameState,
+  KEYWORDS,
   type ObjectId,
   type PlayerId,
 } from "@mtg/engine";
@@ -40,6 +41,7 @@ export const EXPECTATIONS = [
   "subtypes",
   "counters",
   "abilities contains",
+  "abilities lacks",
   "events contains",
   "events lacks",
   "winner",
@@ -99,7 +101,7 @@ function check(
     if (life[2] === "life") return same(ps?.life);
     return same(Object.fromEntries(Object.entries(ps?.manaPool ?? {}).filter(([, n]) => n !== 0)));
   }
-  const property = /^((?:hand:|graveyard:|stack:)?p\d+:.+?)\.(\w+(?: contains)?)$/.exec(key);
+  const property = /^((?:hand:|graveyard:|stack:)?p\d+:.+?)\.(\w+(?: contains| lacks)?)$/.exec(key);
   if (property !== null) {
     const [, refText = "", prop = ""] = property;
     const coming = COMING_EXPECTATIONS[prop];
@@ -143,6 +145,15 @@ function check(
         if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
         const keywords = characteristics(state, obj.id, cards).keywords;
         return { value: keywords, matches: containsAll(keywords, expected, deepEqual) };
+      }
+      case "abilities lacks": {
+        // "Loses flying" (CR 613.1f): none of these keyword abilities.
+        if (!Array.isArray(expected) || expected.length === 0) return { error: "lacks takes a non-empty list" };
+        // A misspelt keyword would always be lacked, so only known keywords are allowed.
+        const unknown = expected.filter((k) => !(KEYWORDS as readonly unknown[]).includes(k));
+        if (unknown.length > 0) return { error: `lacks: unknown keyword ${JSON.stringify(unknown[0])}` };
+        const keywords: readonly unknown[] = characteristics(state, obj.id, cards).keywords;
+        return { value: keywords, matches: expected.every((k) => !keywords.includes(k)) };
       }
       default:
         return { error: `unknown property "${prop}"` };

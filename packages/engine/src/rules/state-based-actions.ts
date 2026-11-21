@@ -8,7 +8,7 @@ import type { ObjectId } from "../state/ids.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { keywordsOf } from "./abilities.ts";
 import { attachedHost, enchantFilterOf, isAura } from "./attachment.ts";
-import { cardTypesOf } from "./card-types.ts";
+import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
 import { powerAndToughness } from "./power-toughness.ts";
@@ -37,6 +37,8 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
   for (const object of state.zones.battlefield) {
     const obj = state.objects[object];
     if (isAuraIllegallyAttached(state, object, cards)) actions.push({ kind: "auraIllegallyAttached", object });
+    if (isEquipmentIllegallyAttached(state, object, cards))
+      actions.push({ kind: "equipmentIllegallyAttached", object });
     // Any permanent with both kinds, creature or not (CR 704.5q).
     const count = obj?.kind === "card" ? Math.min(obj.counters["+1/+1"] ?? 0, obj.counters["-1/-1"] ?? 0) : 0;
     if (count > 0) actions.push({ kind: "plusAndMinusCounters", object, count });
@@ -68,4 +70,18 @@ function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDa
   return (
     !matchesFilter(state, host, enchant, controllerOf(state, aura), cards) || isProtectedFrom(state, host, aura, cards)
   );
+}
+
+/**
+ * An Equipment attached to something that isn't a creature, to itself, to something with protection from it, or to
+ * something that has left the battlefield (CR 704.5n, 301.5c, 702.16d). It stays on the battlefield, unattached. An
+ * Equipment that's also a creature can't equip anything either; nothing in the pool makes one a creature.
+ */
+function isEquipmentIllegallyAttached(state: GameState, equipment: ObjectId, cards: CardDatabase): boolean {
+  const obj = state.objects[equipment];
+  if (obj?.kind !== "card" || obj.attachedTo === undefined) return false;
+  if (!subtypesOf(state, equipment, cards).includes("Equipment")) return false;
+  const host = attachedHost(state, equipment);
+  if (host === null || host === equipment) return true;
+  return !cardTypesOf(state, host, cards).includes("creature") || isProtectedFrom(state, host, equipment, cards);
 }

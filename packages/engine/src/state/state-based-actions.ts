@@ -11,6 +11,8 @@ export type StateBasedAction =
   | { kind: "tokenOutsideBattlefield"; object: ObjectId }
   /** CR 704.5m: an Aura attached to an illegal object, or to nothing, is put into its owner's graveyard. */
   | { kind: "auraIllegallyAttached"; object: ObjectId }
+  /** CR 704.5n: an Equipment attached to an illegal permanent, or to one that's gone, becomes unattached. */
+  | { kind: "equipmentIllegallyAttached"; object: ObjectId }
   /** CR 704.5f: a creature with toughness 0 or less is put into its owner's graveyard. */
   | { kind: "zeroToughness"; object: ObjectId }
   /** CR 704.5g: a creature with toughness above 0 and lethal damage marked on it is destroyed. */

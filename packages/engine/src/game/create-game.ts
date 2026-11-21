@@ -199,7 +199,7 @@ function nextCardId(cardIds: CardId[]): CardId {
 }
 
 /**
- * Attaches the permanents the setup says start attached (CR 303.4b; Equipment, later: CR 301.5a). Each player's permanents were created in
+ * Attaches the permanents the setup says start attached (CR 303.4b, 301.5a). Each player's permanents were created in
  * their setup order, so the index into a player's `battlefield` names one of them. Whether the attachment is legal is the
  * state-based actions' to judge (CR 704.5m), as for any other permanent.
  */

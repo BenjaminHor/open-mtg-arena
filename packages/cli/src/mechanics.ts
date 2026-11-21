@@ -101,6 +101,8 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   COUNTERS_REMOVED: true,
   TOKEN_CREATED: true,
   TOKEN_CEASED_TO_EXIST: true,
+  ATTACHED: true,
+  UNATTACHED: true,
 };
 
 /**
@@ -145,6 +147,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   preventDamageToYou: "prevented",
   entersWithCounters: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
+  preventNoncombatDamageToAttached: "prevented",
 };
 
 /** The replacement effects a card's own text makes that apply as it moves to `zone`. */
@@ -226,6 +229,8 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   // crediting it in combat would never count; its Aura resolving is when it starts to apply.
   attachedGets: "enters",
   attachedCantAttackOrBlock: "enters",
+  // Evasion, like "can't be blocked": its creature attacking shows it.
+  attachedCantBeBlocked: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */
@@ -242,6 +247,8 @@ const ABILITY_FIELDS: { [F in keyof AbilityDef]-?: (ability: AbilityDef) => stri
   cost: (ability) => ability.cost.map((c) => `cost ${c.kind}`),
   targets: (ability) => ability.targets.map(targetUnit),
   effects: (ability) => effectOps(ability.effects),
+  timing: (ability) => (ability.timing === undefined ? [] : [`timing ${ability.timing}`]),
+  keyword: (ability) => (ability.keyword === undefined ? [] : [`keyword ${ability.keyword}`]),
 };
 
 const TRIGGER_FIELDS: { [F in keyof TriggeredAbilityDef]-?: (trigger: TriggeredAbilityDef) => string[] } = {

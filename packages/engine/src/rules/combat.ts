@@ -108,6 +108,8 @@ function landwalkAllowsBlock(state: GameState, blocker: ObjectId, attacker: Obje
 function cantBeBlockedAllowsBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase) {
   // "Can't be blocked this turn" from a resolved effect (Merfolk Sovereign's ability), a restriction like the static.
   if (state.effects.some((e) => e.change.kind === "cantBeBlocked" && e.affected.includes(attacker))) return false;
+  // "Equipped creature can't be blocked" (Whispersilk Cloak), from what's attached to it.
+  if (layeredOf(state, attacker, cards)?.cantBeBlocked === true) return false;
   return staticAbilitiesOf(state, attacker, cards).every(
     (ability) =>
       ability.kind !== "cantBeBlocked" ||

@@ -1,0 +1,21 @@
+name: A stolen creature keeps its Equipment, which its new controller can't activate
+rules: [CR 301.5d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Forest, Forest, Grizzly Bears]
+    hand: [Act of Treason]
+  p2:
+    battlefield: [Hill Giant, { card: Gorgon Flail, attachedTo: p2:Hill Giant }]
+steps:
+  - p1 cast: Act of Treason
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Hill Giant.power: 4
+      events lacks: [{ type: UNATTACHED }]
+  - p1 activate: p2:Gorgon Flail
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - expect error: illegalAction

@@ -1,0 +1,1308 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Weakness, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Kelinore Bat, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Serra Angel, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Flashfreeze, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Duress, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Shock, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Divine Verdict, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lightning Bolt, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 mulligans
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Weakness, p1's hand -> p1's library
+T0 moves: Kelinore Bat, p1's hand -> p1's library
+T0 moves: Serra Angel, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 moves: Flashfreeze, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Gorgon Flail, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Captain of the Watch, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mind Shatter, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Duress, p2's hand -> p2's library
+T0 moves: Shock, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 moves: Divine Verdict, p2's hand -> p2's library
+T0 moves: Lightning Bolt, p2's hand -> p2's library
+T0 moves: Swamp, p2's hand -> p2's library
+T0 p2 shuffles their library
+T0 moves: Duress, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Acolyte of Xathrid, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Kelinore Bat, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Unsummon, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Nightmare, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p1's hand -> p1's library
+T0 moves: Mountain, p2's hand -> p2's library
+T0 p1 keeps
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 p1 attack: nothing
+T1 moves: Mind Shatter, p1's hand -> stack
+T1 p1 cancels casting Mind Shatter
+T1 moves: Gorgon Flail, p1's hand -> stack
+T1 p1 cancels casting Gorgon Flail
+T1 moves: Captain of the Watch, p1's hand -> stack
+T1 p1 cancels casting Captain of the Watch
+T2 turn 2 begins (p2)
+T2 moves: Mountain, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Nightmare, p2's hand -> stack
+T2 p2 cancels casting Nightmare
+T2 p2 attack: nothing
+T2 moves: Nightmare, p2's hand -> stack
+T2 p2 cancels casting Nightmare
+T3 turn 3 begins (p1)
+T3 moves: Island, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Swamp, p1's hand -> battlefield
+T3 p1 plays p1:Swamp
+T3 moves: Captain of the Watch, p1's hand -> stack
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1 cancels casting Captain of the Watch
+T3 p1 attack: nothing
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1's unspent {B} empties
+T4 turn 4 begins (p2)
+T4 moves: Shock, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Duress, p2's hand -> stack
+T4 p2 cancels casting Duress
+T4 moves: Mountain, p2's hand -> battlefield
+T4 p2 plays p2:Mountain
+T4 moves: Shock, p2's hand -> stack
+T4 taps: p2:Mountain
+T4 p2 adds {R} (p2:Mountain)
+T4 p2 taps p2:Mountain for mana
+T4 p2 casts Shock
+T4 damage: Shock -> p1 2
+T4 p1 loses 2 life
+T4 resolves: Shock
+T4 moves: Shock, stack -> p2's graveyard
+T4 p2 attack: nothing
+T5 turn 5 begins (p1)
+T5 untaps: p1:Swamp
+T5 taps: p1:Swamp
+T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
+T5 p1's unspent {B} empties
+T5 moves: Flashfreeze, p1's library -> p1's hand
+T5 p1 draws
+T5 moves: Gorgon Flail, p1's hand -> stack
+T5 p1 cancels casting Gorgon Flail
+T5 moves: Island, p1's hand -> battlefield
+T5 p1 plays p1:Island
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 p1's unspent {U} empties
+T5 p1 attack: nothing
+T6 turn 6 begins (p2)
+T6 untaps: p2:Mountain
+T6 taps: p2:Mountain
+T6 p2 adds {R} (p2:Mountain)
+T6 p2 taps p2:Mountain for mana
+T6 p2's unspent {R} empties
+T6 moves: Island, p2's library -> p2's hand
+T6 p2 draws
+T6 p2 attack: nothing
+T6 moves: Duress, p2's hand -> stack
+T6 p2 cancels casting Duress
+T6 moves: Island, p2's hand -> battlefield
+T6 p2 plays p2:Island
+T6 taps: p2:Island
+T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
+T6 p2's unspent {U} empties
+T7 turn 7 begins (p1)
+T7 untaps: p1:Swamp
+T7 untaps: p1:Island
+T7 taps: p1:Swamp
+T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
+T7 p1's unspent {U}{B} empties
+T7 moves: Forest, p1's library -> p1's hand
+T7 p1 draws
+T7 moves: Island, p1's hand -> battlefield
+T7 p1 plays p1:Island#2
+T7 taps: p1:Island#2
+T7 p1 adds {U} (p1:Island#2)
+T7 p1 taps p1:Island#2 for mana
+T7 moves: Gorgon Flail, p1's hand -> stack
+T7 p1 cancels casting Gorgon Flail
+T7 moves: Captain of the Watch, p1's hand -> stack
+T7 p1 cancels casting Captain of the Watch
+T7 p1's unspent {U} empties
+T7 p1 attack: nothing
+T7 moves: Gorgon Flail, p1's hand -> stack
+T7 p1 cancels casting Gorgon Flail
+T8 turn 8 begins (p2)
+T8 untaps: p2:Mountain
+T8 untaps: p2:Island
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2's unspent {U}{R} empties
+T8 moves: Shivan Dragon, p2's library -> p2's hand
+T8 p2 draws
+T8 moves: Swamp, p2's hand -> battlefield
+T8 p2 plays p2:Swamp
+T8 moves: Kelinore Bat, p2's hand -> stack
+T8 taps: p2:Swamp
+T8 p2 adds {B} (p2:Swamp)
+T8 p2 taps p2:Swamp for mana
+T8 p2 cancels casting Kelinore Bat
+T8 moves: Kelinore Bat, p2's hand -> stack
+T8 taps: p2:Swamp
+T8 p2 adds {B} (p2:Swamp)
+T8 p2 taps p2:Swamp for mana
+T8 p2 cancels casting Kelinore Bat
+T8 taps: p2:Swamp
+T8 p2 adds {B} (p2:Swamp)
+T8 p2 taps p2:Swamp for mana
+T8 p2's unspent {B} empties
+T8 p2 attack: nothing
+T9 turn 9 begins (p1)
+T9 untaps: p1:Swamp
+T9 untaps: p1:Island#1
+T9 untaps: p1:Island#2
+T9 moves: Naturalize, p1's library -> p1's hand
+T9 p1 draws
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 taps: p1:Swamp
+T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
+T9 taps: p1:Island#1
+T9 p1 adds {U} (p1:Island#1)
+T9 p1 taps p1:Island#1 for mana
+T9 p1's unspent {U}{U}{B} empties
+T9 moves: Forest, p1's hand -> battlefield
+T9 p1 plays p1:Forest
+T9 taps: p1:Forest
+T9 p1 adds {G} (p1:Forest)
+T9 p1 taps p1:Forest for mana
+T9 p1's unspent {G} empties
+T9 p1 attack: nothing
+T10 turn 10 begins (p2)
+T10 untaps: p2:Mountain
+T10 untaps: p2:Island
+T10 untaps: p2:Swamp
+T10 moves: Plains, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Mountain
+T10 p2 adds {R} (p2:Mountain)
+T10 p2 taps p2:Mountain for mana
+T10 p2's unspent {R} empties
+T10 moves: Plains, p2's hand -> battlefield
+T10 p2 plays p2:Plains
+T10 moves: Nightmare, p2's hand -> stack
+T10 taps: p2:Island
+T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
+T10 taps: p2:Swamp
+T10 p2 adds {B} (p2:Swamp)
+T10 p2 taps p2:Swamp for mana
+T10 taps: p2:Plains
+T10 p2 adds {W} (p2:Plains)
+T10 p2 taps p2:Plains for mana
+T10 p2 cancels casting Nightmare
+T10 moves: Shivan Dragon, p2's hand -> stack
+T10 taps: p2:Island
+T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
+T10 taps: p2:Swamp
+T10 p2 adds {B} (p2:Swamp)
+T10 p2 taps p2:Swamp for mana
+T10 taps: p2:Plains
+T10 p2 adds {W} (p2:Plains)
+T10 p2 taps p2:Plains for mana
+T10 p2 cancels casting Shivan Dragon
+T10 p2 attack: nothing
+T10 taps: p2:Plains
+T10 p2 adds {W} (p2:Plains)
+T10 p2 taps p2:Plains for mana
+T10 p2's unspent {W} empties
+T11 turn 11 begins (p1)
+T11 untaps: p1:Swamp
+T11 untaps: p1:Island#1
+T11 untaps: p1:Island#2
+T11 untaps: p1:Forest
+T11 moves: Serra Angel, p1's library -> p1's hand
+T11 p1 draws
+T11 taps: p1:Island#1
+T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
+T11 p1's unspent {U} empties
+T11 taps: p1:Island#2
+T11 p1 adds {U} (p1:Island#2)
+T11 p1 taps p1:Island#2 for mana
+T11 taps: p2:Swamp
+T11 p2 adds {B} (p2:Swamp)
+T11 p2 taps p2:Swamp for mana
+T11 moves: Mountain, p1's hand -> battlefield
+T11 p1 plays p1:Mountain
+T11 taps: p2:Island
+T11 p2 adds {U} (p2:Island)
+T11 p2 taps p2:Island for mana
+T11 p1's unspent {U} empties
+T11 p2's unspent {U}{B} empties
+T11 p1 attack: nothing
+T11 taps: p1:Swamp
+T11 p1 adds {B} (p1:Swamp)
+T11 p1 taps p1:Swamp for mana
+T11 p1's unspent {B} empties
+T11 taps: p1:Mountain
+T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
+T11 moves: Captain of the Watch, p1's hand -> stack
+T11 p1 cancels casting Captain of the Watch
+T11 p1's unspent {R} empties
+T11 taps: p1:Forest
+T11 p1 adds {G} (p1:Forest)
+T11 p1 taps p1:Forest for mana
+T11 p1's unspent {G} empties
+T12 turn 12 begins (p2)
+T12 untaps: p2:Mountain
+T12 untaps: p2:Island
+T12 untaps: p2:Swamp
+T12 untaps: p2:Plains
+T12 taps: p2:Plains
+T12 p2 adds {W} (p2:Plains)
+T12 p2 taps p2:Plains for mana
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
+T12 p2's unspent {W}{R} empties
+T12 moves: Plains, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Island
+T12 p2 adds {U} (p2:Island)
+T12 p2 taps p2:Island for mana
+T12 taps: p2:Swamp
+T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
+T12 p2's unspent {U}{B} empties
+T12 moves: Plains, p2's hand -> battlefield
+T12 p2 plays p2:Plains#2
+T12 taps: p2:Plains#2
+T12 p2 adds {W} (p2:Plains#2)
+T12 p2 taps p2:Plains#2 for mana
+T12 moves: Shivan Dragon, p2's hand -> stack
+T12 p2 cancels casting Shivan Dragon
+T12 moves: Kelinore Bat, p2's hand -> stack
+T12 p2 cancels casting Kelinore Bat
+T12 moves: Duress, p2's hand -> stack
+T12 p2 cancels casting Duress
+T12 p2's unspent {W} empties
+T12 p2 attack: nothing
+T12 moves: Duress, p2's hand -> stack
+T12 p2 cancels casting Duress
+T13 turn 13 begins (p1)
+T13 untaps: p1:Swamp
+T13 untaps: p1:Island#1
+T13 untaps: p1:Island#2
+T13 untaps: p1:Forest
+T13 untaps: p1:Mountain
+T13 taps: p1:Island#1
+T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
+T13 taps: p1:Mountain
+T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
+T13 taps: p1:Swamp
+T13 p1 adds {B} (p1:Swamp)
+T13 p1 taps p1:Swamp for mana
+T13 p1's unspent {U}{B}{R} empties
+T13 moves: Magebane Armor, p1's library -> p1's hand
+T13 p1 draws
+T13 taps: p1:Island#2
+T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
+T13 p1's unspent {U} empties
+T13 p1 attack: nothing
+T13 taps: p1:Forest
+T13 p1 adds {G} (p1:Forest)
+T13 p1 taps p1:Forest for mana
+T13 p1's unspent {G} empties
+T13 moves: Gorgon Flail, p1's hand -> stack
+T13 p1 cancels casting Gorgon Flail
+T14 turn 14 begins (p2)
+T14 untaps: p2:Mountain
+T14 untaps: p2:Island
+T14 untaps: p2:Swamp
+T14 untaps: p2:Plains#1
+T14 untaps: p2:Plains#2
+T14 moves: Mountain, p2's library -> p2's hand
+T14 p2 draws
+T14 moves: Nightmare, p2's hand -> stack
+T14 taps: p2:Plains#1
+T14 p2 adds {W} (p2:Plains#1)
+T14 p2 taps p2:Plains#1 for mana
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 taps: p2:Swamp
+T14 p2 adds {B} (p2:Swamp)
+T14 p2 taps p2:Swamp for mana
+T14 p2 cancels casting Nightmare
+T14 moves: Duress, p2's hand -> stack
+T14 p2 cancels casting Duress
+T14 taps: p2:Swamp
+T14 p2 adds {B} (p2:Swamp)
+T14 p2 taps p2:Swamp for mana
+T14 taps: p2:Island
+T14 p2 adds {U} (p2:Island)
+T14 p2 taps p2:Island for mana
+T14 taps: p2:Plains#1
+T14 p2 adds {W} (p2:Plains#1)
+T14 p2 taps p2:Plains#1 for mana
+T14 p2's unspent {W}{U}{B} empties
+T14 p2 attack: nothing
+T14 taps: p2:Plains#2
+T14 p2 adds {W} (p2:Plains#2)
+T14 p2 taps p2:Plains#2 for mana
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2's unspent {W}{R} empties
+T14 moves: Kelinore Bat, p2's hand -> stack
+T14 p2 cancels casting Kelinore Bat
+T14 moves: Mountain, p2's hand -> battlefield
+T14 p2 plays p2:Mountain#2
+T14 taps: p2:Mountain#2
+T14 p2 adds {R} (p2:Mountain#2)
+T14 p2 taps p2:Mountain#2 for mana
+T14 moves: Kelinore Bat, p2's hand -> stack
+T14 p2 cancels casting Kelinore Bat
+T14 moves: Nightmare, p2's hand -> stack
+T14 p2 cancels casting Nightmare
+T14 p2's unspent {R} empties
+T15 turn 15 begins (p1)
+T15 untaps: p1:Swamp
+T15 untaps: p1:Island#1
+T15 untaps: p1:Island#2
+T15 untaps: p1:Forest
+T15 untaps: p1:Mountain
+T15 moves: Honor of the Pure, p1's library -> p1's hand
+T15 p1 draws
+T15 moves: Magebane Armor, p1's hand -> stack
+T15 taps: p1:Mountain
+T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 p1 cancels casting Magebane Armor
+T15 taps: p1:Forest
+T15 p1 adds {G} (p1:Forest)
+T15 p1 taps p1:Forest for mana
+T15 moves: Mind Shatter, p1's hand -> stack
+T15 taps: p1:Swamp
+T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
+T15 taps: p1:Mountain
+T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
+T15 p1 cancels casting Mind Shatter
+T15 moves: Magebane Armor, p1's hand -> stack
+T15 taps: p1:Mountain
+T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
+T15 taps: p1:Swamp
+T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
+T15 p1 casts Magebane Armor
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 resolves: Magebane Armor
+T15 moves: Magebane Armor, stack -> battlefield
+T15 moves: Mind Shatter, p1's hand -> stack
+T15 p1 cancels casting Mind Shatter
+T15 p1's unspent {U}{B} empties
+T15 moves: Naturalize, p1's hand -> stack
+T15 targeted: p1:Magebane Armor by Naturalize
+T15 p1 cancels casting Naturalize
+T15 moves: Naturalize, p1's hand -> stack
+T15 targeted: p1:Magebane Armor by Naturalize
+T15 p1 cancels casting Naturalize
+T15 p1 attack: nothing
+T15 moves: Naturalize, p1's hand -> stack
+T15 targeted: p1:Magebane Armor by Naturalize
+T15 p1 cancels casting Naturalize
+T16 turn 16 begins (p2)
+T16 untaps: p2:Mountain#1
+T16 untaps: p2:Island
+T16 untaps: p2:Swamp
+T16 untaps: p2:Plains#1
+T16 untaps: p2:Plains#2
+T16 untaps: p2:Mountain#2
+T16 taps: p2:Mountain#2
+T16 p2 adds {R} (p2:Mountain#2)
+T16 p2 taps p2:Mountain#2 for mana
+T16 moves: Naturalize, p1's hand -> stack
+T16 targeted: p1:Magebane Armor by Naturalize
+T16 p1 cancels casting Naturalize
+T16 moves: Naturalize, p1's hand -> stack
+T16 targeted: p1:Magebane Armor by Naturalize
+T16 p1 cancels casting Naturalize
+T16 p2's unspent {R} empties
+T16 moves: Zephyr Sprite, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Mountain#1
+T16 p2 adds {R} (p2:Mountain#1)
+T16 p2 taps p2:Mountain#1 for mana
+T16 taps: p2:Island
+T16 p2 adds {U} (p2:Island)
+T16 p2 taps p2:Island for mana
+T16 taps: p2:Swamp
+T16 p2 adds {B} (p2:Swamp)
+T16 p2 taps p2:Swamp for mana
+T16 taps: p2:Plains#1
+T16 p2 adds {W} (p2:Plains#1)
+T16 p2 taps p2:Plains#1 for mana
+T16 p2's unspent {W}{U}{B}{R} empties
+T16 moves: Kelinore Bat, p2's hand -> stack
+T16 taps: p2:Plains#2
+T16 p2 adds {W} (p2:Plains#2)
+T16 p2 taps p2:Plains#2 for mana
+T16 p2 cancels casting Kelinore Bat
+T16 moves: Naturalize, p1's hand -> stack
+T16 targeted: p1:Magebane Armor by Naturalize
+T16 p1 cancels casting Naturalize
+T16 taps: p2:Plains#2
+T16 p2 adds {W} (p2:Plains#2)
+T16 p2 taps p2:Plains#2 for mana
+T16 p2's unspent {W} empties
+T16 p2 attack: nothing
+T16 moves: Naturalize, p1's hand -> stack
+T16 targeted: p1:Magebane Armor by Naturalize
+T16 p1 cancels casting Naturalize
+T16 moves: Zephyr Sprite, p2's hand -> stack
+T16 p2 cancels casting Zephyr Sprite
+T16 moves: Nightmare, p2's hand -> stack
+T16 p2 cancels casting Nightmare
+T16 moves: Naturalize, p1's hand -> stack
+T16 targeted: p1:Magebane Armor by Naturalize
+T16 p1 cancels casting Naturalize
+T16 moves: Naturalize, p1's hand -> stack
+T16 p1 cancels casting Naturalize
+T16 moves: Naturalize, p1's hand -> stack
+T16 targeted: p1:Magebane Armor by Naturalize
+T16 p1 cancels casting Naturalize
+T17 turn 17 begins (p1)
+T17 untaps: p1:Swamp
+T17 untaps: p1:Island#1
+T17 untaps: p1:Island#2
+T17 untaps: p1:Forest
+T17 untaps: p1:Mountain
+T17 moves: Forest, p1's library -> p1's hand
+T17 p1 draws
+T17 moves: Naturalize, p1's hand -> stack
+T17 targeted: p1:Magebane Armor by Naturalize
+T17 p1 cancels casting Naturalize
+T17 moves: Naturalize, p1's hand -> stack
+T17 targeted: p1:Magebane Armor by Naturalize
+T17 taps: p1:Forest
+T17 p1 adds {G} (p1:Forest)
+T17 p1 taps p1:Forest for mana
+T17 taps: p1:Island#2
+T17 p1 adds {U} (p1:Island#2)
+T17 p1 taps p1:Island#2 for mana
+T17 taps: p1:Mountain
+T17 p1 adds {R} (p1:Mountain)
+T17 p1 taps p1:Mountain for mana
+T17 p1 casts Naturalize
+T17 moves: Flashfreeze, p1's hand -> stack
+T17 targeted: Naturalize by Flashfreeze
+T17 taps: p1:Swamp
+T17 p1 adds {B} (p1:Swamp)
+T17 p1 taps p1:Swamp for mana
+T17 p1 casts Flashfreeze
+T17 countered: Naturalize
+T17 moves: Naturalize, stack -> p1's graveyard
+T17 resolves: Flashfreeze
+T17 moves: Flashfreeze, stack -> p1's graveyard
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
+T17 p1's unspent {U} empties
+T17 moves: Honor of the Pure, p1's hand -> stack
+T17 p1 cancels casting Honor of the Pure
+T17 moves: Forest, p1's hand -> battlefield
+T17 p1 plays p1:Forest#2
+T17 taps: p1:Forest#2
+T17 p1 adds {G} (p1:Forest#2)
+T17 p1 taps p1:Forest#2 for mana
+T17 p1's unspent {G} empties
+T17 p1 attack: nothing
+T18 turn 18 begins (p2)
+T18 untaps: p2:Mountain#1
+T18 untaps: p2:Island
+T18 untaps: p2:Swamp
+T18 untaps: p2:Plains#1
+T18 untaps: p2:Plains#2
+T18 untaps: p2:Mountain#2
+T18 moves: Swamp, p2's library -> p2's hand
+T18 p2 draws
+T18 p2 attack: nothing
+T18 moves: Swamp, p2's hand -> battlefield
+T18 p2 plays p2:Swamp#2
+T18 taps: p2:Island
+T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
+T18 moves: Nightmare, p2's hand -> stack
+T18 taps: p2:Mountain#1
+T18 p2 adds {R} (p2:Mountain#1)
+T18 p2 taps p2:Mountain#1 for mana
+T18 taps: p2:Plains#1
+T18 p2 adds {W} (p2:Plains#1)
+T18 p2 taps p2:Plains#1 for mana
+T18 taps: p2:Swamp#2
+T18 p2 adds {B} (p2:Swamp#2)
+T18 p2 taps p2:Swamp#2 for mana
+T18 taps: p2:Mountain#2
+T18 p2 adds {R} (p2:Mountain#2)
+T18 p2 taps p2:Mountain#2 for mana
+T18 taps: p2:Swamp#1
+T18 p2 adds {B} (p2:Swamp#1)
+T18 p2 taps p2:Swamp#1 for mana
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 casts Nightmare
+T18 resolves: Nightmare
+T18 moves: Nightmare, stack -> battlefield
+T18 p2's unspent {W} empties
+T19 turn 19 begins (p1)
+T19 untaps: p1:Swamp
+T19 untaps: p1:Island#1
+T19 untaps: p1:Island#2
+T19 untaps: p1:Forest#1
+T19 untaps: p1:Mountain
+T19 untaps: p1:Forest#2
+T19 taps: p1:Forest#1
+T19 p1 adds {G} (p1:Forest#1)
+T19 p1 taps p1:Forest#1 for mana
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
+T19 taps: p1:Swamp
+T19 p1 adds {B} (p1:Swamp)
+T19 p1 taps p1:Swamp for mana
+T19 taps: p1:Forest#2
+T19 p1 adds {G} (p1:Forest#2)
+T19 p1 taps p1:Forest#2 for mana
+T19 p1's unspent {U}{B}{G}{G} empties
+T19 moves: Black Knight, p1's library -> p1's hand
+T19 p1 draws
+T19 taps: p1:Mountain
+T19 p1 adds {R} (p1:Mountain)
+T19 p1 taps p1:Mountain for mana
+T19 p1's unspent {R} empties
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
+T19 p1's unspent {U} empties
+T19 moves: Unsummon, p2's hand -> stack
+T19 targeted: p2:Nightmare by Unsummon
+T19 p2 cancels casting Unsummon
+T19 p1 attack: nothing
+T19 moves: Unsummon, p2's hand -> stack
+T19 p2 cancels casting Unsummon
+T19 moves: Unsummon, p2's hand -> stack
+T19 targeted: p2:Nightmare by Unsummon
+T19 p2 cancels casting Unsummon
+T20 turn 20 begins (p2)
+T20 untaps: p2:Mountain#1
+T20 untaps: p2:Island
+T20 untaps: p2:Swamp#1
+T20 untaps: p2:Plains#1
+T20 untaps: p2:Plains#2
+T20 untaps: p2:Mountain#2
+T20 untaps: p2:Swamp#2
+T20 moves: Warpath Ghoul, p2's library -> p2's hand
+T20 p2 draws
+T20 taps: p2:Mountain#2
+T20 p2 adds {R} (p2:Mountain#2)
+T20 p2 taps p2:Mountain#2 for mana
+T20 taps: p2:Swamp#1
+T20 p2 adds {B} (p2:Swamp#1)
+T20 p2 taps p2:Swamp#1 for mana
+T20 taps: p2:Island
+T20 p2 adds {U} (p2:Island)
+T20 p2 taps p2:Island for mana
+T20 moves: Unsummon, p2's hand -> stack
+T20 p2 cancels casting Unsummon
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Nightmare by Unsummon
+T20 taps: p2:Swamp#2
+T20 p2 adds {B} (p2:Swamp#2)
+T20 p2 taps p2:Swamp#2 for mana
+T20 taps: p2:Plains#2
+T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
+T20 p2 cancels casting Unsummon
+T20 p2's unspent {U}{B}{R} empties
+T20 taps: p2:Plains#1
+T20 p2 adds {W} (p2:Plains#1)
+T20 p2 taps p2:Plains#1 for mana
+T20 p2's unspent {W} empties
+T20 taps: p2:Plains#2
+T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
+T20 taps: p2:Mountain#1
+T20 p2 adds {R} (p2:Mountain#1)
+T20 p2 taps p2:Mountain#1 for mana
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Nightmare by Unsummon
+T20 taps: p2:Swamp#2
+T20 p2 adds {B} (p2:Swamp#2)
+T20 p2 taps p2:Swamp#2 for mana
+T20 p2 cancels casting Unsummon
+T20 taps: p2:Swamp#2
+T20 p2 adds {B} (p2:Swamp#2)
+T20 p2 taps p2:Swamp#2 for mana
+T20 moves: Unsummon, p2's hand -> stack
+T20 targeted: p2:Nightmare by Unsummon
+T20 p2 cancels casting Unsummon
+T20 p2's unspent {W}{B}{R} empties
+T20 p2 attack: nothing
+T20 moves: Unsummon, p2's hand -> stack
+T20 p2 cancels casting Unsummon
+T21 turn 21 begins (p1)
+T21 untaps: p1:Swamp
+T21 untaps: p1:Island#1
+T21 untaps: p1:Island#2
+T21 untaps: p1:Forest#1
+T21 untaps: p1:Mountain
+T21 untaps: p1:Forest#2
+T21 taps: p1:Forest#1
+T21 p1 adds {G} (p1:Forest#1)
+T21 p1 taps p1:Forest#1 for mana
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 p1's unspent {G} empties
+T21 moves: Plains, p1's library -> p1's hand
+T21 p1 draws
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 taps: p1:Swamp
+T21 p1 adds {B} (p1:Swamp)
+T21 p1 taps p1:Swamp for mana
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 p1's unspent {B} empties
+T21 p1 attack: nothing
+T21 taps: p1:Mountain
+T21 p1 adds {R} (p1:Mountain)
+T21 p1 taps p1:Mountain for mana
+T21 taps: p1:Forest#2
+T21 p1 adds {G} (p1:Forest#2)
+T21 p1 taps p1:Forest#2 for mana
+T21 moves: Serra Angel, p1's hand -> stack
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
+T21 p1 cancels casting Serra Angel
+T21 moves: Gorgon Flail, p1's hand -> stack
+T21 p1 casts Gorgon Flail
+T21 resolves: Gorgon Flail
+T21 moves: Gorgon Flail, stack -> battlefield
+T21 moves: Captain of the Watch, p1's hand -> stack
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
+T21 taps: p1:Island#1
+T21 p1 adds {U} (p1:Island#1)
+T21 p1 taps p1:Island#1 for mana
+T21 p1 cancels casting Captain of the Watch
+T21 moves: Plains, p1's hand -> battlefield
+T21 p1 plays p1:Plains
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 moves: Black Knight, p1's hand -> stack
+T21 taps: p1:Island#1
+T21 p1 adds {U} (p1:Island#1)
+T21 p1 taps p1:Island#1 for mana
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
+T21 p1 cancels casting Black Knight
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 moves: Unsummon, p2's hand -> stack
+T21 targeted: p2:Nightmare by Unsummon
+T21 p2 cancels casting Unsummon
+T21 p1's unspent {W} empties
+T22 turn 22 begins (p2)
+T22 untaps: p2:Mountain#1
+T22 untaps: p2:Island
+T22 untaps: p2:Swamp#1
+T22 untaps: p2:Plains#1
+T22 untaps: p2:Plains#2
+T22 untaps: p2:Mountain#2
+T22 untaps: p2:Swamp#2
+T22 taps: p1:Island#2
+T22 p1 adds {U} (p1:Island#2)
+T22 p1 taps p1:Island#2 for mana
+T22 taps: p1:Island#1
+T22 p1 adds {U} (p1:Island#1)
+T22 p1 taps p1:Island#1 for mana
+T22 taps: p2:Plains#2
+T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
+T22 p1's unspent {U}{U} empties
+T22 p2's unspent {W} empties
+T22 moves: Volcanic Hammer, p2's library -> p2's hand
+T22 p2 draws
+T22 taps: p2:Island
+T22 p2 adds {U} (p2:Island)
+T22 p2 taps p2:Island for mana
+T22 p2's unspent {U} empties
+T22 moves: Kelinore Bat, p2's hand -> stack
+T22 taps: p2:Mountain#2
+T22 p2 adds {R} (p2:Mountain#2)
+T22 p2 taps p2:Mountain#2 for mana
+T22 taps: p2:Plains#1
+T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
+T22 taps: p2:Swamp#2
+T22 p2 adds {B} (p2:Swamp#2)
+T22 p2 taps p2:Swamp#2 for mana
+T22 taps: p2:Swamp#1
+T22 p2 adds {B} (p2:Swamp#1)
+T22 p2 taps p2:Swamp#1 for mana
+T22 p2 casts Kelinore Bat
+T22 resolves: Kelinore Bat
+T22 moves: Kelinore Bat, stack -> battlefield
+T22 moves: Shivan Dragon, p2's hand -> stack
+T22 taps: p2:Mountain#1
+T22 p2 adds {R} (p2:Mountain#1)
+T22 p2 taps p2:Mountain#1 for mana
+T22 p2 cancels casting Shivan Dragon
+T22 p2's unspent {R} empties
+T22 taps: p2:Nightmare
+T22 p2 attack: p2:Nightmare -> p1
+T22 taps: p2:Mountain#1
+T22 p2 adds {R} (p2:Mountain#1)
+T22 p2 taps p2:Mountain#1 for mana
+T22 moves: Unsummon, p2's hand -> stack
+T22 targeted: p2:Kelinore Bat by Unsummon
+T22 p2 cancels casting Unsummon
+T22 moves: Unsummon, p2's hand -> stack
+T22 targeted: p2:Kelinore Bat by Unsummon
+T22 p2 cancels casting Unsummon
+T22 moves: Unsummon, p2's hand -> stack
+T22 targeted: p2:Kelinore Bat by Unsummon
+T22 p2 cancels casting Unsummon
+T22 p2's unspent {R} empties
+T22 p1 block: nothing
+T22 combat damage: p2:Nightmare -> p1 2
+T22 p1 loses 2 life
+T22 moves: Unsummon, p2's hand -> stack
+T22 targeted: p2:Kelinore Bat by Unsummon
+T22 p2 cancels casting Unsummon
+T22 moves: Unsummon, p2's hand -> stack
+T22 targeted: p2:Kelinore Bat by Unsummon
+T22 p2 cancels casting Unsummon
+T22 moves: Unsummon, p2's hand -> stack
+T22 targeted: p2:Nightmare by Unsummon
+T22 p2 cancels casting Unsummon
+T23 turn 23 begins (p1)
+T23 untaps: p1:Swamp
+T23 untaps: p1:Island#1
+T23 untaps: p1:Island#2
+T23 untaps: p1:Forest#1
+T23 untaps: p1:Mountain
+T23 untaps: p1:Forest#2
+T23 untaps: p1:Plains
+T23 moves: Prodigal Pyromancer, p1's library -> p1's hand
+T23 p1 draws
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Kelinore Bat by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Kelinore Bat by Unsummon
+T23 p2 cancels casting Unsummon
+T23 taps: p1:Island#1
+T23 p1 adds {U} (p1:Island#1)
+T23 p1 taps p1:Island#1 for mana
+T23 moves: Black Knight, p1's hand -> stack
+T23 taps: p1:Mountain
+T23 p1 adds {R} (p1:Mountain)
+T23 p1 taps p1:Mountain for mana
+T23 taps: p1:Swamp
+T23 p1 adds {B} (p1:Swamp)
+T23 p1 taps p1:Swamp for mana
+T23 taps: p1:Forest#1
+T23 p1 adds {G} (p1:Forest#1)
+T23 p1 taps p1:Forest#1 for mana
+T23 taps: p1:Forest#2
+T23 p1 adds {G} (p1:Forest#2)
+T23 p1 taps p1:Forest#2 for mana
+T23 taps: p1:Island#2
+T23 p1 adds {U} (p1:Island#2)
+T23 p1 taps p1:Island#2 for mana
+T23 taps: p1:Plains
+T23 p1 adds {W} (p1:Plains)
+T23 p1 taps p1:Plains for mana
+T23 p1 cancels casting Black Knight
+T23 taps: p1:Island#2
+T23 p1 adds {U} (p1:Island#2)
+T23 p1 taps p1:Island#2 for mana
+T23 taps: p1:Swamp
+T23 p1 adds {B} (p1:Swamp)
+T23 p1 taps p1:Swamp for mana
+T23 taps: p1:Forest#1
+T23 p1 adds {G} (p1:Forest#1)
+T23 p1 taps p1:Forest#1 for mana
+T23 taps: p1:Mountain
+T23 p1 adds {R} (p1:Mountain)
+T23 p1 taps p1:Mountain for mana
+T23 moves: Prodigal Pyromancer, p1's hand -> stack
+T23 taps: p1:Plains
+T23 p1 adds {W} (p1:Plains)
+T23 p1 taps p1:Plains for mana
+T23 p1 casts Prodigal Pyromancer
+T23 resolves: Prodigal Pyromancer
+T23 moves: Prodigal Pyromancer, stack -> battlefield
+T23 moves: Serra Angel, p1's hand -> stack
+T23 taps: p1:Forest#2
+T23 p1 adds {G} (p1:Forest#2)
+T23 p1 taps p1:Forest#2 for mana
+T23 p1 cancels casting Serra Angel
+T23 targeted: p1:Prodigal Pyromancer by Magebane Armor ability
+T23 taps: p1:Forest#2
+T23 p1 adds {G} (p1:Forest#2)
+T23 p1 taps p1:Forest#2 for mana
+T23 p1 activates p1:Magebane Armor
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Kelinore Bat by Unsummon
+T23 p2 cancels casting Unsummon
+T23 attached: p1:Magebane Armor to p1:Prodigal Pyromancer
+T23 resolves: p1:Magebane Armor's ability
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p1:Prodigal Pyromancer by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Nightmare by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Nightmare by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Unsummon, p2's hand -> stack
+T23 p2 cancels casting Unsummon
+T23 p1's unspent {W}{U} empties
+T23 p1 attack: nothing
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Nightmare by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Nightmare by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Unsummon, p2's hand -> stack
+T23 targeted: p2:Nightmare by Unsummon
+T23 p2 cancels casting Unsummon
+T23 moves: Serra Angel, p1's hand -> stack
+T23 p1 cancels casting Serra Angel
+T23 moves: Unsummon, p2's hand -> stack
+T23 p2 cancels casting Unsummon
+T24 turn 24 begins (p2)
+T24 untaps: p2:Mountain#1
+T24 untaps: p2:Island
+T24 untaps: p2:Swamp#1
+T24 untaps: p2:Plains#1
+T24 untaps: p2:Plains#2
+T24 untaps: p2:Mountain#2
+T24 untaps: p2:Swamp#2
+T24 untaps: p2:Nightmare
+T24 moves: Unsummon, p2's hand -> stack
+T24 p2 cancels casting Unsummon
+T24 moves: Unsummon, p2's hand -> stack
+T24 targeted: p2:Nightmare by Unsummon
+T24 taps: p2:Swamp#1
+T24 p2 adds {B} (p2:Swamp#1)
+T24 p2 taps p2:Swamp#1 for mana
+T24 taps: p2:Plains#1
+T24 p2 adds {W} (p2:Plains#1)
+T24 p2 taps p2:Plains#1 for mana
+T24 taps: p2:Swamp#2
+T24 p2 adds {B} (p2:Swamp#2)
+T24 p2 taps p2:Swamp#2 for mana
+T24 taps: p2:Mountain#2
+T24 p2 adds {R} (p2:Mountain#2)
+T24 p2 taps p2:Mountain#2 for mana
+T24 p2 cancels casting Unsummon
+T24 taps: p2:Swamp#2
+T24 p2 adds {B} (p2:Swamp#2)
+T24 p2 taps p2:Swamp#2 for mana
+T24 taps: p2:Mountain#2
+T24 p2 adds {R} (p2:Mountain#2)
+T24 p2 taps p2:Mountain#2 for mana
+T24 taps: p2:Plains#2
+T24 p2 adds {W} (p2:Plains#2)
+T24 p2 taps p2:Plains#2 for mana
+T24 taps: p2:Swamp#1
+T24 p2 adds {B} (p2:Swamp#1)
+T24 p2 taps p2:Swamp#1 for mana
+T24 taps: p2:Plains#1
+T24 p2 adds {W} (p2:Plains#1)
+T24 p2 taps p2:Plains#1 for mana
+T24 taps: p2:Island
+T24 p2 adds {U} (p2:Island)
+T24 p2 taps p2:Island for mana
+T24 p2's unspent {W}{W}{U}{B}{B}{R} empties
+T24 moves: Mind Shatter, p2's library -> p2's hand
+T24 p2 draws
+T24 taps: p2:Mountain#1
+T24 p2 adds {R} (p2:Mountain#1)
+T24 p2 taps p2:Mountain#1 for mana
+T24 p2's unspent {R} empties
+T24 p2 attack: nothing
+T24 moves: Unsummon, p2's hand -> stack
+T24 targeted: p2:Kelinore Bat by Unsummon
+T24 p2 cancels casting Unsummon
+T24 moves: Unsummon, p2's hand -> stack
+T24 p2 cancels casting Unsummon
+T24 moves: Unsummon, p2's hand -> stack
+T24 targeted: p2:Nightmare by Unsummon
+T24 p2 cancels casting Unsummon
+T24 moves: Unsummon, p2's hand -> stack
+T24 targeted: p2:Kelinore Bat by Unsummon
+T24 p2 cancels casting Unsummon
+T24 moves: Unsummon, p2's hand -> stack
+T24 targeted: p1:Prodigal Pyromancer by Unsummon
+T24 p2 cancels casting Unsummon
+T24 moves: Unsummon, p2's hand -> stack
+T24 targeted: p1:Prodigal Pyromancer by Unsummon
+T24 p2 cancels casting Unsummon
+T24 moves: Acolyte of Xathrid, p2's hand -> p2's graveyard
+T24 p2 discards Acolyte of Xathrid
+T25 turn 25 begins (p1)
+T25 untaps: p1:Swamp
+T25 untaps: p1:Island#1
+T25 untaps: p1:Island#2
+T25 untaps: p1:Forest#1
+T25 untaps: p1:Mountain
+T25 untaps: p1:Forest#2
+T25 untaps: p1:Plains
+T25 targeted: p2:Nightmare by Prodigal Pyromancer ability
+T25 taps: p1:Prodigal Pyromancer
+T25 p1 activates p1:Prodigal Pyromancer
+T25 damage: p1:Prodigal Pyromancer -> p2:Nightmare 1
+T25 resolves: p1:Prodigal Pyromancer's ability
+T25 taps: p1:Swamp
+T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
+T25 taps: p1:Island#2
+T25 p1 adds {U} (p1:Island#2)
+T25 p1 taps p1:Island#2 for mana
+T25 p1's unspent {U}{B} empties
+T25 moves: Blinding Mage, p1's library -> p1's hand
+T25 p1 draws
+T25 taps: p1:Forest#2
+T25 p1 adds {G} (p1:Forest#2)
+T25 p1 taps p1:Forest#2 for mana
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 taps p1:Island#1 for mana
+T25 taps: p1:Plains
+T25 p1 adds {W} (p1:Plains)
+T25 p1 taps p1:Plains for mana
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p2:Kelinore Bat by Unsummon
+T25 p2 cancels casting Unsummon
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p2:Nightmare by Unsummon
+T25 p2 cancels casting Unsummon
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p1:Prodigal Pyromancer by Unsummon
+T25 p2 cancels casting Unsummon
+T25 p1's unspent {W}{U}{G} empties
+T25 taps: p1:Forest#1
+T25 p1 adds {G} (p1:Forest#1)
+T25 p1 taps p1:Forest#1 for mana
+T25 p1 cancels activating p1:Magebane Armor
+T25 p1's unspent {G} empties
+T25 taps: p1:Mountain
+T25 p1 adds {R} (p1:Mountain)
+T25 p1 taps p1:Mountain for mana
+T25 p1's unspent {R} empties
+T25 p1 attack: nothing
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p1:Prodigal Pyromancer by Unsummon
+T25 p2 cancels casting Unsummon
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p1:Prodigal Pyromancer by Unsummon
+T25 p2 cancels casting Unsummon
+T25 moves: Serra Angel, p1's hand -> stack
+T25 p1 cancels casting Serra Angel
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p1:Prodigal Pyromancer by Unsummon
+T25 p2 cancels casting Unsummon
+T25 moves: Unsummon, p2's hand -> stack
+T25 targeted: p2:Nightmare by Unsummon
+T25 p2 cancels casting Unsummon
+T25 damage removed: p2:Nightmare (1)
+T26 turn 26 begins (p2)
+T26 untaps: p2:Mountain#1
+T26 untaps: p2:Island
+T26 untaps: p2:Swamp#1
+T26 untaps: p2:Plains#1
+T26 untaps: p2:Plains#2
+T26 untaps: p2:Mountain#2
+T26 untaps: p2:Swamp#2
+T26 taps: p2:Plains#2
+T26 p2 adds {W} (p2:Plains#2)
+T26 p2 taps p2:Plains#2 for mana
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 p2 taps p2:Mountain#2 for mana
+T26 p2's unspent {W}{R} empties
+T26 moves: Sparkmage Apprentice, p2's library -> p2's hand
+T26 p2 draws
+T26 taps: p2:Plains#1
+T26 p2 adds {W} (p2:Plains#1)
+T26 p2 taps p2:Plains#1 for mana
+T26 taps: p2:Mountain#1
+T26 p2 adds {R} (p2:Mountain#1)
+T26 p2 taps p2:Mountain#1 for mana
+T26 moves: Volcanic Hammer, p2's hand -> stack
+T26 taps: p2:Island
+T26 p2 adds {U} (p2:Island)
+T26 p2 taps p2:Island for mana
+T26 p2 casts Volcanic Hammer
+T26 damage: Volcanic Hammer -> p2 3
+T26 p2 loses 3 life
+T26 resolves: Volcanic Hammer
+T26 moves: Volcanic Hammer, stack -> p2's graveyard
+T26 taps: p2:Swamp#2
+T26 p2 adds {B} (p2:Swamp#2)
+T26 p2 taps p2:Swamp#2 for mana
+T26 taps: p2:Swamp#1
+T26 p2 adds {B} (p2:Swamp#1)
+T26 p2 taps p2:Swamp#1 for mana
+T26 p2's unspent {W}{B}{B} empties
+T26 moves: Unsummon, p2's hand -> stack
+T26 targeted: p2:Kelinore Bat by Unsummon
+T26 p2 cancels casting Unsummon
+T26 moves: Unsummon, p2's hand -> stack
+T26 targeted: p2:Nightmare by Unsummon
+T26 p2 cancels casting Unsummon
+T26 moves: Unsummon, p2's hand -> stack
+T26 targeted: p2:Kelinore Bat by Unsummon
+T26 p2 cancels casting Unsummon
+T26 p2 attack: nothing
+T26 moves: Unsummon, p2's hand -> stack
+T26 targeted: p2:Kelinore Bat by Unsummon
+T26 p2 cancels casting Unsummon
+T26 moves: Sparkmage Apprentice, p2's hand -> stack
+T26 p2 cancels casting Sparkmage Apprentice
+T26 moves: Unsummon, p2's hand -> stack
+T26 targeted: p1:Prodigal Pyromancer by Unsummon
+T26 p2 cancels casting Unsummon
+T27 turn 27 begins (p1)
+T27 untaps: p1:Swamp
+T27 untaps: p1:Island#1
+T27 untaps: p1:Island#2
+T27 untaps: p1:Forest#1
+T27 untaps: p1:Mountain
+T27 untaps: p1:Forest#2
+T27 untaps: p1:Plains
+T27 untaps: p1:Prodigal Pyromancer
+T27 taps: p1:Island#1
+T27 p1 adds {U} (p1:Island#1)
+T27 p1 taps p1:Island#1 for mana
+T27 taps: p1:Swamp
+T27 p1 adds {B} (p1:Swamp)
+T27 p1 taps p1:Swamp for mana
+T27 moves: Unsummon, p2's hand -> stack
+T27 targeted: p2:Nightmare by Unsummon
+T27 p2 cancels casting Unsummon
+T27 p1's unspent {U}{B} empties
+T27 moves: Forest, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p1:Plains
+T27 p1 adds {W} (p1:Plains)
+T27 p1 taps p1:Plains for mana
+T27 taps: p1:Mountain
+T27 p1 adds {R} (p1:Mountain)
+T27 p1 taps p1:Mountain for mana
+T27 taps: p1:Island#2
+T27 p1 adds {U} (p1:Island#2)
+T27 p1 taps p1:Island#2 for mana
+T27 p1's unspent {W}{U}{R} empties
+T27 targeted: p1:Prodigal Pyromancer by Magebane Armor ability
+T27 p1 cancels activating p1:Magebane Armor
+T27 moves: Unsummon, p2's hand -> stack
+T27 targeted: p2:Nightmare by Unsummon
+T27 p2 cancels casting Unsummon
+T27 moves: Unsummon, p2's hand -> stack
+T27 targeted: p2:Nightmare by Unsummon
+T27 p2 cancels casting Unsummon
+T27 taps: p1:Forest#2
+T27 p1 adds {G} (p1:Forest#2)
+T27 p1 taps p1:Forest#2 for mana
+T27 p1's unspent {G} empties
+T27 taps: p1:Prodigal Pyromancer
+T27 p1 attack: p1:Prodigal Pyromancer -> p2
+T27 p2 block: p2:Nightmare -> p1:Prodigal Pyromancer
+T27 combat damage: p1:Prodigal Pyromancer -> p2:Nightmare 3
+T27 combat damage: p2:Nightmare -> p1:Prodigal Pyromancer 2
+T27 state-based actions: p2:Nightmare lethalDamage
+T27 destroyed: p2:Nightmare
+T27 moves: Nightmare, battlefield -> p2's graveyard
+T27 taps: p1:Forest#1
+T27 p1 adds {G} (p1:Forest#1)
+T27 p1 taps p1:Forest#1 for mana
+T27 moves: Unsummon, p2's hand -> stack
+T27 targeted: p2:Kelinore Bat by Unsummon
+T27 p2 cancels casting Unsummon
+T27 p1's unspent {G} empties
+T27 moves: Unsummon, p2's hand -> stack
+T27 targeted: p2:Kelinore Bat by Unsummon
+T27 p2 cancels casting Unsummon
+T27 damage removed: p1:Prodigal Pyromancer (2)
+T28 turn 28 begins (p2)
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Island
+T28 untaps: p2:Swamp#1
+T28 untaps: p2:Plains#1
+T28 untaps: p2:Plains#2
+T28 untaps: p2:Mountain#2
+T28 untaps: p2:Swamp#2
+T28 moves: Unsummon, p2's hand -> stack
+T28 targeted: p1:Prodigal Pyromancer by Unsummon
+T28 taps: p2:Swamp#1
+T28 p2 adds {B} (p2:Swamp#1)
+T28 p2 taps p2:Swamp#1 for mana
+T28 taps: p2:Plains#1
+T28 p2 adds {W} (p2:Plains#1)
+T28 p2 taps p2:Plains#1 for mana
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 p2 taps p2:Mountain#1 for mana
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 p2 taps p2:Mountain#2 for mana
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2 taps p2:Plains#2 for mana
+T28 taps: p2:Island
+T28 p2 adds {U} (p2:Island)
+T28 p2 taps p2:Island for mana
+T28 taps: p2:Swamp#2
+T28 p2 adds {B} (p2:Swamp#2)
+T28 p2 taps p2:Swamp#2 for mana
+T28 p2 casts Unsummon
+T28 moves: Prodigal Pyromancer, battlefield -> p1's hand
+T28 resolves: Unsummon
+T28 moves: Unsummon, stack -> p2's graveyard
+T28 state-based actions: p1:Magebane Armor equipmentIllegallyAttached
+T28 unattached: p1:Magebane Armor from p1:Prodigal Pyromancer
+T28 p2's unspent {W}{W}{B}{B}{R}{R} empties
+T28 moves: Megrim, p2's library -> p2's hand
+T28 p2 draws
+T28 moves: Zephyr Sprite, p2's hand -> stack
+T28 p2 cancels casting Zephyr Sprite
+T28 taps: p2:Kelinore Bat
+T28 p2 attack: p2:Kelinore Bat -> p1
+T28 p1 block: nothing
+T28 combat damage: p2:Kelinore Bat -> p1 2
+T28 p1 loses 2 life
+T28 moves: Shivan Dragon, p2's hand -> stack
+T28 p2 cancels casting Shivan Dragon
+T28 moves: Mind Shatter, p2's hand -> stack
+T28 p2 cancels casting Mind Shatter
+T28 moves: Zephyr Sprite, p2's hand -> stack
+T28 p2 cancels casting Zephyr Sprite
+T29 turn 29 begins (p1)
+T29 untaps: p1:Swamp
+T29 untaps: p1:Island#1
+T29 untaps: p1:Island#2
+T29 untaps: p1:Forest#1
+T29 untaps: p1:Mountain
+T29 untaps: p1:Forest#2
+T29 untaps: p1:Plains

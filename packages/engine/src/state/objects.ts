@@ -32,7 +32,7 @@ export type CardObject = {
   baseController: PlayerId;
   /**
    * The object's current timestamp, for applying effects in timestamp order (CR 613.7). It gets one when it
-   * enters a zone (CR 613.7d), and later rules give it new ones (attaching, turning face up, later: CR 613.7e–g).
+   * enters a zone (CR 613.7d), and later rules give it new ones (attaching, CR 613.7e; turning face up, later: CR 613.7f–g).
    */
   timestamp: number;
   // The next three fields mean something only on the battlefield (CR 110.5d: only permanents have status).
@@ -59,7 +59,7 @@ export type CardObject = {
    */
   token?: CardData;
   /**
-   * The object an Aura or Equipment on the battlefield is attached to (CR 303.4b; Equipment, later: CR 301.5a). Left out when it's attached to
+   * The object an Aura or Equipment on the battlefield is attached to (CR 303.4b, 301.5a). Left out when it's attached to
    * nothing. It goes stale when that object leaves (a new object, CR 400.7): read it through `attachedHost`.
    */
   attachedTo?: ObjectId;

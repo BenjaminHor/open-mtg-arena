@@ -39,6 +39,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
       return { player: action.player, reason: action.kind };
     case "tokenOutsideBattlefield":
     case "auraIllegallyAttached":
+    case "equipmentIllegallyAttached":
     case "zeroToughness":
     case "lethalDamage":
     case "deathtouchDamage":
@@ -63,6 +64,9 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
       return []; // players lose together, after the objects move
     case "tokenOutsideBattlefield":
       return [{ kind: "ceaseToExist", object: action.object }];
+    // It stays on the battlefield (CR 704.5n).
+    case "equipmentIllegallyAttached":
+      return [{ kind: "unattach", object: action.object }];
     // Put into its owner's graveyard, not destroyed (CR 704.5m).
     case "auraIllegallyAttached":
     case "zeroToughness":

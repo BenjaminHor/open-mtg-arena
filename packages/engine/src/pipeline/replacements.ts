@@ -134,6 +134,8 @@ function affectedObject(event: SingleEvent): ObjectId | null {
     // Nothing replaces creating a token or one ceasing to exist yet (later: CR 614.1, "if you would create").
     case "createToken":
     case "ceaseToExist":
+    case "attach":
+    case "unattach":
     // Damage is replaced per entry, with its own choices (`damage-replacements.ts`).
     case "dealDamage":
     case "damagePrevented":
@@ -173,6 +175,8 @@ function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
     case "removeCounters":
     case "createToken":
     case "ceaseToExist":
+    case "attach":
+    case "unattach":
     case "addMana":
     case "shuffle":
       throw new Error(`no replacement offers a choice on ${event.kind} yet`);
@@ -211,6 +215,8 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
     case "removeCounters":
     case "createToken":
     case "ceaseToExist":
+    case "attach":
+    case "unattach":
     case "addMana":
     case "shuffle":
     case "regenerate":
@@ -237,6 +243,7 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
     // Prevention, read for damage (`damage-replacements.ts`), never for a move.
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":
+    case "preventNoncombatDamageToAttached":
       return false;
   }
 }
@@ -294,6 +301,7 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
     }
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":
+    case "preventNoncombatDamageToAttached":
       throw new Error("a prevention effect never replaces a move");
   }
 }
@@ -326,6 +334,8 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "removeCounters":
     case "createToken":
     case "ceaseToExist":
+    case "attach":
+    case "unattach":
     case "addMana":
     case "shuffle":
     case "regenerate":

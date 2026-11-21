@@ -176,7 +176,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `pending: { player: p1, kind: priority }`: every key given must match (`remaining`, `mulligansTaken`, ...);
   `pending: null` for nothing pending.
 - `p1:Grizzly Bears.tapped`, `.damage`, `.sick`; `.power` and `.toughness` as computed by `characteristics()` (`null`
-  for a noncreature permanent); `.abilities contains: [reach]` checks its keyword abilities (CR 702), by their lowercase
+  for a noncreature permanent); `.abilities contains: [reach]` checks its keyword abilities (CR 702), and `.abilities lacks: [flying]` that it has none of these, by their lowercase
   names. `.colors: [B, G]`, `.types: [land, creature]` (supertypes first) and `.subtypes: [Forest, Treefolk]`, as
   computed. `hand:p1:Nightmare.power`, `graveyard:p1:Nightmare.power` and `stack:p1:Nightmare.power` (a spell p1 controls) ask
   about a card in that zone (`#2` for the

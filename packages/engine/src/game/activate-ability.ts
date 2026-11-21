@@ -5,6 +5,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import { activationBasicsProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import { targetsProblem } from "../rules/targets.ts";
+import { mainPhaseEmptyStack } from "../rules/timing.ts";
 import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -15,9 +16,9 @@ import type { Progress } from "./progress.ts";
 
 /**
  * Why the player can't begin activating this ability now, or null. Only the controller of a permanent activates its
- * abilities (CR 602.2), whenever they have priority (CR 113.3b): there's no timing restriction in the pool. Mana
- * abilities go through `mana/activate.ts` instead. As with casting, payability isn't checked (D-035): a player who
- * can't pay cancels. Every instance of "target" must have enough legal choices (CR 601.2c, 602.2b).
+ * abilities (CR 602.2), whenever they have priority (CR 113.3b), unless the ability says "activate only as a sorcery"
+ * (CR 602.5d). Mana abilities go through `mana/activate.ts` instead. As with casting, payability isn't checked (D-035):
+ * a player who can't pay cancels. Every instance of "target" must have enough legal choices (CR 601.2c, 602.2b).
  */
 export function activationProblem(
   state: GameState,
@@ -31,6 +32,9 @@ export function activationProblem(
   const ability = findAbility(state, source, ref, cards);
   if (ability === null) return `${source} has no such ability`;
   if (isManaAbility(ability.def)) return "that's a mana ability";
+  // "Activate only as a sorcery": the timing of a sorcery (CR 602.5d, 117.1a), as equip is (CR 702.6a).
+  if (ability.def.timing === "sorcery" && !mainPhaseEmptyStack(state, player))
+    return "only as a sorcery: in your main phase with an empty stack (CR 602.5d)";
   // {T} was checked with the basics. Whether there's anything to sacrifice isn't checked, as payability isn't (D-035):
   // a player who can't pay cancels.
   // The ability isn't on the stack yet, so its source stands in as what targets; it can target its own source.

@@ -1,0 +1,17 @@
+name: Levitation earlier than Magebane Armor doesn't give flying; once the Armor moves off, it does again
+rules: [CR 613.7a, CR 613.7e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Levitation, Serra Angel, { card: Magebane Armor, attachedTo: p1:Serra Angel }, Grizzly Bears, Forest, Forest]
+steps:
+  - expect:
+      p1:Serra Angel.abilities lacks: [flying]
+      p1:Grizzly Bears.abilities contains: [flying]
+  - p1 activate: Magebane Armor
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Serra Angel.abilities contains: [flying]
+      p1:Grizzly Bears.abilities lacks: [flying]

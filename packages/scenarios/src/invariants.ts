@@ -54,6 +54,12 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
       if (isAura(state, id, cards) && attachedHost(state, id) === null)
         problems.push(`${id}: an Aura attached to nothing with priority to give`);
     }
+    // And an Equipment is attached to a permanent or to nothing: one whose creature left is unattached (CR 704.5n).
+    for (const id of state.zones.battlefield) {
+      const obj = state.objects[id];
+      if (obj?.kind === "card" && obj.attachedTo !== undefined && attachedHost(state, id) === null)
+        problems.push(`${id}: attached to an object that's gone, with priority to give`);
+    }
   }
   // Cards a decision shows by identity (D-062) are in the fixed order and really in that zone: never the zone's own
   // order, never cards from elsewhere.

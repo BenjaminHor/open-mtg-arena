@@ -68,6 +68,7 @@ import { fabricate } from "./f/fabricate.ts";
 import { fieryHellhound } from "./f/fiery-hellhound.ts";
 import { fireElemental } from "./f/fire-elemental.ts";
 import { fireball } from "./f/fireball.ts";
+import { firebreathing } from "./f/firebreathing.ts";
 import { flashfreeze } from "./f/flashfreeze.ts";
 import { fog } from "./f/fog.ts";
 import { forest } from "./f/forest.ts";
@@ -80,6 +81,7 @@ import { gloriousCharge } from "./g/glorious-charge.ts";
 import { goblinArtillery } from "./g/goblin-artillery.ts";
 import { goblinChieftain } from "./g/goblin-chieftain.ts";
 import { goblinPiker } from "./g/goblin-piker.ts";
+import { gorgonFlail } from "./g/gorgon-flail.ts";
 import { gravedigger } from "./g/gravedigger.ts";
 import { grayOgre } from "./g/gray-ogre.ts";
 import { greatSableStag } from "./g/great-sable-stag.ts";
@@ -115,6 +117,7 @@ import { lightwielderPaladin } from "./l/lightwielder-paladin.ts";
 import { llanowarElves } from "./l/llanowar-elves.ts";
 import { loomingShade } from "./l/looming-shade.ts";
 import { lurkingPredators } from "./l/lurking-predators.ts";
+import { magebaneArmor } from "./m/magebane-armor.ts";
 import { manabarbs } from "./m/manabarbs.ts";
 import { megrim } from "./m/megrim.ts";
 import { merfolkLooter } from "./m/merfolk-looter.ts";
@@ -203,6 +206,7 @@ import { wallOfFaith } from "./w/wall-of-faith.ts";
 import { wallOfFire } from "./w/wall-of-fire.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { weakness } from "./w/weakness.ts";
+import { whispersilkCloak } from "./w/whispersilk-cloak.ts";
 import { whiteKnight } from "./w/white-knight.ts";
 import { windDrake } from "./w/wind-drake.ts";
 import { windstorm } from "./w/windstorm.ts";
@@ -280,6 +284,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   fieryHellhound,
   fireElemental,
   fireball,
+  firebreathing,
   flashfreeze,
   fog,
   forest,
@@ -292,6 +297,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   goblinArtillery,
   goblinChieftain,
   goblinPiker,
+  gorgonFlail,
   gravedigger,
   grayOgre,
   greatSableStag,
@@ -327,6 +333,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   llanowarElves,
   loomingShade,
   lurkingPredators,
+  magebaneArmor,
   manabarbs,
   megrim,
   merfolkLooter,
@@ -415,6 +422,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   wallOfFire,
   warpathGhoul,
   weakness,
+  whispersilkCloak,
   whiteKnight,
   windDrake,
   windstorm,

@@ -15,15 +15,16 @@ color (5), ability adding and removing (6), and power/toughness (7a–7d), with 
 stack, kept per its inputs; the per-layer readers (`cardTypesOf`, `colorsOf`, `keywordsOf`, `powerAndToughness`...)
 read it. Layer 6 grants keywords (resolved effects and static abilities), 7c adds; a static ability's set is found as
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
-every zone (M2-09b1, D-094), a card elsewhere computed with the board. Sorting within a sublayer by timestamp and dependency
-arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
+every zone (M2-09b1, D-094), a card elsewhere computed with the board. Layer 6 sorts its grants and removals by timestamp
+since M2-12b (D-103, "loses flying"); dependency (CR 613.8) waits on the open question in status.md.
 *Watch out:* layer 2 is built for resolved effects (M2-09c2, D-098): `controlFromEffects`, read by `controllerOf` and
 the pass alike; a static control effect (an Aura, M2-12) needs the card database in `controllerOf` (read the kept
 pass's `controller` then, so layer 2 lives in one place), and a central check in `advance` comparing controllers
 before and after each piece of work, for summoning sickness (CR 302.6) and removal from combat (CR 506.4), rather than
 `recordControlChanges` at each place an effect begins or ends. Layers 4, 5 and 7b have resolved effects
 (M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
-merged into that order (CR 613.7a). In a simultaneous batch the cards move one by one, so a Druid moving first ends
+merged into that order (CR 613.7a), as layer 6 does since M2-12b (D-103). Layer 2 too: Mind Control's static control
+effect takes its Aura's timestamp, renewed when it's attached (CR 613.7e), against Act of Treason's. In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch
 (CR 603.10a, 608.2h). "endOfGame" effects stay in `state.effects` after their object is gone; drop them once nothing
 can read them (after the last-known-information snapshot). A gone object's power is read from the snapshot taken as it left (D-096), not worked out from
@@ -114,7 +115,7 @@ they are then. *Built (M2-09b2b, D-096):* `perform` snapshots each permanent an 
 event (a whole batch, CR 603.10a), into `lastKnownCharacteristics` (controller, types, subtypes, colors, power,
 toughness, and since M2-12a keywords); protection, Stone Giant's "this creature's power", a gone object's controller and
 a gone damage source's lifelink (CR 702.15c: Siege-Gang Commander with Lifelink sacrificed for its own ability) read it;
-deathtouch reads it the same way, and gets its scenario with Gorgon Flail (M2-12b, later: CR 702.2e). A spell leaving the stack keeps no snapshot, which a delayed trigger
+deathtouch reads it the same way (M2-12b: a Pyromancer with Gorgon Flail killed in response). A spell leaving the stack keeps no snapshot, which a delayed trigger
 made by a spell that deals damage would need. As readers multiply (M2-09c), "computed if it exists, else the snapshot"
 should live in one small module rather than in each reader. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a
@@ -145,7 +146,7 @@ words will need the same before the first card with one.
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down
 permanents such as morph and manifest (CR 708).
 *Needs now:* an object's characteristics come from "which face or part is active", not straight from a
-single card record; tokens are objects without a deck card. *Built (M2-12a, D-102):* Auras, attached through `attachedTo` and its one reader. *Built (M2-11a, D-101):* tokens are `CardObject`s
+single card record; tokens are objects without a deck card. *Built (M2-12a-b, D-102, D-103):* Auras and Equipment, attached through `attachedTo` and its one reader. *Built (M2-11a, D-101):* tokens are `CardObject`s
 carrying their own `CardData` (read through `cardDataOf`), so the `kind` checks below hold for them; "card" filters ask
 `isToken` (CR 111.6). *Still to come:* a token's own activated or triggered abilities (the ability object
 names its source only by `sourceOracleId`); a token that left the battlefield staying put (CR 111.8); a token in a hidden
@@ -318,8 +319,8 @@ whole, which is right while a creature has only creature types; an animated Fore
 "Forest Treefolk", and a Forest shared with another animated land would count. Split subtypes by type when a card can
 reach that. *Needs now:* nothing (every animated land in the pool is also a Treefolk).
 
-**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** *Built for Auras (M2-12a, D-102):* an Aura on a permanent with
-protection from it goes to the graveyard (CR 704.5m). Auras and Equipment (M2-12): "can't be enchanted or equipped"
+**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** *Built (M2-12a-b, D-102, D-103):* an Aura on a permanent with protection from
+it goes to the graveyard (CR 704.5m), and an Equipment becomes unattached (CR 704.5n); equip can't move onto one. Auras and Equipment (M2-12): "can't be enchanted or equipped"
 needs `isProtectedFrom(state, permanent, auraOrEquipment)` where an Aura is attached without targeting (put onto the
 battlefield, CR 303.4f) and in the state-based actions that put such an Aura into its owner's graveyard and unattach
 such Equipment (CR 704.5m-n); Aura spells and equip abilities that target are covered by `legalTargets`. Layers (M2-09):

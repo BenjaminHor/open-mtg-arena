@@ -193,6 +193,9 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     );
     const bears = at("main1", "  p1: { battlefield: [Grizzly Bears] }\n");
     expect(first(`${bears}  - expect: { "p1:Grizzly Bears.abilities contains": [] }\n`)).toMatch(/non-empty list/);
+    // A misspelt keyword would always be lacked: refused, not passed.
+    expect(first(`${bears}  - expect: { "p1:Grizzly Bears.abilities lacks": [flyng] }\n`)).toMatch(/unknown keyword/);
+    expect(problems(`${bears}  - expect: { "p1:Grizzly Bears.abilities lacks": [flying] }\n`)).toStrictEqual([]);
     const negative = at("main1", "  p1: { battlefield: [{ card: Grizzly Bears, counters: { +1/+1: -1 } }] }\n");
     expect(first(`${negative}  - p1 pass: once\n`)).toMatch(/can't be negative/);
   });

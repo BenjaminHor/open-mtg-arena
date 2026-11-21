@@ -70,6 +70,10 @@ export type SingleEvent =
   | { kind: "putCounters"; object: ObjectId; counter: string; amount: number }
   /** Counters of a kind are removed from a permanent (CR 122.1). */
   | { kind: "removeCounters"; object: ObjectId; counter: string; amount: number }
+  /** An Aura or Equipment on the battlefield becomes attached to a permanent (CR 701.3a). */
+  | { kind: "attach"; object: ObjectId; to: ObjectId }
+  /** An Equipment becomes unattached, staying on the battlefield (CR 701.3d, 704.5n). */
+  | { kind: "unattach"; object: ObjectId }
   /** `player` creates a token with these characteristics (CR 111.1, 111.3). */
   | { kind: "createToken"; player: PlayerId; token: CardData }
   /** A token outside the battlefield ceases to exist (CR 111.7, 704.5d). */

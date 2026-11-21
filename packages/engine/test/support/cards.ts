@@ -38,6 +38,8 @@ export const X_BOLT = "test-x-bolt";
 export const SAC_PUMP = "test-sac-pump";
 /** Not a real card: an Aura, "Enchant creature / Enchanted creature gets +1/+1", for attachments below the scenarios. */
 export const TEST_AURA = "test-aura";
+/** Not a real card: a black Equipment, which no M10 card is, for protection's "can't be equipped" (CR 702.16d). */
+export const BLACK_EQUIPMENT = "test-black-equipment";
 /** Not a real card: an instant whose delayed trigger is a spell's (CR 603.7d), which no Magic 2010 card has. */
 export const LATE_GIFT = "test-late-gift";
 /** Not a real card: "enters tapped unless you control a Forest", for lands entering together. */
@@ -479,6 +481,34 @@ export const TEST_CARDS: CardDatabase = {
         targets: [{ kind: "anyTarget" }],
         effects: [{ op: "dealDamage", amount: "X", from: "self", to: { target: 0 } }],
       },
+    },
+  }),
+  [BLACK_EQUIPMENT]: card(BLACK_EQUIPMENT, {
+    printed: {
+      name: "Black Equipment",
+      manaCost: [{ kind: "colored", color: "B" }],
+      colors: ["B"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["artifact"],
+      subtypes: ["Equipment"],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Black Equipment",
+      oracle: "Equipped creature gets +1/+1.\nEquip {1}",
+      statics: [{ kind: "attachedGets", power: 1, toughness: 1 }],
+      abilities: [
+        {
+          kind: "activated",
+          keyword: "equip",
+          timing: "sorcery",
+          cost: [{ kind: "mana", cost: [{ kind: "generic", amount: 1 }] }],
+          targets: [{ kind: "permanent", filter: { types: ["creature"], controller: "you" } }],
+          effects: [{ op: "attachSelf", to: { target: 0 } }],
+        },
+      ],
     },
   }),
   [TEST_AURA]: card(TEST_AURA, {

@@ -1,0 +1,22 @@
+name: A Pyromancer with Gorgon Flail killed in response still has deathtouch as its ability resolves (last known information)
+rules: [CR 702.2e, CR 113.7a, CR 704.5h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Prodigal Pyromancer, { card: Gorgon Flail, attachedTo: p1:Prodigal Pyromancer }]
+  p2:
+    battlefield: [Hill Giant, Mountain]
+    hand: [Shock]
+steps:
+  - p1 activate: Prodigal Pyromancer
+    targets: [p2:Hill Giant]
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Prodigal Pyromancer]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Prodigal Pyromancer]
+  - all pass: once
+  - expect:
+      p2.graveyard contains: [Hill Giant]

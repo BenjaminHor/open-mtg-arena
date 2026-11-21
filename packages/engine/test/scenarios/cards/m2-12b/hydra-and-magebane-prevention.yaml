@@ -1,0 +1,16 @@
+name: Protean Hydra wearing Magebane Armor is Shocked, and its controller chooses which prevention applies first
+rules: [CR 616.1]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Protean Hydra, counters: { "+1/+1": 3 } }, { card: Magebane Armor, attachedTo: p1:Protean Hydra }]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p2 cast: Shock
+    targets: [p1:Protean Hydra]
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseReplacement }

@@ -54,7 +54,7 @@ export type PermanentSetup = {
   damage: number;
   counters: Counters;
   /**
-   * For an Aura or Equipment that starts attached (CR 303.4b; Equipment, later: CR 301.5a): the permanent it's attached to, as a player and
+   * For an Aura or Equipment that starts attached (CR 303.4b, 301.5a): the permanent it's attached to, as a player and
    * an index into that player's `battlefield`. Left out when it's attached to nothing.
    */
   attachedTo?: { player: PlayerId; index: number };

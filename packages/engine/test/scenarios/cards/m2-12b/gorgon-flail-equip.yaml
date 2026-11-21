@@ -1,0 +1,16 @@
+name: Equip attaches Gorgon Flail to a creature its controller controls, which gets +1/+1 and deathtouch
+rules: [CR 702.6a, CR 701.3a, CR 301.5f, CR 613.4c, CR 613.1f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Gorgon Flail, Grizzly Bears, Forest, Forest]
+steps:
+  - p1 activate: Gorgon Flail
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 3
+      p1:Grizzly Bears.toughness: 3
+      p1:Grizzly Bears.abilities contains: [deathtouch]
+      events contains: [{ type: ATTACHED }]

@@ -4,7 +4,7 @@
 // a computed value in the state (architecture.md). The pass is computed at most once per state object (D-092).
 //
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
-// granted), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
+// granted or removed, `layer-six.ts`), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
 // Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095). Layers 1-3 and 7d have none yet;
 // each comes in its place below as its first card does (M2-09).
@@ -25,10 +25,10 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
 import type { CardObject } from "../state/objects.ts";
-import { attachedHostIn } from "./attachment.ts";
 import { controlFromEffects } from "./control-effects.ts";
 import { layerSeven } from "./layer-seven.ts";
-import { type KeywordGrant, staticKeywordGrants, staticPTChanges, staticSources } from "./static-effects.ts";
+import { layerSix } from "./layer-six.ts";
+import { type KeywordGrant, staticPTChanges, staticSources } from "./static-effects.ts";
 
 /**
  * One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. Read-only:
@@ -51,7 +51,10 @@ export type Layered = Readonly<{
   base: BasePT | null;
   /** Each layer 7c change, in the order applied (CR 613.4c). */
   sevenC: readonly LayerSevenCChange[];
-  /** Each layer 6 grant of keywords, and its source, for explaining them (the printed ones are in `keywords` too). */
+  /**
+   * Each layer 6 change to keywords, granted or removed, in the timestamp order applied, with its source, for explaining
+   * them (the printed ones are in `keywords` too).
+   */
   granted: readonly KeywordGrant[];
   /**
    * Not a characteristic: "enchanted creature can't attack or block" (Pacifism, CR 508.1c, 509.1b) from a permanent
@@ -59,6 +62,8 @@ export type Layered = Readonly<{
    * creature instead of searching the battlefield for every pair of attacker and blocker (measured).
    */
   cantAttackOrBlock: boolean;
+  /** Likewise, "equipped creature can't be blocked" (Whispersilk Cloak, CR 509.1b). */
+  cantBeBlocked: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -220,27 +225,9 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
       if (card !== undefined) board[id] = withColors(card, effect.change.colors);
     }
   }
-  // Layer 6 (CR 613.1f): keywords granted by resolved effects, on the objects they locked in (CR 611.2c), and by static
-  // abilities, on what fits now (CR 611.3a). Only adding so far, so the order within the layer can't matter.
+  // Layer 6 (CR 613.1f): abilities, in `layer-six.ts`; it keeps the sets the static abilities found for 7c (CR 613.6).
   const sources = staticSources(input, board);
-  const { grants, sets } = staticKeywordGrants(input, board, sources);
-  for (const effect of input.effects) {
-    if (effect.change.kind !== "addKeywords") continue;
-    const grant = { source: effect.source, keywords: effect.change.keywords };
-    for (const id of effect.affected) grants[id] = [...(grants[id] ?? []), grant];
-  }
-  for (const [id, granted] of Object.entries(grants) as [ObjectId, KeywordGrant[]][]) {
-    const card = board[id];
-    const keywords = granted.flatMap((g) => g.keywords);
-    if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
-  }
-  // Restrictions from attached permanents' statics (CR 303.4m), not a layer: kept on the host for combat to read.
-  for (const s of sources) {
-    if (s.def.kind !== "attachedCantAttackOrBlock") continue;
-    const host = attachedHostIn(input.objects, input.battlefield, s.source);
-    const card = host === null ? undefined : board[host];
-    if (host !== null && card !== undefined) board[host] = { ...card, cantAttackOrBlock: true };
-  }
+  const sets = layerSix(input, board, sources);
   // Layer 7 (CR 613.4): a creature's base power and toughness (7b's, else 7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
@@ -287,6 +274,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     sevenC: Object.freeze([]),
     granted: Object.freeze([]),
     cantAttackOrBlock: false,
+    cantBeBlocked: false,
   };
 }
 
@@ -313,7 +301,7 @@ function withColors(card: Layered, colors: NonNullable<Becomes["colors"]>): Laye
 }
 
 /** A keyword granted twice is listed once: each keyword's own rules say several instances are redundant. */
-function withoutRepeats<T>(items: readonly T[]): T[] {
+export function withoutRepeats<T>(items: readonly T[]): T[] {
   return items.filter((item, i) => items.indexOf(item) === i);
 }
 

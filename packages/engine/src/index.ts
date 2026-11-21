@@ -25,6 +25,7 @@ export type {
   Supertype,
   TargetSpec,
 } from "./cards/types.ts";
+export { KEYWORDS } from "./cards/types.ts";
 export { legalAmounts, withForcedAnswers } from "./combat/damage-assignment.ts";
 export { applyAction } from "./game/apply-action.ts";
 export { createGame } from "./game/create-game.ts";
