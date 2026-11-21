@@ -38,6 +38,7 @@ export const EXPECTATIONS = [
   "colors",
   "types",
   "subtypes",
+  "counters",
   "abilities contains",
   "events contains",
   "events lacks",
@@ -45,9 +46,7 @@ export const EXPECTATIONS = [
 ];
 
 /** Expectation keys the format defines that later tasks add, with the task. */
-export const COMING_EXPECTATIONS: Record<string, string> = {
-  counters: "M1-13",
-};
+export const COMING_EXPECTATIONS: Record<string, string> = {};
 
 export function expectationProblems(
   state: GameState,
@@ -137,6 +136,9 @@ function check(
       }
       case "subtypes":
         return same(characteristics(state, obj.id, cards).subtypes);
+      case "counters":
+        // The kinds it has any of (CR 122.1); `{}` for none.
+        return same(Object.fromEntries(Object.entries(obj.counters).filter(([, n]) => n > 0)));
       case "abilities contains": {
         if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
         const keywords = characteristics(state, obj.id, cards).keywords;

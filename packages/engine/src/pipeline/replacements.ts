@@ -128,6 +128,8 @@ function affectedObject(event: SingleEvent): ObjectId | null {
     case "playLand":
     case "tap":
     case "untap":
+    case "putCounters":
+    case "removeCounters":
       return event.object;
     // Damage is replaced per entry, with its own choices (`damage-replacements.ts`).
     case "dealDamage":
@@ -164,6 +166,8 @@ function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
     case "reorderLibrary":
     case "tap":
     case "untap":
+    case "putCounters":
+    case "removeCounters":
     case "addMana":
     case "shuffle":
       throw new Error(`no replacement offers a choice on ${event.kind} yet`);
@@ -198,6 +202,8 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
     case "reorderLibrary":
     case "tap":
     case "untap":
+    case "putCounters":
+    case "removeCounters":
     case "addMana":
     case "shuffle":
     case "regenerate":
@@ -294,6 +300,8 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "reorderLibrary":
     case "tap":
     case "untap":
+    case "putCounters":
+    case "removeCounters":
     case "addMana":
     case "shuffle":
     case "regenerate":

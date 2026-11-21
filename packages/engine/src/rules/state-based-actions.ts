@@ -19,6 +19,9 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
   }
   for (const object of state.zones.battlefield) {
     const obj = state.objects[object];
+    // Any permanent with both kinds, creature or not (CR 704.5q).
+    const count = obj?.kind === "card" ? Math.min(obj.counters["+1/+1"] ?? 0, obj.counters["-1/-1"] ?? 0) : 0;
+    if (count > 0) actions.push({ kind: "plusAndMinusCounters", object, count });
     if (obj?.kind !== "card" || !cardTypesOf(state, object, cards).includes("creature")) continue;
     const { toughness } = powerAndToughness(state, object, cards);
     if (toughness === null) continue;

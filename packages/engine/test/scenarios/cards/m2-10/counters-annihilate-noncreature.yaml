@@ -1,0 +1,9 @@
+name: +1/+1 and -1/-1 counters annihilate on a permanent that isn't a creature too
+rules: [CR 704.5q]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Forest, counters: { +1/+1: 2, -1/-1: 2 } }]
+steps:
+  - expect:
+      p1:Forest.counters: {}

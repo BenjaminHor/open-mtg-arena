@@ -153,8 +153,17 @@ not die, token creatures couldn't attack, and a copy couldn't be targeted as a s
 checks handle every kind, or fail loudly.
 
 **Counters (CR 122), including +1/+1 and -1/-1 annihilation (CR 704.5q).**
-*Needs now:* counters live on objects as a map of counter type to number. Keyword counters (CR 122.1b) will need
-timestamps (CR 613.7c) for layer 6, which means a state migration (`GameState.version`).
+*Built (M2-10a, D-099):* counters on permanents as a map of kind to number, put and removed as pipeline events
+(`COUNTERS_PUT`, `COUNTERS_REMOVED`); CR 704.5q in the state-based-action batch, the creature dying in it leaving with
+its counters as they were before (CR 704.3). *Watch out:* counters on players (poison, CR 122.1f, 704.5c) need a
+recipient like damage's `to` and a field on the player: the events name an object only. Entering with counters
+(CR 614.1c, 122.6: that's putting them too) should emit `COUNTERS_PUT` for the entering object, so a later
+counter-doubling replacement sees it. Who puts them (CR 122.6a) isn't on the events yet; "if you would put counters"
+replacements need it, and `happenOrAsk` for their CR 616.1 order. Wither and infect put -1/-1 counters inside the
+damage event, as lifelink gains life there (D-070). Keyword counters (CR 122.1b) need timestamps (CR 613.7c) for
+layer 6, a state migration (`GameState.version`). A prevention that also does something else (Protean Hydra: "prevent
+that damage and remove that many +1/+1 counters") does the rest right after the prevented event, not in it
+(CR 615.5).
 
 **Control-changing effects and ownership vs. control (CR 108.3, 110.2).**
 *Needs now:* code never assumes the controller is the owner. "Your" in card text means controller.

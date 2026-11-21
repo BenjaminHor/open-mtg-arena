@@ -65,6 +65,10 @@ export type SingleEvent =
   | { kind: "tap"; object: ObjectId }
   /** A permanent becomes untapped (CR 701.26b). */
   | { kind: "untap"; object: ObjectId }
+  /** Counters of a kind are put on a permanent (CR 122.6). */
+  | { kind: "putCounters"; object: ObjectId; counter: string; amount: number }
+  /** Counters of a kind are removed from a permanent (CR 122.1). */
+  | { kind: "removeCounters"; object: ObjectId; counter: string; amount: number }
   /** Mana goes into a player's mana pool (CR 106.4), made by an ability of `source`. */
   | { kind: "addMana"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /** A player draws one card (CR 121.1, 121.2). */

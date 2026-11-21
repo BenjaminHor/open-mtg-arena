@@ -1450,3 +1450,13 @@ every schema change and every change D-024 lists bumps it.
   "for as long as" (the type refuses it), as that would end in `moveCard` with no check.
 - New ops `gainControl` and `untap`. Removal from combat on a control change (CR 506.4) can't happen in the pool (Act of
   Treason is a sorcery whose effect ends in cleanup), so it waits (later: CR 506.4 for control).
+
+**D-099: Counters as pipeline events (M2-10a)** · 2026-11-21 · accepted
+- Putting counters on a permanent and removing them are events, `putCounters` and `removeCounters`
+  (`permanents/counters.ts`, emitting `COUNTERS_PUT` and `COUNTERS_REMOVED`), performed only by the pipeline, so
+  replacements and triggers on counters (Protean Hydra, M2-10b) see each one (CR 122.1, 122.6). Removing more than a
+  permanent has removes what it has (CR 101.3).
+- A permanent with both +1/+1 and -1/-1 counters loses N of each as a state-based action, N the smaller count
+  (CR 704.5q), as two `removeCounters` events in the same batch.
+- The effect op `putCounters { of, counter, amount }`, for "+1/+1" or "-1/-1" for now; other kinds (wish, poison on
+  players) come with their cards.

@@ -73,6 +73,8 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "ABILITY_RESOLVED":
     case "MANA_EMPTIED":
     case "PERMANENT_UNTAPPED":
+    case "COUNTERS_PUT":
+    case "COUNTERS_REMOVED":
     case "PERMANENT_TAPPED":
     case "MANA_ADDED":
     case "TAPPED_FOR_MANA":

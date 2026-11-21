@@ -110,6 +110,7 @@ export const furnaceWhelp: CardDef = {
   (D-097).
 - "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn." is
   `gainControl` (with `duration`), `untap` and `gainKeywords` on `{ target: 0 }` (D-098).
+- "Put a +1/+1 counter on this creature" is `{ op: "putCounters", of: "self", counter: "+1/+1", amount: 1 }` (D-099).
 - "Your opponents can't cast spells this turn" is `{ op: "cantCastSpells", who: "eachOpponent", duration: "endOfTurn"
   }` (D-097).
 - "Target Forest becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's

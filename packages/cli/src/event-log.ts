@@ -156,6 +156,10 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `taps: ${name(e.object)}`;
     case "PERMANENT_UNTAPPED":
       return `untaps: ${name(e.object)}`;
+    case "COUNTERS_PUT":
+      return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} put on ${name(e.object)}`;
+    case "COUNTERS_REMOVED":
+      return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} removed from ${name(e.object)}`;
     case "PERMANENT_REGENERATED":
       return `regenerates: ${name(e.object)}`;
     case "DAMAGE_PREVENTED":

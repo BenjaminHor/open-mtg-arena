@@ -275,9 +275,11 @@ describe("the scenario runner refuses what it can't read, instead of ignoring it
     expect(first(`${main1}  - expect: { pending: {} }\n`)).toMatch(/pending takes a map/);
   });
 
-  it("says when a step or expectation arrives in a later task, keeping a step's options", () => {
+  it("names a step's unknown option, and reads counters (no expectation is still to come since M2-10)", () => {
     expect(first(`${main1}  - p1 cast: Shock\n    target: [p2]\n`)).toMatch(/"cast" has no option "target"/);
-    expect(first(`${main1}  - expect: { "p1:Forest.counters": {} }\n`)).toMatch(/arrives in M1-13/);
+    const forest = at("main1", "  p1:\n    battlefield: [Forest]\n");
+    expect(problems(`${forest}  - expect: { "p1:Forest.counters": {} }\n`)).toStrictEqual([]);
+    expect(first(`${forest}  - expect: { "p1:Forest.counters": { +1/+1: 1 } }\n`)).toMatch(/counters/);
   });
 
   it("checks a rejected setup's reason, which must be given", () => {

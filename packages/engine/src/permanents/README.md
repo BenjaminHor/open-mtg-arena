@@ -4,6 +4,8 @@ Changes to permanents' status and marked damage. Apart from `removeAllDamage`, t
 events (`pipeline/`, D-056) and are called only by it; everything else proposes the event with `happen`.
 
 - `tap.ts`: `tapPermanent(state, id)`, emitting `PERMANENT_TAPPED`.
+- `counters.ts`: `putCounters` and `removeCounters`, emitting `COUNTERS_PUT` and `COUNTERS_REMOVED` (CR 122.1, 122.6,
+  D-099); the state-based action that annihilates +1/+1 and -1/-1 counters removes them through it (CR 704.5q).
 - `untap.ts`: `untapPermanent(state, id)`, emitting `PERMANENT_UNTAPPED`. The untap step untaps them all as one
   `simultaneous` event (CR 502.3).
 - `destroy.ts`: `destroy(state, id)` (CR 701.8): the move to the graveyard, emitting `PERMANENT_DESTROYED` first.

@@ -29,6 +29,8 @@ const PRIMITIVES = [
   "reveal",
   "reorderLibraryTop",
   "regenerate",
+  "putCounters",
+  "removeCounters",
 ];
 
 /** The primitives a primitive's own file may use, because they're part of the event it performs. */

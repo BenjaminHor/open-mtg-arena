@@ -112,6 +112,8 @@ function replaceOne(
     case "reveal":
     case "reorderLibrary":
     case "untap":
+    case "putCounters":
+    case "removeCounters":
     case "addMana":
     case "draw":
     case "discard":
