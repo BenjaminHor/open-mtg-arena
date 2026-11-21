@@ -50,12 +50,7 @@ export function staticKeywordGrants(
   sources: readonly StaticSource[],
 ): { grants: Record<ObjectId, KeywordGrant[]>; sets: (ObjectId[] | undefined)[] } {
   const grants: Record<ObjectId, KeywordGrant[]> = {};
-  // A static ability's effects have its permanent's timestamp (CR 613.7a), which an Aura or Equipment renews each time
-  // it's attached (CR 613.7e).
-  const timestampOf = (id: ObjectId) => {
-    const obj = input.objects[id];
-    return obj?.kind === "card" ? obj.timestamp : 0;
-  };
+  const timestampOf = (id: ObjectId) => staticTimestamp(input, id);
   // By source's place in `sources`: the set each effect found here, if it started in this layer.
   const sets: (ObjectId[] | undefined)[] = sources.map(() => undefined);
   for (const [i, s] of sources.entries()) {
@@ -99,6 +94,15 @@ export function staticKeywordGrants(
     }
   }
   return { grants, sets };
+}
+
+/**
+ * The timestamp of a static ability's effects: its permanent's (CR 613.7a), which an Aura or Equipment renews each time
+ * it's attached (CR 613.7e). Shared by every layer that orders statics against resolved effects (layer 2 next).
+ */
+export function staticTimestamp(input: LayerInputs, source: ObjectId): number {
+  const obj = input.objects[source];
+  return obj?.kind === "card" ? obj.timestamp : 0;
 }
 
 /**

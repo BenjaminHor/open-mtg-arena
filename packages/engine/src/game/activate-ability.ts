@@ -17,9 +17,8 @@ import type { Progress } from "./progress.ts";
 /**
  * Why the player can't begin activating this ability now, or null. Only the controller of a permanent activates its
  * abilities (CR 602.2), whenever they have priority (CR 113.3b), unless the ability says "activate only as a sorcery"
- * (CR 602.5d). Mana
- * abilities go through `mana/activate.ts` instead. As with casting, payability isn't checked (D-035): a player who
- * can't pay cancels. Every instance of "target" must have enough legal choices (CR 601.2c, 602.2b).
+ * (CR 602.5d). Mana abilities go through `mana/activate.ts` instead. As with casting, payability isn't checked (D-035):
+ * a player who can't pay cancels. Every instance of "target" must have enough legal choices (CR 601.2c, 602.2b).
  */
 export function activationProblem(
   state: GameState,

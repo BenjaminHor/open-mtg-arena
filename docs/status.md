@@ -719,7 +719,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (protection too), layer 6 in timestamp order ("loses flying"), Whispersilk's "can't be blocked", Magebane's
          prevention, the `"attached"` subject; Gorgon Flail, Whispersilk Cloak, Magebane Armor, Firebreathing (214 cards);
          13 scenarios in `cards/m2-12b/`, `abilities lacks` in the runner, unit tests, the invariant, an Equipment column,
-         three golden games. Next: reviews, fuzz, bench, PR.
+         four golden games. Rules review: Firebreathing destroyed in response pumped nothing (CR 608.2h, Shiv's
+         Embrace's ruling): fixed; 13 more scenarios from its probes. Code review: `abilities lacks` refuses unknown
+         keywords (`KEYWORDS`), layer 6 moved to `layer-six.ts`, `staticTimestamp` for layer 2 next, equip abilities
+         checked against CR 702.6a, docs. Bench within noise of the base. Next: fuzz, PR.
        - M2-12a built (2026-11-21, D-102): `attachedTo` and its one reader, `enchant` as the Aura spell's target, entering
          attached, `attachedGets` / `attachedCantAttackOrBlock`, CR 704.5m (protection too), setup `attachedTo`, the
          invariant; Holy Strength, Unholy Strength, Weakness, Oakenform, Lifelink, Armored Ascension, Indestructibility,

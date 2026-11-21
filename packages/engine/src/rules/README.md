@@ -11,8 +11,9 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `layer-seven.ts`: layer 7 of the pass, power and toughness (CR 613.4): the base from 7a (characteristic-defining
   abilities), 7b (effects that set it, D-095) or the printed values, then 7c adds.
 - `static-effects.ts`: static abilities that change other objects (anthems, D-093, and "enchanted creature gets",
-  D-102): their sets (CR 611.3a), the keywords they grant in layer 6 and what they add in 7c. The pass also marks a
-  creature Pacifism enchants (`Layered.cantAttackOrBlock`).
+  D-102): their sets (CR 611.3a), the keywords they grant or remove in layer 6 and what they add in 7c;
+  `staticTimestamp` (CR 613.7a). `layer-six.ts`: layer 6 in timestamp order (CR 613.7, D-103), and the restrictions
+  marked on a creature an attachment puts them on (`Layered.cantAttackOrBlock`, `Layered.cantBeBlocked`).
 - `attachment.ts`: `attachedHost` (and `attachedHostIn`, for the pass), the one reader of what an Aura is attached to,
   null once that object has left (CR 303.4b, 400.7); `attachmentsOf`; `enchantFilterOf` and `isAura` (CR 702.5a, 303.4).
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
@@ -43,9 +44,10 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (`{ count }`) is worked out only as an effect applies, by `amountNow` in `effects/subjects.ts` (D-067).
 - `casting-prohibitions.ts`: `cantCastSpells`, whether an effect forbids a player to cast spells (Silence, CR 601.3).
 - `hand-size.ts`: `maximumHandSize`, seven unless a static says otherwise (Spellbook, CR 402.2, D-097).
-- `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/d/f/g/h/m/q).
+- `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/d/f/g/h/m/n/q).
 - `damage-recipients.ts`: `canBeDealtDamage`, who can be dealt damage now (CR 120.1a).
-- `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1).
+- `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1), `mainPhaseEmptyStack`
+  (sorcery speed, also for "activate only as a sorcery", CR 602.5d).
 - `protection.ts`: `protectionsOf`, `isProtectedFrom`: protection (CR 702.16) and whether a source has the quality,
   as it is or as it last existed (D-091).
 - `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes

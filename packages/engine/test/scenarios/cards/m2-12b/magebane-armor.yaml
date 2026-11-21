@@ -3,8 +3,7 @@ rules: [CR 613.1f, CR 615.1a, CR 120.2a]
 setup:
   turn: { active: p2, step: main1 }
   p1:
-    battlefield: [Serra Angel, { card: Magebane Armor, attachedTo: p1:Serra Angel }, Mountain]
-    hand: [Shock]
+    battlefield: [Serra Angel, { card: Magebane Armor, attachedTo: p1:Serra Angel }]
   p2:
     battlefield: [Grizzly Bears, Mountain]
     hand: [Shock]

@@ -59,7 +59,8 @@ the one place their effects become changes to the game.
 
 Which move op to use: `returnToHand` for a target bounced to its owner's hand; `put` for cards an earlier `search`,
 `revealTop` or `revealUntil` found (`"found"`), into the hand, onto the battlefield or on the bottom of the library; `putOntoBattlefield` when the player chooses a card from
-their hand as the effect resolves (Elvish Piper); `exile` for either.
+their hand as the effect resolves (Elvish Piper); `exile` for either. `createTokens` makes tokens (`create-tokens.ts`,
+D-101); `attachSelf` is equip's "attach this to target creature you control" (`attach-self.ts`, D-103).
 
 Every op that acts on objects skips one that's no longer where it was when the targets were checked: it's a new object
 now, and acting on it is impossible (CR 101.3, 400.7). `"you"` names the controller (CR 109.5); `"eachPlayer"` names
@@ -70,7 +71,8 @@ every player in APNAP order (CR 101.4).
 `search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
 it now, CR 608.2h), `{ target: i }` for the still-legal targets of the i-th instance of "target", or
 `{ controllerOf: { target: i } }` for that target's controller ("its controller", from last known information if it's
-gone, CR 608.2h). A subject with no
+gone, CR 608.2h), or `"attached"` (an Aura's or Equipment's "enchanted creature", as it last was if the source is gone,
+CR 303.4m, 608.2h). A subject with no
 legal targets left means that part does nothing (CR 608.2b). Amounts are a number, `"X"`, `{ count: filter }`, or
 `"thatMuch"` (a triggered ability's event amount: the life gained), or `"sacrificedPower"` (the power of what an earlier
 `sacrifice` sacrificed, as it last was on the battlefield, CR 608.2h, never below 0, CR 107.1b).

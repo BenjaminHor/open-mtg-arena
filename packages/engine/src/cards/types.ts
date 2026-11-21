@@ -230,22 +230,25 @@ export type StaticAbilityDef =
   | { kind: "noMaximumHandSize" };
 
 /** Keyword abilities in the current pool (CR 702). */
-export type Keyword =
-  | "deathtouch" // CR 702.2
-  | "defender" // CR 702.3
-  | "double strike" // CR 702.4
-  | "first strike" // CR 702.7
-  | "flash" // CR 702.8
-  | "flying" // CR 702.9
-  | "forestwalk" // CR 702.14
-  | "haste" // CR 702.10
-  | "indestructible" // CR 702.12
-  | "lifelink" // CR 702.15
-  | "reach" // CR 702.17
-  | "shroud" // CR 702.18
-  | "swampwalk" // CR 702.14
-  | "trample" // CR 702.19
-  | "vigilance"; // CR 702.20
+export const KEYWORDS = [
+  "deathtouch", // CR 702.2
+  "defender", // CR 702.3
+  "double strike", // CR 702.4
+  "first strike", // CR 702.7
+  "flash", // CR 702.8
+  "flying", // CR 702.9
+  "forestwalk", // CR 702.14
+  "haste", // CR 702.10
+  "indestructible", // CR 702.12
+  "lifelink", // CR 702.15
+  "reach", // CR 702.17
+  "shroud", // CR 702.18
+  "swampwalk", // CR 702.14
+  "trample", // CR 702.19
+  "vigilance", // CR 702.20
+] as const;
+
+export type Keyword = (typeof KEYWORDS)[number];
 
 /**
  * What a protection ability is from (CR 702.16a): a color, or a subtype ("protection from Demons", Baneslayer Angel),

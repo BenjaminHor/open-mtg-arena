@@ -586,7 +586,7 @@ T15 taps: p2:Island#2
 T15 p2 adds {U} (p2:Island#2)
 T15 p2 taps p2:Island#2 for mana
 T15 p2 activates p2:Gorgon Flail
-T15 attaches: p2:Gorgon Flail to p2:Centaur Courser
+T15 attached: p2:Gorgon Flail to p2:Centaur Courser
 T15 resolves: p2:Gorgon Flail's ability
 T15 targeted: p2:Centaur Courser by Gorgon Flail ability
 T15 p2 cancels activating p2:Gorgon Flail

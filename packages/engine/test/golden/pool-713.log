@@ -961,7 +961,7 @@ T23 p1 activates p1:Magebane Armor
 T23 moves: Unsummon, p2's hand -> stack
 T23 targeted: p2:Kelinore Bat by Unsummon
 T23 p2 cancels casting Unsummon
-T23 attaches: p1:Magebane Armor to p1:Prodigal Pyromancer
+T23 attached: p1:Magebane Armor to p1:Prodigal Pyromancer
 T23 resolves: p1:Magebane Armor's ability
 T23 moves: Unsummon, p2's hand -> stack
 T23 targeted: p1:Prodigal Pyromancer by Unsummon

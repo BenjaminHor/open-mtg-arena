@@ -2,6 +2,7 @@
 // when Scryfall's Oracle text changes (errata) or a card is missing a definition (docs/card-scripting.md).
 
 import {
+  type AbilityDef,
   type CardDef,
   type Color,
   type Effect,
@@ -90,6 +91,11 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     const protections = protectionProblem(def);
     if (protections !== null) problems.push(protections);
+    // "Equip [cost]" means exactly "[cost]: attach this to target creature you control; activate only as a sorcery"
+    // (CR 702.6a), so an equip ability scripted any other way is refused.
+    for (const a of def.abilities ?? []) {
+      if (a.keyword === "equip" && !isEquipShape(a)) problems.push(`${def.name}: an equip ability isn't CR 702.6a's`);
+    }
     // A static ability's filter is read inside the layer pass, which knows nothing of combat or a trigger (D-092).
     for (const s of def.statics ?? []) {
       const filter = passFilter(s);
@@ -435,4 +441,19 @@ function protectionProblem(def: CardDef): string | null {
 /** Whether a filter, or the filter inside its `not`, has something `test` looks for. */
 function filterUses(filter: ObjectFilter, test: (f: ObjectFilter) => boolean): boolean {
   return test(filter) || (filter.not !== undefined && filterUses(filter.not, test));
+}
+
+/** Whether an ability is exactly what "Equip [cost]" means (CR 702.6a), whatever its cost. */
+function isEquipShape(a: AbilityDef): boolean {
+  const target = a.targets[0];
+  const effect = a.effects[0];
+  return (
+    a.timing === "sorcery" &&
+    a.targets.length === 1 &&
+    target?.kind === "permanent" &&
+    JSON.stringify(target.filter) === JSON.stringify({ types: ["creature"], controller: "you" }) &&
+    a.effects.length === 1 &&
+    effect?.op === "attachSelf" &&
+    JSON.stringify(effect.to) === JSON.stringify({ target: 0 })
+  );
 }

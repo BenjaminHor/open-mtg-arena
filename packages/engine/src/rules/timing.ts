@@ -1,4 +1,5 @@
-// When a player may play a land or cast a spell (CR 117.1a, 305.1, 302.1, 304.1, 307.1).
+// When a player may play a land, cast a spell, or activate an ability "only as a sorcery" (CR 117.1a, 305.1, 302.1,
+// 304.1, 307.1, 602.5d).
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";

@@ -1,4 +1,7 @@
-// "Attach this permanent to target creature you control" (equip, CR 702.6a): the `attachSelf` op.
+// "Attach this permanent to target creature you control" (equip, CR 702.6a): the `attachSelf` op. Equip's op only: its
+// checks are an Equipment's (a creature, no protection from it); an effect moving an Aura would check its enchant
+// ability instead, and a source that's no Aura or Equipment, or an Equipment that's a creature, would do nothing
+// (later: CR 701.3b, 301.5c; nothing in the pool makes either happen).
 
 import type { CardDatabase, EffectSubject } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";

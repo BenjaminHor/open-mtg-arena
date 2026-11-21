@@ -24,7 +24,7 @@ export type ActivatedAbility = { ref: AbilityRef; def: AbilityDef };
 
 /**
  * An object's keyword abilities (CR 702): layer 6 of the layer pass (`layers.ts`), printed ones and those granted by
- * resolved effects and static abilities (D-093). Effects that remove them come later (later: CR 613.1f).
+ * resolved effects and static abilities (D-093), less those removed ("loses flying", D-103), in timestamp order.
  */
 export function keywordsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Keyword[] {
   return layeredOf(state, id, cards)?.keywords ?? [];
