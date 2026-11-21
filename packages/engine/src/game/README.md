@@ -33,7 +33,8 @@ The engine's entry points and the flow of a game.
 | `state-based-actions.ts` | `checkStateBasedActions()`: performs every SBA that applies as one event (CR 704.3) (D-039) |
 | `game-end.ts` | `playersLose()`: players lose, and the game ends with a winner or a draw (CR 104) |
 | `turn-order.ts` | `rotateTo()`: turn order starting with a given player (CR 103.1) |
-| `ids.ts`, `progress.ts`, `turn.ts` | Id and timestamp allocation; passing state plus events along; `currentTurn()` |
+| `ids.ts`, `progress.ts`, `turn.ts` | Id and timestamp allocation; passing state plus events along; `currentTurn()` and `nextPlayer()` |
+| `extra-turns.ts` | Extra turns (CR 500.7): `addExtraTurns` puts them directly after the current turn (the latest first), `nextTurn` picks the next extra turn or the next regular one |
 
 Every function takes a state and returns a new one (D-021). Events are collected alongside (`Progress`).
 

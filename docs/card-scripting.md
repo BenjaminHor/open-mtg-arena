@@ -77,7 +77,8 @@ export const furnaceWhelp: CardDef = {
 - Effects name what they act on with a subject: `{ target: 0 }`, `"self"` (the spell, or the ability's source), or
   `"you"` (the controller: "you gain 4 life" is `{ op: "gainLife", who: "you", amount: 4 }`), or `"eachPlayer"` (in
   APNAP order: Burning Inquiry). "Target player" is the target kind `player`; "target opponent" is `opponent`. `"found"` names
-  what an earlier `search` in the same text found ("put that card into your hand").
+  what an earlier `search` in the same text found ("put that card into your hand"). "Target player takes an extra
+  turn after this one" is `{ op: "extraTurn", who: { target: 0 } }` (D-116).
 - Amounts: a number, `"X"`, or `{ count: { subtypes: ["Swamp"], controller: "you" } }` ("the number of Swamps you
   control"). "Each creature without flying" is the subject `{ each: { types: ["creature"], notKeywords: ["flying"] } }`;
   "...and 3 damage to you" is `and: [{ to: "you", amount: 3 }]` on `dealDamage`. "Spend only black mana on X" is

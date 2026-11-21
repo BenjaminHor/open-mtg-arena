@@ -740,6 +740,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
+         `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
+         event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the
+         latest first, one cast during an extra turn, Sleep's untap step being the extra turn's); mutants 2/2 (first in,
+         first out; an extra turn moving the turn order's place). Replays' final-state hashes updated (the two new state
+         fields only); 1 golden game. Rules review: no wrong ruling; 10 more scenarios (countered, after turn 1 with its
+         draw, "this turn" facts starting again, Sleep's untap step not used by another player's extra turn, back and
+         forth, until end of turn ending first, a turn made during an extra turn going before one waiting, Mind Control,
+         summoning sickness through an opponent's extra turn, Act of Treason), a unit test for APNAP order (CR 500.7),
+         stale "later:" marks and comments; a player leaving the game noted for extra turns (CR 800.4k). Fuzz 60 clean.
+         Code review: no bug, the replay hash changes checked (removing the two fields gives the old hashes); the player
+         view shows `extraTurns`, `TURN_BEGAN` says whether a turn is extra (one golden log line: "extra turn 20"),
+         `nextTurn` throws instead of falling back, architecture.md's state shape, a definition test. Next: PR.
        - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
          `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
          static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on
@@ -756,7 +769,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          target untapped in response) waits for an instant-speed untap in the pool. Code review: no invariant broken; the
          same bug; effects chosen by their duration too; the switches given the new kinds; 2 scenarios (the blocked
          creature dying before the untap step, or before the trigger resolves), a definition test (`eachOpponent`); both
-         surviving mutants now caught. Next: PR.
+         surviving mutants now caught. Fuzz 60 clean. Merged as #72. Next: M2-14b, Time Warp.
        - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
          refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
          turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing
@@ -1053,6 +1066,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
   then fails (it did once; nothing reached `main`).
 - Commit only when `pnpm check` exits 0: run it into a log file, use its exit code, never pipe its output through
   `grep` (a red commit went in that way). Edit scripts must fail loudly when a replacement doesn't match.
+- **Owner's request (2026-11-21):** run the fuzz games in parallel (a 60-game run took over 5 minutes on one core).
+  Done (D-117): `pnpm fuzz` uses a worker thread per core; 60 games in 2 minutes on this 4-core machine.
 - **Owner's preference (2026-11-20):** keep looking for ways to speed up iteration, so features land quickly while
   staying accurate and high quality. Slow spots seen so far, to work on as they bite: the 300-game fuzz (about 10
   minutes, one process: could run seeds across worker processes), `golden:cover` (plays up to 800 candidate games:

@@ -197,12 +197,16 @@ after the action and each piece of work, and the flag only ever resets, so A→B
 sick. Still at risk: a change and its change back inside one piece of work, which nothing in the pool does; a
 `{ player, since }` record would catch it.
 
-**Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
+**Turn structure changes.** Extra combat phases (CR 500.8), skipped steps and turns, and
 "at the beginning of the next end step". ("No maximum hand size" is built, D-097.) (First strike's second combat damage
 step is built, D-070: `endStep` repeats `combatDamage` once, read from `Combat`.)
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
-`Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
+`Turn` (a state migration). Extra turns are built (D-116): `GameState.extraTurns`, the latest first, and
+`regularTurnPlayer`, the turn order's place, which `endStep` reads through `nextTurn`. "Skip your next turn" (later:
+CR 614.10) belongs beside them, as does a player leaving the game: their extra turns don't begin (later: CR 800.4k), and
+the turn order's place must step on from their old seat. Storing whether the current turn is an extra one (for "if
+it's an extra turn" checks) is a field on `Turn` when a card needs it.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 "Doesn't untap during [its controller's / that player's] next untap step" is built (D-115): the effect ends when the
 untap step it names is over, in `game/untap-step.ts`. A skipped untap step must not end it: "the next"

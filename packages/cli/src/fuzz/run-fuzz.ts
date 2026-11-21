@@ -5,7 +5,7 @@ import { join } from "node:path";
 import type { CardDatabase } from "@mtg/engine";
 import { writeGameFile } from "../game-file.ts";
 import { ALL_CHECKS, type Check } from "./checks.ts";
-import { fuzzGame, TURN_CAP } from "./run-game.ts";
+import { type FailureFile, fuzzGame, TURN_CAP } from "./run-game.ts";
 
 export type FuzzOptions = {
   games: number;
@@ -24,13 +24,22 @@ export function runFuzz(options: FuzzOptions, cards: CardDatabase): FuzzSummary 
   for (let i = 0; i < options.games; i++) {
     const seed = options.seed + i;
     const result = fuzzGame(seed, options.checks ?? ALL_CHECKS, cards, options.turnCap ?? TURN_CAP);
-    if (result.ok) continue;
-    mkdirSync(options.outDir, { recursive: true });
-    const file = join(options.outDir, `seed-${seed}.json`);
-    writeGameFile(file, result.file);
-    failures.push({ seed, problem: result.problem, file });
+    if (!result.ok) failures.push(recordFailure(options.outDir, seed, result.problem, result.file));
   }
   return { games: options.games, failures };
+}
+
+/** Writes a failed game to `<outDir>/seed-<n>.json`, which `pnpm cli replay` opens, and says where. */
+export function recordFailure(
+  outDir: string,
+  seed: number,
+  problem: string,
+  game: FailureFile,
+): FuzzSummary["failures"][number] {
+  mkdirSync(outDir, { recursive: true });
+  const file = join(outDir, `seed-${seed}.json`);
+  writeGameFile(file, game);
+  return { seed, problem, file };
 }
 
 /** The report: one line per failure, with how to look at it and how to rerun it. */

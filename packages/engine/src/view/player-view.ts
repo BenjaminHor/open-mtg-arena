@@ -26,6 +26,8 @@ export type PlayerView = {
   viewer: PlayerId;
   turn: Turn | null;
   turnOrder: PlayerId[];
+  /** Extra turns still to come, the next first (CR 500.7): public, as everyone saw them made. */
+  extraTurns: PlayerId[];
   /** Life, mana pools and the like: public. */
   players: Record<PlayerId, PlayerState>;
   /** Only the objects the viewer may see: those in public zones and in the viewer's own hand. */
@@ -97,6 +99,7 @@ export function playerView(state: GameState, viewer: PlayerId): PlayerView {
     viewer,
     turn: state.turn,
     turnOrder: state.turnOrder,
+    extraTurns: state.extraTurns,
     players: state.players,
     objects,
     zones: {

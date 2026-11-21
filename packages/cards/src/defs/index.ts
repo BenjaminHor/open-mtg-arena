@@ -200,6 +200,7 @@ import { swamp } from "./s/swamp.ts";
 import { tempestOfLight } from "./t/tempest-of-light.ts";
 import { tendrilsOfCorruption } from "./t/tendrils-of-corruption.ts";
 import { terramorphicExpanse } from "./t/terramorphic-expanse.ts";
+import { timeWarp } from "./t/time-warp.ts";
 import { tomeScour } from "./t/tome-scour.ts";
 import { traumatize } from "./t/traumatize.ts";
 import { trumpetBlast } from "./t/trumpet-blast.ts";
@@ -333,6 +334,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   illusionaryServant,
   indestructibility,
   infernoElemental,
+  timeWarp,
   entanglingVines,
   wallOfFrost,
   sleep,

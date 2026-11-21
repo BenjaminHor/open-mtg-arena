@@ -61,6 +61,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   CARD_DRAWN: true,
   MULLIGAN_DECLARED: true,
   TURN_BEGAN: true,
+  EXTRA_TURN_ADDED: true,
   STEP_BEGAN: true,
   PRIORITY_PASSED: true,
   LAND_PLAYED: true,

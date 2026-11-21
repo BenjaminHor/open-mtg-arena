@@ -48,6 +48,7 @@ export function createGame(setup: GameSetup, cards: CardDatabase): EngineResult 
       state = {
         ...state,
         turn: { ...opening.turn },
+        regularTurnPlayer: opening.turn.activePlayer,
         turnOrder: opening.turn.number === 1 ? rotateTo(state.turnOrder, opening.turn.activePlayer) : state.turnOrder,
         combat: inCombat ? newCombat() : null,
       };
@@ -88,6 +89,8 @@ function emptyGame(setup: GameSetup): GameState {
     nextCardId: 1,
     turn: null,
     turnOrder: ids,
+    extraTurns: [],
+    regularTurnPlayer: null,
     players: Object.fromEntries(
       setup.players.map((p) => [
         p.id,

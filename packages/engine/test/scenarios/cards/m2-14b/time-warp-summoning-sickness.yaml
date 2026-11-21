@@ -1,0 +1,21 @@
+name: An opponent's extra turn isn't your turn, so your new creature stays summoning sick until your own turn
+rules: [CR 302.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island, Forest, Forest]
+    hand: [Time Warp, Grizzly Bears]
+steps:
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - all pass: once
+  - p1 cast: Time Warp
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - all pass: until upkeep
+  - expect: { turn: 4, active: p2, p1:Grizzly Bears.sick: true }
+  - all pass: until upkeep
+  - expect: { turn: 5, active: p2, p1:Grizzly Bears.sick: true }
+  - all pass: until upkeep
+  - expect: { turn: 6, active: p1, p1:Grizzly Bears.sick: false }

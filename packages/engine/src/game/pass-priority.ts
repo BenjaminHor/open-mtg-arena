@@ -4,7 +4,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 import type { WorkItem } from "../state/work.ts";
 import type { Progress } from "./progress.ts";
-import { nextPlayer } from "./steps.ts";
+import { nextPlayer } from "./turn.ts";
 import { queueWork } from "./work.ts";
 
 /**

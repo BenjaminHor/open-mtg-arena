@@ -1,0 +1,35 @@
+name: An extra turn given back during an extra turn comes next, then the regular turn order goes on
+rules: [CR 500.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Time Warp]
+  p2:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Time Warp]
+steps:
+  - p1 cast: Time Warp
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - all pass: until main1
+  - expect:
+      turn: 4
+      active: p2
+  - p2 cast: Time Warp
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - all pass: until upkeep
+  - expect:
+      turn: 5
+      active: p1
+  - all pass: until upkeep
+  - expect:
+      turn: 6
+      active: p2
+  - all pass: until upkeep
+  - expect:
+      turn: 7
+      active: p1

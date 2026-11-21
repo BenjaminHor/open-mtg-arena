@@ -320,6 +320,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
 /** Ops that act on players, and the subject each names them with. */
 const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject>> = {
   gainLife: (e) => (e as { who: EffectSubject }).who,
+  extraTurn: (e) => (e as { who: EffectSubject }).who,
   loseLife: (e) => (e as { who: EffectSubject }).who,
   draw: (e) => (e as { who: EffectSubject }).who,
   discardAtRandom: (e) => (e as { who: EffectSubject }).who,
