@@ -725,8 +725,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          cast after the −1). Code review: no stale-life path found; a scenario where combat damage changes life while
          the objects stay the same (the case the cache exists for: two mutants survived the scenarios); life read only
          through `lifeTotalOf`; the players record's identity kept beside the pass, not in its inputs; tokens from
-         delayed triggers checked; the cost recorded honestly (characteristics reads ~12-15% slower, 0.3 µs). Next: PR;
-         then M2-13c2b (Chandra).
+         delayed triggers checked; the cost recorded honestly (characteristics reads ~12-15% slower, 0.3 µs). Fuzz 180
+         clean. Merged as #70. Next: M2-13c2b (Chandra).
        - M2-13c2 plan (2026-11-21, with the advisor's review), two PRs.
          - M2-13c2a, Ajani Goldmane: +1 gain 2 life; −1 a +1/+1 counter on each creature you control, then those gain
            vigilance (the same set, nothing changes between); −6 a white Avatar token whose power and toughness are each
