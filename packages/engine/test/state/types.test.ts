@@ -93,6 +93,8 @@ describe("discriminated unions", () => {
           return `order ${decision.batch.length} triggered abilities`;
         case "chooseReplacement":
           return `choose one of ${decision.options.length} replacement effects`;
+        case "keepLegend":
+          return `keep one of ${decision.options.length} legendary permanents`;
         default:
           return assertNever(decision);
       }

@@ -11,6 +11,7 @@ import { attachedHost, isAura } from "./attachment.ts";
 import { canEnchant } from "./can-enchant.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
+import { legendRuleGroups } from "./legend-rule.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
@@ -18,7 +19,11 @@ import { isProtectedFrom } from "./protection.ts";
  * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then permanents
  * in battlefield order.
  */
-export function stateBasedActions(state: GameState, cards: CardDatabase): StateBasedAction[] {
+export function stateBasedActions(
+  state: GameState,
+  cards: CardDatabase,
+  kept: readonly ObjectId[] = [],
+): StateBasedAction[] {
   const actions: StateBasedAction[] = [];
   for (const player of state.turnOrder) {
     const ps = state.players[player];
@@ -54,6 +59,17 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     // Destroyed once, whichever of CR 704.5g and 704.5h applies.
     else if (state.dealtDeathtouchDamage.includes(object)) actions.push({ kind: "deathtouchDamage", object });
   }
+  // The legend rule, for each set a permanent was chosen to keep from (CR 704.5j): asked before the check, so a set
+  // with no choice yet isn't listed here (game/priority.ts). A permanent another action already puts into the
+  // graveyard or destroys goes once (a permanent can't leave twice), by that action.
+  if (kept.length > 0) {
+    const leaving = actions.flatMap((a) => (leavesTheBattlefield(a) ? [a.object] : []));
+    for (const group of legendRuleGroups(state, cards)) {
+      if (!group.some((id) => kept.includes(id))) continue;
+      for (const object of group)
+        if (!kept.includes(object) && !leaving.includes(object)) actions.push({ kind: "legendRule", object });
+    }
+  }
   return actions;
 }
 
@@ -80,4 +96,22 @@ function isEquipmentIllegallyAttached(state: GameState, equipment: ObjectId, car
   const host = attachedHost(state, equipment);
   if (host === null || host === equipment) return true;
   return !cardTypesOf(state, host, cards).includes("creature") || isProtectedFrom(state, host, equipment, cards);
+}
+
+/** Whether this state-based action takes its object off the battlefield. Exhaustive, so a new one must say. */
+function leavesTheBattlefield(action: StateBasedAction): action is StateBasedAction & { object: ObjectId } {
+  switch (action.kind) {
+    case "auraIllegallyAttached":
+    case "zeroToughness":
+    case "lethalDamage":
+    case "deathtouchDamage":
+    case "legendRule":
+      return true;
+    case "zeroLife":
+    case "drewFromEmptyLibrary":
+    case "tokenOutsideBattlefield":
+    case "equipmentIllegallyAttached":
+    case "plusAndMinusCounters":
+      return false;
+  }
 }

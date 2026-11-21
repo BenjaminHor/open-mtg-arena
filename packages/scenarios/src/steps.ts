@@ -283,6 +283,14 @@ function answerFor(
       if (another !== undefined) throw new Error(`"${text}" names more than one replacement effect to choose`);
       return { kind: "chooseReplacement", option };
     }
+    case "keepLegend": {
+      // The legend rule (CR 704.5j): the permanent to keep, by name, `#n` for the nth option of that name.
+      const [, name = text, nth = "1"] = /^(.+?)(?:#(\d+))?$/.exec(text) ?? [];
+      const named = pending.options.flatMap((id, i) => (nameOf(state, id, cards) === name ? [i] : []));
+      const option = named[Number(nth) - 1];
+      if (option === undefined) throw new Error(`no ${text} to keep`);
+      return { kind: "chooseCard", option };
+    }
     case "declareAttackers":
     case "declareBlockers":
       return declarationAnswer(state, player, text, cards);

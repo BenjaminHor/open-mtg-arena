@@ -716,6 +716,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13b1 built (2026-11-21, D-109): the legend rule (CR 704.5j): `legendRuleGroups`, a `keepLegend` decision asked
+         in `givePriority` (APNAP), the check made with the choices (`stateBasedActions`'s `kept`), a permanent leaving
+         once if another action removes it too; CLI, scenario `choose:`, exporter; 5 unit tests with test legends (the
+         pool has no legendary permanent until Jace). M2-13 is now four PRs (D-109). Next: reviews, PR; then M2-13b2.
        - M2-13a built (2026-11-21): `Attack.planeswalker` (optional; left out for an attack on the player), `attackedNow`
          (null once the planeswalker is removed from combat), `Combat.removed.planeswalkers` (present only once one is),
          per-role removal (`removeTypeChangesFromCombat`, a control change through `removedFromCombat`), possible attacks
