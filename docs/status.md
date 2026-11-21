@@ -658,7 +658,27 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - c1 built (D-097): Silence, Spellbook; 8 scenarios in `test/scenarios/cards/m2-09c/`, golden pool-55 and
            pool-167. 193 cards. Mutations 4/4. Review (no wrong results): citations (CR 601.3, 109.5; `later: CR
            613.11`), a named `cantCastSpells` question, the definition check for its subject, 3 more scenarios (the
-           non-active player's Silence and a land play, still in the end step, Spellbook in hand), docs. Next: PR.
+           non-active player's Silence and a land play, still in the end step, Spellbook in hand), docs. Fuzz 200
+           clean. Merged as #54. Next: c2, Act of Treason.
+         - c2 plan (2026-11-21): Act of Treason ("gain control of target creature until end of turn. Untap that
+           creature. It gains haste until end of turn."). Layer 2 (CR 613.1b) from resolved effects only:
+           `gainControl { player }` effects, latest timestamp wins (CR 613.7), read by one helper that both
+           `controllerOf` and the layer pass use, from `state.effects`: no card database needed, so no signature change
+           yet (static control effects, Auras in M2-12, will need it). A control change resets
+           `controlledSinceTurnStart` as it starts and as it ends (CR 302.6: "continuously since their most recent turn
+           began"). New ops: `gainControl`, `untap`. Removal from combat on a control change (CR 506.4) can't happen in
+           the pool (Act of Treason is a sorcery; its effect ends in cleanup): `later:`.
+           Scenarios: steal, untap, attack with haste; control returns in cleanup; a stolen {T} creature (Prodigal
+           Pyromancer); targeting your own creature (its ruling); it dies into its owner's graveyard; Polymorph on a
+           stolen creature reveals from the thief's library (last known controller, D-096); anthems follow the new
+           controller.
+         - c2 built (D-098): Act of Treason; 7 scenarios, a unit test of the control change and summoning sickness,
+           golden pool-571. 194 cards. Bench ok (91.7 ms). Mutations 4/4 (one after a latest-wins unit test).
+           Rules and code reviews (no rules bug): 7 more scenarios (the thief's summoning sickness and the owner's next
+           turn, a stolen lord, mana creature and trigger, control through the end step, damage at reversion, Safe
+           Passage); `gainControl` can't last "for as long as" (it would end in `moveCard` unrecorded); control changes
+           should move to a central check in `advance` with static control effects (M2-12, D-098, future-rules);
+           docs, READMEs, citations. Fuzz 200 clean. Next: PR; then M2-09 is done.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

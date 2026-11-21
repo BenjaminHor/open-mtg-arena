@@ -1434,3 +1434,19 @@ every schema change and every change D-024 lists bumps it.
 - "You have no maximum hand size" (Spellbook) is a static, `noMaximumHandSize`, read by `maximumHandSize`
   (`rules/hand-size.ts`), which the cleanup step asks (CR 402.2, 514.1). Effects that set another maximum would apply in
   timestamp order (its ruling, CR 613.11); none is in the pool, and statics don't carry timestamps yet.
+
+**D-098: Layer 2 from resolved effects (M2-09c2)** · 2026-11-21 · accepted
+- "Gain control of target creature until end of turn" (Act of Treason) is an effect change `gainControl { player }`
+  on the permanents locked in (CR 613.1b, 611.2c), the latest winning (CR 613.7, `state.effects`' order). One helper,
+  `controlFromEffects` (`rules/control-effects.ts`), reads it for both `controllerOf` and the layer pass, so they agree;
+  it needs no card database, so `controllerOf` keeps its signature (D-092 foresaw this). Static control effects (an
+  Aura's "you control enchanted creature", M2-12) will need the database and the signature change then.
+- A control change makes the permanent summoning sick again (CR 302.6): `recordControlChanges` clears
+  `controlledSinceTurnStart` when the effect begins and when it ends, only if the controller really changes (Act of
+  Treason on your own creature changes nothing). That works while control changes only as a resolved effect begins or
+  ends; static control effects (M2-12) change it with whatever moves their permanent, so then the check moves to
+  `advance`, beside `removeNoncreaturesFromCombat`, comparing controllers before and after each piece of work, and
+  removing attackers and blockers whose controller changed (CR 506.4). Until then `gainControl`'s duration can't be
+  "for as long as" (the type refuses it), as that would end in `moveCard` with no check.
+- New ops `gainControl` and `untap`. Removal from combat on a control change (CR 506.4) can't happen in the pool (Act of
+  Treason is a sorcery whose effect ends in cleanup), so it waits (later: CR 506.4 for control).

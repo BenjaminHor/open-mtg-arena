@@ -45,6 +45,8 @@ export type EffectChange =
   | { kind: "addKeywords"; keywords: Keyword[] }
   /** Not a layer: the affected creatures can't be blocked (CR 509.1b). */
   | { kind: "cantBeBlocked" }
+  /** Layer 2 (CR 613.1b): `player` controls the affected permanents. */
+  | { kind: "gainControl"; player: PlayerId }
   /** Not a layer: these players can't cast spells (CR 101.2). It affects no objects. */
   | { kind: "cantCastSpells"; players: PlayerId[] }
   /** One effect in several layers (CR 613.6): Awakener Druid's Forest, Rise from the Grave's Zombie. */

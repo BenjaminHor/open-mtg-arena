@@ -109,6 +109,7 @@ function layer7c(
       case "addKeywords":
       case "cantBeBlocked":
       case "cantCastSpells":
+      case "gainControl":
       case "becomes":
         break;
     }

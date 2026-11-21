@@ -228,7 +228,7 @@ export const layersMatchFreshPass: Check = (_before, after, _events, cards) => {
     const kept = layeredOf(after, id, cards);
     if (JSON.stringify(kept) !== JSON.stringify(layeredOfFresh(after, id, cards)))
       problems.push(`${id}'s characteristics kept for this state differ from fresh ones (D-092)`);
-    // Layer 2 is `controllerOf`'s, outside the pass (D-092): the two must agree.
+    // Layer 2 reaches both the pass and `controllerOf` through `controlFromEffects` (D-098): the two must agree.
     if (kept !== null && kept.controller !== controllerOf(after, id))
       problems.push(`${id}'s controller in the layer pass differs from controllerOf (D-092)`);
   }
