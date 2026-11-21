@@ -1,0 +1,14 @@
+name: Serpent of the Endless Sea can attack when the defender's only Island Convincing Mirage made a Swamp
+rules: [CR 305.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Serpent of the Endless Sea, Island]
+  p2:
+    battlefield: [Swamp, { card: Convincing Mirage, attachedTo: p2:Swamp, chosenLandType: Island }]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Serpent of the Endless Sea]
+  - all pass: until main2
+  - expect:
+      p2.life: 19

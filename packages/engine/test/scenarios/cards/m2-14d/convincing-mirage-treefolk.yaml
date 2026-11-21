@@ -1,5 +1,5 @@
 name: A Forest that Awakener Druid made a Treefolk creature stays a Treefolk when Convincing Mirage makes it an Island
-rules: [CR 305.7, CR 613.7]
+rules: [CR 305.7]
 setup:
   turn: { active: p1, step: main1 }
   p1:

@@ -1822,4 +1822,8 @@ owner's answer to the D-089 open question, option (a))
   types, subtypes and supertypes stay (a Treefolk stays a Treefolk; basic stays basic, its ruling). It loses the
   abilities of its rules text (CR 305.7): printed keywords, protections and statics are cleared before layer 6, so
   granted ones still come; `Layered.rulesTextLost` makes `abilitiesOf` give only the basic land type's mana ability,
-  and `triggersOf` and `replacementsOf` nothing.
+  and `triggersOf` and `replacementsOf` nothing. Two on one land apply in timestamp order, the later winning
+  (CR 613.7). From Open the Vaults, hosts are announced in APNAP order first (its ruling), then each Mirage's type is
+  chosen as they enter, again in APNAP order (CR 614.12a, 101.4); the nonactive player's, later, wins (CR 613.7m).
+- Not built: CR 305.7's "any copiable effects affecting that land" (layer 1 doesn't exist yet). When it does, the
+  pass must know which lands a land-type-setting effect hits before running layer 1 (future-rules).

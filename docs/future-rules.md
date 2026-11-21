@@ -309,6 +309,8 @@ layer 4 sets the land types after the resolved layer 4 effects, and `Layered.rul
 `triggersOf` and `replacementsOf` leave out the printed abilities. Timestamp order between a static and a resolved
 effect in layer 4 (CR 613.7) isn't kept yet: statics come after, which no pool pair can tell. "Loses all abilities"
 (Turn to Frog, Humility) will need the same flag kept per layer 6 timestamp, with granted abilities after it kept.
+CR 305.7 also takes away "any copiable effects affecting that land": once layer 1 (copies, Clone) exists, the pass must
+know which lands a land-type-setting effect will hit before it runs layer 1.
 
 **Choices as a permanent enters (CR 614.12a, D-119).** Built for "choose a card name" (Pithing Needle) on two paths:
 a permanent spell resolving and Open the Vaults, which use `happenOrAsk`. Other paths onto the battlefield still use

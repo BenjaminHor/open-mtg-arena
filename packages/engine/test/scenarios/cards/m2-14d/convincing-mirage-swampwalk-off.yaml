@@ -1,0 +1,15 @@
+name: A Swamp made a Plains by Convincing Mirage turns swampwalk off, so the Wraith can be blocked
+rules: [CR 702.14c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Bog Wraith]
+  p2:
+    battlefield: [Grizzly Bears, Swamp, { card: Convincing Mirage, attachedTo: p2:Swamp, chosenLandType: Plains }]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Bog Wraith]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Bog Wraith }
+  - expect:
+      p2.life: 20

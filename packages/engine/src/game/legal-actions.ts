@@ -14,6 +14,7 @@ import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import type { Action } from "../state/actions.ts";
+import type { ChooseWhat } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { DecisionId, ObjectId, PlayerId } from "../state/ids.ts";
 import { BASIC_LAND_TYPES } from "../state/objects.ts";
@@ -66,8 +67,7 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
     case "chooseReplacement":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseReplacement", option } }));
     case "chooseName": {
-      const names = pending.what === "cardName" ? cardNames(cards) : BASIC_LAND_TYPES;
-      return names.map((name): Action => ({ ...answer, answer: { kind: "chooseName", name } }));
+      return namesFor(pending.what, cards).map((name): Action => ({ ...answer, answer: { kind: "chooseName", name } }));
     }
     case "keepLegend":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseCard", option } }));
@@ -235,4 +235,14 @@ function declarationActions(
   const finish: Action[] = canFinish ? [{ ...answer, answer: { kind: "finishDeclaring" } }] : [];
   const takeBack: Action[] = canTakeBack ? [{ ...answer, answer: { kind: "takeBack" } }] : [];
   return [...finish, ...picks, ...takeBack];
+}
+
+/** What a `chooseName` decision offers: every card name (CR 201.4), or the basic land types (CR 205.3i). */
+function namesFor(what: ChooseWhat, cards: CardDatabase): readonly string[] {
+  switch (what) {
+    case "cardName":
+      return cardNames(cards);
+    case "basicLandType":
+      return BASIC_LAND_TYPES;
+  }
 }

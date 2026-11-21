@@ -12,6 +12,7 @@ import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.t
 import { activateManaAbility, manaAbilityProblem, manaColorProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
+import type { ChooseWhat } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
@@ -167,10 +168,8 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     case "chooseName": {
       if (answer.kind !== "chooseName") return mismatch;
       // The name of a card (CR 201.4), from the card database (D-114), or a basic land type (CR 205.3i).
-      if (pending.what === "cardName" && !isCardName(answer.name, cards))
-        return error("illegalAction", `no card is named ${answer.name}`);
-      if (pending.what === "basicLandType" && !isBasicLandType(answer.name))
-        return error("illegalAction", `${answer.name} isn't a basic land type`);
+      const problem = nameProblem(pending.what, answer.name, cards);
+      if (problem !== null) return error("illegalAction", problem);
       // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
       // Told to everyone, so a player choosing after knows it (CR 101.4b).
       const { proposed, choices } = pending.resume;
@@ -314,4 +313,14 @@ function cancel(state: GameState): EngineResult {
     return error("illegalAction", "a triggered ability can't be cancelled as it's put on the stack (CR 603.3d)");
   }
   return { ok: true, ...cancelCasting(state) };
+}
+
+/** Why this isn't a name a `chooseName` decision takes, or null: a card's (CR 201.4) or a basic land type (CR 205.3i). */
+function nameProblem(what: ChooseWhat, name: string, cards: CardDatabase): string | null {
+  switch (what) {
+    case "cardName":
+      return isCardName(name, cards) ? null : `no card is named ${name}`;
+    case "basicLandType":
+      return isBasicLandType(name) ? null : `${name} isn't a basic land type`;
+  }
 }

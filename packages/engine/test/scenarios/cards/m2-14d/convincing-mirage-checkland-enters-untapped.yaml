@@ -1,0 +1,11 @@
+name: A Swamp made an Island by Convincing Mirage counts for Glacial Fortress, which enters untapped
+rules: [CR 614.12]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, { card: Convincing Mirage, attachedTo: p1:Swamp, chosenLandType: Island }]
+    hand: [Glacial Fortress]
+steps:
+  - p1 play: Glacial Fortress
+  - expect:
+      p1:Glacial Fortress.tapped: false

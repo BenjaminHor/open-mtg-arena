@@ -745,7 +745,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type
          refused, a Forest made an Island paying {U} and back once the Aura goes, a checkland made a Swamp, Gargoyle
          Castle made a Mountain, swampwalk, Nightmare's count, Awakener Druid's Treefolk staying a Treefolk), unit tests
-         for the lost abilities; mutants 3/4 (the land guard unreachable). 1 golden game. Next: reviews, PR.
+         for the lost abilities; mutants 3/4 (the land guard unreachable). 1 golden game. Fuzz 80 clean. Rules review:
+         no wrong ruling; 13 more scenarios (checklands with a changed land, Awakener Druid's targets, a granted
+         keyword kept, two Mirages from Open the Vaults in both APNAP orders, Serpent of the Endless Sea, Terramorphic
+         Expanse, two Mirages on one land, swampwalk turned off); land-type statics in timestamp order (CR 613.7); a unit
+         test with test cards for the replacements, triggers, keywords and statics lost; exhaustive switches on what is
+         chosen; citations trimmed; CR 305.7's copiable effects noted for later. Next: code review, PR.
        - M2-14d1 built (2026-11-21, D-119): Pithing Needle (230 cards) and "as it enters, choose a card name": a
          replacement asking through `happenOrAsk` (a `chooseName` decision, kept in the resumed event's choices), the
          name on the permanent, `finishResolving` and Open the Vaults able to wait. 7 scenarios (naming as it enters and
