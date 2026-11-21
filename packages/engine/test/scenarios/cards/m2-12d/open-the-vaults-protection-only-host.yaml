@@ -1,0 +1,17 @@
+name: An Aura whose only possible host has protection from it stays in the graveyard
+rules: [CR 303.4g, CR 702.16c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains]
+    hand: [Open the Vaults]
+    graveyard: [Unholy Strength]
+  p2:
+    battlefield: [White Knight]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      p1.graveyard: [Unholy Strength, Open the Vaults]

@@ -38,6 +38,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "putCounters":
     case "becomes":
     case "sacrificeSource":
+    case "returnAllToBattlefield":
     case "destroy":
     case "destroyOneAtRandom":
     case "destroyAll":

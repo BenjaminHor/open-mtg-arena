@@ -7,10 +7,10 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { keywordsOf } from "./abilities.ts";
-import { attachedHost, enchantFilterOf, isAura } from "./attachment.ts";
+import { attachedHost, isAura } from "./attachment.ts";
+import { canEnchant } from "./can-enchant.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
-import { matchesFilter } from "./object-filter.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
@@ -63,14 +63,9 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
  * also a creature, later: CR 303.4d). The enchant filter is read with the Aura's controller as "you".
  */
 function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDatabase): boolean {
-  const enchant = enchantFilterOf(state, aura, cards);
-  if (enchant === null || !isAura(state, aura, cards)) return false;
+  if (!isAura(state, aura, cards)) return false;
   const host = attachedHost(state, aura);
-  if (host === null || host === aura) return true;
-  return (
-    !matchesFilter(state, host, enchant, controllerOf(state, aura, cards), cards) ||
-    isProtectedFrom(state, host, aura, cards)
-  );
+  return host === null || !canEnchant(state, aura, host, controllerOf(state, aura, cards), cards);
 }
 
 /**

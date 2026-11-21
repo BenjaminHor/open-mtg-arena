@@ -595,6 +595,12 @@ export type Effect =
    */
   | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean }
   /**
+   * "Return all [filter] cards from all graveyards to the battlefield under their owners' control" (Open the Vaults):
+   * all at once (CR 608.2f, 110.2). An Aura's owner chooses what it will enchant, not targeting (CR 303.4f); one with
+   * nothing it could enchant stays in its graveyard (CR 303.4g).
+   */
+  | { op: "returnAllToBattlefield"; from: "allGraveyards"; filter: ObjectFilter }
+  /**
    * "Search [whose] library for [a card / a [filter] card / all cards with the same name as a card exiled this way]":
    * "you" look at the whole library (CR 701.23a) and choose; the cards found are `"found"` for the effects after it.
    * With a stated quality the searcher may find none (CR 701.23b); "a card" must be found if there is one

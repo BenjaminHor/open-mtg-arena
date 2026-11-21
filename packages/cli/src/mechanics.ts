@@ -103,6 +103,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   TOKEN_CEASED_TO_EXIST: true,
   ATTACHED: true,
   UNATTACHED: true,
+  AURA_HOST_CHOSEN: true,
 };
 
 /**

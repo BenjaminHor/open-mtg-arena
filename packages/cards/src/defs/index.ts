@@ -137,6 +137,7 @@ import { naturesSpiral } from "./n/natures-spiral.ts";
 import { negate } from "./n/negate.ts";
 import { nightmare } from "./n/nightmare.ts";
 import { oakenform } from "./o/oakenform.ts";
+import { openTheVaults } from "./o/open-the-vaults.ts";
 import { ornithopter } from "./o/ornithopter.ts";
 import { overrun } from "./o/overrun.ts";
 import { pacifism } from "./p/pacifism.ts";
@@ -356,6 +357,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   negate,
   nightmare,
   oakenform,
+  openTheVaults,
   ornithopter,
   overrun,
   pacifism,

@@ -110,7 +110,17 @@ export type GameState = {
 };
 
 /** See `GameState.resolution`. */
-export type Resolution = { object: ObjectId; found: ObjectId[]; exiled: ObjectId[]; sacrificed: Sacrificed[] };
+export type Resolution = {
+  object: ObjectId;
+  found: ObjectId[];
+  exiled: ObjectId[];
+  sacrificed: Sacrificed[];
+  /** What each Aura returning to the battlefield will enchant, as chosen so far (CR 303.4f); null for nothing. */
+  auraHosts: AuraHost[];
+};
+
+/** An Aura and the permanent it will enter attached to, or null when it can't enter at all (CR 303.4g). */
+export type AuraHost = { aura: ObjectId; host: ObjectId | null };
 
 /**
  * A permanent sacrificed this way (CR 608.2c), with its power as it last existed on the battlefield (CR 608.2h), for

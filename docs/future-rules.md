@@ -322,10 +322,9 @@ whole, which is right while a creature has only creature types; an animated Fore
 reach that. *Needs now:* nothing (every animated land in the pool is also a Treefolk).
 
 **Protection beyond M2-08e (CR 702.16c-d, 613.1f).** *Built (M2-12a-b, D-102, D-103):* an Aura on a permanent with protection from
-it goes to the graveyard (CR 704.5m), and an Equipment becomes unattached (CR 704.5n); equip can't move onto one. Auras and Equipment (M2-12): "can't be enchanted or equipped"
-needs `isProtectedFrom(state, permanent, auraOrEquipment)` where an Aura is attached without targeting (put onto the
-battlefield, CR 303.4f) and in the state-based actions that put such an Aura into its owner's graveyard and unattach
-such Equipment (CR 704.5m-n); Aura spells and equip abilities that target are covered by `legalTargets`. Layers (M2-09):
+it goes to the graveyard (CR 704.5m), and an Equipment becomes unattached (CR 704.5n); equip can't move onto one. *Built
+(M2-12d, D-107):* an Aura put onto the battlefield (CR 303.4f) can't be attached to one, through `canEnchant`, which the
+CR 704.5m state-based action shares; Aura spells and equip abilities that target are covered by `legalTargets`. Layers (M2-09):
 granted or removed protection goes through `protectionsOf`, with the keywords ("loses all abilities" removes both).
 Protection for players changes `isProtectedFrom`'s first parameter to a `Target`. *Needs now:* nothing.
 
@@ -379,3 +378,13 @@ modifiers; `GameResult` reports what the meta layer needs.
 can refer to cards the engine doesn't support yet.
 **Animations and the board UI (M3).** *Needs now:* every visible change produces an event, with the `cardId` the UI
 uses to track a card between zones.
+
+**Auras entering without being cast, beyond Open the Vaults (CR 303.4f-g, D-107).** Other effects that put an Aura
+onto the battlefield (Academy Researchers, Aura tokens such as Roles, CR 111.10j) choose its host through the same
+steps as `returnAllToBattlefield`: `canEnchant`, a `chooseCards` decision with purpose `enchant` and `for`, and
+`Destination.attachedTo`. The chooser is the Aura's owner today, right for "under their owners' control"; an effect
+putting it under another player's control, or a replacement changing who controls it, needs the controller-to-be
+(CR 110.2a). An Aura that enchants a player (Curses, later: CR 303.4, 702.5d) needs players among the options, which
+`chooseCards` can't offer, and `AuraHost.host` to take a player. The host's legality is judged on the Aura as it is in
+the graveyard; an effect that changes it as it enters (CR 614.12) would need it judged as it will be. *Needs now:*
+nothing.

@@ -1,0 +1,32 @@
+name: Open the Vaults returns both players' artifacts and enchantments; the active player chooses first for their Auras
+rules: [CR 303.4f, CR 101.4, CR 110.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Grizzly Bears]
+    hand: [Open the Vaults]
+    graveyard: [Pacifism, Ornithopter]
+  p2:
+    battlefield: [Hill Giant, Craw Wurm]
+    graveyard: [Unholy Strength, Gorgon Flail]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  # The active player announces first (the card's ruling, CR 101.4), then each other player in turn order.
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: enchant }
+  - p1 choose: Hill Giant
+  - expect:
+      pending: { player: p2, kind: chooseCards, purpose: enchant }
+      events contains: [{ type: AURA_HOST_CHOSEN, player: p1 }]
+  - p2 choose: Craw Wurm
+  - expect:
+      p1.battlefield contains: [Pacifism, Ornithopter]
+      p2.battlefield contains: [Unholy Strength, Gorgon Flail]
+      p1:Pacifism.attachedTo: p2:Hill Giant
+      p2:Unholy Strength.attachedTo: p2:Craw Wurm
+      p2:Gorgon Flail.attachedTo: null
+      p2:Craw Wurm.power: 8
+      p1.graveyard: [Open the Vaults]
+      p2.graveyard: []

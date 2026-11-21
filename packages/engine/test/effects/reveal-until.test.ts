@@ -14,7 +14,7 @@ function withLibrary(library: string[]): GameState {
     opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
     ruleModifiers: [],
   }).state;
-  return { ...state, resolution: { object: "o999", found: [], exiled: [], sacrificed: [] } };
+  return { ...state, resolution: { object: "o999", found: [], exiled: [], sacrificed: [], auraHosts: [] } };
 }
 
 const revealed = (state: GameState) => {

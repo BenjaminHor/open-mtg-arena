@@ -189,6 +189,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `winner: p1` once the game is over; `winner: draw` when it ended in a draw (CR 104.4a); `winner: (game not over)`
   while it's still going.
 - `p1:Grizzly Bears.counters: { +1/+1: 2 }`: the kinds of counters it has, `{}` for none.
+- `p1:Pacifism.attachedTo: p2:Grizzly Bears`: what an Aura or Equipment is attached to, as a reference; `null` for
+  nothing.
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, a pending decision always has a legal

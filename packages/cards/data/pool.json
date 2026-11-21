@@ -3878,6 +3878,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Open the Vaults",
+      "slug": "open-the-vaults",
+      "oracleId": "1e9c473e-bd65-4e1f-b2ab-cac58dc581c9",
+      "layout": "normal",
+      "manaCost": "{4}{W}{W}",
+      "manaValue": 6,
+      "typeLine": "Sorcery",
+      "oracleText": "Return all artifact and enchantment cards from all graveyards to the battlefield under their owners' control. (Auras with nothing to enchant remain in graveyards.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/f/ffb29703-96de-475a-9499-b3cd2a2d6566.jpg?1783942401",
+        "large": "https://cards.scryfall.io/large/front/f/f/ffb29703-96de-475a-9499-b3cd2a2d6566.jpg?1783942401",
+        "png": "https://cards.scryfall.io/png/front/f/f/ffb29703-96de-475a-9499-b3cd2a2d6566.png?1783942401",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/f/ffb29703-96de-475a-9499-b3cd2a2d6566.jpg?1783942401"
+      },
+      "artist": "Brian Despain",
+      "set": "m10",
+      "collectorNumber": "21",
+      "scryfallUri": "https://scryfall.com/card/m10/21/open-the-vaults?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ornithopter",
       "slug": "ornithopter",
       "oracleId": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",

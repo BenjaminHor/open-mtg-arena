@@ -225,7 +225,10 @@ describe("a spell that left the stack during its own resolution (CR 608.2m)", ()
     const game = putSpell(precombatMain(), "p1", 0);
     const [spell] = game.state.zones.stack as [ObjectId];
     const exiled = moveCard(game.state, spell, { zone: "exile" });
-    const resolving = { ...exiled.state, resolution: { object: spell, found: [], exiled: [], sacrificed: [] } };
+    const resolving = {
+      ...exiled.state,
+      resolution: { object: spell, found: [], exiled: [], sacrificed: [], auraHosts: [] },
+    };
     expect(finishResolving(resolving, spell, TEST_CARDS).state.resolution).toBeNull();
   });
 
