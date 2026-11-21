@@ -1,0 +1,18 @@
+name: Gargoyle Castle, with {5}, is sacrificed to make a 3/4 colorless Gargoyle artifact creature token with flying
+rules: [CR 111.1, CR 105.2c, CR 701.21a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Gargoyle Castle, Forest, Forest, Forest, Forest, Forest]
+steps:
+  - p1 activate: Gargoyle Castle
+    ability: 2
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Gargoyle Castle]
+      p1:Gargoyle Token.power: 3
+      p1:Gargoyle Token.toughness: 4
+      p1:Gargoyle Token.colors: []
+      p1:Gargoyle Token.types: [artifact, creature]
+      p1:Gargoyle Token.abilities contains: [flying]

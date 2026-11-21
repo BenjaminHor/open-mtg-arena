@@ -715,6 +715,46 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12 plan (2026-11-21, with the advisor's review), four PRs. Auras and Equipment (CR 303.4, 301.5, 702.5,
+         702.6), 16 cards.
+         - Model: an attached permanent records what it's attached to, `CardObject.attachedTo?: ObjectId` (left out
+           otherwise, like `token`), fresh on every new object (CR 400.7). One reader, `attachedTo(state, id)`, returns
+           the host only while it's on the battlefield (a host that left is a new object), and the layer pass, the
+           state-based actions and triggers all use it. An invariant: at priority, every Aura is attached to a permanent.
+         - Aura spells: "Enchant creature" (CR 702.5a) is a target spec of the Aura spell (CR 303.4a, 601.2c), read where
+           `targets.ts` reads a spell's targets, so shroud, protection and the illegal target on resolution come free.
+           Resolving, it enters attached as part of the move (`Destination.attachedTo`, as `Destination.is`, CR 303.4f,
+           608.3), so it's attached before anything sees it. The `attach` event (new timestamp, CR 613.7e) is for equip
+           and moving an attachment. Check how the definition-vs-Oracle test reads Scryfall's Enchant and Equip keywords.
+         - Statics on "enchanted creature" / "equipped creature": the static kinds learn an `attached` subject, read in
+           the layer pass.
+         - State-based actions: an Aura attached illegally or to nothing goes to its owner's graveyard (CR 704.5m);
+           Equipment attached illegally becomes unattached (CR 704.5n); protection's "can't be enchanted or equipped"
+           counts (CR 702.16c-d). Awakener Druid's Forest ceasing to be a creature reaches both in the pool; Equipment is
+           colorless, so protection may reach CR 704.5n only in a unit test.
+         - Scenario setup: an Aura or Equipment can be set up attached (`attachedTo` in a battlefield entry), with
+           validation, the exporter and `testing.md`, so scenarios needn't cast every Aura.
+         - Equip: an activated ability, sorcery timing (check `AbilityDef` has it), target creature you control
+           (CR 702.6a); equipping the current host does nothing (CR 701.3b).
+         - Order becomes visible: Magebane Armor's "loses flying" is the first non-additive layer 6 effect, so statics and
+           resolved effects in a layer merge by timestamp (CR 613.7), and the attach timestamp is tested (Jump before and
+           after equipping); Mind Control against Act of Treason is the same in layer 2.
+         - M2-12a: the model, Aura spells, CR 704.5m, setup, Holy Strength, Unholy Strength, Weakness, Oakenform,
+           Lifelink, Armored Ascension, Indestructibility, Pacifism. M2-12b: Equipment, equip, CR 704.5n, protection's c-d,
+           timestamp order in layer 6, Gorgon Flail, Whispersilk Cloak, Magebane Armor, Firebreathing. M2-12c: Mind
+           Control (a static layer 2 effect: `controllerOf` takes the database, and a central control check in `advance`,
+           D-098), Soul Bleed, Ice Cage. M2-12d: Open the Vaults (an Aura put onto the battlefield chooses what it
+           enchants without targeting, CR 303.4f-g; read its rulings: what returns in the same batch, who chooses).
+         - Future impact: Auras that enchant a player (Curses, later: CR 303.4) need `attachedTo` to take a player;
+           bestow and reconfigure (later: CR 702.103, 702.151) change what an Aura or Equipment is; a token Aura (Roles,
+           CR 111.10j) is created attached.
+       - M2-11b built (2026-11-21): Siege-Gang Commander (three Goblins; "sacrifice a Goblin", a token or itself),
+         Captain of the Watch (three Soldiers it pumps, other Soldiers too, not an opponent's), Cemetery Reaper (exile a
+         creature card, a Zombie it pumps; no token if the target is gone, its ruling), Gargoyle Castle ({C}; a 3/4 flying
+         artifact Gargoyle), 202 cards, 13 scenarios in `cards/m2-11b/` with Goblin Chieftain, Veteran Armorsmith and two
+         Reapers; no engine change; the golden games already cover their mechanics. Rules review: no bug; counts and
+         events tightened, four more scenarios (sacrificing its own target, the Reaper killed in response or summoning
+         sick, the Castle tapped for {C} mid-payment), citations fixed. Fuzz 200 clean.
        - M2-11a built (2026-11-21, D-101): `cardDataOf` everywhere (a source scan forbids `cards[...]`), tokens as card
          objects carrying their data, `createToken` / `ceaseToExist` events, CR 704.5d, `createTokens`, Ant Queen and
          Howl of the Night Pack (198 cards), 9 scenarios in `cards/m2-11/` (enters triggers, dies, bounced, stolen,
@@ -723,8 +763,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          more (creator owns a token made by a stolen Ant Queen, an opponent's token triggers Soul Warden, summoning
          sickness, to a library, Howl with no Forests); `isToken` for "card" filters; the state-based action's scan of
          every object made each action ~3 µs slower (bench over budget), now `for ... in` with the token test first, back
-         to main's numbers; a token ceasing to exist in a hidden zone is shown only by where. Fuzz 300 clean. Next: PR;
-         then M2-11b.
+         to main's numbers; a token ceasing to exist in a hidden zone is shown only by where. Fuzz 300 clean. Merged as #58.
        - M2-11 plan (2026-11-21, with the advisor's review), two PRs.
          - Model: a token is a `CardObject` with `token: CardData`, its characteristics as the creating effect states
            them (CR 111.3; name = subtypes + "Token" unless stated, CR 111.4), kept on the object so the layer pass's

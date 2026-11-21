@@ -1,0 +1,25 @@
+name: Cemetery Reaper's ability still exiles and makes a Zombie after the Reaper is killed in response, unpumped
+rules: [CR 113.7a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Cemetery Reaper, Swamp, Swamp, Swamp]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+    graveyard: [Grizzly Bears]
+steps:
+  - p1 activate: Cemetery Reaper
+    targets: [graveyard:p2:Grizzly Bears]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Cemetery Reaper]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Cemetery Reaper]
+  - all pass: once
+  - expect:
+      exile: [Grizzly Bears]
+      p1:Zombie Token.power: 2

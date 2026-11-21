@@ -1,0 +1,16 @@
+name: Siege-Gang Commander sacrificing the creature it targets does nothing; the target is gone
+rules: [CR 601.5, CR 608.2b, CR 701.21a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Siege-Gang Commander, Mountain, Mountain]
+steps:
+  - p1 activate: Siege-Gang Commander
+    sacrifice: Siege-Gang Commander
+    targets: [p1:Siege-Gang Commander]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Siege-Gang Commander]
+      p2.life: 20
+      events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]
