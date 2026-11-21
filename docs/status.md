@@ -721,7 +721,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 115.4), scenario setup with printed loyalty, `show` with loyalty; 12 scenarios in `cards/m2-13b/` (each
          ability, once per turn, timing, too few counters, the ultimate leaving Jace in the graveyard while it resolves,
          entering, damage and Lava Axe, attacked, attacked then bolted, trampled over, two Jaces); one golden game. Bench
-         equal to main (alternating runs). Next: reviews, PR; then M2-13c.
+         equal to main (alternating runs). Rules review: no wrong ruling; a loyalty ability is never a mana ability
+         (CR 605.1a, latent); citations (CR 115.1, 115.1c, 107.7); 9 more scenarios (a cancelled activation, a second
+         Jace both ways, combat and the next turn, lifelink and deathtouch, Fog and Safe Passage, indestructible,
+         Earthquake, Hypnotic Specter). Next: code review, PR; then M2-13c.
        - M2-13b1 built (2026-11-21, D-109): the legend rule (CR 704.5j): `legendRuleGroups`, a `keepLegend` decision asked
          in `givePriority` (APNAP), the check made with the choices (`stateBasedActions`'s `kept`), a permanent leaving
          once if another action removes it too; CLI, scenario `choose:`, exporter; 5 unit tests with test legends (the

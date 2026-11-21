@@ -12,6 +12,9 @@ steps:
   - all pass: until combat.declareBlockers
   - p2 block: { Grizzly Bears: Stampeding Rhino }
   - all pass: once
+  # The recipients are the Bears and Jace, not Jace's controller: the Rhino attacks Jace (CR 702.19b).
+  - expect:
+      pending: { player: p1, kind: assignDamage }
   - p1 assign: { Grizzly Bears: 2, Jace Beleren: 2 }
   - expect:
       p2:Jace Beleren.counters: { loyalty: 1 }

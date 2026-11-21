@@ -25,8 +25,8 @@ export function loyaltyOf(state: GameState, id: ObjectId): number {
 /**
  * Why `player` can't activate this loyalty ability of `id` now, or null: only in their main phase with an empty stack,
  * and only if no loyalty ability of that permanent has been activated this turn (CR 606.3), counted per object, so a
- * permanent that left and came back is new (CR 400.7) and one that changed controller isn't; a negative cost needs
- * that many loyalty counters (CR 606.6).
+ * permanent that left and came back is a new one with none (CR 400.7); a negative cost needs that many loyalty counters
+ * (CR 606.6).
  */
 export function loyaltyAbilityProblem(
   state: GameState,
@@ -51,7 +51,9 @@ export function loyaltyAbilityProblem(
 /**
  * The loyalty part of the cost being paid, as the event that pays it: counters put on or removed from the ability's
  * source (CR 606.4), or null when the cost has none. A negative one can't be paid without enough counters, rechecked
- * as the whole cost is paid (CR 601.2h, 606.6): "unpayable" then.
+ * as the whole cost is paid (CR 601.2h, 606.6): "unpayable" then. Nothing in the pool can remove the counters between
+ * the start of an activation and its payment (no loyalty ability has a mana cost, so no mana ability runs between),
+ * so this is a guard, not a path a game takes today.
  */
 export function loyaltyPayment(state: GameState, cards: CardDatabase): SingleEvent | "unpayable" | null {
   const casting = state.casting;

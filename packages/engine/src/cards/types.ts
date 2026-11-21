@@ -322,7 +322,8 @@ export type CostPart =
   /** "Sacrifice this land": the source itself, paid with the rest of the cost, after {T} (CR 602.2, 701.21a; D-059). */
   | { kind: "sacrificeSelf" }
   /**
-   * A loyalty symbol: put `amount` loyalty counters on the source, or remove that many when it's negative (CR 606.4).
+   * A loyalty symbol: put `amount` loyalty counters on the source, or remove that many when it's negative (CR 606.4,
+   * 107.7: [+N], [−N]; [0] puts none, and is still a loyalty ability).
    * An ability with one is a loyalty ability (CR 606.2): activated only as a sorcery, once per turn for its permanent
    * (CR 606.3), and a negative one only with enough counters (CR 606.6).
    */

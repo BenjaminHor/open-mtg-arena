@@ -1,0 +1,16 @@
+name: An indestructible Jace Beleren still goes to the graveyard with no loyalty, which isn't destroying it
+rules: [CR 704.5i, CR 702.12b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Jace Beleren, { card: Indestructibility, attachedTo: p2:Jace Beleren }]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2:Jace Beleren]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard contains: [Jace Beleren, Indestructibility]

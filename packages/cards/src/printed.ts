@@ -104,7 +104,7 @@ function parseColor(color: string): Color {
   return color as Color;
 }
 
-/** Printed loyalty: a number ("X" loyalty, later: CR 306.5b's X). */
+/** Printed loyalty: a number. A printed "X" isn't supported yet: no card in the pool has one. */
 function parseLoyalty(value: string, name: string): number {
   if (!/^\d+$/.test(value)) throw new Error(`${name}: loyalty "${value}" isn't supported yet`);
   return Number(value);

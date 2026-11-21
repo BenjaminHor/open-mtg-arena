@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  type AbilityDef,
   allPayments,
   autoPay,
   isManaAbility,
@@ -52,6 +53,18 @@ describe("mana abilities (CR 605.1a)", () => {
     const [elves, whelp] = game.state.zones.battlefield as [ObjectId, ObjectId];
     expect(abilitiesOf(game.state, elves, TEST_CARDS).map((a) => isManaAbility(a.def))).toStrictEqual([true]);
     expect(abilitiesOf(game.state, whelp, TEST_CARDS).map((a) => isManaAbility(a.def))).toStrictEqual([false]);
+  });
+
+  it("isn't a loyalty ability, even one that adds mana (CR 605.1a)", () => {
+    // "+1: Add {R}." (CR 107.7: [+1] is a loyalty symbol.)
+    const loyal: AbilityDef = {
+      kind: "activated",
+      cost: [{ kind: "loyalty", amount: 1 }],
+      targets: [],
+      effects: [{ op: "addMana", mana: "R", amount: 1 }],
+    };
+    expect(isManaAbility({ ...loyal, cost: [] })).toBe(true);
+    expect(isManaAbility(loyal)).toBe(false);
   });
 });
 

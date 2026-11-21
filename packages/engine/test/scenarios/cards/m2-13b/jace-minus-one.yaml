@@ -1,5 +1,5 @@
 name: Jace Beleren's -1 removes a loyalty counter as its cost; the target player draws a card
-rules: [CR 606.4, CR 115.1a]
+rules: [CR 606.4, CR 115.1c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

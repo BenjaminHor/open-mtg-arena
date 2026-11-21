@@ -59,7 +59,7 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       return [...objects(permanents), ...players];
     }
     case "playerOrPlaneswalker": {
-      // "Target player or planeswalker" (CR 115.4).
+      // "Target player or planeswalker" (CR 115.1).
       const planeswalkers = state.zones.battlefield.filter((id) =>
         cardTypesOf(state, id, cards).includes("planeswalker"),
       );

@@ -148,7 +148,9 @@ permanents such as morph and manifest (CR 708).
 *Needs now:* an object's characteristics come from "which face or part is active", not straight from a
 single card record; tokens are objects without a deck card. *Built (M2-13, D-108 to D-110):* planeswalkers: printed
 loyalty, entering with it, loyalty abilities, damage removing loyalty, CR 704.5i, the legend rule, attacking them; −X
-loyalty costs come with Chandra (M2-13c). *Built (M2-12a-b, D-102, D-103):* Auras and Equipment, attached through `attachedTo` and its one reader. *Built (M2-11a, D-101):* tokens are `CardObject`s
+loyalty costs come with Chandra (M2-13c). *Watch out:* `loyaltyCost` reads the printed loyalty part; effects that
+change it (CR 606.4) or add loyalty costs to combine (CR 606.5) need the loyalty amount in the total cost locked in at
+CR 601.2f, and CR 606.6 must then read that total. *Built (M2-12a-b, D-102, D-103):* Auras and Equipment, attached through `attachedTo` and its one reader. *Built (M2-11a, D-101):* tokens are `CardObject`s
 carrying their own `CardData` (read through `cardDataOf`), so the `kind` checks below hold for them; "card" filters ask
 `isToken` (CR 111.6). *Still to come:* a token's own activated or triggered abilities (the ability object
 names its source only by `sourceOracleId`); a token that left the battlefield staying put (CR 111.8); a token in a hidden

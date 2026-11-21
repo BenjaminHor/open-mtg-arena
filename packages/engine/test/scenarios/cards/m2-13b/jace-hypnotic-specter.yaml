@@ -1,0 +1,17 @@
+name: Hypnotic Specter dealing damage to Jace isn't damage to an opponent, so it doesn't trigger
+rules: [CR 510.1b, CR 603.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hypnotic Specter]
+  p2:
+    battlefield: [{ card: Jace Beleren, counters: { loyalty: 5 } }]
+    hand: [Forest]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hypnotic Specter -> Jace Beleren]
+  - all pass: until combat.damage
+  - expect:
+      stack: []
+      p2.hand: [Forest]
+      p2:Jace Beleren.counters: { loyalty: 3 }

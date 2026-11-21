@@ -1658,7 +1658,8 @@ every schema change and every change D-024 lists bumps it.
   with enough counters (CR 606.6, rechecked as the whole cost is paid). The counters go on or come off with the rest
   of the cost, as one event (CR 601.2h).
 - A planeswalker with no loyalty is put into its owner's graveyard (CR 704.5i), not destroyed, like the legend rule;
-  "any target" and "target player or planeswalker" include planeswalkers (CR 115.4).
+  "any target" (CR 115.4) and "target player or planeswalker" (CR 115.1) include planeswalkers. A loyalty ability is
+  never a mana ability (CR 605.1a).
 - A scenario's planeswalker set up on the battlefield starts with its printed loyalty unless `counters` gives some: it
   never entered, so nothing else would give it loyalty, and CR 704.5i would take it at once.
 
