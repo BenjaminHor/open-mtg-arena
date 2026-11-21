@@ -753,7 +753,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          dropped a set-up chosen name (fixed, round-trip test); `ReplacementChoice` a union (`first` | `asEnters`, ready for
          Convincing Mirage's land type) and the name applied in `replaceByOwnText` with the others; a `chosenName`
          expectation; `cardNames` in one pass and `isCardName` for checks; stale pipeline docs; future-rules on the paths
-         still using `happen`. Next: PR.
+         still using `happen`. Merged as #75. Next: M2-14d2, Convincing Mirage.
        - M2-14d plan (2026-11-21, with the advisor's review), two PRs:
          - M2-14d1, Pithing Needle and the "as it enters, choose" mechanism (CR 614.12a): a replacement of its own
            text asks the player it enters under, through `happenOrAsk`'s saved choices (keyed by object and
