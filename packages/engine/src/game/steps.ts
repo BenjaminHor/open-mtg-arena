@@ -10,6 +10,7 @@ import { removeAllDamage } from "../permanents/damage.ts";
 import { happen } from "../pipeline/happen.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { maximumHandSize } from "../rules/hand-size.ts";
+import { legendRuleGroups } from "../rules/legend-rule.ts";
 import { newCombat } from "../state/combat.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -122,6 +123,9 @@ function endCleanup(state: GameState): Progress {
  * otherwise the active player gets priority, which performs them and puts the triggers on the stack first.
  */
 export function cleanupCheck(state: GameState, cards: CardDatabase): Progress {
+  // The legend rule needs a choice first: giving priority asks it, then checks everything together (CR 704.5j).
+  if (legendRuleGroups(state, cards).length > 0)
+    return { state: queueWork(state, { kind: "givePriority", player: currentTurn(state).activePlayer }), events: [] };
   const checked = checkStateBasedActions(state, cards);
   if (checked.state.result !== null) return { state: checked.state, events: checked.events };
   const active = currentTurn(checked.state).activePlayer;

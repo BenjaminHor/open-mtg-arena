@@ -63,6 +63,8 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
       return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
     case "chooseReplacement":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseReplacement", option } }));
+    case "keepLegend":
+      return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseCard", option } }));
     case "orderTriggers":
       return pending.batch.flatMap((_, index): Action[] =>
         orderTriggersProblem(pending.batch, player, index) === null

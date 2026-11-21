@@ -126,10 +126,11 @@ function answerStep(
     case "chooseCard": {
       // By name, with `#n` among the options of that name when there are several: which copy can matter to a replay.
       const pending = state.pending;
-      const option = pending?.kind === "chooseCards" ? pending.options[answer.option] : undefined;
-      if (pending?.kind !== "chooseCards" || option === undefined) throw new Error(`no option ${answer.option}`);
+      const options = pending?.kind === "chooseCards" || pending?.kind === "keepLegend" ? pending.options : [];
+      const option = options[answer.option];
+      if (option === undefined) throw new Error(`no option ${answer.option}`);
       const name = nameOf(state, option, cards);
-      const named = pending.options.flatMap((id, j) => (nameOf(state, id, cards) === name ? [j] : []));
+      const named = options.flatMap((id, j) => (nameOf(state, id, cards) === name ? [j] : []));
       return choose(named.length > 1 ? `${name}#${named.indexOf(answer.option) + 1}` : name);
     }
     case "finishChoosing":

@@ -5,6 +5,7 @@ import { happen } from "../pipeline/happen.ts";
 import type { ProposedEvent, SingleEvent } from "../pipeline/proposed.ts";
 import { stateBasedActions } from "../rules/state-based-actions.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
 import type { Loss } from "../state/result.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { playersLose } from "./game-end.ts";
@@ -15,8 +16,12 @@ import { andThen, type Progress } from "./progress.ts";
  * together as one event. The caller repeats the check while `performed` is true. Either way, the records of drawing
  * from an empty library and of deathtouch damage are cleared: they only count until the next check (CR 704.5b, 704.5h).
  */
-export function checkStateBasedActions(state: GameState, cards: CardDatabase): Progress & { performed: boolean } {
-  const actions = stateBasedActions(state, cards);
+export function checkStateBasedActions(
+  state: GameState,
+  cards: CardDatabase,
+  kept: readonly ObjectId[] = [],
+): Progress & { performed: boolean } {
+  const actions = stateBasedActions(state, cards, kept);
   const cleared = clearDeathtouchDamage(clearEmptyLibraryDraws(state));
   if (actions.length === 0) return { state: cleared, events: [], performed: false };
   const progress = andThen({ state: cleared, events: [{ type: "STATE_BASED_ACTIONS", actions }] }, (s) =>
@@ -44,6 +49,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
     case "lethalDamage":
     case "deathtouchDamage":
     case "plusAndMinusCounters":
+    case "legendRule":
       return null;
   }
 }
@@ -70,6 +76,7 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
     // Put into its owner's graveyard, not destroyed (CR 704.5m).
     case "auraIllegallyAttached":
     case "zeroToughness":
+    case "legendRule":
       return [{ kind: "moveCard", object: action.object, to: { zone: "graveyard" } }]; // not "destroyed" (CR 704.5f)
     case "lethalDamage":
     case "deathtouchDamage":

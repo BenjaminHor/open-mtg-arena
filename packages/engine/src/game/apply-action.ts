@@ -34,6 +34,7 @@ import { playersLose } from "./game-end.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
+import { answerKeepLegend } from "./priority.ts";
 import { chooseSacrifice, sacrificeProblem } from "./sacrifice-costs.ts";
 import { queueWork } from "./work.ts";
 
@@ -137,6 +138,12 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       const problem = orderTriggersProblem(pending.batch, pending.player, answer.index);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...putOne(answered, pending.batch, answer.index, pending.priorityTo, cards) };
+    }
+    case "keepLegend": {
+      if (answer.kind !== "chooseCard") return mismatch;
+      const keep = pending.options[answer.option];
+      if (keep === undefined) return error("illegalAction", `There's no option ${answer.option}`);
+      return { ok: true, ...answerKeepLegend(answered, [...pending.kept, keep], pending.priorityTo, cards) };
     }
     case "chooseReplacement": {
       if (answer.kind !== "chooseReplacement") return mismatch;

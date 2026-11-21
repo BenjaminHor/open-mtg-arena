@@ -40,6 +40,9 @@ export const SAC_PUMP = "test-sac-pump";
 export const TEST_AURA = "test-aura";
 /** Not a real card: a planeswalker with no abilities, for attacking and damaging one before the pool has any. */
 export const TEST_WALKER = "test-walker";
+/** Not real cards: two legendary 2/2 creatures with different names, for the legend rule (CR 704.5j). */
+export const LEGEND = "test-legend";
+export const OTHER_LEGEND = "test-other-legend";
 /** Not a real card: Mind Control's "you control enchanted creature" on a test Aura, for layer 2 order below the scenarios. */
 export const CONTROL_AURA = "test-control-aura";
 /** Not a real card: a black Equipment, which no M10 card is, for protection's "can't be equipped" (CR 702.16d). */
@@ -123,7 +126,14 @@ function keywordCreature(oracleId: string, name: string, size: [number, number],
   });
 }
 
+function legend(oracleId: string, name: string): CardData {
+  const data = keywordCreature(oracleId, name, [2, 2], []);
+  return { ...data, printed: { ...data.printed, supertypes: ["legendary"] } };
+}
+
 export const TEST_CARDS: CardDatabase = {
+  [LEGEND]: legend(LEGEND, "Test Legend"),
+  [OTHER_LEGEND]: legend(OTHER_LEGEND, "Other Legend"),
   [FOREST]: card(FOREST, {
     printed: {
       name: "Forest",

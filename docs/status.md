@@ -716,6 +716,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13b1 built (2026-11-21, D-109): the legend rule (CR 704.5j): `legendRuleGroups`, a `keepLegend` decision asked
+         in `givePriority` (APNAP), the check made with the choices (`stateBasedActions`'s `kept`), a permanent leaving
+         once if another action removes it too; CLI, scenario `choose:`, exporter; 5 unit tests with test legends (the
+         pool has no legendary permanent until Jace). M2-13 is now four PRs (D-109). Reviews: an unkept legend with lethal
+         damage was destroyed, so regeneration could save it (now put into the graveyard, CR 614.8); the cleanup step
+         skipped the legend rule (now gives priority, CR 514.3a); names now through `characteristics()` (no name shares
+         none, CR 201.2a); 9 unit tests (three copies, a stolen legend to its owner's graveyard, refused answers,
+         cleanup), scenario and exporter tests with a test legend. Next: PR; then M2-13b2.
        - M2-13a built (2026-11-21): `Attack.planeswalker` (optional; left out for an attack on the player), `attackedNow`
          (null once the planeswalker is removed from combat), `Combat.removed.planeswalkers` (present only once one is),
          per-role removal (`removeTypeChangesFromCombat`, a control change through `removedFromCombat`), possible attacks
@@ -729,7 +737,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          `undefined` could get in); the field renamed `attacked` (battles later); the fuzz control-change check covers
          the attacked role; 13 unit tests (a real control change, a trampler's excess, Alluring Siren's ruling, refused
          attacks), the action-lines round trip. The scenario `->` step and exporter get their scenarios with Jace in
-         M2-13b. Next: PR.
+         M2-13b. Fuzz 100 clean. Merged as #66. Next: M2-13b (Jace Beleren; loyalty, loyalty abilities, CR 704.5i, the
+         legend rule, planeswalkers as targets).
        - M2-13 plan (2026-11-21, with the advisor's review): planeswalkers, three PRs. The five: Ajani Goldmane, Jace
          Beleren, Liliana Vess, Chandra Nalaar, Garruk Wildspeaker (all "Legendary Planeswalker" in today's Oracle). A
          card enters the pool only when it works completely, attacking included, so the plumbing comes first.

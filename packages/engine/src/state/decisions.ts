@@ -131,6 +131,13 @@ export type DecisionKind =
    */
   | { kind: "chooseYesNo"; purpose: "shuffle" | "optional"; resume: WorkItem[] }
   /**
+   * The legend rule (CR 704.5j): this player controls the legendary permanents in `options`, which share a name, and
+   * chooses the one to keep. The rest go to their owners' graveyards with every other state-based action of the check
+   * (CR 704.3), which is made once every such set has been chosen for, in APNAP order (CR 101.4): `kept` holds the
+   * choices made so far, `priorityTo` who gets priority after the check.
+   */
+  | { kind: "keepLegend"; options: ObjectId[]; kept: ObjectId[]; priorityTo: PlayerId }
+  /**
    * Several replacement effects would apply to one event, and the affected player (or the affected object's
    * controller) chooses which applies first (CR 616.1). `resume` is the event and the choices made so far; the
    * chosen option is added and the event replaced again from the start, as nothing has happened yet.

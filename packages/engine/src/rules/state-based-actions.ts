@@ -11,14 +11,20 @@ import { attachedHost, isAura } from "./attachment.ts";
 import { canEnchant } from "./can-enchant.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
+import { legendRuleGroups } from "./legend-rule.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
 /**
  * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then permanents
- * in battlefield order.
+ * in battlefield order, then the legend rule. The legend rule only for the sets `kept` chooses from: a caller must ask
+ * the choice first (`askToKeepLegend`, D-109).
  */
-export function stateBasedActions(state: GameState, cards: CardDatabase): StateBasedAction[] {
+export function stateBasedActions(
+  state: GameState,
+  cards: CardDatabase,
+  kept: readonly ObjectId[] = [],
+): StateBasedAction[] {
   const actions: StateBasedAction[] = [];
   for (const player of state.turnOrder) {
     const ps = state.players[player];
@@ -54,7 +60,23 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     // Destroyed once, whichever of CR 704.5g and 704.5h applies.
     else if (state.dealtDeathtouchDamage.includes(object)) actions.push({ kind: "deathtouchDamage", object });
   }
-  return actions;
+  // The legend rule, for each set a permanent was chosen to keep from (CR 704.5j): asked before the check, so a set
+  // with no choice yet isn't listed here (game/priority.ts; every caller of a check asks first). An unkept one is put
+  // into its owner's graveyard, not destroyed, so a regeneration shield can't save it (CR 614.8): that wins over its
+  // lethal or deathtouch damage, and it leaves once. One already put into the graveyard by another action goes by that.
+  if (kept.length === 0) return actions;
+  const unkept = legendRuleGroups(state, cards).flatMap((group) =>
+    group.permanents.some((id) => kept.includes(id)) ? group.permanents.filter((id) => !kept.includes(id)) : [],
+  );
+  const destroyed = (a: StateBasedAction) =>
+    (a.kind === "lethalDamage" || a.kind === "deathtouchDamage") && unkept.includes(a.object);
+  const putAway = actions.flatMap((a) =>
+    a.kind === "zeroToughness" || a.kind === "auraIllegallyAttached" ? [a.object] : [],
+  );
+  return [
+    ...actions.filter((a) => !destroyed(a)),
+    ...unkept.filter((id) => !putAway.includes(id)).map((object) => ({ kind: "legendRule", object }) as const),
+  ];
 }
 
 /**

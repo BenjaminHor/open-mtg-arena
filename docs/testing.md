@@ -109,7 +109,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   `Soul Warden#2` for the player's second waiting trigger from a card of that name); for choosing which replacement
   effect applies first (`chooseReplacement`, CR 616.1), `regeneration` for a regeneration shield, the name of the card
   whose own replacement it is (`Guardian Seraph`), or the card whose resolution made it (`Fog`); identical effects are
-  one option, and a name matching two different options is refused;
+  one option, and a name matching two different options is refused; for the legend rule (`keepLegend`, CR 704.5j), the
+  name of the permanent to keep, `Jace Beleren#2` for the second of them in battlefield order;
   a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
   `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.

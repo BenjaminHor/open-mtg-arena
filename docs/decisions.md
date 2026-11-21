@@ -1632,3 +1632,19 @@ every schema change and every change D-024 lists bumps it.
   happen at once (CR 120.4c).
 - The engine stores its own listed attack, not the answer as sent, so an answer can't add keys or an `undefined`.
 
+**D-109: The legend rule as a decision before the check (M2-13b1)** · 2026-11-21 · accepted
+- The legend rule (CR 704.5j) is the one state-based action that needs a choice. `givePriority` asks it first: a
+  `keepLegend` decision per set of same-named legendary permanents a player controls, players in APNAP order
+  (CR 101.4), each knowing the choices before theirs. Once all are made, the check runs with them (`kept`), so the
+  unkept permanents go to the graveyard together with every other state-based action of that check (CR 704.3).
+- The choices live in the decision (`kept`), not in `GameState`, so no new state field (and no change to saved
+  hashes); the answer is the existing `chooseCard` answer, by position in `options`.
+- An unkept permanent is put into its owner's graveyard, not destroyed, so a regeneration shield can't save it
+  (CR 614.8): the legend rule wins over its lethal or deathtouch damage, and it leaves once; one another action already
+  puts into the graveyard (toughness 0) goes by that one.
+- Every caller of a check asks the choice first: `givePriority`, and `cleanupCheck`, which gives the active player
+  priority when a set exists (CR 514.3a). Earlier choices are known to later players (CR 101.4b).
+- M2-13 is now four PRs: M2-13a (attacking, #66), M2-13b1 (the legend rule, no card), M2-13b2 (loyalty, loyalty
+  abilities, CR 704.5i, planeswalkers as targets, Jace Beleren), M2-13c (the other four). Jace waits for the legend
+  rule: a card enters the pool only when it works completely.
+

@@ -127,8 +127,11 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
     case "chooseCard": {
       // By name only: an option from a hidden zone is shown without its id (D-062).
       const pending = state.pending;
-      const option = pending?.kind === "chooseCards" ? pending.options[answer.option] : undefined;
+      const options = pending?.kind === "chooseCards" || pending?.kind === "keepLegend" ? pending.options : [];
+      const option = options[answer.option];
       const card = option === undefined ? `option ${answer.option}` : nameOf(state, option, cards);
+      // The legend rule: the permanent kept, by reference, as the options share a name (CR 704.5j).
+      if (pending?.kind === "keepLegend" && option !== undefined) return `keep ${objectText(state, option, cards)}`;
       if (pending?.kind !== "chooseCards") return `choose ${card}`;
       const forName = pending.for === null ? "" : nameOf(state, pending.for, cards);
       return choiceText(pending.purpose, card, forName);

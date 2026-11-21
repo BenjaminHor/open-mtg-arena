@@ -49,7 +49,10 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (`{ count }`) is worked out only as an effect applies, by `amountNow` in `effects/subjects.ts` (D-067).
 - `casting-prohibitions.ts`: `cantCastSpells`, whether an effect forbids a player to cast spells (Silence, CR 601.3).
 - `hand-size.ts`: `maximumHandSize`, seven unless a static says otherwise (Spellbook, CR 402.2, D-097).
-- `state-based-actions.ts`: `stateBasedActions(state, cards)`: the SBAs that apply now, as data (CR 704.5a/b/d/f/g/h/m/n/q).
+- `state-based-actions.ts`: `stateBasedActions(state, cards, kept)`: the SBAs that apply now, as data
+  (CR 704.5a/b/d/f/g/h/j/m/n/q); the legend rule only for the sets `kept` has a choice for.
+- `legend-rule.ts`: `legendRuleGroups`, the sets of same-named legendary permanents one player controls (CR 704.5j),
+  which `game/priority.ts` asks about (a `keepLegend` decision) before the check.
 - `damage-recipients.ts`: `canBeDealtDamage`, who can be dealt damage now (CR 120.1a).
 - `timing.ts`: `castTimingProblem`, `landPlayProblem` (CR 117.1a, 305.1–2, 302.1, 304.1, 307.1), `mainPhaseEmptyStack`
   (sorcery speed, also for "activate only as a sorcery", CR 602.5d).
