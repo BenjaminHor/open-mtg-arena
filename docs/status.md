@@ -715,6 +715,29 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12 plan (2026-11-21, draft, before the advisor's review), three PRs. Auras and Equipment (CR 303.4, 301.5,
+         702.5, 702.6), 16 cards.
+         - Model: an attached permanent records what it's attached to, `CardObject.attachedTo?: ObjectId` (left out
+           otherwise, like `token`), fresh on every new object (CR 400.7). Attaching is a pipeline event, `attach`,
+           emitting `ATTACHED`, which gives the attachment a new timestamp (CR 613.7e); unattaching likewise.
+         - Aura spells: "Enchant creature" (CR 702.5a) is the Aura's target as it's cast (CR 303.4a, 601.2c); resolving,
+           it enters attached to that object (CR 303.4f, 608.3), or doesn't resolve if the target is illegal (CR 608.3b).
+           Put onto the battlefield without being cast (Open the Vaults), its controller chooses what it enchants, not
+           targeting (CR 303.4f); with nothing legal it stays put (CR 303.4g).
+         - Statics on "enchanted creature" / "equipped creature": the static kinds learn an `attached` subject (layers
+           6, 7c; layer 2 for Mind Control), read in the layer pass from `attachedTo`.
+         - State-based actions: an Aura attached to an illegal object or nothing goes to its owner's graveyard
+           (CR 704.5m); Equipment attached illegally becomes unattached (CR 704.5n); protection's "can't be enchanted or
+           equipped" (CR 702.16c-d) counts as illegal.
+         - Equip: "Equip {2}" is an activated ability, sorcery timing, target creature you control (CR 702.6a).
+         - M2-12a: the model, Aura spells and the SBA, Holy Strength, Unholy Strength, Weakness, Oakenform, Lifelink,
+           Armored Ascension, Indestructibility, Pacifism. M2-12b: Equipment, equip, CR 704.5n, protection's
+           c-d, Gorgon Flail, Whispersilk Cloak, Magebane Armor ("loses flying", its prevention), Firebreathing.
+           M2-12c: Mind Control (a static layer 2 effect: `controllerOf` takes the database and a central control
+           check in `advance`, D-098), Soul Bleed, Ice Cage, Open the Vaults.
+         - Future impact: Auras that enchant a player (Curses, later: CR 303.4) need `attachedTo` to take a player;
+           bestow and reconfigure (later: CR 702.103, 702.151) change what an Aura or Equipment is; a token Aura (Roles,
+           CR 111.10j) is created attached.
        - M2-11b built (2026-11-21): Siege-Gang Commander (three Goblins; "sacrifice a Goblin", a token or itself),
          Captain of the Watch (three Soldiers it pumps, other Soldiers too, not an opponent's), Cemetery Reaper (exile a
          creature card, a Zombie it pumps; no token if the target is gone, its ruling), Gargoyle Castle ({C}; a 3/4 flying
