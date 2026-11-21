@@ -1,0 +1,16 @@
+name: An Aura enters attached to the creature it targeted, not another (Unholy Strength's +2/+1)
+rules: [CR 608.3c, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, Grizzly Bears, Swamp]
+    hand: [Unholy Strength]
+steps:
+  - p1 cast: Unholy Strength
+    targets: [p1:Grizzly Bears#2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears#1.power: 2
+      p1:Grizzly Bears#2.power: 4
+      p1:Grizzly Bears#2.toughness: 3

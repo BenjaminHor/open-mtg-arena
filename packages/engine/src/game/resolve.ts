@@ -3,7 +3,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
 import { isTriggerRef, triggeredAbilityDef } from "../rules/abilities.ts";
-import { enchantFilterOf } from "../rules/attachment.ts";
+import { isAura } from "../rules/attachment.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { effectsOf, sameTarget, stillLegalTargets } from "../rules/targets.ts";
@@ -144,7 +144,7 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
  * (CR 608.3b). Nothing else here enters attached.
  */
 function auraHost(state: GameState, id: ObjectId, cards: CardDatabase): { attachedTo?: ObjectId } {
-  if (enchantFilterOf(state, id, cards) === null) return {};
+  if (!isAura(state, id, cards)) return {};
   const target = state.objects[id]?.choices?.targets[0]?.[0];
   return target?.kind === "object" ? { attachedTo: target.object } : {};
 }

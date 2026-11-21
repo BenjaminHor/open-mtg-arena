@@ -100,9 +100,7 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     ...(old.token === undefined ? {} : { token: old.token }),
     // Attached as it enters, so it's never seen unattached (CR 608.3c); its timestamp is its entering one (attaching
     // later gives it a new one, later: CR 613.7e).
-    ...(to.zone === "battlefield" && "attachedTo" in to && to.attachedTo !== undefined
-      ? { attachedTo: to.attachedTo }
-      : {}),
+    ...(to.zone === "battlefield" && to.attachedTo !== undefined ? { attachedTo: to.attachedTo } : {}),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

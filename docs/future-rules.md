@@ -145,7 +145,7 @@ words will need the same before the first card with one.
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down
 permanents such as morph and manifest (CR 708).
 *Needs now:* an object's characteristics come from "which face or part is active", not straight from a
-single card record; tokens are objects without a deck card. *Built (M2-11a, D-101):* tokens are `CardObject`s
+single card record; tokens are objects without a deck card. *Built (M2-12a, D-102):* Auras, attached through `attachedTo` and its one reader. *Built (M2-11a, D-101):* tokens are `CardObject`s
 carrying their own `CardData` (read through `cardDataOf`), so the `kind` checks below hold for them; "card" filters ask
 `isToken` (CR 111.6). *Still to come:* a token's own activated or triggered abilities (the ability object
 names its source only by `sourceOracleId`); a token that left the battlefield staying put (CR 111.8); a token in a hidden
@@ -318,7 +318,8 @@ whole, which is right while a creature has only creature types; an animated Fore
 "Forest Treefolk", and a Forest shared with another animated land would count. Split subtypes by type when a card can
 reach that. *Needs now:* nothing (every animated land in the pool is also a Treefolk).
 
-**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** *Built for Auras (M2-12a, D-102):* an Aura on a permanent with protection from it goes to the graveyard (CR 704.5m). Auras and Equipment (M2-12): "can't be enchanted or equipped"
+**Protection beyond M2-08e (CR 702.16c-d, 613.1f).** *Built for Auras (M2-12a, D-102):* an Aura on a permanent with
+protection from it goes to the graveyard (CR 704.5m). Auras and Equipment (M2-12): "can't be enchanted or equipped"
 needs `isProtectedFrom(state, permanent, auraOrEquipment)` where an Aura is attached without targeting (put onto the
 battlefield, CR 303.4f) and in the state-based actions that put such an Aura into its owner's graveyard and unattach
 such Equipment (CR 704.5m-n); Aura spells and equip abilities that target are covered by `legalTargets`. Layers (M2-09):

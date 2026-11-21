@@ -1512,4 +1512,8 @@ every schema change and every change D-024 lists bumps it.
   battlefield (CR 702.15c).
 - Future impact: Equipment (M2-12b) reuses `attachedTo` and the reader, with an `attach` event for equip (a new
   timestamp, CR 613.7e); Auras put onto the battlefield without being cast choose a host (M2-12d, CR 303.4f-g); an Aura
-  enchanting a player (later: CR 702.5d) needs `attachedTo` to name a player.
+  enchanting a player (later: CR 702.5d) needs `attachedTo` to name a player. Mind Control (M2-12c) is a static layer 2
+  effect: `attachedHostIn` needs no board, so the pass's controller step can use it, and `controllerOf` reads the kept
+  pass then (future-rules, "Layers").
+- Pacifism's restriction is marked on its host by the layer pass (`Layered.cantAttackOrBlock`), not searched for per
+  attacker and blocker: the search made combat measurably slower (code review).

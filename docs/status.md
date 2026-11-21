@@ -719,7 +719,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          attached, `attachedGets` / `attachedCantAttackOrBlock`, CR 704.5m (protection too), setup `attachedTo`, the
          invariant; Holy Strength, Unholy Strength, Weakness, Oakenform, Lifelink, Armored Ascension, Indestructibility,
          Pacifism (210 cards); 15 scenarios in `cards/m2-12a/` (each ruling, shroud, protection, an animated Forest), an
-         Auras column in the matrix, two golden games. Next: reviews, fuzz, bench, PR.
+         Auras column in the matrix, two golden games. Rules review: a gone source's lifelink gave no life (CR 702.15c;
+         Siege-Gang with Lifelink sacrificed for its own ability): last known information keeps keywords now; 13 more
+         scenarios from its probes; Equipment citations marked later. Code review: Pacifism's check searched the
+         battlefield per attacker and blocker and the Aura check was a second loop over it (bench over): now marked by
+         the pass and folded into the one loop; `isAura`; only an Aura or Equipment can start attached (CR 303.4h); four
+         more scenarios (the chosen target, pump, anthem, Nightmare); docs. Next: fuzz, PR.
        - M2-12 plan (2026-11-21, with the advisor's review), four PRs. Auras and Equipment (CR 303.4, 301.5, 702.5,
          702.6), 16 cards.
          - Model: an attached permanent records what it's attached to, `CardObject.attachedTo?: ObjectId` (left out

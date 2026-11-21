@@ -25,6 +25,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
 import type { CardObject } from "../state/objects.ts";
+import { attachedHostIn } from "./attachment.ts";
 import { controlFromEffects } from "./control-effects.ts";
 import { layerSeven } from "./layer-seven.ts";
 import { type KeywordGrant, staticKeywordGrants, staticPTChanges, staticSources } from "./static-effects.ts";
@@ -52,6 +53,12 @@ export type Layered = Readonly<{
   sevenC: readonly LayerSevenCChange[];
   /** Each layer 6 grant of keywords, and its source, for explaining them (the printed ones are in `keywords` too). */
   granted: readonly KeywordGrant[];
+  /**
+   * Not a characteristic: "enchanted creature can't attack or block" (Pacifism, CR 508.1c, 509.1b) from a permanent
+   * attached to it. Found here because the pass already finds what each static applies to, so combat asks once per
+   * creature instead of searching the battlefield for every pair of attacker and blocker (measured).
+   */
+  cantAttackOrBlock: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -227,6 +234,13 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
     const keywords = granted.flatMap((g) => g.keywords);
     if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
   }
+  // Restrictions from attached permanents' statics (CR 303.4m), not a layer: kept on the host for combat to read.
+  for (const s of sources) {
+    if (s.def.kind !== "attachedCantAttackOrBlock") continue;
+    const host = attachedHostIn(input.objects, input.battlefield, s.source);
+    const card = host === null ? undefined : board[host];
+    if (host !== null && card !== undefined) board[host] = { ...card, cantAttackOrBlock: true };
+  }
   // Layer 7 (CR 613.4): a creature's base power and toughness (7b's, else 7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
@@ -272,6 +286,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     base: null,
     sevenC: Object.freeze([]),
     granted: Object.freeze([]),
+    cantAttackOrBlock: false,
   };
 }
 

@@ -7,16 +7,16 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { keywordsOf } from "./abilities.ts";
-import { attachedHost, enchantFilterOf } from "./attachment.ts";
-import { cardTypesOf, subtypesOf } from "./card-types.ts";
+import { attachedHost, enchantFilterOf, isAura } from "./attachment.ts";
+import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
 /**
- * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then Auras
- * attached illegally, then permanents in battlefield order.
+ * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then permanents
+ * in battlefield order.
  */
 export function stateBasedActions(state: GameState, cards: CardDatabase): StateBasedAction[] {
   const actions: StateBasedAction[] = [];
@@ -35,10 +35,8 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
       actions.push({ kind: "tokenOutsideBattlefield", object });
   }
   for (const object of state.zones.battlefield) {
-    if (isAuraIllegallyAttached(state, object, cards)) actions.push({ kind: "auraIllegallyAttached", object });
-  }
-  for (const object of state.zones.battlefield) {
     const obj = state.objects[object];
+    if (isAuraIllegallyAttached(state, object, cards)) actions.push({ kind: "auraIllegallyAttached", object });
     // Any permanent with both kinds, creature or not (CR 704.5q).
     const count = obj?.kind === "card" ? Math.min(obj.counters["+1/+1"] ?? 0, obj.counters["-1/-1"] ?? 0) : 0;
     if (count > 0) actions.push({ kind: "plusAndMinusCounters", object, count });
@@ -64,7 +62,7 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
  */
 function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDatabase): boolean {
   const enchant = enchantFilterOf(state, aura, cards);
-  if (enchant === null || !subtypesOf(state, aura, cards).includes("Aura")) return false;
+  if (enchant === null || !isAura(state, aura, cards)) return false;
   const host = attachedHost(state, aura);
   if (host === null || host === aura) return true;
   return (

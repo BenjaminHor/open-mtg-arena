@@ -53,17 +53,37 @@ export function staticKeywordGrants(
   // By source's place in `sources`: the set each effect found here, if it started in this layer.
   const sets: (ObjectId[] | undefined)[] = sources.map(() => undefined);
   for (const [i, s] of sources.entries()) {
-    if (s.def.kind === "attachedGets" && (s.def.keywords ?? []).length > 0) {
-      // "Enchanted creature has flying" (CR 303.4m): the permanent it's attached to, whatever that is now.
-      const host = attachedHostIn(input.objects, input.battlefield, s.source);
-      if (host !== null) grants[host] = [...(grants[host] ?? []), { source: s.source, keywords: s.def.keywords ?? [] }];
-      continue;
+    switch (s.def.kind) {
+      case "attachedGets": {
+        // "Enchanted creature has flying" (CR 303.4m): the permanent it's attached to, whatever that is now.
+        const host = attachedHostIn(input.objects, input.battlefield, s.source);
+        const keywords = s.def.keywords ?? [];
+        if (host !== null && keywords.length > 0)
+          grants[host] = [...(grants[host] ?? []), { source: s.source, keywords }];
+        break;
+      }
+      case "creaturesGet": {
+        const keywords = s.def.keywords ?? [];
+        if (keywords.length === 0) break;
+        const affected = creaturesGetSet(input, board, s.source, s.def);
+        sets[i] = affected;
+        for (const id of affected) grants[id] = [...(grants[id] ?? []), { source: s.source, keywords }];
+        break;
+      }
+      case "attachedCantAttackOrBlock":
+      case "plusPerSharedCreatureType":
+      case "plusPerOtherSameName":
+      case "cantBeBlocked":
+      case "canBlockAnyNumber":
+      case "cantAttackOrBlockAlone":
+      case "attacksEachCombat":
+      case "mustBeBlockedByAllAble":
+      case "cantBeCountered":
+      case "powerToughnessEachEqual":
+      case "cantAttackUnlessDefenderControls":
+      case "noMaximumHandSize":
+        break;
     }
-    if (s.def.kind !== "creaturesGet" || (s.def.keywords ?? []).length === 0) continue;
-    const affected = creaturesGetSet(input, board, s.source, s.def);
-    sets[i] = affected;
-    const keywords = s.def.keywords ?? [];
-    for (const id of affected) grants[id] = [...(grants[id] ?? []), { source: s.source, keywords }];
   }
   return { grants, sets };
 }

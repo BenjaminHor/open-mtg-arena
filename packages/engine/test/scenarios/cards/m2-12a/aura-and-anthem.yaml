@@ -1,0 +1,10 @@
+name: Honor of the Pure and Holy Strength both pump a white creature, an anthem and an Aura in the same layer
+rules: [CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Honor of the Pure, Elite Vanguard, { card: Holy Strength, attachedTo: p1:Elite Vanguard }]
+steps:
+  - expect:
+      p1:Elite Vanguard.power: 4
+      p1:Elite Vanguard.toughness: 4

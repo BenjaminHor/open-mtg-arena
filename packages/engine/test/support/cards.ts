@@ -36,6 +36,8 @@ export const SPLIT = "test-split";
 export const X_BOLT = "test-x-bolt";
 /** Not a real card: "Sacrifice a creature: this creature gets +1/+1 until end of turn", for sacrifice costs. */
 export const SAC_PUMP = "test-sac-pump";
+/** Not a real card: an Aura, "Enchant creature / Enchanted creature gets +1/+1", for attachments below the scenarios. */
+export const TEST_AURA = "test-aura";
 /** Not a real card: an instant whose delayed trigger is a spell's (CR 603.7d), which no Magic 2010 card has. */
 export const LATE_GIFT = "test-late-gift";
 /** Not a real card: "enters tapped unless you control a Forest", for lands entering together. */
@@ -477,6 +479,25 @@ export const TEST_CARDS: CardDatabase = {
         targets: [{ kind: "anyTarget" }],
         effects: [{ op: "dealDamage", amount: "X", from: "self", to: { target: 0 } }],
       },
+    },
+  }),
+  [TEST_AURA]: card(TEST_AURA, {
+    printed: {
+      name: "Test Aura",
+      manaCost: [{ kind: "colored", color: "W" }],
+      colors: ["W"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["enchantment"],
+      subtypes: ["Aura"],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Test Aura",
+      oracle: "Enchant creature\nEnchanted creature gets +1/+1.",
+      enchant: { types: ["creature"] },
+      statics: [{ kind: "attachedGets", power: 1, toughness: 1 }],
     },
   }),
   [SAC_PUMP]: card(SAC_PUMP, {

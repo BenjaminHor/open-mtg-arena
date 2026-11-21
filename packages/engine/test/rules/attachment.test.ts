@@ -7,11 +7,14 @@ import type { GameSetup, GameState, ObjectId } from "../../src/index.ts";
 import { attachedHost, attachmentsOf } from "../../src/rules/attachment.ts";
 import type { PermanentSetup } from "../../src/state/setup.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
-import { BEARS, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, TEST_AURA, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
-const permanent = (attachedTo?: PermanentSetup["attachedTo"]): PermanentSetup => ({
-  oracleId: BEARS,
+const permanent = (
+  attachedTo?: PermanentSetup["attachedTo"],
+  oracleId = attachedTo === undefined ? BEARS : TEST_AURA,
+) => ({
+  oracleId,
   tapped: false,
   summoningSick: false,
   damage: 0,
@@ -39,13 +42,16 @@ describe("a setup can start a permanent attached (CR 303.4b, 301.5a)", () => {
     expect(attachmentsOf(state, theirs)).toStrictEqual([attached]);
   });
 
-  it("refuses a permanent attached to nothing, or to itself (CR 303.4d, 301.5c)", () => {
+  it("refuses a permanent attached to nothing, or to itself (CR 303.4d), or one that's no Aura or Equipment (CR 303.4h)", () => {
     expect(setupProblems(setup([permanent({ player: "p2", index: 0 })]), TEST_CARDS)).toStrictEqual([
       "p1: a permanent is attached to nothing on p2's battlefield",
     ]);
     expect(setupProblems(setup([permanent({ player: "p1", index: 0 })]), TEST_CARDS)).toStrictEqual([
       "p1: a permanent can't be attached to itself (CR 303.4d)",
     ]);
+    expect(setupProblems(setup([permanent(), permanent({ player: "p1", index: 0 }, BEARS)]), TEST_CARDS)).toStrictEqual(
+      ["p1: only an Aura or Equipment can start attached (CR 303.4h)"],
+    );
   });
 });
 

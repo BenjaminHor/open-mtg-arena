@@ -5,8 +5,8 @@ import {
   applyAction,
   attachedHost,
   type CardDatabase,
-  enchantFilterOf,
   type GameState,
+  isAura,
   isToken,
   legalActions,
   type ObjectId,
@@ -51,7 +51,7 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
     }
     // And every Aura is attached to a permanent: one attached to nothing has gone to the graveyard (CR 704.5m).
     for (const id of state.zones.battlefield) {
-      if (enchantFilterOf(state, id, cards) !== null && attachedHost(state, id) === null)
+      if (isAura(state, id, cards) && attachedHost(state, id) === null)
         problems.push(`${id}: an Aura attached to nothing with priority to give`);
     }
   }

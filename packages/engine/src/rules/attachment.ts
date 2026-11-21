@@ -6,6 +6,7 @@ import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, ObjectFilter } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import { subtypesOf } from "./card-types.ts";
 
 /** The permanent `id` is attached to, or null: attached to nothing, or to an object that's no longer on the battlefield. */
 export function attachedHost(state: Pick<GameState, "objects" | "zones">, id: ObjectId): ObjectId | null {
@@ -38,4 +39,9 @@ export function attachmentsOf(state: Pick<GameState, "objects" | "zones">, host:
 export function enchantFilterOf(state: GameState, id: ObjectId, cards: CardDatabase): ObjectFilter | null {
   const obj = state.objects[id];
   return obj?.kind === "card" ? (cardDataOf(obj, cards)?.def.enchant ?? null) : null;
+}
+
+/** Whether a permanent or spell is an Aura with an enchant ability, the one test every Aura rule uses (CR 303.4). */
+export function isAura(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+  return enchantFilterOf(state, id, cards) !== null && subtypesOf(state, id, cards).includes("Aura");
 }

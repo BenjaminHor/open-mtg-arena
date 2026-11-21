@@ -11,7 +11,7 @@ import type {
   RuleModifier,
 } from "@mtg/engine";
 import { isRecord } from "./format.ts";
-import { engineStep, oracleIdOf } from "./names.ts";
+import { engineStep, oracleIdOf, parseRef } from "./names.ts";
 
 /**
  * Unlisted libraries get 20 basic lands so drawing doesn't lose the game (40 in a standard opening): Forest for p1,
@@ -77,21 +77,19 @@ function withAttachments(players: PlayerSetup[], setup: Record<string, unknown>,
 }
 
 function hostOf(
-  ref: string,
+  text: string,
   players: readonly PlayerSetup[],
   cards: CardDatabase,
 ): { player: PlayerId; index: number } {
-  const match = /^(p[12]):([^#]+)(?:#(\d+))?$/.exec(ref);
-  if (match === null) throw new Error(`attachedTo names a permanent like p1:Grizzly Bears, got ${ref}`);
-  const player = match[1] as PlayerId;
-  const oracleId = oracleIdOf(cards, match[2] ?? "");
-  const nth = Number(match[3] ?? 1);
-  const indexes = (players.find((p) => p.id === player)?.battlefield ?? []).flatMap((perm, i) =>
+  const ref = parseRef(text);
+  if (ref === null) throw new Error(`attachedTo names a permanent like p1:Grizzly Bears, got ${text}`);
+  const oracleId = oracleIdOf(cards, ref.card);
+  const indexes = (players.find((p) => p.id === ref.player)?.battlefield ?? []).flatMap((perm, i) =>
     perm.oracleId === oracleId ? [i] : [],
   );
-  const index = indexes[nth - 1];
-  if (index === undefined) throw new Error(`attachedTo: ${player} starts with no ${ref.slice(3)}`);
-  return { player, index };
+  const index = indexes[ref.nth - 1];
+  if (index === undefined) throw new Error(`attachedTo: ${ref.player} starts with no ${text}`);
+  return { player: ref.player, index };
 }
 
 /** `rules:` in a setup: rule modifiers, written like the engine's `RuleModifier` (one kind so far). */

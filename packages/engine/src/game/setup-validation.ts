@@ -56,6 +56,10 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       }
       const host = permanent.attachedTo;
       if (host === undefined) continue;
+      // Only an Aura or Equipment can be attached; anything else enters unattached (CR 303.4h).
+      const subtypes = cardDataByOracleId(permanent.oracleId, cards)?.printed.subtypes ?? [];
+      if (!subtypes.includes("Aura") && !subtypes.includes("Equipment"))
+        problems.push(`${player.id}: only an Aura or Equipment can start attached (CR 303.4h)`);
       const hosts = setup.players.find((p) => p.id === host.player)?.battlefield ?? [];
       if (!Number.isSafeInteger(host.index) || host.index < 0 || host.index >= hosts.length)
         problems.push(`${player.id}: a permanent is attached to nothing on ${host.player}'s battlefield`);
