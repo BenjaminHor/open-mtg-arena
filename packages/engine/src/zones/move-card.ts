@@ -7,7 +7,7 @@ import type { ContinuousEffect, EntersAs } from "../state/effects.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { CardId, ObjectId, PlayerId } from "../state/ids.ts";
-import type { CardObject } from "../state/objects.ts";
+import type { BasicLandType, CardObject } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
 
@@ -32,6 +32,7 @@ export type Destination =
       counters?: Record<string, number>;
       attachedTo?: ObjectId;
       chosenName?: string;
+      chosenLandType?: BasicLandType;
     }
   /**
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
@@ -45,6 +46,7 @@ export type Destination =
       counters?: Record<string, number>;
       attachedTo?: ObjectId;
       chosenName?: string;
+      chosenLandType?: BasicLandType;
     }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
@@ -106,6 +108,7 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     ...(to.zone === "battlefield" && to.attachedTo !== undefined ? { attachedTo: to.attachedTo } : {}),
     // The choice made as it entered (CR 614.12a), which its abilities read; absent when it made none.
     ...(to.zone === "battlefield" && to.chosenName !== undefined ? { chosenName: to.chosenName } : {}),
+    ...(to.zone === "battlefield" && to.chosenLandType !== undefined ? { chosenLandType: to.chosenLandType } : {}),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

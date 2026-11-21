@@ -1,0 +1,13 @@
+name: Gargoyle Castle made a Mountain loses both its abilities and gains the Mountain's
+rules: [CR 305.7, CR 305.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Gargoyle Castle, { card: Convincing Mirage, attachedTo: p1:Gargoyle Castle, chosenLandType: Mountain }]
+    hand: [Raging Goblin]
+steps:
+  - p1 cast: Raging Goblin
+    pay: auto
+  - expect:
+      stack: [Raging Goblin]
+      p1:Gargoyle Castle.tapped: true

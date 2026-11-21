@@ -740,6 +740,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14d2 built (2026-11-21, D-120): Convincing Mirage (231 cards): a basic land type chosen as it enters (the
+         `chooseName` decision with `what`), layer 4 setting the enchanted land's type (`rules/land-type.ts`), its rules
+         text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type
+         refused, a Forest made an Island paying {U} and back once the Aura goes, a checkland made a Swamp, Gargoyle
+         Castle made a Mountain, swampwalk, Nightmare's count, Awakener Druid's Treefolk staying a Treefolk), unit tests
+         for the lost abilities; mutants 3/4 (the land guard unreachable). 1 golden game. Fuzz 80 clean. Rules review:
+         no wrong ruling; 13 more scenarios (checklands with a changed land, Awakener Druid's targets, a granted
+         keyword kept, two Mirages from Open the Vaults in both APNAP orders, Serpent of the Endless Sea, Terramorphic
+         Expanse, two Mirages on one land, swampwalk turned off); land-type statics in timestamp order (CR 613.7); a unit
+         test with test cards for the replacements, triggers, keywords and statics lost; exhaustive switches on what is
+         chosen; citations trimmed; CR 305.7's copiable effects noted for later. Code review: no invariant broken; the three
+         ability readers asked the layer pass for every object, about 13% slower on `applyAction` (bench, alternating
+         against main); they now ask only for a card with written abilities of that kind, which recovers it; setup tests
+         for `chosenLandType`; stale comments. Next: PR.
        - M2-14d1 built (2026-11-21, D-119): Pithing Needle (230 cards) and "as it enters, choose a card name": a
          replacement asking through `happenOrAsk` (a `chooseName` decision, kept in the resumed event's choices), the
          name on the permanent, `finishResolving` and Open the Vaults able to wait. 7 scenarios (naming as it enters and
@@ -753,7 +767,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          dropped a set-up chosen name (fixed, round-trip test); `ReplacementChoice` a union (`first` | `asEnters`, ready for
          Convincing Mirage's land type) and the name applied in `replaceByOwnText` with the others; a `chosenName`
          expectation; `cardNames` in one pass and `isCardName` for checks; stale pipeline docs; future-rules on the paths
-         still using `happen`. Next: PR.
+         still using `happen`. Merged as #75. Next: M2-14d2, Convincing Mirage.
        - M2-14d plan (2026-11-21, with the advisor's review), two PRs:
          - M2-14d1, Pithing Needle and the "as it enters, choose" mechanism (CR 614.12a): a replacement of its own
            text asks the player it enters under, through `happenOrAsk`'s saved choices (keyed by object and

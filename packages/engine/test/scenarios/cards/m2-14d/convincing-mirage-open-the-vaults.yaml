@@ -1,0 +1,30 @@
+name: Two Convincing Mirages from Open the Vaults, hosts announced in APNAP order, then land types, the later one winning
+rules: [CR 613.7m, CR 101.4, CR 303.4f, CR 614.12a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Mountain]
+    hand: [Open the Vaults]
+    graveyard: [Convincing Mirage]
+  p2:
+    battlefield: [Forest]
+    graveyard: [Convincing Mirage]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards }
+  - p1 choose: Forest
+  - expect:
+      pending: { player: p2, kind: chooseCards }
+  - p2 choose: Forest
+  - expect:
+      pending: { player: p1, kind: chooseName }
+  - p1 choose: Island
+  - expect:
+      pending: { player: p2, kind: chooseName }
+  - p2 choose: Swamp
+  - expect:
+      p2:Forest.subtypes: [Swamp]
+      p1:Convincing Mirage.attachedTo: p2:Forest

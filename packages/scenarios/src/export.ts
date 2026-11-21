@@ -254,6 +254,7 @@ function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, un
         if (Object.keys(perm.counters).length > 0) entry.counters = perm.counters;
         if (perm.attachedTo !== undefined) entry.attachedTo = hostRef(setup, perm.attachedTo, card);
         if (perm.chosenName !== undefined) entry.chosenName = perm.chosenName;
+        if (perm.chosenLandType !== undefined) entry.chosenLandType = perm.chosenLandType;
         return entry;
       });
     }

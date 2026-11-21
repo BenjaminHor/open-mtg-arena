@@ -38,6 +38,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
     case "attachedCantBeBlocked":
     case "attachedCantActivate":
     case "attachedDoesntUntap":
+    case "attachedSetsLandType":
     case "attachedControl":
       return null;
     case "cantBeBlocked":

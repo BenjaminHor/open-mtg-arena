@@ -6,7 +6,8 @@
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
 // granted or removed, `layer-six.ts`), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
-// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), and layer 2 resolved and static ones
+// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), layer 4 a static setting a land's
+// subtype (`land-type.ts`, D-120), and layer 2 resolved and static ones
 // (D-098, D-105, `control-effects.ts`; `controllerOf` reads the pass, D-104). Layers 1, 3 and 7d have none yet; each comes in its place
 // below as its first card does.
 
@@ -27,6 +28,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
 import type { CardObject } from "../state/objects.ts";
 import { layerTwo } from "./control-effects.ts";
+import { setLandTypes } from "./land-type.ts";
 import { layerSeven } from "./layer-seven.ts";
 import { layerSix } from "./layer-six.ts";
 import { type KeywordGrant, staticPTChanges, staticSources } from "./static-effects.ts";
@@ -69,6 +71,11 @@ export type Layered = Readonly<{
   cantActivate: boolean;
   /** Likewise, "doesn't untap during its controller's untap step" (Entangling Vines, CR 502.3). */
   doesntUntap: boolean;
+  /**
+   * A land whose subtype an effect set: it has lost the abilities from its rules text (CR 305.7), which the ability
+   * readers (`abilitiesOf`, `triggersOf`, `replacementsOf`) leave out.
+   */
+  rulesTextLost: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -266,6 +273,8 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
       if (card !== undefined) board[id] = withTypesAdded(card, effect.change);
     }
   }
+  // Then statics that set a land's subtype, still layer 4 (CR 305.7).
+  setLandTypes(input, board);
   for (const effect of input.effects) {
     if (effect.change.kind !== "becomes" || effect.change.colors === undefined) continue;
     for (const id of effect.affected) {
@@ -325,12 +334,13 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     cantBeBlocked: false,
     cantActivate: false,
     doesntUntap: false,
+    rulesTextLost: false,
   };
 }
 
 /**
- * Layer 4: card types and subtypes added, the others kept ("it's still a land", "in addition to its other types",
- * CR 205.1b). Setting types without keeping them waits for a card that does it.
+ * Layer 4: card types and subtypes added by resolved effects, the others kept ("it's still a land", "in addition to
+ * its other types", CR 205.1b). A land's subtype set by a static is `land-type.ts`.
  */
 function withTypesAdded(card: Layered, change: Becomes): Layered {
   if (change.addTypes.length === 0 && change.addSubtypes.length === 0) return card;

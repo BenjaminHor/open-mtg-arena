@@ -274,7 +274,7 @@ function answerFor(
       return { kind: "chooseYesNo", yes: text === "yes" };
     case "orderTriggers":
       return { kind: "orderTrigger", index: triggerNamed(pending.batch, player, text, cards) };
-    // A card name (CR 201.4), as written.
+    // A card name (CR 201.4) or a basic land type (CR 205.3i), as written.
     case "chooseName":
       return { kind: "chooseName", name: text };
     case "chooseReplacement": {

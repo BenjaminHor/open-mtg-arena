@@ -1,0 +1,22 @@
+name: A Forest that Awakener Druid made a Treefolk creature stays a Treefolk when Convincing Mirage makes it an Island
+rules: [CR 305.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest, Island, Island, Island]
+    hand: [Awakener Druid, Convincing Mirage]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Forest
+  - all pass: once
+  - p1 cast: Convincing Mirage
+    targets: [p1:Forest]
+    pay: auto
+  - all pass: once
+  - p1 choose: Island
+  - expect:
+      p1:Forest.subtypes: [Treefolk, Island]
+      p1:Forest.types: [basic, land, creature]
+      p1:Forest.power: 4

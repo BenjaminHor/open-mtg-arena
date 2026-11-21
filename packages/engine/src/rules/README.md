@@ -49,6 +49,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (`{ count }`) is worked out only as an effect applies, by `amountNow` in `effects/subjects.ts` (D-067).
 - `casting-prohibitions.ts`: `cantCastSpells`, whether an effect forbids a player to cast spells (Silence, CR 601.3).
 - `hand-size.ts`: `maximumHandSize`, seven unless a static says otherwise (Spellbook, CR 402.2, D-097).
+- `land-type.ts`: `setLandTypes`, layer 4's "enchanted land is the chosen type" (Convincing Mirage): the land types set,
+  the rules text's abilities lost (`Layered.rulesTextLost`, CR 305.7, D-120).
 - `chosen-name.ts`: `namedCantActivate`, whether a permanent's chosen name stops a source's activated abilities
   (Pithing Needle, CR 602.5, D-119).
 - `game-loss.ts`: `cantLose`, whether a static stops a player losing to a state-based action (Platinum Angel, CR 104.3,
@@ -65,8 +67,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (sorcery speed, also for "activate only as a sorcery", CR 602.5d).
 - `protection.ts`: `protectionsOf`, `isProtectedFrom`: protection (CR 702.16) and whether a source has the quality,
   as it is or as it last existed (D-091).
-- `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes
-  types yet).
+- `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types, read from the layer pass (layer 4:
+  types added by resolved effects, a land's subtype set by Convincing Mirage).
 - `characteristics.ts`: `characteristics(state, id, cards)`, an object's characteristics through the layers (CR 613),
   composing the readers above. `power-toughness.ts`: `powerAndToughness`, layer 7 (CR 613.4): the base from 7a's
   characteristic-defining abilities, else printed, then 7c effects, static abilities, counters and rule modifiers. Read power and toughness only through these.

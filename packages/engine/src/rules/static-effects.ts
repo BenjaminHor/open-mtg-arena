@@ -81,6 +81,7 @@ export function staticKeywordGrants(
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
       case "attachedDoesntUntap":
+      case "attachedSetsLandType":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
       case "attachedControl":
@@ -163,8 +164,8 @@ export function staticPTChanges(
       }
       case "plusPerSharedCreatureType":
         // Each creature, whoever controls it (CR 109.2), counting the others that share a creature type with it. The
-        // subtypes are one list today; once a creature can also have land types (an animated Forest), compare only
-        // its creature types (later: CR 205.3m).
+        // subtypes are one list today, land types included: an animated Forest is a creature with one (Awakener Druid's
+        // are all Treefolk, so a shared land type adds nobody yet). Compare only creature types (later: CR 205.3m).
         for (const id of creatures) {
           const mine = board[id]?.subtypes ?? [];
           const sharing = creatures.filter(
@@ -193,6 +194,7 @@ export function staticPTChanges(
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
       case "attachedDoesntUntap":
+      case "attachedSetsLandType":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
       case "attachedControl":

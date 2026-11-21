@@ -48,7 +48,13 @@ export function happenOrAsk(
       return { state: waitFor(state, replaced.player, decision), events: [] };
     }
     case "chooseName": {
-      const decision = { kind: "chooseName", for: replaced.for, ref: replaced.ref, resume } as const;
+      const decision = {
+        kind: "chooseName",
+        what: replaced.what,
+        for: replaced.for,
+        ref: replaced.ref,
+        resume,
+      } as const;
       return { state: waitFor(state, replaced.player, decision), events: [] };
     }
     case "replaced":

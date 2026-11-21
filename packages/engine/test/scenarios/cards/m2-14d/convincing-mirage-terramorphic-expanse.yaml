@@ -1,0 +1,12 @@
+name: Terramorphic Expanse made a Forest taps for green and can't be sacrificed for its search
+rules: [CR 305.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Terramorphic Expanse, { card: Convincing Mirage, attachedTo: p1:Terramorphic Expanse, chosenLandType: Forest }]
+steps:
+  - p1 activate: Terramorphic Expanse
+  - expect:
+      p1.manaPool: { G: 1 }
+      p1.battlefield: [Terramorphic Expanse, Convincing Mirage]
+      stack: []

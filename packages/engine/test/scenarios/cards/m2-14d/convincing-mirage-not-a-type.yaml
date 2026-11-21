@@ -1,0 +1,21 @@
+name: Convincing Mirage's choice is a basic land type, not another word or land type
+rules: [CR 205.3i, CR 614.12a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island]
+    hand: [Convincing Mirage]
+  p2:
+    battlefield: [Forest]
+steps:
+  - p1 cast: Convincing Mirage
+    targets: [p2:Forest]
+    pay: auto
+  - all pass: once
+  - p1 choose: Grizzly Bears
+  - expect error: illegalAction
+  - p1 choose: Desert
+  - expect error: illegalAction
+  - p1 choose: Island
+  - expect:
+      p2:Forest.subtypes: [Island]

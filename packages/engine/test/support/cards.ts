@@ -45,6 +45,10 @@ export const TEST_WALKER = "test-walker";
 export const TEST_ANGEL = "test-angel";
 /** Not a real card: a noncreature artifact, "When this creature dies, you gain 1 life" (CR 700.7: "this" is the object). */
 export const TEST_RELIC = "test-relic";
+/** Not a real card: a nonbasic Forest land with shroud, "enters tapped", a trigger and a static, for losing rules text. */
+export const TEST_ODD_LAND = "test-odd-land";
+/** Not a real card: "Enchant land. As this Aura enters, choose a basic land type. Enchanted land is the chosen type." */
+export const TEST_MIRAGE = "test-mirage";
 export const TAKE_ENCHANTMENTS = "test-take-enchantments";
 /** Not a real card: "Enchant creature you control / Enchanted creature gets +1/+1." */
 export const YOUR_AURA = "test-your-aura";
@@ -585,6 +589,47 @@ export const TEST_CARDS: CardDatabase = {
       name: "Test Relic",
       oracle: "When this creature dies, you gain 1 life.",
       triggers: [{ when: { kind: "selfDies" }, targets: [], effects: [{ op: "gainLife", who: "you", amount: 1 }] }],
+    },
+  }),
+  [TEST_ODD_LAND]: card(TEST_ODD_LAND, {
+    printed: {
+      name: "Test Odd Land",
+      manaCost: [],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["land"],
+      subtypes: ["Forest"],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Test Odd Land",
+      oracle: "",
+      keywords: ["shroud"],
+      replacements: [{ kind: "entersTapped", unless: { subtypes: ["Plains"], controller: "you" } }],
+      triggers: [{ when: { kind: "selfEnters" }, targets: [], effects: [{ op: "gainLife", who: "you", amount: 1 }] }],
+      statics: [{ kind: "noMaximumHandSize" }],
+    },
+  }),
+  [TEST_MIRAGE]: card(TEST_MIRAGE, {
+    printed: {
+      name: "Test Mirage",
+      manaCost: [],
+      colors: [],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["enchantment"],
+      subtypes: ["Aura"],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Test Mirage",
+      oracle: "",
+      enchant: { types: ["land"] },
+      replacements: [{ kind: "asEntersChooseBasicLandType" }],
+      statics: [{ kind: "attachedSetsLandType" }],
     },
   }),
   [TEST_ANGEL]: card(TEST_ANGEL, {
