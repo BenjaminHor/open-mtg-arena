@@ -5,7 +5,7 @@
 // one (an Aura's "you control enchanted creature") starts or stops applying, with no event of its own.
 
 import type { CardDatabase } from "../cards/types.ts";
-import { removedFromCombat } from "../combat/removed-from-combat.ts";
+import { ALL_COMBAT_ROLES, removedFromCombat } from "../combat/removed-from-combat.ts";
 import { anyControlEffects } from "../rules/control-effects.ts";
 import { layered } from "../rules/layers.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -33,7 +33,7 @@ export function recordControlChanges(before: GameState, after: GameState, cards:
     const objects = obj.controlledSinceTurnStart
       ? { ...state.objects, [id]: { ...obj, controlledSinceTurnStart: false } }
       : state.objects;
-    state = { ...state, objects, combat: removedFromCombat(state, id as ObjectId) };
+    state = { ...state, objects, combat: removedFromCombat(state, id as ObjectId, ALL_COMBAT_ROLES) };
   }
   return state;
 }

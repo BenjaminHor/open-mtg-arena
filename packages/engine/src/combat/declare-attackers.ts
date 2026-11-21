@@ -38,7 +38,7 @@ export function possibleAttacks(state: GameState, chosen: readonly Attack[], car
         .filter((d) => canAttackPlayer(state, attacker, d, cards))
         .flatMap((defender) => [
           { attacker, defender },
-          ...planeswalkersOf(defender).map((planeswalker) => ({ attacker, defender, planeswalker })),
+          ...planeswalkersOf(defender).map((attacked) => ({ attacker, defender, attacked })),
         ]),
     );
 }
@@ -54,13 +54,20 @@ export function declareAttackers(state: GameState, chosen: Attack[], cards: Card
   return { state: waitFor(state, active, { kind: "declareAttackers", chosen }), events: [] };
 }
 
-/** Why this attack can't be added, or null. */
-export function attackProblem(state: GameState, chosen: readonly Attack[], attack: Attack, cards: CardDatabase) {
-  const ok = possibleAttacks(state, chosen, cards).some(
-    (a) => a.attacker === attack.attacker && a.defender === attack.defender && a.planeswalker === attack.planeswalker,
+/**
+ * The attack as the engine lists it, if this one can be added (CR 508.1a-c), or why it can't. The engine's own copy is
+ * what's stored, not the answer as sent, so an answer can't bring in extra keys or an `undefined` (plain JSON).
+ */
+export function possibleAttack(
+  state: GameState,
+  chosen: readonly Attack[],
+  attack: Attack,
+  cards: CardDatabase,
+): Attack | string {
+  const found = possibleAttacks(state, chosen, cards).find(
+    (a) => a.attacker === attack.attacker && a.defender === attack.defender && a.attacked === attack.attacked,
   );
-  const attacked = attack.planeswalker ?? attack.defender;
-  return ok ? null : `${attack.attacker} can't attack ${attacked} (CR 508.1a-c)`;
+  return found ?? `${attack.attacker} can't attack ${attack.attacked ?? attack.defender} (CR 508.1a-c)`;
 }
 
 /**

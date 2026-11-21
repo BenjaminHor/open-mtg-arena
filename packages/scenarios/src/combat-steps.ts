@@ -72,7 +72,9 @@ function checkDivision(
     named.length !== pending.recipients.length ||
     pending.recipients.some((r) => !named.some((n) => sameTarget(n, r)))
   ) {
-    throw new Error("assign names each blocking creature (and for a trampler, the player) exactly once");
+    throw new Error(
+      "assign names each blocking creature (and for a trampler, the player or planeswalker it attacks) exactly once",
+    );
   }
   const total = step.division.reduce((sum, [, n]) => sum + n, 0);
   if (total !== pending.amount) throw new Error(`the division must add up to ${pending.amount}, not ${total}`);
@@ -116,7 +118,7 @@ function otherPlayer(state: GameState, player: PlayerId): PlayerId {
 function attackOf(state: GameState, player: PlayerId, other: PlayerId, text: string, cards: CardDatabase): Attack {
   const [attacker = text, attacked] = text.split(" -> ");
   const attack = { attacker: permanent(state, player, attacker, cards), defender: other };
-  return attacked === undefined ? attack : { ...attack, planeswalker: permanent(state, other, attacked, cards) };
+  return attacked === undefined ? attack : { ...attack, attacked: permanent(state, other, attacked, cards) };
 }
 
 /** A permanent `controller` controls, by name or reference (`Grizzly Bears#2`). */

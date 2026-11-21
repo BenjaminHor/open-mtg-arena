@@ -38,7 +38,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `combat.ts`: `canAttack` (with defender, CR 702.3b), `canAttackPlayer` ("can't attack unless defending player
   controls ...", CR 508.1c), `canBlock` (flying and reach, landwalk, "can't be blocked (except
   by ...)", "can't block": CR 702.9b, 702.17b, 702.14c, 509.1b; Pacifism's "can't attack or block", CR 508.1c),
-  `canBlockAnyNumber`, `attacksInCombat`,
+  `canBlockAnyNumber`, `attackedNow` (the player or planeswalker an attack is attacking now, null once that planeswalker
+  is removed from combat, CR 506.4c), `attacksInCombat`,
   `blocksInCombat`, `isBlocked` (CR 506.4, 508.1a, 509.1a, 509.1h), `isAttacking` and `isBlocking` (CR 508.1k,
   509.1g: a blocker stays one after its attacker is gone).
 - `costs.ts`: `costOf` (what to pay to put a spell or ability on the stack), from `totalCost` (a spell, CR 601.2f: X as

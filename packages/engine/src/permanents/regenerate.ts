@@ -21,7 +21,8 @@ export function regenerate(state: GameState, id: ObjectId): Progress {
     ...state,
     replacements: state.replacements.filter((_, i) => i !== shield),
     objects: { ...state.objects, [id]: { ...obj, damage: 0 } },
-    combat: removedFromCombat(state, id),
+    // Only as an attacking or blocking creature (CR 701.19a): a regenerated planeswalker stays attacked.
+    combat: removedFromCombat(state, id, ["attacker", "blocker"]),
   };
   const tapped = tapPermanent(healed, id);
   return { state: tapped.state, events: [...events, ...tapped.events] };

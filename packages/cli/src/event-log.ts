@@ -119,7 +119,7 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "ABILITY_RESOLVED":
       return `resolves: ${name(e.source)}'s ability`;
     case "ATTACKERS_DECLARED":
-      return `${e.player} attack: ${e.attacks.length === 0 ? "nothing" : e.attacks.map((a) => `${name(a.attacker)} -> ${a.planeswalker === undefined ? a.defender : name(a.planeswalker)}`).join(", ")}`;
+      return `${e.player} attack: ${e.attacks.length === 0 ? "nothing" : e.attacks.map((a) => `${name(a.attacker)} -> ${a.attacked === undefined ? a.defender : name(a.attacked)}`).join(", ")}`;
     case "BLOCKERS_DECLARED":
       return `${e.player} block: ${e.blocks.length === 0 ? "nothing" : e.blocks.map((b) => `${name(b.blocker)} -> ${name(b.attacker)}`).join(", ")}`;
     case "DAMAGE_DEALT":

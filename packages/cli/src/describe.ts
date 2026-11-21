@@ -26,7 +26,7 @@ export function objectText(state: GameState, id: ObjectId, cards: CardDatabase):
 
 /** What an attack was declared against: the defending player, or the planeswalker of theirs (CR 508.1b). */
 export function attackedText(state: GameState, attack: Attack, cards: CardDatabase): string {
-  return attack.planeswalker === undefined ? attack.defender : objectText(state, attack.planeswalker, cards);
+  return attack.attacked === undefined ? attack.defender : objectText(state, attack.attacked, cards);
 }
 
 export function targetText(state: GameState, target: Target, cards: CardDatabase): string {

@@ -110,5 +110,5 @@ function answerOf(action: Action | undefined): Answer | null {
 /** An attack as a step names it: the attacker, and "-> <planeswalker>" when it attacks one (CR 508.1b). */
 function attackText(state: GameState, attack: Attack, cards: CardDatabase): string {
   const attacker = local(state, attack.attacker, cards);
-  return attack.planeswalker === undefined ? attacker : `${attacker} -> ${local(state, attack.planeswalker, cards)}`;
+  return attack.attacked === undefined ? attacker : `${attacker} -> ${local(state, attack.attacked, cards)}`;
 }

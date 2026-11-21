@@ -723,7 +723,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          the player once the planeswalker is gone, CR 702.19f), damage to a planeswalker removes loyalty (CR 120.3c),
          "attacks [player] if able" isn't obeyed by attacking their planeswalker; CLI, action lines, the scenario
          `attack:` step (`Hill Giant -> Jace Beleren`) and the exporter. Neutral: every scenario, replay and golden game
-         unchanged. 7 unit tests with a test planeswalker. Next: reviews, PR.
+         unchanged. Reviews (D-108): no wrong result in the pool; regeneration removed an attacked planeswalker from
+         combat (CR 701.19a): roles are now named by every caller; damage results read types once per event (a layer
+         pass per damaged permanent made a big board's damage ~30x slower); the stored attack is the engine's own (an
+         `undefined` could get in); the field renamed `attacked` (battles later); the fuzz control-change check covers
+         the attacked role; 13 unit tests (a real control change, a trampler's excess, Alluring Siren's ruling, refused
+         attacks), the action-lines round trip. The scenario `->` step and exporter get their scenarios with Jace in
+         M2-13b. Next: PR.
        - M2-13 plan (2026-11-21, with the advisor's review): planeswalkers, three PRs. The five: Ajani Goldmane, Jace
          Beleren, Liliana Vess, Chandra Nalaar, Garruk Wildspeaker (all "Legendary Planeswalker" in today's Oracle). A
          card enters the pool only when it works completely, attacking included, so the plumbing comes first.

@@ -11,33 +11,31 @@ import type { ObjectId } from "../state/ids.ts";
 /** The parts a permanent can play in combat: attacking, blocking, or being attacked (a planeswalker, CR 506.3). */
 export type CombatRole = "attacker" | "blocker" | "attacked";
 
+/** Every role: what a change of controller removes a permanent from (CR 506.4). */
+export const ALL_COMBAT_ROLES: readonly CombatRole[] = ["attacker", "blocker", "attacked"];
+
 /**
- * Combat with `id` removed from the declarations it's in now (CR 506.4), in the roles given (all of them by default):
- * as an attacker, as a blocker, as an attacked planeswalker; unchanged if it's in none. A declaration made later (a
+ * Combat with `id` removed from the declarations it's in now (CR 506.4), in the roles given: as an attacker, as a
+ * blocker, as an attacked planeswalker; unchanged if it's in none. Each caller names the roles its rule removes: a
+ * control change removes all three, regeneration only attacking and blocking (CR 701.19a). A declaration made later (a
  * block, after it was removed as an attacker) isn't touched.
  */
-export function removedFromCombat(
-  state: GameState,
-  id: ObjectId,
-  roles: readonly CombatRole[] = ["attacker", "blocker", "attacked"],
-): GameState["combat"] {
+export function removedFromCombat(state: GameState, id: ObjectId, roles: readonly CombatRole[]): GameState["combat"] {
   const combat = state.combat;
   if (combat === null) return combat;
-  const { attackers, blockers, planeswalkers = [] } = combat.removed;
+  const { attackers, blockers, attacked = [] } = combat.removed;
   const asAttacker =
     roles.includes("attacker") && combat.attacks.some((a) => a.attacker === id) && !attackers.includes(id);
   const asBlocker = roles.includes("blocker") && combat.blocks.some((b) => b.blocker === id) && !blockers.includes(id);
   const asAttacked =
-    roles.includes("attacked") && combat.attacks.some((a) => a.planeswalker === id) && !planeswalkers.includes(id);
+    roles.includes("attacked") && combat.attacks.some((a) => a.attacked === id) && !attacked.includes(id);
   if (!asAttacker && !asBlocker && !asAttacked) return combat;
   return {
     ...combat,
     removed: {
       attackers: asAttacker ? [...attackers, id] : attackers,
       blockers: asBlocker ? [...blockers, id] : blockers,
-      ...(asAttacked || planeswalkers.length > 0
-        ? { planeswalkers: asAttacked ? [...planeswalkers, id] : planeswalkers }
-        : {}),
+      ...(asAttacked || attacked.length > 0 ? { attacked: asAttacked ? [...attacked, id] : attacked } : {}),
     },
   };
 }
@@ -51,7 +49,7 @@ export function removeTypeChangesFromCombat(state: GameState, cards: CardDatabas
   const combat = state.combat;
   if (combat === null) return state;
   const declared = [...combat.attacks.map((a) => a.attacker), ...combat.blocks.map((b) => b.blocker)];
-  const attacked = combat.attacks.flatMap((a) => (a.planeswalker === undefined ? [] : [a.planeswalker]));
+  const attacked = combat.attacks.flatMap((a) => (a.attacked === undefined ? [] : [a.attacked]));
   const isNo = (id: ObjectId, type: "creature" | "planeswalker") =>
     state.zones.battlefield.includes(id) && !cardTypesOf(state, id, cards).includes(type);
   // Each role is dropped on its own, so a permanent that stops being a creature but is still a planeswalker stays

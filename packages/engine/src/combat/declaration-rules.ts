@@ -94,7 +94,7 @@ function attackRequirements(state: GameState, attack: Attack, cards: CardDatabas
     (e) =>
       e.change.kind === "mustAttack" &&
       e.change.player === attack.defender &&
-      attack.planeswalker === undefined &&
+      attack.attacked === undefined &&
       e.affected.includes(attack.attacker),
   ).length;
   return own + effects;

@@ -149,9 +149,9 @@ function stillInCombat(state: GameState, id: ObjectId, as: "attackers" | "blocke
  * (CR 506.4c, 510.1b).
  */
 export function attackedNow(state: GameState, attack: Attack, cards: CardDatabase): Target | null {
-  const planeswalker = attack.planeswalker;
+  const planeswalker = attack.attacked;
   if (planeswalker === undefined) return { kind: "player", player: attack.defender };
-  const removed = state.combat?.removed.planeswalkers ?? [];
+  const removed = state.combat?.removed.attacked ?? [];
   const attacked =
     state.zones.battlefield.includes(planeswalker) &&
     cardTypesOf(state, planeswalker, cards).includes("planeswalker") &&

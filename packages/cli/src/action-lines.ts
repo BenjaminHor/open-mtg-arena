@@ -136,7 +136,9 @@ function answerLine(answer: Answer): string {
       return `${answer.kind} ${manaWords(answer.payment)}`;
     case "declareAttacker":
       // The attacked planeswalker last, only when there is one (CR 508.1b).
-      return `${answer.kind} ${answer.attack.attacker} ${answer.attack.defender}${answer.attack.planeswalker === undefined ? "" : ` ${answer.attack.planeswalker}`}`;
+      return [answer.kind, answer.attack.attacker, answer.attack.defender, answer.attack.attacked ?? ""]
+        .join(" ")
+        .trim();
     case "declareBlocker":
       return `${answer.kind} ${answer.block.blocker} ${answer.block.attacker}`;
     case "orderTrigger":
@@ -246,7 +248,7 @@ const ANSWERS: { [K in Answer["kind"]]: Decode<K> } = {
     attack: {
       attacker: a as ObjectId,
       defender: b as PlayerId,
-      ...(c === undefined ? {} : { planeswalker: c as ObjectId }),
+      ...(c === undefined ? {} : { attacked: c as ObjectId }),
     },
   }),
   declareBlocker: ([a, b]) => ({ kind: "declareBlocker", block: { blocker: a as ObjectId, attacker: b as ObjectId } }),

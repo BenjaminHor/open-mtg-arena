@@ -2,7 +2,7 @@
 // the event before it gets here (`pipeline/damage-replacements.ts`, CR 615); source abilities like lifelink, infect and
 // wither (CR 120.3) change its results here.
 
-import type { CardDatabase, Keyword } from "../cards/types.ts";
+import type { CardDatabase, CardType, Keyword } from "../cards/types.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { removeCounters } from "../permanents/counters.ts";
 import { markDamage } from "../permanents/damage.ts";
@@ -28,6 +28,7 @@ export function dealDamage(state: GameState, damage: readonly Damage[], cards: C
   // prevention (CR 120.8, damage-replacements.ts). A recipient can still leave between that and this, when an earlier
   // event of the same batch is performed first, so it's checked again.
   const dealt = damage.filter((d) => canBeDealtDamage(state, d.to, cards));
+  const types = (d: Damage) => (d.to.kind === "object" ? cardTypesOf(state, d.to.object, cards) : []);
   const events: GameEvent[] = dealt.map((d) => ({
     type: "DAMAGE_DEALT",
     source: d.source,
@@ -35,7 +36,9 @@ export function dealDamage(state: GameState, damage: readonly Damage[], cards: C
     amount: d.amount,
     combat: d.combat,
   }));
-  const results = dealt.reduce<Progress>((progress, d) => andThen(progress, (s) => damageResult(s, d, cards)), {
+  // Every result happens at once (CR 120.4c), so what each recipient is comes from the state before any of them; read
+  // after each one, the layer pass would run again for every damaged permanent.
+  const results = dealt.reduce<Progress>((progress, d) => andThen(progress, (s) => damageResult(s, d, types(d))), {
     state,
     events,
   });
@@ -99,13 +102,12 @@ function sourceKeywords(state: GameState, source: ObjectId, cards: CardDatabase)
  * What dealt damage does (CR 120.3, 120.4c). A permanent's results are checked one by one, not chosen by its type: a
  * creature that's also a planeswalker gets both (CR 120.3c, 120.3e).
  */
-function damageResult(state: GameState, d: Damage, cards: CardDatabase): Progress {
+function damageResult(state: GameState, d: Damage, types: readonly CardType[]): Progress {
   switch (d.to.kind) {
     case "player":
       return loseLife(state, d.to.player, d.amount);
     case "object": {
       const id = d.to.object;
-      const types = cardTypesOf(state, id, cards);
       const marked = types.includes("creature") ? markDamage(state, id, d.amount) : { state, events: [] };
       return types.includes("planeswalker")
         ? andThen(marked, (s) => removeCounters(s, id, "loyalty", d.amount))

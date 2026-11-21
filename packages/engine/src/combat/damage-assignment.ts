@@ -158,7 +158,7 @@ export function assignProblem(pending: AssignDamage, amount: number): string | n
   if (lethal === null || !lastBlocker || amount === left) return null;
   const short = [...pending.assigned, amount].some((n, i) => n < (lethal[i] ?? 0));
   return short
-    ? `the player gets damage only once every blocker has lethal damage: give this one ${left} (CR 702.19b)`
+    ? `the player or planeswalker attacked gets damage only once every blocker has lethal damage: give this one ${left} (CR 702.19b)`
     : null;
 }
 
