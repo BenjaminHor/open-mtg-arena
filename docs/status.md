@@ -538,7 +538,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          no tests of the memo itself; benchmarks time only cache hits (add a fresh-pass measure); stale reader
          comments and docs (future-rules, architecture.md, rules README); `inspect` doesn't say where a granted
          keyword came from; scenario gaps (Coat of Arms across players, Levitation not on p2's creatures, effects
-         ending at cleanup, Archdruid and auto-pay, Anthems with protection and shroud).
+         ending at cleanup, Archdruid and auto-pay, Anthems with protection and shroud). Rules review (no wrong
+         results): `jump.yaml` and `levitation.yaml` pass without the grant (try a block); CR 613.6 is built (test it
+         with a test def, drop `later:`); CR 613.7 and 205.3m are cited as built but aren't (`later:`); cite CR 611.3c;
+         Trumpet Blast cites 506.4 (its duration is 611.2a); Elvish Archdruid makes `manaAvailable` undercount X; more
+         scenarios (Jump after blocks and at cleanup, Kindled Fury after first strike, Trumpet Blast by the defender and
+         before combat, Merfolk Sovereign on an opponent's Merfolk and after blocks, Coat of Arms across players, two
+         Coats, Relentless Rats becoming lethal, Archdruid and Pikemaster only yours, Burst of Speed and a tap ability,
+         Overrun and a later creature, Glorious Charge on Black Knight, Overrun on Mist Leopard).
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).
