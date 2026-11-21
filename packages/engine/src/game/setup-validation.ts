@@ -54,6 +54,13 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       if (!Number.isSafeInteger(permanent.damage) || permanent.damage < 0) {
         problems.push(`${player.id}: damage must be 0 or more`);
       }
+      // A planeswalker set up on the battlefield never entered, so nothing gives it loyalty counters (CR 306.5b): the
+      // setup must say how many, or it would go at once (CR 704.5i). Every host sets them; none fills them in silently.
+      if (
+        cardDataByOracleId(permanent.oracleId, cards)?.printed.loyalty !== undefined &&
+        !("loyalty" in permanent.counters)
+      )
+        problems.push(`${player.id}: a planeswalker on the battlefield needs its loyalty counters (CR 306.5b)`);
       const host = permanent.attachedTo;
       if (host === undefined) continue;
       // Only an Aura or Equipment can be attached; anything else enters unattached (CR 303.4h).

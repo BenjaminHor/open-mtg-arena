@@ -5,22 +5,11 @@
 import type { AbilityDef, CardDatabase } from "../cards/types.ts";
 import type { SingleEvent } from "../pipeline/proposed.ts";
 import { abilitiesOf, stackAbilityDef } from "../rules/abilities.ts";
+import { loyaltyCost, loyaltyOf } from "../rules/loyalty.ts";
 import { mainPhaseEmptyStack } from "../rules/timing.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { activationsThisTurn } from "./activation-count.ts";
-
-/** The loyalty counters an ability's cost puts on its permanent, negative to remove; null if it isn't a loyalty ability. */
-export function loyaltyCost(def: AbilityDef): number | null {
-  const part = def.cost.find((p) => p.kind === "loyalty");
-  return part?.kind === "loyalty" ? part.amount : null;
-}
-
-/** The loyalty counters on a permanent: its loyalty on the battlefield (CR 306.5c). */
-export function loyaltyOf(state: GameState, id: ObjectId): number {
-  const obj = state.objects[id];
-  return obj?.kind === "card" ? (obj.counters.loyalty ?? 0) : 0;
-}
 
 /**
  * Why `player` can't activate this loyalty ability of `id` now, or null: only in their main phase with an empty stack,

@@ -6,10 +6,12 @@ import { describe, expect, it } from "vitest";
 import { attackDeclarationProblem } from "../../src/combat/declaration-rules.ts";
 import { removeTypeChangesFromCombat } from "../../src/combat/removed-from-combat.ts";
 import { recordControlChanges } from "../../src/game/control-changes.ts";
+import { setupProblems } from "../../src/game/setup-validation.ts";
 import {
   type Action,
   applyAction,
   attackedNow,
+  type GameSetup,
   type GameState,
   isAttacking,
   legalActions,
@@ -119,6 +121,21 @@ describe("attacking a planeswalker (CR 506.3, 508.1b)", () => {
     game = answer(game, { kind: "finishDeclaring" });
     game = passBoth(game);
     expect(loyalty(game.state, walker)).toBe(5);
+  });
+});
+
+describe("setting up a planeswalker", () => {
+  it("refuses one on the battlefield without its loyalty counters: it never entered (CR 306.5b)", () => {
+    const setup = (counters: Record<string, number>): GameSetup => ({
+      seed: 1,
+      players: [playerSetup("p1", { battlefield: [permanent(TEST_WALKER, counters)] }), playerSetup("p2")],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    expect(setupProblems(setup({}), TEST_CARDS)).toContain(
+      "p1: a planeswalker on the battlefield needs its loyalty counters (CR 306.5b)",
+    );
+    expect(setupProblems(setup({ loyalty: 0 }), TEST_CARDS)).toStrictEqual([]);
   });
 });
 

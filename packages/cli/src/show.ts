@@ -10,6 +10,7 @@ import {
   isBlocking,
   isFreeOfSummoningSickness,
   legalActions,
+  loyaltyOf,
   type ObjectId,
   type PlayerId,
 } from "@mtg/engine";
@@ -76,7 +77,7 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
     if (c.types.includes("creature") && !isFreeOfSummoningSickness(state, id, cards)) notes.push("sick");
     if (obj.damage > 0) notes.push(`${obj.damage} damage`);
     // A planeswalker's loyalty is its loyalty counters (CR 306.5c).
-    if (c.types.includes("planeswalker")) notes.push(`loyalty ${obj.counters.loyalty ?? 0}`);
+    if (c.types.includes("planeswalker")) notes.push(`loyalty ${loyaltyOf(state, id)}`);
   }
   // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
   if (isAttacking(state, id, cards)) notes.push("attacking");

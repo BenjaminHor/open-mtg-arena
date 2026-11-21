@@ -125,7 +125,15 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
     if (def.spell !== undefined && anyColor(def.spell.effects))
       problems.push(`${def.name}: mana of any color is only for a mana ability`);
+    // Entering with printed loyalty is intrinsic (CR 306.5b): `replacementsOf` adds it, so a written one would apply twice.
+    if ((def.replacements ?? []).some((r) => r.kind === "entersWithLoyalty"))
+      problems.push(`${def.name}: entersWithLoyalty is intrinsic to a planeswalker; a definition doesn't write it`);
     for (const [i, ability] of (def.abilities ?? []).entries()) {
+      // One loyalty symbol per cost (CR 107.7; several would combine, later: CR 606.5); its timing comes from it (CR 606.3).
+      const loyaltyParts = ability.cost.filter((p) => p.kind === "loyalty").length;
+      if (loyaltyParts > 1) problems.push(`${def.name} ability ${i + 1}: more than one loyalty cost`);
+      if (loyaltyParts > 0 && ability.timing !== undefined)
+        problems.push(`${def.name} ability ${i + 1}: a loyalty ability's timing comes from its cost (CR 606.3)`);
       if (anyColor(ability.effects) && (ability.targets.length > 0 || ability.cost.some((p) => p.kind !== "tap")))
         problems.push(`${def.name} ability ${i + 1}: mana of any color is only for a mana ability with a {T} cost`);
       problems.push(...targetProblems(`${def.name} ability ${i + 1}`, ability.targets, ability.effects));

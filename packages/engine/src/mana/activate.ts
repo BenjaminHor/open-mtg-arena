@@ -3,7 +3,6 @@
 
 import type { AbilityDef, CardDatabase, Color, Effect } from "../cards/types.ts";
 import { runEffect } from "../effects/run-effect.ts";
-import { loyaltyAbilityProblem } from "../game/loyalty-abilities.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
@@ -20,8 +19,7 @@ import { detectTriggers } from "../triggers/detect.ts";
 /**
  * What stops any activated ability of a permanent, mana ability or not: it works only on the battlefield (CR 113.6),
  * only its controller activates it (CR 602.2), nothing says its activated abilities can't be activated (Ice Cage,
- * CR 602.5), a {T} in its cost must be payable (CR 118.3, 602.5a), and a loyalty ability's own rules hold (CR 606.3,
- * 606.6). Mana in the cost
+ * CR 602.5), and a {T} in its cost must be payable (CR 118.3, 602.5a). Mana in the cost
  * is paid later, while the ability is put on the stack (CR 601.2g–h, 602.2b). Null if nothing stops it.
  */
 export function activationBasicsProblem(
@@ -50,12 +48,10 @@ export function activationBasicsProblem(
       case "sacrifice":
       case "sacrificeSelf":
         break;
-      case "loyalty": {
-        // Timing, once per turn, and enough counters for a negative cost (CR 606.3, 606.6).
-        const problem = loyaltyAbilityProblem(state, player, id, ability.def, cards);
-        if (problem !== null) return problem;
+      // A loyalty ability's own rules are checked with its activation (`activationProblem`): it's never a mana
+      // ability (CR 605.1a).
+      case "loyalty":
         break;
-      }
       default:
         return assertNever(part);
     }
@@ -159,7 +155,7 @@ export function resolveManaAbility(
       case "sacrificeSelf":
         throw new Error("mana abilities with sacrifice costs aren't supported yet");
       case "loyalty":
-        throw new Error("a loyalty ability isn't a mana ability here (none in the pool is, CR 605.1a)");
+        throw new Error("a loyalty ability is never a mana ability (CR 605.1a)");
       default:
         return assertNever(part);
     }

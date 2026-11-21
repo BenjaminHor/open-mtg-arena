@@ -12,6 +12,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
 import { putAbilityOnStack } from "../zones/stack-abilities.ts";
 import { nextCastingStep } from "./casting-steps.ts";
+import { loyaltyAbilityProblem } from "./loyalty-abilities.ts";
 import type { Progress } from "./progress.ts";
 
 /**
@@ -35,6 +36,9 @@ export function activationProblem(
   // "Activate only as a sorcery": the timing of a sorcery (CR 602.5d, 117.1a), as equip is (CR 702.6a).
   if (ability.def.timing === "sorcery" && !mainPhaseEmptyStack(state, player))
     return "only as a sorcery: in your main phase with an empty stack (CR 602.5d)";
+  // A loyalty ability: as a sorcery, once per turn for its permanent, and enough counters (CR 606.3, 606.6).
+  const loyalty = loyaltyAbilityProblem(state, player, source, ability.def, cards);
+  if (loyalty !== null) return loyalty;
   // {T} was checked with the basics. Whether there's anything to sacrifice isn't checked, as payability isn't (D-035):
   // a player who can't pay cancels.
   // The ability isn't on the stack yet, so its source stands in as what targets; it can target its own source.

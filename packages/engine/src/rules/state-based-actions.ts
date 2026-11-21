@@ -12,6 +12,7 @@ import { canEnchant } from "./can-enchant.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { legendRuleGroups } from "./legend-rule.ts";
+import { loyaltyOf } from "./loyalty.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
@@ -52,7 +53,7 @@ export function stateBasedActions(
     const types = cardTypesOf(state, object, cards);
     // Put into the graveyard, not destroyed (CR 704.5i): a creature planeswalker with lethal damage too goes this way,
     // once, as the legend rule does.
-    if (types.includes("planeswalker") && (obj.counters.loyalty ?? 0) <= 0) {
+    if (types.includes("planeswalker") && loyaltyOf(state, object) <= 0) {
       actions.push({ kind: "zeroLoyalty", object });
       continue;
     }

@@ -129,7 +129,8 @@ export function payCost(
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
-  // Taps first, then sacrifices: "{T}, Sacrifice this" taps it before it's gone (CR 601.2h lets the order be chosen).
+  // Loyalty counters, then taps, then sacrifices: "{T}, Sacrifice this" taps it before it's gone (CR 601.2h lets the
+  // order be chosen).
   const costs: SingleEvent[] = [
     ...(loyalty === null ? [] : [loyalty]),
     ...taps.map((object) => ({ kind: "tap", object }) as const),

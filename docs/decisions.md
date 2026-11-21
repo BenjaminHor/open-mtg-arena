@@ -1660,6 +1660,11 @@ every schema change and every change D-024 lists bumps it.
 - A planeswalker with no loyalty is put into its owner's graveyard (CR 704.5i), not destroyed, like the legend rule;
   "any target" (CR 115.4) and "target player or planeswalker" (CR 115.1) include planeswalkers. A loyalty ability is
   never a mana ability (CR 605.1a).
-- A scenario's planeswalker set up on the battlefield starts with its printed loyalty unless `counters` gives some: it
-  never entered, so nothing else would give it loyalty, and CR 704.5i would take it at once.
+- A planeswalker set up on the battlefield never entered, so nothing gives it loyalty: the engine's setup validation
+  refuses one without loyalty counters rather than filling them in, so every host (scenarios, the RPG's boards) says
+  how many. The scenario format fills in the printed loyalty when `counters` gives none, as a convenience of that
+  format only.
+- Loyalty is read in one place (`rules/loyalty.ts`); the loyalty ability check is with the rest of an activation's
+  (`activationProblem`), not with mana abilities' basics, as a loyalty ability is never a mana ability (CR 605.1a).
+  Definitions can't write `entersWithLoyalty`, two loyalty parts in one cost, or a `timing` on a loyalty ability.
 
