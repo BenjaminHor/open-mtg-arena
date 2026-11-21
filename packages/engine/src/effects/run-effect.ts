@@ -4,7 +4,7 @@
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import { addExtraTurns } from "../game/extra-turns.ts";
-import { mayPlay } from "../game/play-during-resolution.ts";
+import { mayPlayWithoutPaying } from "../game/play-during-resolution.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
@@ -314,8 +314,8 @@ export function runEffect(
         events: [],
       };
     }
-    case "mayPlay":
-      return mayPlay(state, effect, context, cards);
+    case "mayPlayWithoutPaying":
+      return mayPlayWithoutPaying(state, effect, context, cards);
     case "revealTop": {
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : revealTop(state, player, cards);

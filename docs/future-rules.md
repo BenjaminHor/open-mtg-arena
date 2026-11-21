@@ -401,12 +401,14 @@ reductions and a check against a second alternative cost (CR 118.9a) join `casti
 (`game/cast.ts`), the casting origin records a hand index (`state/casting.ts`), and cancelling puts the card back in
 the hand. *Built (M2-14g, D-124):* a cast from the top of a library while an ability resolves (`origin` "resolution"),
 a cancel putting it back on top and returning to the "you may play" choice. A card cast from a graveyard or exile
-(cascade, flashback) must go back where it came from: generalise that origin from "a library" to a zone. The check before casting
+(cascade, flashback) must go back where it came from: generalise that origin from "a library" to a zone. The origin now
+also stands for "free" and "no priority after": `withoutPayingManaCost` and `givesPriorityAfter` in `casting-steps.ts`
+are the one place each is asked, for a free cast outside a resolution (Omniscience-like) or cascade to split apart. The check before casting
 (`targetsProblem` in `castProblem`) uses the card in its zone as what targets; cast from a graveyard, a "target card in
 your graveyard" spell would count itself as a choice before it moves to the stack (CR 115.5), so exclude it there.
 
 **Casting prohibitions (M2-09c1, D-097).** Silence's `cantCastSpells` is asked by `castProblem`, after the "it's in
-your hand" check, and by `mayPlay` for a cast while something resolves (D-124). Casting from other zones must ask it
+your hand" check, and by `mayPlayWithoutPaying` for a cast while something resolves (D-124). Casting from other zones must ask it
 before any zone check; suspend (CR 702.62a) asks the same "could begin to cast" question (Silence's ruling).
 
 **Smaller rules noted while closing the coverage gaps (later: in the code).** "Another target" (CR 115.4, Arc Trail) needs targets distinct

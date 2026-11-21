@@ -743,7 +743,7 @@ export type Effect =
    * land (CR 305.2a, 305.3) or a spell, cast now while this resolves (CR 608.2g) for no mana cost (CR 118.9, X is 0,
    * CR 107.3b). Asked only if it can be played; nothing happens if it can't, or the player says no or cancels.
    */
-  | { op: "mayPlay"; of: EffectSubject; withoutPayingManaCost: true }
+  | { op: "mayPlayWithoutPaying"; of: EffectSubject }
   /**
    * "[who] shuffles" (CR 701.24a). `foundOnTop`: "then shuffle and put that card on top" (Liliana Vess), the cards found
    * left out of the shuffle (CR 701.24b) and put on top in the same event.

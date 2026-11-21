@@ -8,9 +8,10 @@ import { cantCastSpells } from "../rules/casting-prohibitions.ts";
 import { totalCost } from "../rules/costs.ts";
 import { targetSpecsOf, targetsProblem } from "../rules/targets.ts";
 import { castTimingProblem } from "../rules/timing.ts";
-import type { Casting } from "../state/casting.ts";
+import type { Casting, CastingOrigin } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { CardObject } from "../state/objects.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { castingBegins, nextCastingStep } from "./casting-steps.ts";
 import type { Progress } from "./progress.ts";
@@ -35,13 +36,28 @@ export function castProblem(state: GameState, player: PlayerId, card: ObjectId, 
   return null;
 }
 
-/** CR 601.2a: the card moves to the stack, and the cast continues with its targets and costs. */
+/** Casting a card from the player's hand. */
 export function startCast(state: GameState, player: PlayerId, card: ObjectId, cards: CardDatabase): Progress {
   const obj = state.objects[card];
-  const ps = state.players[player];
-  if (obj?.kind !== "card" || ps === undefined) throw new Error(`Can't cast ${card}`);
+  if (obj?.kind !== "card") throw new Error(`Can't cast ${card}`);
   const handIndex = zoneList(state, { zone: "hand", player }).indexOf(card);
-  // As the cast begins, before the card moves (a card cast from the top of a library would change it, CR 401.5).
+  return beginCast(state, player, card, { kind: "card", card: obj, handIndex }, cards);
+}
+
+/**
+ * CR 601.2a: the card moves to the stack, wherever `origin` says it was, and the cast continues with its targets and
+ * costs (`nextCastingStep`).
+ */
+export function beginCast(
+  state: GameState,
+  player: PlayerId,
+  card: ObjectId,
+  origin: Extract<CastingOrigin, { card: CardObject }>,
+  cards: CardDatabase,
+): Progress {
+  const ps = state.players[player];
+  if (ps === undefined) throw new Error(`No player ${player}`);
+  // As the cast begins, before the card moves (a card cast from the top of a library changes it, CR 401.5).
   const begins = castingBegins(state);
   const moved = happen(state, { kind: "moveCard", object: card, to: { zone: "stack", controller: player } }, cards);
   const change = zoneChangeOf(moved.events, card);
@@ -49,7 +65,7 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
   const casting: Casting = {
     player,
     object: change.newId,
-    origin: { kind: "card", card: obj, handIndex },
+    origin,
     poolBefore: ps.manaPool,
     tappedForMana: [],
     targetCounts: [],

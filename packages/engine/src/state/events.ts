@@ -61,7 +61,8 @@ export type GameEvent =
   | { type: "SPELL_CAST"; player: PlayerId; object: ObjectId; cardId: CardId }
   /**
    * The player cancelled a cast and it was reversed (D-035): the spell `spell` (with card id `cardId`) left the stack,
-   * the card is back in hand as `restored`, exactly the object it was before the cast, and `untapped` untapped.
+   * the card is back in hand as `restored`, exactly the object it was before the cast, or on top of the library it was
+   * cast from while something resolved (then `restored` is null, D-124), and `untapped` untapped.
    * Nothing triggers from this (CR 734.1). Other players aren't shown `restored` (D-054).
    */
   | {

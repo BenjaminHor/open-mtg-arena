@@ -24,7 +24,7 @@ export const djinnOfWishes: CardDef = {
       // "If you don't, exile it": a card played is a new object, which `exile` of "found" no longer finds (CR 400.7).
       effects: [
         { op: "revealTop", who: "you" },
-        { op: "mayPlay", of: "found", withoutPayingManaCost: true },
+        { op: "mayPlayWithoutPaying", of: "found" },
         { op: "exile", of: "found" },
       ],
     },

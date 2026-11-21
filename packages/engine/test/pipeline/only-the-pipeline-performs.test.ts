@@ -56,7 +56,7 @@ const GUARDED: Record<string, Record<string, string>> = {
   withZoneList: {
     "zones/": "the zone primitives themselves",
     "game/create-game.ts": "setting up the zones before the game begins (CR 103.1)",
-    "game/casting-steps.ts": "putting a cancelled cast back as it was (CR 734.1, D-035): it undoes events",
+    "game/cancel-casting.ts": "putting a cancelled cast back as it was (CR 734.1, D-035): it undoes events",
   },
 };
 

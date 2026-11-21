@@ -774,12 +774,17 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: casting during resolution is what cascade and "cast copies" need; Twincast/Hive Mind (M2-14h)
            don't cast. The free cast is an alternative cost (CR 118.9a: one at a time).
        - M2-14g built (2026-11-21, D-124): Djinn of Wishes (235 cards): the `removeCounters` cost, `entersWithCounters`
-         with a fixed number, the `mayPlay` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
+         with a fixed number, the `mayPlayWithoutPaying` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
          cost increases paid, no priority after, a cancel back to the library); CR 401.5's casting delay built
          (`Casting.libraryTops`), as Djinn casting the top card with Nocturnus out reaches it; `Casting.triggersBefore`
          for a cancel mid-resolution. 13 scenarios (a creature, declined, no counters and entering with three, a land
          played and refused, the opponent's turn, targets, cancelled, Fireball's increase, Silence, a cast trigger, two
-         with Nocturnus); mutants: both halves of the delay caught. 1 golden game. Next: fuzz, reviews, PR.
+         with Nocturnus); mutants: both halves of the delay caught. 1 golden game. Rules review: one wrong ruling, a
+         cancelled free cast exiled the card; it now returns to the "you may play" choice (CR 601.2, 734.1-734.2); 11
+         scenarios from it, citations fixed. Code review: no bug; a fuzz check for a held-back top (the scramble keeps
+         it), the library card kept aside counted hidden, `legalActions` tested at 0 wish counters, `cancelCasting` moved
+         to `cancel-casting.ts` with one restore, `beginCast` shared, the op renamed `mayPlayWithoutPaying`, "free" and
+         "no priority after" named apart from the origin, `hasLandPlayLeft` shared, docs. PR #80.
        - M2-14f built (2026-11-21, D-122): Telepathy and Vampire Nocturnus (234 cards). Statics read through the pass
          (`rules/revealed.ts`); the view's `revealedHand`/`revealedTop` by identity only (`playerView` takes `cards`);
          a draw from a revealed top emits `CARDS_REVEALED` first; `creaturesGet` gains `self` and `asLongAs:

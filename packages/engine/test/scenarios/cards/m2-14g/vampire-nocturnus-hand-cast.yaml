@@ -1,4 +1,4 @@
-name: Nocturnus, casting from hand and activating keep the top shown
+name: With Nocturnus out, casting from hand and activating keep the top shown, and cast reveal nothing new
 rules: [CR 401.5]
 setup:
   turn: { active: p1, step: main1 }
@@ -11,7 +11,14 @@ steps:
   - expect:
       pending: { player: p1, kind: chooseTarget }
       p1.revealedTop: Sign in Blood
-  - p1 choose: cancel
+  - p1 choose: p2
+  - p1 activate: Mountain
+  - p1 choose: { R: 1 }
+  - expect:
+      stack: [Lightning Bolt]
+      p1.revealedTop: Sign in Blood
+      events lacks: [{ type: CARDS_REVEALED }]
+  - all pass: once
   - p1 activate: Djinn of Wishes
   - expect:
       pending: { player: p1, kind: payMana }

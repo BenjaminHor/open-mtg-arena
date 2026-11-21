@@ -2,7 +2,7 @@
 // casting/target-died-does-not-resolve.yaml shows CR 608.2b with a creature that really died.
 
 import { describe, expect, it } from "vitest";
-import { cancelCasting } from "../../src/game/casting-steps.ts";
+import { cancelCasting } from "../../src/game/cancel-casting.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import type { PendingTrigger } from "../../src/state/triggers.ts";
 import { moveCard } from "../../src/zones/move-card.ts";

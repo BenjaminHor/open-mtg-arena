@@ -1899,7 +1899,7 @@ owner's answer to the D-089 open question, option (a))
   meets it isn't known from here (open question).
 
 **D-124: Playing a card while an ability resolves (M2-14g: Djinn of Wishes)** · 2026-11-21 · accepted
-- "You may play that card without paying its mana cost" is the op `mayPlay`. The controller is asked (a yes/no) only if
+- "You may play that card without paying its mana cost" is the op `mayPlayWithoutPaying`. The controller is asked (a yes/no) only if
   the card can be played: a land on their own turn with a land play left (CR 305.3, 305.2b; a land and another type
   only as a land, CR 305.9), a spell if nothing forbids casting (Silence, CR 601.3) and each "target" has a choice
   (CR 601.2c). Timing permissions don't apply (CR 608.2g; its ruling). The card was revealed, so not asking hides

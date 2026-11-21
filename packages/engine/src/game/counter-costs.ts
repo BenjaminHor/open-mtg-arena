@@ -9,7 +9,9 @@ import type { GameState } from "../state/game-state.ts";
 
 /**
  * The counters to remove for the ability being activated, as events, or "unpayable" if the source has left the
- * battlefield or no longer has them: a cost can't be paid without the resources (CR 118.3, 601.2h).
+ * battlefield or no longer has them: a cost can't be paid without the resources (CR 118.3, 601.2h). Checked again at
+ * payment as loyalty is, though no pool card can remove counters between the activation and the payment yet (its mana
+ * abilities only add mana): the activation's check (`activationBasicsProblem`) is what refuses it today.
  */
 export function counterPayments(state: GameState, cards: CardDatabase): SingleEvent[] | "unpayable" {
   const casting = state.casting;

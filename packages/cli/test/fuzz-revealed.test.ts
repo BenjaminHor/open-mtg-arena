@@ -1,11 +1,12 @@
 // The fuzzer's leak check meets revealed cards (D-122): Telepathy's hand and Vampire Nocturnus's library top are shown
 // to every player, so the scramble keeps what they are, and still changes everything else that's hidden.
 
+import { readFileSync } from "node:fs";
 import { cardDatabase } from "@mtg/cards";
 import { createGame, type GameState, type ObjectId, type OracleId } from "@mtg/engine";
-import { buildSetup, parseScenario } from "@mtg/scenarios";
+import { buildSetup, parseScenario, runScenario } from "@mtg/scenarios";
 import { describe, expect, it } from "vitest";
-import { layersMatchFreshPass, scrambleHidden, viewsLeakNothing } from "../src/fuzz/checks.ts";
+import { heldBackTopsHidden, layersMatchFreshPass, scrambleHidden, viewsLeakNothing } from "../src/fuzz/checks.ts";
 
 const cards = cardDatabase();
 
@@ -54,5 +55,26 @@ describe("the leak check with revealed cards", () => {
     expect(hand(scrambled, "p1")).not.toStrictEqual(hand(telepathy, "p1"));
     const scrambledForP1 = scrambleHidden(telepathy, "p1", cards);
     expect([...hand(scrambledForP1, "p2")].sort()).toStrictEqual([...hand(telepathy, "p2")].sort());
+  });
+});
+
+describe("a library's top held back while a spell is cast (CR 401.5)", () => {
+  it("is checked in the middle of Djinn of Wishes casting the top card with Vampire Nocturnus out", () => {
+    const yaml = readFileSync(
+      new URL("../../engine/test/scenarios/cards/m2-14g/djinn-of-wishes-nocturnus.yaml", import.meta.url),
+      "utf8",
+    );
+    const midCast: GameState[] = [];
+    const result = runScenario(yaml, cards, (state) => {
+      if (state.casting?.origin.kind === "resolution") midCast.push(state);
+      return [];
+    });
+    expect(result.problems).toStrictEqual([]);
+    expect(midCast.length).toBeGreaterThan(0);
+    for (const s of midCast) {
+      expect(s.zones.players.p1?.library[0]).not.toBe(s.casting?.libraryTops.p1);
+      expect(heldBackTopsHidden(s, s, [], cards)).toStrictEqual([]);
+      expect(viewsLeakNothing(s, s, [], cards)).toStrictEqual([]);
+    }
   });
 });
