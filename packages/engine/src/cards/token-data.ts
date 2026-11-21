@@ -23,6 +23,11 @@ export function tokenData(token: TokenDef): CardData {
       power: token.power,
       toughness: token.toughness,
     },
-    def: { name, oracle: "", ...(token.keywords === undefined ? {} : { keywords: [...token.keywords] }) },
+    def: {
+      name,
+      oracle: "",
+      ...(token.keywords === undefined ? {} : { keywords: [...token.keywords] }),
+      ...(token.statics === undefined ? {} : { statics: [...token.statics] }),
+    },
   };
 }

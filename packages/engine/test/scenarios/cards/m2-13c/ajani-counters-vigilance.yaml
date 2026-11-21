@@ -1,0 +1,27 @@
+name: Ajani Goldmane's -1 puts a +1/+1 counter on each creature you control and gives them vigilance until end of turn
+rules: [CR 122.6, CR 702.20b, CR 514.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ajani Goldmane, Grizzly Bears]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 activate: Ajani Goldmane
+    ability: 2
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.counters: { +1/+1: 1 }
+      p1:Grizzly Bears.power: 3
+      p1:Grizzly Bears.abilities contains: [vigilance]
+      p2:Hill Giant.counters: {}
+      p2:Hill Giant.abilities lacks: [vigilance]
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - expect:
+      p1:Grizzly Bears.tapped: false
+  # The counter stays; the vigilance ends with the turn.
+  - all pass: until upkeep
+  - expect:
+      p1:Grizzly Bears.counters: { +1/+1: 1 }
+      p1:Grizzly Bears.abilities lacks: [vigilance]

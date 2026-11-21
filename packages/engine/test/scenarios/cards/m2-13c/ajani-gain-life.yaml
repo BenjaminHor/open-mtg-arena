@@ -1,0 +1,13 @@
+name: Ajani Goldmane's +1 gains 2 life
+rules: [CR 606.4, CR 119.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ajani Goldmane]
+steps:
+  - p1 activate: Ajani Goldmane
+    ability: 1
+  - all pass: once
+  - expect:
+      p1.life: 22
+      p1:Ajani Goldmane.counters: { loyalty: 5 }

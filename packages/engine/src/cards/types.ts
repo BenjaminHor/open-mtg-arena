@@ -241,7 +241,7 @@ export type StaticAbilityDef =
    * characteristic-defining ability (CR 604.3), applied to its own object in layer 7a (CR 613.4a), in every zone. "You"
    * is its controller, or its owner where it has none (CR 108.4a).
    */
-  | { kind: "powerToughnessEachEqual"; to: { count: ObjectFilter } }
+  | { kind: "powerToughnessEachEqual"; to: { count: ObjectFilter } | "yourLifeTotal" }
   /**
    * "This creature can't attack unless defending player controls [filter]" (Serpent of the Endless Sea): a restriction
    * on attacking each player (CR 508.1c). The filter has no `controller`: it's the defending player's permanents.
@@ -470,9 +470,12 @@ export type TokenDef = {
   colors: Color[];
   types: CardType[];
   subtypes: string[];
-  power: number;
-  toughness: number;
+  /** `"*"` when a characteristic-defining ability in `statics` sets it (CR 208.2a, 604.3), as Ajani's Avatar's does. */
+  power: number | "*";
+  toughness: number | "*";
   keywords?: Keyword[];
+  /** The static abilities the text gives it: only a characteristic-defining one so far (CR 111.3, 604.3). */
+  statics?: StaticAbilityDef[];
 };
 
 export type Effect =

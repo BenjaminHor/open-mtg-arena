@@ -5,6 +5,7 @@ import { acidicSlime } from "./a/acidic-slime.ts";
 import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
 import { actOfTreason } from "./a/act-of-treason.ts";
 import { airElemental } from "./a/air-elemental.ts";
+import { ajaniGoldmane } from "./a/ajani-goldmane.ts";
 import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsFeather } from "./a/angels-feather.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
@@ -228,6 +229,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   acolyteOfXathrid,
   actOfTreason,
   airElemental,
+  ajaniGoldmane,
   alluringSiren,
   angelsFeather,
   angelsMercy,

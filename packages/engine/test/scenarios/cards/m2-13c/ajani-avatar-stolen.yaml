@@ -1,0 +1,32 @@
+name: Ajani's Avatar under an opponent's Mind Control has its new controller's life total, and Giant Growth adds to it
+rules: [CR 604.3, CR 109.5, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Ajani Goldmane, counters: { loyalty: 7 } }]
+  p2:
+    life: 15
+    battlefield: [Island, Island, Island, Island, Island, Forest]
+    hand: [Mind Control, Giant Growth]
+steps:
+  - p1 activate: Ajani Goldmane
+    ability: 3
+  - all pass: once
+  - expect:
+      p1:Avatar Token.power: 20
+  - all pass: until main1
+  - expect:
+      active: p2
+  - p2 cast: Mind Control
+    targets: [p1:Avatar Token]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Avatar Token.power: 15
+  - p2 cast: Giant Growth
+    targets: [p2:Avatar Token]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Avatar Token.power: 18
+      p2:Avatar Token.toughness: 18

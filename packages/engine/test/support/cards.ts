@@ -97,6 +97,8 @@ export const GROUNDED_ANTHEM = "test-grounded-anthem";
  * 7a).
  */
 export const FOREST_COUNTER = "test-forest-counter";
+/** Not a real card: "power and toughness are each equal to your life total", as Ajani Goldmane's Avatar token has. */
+export const LIFE_AVATAR = "test-life-avatar";
 /** Not a real card: "Whenever another Zombie enters, you gain 1 life", to see what an entering creature is (CR 611.2e). */
 export const ZOMBIE_WATCHER = "test-zombie-watcher";
 /** Not a real card: a black 1/1 with deathtouch (the pool's deathtouch creatures are green). */
@@ -835,6 +837,16 @@ export const TEST_CARDS: CardDatabase = {
       {
         oracle: "Forest Counter's power and toughness are each equal to the number of Forests you control.",
         statics: [{ kind: "powerToughnessEachEqual", to: { count: { subtypes: ["Forest"], controller: "you" } } }],
+      },
+    );
+  })(),
+  [LIFE_AVATAR]: (() => {
+    const body = keywordCreature(LIFE_AVATAR, "Life Avatar", [0, 0], []);
+    return withDef(
+      { ...body, printed: { ...body.printed, power: "*", toughness: "*" } },
+      {
+        oracle: "Life Avatar's power and toughness are each equal to your life total.",
+        statics: [{ kind: "powerToughnessEachEqual", to: "yourLifeTotal" }],
       },
     );
   })(),

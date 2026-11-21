@@ -74,6 +74,12 @@ type DefinesPT = Extract<StaticAbilityDef, { kind: "powerToughnessEachEqual" }>;
 function layer7a(input: LayerInputs, board: Readonly<Record<ObjectId, Layered>>, card: Layered): BasePT | null {
   const cda = card.statics.find((s): s is DefinesPT => s.kind === "powerToughnessEachEqual");
   if (cda === undefined) return null;
+  if (cda.to === "yourLifeTotal") {
+    // The kept pass now depends on the life totals (`layers.ts`).
+    input.lifeRead.read = true;
+    const life = input.life[card.controller] ?? 0;
+    return { from: "ability", power: life, toughness: life };
+  }
   const n = countOnBoard(input, board, cda.to.count, card.controller);
   return { from: "ability", power: n, toughness: n };
 }

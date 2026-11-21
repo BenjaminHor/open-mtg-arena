@@ -99,12 +99,41 @@ export type LayerInputs = {
   battlefield: GameState["zones"]["battlefield"];
   stack: GameState["zones"]["stack"];
   ruleModifiers: GameState["setup"]["ruleModifiers"];
+  /** Each player's life total, for "equal to your life total" (Ajani Goldmane's Avatar, CR 604.3). */
+  life: Readonly<Record<PlayerId, number>>;
+  /** The players record the life totals were read from: the same one means the same totals, without comparing. */
+  players: GameState["players"];
+  /** Set by layer 7a when a characteristic-defining ability reads a life total, so the pass depends on them. */
+  lifeRead: { read: boolean };
 };
 
 function inputsOf(state: GameState): LayerInputs {
   const { objects, effects } = state;
   const { battlefield, stack } = state.zones;
-  return { objects, effects, battlefield, stack, ruleModifiers: state.setup.ruleModifiers };
+  const life: Record<PlayerId, number> = {};
+  for (const p of state.turnOrder) life[p] = state.players[p]?.life ?? 0;
+  const { ruleModifiers } = state.setup;
+  return {
+    objects,
+    effects,
+    battlefield,
+    stack,
+    ruleModifiers,
+    life,
+    players: state.players,
+    lifeRead: { read: false },
+  };
+}
+
+/**
+ * Whether the life totals are the ones the pass read: the same players record, or, when that changed, the same values.
+ * Not by identity alone: mana pools live there too and change far more often, and they don't change any
+ * characteristic.
+ */
+function sameLife(state: GameState, input: LayerInputs): boolean {
+  if (state.players === input.players) return true;
+  for (const p of state.turnOrder) if (state.players[p]?.life !== input.life[p]) return false;
+  return true;
 }
 
 /**
@@ -118,7 +147,11 @@ export function layeredOf(state: GameState, id: ObjectId, cards: CardDatabase): 
   if (known !== undefined) return known;
   const obj = computed.input.objects[id];
   if (obj?.kind !== "card") return null;
+  const read = computed.input.lifeRead.read;
   const card = offBoard(computed.input, computed.board, obj, cards);
+  // One that reads a life total, when nothing on the board did, is computed again from the state's own totals: the
+  // pass's may be older, as they weren't compared until now (`lifeRead` is now set, so they will be).
+  if (!read && computed.input.lifeRead.read) return offBoard(inputsOf(state), computed.board, obj, cards);
   computed.elsewhere[id] = card;
   return card;
 }
@@ -176,9 +209,9 @@ const computedFor = new WeakMap<LayerInputs["objects"], Computed[]>();
 let last: Computed | null = null;
 
 function memo(state: GameState, cards: CardDatabase): Computed {
-  if (last !== null && last.cards === cards && hasInputs(state, last.input)) return last;
+  if (last !== null && last.cards === cards && hasInputs(state, last)) return last;
   const kept = computedFor.get(state.objects) ?? [];
-  const found = kept.find((c) => c.cards === cards && hasInputs(state, c.input));
+  const found = kept.find((c) => c.cards === cards && hasInputs(state, c));
   const computed = found ?? { input: inputsOf(state), cards, board: {}, elsewhere: {} };
   if (found === undefined) {
     computed.board = pass(computed.input, cards);
@@ -188,14 +221,19 @@ function memo(state: GameState, cards: CardDatabase): Computed {
   return computed;
 }
 
-/** Whether the state has exactly these inputs: every part of `LayerInputs`, by identity. */
-function hasInputs(state: GameState, input: LayerInputs): boolean {
+/**
+ * Whether the state has exactly the inputs this pass was computed from: every part of `LayerInputs` by identity, and
+ * the life totals by value, only if the pass read one (`lifeRead`): this runs on every characteristic read.
+ */
+function hasInputs(state: GameState, computed: Computed): boolean {
+  const input = computed.input;
   return (
     state.objects === input.objects &&
     state.effects === input.effects &&
     state.zones.battlefield === input.battlefield &&
     state.zones.stack === input.stack &&
-    state.setup.ruleModifiers === input.ruleModifiers
+    state.setup.ruleModifiers === input.ruleModifiers &&
+    (!input.lifeRead.read || sameLife(state, input))
   );
 }
 

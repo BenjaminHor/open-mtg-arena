@@ -127,6 +127,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Ajani Goldmane",
+      "slug": "ajani-goldmane",
+      "oracleId": "dfb5f660-fd8b-4b7b-934c-6a71cd182f15",
+      "layout": "normal",
+      "manaCost": "{2}{W}{W}",
+      "manaValue": 4,
+      "typeLine": "Legendary Planeswalker — Ajani",
+      "oracleText": "+1: You gain 2 life.\n−1: Put a +1/+1 counter on each creature you control. Those creatures gain vigilance until end of turn.\n−6: Create a white Avatar creature token. It has \"This token's power and toughness are each equal to your life total.\"",
+      "power": null,
+      "toughness": null,
+      "loyalty": "4",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/d/2d911053-a026-4b20-ba2d-dbcc367c1413.jpg?1783941838",
+        "large": "https://cards.scryfall.io/large/front/2/d/2d911053-a026-4b20-ba2d-dbcc367c1413.jpg?1783941838",
+        "png": "https://cards.scryfall.io/png/front/2/d/2d911053-a026-4b20-ba2d-dbcc367c1413.png?1783941838",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/d/2d911053-a026-4b20-ba2d-dbcc367c1413.jpg?1783941838"
+      },
+      "artist": "Aleksi Briclot",
+      "set": "m11",
+      "collectorNumber": "1",
+      "scryfallUri": "https://scryfall.com/card/m11/1/ajani-goldmane?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Alluring Siren",
       "slug": "alluring-siren",
       "oracleId": "5f358544-7319-4f8e-9d60-a410c4feb774",
