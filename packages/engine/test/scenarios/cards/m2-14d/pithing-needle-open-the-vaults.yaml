@@ -22,8 +22,8 @@ steps:
       events contains: [{ type: NAME_CHOSEN, player: p1, name: Gargoyle Castle }]
   - p2 choose: Gorgon Flail
   - expect:
-      p1.battlefield contains: [Pithing Needle]
-      p2.battlefield contains: [Pithing Needle]
+      p1:Pithing Needle.chosenName: Gargoyle Castle
+      p2:Pithing Needle.chosenName: Gorgon Flail
   # p2's Needle stops p1's Equipment; p1's stops p2's land's non-mana ability.
   - p1 activate: Gorgon Flail
   - expect error: illegalAction

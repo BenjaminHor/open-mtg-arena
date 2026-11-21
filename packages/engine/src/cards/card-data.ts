@@ -29,6 +29,13 @@ export function cardDataByOracleId(oracleId: string, cards: CardDatabase): CardD
  * game knows its own card database only, so that's the list (D-114).
  */
 export function cardNames(cards: CardDatabase): string[] {
-  const names = Object.values(cards).map((c) => c.printed.name);
-  return names.filter((name, i) => names.indexOf(name) === i).sort();
+  // Kept in a plain record to drop repeats in one pass: the full database (M4) has tens of thousands of names.
+  const seen: Record<string, true> = {};
+  for (const card of Object.values(cards)) seen[card.printed.name] = true;
+  return Object.keys(seen).sort();
+}
+
+/** Whether a card in the database has this name (CR 201.4), without listing them all. */
+export function isCardName(name: string, cards: CardDatabase): boolean {
+  return Object.values(cards).some((c) => c.printed.name === name);
 }

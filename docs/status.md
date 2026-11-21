@@ -749,7 +749,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          wrong ruling; the second player naming didn't see the first's name (CR 101.4b): a public `NAME_CHOSEN` event
          now; citations (who chooses: CR 614.12's example, 616.1); 4 more scenarios (unnamed cards still work, Terramorphic
          Expanse stopped and Birds not, every copy whoever controls it, Garruk), the token name refused, the Gargoyle
-         Castle half of Open the Vaults; setup tests; the CLI shows a chosen name. Next: code review, PR.
+         Castle half of Open the Vaults; setup tests; the CLI shows a chosen name. Code review: the scenario exporter
+         dropped a set-up chosen name (fixed, round-trip test); `ReplacementChoice` a union (`first` | `asEnters`, ready for
+         Convincing Mirage's land type) and the name applied in `replaceByOwnText` with the others; a `chosenName`
+         expectation; `cardNames` in one pass and `isCardName` for checks; stale pipeline docs; future-rules on the paths
+         still using `happen`. Next: PR.
        - M2-14d plan (2026-11-21, with the advisor's review), two PRs:
          - M2-14d1, Pithing Needle and the "as it enters, choose" mechanism (CR 614.12a): a replacement of its own
            text asks the player it enters under, through `happenOrAsk`'s saved choices (keyed by object and

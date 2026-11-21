@@ -197,6 +197,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `p1:Grizzly Bears.counters: { +1/+1: 2 }`: the kinds of counters it has, `{}` for none.
 - `p1:Pacifism.attachedTo: p2:Grizzly Bears`: what an Aura or Equipment is attached to, as a reference; `null` for
   nothing.
+- `p1:Pithing Needle.chosenName: Gorgon Flail`: the card name a permanent chose as it entered (CR 614.12a); `null` for none.
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, a pending decision always has a legal

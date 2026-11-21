@@ -42,6 +42,7 @@ export const EXPECTATIONS = [
   "subtypes",
   "counters",
   "attachedTo",
+  "chosenName",
   "abilities contains",
   "abilities lacks",
   "events contains",
@@ -154,6 +155,9 @@ function check(
         if (hostRef === null) return { error: "attachedTo takes a reference like p2:Grizzly Bears, or null" };
         return { value: shown, matches: host !== null && host === resolveRef(state, hostRef, cards) };
       }
+      case "chosenName":
+        // The card name it chose as it entered (Pithing Needle, CR 614.12a), or null for none.
+        return { value: obj.chosenName ?? null, matches: (obj.chosenName ?? null) === expected };
       case "abilities contains": {
         if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
         const keywords = characteristics(state, obj.id, cards).keywords;

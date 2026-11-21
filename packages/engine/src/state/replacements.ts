@@ -43,15 +43,14 @@ export type ReplacementRef =
  * A choice a player made between replacement effects, and what it was for, so a choice made for one event or damage
  * entry isn't used for another (CR 616.1).
  */
-export type ReplacementChoice = {
-  for: ChoiceFor;
-  ref: ReplacementRef;
+export type ReplacementChoice =
+  /** Which of several replacement effects applies first (CR 616.1). */
+  | { kind: "first"; for: ChoiceFor; ref: ReplacementRef }
   /**
-   * Not which applies first, but what this replacement's own choice was: "as this enters, choose a card name"
-   * (CR 614.12a, 201.4), made before it enters and kept so replacing the event again doesn't ask again.
+   * What a replacement effect's own choice was as a permanent enters: so far a card name, "as this enters, choose a
+   * card name" (CR 614.12a, 201.4). Made before it enters, and kept so replacing the event again doesn't ask again.
    */
-  name?: string;
-};
+  | { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef; chosen: string };
 
 /**
  * What a choice between replacement effects is for: the object an event affects, or one entry of a damage event (a

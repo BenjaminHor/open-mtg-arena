@@ -16,8 +16,8 @@ import { type Ask, applyReplacements, firstInApnapOrder, type Replaced } from ".
 
 /**
  * Carries out an event. All of the replacing comes first, against the state before the event, and then all of the
- * performing. An event on which a player must choose between replacement effects (CR 616.1) can't happen here: only
- * `happenOrAsk` can wait for that choice.
+ * performing. An event on which a player must choose between replacement effects (CR 616.1), or make a replacement's
+ * choice as a permanent enters (CR 614.12a), can't happen here: only `happenOrAsk` can wait for that choice.
  */
 export function happen(state: GameState, proposed: ProposedEvent, cards: CardDatabase): Progress {
   const replaced = replace(state, proposed, cards, []);
@@ -27,11 +27,12 @@ export function happen(state: GameState, proposed: ProposedEvent, cards: CardDat
 }
 
 /**
- * Carries out an event, or, when the affected player must choose which replacement effect applies first (CR 616.1),
- * performs nothing and asks: the answer queues a `resumeEvent` work item with the choices so far, and the event is replaced
- * again from the start, as nothing has happened yet. Only callers that do nothing after the event may use it (a
- * resolving effect, the combat damage step): whatever they'd do next must already be queued behind it. `only-the-
- * pipeline-performs.test.ts` lists them.
+ * Carries out an event, or, when the affected player must choose which replacement effect applies first (CR 616.1) or
+ * a permanent entering must make its choice (a card name, CR 614.12a), performs nothing and asks: the answer queues a
+ * `resumeEvent` work item with the choices so far, and the event is replaced again from the start, as nothing has
+ * happened yet. Only callers that do nothing after the event may use it (a resolving effect, the combat damage step,
+ * a permanent spell's resolving, Open the Vaults): whatever they'd do next must already be queued behind it.
+ * `only-the-pipeline-performs.test.ts` lists them.
  */
 export function happenOrAsk(
   state: GameState,

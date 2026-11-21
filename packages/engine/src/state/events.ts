@@ -87,7 +87,10 @@ export type GameEvent =
   | { type: "ABILITY_DID_NOT_RESOLVE"; object: ObjectId; source: ObjectId; reason: DidNotResolve }
   /** Every target was illegal, so the spell didn't resolve (CR 608.2b); it goes to its owner's graveyard. */
   | { type: "SPELL_DID_NOT_RESOLVE"; object: ObjectId; cardId: CardId }
-  /** A spell resolved (CR 608.1). Its card then moves to the battlefield or a graveyard (`ZONE_CHANGED`). */
+  /**
+   * A spell resolved (CR 608.1). Its card then moves to the battlefield or a graveyard (`ZONE_CHANGED`), a permanent
+   * perhaps only after a choice as it enters (`chooseName`, CR 614.12a): until then it's still on the stack.
+   */
   | { type: "SPELL_RESOLVED"; object: ObjectId; cardId: CardId; controller: PlayerId }
   /** An ability resolved and ceased to exist (CR 608.2n). */
   | { type: "ABILITY_RESOLVED"; object: ObjectId; source: ObjectId; controller: PlayerId }

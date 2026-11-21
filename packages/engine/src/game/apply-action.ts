@@ -2,7 +2,7 @@
 // decision (except `CONCEDE`, which any player in the game may send at any time, CR 104.3a), applies it, and returns
 // the new state and events. An illegal action changes nothing.
 
-import { cardNames } from "../cards/card-data.ts";
+import { isCardName } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextRecipient } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
@@ -158,7 +158,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         state: queueWork(answered, {
           kind: "resumeEvent",
           proposed,
-          choices: [...choices, { for: pending.for, ref: chosen }],
+          choices: [...choices, { kind: "first", for: pending.for, ref: chosen }],
         }),
         events: [],
       };
@@ -166,7 +166,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     case "chooseName": {
       if (answer.kind !== "chooseName") return mismatch;
       // The name of a card (CR 201.4), from the card database (D-114).
-      if (!cardNames(cards).includes(answer.name)) return error("illegalAction", `no card is named ${answer.name}`);
+      if (!isCardName(answer.name, cards)) return error("illegalAction", `no card is named ${answer.name}`);
       // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
       // Told to everyone, so a player choosing after knows it (CR 101.4b).
       const { proposed, choices } = pending.resume;
@@ -177,7 +177,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         state: queueWork(answered, {
           kind: "resumeEvent",
           proposed,
-          choices: [...choices, { for: pending.for, ref: pending.ref, name: answer.name }],
+          choices: [...choices, { kind: "asEnters", for: pending.for, ref: pending.ref, chosen: answer.name }],
         }),
         events: [{ type: "NAME_CHOSEN", player: pending.player, object, name: answer.name }],
       };

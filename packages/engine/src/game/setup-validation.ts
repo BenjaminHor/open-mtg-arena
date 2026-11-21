@@ -1,6 +1,6 @@
 // Checks a GameSetup before a game is created from it. Returns readable problems; empty means it can start.
 
-import { cardDataByOracleId, cardNames } from "../cards/card-data.ts";
+import { cardDataByOracleId, isCardName } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { MANA_TYPES } from "../state/mana.ts";
 import type { GameSetup } from "../state/setup.ts";
@@ -67,7 +67,7 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
           (r) => r.kind === "asEntersChooseName",
         );
         if (!chooses) problems.push(`${player.id}: only a permanent that chooses a card name as it enters has one`);
-        if (!cardNames(cards).includes(permanent.chosenName))
+        if (!isCardName(permanent.chosenName, cards))
           problems.push(`${player.id}: no card is named ${permanent.chosenName} (CR 201.4)`);
       }
       const host = permanent.attachedTo;

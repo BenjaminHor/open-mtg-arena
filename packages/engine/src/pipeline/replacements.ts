@@ -7,7 +7,9 @@
 // They're applied one at a time, each once (none so far could apply again to its own result; later: CR 614.5, the
 // `applied` list), and after each the others are checked against the changed event
 // (CR 616.1f). When two different ones apply, the affected player or the affected object's controller chooses which
-// first (CR 616.1): `choices` holds the choices made so far, and without one for this event the answer is to ask.
+// first (CR 616.1): `choices` holds the choices made so far, and without one for this event the answer is to ask. A
+// replacement with a choice of its own as a permanent enters, "choose a card name" (CR 614.12a, D-119), is asked the
+// same way, its answer kept in `choices` too.
 
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
 import { apnapOrder } from "../game/turn-order.ts";
@@ -58,7 +60,7 @@ export function applyReplacements(
   // Choices are for the object the event affects (`ReplacementChoice.for`).
   const object = affectedObject(event);
   const forObject = allChoices.filter((c) => c.for.kind === "object" && c.for.object === object);
-  const choices = forObject.filter((c) => c.name === undefined).map((c) => c.ref);
+  const choices = forObject.flatMap((c) => (c.kind === "first" ? [c.ref] : []));
   let replaced: Replacing = { before: [], event, after: [] };
   const applied: ReplacementRef[] = [];
   for (;;) {
@@ -88,19 +90,22 @@ export function applyReplacements(
     // A replacement that makes a choice as the permanent enters asks it before it enters (CR 614.12a), of the player it
     // enters under (its controller, CR 614.12's example, 616.1); the answer is kept with the others, so replacing
     // again finds it.
-    if (chosen.kind === "ownText" && chosen.def.kind === "asEntersChooseName") {
+    const answer = forObject.find((c) => c.kind === "asEnters" && sameReplacement(c.ref, chosen.ref));
+    const answered = answer?.kind === "asEnters" ? answer.chosen : null;
+    if (needsChoice(chosen) && answered === null) {
       const to = chosen.move.to;
-      if (object === null || to.zone !== "battlefield") throw new Error("only a permanent entering names a card");
-      const named = forObject.find((c) => c.name !== undefined && sameReplacement(c.ref, chosen.ref))?.name;
-      if (named === undefined)
-        return { kind: "chooseName", player: to.controller, for: { kind: "object", object }, ref: chosen.ref };
-      applied.push(chosen.ref);
-      replaced = { ...replaced, event: rerouted(replaced.event, { ...to, chosenName: named }) };
-      continue;
+      if (object === null || to.zone !== "battlefield")
+        throw new Error("only a permanent entering chooses as it enters");
+      return { kind: "chooseName", player: to.controller, for: { kind: "object", object }, ref: chosen.ref };
     }
     applied.push(chosen.ref);
-    replaced = replaceWith(state, chosen, replaced);
+    replaced = replaceWith(state, chosen, replaced, answered);
   }
+}
+
+/** Whether this replacement makes a choice of its own as the permanent enters (CR 614.12a). */
+function needsChoice(candidate: Candidate): candidate is Extract<Candidate, { kind: "ownText" }> {
+  return candidate.kind === "ownText" && candidate.def.kind === "asEntersChooseName";
 }
 
 /** The event so far: what earlier replacements put before and after it, and the event itself as changed. */
@@ -276,13 +281,13 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
  * where it is, but that's for an instruction carried out, not an event replaced (D-087; an open question for the
  * owner, unreachable with the pool).
  */
-function replaceWith(state: GameState, candidate: Candidate, replaced: Replacing): Replacing {
+function replaceWith(state: GameState, candidate: Candidate, replaced: Replacing, chosen: string | null): Replacing {
   switch (candidate.kind) {
     case "regeneration":
       // "Instead remove all damage marked on it and its controller taps it ... remove it from combat" (CR 701.19a).
       return { before: [], event: { kind: "regenerate", object: candidate.object }, after: [] };
     case "ownText": {
-      const own = replaceByOwnText(state, candidate.def, replaced.event, candidate.move);
+      const own = replaceByOwnText(state, candidate.def, replaced.event, candidate.move, chosen);
       return {
         before: [...replaced.before, ...own.before],
         event: own.event,
@@ -293,7 +298,13 @@ function replaceWith(state: GameState, candidate: Candidate, replaced: Replacing
 }
 
 /** The events a card's own replacement puts in place of the event. */
-function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEvent, move: Move): Replacing {
+function replaceByOwnText(
+  state: GameState,
+  def: ReplacementDef,
+  event: SingleEvent,
+  move: Move,
+  chosen: string | null,
+): Replacing {
   switch (def.kind) {
     case "entersTapped":
       if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters tapped");
@@ -327,8 +338,11 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
       const counters = { ...move.to.counters, loyalty: (move.to.counters?.loyalty ?? 0) + def.loyalty };
       return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
-    case "asEntersChooseName":
-      throw new Error("a choice as it enters is applied with its answer, in applyReplacements");
+    case "asEntersChooseName": {
+      // The name chosen before it enters (CR 614.12a), which `applyReplacements` asked for first.
+      if (move.to.zone !== "battlefield" || chosen === null) throw new Error("only a permanent entering with a name");
+      return { before: [], event: rerouted(event, { ...move.to, chosenName: chosen }), after: [] };
+    }
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":
     case "preventNoncombatDamageToAttached":
@@ -351,6 +365,8 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     }
     case "playLand":
       if (to.zone !== "battlefield") throw new Error("a land played can only be sent elsewhere on the battlefield");
+      // A played land carries only "tapped": a name chosen as it enters would be lost (no land in the pool names one).
+      if (to.chosenName !== undefined) throw new Error("a land played can't carry a chosen name yet");
       return "tapped" in to ? { ...event, tapped: true } : event;
     case "draw":
     case "dealDamage":
