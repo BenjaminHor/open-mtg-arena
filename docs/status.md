@@ -768,7 +768,15 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          prints revealed cards. 12 scenarios, unit tests (the pass re-read after a reorder with the same objects, two
          worlds for each reveal, a non-Vampire "this creature and other Vampires"); mutants: the cache key killed by the
          unit test only (a reorder in a scenario always comes with an objects change), `self` by the unit test. 2 golden
-         games. Next: fuzz, reviews, bench, PR.
+         games. Rules review: no wrong result; a top revealed only for a moment within a resolution (Diabolic Tutor
+         before its shuffle) was never announced, so every change of a revealed top now emits `CARDS_REVEALED`
+         (replacing the reveal before a draw), and Liliana Vess's shuffle-and-put-on-top is one event (CR 701.24b);
+         citations made honest (CR 701.20d, 401.6 and the casting delay `later:`); 17 more scenarios. Code review: no
+         bug, no stale pass; every characteristic read cost twice as much once a pass read a top (fixed: an identity
+         shortcut, `topsFrom`); one battlefield walk for both reveals (`revealedBy`); fuzz tests for the leak check
+         with revealed cards (killing the scramble-weakening mutants); the CLI reads reveals from `playerView`, with a
+         test; the definition check reads `asLongAs`'s filter and refuses `self` with `others`; docs. Bench within
+         noise of main; fuzz 100 clean. PR #78.
        - M2-14e built (2026-11-21, D-121): Sphinx Ambassador (232 cards): `nameCard` at resolution (the `chooseName`
          decision with `answering: resolution`), `Resolution.named`, the `notNamedThisWay` filter. 4 scenarios (a creature
          not named put under your control, the named card left, a noncreature found, declined), a test that the

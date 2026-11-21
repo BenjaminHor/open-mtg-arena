@@ -1876,7 +1876,11 @@ owner's answer to the D-089 open question, option (a))
   changes the top without a new objects record. `printedStart` moved to `rules/printed-start.ts` to be shared.
 - Measured (`pnpm bench`, alternating with main twice on one noisy machine): within noise of main everywhere, e.g.
   `applyAction.busyCombat` 28.0–29.0 µs against 27.3–28.2 µs, `randomGame` 107–125 ms against 102–143 ms. The new-top
-  check compares each library's first id after every event and reads the battlefield only when one changed.
+  check compares each library's first id after every event and reads the battlefield only when one changed. The bench's
+  decks have no Nocturnus, so it never measures a pass that read a top: the code review found every characteristic
+  read then costing twice as much (the tops compared by value each time), fixed with an identity shortcut like the
+  life totals' (`topsFrom`), measured back to the plain cost. `playerView` walks the battlefield once for both
+  reveals (`revealedBy`).
 - Not built, as nothing in the pool can cause them (future-rules): CR 401.5's delay while casting (only mana, tap,
   loyalty and sacrifice costs exist), CR 401.6's new object; and a library becoming revealed mid-action (Nocturnus
   entering) whose top then changes in the same action before a view.

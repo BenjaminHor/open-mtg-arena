@@ -3,7 +3,7 @@
 // `viewsLeakNothing` check (packages/cli/src/fuzz/checks.ts) tests that after every action of every game.
 
 import type { CardDatabase } from "../cards/types.ts";
-import { handsRevealed, libraryTopsRevealed } from "../rules/revealed.ts";
+import { revealedBy } from "../rules/revealed.ts";
 import type { Combat } from "../state/combat.ts";
 import type { PendingDecision } from "../state/decisions.ts";
 import type { ContinuousEffect } from "../state/effects.ts";
@@ -99,8 +99,7 @@ export function playerView(state: GameState, viewer: PlayerId, cards: CardDataba
     }
   }
   const players: ViewZones["players"] = {};
-  const hands = handsRevealed(state, cards);
-  const tops = libraryTopsRevealed(state, cards);
+  const { hands, tops } = revealedBy(state, cards);
   for (const p of state.turnOrder) {
     const z = state.zones.players[p];
     if (z === undefined) continue;

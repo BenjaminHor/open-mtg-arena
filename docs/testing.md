@@ -178,7 +178,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).
 - `p2.revealedHand`, `p2.revealedTop`: what another player's view shows of p2's hand or library top while an ability
-  reveals it (Telepathy, Vampire Nocturnus): the card names, sorted by name, or `null`.
+  reveals it (Telepathy, Vampire Nocturnus): the card names, sorted by name, or `null`. Read from the first other
+  player's view, which is right for what's revealed to everyone; a card only one player may look at will need an
+  "as p3" form.
 - `p1.library`, `p1.hand`, `p1.graveyard`, `p1.battlefield`: the exact list of card names, in zone order (library top
   first; graveyard oldest first, so the top is last; battlefield is the permanents p1 controls). Add ` contains` for a
   subset (`p1.hand contains: [Shock]`) or ` count` for the size (`p1.hand count: 7`).

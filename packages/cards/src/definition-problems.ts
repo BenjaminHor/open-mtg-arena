@@ -25,22 +25,22 @@ const KEYWORD_ACTIONS: readonly string[] = ["mill", "regenerate"];
  */
 const GENERIC_TERMS: readonly string[] = ["landwalk", "heal"];
 
-/** The filter a static ability has that the layer pass reads, if any (others are read by rules checks, outside it). */
-function passFilter(s: StaticAbilityDef): ObjectFilter | null {
+/** The filters a static ability has that the layer pass reads (others are read by rules checks, outside it). */
+function passFilters(s: StaticAbilityDef): ObjectFilter[] {
   switch (s.kind) {
     case "creaturesGet":
-      return s.filter;
+      return s.asLongAs === undefined ? [s.filter] : [s.filter, s.asLongAs.topOfLibrary];
     case "powerToughnessEachEqual":
-      return s.to === "yourLifeTotal" ? null : s.to.count;
+      return s.to === "yourLifeTotal" ? [] : [s.to.count];
     case "attachedGets":
-      return s.perCount ?? null;
+      return s.perCount === undefined ? [] : [s.perCount];
     case "attachedCantAttackOrBlock":
     case "attachedCantBeBlocked":
     case "attachedCantActivate":
     case "attachedDoesntUntap":
     case "attachedSetsLandType":
     case "attachedControl":
-      return null;
+      return [];
     case "cantBeBlocked":
     case "cantAttackUnlessDefenderControls":
     case "noMaximumHandSize":
@@ -55,7 +55,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
     case "cantBeCountered":
     case "plusPerSharedCreatureType":
     case "plusPerOtherSameName":
-      return null;
+      return [];
   }
 }
 
@@ -106,9 +106,12 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     // A static ability's filter is read inside the layer pass, which knows nothing of combat or a trigger (D-092).
     for (const s of def.statics ?? []) {
-      const filter = passFilter(s);
-      if (filter !== null && filterUses(filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
+      const asks = (f: ObjectFilter) => f.combat !== undefined || f.controller === "triggeringPlayer";
+      if (passFilters(s).some((filter) => filterUses(filter, asks)))
         problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
+      // "This creature and other ..." and "other ... creatures" contradict each other.
+      if (s.kind === "creaturesGet" && s.self === true && s.others === true)
+        problems.push(`${def.name}: a creaturesGet can't be both self and others`);
     }
     // A name chosen this way exists only while an effect resolves, after the targets and the trigger's event (D-121).
     const outsideResolution = [

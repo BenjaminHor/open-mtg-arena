@@ -3,29 +3,29 @@
 
 import {
   type CardDatabase,
+  cardDataByOracleId,
   characteristics,
   controllerOf,
   type GameState,
-  handsRevealed,
   isAttacking,
   isBlocking,
   isFreeOfSummoningSickness,
   legalActions,
-  libraryTopsRevealed,
   loyaltyOf,
   type ObjectId,
+  type OracleId,
   type PlayerId,
+  playerView,
 } from "@mtg/engine";
 import { nameOf, scenarioStep } from "@mtg/scenarios";
 import { manaText, objectText, targetText } from "./describe.ts";
 
 /**
- * Whether `viewer` may see the cards in `owner`'s hand: their own, or one an ability reveals (Telepathy). With no viewer
- * (debug), everything shows. The one place the CLI hides information; the engine's `playerView` (architecture.md)
- * arrives with the AI that needs it (M3).
+ * Whether `viewer` may see the cards in `owner`'s hand as they are: their own. With no viewer (debug), everything
+ * shows. What an ability reveals to everyone (Telepathy, Vampire Nocturnus) comes from the engine's `playerView`.
  */
-export function canSeeHand(state: GameState, viewer: PlayerId | null, owner: PlayerId, cards: CardDatabase): boolean {
-  return viewer === null || viewer === owner || handsRevealed(state, cards).includes(owner);
+export function canSeeHand(viewer: PlayerId | null, owner: PlayerId): boolean {
+  return viewer === null || viewer === owner;
 }
 
 export function showGame(state: GameState, cards: CardDatabase, viewer: PlayerId | null = null): string {
@@ -59,16 +59,16 @@ function playerLines(state: GameState, player: PlayerId, viewer: PlayerId | null
   lines.push(
     `    battlefield: ${permanents.length === 0 ? "(none)" : permanents.map((id) => permanentText(state, id, cards)).join(", ")}`,
   );
-  if (canSeeHand(state, viewer, player, cards) && zones.hand.length > 0) {
-    // A hand another player sees only as revealed is listed sorted: its order records when each card came (D-122).
-    const names = zones.hand.map((id) => nameOf(state, id, cards));
-    lines.push(`    hand: ${(viewer === null || viewer === player ? names : [...names].sort()).join(", ")}`);
+  // What an ability shows everyone, as the engine's view has it: the same for every viewer (D-122).
+  const shown = playerView(state, viewer ?? player, cards).zones.players[player];
+  const named = (o: OracleId) => cardDataByOracleId(o, cards)?.printed.name ?? o;
+  if (canSeeHand(viewer, player) && zones.hand.length > 0) {
+    lines.push(`    hand: ${zones.hand.map((id) => nameOf(state, id, cards)).join(", ")}`);
+  } else if (shown?.revealedHand != null && shown.revealedHand.length > 0) {
+    // Sorted by name: a revealed hand's order would show when each card came (D-122).
+    lines.push(`    hand (revealed): ${shown.revealedHand.map(named).sort().join(", ")}`);
   }
-  // A top card played revealed (Vampire Nocturnus), shown to everyone.
-  const top = zones.library[0];
-  if (top !== undefined && libraryTopsRevealed(state, cards).includes(player)) {
-    lines.push(`    library top (revealed): ${nameOf(state, top, cards)}`);
-  }
+  if (shown?.revealedTop != null) lines.push(`    library top (revealed): ${named(shown.revealedTop)}`);
   if (zones.graveyard.length > 0) {
     lines.push(`    graveyard: ${zones.graveyard.map((id) => nameOf(state, id, cards)).join(", ")}`);
   }

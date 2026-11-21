@@ -8,7 +8,7 @@ import type { CardDatabase, Keyword, ObjectFilter, StaticAbilityDef } from "../c
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
 import { attachedHostIn } from "./attachment.ts";
-import { fits } from "./filter-fit.ts";
+import { type FitContext, fits } from "./filter-fit.ts";
 import type { Layered, LayerInputs } from "./layers.ts";
 import { libraryTopOf } from "./library-top-input.ts";
 import { printedStart } from "./printed-start.ts";
@@ -241,14 +241,19 @@ export function countOnBoard(
  * finished pass, so the pass can't call it). `you` is the static ability's controller. Combat isn't one of the pass's
  * inputs (D-092), so a static can't ask about attacking or blocking; definitions are checked for that.
  */
-function fitsOnBoard(obj: CardObject, card: Layered, filter: ObjectFilter, you: PlayerId, controlled = true): boolean {
+function fitsOnBoard(obj: CardObject, card: Layered, filter: ObjectFilter, you: PlayerId): boolean {
+  return fits(inPass(obj, card, true), filter, you, null);
+}
+
+/** What a filter is checked against inside the pass, which knows nothing of combat or a resolution (D-092, D-121). */
+function inPass(obj: CardObject, card: Layered, controlled: boolean): FitContext {
   const inCombat = () => {
     throw new Error("a static ability can't ask about combat inside the layer pass (D-092)");
   };
   const namedThisWay = () => {
     throw new Error("a static ability can't ask about a name chosen while something resolves");
   };
-  return fits({ obj, card, controlled, inCombat, namedThisWay }, filter, you, null);
+  return { obj, card, controlled, inCombat, namedThisWay };
 }
 
 /**
@@ -259,5 +264,6 @@ function topOfLibraryFits(input: LayerInputs, you: PlayerId, filter: ObjectFilte
   const top = libraryTopOf(input, you);
   const obj = top === null ? undefined : input.objects[top];
   if (obj?.kind !== "card") return false;
-  return fitsOnBoard(obj, printedStart(obj, obj.owner, cards), filter, you, false);
+  // A card in a library has no controller (CR 109.4).
+  return fits(inPass(obj, printedStart(obj, obj.owner, cards), false), filter, you, null);
 }

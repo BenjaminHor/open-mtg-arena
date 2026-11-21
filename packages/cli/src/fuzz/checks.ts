@@ -7,15 +7,14 @@ import {
   eventsFor,
   type GameEvent,
   type GameState,
-  handsRevealed,
   layered,
   layeredFresh,
   layeredOf,
   layeredOfFresh,
-  libraryTopsRevealed,
   type ObjectId,
   type PlayerId,
   playerView,
+  revealedBy,
 } from "@mtg/engine";
 import { invariantProblems } from "@mtg/scenarios";
 
@@ -160,9 +159,9 @@ export function scrambleHidden(state: GameState, viewer: PlayerId, cards: CardDa
   });
   const scrambled = JSON.parse(json) as GameState;
   // Cards the viewer's own decision shows them keep what they are (D-062): only their ids and history change.
-  const tops = libraryTopsRevealed(state, cards);
+  const { hands, tops } = revealedBy(state, cards);
   const revealed = [
-    ...handsRevealed(state, cards).flatMap((p) => state.zones.players[p]?.hand ?? []),
+    ...hands.flatMap((p) => state.zones.players[p]?.hand ?? []),
     ...tops.flatMap((p) => state.zones.players[p]?.library.slice(0, 1) ?? []),
   ];
   const shown = new Set([...shownBy(state, viewer), ...revealed].flatMap((id) => renamed.get(id) ?? []));
