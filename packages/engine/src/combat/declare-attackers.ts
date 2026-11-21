@@ -8,7 +8,7 @@ import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { ProposedEvent } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
-import { canAttack } from "../rules/combat.ts";
+import { canAttack, canAttackPlayer } from "../rules/combat.ts";
 import { type Attack, newCombat } from "../state/combat.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -24,7 +24,9 @@ export function possibleAttacks(state: GameState, chosen: readonly Attack[], car
   const defenders = state.turnOrder.filter((p) => p !== active);
   return state.zones.battlefield
     .filter((id) => canAttack(state, id, active, cards) && !chosen.some((a) => a.attacker === id))
-    .flatMap((attacker) => defenders.map((defender) => ({ attacker, defender })));
+    .flatMap((attacker) =>
+      defenders.filter((d) => canAttackPlayer(state, attacker, d, cards)).map((defender) => ({ attacker, defender })),
+    );
 }
 
 /**

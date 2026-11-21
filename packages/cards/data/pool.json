@@ -3328,6 +3328,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Nightmare",
+      "slug": "nightmare",
+      "oracleId": "375932e6-1b3e-48dc-8154-9b664c3add34",
+      "layout": "normal",
+      "manaCost": "{5}{B}",
+      "manaValue": 6,
+      "typeLine": "Creature — Nightmare Horse",
+      "oracleText": "Flying (This creature can't be blocked except by creatures with flying or reach.)\nNightmare's power and toughness are each equal to the number of Swamps you control.",
+      "power": "*",
+      "toughness": "*",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Flying"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/9/192bb40a-3ecd-41eb-acee-819f3138875a.jpg?1783938297",
+        "large": "https://cards.scryfall.io/large/front/1/9/192bb40a-3ecd-41eb-acee-819f3138875a.jpg?1783938297",
+        "png": "https://cards.scryfall.io/png/front/1/9/192bb40a-3ecd-41eb-acee-819f3138875a.png?1783938297",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/9/192bb40a-3ecd-41eb-acee-819f3138875a.jpg?1783938297"
+      },
+      "artist": "Vance Kovacs",
+      "set": "ori",
+      "collectorNumber": "282",
+      "scryfallUri": "https://scryfall.com/card/ori/282/nightmare?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ornithopter",
       "slug": "ornithopter",
       "oracleId": "a3a98bc9-caa0-49b7-951c-fe4e4f54e4ba",
@@ -4087,6 +4117,34 @@
       "set": "m15",
       "collectorNumber": "280",
       "scryfallUri": "https://scryfall.com/card/m15/280/seismic-strike?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Serpent of the Endless Sea",
+      "slug": "serpent-of-the-endless-sea",
+      "oracleId": "3b954d5f-3a93-4dd9-9d60-6097594d449c",
+      "layout": "normal",
+      "manaCost": "{4}{U}",
+      "manaValue": 5,
+      "typeLine": "Creature — Serpent",
+      "oracleText": "Serpent of the Endless Sea's power and toughness are each equal to the number of Islands you control.\nThis creature can't attack unless defending player controls an Island.",
+      "power": "*",
+      "toughness": "*",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/5/f525d734-7e19-4c1e-a5c2-097b718df7c4.jpg?1783942389",
+        "large": "https://cards.scryfall.io/large/front/f/5/f525d734-7e19-4c1e-a5c2-097b718df7c4.jpg?1783942389",
+        "png": "https://cards.scryfall.io/png/front/f/5/f525d734-7e19-4c1e-a5c2-097b718df7c4.png?1783942389",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/5/f525d734-7e19-4c1e-a5c2-097b718df7c4.jpg?1783942389"
+      },
+      "artist": "Kieran Yanner",
+      "set": "m10",
+      "collectorNumber": "70",
+      "scryfallUri": "https://scryfall.com/card/m10/70/serpent-of-the-endless-sea?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

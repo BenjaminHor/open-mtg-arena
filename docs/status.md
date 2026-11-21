@@ -558,6 +558,28 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          one count for `manaAvailable` and auto pay, a payable Archdruid X and an "only yours" scenario, doc wording,
          `later: CR 602.2` on the controller pre-filter; all fixed (4feab84). Fuzz 200 + 150 clean. Merged as #50.
          Next: M2-09b.
+       - M2-09b, split in two PRs (2026-11-21). Plan for b1, characteristic-defining abilities (CR 604.3, 208.2a,
+         613.4a): Nightmare, Serpent of the Endless Sea.
+         - Printed power and toughness may be `"*"` (`printed.ts`); a card with one must have a CDA (definition check).
+         - A static ability `powerToughnessEachEqual { to: { count: filter } }` ("power and toughness are each equal to
+           the number of [filter] you control"), applied in layer 7a for its own object in every zone (CR 604.3): the
+           base is the CDA's value, else printed; 7c adds as before. "You" is the controller, or the owner elsewhere
+           (CR 108.4a, as `alone`). The count is read from the board as layers 1-6 left it (`fitsOnBoard`); a CDA's
+           filter may not read power, toughness or combat (definition check). A card outside the battlefield and the
+           stack is computed with the board, so Nightmare in hand is X/X (its ruling).
+         - `cantAttackUnlessDefenderControls { filter }` (Serpent; CR 508.1c), checked per attacker and defending player
+           in `possibleAttacks`.
+         - Scenarios: Nightmare's P/T as Swamps come and go, a nonbasic Swamp (a checkland? no: Swamp subtype only on
+           basics in the pool, so basic Swamps), 0 Swamps dies (SBA), in hand (inspect/characteristics), only yours,
+           with an anthem; Serpent can't attack without a defending Island, can with one; Serpent dies with 0 Islands.
+         - Future impact: 7b (Awakener Druid, b2) sets base P/T after 7a in timestamp order; tokens' CDAs come from
+           their creating effect (CR 604.3a); a CDA counting creatures by power would need dependency (CR 613.8).
+         - b1 built (D-094): Nightmare, Serpent of the Endless Sea; 8 scenarios in `test/scenarios/cards/m2-09b/`
+           (Nightmare growing and dying, a pump keeping it alive, in hand and graveyard; Serpent's restriction, its
+           count, and Alluring Siren), unit tests for the printed "*" and the definition checks, `inspect` showing
+           7a, the Defined P/T column of the interaction matrix, golden pool-231. 188 cards. Next: mutations, reviews,
+           fuzz, PR.
+         b2: Awakener Druid, Rise from the Grave, Stone Giant; subtypes by kind; last known characteristics snapshot.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

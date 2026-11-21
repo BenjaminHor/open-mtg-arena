@@ -118,6 +118,7 @@ import { mountain } from "./m/mountain.ts";
 import { naturalize } from "./n/naturalize.ts";
 import { naturesSpiral } from "./n/natures-spiral.ts";
 import { negate } from "./n/negate.ts";
+import { nightmare } from "./n/nightmare.ts";
 import { ornithopter } from "./o/ornithopter.ts";
 import { overrun } from "./o/overrun.ts";
 import { palaceGuard } from "./p/palace-guard.ts";
@@ -145,6 +146,7 @@ import { safePassage } from "./s/safe-passage.ts";
 import { sageOwl } from "./s/sage-owl.ts";
 import { sanguineBond } from "./s/sanguine-bond.ts";
 import { seismicStrike } from "./s/seismic-strike.ts";
+import { serpentOfTheEndlessSea } from "./s/serpent-of-the-endless-sea.ts";
 import { serraAngel } from "./s/serra-angel.ts";
 import { shatter } from "./s/shatter.ts";
 import { shivanDragon } from "./s/shivan-dragon.ts";
@@ -306,6 +308,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   naturalize,
   naturesSpiral,
   negate,
+  nightmare,
   ornithopter,
   overrun,
   palaceGuard,
@@ -333,6 +336,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   sageOwl,
   sanguineBond,
   seismicStrike,
+  serpentOfTheEndlessSea,
   serraAngel,
   shatter,
   shivanDragon,

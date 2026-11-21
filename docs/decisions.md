@@ -1366,3 +1366,19 @@ every schema change and every change D-024 lists bumps it.
   pay skips it (it pays only with 1-mana sources).
 - Golden cover credits the anthem statics as their permanent resolves (coarse: many are on noncreatures).
 
+
+**D-094: Characteristic-defining abilities in layer 7a (M2-09b1)** · 2026-11-21 · accepted
+- A printed `"*"` is kept as `"*"` in the card data (`PrintedCard.power: number | "*" | null`), not turned into a
+  number: the definition check then requires a characteristic-defining ability exactly where there's a `"*"` (CR 208.2a,
+  604.3). One that can't be determined is 0 (CR 208.2a). "1+*" waits for a card that needs it.
+- "Power and toughness are each equal to the number of [filter] you control" is a static ability,
+  `powerToughnessEachEqual`, read in layer 7a for its own object only (CR 613.4a), in every zone: a card in hand or a
+  graveyard is computed with the board, its owner being "you" (CR 108.4a). The base is 7a's value, else the printed
+  one; 7c adds to it. The count is read from the board after layers 1-6; layer 7 changes only power and toughness,
+  which no filter reads today, and the definition check refuses combat in it.
+- "Can't attack unless defending player controls [filter]" is a static restriction checked per attacker and player in
+  `possibleAttacks` (`canAttackPlayer`, CR 508.1c), so a "must attack" requirement it makes impossible is simply not
+  obeyable (CR 508.1d).
+- Scenarios can name a card in a hand or graveyard (`hand:p1:Nightmare.power`), and `inspect` shows the 7a base.
+- Future impact: 7b (Awakener Druid, M2-09b2) sets a base after 7a, in timestamp order (CR 613.7); a CDA whose count
+  reads power would need dependency order (CR 613.8); tokens' CDAs come from the effect that made them (CR 604.3a).

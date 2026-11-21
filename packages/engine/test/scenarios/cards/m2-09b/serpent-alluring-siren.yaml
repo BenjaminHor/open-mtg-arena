@@ -1,0 +1,19 @@
+name: Serpent of the Endless Sea made to attack "if able" isn't able while the defending player controls no Island
+rules: [CR 508.1c, CR 508.1d]
+setup:
+  turn: { active: p2, step: upkeep }
+  p1:
+    battlefield: [Alluring Siren]
+  p2:
+    battlefield: [Serpent of the Endless Sea, Island, Grizzly Bears]
+steps:
+  - p2 pass: once
+  - p1 activate: p1:Alluring Siren
+    targets: [p2:Serpent of the Endless Sea]
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  # The restriction makes the requirement impossible, so declaring no attackers obeys every requirement it can.
+  - p2 attack: []
+  - all pass: until main2
+  - expect:
+      p1.life: 20

@@ -33,6 +33,23 @@ export function canAttack(state: GameState, id: ObjectId, player: PlayerId, card
 }
 
 /**
+ * Whether this creature may attack this player, beyond `canAttack`: "can't attack unless defending player controls an
+ * Island" (Serpent of the Endless Sea), a restriction (CR 508.1c) checked for each player it could attack.
+ */
+export function canAttackPlayer(state: GameState, id: ObjectId, defender: PlayerId, cards: CardDatabase): boolean {
+  const attackerController = controllerOf(state, id);
+  return staticAbilitiesOf(state, id, cards).every(
+    (a) =>
+      a.kind !== "cantAttackUnlessDefenderControls" ||
+      state.zones.battlefield.some(
+        (permanent) =>
+          controllerOf(state, permanent) === defender &&
+          matchesFilter(state, permanent, a.filter, attackerController, cards),
+      ),
+  );
+}
+
+/**
  * Whether `blocker` may block `attacker` (CR 509.1a–b): an untapped creature, obeying the restrictions on it and the
  * attacker's evasion abilities, which are cumulative (CR 509.1b).
  */

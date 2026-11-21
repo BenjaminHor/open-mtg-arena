@@ -211,6 +211,9 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   creaturesGet: "enters",
   plusPerSharedCreatureType: "enters",
   plusPerOtherSameName: "enters",
+  // Coarse, like anthems: it does something wherever the card is, and its permanent's resolving shows it.
+  powerToughnessEachEqual: "enters",
+  cantAttackUnlessDefenderControls: "combat",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

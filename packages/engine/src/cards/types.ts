@@ -39,10 +39,11 @@ export type PrintedCard = {
   subtypes: string[];
   /**
    * Null when the card has no power and toughness (CR 208.1). A noncreature permanent has none even if they're
-   * printed (CR 208.3), so `characteristics()` decides whether these apply.
+   * printed (CR 208.3), so `characteristics()` decides whether these apply. `"*"`: a characteristic-defining ability
+   * sets it (CR 208.2a); the card's definition has one.
    */
-  power: number | null;
-  toughness: number | null;
+  power: number | "*" | null;
+  toughness: number | "*" | null;
 };
 
 /** The five colors (CR 105.1), by their mana symbol letters. */
@@ -175,7 +176,18 @@ export type StaticAbilityDef =
    */
   | { kind: "plusPerSharedCreatureType" }
   /** "This creature gets +1/+1 for each other creature on the battlefield named [this]" (Relentless Rats), layer 7c. */
-  | { kind: "plusPerOtherSameName" };
+  | { kind: "plusPerOtherSameName" }
+  /**
+   * "[This creature's] power and toughness are each equal to the number of [filter] you control" (Nightmare): a
+   * characteristic-defining ability (CR 604.3), applied to its own object in layer 7a (CR 613.4a), in every zone. "You"
+   * is its controller, or its owner where it has none (CR 108.4a).
+   */
+  | { kind: "powerToughnessEachEqual"; to: { count: ObjectFilter } }
+  /**
+   * "This creature can't attack unless defending player controls [filter]" (Serpent of the Endless Sea): a restriction
+   * on attacking each player (CR 508.1c). The filter has no `controller`: it's the defending player's permanents.
+   */
+  | { kind: "cantAttackUnlessDefenderControls"; filter: ObjectFilter };
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =

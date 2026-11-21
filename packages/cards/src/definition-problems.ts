@@ -8,6 +8,7 @@ import {
   type EffectSubject,
   isFixedAmount,
   type ObjectFilter,
+  type StaticAbilityDef,
   type TargetSpec,
   type TriggeredAbilityDef,
 } from "@mtg/engine";
@@ -22,6 +23,26 @@ const KEYWORD_ACTIONS: readonly string[] = ["mill", "regenerate"];
  * "Swampwalk" (CR 702.14a), and "Heal" beside "Regenerate", from its reminder text's "heal all damage on it".
  */
 const GENERIC_TERMS: readonly string[] = ["landwalk", "heal"];
+
+/** The filter a static ability has that the layer pass reads, if any (others are read by rules checks, outside it). */
+function passFilter(s: StaticAbilityDef): ObjectFilter | null {
+  switch (s.kind) {
+    case "creaturesGet":
+      return s.filter;
+    case "powerToughnessEachEqual":
+      return s.to.count;
+    case "cantBeBlocked":
+    case "cantAttackUnlessDefenderControls":
+    case "canBlockAnyNumber":
+    case "cantAttackOrBlockAlone":
+    case "attacksEachCombat":
+    case "mustBeBlockedByAllAble":
+    case "cantBeCountered":
+    case "plusPerSharedCreatureType":
+    case "plusPerOtherSameName":
+      return null;
+  }
+}
 
 /** Every disagreement between the definitions and the pool's card data, as readable messages. Empty when they agree. */
 export function definitionProblems(defs: readonly CardDef[], pool: readonly PoolCard[]): string[] {
@@ -60,10 +81,17 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (protections !== null) problems.push(protections);
     // A static ability's filter is read inside the layer pass, which knows nothing of combat or a trigger (D-092).
     for (const s of def.statics ?? []) {
-      if (s.kind !== "creaturesGet") continue;
-      if (filterUses(s.filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
+      const filter = passFilter(s);
+      if (filter !== null && filterUses(filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
         problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
     }
+    // A printed "*" is set by a characteristic-defining ability, and only a "*" is (CR 208.2a, 604.3).
+    const definesPT = (def.statics ?? []).some((s) => s.kind === "powerToughnessEachEqual");
+    if ((card.power === "*" || card.toughness === "*") !== definesPT)
+      problems.push(`${def.name}: a printed "*" needs an ability that defines it, and that ability needs a "*"`);
+    for (const s of def.statics ?? [])
+      if (s.kind === "cantAttackUnlessDefenderControls" && s.filter.controller !== undefined)
+        problems.push(`${def.name}: "defending player controls" already says whose permanents are counted`);
     if (def.spell !== undefined)
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),

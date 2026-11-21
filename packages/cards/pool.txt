@@ -121,6 +121,7 @@ Mountain
 Naturalize
 Nature's Spiral
 Negate
+Nightmare
 Ornithopter
 Overrun
 Palace Guard
@@ -148,6 +149,7 @@ Safe Passage
 Sage Owl
 Sanguine Bond
 Seismic Strike
+Serpent of the Endless Sea
 Serra Angel
 Shatter
 Shivan Dragon
