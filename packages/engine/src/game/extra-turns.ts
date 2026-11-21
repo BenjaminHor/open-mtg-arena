@@ -6,7 +6,7 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
 import type { Progress } from "./progress.ts";
-import { currentTurn, nextPlayer } from "./turn.ts";
+import { nextPlayer } from "./turn.ts";
 
 /**
  * Adds an extra turn for each player directly after the current turn, one at a time in the order given, which the
@@ -29,6 +29,6 @@ export function addExtraTurns(state: GameState, players: readonly PlayerId[]): P
 export function nextTurn(state: GameState): { player: PlayerId; extra: boolean; state: GameState } {
   const [extra, ...rest] = state.extraTurns;
   if (extra !== undefined) return { player: extra, extra: true, state: { ...state, extraTurns: rest } };
-  const from = state.regularTurnPlayer ?? currentTurn(state).activePlayer;
-  return { player: nextPlayer(state, from), extra: false, state };
+  if (state.regularTurnPlayer === null) throw new Error("No regular turn has begun yet");
+  return { player: nextPlayer(state, state.regularTurnPlayer), extra: false, state };
 }

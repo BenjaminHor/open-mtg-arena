@@ -49,6 +49,10 @@ describe("playerView (CR 400.2)", () => {
     expect(view.zones.players.p2).toStrictEqual({ librarySize: 34, handSize: 6, hand: null, graveyard: [] });
   });
 
+  it("shows the extra turns to come, which everyone saw made (CR 500.7)", () => {
+    expect(playerView({ ...state, extraTurns: ["p2", "p1"] }, "p1").extraTurns).toStrictEqual(["p2", "p1"]);
+  });
+
   it("holds exactly the objects in public zones and the viewer's own hand", () => {
     // A board with something in every zone: permanents, graveyards, exile, hands and libraries.
     const permanent = { oracleId: "grizzly-bears", tapped: false, summoningSick: false, damage: 0, counters: {} };

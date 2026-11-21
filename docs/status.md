@@ -750,7 +750,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          forth, until end of turn ending first, a turn made during an extra turn going before one waiting, Mind Control,
          summoning sickness through an opponent's extra turn, Act of Treason), a unit test for APNAP order (CR 500.7),
          stale "later:" marks and comments; a player leaving the game noted for extra turns (CR 800.4k). Fuzz 60 clean.
-         Next: code review, PR.
+         Code review: no bug, the replay hash changes checked (removing the two fields gives the old hashes); the player
+         view shows `extraTurns`, `TURN_BEGAN` says whether a turn is extra (one golden log line: "extra turn 20"),
+         `nextTurn` throws instead of falling back, architecture.md's state shape, a definition test. Next: PR.
        - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
          `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
          static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on

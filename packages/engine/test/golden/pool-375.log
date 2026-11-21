@@ -611,7 +611,7 @@ T19 p1 adds {G} (p1:Forest)
 T19 p1 taps p1:Forest for mana
 T19 p1's unspent {G} empties
 T19 p1 attack: nothing
-T20 turn 20 begins (p2)
+T20 extra turn 20 begins (p2)
 T20 untaps: p2:Island
 T20 untaps: p2:Forest#1
 T20 untaps: p2:Forest#2

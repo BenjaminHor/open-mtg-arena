@@ -499,6 +499,9 @@ describe("definitionProblems", () => {
     expect(definitionProblems([def([{ op: "mill", who: "self", amount: 2 }])], [offering])).toStrictEqual([
       "Solemn Offering: mill is for players, not objects",
     ]);
+    expect(definitionProblems([def([{ op: "extraTurn", who: "self" }])], [offering])).toStrictEqual([
+      "Solemn Offering: extraTurn is for players, not objects",
+    ]);
   });
 
   it("reports a filtered or caster-chosen discard from a hand that wasn't revealed first (D-062)", () => {

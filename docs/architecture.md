@@ -66,6 +66,8 @@ type GameState = {
 
   turn: { number: number; activePlayer: PlayerId; step: Step } | null   // null before the first turn
   turnOrder: PlayerId[]        // starts with the starting player (CR 103.1)
+  extraTurns: PlayerId[]       // extra turns to come, the next first (CR 500.7)
+  regularTurnPlayer: PlayerId | null   // whose regular turn was the most recent: the turn order's place
   players: Record<PlayerId, PlayerState>   // life, manaPool, landsPlayed, poison, lost, ...
   objects: Record<ObjectId, GameObject>    // every card/token/copy/ability object currently in a zone
   zones: Zones                             // ordered id arrays per player/zone; stack; battlefield

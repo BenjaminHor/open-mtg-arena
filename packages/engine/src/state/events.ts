@@ -41,7 +41,8 @@ export type GameEvent =
   /** A card drawn (CR 121.1), as well as its `ZONE_CHANGED`. Hidden from other players, like the card itself. */
   | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5
-  | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId }
+  /** `extra`: an extra turn (CR 500.7), for showing it as one; it can't be worked out from the state afterwards. */
+  | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId; extra: boolean }
   /** "Takes an extra turn after this one" (CR 500.7): the turn is added directly after the current one. */
   | { type: "EXTRA_TURN_ADDED"; player: PlayerId }
   /**

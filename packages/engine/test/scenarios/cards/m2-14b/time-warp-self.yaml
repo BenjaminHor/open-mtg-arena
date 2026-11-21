@@ -10,13 +10,17 @@ steps:
     targets: [p1]
     pay: auto
   - all pass: once
+  - expect:
+      events contains: [{ type: EXTRA_TURN_ADDED, player: p1 }]
   - all pass: until upkeep
   - expect:
+      events contains: [{ type: TURN_BEGAN, turn: 4, activePlayer: p1, extra: true }]
       turn: 4
       active: p1
       p1:Island.tapped: false
   - all pass: until upkeep
   - expect:
+      events contains: [{ type: TURN_BEGAN, turn: 5, activePlayer: p2, extra: false }]
       turn: 5
       active: p2
   - all pass: until upkeep

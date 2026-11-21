@@ -64,7 +64,7 @@ export function beginTurn(
     turn: { number, activePlayer: player, step: "untap" },
     regularTurnPlayer: extra ? state.regularTurnPlayer : player,
   };
-  return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player }] }, (s) =>
+  return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player, extra }] }, (s) =>
     beginStep(s, "untap", cards),
   );
 }
