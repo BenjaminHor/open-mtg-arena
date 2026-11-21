@@ -755,7 +755,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          scenario exporter couldn't replay a graveyard activation (fixed, round-trip test); "dies" no longer asks for a
          creature (CR 700.7, unit test); the activation check looks at where a card is before what it is (a hidden card's
          refusal showed its abilities; test); `leavesTheBattlefield` an exhaustive switch; the short fuzz test's timeout
-         120 s (random decks grew with the pool); a cheaper graveyard scan; stale READMEs. Next: PR.
+         120 s (random decks grew with the pool); a cheaper graveyard scan; stale READMEs. Merged as #74. Next: M2-14d,
+         "as it enters, choose" (Convincing Mirage, then Pithing Needle).
        - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
          `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the
