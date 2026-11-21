@@ -645,7 +645,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (an exhaustive switch; tapping no longer snapshots); "its controller" of a gone object from the snapshot; the
            definition check's false positive inside a condition, and `about` naming a player; citations, comments,
            docs. "Flying given after blockers does nothing" is plain evasion (CR 509.1b), already covered; not added.
-           Fuzz 200 clean. Next: bench, PR.
+           Fuzz 200 clean. Bench ok (a random game 94.5 ms: the margin to 100 is thin). Merged as #53; M2-09b is done.
+           Next: M2-09c (Act of Treason, Silence, Spellbook).
          - Future impact: the snapshot is what M2-09c's Polymorph-on-a-stolen-creature and every "dies" trigger
            reading characteristics need; tokens (M2-11) leave a snapshot too.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
