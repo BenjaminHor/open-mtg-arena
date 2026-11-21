@@ -49,6 +49,7 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "attachedCantBeBlocked":
         board[host] = { ...card, cantBeBlocked: true };
         break;
+      case "attachedControl":
       case "attachedGets":
       case "creaturesGet":
       case "plusPerSharedCreatureType":

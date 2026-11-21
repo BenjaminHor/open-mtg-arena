@@ -21,8 +21,11 @@ since M2-12b (D-103, "loses flying"); dependency (CR 613.8) waits on the open qu
 controller for a permanent, and controllers are compared after the action and each piece of work, for summoning
 sickness (CR 302.6) and removal from combat (CR 506.4). Layers 4, 5 and 7b have resolved effects
 (M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
-merged into that order (CR 613.7a), as layer 6 does since M2-12b (D-103). Layer 2 too: Mind Control's static control
-effect takes its Aura's timestamp, renewed when it's attached (CR 613.7e), against Act of Treason's. In a simultaneous batch the cards move one by one, so a Druid moving first ends
+merged into that order (CR 613.7a), as layer 6 does since M2-12b (D-103) and layer 2 since M2-12c2 (D-105: Mind
+Control's static control effect takes its Aura's timestamp, renewed when it's attached, CR 613.7e). *Watch out:*
+`anyControlEffects` reads static control abilities from printed text, kept per battlefield list (D-105); a copy effect
+starting on a permanent (layer 1), a permanent turned face up (CR 708), or a control ability granted in layer 6 would
+need it to key on the objects too, or to read the pass. In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch
 (CR 603.10a, 608.2h). "endOfGame" effects stay in `state.effects` after their object is gone; drop them once nothing
 can read them (after the last-known-information snapshot). A gone object's power is read from the snapshot taken as it left (D-096), not worked out from
@@ -180,8 +183,10 @@ prevented until damage can't be prevented (CR 615.12: then it removes counters f
 **Control-changing effects and ownership vs. control (CR 108.3, 110.2).**
 *Needs now:* code never assumes the controller is the owner. "Your" in card text means controller.
 Control is computed (layer 2), so `controlledSinceTurnStart` (CR 302.6) must reset whenever the computed
-controller changes, including when a control effect ends. A bare boolean can't see A→B→A in one turn; expect to
-replace it with a `{ player, since }` record when control-changing effects arrive.
+controller changes, including when a control effect ends. *Built (M2-12c1-2, D-104, D-105):* controllers are compared
+after the action and each piece of work, and the flag only ever resets, so A→B→A across pieces of work comes out
+sick. Still at risk: a change and its change back inside one piece of work, which nothing in the pool does; a
+`{ player, since }` record would catch it.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
 "at the beginning of the next end step". ("No maximum hand size" is built, D-097.) (First strike's second combat damage

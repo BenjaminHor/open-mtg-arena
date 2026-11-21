@@ -1,0 +1,19 @@
+name: Firebreathing on a creature stolen with Mind Control is still activated by Firebreathing's controller only
+rules: [CR 303.4e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, { card: Mind Control, attachedTo: p2:Hill Giant }]
+  p2:
+    battlefield: [Hill Giant, Mountain, { card: Firebreathing, attachedTo: p2:Hill Giant }]
+steps:
+  - expect:
+      p1.battlefield contains: [Hill Giant]
+  - p1 activate: p2:Firebreathing
+  - expect error: illegalAction
+  - p1 pass: once
+  - p2 activate: Firebreathing
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Hill Giant.power: 4

@@ -14,7 +14,7 @@ import type { ObjectId } from "../state/ids.ts";
 export function recordControlChanges(before: GameState, after: GameState, cards: CardDatabase): GameState {
   // With no control-changing effect in either state, every permanent is controlled by its stored controller (CR 110.2),
   // so nothing changed control: no need to compute either pass (measured: this runs after every piece of work).
-  if (!anyControlEffects(before) && !anyControlEffects(after)) return after;
+  if (!anyControlEffects(before, cards) && !anyControlEffects(after, cards)) return after;
   // A controller is computed from the objects, the effects and the battlefield only (layer 2, `control-effects.ts`).
   if (
     before.objects === after.objects &&

@@ -715,12 +715,23 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12c2 built (2026-11-21, D-105): Mind Control, the static `attachedControl` in the pass's layer 2 with timestamp
+         order, `anyControlEffects` counting it (215 cards); 10 scenarios in `cards/m2-12c/` (Act of Treason after it and
+         before it, two Mind Controls, destroyed while attacking and while blocking, an anthem, Equipment, the Cloak,
+         Firebreathing). Rules review: a creature removed from combat as an attacker and returned untapped could
+         block but dealt no damage (`Combat.removed` was one list): now kept by role; 12 more scenarios from its probes;
+         a unit test for a resolved control effect earlier than Mind Control. Code review: `layerTwo` built every
+         permanent's controller on every board (the pass a quarter slower): it returns nothing without a control effect;
+         an Aura's "you" is plain data; the rationale for reading the static from printed text corrected (layer 6 is after
+         layer 2), with a future-rules watch-out; the anthem scenario made uneven; a unit test of the cache. Bench equal to
+         or faster than the base. Next: PR; then M2-12c3.
        - M2-12c1 built (2026-11-21, D-104): `controllerOf(state, id, cards)` (56 calls in 31 files), layer 2 only in the
          pass, the control-change check in `advance` (CR 302.6, 506.4), the `controlChangesRecorded` fuzz check. Every
          scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`
          asking for the pass cost deepStack a fifth to a quarter (measured): both skip the pass when no control effect is
          in the game (`anyControlEffects`), and the fuzzer checks `controllerOf` agrees with the pass; the action's own
-         handler is checked too; the check moved to `game/control-changes.ts`. Bench within noise of the base. Next: PR.
+         handler is checked too; the check moved to `game/control-changes.ts`. Bench within noise of the base. Fuzz 80 clean. Merged as #62.
+         Next: M2-12c2, Mind Control.
        - M2-12c plan (2026-11-21, with the advisor's review), three PRs.
          - M2-12c1, a refactor with no new card: `controllerOf(state, id, cards)`, a battlefield permanent's controller
            read from the layer pass, which does layer 2 itself (resolved `gainControl` effects and, next, static control

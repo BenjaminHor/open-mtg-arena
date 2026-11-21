@@ -31,7 +31,7 @@ export function controllerOf(state: GameState, id: ObjectId, cards: CardDatabase
   // no control effect in the game, the pass would give the stored controller (CR 110.2), so that's read without it
   // (measured: asking for the pass here made each action a fifth slower). The fuzzer checks the two agree.
   if (zone === "battlefield") {
-    if (!anyControlEffects(state)) return obj.baseController;
+    if (!anyControlEffects(state, cards)) return obj.baseController;
     const permanent = layeredOf(state, id, cards);
     if (permanent === null) throw new Error(`No layer pass for ${id}`);
     return permanent.controller;

@@ -124,6 +124,7 @@ import { merfolkLooter } from "./m/merfolk-looter.ts";
 import { merfolkSovereign } from "./m/merfolk-sovereign.ts";
 import { mesaEnchantress } from "./m/mesa-enchantress.ts";
 import { mightOfOaks } from "./m/might-of-oaks.ts";
+import { mindControl } from "./m/mind-control.ts";
 import { mindRot } from "./m/mind-rot.ts";
 import { mindShatter } from "./m/mind-shatter.ts";
 import { mindSpring } from "./m/mind-spring.ts";
@@ -340,6 +341,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   merfolkSovereign,
   mesaEnchantress,
   mightOfOaks,
+  mindControl,
   mindRot,
   mindShatter,
   mindSpring,

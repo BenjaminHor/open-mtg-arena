@@ -4,9 +4,11 @@ import { describe, expect, it } from "vitest";
 import { endUntilEndOfTurnEffects } from "../../src/effects/continuous-effect.ts";
 import { recordControlChanges } from "../../src/game/control-changes.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
+import { anyControlEffects } from "../../src/rules/control-effects.ts";
 import { controllerOf } from "../../src/rules/controller.ts";
 import { newCombat } from "../../src/state/combat.ts";
-import { BEARS, FOREST, TEST_CARDS } from "../support/cards.ts";
+import { moveCard } from "../../src/zones/move-card.ts";
+import { BEARS, CONTROL_AURA, FOREST, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -78,7 +80,8 @@ describe("a control change (CR 302.6, 613.1b)", () => {
       effects: [first, { ...first, timestamp: 901, change: { kind: "gainControl", player: "p2" } }],
     };
     expect(controllerOf(twice, bears, TEST_CARDS)).toBe("p2");
-    expect(controllerOf({ ...twice, effects: [...twice.effects].reverse() }, bears, TEST_CARDS)).toBe("p1");
+    // Timestamps decide, not where the effects are listed (CR 613.7).
+    expect(controllerOf({ ...twice, effects: [...twice.effects].reverse() }, bears, TEST_CARDS)).toBe("p2");
     // The later one ending leaves the earlier one's player in control, not the owner.
     expect(controllerOf({ ...twice, effects: [first] }, bears, TEST_CARDS)).toBe("p1");
   });
@@ -104,6 +107,65 @@ describe("a control change (CR 302.6, 613.1b)", () => {
       combat: { ...newCombat(), attacks: [{ attacker: bears, defender: "p1" }] },
     };
     const after = recordControlChanges(attacking, stolen(attacking, bears), TEST_CARDS);
-    expect(after.combat?.removed).toStrictEqual([bears]);
+    expect(after.combat?.removed).toStrictEqual({ attackers: [bears], blockers: [] });
+  });
+
+  it("orders a static control effect by its Aura's timestamp against resolved ones, either way (CR 613.7, 613.7a)", () => {
+    const state = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: [FOREST],
+          battlefield: [{ ...permanent(CONTROL_AURA), attachedTo: { player: "p2", index: 0 } }],
+        }),
+        playerSetup("p2", { library: [FOREST], battlefield: [permanent(BEARS)] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    const [aura, bears] = state.zones.battlefield as [ObjectId, ObjectId];
+    const auraTimestamp = state.objects[aura]?.timestamp ?? 0;
+    const giveTo = (timestamp: number): GameState => ({
+      ...state,
+      effects: [
+        {
+          source: bears,
+          controller: "p2",
+          timestamp,
+          duration: "endOfTurn",
+          affected: [bears],
+          change: { kind: "gainControl", player: "p2" },
+        },
+      ],
+    });
+    expect(controllerOf(state, bears, TEST_CARDS)).toBe("p1");
+    // An earlier resolved effect loses to the Aura; a later one wins.
+    expect(controllerOf(giveTo(auraTimestamp - 1), bears, TEST_CARDS)).toBe("p1");
+    expect(controllerOf(giveTo(auraTimestamp + 1), bears, TEST_CARDS)).toBe("p2");
+  });
+
+  it("knows when any control effect is in the game, the Aura's static included, kept per battlefield list", () => {
+    const { state, bears } = bearsOfP2();
+    expect(anyControlEffects(state, TEST_CARDS)).toBe(false);
+    expect(anyControlEffects(stolen(state, bears), TEST_CARDS)).toBe(true);
+    const withAura = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: [FOREST],
+          battlefield: [{ ...permanent(CONTROL_AURA), attachedTo: { player: "p2", index: 0 } }],
+        }),
+        playerSetup("p2", { library: [FOREST], battlefield: [permanent(BEARS)] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    expect(anyControlEffects(withAura, TEST_CARDS)).toBe(true);
+    // Asked again of the same battlefield list: the kept answer.
+    expect(anyControlEffects(withAura, TEST_CARDS)).toBe(true);
+    // The Aura gone, a new battlefield list: false again.
+    const [aura] = withAura.zones.battlefield as [ObjectId];
+    const gone = moveCard(withAura, aura, { zone: "graveyard" }).state;
+    expect(anyControlEffects(gone, TEST_CARDS)).toBe(false);
   });
 });

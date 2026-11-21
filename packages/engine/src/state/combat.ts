@@ -20,10 +20,12 @@ export type Combat = {
   /** Every block declared (CR 509.1g). Empty until blockers are declared. */
   blocks: Block[];
   /**
-   * Creatures an effect removed from combat while they stayed on the battlefield: regenerated (CR 506.4, 701.19a).
-   * One that left the battlefield is out of combat anyway (`rules/combat.ts`).
+   * The declarations a creature was removed from while it stayed on the battlefield (CR 506.4): regenerated
+   * (CR 701.19a), no longer a creature, or now controlled by another player. Kept by role, so a creature removed as an
+   * attacker can still be declared as a blocker later that combat, and block (CR 509.1a). One that left the battlefield
+   * is out of combat anyway (`rules/combat.ts`).
    */
-  removed: ObjectId[];
+  removed: { attackers: ObjectId[]; blockers: ObjectId[] };
   /**
    * The attacking and blocking creatures that had first strike or double strike as the first combat damage step began,
    * when any did (CR 510.4): then that step is a first strike step and a second one follows. Null otherwise.
@@ -35,7 +37,13 @@ export type Combat = {
 
 /** Combat as the combat phase begins (CR 506.1): no attackers or blockers yet. */
 export function newCombat(): Combat {
-  return { attacks: [], blocks: [], removed: [], firstStrikers: null, secondDamageStep: false };
+  return {
+    attacks: [],
+    blocks: [],
+    removed: { attackers: [], blockers: [] },
+    firstStrikers: null,
+    secondDamageStep: false,
+  };
 }
 
 /**

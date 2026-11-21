@@ -1,0 +1,27 @@
+name: A stolen attacker returned to its owner after it's blocked leaves combat, so no damage is dealt either way
+rules: [CR 510.1d, CR 506.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Mind Control, attachedTo: p2:Hill Giant }]
+  p2:
+    battlefield: [Hill Giant, Grizzly Bears, Forest, Forest]
+    hand: [Naturalize]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Hill Giant }
+  - p1 pass: once
+  - p2 cast: Naturalize
+    targets: [p1:Mind Control]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Hill Giant, Grizzly Bears]
+  - all pass: until main2
+  - expect:
+      p2.life: 20
+      p2:Hill Giant.damage: 0
+      p2:Grizzly Bears.damage: 0
+      p2.battlefield contains: [Hill Giant, Grizzly Bears]

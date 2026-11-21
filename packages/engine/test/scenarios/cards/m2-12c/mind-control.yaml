@@ -1,0 +1,29 @@
+name: Mind Control gives its controller the creature it enchants, summoning sick until their next turn
+rules: [CR 613.1b, CR 303.4e, CR 302.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Mind Control]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Mind Control
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Hill Giant, Mind Control]
+      p2.battlefield: []
+      p1:Hill Giant.sick: true
+  # With only a summoning-sick creature, p1 has no attack to declare this turn.
+  - all pass: until combat.declareAttackers
+  - expect:
+      pending: { player: p1, kind: priority }
+  - all pass: until main1
+  - all pass: until main1
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: until main2
+  - expect:
+      p2.life: 17

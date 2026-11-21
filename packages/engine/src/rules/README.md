@@ -19,8 +19,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   null once that object has left (CR 303.4b, 400.7); `attachmentsOf`; `enchantFilterOf` and `isAura` (CR 702.5a, 303.4).
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
   `matchesFilter` and the pass.
-- `control-effects.ts`: `controlFromEffects`, layer 2 from resolved effects (Act of Treason, CR 613.1b, D-098), read
-  only by the layer pass (D-104).
+- `control-effects.ts`: `layerTwo`, layer 2: resolved control effects (Act of Treason, D-098) and static ones (Mind
+  Control, D-105) in timestamp order, read only by the layer pass (D-104); `anyControlEffects`, whether there's any.
 - `abilities.ts`: `keywordsOf` and `staticAbilitiesOf` (layer 6: printed and granted); `findAbility` (by its ref); `stackAbilityDef` (an ability on the stack, from its source's
   card, CR 113.7a); `abilitiesOf(state, id, cards)`: an object's activated abilities with their refs (printed, then a basic
   land type's intrinsic mana ability, CR 305.6); `isManaAbility` (CR 605.1a).

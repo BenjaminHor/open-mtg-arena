@@ -1559,3 +1559,21 @@ every schema change and every change D-024 lists bumps it.
   (CR 506.4) is new but unreachable until a control effect can happen in combat (Mind Control destroyed mid-combat,
   M2-12c2). D-098's refusal of a "for as long as" `gainControl` can now be lifted, as its ending is noticed too; no
   card asks for it yet.
+
+**D-105: Static control effects (Mind Control, M2-12c2)** · 2026-11-21 · accepted
+- "You control enchanted creature" is the static `attachedControl`, applied in layer 2 (`layerTwo`, `rules/control-effects.ts`)
+  to what its Aura is attached to now, "you" being the Aura's controller as layer 2 has it so far, with the Aura's
+  timestamp (CR 613.7a, renewed on attach, 613.7e). Resolved control effects and static ones apply in one timestamp
+  order: Act of Treason after Mind Control wins until it ends; of two Mind Controls the later wins.
+- Whether a permanent has one is read from its printed text. Layer 6's ability-removing effects apply after layer 2
+  (CR 613.1), so they can't undo one; a copy effect starting on a permanent, a permanent turned face up, or the ability
+  granted in layer 6 could, and none is in the pool (future-rules). `anyControlEffects` counts these permanents too, kept per battlefield list, so
+  the fast paths of D-104 stay right.
+- `layerTwo` returns nothing when there's no control effect, so a board without one pays nothing for it (measured: the
+  pass was a quarter slower building every permanent's controller). An Aura's "you" is a plain-data recipient
+  (`auraController`), read when the effect applies.
+- Mind Control leaving mid-combat gives the creature back, removed from combat and summoning sick (CR 506.4, 302.6),
+  through D-104's one check. The rules review found the creature, untapped (vigilance), could then block for its owner
+  but dealt and took no damage: `Combat.removed` was one list of creatures "out for good". It's now kept by role
+  (`{ attackers, blockers }`): removal takes a creature out of the declarations it's in, and a block declared after
+  that is a new one (CR 506.4, 509.1a).

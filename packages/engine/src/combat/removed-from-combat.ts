@@ -1,18 +1,30 @@
-// Leaving combat while staying on the battlefield (CR 506.4): a permanent that's regenerated, or that stops being a
-// creature, is removed from combat, for good. It's recorded in `Combat.removed` as it happens, so becoming a creature
-// again later doesn't bring it back.
+// Leaving combat while staying on the battlefield (CR 506.4): a permanent that's regenerated, stops being a creature, or
+// changes controller is removed from the declarations it's in, for good. It's recorded in `Combat.removed` as it
+// happens, so becoming a creature again later doesn't bring it back; a block declared after that is a new declaration.
 
 import type { CardDatabase } from "../cards/types.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
-/** Combat with `id` removed from it, if it's attacking or blocking (CR 506.4); unchanged otherwise. */
+/**
+ * Combat with `id` removed from the declarations it's in now (CR 506.4): as an attacker, as a blocker, or both; unchanged
+ * if it's in none. A declaration made later (a block, after it was removed as an attacker) isn't touched.
+ */
 export function removedFromCombat(state: GameState, id: ObjectId): GameState["combat"] {
   const combat = state.combat;
-  if (combat === null || combat.removed.includes(id)) return combat;
-  const inCombat = combat.attacks.some((a) => a.attacker === id) || combat.blocks.some((b) => b.blocker === id);
-  return inCombat ? { ...combat, removed: [...combat.removed, id] } : combat;
+  if (combat === null) return combat;
+  const { attackers, blockers } = combat.removed;
+  const asAttacker = combat.attacks.some((a) => a.attacker === id) && !attackers.includes(id);
+  const asBlocker = combat.blocks.some((b) => b.blocker === id) && !blockers.includes(id);
+  if (!asAttacker && !asBlocker) return combat;
+  return {
+    ...combat,
+    removed: {
+      attackers: asAttacker ? [...attackers, id] : attackers,
+      blockers: asBlocker ? [...blockers, id] : blockers,
+    },
+  };
 }
 
 /**
@@ -28,10 +40,11 @@ export function removeNoncreaturesFromCombat(state: GameState, cards: CardDataba
   const stopped = declared.filter(
     (id, i) =>
       declared.indexOf(id) === i &&
-      !combat.removed.includes(id) &&
       state.zones.battlefield.includes(id) &&
       !cardTypesOf(state, id, cards).includes("creature"),
   );
   if (stopped.length === 0) return state;
-  return { ...state, combat: { ...combat, removed: [...combat.removed, ...stopped] } };
+  let next: GameState = state;
+  for (const id of stopped) next = { ...next, combat: removedFromCombat(next, id) };
+  return next.combat === combat ? state : next;
 }
