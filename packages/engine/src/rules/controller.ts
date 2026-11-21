@@ -11,8 +11,8 @@ import { zoneOf } from "../zones/zone-list.ts";
  */
 export function controllerNowOrLastKnown(state: GameState, id: ObjectId): PlayerId | null {
   if (state.objects[id] !== undefined) return controllerOf(state, id);
-  // Last known information keeps the card as it left; control-changing effects will need its controller then (layer 2).
-  return state.lastKnown[id]?.baseController ?? null;
+  // As it last existed, computed (layer 2 included) as it left (CR 608.2h); the stored controller if no snapshot was kept.
+  return state.lastKnownCharacteristics[id]?.controller ?? state.lastKnown[id]?.baseController ?? null;
 }
 
 /**

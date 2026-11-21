@@ -75,6 +75,7 @@ type GameState = {
   delayedTriggers: DelayedTrigger[]
   pendingTriggers: PendingTrigger[] // triggered, waiting to be put on the stack (CR 603.3)
   lastKnown: Record<ObjectId, CardObject> // cards as they last were on the battlefield (CR 608.2h), until the stack empties
+  lastKnownCharacteristics: Record<ObjectId, LastKnownCharacteristics> // and their computed characteristics, snapshotted as they left (D-096)
   turnHistory: TurnHistory          // facts later rules ask about, emptied each turn (activations, D-078; later "a creature died this turn")
 
   pregame: Pregame | null          // choosing the starting player and mulligans (CR 103), before turn 1

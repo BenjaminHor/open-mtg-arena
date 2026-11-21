@@ -300,6 +300,26 @@ describe("definitionProblems", () => {
     expect(definitionProblems([changed(false)], [giant])).toStrictEqual([
       'Stone Giant: "remembered" is only for a delayed triggered ability',
     ]);
+    // Inside a condition it's still a delayed ability's own word, not the condition's.
+    const conditional: CardDef = {
+      ...real,
+      abilities: (real.abilities ?? []).map((a) => ({
+        ...a,
+        effects: [{ op: "ifActivatedThisTurn", atLeast: 1, effects: a.effects }],
+      })),
+    };
+    expect(definitionProblems([conditional], [giant]).filter((p) => p.includes("remembered"))).toStrictEqual([]);
+    // Remembering a player names no creature.
+    const player: CardDef = {
+      ...real,
+      abilities: (real.abilities ?? []).map((a) => ({
+        ...a,
+        effects: a.effects.map((e) => (e.op === "createDelayedTrigger" ? { ...e, about: "you" } : e)),
+      })),
+    };
+    expect(definitionProblems([player], [giant])).toContain(
+      "Stone Giant ability 1: createDelayedTrigger acts on objects, not players",
+    );
   });
 
   it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {

@@ -98,6 +98,9 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
       );
+    // "This creature's power" needs a source on the battlefield: a spell has none.
+    if (def.spell?.targets.some((t) => t.kind === "permanent" && t.toughnessBelowSourcePower === true))
+      problems.push(`${def.name}: toughnessBelowSourcePower is only for a permanent's ability`);
     // "Spend only black mana on X" needs an {X} to restrict.
     if (def.spell?.xPaidWith !== undefined && !card.manaCost.includes("{X}"))
       problems.push(`${def.name}: xPaidWith restricts paying X, but the mana cost has no {X}`);
@@ -151,8 +154,13 @@ function triggerProblems(where: string, trigger: TriggeredAbilityDef): string[] 
  * CR 603.7c): anywhere else it would name nothing.
  */
 function rememberedProblems(def: CardDef): string[] {
-  // Any subject field can hold it, so the effects are searched as written, as JSON.
-  const uses = (effects: readonly Effect[]) => JSON.stringify(effects).includes('"remembered"');
+  // Any subject field can hold it, so each effect is searched as written, as JSON, without the effects nested in it
+  // (a condition's, a delayed ability's), which are checked as their own.
+  const own = (e: Effect) => {
+    const { effects: _nested, ability: _delayed, ...fields } = e as Effect & { effects?: unknown; ability?: unknown };
+    return JSON.stringify(fields).includes('"remembered"');
+  };
+  const uses = (effects: readonly Effect[]) => flatEffects(effects).some(own);
   const lists = [
     def.spell?.effects ?? [],
     ...(def.abilities ?? []).map((a) => a.effects),
@@ -161,8 +169,7 @@ function rememberedProblems(def: CardDef): string[] {
   const problems: string[] = [];
   for (const effects of lists) {
     const makers = flatEffects(effects).filter((e) => e.op === "createDelayedTrigger");
-    const own = flatEffects(effects).filter((e) => e.op !== "createDelayedTrigger");
-    if (uses(own)) problems.push(`${def.name}: "remembered" is only for a delayed triggered ability`);
+    if (uses(effects)) problems.push(`${def.name}: "remembered" is only for a delayed triggered ability`);
     for (const maker of makers)
       if (maker.op === "createDelayedTrigger" && maker.about === undefined && uses(maker.ability.effects))
         problems.push(`${def.name}: a delayed ability that says "that creature" needs its maker's \`about\``);
@@ -254,6 +261,8 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   reveal: (e) => (e as { of: EffectSubject }).of,
   put: (e) => (e as { of: EffectSubject }).of,
   regenerate: (e) => (e as { of: EffectSubject }).of,
+  // What a delayed ability's "that creature" remembers; "self" if it names nothing, which is an object.
+  createDelayedTrigger: (e) => (e as { about?: EffectSubject }).about ?? "self",
 };
 
 /** Ops that act on players, and the subject each names them with. */

@@ -35,9 +35,10 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
 }
 
 /**
- * The computed characteristics of each permanent the event is about, taken before any of it happens: what a permanent
- * that leaves was as it last existed (CR 608.2h), all of a simultaneous batch from the same moment (CR 603.10a), so an
- * Awakener Druid leaving first doesn't make its Forest leave as a mere land.
+ * The computed characteristics of each permanent the event may move off the battlefield, taken before any of it
+ * happens: what a permanent that leaves was as it last existed (CR 608.2h), all of a simultaneous batch from the same
+ * moment (state-based actions too, CR 704.8), so an Awakener Druid leaving first doesn't make its Forest leave as a
+ * mere land.
  */
 function snapshots(
   state: GameState,
@@ -45,11 +46,38 @@ function snapshots(
   cards: CardDatabase,
 ): Record<ObjectId, LastKnownCharacteristics> {
   const events = event.kind === "simultaneous" ? event.events : [event];
-  const ids = events.flatMap((e) => ("object" in e && state.zones.battlefield.includes(e.object) ? [e.object] : []));
-  return Object.fromEntries(ids.map((id) => [id, known(characteristics(state, id, cards))]));
+  const ids = events.flatMap(leavingObjects).filter((id) => state.zones.battlefield.includes(id));
+  return Object.fromEntries(ids.map((id) => [id, lastKnownOf(characteristics(state, id, cards))]));
 }
 
-function known(c: Characteristics): LastKnownCharacteristics {
+/** The objects an event may move off the battlefield; each new kind of event says whether it does. */
+function leavingObjects(event: SingleEvent): ObjectId[] {
+  switch (event.kind) {
+    case "moveCard":
+    case "destroy":
+    case "sacrifice":
+      return [event.object];
+    // A spell countered or a card discarded isn't a permanent; a land played comes onto the battlefield.
+    case "counterObject":
+    case "discard":
+    case "playLand":
+    case "regenerate":
+    case "damagePrevented":
+    case "dealDamage":
+    case "reveal":
+    case "reorderLibrary":
+    case "tap":
+    case "untap":
+    case "gainLife":
+    case "loseLife":
+    case "addMana":
+    case "draw":
+    case "shuffle":
+      return [];
+  }
+}
+
+function lastKnownOf(c: Characteristics): LastKnownCharacteristics {
   const { controller, power, toughness } = c;
   return { controller, types: [...c.types], subtypes: [...c.subtypes], colors: [...c.colors], power, toughness };
 }

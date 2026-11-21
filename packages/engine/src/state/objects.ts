@@ -94,7 +94,7 @@ export type AbilityRef =
   /**
    * A delayed triggered ability (CR 603.7): written on no card, but made by an effect as a spell or ability resolved,
    * so it carries its own text, and the objects that effect named ("destroy that creature", CR 603.7c) when it named
-   * any (`objects` is left out otherwise, so older saved games are unchanged).
+   * any (`objects` is left out otherwise: only a delayed ability that says "that creature" carries it).
    */
   | { kind: "delayed"; ability: TriggeredAbilityDef; objects?: ObjectId[] };
 

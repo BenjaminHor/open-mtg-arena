@@ -1,5 +1,5 @@
 name: A risen black Inferno Elemental bounced before its trigger resolves deals its damage as a black source, so White Knight's protection prevents it
-rules: [CR 608.2h, CR 702.16e, CR 603.10a]
+rules: [CR 608.2h, CR 702.16e]
 setup:
   turn: { active: p1, step: main1 }
   p1:

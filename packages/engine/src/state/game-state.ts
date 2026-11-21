@@ -68,7 +68,7 @@ export type GameState = {
   lastKnown: Record<ObjectId, CardObject>;
   /**
    * Their characteristics as they last existed (CR 608.2h), as computed then, by old id: snapshotted as they left
-   * (`pipeline/perform.ts`), from the state before the whole event (CR 603.10a). Emptied with `lastKnown`.
+   * (`pipeline/perform.ts`), from the state before the whole event (CR 704.8 for state-based actions). Emptied with `lastKnown`.
    */
   lastKnownCharacteristics: Record<ObjectId, LastKnownCharacteristics>;
   /** Replacement effects made by resolving spells and abilities (CR 614.1): regeneration shields. All end this turn. */

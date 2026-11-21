@@ -638,8 +638,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            Knight (protection reads the snapshot); flying given after blockers does nothing (its ruling).
          - Built (D-096): Stone Giant; 7 scenarios in `test/scenarios/cards/m2-09b3/` (the "no longer a creature"
            ruling can't be set up with the pool: a 4/5 Forest is too tough), a definition check for "remembered" with
-           a test, replays' hashes rewritten (only the new field differs). 191 cards. Next: mutations, reviews, fuzz,
-           bench, PR.
+           a test, replays' hashes rewritten (only the new field differs). 191 cards. Mutations 5/5 (one after adding an
+           equal-toughness case). Rules and code reviews (no wrong results): 6 more scenarios (a target pumped in
+           response, pumped later, the Giant gone or destroyed, regeneration, a target no longer a creature); a unit
+           test of the batch snapshot (CR 704.8); snapshots only for events that may move a permanent off the battlefield
+           (an exhaustive switch; tapping no longer snapshots); "its controller" of a gone object from the snapshot; the
+           definition check's false positive inside a condition, and `about` naming a player; citations, comments,
+           docs. "Flying given after blockers does nothing" is plain evasion (CR 509.1b), already covered; not added.
+           Fuzz 200 clean. Next: bench, PR.
          - Future impact: the snapshot is what M2-09c's Polymorph-on-a-stolen-creature and every "dies" trigger
            reading characteristics need; tokens (M2-11) leave a snapshot too.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

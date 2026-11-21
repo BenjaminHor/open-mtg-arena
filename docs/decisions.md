@@ -1410,14 +1410,17 @@ every schema change and every change D-024 lists bumps it.
 
 **D-096: Last known characteristics, and delayed abilities that remember (M2-09b2b)** · 2026-11-21 · accepted
 - `perform` snapshots the computed characteristics (controller, types, subtypes, colors, power, toughness) of each
-  permanent an event names, from the state before the event, and keeps those that left the battlefield in
-  `GameState.lastKnownCharacteristics`, emptied with `lastKnown` (CR 608.2h). A simultaneous batch is snapshotted at
-  once, so a Druid moving first doesn't make its Forest leave as a mere land (CR 603.10a). `perform` reads
+  permanent an event may move off the battlefield (moved, destroyed, sacrificed; an exhaustive `switch` over the event
+  kinds), from the state before the event, and keeps those that left in `GameState.lastKnownCharacteristics`, emptied
+  with `lastKnown` (CR 608.2h). A simultaneous batch is snapshotted at once, so a Druid moving first doesn't make its
+  Forest leave as a mere land (CR 704.8 for state-based actions). Readers: protection's source qualities, Stone Giant's
+  "this creature's power", and "its controller" of a gone object (`controllerNowOrLastKnown`), which M2-09c's layer 2
+  then follows. A spell leaving the stack keeps no snapshot yet. `perform` reads
   characteristics but changes nothing else; the pipeline guard test allows it. Keywords join the snapshot with the first
   reader that needs them.
 - The new state field changes the saved replays' final-state hashes; with it left out, each hash is the old one.
 - Stone Giant: the permanent target's `toughnessBelowSourcePower`, its source's power now or as it last existed, so it's
   rechecked as the ability resolves (CR 608.2b). "Destroy that creature at the beginning of the next end step":
   `createDelayedTrigger { about }` keeps the named objects on the delayed ability's reference (`objects`, left out when
-  none, so older saves keep their hashes), and the subject `"remembered"` reads them (CR 603.7c). A remembered object
+  it names none), and the subject `"remembered"` reads them (CR 603.7c). A remembered object
   that left is a new object and isn't affected (CR 400.7). The definition check refuses `"remembered"` elsewhere.
