@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import { endUntilEndOfTurnEffects } from "../../src/effects/continuous-effect.ts";
-import { recordControlChanges } from "../../src/effects/control-change.ts";
+import { recordControlChanges } from "../../src/game/control-changes.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { controllerOf } from "../../src/rules/controller.ts";
 import { newCombat } from "../../src/state/combat.ts";

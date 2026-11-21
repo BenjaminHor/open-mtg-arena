@@ -6,12 +6,16 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import { removedFromCombat } from "../combat/removed-from-combat.ts";
+import { anyControlEffects } from "../rules/control-effects.ts";
 import { layered } from "../rules/layers.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
 export function recordControlChanges(before: GameState, after: GameState, cards: CardDatabase): GameState {
-  // Nothing a controller is computed from changed (D-092's inputs for layer 2), so no controller did.
+  // With no control-changing effect in either state, every permanent is controlled by its stored controller (CR 110.2),
+  // so nothing changed control: no need to compute either pass (measured: this runs after every piece of work).
+  if (!anyControlEffects(before) && !anyControlEffects(after)) return after;
+  // A controller is computed from the objects, the effects and the battlefield only (layer 2, `control-effects.ts`).
   if (
     before.objects === after.objects &&
     before.effects === after.effects &&
@@ -20,7 +24,6 @@ export function recordControlChanges(before: GameState, after: GameState, cards:
     return after;
   const was = layered(before, cards);
   const now = layered(after, cards);
-  if (was === now) return after;
   let state = after;
   for (const id of after.zones.battlefield) {
     const then = was[id]?.controller;

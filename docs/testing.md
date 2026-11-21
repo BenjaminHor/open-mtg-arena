@@ -299,6 +299,8 @@ it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
   unless they could see it then too (D-044, D-054)
 - no player has negative mana, and life totals change only through events
 - the layer pass kept for the state is what a fresh pass gives (D-092): the kept result can't go stale
+- a permanent whose controller changed during the action is summoning sick again and out of combat (CR 302.6, 506.4;
+  D-104), unless its new controller's turn began in the same action
 
 At the end of each game, replaying the action log from the setup must give an identical state (determinism), and a
 game past 200 turns (`--turn-cap`) is flagged as a likely loop.

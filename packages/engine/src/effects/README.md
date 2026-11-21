@@ -85,7 +85,6 @@ legal targets left means that part does nothing (CR 608.2b). Amounts are a numbe
 | `deal-damage.ts` | `dealDamage(state, damage[], cards)`, performing the pipeline's `dealDamage` event: every damage in the game goes through it (CR 120.4), its results included. Life loss for a player (CR 120.3a), damage marked on a creature (CR 120.3e); 0 damage is dropped before it gets here (CR 120.8); only players and creatures can be dealt damage (CR 120.1a). Emits `DAMAGE_DEALT` |
 | `life.ts` | `loseLife(state, player, amount)` (CR 119.3), emitting `LIFE_LOST`. Reaching 0 life is checked later, as a state-based action (CR 704.5a) |
 | `continuous-effect.ts` | `createContinuousEffect(state, effect)`: gives it a timestamp (CR 613.7b) and adds it to `GameState.effects`, emitting `EFFECT_CREATED`. The layer pass applies it (`rules/layers.ts`). `endUntilEndOfTurnEffects` ends them in cleanup (CR 514.2), emitting `EFFECT_ENDED`; "while its source remains on the battlefield" ones end in `moveCard` (D-095) |
-| `control-change.ts` | `recordControlChanges`: after each piece of work (`advance`), a permanent whose controller changed is summoning sick again (CR 302.6) and out of combat (CR 506.4) (D-104) |
 | `becomes.ts` | `becomes`: Awakener Druid's "becomes a 4/5 green Treefolk creature", one effect in layers 4, 5 and 7b (D-095); none if a "for as long as" duration never starts (CR 611.2b). What a card "is" as it enters is `put`'s `is`, made by the move (CR 611.2e) |
 
 `dealDamage` and `loseLife` are called only by the event pipeline (`pipeline/`, D-056); `runEffect` proposes its
@@ -102,5 +101,5 @@ that use it.
 an effect names (one draw at a time; random picks, then one simultaneous discard; one simultaneous mill).
 
 Tests: `test/effects/effects.test.ts`, `removal.test.ts`, `player-effects.test.ts`, `choose-cards.test.ts`,
-`library-effects.test.ts`, `damage-to-many.test.ts`, `becomes.test.ts` and `control-change.test.ts`, and the scenarios in
+`library-effects.test.ts`, `damage-to-many.test.ts`, and `becomes.test.ts` (control changes: `test/game/control-changes.test.ts`), and the scenarios in
 `test/scenarios/effects/` and `test/scenarios/cards/`.

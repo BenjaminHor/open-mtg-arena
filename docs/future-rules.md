@@ -17,9 +17,9 @@ read it. Layer 6 grants keywords (resolved effects and static abilities), 7c add
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Layer 6 sorts its grants and removals by timestamp
 since M2-12b (D-103, "loses flying"); dependency (CR 613.8) waits on the open question in status.md.
-*Built (M2-12c1, D-104):* layer 2 lives only in the pass; `controllerOf(state, id, cards)` reads the pass's controller
-for a permanent, and `advance` compares controllers before and after each piece of work, for summoning sickness
-(CR 302.6) and removal from combat (CR 506.4). A static control effect (Mind Control, M2-12c2) joins the pass's layer 2. Layers 4, 5 and 7b have resolved effects
+*Built (M2-12c1, D-104):* layer 2 lives only in the pass; `controllerOf(state, id, cards)` reads the pass's
+controller for a permanent, and controllers are compared after the action and each piece of work, for summoning
+sickness (CR 302.6) and removal from combat (CR 506.4). Layers 4, 5 and 7b have resolved effects
 (M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
 merged into that order (CR 613.7a), as layer 6 does since M2-12b (D-103). Layer 2 too: Mind Control's static control
 effect takes its Aura's timestamp, renewed when it's attached (CR 613.7e), against Act of Treason's. In a simultaneous batch the cards move one by one, so a Druid moving first ends
@@ -158,7 +158,7 @@ a card's name uses that card's Oracle text (CR 111.11); a copy of a permanent sp
 of creature cards in a graveyard) asking `isToken` once a token can be there when they're read. *Watch out* (rules-judge, M1 exit review): many rules
 checks skip any object whose `kind` isn't `"card"` (`rules/state-based-actions.ts`, `rules/combat.ts`,
 `rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`, `rules/targets.ts`, `rules/object-filter.ts`,
-`effects/control-change.ts`). Tokens are card objects (D-101), so they pass; if spell copies (CR 707.10) become a new
+`game/control-changes.ts`). Tokens are card objects (D-101), so they pass; if spell copies (CR 707.10) become a new
 object kind, a copy couldn't be targeted as a spell or match any filter. Make those checks handle every kind, or fail
 loudly.
 

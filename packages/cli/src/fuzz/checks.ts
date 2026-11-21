@@ -228,6 +228,9 @@ export const layersMatchFreshPass: Check = (_before, after, _events, cards) => {
     const kept = layeredOf(after, id, cards);
     if (JSON.stringify(kept) !== JSON.stringify(layeredOfFresh(after, id, cards)))
       problems.push(`${id}'s characteristics kept for this state differ from fresh ones (D-092)`);
+    // `controllerOf` skips the pass when no control effect is in the game (D-104): it must still agree with it.
+    if (after.zones.battlefield.includes(id) && kept !== null && kept.controller !== controllerOf(after, id, cards))
+      problems.push(`${id}'s controller in the layer pass differs from controllerOf (D-104)`);
   }
   return problems;
 };

@@ -119,7 +119,7 @@ export function runEffect(
         affected,
         change: { kind: "gainControl", player: context.controller },
       });
-      // The control change makes it summoning sick again (CR 302.6): `advance` sees it (effects/control-change.ts).
+      // `advance` records the control change (game/control-changes.ts).
       return created;
     }
     case "putCounters": {

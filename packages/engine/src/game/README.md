@@ -11,6 +11,7 @@ The engine's entry points and the flow of a game.
 | `turn-steps.ts` | `TURN_STEPS`: the turn sequence as data (CR 500.1) |
 | `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031); the cleanup step's check and another cleanup step (CR 514.3a) |
 | `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
+| `control-changes.ts` | `recordControlChanges`: after the action and each piece of work, a permanent whose controller changed is summoning sick again (CR 302.6) and out of combat (CR 506.4) (D-104) |
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
 | `resolve.ts` | `resolveTopOfStack()` checks targets (CR 608.2b) and queues a resolution's steps: its effects (`effects/`), then `finishResolving()`, the final part (CR 608) |
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |

@@ -717,7 +717,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Gargoyle Castle.
        - M2-12c1 built (2026-11-21, D-104): `controllerOf(state, id, cards)` (56 calls in 31 files), layer 2 only in the
          pass, the control-change check in `advance` (CR 302.6, 506.4), the `controlChangesRecorded` fuzz check. Every
-         scenario, replay and golden game unchanged. Next: review, bench, PR.
+         scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`
+         asking for the pass cost deepStack a fifth to a quarter (measured): both skip the pass when no control effect is
+         in the game (`anyControlEffects`), and the fuzzer checks `controllerOf` agrees with the pass; the action's own
+         handler is checked too; the check moved to `game/control-changes.ts`. Bench within noise of the base. Next: PR.
        - M2-12c plan (2026-11-21, with the advisor's review), three PRs.
          - M2-12c1, a refactor with no new card: `controllerOf(state, id, cards)`, a battlefield permanent's controller
            read from the layer pass, which does layer 2 itself (resolved `gainControl` effects and, next, static control

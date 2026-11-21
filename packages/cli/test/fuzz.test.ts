@@ -217,6 +217,21 @@ describe("the checks", () => {
     ]);
     const sick = { ...taken, objects: { ...taken.objects, [id]: { ...obj, controlledSinceTurnStart: false } } };
     expect(controlChangesRecorded(before, sick, [], cards)).toEqual([]);
+    // Its new controller's turn beginning in the same action makes it controlled since then; the other player's doesn't.
+    const began = (activePlayer: PlayerId) => [{ type: "TURN_BEGAN", turn: 9, activePlayer }] as const;
+    expect(controlChangesRecorded(before, settled, [...began(owner)], cards)).toEqual([]);
+    expect(controlChangesRecorded(before, settled, [...began(obj.baseController)], cards)).toHaveLength(1);
+    // Still in combat is a problem (CR 506.4); recorded as removed isn't.
+    const attacks = [{ attacker: id, defender: obj.baseController }];
+    const fighting = {
+      ...sick,
+      combat: { attacks, blocks: [], removed: [], firstStrikers: null, secondDamageStep: false },
+    };
+    expect(controlChangesRecorded(before, fighting, [], cards)).toEqual([
+      `${id} changed controller but is still in combat (CR 506.4)`,
+    ]);
+    const removed = { ...fighting, combat: { ...fighting.combat, removed: [id] } };
+    expect(controlChangesRecorded(before, removed, [], cards)).toEqual([]);
   });
 
   it("lifeThroughEvents: a life change with no event is a problem", () => {

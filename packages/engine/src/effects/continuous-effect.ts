@@ -26,7 +26,7 @@ export function endUntilEndOfTurnEffects(state: GameState): Progress {
   const ending = state.effects.filter((e) => e.duration === "endOfTurn");
   if (ending.length === 0) return { state, events: [] };
   const ended = { ...state, effects: state.effects.filter((e) => e.duration !== "endOfTurn") };
-  // Control going back is a control change too (CR 302.6), which `advance` sees (effects/control-change.ts).
+  // Control going back is a control change too, which `advance` records (game/control-changes.ts).
   return {
     state: ended,
     events: ending.map((effect) => ({ type: "EFFECT_ENDED", effect })),

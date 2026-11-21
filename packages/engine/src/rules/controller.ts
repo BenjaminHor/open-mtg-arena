@@ -5,6 +5,7 @@ import type { CardDatabase } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { zoneOf } from "../zones/zone-list.ts";
+import { anyControlEffects } from "./control-effects.ts";
 import { layeredOf } from "./layers.ts";
 
 /**
@@ -26,7 +27,14 @@ export function controllerOf(state: GameState, id: ObjectId, cards: CardDatabase
   if (obj === undefined) throw new Error(`No object ${id}`);
   if (obj.kind === "ability") return obj.baseController;
   const zone = zoneOf(state, id).zone;
-  // A permanent's, from the layer pass, which does layer 2 (CR 613.1b): one place, so nothing can disagree with it.
-  if (zone === "battlefield") return layeredOf(state, id, cards)?.controller ?? obj.baseController;
+  // A permanent's, from the layer pass, which does layer 2 (CR 613.1b): one place, so nothing can disagree with it. With
+  // no control effect in the game, the pass would give the stored controller (CR 110.2), so that's read without it
+  // (measured: asking for the pass here made each action a fifth slower). The fuzzer checks the two agree.
+  if (zone === "battlefield") {
+    if (!anyControlEffects(state)) return obj.baseController;
+    const permanent = layeredOf(state, id, cards);
+    if (permanent === null) throw new Error(`No layer pass for ${id}`);
+    return permanent.controller;
+  }
   return zone === "stack" ? obj.baseController : obj.owner;
 }
