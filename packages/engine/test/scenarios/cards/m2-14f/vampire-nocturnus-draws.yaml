@@ -1,5 +1,5 @@
-name: Drawing changes the top card, and each card drawn from the revealed top is revealed as it's drawn (its ruling)
-rules: [CR 401.5]
+name: Drawing changes the top card, and each new top is revealed before it's drawn (its ruling), the first already in view
+rules: [CR 613.4c]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -17,5 +17,5 @@ steps:
       p1:Vampire Nocturnus.power: 5
       p1.revealedTop: Sign in Blood
       events contains:
-        - { type: CARDS_REVEALED, from: { zone: library, player: p1 }, cards: [Swamp] }
         - { type: CARDS_REVEALED, from: { zone: library, player: p1 }, cards: [Island] }
+        - { type: CARDS_REVEALED, from: { zone: library, player: p1 }, cards: [Sign in Blood] }

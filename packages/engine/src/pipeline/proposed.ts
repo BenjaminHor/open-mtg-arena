@@ -84,8 +84,12 @@ export type SingleEvent =
   | { kind: "draw"; player: PlayerId }
   /** A card is discarded: it moves from its owner's hand to their graveyard (CR 701.9a). */
   | { kind: "discard"; object: ObjectId; to?: Rerouted }
-  /** A player shuffles their library (CR 701.24a). */
-  | { kind: "shuffle"; player: PlayerId }
+  /**
+   * A player shuffles their library (CR 701.24a). `thenOnTop`: "shuffle and put that card on top", one event, as the card
+   * isn't part of the shuffle (CR 701.24b), so no other card is ever on top between the two: it's shuffled with the
+   * rest and then moved up, which gives the same odds.
+   */
+  | { kind: "shuffle"; player: PlayerId; thenOnTop?: ObjectId[] }
   /**
    * A player plays a land (CR 305.1): it enters the battlefield, and counts toward their land plays (CR 305.2).
    * `tapped`: a replacement has it enter tapped (CR 614.1d).

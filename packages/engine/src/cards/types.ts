@@ -733,8 +733,11 @@ export type Effect =
     }
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject }
-  /** "[who] shuffles" (CR 701.24a). */
-  | { op: "shuffle"; who: EffectSubject }
+  /**
+   * "[who] shuffles" (CR 701.24a). `foundOnTop`: "then shuffle and put that card on top" (Liliana Vess), the cards found
+   * left out of the shuffle (CR 701.24b) and put on top in the same event.
+   */
+  | { op: "shuffle"; who: EffectSubject; foundOnTop?: true }
   /** "You may shuffle": a yes or no choice; yes shuffles (CR 701.24a). */
   | { op: "mayShuffle"; who: EffectSubject }
   /** "Look at the top N cards of your library, then put them back in any order" (CR 701.20e, 401.4). */

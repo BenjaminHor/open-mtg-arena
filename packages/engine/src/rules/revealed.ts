@@ -17,7 +17,10 @@ export function handsRevealed(state: GameState, cards: CardDatabase): PlayerId[]
   return state.turnOrder.filter((p) => telepaths.some((t) => t !== p));
 }
 
-/** The players whose library's top card is revealed: each player controlling Vampire Nocturnus (CR 401.5). */
+/**
+ * The players whose library's top card is revealed: each player controlling Vampire Nocturnus (CR 401.5). The view shows
+ * it by identity, so it needn't become a new object when it stops being revealed (later: CR 401.6).
+ */
 export function libraryTopsRevealed(state: GameState, cards: CardDatabase): PlayerId[] {
   const revealers = controllersWith(state, "playWithTopOfLibraryRevealed", cards);
   return state.turnOrder.filter((p) => revealers.includes(p));

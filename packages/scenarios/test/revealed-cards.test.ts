@@ -58,4 +58,11 @@ describe("revealed cards, seen by another player", () => {
     expect(playerView(a, "p1", cards).zones.players.p2?.revealedHand).toHaveLength(3);
     expect(playerView(a, "p1", cards)).toStrictEqual(playerView(b, "p1", cards));
   });
+
+  it("leave a revealed hand a hidden zone: no ids, no objects (CR 400.2)", () => {
+    const state = started("  p1:\n    battlefield: [Telepathy]\n  p2:\n    hand: [Grizzly Bears]");
+    const view = playerView(state, "p1", cards);
+    expect(view.zones.players.p2?.hand).toBeNull();
+    for (const id of state.zones.players.p2?.hand ?? []) expect(view.objects[id]).toBeUndefined();
+  });
 });

@@ -317,8 +317,10 @@ export function runEffect(
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : revealTop(state, player, cards);
     }
-    case "shuffle":
-      return shuffleEach(state, playersNamed(state, effect.who, context, cards), cards);
+    case "shuffle": {
+      const onTop = effect.foundOnTop === true ? objectsNamed(state, "found", context, cards) : undefined;
+      return shuffleEach(state, playersNamed(state, effect.who, context, cards), cards, onTop);
+    }
     case "mayShuffle": {
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : mayShuffle(state, player, effect, context);

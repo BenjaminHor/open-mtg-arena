@@ -219,13 +219,7 @@ function check(
         return { error: "events contains takes a non-empty list of events like { type: CARD_DRAWN }" };
       }
       const wanted = expected.map((want) => withEngineStep(want));
-      // Revealed cards are written by name, as everywhere in a scenario.
-      const named = events.map((e) =>
-        e.type === "CARDS_REVEALED"
-          ? { ...e, cards: e.cards.map((o) => cardDataByOracleId(o, cards)?.printed.name ?? o) }
-          : e,
-      );
-      const matches = containsAll(named as unknown[], wanted, (e, w) =>
+      const matches = containsAll(withCardNames(events, cards) as unknown[], wanted, (e, w) =>
         partialMatch(e as Record<string, unknown>, w as Record<string, unknown>),
       );
       return { value: events.map((e) => e.type), matches };
@@ -235,7 +229,7 @@ function check(
         return { error: "events lacks takes a non-empty list of events like { type: DAMAGE_DEALT }" };
       }
       const unwanted = expected.map((e) => withEngineStep(e));
-      const matches = !events.some((e) =>
+      const matches = !withCardNames(events, cards).some((e) =>
         unwanted.some((u) => partialMatch(e as unknown as Record<string, unknown>, u as Record<string, unknown>)),
       );
       return { value: events.map((e) => e.type), matches };
@@ -283,4 +277,13 @@ function containsAll(
 function withEngineStep(want: Record<string, unknown>): Record<string, unknown> {
   const step = want.step;
   return typeof step === "string" && step in STEP_NAMES ? { ...want, step: STEP_NAMES[step] } : want;
+}
+
+/** Revealed cards written by name, as everywhere in a scenario: `{ type: CARDS_REVEALED, cards: [Swamp] }`. */
+function withCardNames(events: readonly GameEvent[], cards: CardDatabase): unknown[] {
+  return events.map((e) =>
+    e.type === "CARDS_REVEALED"
+      ? { ...e, cards: e.cards.map((o) => cardDataByOracleId(o, cards)?.printed.name ?? o) }
+      : e,
+  );
 }

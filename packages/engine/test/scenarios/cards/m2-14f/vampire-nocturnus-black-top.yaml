@@ -1,5 +1,5 @@
 name: With a black card on top of its controller's library, Vampire Nocturnus and other Vampires they control get +2/+1 and flying, and another player's Vampires don't
-rules: [CR 613.4c, CR 109.5]
+rules: [CR 401.5, CR 613.1f, CR 613.4c, CR 109.5]
 setup:
   turn: { active: p1, step: main1 }
   p1:

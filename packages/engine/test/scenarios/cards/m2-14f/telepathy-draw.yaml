@@ -1,5 +1,5 @@
-name: A card drawn into a hand Telepathy reveals is revealed too, and a card leaving it isn't any more
-rules: [CR 701.18c, CR 400.2]
+name: A card drawn into a hand Telepathy reveals is revealed too
+rules: [CR 701.18c, CR 504.1]
 setup:
   turn: { active: p1, step: end }
   p1:

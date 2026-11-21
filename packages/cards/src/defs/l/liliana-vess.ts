@@ -15,11 +15,11 @@ export const lilianaVess: CardDef = {
       kind: "activated",
       cost: [{ kind: "loyalty", amount: -2 }],
       targets: [],
-      // The card found is moved to the top after the shuffle, so it ends up there and the rest are random.
+      // The card found isn't part of the shuffle (CR 701.24b): shuffled and put on top as one event, so no other card is
+      // ever on top between the two (a revealed top would show it, D-122).
       effects: [
         { op: "search", library: "you", count: "one" },
-        { op: "shuffle", who: "you" },
-        { op: "put", of: "found", into: "libraryTop" },
+        { op: "shuffle", who: "you", foundOnTop: true },
       ],
     },
     {

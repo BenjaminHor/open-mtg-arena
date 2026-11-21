@@ -60,7 +60,9 @@ function playerLines(state: GameState, player: PlayerId, viewer: PlayerId | null
     `    battlefield: ${permanents.length === 0 ? "(none)" : permanents.map((id) => permanentText(state, id, cards)).join(", ")}`,
   );
   if (canSeeHand(state, viewer, player, cards) && zones.hand.length > 0) {
-    lines.push(`    hand: ${zones.hand.map((id) => nameOf(state, id, cards)).join(", ")}`);
+    // A hand another player sees only as revealed is listed sorted: its order records when each card came (D-122).
+    const names = zones.hand.map((id) => nameOf(state, id, cards));
+    lines.push(`    hand: ${(viewer === null || viewer === player ? names : [...names].sort()).join(", ")}`);
   }
   // A top card played revealed (Vampire Nocturnus), shown to everyone.
   const top = zones.library[0];

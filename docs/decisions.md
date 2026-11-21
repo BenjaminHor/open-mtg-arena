@@ -1858,14 +1858,22 @@ owner's answer to the D-089 open question, option (a))
   and a shuffle keeps object ids (CR 701.20d makes a reordered revealed card a new object; an id would let a player
   follow it). Two-worlds tests check a view doesn't change with what stays hidden; the fuzzer's scramble keeps a revealed
   top on top and revealed cards' identities.
-- A view exists only between actions, so a draw from a revealed top emits a public `CARDS_REVEALED` first: each card
-  of a multi-card draw is seen (CR 401.5; Nocturnus's ruling). Scenarios can name revealed cards in `events contains`,
-  and check `p2.revealedHand` / `p2.revealedTop` as another player sees them.
+- A view exists only between actions, but a revealed top is seen as soon as it's the top, also for a moment within one
+  resolution (CR 401.5 delays it only while casting or activating): between draws (Nocturnus's ruling: "reveal each one
+  before you draw it"), or between a search taking the top card and the shuffle after it (Diabolic Tutor, Rampant
+  Growth, Sphinx Ambassador; found by the rules review). So `perform` emits a public `CARDS_REVEALED` for each library
+  whose top card changed in an event while it's revealed (a simultaneous batch is one event). Liliana Vess's "shuffle
+  and put that card on top" is one event (`shuffle` with `thenOnTop`; the op's `foundOnTop`): the card found isn't
+  part of the shuffle (CR 701.24b), so no other card is ever on top between the two, and announcing one would show the
+  card that ends up second. Her ruling file says nothing more. The algorithm, and so the RNG and the final order, are
+  as before. Scenarios can name revealed cards in `events contains` and `events lacks`, and check `p2.revealedHand` /
+  `p2.revealedTop` as another player sees them.
 - "As long as the top card of your library is black, this creature and other Vampire creatures you control get +2/+1
   and have flying" is `creaturesGet` with `self` (the ruling: even if it isn't a Vampire) and `asLongAs: { topOfLibrary:
   filter }`, read with the top card's printed values (no effect in the pool applies in a library), an empty library
   fitting nothing. The library tops join the layer inputs, read only through `libraryTopOf` and compared by value only
   if a pass read one (`read.libraryTops`, beside `read.life`, which replaces D-112's `lifeRead`): a reorder or shuffle
   changes the top without a new objects record. `printedStart` moved to `rules/printed-start.ts` to be shared.
-- Not built, as nothing in the pool can cause them (future-rules): CR 401.5's mid-cast delay, CR 401.6's new object, a
-  top revealed only for a moment within one action.
+- Not built, as nothing in the pool can cause them (future-rules): CR 401.5's delay while casting (only mana, tap,
+  loyalty and sacrifice costs exist), CR 401.6's new object; and a library becoming revealed mid-action (Nocturnus
+  entering) whose top then changes in the same action before a view.

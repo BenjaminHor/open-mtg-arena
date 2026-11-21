@@ -72,7 +72,7 @@ export type ViewZones = {
       /**
        * What the library's top card is, while it's revealed to every player (Vampire Nocturnus, CR 401.5); else null,
        * also for an empty library. By identity only: a shuffle keeps object ids, so an id would let a player follow the
-       * card through it (CR 701.20d makes it a new object).
+       * card through it (a reordered revealed card becomes a new object, later: CR 701.20d).
        */
       revealedTop: OracleId | null;
       graveyard: ObjectId[];
@@ -110,7 +110,7 @@ export function playerView(state: GameState, viewer: PlayerId, cards: CardDataba
       handSize: z.hand.length,
       hand: canSee({ zone: "hand", player: p }, viewer) ? z.hand : null,
       revealedHand: hands.includes(p) ? inShownOrder(state, z.hand).map((id) => oracleIdOf(state, id)) : null,
-      // later: CR 401.5's new top card that waits until a spell is cast (no card in the pool changes it while casting).
+      // A new top card waits until a spell is cast (later: CR 601.2i); no card in the pool changes it while casting.
       revealedTop: tops.includes(p) && top !== undefined ? oracleIdOf(state, top) : null,
       graveyard: z.graveyard,
     };

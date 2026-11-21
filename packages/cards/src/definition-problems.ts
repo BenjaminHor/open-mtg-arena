@@ -471,7 +471,10 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";
-    const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
+    const foundNamed =
+      names(OBJECT_SUBJECTS[effect.op]?.(effect)) ||
+      names(PLAYER_SUBJECTS[effect.op]?.(effect)) ||
+      (effect.op === "shuffle" && effect.foundOnTop === true);
     if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop" || e.op === "revealUntil"))
       problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
     const readsSacrificed =

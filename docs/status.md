@@ -748,8 +748,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          2. The view shows revealed cards by identity only, sorted (D-062): `revealedHand: OracleId[] | null` and
             `revealedTop: OracleId | null` per player; `objects`, `hand` and `canSee` unchanged (ids record history, and a
             shuffle keeps them). `playerView` takes `cards`; the CLI's `show` too.
-         3. A draw from a revealed top emits a public `CARDS_REVEALED` first (its ruling: each card of a multi-draw is
-            revealed before it's drawn).
+         3. Each new revealed top is announced with a public `CARDS_REVEALED` (its ruling: each card of a multi-draw
+            is revealed before it's drawn; the rules review: also between a search and its shuffle).
          4. `creaturesGet` gains `self` ("this creature and other ...") and `asLongAs: { topOfLibrary: filter }`; the
             library tops join the layer inputs, compared by value only if the pass read one (like `lifeRead`), as a
             shuffle changes the top without a new objects record. The top's printed characteristics.
@@ -757,6 +757,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          6. Scenarios: both reveals, an empty library, a land on top, a non-Vampire Nocturnus, flying after blockers,
             two Nocturni, a stolen one, a shuffle (Sage Owl/Liliana) changing the top, Divination's draws revealed. Bench.
          - Later, not in the pool: CR 401.5's mid-cast delay, CR 401.6's new object (no id is shown, so nothing tracks it).
+           (The plan first said no pool card reveals a top only for a moment; the rules review found Diabolic Tutor does.)
          - Future impact: per-player knowledge (a looked-at card, face-down cards) extends the same view fields.
        - M2-14f built (2026-11-21, D-122): Telepathy and Vampire Nocturnus (234 cards). Statics read through the pass
          (`rules/revealed.ts`); the view's `revealedHand`/`revealedTop` by identity only (`playerView` takes `cards`);

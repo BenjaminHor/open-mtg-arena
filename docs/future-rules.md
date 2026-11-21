@@ -286,9 +286,10 @@ chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt f
 the revealed hand, though it stays revealed until the effect is done (CR 701.20a). *Built (M2-14f, D-122):* what a
 "play with ... revealed" ability shows is in the view by identity only (`revealedHand`, `revealedTop`), read from the
 battlefield by `rules/revealed.ts`; Duress's revealed hand and a third player who must see it can fill the same fields.
-Not built, as no pool card can cause them: CR 401.5's new top card that stays hidden until a spell is cast; CR 401.6's
-new object (the view shows no id, so nothing can follow it); and a top card revealed only for a moment within one
-action (a shuffle and then a put on top), which only a draw announces (`CARDS_REVEALED` before each draw). Several players
+A top card revealed only for a moment within one resolution (between a search and the shuffle) is announced with
+`CARDS_REVEALED` after each event that changes it. Not built, as no pool card can cause them: CR 401.5's new top card
+that stays hidden until a spell is cast (record the top as casting starts); CR 401.6's new object (the view shows no id,
+so nothing can follow it); a library that becomes revealed mid-action and changes before a view. Several players
 choosing at once for one effect choose in APNAP order, then it's done at once (CR 608.2e): `discard` and
 `sacrifice` name one player until a card needs more (Yawning Fissure in multiplayer: each opponent's choice collected,
 then one simultaneous sacrifice). And

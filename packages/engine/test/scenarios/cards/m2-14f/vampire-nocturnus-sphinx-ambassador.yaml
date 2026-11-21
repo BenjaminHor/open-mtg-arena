@@ -1,0 +1,25 @@
+name: Sphinx Ambassador finds p2's revealed top creature; the top stays shown while p2 names, and after the put the new top is shown
+rules: [CR 701.23a, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+  p2:
+    battlefield: [Vampire Nocturnus]
+    library: [Craw Wurm, Sign in Blood]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - p1 choose: Craw Wurm
+  - expect:
+      pending: { player: p2, kind: chooseName }
+      p2.revealedTop: Craw Wurm
+      p2:Vampire Nocturnus.power: 3
+  - p2 choose: Grizzly Bears
+  - p1 choose: yes
+  - expect:
+      p1.battlefield contains: [Craw Wurm]
+      p2.revealedTop: Sign in Blood
+      p2:Vampire Nocturnus.power: 5
