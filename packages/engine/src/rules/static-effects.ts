@@ -233,5 +233,8 @@ function fitsOnBoard(obj: CardObject, card: Layered, filter: ObjectFilter, you: 
   const inCombat = () => {
     throw new Error("a static ability can't ask about combat inside the layer pass (D-092)");
   };
-  return fits({ obj, card, controlled: true, inCombat }, filter, you, null);
+  const namedThisWay = () => {
+    throw new Error("a static ability can't ask about a name chosen while something resolves");
+  };
+  return fits({ obj, card, controlled: true, inCombat, namedThisWay }, filter, you, null);
 }

@@ -128,9 +128,11 @@ export type DecisionKind =
   | { kind: "orderTriggers"; batch: PendingTrigger[]; priorityTo: PlayerId }
   /**
    * While a spell or ability resolves: a "you may" choice (CR 608.2d): "you may shuffle", or a triggered ability's "you
-   * may" (CR 603.5). Yes runs `resume`, the work it chose to do; no does nothing.
+   * may" (CR 603.5). Yes runs `resume`, the work it chose to do; no does nothing. `canSayYes` is false when yes would
+   * be impossible (CR 608.2d), and the question is asked all the same so the other players can't tell: a card searched
+   * for in a hidden zone that doesn't fit "if it's a creature card" (Sphinx Ambassador's ruling, D-062, D-121).
    */
-  | { kind: "chooseYesNo"; purpose: "shuffle" | "optional"; resume: WorkItem[] }
+  | { kind: "chooseYesNo"; purpose: "shuffle" | "optional"; canSayYes: boolean; resume: WorkItem[] }
   /**
    * The legend rule (CR 704.5j): this player controls the legendary permanents in `options`, which share a name, and
    * chooses the one to keep. The rest go to their owners' graveyards with every other state-based action of the check

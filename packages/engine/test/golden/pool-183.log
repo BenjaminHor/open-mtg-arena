@@ -1579,12 +1579,14 @@ T26 p1:Sphinx Ambassador triggers (p1)
 T26 p2 names Air Elemental for Sphinx Ambassador ability
 T26 p2 shuffles their library
 T26 resolves: p1:Sphinx Ambassador's ability
-T26 moves: Serpent of the Endless Sea, p1's hand -> stack
-T26 p1 cancels casting Serpent of the Endless Sea
-T26 moves: Serpent of the Endless Sea, p1's hand -> stack
-T26 p1 cancels casting Serpent of the Endless Sea
 T26 moves: Island, p1's hand -> battlefield
 T26 p1 plays p1:Island#3
+T26 taps: p1:Island#3
+T26 p1 adds {U} (p1:Island#3)
+T26 p1 taps p1:Island#3 for mana
+T26 moves: Serpent of the Endless Sea, p1's hand -> stack
+T26 p1 cancels casting Serpent of the Endless Sea
+T26 p1's unspent {U} empties
 T27 turn 27 begins (p2)
 T27 untaps: p2:Plains#1
 T27 untaps: p2:Island#1

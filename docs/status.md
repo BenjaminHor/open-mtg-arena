@@ -743,7 +743,15 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - M2-14e built (2026-11-21, D-121): Sphinx Ambassador (232 cards): `nameCard` at resolution (the `chooseName`
          decision with `answering: resolution`), `Resolution.named`, the `notNamedThisWay` filter. 4 scenarios (a creature
          not named put under your control, the named card left, a noncreature found, declined), a test that the
-         naming player's view holds nothing of the found card; mutants 3/3. Next: reviews, PR.
+         naming player's view holds nothing of the found card; mutants 3/3. Rules review: no wrong ruling, but p2 could
+         tell from `waitingFor` whether the found card could be put onto the battlefield (asked only for a creature not
+         named), against its ruling and D-062; an optional `put` of cards in a hidden zone now asks anyway, with
+         `canSayYes` false (only no; yes refused, CR 608.2d), and a two-worlds test proves p2's views match; the
+         resolution's `NAME_CHOSEN` cites CR 608.2d, not 101.4b; 5 more scenarios (an empty library, the owner, a stolen
+         Sphinx, two Sphinxes, Pithing Needle naming it). Code review: the same leak; `notNamedThisWay` read in `fits`
+         (so inside `not` too) through a lazy `FitContext.namedThisWay`; definitions refuse it with no `nameCard` before,
+         outside an effect, and `nameCard` by each player; a test that a name decision's view drops `resume` (a
+         surviving mutant); `answerName` moved to `game/choose-name.ts`. Next: PR #77, merge.
        - M2-14d2 built (2026-11-21, D-120): Convincing Mirage (231 cards): a basic land type chosen as it enters (the
          `chooseName` decision with `what`), layer 4 setting the enchanted land's type (`rules/land-type.ts`), its rules
          text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type

@@ -1,0 +1,26 @@
+name: A stolen Sphinx's ability is its new controller's, who searches; the damaged player names a card and shuffles
+rules: [CR 603.3a, CR 110.2a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+    library: [Craw Wurm, Island]
+  p2:
+    battlefield: [{ card: Mind Control, attachedTo: p1:Sphinx Ambassador }]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseCards }
+  - p2 choose: Craw Wurm
+  - expect:
+      pending: { player: p1, kind: chooseName }
+  - p1 choose: Grizzly Bears
+  - expect:
+      pending: { player: p2, kind: chooseYesNo }
+  - p2 choose: yes
+  - expect:
+      p2.battlefield contains: [Craw Wurm, Sphinx Ambassador]
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }]

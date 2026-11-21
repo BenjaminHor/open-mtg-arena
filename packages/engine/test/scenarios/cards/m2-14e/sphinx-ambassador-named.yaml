@@ -1,5 +1,5 @@
 name: If the player names the card searched for, it stays in their library, which they shuffle
-rules: [CR 701.23a, CR 701.24a]
+rules: [CR 701.23a, CR 201.4, CR 608.2d, CR 701.24a]
 setup:
   turn: { active: p1, step: main1 }
   p1:
@@ -13,6 +13,11 @@ steps:
   - all pass: once
   - p1 choose: Craw Wurm
   - p2 choose: Craw Wurm
+  - expect:
+      pending: { player: p1, kind: chooseYesNo }
+  - p1 choose: yes
+  - expect error: illegalAction
+  - p1 choose: no
   - expect:
       p1.battlefield: [Sphinx Ambassador]
       p2.library count: 2

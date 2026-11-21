@@ -1,10 +1,9 @@
 // A pending decision as its own player may see it. Most are shown whole; a `chooseCards` decision's options are shown
 // by what each card is, and by its object id only when the player can see that card anyway (D-062).
 
-import type { PendingDecision } from "../state/decisions.ts";
+import type { NameFor, PendingDecision } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
-import type { ChoiceFor, ReplacementRef } from "../state/replacements.ts";
 import { oracleIdOf } from "../zones/shown-order.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { canSee } from "./visibility.ts";
@@ -27,8 +26,10 @@ export type ViewChooseYesNo = Omit<ChooseYesNo, "resume">;
 
 export type ViewChooseReplacement = Omit<ChooseReplacement, "resume">;
 
+type AsEnters = Extract<NameFor, { kind: "asEnters" }>;
+
 export type ViewChooseName = Omit<ChooseName, "answering"> & {
-  answering: { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef } | { kind: "resolution" };
+  answering: Omit<AsEnters, "resume"> | Exclude<NameFor, AsEnters>;
 };
 
 export type ViewDecision =
@@ -49,11 +50,12 @@ export function viewDecision(state: GameState, decision: PendingDecision, viewer
       const { resume: _resume, ...rest } = decision;
       return rest;
     }
-    case "chooseName":
+    case "chooseName": {
       // The event to resume is the engine's bookkeeping; what it's for stays.
-      return decision.answering.kind === "asEnters"
-        ? { ...decision, answering: { kind: "asEnters", for: decision.answering.for, ref: decision.answering.ref } }
-        : { ...decision, answering: { kind: "resolution" } };
+      if (decision.answering.kind !== "asEnters") return decision;
+      const { resume: _resume, ...answering } = decision.answering;
+      return { ...decision, answering };
+    }
     default:
       return decision;
   }

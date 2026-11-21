@@ -525,7 +525,7 @@ describe("definitionProblems", () => {
     expect(definitionProblems([def([{ op: "revealHand", who: { target: 0 } }, discard])], [duress])).toStrictEqual([]);
   });
 
-  it("reports 'found' with no search before it, a same-name search with no exile before it, and each player searching", () => {
+  it("reports 'found' with no search before it, a same-name search with no exile before it, each player searching, and an unchosen name", () => {
     const tutor = POOL.cards.find((c) => c.name === "Diabolic Tutor");
     if (tutor === undefined) throw new Error("Diabolic Tutor missing from the pool");
     const def = (effects: Effect[]): CardDef => ({
@@ -544,6 +544,41 @@ describe("definitionProblems", () => {
     ).toStrictEqual(["Diabolic Tutor: a search for the cards exiled this way must follow exiling them"]);
     expect(definitionProblems([def([{ op: "search", library: "eachPlayer", count: "one" }])], [tutor])).toStrictEqual([
       "Diabolic Tutor: search names one player, not each player",
+    ]);
+    const search: Effect = { op: "search", library: "you", count: "one" };
+    const putUnnamed: Effect = {
+      op: "put",
+      of: "found",
+      into: "battlefield",
+      onlyIf: { types: ["creature"], notNamedThisWay: true },
+    };
+    expect(definitionProblems([def([search, putUnnamed])], [tutor])).toStrictEqual([
+      "Diabolic Tutor: a filter reads the name chosen this way, but no nameCard comes before it",
+    ]);
+    expect(definitionProblems([def([search, { op: "nameCard", who: "you" }, putUnnamed])], [tutor])).toStrictEqual([]);
+    // After the put, inside "not", or named by each player: all refused.
+    expect(definitionProblems([def([search, putUnnamed, { op: "nameCard", who: "you" }])], [tutor])).toStrictEqual([
+      "Diabolic Tutor: a filter reads the name chosen this way, but no nameCard comes before it",
+    ]);
+    const putNamed: Effect = {
+      op: "put",
+      of: "found",
+      into: "battlefield",
+      onlyIf: { not: { notNamedThisWay: true } },
+    };
+    expect(definitionProblems([def([search, putNamed])], [tutor])).toStrictEqual([
+      "Diabolic Tutor: a filter reads the name chosen this way, but no nameCard comes before it",
+    ]);
+    expect(definitionProblems([def([search, { op: "nameCard", who: "eachPlayer" }])], [tutor])).toStrictEqual([
+      "Diabolic Tutor: nameCard names one player, not each player",
+    ]);
+    const targeting: CardDef = {
+      name: "Diabolic Tutor",
+      oracle: tutor.oracleText,
+      spell: { targets: [{ kind: "permanent", filter: { notNamedThisWay: true } }], effects: [search] },
+    };
+    expect(definitionProblems([targeting], [tutor])).toStrictEqual([
+      "Diabolic Tutor: only an effect's filter can read a name chosen while it resolves",
     ]);
   });
 

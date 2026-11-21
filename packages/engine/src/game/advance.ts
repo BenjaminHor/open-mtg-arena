@@ -62,7 +62,12 @@ function runWorkItem(state: GameState, item: WorkItem, cards: CardDatabase): Pro
       return finishCleanup(state, item.chosen, cards);
     case "askOptional":
       return {
-        state: waitFor(state, item.player, { kind: "chooseYesNo", purpose: "optional", resume: item.resume }),
+        state: waitFor(state, item.player, {
+          kind: "chooseYesNo",
+          purpose: "optional",
+          canSayYes: true,
+          resume: item.resume,
+        }),
         events: [],
       };
     case "putTriggers":

@@ -1,0 +1,29 @@
+name: Two Sphinxes trigger twice, and the second resolution's name is its own
+rules: [CR 603.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador, Sphinx Ambassador]
+  p2:
+    library: [Craw Wurm, Grizzly Bears, Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador, Sphinx Ambassador#2]
+  - all pass: until combat.declareBlockers
+  - all pass: once
+  - p1 choose: Sphinx Ambassador
+  - expect:
+      stack: [Sphinx Ambassador ability, Sphinx Ambassador ability]
+  - all pass: once
+  - p1 choose: Craw Wurm
+  - p2 choose: Grizzly Bears
+  - p1 choose: yes
+  - all pass: once
+  - p1 choose: Grizzly Bears
+  - p2 choose: Craw Wurm
+  - expect:
+      pending: { player: p1, kind: chooseYesNo }
+  - p1 choose: yes
+  - expect:
+      p1.battlefield contains: [Craw Wurm, Grizzly Bears]
+      p2.library: [Island]
