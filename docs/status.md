@@ -720,7 +720,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`
          asking for the pass cost deepStack a fifth to a quarter (measured): both skip the pass when no control effect is
          in the game (`anyControlEffects`), and the fuzzer checks `controllerOf` agrees with the pass; the action's own
-         handler is checked too; the check moved to `game/control-changes.ts`. Bench within noise of the base. Next: PR.
+         handler is checked too; the check moved to `game/control-changes.ts`. Bench within noise of the base. Fuzz 80 clean. Merged as #62.
+         Next: M2-12c2, Mind Control.
        - M2-12c plan (2026-11-21, with the advisor's review), three PRs.
          - M2-12c1, a refactor with no new card: `controllerOf(state, id, cards)`, a battlefield permanent's controller
            read from the layer pass, which does layer 2 itself (resolved `gainControl` effects and, next, static control
