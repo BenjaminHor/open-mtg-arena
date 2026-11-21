@@ -20,7 +20,7 @@ import {
 } from "@mtg/engine";
 import { stringify } from "yaml";
 import { declaration, division } from "./export-declarations.ts";
-import { nameOf, refOf, scenarioStep } from "./names.ts";
+import { graveyardRef, nameOf, refOf, scenarioStep } from "./names.ts";
 import { replacementWord } from "./steps.ts";
 
 type Step = Record<string, unknown>;
@@ -71,7 +71,11 @@ function stepFor(
     case "CAST_SPELL":
       return { step: { [`${p} cast`]: handCardName(state, p, action.object, cards) }, taken: 1 };
     case "ACTIVATE_ABILITY": {
-      const ref = refOf(state, action.object, cards) ?? nameOf(state, action.object, cards);
+      // A card in a graveyard, for an ability that works from there (CR 113.6m), as `graveyard:p1:Name`.
+      const ref =
+        refOf(state, action.object, cards) ??
+        graveyardRef(state, action.object, cards) ??
+        nameOf(state, action.object, cards);
       const step: Step = { [`${p} activate`]: ref };
       // `ability: n` counts in `abilitiesOf` order, as the runner does, and is needed when there's more than one.
       const abilities = abilitiesOf(state, action.object, cards);
@@ -174,15 +178,6 @@ function targetName(state: GameState, target: Target, cards: CardDatabase): stri
     graveyardRef(state, target.object, cards) ??
     nameOf(state, target.object, cards)
   );
-}
-
-/** A card in a graveyard, named as `targets:` names it (`graveyard:p1:Grizzly Bears`, `#2` counting from the bottom). */
-function graveyardRef(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
-  const player = state.turnOrder.find((p) => state.zones.players[p]?.graveyard.includes(id));
-  if (player === undefined) return null;
-  const name = nameOf(state, id, cards);
-  const same = (state.zones.players[player]?.graveyard ?? []).filter((x) => nameOf(state, x, cards) === name);
-  return same.length > 1 ? `graveyard:${player}:${name}#${same.indexOf(id) + 1}` : `graveyard:${player}:${name}`;
 }
 
 /** A spell on the stack, named only as a spell (`spell:p1:Lightning Bolt`, `#2` counting from the bottom). */

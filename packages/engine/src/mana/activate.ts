@@ -31,15 +31,15 @@ export function activationBasicsProblem(
   cards: CardDatabase,
 ): string | null {
   const obj = state.objects[id];
-  if (obj?.kind !== "card") return `${id} isn't a card or token`;
+  // Where it is first, so nothing is read from a card in a hidden zone (a hand, a library).
+  const onBattlefield = state.zones.battlefield.includes(id);
+  const inOwnGraveyard = (state.zones.players[player]?.graveyard ?? []).includes(id);
+  if (obj?.kind !== "card" || (!onBattlefield && !inOwnGraveyard)) return `${id} isn't a permanent`;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null) return `${id} has no such ability`;
-  if (ability.def.zone === "graveyard") {
-    if (!(state.zones.players[player]?.graveyard ?? []).includes(id)) return `${id} isn't in ${player}'s graveyard`;
-  } else {
-    if (!state.zones.battlefield.includes(id)) return `${id} isn't a permanent`;
-    if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
-  }
+  if ((ability.def.zone === "graveyard") !== inOwnGraveyard)
+    return ability.def.zone === "graveyard" ? `${id} isn't in ${player}'s graveyard` : `${id} isn't a permanent`;
+  if (onBattlefield && controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
   // "Its activated abilities can't be activated" (Ice Cage): all of them, mana abilities included (CR 602.5, 605.1a).
   if (layeredOf(state, id, cards)?.cantActivate === true) return `${id}'s activated abilities can't be activated`;
   for (const part of ability.def.cost) {

@@ -1774,10 +1774,13 @@ owner's answer to the D-089 open question, option (a))
   still loses (CR 104.3a, its ruling). "Your opponents can't win" needs no rule while games have two players and no
   "win the game" effect: an opponent wins only by this player losing (later: CR 104.2b).
 - An activated ability with `zone: "graveyard"` works only from its owner's graveyard, and its owner activates it
-  (CR 113.6m, 602.2): `activationBasicsProblem` checks the zone in place of the battlefield and controller, and
-  `legalActions` offers the graveyard cards that have one, after the permanents.
+  (CR 113.6m, 602.2): `activationBasicsProblem` checks where the card is before reading anything of it (so a card in a
+  hidden zone is refused the same whatever it is), then the ability's zone, then the controller; `legalActions` offers
+  the graveyard cards with a printed one, after the permanents. Scenarios and their export name them
+  `graveyard:p1:<card>`.
 - "When this creature dies" is the trigger `selfDies`, the first that looks back in time: `detectTriggers` matches a
   permanent an event moved off the battlefield against the state before the event (CR 603.10a), with that controller.
+  It doesn't ask that the permanent still be a creature: "this creature" names the object (CR 700.7).
   Its "it deals 3 damage" reads the gone source from last known information, which lasts until the stack is empty.
 - Future impact: "when this leaves the battlefield" joins `leavesTheBattlefield`. "Whenever another creature dies" is
   different: the watcher isn't the permanent that left, so `lookingBack` must then scan every permanent of `before`'s

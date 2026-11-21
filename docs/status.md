@@ -751,8 +751,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          chain, regenerated, exiled, 0 toughness, instant speed, combat trade, two of one player's; Angel: both players
          at 0, a draw without it, it dying in the same check, two Angels, not for the opponent, a later draw, Act of
          Treason's cleanup), 3 unit tests for the empty-library record with the Angel; stale "later:" marks (CR 700.4,
-         603.10a), CR 603.3a cited; D-118 corrected on "whenever another creature dies". Fuzz 80 clean. Next: code
-         review, PR.
+         603.10a), CR 603.3a cited; D-118 corrected on "whenever another creature dies". Fuzz 80 clean. Code review: the
+         scenario exporter couldn't replay a graveyard activation (fixed, round-trip test); "dies" no longer asks for a
+         creature (CR 700.7, unit test); the activation check looks at where a card is before what it is (a hidden card's
+         refusal showed its abilities; test); `leavesTheBattlefield` an exhaustive switch; the short fuzz test's timeout
+         120 s (random decks grew with the pool); a cheaper graveyard scan; stale READMEs. Next: PR.
        - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
          `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the

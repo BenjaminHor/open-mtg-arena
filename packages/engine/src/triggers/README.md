@@ -59,6 +59,6 @@ intervening if turned false before resolving).
 ## Not built yet
 
 Delayed triggers waiting for anything but the next beginning of a step ("your next upkeep", "when that creature
-dies"), or with targets; "leaves the battlefield" abilities, which
-look back in time (CR 603.10, M2-14); triggers on activating an ability (no card yet). A trigger
+dies"), or with targets; leaves-the-battlefield abilities other than "when this creature dies" (built, D-118), such as
+"whenever another creature dies" (CR 603.10a); triggers on activating an ability (no card yet). A trigger
 removed for too few legal targets (CR 603.3d) emits no event yet, so a log or the UI doesn't show that it triggered.

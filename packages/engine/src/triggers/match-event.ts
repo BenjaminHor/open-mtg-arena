@@ -14,7 +14,26 @@ import type { TriggerEvent } from "../state/triggers.ts";
 
 /** Whether a trigger condition is a leaves-the-battlefield one, which looks back in time (CR 603.6c, 603.10a). */
 export function leavesTheBattlefield(when: TriggerCondition): boolean {
-  return when.kind === "selfDies";
+  switch (when.kind) {
+    case "selfDies":
+      return true;
+    case "selfEnters":
+    case "anotherEnters":
+    case "beginningOfStep":
+    case "selfAttacks":
+    case "spellCast":
+    case "selfCountersRemoved":
+    case "playerDraws":
+    case "playerDiscards":
+    case "landTappedForMana":
+    case "selfDealsDamageToPlayer":
+    case "selfBlocksOrBlocked":
+    case "selfBlocks":
+    case "selfBecomesTarget":
+    case "attachedBecomesTarget":
+    case "playerGainsLife":
+      return false;
+  }
 }
 
 /**
@@ -32,13 +51,12 @@ export function matches(
     case "selfEnters":
       return entered(event) === source ? [{ player: null, object: source, amount: null }] : [];
     case "selfDies":
-      // From the battlefield to a graveyard, while a creature (CR 700.4 and the glossary's "Dies"), read as it was before
-      // (CR 603.10a).
+      // From the battlefield to a graveyard (CR 700.4), read as it was before (CR 603.10a). "This creature" is this
+      // object even if it isn't a creature then (CR 700.7).
       return event.type === "ZONE_CHANGED" &&
         event.oldId === source &&
         event.from.zone === "battlefield" &&
-        event.to.zone === "graveyard" &&
-        cardTypesOf(state, source, cards).includes("creature")
+        event.to.zone === "graveyard"
         ? [{ player: null, object: null, amount: null }]
         : [];
     case "anotherEnters": {

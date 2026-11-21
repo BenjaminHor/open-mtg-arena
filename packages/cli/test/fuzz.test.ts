@@ -36,12 +36,13 @@ const tempDir = () => mkdtempSync(path.join(tmpdir(), "mtg-fuzz-"));
 
 describe("fuzzGame", () => {
   // The short fuzz `pnpm check` runs (docs/testing.md, section 3): fixed seeds, so a failure is the same every time.
+  // Random decks grow with the pool, and so do their games: 40 s alone on one core now, so room under a busy machine.
   it("plays prebuilt decks (even seeds) and random decks (odd seeds) to the end with every check: seeds 1 to 6", () => {
     for (let seed = 1; seed <= 6; seed++) {
       const result = fuzzGame(seed, ALL_CHECKS, cards);
       expect(result.ok ? "ok" : result.problem, `seed ${seed}`).toBe("ok");
     }
-  }, 60_000);
+  }, 120_000);
 
   it("is deterministic: one seed is one game", () => {
     expect(fuzzGame(7, [], cards)).toEqual(fuzzGame(7, [], cards));
