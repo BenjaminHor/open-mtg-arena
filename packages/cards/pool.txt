@@ -100,6 +100,7 @@ Howl of the Night Pack
 Howling Banshee
 Howling Mine
 Hypnotic Specter
+Ice Cage
 Ignite Disorder
 Illusionary Servant
 Indestructibility
@@ -181,6 +182,7 @@ Silence
 Silvercoat Lion
 Snapping Drake
 Solemn Offering
+Soul Bleed
 Soul Warden
 Sparkmage Apprentice
 Spellbook

@@ -36,7 +36,10 @@ export function layerSix(
   return sets;
 }
 
-/** "Enchanted creature can't attack or block", "equipped creature can't be blocked" (CR 303.4m, 301.5f), on the host. */
+/**
+ * "Enchanted creature can't attack or block", "can't be blocked", "its activated abilities can't be activated"
+ * (CR 303.4m, 301.5f), on the host.
+ */
 function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, sources: readonly StaticSource[]) {
   for (const s of sources) {
     const host = attachedHostIn(input.objects, input.battlefield, s.source);
@@ -48,6 +51,9 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
         break;
       case "attachedCantBeBlocked":
         board[host] = { ...card, cantBeBlocked: true };
+        break;
+      case "attachedCantActivate":
+        board[host] = { ...card, cantActivate: true };
         break;
       case "attachedControl":
       case "attachedGets":

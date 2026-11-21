@@ -120,6 +120,11 @@ export const furnaceWhelp: CardDef = {
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
   is `{ kind: "attachedCantAttackOrBlock" }` (D-102).
+- "At the beginning of the upkeep of enchanted creature's controller, that player loses 1 life" (Soul Bleed) is the
+  trigger `{ kind: "beginningOfStep", step: "upkeep", whose: "attachedController" }` with `loseLife` of
+  `"triggeringPlayer"`; "its activated abilities can't be activated" (Ice Cage) is the static
+  `{ kind: "attachedCantActivate" }`, mana abilities included; "when enchanted creature becomes the target of a spell
+  or ability" is the trigger `{ kind: "attachedBecomesTarget" }` (D-106).
 - "You control enchanted creature" (Mind Control) is the static `{ kind: "attachedControl" }`, layer 2 (D-105).
 - "Equip {2}" is an activated ability `{ kind: "activated", keyword: "equip", timing: "sorcery", cost: [{ kind: "mana",
   cost: [{ kind: "generic", amount: 2 }] }], targets: [{ kind: "permanent", filter: { types: ["creature"], controller:

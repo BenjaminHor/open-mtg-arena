@@ -1577,3 +1577,14 @@ every schema change and every change D-024 lists bumps it.
   but dealt and took no damage: `Combat.removed` was one list of creatures "out for good". It's now kept by role
   (`{ attackers, blockers }`): removal takes a creature out of the declarations it's in, and a block declared after
   that is a new one (CR 506.4, 509.1a).
+
+**D-106: Soul Bleed and Ice Cage (M2-12c3)** · 2026-11-21 · accepted
+- "At the beginning of the upkeep of enchanted creature's controller" is `beginningOfStep` with `whose:
+  "attachedController"`: it triggers in the turn of whoever controls the creature as the step begins, so under a Mind
+  Control it drains the thief (CR 303.4m, 613.1b); "that player" is the player whose step it is.
+- "Its activated abilities can't be activated" is marked on the host by the layer pass (`Layered.cantActivate`), like
+  Pacifism's restriction, and read where every activation, mana abilities included, is checked
+  (`activationBasicsProblem`, CR 602.5, 605.3a), so auto-pay can't use a caged Llanowar Elves either.
+- "When enchanted creature becomes the target of a spell or ability" is `attachedBecomesTarget`, matched on
+  `BECAME_TARGET` for what the Aura is attached to: its trigger goes on the stack above the spell and resolves first
+  (its ruling). Ice Cage's own Aura spell can't trigger it: it isn't on the battlefield yet.

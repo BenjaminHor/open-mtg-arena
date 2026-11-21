@@ -65,6 +65,8 @@ export type Layered = Readonly<{
   cantAttackOrBlock: boolean;
   /** Likewise, "equipped creature can't be blocked" (Whispersilk Cloak, CR 509.1b). */
   cantBeBlocked: boolean;
+  /** Likewise, "its activated abilities can't be activated" (Ice Cage, CR 602.5). */
+  cantActivate: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -274,6 +276,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     granted: Object.freeze([]),
     cantAttackOrBlock: false,
     cantBeBlocked: false,
+    cantActivate: false,
   };
 }
 

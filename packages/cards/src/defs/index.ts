@@ -97,6 +97,7 @@ import { howlOfTheNightPack } from "./h/howl-of-the-night-pack.ts";
 import { howlingBanshee } from "./h/howling-banshee.ts";
 import { howlingMine } from "./h/howling-mine.ts";
 import { hypnoticSpecter } from "./h/hypnotic-specter.ts";
+import { iceCage } from "./i/ice-cage.ts";
 import { igniteDisorder } from "./i/ignite-disorder.ts";
 import { illusionaryServant } from "./i/illusionary-servant.ts";
 import { indestructibility } from "./i/indestructibility.ts";
@@ -178,6 +179,7 @@ import { silence } from "./s/silence.ts";
 import { silvercoatLion } from "./s/silvercoat-lion.ts";
 import { snappingDrake } from "./s/snapping-drake.ts";
 import { solemnOffering } from "./s/solemn-offering.ts";
+import { soulBleed } from "./s/soul-bleed.ts";
 import { soulWarden } from "./s/soul-warden.ts";
 import { sparkmageApprentice } from "./s/sparkmage-apprentice.ts";
 import { spellbook } from "./s/spellbook.ts";
@@ -314,6 +316,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   howlingBanshee,
   howlingMine,
   hypnoticSpecter,
+  iceCage,
   igniteDisorder,
   illusionaryServant,
   indestructibility,
@@ -395,6 +398,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   silvercoatLion,
   snappingDrake,
   solemnOffering,
+  soulBleed,
   soulWarden,
   sparkmageApprentice,
   spellbook,

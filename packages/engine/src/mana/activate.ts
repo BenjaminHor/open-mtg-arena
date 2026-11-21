@@ -8,6 +8,7 @@ import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
+import { layeredOf } from "../rules/layers.ts";
 import { canUseTapAbilities } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -32,6 +33,8 @@ export function activationBasicsProblem(
   if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null) return `${id} has no such ability`;
+  // "Its activated abilities can't be activated" (Ice Cage): all of them, mana abilities included (CR 602.5, 605.3a).
+  if (layeredOf(state, id, cards)?.cantActivate === true) return `${id}'s activated abilities can't be activated`;
   for (const part of ability.def.cost) {
     switch (part.kind) {
       case "tap":

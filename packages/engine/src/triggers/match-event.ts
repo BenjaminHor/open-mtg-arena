@@ -3,6 +3,7 @@
 
 import type { PlayerRelation, TriggerCheck, TriggerCondition } from "../cards/triggers.ts";
 import type { CardDatabase } from "../cards/types.ts";
+import { attachedHost } from "../rules/attachment.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
@@ -36,6 +37,8 @@ export function matches(
       // "Each player's draw step": "that player", in the card's text, is the player whose step it is.
       if (event.type !== "STEP_BEGAN" || event.step !== when.step) return [];
       if (when.whose === "yours" && event.activePlayer !== controllerOf(state, source, cards)) return [];
+      if (when.whose === "attachedController" && event.activePlayer !== attachedController(state, source, cards))
+        return [];
       return [{ player: event.activePlayer, object: null, amount: null }];
     case "selfAttacks":
       return event.type === "ATTACKERS_DECLARED" && event.attacks.some((a) => a.attacker === source)
@@ -84,6 +87,10 @@ export function matches(
       return event.type === "BECAME_TARGET" && event.object === source
         ? [{ player: null, object: null, amount: null }]
         : [];
+    case "attachedBecomesTarget":
+      return event.type === "BECAME_TARGET" && event.object === attachedHost(state, source)
+        ? [{ player: null, object: null, amount: null }]
+        : [];
     case "spellCast":
       return event.type === "SPELL_CAST" &&
         matchesFilter(state, event.object, when.filter, controllerOf(state, source, cards), cards)
@@ -129,4 +136,10 @@ export function holds(state: GameState, source: ObjectId, check: TriggerCheck): 
       return obj?.kind === "card" && !obj.tapped;
     }
   }
+}
+
+/** Who controls what this permanent is attached to ("enchanted creature's controller", CR 303.4m), or null. */
+function attachedController(state: GameState, source: ObjectId, cards: CardDatabase): PlayerId | null {
+  const host = attachedHost(state, source);
+  return host === null ? null : controllerOf(state, host, cards);
 }
