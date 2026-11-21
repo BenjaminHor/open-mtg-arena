@@ -163,7 +163,9 @@ replacements need it, and `happenOrAsk` for their CR 616.1 order. Wither and inf
 damage event, as lifelink gains life there (D-070). Keyword counters (CR 122.1b) need timestamps (CR 613.7c) for
 layer 6, a state migration (`GameState.version`). A prevention that also does something else (Protean Hydra: "prevent
 that damage and remove that many +1/+1 counters") does the rest right after the damage event (CR 615.5; built,
-M2-10b: a prevention candidate's `afterwards`).
+M2-10b: a prevention candidate's `afterwards`). Its "that many" is the damage it applied to, which equals what it
+prevented until damage can't be prevented (CR 615.12: then it removes counters for damage it couldn't stop); the
+`afterwards` events skip replacement, as `after` events do.
 
 **Control-changing effects and ownership vs. control (CR 108.3, 110.2).**
 *Needs now:* code never assumes the controller is the owner. "Your" in card text means controller.

@@ -225,7 +225,8 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
     case "graveyardToLibrary":
       return move.to.zone === "graveyard";
     case "entersWithCounters":
-      return move.to.zone === "battlefield" && move.to.counters === undefined;
+      // Once per event like every replacement: the `applied` list sees to that.
+      return move.to.zone === "battlefield";
     // Prevention, read for damage (`damage-replacements.ts`), never for a move.
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":
@@ -279,7 +280,10 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
       // X as the spell that becomes it was cast (CR 107.3m); 0 if it wasn't cast (put onto the battlefield).
       const obj = state.objects[move.object];
       const x = obj?.kind === "card" ? (obj.choices?.x ?? 0) : 0;
-      return { before: [], event: rerouted(event, { ...move.to, counters: { [def.counter]: x } }), after: [] };
+      // Zero counters is no counters (CR 122.6 counts only an object given some); others it enters with add up.
+      if (x <= 0) return { before: [], event, after: [] };
+      const counters = { ...move.to.counters, [def.counter]: (move.to.counters?.[def.counter] ?? 0) + x };
+      return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":

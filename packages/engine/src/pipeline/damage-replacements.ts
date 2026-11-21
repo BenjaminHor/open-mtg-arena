@@ -111,6 +111,8 @@ function preventEntry(
     const stopped = chosen.prevents === "all" ? amount : Math.min(amount, chosen.prevents);
     amount -= stopped;
     prevented.push({ kind: "damagePrevented", source: entry.source, to: entry.to, amount: stopped, by: chosen.by });
+    // "That many": the damage it applied to (all that was left), which is what it stopped until damage can't be
+    // prevented (later: CR 615.12).
     if (chosen.afterwards !== undefined) afterwards.push({ ...chosen.afterwards, amount: stopped });
   }
   return { kind: "prevented", amount, prevented, afterwards };

@@ -1,0 +1,22 @@
+name: Damage from two blockers to Protean Hydra is prevented for each, each removing its counters right after
+rules: [CR 615.5]
+setup:
+  turn: { active: p1, step: main1 }
+  rules: [{ kind: creaturesGetPT, controller: p1, power: 1, toughness: 1 }]
+  p1:
+    battlefield: [{ card: Protean Hydra, counters: { +1/+1: 3 } }]
+  p2:
+    battlefield: [Grizzly Bears, Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Protean Hydra]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Protean Hydra, Runeclaw Bear: Protean Hydra }
+  - all pass: until combat.damage
+  - p1 assign: { Grizzly Bears: 2, Runeclaw Bear: 2 }
+  - expect:
+      p1:Protean Hydra.counters: {}
+      p1:Protean Hydra.damage: 0
+      p1:Protean Hydra.toughness: 1
+      stack: [Protean Hydra ability, Protean Hydra ability, Protean Hydra ability]
+      events contains: [{ type: COUNTERS_REMOVED, amount: 2 }, { type: COUNTERS_REMOVED, amount: 1 }]

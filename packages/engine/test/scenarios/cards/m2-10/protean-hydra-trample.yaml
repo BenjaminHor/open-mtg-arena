@@ -1,0 +1,23 @@
+name: An attacker with trample must assign lethal damage to a blocking Protean Hydra, ignoring that the damage will be prevented
+rules: [CR 702.19b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino]
+  p2:
+    battlefield: [{ card: Protean Hydra, counters: { +1/+1: 2 } }]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Protean Hydra: Stampeding Rhino }
+  - all pass: until combat.damage
+  - expect:
+      pending: { player: p1, kind: assignDamage, lethal: [2] }
+  - p1 assign: { Protean Hydra: 1, p2: 3 }
+  - expect error: illegalAction
+  - p1 assign: { Protean Hydra: 2, p2: 2 }
+  - expect:
+      p2.life: 18
+      p1:Stampeding Rhino.damage: 2
+      p2.graveyard: [Protean Hydra]

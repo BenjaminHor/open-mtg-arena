@@ -1,0 +1,26 @@
+name: With Safe Passage chosen first for damage to Protean Hydra, it keeps its counters
+rules: [CR 616.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Protean Hydra, counters: { +1/+1: 3 } }, Plains, Plains, Plains]
+    hand: [Safe Passage]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Safe Passage
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Protean Hydra]
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseReplacement }
+  - p1 choose: Safe Passage
+  - expect:
+      p1:Protean Hydra.counters: { +1/+1: 3 }
+      events lacks: [{ type: COUNTERS_REMOVED }]
+      stack: []

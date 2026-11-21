@@ -1,9 +1,9 @@
-name: Protean Hydra's delayed ability puts nothing on a Hydra that left the battlefield before the end step
-rules: [CR 603.7c, CR 400.7]
+name: Protean Hydra's delayed ability doesn't affect the Hydra once it has left and come back, a new object
+rules: [CR 400.7, CR 603.7c]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [{ card: Protean Hydra, counters: { +1/+1: 3 } }]
+    battlefield: [{ card: Protean Hydra, counters: { +1/+1: 3 } }, Forest, Forest]
   p2:
     battlefield: [Mountain, Island]
     hand: [Shock, Unsummon]
@@ -20,8 +20,15 @@ steps:
     targets: [p1:Protean Hydra]
     pay: auto
   - all pass: once
+  - p1 cast: Protean Hydra
+    x: 1
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Protean Hydra.counters: { +1/+1: 1 }
   - all pass: until end
   - all pass: once
   - all pass: once
   - expect:
-      p1.hand: [Protean Hydra]
+      p1:Protean Hydra.counters: { +1/+1: 1 }
+      stack: []

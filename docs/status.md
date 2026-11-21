@@ -707,7 +707,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            puts counters, entering with them, CR 615.5 for the Hydra). Fuzz 200 clean. Merged as #56. Next: M2-10b.
          - M2-10b built (D-100): Protean Hydra; 5 scenarios (entering with X, prevention and the counters back at end
            step, more damage than counters, X of 0 when not cast, the Hydra gone before the end step), golden pool-509.
-           196 cards. Next: mutations, review, fuzz, PR; then M2-10 is done.
+           196 cards. Mutations 4/4. Review (rules outcomes right): X of 0 gave a 0-count key and a COUNTERS_PUT of 0, now
+           none; counters a permanent enters with add up (no overwrite, no extra guard); 12 more scenarios (Fog, Safe
+           Passage or the Hydra chosen first, CR 616.1; the -1/-1 ruling; the end-step ruling; dying; trample's lethal
+           ignoring prevention, CR 702.19b; a new object after a bounce; no counters; two blockers; X of 0 cast and put).
+           Next: fuzz, PR; then M2-10 is done.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

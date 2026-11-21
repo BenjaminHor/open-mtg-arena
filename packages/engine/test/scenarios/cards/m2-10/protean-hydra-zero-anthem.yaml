@@ -1,0 +1,16 @@
+name: Protean Hydra put onto the battlefield with X of 0 gets no counters at all, which an anthem shows as it survives
+rules: [CR 107.3m]
+setup:
+  turn: { active: p1, step: main1 }
+  rules: [{ kind: creaturesGetPT, controller: p1, power: 1, toughness: 1 }]
+  p1:
+    battlefield: [Elvish Piper, Forest]
+    hand: [Protean Hydra]
+steps:
+  - p1 activate: Elvish Piper
+    pay: auto
+  - all pass: once
+  - p1 choose: Protean Hydra
+  - expect:
+      p1:Protean Hydra.counters: {}
+      events lacks: [{ type: COUNTERS_PUT }]

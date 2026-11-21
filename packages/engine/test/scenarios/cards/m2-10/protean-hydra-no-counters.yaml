@@ -1,0 +1,21 @@
+name: Damage to a Protean Hydra with no counters is still prevented, removing none (its ruling)
+rules: [CR 615.5]
+setup:
+  turn: { active: p1, step: main1 }
+  rules: [{ kind: creaturesGetPT, controller: p1, power: 1, toughness: 1 }]
+  p1:
+    battlefield: [{ card: Protean Hydra }]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Protean Hydra]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Protean Hydra.damage: 0
+      events contains: [{ type: DAMAGE_PREVENTED, amount: 2 }]
+      events lacks: [{ type: COUNTERS_REMOVED }]
+      stack: []
