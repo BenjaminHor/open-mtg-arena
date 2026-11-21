@@ -752,7 +752,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          stale "later:" marks and comments; a player leaving the game noted for extra turns (CR 800.4k). Fuzz 60 clean.
          Code review: no bug, the replay hash changes checked (removing the two fields gives the old hashes); the player
          view shows `extraTurns`, `TURN_BEGAN` says whether a turn is extra (one golden log line: "extra turn 20"),
-         `nextTurn` throws instead of falling back, architecture.md's state shape, a definition test. Next: PR.
+         `nextTurn` throws instead of falling back, architecture.md's state shape, a definition test. Merged as #73 (with
+         the parallel fuzzer, D-117). Next: M2-14c, Platinum Angel and Magma Phoenix.
        - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
          `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
          static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on
