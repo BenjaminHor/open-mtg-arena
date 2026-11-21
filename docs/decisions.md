@@ -1880,3 +1880,11 @@ owner's answer to the D-089 open question, option (a))
 - Not built, as nothing in the pool can cause them (future-rules): CR 401.5's delay while casting (only mana, tap,
   loyalty and sacrifice costs exist), CR 401.6's new object; and a library becoming revealed mid-action (Nocturnus
   entering) whose top then changes in the same action before a view.
+
+**D-123: The bench baseline reset on a quiet run** · 2026-11-21 · accepted (the owner's choice)
+- `pnpm bench` failed on main on this cloud machine: measures over their +20% gates and `randomGame` near its 100 ms
+  budget, with runs of main differing by up to 40% while reviewers and fuzz games ran alongside. The owner chose to
+  reset `bench/baseline.json` with `pnpm bench --update` on a quieter run: nothing else running, the best of several
+  runs. Close calls are still judged by alternating base and head runs. The 100 ms budget (architecture.md, "on a
+  laptop") stays a hard limit.
+

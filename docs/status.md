@@ -1330,12 +1330,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (Asked 2026-11-21, D-114) Pithing Needle and Sphinx Ambassador name a card. CR 201.4 allows any card in the Oracle
   card reference. Options: (a) any name in the app's card database (recommended; proceeding with this); (b) only names
   in the current pool; (c) any Oracle name, which would ship the full name list with the app.
-- (Asked 2026-11-21) `pnpm bench` fails on main too on this machine: the last two code reviews measured the base over
-  its +20% gates (busyCombat, deepStack) and randomGame near or over 100 ms, so each slice's bench is judged by
-  alternating base and head runs instead. CI doesn't run it. Options: (a) re-baseline `bench/baseline.json` on this
-  cloud machine with `pnpm bench --update`, and keep alternating runs for close calls (recommended; proceeding with this
-  at the next slice that needs it); (b) keep the old baseline and judge by alternating runs only; (c) run the bench in
-  CI on a fixed runner, with its own baseline.
 - (Asked 2026-11-21, D-092) CLAUDE.md says the engine has "no globals". The layer pass is kept in module-level
   `WeakMap`s (and a last-result value), outside the state, as architecture.md's "memoize per state object" allows: a
   kept result can never differ from a fresh one, and the fuzzer checks that after every action. Options: (a) read "no
@@ -1382,6 +1376,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Artillery's two losses kept.)
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
   activation resolves.)
+- (Answered 2026-11-21, D-123: `pnpm bench` failed on main on this machine. The owner chose to reset the baseline on a
+  quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.)
 
 ## Known issues
 - (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is
