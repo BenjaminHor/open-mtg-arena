@@ -1,0 +1,18 @@
+name: Indestructibility plus Weakness on a 1-toughness creature still dies (toughness 0)
+rules: [CR 704.5f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp]
+    hand: [Weakness]
+  p2:
+    battlefield: [Raging Goblin, { card: Indestructibility, attachedTo: p2:Raging Goblin }]
+steps:
+  - p1 cast: Weakness
+    targets: [p2:Raging Goblin]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield: []
+      p2.graveyard contains: [Raging Goblin, Indestructibility]
+      p1.graveyard: [Weakness]

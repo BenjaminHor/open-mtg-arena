@@ -1,5 +1,5 @@
-name: Two Auras on one creature both apply; one on an opponent's creature stays under its caster's control
-rules: [CR 613.4c, CR 303.4e]
+name: Two Auras on one creature both apply; Auras cast on an opponent's creature stay under their caster's control
+rules: [CR 613.4c, CR 608.3c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

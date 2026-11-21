@@ -60,7 +60,7 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       if (!Number.isSafeInteger(host.index) || host.index < 0 || host.index >= hosts.length)
         problems.push(`${player.id}: a permanent is attached to nothing on ${host.player}'s battlefield`);
       else if (host.player === player.id && host.index === i)
-        problems.push(`${player.id}: a permanent can't be attached to itself (CR 303.4d, 301.5c)`);
+        problems.push(`${player.id}: a permanent can't be attached to itself (CR 303.4d)`);
     }
     if (setup.opening.kind === "standard") {
       if (player.hand.length > 0)

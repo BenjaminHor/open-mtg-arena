@@ -1,4 +1,4 @@
-// What an Aura or Equipment is attached to (CR 303.4b, 301.5a), and what an Aura may enchant (CR 702.5a). The one place
+// What an Aura or Equipment is attached to (CR 303.4b; Equipment, later: CR 301.5a), and what an Aura may enchant (CR 702.5a). The one place
 // that reads `CardObject.attachedTo`, so a host that has left the battlefield (a new object, CR 400.7) is never read as
 // still enchanted.
 
@@ -23,7 +23,7 @@ export function attachedHostIn(
   return host !== undefined && battlefield.includes(host) ? host : null;
 }
 
-/** The permanents attached to `host`, a permanent on the battlefield (CR 303.4b, 301.5a), in battlefield order. */
+/** The permanents attached to `host`, a permanent on the battlefield (CR 303.4b; Equipment, later: CR 301.5a), in battlefield order. */
 export function attachmentsOf(state: Pick<GameState, "objects" | "zones">, host: ObjectId): ObjectId[] {
   return state.zones.battlefield.filter((id) => {
     const obj = state.objects[id];

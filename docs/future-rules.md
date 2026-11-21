@@ -112,9 +112,9 @@ first reader of a gone object's power, keywords or controller (deathtouch or lif
 resolution's "this way" record as it's sacrificed, D-079) reads the snapshot, not a recomputation with the effects as
 they are then. *Built (M2-09b2b, D-096):* `perform` snapshots each permanent an event moves, from the state before the
 event (a whole batch, CR 603.10a), into `lastKnownCharacteristics` (controller, types, subtypes, colors, power,
-toughness); protection, Stone Giant's "this creature's power" and a gone object's controller read it. Keywords aren't in
-it yet: the first reader of a gone source's deathtouch or lifelink adds them (`deal-damage.ts` reads `keywordsOf` on
-the source, and skips lifelink for a gone one). A spell leaving the stack keeps no snapshot, which a delayed trigger
+toughness, and since M2-12a keywords); protection, Stone Giant's "this creature's power", a gone object's controller and
+a gone damage source's lifelink (CR 702.15c: Siege-Gang Commander with Lifelink sacrificed for its own ability) read it;
+deathtouch reads it the same way, and gets its scenario with Gorgon Flail (M2-12b, later: CR 702.2e). A spell leaving the stack keeps no snapshot, which a delayed trigger
 made by a spell that deals damage would need. As readers multiply (M2-09c), "computed if it exists, else the snapshot"
 should live in one small module rather than in each reader. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a

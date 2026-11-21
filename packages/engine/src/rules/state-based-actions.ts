@@ -58,8 +58,9 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
 }
 
 /**
- * An Aura attached to nothing, to itself, to something its enchant ability doesn't allow, or to something with
- * protection from it (CR 704.5m, 303.4c-d, 702.16c). The enchant filter is read with the Aura's controller as "you".
+ * An Aura attached to nothing, to something its enchant ability doesn't allow, or to something with protection from it
+ * (CR 704.5m, 303.4c, 702.16c); or to itself, which the setup refuses and nothing in the pool can cause (an Aura that's
+ * also a creature, later: CR 303.4d). The enchant filter is read with the Aura's controller as "you".
  */
 function isAuraIllegallyAttached(state: GameState, aura: ObjectId, cards: CardDatabase): boolean {
   const enchant = enchantFilterOf(state, aura, cards);

@@ -2,7 +2,7 @@
 // No classes, Map or Set, functions or undefined values: JSON.parse(JSON.stringify(state)) gives an equal state.
 // States are never mutated; each change makes a new state that shares the unchanged parts (D-021).
 
-import type { CardType, Color } from "../cards/types.ts";
+import type { CardType, Color, Keyword } from "../cards/types.ts";
 import type { RngState } from "../rng/xoshiro128.ts";
 import type { Casting } from "./casting.ts";
 import type { Combat } from "./combat.ts";
@@ -126,4 +126,6 @@ export type LastKnownCharacteristics = {
   colors: Color[];
   power: number | null;
   toughness: number | null;
+  /** Its keyword abilities, for lifelink on a source that's gone (CR 702.15c; deathtouch, later: CR 702.2e). */
+  keywords: Keyword[];
 };

@@ -1,0 +1,15 @@
+name: Unsummon the host; the Aura goes to the graveyard
+rules: [CR 704.5m]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, { card: Oakenform, attachedTo: p1:Grizzly Bears }, Island]
+    hand: [Unsummon]
+steps:
+  - p1 cast: Unsummon
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Grizzly Bears]
+      p1.graveyard: [Unsummon, Oakenform]

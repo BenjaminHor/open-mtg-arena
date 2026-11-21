@@ -1507,6 +1507,9 @@ every schema change and every change D-024 lists bumps it.
   from it goes to its owner's graveyard as a state-based action (`auraIllegallyAttached`, CR 704.5m, 303.4c-d, 702.16c).
 - Scenario setups can start a permanent attached (`attachedTo` in a battlefield entry; `PermanentSetup.attachedTo` as a
   player and an index into their battlefield), validated and exported.
+- The Lifelink Aura is the first to make a gone damage source's lifelink matter, so the last-known-information snapshot
+  (D-096) now keeps keywords, and damage reads them and the last known controller for a source that has left the
+  battlefield (CR 702.15c).
 - Future impact: Equipment (M2-12b) reuses `attachedTo` and the reader, with an `attach` event for equip (a new
   timestamp, CR 613.7e); Auras put onto the battlefield without being cast choose a host (M2-12d, CR 303.4f-g); an Aura
   enchanting a player (later: CR 702.5d) needs `attachedTo` to name a player.

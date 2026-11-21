@@ -1,0 +1,19 @@
+name: Act of Treason on a creature with Armored Ascension; the Aura's controller's Plains still count, Aura stays theirs
+rules: [CR 303.4e, CR 109.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain]
+    hand: [Act of Treason]
+  p2:
+    battlefield: [Grizzly Bears, { card: Armored Ascension, attachedTo: p2:Grizzly Bears }, Plains, Plains]
+steps:
+  - expect:
+      p2:Grizzly Bears.power: 4
+  - p1 cast: Act of Treason
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 4
+      p2.battlefield contains: [Armored Ascension]

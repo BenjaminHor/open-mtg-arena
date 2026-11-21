@@ -35,7 +35,14 @@ export type Destination =
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
    * (CR 603.2e): no `PERMANENT_TAPPED` event, the one such triggers will see.
    */
-  | { zone: "battlefield"; controller: PlayerId; tapped: true; is?: EntersAs; counters?: Record<string, number> }
+  | {
+      zone: "battlefield";
+      controller: PlayerId;
+      tapped: true;
+      is?: EntersAs;
+      counters?: Record<string, number>;
+      attachedTo?: ObjectId;
+    }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
 

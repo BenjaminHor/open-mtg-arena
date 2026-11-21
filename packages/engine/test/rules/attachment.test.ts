@@ -44,7 +44,7 @@ describe("a setup can start a permanent attached (CR 303.4b, 301.5a)", () => {
       "p1: a permanent is attached to nothing on p2's battlefield",
     ]);
     expect(setupProblems(setup([permanent({ player: "p1", index: 0 })]), TEST_CARDS)).toStrictEqual([
-      "p1: a permanent can't be attached to itself (CR 303.4d, 301.5c)",
+      "p1: a permanent can't be attached to itself (CR 303.4d)",
     ]);
   });
 });
