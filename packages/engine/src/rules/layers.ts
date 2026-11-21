@@ -9,6 +9,7 @@
 // below as its first card does (M2-09).
 
 import type {
+  CardData,
   CardDatabase,
   CardType,
   Color,
@@ -29,8 +30,11 @@ import {
   staticSources,
 } from "./static-effects.ts";
 
-/** One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. */
-export type Layered = {
+/**
+ * One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. Read-only:
+ * results are kept and shared (`start`), so a change is always a copy.
+ */
+export type Layered = Readonly<{
   /** On the battlefield or the stack, its controller (layer 2); a card elsewhere has none: its owner (CR 108.4a). */
   controller: PlayerId;
   supertypes: readonly Supertype[];
@@ -47,7 +51,7 @@ export type Layered = {
   sevenC: readonly LayerSevenCChange[];
   /** Each layer 6 grant of keywords, and its source, for explaining them (the printed ones are in `keywords` too). */
   granted: readonly KeywordGrant[];
-};
+}>;
 
 /** What changes an object's power and toughness in layer 7c, and by how much (CR 613.4c). */
 export type LayerSevenCChange =
@@ -193,9 +197,24 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
   return board;
 }
 
+/**
+ * The printed values with a controller. Made once per card and controller and shared, as most permanents (lands) keep
+ * them unchanged: the pass only ever copies a `Layered` to change it (measured, D-092).
+ */
 function start(obj: CardObject, controller: PlayerId, cards: CardDatabase): Layered {
   const data = cards[obj.oracleId];
   if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
+  const kept = startsKept.get(data) ?? {};
+  const known = kept[controller];
+  if (known !== undefined) return known;
+  const made = printedWith(data, controller);
+  startsKept.set(data, { ...kept, [controller]: made });
+  return made;
+}
+
+const startsKept = new WeakMap<CardData, Partial<Record<PlayerId, Layered>>>();
+
+function printedWith(data: CardData, controller: PlayerId): Layered {
   return {
     controller,
     supertypes: data.printed.supertypes,

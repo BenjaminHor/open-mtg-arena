@@ -9,8 +9,9 @@ import { colorsOf } from "./colors.ts";
 import { layeredOf } from "./layers.ts";
 
 /**
- * An object's protection abilities (CR 702.16), in any zone, like `keywordsOf`: layer 6 of `characteristics()`, printed
- * until effects grant or remove them (later: CR 613.1f). Where they work is the rule's to say (`isProtectedFrom`).
+ * An object's protection abilities (CR 702.16), in any zone, like `keywordsOf`: layer 6 of the layer pass (`layers.ts`),
+ * printed until an effect grants or removes one (later: CR 613.1f). Where they work is the rule's to say
+ * (`isProtectedFrom`).
  */
 export function protectionsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ProtectionQuality[] {
   return layeredOf(state, id, cards)?.protections ?? [];

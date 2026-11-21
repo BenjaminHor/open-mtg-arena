@@ -11,9 +11,10 @@ import { possibleBlocks } from "../combat/declare-blockers.ts";
 import { manaAbilityProblem, manaChoices } from "../mana/activate.ts";
 import { allPayments } from "../mana/payment.ts";
 import { abilitiesOf, isManaAbility } from "../rules/abilities.ts";
+import { controllerOf } from "../rules/controller.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { DecisionId, PlayerId } from "../state/ids.ts";
+import type { DecisionId, ObjectId, PlayerId } from "../state/ids.ts";
 import { orderTriggersProblem } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
@@ -161,7 +162,7 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
  * color ("any color", "{G} or {W}") once per color, the color being part of the activation (D-068).
  */
 function manaAbilityActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
-  return state.zones.battlefield.flatMap((object) =>
+  return controlled(state, player).flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => isManaAbility(def) && manaAbilityProblem(state, player, object, ref, cards) === null)
       .flatMap(({ ref, def }): Action[] => {
@@ -175,11 +176,19 @@ function manaAbilityActions(state: GameState, player: PlayerId, decisionId: Deci
 
 /** Every other activated ability the player could begin activating now (CR 602.2), in battlefield order. */
 function activationActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {
-  return state.zones.battlefield.flatMap((object) =>
+  return controlled(state, player).flatMap((object) =>
     abilitiesOf(state, object, cards)
       .filter(({ ref, def }) => !isManaAbility(def) && activationProblem(state, player, object, ref, cards) === null)
       .map(({ ref }) => ({ type: "ACTIVATE_ABILITY", decisionId, player, object, ability: ref }) as const),
   );
+}
+
+/**
+ * The player's permanents, in battlefield order: only a permanent's controller activates its abilities (CR 602.2). The
+ * problem functions check that too; leaving out the others first halves the work done at every priority (measured).
+ */
+function controlled(state: GameState, player: PlayerId): ObjectId[] {
+  return state.zones.battlefield.filter((object) => controllerOf(state, object) === player);
 }
 
 function landActions(state: GameState, player: PlayerId, decisionId: DecisionId, cards: CardDatabase): Action[] {

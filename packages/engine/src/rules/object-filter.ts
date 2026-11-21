@@ -1,12 +1,12 @@
 // Whether an object fits a description such as "nonblack creature" or "tapped creature an opponent controls"
 // (`ObjectFilter`, cards/types.ts). Targets use it (CR 115), and later costs ("sacrifice a Goblin") and effects ("each
-// creature without flying") will too, so the restrictions are read in one place.
+// creature without flying") will too, so the restrictions are read in one place: `filter-fit.ts`, which the layer pass
+// also uses for static abilities' sets (D-093). This file feeds it the object's characteristics now.
 
 import type { CardDatabase, ObjectFilter } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { isAttacking, isBlocking } from "./combat.ts";
-import { controllerOf } from "./controller.ts";
 import { fits } from "./filter-fit.ts";
 import { layeredOf } from "./layers.ts";
 
@@ -27,10 +27,9 @@ export function matchesFilter(
   const card = layeredOf(state, id, cards);
   if (obj?.kind !== "card" || card === null) return false;
   const controlled = state.zones.battlefield.includes(id) || state.zones.stack.includes(id);
-  // The controller: on the battlefield or the stack, as `controllerOf` says (layer 2 is its own, D-092).
-  const withController = controlled ? { ...card, controller: controllerOf(state, id) } : card;
+  // The pass's controller is `controllerOf`'s (layer 2 is its own, D-092; the fuzzer checks they agree).
   const inCombat = (as: NonNullable<ObjectFilter["combat"]>) => inCombatAs(state, id, as, cards);
-  return fits({ obj, card: withController, controlled, inCombat }, filter, you, thatPlayer);
+  return fits({ obj, card, controlled, inCombat }, filter, you, thatPlayer);
 }
 
 function inCombatAs(state: GameState, id: ObjectId, as: NonNullable<ObjectFilter["combat"]>, cards: CardDatabase) {

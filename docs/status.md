@@ -546,6 +546,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          before combat, Merfolk Sovereign on an opponent's Merfolk and after blocks, Coat of Arms across players, two
          Coats, Relentless Rats becoming lethal, Archdruid and Pikemaster only yours, Burst of Speed and a tap ability,
          Overrun and a later creature, Glorious Charge on Black Knight, Overrun on Mist Leopard).
+       - Review fixes, part 1 (c804684): the cache key with the rule modifiers and a unit test; one filter core
+         (`filter-fit.ts`); `creaturesGet` requires creatures and the definition check refuses combat in static
+         filters; the `alone` cache replaced by `elsewhere` in the kept pass; CR 613.6 unit-tested; `later:` for 613.7
+         and 205.3m; `inspect` names a grant's source; the scenarios both reviews asked for (34 in `m2-09a/`).
+         Part 2: Elvish Archdruid counted by `manaAvailable` (scenario `elvish-archdruid-x.yaml`); the
+         `layers.freshPass` measure; docs (D-092, architecture.md, future-rules, rules README, reader comments); a
+         random game back from 103 ms to 82 ms (D-092: printed values shared, basic land abilities made once, legal
+         actions ask only the player's permanents), baseline updated. Next: re-mutate, fuzz, PR.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).
@@ -735,6 +743,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-21, D-092) CLAUDE.md says the engine has "no globals". The layer pass is kept in module-level
+  `WeakMap`s (and a last-result value), outside the state, as architecture.md's "memoize per state object" allows: a
+  kept result can never differ from a fresh one, and the fuzzer checks that after every action. Options: (a) read "no
+  globals" as "no hidden state that can change a result", allowing these kept values (recommended; proceeding with
+  this); (b) keep the pass inside a per-call context passed to every reader instead, a signature change across the
+  engine; (c) drop keeping it, and accept a random game about five times slower.
 - (Asked 2026-11-20, M2-09) The M2-09 spec asks for "at least one dependency example from the CR" (CR 613.8: within a
   layer, an effect that changes what another applies to goes first). No card in the pool, or in M2-09's 24, has two
   effects in one layer where that matters, so it would be machinery only test cards exercise. Options: (a) build

@@ -5,7 +5,14 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `controller.ts`: `controllerOf(state, id)`: who controls an object (CR 110.2, 112.2, 113.8; a card in another zone
   has no controller and the owner answers for it, CR 108.4a). Control-changing effects (layer 2) will be added here.
 
-- `abilities.ts`: `keywordsOf` and `staticAbilitiesOf` (layer 6, printed for now); `findAbility` (by its ref); `stackAbilityDef` (an ability on the stack, from its source's
+- `layers.ts`: the layer pass (CR 613, D-092): `layeredOf`, `layered`, every object's characteristics computed once
+  per state for the battlefield and the stack, kept per its inputs; `layeredFresh` and `layeredOfFresh`, computed
+  afresh, for the fuzzer's check that the kept pass is right. Every reader below reads it.
+- `static-effects.ts`: static abilities that change other objects (anthems, D-093): their sets (CR 611.3a), the
+  keywords they grant in layer 6 and what they add in 7c.
+- `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
+  `matchesFilter` and the pass.
+- `abilities.ts`: `keywordsOf` and `staticAbilitiesOf` (layer 6: printed and granted); `findAbility` (by its ref); `stackAbilityDef` (an ability on the stack, from its source's
   card, CR 113.7a); `abilitiesOf(state, id, cards)`: an object's activated abilities with their refs (printed, then a basic
   land type's intrinsic mana ability, CR 305.6); `isManaAbility` (CR 605.1a).
 - `summoning-sickness.ts`: `canUseTapAbilities` (CR 602.5a, 302.6, haste 702.10c), only for creatures.
@@ -14,7 +21,7 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   (CR 608.2b); `targetSpecsOf` and `effectsOf`, the one place a spell's or ability's targets and effects are read from
   its definition.
 - `object-filter.ts`: `matchesFilter`: whether an object fits an `ObjectFilter` ("nonblack", "tapped", "an opponent
-  controls", "blocking"), each restriction asking only the layer reader it needs.
+  controls", "blocking"), from the object's characteristics now, through `fits`.
 - `colors.ts`: `colorsOf`, an object's colors (layer 5; printed for now).
 - `combat.ts`: `canAttack` (with defender, CR 702.3b), `canBlock` (flying and reach, landwalk, "can't be blocked (except
   by ...)", "can't block": CR 702.9b, 702.17b, 702.14c, 509.1b), `canBlockAnyNumber`, `attacksInCombat`,
@@ -34,7 +41,7 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   types yet).
 - `characteristics.ts`: `characteristics(state, id, cards)`, an object's characteristics through the layers (CR 613),
   composing the readers above. `power-toughness.ts`: `powerAndToughness`, layer 7 (CR 613.4): printed values, then
-  7c effects, counters and rule modifiers. Read power and toughness only through these.
+  7c effects, static abilities, counters and rule modifiers. Read power and toughness only through these.
 
 Tests: `test/mana/` and the scenarios in `test/scenarios/mana/` (abilities, summoning sickness),
 `test/rules/characteristics.test.ts` and `test/scenarios/characteristics/` (layers), and the game tests.

@@ -1329,16 +1329,22 @@ every schema change and every change D-024 lists bumps it.
 - The pass is kept, not stored in the state (architecture.md: "memoize per state object if profiling shows a need,
   never by caching values inside the state"): module-level `WeakMap`s keyed by exactly what it reads (`LayerInputs`:
   the objects, the effects, the battlefield, the stack, the rule modifiers, and the card database), plus the last
-  result. This is the one module-level value in the engine; CLAUDE.md's "no globals" means no hidden state that can
-  change a result, and this can't: the pass is pure, its type lets it read only its inputs, the state is never changed
-  in place, and the fuzzer checks after every action that the kept pass equals a fresh one (`layersMatchFreshPass`).
+  result. These kept values (`computedFor`, `last`, `zonesKept`, and `startsKept`, each card's printed values with a
+  controller) are the engine's only module-level values; CLAUDE.md's "no globals" means no hidden state that can change
+  a result, and these can't: the pass is pure, its type lets it read only its inputs, the state is never changed in
+  place, a `Layered` is read-only (shared results are only ever copied to change), and the fuzzer checks after every
+  action that the kept pass equals a fresh one (`layersMatchFreshPass`). The owner is asked to confirm this reading of
+  "no globals" (status.md, Open questions).
   A new layer that reads more (combat, for "attacking creatures") adds it to `LayerInputs` and the key.
 - Measured: before keeping it, an action was about 5 times slower; keyed by state object, 2 to 3 times; keyed by its
   inputs, with the last-result shortcut, 1.2 to 1.6 times (the pass reruns whenever an object changes). A profile then
   showed `zoneOf` searching every library first; searching the battlefield and the stack first brought a random game
-  back under its 100 ms budget (98.5 ms on this machine, against 61 before the pass). The baseline is updated for that
-  (bench/README.md): the layer system's cost, which the next slices build on. The budget margin is thin; incremental
-  recomputation, or keeping unchanged objects' results, would be the next step if a benchmark asks.
+  back under its 100 ms budget (98.5 ms on this machine, against 61 before the pass); anthems and the review fixes
+  took it to 103. A profile then found three cheap fixes outside the pass's logic: each card's printed values made
+  once and shared (most permanents are lands nothing changes), the basic land types' mana abilities made once, and
+  legal actions asking only the player's own permanents for abilities. A random game is now 82 ms; the baseline is
+  updated for that, with a new measure of a fresh pass (`layers.freshPass`). Incremental recomputation would be the
+  next step if a benchmark asks.
 
 **D-093: Anthems and granted keywords in the layer pass (M2-09a)** · 2026-11-20 · accepted
 - Static abilities that change other objects are `StaticAbilityDef`s read inside the pass (`rules/static-effects.ts`):

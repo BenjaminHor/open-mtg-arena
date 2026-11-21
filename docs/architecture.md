@@ -106,7 +106,9 @@ Objects point at their card definition by `oracleId` (the printed values live th
 state like counters, damage, tapped, face-down. The stored controller is only the default (CR 110.2, 112.2, 113.8). Current power, toughness, types, colors, abilities and controller are
 computed by `characteristics()`, which applies continuous effects in layer order (CR 613.1),
 using timestamps (CR 613.7) and dependencies (CR 613.8). Memoize per state object if profiling
-shows a need, never by caching values inside the state.
+shows a need, never by caching values inside the state. The layer pass (`rules/layers.ts`) is kept this way, in
+module-level `WeakMap`s keyed by exactly the inputs it reads: the engine's one exception to "no module-level values",
+allowed because a kept result can never differ from a fresh one, which the fuzzer checks after every action (D-092).
 
 ## Actions and decisions
 
