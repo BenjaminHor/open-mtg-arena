@@ -715,6 +715,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-11b built (2026-11-21): Siege-Gang Commander (three Goblins; "sacrifice a Goblin", a token or itself),
+         Captain of the Watch (three Soldiers it pumps, other Soldiers too, not an opponent's), Cemetery Reaper (exile a
+         creature card, a Zombie it pumps; no token if the target is gone, its ruling), Gargoyle Castle ({C}; a 3/4 flying
+         artifact Gargoyle), 202 cards, 13 scenarios in `cards/m2-11b/` with Goblin Chieftain, Veteran Armorsmith and two
+         Reapers; no engine change; the golden games already cover their mechanics. Next: rules-judge, PR; then M2-12.
        - M2-11a built (2026-11-21, D-101): `cardDataOf` everywhere (a source scan forbids `cards[...]`), tokens as card
          objects carrying their data, `createToken` / `ceaseToExist` events, CR 704.5d, `createTokens`, Ant Queen and
          Howl of the Night Pack (198 cards), 9 scenarios in `cards/m2-11/` (enters triggers, dies, bounced, stolen,
@@ -723,8 +728,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          more (creator owns a token made by a stolen Ant Queen, an opponent's token triggers Soul Warden, summoning
          sickness, to a library, Howl with no Forests); `isToken` for "card" filters; the state-based action's scan of
          every object made each action ~3 µs slower (bench over budget), now `for ... in` with the token test first, back
-         to main's numbers; a token ceasing to exist in a hidden zone is shown only by where. Fuzz 300 clean. Next: PR;
-         then M2-11b.
+         to main's numbers; a token ceasing to exist in a hidden zone is shown only by where. Fuzz 300 clean. Merged as #58.
        - M2-11 plan (2026-11-21, with the advisor's review), two PRs.
          - Model: a token is a `CardObject` with `token: CardData`, its characteristics as the creating effect states
            them (CR 111.3; name = subtypes + "Token" unless stated, CR 111.4), kept on the object so the layer pass's

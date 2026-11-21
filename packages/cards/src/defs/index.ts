@@ -27,7 +27,9 @@ import { burstOfSpeed } from "./b/burst-of-speed.ts";
 import { cancel } from "./c/cancel.ts";
 import { canyonMinotaur } from "./c/canyon-minotaur.ts";
 import { capriciousEfreet } from "./c/capricious-efreet.ts";
+import { captainOfTheWatch } from "./c/captain-of-the-watch.ts";
 import { celestialPurge } from "./c/celestial-purge.ts";
+import { cemeteryReaper } from "./c/cemetery-reaper.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
 import { childOfNight } from "./c/child-of-night.ts";
 import { coatOfArms } from "./c/coat-of-arms.ts";
@@ -69,6 +71,7 @@ import { flashfreeze } from "./f/flashfreeze.ts";
 import { fog } from "./f/fog.ts";
 import { forest } from "./f/forest.ts";
 import { furnaceWhelp } from "./f/furnace-whelp.ts";
+import { gargoyleCastle } from "./g/gargoyle-castle.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
 import { glacialFortress } from "./g/glacial-fortress.ts";
@@ -158,6 +161,7 @@ import { serraAngel } from "./s/serra-angel.ts";
 import { shatter } from "./s/shatter.ts";
 import { shivanDragon } from "./s/shivan-dragon.ts";
 import { shock } from "./s/shock.ts";
+import { siegeGangCommander } from "./s/siege-gang-commander.ts";
 import { siegeMastodon } from "./s/siege-mastodon.ts";
 import { signInBlood } from "./s/sign-in-blood.ts";
 import { silence } from "./s/silence.ts";
@@ -227,7 +231,9 @@ export const CARD_DEFS: readonly CardDef[] = [
   cancel,
   canyonMinotaur,
   capriciousEfreet,
+  captainOfTheWatch,
   celestialPurge,
+  cemeteryReaper,
   centaurCourser,
   childOfNight,
   coatOfArms,
@@ -269,6 +275,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   fog,
   forest,
   furnaceWhelp,
+  gargoyleCastle,
   giantGrowth,
   giantSpider,
   glacialFortress,
@@ -358,6 +365,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   shatter,
   shivanDragon,
   shock,
+  siegeGangCommander,
   siegeMastodon,
   signInBlood,
   silence,

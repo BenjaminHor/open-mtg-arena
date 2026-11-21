@@ -1,0 +1,21 @@
+name: Siege-Gang Commander's ability can sacrifice a Goblin token, which then ceases to exist
+rules: [CR 701.21a, CR 704.5d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+    hand: [Siege-Gang Commander]
+steps:
+  - p1 cast: Siege-Gang Commander
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - p1 activate: Siege-Gang Commander
+    sacrifice: p1:Goblin Token#1
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.life: 18
+      p1.graveyard: []
+      p1.battlefield contains: [Siege-Gang Commander, Goblin Token, Goblin Token]

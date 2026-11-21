@@ -1,0 +1,15 @@
+name: Siege-Gang Commander can sacrifice itself, a Goblin, and still deals the damage as it last existed
+rules: [CR 701.21a, CR 113.7a, CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Siege-Gang Commander, Mountain, Mountain]
+steps:
+  - p1 activate: Siege-Gang Commander
+    sacrifice: Siege-Gang Commander
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.life: 18
+      p1.graveyard: [Siege-Gang Commander]

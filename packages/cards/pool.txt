@@ -30,7 +30,9 @@ Burst of Speed
 Cancel
 Canyon Minotaur
 Capricious Efreet
+Captain of the Watch
 Celestial Purge
+Cemetery Reaper
 Centaur Courser
 Child of Night
 Coat of Arms
@@ -72,6 +74,7 @@ Flashfreeze
 Fog
 Forest
 Furnace Whelp
+Gargoyle Castle
 Giant Growth
 Giant Spider
 Glacial Fortress
@@ -162,6 +165,7 @@ Shatter
 Shivan Dragon
 Shock
 Siege Mastodon
+Siege-Gang Commander
 Sign in Blood
 Silence
 Silvercoat Lion

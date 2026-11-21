@@ -1,0 +1,19 @@
+name: Captain of the Watch makes three Soldiers, which get +1/+1 and vigilance from it; the Captain doesn't pump itself
+rules: [CR 603.6a, CR 111.1, CR 613.4c, CR 613.1f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains]
+    hand: [Captain of the Watch]
+steps:
+  - p1 cast: Captain of the Watch
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Captain of the Watch, Soldier Token, Soldier Token, Soldier Token]
+      p1:Soldier Token#2.power: 2
+      p1:Soldier Token#2.toughness: 2
+      p1:Soldier Token#2.colors: [W]
+      p1:Soldier Token#2.abilities contains: [vigilance]
+      p1:Captain of the Watch.power: 3

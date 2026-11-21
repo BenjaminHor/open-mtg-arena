@@ -756,6 +756,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Captain of the Watch",
+      "slug": "captain-of-the-watch",
+      "oracleId": "9f2af06d-8fb7-4276-bb92-3559a6d1fa18",
+      "layout": "normal",
+      "manaCost": "{4}{W}{W}",
+      "manaValue": 6,
+      "typeLine": "Creature — Human Soldier",
+      "oracleText": "Vigilance (Attacking doesn't cause this creature to tap.)\nOther Soldier creatures you control get +1/+1 and have vigilance.\nWhen this creature enters, create three 1/1 white Soldier creature tokens.",
+      "power": "3",
+      "toughness": "3",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Vigilance"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/e/8e3c18f5-89cd-4d33-8d5b-12dacad9f9b3.jpg?1783940522",
+        "large": "https://cards.scryfall.io/large/front/8/e/8e3c18f5-89cd-4d33-8d5b-12dacad9f9b3.jpg?1783940522",
+        "png": "https://cards.scryfall.io/png/front/8/e/8e3c18f5-89cd-4d33-8d5b-12dacad9f9b3.png?1783940522",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/e/8e3c18f5-89cd-4d33-8d5b-12dacad9f9b3.jpg?1783940522"
+      },
+      "artist": "Greg Staples",
+      "set": "m13",
+      "collectorNumber": "8",
+      "scryfallUri": "https://scryfall.com/card/m13/8/captain-of-the-watch?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Celestial Purge",
       "slug": "celestial-purge",
       "oracleId": "ec1f6188-2516-46ac-8a03-7b7285b23a62",
@@ -781,6 +811,34 @@
       "set": "m12",
       "collectorNumber": "11",
       "scryfallUri": "https://scryfall.com/card/m12/11/celestial-purge?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Cemetery Reaper",
+      "slug": "cemetery-reaper",
+      "oracleId": "70fa209f-5e79-44de-81ce-1d8d0d8c1006",
+      "layout": "normal",
+      "manaCost": "{1}{B}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Zombie",
+      "oracleText": "Other Zombie creatures you control get +1/+1.\n{2}{B}, {T}: Exile target creature card from a graveyard. Create a 2/2 black Zombie creature token.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/6/56494d1e-0d7e-4c29-942c-b376ff07cdf8.jpg?1783941084",
+        "large": "https://cards.scryfall.io/large/front/5/6/56494d1e-0d7e-4c29-942c-b376ff07cdf8.jpg?1783941084",
+        "png": "https://cards.scryfall.io/png/front/5/6/56494d1e-0d7e-4c29-942c-b376ff07cdf8.png?1783941084",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/6/56494d1e-0d7e-4c29-942c-b376ff07cdf8.jpg?1783941084"
+      },
+      "artist": "Dave Allsop",
+      "set": "m12",
+      "collectorNumber": "86",
+      "scryfallUri": "https://scryfall.com/card/m12/86/cemetery-reaper?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1936,6 +1994,32 @@
       "set": "m15",
       "collectorNumber": "279",
       "scryfallUri": "https://scryfall.com/card/m15/279/furnace-whelp?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Gargoyle Castle",
+      "slug": "gargoyle-castle",
+      "oracleId": "963f2848-15bd-441b-a55c-635f53b7b63f",
+      "layout": "normal",
+      "manaCost": "",
+      "manaValue": 0,
+      "typeLine": "Land",
+      "oracleText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create a 3/4 colorless Gargoyle artifact creature token with flying.",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/b/ab512e43-894e-40af-ab8a-f33f258dd885.jpg?1783942353",
+        "large": "https://cards.scryfall.io/large/front/a/b/ab512e43-894e-40af-ab8a-f33f258dd885.jpg?1783942353",
+        "png": "https://cards.scryfall.io/png/front/a/b/ab512e43-894e-40af-ab8a-f33f258dd885.png?1783942353",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/b/ab512e43-894e-40af-ab8a-f33f258dd885.jpg?1783942353"
+      },
+      "artist": "Paul Bonner",
+      "set": "m10",
+      "collectorNumber": "225",
+      "scryfallUri": "https://scryfall.com/card/m10/225/gargoyle-castle?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -4486,6 +4570,34 @@
       "set": "m20",
       "collectorNumber": "312",
       "scryfallUri": "https://scryfall.com/card/m20/312/siege-mastodon?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Siege-Gang Commander",
+      "slug": "siege-gang-commander",
+      "oracleId": "ddc7f59a-bbb1-4ba1-82c8-6813fd191940",
+      "layout": "normal",
+      "manaCost": "{3}{R}{R}",
+      "manaValue": 5,
+      "typeLine": "Creature — Goblin",
+      "oracleText": "When this creature enters, create three 1/1 red Goblin creature tokens.\n{1}{R}, Sacrifice a Goblin: This creature deals 2 damage to any target.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/5/f59ff087-97e7-4946-871f-1833abb2558a.jpg?1783934987",
+        "large": "https://cards.scryfall.io/large/front/f/5/f59ff087-97e7-4946-871f-1833abb2558a.jpg?1783934987",
+        "png": "https://cards.scryfall.io/png/front/f/5/f59ff087-97e7-4946-871f-1833abb2558a.png?1783934987",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/5/f59ff087-97e7-4946-871f-1833abb2558a.jpg?1783934987"
+      },
+      "artist": "Aaron Miller",
+      "set": "dom",
+      "collectorNumber": "143",
+      "scryfallUri": "https://scryfall.com/card/dom/143/siege-gang-commander?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

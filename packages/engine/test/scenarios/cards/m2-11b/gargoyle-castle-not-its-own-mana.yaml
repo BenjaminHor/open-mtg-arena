@@ -1,0 +1,15 @@
+name: Once Gargoyle Castle is tapped for {C}, its other ability can't be activated, as that taps it too
+rules: [CR 602.2b, CR 601.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Gargoyle Castle, Forest, Forest, Forest, Forest, Forest]
+steps:
+  - p1 activate: Gargoyle Castle
+    ability: 1
+  - expect:
+      p1.manaPool: { C: 1 }
+  - p1 activate: Gargoyle Castle
+    ability: 2
+    pay: auto
+  - expect error: illegalAction
