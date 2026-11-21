@@ -1,6 +1,6 @@
 // legalActions: every action a player may take right now (docs/architecture.md, "Engine API"), except `CONCEDE`,
-// which is always allowed and never listed (D-042), and values of X above the decision's `upTo`, which are legal but
-// endless (D-058). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
+// which is always allowed and never listed (D-042), and values of a mana {X} above the decision's `upTo`, which are
+// legal but endless (D-058; a [−X] loyalty cost's `upTo` is a real limit, CR 606.6). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
 // list.
 
 import type { CardDatabase } from "../cards/types.ts";

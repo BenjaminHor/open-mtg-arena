@@ -19,6 +19,7 @@ import type { AbilityRef, BasicLandType } from "../state/objects.ts";
 import type { TriggerRef } from "../state/triggers.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { layeredOf } from "./layers.ts";
+import { isLoyaltyAbility } from "./loyalty.ts";
 
 export type ActivatedAbility = { ref: AbilityRef; def: AbilityDef };
 
@@ -125,7 +126,7 @@ export function isManaAbility(def: AbilityDef): boolean {
   return (
     def.kind === "activated" &&
     def.targets.length === 0 &&
-    !def.cost.some((part) => part.kind === "loyalty") && // a loyalty ability, [−X] included
+    !isLoyaltyAbility(def) &&
     def.effects.some((e) => e.op === "addMana")
   );
 }

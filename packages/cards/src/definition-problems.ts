@@ -339,9 +339,12 @@ const OBJECT_TARGETS: readonly string[] = ["permanent", "spell", "cardInGraveyar
 
 /** Every subject an effect names, in any of its fields. */
 function subjectsOf(effect: Effect): EffectSubject[] {
-  return Object.values(effect).filter(
-    (v): v is EffectSubject => typeof v === "object" && v !== null && ("target" in v || "controllerOf" in v),
-  );
+  const isSubject = (v: unknown): v is EffectSubject =>
+    typeof v === "object" && v !== null && ("target" in v || "controllerOf" in v || "eachControlledBy" in v);
+  const own = Object.values(effect).filter(isSubject);
+  // dealDamage's extra recipients ("and") name subjects of their own.
+  const extra = effect.op === "dealDamage" ? (effect.and ?? []).map((a) => a.to).filter(isSubject) : [];
+  return [...own, ...extra];
 }
 
 /**
@@ -368,7 +371,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
   };
   const objectOnly = (s: EffectSubject) => {
     const kind = targetKind(s);
-    const each = typeof s === "object" && "each" in s;
+    const each = typeof s === "object" && ("each" in s || "eachControlledBy" in s);
     return (
       s === "self" ||
       s === "found" ||
@@ -393,7 +396,8 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
     if (
       effect.op === "dealDamage" &&
-      (playerOnly(effect.from) || (typeof effect.from === "object" && "each" in effect.from))
+      (playerOnly(effect.from) ||
+        (typeof effect.from === "object" && ("each" in effect.from || "eachControlledBy" in effect.from)))
     )
       problems.push(`${where}: damage comes from one object`);
     const of = OBJECT_SUBJECTS[effect.op];
@@ -427,6 +431,17 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
         !OBJECT_TARGETS.includes(targets[s.controllerOf.target]?.kind ?? "")
       )
         problems.push(`${where}: "its controller" names target ${s.controllerOf.target}, which isn't an object`);
+    // "Each creature that player or that planeswalker's controller controls": the target names a player or a
+    // permanent, and the subject sets the controller itself.
+    for (const s of subjectsOf(effect)) {
+      if (typeof s !== "object" || !("eachControlledBy" in s)) continue;
+      const kind = targets[s.eachControlledBy.target]?.kind ?? "";
+      if (!["player", "opponent", "playerOrPlaneswalker", "permanent"].includes(kind))
+        problems.push(
+          `${where}: eachControlledBy names target ${s.eachControlledBy.target}, which isn't a player or permanent`,
+        );
+      if (s.filter.controller !== undefined) problems.push(`${where}: eachControlledBy sets the controller itself`);
+    }
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";
