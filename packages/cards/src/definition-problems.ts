@@ -119,6 +119,7 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     // made it, with its own targets and trigger event.
     for (const [where, delayed] of delayedOf(def))
       problems.push(...delayedProblems(where, delayed), ...triggerProblems(where, delayed));
+    problems.push(...rememberedProblems(def));
   }
   for (const card of pool) {
     if (!defined.has(card.name)) problems.push(`${card.name}: is in the pool but has no definition`);
@@ -143,6 +144,30 @@ function triggerProblems(where: string, trigger: TriggeredAbilityDef): string[] 
     ...subjectProblems(where, trigger.targets, trigger.effects),
     ...triggerWordProblemsOf(where, trigger),
   ];
+}
+
+/**
+ * "That creature" (`"remembered"`) only in a delayed triggered ability whose maker names what it remembers (`about`,
+ * CR 603.7c): anywhere else it would name nothing.
+ */
+function rememberedProblems(def: CardDef): string[] {
+  // Any subject field can hold it, so the effects are searched as written, as JSON.
+  const uses = (effects: readonly Effect[]) => JSON.stringify(effects).includes('"remembered"');
+  const lists = [
+    def.spell?.effects ?? [],
+    ...(def.abilities ?? []).map((a) => a.effects),
+    ...(def.triggers ?? []).map((t) => t.effects),
+  ];
+  const problems: string[] = [];
+  for (const effects of lists) {
+    const makers = flatEffects(effects).filter((e) => e.op === "createDelayedTrigger");
+    const own = flatEffects(effects).filter((e) => e.op !== "createDelayedTrigger");
+    if (uses(own)) problems.push(`${def.name}: "remembered" is only for a delayed triggered ability`);
+    for (const maker of makers)
+      if (maker.op === "createDelayedTrigger" && maker.about === undefined && uses(maker.ability.effects))
+        problems.push(`${def.name}: a delayed ability that says "that creature" needs its maker's \`about\``);
+  }
+  return problems;
 }
 
 /** Each delayed triggered ability the card's spell, abilities and triggers make, named by what makes it. */
@@ -288,6 +313,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       s === "self" ||
       s === "found" ||
       s === "triggeringObject" ||
+      s === "remembered" ||
       each ||
       kind === "permanent" ||
       kind === "spell" ||

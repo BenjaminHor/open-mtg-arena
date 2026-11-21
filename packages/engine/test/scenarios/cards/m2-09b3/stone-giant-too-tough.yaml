@@ -1,0 +1,16 @@
+name: Stone Giant can't target a creature whose toughness isn't less than its power, nor an opponent's creature
+rules: [CR 115.2, CR 601.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stone Giant, Craw Wurm]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  # Craw Wurm's toughness 4 isn't less than Stone Giant's power 3.
+  - p1 activate: Stone Giant
+    targets: [p1:Craw Wurm]
+  - expect error: illegalAction
+  - p1 activate: Stone Giant
+    targets: [p2:Grizzly Bears]
+  - expect error: illegalAction

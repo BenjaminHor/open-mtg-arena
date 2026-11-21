@@ -26,7 +26,9 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    instead was discarded.
 3. **Perform** (`perform.ts`): a `switch` that calls the primitives in `zones/`, `permanents/`, `effects/`, `mana/`
    and `game/land-played.ts`, which emit the `GameEvent`s. Each event is performed whole: destroying a permanent is
-   its move to the graveyard (CR 701.8a), not a second event.
+   its move to the graveyard (CR 701.8a), not a second event. First, each permanent the event moves has its
+   characteristics snapshotted, all from the state before the event, as last known information (CR 608.2h, 603.10a,
+   `GameState.lastKnownCharacteristics`, D-096).
 4. **Trigger** (`happen.ts`, `checkTriggers`): once, after everything, with the state from before, for abilities that
    look back in time (CR 603.10). It calls `detectTriggers` (`triggers/`), which adds what triggered to
    `GameState.pendingTriggers`; they go on the stack the next time a player would receive priority (CR 117.5, 603.3).

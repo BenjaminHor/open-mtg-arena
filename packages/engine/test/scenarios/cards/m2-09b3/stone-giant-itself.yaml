@@ -1,0 +1,26 @@
+name: Stone Giant can target itself once its toughness is less than its power (its ruling)
+rules: [CR 115.2, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stone Giant, Mountain, Mountain, Mountain, Mountain]
+    hand: [Kindled Fury, Kindled Fury]
+steps:
+  - p1 activate: Stone Giant
+    targets: [p1:Stone Giant]
+  - expect error: illegalAction
+  - p1 cast: Kindled Fury
+    targets: [p1:Stone Giant]
+    pay: auto
+  - all pass: once
+  - p1 cast: Kindled Fury
+    targets: [p1:Stone Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Stone Giant.power: 5
+  - p1 activate: Stone Giant
+    targets: [p1:Stone Giant]
+  - all pass: once
+  - expect:
+      p1:Stone Giant.abilities contains: [flying]

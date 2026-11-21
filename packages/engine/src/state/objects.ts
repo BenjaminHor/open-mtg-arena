@@ -93,9 +93,10 @@ export type AbilityRef =
   | { kind: "triggered"; index: number }
   /**
    * A delayed triggered ability (CR 603.7): written on no card, but made by an effect as a spell or ability resolved,
-   * so it carries its own text.
+   * so it carries its own text, and the objects that effect named ("destroy that creature", CR 603.7c) when it named
+   * any (`objects` is left out otherwise, so older saved games are unchanged).
    */
-  | { kind: "delayed"; ability: TriggeredAbilityDef };
+  | { kind: "delayed"; ability: TriggeredAbilityDef; objects?: ObjectId[] };
 
 /** The basic land types (CR 305.6). */
 export type BasicLandType = "Plains" | "Island" | "Swamp" | "Mountain" | "Forest";

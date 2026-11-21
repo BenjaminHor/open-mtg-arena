@@ -117,6 +117,7 @@ function emptyGame(setup: GameSetup): GameState {
     dealtDeathtouchDamage: [],
     pendingTriggers: [],
     lastKnown: {},
+    lastKnownCharacteristics: {},
     delayedTriggers: [],
     turnHistory: newTurnHistory(),
     work: [],

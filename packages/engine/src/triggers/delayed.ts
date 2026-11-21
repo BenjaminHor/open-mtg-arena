@@ -9,6 +9,7 @@ import type { Progress } from "../game/progress.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
 import type { DelayedTrigger, PendingTrigger } from "../state/triggers.ts";
 import { matches } from "./match-event.ts";
 
@@ -17,11 +18,22 @@ import { matches } from "./match-event.ts";
  * controlled that spell or ability as it resolved (CR 603.7d, 603.7e): `context.self` and `context.controller`. The
  * source's card is read from the resolving object itself, as the source may already be gone (CR 113.7a).
  */
-export function createDelayedTrigger(state: GameState, ability: TriggeredAbilityDef, context: EffectContext): Progress {
+export function createDelayedTrigger(
+  state: GameState,
+  ability: TriggeredAbilityDef,
+  context: EffectContext,
+  objects: readonly ObjectId[] = [],
+): Progress {
   const resolving = state.resolution === null ? undefined : state.objects[state.resolution.object];
   if (resolving === undefined) throw new Error("a delayed trigger is made only as a spell or ability resolves");
   const sourceOracleId = resolving.kind === "card" ? resolving.oracleId : resolving.sourceOracleId;
-  const delayed = { source: context.self, sourceOracleId, controller: context.controller, ability };
+  const delayed: DelayedTrigger = {
+    source: context.self,
+    sourceOracleId,
+    controller: context.controller,
+    ability,
+    ...(objects.length > 0 && { objects: [...objects] }),
+  };
   return { state: { ...state, delayedTriggers: [...state.delayedTriggers, delayed] }, events: [] };
 }
 
@@ -43,7 +55,7 @@ export function detectDelayed(state: GameState, events: readonly GameEvent[], ca
       fired.push({
         source: delayed.source,
         sourceOracleId: delayed.sourceOracleId,
-        ref: { kind: "delayed", ability: delayed.ability },
+        ref: { kind: "delayed", ability: delayed.ability, ...(delayed.objects && { objects: delayed.objects }) },
         controller: delayed.controller,
         event,
       });

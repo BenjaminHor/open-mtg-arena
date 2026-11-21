@@ -2,6 +2,7 @@
 // No classes, Map or Set, functions or undefined values: JSON.parse(JSON.stringify(state)) gives an equal state.
 // States are never mutated; each change makes a new state that shares the unchanged parts (D-021).
 
+import type { CardType, Color } from "../cards/types.ts";
 import type { RngState } from "../rng/xoshiro128.ts";
 import type { Casting } from "./casting.ts";
 import type { Combat } from "./combat.ts";
@@ -65,6 +66,11 @@ export type GameState = {
    * something on the stack or waiting to go on it might need them; emptied when a player gets priority with both empty.
    */
   lastKnown: Record<ObjectId, CardObject>;
+  /**
+   * Their characteristics as they last existed (CR 608.2h), as computed then, by old id: snapshotted as they left
+   * (`pipeline/perform.ts`), from the state before the whole event (CR 603.10a). Emptied with `lastKnown`.
+   */
+  lastKnownCharacteristics: Record<ObjectId, LastKnownCharacteristics>;
   /** Replacement effects made by resolving spells and abilities (CR 614.1): regeneration shields. All end this turn. */
   replacements: ReplacementEffect[];
   /** Delayed triggered abilities waiting for their event (CR 603.7), in the order they were made. */
@@ -111,3 +117,13 @@ export type Resolution = { object: ObjectId; found: ObjectId[]; exiled: ObjectId
  * "loses life equal to the sacrificed creature's power". Null for a permanent with no power.
  */
 export type Sacrificed = { object: ObjectId; power: number | null };
+
+/** A permanent's computed characteristics, kept as it leaves the battlefield (CR 608.2h). */
+export type LastKnownCharacteristics = {
+  controller: PlayerId;
+  types: CardType[];
+  subtypes: string[];
+  colors: Color[];
+  power: number | null;
+  toughness: number | null;
+};

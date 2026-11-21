@@ -44,9 +44,9 @@ function hasQuality(state: GameState, source: ObjectId, quality: ProtectionQuali
 }
 
 /**
- * A source's colors and subtypes: computed (layers 4 and 5) while it exists; as it last existed if it left. For a gone
- * card these are its printed ones, which is wrong once an effect changed them (a black Zombie from Rise from the Grave
- * that left): last known characteristics are snapshotted next (M2-09b2b; future-rules: snapshot `characteristics()`).
+ * A source's colors and subtypes: computed (layers 4 and 5) while it exists; as it last existed if it left the
+ * battlefield, from the snapshot taken as it left (CR 608.2h): a black Zombie from Rise from the Grave stays black. A
+ * card that left another zone (a spell countered) has its printed ones.
  */
 function qualitiesOf(
   state: GameState,
@@ -55,6 +55,8 @@ function qualitiesOf(
 ): { colors: readonly Color[]; subtypes: readonly string[] } {
   if (state.objects[id]?.kind === "card")
     return { colors: colorsOf(state, id, cards), subtypes: subtypesOf(state, id, cards) };
+  const known = state.lastKnownCharacteristics[id];
+  if (known !== undefined) return { colors: known.colors, subtypes: known.subtypes };
   const gone = state.lastKnown[id];
   const printed = gone === undefined ? undefined : cards[gone.oracleId]?.printed;
   return { colors: printed?.colors ?? [], subtypes: printed?.subtypes ?? [] };

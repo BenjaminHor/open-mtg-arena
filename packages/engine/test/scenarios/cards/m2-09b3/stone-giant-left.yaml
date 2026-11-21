@@ -1,0 +1,26 @@
+name: Stone Giant's delayed ability does nothing to a creature that left the battlefield and came back, a new object
+rules: [CR 603.7c, CR 400.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stone Giant, Grizzly Bears, Forest, Forest]
+  p2:
+    battlefield: [Island]
+    hand: [Unsummon]
+steps:
+  - p1 activate: Stone Giant
+    targets: [p1:Grizzly Bears]
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Unsummon
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - all pass: once
+  - all pass: until end
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Grizzly Bears]
+      p1.graveyard: []

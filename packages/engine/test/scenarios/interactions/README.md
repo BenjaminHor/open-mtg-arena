@@ -34,7 +34,7 @@ Scenario paths are relative to `packages/engine/test/scenarios/`.
 | Triggers | | | | | | | | | | | | | | | | | | | | | | — | n/a | n/a | [baneslayer-hellkite-target](../cards/m2-08e/baneslayer-hellkite-target.yaml) | n/a | n/a | n/a |
 | Indestructible | | | | | | | | | | | | | | | | | | | | | | | — | [regeneration.test.ts](../../permanents/regeneration.test.ts) | n/a | n/a | n/a | n/a |
 | Regeneration | | | | | | | | | | | | | | | | | | | | | | | | — | n/a | n/a | n/a | n/a |
-| Protection | | | | | | | | | | | | | | | | | | | | | | | | | — | [glorious-charge-protection](../cards/m2-09a/glorious-charge-protection.yaml) | n/a | [rise-from-the-grave-protection](../cards/m2-09b2/rise-from-the-grave-protection.yaml) |
+| Protection | | | | | | | | | | | | | | | | | | | | | | | | | — | [glorious-charge-protection](../cards/m2-09a/glorious-charge-protection.yaml) | n/a | [rise-from-the-grave-protection](../cards/m2-09b2/rise-from-the-grave-protection.yaml), [inferno-elemental-risen-gone](../cards/m2-09b3/inferno-elemental-risen-gone.yaml) |
 | Anthems | | | | | | | | | | | | | | | | | | | | | | | | | | — | [nightmare-with-pump](../cards/m2-09b/nightmare-with-pump.yaml) | [becomes-and-statics](../cards/m2-09b2/becomes-and-statics.yaml), [awakener-druid-pump](../cards/m2-09b2/awakener-druid-pump.yaml) |
 | Defined P/T | | | | | | | | | | | | | | | | | | | | | | | | | | | — | n/a |
 | Becomes | | | | | | | | | | | | | | | | | | | | | | | | | | | | — |

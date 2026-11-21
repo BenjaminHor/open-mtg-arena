@@ -27,6 +27,9 @@ export function givePriority(state: GameState, player: PlayerId, cards: CardData
     return { state: startPuttingTriggers(checked.state, player), events: checked.events };
   }
   // With nothing on the stack or waiting to go on it, nothing can need a gone object's last known information.
-  const settled = checked.state.zones.stack.length === 0 ? { ...checked.state, lastKnown: {} } : checked.state;
+  const settled =
+    checked.state.zones.stack.length === 0
+      ? { ...checked.state, lastKnown: {}, lastKnownCharacteristics: {} }
+      : checked.state;
   return { state: waitFor(settled, player, { kind: "priority" }), events: checked.events };
 }

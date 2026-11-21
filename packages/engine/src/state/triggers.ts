@@ -45,4 +45,6 @@ export type DelayedTrigger = {
   sourceOracleId: OracleId;
   controller: PlayerId;
   ability: TriggeredAbilityDef;
+  /** The objects the effect that made it named, "that creature" in its text (CR 603.7c); left out when none. */
+  objects?: ObjectId[];
 };

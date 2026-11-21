@@ -252,8 +252,10 @@ export function runEffect(
       return ifNothingSacrificed(state, effect.effects, context);
     case "ifActivatedThisTurn":
       return ifActivatedThisTurn(state, effect.atLeast, effect.effects, context);
-    case "createDelayedTrigger":
-      return createDelayedTrigger(state, effect.ability, context);
+    case "createDelayedTrigger": {
+      const about = effect.about === undefined ? [] : objectsNamed(state, effect.about, context, cards);
+      return createDelayedTrigger(state, effect.ability, context, about);
+    }
     case "exileGraveyard": {
       const player = onePlayer(state, effect.of, context, cards);
       if (player === null) return { state, events: [] };
