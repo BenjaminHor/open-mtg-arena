@@ -33,6 +33,7 @@ import { captainOfTheWatch } from "./c/captain-of-the-watch.ts";
 import { celestialPurge } from "./c/celestial-purge.ts";
 import { cemeteryReaper } from "./c/cemetery-reaper.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
+import { chandraNalaar } from "./c/chandra-nalaar.ts";
 import { childOfNight } from "./c/child-of-night.ts";
 import { coatOfArms } from "./c/coat-of-arms.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
@@ -257,6 +258,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   celestialPurge,
   cemeteryReaper,
   centaurCourser,
+  chandraNalaar,
   childOfNight,
   coatOfArms,
   consumeSpirit,

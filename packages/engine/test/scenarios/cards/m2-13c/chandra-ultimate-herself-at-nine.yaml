@@ -1,0 +1,14 @@
+name: Chandra Nalaar at 9 targeting herself with her -8 is still there, so she and her controller's creatures take 10
+rules: [CR 608.2b, CR 120.3c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Chandra Nalaar, counters: { loyalty: 9 } }, Grizzly Bears]
+steps:
+  - p1 activate: Chandra Nalaar
+    ability: 3
+    targets: [p1:Chandra Nalaar]
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Chandra Nalaar, Grizzly Bears]
+      p1.life: 20

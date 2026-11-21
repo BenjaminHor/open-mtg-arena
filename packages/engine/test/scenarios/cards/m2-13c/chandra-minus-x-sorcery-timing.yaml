@@ -1,0 +1,29 @@
+name: Chandra Nalaar's -X can't be activated with a spell on the stack, nor on an opponent's turn
+rules: [CR 606.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Chandra Nalaar, Mountain]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 activate: Chandra Nalaar
+    ability: 2
+  - expect error: illegalAction
+  - all pass: once
+  - expect:
+      p2.life: 17
+      p1:Chandra Nalaar.counters: { loyalty: 6 }
+  - all pass: until end
+  - all pass: until main1
+  - expect:
+      active: p2
+      step: main1
+  - p2 pass: once
+  - p1 activate: Chandra Nalaar
+    ability: 2
+  - expect error: illegalAction

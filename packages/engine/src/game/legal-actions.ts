@@ -1,6 +1,6 @@
 // legalActions: every action a player may take right now (docs/architecture.md, "Engine API"), except `CONCEDE`,
-// which is always allowed and never listed (D-042), and values of X above the decision's `upTo`, which are legal but
-// endless (D-058). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
+// which is always allowed and never listed (D-042), and values of a mana {X} above the decision's `upTo`, which are
+// legal but endless (D-058; a [−X] loyalty cost's `upTo` is a real limit, CR 606.6). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
 // list.
 
 import type { CardDatabase } from "../cards/types.ts";
@@ -98,7 +98,8 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
       return legalAmounts(pending).map((amount): Action => ({ ...answer, answer: { kind: "assignDamage", amount } }));
     }
     case "announceX": {
-      // Any whole number is legal (CR 107.3a); these are the ones the player could pay for now, from 0.
+      // Any whole number is legal for {X} (CR 107.3a), up to the loyalty for [−X] (CR 606.6); these are the ones the
+      // player could pay for now, from 0.
       const values = Array.from(
         { length: pending.upTo + 1 },
         (_, value): Action => ({ ...answer, answer: { kind: "announceX", value } }),

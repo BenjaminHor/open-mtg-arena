@@ -323,11 +323,12 @@ export type CostPart =
   | { kind: "sacrificeSelf" }
   /**
    * A loyalty symbol: put `amount` loyalty counters on the source, or remove that many when it's negative (CR 606.4,
-   * 107.7: [+N], [−N]; [0] puts none, and is still a loyalty ability).
+   * 107.7: [+N], [−N]; [0] puts none, and is still a loyalty ability). `"minusX"` is [−X]: X is announced as it's
+   * activated (CR 601.2b, 107.3a), at most the loyalty counters there are (CR 606.6), and that many are removed.
    * An ability with one is a loyalty ability (CR 606.2): activated only as a sorcery, once per turn for its permanent
    * (CR 606.3), and a negative one only with enough counters (CR 606.6).
    */
-  | { kind: "loyalty"; amount: number };
+  | { kind: "loyalty"; amount: number | "minusX" };
 
 /**
  * What one instance of the word "target" may choose (CR 115), and how many (`count`, exactly one when left out).
@@ -456,7 +457,13 @@ export type EffectSubject =
    * "Its controller": the controller of that instance of "target" as the effect applies, or as it last was on the
    * battlefield if an earlier effect of this resolution moved it (CR 608.2h). Polymorph.
    */
-  | { controllerOf: { target: number } };
+  | { controllerOf: { target: number } }
+  /**
+   * "Each creature that player or that planeswalker's controller controls" (Chandra Nalaar): every permanent fitting
+   * the filter (its `controller` left out) that the target controls: the target player, or the targeted planeswalker's
+   * controller as the effect applies (a target that's gone makes Chandra's ability not resolve at all, CR 608.2b).
+   */
+  | { eachControlledBy: { target: number }; filter: ObjectFilter };
 
 /**
  * A token as the effect that creates it defines it (CR 111.3): "a 1/1 green Insect creature token". It has nothing

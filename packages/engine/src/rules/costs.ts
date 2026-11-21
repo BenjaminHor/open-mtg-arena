@@ -6,6 +6,7 @@ import type { AbilityDef, CardDatabase, Color, ManaCost } from "../cards/types.t
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { isTriggerRef, stackAbilityDef } from "./abilities.ts";
+import { hasLoyaltyX } from "./loyalty.ts";
 
 /**
  * The total cost of a spell (CR 601.2f): its mana cost with X as the announced amount of generic mana (CR 107.3a), plus
@@ -79,7 +80,11 @@ export function announcesX(state: GameState, id: ObjectId, cards: CardDatabase):
   switch (obj.kind) {
     case "card":
       return hasX(cardDataOf(obj, cards)?.printed.manaCost ?? null);
-    case "ability":
-      return !isTriggerRef(obj.ability) && hasX(activationManaCost(stackAbilityDef(state, id, cards)));
+    case "ability": {
+      if (isTriggerRef(obj.ability)) return false;
+      // {X} in the mana, or [−X] in the loyalty cost (CR 107.3a, 606.4).
+      const def = stackAbilityDef(state, id, cards);
+      return hasX(activationManaCost(def)) || hasLoyaltyX(def);
+    }
   }
 }

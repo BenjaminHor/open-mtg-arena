@@ -1,0 +1,19 @@
+name: Chandra Nalaar's -X is a loyalty ability too, so it can't follow her +1 the same turn
+rules: [CR 606.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Chandra Nalaar]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 activate: Chandra Nalaar
+    ability: 1
+    targets: [p2]
+  - all pass: once
+  - p1 activate: Chandra Nalaar
+    ability: 2
+  - expect error: illegalAction
+  - expect:
+      p1:Chandra Nalaar.counters: { loyalty: 7 }
+      p2:Grizzly Bears.damage: 0

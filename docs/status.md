@@ -716,6 +716,16 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
+         refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
+         turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing
+         nothing). With her, all five planeswalkers are in. Rules review: no wrong ruling; 3 more scenarios (the −8's
+         planeswalker bolted in response, at herself at 9, the −X's target gone with the counters still paid), stronger
+         assertions, citations trimmed to what's tested, stale docs. Code review: no logic error; 2 scenarios (the −X
+         refused after the +1, with a spell on the stack and on the opponent's turn), a unit test (the −8 on a stolen
+         planeswalker hits its controller's creatures), definition checks for `eachControlledBy` (in `and`, as damage's
+         source, a target that names no player or permanent, a set controller) and [−X] with {X}, stale X comments.
+         Next: PR; then M2-13 is done.
        - M2-13c2a built (2026-11-21, D-112): Ajani Goldmane (222 cards): tokens with statics and "*", the "yourLifeTotal"
          CDA, life totals in the layer pass only once read (bench equal to main after two fixes: an identity test, then
          a `lifeRead` flag; see the code review below); 4 scenarios (gain life, counters and vigilance, the Avatar growing and shrinking with lethal
@@ -725,8 +735,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          cast after the −1). Code review: no stale-life path found; a scenario where combat damage changes life while
          the objects stay the same (the case the cache exists for: two mutants survived the scenarios); life read only
          through `lifeTotalOf`; the players record's identity kept beside the pass, not in its inputs; tokens from
-         delayed triggers checked; the cost recorded honestly (characteristics reads ~12-15% slower, 0.3 µs). Next: PR;
-         then M2-13c2b (Chandra).
+         delayed triggers checked; the cost recorded honestly (characteristics reads ~12-15% slower, 0.3 µs). Fuzz 180
+         clean. Merged as #70. Next: M2-13c2b (Chandra).
        - M2-13c2 plan (2026-11-21, with the advisor's review), two PRs.
          - M2-13c2a, Ajani Goldmane: +1 gain 2 life; −1 a +1/+1 counter on each creature you control, then those gain
            vigilance (the same set, nothing changes between); −6 a white Avatar token whose power and toughness are each

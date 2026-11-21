@@ -70,7 +70,8 @@ every player in APNAP order (CR 101.4).
 `from`, `to`, `of` and `who` are `EffectSubject`s: `"self"`, `"you"`, `"eachPlayer"`, `"triggeringPlayer"` and
 `"triggeringObject"` (a triggered ability's "that player" and "that creature"), `"found"` (what an earlier
 `search` of this resolution found, kept in `GameState.resolution`, D-064), `{ each: filter }` (every permanent fitting
-it now, CR 608.2h), `{ target: i }` for the still-legal targets of the i-th instance of "target", or
+it now, CR 608.2h), `{ eachControlledBy: { target: i }, filter }` (every permanent fitting the filter that the target
+player, or the targeted permanent's controller, controls now), `{ target: i }` for the still-legal targets of the i-th instance of "target", or
 `{ controllerOf: { target: i } }` for that target's controller ("its controller", from last known information if it's
 gone, CR 608.2h), or `"attached"` (an Aura's or Equipment's "enchanted creature", as it last was if the source is gone,
 CR 303.4m, 608.2h). A subject with no

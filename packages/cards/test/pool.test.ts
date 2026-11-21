@@ -255,6 +255,47 @@ describe("definitionProblems", () => {
     );
   });
 
+  it("refuses [−X] with {X} in one cost, and an eachControlledBy that names an object or sets the controller", () => {
+    const chandraCard = POOL.cards.find((c) => c.name === "Chandra Nalaar");
+    const chandraDef = CARD_DEFS.find((d) => d.name === "Chandra Nalaar");
+    if (chandraCard === undefined || chandraDef?.abilities === undefined)
+      throw new Error("Chandra Nalaar isn't in the pool");
+    const [plus, minusX, ultimate] = chandraDef.abilities;
+    if (plus === undefined || minusX === undefined || ultimate === undefined)
+      throw new Error("Chandra has 3 abilities");
+    const bothX: AbilityDef = { ...minusX, cost: [...minusX.cost, { kind: "mana", cost: [{ kind: "x" }] }] };
+    const subject = (target: number, controller?: "you"): Effect => ({
+      op: "dealDamage",
+      amount: 10,
+      from: "self",
+      to: { target: 0 },
+      and: [
+        {
+          to: { eachControlledBy: { target }, filter: { types: ["creature"], ...(controller && { controller }) } },
+          amount: 10,
+        },
+      ],
+    });
+    const spellTarget: TargetSpec = { kind: "spell", filter: {} };
+    const onSpell: AbilityDef = { ...ultimate, targets: [...ultimate.targets, spellTarget], effects: [subject(1)] };
+    const setsController: AbilityDef = { ...ultimate, effects: [subject(0, "you")] };
+    const damageFrom: AbilityDef = {
+      ...plus,
+      effects: [
+        { op: "dealDamage", amount: 1, from: { eachControlledBy: { target: 0 }, filter: {} }, to: { target: 0 } },
+      ],
+    };
+    const bad: CardDef = { ...chandraDef, abilities: [plus, bothX, onSpell, setsController, damageFrom] };
+    expect(definitionProblems([bad], [chandraCard])).toEqual(
+      expect.arrayContaining([
+        "Chandra Nalaar ability 2: both [−X] and {X} in one cost",
+        "Chandra Nalaar ability 3: eachControlledBy names target 1, which isn't a player or permanent",
+        "Chandra Nalaar ability 4: eachControlledBy sets the controller itself",
+        "Chandra Nalaar ability 5: damage comes from one object",
+      ]),
+    );
+  });
+
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);

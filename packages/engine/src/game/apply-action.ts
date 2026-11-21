@@ -31,6 +31,7 @@ import {
 } from "./choose-targets.ts";
 import { recordControlChanges } from "./control-changes.ts";
 import { playersLose } from "./game-end.ts";
+import { loyaltyXProblem } from "./loyalty-abilities.ts";
 import { passPriority } from "./pass-priority.ts";
 import { playLand, playLandProblem } from "./play-land.ts";
 import { canMulligan, declareMulligan, putOnBottom, setStartingPlayer } from "./pregame.ts";
@@ -185,7 +186,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     case "announceX": {
       if (answer.kind === "cancelCast") return cancel(answered);
       if (answer.kind !== "announceX") return mismatch;
-      const problem = xProblem(answer.value);
+      const problem = xProblem(answer.value) ?? loyaltyXProblem(answered, answer.value, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...nextCastingStep(announceX(answered, answer.value), cards) };
     }

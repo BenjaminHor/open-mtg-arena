@@ -69,8 +69,9 @@ export type DecisionKind =
   /** While casting a spell or activating an ability: choose the target for this instance of "target" (CR 601.2c). */
   | { kind: "chooseTarget"; object: ObjectId; instance: number }
   /**
-   * While casting or activating, first: announce the value of X (CR 601.2b, 107.3a). Any whole number from 0 is
-   * accepted; `upTo` is only how far `legalActions` lists them, the most the player could pay for now.
+   * While casting or activating, first: announce the value of X (CR 601.2b, 107.3a). For a mana {X}, any whole number
+   * from 0 is accepted; `upTo` is only how far `legalActions` lists them, the most the player could pay for now. For a
+   * [−X] loyalty cost, `upTo` is the permanent's loyalty, and more is refused (CR 606.6 and its ruling).
    */
   | { kind: "announceX"; object: ObjectId; upTo: number }
   /**

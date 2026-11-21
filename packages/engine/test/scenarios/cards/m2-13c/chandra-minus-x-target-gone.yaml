@@ -1,0 +1,23 @@
+name: The counters Chandra Nalaar's -X removed stay removed when its target leaves in response
+rules: [CR 608.2b, CR 601.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Chandra Nalaar]
+  p2:
+    battlefield: [Grizzly Bears, Mountain]
+    hand: [Shock]
+steps:
+  - p1 activate: Chandra Nalaar
+    ability: 2
+    x: 3
+    targets: [p2:Grizzly Bears]
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1:Chandra Nalaar.counters: { loyalty: 3 }
+      events contains: [{ type: ABILITY_DID_NOT_RESOLVE }]

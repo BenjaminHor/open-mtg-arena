@@ -1689,3 +1689,14 @@ every schema change and every change D-024 lists bumps it.
   the pass; that mark is the pass's one write, and only ever makes the match stricter. The players record's identity
   (the shortcut before comparing) is kept beside the pass, not in its inputs, which stay what the pass may read.
 
+**D-113: Chandra Nalaar, and [−X] (M2-13c2b)** · 2026-11-21 · accepted
+- [−X] is the loyalty cost `amount: "minusX"`. "Is a loyalty ability" (`isLoyaltyAbility`: timing, once per turn,
+  never a mana ability) is kept apart from "how many counters" (`loyaltyChange`, which needs the announced X), so a
+  [−X] ability can't slip out of once per turn.
+- X is announced like {X} (CR 601.2b, 107.3a), offered up to the loyalty, and an X above it is refused as it's
+  announced (CR 606.6, the card's ruling), never reaching the payment, which would throw on an unpayable cost. X = 0 is
+  allowed and still uses the turn's loyalty ability.
+- "Each creature that player or that planeswalker's controller controls" is a subject, `eachControlledBy`, read from
+  the still-legal target (CR 608.2b): its player, or the planeswalker's controller. With the target, it's one damage
+  event (`dealDamage`'s `and`, CR 608.2f).
+
