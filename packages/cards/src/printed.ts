@@ -90,9 +90,10 @@ function parseColor(color: string): Color {
   return color as Color;
 }
 
-/** Power or toughness. Values like "*" (later: CR 208.2) aren't supported yet. */
-function parsePT(value: string | null, name: string): number | null {
+/** Power or toughness: a number, or "*", which a characteristic-defining ability sets (CR 208.2a). "1+*" isn't yet. */
+function parsePT(value: string | null, name: string): number | "*" | null {
   if (value === null) return null;
+  if (value === "*") return "*";
   if (!/^\d+$/.test(value)) throw new Error(`${name}: power/toughness "${value}" isn't supported yet`);
   return Number(value);
 }

@@ -556,7 +556,36 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          actions ask only the player's permanents), baseline updated. Code review of part 2 (no wrong results): freeze
          the shared starts and basic land abilities (the fresh pass shares them), one usable-mana-ability search and
          one count for `manaAvailable` and auto pay, a payable Archdruid X and an "only yours" scenario, doc wording,
-         `later: CR 602.2` on the controller pre-filter; all fixed. Next: fuzz, PR.
+         `later: CR 602.2` on the controller pre-filter; all fixed (4feab84). Fuzz 200 + 150 clean. Merged as #50.
+         Next: M2-09b.
+       - M2-09b, split in two PRs (2026-11-21). Plan for b1, characteristic-defining abilities (CR 604.3, 208.2a,
+         613.4a): Nightmare, Serpent of the Endless Sea.
+         - Printed power and toughness may be `"*"` (`printed.ts`); a card with one must have a CDA (definition check).
+         - A static ability `powerToughnessEachEqual { to: { count: filter } }` ("power and toughness are each equal to
+           the number of [filter] you control"), applied in layer 7a for its own object in every zone (CR 604.3): the
+           base is the CDA's value, else printed; 7c adds as before. "You" is the controller, or the owner elsewhere
+           (CR 108.4a, 109.5). The count is read from the board as layers 1-6 left it (`fitsOnBoard`); a CDA's filter
+           can't read combat (definition check), nor power or toughness (`ObjectFilter` has no such field). A card outside the battlefield and the
+           stack is computed with the board, so Nightmare in hand is X/X (its ruling).
+         - `cantAttackUnlessDefenderControls { filter }` (Serpent; CR 508.1c), checked per attacker and defending player
+           in `possibleAttacks`.
+         - Scenarios: Nightmare's P/T as Swamps come and go, a nonbasic Swamp (a checkland? no: Swamp subtype only on
+           basics in the pool, so basic Swamps), 0 Swamps dies (SBA), in hand (inspect/characteristics), only yours,
+           with an anthem; Serpent can't attack without a defending Island, can with one; Serpent dies with 0 Islands.
+         - Future impact: 7b (Awakener Druid, b2) sets base P/T after 7a in timestamp order; tokens' CDAs come from
+           their creating effect (CR 604.3a); a CDA counting creatures by power would need dependency (CR 613.8).
+         - b1 built (D-094): Nightmare, Serpent of the Endless Sea; 8 scenarios in `test/scenarios/cards/m2-09b/`
+           (Nightmare growing and dying, a pump keeping it alive, in hand and graveyard; Serpent's restriction, its
+           count, and Alluring Siren), unit tests for the printed "*" and the definition checks, `inspect` showing
+           7a, the Defined P/T column of the interaction matrix, golden pool-231. 188 cards. Mutations 5/5, fuzz 200
+           clean. Rules and code reviews (no wrong results): 5 more scenarios (stack, opponent's hand, Coat of Arms,
+           damage as it shrinks, Siren when able; 69e40a2); `Layered.base` records 7a's base so `inspect` doesn't
+           subtract (7b will set it); both printed P/T must be "*"; stale comments, the 508.1c message, a tripwire on
+           `ObjectFilter`, docs (future-rules, card-scripting, rules README). Bench baseline rewritten: the busy-board
+           measures take their states from the golden games, which now include pool-231, so `legalActions.busyBoard`
+           measures different boards (+12-23%); a random game (fixed decks) is about 3-7% slower, `layerSeven`
+           recording the base (main 80 ms, this branch 86 ms standalone, under the 100 ms budget). Next: PR.
+         b2: Awakener Druid, Rise from the Grave, Stone Giant; subtypes by kind; last known characteristics snapshot.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

@@ -14,12 +14,14 @@ color (5), ability adding and removing (6), and power/toughness (7a–7d), with 
 *Built (M2-09a, D-092, D-093):* one board-wide pass in `rules/layers.ts`, layer by layer, over the battlefield and the
 stack, kept per its inputs; the per-layer readers (`cardTypesOf`, `colorsOf`, `keywordsOf`, `powerAndToughness`...)
 read it. Layer 6 grants keywords (resolved effects and static abilities), 7c adds; a static ability's set is found as
-it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Sorting within a sublayer by timestamp and dependency
+it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
+every zone (M2-09b1, D-094), a card elsewhere computed with the board. Sorting within a sublayer by timestamp and dependency
 arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
-*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). A card outside the battlefield and the
-stack is computed alone, printed values only, which characteristic-defining abilities in every zone will change
-(M2-09b). 7a/7b set the base power and toughness (the early "no printed P/T" return must become "base from 7a/7b,
-else printed"); tokens (CR 111) need a characteristics source other than the card database; an effect on a permanent
+*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). 7b sets the base power and toughness
+after 7a (`Layered.base`), and the early "no printed P/T" return must become "base from 7a/7b, else printed", or an
+animated land gets none. A gone object's power is worked out from today's board unless it's snapshotted as it leaves
+(a dead Nightmare would count the Swamps left; future "snapshot `characteristics()`" item); a granted copy of a
+"power and toughness are each equal to" ability isn't characteristic-defining (CR 604.3a) and belongs in 7b; tokens (CR 111) need a characteristics source other than the card database; an effect on a permanent
 spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet. A layer reading more of the state
 (combat, for "attacking creatures") adds it to `LayerInputs`, the memo's key.
 *Needs now:* every characteristic is read through `characteristics()` or the per-layer readers it composes (D-038),
@@ -309,8 +311,7 @@ the hand. A card cast from a graveyard or exile must go back where it came from.
 (`targetsProblem` in `castProblem`) uses the card in its zone as what targets; cast from a graveyard, a "target card in
 your graveyard" spell would count itself as a choice before it moves to the stack (CR 115.5), so exclude it there.
 
-**Smaller rules noted while closing the coverage gaps (later: in the code).** Power or toughness of `*`
-(CR 208.2) needs characteristic-defining abilities; "another target" (CR 115.4, Arc Trail) needs targets distinct
+**Smaller rules noted while closing the coverage gaps (later: in the code).** "Another target" (CR 115.4, Arc Trail) needs targets distinct
 across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule
 modifiers already behave like; the extra start-of-game steps some formats take (CR 103.2: sideboards, companions).
 

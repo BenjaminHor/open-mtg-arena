@@ -90,6 +90,13 @@ describe("printedCard", () => {
     expect(card("Craw Wurm")).toMatchObject({ power: 6, toughness: 4, colors: ["G"], subtypes: ["Wurm"] });
   });
 
+  it('reads a printed "*", which an ability sets (CR 208.2a), and refuses "1+*", not supported yet', () => {
+    expect(card("Nightmare")).toMatchObject({ power: "*", toughness: "*" });
+    const nightmare = POOL.cards.find((c) => c.name === "Nightmare");
+    if (nightmare === undefined) throw new Error("Nightmare isn't in the pool");
+    expect(() => printedCard({ ...nightmare, power: "1+*" })).toThrow();
+  });
+
   it("parses every card in the pool", () => {
     for (const c of POOL.cards) expect(() => printedCard(c)).not.toThrow();
   });

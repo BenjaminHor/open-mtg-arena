@@ -1,0 +1,14 @@
+name: Serpent of the Endless Sea attacks a defending player who controls an Island, sized by its controller's Islands
+rules: [CR 508.1c, CR 208.2a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Serpent of the Endless Sea, Island, Island, Island]
+  p2:
+    battlefield: [Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Serpent of the Endless Sea]
+  - all pass: until main2
+  - expect:
+      p2.life: 17

@@ -1,0 +1,20 @@
+name: Serpent of the Endless Sea made to attack "if able" must attack once the defending player controls an Island
+rules: [CR 508.1c, CR 508.1d]
+setup:
+  turn: { active: p2, step: upkeep }
+  p1:
+    battlefield: [Alluring Siren, Island]
+  p2:
+    battlefield: [Serpent of the Endless Sea, Island, Island]
+steps:
+  - p2 pass: once
+  - p1 activate: p1:Alluring Siren
+    targets: [p2:Serpent of the Endless Sea]
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p2 attack: []
+  - expect error: illegalAction
+  - p2 attack: [Serpent of the Endless Sea]
+  - all pass: until main2
+  - expect:
+      p1.life: 18

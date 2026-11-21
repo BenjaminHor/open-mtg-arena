@@ -101,8 +101,12 @@ export const furnaceWhelp: CardDef = {
   countered" is `{ kind: "cantBeCountered" }` (it works on the stack, CR 113.6g). Anthems (D-093): "[other] white
   creatures you control get +1/+1 [and have haste]" is `{ kind: "creaturesGet", filter, others?, power, toughness,
   keywords? }`, the filter read relative to the permanent's controller; Coat of Arms is `{ kind:
-  "plusPerSharedCreatureType" }`, Relentless Rats `{ kind: "plusPerOtherSameName" }`. The engine reads them only through
-  `staticAbilitiesOf`.
+  "plusPerSharedCreatureType" }`, Relentless Rats `{ kind: "plusPerOtherSameName" }`. Characteristic-defining abilities
+  (D-094): "[this]'s power and toughness are each equal to the number of Swamps you control" is `{ kind:
+  "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }`, and a card has one exactly
+  when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
+  kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
+  engine reads them only through `staticAbilitiesOf`.
 - Triggered abilities go in `triggers` (D-076), each `{ when, onlyIf?, optional?, targets, effects }`. `when` is the
   trigger condition: "when this creature enters" is `{ kind: "selfEnters" }`, "whenever another creature enters" is
   `{ kind: "anotherEnters", filter: { types: ["creature"] } }` (a filter's `controller` is relative to the trigger's

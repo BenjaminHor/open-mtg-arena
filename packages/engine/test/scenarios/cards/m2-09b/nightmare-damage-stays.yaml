@@ -1,0 +1,24 @@
+name: Damage stays marked on Nightmare as it shrinks, so losing a Swamp after a Shock destroys it
+rules: [CR 704.5g, CR 120.3e, CR 613.4a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Nightmare, Swamp, Swamp, Swamp]
+  p2:
+    battlefield: [Mountain, Forest, Forest, Forest, Forest, Forest]
+    hand: [Shock, Acidic Slime]
+steps:
+  - p2 cast: Shock
+    targets: [p1:Nightmare]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Nightmare.damage: 2
+      p1:Nightmare.toughness: 3
+  - p2 cast: Acidic Slime
+    pay: auto
+  - all pass: once
+  - p2 choose: p1:Swamp
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Nightmare, Swamp]

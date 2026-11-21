@@ -237,6 +237,46 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it('reports a printed "*" without an ability that defines it, and such an ability without a "*" (CR 208.2a)', () => {
+    const nightmare = POOL.cards.find((c) => c.name === "Nightmare");
+    const bears = POOL.cards.find((c) => c.name === "Grizzly Bears");
+    if (nightmare === undefined || bears === undefined) throw new Error("Nightmare or Grizzly Bears missing");
+    const undefinedStar: CardDef = { name: "Nightmare", oracle: nightmare.oracleText, keywords: ["flying"] };
+    const definedBears: CardDef = {
+      name: "Grizzly Bears",
+      oracle: bears.oracleText,
+      statics: [{ kind: "powerToughnessEachEqual", to: { count: { subtypes: ["Forest"], controller: "you" } } }],
+    };
+    expect(definitionProblems([undefinedStar, definedBears], [nightmare, bears])).toStrictEqual([
+      'Nightmare: a printed "*" needs an ability that defines it, and that ability needs a "*"',
+      'Grizzly Bears: a printed "*" needs an ability that defines it, and that ability needs a "*"',
+    ]);
+    // "*/3" with an ability that sets both: its toughness would be overwritten.
+    const halfStar = { ...nightmare, toughness: "3" };
+    const nightmareDef = CARD_DEFS.find((d) => d.name === "Nightmare");
+    if (nightmareDef === undefined) throw new Error("Nightmare has no definition");
+    expect(definitionProblems([nightmareDef], [halfStar])).toStrictEqual([
+      'Nightmare: a printed "*" needs an ability that defines it, and that ability needs a "*"',
+    ]);
+  });
+
+  it("reports a characteristic-defining count that asks about combat, and a defending player's filter with a controller", () => {
+    const serpent = POOL.cards.find((c) => c.name === "Serpent of the Endless Sea");
+    if (serpent === undefined) throw new Error("Serpent of the Endless Sea missing");
+    const def: CardDef = {
+      name: "Serpent of the Endless Sea",
+      oracle: serpent.oracleText,
+      statics: [
+        { kind: "powerToughnessEachEqual", to: { count: { types: ["creature"], combat: "attacking" } } },
+        { kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"], controller: "opponent" } },
+      ],
+    };
+    expect(definitionProblems([def], [serpent])).toStrictEqual([
+      `Serpent of the Endless Sea: a static ability's filter can't ask about combat or "that player" (D-092)`,
+      'Serpent of the Endless Sea: "defending player controls" already says whose permanents are counted',
+    ]);
+  });
+
   it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {
     const ignite = POOL.cards.find((c) => c.name === "Ignite Disorder");
     if (ignite === undefined) throw new Error("Ignite Disorder missing from the pool");

@@ -23,7 +23,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `object-filter.ts`: `matchesFilter`: whether an object fits an `ObjectFilter` ("nonblack", "tapped", "an opponent
   controls", "blocking"), from the object's characteristics now, through `fits`.
 - `colors.ts`: `colorsOf`, an object's colors (layer 5; printed for now).
-- `combat.ts`: `canAttack` (with defender, CR 702.3b), `canBlock` (flying and reach, landwalk, "can't be blocked (except
+- `combat.ts`: `canAttack` (with defender, CR 702.3b), `canAttackPlayer` ("can't attack unless defending player
+  controls ...", CR 508.1c), `canBlock` (flying and reach, landwalk, "can't be blocked (except
   by ...)", "can't block": CR 702.9b, 702.17b, 702.14c, 509.1b), `canBlockAnyNumber`, `attacksInCombat`,
   `blocksInCombat`, `isBlocked` (CR 506.4, 508.1a, 509.1a, 509.1h), `isAttacking` and `isBlocking` (CR 508.1k,
   509.1g: a blocker stays one after its attacker is gone).
@@ -40,8 +41,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `card-types.ts`: `supertypesOf`, `cardTypesOf`, `subtypesOf`: an object's types (layer 4; printed, as nothing changes
   types yet).
 - `characteristics.ts`: `characteristics(state, id, cards)`, an object's characteristics through the layers (CR 613),
-  composing the readers above. `power-toughness.ts`: `powerAndToughness`, layer 7 (CR 613.4): printed values, then
-  7c effects, static abilities, counters and rule modifiers. Read power and toughness only through these.
+  composing the readers above. `power-toughness.ts`: `powerAndToughness`, layer 7 (CR 613.4): the base from 7a's
+  characteristic-defining abilities, else printed, then 7c effects, static abilities, counters and rule modifiers. Read power and toughness only through these.
 
 Tests: `test/mana/` and the scenarios in `test/scenarios/mana/` (abilities, summoning sickness),
 `test/rules/characteristics.test.ts` and `test/scenarios/characteristics/` (layers), and the game tests.

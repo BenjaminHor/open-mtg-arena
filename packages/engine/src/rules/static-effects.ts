@@ -117,6 +117,8 @@ export function staticPTChanges(
       case "attacksEachCombat":
       case "mustBeBlockedByAllAble":
       case "cantBeCountered":
+      case "powerToughnessEachEqual":
+      case "cantAttackUnlessDefenderControls":
         break;
     }
   }
@@ -127,6 +129,20 @@ export function staticPTChanges(
 function cardName(input: LayerInputs, id: ObjectId, cards: CardDatabase): string | null {
   const obj = input.objects[id];
   return obj?.kind === "card" ? (cards[obj.oracleId]?.printed.name ?? null) : null;
+}
+
+/** How many permanents fit a filter, read from the board as built so far, `you` being the ability's controller. */
+export function countOnBoard(
+  input: LayerInputs,
+  board: Readonly<Record<ObjectId, Layered>>,
+  filter: ObjectFilter,
+  you: PlayerId,
+): number {
+  return input.battlefield.filter((id) => {
+    const obj = input.objects[id];
+    const card = board[id];
+    return obj?.kind === "card" && card !== undefined && fitsOnBoard(obj, card, filter, you);
+  }).length;
 }
 
 /**

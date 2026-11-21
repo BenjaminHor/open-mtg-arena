@@ -27,6 +27,14 @@ describe("log, inspect and replay", () => {
     expect(cli("inspect", ruled, "p2:Gray Ogre")).toMatch(/layer 7c: \+2\/\+1 from rule modifier 1 of the game/);
   });
 
+  it("explains a printed star by the ability that sets it (layer 7a)", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-09b/nightmare", "--out", file);
+    const inspected = cli("inspect", file, "p1:Nightmare");
+    expect(inspected).toMatch(/printed: \*\/\*/);
+    expect(inspected).toMatch(/layer 7a, its ability: 2\/2/);
+  });
+
   it("replays from the setup, and warns when the cached state differs", () => {
     const file = deckGame("8");
     cli("auto", file, "--ai", "both", "--max-actions", "50");

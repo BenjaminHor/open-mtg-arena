@@ -3,6 +3,7 @@
 import {
   type CardDatabase,
   characteristics,
+  controllerOf,
   type GameEvent,
   type GameState,
   type ObjectId,
@@ -10,7 +11,7 @@ import {
 } from "@mtg/engine";
 import { deepEqual, partialMatch } from "./compare.ts";
 import { isRecord } from "./format.ts";
-import { battlefieldOf, nameOf, parseRef, resolveRef, STEP_NAMES, scenarioStep } from "./names.ts";
+import { battlefieldOf, nameOf, type PermanentRef, parseRef, resolveRef, STEP_NAMES, scenarioStep } from "./names.ts";
 import { PLAYERS } from "./setup.ts";
 
 /** Expectation keys the runner supports. `pX.` and `pX:<card>.` forms are listed with a placeholder. */
@@ -96,18 +97,24 @@ function check(
     if (life[2] === "life") return same(ps?.life);
     return same(Object.fromEntries(Object.entries(ps?.manaPool ?? {}).filter(([, n]) => n !== 0)));
   }
-  const property = /^(p\d+:.+?)\.(\w+(?: contains)?)$/.exec(key);
+  const property = /^((?:hand:|graveyard:|stack:)?p\d+:.+?)\.(\w+(?: contains)?)$/.exec(key);
   if (property !== null) {
     const [, refText = "", prop = ""] = property;
     const coming = COMING_EXPECTATIONS[prop];
     if (coming !== undefined) return { error: `arrives in ${coming}` };
-    const ref = parseRef(refText);
+    // `hand:p1:Nightmare`, `graveyard:p1:Nightmare` and `stack:p1:Nightmare` (a spell p1 controls) name a card in that
+    // zone, for what works there (CR 604.3).
+    const zoned = /^(hand|graveyard|stack):(.+)$/.exec(refText);
+    const ref = parseRef(zoned?.[2] ?? refText);
     if (ref === null || player(ref.player) === null)
-      return { error: `"${refText}" isn't a reference like p2:Grizzly Bears` };
-    const id = resolveRef(state, ref, cards);
+      return { error: `"${refText}" isn't a reference like p2:Grizzly Bears or hand:p1:Nightmare` };
+    const inZone = zoned?.[1] as "hand" | "graveyard" | "stack" | undefined;
+    const id = inZone === undefined ? resolveRef(state, ref, cards) : cardInZone(state, inZone, ref, cards);
     const obj = id === null ? undefined : state.objects[id];
     if (obj?.kind !== "card")
-      return { error: `${ref.player} controls no ${ref.card}${ref.nth === 1 ? "" : ` #${ref.nth}`}` };
+      return {
+        error: `${inZone === undefined ? `${ref.player} controls` : `${ref.player}'s ${inZone} has`} no ${ref.card}${ref.nth === 1 ? "" : ` #${ref.nth}`}`,
+      };
     switch (prop) {
       case "tapped":
         return same(obj.tapped);
@@ -177,6 +184,23 @@ function check(
       return { error: coming === undefined ? "unknown expectation" : `arrives in ${coming}` };
     }
   }
+}
+
+/**
+ * The card a reference names in a player's hand or graveyard, or a spell they control on the stack (`#2`: the second
+ * with that name, in zone order, the stack's from the bottom).
+ */
+function cardInZone(
+  state: GameState,
+  zone: "hand" | "graveyard" | "stack",
+  ref: PermanentRef,
+  cards: CardDatabase,
+): ObjectId | null {
+  const ids =
+    zone === "stack"
+      ? state.zones.stack.filter((id) => controllerOf(state, id) === ref.player)
+      : (state.zones.players[ref.player]?.[zone] ?? []);
+  return ids.filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
 }
 
 /** Each wanted item matches a different item of `have` (a match is used only once). */
