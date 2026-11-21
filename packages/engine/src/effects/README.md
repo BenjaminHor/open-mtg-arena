@@ -26,6 +26,7 @@ the one place their effects become changes to the game.
 | `gainKeywords` | "Target creature gains flying until end of turn", "creatures you control gain haste" | A layer 6 effect (CR 613.1f) on the objects `of` names, fixed now (CR 611.2c) |
 | `gainControl` | "Gain control of target creature until end of turn" | A layer 2 effect (CR 613.1b) on the permanents fixed now, to "you"; the control change makes them summoning sick (CR 302.6, D-098) |
 | `untap` | "Untap that creature" | Untaps the permanents `of` names (CR 701.26b) |
+| `doesntUntap` | "Those creatures don't untap during that player's next untap step" | A continuous effect the untap step reads (CR 502.3) on the permanents "those creatures" names now (a rules effect), ending with that untap step (`game/untap-step.ts`) |
 | `cantBeBlocked` | "Target Merfolk creature can't be blocked this turn" | A continuous effect `canBlock` reads (CR 509.1b) on the targets still legal; targets only |
 | `cantBlock` | "can't block this turn" | Creates a continuous effect `canBlock` reads (CR 509.1b) on the targets still legal (CR 608.2b); targets only for now |
 | `destroy` | "Destroy target creature" | Destroys each permanent `of` names (CR 701.8a); `noRegeneration`: "It can't be regenerated", so no shield is used (CR 701.19c) |

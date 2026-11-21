@@ -204,6 +204,10 @@ step is built, D-070: `endStep` repeats `combatDamage` once, read from `Combat`.
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
+"Doesn't untap during [its controller's / that player's] next untap step" is built (D-115): the effect ends when the
+untap step it names is over, in `game/untap-step.ts`. A skipped untap step must not end it: "the next"
+occurrence waits for the first one that isn't skipped (later: CR 614.10a, 500.11), so skipping should simply not begin
+the untap step.
 
 **State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) is built (D-109): its choice is a `keepLegend`
 decision asked before the check, so every caller of a check asks it first (`givePriority`, `cleanupCheck`). Names are
@@ -294,6 +298,8 @@ field paths the same as the state's for that), or have the host send each visibl
 the view. Never let the UI read `baseController` or printed power and toughness directly.
 
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
+An effect lasting until a player's next untap step (Sleep's `doesntUntap`, D-115) never ends if that player leaves:
+leaving must end or drop the effects that name them (later: CR 800.4a).
 *Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
 the player from `turnOrder` (or mark them) so they can't concede twice, and pass priority on if they had it (CR 800.4a).
 `GameResult.winner` is one player: team games (CR 104.2c) and draws for only some players (CR 104.4e) will need a

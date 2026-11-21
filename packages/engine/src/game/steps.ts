@@ -26,6 +26,7 @@ import { andThen, type Progress } from "./progress.ts";
 import { checkStateBasedActions } from "./state-based-actions.ts";
 import { currentTurn } from "./turn.ts";
 import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
+import { untapStep } from "./untap-step.ts";
 import { queueWork } from "./work.ts";
 
 /** Begins a player's turn with its untap step (CR 501.1). Each player's land count starts again (CR 305.2). */
@@ -199,20 +200,6 @@ function beginStep(state: GameState, step: Step, cards: CardDatabase): Progress 
       // No turn-based actions: the active player gets priority.
       return andThen(progress, priorityForActivePlayer);
   }
-}
-
-/** The active player untaps all their permanents at once (CR 502.3). */
-function untapStep(state: GameState, cards: CardDatabase): Progress {
-  const active = currentTurn(state).activePlayer;
-  const untaps = state.zones.battlefield
-    .filter((id) => controllerOf(state, id, cards) === active && isTapped(state, id))
-    .map((object) => ({ kind: "untap", object }) as const);
-  return happen(state, { kind: "simultaneous", events: untaps }, cards);
-}
-
-function isTapped(state: GameState, id: ObjectId): boolean {
-  const obj = state.objects[id];
-  return obj?.kind === "card" && obj.tapped;
 }
 
 function priorityForActivePlayer(state: GameState): Progress {

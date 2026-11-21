@@ -1551,7 +1551,7 @@ T28 taps: p1:Swamp#2
 T28 p1 adds {B} (p1:Swamp#2)
 T28 p1 taps p1:Swamp#2 for mana
 T28 p1 casts Silence
-T28 effect:  p2 can't cast spells until end of turn
+T28 effect: p2 can't cast spells until end of turn
 T28 resolves: Silence
 T28 moves: Silence, stack -> p1's graveyard
 T28 p1's unspent {U}{B}{B}{B}{G} empties

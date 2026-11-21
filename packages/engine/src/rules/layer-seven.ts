@@ -115,6 +115,7 @@ function layer7c(
       case "addKeywords":
       case "cantBeBlocked":
       case "cantCastSpells":
+      case "doesntUntap":
       case "gainControl":
       case "becomes":
         break;

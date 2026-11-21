@@ -49,7 +49,7 @@ after M2-12, all 234 after M2-14.
 | M2-11 | 6 | Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack, Gargoyle Castle |
 | M2-12 | 16 | Armored Ascension, Holy Strength, Indestructibility, Lifelink, Open the Vaults, Pacifism, Ice Cage, Mind Control, Soul Bleed, Unholy Strength, Weakness, Firebreathing, Oakenform, Gorgon Flail, Magebane Armor, Whispersilk Cloak |
 | M2-13 | 5 | Ajani Goldmane, Jace Beleren, Liliana Vess, Chandra Nalaar, Garruk Wildspeaker |
-| M2-14 | 18 | Clone, Convincing Mirage, Djinn of Wishes, Hive Mind, Sleep, Sphinx Ambassador, Telepathy, Time Warp, Twincast, Wall of Frost, Vampire Nocturnus, Magma Phoenix, Warp World, Entangling Vines, Master of the Wild Hunt, Mirror of Fate, Pithing Needle, Platinum Angel |
+| M2-14 | 17 (Master of the Wild Hunt set aside, D-114) | Clone, Convincing Mirage, Djinn of Wishes, Hive Mind, Sleep, Sphinx Ambassador, Telepathy, Time Warp, Twincast, Wall of Frost, Vampire Nocturnus, Magma Phoenix, Warp World, Entangling Vines, Mirror of Fate, Pithing Needle, Platinum Angel |
 
 ## Special rules (M2-14)
 
@@ -278,7 +278,7 @@ The exact lists are written when they're built (D-053's pool rule: only scripted
 | 188 | Kalonian Behemoth | Creature — Beast | KW | shroud |
 | 189 | Llanowar Elves | Creature — Elf Druid | — |  |
 | 190 | Lurking Predators | Enchantment | TR FX | "whenever an opponent casts" trigger; reveal; put onto the battlefield or the bottom |
-| 191 | Master of the Wild Hunt | Creature — Human Shaman | TR TK SP | upkeep trigger; tokens; tap all Wolves, damage dealt each way and divided by the opponent |
+| 191 | Master of the Wild Hunt | Creature — Human Shaman | TR TK SP | upkeep trigger; tokens; tap all Wolves, damage dealt each way and divided by the opponent. Set aside (D-114, pending the owner): that division has no Arena counterpart |
 | 192 | Might of Oaks | Instant | — |  |
 | 193 | Mist Leopard | Creature — Cat | KW | shroud |
 | 194 | Mold Adder | Creature — Fungus Snake | TR K | cast trigger; +1/+1 counter |

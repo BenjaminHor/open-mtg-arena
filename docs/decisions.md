@@ -1700,3 +1700,41 @@ every schema change and every change D-024 lists bumps it.
   the still-legal target (CR 608.2b): its player, or the planeswalker's controller. With the target, it's one damage
   event (`dealDamage`'s `and`, CR 608.2f).
 
+
+**D-114: M2-14's cards checked against MTG Arena (D-089), and its order** · 2026-11-21 · accepted (pending the
+owner's answer to the D-089 open question, option (a))
+- Checked on the Scryfall bulk data of 2026-11-20, under the owner's filter (a paper card with a non-Alchemy Arena
+  printing, 15,689 cards): Clone, Djinn of Wishes, Sleep, Time Warp, Pithing Needle and Platinum Angel are on Arena
+  themselves. The other twelve aren't, but each one's mechanic is on an Arena card: hands revealed (Sen Triplets), the
+  top card revealed (Courser of Kruphix), all permanents shuffled into libraries (The Great Aurora), copies of a spell
+  for other players (Precursor Golem), a card named (Pithing Needle, Runed Halo), another player's library searched
+  (Bribery), face-up exiled cards (Binding Negotiation), "doesn't untap during the next untap step" (52 cards), a
+  card returning from the graveyard by its own ability (34 cards), an Aura with a narrower enchant (many).
+- One part has none: Master of the Wild Hunt's "that creature deals damage ... divided as its controller chooses among
+  any number of those Wolves", a division chosen at resolution by a player other than the ability's controller (0
+  Arena cards). By D-089's option (a), Master of the Wild Hunt is set aside, like Harm's Way (D-090), unless the owner
+  says otherwise; the other 17 are scripted.
+- Order by what each needs from the one before, not the spec's grouping: "doesn't untap" first, then extra turns,
+  Platinum Angel and Magma Phoenix, the "as it enters, choose" replacement (Convincing Mirage, then Pithing Needle,
+  Sphinx Ambassador), revealed information (Telepathy, Vampire Nocturnus), playing a card mid-resolution (Djinn of
+  Wishes), copies of spells (Twincast, Hive Mind), Clone (layer 1), Mirror of Fate, Warp World last (it re-enters
+  every "as it enters" choice at once), then the three final decks.
+- Names chosen for Pithing Needle and Sphinx Ambassador: any card name in the card database (CR 201.4 lets a player
+  name any card in the Oracle card reference; a game only knows its own database). Open question to the owner.
+
+**D-115: "Doesn't untap" (M2-14a: Sleep, Wall of Frost, Entangling Vines)** · 2026-11-21 · accepted
+- The untap step's turn-based action moved to its own file, `game/untap-step.ts` (CR 502.3): the active player's
+  permanents untap together, except those kept tapped.
+- An Aura's "doesn't untap during its controller's untap step" is the static `attachedDoesntUntap`, marked on the host by
+  the layer pass like `cantAttackOrBlock` (so the untap step asks once per permanent).
+- "Doesn't untap during [that player's / its controller's] next untap step" is a continuous effect, `doesntUntap`, with
+  the new duration `"nextUntapStep"`: `during` is a player (Sleep: that player's untap step only, so a slept creature
+  another player controls first still untaps in theirs), or `"itsController"` (Wall of Frost: the first untap step of
+  whoever controls each permanent then, its ruling that the effect follows the creature). After each untap step the
+  effects it used up end, whether or not their permanents were tapped (Wall of Frost's ruling): the whole effect for a
+  player, each permanent the active player controls for "its controller".
+- Sleep's "those creatures" is every creature the player controls as it resolves, tapped by it or not (its ruling), read
+  with the same subject as the tap.
+- "Whenever this creature blocks a creature" is the trigger `selfBlocks`, once per creature it blocks (CR 509.3b).
+- Future impact: "skip your next untap step" must leave these effects for the untap step that does happen (later:
+  CR 614.10a).

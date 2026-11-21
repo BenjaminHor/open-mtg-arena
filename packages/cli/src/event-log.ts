@@ -127,7 +127,14 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "LIFE_LOST":
       return `${e.player} loses ${e.amount} life`;
     case "EFFECT_CREATED":
-      return `effect: ${e.effect.affected.map(name).join(", ")} ${effectChangeText(e.effect.change)} ${durationText(e.effect.duration)}`;
+      return [
+        "effect:",
+        e.effect.affected.map(name).join(", "),
+        effectChangeText(e.effect.change),
+        durationText(e.effect.duration),
+      ]
+        .filter((part) => part !== "")
+        .join(" ");
     case "EFFECT_ENDED":
       return `effect ends: ${e.effect.affected.map(name).join(", ")} ${effectChangeText(e.effect.change)}`;
     case "STATE_BASED_ACTIONS":
@@ -207,6 +214,10 @@ function effectChangeText(change: EffectChange): string {
       return `controlled by ${change.player}`;
     case "cantCastSpells":
       return `${change.players.join(" and ")} can't cast spells`;
+    case "doesntUntap":
+      return change.during === "itsController"
+        ? "doesn't untap during its controller's next untap step"
+        : `doesn't untap during ${change.during}'s next untap step`;
   }
 }
 

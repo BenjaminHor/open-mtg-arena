@@ -60,6 +60,11 @@ export type TriggerCondition =
    */
   | { kind: "selfBlocksOrBlocked" }
   /**
+   * "Whenever this creature blocks a creature": once for each attacking creature it blocks, as blockers are declared
+   * (CR 509.3b). "That creature" is the one it blocks.
+   */
+  | { kind: "selfBlocks" }
+  /**
    * "When this creature becomes the target of a spell or ability": as the target is chosen (CR 601.2c), for a spell, an
    * activated ability or a triggered ability (CR 603.3d).
    */

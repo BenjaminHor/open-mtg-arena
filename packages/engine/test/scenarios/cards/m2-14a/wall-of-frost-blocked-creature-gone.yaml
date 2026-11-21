@@ -1,0 +1,24 @@
+name: Wall of Frost's trigger does nothing if the creature it blocked leaves before it resolves
+rules: [CR 509.3b, CR 400.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hill Giant]
+  p2:
+    battlefield: [Wall of Frost, Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Wall of Frost: Hill Giant }
+  - p1 pass: once
+  - p2 cast: Lightning Bolt
+    targets: [p1:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Hill Giant]
+  - all pass: once
+  - expect:
+      events lacks: [{ type: EFFECT_CREATED }]

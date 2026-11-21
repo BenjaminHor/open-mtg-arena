@@ -716,6 +716,47 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - **M2-13 done** (2026-11-21): planeswalkers, #66 to #71 (223 cards). All five Magic 2010 planeswalkers.
+       - M2-14 plan (2026-11-21, D-114, with the advisor's review): 17 special-rules cards (Master of the Wild Hunt set
+         aside, D-114), one PR per slice, in this order:
+         1. M2-14a "doesn't untap": Sleep, Wall of Frost, Entangling Vines. A duration "during that player's next untap
+            step"; "enchant tapped creature" through `canEnchant` (shared with CR 704.5m). Read Vines's rulings.
+         2. M2-14b Time Warp (CR 500.7): how the next turn is chosen now; several extra turns' order; Sleep's untap step
+            as the extra turn's.
+         3. M2-14c Platinum Angel (CR 104.3: conceding still loses; an empty-library draw after she leaves; the fuzz
+            invariants) and Magma Phoenix (an ability activated from the graveyard, CR 113.6; resolving after the card
+            left it).
+         4. M2-14d "As it enters, choose" (CR 614.12): Convincing Mirage (a basic land type, layer 4), then Pithing Needle
+            (a card name, CR 201.4; loyalty abilities, equip and Phoenix's graveyard ability stopped, mana abilities not).
+         5. M2-14e Sphinx Ambassador: a name chosen by the other player, who mustn't see the searched card (two-worlds).
+         6. M2-14f Telepathy and Vampire Nocturnus: revealed information; the library's top card as a layer input
+            (shaped like `lifeRead`), with a bench against main.
+         7. M2-14g Djinn of Wishes: playing a card while an ability resolves, without paying its mana cost (X, additional
+            costs, the land-play limit).
+         8. M2-14h Twincast, then Hive Mind: copies of spells (CR 707.10), a stack object that isn't a card.
+         9. M2-14i Clone: copy effects in layer 1 (CR 707.2), "as it enters" again; copying a token decided first.
+         10. M2-14j Mirror of Fate; 11. M2-14k Warp World (every "as it enters" choice at once); 12. the three final decks,
+             golden cover and the interaction matrix.
+         - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
+           queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
+           `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
+         `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
+         static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on
+         yourself, a slept creature borrowed by Act of Treason; Wall of Frost, defender, its effect following the
+         creature under Mind Control; Vines, its untapped target refused, the Aura falling off once untapped), 2 unit tests
+         (another player's untap step, the effect ending on an untapped creature), definition checks; mutants 5/5 after
+         the unit test; 2 golden games (they create the effects; neither reaches an untap step that keeps something tapped).
+         Rules review: no wrong ruling a pool card reaches; a latent bug fixed (an "its
+         controller" effect trimmed to some of its permanents was thrown away, so the rest would stay tapped again a turn
+         later; unit test); citations fixed (CR 611.2c doesn't fix a rules effect's objects, the words do; CR 614.10a for
+         skipped steps); 7 more scenarios (Wall of Frost gone before the untap step, vigilance attackers tapped later or
+         never, Sleep then Mind Control, a creature arriving after Sleep, Vines under Mind Control, the Wall's controller
+         stealing the blocked creature), a unit test for one blocker blocking two (CR 509.3b). Vines's second ruling (its
+         target untapped in response) waits for an instant-speed untap in the pool. Code review: no invariant broken; the
+         same bug; effects chosen by their duration too; the switches given the new kinds; 2 scenarios (the blocked
+         creature dying before the untap step, or before the trigger resolves), a definition test (`eachOpponent`); both
+         surviving mutants now caught. Next: PR.
        - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
          refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
          turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing
@@ -725,7 +766,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          refused after the +1, with a spell on the stack and on the opponent's turn), a unit test (the −8 on a stolen
          planeswalker hits its controller's creatures), definition checks for `eachControlledBy` (in `and`, as damage's
          source, a target that names no player or permanent, a set controller) and [−X] with {X}, stale X comments.
-         Next: PR; then M2-13 is done.
+         Fuzz 150 clean (slow: about 10 minutes). Merged as #71.
        - M2-13c2a built (2026-11-21, D-112): Ajani Goldmane (222 cards): tokens with statics and "*", the "yourLifeTotal"
          CDA, life totals in the layer pass only once read (bench equal to main after two fixes: an identity test, then
          a `lifeRead` flag; see the code review below); 4 scenarios (gain life, counters and vigilance, the Avatar growing and shrinking with lethal
@@ -1164,6 +1205,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
+  creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
+  by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
+- (Asked 2026-11-21, D-114) Pithing Needle and Sphinx Ambassador name a card. CR 201.4 allows any card in the Oracle
+  card reference. Options: (a) any name in the app's card database (recommended; proceeding with this); (b) only names
+  in the current pool; (c) any Oracle name, which would ship the full name list with the app.
 - (Asked 2026-11-21) `pnpm bench` fails on main too on this machine: the last two code reviews measured the base over
   its +20% gates (busyCombat, deepStack) and randomGame near or over 100 ms, so each slice's bench is judged by
   alternating base and head runs instead. CI doesn't run it. Options: (a) re-baseline `bench/baseline.json` on this

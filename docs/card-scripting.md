@@ -119,7 +119,12 @@ export const furnaceWhelp: CardDef = {
   spell's target (CR 303.4a), and what it may stay attached to (CR 704.5m). "Enchanted creature gets +1/+2" is the
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
-  is `{ kind: "attachedCantAttackOrBlock" }` (D-102).
+  is `{ kind: "attachedCantAttackOrBlock" }` (D-102); "enchanted creature doesn't untap during its controller's untap
+  step" is `{ kind: "attachedDoesntUntap" }`, and "enchant tapped creature" the filter `{ types: ["creature"], tapped:
+  true }` (D-115).
+- "Those creatures don't untap during that player's next untap step" (Sleep) is `{ op: "doesntUntap", of, during: {
+  target: 0 } }`; "that creature doesn't untap during its controller's next untap step" (Wall of Frost) has `during:
+  "itsController"`, whoever controls it at that untap step (D-115).
 - "At the beginning of the upkeep of enchanted creature's controller, that player loses 1 life" (Soul Bleed) is the
   trigger `{ kind: "beginningOfStep", step: "upkeep", whose: "attachedController" }` with `loseLife` of
   `"triggeringPlayer"`; "its activated abilities can't be activated" (Ice Cage) is the static
@@ -169,7 +174,8 @@ export const furnaceWhelp: CardDef = {
   "landTappedForMana" }`; "whenever this creature deals [combat] damage to [an opponent / a player]" is `{ kind:
   "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
   "you" }`, with "that much" the amount `"thatMuch"`. "Whenever this creature blocks or becomes blocked by a creature"
-  is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "When this creature
+  is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`; "whenever this creature
+  blocks a creature" is `{ kind: "selfBlocks" }` (once per creature it blocks, CR 509.3b). "When this creature
   becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`; "when enchanted creature becomes the target
   of a spell or ability" is `{ kind: "attachedBecomesTarget" }`. "At the beginning of the next end step,
   [effects]" is `{ op: "createDelayedTrigger", ability: { when: { kind: "beginningOfStep", step: "end", whose: "each"

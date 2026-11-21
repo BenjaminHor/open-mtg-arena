@@ -81,6 +81,12 @@ export function matches(
             ? [{ player: null, object: b.blocker, amount: null }]
             : [],
       );
+    case "selfBlocks":
+      // Once for each attacking creature it blocks, "that creature" being that one (CR 509.3b).
+      if (event.type !== "BLOCKERS_DECLARED") return [];
+      return event.blocks.flatMap((b) =>
+        b.blocker === source ? [{ player: null, object: b.attacker, amount: null }] : [],
+      );
     case "selfBecomesTarget":
       return event.type === "BECAME_TARGET" && event.object === source
         ? [{ player: null, object: null, amount: null }]

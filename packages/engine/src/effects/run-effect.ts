@@ -136,6 +136,22 @@ export function runEffect(
       return attachSelf(state, effect.to, context, cards);
     case "createTokens":
       return createTokens(state, effect.token, effect.amount, context, cards);
+    case "doesntUntap": {
+      // "Those creatures" / "that creature": the ones named now, so a creature that comes later untaps as usual. The
+      // words fix them, not CR 611.2c (which fixes only characteristic and control changes); it's a rules effect,
+      // not a change to characteristics.
+      const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
+      const during =
+        effect.during === "itsController" ? "itsController" : onePlayer(state, effect.during, context, cards);
+      if (affected.length === 0 || during === null) return { state, events: [] };
+      return createContinuousEffect(state, {
+        source: context.self,
+        controller: context.controller,
+        duration: "nextUntapStep",
+        affected,
+        change: { kind: "doesntUntap", during },
+      });
+    }
     case "untap": {
       const ids = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (ids.length === 0) return { state, events: [] };

@@ -1,0 +1,26 @@
+name: An effect on a creature Wall of Frost blocked ends at the next untap step after that creature dies
+rules: [CR 502.3, CR 400.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hill Giant]
+  p2:
+    battlefield: [Wall of Frost, Mountain]
+    hand: [Lightning Bolt]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Wall of Frost: Hill Giant }
+  - all pass: until main2
+  - p1 pass: once
+  - p2 cast: Lightning Bolt
+    targets: [p1:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Hill Giant]
+  - all pass: until upkeep
+  - expect:
+      active: p2
+      events contains: [{ type: EFFECT_ENDED }]

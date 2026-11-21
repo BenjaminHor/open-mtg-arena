@@ -1,0 +1,31 @@
+name: A creature that comes under the slept player's control after Sleep resolves untaps as usual
+rules: [CR 502.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Forest, Forest, Grizzly Bears]
+    hand: [Sleep, Grizzly Bears]
+  p2:
+    battlefield: [Blinding Mage, Plains]
+steps:
+  - p1 cast: Sleep
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 activate: Blinding Mage
+    targets: [p1:Grizzly Bears#2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.tapped: true
+      p1:Grizzly Bears#2.tapped: true
+  - all pass: until upkeep
+  - all pass: until upkeep
+  - expect:
+      active: p1
+      p1:Grizzly Bears.tapped: true
+      p1:Grizzly Bears#2.tapped: false

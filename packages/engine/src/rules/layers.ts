@@ -67,6 +67,8 @@ export type Layered = Readonly<{
   cantBeBlocked: boolean;
   /** Likewise, "its activated abilities can't be activated" (Ice Cage, CR 602.5). */
   cantActivate: boolean;
+  /** Likewise, "doesn't untap during its controller's untap step" (Entangling Vines, CR 502.3). */
+  doesntUntap: boolean;
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
@@ -322,6 +324,7 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
     cantAttackOrBlock: false,
     cantBeBlocked: false,
     cantActivate: false,
+    doesntUntap: false,
   };
 }
 

@@ -13,8 +13,9 @@ import type { TriggerEvent } from "./triggers.ts";
  * How long an effect lasts (CR 611.2a). "Until end of turn" ends in the cleanup step (CR 514.2). "endOfGame": no
  * duration stated (CR 611.2a); it still affects only the objects it began on, which a zone change makes new (CR 400.7).
  * "For as long as this creature remains on the battlefield" ends as its source leaves (CR 611.2b), `moveCard`.
+ * "nextUntapStep" belongs to a "doesn't untap" change: it ends with the untap step that change names (CR 502.3).
  */
-export type Duration = "endOfTurn" | "endOfGame" | "whileSourceOnBattlefield";
+export type Duration = "endOfTurn" | "endOfGame" | "whileSourceOnBattlefield" | "nextUntapStep";
 
 /** A continuous effect from the resolution of a spell or ability (CR 611.2). */
 export type ContinuousEffect = {
@@ -49,6 +50,11 @@ export type EffectChange =
   | { kind: "gainControl"; player: PlayerId }
   /** Not a layer: these players can't cast spells (CR 101.2). It affects no objects. */
   | { kind: "cantCastSpells"; players: PlayerId[] }
+  /**
+   * Not a layer: the affected permanents don't untap during `during`'s next untap step, or, for `"itsController"`, the
+   * next untap step of whoever controls each one then (CR 502.3). Each is dropped from the effect once that step is over.
+   */
+  | { kind: "doesntUntap"; during: PlayerId | "itsController" }
   /** One effect in several layers (CR 613.6): Awakener Druid's Forest, Rise from the Grave's Zombie. */
   | ({ kind: "becomes" } & Becomes);
 

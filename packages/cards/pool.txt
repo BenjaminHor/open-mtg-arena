@@ -67,6 +67,7 @@ Elvish Piper
 Elvish Visionary
 Emerald Oryx
 Enormous Baloth
+Entangling Vines
 Essence Scatter
 Excommunicate
 Fabricate
@@ -186,6 +187,7 @@ Siege-Gang Commander
 Sign in Blood
 Silence
 Silvercoat Lion
+Sleep
 Snapping Drake
 Solemn Offering
 Soul Bleed
@@ -216,6 +218,7 @@ Volcanic Hammer
 Wall of Bone
 Wall of Faith
 Wall of Fire
+Wall of Frost
 Warpath Ghoul
 Weakness
 Whispersilk Cloak
