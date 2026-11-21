@@ -205,6 +205,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Ant Queen",
+      "slug": "ant-queen",
+      "oracleId": "50de88d4-0beb-45e5-9664-d4f0e280e652",
+      "layout": "normal",
+      "manaCost": "{3}{G}{G}",
+      "manaValue": 5,
+      "typeLine": "Creature — Insect",
+      "oracleText": "{1}{G}: Create a 1/1 green Insect creature token.",
+      "power": "5",
+      "toughness": "5",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/e/6ee46d8b-559e-4c33-99fb-b55f00aeee72.jpg?1783942367",
+        "large": "https://cards.scryfall.io/large/front/6/e/6ee46d8b-559e-4c33-99fb-b55f00aeee72.jpg?1783942367",
+        "png": "https://cards.scryfall.io/png/front/6/e/6ee46d8b-559e-4c33-99fb-b55f00aeee72.png?1783942367",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/e/6ee46d8b-559e-4c33-99fb-b55f00aeee72.jpg?1783942367"
+      },
+      "artist": "Trevor Claxton",
+      "set": "m10",
+      "collectorNumber": "166",
+      "scryfallUri": "https://scryfall.com/card/m10/166/ant-queen?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Assassinate",
       "slug": "assassinate",
       "oracleId": "ce979f36-84f2-4419-b400-971263494cc6",
@@ -2393,6 +2421,34 @@
       "set": "m10",
       "collectorNumber": "55",
       "scryfallUri": "https://scryfall.com/card/m10/55/horned-turtle?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Howl of the Night Pack",
+      "slug": "howl-of-the-night-pack",
+      "oracleId": "868b758c-e21c-4079-a1fc-4c89af106f4b",
+      "layout": "normal",
+      "manaCost": "{6}{G}",
+      "manaValue": 7,
+      "typeLine": "Sorcery",
+      "oracleText": "Create a 2/2 green Wolf creature token for each Forest you control.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/0/20fc5ff1-b8bd-44d5-a659-17eeae06736a.jpg?1783939903",
+        "large": "https://cards.scryfall.io/large/front/2/0/20fc5ff1-b8bd-44d5-a659-17eeae06736a.jpg?1783939903",
+        "png": "https://cards.scryfall.io/png/front/2/0/20fc5ff1-b8bd-44d5-a659-17eeae06736a.png?1783939903",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/0/20fc5ff1-b8bd-44d5-a659-17eeae06736a.jpg?1783939903"
+      },
+      "artist": "Lars Grant-West",
+      "set": "m14",
+      "collectorNumber": "178",
+      "scryfallUri": "https://scryfall.com/card/m14/178/howl-of-the-night-pack?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

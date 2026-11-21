@@ -715,6 +715,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-11a built (2026-11-21, D-101): `cardDataOf` everywhere (a source scan forbids `cards[...]`), tokens as card
+         objects carrying their data, `createToken` / `ceaseToExist` events, CR 704.5d, `createTokens`, Ant Queen and
+         Howl of the Night Pack (198 cards), 9 scenarios in `cards/m2-11/` (enters triggers, dies, bounced, stolen,
+         pumped, Overrun), token unit tests, a "no token outside the battlefield at priority" invariant, a Tokens column
+         in the interaction matrix, one golden game. Next: reviews, fuzz, PR; then M2-11b.
        - M2-11 plan (2026-11-21, with the advisor's review), two PRs.
          - Model: a token is a `CardObject` with `token: CardData`, its characteristics as the creating effect states
            them (CR 111.3; name = subtypes + "Token" unless stated, CR 111.4), kept on the object so the layer pass's

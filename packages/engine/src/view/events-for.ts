@@ -74,6 +74,8 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "MANA_EMPTIED":
     case "PERMANENT_UNTAPPED":
     case "COUNTERS_PUT":
+    case "TOKEN_CREATED":
+    case "TOKEN_CEASED_TO_EXIST":
     case "COUNTERS_REMOVED":
     case "PERMANENT_TAPPED":
     case "MANA_ADDED":

@@ -81,6 +81,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     // A spell on the stack carries its casting choices (CR 601.2c; modes, later: CR 700.2); casting (M1-09) fills
     // them in.
     choices: to.zone === "stack" ? { modes: [], x: null, targets: [], division: null } : null,
+    // A token stays a token wherever it goes, until it ceases to exist (CR 111.7, 704.5d).
+    ...(old.token === undefined ? {} : { token: old.token }),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

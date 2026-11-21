@@ -1,0 +1,16 @@
+name: A token Ant Queen creates is "another creature" entering, for Soul Warden; the ability can be activated again and again
+rules: [CR 603.6a, CR 111.1, CR 602.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, Soul Warden, Forest, Forest]
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Soul Warden ability]
+  - all pass: once
+  - expect:
+      p1.life: 21
+      p1.battlefield contains: [Insect Token]

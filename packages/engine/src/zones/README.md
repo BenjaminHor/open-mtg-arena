@@ -22,6 +22,9 @@ events (`pipeline/`, D-056) and are called only by it: code that moves a card pr
   exist; performs the pipeline's `counterObject` event.
 - `stack-abilities.ts`: `putAbilityOnStack` (CR 602.2a) and `removeAbilityFromStack`: an ability isn't a card, so it
   doesn't change zones; it's created on the stack and ceases to exist (CR 608.2n, 608.2b).
+- `create-token.ts`: `createToken` (CR 111.1, 111.2), emitting `TOKEN_CREATED`, and `ceaseToExist` (CR 111.7, 704.5d),
+  emitting `TOKEN_CEASED_TO_EXIST`. A token is a card object carrying its own data (D-101); `moveCard` keeps it.
 - `zone-list.ts`: read or replace one zone's list, and find which zone an object is in.
 
-Tests: through `test/game/start.test.ts` (draws, shuffles and moving cards to the bottom).
+Tests: through `test/game/start.test.ts` (draws, shuffles and moving cards to the bottom); tokens in
+`test/zones/tokens.test.ts` and the scenarios in `cards/m2-11/`.

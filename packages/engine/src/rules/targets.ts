@@ -89,8 +89,15 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       // "Your graveyard" or "a graveyard" names the zone (CR 109.2a), not control: cards there have none (CR 109.4).
       const owners = spec.graveyard === "yours" ? [by.controller] : state.turnOrder;
       const inGraveyards = owners.flatMap((p) => state.zones.players[p]?.graveyard ?? []);
+      // A token there isn't a card (CR 111.6), for the moment before it ceases to exist (CR 704.5d).
+      const isCard = (id: ObjectId) => {
+        const obj = state.objects[id];
+        return obj?.kind === "card" && obj.token === undefined;
+      };
       return objects(
-        inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer)),
+        inGraveyards.filter(
+          (id) => isCard(id) && matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer),
+        ),
       );
     }
   }

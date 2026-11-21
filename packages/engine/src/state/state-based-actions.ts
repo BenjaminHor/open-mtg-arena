@@ -7,6 +7,8 @@ export type StateBasedAction =
   | { kind: "zeroLife"; player: PlayerId }
   /** CR 704.5b: a player who attempted to draw from an empty library since the last check loses. */
   | { kind: "drewFromEmptyLibrary"; player: PlayerId }
+  /** CR 704.5d: a token in a zone other than the battlefield ceases to exist. */
+  | { kind: "tokenOutsideBattlefield"; object: ObjectId }
   /** CR 704.5f: a creature with toughness 0 or less is put into its owner's graveyard. */
   | { kind: "zeroToughness"; object: ObjectId }
   /** CR 704.5g: a creature with toughness above 0 and lethal damage marked on it is destroyed. */

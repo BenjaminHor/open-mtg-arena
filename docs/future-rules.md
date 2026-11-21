@@ -145,7 +145,11 @@ words will need the same before the first card with one.
 battles (CR 306, 310), double-faced, split, adventure and other multi-part cards (CR 709–715), and face-down
 permanents such as morph and manifest (CR 708).
 *Needs now:* an object's characteristics come from "which face or part is active", not straight from a
-single card record; tokens are objects without a deck card. *Watch out* (rules-judge, M1 exit review): many rules
+single card record; tokens are objects without a deck card. *Built (M2-11a, D-101):* tokens are `CardObject`s
+carrying their own `CardData` (read through `cardDataOf`), so the `kind` checks below hold for them; "card" filters ask
+`token === undefined` (CR 111.6). *Still to come:* a token's own activated or triggered abilities (the ability object
+names its source only by `sourceOracleId`); a token that left the battlefield staying put (CR 111.8); a token in a hidden
+zone shown by identity (D-062 shows only an oracle id); copies of permanents (CR 707). *Watch out* (rules-judge, M1 exit review): many rules
 checks skip any object whose `kind` isn't `"card"` (`rules/state-based-actions.ts`, `rules/combat.ts`,
 `rules/power-toughness.ts`, `rules/card-types.ts`, `rules/abilities.ts`, and since M2-04 `rules/targets.ts` and
 `rules/object-filter.ts`, and since M2-09c `effects/control-change.ts`: a stolen token wouldn't become summoning sick). If tokens or spell copies (CR 707.10) become a new object kind, a 0/0 token would quietly

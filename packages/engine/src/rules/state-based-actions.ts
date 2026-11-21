@@ -3,12 +3,16 @@
 
 import type { CardDatabase } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
 import type { StateBasedAction } from "../state/state-based-actions.ts";
 import { keywordsOf } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 
-/** Every state-based action that applies now: players in turn order, then creatures in battlefield order. */
+/**
+ * Every state-based action that applies now: players in turn order, then tokens outside the battlefield, then permanents
+ * in battlefield order.
+ */
 export function stateBasedActions(state: GameState, cards: CardDatabase): StateBasedAction[] {
   const actions: StateBasedAction[] = [];
   for (const player of state.turnOrder) {
@@ -16,6 +20,12 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     if (ps === undefined) continue;
     if (ps.life <= 0) actions.push({ kind: "zeroLife", player });
     if (ps.attemptedDrawFromEmptyLibrary) actions.push({ kind: "drewFromEmptyLibrary", player });
+  }
+  // Found from the objects, not by searching every zone: a token can be anywhere a card can (CR 111.7).
+  for (const object of Object.keys(state.objects) as ObjectId[]) {
+    const obj = state.objects[object];
+    if (obj?.kind === "card" && obj.token !== undefined && !state.zones.battlefield.includes(object))
+      actions.push({ kind: "tokenOutsideBattlefield", object });
   }
   for (const object of state.zones.battlefield) {
     const obj = state.objects[object];

@@ -17,6 +17,7 @@ import { type Characteristics, characteristics } from "../rules/characteristics.
 import type { GameState, LastKnownCharacteristics } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { counterObject } from "../zones/counter.ts";
+import { ceaseToExist, createToken } from "../zones/create-token.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { moveCard } from "../zones/move-card.ts";
@@ -71,6 +72,9 @@ function leavingObjects(event: SingleEvent): ObjectId[] {
     case "untap":
     case "putCounters":
     case "removeCounters":
+    case "createToken":
+    // A token leaves the game from a zone that isn't the battlefield (CR 111.7).
+    case "ceaseToExist":
     case "gainLife":
     case "loseLife":
     case "addMana":
@@ -150,6 +154,10 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return putCounters(state, event.object, event.counter, event.amount);
     case "removeCounters":
       return removeCounters(state, event.object, event.counter, event.amount);
+    case "createToken":
+      return createToken(state, event.token, event.player);
+    case "ceaseToExist":
+      return ceaseToExist(state, event.object);
     case "addMana":
       return addMana(state, event.player, event.mana, event.amount, event.source);
     case "draw":

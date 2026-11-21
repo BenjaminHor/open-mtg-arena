@@ -1472,3 +1472,22 @@ every schema change and every change D-024 lists bumps it.
 - "Whenever a +1/+1 counter is removed from this creature" (`selfCountersRemoved`) triggers once per counter removed
   (CR 603.2c, its ruling); its delayed "put two +1/+1 counters on it at the beginning of the next end step" remembers the
   Hydra (`about: "self"`, D-096) and does nothing if it left.
+
+**D-101: Tokens are card objects carrying their own data (M2-11a)** · 2026-11-21 · accepted
+- A token is a `CardObject` with a `token: CardData` field: the characteristics the creating effect defines, in the shape
+  of a card's printed ones (CR 111.3; named for its subtypes plus "Token" unless the text names it, CR 111.4), with an
+  oracle id of its own (`token:Insect Token`) that names nothing in the database. Not a new object kind: everything that
+  works on permanents works on it (CR 111.6), and the many `kind === "card"` checks that mean "a permanent object" stay
+  right (future-rules, "Card types beyond the M1 pool"). Where "card" matters, the code asks `token === undefined`: a
+  token in a graveyard isn't a "creature card" to target.
+- Every read of card data goes through `cardDataOf(obj, cards)` (or `cardDataByOracleId` for a bare id), in every
+  package; a source scan forbids indexing the database anywhere else. Keeping the data on the object keeps one
+  reference across actions, so the layer pass's per-`CardData` cache (D-092) still works.
+- Creating a token is a pipeline event, `createToken`, emitting `TOKEN_CREATED` (no `ZONE_CHANGED`: it was in no zone
+  before); "enters" triggers match it (CR 603.6a). The creator owns and controls it (CR 111.2). Tokens made together are
+  one simultaneous event. `moveCard` carries `token` along, and a token in any zone but the battlefield ceases to exist
+  as a state-based action (`tokenOutsideBattlefield`, CR 704.5d, 111.7), a `ceaseToExist` event emitting
+  `TOKEN_CEASED_TO_EXIST`; found from the objects, not by searching zones.
+- A token's own activated or triggered abilities would need its data on the ability object (`sourceOracleId` names no
+  card); none in the pool has one yet. A token that has left the battlefield can't move again (later: CR 111.8).
+- The effect op: `createTokens { token: TokenDef, amount }`.

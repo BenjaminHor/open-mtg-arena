@@ -12,15 +12,9 @@ export function cardDataOf(obj: CardObject, cards: CardDatabase): CardData | und
 
 /**
  * The card data an oracle id names: the card an ability on the stack came from, a revealed card. A token's oracle id
- * names no card: a token's abilities would need its data kept on the ability object, and no token in the pool has an
- * activated or triggered ability yet (later).
+ * names none, so this is undefined for it: a token's own abilities would need its data kept on the ability object, and
+ * no token in the pool has an activated or triggered ability yet (later).
  */
 export function cardDataByOracleId(oracleId: string, cards: CardDatabase): CardData | undefined {
-  if (isTokenOracleId(oracleId)) throw new Error(`a token's ability isn't supported yet (${oracleId})`);
   return cards[oracleId];
-}
-
-/** Tokens get an oracle id of their own (`token:Insect Token`), which names no card in the database. */
-export function isTokenOracleId(oracleId: string): boolean {
-  return oracleId.startsWith("token:");
 }

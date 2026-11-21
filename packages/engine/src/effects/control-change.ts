@@ -13,7 +13,7 @@ export function recordControlChanges(before: GameState, after: GameState, ids: r
   let objects = after.objects;
   for (const id of ids) {
     const obj = objects[id];
-    // A token or copy on the battlefield isn't a card object yet (future-rules: rules checks that skip non-cards).
+    // Tokens are card objects too (D-101); a copy of a permanent will need checking here (future-rules).
     if (obj?.kind !== "card" || !after.zones.battlefield.includes(id) || !before.zones.battlefield.includes(id))
       continue;
     if (controllerOf(before, id) === controllerOf(after, id) || !obj.controlledSinceTurnStart) continue;

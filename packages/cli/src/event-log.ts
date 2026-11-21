@@ -162,6 +162,10 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} put on ${name(e.object)}`;
     case "COUNTERS_REMOVED":
       return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} removed from ${name(e.object)}`;
+    case "TOKEN_CREATED":
+      return `${e.player} creates ${name(e.object)}`;
+    case "TOKEN_CEASED_TO_EXIST":
+      return `ceases to exist: ${cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId} (${e.from.zone})`;
     case "PERMANENT_REGENERATED":
       return `regenerates: ${name(e.object)}`;
     case "DAMAGE_PREVENTED":

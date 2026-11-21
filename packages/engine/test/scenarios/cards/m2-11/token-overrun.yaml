@@ -1,0 +1,17 @@
+name: An effect on "creatures you control" reaches a token too (Overrun on an Insect)
+rules: [CR 111.6, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+    hand: [Overrun]
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - p1 cast: Overrun
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Insect Token.power: 4
+      p1:Insect Token.abilities contains: [trample]
