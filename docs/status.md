@@ -720,7 +720,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          before it, two Mind Controls, destroyed while attacking and while blocking, an anthem, Equipment, the Cloak,
          Firebreathing). Rules review: a creature removed from combat as an attacker and returned untapped could
          block but dealt no damage (`Combat.removed` was one list): now kept by role; 12 more scenarios from its probes;
-         a unit test for a resolved control effect earlier than Mind Control. Next: code review, PR; then M2-12c3.
+         a unit test for a resolved control effect earlier than Mind Control. Code review: `layerTwo` built every
+         permanent's controller on every board (the pass a quarter slower): it returns nothing without a control effect;
+         an Aura's "you" is plain data; the rationale for reading the static from printed text corrected (layer 6 is after
+         layer 2), with a future-rules watch-out; the anthem scenario made uneven; a unit test of the cache. Bench equal to
+         or faster than the base. Next: PR; then M2-12c3.
        - M2-12c1 built (2026-11-21, D-104): `controllerOf(state, id, cards)` (56 calls in 31 files), layer 2 only in the
          pass, the control-change check in `advance` (CR 302.6, 506.4), the `controlChangesRecorded` fuzz check. Every
          scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`

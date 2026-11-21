@@ -6,8 +6,8 @@
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
 // granted or removed, `layer-six.ts`), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
-// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), and so has layer 2 (D-098,
-// `control-effects.ts`; `controllerOf` reads the pass, D-104). Layers 1, 3 and 7d have none yet; each comes in its place
+// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), and layer 2 resolved and static ones
+// (D-098, D-105, `control-effects.ts`; `controllerOf` reads the pass, D-104). Layers 1, 3 and 7d have none yet; each comes in its place
 // below as its first card does.
 
 import { cardDataOf } from "../cards/card-data.ts";

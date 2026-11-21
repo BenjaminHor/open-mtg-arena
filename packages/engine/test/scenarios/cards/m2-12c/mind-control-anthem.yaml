@@ -1,9 +1,9 @@
-name: A stolen white creature gets its new controller's Honor of the Pure, and loses its owner's
+name: A stolen white creature gets its new controller's two Honors of the Pure, and loses its owner's one
 rules: [CR 613.1b, CR 613.4c, CR 109.5]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [Honor of the Pure, Island, Island, Island, Island, Island]
+    battlefield: [Honor of the Pure, Honor of the Pure, Island, Island, Island, Island, Island]
     hand: [Mind Control]
   p2:
     battlefield: [Elite Vanguard, Honor of the Pure]
@@ -15,5 +15,5 @@ steps:
     pay: auto
   - all pass: once
   - expect:
-      p1:Elite Vanguard.power: 3
+      p1:Elite Vanguard.power: 4
       p1.battlefield contains: [Elite Vanguard]

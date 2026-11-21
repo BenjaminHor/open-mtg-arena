@@ -4,8 +4,10 @@ import { describe, expect, it } from "vitest";
 import { endUntilEndOfTurnEffects } from "../../src/effects/continuous-effect.ts";
 import { recordControlChanges } from "../../src/game/control-changes.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
+import { anyControlEffects } from "../../src/rules/control-effects.ts";
 import { controllerOf } from "../../src/rules/controller.ts";
 import { newCombat } from "../../src/state/combat.ts";
+import { moveCard } from "../../src/zones/move-card.ts";
 import { BEARS, CONTROL_AURA, FOREST, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
@@ -140,5 +142,30 @@ describe("a control change (CR 302.6, 613.1b)", () => {
     // An earlier resolved effect loses to the Aura; a later one wins.
     expect(controllerOf(giveTo(auraTimestamp - 1), bears, TEST_CARDS)).toBe("p1");
     expect(controllerOf(giveTo(auraTimestamp + 1), bears, TEST_CARDS)).toBe("p2");
+  });
+
+  it("knows when any control effect is in the game, the Aura's static included, kept per battlefield list", () => {
+    const { state, bears } = bearsOfP2();
+    expect(anyControlEffects(state, TEST_CARDS)).toBe(false);
+    expect(anyControlEffects(stolen(state, bears), TEST_CARDS)).toBe(true);
+    const withAura = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: [FOREST],
+          battlefield: [{ ...permanent(CONTROL_AURA), attachedTo: { player: "p2", index: 0 } }],
+        }),
+        playerSetup("p2", { library: [FOREST], battlefield: [permanent(BEARS)] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    expect(anyControlEffects(withAura, TEST_CARDS)).toBe(true);
+    // Asked again of the same battlefield list: the kept answer.
+    expect(anyControlEffects(withAura, TEST_CARDS)).toBe(true);
+    // The Aura gone, a new battlefield list: false again.
+    const [aura] = withAura.zones.battlefield as [ObjectId];
+    const gone = moveCard(withAura, aura, { zone: "graveyard" }).state;
+    expect(anyControlEffects(gone, TEST_CARDS)).toBe(false);
   });
 });

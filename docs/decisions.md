@@ -1565,9 +1565,13 @@ every schema change and every change D-024 lists bumps it.
   to what its Aura is attached to now, "you" being the Aura's controller as layer 2 has it so far, with the Aura's
   timestamp (CR 613.7a, renewed on attach, 613.7e). Resolved control effects and static ones apply in one timestamp
   order: Act of Treason after Mind Control wins until it ends; of two Mind Controls the later wins.
-- Whether a permanent has one is read from its printed text: only an ability-removing effect could change that, and
-  none is in the pool (later: CR 613.8). `anyControlEffects` counts these permanents too, kept per battlefield list, so
+- Whether a permanent has one is read from its printed text. Layer 6's ability-removing effects apply after layer 2
+  (CR 613.1), so they can't undo one; a copy effect starting on a permanent, a permanent turned face up, or the ability
+  granted in layer 6 could, and none is in the pool (future-rules). `anyControlEffects` counts these permanents too, kept per battlefield list, so
   the fast paths of D-104 stay right.
+- `layerTwo` returns nothing when there's no control effect, so a board without one pays nothing for it (measured: the
+  pass was a quarter slower building every permanent's controller). An Aura's "you" is a plain-data recipient
+  (`auraController`), read when the effect applies.
 - Mind Control leaving mid-combat gives the creature back, removed from combat and summoning sick (CR 506.4, 302.6),
   through D-104's one check. The rules review found the creature, untapped (vigilance), could then block for its owner
   but dealt and took no damage: `Combat.removed` was one list of creatures "out for good". It's now kept by role

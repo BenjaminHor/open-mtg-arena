@@ -99,7 +99,7 @@ export function staticKeywordGrants(
 
 /**
  * The timestamp of a static ability's effects: its permanent's (CR 613.7a), which an Aura or Equipment renews each time
- * it's attached (CR 613.7e). Shared by every layer that orders statics against resolved effects (layer 2 next).
+ * it's attached (CR 613.7e). Shared by the layers that order statics against resolved effects (2 and 6).
  */
 export function staticTimestamp(input: LayerInputs, source: ObjectId): number {
   const obj = input.objects[source];
