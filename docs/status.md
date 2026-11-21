@@ -723,7 +723,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          damage was destroyed, so regeneration could save it (now put into the graveyard, CR 614.8); the cleanup step
          skipped the legend rule (now gives priority, CR 514.3a); names now through `characteristics()` (no name shares
          none, CR 201.2a); 9 unit tests (three copies, a stolen legend to its owner's graveyard, refused answers,
-         cleanup), scenario and exporter tests with a test legend. Next: PR; then M2-13b2.
+         cleanup), scenario and exporter tests with a test legend. Fuzz 100 clean. Merged as #67. Next: M2-13b2.
        - M2-13a built (2026-11-21): `Attack.planeswalker` (optional; left out for an attack on the player), `attackedNow`
          (null once the planeswalker is removed from combat), `Combat.removed.planeswalkers` (present only once one is),
          per-role removal (`removeTypeChangesFromCombat`, a control change through `removedFromCombat`), possible attacks
