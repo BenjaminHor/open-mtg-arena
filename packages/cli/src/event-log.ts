@@ -187,6 +187,8 @@ function effectChangeText(change: EffectChange): string {
       return "can't be blocked";
     case "becomes":
       return becomesText(change);
+    case "cantCastSpells":
+      return `${change.players.join(" and ")} can't cast spells`;
   }
 }
 

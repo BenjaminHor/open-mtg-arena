@@ -106,7 +106,10 @@ export const furnaceWhelp: CardDef = {
   "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }`, and a card has one exactly
   when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
-  engine reads them only through `staticAbilitiesOf`.
+  engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
+  (D-097).
+- "Your opponents can't cast spells this turn" is `{ op: "cantCastSpells", who: "eachOpponent", duration: "endOfTurn"
+  }` (D-097).
 - "Target Forest becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's
   still a land." is `{ op: "becomes", of: { target: 0 }, addTypes: ["creature"], addSubtypes: ["Treefolk"], colors: {
   set: ["G"] }, setPT: { power: 4, toughness: 5 }, duration: "whileSourceOnBattlefield" }` (D-095). Rise from the

@@ -30,6 +30,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "gainKeywords":
     case "cantBeBlocked":
     case "mustAttack":
+    case "cantCastSpells":
     case "becomes":
     case "sacrificeSource":
     case "destroy":

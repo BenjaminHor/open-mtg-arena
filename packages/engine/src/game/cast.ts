@@ -4,6 +4,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { happen } from "../pipeline/happen.ts";
 import { zoneChangeOf } from "../pipeline/moved.ts";
+import { cantCastSpells } from "../rules/casting-prohibitions.ts";
 import { totalCost } from "../rules/costs.ts";
 import { targetSpecsOf, targetsProblem } from "../rules/targets.ts";
 import { castTimingProblem } from "../rules/timing.ts";
@@ -15,15 +16,17 @@ import { nextCastingStep } from "./casting-steps.ts";
 import type { Progress } from "./progress.ts";
 
 /**
- * Why the player can't begin casting this card now, or null: the check that the proposed spell can legally be cast
- * (CR 601.2e), done once, before the card moves (CR 601.2a), rather than after all the choices: it's in
- * their hand and the timing allows it. Two shortcuts give the same result as starting and then reversing the cast
+ * Why the player can't begin casting this card now, or null: no effect forbids them to cast spells (CR 601.3), and the
+ * check that the proposed spell can legally be cast (CR 601.2e), done once, before the card moves (CR 601.2a), rather
+ * than after all the choices: it's in their hand and the timing allows it. Two shortcuts give the same result as starting and then reversing the cast
  * (CR 601.2, 734.1): every instance of "target" must have enough legal choices (CR 601.2c, 115.3), and a card with no mana cost can't be
  * cast (it has no alternative costs yet; CR 118.6 makes the attempt legal, but it could never be paid). Whether the
  * player can pay is NOT checked: attempting is legal (CR 118.6), and a player who can't pay cancels.
  */
 export function castProblem(state: GameState, player: PlayerId, card: ObjectId, cards: CardDatabase): string | null {
   if (!zoneList(state, { zone: "hand", player }).includes(card)) return `${card} isn't in ${player}'s hand`;
+  // A player an effect forbids to cast spells can't begin to (CR 601.3); "can't" beats "can" (CR 101.2).
+  if (cantCastSpells(state, player)) return `${player} can't cast spells this turn (CR 601.3)`;
   const timing = castTimingProblem(state, player, card, cards);
   if (timing !== null) return timing;
   const targets = targetsProblem(state, targetSpecsOf(state, card, cards), { object: card, controller: player }, cards);

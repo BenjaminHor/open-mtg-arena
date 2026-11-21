@@ -119,6 +119,7 @@ export function staticPTChanges(
       case "cantBeCountered":
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
+      case "noMaximumHandSize":
         break;
     }
   }

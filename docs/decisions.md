@@ -1424,3 +1424,13 @@ every schema change and every change D-024 lists bumps it.
   `createDelayedTrigger { about }` keeps the named objects on the delayed ability's reference (`objects`, left out when
   it names none), and the subject `"remembered"` reads them (CR 603.7c). A remembered object
   that left is a new object and isn't affected (CR 400.7). The definition check refuses `"remembered"` elsewhere.
+
+**D-097: Rules effects on players, and hand size (M2-09c1)** · 2026-11-21 · accepted
+- "Your opponents can't cast spells this turn" (Silence) is an effect change `cantCastSpells { players }`: the opponents
+  of its controller (CR 109.5, 102.2), which can't change during a game, so they're stored as it resolves; it affects
+  no objects. `castProblem` refuses a cast by them (`rules/casting-prohibitions.ts`, CR 601.3; "can't" beats "can",
+  CR 101.2). Abilities, land plays and spells already cast are untouched (its rulings). It isn't in the layers: it
+  changes no characteristic (CR 613.11 would only order it against other rules effects).
+- "You have no maximum hand size" (Spellbook) is a static, `noMaximumHandSize`, read by `maximumHandSize`
+  (`rules/hand-size.ts`), which the cleanup step asks (CR 402.2, 514.1). Effects that set another maximum would apply in
+  timestamp order (its ruling, CR 613.11); none is in the pool, and statics don't carry timestamps yet.

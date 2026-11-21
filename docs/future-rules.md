@@ -159,7 +159,7 @@ controller changes, including when a control effect ends. A bare boolean can't s
 replace it with a `{ player, since }` record when control-changing effects arrive.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
-"at the beginning of the next end step", and "no maximum hand size" (CR 402.2). (First strike's second combat damage
+"at the beginning of the next end step". ("No maximum hand size" is built, D-097.) (First strike's second combat damage
 step is built, D-070: `endStep` repeats `combatDamage` once, read from `Combat`.)
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
@@ -320,6 +320,10 @@ amount of X must cap the number of targets at X (CR 601.2d), and casting without
 the hand. A card cast from a graveyard or exile must go back where it came from. The check before casting
 (`targetsProblem` in `castProblem`) uses the card in its zone as what targets; cast from a graveyard, a "target card in
 your graveyard" spell would count itself as a choice before it moves to the stack (CR 115.5), so exclude it there.
+
+**Casting prohibitions (M2-09c1, D-097).** Silence's `cantCastSpells` is asked by `castProblem`, after the "it's in
+your hand" check. Casting from other zones, and "cast without paying its mana cost" from a resolving effect (cascade),
+must ask it before any zone check; suspend (CR 702.62a) asks the same "could begin to cast" question (Silence's ruling).
 
 **Smaller rules noted while closing the coverage gaps (later: in the code).** "Another target" (CR 115.4, Arc Trail) needs targets distinct
 across instances, a check across the groups `game/choose-targets.ts` keeps; emblems (CR 114), which the setup's rule

@@ -645,9 +645,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (an exhaustive switch; tapping no longer snapshots); "its controller" of a gone object from the snapshot; the
            definition check's false positive inside a condition, and `about` naming a player; citations, comments,
            docs. "Flying given after blockers does nothing" is plain evasion (CR 509.1b), already covered; not added.
-           Fuzz 200 clean. Next: bench, PR.
-         - Future impact: the snapshot is what M2-09c's Polymorph-on-a-stolen-creature and every "dies" trigger
+           Fuzz 200 clean. Bench ok (a random game 94.5 ms: the margin to 100 is thin). Merged as #53; M2-09b is done.
+           Next: M2-09c (Act of Treason, Silence, Spellbook).
+         - Future impact (b2b): the snapshot is what M2-09c's Polymorph-on-a-stolen-creature and every "dies" trigger
            reading characteristics need; tokens (M2-11) leave a snapshot too.
+       - M2-09c, split in two PRs (2026-11-21). c1, rules effects (CR 101.2, 613.10-11): Silence ("your opponents can't
+         cast spells this turn": a resolved effect on players, fixed as it resolves; `castProblem` refuses; abilities,
+         land plays and spells already cast are untouched, its rulings) and Spellbook ("you have no maximum hand size":
+         a static read by the cleanup step's hand-size check, CR 402.2, 514.1). c2: Act of Treason, layer 2 inside the
+         pass and `controllerOf` reading it (a signature change: it takes the card database), control changes
+         recorded for summoning sickness (CR 302.6) and removing a creature from combat (CR 506.4).
+         - c1 built (D-097): Silence, Spellbook; 8 scenarios in `test/scenarios/cards/m2-09c/`, golden pool-55 and
+           pool-167. 193 cards. Mutations 4/4. Review (no wrong results): citations (CR 601.3, 109.5; `later: CR
+           613.11`), a named `cantCastSpells` question, the definition check for its subject, 3 more scenarios (the
+           non-active player's Silence and a land play, still in the end step, Spellbook in hand), docs. Next: PR.
+         - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
+           before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

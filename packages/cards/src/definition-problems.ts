@@ -33,6 +33,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
       return s.to.count;
     case "cantBeBlocked":
     case "cantAttackUnlessDefenderControls":
+    case "noMaximumHandSize":
     case "canBlockAnyNumber":
     case "cantAttackOrBlockAlone":
     case "attacksEachCombat":
@@ -274,6 +275,7 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   mill: (e) => (e as { who: EffectSubject }).who,
   discard: (e) => (e as { who: EffectSubject }).who,
   revealHand: (e) => (e as { who: EffectSubject }).who,
+  cantCastSpells: (e) => (e as { who: EffectSubject }).who,
   search: (e) => (e as { library: EffectSubject }).library,
   shuffle: (e) => (e as { who: EffectSubject }).who,
   mayShuffle: (e) => (e as { who: EffectSubject }).who,

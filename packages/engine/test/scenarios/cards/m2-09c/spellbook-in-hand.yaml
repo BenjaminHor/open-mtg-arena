@@ -1,0 +1,10 @@
+name: Spellbook in hand does nothing, as its ability works only on the battlefield
+rules: [CR 113.6, CR 402.2]
+setup:
+  turn: { active: p1, step: end }
+  p1:
+    hand: [Spellbook, Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+steps:
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: discardToHandSize, remaining: 1 }

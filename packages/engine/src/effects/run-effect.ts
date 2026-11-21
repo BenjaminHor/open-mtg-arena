@@ -106,6 +106,19 @@ export function runEffect(
         change: ruleChange(effect.op, context.controller),
       });
     }
+    case "cantCastSpells": {
+      // "Your opponents can't cast spells this turn": a rule for the opponents of "you", the spell's controller
+      // (CR 109.5, 102.2), which can't change during the game.
+      const players = playersNamed(state, effect.who, context, cards);
+      if (players.length === 0) return { state, events: [] };
+      return createContinuousEffect(state, {
+        source: context.self,
+        controller: context.controller,
+        duration: effect.duration,
+        affected: [],
+        change: { kind: "cantCastSpells", players },
+      });
+    }
     case "sacrificeSource": {
       // Only its controller can sacrifice it, and only from the battlefield (CR 701.21a): gone or given away, nothing.
       const source = context.self;

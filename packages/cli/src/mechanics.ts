@@ -214,6 +214,8 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   // Coarse, like anthems: it does something wherever the card is, and its permanent's resolving shows it.
   powerToughnessEachEqual: "enters",
   cantAttackUnlessDefenderControls: "combat",
+  // As its permanent resolves, like anthems: it does something only at a cleanup with too many cards.
+  noMaximumHandSize: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

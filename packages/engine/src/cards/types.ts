@@ -187,7 +187,9 @@ export type StaticAbilityDef =
    * "This creature can't attack unless defending player controls [filter]" (Serpent of the Endless Sea): a restriction
    * on attacking each player (CR 508.1c). The filter has no `controller`: it's the defending player's permanents.
    */
-  | { kind: "cantAttackUnlessDefenderControls"; filter: ObjectFilter };
+  | { kind: "cantAttackUnlessDefenderControls"; filter: ObjectFilter }
+  /** "You have no maximum hand size" (Spellbook): its controller skips the cleanup discard (CR 402.2, 514.1). */
+  | { kind: "noMaximumHandSize" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export type Keyword =
@@ -412,6 +414,11 @@ export type Effect =
   | { op: "cantBeBlocked"; of: EffectSubject; duration: Duration }
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
+  /**
+   * "Your opponents can't cast spells this turn" (Silence): a rule for those players (CR 101.2, 601.3); spells already
+   * cast, abilities and land plays are untouched (its rulings).
+   */
+  | { op: "cantCastSpells"; who: EffectSubject; duration: Duration }
   /**
    * "[subject] becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's still a
    * land." (Awakener Druid): one effect in layers 4, 5 and 7b on the objects fixed now (CR 611.2c, 613.6). With
