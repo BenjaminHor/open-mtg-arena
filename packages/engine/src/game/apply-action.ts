@@ -2,7 +2,6 @@
 // decision (except `CONCEDE`, which any player in the game may send at any time, CR 104.3a), applies it, and returns
 // the new state and events. An illegal action changes nothing.
 
-import { isCardName } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextRecipient } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
@@ -12,11 +11,9 @@ import { answerChooseCards, chooseCardsProblem } from "../effects/choose-cards.t
 import { activateManaAbility, manaAbilityProblem, manaColorProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
 import type { Action } from "../state/actions.ts";
-import type { ChooseWhat } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { AbilityRef } from "../state/objects.ts";
-import { isBasicLandType } from "../state/objects.ts";
 import type { EngineErrorCode, EngineResult } from "../state/result.ts";
 import { orderTriggersProblem, putOne } from "../triggers/put-on-stack.ts";
 import { zoneList } from "../zones/zone-list.ts";
@@ -24,6 +21,7 @@ import { activationProblem, startActivation } from "./activate-ability.ts";
 import { advance } from "./advance.ts";
 import { castProblem, startCast } from "./cast.ts";
 import { activateWhilePaying, announceX, cancelCasting, nextCastingStep, payCost, xProblem } from "./casting-steps.ts";
+import { answerName, nameProblem } from "./choose-name.ts";
 import {
   chooseTarget,
   chooseTargetCount,
@@ -170,25 +168,14 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       // The name of a card (CR 201.4), from the card database (D-114), or a basic land type (CR 205.3i).
       const problem = nameProblem(pending.what, answer.name, cards);
       if (problem !== null) return error("illegalAction", problem);
-      // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
-      // Told to everyone, so a player choosing after knows it (CR 101.4b).
-      const { proposed, choices } = pending.resume;
-      const object = pending.for.kind === "object" ? pending.for.object : null;
-      if (object === null) throw new Error("a card name is chosen for an object");
-      return {
-        ok: true,
-        state: queueWork(answered, {
-          kind: "resumeEvent",
-          proposed,
-          choices: [...choices, { kind: "asEnters", for: pending.for, ref: pending.ref, chosen: answer.name }],
-        }),
-        events: [{ type: "NAME_CHOSEN", player: pending.player, object, what: pending.what, name: answer.name }],
-      };
+      return { ok: true, ...answerName(answered, pending, answer.name) };
     }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;
-      // Yes runs the effect, ahead of the rest of the resolution; no does nothing (CR 608.2d).
+      // Yes runs the effect, ahead of the rest of the resolution; no does nothing. Yes can't be chosen when it's
+      // impossible (CR 608.2d).
       if (!answer.yes) return { ok: true, state: answered, events: [] };
+      if (!pending.canSayYes) return error("illegalAction", "there's nothing this yes could do");
       return {
         ok: true,
         state: queueWork(answered, ...pending.resume),
@@ -313,14 +300,4 @@ function cancel(state: GameState): EngineResult {
     return error("illegalAction", "a triggered ability can't be cancelled as it's put on the stack (CR 603.3d)");
   }
   return { ok: true, ...cancelCasting(state) };
-}
-
-/** Why this isn't a name a `chooseName` decision takes, or null: a card's (CR 201.4) or a basic land type (CR 205.3i). */
-function nameProblem(what: ChooseWhat, name: string, cards: CardDatabase): string | null {
-  switch (what) {
-    case "cardName":
-      return isCardName(name, cards) ? null : `no card is named ${name}`;
-    case "basicLandType":
-      return isBasicLandType(name) ? null : `${name} isn't a basic land type`;
-  }
 }

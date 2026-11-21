@@ -108,6 +108,15 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       if (filter !== null && filterUses(filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
         problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
     }
+    // A name chosen this way exists only while an effect resolves, after the targets and the trigger's event (D-121).
+    const outsideResolution = [
+      def.statics ?? [],
+      def.spell?.targets ?? [],
+      (def.abilities ?? []).map((a) => a.targets),
+      (def.triggers ?? []).map((t) => [t.when, t.targets]),
+    ];
+    if (JSON.stringify(outsideResolution).includes('"notNamedThisWay":true'))
+      problems.push(`${def.name}: only an effect's filter can read a name chosen while it resolves`);
     // A printed "*" is set by a characteristic-defining ability, and only a "*" is (CR 208.2a, 604.3). The one kind so
     // far sets both, so both must be "*"; any other mix is refused until a card needs it.
     const definesPT = (def.statics ?? []).some((s) => s.kind === "powerToughnessEachEqual");
@@ -324,6 +333,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
 const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject>> = {
   gainLife: (e) => (e as { who: EffectSubject }).who,
   extraTurn: (e) => (e as { who: EffectSubject }).who,
+  nameCard: (e) => (e as { who: EffectSubject }).who,
   loseLife: (e) => (e as { who: EffectSubject }).who,
   draw: (e) => (e as { who: EffectSubject }).who,
   discardAtRandom: (e) => (e as { who: EffectSubject }).who,
@@ -420,6 +430,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       "exileGraveyard",
       "sacrifice",
       "revealUntil",
+      "nameCard",
     ];
     if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
@@ -467,6 +478,10 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       problems.push(`${where}: ${effect.op} reads what was sacrificed, but no sacrifice comes before it`);
     if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileGraveyard"))
       problems.push(`${where}: a search for the cards exiled this way must follow exiling them`);
+    // "That doesn't have that name" reads the name chosen earlier in the same resolution (Sphinx Ambassador), wherever
+    // the filter is.
+    if (JSON.stringify(effect).includes('"notNamedThisWay":true') && !earlier.some((e) => e.op === "nameCard"))
+      problems.push(`${where}: a filter reads the name chosen this way, but no nameCard comes before it`);
     // A filter, or "you" choosing from another player's hand, would show or hint at a hidden hand's cards unless it was
     // just revealed (D-062).
     if (effect.op === "discard" && (effect.filter !== undefined || effect.chosenBy !== undefined)) {

@@ -6,6 +6,7 @@
 import type { CardDatabase, ObjectFilter } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { characteristics } from "./characteristics.ts";
 import { isAttacking, isBlocking } from "./combat.ts";
 import { fits } from "./filter-fit.ts";
 import { layeredOf } from "./layers.ts";
@@ -29,7 +30,11 @@ export function matchesFilter(
   const controlled = state.zones.battlefield.includes(id) || state.zones.stack.includes(id);
   // The pass's controller is `controllerOf`'s (layer 2 is its own, D-092; the fuzzer checks they agree).
   const inCombat = (as: NonNullable<ObjectFilter["combat"]>) => inCombatAs(state, id, as, cards);
-  return fits({ obj, card, controlled, inCombat }, filter, you, thatPlayer);
+  // The card name chosen while this resolves (Sphinx Ambassador), read here as the pass has no name (no effect
+  // changes one yet, later: CR 707.2). Every card in the pool has exactly one name, so it's compared as one string
+  // (later: CR 201.2c, a face-down card with no name; later: CR 201.4g, interchangeable names).
+  const namedThisWay = () => characteristics(state, id, cards).name === state.resolution?.named;
+  return fits({ obj, card, controlled, inCombat, namedThisWay }, filter, you, thatPlayer);
 }
 
 function inCombatAs(state: GameState, id: ObjectId, as: NonNullable<ObjectFilter["combat"]>, cards: CardDatabase) {

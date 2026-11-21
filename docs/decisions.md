@@ -1827,3 +1827,21 @@ owner's answer to the D-089 open question, option (a))
   chosen as they enter, again in APNAP order (CR 614.12a, 101.4); the nonactive player's, later, wins (CR 613.7m).
 - Not built: CR 305.7's "any copiable effects affecting that land" (layer 1 doesn't exist yet). When it does, the
   pass must know which lands a land-type-setting effect hits before running layer 1 (future-rules).
+
+**D-121: Sphinx Ambassador: a card name chosen while a trigger resolves (M2-14e)** · 2026-11-21 · accepted
+- The `chooseName` decision says what the answer is for in `answering`: `asEnters` (D-119's resume of the moving event) or
+  `resolution`, where the rest of the resolution is already queued and the name is kept as `Resolution.named`. The
+  effect is `nameCard { who }`: "that player chooses a card name" (CR 201.4), the triggering player, not the
+  ability's controller. `NAME_CHOSEN` tells everyone, as the player announces it while applying the effect (CR 608.2d),
+  its object the resolving ability.
+- "A creature card that doesn't have that name" is the filter `notNamedThisWay`, read in `matchesFilter` against the
+  card's name through `characteristics` (the layer pass holds no name). `put`'s `onlyIf` and `optional` do the rest:
+  "you may put it onto the battlefield under your control" (CR 110.2a).
+- The search's found card stays hidden from the player naming (its ruling; CR 701.23e): it stays in their library,
+  which they can't see, and `Resolution.found` isn't in any view (a test checks the naming player's view).
+- Nor may the questions asked tell them (the rules review): "you may put" asked only for a creature not named would show
+  the naming player, in `waitingFor`, what the card is. So an optional `put` of cards in a hidden zone (a library or a
+  hand) asks even when none fits, as D-062 asks a hidden zone's choice when nothing fits; the `chooseYesNo` decision's
+  `canSayYes` is then false, `legalActions` offers only no and yes is refused, as yes would be impossible (CR 608.2d).
+  A card revealed in a library is asked the same way, though everyone saw it: a question with only no, harmless and
+  not in the pool today (Lurking Predators's card has left the library or fits by the time it's asked).

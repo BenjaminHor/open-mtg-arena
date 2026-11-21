@@ -1,0 +1,26 @@
+name: The creature put onto the battlefield is still owned by the player whose library it came from, so it goes to their graveyard
+rules: [CR 110.2, CR 404.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador, Mountain]
+    hand: [Lightning Bolt]
+  p2:
+    library: [Grizzly Bears, Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - p1 choose: Grizzly Bears
+  - p2 choose: Craw Wurm
+  - p1 choose: yes
+  - expect:
+      p1.battlefield contains: [Grizzly Bears]
+  - p1 cast: Lightning Bolt
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Grizzly Bears]
+      p1.graveyard: [Lightning Bolt]

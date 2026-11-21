@@ -316,8 +316,8 @@ know which lands a land-type-setting effect will hit before it runs layer 1.
 a permanent spell resolving and Open the Vaults, which use `happenOrAsk`. Other paths onto the battlefield still use
 `happen`, which refuses a choice: `put` (`effects/put-effects.ts`), `putOntoBattlefieldFromHand`
 (`effects/hand-effects.ts`) and playing a land (`game/play-land.ts`). Clone (M2-14i) and Warp World (M2-14k) must move
-those to `happenOrAsk` first. Sphinx Ambassador's name is chosen by another player at resolution, so the chooser must
-come from the replacement or effect, not always the player it enters under. Names are `printed.name`: split halves,
+those to `happenOrAsk` first. Sphinx Ambassador's name is chosen at resolution by the player its effect names (`nameCard`, D-121), the same
+decision with `answering: { kind: "resolution" }`. Names are `printed.name`: split halves,
 back faces and adventures (later: CR 201.4b-f) need more at M4, where the full list also wants a search in the UI.
 
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.

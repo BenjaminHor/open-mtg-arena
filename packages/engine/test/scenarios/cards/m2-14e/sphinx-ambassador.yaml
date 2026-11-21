@@ -1,0 +1,26 @@
+name: Sphinx Ambassador's damage lets its controller search, the player names a card, and a creature not named is put onto the battlefield
+rules: [CR 701.23a, CR 201.4, CR 608.2d, CR 110.2a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+  p2:
+    library: [Craw Wurm, Grizzly Bears, Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards }
+  - p1 choose: Craw Wurm
+  - expect:
+      pending: { player: p2, kind: chooseName }
+  - p2 choose: Grizzly Bears
+  - expect:
+      pending: { player: p1, kind: chooseYesNo }
+      events contains: [{ type: NAME_CHOSEN, player: p2, name: Grizzly Bears }]
+  - p1 choose: yes
+  - expect:
+      p1.battlefield contains: [Craw Wurm]
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p2 }]

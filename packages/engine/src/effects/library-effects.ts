@@ -96,7 +96,7 @@ export function lookAtTop(
 export function mayShuffle(state: GameState, player: PlayerId, effect: MayShuffle, context: EffectContext): Progress {
   const shuffle = { op: "shuffle", who: effect.who } as const;
   const resume = [{ kind: "runEffect", effect: shuffle, context, chosen: null } as const];
-  return nothing(waitFor(state, player, { kind: "chooseYesNo", purpose: "shuffle", resume }));
+  return nothing(waitFor(state, player, { kind: "chooseYesNo", purpose: "shuffle", canSayYes: true, resume }));
 }
 
 /**

@@ -63,7 +63,9 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
       return [...add, ...finish];
     }
     case "chooseYesNo":
-      return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
+      return (pending.canSayYes ? [true, false] : [false]).map(
+        (yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }),
+      );
     case "chooseReplacement":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseReplacement", option } }));
     case "chooseName": {

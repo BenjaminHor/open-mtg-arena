@@ -38,6 +38,7 @@ the one place their effects become changes to the game.
 | `tap` | "Tap target creature" | Taps each permanent `of` names; a tapped one stays as it is (CR 701.26a) |
 | `counter` | "Counter target spell" | Counters each spell or ability `of` names (CR 701.6a) |
 | `gainLife` | "You gain 4 life" | The players `who` names gain `amount` (CR 119.3) |
+| `nameCard` | "That player chooses a card name" | The player `who` names names a card (a `chooseName` decision), kept as `Resolution.named` for a later filter's `notNamedThisWay` (CR 201.4, D-121) |
 | `extraTurn` | "Target player takes an extra turn after this one" | Adds a turn for each player `who` names directly after this one (CR 500.7, `game/extra-turns.ts`) |
 | `loseLife` | "Target player loses 2 life" | The players `who` names lose `amount` (CR 119.3); 0 isn't proposed |
 | `draw` | "Draw two cards" | One draw at a time (CR 121.2), all of one player's before the next player's, in APNAP order (CR 121.2c) |

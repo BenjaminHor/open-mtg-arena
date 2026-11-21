@@ -128,9 +128,11 @@ export type DecisionKind =
   | { kind: "orderTriggers"; batch: PendingTrigger[]; priorityTo: PlayerId }
   /**
    * While a spell or ability resolves: a "you may" choice (CR 608.2d): "you may shuffle", or a triggered ability's "you
-   * may" (CR 603.5). Yes runs `resume`, the work it chose to do; no does nothing.
+   * may" (CR 603.5). Yes runs `resume`, the work it chose to do; no does nothing. `canSayYes` is false when yes would
+   * be impossible (CR 608.2d), and the question is asked all the same so the other players can't tell: a card searched
+   * for in a hidden zone that doesn't fit "if it's a creature card" (Sphinx Ambassador's ruling, D-062, D-121).
    */
-  | { kind: "chooseYesNo"; purpose: "shuffle" | "optional"; resume: WorkItem[] }
+  | { kind: "chooseYesNo"; purpose: "shuffle" | "optional"; canSayYes: boolean; resume: WorkItem[] }
   /**
    * The legend rule (CR 704.5j): this player controls the legendary permanents in `options`, which share a name, and
    * chooses the one to keep. The rest go to their owners' graveyards with every other state-based action of the check
@@ -151,17 +153,24 @@ export type DecisionKind =
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     }
   /**
-   * "As this enters, choose a card name" (CR 614.12a, 201.4) or "a basic land type" (CR 205.3i): the player it enters
-   * under names one, a card from the card database or one of the five types (`what`). `resume` is as for
-   * `chooseReplacement`: the answer is kept with the choices, and the event replaced again.
+   * A card name (CR 201.4) or a basic land type (CR 205.3i) to choose (`what`), and what the answer is for (`answering`):
+   * "as this enters, choose" (CR 614.12a), by the player it enters under, or "that player chooses a card name" while
+   * a spell or ability resolves (Sphinx Ambassador), kept in `Resolution.named` for the effects after it.
    */
+  | { kind: "chooseName"; what: ChooseWhat; answering: NameFor };
+
+/**
+ * What a `chooseName` answer is for. As a permanent enters, `resume` is as for `chooseReplacement`: the answer is kept
+ * with the choices, and the event replaced again. During a resolution, the rest of it is already queued.
+ */
+export type NameFor =
   | {
-      kind: "chooseName";
-      what: ChooseWhat;
+      kind: "asEnters";
       for: ChoiceFor;
       ref: ReplacementRef;
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
-    };
+    }
+  | { kind: "resolution" };
 
 /** What a `chooseName` decision names: a card (CR 201.4) or a basic land type (CR 205.3i). */
 export type ChooseWhat = "cardName" | "basicLandType";

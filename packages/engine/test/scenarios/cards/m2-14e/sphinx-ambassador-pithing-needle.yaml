@@ -1,0 +1,20 @@
+name: Pithing Needle naming Sphinx Ambassador doesn't stop its triggered ability
+rules: [CR 603.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Sphinx Ambassador]
+  p2:
+    battlefield: [{ card: Pithing Needle, chosenName: Sphinx Ambassador }]
+    library: [Platinum Angel, Island]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Sphinx Ambassador]
+  - all pass: until combat.damage
+  - all pass: once
+  - p1 choose: Platinum Angel
+  - p2 choose: Sphinx Ambassador
+  - p1 choose: yes
+  - expect:
+      p1.battlefield contains: [Platinum Angel]
+      p2:Pithing Needle.chosenName: Sphinx Ambassador
