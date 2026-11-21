@@ -745,7 +745,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the
          latest first, one cast during an extra turn, Sleep's untap step being the extra turn's); mutants 2/2 (first in,
          first out; an extra turn moving the turn order's place). Replays' final-state hashes updated (the two new state
-         fields only); 1 golden game. Next: reviews, PR.
+         fields only); 1 golden game. Rules review: no wrong ruling; 10 more scenarios (countered, after turn 1 with its
+         draw, "this turn" facts starting again, Sleep's untap step not used by another player's extra turn, back and
+         forth, until end of turn ending first, a turn made during an extra turn going before one waiting, Mind Control,
+         summoning sickness through an opponent's extra turn, Act of Treason), a unit test for APNAP order (CR 500.7),
+         stale "later:" marks and comments; a player leaving the game noted for extra turns (CR 800.4k). Fuzz 60 clean.
+         Next: code review, PR.
        - M2-14a built (2026-11-21, D-115): Sleep, Wall of Frost, Entangling Vines (226 cards). The untap step in
          `game/untap-step.ts`; `doesntUntap` effects (a player's or "its controller's" next untap step) and the Aura
          static `attachedDoesntUntap`; the `selfBlocks` trigger (CR 509.3b). 9 scenarios (Sleep on an opponent, on

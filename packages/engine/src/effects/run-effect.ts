@@ -333,7 +333,8 @@ export function runEffect(
       return exileGraveyard(state, player, effect.filter, context.controller, cards);
     }
     case "extraTurn":
-      // Several players' extra turns are added one at a time in APNAP order (CR 500.7); `playersNamed` lists them so.
+      // Several players' extra turns are added one at a time in the order named (CR 500.7 wants APNAP order: true of
+      // "each player", which lists players so; a target group would need sorting first, and none can name two yet).
       return addExtraTurns(state, playersNamed(state, effect.who, context, cards));
     case "gainLife": {
       const amount = amountNow(state, effect.amount, context, cards);

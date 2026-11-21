@@ -71,7 +71,7 @@ export function beginTurn(
 
 /**
  * Ends the current step (CR 500.5: unspent mana empties) and begins the next step that isn't skipped. After cleanup,
- * the next player in turn order begins their turn.
+ * the next turn begins: the next extra turn, or else the next player's in turn order (`nextTurn`).
  */
 export function endStep(state: GameState, cards: CardDatabase): Progress {
   const turn = currentTurn(state);
