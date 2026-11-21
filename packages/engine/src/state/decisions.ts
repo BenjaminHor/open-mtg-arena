@@ -102,7 +102,10 @@ export type DecisionKind =
   | {
       kind: "chooseCards";
       purpose: ChoosePurpose;
-      /** The object the choice is for, shown with it: the Aura that will enchant the chosen permanent. Else null. */
+      /**
+       * The object the choice is for, shown with it: the Aura that will enchant the chosen permanent. Else null. It's
+       * shown to the chooser as is, so it must be an object in a public zone.
+       */
       for: ObjectId | null;
       options: ObjectId[];
       min: number;

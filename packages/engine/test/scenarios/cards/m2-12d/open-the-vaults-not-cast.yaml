@@ -1,0 +1,17 @@
+name: Enchantments returned by Open the Vaults aren't cast, so Mesa Enchantress ("whenever you cast an enchantment spell") doesn't trigger
+rules: [CR 603.2, CR 601.2i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Grizzly Bears, Mesa Enchantress]
+    hand: [Open the Vaults]
+    graveyard: [Holy Strength]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  - p1 choose: Grizzly Bears
+  - expect:
+      p1:Holy Strength.attachedTo: p1:Grizzly Bears
+      stack: []
+      p1.hand: []

@@ -19,7 +19,8 @@ export function newDecisionId(state: GameState): { id: DecisionId; state: GameSt
 
 /**
  * A new timestamp (CR 613.7). Timestamps are always distinct. Objects created from a setup get them in setup order;
- * objects that really arrive at the same time during play must get them in APNAP order (later: CR 613.7m).
+ * objects that really arrive at the same time during play must get them in APNAP order: Open the Vaults moves its
+ * cards in that order (`effects/return-all.ts`); other simultaneous arrivals, later (CR 613.7m).
  */
 export function newTimestamp(state: GameState): { timestamp: number; state: GameState } {
   return { timestamp: state.nextTimestamp, state: { ...state, nextTimestamp: state.nextTimestamp + 1 } };

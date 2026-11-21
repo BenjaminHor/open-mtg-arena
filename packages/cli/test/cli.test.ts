@@ -48,6 +48,20 @@ describe("new, show, actions and do", () => {
     expect(cli("do", file, "p2 concede: now")).toMatch(/game over: p1 wins \(p2: conceded\)/);
   });
 
+  it("names the Aura an enchant choice is for (CR 303.4f, D-107)", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-12d/open-the-vaults", "--out", file);
+    cli("do", file, "cast: Open the Vaults, pay: auto");
+    cli("do", file, "all pass: once");
+    const state = readGameFile(file).state;
+    const pending = state?.pending;
+    expect(pending?.kind === "chooseCards" && pending.for !== null && state?.objects[pending.for]?.kind).toBe("card");
+    expect(cli("actions", file)).toMatch(/1\. Pacifism enchants Grizzly Bears/);
+    expect(cli("log", file, "--brief")).not.toMatch(/chooses/);
+    cli("do", file, "choose: Hill Giant");
+    expect(cli("log", file, "--brief")).toMatch(/p1 chooses p2:Hill Giant for Pacifism to enchant/);
+  });
+
   it("writes nothing when a step fails part way", () => {
     const file = tempFile();
     cli("new", "--scenario", "casting/targets", "--out", file);

@@ -1,0 +1,27 @@
+name: One player's Auras are announced one at a time, in graveyard order; one with a single possible host isn't asked
+rules: [CR 303.4f, CR 702.16c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Grizzly Bears]
+    hand: [Open the Vaults]
+  p2:
+    battlefield: [White Knight]
+    graveyard: [Pacifism, Holy Strength, Unholy Strength]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseCards, purpose: enchant }
+  - p2 choose: Grizzly Bears
+  - expect:
+      pending: { player: p2, kind: chooseCards, purpose: enchant }
+  - p2 choose: White Knight
+  # Unholy Strength is black: White Knight has protection from it, so the Bears are its only host.
+  - expect:
+      p2:Pacifism.attachedTo: p1:Grizzly Bears
+      p2:Holy Strength.attachedTo: p2:White Knight
+      p2:Unholy Strength.attachedTo: p1:Grizzly Bears
+      p2:White Knight.power: 3
+      p1:Grizzly Bears.power: 4

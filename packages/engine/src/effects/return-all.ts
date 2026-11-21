@@ -2,8 +2,11 @@
 // (Open the Vaults). Everything enters at once (CR 608.2f). An Aura entering this way isn't cast, so its owner, who'll
 // control it (CR 110.2), chooses what it will enchant (CR 303.4f): any permanent already on the battlefield it could
 // legally enchant, not one entering with it (its ruling), and without targeting. With nothing to enchant, it stays in
-// the graveyard (CR 303.4g). The active player announces for their Auras first, then each other player in turn order
-// (its ruling, CR 101.4). Each answer runs the effect again; the choices so far are kept in `state.resolution`.
+// the graveyard (CR 303.4g). Equipment enters unattached (CR 301.5b). The active player announces for their Auras
+// first, then each other player in turn order (CR 101.4), each knowing the choices before theirs (CR 101.4b). A
+// player's own Auras are announced in their graveyard's order, not one the player picks (later: CR 101.4c): the
+// choices don't depend on each other, so the order changes nothing. Each answer runs the effect again; the choices so
+// far are kept in `state.resolution.auraHosts`.
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
@@ -13,7 +16,6 @@ import { isAura } from "../rules/attachment.ts";
 import { canEnchant } from "../rules/can-enchant.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
-import type { GameEvent } from "../state/events.ts";
 import type { AuraHost, GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { askToChoose } from "./choose-cards.ts";
@@ -34,20 +36,22 @@ export function returnAllToBattlefield(
 ): Progress {
   const returning = cardsReturning(state, effect, context, cards);
   const auras = returning.filter((id) => isAura(state, id, cards));
-  let next = state;
-  const events: GameEvent[] = [];
-  // The answer is for the first Aura without a host yet: the one asked about.
-  let answer: ObjectId | undefined = chosen?.[0];
+  let progress: Progress = { state, events: [] };
+  if (chosen !== null) {
+    // The answer is for the first Aura without a host yet: the one that was asked about.
+    const aura = auras.find((id) => !hasHost(progress.state, id));
+    const host = chosen[0];
+    if (aura === undefined || host === undefined || !possibleHosts(state, aura, cards).includes(host))
+      throw new Error("an answer naming a host no Aura was asked about");
+    progress = recordHost(progress, aura, host);
+  }
   for (const aura of auras) {
-    if (enchantsOf(next).some((e) => e.aura === aura)) continue;
-    const hosts = possibleHosts(next, aura, cards);
-    const host = answer ?? (hosts.length <= 1 ? (hosts[0] ?? null) : undefined);
-    answer = undefined;
-    if (host === undefined) {
+    if (hasHost(progress.state, aura)) continue;
+    const hosts = possibleHosts(progress.state, aura, cards);
+    if (hosts.length > 1) {
       // Two or more to choose from: ask its owner. The battlefield is public, so one option isn't asked (like sacrifice).
-      const owner = ownerOf(next, aura);
-      const ask = askToChoose(next, {
-        chooser: owner,
+      const ask = askToChoose(progress.state, {
+        chooser: ownerOf(state, aura),
         purpose: "enchant",
         for: aura,
         options: hosts,
@@ -56,27 +60,31 @@ export function returnAllToBattlefield(
         effect,
         context,
       });
-      return { state: ask, events };
+      return { state: ask, events: progress.events };
     }
-    next = remember(next, { aura, host });
-    if (host !== null) events.push({ type: "AURA_HOST_CHOSEN", player: ownerOf(next, aura), aura, host });
+    progress = recordHost(progress, aura, hosts[0] ?? null);
   }
+  const auraHosts = progress.state.resolution?.auraHosts ?? [];
   const moves = returning.flatMap((object) => {
-    const host = enchantsOf(next).find((e) => e.aura === object)?.host;
+    const host = auraHosts.find((e) => e.aura === object)?.host;
     // An Aura with nothing to enchant stays where it is (CR 303.4g).
     if (host === null) return [];
     const attached = host === undefined ? {} : { attachedTo: host };
-    const to = { zone: "battlefield", controller: ownerOf(next, object), ...attached } as const;
+    const to = { zone: "battlefield", controller: ownerOf(state, object), ...attached } as const;
     return [{ kind: "moveCard", object, to } as const];
   });
-  if (moves.length === 0) return { state: next, events };
-  const done = happen(next, { kind: "simultaneous", events: moves }, cards);
-  return { state: done.state, events: [...events, ...done.events] };
+  // The choices belong to this effect only: a later one in the same resolution starts afresh.
+  const cleared = withAuraHosts(progress.state, []);
+  if (moves.length === 0) return { state: cleared, events: progress.events };
+  // In APNAP order, so they get their timestamps in it (CR 613.7m): with two Mind Controls on one creature, the
+  // nonactive player's is later and wins.
+  const done = happen(cleared, { kind: "simultaneous", events: moves }, cards);
+  return { state: done.state, events: [...progress.events, ...done.events] };
 }
 
 /**
  * The cards that fit, from every graveyard: the active player's first, then in turn order (the order Auras are
- * announced in), each graveyard from the bottom (its public order, CR 404.1).
+ * announced in), each graveyard from the bottom (its order, which anyone may see, CR 404.2).
  */
 function cardsReturning(state: GameState, effect: ReturnAll, context: EffectContext, cards: CardDatabase): ObjectId[] {
   return apnapOrder(state).flatMap((player) =>
@@ -98,11 +106,20 @@ function ownerOf(state: GameState, id: ObjectId): PlayerId {
   return obj.owner;
 }
 
-function enchantsOf(state: GameState): readonly AuraHost[] {
-  return state.resolution?.enchants ?? [];
+function hasHost(state: GameState, aura: ObjectId): boolean {
+  return (state.resolution?.auraHosts ?? []).some((e) => e.aura === aura);
 }
 
-function remember(state: GameState, choice: AuraHost): GameState {
+/** Keeps the Aura's host; a host chosen is announced to everyone (CR 101.4b), so the players choosing later know it. */
+function recordHost(progress: Progress, aura: ObjectId, host: ObjectId | null): Progress {
+  const state = progress.state;
+  const recorded = withAuraHosts(state, [...(state.resolution?.auraHosts ?? []), { aura, host }]);
+  if (host === null) return { state: recorded, events: progress.events };
+  const chosenBy = ownerOf(state, aura);
+  return { state: recorded, events: [...progress.events, { type: "AURA_HOST_CHOSEN", player: chosenBy, aura, host }] };
+}
+
+function withAuraHosts(state: GameState, auraHosts: AuraHost[]): GameState {
   if (state.resolution === null) throw new Error("an Aura's host chosen outside a resolution");
-  return { ...state, resolution: { ...state.resolution, enchants: [...state.resolution.enchants, choice] } };
+  return { ...state, resolution: { ...state.resolution, auraHosts } };
 }

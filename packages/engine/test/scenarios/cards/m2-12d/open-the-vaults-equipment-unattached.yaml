@@ -1,5 +1,5 @@
 name: Equipment returned by Open the Vaults enters unattached; only Auras choose something to be attached to
-rules: [CR 303.4h, CR 301.5]
+rules: [CR 301.5b]
 setup:
   turn: { active: p1, step: main1 }
   p1:

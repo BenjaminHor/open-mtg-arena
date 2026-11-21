@@ -717,7 +717,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Gargoyle Castle.
        - M2-12d built (2026-11-21, D-107): Open the Vaults (218 cards); `returnAllToBattlefield`, `canEnchant` shared with
          CR 704.5m, `chooseCards.for` and the `enchant` purpose, `Resolution.enchants`, the `AURA_HOST_CHOSEN` event, the
-         `.attachedTo` scenario expectation; 9 scenarios in `cards/m2-12d/`; two golden games. Next: reviews, PR.
+         `.attachedTo` scenario expectation; two golden games. Rules review: no wrong ruling; CR 613.7m now happens (the
+         cards move in APNAP order: two Mind Controls on one creature, the nonactive player's wins) and is cited and
+         tested; the APNAP scenario couldn't fail (p1 was both active and first seat), now p2 active too; Equipment's
+         citation is CR 301.5b, not 303.4h. Code review: the answer is checked against the Aura asked about (throws on
+         drift), the choices are cleared after the move, `enchants` renamed `auraHosts`, docs (rules and state READMEs,
+         future-rules). 14 scenarios, a CLI test for the decision's `for`; mutants (seat order, no event when only one
+         host) now die. The golden game that cast it with nothing to return is dropped. Next: PR.
        - M2-12d plan (2026-11-21, with the advisor's review): Open the Vaults, one PR.
          - Its rulings: an Aura that can return must; its controller-to-be chooses what it enchants as it enters, not
            targeting (shroud and Ice Cage don't matter), but the enchant ability and protection do (CR 303.4f); none

@@ -98,7 +98,7 @@ export type GameEvent =
   | { type: "ATTACHED"; object: ObjectId; to: ObjectId; from: ObjectId | null }
   /**
    * As an Aura is about to be put onto the battlefield other than by resolving, the player who'll control it chose what
-   * it will enchant (CR 303.4f). Public, so the players choosing after see it (Open the Vaults' ruling).
+   * it will enchant (CR 303.4f). Public, so the players choosing after know it (CR 101.4b).
    */
   | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId; host: ObjectId }
   /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */

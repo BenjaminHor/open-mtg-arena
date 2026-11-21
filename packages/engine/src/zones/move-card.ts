@@ -22,7 +22,7 @@ export type Destination =
   | { zone: "stack"; controller: PlayerId }
   /**
    * A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e); `counters`: what it enters with
-   * (CR 614.1c, 122.6); `attachedTo`: the permanent an Aura enters attached to (CR 608.3c).
+   * (CR 614.1c, 122.6); `attachedTo`: the permanent an Aura enters attached to (CR 608.3c, 303.4f).
    */
   | {
       zone: "battlefield";

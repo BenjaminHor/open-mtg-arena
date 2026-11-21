@@ -18,6 +18,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   `Layered.cantActivate`).
 - `attachment.ts`: `attachedHost` (and `attachedHostIn`, for the pass), the one reader of what an Aura is attached to,
   null once that object has left (CR 303.4b, 400.7); `attachmentsOf`; `enchantFilterOf` and `isAura` (CR 702.5a, 303.4).
+- `can-enchant.ts`: `canEnchant`, whether an Aura could legally enchant a permanent (enchant ability, protection), shared
+  by the CR 704.5m state-based action and Auras put onto the battlefield (CR 303.4f, D-107).
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by
   `matchesFilter` and the pass.
 - `control-effects.ts`: `layerTwo`, layer 2: resolved control effects (Act of Treason, D-098) and static ones (Mind
