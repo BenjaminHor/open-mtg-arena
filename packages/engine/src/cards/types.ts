@@ -635,7 +635,8 @@ export type Effect =
   /** "Reveal it": shows the cards to every player (CR 701.20a), staying where they are (CR 701.20b). */
   | { op: "reveal"; of: EffectSubject }
   /**
-   * "Put it into your hand" / "onto the battlefield tapped" / "on top of" or "on the bottom of your library": under the controller's
+   * "Put it into your hand" / "onto the battlefield tapped" / "on top of" or "on the bottom of your library": under
+   * the controller's
    * control (CR 110.2a); a library or hand is the card's owner's (CR 400.3). `onlyIf`: "if it's a creature card, put it
    * ..." (the filter's `controller` relative to "you"). `optional`: "you may put", asked only if there's a card to put.
    */

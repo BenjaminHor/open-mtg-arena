@@ -1,0 +1,16 @@
+name: Liliana Vess's +1 on a player with one card discards it without a question
+rules: [CR 701.9b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Liliana Vess]
+  p2:
+    hand: [Forest]
+steps:
+  - p1 activate: Liliana Vess
+    ability: 1
+    targets: [p2]
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      p2.graveyard: [Forest]

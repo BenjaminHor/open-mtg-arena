@@ -5,6 +5,8 @@ setup:
   p1:
     battlefield: [{ card: Garruk Wildspeaker, counters: { loyalty: 4 } }, Grizzly Bears, Forest]
     hand: [Llanowar Elves]
+  p2:
+    battlefield: [Hill Giant]
 steps:
   - p1 activate: Garruk Wildspeaker
     ability: 3
@@ -13,7 +15,10 @@ steps:
   - all pass: once
   - expect:
       p1:Grizzly Bears.power: 5
+      p1:Grizzly Bears.toughness: 5
       p1:Grizzly Bears.abilities contains: [trample]
+      p2:Hill Giant.power: 3
+      p2:Hill Giant.abilities lacks: [trample]
   - p1 cast: Llanowar Elves
     pay: auto
   - all pass: once

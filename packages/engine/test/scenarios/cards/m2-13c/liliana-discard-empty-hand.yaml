@@ -1,0 +1,15 @@
+name: Liliana Vess's +1 on a player with no cards in hand does nothing
+rules: [CR 609.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Liliana Vess]
+steps:
+  - p1 activate: Liliana Vess
+    ability: 1
+    targets: [p1]
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      p1:Liliana Vess.counters: { loyalty: 6 }
+      p1.graveyard: []

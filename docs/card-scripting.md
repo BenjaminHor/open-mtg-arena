@@ -126,6 +126,9 @@ export const furnaceWhelp: CardDef = {
   `{ kind: "attachedCantActivate" }`, mana abilities included; "when enchanted creature becomes the target of a spell
   or ability" is the trigger `{ kind: "attachedBecomesTarget" }` (D-106).
 - "You control enchanted creature" (Mind Control) is the static `{ kind: "attachedControl" }`, layer 2 (D-105).
+- "Return all [filter] cards from all graveyards to the battlefield under their owners' control" is `{ op:
+  "returnAllToBattlefield", from: "allGraveyards", filter, under: "owners" }`; "put all ... under your control" is
+  `under: "you"`. "Put that card on top of your library" is `{ op: "put", of: "found", into: "libraryTop" }`.
 - A planeswalker's loyalty abilities are activated abilities whose cost is `{ kind: "loyalty", amount: 2 }` for "+2:",
   `amount: -1` for "−1:" (CR 606.4): `{ kind: "activated", cost: [{ kind: "loyalty", amount: -1 }], targets: [{ kind:
   "player" }], effects: [...] }`. Their timing and once-per-turn limit come from the cost part (CR 606.3, 606.6), with

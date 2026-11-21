@@ -2,9 +2,9 @@
 // (Open the Vaults), or "under your control" (Liliana Vess). Everything enters at once (CR 608.2f). An Aura entering
 // this way isn't cast, so the player who'll control it (CR 110.2) chooses what it will enchant (CR 303.4f): any
 // permanent already on the battlefield it could legally enchant, not one entering with it (its ruling), and without
-// targeting. With nothing to enchant, it stays in
-// the graveyard (CR 303.4g). Equipment enters unattached (CR 301.5b). The active player announces for their Auras
-// first, then each other player in turn order (CR 101.4), each knowing the choices before theirs (CR 101.4b). A
+// targeting. With nothing to enchant, it stays in the graveyard (CR 303.4g). Equipment enters unattached (CR 301.5b).
+// The active player announces for their Auras first, then each other player in turn order (CR 101.4); under "you",
+// one player announces for all, each knowing the choices before theirs (CR 101.4b). A
 // player's own Auras are announced in their graveyard's order, not one the player picks (later: CR 101.4c): the
 // choices don't depend on each other, so the order changes nothing. Each answer runs the effect again; the choices so
 // far are kept in `state.resolution.auraHosts`.
@@ -56,7 +56,7 @@ export function returnAllToBattlefield(
     if (hasHost(progress.state, aura)) continue;
     const hosts = possibleHosts(progress.state, aura, controllerToBe(aura), cards);
     if (hosts.length > 1) {
-      // Two or more to choose from: ask its owner. The battlefield is public, so one option isn't asked (like sacrifice).
+      // Two or more to choose from: ask its controller-to-be. The battlefield is public, so one option isn't asked.
       const ask = askToChoose(progress.state, {
         chooser: controllerToBe(aura),
         purpose: "enchant",
@@ -84,7 +84,8 @@ export function returnAllToBattlefield(
   const cleared = withAuraHosts(progress.state, []);
   if (moves.length === 0) return { state: cleared, events: progress.events };
   // In APNAP order, so they get their timestamps in it (CR 613.7m): with two Mind Controls on one creature, the
-  // nonactive player's is later and wins.
+  // nonactive player's is later and wins. Under "you" one player controls them all and would choose their order
+  // (later: CR 613.7m's "the order of that player's choice"); graveyard order stands in.
   const done = happen(cleared, { kind: "simultaneous", events: moves }, cards);
   return { state: done.state, events: [...progress.events, ...done.events] };
 }
