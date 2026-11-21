@@ -107,7 +107,8 @@ export function runEffect(
       });
     }
     case "cantCastSpells": {
-      // "Your opponents can't cast spells this turn": a rule for the players named now (CR 101.2, 611.2c).
+      // "Your opponents can't cast spells this turn": a rule for the opponents of "you", the spell's controller
+      // (CR 109.5, 102.2), which can't change during the game.
       const players = playersNamed(state, effect.who, context, cards);
       if (players.length === 0) return { state, events: [] };
       return createContinuousEffect(state, {

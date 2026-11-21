@@ -415,8 +415,8 @@ export type Effect =
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
   /**
-   * "Your opponents can't cast spells this turn" (Silence): a rule for the players named as it resolves (CR 101.2,
-   * 611.2c); spells already cast, abilities and land plays are untouched (its rulings).
+   * "Your opponents can't cast spells this turn" (Silence): a rule for those players (CR 101.2, 601.3); spells already
+   * cast, abilities and land plays are untouched (its rulings).
    */
   | { op: "cantCastSpells"; who: EffectSubject; duration: Duration }
   /**
