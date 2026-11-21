@@ -79,6 +79,7 @@ export function staticKeywordGrants(
       }
       case "attachedCantAttackOrBlock":
       case "attachedCantBeBlocked":
+      case "attachedControl":
       case "plusPerSharedCreatureType":
       case "plusPerOtherSameName":
       case "cantBeBlocked":
@@ -186,6 +187,7 @@ export function staticPTChanges(
       case "noMaximumHandSize":
       case "attachedCantAttackOrBlock":
       case "attachedCantBeBlocked":
+      case "attachedControl":
         break;
     }
   }

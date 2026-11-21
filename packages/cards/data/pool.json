@@ -3506,6 +3506,36 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Mind Control",
+      "slug": "mind-control",
+      "oracleId": "5912546a-acc2-448c-b042-64bdac5ec129",
+      "layout": "normal",
+      "manaCost": "{3}{U}{U}",
+      "manaValue": 5,
+      "typeLine": "Enchantment — Aura",
+      "oracleText": "Enchant creature\nYou control enchanted creature.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Enchant"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/c/ec7f77af-17d7-4746-bc83-f455b9b6f9ea.jpg?1783941089",
+        "large": "https://cards.scryfall.io/large/front/e/c/ec7f77af-17d7-4746-bc83-f455b9b6f9ea.jpg?1783941089",
+        "png": "https://cards.scryfall.io/png/front/e/c/ec7f77af-17d7-4746-bc83-f455b9b6f9ea.png?1783941089",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/c/ec7f77af-17d7-4746-bc83-f455b9b6f9ea.jpg?1783941089"
+      },
+      "artist": "Ryan Pancoast",
+      "set": "m12",
+      "collectorNumber": "67",
+      "scryfallUri": "https://scryfall.com/card/m12/67/mind-control?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Mind Rot",
       "slug": "mind-rot",
       "oracleId": "ad44cf74-b717-48fb-9fa2-77512024d76a",

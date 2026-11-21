@@ -78,7 +78,8 @@ can't make it pass.
   (CR 302.6). In a standard opening every permanent starts sick. `counters` is a map like `{ +1/+1: 2 }`; +X/+Y and -X/-Y counters change power and toughness (CR 122.1a).
   `attachedTo: p2:Grizzly Bears` (or `#2` for the second) starts an Aura or Equipment attached to a permanent that player
   starts with (CR 303.4b), so a scenario needn't cast it; one attached illegally goes as state-based actions are first
-  checked (CR 704.5m).
+  checked (CR 704.5m). A creature set up under a Mind Control is its controller's from the start, not summoning sick:
+  no control changed after the setup.
 - `rules: [...]`: rule modifiers for the whole game, like `{ kind: creaturesGetPT, controller: p2, power: 1, toughness: 1 }`
   ("creatures p2 controls get +1/+1", layer 7c).
 

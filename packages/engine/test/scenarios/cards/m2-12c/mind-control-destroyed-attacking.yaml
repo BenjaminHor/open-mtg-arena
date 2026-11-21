@@ -1,0 +1,24 @@
+name: Mind Control destroyed while its creature attacks returns the creature to its owner, removed from combat
+rules: [CR 506.4, CR 302.6, CR 613.1b]
+setup:
+  turn: { active: p1, step: main1 }
+  # Set up already stolen: the Giant has been p1's since the turn began (setups aren't summoning sick, docs/testing.md).
+  p1:
+    battlefield: [{ card: Mind Control, attachedTo: p2:Hill Giant }]
+  p2:
+    battlefield: [Hill Giant, Forest, Forest]
+    hand: [Naturalize]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - p1 pass: once
+  - p2 cast: Naturalize
+    targets: [p1:Mind Control]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Hill Giant]
+      p2:Hill Giant.sick: true
+  - all pass: until main2
+  - expect:
+      p2.life: 20

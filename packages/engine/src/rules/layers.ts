@@ -26,7 +26,7 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { COLORS } from "../state/mana.ts";
 import type { CardObject } from "../state/objects.ts";
-import { controlFromEffects } from "./control-effects.ts";
+import { layerTwo } from "./control-effects.ts";
 import { layerSeven } from "./layer-seven.ts";
 import { layerSix } from "./layer-six.ts";
 import { type KeywordGrant, staticPTChanges, staticSources } from "./static-effects.ts";
@@ -204,12 +204,10 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
     const obj = input.objects[id];
     if (obj?.kind === "card") objects.push(obj);
   }
-  // The printed values (CR 613.1), and the controller: as stored (CR 110.2), unless a layer 2 effect changed it
-  // (CR 613.1b; a permanent's only, as effects lock in permanents).
-  for (const obj of objects) {
-    const changed = zoneOfIn(input, obj.id) === "battlefield" ? controlFromEffects(input.effects, obj.id) : null;
-    board[obj.id] = start(obj, changed ?? obj.baseController, cards);
-  }
+  // The printed values (CR 613.1), and the controller: as stored (CR 110.2), after layer 2 for a permanent
+  // (CR 613.1b, `control-effects.ts`); a spell's is its caster (CR 112.2).
+  const controllers = layerTwo(input, cards);
+  for (const obj of objects) board[obj.id] = start(obj, controllers[obj.id] ?? obj.baseController, cards);
   // Layers 4 and 5 (CR 613.1d, 613.1e): resolved effects that change types and colors, on the objects they locked in
   // (CR 611.2c), each layer in timestamp order (CR 613.7), which is `input.effects`' order (each new one is later).
   for (const effect of input.effects) {

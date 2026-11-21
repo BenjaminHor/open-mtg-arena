@@ -120,6 +120,7 @@ export const furnaceWhelp: CardDef = {
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
   is `{ kind: "attachedCantAttackOrBlock" }` (D-102).
+- "You control enchanted creature" (Mind Control) is the static `{ kind: "attachedControl" }`, layer 2 (D-105).
 - "Equip {2}" is an activated ability `{ kind: "activated", keyword: "equip", timing: "sorcery", cost: [{ kind: "mana",
   cost: [{ kind: "generic", amount: 2 }] }], targets: [{ kind: "permanent", filter: { types: ["creature"], controller:
   "you" } }], effects: [{ op: "attachSelf", to: { target: 0 } }] }` (CR 702.6a); `timing: "sorcery"` is any "activate

@@ -78,7 +78,8 @@ describe("a control change (CR 302.6, 613.1b)", () => {
       effects: [first, { ...first, timestamp: 901, change: { kind: "gainControl", player: "p2" } }],
     };
     expect(controllerOf(twice, bears, TEST_CARDS)).toBe("p2");
-    expect(controllerOf({ ...twice, effects: [...twice.effects].reverse() }, bears, TEST_CARDS)).toBe("p1");
+    // Timestamps decide, not where the effects are listed (CR 613.7).
+    expect(controllerOf({ ...twice, effects: [...twice.effects].reverse() }, bears, TEST_CARDS)).toBe("p2");
     // The later one ending leaves the earlier one's player in control, not the owner.
     expect(controllerOf({ ...twice, effects: [first] }, bears, TEST_CARDS)).toBe("p1");
   });

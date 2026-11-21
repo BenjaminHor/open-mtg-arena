@@ -1,0 +1,14 @@
+name: Mind Control can't target a creature wearing Whispersilk Cloak (shroud)
+rules: [CR 702.18a, CR 303.4a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Mind Control]
+  p2:
+    battlefield: [Hill Giant, { card: Whispersilk Cloak, attachedTo: p2:Hill Giant }]
+steps:
+  - p1 cast: Mind Control
+    targets: [p2:Hill Giant]
+    pay: auto
+  - expect error: illegalAction
