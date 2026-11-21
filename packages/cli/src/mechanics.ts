@@ -98,8 +98,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   CARD_DISCARDED: true,
   CARDS_REVEALED: true,
   COUNTERS_PUT: true,
-  // Only as a +1/+1 counter meets a -1/-1 counter (CR 704.5q), which nothing in the pool puts yet.
-  COUNTERS_REMOVED: "nothing in the pool puts -1/-1 counters or removes counters yet",
+  COUNTERS_REMOVED: true,
 };
 
 /**
@@ -142,6 +141,8 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   // Instead of a graveyard.
   graveyardToLibrary: "library",
   preventDamageToYou: "prevented",
+  entersWithCounters: "battlefield",
+  preventDamageToSelfRemovingCounters: "prevented",
 };
 
 /** The replacement effects a card's own text makes that apply as it moves to `zone`. */

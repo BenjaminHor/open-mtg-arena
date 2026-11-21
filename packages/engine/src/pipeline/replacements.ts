@@ -224,8 +224,12 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
     }
     case "graveyardToLibrary":
       return move.to.zone === "graveyard";
+    case "entersWithCounters":
+      // Once per event like every replacement: the `applied` list sees to that.
+      return move.to.zone === "battlefield";
     // Prevention, read for damage (`damage-replacements.ts`), never for a move.
     case "preventDamageToYou":
+    case "preventDamageToSelfRemovingCounters":
       return false;
   }
 }
@@ -271,7 +275,18 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
         after: [{ kind: "shuffle", player: owner }],
       };
     }
+    case "entersWithCounters": {
+      if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters with counters");
+      // X as the spell that becomes it was cast (CR 107.3m); 0 if it wasn't cast (put onto the battlefield).
+      const obj = state.objects[move.object];
+      const x = obj?.kind === "card" ? (obj.choices?.x ?? 0) : 0;
+      // Zero counters is no counters (CR 122.6 counts only an object given some); others it enters with add up.
+      if (x <= 0) return { before: [], event, after: [] };
+      const counters = { ...move.to.counters, [def.counter]: (move.to.counters?.[def.counter] ?? 0) + x };
+      return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
+    }
     case "preventDamageToYou":
+    case "preventDamageToSelfRemovingCounters":
       throw new Error("a prevention effect never replaces a move");
   }
 }

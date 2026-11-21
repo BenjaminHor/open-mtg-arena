@@ -41,6 +41,10 @@ export function matches(
       return event.type === "ATTACKERS_DECLARED" && event.attacks.some((a) => a.attacker === source)
         ? [{ player: null, object: source, amount: null }]
         : [];
+    case "selfCountersRemoved":
+      // Once for each counter removed (CR 603.2c): "whenever a +1/+1 counter is removed" (Protean Hydra's ruling).
+      if (event.type !== "COUNTERS_REMOVED" || event.object !== source || event.counter !== when.counter) return [];
+      return Array.from({ length: event.amount }, () => ({ player: null, object: null, amount: null }));
     case "playerDraws":
       return event.type === "CARD_DRAWN" && isRelated(state, source, event.player, when.player)
         ? [{ player: event.player, object: null, amount: null }]

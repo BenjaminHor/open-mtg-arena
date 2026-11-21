@@ -1460,3 +1460,15 @@ every schema change and every change D-024 lists bumps it.
   (CR 704.5q), as two `removeCounters` events in the same batch.
 - The effect op `putCounters { of, counter, amount }`, for "+1/+1" or "-1/-1" for now; other kinds (wish, poison on
   players) come with their cards.
+
+**D-100: Entering with counters, and a prevention that does more (M2-10b)** · 2026-11-21 · accepted
+- "This creature enters with X +1/+1 counters on it" (CR 614.1c) is an own-text replacement, `entersWithCounters`, that
+  sets the battlefield destination's `counters`; `moveCard` gives the new object those counters and emits `COUNTERS_PUT`
+  (entering with counters is putting them, CR 122.6). X is the spell's as it was cast (CR 107.3m); a card put onto the
+  battlefield without being cast has X of 0.
+- "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it" is a
+  prevention candidate with `afterwards`: all of the damage prevented, then a `removeCounters` for the amount prevented
+  right after the damage event (CR 615.5), which removes as many as it has (its ruling).
+- "Whenever a +1/+1 counter is removed from this creature" (`selfCountersRemoved`) triggers once per counter removed
+  (CR 603.2c, its ruling); its delayed "put two +1/+1 counters on it at the beginning of the next end step" remembers the
+  Hydra (`about: "self"`, D-096) and does nothing if it left.

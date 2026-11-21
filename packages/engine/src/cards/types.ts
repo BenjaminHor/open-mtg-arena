@@ -137,7 +137,17 @@ export type ReplacementDef =
    * while this permanent is on the battlefield, N of each such source's damage to its controller in each damage event.
    * A source with no controller counts by its owner (its ruling).
    */
-  | { kind: "preventDamageToYou"; amount: number };
+  | { kind: "preventDamageToYou"; amount: number }
+  /**
+   * "This creature enters with X +1/+1 counters on it" (Protean Hydra, CR 614.1c): X as the spell was cast (CR 107.3m),
+   * 0 if it wasn't.
+   */
+  | { kind: "entersWithCounters"; counter: "+1/+1"; amount: "X" }
+  /**
+   * "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it"
+   * (Protean Hydra): all of it prevented, then the counters removed right after (CR 615.5), as many as it has.
+   */
+  | { kind: "preventDamageToSelfRemovingCounters"; counter: "+1/+1" };
 
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
