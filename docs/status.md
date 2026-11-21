@@ -716,6 +716,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13c2 plan (2026-11-21, with the advisor's review), two PRs.
+         - M2-13c2a, Ajani Goldmane: +1 gain 2 life; −1 a +1/+1 counter on each creature you control, then those gain
+           vigilance (the same set, nothing changes between); −6 a white Avatar token whose power and toughness are each
+           your life total. Tokens carry `statics` (a characteristic-defining ability, CR 604.3); the CDA reads
+           "yourLifeTotal"; life totals join the layer pass's inputs, compared by value so a mana-pool change still reuses
+           the pass. Bench `characteristics` and `layers.freshPass` against main. Tests: a life change with the objects
+           unchanged updates the Avatar; a mana change reuses the pass; damage marked becomes lethal as life drops; under
+           Mind Control it uses the thief's life; counters and Giant Growth on top.
+         - M2-13c2b, Chandra Nalaar: −X (X announced, at most her loyalty, CR 606.6 and its ruling: refused, not thrown;
+           `xProblem` reads the state); "is a loyalty ability" kept apart from "how many counters"; −8 as one damage event
+           to the target and each creature that player, or that planeswalker's controller, controls. Scenarios: X = 0, X =
+           all loyalty, X above refused, cancelled at X, −8 at a player and at a planeswalker, the target gone (CR 608.2b).
+         - Future impact: other "equal to your life total" CDAs and battles' defense reading the same inputs; −X on other
+           planeswalkers; "that player or that planeswalker's controller" for more effects.
        - M2-13c1 built (2026-11-21): Garruk Wildspeaker (untap two target lands, a 3/3 Beast, the overrun) and Liliana
          Vess (discard, search then shuffle then put on top, all creature cards from all graveyards under your control),
          221 cards; `put` into `libraryTop`; `returnAllToBattlefield` learns `under: "owners" | "you"` (the Aura host's
