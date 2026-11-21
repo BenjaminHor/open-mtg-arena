@@ -745,7 +745,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          name on the permanent, `finishResolving` and Open the Vaults able to wait. 7 scenarios (naming as it enters and
          a loyalty ability stopped, a mana ability allowed and the other not, equip stopped and an unnamed card's
          ability not, the graveyard ability, the Needle leaving, two Needles from Open the Vaults in APNAP order, any
-         card's name but not a made-up one); mutants 4/4 after one more step. 1 golden game. Next: reviews, PR.
+         card's name but not a made-up one); mutants 4/4 after one more step. 1 golden game. Fuzz 80 clean. Rules review: no
+         wrong ruling; the second player naming didn't see the first's name (CR 101.4b): a public `NAME_CHOSEN` event
+         now; citations (who chooses: CR 614.12's example, 616.1); 4 more scenarios (unnamed cards still work, Terramorphic
+         Expanse stopped and Birds not, every copy whoever controls it, Garruk), the token name refused, the Gargoyle
+         Castle half of Open the Vaults; setup tests; the CLI shows a chosen name. Next: code review, PR.
        - M2-14d plan (2026-11-21, with the advisor's review), two PRs:
          - M2-14d1, Pithing Needle and the "as it enters, choose" mechanism (CR 614.12a): a replacement of its own
            text asks the player it enters under, through `happenOrAsk`'s saved choices (keyed by object and
@@ -754,7 +758,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (`finishResolving`), Open the Vaults. Setup and the scenario format take a chosen name. Needle: a check in
            activation (not mana abilities), names read through characteristics. Scenarios: a loyalty ability, equip,
            Magma Phoenix's graveyard ability, Gargoyle Castle's mana ability allowed and the other not, the Needle
-           leaving, an ability already on the stack, two Needles from Open the Vaults (APNAP).
+           leaving, two Needles from Open the Vaults (APNAP). (An ability already on the stack can't be reached: the Needle
+           enters only at sorcery speed.)
          - M2-14d2, Convincing Mirage: layer 4 setting a land's subtype, its rules-text abilities lost (CR 305.7), one
            flag that `abilitiesOf`, `triggersOf` and `replacementsOf` honor; interaction scenarios (a Forest made an
            Island, a checkland, Gargoyle Castle, swampwalk, Nightmare); bench `abilitiesOf`.

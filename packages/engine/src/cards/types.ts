@@ -161,7 +161,7 @@ export type ReplacementDef =
   | { kind: "entersWithLoyalty"; loyalty: number }
   /**
    * "As this enters, choose a card name" (Pithing Needle): a replacement effect on how it enters (CR 614.1c), its choice
-   * made before it enters (CR 614.12a) by the player it enters under, from the names of cards in the card database
+   * made before it enters (CR 614.12a) by the player it enters under (CR 614.12's example: its controller), from the names of cards in the card database
    * (CR 201.4: a card's name, not a token's; D-114). The permanent keeps it as `chosenName`.
    */
   | { kind: "asEntersChooseName" }

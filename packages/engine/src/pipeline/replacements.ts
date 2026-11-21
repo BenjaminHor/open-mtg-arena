@@ -85,8 +85,9 @@ export function applyReplacements(
         options: candidates.map((c) => c.ref),
       };
     }
-    // A replacement that makes a choice as the permanent enters asks it first, of the player it enters under
-    // (CR 614.12a); its answer is kept with the others, so replacing again finds it.
+    // A replacement that makes a choice as the permanent enters asks it before it enters (CR 614.12a), of the player it
+    // enters under (its controller, CR 614.12's example, 616.1); the answer is kept with the others, so replacing
+    // again finds it.
     if (chosen.kind === "ownText" && chosen.def.kind === "asEntersChooseName") {
       const to = chosen.move.to;
       if (object === null || to.zone !== "battlefield") throw new Error("only a permanent entering names a card");

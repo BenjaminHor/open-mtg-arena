@@ -11,6 +11,9 @@ steps:
   - all pass: once
   - p1 choose: Not A Real Card
   - expect error: illegalAction
+  # A token's name only if a card has it (its ruling, CR 201.4).
+  - p1 choose: Beast Token
+  - expect error: illegalAction
   - p1 choose: Grizzly Bears
   - expect:
       p1.battlefield contains: [Pithing Needle]

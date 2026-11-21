@@ -233,5 +233,6 @@ T1 p1 adds {U} (p1:Island)
 T1 p1 taps p1:Island for mana
 T1 p1 casts Pithing Needle
 T1 resolves: Pithing Needle
+T1 p1 names Sanguine Bond for Pithing Needle
 T1 moves: Pithing Needle, stack -> battlefield
 T2 turn 2 begins (p2)

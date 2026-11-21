@@ -175,6 +175,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `attached: ${name(e.object)} to ${name(e.to)}${e.from === null ? "" : ` (from ${name(e.from)})`}`;
     case "AURA_HOST_CHOSEN":
       return `${e.player} chooses ${name(e.host)} for ${name(e.aura)} to enchant`;
+    case "NAME_CHOSEN":
+      return `${e.player} names ${e.name} for ${name(e.object)}`;
     case "UNATTACHED":
       return `unattached: ${name(e.object)} from ${name(e.from)}`;
     case "TOKEN_CREATED":

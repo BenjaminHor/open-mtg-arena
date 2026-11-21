@@ -1,0 +1,12 @@
+name: Pithing Needle naming Garruk Wildspeaker stops all of his loyalty abilities
+rules: [CR 602.5, CR 606.3]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Pithing Needle, chosenName: Garruk Wildspeaker }]
+  p2:
+    battlefield: [Garruk Wildspeaker]
+steps:
+  - p2 activate: Garruk Wildspeaker
+    ability: 2
+  - expect error: illegalAction

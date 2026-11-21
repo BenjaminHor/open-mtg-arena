@@ -107,6 +107,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   ATTACHED: true,
   UNATTACHED: true,
   AURA_HOST_CHOSEN: true,
+  NAME_CHOSEN: true,
 };
 
 /**

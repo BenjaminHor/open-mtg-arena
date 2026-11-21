@@ -1790,7 +1790,8 @@ owner's answer to the D-089 open question, option (a))
 
 **D-119: "As this enters, choose a card name" and Pithing Needle (M2-14d1)** · 2026-11-21 · accepted
 - The choice is a replacement effect of the card's own text on how it enters (CR 614.1c), `asEntersChooseName`, made
-  before it enters (CR 614.12a) by the player it enters under. The pipeline asks it like the choice between
+  before it enters (CR 614.12a) by the player it enters under (CR 614.12's example: its controller; CR 616.1). The
+  answer is told to everyone as `NAME_CHOSEN`, so a player choosing after knows it (CR 101.4b). The pipeline asks it like the choice between
   replacements (CR 616.1): `applyReplacements` returns a `chooseName` ask, `happenOrAsk` waits with a `chooseName`
   decision, and the answer is kept in the resumed event's choices (a `ReplacementChoice` with `name`), so replacing the
   event again from the start finds it and doesn't ask twice. Several such permanents entering together ask in APNAP
@@ -1805,3 +1806,9 @@ owner's answer to the D-089 open question, option (a))
 - Pithing Needle's static is checked when a non-mana ability is activated (`activationProblem`), never for mana
   abilities (its ruling, CR 605.1a), for a source anywhere (graveyard abilities too), and the source's name is read
   through `characteristics`, so a copy's name will count. Setups and scenarios take `chosenName`.
+- Future impact: Sphinx Ambassador (M2-14e) has another player choose, so the chooser will come from the replacement,
+  not always `to.controller`; "spells with the chosen name can't be cast" (Meddling Mage) is the same check in
+  `castProblem`; split, double-faced and adventure names (later: CR 201.4b-g) need more than `printed.name`.
+  `SPELL_RESOLVED` is emitted before the choice, while the card is still on the stack: a UI must not read it as "left
+  the stack", and "when it resolves" triggers (later: CR 608.2p) must be detected after the move. `isManaAbility`
+  doesn't yet check CR 605.1a's "doesn't move a card to or from a library" (no pool card can tell).

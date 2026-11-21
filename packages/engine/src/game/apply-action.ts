@@ -168,7 +168,10 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       // The name of a card (CR 201.4), from the card database (D-114).
       if (!cardNames(cards).includes(answer.name)) return error("illegalAction", `no card is named ${answer.name}`);
       // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
+      // Told to everyone, so a player choosing after knows it (CR 101.4b).
       const { proposed, choices } = pending.resume;
+      const object = pending.for.kind === "object" ? pending.for.object : null;
+      if (object === null) throw new Error("a card name is chosen for an object");
       return {
         ok: true,
         state: queueWork(answered, {
@@ -176,7 +179,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
           proposed,
           choices: [...choices, { for: pending.for, ref: pending.ref, name: answer.name }],
         }),
-        events: [],
+        events: [{ type: "NAME_CHOSEN", player: pending.player, object, name: answer.name }],
       };
     }
     case "chooseYesNo": {

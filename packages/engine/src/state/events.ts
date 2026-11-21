@@ -104,6 +104,11 @@ export type GameEvent =
    * it will enchant (CR 303.4f). Public, so the players choosing after know it (CR 101.4b).
    */
   | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId; host: ObjectId }
+  /**
+   * As a permanent is about to enter, the player it enters under chose a card name for it (CR 614.12a; Pithing Needle).
+   * Public, so the players choosing after know it (CR 101.4b). `object` is the card as it was, before it entered.
+   */
+  | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId; name: string }
   /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */
   | { type: "UNATTACHED"; object: ObjectId; from: ObjectId }
   /**
