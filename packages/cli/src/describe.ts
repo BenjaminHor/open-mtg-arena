@@ -168,8 +168,9 @@ export function durationText(duration: Duration): string {
       return "for the rest of the game";
     case "whileSourceOnBattlefield":
       return "while its source remains on the battlefield";
+    // The change's own text names the untap step ("doesn't untap during p2's next untap step").
     case "nextUntapStep":
-      return "until its untap step";
+      return "";
   }
 }
 

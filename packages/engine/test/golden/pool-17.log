@@ -2040,7 +2040,7 @@ T35 taps: p1:Mesa Enchantress
 T35 p1 attack: p1:Beast Token#2 -> p2, p1:Mesa Enchantress -> p2
 T35 p2 block: p2:Wall of Frost -> p1:Mesa Enchantress
 T35 p2:Wall of Frost triggers (p2)
-T35 effect: p1:Mesa Enchantress doesn't untap during its controller's next untap step until its untap step
+T35 effect: p1:Mesa Enchantress doesn't untap during its controller's next untap step
 T35 resolves: p2:Wall of Frost's ability
 T35 combat damage: p1:Beast Token#2 -> p2 3
 T35 p2 loses 3 life

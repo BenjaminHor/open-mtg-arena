@@ -145,7 +145,7 @@ T4 taps: p1:Plains
 T4 p1 adds {W} (p1:Plains)
 T4 p1 taps p1:Plains for mana
 T4 p1 casts Silence
-T4 effect:  p2 can't cast spells until end of turn
+T4 effect: p2 can't cast spells until end of turn
 T4 resolves: Silence
 T4 moves: Silence, stack -> p1's graveyard
 T4 taps: p1:Swamp
