@@ -729,7 +729,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          `undefined` could get in); the field renamed `attacked` (battles later); the fuzz control-change check covers
          the attacked role; 13 unit tests (a real control change, a trampler's excess, Alluring Siren's ruling, refused
          attacks), the action-lines round trip. The scenario `->` step and exporter get their scenarios with Jace in
-         M2-13b. Next: PR.
+         M2-13b. Fuzz 100 clean. Merged as #66. Next: M2-13b (Jace Beleren; loyalty, loyalty abilities, CR 704.5i, the
+         legend rule, planeswalkers as targets).
        - M2-13 plan (2026-11-21, with the advisor's review): planeswalkers, three PRs. The five: Ajani Goldmane, Jace
          Beleren, Liliana Vess, Chandra Nalaar, Garruk Wildspeaker (all "Legendary Planeswalker" in today's Oracle). A
          card enters the pool only when it works completely, attacking included, so the plumbing comes first.
