@@ -364,10 +364,10 @@ describe("the checks", () => {
   it("scrambleHidden changes what a player can't see, and nothing they can", () => {
     const s = state();
     const [p1, p2] = s.turnOrder as [PlayerId, PlayerId];
-    const scrambled = scrambleHidden(s, p1);
+    const scrambled = scrambleHidden(s, p1, cards);
     // p2's hand is hidden from p1, so it's scrambled, and p2's own view sees that; p1's view doesn't change.
-    expect(playerView(scrambled, p2)).not.toEqual(playerView(s, p2));
-    expect(playerView(scrambled, p1)).toEqual(playerView(s, p1));
+    expect(playerView(scrambled, p2, cards)).not.toEqual(playerView(s, p2, cards));
+    expect(playerView(scrambled, p1, cards)).toEqual(playerView(s, p1, cards));
   });
 });
 

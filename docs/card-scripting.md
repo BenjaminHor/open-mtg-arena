@@ -101,7 +101,9 @@ export const furnaceWhelp: CardDef = {
   creatures able to block this creature do so" is `{ kind: "mustBeBlockedByAllAble" }`, "this spell can't be
   countered" is `{ kind: "cantBeCountered" }` (it works on the stack, CR 113.6g). Anthems (D-093): "[other] white
   creatures you control get +1/+1 [and have haste]" is `{ kind: "creaturesGet", filter, others?, power, toughness,
-  keywords? }`, the filter read relative to the permanent's controller; Coat of Arms is `{ kind:
+  keywords? }`, the filter read relative to the permanent's controller ("this creature and other ..." adds `self:
+  true`; "as long as the top card of your library is black" adds `asLongAs: { topOfLibrary: { colors: ["B"] } }`,
+  D-122); Coat of Arms is `{ kind:
   "plusPerSharedCreatureType" }`, Relentless Rats `{ kind: "plusPerOtherSameName" }`. Characteristic-defining abilities
   (D-094): "[this]'s power and toughness are each equal to the number of Swamps you control" is `{ kind:
   "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }` ("equal to your life
@@ -109,7 +111,8 @@ export const furnaceWhelp: CardDef = {
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
   engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
   (D-097); "you can't lose the game and your opponents can't win the game" is `{ kind: "cantLoseOpponentsCantWin" }`
-  (D-118).
+  (D-118). "Your opponents play with their hands revealed" is `{ kind: "opponentsPlayWithHandsRevealed" }` and "play
+  with the top card of your library revealed" `{ kind: "playWithTopOfLibraryRevealed" }` (D-122).
 - "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn." is
   `gainControl` (with `duration`), `untap` and `gainKeywords` on `{ target: 0 }` (D-098).
 - "Put a +1/+1 counter on this creature" is `{ op: "putCounters", of: "self", counter: "+1/+1", amount: 1 }` (D-099).

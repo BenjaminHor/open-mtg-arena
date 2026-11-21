@@ -740,6 +740,43 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14f plan (2026-11-21, with the advisor's review): Telepathy ("your opponents play with their hands
+         revealed") and Vampire Nocturnus ("play with the top card of your library revealed"; +2/+1 and flying to it and
+         other Vampires you control while that card is black). CR 401.5, 401.6, 701.18c, 701.20a, 400.2.
+         1. Statics `opponentsPlayWithHandsRevealed`, `playWithTopOfLibraryRevealed`, read through the layer pass (a
+            stolen Nocturnus reveals its new controller's library) in `rules/revealed.ts`.
+         2. The view shows revealed cards by identity only, sorted (D-062): `revealedHand: OracleId[] | null` and
+            `revealedTop: OracleId | null` per player; `objects`, `hand` and `canSee` unchanged (ids record history, and a
+            shuffle keeps them). `playerView` takes `cards`; the CLI's `show` too.
+         3. Each new revealed top is announced with a public `CARDS_REVEALED` (its ruling: each card of a multi-draw
+            is revealed before it's drawn; the rules review: also between a search and its shuffle).
+         4. `creaturesGet` gains `self` ("this creature and other ...") and `asLongAs: { topOfLibrary: filter }`; the
+            library tops join the layer inputs, compared by value only if the pass read one (like `lifeRead`), as a
+            shuffle changes the top without a new objects record. The top's printed characteristics.
+         5. The fuzzer's `scrambleHidden` keeps a revealed top on top and revealed cards' oracle ids.
+         6. Scenarios: both reveals, an empty library, a land on top, a non-Vampire Nocturnus, flying after blockers,
+            two Nocturni, a stolen one, a shuffle (Sage Owl/Liliana) changing the top, Divination's draws revealed. Bench.
+         - Later, not in the pool: CR 401.5's mid-cast delay, CR 401.6's new object (no id is shown, so nothing tracks it).
+           (The plan first said no pool card reveals a top only for a moment; the rules review found Diabolic Tutor does.)
+         - Future impact: per-player knowledge (a looked-at card, face-down cards) extends the same view fields.
+       - M2-14f built (2026-11-21, D-122): Telepathy and Vampire Nocturnus (234 cards). Statics read through the pass
+         (`rules/revealed.ts`); the view's `revealedHand`/`revealedTop` by identity only (`playerView` takes `cards`);
+         a draw from a revealed top emits `CARDS_REVEALED` first; `creaturesGet` gains `self` and `asLongAs:
+         { topOfLibrary }`, the library tops a layer input read through `libraryTopOf` (`read.libraryTops` beside
+         `read.life`); `printedStart` moved to `rules/printed-start.ts`; the fuzzer's scramble keeps revealed cards;
+         scenario expectations `p2.revealedHand`/`p2.revealedTop` and named cards in `CARDS_REVEALED`; the CLI's `show`
+         prints revealed cards. 12 scenarios, unit tests (the pass re-read after a reorder with the same objects, two
+         worlds for each reveal, a non-Vampire "this creature and other Vampires"); mutants: the cache key killed by the
+         unit test only (a reorder in a scenario always comes with an objects change), `self` by the unit test. 2 golden
+         games. Rules review: no wrong result; a top revealed only for a moment within a resolution (Diabolic Tutor
+         before its shuffle) was never announced, so every change of a revealed top now emits `CARDS_REVEALED`
+         (replacing the reveal before a draw), and Liliana Vess's shuffle-and-put-on-top is one event (CR 701.24b);
+         citations made honest (CR 701.20d, 401.6 and the casting delay `later:`); 17 more scenarios. Code review: no
+         bug, no stale pass; every characteristic read cost twice as much once a pass read a top (fixed: an identity
+         shortcut, `topsFrom`); one battlefield walk for both reveals (`revealedBy`); fuzz tests for the leak check
+         with revealed cards (killing the scramble-weakening mutants); the CLI reads reveals from `playerView`, with a
+         test; the definition check reads `asLongAs`'s filter and refuses `self` with `others`; docs. Bench within
+         noise of main; fuzz 100 clean. PR #78.
        - M2-14e built (2026-11-21, D-121): Sphinx Ambassador (232 cards): `nameCard` at resolution (the `chooseName`
          decision with `answering: resolution`), `Resolution.named`, the `notNamedThisWay` filter. 4 scenarios (a creature
          not named put under your control, the named card left, a noncreature found, declined), a test that the
@@ -751,7 +788,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Sphinx, two Sphinxes, Pithing Needle naming it). Code review: the same leak; `notNamedThisWay` read in `fits`
          (so inside `not` too) through a lazy `FitContext.namedThisWay`; definitions refuse it with no `nameCard` before,
          outside an effect, and `nameCard` by each player; a test that a name decision's view drops `resume` (a
-         surviving mutant); `answerName` moved to `game/choose-name.ts`. Next: PR #77, merge.
+         surviving mutant); `answerName` moved to `game/choose-name.ts`. Merged as #77. M2-14e done. Next: M2-14f.
        - M2-14d2 built (2026-11-21, D-120): Convincing Mirage (231 cards): a basic land type chosen as it enters (the
          `chooseName` decision with `what`), layer 4 setting the enchanted land's type (`rules/land-type.ts`), its rules
          text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type
@@ -1301,12 +1338,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (Asked 2026-11-21, D-114) Pithing Needle and Sphinx Ambassador name a card. CR 201.4 allows any card in the Oracle
   card reference. Options: (a) any name in the app's card database (recommended; proceeding with this); (b) only names
   in the current pool; (c) any Oracle name, which would ship the full name list with the app.
-- (Asked 2026-11-21) `pnpm bench` fails on main too on this machine: the last two code reviews measured the base over
-  its +20% gates (busyCombat, deepStack) and randomGame near or over 100 ms, so each slice's bench is judged by
-  alternating base and head runs instead. CI doesn't run it. Options: (a) re-baseline `bench/baseline.json` on this
-  cloud machine with `pnpm bench --update`, and keep alternating runs for close calls (recommended; proceeding with this
-  at the next slice that needs it); (b) keep the old baseline and judge by alternating runs only; (c) run the bench in
-  CI on a fixed runner, with its own baseline.
 - (Asked 2026-11-21, D-092) CLAUDE.md says the engine has "no globals". The layer pass is kept in module-level
   `WeakMap`s (and a last-result value), outside the state, as architecture.md's "memoize per state object" allows: a
   kept result can never differ from a fresh one, and the fuzzer checks that after every action. Options: (a) read "no
@@ -1353,6 +1384,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Artillery's two losses kept.)
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
   activation resolves.)
+- (Answered 2026-11-21, D-123: `pnpm bench` failed on main on this machine. The owner chose to reset the baseline on a
+  quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.)
 
 ## Known issues
 - (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is

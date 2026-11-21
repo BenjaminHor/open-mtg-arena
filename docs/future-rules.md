@@ -17,10 +17,10 @@ read it. Layer 6 grants keywords (resolved effects and static abilities), 7c add
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Layer 6 sorts its grants and removals by timestamp
 since M2-12b (D-103, "loses flying"); dependency (CR 613.8) waits on the open question in status.md. Life totals are
-an input since M2-13c2a (D-112), compared only once a pass read one (`lifeRead`, set by `lifeTotalOf`, the one
-reader). *Watch out:* each new thing a characteristic-defining ability reads that isn't in `LayerInputs` (cards in
-graveyards for Lhurgoyf, hand size for Maro) needs the same: an input, a reader that marks it read, and the comparison;
-a general record of what a pass read would scale better once there are several.
+an input since M2-13c2a (D-112), and each library's top card since M2-14f (D-122), each compared only once a pass read
+one (`read.life`, `read.libraryTops`, set by `lifeTotalOf` and `libraryTopOf`, the one readers). *Watch out:* each new
+thing a characteristic-defining ability reads that isn't in `LayerInputs` (cards in graveyards for Lhurgoyf, hand size
+for Maro) needs the same: an input, a reader that marks it read, and the comparison in `sameReads`.
 *Built (M2-12c1, D-104):* layer 2 lives only in the pass; `controllerOf(state, id, cards)` reads the pass's
 controller for a permanent, and controllers are compared after the action and each piece of work, for summoning
 sickness (CR 302.6) and removal from combat (CR 506.4). Layers 4, 5 and 7b have resolved effects
@@ -281,10 +281,15 @@ same. Liliana Vess's "search, then shuffle and put that card on top" (CR 701.24b
 shuffle) is built as search, shuffle the whole library, then move the found card to the top by reordering, which gives
 the same odds (M2-13c1). Moving a card within its own library is a reorder, not a zone change (CR 400.7); "put on the
 bottom" (Lurking Predators) still goes through `moveCard`, a new object, and should become a reorder too when a
-library trigger (CR 603.10a) or CR 701.20d needs it. So far a reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
+library trigger (CR 603.10a) or CR 701.20d needs it. A one-time reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
 chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt from views mid-choice loses the rest of
-the revealed hand, though it stays revealed until the effect is done (CR 701.20a). That, Telepathy, and a third player
-who must see a revealed hand need revealed cards in the view, per object. Several players
+the revealed hand, though it stays revealed until the effect is done (CR 701.20a). *Built (M2-14f, D-122):* what a
+"play with ... revealed" ability shows is in the view by identity only (`revealedHand`, `revealedTop`), read from the
+battlefield by `rules/revealed.ts`; Duress's revealed hand and a third player who must see it can fill the same fields.
+A top card revealed only for a moment within one resolution (between a search and the shuffle) is announced with
+`CARDS_REVEALED` after each event that changes it. Not built, as no pool card can cause them: CR 401.5's new top card
+that stays hidden until a spell is cast (record the top as casting starts); CR 401.6's new object (the view shows no id,
+so nothing can follow it); a library that becomes revealed mid-action and changes before a view. Several players
 choosing at once for one effect choose in APNAP order, then it's done at once (CR 608.2e): `discard` and
 `sacrifice` name one player until a card needs more (Yawning Fissure in multiplayer: each opponent's choice collected,
 then one simultaneous sacrifice). And

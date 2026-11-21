@@ -2,11 +2,13 @@
 // state, to the UI and the AI. A view must not change when only hidden information changes: the fuzzer's
 // `viewsLeakNothing` check (packages/cli/src/fuzz/checks.ts) tests that after every action of every game.
 
+import type { CardDatabase } from "../cards/types.ts";
+import { revealedBy } from "../rules/revealed.ts";
 import type { Combat } from "../state/combat.ts";
 import type { PendingDecision } from "../state/decisions.ts";
 import type { ContinuousEffect } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { DecisionId, ObjectId, PlayerId } from "../state/ids.ts";
+import type { DecisionId, ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { GameObject } from "../state/objects.ts";
 import type { PlayerState } from "../state/players.ts";
 import type { Pregame } from "../state/pregame.ts";
@@ -14,6 +16,7 @@ import type { GameResult } from "../state/result.ts";
 import type { RuleModifier } from "../state/setup.ts";
 import type { Turn } from "../state/turn.ts";
 import type { ZoneRef } from "../state/zones.ts";
+import { inShownOrder, oracleIdOf } from "../zones/shown-order.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { type ViewDecision, viewDecision } from "./view-decision.ts";
 import { canSee } from "./visibility.ts";
@@ -60,6 +63,18 @@ export type ViewZones = {
       handSize: number;
       /** The cards in the viewer's own hand (CR 402.3); null for another player's. */
       hand: ObjectId[] | null;
+      /**
+       * What the cards in this hand are, while it's revealed to every player (Telepathy, CR 701.20a); else null. By
+       * identity only, in a fixed order (D-062): ids and the hand's order record when each card came, which a reveal
+       * doesn't show.
+       */
+      revealedHand: OracleId[] | null;
+      /**
+       * What the library's top card is, while it's revealed to every player (Vampire Nocturnus, CR 401.5); else null,
+       * also for an empty library. By identity only: a shuffle keeps object ids, so an id would let a player follow the
+       * card through it (a reordered revealed card becomes a new object, later: CR 701.20d).
+       */
+      revealedTop: OracleId | null;
       graveyard: ObjectId[];
     }
   >;
@@ -70,11 +85,11 @@ export type ViewZones = {
 };
 
 /**
- * The game as `viewer` may see it. Left out: other players' hands, every library's cards and order, the random
+ * The game as `viewer` may see it, with the cards an ability reveals (`rules/revealed.ts`). Left out: other players' hands, every library's cards and order, the random
  * generator's state and the setup (its seed and decklists would predict every shuffle, CR 701.24a), and the engine's
  * work queue and id counters.
  */
-export function playerView(state: GameState, viewer: PlayerId): PlayerView {
+export function playerView(state: GameState, viewer: PlayerId, cards: CardDatabase): PlayerView {
   const objects: Record<ObjectId, GameObject> = {};
   for (const ref of zoneRefs(state)) {
     if (!canSee(ref, viewer)) continue;
@@ -84,13 +99,18 @@ export function playerView(state: GameState, viewer: PlayerId): PlayerView {
     }
   }
   const players: ViewZones["players"] = {};
+  const { hands, tops } = revealedBy(state, cards);
   for (const p of state.turnOrder) {
     const z = state.zones.players[p];
     if (z === undefined) continue;
+    const top = z.library[0];
     players[p] = {
       librarySize: z.library.length,
       handSize: z.hand.length,
       hand: canSee({ zone: "hand", player: p }, viewer) ? z.hand : null,
+      revealedHand: hands.includes(p) ? inShownOrder(state, z.hand).map((id) => oracleIdOf(state, id)) : null,
+      // A new top card waits until a spell is cast (later: CR 401.5); no card in the pool changes it while casting.
+      revealedTop: tops.includes(p) && top !== undefined ? oracleIdOf(state, top) : null,
       graveyard: z.graveyard,
     };
   }

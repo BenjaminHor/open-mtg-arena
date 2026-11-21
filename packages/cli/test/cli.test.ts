@@ -80,6 +80,17 @@ describe("new, show, actions and do", () => {
     expect(p2View).not.toContain(`hand: ${p1Hand}`);
     expect(p2View).toMatch(/p2 {2}life[^\n]*\n[^\n]*\n {4}hand: /);
   });
+
+  it("shows what Telepathy and Vampire Nocturnus reveal, the same to every player (D-122)", () => {
+    const hand = tempFile();
+    cli("new", "--scenario", "cards/m2-14f/telepathy-leaves", "--out", hand);
+    expect(cli("show", hand, "--as", "p1")).toContain("    hand (revealed): Grizzly Bears, Naturalize");
+    const top = tempFile();
+    cli("new", "--scenario", "cards/m2-14f/vampire-nocturnus-black-top", "--out", top);
+    for (const viewer of ["p1", "p2"])
+      expect(cli("show", top, "--as", viewer)).toContain("    library top (revealed): Sign in Blood");
+    expect(cli("show", top, "--as", "p1")).not.toMatch(/p2 [^\n]*\n[^\n]*\n {4}library top/);
+  });
 });
 
 describe("the game file's actions are the truth (D-043)", () => {

@@ -1,0 +1,11 @@
+name: Telepathy reveals an empty hand as empty, not as hidden
+rules: [CR 701.18c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Telepathy]
+  p2:
+    hand: []
+steps:
+  - expect:
+      p2.revealedHand: []

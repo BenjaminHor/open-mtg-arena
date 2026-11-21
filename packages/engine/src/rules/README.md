@@ -9,6 +9,10 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `layers.ts`: the layer pass (CR 613, D-092): `layeredOf`, `layered`, every object's characteristics computed once
   per state for the battlefield and the stack, kept per its inputs; `layeredFresh` and `layeredOfFresh`, computed
   afresh, for the fuzzer's check that the kept pass is right. Every reader below reads it.
+- `printed-start.ts`: `printedStart`, a card's printed values with a controller, where the layers start (CR 613.1),
+  frozen and shared.
+- `life-input.ts`, `library-top-input.ts`: `lifeTotalOf`, `libraryTopOf`, the one readers of the life totals and the
+  library tops inside the pass, which mark it as depending on them (D-112, D-122).
 - `layer-seven.ts`: layer 7 of the pass, power and toughness (CR 613.4): the base from 7a (characteristic-defining
   abilities), 7b (effects that set it, D-095) or the printed values, then 7c adds.
 - `static-effects.ts`: static abilities that change other objects (anthems, D-093, and "enchanted creature gets",
@@ -53,6 +57,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
   the rules text's abilities lost (`Layered.rulesTextLost`, CR 305.7, D-120).
 - `chosen-name.ts`: `namedCantActivate`, whether a permanent's chosen name stops a source's activated abilities
   (Pithing Needle, CR 602.5, D-119).
+- `revealed.ts`: `revealedBy` (and `handsRevealed`, `libraryTopsRevealed`): whose hand and whose library's top card an
+  ability reveals to every player (Telepathy, Vampire Nocturnus; CR 701.18c, 401.5, D-122), read from the pass.
 - `game-loss.ts`: `cantLose`, whether a static stops a player losing to a state-based action (Platinum Angel, CR 104.3,
   D-118).
 - `state-based-actions.ts`: `stateBasedActions(state, cards, kept)`: the SBAs that apply now, as data

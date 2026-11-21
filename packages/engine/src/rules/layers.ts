@@ -11,9 +11,7 @@
 // (D-098, D-105, `control-effects.ts`; `controllerOf` reads the pass, D-104). Layers 1, 3 and 7d have none yet; each comes in its place
 // below as its first card does.
 
-import { cardDataOf } from "../cards/card-data.ts";
 import type {
-  CardData,
   CardDatabase,
   CardType,
   Color,
@@ -31,11 +29,12 @@ import { layerTwo } from "./control-effects.ts";
 import { setLandTypes } from "./land-type.ts";
 import { layerSeven } from "./layer-seven.ts";
 import { layerSix } from "./layer-six.ts";
+import { printedStart } from "./printed-start.ts";
 import { type KeywordGrant, staticPTChanges, staticSources } from "./static-effects.ts";
 
 /**
  * One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. Read-only:
- * results are kept and shared (`start`), so a change is always a copy.
+ * results are kept and shared (`printedStart`), so a change is always a copy.
  */
 export type Layered = Readonly<{
   /** On the battlefield or the stack, its controller (layer 2); a card elsewhere has none: its owner (CR 108.4a). */
@@ -114,11 +113,18 @@ export type LayerInputs = {
    */
   life: Readonly<Record<PlayerId, number>>;
   /**
-   * Whether the pass read a life total, so the kept pass is reused only for the same totals (`hasInputs`). The one
-   * thing the pass writes: it only ever turns on, which only makes the match stricter, and each inputs record belongs
-   * to one kept pass (a fresh pass builds its own), so the pass's result still depends on its inputs alone.
+   * The top card of each player's library, or null for an empty one, for "as long as the top card of your library is
+   * black" (Vampire Nocturnus). Read only through `libraryTopOf` (`library-top-input.ts`), which marks the pass. A
+   * shuffle changes it without a new objects record, so it's compared by value.
    */
-  lifeRead: { read: boolean };
+  libraryTops: Readonly<Record<PlayerId, ObjectId | null>>;
+  /**
+   * Whether the pass read a life total or a library's top card, so the kept pass is reused only for the same ones
+   * (`hasInputs`). The one thing the pass writes: each only ever turns on, which only makes the match stricter, and each
+   * inputs record belongs to one kept pass (a fresh pass builds its own), so the pass's result still depends on its
+   * inputs alone.
+   */
+  read: { life: boolean; libraryTops: boolean };
 };
 
 function inputsOf(state: GameState): LayerInputs {
@@ -126,6 +132,8 @@ function inputsOf(state: GameState): LayerInputs {
   const { battlefield, stack } = state.zones;
   const life: Record<PlayerId, number> = {};
   for (const p of state.turnOrder) life[p] = state.players[p]?.life ?? 0;
+  const libraryTops: Record<PlayerId, ObjectId | null> = {};
+  for (const p of state.turnOrder) libraryTops[p] = state.zones.players[p]?.library[0] ?? null;
   const { ruleModifiers } = state.setup;
   return {
     objects,
@@ -134,7 +142,8 @@ function inputsOf(state: GameState): LayerInputs {
     stack,
     ruleModifiers,
     life,
-    lifeRead: { read: false },
+    libraryTops,
+    read: { life: false, libraryTops: false },
   };
 }
 
@@ -150,6 +159,24 @@ function sameLife(state: GameState, computed: Computed): boolean {
 }
 
 /**
+ * Whether each library's top card is the one the pass read: the same players' zones record, or, when that changed, the
+ * same first ids. The identity shortcut matters: this runs on every characteristic read once a pass read a top.
+ */
+function sameLibraryTops(state: GameState, computed: Computed): boolean {
+  if (state.zones.players === computed.topsFrom) return true;
+  const input = computed.input;
+  for (const p of state.turnOrder)
+    if ((state.zones.players[p]?.library[0] ?? null) !== input.libraryTops[p]) return false;
+  return true;
+}
+
+/** Whether the state has the life totals and library tops the pass read, of those it read. */
+function sameReads(state: GameState, computed: Computed): boolean {
+  const { read } = computed.input;
+  return (!read.life || sameLife(state, computed)) && (!read.libraryTops || sameLibraryTops(state, computed));
+}
+
+/**
  * One card object's characteristics now, or null if it isn't a card object. The battlefield and the stack, where
  * effects apply, are computed together in one pass; a card in any other zone is computed alone as it's first asked for,
  * and kept with the pass, under the same inputs.
@@ -160,12 +187,14 @@ export function layeredOf(state: GameState, id: ObjectId, cards: CardDatabase): 
   if (known !== undefined) return known;
   const obj = computed.input.objects[id];
   if (obj?.kind !== "card") return null;
-  const read = computed.input.lifeRead.read;
+  const before = { ...computed.input.read };
   const card = offBoard(computed.input, computed.board, obj, cards);
-  // One that reads a life total, when nothing on the board did, is computed again from the state's own totals: the
-  // pass's may be older, as they weren't compared until now (`lifeRead` is now set, so they will be).
-  if (!read && computed.input.lifeRead.read && !sameLife(state, computed))
-    return offBoard(inputsOf(state), computed.board, obj, cards);
+  // One that reads a life total or a library's top, when nothing on the board did, is computed again from the state's
+  // own: the pass's may be older, as they weren't compared until now (`read` is now set, so they will be).
+  const after = computed.input.read;
+  // No off-board card reads a library top yet (only a static on the battlefield does); a Lhurgoyf-like reader would.
+  const newlyRead = (after.life && !before.life) || (after.libraryTops && !before.libraryTops);
+  if (newlyRead && !sameReads(state, computed)) return offBoard(inputsOf(state), computed.board, obj, cards);
   computed.elsewhere[id] = card;
   return card;
 }
@@ -180,13 +209,13 @@ function offBoard(
   obj: CardObject,
   cards: CardDatabase,
 ): Layered {
-  return layerSeven(input, board, obj, start(obj, obj.owner, cards), false, cards);
+  return layerSeven(input, board, obj, printedStart(obj, obj.owner, cards), false, cards);
 }
 
 /**
  * The pass computed afresh, without the kept passes, for one card object or for the board: the fuzzer checks after
  * every action that they equal what the readers see (`layersMatchFreshPass`), which catches a state changed in place
- * after its pass was kept. Both share the printed starts (`start`), which are frozen instead.
+ * after its pass was kept. Both share the printed starts (`printedStart`), which are frozen instead.
  */
 export function layeredFresh(state: GameState, cards: CardDatabase): Readonly<Record<ObjectId, Layered>> {
   return pass(inputsOf(state), cards);
@@ -214,9 +243,11 @@ type Computed = {
   elsewhere: Record<ObjectId, Layered>;
   /** The players record the life totals were read from: the same one means the same totals, without comparing. */
   lifeFrom: GameState["players"];
+  /** The players' zones the library tops were read from: the same record means the same tops, without comparing. */
+  topsFrom: GameState["zones"]["players"];
 };
 
-// The pass is pure, but for marking `lifeRead` (see `LayerInputs`), so its result for the same inputs never changes. It's kept, never stored in the state
+// The pass is pure, but for marking `read` (see `LayerInputs`), so its result for the same inputs never changes. It's kept, never stored in the state
 // (architecture.md: "memoize per state object ... never by caching values inside the state"; D-092): per objects record
 // (by identity: the state is never changed in place, and an action that changes no object, like passing priority, keeps
 // it), as a short list matched on all the other inputs by `hasInputs`, the one place the key is spelled out; and the
@@ -228,7 +259,14 @@ function memo(state: GameState, cards: CardDatabase): Computed {
   if (last !== null && last.cards === cards && hasInputs(state, last)) return last;
   const kept = computedFor.get(state.objects) ?? [];
   const found = kept.find((c) => c.cards === cards && hasInputs(state, c));
-  const computed = found ?? { input: inputsOf(state), cards, board: {}, elsewhere: {}, lifeFrom: state.players };
+  const computed = found ?? {
+    input: inputsOf(state),
+    cards,
+    board: {},
+    elsewhere: {},
+    lifeFrom: state.players,
+    topsFrom: state.zones.players,
+  };
   if (found === undefined) {
     computed.board = pass(computed.input, cards);
     computedFor.set(state.objects, [...kept, computed]);
@@ -239,7 +277,7 @@ function memo(state: GameState, cards: CardDatabase): Computed {
 
 /**
  * Whether the state has exactly the inputs this pass was computed from: every part of `LayerInputs` by identity, and
- * the life totals by value, only if the pass read one (`lifeRead`): this runs on every characteristic read.
+ * the life totals and library tops by value, only if the pass read one (`read`): this runs on every characteristic read.
  */
 function hasInputs(state: GameState, computed: Computed): boolean {
   const input = computed.input;
@@ -249,7 +287,7 @@ function hasInputs(state: GameState, computed: Computed): boolean {
     state.zones.battlefield === input.battlefield &&
     state.zones.stack === input.stack &&
     state.setup.ruleModifiers === input.ruleModifiers &&
-    (!input.lifeRead.read || sameLife(state, computed))
+    sameReads(state, computed)
   );
 }
 
@@ -263,7 +301,7 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
   // The printed values (CR 613.1), and the controller: as stored (CR 110.2), after layer 2 for a permanent
   // (CR 613.1b, `control-effects.ts`); a spell's is its caster (CR 112.2).
   const controllers = layerTwo(input, cards);
-  for (const obj of objects) board[obj.id] = start(obj, controllers[obj.id] ?? obj.baseController, cards);
+  for (const obj of objects) board[obj.id] = printedStart(obj, controllers[obj.id] ?? obj.baseController, cards);
   // Layers 4 and 5 (CR 613.1d, 613.1e): resolved effects that change types and colors, on the objects they locked in
   // (CR 611.2c), each layer in timestamp order (CR 613.7), which is `input.effects`' order (each new one is later).
   for (const effect of input.effects) {
@@ -284,7 +322,7 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
   }
   // Layer 6 (CR 613.1f): abilities, in `layer-six.ts`; it keeps the sets the static abilities found for 7c (CR 613.6).
   const sources = staticSources(input, board);
-  const sets = layerSix(input, board, sources);
+  const sets = layerSix(input, board, sources, cards);
   // Layer 7 (CR 613.4): a creature's base power and toughness (7b's, else 7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
@@ -294,48 +332,6 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
       board[obj.id] = layerSeven(input, board, obj, card, onBattlefield, cards, statics[obj.id] ?? []);
   }
   return board;
-}
-
-/**
- * The printed values with a controller. Made once per card and controller and shared, as most permanents (lands) keep
- * them unchanged: the pass only ever copies a `Layered` to change it (measured, D-092).
- */
-function start(obj: CardObject, controller: PlayerId, cards: CardDatabase): Layered {
-  const data = cardDataOf(obj, cards);
-  if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
-  const kept = startsKept.get(data) ?? {};
-  const known = kept[controller];
-  if (known !== undefined) return known;
-  // Frozen, so changing a shared start in place throws rather than quietly changing every card that shares it: the
-  // fresh pass shares these too, so the fuzzer's comparison couldn't catch it.
-  const made = Object.freeze(printedWith(data, controller));
-  startsKept.set(data, { ...kept, [controller]: made });
-  return made;
-}
-
-const startsKept = new WeakMap<CardData, Partial<Record<PlayerId, Layered>>>();
-
-function printedWith(data: CardData, controller: PlayerId): Layered {
-  return {
-    controller,
-    supertypes: data.printed.supertypes,
-    types: data.printed.types,
-    subtypes: data.printed.subtypes,
-    colors: data.printed.colors,
-    keywords: data.def.keywords ?? [],
-    protections: data.def.protections ?? [],
-    statics: data.def.statics ?? [],
-    power: null,
-    toughness: null,
-    base: null,
-    sevenC: Object.freeze([]),
-    granted: Object.freeze([]),
-    cantAttackOrBlock: false,
-    cantBeBlocked: false,
-    cantActivate: false,
-    doesntUntap: false,
-    rulesTextLost: false,
-  };
 }
 
 /**

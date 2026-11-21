@@ -25,25 +25,27 @@ const KEYWORD_ACTIONS: readonly string[] = ["mill", "regenerate"];
  */
 const GENERIC_TERMS: readonly string[] = ["landwalk", "heal"];
 
-/** The filter a static ability has that the layer pass reads, if any (others are read by rules checks, outside it). */
-function passFilter(s: StaticAbilityDef): ObjectFilter | null {
+/** The filters a static ability has that the layer pass reads (others are read by rules checks, outside it). */
+function passFilters(s: StaticAbilityDef): ObjectFilter[] {
   switch (s.kind) {
     case "creaturesGet":
-      return s.filter;
+      return s.asLongAs === undefined ? [s.filter] : [s.filter, s.asLongAs.topOfLibrary];
     case "powerToughnessEachEqual":
-      return s.to === "yourLifeTotal" ? null : s.to.count;
+      return s.to === "yourLifeTotal" ? [] : [s.to.count];
     case "attachedGets":
-      return s.perCount ?? null;
+      return s.perCount === undefined ? [] : [s.perCount];
     case "attachedCantAttackOrBlock":
     case "attachedCantBeBlocked":
     case "attachedCantActivate":
     case "attachedDoesntUntap":
     case "attachedSetsLandType":
     case "attachedControl":
-      return null;
+      return [];
     case "cantBeBlocked":
     case "cantAttackUnlessDefenderControls":
     case "noMaximumHandSize":
+    case "opponentsPlayWithHandsRevealed":
+    case "playWithTopOfLibraryRevealed":
     case "cantLoseOpponentsCantWin":
     case "chosenNameCantActivate":
     case "canBlockAnyNumber":
@@ -53,7 +55,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
     case "cantBeCountered":
     case "plusPerSharedCreatureType":
     case "plusPerOtherSameName":
-      return null;
+      return [];
   }
 }
 
@@ -104,9 +106,12 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     // A static ability's filter is read inside the layer pass, which knows nothing of combat or a trigger (D-092).
     for (const s of def.statics ?? []) {
-      const filter = passFilter(s);
-      if (filter !== null && filterUses(filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
+      const asks = (f: ObjectFilter) => f.combat !== undefined || f.controller === "triggeringPlayer";
+      if (passFilters(s).some((filter) => filterUses(filter, asks)))
         problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
+      // "This creature and other ..." and "other ... creatures" contradict each other.
+      if (s.kind === "creaturesGet" && s.self === true && s.others === true)
+        problems.push(`${def.name}: a creaturesGet can't be both self and others`);
     }
     // A name chosen this way exists only while an effect resolves, after the targets and the trigger's event (D-121).
     const outsideResolution = [
@@ -469,7 +474,10 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     // "Found" and "exiled this way" are results of an earlier effect of the same resolution (CR 608.2c).
     const earlier = effects.slice(0, effects.indexOf(effect));
     const names = (s: EffectSubject | undefined) => s === "found";
-    const foundNamed = names(OBJECT_SUBJECTS[effect.op]?.(effect)) || names(PLAYER_SUBJECTS[effect.op]?.(effect));
+    const foundNamed =
+      names(OBJECT_SUBJECTS[effect.op]?.(effect)) ||
+      names(PLAYER_SUBJECTS[effect.op]?.(effect)) ||
+      (effect.op === "shuffle" && effect.foundOnTop === true);
     if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop" || e.op === "revealUntil"))
       problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
     const readsSacrificed =

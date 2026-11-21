@@ -15,8 +15,9 @@ import { sacrifice } from "../permanents/sacrifice.ts";
 import { tapPermanent } from "../permanents/tap.ts";
 import { untapPermanent } from "../permanents/untap.ts";
 import { type Characteristics, characteristics } from "../rules/characteristics.ts";
+import { libraryTopsRevealed } from "../rules/revealed.ts";
 import type { GameState, LastKnownCharacteristics } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { counterObject } from "../zones/counter.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
@@ -34,7 +35,29 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
       ? performOne(state, event, cards)
       : // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
         event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
-  return { state: keepLastKnown(state, done.state, before), events: done.events };
+  return withNewTopsShown(state, { state: keepLastKnown(state, done.state, before), events: done.events }, cards);
+}
+
+/**
+ * A library's top card played revealed (Vampire Nocturnus) is seen by everyone as soon as it's the top, also for a
+ * moment within one resolution, between a search taking the top card and the shuffle after it, or between two draws
+ * (the card's ruling: "reveal each one before you draw it"). A view comes only between actions, so each new top is
+ * told with `CARDS_REVEALED` after the event that made it the top: a simultaneous batch is one event, and shows only
+ * the top it leaves. A top changed while casting would wait until the spell is cast, as in `playerView`
+ * (later: CR 401.5); no card in the pool changes it then.
+ */
+function withNewTopsShown(before: GameState, after: Progress, cards: CardDatabase): Progress {
+  const topOf = (s: GameState, p: PlayerId) => s.zones.players[p]?.library[0];
+  const changed = after.state.turnOrder.filter((p) => topOf(before, p) !== topOf(after.state, p));
+  if (changed.length === 0) return after;
+  const revealed = libraryTopsRevealed(after.state, cards);
+  const shown = changed.flatMap((player) => {
+    const top = topOf(after.state, player);
+    return top === undefined || !revealed.includes(player)
+      ? []
+      : reveal(after.state, { zone: "library", player }, [top]).events;
+  });
+  return { state: after.state, events: [...after.events, ...shown] };
 }
 
 /**
@@ -179,8 +202,11 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return drawCard(state, event.player);
     case "discard":
       return discardCard(state, event.object, event.to);
-    case "shuffle":
-      return shuffleLibrary(state, event.player);
+    case "shuffle": {
+      const shuffled = shuffleLibrary(state, event.player);
+      const onTop = event.thenOnTop;
+      return onTop === undefined ? shuffled : andThen(shuffled, (s) => reorderLibraryTop(s, event.player, onTop));
+    }
     case "playLand": {
       const moved = moveCard(state, event.object, playLandDestination(event));
       return andThen(moved, (s) => countLandPlay(s, event.player, moved.newId));

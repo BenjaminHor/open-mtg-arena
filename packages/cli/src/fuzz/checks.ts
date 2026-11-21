@@ -14,6 +14,7 @@ import {
   type ObjectId,
   type PlayerId,
   playerView,
+  revealedBy,
 } from "@mtg/engine";
 import { invariantProblems } from "@mtg/scenarios";
 
@@ -49,11 +50,12 @@ export const lifeThroughEvents: Check = (before, after, events) => {
  * Views leak nothing (D-044): scrambling what a player can't see leaves their view unchanged, and the events they're
  * shown name no card hidden from them (in another player's hand or library).
  */
-export const viewsLeakNothing: Check = (before, after, events) => {
+export const viewsLeakNothing: Check = (before, after, events, cards) => {
   const problems: string[] = [];
   for (const viewer of after.turnOrder) {
     if (
-      JSON.stringify(playerView(scrambleHidden(after, viewer), viewer)) !== JSON.stringify(playerView(after, viewer))
+      JSON.stringify(playerView(scrambleHidden(after, viewer, cards), viewer, cards)) !==
+      JSON.stringify(playerView(after, viewer, cards))
     ) {
       problems.push(`${viewer}'s view changes when only hidden information changes`);
     }
@@ -141,9 +143,11 @@ function hiddenFrom(state: GameState, viewer: PlayerId): ObjectId[] {
 
 /**
  * The same state with everything `viewer` can't see changed: hidden cards' ids, names and card ids, the order of every
- * library and of other hands, another player's casting details and pending choices, the seed, RNG and internals.
+ * library and of other hands, another player's casting details and pending choices, the seed, RNG and internals. What
+ * an ability reveals keeps what it is (`rules/revealed.ts`): a revealed hand's cards, and a revealed top card, which
+ * stays on top.
  */
-export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
+export function scrambleHidden(state: GameState, viewer: PlayerId, cards: CardDatabase): GameState {
   const hidden = hiddenObjects(state, viewer);
   // A hidden object's id is renamed everywhere it appears (zone lists, object keys, picks in a pending decision), in
   // reverse order, so a view that names one, or shows the order of their ids (which records how they got there, D-062),
@@ -155,7 +159,12 @@ export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
   });
   const scrambled = JSON.parse(json) as GameState;
   // Cards the viewer's own decision shows them keep what they are (D-062): only their ids and history change.
-  const shown = new Set(shownBy(state, viewer).flatMap((id) => renamed.get(id) ?? []));
+  const { hands, tops } = revealedBy(state, cards);
+  const revealed = [
+    ...hands.flatMap((p) => state.zones.players[p]?.hand ?? []),
+    ...tops.flatMap((p) => state.zones.players[p]?.library.slice(0, 1) ?? []),
+  ];
+  const shown = new Set([...shownBy(state, viewer), ...revealed].flatMap((id) => renamed.get(id) ?? []));
   const objects = { ...scrambled.objects };
   for (const [i, id] of hidden.entries()) {
     const newId = renamed.get(id) as ObjectId;
@@ -169,7 +178,9 @@ export function scrambleHidden(state: GameState, viewer: PlayerId): GameState {
   for (const p of scrambled.turnOrder) {
     const z = players[p];
     if (z === undefined) continue;
-    players[p] = { ...z, library: [...z.library].reverse(), hand: p === viewer ? z.hand : [...z.hand].reverse() };
+    const [top, ...rest] = z.library;
+    const library = tops.includes(p) && top !== undefined ? [top, ...rest.reverse()] : [...z.library].reverse();
+    players[p] = { ...z, library, hand: p === viewer ? z.hand : [...z.hand].reverse() };
   }
   const casting = scrambled.casting;
   const pending = scrambled.pending;

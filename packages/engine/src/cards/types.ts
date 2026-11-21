@@ -251,12 +251,15 @@ export type StaticAbilityDef =
    * "[Other] [filter] creatures [you control] get +P/+T [and have K]" (Honor of the Pure, Goblin Chieftain, Levitation): a
    * continuous effect on whatever fits as it applies (CR 611.3a), in layer 6 for the keywords and 7c for the bonus
    * (CR 613.1f, 613.4c), the same objects in both. `filter` is read relative to this permanent's controller ("you");
-   * `others`: not this permanent itself.
+   * `others`: not this permanent itself; `self`: "this creature and other ...", this one whatever the filter says.
+   * `asLongAs`: only while the top card of its controller's library fits (Vampire Nocturnus).
    */
   | {
       kind: "creaturesGet";
       filter: ObjectFilter;
       others?: true;
+      self?: true;
+      asLongAs?: { topOfLibrary: ObjectFilter };
       power: number;
       toughness: number;
       keywords?: Keyword[];
@@ -280,7 +283,17 @@ export type StaticAbilityDef =
    */
   | { kind: "cantAttackUnlessDefenderControls"; filter: ObjectFilter }
   /** "You have no maximum hand size" (Spellbook): its controller skips the cleanup discard (CR 402.2, 514.1). */
-  | { kind: "noMaximumHandSize" };
+  | { kind: "noMaximumHandSize" }
+  /**
+   * "Your opponents play with their hands revealed" (Telepathy): every player sees the hands of its controller's
+   * opponents (CR 701.18c, 701.20a). They're still hidden zones (CR 400.2). `rules/revealed.ts` reads it.
+   */
+  | { kind: "opponentsPlayWithHandsRevealed" }
+  /**
+   * "Play with the top card of your library revealed" (Vampire Nocturnus): every player sees the top card of its
+   * controller's library (CR 401.5, 701.18c). `rules/revealed.ts` reads it.
+   */
+  | { kind: "playWithTopOfLibraryRevealed" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export const KEYWORDS = [
@@ -720,8 +733,11 @@ export type Effect =
     }
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject }
-  /** "[who] shuffles" (CR 701.24a). */
-  | { op: "shuffle"; who: EffectSubject }
+  /**
+   * "[who] shuffles" (CR 701.24a). `foundOnTop`: "then shuffle and put that card on top" (Liliana Vess), the cards found
+   * left out of the shuffle (CR 701.24b) and put on top in the same event.
+   */
+  | { op: "shuffle"; who: EffectSubject; foundOnTop?: true }
   /** "You may shuffle": a yes or no choice; yes shuffles (CR 701.24a). */
   | { op: "mayShuffle"; who: EffectSubject }
   /** "Look at the top N cards of your library, then put them back in any order" (CR 701.20e, 401.4). */

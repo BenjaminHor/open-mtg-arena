@@ -75,7 +75,7 @@ function act(g: Game, match: (a: Action) => boolean): Game {
 
 /** What `viewer` is shown: the view and the events of the last action. */
 const seen = (g: Game, viewer: PlayerId) => ({
-  view: playerView(g.state, viewer),
+  view: playerView(g.state, viewer, TEST_CARDS),
   events: eventsFor(g.events, viewer),
 });
 
@@ -124,7 +124,7 @@ describe("a choice over a hidden hand tells no one what the hand holds (D-062)",
     const revealed = x.events.find((e) => e.type === "CARDS_REVEALED");
     expect(revealed).toMatchObject({ cards: [BEARS, GROWTH, SHOCK].sort() });
     // The options are exactly the noncreature, nonland cards, shown without ids, the same in both games.
-    const decision = playerView(x.state, "p1").decision;
+    const decision = playerView(x.state, "p1", TEST_CARDS).decision;
     if (decision?.kind !== "chooseCards") throw new Error("no choice");
     expect(decision.options).toStrictEqual([GROWTH, SHOCK].sort().map((oracleId) => ({ oracleId, object: null })));
     // The caster keeps seeing the whole revealed hand while choosing (CR 701.20a), by identity (D-062).
@@ -154,7 +154,7 @@ describe("Elvish Piper's options", () => {
   it("are only the creature cards in hand, shown with their ids, as the hand is the chooser's own", () => {
     const activate = (a: Action) => a.type === "ACTIVATE_ABILITY";
     const g = act(act(act(game({ hand: [BEARS, SHOCK], battlefield: [HASTY_ELF] }, []), activate), pass), pass);
-    const decision = playerView(g.state, "p1").decision;
+    const decision = playerView(g.state, "p1", TEST_CARDS).decision;
     if (decision?.kind !== "chooseCards") throw new Error("no choice");
     const bears = g.state.zones.players.p1?.hand[0];
     expect(decision.options).toStrictEqual([{ oracleId: BEARS, object: bears }]);

@@ -355,6 +355,33 @@ describe("definitionProblems", () => {
     expect(definitionProblems([attacking], [honor])).toStrictEqual([
       `Honor of the Pure: a static ability's filter can't ask about combat or "that player" (D-092)`,
     ]);
+    // The top card's filter is read in the pass too, and "self" and "others" contradict each other.
+    const topInCombat: CardDef = {
+      name: "Honor of the Pure",
+      oracle: honor.oracleText,
+      statics: [
+        {
+          kind: "creaturesGet",
+          filter: { types: ["creature"] },
+          asLongAs: { topOfLibrary: { combat: "attacking" } },
+          power: 1,
+          toughness: 1,
+        },
+      ],
+    };
+    expect(definitionProblems([topInCombat], [honor])).toStrictEqual([
+      `Honor of the Pure: a static ability's filter can't ask about combat or "that player" (D-092)`,
+    ]);
+    const both: CardDef = {
+      name: "Honor of the Pure",
+      oracle: honor.oracleText,
+      statics: [
+        { kind: "creaturesGet", filter: { types: ["creature"] }, self: true, others: true, power: 1, toughness: 1 },
+      ],
+    };
+    expect(definitionProblems([both], [honor])).toStrictEqual([
+      "Honor of the Pure: a creaturesGet can't be both self and others",
+    ]);
   });
 
   it('reports a printed "*" without an ability that defines it, and such an ability without a "*" (CR 208.2a)', () => {

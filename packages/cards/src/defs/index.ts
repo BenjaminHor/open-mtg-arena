@@ -202,6 +202,7 @@ import { stoneGiant } from "./s/stone-giant.ts";
 import { stormfrontPegasus } from "./s/stormfront-pegasus.ts";
 import { sunpetalGrove } from "./s/sunpetal-grove.ts";
 import { swamp } from "./s/swamp.ts";
+import { telepathy } from "./t/telepathy.ts";
 import { tempestOfLight } from "./t/tempest-of-light.ts";
 import { tendrilsOfCorruption } from "./t/tendrils-of-corruption.ts";
 import { terramorphicExpanse } from "./t/terramorphic-expanse.ts";
@@ -214,6 +215,7 @@ import { underworldDreams } from "./u/underworld-dreams.ts";
 import { unholyStrength } from "./u/unholy-strength.ts";
 import { unsummon } from "./u/unsummon.ts";
 import { vampireAristocrat } from "./v/vampire-aristocrat.ts";
+import { vampireNocturnus } from "./v/vampire-nocturnus.ts";
 import { veteranArmorsmith } from "./v/veteran-armorsmith.ts";
 import { veteranSwordsmith } from "./v/veteran-swordsmith.ts";
 import { viashinoSpearhunter } from "./v/viashino-spearhunter.ts";
@@ -438,6 +440,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   stormfrontPegasus,
   sunpetalGrove,
   swamp,
+  telepathy,
   tempestOfLight,
   tendrilsOfCorruption,
   terramorphicExpanse,
@@ -449,6 +452,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   unholyStrength,
   unsummon,
   vampireAristocrat,
+  vampireNocturnus,
   veteranArmorsmith,
   veteranSwordsmith,
   viashinoSpearhunter,

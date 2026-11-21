@@ -1,0 +1,21 @@
+name: Drawing changes the top card, and each new top is revealed before it's drawn (its ruling), the first already in view
+rules: [CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Nocturnus, Island, Island, Island]
+    hand: [Divination]
+    library: [Swamp, Island, Sign in Blood]
+steps:
+  - expect:
+      p1:Vampire Nocturnus.power: 3
+  - p1 cast: Divination
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: [Swamp, Island]
+      p1:Vampire Nocturnus.power: 5
+      p1.revealedTop: Sign in Blood
+      events contains:
+        - { type: CARDS_REVEALED, from: { zone: library, player: p1 }, cards: [Island] }
+        - { type: CARDS_REVEALED, from: { zone: library, player: p1 }, cards: [Sign in Blood] }

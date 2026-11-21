@@ -223,6 +223,8 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   attacksEachCombat: "combat",
   mustBeBlockedByAllAble: "combat",
   cantBeCountered: "enters",
+  opponentsPlayWithHandsRevealed: "enters",
+  playWithTopOfLibraryRevealed: "enters",
   // Anthems, coarsely, as their permanent resolves: many are on noncreatures (Honor of the Pure, Coat of Arms), which
   // never attack or block.
   creaturesGet: "enters",

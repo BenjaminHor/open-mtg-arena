@@ -5,7 +5,15 @@ import { describe, expect, it } from "vitest";
 import type { Becomes, GameState, ObjectId } from "../../src/index.ts";
 import { layeredOf, layeredOfFresh } from "../../src/rules/layers.ts";
 import { powerAndToughness } from "../../src/rules/power-toughness.ts";
-import { BEARS, FOREST, FOREST_COUNTER, GROUNDED_ANTHEM, LIFE_AVATAR, TEST_CARDS } from "../support/cards.ts";
+import {
+  BEARS,
+  FOREST,
+  FOREST_COUNTER,
+  GROUNDED_ANTHEM,
+  LIFE_AVATAR,
+  LONE_LORD,
+  TEST_CARDS,
+} from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -93,6 +101,15 @@ describe("an effect keeps its set from its first layer (CR 613.6)", () => {
     const card = layeredOf(state, bears, TEST_CARDS);
     expect(card?.keywords).toContain("flying");
     expect([card?.power, card?.toughness]).toStrictEqual([3, 3]);
+  });
+});
+
+describe('"this creature and other [filter] creatures" (Vampire Nocturnus)', () => {
+  it("gives this creature the bonus though it doesn't fit the filter (its ruling), and not another that doesn't", () => {
+    const { state, bears } = withBears(LONE_LORD);
+    const lord = state.zones.battlefield[1] as ObjectId;
+    expect(powerAndToughness(state, lord, TEST_CARDS)).toStrictEqual({ power: 3, toughness: 2 });
+    expect(powerAndToughness(state, bears, TEST_CARDS)).toStrictEqual({ power: 2, toughness: 2 });
   });
 });
 

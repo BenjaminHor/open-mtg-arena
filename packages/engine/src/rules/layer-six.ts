@@ -3,7 +3,7 @@
 // (CR 613.7, 613.7a). Also, though not a layer, the restrictions an attached permanent puts on its host (Pacifism,
 // Whispersilk Cloak, Ice Cage, Entangling Vines), marked here because the pass already finds what each static applies to.
 
-import type { Keyword } from "../cards/types.ts";
+import type { CardDatabase, Keyword } from "../cards/types.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { attachedHostIn } from "./attachment.ts";
 import { type Layered, type LayerInputs, withoutRepeats } from "./layers.ts";
@@ -17,8 +17,9 @@ export function layerSix(
   input: LayerInputs,
   board: Record<ObjectId, Layered>,
   sources: readonly StaticSource[],
+  cards: CardDatabase,
 ): (ObjectId[] | undefined)[] {
-  const { grants, sets } = staticKeywordGrants(input, board, sources);
+  const { grants, sets } = staticKeywordGrants(input, board, sources, cards);
   for (const effect of input.effects) {
     if (effect.change.kind !== "addKeywords") continue;
     const grant = { source: effect.source, timestamp: effect.timestamp, keywords: effect.change.keywords, lose: [] };
@@ -74,6 +75,8 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
+      case "opponentsPlayWithHandsRevealed":
+      case "playWithTopOfLibraryRevealed":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
         break;

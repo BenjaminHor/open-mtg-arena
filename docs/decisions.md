@@ -1845,3 +1845,50 @@ owner's answer to the D-089 open question, option (a))
   `canSayYes` is then false, `legalActions` offers only no and yes is refused, as yes would be impossible (CR 608.2d).
   A card revealed in a library is asked the same way, though everyone saw it: a question with only no, harmless and
   not in the pool today (Lurking Predators's card has left the library or fits by the time it's asked).
+
+**D-122: Revealed hands and library tops, and a bonus that reads the top card (M2-14f: Telepathy, Vampire Nocturnus)** ·
+2026-11-21 · accepted
+- "Your opponents play with their hands revealed" and "play with the top card of your library revealed" are static
+  abilities (`opponentsPlayWithHandsRevealed`, `playWithTopOfLibraryRevealed`), read from the battlefield through the
+  layer pass by `rules/revealed.ts` (`handsRevealed`, `libraryTopsRevealed`): a stolen Nocturnus reveals its new
+  controller's library (CR 109.5). The hand and library stay hidden zones (CR 400.2); nothing new is stored in the state.
+- `playerView` takes the card database and shows what's revealed to every player (CR 701.20a) by identity only, in the
+  fixed order of D-062: `revealedHand: OracleId[] | null` and `revealedTop: OracleId | null` per player. `objects`,
+  `hand` and `canSee` are unchanged: ids and a hand's order record when each card came, which a reveal doesn't show,
+  and a shuffle keeps object ids (CR 701.20d makes a reordered revealed card a new object; an id would let a player
+  follow it). Two-worlds tests check a view doesn't change with what stays hidden; the fuzzer's scramble keeps a revealed
+  top on top and revealed cards' identities.
+- A view exists only between actions, but a revealed top is seen as soon as it's the top, also for a moment within one
+  resolution (CR 401.5 delays it only while casting or activating): between draws (Nocturnus's ruling: "reveal each one
+  before you draw it"), or between a search taking the top card and the shuffle after it (Diabolic Tutor, Rampant
+  Growth, Sphinx Ambassador; found by the rules review). So `perform` emits a public `CARDS_REVEALED` for each library
+  whose top card changed in an event while it's revealed (a simultaneous batch is one event). Liliana Vess's "shuffle
+  and put that card on top" is one event (`shuffle` with `thenOnTop`; the op's `foundOnTop`): the card found isn't
+  part of the shuffle (CR 701.24b), so no other card is ever on top between the two, and announcing one would show the
+  card that ends up second. Her ruling file says nothing more. The algorithm, and so the RNG and the final order, are
+  as before. Scenarios can name revealed cards in `events contains` and `events lacks`, and check `p2.revealedHand` /
+  `p2.revealedTop` as another player sees them.
+- "As long as the top card of your library is black, this creature and other Vampire creatures you control get +2/+1
+  and have flying" is `creaturesGet` with `self` (the ruling: even if it isn't a Vampire) and `asLongAs: { topOfLibrary:
+  filter }`, read with the top card's printed values (no effect in the pool applies in a library), an empty library
+  fitting nothing. The library tops join the layer inputs, read only through `libraryTopOf` and compared by value only
+  if a pass read one (`read.libraryTops`, beside `read.life`, which replaces D-112's `lifeRead`): a reorder or shuffle
+  changes the top without a new objects record. `printedStart` moved to `rules/printed-start.ts` to be shared.
+- Measured (`pnpm bench`, alternating with main twice on one noisy machine): within noise of main everywhere, e.g.
+  `applyAction.busyCombat` 28.0–29.0 µs against 27.3–28.2 µs, `randomGame` 107–125 ms against 102–143 ms. The new-top
+  check compares each library's first id after every event and reads the battlefield only when one changed. The bench's
+  decks have no Nocturnus, so it never measures a pass that read a top: the code review found every characteristic
+  read then costing twice as much (the tops compared by value each time), fixed with an identity shortcut like the
+  life totals' (`topsFrom`), measured back to the plain cost. `playerView` walks the battlefield once for both
+  reveals (`revealedBy`).
+- Not built, as nothing in the pool can cause them (future-rules): CR 401.5's delay while casting (only mana, tap,
+  loyalty and sacrifice costs exist), CR 401.6's new object; and a library becoming revealed mid-action (Nocturnus
+  entering) whose top then changes in the same action before a view.
+
+**D-123: The bench baseline reset on a quiet run** · 2026-11-21 · accepted (the owner's choice)
+- `pnpm bench` failed on main on this cloud machine: measures over their +20% gates and `randomGame` near its 100 ms
+  budget, with runs of main differing by up to 40% while reviewers and fuzz games ran alongside. The owner chose to
+  reset `bench/baseline.json` with `pnpm bench --update` on a quieter run: nothing else running, the best of several
+  runs. Close calls are still judged by alternating base and head runs. The 100 ms budget (architecture.md, "on a
+  laptop") stays a hard limit.
+

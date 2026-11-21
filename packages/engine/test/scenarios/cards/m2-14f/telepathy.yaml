@@ -1,0 +1,19 @@
+name: Telepathy reveals its controller's opponents' hands to every player, and not its controller's own
+rules: [CR 701.18c, CR 701.20a, CR 102.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island]
+    hand: [Telepathy, Shock]
+  p2:
+    hand: [Lightning Bolt, Grizzly Bears]
+steps:
+  - expect:
+      p2.revealedHand: null
+  - p1 cast: Telepathy
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Telepathy]
+      p2.revealedHand: [Grizzly Bears, Lightning Bolt]
+      p1.revealedHand: null

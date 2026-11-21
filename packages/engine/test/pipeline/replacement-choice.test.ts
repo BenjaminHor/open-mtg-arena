@@ -105,7 +105,7 @@ describe("choosing between replacement effects (CR 616.1)", () => {
 
   it("is shown to its player without the engine's bookkeeping", () => {
     const { asked } = destroyChoosing("ownText");
-    const view = playerView(asked, "p1");
+    const view = playerView(asked, "p1", TEST_CARDS);
     expect(view.decision).toMatchObject({ kind: "chooseReplacement" });
     expect(view.decision).not.toHaveProperty("resume");
   });

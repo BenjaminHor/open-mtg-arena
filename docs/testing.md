@@ -177,6 +177,10 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 
 **Expectations** (all keys in one `expect` must hold):
 - `p1.life`, `p1.manaPool` (only the mana present, `{}` for empty).
+- `p2.revealedHand`, `p2.revealedTop`: what another player's view shows of p2's hand or library top while an ability
+  reveals it (Telepathy, Vampire Nocturnus): the card names, sorted by name, or `null`. Read from the first other
+  player's view, which is right for what's revealed to everyone; a card only one player may look at will need an
+  "as p3" form.
 - `p1.library`, `p1.hand`, `p1.graveyard`, `p1.battlefield`: the exact list of card names, in zone order (library top
   first; graveyard oldest first, so the top is last; battlefield is the permanents p1 controls). Add ` contains` for a
   subset (`p1.hand contains: [Shock]`) or ` count` for the size (`p1.hand count: 7`).
@@ -192,7 +196,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   second with that name), for what works outside the battlefield (CR 604.3).
 - `events contains: [{ type: CARD_DRAWN, player: p2 }]`: each listed event, matched on the keys given, happened during
   the last step that changed the game. Nested maps match on their keys given too: `{ type: EFFECT_CREATED, effect:
-  { controller: p1 } }`. `pending:` matches the same way.
+  { controller: p1 } }`. `pending:` matches the same way. A reveal's cards are named: `{ type: CARDS_REVEALED, cards:
+  [Swamp] }`.
 - `events lacks: [{ type: DAMAGE_DEALT }]`: no event matching any listed one happened during that step.
 - `winner: p1` once the game is over; `winner: draw` when it ended in a draw (CR 104.4a); `winner: (game not over)`
   while it's still going.

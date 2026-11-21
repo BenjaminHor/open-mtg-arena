@@ -101,11 +101,21 @@ export function mayShuffle(state: GameState, player: PlayerId, effect: MayShuffl
 
 /**
  * Each player shuffles their library (CR 701.24a), even an empty one: `LIBRARY_SHUFFLED` is still emitted, the event
- * "whenever a player shuffles" triggers will see (CR 701.24e).
+ * "whenever a player shuffles" triggers will see (CR 701.24e). `thenOnTop`: cards found, left out of the shuffle and put
+ * on top (CR 701.24b), in their owner's library.
  */
-export function shuffleEach(state: GameState, players: readonly PlayerId[], cards: CardDatabase): Progress {
+export function shuffleEach(
+  state: GameState,
+  players: readonly PlayerId[],
+  cards: CardDatabase,
+  thenOnTop?: readonly ObjectId[],
+): Progress {
   return players.reduce<Progress>(
-    (p, player) => andThen(p, (s) => happen(s, { kind: "shuffle", player }, cards)),
+    (p, player) =>
+      andThen(p, (s) => {
+        const onTop = thenOnTop?.filter((id) => zoneList(s, { zone: "library", player }).includes(id));
+        return happen(s, { kind: "shuffle", player, ...(onTop === undefined ? {} : { thenOnTop: onTop }) }, cards);
+      }),
     nothing(state),
   );
 }

@@ -43,6 +43,7 @@ export { controllerOf } from "./rules/controller.ts";
 export { type Layered, layered, layeredFresh, layeredOf, layeredOfFresh } from "./rules/layers.ts";
 export { loyaltyOf } from "./rules/loyalty.ts";
 export { type LayerSevenCChange, layerSevenCChanges } from "./rules/power-toughness.ts";
+export { handsRevealed, libraryTopsRevealed, type Revealed, revealedBy } from "./rules/revealed.ts";
 export { isFreeOfSummoningSickness } from "./rules/summoning-sickness.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";

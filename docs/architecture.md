@@ -41,7 +41,7 @@ The whole public surface is small and pure:
 createGame(setup: GameSetup, cards: CardDatabase): EngineResult
 applyAction(state: GameState, action: Action, cards: CardDatabase): EngineResult
 legalActions(state: GameState, player: PlayerId, cards: CardDatabase): Action[]
-playerView(state: GameState, player: PlayerId): PlayerView      // hides hidden information
+playerView(state: GameState, player: PlayerId, cards: CardDatabase): PlayerView  // hides hidden information
 eventsFor(events: GameEvent[], player: PlayerId): ViewEvent[]   // the same, for events
 characteristics(state: GameState, obj: ObjectId, cards: CardDatabase): Characteristics
 
@@ -201,8 +201,8 @@ simple.
   `eventsFor(events, p)` before they reach the UI or AI, the same way `playerView` filters state (D-044).
 - `GameState.rng` predicts every future shuffle, so `playerView` must leave it out too (CR 701.24a: no player knows
   a library's order).
-- `playerView(state, p)` leaves out hidden objects (other players' hands, libraries; face-down cards later) and keeps
-  only counts and public facts; it also leaves out the setup (its seed and decklists) and the engine's internals. The
+- `playerView(state, p, cards)` leaves out hidden objects (other players' hands, libraries; face-down cards later) and
+  keeps only counts and public facts, and what an ability reveals to everyone, by identity only (D-122); it also leaves out the setup (its seed and decklists) and the engine's internals. The
   AI and the UI get views only. Tests and the CLI's debug mode can see full state.
 - All randomness (shuffles, coin flips, random choices) comes from `state.rng`, a small seeded
   PRNG implemented in the engine. The same setup and the same actions always give the same game.
