@@ -4577,6 +4577,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Stone Giant",
+      "slug": "stone-giant",
+      "oracleId": "0b8e3f9b-a4da-49a3-8545-ce7a265e5856",
+      "layout": "normal",
+      "manaCost": "{2}{R}{R}",
+      "manaValue": 4,
+      "typeLine": "Creature — Giant",
+      "oracleText": "{T}: Target creature you control with toughness less than this creature's power gains flying until end of turn. Destroy that creature at the beginning of the next end step.",
+      "power": "3",
+      "toughness": "4",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/9/19e3aadb-88c9-4629-bf9f-7ea5dccaacb6.jpg?1783942368",
+        "large": "https://cards.scryfall.io/large/front/1/9/19e3aadb-88c9-4629-bf9f-7ea5dccaacb6.jpg?1783942368",
+        "png": "https://cards.scryfall.io/png/front/1/9/19e3aadb-88c9-4629-bf9f-7ea5dccaacb6.png?1783942368",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/9/19e3aadb-88c9-4629-bf9f-7ea5dccaacb6.jpg?1783942368"
+      },
+      "artist": "Warren Mahy",
+      "set": "m10",
+      "collectorNumber": "159",
+      "scryfallUri": "https://scryfall.com/card/m10/159/stone-giant?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Stormfront Pegasus",
       "slug": "stormfront-pegasus",
       "oracleId": "b35c1b30-c1dc-489f-bd79-ad6566fb9389",

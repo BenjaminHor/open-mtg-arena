@@ -22,8 +22,8 @@ arrives with the first non-additive effect (M2-09b; CR 613.8 per the open questi
 merged into that order (CR 613.7a). In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch
 (CR 603.10a, 608.2h). "endOfGame" effects stay in `state.effects` after their object is gone; drop them once nothing
-can read them (after the last-known-information snapshot). A gone object's power is worked out from today's board unless it's snapshotted as it leaves
-(a dead Nightmare would count the Swamps left; future "snapshot `characteristics()`" item); a granted copy of a
+can read them (after the last-known-information snapshot). A gone object's power is read from the snapshot taken as it left (D-096), not worked out from
+today's board (a dead Nightmare would count the Swamps left); a granted copy of a
 "power and toughness are each equal to" ability isn't characteristic-defining (CR 604.3a) and belongs in 7b; tokens (CR 111) need a characteristics source other than the card database; an effect on a permanent
 spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet. A layer reading more of the state
 (combat, for "attacking creatures") adds it to `LayerInputs`, the memo's key.
@@ -104,9 +104,15 @@ which triggers during a cast: a cast starts only when a player receives priority
 delayed trigger "its power") must copy what it needs when it's created. `lastKnown` holds the raw `CardObject`,
 enough for "tapped"; last known information is the characteristics as last computed by the layers (CR 608.2h), so the
 first reader of a gone object's power, keywords or controller (deathtouch or lifelink from a gone source, CR 702.2e,
-702.15c; protection reading a gone source's colors and subtypes, `rules/protection.ts`, D-091; leaves-the-battlefield triggers; Xathrid Demon reads only the sacrificed creature's power, kept in the
-resolution's "this way" record as it's sacrificed, D-079) must snapshot `characteristics()` in `moveCard` beside it, not
-recompute later with the effects as they are then. Putting and resolving a trigger read the printed `def.triggers`,
+702.15c; leaves-the-battlefield triggers; Xathrid Demon reads only the sacrificed creature's power, kept in the
+resolution's "this way" record as it's sacrificed, D-079) reads the snapshot, not a recomputation with the effects as
+they are then. *Built (M2-09b2b, D-096):* `perform` snapshots each permanent an event moves, from the state before the
+event (a whole batch, CR 603.10a), into `lastKnownCharacteristics` (controller, types, subtypes, colors, power,
+toughness); protection, Stone Giant's "this creature's power" and a gone object's controller read it. Keywords aren't in
+it yet: the first reader of a gone source's deathtouch or lifelink adds them (`deal-damage.ts` reads `keywordsOf` on
+the source, and skips lifelink for a gone one). A spell leaving the stack keeps no snapshot, which a delayed trigger
+made by a spell that deals damage would need. As readers multiply (M2-09c), "computed if it exists, else the snapshot"
+should live in one small module rather than in each reader. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a
 controller who left the game; multiplayer (CR 800.4a) must drop that player's triggers instead.
 

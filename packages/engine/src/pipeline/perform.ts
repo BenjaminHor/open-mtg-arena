@@ -12,7 +12,9 @@ import { regenerate } from "../permanents/regenerate.ts";
 import { sacrifice } from "../permanents/sacrifice.ts";
 import { tapPermanent } from "../permanents/tap.ts";
 import { untapPermanent } from "../permanents/untap.ts";
-import type { GameState } from "../state/game-state.ts";
+import { type Characteristics, characteristics } from "../rules/characteristics.ts";
+import type { GameState, LastKnownCharacteristics } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
 import { counterObject } from "../zones/counter.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
@@ -23,9 +25,68 @@ import { shuffleLibrary } from "../zones/shuffle.ts";
 import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
-  if (event.kind !== "simultaneous") return performOne(state, event, cards);
-  // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
-  return event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
+  const before = snapshots(state, event, cards);
+  const done =
+    event.kind !== "simultaneous"
+      ? performOne(state, event, cards)
+      : // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
+        event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
+  return { state: keepLastKnown(done.state, before), events: done.events };
+}
+
+/**
+ * The computed characteristics of each permanent the event may move off the battlefield, taken before any of it
+ * happens: what a permanent that leaves was as it last existed (CR 608.2h), all of a simultaneous batch from the same
+ * moment (state-based actions too, CR 704.8), so an Awakener Druid leaving first doesn't make its Forest leave as a
+ * mere land.
+ */
+function snapshots(
+  state: GameState,
+  event: ProposedEvent,
+  cards: CardDatabase,
+): Record<ObjectId, LastKnownCharacteristics> {
+  const events = event.kind === "simultaneous" ? event.events : [event];
+  const ids = events.flatMap(leavingObjects).filter((id) => state.zones.battlefield.includes(id));
+  return Object.fromEntries(ids.map((id) => [id, lastKnownOf(characteristics(state, id, cards))]));
+}
+
+/** The objects an event may move off the battlefield; each new kind of event says whether it does. */
+function leavingObjects(event: SingleEvent): ObjectId[] {
+  switch (event.kind) {
+    case "moveCard":
+    case "destroy":
+    case "sacrifice":
+      return [event.object];
+    // A spell countered or a card discarded isn't a permanent; a land played comes onto the battlefield.
+    case "counterObject":
+    case "discard":
+    case "playLand":
+    case "regenerate":
+    case "damagePrevented":
+    case "dealDamage":
+    case "reveal":
+    case "reorderLibrary":
+    case "tap":
+    case "untap":
+    case "gainLife":
+    case "loseLife":
+    case "addMana":
+    case "draw":
+    case "shuffle":
+      return [];
+  }
+}
+
+function lastKnownOf(c: Characteristics): LastKnownCharacteristics {
+  const { controller, power, toughness } = c;
+  return { controller, types: [...c.types], subtypes: [...c.subtypes], colors: [...c.colors], power, toughness };
+}
+
+/** Keeps the snapshots of those that left the battlefield. */
+function keepLastKnown(state: GameState, taken: Record<ObjectId, LastKnownCharacteristics>): GameState {
+  const left = Object.entries(taken).filter(([id]) => !state.zones.battlefield.includes(id as ObjectId));
+  if (left.length === 0) return state;
+  return { ...state, lastKnownCharacteristics: { ...state.lastKnownCharacteristics, ...Object.fromEntries(left) } };
 }
 
 function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): Progress {

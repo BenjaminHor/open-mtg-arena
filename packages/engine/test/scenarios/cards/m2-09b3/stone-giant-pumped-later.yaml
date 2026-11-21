@@ -1,0 +1,21 @@
+name: A creature Stone Giant targeted is destroyed at the end step even if its toughness is no longer less than the Giant's power (its ruling)
+rules: [CR 603.7c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stone Giant, Grizzly Bears, Forest]
+    hand: [Giant Growth]
+steps:
+  - p1 activate: Stone Giant
+    targets: [p1:Grizzly Bears]
+  - all pass: once
+  - p1 cast: Giant Growth
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.toughness: 5
+  - all pass: until end
+  - all pass: once
+  - expect:
+      p1.graveyard contains: [Grizzly Bears, Giant Growth]

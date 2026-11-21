@@ -277,6 +277,51 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it('reports "that creature" (remembered) where nothing names it: outside a delayed ability, or without `about`', () => {
+    const giant = POOL.cards.find((c) => c.name === "Stone Giant");
+    const real = CARD_DEFS.find((d) => d.name === "Stone Giant");
+    if (giant === undefined || real === undefined) throw new Error("Stone Giant missing");
+    // Without `about` on the delayed trigger's maker; or with "remembered" in the ability's own effects.
+    const changed = (withoutAbout: boolean): CardDef => ({
+      ...real,
+      abilities: (real.abilities ?? []).map((a) => ({
+        ...a,
+        effects: a.effects.map((e) => {
+          if (e.op !== "createDelayedTrigger") return withoutAbout ? e : { op: "destroy", of: "remembered" };
+          if (!withoutAbout) return e;
+          const { about: _, ...rest } = e;
+          return rest;
+        }),
+      })),
+    });
+    expect(definitionProblems([changed(true)], [giant])).toStrictEqual([
+      'Stone Giant: a delayed ability that says "that creature" needs its maker\'s `about`',
+    ]);
+    expect(definitionProblems([changed(false)], [giant])).toStrictEqual([
+      'Stone Giant: "remembered" is only for a delayed triggered ability',
+    ]);
+    // Inside a condition it's still a delayed ability's own word, not the condition's.
+    const conditional: CardDef = {
+      ...real,
+      abilities: (real.abilities ?? []).map((a) => ({
+        ...a,
+        effects: [{ op: "ifActivatedThisTurn", atLeast: 1, effects: a.effects }],
+      })),
+    };
+    expect(definitionProblems([conditional], [giant]).filter((p) => p.includes("remembered"))).toStrictEqual([]);
+    // Remembering a player names no creature.
+    const player: CardDef = {
+      ...real,
+      abilities: (real.abilities ?? []).map((a) => ({
+        ...a,
+        effects: a.effects.map((e) => (e.op === "createDelayedTrigger" ? { ...e, about: "you" } : e)),
+      })),
+    };
+    expect(definitionProblems([player], [giant])).toContain(
+      "Stone Giant ability 1: createDelayedTrigger acts on objects, not players",
+    );
+  });
+
   it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {
     const ignite = POOL.cards.find((c) => c.name === "Ignite Disorder");
     if (ignite === undefined) throw new Error("Ignite Disorder missing from the pool");

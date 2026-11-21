@@ -618,9 +618,36 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            `is`, `putTargetOntoBattlefield` dropped); a creature with no P/T is 0/0 (CR 208.5); unit tests for
            timestamp order in layers 5 and 7b; 8 more scenarios (no Forest, sick Forest can't attack, a blocking
            Forest, Earthquake killing both, Undead Slayer and the Zombie, a noncreature target, statics after layers
-           4-5, colors after death); citations, stale comments and READMEs. Next: fuzz, bench, PR.
-         b2b: Stone Giant (a target compared with the source's power; a delayed trigger that remembers "that
-         creature", CR 603.7c) and last known characteristics snapshotted as an object leaves (CR 608.2h).
+           4-5, colors after death); citations, stale comments and READMEs. A re-check: a blocker staying out of
+           combat (`awakener-druid-reblocker`), D-095 corrected for tokens. Fuzz 3×200 clean. Merged as #52.
+         b2b plan (2026-11-21): Stone Giant and last known characteristics.
+         - Snapshot (CR 608.2h, 603.10a): `perform` takes `characteristics()` of each permanent an event will move,
+           from the state before the event (a whole simultaneous batch), and keeps those that left in
+           `GameState.lastKnownCharacteristics`, cleared with `lastKnown`. Readers of a gone object's characteristics
+           use it: protection's source qualities (Rise's black Zombie that left), a source's power.
+         - Stone Giant: a target restriction "with toughness less than this creature's power" on the permanent target
+           (`toughnessBelowSourcePower`), checked as it's chosen and as the ability resolves (CR 608.2b), the source's
+           power as it last existed if it's gone (608.2h). The Giant itself is a legal target if it fits (its ruling).
+         - "Destroy that creature at the beginning of the next end step": `createDelayedTrigger { about }` keeps the
+           objects it names on the delayed ability's reference (optional `objects`, so older replays keep their
+           hashes); subject "remembered" reads them (CR 603.7c). Destroyed even if no longer a creature or yours;
+           nothing if it left the battlefield (a new object, CR 400.7). Activated in the end step: the next turn's.
+         - Scenarios: flying then destroyed at end step; toughness not less refused; the Giant targeting itself after
+           a pump; activated during the end step; the target bounced and recast (not destroyed); the Giant gone before
+           resolution, its LKI power deciding legality; a risen black Zombie dealing damage as it left vs White
+           Knight (protection reads the snapshot); flying given after blockers does nothing (its ruling).
+         - Built (D-096): Stone Giant; 7 scenarios in `test/scenarios/cards/m2-09b3/` (the "no longer a creature"
+           ruling can't be set up with the pool: a 4/5 Forest is too tough), a definition check for "remembered" with
+           a test, replays' hashes rewritten (only the new field differs). 191 cards. Mutations 5/5 (one after adding an
+           equal-toughness case). Rules and code reviews (no wrong results): 6 more scenarios (a target pumped in
+           response, pumped later, the Giant gone or destroyed, regeneration, a target no longer a creature); a unit
+           test of the batch snapshot (CR 704.8); snapshots only for events that may move a permanent off the battlefield
+           (an exhaustive switch; tapping no longer snapshots); "its controller" of a gone object from the snapshot; the
+           definition check's false positive inside a condition, and `about` naming a player; citations, comments,
+           docs. "Flying given after blockers does nothing" is plain evasion (CR 509.1b), already covered; not added.
+           Fuzz 200 clean. Next: bench, PR.
+         - Future impact: the snapshot is what M2-09c's Polymorph-on-a-stolen-creature and every "dies" trigger
+           reading characteristics need; tokens (M2-11) leave a snapshot too.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

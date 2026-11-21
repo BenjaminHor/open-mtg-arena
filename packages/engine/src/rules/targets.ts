@@ -9,6 +9,7 @@ import { keywordsOf, stackAbilityText } from "./abilities.ts";
 import { cardTypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { matchesFilter } from "./object-filter.ts";
+import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
 /**
@@ -60,10 +61,19 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
     case "opponent":
       // Relative to the controller, "you" (CR 109.5): checked as targets are chosen and again on resolving (CR 608.2b).
       return players.filter((t) => t.kind === "player" && t.player !== by.controller);
-    case "permanent":
-      return objects(
-        state.zones.battlefield.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer)),
+    case "permanent": {
+      const fitting = state.zones.battlefield.filter((id) =>
+        matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer),
       );
+      if (spec.toughnessBelowSourcePower !== true) return objects(fitting);
+      const power = sourcePower(state, by, cards);
+      return objects(
+        fitting.filter((id) => {
+          const { toughness } = powerAndToughness(state, id, cards);
+          return power !== null && toughness !== null && toughness < power;
+        }),
+      );
+    }
     case "spell": {
       // A spell is a card on the stack (CR 112.1); an ability on the stack isn't one. It can't target itself (CR 115.5).
       const spells = state.zones.stack.filter(
@@ -83,6 +93,17 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       );
     }
   }
+}
+
+/**
+ * The power of the spell's or ability's source ("this creature's power"): now, or as it last existed on the battlefield
+ * if it has left (CR 608.2h), when legality is checked again as the ability resolves (CR 608.2b).
+ */
+function sourcePower(state: GameState, by: Targeting, cards: CardDatabase): number | null {
+  const self = state.objects[by.object];
+  const source = self?.kind === "ability" ? self.source : by.object;
+  if (state.zones.battlefield.includes(source)) return powerAndToughness(state, source, cards).power;
+  return state.lastKnownCharacteristics[source]?.power ?? null;
 }
 
 /** How many targets an instance takes; exactly one when the text just says "target" (CR 601.2c). */

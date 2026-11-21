@@ -1,0 +1,16 @@
+name: Stone Giant gives flying to a creature you control with toughness less than its power, then destroys it at the next end step
+rules: [CR 603.7, CR 603.7c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stone Giant, Grizzly Bears]
+steps:
+  - p1 activate: Stone Giant
+    targets: [p1:Grizzly Bears]
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.abilities contains: [flying]
+  - all pass: until end
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]

@@ -162,6 +162,7 @@ import { soulWarden } from "./s/soul-warden.ts";
 import { sparkmageApprentice } from "./s/sparkmage-apprentice.ts";
 import { spinedWurm } from "./s/spined-wurm.ts";
 import { stampedingRhino } from "./s/stampeding-rhino.ts";
+import { stoneGiant } from "./s/stone-giant.ts";
 import { stormfrontPegasus } from "./s/stormfront-pegasus.ts";
 import { sunpetalGrove } from "./s/sunpetal-grove.ts";
 import { swamp } from "./s/swamp.ts";
@@ -354,6 +355,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   sparkmageApprentice,
   spinedWurm,
   stampedingRhino,
+  stoneGiant,
   stormfrontPegasus,
   sunpetalGrove,
   swamp,

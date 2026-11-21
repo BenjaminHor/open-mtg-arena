@@ -213,8 +213,12 @@ export function sameAbilityRef(a: AbilityRef, b: AbilityRef): boolean {
     case "triggered":
       return b.kind === "triggered" && a.index === b.index;
     case "delayed":
-      // The same text: delayed triggers made by the same effect are interchangeable. Compared as JSON, which depends on
-      // key order: safe, as both are copies of the same definition object.
-      return b.kind === "delayed" && JSON.stringify(a.ability) === JSON.stringify(b.ability);
+      // The same text and the same remembered objects: delayed triggers made by the same effect are interchangeable.
+      // Compared as JSON, which depends on key order: safe, as both are copies of the same definition object.
+      return (
+        b.kind === "delayed" &&
+        JSON.stringify(a.ability) === JSON.stringify(b.ability) &&
+        JSON.stringify(a.objects ?? []) === JSON.stringify(b.objects ?? [])
+      );
   }
 }

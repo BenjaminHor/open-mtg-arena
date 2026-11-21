@@ -6,7 +6,7 @@ tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 | File | What it defines |
 | --- | --- |
 | `ids.ts` | `PlayerId` (`p1`), `ObjectId` (`o7`), `CardId` (`c7`), `DecisionId` (`d3`), `OracleId`. Distinct types, so an object id can't be used as a card id (CR 400.7). |
-| `game-state.ts` | `GameState`, the whole game |
+| `game-state.ts` | `GameState`, the whole game; `LastKnownCharacteristics`, a permanent's computed characteristics kept as it left (CR 608.2h) |
 | `setup.ts` | `GameSetup`: players, decks, preset zones, a `standard` or `fixed` opening, rule modifiers |
 | `objects.ts` | `GameObject`: a card in a zone, or an ability on the stack, plus the choices made while casting |
 | `zones.ts` | Zones and their order conventions (library top is index 0; stack and graveyard tops are the last entry) |

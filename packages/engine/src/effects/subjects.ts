@@ -12,6 +12,13 @@ import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Target } from "../state/objects.ts";
 
+/** The objects the resolving delayed triggered ability remembers (CR 603.7c); none for any other spell or ability. */
+function rememberedObjects(state: GameState): readonly ObjectId[] {
+  const resolving = state.resolution === null ? undefined : state.objects[state.resolution.object];
+  if (resolving?.kind !== "ability" || resolving.ability.kind !== "delayed") return [];
+  return resolving.ability.objects ?? [];
+}
+
 /** The players and objects a subject refers to. A target group holds only the targets still legal (CR 608.2b). */
 export function subject(state: GameState, s: EffectSubject, context: EffectContext, cards: CardDatabase): Target[] {
   if (s === "self") return [{ kind: "object", object: context.self }];
@@ -28,6 +35,8 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
   // Every opponent of "you" (CR 102.2; teams later: CR 102.3), in APNAP order.
   if (s === "eachOpponent")
     return apnapOrder(state).flatMap((player) => (player === context.controller ? [] : [{ kind: "player", player }]));
+  // "That creature" in a delayed ability: what the effect that made it named (CR 603.7c).
+  if (s === "remembered") return rememberedObjects(state).map((object) => ({ kind: "object", object }));
   // What an earlier search of this resolution found (CR 608.2c).
   if (s === "found") return (state.resolution?.found ?? []).map((object) => ({ kind: "object", object }));
   // Every permanent fitting the filter now, as the effect applies (CR 608.2h).

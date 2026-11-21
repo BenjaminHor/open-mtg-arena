@@ -269,8 +269,11 @@ export type TargetKind =
   | { kind: "player" }
   /** "Target opponent": a player who's an opponent of the controller, "you" (CR 115.1a, 102.2; later: CR 102.3). */
   | { kind: "opponent" }
-  /** "Target [filter] permanent", "target creature": an object on the battlefield (CR 115.2). */
-  | { kind: "permanent"; filter: ObjectFilter }
+  /**
+   * "Target [filter] permanent", "target creature": an object on the battlefield (CR 115.2). `toughnessBelowSourcePower`:
+   * "with toughness less than this creature's power" (Stone Giant), its source's power now, or as it last existed.
+   */
+  | { kind: "permanent"; filter: ObjectFilter; toughnessBelowSourcePower?: true }
   /** "Target [filter] spell": a spell on the stack, never an ability (CR 112.1) and never itself (CR 115.5). */
   | { kind: "spell"; filter: ObjectFilter }
   /** "Target [filter] card from your graveyard" or "from a graveyard": a zone, not control (CR 109.2a, 115.2). */
@@ -361,6 +364,11 @@ export type EffectSubject =
   | "triggeringObject"
   /** "That card", "them": the cards an earlier `search` of this resolution found (CR 608.2c). */
   | "found"
+  /**
+   * "That creature" in a delayed triggered ability: the objects the effect that made it named (`createDelayedTrigger`'s
+   * `about`, CR 603.7c), still affected if they changed, but not once they've left their zone (a new object, CR 400.7).
+   */
+  | "remembered"
   /** "Each creature without flying": every permanent fitting the filter as the effect applies (CR 608.2h). */
   | { each: ObjectFilter }
   /**
@@ -540,4 +548,12 @@ export type Effect =
    * "[Effects] at the beginning of the next end step": makes a delayed triggered ability (CR 603.7), whose source and
    * controller are those of the spell's or ability's, as it resolves (CR 603.7d, 603.7e).
    */
-  | { op: "createDelayedTrigger"; ability: TriggeredAbilityDef };
+  | {
+      op: "createDelayedTrigger";
+      ability: TriggeredAbilityDef;
+      /**
+       * "Destroy that creature at the beginning of the next end step" (Stone Giant): the objects named now, which the
+       * delayed ability's `"remembered"` refers to (CR 603.7c).
+       */
+      about?: EffectSubject;
+    };

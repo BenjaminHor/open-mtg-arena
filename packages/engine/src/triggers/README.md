@@ -43,7 +43,8 @@ from when it left until the stack is next empty. Howling Mine Shattered in respo
 ## Entry points
 
 - `detectTriggers(before, after, events, cards)`: adds the triggers these events trigger to the pending list.
-- `createDelayedTrigger(state, ability, context)`, `detectDelayed`: make a delayed trigger; trigger the waiting ones.
+- `createDelayedTrigger(state, ability, context, objects)`, `detectDelayed`: make a delayed trigger, remembering the
+  objects its maker's `about` named ("that creature", the subject `"remembered"`, CR 603.7c); trigger the waiting ones.
 - `startPuttingTriggers(state, player)`, `putTriggers`, `putOne`: put a batch on the stack, then give `player` priority.
 - `orderTriggersProblem`: why a player can't put that trigger next (shared by `legalActions` and `applyAction`).
 

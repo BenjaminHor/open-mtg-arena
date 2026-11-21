@@ -127,7 +127,10 @@ export const furnaceWhelp: CardDef = {
   is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`. "When this creature
   becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`. "At the beginning of the next end step,
   [effects]" is `{ op: "createDelayedTrigger", ability: { when: { kind: "beginningOfStep", step: "end", whose: "each"
-  }, targets: [], effects } }` (CR 603.7; only the next beginning of anyone's step, with no targets, for now); "if this
+  }, targets: [], effects } }` (CR 603.7; only the next beginning of anyone's step, with no targets, for now); "destroy
+  that creature" in it adds `about: { target: 0 }` to the maker and uses the subject `"remembered"` (CR 603.7c, Stone
+  Giant). "Target creature you control with toughness less than this creature's power" adds
+  `toughnessBelowSourcePower: true` to the permanent target; "if this
   ability has been activated four or more times this turn, [effects]" is `{ op: "ifActivatedThisTurn", atLeast: 4,
   effects }`, for an activated ability only (D-078). "Sacrifice a creature
   other than this creature" is `{ op: "sacrifice", ..., otherThanSelf: true }`, "equal to the sacrificed creature's
