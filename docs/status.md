@@ -658,7 +658,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - c1 built (D-097): Silence, Spellbook; 8 scenarios in `test/scenarios/cards/m2-09c/`, golden pool-55 and
            pool-167. 193 cards. Mutations 4/4. Review (no wrong results): citations (CR 601.3, 109.5; `later: CR
            613.11`), a named `cantCastSpells` question, the definition check for its subject, 3 more scenarios (the
-           non-active player's Silence and a land play, still in the end step, Spellbook in hand), docs. Next: PR.
+           non-active player's Silence and a land play, still in the end step, Spellbook in hand), docs. Fuzz 200
+           clean. Merged as #54. Next: c2, Act of Treason.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
