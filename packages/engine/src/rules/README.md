@@ -8,6 +8,8 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `layers.ts`: the layer pass (CR 613, D-092): `layeredOf`, `layered`, every object's characteristics computed once
   per state for the battlefield and the stack, kept per its inputs; `layeredFresh` and `layeredOfFresh`, computed
   afresh, for the fuzzer's check that the kept pass is right. Every reader below reads it.
+- `layer-seven.ts`: layer 7 of the pass, power and toughness (CR 613.4): the base from 7a (characteristic-defining
+  abilities), 7b (effects that set it, D-095) or the printed values, then 7c adds.
 - `static-effects.ts`: static abilities that change other objects (anthems, D-093): their sets (CR 611.3a), the
   keywords they grant in layer 6 and what they add in 7c.
 - `filter-fit.ts`: `fits`, the pure check of an `ObjectFilter` against given characteristics, shared by

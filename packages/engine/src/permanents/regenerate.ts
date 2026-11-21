@@ -2,6 +2,7 @@
 // shield on it is used up, all damage marked on it is removed, its controller taps it, and if it's attacking or
 // blocking it's removed from combat (CR 506.4). It stays on the battlefield, the same object.
 
+import { removedFromCombat } from "../combat/removed-from-combat.ts";
 import type { Progress } from "../game/progress.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -24,12 +25,4 @@ export function regenerate(state: GameState, id: ObjectId): Progress {
   };
   const tapped = tapPermanent(healed, id);
   return { state: tapped.state, events: [...events, ...tapped.events] };
-}
-
-/** Combat with `id` removed from it, if it's attacking or blocking (CR 506.4); unchanged otherwise. */
-function removedFromCombat(state: GameState, id: ObjectId): GameState["combat"] {
-  const combat = state.combat;
-  if (combat === null || combat.removed.includes(id)) return combat;
-  const inCombat = combat.attacks.some((a) => a.attacker === id) || combat.blocks.some((b) => b.blocker === id);
-  return inCombat ? { ...combat, removed: [...combat.removed, id] } : combat;
 }

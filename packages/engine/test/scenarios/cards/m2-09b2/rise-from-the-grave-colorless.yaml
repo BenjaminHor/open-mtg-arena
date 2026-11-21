@@ -1,0 +1,17 @@
+name: Rise from the Grave makes a colorless creature only black (its ruling)
+rules: [CR 105.2c, CR 613.1e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Rise from the Grave]
+    graveyard: [Ornithopter]
+    manaPool: { B: 5 }
+steps:
+  - p1 cast: Rise from the Grave
+    targets: [graveyard:p1:Ornithopter]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Ornithopter.colors: [B]
+      p1:Ornithopter.types: [artifact, creature]
+      p1:Ornithopter.subtypes: [Thopter, Zombie]

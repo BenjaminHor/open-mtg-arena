@@ -1382,3 +1382,28 @@ every schema change and every change D-024 lists bumps it.
 - Scenarios can name a card in a hand or graveyard (`hand:p1:Nightmare.power`), and `inspect` shows the 7a base.
 - Future impact: 7b (Awakener Druid, M2-09b2) sets a base after 7a, in timestamp order (CR 613.7); a CDA whose count
   reads power would need dependency order (CR 613.8); tokens' CDAs come from the effect that made them (CR 604.3a).
+
+**D-095: Type, color and setting effects in layers 4, 5 and 7b (M2-09b2a)** · 2026-11-21 · accepted
+- One effect change, `becomes { addTypes, addSubtypes, colors?: {set} | {add}, setPT? }`, applied in every layer it
+  touches (CR 613.6): types and subtypes added in layer 4, keeping the others (CR 205.1b), colors set or added in 5,
+  base power and toughness set in 7b. Each layer goes through `state.effects` in order, which is timestamp order
+  (CR 613.7). Setting types without keeping the others waits for a card that does it.
+- Durations: `"endOfTurn"`, `"endOfGame"` (none stated, CR 611.2a) and `"whileSourceOnBattlefield"`. The last ends in
+  `moveCard` as its source leaves, with EFFECT_ENDED, and none is made if the source has already left (CR 611.2b). An
+  "endOfGame" effect stays in the state after its object is gone; it can't apply again, as ids are never reused.
+- Rise from the Grave's "is a black Zombie" is `put { into: "battlefield", is }`: the move itself makes the effect
+  (`Destination.is`, `moveCard`), on the new object, its timestamp after the object's, before triggers look at what
+  entered (CR 611.2e, 613.7n; a unit test with a "whenever a Zombie enters" test card). Not for tokens: CR 611.2e is
+  about nontoken permanents, and a token's stated characteristics are its copiable values (CR 111.3, 707.2), so M2-11
+  gives tokens their own characteristics source instead. `moveCard` also ends "while on the battlefield" effects, so `zones/`
+  doesn't import `effects/`.
+- A creature with no power or toughness (a land made a creature without one set) is 0/0 (CR 208.5).
+- Removal from combat (CR 506.4) is recorded in `Combat.removed` as it happens: `advance` checks after each piece of
+  work for an attacker or blocker that stopped being a creature, so becoming one again doesn't bring it back (both
+  reviews found this; a second Awakener Druid did). Control changes (M2-09c) will add to the same record.
+- Layer 7 moved to `rules/layer-seven.ts`. A land made a creature gets its P/T from 7b although none is printed;
+  `Layered.base` says where the base came from, and `inspect` shows it.
+- Not built: subtypes by kind (Coat of Arms counting creature types only, CR 205.3m). An animated Forest shares no land
+  type with another creature in the pool, so nothing shows it; it stays `later:`.
+- Future impact: layer 2 (M2-09c) and Auras' statics (M2-12) set and add in these layers the same way; tokens (M2-11)
+  are made with characteristics like Rise's `is`.

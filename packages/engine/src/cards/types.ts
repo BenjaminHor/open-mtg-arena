@@ -4,7 +4,7 @@
 // This is a first draft (M1-04). The effect, cost and ability shapes will be reshaped by the tasks that
 // interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities, D-041), see D-026.
 
-import type { Duration } from "../state/effects.ts";
+import type { Becomes, Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { TriggeredAbilityDef } from "./triggers.ts";
@@ -405,6 +405,12 @@ export type Effect =
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
   /**
+   * "[subject] becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's still a
+   * land." (Awakener Druid): one effect in layers 4, 5 and 7b on the objects fixed now (CR 611.2c, 613.6). With
+   * "whileSourceOnBattlefield", none is made if the source has already left (CR 611.2b).
+   */
+  | ({ op: "becomes"; of: EffectSubject; duration: Duration } & Becomes)
+  /**
    * "Sacrifice this creature": its source, if it's still on the battlefield under the ability's controller
    * (CR 701.21a).
    */
@@ -497,6 +503,11 @@ export type Effect =
       tapped?: true;
       onlyIf?: ObjectFilter;
       optional?: true;
+      /**
+       * Onto the battlefield only: what it is as it enters, "that creature is a black Zombie in addition to its other
+       * colors and types" (Rise from the Grave), applying as it enters (CR 611.2e) for the rest of the game.
+       */
+      is?: Becomes;
     }
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject }

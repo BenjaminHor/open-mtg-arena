@@ -8,6 +8,7 @@ import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsFeather } from "./a/angels-feather.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
 import { assassinate } from "./a/assassinate.ts";
+import { awakenerDruid } from "./a/awakener-druid.ts";
 import { ballLightning } from "./b/ball-lightning.ts";
 import { baneslayerAngel } from "./b/baneslayer-angel.ts";
 import { berserkersOfBloodRidge } from "./b/berserkers-of-blood-ridge.ts";
@@ -138,6 +139,7 @@ import { regenerate } from "./r/regenerate.ts";
 import { relentlessRats } from "./r/relentless-rats.ts";
 import { rhoxPikemaster } from "./r/rhox-pikemaster.ts";
 import { righteousness } from "./r/righteousness.ts";
+import { riseFromTheGrave } from "./r/rise-from-the-grave.ts";
 import { rodOfRuin } from "./r/rod-of-ruin.ts";
 import { rootboundCrag } from "./r/rootbound-crag.ts";
 import { royalAssassin } from "./r/royal-assassin.ts";
@@ -198,6 +200,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   angelsFeather,
   angelsMercy,
   assassinate,
+  awakenerDruid,
   ballLightning,
   baneslayerAngel,
   berserkersOfBloodRidge,
@@ -328,6 +331,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   relentlessRats,
   rhoxPikemaster,
   righteousness,
+  riseFromTheGrave,
   rodOfRuin,
   rootboundCrag,
   royalAssassin,

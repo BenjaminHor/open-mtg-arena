@@ -6,7 +6,8 @@
 // Each card object starts from its printed values (CR 613.1). The layers with effects in the pool so far: 6 (keywords
 // granted), 7a (characteristic-defining abilities, CR 613.4a, in every zone) and 7c (CR 613.4c), from resolved effects
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
-// Layers 1-5, 7b and 7d have none yet; each comes in its place below as its first card does (M2-09).
+// Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095). Layers 1-3 and 7d have none yet;
+// each comes in its place below as its first card does (M2-09).
 
 import type {
   CardData,
@@ -18,18 +19,13 @@ import type {
   StaticAbilityDef,
   Supertype,
 } from "../cards/types.ts";
-import type { Duration } from "../state/effects.ts";
+import type { Becomes, Duration } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { COLORS } from "../state/mana.ts";
 import type { CardObject } from "../state/objects.ts";
-import {
-  countOnBoard,
-  type KeywordGrant,
-  type StaticPT,
-  staticKeywordGrants,
-  staticPTChanges,
-  staticSources,
-} from "./static-effects.ts";
+import { layerSeven } from "./layer-seven.ts";
+import { type KeywordGrant, staticKeywordGrants, staticPTChanges, staticSources } from "./static-effects.ts";
 
 /**
  * One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. Read-only:
@@ -57,7 +53,13 @@ export type Layered = Readonly<{
 }>;
 
 /** The power and toughness 7c started from, and where they came from (effects that check them, later: CR 208.4b). */
-export type BasePT = Readonly<{ from: "printed" | "ability"; power: number; toughness: number }>;
+export type BasePT = Readonly<
+  | { from: "printed" | "ability"; power: number; toughness: number }
+  /** A creature with none: 0 (CR 208.5). */
+  | { from: "none"; power: 0; toughness: 0 }
+  /** Set by a resolved effect (layer 7b), from this source. */
+  | { from: "effect"; source: ObjectId; power: number; toughness: number }
+>;
 
 /** What changes an object's power and toughness in layer 7c, and by how much (CR 613.4c). */
 export type LayerSevenCChange =
@@ -114,7 +116,7 @@ function offBoard(
   obj: CardObject,
   cards: CardDatabase,
 ): Layered {
-  return layerSeven(input, board, obj, start(obj, obj.owner, cards), cards);
+  return layerSeven(input, board, obj, start(obj, obj.owner, cards), false, cards);
 }
 
 /**
@@ -189,6 +191,22 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
   }
   // The printed values (CR 613.1), and the controller as stored (CR 110.2); no control-changing effects yet (layer 2).
   for (const obj of objects) board[obj.id] = start(obj, obj.baseController, cards);
+  // Layers 4 and 5 (CR 613.1d, 613.1e): resolved effects that change types and colors, on the objects they locked in
+  // (CR 611.2c), each layer in timestamp order (CR 613.7), which is `input.effects`' order (each new one is later).
+  for (const effect of input.effects) {
+    if (effect.change.kind !== "becomes") continue;
+    for (const id of effect.affected) {
+      const card = board[id];
+      if (card !== undefined) board[id] = withTypesAdded(card, effect.change);
+    }
+  }
+  for (const effect of input.effects) {
+    if (effect.change.kind !== "becomes" || effect.change.colors === undefined) continue;
+    for (const id of effect.affected) {
+      const card = board[id];
+      if (card !== undefined) board[id] = withColors(card, effect.change.colors);
+    }
+  }
   // Layer 6 (CR 613.1f): keywords granted by resolved effects, on the objects they locked in (CR 611.2c), and by static
   // abilities, on what fits now (CR 611.3a). Only adding so far, so the order within the layer can't matter.
   const sources = staticSources(input, board);
@@ -203,11 +221,13 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
     const keywords = granted.flatMap((g) => g.keywords);
     if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
   }
-  // Layer 7 (CR 613.4): a creature's base power and toughness (7a's, else printed), then 7c.
+  // Layer 7 (CR 613.4): a creature's base power and toughness (7b's, else 7a's, else printed), then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
   for (const obj of objects) {
     const card = board[obj.id];
-    if (card !== undefined) board[obj.id] = layerSeven(input, board, obj, card, cards, statics[obj.id] ?? []);
+    const onBattlefield = zoneOfIn(input, obj.id) === "battlefield";
+    if (card !== undefined)
+      board[obj.id] = layerSeven(input, board, obj, card, onBattlefield, cards, statics[obj.id] ?? []);
   }
   return board;
 }
@@ -250,122 +270,25 @@ function printedWith(data: CardData, controller: PlayerId): Layered {
 }
 
 /**
- * Power and toughness (CR 613.4): a noncreature permanent has none, even if printed; a noncreature card elsewhere has
- * its printed ones (CR 208.3). The base is 7a's, else the printed values; then 7c adds (7b and 7d have no effects yet;
- * when they do, they apply in timestamp order, later: CR 613.7). 7c only adds and subtracts, so its order never changes
- * the result. `board` is the pass so far, for 7a's counts.
+ * Layer 4: card types and subtypes added, the others kept ("it's still a land", "in addition to its other types",
+ * CR 205.1b). Setting types without keeping them waits for a card that does it.
  */
-function layerSeven(
-  input: LayerInputs,
-  board: Readonly<Record<ObjectId, Layered>>,
-  obj: CardObject,
-  card: Layered,
-  cards: CardDatabase,
-  statics: readonly StaticPT[] = [],
-): Layered {
-  const printed = cards[obj.oracleId]?.printed;
-  const onBattlefield = zoneOfIn(input, obj.id) === "battlefield";
-  const isCreature = card.types.includes("creature");
-  if (printed === undefined || printed.power === null || printed.toughness === null || (onBattlefield && !isCreature))
-    return card;
-  const base: BasePT = layer7a(input, board, card) ?? {
-    from: "printed",
-    power: knownOrZero(printed.power),
-    toughness: knownOrZero(printed.toughness),
+function withTypesAdded(card: Layered, change: Becomes): Layered {
+  if (change.addTypes.length === 0 && change.addSubtypes.length === 0) return card;
+  return {
+    ...card,
+    types: withoutRepeats([...card.types, ...change.addTypes]),
+    subtypes: withoutRepeats([...card.subtypes, ...change.addSubtypes]),
   };
-  const sevenC = [
-    ...layer7c(input, obj, card, isCreature, onBattlefield),
-    ...statics.map((s): LayerSevenCChange => ({ kind: "static", ...s })),
-  ];
-  const bonus = sevenC.reduce((sum, c) => ({ power: sum.power + c.power, toughness: sum.toughness + c.toughness }), {
-    power: 0,
-    toughness: 0,
-  });
-  return { ...card, power: base.power + bonus.power, toughness: base.toughness + bonus.toughness, base, sevenC };
-}
-
-type DefinesPT = Extract<StaticAbilityDef, { kind: "powerToughnessEachEqual" }>;
-
-/**
- * Layer 7a (CR 613.4a): a characteristic-defining ability's power and toughness, in every zone (CR 604.3), or null. "You"
- * is the object's controller, or its owner where it has none (CR 109.5). It counts what the board has after layers 1-6:
- * layer 7, which the pass finishes object by object, changes only power and toughness, and `ObjectFilter` has no field
- * that reads them, so the order the pass goes in can't change a count.
- */
-function layer7a(input: LayerInputs, board: Readonly<Record<ObjectId, Layered>>, card: Layered): BasePT | null {
-  const cda = card.statics.find((s): s is DefinesPT => s.kind === "powerToughnessEachEqual");
-  if (cda === undefined) return null;
-  const n = countOnBoard(input, board, cda.to.count, card.controller);
-  return { from: "ability", power: n, toughness: n };
 }
 
 /**
- * A printed "*" is set by an ability, which every such card has (the definition check). Without one, it could only be 0
- * (the usual reading), which needs an effect that removes abilities first (later: CR 613.1f).
+ * Layer 5: colors set ("becomes ... green") or added ("black in addition to its other colors"). Listed in WUBRG order,
+ * like printed colors; colorless is no color at all (CR 105.2c), so adding black to it makes it only black.
  */
-function knownOrZero(printed: number | "*"): number {
-  return printed === "*" ? 0 : printed;
-}
-
-/** Layer 7c (CR 613.4c): effects and counters that modify power and toughness, each with what it is. */
-function layer7c(
-  input: LayerInputs,
-  obj: CardObject,
-  card: Layered,
-  isCreature: boolean,
-  onBattlefield: boolean,
-): LayerSevenCChange[] {
-  const changes: LayerSevenCChange[] = [];
-  // Continuous effects from resolved spells and abilities, on the objects they locked in (CR 611.2c).
-  for (const effect of input.effects) {
-    if (!effect.affected.includes(obj.id)) continue;
-    switch (effect.change.kind) {
-      case "modifyPT": {
-        const { power, toughness } = effect.change;
-        const { source, timestamp, duration } = effect;
-        changes.push({ kind: "effect", source, timestamp, duration, power, toughness });
-        break;
-      }
-      case "cantBlock":
-      case "mustAttack":
-      case "addKeywords":
-      case "cantBeBlocked":
-        break;
-    }
-  }
-  // +X/+Y and -X/-Y counters count on a creature or a creature card in another zone, not on a noncreature card
-  // (CR 122.1a). In the engine today only permanents get counters (they don't move with a card, CR 122.2), but the CR
-  // allows them elsewhere.
-  for (const [name, count] of isCreature ? Object.entries(obj.counters) : []) {
-    const pt = ptCounter(name);
-    if (pt !== null)
-      changes.push({
-        kind: "counters",
-        counter: name,
-        count,
-        power: pt.power * count,
-        toughness: pt.toughness * count,
-      });
-  }
-  // Rule modifiers: "creatures [player] controls get +N/+N" means creature permanents on the battlefield (CR 109.2).
-  if (onBattlefield) {
-    input.ruleModifiers.forEach((modifier, index) => {
-      switch (modifier.kind) {
-        case "creaturesGetPT":
-          if (modifier.controller === card.controller)
-            changes.push({ kind: "ruleModifier", index, power: modifier.power, toughness: modifier.toughness });
-          break;
-      }
-    });
-  }
-  return changes;
-}
-
-/** A counter named like `+1/+1` or `-1/-1` (CR 122.1a), as numbers; null for any other counter. */
-function ptCounter(name: string): { power: number; toughness: number } | null {
-  const match = /^([+-]\d+)\/([+-]\d+)$/.exec(name);
-  if (match === null) return null;
-  return { power: Number(match[1]), toughness: Number(match[2]) };
+function withColors(card: Layered, colors: NonNullable<Becomes["colors"]>): Layered {
+  const now = "set" in colors ? colors.set : [...card.colors, ...colors.add];
+  return { ...card, colors: COLORS.filter((c) => now.includes(c)) };
 }
 
 /** A keyword granted twice is listed once: each keyword's own rules say several instances are redundant. */

@@ -120,9 +120,9 @@ function flyingAllowsBlock(state: GameState, blocker: ObjectId, attacker: Object
 
 /**
  * Whether a creature declared in combat is still in it (CR 506.4): one that left the battlefield is a new object
- * (CR 400.7), so its old id is no longer there; one that stopped being a creature is out too, and so is one an effect
- * removed (regenerated, `Combat.removed`). A change of controller also removes it, which needs control-changing effects
- * (none yet) and the controller stored with the attack.
+ * (CR 400.7), so its old id is no longer there; one that stopped being a creature or was regenerated is recorded in
+ * `Combat.removed` as it happens (`combat/removed-from-combat.ts`), so it stays out even if it becomes a creature again.
+ * A change of controller also removes it, which needs control-changing effects (M2-09c) and the same record.
  */
 function stillInCombat(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
   return isCreaturePermanent(state, id, cards) && !(state.combat?.removed.includes(id) ?? false);

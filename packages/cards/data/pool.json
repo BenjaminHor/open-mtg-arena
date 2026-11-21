@@ -205,6 +205,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Awakener Druid",
+      "slug": "awakener-druid",
+      "oracleId": "7e8f5b34-fd16-4307-9104-17b584b25b14",
+      "layout": "normal",
+      "manaCost": "{2}{G}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Druid",
+      "oracleText": "When this creature enters, target Forest becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's still a land.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/5/e5ea3786-c64c-4e36-8b3b-19da0c0b46d3.jpg?1783941801",
+        "large": "https://cards.scryfall.io/large/front/e/5/e5ea3786-c64c-4e36-8b3b-19da0c0b46d3.jpg?1783941801",
+        "png": "https://cards.scryfall.io/png/front/e/5/e5ea3786-c64c-4e36-8b3b-19da0c0b46d3.png?1783941801",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/5/e5ea3786-c64c-4e36-8b3b-19da0c0b46d3.jpg?1783941801"
+      },
+      "artist": "Jason Chan",
+      "set": "m11",
+      "collectorNumber": "163",
+      "scryfallUri": "https://scryfall.com/card/m11/163/awakener-druid?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Ball Lightning",
       "slug": "ball-lightning",
       "oracleId": "7485cf25-eb41-4397-be13-7f0b8c10c70a",
@@ -3895,6 +3923,34 @@
       "set": "eld",
       "collectorNumber": "27",
       "scryfallUri": "https://scryfall.com/card/eld/27/righteousness?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Rise from the Grave",
+      "slug": "rise-from-the-grave",
+      "oracleId": "4e769107-0f32-4181-9e57-ffebc2228d3a",
+      "layout": "normal",
+      "manaCost": "{4}{B}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "Put target creature card from a graveyard onto the battlefield under your control. That creature is a black Zombie in addition to its other colors and types.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/c/bc73644e-884c-47cd-aeec-ab80360dd5ae.jpg?1783934562",
+        "large": "https://cards.scryfall.io/large/front/b/c/bc73644e-884c-47cd-aeec-ab80360dd5ae.jpg?1783934562",
+        "png": "https://cards.scryfall.io/png/front/b/c/bc73644e-884c-47cd-aeec-ab80360dd5ae.png?1783934562",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/c/bc73644e-884c-47cd-aeec-ab80360dd5ae.jpg?1783934562"
+      },
+      "artist": "Kieran Yanner",
+      "set": "m19",
+      "collectorNumber": "117",
+      "scryfallUri": "https://scryfall.com/card/m19/117/rise-from-the-grave?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

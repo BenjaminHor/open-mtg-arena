@@ -35,6 +35,9 @@ export const EXPECTATIONS = [
   "sick",
   "power",
   "toughness",
+  "colors",
+  "types",
+  "subtypes",
   "abilities contains",
   "events contains",
   "events lacks",
@@ -126,6 +129,14 @@ function check(
         return same(characteristics(state, obj.id, cards).power);
       case "toughness":
         return same(characteristics(state, obj.id, cards).toughness);
+      case "colors":
+        return same(characteristics(state, obj.id, cards).colors);
+      case "types": {
+        const c = characteristics(state, obj.id, cards);
+        return same([...c.supertypes, ...c.types]);
+      }
+      case "subtypes":
+        return same(characteristics(state, obj.id, cards).subtypes);
       case "abilities contains": {
         if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
         const keywords = characteristics(state, obj.id, cards).keywords;

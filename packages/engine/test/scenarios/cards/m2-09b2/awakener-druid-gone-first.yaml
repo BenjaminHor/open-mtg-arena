@@ -1,0 +1,28 @@
+name: If Awakener Druid leaves before its ability resolves, the Forest never becomes a creature (its ruling)
+rules: [CR 611.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest]
+    hand: [Awakener Druid]
+    manaPool: { G: 3 }
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Forest
+  # The trigger is on the stack; p2 kills the Druid in response.
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Awakener Druid]
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - expect:
+      p1.graveyard: [Awakener Druid]
+      p1:Forest.power: null
+      p1:Forest.types: [basic, land]
+      events lacks: [{ type: EFFECT_CREATED }]

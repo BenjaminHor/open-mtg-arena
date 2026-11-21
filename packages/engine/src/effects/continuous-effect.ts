@@ -20,7 +20,7 @@ export function createContinuousEffect(state: GameState, effect: Omit<Continuous
 
 /**
  * Every "until end of turn" effect ends (CR 514.2, 611.2a). Called by the cleanup step in the same action that removes
- * damage. No other durations exist yet.
+ * damage.
  */
 export function endUntilEndOfTurnEffects(state: GameState): Progress {
   const ending = state.effects.filter((e) => e.duration === "endOfTurn");

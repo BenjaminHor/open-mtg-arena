@@ -17,9 +17,12 @@ read it. Layer 6 grants keywords (resolved effects and static abilities), 7c add
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Sorting within a sublayer by timestamp and dependency
 arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
-*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). 7b sets the base power and toughness
-after 7a (`Layered.base`), and the early "no printed P/T" return must become "base from 7a/7b, else printed", or an
-animated land gets none. A gone object's power is worked out from today's board unless it's snapshotted as it leaves
+*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). Layers 4, 5 and 7b have resolved effects
+(M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
+merged into that order (CR 613.7a). In a simultaneous batch the cards move one by one, so a Druid moving first ends
+its Forest's effect before the Forest moves: last known information must be read from the state before the batch
+(CR 603.10a, 608.2h). "endOfGame" effects stay in `state.effects` after their object is gone; drop them once nothing
+can read them (after the last-known-information snapshot). A gone object's power is worked out from today's board unless it's snapshotted as it leaves
 (a dead Nightmare would count the Swamps left; future "snapshot `characteristics()`" item); a granted copy of a
 "power and toughness are each equal to" ability isn't characteristic-defining (CR 604.3a) and belongs in 7b; tokens (CR 111) need a characteristics source other than the card database; an effect on a permanent
 spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet. A layer reading more of the state
@@ -179,8 +182,9 @@ need the text fixed when it's activated.
 **More combat (CR 506–511, D-040).**
 *Built (M2-08b, D-086):* `Combat.removed`, the creatures an effect removed while they stayed on the battlefield
 (regeneration), read through `stillInCombat` in `rules/combat.ts`. *Watch out:* phasing, "remove from combat" effects
-and control changes must add to it too, and a permanent that stops and starts being a creature would rejoin combat
-unless it's added then (CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
+and control changes must add to it too. A permanent that stops being a creature is added as `advance` finishes each
+piece of work (M2-09b2a), so one that stopped and started again inside a single piece of work (a batch moving an
+animator out and another in) would rejoin combat (CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
 removes the last pick (M2-06c, D-072). The most requirements obeyable is worked out directly, which is exact while the
 only whole-declaration restriction is "alone"; menace (CR 702.111b) and "no more than one creature can attack"
 (CR 508.1d's example) need a search over declarations. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,

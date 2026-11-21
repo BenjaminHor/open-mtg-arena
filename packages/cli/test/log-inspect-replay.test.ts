@@ -35,6 +35,18 @@ describe("log, inspect and replay", () => {
     expect(inspected).toMatch(/layer 7a, its ability: 2\/2/);
   });
 
+  it("explains a land made a creature by the effect that sets its power and toughness (layer 7b)", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-09b2/awakener-druid", "--out", file);
+    for (const step of ["cast: Awakener Druid, pay: auto", "all pass: once", "choose: p1:Forest", "all pass: once"])
+      cli("do", file, step);
+    const inspected = cli("inspect", file, "p1:Forest");
+    expect(inspected).toMatch(/types: basic land creature — Forest Treefolk/);
+    expect(inspected).toMatch(/printed: none/);
+    expect(inspected).toMatch(/layer 7b, set by Awakener Druid: 4\/5/);
+    expect(cli("log", file)).toMatch(/effect: p1:Forest becomes 4\/5, colors G, also creature, also Treefolk while/);
+  });
+
   it("replays from the setup, and warns when the cached state differs", () => {
     const file = deckGame("8");
     cli("auto", file, "--ai", "both", "--max-actions", "50");

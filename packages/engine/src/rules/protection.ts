@@ -44,9 +44,9 @@ function hasQuality(state: GameState, source: ObjectId, quality: ProtectionQuali
 }
 
 /**
- * A source's colors and subtypes: computed (layers 4 and 5) while it exists; as it last existed if it left. Nothing
- * changes colors or types yet, so a gone card's are its printed ones; once effects can (later: CR 613.1d-e), this reads
- * a snapshot of its characteristics (future-rules: snapshot `characteristics()`).
+ * A source's colors and subtypes: computed (layers 4 and 5) while it exists; as it last existed if it left. For a gone
+ * card these are its printed ones, which is wrong once an effect changed them (a black Zombie from Rise from the Grave
+ * that left): last known characteristics are snapshotted next (M2-09b2b; future-rules: snapshot `characteristics()`).
  */
 function qualitiesOf(
   state: GameState,

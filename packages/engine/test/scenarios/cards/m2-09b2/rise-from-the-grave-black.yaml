@@ -1,0 +1,21 @@
+name: A creature Rise from the Grave returned is black, so Doom Blade can't target it
+rules: [CR 115.2, CR 613.1e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Rise from the Grave]
+    manaPool: { B: 5 }
+  p2:
+    battlefield: [Swamp, Swamp]
+    hand: [Doom Blade]
+    graveyard: [Grizzly Bears]
+steps:
+  - p1 cast: Rise from the Grave
+    targets: [graveyard:p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Doom Blade
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - expect error: illegalAction

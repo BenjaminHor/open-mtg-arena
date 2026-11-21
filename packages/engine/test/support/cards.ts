@@ -77,6 +77,13 @@ export const PRO_BLACK = "test-pro-black";
  * it grants flying, and kept for 7c (CR 613.6): looking again in 7c would find none.
  */
 export const GROUNDED_ANTHEM = "test-grounded-anthem";
+/**
+ * Not a real card: a creature printed with "*" power and toughness, each the number of Forests you control (layer
+ * 7a).
+ */
+export const FOREST_COUNTER = "test-forest-counter";
+/** Not a real card: "Whenever another Zombie enters, you gain 1 life", to see what an entering creature is (CR 611.2e). */
+export const ZOMBIE_WATCHER = "test-zombie-watcher";
 /** Not a real card: a black 1/1 with deathtouch (the pool's deathtouch creatures are green). */
 export const BLACK_DEATHTOUCH = "test-black-deathtouch";
 
@@ -676,6 +683,16 @@ export const TEST_CARDS: CardDatabase = {
       },
     ],
   }),
+  [FOREST_COUNTER]: (() => {
+    const body = keywordCreature(FOREST_COUNTER, "Forest Counter", [0, 0], []);
+    return withDef(
+      { ...body, printed: { ...body.printed, power: "*", toughness: "*" } },
+      {
+        oracle: "Forest Counter's power and toughness are each equal to the number of Forests you control.",
+        statics: [{ kind: "powerToughnessEachEqual", to: { count: { subtypes: ["Forest"], controller: "you" } } }],
+      },
+    );
+  })(),
   [BLACK_DEATHTOUCH]: withColors(keywordCreature(BLACK_DEATHTOUCH, "Black Deathtouch", [1, 1], ["deathtouch"]), ["B"]),
   [DOUBLE_STRIKER]: keywordCreature(DOUBLE_STRIKER, "Double Striker", [2, 2], ["double strike"]),
   [DOUBLE_LIFELINKER]: keywordCreature(DOUBLE_LIFELINKER, "Double Lifelinker", [2, 2], ["double strike", "lifelink"]),
@@ -699,6 +716,20 @@ export const TEST_CARDS: CardDatabase = {
       triggers: [
         {
           when: { kind: "anotherEnters", filter: { types: ["creature"] } },
+          targets: [],
+          effects: [{ op: "gainLife", who: "you", amount: 1 }],
+        },
+      ],
+    },
+  },
+  [ZOMBIE_WATCHER]: {
+    ...keywordCreature(ZOMBIE_WATCHER, "Zombie Watcher", [1, 1], []),
+    def: {
+      name: "Zombie Watcher",
+      oracle: "Whenever another Zombie enters, you gain 1 life.",
+      triggers: [
+        {
+          when: { kind: "anotherEnters", filter: { subtypes: ["Zombie"] } },
           targets: [],
           effects: [{ op: "gainLife", who: "you", amount: 1 }],
         },
