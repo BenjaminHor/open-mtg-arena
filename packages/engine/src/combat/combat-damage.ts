@@ -8,7 +8,7 @@ import { queueWork } from "../game/work.ts";
 import { happenOrAsk } from "../pipeline/happen.ts";
 import type { Damage } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
-import { attacksInCombat, isBlocked } from "../rules/combat.ts";
+import { attackedNow, attacksInCombat, isBlocked } from "../rules/combat.ts";
 import { controllerOf } from "../rules/controller.ts";
 import type { Attack, CombatDivision, DamageDivision } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -74,11 +74,12 @@ function settleAttackers(
   cards: CardDatabase,
 ): { divisions: CombatDivision[]; ask: { attacker: ObjectId; recipients: Recipients; amount: number } | null } {
   const divisions = [...chosen];
-  for (const { attacker, defender } of attackersInOrder(state, cards)) {
+  for (const attack of attackersInOrder(state, cards)) {
+    const attacker = attack.attacker;
     if (!assignsDamageNow(state, attacker, cards) || !isBlocked(state, attacker)) continue;
     if (divisionOf(attacker, divisions) !== undefined || blockersOf(state, attacker, cards).length === 0) continue;
     const amount = combatPower(state, attacker, cards);
-    const recipients = recipientsOf(state, attacker, defender, amount, divisions, cards);
+    const recipients = recipientsOf(state, attacker, attackedNow(state, attack, cards), amount, divisions, cards);
     if (hasChoice(recipients, amount)) return { divisions, ask: { attacker, recipients, amount } };
     const only = recipients.recipients[0];
     divisions.push({ source: attacker, division: only === undefined ? [] : [{ to: only, amount }] });
@@ -109,17 +110,22 @@ function assignedDamage(
       if (part.amount > 0) damage.push({ source, to: part.to, amount: part.amount, combat: true });
     }
   };
-  for (const { attacker, defender } of attacksInCombat(state, cards)) {
+  for (const attack of attacksInCombat(state, cards)) {
+    const attacker = attack.attacker;
     if (!assignsDamageNow(state, attacker, cards)) continue;
     const amount = combatPower(state, attacker, cards);
-    const toDefender: DamageDivision = [{ to: { kind: "player", player: defender }, amount }];
+    // The player or planeswalker it attacks; nothing once that planeswalker is removed from combat (CR 506.4c).
+    const attacked = attackedNow(state, attack, cards);
+    const toAttacked: DamageDivision = attacked === null ? [] : [{ to: attacked, amount }];
     if (!isBlocked(state, attacker)) {
-      // An unblocked creature assigns its damage to the player it attacks (CR 510.1b).
-      deal(attacker, toDefender);
+      // An unblocked creature assigns its damage to the player or planeswalker it attacks, or none if it attacks
+      // nothing now (CR 510.1b).
+      deal(attacker, toAttacked);
     } else if (blockersOf(state, attacker, cards).length === 0) {
       // A blocked creature with no blockers left assigns no damage (CR 510.1c), unless it has trample: then all of it
-      // goes to the player, as though every blocker had lethal damage (CR 702.19d).
-      if (keywordsOf(state, attacker, cards).includes("trample")) deal(attacker, toDefender);
+      // goes to the player or planeswalker it attacks, as though every blocker had lethal damage (CR 702.19d); none to
+      // the defending player if the planeswalker it attacked is gone (CR 702.19f).
+      if (keywordsOf(state, attacker, cards).includes("trample")) deal(attacker, toAttacked);
     } else {
       deal(attacker, divisionOf(attacker, attackerDivisions) ?? []);
     }

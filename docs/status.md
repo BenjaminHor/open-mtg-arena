@@ -716,6 +716,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13a built (2026-11-21): `Attack.planeswalker` (optional; left out for an attack on the player), `attackedNow`
+         (null once the planeswalker is removed from combat), `Combat.removed.planeswalkers` (present only once one is),
+         per-role removal (`removeTypeChangesFromCombat`, a control change through `removedFromCombat`), possible attacks
+         list each planeswalker of the defending player, combat damage and trample go to what's attacked now (none to
+         the player once the planeswalker is gone, CR 702.19f), damage to a planeswalker removes loyalty (CR 120.3c),
+         "attacks [player] if able" isn't obeyed by attacking their planeswalker; CLI, action lines, the scenario
+         `attack:` step (`Hill Giant -> Jace Beleren`) and the exporter. Neutral: every scenario, replay and golden game
+         unchanged. 7 unit tests with a test planeswalker. Next: reviews, PR.
        - M2-13 plan (2026-11-21, with the advisor's review): planeswalkers, three PRs. The five: Ajani Goldmane, Jace
          Beleren, Liliana Vess, Chandra Nalaar, Garruk Wildspeaker (all "Legendary Planeswalker" in today's Oracle). A
          card enters the pool only when it works completely, attacking included, so the plumbing comes first.

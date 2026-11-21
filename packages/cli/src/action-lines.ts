@@ -135,7 +135,8 @@ function answerLine(answer: Answer): string {
     case "payMana":
       return `${answer.kind} ${manaWords(answer.payment)}`;
     case "declareAttacker":
-      return `${answer.kind} ${answer.attack.attacker} ${answer.attack.defender}`;
+      // The attacked planeswalker last, only when there is one (CR 508.1b).
+      return `${answer.kind} ${answer.attack.attacker} ${answer.attack.defender}${answer.attack.planeswalker === undefined ? "" : ` ${answer.attack.planeswalker}`}`;
     case "declareBlocker":
       return `${answer.kind} ${answer.block.blocker} ${answer.block.attacker}`;
     case "orderTrigger":
@@ -240,9 +241,13 @@ const ANSWERS: { [K in Answer["kind"]]: Decode<K> } = {
   divide: ([a]) => ({ kind: "divide", amount: Number(a) }),
   assignDamage: ([a]) => ({ kind: "assignDamage", amount: Number(a) }),
   payMana: (args) => ({ kind: "payMana", payment: manaFrom(args) }),
-  declareAttacker: ([a, b]) => ({
+  declareAttacker: ([a, b, c]) => ({
     kind: "declareAttacker",
-    attack: { attacker: a as ObjectId, defender: b as PlayerId },
+    attack: {
+      attacker: a as ObjectId,
+      defender: b as PlayerId,
+      ...(c === undefined ? {} : { planeswalker: c as ObjectId }),
+    },
   }),
   declareBlocker: ([a, b]) => ({ kind: "declareBlocker", block: { blocker: a as ObjectId, attacker: b as ObjectId } }),
   orderTrigger: ([a]) => ({ kind: "orderTrigger", index: Number(a) }),

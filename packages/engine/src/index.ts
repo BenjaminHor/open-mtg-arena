@@ -37,7 +37,7 @@ export { type ActivatedAbility, abilitiesOf, isManaAbility, sameAbilityRef } fro
 export { isFixedAmount } from "./rules/amount.ts";
 export { attachedHost, enchantFilterOf, isAura } from "./rules/attachment.ts";
 export { type Characteristics, characteristics } from "./rules/characteristics.ts";
-export { isAttacking, isBlocking } from "./rules/combat.ts";
+export { attackedNow, isAttacking, isBlocking } from "./rules/combat.ts";
 export { controllerOf } from "./rules/controller.ts";
 export { type Layered, layered, layeredFresh, layeredOf, layeredOfFresh } from "./rules/layers.ts";
 export { type LayerSevenCChange, layerSevenCChanges } from "./rules/power-toughness.ts";

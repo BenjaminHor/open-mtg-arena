@@ -8,25 +8,38 @@ import { queueWork } from "../game/work.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { ProposedEvent } from "../pipeline/proposed.ts";
 import { keywordsOf } from "../rules/abilities.ts";
+import { cardTypesOf } from "../rules/card-types.ts";
 import { canAttack, canAttackPlayer } from "../rules/combat.ts";
+import { controllerOf } from "../rules/controller.ts";
 import { type Attack, newCombat } from "../state/combat.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { PlayerId } from "../state/ids.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 
 /**
  * Every attack the active player could still add to the declaration: each creature that can attack and isn't chosen
- * yet, against each other player it may attack (CR 508.1a; restrictions on attacking a player, such as "unless
- * defending player controls an Island", CR 508.1c; a choice of defenders, later: CR 508.1b). Players in turn order,
- * creatures in battlefield order.
+ * yet, against each other player it may attack, and each planeswalker that player controls (CR 508.1a-b; restrictions
+ * on attacking a player, such as "unless defending player controls an Island", CR 508.1c, are about the defending
+ * player, so they hold for their planeswalkers too). Creatures in battlefield order, then players in turn order, each
+ * player before their planeswalkers, those in battlefield order.
  */
 export function possibleAttacks(state: GameState, chosen: readonly Attack[], cards: CardDatabase): Attack[] {
   const active = currentTurn(state).activePlayer;
   const defenders = state.turnOrder.filter((p) => p !== active);
+  // Found once, not per attacker: this runs whenever legal actions are listed.
+  const planeswalkers = state.zones.battlefield.filter((id) => cardTypesOf(state, id, cards).includes("planeswalker"));
+  const planeswalkersOf = (player: PlayerId) =>
+    planeswalkers.length === 0 ? [] : planeswalkers.filter((id) => controllerOf(state, id, cards) === player);
   return state.zones.battlefield
     .filter((id) => canAttack(state, id, active, cards) && !chosen.some((a) => a.attacker === id))
     .flatMap((attacker) =>
-      defenders.filter((d) => canAttackPlayer(state, attacker, d, cards)).map((defender) => ({ attacker, defender })),
+      defenders
+        .filter((d) => canAttackPlayer(state, attacker, d, cards))
+        .flatMap((defender) => [
+          { attacker, defender },
+          ...planeswalkersOf(defender).map((planeswalker) => ({ attacker, defender, planeswalker })),
+        ]),
     );
 }
 
@@ -44,9 +57,10 @@ export function declareAttackers(state: GameState, chosen: Attack[], cards: Card
 /** Why this attack can't be added, or null. */
 export function attackProblem(state: GameState, chosen: readonly Attack[], attack: Attack, cards: CardDatabase) {
   const ok = possibleAttacks(state, chosen, cards).some(
-    (a) => a.attacker === attack.attacker && a.defender === attack.defender,
+    (a) => a.attacker === attack.attacker && a.defender === attack.defender && a.planeswalker === attack.planeswalker,
   );
-  return ok ? null : `${attack.attacker} can't attack ${attack.defender} (CR 508.1a, 508.1c)`;
+  const attacked = attack.planeswalker ?? attack.defender;
+  return ok ? null : `${attack.attacker} can't attack ${attacked} (CR 508.1a-c)`;
 }
 
 /**

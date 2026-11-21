@@ -3,6 +3,7 @@
 import {
   type Action,
   type Answer,
+  type Attack,
   type CardDatabase,
   type GameState,
   type ObjectId,
@@ -44,7 +45,7 @@ export function declaration(
       if (a?.kind !== "declareAttacker") throw new Error("an unexpected answer in a declaration of attackers");
       if (others.length !== 1 || a.attack.defender !== others[0])
         throw new Error("attacks on several players can't be written");
-      return local(state, a.attack.attacker, cards);
+      return attackText(state, a.attack, cards);
     });
     return { step: { [`${p} attack`]: attackers }, taken: end - i + 1 };
   }
@@ -90,7 +91,7 @@ export function division(
 function declarationChoice(state: GameState, answer: Answer | null, cards: CardDatabase): string {
   switch (answer?.kind) {
     case "declareAttacker":
-      return local(state, answer.attack.attacker, cards);
+      return attackText(state, answer.attack, cards);
     case "declareBlocker":
       return `${local(state, answer.block.blocker, cards)} blocks ${local(state, answer.block.attacker, cards)}`;
     case "takeBack":
@@ -104,4 +105,10 @@ function declarationChoice(state: GameState, answer: Answer | null, cards: CardD
 
 function answerOf(action: Action | undefined): Answer | null {
   return action?.type === "ANSWER" ? action.answer : null;
+}
+
+/** An attack as a step names it: the attacker, and "-> <planeswalker>" when it attacks one (CR 508.1b). */
+function attackText(state: GameState, attack: Attack, cards: CardDatabase): string {
+  const attacker = local(state, attack.attacker, cards);
+  return attack.planeswalker === undefined ? attacker : `${attacker} -> ${local(state, attack.planeswalker, cards)}`;
 }

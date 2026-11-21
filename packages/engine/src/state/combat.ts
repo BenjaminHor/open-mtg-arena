@@ -4,9 +4,12 @@ import type { ObjectId, PlayerId } from "./ids.ts";
 import type { Target } from "./objects.ts";
 
 /**
- * A creature declared as an attacker, and the player it attacks (CR 506.3; a choice of defenders, later: CR 508.1b).
+ * A creature declared as an attacker; the defending player (CR 506.2, 508.5); and, when it attacks a planeswalker that
+ * player controls rather than the player, that planeswalker (CR 506.3, 508.1b). Left out for an attack on the player.
+ * Read what it attacks now through `attackedNow` (rules/combat.ts): a planeswalker removed from combat is attacked no
+ * longer (CR 506.4c).
  */
-export type Attack = { attacker: ObjectId; defender: PlayerId };
+export type Attack = { attacker: ObjectId; defender: PlayerId; planeswalker?: ObjectId };
 
 /** A creature declared as a blocker, and the attacking creature it blocks (CR 509.1a). */
 export type Block = { blocker: ObjectId; attacker: ObjectId };
@@ -25,7 +28,15 @@ export type Combat = {
    * attacker can still be declared as a blocker later that combat, and block (CR 509.1a). One that left the battlefield
    * is out of combat anyway (`rules/combat.ts`).
    */
-  removed: { attackers: ObjectId[]; blockers: ObjectId[] };
+  removed: {
+    attackers: ObjectId[];
+    blockers: ObjectId[];
+    /**
+     * Attacked planeswalkers removed from combat while they stayed on the battlefield: no longer planeswalkers, or now
+     * controlled by another player (CR 506.4). Present only once one is, so a combat with none is as before.
+     */
+    planeswalkers?: ObjectId[];
+  };
   /**
    * The attacking and blocking creatures that had first strike or double strike as the first combat damage step began,
    * when any did (CR 510.4): then that step is a first strike step and a second one follows. Null otherwise.

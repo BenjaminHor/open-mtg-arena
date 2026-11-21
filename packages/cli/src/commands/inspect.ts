@@ -2,6 +2,7 @@
 // its status and place in combat.
 
 import {
+  attackedNow,
   type CardDatabase,
   type Characteristics,
   type Color,
@@ -16,7 +17,7 @@ import {
   type ProtectionQuality,
 } from "@mtg/engine";
 import { nameOf, parseRef, resolveRef } from "@mtg/scenarios";
-import { durationText, objectText } from "../describe.ts";
+import { durationText, objectText, targetText } from "../describe.ts";
 import { currentState, readGameFile } from "../game-file.ts";
 
 export function inspectCommand(file: string, ref: string | undefined, cards: CardDatabase): string {
@@ -61,7 +62,11 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
   lines.push(`  under its controller's control since their turn began: ${obj.controlledSinceTurnStart ? "yes" : "no"}`);
   // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
   const attack = isAttacking(state, id, cards) ? state.combat?.attacks.find((a) => a.attacker === id) : undefined;
-  if (attack !== undefined) lines.push(`  attacking ${attack.defender}`);
+  if (attack !== undefined) {
+    // What it attacks now: nothing once the planeswalker it attacked has left combat (CR 506.4c).
+    const attacked = attackedNow(state, attack, cards);
+    lines.push(`  attacking ${attacked === null ? "nothing" : targetText(state, attacked, cards)}`);
+  }
   const blocks = isBlocking(state, id, cards) ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id) : [];
   if (blocks.length > 0) lines.push(`  blocking ${blocks.map((b) => objectText(state, b.attacker, cards)).join(", ")}`);
   return lines.join("\n");

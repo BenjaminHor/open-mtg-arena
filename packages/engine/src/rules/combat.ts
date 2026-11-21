@@ -7,6 +7,7 @@ import type { CardDatabase, Keyword } from "../cards/types.ts";
 import type { Attack, Block } from "../state/combat.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import type { Target } from "../state/objects.ts";
 import { keywordsOf, staticAbilitiesOf } from "./abilities.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
@@ -138,6 +139,24 @@ function flyingAllowsBlock(state: GameState, blocker: ObjectId, attacker: Object
  */
 function stillInCombat(state: GameState, id: ObjectId, as: "attackers" | "blockers", cards: CardDatabase): boolean {
   return isCreaturePermanent(state, id, cards) && !(state.combat?.removed[as].includes(id) ?? false);
+}
+
+/**
+ * What this attack is attacking now (CR 506.3): the defending player, or the planeswalker it was declared against while
+ * that planeswalker is still being attacked. Null once that planeswalker has been removed from combat: it left the
+ * battlefield (a new object, CR 400.7), stopped being a planeswalker or changed controller (CR 506.4, recorded in
+ * `Combat.removed`). The creature still attacks, but attacks nothing, and if unblocked deals no combat damage
+ * (CR 506.4c, 510.1b).
+ */
+export function attackedNow(state: GameState, attack: Attack, cards: CardDatabase): Target | null {
+  const planeswalker = attack.planeswalker;
+  if (planeswalker === undefined) return { kind: "player", player: attack.defender };
+  const removed = state.combat?.removed.planeswalkers ?? [];
+  const attacked =
+    state.zones.battlefield.includes(planeswalker) &&
+    cardTypesOf(state, planeswalker, cards).includes("planeswalker") &&
+    !removed.includes(planeswalker);
+  return attacked ? { kind: "object", object: planeswalker } : null;
 }
 
 /** The attacks still in combat (CR 506.4). */
