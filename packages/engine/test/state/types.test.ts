@@ -95,6 +95,8 @@ describe("discriminated unions", () => {
           return `choose one of ${decision.options.length} replacement effects`;
         case "keepLegend":
           return `keep one of ${decision.options.length} legendary permanents`;
+        case "chooseName":
+          return "name a card";
         default:
           return assertNever(decision);
       }

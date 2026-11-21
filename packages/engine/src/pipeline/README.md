@@ -17,7 +17,9 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    replace it (CR 120.8); a destroy an indestructible permanent ignores is dropped (CR 702.12b), and so is a counter
    aimed at a spell that can't be countered (CR 101.2, 113.6g); and a card's own
    replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
-   into a graveyard from anywhere, ... instead"; and a regeneration shield on a permanent about to be destroyed
+   into a graveyard from anywhere, ... instead", and "as this enters, choose a card name", whose choice is asked of the
+   player it enters under before it enters (CR 614.12a, D-119; a `chooseName` decision, only through `happenOrAsk`);
+   and a regeneration shield on a permanent about to be destroyed
    (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Damage is prevented per entry
    (a source dealing damage to a recipient) inside its one event (`damage-replacements.ts`, D-088): Fog and Safe
    Passage from `GameState.replacements`, Guardian Seraph from the battlefield, and the recipient's protection

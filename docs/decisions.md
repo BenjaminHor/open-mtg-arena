@@ -1787,3 +1787,21 @@ owner's answer to the D-089 open question, option (a))
   battlefield (CR 603.10a's example: a watcher leaving at the same time still sees it). A dies trigger that returns "it"
   will need `ZONE_CHANGED.newId` in its trigger event (CR 400.7e). A "loses the game" effect (CR 104.3e) must ask
   `cantLose`; conceding must not. Pithing Needle (M2-14d) stops graveyard abilities too.
+
+**D-119: "As this enters, choose a card name" and Pithing Needle (M2-14d1)** · 2026-11-21 · accepted
+- The choice is a replacement effect of the card's own text on how it enters (CR 614.1c), `asEntersChooseName`, made
+  before it enters (CR 614.12a) by the player it enters under. The pipeline asks it like the choice between
+  replacements (CR 616.1): `applyReplacements` returns a `chooseName` ask, `happenOrAsk` waits with a `chooseName`
+  decision, and the answer is kept in the resumed event's choices (a `ReplacementChoice` with `name`), so replacing the
+  event again from the start finds it and doesn't ask twice. Several such permanents entering together ask in APNAP
+  order (CR 101.4). The permanent keeps it as `CardObject.chosenName` (absent when none, so other states are unchanged).
+- Names are the card database's (`cardNames`, CR 201.4, D-114's open question); `legalActions` lists them all, 230
+  today. With the full database (M4) that list will be long: the UI will want a search, and the AI a smarter pick, but
+  the rule doesn't change.
+- Only callers that do nothing after the move may wait: resolving a permanent spell (`finishResolving`) and Open the
+  Vaults now use `happenOrAsk`. A put onto the battlefield from a library or graveyard by other effects still uses
+  `happen`, which throws on a choice: no such card can bring an artifact that names one yet (Elvish Piper and Rise from
+  the Grave take creatures). Clone (M2-14i) or Warp World (M2-14k) must move those paths to `happenOrAsk` first.
+- Pithing Needle's static is checked when a non-mana ability is activated (`activationProblem`), never for mana
+  abilities (its ruling, CR 605.1a), for a source anywhere (graveyard abilities too), and the source's name is read
+  through `characteristics`, so a copy's name will count. Setups and scenarios take `chosenName`.

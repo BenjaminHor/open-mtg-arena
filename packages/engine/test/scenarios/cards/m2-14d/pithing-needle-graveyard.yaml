@@ -1,0 +1,12 @@
+name: Pithing Needle stops a named card's ability wherever the card is, a graveyard too (its ruling)
+rules: [CR 602.5, CR 113.6m]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Pithing Needle, chosenName: Magma Phoenix }]
+  p2:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain]
+    graveyard: [Magma Phoenix]
+steps:
+  - p2 activate: graveyard:p2:Magma Phoenix
+  - expect error: illegalAction

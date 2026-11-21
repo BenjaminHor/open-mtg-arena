@@ -44,6 +44,7 @@ function passFilter(s: StaticAbilityDef): ObjectFilter | null {
     case "cantAttackUnlessDefenderControls":
     case "noMaximumHandSize":
     case "cantLoseOpponentsCantWin":
+    case "chosenNameCantActivate":
     case "canBlockAnyNumber":
     case "cantAttackOrBlockAlone":
     case "attacksEachCombat":

@@ -63,6 +63,8 @@ export type CardObject = {
    * nothing. It goes stale when that object leaves (a new object, CR 400.7): read it through `attachedHost`.
    */
   attachedTo?: ObjectId;
+  /** The card name chosen as it entered the battlefield (CR 614.12a; Pithing Needle). Left out when it chose none. */
+  chosenName?: string;
 };
 
 /** An activated or triggered ability on the stack (CR 113.1c, 405.1). It isn't a card and has no `cardId`. */

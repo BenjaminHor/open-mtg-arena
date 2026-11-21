@@ -151,6 +151,7 @@ import { pacifism } from "./p/pacifism.ts";
 import { palaceGuard } from "./p/palace-guard.ts";
 import { panicAttack } from "./p/panic-attack.ts";
 import { phantomWarrior } from "./p/phantom-warrior.ts";
+import { pithingNeedle } from "./p/pithing-needle.ts";
 import { plains } from "./p/plains.ts";
 import { planarCleansing } from "./p/planar-cleansing.ts";
 import { platinumAngel } from "./p/platinum-angel.ts";
@@ -336,6 +337,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   illusionaryServant,
   indestructibility,
   infernoElemental,
+  pithingNeedle,
   platinumAngel,
   magmaPhoenix,
   timeWarp,

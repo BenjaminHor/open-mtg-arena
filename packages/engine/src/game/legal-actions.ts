@@ -3,7 +3,7 @@
 // legal but endless (D-058; a [−X] loyalty cost's `upTo` is a real limit, CR 606.6). Each one is accepted by applyAction, and the scenario runner, the CLI and the AI choose from this
 // list.
 
-import { cardDataOf } from "../cards/card-data.ts";
+import { cardDataOf, cardNames } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { legalAmounts } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
@@ -64,6 +64,8 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
       return [true, false].map((yes): Action => ({ ...answer, answer: { kind: "chooseYesNo", yes } }));
     case "chooseReplacement":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseReplacement", option } }));
+    case "chooseName":
+      return cardNames(cards).map((name): Action => ({ ...answer, answer: { kind: "chooseName", name } }));
     case "keepLegend":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseCard", option } }));
     case "orderTriggers":

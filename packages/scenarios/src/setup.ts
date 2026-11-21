@@ -25,7 +25,7 @@ export const PLAYERS: readonly PlayerId[] = ["p1", "p2"];
 export const SETUP_KEYS = ["seed", "opening", "first", "turn", "p1", "p2", "rules"];
 export const TURN_KEYS = ["active", "step", "number"];
 export const PLAYER_KEYS = ["life", "library", "hand", "battlefield", "graveyard", "exile", "manaPool"];
-export const PERMANENT_KEYS = ["card", "tapped", "sick", "damage", "counters", "attachedTo"];
+export const PERMANENT_KEYS = ["card", "tapped", "sick", "damage", "counters", "attachedTo", "chosenName"];
 
 export function buildSetup(setup: Record<string, unknown>, cards: CardDatabase): GameSetup {
   keysIn(setup, SETUP_KEYS, "setup");
@@ -155,6 +155,8 @@ function permanent(entry: unknown, cards: CardDatabase, id: PlayerId): Permanent
     summoningSick: boolean(entry.sick, "sick"),
     damage: entry.damage === undefined ? 0 : integer(entry.damage, "damage"),
     counters: startingLoyalty(cards, oracleId, given),
+    // The name it chose as it entered (Pithing Needle, CR 614.12a), as written.
+    ...(entry.chosenName === undefined ? {} : { chosenName: String(entry.chosenName) }),
   };
 }
 

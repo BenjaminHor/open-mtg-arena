@@ -80,7 +80,8 @@ can't make it pass.
   `attachedTo: p2:Grizzly Bears` (or `#2` for the second) starts an Aura or Equipment attached to a permanent that player
   starts with (CR 303.4b), so a scenario needn't cast it; one attached illegally goes as state-based actions are first
   checked (CR 704.5m). A creature set up under a Mind Control is its controller's from the start, not summoning sick:
-  no control changed after the setup.
+  no control changed after the setup. `chosenName: Gorgon Flail` gives a permanent that names a card as it enters
+  (Pithing Needle, CR 614.12a) its name, as if it had chosen it.
 - `rules: [...]`: rule modifiers for the whole game, like `{ kind: creaturesGetPT, controller: p2, power: 1, toughness: 1 }`
   ("creatures p2 controls get +1/+1", layer 7c).
 
@@ -111,7 +112,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   effect applies first (`chooseReplacement`, CR 616.1), `regeneration` for a regeneration shield, the name of the card
   whose own replacement it is (`Guardian Seraph`), or the card whose resolution made it (`Fog`); identical effects are
   one option, and a name matching two different options is refused; for the legend rule (`keepLegend`, CR 704.5j), the
-  name of the permanent to keep, `Jace Beleren#2` for the second of them in battlefield order;
+  name of the permanent to keep, `Jace Beleren#2` for the second of them in battlefield order; for a card name
+  (`chooseName`, Pithing Needle, CR 614.12a), the name as written;
   a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
   `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.

@@ -27,8 +27,13 @@ import type { Destination } from "../zones/move-card.ts";
 import { zoneOf } from "../zones/zone-list.ts";
 import { playLandDestination, type SingleEvent } from "./proposed.ts";
 
-/** Who must choose between which replacements first (CR 616.1), and what the choice is for. */
-export type Ask = { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] };
+/**
+ * A choice needed before the event can happen: who must choose between which replacements first (CR 616.1), or a
+ * replacement's own choice as a permanent enters, a card name (CR 614.12a), and what each is for.
+ */
+export type Ask =
+  | { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] }
+  | { kind: "chooseName"; player: PlayerId; for: ChoiceFor; ref: ReplacementRef };
 
 /** The events in place of the event, or the choice needed first. */
 export type Replaced = { kind: "replaced"; events: SingleEvent[] } | Ask;
@@ -52,7 +57,8 @@ export function applyReplacements(
 ): Replaced {
   // Choices are for the object the event affects (`ReplacementChoice.for`).
   const object = affectedObject(event);
-  const choices = allChoices.filter((c) => c.for.kind === "object" && c.for.object === object).map((c) => c.ref);
+  const forObject = allChoices.filter((c) => c.for.kind === "object" && c.for.object === object);
+  const choices = forObject.filter((c) => c.name === undefined).map((c) => c.ref);
   let replaced: Replacing = { before: [], event, after: [] };
   const applied: ReplacementRef[] = [];
   for (;;) {
@@ -78,6 +84,18 @@ export function applyReplacements(
         for: { kind: "object", object },
         options: candidates.map((c) => c.ref),
       };
+    }
+    // A replacement that makes a choice as the permanent enters asks it first, of the player it enters under
+    // (CR 614.12a); its answer is kept with the others, so replacing again finds it.
+    if (chosen.kind === "ownText" && chosen.def.kind === "asEntersChooseName") {
+      const to = chosen.move.to;
+      if (object === null || to.zone !== "battlefield") throw new Error("only a permanent entering names a card");
+      const named = forObject.find((c) => c.name !== undefined && sameReplacement(c.ref, chosen.ref))?.name;
+      if (named === undefined)
+        return { kind: "chooseName", player: to.controller, for: { kind: "object", object }, ref: chosen.ref };
+      applied.push(chosen.ref);
+      replaced = { ...replaced, event: rerouted(replaced.event, { ...to, chosenName: named }) };
+      continue;
     }
     applied.push(chosen.ref);
     replaced = replaceWith(state, chosen, replaced);
@@ -239,6 +257,7 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
       return move.to.zone === "graveyard";
     case "entersWithCounters":
     case "entersWithLoyalty":
+    case "asEntersChooseName":
       // Once per event like every replacement: the `applied` list sees to that.
       return move.to.zone === "battlefield";
     // Prevention, read for damage (`damage-replacements.ts`), never for a move.
@@ -307,6 +326,8 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
       const counters = { ...move.to.counters, loyalty: (move.to.counters?.loyalty ?? 0) + def.loyalty };
       return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
+    case "asEntersChooseName":
+      throw new Error("a choice as it enters is applied with its answer, in applyReplacements");
     case "preventDamageToYou":
     case "preventDamageToSelfRemovingCounters":
     case "preventNoncombatDamageToAttached":

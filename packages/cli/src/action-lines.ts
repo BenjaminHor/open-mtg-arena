@@ -148,6 +148,8 @@ function answerLine(answer: Answer): string {
       return `${answer.kind} ${answer.option}`;
     case "chooseYesNo":
       return `${answer.kind} ${answer.yes ? "yes" : "no"}`;
+    case "chooseName":
+      return `${answer.kind} ${answer.name}`;
     case "cancelCast":
     case "finishDeclaring":
     case "takeBack":
@@ -255,6 +257,8 @@ const ANSWERS: { [K in Answer["kind"]]: Decode<K> } = {
   orderTrigger: ([a]) => ({ kind: "orderTrigger", index: Number(a) }),
   chooseCard: ([a]) => ({ kind: "chooseCard", option: Number(a) }),
   chooseReplacement: ([a]) => ({ kind: "chooseReplacement", option: Number(a) }),
+  // A card name may have spaces: every word after the kind.
+  chooseName: (args) => ({ kind: "chooseName", name: args.join(" ") }),
   chooseYesNo: ([a], line) => ({ kind: "chooseYesNo", yes: oneOf(a, ["yes", "no"], line) === "yes" }),
   cancelCast: () => ({ kind: "cancelCast" }),
   finishDeclaring: () => ({ kind: "finishDeclaring" }),

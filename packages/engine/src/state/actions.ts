@@ -65,4 +65,6 @@ export type Answer =
   /** The answer to a "you may" (`chooseYesNo`). */
   | { kind: "chooseYesNo"; yes: boolean }
   /** Which replacement effect applies first, by its position in the decision's `options` (CR 616.1). */
-  | { kind: "chooseReplacement"; option: number };
+  | { kind: "chooseReplacement"; option: number }
+  /** A card name, for a `chooseName` decision: a name in the card database (CR 201.4). */
+  | { kind: "chooseName"; name: string };

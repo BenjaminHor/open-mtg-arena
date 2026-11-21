@@ -21,8 +21,8 @@ import { type Ask, applyReplacements, firstInApnapOrder, type Replaced } from ".
  */
 export function happen(state: GameState, proposed: ProposedEvent, cards: CardDatabase): Progress {
   const replaced = replace(state, proposed, cards, []);
-  if (replaced.kind === "choose")
-    throw new Error("a choice between replacement effects can only be asked where happenOrAsk is used");
+  if (replaced.kind !== "replaced")
+    throw new Error("a choice for replacement effects can only be asked where happenOrAsk is used");
   return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
 
@@ -40,10 +40,18 @@ export function happenOrAsk(
   choices: readonly ReplacementChoice[] = [],
 ): Progress {
   const replaced = replace(state, proposed, cards, choices);
-  if (replaced.kind === "choose") {
-    const resume = { proposed, choices: [...choices] };
-    const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
-    return { state: waitFor(state, replaced.player, decision), events: [] };
+  const resume = { proposed, choices: [...choices] };
+  switch (replaced.kind) {
+    case "choose": {
+      const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
+    case "chooseName": {
+      const decision = { kind: "chooseName", for: replaced.for, ref: replaced.ref, resume } as const;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
+    case "replaced":
+      break;
   }
   return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
@@ -65,7 +73,7 @@ function replace(
   const results = members.map((e) => replaceOne(state, e, cards, choices));
   const ask = firstInApnapOrder(
     state,
-    results.flatMap((r) => (r.kind === "choose" ? [r] : [])),
+    results.flatMap((r) => (r.kind === "replaced" ? [] : [r])),
   );
   if (ask !== null) return ask;
   const replaced = results.flatMap((r) => (r.kind === "replaced" ? r.events : []));

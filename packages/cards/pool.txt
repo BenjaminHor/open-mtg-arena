@@ -154,6 +154,7 @@ Pacifism
 Palace Guard
 Panic Attack
 Phantom Warrior
+Pithing Needle
 Plains
 Planar Cleansing
 Platinum Angel

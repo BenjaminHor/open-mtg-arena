@@ -1,6 +1,6 @@
 // Checks a GameSetup before a game is created from it. Returns readable problems; empty means it can start.
 
-import { cardDataByOracleId } from "../cards/card-data.ts";
+import { cardDataByOracleId, cardNames } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { MANA_TYPES } from "../state/mana.ts";
 import type { GameSetup } from "../state/setup.ts";
@@ -61,6 +61,15 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
         !("loyalty" in permanent.counters)
       )
         problems.push(`${player.id}: a planeswalker on the battlefield needs its loyalty counters (CR 306.5b)`);
+      // A name chosen as it entered (CR 614.12a) only for a permanent that chooses one, and a card's name (CR 201.4).
+      if (permanent.chosenName !== undefined) {
+        const chooses = (cardDataByOracleId(permanent.oracleId, cards)?.def.replacements ?? []).some(
+          (r) => r.kind === "asEntersChooseName",
+        );
+        if (!chooses) problems.push(`${player.id}: only a permanent that chooses a card name as it enters has one`);
+        if (!cardNames(cards).includes(permanent.chosenName))
+          problems.push(`${player.id}: no card is named ${permanent.chosenName} (CR 201.4)`);
+      }
       const host = permanent.attachedTo;
       if (host === undefined) continue;
       // Only an Aura or Equipment can be attached; anything else enters unattached (CR 303.4h).

@@ -160,6 +160,12 @@ export type ReplacementDef =
    */
   | { kind: "entersWithLoyalty"; loyalty: number }
   /**
+   * "As this enters, choose a card name" (Pithing Needle): a replacement effect on how it enters (CR 614.1c), its choice
+   * made before it enters (CR 614.12a) by the player it enters under, from the names of cards in the card database
+   * (CR 201.4: a card's name, not a token's; D-114). The permanent keeps it as `chosenName`.
+   */
+  | { kind: "asEntersChooseName" }
+  /**
    * "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it"
    * (Protean Hydra): all of it prevented, then the counters removed right after (CR 615.5), as many as it has.
    */
@@ -199,6 +205,11 @@ export type StaticAbilityDef =
    * Opponents winning only by this player losing in a two-player game, their half needs no rule yet (later: CR 104.2b).
    */
   | { kind: "cantLoseOpponentsCantWin" }
+  /**
+   * "Activated abilities of sources with the chosen name can't be activated unless they're mana abilities" (Pithing
+   * Needle): sources in any zone (its ruling), named this permanent's `chosenName` (CR 602.5, 605.1a).
+   */
+  | { kind: "chosenNameCantActivate" }
   /**
    * "Its activated abilities can't be activated" (Ice Cage): the attached permanent's, mana abilities too (CR 602.5,
    * 605.3a).

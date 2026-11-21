@@ -141,6 +141,8 @@ function answerStep(
       return choose("finish");
     case "chooseYesNo":
       return choose(answer.yes ? "yes" : "no");
+    case "chooseName":
+      return choose(answer.name);
     case "chooseReplacement": {
       const pending = state.pending;
       const ref = pending?.kind === "chooseReplacement" ? pending.options[answer.option] : undefined;
