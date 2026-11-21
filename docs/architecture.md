@@ -103,7 +103,8 @@ type GameState = {
 
 ### Characteristics are computed
 
-Objects point at their card definition by `oracleId` (the printed values live there, D-022) and store
+Objects point at their card definition by `oracleId` (the printed values live there, D-022); a token carries its own
+`CardData` instead (CR 111.3, D-101), so card data is always read through `cardDataOf`. Objects store
 state like counters, damage, tapped, face-down. The stored controller is only the default (CR 110.2, 112.2, 113.8). Current power, toughness, types, colors, abilities and controller are
 computed by `characteristics()`, which applies continuous effects in layer order (CR 613.1),
 using timestamps (CR 613.7) and dependencies (CR 613.8). Memoize per state object if profiling

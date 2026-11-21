@@ -1,7 +1,7 @@
 // What a target requirement may choose (CR 115), in one place, so rules that stop targeting (shroud, protection;
 // hexproof, later: CR 702.11b) have one function to change.
 
-import { cardDataOf } from "../cards/card-data.ts";
+import { cardDataOf, isToken } from "../cards/card-data.ts";
 import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -92,7 +92,7 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       // A token there isn't a card (CR 111.6), for the moment before it ceases to exist (CR 704.5d).
       const isCard = (id: ObjectId) => {
         const obj = state.objects[id];
-        return obj?.kind === "card" && obj.token === undefined;
+        return obj?.kind === "card" && !isToken(obj);
       };
       return objects(
         inGraveyards.filter(

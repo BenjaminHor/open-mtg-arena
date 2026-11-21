@@ -1478,7 +1478,7 @@ every schema change and every change D-024 lists bumps it.
   of a card's printed ones (CR 111.3; named for its subtypes plus "Token" unless the text names it, CR 111.4), with an
   oracle id of its own (`token:Insect Token`) that names nothing in the database. Not a new object kind: everything that
   works on permanents works on it (CR 111.6), and the many `kind === "card"` checks that mean "a permanent object" stay
-  right (future-rules, "Card types beyond the M1 pool"). Where "card" matters, the code asks `token === undefined`: a
+  right (future-rules, "Card types beyond the M1 pool"). Where "card" matters, the code asks `isToken`: a
   token in a graveyard isn't a "creature card" to target.
 - Every read of card data goes through `cardDataOf(obj, cards)` (or `cardDataByOracleId` for a bare id), in every
   package; a source scan forbids indexing the database anywhere else. Keeping the data on the object keeps one

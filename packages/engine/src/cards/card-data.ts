@@ -10,6 +10,11 @@ export function cardDataOf(obj: CardObject, cards: CardDatabase): CardData | und
   return obj.token ?? cards[obj.oracleId];
 }
 
+/** Whether an object is a token, which isn't a card (CR 111.6): "creature card" filters leave it out. */
+export function isToken(obj: CardObject): boolean {
+  return obj.token !== undefined;
+}
+
 /**
  * The card data an oracle id names: the card an ability on the stack came from, a revealed card. A token's oracle id
  * names none, so this is undefined for it: a token's own abilities would need its data kept on the ability object, and

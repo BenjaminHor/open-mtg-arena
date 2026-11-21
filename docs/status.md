@@ -719,7 +719,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          objects carrying their data, `createToken` / `ceaseToExist` events, CR 704.5d, `createTokens`, Ant Queen and
          Howl of the Night Pack (198 cards), 9 scenarios in `cards/m2-11/` (enters triggers, dies, bounced, stolen,
          pumped, Overrun), token unit tests, a "no token outside the battlefield at priority" invariant, a Tokens column
-         in the interaction matrix, one golden game. Next: reviews, fuzz, PR; then M2-11b.
+         in the interaction matrix, one golden game. Reviews: rules outcomes right; stricter dies/bounced scenarios and five
+         more (creator owns a token made by a stolen Ant Queen, an opponent's token triggers Soul Warden, summoning
+         sickness, to a library, Howl with no Forests); `isToken` for "card" filters; the state-based action's scan of
+         every object made each action ~3 µs slower (bench over budget), now `for ... in` with the token test first, back
+         to main's numbers; a token ceasing to exist in a hidden zone is shown only by where. Fuzz 300 clean. Next: PR;
+         then M2-11b.
        - M2-11 plan (2026-11-21, with the advisor's review), two PRs.
          - Model: a token is a `CardObject` with `token: CardData`, its characteristics as the creating effect states
            them (CR 111.3; name = subtypes + "Token" unless stated, CR 111.4), kept on the object so the layer pass's

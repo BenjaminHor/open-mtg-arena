@@ -5,6 +5,7 @@ import {
   applyAction,
   type CardDatabase,
   type GameState,
+  isToken,
   legalActions,
   type ObjectId,
   phaseOf,
@@ -43,7 +44,7 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
   // (CR 704.5d).
   if (pending?.kind === "priority") {
     for (const obj of Object.values(state.objects)) {
-      if (obj.kind === "card" && obj.token !== undefined && !state.zones.battlefield.includes(obj.id))
+      if (obj.kind === "card" && isToken(obj) && !state.zones.battlefield.includes(obj.id))
         problems.push(`${obj.id}: a token outside the battlefield with priority to give`);
     }
   }

@@ -188,7 +188,8 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, a pending decision always has a legal
-action (a trigger's targeting can't be cancelled), every listed legal action accepted.
+action (a trigger's targeting can't be cancelled), every listed legal action accepted, no token outside the battlefield
+when a player has priority (CR 704.5d).
 
 When the runner needs a new step or expectation, add it, document it here in the same commit (a test checks every word
 the runner knows appears here), and keep the vocabulary small.

@@ -1,7 +1,7 @@
 // Public API of the engine. See docs/architecture.md, "Engine API".
 // Nothing is exported here without a reason in docs/decisions.md (types: D-023).
 
-export { cardDataByOracleId, cardDataOf } from "./cards/card-data.ts";
+export { cardDataByOracleId, cardDataOf, isToken } from "./cards/card-data.ts";
 export type { PlayerRelation, TriggerCheck, TriggerCondition, TriggeredAbilityDef } from "./cards/triggers.ts";
 export type {
   AbilityDef,

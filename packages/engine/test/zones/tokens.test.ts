@@ -10,8 +10,8 @@ import { characteristics } from "../../src/rules/characteristics.ts";
 import { controllerOf } from "../../src/rules/controller.ts";
 import { stateBasedActions } from "../../src/rules/state-based-actions.ts";
 import { legalTargets } from "../../src/rules/targets.ts";
-import { ceaseToExist, createToken } from "../../src/zones/create-token.ts";
 import { moveCard } from "../../src/zones/move-card.ts";
+import { ceaseToExist, createToken } from "../../src/zones/tokens.ts";
 import { BEARS, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
@@ -44,6 +44,12 @@ describe("a token's characteristics are what the effect defines (CR 111.3, 111.4
     expect(tokenData({ ...INSECT, name: "Boo" }).printed.name).toBe("Boo");
   });
 
+  it('has the keywords the effect gives it, "with flying" (CR 111.3)', () => {
+    const { state, id } = withToken({ ...INSECT, keywords: ["flying"] });
+    expect(characteristics(state, id, TEST_CARDS).keywords).toStrictEqual(["flying"]);
+    expect(characteristics(withToken().state, withToken().id, TEST_CARDS).keywords).toStrictEqual([]);
+  });
+
   it("has no mana cost or supertypes the effect doesn't give it (CR 111.3)", () => {
     const { printed } = tokenData(INSECT);
     expect(printed.manaCost).toBeNull();
@@ -66,7 +72,7 @@ describe("a token's characteristics are what the effect defines (CR 111.3, 111.4
     expect(controllerOf(state, id)).toBe("p2");
   });
 
-  it("enters as a new permanent does: untapped, no damage or counters, summoning sick (CR 110.5d, 302.6)", () => {
+  it("enters as a new permanent does: untapped, no damage or counters, summoning sick (CR 110.5b, 302.6)", () => {
     const { state, id } = withToken();
     const obj = state.objects[id];
     expect(obj?.kind === "card" && [obj.tapped, obj.damage, obj.counters, obj.controlledSinceTurnStart]).toStrictEqual([

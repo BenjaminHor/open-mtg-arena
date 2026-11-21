@@ -31,6 +31,11 @@ export type ViewEvent =
       cardId: CardId;
       object: ZoneChanged["object"];
     }
+  /**
+   * A token ceased to exist in a zone the viewer can't see into (bounced to another player's hand): only where. Its
+   * object id there isn't shown, as for any object in a hidden zone (D-054).
+   */
+  | { type: "HIDDEN_TOKEN_CEASED_TO_EXIST"; from: ZoneRef }
   /** Another player drew a card (CR 121.1); which one is hidden. */
   | { type: "HIDDEN_CARD_DRAWN"; player: PlayerId };
 
@@ -49,6 +54,8 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
       return e.player === viewer ? e : { ...e, restored: null };
     case "CARD_DRAWN":
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };
+    case "TOKEN_CEASED_TO_EXIST":
+      return canSee(e.from, viewer) ? e : { type: "HIDDEN_TOKEN_CEASED_TO_EXIST", from: e.from };
     // Everything else names only public objects or facts: cards on the stack or battlefield, a discard (CR 701.9, the
     // card goes to a public graveyard, with the card id it got coming out of the hand, D-054; named by nothing if a
     // replacement sent it somewhere hidden), players and numbers.
@@ -75,7 +82,6 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "PERMANENT_UNTAPPED":
     case "COUNTERS_PUT":
     case "TOKEN_CREATED":
-    case "TOKEN_CEASED_TO_EXIST":
     case "COUNTERS_REMOVED":
     case "PERMANENT_TAPPED":
     case "MANA_ADDED":

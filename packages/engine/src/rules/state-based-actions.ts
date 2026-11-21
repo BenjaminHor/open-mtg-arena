@@ -1,6 +1,7 @@
 // Which state-based actions apply right now (CR 704). Only a list, as data: performing them is
 // `game/state-based-actions.ts`. Listing everything from one snapshot first is what makes them simultaneous (CR 704.3).
 
+import { isToken } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -22,9 +23,11 @@ export function stateBasedActions(state: GameState, cards: CardDatabase): StateB
     if (ps.attemptedDrawFromEmptyLibrary) actions.push({ kind: "drewFromEmptyLibrary", player });
   }
   // Found from the objects, not by searching every zone: a token can be anywhere a card can (CR 111.7).
-  for (const object of Object.keys(state.objects) as ObjectId[]) {
+  // `for ... in` builds no array, and the token test goes first: this runs several times per action (measured, D-101).
+  for (const key in state.objects) {
+    const object = key as ObjectId;
     const obj = state.objects[object];
-    if (obj?.kind === "card" && obj.token !== undefined && !state.zones.battlefield.includes(object))
+    if (obj?.kind === "card" && isToken(obj) && !state.zones.battlefield.includes(object))
       actions.push({ kind: "tokenOutsideBattlefield", object });
   }
   for (const object of state.zones.battlefield) {

@@ -21,19 +21,24 @@ function sourceFiles(dir: string): string[] {
   });
 }
 
-/** Indexing a value named like the database: `cards[`, `db[`. Comments are skipped. */
+/**
+ * Indexing a value named like the database: `cards[`, `db[`, `cards?.[`. Comments are skipped. It goes by name, so an
+ * unrelated array called `cards` trips it too: rename the array (as `zones/shuffle.ts` did), the price of a simple scan.
+ */
 function lookups(source: string): string[] {
   return source
     .split("\n")
     .filter((line) => !/^\s*(\/\/|\*|\/\*)/.test(line))
-    .filter((line) => /\b(cards|db|database|cardDatabase)\[/.test(line));
+    .filter((line) => /\b(cards|db|database|cardDatabase)(\?\.)?\[/.test(line));
 }
 
 describe("card data is read through cardDataOf (CR 111.3)", () => {
   it("finds an index into the database, and skips comments", () => {
-    expect(lookups("const a = cards[obj.oracleId];\n// cards[x]\n * cards[y]\nconst b = shuffled[0];")).toStrictEqual([
-      "const a = cards[obj.oracleId];",
-    ]);
+    expect(
+      lookups(
+        "const a = cards[obj.oracleId];\nconst c = cards?.[id];\n// cards[x]\n * cards[y]\nconst b = shuffled[0];",
+      ),
+    ).toStrictEqual(["const a = cards[obj.oracleId];", "const c = cards?.[id];"]);
   });
 
   it("no package's source indexes the database but the allowed files", () => {

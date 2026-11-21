@@ -1,6 +1,7 @@
-// Creating a token, and a token ceasing to exist (CR 111). A token is an object like a card's, with its own data kept
+// Tokens (CR 111): creating one, and one ceasing to exist. A token is an object like a card's, with its own data kept
 // on it (CR 111.3): everything that works on permanents works on it (CR 111.6).
 
+import { isToken } from "../cards/card-data.ts";
 import type { CardData } from "../cards/types.ts";
 import { newCardId, newObjectId, newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
@@ -11,7 +12,7 @@ import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
 
 /**
  * Puts a new token onto the battlefield: `player` created it, so owns it, and it enters under their control
- * (CR 111.2). It enters as a new object does (CR 110.5d, 302.6): untapped, no damage or counters, summoning sick.
+ * (CR 111.2). It enters as a new object does (CR 110.5b, 302.6): untapped, no damage or counters, summoning sick.
  */
 export function createToken(state: GameState, token: CardData, player: PlayerId): Progress {
   const allocated = newObjectId(state);
@@ -45,7 +46,7 @@ export function createToken(state: GameState, token: CardData, player: PlayerId)
 /** A token outside the battlefield ceases to exist (CR 111.7, 704.5d): it leaves its zone and the game. */
 export function ceaseToExist(state: GameState, id: ObjectId): Progress {
   const object = state.objects[id];
-  if (object?.kind !== "card" || object.token === undefined) throw new Error(`${id} isn't a token`);
+  if (object?.kind !== "card" || !isToken(object)) throw new Error(`${id} isn't a token`);
   const from = zoneOf(state, id);
   const next = withZoneList(
     state,

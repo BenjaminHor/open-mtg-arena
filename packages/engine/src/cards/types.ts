@@ -391,7 +391,9 @@ export type EffectSubject =
 
 /**
  * A token as the effect that creates it defines it (CR 111.3): "a 1/1 green Insect creature token". It has nothing
- * the text doesn't give it: no mana cost, no supertypes, no other abilities (CR 111.3's example).
+ * the text doesn't give it: no mana cost, no supertypes, no other abilities (CR 111.3's example). No activated or
+ * triggered abilities yet: abilities on the stack find their text by the source's oracle id, which names no card for a
+ * token, so a Treasure or Clue (later: CR 111.10) needs that reference changed first (future-rules).
  */
 export type TokenDef = {
   /** Only when the text names it (CR 111.4); otherwise its name is its subtypes plus "Token". */
@@ -399,9 +401,8 @@ export type TokenDef = {
   colors: Color[];
   types: CardType[];
   subtypes: string[];
-  /** Null for a noncreature token, which has none (CR 208.1). */
-  power: number | null;
-  toughness: number | null;
+  power: number;
+  toughness: number;
   keywords?: Keyword[];
 };
 

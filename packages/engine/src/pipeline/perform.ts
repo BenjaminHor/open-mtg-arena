@@ -17,13 +17,13 @@ import { type Characteristics, characteristics } from "../rules/characteristics.
 import type { GameState, LastKnownCharacteristics } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { counterObject } from "../zones/counter.ts";
-import { ceaseToExist, createToken } from "../zones/create-token.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { moveCard } from "../zones/move-card.ts";
 import { reorderLibraryTop } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
+import { ceaseToExist, createToken } from "../zones/tokens.ts";
 import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
