@@ -110,13 +110,22 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     const stars = [card.power, card.toughness].filter((v) => v === "*").length;
     if (stars === 1 || (stars === 2) !== definesPT)
       problems.push(`${def.name}: a printed "*" needs an ability that defines it, and that ability needs a "*"`);
-    // The same for a token an effect creates (CR 111.3): a "*" only with the ability that sets it, and the reverse.
-    for (const e of [...(def.spell?.effects ?? []), ...(def.abilities ?? []).flatMap((a) => a.effects)]) {
+    // The same for a token an effect creates (CR 111.3): a "*" only with the ability that sets it, and the reverse;
+    // and a token's statics are only that characteristic-defining ability so far (nothing else is read for a token).
+    const allEffects = [
+      ...(def.spell?.effects ?? []),
+      ...(def.abilities ?? []).flatMap((a) => a.effects),
+      ...(def.triggers ?? []).flatMap((t) => t.effects),
+    ];
+    for (const e of flatEffects(allEffects)) {
       if (e.op !== "createTokens") continue;
-      const tokenDefines = (e.token.statics ?? []).some((s) => s.kind === "powerToughnessEachEqual");
+      const statics = e.token.statics ?? [];
+      const tokenDefines = statics.some((s) => s.kind === "powerToughnessEachEqual");
       const tokenStars = [e.token.power, e.token.toughness].filter((v) => v === "*").length;
       if (tokenStars === 1 || (tokenStars === 2) !== tokenDefines)
         problems.push(`${def.name}: a token's "*" needs an ability that defines it, and that ability needs a "*"`);
+      if (statics.some((s) => s.kind !== "powerToughnessEachEqual"))
+        problems.push(`${def.name}: a token's static abilities are only a characteristic-defining one so far`);
     }
     for (const s of def.statics ?? [])
       if (s.kind === "cantAttackUnlessDefenderControls" && s.filter.controller !== undefined)

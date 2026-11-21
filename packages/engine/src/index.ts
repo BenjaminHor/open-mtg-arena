@@ -24,6 +24,7 @@ export type {
   StaticAbilityDef,
   Supertype,
   TargetSpec,
+  TokenDef,
 } from "./cards/types.ts";
 export { KEYWORDS } from "./cards/types.ts";
 export { legalAmounts, withForcedAnswers } from "./combat/damage-assignment.ts";

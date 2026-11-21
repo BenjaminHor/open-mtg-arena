@@ -54,6 +54,30 @@ describe("the kept layer pass (D-092)", () => {
     expect(layeredOf(paid, avatar, TEST_CARDS)).toBe(layeredOf(state, avatar, TEST_CARDS));
   });
 
+  it("reads a life total for a card off the battlefield from its own state, under a pass shared by two totals", () => {
+    const state = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: [LIFE_AVATAR], battlefield: [permanent(BEARS)] }),
+        playerSetup("p2", { library: [FOREST] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    const [bears] = state.zones.battlefield as [ObjectId];
+    const [avatar] = state.zones.players.p1?.library ?? [];
+    const p1 = state.players.p1;
+    if (avatar === undefined || p1 === undefined) throw new Error("no Life Avatar in the library");
+    const hurt: GameState = { ...state, players: { ...state.players, p1: { ...p1, life: 7 } } };
+    // Nothing on the battlefield reads a life total, so both states share one pass.
+    powerAndToughness(state, bears, TEST_CARDS);
+    powerAndToughness(hurt, bears, TEST_CARDS);
+    // Each reads its own (CR 604.3: the ability works in the library too).
+    expect(powerAndToughness(hurt, avatar, TEST_CARDS)).toStrictEqual({ power: 7, toughness: 7 });
+    expect(powerAndToughness(state, avatar, TEST_CARDS)).toStrictEqual({ power: 20, toughness: 20 });
+    expect(layeredOf(hurt, avatar, TEST_CARDS)).toStrictEqual(layeredOfFresh(hurt, avatar, TEST_CARDS));
+  });
+
   it("is what a fresh pass gives, for a card on the battlefield and one in a library", () => {
     const { state, bears } = withBears();
     const [inLibrary] = state.zones.players.p1?.library ?? [];

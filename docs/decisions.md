@@ -1678,7 +1678,7 @@ every schema change and every change D-024 lists bumps it.
 
 **D-112: Ajani Goldmane, and life totals in the layer pass (M2-13c2a)** · 2026-11-21 · accepted
 - A token can have static abilities (`TokenDef.statics`) and a printed "*": only a characteristic-defining one so far
-  (CR 111.3, 604.3), checked by the definitions like a card's.
+  (CR 111.3, 604.3); the definitions refuse any other, and a "*" without the ability or the reverse, as for a card.
 - "Power and toughness are each equal to your life total" is `powerToughnessEachEqual` with `to: "yourLifeTotal"`,
   "your" being its controller (CR 109.5), in layer 7a (CR 613.4a).
 - The life totals join the layer pass's inputs, and the kept pass is reused only for the same totals, but only if the
