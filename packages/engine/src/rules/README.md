@@ -50,7 +50,9 @@ Answers to rules questions that many parts of the engine ask, each in one place 
 - `casting-prohibitions.ts`: `cantCastSpells`, whether an effect forbids a player to cast spells (Silence, CR 601.3).
 - `hand-size.ts`: `maximumHandSize`, seven unless a static says otherwise (Spellbook, CR 402.2, D-097).
 - `state-based-actions.ts`: `stateBasedActions(state, cards, kept)`: the SBAs that apply now, as data
-  (CR 704.5a/b/d/f/g/h/j/m/n/q); the legend rule only for the sets `kept` has a choice for.
+  (CR 704.5a/b/d/f/g/h/i/j/m/n/q); the legend rule only for the sets `kept` has a choice for.
+- `loyalty.ts`: `loyaltyOf` (a planeswalker's loyalty counters, CR 306.5c) and `loyaltyCost` (a loyalty ability's
+  [+N]/[−N], CR 107.7, 606.4), the one place loyalty is read.
 - `legend-rule.ts`: `legendRuleGroups`, the sets of same-named legendary permanents one player controls (CR 704.5j),
   which `game/priority.ts` asks about (a `keepLegend` decision) before the check.
 - `damage-recipients.ts`: `canBeDealtDamage`, who can be dealt damage now (CR 120.1a).

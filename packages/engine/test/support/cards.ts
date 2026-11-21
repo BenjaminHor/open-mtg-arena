@@ -555,6 +555,7 @@ export const TEST_CARDS: CardDatabase = {
       subtypes: ["Test"],
       power: null,
       toughness: null,
+      loyalty: 5,
     },
     def: { name: "Test Walker", oracle: "" },
   }),

@@ -1,0 +1,24 @@
+name: A loyalty ability only in its controller's own main phase with an empty stack
+rules: [CR 606.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Jace Beleren, Mountain]
+    hand: [Shock]
+steps:
+  # Not with something on the stack.
+  - p1 cast: Shock
+    targets: [p2]
+    pay: auto
+  - p1 activate: Jace Beleren
+    ability: 1
+  - expect error: illegalAction
+  - all pass: once
+  # Nor on the opponent's turn.
+  - all pass: until main1
+  - expect:
+      active: p2
+  - p2 pass: once
+  - p1 activate: Jace Beleren
+    ability: 1
+  - expect error: illegalAction

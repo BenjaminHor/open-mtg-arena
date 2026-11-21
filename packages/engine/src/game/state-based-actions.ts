@@ -49,6 +49,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
     case "lethalDamage":
     case "deathtouchDamage":
     case "plusAndMinusCounters":
+    case "zeroLoyalty":
     case "legendRule":
       return null;
   }
@@ -76,6 +77,7 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
     // Put into its owner's graveyard, not destroyed (CR 704.5m).
     case "auraIllegallyAttached":
     case "zeroToughness":
+    case "zeroLoyalty":
     case "legendRule":
       return [{ kind: "moveCard", object: action.object, to: { zone: "graveyard" } }]; // not "destroyed" (CR 704.5f)
     case "lethalDamage":

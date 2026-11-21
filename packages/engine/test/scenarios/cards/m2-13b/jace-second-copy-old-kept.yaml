@@ -1,0 +1,21 @@
+name: Keeping the Jace Beleren whose loyalty ability was used this turn, no more can be activated
+rules: [CR 606.3, CR 704.5j]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Jace Beleren, Island, Island, Island]
+    hand: [Jace Beleren]
+steps:
+  - p1 activate: Jace Beleren
+    ability: 2
+    targets: [p1]
+  - all pass: once
+  - p1 cast: Jace Beleren
+    pay: auto
+  - all pass: once
+  - p1 choose: Jace Beleren#1
+  - expect:
+      p1:Jace Beleren.counters: { loyalty: 2 }
+  - p1 activate: Jace Beleren
+    ability: 1
+  - expect error: illegalAction

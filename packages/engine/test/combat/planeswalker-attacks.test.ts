@@ -6,10 +6,12 @@ import { describe, expect, it } from "vitest";
 import { attackDeclarationProblem } from "../../src/combat/declaration-rules.ts";
 import { removeTypeChangesFromCombat } from "../../src/combat/removed-from-combat.ts";
 import { recordControlChanges } from "../../src/game/control-changes.ts";
+import { setupProblems } from "../../src/game/setup-validation.ts";
 import {
   type Action,
   applyAction,
   attackedNow,
+  type GameSetup,
   type GameState,
   isAttacking,
   legalActions,
@@ -34,7 +36,11 @@ function atDeclareAttackers(mine: string[], theirs: string[] = []): { game: Game
   const game = start({
     seed: 1,
     players: [
-      playerSetup("p1", { library: ["forest", "forest"], battlefield: mine.map((c) => permanent(c)) }),
+      playerSetup("p1", {
+        library: ["forest", "forest"],
+        // A planeswalker of p1's has loyalty too, or it would go at once (CR 704.5i).
+        battlefield: mine.map((c) => permanent(c, c === TEST_WALKER ? { loyalty: 3 } : {})),
+      }),
       playerSetup("p2", {
         library: ["forest", "forest"],
         battlefield: [permanent(TEST_WALKER, { loyalty: 5 }), ...theirs.map((c) => permanent(c))],
@@ -115,6 +121,21 @@ describe("attacking a planeswalker (CR 506.3, 508.1b)", () => {
     game = answer(game, { kind: "finishDeclaring" });
     game = passBoth(game);
     expect(loyalty(game.state, walker)).toBe(5);
+  });
+});
+
+describe("setting up a planeswalker", () => {
+  it("refuses one on the battlefield without its loyalty counters: it never entered (CR 306.5b)", () => {
+    const setup = (counters: Record<string, number>): GameSetup => ({
+      seed: 1,
+      players: [playerSetup("p1", { battlefield: [permanent(TEST_WALKER, counters)] }), playerSetup("p2")],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    expect(setupProblems(setup({}), TEST_CARDS)).toContain(
+      "p1: a planeswalker on the battlefield needs its loyalty counters (CR 306.5b)",
+    );
+    expect(setupProblems(setup({ loyalty: 0 }), TEST_CARDS)).toStrictEqual([]);
   });
 });
 
@@ -217,7 +238,9 @@ describe("a planeswalker removed from combat (CR 506.4)", () => {
     game = answer(game, { kind: "finishDeclaring" });
     game = { ...game, state: moveCard(game.state, bears, { zone: "graveyard" }).state };
     game = passBoth(game);
-    expect(loyalty(game.state, walker)).toBe(0);
+    // All 5 to the walker: no loyalty left, so it's put into its owner's graveyard (CR 704.5i).
+    expect(game.state.objects[walker]).toBeUndefined();
+    expect(game.state.zones.players.p2?.graveyard).toHaveLength(2); // the Bears, then the walker
     expect(game.state.players.p2?.life).toBe(20);
   });
 

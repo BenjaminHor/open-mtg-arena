@@ -12,6 +12,7 @@ import { canEnchant } from "./can-enchant.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { controllerOf } from "./controller.ts";
 import { legendRuleGroups } from "./legend-rule.ts";
+import { loyaltyOf } from "./loyalty.ts";
 import { powerAndToughness } from "./power-toughness.ts";
 import { isProtectedFrom } from "./protection.ts";
 
@@ -48,7 +49,15 @@ export function stateBasedActions(
     // Any permanent with both kinds, creature or not (CR 704.5q).
     const count = obj?.kind === "card" ? Math.min(obj.counters["+1/+1"] ?? 0, obj.counters["-1/-1"] ?? 0) : 0;
     if (count > 0) actions.push({ kind: "plusAndMinusCounters", object, count });
-    if (obj?.kind !== "card" || !cardTypesOf(state, object, cards).includes("creature")) continue;
+    if (obj?.kind !== "card") continue;
+    const types = cardTypesOf(state, object, cards);
+    // Put into the graveyard, not destroyed (CR 704.5i): a creature planeswalker with lethal damage too goes this way,
+    // once, as the legend rule does.
+    if (types.includes("planeswalker") && loyaltyOf(state, object) <= 0) {
+      actions.push({ kind: "zeroLoyalty", object });
+      continue;
+    }
+    if (!types.includes("creature")) continue;
     const { toughness } = powerAndToughness(state, object, cards);
     if (toughness === null) continue;
     // A creature with toughness 0 or less isn't also destroyed: CR 704.5g needs toughness greater than 0.
@@ -71,7 +80,7 @@ export function stateBasedActions(
   const destroyed = (a: StateBasedAction) =>
     (a.kind === "lethalDamage" || a.kind === "deathtouchDamage") && unkept.includes(a.object);
   const putAway = actions.flatMap((a) =>
-    a.kind === "zeroToughness" || a.kind === "auraIllegallyAttached" ? [a.object] : [],
+    a.kind === "zeroToughness" || a.kind === "zeroLoyalty" || a.kind === "auraIllegallyAttached" ? [a.object] : [],
   );
   return [
     ...actions.filter((a) => !destroyed(a)),

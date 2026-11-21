@@ -1,0 +1,16 @@
+name: Jace Beleren's +2 puts two loyalty counters on it as its cost, then each player draws a card
+rules: [CR 606.2, CR 606.4, CR 606.3, CR 306.5c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Jace Beleren]
+steps:
+  - p1 activate: Jace Beleren
+    ability: 1
+  - expect:
+      stack: [Jace Beleren ability]
+      p1:Jace Beleren.counters: { loyalty: 5 }
+  - all pass: once
+  - expect:
+      p1.hand count: 1
+      p2.hand count: 1

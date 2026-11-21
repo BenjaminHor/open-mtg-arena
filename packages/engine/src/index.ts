@@ -40,6 +40,7 @@ export { type Characteristics, characteristics } from "./rules/characteristics.t
 export { attackedNow, isAttacking, isBlocking } from "./rules/combat.ts";
 export { controllerOf } from "./rules/controller.ts";
 export { type Layered, layered, layeredFresh, layeredOf, layeredOfFresh } from "./rules/layers.ts";
+export { loyaltyOf } from "./rules/loyalty.ts";
 export { type LayerSevenCChange, layerSevenCChanges } from "./rules/power-toughness.ts";
 export { isFreeOfSummoningSickness } from "./rules/summoning-sickness.ts";
 export type { Action, Answer } from "./state/actions.ts";

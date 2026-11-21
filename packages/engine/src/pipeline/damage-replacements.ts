@@ -217,6 +217,7 @@ function preventsForPermanent(
     case "entersTapped":
     case "graveyardToLibrary":
     case "entersWithCounters":
+    case "entersWithLoyalty":
       return null;
   }
 }

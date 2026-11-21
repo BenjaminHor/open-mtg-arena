@@ -44,6 +44,11 @@ export type PrintedCard = {
    */
   power: number | "*" | null;
   toughness: number | "*" | null;
+  /**
+   * A planeswalker's printed loyalty (CR 209.1): its loyalty off the battlefield (CR 306.5a), and the loyalty counters
+   * it enters with (CR 306.5b). Left out for any other card, so cards and tokens without one are stored as before.
+   */
+  loyalty?: number;
 };
 
 /** The five colors (CR 105.1), by their mana symbol letters. */
@@ -148,6 +153,12 @@ export type ReplacementDef =
    * 0 if it wasn't.
    */
   | { kind: "entersWithCounters"; counter: "+1/+1"; amount: "X" }
+  /**
+   * A planeswalker's intrinsic "This permanent enters with a number of loyalty counters on it equal to its printed
+   * loyalty number" (CR 306.5b, 614.1c). Never written in a definition: `replacementsOf` adds it to every card with a
+   * printed loyalty, as it adds basic lands' mana abilities, with that loyalty.
+   */
+  | { kind: "entersWithLoyalty"; loyalty: number }
   /**
    * "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it"
    * (Protean Hydra): all of it prevented, then the counters removed right after (CR 615.5), as many as it has.
@@ -309,7 +320,14 @@ export type CostPart =
    */
   | { kind: "sacrifice"; filter: ObjectFilter }
   /** "Sacrifice this land": the source itself, paid with the rest of the cost, after {T} (CR 602.2, 701.21a; D-059). */
-  | { kind: "sacrificeSelf" };
+  | { kind: "sacrificeSelf" }
+  /**
+   * A loyalty symbol: put `amount` loyalty counters on the source, or remove that many when it's negative (CR 606.4,
+   * 107.7: [+N], [−N]; [0] puts none, and is still a loyalty ability).
+   * An ability with one is a loyalty ability (CR 606.2): activated only as a sorcery, once per turn for its permanent
+   * (CR 606.3), and a negative one only with enough counters (CR 606.6).
+   */
+  | { kind: "loyalty"; amount: number };
 
 /**
  * What one instance of the word "target" may choose (CR 115), and how many (`count`, exactly one when left out).

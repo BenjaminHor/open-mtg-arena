@@ -48,6 +48,10 @@ export function activationBasicsProblem(
       case "sacrifice":
       case "sacrificeSelf":
         break;
+      // A loyalty ability's own rules are checked with its activation (`activationProblem`): it's never a mana
+      // ability (CR 605.1a).
+      case "loyalty":
+        break;
       default:
         return assertNever(part);
     }
@@ -150,6 +154,8 @@ export function resolveManaAbility(
       case "sacrifice":
       case "sacrificeSelf":
         throw new Error("mana abilities with sacrifice costs aren't supported yet");
+      case "loyalty":
+        throw new Error("a loyalty ability is never a mana ability (CR 605.1a)");
       default:
         return assertNever(part);
     }

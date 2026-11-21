@@ -48,13 +48,17 @@ export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDat
 
 /**
  * The replacement effects an object's own text makes (CR 614.1), in any zone: each kind says where it works
- * (CR 113.6b, 113.6h), and `pipeline/replacements.ts` checks that. Abilities granted or removed by effects (layer 6,
- * later: CR 613.1f) will change this list, in this one place.
+ * (CR 113.6b, 113.6h), and `pipeline/replacements.ts` checks that. Then a planeswalker's intrinsic one, entering with
+ * its printed loyalty (CR 306.5b), last, so the written ones keep their places. Abilities granted or removed by effects
+ * (layer 6, later: CR 613.1f) will change this list, in this one place.
  */
 export function replacementsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ReplacementDef[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
-  return cardDataOf(obj, cards)?.def.replacements ?? [];
+  const data = cardDataOf(obj, cards);
+  const written = data?.def.replacements ?? [];
+  const loyalty = data?.printed.loyalty;
+  return loyalty === undefined ? written : [...written, { kind: "entersWithLoyalty", loyalty }];
 }
 
 /**
@@ -113,12 +117,17 @@ function deepFrozen<T>(value: T): T {
 
 /**
  * CR 605.1a: an activated ability is a mana ability if it doesn't require a target, could add mana when it resolves,
- * isn't a loyalty ability, and its cost and effect don't move a card to or from a library. No loyalty abilities exist
- * yet and no effect moves library cards, so those two always hold for now. Triggered mana abilities (later: CR 605.1b)
- * will be a separate check. Worked out from the definition, so a definition can't get it wrong (D-026).
+ * isn't a loyalty ability (no loyalty symbol in its cost, CR 606.2), and its cost and effect don't move a card to or
+ * from a library. No effect moves library cards, so that one always holds for now. Triggered mana abilities
+ * (later: CR 605.1b) will be a separate check. Worked out from the definition, so a definition can't get it wrong (D-026).
  */
 export function isManaAbility(def: AbilityDef): boolean {
-  return def.kind === "activated" && def.targets.length === 0 && def.effects.some((e) => e.op === "addMana");
+  return (
+    def.kind === "activated" &&
+    def.targets.length === 0 &&
+    !def.cost.some((part) => part.kind === "loyalty") &&
+    def.effects.some((e) => e.op === "addMana")
+  );
 }
 
 /**

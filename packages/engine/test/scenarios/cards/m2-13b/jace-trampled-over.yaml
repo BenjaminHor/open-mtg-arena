@@ -1,0 +1,22 @@
+name: A trampler attacking Jace Beleren assigns its excess over its blocker to Jace, not to Jace's controller
+rules: [CR 702.19b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Stampeding Rhino]
+  p2:
+    battlefield: [Jace Beleren, Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino -> Jace Beleren]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Stampeding Rhino }
+  - all pass: once
+  # The recipients are the Bears and Jace, not Jace's controller: the Rhino attacks Jace (CR 702.19b).
+  - expect:
+      pending: { player: p1, kind: assignDamage }
+  - p1 assign: { Grizzly Bears: 2, Jace Beleren: 2 }
+  - expect:
+      p2:Jace Beleren.counters: { loyalty: 1 }
+      p2.life: 20
+      p2.graveyard: [Grizzly Bears]

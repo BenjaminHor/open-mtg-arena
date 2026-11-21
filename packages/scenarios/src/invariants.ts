@@ -5,10 +5,12 @@ import {
   applyAction,
   attachedHost,
   type CardDatabase,
+  characteristics,
   type GameState,
   isAura,
   isToken,
   legalActions,
+  loyaltyOf,
   type ObjectId,
   phaseOf,
   type ZoneRef,
@@ -53,6 +55,14 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
     for (const id of state.zones.battlefield) {
       if (isAura(state, id, cards) && attachedHost(state, id) === null)
         problems.push(`${id}: an Aura attached to nothing with priority to give`);
+    }
+    // And no planeswalker is left with no loyalty (CR 704.5i), and no counter count is below zero.
+    for (const id of state.zones.battlefield) {
+      const obj = state.objects[id];
+      if (obj?.kind !== "card") continue;
+      if (Object.values(obj.counters).some((n) => n < 0)) problems.push(`${id}: a negative number of counters`);
+      if (characteristics(state, id, cards).types.includes("planeswalker") && loyaltyOf(state, id) <= 0)
+        problems.push(`${id}: a planeswalker with no loyalty with priority to give`);
     }
     // And an Equipment is attached to a permanent or to nothing: one whose creature left is unattached (CR 704.5n).
     for (const id of state.zones.battlefield) {

@@ -1,0 +1,18 @@
+name: Jace Beleren enters with its printed loyalty in loyalty counters, and can use a loyalty ability at once
+rules: [CR 306.5b, CR 209.1, CR 606.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island]
+    hand: [Jace Beleren]
+steps:
+  - p1 cast: Jace Beleren
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Jace Beleren.counters: { loyalty: 3 }
+  - p1 activate: Jace Beleren
+    ability: 2
+    targets: [p1]
+  - expect:
+      p1:Jace Beleren.counters: { loyalty: 2 }

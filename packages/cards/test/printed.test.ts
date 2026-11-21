@@ -48,7 +48,6 @@ describe("parseTypeLine", () => {
       "Tribal Instant — Goblin",
       "Creature — Human // Creature — Werewolf",
       "Wurm",
-      "Legendary Planeswalker — Jace",
       "Battle — Siege",
       "Ongoing Scheme",
     ]) {
@@ -95,6 +94,15 @@ describe("printedCard", () => {
     const nightmare = POOL.cards.find((c) => c.name === "Nightmare");
     if (nightmare === undefined) throw new Error("Nightmare isn't in the pool");
     expect(() => printedCard({ ...nightmare, power: "1+*" })).toThrow();
+  });
+
+  it("reads a planeswalker's printed loyalty, which only a planeswalker has (CR 209.1, 306.5a)", () => {
+    expect(card("Jace Beleren")).toMatchObject({ supertypes: ["legendary"], types: ["planeswalker"], loyalty: 3 });
+    expect(card("Craw Wurm")).not.toHaveProperty("loyalty");
+    const jace = POOL.cards.find((c) => c.name === "Jace Beleren");
+    if (jace === undefined) throw new Error("Jace Beleren isn't in the pool");
+    expect(() => printedCard({ ...jace, loyalty: null })).toThrow(/loyalty/);
+    expect(() => printedCard({ ...jace, loyalty: "X" })).toThrow(/loyalty/);
   });
 
   it("parses every card in the pool", () => {

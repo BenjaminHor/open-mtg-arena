@@ -17,7 +17,8 @@ The engine's entry points and the flow of a game.
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
 | `cast.ts` | Casting a spell (CR 601.2): `castProblem`, `startCast` (D-035) |
 | `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |
-| `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): `nextCastingStep` (X, targets, sacrifices, then the mana; a cost with no mana is paid at once), `announceX` and `xProblem` (CR 107.3a), `payCost`, `cancelCasting` |
+| `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): `nextCastingStep` (X, targets, sacrifices, then the mana; a cost with no mana is paid at once), `announceX` and `xProblem` (CR 107.3a), `payCost` (mana, loyalty counters, {T}, sacrifices), `cancelCasting` |
+| `loyalty-abilities.ts` | Loyalty abilities (CR 606): `loyaltyAbilityProblem` (as a sorcery, once per turn per permanent, enough counters; called by `activationProblem`), `loyaltyPayment` (the counters the cost puts on or removes, CR 606.4) |
 | `choose-targets.ts` | Targets and their division (CR 601.2c–d): how many for a range, each target (no repeats in an instance, CR 115.3), each target's share of a divided effect |
 | `activation-count.ts` | `countActivation`, `activationsThisTurn`: each object's activations this turn, in `GameState.turnHistory` (D-078) |
 | `casting-state.ts` | `castingOf`: the cast or activation in progress |

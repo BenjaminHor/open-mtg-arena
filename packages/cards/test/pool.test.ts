@@ -205,6 +205,28 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it("refuses a written entersWithLoyalty, two loyalty costs in one, and a loyalty ability with a timing", () => {
+    const jaceCard = POOL.cards.find((c) => c.name === "Jace Beleren");
+    const jaceDef = CARD_DEFS.find((d) => d.name === "Jace Beleren");
+    if (jaceCard === undefined || jaceDef?.abilities === undefined) throw new Error("Jace Beleren isn't in the pool");
+    const [plus, ...rest] = jaceDef.abilities;
+    if (plus === undefined) throw new Error("Jace has no abilities");
+    const twice = { ...plus, cost: [...plus.cost, ...plus.cost] };
+    const timed = { ...plus, timing: "sorcery" as const };
+    const bad: CardDef = {
+      ...jaceDef,
+      replacements: [{ kind: "entersWithLoyalty", loyalty: 3 }],
+      abilities: [twice, timed, ...rest.slice(1)],
+    };
+    expect(definitionProblems([bad], [jaceCard])).toEqual(
+      expect.arrayContaining([
+        "Jace Beleren: entersWithLoyalty is intrinsic to a planeswalker; a definition doesn't write it",
+        "Jace Beleren ability 1: more than one loyalty cost",
+        "Jace Beleren ability 2: a loyalty ability's timing comes from its cost (CR 606.3)",
+      ]),
+    );
+  });
+
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);

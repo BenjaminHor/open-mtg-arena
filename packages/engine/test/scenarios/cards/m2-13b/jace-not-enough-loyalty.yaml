@@ -1,0 +1,11 @@
+name: A negative loyalty cost can't be paid without that many loyalty counters
+rules: [CR 606.6]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Jace Beleren]
+steps:
+  - p1 activate: Jace Beleren
+    ability: 3
+    targets: [p2]
+  - expect error: illegalAction

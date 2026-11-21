@@ -10,6 +10,7 @@ import {
   isBlocking,
   isFreeOfSummoningSickness,
   legalActions,
+  loyaltyOf,
   type ObjectId,
   type PlayerId,
 } from "@mtg/engine";
@@ -64,7 +65,7 @@ function playerLines(state: GameState, player: PlayerId, viewer: PlayerId | null
   return lines;
 }
 
-/** `Grizzly Bears 2/2 (T, sick, 1 damage, attacking)`. */
+/** `Grizzly Bears 2/2 (T, sick, 1 damage, attacking)`, `Jace Beleren (loyalty 3)`. */
 function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): string {
   const obj = state.objects[id];
   const c = characteristics(state, id, cards);
@@ -75,6 +76,8 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
     // Summoning sick: can't attack or use {T} yet (CR 302.6, with haste, 702.10).
     if (c.types.includes("creature") && !isFreeOfSummoningSickness(state, id, cards)) notes.push("sick");
     if (obj.damage > 0) notes.push(`${obj.damage} damage`);
+    // A planeswalker's loyalty is its loyalty counters (CR 306.5c).
+    if (c.types.includes("planeswalker")) notes.push(`loyalty ${loyaltyOf(state, id)}`);
   }
   // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
   if (isAttacking(state, id, cards)) notes.push("attacking");

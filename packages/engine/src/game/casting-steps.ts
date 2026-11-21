@@ -24,6 +24,7 @@ import { countActivation } from "./activation-count.ts";
 import { castingOf } from "./casting-state.ts";
 import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
+import { loyaltyPayment } from "./loyalty-abilities.ts";
 import type { Progress } from "./progress.ts";
 import { sacrificeParts, sacrificesStillPossible, selfSacrificesForCost } from "./sacrifice-costs.ts";
 import { canTapForCost, tapsForCost } from "./tap-costs.ts";
@@ -96,7 +97,7 @@ export function activateWhilePaying(
 
 /**
  * CR 601.2h: the player pays the whole cost at once, after any mana abilities (CR 601.2g): the mana from their pool,
- * then the {T} and the sacrifices chosen, which must all still be possible, since partial payments aren't allowed and
+ * then the loyalty counters (CR 606.4), the {T} and the sacrifices chosen, which must all still be possible, since partial payments aren't allowed and
  * unpayable costs can't be paid. Then the spell becomes cast (CR 601.2i) or the ability activated (CR 602.2b), so the
  * cost's events come first. They receive priority (CR 117.3c), and everyone has to pass again (CR 117.4).
  */
@@ -123,11 +124,15 @@ export function payCost(
     )
   )
     return "the permanent to sacrifice for the cost is gone or no longer the player's (CR 601.2h, 701.21a)";
+  const loyalty = loyaltyPayment(state, cards);
+  if (loyalty === "unpayable") return "the loyalty counters to remove for the cost aren't there (CR 601.2h, 606.6)";
   const obj = state.objects[casting.object];
   if (obj === undefined) throw new Error("Nothing is being put on the stack");
   const players = { ...state.players, [casting.player]: { ...ps, manaPool: rest } };
-  // Taps first, then sacrifices: "{T}, Sacrifice this" taps it before it's gone (CR 601.2h lets the order be chosen).
+  // Loyalty counters, then taps, then sacrifices: "{T}, Sacrifice this" taps it before it's gone (CR 601.2h lets the
+  // order be chosen).
   const costs: SingleEvent[] = [
+    ...(loyalty === null ? [] : [loyalty]),
     ...taps.map((object) => ({ kind: "tap", object }) as const),
     ...[...selfSacrifices, ...casting.sacrifices].map((object) => ({ kind: "sacrifice", object }) as const),
   ];
