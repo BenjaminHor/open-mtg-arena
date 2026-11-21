@@ -3,7 +3,6 @@
 // (CR 603.3).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { controllerOf } from "../rules/controller.ts";
 import { legendRuleGroups } from "../rules/legend-rule.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -42,7 +41,8 @@ export function givePriority(state: GameState, player: PlayerId, cards: CardData
 
 /**
  * The next set of same-named legendary permanents a player controls with no choice yet, asked of that player, the
- * active player's first (CR 704.5j, 101.4); null when every set has a permanent chosen in `kept`.
+ * active player's first (CR 704.5j, 101.4), each knowing the choices before theirs (`kept`, CR 101.4b); null when every
+ * set has a permanent chosen in `kept`.
  */
 export function askToKeepLegend(
   state: GameState,
@@ -52,12 +52,11 @@ export function askToKeepLegend(
 ): GameState | null {
   const order = apnapOrder(state);
   const open = legendRuleGroups(state, cards)
-    .filter((group) => !group.some((id) => kept.includes(id)))
-    .map((group) => ({ group, controller: controllerOf(state, group[0] as ObjectId, cards) }))
+    .filter((group) => !group.permanents.some((id) => kept.includes(id)))
     .sort((a, b) => order.indexOf(a.controller) - order.indexOf(b.controller));
   const next = open[0];
   if (next === undefined) return null;
-  return waitFor(state, next.controller, { kind: "keepLegend", options: next.group, kept: [...kept], priorityTo });
+  return waitFor(state, next.controller, { kind: "keepLegend", options: next.permanents, kept: [...kept], priorityTo });
 }
 
 /**

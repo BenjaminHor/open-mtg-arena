@@ -719,7 +719,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - M2-13b1 built (2026-11-21, D-109): the legend rule (CR 704.5j): `legendRuleGroups`, a `keepLegend` decision asked
          in `givePriority` (APNAP), the check made with the choices (`stateBasedActions`'s `kept`), a permanent leaving
          once if another action removes it too; CLI, scenario `choose:`, exporter; 5 unit tests with test legends (the
-         pool has no legendary permanent until Jace). M2-13 is now four PRs (D-109). Next: reviews, PR; then M2-13b2.
+         pool has no legendary permanent until Jace). M2-13 is now four PRs (D-109). Reviews: an unkept legend with lethal
+         damage was destroyed, so regeneration could save it (now put into the graveyard, CR 614.8); the cleanup step
+         skipped the legend rule (now gives priority, CR 514.3a); names now through `characteristics()` (no name shares
+         none, CR 201.2a); 9 unit tests (three copies, a stolen legend to its owner's graveyard, refused answers,
+         cleanup), scenario and exporter tests with a test legend. Next: PR; then M2-13b2.
        - M2-13a built (2026-11-21): `Attack.planeswalker` (optional; left out for an attack on the player), `attackedNow`
          (null once the planeswalker is removed from combat), `Combat.removed.planeswalkers` (present only once one is),
          per-role removal (`removeTypeChangesFromCombat`, a control change through `removedFromCombat`), possible attacks

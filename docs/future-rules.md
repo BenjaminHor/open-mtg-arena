@@ -195,8 +195,12 @@ with two combat phases or two upkeeps can't be represented yet. That needs a per
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 
-**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) needs a choice. (Deathtouch's 704.5h is
-built, D-070: `dealtDeathtouchDamage`, cleared at every check.)
+**State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) is built (D-109): its choice is a `keepLegend`
+decision asked before the check, so every caller of a check asks it first (`givePriority`, `cleanupCheck`). Names are
+read through `characteristics()`, so copies (layer 1, CR 707.2), text changes and face-down permanents (no name,
+CR 201.2a) change the sets in one place; split and double-faced names will need a set of names per object. Phased-out
+permanents (CR 702.26b) must be left out. (Deathtouch's 704.5h is built, D-070: `dealtDeathtouchDamage`, cleared at
+every check.)
 *Watch out (D-039):* a listed SBA counts as performed, and a performed check repeats. So anything that stops an SBA
 (indestructible ignoring lethal damage, CR 702.12b; "can't lose the game") must keep it off the list in
 `rules/state-based-actions.ts`, or the check repeats forever. Creatures dying together are one `simultaneous` event

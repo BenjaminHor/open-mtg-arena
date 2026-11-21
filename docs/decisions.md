@@ -1639,8 +1639,11 @@ every schema change and every change D-024 lists bumps it.
   unkept permanents go to the graveyard together with every other state-based action of that check (CR 704.3).
 - The choices live in the decision (`kept`), not in `GameState`, so no new state field (and no change to saved
   hashes); the answer is the existing `chooseCard` answer, by position in `options`.
-- A permanent that another state-based action already removes (lethal damage) isn't also put into the graveyard by
-  the legend rule: it leaves once.
+- An unkept permanent is put into its owner's graveyard, not destroyed, so a regeneration shield can't save it
+  (CR 614.8): the legend rule wins over its lethal or deathtouch damage, and it leaves once; one another action already
+  puts into the graveyard (toughness 0) goes by that one.
+- Every caller of a check asks the choice first: `givePriority`, and `cleanupCheck`, which gives the active player
+  priority when a set exists (CR 514.3a). Earlier choices are known to later players (CR 101.4b).
 - M2-13 is now four PRs: M2-13a (attacking, #66), M2-13b1 (the legend rule, no card), M2-13b2 (loyalty, loyalty
   abilities, CR 704.5i, planeswalkers as targets, Jace Beleren), M2-13c (the other four). Jace waits for the legend
   rule: a card enters the pool only when it works completely.

@@ -15,7 +15,7 @@ export function subtypesOf(state: GameState, id: ObjectId, cards: CardDatabase):
 
 /**
  * An object's supertypes (CR 205.4): layer 4 of `characteristics()`, printed until type-changing effects exist.
- * The legend rule (later: CR 704.5j) asks this.
+ * The legend rule (CR 704.5j) asks this.
  */
 export function supertypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Supertype[] {
   return layeredOf(state, id, cards)?.supertypes ?? [];

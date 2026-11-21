@@ -153,7 +153,8 @@ type Action =
    they run before older work), change state, emit events, or **set `pending`**, which stops the loop.
 3. An empty queue with nothing pending is an engine bug: `advance` throws.
 
-The work items so far: `givePriority` (state-based actions are checked first, CR 117.5, and it re-queues itself
+The work items so far: `givePriority` (state-based actions are checked first, CR 117.5, after asking the legend rule's
+choice, a `keepLegend` decision, D-109, and it re-queues itself
 while any are performed, D-039; then it starts putting waiting triggers on the stack, D-076), `putTriggers` (one batch
 of triggered abilities, APNAP, CR 603.3b), `endStep` (CR 500.2), `resolveTopOfStack` (CR 608: it queues the
 resolution's effects, `finishResolving`, then priority for the active player), `runEffect` (one effect of a resolving
