@@ -429,6 +429,8 @@ export type Effect =
     }
   /** "Untap that creature" (CR 701.26b). */
   | { op: "untap"; of: EffectSubject }
+  /** "Put a +1/+1 counter on this creature" (CR 122.6): `amount` counters of the kind on each permanent `of` names. */
+  | { op: "putCounters"; of: EffectSubject; counter: "+1/+1" | "-1/-1"; amount: Amount }
   /**
    * "Your opponents can't cast spells this turn" (Silence): a rule for those players (CR 101.2, 601.3); spells already
    * cast, abilities and land plays are untouched (its rulings).

@@ -262,6 +262,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   reveal: (e) => (e as { of: EffectSubject }).of,
   put: (e) => (e as { of: EffectSubject }).of,
   regenerate: (e) => (e as { of: EffectSubject }).of,
+  putCounters: (e) => (e as { of: EffectSubject }).of,
   // What a delayed ability's "that creature" remembers; "self" if it names nothing, which is an object.
   createDelayedTrigger: (e) => (e as { about?: EffectSubject }).about ?? "self",
 };

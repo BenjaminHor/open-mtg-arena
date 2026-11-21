@@ -184,7 +184,7 @@ names an illegal action fails the scenario, unless the next step is `expect erro
 - `events lacks: [{ type: DAMAGE_DEALT }]`: no event matching any listed one happened during that step.
 - `winner: p1` once the game is over; `winner: draw` when it ended in a draw (CR 104.4a); `winner: (game not over)`
   while it's still going.
-- Expectations that arrive later and fail until then: `.counters` (M1-13).
+- `p1:Grizzly Bears.counters: { +1/+1: 2 }`: the kinds of counters it has, `{}` for none.
 
 Every state the runner sees is also checked against the engine's invariants (`invariantProblems`): plain JSON, every
 object in exactly one zone, casting choices only on the stack, nothing stalled, a pending decision always has a legal

@@ -3274,6 +3274,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Mold Adder",
+      "slug": "mold-adder",
+      "oracleId": "2091eb7e-2357-4ef8-b15e-1e6f82176340",
+      "layout": "normal",
+      "manaCost": "{G}",
+      "manaValue": 1,
+      "typeLine": "Creature — Fungus Snake",
+      "oracleText": "Whenever an opponent casts a blue or black spell, you may put a +1/+1 counter on this creature.",
+      "power": "1",
+      "toughness": "1",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/8/48d665cd-a2c6-4b81-8032-379e476b5ea5.jpg?1783908917",
+        "large": "https://cards.scryfall.io/large/front/4/8/48d665cd-a2c6-4b81-8032-379e476b5ea5.jpg?1783908917",
+        "png": "https://cards.scryfall.io/png/front/4/8/48d665cd-a2c6-4b81-8032-379e476b5ea5.png?1783908917",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/8/48d665cd-a2c6-4b81-8032-379e476b5ea5.jpg?1783908917"
+      },
+      "artist": "Matt Cavotta",
+      "set": "fdn",
+      "collectorNumber": "640",
+      "scryfallUri": "https://scryfall.com/card/fdn/640/mold-adder?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Mountain",
       "slug": "mountain",
       "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",

@@ -120,6 +120,14 @@ export function runEffect(
       });
       return { state: recordControlChanges(state, created.state, affected), events: created.events };
     }
+    case "putCounters": {
+      const amount = amountNow(state, effect.amount, context, cards);
+      const ids = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
+      if (ids.length === 0 || amount <= 0) return { state, events: [] };
+      const { counter } = effect;
+      const events = ids.map((object) => ({ kind: "putCounters", object, counter, amount }) as const);
+      return happen(state, { kind: "simultaneous", events }, cards);
+    }
     case "untap": {
       const ids = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (ids.length === 0) return { state, events: [] };

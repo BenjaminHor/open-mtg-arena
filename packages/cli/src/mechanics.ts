@@ -97,6 +97,9 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   DAMAGE_PREVENTED: true,
   CARD_DISCARDED: true,
   CARDS_REVEALED: true,
+  COUNTERS_PUT: true,
+  // Only as a +1/+1 counter meets a -1/-1 counter (CR 704.5q), which nothing in the pool puts yet.
+  COUNTERS_REMOVED: "nothing in the pool puts -1/-1 counters or removes counters yet",
 };
 
 /**

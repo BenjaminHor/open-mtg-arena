@@ -1,0 +1,23 @@
+name: Mold Adder gets a +1/+1 counter when an opponent casts a blue or a black spell, if its controller wants
+rules: [CR 122.1a, CR 122.6, CR 603.2, CR 613.4c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Mold Adder]
+  p2:
+    battlefield: [Island, Swamp]
+    hand: [Unsummon, Doom Blade]
+    library: [Forest, Forest]
+steps:
+  - p2 cast: Unsummon
+    targets: [p1:Mold Adder]
+    pay: auto
+  # Its ability resolves first, before the spell that made it trigger (its ruling).
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      p1:Mold Adder.power: 2
+      stack: [Unsummon]
+  - all pass: once
+  - expect:
+      p1.hand: [Mold Adder]

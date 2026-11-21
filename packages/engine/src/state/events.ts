@@ -91,6 +91,9 @@ export type GameEvent =
   /** Unspent mana emptied from a pool as a step ended (CR 500.5). Only for pools that weren't empty. */
   | { type: "MANA_EMPTIED"; player: PlayerId; lost: ManaPool }
   | { type: "PERMANENT_UNTAPPED"; object: ObjectId } // CR 502.3
+  /** Counters put on a permanent, or removed from it (CR 122.1, 122.6). */
+  | { type: "COUNTERS_PUT"; object: ObjectId; counter: string; amount: number }
+  | { type: "COUNTERS_REMOVED"; object: ObjectId; counter: string; amount: number }
   | { type: "PERMANENT_TAPPED"; object: ObjectId } // CR 701.26a
   /**
    * Mana added to a player's mana pool (CR 106.4), by an ability of `source`. "Tapped for mana" is its own event,

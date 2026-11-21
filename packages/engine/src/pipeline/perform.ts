@@ -7,6 +7,7 @@ import { gainLife, loseLife } from "../effects/life.ts";
 import { countLandPlay } from "../game/land-played.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { addMana } from "../mana/pool.ts";
+import { putCounters, removeCounters } from "../permanents/counters.ts";
 import { destroy } from "../permanents/destroy.ts";
 import { regenerate } from "../permanents/regenerate.ts";
 import { sacrifice } from "../permanents/sacrifice.ts";
@@ -68,6 +69,8 @@ function leavingObjects(event: SingleEvent): ObjectId[] {
     case "reorderLibrary":
     case "tap":
     case "untap":
+    case "putCounters":
+    case "removeCounters":
     case "gainLife":
     case "loseLife":
     case "addMana":
@@ -125,6 +128,10 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return loseLife(state, event.player, event.amount);
     case "untap":
       return untapPermanent(state, event.object);
+    case "putCounters":
+      return putCounters(state, event.object, event.counter, event.amount);
+    case "removeCounters":
+      return removeCounters(state, event.object, event.counter, event.amount);
     case "addMana":
       return addMana(state, event.player, event.mana, event.amount, event.source);
     case "draw":
