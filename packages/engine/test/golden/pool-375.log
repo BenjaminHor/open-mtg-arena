@@ -1,0 +1,619 @@
+T0 p1 goes first (chosen by p2)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Deathmark, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Protean Hydra, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Elvish Archdruid, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Bramble Creeper, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Consume Spirit, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Elvish Piper, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Cemetery Reaper, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 keeps
+T0 p2 keeps
+T1 turn 1 begins (p1)
+T1 p1 attack: nothing
+T1 moves: Elvish Archdruid, p1's hand -> stack
+T1 p1 cancels casting Elvish Archdruid
+T1 moves: Swamp, p1's hand -> battlefield
+T1 p1 plays p1:Swamp
+T2 turn 2 begins (p2)
+T2 moves: Fireball, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Elvish Piper, p2's hand -> stack
+T2 p2 cancels casting Elvish Piper
+T2 moves: Elvish Piper, p2's hand -> stack
+T2 p2 cancels casting Elvish Piper
+T2 moves: Elvish Piper, p2's hand -> stack
+T2 p2 cancels casting Elvish Piper
+T2 taps: p1:Swamp
+T2 p1 adds {B} (p1:Swamp)
+T2 p1 taps p1:Swamp for mana
+T2 p1's unspent {B} empties
+T2 p2 attack: nothing
+T2 moves: Island, p2's hand -> battlefield
+T2 p2 plays p2:Island
+T2 taps: p2:Island
+T2 p2 adds {U} (p2:Island)
+T2 p2 taps p2:Island for mana
+T2 p2's unspent {U} empties
+T3 turn 3 begins (p1)
+T3 untaps: p1:Swamp
+T3 moves: Island, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Elvish Archdruid, p1's hand -> stack
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1 cancels casting Elvish Archdruid
+T3 moves: Elvish Archdruid, p1's hand -> stack
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1 cancels casting Elvish Archdruid
+T3 moves: Elvish Archdruid, p1's hand -> stack
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1 cancels casting Elvish Archdruid
+T3 taps: p1:Swamp
+T3 p1 adds {B} (p1:Swamp)
+T3 p1 taps p1:Swamp for mana
+T3 p1's unspent {B} empties
+T3 p1 attack: nothing
+T3 moves: Mountain, p1's hand -> battlefield
+T3 p1 plays p1:Mountain
+T3 moves: Elvish Archdruid, p1's hand -> stack
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
+T3 p1 cancels casting Elvish Archdruid
+T3 moves: Elvish Archdruid, p1's hand -> stack
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
+T3 p1 cancels casting Elvish Archdruid
+T3 moves: Protean Hydra, p1's hand -> stack
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
+T3 p1 cancels casting Protean Hydra
+T3 taps: p1:Mountain
+T3 p1 adds {R} (p1:Mountain)
+T3 p1 taps p1:Mountain for mana
+T3 p1's unspent {R} empties
+T4 turn 4 begins (p2)
+T4 untaps: p2:Island
+T4 moves: Sparkmage Apprentice, p2's library -> p2's hand
+T4 p2 draws
+T4 taps: p2:Island
+T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
+T4 p2's unspent {U} empties
+T4 p2 attack: nothing
+T4 moves: Forest, p2's hand -> battlefield
+T4 p2 plays p2:Forest
+T4 taps: p2:Forest
+T4 p2 adds {G} (p2:Forest)
+T4 p2 taps p2:Forest for mana
+T4 p2's unspent {G} empties
+T5 turn 5 begins (p1)
+T5 untaps: p1:Swamp
+T5 untaps: p1:Mountain
+T5 taps: p1:Mountain
+T5 p1 adds {R} (p1:Mountain)
+T5 p1 taps p1:Mountain for mana
+T5 taps: p1:Swamp
+T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
+T5 p1's unspent {B}{R} empties
+T5 moves: Swamp, p1's library -> p1's hand
+T5 p1 draws
+T5 p1 attack: nothing
+T5 moves: Island, p1's hand -> battlefield
+T5 p1 plays p1:Island
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 p1's unspent {U} empties
+T6 turn 6 begins (p2)
+T6 untaps: p2:Island
+T6 untaps: p2:Forest
+T6 moves: Forest, p2's library -> p2's hand
+T6 p2 draws
+T6 taps: p2:Island
+T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
+T6 moves: Fireball, p2's hand -> stack
+T6 taps: p2:Forest
+T6 p2 adds {G} (p2:Forest)
+T6 p2 taps p2:Forest for mana
+T6 p2 cancels casting Fireball
+T6 moves: Forest, p2's hand -> battlefield
+T6 p2 plays p2:Forest#2
+T6 moves: Fireball, p2's hand -> stack
+T6 p2 cancels casting Fireball
+T6 taps: p2:Forest#1
+T6 p2 adds {G} (p2:Forest#1)
+T6 p2 taps p2:Forest#1 for mana
+T6 moves: Fireball, p2's hand -> stack
+T6 p2 cancels casting Fireball
+T6 taps: p2:Forest#2
+T6 p2 adds {G} (p2:Forest#2)
+T6 p2 taps p2:Forest#2 for mana
+T6 moves: Elvish Piper, p2's hand -> stack
+T6 p2 cancels casting Elvish Piper
+T6 moves: Elvish Piper, p2's hand -> stack
+T6 p2 cancels casting Elvish Piper
+T6 p2's unspent {U}{G}{G} empties
+T6 p2 attack: nothing
+T7 turn 7 begins (p1)
+T7 untaps: p1:Swamp
+T7 untaps: p1:Mountain
+T7 untaps: p1:Island
+T7 moves: Time Warp, p1's library -> p1's hand
+T7 p1 draws
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
+T7 p1's unspent {U} empties
+T7 p1 attack: nothing
+T7 taps: p1:Swamp
+T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
+T7 taps: p1:Mountain
+T7 p1 adds {R} (p1:Mountain)
+T7 p1 taps p1:Mountain for mana
+T7 p1's unspent {B}{R} empties
+T7 moves: Elvish Archdruid, p1's hand -> stack
+T7 p1 cancels casting Elvish Archdruid
+T8 turn 8 begins (p2)
+T8 untaps: p2:Island
+T8 untaps: p2:Forest#1
+T8 untaps: p2:Forest#2
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2's unspent {U} empties
+T8 moves: Burst of Speed, p2's library -> p2's hand
+T8 p2 draws
+T8 p2 attack: nothing
+T8 taps: p2:Forest#2
+T8 p2 adds {G} (p2:Forest#2)
+T8 p2 taps p2:Forest#2 for mana
+T8 taps: p2:Forest#1
+T8 p2 adds {G} (p2:Forest#1)
+T8 p2 taps p2:Forest#1 for mana
+T8 p2's unspent {G}{G} empties
+T8 moves: Mountain, p2's hand -> battlefield
+T8 p2 plays p2:Mountain
+T8 moves: Fireball, p2's hand -> stack
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
+T8 p2 casts Fireball
+T8 resolves: Fireball
+T8 moves: Fireball, stack -> p2's graveyard
+T9 turn 9 begins (p1)
+T9 untaps: p1:Swamp
+T9 untaps: p1:Mountain
+T9 untaps: p1:Island
+T9 taps: p1:Swamp
+T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
+T9 taps: p1:Island
+T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 p1's unspent {U}{B}{R} empties
+T9 moves: Forest, p1's library -> p1's hand
+T9 p1 draws
+T9 moves: Island, p1's hand -> battlefield
+T9 p1 plays p1:Island#2
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 moves: Protean Hydra, p1's hand -> stack
+T9 p1 cancels casting Protean Hydra
+T9 p1's unspent {U} empties
+T9 p1 attack: nothing
+T10 turn 10 begins (p2)
+T10 untaps: p2:Island
+T10 untaps: p2:Forest#1
+T10 untaps: p2:Forest#2
+T10 untaps: p2:Mountain
+T10 moves: Weakness, p2's library -> p2's hand
+T10 p2 draws
+T10 taps: p2:Forest#1
+T10 p2 adds {G} (p2:Forest#1)
+T10 p2 taps p2:Forest#1 for mana
+T10 taps: p2:Forest#2
+T10 p2 adds {G} (p2:Forest#2)
+T10 p2 taps p2:Forest#2 for mana
+T10 taps: p2:Mountain
+T10 p2 adds {R} (p2:Mountain)
+T10 p2 taps p2:Mountain for mana
+T10 p2's unspent {R}{G}{G} empties
+T10 p2 attack: nothing
+T10 taps: p2:Island
+T10 p2 adds {U} (p2:Island)
+T10 p2 taps p2:Island for mana
+T10 p2's unspent {U} empties
+T11 turn 11 begins (p1)
+T11 untaps: p1:Swamp
+T11 untaps: p1:Mountain
+T11 untaps: p1:Island#1
+T11 untaps: p1:Island#2
+T11 moves: Island, p1's library -> p1's hand
+T11 p1 draws
+T11 taps: p1:Island#2
+T11 p1 adds {U} (p1:Island#2)
+T11 p1 taps p1:Island#2 for mana
+T11 p1's unspent {U} empties
+T11 moves: Swamp, p1's hand -> battlefield
+T11 p1 plays p1:Swamp#2
+T11 moves: Elvish Archdruid, p1's hand -> stack
+T11 taps: p1:Swamp#1
+T11 p1 adds {B} (p1:Swamp#1)
+T11 p1 taps p1:Swamp#1 for mana
+T11 taps: p1:Mountain
+T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
+T11 taps: p1:Island#1
+T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
+T11 p1 cancels casting Elvish Archdruid
+T11 moves: Time Warp, p1's hand -> stack
+T11 p1 cancels casting Time Warp
+T11 p1 attack: nothing
+T11 taps: p1:Mountain
+T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
+T11 p1's unspent {R} empties
+T11 taps: p1:Swamp#1
+T11 p1 adds {B} (p1:Swamp#1)
+T11 p1 taps p1:Swamp#1 for mana
+T11 taps: p1:Swamp#2
+T11 p1 adds {B} (p1:Swamp#2)
+T11 p1 taps p1:Swamp#2 for mana
+T11 taps: p1:Island#1
+T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
+T11 p1's unspent {U}{B}{B} empties
+T11 moves: Protean Hydra, p1's hand -> stack
+T11 p1 cancels casting Protean Hydra
+T12 turn 12 begins (p2)
+T12 untaps: p2:Island
+T12 untaps: p2:Forest#1
+T12 untaps: p2:Forest#2
+T12 untaps: p2:Mountain
+T12 moves: Spined Wurm, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Forest#2
+T12 p2 adds {G} (p2:Forest#2)
+T12 p2 taps p2:Forest#2 for mana
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
+T12 taps: p2:Island
+T12 p2 adds {U} (p2:Island)
+T12 p2 taps p2:Island for mana
+T12 p2's unspent {U}{R}{G} empties
+T12 taps: p2:Forest#1
+T12 p2 adds {G} (p2:Forest#1)
+T12 p2 taps p2:Forest#1 for mana
+T12 moves: Consume Spirit, p2's hand -> stack
+T12 p2 cancels casting Consume Spirit
+T12 moves: Cemetery Reaper, p2's hand -> stack
+T12 p2 cancels casting Cemetery Reaper
+T12 moves: Elvish Piper, p2's hand -> stack
+T12 p2 cancels casting Elvish Piper
+T12 moves: Elvish Piper, p2's hand -> stack
+T12 p2 cancels casting Elvish Piper
+T12 p2's unspent {G} empties
+T12 p2 attack: nothing
+T12 moves: Weakness, p2's hand -> p2's graveyard
+T12 p2 discards Weakness
+T13 turn 13 begins (p1)
+T13 untaps: p1:Swamp#1
+T13 untaps: p1:Mountain
+T13 untaps: p1:Island#1
+T13 untaps: p1:Island#2
+T13 untaps: p1:Swamp#2
+T13 taps: p1:Island#2
+T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
+T13 p1's unspent {U} empties
+T13 moves: Mountain, p1's library -> p1's hand
+T13 p1 draws
+T13 p1 attack: nothing
+T13 taps: p1:Swamp#1
+T13 p1 adds {B} (p1:Swamp#1)
+T13 p1 taps p1:Swamp#1 for mana
+T13 taps: p1:Island#1
+T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
+T13 taps: p1:Mountain
+T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
+T13 p1's unspent {U}{B}{R} empties
+T13 taps: p1:Swamp#2
+T13 p1 adds {B} (p1:Swamp#2)
+T13 p1 taps p1:Swamp#2 for mana
+T13 p1's unspent {B} empties
+T13 moves: Mountain, p1's hand -> battlefield
+T13 p1 plays p1:Mountain#2
+T13 moves: Elvish Archdruid, p1's hand -> stack
+T13 taps: p1:Mountain#2
+T13 p1 adds {R} (p1:Mountain#2)
+T13 p1 taps p1:Mountain#2 for mana
+T13 p1 cancels casting Elvish Archdruid
+T14 turn 14 begins (p2)
+T14 untaps: p2:Island
+T14 untaps: p2:Forest#1
+T14 untaps: p2:Forest#2
+T14 untaps: p2:Mountain
+T14 taps: p2:Forest#2
+T14 p2 adds {G} (p2:Forest#2)
+T14 p2 taps p2:Forest#2 for mana
+T14 p2's unspent {G} empties
+T14 moves: Mountain, p2's library -> p2's hand
+T14 p2 draws
+T14 taps: p1:Mountain#2
+T14 p1 adds {R} (p1:Mountain#2)
+T14 p1 taps p1:Mountain#2 for mana
+T14 p1's unspent {R} empties
+T14 p2 attack: nothing
+T14 taps: p2:Island
+T14 p2 adds {U} (p2:Island)
+T14 p2 taps p2:Island for mana
+T14 taps: p2:Forest#1
+T14 p2 adds {G} (p2:Forest#1)
+T14 p2 taps p2:Forest#1 for mana
+T14 p2's unspent {U}{G} empties
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2's unspent {R} empties
+T14 moves: Bramble Creeper, p2's hand -> stack
+T14 p2 cancels casting Bramble Creeper
+T14 moves: Mountain, p2's hand -> battlefield
+T14 p2 plays p2:Mountain#2
+T14 taps: p2:Mountain#2
+T14 p2 adds {R} (p2:Mountain#2)
+T14 p2 taps p2:Mountain#2 for mana
+T14 moves: Bramble Creeper, p2's hand -> stack
+T14 p2 cancels casting Bramble Creeper
+T14 p2's unspent {R} empties
+T15 turn 15 begins (p1)
+T15 untaps: p1:Swamp#1
+T15 untaps: p1:Mountain#1
+T15 untaps: p1:Island#1
+T15 untaps: p1:Island#2
+T15 untaps: p1:Swamp#2
+T15 untaps: p1:Mountain#2
+T15 taps: p1:Mountain#2
+T15 p1 adds {R} (p1:Mountain#2)
+T15 p1 taps p1:Mountain#2 for mana
+T15 p1's unspent {R} empties
+T15 moves: Silvercoat Lion, p1's library -> p1's hand
+T15 p1 draws
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 p1's unspent {U} empties
+T15 taps: p1:Swamp#1
+T15 p1 adds {B} (p1:Swamp#1)
+T15 p1 taps p1:Swamp#1 for mana
+T15 moves: Elvish Archdruid, p1's hand -> stack
+T15 taps: p1:Mountain#1
+T15 p1 adds {R} (p1:Mountain#1)
+T15 p1 taps p1:Mountain#1 for mana
+T15 taps: p1:Swamp#2
+T15 p1 adds {B} (p1:Swamp#2)
+T15 p1 taps p1:Swamp#2 for mana
+T15 p1 cancels casting Elvish Archdruid
+T15 taps: p1:Mountain#1
+T15 p1 adds {R} (p1:Mountain#1)
+T15 p1 taps p1:Mountain#1 for mana
+T15 moves: Swamp, p1's hand -> battlefield
+T15 p1 plays p1:Swamp#3
+T15 taps: p1:Swamp#3
+T15 p1 adds {B} (p1:Swamp#3)
+T15 p1 taps p1:Swamp#3 for mana
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
+T15 p1's unspent {U}{B}{B}{R} empties
+T15 p1 attack: nothing
+T15 taps: p1:Swamp#2
+T15 p1 adds {B} (p1:Swamp#2)
+T15 p1 taps p1:Swamp#2 for mana
+T15 p1's unspent {B} empties
+T16 turn 16 begins (p2)
+T16 untaps: p2:Island
+T16 untaps: p2:Forest#1
+T16 untaps: p2:Forest#2
+T16 untaps: p2:Mountain#1
+T16 untaps: p2:Mountain#2
+T16 moves: Essence Scatter, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Mountain#1
+T16 p2 adds {R} (p2:Mountain#1)
+T16 p2 taps p2:Mountain#1 for mana
+T16 p2's unspent {R} empties
+T16 taps: p2:Forest#1
+T16 p2 adds {G} (p2:Forest#1)
+T16 p2 taps p2:Forest#1 for mana
+T16 taps: p2:Mountain#2
+T16 p2 adds {R} (p2:Mountain#2)
+T16 p2 taps p2:Mountain#2 for mana
+T16 p2's unspent {R}{G} empties
+T16 p2 attack: nothing
+T16 taps: p2:Island
+T16 p2 adds {U} (p2:Island)
+T16 p2 taps p2:Island for mana
+T16 taps: p2:Forest#2
+T16 p2 adds {G} (p2:Forest#2)
+T16 p2 taps p2:Forest#2 for mana
+T16 p2's unspent {U}{G} empties
+T16 moves: Bramble Creeper, p2's hand -> p2's graveyard
+T16 p2 discards Bramble Creeper
+T17 turn 17 begins (p1)
+T17 untaps: p1:Swamp#1
+T17 untaps: p1:Mountain#1
+T17 untaps: p1:Island#1
+T17 untaps: p1:Island#2
+T17 untaps: p1:Swamp#2
+T17 untaps: p1:Mountain#2
+T17 untaps: p1:Swamp#3
+T17 moves: Palace Guard, p1's library -> p1's hand
+T17 p1 draws
+T17 taps: p1:Swamp#3
+T17 p1 adds {B} (p1:Swamp#3)
+T17 p1 taps p1:Swamp#3 for mana
+T17 p1's unspent {B} empties
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
+T17 p1's unspent {U} empties
+T17 p1 attack: nothing
+T17 taps: p1:Mountain#1
+T17 p1 adds {R} (p1:Mountain#1)
+T17 p1 taps p1:Mountain#1 for mana
+T17 p1's unspent {R} empties
+T17 moves: Time Warp, p1's hand -> stack
+T17 p1 cancels casting Time Warp
+T17 moves: Island, p1's hand -> battlefield
+T17 p1 plays p1:Island#3
+T18 turn 18 begins (p2)
+T18 untaps: p2:Island
+T18 untaps: p2:Forest#1
+T18 untaps: p2:Forest#2
+T18 untaps: p2:Mountain#1
+T18 untaps: p2:Mountain#2
+T18 taps: p1:Island#3
+T18 p1 adds {U} (p1:Island#3)
+T18 p1 taps p1:Island#3 for mana
+T18 taps: p2:Mountain#1
+T18 p2 adds {R} (p2:Mountain#1)
+T18 p2 taps p2:Mountain#1 for mana
+T18 taps: p1:Mountain#2
+T18 p1 adds {R} (p1:Mountain#2)
+T18 p1 taps p1:Mountain#2 for mana
+T18 taps: p1:Swamp#1
+T18 p1 adds {B} (p1:Swamp#1)
+T18 p1 taps p1:Swamp#1 for mana
+T18 taps: p1:Swamp#2
+T18 p1 adds {B} (p1:Swamp#2)
+T18 p1 taps p1:Swamp#2 for mana
+T18 taps: p2:Forest#1
+T18 p2 adds {G} (p2:Forest#1)
+T18 p2 taps p2:Forest#1 for mana
+T18 taps: p1:Island#2
+T18 p1 adds {U} (p1:Island#2)
+T18 p1 taps p1:Island#2 for mana
+T18 taps: p2:Mountain#2
+T18 p2 adds {R} (p2:Mountain#2)
+T18 p2 taps p2:Mountain#2 for mana
+T18 p1's unspent {U}{U}{B}{B}{R} empties
+T18 p2's unspent {R}{R}{G} empties
+T18 moves: Child of Night, p2's library -> p2's hand
+T18 p2 draws
+T18 taps: p2:Island
+T18 p2 adds {U} (p2:Island)
+T18 p2 taps p2:Island for mana
+T18 taps: p2:Forest#2
+T18 p2 adds {G} (p2:Forest#2)
+T18 p2 taps p2:Forest#2 for mana
+T18 p2's unspent {U}{G} empties
+T18 moves: Spined Wurm, p2's hand -> stack
+T18 p2 cancels casting Spined Wurm
+T18 moves: Sparkmage Apprentice, p2's hand -> stack
+T18 p2 cancels casting Sparkmage Apprentice
+T18 moves: Consume Spirit, p2's hand -> stack
+T18 p2 cancels casting Consume Spirit
+T18 p2 attack: nothing
+T18 moves: Cemetery Reaper, p2's hand -> p2's graveyard
+T18 p2 discards Cemetery Reaper
+T19 turn 19 begins (p1)
+T19 untaps: p1:Swamp#1
+T19 untaps: p1:Mountain#1
+T19 untaps: p1:Island#1
+T19 untaps: p1:Island#2
+T19 untaps: p1:Swamp#2
+T19 untaps: p1:Mountain#2
+T19 untaps: p1:Swamp#3
+T19 untaps: p1:Island#3
+T19 moves: Inferno Elemental, p1's library -> p1's hand
+T19 p1 draws
+T19 moves: Time Warp, p1's hand -> stack
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
+T19 taps: p1:Mountain#2
+T19 p1 adds {R} (p1:Mountain#2)
+T19 p1 taps p1:Mountain#2 for mana
+T19 taps: p1:Swamp#3
+T19 p1 adds {B} (p1:Swamp#3)
+T19 p1 taps p1:Swamp#3 for mana
+T19 taps: p1:Swamp#1
+T19 p1 adds {B} (p1:Swamp#1)
+T19 p1 taps p1:Swamp#1 for mana
+T19 taps: p1:Swamp#2
+T19 p1 adds {B} (p1:Swamp#2)
+T19 p1 taps p1:Swamp#2 for mana
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
+T19 taps: p1:Island#3
+T19 p1 adds {U} (p1:Island#3)
+T19 p1 taps p1:Island#3 for mana
+T19 p1 casts Time Warp
+T19 taps: p1:Mountain#1
+T19 p1 adds {R} (p1:Mountain#1)
+T19 p1 taps p1:Mountain#1 for mana
+T19 p2 will take an extra turn after this one
+T19 resolves: Time Warp
+T19 moves: Time Warp, stack -> p1's graveyard
+T19 moves: Forest, p1's hand -> battlefield
+T19 p1 plays p1:Forest
+T19 moves: Silvercoat Lion, p1's hand -> stack
+T19 taps: p1:Forest
+T19 p1 adds {G} (p1:Forest)
+T19 p1 taps p1:Forest for mana
+T19 p1 cancels casting Silvercoat Lion
+T19 p1's unspent {U}{R}{R} empties
+T19 taps: p1:Forest
+T19 p1 adds {G} (p1:Forest)
+T19 p1 taps p1:Forest for mana
+T19 p1's unspent {G} empties
+T19 p1 attack: nothing
+T20 turn 20 begins (p2)
+T20 untaps: p2:Island
+T20 untaps: p2:Forest#1
+T20 untaps: p2:Forest#2
+T20 untaps: p2:Mountain#1
+T20 untaps: p2:Mountain#2

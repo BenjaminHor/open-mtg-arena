@@ -45,6 +45,16 @@ export type GameState = {
    * "the next player" always come from this list, cyclically.
    */
   turnOrder: PlayerId[];
+  /**
+   * Extra turns still to come (CR 500.7), the next one first: each is added directly after the current turn, so the most
+   * recently created is taken first. They come before the regular turn order goes on.
+   */
+  extraTurns: PlayerId[];
+  /**
+   * Whose regular turn was the most recent, the turn order's place: the next regular turn is the player after them
+   * (CR 500.7). Null before the first turn; during an extra turn, it's still the regular turn's player before it.
+   */
+  regularTurnPlayer: PlayerId | null;
   players: Record<PlayerId, PlayerState>;
   objects: Record<ObjectId, GameObject>;
   zones: Zones;

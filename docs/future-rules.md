@@ -202,7 +202,9 @@ sick. Still at risk: a change and its change back inside one piece of work, whic
 step is built, D-070: `endStep` repeats `combatDamage` once, read from `Combat`.)
 *Watch out:* `Turn` stores only a step name and `stepAfter` finds the next one by its position in `TURN_STEPS`, so a turn
 with two combat phases or two upkeeps can't be represented yet. That needs a per-turn step list with a position in
-`Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
+`Turn` (a state migration). Extra turns are built (D-116): `GameState.extraTurns`, the latest first, and
+`regularTurnPlayer`, the turn order's place, which `endStep` reads through `nextTurn`. "Skip your next turn" (later:
+CR 614.10) belongs beside them.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 "Doesn't untap during [its controller's / that player's] next untap step" is built (D-115): the effect ends when the
 untap step it names is over, in `game/untap-step.ts`. A skipped untap step must not end it: "the next"

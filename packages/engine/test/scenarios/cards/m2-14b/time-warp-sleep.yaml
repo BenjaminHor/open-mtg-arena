@@ -1,0 +1,28 @@
+name: After Sleep and Time Warp on one opponent, their extra turn's untap step is the next one, so their regular turn untaps
+rules: [CR 500.7, CR 502.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island, Island, Island, Island, Island]
+    hand: [Sleep, Time Warp]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Sleep
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - p1 cast: Time Warp
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - all pass: until upkeep
+  - expect:
+      turn: 4
+      active: p2
+      p2:Grizzly Bears.tapped: true
+  - all pass: until upkeep
+  - expect:
+      turn: 5
+      active: p2
+      p2:Grizzly Bears.tapped: false

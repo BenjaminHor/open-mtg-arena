@@ -2,6 +2,7 @@
 // place that turns them into changes to the game.
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
+import { addExtraTurns } from "../game/extra-turns.ts";
 import { andThen, type Progress } from "../game/progress.ts";
 import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
@@ -331,6 +332,9 @@ export function runEffect(
       if (player === null) return { state, events: [] };
       return exileGraveyard(state, player, effect.filter, context.controller, cards);
     }
+    case "extraTurn":
+      // Several players' extra turns are added one at a time in APNAP order (CR 500.7); `playersNamed` lists them so.
+      return addExtraTurns(state, playersNamed(state, effect.who, context, cards));
     case "gainLife": {
       const amount = amountNow(state, effect.amount, context, cards);
       return toEach(state, playersNamed(state, effect.who, context, cards), cards, (player) => ({

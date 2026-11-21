@@ -89,6 +89,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player} ${e.choice === "keep" ? "keeps" : "mulligans"}`;
     case "TURN_BEGAN":
       return `turn ${e.turn} begins (${e.activePlayer})`;
+    case "EXTRA_TURN_ADDED":
+      return `${e.player} will take an extra turn after this one`;
     case "STEP_BEGAN":
       return `step: ${scenarioStep(e.step)}`;
     case "PRIORITY_PASSED":

@@ -22,6 +22,7 @@ import { newTurnHistory } from "../state/turn-history.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { zoneList } from "../zones/zone-list.ts";
 import { waitFor } from "./decide.ts";
+import { nextTurn } from "./extra-turns.ts";
 import { andThen, type Progress } from "./progress.ts";
 import { checkStateBasedActions } from "./state-based-actions.ts";
 import { currentTurn } from "./turn.ts";
@@ -29,8 +30,17 @@ import { skipsFirstDrawStep, stepAfter } from "./turn-steps.ts";
 import { untapStep } from "./untap-step.ts";
 import { queueWork } from "./work.ts";
 
-/** Begins a player's turn with its untap step (CR 501.1). Each player's land count starts again (CR 305.2). */
-export function beginTurn(state: GameState, player: PlayerId, number: number, cards: CardDatabase): Progress {
+/**
+ * Begins a player's turn with its untap step (CR 501.1). Each player's land count starts again (CR 305.2). An extra
+ * turn (CR 500.7) leaves the turn order's place where it was.
+ */
+export function beginTurn(
+  state: GameState,
+  player: PlayerId,
+  number: number,
+  cards: CardDatabase,
+  extra = false,
+): Progress {
   const players = { ...state.players };
   for (const p of state.turnOrder) {
     const ps = players[p];
@@ -52,6 +62,7 @@ export function beginTurn(state: GameState, player: PlayerId, number: number, ca
     objects,
     turnHistory: newTurnHistory(),
     turn: { number, activePlayer: player, step: "untap" },
+    regularTurnPlayer: extra ? state.regularTurnPlayer : player,
   };
   return andThen({ state: begun, events: [{ type: "TURN_BEGAN", turn: number, activePlayer: player }] }, (s) =>
     beginStep(s, "untap", cards),
@@ -71,8 +82,11 @@ export function endStep(state: GameState, cards: CardDatabase): Progress {
   let next = turn.step === "combatDamage" && secondDamageStepFollows(state) ? "combatDamage" : stepAfter(turn.step);
   while (next !== null && isSkipped(emptied.state, next)) next = stepAfter(next);
   if (next !== null) return andThen(emptied, (s) => beginStep(s, next, cards));
-  const after = nextPlayer(state, turn.activePlayer);
-  return andThen(emptied, (s) => beginTurn(s, after, turn.number + 1, cards));
+  // The next extra turn, if any, else the next regular turn (CR 500.7).
+  return andThen(emptied, (s) => {
+    const after = nextTurn(s);
+    return beginTurn(after.state, after.player, turn.number + 1, cards, after.extra);
+  });
 }
 
 /**
@@ -217,12 +231,4 @@ function emptyManaPools(state: GameState): Progress {
     players[p] = { ...ps, manaPool: emptyManaPool() };
   }
   return { state: { ...state, players }, events };
-}
-
-/** The next player in turn order (CR 103.1, 117.3d), wrapping around. */
-export function nextPlayer(state: GameState, player: PlayerId): PlayerId {
-  const at = state.turnOrder.indexOf(player);
-  const next = state.turnOrder[(at + 1) % state.turnOrder.length];
-  if (at < 0 || next === undefined) throw new Error(`${player} isn't in turn order`);
-  return next;
 }

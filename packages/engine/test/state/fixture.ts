@@ -65,6 +65,8 @@ export function midTurnState(): GameState {
     nextCardId: 11,
     turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
     turnOrder: ["p1", "p2"],
+    extraTurns: [],
+    regularTurnPlayer: "p1",
     players: {
       p1: {
         id: "p1",

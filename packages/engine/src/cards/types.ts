@@ -611,6 +611,8 @@ export type Effect =
   | { op: "counter"; of: EffectSubject }
   /** "[who] gain(s) N life" (CR 119.3). */
   | { op: "gainLife"; who: EffectSubject; amount: Amount }
+  /** "[who] takes an extra turn after this one" (CR 500.7): added directly after the current turn. */
+  | { op: "extraTurn"; who: EffectSubject }
   /** "[who] lose(s) N life" (CR 119.3). */
   | { op: "loseLife"; who: EffectSubject; amount: Amount }
   /** "[who] draw(s) N cards": one draw at a time (CR 121.2), each player's in turn, from the active player (CR 121.2c). */

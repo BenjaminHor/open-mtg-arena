@@ -42,6 +42,8 @@ export type GameEvent =
   | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5
   | { type: "TURN_BEGAN"; turn: number; activePlayer: PlayerId }
+  /** "Takes an extra turn after this one" (CR 500.7): the turn is added directly after the current one. */
+  | { type: "EXTRA_TURN_ADDED"; player: PlayerId }
   /**
    * A step began, or a main phase (which has no steps, CR 505.2): `Step` names both. Skipped steps don't begin
    * (CR 500.11).

@@ -1738,3 +1738,18 @@ owner's answer to the D-089 open question, option (a))
 - "Whenever this creature blocks a creature" is the trigger `selfBlocks`, once per creature it blocks (CR 509.3b).
 - Future impact: "skip your next untap step" must leave these effects for the untap step that does happen (later:
   CR 614.10a).
+
+**D-116: Extra turns (M2-14b: Time Warp)** · 2026-11-21 · accepted
+- `GameState.extraTurns` lists the extra turns to come, the next one first: each is added directly after the current
+  turn (CR 500.7), so a new one goes to the front, and of several made in one turn the latest is taken first (Time
+  Warp's ruling). `GameState.regularTurnPlayer` is the turn order's place: the player whose regular turn was the most
+  recent. After the last extra turn the next regular turn is the player after them, so an extra turn given to an
+  opponent is followed by that opponent's regular turn too.
+- `Turn` (also the fixed opening's type) is unchanged; the two fields are on the state, set by `beginTurn` and read by
+  `nextTurn` in `game/extra-turns.ts`. A fixed opening's turn is a regular turn.
+- An extra turn is a turn like any other: its number goes on counting, it has every step, and a "next untap step"
+  effect on its player is used up by its untap step (the Sleep and Time Warp scenario).
+- The `EXTRA_TURN_ADDED` event tells the UI. `nextPlayer` moved to `game/turn.ts`, which `extra-turns.ts` and
+  `pass-priority.ts` both use.
+- Future impact: "skip your next turn" goes beside `nextTurn`; extra combat phases (CR 500.8) still need a per-turn
+  step list (future-rules).
