@@ -460,8 +460,8 @@ export type EffectSubject =
   | { controllerOf: { target: number } }
   /**
    * "Each creature that player or that planeswalker's controller controls" (Chandra Nalaar): every permanent fitting
-   * the filter (its `controller` left out) that the target controls, the target being a player, or, for a planeswalker,
-   * its controller as the effect applies or as it last was (CR 608.2h).
+   * the filter (its `controller` left out) that the target controls: the target player, or the targeted planeswalker's
+   * controller as the effect applies (a target that's gone makes Chandra's ability not resolve at all, CR 608.2b).
    */
   | { eachControlledBy: { target: number }; filter: ObjectFilter };
 

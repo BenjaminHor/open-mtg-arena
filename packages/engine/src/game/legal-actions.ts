@@ -98,7 +98,8 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
       return legalAmounts(pending).map((amount): Action => ({ ...answer, answer: { kind: "assignDamage", amount } }));
     }
     case "announceX": {
-      // Any whole number is legal (CR 107.3a); these are the ones the player could pay for now, from 0.
+      // Any whole number is legal for {X} (CR 107.3a), up to the loyalty for [−X] (CR 606.6); these are the ones the
+      // player could pay for now, from 0.
       const values = Array.from(
         { length: pending.upTo + 1 },
         (_, value): Action => ({ ...answer, answer: { kind: "announceX", value } }),

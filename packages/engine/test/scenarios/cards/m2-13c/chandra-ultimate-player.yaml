@@ -1,5 +1,5 @@
-name: Chandra Nalaar's -8 deals 10 to the target player and each creature they control, in one damage event
-rules: [CR 608.2f, CR 120.4, CR 113.7a, CR 704.5i]
+name: Chandra Nalaar's -8 deals 10 to the target player and each creature they control
+rules: [CR 113.7a, CR 704.5i]
 setup:
   turn: { active: p1, step: main1 }
   p1:
