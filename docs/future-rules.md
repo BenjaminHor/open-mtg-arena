@@ -182,8 +182,9 @@ need the text fixed when it's activated.
 **More combat (CR 506–511, D-040).**
 *Built (M2-08b, D-086):* `Combat.removed`, the creatures an effect removed while they stayed on the battlefield
 (regeneration), read through `stillInCombat` in `rules/combat.ts`. *Watch out:* phasing, "remove from combat" effects
-and control changes must add to it too, and a permanent that stops and starts being a creature would rejoin combat
-unless it's added then (CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
+and control changes must add to it too. A permanent that stops being a creature is added as `advance` finishes each
+piece of work (M2-09b2a), so one that stopped and started again inside a single piece of work (a batch moving an
+animator out and another in) would rejoin combat (CR 506.4). Rules about a whole declaration are checked at `finishDeclaring`, offered only when legal, and a `takeBack` answer
 removes the last pick (M2-06c, D-072). The most requirements obeyable is worked out directly, which is exact while the
 only whole-declaration restriction is "alone"; menace (CR 702.111b) and "no more than one creature can attack"
 (CR 508.1d's example) need a search over declarations. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,

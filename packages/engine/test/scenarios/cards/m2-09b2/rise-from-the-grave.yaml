@@ -1,5 +1,5 @@
 name: Rise from the Grave puts an opponent's creature card onto the battlefield under your control, a black Zombie as well
-rules: [CR 611.2e, CR 613.1d, CR 613.1e, CR 205.1b, CR 110.2]
+rules: [CR 613.1d, CR 613.1e, CR 205.1b, CR 110.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:

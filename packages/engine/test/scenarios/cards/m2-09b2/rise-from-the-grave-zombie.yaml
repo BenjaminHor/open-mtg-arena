@@ -1,5 +1,5 @@
 name: A creature Rise from the Grave returned is a Zombie, so Undead Slayer can exile it, though not a creature that isn't one
-rules: [CR 613.1d, CR 205.1b, CR 115.2]
+rules: [CR 613.1d, CR 115.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:

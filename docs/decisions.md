@@ -1393,8 +1393,9 @@ every schema change and every change D-024 lists bumps it.
   "endOfGame" effect stays in the state after its object is gone; it can't apply again, as ids are never reused.
 - Rise from the Grave's "is a black Zombie" is `put { into: "battlefield", is }`: the move itself makes the effect
   (`Destination.is`, `moveCard`), on the new object, its timestamp after the object's, before triggers look at what
-  entered (CR 611.2e, 613.7n; a unit test with a "whenever a Zombie enters" test card). Tokens made "with"
-  characteristics (M2-11) can use the same field. `moveCard` also ends "while on the battlefield" effects, so `zones/`
+  entered (CR 611.2e, 613.7n; a unit test with a "whenever a Zombie enters" test card). Not for tokens: CR 611.2e is
+  about nontoken permanents, and a token's stated characteristics are its copiable values (CR 111.3, 707.2), so M2-11
+  gives tokens their own characteristics source instead. `moveCard` also ends "while on the battlefield" effects, so `zones/`
   doesn't import `effects/`.
 - A creature with no power or toughness (a land made a creature without one set) is 0/0 (CR 208.5).
 - Removal from combat (CR 506.4) is recorded in `Combat.removed` as it happens: `advance` checks after each piece of

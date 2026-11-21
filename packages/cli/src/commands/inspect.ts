@@ -45,6 +45,7 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
     // A "*" is set by its characteristic-defining ability: what 7c started from.
     const base = layeredOf(state, id, cards)?.base;
     if (base?.from === "ability") lines.push(`    layer 7a, its ability: ${base.power}/${base.toughness}`);
+    if (base?.from === "none") lines.push("    no power or toughness to start from: 0/0");
     if (base?.from === "effect")
       lines.push(`    layer 7b, set by ${sourceName(base.source)}: ${base.power}/${base.toughness}`);
     for (const change of layerSevenCChanges(state, id, cards)) lines.push(`    layer 7c: ${changeText(change)}`);

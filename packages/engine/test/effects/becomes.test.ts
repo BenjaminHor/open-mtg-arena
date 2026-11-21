@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { happen } from "../../src/pipeline/happen.ts";
-import { BEARS, FOREST, TEST_CARDS, ZOMBIE_WATCHER } from "../support/cards.ts";
+import { BEARS, FOREST, GROVE, TEST_CARDS, ZOMBIE_WATCHER } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -59,5 +59,21 @@ describe("a permanent entering as something (CR 611.2e)", () => {
     expect(effect?.duration).toBe("endOfGame");
     expect(obj?.kind === "card" && effect !== undefined && effect.timestamp > obj.timestamp).toBe(true);
     expect(risen.events.map((e) => e.type)).toContain("EFFECT_CREATED");
+  });
+
+  it("keeps it through an 'enters tapped' replacement, which changes only how it enters", () => {
+    const { state, card } = bearsInGraveyard();
+    const as = { source: card, controller: "p1" as const, change: zombie };
+    const grove = { ...state.objects[card], oracleId: GROVE } as GameState["objects"][ObjectId];
+    const withGrove: GameState = { ...state, objects: { ...state.objects, [card]: grove } };
+    const entered = happen(
+      withGrove,
+      { kind: "moveCard", object: card, to: { zone: "battlefield", controller: "p1", is: as } },
+      TEST_CARDS,
+    );
+    const id = entered.state.zones.battlefield.at(-1);
+    const obj = id === undefined ? undefined : entered.state.objects[id];
+    expect(obj?.kind === "card" && obj.tapped).toBe(true);
+    expect(entered.state.effects[0]?.affected).toStrictEqual([id]);
   });
 });

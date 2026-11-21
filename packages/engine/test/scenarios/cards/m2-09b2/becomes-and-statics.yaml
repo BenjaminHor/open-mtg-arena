@@ -1,4 +1,4 @@
-name: Static abilities find what they apply to after types and colors change, so they reach an animated Forest and a risen white creature turned black
+name: Static abilities find what they apply to after types change, so Levitation reaches an animated Forest; a risen White Knight is white and black
 rules: [CR 611.3a, CR 613.1d, CR 613.1e]
 setup:
   turn: { active: p1, step: main1 }
