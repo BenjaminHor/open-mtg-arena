@@ -1922,3 +1922,22 @@ owner's answer to the D-089 open question, option (a))
   counter and a fixed number. `CAST_CANCELLED.restored` is null for a card put back in a library: its id isn't shown,
   so no one can follow it there (D-054), though everyone saw it revealed.
 
+**D-125: Copies of spells (M2-14h1: Twincast)** · 2026-11-21 · accepted
+- A copy of a spell (CR 707.10) is a card object on the stack marked `copy`, not a third `GameObject` kind (as
+  future-rules once suggested): it has the original's oracle id and choices (targets, X, the division; modes later) and
+  is owned and controlled by who put it there, so everything that works on a spell (characteristics, targets, resolving,
+  being countered) works on it, as `token` does for a permanent. It isn't cast: the pipeline event `copySpell` puts it
+  on the stack (`zones/spell-copies.ts`, `SPELL_COPIED`), so "whenever a player casts" doesn't see it. A move keeps the
+  flag, and the state-based action CR 704.5e (`copyOutsideStack`) makes one outside the stack cease to exist
+  (`COPY_CEASED_TO_EXIST`). Scenarios and the log name it "Lightning Bolt copy".
+- The op `copySpell { of, newTargets: "may" }` copies a spell from what it is on the stack; Hive Mind (M2-14h2) copies
+  one countered in response from its last known information (judge forum, apps.magicjudges.org/forum/topic/8094), so
+  the pipeline event takes a snapshot (`SpellCopied`: original, oracle id, choices), not only a live object.
+- "You may choose new targets": the copy goes on the stack, then its controller is asked for each target in turn
+  (`chooseNewTarget`: keep it, even if illegal, or a new legal one, CR 115.7d), with the copy as the source (its color
+  for protection, its controller, and never itself, CR 115.5): the same as choosing before it's put there (CR 707.10c),
+  as nothing can happen between. The number of targets stays, and a changed target takes its share of a division
+  (CR 115.7f). Twincast is still on the stack, resolving, while they're chosen.
+- Once they're fixed, each object the copy targets becomes the target of a spell, kept or new: it's a new spell
+  targeting it (judge forum, apps.magicjudges.org/forum/post/65270), so Illusionary Servant's ability triggers.
+

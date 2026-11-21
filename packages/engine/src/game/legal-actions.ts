@@ -23,6 +23,7 @@ import { zoneList } from "../zones/zone-list.ts";
 import { activationProblem } from "./activate-ability.ts";
 import { castProblem } from "./cast.ts";
 import { largestShare, possibleTargets } from "./choose-targets.ts";
+import { newTargetOptions } from "./copy-spell.ts";
 import { playLandProblem } from "./play-land.ts";
 import { canMulligan } from "./pregame.ts";
 import { nextSacrificeOptions } from "./sacrifice-costs.ts";
@@ -71,6 +72,11 @@ function decisionActions(state: GameState, player: PlayerId, cards: CardDatabase
     case "chooseName": {
       return namesFor(pending.what, cards).map((name): Action => ({ ...answer, answer: { kind: "chooseName", name } }));
     }
+    case "chooseNewTarget":
+      // Keep it, or any legal new one (CR 115.7d).
+      return [null, ...newTargetOptions(state, pending, cards)].map(
+        (target): Action => ({ ...answer, answer: { kind: "chooseNewTarget", target } }),
+      );
     case "keepLegend":
       return pending.options.map((_, option): Action => ({ ...answer, answer: { kind: "chooseCard", option } }));
     case "orderTriggers":

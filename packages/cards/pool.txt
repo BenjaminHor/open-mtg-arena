@@ -214,6 +214,7 @@ Time Warp
 Tome Scour
 Traumatize
 Trumpet Blast
+Twincast
 Undead Slayer
 Underworld Dreams
 Unholy Strength

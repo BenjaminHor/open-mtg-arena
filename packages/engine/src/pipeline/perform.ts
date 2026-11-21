@@ -25,6 +25,7 @@ import { moveCard } from "../zones/move-card.ts";
 import { reorderLibraryTop } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
+import { putSpellCopy } from "../zones/spell-copies.ts";
 import { ceaseToExist, createToken } from "../zones/tokens.ts";
 import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
@@ -108,6 +109,7 @@ function leavingObjects(event: SingleEvent): ObjectId[] {
     case "putCounters":
     case "removeCounters":
     case "createToken":
+    case "copySpell":
     case "attach":
     case "unattach":
     // A token leaves the game from a zone that isn't the battlefield (CR 111.7).
@@ -201,6 +203,8 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return removeCounters(state, event.object, event.counter, event.amount);
     case "createToken":
       return createToken(state, event.token, event.player);
+    case "copySpell":
+      return putSpellCopy(state, event.player, event.spell);
     case "attach":
       return attach(state, event.object, event.to);
     case "unattach":

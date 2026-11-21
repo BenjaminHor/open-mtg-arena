@@ -56,6 +56,10 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };
     case "TOKEN_CEASED_TO_EXIST":
       return canSee(e.from, viewer) ? e : { type: "HIDDEN_TOKEN_CEASED_TO_EXIST", from: e.from };
+    // A copy of a spell leaves the stack only for a public zone in the pool (resolved or countered, CR 608.2n, 701.6a).
+    case "COPY_CEASED_TO_EXIST":
+    case "SPELL_COPIED":
+      return e;
     // Everything else names only public objects or facts: cards on the stack or battlefield, a discard (CR 701.9, the
     // card goes to a public graveyard, with the card id it got coming out of the hand, D-054; named by nothing if a
     // replacement sent it somewhere hidden), players and numbers.

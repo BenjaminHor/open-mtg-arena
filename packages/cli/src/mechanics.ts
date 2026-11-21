@@ -49,6 +49,7 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   chooseReplacement: "two different prevention effects on one damage event are too rare in agent games",
   keepLegend: true,
   chooseName: true,
+  chooseNewTarget: true,
 };
 
 /**
@@ -107,6 +108,8 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   ATTACHED: true,
   UNATTACHED: true,
   AURA_HOST_CHOSEN: true,
+  SPELL_COPIED: true,
+  COPY_CEASED_TO_EXIST: true,
   NAME_CHOSEN: true,
 };
 

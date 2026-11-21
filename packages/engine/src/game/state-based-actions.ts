@@ -43,6 +43,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
     case "drewFromEmptyLibrary":
       return { player: action.player, reason: action.kind };
     case "tokenOutsideBattlefield":
+    case "copyOutsideStack":
     case "auraIllegallyAttached":
     case "equipmentIllegallyAttached":
     case "zeroToughness":
@@ -70,6 +71,7 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
     case "drewFromEmptyLibrary":
       return []; // players lose together, after the objects move
     case "tokenOutsideBattlefield":
+    case "copyOutsideStack":
       return [{ kind: "ceaseToExist", object: action.object }];
     // It stays on the battlefield (CR 704.5n).
     case "equipmentIllegallyAttached":

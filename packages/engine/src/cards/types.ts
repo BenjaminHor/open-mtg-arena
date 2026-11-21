@@ -739,6 +739,12 @@ export type Effect =
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject }
   /**
+   * "Copy target instant or sorcery spell. You may choose new targets for the copy." (Twincast): a copy of the spell
+   * named is put on the stack under the controller's control (CR 707.10); with `newTargets`, they may then choose new
+   * targets for it (CR 707.10c, 115.7d).
+   */
+  | { op: "copySpell"; of: EffectSubject; newTargets: "may" }
+  /**
    * "You may play that card without paying its mana cost" (Djinn of Wishes): the controller may play the card named, a
    * land (CR 305.2a, 305.3) or a spell, cast now while this resolves (CR 608.2g) for no mana cost (CR 118.9, X is 0,
    * CR 107.3b). Asked only if it can be played; nothing happens if it can't, or the player says no or cancels.

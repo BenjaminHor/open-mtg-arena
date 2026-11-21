@@ -10,7 +10,7 @@
 import type { CardData } from "../cards/types.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
-import type { Target } from "../state/objects.ts";
+import type { StackChoices, Target } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import type { Destination } from "../zones/move-card.ts";
 
@@ -78,6 +78,11 @@ export type SingleEvent =
   | { kind: "createToken"; player: PlayerId; token: CardData }
   /** A token outside the battlefield ceases to exist (CR 111.7, 704.5d). */
   | { kind: "ceaseToExist"; object: ObjectId }
+  /**
+   * A copy of a spell is put on the stack under `player`'s control (CR 707.10): of `spell`, the original as it is, or
+   * as it last existed on the stack (Hive Mind copies one countered in response).
+   */
+  | { kind: "copySpell"; player: PlayerId; spell: SpellCopied }
   /** Mana goes into a player's mana pool (CR 106.4), made by an ability of `source`. */
   | { kind: "addMana"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /** A player draws one card (CR 121.1, 121.2). */
@@ -111,3 +116,10 @@ export type ProposedEvent =
    * them together (later: CR 603.2).
    */
   | { kind: "simultaneous"; events: SingleEvent[] };
+
+/**
+ * What a copy of a spell copies (CR 707.2, 707.10): its characteristics, by the card it is (`oracleId`, or a copy's or
+ * token's own data later), and the choices made for it: modes, targets, X and the division. `original` is the spell
+ * copied, for the event; it may have left the stack since.
+ */
+export type SpellCopied = { original: ObjectId; oracleId: OracleId; choices: StackChoices };

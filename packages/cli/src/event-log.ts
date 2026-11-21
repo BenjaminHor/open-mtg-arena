@@ -184,6 +184,10 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `unattached: ${name(e.object)} from ${name(e.from)}`;
     case "TOKEN_CREATED":
       return `${e.player} creates ${name(e.object)}`;
+    case "SPELL_COPIED":
+      return `${e.player} copies ${name(e.original)}`;
+    case "COPY_CEASED_TO_EXIST":
+      return `ceases to exist: a copy of ${cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId} (${e.from.zone})`;
     case "TOKEN_CEASED_TO_EXIST":
       return `ceases to exist: ${cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId} (${e.from.zone})`;
     case "PERMANENT_REGENERATED":

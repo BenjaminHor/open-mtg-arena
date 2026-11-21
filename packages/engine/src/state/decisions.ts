@@ -157,7 +157,13 @@ export type DecisionKind =
    * "as this enters, choose" (CR 614.12a), by the player it enters under, or "that player chooses a card name" while
    * a spell or ability resolves (Sphinx Ambassador), kept in `Resolution.named` for the effects after it.
    */
-  | { kind: "chooseName"; what: ChooseWhat; answering: NameFor };
+  | { kind: "chooseName"; what: ChooseWhat; answering: NameFor }
+  /**
+   * "You may choose new targets for the copy" (CR 707.10c, 115.7d): for target `index` of instance `instance` of the
+   * copy `object`, keep it (even if illegal) or choose a new legal one. Asked for each target in turn; the number of
+   * targets and the division stay (CR 115.7f).
+   */
+  | { kind: "chooseNewTarget"; object: ObjectId; instance: number; index: number };
 
 /**
  * What a `chooseName` answer is for. As a permanent enters, `resume` is as for `chooseReplacement`: the answer is kept

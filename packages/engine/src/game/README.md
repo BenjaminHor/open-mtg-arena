@@ -17,6 +17,7 @@ The engine's entry points and the flow of a game.
 | `resolve.ts` | `resolveTopOfStack()` checks targets (CR 608.2b) and queues a resolution's steps: its effects (`effects/`), then `finishResolving()`, the final part (CR 608) |
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
 | `play-during-resolution.ts` | `mayPlayWithoutPaying`, `playWithoutPaying`: playing a card while something resolves, a land or a spell cast for no mana cost with no priority after (Djinn of Wishes, CR 608.2g, D-124) |
+| `copy-spell.ts` | `copySpell`, `answerNewTarget`, `newTargetOptions`: a copy of a spell and its new targets (CR 707.10c, 115.7d, D-125) |
 | `counter-costs.ts` | `counterPayments`: "remove a counter from this" in a cost (CR 118.3) |
 | `cast.ts` | Casting a spell (CR 601.2): `castProblem`, `startCast` (D-035) |
 | `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |

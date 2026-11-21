@@ -798,6 +798,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             Silence, no wish counters left, three activations, Nocturnus's revealed top.
          - Future impact: casting during resolution is what cascade and "cast copies" need; Twincast/Hive Mind (M2-14h)
            don't cast. The free cast is an alternative cost (CR 118.9a: one at a time).
+       - M2-14h1 built (2026-11-21, D-125): Twincast (236 cards): the `copy` flag, the `copySpell` pipeline event and op,
+         SBA CR 704.5e, the `chooseNewTarget` decision (keep or a new legal target, the share moving with it), a
+         copy's targets becoming its targets (Illusionary Servant). 10 scenarios (Bolt kept and retargeted, the
+         opponent's spell, Divination's "you", a copy countered, the division, Servant, Cancel on the Cancel it copies,
+         a copy of a copy, an illegal target kept). 1 golden game. Next: fuzz, reviews, PR; then Hive Mind.
        - M2-14g built (2026-11-21, D-124): Djinn of Wishes (235 cards): the `removeCounters` cost, `entersWithCounters`
          with a fixed number, the `mayPlayWithoutPaying` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
          cost increases paid, no priority after, a cancel back to the library); CR 401.5's casting delay built

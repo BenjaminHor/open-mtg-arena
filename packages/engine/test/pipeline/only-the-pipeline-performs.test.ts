@@ -13,6 +13,7 @@ const SRC = join(import.meta.dirname, "../../src");
 const PRIMITIVES = [
   "moveCard",
   "createToken",
+  "putSpellCopy",
   "attach",
   "unattach",
   "ceaseToExist",

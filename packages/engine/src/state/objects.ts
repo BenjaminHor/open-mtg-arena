@@ -67,6 +67,11 @@ export type CardObject = {
   chosenName?: string;
   /** The basic land type chosen as it entered (CR 614.12a; Convincing Mirage). Left out when it chose none. */
   chosenLandType?: BasicLandType;
+  /**
+   * A copy of a spell (CR 707.10): a spell with no card, owned and controlled by who put it on the stack, its oracle id
+   * and choices the original's. It ceases to exist outside the stack (CR 707.10a, 704.5e). Left out for a card.
+   */
+  copy?: true;
 };
 
 /** An activated or triggered ability on the stack (CR 113.1c, 405.1). It isn't a card and has no `cardId`. */

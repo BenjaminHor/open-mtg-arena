@@ -2,6 +2,7 @@
 // place that turns them into changes to the game.
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
+import { copySpell } from "../game/copy-spell.ts";
 import { waitFor } from "../game/decide.ts";
 import { addExtraTurns } from "../game/extra-turns.ts";
 import { mayPlayWithoutPaying } from "../game/play-during-resolution.ts";
@@ -314,6 +315,8 @@ export function runEffect(
         events: [],
       };
     }
+    case "copySpell":
+      return copySpell(state, effect, context, cards);
     case "mayPlayWithoutPaying":
       return mayPlayWithoutPaying(state, effect, context, cards);
     case "revealTop": {
