@@ -3,6 +3,7 @@
 import type { CardDef } from "@mtg/engine";
 import { acidicSlime } from "./a/acidic-slime.ts";
 import { acolyteOfXathrid } from "./a/acolyte-of-xathrid.ts";
+import { actOfTreason } from "./a/act-of-treason.ts";
 import { airElemental } from "./a/air-elemental.ts";
 import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsFeather } from "./a/angels-feather.ts";
@@ -198,6 +199,7 @@ import { zombieGoliath } from "./z/zombie-goliath.ts";
 export const CARD_DEFS: readonly CardDef[] = [
   acidicSlime,
   acolyteOfXathrid,
+  actOfTreason,
   airElemental,
   alluringSiren,
   angelsFeather,

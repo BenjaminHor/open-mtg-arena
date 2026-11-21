@@ -4,6 +4,7 @@ import { newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
 import type { ContinuousEffect } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
+import { recordControlChanges } from "./control-change.ts";
 
 /**
  * A continuous effect begins (CR 611.2a). It gets its timestamp now (CR 613.7b), and the caller has already fixed the
@@ -25,8 +26,11 @@ export function createContinuousEffect(state: GameState, effect: Omit<Continuous
 export function endUntilEndOfTurnEffects(state: GameState): Progress {
   const ending = state.effects.filter((e) => e.duration === "endOfTurn");
   if (ending.length === 0) return { state, events: [] };
+  const ended = { ...state, effects: state.effects.filter((e) => e.duration !== "endOfTurn") };
+  // Control going back is a control change too (CR 302.6).
+  const controlled = ending.flatMap((e) => (e.change.kind === "gainControl" ? e.affected : []));
   return {
-    state: { ...state, effects: state.effects.filter((e) => e.duration !== "endOfTurn") },
+    state: recordControlChanges(state, ended, controlled),
     events: ending.map((effect) => ({ type: "EFFECT_ENDED", effect })),
   };
 }

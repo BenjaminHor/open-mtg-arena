@@ -660,6 +660,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            613.11`), a named `cantCastSpells` question, the definition check for its subject, 3 more scenarios (the
            non-active player's Silence and a land play, still in the end step, Spellbook in hand), docs. Fuzz 200
            clean. Merged as #54. Next: c2, Act of Treason.
+         - c2 plan (2026-11-21): Act of Treason ("gain control of target creature until end of turn. Untap that
+           creature. It gains haste until end of turn."). Layer 2 (CR 613.1b) from resolved effects only:
+           `gainControl { player }` effects, latest timestamp wins (CR 613.7), read by one helper that both
+           `controllerOf` and the layer pass use, from `state.effects`: no card database needed, so no signature change
+           yet (static control effects, Auras in M2-12, will need it). A control change resets
+           `controlledSinceTurnStart` as it starts and as it ends (CR 302.6: "continuously since their most recent turn
+           began"). New ops: `gainControl`, `untap`. Removal from combat on a control change (CR 506.4) can't happen in
+           the pool (Act of Treason is a sorcery; its effect ends in cleanup): `later:`.
+           Scenarios: steal, untap, attack with haste; control returns in cleanup; a stolen {T} creature (Prodigal
+           Pyromancer); targeting your own creature (its ruling); it dies into its owner's graveyard; Polymorph on a
+           stolen creature reveals from the thief's library (last known controller, D-096); anthems follow the new
+           controller.
+         - c2 built (D-098): Act of Treason; 7 scenarios, a unit test of the control change and summoning sickness,
+           golden pool-571. 194 cards. Bench ok (91.7 ms). Next: mutations, reviews, fuzz, PR.
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

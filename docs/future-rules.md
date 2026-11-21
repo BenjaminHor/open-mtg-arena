@@ -17,7 +17,9 @@ read it. Layer 6 grants keywords (resolved effects and static abilities), 7c add
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Sorting within a sublayer by timestamp and dependency
 arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
-*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). Layers 4, 5 and 7b have resolved effects
+*Watch out:* layer 2 is built for resolved effects (M2-09c2, D-098): `controlFromEffects`, read by `controllerOf` and
+the pass alike; a static control effect (an Aura, M2-12) needs the card database in `controllerOf`, a signature change,
+and every control change must call `recordControlChanges` (CR 302.6) and, in combat, remove the creature (CR 506.4). Layers 4, 5 and 7b have resolved effects
 (M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
 merged into that order (CR 613.7a). In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch

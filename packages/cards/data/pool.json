@@ -65,6 +65,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Act of Treason",
+      "slug": "act-of-treason",
+      "oracleId": "9d08af23-9f4a-4097-9abc-3b17475ab744",
+      "layout": "normal",
+      "manaCost": "{2}{R}",
+      "manaValue": 3,
+      "typeLine": "Sorcery",
+      "oracleText": "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn. (It can attack and {T} this turn.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/0/20234668-53ce-4cc8-892f-30ee3ecfc34c.jpg?1783932984",
+        "large": "https://cards.scryfall.io/large/front/2/0/20234668-53ce-4cc8-892f-30ee3ecfc34c.jpg?1783932984",
+        "png": "https://cards.scryfall.io/png/front/2/0/20234668-53ce-4cc8-892f-30ee3ecfc34c.png?1783932984",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/0/20234668-53ce-4cc8-892f-30ee3ecfc34c.jpg?1783932984"
+      },
+      "artist": "Eric Deschamps",
+      "set": "m20",
+      "collectorNumber": "124",
+      "scryfallUri": "https://scryfall.com/card/m20/124/act-of-treason?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Air Elemental",
       "slug": "air-elemental",
       "oracleId": "7744bae4-a8b7-44a5-9b4c-0048ad4cc448",

@@ -12,6 +12,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { createDelayedTrigger } from "../triggers/delayed.ts";
 import { becomes } from "./becomes.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
+import { recordControlChanges } from "./control-change.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { ifActivatedThisTurn } from "./if-activated.ts";
@@ -105,6 +106,28 @@ export function runEffect(
         affected,
         change: ruleChange(effect.op, context.controller),
       });
+    }
+    case "gainControl": {
+      // Layer 2 on the permanents fixed now (CR 613.1b, 611.2c), to "you" (CR 109.5).
+      const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
+      if (affected.length === 0) return { state, events: [] };
+      const created = createContinuousEffect(state, {
+        source: context.self,
+        controller: context.controller,
+        duration: effect.duration,
+        affected,
+        change: { kind: "gainControl", player: context.controller },
+      });
+      return { state: recordControlChanges(state, created.state, affected), events: created.events };
+    }
+    case "untap": {
+      const ids = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
+      if (ids.length === 0) return { state, events: [] };
+      return happen(
+        state,
+        { kind: "simultaneous", events: ids.map((object) => ({ kind: "untap", object }) as const) },
+        cards,
+      );
     }
     case "cantCastSpells": {
       // "Your opponents can't cast spells this turn": a rule for the opponents of "you", the spell's controller

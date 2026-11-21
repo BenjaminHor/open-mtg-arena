@@ -415,6 +415,13 @@ export type Effect =
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
   /**
+   * "Gain control of target creature until end of turn" (Act of Treason): a layer 2 effect giving the affected permanents
+   * to the controller, "you" (CR 613.1b, 109.5).
+   */
+  | { op: "gainControl"; of: EffectSubject; duration: Duration }
+  /** "Untap that creature" (CR 701.26b). */
+  | { op: "untap"; of: EffectSubject }
+  /**
    * "Your opponents can't cast spells this turn" (Silence): a rule for those players (CR 101.2, 601.3); spells already
    * cast, abilities and land plays are untouched (its rulings).
    */

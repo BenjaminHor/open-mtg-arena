@@ -108,6 +108,8 @@ export const furnaceWhelp: CardDef = {
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
   engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
   (D-097).
+- "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn." is
+  `gainControl` (with `duration`), `untap` and `gainKeywords` on `{ target: 0 }` (D-098).
 - "Your opponents can't cast spells this turn" is `{ op: "cantCastSpells", who: "eachOpponent", duration: "endOfTurn"
   }` (D-097).
 - "Target Forest becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's

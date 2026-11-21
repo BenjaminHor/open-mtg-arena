@@ -1,0 +1,21 @@
+name: A stolen creature that dies goes to its owner's graveyard
+rules: [CR 400.3, CR 108.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Mountain]
+    hand: [Act of Treason, Shock]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Act of Treason
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - p1 cast: Shock
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Grizzly Bears]
+      p1.graveyard contains: [Act of Treason, Shock]
