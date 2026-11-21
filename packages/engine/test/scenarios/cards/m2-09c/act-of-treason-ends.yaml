@@ -14,6 +14,9 @@ steps:
   - all pass: once
   - expect:
       p1.battlefield contains: [Grizzly Bears]
+  - all pass: until end
+  - expect:
+      p1.battlefield contains: [Grizzly Bears]
   - all pass: until upkeep
   - expect:
       p2.battlefield contains: [Grizzly Bears]
