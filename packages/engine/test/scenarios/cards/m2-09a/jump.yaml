@@ -6,7 +6,7 @@ setup:
     battlefield: [Grizzly Bears, Island]
     hand: [Jump]
   p2:
-    battlefield: [Runeclaw Bear]
+    battlefield: [Runeclaw Bear, Giant Spider]
 steps:
   - p1 cast: Jump
     targets: [p1:Grizzly Bears]
@@ -14,6 +14,6 @@ steps:
   - all pass: once
   - all pass: until combat.declareAttackers
   - p1 attack: [Grizzly Bears]
-  - all pass: until main2
-  - expect:
-      p2.life: 18
+  - all pass: until combat.declareBlockers
+  - p2 block: { Runeclaw Bear: Grizzly Bears }
+  - expect error: illegalAction

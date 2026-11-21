@@ -1,0 +1,16 @@
+name: Trumpet Blast cast before combat affects no creature, as none is attacking (its ruling)
+rules: [CR 611.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, Mountain, Mountain, Mountain]
+    hand: [Trumpet Blast]
+steps:
+  - p1 cast: Trumpet Blast
+    pay: auto
+  - all pass: once
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until main2
+  - expect:
+      p2.life: 18

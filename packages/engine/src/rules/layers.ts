@@ -21,7 +21,13 @@ import type { Duration } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
-import { type StaticPT, staticKeywordGrants, staticPTChanges, staticSources } from "./static-effects.ts";
+import {
+  type KeywordGrant,
+  type StaticPT,
+  staticKeywordGrants,
+  staticPTChanges,
+  staticSources,
+} from "./static-effects.ts";
 
 /** One card object's characteristics after every layer (CR 613), and what layer 7c did, for explaining it. */
 export type Layered = {
@@ -39,6 +45,8 @@ export type Layered = {
   toughness: number | null;
   /** Each layer 7c change, in the order applied (CR 613.4c). */
   sevenC: readonly LayerSevenCChange[];
+  /** Each layer 6 grant of keywords, and its source, for explaining them (the printed ones are in `keywords` too). */
+  granted: readonly KeywordGrant[];
 };
 
 /** What changes an object's power and toughness in layer 7c, and by how much (CR 613.4c). */
@@ -72,39 +80,40 @@ function inputsOf(state: GameState): LayerInputs {
 
 /**
  * One card object's characteristics now, or null if it isn't a card object. The battlefield and the stack, where
- * effects apply, are computed together in one pass; a card in any other zone is computed alone as it's asked for, as
- * nothing there changes it yet (later: effects on cards in hands or graveyards).
+ * effects apply, are computed together in one pass; a card in any other zone is computed alone as it's first asked for,
+ * and kept with the pass, under the same inputs.
  */
 export function layeredOf(state: GameState, id: ObjectId, cards: CardDatabase): Layered | null {
   const computed = memo(state, cards);
-  const known = computed.board[id];
+  const known = computed.board[id] ?? computed.elsewhere[id];
   if (known !== undefined) return known;
   const obj = computed.input.objects[id];
   if (obj?.kind !== "card") return null;
-  return alone(computed.input, obj, cards);
-}
-
-// A card outside the battlefield and the stack depends on nothing but itself while no effect names it, so it's kept
-// per card object, across states (D-092).
-const aloneFor = new WeakMap<CardDatabase, WeakMap<CardObject, Layered>>();
-
-/** A card in another zone: no controller, so "controller" is its owner (CR 108.4a); its printed values otherwise. */
-function alone(input: LayerInputs, obj: CardObject, cards: CardDatabase): Layered {
-  const named = input.effects.some((e) => e.affected.includes(obj.id));
-  const forCards = getOrAdd(aloneFor, cards, () => new WeakMap<CardObject, Layered>());
-  const known = named ? undefined : forCards.get(obj);
-  if (known !== undefined) return known;
-  const card = layerSeven(input, obj, start(obj, obj.owner, cards), cards);
-  if (!named) forCards.set(obj, card);
+  const card = alone(computed.input, obj, cards);
+  computed.elsewhere[id] = card;
   return card;
 }
 
+/** A card in another zone: no controller, so "controller" is its owner (CR 108.4a); its printed values otherwise. */
+function alone(input: LayerInputs, obj: CardObject, cards: CardDatabase): Layered {
+  return layerSeven(input, obj, start(obj, obj.owner, cards), cards);
+}
+
 /**
- * The pass computed afresh, without the kept results: the fuzzer checks after every action that it equals what the
- * readers see (`layersMatchFreshPass`), so a pass reading something outside `LayerInputs` is caught.
+ * The pass computed afresh, without the kept results, for one card object or for the board: the fuzzer checks after
+ * every action that they equal what the readers see (`layersMatchFreshPass`), which catches a state changed in place
+ * after its pass was kept.
  */
 export function layeredFresh(state: GameState, cards: CardDatabase): Readonly<Record<ObjectId, Layered>> {
   return pass(inputsOf(state), cards);
+}
+
+export function layeredOfFresh(state: GameState, id: ObjectId, cards: CardDatabase): Layered | null {
+  const input = inputsOf(state);
+  const onBoard = pass(input, cards)[id];
+  if (onBoard !== undefined) return onBoard;
+  const obj = input.objects[id];
+  return obj?.kind === "card" ? alone(input, obj, cards) : null;
 }
 
 /** The characteristics of everything on the battlefield and the stack, the objects effects apply to. */
@@ -112,31 +121,36 @@ export function layered(state: GameState, cards: CardDatabase): Readonly<Record<
   return memo(state, cards).board;
 }
 
-type Computed = { input: LayerInputs; board: Readonly<Record<ObjectId, Layered>> };
+/** A kept pass: its inputs and card database, the board, and the cards elsewhere asked for so far. */
+type Computed = {
+  input: LayerInputs;
+  cards: CardDatabase;
+  board: Readonly<Record<ObjectId, Layered>>;
+  elsewhere: Record<ObjectId, Layered>;
+};
 
-// Pure, so its result for the same inputs never changes: kept per inputs (by identity: the state is never changed in
-// place, and an action that changes none of them, like passing priority, keeps their identity) and card database, and
-// dropped with them (architecture.md: "memoize per state object ... never by caching values inside the state"; D-092).
-type Level<K extends object, V> = WeakMap<K, V>;
-const computedFor: Level<
-  LayerInputs["objects"],
-  Level<
-    LayerInputs["effects"],
-    Level<LayerInputs["battlefield"], Level<LayerInputs["stack"], Level<CardDatabase, Computed>>>
-  >
-> = new WeakMap();
-
-// The last result: most reads in a row are of one state, or of states that share its inputs, so they skip the
-// lookups below.
-let last: { cards: CardDatabase; computed: Computed } | null = null;
+// The pass is pure, so its result for the same inputs never changes. It's kept, never stored in the state
+// (architecture.md: "memoize per state object ... never by caching values inside the state"; D-092): per objects record
+// (by identity: the state is never changed in place, and an action that changes no object, like passing priority, keeps
+// it), as a short list matched on all the other inputs by `hasInputs`, the one place the key is spelled out; and the
+// last one used, as most reads in a row are of one state.
+const computedFor = new WeakMap<LayerInputs["objects"], Computed[]>();
+let last: Computed | null = null;
 
 function memo(state: GameState, cards: CardDatabase): Computed {
-  if (last !== null && last.cards === cards && hasInputs(state, last.computed.input)) return last.computed;
-  const computed = memoized(inputsOf(state), cards);
-  last = { cards, computed };
+  if (last !== null && last.cards === cards && hasInputs(state, last.input)) return last;
+  const kept = computedFor.get(state.objects) ?? [];
+  const found = kept.find((c) => c.cards === cards && hasInputs(state, c.input));
+  const computed = found ?? { input: inputsOf(state), cards, board: {}, elsewhere: {} };
+  if (found === undefined) {
+    computed.board = pass(computed.input, cards);
+    computedFor.set(state.objects, [...kept, computed]);
+  }
+  last = computed;
   return computed;
 }
 
+/** Whether the state has exactly these inputs: every part of `LayerInputs`, by identity. */
 function hasInputs(state: GameState, input: LayerInputs): boolean {
   return (
     state.objects === input.objects &&
@@ -145,26 +159,6 @@ function hasInputs(state: GameState, input: LayerInputs): boolean {
     state.zones.stack === input.stack &&
     state.setup.ruleModifiers === input.ruleModifiers
   );
-}
-
-function memoized(input: LayerInputs, cards: CardDatabase): Computed {
-  const byEffects = getOrAdd(computedFor, input.objects, () => new WeakMap());
-  const byBattlefield = getOrAdd(byEffects, input.effects, () => new WeakMap());
-  const byStack = getOrAdd(byBattlefield, input.battlefield, () => new WeakMap());
-  const byCards = getOrAdd(byStack, input.stack, () => new WeakMap());
-  // The rule modifiers are the game's setup, the same for the whole game.
-  return getOrAdd(byCards, cards, () => ({
-    input,
-    board: pass(input, cards),
-  }));
-}
-
-function getOrAdd<K extends object, V>(map: WeakMap<K, V>, key: K, make: () => V): V {
-  const known = map.get(key);
-  if (known !== undefined) return known;
-  const made = make();
-  map.set(key, made);
-  return made;
 }
 
 function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered> {
@@ -182,11 +176,13 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
   const { grants, sets } = staticKeywordGrants(input, board, sources);
   for (const effect of input.effects) {
     if (effect.change.kind !== "addKeywords") continue;
-    for (const id of effect.affected) grants[id] = [...(grants[id] ?? []), ...effect.change.keywords];
+    const grant = { source: effect.source, keywords: effect.change.keywords };
+    for (const id of effect.affected) grants[id] = [...(grants[id] ?? []), grant];
   }
-  for (const [id, keywords] of Object.entries(grants) as [ObjectId, Keyword[]][]) {
+  for (const [id, granted] of Object.entries(grants) as [ObjectId, KeywordGrant[]][]) {
     const card = board[id];
-    if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]) };
+    const keywords = granted.flatMap((g) => g.keywords);
+    if (card !== undefined) board[id] = { ...card, keywords: withoutRepeats([...card.keywords, ...keywords]), granted };
   }
   // Layer 7 (CR 613.4): a creature's printed power and toughness, then 7c.
   const statics = staticPTChanges(input, board, sources, sets, cards);
@@ -212,13 +208,14 @@ function start(obj: CardObject, controller: PlayerId, cards: CardDatabase): Laye
     power: null,
     toughness: null,
     sevenC: [],
+    granted: [],
   };
 }
 
 /**
  * Power and toughness (CR 613.4): a noncreature permanent has none, even if printed; a noncreature card elsewhere has
  * its printed ones (CR 208.3). Then 7c adds (7a, 7b, 7d have no effects yet; when they do, they apply in timestamp
- * order, CR 613.7). 7c only adds and subtracts, so its order never changes the result.
+ * order, later: CR 613.7). 7c only adds and subtracts, so its order never changes the result.
  */
 function layerSeven(
   input: LayerInputs,
@@ -228,7 +225,7 @@ function layerSeven(
   statics: readonly StaticPT[] = [],
 ): Layered {
   const printed = cards[obj.oracleId]?.printed;
-  const onBattlefield = input.battlefield.includes(obj.id);
+  const onBattlefield = zoneOfIn(input, obj.id) === "battlefield";
   const isCreature = card.types.includes("creature");
   if (printed === undefined || printed.power === null || printed.toughness === null || (onBattlefield && !isCreature))
     return card;
@@ -307,4 +304,25 @@ function ptCounter(name: string): { power: number; toughness: number } | null {
 /** A keyword granted twice is listed once: each keyword's own rules say several instances are redundant. */
 function withoutRepeats<T>(items: readonly T[]): T[] {
   return items.filter((item, i) => items.indexOf(item) === i);
+}
+
+/**
+ * Where a card object is, of the zones the pass knows: found once per inputs (a lookup per object, rather than a search
+ * of the battlefield for each one).
+ */
+function zoneOfIn(input: LayerInputs, id: ObjectId): "battlefield" | "stack" | "elsewhere" {
+  const zones = zonesFor(input);
+  return zones[id] ?? "elsewhere";
+}
+
+const zonesKept = new WeakMap<LayerInputs, Record<ObjectId, "battlefield" | "stack">>();
+
+function zonesFor(input: LayerInputs): Record<ObjectId, "battlefield" | "stack"> {
+  const known = zonesKept.get(input);
+  if (known !== undefined) return known;
+  const zones: Record<ObjectId, "battlefield" | "stack"> = {};
+  for (const id of input.battlefield) zones[id] = "battlefield";
+  for (const id of input.stack) zones[id] = "stack";
+  zonesKept.set(input, zones);
+  return zones;
 }

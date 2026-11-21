@@ -1,0 +1,13 @@
+name: "Glorious Charge, a white spell, pumps Black Knight, which has protection from white: it doesn't target"
+rules: [CR 702.16b, CR 611.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Black Knight, Plains, Plains]
+    hand: [Glorious Charge]
+steps:
+  - p1 cast: Glorious Charge
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Black Knight.power: 3

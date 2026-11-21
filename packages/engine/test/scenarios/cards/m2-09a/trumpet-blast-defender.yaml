@@ -1,0 +1,21 @@
+name: Trumpet Blast cast by the defending player still gives every attacking creature +2/+0, not its own blockers
+rules: [CR 611.2c, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears]
+  p2:
+    battlefield: [Runeclaw Bear, Mountain, Mountain, Mountain]
+    hand: [Trumpet Blast]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Grizzly Bears]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Runeclaw Bear: Grizzly Bears }
+  - p1 pass: once
+  - p2 cast: Trumpet Blast
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 4
+      p2:Runeclaw Bear.power: 2

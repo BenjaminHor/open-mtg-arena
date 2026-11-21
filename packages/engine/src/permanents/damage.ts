@@ -26,5 +26,6 @@ export function removeAllDamage(state: GameState): Progress {
       events.push({ type: "DAMAGE_REMOVED", object: id, amount: obj.damage });
     }
   }
-  return { state: { ...state, objects }, events };
+  // Unchanged when nothing had damage: keeping the objects record keeps the layer pass kept for it (D-092).
+  return { state: events.length === 0 ? state : { ...state, objects }, events };
 }

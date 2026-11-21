@@ -6,6 +6,7 @@
 import type { CardDatabase, Keyword, ObjectFilter, StaticAbilityDef } from "../cards/types.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
+import { fits } from "./filter-fit.ts";
 import type { Layered, LayerInputs } from "./layers.ts";
 
 type CreaturesGet = Extract<StaticAbilityDef, { kind: "creaturesGet" }>;
@@ -20,7 +21,7 @@ export function staticSources(input: LayerInputs, board: Readonly<Record<ObjectI
 
 /**
  * The permanents a "creatures get" effect applies to, found from the board as it is when the effect first applies
- * (CR 611.3a); it keeps them in its later layer (later: CR 613.6).
+ * (CR 611.3a); it keeps them in its later layer (CR 613.6).
  */
 export function creaturesGetSet(
   input: LayerInputs,
@@ -34,7 +35,9 @@ export function creaturesGetSet(
     if (def.others === true && id === source) return false;
     const obj = input.objects[id];
     const card = board[id];
-    return obj?.kind === "card" && card !== undefined && fitsOnBoard(obj, card, def.filter, you);
+    // "Creatures": whatever else the filter says, only creatures (it can't grant a keyword to a land by omission).
+    if (obj?.kind !== "card" || card === undefined || !card.types.includes("creature")) return false;
+    return fitsOnBoard(obj, card, def.filter, you);
   });
 }
 
@@ -43,26 +46,30 @@ export function staticKeywordGrants(
   input: LayerInputs,
   board: Readonly<Record<ObjectId, Layered>>,
   sources: readonly StaticSource[],
-): { grants: Record<ObjectId, Keyword[]>; sets: (ObjectId[] | undefined)[] } {
-  const grants: Record<ObjectId, Keyword[]> = {};
+): { grants: Record<ObjectId, KeywordGrant[]>; sets: (ObjectId[] | undefined)[] } {
+  const grants: Record<ObjectId, KeywordGrant[]> = {};
   // By source's place in `sources`: the set each effect found here, if it started in this layer.
   const sets: (ObjectId[] | undefined)[] = sources.map(() => undefined);
   for (const [i, s] of sources.entries()) {
     if (s.def.kind !== "creaturesGet" || (s.def.keywords ?? []).length === 0) continue;
     const affected = creaturesGetSet(input, board, s.source, s.def);
     sets[i] = affected;
-    for (const id of affected) grants[id] = [...(grants[id] ?? []), ...(s.def.keywords ?? [])];
+    const keywords = s.def.keywords ?? [];
+    for (const id of affected) grants[id] = [...(grants[id] ?? []), { source: s.source, keywords }];
   }
   return { grants, sets };
 }
+
+/** Keywords granted in layer 6, and by what: a static ability's permanent, or a resolved effect's source. */
+export type KeywordGrant = { source: ObjectId; keywords: readonly Keyword[] };
 
 /** One static ability's change to a permanent's power and toughness in layer 7c (CR 613.4c). */
 export type StaticPT = { source: ObjectId; power: number; toughness: number };
 
 /**
  * Layer 7c (CR 613.4c): the static abilities' bonuses, by object. A "creatures get" effect that started in layer 6 keeps
- * the set it found there (later: CR 613.6, once something between those layers can change what fits); one that
- * starts here finds it now.
+ * the set it found there (CR 613.6), even if what it grants there changes what fits; one that starts here finds it
+ * now.
  */
 export function staticPTChanges(
   input: LayerInputs,
@@ -88,7 +95,7 @@ export function staticPTChanges(
       case "plusPerSharedCreatureType":
         // Each creature, whoever controls it (CR 109.2), counting the others that share a creature type with it. The
         // subtypes are one list today; once a creature can also have land types (an animated Forest), compare only
-        // its creature types (CR 205.3m).
+        // its creature types (later: CR 205.3m).
         for (const id of creatures) {
           const mine = board[id]?.subtypes ?? [];
           const sharing = creatures.filter(
@@ -123,35 +130,13 @@ function cardName(input: LayerInputs, id: ObjectId, cards: CardDatabase): string
 }
 
 /**
- * Whether a permanent fits a filter, read from the board as built so far (`matchesFilter` reads the finished pass, so
- * the pass can't call it). `you` is the static ability's controller. Combat isn't one of the pass's inputs (D-092), so a
- * static can't ask about attacking or blocking.
+ * Whether a permanent fits a filter, read from the board as built so far (`filter-fit.ts`; `matchesFilter` reads the
+ * finished pass, so the pass can't call it). `you` is the static ability's controller. Combat isn't one of the pass's
+ * inputs (D-092), so a static can't ask about attacking or blocking; definitions are checked for that.
  */
 function fitsOnBoard(obj: CardObject, card: Layered, filter: ObjectFilter, you: PlayerId): boolean {
-  const any = <T>(have: readonly T[], wanted: readonly T[] | undefined) =>
-    wanted === undefined || wanted.some((w) => have.includes(w));
-  const none = <T>(have: readonly T[], unwanted: readonly T[] | undefined) =>
-    unwanted === undefined || !unwanted.some((u) => have.includes(u));
-  if (!any(card.types, filter.types) || !none(card.types, filter.notTypes)) return false;
-  if (!any(card.colors, filter.colors) || !none(card.colors, filter.notColors)) return false;
-  if (!any(card.subtypes, filter.subtypes)) return false;
-  if (!any(card.keywords, filter.keywords) || !none(card.keywords, filter.notKeywords)) return false;
-  if (filter.supertypes !== undefined && !filter.supertypes.every((s) => card.supertypes.includes(s))) return false;
-  if (filter.not !== undefined && fitsOnBoard(obj, card, filter.not, you)) return false;
-  if (filter.tapped === true && !obj.tapped) return false;
-  if (filter.combat !== undefined)
+  const inCombat = () => {
     throw new Error("a static ability can't ask about combat inside the layer pass (D-092)");
-  switch (filter.controller) {
-    case undefined:
-      return true;
-    case "you":
-      return card.controller === you;
-    case "notYou":
-    case "opponent":
-      // An opponent (CR 102.2); teams would change "opponent" (later: CR 102.3).
-      return card.controller !== you;
-    case "triggeringPlayer":
-      throw new Error("only a triggered ability's target can name the triggering player");
-  }
-  return true;
+  };
+  return fits({ obj, card, controlled: true, inCombat }, filter, you, null);
 }

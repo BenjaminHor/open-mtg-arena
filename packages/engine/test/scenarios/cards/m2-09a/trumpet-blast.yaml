@@ -1,5 +1,5 @@
 name: Trumpet Blast gives the creatures attacking as it resolves +2/+0 until end of turn, not the others
-rules: [CR 611.2c, CR 613.4c, CR 506.4]
+rules: [CR 611.2c, CR 613.4c, CR 611.2a]
 setup:
   turn: { active: p1, step: main1 }
   p1:

@@ -1,0 +1,10 @@
+name: Two Coats of Arms each apply
+rules: [CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Coat of Arms, Coat of Arms, Goblin Piker, Raging Goblin]
+steps:
+  - expect:
+      p1:Goblin Piker.power: 4
+      p1:Goblin Piker.toughness: 3

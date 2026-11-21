@@ -7,6 +7,7 @@ import {
   type Effect,
   type EffectSubject,
   isFixedAmount,
+  type ObjectFilter,
   type TargetSpec,
   type TriggeredAbilityDef,
 } from "@mtg/engine";
@@ -57,6 +58,12 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     const protections = protectionProblem(def);
     if (protections !== null) problems.push(protections);
+    // A static ability's filter is read inside the layer pass, which knows nothing of combat or a trigger (D-092).
+    for (const s of def.statics ?? []) {
+      if (s.kind !== "creaturesGet") continue;
+      if (filterUses(s.filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
+        problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
+    }
     if (def.spell !== undefined)
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
@@ -345,4 +352,9 @@ function protectionProblem(def: CardDef): string | null {
   const actual = (def.protections ?? []).map((q) => (q.kind === "color" ? `color ${q.color}` : `subtype ${q.subtype}`));
   if (JSON.stringify([...expected].sort()) === JSON.stringify([...actual].sort())) return null;
   return `${def.name}: protections ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`;
+}
+
+/** Whether a filter, or the filter inside its `not`, has something `test` looks for. */
+function filterUses(filter: ObjectFilter, test: (f: ObjectFilter) => boolean): boolean {
+  return test(filter) || (filter.not !== undefined && filterUses(filter.not, test));
 }

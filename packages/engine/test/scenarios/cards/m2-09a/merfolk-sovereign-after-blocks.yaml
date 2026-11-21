@@ -1,0 +1,20 @@
+name: Merfolk Sovereign's ability after blockers are declared doesn't remove the block (its ruling)
+rules: [CR 509.1h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Merfolk Sovereign, Coral Merfolk]
+  p2:
+    battlefield: [Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Coral Merfolk]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Runeclaw Bear: Coral Merfolk }
+  - p1 activate: Merfolk Sovereign
+    targets: [p1:Coral Merfolk]
+  - all pass: once
+  - all pass: until main2
+  - expect:
+      p2.life: 20
+      p2.graveyard: [Runeclaw Bear]

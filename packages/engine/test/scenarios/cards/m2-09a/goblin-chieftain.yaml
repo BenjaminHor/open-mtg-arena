@@ -1,5 +1,5 @@
 name: Goblin Chieftain gives other Goblins you control +1/+1 and haste, so one cast this turn attacks
-rules: [CR 613.1f, CR 613.4c, CR 302.6, CR 702.10b]
+rules: [CR 613.1f, CR 613.4c, CR 302.6, CR 702.10b, CR 611.3c]
 setup:
   turn: { active: p1, step: main1 }
   p1:

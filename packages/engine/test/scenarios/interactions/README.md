@@ -30,11 +30,11 @@ Scenario paths are relative to `packages/engine/test/scenarios/`.
 | Can't block | | | | | | | | | | | | | | | | | | — | n/a | [unicorn-and-panic-attack](requirements/unicorn-and-panic-attack.yaml) | [panic-attack-skips-shroud](shroud/panic-attack-skips-shroud.yaml) | n/a | n/a | n/a | n/a | n/a |
 | Alone | | | | | | | | | | | | | | | | | | | — | [siren-and-jackal](../cards/m2-06c/siren-and-jackal.yaml), [siren-and-lone-jackal](../cards/m2-06c/siren-and-lone-jackal.yaml) | n/a | n/a | n/a | n/a | n/a | n/a |
 | Requirements | | | | | | | | | | | | | | | | | | | | — | [siren-and-shroud](shroud/siren-and-shroud.yaml) | n/a | n/a | n/a | n/a | n/a |
-| Shroud | | | | | | | | | | | | | | | | | | | | | — | [sparkmage-apprentice-shroud](../cards/m2-07a/sparkmage-apprentice-shroud.yaml) | n/a | n/a | n/a | n/a |
+| Shroud | | | | | | | | | | | | | | | | | | | | | — | [sparkmage-apprentice-shroud](../cards/m2-07a/sparkmage-apprentice-shroud.yaml) | n/a | n/a | n/a | [overrun-shroud](../cards/m2-09a/overrun-shroud.yaml) |
 | Triggers | | | | | | | | | | | | | | | | | | | | | | — | n/a | n/a | [baneslayer-hellkite-target](../cards/m2-08e/baneslayer-hellkite-target.yaml) | n/a |
 | Indestructible | | | | | | | | | | | | | | | | | | | | | | | — | [regeneration.test.ts](../../permanents/regeneration.test.ts) | n/a | n/a |
 | Regeneration | | | | | | | | | | | | | | | | | | | | | | | | — | n/a | n/a |
-| Protection | | | | | | | | | | | | | | | | | | | | | | | | | — | n/a |
+| Protection | | | | | | | | | | | | | | | | | | | | | | | | | — | [glorious-charge-protection](../cards/m2-09a/glorious-charge-protection.yaml) |
 | Anthems | | | | | | | | | | | | | | | | | | | | | | | | | | — |
 
 - **Anthems**: static abilities and resolved effects that give bonuses or keywords (CR 611, 613.1f, 613.4c; M2-09a): Honor of the Pure, Goblin Chieftain, Levitation, Coat of Arms, Glorious Charge, Overrun, Jump and the rest; granted keywords then work as printed ones do.

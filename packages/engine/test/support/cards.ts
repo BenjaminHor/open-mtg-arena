@@ -72,6 +72,11 @@ export const THAT_PLAYERS = "test-that-players";
 
 /** Not a real card: a 2/2 with protection from black (White Knight's protection without its first strike). */
 export const PRO_BLACK = "test-pro-black";
+/**
+ * Not a real card: "Creatures you control without flying get +1/+1 and have flying." Its set is found in layer 6, before
+ * it grants flying, and kept for 7c (CR 613.6): looking again in 7c would find none.
+ */
+export const GROUNDED_ANTHEM = "test-grounded-anthem";
 /** Not a real card: a black 1/1 with deathtouch (the pool's deathtouch creatures are green). */
 export const BLACK_DEATHTOUCH = "test-black-deathtouch";
 
@@ -657,6 +662,19 @@ export const TEST_CARDS: CardDatabase = {
   [PRO_BLACK]: withDef(keywordCreature(PRO_BLACK, "Pro Black", [2, 2], []), {
     oracle: "Protection from black",
     protections: [{ kind: "color", color: "B" }],
+  }),
+  [GROUNDED_ANTHEM]: withDef(keywordCreature(GROUNDED_ANTHEM, "Grounded Anthem", [0, 1], []), {
+    oracle: "Creatures you control without flying get +1/+1 and have flying.",
+    statics: [
+      {
+        kind: "creaturesGet",
+        filter: { types: ["creature"], notKeywords: ["flying"], controller: "you" },
+        others: true,
+        power: 1,
+        toughness: 1,
+        keywords: ["flying"],
+      },
+    ],
   }),
   [BLACK_DEATHTOUCH]: withColors(keywordCreature(BLACK_DEATHTOUCH, "Black Deathtouch", [1, 1], ["deathtouch"]), ["B"]),
   [DOUBLE_STRIKER]: keywordCreature(DOUBLE_STRIKER, "Double Striker", [2, 2], ["double strike"]),

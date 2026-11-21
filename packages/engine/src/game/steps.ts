@@ -38,11 +38,12 @@ export function beginTurn(state: GameState, player: PlayerId, number: number, ca
   }
   // The active player's permanents have now been under their control since their most recent turn began (CR 302.6).
   // This belongs to the turn beginning, not the untap step, so it still happens if the untap step is skipped.
-  const objects = { ...state.objects };
+  let objects = state.objects;
   for (const id of state.zones.battlefield) {
     const obj = objects[id];
-    if (obj?.kind === "card" && controllerOf(state, id) === player)
-      objects[id] = { ...obj, controlledSinceTurnStart: true };
+    // Copied only if something changes, so an unchanged record keeps the layer pass kept for it (D-092).
+    if (obj?.kind === "card" && controllerOf(state, id) === player && !obj.controlledSinceTurnStart)
+      objects = { ...objects, [id]: { ...obj, controlledSinceTurnStart: true } };
   }
   // "This turn" facts start again (D-078).
   const begun: GameState = {

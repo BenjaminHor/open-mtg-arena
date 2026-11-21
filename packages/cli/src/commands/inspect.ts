@@ -9,6 +9,7 @@ import {
   isAttacking,
   isBlocking,
   type LayerSevenCChange,
+  layeredOf,
   layerSevenCChanges,
   type ObjectId,
   type ProtectionQuality,
@@ -33,6 +34,9 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
     `  colors: ${c.colors.length > 0 ? c.colors.join("") : "colorless"}; keywords: ${keywordText(c)}`,
     `  controller: ${c.controller}; owner: ${obj.owner}`,
   ];
+  // Keywords granted by effects (layer 6), each with where it came from.
+  for (const grant of layeredOf(state, id, cards)?.granted ?? [])
+    lines.push(`    granted ${grant.keywords.join(", ")} by ${sourceName(grant.source)}`);
   if (c.power !== null && c.toughness !== null) {
     lines.push(`  power/toughness: ${c.power}/${c.toughness}`);
     lines.push(`    printed: ${data?.printed.power}/${data?.printed.toughness}`);
