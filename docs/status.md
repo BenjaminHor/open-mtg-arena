@@ -715,6 +715,38 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13 plan (2026-11-21, with the advisor's review): planeswalkers, three PRs. The five: Ajani Goldmane, Jace
+         Beleren, Liliana Vess, Chandra Nalaar, Garruk Wildspeaker (all "Legendary Planeswalker" in today's Oracle). A
+         card enters the pool only when it works completely, attacking included, so the plumbing comes first.
+         - M2-13a, no new card: the defender in combat. An attack can be at a planeswalker (CR 506.3, 508.1b): an
+           optional field on `Attack` for the attacked planeswalker, read through one helper that returns null once it's
+           gone or no longer a planeswalker (like `attachedHost`), so saved hashes and every reader of "the defending
+           player" stay as they are. Read CR 506.4 and 508.5 first, and a planeswalker whose controller changes
+           mid-combat. Proof it's neutral: every scenario, replay hash and golden log unchanged.
+         - M2-13b, the planeswalker, with Jace Beleren (and Garruk Wildspeaker if all its ops exist):
+           - The card pipeline carries printed loyalty (`printed.ts` rejects planeswalkers today; CR 209); a
+             planeswalker enters with that many loyalty counters (CR 306.5b, an intrinsic replacement like Protean
+             Hydra's `entersWithCounters`); a scenario setup puts printed loyalty on by default.
+           - Loyalty abilities (CR 606): a loyalty cost part (+N, −N, −X; check U+2212 in the Oracle test; CR 606.4-6);
+             sorcery timing and once per turn per permanent (CR 606.3) derived from it, checked in
+             `activationBasicsProblem`; check `activationsThisTurn` sums all its loyalty abilities, ignores cancelled
+             activations, survives a control change, and starts fresh for a new object.
+           - Damage to a planeswalker removes loyalty (CR 120.3c), independent of marking damage on creatures;
+             prevention and "deals damage to a player" triggers checked; "any target" and "target player or
+             planeswalker" include planeswalkers (CR 115.4); CR 704.5i and the legend rule (CR 704.5j, a decision before
+             the batch, CR 704.3; check whether `chooseCards.resume` fits or a custom resume like `chooseReplacement`)
+             in the single state-based-action loop, cheap test first; re-baseline the bench here (option a).
+           - Attacking a planeswalker: unblocked damage removes loyalty (CR 510.1b); its leaving means no damage
+             (CR 506.4c); trample over it (CR 702.19c); the AI chooses defenders.
+           - Scenarios first: a cost taking loyalty to 0 still resolves; a second activation in a turn refused; on the
+             opponent's turn refused; the attacked planeswalker leaves; trample over one; the legend rule.
+         - M2-13c: Liliana Vess (`returnAllToBattlefield` under "you"), Chandra Nalaar (−X; "that player or that
+           planeswalker's controller"), Ajani Goldmane (its Avatar is a token with a characteristic-defining ability:
+           tokens with abilities threw in M2-11; check the layer pass reads it), Garruk if not in 13b.
+         - Future impact: battles (CR 310) are the other permanent with damage as counters and a defender role, so the
+           defender helper should grow to them; loyalty abilities on non-planeswalkers (CR 606.2) work the same;
+           multiplayer adds several defending players.
        - M2-12d built (2026-11-21, D-107): Open the Vaults (218 cards); `returnAllToBattlefield`, `canEnchant` shared with
          CR 704.5m, `chooseCards.for` and the `enchant` purpose, `Resolution.enchants`, the `AURA_HOST_CHOSEN` event, the
          `.attachedTo` scenario expectation; two golden games. Rules review: no wrong ruling; CR 613.7m now happens (the
@@ -723,7 +755,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          citation is CR 301.5b, not 303.4h. Code review: the answer is checked against the Aura asked about (throws on
          drift), the choices are cleared after the move, `enchants` renamed `auraHosts`, docs (rules and state READMEs,
          future-rules). 14 scenarios, a CLI test for the decision's `for`; mutants (seat order, no event when only one
-         host) now die. The golden game that cast it with nothing to return is dropped. Next: PR.
+         host) now die. The golden game that cast it with nothing to return is dropped. Fuzz 180 clean. Merged as #65.
        - M2-12d plan (2026-11-21, with the advisor's review): Open the Vaults, one PR.
          - Its rulings: an Aura that can return must; its controller-to-be chooses what it enchants as it enters, not
            targeting (shroud and Ice Cage don't matter), but the enchant ability and protection do (CR 303.4f); none
