@@ -1,0 +1,19 @@
+name: Chandra Nalaar's -8 deals 10 to the target player and each creature they control, in one damage event
+rules: [CR 608.2f, CR 120.4, CR 113.7a, CR 704.5i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Chandra Nalaar, counters: { loyalty: 8 } }, Grizzly Bears]
+  p2:
+    battlefield: [Hill Giant, Craw Wurm, Jace Beleren]
+steps:
+  - p1 activate: Chandra Nalaar
+    ability: 3
+    targets: [p2]
+  - all pass: once
+  - expect:
+      p2.life: 10
+      p2.battlefield: [Jace Beleren]
+      p2:Jace Beleren.counters: { loyalty: 3 }
+      p1.battlefield: [Grizzly Bears]
+      p1.graveyard: [Chandra Nalaar]

@@ -54,6 +54,19 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
     const player = controllerOfTarget(state, context.targets[s.controllerOf.target] ?? [], cards);
     return player === null ? [] : [{ kind: "player", player }];
   }
+  if ("eachControlledBy" in s) {
+    // The target player, or the targeted permanent's controller; none if the target is no longer legal (CR 608.2b).
+    const [target] = context.targets[s.eachControlledBy.target] ?? [];
+    const player =
+      target === undefined
+        ? null
+        : target.kind === "player"
+          ? target.player
+          : controllerOfTarget(state, [target], cards);
+    if (player === null) return [];
+    const theirs = permanentsFittingFor(state, { ...s.filter, controller: "you" }, player, cards);
+    return theirs.map((object) => ({ kind: "object", object }));
+  }
   return context.targets[s.target] ?? [];
 }
 

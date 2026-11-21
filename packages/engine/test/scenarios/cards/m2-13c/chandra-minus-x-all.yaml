@@ -1,0 +1,18 @@
+name: Chandra Nalaar's -X for all her loyalty puts her into the graveyard, and the ability still deals X
+rules: [CR 606.6, CR 704.5i, CR 113.7a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Chandra Nalaar]
+  p2:
+    battlefield: [Craw Wurm]
+steps:
+  - p1 activate: Chandra Nalaar
+    ability: 2
+    x: 6
+    targets: [p2:Craw Wurm]
+  - expect:
+      p1.graveyard: [Chandra Nalaar]
+  - all pass: once
+  - expect:
+      p2.graveyard: [Craw Wurm]

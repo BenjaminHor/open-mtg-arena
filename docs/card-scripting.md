@@ -129,8 +129,10 @@ export const furnaceWhelp: CardDef = {
 - "Return all [filter] cards from all graveyards to the battlefield under their owners' control" is `{ op:
   "returnAllToBattlefield", from: "allGraveyards", filter, under: "owners" }`; "put all ... under your control" is
   `under: "you"`. "Put that card on top of your library" is `{ op: "put", of: "found", into: "libraryTop" }`.
+- "Each creature that player or that planeswalker's controller controls" is the subject `{ eachControlledBy: { target:
+  0 }, filter: { types: ["creature"] } }`; with the target in one damage event, `dealDamage`'s `and`.
 - A planeswalker's loyalty abilities are activated abilities whose cost is `{ kind: "loyalty", amount: 2 }` for "+2:",
-  `amount: -1` for "−1:" (CR 606.4): `{ kind: "activated", cost: [{ kind: "loyalty", amount: -1 }], targets: [{ kind:
+  `amount: -1` for "−1:", `amount: "minusX"` for "−X:" (X announced, at most the loyalty, CR 606.6) (CR 606.4): `{ kind: "activated", cost: [{ kind: "loyalty", amount: -1 }], targets: [{ kind:
   "player" }], effects: [...] }`. Their timing and once-per-turn limit come from the cost part (CR 606.3, 606.6), with
   no `timing` field. Printed loyalty comes from Scryfall, and entering with it is intrinsic (CR 306.5b): a definition
   writes neither.

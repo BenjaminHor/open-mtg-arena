@@ -960,6 +960,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Chandra Nalaar",
+      "slug": "chandra-nalaar",
+      "oracleId": "f4da7a43-e9d5-47ea-b2f0-3cf55a156f4a",
+      "layout": "normal",
+      "manaCost": "{3}{R}{R}",
+      "manaValue": 5,
+      "typeLine": "Legendary Planeswalker — Chandra",
+      "oracleText": "+1: Chandra Nalaar deals 1 damage to target player or planeswalker.\n−X: Chandra Nalaar deals X damage to target creature.\n−8: Chandra Nalaar deals 10 damage to target player or planeswalker and each creature that player or that planeswalker's controller controls.",
+      "power": null,
+      "toughness": null,
+      "loyalty": "6",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/c/ac44125d-28de-4ecf-a55b-1299daa5539e.jpg?1783941809",
+        "large": "https://cards.scryfall.io/large/front/a/c/ac44125d-28de-4ecf-a55b-1299daa5539e.jpg?1783941809",
+        "png": "https://cards.scryfall.io/png/front/a/c/ac44125d-28de-4ecf-a55b-1299daa5539e.png?1783941809",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/c/ac44125d-28de-4ecf-a55b-1299daa5539e.jpg?1783941809"
+      },
+      "artist": "Aleksi Briclot",
+      "set": "m11",
+      "collectorNumber": "127",
+      "scryfallUri": "https://scryfall.com/card/m11/127/chandra-nalaar?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Child of Night",
       "slug": "child-of-night",
       "oracleId": "c650a7bc-e350-44a0-a698-d4a233d66156",

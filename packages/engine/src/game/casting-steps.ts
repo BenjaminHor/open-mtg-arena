@@ -24,7 +24,7 @@ import { countActivation } from "./activation-count.ts";
 import { castingOf } from "./casting-state.ts";
 import { targetStep } from "./choose-targets.ts";
 import { waitFor } from "./decide.ts";
-import { loyaltyPayment } from "./loyalty-abilities.ts";
+import { loyaltyPayment, loyaltyXMost } from "./loyalty-abilities.ts";
 import type { Progress } from "./progress.ts";
 import { sacrificeParts, sacrificesStillPossible, selfSacrificesForCost } from "./sacrifice-costs.ts";
 import { canTapForCost, tapsForCost } from "./tap-costs.ts";
@@ -40,12 +40,10 @@ export function nextCastingStep(state: GameState, cards: CardDatabase): Progress
   const obj = state.objects[casting.object];
   if (obj?.choices?.x === null && announcesX(state, casting.object, cards)) {
     const available = manaAvailable(state, casting.player, cards);
-    const upTo = payableX(
-      state,
-      casting.object,
-      Math.max(0, available - manaValue(costOf(state, casting.object, cards))),
-      cards,
-    );
+    // [−X]: at most the loyalty counters there are (CR 606.6); {X}: what the mana could pay.
+    const upTo =
+      loyaltyXMost(state, cards) ??
+      payableX(state, casting.object, Math.max(0, available - manaValue(costOf(state, casting.object, cards))), cards);
     return wait(waitFor(state, casting.player, { kind: "announceX", object: casting.object, upTo }));
   }
   const targeted = targetStep(state, cards);

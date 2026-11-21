@@ -716,6 +716,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
+         refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
+         turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing
+         nothing). With her, all five planeswalkers are in. Next: reviews, PR; then M2-13 is done.
        - M2-13c2a built (2026-11-21, D-112): Ajani Goldmane (222 cards): tokens with statics and "*", the "yourLifeTotal"
          CDA, life totals in the layer pass only once read (bench equal to main after two fixes: an identity test, then
          a `lifeRead` flag; see the code review below); 4 scenarios (gain life, counters and vigilance, the Avatar growing and shrinking with lethal

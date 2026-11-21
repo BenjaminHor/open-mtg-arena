@@ -150,6 +150,10 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       // One loyalty symbol per cost (CR 107.7; several would combine, later: CR 606.5); its timing comes from it (CR 606.3).
       const loyaltyParts = ability.cost.filter((p) => p.kind === "loyalty").length;
       if (loyaltyParts > 1) problems.push(`${def.name} ability ${i + 1}: more than one loyalty cost`);
+      // One X per ability: [−X] and {X} together would need two (no card has both).
+      const minusX = ability.cost.some((p) => p.kind === "loyalty" && p.amount === "minusX");
+      const manaX = ability.cost.some((p) => p.kind === "mana" && p.cost.some((s) => s.kind === "x"));
+      if (minusX && manaX) problems.push(`${def.name} ability ${i + 1}: both [−X] and {X} in one cost`);
       if (loyaltyParts > 0 && ability.timing !== undefined)
         problems.push(`${def.name} ability ${i + 1}: a loyalty ability's timing comes from its cost (CR 606.3)`);
       if (anyColor(ability.effects) && (ability.targets.length > 0 || ability.cost.some((p) => p.kind !== "tap")))

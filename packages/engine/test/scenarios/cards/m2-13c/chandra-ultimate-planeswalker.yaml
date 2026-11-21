@@ -1,0 +1,17 @@
+name: Chandra Nalaar's -8 at a planeswalker deals 10 to it and each creature its controller controls, not to the player
+rules: [CR 608.2f, CR 120.3c, CR 608.2h]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Chandra Nalaar, counters: { loyalty: 9 } }]
+  p2:
+    battlefield: [Jace Beleren, Hill Giant]
+steps:
+  - p1 activate: Chandra Nalaar
+    ability: 3
+    targets: [p2:Jace Beleren]
+  - all pass: once
+  - expect:
+      p2.life: 20
+      p2.graveyard contains: [Jace Beleren, Hill Giant]
+      p1:Chandra Nalaar.counters: { loyalty: 1 }

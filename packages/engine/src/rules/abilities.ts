@@ -125,7 +125,7 @@ export function isManaAbility(def: AbilityDef): boolean {
   return (
     def.kind === "activated" &&
     def.targets.length === 0 &&
-    !def.cost.some((part) => part.kind === "loyalty") &&
+    !def.cost.some((part) => part.kind === "loyalty") && // a loyalty ability, [−X] included
     def.effects.some((e) => e.op === "addMana")
   );
 }
