@@ -7,6 +7,6 @@ import type { LayerInputs } from "./layers.ts";
 
 /** A player's life total, with the pass marked as reading life totals. */
 export function lifeTotalOf(input: LayerInputs, player: PlayerId): number {
-  input.lifeRead.read = true;
+  input.read.life = true;
   return input.life[player] ?? 0;
 }

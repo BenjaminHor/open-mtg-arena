@@ -6,10 +6,12 @@ import {
   characteristics,
   controllerOf,
   type GameState,
+  handsRevealed,
   isAttacking,
   isBlocking,
   isFreeOfSummoningSickness,
   legalActions,
+  libraryTopsRevealed,
   loyaltyOf,
   type ObjectId,
   type PlayerId,
@@ -18,11 +20,12 @@ import { nameOf, scenarioStep } from "@mtg/scenarios";
 import { manaText, objectText, targetText } from "./describe.ts";
 
 /**
- * Whether `viewer` may see the cards in `owner`'s hand. With no viewer (debug), everything shows. The one place the
- * CLI hides information; the engine's `playerView` (architecture.md) arrives with the AI that needs it (M3).
+ * Whether `viewer` may see the cards in `owner`'s hand: their own, or one an ability reveals (Telepathy). With no viewer
+ * (debug), everything shows. The one place the CLI hides information; the engine's `playerView` (architecture.md)
+ * arrives with the AI that needs it (M3).
  */
-export function canSeeHand(viewer: PlayerId | null, owner: PlayerId): boolean {
-  return viewer === null || viewer === owner;
+export function canSeeHand(state: GameState, viewer: PlayerId | null, owner: PlayerId, cards: CardDatabase): boolean {
+  return viewer === null || viewer === owner || handsRevealed(state, cards).includes(owner);
 }
 
 export function showGame(state: GameState, cards: CardDatabase, viewer: PlayerId | null = null): string {
@@ -56,8 +59,13 @@ function playerLines(state: GameState, player: PlayerId, viewer: PlayerId | null
   lines.push(
     `    battlefield: ${permanents.length === 0 ? "(none)" : permanents.map((id) => permanentText(state, id, cards)).join(", ")}`,
   );
-  if (canSeeHand(viewer, player) && zones.hand.length > 0) {
+  if (canSeeHand(state, viewer, player, cards) && zones.hand.length > 0) {
     lines.push(`    hand: ${zones.hand.map((id) => nameOf(state, id, cards)).join(", ")}`);
+  }
+  // A top card played revealed (Vampire Nocturnus), shown to everyone.
+  const top = zones.library[0];
+  if (top !== undefined && libraryTopsRevealed(state, cards).includes(player)) {
+    lines.push(`    library top (revealed): ${nameOf(state, top, cards)}`);
   }
   if (zones.graveyard.length > 0) {
     lines.push(`    graveyard: ${zones.graveyard.map((id) => nameOf(state, id, cards)).join(", ")}`);

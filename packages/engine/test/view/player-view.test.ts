@@ -12,6 +12,7 @@ import {
   type PlayerId,
   playerView,
 } from "../../src/index.ts";
+import { TEST_CARDS } from "../support/cards.ts";
 import { answer, type Game, passBoth, playerSetup, standardSetup, start, take } from "../support/game.ts";
 
 const hand = (s: GameState, p: PlayerId) => s.zones.players[p]?.hand ?? [];
@@ -37,20 +38,29 @@ const handToLibrary = (e: GameEvent, player: PlayerId) =>
 
 describe("playerView (CR 400.2)", () => {
   const { state } = p2Mulligans();
-  const view = playerView(state, "p1");
+  const view = playerView(state, "p1", TEST_CARDS);
 
   it("lists the viewer's own hand; other hands and every library are only counts (CR 401.3, 402.3)", () => {
     expect(view.zones.players.p1).toStrictEqual({
       librarySize: library(state, "p1").length,
       handSize: 7,
       hand: hand(state, "p1"),
+      revealedHand: null,
+      revealedTop: null,
       graveyard: [],
     });
-    expect(view.zones.players.p2).toStrictEqual({ librarySize: 34, handSize: 6, hand: null, graveyard: [] });
+    expect(view.zones.players.p2).toStrictEqual({
+      librarySize: 34,
+      handSize: 6,
+      hand: null,
+      revealedHand: null,
+      revealedTop: null,
+      graveyard: [],
+    });
   });
 
   it("shows the extra turns to come, which everyone saw made (CR 500.7)", () => {
-    expect(playerView({ ...state, extraTurns: ["p2", "p1"] }, "p1").extraTurns).toStrictEqual(["p2", "p1"]);
+    expect(playerView({ ...state, extraTurns: ["p2", "p1"] }, "p1", TEST_CARDS).extraTurns).toStrictEqual(["p2", "p1"]);
   });
 
   it("holds exactly the objects in public zones and the viewer's own hand", () => {
@@ -74,7 +84,7 @@ describe("playerView (CR 400.2)", () => {
       ...hand(board, "p1"),
     ];
     expect(visible).toHaveLength(7);
-    expect(Object.keys(playerView(board, "p1").objects).sort()).toStrictEqual([...visible].sort());
+    expect(Object.keys(playerView(board, "p1", TEST_CARDS).objects).sort()).toStrictEqual([...visible].sort());
   });
 
   it("leaves out the random generator, the setup and the engine's internals (CR 701.24a)", () => {
@@ -82,7 +92,7 @@ describe("playerView (CR 400.2)", () => {
   });
 
   it("keeps public facts: the mulligans taken, while the game is starting", () => {
-    expect(playerView(p2Mulligans(false).state, "p1").pregame?.mulligans).toStrictEqual({ p1: 0, p2: 1 });
+    expect(playerView(p2Mulligans(false).state, "p1", TEST_CARDS).pregame?.mulligans).toStrictEqual({ p1: 0, p2: 1 });
   });
 });
 
@@ -96,13 +106,13 @@ describe("decisions in a view", () => {
   };
 
   it("shows the deciding player their decision in full", () => {
-    const view = playerView(discarding, "p2");
+    const view = playerView(discarding, "p2", TEST_CARDS);
     expect(view.decision).toStrictEqual(discarding.pending);
     expect(view.waitingFor).toStrictEqual({ id: "d9999", player: "p2", kind: "discardToHandSize" });
   });
 
   it("shows another player only who must decide what, not the picks so far", () => {
-    const view = playerView(discarding, "p1");
+    const view = playerView(discarding, "p1", TEST_CARDS);
     expect(view.decision).toBeNull();
     expect(view.waitingFor).toStrictEqual({ id: "d9999", player: "p2", kind: "discardToHandSize" });
     expect(JSON.stringify(view)).not.toContain(`"${picked}"`);
@@ -230,7 +240,7 @@ describe("views and events through a real game", () => {
   it("after a cancelled cast, shows the other player the hand only as a count again (CR 734.1)", () => {
     let game = castShock(bearsAndShock("precombatMain"));
     game = take(game, (a) => a.type === "ANSWER" && a.answer.kind === "cancelCast");
-    const view = playerView(game.state, "p2");
+    const view = playerView(game.state, "p2", TEST_CARDS);
     expect(view.zones.players.p1).toMatchObject({ handSize: 1, hand: null });
     expect(view.objects[hand(game.state, "p1")[0] as ObjectId]).toBeUndefined();
     expect(view.casting).toBeNull();
@@ -255,10 +265,10 @@ describe("a cancelled spell can't be followed through its owner's hand (CR 402.3
       opening: { kind: "fixed", turn: { number: 3, activePlayer: "p2", step: "precombatMain" } },
       ruleModifiers: [],
     });
-    const views: unknown[] = [playerView(game.state, "p1")];
+    const views: unknown[] = [playerView(game.state, "p1", TEST_CARDS)];
     const step = (match: (a: Action) => boolean) => {
       game = take(game, match);
-      views.push(playerView(game.state, "p1"));
+      views.push(playerView(game.state, "p1", TEST_CARDS));
     };
     const [first, second] = hand(game.state, "p2") as [ObjectId, ObjectId];
     const mountain = game.state.zones.battlefield[0];

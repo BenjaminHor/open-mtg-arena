@@ -3,13 +3,16 @@
 import {
   attachedHost,
   type CardDatabase,
+  cardDataByOracleId,
   characteristics,
   controllerOf,
   type GameEvent,
   type GameState,
   KEYWORDS,
   type ObjectId,
+  type OracleId,
   type PlayerId,
+  playerView,
 } from "@mtg/engine";
 import { deepEqual, partialMatch } from "./compare.ts";
 import { isRecord } from "./format.ts";
@@ -97,6 +100,17 @@ function check(
       return { value: names(ids), matches: containsAll(names(ids), expected, deepEqual) };
     }
     return same(names(ids));
+  }
+  const revealed = /^(p\d+)\.(revealedHand|revealedTop)$/.exec(key);
+  if (revealed !== null) {
+    // What another player is shown of this player's hand or library top (Telepathy, Vampire Nocturnus): names, or null.
+    const p = player(revealed[1] ?? "");
+    const other = state.turnOrder.find((q) => q !== p);
+    if (p === null || other === undefined) return { error: `no player ${revealed[1]} with an opponent` };
+    const shown = playerView(state, other, cards).zones.players[p];
+    const name = (o: OracleId) => cardDataByOracleId(o, cards)?.printed.name ?? o;
+    if (revealed[2] === "revealedTop") return same(shown?.revealedTop == null ? null : name(shown.revealedTop));
+    return same(shown?.revealedHand == null ? null : shown.revealedHand.map(name).sort());
   }
   const life = /^(p\d+)\.(life|manaPool)$/.exec(key);
   if (life !== null) {
@@ -205,7 +219,13 @@ function check(
         return { error: "events contains takes a non-empty list of events like { type: CARD_DRAWN }" };
       }
       const wanted = expected.map((want) => withEngineStep(want));
-      const matches = containsAll(events as unknown[], wanted, (e, w) =>
+      // Revealed cards are written by name, as everywhere in a scenario.
+      const named = events.map((e) =>
+        e.type === "CARDS_REVEALED"
+          ? { ...e, cards: e.cards.map((o) => cardDataByOracleId(o, cards)?.printed.name ?? o) }
+          : e,
+      );
+      const matches = containsAll(named as unknown[], wanted, (e, w) =>
         partialMatch(e as Record<string, unknown>, w as Record<string, unknown>),
       );
       return { value: events.map((e) => e.type), matches };

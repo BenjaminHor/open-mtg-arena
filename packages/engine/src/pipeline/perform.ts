@@ -15,6 +15,7 @@ import { sacrifice } from "../permanents/sacrifice.ts";
 import { tapPermanent } from "../permanents/tap.ts";
 import { untapPermanent } from "../permanents/untap.ts";
 import { type Characteristics, characteristics } from "../rules/characteristics.ts";
+import { libraryTopsRevealed } from "../rules/revealed.ts";
 import type { GameState, LastKnownCharacteristics } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { counterObject } from "../zones/counter.ts";
@@ -175,8 +176,15 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return ceaseToExist(state, event.object);
     case "addMana":
       return addMana(state, event.player, event.mana, event.amount, event.source);
-    case "draw":
-      return drawCard(state, event.player);
+    case "draw": {
+      // A top card played revealed is seen by everyone as it's drawn, each of several draws in turn (CR 401.5;
+      // Vampire Nocturnus's ruling): a view comes only between actions, so it's told here.
+      const top = state.zones.players[event.player]?.library[0];
+      const revealed = top !== undefined && libraryTopsRevealed(state, cards).includes(event.player);
+      const from = { zone: "library", player: event.player } as const;
+      const shown = revealed ? reveal(state, from, [top]) : { state, events: [] };
+      return andThen(shown, (s) => drawCard(s, event.player));
+    }
     case "discard":
       return discardCard(state, event.object, event.to);
     case "shuffle":

@@ -80,7 +80,7 @@ function act(g: Game, cards: CardDatabase, match: (a: Action) => boolean): Game 
 }
 
 const seen = (g: Game, viewer: PlayerId) => ({
-  view: playerView(g.state, viewer),
+  view: playerView(g.state, viewer, TEST_CARDS),
   events: eventsFor(g.events, viewer),
 });
 
@@ -121,7 +121,7 @@ describe("a search tells the other players nothing about the library (CR 401.2, 
   it("Fabricate shows its chooser the whole library by identity, without ids (CR 701.23a)", () => {
     let g = game([FOREST, STATUE, FOREST]);
     for (const step of [cast, ...toResolve]) g = act(g, FABRICATE, step);
-    const decision = playerView(g.state, "p1").decision;
+    const decision = playerView(g.state, "p1", TEST_CARDS).decision;
     if (decision?.kind !== "chooseCards") throw new Error("no search");
     expect(decision.seen).toStrictEqual({
       from: { zone: "library", player: "p1" },
@@ -173,7 +173,7 @@ describe("a search tells the other players nothing about the library (CR 401.2, 
     const cards = { ...rampant, [MOUNTAIN]: { ...mountain, printed: { ...mountain.printed, supertypes: [] } } };
     let g = game([MOUNTAIN, FOREST]);
     for (const step of [cast, ...toResolve]) g = act(g, cards, step);
-    const decision = playerView(g.state, "p1").decision;
+    const decision = playerView(g.state, "p1", TEST_CARDS).decision;
     if (decision?.kind !== "chooseCards") throw new Error("no search");
     expect(decision.options.map((o) => o.oracleId)).toStrictEqual([FOREST]);
   });

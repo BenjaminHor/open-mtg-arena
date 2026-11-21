@@ -1,0 +1,17 @@
+name: A stolen Vampire Nocturnus reads its new controller's library, and gives the bonus to their Vampires
+rules: [CR 109.5, CR 613.4c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Vampire Nocturnus, Child of Night]
+    library: [Swamp]
+  p2:
+    battlefield: [{ card: Mind Control, attachedTo: p1:Vampire Nocturnus }, Vampire Aristocrat]
+    library: [Sign in Blood]
+steps:
+  - expect:
+      p2:Vampire Nocturnus.power: 5
+      p2:Vampire Aristocrat.power: 4
+      p1:Child of Night.power: 2
+      p2.revealedTop: Sign in Blood
+      p1.revealedTop: null

@@ -1,0 +1,12 @@
+name: Two Vampire Nocturni each get their own bonus and the other's
+rules: [CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Vampire Nocturnus, Vampire Nocturnus]
+    library: [Sign in Blood]
+steps:
+  - expect:
+      p1:Vampire Nocturnus.power: 7
+      p1:Vampire Nocturnus.toughness: 5
+      p1:Vampire Nocturnus#2.power: 7

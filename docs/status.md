@@ -740,6 +740,34 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14f plan (2026-11-21, with the advisor's review): Telepathy ("your opponents play with their hands
+         revealed") and Vampire Nocturnus ("play with the top card of your library revealed"; +2/+1 and flying to it and
+         other Vampires you control while that card is black). CR 401.5, 401.6, 701.18c, 701.20a, 400.2.
+         1. Statics `opponentsPlayWithHandsRevealed`, `playWithTopOfLibraryRevealed`, read through the layer pass (a
+            stolen Nocturnus reveals its new controller's library) in `rules/revealed.ts`.
+         2. The view shows revealed cards by identity only, sorted (D-062): `revealedHand: OracleId[] | null` and
+            `revealedTop: OracleId | null` per player; `objects`, `hand` and `canSee` unchanged (ids record history, and a
+            shuffle keeps them). `playerView` takes `cards`; the CLI's `show` too.
+         3. A draw from a revealed top emits a public `CARDS_REVEALED` first (its ruling: each card of a multi-draw is
+            revealed before it's drawn).
+         4. `creaturesGet` gains `self` ("this creature and other ...") and `asLongAs: { topOfLibrary: filter }`; the
+            library tops join the layer inputs, compared by value only if the pass read one (like `lifeRead`), as a
+            shuffle changes the top without a new objects record. The top's printed characteristics.
+         5. The fuzzer's `scrambleHidden` keeps a revealed top on top and revealed cards' oracle ids.
+         6. Scenarios: both reveals, an empty library, a land on top, a non-Vampire Nocturnus, flying after blockers,
+            two Nocturni, a stolen one, a shuffle (Sage Owl/Liliana) changing the top, Divination's draws revealed. Bench.
+         - Later, not in the pool: CR 401.5's mid-cast delay, CR 401.6's new object (no id is shown, so nothing tracks it).
+         - Future impact: per-player knowledge (a looked-at card, face-down cards) extends the same view fields.
+       - M2-14f built (2026-11-21, D-122): Telepathy and Vampire Nocturnus (234 cards). Statics read through the pass
+         (`rules/revealed.ts`); the view's `revealedHand`/`revealedTop` by identity only (`playerView` takes `cards`);
+         a draw from a revealed top emits `CARDS_REVEALED` first; `creaturesGet` gains `self` and `asLongAs:
+         { topOfLibrary }`, the library tops a layer input read through `libraryTopOf` (`read.libraryTops` beside
+         `read.life`); `printedStart` moved to `rules/printed-start.ts`; the fuzzer's scramble keeps revealed cards;
+         scenario expectations `p2.revealedHand`/`p2.revealedTop` and named cards in `CARDS_REVEALED`; the CLI's `show`
+         prints revealed cards. 12 scenarios, unit tests (the pass re-read after a reorder with the same objects, two
+         worlds for each reveal, a non-Vampire "this creature and other Vampires"); mutants: the cache key killed by the
+         unit test only (a reorder in a scenario always comes with an objects change), `self` by the unit test. 2 golden
+         games. Next: fuzz, reviews, bench, PR.
        - M2-14e built (2026-11-21, D-121): Sphinx Ambassador (232 cards): `nameCard` at resolution (the `chooseName`
          decision with `answering: resolution`), `Resolution.named`, the `notNamedThisWay` filter. 4 scenarios (a creature
          not named put under your control, the named card left, a noncreature found, declined), a test that the
@@ -751,7 +779,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Sphinx, two Sphinxes, Pithing Needle naming it). Code review: the same leak; `notNamedThisWay` read in `fits`
          (so inside `not` too) through a lazy `FitContext.namedThisWay`; definitions refuse it with no `nameCard` before,
          outside an effect, and `nameCard` by each player; a test that a name decision's view drops `resume` (a
-         surviving mutant); `answerName` moved to `game/choose-name.ts`. Next: PR #77, merge.
+         surviving mutant); `answerName` moved to `game/choose-name.ts`. Merged as #77. M2-14e done. Next: M2-14f.
        - M2-14d2 built (2026-11-21, D-120): Convincing Mirage (231 cards): a basic land type chosen as it enters (the
          `chooseName` decision with `what`), layer 4 setting the enchanted land's type (`rules/land-type.ts`), its rules
          text's abilities lost (`Layered.rulesTextLost`, CR 305.7). 8 scenarios (the choice, a word or nonbasic type

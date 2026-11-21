@@ -3,8 +3,9 @@
 What one player may know of the game (CR 400.2: libraries and hands are hidden zones). The UI and the AI get views,
 never the state (docs/architecture.md, "Hidden information"; D-044).
 
-- `player-view.ts`: `playerView(state, viewer)`: objects in public zones and the viewer's own hand; other hands and
-  every library only as counts; the viewer's own pending `decision`, and `waitingFor` for anyone's; no random
+- `player-view.ts`: `playerView(state, viewer, cards)`: objects in public zones and the viewer's own hand; other hands
+  and every library only as counts, but for what an ability reveals to everyone (`revealedHand`, `revealedTop`, by
+  identity only, `rules/revealed.ts`); the viewer's own pending `decision`, and `waitingFor` for anyone's; no random
   generator state, setup, work queue or id counters. A view shares structure with the state: never change it.
 - `events-for.ts`: `eventsFor(events, viewer)`: events that would reveal a hidden card (another player's draw, a card
   moving between hidden zones) lose the card's identity, and a card moving between a zone the viewer sees and one

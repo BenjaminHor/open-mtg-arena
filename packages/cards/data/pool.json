@@ -5922,6 +5922,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Telepathy",
+      "slug": "telepathy",
+      "oracleId": "d2e647ac-717f-46e6-baa8-6a793e7bdc32",
+      "layout": "normal",
+      "manaCost": "{U}",
+      "manaValue": 1,
+      "typeLine": "Enchantment",
+      "oracleText": "Your opponents play with their hands revealed.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/e/ce03b4b4-612b-4fc9-b063-b0d367712eaf.jpg?1783942387",
+        "large": "https://cards.scryfall.io/large/front/c/e/ce03b4b4-612b-4fc9-b063-b0d367712eaf.jpg?1783942387",
+        "png": "https://cards.scryfall.io/png/front/c/e/ce03b4b4-612b-4fc9-b063-b0d367712eaf.png?1783942387",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/e/ce03b4b4-612b-4fc9-b063-b0d367712eaf.jpg?1783942387"
+      },
+      "artist": "Matthew D. Wilson",
+      "set": "m10",
+      "collectorNumber": "74",
+      "scryfallUri": "https://scryfall.com/card/m10/74/telepathy?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Tempest of Light",
       "slug": "tempest-of-light",
       "oracleId": "9399ed27-31c7-4d6a-99eb-644b74e67344",
@@ -6271,6 +6300,35 @@
       "set": "m10",
       "collectorNumber": "117",
       "scryfallUri": "https://scryfall.com/card/m10/117/vampire-aristocrat?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Vampire Nocturnus",
+      "slug": "vampire-nocturnus",
+      "oracleId": "2109c49e-dc81-4a10-8265-3cf8c90db523",
+      "layout": "normal",
+      "manaCost": "{1}{B}{B}{B}",
+      "manaValue": 4,
+      "typeLine": "Creature — Vampire",
+      "oracleText": "Play with the top card of your library revealed.\nAs long as the top card of your library is black, this creature and other Vampire creatures you control get +2/+1 and have flying.",
+      "power": "3",
+      "toughness": "3",
+      "loyalty": null,
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/d/8daccbbb-6600-4467-810f-277f01a11771.jpg?1783940488",
+        "large": "https://cards.scryfall.io/large/front/8/d/8daccbbb-6600-4467-810f-277f01a11771.jpg?1783940488",
+        "png": "https://cards.scryfall.io/png/front/8/d/8daccbbb-6600-4467-810f-277f01a11771.png?1783940488",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/d/8daccbbb-6600-4467-810f-277f01a11771.jpg?1783940488"
+      },
+      "artist": "Raymond Swanland",
+      "set": "m13",
+      "collectorNumber": "113",
+      "scryfallUri": "https://scryfall.com/card/m13/113/vampire-nocturnus?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

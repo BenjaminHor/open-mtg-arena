@@ -1845,3 +1845,27 @@ owner's answer to the D-089 open question, option (a))
   `canSayYes` is then false, `legalActions` offers only no and yes is refused, as yes would be impossible (CR 608.2d).
   A card revealed in a library is asked the same way, though everyone saw it: a question with only no, harmless and
   not in the pool today (Lurking Predators's card has left the library or fits by the time it's asked).
+
+**D-122: Revealed hands and library tops, and a bonus that reads the top card (M2-14f: Telepathy, Vampire Nocturnus)** ·
+2026-11-21 · accepted
+- "Your opponents play with their hands revealed" and "play with the top card of your library revealed" are static
+  abilities (`opponentsPlayWithHandsRevealed`, `playWithTopOfLibraryRevealed`), read from the battlefield through the
+  layer pass by `rules/revealed.ts` (`handsRevealed`, `libraryTopsRevealed`): a stolen Nocturnus reveals its new
+  controller's library (CR 109.5). The hand and library stay hidden zones (CR 400.2); nothing new is stored in the state.
+- `playerView` takes the card database and shows what's revealed to every player (CR 701.20a) by identity only, in the
+  fixed order of D-062: `revealedHand: OracleId[] | null` and `revealedTop: OracleId | null` per player. `objects`,
+  `hand` and `canSee` are unchanged: ids and a hand's order record when each card came, which a reveal doesn't show,
+  and a shuffle keeps object ids (CR 701.20d makes a reordered revealed card a new object; an id would let a player
+  follow it). Two-worlds tests check a view doesn't change with what stays hidden; the fuzzer's scramble keeps a revealed
+  top on top and revealed cards' identities.
+- A view exists only between actions, so a draw from a revealed top emits a public `CARDS_REVEALED` first: each card
+  of a multi-card draw is seen (CR 401.5; Nocturnus's ruling). Scenarios can name revealed cards in `events contains`,
+  and check `p2.revealedHand` / `p2.revealedTop` as another player sees them.
+- "As long as the top card of your library is black, this creature and other Vampire creatures you control get +2/+1
+  and have flying" is `creaturesGet` with `self` (the ruling: even if it isn't a Vampire) and `asLongAs: { topOfLibrary:
+  filter }`, read with the top card's printed values (no effect in the pool applies in a library), an empty library
+  fitting nothing. The library tops join the layer inputs, read only through `libraryTopOf` and compared by value only
+  if a pass read one (`read.libraryTops`, beside `read.life`, which replaces D-112's `lifeRead`): a reorder or shuffle
+  changes the top without a new objects record. `printedStart` moved to `rules/printed-start.ts` to be shared.
+- Not built, as nothing in the pool can cause them (future-rules): CR 401.5's mid-cast delay, CR 401.6's new object, a
+  top revealed only for a moment within one action.

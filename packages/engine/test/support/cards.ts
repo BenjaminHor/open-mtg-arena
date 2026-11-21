@@ -100,6 +100,7 @@ export const PRO_BLACK = "test-pro-black";
  * it grants flying, and kept for 7c (CR 613.6): looking again in 7c would find none.
  */
 export const GROUNDED_ANTHEM = "test-grounded-anthem";
+export const LONE_LORD = "test-lone-lord";
 /**
  * Not a real card: a creature printed with "*" power and toughness, each the number of Forests you control (layer
  * 7a).
@@ -912,6 +913,18 @@ export const TEST_CARDS: CardDatabase = {
         power: 1,
         toughness: 1,
         keywords: ["flying"],
+      },
+    ],
+  }),
+  [LONE_LORD]: withDef(keywordCreature(LONE_LORD, "Lone Lord", [1, 1], []), {
+    oracle: "This creature and other Vampire creatures you control get +2/+1.",
+    statics: [
+      {
+        kind: "creaturesGet",
+        filter: { subtypes: ["Vampire"], controller: "you" },
+        self: true,
+        power: 2,
+        toughness: 1,
       },
     ],
   }),

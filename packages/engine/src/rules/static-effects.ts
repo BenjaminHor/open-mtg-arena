@@ -10,6 +10,8 @@ import type { CardObject } from "../state/objects.ts";
 import { attachedHostIn } from "./attachment.ts";
 import { fits } from "./filter-fit.ts";
 import type { Layered, LayerInputs } from "./layers.ts";
+import { libraryTopOf } from "./library-top-input.ts";
+import { printedStart } from "./printed-start.ts";
 
 type CreaturesGet = Extract<StaticAbilityDef, { kind: "creaturesGet" }>;
 
@@ -30,15 +32,20 @@ export function creaturesGetSet(
   board: Readonly<Record<ObjectId, Layered>>,
   source: ObjectId,
   def: CreaturesGet,
+  cards: CardDatabase,
 ): ObjectId[] {
   const you = board[source]?.controller;
   if (you === undefined) return [];
+  // "As long as ...": "your library" is its controller's (CR 109.5).
+  if (def.asLongAs !== undefined && !topOfLibraryFits(input, you, def.asLongAs.topOfLibrary, cards)) return [];
   return input.battlefield.filter((id) => {
     if (def.others === true && id === source) return false;
     const obj = input.objects[id];
     const card = board[id];
     // "Creatures": whatever else the filter says, only creatures (it can't grant a keyword to a land by omission).
     if (obj?.kind !== "card" || card === undefined || !card.types.includes("creature")) return false;
+    // "This creature and other Vampire creatures": this one even if it isn't a Vampire (Vampire Nocturnus's ruling).
+    if (def.self === true && id === source) return true;
     return fitsOnBoard(obj, card, def.filter, you);
   });
 }
@@ -48,6 +55,7 @@ export function staticKeywordGrants(
   input: LayerInputs,
   board: Readonly<Record<ObjectId, Layered>>,
   sources: readonly StaticSource[],
+  cards: CardDatabase,
 ): { grants: Record<ObjectId, KeywordGrant[]>; sets: (ObjectId[] | undefined)[] } {
   const grants: Record<ObjectId, KeywordGrant[]> = {};
   const timestampOf = (id: ObjectId) => staticTimestamp(input, id);
@@ -71,7 +79,7 @@ export function staticKeywordGrants(
       case "creaturesGet": {
         const keywords = s.def.keywords ?? [];
         if (keywords.length === 0) break;
-        const affected = creaturesGetSet(input, board, s.source, s.def);
+        const affected = creaturesGetSet(input, board, s.source, s.def, cards);
         sets[i] = affected;
         const grant = { source: s.source, timestamp: timestampOf(s.source), keywords, lose: [] };
         for (const id of affected) grants[id] = [...(grants[id] ?? []), grant];
@@ -96,6 +104,8 @@ export function staticKeywordGrants(
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
+      case "opponentsPlayWithHandsRevealed":
+      case "playWithTopOfLibraryRevealed":
         break;
     }
   }
@@ -147,7 +157,7 @@ export function staticPTChanges(
       case "creaturesGet": {
         const { power, toughness } = s.def;
         if (power === 0 && toughness === 0) break;
-        const affected = setsFromLayer6[i] ?? creaturesGetSet(input, board, s.source, s.def);
+        const affected = setsFromLayer6[i] ?? creaturesGetSet(input, board, s.source, s.def, cards);
         for (const id of affected) add(id, { source: s.source, power, toughness });
         break;
       }
@@ -190,6 +200,8 @@ export function staticPTChanges(
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
+      case "opponentsPlayWithHandsRevealed":
+      case "playWithTopOfLibraryRevealed":
       case "attachedCantAttackOrBlock":
       case "attachedCantBeBlocked":
       case "attachedCantActivate":
@@ -229,12 +241,23 @@ export function countOnBoard(
  * finished pass, so the pass can't call it). `you` is the static ability's controller. Combat isn't one of the pass's
  * inputs (D-092), so a static can't ask about attacking or blocking; definitions are checked for that.
  */
-function fitsOnBoard(obj: CardObject, card: Layered, filter: ObjectFilter, you: PlayerId): boolean {
+function fitsOnBoard(obj: CardObject, card: Layered, filter: ObjectFilter, you: PlayerId, controlled = true): boolean {
   const inCombat = () => {
     throw new Error("a static ability can't ask about combat inside the layer pass (D-092)");
   };
   const namedThisWay = () => {
     throw new Error("a static ability can't ask about a name chosen while something resolves");
   };
-  return fits({ obj, card, controlled: true, inCombat, namedThisWay }, filter, you, null);
+  return fits({ obj, card, controlled, inCombat, namedThisWay }, filter, you, null);
+}
+
+/**
+ * "As long as the top card of your library is [filter]" (Vampire Nocturnus): read with its printed values, as no
+ * effect in the pool applies to a card in a library. An empty library has no top card, so it fits nothing.
+ */
+function topOfLibraryFits(input: LayerInputs, you: PlayerId, filter: ObjectFilter, cards: CardDatabase): boolean {
+  const top = libraryTopOf(input, you);
+  const obj = top === null ? undefined : input.objects[top];
+  if (obj?.kind !== "card") return false;
+  return fitsOnBoard(obj, printedStart(obj, obj.owner, cards), filter, you, false);
 }

@@ -31,7 +31,7 @@ steps:
 `;
   const views: string[] = [];
   const result = runScenario(yaml, cards, (state) => {
-    const view = JSON.stringify(playerView(state, "p2"));
+    const view = JSON.stringify(playerView(state, "p2", cards));
     if (views.at(-1) !== view) views.push(view);
     return [];
   });
@@ -56,7 +56,7 @@ steps:
 `;
     const decisions: unknown[] = [];
     const result = runScenario(yaml, cards, (state) => {
-      if (state.pending?.kind === "chooseName") decisions.push(playerView(state, "p1").decision);
+      if (state.pending?.kind === "chooseName") decisions.push(playerView(state, "p1", cards).decision);
       return [];
     });
     expect(result.problems).toStrictEqual([]);

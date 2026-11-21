@@ -1,0 +1,19 @@
+name: Once Telepathy leaves the battlefield, the hand is hidden again
+rules: [CR 701.18c]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Telepathy]
+  p2:
+    battlefield: [Forest, Forest]
+    hand: [Naturalize, Grizzly Bears]
+steps:
+  - expect:
+      p2.revealedHand: [Grizzly Bears, Naturalize]
+  - p2 cast: Naturalize
+    targets: [p1:Telepathy]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Telepathy]
+      p2.revealedHand: null

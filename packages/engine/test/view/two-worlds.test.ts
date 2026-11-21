@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { type Action, eventsFor, type GameState, type ObjectId, playerView } from "../../src/index.ts";
+import { TEST_CARDS } from "../support/cards.ts";
 import { type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 const MOUNTAIN = { oracleId: "mountain", tapped: false, summoningSick: false, damage: 0, counters: {} };
@@ -28,11 +29,11 @@ const handOf = (s: GameState) => s.zones.players.p2?.hand ?? [];
 /** Takes actions, keeping what p1 sees after each. */
 function recorder(start: Game) {
   let game = start;
-  const views: unknown[] = [playerView(game.state, "p1")];
+  const views: unknown[] = [playerView(game.state, "p1", TEST_CARDS)];
   return {
     take(match: (a: Action) => boolean): void {
       game = take(game, match);
-      views.push(playerView(game.state, "p1"));
+      views.push(playerView(game.state, "p1", TEST_CARDS));
     },
     get game(): Game {
       return game;
