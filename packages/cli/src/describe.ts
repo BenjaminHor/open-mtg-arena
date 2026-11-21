@@ -151,6 +151,10 @@ export function durationText(duration: Duration): string {
   switch (duration) {
     case "endOfTurn":
       return "until end of turn";
+    case "endOfGame":
+      return "for the rest of the game";
+    case "whileSourceOnBattlefield":
+      return "while its source remains on the battlefield";
   }
 }
 

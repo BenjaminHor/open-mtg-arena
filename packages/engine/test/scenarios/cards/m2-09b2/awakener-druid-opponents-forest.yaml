@@ -1,0 +1,18 @@
+name: Awakener Druid's ability must target a Forest if there is one, even an opponent's, which becomes their creature
+rules: [CR 603.3d, CR 613.1d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Awakener Druid]
+    manaPool: { G: 3 }
+  p2:
+    battlefield: [Forest]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Forest
+  - all pass: once
+  - expect:
+      p2:Forest.power: 4
+      p2:Forest.toughness: 5

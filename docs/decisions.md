@@ -1382,3 +1382,21 @@ every schema change and every change D-024 lists bumps it.
 - Scenarios can name a card in a hand or graveyard (`hand:p1:Nightmare.power`), and `inspect` shows the 7a base.
 - Future impact: 7b (Awakener Druid, M2-09b2) sets a base after 7a, in timestamp order (CR 613.7); a CDA whose count
   reads power would need dependency order (CR 613.8); tokens' CDAs come from the effect that made them (CR 604.3a).
+
+**D-095: Type, color and setting effects in layers 4, 5 and 7b (M2-09b2a)** · 2026-11-21 · accepted
+- One effect change, `becomes { addTypes, addSubtypes, colors?: {set} | {add}, setPT? }`, applied in every layer it
+  touches (CR 613.6): types and subtypes added in layer 4, keeping the others (CR 205.1b), colors set or added in 5,
+  base power and toughness set in 7b. Each layer goes through `state.effects` in order, which is timestamp order
+  (CR 613.7). Setting types without keeping the others waits for a card that does it.
+- Durations: `"endOfTurn"`, `"endOfGame"` (none stated, CR 611.2a) and `"whileSourceOnBattlefield"`. The last ends in
+  `moveCard` as its source leaves, with EFFECT_ENDED, and none is made if the source has already left (CR 611.2b). An
+  "endOfGame" effect stays in the state after its object is gone; it can't apply again, as ids are never reused.
+- Rise from the Grave's "is a black Zombie" is `putTargetOntoBattlefield { target, is }`: the effect is made with the
+  move, on the new object, its timestamp after the object's (CR 611.2e, 613.7n). Nothing in the pool would notice it
+  entering that way rather than becoming so a moment later; the shape is right for one that does.
+- Layer 7 moved to `rules/layer-seven.ts`. A land made a creature gets its P/T from 7b although none is printed;
+  `Layered.base` says where the base came from, and `inspect` shows it.
+- Not built: subtypes by kind (Coat of Arms counting creature types only, CR 205.3m). An animated Forest shares no land
+  type with another creature in the pool, so nothing shows it; it stays `later:`.
+- Future impact: layer 2 (M2-09c) and Auras' statics (M2-12) set and add in these layers the same way; tokens (M2-11)
+  are made with characteristics like Rise's `is`.

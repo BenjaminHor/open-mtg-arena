@@ -11,6 +11,7 @@ Alluring Siren
 Angel's Feather
 Angel's Mercy
 Assassinate
+Awakener Druid
 Ball Lightning
 Baneslayer Angel
 Berserkers of Blood Ridge
@@ -141,6 +142,7 @@ Regenerate
 Relentless Rats
 Rhox Pikemaster
 Righteousness
+Rise from the Grave
 Rod of Ruin
 Rootbound Crag
 Royal Assassin

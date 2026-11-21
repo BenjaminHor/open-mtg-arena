@@ -1,0 +1,30 @@
+name: Awakener Druid's Forest stops being a creature when the Druid leaves the battlefield
+rules: [CR 611.2a, CR 613.4b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest]
+    hand: [Awakener Druid]
+    manaPool: { G: 3 }
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Forest
+  - all pass: once
+  - expect:
+      p1:Forest.power: 4
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Awakener Druid]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Awakener Druid]
+      p1:Forest.power: null
+      p1:Forest.types: [basic, land]
+      p1:Forest.colors: []
+      events contains: [{ type: EFFECT_ENDED }]

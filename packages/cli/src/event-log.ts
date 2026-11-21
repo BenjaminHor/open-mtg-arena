@@ -5,6 +5,7 @@
 import {
   type Action,
   applyAction,
+  type Becomes,
   type CardDatabase,
   createGame,
   type EffectChange,
@@ -184,5 +185,22 @@ function effectChangeText(change: EffectChange): string {
       return `gains ${change.keywords.join(", ")}`;
     case "cantBeBlocked":
       return "can't be blocked";
+    case "becomes":
+      return becomesText(change);
   }
+}
+
+/** "becomes a 4/5 G land creature — Forest Treefolk" style: what each layer sets or adds. */
+export function becomesText(change: Becomes): string {
+  const parts = [
+    change.setPT === undefined ? null : `${change.setPT.power}/${change.setPT.toughness}`,
+    change.colors === undefined
+      ? null
+      : "set" in change.colors
+        ? `colors ${change.colors.set.join("") || "none"}`
+        : `also ${change.colors.add.join("")}`,
+    change.addTypes.length === 0 ? null : `also ${change.addTypes.join(" ")}`,
+    change.addSubtypes.length === 0 ? null : `also ${change.addSubtypes.join(" ")}`,
+  ];
+  return `becomes ${parts.filter((p) => p !== null).join(", ")}`;
 }

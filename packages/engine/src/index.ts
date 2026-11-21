@@ -43,7 +43,7 @@ export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";
 export type { Attack, Block, Combat, CombatDivision, DamageDivision } from "./state/combat.ts";
 export type { ChoosePurpose, DecisionKind, PendingDecision, Seen } from "./state/decisions.ts";
-export type { ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
+export type { Becomes, ContinuousEffect, Duration, EffectChange, EffectContext } from "./state/effects.ts";
 export type { DidNotResolve, GameEvent } from "./state/events.ts";
 export type { GameState, Resolution } from "./state/game-state.ts";
 export type { CardId, DecisionId, ObjectId, OracleId, PlayerId } from "./state/ids.ts";

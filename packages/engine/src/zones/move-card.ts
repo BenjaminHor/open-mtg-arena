@@ -1,6 +1,7 @@
 // Moving a card between zones. Every zone change goes through `moveCard`, so the replacement and trigger steps of
 // the event pipeline (docs/architecture.md, "Effects, events, replacements, triggers") have one place to plug in.
 
+import { endEffectsOfSourceLeaving } from "../effects/continuous-effect.ts";
 import { newCardId, newObjectId, newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
 import type { GameEvent } from "../state/events.ts";
@@ -81,6 +82,10 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
   const toTop = to.zone === "library" && to.position === "top";
   next = withZoneList(next, toRef, toTop ? [card.id, ...list] : [...list, card.id]);
 
+  // "For as long as this creature remains on the battlefield" ends as it leaves (CR 611.2b).
+  const ended = from.zone === "battlefield" ? endEffectsOfSourceLeaving(next, id) : { state: next, events: [] };
+  next = ended.state;
+
   const event: GameEvent = {
     type: "ZONE_CHANGED",
     from,
@@ -91,7 +96,7 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     newCardId: card.cardId,
     object: old,
   };
-  return { state: next, events: [event], newId: card.id };
+  return { state: next, events: [event, ...ended.events], newId: card.id };
 }
 
 /** Hands and libraries: zones some player can't see into (CR 400.2). */

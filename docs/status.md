@@ -584,8 +584,36 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            `ObjectFilter`, docs (future-rules, card-scripting, rules README). Bench baseline rewritten: the busy-board
            measures take their states from the golden games, which now include pool-231, so `legalActions.busyBoard`
            measures different boards (+12-23%); a random game (fixed decks) is about 3-7% slower, `layerSeven`
-           recording the base (main 80 ms, this branch 86 ms standalone, under the 100 ms budget). Next: PR.
-         b2: Awakener Druid, Rise from the Grave, Stone Giant; subtypes by kind; last known characteristics snapshot.
+           recording the base (main 80 ms, this branch 86 ms standalone, under the 100 ms budget). Merged as #51.
+         b2, split again (2026-11-21). Plan for b2a, type, color and setting effects (CR 613.1d-e, 613.4b, 611.2b,
+         611.2e, 205.1b): Awakener Druid, Rise from the Grave.
+         - A continuous effect change `becomes { addTypes, addSubtypes, colors?: {set}|{add}, setPT? }`, one effect
+           applied in each layer it touches (CR 613.6): types and subtypes added in layer 4 ("still a land", "in
+           addition to its other types", CR 205.1b), colors in 5, base power and toughness set in 7b after 7a. Within a
+           layer, effects apply in timestamp order (CR 613.7), which is `state.effects`' order (each new one is later).
+         - Durations: "endOfTurn", "endOfGame" (no duration stated, CR 611.2a: Rise), and "whileSourceOnBattlefield"
+           ("for as long as this creature remains on the battlefield": the effect ends as its source leaves, in
+           `moveCard`, with EFFECT_ENDED; none is made if the source is already gone, CR 611.2b).
+         - Layer 7 for a land that becomes a creature: P/T from 7b although none is printed (the early return goes).
+         - Rise from the Grave: `putOntoBattlefield` from a target card in a graveyard, under "your" control (the stored
+           controller), with characteristics it has as it enters (CR 611.2e): the effect is made with the move, on the
+           new object (CR 400.7), its timestamp after the object's (CR 613.7n).
+         - Scenarios: the Druid's Forest is a 4/5 green Treefolk land creature that still taps for {G}, reverts when
+           the Druid leaves (and leaves combat, CR 506.4), nothing if the Druid left first (611.2b), an opponent's
+           Forest, a Forest that entered this turn is summoning sick, a pump on 7b; Rise: a black Zombie under your
+           control, colors added (Ornithopter becomes only black, its ruling), Doom Blade can't target it, it goes to
+           its owner's graveyard. New expectations `.colors`, `.types`, `.subtypes`.
+         - Not built: subtypes by kind (Coat of Arms counting only creature types, CR 205.3m): no pool pair shows it
+           (an animated Forest and another creature share no land type), so it stays `later:`.
+         - Future impact: control-changing effects (M2-09c) join the pass as layer 2 the same way; Auras' and
+           Equipment's statics (M2-12) set or add in these layers too; tokens (M2-11) are made with characteristics
+           like Rise's.
+         - b2a built (D-095): Awakener Druid, Rise from the Grave; 12 scenarios in `test/scenarios/cards/m2-09b2/`, a
+           unit test for CR 613.7n, `.colors`/`.types`/`.subtypes` expectations, `inspect` and the log showing 7b,
+           the Becomes column of the interaction matrix, golden pool-563 and pool-655 (no old one changed). Layer 7
+           moved to `rules/layer-seven.ts`. 190 cards. Next: mutations, reviews, fuzz, bench, PR.
+         b2b: Stone Giant (a target compared with the source's power; a delayed trigger that remembers "that
+         creature", CR 603.7c) and last known characteristics snapshotted as an object leaves (CR 608.2h).
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
          and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
          Stone Giant (flying, then a delayed destroy).

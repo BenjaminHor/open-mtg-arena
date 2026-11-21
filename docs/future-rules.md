@@ -17,9 +17,9 @@ read it. Layer 6 grants keywords (resolved effects and static abilities), 7c add
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Sorting within a sublayer by timestamp and dependency
 arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
-*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). 7b sets the base power and toughness
-after 7a (`Layered.base`), and the early "no printed P/T" return must become "base from 7a/7b, else printed", or an
-animated land gets none. A gone object's power is worked out from today's board unless it's snapshotted as it leaves
+*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). Layers 4, 5 and 7b have resolved effects
+(M2-09b2a, D-095), in `state.effects` order; a static ability that sets them (an Aura, M2-12) needs its timestamp
+merged into that order (CR 613.7a). A gone object's power is worked out from today's board unless it's snapshotted as it leaves
 (a dead Nightmare would count the Swamps left; future "snapshot `characteristics()`" item); a granted copy of a
 "power and toughness are each equal to" ability isn't characteristic-defining (CR 604.3a) and belongs in 7b; tokens (CR 111) need a characteristics source other than the card database; an effect on a permanent
 spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet. A layer reading more of the state

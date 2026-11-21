@@ -4,7 +4,7 @@
 // This is a first draft (M1-04). The effect, cost and ability shapes will be reshaped by the tasks that
 // interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities, D-041), see D-026.
 
-import type { Duration } from "../state/effects.ts";
+import type { Becomes, Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { TriggeredAbilityDef } from "./triggers.ts";
@@ -405,6 +405,12 @@ export type Effect =
   /** "[subject] attacks you this turn if able": a requirement on declaring attackers (CR 508.1d). */
   | { op: "mustAttack"; of: EffectSubject; duration: Duration }
   /**
+   * "[subject] becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's still a
+   * land." (Awakener Druid): one effect in layers 4, 5 and 7b on the objects fixed now (CR 611.2c, 613.6). With
+   * "whileSourceOnBattlefield", none is made if the source has already left (CR 611.2b).
+   */
+  | ({ op: "becomes"; of: EffectSubject; duration: Duration } & Becomes)
+  /**
    * "Sacrifice this creature": its source, if it's still on the battlefield under the ability's controller
    * (CR 701.21a).
    */
@@ -468,6 +474,13 @@ export type Effect =
    * cast. `optional` for "you may".
    */
   | { op: "putOntoBattlefield"; from: "yourHand"; filter: ObjectFilter; optional: boolean }
+  /**
+   * "Put target creature card from a graveyard onto the battlefield under your control. That creature is a black Zombie in
+   * addition to its other colors and types." (Rise from the Grave): the target enters under the controller's control
+   * (CR 110.2a), and `is`, if given, is an effect on the new object that applies as it enters (CR 611.2e), lasting until
+   * the end of the game (CR 611.2a).
+   */
+  | { op: "putTargetOntoBattlefield"; target: number; is?: Becomes }
   /**
    * "Search [whose] library for [a card / a [filter] card / all cards with the same name as a card exiled this way]":
    * "you" look at the whole library (CR 701.23a) and choose; the cards found are `"found"` for the effects after it.

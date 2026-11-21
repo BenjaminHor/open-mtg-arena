@@ -4,6 +4,7 @@ import { newTimestamp } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
 import type { ContinuousEffect } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
+import type { ObjectId } from "../state/ids.ts";
 
 /**
  * A continuous effect begins (CR 611.2a). It gets its timestamp now (CR 613.7b), and the caller has already fixed the
@@ -20,13 +21,26 @@ export function createContinuousEffect(state: GameState, effect: Omit<Continuous
 
 /**
  * Every "until end of turn" effect ends (CR 514.2, 611.2a). Called by the cleanup step in the same action that removes
- * damage. No other durations exist yet.
+ * damage.
  */
 export function endUntilEndOfTurnEffects(state: GameState): Progress {
   const ending = state.effects.filter((e) => e.duration === "endOfTurn");
   if (ending.length === 0) return { state, events: [] };
   return {
     state: { ...state, effects: state.effects.filter((e) => e.duration !== "endOfTurn") },
+    events: ending.map((effect) => ({ type: "EFFECT_ENDED", effect })),
+  };
+}
+
+/**
+ * The effects lasting "for as long as [this] remains on the battlefield" end as their source leaves it (CR 611.2b):
+ * called by `moveCard`, the one place a permanent leaves.
+ */
+export function endEffectsOfSourceLeaving(state: GameState, source: ObjectId): Progress {
+  const ending = state.effects.filter((e) => e.duration === "whileSourceOnBattlefield" && e.source === source);
+  if (ending.length === 0) return { state, events: [] };
+  return {
+    state: { ...state, effects: state.effects.filter((e) => !ending.includes(e)) },
     events: ending.map((effect) => ({ type: "EFFECT_ENDED", effect })),
   };
 }

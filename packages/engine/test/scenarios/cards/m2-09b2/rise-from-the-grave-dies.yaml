@@ -1,0 +1,24 @@
+name: A creature Rise from the Grave stole goes to its owner's graveyard when it dies
+rules: [CR 400.3, CR 704.5g]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    hand: [Rise from the Grave]
+    manaPool: { B: 5 }
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+    graveyard: [Grizzly Bears]
+steps:
+  - p1 cast: Rise from the Grave
+    targets: [graveyard:p2:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield: []
+      p2.graveyard contains: [Grizzly Bears, Shock]

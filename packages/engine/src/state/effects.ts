@@ -4,13 +4,17 @@
 // `characteristics()` applies those that change characteristics in layer order (CR 613); the rules questions read the
 // rest ("can't block": `canBlock`). Nothing applies them once and stores the result.
 
-import type { Keyword } from "../cards/types.ts";
+import type { CardType, Color, Keyword } from "../cards/types.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { Share, Target } from "./objects.ts";
 import type { TriggerEvent } from "./triggers.ts";
 
-/** How long an effect lasts (CR 611.2a). "Until end of turn" ends in the cleanup step (CR 514.2). */
-export type Duration = "endOfTurn";
+/**
+ * How long an effect lasts (CR 611.2a). "Until end of turn" ends in the cleanup step (CR 514.2). "endOfGame": no
+ * duration stated (CR 611.2a); it still affects only the objects it began on, which a zone change makes new (CR 400.7).
+ * "For as long as this creature remains on the battlefield" ends as its source leaves (CR 611.2b), `moveCard`.
+ */
+export type Duration = "endOfTurn" | "endOfGame" | "whileSourceOnBattlefield";
 
 /** A continuous effect from the resolution of a spell or ability (CR 611.2). */
 export type ContinuousEffect = {
@@ -40,7 +44,21 @@ export type EffectChange =
   /** Layer 6 (CR 613.1f): the affected objects have these keyword abilities. */
   | { kind: "addKeywords"; keywords: Keyword[] }
   /** Not a layer: the affected creatures can't be blocked (CR 509.1b). */
-  | { kind: "cantBeBlocked" };
+  | { kind: "cantBeBlocked" }
+  /** One effect in several layers (CR 613.6): Awakener Druid's Forest, Rise from the Grave's Zombie. */
+  | ({ kind: "becomes" } & Becomes);
+
+/**
+ * "Becomes a 4/5 green Treefolk creature ... it's still a land", "is a black Zombie in addition to its other colors and
+ * types": card types and subtypes added in layer 4 (keeping the others, CR 205.1b), colors set or added in layer 5,
+ * base power and toughness set in layer 7b (CR 613.1d, 613.1e, 613.4b).
+ */
+export type Becomes = {
+  addTypes: CardType[];
+  addSubtypes: string[];
+  colors?: { set: Color[] } | { add: Color[] };
+  setPT?: { power: number; toughness: number };
+};
 
 /**
  * What a resolving effect needs to know about the spell or ability it's part of. It's built once, as resolution begins,
