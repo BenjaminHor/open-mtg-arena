@@ -1,0 +1,16 @@
+name: Equipment returned by Open the Vaults enters unattached; only Auras choose something to be attached to
+rules: [CR 303.4h, CR 301.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Grizzly Bears]
+    hand: [Open the Vaults]
+    graveyard: [Whispersilk Cloak]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      p1:Whispersilk Cloak.attachedTo: null
+      p1:Grizzly Bears.abilities lacks: [shroud]

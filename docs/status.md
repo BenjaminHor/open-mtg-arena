@@ -715,6 +715,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12d built (2026-11-21, D-107): Open the Vaults (218 cards); `returnAllToBattlefield`, `canEnchant` shared with
+         CR 704.5m, `chooseCards.for` and the `enchant` purpose, `Resolution.enchants`, the `AURA_HOST_CHOSEN` event, the
+         `.attachedTo` scenario expectation; 9 scenarios in `cards/m2-12d/`; two golden games. Next: reviews, PR.
        - M2-12d plan (2026-11-21, with the advisor's review): Open the Vaults, one PR.
          - Its rulings: an Aura that can return must; its controller-to-be chooses what it enchants as it enters, not
            targeting (shroud and Ice Cage don't matter), but the enchant ability and protection do (CR 303.4f); none

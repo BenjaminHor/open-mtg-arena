@@ -123,7 +123,9 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       const pending = state.pending;
       const option = pending?.kind === "chooseCards" ? pending.options[answer.option] : undefined;
       const card = option === undefined ? `option ${answer.option}` : nameOf(state, option, cards);
-      return pending?.kind === "chooseCards" ? choiceText(pending.purpose, card) : `choose ${card}`;
+      if (pending?.kind !== "chooseCards") return `choose ${card}`;
+      const forName = pending.for === null ? "" : nameOf(state, pending.for, cards);
+      return choiceText(pending.purpose, card, forName);
     }
     case "finishChoosing":
       return "done choosing";
@@ -161,8 +163,10 @@ export function durationText(duration: Duration): string {
 }
 
 /** What choosing a card for this purpose does, in words. */
-function choiceText(purpose: ChoosePurpose, card: string): string {
+function choiceText(purpose: ChoosePurpose, card: string, forName: string): string {
   switch (purpose) {
+    case "enchant":
+      return `${forName} enchants ${card}`;
     case "putOntoBattlefield":
       return `put ${card} onto the battlefield`;
     case "sacrifice":

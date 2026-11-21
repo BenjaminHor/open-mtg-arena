@@ -1,0 +1,19 @@
+name: An artifact creature returned by Open the Vaults enters the battlefield, so Soul Warden triggers
+rules: [CR 603.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Soul Warden]
+    hand: [Open the Vaults]
+  p2:
+    graveyard: [Ornithopter]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Soul Warden ability]
+  - all pass: once
+  - expect:
+      p1.life: 21
+      p2.battlefield: [Ornithopter]

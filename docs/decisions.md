@@ -1593,3 +1593,21 @@ every schema change and every change D-024 lists bumps it.
   the pool can do it, so a unit test shows it.
 - Future impact: a resolved "can't be activated" effect (Pithing Needle's kind, M2-14) would mark the same
   `Layered.cantActivate` from `input.effects`, checked in the same place.
+
+**D-107: Open the Vaults, and Auras entering without being cast (M2-12d)** · 2026-11-21 · accepted
+- "Return all artifact and enchantment cards from all graveyards to the battlefield under their owners' control" is
+  `returnAllToBattlefield` (`from: "allGraveyards"`): every card moves in one simultaneous event (CR 608.2f), each under
+  its owner's control (CR 110.2); Equipment enters unattached (CR 303.4h).
+- An Aura entering other than by resolving chooses what it will enchant (CR 303.4f): its owner, who'll control it,
+  chooses among permanents already on the battlefield (not the cards returning with it, the card's ruling). It doesn't
+  target, so shroud and Ice Cage don't matter; its enchant ability and protection do. One predicate, `canEnchant`
+  (`rules/can-enchant.ts`), answers this and the CR 704.5m state-based action, so they can't disagree. With nothing
+  to enchant, it stays in the graveyard (CR 303.4g).
+- Players announce in APNAP order (the card's ruling, CR 101.4), each Aura in its graveyard's order. Each choice is a
+  `chooseCards` decision with the new purpose `enchant` and a `for` field naming the Aura, so the view and the CLI
+  show which Aura it is ("Pacifism enchants Hill Giant"). With one possible host there's no decision, as with
+  sacrifice: the battlefield is public. The choices so far are kept in `state.resolution.enchants`, and each is
+  announced with a public `AURA_HOST_CHOSEN` event, so the players choosing later see the earlier choices.
+- Future impact: other effects that put an Aura onto the battlefield (Academy Researchers, Aura tokens such as Roles,
+  CR 111.10j) choose through the same steps; an Aura that enchants a player (Curses, later: CR 303.4) adds players
+  to the options, which `chooseCards` can't offer today.

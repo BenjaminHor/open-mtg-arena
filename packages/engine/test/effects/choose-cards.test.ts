@@ -169,6 +169,7 @@ describe("answers to a chooseCards decision", () => {
     player: "p1" as const,
     kind: "chooseCards" as const,
     purpose: "discard" as const,
+    for: null,
     options: ["o1" as const, "o2" as const, "o3" as const],
     min: 2,
     max: 2,

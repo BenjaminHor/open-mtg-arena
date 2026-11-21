@@ -83,6 +83,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "COUNTERS_PUT":
     case "TOKEN_CREATED":
     case "ATTACHED":
+    case "AURA_HOST_CHOSEN":
     case "UNATTACHED":
     case "COUNTERS_REMOVED":
     case "PERMANENT_TAPPED":

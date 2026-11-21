@@ -102,6 +102,8 @@ export type DecisionKind =
   | {
       kind: "chooseCards";
       purpose: ChoosePurpose;
+      /** The object the choice is for, shown with it: the Aura that will enchant the chosen permanent. Else null. */
+      for: ObjectId | null;
       options: ObjectId[];
       min: number;
       max: number;
@@ -139,7 +141,7 @@ export type DecisionKind =
     };
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
-export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice";
+export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice" | "enchant";
 
 /** Cards shown to one player by what they are, in a fixed order (D-062), and the zone they're in. */
 export type Seen = { from: ZoneRef; cards: OracleId[] };

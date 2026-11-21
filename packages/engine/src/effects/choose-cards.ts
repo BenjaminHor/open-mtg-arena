@@ -30,6 +30,8 @@ export type CardChoice = {
   context: EffectContext;
   endsOnlyOnFinish?: boolean;
   seen?: Seen;
+  /** The object the choice is for (an Aura choosing what it enchants). */
+  for?: ObjectId;
 };
 
 /** Waits for `chooser` to choose between `min` and `max` of the options, shown in a fixed order (D-062). */
@@ -37,6 +39,7 @@ export function askToChoose(state: GameState, choice: CardChoice): GameState {
   return waitFor(state, choice.chooser, {
     kind: "chooseCards",
     purpose: choice.purpose,
+    for: choice.for ?? null,
     options: inShownOrder(state, choice.options),
     min: choice.min,
     max: choice.max,

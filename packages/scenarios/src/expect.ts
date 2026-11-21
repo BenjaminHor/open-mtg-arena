@@ -1,6 +1,7 @@
 // Checking a scenario's `expect:` block against the game (docs/testing.md, "Expectations").
 
 import {
+  attachedHost,
   type CardDatabase,
   characteristics,
   controllerOf,
@@ -40,6 +41,7 @@ export const EXPECTATIONS = [
   "types",
   "subtypes",
   "counters",
+  "attachedTo",
   "abilities contains",
   "abilities lacks",
   "events contains",
@@ -143,6 +145,15 @@ function check(
       case "counters":
         // The kinds it has any of (CR 122.1); `{}` for none.
         return same(Object.fromEntries(Object.entries(obj.counters).filter(([, n]) => n > 0)));
+      case "attachedTo": {
+        // What it's attached to, as a reference (`p2:Grizzly Bears`), or null for nothing (CR 303.4b, 301.5a).
+        const host = attachedHost(state, obj.id);
+        const shown = host === null ? null : `${controllerOf(state, host, cards)}:${nameOf(state, host, cards)}`;
+        if (expected === null) return { value: shown, matches: host === null };
+        const hostRef = typeof expected === "string" ? parseRef(expected) : null;
+        if (hostRef === null) return { error: "attachedTo takes a reference like p2:Grizzly Bears, or null" };
+        return { value: shown, matches: host !== null && host === resolveRef(state, hostRef, cards) };
+      }
       case "abilities contains": {
         if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
         const keywords = characteristics(state, obj.id, cards).keywords;

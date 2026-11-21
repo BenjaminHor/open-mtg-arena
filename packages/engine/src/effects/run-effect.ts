@@ -31,6 +31,7 @@ import { discardAtRandom, drawEach, mill } from "./player-effects.ts";
 import { preventAllDamage } from "./prevention.ts";
 import { put } from "./put-effects.ts";
 import { addRegenerationShields } from "./regeneration-shield.ts";
+import { returnAllToBattlefield } from "./return-all.ts";
 import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
@@ -273,6 +274,8 @@ export function runEffect(
       );
     case "putOntoBattlefield":
       return putOntoBattlefieldFromHand(state, effect, context, chosen, cards);
+    case "returnAllToBattlefield":
+      return returnAllToBattlefield(state, effect, context, chosen, cards);
     case "becomes":
       return becomes(state, effect, context, cards);
     case "search": {

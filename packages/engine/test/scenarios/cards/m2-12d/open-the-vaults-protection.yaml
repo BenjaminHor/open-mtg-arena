@@ -1,0 +1,20 @@
+name: An Aura returned by Open the Vaults can't enchant a creature with protection from it
+rules: [CR 303.4f, CR 702.16c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Plains, Plains, Plains, Plains, Plains, Grizzly Bears]
+    hand: [Open the Vaults]
+    graveyard: [Unholy Strength]
+  p2:
+    battlefield: [White Knight]
+steps:
+  - p1 cast: Open the Vaults
+    pay: auto
+  - all pass: once
+  # The Knight has protection from black, so the Bears are the only legal choice: nothing to ask, and it must return
+  # even onto its owner's own creature (the card's ruling).
+  - expect:
+      pending: { player: p1, kind: priority }
+      p1:Unholy Strength.attachedTo: p1:Grizzly Bears
+      p1:Grizzly Bears.power: 4
