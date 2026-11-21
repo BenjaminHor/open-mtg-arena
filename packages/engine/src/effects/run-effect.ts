@@ -137,7 +137,9 @@ export function runEffect(
     case "createTokens":
       return createTokens(state, effect.token, effect.amount, context, cards);
     case "doesntUntap": {
-      // "Those creatures": fixed now (CR 611.2c), so a creature that comes later untaps as usual (Sleep's ruling).
+      // "Those creatures" / "that creature": the ones named now, so a creature that comes later untaps as usual. The
+      // words fix them, not CR 611.2c (which fixes only characteristic and control changes); it's a rules effect,
+      // not a change to characteristics.
       const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       const during =
         effect.during === "itsController" ? "itsController" : onePlayer(state, effect.during, context, cards);

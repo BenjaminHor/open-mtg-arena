@@ -1,5 +1,5 @@
 name: A slept creature untapped and borrowed by Act of Treason still doesn't untap in its owner's next untap step
-rules: [CR 611.2c, CR 400.7]
+rules: [CR 701.26b, CR 514.2, CR 502.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:

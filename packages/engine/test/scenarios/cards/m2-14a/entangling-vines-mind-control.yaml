@@ -1,0 +1,19 @@
+name: Entangling Vines keeps its creature tapped under a new controller too
+rules: [CR 502.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Mind Control]
+  p2:
+    battlefield: [{ card: Hill Giant, tapped: true }, { card: Entangling Vines, attachedTo: p2:Hill Giant }]
+steps:
+  - p1 cast: Mind Control
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - all pass: until upkeep
+  - all pass: until upkeep
+  - expect:
+      active: p1
+      p1:Hill Giant.tapped: true

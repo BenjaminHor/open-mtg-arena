@@ -1736,4 +1736,5 @@ owner's answer to the D-089 open question, option (a))
 - Sleep's "those creatures" is every creature the player controls as it resolves, tapped by it or not (its ruling), read
   with the same subject as the tap.
 - "Whenever this creature blocks a creature" is the trigger `selfBlocks`, once per creature it blocks (CR 509.3b).
-- Future impact: "skip your next untap step" must leave these effects for the untap step that does happen.
+- Future impact: "skip your next untap step" must leave these effects for the untap step that does happen (later:
+  CR 614.10a).

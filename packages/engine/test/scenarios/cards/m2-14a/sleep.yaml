@@ -1,5 +1,5 @@
 name: Sleep taps all creatures the target player controls, and they stay tapped through that player's next untap step only
-rules: [CR 502.3, CR 611.2c]
+rules: [CR 502.3]
 setup:
   turn: { active: p1, step: main1 }
   p1:

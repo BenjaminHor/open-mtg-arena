@@ -553,8 +553,8 @@ export type Effect =
   /**
    * "Those creatures don't untap during that player's next untap step" (Sleep, `during` a player subject), or "that
    * creature doesn't untap during its controller's next untap step" (Wall of Frost, `"itsController"`: whoever controls
-   * it at that untap step, its ruling). The permanents are fixed now (CR 611.2c); the effect ends with that untap step,
-   * whether or not they were tapped (Wall of Frost's ruling).
+   * it at that untap step, its ruling). The permanents are the ones the words name now ("those creatures"); the effect
+   * ends with that untap step, whether or not they were tapped (Wall of Frost's ruling).
    */
   | { op: "doesntUntap"; of: EffectSubject; during: EffectSubject | "itsController" }
   /** "Put a +1/+1 counter on this creature" (CR 122.6): `amount` counters of the kind on each permanent `of` names. */

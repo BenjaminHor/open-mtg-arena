@@ -47,6 +47,7 @@ function keptTapped(state: GameState, id: ObjectId, active: PlayerId, cards: Car
 function endDoesntUntapEffects(state: GameState, active: PlayerId, cards: CardDatabase): Progress {
   const effects: ContinuousEffect[] = [];
   const events: GameEvent[] = [];
+  let changed = false;
   for (const effect of state.effects) {
     if (effect.change.kind !== "doesntUntap") {
       effects.push(effect);
@@ -59,12 +60,14 @@ function endDoesntUntapEffects(state: GameState, active: PlayerId, cards: CardDa
         : during === "itsController"
           ? effect.affected.filter((id) => state.objects[id] !== undefined && controllerOf(state, id, cards) !== active)
           : effect.affected;
-    if (left.length === 0) events.push({ type: "EFFECT_ENDED", effect });
-    else effects.push(left.length === effect.affected.length ? effect : { ...effect, affected: left });
+    if (left.length === effect.affected.length) effects.push(effect);
+    else {
+      changed = true;
+      if (left.length === 0) events.push({ type: "EFFECT_ENDED", effect });
+      else effects.push({ ...effect, affected: left });
+    }
   }
-  return events.length === 0 && effects.length === state.effects.length
-    ? { state, events: [] }
-    : { state: { ...state, effects }, events };
+  return changed ? { state: { ...state, effects }, events } : { state, events: [] };
 }
 
 function isTapped(state: GameState, id: ObjectId): boolean {

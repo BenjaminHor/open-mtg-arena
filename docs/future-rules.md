@@ -205,8 +205,9 @@ with two combat phases or two upkeeps can't be represented yet. That needs a per
 `Turn` (a state migration), and extra turns need a turn queue where `endStep` picks the next player.
 *Needs now:* the turn sequence is data the engine walks, not hard-coded control flow.
 "Doesn't untap during [its controller's / that player's] next untap step" is built (D-115): the effect ends when the
-untap step it names is over, in `game/untap-step.ts`. A skipped untap step (later: CR 502.3's "skip") must not end it,
-since the next untap step that happens is the one it means; skipping should simply not begin the untap step.
+untap step it names is over, in `game/untap-step.ts`. A skipped untap step must not end it: "the next"
+occurrence waits for the first one that isn't skipped (later: CR 614.10a, 500.11), so skipping should simply not begin
+the untap step.
 
 **State-based actions beyond M1 (CR 704.5).** The legend rule (704.5j) is built (D-109): its choice is a `keepLegend`
 decision asked before the check, so every caller of a check asks it first (`givePriority`, `cleanupCheck`). Names are
