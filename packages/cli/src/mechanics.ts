@@ -47,8 +47,8 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   orderTriggers: true,
   // Reachable since M2-08d1, only when Guardian Seraph meets Fog or Safe Passage in one game: rare in agent games.
   chooseReplacement: "two different prevention effects on one damage event are too rare in agent games",
-  // No legendary permanent is in the pool until Jace Beleren (M2-13b2).
-  keepLegend: "no legendary permanent in the pool yet",
+  // Reachable since Jace Beleren (M2-13b2), only with two of one legend under one player at once.
+  keepLegend: "two copies of one legend under one player are too rare in agent games",
 };
 
 /**
@@ -149,6 +149,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   graveyardToLibrary: "library",
   preventDamageToYou: "prevented",
   entersWithCounters: "battlefield",
+  entersWithLoyalty: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
   preventNoncombatDamageToAttached: "prevented",
 };

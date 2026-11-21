@@ -6,9 +6,17 @@ import type { PoolCard } from "./pool-data.ts";
 
 const COLORS: readonly string[] = ["W", "U", "B", "R", "G"];
 const SUPERTYPES: readonly string[] = ["basic", "legendary", "snow", "world"];
-const CARD_TYPES: readonly string[] = ["artifact", "creature", "enchantment", "instant", "kindred", "land", "sorcery"];
-// Planeswalkers (loyalty, later: CR 209) and battles (defense, later: CR 310) need printed values the engine doesn't
-// model yet.
+const CARD_TYPES: readonly string[] = [
+  "artifact",
+  "creature",
+  "enchantment",
+  "instant",
+  "kindred",
+  "land",
+  "planeswalker",
+  "sorcery",
+];
+// Battles (defense, later: CR 310) need a printed value the engine doesn't model yet.
 
 /** Creature types that are two words (CR 205.3b: creature subtypes are "one or two words"; the list is CR 205.3m). */
 const TWO_WORD_SUBTYPES: readonly string[] = ["Time Lord"];
@@ -23,7 +31,13 @@ export function printedCard(card: PoolCard): PrintedCard {
   if (types.includes("creature") !== (power !== null && toughness !== null)) {
     throw new Error(`${card.name}: power/toughness don't fit its type line "${card.typeLine}"`);
   }
+  // A planeswalker card, and only one, has a printed loyalty (CR 209.1, 306.5a).
+  const loyalty = card.loyalty === null ? null : parseLoyalty(card.loyalty, card.name);
+  if (types.includes("planeswalker") !== (loyalty !== null)) {
+    throw new Error(`${card.name}: loyalty doesn't fit its type line "${card.typeLine}"`);
+  }
   return {
+    ...(loyalty === null ? {} : { loyalty }),
     name: card.name,
     manaCost,
     colors: colorsOf(manaCost, colorIndicator),
@@ -88,6 +102,12 @@ function splitSubtypes(text: string): string[] {
 function parseColor(color: string): Color {
   if (!COLORS.includes(color)) throw new Error(`Unknown color "${color}"`);
   return color as Color;
+}
+
+/** Printed loyalty: a number ("X" loyalty, later: CR 306.5b's X). */
+function parseLoyalty(value: string, name: string): number {
+  if (!/^\d+$/.test(value)) throw new Error(`${name}: loyalty "${value}" isn't supported yet`);
+  return Number(value);
 }
 
 /** Power or toughness: a number, or "*", which a characteristic-defining ability sets (CR 208.2a). "1+*" isn't yet. */

@@ -1648,3 +1648,17 @@ every schema change and every change D-024 lists bumps it.
   abilities, CR 704.5i, planeswalkers as targets, Jace Beleren), M2-13c (the other four). Jace waits for the legend
   rule: a card enters the pool only when it works completely.
 
+**D-110: Loyalty and loyalty abilities (M2-13b2)** · 2026-11-21 · accepted
+- Printed loyalty (CR 209.1) comes from Scryfall into `PrintedCard.loyalty`, left out for any other card so cards and
+  tokens without one are stored as before. Entering with it (CR 306.5b) is an intrinsic replacement that
+  `replacementsOf` adds, as `abilitiesOf` adds basic lands' mana abilities; a definition never writes it.
+- A loyalty cost is a cost part, `{ kind: "loyalty", amount }` (CR 606.4). The rules of loyalty abilities come from it,
+  in `game/loyalty-abilities.ts`, checked with every activation's basics: sorcery timing and once per turn per
+  permanent (CR 606.3, counted from the activations this turn of that object's loyalty abilities), a negative cost only
+  with enough counters (CR 606.6, rechecked as the whole cost is paid). The counters go on or come off with the rest
+  of the cost, as one event (CR 601.2h).
+- A planeswalker with no loyalty is put into its owner's graveyard (CR 704.5i), not destroyed, like the legend rule;
+  "any target" and "target player or planeswalker" include planeswalkers (CR 115.4).
+- A scenario's planeswalker set up on the battlefield starts with its printed loyalty unless `counters` gives some: it
+  never entered, so nothing else would give it loyalty, and CR 704.5i would take it at once.
+

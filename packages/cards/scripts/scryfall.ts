@@ -37,6 +37,7 @@ export type ScryfallCard = {
   oracle_text?: string;
   power?: string;
   toughness?: string;
+  loyalty?: string;
   colors?: string[];
   color_indicator?: string[];
   keywords: string[];

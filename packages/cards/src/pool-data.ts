@@ -24,6 +24,8 @@ export type PoolCard = {
   /** Strings, because some cards have "*" or "1+*". Null when the card has none. */
   power: string | null;
   toughness: string | null;
+  /** A planeswalker's printed loyalty (CR 209.1), a string like power. Null for any other card. */
+  loyalty: string | null;
   /** Scryfall's colors, which also count color-defining abilities. Checked against the derived colors in tests. */
   colors: string[];
   /** The color indicator's colors (CR 204), empty when there is none. */

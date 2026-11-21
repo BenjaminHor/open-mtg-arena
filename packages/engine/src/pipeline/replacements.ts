@@ -238,6 +238,7 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
     case "graveyardToLibrary":
       return move.to.zone === "graveyard";
     case "entersWithCounters":
+    case "entersWithLoyalty":
       // Once per event like every replacement: the `applied` list sees to that.
       return move.to.zone === "battlefield";
     // Prevention, read for damage (`damage-replacements.ts`), never for a move.
@@ -297,6 +298,13 @@ function replaceByOwnText(state: GameState, def: ReplacementDef, event: SingleEv
       // Zero counters is no counters (CR 122.6 counts only an object given some); others it enters with add up.
       if (x <= 0) return { before: [], event, after: [] };
       const counters = { ...move.to.counters, [def.counter]: (move.to.counters?.[def.counter] ?? 0) + x };
+      return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
+    }
+    case "entersWithLoyalty": {
+      if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters with loyalty");
+      // As many loyalty counters as its printed loyalty (CR 306.5b), added to any it enters with.
+      if (def.loyalty <= 0) return { before: [], event, after: [] };
+      const counters = { ...move.to.counters, loyalty: (move.to.counters?.loyalty ?? 0) + def.loyalty };
       return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
     case "preventDamageToYou":

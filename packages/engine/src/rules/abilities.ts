@@ -48,13 +48,17 @@ export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDat
 
 /**
  * The replacement effects an object's own text makes (CR 614.1), in any zone: each kind says where it works
- * (CR 113.6b, 113.6h), and `pipeline/replacements.ts` checks that. Abilities granted or removed by effects (layer 6,
- * later: CR 613.1f) will change this list, in this one place.
+ * (CR 113.6b, 113.6h), and `pipeline/replacements.ts` checks that. Then a planeswalker's intrinsic one, entering with
+ * its printed loyalty (CR 306.5b), last, so the written ones keep their places. Abilities granted or removed by effects
+ * (layer 6, later: CR 613.1f) will change this list, in this one place.
  */
 export function replacementsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ReplacementDef[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
-  return cardDataOf(obj, cards)?.def.replacements ?? [];
+  const data = cardDataOf(obj, cards);
+  const written = data?.def.replacements ?? [];
+  const loyalty = data?.printed.loyalty;
+  return loyalty === undefined ? written : [...written, { kind: "entersWithLoyalty", loyalty }];
 }
 
 /**

@@ -103,6 +103,7 @@ import { illusionaryServant } from "./i/illusionary-servant.ts";
 import { indestructibility } from "./i/indestructibility.ts";
 import { infernoElemental } from "./i/inferno-elemental.ts";
 import { island } from "./i/island.ts";
+import { jaceBeleren } from "./j/jace-beleren.ts";
 import { jackalFamiliar } from "./j/jackal-familiar.ts";
 import { jump } from "./j/jump.ts";
 import { kalonianBehemoth } from "./k/kalonian-behemoth.ts";
@@ -323,6 +324,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   indestructibility,
   infernoElemental,
   island,
+  jaceBeleren,
   jackalFamiliar,
   jump,
   kalonianBehemoth,

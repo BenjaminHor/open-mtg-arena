@@ -716,6 +716,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13b2 built (2026-11-21, D-110): Jace Beleren (219 cards): printed loyalty through the card pipeline, the intrinsic
+         `entersWithLoyalty`, the `loyalty` cost part (CR 606.3, 606.4, 606.6), CR 704.5i, planeswalkers as targets
+         (CR 115.4), scenario setup with printed loyalty, `show` with loyalty; 12 scenarios in `cards/m2-13b/` (each
+         ability, once per turn, timing, too few counters, the ultimate leaving Jace in the graveyard while it resolves,
+         entering, damage and Lava Axe, attacked, attacked then bolted, trampled over, two Jaces); one golden game. Bench
+         equal to main (alternating runs). Next: reviews, PR; then M2-13c.
        - M2-13b1 built (2026-11-21, D-109): the legend rule (CR 704.5j): `legendRuleGroups`, a `keepLegend` decision asked
          in `givePriority` (APNAP), the check made with the choices (`stateBasedActions`'s `kept`), a permanent leaving
          once if another action removes it too; CLI, scenario `choose:`, exporter; 5 unit tests with test legends (the

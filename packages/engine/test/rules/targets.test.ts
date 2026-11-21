@@ -108,7 +108,7 @@ describe("restrictions on a permanent (CR 115.2)", () => {
 });
 
 describe("targets in other zones (CR 115.2)", () => {
-  it("'target player or planeswalker': players only, with no planeswalkers yet", () => {
+  it("'target player or planeswalker': the players, when no planeswalker is on the battlefield (CR 115.4)", () => {
     expect(ids(legalTargets(board(), { kind: "playerOrPlaneswalker" }, byP1, TEST_CARDS))).toStrictEqual(["p1", "p2"]);
   });
 

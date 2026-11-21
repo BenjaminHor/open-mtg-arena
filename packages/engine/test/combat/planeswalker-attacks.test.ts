@@ -34,7 +34,11 @@ function atDeclareAttackers(mine: string[], theirs: string[] = []): { game: Game
   const game = start({
     seed: 1,
     players: [
-      playerSetup("p1", { library: ["forest", "forest"], battlefield: mine.map((c) => permanent(c)) }),
+      playerSetup("p1", {
+        library: ["forest", "forest"],
+        // A planeswalker of p1's has loyalty too, or it would go at once (CR 704.5i).
+        battlefield: mine.map((c) => permanent(c, c === TEST_WALKER ? { loyalty: 3 } : {})),
+      }),
       playerSetup("p2", {
         library: ["forest", "forest"],
         battlefield: [permanent(TEST_WALKER, { loyalty: 5 }), ...theirs.map((c) => permanent(c))],
@@ -217,7 +221,9 @@ describe("a planeswalker removed from combat (CR 506.4)", () => {
     game = answer(game, { kind: "finishDeclaring" });
     game = { ...game, state: moveCard(game.state, bears, { zone: "graveyard" }).state };
     game = passBoth(game);
-    expect(loyalty(game.state, walker)).toBe(0);
+    // All 5 to the walker: no loyalty left, so it's put into its owner's graveyard (CR 704.5i).
+    expect(game.state.objects[walker]).toBeUndefined();
+    expect(game.state.zones.players.p2?.graveyard).toHaveLength(2); // the Bears, then the walker
     expect(game.state.players.p2?.life).toBe(20);
   });
 

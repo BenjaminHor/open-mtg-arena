@@ -76,6 +76,7 @@ can't make it pass.
 - A battlefield entry is a card name or a map: `{ card: Grizzly Bears, tapped: true, sick: true, damage: 1 }`.
   `sick: true` means it hasn't been under its controller's control continuously since their most recent turn began
   (CR 302.6). In a standard opening every permanent starts sick. `counters` is a map like `{ +1/+1: 2 }`; +X/+Y and -X/-Y counters change power and toughness (CR 122.1a).
+  A planeswalker starts with its printed loyalty in loyalty counters (CR 306.5b) unless `counters` gives `loyalty`.
   `attachedTo: p2:Grizzly Bears` (or `#2` for the second) starts an Aura or Equipment attached to a permanent that player
   starts with (CR 303.4b), so a scenario needn't cast it; one attached illegally goes as state-based actions are first
   checked (CR 704.5m). A creature set up under a Mind Control is its controller's from the start, not summoning sick:

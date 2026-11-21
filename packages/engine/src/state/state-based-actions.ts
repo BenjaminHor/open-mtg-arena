@@ -19,6 +19,8 @@ export type StateBasedAction =
   | { kind: "lethalDamage"; object: ObjectId }
   /** CR 704.5h: a creature with toughness above 0 dealt damage by a deathtouch source since the last check is destroyed. */
   | { kind: "deathtouchDamage"; object: ObjectId }
+  /** CR 704.5i: a planeswalker with loyalty 0 is put into its owner's graveyard. */
+  | { kind: "zeroLoyalty"; object: ObjectId }
   /** CR 704.5j, the legend rule: a legendary permanent its controller didn't choose to keep goes to the graveyard. */
   | { kind: "legendRule"; object: ObjectId }
   /** CR 704.5q: a permanent with both +1/+1 and -1/-1 counters loses `count` of each, the smaller number. */

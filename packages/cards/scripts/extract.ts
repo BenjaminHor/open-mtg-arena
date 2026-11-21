@@ -115,6 +115,7 @@ function toPoolCard(c: ScryfallCard, printing: ScryfallCard, chosenBy: PrintingC
     oracleText: c.oracle_text,
     power: c.power ?? null,
     toughness: c.toughness ?? null,
+    loyalty: c.loyalty ?? null,
     colors: c.colors ?? [],
     colorIndicator: c.color_indicator ?? [],
     keywords: c.keywords,

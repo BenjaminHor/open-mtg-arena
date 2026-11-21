@@ -1,14 +1,15 @@
 // Turns a scenario's `setup:` into the engine's GameSetup (docs/testing.md, "Format"). Every key and value is
 // checked: an unknown key or a value of the wrong type fails instead of falling back to a default.
 
-import type {
-  CardDatabase,
-  GameSetup,
-  ManaPool,
-  PermanentSetup,
-  PlayerId,
-  PlayerSetup,
-  RuleModifier,
+import {
+  type CardDatabase,
+  cardDataByOracleId,
+  type GameSetup,
+  type ManaPool,
+  type PermanentSetup,
+  type PlayerId,
+  type PlayerSetup,
+  type RuleModifier,
 } from "@mtg/engine";
 import { isRecord } from "./format.ts";
 import { engineStep, oracleIdOf, parseRef } from "./names.ts";
@@ -139,19 +140,31 @@ function playerSetup(id: PlayerId, raw: unknown, cards: CardDatabase, standard: 
 
 function permanent(entry: unknown, cards: CardDatabase, id: PlayerId): PermanentSetup {
   if (typeof entry === "string") {
-    return { oracleId: oracleIdOf(cards, entry), tapped: false, summoningSick: false, damage: 0, counters: {} };
+    const oracleId = oracleIdOf(cards, entry);
+    return { oracleId, tapped: false, summoningSick: false, damage: 0, counters: startingLoyalty(cards, oracleId, {}) };
   }
   if (!isRecord(entry)) throw new Error(`${id}: a battlefield entry is a card name or a map`);
   keysIn(entry, PERMANENT_KEYS, `${id} permanent`);
   const counters = entry.counters ?? {};
   if (!isRecord(counters)) throw new Error(`${id}: counters is a map like { +1/+1: 2 }`);
+  const oracleId = oracleIdOf(cards, String(entry.card));
+  const given = Object.fromEntries(Object.entries(counters).map(([k, v]) => [k, count(v, `counters ${k}`)]));
   return {
-    oracleId: oracleIdOf(cards, String(entry.card)),
+    oracleId,
     tapped: boolean(entry.tapped, "tapped"),
     summoningSick: boolean(entry.sick, "sick"),
     damage: entry.damage === undefined ? 0 : integer(entry.damage, "damage"),
-    counters: Object.fromEntries(Object.entries(counters).map(([k, v]) => [k, count(v, `counters ${k}`)])),
+    counters: startingLoyalty(cards, oracleId, given),
   };
+}
+
+/**
+ * A planeswalker set up on the battlefield never entered it, so it has its printed loyalty in loyalty counters as if it
+ * had (CR 306.5b), unless the setup gives some.
+ */
+function startingLoyalty(cards: CardDatabase, oracleId: string, counters: Record<string, number>) {
+  const loyalty = cardDataByOracleId(oracleId, cards)?.printed.loyalty;
+  return loyalty === undefined || "loyalty" in counters ? counters : { ...counters, loyalty };
 }
 
 function manaPool(raw: unknown, id: PlayerId): ManaPool {

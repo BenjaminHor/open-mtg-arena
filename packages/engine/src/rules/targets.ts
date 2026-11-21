@@ -51,13 +51,20 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
   const thatPlayer = self?.kind === "ability" ? (self.trigger?.player ?? null) : null;
   switch (spec.kind) {
     case "anyTarget": {
-      // "Any target": a creature, player, planeswalker or battle (CR 115.4). There are no planeswalkers or battles yet.
-      const creatures = state.zones.battlefield.filter((id) => cardTypesOf(state, id, cards).includes("creature"));
-      return [...objects(creatures), ...players];
+      // "Any target": a creature, player, planeswalker or battle (CR 115.4; battles, later: CR 310).
+      const permanents = state.zones.battlefield.filter((id) => {
+        const types = cardTypesOf(state, id, cards);
+        return types.includes("creature") || types.includes("planeswalker");
+      });
+      return [...objects(permanents), ...players];
     }
-    case "playerOrPlaneswalker":
-      // No planeswalkers yet (later: CR 306), so only players.
-      return players;
+    case "playerOrPlaneswalker": {
+      // "Target player or planeswalker" (CR 115.4).
+      const planeswalkers = state.zones.battlefield.filter((id) =>
+        cardTypesOf(state, id, cards).includes("planeswalker"),
+      );
+      return [...objects(planeswalkers), ...players];
+    }
     case "player":
       return players;
     case "opponent":

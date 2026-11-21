@@ -1,0 +1,20 @@
+name: Jace Beleren's -10 leaves it with no loyalty, so it goes to the graveyard, but the ability still resolves
+rules: [CR 704.5i, CR 113.7a, CR 606.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Jace Beleren, counters: { loyalty: 10 } }]
+  p2:
+    library: [Forest, Forest, Forest]
+steps:
+  - p1 activate: Jace Beleren
+    ability: 3
+    targets: [p2]
+  - expect:
+      p1.graveyard: [Jace Beleren]
+      stack: [Jace Beleren ability]
+  # Fewer than twenty cards: all of them (its ruling).
+  - all pass: once
+  - expect:
+      p2.library count: 0
+      p2.graveyard count: 3

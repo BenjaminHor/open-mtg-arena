@@ -1,0 +1,25 @@
+name: Damage to Jace Beleren removes loyalty counters; at 0 it goes to the graveyard
+rules: [CR 120.3c, CR 115.4, CR 704.5i]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Mountain, Mountain, Mountain, Mountain]
+    hand: [Shock, Lava Axe]
+  p2:
+    battlefield: [{ card: Jace Beleren, counters: { loyalty: 5 } }]
+steps:
+  - p1 cast: Shock
+    targets: [p2:Jace Beleren]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Jace Beleren.counters: { loyalty: 3 }
+      p2.life: 20
+  # "Target player or planeswalker".
+  - p1 cast: Lava Axe
+    targets: [p2:Jace Beleren]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Jace Beleren]
+      p2.life: 20
