@@ -754,7 +754,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          artifact Gargoyle), 202 cards, 13 scenarios in `cards/m2-11b/` with Goblin Chieftain, Veteran Armorsmith and two
          Reapers; no engine change; the golden games already cover their mechanics. Rules review: no bug; counts and
          events tightened, four more scenarios (sacrificing its own target, the Reaper killed in response or summoning
-         sick, the Castle tapped for {C} mid-payment), citations fixed. Fuzz 200 clean.
+         sick, the Castle tapped for {C} mid-payment), citations fixed. Fuzz 200 clean. Merged as #59: **M2-11 done** (202 cards).
        - M2-11a built (2026-11-21, D-101): `cardDataOf` everywhere (a source scan forbids `cards[...]`), tokens as card
          objects carrying their data, `createToken` / `ceaseToExist` events, CR 704.5d, `createTokens`, Ant Queen and
          Howl of the Night Pack (198 cards), 9 scenarios in `cards/m2-11/` (enters triggers, dies, bounced, stolen,
