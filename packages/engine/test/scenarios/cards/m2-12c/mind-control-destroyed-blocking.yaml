@@ -1,5 +1,5 @@
 name: Mind Control destroyed while its creature blocks takes it out of combat; the attacker stays blocked and deals no damage
-rules: [CR 506.4, CR 509.1h, CR 510.1c]
+rules: [CR 506.4, CR 509.1h, CR 510.1d]
 setup:
   turn: { active: p2, step: main1 }
   p1:
@@ -23,3 +23,4 @@ steps:
   - expect:
       p1.life: 20
       p2:Hill Giant.damage: 0
+      p2:Grizzly Bears.damage: 0

@@ -253,8 +253,8 @@ export const controlChangesRecorded: Check = (before, after, events, cards) => {
     const combat = after.combat;
     const inCombat =
       combat !== null &&
-      !combat.removed.includes(id) &&
-      (combat.attacks.some((a) => a.attacker === id) || combat.blocks.some((b) => b.blocker === id));
+      ((combat.attacks.some((a) => a.attacker === id) && !combat.removed.attackers.includes(id)) ||
+        (combat.blocks.some((b) => b.blocker === id) && !combat.removed.blockers.includes(id)));
     if (inCombat) problems.push(`${id} changed controller but is still in combat (CR 506.4)`);
   }
   return problems;

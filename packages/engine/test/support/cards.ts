@@ -38,6 +38,8 @@ export const X_BOLT = "test-x-bolt";
 export const SAC_PUMP = "test-sac-pump";
 /** Not a real card: an Aura, "Enchant creature / Enchanted creature gets +1/+1", for attachments below the scenarios. */
 export const TEST_AURA = "test-aura";
+/** Not a real card: Mind Control's "you control enchanted creature" on a test Aura, for layer 2 order below the scenarios. */
+export const CONTROL_AURA = "test-control-aura";
 /** Not a real card: a black Equipment, which no M10 card is, for protection's "can't be equipped" (CR 702.16d). */
 export const BLACK_EQUIPMENT = "test-black-equipment";
 /** Not a real card: an instant whose delayed trigger is a spell's (CR 603.7d), which no Magic 2010 card has. */
@@ -509,6 +511,25 @@ export const TEST_CARDS: CardDatabase = {
           effects: [{ op: "attachSelf", to: { target: 0 } }],
         },
       ],
+    },
+  }),
+  [CONTROL_AURA]: card(CONTROL_AURA, {
+    printed: {
+      name: "Control Aura",
+      manaCost: [{ kind: "colored", color: "U" }],
+      colors: ["U"],
+      colorIndicator: [],
+      supertypes: [],
+      types: ["enchantment"],
+      subtypes: ["Aura"],
+      power: null,
+      toughness: null,
+    },
+    def: {
+      name: "Control Aura",
+      oracle: "Enchant creature\nYou control enchanted creature.",
+      enchant: { types: ["creature"] },
+      statics: [{ kind: "attachedControl" }],
     },
   }),
   [TEST_AURA]: card(TEST_AURA, {

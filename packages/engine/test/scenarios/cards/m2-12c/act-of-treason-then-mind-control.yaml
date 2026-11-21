@@ -1,5 +1,5 @@
 name: Stolen with Act of Treason, then enchanted with Mind Control, a creature stays when Act of Treason ends
-rules: [CR 613.1b, CR 611.2b]
+rules: [CR 613.1b, CR 514.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:

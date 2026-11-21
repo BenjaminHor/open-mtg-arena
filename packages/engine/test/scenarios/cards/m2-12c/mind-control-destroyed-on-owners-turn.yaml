@@ -1,0 +1,32 @@
+name: A creature its owner gets back when Mind Control is destroyed is summoning sick until the owner's next turn
+rules: [CR 302.6, CR 613.1b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Mind Control, attachedTo: p2:Prodigal Pyromancer }]
+  p2:
+    battlefield: [Prodigal Pyromancer, Forest, Forest]
+    hand: [Naturalize]
+steps:
+  - p2 cast: Naturalize
+    targets: [p1:Mind Control]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Prodigal Pyromancer]
+      p2:Prodigal Pyromancer.sick: true
+  - p2 activate: Prodigal Pyromancer
+    targets: [p1]
+  - expect error: illegalAction
+  - all pass: until main1
+  - expect:
+      active: p1
+      p2:Prodigal Pyromancer.sick: true
+  - p1 pass: once
+  - p2 activate: Prodigal Pyromancer
+    targets: [p1]
+  - expect error: illegalAction
+  - all pass: until main1
+  - expect:
+      active: p2
+      p2:Prodigal Pyromancer.sick: false

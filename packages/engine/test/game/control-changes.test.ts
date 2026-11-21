@@ -6,7 +6,7 @@ import { recordControlChanges } from "../../src/game/control-changes.ts";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { controllerOf } from "../../src/rules/controller.ts";
 import { newCombat } from "../../src/state/combat.ts";
-import { BEARS, FOREST, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, CONTROL_AURA, FOREST, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -105,6 +105,40 @@ describe("a control change (CR 302.6, 613.1b)", () => {
       combat: { ...newCombat(), attacks: [{ attacker: bears, defender: "p1" }] },
     };
     const after = recordControlChanges(attacking, stolen(attacking, bears), TEST_CARDS);
-    expect(after.combat?.removed).toStrictEqual([bears]);
+    expect(after.combat?.removed).toStrictEqual({ attackers: [bears], blockers: [] });
+  });
+
+  it("orders a static control effect by its Aura's timestamp against resolved ones, either way (CR 613.7, 613.7a)", () => {
+    const state = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", {
+          library: [FOREST],
+          battlefield: [{ ...permanent(CONTROL_AURA), attachedTo: { player: "p2", index: 0 } }],
+        }),
+        playerSetup("p2", { library: [FOREST], battlefield: [permanent(BEARS)] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    const [aura, bears] = state.zones.battlefield as [ObjectId, ObjectId];
+    const auraTimestamp = state.objects[aura]?.timestamp ?? 0;
+    const giveTo = (timestamp: number): GameState => ({
+      ...state,
+      effects: [
+        {
+          source: bears,
+          controller: "p2",
+          timestamp,
+          duration: "endOfTurn",
+          affected: [bears],
+          change: { kind: "gainControl", player: "p2" },
+        },
+      ],
+    });
+    expect(controllerOf(state, bears, TEST_CARDS)).toBe("p1");
+    // An earlier resolved effect loses to the Aura; a later one wins.
+    expect(controllerOf(giveTo(auraTimestamp - 1), bears, TEST_CARDS)).toBe("p1");
+    expect(controllerOf(giveTo(auraTimestamp + 1), bears, TEST_CARDS)).toBe("p2");
   });
 });

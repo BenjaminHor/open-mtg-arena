@@ -1,0 +1,20 @@
+name: Armored Ascension on a creature someone else stole still counts its own controller's Plains, and keeps its flying
+rules: [CR 109.5, CR 303.4e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island, Plains]
+    hand: [Mind Control]
+  p2:
+    battlefield: [Hill Giant, Plains, Plains, Plains, { card: Armored Ascension, attachedTo: p2:Hill Giant }]
+steps:
+  - expect:
+      p2:Hill Giant.power: 6
+  - p1 cast: Mind Control
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Hill Giant.power: 6
+      p1:Hill Giant.abilities contains: [flying]
+      p2.battlefield contains: [Armored Ascension]

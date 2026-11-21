@@ -180,8 +180,10 @@ prevented until damage can't be prevented (CR 615.12: then it removes counters f
 **Control-changing effects and ownership vs. control (CR 108.3, 110.2).**
 *Needs now:* code never assumes the controller is the owner. "Your" in card text means controller.
 Control is computed (layer 2), so `controlledSinceTurnStart` (CR 302.6) must reset whenever the computed
-controller changes, including when a control effect ends. A bare boolean can't see A→B→A in one turn; expect to
-replace it with a `{ player, since }` record when control-changing effects arrive.
+controller changes, including when a control effect ends. *Built (M2-12c1-2, D-104, D-105):* controllers are compared
+after the action and each piece of work, and the flag only ever resets, so A→B→A across pieces of work comes out
+sick. Still at risk: a change and its change back inside one piece of work, which nothing in the pool does; a
+`{ player, since }` record would catch it.
 
 **Turn structure changes.** Extra turns and extra combat phases (CR 500.7–500.8), skipped steps, and
 "at the beginning of the next end step". ("No maximum hand size" is built, D-097.) (First strike's second combat damage

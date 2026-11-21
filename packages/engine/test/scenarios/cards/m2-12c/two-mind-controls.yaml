@@ -1,5 +1,5 @@
 name: The later of two Mind Controls on a creature wins; destroy it, and the earlier one's controller has the creature back
-rules: [CR 613.7, CR 613.7a, CR 704.5m]
+rules: [CR 613.7, CR 613.7a]
 setup:
   turn: { active: p2, step: main1 }
   p1:

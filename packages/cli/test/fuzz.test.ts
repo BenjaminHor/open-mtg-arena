@@ -225,12 +225,18 @@ describe("the checks", () => {
     const attacks = [{ attacker: id, defender: obj.baseController }];
     const fighting = {
       ...sick,
-      combat: { attacks, blocks: [], removed: [], firstStrikers: null, secondDamageStep: false },
+      combat: {
+        attacks,
+        blocks: [],
+        removed: { attackers: [], blockers: [] },
+        firstStrikers: null,
+        secondDamageStep: false,
+      },
     };
     expect(controlChangesRecorded(before, fighting, [], cards)).toEqual([
       `${id} changed controller but is still in combat (CR 506.4)`,
     ]);
-    const removed = { ...fighting, combat: { ...fighting.combat, removed: [id] } };
+    const removed = { ...fighting, combat: { ...fighting.combat, removed: { attackers: [id], blockers: [] } } };
     expect(controlChangesRecorded(before, removed, [], cards)).toEqual([]);
   });
 

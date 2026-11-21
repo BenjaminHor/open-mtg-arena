@@ -718,7 +718,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - M2-12c2 built (2026-11-21, D-105): Mind Control, the static `attachedControl` in the pass's layer 2 with timestamp
          order, `anyControlEffects` counting it (215 cards); 10 scenarios in `cards/m2-12c/` (Act of Treason after it and
          before it, two Mind Controls, destroyed while attacking and while blocking, an anthem, Equipment, the Cloak,
-         Firebreathing). Next: reviews, PR; then M2-12c3.
+         Firebreathing). Rules review: a creature removed from combat as an attacker and returned untapped could
+         block but dealt no damage (`Combat.removed` was one list): now kept by role; 12 more scenarios from its probes;
+         a unit test for a resolved control effect earlier than Mind Control. Next: code review, PR; then M2-12c3.
        - M2-12c1 built (2026-11-21, D-104): `controllerOf(state, id, cards)` (56 calls in 31 files), layer 2 only in the
          pass, the control-change check in `advance` (CR 302.6, 506.4), the `controlChangesRecorded` fuzz check. Every
          scenario, replay and golden game unchanged. Code review: the check after every piece of work and `controllerOf`

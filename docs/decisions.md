@@ -1569,4 +1569,7 @@ every schema change and every change D-024 lists bumps it.
   none is in the pool (later: CR 613.8). `anyControlEffects` counts these permanents too, kept per battlefield list, so
   the fast paths of D-104 stay right.
 - Mind Control leaving mid-combat gives the creature back, removed from combat and summoning sick (CR 506.4, 302.6),
-  through D-104's one check.
+  through D-104's one check. The rules review found the creature, untapped (vigilance), could then block for its owner
+  but dealt and took no damage: `Combat.removed` was one list of creatures "out for good". It's now kept by role
+  (`{ attackers, blockers }`): removal takes a creature out of the declarations it's in, and a block declared after
+  that is a new one (CR 506.4, 509.1a).
