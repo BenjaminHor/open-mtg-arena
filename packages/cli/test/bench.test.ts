@@ -16,6 +16,7 @@ describe("the bench workloads", () => {
       "randomGame",
       "legalActions.busyBoard",
       "characteristics.busyBoard",
+      "layers.freshPass",
     ]);
     for (const w of list) {
       expect(w.count, w.name).toBeGreaterThan(0);

@@ -4,6 +4,7 @@
 // `characteristics()` applies those that change characteristics in layer order (CR 613); the rules questions read the
 // rest ("can't block": `canBlock`). Nothing applies them once and stores the result.
 
+import type { Keyword } from "../cards/types.ts";
 import type { ObjectId, PlayerId } from "./ids.ts";
 import type { Share, Target } from "./objects.ts";
 import type { TriggerEvent } from "./triggers.ts";
@@ -35,7 +36,11 @@ export type EffectChange =
   /** Not a layer: a rule for the affected creatures, that they can't block (CR 509.1b). */
   | { kind: "cantBlock" }
   /** Not a layer: the affected creatures attack `player` this turn if able (CR 508.1d). */
-  | { kind: "mustAttack"; player: PlayerId };
+  | { kind: "mustAttack"; player: PlayerId }
+  /** Layer 6 (CR 613.1f): the affected objects have these keyword abilities. */
+  | { kind: "addKeywords"; keywords: Keyword[] }
+  /** Not a layer: the affected creatures can't be blocked (CR 509.1b). */
+  | { kind: "cantBeBlocked" };
 
 /**
  * What a resolving effect needs to know about the spell or ability it's part of. It's built once, as resolution begins,

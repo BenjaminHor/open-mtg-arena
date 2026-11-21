@@ -497,7 +497,74 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        `test/scenarios/cards/m2-08e/`, a unit test for a source that left; golden pool-197 and pool-537. 170 cards;
        162 of the 234 Magic 2010 cards. Mutations 7/7, fuzz clean, reviews (no wrong results) fixed in e5d7287:
        15 scenarios, unit tests in `test/rules/protection.test.ts`, protection in the interaction matrix. PR next, with
-       the M2-08d docs; then M2-09 (layers).
+       the M2-08d docs; then M2-09 (layers). Merged as #49.
+     - Now: M2-09, the full layer system (CR 613, 604, 611), 24 cards, in three PRs. Plan (2026-11-20):
+       - M2-09a, the board-wide layer pass and anthems: `rules/layers.ts` computes every object's characteristics once
+         per state, layer by layer (CR 613.1), each continuous effect with its timestamp (CR 613.7) and its affected set
+         fixed in the first layer it applies in (CR 613.6); static abilities' effects find their set as they apply
+         (CR 611.3a), resolved effects keep theirs (CR 611.2c). The per-layer readers (`controllerOf`, `cardTypesOf`,
+         `colorsOf`, `keywordsOf`, `protectionsOf`, `staticAbilitiesOf`, `powerAndToughness`) read it, so callers don't
+         change. Memoized per state object if the benchmark asks (architecture.md). Layer 6 grants keywords, layer 7c
+         adds. Cards: Honor of the Pure, Veteran Armorsmith, Veteran Swordsmith, Elvish Archdruid, Merfolk Sovereign,
+         Goblin Chieftain, Rhox Pikemaster, Levitation, Coat of Arms, Relentless Rats; Glorious Charge, Overrun,
+         Trumpet Blast, Kindled Fury, Jump, Burst of Speed. A CR 613.8 dependency example as a unit test.
+       - Step 1 done (D-092): the readers read one pass in `rules/layers.ts`, no behavior change (no golden log
+         changed), kept per its inputs; a fuzz check compares it with a fresh pass. A random game is 98.5 ms against
+         its 100 ms budget (61 before): watch it as the slices add layers.
+       - Paper review of the pass (rules-judge, 2026-11-20): boards A-E right; no same-layer dependency in the pool, nor
+         a case where timestamp order or CR 613.6 is visible (so they're unit tests on test effects, or `later:`).
+         Needs: CDAs work in every zone (Nightmare in hand), so the per-card cache for other zones and the "no printed
+         P/T" early return go (base from 7a/7b, else printed, at the start of layer 7); locked sets (CR 611.2c) are
+         found from fully computed characteristics as the effect begins, and stay on an object that stops being a
+         creature; "for as long as" durations tied to an object (Awakener Druid; none made if it's gone, CR 611.2b);
+         Rise from the Grave's effect made with the move, on the new id (CR 611.2e), "under your control" is the
+         stored controller, not layer 2; layer 2 inside the pass before the rest, every "you" read after it; a
+         changed controller removes a creature from combat (CR 506.4); Coat of Arms counts creature types only
+         (CR 205.3m: subtypes are one flat list today); Silence and Spellbook stay out of the pass (CR 613.10-11);
+         drop "attacking" from the pass (no static reads it; it would need combat in the inputs). Last known
+         information must be the computed characteristics, snapshotted as it leaves (CR 608.2h): Polymorph on a
+         stolen creature, Inferno Elemental risen black against White Knight, Stone Giant's power. The judge's
+         scenario list is in its report; the ones for each slice are written with it.
+       - Step 2 done (D-093): 16 cards (Honor of the Pure, Veteran Armorsmith, Veteran Swordsmith, Elvish Archdruid,
+         Merfolk Sovereign, Goblin Chieftain, Rhox Pikemaster, Levitation, Coat of Arms, Relentless Rats, Glorious
+         Charge, Overrun, Trumpet Blast, Kindled Fury, Jump, Burst of Speed); 16 scenarios in
+         `test/scenarios/cards/m2-09a/`; the Anthems row of the interaction matrix; golden pool-329 and pool-685. 186
+         cards. Mutations 10/10 (two scenarios strengthened), fuzz 200 clean. Code review (no wrong results) found, to
+         fix with the rules review's findings: the cache key misses the rule modifiers (reproduced: a pass kept across
+         a changed modifier); a bad anthem filter throws inside the pass (definition check, and `creaturesGet` should
+         require creatures itself); `fitsOnBoard` duplicates `matchesFilter` (extract a pure core); `controllerOf`
+         and `Layered.controller` are two sources (a fuzz check now; layer 2 and the signature change in 09c, as
+         Mind Control in M2-12 needs the card database); the `alone` cache is outside the safety check (replace it);
+         no tests of the memo itself; benchmarks time only cache hits (add a fresh-pass measure); stale reader
+         comments and docs (future-rules, architecture.md, rules README); `inspect` doesn't say where a granted
+         keyword came from; scenario gaps (Coat of Arms across players, Levitation not on p2's creatures, effects
+         ending at cleanup, Archdruid and auto-pay, Anthems with protection and shroud). Rules review (no wrong
+         results): `jump.yaml` and `levitation.yaml` pass without the grant (try a block); CR 613.6 is built (test it
+         with a test def, drop `later:`); CR 613.7 and 205.3m are cited as built but aren't (`later:`); cite CR 611.3c;
+         Trumpet Blast cites 506.4 (its duration is 611.2a); Elvish Archdruid makes `manaAvailable` undercount X; more
+         scenarios (Jump after blocks and at cleanup, Kindled Fury after first strike, Trumpet Blast by the defender and
+         before combat, Merfolk Sovereign on an opponent's Merfolk and after blocks, Coat of Arms across players, two
+         Coats, Relentless Rats becoming lethal, Archdruid and Pikemaster only yours, Burst of Speed and a tap ability,
+         Overrun and a later creature, Glorious Charge on Black Knight, Overrun on Mist Leopard).
+       - Review fixes, part 1 (c804684): the cache key with the rule modifiers and a unit test; one filter core
+         (`filter-fit.ts`); `creaturesGet` requires creatures and the definition check refuses combat in static
+         filters; the `alone` cache replaced by `elsewhere` in the kept pass; CR 613.6 unit-tested; `later:` for 613.7
+         and 205.3m; `inspect` names a grant's source; the scenarios both reviews asked for (34 in `m2-09a/`).
+         Part 2: Elvish Archdruid counted by `manaAvailable` (scenario `elvish-archdruid-x.yaml`); the
+         `layers.freshPass` measure; docs (D-092, architecture.md, future-rules, rules README, reader comments); a
+         random game back from 103 ms to 82 ms (D-092: printed values shared, basic land abilities made once, legal
+         actions ask only the player's permanents), baseline updated. Code review of part 2 (no wrong results): freeze
+         the shared starts and basic land abilities (the fresh pass shares them), one usable-mana-ability search and
+         one count for `manaAvailable` and auto pay, a payable Archdruid X and an "only yours" scenario, doc wording,
+         `later: CR 602.2` on the controller pre-filter; all fixed. Next: fuzz, PR.
+       - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
+         and its attack restriction), layers 4, 5 and 7b with "for as long as" (Awakener Druid), Rise from the Grave,
+         Stone Giant (flying, then a delayed destroy).
+       - M2-09c, control and rules effects: layer 2 (Act of Treason; `controlledSinceTurnStart` becomes a record that
+         sees control change, future-rules), "can't cast spells" (Silence, CR 101.2), no maximum hand size (Spellbook).
+       - Future impact: copies (layer 1) and text changes (layer 3) slot into the pass; tokens (M2-11) need a
+         characteristics source beside the card database; counters (M2-10) stay in 7c; Auras and Equipment (M2-12)
+         are statics on the attached object, affecting the one they're attached to.
        Plan (2026-11-20):
        - `CardDef.protections: ProtectionQuality[]` (a color, or a subtype like Demon), one per "from" (CR 702.16g),
          read through `protectionsOf` (layer 6, like `keywordsOf`); `rules/protection.ts`: `isProtectedFrom(state,
@@ -679,6 +746,18 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (Asked 2026-11-21, D-092) CLAUDE.md says the engine has "no globals". The layer pass is kept in module-level
+  `WeakMap`s (and a last-result value), outside the state, as architecture.md's "memoize per state object" allows: a
+  kept result can never differ from a fresh one, and the fuzzer checks that after every action. Options: (a) read "no
+  globals" as "no hidden state that can change a result", allowing these kept values (recommended; proceeding with
+  this); (b) keep the pass inside a per-call context passed to every reader instead, a signature change across the
+  engine; (c) drop keeping it, and accept a random game about five times slower.
+- (Asked 2026-11-20, M2-09) The M2-09 spec asks for "at least one dependency example from the CR" (CR 613.8: within a
+  layer, an effect that changes what another applies to goes first). No card in the pool, or in M2-09's 24, has two
+  effects in one layer where that matters, so it would be machinery only test cards exercise. Options: (a) build
+  timestamp order now and leave dependency for the first card that needs it, amending the spec's acceptance line
+  (recommended; proceeding with this unless the rules review finds a pool pair); (b) build dependency now with a CR
+  example on test cards, as the spec says; (c) build it with M2-14's special-rules batch.
 - (Asked 2026-11-20, D-089) Does "modern Magic" mean the Modern format? `game:arena -is:alchemy -is:digital` keeps 13,036
   of 23,012 Modern-legal cards, and 51 keywords on 596 Modern-legal cards appear on no card it keeps (Echo, Dredge,
   Undying, Miracle, Level Up, Fear, Soulbond...; the list is in D-089). (Counts are under the earlier filter; the

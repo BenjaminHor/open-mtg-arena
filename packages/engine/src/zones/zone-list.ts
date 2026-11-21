@@ -39,12 +39,17 @@ export function withZoneList(state: GameState, ref: ZoneRef, ids: ObjectId[]): G
 
 /** The zone an object is in. Throws if it's in none, which would break an engine invariant. */
 export function zoneOf(state: GameState, id: ObjectId): ZoneRef {
-  for (const player of state.turnOrder) {
-    for (const zone of ["library", "hand", "graveyard"] as const) {
+  // An object is in exactly one zone, so the order searched doesn't change the answer: the small zones asked about
+  // most come first, libraries last (a benchmark showed this search among the costliest calls).
+  for (const zone of ["battlefield", "stack"] as const) {
+    if (state.zones[zone].includes(id)) return { zone };
+  }
+  for (const zone of ["hand", "graveyard", "library"] as const) {
+    for (const player of state.turnOrder) {
       if (playerZones(state, player)[zone].includes(id)) return { zone, player };
     }
   }
-  for (const zone of ["battlefield", "stack", "exile", "command"] as const) {
+  for (const zone of ["exile", "command"] as const) {
     if (state.zones[zone].includes(id)) return { zone };
   }
   throw new Error(`Object ${id} isn't in any zone`);

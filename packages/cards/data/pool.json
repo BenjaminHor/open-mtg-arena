@@ -560,6 +560,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Burst of Speed",
+      "slug": "burst-of-speed",
+      "oracleId": "91e33674-b13a-41de-8998-4b57016ae42f",
+      "layout": "normal",
+      "manaCost": "{R}",
+      "manaValue": 1,
+      "typeLine": "Sorcery",
+      "oracleText": "Creatures you control gain haste until end of turn. (They can attack and {T} even if they just came under your control.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/d/c/dc8c7aa0-2067-4513-a658-ed866279e671.jpg?1783942375",
+        "large": "https://cards.scryfall.io/large/front/d/c/dc8c7aa0-2067-4513-a658-ed866279e671.jpg?1783942375",
+        "png": "https://cards.scryfall.io/png/front/d/c/dc8c7aa0-2067-4513-a658-ed866279e671.png?1783942375",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/d/c/dc8c7aa0-2067-4513-a658-ed866279e671.jpg?1783942375"
+      },
+      "artist": "Zoltan Boros & Gabor Szikszai",
+      "set": "m10",
+      "collectorNumber": "129",
+      "scryfallUri": "https://scryfall.com/card/m10/129/burst-of-speed?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Cancel",
       "slug": "cancel",
       "oracleId": "7d00fb28-ea6c-49a9-b4af-ffb38860a9a7",
@@ -727,6 +755,32 @@
       "set": "grn",
       "collectorNumber": "65",
       "scryfallUri": "https://scryfall.com/card/grn/65/child-of-night?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Coat of Arms",
+      "slug": "coat-of-arms",
+      "oracleId": "5f7f133e-58ea-41ab-b1be-be4b400fac4c",
+      "layout": "normal",
+      "manaCost": "{5}",
+      "manaValue": 5,
+      "typeLine": "Artifact",
+      "oracleText": "Each creature gets +1/+1 for each other creature on the battlefield that shares at least one creature type with it. (For example, if two Goblin Warriors and a Goblin Shaman are on the battlefield, each gets +2/+2.)",
+      "power": null,
+      "toughness": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/5/45f77859-c92c-4851-9bab-9232d8b74cdb.jpg?1783942357",
+        "large": "https://cards.scryfall.io/large/front/4/5/45f77859-c92c-4851-9bab-9232d8b74cdb.jpg?1783942357",
+        "png": "https://cards.scryfall.io/png/front/4/5/45f77859-c92c-4851-9bab-9232d8b74cdb.png?1783942357",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/5/45f77859-c92c-4851-9bab-9232d8b74cdb.jpg?1783942357"
+      },
+      "artist": "Scott M. Fischer",
+      "set": "m10",
+      "collectorNumber": "207",
+      "scryfallUri": "https://scryfall.com/card/m10/207/coat-of-arms?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -1378,6 +1432,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Elvish Archdruid",
+      "slug": "elvish-archdruid",
+      "oracleId": "6e2c2423-d854-4478-99e6-64f29851f026",
+      "layout": "normal",
+      "manaCost": "{1}{G}{G}",
+      "manaValue": 3,
+      "typeLine": "Creature — Elf Druid",
+      "oracleText": "Other Elf creatures you control get +1/+1.\n{T}: Add {G} for each Elf you control.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/3/4/341da856-7414-403b-b2e3-4bebd58a5aa4.jpg?1783909059",
+        "large": "https://cards.scryfall.io/large/front/3/4/341da856-7414-403b-b2e3-4bebd58a5aa4.jpg?1783909059",
+        "png": "https://cards.scryfall.io/png/front/3/4/341da856-7414-403b-b2e3-4bebd58a5aa4.png?1783909059",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/3/4/341da856-7414-403b-b2e3-4bebd58a5aa4.jpg?1783909059"
+      },
+      "artist": "Karl Kopinski",
+      "set": "fdn",
+      "collectorNumber": "219",
+      "scryfallUri": "https://scryfall.com/card/fdn/219/elvish-archdruid?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Elvish Piper",
       "slug": "elvish-piper",
       "oracleId": "872ef617-7cdb-4a7a-85f5-efc9e12bece5",
@@ -1857,6 +1939,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Glorious Charge",
+      "slug": "glorious-charge",
+      "oracleId": "754d5009-7887-4293-b554-b3decddb33f7",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Instant",
+      "oracleText": "Creatures you control get +1/+1 until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/8/f8672cfd-e34b-4587-9e24-015e03c7574d.jpg?1783940518",
+        "large": "https://cards.scryfall.io/large/front/f/8/f8672cfd-e34b-4587-9e24-015e03c7574d.jpg?1783940518",
+        "png": "https://cards.scryfall.io/png/front/f/8/f8672cfd-e34b-4587-9e24-015e03c7574d.png?1783940518",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/8/f8672cfd-e34b-4587-9e24-015e03c7574d.jpg?1783940518"
+      },
+      "artist": "Izzy",
+      "set": "m13",
+      "collectorNumber": "15",
+      "scryfallUri": "https://scryfall.com/card/m13/15/glorious-charge?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Goblin Artillery",
       "slug": "goblin-artillery",
       "oracleId": "06db7444-0225-48c8-ab04-d69ff06e97b6",
@@ -1882,6 +1992,36 @@
       "set": "m10",
       "collectorNumber": "138",
       "scryfallUri": "https://scryfall.com/card/m10/138/goblin-artillery?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Goblin Chieftain",
+      "slug": "goblin-chieftain",
+      "oracleId": "368b4052-174e-4458-a6e6-eaf8093aa0fe",
+      "layout": "normal",
+      "manaCost": "{1}{R}{R}",
+      "manaValue": 3,
+      "typeLine": "Creature — Goblin",
+      "oracleText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nOther Goblin creatures you control get +1/+1 and have haste.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "Haste"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/5/2540ec6b-9ffa-4ab0-bbd3-ddf1efd2db60.jpg?1783941069",
+        "large": "https://cards.scryfall.io/large/front/2/5/2540ec6b-9ffa-4ab0-bbd3-ddf1efd2db60.jpg?1783941069",
+        "png": "https://cards.scryfall.io/png/front/2/5/2540ec6b-9ffa-4ab0-bbd3-ddf1efd2db60.png?1783941069",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/5/2540ec6b-9ffa-4ab0-bbd3-ddf1efd2db60.jpg?1783941069"
+      },
+      "artist": "Sam Wood",
+      "set": "m12",
+      "collectorNumber": "138",
+      "scryfallUri": "https://scryfall.com/card/m12/138/goblin-chieftain?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -2144,6 +2284,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Honor of the Pure",
+      "slug": "honor-of-the-pure",
+      "oracleId": "eb4188bb-62df-4309-bde1-f66318fe2f05",
+      "layout": "normal",
+      "manaCost": "{1}{W}",
+      "manaValue": 2,
+      "typeLine": "Enchantment",
+      "oracleText": "White creatures you control get +1/+1.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/5/650a6831-c352-4ca7-9f8f-43ea99a1cf33.jpg?1783941102",
+        "large": "https://cards.scryfall.io/large/front/6/5/650a6831-c352-4ca7-9f8f-43ea99a1cf33.jpg?1783941102",
+        "png": "https://cards.scryfall.io/png/front/6/5/650a6831-c352-4ca7-9f8f-43ea99a1cf33.png?1783941102",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/5/650a6831-c352-4ca7-9f8f-43ea99a1cf33.jpg?1783941102"
+      },
+      "artist": "Greg Staples",
+      "set": "m12",
+      "collectorNumber": "23",
+      "scryfallUri": "https://scryfall.com/card/m12/23/honor-of-the-pure?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Horned Turtle",
       "slug": "horned-turtle",
       "oracleId": "7a4ae76b-6241-4fa8-b239-5ec941a0e7df",
@@ -2398,6 +2566,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Jump",
+      "slug": "jump",
+      "oracleId": "f7518456-45ed-41d4-bd3c-5aacea28eb35",
+      "layout": "normal",
+      "manaCost": "{U}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Target creature gains flying until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/2/e/2edd7be9-9334-4684-b642-1aaf2000e054.jpg?1783942391",
+        "large": "https://cards.scryfall.io/large/front/2/e/2edd7be9-9334-4684-b642-1aaf2000e054.jpg?1783942391",
+        "png": "https://cards.scryfall.io/png/front/2/e/2edd7be9-9334-4684-b642-1aaf2000e054.png?1783942391",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/2/e/2edd7be9-9334-4684-b642-1aaf2000e054.jpg?1783942391"
+      },
+      "artist": "Eric Deschamps",
+      "set": "m10",
+      "collectorNumber": "59",
+      "scryfallUri": "https://scryfall.com/card/m10/59/jump?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Kalonian Behemoth",
       "slug": "kalonian-behemoth",
       "oracleId": "68d0b5c0-df6a-4eea-8dea-20358270f916",
@@ -2458,6 +2654,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Kindled Fury",
+      "slug": "kindled-fury",
+      "oracleId": "ebeee06e-3345-4f02-896f-cb0b2cfa5548",
+      "layout": "normal",
+      "manaCost": "{R}",
+      "manaValue": 1,
+      "typeLine": "Instant",
+      "oracleText": "Target creature gets +1/+0 and gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/f/af158462-91e3-4ad7-b435-95d4eb32fe0a.jpg?1783908950",
+        "large": "https://cards.scryfall.io/large/front/a/f/af158462-91e3-4ad7-b435-95d4eb32fe0a.jpg?1783908950",
+        "png": "https://cards.scryfall.io/png/front/a/f/af158462-91e3-4ad7-b435-95d4eb32fe0a.png?1783908950",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/f/af158462-91e3-4ad7-b435-95d4eb32fe0a.jpg?1783908950"
+      },
+      "artist": "Wayne Reynolds",
+      "set": "fdn",
+      "collectorNumber": "542",
+      "scryfallUri": "https://scryfall.com/card/fdn/542/kindled-fury?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Kraken's Eye",
       "slug": "krakens-eye",
       "oracleId": "14a21d8a-2097-4150-8af5-8c155049477a",
@@ -2509,6 +2733,34 @@
       "set": "m19",
       "collectorNumber": "150",
       "scryfallUri": "https://scryfall.com/card/m19/150/lava-axe?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Levitation",
+      "slug": "levitation",
+      "oracleId": "94b703c4-5584-4913-8365-7e9f2f535c2d",
+      "layout": "normal",
+      "manaCost": "{2}{U}{U}",
+      "manaValue": 4,
+      "typeLine": "Enchantment",
+      "oracleText": "Creatures you control have flying.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/3/63e5124a-67c0-44ed-8085-28bf37816423.jpg?1783941091",
+        "large": "https://cards.scryfall.io/large/front/6/3/63e5124a-67c0-44ed-8085-28bf37816423.jpg?1783941091",
+        "png": "https://cards.scryfall.io/png/front/6/3/63e5124a-67c0-44ed-8085-28bf37816423.png?1783941091",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/3/63e5124a-67c0-44ed-8085-28bf37816423.jpg?1783941091"
+      },
+      "artist": "Jim Murray",
+      "set": "m12",
+      "collectorNumber": "61",
+      "scryfallUri": "https://scryfall.com/card/m12/61/levitation?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -2765,6 +3017,34 @@
       "set": "m12",
       "collectorNumber": "65",
       "scryfallUri": "https://scryfall.com/card/m12/65/merfolk-looter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Merfolk Sovereign",
+      "slug": "merfolk-sovereign",
+      "oracleId": "16aba9af-7a12-4c3d-87eb-06278921cb7c",
+      "layout": "normal",
+      "manaCost": "{1}{U}{U}",
+      "manaValue": 3,
+      "typeLine": "Creature — Merfolk Noble",
+      "oracleText": "Other Merfolk creatures you control get +1/+1.\n{T}: Target Merfolk creature can't be blocked this turn.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/e/d/ed43af3c-1070-45d9-9de6-17d07a6ef3c0.jpg?1783941823",
+        "large": "https://cards.scryfall.io/large/front/e/d/ed43af3c-1070-45d9-9de6-17d07a6ef3c0.jpg?1783941823",
+        "png": "https://cards.scryfall.io/png/front/e/d/ed43af3c-1070-45d9-9de6-17d07a6ef3c0.png?1783941823",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/e/d/ed43af3c-1070-45d9-9de6-17d07a6ef3c0.jpg?1783941823"
+      },
+      "artist": "Jesper Ejsing",
+      "set": "m11",
+      "collectorNumber": "65",
+      "scryfallUri": "https://scryfall.com/card/m11/65/merfolk-sovereign?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3073,6 +3353,34 @@
       "set": "aer",
       "collectorNumber": "167",
       "scryfallUri": "https://scryfall.com/card/aer/167/ornithopter?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Overrun",
+      "slug": "overrun",
+      "oracleId": "204f9afe-c20b-4933-b5cd-aa572784762a",
+      "layout": "normal",
+      "manaCost": "{2}{G}{G}{G}",
+      "manaValue": 5,
+      "typeLine": "Sorcery",
+      "oracleText": "Creatures you control get +3/+3 and gain trample until end of turn. (Each of those creatures can deal excess combat damage to the player or planeswalker it's attacking.)",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/1/d/1d8e9cbb-8bf4-4a48-a58e-79deb3abdf7f.jpg?1783909056",
+        "large": "https://cards.scryfall.io/large/front/1/d/1d8e9cbb-8bf4-4a48-a58e-79deb3abdf7f.jpg?1783909056",
+        "png": "https://cards.scryfall.io/png/front/1/d/1d8e9cbb-8bf4-4a48-a58e-79deb3abdf7f.png?1783909056",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/1/d/1d8e9cbb-8bf4-4a48-a58e-79deb3abdf7f.jpg?1783909056"
+      },
+      "artist": "Carl Critchlow",
+      "set": "fdn",
+      "collectorNumber": "230",
+      "scryfallUri": "https://scryfall.com/card/fdn/230/overrun?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -3471,6 +3779,64 @@
       "set": "m10",
       "collectorNumber": "202",
       "scryfallUri": "https://scryfall.com/card/m10/202/regenerate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Relentless Rats",
+      "slug": "relentless-rats",
+      "oracleId": "104ea189-14cd-420f-afdc-57b0f827ab8e",
+      "layout": "normal",
+      "manaCost": "{1}{B}{B}",
+      "manaValue": 3,
+      "typeLine": "Creature — Rat",
+      "oracleText": "This creature gets +1/+1 for each other creature on the battlefield named Relentless Rats.\nA deck can have any number of cards named Relentless Rats.",
+      "power": "2",
+      "toughness": "2",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/f/8/f873c62a-7efc-40d8-8c0a-55e9a94847b8.jpg?1783941812",
+        "large": "https://cards.scryfall.io/large/front/f/8/f873c62a-7efc-40d8-8c0a-55e9a94847b8.jpg?1783941812",
+        "png": "https://cards.scryfall.io/png/front/f/8/f873c62a-7efc-40d8-8c0a-55e9a94847b8.png?1783941812",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/f/8/f873c62a-7efc-40d8-8c0a-55e9a94847b8.jpg?1783941812"
+      },
+      "artist": "Thomas M. Baxa",
+      "set": "m11",
+      "collectorNumber": "113",
+      "scryfallUri": "https://scryfall.com/card/m11/113/relentless-rats?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Rhox Pikemaster",
+      "slug": "rhox-pikemaster",
+      "oracleId": "8866d33e-8159-4e10-8b11-914c12a0918f",
+      "layout": "normal",
+      "manaCost": "{2}{W}{W}",
+      "manaValue": 4,
+      "typeLine": "Creature — Rhino Soldier",
+      "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nOther Soldier creatures you control have first strike.",
+      "power": "3",
+      "toughness": "3",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [
+        "First strike"
+      ],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/b/3/b3684a28-e819-4909-912e-dec4a9cf1b11.jpg?1783942399",
+        "large": "https://cards.scryfall.io/large/front/b/3/b3684a28-e819-4909-912e-dec4a9cf1b11.jpg?1783942399",
+        "png": "https://cards.scryfall.io/png/front/b/3/b3684a28-e819-4909-912e-dec4a9cf1b11.png?1783942399",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/b/3/b3684a28-e819-4909-912e-dec4a9cf1b11.jpg?1783942399"
+      },
+      "artist": "Steve Prescott",
+      "set": "m10",
+      "collectorNumber": "26",
+      "scryfallUri": "https://scryfall.com/card/m10/26/rhox-pikemaster?utm_source=api",
       "printingChosenBy": "rule"
     },
     {
@@ -4321,6 +4687,34 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Trumpet Blast",
+      "slug": "trumpet-blast",
+      "oracleId": "d3b408e7-4d39-47a3-b00c-846903f8ae77",
+      "layout": "normal",
+      "manaCost": "{2}{R}",
+      "manaValue": 3,
+      "typeLine": "Instant",
+      "oracleText": "Attacking creatures get +2/+0 until end of turn.",
+      "power": null,
+      "toughness": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/6/c676a5b0-bd46-46b3-b71b-a50b86c9b0bd.jpg?1783934542",
+        "large": "https://cards.scryfall.io/large/front/c/6/c676a5b0-bd46-46b3-b71b-a50b86c9b0bd.jpg?1783934542",
+        "png": "https://cards.scryfall.io/png/front/c/6/c676a5b0-bd46-46b3-b71b-a50b86c9b0bd.png?1783934542",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/6/c676a5b0-bd46-46b3-b71b-a50b86c9b0bd.jpg?1783934542"
+      },
+      "artist": "Steve Prescott",
+      "set": "m19",
+      "collectorNumber": "165",
+      "scryfallUri": "https://scryfall.com/card/m19/165/trumpet-blast?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Undead Slayer",
       "slug": "undead-slayer",
       "oracleId": "08fc069e-7fdd-4726-aa08-a96bbd2bcaa3",
@@ -4430,6 +4824,62 @@
       "set": "m10",
       "collectorNumber": "117",
       "scryfallUri": "https://scryfall.com/card/m10/117/vampire-aristocrat?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Veteran Armorsmith",
+      "slug": "veteran-armorsmith",
+      "oracleId": "fcb34e92-f991-401c-a494-c2919083bf9e",
+      "layout": "normal",
+      "manaCost": "{W}{W}",
+      "manaValue": 2,
+      "typeLine": "Creature — Human Soldier",
+      "oracleText": "Other Soldier creatures you control get +0/+1.",
+      "power": "2",
+      "toughness": "3",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/4/2/42f506b5-2e24-47fd-a41e-1e834ce48cd1.jpg?1783942397",
+        "large": "https://cards.scryfall.io/large/front/4/2/42f506b5-2e24-47fd-a41e-1e834ce48cd1.jpg?1783942397",
+        "png": "https://cards.scryfall.io/png/front/4/2/42f506b5-2e24-47fd-a41e-1e834ce48cd1.png?1783942397",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/4/2/42f506b5-2e24-47fd-a41e-1e834ce48cd1.jpg?1783942397"
+      },
+      "artist": "Michael Komarck",
+      "set": "m10",
+      "collectorNumber": "38",
+      "scryfallUri": "https://scryfall.com/card/m10/38/veteran-armorsmith?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Veteran Swordsmith",
+      "slug": "veteran-swordsmith",
+      "oracleId": "cc71b6c4-09d4-423b-a134-2f2f2fd7b533",
+      "layout": "normal",
+      "manaCost": "{2}{W}",
+      "manaValue": 3,
+      "typeLine": "Creature — Human Soldier",
+      "oracleText": "Other Soldier creatures you control get +1/+0.",
+      "power": "3",
+      "toughness": "2",
+      "colors": [
+        "W"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/c/5/c50e0950-e1ef-4c5c-b758-e707ef026d54.jpg?1783942396",
+        "large": "https://cards.scryfall.io/large/front/c/5/c50e0950-e1ef-4c5c-b758-e707ef026d54.jpg?1783942396",
+        "png": "https://cards.scryfall.io/png/front/c/5/c50e0950-e1ef-4c5c-b758-e707ef026d54.png?1783942396",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/c/5/c50e0950-e1ef-4c5c-b758-e707ef026d54.jpg?1783942396"
+      },
+      "artist": "Michael Komarck",
+      "set": "m10",
+      "collectorNumber": "39",
+      "scryfallUri": "https://scryfall.com/card/m10/39/veteran-swordsmith?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

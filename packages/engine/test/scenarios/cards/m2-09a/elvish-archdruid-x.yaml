@@ -1,0 +1,21 @@
+name: Elvish Archdruid's mana counts toward the largest X offered, and that X can be paid with it
+rules: [CR 107.3a, CR 605.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Llanowar Elves, Elvish Archdruid]
+    hand: [Fireball]
+steps:
+  - p1 cast: Fireball
+  - expect:
+      pending: { player: p1, kind: announceX, upTo: 3 }
+  - p1 choose: cancel
+  # Auto pay taps only sources that make one mana, so the Archdruid's two are made first.
+  - p1 activate: Elvish Archdruid
+  - p1 cast: Fireball
+    x: 3
+    targets: [[p2]]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.life: 17

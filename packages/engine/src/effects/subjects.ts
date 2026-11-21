@@ -100,7 +100,20 @@ export function permanentsFitting(
   context: EffectContext,
   cards: CardDatabase,
 ): ObjectId[] {
-  return state.zones.battlefield.filter((id) => matchesFilter(state, id, filter, context.controller, cards));
+  return permanentsFittingFor(state, filter, context.controller, cards);
+}
+
+/**
+ * The same, for a given "you": also what `manaAvailable` counts before a mana ability is activated, so the X offered
+ * and the mana made are counted one way.
+ */
+export function permanentsFittingFor(
+  state: GameState,
+  filter: ObjectFilter,
+  you: PlayerId,
+  cards: CardDatabase,
+): ObjectId[] {
+  return state.zones.battlefield.filter((id) => matchesFilter(state, id, filter, you, cards));
 }
 
 /** The objects a subject names (its players left out). */

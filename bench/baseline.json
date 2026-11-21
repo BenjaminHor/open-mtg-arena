@@ -1,30 +1,34 @@
 {
-  "machine": "Intel(R) Xeon(R) Processor @ 2.30GHz, Node 26.13.1",
-  "referenceMs": 1.0787597777777793,
+  "machine": "Intel(R) Xeon(R) Processor @ 2.10GHz, Node 26.13.1",
+  "referenceMs": 1.3159059565217357,
   "measures": {
     "applyAction.emptyBoard": {
-      "ms": 0.008389071202531673,
-      "relative": 0.007776588797009998
+      "ms": 0.012562479761904688,
+      "relative": 0.009546639484109049
     },
     "applyAction.busyCombat": {
-      "ms": 0.012111482000000024,
-      "relative": 0.011227228016370246
+      "ms": 0.016891346710526466,
+      "relative": 0.012836287142566377
     },
     "applyAction.deepStack": {
-      "ms": 0.009088573666666737,
-      "relative": 0.00842502089333456
+      "ms": 0.01891616812500047,
+      "relative": 0.014375015198654903
     },
     "randomGame": {
-      "ms": 61.45190099999945,
-      "relative": 56.96532468664059
+      "ms": 78.08050000000003,
+      "relative": 59.33592717095534
     },
     "legalActions.busyBoard": {
-      "ms": 0.03372540357142952,
-      "relative": 0.03126312666282672
+      "ms": 0.0227683821428572,
+      "relative": 0.017302438696333324
     },
     "characteristics.busyBoard": {
-      "ms": 0.0005314598399654029,
-      "relative": 0.0004926581903713522
+      "ms": 0.0002028019812091557,
+      "relative": 0.00015411586231071664
+    },
+    "layers.freshPass": {
+      "ms": 0.011164820491803468,
+      "relative": 0.008484512465704499
     }
   }
 }

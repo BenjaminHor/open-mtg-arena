@@ -17,14 +17,16 @@ import type { ManaType } from "../state/mana.ts";
 import type { AbilityRef, BasicLandType } from "../state/objects.ts";
 import type { TriggerRef } from "../state/triggers.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
+import { layeredOf } from "./layers.ts";
 
 export type ActivatedAbility = { ref: AbilityRef; def: AbilityDef };
 
-/** An object's keyword abilities (CR 702): layer 6 of `characteristics()`, printed until effects grant or remove them. */
+/**
+ * An object's keyword abilities (CR 702): layer 6 of the layer pass (`layers.ts`), printed ones and those granted by
+ * resolved effects and static abilities (D-093). Effects that remove them come later (later: CR 613.1f).
+ */
 export function keywordsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Keyword[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.keywords ?? [];
+  return layeredOf(state, id, cards)?.keywords ?? [];
 }
 
 const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
@@ -40,9 +42,7 @@ const BASIC_LAND_MANA: Record<BasicLandType, ManaType> = {
  * or removed by effects (layer 6, later: CR 613.1f) will change this list, in this one place.
  */
 export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly StaticAbilityDef[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.statics ?? [];
+  return layeredOf(state, id, cards)?.statics ?? [];
 }
 
 /**
@@ -76,15 +76,38 @@ function basicLandAbilities(state: GameState, id: ObjectId, cards: CardDatabase)
   if (!cardTypesOf(state, id, cards).includes("land")) return [];
   return subtypesOf(state, id, cards)
     .filter((t): t is BasicLandType => Object.hasOwn(BASIC_LAND_MANA, t))
-    .map((landType) => ({
-      ref: { kind: "basicLandType", landType } as const,
-      def: {
-        kind: "activated",
-        cost: [{ kind: "tap" }],
-        targets: [],
-        effects: [{ op: "addMana", mana: BASIC_LAND_MANA[landType], amount: 1 }],
-      },
-    }));
+    .map((landType) => BASIC_LAND_ABILITY[landType]);
+}
+
+/** Made once: legal actions list every land's abilities at every priority (measured, D-092). */
+const BASIC_LAND_ABILITY: Readonly<Record<BasicLandType, ActivatedAbility>> = {
+  Plains: tapForMana("Plains"),
+  Island: tapForMana("Island"),
+  Swamp: tapForMana("Swamp"),
+  Mountain: tapForMana("Mountain"),
+  Forest: tapForMana("Forest"),
+};
+
+/** Frozen throughout, as every caller shares it (and actions carry its `ref`): a change in place throws. */
+function tapForMana(landType: BasicLandType): ActivatedAbility {
+  return deepFrozen<ActivatedAbility>({
+    ref: { kind: "basicLandType", landType },
+    def: {
+      kind: "activated",
+      cost: [{ kind: "tap" }],
+      targets: [],
+      effects: [{ op: "addMana", mana: BASIC_LAND_MANA[landType], amount: 1 }],
+    },
+  });
+}
+
+/** Freezes plain data and everything inside it. */
+function deepFrozen<T>(value: T): T {
+  if (typeof value === "object" && value !== null) {
+    for (const inner of Object.values(value)) deepFrozen(inner);
+    Object.freeze(value);
+  }
+  return value;
 }
 
 /**

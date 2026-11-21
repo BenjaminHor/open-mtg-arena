@@ -23,12 +23,14 @@ Borderland Ranger
 Bountiful Harvest
 Bramble Creeper
 Burning Inquiry
+Burst of Speed
 Cancel
 Canyon Minotaur
 Capricious Efreet
 Celestial Purge
 Centaur Courser
 Child of Night
+Coat of Arms
 Consume Spirit
 Coral Merfolk
 Craw Wurm
@@ -52,6 +54,7 @@ Drudge Skeletons
 Duress
 Earthquake
 Elite Vanguard
+Elvish Archdruid
 Elvish Piper
 Elvish Visionary
 Emerald Oryx
@@ -69,7 +72,9 @@ Furnace Whelp
 Giant Growth
 Giant Spider
 Glacial Fortress
+Glorious Charge
 Goblin Artillery
+Goblin Chieftain
 Goblin Piker
 Gravedigger
 Gray Ogre
@@ -79,6 +84,7 @@ Grizzly Bears
 Guardian Seraph
 Haunting Echoes
 Hill Giant
+Honor of the Pure
 Horned Turtle
 Howling Banshee
 Howling Mine
@@ -88,10 +94,13 @@ Illusionary Servant
 Inferno Elemental
 Island
 Jackal Familiar
+Jump
 Kalonian Behemoth
 Kelinore Bat
+Kindled Fury
 Kraken's Eye
 Lava Axe
+Levitation
 Lightning Bolt
 Lightning Elemental
 Lightwielder Paladin
@@ -101,6 +110,7 @@ Lurking Predators
 Manabarbs
 Megrim
 Merfolk Looter
+Merfolk Sovereign
 Mesa Enchantress
 Might of Oaks
 Mind Rot
@@ -112,6 +122,7 @@ Naturalize
 Nature's Spiral
 Negate
 Ornithopter
+Overrun
 Palace Guard
 Panic Attack
 Phantom Warrior
@@ -126,6 +137,8 @@ Raging Goblin
 Rampant Growth
 Razorfoot Griffin
 Regenerate
+Relentless Rats
+Rhox Pikemaster
 Righteousness
 Rod of Ruin
 Rootbound Crag
@@ -156,10 +169,13 @@ Tendrils of Corruption
 Terramorphic Expanse
 Tome Scour
 Traumatize
+Trumpet Blast
 Undead Slayer
 Underworld Dreams
 Unsummon
 Vampire Aristocrat
+Veteran Armorsmith
+Veteran Swordsmith
 Viashino Spearhunter
 Volcanic Hammer
 Wall of Bone

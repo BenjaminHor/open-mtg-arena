@@ -1,0 +1,17 @@
+name: Levitation gives flying only to its controller's creatures; the opponent's can't block a flyer they couldn't before
+rules: [CR 613.1f, CR 109.2, CR 702.9b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Levitation, Grizzly Bears]
+  p2:
+    battlefield: [Runeclaw Bear]
+steps:
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Runeclaw Bear]
+  - all pass: until combat.declareBlockers
+  - p1 block: { Grizzly Bears: Runeclaw Bear }
+  - all pass: until main2
+  - expect:
+      p1.graveyard: [Grizzly Bears]
+      p2.graveyard: [Runeclaw Bear]

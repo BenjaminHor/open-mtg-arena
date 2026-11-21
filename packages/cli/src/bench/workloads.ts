@@ -10,6 +10,7 @@ import {
   characteristics,
   createGame,
   type GameState,
+  layeredFresh,
   legalActions,
 } from "@mtg/engine";
 import { playAgents } from "../agent-play.ts";
@@ -102,6 +103,15 @@ export function workloads(cards: CardDatabase): Workload[] {
       count: permanents(boards),
       run: () => {
         for (const state of boards) for (const id of state.zones.battlefield) characteristics(state, id, cards);
+      },
+    },
+    {
+      // The layer pass itself, not a kept one (D-092): what a state with changed objects costs.
+      name: "layers.freshPass",
+      what: `per pass, in the ${boards.length} busiest states`,
+      count: boards.length,
+      run: () => {
+        for (const state of boards) layeredFresh(state, cards);
       },
     },
   ];

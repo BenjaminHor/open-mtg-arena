@@ -185,7 +185,7 @@ function allEffects(def: CardDef): (readonly Effect[])[] {
 
 /**
  * A card's keywords, protection and static abilities credited at `when` (`KEYWORD_WHEN`, `STATIC_WHEN`): in combat, or
- * as it resolves ("enters": a permanent spell's flash and shroud, a spell's "can't be countered").
+ * as it resolves ("enters": a permanent spell's flash and shroud, a spell's "can't be countered", anthems).
  */
 export function permanentUnits(def: CardDef, when: "combat" | "enters"): string[] {
   const keywords = (def.keywords ?? []).filter((k) => KEYWORD_WHEN[k] === when).map((k) => `keyword ${k}`);
@@ -206,6 +206,11 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   attacksEachCombat: "combat",
   mustBeBlockedByAllAble: "combat",
   cantBeCountered: "enters",
+  // Anthems, coarsely, as their permanent resolves: many are on noncreatures (Honor of the Pure, Coat of Arms), which
+  // never attack or block.
+  creaturesGet: "enters",
+  plusPerSharedCreatureType: "enters",
+  plusPerOtherSameName: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

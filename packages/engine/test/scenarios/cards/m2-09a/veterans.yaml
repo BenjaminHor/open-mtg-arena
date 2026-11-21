@@ -1,0 +1,14 @@
+name: Veteran Armorsmith and Veteran Swordsmith each give the other Soldiers their bonus, not themselves
+rules: [CR 611.3a, CR 613.4c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Veteran Armorsmith, Veteran Swordsmith, Elite Vanguard]
+steps:
+  - expect:
+      p1:Elite Vanguard.power: 3
+      p1:Elite Vanguard.toughness: 2
+      p1:Veteran Armorsmith.power: 3
+      p1:Veteran Armorsmith.toughness: 3
+      p1:Veteran Swordsmith.power: 3
+      p1:Veteran Swordsmith.toughness: 3

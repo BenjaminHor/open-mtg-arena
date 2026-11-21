@@ -241,6 +241,8 @@ export function announceX(state: GameState, value: number): GameState {
 /**
  * `upTo` lowered, for "spend only black mana on X" (`xPaidWith`), to the largest X whose cost the player could pay
  * now, so the X offered stays a guide to what's payable (D-058, D-067). Other spells' X is limited by mana alone.
+ * Auto pay taps only sources that make one mana, so a black source making more (none in the pool yet) would be
+ * undercounted here: `autoPay` should learn to use them when one arrives.
  */
 function payableX(state: GameState, id: ObjectId, upTo: number, cards: CardDatabase): number {
   const obj = state.objects[id];

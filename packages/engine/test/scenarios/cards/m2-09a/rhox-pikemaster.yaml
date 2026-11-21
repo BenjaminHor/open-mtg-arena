@@ -1,0 +1,17 @@
+name: Rhox Pikemaster gives other Soldiers first strike, so Elite Vanguard kills a 2/2 blocker before it deals damage
+rules: [CR 613.1f, CR 702.7b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Rhox Pikemaster, Elite Vanguard]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Elite Vanguard]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Grizzly Bears: Elite Vanguard }
+  - all pass: until main2
+  - expect:
+      p2.graveyard: [Grizzly Bears]
+      p1.battlefield contains: [Elite Vanguard]

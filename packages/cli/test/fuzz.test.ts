@@ -15,7 +15,14 @@ import {
   playerView,
 } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
-import { ALL_CHECKS, type Check, lifeThroughEvents, scrambleHidden, viewsLeakNothing } from "../src/fuzz/checks.ts";
+import {
+  ALL_CHECKS,
+  type Check,
+  layersMatchFreshPass,
+  lifeThroughEvents,
+  scrambleHidden,
+  viewsLeakNothing,
+} from "../src/fuzz/checks.ts";
 import { runFuzz } from "../src/fuzz/run-fuzz.ts";
 import { fuzzGame } from "../src/fuzz/run-game.ts";
 import { fuzz } from "../src/fuzz.ts";
@@ -173,6 +180,20 @@ describe("the checks", () => {
     const { setup, actions } = turnTwoGame();
     return replay(setup, actions, cards).state;
   };
+
+  it("layersMatchFreshPass: a state changed in place after its pass was kept is a problem (D-092)", () => {
+    const after = state();
+    expect(layersMatchFreshPass(after, after, [], cards)).toEqual([]);
+    const [id] = after.zones.battlefield.filter((i) => after.objects[i]?.kind === "card");
+    const obj = id === undefined ? undefined : after.objects[id];
+    if (id === undefined || obj?.kind !== "card") throw new Error("no card on the battlefield");
+    // Never done by the engine: changing the state in place, which the kept pass can't see.
+    const other = after.turnOrder.find((p) => p !== obj.baseController) as PlayerId;
+    (obj as { baseController: PlayerId }).baseController = other;
+    expect(layersMatchFreshPass(after, after, [], cards)).toContain(
+      `${id}'s characteristics kept for this state differ from fresh ones (D-092)`,
+    );
+  });
 
   it("lifeThroughEvents: a life change with no event is a problem", () => {
     const before = state();

@@ -27,6 +27,8 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "addMana":
     case "modifyPT":
     case "cantBlock":
+    case "gainKeywords":
+    case "cantBeBlocked":
     case "mustAttack":
     case "sacrificeSource":
     case "destroy":

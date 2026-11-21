@@ -180,5 +180,9 @@ function effectChangeText(change: EffectChange): string {
       return "can't block";
     case "mustAttack":
       return `attacks ${change.player} if able`;
+    case "addKeywords":
+      return `gains ${change.keywords.join(", ")}`;
+    case "cantBeBlocked":
+      return "can't be blocked";
   }
 }

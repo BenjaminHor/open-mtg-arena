@@ -1,0 +1,20 @@
+name: When one Relentless Rats dies, the other's bonus shrinks, and damage marked on it can become lethal (its ruling)
+rules: [CR 613.4c, CR 704.5g]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Relentless Rats, Relentless Rats]
+  p2:
+    battlefield: [Mountain, Mountain]
+    hand: [Shock, Lightning Bolt]
+steps:
+  - p2 cast: Shock
+    targets: [p1:Relentless Rats]
+    pay: auto
+  - all pass: once
+  - p2 cast: Lightning Bolt
+    targets: [p1:Relentless Rats#2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Relentless Rats, Relentless Rats]

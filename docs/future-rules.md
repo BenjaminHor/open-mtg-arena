@@ -11,15 +11,17 @@ implemented, move it out of this file (or mark it done) in the same commit.
 
 **Full layer system (CR 613), M2.** Copy effects (layer 1), control (2), text-changing (3), type (4),
 color (5), ability adding and removing (6), and power/toughness (7a–7d), with timestamps and dependencies.
-*Built (M1-11, D-038):* `characteristics()` composes one reader per layer; layer 7 has 7c. Adding a layer means adding
-its effects to the reader for that layer. Sorting within a sublayer by timestamp and dependency arrives with the first
-non-additive effect.
-*Watch out:* the readers work one object at a time. An effect that starts applying in one layer keeps applying to the
-same objects in later layers (CR 613.6), and dependency orders effects across the board (CR 613.8), so full layers will
-want one board-wide pass, layer by layer, that records each effect's affected set. Don't let the readers' signatures
-harden around per-object evaluation. Also: 7a/7b set the base power and toughness (the early "no printed P/T" return
-must become "base from 7a/7b, else printed"); tokens (CR 111) need a characteristics source other than the card
-database; an effect on a permanent spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet.
+*Built (M2-09a, D-092, D-093):* one board-wide pass in `rules/layers.ts`, layer by layer, over the battlefield and the
+stack, kept per its inputs; the per-layer readers (`cardTypesOf`, `colorsOf`, `keywordsOf`, `powerAndToughness`...)
+read it. Layer 6 grants keywords (resolved effects and static abilities), 7c adds; a static ability's set is found as
+it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Sorting within a sublayer by timestamp and dependency
+arrives with the first non-additive effect (M2-09b; CR 613.8 per the open question in status.md).
+*Watch out:* `controllerOf` is outside the pass (layer 2 moves in with M2-09c). A card outside the battlefield and the
+stack is computed alone, printed values only, which characteristic-defining abilities in every zone will change
+(M2-09b). 7a/7b set the base power and toughness (the early "no printed P/T" return must become "base from 7a/7b,
+else printed"); tokens (CR 111) need a characteristics source other than the card database; an effect on a permanent
+spell carries over to the permanent it becomes (CR 400.7a), which ids don't do yet. A layer reading more of the state
+(combat, for "attacking creatures") adds it to `LayerInputs`, the memo's key.
 *Needs now:* every characteristic is read through `characteristics()` or the per-layer readers it composes (D-038),
 never from raw object fields. Code that
 asks "is this a creature?", "who controls this?" or "does it have flying?" must go through it, even in M1.
@@ -272,6 +274,11 @@ the ability's source. Hexproof, and protection for players or "from everything" 
 player", 702.16j-k), need the source's controller too, in the same place. `game/cast.ts` checks targets before the spell object exists. Each target group is one
 target today; "two target creatures" needs several per group, and one instance can't choose the same target twice
 (CR 601.2c). *Needs now:* nothing.
+
+**Creature types and land types (CR 205.3m).** A permanent's `subtypes` are one list. Coat of Arms compares them
+whole, which is right while a creature has only creature types; an animated Forest (Awakener Druid, M2-09b) is a
+"Forest Treefolk", and a Forest shared with another animated land would count. Split subtypes by type when a card can
+reach that. *Needs now:* nothing (every animated land in the pool is also a Treefolk).
 
 **Protection beyond M2-08e (CR 702.16c-d, 613.1f).** Auras and Equipment (M2-12): "can't be enchanted or equipped"
 needs `isProtectedFrom(state, permanent, auraOrEquipment)` where an Aura is attached without targeting (put onto the

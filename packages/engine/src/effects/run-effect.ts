@@ -6,9 +6,9 @@ import { andThen, type Progress } from "../game/progress.ts";
 import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import type { Damage, SingleEvent } from "../pipeline/proposed.ts";
 import { controllerOf } from "../rules/controller.ts";
-import type { EffectContext } from "../state/effects.ts";
+import type { EffectChange, EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { createDelayedTrigger } from "../triggers/delayed.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
@@ -55,9 +55,11 @@ export function runEffect(
     case "addMana": {
       // "Add {G}": mana goes into the pool of the player the text calls "you" (CR 106.4, 109.5). A choice of color was
       // replaced by the color chosen as the mana ability resolved (`resolveManaAbility`, D-068).
-      const { mana, amount } = effect;
+      const { mana } = effect;
       if (typeof mana !== "string" || mana === "anyColor")
         throw new Error("a choice of mana needs the color chosen as its ability resolves");
+      // "Add {G} for each Elf you control": counted as it resolves (CR 608.2h).
+      const amount = amountNow(state, effect.amount, context, cards);
       return happen(state, { kind: "addMana", player: context.controller, mana, amount, source: context.self }, cards);
     }
     case "modifyPT": {
@@ -74,8 +76,21 @@ export function runEffect(
         change,
       });
     }
+    case "gainKeywords": {
+      // A layer 6 effect on the objects fixed now (CR 611.2c, 613.1f), as `modifyPT` does for 7c.
+      const affected = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
+      if (affected.length === 0) return { state, events: [] };
+      return createContinuousEffect(state, {
+        source: context.self,
+        controller: context.controller,
+        duration: effect.duration,
+        affected,
+        change: { kind: "addKeywords", keywords: effect.keywords },
+      });
+    }
     case "cantBlock":
-    case "mustAttack": {
+    case "mustAttack":
+    case "cantBeBlocked": {
       // "Attacks you" is the controller of the ability, its "you" (CR 109.5). A rules effect, not a change to
       // characteristics, so it could reach creatures arriving later (later: CR 611.2c, 613.11);
       // on its targets it applies only to those still legal (CR 608.2b), as the objects they were (CR 400.7). Only targets
@@ -87,7 +102,7 @@ export function runEffect(
         controller: context.controller,
         duration: effect.duration,
         affected,
-        change: effect.op === "cantBlock" ? { kind: "cantBlock" } : { kind: "mustAttack", player: context.controller },
+        change: ruleChange(effect.op, context.controller),
       });
     }
     case "sacrificeSource": {
@@ -319,5 +334,17 @@ function mainDamage(
       const share = to.length === 0 ? 0 : Math.floor(amount / to.length);
       return to.map((t) => ({ source: from, to: t, amount: share, combat: false }));
     }
+  }
+}
+
+/** The rules effect of a "can't block", "attacks if able" or "can't be blocked" effect, for its creatures. */
+function ruleChange(op: "cantBlock" | "mustAttack" | "cantBeBlocked", controller: PlayerId): EffectChange {
+  switch (op) {
+    case "cantBlock":
+      return { kind: "cantBlock" };
+    case "mustAttack":
+      return { kind: "mustAttack", player: controller };
+    case "cantBeBlocked":
+      return { kind: "cantBeBlocked" };
   }
 }

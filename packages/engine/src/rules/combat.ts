@@ -79,6 +79,8 @@ function landwalkAllowsBlock(state: GameState, blocker: ObjectId, attacker: Obje
  * filter is read relative to the attacker's controller, the ability's "you" (CR 109.5).
  */
 function cantBeBlockedAllowsBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase) {
+  // "Can't be blocked this turn" from a resolved effect (Merfolk Sovereign's ability), a restriction like the static.
+  if (state.effects.some((e) => e.change.kind === "cantBeBlocked" && e.affected.includes(attacker))) return false;
   return staticAbilitiesOf(state, attacker, cards).every(
     (ability) =>
       ability.kind !== "cantBeBlocked" ||

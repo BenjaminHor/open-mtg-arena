@@ -1,0 +1,16 @@
+name: A creature cast after Overrun resolves isn't affected (its ruling)
+rules: [CR 611.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+    hand: [Overrun, Grizzly Bears]
+steps:
+  - p1 cast: Overrun
+    pay: auto
+  - all pass: once
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Grizzly Bears.power: 2

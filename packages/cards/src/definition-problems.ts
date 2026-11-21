@@ -7,6 +7,7 @@ import {
   type Effect,
   type EffectSubject,
   isFixedAmount,
+  type ObjectFilter,
   type TargetSpec,
   type TriggeredAbilityDef,
 } from "@mtg/engine";
@@ -57,6 +58,12 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     }
     const protections = protectionProblem(def);
     if (protections !== null) problems.push(protections);
+    // A static ability's filter is read inside the layer pass, which knows nothing of combat or a trigger (D-092).
+    for (const s of def.statics ?? []) {
+      if (s.kind !== "creaturesGet") continue;
+      if (filterUses(s.filter, (f) => f.combat !== undefined || f.controller === "triggeringPlayer"))
+        problems.push(`${def.name}: a static ability's filter can't ask about combat or "that player" (D-092)`);
+    }
     if (def.spell !== undefined)
       problems.push(
         ...targetProblems(def.name, def.spell.targets, def.spell.effects, def.spell.costIncrease !== undefined),
@@ -156,7 +163,10 @@ function targetProblems(
     // "Can't block" is a rules effect: on targets its set is fixed by them (CR 608.2b), but on "each creature ..." it
     // would apply to creatures arriving later (later: CR 611.2c, 613.11), which nothing reads yet.
     const onTargets = (of: unknown) => typeof of === "object" && of !== null && "target" in of;
-    if ((effect.op === "cantBlock" || effect.op === "mustAttack") && !onTargets(effect.of))
+    if (
+      (effect.op === "cantBlock" || effect.op === "mustAttack" || effect.op === "cantBeBlocked") &&
+      !onTargets(effect.of)
+    )
       problems.push(`${where}: ${effect.op} applies only to targets until rules effects read their set live`);
     if (effect.op !== "dealDamage" || effect.divided === undefined) continue;
     // A division is announced as it's cast (CR 601.2d), when nothing can be counted yet.
@@ -342,4 +352,9 @@ function protectionProblem(def: CardDef): string | null {
   const actual = (def.protections ?? []).map((q) => (q.kind === "color" ? `color ${q.color}` : `subtype ${q.subtype}`));
   if (JSON.stringify([...expected].sort()) === JSON.stringify([...actual].sort())) return null;
   return `${def.name}: protections ${JSON.stringify(actual)}, but Oracle has ${JSON.stringify(expected)}`;
+}
+
+/** Whether a filter, or the filter inside its `not`, has something `test` looks for. */
+function filterUses(filter: ObjectFilter, test: (f: ObjectFilter) => boolean): boolean {
+  return test(filter) || (filter.not !== undefined && filterUses(filter.not, test));
 }

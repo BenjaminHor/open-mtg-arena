@@ -224,6 +224,19 @@ describe("definitionProblems", () => {
     ]);
   });
 
+  it("reports a static ability's filter that asks about combat, which the layer pass can't (D-092)", () => {
+    const honor = POOL.cards.find((c) => c.name === "Honor of the Pure");
+    if (honor === undefined) throw new Error("Honor of the Pure isn't in the pool");
+    const attacking: CardDef = {
+      name: "Honor of the Pure",
+      oracle: honor.oracleText,
+      statics: [{ kind: "creaturesGet", filter: { types: ["creature"], combat: "attacking" }, power: 1, toughness: 1 }],
+    };
+    expect(definitionProblems([attacking], [honor])).toStrictEqual([
+      `Honor of the Pure: a static ability's filter can't ask about combat or "that player" (D-092)`,
+    ]);
+  });
+
   it("reports target shapes the engine can't use: a minimum above the maximum, a division it can't make (CR 601.2d)", () => {
     const ignite = POOL.cards.find((c) => c.name === "Ignite Disorder");
     if (ignite === undefined) throw new Error("Ignite Disorder missing from the pool");

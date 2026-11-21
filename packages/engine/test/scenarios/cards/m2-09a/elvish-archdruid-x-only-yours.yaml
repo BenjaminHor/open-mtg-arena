@@ -1,0 +1,14 @@
+name: Elvish Archdruid counts only the Elves its controller controls toward the X offered, not an opponent's
+rules: [CR 107.3a, CR 605.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Elvish Archdruid]
+    hand: [Fireball]
+  p2:
+    battlefield: [Llanowar Elves, Elvish Visionary]
+steps:
+  - p1 cast: Fireball
+  # The Mountain's one and the Archdruid's one, less the {R}.
+  - expect:
+      pending: { player: p1, kind: announceX, upTo: 1 }

@@ -36,7 +36,7 @@ Features are tagged **[core]** (needed for M4 to be done), **[next]** (soon afte
   average mana value, land count.
 - **[core]** "Add lands" helper that suggests a basic land split from the deck's color pips.
 - **[core]** Validation for each format: 60-card constructed (Standard, Pioneer, Modern, Legacy, Vintage, Pauper,
-  using Scryfall legality data), 40-card limited, and casual. Problems are listed in plain words ("4 copies max:
+  using Scryfall legality data), 40-card limited, and casual. Problems are listed in plain words ("4 copies max (except cards like Relentless Rats, "A deck can have any number of cards named ..."):
   you have 5 Lightning Bolt"). It also checks playability in the engine.
 - **[core]** Undo and redo for every edit.
 - **[core]** Import and export as text (`4 Lightning Bolt`, plus Arena-style lines with set and collector number),

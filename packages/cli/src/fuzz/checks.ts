@@ -3,9 +3,14 @@
 
 import {
   type CardDatabase,
+  controllerOf,
   eventsFor,
   type GameEvent,
   type GameState,
+  layered,
+  layeredFresh,
+  layeredOf,
+  layeredOfFresh,
   type ObjectId,
   type PlayerId,
   playerView,
@@ -211,4 +216,28 @@ function hiddenObjects(state: GameState, viewer: PlayerId): ObjectId[] {
   ]);
 }
 
-export const ALL_CHECKS: readonly Check[] = [engineInvariants, lifeThroughEvents, viewsLeakNothing];
+/**
+ * The layer pass kept for a state (D-092) is what a fresh pass gives: the pass reads only its inputs, by which it's
+ * kept, and the state is never changed in place.
+ */
+export const layersMatchFreshPass: Check = (_before, after, _events, cards) => {
+  const problems: string[] = [];
+  if (JSON.stringify(layered(after, cards)) !== JSON.stringify(layeredFresh(after, cards)))
+    problems.push("the layer pass kept for this state differs from a fresh one (D-092)");
+  for (const id of Object.keys(after.objects) as ObjectId[]) {
+    const kept = layeredOf(after, id, cards);
+    if (JSON.stringify(kept) !== JSON.stringify(layeredOfFresh(after, id, cards)))
+      problems.push(`${id}'s characteristics kept for this state differ from fresh ones (D-092)`);
+    // Layer 2 is `controllerOf`'s, outside the pass (D-092): the two must agree.
+    if (kept !== null && kept.controller !== controllerOf(after, id))
+      problems.push(`${id}'s controller in the layer pass differs from controllerOf (D-092)`);
+  }
+  return problems;
+};
+
+export const ALL_CHECKS: readonly Check[] = [
+  engineInvariants,
+  lifeThroughEvents,
+  viewsLeakNothing,
+  layersMatchFreshPass,
+];

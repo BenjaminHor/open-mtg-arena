@@ -4,11 +4,10 @@
 import type { CardDatabase, Color } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
+import { layeredOf } from "./layers.ts";
 
 export function colorsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly Color[] {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
-  const data = cards[obj.oracleId];
-  if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
-  return data.printed.colors;
+  const card = layeredOf(state, id, cards);
+  if (card === null) throw new Error(`${id} isn't a card`);
+  return card.colors;
 }
