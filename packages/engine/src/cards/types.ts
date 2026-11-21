@@ -150,9 +150,9 @@ export type ReplacementDef =
   | { kind: "preventDamageToYou"; amount: number }
   /**
    * "This creature enters with X +1/+1 counters on it" (Protean Hydra, CR 614.1c): X as the spell was cast (CR 107.3m),
-   * 0 if it wasn't.
+   * 0 if it wasn't; or a fixed number ("with three wish counters", Djinn of Wishes).
    */
-  | { kind: "entersWithCounters"; counter: "+1/+1"; amount: "X" }
+  | { kind: "entersWithCounters"; counter: string; amount: "X" | number }
   /**
    * A planeswalker's intrinsic "This permanent enters with a number of loyalty counters on it equal to its printed
    * loyalty number" (CR 306.5b, 614.1c). Never written in a definition: `replacementsOf` adds it to every card with a
@@ -378,7 +378,12 @@ export type CostPart =
    * An ability with one is a loyalty ability (CR 606.2): activated only as a sorcery, once per turn for its permanent
    * (CR 606.3), and a negative one only with enough counters (CR 606.6).
    */
-  | { kind: "loyalty"; amount: number | "minusX" };
+  | { kind: "loyalty"; amount: number | "minusX" }
+  /**
+   * "Remove a wish counter from this creature": `amount` counters of the kind removed from the source as the cost is
+   * paid, and the ability can't be activated without them (CR 118.3).
+   */
+  | { kind: "removeCounters"; counter: string; amount: number };
 
 /**
  * What one instance of the word "target" may choose (CR 115), and how many (`count`, exactly one when left out).
@@ -733,6 +738,12 @@ export type Effect =
     }
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject }
+  /**
+   * "You may play that card without paying its mana cost" (Djinn of Wishes): the controller may play the card named, a
+   * land (CR 305.2a, 305.3) or a spell, cast now while this resolves (CR 608.2g) for no mana cost (CR 118.9, X is 0,
+   * CR 107.3b). Asked only if it can be played; nothing happens if it can't, or the player says no or cancels.
+   */
+  | { op: "mayPlay"; of: EffectSubject; withoutPayingManaCost: true }
   /**
    * "[who] shuffles" (CR 701.24a). `foundOnTop`: "then shuffle and put that card on top" (Liliana Vess), the cards found
    * left out of the shuffle (CR 701.24b) and put on top in the same event.

@@ -24,11 +24,25 @@ export type Casting = {
   targetCounts: number[];
   /** The permanents chosen so far to sacrifice for the cost, one per sacrifice it calls for, sacrificed as it's paid. */
   sacrifices: ObjectId[];
+  /**
+   * The triggered abilities waiting as it began: none from priority (CR 117.5), but a cast during a resolution
+   * (CR 608.2g) may begin with some, which a cancel keeps (CR 734.1 reverses only the cast).
+   */
+  triggersBefore: PendingTrigger[];
+  /**
+   * Each library's top card as it began: a new top card isn't revealed until the spell becomes cast (CR 401.5).
+   */
+  libraryTops: Record<PlayerId, ObjectId | null>;
 };
 
 export type CastingOrigin =
   /** A spell cast from hand: the card as it was, and where it was in the hand. */
   | { kind: "card"; card: CardObject; handIndex: number }
+  /**
+   * A spell cast while a spell or ability resolves (CR 608.2g), without paying its mana cost (Djinn of Wishes): from
+   * the top of `library`, put back there if it's cancelled (CR 734.1). No player receives priority after it's cast.
+   */
+  | { kind: "resolution"; card: CardObject; library: PlayerId }
   /** An activated ability of a permanent (CR 602.2a): it was created on the stack, and simply ceases to exist. */
   | { kind: "ability"; source: ObjectId }
   /**

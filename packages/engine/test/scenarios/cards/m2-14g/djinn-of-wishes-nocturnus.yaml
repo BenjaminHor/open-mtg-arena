@@ -1,0 +1,23 @@
+name: With Vampire Nocturnus out, the card under the one Djinn of Wishes casts isn't revealed until the spell is cast
+rules: [CR 401.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Vampire Nocturnus, Island, Island, Island, Island]
+    library: [Lightning Bolt, Sign in Blood, Island]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.revealedTop: Lightning Bolt
+  - p1 choose: yes
+  - expect:
+      pending: { player: p1, kind: chooseTarget }
+      p1.revealedTop: null
+      events lacks: [{ type: CARDS_REVEALED, cards: [Sign in Blood] }]
+  - p1 choose: p2
+  - expect:
+      stack: [Lightning Bolt]
+      p1.revealedTop: Sign in Blood
+      events contains: [{ type: CARDS_REVEALED, cards: [Sign in Blood] }]

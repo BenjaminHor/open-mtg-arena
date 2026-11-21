@@ -5,7 +5,7 @@
 // would have received priority does (CR 603.3b).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { nextCastingStep } from "../game/casting-steps.ts";
+import { castingBegins, nextCastingStep } from "../game/casting-steps.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
 import { apnapOrder } from "../game/turn-order.ts";
@@ -89,6 +89,7 @@ export function putOne(
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
+    ...castingBegins(put.state),
   };
   const targeting = nextCastingStep({ ...put.state, casting }, cards);
   return { state: targeting.state, events: [...events, ...targeting.events] };

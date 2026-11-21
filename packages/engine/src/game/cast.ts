@@ -12,7 +12,7 @@ import type { Casting } from "../state/casting.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { zoneList } from "../zones/zone-list.ts";
-import { nextCastingStep } from "./casting-steps.ts";
+import { castingBegins, nextCastingStep } from "./casting-steps.ts";
 import type { Progress } from "./progress.ts";
 
 /**
@@ -52,6 +52,7 @@ export function startCast(state: GameState, player: PlayerId, card: ObjectId, ca
     tappedForMana: [],
     targetCounts: [],
     sacrifices: [],
+    ...castingBegins(moved.state),
   };
   const next = nextCastingStep({ ...moved.state, casting }, cards);
   return { state: next.state, events: [...moved.events, ...next.events] };

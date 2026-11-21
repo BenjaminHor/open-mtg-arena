@@ -109,8 +109,7 @@ export function playerView(state: GameState, viewer: PlayerId, cards: CardDataba
       handSize: z.hand.length,
       hand: canSee({ zone: "hand", player: p }, viewer) ? z.hand : null,
       revealedHand: hands.includes(p) ? inShownOrder(state, z.hand).map((id) => oracleIdOf(state, id)) : null,
-      // A new top card waits until a spell is cast (later: CR 401.5); no card in the pool changes it while casting.
-      revealedTop: tops.includes(p) && top !== undefined ? oracleIdOf(state, top) : null,
+      revealedTop: tops.includes(p) && top !== undefined && !heldBack(state, p, top) ? oracleIdOf(state, top) : null,
       graveyard: z.graveyard,
     };
   }
@@ -154,4 +153,13 @@ function zoneRefs(state: GameState): ZoneRef[] {
       { zone: "graveyard", player },
     ]),
   ];
+}
+
+/**
+ * A library's new top card while a spell is being cast, not revealed until it's cast (CR 401.5): Djinn of Wishes casting
+ * the top card with Vampire Nocturnus out. While it's cast, nothing is shown of that library's top.
+ */
+function heldBack(state: GameState, player: PlayerId, top: ObjectId): boolean {
+  const casting = state.casting;
+  return casting !== null && casting.libraryTops[player] !== top;
 }

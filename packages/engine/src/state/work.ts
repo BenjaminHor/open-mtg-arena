@@ -26,6 +26,11 @@ export type WorkItem =
    * an effect that asks for cards (`chooseCards`) runs again with the cards chosen (CR 608.2d).
    */
   | { kind: "runEffect"; effect: Effect; context: EffectContext; chosen: ObjectId[] | null }
+  /**
+   * The player plays this card while a spell or ability resolves, without paying its mana cost (Djinn of Wishes): a
+   * land is played (CR 305.2a), a spell is cast (CR 608.2g).
+   */
+  | { kind: "playWithoutPaying"; player: PlayerId; card: ObjectId }
   /** The final part of an object's resolution (CR 608.2n, 608.3a). */
   | { kind: "finishResolving"; object: ObjectId }
   /**

@@ -1,0 +1,24 @@
+name: On the opponent's turn a land can't be played (exiled), but a sorcery can be cast, the timing ignored (its ruling)
+rules: [CR 305.3, CR 608.2g]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island, Island, Island, Island, Island]
+    library: [Forest, Divination, Swamp, Island, Plains]
+steps:
+  - p2 pass: once
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - expect:
+      exile: [Forest]
+  - p2 pass: once
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      stack: [Divination]
+  - all pass: once
+  - expect:
+      p1.hand: [Swamp, Island]

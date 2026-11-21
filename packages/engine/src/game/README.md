@@ -16,9 +16,11 @@ The engine's entry points and the flow of a game.
 | `work.ts` | `queueWork()`: adds work to the front of the queue |
 | `resolve.ts` | `resolveTopOfStack()` checks targets (CR 608.2b) and queues a resolution's steps: its effects (`effects/`), then `finishResolving()`, the final part (CR 608) |
 | `play-land.ts` | `playLand`, `playLandProblem`: the special action (CR 305.1) |
+| `play-during-resolution.ts` | `mayPlay`, `playWithoutPaying`: playing a card while something resolves, a land or a spell cast for no mana cost with no priority after (Djinn of Wishes, CR 608.2g, D-124) |
+| `counter-costs.ts` | `counterPayments`: "remove a counter from this" in a cost (CR 118.3) |
 | `cast.ts` | Casting a spell (CR 601.2): `castProblem`, `startCast` (D-035) |
 | `activate-ability.ts` | Activating a non-mana ability (CR 602.2): `activationProblem`, `startActivation` (D-041) |
-| `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): `nextCastingStep` (X, targets, sacrifices, then the mana; a cost with no mana is paid at once), `announceX` and `xProblem` (CR 107.3a), `payCost` (mana, loyalty counters, {T}, sacrifices), `cancelCasting` |
+| `casting-steps.ts` | The steps both share (CR 601.2b–i, 602.2b): `nextCastingStep` (X, targets, sacrifices, then the mana; a cost with no mana is paid at once), `announceX` and `xProblem` (CR 107.3a), `payCost` (mana, loyalty and other counters, {T}, sacrifices), `cancelCasting`, `castingBegins` (what a cancel restores, and the library tops a cast holds back, CR 401.5) |
 | `loyalty-abilities.ts` | Loyalty abilities (CR 606): `loyaltyAbilityProblem` (as a sorcery, once per turn per permanent, enough counters; called by `activationProblem`), `loyaltyPayment` (the counters the cost puts on or removes, CR 606.4), `loyaltyXProblem` and `loyaltyXMost` (X for a [−X] cost is at most the loyalty, CR 606.6) |
 | `choose-targets.ts` | Targets and their division (CR 601.2c–d): how many for a range, each target (no repeats in an instance, CR 115.3), each target's share of a divided effect |
 | `activation-count.ts` | `countActivation`, `activationsThisTurn`: each object's activations this turn, in `GameState.turnHistory` (D-078) |

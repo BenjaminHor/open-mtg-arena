@@ -344,9 +344,10 @@ function replaceByOwnText(
       // X as the spell that becomes it was cast (CR 107.3m); 0 if it wasn't cast (put onto the battlefield).
       const obj = state.objects[move.object];
       const x = obj?.kind === "card" ? (obj.choices?.x ?? 0) : 0;
+      const amount = def.amount === "X" ? x : def.amount;
       // Zero counters is no counters (CR 122.6 counts only an object given some); others it enters with add up.
-      if (x <= 0) return { before: [], event, after: [] };
-      const counters = { ...move.to.counters, [def.counter]: (move.to.counters?.[def.counter] ?? 0) + x };
+      if (amount <= 0) return { before: [], event, after: [] };
+      const counters = { ...move.to.counters, [def.counter]: (move.to.counters?.[def.counter] ?? 0) + amount };
       return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
     case "entersWithLoyalty": {

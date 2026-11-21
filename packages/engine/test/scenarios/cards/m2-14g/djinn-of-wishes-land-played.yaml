@@ -1,0 +1,16 @@
+name: With the land play used, a land revealed can't be played, so it's exiled without asking
+rules: [CR 305.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+    hand: [Mountain]
+    library: [Forest, Island]
+steps:
+  - p1 play: Mountain
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: priority }
+      exile: [Forest]
