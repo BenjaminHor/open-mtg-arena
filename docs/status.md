@@ -678,7 +678,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            turn, a stolen lord, mana creature and trigger, control through the end step, damage at reversion, Safe
            Passage); `gainControl` can't last "for as long as" (it would end in `moveCard` unrecorded); control changes
            should move to a central check in `advance` with static control effects (M2-12, D-098, future-rules);
-           docs, READMEs, citations. Fuzz 200 clean. Next: PR; then M2-09 is done.
+           docs, READMEs, citations. Fuzz 200 clean. Merged as #55.
+       - **M2-09 done** (2026-11-21): all 24 of its cards, in #50-#55 (194 cards in the pool). Its spec's "dependency
+         example from the CR" (CR 613.8) waits for the first card that needs one (Open questions, proceeding with (a)).
+         Next: M2-10, counters (CR 122).
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea
