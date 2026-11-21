@@ -1,6 +1,7 @@
 // An object's characteristics now (CR 109.3), computed by the layer system (CR 613). Nothing stores them: every rules
 // question about what an object is reads them through here or through the readers this composes.
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, CardType, Color, Keyword, ProtectionQuality, Supertype } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -43,7 +44,7 @@ export function characteristics(state: GameState, id: ObjectId, cards: CardDatab
   const obj = state.objects[id];
   if (obj === undefined) throw new Error(`No object ${id}`);
   if (obj.kind !== "card") throw new Error(`${id} isn't a card: only cards have characteristics here`);
-  const data = cards[obj.oracleId];
+  const data = cardDataOf(obj, cards);
   if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
   const { power, toughness } = powerAndToughness(state, id, cards);
   return {

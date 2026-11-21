@@ -1,0 +1,21 @@
+name: Ant Queen makes a 1/1 green Insect creature token, a permanent its controller owns, named Insect Token
+rules: [CR 111.1, CR 111.2, CR 111.3, CR 111.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, Forest, Forest, Forest, Forest]
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.battlefield contains: [Insect Token, Insect Token]
+      p1:Insect Token#2.power: 1
+      p1:Insect Token#2.colors: [G]
+      p1:Insect Token#2.types: [creature]
+      p1:Insect Token#2.subtypes: [Insect]
+      p1:Insect Token.sick: true
+      events contains: [{ type: TOKEN_CREATED }]

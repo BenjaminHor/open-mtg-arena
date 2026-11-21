@@ -13,6 +13,7 @@ import { createDelayedTrigger } from "../triggers/delayed.ts";
 import { becomes } from "./becomes.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { recordControlChanges } from "./control-change.ts";
+import { createTokens } from "./create-tokens.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { ifActivatedThisTurn } from "./if-activated.ts";
@@ -129,6 +130,8 @@ export function runEffect(
       const events = ids.map((object) => ({ kind: "putCounters", object, counter, amount }) as const);
       return happen(state, { kind: "simultaneous", events }, cards);
     }
+    case "createTokens":
+      return createTokens(state, effect.token, effect.amount, context, cards);
     case "untap": {
       const ids = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (ids.length === 0) return { state, events: [] };

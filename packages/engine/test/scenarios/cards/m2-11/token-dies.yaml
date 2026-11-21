@@ -1,0 +1,22 @@
+name: A token that dies goes to its owner's graveyard and then ceases to exist (CR 111.7), though "dies" still happened
+rules: [CR 704.5d, CR 111.7, CR 700.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, Forest, Forest, Mountain]
+    hand: [Shock]
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - p1 cast: Shock
+    targets: [p1:Insect Token]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Shock]
+      p1.battlefield: [Ant Queen, Forest, Forest, Mountain]
+      # It really died, battlefield to graveyard (CR 700.4), before it ceased to exist there.
+      events contains:
+        - { type: ZONE_CHANGED, from: { zone: battlefield }, to: { zone: graveyard, player: p1 } }
+        - { type: TOKEN_CEASED_TO_EXIST, from: { zone: graveyard, player: p1 } }

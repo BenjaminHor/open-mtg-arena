@@ -11,6 +11,7 @@ Air Elemental
 Alluring Siren
 Angel's Feather
 Angel's Mercy
+Ant Queen
 Assassinate
 Awakener Druid
 Ball Lightning
@@ -88,6 +89,7 @@ Haunting Echoes
 Hill Giant
 Honor of the Pure
 Horned Turtle
+Howl of the Night Pack
 Howling Banshee
 Howling Mine
 Hypnotic Specter

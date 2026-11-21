@@ -23,6 +23,7 @@ import { moveCard } from "../zones/move-card.ts";
 import { reorderLibraryTop } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
+import { ceaseToExist, createToken } from "../zones/tokens.ts";
 import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
@@ -71,6 +72,9 @@ function leavingObjects(event: SingleEvent): ObjectId[] {
     case "untap":
     case "putCounters":
     case "removeCounters":
+    case "createToken":
+    // A token leaves the game from a zone that isn't the battlefield (CR 111.7).
+    case "ceaseToExist":
     case "gainLife":
     case "loseLife":
     case "addMana":
@@ -150,6 +154,10 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
       return putCounters(state, event.object, event.counter, event.amount);
     case "removeCounters":
       return removeCounters(state, event.object, event.counter, event.amount);
+    case "createToken":
+      return createToken(state, event.token, event.player);
+    case "ceaseToExist":
+      return ceaseToExist(state, event.object);
     case "addMana":
       return addMana(state, event.player, event.mana, event.amount, event.source);
     case "draw":

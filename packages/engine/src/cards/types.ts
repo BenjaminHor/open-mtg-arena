@@ -389,6 +389,23 @@ export type EffectSubject =
    */
   | { controllerOf: { target: number } };
 
+/**
+ * A token as the effect that creates it defines it (CR 111.3): "a 1/1 green Insect creature token". It has nothing
+ * the text doesn't give it: no mana cost, no supertypes, no other abilities (CR 111.3's example). No activated or
+ * triggered abilities yet: abilities on the stack find their text by the source's oracle id, which names no card for a
+ * token, so a Treasure or Clue (later: CR 111.10) needs that reference changed first (future-rules).
+ */
+export type TokenDef = {
+  /** Only when the text names it (CR 111.4); otherwise its name is its subtypes plus "Token". */
+  name?: string;
+  colors: Color[];
+  types: CardType[];
+  subtypes: string[];
+  power: number;
+  toughness: number;
+  keywords?: Keyword[];
+};
+
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
   | {
@@ -437,6 +454,11 @@ export type Effect =
        */
       duration: "endOfTurn" | "endOfGame";
     }
+  /**
+   * "Create a 1/1 green Insect creature token", "a ... token for each Forest you control": `amount` tokens, created
+   * by "you", the ability's controller, who owns and controls them (CR 111.2), all at once.
+   */
+  | { op: "createTokens"; token: TokenDef; amount: Amount }
   /** "Untap that creature" (CR 701.26b). */
   | { op: "untap"; of: EffectSubject }
   /** "Put a +1/+1 counter on this creature" (CR 122.6): `amount` counters of the kind on each permanent `of` names. */

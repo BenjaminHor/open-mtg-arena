@@ -3,6 +3,7 @@
 // stack object, so every pause is plain data and a cancelled action can be reversed exactly (CR 734.1, D-035). Modes
 // come later (later: CR 700.2).
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import { resolveManaAbility } from "../mana/activate.ts";
 import { autoPay, manaAvailable } from "../mana/auto-pay.ts";
@@ -246,7 +247,7 @@ export function announceX(state: GameState, value: number): GameState {
  */
 function payableX(state: GameState, id: ObjectId, upTo: number, cards: CardDatabase): number {
   const obj = state.objects[id];
-  const data = obj?.kind === "card" ? cards[obj.oracleId] : undefined;
+  const data = obj?.kind === "card" ? cardDataOf(obj, cards) : undefined;
   const color = data?.def.spell?.xPaidWith;
   const printed = data?.printed.manaCost ?? null;
   if (color === undefined || printed === null) return upTo;

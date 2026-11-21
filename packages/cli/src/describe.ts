@@ -15,7 +15,7 @@ import type {
   ReplacementRef,
   Target,
 } from "@mtg/engine";
-import { replacementEffectCard } from "@mtg/engine";
+import { cardDataByOracleId, replacementEffectCard } from "@mtg/engine";
 import { nameOf, refOf } from "@mtg/scenarios";
 
 /** A permanent's reference, or the object's name if it isn't on the battlefield. */
@@ -140,7 +140,9 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       const pending = state.pending;
       const trigger = pending?.kind === "orderTriggers" ? pending.batch[answer.index] : undefined;
       const name =
-        trigger === undefined ? `trigger ${answer.index}` : (cards[trigger.sourceOracleId]?.printed.name ?? "?");
+        trigger === undefined
+          ? `trigger ${answer.index}`
+          : (cardDataByOracleId(trigger.sourceOracleId, cards)?.printed.name ?? "?");
       return `put ${name}'s triggered ability on the stack next`;
     }
   }
@@ -186,7 +188,7 @@ export function replacementText(state: GameState, ref: ReplacementRef, cards: Ca
     case "resolvedEffect": {
       // Named by the card that made it: its spell is usually gone (CR 400.7).
       const oracleId = replacementEffectCard(state, ref.id);
-      return `${(oracleId === null ? undefined : cards[oracleId]?.printed.name) ?? ref.id}'s effect`;
+      return `${(oracleId === null ? undefined : cardDataByOracleId(oracleId, cards)?.printed.name) ?? ref.id}'s effect`;
     }
   }
 }

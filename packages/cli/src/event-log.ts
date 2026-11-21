@@ -7,6 +7,8 @@ import {
   applyAction,
   type Becomes,
   type CardDatabase,
+  cardDataByOracleId,
+  cardDataOf,
   createGame,
   type EffectChange,
   type GameEvent,
@@ -73,7 +75,7 @@ function target(t: Target, name: Namer): string {
 export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): string {
   switch (e.type) {
     case "ZONE_CHANGED": {
-      const card = cards[e.object.oracleId]?.printed.name ?? e.object.oracleId;
+      const card = cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId;
       const zone = (z: typeof e.from) => ("player" in z ? `${z.player}'s ${z.zone}` : z.zone);
       return `moves: ${card}, ${zone(e.from)} -> ${zone(e.to)}`;
     }
@@ -160,17 +162,21 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} put on ${name(e.object)}`;
     case "COUNTERS_REMOVED":
       return `${e.amount} ${e.counter} counter${e.amount === 1 ? "" : "s"} removed from ${name(e.object)}`;
+    case "TOKEN_CREATED":
+      return `${e.player} creates ${name(e.object)}`;
+    case "TOKEN_CEASED_TO_EXIST":
+      return `ceases to exist: ${cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId} (${e.from.zone})`;
     case "PERMANENT_REGENERATED":
       return `regenerates: ${name(e.object)}`;
     case "DAMAGE_PREVENTED":
-      return `prevented: ${name(e.source)} -> ${target(e.to, name)} ${e.amount} (${cards[e.by]?.printed.name ?? e.by})`;
+      return `prevented: ${name(e.source)} -> ${target(e.to, name)} ${e.amount} (${cardDataByOracleId(e.by, cards)?.printed.name ?? e.by})`;
     case "DAMAGE_REMOVED":
       return `damage removed: ${name(e.object)} (${e.amount})`;
     case "CARD_DISCARDED":
       return `${e.player} discards ${e.newId === null ? "a card, which went somewhere hidden" : name(e.newId)}`;
     case "CARDS_REVEALED": {
       const owner = "player" in e.from ? `${e.from.player}'s ` : "";
-      const shown = e.cards.map((oracleId) => cards[oracleId]?.printed.name ?? oracleId);
+      const shown = e.cards.map((oracleId) => cardDataByOracleId(oracleId, cards)?.printed.name ?? oracleId);
       return `${owner}${e.from.zone} is revealed: ${shown.length === 0 ? "no cards" : shown.join(", ")}`;
     }
   }

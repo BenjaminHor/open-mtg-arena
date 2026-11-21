@@ -1,0 +1,17 @@
+name: An opponent's token entering triggers your Soul Warden ("another creature", anyone's)
+rules: [CR 603.6a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Soul Warden]
+  p2:
+    battlefield: [Ant Queen, Forest, Forest]
+steps:
+  - p2 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Soul Warden ability]
+  - all pass: once
+  - expect:
+      p1.life: 21

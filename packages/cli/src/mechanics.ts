@@ -99,6 +99,8 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   CARDS_REVEALED: true,
   COUNTERS_PUT: true,
   COUNTERS_REMOVED: true,
+  TOKEN_CREATED: true,
+  TOKEN_CEASED_TO_EXIST: true,
 };
 
 /**

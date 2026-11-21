@@ -12,6 +12,8 @@ const SRC = join(import.meta.dirname, "../../src");
 /** The functions that perform an event. Only `perform.ts`, and the files that define them, may import them. */
 const PRIMITIVES = [
   "moveCard",
+  "createToken",
+  "ceaseToExist",
   "destroy",
   "sacrifice",
   "counterObject",

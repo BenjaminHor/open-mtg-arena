@@ -5,6 +5,7 @@ import {
   applyAction,
   type CardDatabase,
   type GameState,
+  isToken,
   legalActions,
   type ObjectId,
   phaseOf,
@@ -38,9 +39,17 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
       problems.push(`${obj.id}: a card has casting choices exactly when it's on the stack`);
     }
   }
+  const pending = state.pending;
+  // State-based actions happen before anyone gets priority (CR 117.5), so no token is left outside the battlefield
+  // (CR 704.5d).
+  if (pending?.kind === "priority") {
+    for (const obj of Object.values(state.objects)) {
+      if (obj.kind === "card" && isToken(obj) && !state.zones.battlefield.includes(obj.id))
+        problems.push(`${obj.id}: a token outside the battlefield with priority to give`);
+    }
+  }
   // Cards a decision shows by identity (D-062) are in the fixed order and really in that zone: never the zone's own
   // order, never cards from elsewhere.
-  const pending = state.pending;
   if (pending?.kind === "chooseCards" && pending.seen !== null) {
     const shown = pending.seen.cards;
     const inZone = zoneOf(state, pending.seen.from).map((id) => {

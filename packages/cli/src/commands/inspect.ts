@@ -5,6 +5,7 @@ import {
   type CardDatabase,
   type Characteristics,
   type Color,
+  cardDataOf,
   characteristics,
   isAttacking,
   isBlocking,
@@ -27,7 +28,7 @@ export function inspectCommand(file: string, ref: string | undefined, cards: Car
   const obj = state.objects[id];
   if (obj?.kind !== "card") throw new Error(`${ref} isn't a card`);
   const c = characteristics(state, id, cards);
-  const data = cards[obj.oracleId];
+  const data = cardDataOf(obj, cards);
   const lines = [
     `${objectText(state, id, cards)} (object ${id}, card ${obj.cardId})`,
     `  types: ${[...c.supertypes, ...c.types].join(" ")}${c.subtypes.length > 0 ? ` — ${c.subtypes.join(" ")}` : ""}`,

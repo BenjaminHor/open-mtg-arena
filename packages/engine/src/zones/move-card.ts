@@ -41,6 +41,8 @@ export type Destination =
  * a zone they can't see (CR 401.2, 402.3).
  */
 export function moveCard(state: GameState, id: ObjectId, to: Destination): Progress & { newId: ObjectId } {
+  // A token that already left the battlefield would stay where it is (later: CR 111.8); nothing in the pool moves one
+  // twice before state-based actions.
   const old = state.objects[id];
   if (old === undefined || old.kind !== "card") throw new Error(`${id} isn't a card`);
   const from = zoneOf(state, id);
@@ -81,6 +83,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     // A spell on the stack carries its casting choices (CR 601.2c; modes, later: CR 700.2); casting (M1-09) fills
     // them in.
     choices: to.zone === "stack" ? { modes: [], x: null, targets: [], division: null } : null,
+    // A token stays a token wherever it goes, until it ceases to exist (CR 111.7, 704.5d).
+    ...(old.token === undefined ? {} : { token: old.token }),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

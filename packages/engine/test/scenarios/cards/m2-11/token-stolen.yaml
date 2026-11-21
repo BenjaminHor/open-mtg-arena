@@ -1,0 +1,33 @@
+name: A stolen token attacks with haste for its new controller, then dies into its owner's graveyard and ceases to exist
+rules: [CR 111.2, CR 400.3, CR 704.5d]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, Forest, Forest]
+  p2:
+    battlefield: [Mountain, Mountain, Mountain, Mountain]
+    hand: [Act of Treason, Shock]
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - all pass: until main1
+  - p2 cast: Act of Treason
+    targets: [p1:Insect Token]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Insect Token]
+  - all pass: until combat.declareAttackers
+  - p2 attack: [Insect Token]
+  - all pass: until main2
+  - expect:
+      p1.life: 19
+  - p2 cast: Shock
+    targets: [p2:Insect Token]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: []
+      p2.graveyard: [Act of Treason, Shock]
+      events contains: [{ type: TOKEN_CEASED_TO_EXIST, from: { zone: graveyard, player: p1 } }]

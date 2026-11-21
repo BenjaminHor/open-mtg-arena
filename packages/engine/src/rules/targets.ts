@@ -1,6 +1,7 @@
 // What a target requirement may choose (CR 115), in one place, so rules that stop targeting (shroud, protection;
 // hexproof, later: CR 702.11b) have one function to change.
 
+import { cardDataOf, isToken } from "../cards/card-data.ts";
 import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -88,8 +89,15 @@ function candidates(state: GameState, spec: TargetSpec, by: Targeting, cards: Ca
       // "Your graveyard" or "a graveyard" names the zone (CR 109.2a), not control: cards there have none (CR 109.4).
       const owners = spec.graveyard === "yours" ? [by.controller] : state.turnOrder;
       const inGraveyards = owners.flatMap((p) => state.zones.players[p]?.graveyard ?? []);
+      // A token there isn't a card (CR 111.6), for the moment before it ceases to exist (CR 704.5d).
+      const isCard = (id: ObjectId) => {
+        const obj = state.objects[id];
+        return obj?.kind === "card" && !isToken(obj);
+      };
       return objects(
-        inGraveyards.filter((id) => matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer)),
+        inGraveyards.filter(
+          (id) => isCard(id) && matchesFilter(state, id, spec.filter, by.controller, cards, thatPlayer),
+        ),
       );
     }
   }
@@ -177,7 +185,7 @@ export function effectsOf(state: GameState, id: ObjectId, cards: CardDatabase): 
   if (obj === undefined) return [];
   switch (obj.kind) {
     case "card": {
-      const data = cards[obj.oracleId];
+      const data = cardDataOf(obj, cards);
       if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
       return data.def.spell?.effects ?? [];
     }
@@ -192,7 +200,7 @@ export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabas
   if (obj === undefined) return [];
   switch (obj.kind) {
     case "card":
-      return cards[obj.oracleId]?.def.spell?.targets ?? [];
+      return cardDataOf(obj, cards)?.def.spell?.targets ?? [];
     case "ability":
       return stackAbilityText(state, id, cards).targets;
   }

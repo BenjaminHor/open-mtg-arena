@@ -7,6 +7,7 @@
 // graveyard (CR 701.8a), not a destruction followed by a separate zone change, so a "would die" replacement and a
 // "would be destroyed" one apply to the same event, in the order its controller chooses (CR 616.1, 616.1f).
 
+import type { CardData } from "../cards/types.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
 import type { Target } from "../state/objects.ts";
@@ -69,6 +70,10 @@ export type SingleEvent =
   | { kind: "putCounters"; object: ObjectId; counter: string; amount: number }
   /** Counters of a kind are removed from a permanent (CR 122.1). */
   | { kind: "removeCounters"; object: ObjectId; counter: string; amount: number }
+  /** `player` creates a token with these characteristics (CR 111.1, 111.3). */
+  | { kind: "createToken"; player: PlayerId; token: CardData }
+  /** A token outside the battlefield ceases to exist (CR 111.7, 704.5d). */
+  | { kind: "ceaseToExist"; object: ObjectId }
   /** Mana goes into a player's mana pool (CR 106.4), made by an ability of `source`. */
   | { kind: "addMana"; player: PlayerId; mana: ManaType; amount: number; source: ObjectId }
   /** A player draws one card (CR 121.1, 121.2). */

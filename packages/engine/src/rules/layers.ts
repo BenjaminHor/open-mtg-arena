@@ -9,6 +9,7 @@
 // Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095). Layers 1-3 and 7d have none yet;
 // each comes in its place below as its first card does (M2-09).
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type {
   CardData,
   CardDatabase,
@@ -242,7 +243,7 @@ function pass(input: LayerInputs, cards: CardDatabase): Record<ObjectId, Layered
  * them unchanged: the pass only ever copies a `Layered` to change it (measured, D-092).
  */
 function start(obj: CardObject, controller: PlayerId, cards: CardDatabase): Layered {
-  const data = cards[obj.oracleId];
+  const data = cardDataOf(obj, cards);
   if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
   const kept = startsKept.get(data) ?? {};
   const known = kept[controller];

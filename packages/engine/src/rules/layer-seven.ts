@@ -2,6 +2,7 @@
 // ability (7a), an effect that sets it (7b), or the printed values; then effects, static abilities, counters and rule
 // modifiers add (7c). Switching them (7d) has no card yet.
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, StaticAbilityDef } from "../cards/types.ts";
 import type { ObjectId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
@@ -43,7 +44,7 @@ export function layerSeven(
 
 /** The printed power and toughness, or null when there are none (CR 208.1). */
 function printedPT(cards: CardDatabase, obj: CardObject): BasePT | null {
-  const printed = cards[obj.oracleId]?.printed;
+  const printed = cardDataOf(obj, cards)?.printed;
   if (printed === undefined || printed.power === null || printed.toughness === null) return null;
   return { from: "printed", power: knownOrZero(printed.power), toughness: knownOrZero(printed.toughness) };
 }

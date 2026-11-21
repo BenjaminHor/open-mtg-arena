@@ -3,6 +3,7 @@
 // battlefield (CR 113.6, 611.3b). Inside the pass, what fits a filter is read from the board as the earlier layers left
 // it, never from the readers (which read the finished pass).
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, Keyword, ObjectFilter, StaticAbilityDef } from "../cards/types.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { CardObject } from "../state/objects.ts";
@@ -129,7 +130,7 @@ export function staticPTChanges(
 /** An object's name: printed, as nothing changes names yet (layer 1 copies and layer 3 text changes would). */
 function cardName(input: LayerInputs, id: ObjectId, cards: CardDatabase): string | null {
   const obj = input.objects[id];
-  return obj?.kind === "card" ? (cards[obj.oracleId]?.printed.name ?? null) : null;
+  return obj?.kind === "card" ? (cardDataOf(obj, cards)?.printed.name ?? null) : null;
 }
 
 /** How many permanents fit a filter, read from the board as built so far, `you` being the ability's controller. */

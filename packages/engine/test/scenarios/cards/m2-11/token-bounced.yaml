@@ -1,0 +1,19 @@
+name: A token returned to its owner's hand ceases to exist there
+rules: [CR 704.5d, CR 111.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, Forest, Forest, Island]
+    hand: [Unsummon]
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - p1 cast: Unsummon
+    targets: [p1:Insect Token]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.hand: []
+      events contains: [{ type: TOKEN_CEASED_TO_EXIST, from: { zone: hand, player: p1 } }]
+      p1.battlefield: [Ant Queen, Forest, Forest, Island]

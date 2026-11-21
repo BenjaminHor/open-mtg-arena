@@ -131,6 +131,9 @@ function affectedObject(event: SingleEvent): ObjectId | null {
     case "putCounters":
     case "removeCounters":
       return event.object;
+    // Nothing replaces creating a token or one ceasing to exist yet (later: CR 614.1, "if you would create").
+    case "createToken":
+    case "ceaseToExist":
     // Damage is replaced per entry, with its own choices (`damage-replacements.ts`).
     case "dealDamage":
     case "damagePrevented":
@@ -168,6 +171,8 @@ function affectedPlayer(state: GameState, event: SingleEvent): PlayerId {
     case "untap":
     case "putCounters":
     case "removeCounters":
+    case "createToken":
+    case "ceaseToExist":
     case "addMana":
     case "shuffle":
       throw new Error(`no replacement offers a choice on ${event.kind} yet`);
@@ -204,6 +209,8 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
     case "untap":
     case "putCounters":
     case "removeCounters":
+    case "createToken":
+    case "ceaseToExist":
     case "addMana":
     case "shuffle":
     case "regenerate":
@@ -317,6 +324,8 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "untap":
     case "putCounters":
     case "removeCounters":
+    case "createToken":
+    case "ceaseToExist":
     case "addMana":
     case "shuffle":
     case "regenerate":

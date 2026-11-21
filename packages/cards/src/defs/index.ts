@@ -8,6 +8,7 @@ import { airElemental } from "./a/air-elemental.ts";
 import { alluringSiren } from "./a/alluring-siren.ts";
 import { angelsFeather } from "./a/angels-feather.ts";
 import { angelsMercy } from "./a/angels-mercy.ts";
+import { antQueen } from "./a/ant-queen.ts";
 import { assassinate } from "./a/assassinate.ts";
 import { awakenerDruid } from "./a/awakener-druid.ts";
 import { ballLightning } from "./b/ball-lightning.ts";
@@ -85,6 +86,7 @@ import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
 import { honorOfThePure } from "./h/honor-of-the-pure.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
+import { howlOfTheNightPack } from "./h/howl-of-the-night-pack.ts";
 import { howlingBanshee } from "./h/howling-banshee.ts";
 import { howlingMine } from "./h/howling-mine.ts";
 import { hypnoticSpecter } from "./h/hypnotic-specter.ts";
@@ -206,6 +208,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   alluringSiren,
   angelsFeather,
   angelsMercy,
+  antQueen,
   assassinate,
   awakenerDruid,
   ballLightning,
@@ -283,6 +286,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   hillGiant,
   honorOfThePure,
   hornedTurtle,
+  howlOfTheNightPack,
   howlingBanshee,
   howlingMine,
   hypnoticSpecter,

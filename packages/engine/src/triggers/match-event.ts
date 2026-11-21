@@ -105,8 +105,9 @@ function isRelated(state: GameState, source: ObjectId, player: PlayerId, relatio
   }
 }
 
-/** The permanent an event put onto the battlefield, or null (CR 603.6a). */
+/** The permanent an event put onto the battlefield, or null (CR 603.6a): a token created enters too (CR 111.1). */
 function entered(event: GameEvent): ObjectId | null {
+  if (event.type === "TOKEN_CREATED") return event.object;
   return event.type === "ZONE_CHANGED" && event.to.zone === "battlefield" ? event.newId : null;
 }
 

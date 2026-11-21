@@ -1,0 +1,26 @@
+name: Tokens created together each trigger "whenever another creature enters" (Soul Warden), seven Wolves seven times
+rules: [CR 603.6a, CR 603.2c, CR 111.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Soul Warden, Forest, Forest, Forest, Forest, Forest, Forest, Forest]
+    hand: [Howl of the Night Pack]
+steps:
+  - p1 cast: Howl of the Night Pack
+    pay: auto
+  - all pass: once
+  # Each trigger names a different Wolf, so they aren't identical (D-077) and p1 orders them (CR 603.3b).
+  - expect:
+      p1.battlefield contains: [Wolf Token, Wolf Token, Wolf Token, Wolf Token, Wolf Token, Wolf Token, Wolf Token]
+      pending: { player: p1, kind: orderTriggers }
+  - p1 choose: Soul Warden
+  - p1 choose: Soul Warden
+  - p1 choose: Soul Warden
+  - p1 choose: Soul Warden
+  - p1 choose: Soul Warden
+  - p1 choose: Soul Warden
+  - expect:
+      stack: [Soul Warden ability, Soul Warden ability, Soul Warden ability, Soul Warden ability, Soul Warden ability, Soul Warden ability, Soul Warden ability]
+  - all pass: until main2
+  - expect:
+      p1.life: 27

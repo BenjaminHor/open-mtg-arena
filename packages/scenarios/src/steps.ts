@@ -7,6 +7,7 @@ import {
   applyAction,
   type CardDatabase,
   type Color,
+  cardDataByOracleId,
   type GameState,
   type ObjectId,
   type PendingTrigger,
@@ -299,7 +300,7 @@ function answerFor(
 function triggerNamed(batch: readonly PendingTrigger[], player: string, text: string, cards: CardDatabase): number {
   const [name, nth] = text.split("#");
   const theirs = batch.flatMap((t, i) =>
-    t.controller === player && cards[t.sourceOracleId]?.printed.name === name ? [i] : [],
+    t.controller === player && cardDataByOracleId(t.sourceOracleId, cards)?.printed.name === name ? [i] : [],
   );
   const index = theirs[(nth === undefined ? 1 : Number(nth)) - 1];
   if (index === undefined) throw new Error(`${player} has no triggered ability of ${text} waiting`);
@@ -320,7 +321,7 @@ export function replacementWord(state: GameState, ref: ReplacementRef, cards: Ca
       return nameOf(state, ref.object, cards);
     case "resolvedEffect": {
       const oracleId = replacementEffectCard(state, ref.id);
-      return (oracleId === null ? undefined : cards[oracleId]?.printed.name) ?? ref.id;
+      return (oracleId === null ? undefined : cardDataByOracleId(oracleId, cards)?.printed.name) ?? ref.id;
     }
   }
 }

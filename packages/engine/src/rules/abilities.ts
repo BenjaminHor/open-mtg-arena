@@ -1,6 +1,7 @@
 // An object's abilities as it has them now: keywords, static abilities that aren't keywords, replacement effects,
 // triggered and activated abilities, with which of those are mana abilities.
 
+import { cardDataByOracleId, cardDataOf } from "../cards/card-data.ts";
 import type { TriggeredAbilityDef } from "../cards/triggers.ts";
 import type {
   AbilityDef,
@@ -53,7 +54,7 @@ export function staticAbilitiesOf(state: GameState, id: ObjectId, cards: CardDat
 export function replacementsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ReplacementDef[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
-  return cards[obj.oracleId]?.def.replacements ?? [];
+  return cardDataOf(obj, cards)?.def.replacements ?? [];
 }
 
 /**
@@ -64,7 +65,7 @@ export function replacementsOf(state: GameState, id: ObjectId, cards: CardDataba
 export function abilitiesOf(state: GameState, id: ObjectId, cards: CardDatabase): ActivatedAbility[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
-  const printed = (cards[obj.oracleId]?.def.abilities ?? []).map((def, index) => ({
+  const printed = (cardDataOf(obj, cards)?.def.abilities ?? []).map((def, index) => ({
     ref: { kind: "printed", index } as const,
     def,
   }));
@@ -129,7 +130,7 @@ export function stackAbilityDef(state: GameState, id: ObjectId, cards: CardDatab
   if (obj?.kind !== "ability") throw new Error(`${id} isn't an ability on the stack`);
   switch (obj.ability.kind) {
     case "printed": {
-      const def = cards[obj.sourceOracleId]?.def.abilities?.[obj.ability.index];
+      const def = cardDataByOracleId(obj.sourceOracleId, cards)?.def.abilities?.[obj.ability.index];
       if (def === undefined) throw new Error(`No ability ${obj.ability.index} on ${obj.sourceOracleId}`);
       return def;
     }
@@ -172,7 +173,7 @@ export function triggeredAbilityDef(oracleId: OracleId, ref: TriggerRef, cards: 
     case "delayed":
       return ref.ability;
     case "triggered": {
-      const def = cards[oracleId]?.def.triggers?.[ref.index];
+      const def = cardDataByOracleId(oracleId, cards)?.def.triggers?.[ref.index];
       if (def === undefined) throw new Error(`No triggered ability ${ref.index} on ${oracleId}`);
       return def;
     }
@@ -190,7 +191,7 @@ export function triggersOf(
 ): readonly { index: number; def: TriggeredAbilityDef }[] {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return [];
-  return (cards[obj.oracleId]?.def.triggers ?? []).map((def, index) => ({ index, def }));
+  return (cardDataOf(obj, cards)?.def.triggers ?? []).map((def, index) => ({ index, def }));
 }
 
 /** The ability of this object that `ref` names, or null if it has none. */

@@ -115,6 +115,10 @@ export const furnaceWhelp: CardDef = {
   amount: "X" }`; "if damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters
   from it" is `{ kind: "preventDamageToSelfRemovingCounters", counter: "+1/+1" }`; "whenever a +1/+1 counter is removed
   from this creature" is the trigger `{ kind: "selfCountersRemoved", counter: "+1/+1" }`, once per counter (D-100).
+- "Create a 1/1 green Insect creature token" is `{ op: "createTokens", token: { colors: ["G"], types: ["creature"],
+  subtypes: ["Insect"], power: 1, toughness: 1 }, amount: 1 }`; "for each Forest you control" is `amount: { count: {
+  subtypes: ["Forest"], controller: "you" } }`. `name` only when the text names the token (CR 111.4); `keywords` for
+  "with flying" (D-101).
 - "Your opponents can't cast spells this turn" is `{ op: "cantCastSpells", who: "eachOpponent", duration: "endOfTurn"
   }` (D-097).
 - "Target Forest becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's
