@@ -103,8 +103,8 @@ export const furnaceWhelp: CardDef = {
   keywords? }`, the filter read relative to the permanent's controller; Coat of Arms is `{ kind:
   "plusPerSharedCreatureType" }`, Relentless Rats `{ kind: "plusPerOtherSameName" }`. Characteristic-defining abilities
   (D-094): "[this]'s power and toughness are each equal to the number of Swamps you control" is `{ kind:
-  "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }`, and a card has one exactly
-  when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
+  "powerToughnessEachEqual", to: { count: { subtypes: ["Swamp"], controller: "you" } } }` ("equal to your life
+  total" is `to: "yourLifeTotal"`), and a card has one exactly when its printed power and toughness are both `*`. "Can't attack unless defending player controls an Island" is `{
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
   engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
   (D-097).
@@ -145,7 +145,8 @@ export const furnaceWhelp: CardDef = {
 - "Create a 1/1 green Insect creature token" is `{ op: "createTokens", token: { colors: ["G"], types: ["creature"],
   subtypes: ["Insect"], power: 1, toughness: 1 }, amount: 1 }`; "for each Forest you control" is `amount: { count: {
   subtypes: ["Forest"], controller: "you" } }`. `name` only when the text names the token (CR 111.4); `keywords` for
-  "with flying" (D-101).
+  "with flying" (D-101); `statics` for an ability the token has, with `power: "*"` for one that defines it (Ajani
+  Goldmane's Avatar, D-112).
 - "Your opponents can't cast spells this turn" is `{ op: "cantCastSpells", who: "eachOpponent", duration: "endOfTurn"
   }` (D-097).
 - "Target Forest becomes a 4/5 green Treefolk creature for as long as this creature remains on the battlefield. It's

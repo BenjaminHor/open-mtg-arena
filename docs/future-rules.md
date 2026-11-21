@@ -16,7 +16,11 @@ stack, kept per its inputs; the per-layer readers (`cardTypesOf`, `colorsOf`, `k
 read it. Layer 6 grants keywords (resolved effects and static abilities), 7c adds; a static ability's set is found as
 it applies (CR 611.3a) and kept from layer 6 to 7c (CR 613.6). Layer 7a applies characteristic-defining abilities in
 every zone (M2-09b1, D-094), a card elsewhere computed with the board. Layer 6 sorts its grants and removals by timestamp
-since M2-12b (D-103, "loses flying"); dependency (CR 613.8) waits on the open question in status.md.
+since M2-12b (D-103, "loses flying"); dependency (CR 613.8) waits on the open question in status.md. Life totals are
+an input since M2-13c2a (D-112), compared only once a pass read one (`lifeRead`, set by `lifeTotalOf`, the one
+reader). *Watch out:* each new thing a characteristic-defining ability reads that isn't in `LayerInputs` (cards in
+graveyards for Lhurgoyf, hand size for Maro) needs the same: an input, a reader that marks it read, and the comparison;
+a general record of what a pass read would scale better once there are several.
 *Built (M2-12c1, D-104):* layer 2 lives only in the pass; `controllerOf(state, id, cards)` reads the pass's
 controller for a permanent, and controllers are compared after the action and each piece of work, for summoning
 sickness (CR 302.6) and removal from combat (CR 506.4). Layers 4, 5 and 7b have resolved effects

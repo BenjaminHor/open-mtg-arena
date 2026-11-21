@@ -47,8 +47,7 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   orderTriggers: true,
   // Reachable since M2-08d1, only when Guardian Seraph meets Fog or Safe Passage in one game: rare in agent games.
   chooseReplacement: "two different prevention effects on one damage event are too rare in agent games",
-  // Reachable since Jace Beleren (M2-13b2), only with two of one legend under one player at once.
-  keepLegend: "two copies of one legend under one player are too rare in agent games",
+  keepLegend: true,
 };
 
 /**

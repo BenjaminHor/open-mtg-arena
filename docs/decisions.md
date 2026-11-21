@@ -1676,3 +1676,16 @@ every schema change and every change D-024 lists bumps it.
   change, so it stays the same object (CR 400.7). Liliana's −2 is search, shuffle, put on top: the same odds as
   shuffling the rest without it (CR 701.24b).
 
+**D-112: Ajani Goldmane, and life totals in the layer pass (M2-13c2a)** · 2026-11-21 · accepted
+- A token can have static abilities (`TokenDef.statics`) and a printed "*": only a characteristic-defining one so far
+  (CR 111.3, 604.3); the definitions refuse any other, and a "*" without the ability or the reverse, as for a card.
+- "Power and toughness are each equal to your life total" is `powerToughnessEachEqual` with `to: "yourLifeTotal"`,
+  "your" being its controller (CR 109.5), in layer 7a (CR 613.4a).
+- The life totals join the layer pass's inputs, and the kept pass is reused only for the same totals, but only if the
+  pass read one (`lifeRead`, set in layer 7a): a mana-pool change, which replaces `state.players` far more often, still
+  reuses the pass. An off-battlefield card that reads one, under a pass that didn't, is computed again from the
+  state's own totals. Measured: the other benchmarks within noise of main, `characteristics.busyBoard` about 12-15%
+  slower per read (0.3 µs), the cost of the comparison; accepted. Life is read only through `lifeTotalOf`, which marks
+  the pass; that mark is the pass's one write, and only ever makes the match stricter. The players record's identity
+  (the shortcut before comparing) is kept beside the pass, not in its inputs, which stay what the pass may read.
+

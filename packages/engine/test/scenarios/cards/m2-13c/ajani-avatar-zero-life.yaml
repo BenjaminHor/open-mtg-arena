@@ -1,0 +1,21 @@
+name: Ajani's Avatar and its controller reach no life together; both go in one check of state-based actions
+rules: [CR 704.3, CR 704.5a, CR 704.5f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    life: 1
+    battlefield: [{ card: Ajani Goldmane, counters: { loyalty: 6 } }, Mountain]
+    hand: [Shock]
+steps:
+  - p1 activate: Ajani Goldmane
+    ability: 3
+  - all pass: once
+  - p1 cast: Shock
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      winner: p2
+      # One check: p1 at -1 life, and the Avatar at -1 toughness put into the graveyard, not destroyed.
+      p1.battlefield: [Mountain]
+      p1.life: -1

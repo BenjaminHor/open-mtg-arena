@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { Becomes, GameState, ObjectId } from "../../src/index.ts";
 import { layeredOf, layeredOfFresh } from "../../src/rules/layers.ts";
 import { powerAndToughness } from "../../src/rules/power-toughness.ts";
-import { BEARS, FOREST, FOREST_COUNTER, GROUNDED_ANTHEM, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, FOREST, FOREST_COUNTER, GROUNDED_ANTHEM, LIFE_AVATAR, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -35,6 +35,47 @@ describe("the kept layer pass (D-092)", () => {
     expect(powerAndToughness(modified, bears, TEST_CARDS)).toStrictEqual({ power: 7, toughness: 7 });
     // And back: the first state's pass is still the one kept for it.
     expect(powerAndToughness(state, bears, TEST_CARDS)).toStrictEqual({ power: 2, toughness: 2 });
+  });
+
+  it("follows a life total, though the objects are the same, but not a mana pool (CR 604.3)", () => {
+    const { state } = withBears(LIFE_AVATAR);
+    const avatar = state.zones.battlefield[1] as ObjectId;
+    expect(powerAndToughness(state, avatar, TEST_CARDS)).toStrictEqual({ power: 20, toughness: 20 });
+    const p1 = state.players.p1;
+    if (p1 === undefined) throw new Error("no p1");
+    const hurt: GameState = { ...state, players: { ...state.players, p1: { ...p1, life: 7 } } };
+    expect(powerAndToughness(hurt, avatar, TEST_CARDS)).toStrictEqual({ power: 7, toughness: 7 });
+    expect(powerAndToughness(state, avatar, TEST_CARDS)).toStrictEqual({ power: 20, toughness: 20 });
+    // Mana in the pool changes no characteristic, so the pass is reused, the very same record.
+    const paid: GameState = {
+      ...state,
+      players: { ...state.players, p1: { ...p1, manaPool: { ...p1.manaPool, G: 1 } } },
+    };
+    expect(layeredOf(paid, avatar, TEST_CARDS)).toBe(layeredOf(state, avatar, TEST_CARDS));
+  });
+
+  it("reads a life total for a card off the battlefield from its own state, under a pass shared by two totals", () => {
+    const state = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: [LIFE_AVATAR], battlefield: [permanent(BEARS)] }),
+        playerSetup("p2", { library: [FOREST] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    }).state;
+    const [bears] = state.zones.battlefield as [ObjectId];
+    const [avatar] = state.zones.players.p1?.library ?? [];
+    const p1 = state.players.p1;
+    if (avatar === undefined || p1 === undefined) throw new Error("no Life Avatar in the library");
+    const hurt: GameState = { ...state, players: { ...state.players, p1: { ...p1, life: 7 } } };
+    // Nothing on the battlefield reads a life total, so both states share one pass.
+    powerAndToughness(state, bears, TEST_CARDS);
+    powerAndToughness(hurt, bears, TEST_CARDS);
+    // Each reads its own (CR 604.3: the ability works in the library too).
+    expect(powerAndToughness(hurt, avatar, TEST_CARDS)).toStrictEqual({ power: 7, toughness: 7 });
+    expect(powerAndToughness(state, avatar, TEST_CARDS)).toStrictEqual({ power: 20, toughness: 20 });
+    expect(layeredOf(hurt, avatar, TEST_CARDS)).toStrictEqual(layeredOfFresh(hurt, avatar, TEST_CARDS));
   });
 
   it("is what a fresh pass gives, for a card on the battlefield and one in a library", () => {

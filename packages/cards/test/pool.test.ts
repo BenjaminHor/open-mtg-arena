@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import type { AbilityDef, CardDef, Effect, TargetSpec, TriggeredAbilityDef } from "@mtg/engine";
+import type { AbilityDef, CardDef, Effect, TargetSpec, TokenDef, TriggeredAbilityDef } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { CARD_DEFS, cardDatabase, definitionProblems, POOL, slugify } from "../src/index.ts";
 import { parsePoolTxt } from "../src/pool-data.ts";
@@ -203,6 +203,34 @@ describe("definitionProblems", () => {
       ...[2, 3, 4, 5, 6].map((i) => `Furnace Whelp ability ${i} delayed trigger: ${cantWait}`),
       "Furnace Whelp ability 8 delayed trigger: ifActivatedThisTurn is only for an activated ability",
     ]);
+  });
+
+  it('refuses a token\'s "*" without the ability that defines it, the ability without a "*", and other statics', () => {
+    const ajaniCard = POOL.cards.find((c) => c.name === "Ajani Goldmane");
+    const ajaniDef = CARD_DEFS.find((d) => d.name === "Ajani Goldmane");
+    if (ajaniCard === undefined || ajaniDef?.abilities === undefined)
+      throw new Error("Ajani Goldmane isn't in the pool");
+    const abilities = ajaniDef.abilities;
+    const withToken = (token: Partial<TokenDef>): CardDef => ({
+      ...ajaniDef,
+      abilities: abilities.map((a, i) =>
+        i !== 2
+          ? a
+          : {
+              ...a,
+              effects: a.effects.map((e) => (e.op === "createTokens" ? { ...e, token: { ...e.token, ...token } } : e)),
+            },
+      ),
+    });
+    const star = 'Ajani Goldmane: a token\'s "*" needs an ability that defines it, and that ability needs a "*"';
+    expect(definitionProblems([withToken({ statics: [] })], [ajaniCard])).toContain(star);
+    expect(definitionProblems([withToken({ power: 1, toughness: 1 })], [ajaniCard])).toContain(star);
+    const other = withToken({
+      statics: [{ kind: "canBlockAnyNumber" }, { kind: "powerToughnessEachEqual", to: "yourLifeTotal" }],
+    });
+    expect(definitionProblems([other], [ajaniCard])).toContain(
+      "Ajani Goldmane: a token's static abilities are only a characteristic-defining one so far",
+    );
   });
 
   it("refuses a written entersWithLoyalty, two loyalty costs in one, and a loyalty ability with a timing", () => {
