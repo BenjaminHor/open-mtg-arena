@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { GameState, ObjectId } from "../../src/index.ts";
 import { layeredOf, layeredOfFresh } from "../../src/rules/layers.ts";
 import { powerAndToughness } from "../../src/rules/power-toughness.ts";
-import { BEARS, FOREST, GROUNDED_ANTHEM, TEST_CARDS } from "../support/cards.ts";
+import { BEARS, FOREST, FOREST_COUNTER, GROUNDED_ANTHEM, TEST_CARDS } from "../support/cards.ts";
 import { playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string) => ({ oracleId, tapped: false, summoningSick: false, damage: 0, counters: {} });
@@ -52,5 +52,43 @@ describe("an effect keeps its set from its first layer (CR 613.6)", () => {
     const card = layeredOf(state, bears, TEST_CARDS);
     expect(card?.keywords).toContain("flying");
     expect([card?.power, card?.toughness]).toStrictEqual([3, 3]);
+  });
+});
+
+describe("the base power and toughness: 7b over 7a over printed (CR 613.4a, 613.4b)", () => {
+  // A "becomes 4/5" effect from a resolved ability, on `id`, as Awakener Druid makes (D-095).
+  const setTo = (state: GameState, id: ObjectId): GameState => ({
+    ...state,
+    effects: [
+      ...state.effects,
+      {
+        source: id,
+        controller: "p1",
+        timestamp: 999,
+        duration: "endOfTurn",
+        affected: [id],
+        change: { kind: "becomes", addTypes: [], addSubtypes: [], setPT: { power: 4, toughness: 5 } },
+      },
+    ],
+  });
+
+  it("sets a printed creature's power and toughness, and 7c still adds", () => {
+    const { state, bears } = withBears(GROUNDED_ANTHEM);
+    // Grizzly Bears is 2/2, +1/+1 from the anthem in 7c; set to 4/5 in 7b, it's 5/6.
+    expect(powerAndToughness(setTo(state, bears), bears, TEST_CARDS)).toStrictEqual({ power: 5, toughness: 6 });
+  });
+
+  it("sets over a characteristic-defining ability's values, applied before it", () => {
+    const { state } = withBears(FOREST_COUNTER, FOREST);
+    const counter = state.zones.battlefield[1];
+    if (counter === undefined) throw new Error("no Forest Counter");
+    expect(powerAndToughness(state, counter, TEST_CARDS)).toStrictEqual({ power: 1, toughness: 1 });
+    expect(powerAndToughness(setTo(state, counter), counter, TEST_CARDS)).toStrictEqual({ power: 4, toughness: 5 });
+    expect(layeredOf(setTo(state, counter), counter, TEST_CARDS)?.base).toStrictEqual({
+      from: "effect",
+      source: counter,
+      power: 4,
+      toughness: 5,
+    });
   });
 });
