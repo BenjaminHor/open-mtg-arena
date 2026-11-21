@@ -756,7 +756,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          target untapped in response) waits for an instant-speed untap in the pool. Code review: no invariant broken; the
          same bug; effects chosen by their duration too; the switches given the new kinds; 2 scenarios (the blocked
          creature dying before the untap step, or before the trigger resolves), a definition test (`eachOpponent`); both
-         surviving mutants now caught. Next: PR.
+         surviving mutants now caught. Fuzz 60 clean. Merged as #72. Next: M2-14b, Time Warp.
        - M2-13c2b built (2026-11-21, D-113): Chandra Nalaar (223 cards), [−X] loyalty costs (X announced, at most her loyalty,
          refused above it), the `eachControlledBy` subject; 8 scenarios (the +1 at a planeswalker, −X, X = 0 using the
          turn, X = all her loyalty, X too big and a cancel, the −8 at a player and at a planeswalker, at herself doing
