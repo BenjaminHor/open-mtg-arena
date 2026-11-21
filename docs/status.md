@@ -724,7 +724,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          scenarios from its probes; Equipment citations marked later. Code review: Pacifism's check searched the
          battlefield per attacker and blocker and the Aura check was a second loop over it (bench over): now marked by
          the pass and folded into the one loop; `isAura`; only an Aura or Equipment can start attached (CR 303.4h); four
-         more scenarios (the chosen target, pump, anthem, Nightmare); docs. Next: fuzz, PR.
+         more scenarios (the chosen target, pump, anthem, Nightmare); docs. Fuzz 200 clean. Merged as #60. Next: M2-12b.
        - M2-12 plan (2026-11-21, with the advisor's review), four PRs. Auras and Equipment (CR 303.4, 301.5, 702.5,
          702.6), 16 cards.
          - Model: an attached permanent records what it's attached to, `CardObject.attachedTo?: ObjectId` (left out
