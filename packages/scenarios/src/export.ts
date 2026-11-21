@@ -7,6 +7,7 @@ import {
   abilitiesOf,
   applyAction,
   type CardDatabase,
+  cardDataByOracleId,
   controllerOf,
   createGame,
   type GameSetup,
@@ -146,9 +147,11 @@ function answerStep(
       if (pending?.kind !== "orderTriggers") throw new Error("an orderTrigger answer without its decision");
       const chosen = pending.batch[answer.index];
       if (chosen === undefined) throw new Error(`no trigger ${answer.index}`);
-      const name = cards[chosen.sourceOracleId]?.printed.name ?? chosen.sourceOracleId;
+      const name = cardDataByOracleId(chosen.sourceOracleId, cards)?.printed.name ?? chosen.sourceOracleId;
       const same = pending.batch.flatMap((t, i) =>
-        t.controller === chosen.controller && cards[t.sourceOracleId]?.printed.name === name ? [i] : [],
+        t.controller === chosen.controller && cardDataByOracleId(t.sourceOracleId, cards)?.printed.name === name
+          ? [i]
+          : [],
       );
       return choose(same.length > 1 ? `${name}#${same.indexOf(answer.index) + 1}` : name);
     }
@@ -224,7 +227,7 @@ function finalExpect(state: GameState, cards: CardDatabase): Record<string, unkn
 
 /** The game's setup in the scenario format (docs/testing.md, "setup"). */
 function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, unknown> {
-  const card = (oracleId: string) => cards[oracleId]?.printed.name ?? oracleId;
+  const card = (oracleId: string) => cardDataByOracleId(oracleId, cards)?.printed.name ?? oracleId;
   const out: Record<string, unknown> = { seed: setup.seed };
   switch (setup.opening.kind) {
     case "standard":

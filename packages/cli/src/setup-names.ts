@@ -2,11 +2,12 @@
 // rather than a UUID. Names are unique in the pool, so the swap goes both ways.
 
 import type { CardDatabase, GameSetup, OracleId, PlayerSetup } from "@mtg/engine";
+import { cardDataByOracleId } from "@mtg/engine";
 
 /** The setup with each card named. */
 export function setupWithNames(setup: GameSetup, cards: CardDatabase): GameSetup {
   const name = (id: OracleId) => {
-    const found = cards[id]?.printed.name;
+    const found = cardDataByOracleId(id, cards)?.printed.name;
     if (found === undefined) throw new Error(`no card ${id} in the pool`);
     return found;
   };

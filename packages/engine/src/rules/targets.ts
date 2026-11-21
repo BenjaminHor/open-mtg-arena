@@ -1,6 +1,7 @@
 // What a target requirement may choose (CR 115), in one place, so rules that stop targeting (shroud, protection;
 // hexproof, later: CR 702.11b) have one function to change.
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { CardDatabase, Effect, TargetCount, TargetSpec } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -177,7 +178,7 @@ export function effectsOf(state: GameState, id: ObjectId, cards: CardDatabase): 
   if (obj === undefined) return [];
   switch (obj.kind) {
     case "card": {
-      const data = cards[obj.oracleId];
+      const data = cardDataOf(obj, cards);
       if (data === undefined) throw new Error(`No card data for ${obj.oracleId}`);
       return data.def.spell?.effects ?? [];
     }
@@ -192,7 +193,7 @@ export function targetSpecsOf(state: GameState, id: ObjectId, cards: CardDatabas
   if (obj === undefined) return [];
   switch (obj.kind) {
     case "card":
-      return cards[obj.oracleId]?.def.spell?.targets ?? [];
+      return cardDataOf(obj, cards)?.def.spell?.targets ?? [];
     case "ability":
       return stackAbilityText(state, id, cards).targets;
   }

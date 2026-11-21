@@ -13,6 +13,8 @@ import {
   type Action,
   applyAction,
   type CardDatabase,
+  cardDataByOracleId,
+  cardDataOf,
   createGame,
   type GameEvent,
   type GameSetup,
@@ -91,7 +93,7 @@ export function mechanicsUsed(event: GameEvent, before: GameState, after: GameSt
   const object = (id: ObjectId) => before.objects[id] ?? after.objects[id];
   const cardDef = (id: ObjectId) => {
     const obj = object(id);
-    return obj?.kind === "card" ? cards[obj.oracleId]?.def : undefined;
+    return obj?.kind === "card" ? cardDataOf(obj, cards)?.def : undefined;
   };
   const inCombat = (ids: readonly ObjectId[]) =>
     ids.flatMap((id) => {
@@ -109,7 +111,7 @@ export function mechanicsUsed(event: GameEvent, before: GameState, after: GameSt
     case "ABILITY_RESOLVED": {
       const obj = object(event.object);
       if (obj?.kind !== "ability") return [];
-      const def = cards[obj.sourceOracleId]?.def;
+      const def = cardDataByOracleId(obj.sourceOracleId, cards)?.def;
       const ref = obj.ability;
       switch (ref.kind) {
         case "printed": {
@@ -137,12 +139,12 @@ export function mechanicsUsed(event: GameEvent, before: GameState, after: GameSt
     }
     case "ZONE_CHANGED": {
       // A mulligan puts the hand back into the library: no replacement does that (CR 103.5).
-      const def = cards[event.object.oracleId]?.def;
+      const def = cardDataOf(event.object, cards)?.def;
       return def === undefined || before.pregame !== null ? [] : replacementUnits(def, event.to.zone);
     }
     case "DAMAGE_PREVENTED": {
       // A permanent's own prevention text, credited only when it prevented something.
-      const def = cards[event.by]?.def;
+      const def = cardDataByOracleId(event.by, cards)?.def;
       return def === undefined ? [] : replacementUnits(def, "prevented");
     }
     case "ATTACKERS_DECLARED":

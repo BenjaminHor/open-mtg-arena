@@ -1,6 +1,7 @@
 // What it costs to cast a spell or activate an ability, in one place each, so cost increases, reductions and
 // additional costs (CR 601.2f) have one function to change.
 
+import { cardDataOf } from "../cards/card-data.ts";
 import type { AbilityDef, CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
@@ -15,7 +16,7 @@ import { isTriggerRef, stackAbilityDef } from "./abilities.ts";
 export function totalCost(state: GameState, id: ObjectId, cards: CardDatabase): ManaCost | null {
   const obj = state.objects[id];
   if (obj?.kind !== "card") return null;
-  const data = cards[obj.oracleId];
+  const data = cardDataOf(obj, cards);
   const printed = data?.printed.manaCost ?? null;
   if (printed === null) return null;
   const x = obj.choices?.x ?? 0;
@@ -77,7 +78,7 @@ export function announcesX(state: GameState, id: ObjectId, cards: CardDatabase):
   if (obj === undefined) return false;
   switch (obj.kind) {
     case "card":
-      return hasX(cards[obj.oracleId]?.printed.manaCost ?? null);
+      return hasX(cardDataOf(obj, cards)?.printed.manaCost ?? null);
     case "ability":
       return !isTriggerRef(obj.ability) && hasX(activationManaCost(stackAbilityDef(state, id, cards)));
   }

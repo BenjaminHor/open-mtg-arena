@@ -715,6 +715,21 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-11 plan (2026-11-21, with the advisor's review), two PRs.
+         - Model: a token is a `CardObject` with `token: CardData`, its characteristics as the creating effect states
+           them (CR 111.3; name = subtypes + "Token" unless stated, CR 111.4), kept on the object so the layer pass's
+           per-`CardData` cache holds. Most of the engine's `kind === "card"` checks mean "a permanent object" and stay
+           right; a token isn't a card for "card" filters (CR 111.6). One helper, `cardDataOf(obj, cards)`, replaces every
+           `cards[...oracleId]` lookup in all packages (found by the compiler), and a source-scan test forbids new ones.
+           An ability whose source is a token throws for now (no M2-11 token has one; later).
+         - Creating a token is a pipeline event, `createToken`, emitting `TOKEN_CREATED`, which "enters" triggers match
+           (Soul Warden for each of three Soldiers, one batch). Owner and controller: the creator (CR 111.2).
+         - Leaving: `moveCard` carries `token`; a token in any zone but the battlefield ceases to exist as a state-based
+           action (CR 704.5d, 111.7), found from the objects, not by searching libraries. A token can't come back
+           (later: CR 111.8; nothing in the pool tries).
+         - M2-11a: the model, `createTokens { token, amount }`, Ant Queen, Howl of the Night Pack (a count). M2-11b:
+           Siege-Gang Commander ("sacrifice a Goblin", tokens included), Captain of the Watch, Cemetery Reaper,
+           Gargoyle Castle ({C} and a sacrifice-self cost).
          - Future impact (c1): casting from other zones and "cast without paying" (cascade) must ask `cantCastSpells`
            before any zone; suspend (CR 702.62a) asks it too; a "set to N" hand size needs statics with timestamps.
        - M2-09b, characteristic-defining and setting effects, type and color: 7a (Nightmare, Serpent of the Endless Sea

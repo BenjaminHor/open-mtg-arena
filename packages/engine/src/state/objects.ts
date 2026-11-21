@@ -4,6 +4,7 @@
 // current controller come from `characteristics()` (CR 613), never from these fields directly.
 
 import type { TriggeredAbilityDef } from "../cards/triggers.ts";
+import type { CardData } from "../cards/types.ts";
 import type { CardId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { TriggerEvent } from "./triggers.ts";
 
@@ -52,6 +53,11 @@ export type CardObject = {
    * Otherwise null.
    */
   choices: StackChoices | null;
+  /**
+   * A token's characteristics, as the effect that created it defined them (CR 111.3): its "printed" values. Left out
+   * for a card, whose come from the `CardDatabase`. Read through `cardDataOf`, never `cards[oracleId]`.
+   */
+  token?: CardData;
 };
 
 /** An activated or triggered ability on the stack (CR 113.1c, 405.1). It isn't a card and has no `cardId`. */

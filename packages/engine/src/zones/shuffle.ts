@@ -12,13 +12,13 @@ import { withZoneList, zoneList } from "./zone-list.ts";
  */
 export function shuffleLibrary(state: GameState, player: PlayerId): Progress {
   const ref = { zone: "library", player } as const;
-  const cards = [...zoneList(state, ref)];
+  const order = [...zoneList(state, ref)];
   let rng = state.rng;
-  for (let i = cards.length - 1; i > 0; i--) {
+  for (let i = order.length - 1; i > 0; i--) {
     const pick = randomInt(rng, i + 1);
     rng = pick.rng;
     const j = pick.value;
-    [cards[i], cards[j]] = [cards[j] as (typeof cards)[number], cards[i] as (typeof cards)[number]];
+    [order[i], order[j]] = [order[j] as (typeof order)[number], order[i] as (typeof order)[number]];
   }
-  return { state: withZoneList({ ...state, rng }, ref, cards), events: [{ type: "LIBRARY_SHUFFLED", player }] };
+  return { state: withZoneList({ ...state, rng }, ref, order), events: [{ type: "LIBRARY_SHUFFLED", player }] };
 }

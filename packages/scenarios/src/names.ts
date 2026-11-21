@@ -1,6 +1,15 @@
 // The words scenarios use for steps, cards and objects, and how they map to the engine's.
 
-import { type CardDatabase, controllerOf, type GameState, type ObjectId, type PlayerId, type Step } from "@mtg/engine";
+import {
+  type CardDatabase,
+  cardDataByOracleId,
+  cardDataOf,
+  controllerOf,
+  type GameState,
+  type ObjectId,
+  type PlayerId,
+  type Step,
+} from "@mtg/engine";
 
 /** Scenario step names (docs/testing.md) and the engine's CR names (CR 500.1). */
 export const STEP_NAMES: Record<string, Step> = {
@@ -74,6 +83,7 @@ export function oracleIdOf(cards: CardDatabase, name: string): string {
 export function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): string {
   const obj = state.objects[id] ?? state.lastKnown[id];
   if (obj === undefined) return `(gone ${id})`;
-  if (obj.kind === "ability") return `${cards[obj.sourceOracleId]?.printed.name ?? obj.sourceOracleId} ability`;
-  return cards[obj.oracleId]?.printed.name ?? obj.oracleId;
+  if (obj.kind === "ability")
+    return `${cardDataByOracleId(obj.sourceOracleId, cards)?.printed.name ?? obj.sourceOracleId} ability`;
+  return cardDataOf(obj, cards)?.printed.name ?? obj.oracleId;
 }

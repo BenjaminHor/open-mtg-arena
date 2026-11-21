@@ -1,5 +1,6 @@
 // Checks a GameSetup before a game is created from it. Returns readable problems; empty means it can start.
 
+import { cardDataByOracleId } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { MANA_TYPES } from "../state/mana.ts";
 import type { GameSetup } from "../state/setup.ts";
@@ -41,7 +42,7 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       ...player.battlefield.map((b) => b.oracleId),
     ];
     for (const oracleId of all.filter((id, i) => all.indexOf(id) === i)) {
-      if (cards[oracleId] === undefined) problems.push(`${player.id}: unknown card ${oracleId}`);
+      if (cardDataByOracleId(oracleId, cards) === undefined) problems.push(`${player.id}: unknown card ${oracleId}`);
     }
     if (!Number.isSafeInteger(player.life)) problems.push(`${player.id}: life must be an integer`);
     for (const type of MANA_TYPES) {
