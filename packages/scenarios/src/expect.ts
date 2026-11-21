@@ -85,7 +85,9 @@ function check(
     const p = player(who);
     if (p === null) return { error: `no player ${who}` };
     const ids =
-      zoneName === "battlefield" ? battlefieldOf(state, p) : (state.zones.players[p]?.[zoneName as "hand"] ?? []);
+      zoneName === "battlefield"
+        ? battlefieldOf(state, p, cards)
+        : (state.zones.players[p]?.[zoneName as "hand"] ?? []);
     if (mode === " count") return same(ids.length);
     if (mode === " contains") {
       if (!Array.isArray(expected) || expected.length === 0) return { error: "contains takes a non-empty list" };
@@ -222,7 +224,7 @@ function cardInZone(
 ): ObjectId | null {
   const ids =
     zone === "stack"
-      ? state.zones.stack.filter((id) => controllerOf(state, id) === ref.player)
+      ? state.zones.stack.filter((id) => controllerOf(state, id, cards) === ref.player)
       : (state.zones.players[ref.player]?.[zone] ?? []);
   return ids.filter((id) => nameOf(state, id, cards) === ref.card)[ref.nth - 1] ?? null;
 }

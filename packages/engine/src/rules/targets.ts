@@ -168,7 +168,7 @@ export function stillLegalTargets(
   const choices = obj === undefined ? null : obj.choices;
   if (choices === null) return { chosen: [], legal: [] };
   const specs = targetSpecsOf(state, id, cards);
-  const by = { object: id, controller: controllerOf(state, id) };
+  const by = { object: id, controller: controllerOf(state, id, cards) };
   const chosen = choices.targets;
   const legal = chosen.map((group, i) => {
     const spec = specs[i];

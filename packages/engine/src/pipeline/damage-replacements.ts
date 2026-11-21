@@ -107,7 +107,7 @@ function preventEntry(
       second === undefined ? only : options.find((c) => next !== undefined && sameReplacement(c.ref, next));
     // Any of them may be chosen first (CR 616.1e): none is a self-replacement (later: CR 616.1a).
     if (chosen === undefined)
-      return { kind: "choose", player: recipientChooser(state, entry.to), options: options.map((c) => c.ref) };
+      return { kind: "choose", player: recipientChooser(state, entry.to, cards), options: options.map((c) => c.ref) };
     applied.push(chosen.ref);
     const stopped = chosen.prevents === "all" ? amount : Math.min(amount, chosen.prevents);
     amount -= stopped;
@@ -120,8 +120,8 @@ function preventEntry(
 }
 
 /** Who chooses for damage to this recipient: the player, or the object's controller (CR 616.1). */
-function recipientChooser(state: GameState, to: Target): PlayerId {
-  return to.kind === "player" ? to.player : controllerOf(state, to.object);
+function recipientChooser(state: GameState, to: Target, cards: CardDatabase): PlayerId {
+  return to.kind === "player" ? to.player : controllerOf(state, to.object, cards);
 }
 
 /** The prevention effects that would apply to this entry now. */
@@ -145,7 +145,7 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
   });
   const fromPermanents = state.zones.battlefield.flatMap((permanent) =>
     replacementsOf(state, permanent, cards).flatMap((def, index): Candidate[] => {
-      const prevents = preventsForPermanent(state, def, permanent, entry);
+      const prevents = preventsForPermanent(state, def, permanent, entry, cards);
       const obj = state.objects[permanent];
       if (prevents === null || obj?.kind !== "card") return [];
       const afterwards =
@@ -155,7 +155,7 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
       return [
         {
           ref: { kind: "ownText", object: permanent, index },
-          identity: JSON.stringify({ def, you: controllerOf(state, permanent) }),
+          identity: JSON.stringify({ def, you: controllerOf(state, permanent, cards) }),
           prevents,
           by: obj.oracleId,
           ...afterwards,
@@ -192,15 +192,16 @@ function preventsForPermanent(
   def: ReplacementDef,
   permanent: ObjectId,
   entry: Damage,
+  cards: CardDatabase,
 ): number | "all" | null {
   switch (def.kind) {
     case "preventDamageToYou": {
       // "If a source an opponent controls would deal damage to you": to its controller, from an opponent's source.
-      const you = controllerOf(state, permanent);
+      const you = controllerOf(state, permanent, cards);
       if (entry.to.kind !== "player" || entry.to.player !== you) return null;
       // A source that left is as it last existed (CR 113.7a, 608.2h); one without a controller counts by its owner
       // (its ruling), which `controllerOf` gives for a card outside the battlefield and the stack.
-      const sourceController = controllerNowOrLastKnown(state, entry.source);
+      const sourceController = controllerNowOrLastKnown(state, entry.source, cards);
       // An opponent (CR 102.2); teams would change this (later: CR 102.3).
       return sourceController !== null && sourceController !== you ? def.amount : null;
     }
@@ -226,6 +227,6 @@ function isYouOrYourCreature(state: GameState, to: Target, you: PlayerId, cards:
   return (
     state.zones.battlefield.includes(to.object) &&
     cardTypesOf(state, to.object, cards).includes("creature") &&
-    controllerOf(state, to.object) === you
+    controllerOf(state, to.object, cards) === you
   );
 }

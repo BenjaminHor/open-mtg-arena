@@ -37,7 +37,7 @@ export function possibleBlocks(state: GameState, chosen: readonly Block[], cards
     .filter((a) => a.defender === defender)
     .map((a) => a.attacker);
   return state.zones.battlefield
-    .filter((id) => controllerOf(state, id) === defender)
+    .filter((id) => controllerOf(state, id, cards) === defender)
     .flatMap((blocker) => {
       const blocking = chosen.filter((b) => b.blocker === blocker).map((b) => b.attacker);
       if (blocking.length > 0 && !canBlockAnyNumber(state, blocker, cards)) return [];

@@ -14,7 +14,7 @@ const MAXIMUM_HAND_SIZE = 7;
 export function maximumHandSize(state: GameState, player: PlayerId, cards: CardDatabase): number | null {
   const unlimited = state.zones.battlefield.some(
     (id) =>
-      controllerOf(state, id) === player &&
+      controllerOf(state, id, cards) === player &&
       staticAbilitiesOf(state, id, cards).some((a) => a.kind === "noMaximumHandSize"),
   );
   return unlimited ? null : MAXIMUM_HAND_SIZE;

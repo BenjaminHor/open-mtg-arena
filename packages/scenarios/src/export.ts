@@ -187,10 +187,11 @@ function graveyardRef(state: GameState, id: ObjectId, cards: CardDatabase): stri
 /** A spell on the stack, named only as a spell (`spell:p1:Lightning Bolt`, `#2` counting from the bottom). */
 function spellRef(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
   if (!state.zones.stack.includes(id) || state.objects[id]?.kind !== "card") return null;
-  const player = controllerOf(state, id);
+  const player = controllerOf(state, id, cards);
   const name = nameOf(state, id, cards);
   const same = state.zones.stack.filter(
-    (x) => state.objects[x]?.kind === "card" && controllerOf(state, x) === player && nameOf(state, x, cards) === name,
+    (x) =>
+      state.objects[x]?.kind === "card" && controllerOf(state, x, cards) === player && nameOf(state, x, cards) === name,
   );
   return same.length > 1 ? `spell:${player}:${name}#${same.indexOf(id) + 1}` : `spell:${player}:${name}`;
 }

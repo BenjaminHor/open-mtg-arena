@@ -28,14 +28,14 @@ export function matches(
     case "anotherEnters": {
       const object = entered(event);
       if (object === null || object === source) return [];
-      return matchesFilter(state, object, when.filter, controllerOf(state, source), cards)
+      return matchesFilter(state, object, when.filter, controllerOf(state, source, cards), cards)
         ? [{ player: null, object, amount: null }]
         : [];
     }
     case "beginningOfStep":
       // "Each player's draw step": "that player", in the card's text, is the player whose step it is.
       if (event.type !== "STEP_BEGAN" || event.step !== when.step) return [];
-      if (when.whose === "yours" && event.activePlayer !== controllerOf(state, source)) return [];
+      if (when.whose === "yours" && event.activePlayer !== controllerOf(state, source, cards)) return [];
       return [{ player: event.activePlayer, object: null, amount: null }];
     case "selfAttacks":
       return event.type === "ATTACKERS_DECLARED" && event.attacks.some((a) => a.attacker === source)
@@ -46,11 +46,11 @@ export function matches(
       if (event.type !== "COUNTERS_REMOVED" || event.object !== source || event.counter !== when.counter) return [];
       return Array.from({ length: event.amount }, () => ({ player: null, object: null, amount: null }));
     case "playerDraws":
-      return event.type === "CARD_DRAWN" && isRelated(state, source, event.player, when.player)
+      return event.type === "CARD_DRAWN" && isRelated(state, source, event.player, when.player, cards)
         ? [{ player: event.player, object: null, amount: null }]
         : [];
     case "playerDiscards":
-      return event.type === "CARD_DISCARDED" && isRelated(state, source, event.player, when.player)
+      return event.type === "CARD_DISCARDED" && isRelated(state, source, event.player, when.player, cards)
         ? [{ player: event.player, object: null, amount: null }]
         : [];
     case "landTappedForMana":
@@ -61,12 +61,12 @@ export function matches(
     case "selfDealsDamageToPlayer": {
       if (event.type !== "DAMAGE_DEALT" || event.source !== source || event.to.kind !== "player") return [];
       if (when.combatOnly && !event.combat) return [];
-      return isRelated(state, source, event.to.player, when.player)
+      return isRelated(state, source, event.to.player, when.player, cards)
         ? [{ player: event.to.player, object: null, amount: null }]
         : [];
     }
     case "playerGainsLife":
-      return event.type === "LIFE_GAINED" && isRelated(state, source, event.player, when.player)
+      return event.type === "LIFE_GAINED" && isRelated(state, source, event.player, when.player, cards)
         ? [{ player: event.player, object: null, amount: event.amount }]
         : [];
     case "selfBlocksOrBlocked":
@@ -86,15 +86,21 @@ export function matches(
         : [];
     case "spellCast":
       return event.type === "SPELL_CAST" &&
-        matchesFilter(state, event.object, when.filter, controllerOf(state, source), cards)
+        matchesFilter(state, event.object, when.filter, controllerOf(state, source, cards), cards)
         ? [{ player: event.player, object: event.object, amount: null }]
         : [];
   }
 }
 
 /** Whether `player` is one the trigger's "a player / you / an opponent" means, from its controller's side (CR 102.2). */
-function isRelated(state: GameState, source: ObjectId, player: PlayerId, relation: PlayerRelation): boolean {
-  const you = controllerOf(state, source);
+function isRelated(
+  state: GameState,
+  source: ObjectId,
+  player: PlayerId,
+  relation: PlayerRelation,
+  cards: CardDatabase,
+): boolean {
+  const you = controllerOf(state, source, cards);
   switch (relation) {
     case "anyPlayer":
       return true;

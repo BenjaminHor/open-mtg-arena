@@ -113,7 +113,7 @@ export function manaAvailable(state: GameState, player: PlayerId, cards: CardDat
 function usablePermanents(state: GameState, player: PlayerId, cards: CardDatabase): ObjectId[] {
   const tappedByCost = tapsForCost(state, cards);
   return state.zones.battlefield.filter(
-    (object) => controllerOf(state, object) === player && !tappedByCost.includes(object),
+    (object) => controllerOf(state, object, cards) === player && !tappedByCost.includes(object),
   );
 }
 

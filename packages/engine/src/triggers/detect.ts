@@ -38,7 +38,7 @@ export function detectTriggers(
 function triggered(state: GameState, source: ObjectId, event: GameEvent, cards: CardDatabase): PendingTrigger[] {
   const obj = state.objects[source];
   if (obj?.kind !== "card") return [];
-  const controller = controllerOf(state, source);
+  const controller = controllerOf(state, source, cards);
   return triggersOf(state, source, cards).flatMap(({ index, def }) => {
     const occurrences = matches(state, source, def.when, event, cards);
     if (occurrences.length === 0) return [];

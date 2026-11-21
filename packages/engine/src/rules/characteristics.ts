@@ -49,7 +49,7 @@ export function characteristics(state: GameState, id: ObjectId, cards: CardDatab
   const { power, toughness } = powerAndToughness(state, id, cards);
   return {
     name: data.printed.name,
-    controller: controllerOf(state, id),
+    controller: controllerOf(state, id, cards),
     supertypes: supertypesOf(state, id, cards),
     types: cardTypesOf(state, id, cards),
     subtypes: subtypesOf(state, id, cards),

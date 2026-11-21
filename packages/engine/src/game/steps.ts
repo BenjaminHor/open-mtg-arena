@@ -40,7 +40,7 @@ export function beginTurn(state: GameState, player: PlayerId, number: number, ca
   for (const id of state.zones.battlefield) {
     const obj = objects[id];
     // Copied only if something changes, so an unchanged record keeps the layer pass kept for it (D-092).
-    if (obj?.kind === "card" && controllerOf(state, id) === player && !obj.controlledSinceTurnStart)
+    if (obj?.kind === "card" && controllerOf(state, id, cards) === player && !obj.controlledSinceTurnStart)
       objects = { ...objects, [id]: { ...obj, controlledSinceTurnStart: true } };
   }
   // "This turn" facts start again (D-078).
@@ -201,7 +201,7 @@ function beginStep(state: GameState, step: Step, cards: CardDatabase): Progress 
 function untapStep(state: GameState, cards: CardDatabase): Progress {
   const active = currentTurn(state).activePlayer;
   const untaps = state.zones.battlefield
-    .filter((id) => controllerOf(state, id) === active && isTapped(state, id))
+    .filter((id) => controllerOf(state, id, cards) === active && isTapped(state, id))
     .map((object) => ({ kind: "untap", object }) as const);
   return happen(state, { kind: "simultaneous", events: untaps }, cards);
 }

@@ -72,7 +72,7 @@ function lifelinkGains(state: GameState, dealt: readonly Damage[], cards: CardDa
     if (gain !== undefined) gain.amount += d.amount;
     else {
       // The source's controller (CR 702.15b), as it last was if it's gone (CR 702.15c).
-      const player = controllerNowOrLastKnown(state, d.source);
+      const player = controllerNowOrLastKnown(state, d.source, cards);
       if (player !== null) gains.push({ source: d.source, player, amount: d.amount });
     }
   }

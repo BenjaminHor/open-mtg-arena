@@ -1540,3 +1540,14 @@ every schema change and every change D-024 lists bumps it.
 - Magebane Armor's ruling says a Levitation "that comes under your control later" gives flying back. Under CR 613.7a its
   effect has Levitation's timestamp, and no rule gives a new one on a change of control (CR 613.7d-k), so the engine
   follows the CR (D-020). Nothing in the pool can steal an enchantment yet.
+
+**D-104: One layer 2, read through the pass (M2-12c1)** · 2026-11-21 · accepted
+- `controllerOf(state, id, cards)` takes the card database (D-092 and D-098 foresaw this) and reads a permanent's
+  controller from the layer pass, which does layer 2; nothing else computes it, so nothing can disagree. A spell's and
+  an ability's controller, and a card elsewhere's owner, are read as before. The pass never calls `controllerOf`.
+- A control change is noticed in one place: after each piece of work, `advance` compares who controls each permanent
+  before and after (`recordControlChanges`, skipped when nothing the pass reads changed). A permanent whose controller
+  changed is summoning sick again (CR 302.6) and removed from combat (CR 506.4). This replaces the checks where a
+  resolved effect began or ended, and covers static control effects, which change with no event (Mind Control).
+- A fuzz check (`controlChangesRecorded`) checks it across each action, so a path that misses it shows.
+- Neutral on its own: every scenario, replay and golden game is unchanged.

@@ -13,7 +13,6 @@ import { createDelayedTrigger } from "../triggers/delayed.ts";
 import { attachSelf } from "./attach-self.ts";
 import { becomes } from "./becomes.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
-import { recordControlChanges } from "./control-change.ts";
 import { createTokens } from "./create-tokens.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
@@ -120,7 +119,8 @@ export function runEffect(
         affected,
         change: { kind: "gainControl", player: context.controller },
       });
-      return { state: recordControlChanges(state, created.state, affected), events: created.events };
+      // The control change makes it summoning sick again (CR 302.6): `advance` sees it (effects/control-change.ts).
+      return created;
     }
     case "putCounters": {
       // "Put a +1/+1 counter on this creature" (CR 122.6), counted as it resolves (CR 608.2h).
@@ -160,7 +160,7 @@ export function runEffect(
     case "sacrificeSource": {
       // Only its controller can sacrifice it, and only from the battlefield (CR 701.21a): gone or given away, nothing.
       const source = context.self;
-      if (!state.zones.battlefield.includes(source) || controllerOf(state, source) !== context.controller) {
+      if (!state.zones.battlefield.includes(source) || controllerOf(state, source, cards) !== context.controller) {
         return { state, events: [] };
       }
       return happen(state, { kind: "sacrifice", object: source }, cards);

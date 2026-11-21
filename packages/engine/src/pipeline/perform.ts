@@ -144,7 +144,7 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
         events: [{ type: "DAMAGE_PREVENTED", source: event.source, to: event.to, amount: event.amount, by: event.by }],
       };
     case "sacrifice":
-      return sacrifice(state, event.object, event.to);
+      return sacrifice(state, event.object, cards, event.to);
     case "dealDamage":
       return dealDamage(state, event.damage, cards);
     case "reveal":

@@ -228,9 +228,31 @@ export const layersMatchFreshPass: Check = (_before, after, _events, cards) => {
     const kept = layeredOf(after, id, cards);
     if (JSON.stringify(kept) !== JSON.stringify(layeredOfFresh(after, id, cards)))
       problems.push(`${id}'s characteristics kept for this state differ from fresh ones (D-092)`);
-    // Layer 2 reaches both the pass and `controllerOf` through `controlFromEffects` (D-098): the two must agree.
-    if (kept !== null && kept.controller !== controllerOf(after, id))
-      problems.push(`${id}'s controller in the layer pass differs from controllerOf (D-092)`);
+  }
+  return problems;
+};
+
+/**
+ * A permanent whose controller changed during the action is summoning sick again (CR 302.6), unless its new
+ * controller's turn began in the same action, and is out of combat (CR 506.4): what `advance` records after each piece
+ * of work (D-104), checked here across the whole action so a path that misses it shows.
+ */
+export const controlChangesRecorded: Check = (before, after, events, cards) => {
+  const problems: string[] = [];
+  for (const id of after.zones.battlefield) {
+    const obj = after.objects[id];
+    if (obj?.kind !== "card" || !before.zones.battlefield.includes(id)) continue;
+    const now = controllerOf(after, id, cards);
+    if (controllerOf(before, id, cards) === now) continue;
+    const turnBegan = events.some((e) => e.type === "TURN_BEGAN" && e.activePlayer === now);
+    if (obj.controlledSinceTurnStart && !turnBegan)
+      problems.push(`${id} changed controller but isn't summoning sick again (CR 302.6)`);
+    const combat = after.combat;
+    const inCombat =
+      combat !== null &&
+      !combat.removed.includes(id) &&
+      (combat.attacks.some((a) => a.attacker === id) || combat.blocks.some((b) => b.blocker === id));
+    if (inCombat) problems.push(`${id} changed controller but is still in combat (CR 506.4)`);
   }
   return problems;
 };
@@ -240,4 +262,5 @@ export const ALL_CHECKS: readonly Check[] = [
   lifeThroughEvents,
   viewsLeakNothing,
   layersMatchFreshPass,
+  controlChangesRecorded,
 ];

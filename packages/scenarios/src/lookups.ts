@@ -103,7 +103,7 @@ export function abilityNamed(
   const candidates =
     ref !== null
       ? [resolveRef(state, ref, cards)].filter((x): x is ObjectId => x !== null)
-      : battlefieldOf(state, step.player as PlayerId).filter((id) => nameOf(state, id, cards) === step.card);
+      : battlefieldOf(state, step.player as PlayerId, cards).filter((id) => nameOf(state, id, cards) === step.card);
   if (candidates.length === 0) throw new Error(`no ${step.card} for ${step.player} to activate`);
   const options = candidates.map((object) => {
     const abilities = abilitiesOf(state, object, cards);
@@ -155,7 +155,7 @@ function spellNamed(state: GameState, ref: PermanentRef, cards: CardDatabase): O
   const spells = state.zones.stack.filter(
     (id) =>
       state.objects[id]?.kind === "card" &&
-      controllerOf(state, id) === ref.player &&
+      controllerOf(state, id, cards) === ref.player &&
       nameOf(state, id, cards) === ref.card,
   );
   return spells[ref.nth - 1] ?? null;

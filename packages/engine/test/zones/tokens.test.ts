@@ -69,7 +69,7 @@ describe("a token's characteristics are what the effect defines (CR 111.3, 111.4
       1,
     ]);
     expect(state.objects[id]?.kind === "card" && state.objects[id].owner).toBe("p2");
-    expect(controllerOf(state, id)).toBe("p2");
+    expect(controllerOf(state, id, TEST_CARDS)).toBe("p2");
   });
 
   it("enters as a new permanent does: untapped, no damage or counters, summoning sick (CR 110.5b, 302.6)", () => {

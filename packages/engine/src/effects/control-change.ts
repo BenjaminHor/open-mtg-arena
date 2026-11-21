@@ -1,23 +1,36 @@
 // A permanent whose controller changes hasn't been under its new controller's control continuously since their most
-// recent turn began (CR 302.6), so it's summoning sick again until their next turn (or it has haste). Checked as a
-// control effect begins and as it ends, comparing who controls each affected permanent before and after. Static control
-// effects (M2-12) have no such moment: control then changes with whatever moves the Aura, so the check belongs beside
-// `removeNoncreaturesFromCombat` in `advance`, comparing controllers before and after each piece of work. There, too:
-// an attacking or blocking creature whose controller changes is removed from combat (later: CR 506.4).
+// recent turn began (CR 302.6), so it's summoning sick again until their next turn (or it has haste); and if it was
+// attacking or blocking, it's removed from combat (CR 506.4). Checked after each piece of work (`advance`), comparing
+// who controls each permanent before and after: control changes as a resolved effect begins or ends, and as a static
+// one (an Aura's "you control enchanted creature") starts or stops applying, with no event of its own.
 
-import { controllerOf } from "../rules/controller.ts";
+import type { CardDatabase } from "../cards/types.ts";
+import { removedFromCombat } from "../combat/removed-from-combat.ts";
+import { layered } from "../rules/layers.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 
-export function recordControlChanges(before: GameState, after: GameState, ids: readonly ObjectId[]): GameState {
-  let objects = after.objects;
-  for (const id of ids) {
-    const obj = objects[id];
-    // Tokens are card objects too (D-101); a copy of a permanent will need checking here (future-rules).
-    if (obj?.kind !== "card" || !after.zones.battlefield.includes(id) || !before.zones.battlefield.includes(id))
-      continue;
-    if (controllerOf(before, id) === controllerOf(after, id) || !obj.controlledSinceTurnStart) continue;
-    objects = { ...objects, [id]: { ...obj, controlledSinceTurnStart: false } };
+export function recordControlChanges(before: GameState, after: GameState, cards: CardDatabase): GameState {
+  // Nothing a controller is computed from changed (D-092's inputs for layer 2), so no controller did.
+  if (
+    before.objects === after.objects &&
+    before.effects === after.effects &&
+    before.zones.battlefield === after.zones.battlefield
+  )
+    return after;
+  const was = layered(before, cards);
+  const now = layered(after, cards);
+  if (was === now) return after;
+  let state = after;
+  for (const id of after.zones.battlefield) {
+    const then = was[id]?.controller;
+    if (then === undefined || then === now[id]?.controller) continue;
+    const obj = state.objects[id];
+    if (obj?.kind !== "card") continue;
+    const objects = obj.controlledSinceTurnStart
+      ? { ...state.objects, [id]: { ...obj, controlledSinceTurnStart: false } }
+      : state.objects;
+    state = { ...state, objects, combat: removedFromCombat(state, id as ObjectId) };
   }
-  return objects === after.objects ? after : { ...after, objects };
+  return state;
 }

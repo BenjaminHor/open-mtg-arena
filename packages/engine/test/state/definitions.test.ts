@@ -14,7 +14,7 @@ import {
   type Supertype,
   type ZoneName,
 } from "../../src/index.ts";
-import { BEARS, FOREST, MOUNTAIN, SHOCK, WHELP } from "../support/cards.ts";
+import { BEARS, FOREST, MOUNTAIN, SHOCK, TEST_CARDS, WHELP } from "../support/cards.ts";
 import { type Game, passBoth, playerSetup, start, take } from "../support/game.ts";
 
 describe("the types follow the CR's lists", () => {
@@ -75,7 +75,7 @@ describe("objects, owners and controllers", () => {
   it("answers a card's owner when asked for the controller of a card that has none (CR 108.4, 108.4a)", () => {
     const { state } = game();
     for (const p of ["p1", "p2"] as const) {
-      for (const id of zone(state, p, "library")) expect(controllerOf(state, id)).toBe(p);
+      for (const id of zone(state, p, "library")) expect(controllerOf(state, id, TEST_CARDS)).toBe(p);
     }
   });
 
@@ -99,7 +99,7 @@ describe("objects, owners and controllers", () => {
       ...g,
       state: { ...g.state, objects: { ...g.state.objects, [bears]: { ...obj, baseController: "p1" } } },
     };
-    expect(controllerOf(stolen.state, bears)).toBe("p1");
+    expect(controllerOf(stolen.state, bears, TEST_CARDS)).toBe("p1");
     const after = shockTheBears(stolen);
     expect(zone(after.state, "p2", "graveyard")).toHaveLength(1);
     expect(zone(after.state, "p1", "graveyard").map((id) => after.state.objects[id])).toMatchObject([

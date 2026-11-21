@@ -31,7 +31,7 @@ export function sacrificeChosen(
 ): Progress {
   // "Other than this creature": the ability's source can't be chosen (Xathrid Demon).
   const theirs = state.zones.battlefield.filter(
-    (id) => controllerOf(state, id) === player && !(effect.otherThanSelf === true && id === context.self),
+    (id) => controllerOf(state, id, cards) === player && !(effect.otherThanSelf === true && id === context.self),
   );
   if (chosen !== null)
     return sacrificeEach(
