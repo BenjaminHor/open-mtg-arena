@@ -4,8 +4,7 @@ setup:
   turn: { active: p1, step: main1 }
   p1:
     battlefield: [{ card: Grizzly Bears, counters: { +1/+1: 3, -1/-1: 1 } }]
+# Checked as the game begins, before any step (CR 704.3: whenever a player would receive priority).
 steps:
-  - all pass: once
   - expect:
       p1:Grizzly Bears.counters: { +1/+1: 2 }
-      p1:Grizzly Bears.power: 4

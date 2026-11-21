@@ -32,7 +32,7 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
       ? performOne(state, event, cards)
       : // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
         event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
-  return { state: keepLastKnown(done.state, before), events: done.events };
+  return { state: keepLastKnown(state, done.state, before), events: done.events };
 }
 
 /**
@@ -85,11 +85,29 @@ function lastKnownOf(c: Characteristics): LastKnownCharacteristics {
   return { controller, types: [...c.types], subtypes: [...c.subtypes], colors: [...c.colors], power, toughness };
 }
 
-/** Keeps the snapshots of those that left the battlefield. */
-function keepLastKnown(state: GameState, taken: Record<ObjectId, LastKnownCharacteristics>): GameState {
-  const left = Object.entries(taken).filter(([id]) => !state.zones.battlefield.includes(id as ObjectId));
+/**
+ * Keeps the snapshots of those that left the battlefield, and the objects as they were before the event too: a batch
+ * that also removed counters (CR 704.5q beside 704.5f) left them as they last existed then, not after (CR 704.3).
+ */
+function keepLastKnown(
+  before: GameState,
+  state: GameState,
+  taken: Record<ObjectId, LastKnownCharacteristics>,
+): GameState {
+  const left = (Object.keys(taken) as ObjectId[]).filter((id) => !state.zones.battlefield.includes(id));
   if (left.length === 0) return state;
-  return { ...state, lastKnownCharacteristics: { ...state.lastKnownCharacteristics, ...Object.fromEntries(left) } };
+  const objects = left.flatMap((id) => {
+    const obj = before.objects[id];
+    return obj?.kind === "card" ? [[id, obj] as const] : [];
+  });
+  return {
+    ...state,
+    lastKnown: { ...state.lastKnown, ...Object.fromEntries(objects) },
+    lastKnownCharacteristics: {
+      ...state.lastKnownCharacteristics,
+      ...Object.fromEntries(left.map((id) => [id, taken[id]])),
+    },
+  };
 }
 
 function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): Progress {

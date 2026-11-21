@@ -14,4 +14,4 @@ export type StateBasedAction =
   /** CR 704.5h: a creature with toughness above 0 dealt damage by a deathtouch source since the last check is destroyed. */
   | { kind: "deathtouchDamage"; object: ObjectId }
   /** CR 704.5q: a permanent with both +1/+1 and -1/-1 counters loses `count` of each, the smaller number. */
-  | { kind: "counterAnnihilation"; object: ObjectId; count: number };
+  | { kind: "plusAndMinusCounters"; object: ObjectId; count: number };

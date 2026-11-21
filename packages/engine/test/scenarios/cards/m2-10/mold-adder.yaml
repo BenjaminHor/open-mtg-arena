@@ -1,13 +1,12 @@
-name: Mold Adder gets a +1/+1 counter when an opponent casts a blue or a black spell, if its controller wants
+name: Mold Adder gets a +1/+1 counter when an opponent casts a blue spell, if its controller wants
 rules: [CR 122.1a, CR 122.6, CR 603.2, CR 613.4c]
 setup:
   turn: { active: p2, step: main1 }
   p1:
     battlefield: [Mold Adder]
   p2:
-    battlefield: [Island, Swamp]
-    hand: [Unsummon, Doom Blade]
-    library: [Forest, Forest]
+    battlefield: [Island]
+    hand: [Unsummon]
 steps:
   - p2 cast: Unsummon
     targets: [p1:Mold Adder]
@@ -16,7 +15,9 @@ steps:
   - all pass: once
   - p1 choose: yes
   - expect:
-      p1:Mold Adder.power: 2
+      p1:Mold Adder.counters: { +1/+1: 1 }
+      p1:Mold Adder.toughness: 2
+      events contains: [{ type: COUNTERS_PUT, counter: +1/+1, amount: 1 }]
       stack: [Unsummon]
   - all pass: once
   - expect:

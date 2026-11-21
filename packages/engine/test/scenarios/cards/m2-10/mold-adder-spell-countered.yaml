@@ -1,0 +1,26 @@
+name: Mold Adder's ability resolves even if the spell that made it trigger is countered (its ruling)
+rules: [CR 603.2, CR 701.6a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Mold Adder, Island, Island]
+    hand: [Negate]
+  p2:
+    battlefield: [Island]
+    hand: [Unsummon]
+steps:
+  - p2 cast: Unsummon
+    targets: [p1:Mold Adder]
+    pay: auto
+  # The trigger is on top; p1 counters Unsummon underneath it with Negate, which resolves first.
+  - p2 pass: once
+  - p1 cast: Negate
+    targets: [spell:p2:Unsummon]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Unsummon]
+  - all pass: once
+  - p1 choose: yes
+  - expect:
+      p1:Mold Adder.counters: { +1/+1: 1 }

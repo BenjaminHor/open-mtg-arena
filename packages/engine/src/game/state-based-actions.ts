@@ -40,7 +40,7 @@ function lossFrom(action: StateBasedAction): Loss | null {
     case "zeroToughness":
     case "lethalDamage":
     case "deathtouchDamage":
-    case "counterAnnihilation":
+    case "plusAndMinusCounters":
       return null;
   }
 }
@@ -64,7 +64,7 @@ function eventOn(action: StateBasedAction): SingleEvent[] {
     case "lethalDamage":
     case "deathtouchDamage":
       return [{ kind: "destroy", object: action.object }];
-    case "counterAnnihilation": {
+    case "plusAndMinusCounters": {
       const { object, count } = action;
       return [
         { kind: "removeCounters", object, counter: "+1/+1", amount: count },
