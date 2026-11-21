@@ -716,6 +716,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
        - **M2-12 done** (2026-11-21): Auras and Equipment, #60 to #65 (218 cards). Next: M2-13, planeswalkers.
+       - M2-13c1 built (2026-11-21): Garruk Wildspeaker (untap two target lands, a 3/3 Beast, the overrun) and Liliana
+         Vess (discard, search then shuffle then put on top, all creature cards from all graveyards under your control),
+         221 cards; `put` into `libraryTop`; `returnAllToBattlefield` learns `under: "owners" | "you"` (the Aura host's
+         chooser is the controller-to-be); 6 scenarios in `cards/m2-13c/`. Next: reviews, PR; then M2-13c2 (Chandra's −X,
+         Ajani's Avatar).
        - M2-13b2 built (2026-11-21, D-110): Jace Beleren (219 cards): printed loyalty through the card pipeline, the intrinsic
          `entersWithLoyalty`, the `loyalty` cost part (CR 606.3, 606.4, 606.6), CR 704.5i, planeswalkers as targets
          (CR 115.4), scenario setup with printed loyalty, `show` with loyalty; 12 scenarios in `cards/m2-13b/` (each

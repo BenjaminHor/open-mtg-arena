@@ -2156,6 +2156,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Garruk Wildspeaker",
+      "slug": "garruk-wildspeaker",
+      "oracleId": "186b4def-4fff-4a2b-bcbf-5318b0ac5fa9",
+      "layout": "normal",
+      "manaCost": "{2}{G}{G}",
+      "manaValue": 4,
+      "typeLine": "Legendary Planeswalker — Garruk",
+      "oracleText": "+1: Untap two target lands.\n−1: Create a 3/3 green Beast creature token.\n−4: Creatures you control get +3/+3 and gain trample until end of turn.",
+      "power": null,
+      "toughness": null,
+      "loyalty": "3",
+      "colors": [
+        "G"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/1/0135ada3-e5ae-4382-a717-872839bf1d5a.jpg?1783941798",
+        "large": "https://cards.scryfall.io/large/front/0/1/0135ada3-e5ae-4382-a717-872839bf1d5a.jpg?1783941798",
+        "png": "https://cards.scryfall.io/png/front/0/1/0135ada3-e5ae-4382-a717-872839bf1d5a.png?1783941798",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/1/0135ada3-e5ae-4382-a717-872839bf1d5a.jpg?1783941798"
+      },
+      "artist": "Aleksi Briclot",
+      "set": "m11",
+      "collectorNumber": "175",
+      "scryfallUri": "https://scryfall.com/card/m11/175/garruk-wildspeaker?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Giant Growth",
       "slug": "giant-growth",
       "oracleId": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
@@ -3398,6 +3427,35 @@
       "set": "m10",
       "collectorNumber": "19",
       "scryfallUri": "https://scryfall.com/card/m10/19/lightwielder-paladin?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
+      "name": "Liliana Vess",
+      "slug": "liliana-vess",
+      "oracleId": "a6c05941-2cfb-4dac-a7c0-ab808187eb7c",
+      "layout": "normal",
+      "manaCost": "{3}{B}{B}",
+      "manaValue": 5,
+      "typeLine": "Legendary Planeswalker — Liliana",
+      "oracleText": "+1: Target player discards a card.\n−2: Search your library for a card, then shuffle and put that card on top.\n−8: Put all creature cards from all graveyards onto the battlefield under your control.",
+      "power": null,
+      "toughness": null,
+      "loyalty": "5",
+      "colors": [
+        "B"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/6/0/6087f146-f468-472a-b248-fc7386ea3e63.jpg?1783939183",
+        "large": "https://cards.scryfall.io/large/front/6/0/6087f146-f468-472a-b248-fc7386ea3e63.jpg?1783939183",
+        "png": "https://cards.scryfall.io/png/front/6/0/6087f146-f468-472a-b248-fc7386ea3e63.png?1783939183",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/6/0/6087f146-f468-472a-b248-fc7386ea3e63.jpg?1783939183"
+      },
+      "artist": "Aleksi Briclot",
+      "set": "m15",
+      "collectorNumber": "103",
+      "scryfallUri": "https://scryfall.com/card/m15/103/liliana-vess?utm_source=api",
       "printingChosenBy": "rule"
     },
     {

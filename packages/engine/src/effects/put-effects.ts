@@ -51,6 +51,8 @@ function destinationOf(effect: Put, controller: PlayerId, context: EffectContext
   switch (effect.into) {
     case "hand":
       return { zone: "hand" };
+    case "libraryTop":
+      return { zone: "library", position: "top" };
     case "libraryBottom":
       return { zone: "library", position: "bottom" };
     case "battlefield": {

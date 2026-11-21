@@ -6,6 +6,13 @@ export const openTheVaults: CardDef = {
     "Return all artifact and enchantment cards from all graveyards to the battlefield under their owners' control. (Auras with nothing to enchant remain in graveyards.)",
   spell: {
     targets: [],
-    effects: [{ op: "returnAllToBattlefield", from: "allGraveyards", filter: { types: ["artifact", "enchantment"] } }],
+    effects: [
+      {
+        op: "returnAllToBattlefield",
+        from: "allGraveyards",
+        filter: { types: ["artifact", "enchantment"] },
+        under: "owners",
+      },
+    ],
   },
 };

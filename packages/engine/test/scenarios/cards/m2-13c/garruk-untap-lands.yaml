@@ -1,0 +1,17 @@
+name: Garruk Wildspeaker's +1 untaps two target lands, any lands (its ruling)
+rules: [CR 606.4, CR 701.26b, CR 115.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Garruk Wildspeaker, { card: Forest, tapped: true }]
+  p2:
+    battlefield: [{ card: Mountain, tapped: true }]
+steps:
+  - p1 activate: Garruk Wildspeaker
+    ability: 1
+    targets: [[p1:Forest, p2:Mountain]]
+  - all pass: once
+  - expect:
+      p1:Forest.tapped: false
+      p2:Mountain.tapped: false
+      p1:Garruk Wildspeaker.counters: { loyalty: 4 }

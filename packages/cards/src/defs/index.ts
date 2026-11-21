@@ -74,6 +74,7 @@ import { fog } from "./f/fog.ts";
 import { forest } from "./f/forest.ts";
 import { furnaceWhelp } from "./f/furnace-whelp.ts";
 import { gargoyleCastle } from "./g/gargoyle-castle.ts";
+import { garrukWildspeaker } from "./g/garruk-wildspeaker.ts";
 import { giantGrowth } from "./g/giant-growth.ts";
 import { giantSpider } from "./g/giant-spider.ts";
 import { glacialFortress } from "./g/glacial-fortress.ts";
@@ -116,6 +117,7 @@ import { lifelink } from "./l/lifelink.ts";
 import { lightningBolt } from "./l/lightning-bolt.ts";
 import { lightningElemental } from "./l/lightning-elemental.ts";
 import { lightwielderPaladin } from "./l/lightwielder-paladin.ts";
+import { lilianaVess } from "./l/liliana-vess.ts";
 import { llanowarElves } from "./l/llanowar-elves.ts";
 import { loomingShade } from "./l/looming-shade.ts";
 import { lurkingPredators } from "./l/lurking-predators.ts";
@@ -295,6 +297,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   forest,
   furnaceWhelp,
   gargoyleCastle,
+  garrukWildspeaker,
   giantGrowth,
   giantSpider,
   glacialFortress,
@@ -337,6 +340,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   lightningBolt,
   lightningElemental,
   lightwielderPaladin,
+  lilianaVess,
   llanowarElves,
   loomingShade,
   lurkingPredators,
