@@ -58,6 +58,8 @@ export type PermanentSetup = {
    * an index into that player's `battlefield`. Left out when it's attached to nothing.
    */
   attachedTo?: { player: PlayerId; index: number };
+  /** The card name it chose as it entered (CR 614.12a; Pithing Needle), when it has one. Left out otherwise. */
+  chosenName?: string;
 };
 
 /**

@@ -56,6 +56,33 @@ describe("export --scenario", () => {
     expect(runScenario(yaml, cards).problems).toStrictEqual([]);
   }, 60_000);
 
+  it("names a card as a permanent enters, so games with Pithing Needle export too", () => {
+    const cards = cardDatabase();
+    // A golden game in which p1's Pithing Needle names Sanguine Bond as it enters (CR 614.12a).
+    const golden = new URL("../../engine/test/golden/pool-225.json", import.meta.url).pathname;
+    const yaml = cli("export", golden, "--scenario", "--name", "card names", "--rules", "CR 100.1");
+    expect(yaml).toContain("p1 choose: Sanguine Bond");
+    expect(runScenario(yaml, cards).problems).toStrictEqual([]);
+  }, 60_000);
+
+  it("keeps a set-up permanent's chosen name, so the replayed game is the same game", () => {
+    const cards = cardDatabase();
+    const scenario = new URL("../../engine/test/scenarios/cards/m2-14d/pithing-needle-equip.yaml", import.meta.url)
+      .pathname;
+    const file = tempFile();
+    cli("new", "--scenario", scenario, "--out", file);
+    cli("do", file, "pass: once");
+    const yaml = cli("export", file, "--scenario", "--name", "a named Needle", "--rules", "CR 100.1");
+    expect(yaml).toContain("chosenName: Gorgon Flail");
+    let last: unknown = null;
+    const result = runScenario(yaml, cards, (state) => {
+      last = state;
+      return [];
+    });
+    expect(result.problems).toStrictEqual([]);
+    expect(last).toStrictEqual(readGameFile(file).state);
+  }, 60_000);
+
   it("writes a creature blocking several attackers as a list, and its division of damage", () => {
     const cards = cardDatabase();
     const file = tempFile();

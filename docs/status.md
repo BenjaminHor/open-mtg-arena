@@ -740,6 +740,35 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: durations tied to a player's untap step are the shape for "next turn" effects; the extra-turn
            queue is where "skip your next turn" goes; the name choice serves Meddling Mage-likes; spell copies need
            `StackObject` not to assume a card, which also serves storm and casualty later.
+       - M2-14d1 built (2026-11-21, D-119): Pithing Needle (230 cards) and "as it enters, choose a card name": a
+         replacement asking through `happenOrAsk` (a `chooseName` decision, kept in the resumed event's choices), the
+         name on the permanent, `finishResolving` and Open the Vaults able to wait. 7 scenarios (naming as it enters and
+         a loyalty ability stopped, a mana ability allowed and the other not, equip stopped and an unnamed card's
+         ability not, the graveyard ability, the Needle leaving, two Needles from Open the Vaults in APNAP order, any
+         card's name but not a made-up one); mutants 4/4 after one more step. 1 golden game. Fuzz 80 clean. Rules review: no
+         wrong ruling; the second player naming didn't see the first's name (CR 101.4b): a public `NAME_CHOSEN` event
+         now; citations (who chooses: CR 614.12's example, 616.1); 4 more scenarios (unnamed cards still work, Terramorphic
+         Expanse stopped and Birds not, every copy whoever controls it, Garruk), the token name refused, the Gargoyle
+         Castle half of Open the Vaults; setup tests; the CLI shows a chosen name. Code review: the scenario exporter
+         dropped a set-up chosen name (fixed, round-trip test); `ReplacementChoice` a union (`first` | `asEnters`, ready for
+         Convincing Mirage's land type) and the name applied in `replaceByOwnText` with the others; a `chosenName`
+         expectation; `cardNames` in one pass and `isCardName` for checks; stale pipeline docs; future-rules on the paths
+         still using `happen`. Next: PR.
+       - M2-14d plan (2026-11-21, with the advisor's review), two PRs:
+         - M2-14d1, Pithing Needle and the "as it enters, choose" mechanism (CR 614.12a): a replacement of its own
+           text asks the player it enters under, through `happenOrAsk`'s saved choices (keyed by object and
+           replacement, so replacing again doesn't ask twice); the chosen name is kept on the permanent (absent when
+           none). Every path that puts one onto the battlefield must be able to pause: resolving a permanent spell
+           (`finishResolving`), Open the Vaults. Setup and the scenario format take a chosen name. Needle: a check in
+           activation (not mana abilities), names read through characteristics. Scenarios: a loyalty ability, equip,
+           Magma Phoenix's graveyard ability, Gargoyle Castle's mana ability allowed and the other not, the Needle
+           leaving, two Needles from Open the Vaults (APNAP). (An ability already on the stack can't be reached: the Needle
+           enters only at sorcery speed.)
+         - M2-14d2, Convincing Mirage: layer 4 setting a land's subtype, its rules-text abilities lost (CR 305.7), one
+           flag that `abilitiesOf`, `triggersOf` and `replacementsOf` honor; interaction scenarios (a Forest made an
+           Island, a checkland, Gargoyle Castle, swampwalk, Nightmare); bench `abilitiesOf`.
+         - Future impact: Clone's "enter as a copy" uses the same choice; Sphinx Ambassador's name choice the same
+           answer kind.
        - M2-14c built (2026-11-21, D-118): Platinum Angel and Magma Phoenix (229 cards). `cantLose` stops the zero-life
          and empty-library losses (CR 101.2, 704.5a-b); abilities with `zone: "graveyard"` (CR 113.6m), activated by
          the owner, offered from the graveyard; the first look-back trigger, `selfDies` (CR 603.10a). 10 scenarios
@@ -755,7 +784,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          scenario exporter couldn't replay a graveyard activation (fixed, round-trip test); "dies" no longer asks for a
          creature (CR 700.7, unit test); the activation check looks at where a card is before what it is (a hidden card's
          refusal showed its abilities; test); `leavesTheBattlefield` an exhaustive switch; the short fuzz test's timeout
-         120 s (random decks grew with the pool); a cheaper graveyard scan; stale READMEs. Next: PR.
+         120 s (random decks grew with the pool); a cheaper graveyard scan; stale READMEs. Merged as #74. Next: M2-14d,
+         "as it enters, choose" (Convincing Mirage, then Pithing Needle).
        - M2-14b built (2026-11-21, D-116): Time Warp (227 cards). `GameState.extraTurns` (the latest first) and
          `regularTurnPlayer` (the turn order's place), `game/extra-turns.ts`, the `extraTurn` op and `EXTRA_TURN_ADDED`
          event. 5 scenarios (on yourself, on an opponent who then also takes their regular turn, two in one turn with the

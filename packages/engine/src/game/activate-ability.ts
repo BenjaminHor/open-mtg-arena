@@ -4,6 +4,7 @@
 import type { CardDatabase } from "../cards/types.ts";
 import { activationBasicsProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
+import { namedCantActivate } from "../rules/chosen-name.ts";
 import { targetsProblem } from "../rules/targets.ts";
 import { mainPhaseEmptyStack } from "../rules/timing.ts";
 import type { Casting } from "../state/casting.ts";
@@ -33,6 +34,9 @@ export function activationProblem(
   const ability = findAbility(state, source, ref, cards);
   if (ability === null) return `${source} has no such ability`;
   if (isManaAbility(ability.def)) return "that's a mana ability";
+  // "Can't be activated unless they're mana abilities" (Pithing Needle, CR 602.5): only this check, not mana abilities'.
+  const named = namedCantActivate(state, source, cards);
+  if (named !== null) return `activated abilities of sources named ${named} can't be activated`;
   // "Activate only as a sorcery": the timing of a sorcery (CR 602.5d, 117.1a), as equip is (CR 702.6a).
   if (ability.def.timing === "sorcery" && !mainPhaseEmptyStack(state, player))
     return "only as a sorcery: in your main phase with an empty stack (CR 602.5d)";

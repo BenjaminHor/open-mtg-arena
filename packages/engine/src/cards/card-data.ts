@@ -23,3 +23,19 @@ export function isToken(obj: CardObject): boolean {
 export function cardDataByOracleId(oracleId: string, cards: CardDatabase): CardData | undefined {
   return cards[oracleId];
 }
+
+/**
+ * Every card name a player may name (CR 201.4: the name of a card, not of a token unless a card has it), sorted. The
+ * game knows its own card database only, so that's the list (D-114).
+ */
+export function cardNames(cards: CardDatabase): string[] {
+  // Kept in a plain record to drop repeats in one pass: the full database (M4) has tens of thousands of names.
+  const seen: Record<string, true> = {};
+  for (const card of Object.values(cards)) seen[card.printed.name] = true;
+  return Object.keys(seen).sort();
+}
+
+/** Whether a card in the database has this name (CR 201.4), without listing them all. */
+export function isCardName(name: string, cards: CardDatabase): boolean {
+  return Object.values(cards).some((c) => c.printed.name === name);
+}

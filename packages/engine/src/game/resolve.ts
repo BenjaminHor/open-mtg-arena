@@ -1,7 +1,7 @@
 // Resolving the top object of the stack (CR 608).
 
 import type { CardDatabase } from "../cards/types.ts";
-import { happen } from "../pipeline/happen.ts";
+import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import { isTriggerRef, triggeredAbilityDef } from "../rules/abilities.ts";
 import { isAura } from "../rules/attachment.ts";
 import { cardTypesOf } from "../rules/card-types.ts";
@@ -138,9 +138,11 @@ export function finishResolving(given: GameState, id: ObjectId, cards: CardDatab
           ? { zone: "graveyard" }
           : { zone: "battlefield", controller, ...auraHost(state, id, cards) };
       // The resolution is reported before the card moves; triggers on resolving come after both (later: CR 608.2p).
+      // A choice as it enters (CR 614.12a) may wait for its player: nothing here follows the move, and the next work
+      // (priority) is already queued.
       const resolved = { type: "SPELL_RESOLVED", object: id, cardId: obj.cardId, controller } as const;
       return andThen({ state, events: [resolved] }, (s) =>
-        happen(s, { kind: "moveCard", object: id, to: destination }, cards),
+        happenOrAsk(s, { kind: "moveCard", object: id, to: destination }, cards),
       );
     }
   }

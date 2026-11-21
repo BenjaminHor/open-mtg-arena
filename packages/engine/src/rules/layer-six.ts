@@ -73,6 +73,7 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
       case "cantLoseOpponentsCantWin":
+      case "chosenNameCantActivate":
         break;
     }
   }

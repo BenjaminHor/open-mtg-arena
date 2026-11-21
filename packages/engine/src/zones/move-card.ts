@@ -22,7 +22,8 @@ export type Destination =
   | { zone: "stack"; controller: PlayerId }
   /**
    * A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e); `counters`: what it enters with
-   * (CR 614.1c, 122.6); `attachedTo`: the permanent an Aura enters attached to (CR 608.3c, 303.4f).
+   * (CR 614.1c, 122.6); `attachedTo`: the permanent an Aura enters attached to (CR 608.3c, 303.4f); `chosenName`: the
+   * name chosen as it enters (CR 614.12a).
    */
   | {
       zone: "battlefield";
@@ -30,6 +31,7 @@ export type Destination =
       is?: EntersAs;
       counters?: Record<string, number>;
       attachedTo?: ObjectId;
+      chosenName?: string;
     }
   /**
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
@@ -42,6 +44,7 @@ export type Destination =
       is?: EntersAs;
       counters?: Record<string, number>;
       attachedTo?: ObjectId;
+      chosenName?: string;
     }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
@@ -101,6 +104,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     // Attached as it enters, so it's never seen unattached (CR 608.3c); its timestamp is its entering one (attaching
     // it later gives it a new one, CR 613.7e).
     ...(to.zone === "battlefield" && to.attachedTo !== undefined ? { attachedTo: to.attachedTo } : {}),
+    // The choice made as it entered (CR 614.12a), which its abilities read; absent when it made none.
+    ...(to.zone === "battlefield" && to.chosenName !== undefined ? { chosenName: to.chosenName } : {}),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

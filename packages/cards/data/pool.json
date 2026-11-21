@@ -4428,6 +4428,33 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Pithing Needle",
+      "slug": "pithing-needle",
+      "oracleId": "a188fe7e-68de-4c7c-806c-bfe8fc7b44bf",
+      "layout": "normal",
+      "manaCost": "{1}",
+      "manaValue": 1,
+      "typeLine": "Artifact",
+      "oracleText": "As this artifact enters, choose a card name.\nActivated abilities of sources with the chosen name can't be activated unless they're mana abilities.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/5/5/556ec6ab-a19f-4caa-8bfa-145555402caf.jpg?1783925547",
+        "large": "https://cards.scryfall.io/large/front/5/5/556ec6ab-a19f-4caa-8bfa-145555402caf.jpg?1783925547",
+        "png": "https://cards.scryfall.io/png/front/5/5/556ec6ab-a19f-4caa-8bfa-145555402caf.png?1783925547",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/5/5/556ec6ab-a19f-4caa-8bfa-145555402caf.jpg?1783925547"
+      },
+      "artist": "Ovidio Cartagena",
+      "set": "mid",
+      "collectorNumber": "257",
+      "scryfallUri": "https://scryfall.com/card/mid/257/pithing-needle?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Plains",
       "slug": "plains",
       "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",

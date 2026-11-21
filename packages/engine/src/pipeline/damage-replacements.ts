@@ -44,7 +44,7 @@ export function replaceDamage(
     // that left) isn't dealt (CR 101.3): neither is there to prevent, so no effect is used up on it (later: CR 609.7b).
     if (entry.amount <= 0 || !canBeDealtDamage(state, entry.to, cards)) return;
     const key: ChoiceFor = { kind: "damage", index, source: entry.source, to: entry.to };
-    const refs = choices.filter((c) => sameChoiceFor(c.for, key)).map((c) => c.ref);
+    const refs = choices.flatMap((c) => (c.kind === "first" && sameChoiceFor(c.for, key) ? [c.ref] : []));
     const result = preventEntry(state, entry, cards, refs);
     if (result.kind === "choose") {
       asks.push({ kind: "choose", player: result.player, for: key, options: result.options });
@@ -205,6 +205,9 @@ function preventsForPermanent(
       // An opponent (CR 102.2); teams would change this (later: CR 102.3).
       return sourceController !== null && sourceController !== you ? def.amount : null;
     }
+    // Not a prevention.
+    case "asEntersChooseName":
+      return null;
     case "preventDamageToSelfRemovingCounters":
       // "If damage would be dealt to this creature": all of it (its ruling).
       return entry.to.kind === "object" && entry.to.object === permanent ? "all" : null;

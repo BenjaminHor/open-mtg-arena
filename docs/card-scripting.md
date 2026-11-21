@@ -201,7 +201,10 @@ export const furnaceWhelp: CardDef = {
   `replacementsOf`: "This land enters tapped unless you control a Forest or a Plains" is `{ kind: "entersTapped",
   unless: { subtypes: ["Forest", "Plains"], controller: "you" } }` (land types, not names; "you" is the player it
   enters under); "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's
-  library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12).
+  library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12). "As this enters,
+  choose a card name" is `{ kind: "asEntersChooseName" }` (CR 614.12a, D-119): the permanent keeps the name as
+  `chosenName`, and "activated abilities of sources with the chosen name can't be activated unless they're mana
+  abilities" is the static `{ kind: "chosenNameCantActivate" }`.
 - "Regenerate this creature" / "Regenerate target creature" is `{ op: "regenerate", of: "self" }` / `of: { target: 0 }`
   (a shield, D-086); "Destroy target creature. It can't be regenerated." is `{ op: "destroy", of: { target: 0 },
   noRegeneration: true }`. "Its controller reveals cards from the top of their library until they reveal a creature

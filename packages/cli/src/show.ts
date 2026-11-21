@@ -78,6 +78,8 @@ function permanentText(state: GameState, id: ObjectId, cards: CardDatabase): str
     if (obj.damage > 0) notes.push(`${obj.damage} damage`);
     // A planeswalker's loyalty is its loyalty counters (CR 306.5c).
     if (c.types.includes("planeswalker")) notes.push(`loyalty ${loyaltyOf(state, id)}`);
+    // The name it chose as it entered (Pithing Needle, CR 614.12a).
+    if (obj.chosenName !== undefined) notes.push(`named ${obj.chosenName}`);
   }
   // Still in combat, not just declared: a regenerated creature has left it (CR 506.4).
   if (isAttacking(state, id, cards)) notes.push("attacking");

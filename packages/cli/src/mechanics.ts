@@ -48,6 +48,7 @@ const DECISION_KINDS: Record<DecisionKind["kind"], true | string> = {
   // Reachable since M2-08d1, only when Guardian Seraph meets Fog or Safe Passage in one game: rare in agent games.
   chooseReplacement: "two different prevention effects on one damage event are too rare in agent games",
   keepLegend: true,
+  chooseName: true,
 };
 
 /**
@@ -106,6 +107,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   ATTACHED: true,
   UNATTACHED: true,
   AURA_HOST_CHOSEN: true,
+  NAME_CHOSEN: true,
 };
 
 /**
@@ -150,6 +152,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   preventDamageToYou: "prevented",
   entersWithCounters: "battlefield",
   entersWithLoyalty: "battlefield",
+  asEntersChooseName: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
   preventNoncombatDamageToAttached: "prevented",
 };
@@ -233,6 +236,8 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   attachedDoesntUntap: "enters",
   // Coarse, like anthems: it does something only when its controller would lose.
   cantLoseOpponentsCantWin: "enters",
+  // Coarse, like anthems: its permanent's resolving shows it.
+  chosenNameCantActivate: "enters",
   // As its Aura resolves, like anthems. Pacifism's restriction is on the Aura, which never attacks or blocks, so
   // crediting it in combat would never count; its Aura resolving is when it starts to apply.
   attachedGets: "enters",

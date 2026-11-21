@@ -16,22 +16,23 @@ import { type Ask, applyReplacements, firstInApnapOrder, type Replaced } from ".
 
 /**
  * Carries out an event. All of the replacing comes first, against the state before the event, and then all of the
- * performing. An event on which a player must choose between replacement effects (CR 616.1) can't happen here: only
- * `happenOrAsk` can wait for that choice.
+ * performing. An event on which a player must choose between replacement effects (CR 616.1), or make a replacement's
+ * choice as a permanent enters (CR 614.12a), can't happen here: only `happenOrAsk` can wait for that choice.
  */
 export function happen(state: GameState, proposed: ProposedEvent, cards: CardDatabase): Progress {
   const replaced = replace(state, proposed, cards, []);
-  if (replaced.kind === "choose")
-    throw new Error("a choice between replacement effects can only be asked where happenOrAsk is used");
+  if (replaced.kind !== "replaced")
+    throw new Error("a choice for replacement effects can only be asked where happenOrAsk is used");
   return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
 
 /**
- * Carries out an event, or, when the affected player must choose which replacement effect applies first (CR 616.1),
- * performs nothing and asks: the answer queues a `resumeEvent` work item with the choices so far, and the event is replaced
- * again from the start, as nothing has happened yet. Only callers that do nothing after the event may use it (a
- * resolving effect, the combat damage step): whatever they'd do next must already be queued behind it. `only-the-
- * pipeline-performs.test.ts` lists them.
+ * Carries out an event, or, when the affected player must choose which replacement effect applies first (CR 616.1) or
+ * a permanent entering must make its choice (a card name, CR 614.12a), performs nothing and asks: the answer queues a
+ * `resumeEvent` work item with the choices so far, and the event is replaced again from the start, as nothing has
+ * happened yet. Only callers that do nothing after the event may use it (a resolving effect, the combat damage step,
+ * a permanent spell's resolving, Open the Vaults): whatever they'd do next must already be queued behind it.
+ * `only-the-pipeline-performs.test.ts` lists them.
  */
 export function happenOrAsk(
   state: GameState,
@@ -40,10 +41,18 @@ export function happenOrAsk(
   choices: readonly ReplacementChoice[] = [],
 ): Progress {
   const replaced = replace(state, proposed, cards, choices);
-  if (replaced.kind === "choose") {
-    const resume = { proposed, choices: [...choices] };
-    const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
-    return { state: waitFor(state, replaced.player, decision), events: [] };
+  const resume = { proposed, choices: [...choices] };
+  switch (replaced.kind) {
+    case "choose": {
+      const decision = { kind: "chooseReplacement", for: replaced.for, options: replaced.options, resume } as const;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
+    case "chooseName": {
+      const decision = { kind: "chooseName", for: replaced.for, ref: replaced.ref, resume } as const;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
+    case "replaced":
+      break;
   }
   return checkTriggers(state, perform(state, replaced.event, cards), cards);
 }
@@ -65,7 +74,7 @@ function replace(
   const results = members.map((e) => replaceOne(state, e, cards, choices));
   const ask = firstInApnapOrder(
     state,
-    results.flatMap((r) => (r.kind === "choose" ? [r] : [])),
+    results.flatMap((r) => (r.kind === "replaced" ? [] : [r])),
   );
   if (ask !== null) return ask;
   const replaced = results.flatMap((r) => (r.kind === "replaced" ? r.events : []));

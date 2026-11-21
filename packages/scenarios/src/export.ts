@@ -141,6 +141,8 @@ function answerStep(
       return choose("finish");
     case "chooseYesNo":
       return choose(answer.yes ? "yes" : "no");
+    case "chooseName":
+      return choose(answer.name);
     case "chooseReplacement": {
       const pending = state.pending;
       const ref = pending?.kind === "chooseReplacement" ? pending.options[answer.option] : undefined;
@@ -251,6 +253,7 @@ function scenarioSetup(setup: GameSetup, cards: CardDatabase): Record<string, un
         if (perm.damage > 0) entry.damage = perm.damage;
         if (Object.keys(perm.counters).length > 0) entry.counters = perm.counters;
         if (perm.attachedTo !== undefined) entry.attachedTo = hostRef(setup, perm.attachedTo, card);
+        if (perm.chosenName !== undefined) entry.chosenName = perm.chosenName;
         return entry;
       });
     }

@@ -304,6 +304,14 @@ uses that yet.
 field paths the same as the state's for that), or have the host send each visible permanent's characteristics with
 the view. Never let the UI read `baseController` or printed power and toughness directly.
 
+**Choices as a permanent enters (CR 614.12a, D-119).** Built for "choose a card name" (Pithing Needle) on two paths:
+a permanent spell resolving and Open the Vaults, which use `happenOrAsk`. Other paths onto the battlefield still use
+`happen`, which refuses a choice: `put` (`effects/put-effects.ts`), `putOntoBattlefieldFromHand`
+(`effects/hand-effects.ts`) and playing a land (`game/play-land.ts`). Clone (M2-14i) and Warp World (M2-14k) must move
+those to `happenOrAsk` first. Sphinx Ambassador's name is chosen by another player at resolution, so the chooser must
+come from the replacement or effect, not always the player it enters under. Names are `printed.name`: split halves,
+back faces and adventures (later: CR 201.4b-f) need more at M4, where the full list also wants a search in the UI.
+
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 An effect lasting until a player's next untap step (Sleep's `doesntUntap`, D-115) never ends if that player leaves:
 leaving must end or drop the effects that name them (later: CR 800.4a).

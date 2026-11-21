@@ -1,0 +1,22 @@
+name: Pithing Needle stops every source with the chosen name, whoever controls it, its own controller's too
+rules: [CR 602.5]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Pithing Needle, chosenName: Prodigal Pyromancer }, Prodigal Pyromancer]
+  p2:
+    battlefield: [Prodigal Pyromancer, Prodigal Pyromancer, Garruk Wildspeaker]
+steps:
+  - p2 activate: p2:Prodigal Pyromancer
+    targets: [p1]
+  - expect error: illegalAction
+  - p2 activate: p2:Prodigal Pyromancer#2
+    targets: [p1]
+  - expect error: illegalAction
+  - all pass: until upkeep
+  - all pass: until main1
+  - expect:
+      active: p1
+  - p1 activate: Prodigal Pyromancer
+    targets: [p2]
+  - expect error: illegalAction

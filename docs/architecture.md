@@ -183,8 +183,9 @@ simple.
   1. **Propose** an event (draw a card, deal damage, move to a zone). Events that happen together are one
      `simultaneous` event, each member replaced against the state before it.
   2. **Replace**: apply replacement and prevention effects (CR 614–616). If several apply, the
-     affected player or controller chooses the order (CR 616.1), which is a decision: `happenOrAsk` performs nothing,
-     asks, and resumes as a work item (D-087); plain `happen`, used where the caller does more after the event, refuses.
+     affected player or controller chooses the order (CR 616.1), which is a decision; so is a replacement's own choice
+     as a permanent enters, a card name (CR 614.12a, D-119): `happenOrAsk` performs nothing, asks, and resumes as a work
+     item (D-087); plain `happen`, used where the caller does more after the event, refuses.
   3. **Perform** the event and emit `GameEvent`s. Each event is performed whole (destroying a permanent is its move to
      the graveyard), and all replacing is done before any performing, so a replacement's choice can pause the event.
   4. **Trigger**: check triggered abilities against the events and add `pendingTriggers` (CR 603.2), once per

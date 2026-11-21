@@ -47,6 +47,7 @@ describe("action lines", () => {
       finishChoosing: { kind: "finishChoosing" },
       chooseYesNo: { kind: "chooseYesNo", yes: false },
       chooseReplacement: { kind: "chooseReplacement", option: 1 },
+      chooseName: { kind: "chooseName", name: "Jace Beleren" },
     };
     // An attack on a planeswalker names it last (CR 508.1b).
     const onWalker: Answer = { kind: "declareAttacker", attack: { attacker: "o16", defender: "p2", attacked: "o18" } };

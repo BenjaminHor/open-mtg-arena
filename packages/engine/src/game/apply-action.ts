@@ -2,6 +2,7 @@
 // decision (except `CONCEDE`, which any player in the game may send at any time, CR 104.3a), applies it, and returns
 // the new state and events. An illegal action changes nothing.
 
+import { isCardName } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { assignProblem, assignToNextRecipient } from "../combat/damage-assignment.ts";
 import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
@@ -157,9 +158,28 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
         state: queueWork(answered, {
           kind: "resumeEvent",
           proposed,
-          choices: [...choices, { for: pending.for, ref: chosen }],
+          choices: [...choices, { kind: "first", for: pending.for, ref: chosen }],
         }),
         events: [],
+      };
+    }
+    case "chooseName": {
+      if (answer.kind !== "chooseName") return mismatch;
+      // The name of a card (CR 201.4), from the card database (D-114).
+      if (!isCardName(answer.name, cards)) return error("illegalAction", `no card is named ${answer.name}`);
+      // Made before the permanent enters (CR 614.12a): the event is replaced again from the start with the name kept.
+      // Told to everyone, so a player choosing after knows it (CR 101.4b).
+      const { proposed, choices } = pending.resume;
+      const object = pending.for.kind === "object" ? pending.for.object : null;
+      if (object === null) throw new Error("a card name is chosen for an object");
+      return {
+        ok: true,
+        state: queueWork(answered, {
+          kind: "resumeEvent",
+          proposed,
+          choices: [...choices, { kind: "asEnters", for: pending.for, ref: pending.ref, chosen: answer.name }],
+        }),
+        events: [{ type: "NAME_CHOSEN", player: pending.player, object, name: answer.name }],
       };
     }
     case "chooseYesNo": {

@@ -274,6 +274,9 @@ function answerFor(
       return { kind: "chooseYesNo", yes: text === "yes" };
     case "orderTriggers":
       return { kind: "orderTrigger", index: triggerNamed(pending.batch, player, text, cards) };
+    // A card name (CR 201.4), as written.
+    case "chooseName":
+      return { kind: "chooseName", name: text };
     case "chooseReplacement": {
       // "regeneration" for a regeneration shield, the card whose own text it is (Guardian Seraph), or the card whose
       // resolution made it (Fog). Identical effects are one option.

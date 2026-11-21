@@ -12,7 +12,7 @@
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
 import { apnapOrder } from "../game/turn-order.ts";
-import { happen } from "../pipeline/happen.ts";
+import { happenOrAsk } from "../pipeline/happen.ts";
 import { isAura } from "../rules/attachment.ts";
 import { canEnchant } from "../rules/can-enchant.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
@@ -86,7 +86,8 @@ export function returnAllToBattlefield(
   // In APNAP order, so they get their timestamps in it (CR 613.7m): with two Mind Controls on one creature, the
   // nonactive player's is later and wins. Under "you" one player controls them all and would choose their order
   // (later: CR 613.7m's "the order of that player's choice"); graveyard order stands in.
-  const done = happen(cleared, { kind: "simultaneous", events: moves }, cards);
+  // A permanent's choice as it enters (CR 614.12a) may wait for its player; nothing here follows the move.
+  const done = happenOrAsk(cleared, { kind: "simultaneous", events: moves }, cards);
   return { state: done.state, events: [...progress.events, ...done.events] };
 }
 

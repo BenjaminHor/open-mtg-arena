@@ -1,0 +1,16 @@
+name: Pithing Needle stops Terramorphic Expanse's ability, which isn't a mana ability, but not Birds of Paradise's
+rules: [CR 602.5, CR 605.1a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Pithing Needle, chosenName: Terramorphic Expanse }, { card: Pithing Needle, chosenName: Birds of Paradise }]
+  p2:
+    battlefield: [Terramorphic Expanse, Birds of Paradise]
+    hand: [Llanowar Elves]
+steps:
+  - p2 activate: Terramorphic Expanse
+  - expect error: illegalAction
+  - p2 cast: Llanowar Elves
+    pay: auto
+  - expect:
+      p2:Birds of Paradise.tapped: true

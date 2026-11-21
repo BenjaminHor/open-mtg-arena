@@ -1,0 +1,16 @@
+name: Pithing Needle naming an Equipment stops its equip ability, and only the named card's abilities
+rules: [CR 602.5, CR 702.6a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Pithing Needle, chosenName: Gorgon Flail }]
+  p2:
+    battlefield: [Gorgon Flail, Grizzly Bears, Prodigal Pyromancer, Mountain, Mountain]
+steps:
+  - p2 activate: Gorgon Flail
+  - expect error: illegalAction
+  - p2 activate: Prodigal Pyromancer
+    targets: [p1]
+  - all pass: once
+  - expect:
+      p1.life: 19

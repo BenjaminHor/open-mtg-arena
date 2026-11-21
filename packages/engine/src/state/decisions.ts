@@ -149,6 +149,16 @@ export type DecisionKind =
       for: ChoiceFor;
       options: ReplacementRef[];
       resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
+    }
+  /**
+   * "As this enters, choose a card name" (CR 614.12a, 201.4): the player it enters under names a card from the card
+   * database. `resume` is as for `chooseReplacement`: the answer is kept with the choices, and the event replaced again.
+   */
+  | {
+      kind: "chooseName";
+      for: ChoiceFor;
+      ref: ReplacementRef;
+      resume: { proposed: ProposedEvent; choices: ReplacementChoice[] };
     };
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
