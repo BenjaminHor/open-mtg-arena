@@ -1,0 +1,23 @@
+name: Ice Cage on a Forest made a creature stops its own intrinsic mana ability
+rules: [CR 305.6, CR 602.5, CR 605.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Forest, Forest, Forest, Island, Island, Island, Island]
+    hand: [Awakener Druid, Awakener Druid, Ice Cage]
+steps:
+  - p1 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Forest#5
+  - all pass: once
+  - p1 cast: Ice Cage
+    targets: [p1:Forest#5]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Forest#5.power: 4
+      p1:Forest#5.tapped: false
+      p1.battlefield contains: [Ice Cage]
+  - p1 activate: p1:Forest#5
+  - expect error: illegalAction

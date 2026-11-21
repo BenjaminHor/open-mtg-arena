@@ -1584,7 +1584,10 @@ every schema change and every change D-024 lists bumps it.
   Control it drains the thief (CR 303.4m, 613.1b); "that player" is the player whose step it is.
 - "Its activated abilities can't be activated" is marked on the host by the layer pass (`Layered.cantActivate`), like
   Pacifism's restriction, and read where every activation, mana abilities included, is checked
-  (`activationBasicsProblem`, CR 602.5, 605.3a), so auto-pay can't use a caged Llanowar Elves either.
+  (`activationBasicsProblem`, CR 602.5, 605.3a), so a caged Llanowar Elves can't pay for anything either.
 - "When enchanted creature becomes the target of a spell or ability" is `attachedBecomesTarget`, matched on
   `BECAME_TARGET` for what the Aura is attached to: its trigger goes on the stack above the spell and resolves first
   (its ruling). Ice Cage's own Aura spell can't trigger it: it isn't on the battlefield yet.
+- A spell or ability that chooses the same object for two instances of "target" makes it become the target once, so
+  such an ability triggers once (CR 601.2c, 603.2c): Bonecrusher Giant's and Tectonic Giant's rulings say so; no card in
+  the pool can do it, so a unit test shows it.

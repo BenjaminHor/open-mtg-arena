@@ -1,0 +1,20 @@
+name: An Aura spell targeting the caged creature triggers Ice Cage, which is destroyed before the Aura resolves
+rules: [CR 603.3, CR 303.4a, CR 601.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hill Giant, { card: Ice Cage, attachedTo: p1:Hill Giant }, Plains]
+    hand: [Holy Strength]
+steps:
+  - p1 cast: Holy Strength
+    targets: [p1:Hill Giant]
+    pay: auto
+  - expect:
+      stack: [Holy Strength, Ice Cage ability]
+  - all pass: once
+  - expect:
+      p1.graveyard: [Ice Cage]
+      stack: [Holy Strength]
+  - all pass: once
+  - expect:
+      p1:Hill Giant.power: 4

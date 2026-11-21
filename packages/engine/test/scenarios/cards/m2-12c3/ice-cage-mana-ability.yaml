@@ -8,7 +8,7 @@ setup:
 steps:
   - p1 activate: Llanowar Elves
   - expect error: illegalAction
-  # Runeclaw Bear costs {1}{G}: with the Elves caged, only the Forest can pay, so the cast waits at the payment.
+  # While paying for Runeclaw Bear, the caged Elves still can't be tapped for mana.
   - p1 cast: Runeclaw Bear
   - expect:
       pending: { player: p1, kind: payMana }

@@ -1,0 +1,20 @@
+name: Cancelling a cast after targeting the caged creature takes back its trigger too
+rules: [CR 734.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain]
+    hand: [Shock]
+  p2:
+    battlefield: [Hill Giant, { card: Ice Cage, attachedTo: p2:Hill Giant }]
+steps:
+  - p1 cast: Shock
+    targets: [p2:Hill Giant]
+    pay: cancel
+  - expect:
+      stack: []
+      p2.battlefield contains: [Ice Cage]
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Ice Cage]
+      stack: []

@@ -108,6 +108,10 @@ export function chooseTarget(state: GameState, target: Target, cards: CardDataba
   targets[instance] = [...(targets[instance] ?? []), target];
   const chosen = withChoices(state, casting.object, { ...choices, targets });
   if (target.kind !== "object") return { state: chosen, events: [] };
+  // Chosen again for another instance of "target", it doesn't become the target again: the spell or ability targets it
+  // once (CR 601.2c), and a "becomes the target" ability triggers once (CR 603.2c; Bonecrusher Giant's ruling).
+  const already = choices.targets.some((group) => group.some((t) => sameTarget(t, target)));
+  if (already) return { state: chosen, events: [] };
   // Matched here, where it's emitted.
   const event: GameEvent = { type: "BECAME_TARGET", object: target.object, by: casting.object };
   return { state: detectTriggers(chosen, chosen, [event], cards), events: [event] };

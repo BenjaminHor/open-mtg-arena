@@ -33,7 +33,7 @@ export function activationBasicsProblem(
   if (controllerOf(state, id, cards) !== player) return `${player} doesn't control ${id}`;
   const ability = findAbility(state, id, ref, cards);
   if (ability === null) return `${id} has no such ability`;
-  // "Its activated abilities can't be activated" (Ice Cage): all of them, mana abilities included (CR 602.5, 605.3a).
+  // "Its activated abilities can't be activated" (Ice Cage): all of them, mana abilities included (CR 602.5, 605.1a).
   if (layeredOf(state, id, cards)?.cantActivate === true) return `${id}'s activated abilities can't be activated`;
   for (const part of ability.def.cost) {
     switch (part.kind) {

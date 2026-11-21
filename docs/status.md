@@ -717,8 +717,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Gargoyle Castle.
        - M2-12c3 built (2026-11-21, D-106): Soul Bleed (`whose: "attachedController"`), Ice Cage (`attachedCantActivate`,
          `attachedBecomesTarget`), 217 cards; 7 scenarios in `cards/m2-12c3/` (Soul Bleed under Mind Control, a caged
-         Pyromancer and Llanowar Elves, the trigger on a Shock, an Aura and an equip, its own spell not triggering it).
-         Next: reviews, PR; then M2-12d (Open the Vaults).
+         Pyromancer and Llanowar Elves, the trigger on a Shock, an Aura and an equip, its own spell not triggering it). Rules review: no wrong result; 10 more scenarios from
+         its probes (an Aura, a trigger and Naturalize targeting, the trigger's controller, two triggers, a cancelled
+         cast, an animated Forest, Soul Bleed after its creature dies and when stolen mid-game); a spell choosing the same
+         object twice makes it the target once (unit test); citations fixed. Next: code review, PR; then M2-12d.
        - M2-12c2 built (2026-11-21, D-105): Mind Control, the static `attachedControl` in the pass's layer 2 with timestamp
          order, `anyControlEffects` counting it (215 cards); 10 scenarios in `cards/m2-12c/` (Act of Treason after it and
          before it, two Mind Controls, destroyed while attacking and while blocking, an anthem, Equipment, the Cloak,

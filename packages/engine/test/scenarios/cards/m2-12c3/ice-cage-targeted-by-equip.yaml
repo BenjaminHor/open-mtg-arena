@@ -1,10 +1,9 @@
-name: An Aura spell or an equip ability targeting the caged creature triggers Ice Cage too
-rules: [CR 603.3, CR 303.4a, CR 702.6a]
+name: An equip ability targeting the caged creature triggers Ice Cage too
+rules: [CR 603.3, CR 702.6a]
 setup:
   turn: { active: p1, step: main1 }
   p1:
-    battlefield: [Hill Giant, { card: Ice Cage, attachedTo: p1:Hill Giant }, Gorgon Flail, Plains, Forest, Forest]
-    hand: [Holy Strength]
+    battlefield: [Hill Giant, { card: Ice Cage, attachedTo: p1:Hill Giant }, Gorgon Flail, Forest, Forest]
 steps:
   - p1 activate: Gorgon Flail
     targets: [p1:Hill Giant]
