@@ -715,12 +715,31 @@ next session needs to know. Keep it short. Move finished detail into commit mess
        - **M2-10 done** (2026-11-21): Mold Adder and Protean Hydra, #56 and #57 (196 cards). Next: M2-11, tokens
          (CR 111): Captain of the Watch, Cemetery Reaper, Siege-Gang Commander, Ant Queen, Howl of the Night Pack,
          Gargoyle Castle.
+       - M2-12d plan (2026-11-21, with the advisor's review): Open the Vaults, one PR.
+         - Its rulings: an Aura that can return must; its controller-to-be chooses what it enchants as it enters, not
+           targeting (shroud and Ice Cage don't matter), but the enchant ability and protection do (CR 303.4f); none
+           legal, it stays in the graveyard (CR 303.4g); not something also returning; the active player announces for
+           their Auras first, then each other player in turn order (APNAP), then everything enters at once. Equipment
+           enters unattached (CR 303.4h for anything else).
+         - Effect op `returnAllToBattlefield` (from all graveyards, a filter, under owners' control). The set of cards is
+           read again each time the effect runs (nothing else happens while it waits). For each Aura, in APNAP order of
+           owners then shown order, its owner chooses a host among battlefield permanents fitting one predicate shared
+           with CR 704.5m (enchant filter with the owner as "you", protection); none: it stays; one: no decision (like
+           sacrifice, the battlefield is public). The choices go in `state.resolution` (a new field), and an event
+           announces each (public, CR 303.4f's choice, so the other players see it). Then one `simultaneous` batch of
+           `moveCard`s with `controller: owner` and `attachedTo` for Auras.
+         - `chooseCards` learns which object a choice is for (`for`), with a new purpose, so the view and CLI show it.
+         - Scenarios first: APNAP, nothing to enchant (Pacifism stays, Ornithopter returns), shroud and Ice Cage hosts,
+           protection (White Knight not offered for a black Aura), an opponent's artifact under its owner, a returned
+           Mind Control steals a sick creature, Equipment unattached, Soul Warden sees an artifact creature, forced return.
        - M2-12c3 built (2026-11-21, D-106): Soul Bleed (`whose: "attachedController"`), Ice Cage (`attachedCantActivate`,
          `attachedBecomesTarget`), 217 cards; 7 scenarios in `cards/m2-12c3/` (Soul Bleed under Mind Control, a caged
          Pyromancer and Llanowar Elves, the trigger on a Shock, an Aura and an equip, its own spell not triggering it). Rules review: no wrong result; 10 more scenarios from
          its probes (an Aura, a trigger and Naturalize targeting, the trigger's controller, two triggers, a cancelled
          cast, an animated Forest, Soul Bleed after its creature dies and when stolen mid-game); a spell choosing the same
-         object twice makes it the target once (unit test); citations fixed. Next: code review, PR; then M2-12d.
+         object twice makes it the target once (unit test); citations fixed. Code review: an exhaustive switch for `whose`,
+         a negative scenario (another creature or a player targeted; a mutant survived the suite), docs. Fuzz 80 clean.
+         Merged as #64.
        - M2-12c2 built (2026-11-21, D-105): Mind Control, the static `attachedControl` in the pass's layer 2 with timestamp
          order, `anyControlEffects` counting it (215 cards); 10 scenarios in `cards/m2-12c/` (Act of Treason after it and
          before it, two Mind Controls, destroyed while attacking and while blocking, an anthem, Equipment, the Cloak,
