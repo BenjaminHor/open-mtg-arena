@@ -3,7 +3,8 @@
 Living document. Update it at the end of every task: what changed, what's next, and anything the
 next session needs to know. Keep it short. Move finished detail into commit messages.
 
-**Current milestone:** M2 — Rules depth (`milestones/m2-rules-depth.md`)
+**Current milestone:** M2 — Rules depth, **complete** (2026-11-22): every exit criterion met or waived by the owner
+(D-142); tagging `m2` on `main` is the owner's. Next: M3 — First playable (`milestones/m3-first-playable.md`), Phase 1.
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
@@ -1559,8 +1560,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- After the owner tags `m1`: M2 rules depth (`docs/milestones/m2-rules-depth.md`), starting with M2-01 (the
-  hidden-information fix) and M2-02 (the Magic 2010 pool and its mechanics map).
+- After the owner tags `m2`: M3 Phase 1 (`docs/milestones/m3-first-playable.md`): M3-01 the match host (with `brief`'s
+  builder moved into `packages/match`), M3-02 the heuristic AI, M3-03 the web app scaffold, M3-04 the landscape phone
+  board (D-141). The UI follows Arena's interaction design with our own look (D-140, `docs/arena-research.md`).
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
