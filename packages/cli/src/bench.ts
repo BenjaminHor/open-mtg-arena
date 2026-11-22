@@ -15,8 +15,20 @@ import { REPO } from "./coverage/collect.ts";
 export const BASELINE = join(REPO, "bench/baseline.json");
 /** How much slower than the baseline a measure may get before the run fails. */
 const ALLOWED_SLOWDOWN = 1.2;
-/** Hard limits in milliseconds (architecture.md, "Performance budget"), by measure name prefix. */
+/** Hard limits in milliseconds (architecture.md, "Performance budget"), by measure name prefix: a laptop's. */
 const BUDGETS: Record<string, number> = { "applyAction.": 1, randomGame: 100 };
+/**
+ * Looser budgets for a slower machine, by CPU model (D-133): the cloud machine Claude Code runs on, where a random game
+ * takes 100–130 ms. Every other machine has the laptop budgets.
+ */
+const MACHINE_BUDGETS: Record<string, Record<string, number>> = {
+  "Intel(R) Xeon(R) Processor @ 2.10GHz": { "applyAction.": 1, randomGame: 150 },
+};
+
+/** The budgets for the machine this runs on. */
+function budgetsHere(): Record<string, number> {
+  return MACHINE_BUDGETS[cpus()[0]?.model ?? ""] ?? BUDGETS;
+}
 
 type Measure = { ms: number; relative: number };
 export type Baseline = { machine: string; referenceMs: number; measures: Record<string, Measure> };
@@ -52,7 +64,7 @@ export function bench(update: boolean): { output: string; code: number } {
   for (const { name, what, measure } of results) {
     const before = baseline.measures[name];
     const change = before === undefined ? null : measure.relative / before.relative;
-    const budget = Object.entries(BUDGETS).find(([prefix]) => name.startsWith(prefix))?.[1];
+    const budget = Object.entries(budgetsHere()).find(([prefix]) => name.startsWith(prefix))?.[1];
     const changeText = change === null ? "new" : `${change >= 1 ? "+" : ""}${((change - 1) * 100).toFixed(0)}%`;
     lines.push(`${name}: ${time(measure.ms)}, ${changeText} against the baseline (${what})`);
     // A broken measure (NaN compares false with everything) must fail, not pass.

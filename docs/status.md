@@ -871,6 +871,22 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (e) more scenarios: Clone revealed with a creature (options []), Entangling Vines to the bottom, a
            planeswalker card to the bottom, Mind Control on a step-4 creature, two Auras of one player, Hive Mind and
            Twincast copying it.
+       - M2-15 plan (2026-11-22), hardening (m2-rules-depth.md), one PR per slice:
+         1. M2-15a `pnpm fuzz --games 10000` clean, with the pool's decks and random decks (exit criterion); failures
+            fixed as bugs (fix-bug skill), each with a scenario.
+         2. M2-15b mutation testing with StrykerJS and its Vitest runner (testing.md, section 7): a dev dependency (a
+            decision entry), a `pnpm mutate` script, run on the engine's rules code in parts (rules/, pipeline/,
+            effects/, game/, combat/, triggers/...) since a whole run is hours; surviving mutants in rules code get
+            tests, the rest are listed with why they survive (equivalent mutants).
+         3. M2-15c the CR progress report for the owner, chapter by chapter: which rules are implemented and tested,
+            from the coverage report's data (`docs/coverage/`).
+         4. M2-15d the D-126 review: effect ops, statics and replacement kinds only one card uses, merged or generalized
+            into building blocks where they're the same idea, and what stays one-off recorded with why.
+         5. Bench against the budgets: done (D-133, ok on this machine).
+         - M2-15c done: the coverage report (`docs/coverage/rules-coverage.md`) ends with a "By chapter" table, generated
+           with it: 1xx 26%, 2xx 18%, 3xx 18%, 4xx 22%, 5xx 42%, 6xx 35%, 7xx 7% (mostly keywords outside the pool),
+           8xx and 9xx 0%, of each chapter's rules cited and tested.
+         Then the exit criteria: rules-judge review of each system, the owner's CLI spot-check, the M3 spec revised.
        - Owner request (2026-11-22), after M2-14l merges: clean up the READMEs so nothing in them is irrelevant for a
          public repo, and add a straightforward guide to playing games with the CLI. The owner chose MIT and dropped the private starter text
          (D-132). Done: the README rewritten for a public repo (what it is, status, getting
@@ -1544,11 +1560,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Asked 2026-11-21, D-123) A full random game takes 100–130 ms on this cloud machine, even idle, against the 100 ms
-  budget "on a laptop" (architecture.md), and the bench varies by up to about 30% between idle runs here. Options: (a)
-  run `pnpm bench` once on the owner's laptop to see whether the budget holds there, and keep it (recommended); (b)
-  profile and speed up the random game in M2-15 regardless; (c) set a separate budget for this machine. Proceeding
-  with M2-14 meanwhile; the bench is judged by alternating runs.
 - (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
   creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
   by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
@@ -1601,6 +1612,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Artillery's two losses kept.)
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
   activation resolves.)
+- (Answered 2026-11-22, D-133: the random game ran 100–130 ms on this cloud machine against the 100 ms laptop
+  budget. The owner chose a separate, not too strict budget for this machine: 150 ms, by CPU model in `bench.ts`.)
 - (Answered 2026-11-21, D-123: `pnpm bench` failed on main on this machine. The owner chose to reset the baseline on a
   quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
   Done: the median of five idle runs.)

@@ -247,5 +247,5 @@ simple.
 ## Performance budget
 
 - One `applyAction` for a normal action in a normal board state: well under 1 ms on a phone.
-- A full random-legal game in the fuzzer: under 100 ms on a laptop.
+- A full random-legal game in the fuzzer: under 100 ms on a laptop (150 ms on the slower cloud machine, D-133).
 - `pnpm bench` (built in M1) tracks these against a baseline (see `testing.md`). Measure before optimizing anything.

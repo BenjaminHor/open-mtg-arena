@@ -622,3 +622,22 @@ Written `later: CR 614` in the code, and not counted above. Check that each real
 - CR 800.4 — in `packages/engine/src/game/game-end.ts`
 - CR 800.4a — in `packages/engine/src/game/game-end.ts`
 - CR 802 — in `packages/engine/src/combat/declare-blockers.ts`
+
+## By chapter
+
+How much of each chapter of the Comprehensive Rules the engine implements: the rules (numbered rules and their
+lettered subrules) the rules code cites, every one of them tested, against all the chapter's rules, and those
+mentioned as not built yet. A rule cited is one the code implements at least in part. Most of chapter 7 is keyword
+abilities and mechanics no card in the pool has, chapter 8 is multiplayer and chapter 9 other ways to play.
+
+| Chapter | Rules | Implemented and tested | Not built yet |
+| --- | --- | --- | --- |
+| 1xx Game Concepts | 530 | 140 (26%) | 11 |
+| 2xx Parts of a Card | 134 | 24 (18%) | 5 |
+| 3xx Card Types | 180 | 32 (18%) | 1 |
+| 4xx Zones | 87 | 19 (22%) | 3 |
+| 5xx Turn Structure | 165 | 69 (42%) | 4 |
+| 6xx Spells, Abilities, and Effects | 336 | 117 (35%) | 19 |
+| 7xx Additional Rules | 1577 | 113 (7%) | 11 |
+| 8xx Multiplayer Rules | 183 | 0 (0%) | 3 |
+| 9xx Casual Variants | 138 | 0 (0%) | 0 |

@@ -32,6 +32,8 @@ export type Coverage = {
   notInCr: string[];
   /** Interaction matrix cells marked "not yet" or left empty. */
   matrixGaps: string[];
+  /** Every rule in the CR, for the chapter-by-chapter progress table. */
+  crRules: readonly string[];
 };
 
 export function collectInputs(crRules: readonly string[]): CoverageInputs {
@@ -55,6 +57,7 @@ export function coverage(inputs: CoverageInputs): Coverage {
     untested: [],
     notInCr: [],
     matrixGaps: inputs.matrixGaps,
+    crRules: inputs.crRules,
   };
   for (const rule of sortRules([...Object.keys(inputs.code), ...Object.keys(inputs.later)])) {
     if (!known.has(rule) && !result.notInCr.includes(rule)) result.notInCr.push(rule);
@@ -159,7 +162,42 @@ export function reportText(c: Coverage): string {
     "",
     ...(later.length === 0 ? ["(none)"] : later.map((r) => `- CR ${r} — in ${files(c.later[r] ?? [])}`)),
     "",
+    "## By chapter",
+    "",
+    "How much of each chapter of the Comprehensive Rules the engine implements: the rules (numbered rules and their",
+    "lettered subrules) the rules code cites, every one of them tested, against all the chapter's rules, and those",
+    "mentioned as not built yet. A rule cited is one the code implements at least in part. Most of chapter 7 is keyword",
+    "abilities and mechanics no card in the pool has, chapter 8 is multiplayer and chapter 9 other ways to play.",
+    "",
+    ...chapterTable(c),
+    "",
   ].join("\n");
+}
+
+/** The CR's chapters, by the first digit of a rule's number, as its table of contents names them. */
+const CHAPTERS: readonly [string, string][] = [
+  ["1", "Game Concepts"],
+  ["2", "Parts of a Card"],
+  ["3", "Card Types"],
+  ["4", "Zones"],
+  ["5", "Turn Structure"],
+  ["6", "Spells, Abilities, and Effects"],
+  ["7", "Additional Rules"],
+  ["8", "Multiplayer Rules"],
+  ["9", "Casual Variants"],
+];
+
+/** One row per chapter: its rules, how many the code cites (all tested), and how many are mentioned as later. */
+function chapterTable(c: Coverage): string[] {
+  const rows = CHAPTERS.map(([digit, title]) => {
+    const inChapter = (rule: string) => rule.startsWith(digit);
+    const total = new Set(c.crRules.filter(inChapter)).size;
+    const cited = Object.keys(c.code).filter(inChapter).length;
+    const later = Object.keys(c.later).filter((r) => inChapter(r) && c.code[r] === undefined).length;
+    const share = total === 0 ? "0%" : `${Math.round((cited / total) * 100)}%`;
+    return `| ${digit}xx ${title} | ${total} | ${cited} (${share}) | ${later} |`;
+  });
+  return ["| Chapter | Rules | Implemented and tested | Not built yet |", "| --- | --- | --- | --- |", ...rows];
 }
 
 function section(tested: Citations, code: Citations): string[] {

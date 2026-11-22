@@ -2058,3 +2058,10 @@ owner's answer to the D-089 open question, option (a))
   the CLI. The private-repo starter instructions are gone: Claude Code needs none of them (it reads CLAUDE.md, the docs
   and `.claude/`). The copyright line names "the open-mtg-arena contributors", not a person.
 
+**D-133: A looser bench budget for the cloud machine (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The architecture's budgets (a random game under 100 ms, an action under 1 ms) are for a laptop. The cloud machine
+  Claude Code runs on (an Intel Xeon at 2.10 GHz) is slower, and the random game sat at 100–130 ms there. The owner
+  chose a separate, not too strict budget for it: `bench.ts` keeps one budget table per CPU model, and on that machine a
+  random game may take up to 150 ms. Any other machine uses the laptop budgets. The baseline comparison (20% slower
+  fails) is unchanged.
+
