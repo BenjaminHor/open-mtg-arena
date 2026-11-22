@@ -2050,3 +2050,11 @@ owner's answer to the D-089 open question, option (a))
   (white-soldiers-vs-red-green-beats-7), so a whole game of it is replayed; golden games keep the setup they were made
   with, so older ones named after these decks show the decks as they were then.
 
+**D-132: MIT license; the README is for a public repo (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner chose the MIT license for the project's code. It covers this repository's code and docs only: Magic: The
+  Gathering card names, text, symbols, rules text and art stay Wizards of the Coast's property, and card data comes
+  from Scryfall under its terms (docs/data-sources.md); the README says so, with the Fan Content Policy notice.
+- The README is written for a public repository: what the project is, how to run it, and a guide to playing games with
+  the CLI. The private-repo starter instructions are gone: Claude Code needs none of them (it reads CLAUDE.md, the docs
+  and `.claude/`). The copyright line names "the open-mtg-arena contributors", not a person.
+
