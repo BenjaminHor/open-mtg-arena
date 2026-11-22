@@ -748,6 +748,57 @@ Proportions are estimates from 16:9 desktop frames, as a share of screen width (
 
 ---
 
+## The owner's phone screenshots (2026-11-22)
+
+Eight landscape screenshots from the owner's phone (current client), described here in words; the images aren't kept.
+They settle the current mobile layout and the mulligan screen. Proportions are shares of the screen's width (W) and
+height (H). All [R], from the screenshots.
+
+**Match screen, landscape phone**
+- **Corners.** Opponent's portrait: a small square at the top left. Yours: the same at the bottom left. Top right:
+  a spectator/friend count and the settings cog. No names or timeout markers were visible.
+- **Life totals** sit on the centre line, not by the portraits: a large number in a round crest at the top centre
+  (opponent) and at the bottom centre (you). Yours overlaps the middle of your hand.
+- **Opponent's hand:** card backs fanned along the top edge, left of centre, mostly off-screen.
+- **Libraries:** the opponent's as a face-down pile at the top edge, right of centre (about 67% W); yours at the bottom,
+  just right of your portrait (about 24% W). No graveyard was visible (empty in these games).
+- **Battlefield:** the board is split in two by a horizontal band across the middle. Each side's creatures sit close
+  to that band, centred (yours just below it, the opponent's just above). Lands sit further out at the left of each
+  half: yours lower left, above your library; the opponent's upper left, below their hand. Cards on the battlefield are
+  small (about 9% W), showing art, name and the power/toughness box.
+- **Tapped:** a slight tilt (about 5–10°), the card dimmed, and a large curved-arrow mark over it.
+- **Grouping:** the opponent's two Plains overlap as one pile.
+- **Badges on a permanent:** keyword icons at the card's bottom-left corner (a heart for lifelink, a warning triangle
+  for a restriction), the power/toughness box at the bottom right.
+- **An Aura** sits as its own card just left of the creature it enchants, joined by a small link mark. Its effect also
+  shows on the creature: Pacifism draws a chain across it.
+- **The hand, collapsed:** across the bottom centre (about 35–65% W), cards overlapped, showing only their top 20%
+  (name strip, art top). The mana cost of each card floats as symbols just above it. Playable cards glow cyan.
+- **The hand, opened** (after a tap): the cards fan up in an arc to about 40–55% of their height, readable with type
+  line and part of the text; the life crest stays in front at the bottom centre. A selected card rises large above the
+  hand at the centre (about 28% W, 70% H) with its whole text and its mana cost above it.
+- **Main button cluster, bottom right:** the phase ladder as a row of small icons (end-cap diamond, main phase card,
+  crossed swords for combat, second main card, end-cap diamond; the current phase lit); under it a large pill button
+  ("Next", with "To Combat" in small text below it); to its left a round fast-forward button. On the opponent's turn
+  the button reads "Opponent's Turn" and is dark, and the phase ladder moves to the opponent's side, around their life
+  total at the top centre.
+- **The opponent's spell:** shown as a large card at the right of centre (about 28% W, 75% H) while it's cast.
+
+**Examine (long-press)**
+- The board darkens. The card is shown large at the left (about 30% W, 80% H), with its keyword icon on a tab at its
+  top-left edge.
+- To its right, a column of dark panels: one per ability or effect that applies, each with an icon, a short bold title
+  ("Can't Attack or Block", "Doesn't Untap", "Lifelink"), the rules text in italics, and, for an effect from another
+  card, that card's name under it (Pacifism). The flavour text gets a panel of its own at the bottom.
+
+**Mulligan**
+- The board is dimmed behind it. A line at the top centre says who goes first and what's awaited ("You Go First",
+  then that the opponent is still choosing).
+- The seven cards are shown large and readable, fanned in a gentle arc across the middle (each about 12% W, 45% H).
+- Below them, two large pill buttons side by side, centred: "Mulligan" (left) with a note under it saying how many
+  cards would go to the bottom, and "Keep 7" (right). A round "?" help button sits left of them.
+- Top right: an eye button (to look at the battlefield) beside the count and the cog.
+
 ## Conflicts and gaps: status after the second pass
 
 1. **Phase marker position: resolved.** Small ladders sit beside each portrait, plus a current-turn ladder at the bottom right above the main button. Draftsim's "bottom left" text is wrong by its own screenshots.
@@ -759,7 +810,7 @@ Proportions are estimates from 16:9 desktop frames, as a share of screen width (
 7. **How these look:**
    - **Resolved:** targeting arrows (intention lines), modal and alternative choices (Choose One), surveil, Order Triggers, naming a card (a "Choose a Card Name" browser with search).
    - **Partly resolved:** ordering replacement effects (manual ordering exists; layout unseen).
-   - **Open:** the X picker, choosing a player, the scry and library-search browsers, the damage-assignment prompt, the mulligan layout.
+   - **Open:** the X picker, choosing a player, the scry and library-search browsers, the damage-assignment prompt. (The mulligan layout is settled by the owner's screenshots.)
 8. **Sounds and animations: partly resolved.** There are some documented sound events (attack, block, surveil) and a list of animations from patch notes. Most cues are still unsourced; describe our own.
 9. **Timer and timeouts: partly resolved.**
    - Actions extend the timer.
@@ -767,7 +818,7 @@ Proportions are estimates from 16:9 desktop frames, as a share of screen width (
    - Timeouts are shown under the names.
    - The best-of-three clock is 30 minutes per player.
    - **Conflicts remain:** rope length (30 vs 45 seconds), where the rope is drawn (around the avatar vs across the centre; recent frames show the centre), and the inactivity loss rule.
-10. **New open item:** the current (2024–26) mobile layout. Only 2021 mobile frames were found.
+10. **Current mobile layout: resolved** by the owner's phone screenshots (section above).
 
 ## Hosts that still need allowing for a third pass
 
