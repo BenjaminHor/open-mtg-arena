@@ -1,28 +1,23 @@
 // What `brief` says about each object a player can see (M2-15f): a card's name, cost, type line and Oracle text, and
 // for a permanent its current characteristics and status. Read only for objects in the viewer's `playerView`, so it
-// says nothing about a hidden card. Characteristics are derived values the view doesn't carry; the host computes them
-// from the full state for the objects the viewer can see (D-135), as M3's match host will.
+// says nothing about a hidden card. The derived values come from the engine's `seenObjects` (D-135), the one source the
+// UI and every AI read too (D-137); this file only puts them into words.
 
 import {
   type CardDatabase,
   type Color,
   cardDataByOracleId,
   cardDataOf,
-  characteristics,
-  controllerOf,
-  type GameObject,
   type GameState,
-  isAttacking,
-  isBlocking,
-  isFreeOfSummoningSickness,
-  isToken,
   type ManaCost,
   type ObjectId,
   type PlayerId,
   type ProtectionQuality,
+  type SeenCard,
+  type SeenObject,
 } from "@mtg/engine";
 import { nameOf, refOf } from "@mtg/scenarios";
-import { attackedText, objectText, targetText } from "../describe.ts";
+import { objectText, targetText } from "../describe.ts";
 
 /** A card or token as anyone who sees it may read it. */
 export type CardInfo = {
@@ -75,70 +70,67 @@ export type StackInfo = {
   text: string;
 };
 
-export function cardInfo(state: GameState, id: ObjectId, cards: CardDatabase): CardInfo {
-  const obj = state.objects[id];
+export function cardInfo(state: GameState, seen: SeenCard, cards: CardDatabase): CardInfo {
+  const obj = state.objects[seen.id];
   const data = obj?.kind === "card" ? cardDataOf(obj, cards) : undefined;
-  const c = characteristics(state, id, cards);
+  const c = seen.characteristics;
   const subtypes = c.subtypes.length > 0 ? ` — ${c.subtypes.join(" ")}` : "";
   return {
-    id,
-    name: nameOf(state, id, cards),
+    id: seen.id,
+    name: nameOf(state, seen.id, cards),
     manaCost: data?.printed.manaCost == null ? null : manaCostText(data.printed.manaCost),
     typeLine: `${[...c.supertypes, ...c.types].map(capitalized).join(" ")}${subtypes}`,
     text: data?.def.oracle ?? "",
   };
 }
 
-export function permanentInfo(state: GameState, id: ObjectId, cards: CardDatabase): PermanentInfo {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") throw new Error(`${id} isn't a permanent`);
-  const c = characteristics(state, id, cards);
-  const blocks = isBlocking(state, id, cards) ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id) : [];
-  const attack = isAttacking(state, id, cards) ? state.combat?.attacks.find((a) => a.attacker === id) : undefined;
+/** A permanent's description, from what the viewer sees of it (`seenObjects`, D-135). */
+export function permanentInfo(state: GameState, seen: SeenCard, cards: CardDatabase): PermanentInfo {
+  const c = seen.characteristics;
   return {
-    ...cardInfo(state, id, cards),
-    ref: refOf(state, id, cards) ?? nameOf(state, id, cards),
+    ...cardInfo(state, seen, cards),
+    ref: refOf(state, seen.id, cards) ?? nameOf(state, seen.id, cards),
     controller: c.controller,
-    owner: obj.owner,
-    token: isToken(obj),
+    owner: seen.owner,
+    token: seen.token,
     power: c.power,
     toughness: c.toughness,
     keywords: [...c.keywords, ...c.protections.map((q) => `protection from ${protectionText(q)}`)],
-    tapped: obj.tapped,
-    summoningSick: c.types.includes("creature") && !isFreeOfSummoningSickness(state, id, cards),
-    damage: obj.damage,
-    counters: obj.counters,
-    attachedTo: obj.attachedTo === undefined ? null : objectText(state, obj.attachedTo, cards),
-    attacking: attack === undefined ? null : attackedText(state, attack, cards),
-    blocking: blocks.map((b) => objectText(state, b.attacker, cards)),
-    chosen: obj.chosenName ?? obj.chosenLandType ?? null,
+    tapped: seen.tapped,
+    summoningSick: seen.summoningSick,
+    damage: seen.damage,
+    counters: seen.counters,
+    attachedTo: seen.attachedTo === null ? null : objectText(state, seen.attachedTo, cards),
+    attacking: seen.attacking === null ? null : targetText(state, seen.attacking, cards),
+    blocking: seen.blocking.map((attacker) => objectText(state, attacker, cards)),
+    chosen: seen.chosen,
   };
 }
 
-export function stackInfo(state: GameState, id: ObjectId, cards: CardDatabase): StackInfo {
-  const obj = state.objects[id];
-  const choices = obj?.kind === "ability" ? obj.choices : obj?.kind === "card" ? obj.choices : null;
-  const text =
-    obj?.kind === "ability"
-      ? (cardDataByOracleId(obj.sourceOracleId, cards)?.def.oracle ?? "")
-      : obj?.kind === "card"
-        ? (cardDataOf(obj, cards)?.def.oracle ?? "")
-        : "";
+export function stackInfo(state: GameState, seen: SeenObject, cards: CardDatabase): StackInfo {
+  const text = stackText(state, seen, cards);
   return {
-    id,
-    name: nameOf(state, id, cards),
-    kind: stackKind(obj),
-    controller: controllerOf(state, id, cards),
-    targets: (choices?.targets ?? []).flat().map((t) => targetText(state, t, cards)),
-    x: choices?.x ?? null,
+    id: seen.id,
+    name: nameOf(state, seen.id, cards),
+    kind: stackKind(seen),
+    controller: seen.kind === "ability" ? seen.controller : seen.characteristics.controller,
+    targets: (seen.choices?.targets ?? []).flat().map((t) => targetText(state, t, cards)),
+    x: seen.choices?.x ?? null,
     text,
   };
 }
 
+/** A spell's Oracle text, or the text of the card an ability comes from. */
+function stackText(state: GameState, seen: SeenObject, cards: CardDatabase): string {
+  if (seen.kind === "ability") return cardDataByOracleId(seen.sourceOracleId, cards)?.def.oracle ?? "";
+  const obj = state.objects[seen.id];
+  return obj?.kind === "card" ? (cardDataOf(obj, cards)?.def.oracle ?? "") : "";
+}
+
 /** An ability, a copy of a spell (CR 707.10) or a spell. */
-function stackKind(obj: GameObject | undefined): StackInfo["kind"] {
-  if (obj?.kind === "ability") return "ability";
-  return obj?.copy === true ? "copy" : "spell";
+function stackKind(seen: SeenObject): StackInfo["kind"] {
+  if (seen.kind === "ability") return "ability";
+  return seen.copy ? "copy" : "spell";
 }
 
 /** `{X}{1}{R}`. */

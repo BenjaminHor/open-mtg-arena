@@ -15,6 +15,9 @@ import {
   type PlayerId,
   type PlayerView,
   playerView,
+  type SeenCard,
+  type SeenObject,
+  seenObjects,
   type ViewDecision,
 } from "@mtg/engine";
 import { scenarioStep } from "@mtg/scenarios";
@@ -78,8 +81,11 @@ export function briefOf(state: GameState, viewer: PlayerId, recent: readonly str
   const seated = [viewer, ...view.turnOrder.filter((p) => p !== viewer)];
   const turn = view.turn;
   const mine = view.waitingFor?.player === viewer;
-  // Only objects in the view are described: a face-down card (later: CR 708) would be left out of it, not shown here.
-  const seen = (ids: readonly ObjectId[]) => ids.filter((id) => view.objects[id] !== undefined);
+  // What the viewer sees of each object, derived by the engine (D-135): only objects in the view are there, so a
+  // face-down card (later: CR 708) would be left out, not shown.
+  const objects = seenObjects(state, view, cards);
+  const seen = (ids: readonly ObjectId[]): SeenObject[] => ids.flatMap((id) => objects[id] ?? []);
+  const seenCards = (ids: readonly ObjectId[]): SeenCard[] => seen(ids).filter((o): o is SeenCard => o.kind === "card");
   return {
     format: BRIEF_FORMAT,
     version: BRIEF_VERSION,
@@ -93,9 +99,9 @@ export function briefOf(state: GameState, viewer: PlayerId, recent: readonly str
             step: scenarioStep(turn.step),
             nextStep: nextStepName(state),
           },
-    players: seated.map((p) => playerBrief(state, view, p, seen, cards)),
-    stack: seen(view.zones.stack).map((id) => stackInfo(state, id, cards)),
-    exile: seen(view.zones.exile).map((id) => cardInfo(state, id, cards)),
+    players: seated.map((p) => playerBrief(state, view, p, seenCards, cards)),
+    stack: seen(view.zones.stack).map((o) => stackInfo(state, o, cards)),
+    exile: seenCards(view.zones.exile).map((c) => cardInfo(state, c, cards)),
     waitingFor: view.waitingFor === null ? null : { player: view.waitingFor.player, kind: view.waitingFor.kind },
     decision: view.decision,
     // Numbered by the same function as `actions` and `do`, so the numbers always match.
@@ -115,7 +121,7 @@ function playerBrief(
   state: GameState,
   view: PlayerView,
   player: PlayerId,
-  seen: (ids: readonly ObjectId[]) => ObjectId[],
+  seenCards: (ids: readonly ObjectId[]) => SeenCard[],
   cards: CardDatabase,
 ): PlayerBrief {
   const ps = view.players[player];
@@ -130,14 +136,14 @@ function playerBrief(
     manaPool: ps.manaPool,
     manaAvailable: manaAvailable(state, player, cards),
     landsPlayedThisTurn: ps.landsPlayedThisTurn,
-    hand: zones.hand === null ? null : seen(zones.hand).map((id) => cardInfo(state, id, cards)),
+    hand: zones.hand === null ? null : seenCards(zones.hand).map((c) => cardInfo(state, c, cards)),
     revealedHand: zones.revealedHand === null ? null : zones.revealedHand.map(named).sort(),
     revealedTop: zones.revealedTop === null ? null : named(zones.revealedTop),
     // Each player's side of the table is what they control now (CR 110.2), not what they own.
-    battlefield: seen(view.zones.battlefield)
-      .map((id) => permanentInfo(state, id, cards))
+    battlefield: seenCards(view.zones.battlefield)
+      .map((c) => permanentInfo(state, c, cards))
       .filter((p) => p.controller === player),
-    graveyard: seen(zones.graveyard).map((id) => cardInfo(state, id, cards)),
+    graveyard: seenCards(zones.graveyard).map((c) => cardInfo(state, c, cards)),
   };
 }
 
