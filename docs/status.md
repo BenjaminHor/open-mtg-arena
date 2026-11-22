@@ -839,7 +839,12 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            for the bottom (later) goes in the same place.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
-         yours, none asked; one card, no order asked; seven of eight). 1 golden game. Next: fuzz, reviews, PR.
+         yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong
+         game state; under Vampire Nocturnus a card that was never on top was revealed, as the moves and the arranging
+         were two events: now one batch, the reorder naming cards by their ids before it (`renamed` in perform.ts). 9
+         scenarios from it (owner not controller both ways, three ordered, two Mirrors, Djinn's exiled card, a token,
+         Nocturnus twice, all seven), a unit test that the order is secret, a "choose" purpose for the selection step,
+         citations fixed. PR #84; next: code review.
        - M2-14i built (2026-11-22, D-127): Clone (238 cards): the `entersAsCopy` replacement, `CardObject.copied` read
          by `cardDataOf` (layer 1), `textOracleId` for abilities, `chooseCards` resuming an event, `OBJECTS_CHOSEN`, `put`
          through `happenOrAsk`. 17 scenarios (copies Bears; none; no creature; a token; Giant Growth and an Aura not

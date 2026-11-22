@@ -13,7 +13,7 @@ type Choose = Extract<Effect, { op: "choose" }>;
 
 /**
  * The controller chooses up to `upTo` exiled cards fitting the filter, however they got there (Mirror of Fate's
- * ruling); every exiled card is face up (CR 406.3). Not asked with none to choose: exile is public (CR 406.3), so
+ * ruling); every exiled card is face up (CR 406.3; exiled face down, later: CR 406.3a). Not asked with none to choose: exile is public (CR 406.3), so
  * skipping tells nothing. With `chosen`, the answer: the cards still in exile are `found`.
  */
 export function chooseExiled(

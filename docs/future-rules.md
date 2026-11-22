@@ -454,3 +454,11 @@ changing who controls it as it enters still needs reading there (CR 110.2a). An 
 `chooseCards` can't offer, and `AuraHost.host` to take a player. The host's legality is judged on the Aura as it is in
 the graveyard; an effect that changes it as it enters (CR 614.12) would need it judged as it will be. *Needs now:*
 nothing.
+
+**Several cards put in one position of a library (CR 401.4, D-128).** Built for the top (Mirror of Fate): the owner
+arranges them, unrevealed, in one batch (the moves in shown order, then a `reorderLibrary` naming them by their ids
+before the batch, so a top played revealed is shown only as it ends). *Still to come:* the bottom ("put them on the
+bottom of your library in any order", not in the pool), which goes in the same place; cards of several owners put at
+once (each to their owner's library, each owner arranging theirs; `putSeveralOnTop` throws today); and cards already in
+the library moved as a group, which shouldn't become new objects.
+

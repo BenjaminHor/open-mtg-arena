@@ -10,7 +10,7 @@ steps:
   - p1 activate: Mirror of Fate
   - all pass: once
   - expect:
-      pending: { player: p1, kind: chooseCards, purpose: putOnTop, min: 0, max: 1 }
+      pending: { player: p1, kind: chooseCards, purpose: choose, min: 0, max: 1 }
   - p1 choose: Shock
   - expect:
       pending: { player: p1, kind: priority }

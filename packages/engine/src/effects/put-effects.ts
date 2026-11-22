@@ -5,7 +5,7 @@ import type { CardDatabase, Effect } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
 import { happen, happenOrAsk } from "../pipeline/happen.ts";
-import { zoneChangeOf } from "../pipeline/moved.ts";
+import type { SingleEvent } from "../pipeline/proposed.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -91,15 +91,12 @@ function putSeveralOnTop(
       askToChoose(state, { chooser: owner, purpose: "putOnTop", options, min: count, max: count, effect, context }),
     );
   }
+  // One batch, so a library's top played revealed is shown only as it ends (Vampire Nocturnus), never a card that was on
+  // top for a moment of the arranging.
   const top = { zone: "library", position: "top" } as const;
   const moves = inShownOrder(state, ids).map((object) => ({ kind: "moveCard", object, to: top }) as const);
-  const moved = happen(state, { kind: "simultaneous", events: moves }, cards);
-  const order = chosen.flatMap((id) => {
-    const change = zoneChangeOf(moved.events, id);
-    return change === null ? [] : [change.newId];
-  });
-  const reordered = happen(moved.state, { kind: "reorderLibrary", player: owner, top: order }, cards);
-  return { state: reordered.state, events: [...moved.events, ...reordered.events] };
+  const arranged: SingleEvent = { kind: "reorderLibrary", player: owner, top: [...chosen] };
+  return happen(state, { kind: "simultaneous", events: [...moves, arranged] }, cards);
 }
 
 /** Whether the card is in a zone not every player sees into: a library or a hand (CR 400.2). */

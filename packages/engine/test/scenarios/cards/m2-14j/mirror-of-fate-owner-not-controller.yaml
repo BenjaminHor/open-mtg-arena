@@ -1,0 +1,26 @@
+name: a card p2 owns, exiled while p1 controlled it, is p2's to choose, not p1's
+rules: [CR 108.3]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [{ card: Mind Control, attachedTo: p2:Magma Phoenix }, Mirror of Fate]
+    library: [Forest]
+  p2:
+    battlefield: [Magma Phoenix, Plains, Plains, Mirror of Fate]
+    hand: [Celestial Purge]
+    library: [Island]
+steps:
+  - p2 cast: Celestial Purge
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - expect:
+      exile: [Magma Phoenix]
+  - p2 activate: Mirror of Fate
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseCards, purpose: choose, min: 0, max: 1 }
+  - p2 choose: Magma Phoenix
+  - expect:
+      p2.library: [Magma Phoenix]
+      exile: [Island]

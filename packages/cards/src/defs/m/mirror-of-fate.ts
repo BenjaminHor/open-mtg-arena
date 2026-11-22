@@ -11,7 +11,7 @@ export const mirrorOfFate: CardDef = {
       targets: [],
       effects: [
         // Chosen as it resolves, before the library is exiled, so none of those can be chosen (its rulings).
-        { op: "choose", from: "exile", filter: { owner: "you" }, upTo: 7, purpose: "putOnTop" },
+        { op: "choose", from: "exile", filter: { owner: "you" }, upTo: 7, purpose: "choose" },
         { op: "exileAll", zone: "library", of: "you" },
         // In the order its owner chooses, not revealed (CR 401.4).
         { op: "put", of: "found", into: "libraryTop" },

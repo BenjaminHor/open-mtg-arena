@@ -1,0 +1,22 @@
+name: a card Djinn of Wishes exiled is a face-up exiled card its owner can choose with Mirror of Fate
+rules: [CR 406.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island, Mirror of Fate]
+    library: [Craw Wurm, Forest]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: no
+  - expect:
+      exile: [Craw Wurm]
+  - p1 activate: Mirror of Fate
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: choose, min: 0, max: 1 }
+  - p1 choose: Craw Wurm
+  - expect:
+      p1.library: [Craw Wurm]
+      exile: [Forest]

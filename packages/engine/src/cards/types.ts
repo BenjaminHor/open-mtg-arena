@@ -773,8 +773,8 @@ export type Effect =
   | { op: "lookAtTop"; count: number }
   /**
    * "Choose up to N [filter] exiled cards" (Mirror of Fate: "face-up exiled cards you own"): the controller chooses as
-   * it resolves (CR 608.2d), however they got there (its ruling); every exiled card is face up (CR 406.3; face down,
-   * later). The cards chosen are `"found"` for the effects after it, as a search's are. Not asked with none to choose:
+   * it resolves (CR 608.2d), however they got there (its ruling); every exiled card is face up (CR 406.3; exiled face
+   * down, later: CR 406.3a). The cards chosen are `"found"` for the effects after it, as a search's are. Not asked with none to choose:
    * exile is public, so that tells nothing.
    */
   | { op: "choose"; from: "exile"; filter: ObjectFilter; upTo: number; purpose: ChoosePurpose }

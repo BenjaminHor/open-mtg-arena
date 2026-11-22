@@ -194,7 +194,16 @@ export type AsEntersAnswer = {
 export type ChooseWhat = "cardName" | "basicLandType";
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
-export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice" | "enchant" | "copy";
+export type ChoosePurpose =
+  | "discard"
+  | "putOntoBattlefield"
+  | "search"
+  | "putOnTop"
+  | "sacrifice"
+  | "enchant"
+  | "copy"
+  /** Chosen for the effects after it ("choose up to seven exiled cards"), which say what's done with them. */
+  | "choose";
 
 /**
  * What a `chooseCards` answer is for: an effect while a spell or ability resolves, run again with the chosen cards; or

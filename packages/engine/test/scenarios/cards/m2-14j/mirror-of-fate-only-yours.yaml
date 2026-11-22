@@ -1,5 +1,5 @@
 name: Mirror of Fate offers only exiled cards its controller owns; with none, nothing is asked and the library is still exiled
-rules: [CR 108.3, CR 608.2d]
+rules: [CR 608.2d]
 setup:
   turn: { active: p1, step: main1 }
   p1:
