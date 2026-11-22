@@ -871,6 +871,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (e) more scenarios: Clone revealed with a creature (options []), Entangling Vines to the bottom, a
            planeswalker card to the bottom, Mind Control on a step-4 creature, two Auras of one player, Hive Mind and
            Twincast copying it.
+       - M2-14l plan (2026-11-22): the three final decks (m2-pool.md, "Prebuilt decks"). White Soldiers is new (Elite
+         Vanguard, Captain of the Watch, Veteran Armorsmith and Swordsmith, Rhox Pikemaster, Honor of the Pure, Pacifism,
+         Ajani Goldmane...); Red-Green Beats gains Overrun, Garruk Wildspeaker, Siege-Gang Commander and Howl of the
+         Night Pack; Blue-Black Control gains Cancel, Wall of Bone, Jace Beleren and Liliana Vess. The fuzzer's prebuilt
+         pairs add White Soldiers against each; the golden games from these decks are replayed or regenerated, and one
+         White Soldiers game added. The interaction matrix already has no open cells and the golden games already run
+         every mechanic in the pool (D-082), so "between them every mechanic appears" is met by the golden set, not by
+         three 40-card decks (Warp World, Mirror of Fate and the like have no place in them).
+       - M2-14l built (2026-11-22): the three final decks in `packages/cards/src/decks/index.ts` (White Soldiers new;
+         Red-Green Beats with Garruk, Overrun, Siege-Gang Commander, Howl of the Night Pack; Blue-Black Control with Jace,
+         Liliana, Wall of Bone, Cancel). The fuzzer's prebuilt pairs now include White Soldiers against each of the others;
+         golden game white-soldiers-vs-red-green-beats-7 added (White Soldiers wins on turn 39); the older golden games keep
+         their own setups, so they replay unchanged. Interaction matrix: no open cells. Next: fuzz, review, PR.
        - M2-14k built (2026-11-22, D-129, D-130): Warp World (240 cards, every M2 card but the two set aside). First a
          separate commit: a card entering from a hidden zone is shown by identity, not id (D-129). Then
          `shuffleIntoLibraries`, `revealTop` for each player, `returnAllToBattlefield` from `found`, `put` into libraries

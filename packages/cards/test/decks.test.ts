@@ -53,7 +53,7 @@ describe("prebuilt decks", () => {
       "Spined Wurm",
       "Furnace Whelp",
     ];
-    for (const name of ["red-green-beats", "blue-black-control"]) {
+    for (const name of ["white-soldiers", "red-green-beats", "blue-black-control"]) {
       const cardNames = DECKS[name]?.cards.map((c) => c.card) ?? [];
       expect(cardNames, name).not.toHaveLength(0);
       expect(

@@ -82,7 +82,8 @@ every mechanic appears:
 - **Red-Green Beats:** Lightning Bolt, Fireball, Prodigal Pyromancer, Overrun, Giant Growth, tramplers and tokens.
 - **Blue-Black Control:** Cancel, Doom Blade, Mind Rot, Sign in Blood, fliers, regenerating walls, a planeswalker.
 
-The exact lists are written when they're built (D-053's pool rule: only scripted cards go in a deck).
+The exact lists are written when they're built (D-053's pool rule: only scripted cards go in a deck). Built in M2-14l (`packages/cards/src/decks/index.ts`); every mechanic in the pool is run by the golden games
+(D-082) rather than by these three decks alone.
 
 ## Every card
 
