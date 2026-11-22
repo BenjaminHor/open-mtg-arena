@@ -47,18 +47,12 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
     const card = host === null ? undefined : board[host];
     if (host === null || card === undefined) continue;
     switch (s.def.kind) {
-      case "attachedCantAttackOrBlock":
-        board[host] = { ...card, cantAttackOrBlock: true };
+      case "attachedRestricts": {
+        let marked = card;
+        for (const restriction of s.def.restrictions) marked = { ...marked, [restriction]: true };
+        board[host] = marked;
         break;
-      case "attachedCantBeBlocked":
-        board[host] = { ...card, cantBeBlocked: true };
-        break;
-      case "attachedCantActivate":
-        board[host] = { ...card, cantActivate: true };
-        break;
-      case "attachedDoesntUntap":
-        board[host] = { ...card, doesntUntap: true };
-        break;
+      }
       // Layer 4, in `land-type.ts`.
       case "attachedSetsLandType":
       case "attachedControl":
@@ -75,8 +69,7 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
-      case "opponentsPlayWithHandsRevealed":
-      case "playWithTopOfLibraryRevealed":
+      case "playWithRevealed":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
         break;

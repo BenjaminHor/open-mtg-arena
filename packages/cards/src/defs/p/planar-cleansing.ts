@@ -5,6 +5,6 @@ export const planarCleansing: CardDef = {
   oracle: "Destroy all nonland permanents.",
   spell: {
     targets: [],
-    effects: [{ op: "destroyAll", filter: { notTypes: ["land"] } }],
+    effects: [{ op: "destroy", of: { each: { notTypes: ["land"] } } }],
   },
 };

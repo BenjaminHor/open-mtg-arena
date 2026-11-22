@@ -207,8 +207,7 @@ function preventsForPermanent(
       return sourceController !== null && sourceController !== you ? def.amount : null;
     }
     // Not a prevention.
-    case "asEntersChooseName":
-    case "asEntersChooseBasicLandType":
+    case "asEntersChoose":
     case "entersAsCopy":
       return null;
     case "preventDamageToSelfRemovingCounters":

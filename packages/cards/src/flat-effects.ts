@@ -13,8 +13,7 @@ export function flatEffects(effects: readonly Effect[]): Effect[] {
 /** The effects inside a condition, which run as part of the same resolution. */
 export function conditionalEffects(effect: Effect): readonly Effect[] {
   switch (effect.op) {
-    case "ifNothingSacrificed":
-    case "ifActivatedThisTurn":
+    case "if":
       return effect.effects;
     // Its ability's effects run later, as their own resolution: see `delayedAbilities`.
     case "createDelayedTrigger":
@@ -44,7 +43,6 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "returnAllToBattlefield":
     case "destroy":
     case "destroyOneAtRandom":
-    case "destroyAll":
     case "exile":
     case "returnToHand":
     case "putOnTopOfLibrary":
@@ -63,7 +61,6 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "mayPlayWithoutPaying":
     case "copySpell":
     case "shuffle":
-    case "mayShuffle":
     case "lookAtTop":
     case "exileAll":
     case "choose":

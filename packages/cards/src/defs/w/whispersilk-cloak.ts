@@ -4,7 +4,10 @@ export const whispersilkCloak: CardDef = {
   name: "Whispersilk Cloak",
   oracle:
     "Equipped creature can't be blocked and has shroud. (It can't be the target of spells or abilities.)\nEquip {2}",
-  statics: [{ kind: "attachedCantBeBlocked" }, { kind: "attachedGets", power: 0, toughness: 0, keywords: ["shroud"] }],
+  statics: [
+    { kind: "attachedRestricts", restrictions: ["cantBeBlocked"] },
+    { kind: "attachedGets", power: 0, toughness: 0, keywords: ["shroud"] },
+  ],
   abilities: [
     {
       kind: "activated",

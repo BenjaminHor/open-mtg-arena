@@ -118,7 +118,7 @@ describe("definitionProblems", () => {
     const gains: TriggeredAbilityDef = {
       when: { kind: "playerGainsLife", player: "you" },
       targets: [],
-      effects: [{ op: "destroyAll", filter: { controller: "triggeringPlayer" } }],
+      effects: [{ op: "destroy", of: { each: { controller: "triggeringPlayer" } } }],
     };
     const lose: Effect = { op: "loseLife", who: "you", amount: "thatMuch" };
     const attacks: TriggeredAbilityDef = { when: { kind: "selfAttacks" }, targets: [], effects: [lose] };
@@ -167,7 +167,8 @@ describe("definitionProblems", () => {
           effects: [
             { op: "sacrifice", who: "you", filter: { types: ["creature"] } },
             {
-              op: "ifNothingSacrificed",
+              op: "if",
+              condition: { kind: "nothingSacrificed" },
               effects: [
                 {
                   op: "dealDamage",
@@ -188,7 +189,7 @@ describe("definitionProblems", () => {
       "Furnace Whelp ability 1: loseLife is for players, not objects",
       "Furnace Whelp ability 1: destroyOneAtRandom is for objects, not players",
       "Furnace Whelp ability 2: a divided amount is a number or X",
-      "Furnace Whelp ability 2: a divided effect, mana or ifNothingSacrificed can't be inside ifNothingSacrificed",
+      `Furnace Whelp ability 2: a divided effect, mana or "if nothing was sacrificed" can't be inside if`,
       'Furnace Whelp ability 1: "that creature" is only for a triggered ability',
       'Furnace Whelp ability 2: "that much" is only for a triggered ability',
       'Furnace Whelp trigger 1: its event has no "that creature"',
@@ -202,7 +203,7 @@ describe("definitionProblems", () => {
       op: "createDelayedTrigger",
       ability: { when: endStep, targets: [], effects: sacrifice, ...fields },
     });
-    const counted: Effect = { op: "ifActivatedThisTurn", atLeast: 4, effects: [delayed({})] };
+    const counted: Effect = { op: "if", condition: { kind: "activatedThisTurn", atLeast: 4 }, effects: [delayed({})] };
     const activated = (effects: Effect[]): AbilityDef => ({ kind: "activated", cost: [], targets: [], effects });
     const def: CardDef = {
       name: "Furnace Whelp",
@@ -226,10 +227,10 @@ describe("definitionProblems", () => {
     const problems = definitionProblems([def], [whelp]);
     const cantWait = 'waits for the beginning of anyone\'s step, with no targets, intervening if or "you may"';
     expect(problems).toStrictEqual([
-      "Furnace Whelp: ifActivatedThisTurn is only for an activated ability",
-      "Furnace Whelp trigger 1: ifActivatedThisTurn is only for an activated ability",
+      "Furnace Whelp: counting activations is only for an activated ability",
+      "Furnace Whelp trigger 1: counting activations is only for an activated ability",
       ...[2, 3, 4, 5, 6].map((i) => `Furnace Whelp ability ${i} delayed trigger: ${cantWait}`),
-      "Furnace Whelp ability 8 delayed trigger: ifActivatedThisTurn is only for an activated ability",
+      "Furnace Whelp ability 8 delayed trigger: counting activations is only for an activated ability",
     ]);
   });
 
@@ -480,7 +481,7 @@ describe("definitionProblems", () => {
       ...real,
       abilities: (real.abilities ?? []).map((a) => ({
         ...a,
-        effects: [{ op: "ifActivatedThisTurn", atLeast: 1, effects: a.effects }],
+        effects: [{ op: "if", condition: { kind: "activatedThisTurn", atLeast: 1 }, effects: a.effects }],
       })),
     };
     expect(definitionProblems([conditional], [giant]).filter((p) => p.includes("remembered"))).toStrictEqual([]);

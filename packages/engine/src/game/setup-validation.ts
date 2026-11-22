@@ -65,7 +65,7 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       // A name chosen as it entered (CR 614.12a) only for a permanent that chooses one, and a card's name (CR 201.4).
       if (permanent.chosenName !== undefined) {
         const chooses = (cardDataByOracleId(permanent.oracleId, cards)?.def.replacements ?? []).some(
-          (r) => r.kind === "asEntersChooseName",
+          (r) => r.kind === "asEntersChoose" && r.what === "cardName",
         );
         if (!chooses) problems.push(`${player.id}: only a permanent that chooses a card name as it enters has one`);
         if (!isCardName(permanent.chosenName, cards))
@@ -74,7 +74,7 @@ export function setupProblems(setup: GameSetup, cards: CardDatabase): string[] {
       // Likewise a basic land type (CR 205.3i), only for a permanent that chooses one as it enters.
       if (permanent.chosenLandType !== undefined) {
         const chooses = (cardDataByOracleId(permanent.oracleId, cards)?.def.replacements ?? []).some(
-          (r) => r.kind === "asEntersChooseBasicLandType",
+          (r) => r.kind === "asEntersChoose" && r.what === "basicLandType",
         );
         if (!chooses) problems.push(`${player.id}: only a permanent that chooses a land type as it enters has one`);
         if (!isBasicLandType(permanent.chosenLandType))

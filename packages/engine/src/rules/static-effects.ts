@@ -85,10 +85,7 @@ export function staticKeywordGrants(
         for (const id of affected) grants[id] = [...(grants[id] ?? []), grant];
         break;
       }
-      case "attachedCantAttackOrBlock":
-      case "attachedCantBeBlocked":
-      case "attachedCantActivate":
-      case "attachedDoesntUntap":
+      case "attachedRestricts":
       case "attachedSetsLandType":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
@@ -104,8 +101,7 @@ export function staticKeywordGrants(
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
-      case "opponentsPlayWithHandsRevealed":
-      case "playWithTopOfLibraryRevealed":
+      case "playWithRevealed":
         break;
     }
   }
@@ -200,12 +196,8 @@ export function staticPTChanges(
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
-      case "opponentsPlayWithHandsRevealed":
-      case "playWithTopOfLibraryRevealed":
-      case "attachedCantAttackOrBlock":
-      case "attachedCantBeBlocked":
-      case "attachedCantActivate":
-      case "attachedDoesntUntap":
+      case "playWithRevealed":
+      case "attachedRestricts":
       case "attachedSetsLandType":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":

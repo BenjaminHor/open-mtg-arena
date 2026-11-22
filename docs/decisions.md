@@ -2065,3 +2065,22 @@ owner's answer to the D-089 open question, option (a))
   random game may take up to 150 ms. Any other machine uses the laptop budgets. The baseline comparison (20% slower
   fails) is unchanged.
 
+
+**D-134: Single-use building blocks merged where they're the same idea (M2-15d, D-126)** · 2026-11-22 · accepted
+- The D-126 review counted the effect ops, statics, replacement kinds and triggers only one card uses. Where two or more
+  of them were one idea with a different word, they became one block with a field, without changing any behaviour:
+  `destroyAll` is `destroy` of `{ each: filter }`; `asEntersChooseName` and `asEntersChooseBasicLandType` are
+  `asEntersChoose` with `what`; the four attached restrictions (Pacifism, Whispersilk Cloak, Ice Cage, Entangling
+  Vines) are `attachedRestricts` with a list, one static ability as the card's text has it; `ifNothingSacrificed` and
+  `ifActivatedThisTurn` are `if` with a `condition` (`effects/if-condition.ts`); the two revealed-zone statics are
+  `playWithRevealed` with `what` and `whose`; `selfBecomesTarget` and `attachedBecomesTarget` are `becomesTarget` with
+  `of`; `selfBlocksOrBlocked` is `selfBlocks` with `orBecomesBlocked`; `mayShuffle` is `shuffle` with `optional`.
+- Kept as they are, because merging would change play or needs work first: Elvish Piper's and Capricious Efreet's
+  choices through `choose`, `putOnTopOfLibrary` into `put` (tokens in `put` first), and the prevention kinds into one
+  (little to gain). Kept as one-offs, being one card's rules and not a word for something general: Relentless Rats' and
+  Coat of Arms' counts (relative to the creature affected), Warp World's count of the cards shuffled in, Stone Giant's
+  "toughness less than this creature's power" target. Most other single-card blocks are general rules ideas (a keyword,
+  a zone, a turn structure) that more cards will use.
+- Each merge renamed a mechanic key the golden cover reads, so the cover's list shrank; the golden games themselves
+  didn't change. A saved game stopped mid-resolution with an old op name wouldn't load, which is fine before the first
+  release (ENGINE_VERSION 0).

@@ -5,6 +5,6 @@ export const tempestOfLight: CardDef = {
   oracle: "Destroy all enchantments.",
   spell: {
     targets: [],
-    effects: [{ op: "destroyAll", filter: { types: ["enchantment"] } }],
+    effects: [{ op: "destroy", of: { each: { types: ["enchantment"] } } }],
   },
 };

@@ -9,7 +9,7 @@ The engine's entry points and the flow of a game.
 | `pregame.ts` | The start of a standard game (CR 103): starting player, shuffles, opening hands, mulligans |
 | `first-turn.ts` | Turn 1 begins for the starting player (CR 103.8) |
 | `turn-steps.ts` | `TURN_STEPS`: the turn sequence as data (CR 500.1) |
-| `untap-step.ts` | The untap step's turn-based action (CR 502.3): `untapStep` untaps the active player's permanents but those kept tapped (an Aura's `attachedDoesntUntap`, a `doesntUntap` effect), then ends the "next untap step" effects it used up |
+| `untap-step.ts` | The untap step's turn-based action (CR 502.3): `untapStep` untaps the active player's permanents but those kept tapped (an Aura's `attachedRestricts` with `doesntUntap`, a `doesntUntap` effect), then ends the "next untap step" effects it used up |
 | `steps.ts` | The step machine: `beginTurn`, `endStep`, each step's turn-based actions, skipped steps (D-031); the cleanup step's check and another cleanup step (CR 514.3a) |
 | `advance.ts` | `advance()`: runs queued work until a decision is pending (D-032). Every entry point ends here |
 | `control-changes.ts` | `recordControlChanges`: after the action and each piece of work, a permanent whose controller changed is summoning sick again (CR 302.6) and out of combat (CR 506.4) (D-104) |

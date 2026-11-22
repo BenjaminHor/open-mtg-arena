@@ -157,8 +157,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   preventDamageToYou: "prevented",
   entersWithCounters: "battlefield",
   entersWithLoyalty: "battlefield",
-  asEntersChooseName: "battlefield",
-  asEntersChooseBasicLandType: "battlefield",
+  asEntersChoose: "battlefield",
   entersAsCopy: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
   preventNoncombatDamageToAttached: "prevented",
@@ -229,8 +228,7 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   attacksEachCombat: "combat",
   mustBeBlockedByAllAble: "combat",
   cantBeCountered: "enters",
-  opponentsPlayWithHandsRevealed: "enters",
-  playWithTopOfLibraryRevealed: "enters",
+  playWithRevealed: "enters",
   // Anthems, coarsely, as their permanent resolves: many are on noncreatures (Honor of the Pure, Coat of Arms), which
   // never attack or block.
   creaturesGet: "enters",
@@ -241,8 +239,6 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   cantAttackUnlessDefenderControls: "combat",
   // As its permanent resolves, like anthems: it does something only at a cleanup with too many cards.
   noMaximumHandSize: "enters",
-  // Coarse, like anthems: an Aura's resolving shows it; it does something only in an untap step.
-  attachedDoesntUntap: "enters",
   // Coarse, like anthems: it does something only when its controller would lose.
   cantLoseOpponentsCantWin: "enters",
   // Coarse, like anthems: its permanent's resolving shows it.
@@ -252,11 +248,9 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   // As its Aura resolves, like anthems. Pacifism's restriction is on the Aura, which never attacks or blocks, so
   // crediting it in combat would never count; its Aura resolving is when it starts to apply.
   attachedGets: "enters",
-  attachedCantAttackOrBlock: "enters",
-  // Evasion, like "can't be blocked": its creature attacking shows it.
-  attachedCantBeBlocked: "enters",
+  // Likewise; some of its restrictions do something only in combat or an untap step.
+  attachedRestricts: "enters",
   attachedControl: "enters",
-  attachedCantActivate: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */

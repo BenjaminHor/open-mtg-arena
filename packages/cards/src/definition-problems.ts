@@ -34,18 +34,14 @@ function passFilters(s: StaticAbilityDef): ObjectFilter[] {
       return s.to === "yourLifeTotal" ? [] : [s.to.count];
     case "attachedGets":
       return s.perCount === undefined ? [] : [s.perCount];
-    case "attachedCantAttackOrBlock":
-    case "attachedCantBeBlocked":
-    case "attachedCantActivate":
-    case "attachedDoesntUntap":
+    case "attachedRestricts":
     case "attachedSetsLandType":
     case "attachedControl":
       return [];
     case "cantBeBlocked":
     case "cantAttackUnlessDefenderControls":
     case "noMaximumHandSize":
-    case "opponentsPlayWithHandsRevealed":
-    case "playWithTopOfLibraryRevealed":
+    case "playWithRevealed":
     case "cantLoseOpponentsCantWin":
     case "chosenNameCantActivate":
     case "canBlockAnyNumber":
@@ -192,7 +188,7 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
     if (def.spell !== undefined) problems.push(...subjectProblems(def.name, def.spell.targets, def.spell.effects));
     problems.push(...triggerWordProblems(def));
     if (def.spell !== undefined && countsActivations(def.spell.effects))
-      problems.push(`${def.name}: ifActivatedThisTurn is only for an activated ability`);
+      problems.push(`${def.name}: counting activations is only for an activated ability`);
     for (const [i, trigger] of (def.triggers ?? []).entries())
       problems.push(...triggerProblems(`${def.name} trigger ${i + 1}`, trigger));
     // A delayed triggered ability is checked as its own triggered ability: its effects run apart from the effects that
@@ -211,14 +207,17 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
 const anyColor = (effects: readonly Effect[]) =>
   flatEffects(effects).some((e) => e.op === "addMana" && e.mana === "anyColor");
 
+/** "If you can't sacrifice [one]": it reads what an earlier `sacrifice` of the same resolution did. */
+const readsSacrifice = (e: Effect) => e.op === "if" && e.condition.kind === "nothingSacrificed";
+
 /** Only an activated ability has activations to count (D-078). */
 const countsActivations = (effects: readonly Effect[]) =>
-  flatEffects(effects).some((e) => e.op === "ifActivatedThisTurn");
+  flatEffects(effects).some((e) => e.op === "if" && e.condition.kind === "activatedThisTurn");
 
 /** A triggered ability's problems, printed or delayed. */
 function triggerProblems(where: string, trigger: TriggeredAbilityDef): string[] {
   return [
-    ...(countsActivations(trigger.effects) ? [`${where}: ifActivatedThisTurn is only for an activated ability`] : []),
+    ...(countsActivations(trigger.effects) ? [`${where}: counting activations is only for an activated ability`] : []),
     ...(anyColor(trigger.effects) ? [`${where}: mana of any color is only for a mana ability`] : []),
     ...targetProblems(where, trigger.targets, trigger.effects),
     ...subjectProblems(where, trigger.targets, trigger.effects),
@@ -359,7 +358,6 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   cantCastSpells: (e) => (e as { who: EffectSubject }).who,
   search: (e) => (e as { library: EffectSubject }).library,
   shuffle: (e) => (e as { who: EffectSubject }).who,
-  mayShuffle: (e) => (e as { who: EffectSubject }).who,
   exileAll: (e) => (e as { of: EffectSubject }).of,
   sacrifice: (e) => (e as { who: EffectSubject }).who,
   revealTop: (e) => (e as { who: EffectSubject }).who,
@@ -421,10 +419,10 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     // The engine reads a division and mana only from an ability's own effects, never from nested ones.
     if (
       conditionalEffects(effect).some(
-        (e) => e.op === "addMana" || e.op === "ifNothingSacrificed" || ("divided" in e && e.divided !== undefined),
+        (e) => e.op === "addMana" || readsSacrifice(e) || ("divided" in e && e.divided !== undefined),
       )
     )
-      problems.push(`${where}: a divided effect, mana or ifNothingSacrificed can't be inside ${effect.op}`);
+      problems.push(`${where}: a divided effect, mana or "if nothing was sacrificed" can't be inside ${effect.op}`);
     // Damage comes from one object (CR 120.2b): never a player, nor "each" of something.
     if (
       effect.op === "dealDamage" &&
@@ -439,16 +437,9 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
     if (who !== undefined && objectOnly(who(effect)))
       problems.push(`${where}: ${effect.op} is for players, not objects`);
     // A chosen discard waits for one player's choice; several players' would need APNAP order (later: CR 608.2e).
-    const onePlayerOps: Effect["op"][] = [
-      "discard",
-      "search",
-      "mayShuffle",
-      "exileAll",
-      "sacrifice",
-      "revealUntil",
-      "nameCard",
-    ];
-    if (onePlayerOps.includes(effect.op) && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
+    const onePlayerOps: Effect["op"][] = ["discard", "search", "exileAll", "sacrifice", "revealUntil", "nameCard"];
+    const asksOnePlayer = onePlayerOps.includes(effect.op) || (effect.op === "shuffle" && effect.optional === true);
+    if (asksOnePlayer && PLAYER_SUBJECTS[effect.op]?.(effect) === "eachPlayer")
       problems.push(`${where}: ${effect.op} names one player, not each player`);
     // "That player's next untap step" names one player (or "its controller", each permanent's own).
     if (
@@ -503,8 +494,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       !earlier.some((e) => e.op === "shuffleIntoLibraries")
     )
       problems.push(`${where}: revealTop counts the cards shuffled in, but no shuffleIntoLibraries comes before it`);
-    const readsSacrificed =
-      effect.op === "ifNothingSacrificed" || ("amount" in effect && effect.amount === "sacrificedPower");
+    const readsSacrificed = readsSacrifice(effect) || ("amount" in effect && effect.amount === "sacrificedPower");
     if (readsSacrificed && !earlier.some((e) => e.op === "sacrifice"))
       problems.push(`${where}: ${effect.op} reads what was sacrificed, but no sacrifice comes before it`);
     if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileAll"))

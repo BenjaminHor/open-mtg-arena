@@ -6,7 +6,7 @@ export const infernoElemental: CardDef = {
     "Whenever this creature blocks or becomes blocked by a creature, this creature deals 3 damage to that creature.",
   triggers: [
     {
-      when: { kind: "selfBlocksOrBlocked" },
+      when: { kind: "selfBlocks", orBecomesBlocked: true },
       targets: [],
       effects: [{ op: "dealDamage", amount: 3, from: "self", to: "triggeringObject" }],
     },

@@ -111,8 +111,9 @@ export const furnaceWhelp: CardDef = {
   kind: "cantAttackUnlessDefenderControls", filter: { subtypes: ["Island"] } }`, the filter without a `controller`. The
   engine reads them only through `staticAbilitiesOf`. "You have no maximum hand size" is `{ kind: "noMaximumHandSize" }`
   (D-097); "you can't lose the game and your opponents can't win the game" is `{ kind: "cantLoseOpponentsCantWin" }`
-  (D-118). "Your opponents play with their hands revealed" is `{ kind: "opponentsPlayWithHandsRevealed" }` and "play
-  with the top card of your library revealed" `{ kind: "playWithTopOfLibraryRevealed" }` (D-122).
+  (D-118). "Your opponents play with their hands revealed" is `{ kind: "playWithRevealed", what: "hand", whose:
+  "opponents" }` and "play with the top card of your library revealed" `{ kind: "playWithRevealed", what:
+  "topOfLibrary", whose: "you" }` (D-122).
 - "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn." is
   `gainControl` (with `duration`), `untap` and `gainKeywords` on `{ target: 0 }` (D-098).
 - "Put a +1/+1 counter on this creature" is `{ op: "putCounters", of: "self", counter: "+1/+1", amount: 1 }` (D-099).
@@ -128,17 +129,17 @@ export const furnaceWhelp: CardDef = {
   spell's target (CR 303.4a), and what it may stay attached to (CR 704.5m). "Enchanted creature gets +1/+2" is the
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
-  is `{ kind: "attachedCantAttackOrBlock" }` (D-102); "enchanted creature doesn't untap during its controller's untap
-  step" is `{ kind: "attachedDoesntUntap" }`, and "enchant tapped creature" the filter `{ types: ["creature"], tapped:
+  is `{ kind: "attachedRestricts", restrictions: ["cantAttackOrBlock"] }` (D-102); "enchanted creature doesn't untap
+  during its controller's untap step" adds `"doesntUntap"` to the list, and "enchant tapped creature" the filter `{ types: ["creature"], tapped:
   true }` (D-115).
 - "Those creatures don't untap during that player's next untap step" (Sleep) is `{ op: "doesntUntap", of, during: {
   target: 0 } }`; "that creature doesn't untap during its controller's next untap step" (Wall of Frost) has `during:
   "itsController"`, whoever controls it at that untap step (D-115).
 - "At the beginning of the upkeep of enchanted creature's controller, that player loses 1 life" (Soul Bleed) is the
   trigger `{ kind: "beginningOfStep", step: "upkeep", whose: "attachedController" }` with `loseLife` of
-  `"triggeringPlayer"`; "its activated abilities can't be activated" (Ice Cage) is the static
-  `{ kind: "attachedCantActivate" }`, mana abilities included; "when enchanted creature becomes the target of a spell
-  or ability" is the trigger `{ kind: "attachedBecomesTarget" }` (D-106).
+  `"triggeringPlayer"`; "its activated abilities can't be activated" (Ice Cage) is the restriction
+  `"cantActivate"` of `attachedRestricts`, mana abilities included; "when enchanted creature becomes the target of a spell
+  or ability" is the trigger `{ kind: "becomesTarget", of: "attached" }` (D-106).
 - "You control enchanted creature" (Mind Control) is the static `{ kind: "attachedControl" }`, layer 2 (D-105).
 - "Return all [filter] cards from all graveyards to the battlefield under their owners' control" is `{ op:
   "returnAllToBattlefield", from: "allGraveyards", filter, under: "owners" }`; "put all ... under your control" is
@@ -156,7 +157,7 @@ export const furnaceWhelp: CardDef = {
   cost: [{ kind: "generic", amount: 2 }] }], targets: [{ kind: "permanent", filter: { types: ["creature"], controller:
   "you" } }], effects: [{ op: "attachSelf", to: { target: 0 } }] }` (CR 702.6a); `timing: "sorcery"` is any "activate
   only as a sorcery" (CR 602.5d). "Equipped creature gets +1/+1 and has deathtouch" is `attachedGets`, as for an Aura;
-  "and loses flying" adds `loseKeywords`; "equipped creature can't be blocked" is `{ kind: "attachedCantBeBlocked" }`;
+  "and loses flying" adds `loseKeywords`; "equipped creature can't be blocked" is the restriction `"cantBeBlocked"`;
   "prevent all noncombat damage that would be dealt to equipped creature" is the replacement
   `{ kind: "preventNoncombatDamageToAttached" }`. "Enchanted creature" in an Aura's own ability is the subject
   `"attached"` (D-103).
@@ -186,20 +187,20 @@ export const furnaceWhelp: CardDef = {
   "landTappedForMana" }`; "whenever this creature deals [combat] damage to [an opponent / a player]" is `{ kind:
   "selfDealsDamageToPlayer", player, combatOnly }`; "whenever you gain life" is `{ kind: "playerGainsLife", player:
   "you" }`, with "that much" the amount `"thatMuch"`. "Whenever this creature blocks or becomes blocked by a creature"
-  is `{ kind: "selfBlocksOrBlocked" }`, "that creature" being the subject `"triggeringObject"`; "whenever this creature
+  is `{ kind: "selfBlocks", orBecomesBlocked: true }`, "that creature" being the subject `"triggeringObject"`; "whenever this creature
   blocks a creature" is `{ kind: "selfBlocks" }` (once per creature it blocks, CR 509.3b). "When this creature
-  becomes the target of a spell or ability" is `{ kind: "selfBecomesTarget" }`; "when enchanted creature becomes the target
-  of a spell or ability" is `{ kind: "attachedBecomesTarget" }`. "At the beginning of the next end step,
+  becomes the target of a spell or ability" is `{ kind: "becomesTarget", of: "self" }`; "when enchanted creature becomes
+  the target of a spell or ability" is `{ kind: "becomesTarget", of: "attached" }`. "At the beginning of the next end step,
   [effects]" is `{ op: "createDelayedTrigger", ability: { when: { kind: "beginningOfStep", step: "end", whose: "each"
   }, targets: [], effects } }` (CR 603.7; only the next beginning of anyone's step, with no targets, for now); "destroy
   that creature" in it adds `about: { target: 0 }` to the maker and uses the subject `"remembered"` (CR 603.7c, Stone
   Giant). "Target creature you control with toughness less than this creature's power" adds
   `toughnessBelowSourcePower: true` to the permanent target; "if this
-  ability has been activated four or more times this turn, [effects]" is `{ op: "ifActivatedThisTurn", atLeast: 4,
-  effects }`, for an activated ability only (D-078). "Sacrifice a creature
+  ability has been activated four or more times this turn, [effects]" is `{ op: "if", condition: { kind:
+  "activatedThisTurn", atLeast: 4 }, effects }`, for an activated ability only (D-078). "Sacrifice a creature
   other than this creature" is `{ op: "sacrifice", ..., otherThanSelf: true }`, "equal to the sacrificed creature's
-  power" the amount `"sacrificedPower"`, "if you can't sacrifice a creature, ..." `{ op: "ifNothingSacrificed",
-  effects }`; "destroy one of them at random" is `{ op: "destroyOneAtRandom", among: [{ target: 0 }, { target: 1 }] }`. "Target permanent that player controls" is a target filter with
+  power" the amount `"sacrificedPower"`, "if you can't sacrifice a creature, ..." `{ op: "if", condition: { kind:
+  "nothingSacrificed" }, effects }`; "destroy one of them at random" is `{ op: "destroyOneAtRandom", among: [{ target: 0 }, { target: 1 }] }`. "Target permanent that player controls" is a target filter with
   `controller: "triggeringPlayer"` (targets only). "If this artifact
   is untapped" right after the condition is an intervening if, `onlyIf: { kind: "sourceUntapped" }` (CR 603.4). "You
   may" is `optional: true` (asked as it resolves). "That player" is the subject `"triggeringPlayer"`; "sacrifice it"
@@ -209,10 +210,10 @@ export const furnaceWhelp: CardDef = {
   unless: { subtypes: ["Forest", "Plains"], controller: "you" } }` (land types, not names; "you" is the player it
   enters under); "If this would be put into a graveyard from anywhere, reveal it and shuffle it into its owner's
   library instead" is `{ kind: "graveyardToLibrary" }`. Indestructible is a keyword (CR 702.12). "As this enters,
-  choose a card name" is `{ kind: "asEntersChooseName" }` (CR 614.12a, D-119): the permanent keeps the name as
+  choose a card name" is `{ kind: "asEntersChoose", what: "cardName" }` (CR 614.12a, D-119): the permanent keeps the name as
   `chosenName`, and "activated abilities of sources with the chosen name can't be activated unless they're mana
   abilities" is the static `{ kind: "chosenNameCantActivate" }`. "As this Aura enters, choose a basic land type" is
-  `{ kind: "asEntersChooseBasicLandType" }` (kept as `chosenLandType`), and "enchanted land is the chosen type" the
+  `{ kind: "asEntersChoose", what: "basicLandType" }` (kept as `chosenLandType`), and "enchanted land is the chosen type" the
   static `{ kind: "attachedSetsLandType" }`: layer 4 sets the land type, and the land loses its rules text's
   abilities (CR 305.7, D-120). "You may have this creature enter as a copy of any creature on the battlefield" is
   `{ kind: "entersAsCopy", of: { types: ["creature"] } }` (Clone, D-127): its controller chooses one or none
