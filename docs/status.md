@@ -895,6 +895,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            Rats' and Coat of Arms' counts (relative to the creature affected), Warp World's shuffle count, Stone Giant's
            toughness-below-power target. Each merge renames a mechanic key, so golden cover's list changes; saved
            mid-resolution states would break (ENGINE_VERSION 0, acceptable before release).
+         - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
+           says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).
          - M2-15c done: the coverage report (`docs/coverage/rules-coverage.md`) ends with a "By chapter" table, generated
            with it: 1xx 26%, 2xx 18%, 3xx 18%, 4xx 22%, 5xx 42%, 6xx 35%, 7xx 7% (mostly keywords outside the pool),
