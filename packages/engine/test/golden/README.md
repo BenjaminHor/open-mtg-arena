@@ -19,3 +19,7 @@ an engine change did to the game.
   golden:update`. Each card is covered by its own scenarios (a test checks every pool card is in one). M1's four games
   (`red-aggro` / `green-stompy`) are the benchmark's, and three games the export tests read stay too.
 - `pnpm golden:add --decks red-aggro,green-stompy --seed N [--agent by-kind]` adds one game by hand.
+
+A game named after prebuilt decks keeps the setup it was made with: its name shows the decks as they were then, not as
+they are now (D-131).
+

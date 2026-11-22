@@ -300,7 +300,7 @@ the CR. Then make that path a scenario test with `export`, so it stays checked.
 
 `pnpm fuzz --games N --seed S` plays one game per seed from `S` (D-046), on one worker thread per core (`--jobs J` to
 choose, `--jobs 1` for one thread; the results are the same, D-117): even seeds the prebuilt deck pairs in turn
-(Magic 2010's pair in both seats, then M1's, D-069), odd
+(Magic 2010's three decks, each pairing in both seats, then M1's pair, D-131), odd
 seeds two random decks from the pool, with basic lands of their cards' colors. Every decision is a random legal
 action, picked by kind first (pass, cast, activate an ability, play a land, an answer of each kind; cancelling a tenth
 as often), then one of that kind (D-061); one in ten is the first legal one, which passes or declines where it can

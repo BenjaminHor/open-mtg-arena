@@ -883,7 +883,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Red-Green Beats with Garruk, Overrun, Siege-Gang Commander, Howl of the Night Pack; Blue-Black Control with Jace,
          Liliana, Wall of Bone, Cancel). The fuzzer's prebuilt pairs now include White Soldiers against each of the others;
          golden game white-soldiers-vs-red-green-beats-7 added (White Soldiers wins on turn 39); the older golden games keep
-         their own setups, so they replay unchanged. Interaction matrix: no open cells. Next: fuzz, review, PR.
+         their own setups, so they replay unchanged. Interaction matrix: no open cells. Code review: Blue-Black Control's
+         lands were backwards (now 6 Island, 9 Swamp); a deck spec test (cards, colors, four-copy limit); the fuzzer
+         plays all six Magic 2010 pairings in both seats (D-131); docs. PR #86.
        - M2-14k built (2026-11-22, D-129, D-130): Warp World (240 cards, every M2 card but the two set aside). First a
          separate commit: a card entering from a hidden zone is shown by identity, not id (D-129). Then
          `shuffleIntoLibraries`, `revealTop` for each player, `returnAllToBattlefield` from `found`, `put` into libraries

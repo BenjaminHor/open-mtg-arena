@@ -93,8 +93,8 @@ export const DECKS: Record<string, DeckList> = {
   "blue-black-control": {
     name: "blue-black-control",
     cards: [
-      { card: "Island", count: 8 },
-      { card: "Swamp", count: 7 },
+      { card: "Island", count: 6 },
+      { card: "Swamp", count: 9 },
       { card: "Drowned Catacomb", count: 2 },
       { card: "Alluring Siren", count: 1 },
       { card: "Hypnotic Specter", count: 1 },
