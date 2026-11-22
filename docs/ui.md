@@ -9,6 +9,11 @@ for touch first.
 The match should feel as polished and smooth as MTG Arena. That's a product requirement, not a
 finishing touch. Each item below is something the code can be checked against.
 
+**The owner wants the interface to work like MTG Arena's as closely as possible (2026-11-22).** Arena's
+interaction design is the model: where things sit on the board, how a turn flows, how passing, stops, targeting,
+attacking, blocking and paying feel. The research behind this is in "Arena research" below. The look is our own:
+the art, card frames, icons, sounds and visual style are original, never Arena's assets or trade dress (D-140).
+
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**
   or the worker is busy. The UI responds locally right away (press state, card lift, selection highlight)

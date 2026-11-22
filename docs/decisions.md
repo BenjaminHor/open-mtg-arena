@@ -2151,3 +2151,15 @@ owner's answer to the D-089 open question, option (a))
   mutants that don't type-check run too and count as killed or survived by what the tests see.
 - Not part of `pnpm check`. Surviving mutants in rules code get a test; the rest are listed in status.md with why they
   survive (equivalent mutants, logging, error messages).
+
+**D-140: The match UI works like MTG Arena's, with a look of our own (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner wants the interface to mimic MTG Arena as closely as possible, and asked for research into Arena's UI.
+- What we copy is the interaction design: board layout conventions, turn flow, passing and stops, auto-tap, targeting,
+  combat, the hand, prompts and feedback. These are how digital card games work, and they're what makes Arena feel
+  good.
+- What we don't copy is Arena's own expression: its art, card frames, icons, sounds, animations' artwork and visual
+  style. Those belong to Wizards of the Coast (the Fan Content Policy allows fan content, not reuse of a game's assets
+  or trade dress), and a fan project that looks like a copy of Arena invites trouble. Our visuals are original; the
+  layout and the feel follow Arena.
+- The research (from public sources: Wizards' Arena help pages and patch notes, guides, reviews, screenshots) is
+  written up in ui.md, "Arena research", in our own words, as the M3 UI tasks' reference.
