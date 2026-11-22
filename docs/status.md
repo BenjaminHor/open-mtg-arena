@@ -860,6 +860,17 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             finishes (its ruling); a stolen permanent going to its owner's library; an empty library.
          - Future impact: `shuffleIntoLibraries` is "shuffle into its owner's library" for any filter; the bottom
            arranging serves "put the rest on the bottom in any order" cards.
+         - Advisor review of the plan: (a) tokens move with the rest but cease to exist in the same batch (its ruling: "you
+           shouldn't actually shuffle them in"), so no token sits in a library while decisions wait (Nocturnus, views);
+           (b) hidden ids, one commit first: decisions keep real ids and the view shows what they're for by identity
+           (chooseCards' and chooseName's `for`, as options are; Clone's `for: null` reverted to this), events emitted
+           before a card leaves a hidden zone (NAME_CHOSEN, OBJECTS_CHOSEN, AURA_HOST_CHOSEN) carry no id from it;
+           (c) count before moving (a stolen permanent counts for its owner; none still shuffles); cards move out of a
+           library in shown order per owner, APNAP across owners; (d) the fuzz rarely casts it: run the fuzz checks
+           over every step of the m2-14k scenarios, and two-worlds tests for the bottom order and Aura hosts;
+           (e) more scenarios: Clone revealed with a creature (options []), Entangling Vines to the bottom, a
+           planeswalker card to the bottom, Mind Control on a step-4 creature, two Auras of one player, Hive Mind and
+           Twincast copying it.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
          yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong

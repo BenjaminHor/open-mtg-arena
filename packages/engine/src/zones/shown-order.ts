@@ -4,6 +4,8 @@
 import { textOracleId } from "../cards/card-data.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId } from "../state/ids.ts";
+import { isHiddenZone } from "./move-card.ts";
+import { zoneOf } from "./zone-list.ts";
 
 /**
  * Sorted by oracle id, then by object id. A hand's or library's own order, like an object id, records how the cards
@@ -28,4 +30,12 @@ export function oracleIdOf(state: GameState, id: ObjectId): OracleId {
   const obj = state.objects[id];
   if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
   return textOracleId(obj);
+}
+
+/**
+ * An object's id for an event every player is shown, or null while it's in a hidden zone (a card about to enter from a
+ * library or hand): its id there records how it got there (D-062).
+ */
+export function publicIdOf(state: GameState, id: ObjectId): ObjectId | null {
+  return isHiddenZone(zoneOf(state, id)) ? null : id;
 }

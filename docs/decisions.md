@@ -2007,3 +2007,15 @@ owner's answer to the D-089 open question, option (a))
 - Copies of one card put on top together aren't arranged: no one could tell the orders apart. `choose`'s decision
   always has the purpose "choose" (the effects after it say what's done), apart from the "putOnTop" arranging.
 
+**D-129: A card entering from a hidden zone is shown by identity, not id (M2-14k)** · 2026-11-22 · accepted
+- A choice made as a card enters from a library (a Clone Sphinx Ambassador found; Warp World's revealed cards, Auras
+  choosing hosts, Pithing Needle naming) names the card in the engine by its object id, which in a library records how
+  it got there (D-062). Decisions keep the real id; the view shows what they're for by identity (`ShownOption`, as
+  their options are): `chooseCards.for` and a `chooseName` as it enters (its replacement ref is engine bookkeeping and
+  left out). Events can't be fixed in the view (no state there), so the engine leaves the id out of events emitted
+  before the card leaves the hidden zone: `NAME_CHOSEN.object` and `OBJECTS_CHOSEN.object` are null then, and
+  `AURA_HOST_CHOSEN` gains `card` (what the Aura is) with `aura` null, so players choosing after still know it
+  (CR 101.4b). Replaces Clone's engine-side `for: null` (M2-14i). The fuzz scramble keeps the identity of what a
+  viewer's own decision is for. `chooseReplacement` from a hidden zone (two replacements on one card entering from a
+  library) isn't reachable with the pool and still shows ids (future-rules).
+

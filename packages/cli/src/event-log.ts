@@ -176,11 +176,14 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     case "ATTACHED":
       return `attached: ${name(e.object)} to ${name(e.to)}${e.from === null ? "" : ` (from ${name(e.from)})`}`;
     case "AURA_HOST_CHOSEN":
-      return `${e.player} chooses ${name(e.host)} for ${name(e.aura)} to enchant`;
-    case "NAME_CHOSEN":
+      return `${e.player} chooses ${name(e.host)} for ${cardDataByOracleId(e.card, cards)?.printed.name ?? e.card} to enchant`;
+    case "NAME_CHOSEN": {
+      // A card entering from a hidden zone isn't named by its id there (D-062).
+      const entering = e.object === null ? "the card entering" : name(e.object);
       return e.what === "cardName"
-        ? `${e.player} names ${e.name} for ${name(e.object)}`
-        : `${e.player} chooses ${e.name} for ${name(e.object)}`;
+        ? `${e.player} names ${e.name} for ${entering}`
+        : `${e.player} chooses ${e.name} for ${entering}`;
+    }
     case "OBJECTS_CHOSEN": {
       // A card entering from a hidden zone isn't named by its id there (D-062).
       const entering = e.object === null ? "the card entering" : name(e.object);

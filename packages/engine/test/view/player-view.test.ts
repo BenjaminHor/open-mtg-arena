@@ -119,6 +119,44 @@ describe("decisions in a view", () => {
   });
 });
 
+describe("what a decision is for, from a hidden zone (D-062)", () => {
+  const { state } = p2Mulligans();
+  // A card in p2's library about to enter (a Clone Sphinx Ambassador found, an Aura Warp World revealed).
+  const entering = library(state, "p2")[0] as ObjectId;
+  const choosing: GameState = {
+    ...state,
+    pending: {
+      id: "d9999",
+      player: "p2",
+      kind: "chooseCards",
+      purpose: "copy",
+      for: entering,
+      options: [],
+      min: 0,
+      max: 1,
+      chosen: [],
+      endsOnlyOnFinish: false,
+      seen: null,
+      resume: {
+        kind: "asEnters",
+        for: { kind: "object", object: entering },
+        ref: { kind: "ownText", object: entering, index: 0 },
+        resume: { proposed: { kind: "simultaneous", events: [] }, choices: [] },
+      },
+    },
+  };
+
+  it("shows the card by what it is, without its id there", () => {
+    const view = playerView(choosing, "p2", TEST_CARDS);
+    const decision = view.decision?.kind === "chooseCards" ? view.decision : null;
+    expect(decision?.for?.object).toBeNull();
+    expect(decision?.for?.oracleId).toBe(
+      state.objects[entering]?.kind === "card" ? state.objects[entering].oracleId : "",
+    );
+    expect(JSON.stringify(view)).not.toContain(`"${entering}"`);
+  });
+});
+
 describe("eventsFor", () => {
   const { events } = p2Mulligans();
 

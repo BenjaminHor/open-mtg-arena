@@ -19,6 +19,7 @@ import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { AuraHost, GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { oracleIdOf, publicIdOf } from "../zones/shown-order.ts";
 import { askToChoose } from "./choose-cards.ts";
 import { remember } from "./resolution-results.ts";
 
@@ -124,7 +125,14 @@ function recordHost(progress: Progress, aura: ObjectId, host: ObjectId | null, c
   const state = progress.state;
   const recorded = withAuraHosts(state, [...(state.resolution?.auraHosts ?? []), { aura, host }]);
   if (host === null) return { state: recorded, events: progress.events };
-  return { state: recorded, events: [...progress.events, { type: "AURA_HOST_CHOSEN", player: chosenBy, aura, host }] };
+  const event = {
+    type: "AURA_HOST_CHOSEN",
+    player: chosenBy,
+    aura: publicIdOf(state, aura),
+    card: oracleIdOf(state, aura),
+    host,
+  } as const;
+  return { state: recorded, events: [...progress.events, event] };
 }
 
 function withAuraHosts(state: GameState, auraHosts: AuraHost[]): GameState {

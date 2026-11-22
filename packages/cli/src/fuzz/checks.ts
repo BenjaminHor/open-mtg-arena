@@ -219,10 +219,21 @@ export function scrambleHidden(state: GameState, viewer: PlayerId, cards: CardDa
   };
 }
 
-/** The cards a `chooseCards` decision of the viewer's offers them: they may see what those are (D-062). */
+/**
+ * The cards a decision of the viewer's shows them: a `chooseCards` decision's options and the card it's for, a name
+ * chosen as a card enters: they may see what those are, not their ids (D-062).
+ */
 function shownBy(state: GameState, viewer: PlayerId): ObjectId[] {
   const pending = state.pending;
-  return pending?.kind === "chooseCards" && pending.player === viewer ? pending.options : [];
+  if (pending === null || pending.player !== viewer) return [];
+  switch (pending.kind) {
+    case "chooseCards":
+      return pending.for === null ? pending.options : [...pending.options, pending.for];
+    case "chooseName":
+      return pending.answering.kind === "asEnters" ? [pending.answering.for.object] : [];
+    default:
+      return [];
+  }
 }
 
 /** Every library's objects, and other players' hands. */

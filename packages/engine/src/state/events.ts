@@ -107,15 +107,17 @@ export type GameEvent =
   | { type: "ATTACHED"; object: ObjectId; to: ObjectId; from: ObjectId | null }
   /**
    * As an Aura is about to be put onto the battlefield other than by resolving, the player who'll control it chose what
-   * it will enchant (CR 303.4f). Public, so the players choosing after know it (CR 101.4b).
+   * it will enchant (CR 303.4f). Public, so the players choosing after know it (CR 101.4b). `card` is what the Aura is;
+   * `aura` is null while it's in a hidden zone (revealed in a library, Warp World), whose id records its history (D-062).
    */
-  | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId; host: ObjectId }
+  | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId | null; card: OracleId; host: ObjectId }
   /**
    * As a permanent is about to enter, the player it enters under chose a card name (Pithing Needle) or a basic land type
    * (Convincing Mirage) for it (CR 614.12a), as `what` says.
    * Public, so the players choosing after know it (CR 101.4b). `object` is the card as it was, before it entered.
    */
-  | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId; what: ChooseWhat; name: string }
+  /** `object` is null for a card entering from a hidden zone, whose id there records its history (D-062). */
+  | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId | null; what: ChooseWhat; name: string }
   /**
    * As `object` enters, `player` chose these permanents for it (CR 614.12a): the one it enters as a copy of (CR 707.5),
    * or none (Clone's "may"). `object` is null for a card entering from a hidden zone, whose id there records its history

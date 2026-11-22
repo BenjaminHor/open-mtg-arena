@@ -7,6 +7,7 @@ import type { ChooseWhat, PendingDecision } from "../state/decisions.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import { isBasicLandType } from "../state/objects.ts";
+import { publicIdOf } from "../zones/shown-order.ts";
 import type { Progress } from "./progress.ts";
 import { resumeAsEnters } from "./work.ts";
 
@@ -37,7 +38,7 @@ export function answerName(
       const event: GameEvent = {
         type: "NAME_CHOSEN",
         player: pending.player,
-        object: answering.for.object,
+        object: publicIdOf(state, answering.for.object),
         what: pending.what,
         name,
       };
