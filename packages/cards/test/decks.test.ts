@@ -53,7 +53,7 @@ describe("prebuilt decks", () => {
       "Spined Wurm",
       "Furnace Whelp",
     ];
-    for (const name of ["red-green-beats", "blue-black-control"]) {
+    for (const name of ["white-soldiers", "red-green-beats", "blue-black-control"]) {
       const cardNames = DECKS[name]?.cards.map((c) => c.card) ?? [];
       expect(cardNames, name).not.toHaveLength(0);
       expect(
@@ -62,4 +62,50 @@ describe("prebuilt decks", () => {
       ).toStrictEqual([]);
     }
   });
+});
+
+describe("Magic 2010's three decks (m2-pool.md, Prebuilt decks)", () => {
+  const SPEC: Record<string, { colors: string[]; holds: string[] }> = {
+    "white-soldiers": {
+      colors: ["W"],
+      holds: [
+        "Elite Vanguard",
+        "Captain of the Watch",
+        "Veteran Armorsmith",
+        "Veteran Swordsmith",
+        "Honor of the Pure",
+        "Pacifism",
+      ],
+    },
+    "red-green-beats": {
+      colors: ["R", "G"],
+      holds: ["Lightning Bolt", "Fireball", "Prodigal Pyromancer", "Overrun", "Giant Growth"],
+    },
+    "blue-black-control": {
+      colors: ["U", "B"],
+      holds: ["Cancel", "Doom Blade", "Mind Rot", "Sign in Blood", "Wall of Bone", "Jace Beleren"],
+    },
+  };
+  const pool = cardDatabase();
+  const byName = (name: string) => Object.values(pool).find((c) => c.printed.name === name);
+
+  for (const [name, spec] of Object.entries(SPEC)) {
+    it(`${name} holds the spec's cards, in its colors, with at most four of any card but basic lands`, () => {
+      const cards = DECKS[name]?.cards ?? [];
+      const names = cards.map((c) => c.card);
+      expect(
+        spec.holds.filter((card) => !names.includes(card)),
+        name,
+      ).toStrictEqual([]);
+      const offColor = names.filter((card) =>
+        (byName(card)?.printed.colors ?? []).some((c) => !spec.colors.includes(c)),
+      );
+      expect(offColor, name).toStrictEqual([]);
+      const basic = (card: string) => byName(card)?.printed.supertypes.includes("basic") === true;
+      expect(
+        cards.filter((c) => c.count > 4 && !basic(c.card)),
+        name,
+      ).toStrictEqual([]);
+    });
+  }
 });

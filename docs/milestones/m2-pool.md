@@ -74,7 +74,7 @@ Rules only one or two cards need, each built with its card:
 Decks for the fuzzer and the golden games grow with the pool. A first M10 deck pair once M2-05 is done (93 playable
 cards), replacing the M1 decks as the fuzzer's main decks: done (D-069), `red-green-beats` and `blue-black-control`
 in `packages/cards/src/decks/`, first versions of two of the three below from scripted cards only; the fuzzer plays
-them in two of every three prebuilt games, and M1's pair stays for the benchmark. Three final decks in M2-14, chosen so that between them
+them in most prebuilt games (six in seven since M2-14l, D-131), and M1's pair stays for the benchmark. Three final decks in M2-14, chosen so that between them
 every mechanic appears:
 
 - **White Soldiers:** Elite Vanguard, Captain of the Watch, Veteran Armorsmith and Swordsmith, Honor of the Pure,
@@ -82,7 +82,8 @@ every mechanic appears:
 - **Red-Green Beats:** Lightning Bolt, Fireball, Prodigal Pyromancer, Overrun, Giant Growth, tramplers and tokens.
 - **Blue-Black Control:** Cancel, Doom Blade, Mind Rot, Sign in Blood, fliers, regenerating walls, a planeswalker.
 
-The exact lists are written when they're built (D-053's pool rule: only scripted cards go in a deck).
+The exact lists are written when they're built (D-053's pool rule: only scripted cards go in a deck). Built in M2-14l (`packages/cards/src/decks/index.ts`); every mechanic in the pool is run by the golden games
+(D-082) rather than by these three decks alone.
 
 ## Every card
 

@@ -1,7 +1,7 @@
 // The prebuilt decks, by card name and count. 40 cards each. The fuzzer, the CLI, the golden games and the M3 app play
 // with these. red-aggro and green-stompy are M1's (docs/milestones/m1-engine-foundations.md, "Card pool"), kept for the
-// benchmark's golden games; red-green-beats and blue-black-control are Magic 2010's (docs/milestones/m2-pool.md,
-// "Prebuilt decks", D-069).
+// benchmark's golden games; white-soldiers, red-green-beats and blue-black-control are Magic 2010's
+// (docs/milestones/m2-pool.md, "Prebuilt decks", D-069).
 
 import type { OracleId } from "@mtg/engine";
 import { POOL } from "../database.ts";
@@ -36,8 +36,29 @@ export const DECKS: Record<string, DeckList> = {
       { card: "Giant Growth", count: 4 },
     ],
   },
-  // The first versions of two of the three M10 decks (m2-pool.md, "Prebuilt decks"), from scripted Magic 2010 cards
-  // only; M2-14 finishes them with the cards still to come (Overrun, tokens, walls, a planeswalker...).
+  // The three Magic 2010 decks (m2-pool.md, "Prebuilt decks"), finished in M2-14l: anthems, tokens, Auras and first
+  // strike; burn, tramplers, tokens and a planeswalker; counterspells, fliers, a regenerating wall and planeswalkers.
+  "white-soldiers": {
+    name: "white-soldiers",
+    cards: [
+      { card: "Plains", count: 17 },
+      { card: "Elite Vanguard", count: 3 },
+      { card: "Soul Warden", count: 1 },
+      { card: "Veteran Armorsmith", count: 2 },
+      { card: "Veteran Swordsmith", count: 2 },
+      { card: "Palace Guard", count: 1 },
+      { card: "White Knight", count: 1 },
+      { card: "Rhox Pikemaster", count: 2 },
+      { card: "Captain of the Watch", count: 2 },
+      { card: "Siege Mastodon", count: 1 },
+      { card: "Serra Angel", count: 1 },
+      { card: "Ajani Goldmane", count: 1 },
+      { card: "Honor of the Pure", count: 2 },
+      { card: "Pacifism", count: 2 },
+      { card: "Glorious Charge", count: 1 },
+      { card: "Holy Strength", count: 1 },
+    ],
+  },
   "red-green-beats": {
     name: "red-green-beats",
     cards: [
@@ -51,13 +72,13 @@ export const DECKS: Record<string, DeckList> = {
       { card: "Lurking Predators", count: 1 },
       { card: "Elvish Visionary", count: 1 },
       { card: "Borderland Ranger", count: 1 },
-      { card: "Bramble Creeper", count: 1 },
-      { card: "Mist Leopard", count: 1 },
+      { card: "Siege-Gang Commander", count: 1 },
+      { card: "Garruk Wildspeaker", count: 1 },
       { card: "Prodigal Pyromancer", count: 2 },
       { card: "Sparkmage Apprentice", count: 1 },
       { card: "Ball Lightning", count: 1 },
       { card: "Inferno Elemental", count: 1 },
-      { card: "Panic Attack", count: 1 },
+      { card: "Howl of the Night Pack", count: 1 },
       { card: "Stampeding Rhino", count: 1 },
       { card: "Berserkers of Blood Ridge", count: 1 },
       { card: "Shivan Dragon", count: 1 },
@@ -65,31 +86,31 @@ export const DECKS: Record<string, DeckList> = {
       { card: "Dragon's Claw", count: 1 },
       { card: "Fireball", count: 1 },
       { card: "Giant Growth", count: 1 },
-      { card: "Ignite Disorder", count: 1 },
+      { card: "Overrun", count: 1 },
       { card: "Bogardan Hellkite", count: 1 },
     ],
   },
   "blue-black-control": {
     name: "blue-black-control",
     cards: [
-      { card: "Island", count: 8 },
-      { card: "Swamp", count: 7 },
+      { card: "Island", count: 6 },
+      { card: "Swamp", count: 9 },
       { card: "Drowned Catacomb", count: 2 },
       { card: "Alluring Siren", count: 1 },
       { card: "Hypnotic Specter", count: 1 },
-      { card: "Dread Warlock", count: 1 },
+      { card: "Liliana Vess", count: 1 },
       { card: "Sanguine Bond", count: 1 },
       { card: "Sage Owl", count: 1 },
       { card: "Howling Banshee", count: 1 },
       { card: "Gravedigger", count: 1 },
       { card: "Phantom Warrior", count: 1 },
-      { card: "Megrim", count: 1 },
-      { card: "Child of Night", count: 1 },
+      { card: "Jace Beleren", count: 1 },
+      { card: "Wall of Bone", count: 1 },
       { card: "Vampire Aristocrat", count: 1 },
       { card: "Royal Assassin", count: 1 },
       { card: "Underworld Dreams", count: 1 },
       { card: "Essence Scatter", count: 1 },
-      { card: "Negate", count: 1 },
+      { card: "Cancel", count: 1 },
       { card: "Doom Blade", count: 1 },
       { card: "Xathrid Demon", count: 1 },
       { card: "Mind Rot", count: 1 },

@@ -2035,3 +2035,26 @@ owner's answer to the D-089 open question, option (a))
 - The fuzz checks that need only the state (views leak nothing, the layer cache, invariants) run on every state of the
   Clone, Mirror of Fate and Warp World scenarios (`fuzz-checks-on-scenarios.test.ts`), as random games rarely cast them.
 
+**D-131: Magic 2010's three final decks (M2-14l)** · 2026-11-22 · accepted (amends D-069)
+- The three decks the M2 pool spec names are built from scripted cards: White Soldiers (new), Red-Green Beats and
+  Blue-Black Control (finished: Garruk, Overrun, Siege-Gang Commander, Howl of the Night Pack; Jace, Liliana, Wall of
+  Bone, Cancel). `decks.test.ts` checks each holds the spec's cards, stays in its colors and has at most four of any
+  card but basic lands.
+- The fuzzer's prebuilt games rotate through the six ordered pairings of the three (each in both seats), then M1's
+  pair: six in seven prebuilt games are Magic 2010's (D-069 had the old pair in two of three). `pnpm check`'s short
+  fuzz (seeds 2, 4, 6) now plays Magic 2010 pairings only; M1's pair is still fuzzed by `pnpm fuzz` and is the bench's.
+  The `divide` decision is still reached through Fireball and Bogardan Hellkite (Ignite Disorder left the deck).
+- The spec says the three decks are "chosen so that between them every mechanic appears". Three themed 40-card decks
+  can't hold Warp World, Mirror of Fate or most one-offs, so that goal is met by the golden games, which already run
+  every mechanic in the pool (D-082); the decks aim at their themes. One golden game was added by hand for the new deck
+  (white-soldiers-vs-red-green-beats-7), so a whole game of it is replayed; golden games keep the setup they were made
+  with, so older ones named after these decks show the decks as they were then.
+
+**D-132: MIT license; the README is for a public repo (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner chose the MIT license for the project's code. It covers this repository's code and docs only: Magic: The
+  Gathering card names, text, symbols, rules text and art stay Wizards of the Coast's property, and card data comes
+  from Scryfall under its terms (docs/data-sources.md); the README says so, with the Fan Content Policy notice.
+- The README is written for a public repository: what the project is, how to run it, and a guide to playing games with
+  the CLI. The private-repo starter instructions are gone: Claude Code needs none of them (it reads CLAUDE.md, the docs
+  and `.claude/`). The copyright line names "the open-mtg-arena contributors", not a person.
+

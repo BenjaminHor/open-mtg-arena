@@ -31,12 +31,16 @@ export type FailureFile = GameFile & { problem: string; failingAction: Action | 
 const CONCEDE_CHANCE = 1 / 20_000;
 
 /**
- * The prebuilt decks the fuzzer plays against each other, in turn: mostly Magic 2010's pair, in both seats, and M1's
- * (D-069).
+ * The prebuilt decks the fuzzer plays against each other, in turn: Magic 2010's three, each pairing in both seats, then
+ * M1's pair (D-069, D-131).
  */
 const PREBUILT_PAIRS = [
   [DECKS["red-green-beats"], DECKS["blue-black-control"]],
   [DECKS["blue-black-control"], DECKS["red-green-beats"]],
+  [DECKS["white-soldiers"], DECKS["red-green-beats"]],
+  [DECKS["red-green-beats"], DECKS["white-soldiers"]],
+  [DECKS["blue-black-control"], DECKS["white-soldiers"]],
+  [DECKS["white-soldiers"], DECKS["blue-black-control"]],
   [DECKS["red-aggro"], DECKS["green-stompy"]],
 ];
 
