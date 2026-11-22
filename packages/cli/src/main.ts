@@ -6,6 +6,7 @@ import { cardDatabase } from "@mtg/cards";
 import { ENGINE_VERSION } from "@mtg/engine";
 import { actionsCommand } from "./commands/actions.ts";
 import { aiCommand, autoCommand } from "./commands/ai.ts";
+import { briefCommand } from "./commands/brief.ts";
 import { doCommand } from "./commands/do.ts";
 import { exportCommand } from "./commands/export.ts";
 import { inspectCommand } from "./commands/inspect.ts";
@@ -23,6 +24,9 @@ Commands:
   new --scenario <name or .yaml> --out <file>
                              start a game from two prebuilt decks, or from a scenario's setup
   show <file> [--as p2]      the board, stack, step and pending decision
+  brief <file> --as p1 [--text] [--json]
+                             everything p1 may know to decide: each object in detail, what happened since p1
+                             last acted and p1's legal actions; --text adds Oracle text, --json is for programs
   actions <file>             the numbered legal actions
   do <file> <n | step>       take action n, or a scenario step ("cast: Shock, targets: [p2], pay: auto")
   ai <file> --until p1 [--agent random|first-legal|by-kind] [--seed N]
@@ -58,6 +62,7 @@ const OPTIONS: Record<string, Options> = {
     out: { type: "string" },
   },
   show: { as: { type: "string" } },
+  brief: { as: { type: "string" }, text: { type: "boolean" }, json: { type: "boolean" } },
   actions: {},
   do: {},
   ai: { ...AGENT, until: { type: "string" } },
@@ -110,6 +115,8 @@ function runCommand(argv: string[]): string {
       );
     case "show":
       return showCommand(needFile(), str("as"), cards);
+    case "brief":
+      return briefCommand(needFile(), { as: str("as"), text: values.text === true, json: values.json === true }, cards);
     case "actions":
       return actionsCommand(needFile(), cards);
     case "do":

@@ -250,6 +250,8 @@ pnpm cli new --decks red-aggro,green-stompy --seed 42 --out /tmp/g.json   # star
 pnpm cli new --scenario combat/reach-blocks-flyer --out /tmp/g.json       # start from a scenario's setup
 pnpm cli show /tmp/g.json            # board, hands (debug shows both), stack, step, pending decision
 pnpm cli show /tmp/g.json --as p2    # what p2 is allowed to see (hides p1's hand; D-043)
+pnpm cli brief /tmp/g.json --as p1 --text   # all p1 may know to decide: each object in detail, what p1 saw happen
+                                            # since they last acted, p1's own legal actions (D-135); --json for programs
 pnpm cli actions /tmp/g.json         # numbered legal actions for the pending decision
 pnpm cli do /tmp/g.json 3            # take legal action #3
 pnpm cli do /tmp/g.json "cast: Lightning Bolt, targets: [p2:Grizzly Bears], pay: auto"   # a scenario step, as YAML

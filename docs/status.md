@@ -895,6 +895,42 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            Rats' and Coat of Arms' counts (relative to the creature affected), Warp World's shuffle count, Stone Giant's
            toughness-below-power target. Each merge renames a mechanic key, so golden cover's list changes; saved
            mid-resolution states would break (ENGINE_VERSION 0, acceptable before release).
+         - M2-15f (owner, 2026-11-22): the CLI output should be readable and detailed enough that an AI agent playing
+           through the CLI has everything it needs to choose the best action. The owner chose all five parts, read from
+           the engine's per-player view only (no rules change, nothing hidden leaks):
+           1. one command per decision (`brief --as pN`): board, stack, hands as that player sees them, what happened
+              since they last acted, and the legal actions;
+           2. per object: current P/T and what changed it, tapped, summoning sick, damage, counters, keywords (granted
+              too), attachments, controller if not the owner; Oracle text with `--text` (or a `card <name>` lookup); each
+              stack object's controller, targets and X;
+           3. actions with their cost and whether it's payable now, legal targets, possible attackers and blocks, repeats
+              folded ("play Plains (x3)"), combat assignments shown;
+           4. public zones (graveyards, exile, revealed cards, library and hand sizes), untapped mana sources, mana pool,
+              land played this turn, step and next step;
+           5. `--json`: the player's view, legal actions and recent events, for programs.
+           Do it before the owner's CLI spot-check (an M2 exit criterion), after the pause.
+           Plan (2026-11-22), two PRs:
+           - f1: `brief <file> --as pN [--text] [--json]`, built as data (`cli/src/brief/`) from `playerView`, the
+             viewer's `eventsFor` events since their last action, and their own legal actions only (another player's
+             pending decision shows as "waiting for"), plus each public object's characteristics, which the host (here
+             the CLI) computes from full state as M3's match host will. The text is rendered from that data, so text
+             and JSON can't disagree. Parts 1, 2, 4, 5. Test first: two worlds that differ only in hidden cards give
+             byte-identical `brief` output, text and JSON, over the m2-14 scenarios.
+           - f2: action detail (part 3): cost and a "payable now" hint (`autoPay`, labelled a hint: X and per-target
+             increases aren't known yet), legal targets, attack and block candidates, folded repeats that keep a real
+             action number for `do`.
+           - f1 built (D-135): `brief` with `--text` and `--json`; leak test over five scenario folders.
+           - f2 built: each action's cost, a "not enough mana now" hint (`autoPay`, X as 0), its legal targets (the
+             engine's `legalTargets`), same-text actions on one line keeping every number, mana abilities on one line.
+             Attackers and blockers were already one action each. `--text` replaced the `card <name>` idea.
+           - Left out of parts 2 and 4, as `brief` covers the need otherwise: "what changed a P/T" (`inspect` explains
+             it) and a list of untapped mana sources (the `mana available` count, and each land's tapped status).
+           - Review fixes: the next step is the engine's (`nextStep`, skipped steps passed over); actions numbered by
+             `numberedActions`; only `view.objects` described; recent-event tests; the leak test covers seven folders.
+           - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
+             view; record that as a decision.
+         - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
+           says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).
          - M2-15c done: the coverage report (`docs/coverage/rules-coverage.md`) ends with a "By chapter" table, generated
            with it: 1xx 26%, 2xx 18%, 3xx 18%, 4xx 22%, 5xx 42%, 6xx 35%, 7xx 7% (mostly keywords outside the pool),

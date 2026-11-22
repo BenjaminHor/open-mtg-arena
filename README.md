@@ -63,6 +63,14 @@ pending: priority (p1) — 6 legal actions; run `pnpm cli actions`
 
 The last line says who must decide what: here p1 has priority.
 
+For more detail, `brief` shows everything p1 may know to decide: each permanent's power and toughness, status,
+counters and keywords, each card's cost and type (`--text` adds its rules text), what p1 saw happen since they last
+acted, and p1's legal actions. `--json` gives the same as data, for a program or an AI agent playing through the CLI:
+
+```sh
+pnpm cli brief game.json --as p1 --text
+```
+
 **3. List your options and take one.** Every decision (who goes first, mulligans, priority, targets, paying mana,
 attackers, blockers) works the same way:
 

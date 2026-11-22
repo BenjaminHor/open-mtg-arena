@@ -2095,3 +2095,20 @@ owner's answer to the D-089 open question, option (a))
 - Combinations of the new fields that no card uses are refused rather than left untested: `playWithRevealed` is typed
   to its two pairs (opponents' hands, your library's top), and `definitionProblems` refuses a `shuffle` both `optional`
   and `foundOnTop`.
+
+**D-135: `brief`, one player's whole situation for people and programs (owner, M2-15f)** · 2026-11-22 · accepted
+- The owner asked for CLI output detailed enough that an AI agent playing through the CLI has what it needs to choose
+  the best action. `brief <file> --as pN [--text] [--json]` builds one `Brief` (data) and renders it as text, so the two
+  can't disagree: every visible object in detail, each player's public counts and resources, the stack, the events the
+  viewer saw since they last acted, and the viewer's own legal actions, numbered as `do` takes them.
+- It's built from `playerView` and `eventsFor` (D-044), never from what's hidden: another player's pending decision is
+  only "waiting for". `test/brief.test.ts` runs the two-worlds check (`scrambleHidden`) on the brief's text and JSON over
+  every state of the scenarios with hidden cards in play.
+- Derived values (power and toughness, types, keywords, summoning sickness, combat) aren't in `PlayerView`. The host
+  computes them from the full state, only for the objects the viewer can see (public zones, their own hand), and sends them with the view. That's how M3's match host
+  will give the UI and the AI what they show and weigh: the architecture's `{ view, events, legalActions }` gains these
+  derived values, computed beside the view rather than added to it, so `playerView` stays the plain filter it is.
+- Each of the viewer's actions carries its cost, its legal targets (the engine's `legalTargets`, now exported with
+  `targetSpecsOf`) and a hint whether their mana could pay it now (`autoPay`, X as 0). It's a hint, as the engine allows
+  starting what can't be paid (CR 118.6, 601.2h) and a per-target cost increase is known only once targets are chosen.
+- `show` keeps its stable format for tests; `brief` is the detailed one.
