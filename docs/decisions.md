@@ -2122,3 +2122,13 @@ owner's answer to the D-089 open question, option (a))
 - It sees only the player view (`brief`, D-135) and picks a numbered legal action, so it can't cheat or move illegally.
   It also gets what a player knows of their own deck: the decklist and what's left in the library (counts only; the
   list predicts no shuffle, the seed would), the cards the opponent has shown, and the deck's game plan.
+
+**D-137: The AI opponent knows what a human player knows (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner's goal: the player can't tell they're playing against an AI. So the model has all the information a human
+  player has about the game and their deck, no less (or it plays worse than a person) and no more (or it cheats).
+- Parity is made structural, not checked by hand: the app's UI and the AI read one per-player data source (the match
+  host's view with derived values, D-135, as `brief` builds it today). A field added for the UI reaches the AI too.
+- What a human remembers counts as known: the whole game's history as they saw it, cards they know in the opponent's
+  hand or in a library (put there face up, or by themselves), their own decklist and what's left, and the rulings of
+  the cards in play. These are added to the shared data, so a human player sees them too (M3-02b).
+- It also covers behaviour: the AI is offered the response windows a human gets, and paces its actions like a player.

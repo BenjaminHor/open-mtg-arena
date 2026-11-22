@@ -30,7 +30,11 @@ opponent has shown this game, and the deck's game plan. It asks the model only f
 auto-passes the rest) and answers with the number of a legal action; an invalid reply is retried once, then the
 heuristic AI decides. Prove it in the CLI first (a script that plays `brief --json` games against the built-in agents)
 before the UI. Settings: key, model, a "thinking" indicator while it decides. The heuristic AI stays the default and
-the only one offline. *Accept:* in CLI games against the random agent it never makes an illegal move and wins most
+the only one offline. Information parity (D-137): the app's UI and the model read the same per-player data, so anything
+a human sees the model gets, including everything a player remembers: the whole game's history as they saw it, cards
+they know in the opponent's hand (one bounced there, say) and in a library (one they put on top or bottom), and the
+rulings of the cards in play. Response windows a human would get (a combat trick, a counterspell) are offered to the
+model too, and its pacing reads as a player's (not instant every time). *Accept:* in CLI games against the random agent it never makes an illegal move and wins most
 games; in the app the owner can enter a key, pick a model and play a full game against it.
 
 **M3-03 Web app scaffold.** `apps/web`: Vite + React + TypeScript, a PixiJS board canvas under the React UI

@@ -41,6 +41,9 @@ outer screen and a 7.6-inch inner screen), and also desktop browsers.
   concerned about cost or speed (fast, capable models exist), so one call per real decision with the whole view is fine.
   It needs to know its deck as a player does: its own decklist and what's left in its library (counts, never the
   order), the cards the opponent has shown this game, and the deck's game plan.
+  **Goal (owner, 2026-11-22): the player can't tell they're playing an AI.** The model has all the information a human
+  player would have about the game and their deck, no less and no more: what the UI shows a human is what the model
+  gets, from the same data (D-137).
 - **Correct rules.** When in doubt, the Comprehensive Rules win, not convenience.
 - **Readable, maintainable code** that a person can work on. AI writes most of it, but nothing is a black box.
 
