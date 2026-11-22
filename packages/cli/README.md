@@ -16,7 +16,8 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
   same data as text (`brief-text.ts`) (D-135).
 - `src/agent-play.ts`: the loop that lets the simple agents (`first-legal`, `random`, `by-kind`, in `@mtg/ai`) play.
   `src/random-decks.ts`: random 40-card decks from the pool.
-- `src/event-log.ts`: events in words, by turn (`log`, `auto`). `src/deck-setup.ts`: a game between prebuilt decks.
+- `src/event-log.ts`: events in words, by turn (`log`, `auto`). A game between prebuilt decks is `@mtg/match`'s
+  `deckGameSetup`.
 - `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
   actions, targets and mana in words.
 - `src/fuzz.ts`: the `pnpm fuzz` command (docs/testing.md, section 3; D-046). `src/fuzz/`: `checks.ts` (what's

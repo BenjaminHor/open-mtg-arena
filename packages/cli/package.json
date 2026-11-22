@@ -8,6 +8,7 @@
     "@mtg/engine": "workspace:*",
     "@mtg/cards": "workspace:*",
     "@mtg/ai": "workspace:*",
+    "@mtg/match": "workspace:*",
     "@mtg/scenarios": "workspace:*"
   }
 }

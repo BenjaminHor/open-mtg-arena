@@ -50,11 +50,26 @@ importers:
       '@mtg/engine':
         specifier: workspace:*
         version: link:../engine
+      '@mtg/match':
+        specifier: workspace:*
+        version: link:../match
       '@mtg/scenarios':
         specifier: workspace:*
         version: link:../scenarios
 
   packages/engine: {}
+
+  packages/match:
+    dependencies:
+      '@mtg/ai':
+        specifier: workspace:*
+        version: link:../ai
+      '@mtg/cards':
+        specifier: workspace:*
+        version: link:../cards
+      '@mtg/engine':
+        specifier: workspace:*
+        version: link:../engine
 
   packages/scenarios:
     dependencies:

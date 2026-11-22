@@ -27,6 +27,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     a stop where a payable non-mana action exists. Auto-tap reuses `autoPay`. The game file's pure part (format,
     replay) moves into `match`; the CLI keeps file I/O. A guard test: nothing `match` imports uses `node:`.
     *Accept (M3-01):* AI-vs-AI matches run through the host in tests and their logs replay to the same final state.
+  - M3-01a done (seenObjects, brief on it), M3-01b done (agents in `@mtg/ai`), M3-01c built (`packages/match`: state,
+    advance/submit/waitingOn, auto-pass, auto-tap one action at a time, replayLog, deckGameSetup moved in; the CLI's
+    game file keeps its own format and replay for now).
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
     and posts `{ view, seen, legalActions, events }`.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI

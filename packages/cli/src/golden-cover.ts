@@ -21,8 +21,8 @@ import {
   type GameState,
   type ObjectId,
 } from "@mtg/engine";
+import { deckGameSetup } from "@mtg/match";
 import { playAgents } from "./agent-play.ts";
-import { deckGameSetup } from "./deck-setup.ts";
 import { fuzzDecks, TURN_CAP } from "./fuzz/run-game.ts";
 import { addGolden, GOLDEN_DIR, goldenFiles, type NewGolden, playRecipe, readGolden } from "./golden.ts";
 import {

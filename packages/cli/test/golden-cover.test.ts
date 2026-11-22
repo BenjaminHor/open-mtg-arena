@@ -5,8 +5,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import type { Action, GameEvent, GameState, ObjectId, PlayerId } from "@mtg/engine";
+import { deckGameSetup } from "@mtg/match";
 import { afterEach, describe, expect, it } from "vitest";
-import { deckGameSetup } from "../src/deck-setup.ts";
 import { fuzzDecks } from "../src/fuzz/run-game.ts";
 import { addGolden, goldenFiles, playRecipe } from "../src/golden.ts";
 import {

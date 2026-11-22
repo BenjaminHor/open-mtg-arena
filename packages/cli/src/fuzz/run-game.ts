@@ -13,7 +13,7 @@ import {
   type GameState,
   legalActions,
 } from "@mtg/engine";
-import { deckGameSetup } from "../deck-setup.ts";
+import { deckGameSetup } from "@mtg/match";
 import { FORMAT, type GameFile, replay } from "../game-file.ts";
 import { randomDecks } from "../random-decks.ts";
 import type { Check } from "./checks.ts";

@@ -1,0 +1,15 @@
+{
+  "name": "@mtg/match",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@mtg/engine": "workspace:*",
+    "@mtg/ai": "workspace:*",
+    "@mtg/cards": "workspace:*"
+  }
+}
