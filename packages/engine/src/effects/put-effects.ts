@@ -1,6 +1,6 @@
 // "Put it into your hand", "onto the battlefield", "on the bottom of your library": moving the cards an effect names,
-// such as the cards a search found or a revealed card (CR 608.2c), to the zone the text says. Several cards put on top
-// of a library are arranged by their owner, unrevealed (CR 401.4).
+// such as the cards a search found or a revealed card (CR 608.2c), to the zone the text says. Several cards put on the
+// top or bottom of a library are arranged by their owner, unrevealed (CR 401.4).
 
 import { textOracleId } from "../cards/card-data.ts";
 import type { CardDatabase, Effect } from "../cards/types.ts";
@@ -88,6 +88,7 @@ function putInLibraries(
     return theirs.length === 0 ? [] : [{ owner, cards: theirs }];
   });
   const answered = chosen === null ? -1 : owners.findIndex((o) => o.cards.some((c) => c.id === chosen[0]));
+  if (chosen !== null && answered === -1) throw new Error("an order answered for no owner's cards");
   let progress: Progress = { state, events: [] };
   for (const [i, { owner, cards: theirs }] of owners.entries()) {
     if (i < answered) continue;

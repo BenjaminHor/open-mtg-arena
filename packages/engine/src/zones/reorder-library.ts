@@ -1,4 +1,4 @@
-// Putting a library's top cards back in a chosen order (CR 401.4: "Look at the top three cards of your library, then put
+// Putting a library's top or bottom cards in a chosen order (CR 401.4: "Look at the top three cards of your library, then put
 // them back in any order"). The cards keep their ids; looked-at cards that are reordered become new objects
 // (later: CR 701.20d), which matters only once something tracks a card that was looked at.
 
@@ -12,7 +12,7 @@ import { withZoneList, zoneList } from "./zone-list.ts";
  * `top` goes on top of `player`'s library in that order, top first, above the rest, and `bottom` under the rest, top
  * first too. The order is hidden (CR 401.2, 401.4): only how many went to the bottom is told.
  */
-export function reorderLibraryTop(
+export function reorderLibrary(
   state: GameState,
   player: PlayerId,
   top: readonly ObjectId[],

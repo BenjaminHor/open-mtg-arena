@@ -1,0 +1,27 @@
+name: A token shuffled in by Warp World is gone before anything is revealed, so it can't come back, even while a choice waits
+rules: [CR 111.8, CR 608.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Ant Queen, { card: Holy Strength, attachedTo: p1:Ant Queen }]
+    hand: [Warp World]
+    library: []
+    manaPool: { R: 8, G: 2 }
+  p2:
+    battlefield: [Hill Giant]
+    library: []
+steps:
+  - p1 activate: Ant Queen
+    pay: auto
+  - all pass: once
+  - p1 cast: Warp World
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: enchant }
+      p1.library: [Holy Strength]
+      p1.battlefield: [Ant Queen]
+  - p1 choose: Hill Giant
+  - expect:
+      p1.battlefield: [Ant Queen, Holy Strength]
+      p1.library: []

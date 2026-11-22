@@ -8,16 +8,16 @@ import type { Progress } from "../game/progress.ts";
 import { apnapOrder } from "../game/turn-order.ts";
 import { happen } from "../pipeline/happen.ts";
 import type { SingleEvent } from "../pipeline/proposed.ts";
-import { matchesFilter } from "../rules/object-filter.ts";
+import { ownerOf } from "../rules/owner.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
 import { remember } from "./resolution-results.ts";
+import { objectsNamed } from "./subjects.ts";
 
 type ShuffleInto = Extract<Effect, { op: "shuffleIntoLibraries" }>;
 
 /**
- * Every permanent fitting the filter moves to its owner's library, the active player's first, in battlefield order
+ * Every permanent named moves to its owner's library, the active player's first, in battlefield order
  * (public, and each library is shuffled after). A token moves too, so what triggers on it leaving does (CR 111.7), and
  * ceases to exist in the same batch: it isn't a card, and its ruling says not to shuffle it in, so no token waits in a
  * library while the rest of the resolution asks its questions. Every player shuffles, one with nothing put in too
@@ -29,20 +29,11 @@ export function shuffleIntoLibraries(
   context: EffectContext,
   cards: CardDatabase,
 ): Progress {
-  const fitting = state.zones.battlefield.filter((id) =>
-    matchesFilter(state, id, effect.filter, context.controller, cards),
-  );
-  const ownerOf = (id: ObjectId) => {
-    const obj = state.objects[id];
-    if (obj?.kind !== "card") throw new Error(`${id} isn't a permanent`);
-    return obj.owner;
-  };
+  const named = objectsNamed(state, effect.of, context, cards).filter((id) => state.zones.battlefield.includes(id));
   const players = apnapOrder(state);
-  const shuffledIn = players.map((player) => ({
-    player,
-    count: fitting.filter((id) => ownerOf(id) === player).length,
-  }));
-  const moving = players.flatMap((player) => fitting.filter((id) => ownerOf(id) === player));
+  const owned = players.map((player) => ({ player, permanents: named.filter((id) => ownerOf(state, id) === player) }));
+  const shuffledIn = owned.map(({ player, permanents }) => ({ player, count: permanents.length }));
+  const moving = owned.flatMap(({ permanents }) => permanents);
   const moves = moving.map(
     (object): SingleEvent => ({ kind: "moveCard", object, to: { zone: "library", position: "top" } }),
   );

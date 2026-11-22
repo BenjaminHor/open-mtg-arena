@@ -23,7 +23,7 @@ import { counterObject } from "../zones/counter.ts";
 import { discardCard } from "../zones/discard.ts";
 import { drawCard } from "../zones/draw.ts";
 import { moveCard } from "../zones/move-card.ts";
-import { reorderLibraryTop } from "../zones/reorder-library.ts";
+import { reorderLibrary } from "../zones/reorder-library.ts";
 import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
 import { putSpellCopy } from "../zones/spell-copies.ts";
@@ -87,7 +87,30 @@ function renamed(event: SingleEvent, earlier: readonly GameEvent[]): SingleEvent
     // A token moved earlier in the batch, gone as it ends (Warp World: "you shouldn't actually shuffle them in").
     case "ceaseToExist":
       return { ...event, object: newId(event.object) };
-    default:
+    // No batch yet names an object it moved earlier in these: each new one says whether it can.
+    case "moveCard":
+    case "destroy":
+    case "regenerate":
+    case "damagePrevented":
+    case "sacrifice":
+    case "dealDamage":
+    case "counterObject":
+    case "gainLife":
+    case "loseLife":
+    case "reveal":
+    case "tap":
+    case "untap":
+    case "putCounters":
+    case "removeCounters":
+    case "attach":
+    case "unattach":
+    case "createToken":
+    case "copySpell":
+    case "addMana":
+    case "draw":
+    case "discard":
+    case "shuffle":
+    case "playLand":
       return event;
   }
 }
@@ -211,7 +234,7 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     case "reveal":
       return reveal(state, event.from, event.objects);
     case "reorderLibrary":
-      return reorderLibraryTop(state, event.player, event.top, event.bottom);
+      return reorderLibrary(state, event.player, event.top, event.bottom);
     case "tap":
       return tapPermanent(state, event.object);
     case "counterObject":
@@ -245,7 +268,7 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     case "shuffle": {
       const shuffled = shuffleLibrary(state, event.player);
       const onTop = event.thenOnTop;
-      return onTop === undefined ? shuffled : andThen(shuffled, (s) => reorderLibraryTop(s, event.player, onTop));
+      return onTop === undefined ? shuffled : andThen(shuffled, (s) => reorderLibrary(s, event.player, onTop));
     }
     case "playLand": {
       const moved = moveCard(state, event.object, playLandDestination(event));

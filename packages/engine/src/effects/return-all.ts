@@ -16,6 +16,7 @@ import { happenOrAsk } from "../pipeline/happen.ts";
 import { isAura } from "../rules/attachment.ts";
 import { canEnchant } from "../rules/can-enchant.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
+import { ownerOf } from "../rules/owner.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { AuraHost, GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -121,12 +122,6 @@ function cardsReturning(state: GameState, effect: ReturnAll, context: EffectCont
 /** The permanents already on the battlefield this Aura could enchant under `you`, who'll control it (CR 303.4f). */
 function possibleHosts(state: GameState, aura: ObjectId, you: PlayerId, cards: CardDatabase): ObjectId[] {
   return state.zones.battlefield.filter((host) => canEnchant(state, aura, host, you, cards));
-}
-
-function ownerOf(state: GameState, id: ObjectId): PlayerId {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
-  return obj.owner;
 }
 
 function hasHost(state: GameState, aura: ObjectId): boolean {

@@ -748,12 +748,12 @@ export type Effect =
   /** "Reveal the top card of [whose] library": it's `"found"` for the effects after it (CR 701.20a, 608.2c). */
   | { op: "revealTop"; who: EffectSubject; count?: "shuffledIn" }
   /**
-   * "Each player shuffles all permanents they own into their library" (Warp World): every permanent fitting `filter`
-   * goes to its owner's library at once (CR 400.3), each player then shuffles (CR 701.24a), and how many each player
+   * "Each player shuffles all permanents they own into their library" (Warp World, `of: { each: {} }`): each permanent
+   * named goes to its owner's library at once (CR 400.3), each player then shuffles (CR 701.24a), and how many each player
    * owned is kept (`Resolution.shuffledIn`), counted before they moved, tokens too (its rulings). A token goes too and
    * ceases to exist in the same batch (its ruling: it shouldn't really be shuffled in).
    */
-  | { op: "shuffleIntoLibraries"; filter: ObjectFilter }
+  | { op: "shuffleIntoLibraries"; of: EffectSubject }
   /**
    * "Copy target instant or sorcery spell. You may choose new targets for the copy." (Twincast): a copy of the spell
    * named is put on the stack under the controller's control (CR 707.10); with `newTargets`, they may then choose new

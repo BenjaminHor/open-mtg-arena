@@ -8,7 +8,7 @@ export const warpWorld: CardDef = {
     targets: [],
     effects: [
       // Counted before they move, tokens too (its rulings).
-      { op: "shuffleIntoLibraries", filter: {} },
+      { op: "shuffleIntoLibraries", of: { each: {} } },
       { op: "revealTop", who: "eachPlayer", count: "shuffledIn" },
       // All at once (its ruling); then the enchantments, Auras choosing among those already there.
       {

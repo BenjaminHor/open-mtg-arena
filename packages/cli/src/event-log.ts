@@ -73,6 +73,7 @@ function target(t: Target, name: Namer): string {
 }
 
 export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): string {
+  const cardName = (oracleId: string) => cardDataByOracleId(oracleId, cards)?.printed.name ?? oracleId;
   switch (e.type) {
     case "ZONE_CHANGED": {
       const printed = cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId;
@@ -181,14 +182,14 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `${e.player} chooses ${name(e.host)} for ${cardDataByOracleId(e.card, cards)?.printed.name ?? e.card} to enchant`;
     case "NAME_CHOSEN": {
       // A card entering from a hidden zone isn't named by its id there (D-062).
-      const entering = e.object === null ? "the card entering" : name(e.object);
+      const entering = e.object !== null ? name(e.object) : e.card === null ? "it" : cardName(e.card);
       return e.what === "cardName"
         ? `${e.player} names ${e.name} for ${entering}`
         : `${e.player} chooses ${e.name} for ${entering}`;
     }
     case "OBJECTS_CHOSEN": {
       // A card entering from a hidden zone isn't named by its id there (D-062).
-      const entering = e.object === null ? "the card entering" : name(e.object);
+      const entering = e.object !== null ? name(e.object) : e.card === null ? "it" : cardName(e.card);
       return e.chosen.length === 0
         ? `${e.player} chooses nothing for ${entering} to ${e.purpose}`
         : `${e.player} chooses ${e.chosen.map(name).join(", ")} for ${entering} to ${e.purpose}`;

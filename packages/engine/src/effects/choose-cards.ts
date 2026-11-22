@@ -106,6 +106,7 @@ export function answerChooseCards(answered: GameState, decision: ChooseCards, an
         type: "OBJECTS_CHOSEN",
         player: decision.player,
         object: decision.for === null ? null : publicIdOf(answered, decision.for),
+        card: decision.for === null ? null : oracleIdOf(answered, decision.for),
         purpose: decision.purpose,
         chosen: picked,
       };

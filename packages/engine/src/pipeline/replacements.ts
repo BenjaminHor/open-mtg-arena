@@ -18,6 +18,7 @@ import { apnapOrder } from "../game/turn-order.ts";
 import { copiedReplacements, replacementsOf } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
+import { ownerOf } from "../rules/owner.ts";
 import type { ChooseWhat } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -461,10 +462,4 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "damagePrevented":
       throw new Error(`${event.kind} moves no card`);
   }
-}
-
-function ownerOf(state: GameState, id: ObjectId) {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
-  return obj.owner;
 }

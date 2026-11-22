@@ -332,6 +332,7 @@ const OBJECT_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   exile: (e) => (e as { of: EffectSubject }).of,
   returnToHand: (e) => (e as { of: EffectSubject }).of,
   putOnTopOfLibrary: (e) => (e as { of: EffectSubject }).of,
+  shuffleIntoLibraries: (e) => (e as { of: EffectSubject }).of,
   tap: (e) => (e as { of: EffectSubject }).of,
   doesntUntap: (e) => (e as { of: EffectSubject }).of,
   counter: (e) => (e as { of: EffectSubject }).of,
@@ -492,6 +493,16 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       e.op === "search" || e.op === "revealTop" || e.op === "revealUntil" || e.op === "choose";
     if (foundNamed && !earlier.some(finds))
       problems.push(`${where}: ${effect.op} names the cards found, but no search, reveal or choice comes before it`);
+    // "Return all [filter] cards found" reads the cards found, as "found" does.
+    if (effect.op === "returnAllToBattlefield" && effect.from === "found" && !earlier.some(finds))
+      problems.push(`${where}: returnAllToBattlefield from "found", but no search, reveal or choice comes before it`);
+    // "Reveals that many cards" counts what an earlier shuffle put in; without one it would reveal nothing.
+    if (
+      effect.op === "revealTop" &&
+      effect.count === "shuffledIn" &&
+      !earlier.some((e) => e.op === "shuffleIntoLibraries")
+    )
+      problems.push(`${where}: revealTop counts the cards shuffled in, but no shuffleIntoLibraries comes before it`);
     const readsSacrificed =
       effect.op === "ifNothingSacrificed" || ("amount" in effect && effect.amount === "sacrificedPower");
     if (readsSacrificed && !earlier.some((e) => e.op === "sacrifice"))

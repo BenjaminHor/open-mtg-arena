@@ -157,6 +157,36 @@ describe("what a decision is for, from a hidden zone (D-062)", () => {
   });
 });
 
+describe("a name chosen as a card enters from a hidden zone (D-129)", () => {
+  const { state } = p2Mulligans();
+  const entering = library(state, "p2")[0] as ObjectId;
+  const naming: GameState = {
+    ...state,
+    pending: {
+      id: "d9999",
+      player: "p2",
+      kind: "chooseName",
+      what: "cardName",
+      answering: {
+        kind: "asEnters",
+        for: { kind: "object", object: entering },
+        ref: { kind: "ownText", object: entering, index: 0 },
+        resume: { proposed: { kind: "simultaneous", events: [] }, choices: [] },
+      },
+    },
+  };
+
+  it("shows the card by what it is, without its id there, and not the replacement asking", () => {
+    const view = playerView(naming, "p2", TEST_CARDS);
+    const decision = view.decision?.kind === "chooseName" ? view.decision : null;
+    expect(decision?.answering).toStrictEqual({
+      kind: "asEnters",
+      for: { oracleId: state.objects[entering]?.kind === "card" ? state.objects[entering].oracleId : "", object: null },
+    });
+    expect(JSON.stringify(view)).not.toContain(`"${entering}"`);
+  });
+});
+
 describe("eventsFor", () => {
   const { events } = p2Mulligans();
 

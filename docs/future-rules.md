@@ -286,8 +286,7 @@ and a "look at" show cards by identity only, in a fixed order, never by id or zo
 same. Liliana Vess's "search, then shuffle and put that card on top" (CR 701.24b leaves the found card out of the
 shuffle) is built as search, shuffle the whole library, then move the found card to the top by reordering, which gives
 the same odds (M2-13c1). Moving a card within its own library is a reorder, not a zone change (CR 400.7); "put on the
-bottom" (Lurking Predators) still goes through `moveCard`, a new object, and should become a reorder too when a
-library trigger (CR 603.10a) or CR 701.20d needs it. A one-time reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
+bottom" (Lurking Predators) is one too since M2-14k (D-130). A one-time reveal is only an event (`CARDS_REVEALED`), and the view doesn't keep it: while Duress's caster
 chooses, `playerView` shows only the cards that fit, so a client or AI rebuilt from views mid-choice loses the rest of
 the revealed hand, though it stays revealed until the effect is done (CR 701.20a). *Built (M2-14f, D-122):* what a
 "play with ... revealed" ability shows is in the view by identity only (`revealedHand`, `revealedTop`), read from the
@@ -455,14 +454,9 @@ changing who controls it as it enters still needs reading there (CR 110.2a). An 
 the graveyard; an effect that changes it as it enters (CR 614.12) would need it judged as it will be. *Needs now:*
 nothing.
 
-**Several cards put in one position of a library (CR 401.4, D-128).** Built for the top (Mirror of Fate): the owner
-arranges them, unrevealed, in one batch (the moves in shown order, then a `reorderLibrary` naming them by their ids
-before the batch, so a top played revealed is shown only as it ends). *Still to come:* the bottom ("put them on the
-bottom of your library in any order", not in the pool), which goes in the same place; cards of several owners put at
-once (each to their owner's library, each owner arranging theirs; `putSeveralOnTop` throws today); and cards already in
-the library moved as a group, which shouldn't become new objects.
-*Watch out (Warp World, D-130):* `shuffleIntoLibraries` reads the battlefield list directly; a phased-out permanent
-(later: CR 702.26b) must be neither counted nor moved. `NAME_CHOSEN` from a hidden zone has no `card`, unlike
-`AURA_HOST_CHOSEN`: two different name-choosing cards entering from a library at once couldn't be told apart (none in
-the pool; Pithing Needle and Convincing Mirage differ by `what`).
+**Several cards put in one position of a library (CR 401.4, D-128, D-130).** Built for the top (Mirror of Fate) and the
+bottom (Warp World), for several owners in turn order: each owner arranges theirs, unrevealed, in one batch (cards from
+elsewhere move in shown order, then a `reorderLibrary` names them by their ids before the batch). A card already in
+that library is only reordered, never a new object (CR 400.7: Liliana Vess, Lurking Predators), and going to the bottom
+is told as a count (`PUT_ON_LIBRARY_BOTTOM`).
 

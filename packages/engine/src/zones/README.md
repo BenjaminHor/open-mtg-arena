@@ -14,9 +14,10 @@ events (`pipeline/`, D-056) and are called only by it: code that moves a card pr
   `simultaneous` event.
 - `reveal.ts`: `reveal` (CR 701.20a), emitting `CARDS_REVEALED` with the cards' identities only; nothing moves
   (CR 701.20b). `shown-order.ts`: `inShownOrder`, the fixed order (oracle id, then object id) cards are shown in
-  outside their own zone's order, which would tell how they got there (D-062).
-- `reorder-library.ts`: `reorderLibraryTop`, putting a library's top cards back in a chosen order (CR 401.4); nothing
-  leaves the library.
+  outside their own zone's order, which would tell how they got there (D-062); `oracleIdOf`, what a card is as shown;
+  `publicIdOf`, an object's id for an event, null in a hidden zone (D-129).
+- `reorder-library.ts`: `reorderLibrary`, putting cards on a library's top or bottom in a chosen order (CR 401.4);
+  nothing leaves the library, and only how many went to the bottom is told (`PUT_ON_LIBRARY_BOTTOM`).
 - `shuffle.ts`: `shuffleLibrary`, a Fisher–Yates shuffle from the game's seeded RNG (CR 701.24).
 - `counter.ts`: `counterObject` (CR 701.6a): a countered spell goes to its owner's graveyard, an ability ceases to
   exist; performs the pipeline's `counterObject` event.

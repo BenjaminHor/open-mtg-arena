@@ -122,14 +122,31 @@ export type GameEvent =
    * (Convincing Mirage) for it (CR 614.12a), as `what` says.
    * Public, so the players choosing after know it (CR 101.4b). `object` is the card as it was, before it entered.
    */
-  /** `object` is null for a card entering from a hidden zone, whose id there records its history (D-062). */
-  | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId | null; what: ChooseWhat; name: string }
+  /**
+   * `card` is what the card entering is (null while a spell or ability resolves); `object` is null for one entering
+   * from a hidden zone, whose id there records its history (D-062, D-129).
+   */
+  | {
+      type: "NAME_CHOSEN";
+      player: PlayerId;
+      object: ObjectId | null;
+      card: OracleId | null;
+      what: ChooseWhat;
+      name: string;
+    }
   /**
    * As `object` enters, `player` chose these permanents for it (CR 614.12a): the one it enters as a copy of (CR 707.5),
    * or none (Clone's "may"). `object` is null for a card entering from a hidden zone, whose id there records its history
    * (D-062).
    */
-  | { type: "OBJECTS_CHOSEN"; player: PlayerId; object: ObjectId | null; purpose: ChoosePurpose; chosen: ObjectId[] }
+  | {
+      type: "OBJECTS_CHOSEN";
+      player: PlayerId;
+      object: ObjectId | null;
+      card: OracleId | null;
+      purpose: ChoosePurpose;
+      chosen: ObjectId[];
+    }
   /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */
   | { type: "UNATTACHED"; object: ObjectId; from: ObjectId }
   /**

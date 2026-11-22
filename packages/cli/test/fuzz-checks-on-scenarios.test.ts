@@ -18,9 +18,9 @@ describe("the fuzz checks hold on every state of the scenarios a random game rar
     for (const file of readdirSync(join(SCENARIOS, folder)).filter((f) => f.endsWith(".yaml"))) {
       it(`${folder}/${file}`, () => {
         const yaml = readFileSync(join(SCENARIOS, folder, file), "utf8");
-        const result = runScenario(yaml, cards, (state) => [
+        const result = runScenario(yaml, cards, (state, _cards, events, before) => [
           ...invariantProblems(state, cards),
-          ...viewsLeakNothing(state, state, [], cards),
+          ...viewsLeakNothing(before, state, events, cards),
           ...heldBackTopsHidden(state, state, [], cards),
           ...layersMatchFreshPass(state, state, [], cards),
         ]);

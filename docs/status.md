@@ -884,7 +884,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          together, both owners' bottoms, Platinum Angel, Twincast and Hive Mind copying it, a stolen token, protection,
          shroud, owning nothing). Noted, following Warp World's ruling 5: every Aura host is announced (APNAP) before the
          choices made as cards enter (a Mirage's land type comes after the other player's host). PR #85.
-         Code review to apply (in progress): scenarios for Warp World's last clause (a revealed leftover under an
+         Code review applied: scenarios for Warp World's last clause (a revealed leftover under an
          unrevealed card) and a token never revealed (an Aura pending); the scenario fuzz checks get each step's events;
          a chooseName view test; throw on an order answered for no owner; `renamed` an exhaustive switch;
          `shuffleIntoLibraries { of: EffectSubject }`; definition checks for `count: "shuffledIn"` and `from: "found"`;
