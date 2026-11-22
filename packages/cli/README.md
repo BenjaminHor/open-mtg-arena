@@ -1,7 +1,7 @@
 # @mtg/cli
 
 The headless text interface for playing and debugging games. It's stateless: every command reads a game file,
-does one thing and writes it back, so a script (or Claude Code) can drive a game one command at a time.
+does one thing and writes it back, so a person, a script or a test can drive a game one command at a time.
 
 The full command list and output format are in [`docs/testing.md`](../../docs/testing.md), section 2.
 

@@ -1,6 +1,6 @@
 # engine/src/state
 
-The types that make up a game, all plain JSON data (CLAUDE.md, hard invariants). No logic lives here except
+The types that make up a game, all plain JSON data (docs/architecture.md, invariants). No logic lives here except
 tiny helpers that belong to one type (`emptyManaPool`, `phaseOf`).
 
 | File | What it defines |
