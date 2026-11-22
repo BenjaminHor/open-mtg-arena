@@ -923,6 +923,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            - f2 built: each action's cost, a "not enough mana now" hint (`autoPay`, X as 0), its legal targets (the
              engine's `legalTargets`), same-text actions on one line keeping every number, mana abilities on one line.
              Attackers and blockers were already one action each. `--text` replaced the `card <name>` idea.
+           - Left out of parts 2 and 4, as `brief` covers the need otherwise: "what changed a P/T" (`inspect` explains
+             it) and a list of untapped mana sources (the `mana available` count, and each land's tapped status).
+           - Review fixes: the next step is the engine's (`nextStep`, skipped steps passed over); actions numbered by
+             `numberedActions`; only `view.objects` described; recent-event tests; the leak test covers seven folders.
            - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
              view; record that as a decision.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner

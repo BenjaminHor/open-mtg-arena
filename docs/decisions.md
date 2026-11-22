@@ -2105,7 +2105,7 @@ owner's answer to the D-089 open question, option (a))
   only "waiting for". `test/brief.test.ts` runs the two-worlds check (`scrambleHidden`) on the brief's text and JSON over
   every state of the scenarios with hidden cards in play.
 - Derived values (power and toughness, types, keywords, summoning sickness, combat) aren't in `PlayerView`. The host
-  computes them from the full state, for public objects only, and sends them with the view. That's how M3's match host
+  computes them from the full state, only for the objects the viewer can see (public zones, their own hand), and sends them with the view. That's how M3's match host
   will give the UI and the AI what they show and weigh: the architecture's `{ view, events, legalActions }` gains these
   derived values, computed beside the view rather than added to it, so `playerView` stays the plain filter it is.
 - Each of the viewer's actions carries its cost, its legal targets (the engine's `legalTargets`, now exported with
