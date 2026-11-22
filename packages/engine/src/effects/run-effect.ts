@@ -16,13 +16,14 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { createDelayedTrigger } from "../triggers/delayed.ts";
 import { attachSelf } from "./attach-self.ts";
 import { becomes } from "./becomes.ts";
+import { chooseExiled } from "./choose-exiled.ts";
 import { createContinuousEffect } from "./continuous-effect.ts";
 import { createTokens } from "./create-tokens.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
 import { ifActivatedThisTurn } from "./if-activated.ts";
 import {
-  exileGraveyard,
+  exileAll,
   lookAtTop,
   mayShuffle,
   revealObjects,
@@ -305,7 +306,7 @@ export function runEffect(
     case "reveal":
       return revealObjects(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards);
     case "put":
-      return put(state, effect, context, cards);
+      return put(state, effect, context, chosen, cards);
     case "nameCard": {
       // "That player chooses a card name" (CR 201.4): the rest of the resolution waits behind it.
       const player = onePlayer(state, effect.who, context, cards);
@@ -345,10 +346,12 @@ export function runEffect(
       const about = effect.about === undefined ? [] : objectsNamed(state, effect.about, context, cards);
       return createDelayedTrigger(state, effect.ability, context, about);
     }
-    case "exileGraveyard": {
+    case "choose":
+      return chooseExiled(state, effect, context, chosen, cards);
+    case "exileAll": {
       const player = onePlayer(state, effect.of, context, cards);
       if (player === null) return { state, events: [] };
-      return exileGraveyard(state, player, effect.filter, context.controller, cards);
+      return exileAll(state, { zone: effect.zone, player }, effect.filter, context.controller, cards);
     }
     case "extraTurn":
       // Several players' extra turns are added one at a time in the order named (CR 500.7 wants APNAP order: true of

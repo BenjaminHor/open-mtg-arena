@@ -43,6 +43,7 @@ export function fits(object: FitContext, filter: ObjectFilter, you: PlayerId, th
   if (filter.combat !== undefined && !object.inCombat(filter.combat)) return false;
   // "That doesn't have that name" (CR 201.4: the name chosen this way).
   if (filter.notNamedThisWay === true && object.namedThisWay()) return false;
+  if (filter.owner === "you" && obj.owner !== you) return false;
   if (filter.controller !== undefined) {
     // Only permanents and spells have a controller (CR 109.4), even though `controllerOf` names a card's owner for
     // questions that need someone.

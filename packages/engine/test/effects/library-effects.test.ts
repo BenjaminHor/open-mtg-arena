@@ -48,7 +48,12 @@ const TUTOR = hammerAs(
 const ECHOES = hammerAs(
   [{ kind: "player" }],
   [
-    { op: "exileGraveyard", of: { target: 0 }, filter: { not: { supertypes: ["basic"], types: ["land"] } } },
+    {
+      op: "exileAll",
+      zone: "graveyard",
+      of: { target: 0 },
+      filter: { not: { supertypes: ["basic"], types: ["land"] } },
+    },
     { op: "search", library: { target: 0 }, count: "anyNumber", sameNameAsExiled: true },
     { op: "exile", of: "found" },
     { op: "shuffle", who: { target: 0 } },

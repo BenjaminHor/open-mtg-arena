@@ -60,7 +60,8 @@ the one place their effects become changes to the game.
 | `ifActivatedThisTurn` | "If this ability has been activated four or more times this turn, ..." | Its `effects` happen only if the resolving activated ability has become activated `atLeast` times this turn, its own activation counted, read now (CR 608.2h, D-078); for an activated ability only |
 | `createDelayedTrigger` | "Sacrifice Dragon Whelp at the beginning of the next end step" | Makes a delayed triggered ability, with this spell's or ability's source and controller (CR 603.7d, 603.7e), waiting in `GameState.delayedTriggers` (`triggers/delayed.ts`) |
 | `ifNothingSacrificed` | "If you can't sacrifice a creature, tap this creature and you lose 7 life" | Its `effects` happen only if no earlier `sacrifice` of this resolution sacrificed anything (CR 608.2c) |
-| `exileGraveyard` | "Exile all cards from target player's graveyard other than basic land cards" | Exiles the cards fitting `filter` at once, kept as "exiled this way" (CR 608.2c) |
+| `choose` | "Choose up to seven face-up exiled cards you own" | The controller chooses up to `upTo` exiled cards fitting `filter` as it resolves (CR 608.2d), kept as `found`; not asked with none (`choose-exiled.ts`) |
+| `exileAll` | "Exile all cards from target player's graveyard other than basic land cards", "Exile all the cards from your library" | Exiles the cards in `zone` fitting `filter` at once, kept as "exiled this way" (CR 608.2c); a library's in shown order |
 | `mill` | "Target player mills five cards" | The top N of each player's library to its graveyard at once, all there are if fewer (CR 701.17a, 701.17b); `"halfTheirLibrary"` rounds down (CR 107.1a) |
 
 Which move op to use: `returnToHand` for a target bounced to its owner's hand; `put` for cards an earlier `search`,

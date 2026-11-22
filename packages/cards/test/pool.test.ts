@@ -573,7 +573,7 @@ describe("definitionProblems", () => {
       spell: { targets: [], effects },
     });
     expect(definitionProblems([def([{ op: "put", of: "found", into: "hand" }])], [tutor])).toStrictEqual([
-      "Diabolic Tutor: put names the cards found, but no search or reveal comes before it",
+      "Diabolic Tutor: put names the cards found, but no search, reveal or choice comes before it",
     ]);
     expect(
       definitionProblems(

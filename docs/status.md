@@ -821,6 +821,25 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Future impact: "becomes a copy" (CR 707.4, a continuous effect with a duration) goes in `state.effects`, and
            `cardDataOf` then takes the state (one signature, every lookup already there); token copies (CR 707.8a) set
            `copied` on the token; "except ..." (CR 707.9) is a field on `entersAsCopy`.
+       - M2-14j plan (2026-11-22): Mirror of Fate ("{T}, Sacrifice this artifact: Choose up to seven face-up exiled
+         cards you own. Exile all the cards from your library, then put the chosen cards on top of your library.").
+         CR 401.4, 406.3, 108.3, 608.2d, 602.2. D-126, all general blocks:
+         1. `ObjectFilter.owner: "you"` ("you own", CR 108.3), next to `controller`.
+         2. Op `choose { from: "exile", filter, upTo }`: the controller chooses up to N cards there as it resolves
+            (CR 608.2d; the ruling: chosen on resolution, however they got there), kept as `found` for the effects after
+            it, like a search's. Every exiled card is face up (CR 406.3; exiling face down, later).
+         3. `exileGraveyard` generalized to `exileAll { zone: "graveyard" | "library", of, filter? }` (Haunting Echoes
+            unchanged in meaning), its cards exiled this way kept as before.
+         4. `put` into `libraryTop` of several cards: their owner arranges them (CR 401.4), a `chooseCards` "putOnTop"
+            decision, and the order isn't revealed: the cards move in shown order, then the top is reordered (no event).
+         5. Scenarios: choose some, none, more than seven offered, an opponent's exiled card not offered, the order
+            (top first), cards exiled from the library this way not choosable, the library empty then (a draw loses
+            later), Haunting Echoes still working; the hidden order in the fuzz (two worlds).
+         - Future impact: `choose` serves "choose a card in a graveyard" without targets; `exileAll` any zone; CR 401.4
+           for the bottom (later) goes in the same place.
+       - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
+         CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
+         yours, none asked; one card, no order asked; seven of eight). 1 golden game. Next: fuzz, reviews, PR.
        - M2-14i built (2026-11-22, D-127): Clone (238 cards): the `entersAsCopy` replacement, `CardObject.copied` read
          by `cardDataOf` (layer 1), `textOracleId` for abilities, `chooseCards` resuming an event, `OBJECTS_CHOSEN`, `put`
          through `happenOrAsk`. 17 scenarios (copies Bears; none; no creature; a token; Giant Growth and an Aura not

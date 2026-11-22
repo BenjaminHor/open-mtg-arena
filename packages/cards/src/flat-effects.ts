@@ -65,7 +65,8 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "shuffle":
     case "mayShuffle":
     case "lookAtTop":
-    case "exileGraveyard":
+    case "exileAll":
+    case "choose":
     case "sacrifice":
       return [];
   }
