@@ -4,7 +4,15 @@
 
 import type { Action, CardDatabase, ObjectId, SeatView, Target, ViewDecision } from "@mtg/engine";
 import { cardDataByOracleId, manaValue } from "@mtg/engine";
-import { has, opponents, permanents, permanentValue, seenCard, toughnessLeft } from "./board.ts";
+import {
+  cardData as cardDataOf,
+  has,
+  opponents,
+  permanents,
+  permanentValue,
+  seenCard,
+  toughnessLeft,
+} from "./board.ts";
 import { auraIntent, type Intent, stackIntents } from "./intents.ts";
 import { targetScore } from "./targets.ts";
 
@@ -50,19 +58,44 @@ export function newTargetAction(shown: SeatView, d: DecisionOf<"chooseNewTarget"
   return best(answers(shown, "chooseNewTarget"), (a) => score(a.answer.target))?.action ?? null;
 }
 
-/** The most targets allowed: the heuristic only casts spells whose targets are worth choosing. */
-export function targetCountAction(shown: SeatView): Action | null {
-  return best(answers(shown, "chooseTargetCount"), (a) => a.answer.count)?.action ?? null;
+/**
+ * As many targets as it has good ones (worth more than nothing to aim at), within what's allowed; just one for a spell
+ * that costs more for each target beyond the first (Fireball, CR 601.2f), whose X already spent the mana.
+ */
+export function targetCountAction(shown: SeatView, d: DecisionOf<"chooseTargetCount">, cards: CardDatabase) {
+  const intent = stackIntents(shown, d.object, cards)[d.instance] ?? { kind: "neutral" };
+  const seen = shown.seen[d.object];
+  const costsMore = seen?.kind === "card" && cardDataOf(seen, cards)?.def.spell?.costIncrease !== undefined;
+  const candidates: Target[] = [
+    ...shown.view.turnOrder.map((player) => ({ kind: "player" as const, player })),
+    ...permanents(shown).map((c) => ({ kind: "object" as const, object: c.id })),
+  ];
+  const good = candidates.filter((t) => targetScore(shown, t, intent, cards) > 0).length;
+  const wanted = Math.min(d.max, Math.max(d.min, costsMore ? 1 : good));
+  return closest(answers(shown, "chooseTargetCount"), (a) => a.answer.count, wanted);
 }
 
-/** As much X as it can pay; for a loyalty −X, one less than its loyalty, so the planeswalker stays (CR 704.5i). */
+/**
+ * The most X it can pay for (each answer shows its whole cost and whether the engine can pay it, D-144); for a loyalty
+ * [−X], one less than its loyalty, so the planeswalker stays (CR 704.5i).
+ */
 export function announceXAction(shown: SeatView, d: DecisionOf<"announceX">): Action | null {
   const seen = shown.seen[d.object];
   const source = seen?.kind === "ability" ? seenCard(shown, seen.source) : null;
   const isLoyalty = source?.characteristics.types.includes("planeswalker") === true;
-  const cap = isLoyalty ? d.upTo - 1 : d.upTo;
-  const options = answers(shown, "announceX");
-  return best(options, (a) => (a.answer.value <= cap ? a.answer.value : -a.answer.value))?.action ?? null;
+  const options = shown.options.flatMap((o) =>
+    o.action.type === "ANSWER" && o.action.answer.kind === "announceX"
+      ? [{ option: o, value: o.action.answer.value }]
+      : [],
+  );
+  const affordable = options.filter((o) => o.option.payable !== false && (!isLoyalty || o.value < d.upTo));
+  const pick = best(affordable, (o) => o.value) ?? best(options, (o) => -o.value);
+  return pick?.option.action ?? null;
+}
+
+/** The answer whose number is `wanted`, or the nearest to it. */
+function closest<T extends { action: Action }>(items: readonly T[], value: (item: T) => number, wanted: number) {
+  return best(items, (i) => -Math.abs(value(i) - wanted))?.action ?? null;
 }
 
 /** Give each target what kills it, in order; the last gets the rest (CR 601.2d). */

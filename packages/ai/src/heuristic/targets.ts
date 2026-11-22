@@ -4,7 +4,7 @@
 
 import type { CardDatabase, PlayerId, SeatView, SeenCard, Target } from "@mtg/engine";
 import { lifeOf, permanentValue, toughnessLeft } from "./board.ts";
-import type { Intent } from "./intents.ts";
+import { type Intent, stackIntents } from "./intents.ts";
 
 /** Below this, a harmful spell isn't worth casting: it would only scratch something. */
 export const WORTH_CASTING = 1;
@@ -25,7 +25,7 @@ export function targetScore(shown: SeatView, target: Target, intent: Intent, car
       return mine ? helpScore(seen, cards) : -permanentValue(seen, cards);
     case "harm": {
       const onStack = shown.view.zones.stack.includes(target.object);
-      const worth = onStack ? spellWorth(seen, cards) : harmWorth(seen, intent, cards);
+      const worth = onStack ? spellWorth(shown, seen, cards) : harmWorth(seen, intent, cards);
       return mine ? -worth : worth;
     }
   }
@@ -44,9 +44,22 @@ function harmWorth(card: SeenCard, intent: Extract<Intent, { kind: "harm" }>, ca
   return intent.damage >= left ? value : 0.1;
 }
 
-/** A spell on the stack is worth countering by what it would add once resolved, guessed from what it is. */
-function spellWorth(card: SeenCard, cards: CardDatabase): number {
-  return 1 + permanentValue(card, cards);
+/**
+ * What stopping a spell on the stack is worth (countering it, CR 701.5a): a permanent spell, what the permanent would
+ * be worth; any other, a card's worth less what it would do for the heuristic on its chosen targets, so a spell that
+ * only hurts its own caster's side isn't worth answering.
+ */
+function spellWorth(shown: SeatView, spell: SeenCard, cards: CardDatabase): number {
+  const types = spell.characteristics.types;
+  if (!types.includes("instant") && !types.includes("sorcery")) return 1 + permanentValue(spell, cards);
+  const intents = stackIntents(shown, spell.id, cards);
+  const chosen = spell.choices?.targets ?? [];
+  const forMe = chosen.reduce(
+    (sum, group, i) =>
+      sum + group.reduce((s, t) => s + targetScore(shown, t, intents[i] ?? { kind: "neutral" }, cards), 0),
+    0,
+  );
+  return 1 - forMe;
 }
 
 function playerScore(shown: SeatView, player: PlayerId, intent: Intent): number {

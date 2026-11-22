@@ -1,12 +1,15 @@
 // What a spell or ability does to each thing it targets, read from its definition (card effects are data, so the AI
 // reads them as a player reads the card's text): harm it (deal damage, destroy, tap, counter...), help it (pump, untap,
 // regenerate...), or neither. A target is then worth choosing by how much that harm or help matters (`targets.ts`).
+// The text read is the card's own, as printed: no effect in the pool grants or removes abilities from a card on the
+// stack or in hand (later: read them from the seat view once one does).
 
 import type {
   AbilityRef,
   CardDatabase,
   CardDef,
   Effect,
+  EffectSubject,
   ObjectId,
   OracleId,
   SeatView,
@@ -22,6 +25,8 @@ export type Intent =
   | { kind: "neutral" };
 
 const NEUTRAL: Intent = { kind: "neutral" };
+const HARM: Intent = { kind: "harm", damage: null };
+const HELP: Intent = { kind: "help", untilEndOfTurn: false };
 
 /** What each instance of "target" in these effects is for, in order. */
 export function effectIntents(targetCount: number, effects: readonly Effect[], x: number | null): Intent[] {
@@ -30,33 +35,33 @@ export function effectIntents(targetCount: number, effects: readonly Effect[], x
 
 function intentFor(index: number, effects: readonly Effect[], x: number | null): Intent {
   for (const effect of effects) {
-    if (effect.op === "if") {
-      const inner = intentFor(index, effect.effects, x);
-      if (inner.kind !== "neutral") return inner;
-      continue;
-    }
-    if (!mentionsTarget(effect, index)) continue;
-    const intent = opIntent(effect, x);
-    if (intent.kind !== "neutral") return intent;
+    const { subjects, intent } = effectOn(effect, x, index);
+    if (intent.kind !== "neutral" && subjects.some((s) => isTarget(s, index))) return intent;
   }
   return NEUTRAL;
 }
 
-/** Whether an effect names target `index` anywhere in its subjects (`{ target: i }`, `{ controllerOf: ... }`). */
-function mentionsTarget(value: unknown, index: number): boolean {
-  if (value === null || typeof value !== "object") return false;
-  if ("target" in value && (value as { target: unknown }).target === index) return true;
-  return Object.values(value).some((v) => mentionsTarget(v, index));
+/** "Target ...", "target creature's controller", "each creature target player controls": instance `index`. */
+function isTarget(subject: EffectSubject, index: number): boolean {
+  if (typeof subject !== "object") return false;
+  if ("target" in subject) return subject.target === index;
+  if ("controllerOf" in subject) return subject.controllerOf.target === index;
+  if ("eachControlledBy" in subject) return subject.eachControlledBy.target === index;
+  return false;
 }
 
-function opIntent(effect: Effect, x: number | null): Intent {
+type EffectOn = { subjects: readonly EffectSubject[]; intent: Intent };
+
+const NOTHING: EffectOn = { subjects: [], intent: NEUTRAL };
+
+/** What one effect does, and to which of its subjects. A nested "if" answers for target `index` from inside. */
+function effectOn(effect: Effect, x: number | null, index: number): EffectOn {
   switch (effect.op) {
     case "dealDamage": {
-      const amount = effect.amount === "X" ? x : typeof effect.amount === "number" ? effect.amount : null;
-      return { kind: "harm", damage: amount };
+      const damage = effect.amount === "X" ? x : typeof effect.amount === "number" ? effect.amount : null;
+      return { subjects: [effect.to, ...(effect.and ?? []).map((a) => a.to)], intent: { kind: "harm", damage } };
     }
     case "destroy":
-    case "destroyOneAtRandom":
     case "exile":
     case "tap":
     case "returnToHand":
@@ -65,51 +70,104 @@ function opIntent(effect: Effect, x: number | null): Intent {
     case "doesntUntap":
     case "cantBlock":
     case "counter":
+    case "mustAttack":
+    case "shuffleIntoLibraries":
+      return { subjects: [effect.of], intent: HARM };
+    case "destroyOneAtRandom":
+      return { subjects: effect.among, intent: HARM };
     case "discard":
     case "discardAtRandom":
     case "loseLife":
     case "mill":
     case "sacrifice":
     case "cantCastSpells":
-    case "mustAttack":
-      return { kind: "harm", damage: null };
-    case "modifyPT":
-      return effect.power + effect.toughness >= 0
-        ? { kind: "help", untilEndOfTurn: effect.duration === "endOfTurn" }
-        : { kind: "harm", damage: null };
+      return { subjects: [effect.who], intent: HARM };
+    case "modifyPT": {
+      const help = effect.power + effect.toughness >= 0;
+      const intent = help ? { kind: "help" as const, untilEndOfTurn: effect.duration === "endOfTurn" } : HARM;
+      return { subjects: [effect.of], intent };
+    }
     case "putCounters":
-      return effect.counter === "+1/+1" ? { kind: "help", untilEndOfTurn: false } : { kind: "harm", damage: null };
+      return { subjects: [effect.of], intent: effect.counter === "+1/+1" ? HELP : HARM };
     case "gainKeywords":
     case "cantBeBlocked":
-      return { kind: "help", untilEndOfTurn: effect.duration === "endOfTurn" };
+      return { subjects: [effect.of], intent: { kind: "help", untilEndOfTurn: effect.duration === "endOfTurn" } };
     case "untap":
     case "regenerate":
+    case "copySpell":
+      return { subjects: [effect.of], intent: HELP };
+    // Equip, "attach to target creature" (CR 702.6a): the creature gets what's attached.
+    case "attachSelf":
+      return { subjects: [effect.to], intent: HELP };
     case "gainLife":
     case "draw":
-    case "copySpell":
-      return { kind: "help", untilEndOfTurn: false };
-    default:
-      return NEUTRAL;
+    case "extraTurn":
+      return { subjects: [effect.who], intent: HELP };
+    case "if": {
+      const inner = intentFor(index, effect.effects, x);
+      return inner.kind === "neutral" ? NOTHING : { subjects: [{ target: index }], intent: inner };
+    }
+    // What these do to a target depends on the card more than the heuristic weighs yet.
+    case "addMana":
+    case "createTokens":
+    case "becomes":
+    case "sacrificeSource":
+    case "preventAllDamage":
+    case "revealUntil":
+    case "revealHand":
+    case "putOntoBattlefield":
+    case "returnAllToBattlefield":
+    case "search":
+    case "nameCard":
+    case "reveal":
+    case "put":
+    case "revealTop":
+    case "mayPlayWithoutPaying":
+    case "shuffle":
+    case "lookAtTop":
+    case "choose":
+    case "exileAll":
+    case "createDelayedTrigger":
+      return NOTHING;
   }
 }
 
 /** What an Aura does to the permanent it enchants, its one target as a spell (CR 303.4a), from its static abilities. */
 export function auraIntent(def: CardDef): Intent {
-  const statics: readonly StaticAbilityDef[] = def.statics ?? [];
-  for (const s of statics) {
-    switch (s.kind) {
-      case "attachedGets":
-        return s.power + s.toughness >= 0 ? { kind: "help", untilEndOfTurn: false } : { kind: "harm", damage: null };
-      case "attachedRestricts":
-      case "attachedControl":
-      case "attachedSetsLandType":
-        return { kind: "harm", damage: null };
-      default:
-        break;
-    }
+  for (const s of def.statics ?? []) {
+    const intent = attachedIntent(s);
+    if (intent !== null) return intent;
   }
-  // An Aura with only an activated ability to grant (Firebreathing's kind) helps what it enchants.
-  return { kind: "help", untilEndOfTurn: false };
+  // An Aura with only an activated ability (Firebreathing) helps what it enchants.
+  return HELP;
+}
+
+function attachedIntent(s: StaticAbilityDef): Intent | null {
+  switch (s.kind) {
+    case "attachedGets":
+      return s.power + s.toughness >= 0 ? HELP : HARM;
+    case "attachedRestricts":
+    case "attachedControl":
+    case "attachedSetsLandType":
+      return HARM;
+    // Not about what it's attached to.
+    case "attacksEachCombat":
+    case "canBlockAnyNumber":
+    case "cantAttackOrBlockAlone":
+    case "cantAttackUnlessDefenderControls":
+    case "cantBeBlocked":
+    case "cantBeCountered":
+    case "cantLoseOpponentsCantWin":
+    case "chosenNameCantActivate":
+    case "creaturesGet":
+    case "mustBeBlockedByAllAble":
+    case "noMaximumHandSize":
+    case "playWithRevealed":
+    case "plusPerOtherSameName":
+    case "plusPerSharedCreatureType":
+    case "powerToughnessEachEqual":
+      return null;
+  }
 }
 
 /** What a card's spell does to each target, as cast from hand: an Aura's enchant target, or its spell's targets. */
@@ -119,8 +177,10 @@ export function cardIntents(def: CardDef, x: number | null): Intent[] {
   return effectIntents(def.spell.targets.length, def.spell.effects, x);
 }
 
-/** What an ability does to each target, by its definition. Equip helps the creature it targets (CR 702.6a). */
-export function abilityIntents(ability: { targets: readonly unknown[]; effects: readonly Effect[] }, x: number | null) {
+type AbilityText = { targets: readonly unknown[]; effects: readonly Effect[] };
+
+/** What an ability does to each target, by its definition. */
+export function abilityIntents(ability: AbilityText, x: number | null): Intent[] {
   return effectIntents(ability.targets.length, ability.effects, x);
 }
 
@@ -135,8 +195,6 @@ export function stackIntents(shown: SeatView, object: ObjectId, cards: CardDatab
   const ability = abilityText(seen.sourceOracleId, seen.ability, cards);
   return ability === null ? [] : abilityIntents(ability, seen.choices.x);
 }
-
-type AbilityText = { targets: readonly unknown[]; effects: readonly Effect[] };
 
 function abilityText(source: OracleId, ref: AbilityRef, cards: CardDatabase): AbilityText | null {
   const def = cardDataByOracleId(source, cards)?.def;

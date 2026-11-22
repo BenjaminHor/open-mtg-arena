@@ -5,11 +5,12 @@
 // player's own business or public: their own mana, the legal targets among objects they can see.
 
 import type { AbilityDef, CardDatabase, ManaCost } from "../cards/types.ts";
-import { attackDeclarationProblem, blockDeclarationProblem } from "../combat/declaration-rules.ts";
+import { attacksCanFinish, blocksCanFinish } from "../combat/declaration-rules.ts";
 import { legalActions } from "../game/legal-actions.ts";
 import { autoPay } from "../mana/auto-pay.ts";
 import { actionManaCost, mightPay } from "../mana/might-pay.ts";
 import { abilitiesOf, sameAbilityRef } from "../rules/abilities.ts";
+import { totalCost } from "../rules/costs.ts";
 import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -20,7 +21,10 @@ import { type SeenObject, seenObjects } from "./seen-objects.ts";
 
 export type ActionOption = {
   action: Action;
-  /** The mana it costs before choices (X as 0); null when it has no mana cost to pay (`actionManaCost`). */
+  /**
+   * The mana it costs before choices (X as 0); null when it has no mana cost to pay (`actionManaCost`). For an answer
+   * announcing X (CR 601.2b), the whole cost with that X, so a player can see which X they can pay for.
+   */
   manaCost: ManaCost | null;
   /** Whether the engine's own pick of sources pays that mana now, X as 0; null with no mana cost. Strict. */
   payable: boolean | null;
@@ -31,12 +35,13 @@ export type ActionOption = {
   /** For an activation: the ability as the object has it now (`abilitiesOf`), so a player can read what it does. */
   ability: AbilityDef | null;
   /**
-   * For a pick in a declaration of attackers or blockers: whether the declaration could be finished right after it,
-   * breaking no restriction and obeying as many requirements as it could (CR 508.1c-d, 509.1b-c), the same rule that
-   * offers `finishDeclaring`. A player reads the requirements on the cards ("all creatures able to block it do so");
-   * this saves a computer player from adding a pick it would only take back. Null for any other action.
+   * For a pick in a declaration of attackers or blockers: whether the declaration could still be finished after it,
+   * at once or with more picks, breaking no restriction and obeying as many requirements as it could (CR 508.1c-d,
+   * 509.1b-c), the rule that offers `finishDeclaring`. A player reads the requirements on the cards ("all creatures able
+   * to block it do so"); this saves a computer player from adding a pick it could only take back. Null for any other
+   * action.
    */
-  finishes: boolean | null;
+  finishable: boolean | null;
 };
 
 export type SeatView = {
@@ -59,7 +64,8 @@ export function seatView(state: GameState, player: PlayerId, cards: CardDatabase
 }
 
 function actionOption(state: GameState, player: PlayerId, action: Action, cards: CardDatabase): ActionOption {
-  const manaCost = actionManaCost(state, action, cards);
+  const manaCost =
+    action.type === "ANSWER" ? announcedCost(state, action, cards) : actionManaCost(state, action, cards);
   const paying = manaCost === null || manaCost.length === 0 ? null : manaCost.filter((s) => s.kind !== "x");
   const base = {
     action,
@@ -68,37 +74,47 @@ function actionOption(state: GameState, player: PlayerId, action: Action, cards:
     mightPay: paying === null ? null : mightPay(state, player, paying, cards),
   };
   const by = (object: ObjectId) => ({ object, controller: player });
-  const finishes = declarationFinishes(state, action, cards);
+  const finishable = declarationFinishes(state, action, cards);
   switch (action.type) {
     case "CAST_SPELL": {
       const specs = targetSpecsOf(state, action.object, cards);
       const targets = specs.map((s) => legalTargets(state, s, by(action.object), cards));
-      return { ...base, targets, ability: null, finishes };
+      return { ...base, targets, ability: null, finishable };
     }
     case "ACTIVATE_ABILITY": {
       const found = abilitiesOf(state, action.object, cards).find((a) => sameAbilityRef(a.ref, action.ability));
       const def = found?.def ?? null;
       const targets = (def?.targets ?? []).map((s) => legalTargets(state, s, by(action.object), cards));
-      return { ...base, targets, ability: def, finishes };
+      return { ...base, targets, ability: def, finishable };
     }
     case "PASS_PRIORITY":
     case "PLAY_LAND":
     case "ANSWER":
     case "CONCEDE":
-      return { ...base, targets: [], ability: null, finishes };
+      return { ...base, targets: [], ability: null, finishable };
   }
 }
 
-/** Whether the pending declaration could be finished with this pick added; null when it isn't such a pick. */
+/** The cost of the spell or ability being cast with this X announced; null for any other answer, or no mana to pay. */
+function announcedCost(state: GameState, action: Action, cards: CardDatabase): ManaCost | null {
+  const pending = state.pending;
+  if (action.type !== "ANSWER" || action.answer.kind !== "announceX" || pending?.kind !== "announceX") return null;
+  const obj = state.objects[pending.object];
+  if (obj?.kind !== "card" || obj.choices === undefined || obj.choices === null) return null;
+  const announced = { ...obj, choices: { ...obj.choices, x: action.answer.value } };
+  return totalCost({ ...state, objects: { ...state.objects, [pending.object]: announced } }, pending.object, cards);
+}
+
+/** Whether the pending declaration could still be finished with this pick added; null when it isn't such a pick. */
 function declarationFinishes(state: GameState, action: Action, cards: CardDatabase): boolean | null {
   const pending = state.pending;
   if (action.type !== "ANSWER" || pending === null) return null;
   const answer = action.answer;
   if (pending.kind === "declareAttackers" && answer.kind === "declareAttacker") {
-    return attackDeclarationProblem(state, [...pending.chosen, answer.attack], cards) === null;
+    return attacksCanFinish(state, [...pending.chosen, answer.attack], cards);
   }
   if (pending.kind === "declareBlockers" && answer.kind === "declareBlocker") {
-    return blockDeclarationProblem(state, [...pending.chosen, answer.block], cards) === null;
+    return blocksCanFinish(state, [...pending.chosen, answer.block], cards);
   }
   return null;
 }

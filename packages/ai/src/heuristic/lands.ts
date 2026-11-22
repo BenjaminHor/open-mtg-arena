@@ -1,5 +1,7 @@
-// Which land to play (CR 305.1): one a turn, the one making the colors the hand's spells need that its lands don't
-// make yet. Only in its own main phase with an empty stack, where it's legal anyway; elsewhere a land waits.
+// Which land to play: one a turn (CR 305.2), the one making the colors the hand's spells need that its lands don't
+// make yet. The engine lists a land play only where it's legal (CR 305.1). A land's colors are read from its card as
+// printed and its land types now: no effect in the pool grants a land a mana ability (later: read the land's abilities
+// from the seat view once one does).
 
 import type { Action, CardDatabase, Color, ManaType, SeatView, SeenCard } from "@mtg/engine";
 import { cardData, controlledBy, hand, isLand, seenCard } from "./board.ts";

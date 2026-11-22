@@ -27,6 +27,9 @@ export type EvalOutcome = {
   decisionMs: number[];
 };
 
+/** Far more decisions than any real game needs (about 150 is usual); reaching it means the heuristic is looping. */
+const MOST_DECISIONS = 5000;
+
 export function playEvalGame(game: EvalGame, clock: () => number, cards: CardDatabase): EvalOutcome {
   const villain: PlayerId = game.hero === "p1" ? "p2" : "p1";
   const decks = game.hero === "p1" ? [game.heroDeck, game.villainDeck] : [game.villainDeck, game.heroDeck];
@@ -46,13 +49,17 @@ export function playEvalGame(game: EvalGame, clock: () => number, cards: CardDat
       return { outcome, turns, decisionMs };
     }
     if (turns > game.turnCap) return { outcome: "capped", turns, decisionMs };
+    if (decisionMs.length >= MOST_DECISIONS) {
+      throw new Error(`seed ${game.seed}: the heuristic made ${MOST_DECISIONS} decisions without the game ending`);
+    }
     const deciding = waitingOn(match, cards);
     if (deciding !== game.hero) throw new Error(`the host stopped for ${deciding ?? "no one"} (a host bug)`);
     const start = clock();
     const action = heuristicAction(seatView(state, game.hero, cards), cards);
     decisionMs.push(clock() - start);
     const result = submit(match, action, cards);
-    if (!result.ok) throw new Error(`the heuristic chose an illegal action: ${result.error.message}`);
+    if (!result.ok)
+      throw new Error(`seed ${game.seed}: the heuristic chose an illegal action: ${result.error.message}`);
     match = result.match;
   }
 }

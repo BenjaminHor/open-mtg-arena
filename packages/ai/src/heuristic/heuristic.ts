@@ -48,7 +48,7 @@ export function heuristicAction(shown: SeatView, cards: CardDatabase): Action {
       case "announceX":
         return announceXAction(shown, decision);
       case "chooseTargetCount":
-        return targetCountAction(shown);
+        return targetCountAction(shown, decision, cards);
       case "divide":
         return divideAction(shown, decision);
       case "payMana":

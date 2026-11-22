@@ -1,11 +1,13 @@
 // What the heuristic does with priority (CR 117): play a land, then the spell or ability worth the most, else pass.
-// It starts only what it can strictly pay for now (`payable`, the engine's own pick of sources) and only what has a
-// target worth choosing, so it never starts something it would then cancel: a stateless player that did would see the
-// same table again and start it again (the host's loop would never end).
+// It starts only what it can strictly pay for now (`payable`, the engine's own pick of sources, X as 0) and only what
+// has a target worth choosing, and the choices after (`choices.ts`) keep the cost payable: an X it can pay for, one
+// target for a spell that costs more per target. A stateless player that started something it then had to cancel
+// would see the same table again and start it again.
 
-import type { Action, ActionOption, CardDatabase, CardDef, Effect, SeatView, SeenCard } from "@mtg/engine";
+import type { Action, ActionOption, CardDatabase, CardDef, Effect, ManaCost, SeatView, SeenCard } from "@mtg/engine";
 import { isManaAbility, manaValue } from "@mtg/engine";
-import { cardData, controlledBy, creatureValue, isLand, lifeOf, manaValueOf, opponents, seenCard } from "./board.ts";
+import { cardData, controlledBy, creatureValue, isLand, manaValueOf, seenCard } from "./board.ts";
+import { untargetedValue } from "./effect-value.ts";
 import { abilityIntents, cardIntents, type Intent } from "./intents.ts";
 import { bestLand } from "./lands.ts";
 import { bestTarget, WORTH_CASTING } from "./targets.ts";
@@ -53,13 +55,8 @@ function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: 
     const size = card.characteristics.types.includes("creature") ? creatureValue(card) : 0;
     return 2 + manaValueOf(card, cards) + size / 4;
   }
-  const value = effectsValue(
-    shown,
-    option,
-    cardIntents(def, xEstimate(shown, option)),
-    def.spell?.effects ?? [],
-    cards,
-  );
+  const x = xEstimate(shown, cardData(card, cards)?.printed.manaCost ?? null);
+  const value = effectsValue(shown, option, cardIntents(def, x), def.spell?.effects ?? [], x, cards);
   return value !== null && value >= WORTH_CASTING ? value : null;
 }
 
@@ -75,16 +72,17 @@ function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase
   const left = source?.counters.loyalty ?? 0;
   if (loyalty?.kind === "loyalty") {
     const spent = loyalty.amount === "minusX" ? left - 1 : -loyalty.amount;
-    // A planeswalker that would be left with no loyalty dies (CR 704.5i): keep it.
-    if (spent >= left && spent > 0) return null;
-    const intents = abilityIntents(ability, loyalty.amount === "minusX" ? left - 1 : 0);
-    const effect = effectsValue(shown, option, intents, ability.effects, cards);
+    // A planeswalker that would be left with no loyalty dies (CR 704.5i): keep it. A [−X] for 0 does nothing.
+    if ((spent >= left && spent > 0) || (loyalty.amount === "minusX" && spent <= 0)) return null;
+    const x = loyalty.amount === "minusX" ? spent : 0;
+    const effect = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
     if (effect === null) return null;
     // An up ability is good to use every turn; a down ability has to be worth the loyalty it spends.
     if (spent <= 0) return 1 + effect - spent / 2;
     return effect >= WORTH_CASTING ? effect - spent / 2 : null;
   }
-  const value = effectsValue(shown, option, abilityIntents(ability, xEstimate(shown, option)), ability.effects, cards);
+  const x = xEstimate(shown, option.manaCost);
+  const value = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
   // An ability's cost is usually smaller than a card's, so less is enough: pinging a player with a {T} ability.
   return value !== null && value >= WORTH_CASTING / 2 ? value : null;
 }
@@ -98,9 +96,10 @@ function effectsValue(
   option: ActionOption,
   intents: readonly Intent[],
   effects: readonly Effect[],
+  x: number,
   cards: CardDatabase,
 ): number | null {
-  let value = untargetedValue(shown, effects);
+  let value = untargetedValue(shown, effects, x);
   for (const [i, legal] of option.targets.entries()) {
     const intent = intents[i] ?? { kind: "neutral" };
     if (intent.kind === "help" && intent.untilEndOfTurn) return null;
@@ -111,61 +110,12 @@ function effectsValue(
   return value;
 }
 
-/** What the effects that don't target do for the heuristic: a rough count of cards, bodies, life and damage. */
-function untargetedValue(shown: SeatView, effects: readonly Effect[]): number {
-  let value = 0;
-  for (const effect of effects) {
-    switch (effect.op) {
-      case "draw":
-        value += effect.who === "you" ? 1.5 * fixed(effect.amount) : 0;
-        break;
-      case "createTokens":
-        value += 2 * fixed(effect.amount);
-        break;
-      case "gainLife":
-        value += effect.who === "you" ? 0.3 * fixed(effect.amount) : 0;
-        break;
-      case "extraTurn":
-        value += 5;
-        break;
-      case "search":
-        value += 1;
-        break;
-      case "dealDamage":
-      case "loseLife": {
-        const who = effect.op === "dealDamage" ? effect.to : effect.who;
-        if (who !== "eachOpponent") break;
-        const amount = fixed(effect.amount);
-        value += opponents(shown).some((p) => lifeOf(shown, p) <= amount) ? 100 : amount / 2;
-        break;
-      }
-      case "destroy":
-      case "exile":
-        if (typeof effect.of === "object" && "each" in effect.of) value += sweepValue(shown, effect.of.each.types);
-        break;
-      default:
-        break;
-    }
-  }
-  return value;
-}
-
-/** "Destroy all creatures": worth what the opponents lose less what it costs the heuristic. */
-function sweepValue(shown: SeatView, types: readonly string[] | undefined): number {
-  const hit = (c: SeenCard) => types === undefined || c.characteristics.types.some((t) => types.includes(t));
-  const worth = (cs: SeenCard[]) => cs.filter(hit).reduce((sum, c) => sum + creatureValue(c), 0);
-  const theirs = opponents(shown).reduce((sum, p) => sum + worth(controlledBy(shown, p)), 0);
-  return theirs - worth(controlledBy(shown, shown.player));
-}
-
-function fixed(amount: unknown): number {
-  return typeof amount === "number" ? amount : 1;
-}
-
-/** How big an X it could make: the lands it could still tap after the rest of the cost. A guess, not a plan. */
-function xEstimate(shown: SeatView, option: ActionOption): number {
-  if (!(option.manaCost ?? []).some((s) => s.kind === "x")) return 0;
+/**
+ * How big an X it could make with this cost (a spell's printed cost, which still has its {X}): the lands it could
+ * still tap after the rest. A guess for weighing the spell; the X announced is one it can pay (`announceXAction`).
+ */
+function xEstimate(shown: SeatView, cost: ManaCost | null): number {
+  if (cost === null || !cost.some((s) => s.kind === "x")) return 0;
   const untapped = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped).length;
-  const rest = manaValue((option.manaCost ?? []).filter((s) => s.kind !== "x"));
-  return Math.max(0, untapped - rest);
+  return Math.max(0, untapped - manaValue(cost.filter((s) => s.kind !== "x")));
 }

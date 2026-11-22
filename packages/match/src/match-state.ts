@@ -17,7 +17,8 @@ import {
 
 /**
  * Who decides for a player: a person (through the UI), a simple agent the host runs (with its random state), or the
- * heuristic AI, which reads what its seat is shown (`seatView`, D-137) and needs no random state.
+ * heuristic AI, which reads what its seat is shown (`seatView`, D-137), needs no random state, and always has the host
+ * pick its mana sources (it starts only what that pick can pay).
  */
 export type Seat = { kind: "human" } | { kind: "agent"; agent: AgentName; random: number } | { kind: "heuristic" };
 

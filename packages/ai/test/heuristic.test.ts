@@ -26,7 +26,9 @@ const id = (name: string): OracleId => {
   return found.oracleId;
 };
 
-type Side = { hand?: string[]; battlefield?: string[]; library?: string[]; life?: number };
+/** A permanent by name, or with counters on it ("Chandra Nalaar" with 1 loyalty). */
+type Permanent = string | { name: string; counters: Record<string, number> };
+type Side = { hand?: string[]; battlefield?: Permanent[]; library?: string[]; life?: number };
 
 function table(p1: Side, p2: Side, active: PlayerId, step: Step): GameState {
   const player = (pid: PlayerId, side: Side) => ({
@@ -34,12 +36,12 @@ function table(p1: Side, p2: Side, active: PlayerId, step: Step): GameState {
     life: side.life ?? 20,
     library: (side.library ?? ["Plains", "Plains", "Plains"]).map(id),
     hand: (side.hand ?? []).map(id),
-    battlefield: (side.battlefield ?? []).map((name) => ({
-      oracleId: id(name),
+    battlefield: (side.battlefield ?? []).map((p) => ({
+      oracleId: id(typeof p === "string" ? p : p.name),
       tapped: false,
       summoningSick: false,
       damage: 0,
-      counters: {},
+      counters: typeof p === "string" ? {} : p.counters,
     })),
     graveyard: [],
     exile: [],
@@ -146,6 +148,78 @@ describe("the heuristic's main phase", () => {
   });
 });
 
+describe("the heuristic's X, targets, abilities and counterspells", () => {
+  it("casts an X spell with all the X it can pay, at one target, so the cost stays payable (CR 601.2b, 601.2f)", () => {
+    const state = table(
+      { hand: ["Fireball"], battlefield: ["Mountain", "Mountain", "Mountain", "Mountain"] },
+      { battlefield: ["Hill Giant", "Grizzly Bears"] },
+      "p1",
+      "precombatMain",
+    );
+    const { state: after, actions } = heuristicActs(state, "p1");
+    expect(actions.some((a) => a.type === "ANSWER" && a.answer.kind === "cancelCast")).toBe(false);
+    const fireball = after.objects[after.zones.stack[0] as ObjectId] as {
+      choices: { x: number; targets: unknown[][] };
+    };
+    expect(fireball.choices.x).toBe(3);
+    expect(fireball.choices.targets).toStrictEqual([[{ kind: "object", object: named(after, "Hill Giant", "p2") }]]);
+  });
+
+  it("doesn't spend a planeswalker's last loyalty on a [−X] for 0 (CR 606.6)", () => {
+    const state = table(
+      { battlefield: [{ name: "Chandra Nalaar", counters: { loyalty: 1 } }] },
+      { battlefield: ["Grizzly Bears"] },
+      "p1",
+      "precombatMain",
+    );
+    const action = decide(state);
+    expect(action.type).toBe("ACTIVATE_ABILITY");
+    expect(action).toMatchObject({ ability: { kind: "printed", index: 0 } });
+  });
+
+  it("equips its creature (CR 702.6a)", () => {
+    const state = table(
+      { battlefield: ["Gorgon Flail", "Grizzly Bears", "Plains", "Plains"] },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    const after = heuristicActs(state, "p1").state;
+    const flail = named(after, "Gorgon Flail", "p1");
+    const bears = named(after, "Grizzly Bears", "p1");
+    const resolved = until(after, "declareAttackers");
+    expect((resolved.objects[flail] as { attachedTo?: ObjectId }).attachedTo).toBe(bears);
+  });
+
+  /** p1 casts Shock at its own Hill Giant, or at p2's Grizzly Bears; what p2, holding Cancel, does then. */
+  function answerToShock(at: "own" | "theirs"): Action {
+    let state = table(
+      { battlefield: ["Hill Giant", "Mountain"], hand: ["Shock"] },
+      { hand: ["Cancel"], battlefield: ["Island", "Island", "Island", "Grizzly Bears"] },
+      "p1",
+      "precombatMain",
+    );
+    const pending = state.pending;
+    if (pending === null) throw new Error("nothing pending");
+    const target = at === "own" ? named(state, "Hill Giant", "p1") : named(state, "Grizzly Bears", "p2");
+    const shock = state.zones.players.p1?.hand[0] as ObjectId;
+    state = apply(state, { type: "CAST_SPELL", decisionId: pending.id, player: "p1", object: shock });
+    state = answering(state, { kind: "chooseTarget", target: { kind: "object", object: target } });
+    // p1 pays for it and passes priority with it on the stack.
+    state = heuristicActs(state, "p1").state;
+    expect(state.zones.stack).toHaveLength(1);
+    return decide(state);
+  }
+
+  it("counters an opponent's spell aimed at its creature (CR 701.5a)", () => {
+    expect(answerToShock("theirs")).toMatchObject({ type: "CAST_SPELL" });
+  });
+
+  it("lets an opponent's spell resolve when it only hurts that opponent", () => {
+    expect(answerToShock("own").type).toBe("PASS_PRIORITY");
+  });
+});
+
 describe("the heuristic in combat", () => {
   const attacks = (state: GameState) => {
     const { actions } = heuristicActs(until(state, "declareAttackers"), "p1");
@@ -194,6 +268,45 @@ describe("the heuristic in combat", () => {
     expect(picks).toHaveLength(1);
     expect(picks[0]).toMatchObject({ answer: { block: { attacker: unicorn } } });
     expect(state.pending?.kind).not.toBe("declareBlockers");
+  });
+
+  it("puts every creature able to block on the attacker all must block, with no pick it must take back", () => {
+    const p1 = { battlefield: ["Hill Giant", "Grizzly Bears"] };
+    const { blocks: picks, state } = blocks(p1, ["Prized Unicorn", "Gray Ogre"]);
+    const unicorn = named(state, "Prized Unicorn", "p2");
+    expect(picks).toHaveLength(2);
+    for (const pick of picks) expect(pick).toMatchObject({ answer: { block: { attacker: unicorn } } });
+    expect(state.pending?.kind).not.toBe("declareBlockers");
+  });
+});
+
+describe("the heuristic's combat damage", () => {
+  it("gives each blocker lethal damage in order, and the rest to the last (CR 510.1c)", () => {
+    let state = until(
+      table(
+        { battlefield: ["Craw Wurm"] },
+        { battlefield: ["Grizzly Bears", "Llanowar Elves"] },
+        "p1",
+        "precombatMain",
+      ),
+      "declareAttackers",
+    );
+    const wurm = named(state, "Craw Wurm", "p1");
+    state = answering(state, { kind: "declareAttacker", attack: { attacker: wurm, defender: "p2" } });
+    state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
+    for (const blocker of ["Grizzly Bears", "Llanowar Elves"]) {
+      state = answering(state, {
+        kind: "declareBlocker",
+        block: { blocker: named(state, blocker, "p2"), attacker: wurm },
+      });
+    }
+    state = until(answering(state, { kind: "finishDeclaring" }), "assignDamage");
+    const first = decide(state);
+    // Craw Wurm is 6/4: the first blocker in order gets what kills it, no more.
+    const pending = state.pending as { recipients: { kind: string; object?: ObjectId }[] };
+    const firstBlocker = state.objects[pending.recipients[0]?.object as ObjectId] as { oracleId: OracleId };
+    const toughness = cards[firstBlocker.oracleId]?.printed.toughness;
+    expect(first).toMatchObject({ answer: { kind: "assignDamage", amount: toughness } });
   });
 });
 

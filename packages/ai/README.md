@@ -15,7 +15,7 @@ Depends only on `@mtg/engine` (its tests also use `@mtg/cards`). See "AI" in [`d
   switch); `priority.ts` (land, then the spell or ability worth most, only what's strictly payable), `lands.ts`,
   `combat.ts` (attacks and blocks, a whole declaration planned at once), `opening.ts` (mulligan, bottom, discard),
   `choices.ts` (targets, X, division, cards, names...), `intents.ts` (what an effect does to each target, read from
-  the card's definition), `targets.ts` (what a target is worth), `board.ts` (reading the table, what a permanent is
+  the card's definition), `effect-value.ts` (what untargeted effects are worth), `targets.ts` (what a target is worth), `board.ts` (reading the table, what a permanent is
   worth). The worths are guesses tuned with `pnpm eval`.
 
 ## Tests

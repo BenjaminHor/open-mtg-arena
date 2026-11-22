@@ -2198,14 +2198,19 @@ owner's answer to the D-089 open question, option (a))
   affordable and what each spell could target. `seatView(state, player, cards)` in the engine's `view/` gives a seat its
   `playerView`, its `seenObjects`, and its legal actions as options, each with its mana cost, `payable` (the engine's
   `autoPay` finds a payment now, X as 0), `mightPay` (auto-pass's looser hint), its legal targets, the ability for an
-  activation, and for a declaration pick whether the declaration could be finished after it (`finishes`).
+  activation, and for a declaration pick whether the declaration could still be finished after it, with more picks if
+  need be (`finishable`, found by adding the picks that obey the most requirements, `attacksCanFinish` and
+  `blocksCanFinish`). For an answer announcing X, the whole cost with that X and whether it can be paid.
 - Every one of those is something a person in the seat knows or the table shows: their own mana, targets among what
   they see, what a card's text says. The app's Worker will post the same to the UI, which uses the hints to highlight
   what can be cast (D-137): a computer seat and a person's get the same data.
-- The host builds it only for a heuristic seat (`{ kind: "heuristic" }`); the simple agents, the fuzzer and the golden
-  games keep reading the bare legal actions, so they cost no more and their games don't change.
-- Why `finishes`: a stateless player that adds a pick a requirement rules out ("all creatures able to block it do
-  so") has only "take it back" left, then adds the same pick again; the eval found one such game, looping forever.
+- The host builds it only for a heuristic seat (`{ kind: "heuristic" }`), and always picks that seat's mana sources;
+  the simple agents and the golden games keep reading the bare legal actions, so their games don't change. The
+  fuzzer's leak check builds it for every player after every action, about 10% slower.
+- Why `finishable` looks past the next pick: a stateless player that adds a pick a requirement rules out ("all
+  creatures able to block it do so") has only "take it back" left, then adds the same pick again. The eval found such
+  games, one where two blockers had to block the same attacker. Why X answers carry their cost: Fireball's X is
+  announced before its targets, and an X the engine can't pay leaves only a cancel, then the same cast again.
 - The two-worlds checks (`brief.test.ts`, the fuzzer's `viewsLeakNothing`) compare whole seat views.
 
 **D-145: How the heuristic AI's "95% against random with each deck" is measured (M3-02)** · 2026-11-22 · accepted

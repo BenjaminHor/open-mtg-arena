@@ -66,8 +66,9 @@ function hostStep(match: MatchState, cards: CardDatabase): HostStep | null {
   const seat = match.seats[player];
   const settings = match.settings[player];
   if (seat === undefined || settings === undefined) throw new Error(`no seat for ${player}`);
-  // Paying: the host's pick of sources, if the seat leaves it to the host and a way to pay exists.
-  if (pending.kind === "payMana" && settings.autoTap) {
+  // Paying: the host's pick of sources, if the seat leaves it to the host and a way to pay exists. A heuristic seat
+  // always does: it only starts what the engine's pick can pay (D-144).
+  if (pending.kind === "payMana" && (settings.autoTap || seat.kind === "heuristic")) {
     const next = autoTapAction(state, cards);
     if (next !== null) return { match, action: next };
   }

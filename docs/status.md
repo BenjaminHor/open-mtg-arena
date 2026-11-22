@@ -41,19 +41,19 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       auto-pass and UI hint), its legal targets per target spec, and, for an activation, the ability as the object has
       it now (granted ones included). It is the one input agent seats read; the web Worker will post the same (D-137).
       The two-worlds check runs on it (brief test and fuzz).
-    - The simple agents and the fuzzer keep reading only the legal actions (no view built per action): the heuristic
-      is its own function, and the host branches on the seat. Golden hashes and the bench must not move.
+    - The simple agents keep reading only the legal actions: the heuristic is its own function, and the host branches
+      on the seat. Golden hashes and the bench must not move. (The fuzzer's leak check builds seat views, D-144.)
     - The heuristic (`packages/ai/src/heuristic/`), stateless per decision, from `SeatView` and the card database:
       mulligan by land count and bottom, play a land, cast the best affordable spell, targets by what the effect does
       to them, attack/block math, a legal answer for every decision kind (an exhaustive switch). No livelock: it starts
       only what's strictly payable, never plans a `cancelCast` or `takeBack`, and computes a whole declaration ignoring
       `chosen`, then takes the first missing pick or finishes. A test fails if a game reaches the host's action cap.
-    - `pnpm cli eval`: the heuristic with deck D against `random` with each prebuilt deck in turn, seats and starting
+    - `pnpm eval`: the heuristic with deck D against `random` with each prebuilt deck in turn, seats and starting
       player alternating, through the match host (auto-pass and auto-tap for both seats), a turn cap counting as not a
       win; win rates and the slowest decision (timed with the `seatView` build). A few fixed-seed games per deck run in
       `pnpm check` with a looser bar. How "95% with each deck" is read goes in `decisions.md`.
-  - PR 1 progress: `seatView` (D-144, with `finishes` after the eval found a block/take-back loop under Prized
-    Unicorn's requirement), the heuristic in `packages/ai/src/heuristic/`, a `heuristic` seat in the host, `pnpm eval`
+  - PR 1 progress: `seatView` (D-144, with `finishable` after the eval found block/take-back loops under Prized
+    Unicorn's requirement, and each X answer's cost), the heuristic in `packages/ai/src/heuristic/`, a `heuristic` seat in the host, `pnpm eval`
     (D-145) with ten games per deck in `pnpm check`. First 100-game eval per deck: red-aggro 92%, green-stompy 95%,
     white-soldiers 99%, red-green-beats 86%, blue-black-control 92%; mean decision 0.11-0.15 ms, slowest 13.4 ms.
   - **PR 2: tricks and tuning.** Pump spells and firebreathing in combat, burn to the face when lethal, then tune until
@@ -1756,6 +1756,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-22, M3-02 code review) The `random` agent can spend tens of thousands of actions under Prized Unicorn's
+  block requirement, adding and taking back blocks at random (24,629 pairs in one eval game, seed 22 with
+  red-green-beats): the host's loop allows 100,000 actions between decisions, so a worse seed could reach it. Only the
+  test agents do this (the heuristic uses `finishable`, D-144); if it shows up, have `random` skip take-backs.
 - (2026-11-22, M2-14i rules review) Convincing Mirage on a Clone that copied a land (a Forest Awakener Druid animated)
   leaves the copy in place: the permanent stays a Forest copy whose land type is Island. CR 305.7 says a land whose
   type is set loses "any copiable effects affecting that land", but then it's Clone's own 0/0 Shapeshifter creature,

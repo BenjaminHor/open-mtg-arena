@@ -29,22 +29,18 @@ export function blockAction(shown: SeatView, chosen: readonly Block[]): Action {
 }
 
 /**
- * The next pick of the plan, as long as the declaration could still be finished after it; when a requirement keeps it
- * from finishing now ("all creatures able to block it do so", CR 509.1c), a pick that meets it, the plan's first. Then
- * finishing; taking a pick back only when nothing else is left.
+ * The next pick of the plan, as long as the declaration could still be finished after it (`finishable`); when a
+ * requirement keeps it from finishing now ("all creatures able to block it do so", CR 509.1c), a pick toward meeting
+ * it, the plan's first. Then finishing. It never adds a pick from which no finish is reachable, so it never has to take
+ * one back: a stateless player that did would add the same pick again.
  */
 function nextPick(shown: SeatView, planned: readonly ActionOption[]): Action {
   const finish = picksWhere(shown, (a) => a.kind === "finishDeclaring")[0];
   const allPicks = picksWhere(shown, (a) => a.kind === "declareAttacker" || a.kind === "declareBlocker");
-  const finishing = (o: ActionOption) => o.finishes === true;
-  if (finish === undefined) {
-    const meets = planned.find(finishing) ?? allPicks.find(finishing) ?? planned[0] ?? allPicks[0];
-    if (meets !== undefined) return meets.action;
-  } else {
-    const next = planned.find(finishing);
-    if (next !== undefined) return next.action;
-    return finish.action;
-  }
+  const finishable = (o: ActionOption) => o.finishable === true;
+  const next = planned.find(finishable) ?? (finish === undefined ? allPicks.find(finishable) : undefined);
+  if (next !== undefined) return next.action;
+  if (finish !== undefined) return finish.action;
   const back = picksWhere(shown, (a) => a.kind === "takeBack")[0];
   if (back === undefined) throw new Error("no way to finish declaring");
   return back.action;
