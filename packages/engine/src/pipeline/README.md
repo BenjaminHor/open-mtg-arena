@@ -71,14 +71,15 @@ anything can replace or trigger on:
 
 - **Pausing anywhere.** Since M2-08c (D-087), `happenOrAsk` waits for a choice between replacement effects (CR 616.1):
   it performs nothing, asks, and a `resumeEvent` work item replaces the event again with the choices so far. Only callers
-  that do nothing after the event use it: resolving effects' destroy and damage (`effects/run-effect.ts`) and combat
-  damage, which queues its priority first; a test lists them. Every other caller uses `happen`, which refuses a choice:
-  unreachable with the pool, where only damage meets two different effects. A caller that does more after its event
+  that do nothing after the event use it: resolving effects (destroy, damage, puts, hand effects, returns, a random
+  destroy), resolution's own moves and combat damage; `test/pipeline/only-the-pipeline-performs.test.ts` lists them.
+  Clone's "as it enters" copy choice was the first non-damage one (D-127). Every other caller uses `happen`, which
+  refuses a choice: unreachable with the pool. A caller that does more after its event
   (`startCast` in `game/cast.ts`, `playLand`, `putOnBottom` and the pregame loops, `finishAttackers`,
   `checkStateBasedActions`, `finishCleanup`, resolution's own steps in `game/resolve.ts`, `drawEach` and
   `discardAtRandom`, the draw and untap steps, and mana abilities, which resolve at once, CR 605.3b) must queue that
-  rest as work before it can switch. Clone's "as it enters" choice (M2-14) will be the first. A replacement applied once
-  is kept in `applied`, though none so far could apply again to its own result (later: CR 614.5).
+  rest as work before it can switch. A replacement applied once is kept in `applied`, so it never applies again to its
+  own result (CR 614.5; Clone copying a Clone).
 - **Moves that go elsewhere or nowhere.** `startCast` throws if its card didn't move to the stack; a replacement that
   changes that (CR 614.6) needs a real path.
 - **Drawing several cards** as one instruction (CR 121.2a): "draw N" is N single draws for now (D-060); the container

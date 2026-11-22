@@ -444,6 +444,16 @@ every keyword as redundant when repeated (CR 702.1 and each rule's own "redundan
 pool). Rampage, bushido, flanking and exalted count each instance, so `keywords` will need a count or a list kept with
 repeats for those. *Needs now:* nothing.
 
+**Who orders replacements for a card entering under another player (CR 616.1; M2 exit review).** The order is asked
+of `controllerOf` the moving card, its owner outside the battlefield, while "as it enters" choices go to the player it
+enters under. No entering card meets two replacements today. When one does (Rise from the Grave on an opponent's card,
+with an "enters tapped" and an "as it enters"), ask the player it will enter under, with copy effects first (CR
+616.1c). *Needs now:* nothing.
+
+**Intervening "if" on delayed triggers (CR 603.4).** `triggers/delayed.ts` never checks `onlyIf`, since no delayed
+trigger in the pool has one (Dragon Whelp, Stone Giant, Protean Hydra). The first that does needs the check at trigger
+and at resolution, as printed triggers have.
+
 ## App and game features
 
 **AI search (after M3).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).

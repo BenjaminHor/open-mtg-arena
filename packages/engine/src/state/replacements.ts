@@ -28,7 +28,7 @@ export type ReplacementEffect =
 
 /**
  * One replacement effect that would apply to an event, named so a player can choose it (CR 616.1) and so it applies
- * once (later: CR 614.5): a card's own replacement by its object and place in `replacementsOf` (stable while a choice waits), an
+ * once (CR 614.5): a card's own replacement by its object and place in `replacementsOf` (stable while a choice waits), an
  * object's regeneration shields (interchangeable, so one reference stands for them all, D-086), or an effect
  * in `GameState.replacements` (made by a resolving spell or ability) by its id.
  */

@@ -53,6 +53,7 @@ export function replaceDamage(
     }
     prevented.push(...result.prevented);
     afterwards.push(...result.afterwards);
+    // Damage all prevented isn't dealt, so nothing triggers on it (CR 603.2g).
     if (result.amount > 0) dealt.push({ ...entry, amount: result.amount });
   });
   const ask = firstInApnapOrder(state, asks);
