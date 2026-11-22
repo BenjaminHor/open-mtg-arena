@@ -56,6 +56,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     Unicorn's requirement, and each X answer's cost), the heuristic in `packages/ai/src/heuristic/`, a `heuristic` seat in the host, `pnpm eval`
     (D-145) with ten games per deck in `pnpm check`. First 100-game eval per deck: red-aggro 92%, green-stompy 95%,
     white-soldiers 99%, red-green-beats 86%, blue-black-control 92%; mean decision 0.11-0.15 ms, slowest 13.4 ms.
+    After the code review's fixes, 500 games per deck (`pnpm eval --games 500 --seed 1`), no game stuck: red-aggro 94.0%,
+    green-stompy 94.6%, white-soldiers 98.4%, red-green-beats 90.2%, blue-black-control 90.6%; mean decision
+    0.13-0.16 ms, slowest 40.4 ms (seed 433, red-green-beats). PR 2 brings each deck to 95%.
   - **PR 2: tricks and tuning.** Pump spells and firebreathing in combat, burn to the face when lethal, then tune until
     `eval` shows ≥95% of 500 games per deck, no illegal action, ≤50 ms per decision.
   - Future impact: the LLM seat (M3-02b) reads the same `SeatView`; search later (MCTS) starts from it plus sampled
