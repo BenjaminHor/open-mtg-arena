@@ -2132,3 +2132,11 @@ owner's answer to the D-089 open question, option (a))
   hand or in a library (put there face up, or by themselves), their own decklist and what's left, and the rulings of
   the cards in play. These are added to the shared data, so a human player sees them too (M3-02b).
 - It also covers behaviour: the AI is offered the response windows a human gets, and paces its actions like a player.
+
+**D-138: The LLM opponent's harness: previews, a 30-second limit, no memory between games (owner, 2026-11-22)** ·
+2026-11-22 · accepted
+- The LLM opponent is a harness of tools over the player's view (`docs/llm-opponent.md`), the owner's idea.
+- Previews are allowed: the model may ask the engine to play out a combat or an action on a world made only of what it
+  knows; a preview stops where a hidden card would matter.
+- 30 seconds of thinking per decision; at the limit the heuristic AI decides that one. A fast model should stay inside.
+- No memory between games for now; a possible RPG feature. Personas are undecided.

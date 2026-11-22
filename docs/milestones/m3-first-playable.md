@@ -22,7 +22,8 @@ is near), simple attack/block math, use Giant Growth and firebreathing in combat
 *Accept:* it beats the random agent at least 95% of 500 games with each deck; no illegal actions; at most
 50 ms per decision on a laptop.
 
-**M3-02b LLM opponent (owner, D-136).** An optional AI player powered by a model the player picks, through their own
+**M3-02b LLM opponent (owner, D-136).** Spec: `docs/llm-opponent.md`, a harness with tools over the player's view.
+An optional AI player powered by a model the player picks, through their own
 OpenRouter API key (kept on the device, sent only to OpenRouter; check first that it accepts calls straight from a
 browser, as there's no server of ours). It works from the player view only, as `brief` builds it (D-135), plus what a
 player knows of their deck: their decklist, what's left in their library (counts, never the order), the cards the
