@@ -883,6 +883,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          4. M2-15d the D-126 review: effect ops, statics and replacement kinds only one card uses, merged or generalized
             into building blocks where they're the same idea, and what stays one-off recorded with why.
          5. Bench against the budgets: done (D-133, ok on this machine).
+         - M2-15c done: the coverage report (`docs/coverage/rules-coverage.md`) ends with a "By chapter" table, generated
+           with it: 1xx 26%, 2xx 18%, 3xx 18%, 4xx 22%, 5xx 42%, 6xx 35%, 7xx 7% (mostly keywords outside the pool),
+           8xx and 9xx 0%, of each chapter's rules cited and tested.
          Then the exit criteria: rules-judge review of each system, the owner's CLI spot-check, the M3 spec revised.
        - Owner request (2026-11-22), after M2-14l merges: clean up the READMEs so nothing in them is irrelevant for a
          public repo, and add a straightforward guide to playing games with the CLI. The owner chose MIT and dropped the private starter text
