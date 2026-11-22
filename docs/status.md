@@ -895,8 +895,20 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            Rats' and Coat of Arms' counts (relative to the creature affected), Warp World's shuffle count, Stone Giant's
            toughness-below-power target. Each merge renames a mechanic key, so golden cover's list changes; saved
            mid-resolution states would break (ENGINE_VERSION 0, acceptable before release).
-         - Owner wish (2026-11-22): the CLI output should be more readable and detailed, enough that an AI agent playing
-           through the CLI has everything it needs to choose the best action. Options proposed; awaiting the owner's pick.
+         - M2-15f (owner, 2026-11-22): the CLI output should be readable and detailed enough that an AI agent playing
+           through the CLI has everything it needs to choose the best action. The owner chose all five parts, read from
+           the engine's per-player view only (no rules change, nothing hidden leaks):
+           1. one command per decision (`brief --as pN`): board, stack, hands as that player sees them, what happened
+              since they last acted, and the legal actions;
+           2. per object: current P/T and what changed it, tapped, summoning sick, damage, counters, keywords (granted
+              too), attachments, controller if not the owner; Oracle text with `--text` (or a `card <name>` lookup); each
+              stack object's controller, targets and X;
+           3. actions with their cost and whether it's payable now, legal targets, possible attackers and blocks, repeats
+              folded ("play Plains (x3)"), combat assignments shown;
+           4. public zones (graveyards, exile, revealed cards, library and hand sizes), untapped mana sources, mana pool,
+              land played this turn, step and next step;
+           5. `--json`: the player's view, legal actions and recent events, for programs.
+           Do it before the owner's CLI spot-check (an M2 exit criterion), after the pause.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
            says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).
