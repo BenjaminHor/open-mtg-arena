@@ -2,9 +2,9 @@
 
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import type { Action, Answer } from "@mtg/engine";
+import { deckGameSetup } from "@mtg/match";
 import { describe, expect, it } from "vitest";
 import { actionFromLine, actionLines, actionsFromLines } from "../src/action-lines.ts";
-import { deckGameSetup } from "../src/deck-setup.ts";
 import { playRecipe } from "../src/golden.ts";
 import { setupFromNames, setupWithNames } from "../src/setup-names.ts";
 

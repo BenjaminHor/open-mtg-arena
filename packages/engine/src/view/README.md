@@ -7,6 +7,10 @@ never the state (docs/architecture.md, "Hidden information"; D-044).
   and every library only as counts, but for what an ability reveals to everyone (`revealedHand`, `revealedTop`, by
   identity only, `rules/revealed.ts`); the viewer's own pending `decision`, and `waitingFor` for anyone's; no random
   generator state, setup, work queue or id counters. A view shares structure with the state: never change it.
+- `seen-objects.ts`: `seenObjects(state, view, cards)`: what the viewer sees of each object in their view, with the
+  values the layer system derives (characteristics, summoning sickness, combat roles, a spell's choices), keyed by id.
+  The host sends it beside the view (D-135), so the UI, the heuristic AI and the LLM opponent read one source (D-137).
+  Kept out of `playerView`, which stays a plain filter of the state.
 - `events-for.ts`: `eventsFor(events, viewer)`: events that would reveal a hidden card (another player's draw, a card
   moving between hidden zones) lose the card's identity, and a card moving between a zone the viewer sees and one
   they don't shows only the side they see (`CARD_CAME_INTO_VIEW`, `CARD_LEFT_VIEW`, D-054).

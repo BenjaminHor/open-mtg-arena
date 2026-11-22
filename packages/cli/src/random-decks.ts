@@ -1,7 +1,7 @@
 // Random decks from the pool, for the fuzzer's odd seeds and the golden games' candidates (`pnpm golden:cover`).
 
+import { nextRandom } from "@mtg/ai";
 import { type DeckList, POOL } from "@mtg/cards";
-import { nextRandom } from "./seeded-random.ts";
 
 /**
  * Two random 40-card decks from the pool: 23 random nonland cards and 17 basic lands, each of a random color among the

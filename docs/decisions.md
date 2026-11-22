@@ -2177,3 +2177,18 @@ owner's answer to the D-089 open question, option (a))
 - The owner waived M2's exit criterion of playing and spot-checking games through the CLI: they'll play in the browser
   in M3's first phase instead. The planned `brief` additions (the viewer's decklist and library left, the opponent's
   shown cards) move to M3-02b, where the LLM opponent needs them.
+
+**D-143: Auto-pass stops whenever a player could do something meaningful; no stops list (M3-01)** · 2026-11-22 · accepted
+- The first host design passed priority outside a list of per-step stops (your main phases, an opponent's declare
+  attackers and end step). Code review found it broke combat tricks: with a creature blocked, the active player had
+  nothing to stop at in declare blockers, so a pump spell in hand never got its window. Arena's own default
+  (`arena-research.md`) and `ui.md` ask for the opposite: stop when you could act.
+- The rule, one pure function for every seat (D-137, `packages/match/src/auto-pass.ts`): pass when there's nothing
+  meaningful to do (a land you may play, or a spell or non-mana ability whose mana `mightPay` says you could pay, is
+  meaningful); with your own object on top of the stack, pass so it resolves; otherwise stop. It errs toward stopping:
+  `mightPay` says yes when the mana adds up even if `autoPay` finds no plan.
+- Seat settings are `{ autoPass, autoTap }`. Full control is `autoPass: false`: the host never passes for you. Per-step
+  stops come back only if playtesting shows the rule stops too often (a setting on M3-09's settings screen, which lists stops).
+- Gap: auto-tap is one seat-wide flag. The milestone's "manual override" of one payment (tap these lands instead) needs
+  the UI's payment screen (M3-04 onward); it's noted in `status.md`.
+- Cost: every priority with something castable is a stop, so a hand of instants stops often. Arena behaves the same.

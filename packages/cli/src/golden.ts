@@ -6,11 +6,11 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
+import { type AgentName, agentNamed } from "@mtg/ai";
 import { cardDatabase, DECKS, type DeckList } from "@mtg/cards";
 import { type Action, type CardDatabase, createGame, ENGINE_VERSION, type GameSetup } from "@mtg/engine";
+import { deckGameSetup } from "@mtg/match";
 import { playAgents } from "./agent-play.ts";
-import { type AgentName, agentNamed } from "./agents.ts";
-import { deckGameSetup } from "./deck-setup.ts";
 import { logUntilRejected } from "./event-log.ts";
 import { actionPerLineText, decodeStored, encodeLines, FORMAT, replay } from "./game-file.ts";
 import { wholeNumber } from "./numbers.ts";

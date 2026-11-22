@@ -27,7 +27,7 @@ function weightOf(action: Action): number {
 /** A kind of action, by weight, then one action of that kind, uniformly. Seeded, so one seed is one game. */
 export function pickAction(actions: readonly Action[], seed: number): { action: Action; seed: number } {
   // Kinds in the order they're first listed, so the same list always gives the same pick.
-  const kinds = [...Map.groupBy(actions, actionKind).values()];
+  const kinds = Object.values(Object.groupBy(actions, actionKind)).filter((k): k is Action[] => k !== undefined);
   if (kinds.length === 0) throw new Error("no legal actions to choose from");
   const weights = kinds.map((ofKind) => weightOf(ofKind[0] as Action));
   const total = weights.reduce((sum, w) => sum + w, 0);

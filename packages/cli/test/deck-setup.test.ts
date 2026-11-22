@@ -1,8 +1,8 @@
 // A game between prebuilt decks (`new --decks`, `auto`, the fuzzer, golden games).
 
 import { DECKS, type DeckList, deckLibrary } from "@mtg/cards";
+import { deckGameSetup } from "@mtg/match";
 import { describe, expect, it } from "vitest";
-import { deckGameSetup } from "../src/deck-setup.ts";
 
 describe("deckGameSetup", () => {
   const decks = [DECKS["red-aggro"], DECKS["green-stompy"]] as DeckList[];

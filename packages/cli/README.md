@@ -14,10 +14,10 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
 - `src/brief/`: `brief`, one player's whole situation as data (`brief.ts`, `brief-objects.ts`, and `action-info.ts` for
   each action's cost, mana hint and targets), the events they saw since they last acted (`recent-events.ts`), and the
   same data as text (`brief-text.ts`) (D-135).
-- `src/agents.ts`, `src/agent-play.ts`: the `first-legal`, `random` and `by-kind` agents and the loop that lets them
-  play. `src/pick-action.ts`: the `by-kind` pick, a kind of action first (the fuzzer's, D-061). `src/seeded-random.ts`:
-  the seeded random numbers. `src/random-decks.ts`: random 40-card decks from the pool.
-- `src/event-log.ts`: events in words, by turn (`log`, `auto`). `src/deck-setup.ts`: a game between prebuilt decks.
+- `src/agent-play.ts`: the loop that lets the simple agents (`first-legal`, `random`, `by-kind`, in `@mtg/ai`) play.
+  `src/random-decks.ts`: random 40-card decks from the pool.
+- `src/event-log.ts`: events in words, by turn (`log`, `auto`). A game between prebuilt decks is `@mtg/match`'s
+  `deckGameSetup`.
 - `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
   actions, targets and mana in words.
 - `src/fuzz.ts`: the `pnpm fuzz` command (docs/testing.md, section 3; D-046). `src/fuzz/`: `checks.ts` (what's

@@ -1,9 +1,9 @@
 // `ai <file> --until p1`: an agent decides for the other players until p1 must decide (or the game ends).
 // `auto <file> --ai both --max-turns 30`: agents decide for everyone, to the end; prints a log of the game's events.
 
+import { agentNamed } from "@mtg/ai";
 import type { CardDatabase, PlayerId } from "@mtg/engine";
 import { type PlayLimits, playAgents } from "../agent-play.ts";
-import { agentNamed } from "../agents.ts";
 import { logLines } from "../event-log.ts";
 import { currentState, readGameFile, writeGameFile } from "../game-file.ts";
 import { wholeNumber } from "../numbers.ts";

@@ -209,11 +209,14 @@ simple.
 
 ## Match host (`packages/match`)
 
-- Holds the current state. Asks the AI or the human for each decision. Applies actions.
-- **Smart auto-pass**: skips priority decisions the player has nothing meaningful to do in, honoring the
-  player's stops, as Arena does. Auto-pass lives here, not in the engine.
-- **Auto-tap**: chooses which mana sources pay a cost (keeping colors the hand still needs). The engine
-  lists the legal ways to pay; the match host picks one, and the player can override it.
+- Pure step functions over a plain-JSON `MatchState` (the setup, the action log, the game, each seat and its
+  settings): `advance(match)` acts for agent seats and for what the host does itself until a person must decide;
+  `submit(match, action)` applies a person's action; `waitingOn(match)` names who must decide.
+- **Smart auto-pass**: passes priority when the player has nothing meaningful to do, or their own object is on top of
+  the stack, and stops otherwise, as Arena does (D-143). One rule for every seat (D-137). Auto-pass lives here, not
+  in the engine; full control turns it off.
+- **Auto-tap**: chooses which mana sources pay a cost (the engine's `autoPay`), one activation at a time. It's a
+  seat-wide setting for now; overriding one payment comes with the UI's payment screen.
 - **Answer instantly where there's no real choice** (one legal option, a forced order), so the UI never
   shows an empty prompt. See the "Feel" section in `ui.md`.
 - **Replay log**: a match is `setup + seed + ordered actions`. Saving stores a state snapshot plus

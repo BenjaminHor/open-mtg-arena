@@ -1,6 +1,7 @@
 // One fuzzed game: random legal actions (sometimes the first legal one), every check after every action, and the
 // whole game kept, so a failure can be written out and replayed.
 
+import { chooseAction, nextRandom, pickAction } from "@mtg/ai";
 import { DECKS, type DeckList } from "@mtg/cards";
 import {
   type Action,
@@ -12,12 +13,9 @@ import {
   type GameState,
   legalActions,
 } from "@mtg/engine";
-import { chooseAction } from "../agents.ts";
-import { deckGameSetup } from "../deck-setup.ts";
+import { deckGameSetup } from "@mtg/match";
 import { FORMAT, type GameFile, replay } from "../game-file.ts";
-import { pickAction } from "../pick-action.ts";
 import { randomDecks } from "../random-decks.ts";
-import { nextRandom } from "../seeded-random.ts";
 import type { Check } from "./checks.ts";
 
 export type FuzzResult =
@@ -110,7 +108,7 @@ export function fuzzGame(seed: number, checks: readonly Check[], cards: CardData
         return fail(`legalActions threw: ${message(error)}`, null);
       }
       if (legal.length === 0) return fail(`nothing legal for ${pending.player}'s ${pending.kind} decision`, null);
-      const choice = roll.value < 0.1 ? chooseAction("first-legal", state, legal, rng) : pickAction(legal, rng);
+      const choice = roll.value < 0.1 ? chooseAction("first-legal", legal, rng) : pickAction(legal, rng);
       rng = choice.seed;
       action = choice.action;
     }

@@ -13,8 +13,8 @@ import {
   layeredFresh,
   legalActions,
 } from "@mtg/engine";
+import { deckGameSetup } from "@mtg/match";
 import { playAgents } from "../agent-play.ts";
-import { deckGameSetup } from "../deck-setup.ts";
 import { goldenFiles, readGolden } from "../golden.ts";
 
 /** `run` does `count` operations (applyActions, games, ...); times are reported per operation. */

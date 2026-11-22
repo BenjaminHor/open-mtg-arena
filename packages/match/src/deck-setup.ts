@@ -1,4 +1,5 @@
-// A game between prebuilt decks, with a standard opening (CR 103): for `new --decks`, `auto` and the fuzzer (M1-18).
+// A game between prebuilt decks, with a standard opening (CR 103): the app's matches, and the CLI's `new --decks`, `auto`
+// and the fuzzer (M1-18).
 
 import { type DeckList, deckLibrary } from "@mtg/cards";
 import type { GameSetup, PlayerId } from "@mtg/engine";
