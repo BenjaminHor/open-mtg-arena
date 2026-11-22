@@ -29,18 +29,21 @@ export function blockAction(shown: SeatView, chosen: readonly Block[]): Action {
 }
 
 /**
- * The next pick of the plan, as long as the declaration could still be finished after it (`finishable`); when a
- * requirement keeps it from finishing now ("all creatures able to block it do so", CR 509.1c), a pick toward meeting
- * it, the plan's first. Then finishing. It never adds a pick from which no finish is reachable, so it never has to take
- * one back: a stateless player that did would add the same pick again.
+ * The next pick of the plan, as long as the declaration could still be finished after it (`finishable`), then
+ * finishing. When a requirement keeps it from finishing now ("attacks each combat if able", "all creatures able to
+ * block it do so", CR 508.1d, 509.1c), the finishable pick obeying the most requirements, the plan's first on a tie, so
+ * only what the requirement forces joins the plan. It never adds a pick from which no finish is reachable, so it never
+ * has to take one back: a stateless player that did would add the same pick again.
  */
 function nextPick(shown: SeatView, planned: readonly ActionOption[]): Action {
   const finish = picksWhere(shown, (a) => a.kind === "finishDeclaring")[0];
-  const allPicks = picksWhere(shown, (a) => a.kind === "declareAttacker" || a.kind === "declareBlocker");
   const finishable = (o: ActionOption) => o.finishable === true;
-  const next = planned.find(finishable) ?? (finish === undefined ? allPicks.find(finishable) : undefined);
-  if (next !== undefined) return next.action;
-  if (finish !== undefined) return finish.action;
+  if (finish !== undefined) return (planned.find(finishable) ?? finish).action;
+  const picks = [...planned, ...picksWhere(shown, (a) => a.kind === "declareAttacker" || a.kind === "declareBlocker")];
+  let best: ActionOption | undefined;
+  for (const pick of picks.filter(finishable))
+    if (best === undefined || (pick.obeys ?? 0) > (best.obeys ?? 0)) best = pick;
+  if (best !== undefined) return best.action;
   const back = picksWhere(shown, (a) => a.kind === "takeBack")[0];
   if (back === undefined) throw new Error("no way to finish declaring");
   return back.action;

@@ -23,6 +23,15 @@ describe("a heuristic seat plays whole matches through the host", () => {
     });
   }
 
+  it("has the host pick its mana sources even with auto-tap off: it starts only what that pick pays (D-144)", () => {
+    const setup = deckGameSetup([deck("red-green-beats"), deck("green-stompy")], 5, "p1");
+    const play = (autoTap: boolean) => {
+      const settings = { p1: { autoPass: true, autoTap }, p2: { autoPass: true, autoTap } };
+      return advance(startMatch(setup, { p1: HEURISTIC, p2: HEURISTIC }, cards, settings), cards);
+    };
+    expect(play(false).actions).toStrictEqual(play(true).actions);
+  });
+
   it("against an agent that picks any legal action, too", () => {
     const setup = deckGameSetup([deck("blue-black-control"), deck("red-green-beats")], 3, "p2");
     const seats = { p1: HEURISTIC, p2: { kind: "agent", agent: "by-kind", random: 3 } } as const;

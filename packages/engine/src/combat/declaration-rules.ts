@@ -69,9 +69,10 @@ export function blockDeclarationProblem(
 /**
  * Whether this declaration of attackers could still be finished, by adding picks to it: a hint for players
  * (`seatView`), never a rule. Picks are added greedily, each time one obeying the most requirements (CR 508.1d), until
- * the declaration can be finished or nothing can be added. Adding a pick never breaks the pool's one whole-declaration
- * restriction ("can't attack alone", CR 508.1c), so this finds a way to finish when this declaration has one. A
- * restriction that adding can break, such as menace, would need a search (later: CR 702.111b).
+ * the declaration can be finished or nothing can be added. That's enough for the pool because each creature's
+ * requirements don't depend on the other picks, and its one whole-declaration restriction, "can't attack alone"
+ * (CR 508.1c), is always repaired by adding another creature, never made worse. A restriction that adding a creature
+ * can break, such as menace, would need a search (later: CR 702.111b).
  */
 export function attacksCanFinish(state: GameState, chosen: readonly Attack[], cards: CardDatabase): boolean {
   let current = [...chosen];
@@ -90,10 +91,20 @@ export function blocksCanFinish(state: GameState, chosen: readonly Block[], card
   for (;;) {
     if (blockDeclarationProblem(state, current, cards) === null) return true;
     const picks = possibleBlocks(state, current, cards);
-    const best = mostObeying(picks, (b) => (isLure(state, b.attacker, cards) ? 1 : 0));
+    const best = mostObeying(picks, (b) => blockObeys(state, b, cards));
     if (best === undefined) return false;
     current = [...current, best];
   }
+}
+
+/** How many requirements one attack obeys (CR 508.1d): a hint for players, beside `attacksCanFinish`. */
+export function attackObeys(state: GameState, attack: Attack, cards: CardDatabase): number {
+  return attackRequirements(state, attack, cards);
+}
+
+/** How many requirements one block obeys (CR 509.1c): one if it blocks an attacker all able creatures must block. */
+export function blockObeys(state: GameState, block: Block, cards: CardDatabase): number {
+  return isLure(state, block.attacker, cards) ? 1 : 0;
 }
 
 /** The first pick obeying the most requirements; undefined when there are none. */

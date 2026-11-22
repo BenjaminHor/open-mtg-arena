@@ -215,6 +215,22 @@ describe("the heuristic's X, targets, abilities and counterspells", () => {
     expect(answerToShock("theirs")).toMatchObject({ type: "CAST_SPELL" });
   });
 
+  it("never counters its own spell", () => {
+    const state = table(
+      { hand: ["Doom Blade", "Cancel"], battlefield: ["Swamp", "Swamp", "Island", "Island", "Island"] },
+      { battlefield: ["Serra Angel"] },
+      "p1",
+      "precombatMain",
+    );
+    const after = heuristicActs(state, "p1").state;
+    expect(after.zones.stack).toHaveLength(1);
+  });
+
+  it("doesn't cast a creature whose X it can't make more than 0 (CR 107.3a, 704.5f)", () => {
+    const state = table({ hand: ["Protean Hydra"], battlefield: ["Forest"] }, {}, "p1", "precombatMain");
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+
   it("lets an opponent's spell resolve when it only hurts that opponent", () => {
     expect(answerToShock("own").type).toBe("PASS_PRIORITY");
   });
@@ -233,6 +249,19 @@ describe("the heuristic in combat", () => {
   it("doesn't attack into a blocker that would kill its creature and live", () => {
     const state = table({ battlefield: ["Grizzly Bears"] }, { battlefield: ["Hill Giant"] }, "p1", "precombatMain");
     expect(attacks(state)).toHaveLength(0);
+  });
+
+  it("attacks with only what a requirement forces when nothing else is safe (CR 508.1d)", () => {
+    const state = table(
+      { battlefield: ["Llanowar Elves", "Grizzly Bears", "Berserkers of Blood Ridge"] },
+      { battlefield: ["Enormous Baloth"] },
+      "p1",
+      "precombatMain",
+    );
+    const picks = attacks(state);
+    const berserkers = named(state, "Berserkers of Blood Ridge", "p1");
+    expect(picks).toHaveLength(1);
+    expect(picks[0]).toMatchObject({ answer: { attack: { attacker: berserkers } } });
   });
 
   /** p2 attacks with `attacker`; what p1's heuristic blocks with (CR 509.1). */

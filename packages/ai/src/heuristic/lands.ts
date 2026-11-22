@@ -36,7 +36,7 @@ export function bestLand(shown: SeatView, cards: CardDatabase): Action | null {
 }
 
 /** The colors a land can make: its basic land types' (CR 305.6), and its own mana abilities'. */
-function landColors(land: SeenCard, cards: CardDatabase): Color[] {
+export function landColors(land: SeenCard, cards: CardDatabase): Color[] {
   const basic = land.characteristics.subtypes.flatMap((t) => BASIC_COLOR[t] ?? []);
   const written = (cardData(land, cards)?.def.abilities ?? []).flatMap((a) =>
     a.effects.flatMap((e) => (e.op === "addMana" ? manaColors(e.mana) : [])),

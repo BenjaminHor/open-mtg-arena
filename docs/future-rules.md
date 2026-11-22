@@ -454,6 +454,13 @@ with an "enters tapped" and an "as it enters"), ask the player it will enter und
 trigger in the pool has one (Dragon Whelp, Stone Giant, Protean Hydra). The first that does needs the check at trigger
 and at resolution, as printed triggers have.
 
+### Changing a spell's targets (Redirect, Misdirection)
+- The heuristic AI scores a spell on the stack by what it does to its targets, reading down the stack
+  (`packages/ai/src/heuristic/targets.ts`, `stopScore`). That ends because a spell targets older objects; a card that
+  changes a spell's target to a newer one could make a cycle. Give the scoring a visited list or a depth then.
+- `seatView`'s X answers carry the cost only for spells: an ability with {X} in its mana cost needs `costOf` with the
+  answered X (`packages/engine/src/view/seat-view.ts`, `announcedCost`).
+
 ## App and game features
 
 **AI search (after M3).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).

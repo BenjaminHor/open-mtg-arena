@@ -5,7 +5,7 @@
 // player's own business or public: their own mana, the legal targets among objects they can see.
 
 import type { AbilityDef, CardDatabase, ManaCost } from "../cards/types.ts";
-import { attacksCanFinish, blocksCanFinish } from "../combat/declaration-rules.ts";
+import { attackObeys, attacksCanFinish, blockObeys, blocksCanFinish } from "../combat/declaration-rules.ts";
 import { legalActions } from "../game/legal-actions.ts";
 import { autoPay } from "../mana/auto-pay.ts";
 import { actionManaCost, mightPay } from "../mana/might-pay.ts";
@@ -23,10 +23,11 @@ export type ActionOption = {
   action: Action;
   /**
    * The mana it costs before choices (X as 0); null when it has no mana cost to pay (`actionManaCost`). For an answer
-   * announcing X (CR 601.2b), the whole cost with that X, so a player can see which X they can pay for.
+   * announcing X for a spell (CR 601.2b), the spell's whole cost with that X, so a player can see which X they can pay
+   * for (no ability in the pool has {X} in its mana cost: later, cover abilities too).
    */
   manaCost: ManaCost | null;
-  /** Whether the engine's own pick of sources pays that mana now, X as 0; null with no mana cost. Strict. */
+  /** Whether the engine's own pick of sources pays that mana now (X as 0, or as answered); null with none. Strict. */
   payable: boolean | null;
   /** The looser hint auto-pass uses (`mightPay`): yes when the player's mana adds up, even with no plan found. */
   mightPay: boolean | null;
@@ -42,6 +43,8 @@ export type ActionOption = {
    * action.
    */
   finishable: boolean | null;
+  /** For a pick in a declaration: how many requirements it obeys ("attacks each combat if able"); null otherwise. */
+  obeys: number | null;
 };
 
 export type SeatView = {
@@ -74,28 +77,29 @@ function actionOption(state: GameState, player: PlayerId, action: Action, cards:
     mightPay: paying === null ? null : mightPay(state, player, paying, cards),
   };
   const by = (object: ObjectId) => ({ object, controller: player });
-  const finishable = declarationFinishes(state, action, cards);
+  const finishable = declarationFinishable(state, action, cards);
+  const obeys = requirementsObeyed(state, action, cards);
   switch (action.type) {
     case "CAST_SPELL": {
       const specs = targetSpecsOf(state, action.object, cards);
       const targets = specs.map((s) => legalTargets(state, s, by(action.object), cards));
-      return { ...base, targets, ability: null, finishable };
+      return { ...base, targets, ability: null, finishable, obeys };
     }
     case "ACTIVATE_ABILITY": {
       const found = abilitiesOf(state, action.object, cards).find((a) => sameAbilityRef(a.ref, action.ability));
       const def = found?.def ?? null;
       const targets = (def?.targets ?? []).map((s) => legalTargets(state, s, by(action.object), cards));
-      return { ...base, targets, ability: def, finishable };
+      return { ...base, targets, ability: def, finishable, obeys };
     }
     case "PASS_PRIORITY":
     case "PLAY_LAND":
     case "ANSWER":
     case "CONCEDE":
-      return { ...base, targets: [], ability: null, finishable };
+      return { ...base, targets: [], ability: null, finishable, obeys };
   }
 }
 
-/** The cost of the spell or ability being cast with this X announced; null for any other answer, or no mana to pay. */
+/** The cost of the spell being cast with this X announced; null for any other answer, or no mana to pay. */
 function announcedCost(state: GameState, action: Action, cards: CardDatabase): ManaCost | null {
   const pending = state.pending;
   if (action.type !== "ANSWER" || action.answer.kind !== "announceX" || pending?.kind !== "announceX") return null;
@@ -105,8 +109,17 @@ function announcedCost(state: GameState, action: Action, cards: CardDatabase): M
   return totalCost({ ...state, objects: { ...state.objects, [pending.object]: announced } }, pending.object, cards);
 }
 
+/** How many requirements this declaration pick obeys; null when it isn't one. */
+function requirementsObeyed(state: GameState, action: Action, cards: CardDatabase): number | null {
+  if (action.type !== "ANSWER") return null;
+  const answer = action.answer;
+  if (answer.kind === "declareAttacker") return attackObeys(state, answer.attack, cards);
+  if (answer.kind === "declareBlocker") return blockObeys(state, answer.block, cards);
+  return null;
+}
+
 /** Whether the pending declaration could still be finished with this pick added; null when it isn't such a pick. */
-function declarationFinishes(state: GameState, action: Action, cards: CardDatabase): boolean | null {
+function declarationFinishable(state: GameState, action: Action, cards: CardDatabase): boolean | null {
   const pending = state.pending;
   if (action.type !== "ANSWER" || pending === null) return null;
   const answer = action.answer;

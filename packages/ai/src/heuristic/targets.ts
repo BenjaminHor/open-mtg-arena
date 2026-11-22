@@ -24,8 +24,9 @@ export function targetScore(shown: SeatView, target: Target, intent: Intent, car
     case "help":
       return mine ? helpScore(seen, cards) : -permanentValue(seen, cards);
     case "harm": {
-      const onStack = shown.view.zones.stack.includes(target.object);
-      const worth = onStack ? spellWorth(shown, seen, cards) : harmWorth(seen, intent, cards);
+      // A spell on the stack is scored from the heuristic's side already: stopping its own is a loss.
+      if (shown.view.zones.stack.includes(target.object)) return stopScore(shown, seen, mine, cards);
+      const worth = harmWorth(seen, intent, cards);
       return mine ? -worth : worth;
     }
   }
@@ -45,13 +46,18 @@ function harmWorth(card: SeenCard, intent: Extract<Intent, { kind: "harm" }>, ca
 }
 
 /**
- * What stopping a spell on the stack is worth (countering it, CR 701.5a): a permanent spell, what the permanent would
- * be worth; any other, a card's worth less what it would do for the heuristic on its chosen targets, so a spell that
- * only hurts its own caster's side isn't worth answering.
+ * What stopping a spell on the stack (countering it, CR 701.5a) is worth to the heuristic. A permanent spell: what the
+ * permanent would be worth to its controller. Any other: its card, and what it would do on its chosen targets, for or
+ * against the heuristic, so a spell that only hurts its own caster's side isn't worth answering, and its own spells
+ * are never worth stopping. Only reads down the stack: a spell targets older objects (later: a cycle needs a guard once
+ * a card can change a spell's targets to a newer one, Redirect).
  */
-function spellWorth(shown: SeatView, spell: SeenCard, cards: CardDatabase): number {
+function stopScore(shown: SeatView, spell: SeenCard, mine: boolean, cards: CardDatabase): number {
   const types = spell.characteristics.types;
-  if (!types.includes("instant") && !types.includes("sorcery")) return 1 + permanentValue(spell, cards);
+  if (!types.includes("instant") && !types.includes("sorcery")) {
+    const value = 1 + permanentValue(spell, cards);
+    return mine ? -value : value;
+  }
   const intents = stackIntents(shown, spell.id, cards);
   const chosen = spell.choices?.targets ?? [];
   const forMe = chosen.reduce(
@@ -59,7 +65,7 @@ function spellWorth(shown: SeatView, spell: SeenCard, cards: CardDatabase): numb
       sum + group.reduce((s, t) => s + targetScore(shown, t, intents[i] ?? { kind: "neutral" }, cards), 0),
     0,
   );
-  return 1 - forMe;
+  return mine ? -(1 + forMe) : 1 - forMe;
 }
 
 function playerScore(shown: SeatView, player: PlayerId, intent: Intent): number {

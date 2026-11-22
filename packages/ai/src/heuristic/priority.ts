@@ -4,12 +4,22 @@
 // target for a spell that costs more per target. A stateless player that started something it then had to cancel
 // would see the same table again and start it again.
 
-import type { Action, ActionOption, CardDatabase, CardDef, Effect, ManaCost, SeatView, SeenCard } from "@mtg/engine";
+import type {
+  Action,
+  ActionOption,
+  CardDatabase,
+  CardDef,
+  Color,
+  Effect,
+  ManaCost,
+  SeatView,
+  SeenCard,
+} from "@mtg/engine";
 import { isManaAbility, manaValue } from "@mtg/engine";
 import { cardData, controlledBy, creatureValue, isLand, manaValueOf, seenCard } from "./board.ts";
 import { untargetedValue } from "./effect-value.ts";
 import { abilityIntents, cardIntents, type Intent } from "./intents.ts";
-import { bestLand } from "./lands.ts";
+import { bestLand, landColors } from "./lands.ts";
 import { bestTarget, WORTH_CASTING } from "./targets.ts";
 
 export function priorityAction(shown: SeatView, cards: CardDatabase): Action {
@@ -50,12 +60,15 @@ function optionValue(shown: SeatView, option: ActionOption, cards: CardDatabase)
 
 function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: CardDef, cards: CardDatabase) {
   const isPermanent = !card.characteristics.types.some((t) => t === "instant" || t === "sorcery");
+  const printed = cardData(card, cards)?.printed.manaCost ?? null;
+  const x = xEstimate(shown, printed, def.spell?.xPaidWith, cards);
   if (isPermanent && def.enchant === undefined) {
+    // A permanent with an X it can't make more than 0 of (Protean Hydra) would enter as nothing worth having.
+    if (printed?.some((s) => s.kind === "x") === true && x < 1) return null;
     // A permanent with no target: worth its size, so the biggest affordable one comes first.
     const size = card.characteristics.types.includes("creature") ? creatureValue(card) : 0;
-    return 2 + manaValueOf(card, cards) + size / 4;
+    return 2 + manaValueOf(card, cards) + x + size / 4;
   }
-  const x = xEstimate(shown, cardData(card, cards)?.printed.manaCost ?? null);
   const value = effectsValue(shown, option, cardIntents(def, x), def.spell?.effects ?? [], x, cards);
   return value !== null && value >= WORTH_CASTING ? value : null;
 }
@@ -67,7 +80,8 @@ function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase
   if (ability.cost.some((c) => c.kind === "sacrifice" || c.kind === "sacrificeSelf")) return null;
   const source = seenCard(shown, option.action.object);
   // Moving Equipment that's already on a creature only shuffles it around.
-  if (ability.keyword === "equip" && source?.attachedTo !== null) return null;
+  const attached = source !== null && source.attachedTo !== null;
+  if (ability.keyword === "equip" && attached) return null;
   const loyalty = ability.cost.find((c) => c.kind === "loyalty");
   const left = source?.counters.loyalty ?? 0;
   if (loyalty?.kind === "loyalty") {
@@ -81,7 +95,7 @@ function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase
     if (spent <= 0) return 1 + effect - spent / 2;
     return effect >= WORTH_CASTING ? effect - spent / 2 : null;
   }
-  const x = xEstimate(shown, option.manaCost);
+  const x = xEstimate(shown, option.manaCost, undefined, cards);
   const value = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
   // An ability's cost is usually smaller than a card's, so less is enough: pinging a player with a {T} ability.
   return value !== null && value >= WORTH_CASTING / 2 ? value : null;
@@ -112,10 +126,15 @@ function effectsValue(
 
 /**
  * How big an X it could make with this cost (a spell's printed cost, which still has its {X}): the lands it could
- * still tap after the rest. A guess for weighing the spell; the X announced is one it can pay (`announceXAction`).
+ * still tap after the rest, only those making the color X must be paid with when it says (Consume Spirit's {B}). A
+ * guess for weighing the spell; the X announced is one it can pay (`announceXAction`).
  */
-function xEstimate(shown: SeatView, cost: ManaCost | null): number {
+function xEstimate(shown: SeatView, cost: ManaCost | null, paidWith: Color | undefined, cards: CardDatabase): number {
   if (cost === null || !cost.some((s) => s.kind === "x")) return 0;
-  const untapped = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped).length;
-  return Math.max(0, untapped - manaValue(cost.filter((s) => s.kind !== "x")));
+  const untapped = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped);
+  const rest = manaValue(cost.filter((s) => s.kind !== "x"));
+  if (paidWith === undefined) return Math.max(0, untapped.length - rest);
+  const colored = cost.filter((s) => s.kind === "colored" && s.color === paidWith).length;
+  const ofColor = untapped.filter((l) => landColors(l, cards).includes(paidWith)).length;
+  return Math.max(0, Math.min(untapped.length - rest, ofColor - colored));
 }
