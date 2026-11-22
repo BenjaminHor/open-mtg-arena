@@ -57,11 +57,10 @@ export function happenOrAsk(
     }
     case "chooseCopy": {
       // Asked as `chooseCards`, of the permanents to copy (CR 707.5) or none ("you may"), resumed like a name.
-      if (replaced.for.kind !== "object") throw new Error("a copy is chosen for an object");
       // The card entering is shown with the choice only from a public zone: one put onto the battlefield from a library
       // (Sphinx Ambassador's search) keeps its id there, which records its history (D-062).
       const entering = replaced.for.object;
-      const answering = { kind: "asEnters", for: replaced.for, ref: replaced.ref, event: resume } as const;
+      const answering = { kind: "asEnters", for: replaced.for, ref: replaced.ref, resume } as const;
       const decision: DecisionKind = {
         kind: "chooseCards",
         purpose: "copy",

@@ -11,7 +11,11 @@ import type { CardData, CardDatabase } from "./types.ts";
  * (layer 1, CR 613.2a), else its own. Undefined for a card the database doesn't have.
  */
 export function cardDataOf(obj: CardObject, cards: CardDatabase): CardData | undefined {
-  const values = obj.copied ?? obj;
+  return copiableData(obj.copied ?? obj, cards);
+}
+
+/** The card data copiable values name: a token's own, or the card's in the database. */
+export function copiableData(values: Copiable, cards: CardDatabase): CardData | undefined {
   return values.token ?? cards[values.oracleId];
 }
 

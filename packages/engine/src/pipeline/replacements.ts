@@ -39,9 +39,12 @@ import { playLandDestination, type SingleEvent } from "./proposed.ts";
  */
 export type Ask =
   | { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] }
-  | { kind: "chooseName"; what: ChooseWhat; player: PlayerId; for: ChoiceFor; ref: ReplacementRef }
+  | { kind: "chooseName"; what: ChooseWhat; player: PlayerId; for: EnteringObject; ref: ReplacementRef }
   /** The permanent to enter as a copy of (CR 707.5), or none ("you may", Clone), among `options`. */
-  | { kind: "chooseCopy"; player: PlayerId; for: ChoiceFor; ref: ReplacementRef; options: ObjectId[] };
+  | { kind: "chooseCopy"; player: PlayerId; for: EnteringObject; ref: ReplacementRef; options: ObjectId[] };
+
+/** The permanent a choice as it enters is made for (CR 614.12a). */
+type EnteringObject = { kind: "object"; object: ObjectId };
 
 /** The events in place of the event, or the choice needed first. */
 export type Replaced = { kind: "replaced"; events: SingleEvent[] } | Ask;
@@ -96,12 +99,11 @@ export function applyReplacements(
     // A replacement that makes a choice as the permanent enters asks it before it enters (CR 614.12a), of the player it
     // enters under (its controller, CR 614.12's example, 616.1); the answer is kept with the others, so replacing
     // again finds it.
-    const answer = forObject.find((c) => c.kind === "asEnters" && sameReplacement(c.ref, chosen.ref));
-    const answered = answer?.kind === "asEnters" ? answer.chosen : null;
+    const answer = forObject.find((c) => c.kind !== "first" && sameReplacement(c.ref, chosen.ref));
     const ask = answer === undefined && chosen.kind === "ownText" ? askAsEnters(state, chosen, object, cards) : null;
     if (ask !== null) return ask;
     applied.push(chosen.ref);
-    replaced = replaceWith(state, chosen, replaced, answered);
+    replaced = replaceWith(state, chosen, replaced, answer);
   }
 }
 
@@ -112,15 +114,17 @@ export function applyReplacements(
  */
 function askAsEnters(state: GameState, candidate: OwnText, object: ObjectId | null, cards: CardDatabase): Ask | null {
   const def = candidate.def;
-  const what = nameAsEnters(def);
-  if (what === null && def.kind !== "entersAsCopy") return null;
   const to = candidate.move.to;
-  if (object === null || to.zone !== "battlefield") throw new Error("only a permanent entering chooses as it enters");
-  const asked = { player: to.controller, for: { kind: "object", object }, ref: candidate.ref } as const;
-  if (def.kind !== "entersAsCopy") return what === null ? null : { kind: "chooseName", what, ...asked };
-  const you = to.controller;
-  const options = state.zones.battlefield.filter((id) => matchesFilter(state, id, def.of, you, cards));
-  return { kind: "chooseCopy", ...asked, options };
+  const asked = () => {
+    if (object === null || to.zone !== "battlefield") throw new Error("only a permanent entering chooses as it enters");
+    return { player: to.controller, for: { kind: "object", object }, ref: candidate.ref } as const;
+  };
+  if (def.kind === "entersAsCopy") {
+    const options = state.zones.battlefield.filter((id) => matchesFilter(state, id, def.of, asked().player, cards));
+    return { kind: "chooseCopy", ...asked(), options };
+  }
+  const what = nameAsEnters(def);
+  return what === null ? null : { kind: "chooseName", what, ...asked() };
 }
 
 /** The name this replacement has its player choose as the permanent enters, if any (CR 614.12a). */
@@ -327,13 +331,18 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
  * where it is, but that's for an instruction carried out, not an event replaced (D-087; an open question for the
  * owner, unreachable with the pool).
  */
-function replaceWith(state: GameState, candidate: Candidate, replaced: Replacing, chosen: string | null): Replacing {
+function replaceWith(
+  state: GameState,
+  candidate: Candidate,
+  replaced: Replacing,
+  answer: ReplacementChoice | undefined,
+): Replacing {
   switch (candidate.kind) {
     case "regeneration":
       // "Instead remove all damage marked on it and its controller taps it ... remove it from combat" (CR 701.19a).
       return { before: [], event: { kind: "regenerate", object: candidate.object }, after: [] };
     case "ownText": {
-      const own = replaceByOwnText(state, candidate.def, replaced.event, candidate.move, chosen);
+      const own = replaceByOwnText(state, candidate.def, replaced.event, candidate.move, answer);
       return {
         before: [...replaced.before, ...own.before],
         event: own.event,
@@ -349,8 +358,10 @@ function replaceByOwnText(
   def: ReplacementDef,
   event: SingleEvent,
   move: Move,
-  chosen: string | null,
+  answer: ReplacementChoice | undefined,
 ): Replacing {
+  // What its player chose as it entered (CR 614.12a), which `applyReplacements` asked for first.
+  const name = answer?.kind === "asEnters" ? answer.chosen : null;
   switch (def.kind) {
     case "entersTapped":
       if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters tapped");
@@ -386,22 +397,22 @@ function replaceByOwnText(
       return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
     case "asEntersChooseName": {
-      // The name chosen before it enters (CR 614.12a), which `applyReplacements` asked for first.
-      if (move.to.zone !== "battlefield" || chosen === null) throw new Error("only a permanent entering with a name");
-      return { before: [], event: rerouted(event, { ...move.to, chosenName: chosen }), after: [] };
+      if (move.to.zone !== "battlefield" || name === null) throw new Error("only a permanent entering with a name");
+      return { before: [], event: rerouted(event, { ...move.to, chosenName: name }), after: [] };
     }
     case "asEntersChooseBasicLandType": {
       // Likewise, a basic land type (CR 205.3i), checked as it was answered.
-      if (move.to.zone !== "battlefield" || chosen === null || !isBasicLandType(chosen))
+      if (move.to.zone !== "battlefield" || name === null || !isBasicLandType(name))
         throw new Error("only a permanent entering with a basic land type");
-      return { before: [], event: rerouted(event, { ...move.to, chosenLandType: chosen }), after: [] };
+      return { before: [], event: rerouted(event, { ...move.to, chosenLandType: name }), after: [] };
     }
     case "entersAsCopy": {
       // With the chosen permanent's copiable values (CR 707.2) as they are now; none chosen, as itself.
-      if (move.to.zone !== "battlefield") throw new Error("only a permanent entering enters as a copy");
-      if (chosen === null) return { before: [], event, after: [] };
-      const original = state.objects[chosen as ObjectId];
-      if (original?.kind !== "card") throw new Error(`${chosen} isn't a permanent to copy`);
+      if (move.to.zone !== "battlefield" || answer?.kind !== "asEntersCopy")
+        throw new Error("only a permanent entering enters as a copy, of the permanent chosen");
+      if (answer.chosen === null) return { before: [], event, after: [] };
+      const original = state.objects[answer.chosen];
+      if (original?.kind !== "card") throw new Error(`${answer.chosen} isn't a permanent to copy`);
       return { before: [], event: rerouted(event, { ...move.to, copied: copiableValues(original) }), after: [] };
     }
     case "preventDamageToYou":

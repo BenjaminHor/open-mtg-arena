@@ -19,6 +19,8 @@ abilities (CR 603, M2-07) each plug in once, and see every event.
    replacements about where it goes (`CardDef.replacements`, D-085): "enters tapped unless" and "if it would be put
    into a graveyard from anywhere, ... instead", and "as this enters, choose a card name", whose choice is asked of the
    player it enters under before it enters (CR 614.12a, D-119; a `chooseName` decision, only through `happenOrAsk`);
+   "enter as a copy of" (`entersAsCopy`, D-127), asked as a `chooseCards` decision the same way, after which the
+   copied text's replacements apply (CR 614.12, named apart by `ReplacementRef.text`);
    and a regeneration shield on a permanent about to be destroyed
    (`GameState.replacements`, D-086), which turns the destroy into a `regenerate` event. Damage is prevented per entry
    (a source dealing damage to a recipient) inside its one event (`damage-replacements.ts`, D-088): Fog and Safe

@@ -7,8 +7,10 @@ The types for the card data the engine is given (`CardDatabase`). The engine nev
   `CardDef` (what the card does: spell effects, activated abilities, keywords) and their parts. A first draft (D-026).
 - `triggers.ts`: `TriggeredAbilityDef` (CR 603, D-076): a trigger condition, an "intervening if", "you may", targets
   and effects.
-- `card-data.ts`: `cardDataOf(obj, cards)`, the one way to read an object's card data: a token's own (CR 111.3) or its
-  card's from the database (D-101); `isToken`, for "card" filters (CR 111.6). The source scan
+- `card-data.ts`: `cardDataOf(obj, cards)`, the one way to read an object's card data: its copiable values', a copy
+  effect's (`copied`, layer 1, D-127) or its own, a token's own (CR 111.3) or its card's from the database (D-101);
+  `copiableValues` (what a copy of it copies), `textOracleId` (the card whose text it has, which its abilities name);
+  `isToken`, for "card" filters (CR 111.6). The source scan
   `test/cards/card-data-lookups.test.ts` checks nothing else indexes the database.
 - `token-data.ts`: `tokenData`, a token's `CardData` from the `TokenDef` the creating effect gives (CR 111.3, 111.4).
 

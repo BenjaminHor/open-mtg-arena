@@ -135,11 +135,16 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       // The legend rule: the permanent kept, by reference, as the options share a name (CR 704.5j).
       if (pending?.kind === "keepLegend" && option !== undefined) return `keep ${objectText(state, option, cards)}`;
       if (pending?.kind !== "chooseCards") return `choose ${card}`;
-      const forName = pending.for === null ? "" : nameOf(state, pending.for, cards);
+      // A permanent to copy, by reference: yours and theirs may share a name (all on the battlefield, public).
+      const forName = pending.for === null ? "it" : nameOf(state, pending.for, cards);
+      if (pending.purpose === "copy" && option !== undefined)
+        return choiceText(pending.purpose, objectText(state, option, cards), forName);
       return choiceText(pending.purpose, card, forName);
     }
     case "finishChoosing":
-      return "done choosing";
+      return state.pending?.kind === "chooseCards" && state.pending.purpose === "copy"
+        ? "copy nothing"
+        : "done choosing";
     case "chooseYesNo":
       return answer.yes ? "yes" : "no";
     case "chooseName":

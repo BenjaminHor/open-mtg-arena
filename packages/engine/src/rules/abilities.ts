@@ -1,7 +1,7 @@
 // An object's abilities as it has them now: keywords, static abilities that aren't keywords, replacement effects,
 // triggered and activated abilities, with which of those are mana abilities.
 
-import { cardDataByOracleId, cardDataOf } from "../cards/card-data.ts";
+import { cardDataByOracleId, cardDataOf, copiableData } from "../cards/card-data.ts";
 import type { TriggeredAbilityDef } from "../cards/triggers.ts";
 import type {
   AbilityDef,
@@ -70,7 +70,7 @@ export function replacementsOf(state: GameState, id: ObjectId, cards: CardDataba
  * enters" in the copied text apply as it enters, and its printed loyalty.
  */
 export function copiedReplacements(copied: Copiable, cards: CardDatabase): readonly ReplacementDef[] {
-  const data = copied.token ?? cardDataByOracleId(copied.oracleId, cards);
+  const data = copiableData(copied, cards);
   return withIntrinsic(data?.def.replacements ?? [], data);
 }
 

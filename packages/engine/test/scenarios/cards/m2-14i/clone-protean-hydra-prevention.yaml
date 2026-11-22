@@ -27,6 +27,7 @@ steps:
   - expect:
       p1:Protean Hydra.damage: 0
       p1:Protean Hydra.counters: {}
+      events contains: [{ type: DAMAGE_PREVENTED, by: Protean Hydra }]
   - all pass: until end
   - expect:
       stack: [Protean Hydra ability]

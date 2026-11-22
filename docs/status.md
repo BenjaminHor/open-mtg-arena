@@ -809,7 +809,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             controller, non-copy effects (CR 707.2). Not a token if it copies one (`token` stays the object's own).
          2. Replacement kind `entersAsCopy { of: ObjectFilter }` (CR 614.1c): as it enters, its controller chooses
             one permanent of `of` already on the battlefield, or none (the choice, CR 614.12a; one entering with it
-            can't be chosen, its ruling); kept on the move as `copyOf`, like `chosenLandType`. The choice generalizes
+            can't be chosen, its ruling); kept on the move as `copied`, like `chosenLandType`. The choice generalizes
             `chooseCards` (purpose "copy", min 0, max 1) to answer an "as it enters" choice, as `chooseName` does.
          3. CR 614.12/707.5: once the copy is chosen, the replacements that apply are the copied text's ("enters
             with": Protean Hydra's X is 0, its ruling), and its enters triggers trigger.
@@ -832,7 +832,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          scenario. Rules review: Elvish Piper's Clone crashed (`putOntoBattlefieldFromHand` now `happenOrAsk`); 9 scenarios
          from it (Piper, Djinn's wish counters copied, a Clone of an uncopied Clone choosing again, CR 614.5 stopping a
          second pick, last known colour, Darksteel Colossus, Soul Warden twice, Protean Hydra's prevention); CR 614.5 and
-         707.9e cited; the Mirage/CR 305.7 case in Known issues. PR #83; next: code review.
+         707.9e cited; the Mirage/CR 305.7 case in Known issues. Code review: the same Piper crash and leak; two
+         surviving mutants killed (no-creature options `[]`, DAMAGE_PREVENTED `by` the copied card); copy options shown by
+         the copied card (`oracleIdOf`); a guard test on raw `.oracleId` reads; `AsEntersAnswer` shared by both answers,
+         `asEntersCopy` its own choice kind, `copiableData`; the CLI tells copies apart. Not built from the plan: legend
+         rule (no pool legend) and Ajani's Avatar token scenarios (the rules review ran the Avatar: it passes). PR #83.
        - M2-14h2 built (2026-11-22, D-125): Hive Mind (237 cards): `copySpell`'s `by: "eachOtherPlayer"`, one
          `copySpellFor` work item per copier in turn order, a spell leaving the stack kept in `lastKnown` (CR 608.2h) so
          one countered in response is still copied. 5 scenarios (Bolt copied and pointed back, its controller casting,

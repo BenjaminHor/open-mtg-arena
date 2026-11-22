@@ -60,3 +60,47 @@ describe("card data is read through cardDataOf (CR 111.3)", () => {
     expect(offenders).toStrictEqual([]);
   });
 });
+
+// A permanent that entered as a copy (Clone, D-127) has the copied card's text: its own `oracleId` is the card it
+// physically is. So engine code reads an object's text through `cardDataOf` or `textOracleId`, and reads a raw
+// `.oracleId` only where it means the physical card, with the reason here.
+const RAW_ORACLE_ID_ALLOWED: Record<string, string> = {
+  "engine/src/cards/card-data.ts": "the lookup itself",
+  "engine/src/zones/move-card.ts": "the new object is the same physical card",
+  "engine/src/zones/tokens.ts": "a token made from its data",
+  "engine/src/zones/spell-copies.ts": "a spell copy names the card it copies",
+  "engine/src/game/copy-spell.ts": "a spell on the stack is never a copy of a permanent",
+  "engine/src/effects/prevention.ts": "the spell that made the effect, never a copy",
+  "engine/src/triggers/delayed.ts": "the resolving spell that made a delayed trigger, never a copy",
+  "engine/src/game/create-game.ts": "setup data",
+  "engine/src/game/setup-validation.ts": "setup data",
+  "engine/src/rules/printed-start.ts": "an error message",
+  "engine/src/rules/characteristics.ts": "an error message",
+  "engine/src/rules/targets.ts": "an error message",
+};
+
+/** Reading `.oracleId` off something, other than `sourceOracleId` and a copy's own (`copied.oracleId`). Comments skipped. */
+function rawOracleIdReads(source: string): string[] {
+  return source
+    .split("\n")
+    .filter((line) => !/^\s*(\/\/|\*|\/\*)/.test(line))
+    .filter((line) => /\.oracleId\b/.test(line.replace(/copied\??\.oracleId/g, "")));
+}
+
+describe("an object's text is read through cardDataOf or textOracleId (CR 707.2)", () => {
+  it("finds a raw oracle id read, but not a copy's own", () => {
+    expect(rawOracleIdReads("const a = obj.oracleId;\nconst b = obj.copied?.oracleId;\n// obj.oracleId")).toStrictEqual(
+      ["const a = obj.oracleId;"],
+    );
+  });
+
+  it("no engine source reads a raw oracle id but the allowed files", () => {
+    const src = join(PACKAGES, "engine", "src");
+    const offenders = sourceFiles(src).flatMap((path) => {
+      const name = relative(PACKAGES, path);
+      if (RAW_ORACLE_ID_ALLOWED[name] !== undefined) return [];
+      return rawOracleIdReads(readFileSync(path, "utf8")).map((line) => `${name}: ${line.trim()}`);
+    });
+    expect(offenders).toStrictEqual([]);
+  });
+});

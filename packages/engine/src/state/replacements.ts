@@ -52,9 +52,11 @@ export type ReplacementChoice =
   | { kind: "first"; for: ChoiceFor; ref: ReplacementRef }
   /**
    * What a replacement effect's own choice was as a permanent enters: a card name or a basic land type, "as this
-   * enters, choose a card name" (CR 614.12a, 201.4), or the permanent it enters as a copy of (CR 707.5), null for none. Made before it enters, and kept so replacing the event again doesn't ask again.
+   * enters, choose a card name" (CR 614.12a, 201.4). Made before it enters, and kept so replacing the event again doesn't ask again.
    */
-  | { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef; chosen: string | null };
+  | { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef; chosen: string }
+  /** The permanent it enters as a copy of (CR 707.5), or null for none (Clone's "may"). */
+  | { kind: "asEntersCopy"; for: ChoiceFor; ref: ReplacementRef; chosen: ObjectId | null };
 
 /**
  * What a choice between replacement effects is for: the object an event affects, or one entry of a damage event (a

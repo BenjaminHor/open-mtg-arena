@@ -1,6 +1,7 @@
 // The order cards are shown in when a player sees them outside their usual view: a revealed hand, a searched library,
 // the options of a `chooseCards` decision (D-062).
 
+import { textOracleId } from "../cards/card-data.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId } from "../state/ids.ts";
 
@@ -19,9 +20,12 @@ export function inShownOrder(state: GameState, ids: readonly ObjectId[]): Object
   });
 }
 
-/** What a card is. Only cards are ever shown this way, so anything else is an engine bug. */
+/**
+ * What a card is, as shown: the copied card for a permanent that's a copy (CR 707.2; only one on the battlefield is).
+ * Only cards are ever shown this way, so anything else is an engine bug.
+ */
 export function oracleIdOf(state: GameState, id: ObjectId): OracleId {
   const obj = state.objects[id];
   if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
-  return obj.oracleId;
+  return textOracleId(obj);
 }

@@ -281,9 +281,11 @@ function withEngineStep(want: Record<string, unknown>): Record<string, unknown> 
 
 /** Revealed cards written by name, as everywhere in a scenario: `{ type: CARDS_REVEALED, cards: [Swamp] }`. */
 function withCardNames(events: readonly GameEvent[], cards: CardDatabase): unknown[] {
-  return events.map((e) =>
-    e.type === "CARDS_REVEALED"
-      ? { ...e, cards: e.cards.map((o) => cardDataByOracleId(o, cards)?.printed.name ?? o) }
-      : e,
-  );
+  const named = (o: string) => cardDataByOracleId(o, cards)?.printed.name ?? o;
+  return events.map((e) => {
+    if (e.type === "CARDS_REVEALED") return { ...e, cards: e.cards.map(named) };
+    // The card whose text prevents the damage (a Clone copying Protean Hydra names Protean Hydra).
+    if (e.type === "DAMAGE_PREVENTED") return { ...e, by: named(e.by) };
+    return e;
+  });
 }

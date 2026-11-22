@@ -1,10 +1,12 @@
 // Choosing cards while a spell or ability resolves (CR 608.2d; D-062): the effect waits with a `chooseCards` decision,
-// takes one card per answer, and runs again with the cards chosen once all are in. Nothing happens before that.
+// takes one card per answer, and runs again with the cards chosen once all are in. Nothing happens before that. The same
+// decision answers a choice as a permanent enters (CR 614.12a, "enter as a copy of", D-127): the event waiting is
+// replaced again with the choice kept.
 
 import type { CardDatabase, Effect, ObjectFilter } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
-import { queueWork } from "../game/work.ts";
+import { queueWork, resumeAsEnters } from "../game/work.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { Answer } from "../state/actions.ts";
 import type { ChoosePurpose, PendingDecision, Seen } from "../state/decisions.ts";
@@ -74,8 +76,9 @@ export function seenOf(state: GameState, from: ZoneRef, ids: readonly ObjectId[]
 /**
  * Takes a legal answer: one more card, waiting for the next, or, once `max` are chosen (unless only finishing ends it,
  * "any number") or the player finishes, the
- * effect queued to run again with the chosen cards, ahead of the rest of the resolution (D-032). `answered` has the
- * decision cleared. No events: what was chosen shows only in what the effect then does.
+ * effect queued to run again with the chosen cards, ahead of the rest of the resolution (D-032), or the event waiting
+ * resumed with the choice. `answered` has the decision cleared. No events for an effect, as what was chosen shows in
+ * what it then does; `OBJECTS_CHOSEN` for a choice as a permanent enters, told to everyone.
  */
 export function answerChooseCards(answered: GameState, decision: ChooseCards, answer: Answer): Progress {
   const chosen = answer.kind === "chooseCard" ? [...decision.chosen, answer.option] : decision.chosen;
@@ -98,9 +101,7 @@ export function answerChooseCards(answered: GameState, decision: ChooseCards, an
       };
     case "asEnters": {
       // Made before it enters (CR 614.12a) and told to everyone, as the permanent will show it (a copy, CR 707.5).
-      if (resume.for.kind !== "object") throw new Error("a choice as it enters is made for an object");
-      const choice = { kind: "asEnters", for: resume.for, ref: resume.ref, chosen: picked[0] ?? null } as const;
-      const { proposed, choices } = resume.event;
+      const choice = { kind: "asEntersCopy", for: resume.for, ref: resume.ref, chosen: picked[0] ?? null } as const;
       const event: GameEvent = {
         type: "OBJECTS_CHOSEN",
         player: decision.player,
@@ -109,7 +110,7 @@ export function answerChooseCards(answered: GameState, decision: ChooseCards, an
         chosen: picked,
       };
       return {
-        state: queueWork(answered, { kind: "resumeEvent", proposed, choices: [...choices, choice] }),
+        state: resumeAsEnters(answered, resume, choice),
         events: [event],
       };
     }
