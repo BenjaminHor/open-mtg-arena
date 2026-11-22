@@ -35,7 +35,7 @@ export type Characteristics = {
 /**
  * A card's characteristics: its printed values (CR 613.1), with continuous effects applied in layer order, by the one
  * pass in `layers.ts` (D-092), which each reader reads its part of; a missing layer is added there, in its place:
- * 1 copy (none yet), 2 control (`controllerOf`), 3 text (none yet), 4 type (`supertypesOf`, `cardTypesOf`, `subtypesOf`),
+ * 1 copy (`copied`, read through `cardDataOf`, D-127), 2 control (`controllerOf`), 3 text (none yet), 4 type (`supertypesOf`, `cardTypesOf`, `subtypesOf`),
  * 5 color (`colorsOf`), 6 abilities (`keywordsOf`, `protectionsOf`; activated ones from `abilitiesOf`), 7 power and toughness
  * (`powerAndToughness`). The controller is included by decision (D-022): CR 109.3 says it isn't a characteristic. An ability on the stack has no card, so
  * ask `controllerOf` for its controller instead.

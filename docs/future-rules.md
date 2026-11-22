@@ -434,6 +434,16 @@ actions from the opening hand (CR 103.6, Leylines) and "any time you could mulli
 mulligan count is the only thing that sets how many cards go to the bottom; opening-hand actions slot in before
 `beginFirstTurn`. A match host keeps `STARTING_PLAYER_CHOSEN.chosenBy` from the events, since `pregame` is cleared.
 
+**Layer 4 and 5 in timestamp order with statics (CR 613.7; M2 exit review).** Today layer 4 applies resolved effects,
+then statics that set a land's type (`land-type.ts`, `layers.ts`). No pool pair can tell the order apart. A static that
+sets types or colors and a resolved effect touching the same permanent (an Aura beside Awakener Druid, a Blood Moon)
+need the two merged by timestamp in layers 4, 5 and 7b. *Needs now:* nothing; the seam is one function.
+
+**Keywords that stack (CR 702.23 rampage, 702.45 bushido, 702.83 exalted).** `withoutRepeats` (`layers.ts`) treats
+every keyword as redundant when repeated (CR 702.1 and each rule's own "redundant" clause, true of all fifteen in the
+pool). Rampage, bushido, flanking and exalted count each instance, so `keywords` will need a count or a list kept with
+repeats for those. *Needs now:* nothing.
+
 ## App and game features
 
 **AI search (after M3).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).

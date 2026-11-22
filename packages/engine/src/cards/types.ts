@@ -32,7 +32,7 @@ export type PrintedCard = {
    * Empty means colorless (CR 105.2c). Abilities that define color apply later, in layer 5 (later: CR 613.1e).
    */
   colors: Color[];
-  /** The color indicator, if any (CR 204). Kept separately because copies copy it (later: CR 707.2). */
+  /** The color indicator, if any (CR 204). Kept separately because copies copy it (CR 707.2). */
   colorIndicator: Color[];
   supertypes: Supertype[]; // CR 205.4a
   types: CardType[]; // CR 205.2a

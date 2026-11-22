@@ -8,8 +8,8 @@
 // on the objects they locked in (CR 611.2c), static abilities (`static-effects.ts`), counters and rule modifiers.
 // Layers 4 and 5 (types, colors) and 7b (P/T set) have resolved effects too (D-095), layer 4 a static setting a land's
 // subtype (`land-type.ts`, D-120), and layer 2 resolved and static ones
-// (D-098, D-105, `control-effects.ts`; `controllerOf` reads the pass, D-104). Layers 1, 3 and 7d have none yet; each comes in its place
-// below as its first card does.
+// (D-098, D-105, `control-effects.ts`; `controllerOf` reads the pass, D-104). Layer 1 is the copiable values a copy takes (`copied`,
+// read through `cardDataOf`, D-127). Layers 3 and 7d have none yet; each comes in its place below as its first card does.
 
 import type {
   CardDatabase,
