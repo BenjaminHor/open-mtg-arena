@@ -8,7 +8,7 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import { isBasicLandType } from "../state/objects.ts";
 import type { Progress } from "./progress.ts";
-import { queueWork } from "./work.ts";
+import { resumeAsEnters } from "./work.ts";
 
 /** Why this isn't a name a `chooseName` decision takes, or null: a card's (CR 201.4) or a basic land type (CR 205.3i). */
 export function nameProblem(what: ChooseWhat, name: string, cards: CardDatabase): string | null {
@@ -33,8 +33,6 @@ export function answerName(
   const answering = pending.answering;
   switch (answering.kind) {
     case "asEnters": {
-      if (answering.for.kind !== "object") throw new Error("a name as it enters is chosen for an object");
-      const { proposed, choices } = answering.resume;
       const choice = { kind: "asEnters", for: answering.for, ref: answering.ref, chosen: name } as const;
       const event: GameEvent = {
         type: "NAME_CHOSEN",
@@ -44,7 +42,7 @@ export function answerName(
         name,
       };
       return {
-        state: queueWork(state, { kind: "resumeEvent", proposed, choices: [...choices, choice] }),
+        state: resumeAsEnters(state, answering, choice),
         events: [event],
       };
     }

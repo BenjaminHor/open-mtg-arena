@@ -135,7 +135,7 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
     case "chooseCards": {
       const problem = chooseCardsProblem(pending, answer);
       if (problem !== null) return error("illegalAction", problem);
-      return { ok: true, state: answerChooseCards(answered, pending, answer), events: [] };
+      return { ok: true, ...answerChooseCards(answered, pending, answer) };
     }
     case "orderTriggers": {
       if (answer.kind !== "orderTrigger") return mismatch;

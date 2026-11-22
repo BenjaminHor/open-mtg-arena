@@ -171,6 +171,13 @@ export type ReplacementDef =
    */
   | { kind: "asEntersChooseBasicLandType" }
   /**
+   * "You may have this enter as a copy of any creature on the battlefield" (Clone): as it enters (CR 614.1c), the player
+   * it enters under chooses one permanent fitting `of` already on the battlefield, or none (CR 614.12a; one entering
+   * with it can't be chosen, its ruling). It enters with that permanent's copiable values (CR 707.2, 707.5), and then
+   * the replacements in the copied text apply (CR 614.12). It doesn't target.
+   */
+  | { kind: "entersAsCopy"; of: ObjectFilter }
+  /**
    * "If damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters from it"
    * (Protean Hydra): all of it prevented, then the counters removed right after (CR 615.5), as many as it has.
    */

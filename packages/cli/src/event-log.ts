@@ -181,6 +181,13 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return e.what === "cardName"
         ? `${e.player} names ${e.name} for ${name(e.object)}`
         : `${e.player} chooses ${e.name} for ${name(e.object)}`;
+    case "OBJECTS_CHOSEN": {
+      // A card entering from a hidden zone isn't named by its id there (D-062).
+      const entering = e.object === null ? "the card entering" : name(e.object);
+      return e.chosen.length === 0
+        ? `${e.player} chooses nothing for ${entering} to ${e.purpose}`
+        : `${e.player} chooses ${e.chosen.map(name).join(", ")} for ${entering} to ${e.purpose}`;
+    }
     case "UNATTACHED":
       return `unattached: ${name(e.object)} from ${name(e.from)}`;
     case "TOKEN_CREATED":

@@ -1,6 +1,7 @@
 // Activating an activated ability that isn't a mana ability (CR 602.2): checking it can begin, and creating the
 // ability on the stack. The rest follows the casting steps (CR 602.2b), in `casting-steps.ts`.
 
+import { textOracleId } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { activationBasicsProblem } from "../mana/activate.ts";
 import { findAbility, isManaAbility } from "../rules/abilities.ts";
@@ -60,7 +61,7 @@ export function startActivation(
   const obj = state.objects[source];
   const ps = state.players[player];
   if (obj?.kind !== "card" || ps === undefined) throw new Error(`Can't activate ${source}`);
-  const created = putAbilityOnStack(state, source, obj.oracleId, ability, player);
+  const created = putAbilityOnStack(state, source, textOracleId(obj), ability, player);
   const casting: Casting = {
     player,
     object: created.id,

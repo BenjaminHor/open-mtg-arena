@@ -1,0 +1,19 @@
+name: Pithing Needle naming Prodigal Pyromancer stops the ability of a Clone copying it, as the copy has that name
+rules: [CR 707.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, { card: Pithing Needle, chosenName: Prodigal Pyromancer }]
+    hand: [Clone]
+  p2:
+    battlefield: [Prodigal Pyromancer]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Prodigal Pyromancer
+  - all pass: until main1
+  - all pass: until main1
+  - p1 activate: p1:Prodigal Pyromancer
+    targets: [p2]
+  - expect error: illegalAction

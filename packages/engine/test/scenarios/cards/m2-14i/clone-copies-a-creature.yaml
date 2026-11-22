@@ -1,0 +1,25 @@
+name: Clone enters as a copy of Grizzly Bears, copying only its printed values, not its counters or being tapped
+rules: [CR 614.1c, CR 614.12a, CR 707.2, CR 707.5, CR 613.2a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Clone]
+  p2:
+    battlefield: [{ card: Grizzly Bears, tapped: true, counters: { "+1/+1": 1 } }]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: copy, min: 0, max: 1 }
+  - p1 choose: p2:Grizzly Bears
+  - expect:
+      p1.battlefield contains: [Grizzly Bears]
+      p1:Grizzly Bears.power: 2
+      p1:Grizzly Bears.toughness: 2
+      p1:Grizzly Bears.tapped: false
+      p1:Grizzly Bears.colors: [G]
+      p1:Grizzly Bears.subtypes: [Bear]
+      p2:Grizzly Bears.power: 3
+      events contains: [{ type: OBJECTS_CHOSEN, player: p1, purpose: copy }]

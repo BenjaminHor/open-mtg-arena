@@ -178,14 +178,16 @@ export function permanentNamed(state: GameState, player: string, value: unknown,
  * The answer a `choose:` value names for a `chooseCards` decision: `finish` to stop choosing, or a card's name, the
  * first option not yet chosen with that name, or `Shock#2` for the second option named Shock. Which copy can matter
  * to an exact replay (a later random discard picks by position in the hand), so `export` writes `#n` when there are
- * several.
+ * several. `p2:Grizzly Bears` takes only permanents p2 controls (a Clone copying an opponent's creature).
  */
 export function chooseCardsAnswer(state: GameState, text: string, cards: CardDatabase): Answer {
   const pending = state.pending;
   if (pending?.kind !== "chooseCards") throw new Error("no chooseCards decision is pending");
   if (text === "finish") return { kind: "finishChoosing" };
-  const [, name = text, nth] = /^(.+?)(?:#(\d+))?$/.exec(text) ?? [];
-  const named = pending.options.flatMap((id, i) => (nameOf(state, id, cards) === name ? [i] : []));
+  const [, owner, name = text, nth] = /^(?:(p\d+):)?(.+?)(?:#(\d+))?$/.exec(text) ?? [];
+  const fits = (id: ObjectId) =>
+    nameOf(state, id, cards) === name && (owner === undefined || controllerOf(state, id, cards) === owner);
+  const named = pending.options.flatMap((id, i) => (fits(id) ? [i] : []));
   const option = nth === undefined ? named.find((i) => !pending.chosen.includes(i)) : named[Number(nth) - 1];
   if (option === undefined) throw new Error(`no ${text} among the cards to choose`);
   return { kind: "chooseCard", option };

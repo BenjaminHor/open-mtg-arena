@@ -4,7 +4,7 @@
 // Each task adds the events it produces. Every visible change must produce one (docs/future-rules.md).
 
 import type { Attack, Block } from "./combat.ts";
-import type { ChooseWhat } from "./decisions.ts";
+import type { ChoosePurpose, ChooseWhat } from "./decisions.ts";
 import type { ContinuousEffect } from "./effects.ts";
 import type { CardId, ObjectId, OracleId, PlayerId } from "./ids.ts";
 import type { ManaPool, ManaType } from "./mana.ts";
@@ -116,6 +116,12 @@ export type GameEvent =
    * Public, so the players choosing after know it (CR 101.4b). `object` is the card as it was, before it entered.
    */
   | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId; what: ChooseWhat; name: string }
+  /**
+   * As `object` enters, `player` chose these permanents for it (CR 614.12a): the one it enters as a copy of (CR 707.5),
+   * or none (Clone's "may"). `object` is null for a card entering from a hidden zone, whose id there records its history
+   * (D-062).
+   */
+  | { type: "OBJECTS_CHOSEN"; player: PlayerId; object: ObjectId | null; purpose: ChoosePurpose; chosen: ObjectId[] }
   /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */
   | { type: "UNATTACHED"; object: ObjectId; from: ObjectId }
   /**

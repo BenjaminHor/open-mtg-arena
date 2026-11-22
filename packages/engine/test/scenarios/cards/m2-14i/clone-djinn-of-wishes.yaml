@@ -1,0 +1,17 @@
+name: Clone copying Djinn of Wishes enters with three wish counters (copied "enters with")
+rules: [CR 707.5, CR 614.12]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Clone]
+  p2:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 1 } }]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Djinn of Wishes
+  - expect:
+      p1:Djinn of Wishes.counters: { wish: 3 }
+      p1:Djinn of Wishes.abilities contains: [flying]

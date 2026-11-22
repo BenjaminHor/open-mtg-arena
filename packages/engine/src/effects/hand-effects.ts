@@ -3,7 +3,7 @@
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import type { Progress } from "../game/progress.ts";
-import { happen } from "../pipeline/happen.ts";
+import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
@@ -76,7 +76,8 @@ export function putOntoBattlefieldFromHand(
     const moves = chosen
       .filter((id) => hand.includes(id))
       .map((object) => ({ kind: "moveCard", object, to: { zone: "battlefield", controller } }) as const);
-    return moves.length === 0 ? nothing(state) : happen(state, { kind: "simultaneous", events: moves }, cards);
+    // Its last move, so a permanent entering may stop to make its choice as it enters (CR 614.12a; Elvish Piper's Clone).
+    return moves.length === 0 ? nothing(state) : happenOrAsk(state, { kind: "simultaneous", events: moves }, cards);
   }
   if (hand.length === 0) return nothing(state);
   const options = fittingCards(state, hand, effect.filter, controller, cards);

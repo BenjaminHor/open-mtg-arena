@@ -6,9 +6,12 @@ import type { CardDatabase } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
 import { keywordsOf, staticAbilitiesOf } from "../rules/abilities.ts";
+import type { DecisionKind } from "../state/decisions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ReplacementChoice } from "../state/replacements.ts";
 import { detectTriggers } from "../triggers/detect.ts";
+import { isHiddenZone } from "../zones/move-card.ts";
+import { zoneOf } from "../zones/zone-list.ts";
 import { replaceDamage } from "./damage-replacements.ts";
 import { perform } from "./perform.ts";
 import type { ProposedEvent, SingleEvent } from "./proposed.ts";
@@ -50,6 +53,26 @@ export function happenOrAsk(
     case "chooseName": {
       const answering = { kind: "asEnters", for: replaced.for, ref: replaced.ref, resume } as const;
       const decision = { kind: "chooseName", what: replaced.what, answering } as const;
+      return { state: waitFor(state, replaced.player, decision), events: [] };
+    }
+    case "chooseCopy": {
+      // Asked as `chooseCards`, of the permanents to copy (CR 707.5) or none ("you may"), resumed like a name.
+      // The card entering is shown with the choice only from a public zone: one put onto the battlefield from a library
+      // (Sphinx Ambassador's search) keeps its id there, which records its history (D-062).
+      const entering = replaced.for.object;
+      const answering = { kind: "asEnters", for: replaced.for, ref: replaced.ref, resume } as const;
+      const decision: DecisionKind = {
+        kind: "chooseCards",
+        purpose: "copy",
+        for: isHiddenZone(zoneOf(state, entering)) ? null : entering,
+        options: replaced.options,
+        min: 0,
+        max: 1,
+        chosen: [],
+        endsOnlyOnFinish: false,
+        seen: null,
+        resume: answering,
+      };
       return { state: waitFor(state, replaced.player, decision), events: [] };
     }
     case "replaced":

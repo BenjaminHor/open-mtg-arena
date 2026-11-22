@@ -798,6 +798,45 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             Silence, no wish counters left, three activations, Nocturnus's revealed top.
          - Future impact: casting during resolution is what cascade and "cast copies" need; Twincast/Hive Mind (M2-14h)
            don't cast. The free cast is an alternative cost (CR 118.9a: one at a time).
+       - M2-14i plan (2026-11-22): Clone ("You may have this creature enter as a copy of any creature on the
+         battlefield."). CR 707.2, 707.2c, 707.3, 707.5, 613.2a (layer 1), 614.1c, 614.12, 614.12a, 704.5f. D-126:
+         a general block, not a Clone one: "enters as a copy" is a replacement kind any clone-like card reuses.
+         1. Layer 1: `CardObject.copied?: { oracleId; token? }`, the copiable values it took as it entered (fixed,
+            CR 707.2c): the chosen permanent's own `copied` if it has one (CR 707.3), else its oracle id (and a token's
+            data, its rulings). `cardDataOf` reads `copied` first, so every printed value, keyword, static, trigger,
+            activated and mana ability and replacement follows (all lookups go through it, a test checks). Abilities
+            put on the stack name the copied text (`sourceOracleId`). Never copied: tapped, counters, attachments,
+            controller, non-copy effects (CR 707.2). Not a token if it copies one (`token` stays the object's own).
+         2. Replacement kind `entersAsCopy { of: ObjectFilter }` (CR 614.1c): as it enters, its controller chooses
+            one permanent of `of` already on the battlefield, or none (the choice, CR 614.12a; one entering with it
+            can't be chosen, its ruling); kept on the move as `copied`, like `chosenLandType`. The choice generalizes
+            `chooseCards` (purpose "copy", min 0, max 1) to answer an "as it enters" choice, as `chooseName` does.
+         3. CR 614.12/707.5: once the copy is chosen, the replacements that apply are the copied text's ("enters
+            with": Protean Hydra's X is 0, its ruling), and its enters triggers trigger.
+         4. Scenarios (rulings): copy a creature (P/T, name, abilities); choose none (0/0, dies, CR 704.5f); a token
+            (copies the token's values, not a token); counters, tapped, Giant Growth, an Aura, Act of Treason not copied;
+            doesn't target (a shroud creature); an enters trigger (Elvish Visionary); Protean Hydra 0/0; a Clone of a
+            Clone; an activated and a mana ability; Pithing Needle naming the copied name; the legend rule if any pool
+            legend; Clone leaving is Clone again in the graveyard; a CDA (Ajani's Avatar token).
+         - Future impact: "becomes a copy" (CR 707.4, a continuous effect with a duration) goes in `state.effects`, and
+           `cardDataOf` then takes the state (one signature, every lookup already there); token copies (CR 707.8a) set
+           `copied` on the token; "except ..." (CR 707.9) is a field on `entersAsCopy`.
+       - M2-14i built (2026-11-22, D-127): Clone (238 cards): the `entersAsCopy` replacement, `CardObject.copied` read
+         by `cardDataOf` (layer 1), `textOracleId` for abilities, `chooseCards` resuming an event, `OBJECTS_CHOSEN`, `put`
+         through `happenOrAsk`. 17 scenarios (copies Bears; none; no creature; a token; Giant Growth and an Aura not
+         copied; shroud; Elvish Visionary's trigger; Protean Hydra 0/0; Pyromancer's ability; Llanowar Elves' mana; a
+         Clone of a Clone; dies as Clone with Magma Phoenix's trigger; the original leaving; Pithing Needle; an
+         animated Forest copied as a land; Rise from the Grave; Mind Control). 1 golden game. Bench: within noise.
+         Fuzz found a leak: a Clone put onto the battlefield from a library (Sphinx Ambassador) was named in the copy
+         choice by its library id (D-062); now `for` (and `OBJECTS_CHOSEN.object`) is null from a hidden zone, with a
+         scenario. Rules review: Elvish Piper's Clone crashed (`putOntoBattlefieldFromHand` now `happenOrAsk`); 9 scenarios
+         from it (Piper, Djinn's wish counters copied, a Clone of an uncopied Clone choosing again, CR 614.5 stopping a
+         second pick, last known colour, Darksteel Colossus, Soul Warden twice, Protean Hydra's prevention); CR 614.5 and
+         707.9e cited; the Mirage/CR 305.7 case in Known issues. Code review: the same Piper crash and leak; two
+         surviving mutants killed (no-creature options `[]`, DAMAGE_PREVENTED `by` the copied card); copy options shown by
+         the copied card (`oracleIdOf`); a guard test on raw `.oracleId` reads; `AsEntersAnswer` shared by both answers,
+         `asEntersCopy` its own choice kind, `copiableData`; the CLI tells copies apart. Not built from the plan: legend
+         rule (no pool legend) and Ajani's Avatar token scenarios (the rules review ran the Avatar: it passes). PR #83.
        - M2-14h2 built (2026-11-22, D-125): Hive Mind (237 cards): `copySpell`'s `by: "eachOtherPlayer"`, one
          `copySpellFor` work item per copier in turn order, a spell leaving the stack kept in `lastKnown` (CR 608.2h) so
          one countered in response is still copied. 5 scenarios (Bolt copied and pointed back, its controller casting,
@@ -1467,6 +1506,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-22, M2-14i rules review) Convincing Mirage on a Clone that copied a land (a Forest Awakener Druid animated)
+  leaves the copy in place: the permanent stays a Forest copy whose land type is Island. CR 305.7 says a land whose
+  type is set loses "any copiable effects affecting that land", but then it's Clone's own 0/0 Shapeshifter creature,
+  not a land, and whether Mirage still applies is a dependency question (CR 613.8) with no ruling found yet (the
+  judge's web search was blocked). Rare (three specific cards), so left as built until settled (D-080: rulings, then
+  judges, then the owner).
 - (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is
   finer than CR 616.1's "the way an event affects an object or player": with two attackers, Guardian Seraph and Fog,
   the player is asked once per attacker and can order them differently. Life totals can't differ with today's pool;

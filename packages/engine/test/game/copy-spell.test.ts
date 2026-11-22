@@ -9,7 +9,11 @@ import { midTurnState } from "../state/fixture.ts";
 // Lightning Bolt (o10) is on the stack in the fixture.
 function copiers(active: PlayerId, caster: PlayerId): PlayerId[] {
   const base = midTurnState();
-  const state: GameState = { ...base, turnOrder: ["p1", "p2", "p3"], turn: { ...base.turn!, activePlayer: active } };
+  const state: GameState = {
+    ...base,
+    turnOrder: ["p1", "p2", "p3"],
+    turn: { number: 3, activePlayer: active, step: "precombatMain" },
+  };
   const context: EffectContext = {
     self: "o11",
     controller: "p2",

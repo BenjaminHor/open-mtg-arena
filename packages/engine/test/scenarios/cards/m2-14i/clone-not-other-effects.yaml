@@ -1,0 +1,28 @@
+name: Clone doesn't copy Giant Growth's +3/+3 or the Aura on the creature it copies
+rules: [CR 707.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Plains, Forest]
+    hand: [Clone, Giant Growth, Holy Strength]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Holy Strength
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - p1 cast: Giant Growth
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2:Hill Giant.power: 7
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Hill Giant
+  - expect:
+      p1:Hill Giant.power: 3
+      p1:Hill Giant.toughness: 3
+      p2:Hill Giant.toughness: 8

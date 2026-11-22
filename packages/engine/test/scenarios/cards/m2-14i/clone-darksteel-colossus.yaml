@@ -1,0 +1,20 @@
+name: Clone copying Darksteel Colossus, sacrificed, is shuffled into its owner's library by the copied replacement
+rules: [CR 707.2, CR 614.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Vampire Aristocrat]
+    hand: [Clone]
+    library: []
+  p2:
+    battlefield: [Darksteel Colossus]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Darksteel Colossus
+  - p1 activate: Vampire Aristocrat
+    sacrifice: [p1:Darksteel Colossus]
+  - expect:
+      p1.graveyard: []
+      p1.library: [Clone]

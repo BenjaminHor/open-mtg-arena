@@ -91,6 +91,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "ATTACHED":
     case "AURA_HOST_CHOSEN":
     case "NAME_CHOSEN":
+    case "OBJECTS_CHOSEN":
     case "UNATTACHED":
     case "COUNTERS_REMOVED":
     case "PERMANENT_TAPPED":

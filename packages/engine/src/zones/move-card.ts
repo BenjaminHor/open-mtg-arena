@@ -7,7 +7,7 @@ import type { ContinuousEffect, EntersAs } from "../state/effects.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { CardId, ObjectId, PlayerId } from "../state/ids.ts";
-import type { BasicLandType, CardObject } from "../state/objects.ts";
+import type { BasicLandType, CardObject, Copiable } from "../state/objects.ts";
 import type { ZoneRef } from "../state/zones.ts";
 import { withZoneList, zoneList, zoneOf } from "./zone-list.ts";
 
@@ -23,7 +23,7 @@ export type Destination =
   /**
    * A permanent has a controller (CR 110.2); `is`: what it is as it enters (CR 611.2e); `counters`: what it enters with
    * (CR 614.1c, 122.6); `attachedTo`: the permanent an Aura enters attached to (CR 608.3c, 303.4f); `chosenName`: the
-   * name chosen as it enters (CR 614.12a).
+   * name chosen as it enters (CR 614.12a); `copied`: the copiable values it enters as a copy with (CR 707.5).
    */
   | {
       zone: "battlefield";
@@ -33,6 +33,7 @@ export type Destination =
       attachedTo?: ObjectId;
       chosenName?: string;
       chosenLandType?: BasicLandType;
+      copied?: Copiable;
     }
   /**
    * "Onto the battlefield tapped": it enters tapped, as part of this move (CR 110.5b), so it never "becomes tapped"
@@ -47,6 +48,7 @@ export type Destination =
       attachedTo?: ObjectId;
       chosenName?: string;
       chosenLandType?: BasicLandType;
+      copied?: Copiable;
     }
   /** Cards in exile or the command zone have no controller (CR 108.4). */
   | { zone: "exile" | "command" };
@@ -113,6 +115,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     // The choice made as it entered (CR 614.12a), which its abilities read; absent when it made none.
     ...(to.zone === "battlefield" && to.chosenName !== undefined ? { chosenName: to.chosenName } : {}),
     ...(to.zone === "battlefield" && to.chosenLandType !== undefined ? { chosenLandType: to.chosenLandType } : {}),
+    // Entering as a copy (CR 707.5), never carried over from an old object: a new one copies nothing (CR 400.7).
+    ...(to.zone === "battlefield" && to.copied !== undefined ? { copied: to.copied } : {}),
   };
   next = { ...next, objects: { ...next.objects, [card.id]: card } };
 

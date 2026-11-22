@@ -2,12 +2,36 @@
 // effect that created it, kept on the object (CR 111.3). Every lookup goes through here (card-data-lookups.test.ts
 // checks it), so nothing reads a token as a card the database doesn't have.
 
-import type { CardObject } from "../state/objects.ts";
+import type { OracleId } from "../state/ids.ts";
+import type { CardObject, Copiable } from "../state/objects.ts";
 import type { CardData, CardDatabase } from "./types.ts";
 
-/** The card data a card or token starts from; undefined for a card the database doesn't have. */
+/**
+ * The card data a card or token starts from: its copiable values (CR 707.2), a copy effect's if it entered as a copy
+ * (layer 1, CR 613.2a), else its own. Undefined for a card the database doesn't have.
+ */
 export function cardDataOf(obj: CardObject, cards: CardDatabase): CardData | undefined {
-  return obj.token ?? cards[obj.oracleId];
+  return copiableData(obj.copied ?? obj, cards);
+}
+
+/** The card data copiable values name: a token's own, or the card's in the database. */
+export function copiableData(values: Copiable, cards: CardDatabase): CardData | undefined {
+  return values.token ?? cards[values.oracleId];
+}
+
+/** What a copy of this object copies (CR 707.2, 707.3): the values it copies itself, else its own. */
+export function copiableValues(obj: CardObject): Copiable {
+  return (
+    obj.copied ?? (obj.token === undefined ? { oracleId: obj.oracleId } : { oracleId: obj.oracleId, token: obj.token })
+  );
+}
+
+/**
+ * The oracle id of the text the object has: the copied card's for a copy. An ability names it as the card it came from
+ * (`sourceOracleId`), so it resolves from the text it was activated or triggered from.
+ */
+export function textOracleId(obj: CardObject): OracleId {
+  return obj.copied?.oracleId ?? obj.oracleId;
 }
 
 /** Whether an object is a token, which isn't a card (CR 111.6): "creature card" filters leave it out. */

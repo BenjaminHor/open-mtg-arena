@@ -214,7 +214,10 @@ export const furnaceWhelp: CardDef = {
   abilities" is the static `{ kind: "chosenNameCantActivate" }`. "As this Aura enters, choose a basic land type" is
   `{ kind: "asEntersChooseBasicLandType" }` (kept as `chosenLandType`), and "enchanted land is the chosen type" the
   static `{ kind: "attachedSetsLandType" }`: layer 4 sets the land type, and the land loses its rules text's
-  abilities (CR 305.7, D-120).
+  abilities (CR 305.7, D-120). "You may have this creature enter as a copy of any creature on the battlefield" is
+  `{ kind: "entersAsCopy", of: { types: ["creature"] } }` (Clone, D-127): its controller chooses one or none
+  (`chooseCards`, purpose "copy"), and it enters with that permanent's copiable values as `copied` (layer 1), which
+  every lookup through `cardDataOf` reads.
 - "That player chooses a card name" while it resolves is `{ op: "nameCard", who: "triggeringPlayer" }`, and "a
   creature card that doesn't have that name" the filter `{ types: ["creature"], notNamedThisWay: true }` (Sphinx
   Ambassador, D-121).
@@ -243,6 +246,9 @@ cards, that each definition's `oracle` equals the current Oracle text, and that 
 - **Keywords are shared.** `keywords: ['flying', 'haste']` refers to `src/keywords/`, each citing its CR 702 rule.
 - **Prefer a general effect to a card-specific one.** Add a new effect op only when existing ops
   can't express the card, and document each op in `engine/src/effects/README.md` with its CR basis.
+- **Fundamental building blocks (the owner's requirement, D-126).** Almost any card should be definable from general
+  blocks, with no one-off logic. Before a new op, static or replacement kind: compose existing ones, else generalize
+  one, else add a block named for its CR concept and shaped for the next card that shares the idea.
 - **No functions in definitions.** If a card truly can't be expressed, extend the effect language
   in the engine (with tests). Never add an escape hatch.
 - **Oracle text is the reference, not the printed text.** Errata and modern wording win.

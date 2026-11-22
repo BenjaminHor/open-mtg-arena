@@ -131,6 +131,9 @@ describe("only the pipeline performs events (D-056)", () => {
     const allowed = [
       "effects/run-effect.ts",
       "effects/destroy-at-random.ts",
+      // "Put onto the battlefield", its last move: a choice as a permanent enters (CR 614.12a).
+      "effects/put-effects.ts",
+      "effects/hand-effects.ts",
       // The last move of a resolution, and Open the Vaults' moves: a choice as a permanent enters (CR 614.12a).
       "game/resolve.ts",
       "effects/return-all.ts",

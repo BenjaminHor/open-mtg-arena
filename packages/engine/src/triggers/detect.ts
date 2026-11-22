@@ -3,6 +3,7 @@
 // (CR 113.6): a card in a graveyard or a spell on the stack doesn't. A leaves-the-battlefield ability ("when this
 // creature dies") looks back in time: it's found on the permanent as it was before the event (CR 603.10a).
 
+import { textOracleId } from "../cards/card-data.ts";
 import type { CardDatabase } from "../cards/types.ts";
 import { triggersOf } from "../rules/abilities.ts";
 import { controllerOf } from "../rules/controller.ts";
@@ -67,6 +68,12 @@ function triggered(
     // An "intervening if" that's false as the event happens means it doesn't trigger at all (CR 603.4).
     if (def.onlyIf !== undefined && !holds(state, source, def.onlyIf)) return [];
     const ref = { kind: "triggered", index } as const;
-    return occurrences.map((matched) => ({ source, sourceOracleId: obj.oracleId, ref, controller, event: matched }));
+    return occurrences.map((matched) => ({
+      source,
+      sourceOracleId: textOracleId(obj),
+      ref,
+      controller,
+      event: matched,
+    }));
   });
 }
