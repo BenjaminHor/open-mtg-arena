@@ -424,6 +424,14 @@ flipping a comparison or deleting a line, and checks that some test fails each t
 ("a surviving mutant") shows exactly where the tests are too weak. Run it on the engine package before finishing
 each milestone, and write tests for surviving mutants in rules code. It's slow, so it's not part of `pnpm check`.
 
+```sh
+pnpm mutate --mutate "packages/engine/src/combat/**/*.ts"   # one folder at a time; a whole run takes hours
+pnpm mutate --mutate "packages/engine/src/mana/*.ts,packages/engine/src/zones/*.ts"   # several: a comma list
+```
+
+It runs the engine's unit tests and the scenarios (`vitest.mutate.config.ts`), and writes an HTML and a JSON report
+to `reports/mutation/` (gitignored). See D-139 for what's left out and why.
+
 ## What "done" means
 
 A rules or card task is done when:

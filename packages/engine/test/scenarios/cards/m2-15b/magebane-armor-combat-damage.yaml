@@ -1,0 +1,16 @@
+name: Magebane Armor prevents noncombat damage only; combat damage to the equipped creature is dealt
+rules: [CR 615.1a, CR 120.2a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hill Giant, { card: Magebane Armor, attachedTo: p1:Hill Giant }]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Hill Giant]
+  - all pass: once
+  - p2 block: { Grizzly Bears: Hill Giant }
+  - all pass: until combat.damage
+  - expect:
+      p1:Hill Giant.damage: 2

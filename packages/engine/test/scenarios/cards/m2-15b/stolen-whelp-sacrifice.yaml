@@ -1,0 +1,36 @@
+name: A stolen Dragon Whelp's delayed "sacrifice it" does nothing once its controller no longer controls it
+rules: [CR 701.21a, CR 603.7e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Mind Control, attachedTo: p2:Dragon Whelp }, Mountain, Mountain, Mountain, Mountain]
+  p2:
+    battlefield: [Dragon Whelp, Forest, Forest]
+    hand: [Naturalize]
+steps:
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 activate: Dragon Whelp
+    pay: auto
+  - all pass: once
+  - p1 pass: once
+  - p2 cast: Naturalize
+    targets: [p1:Mind Control]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Dragon Whelp]
+  - all pass: until end
+  - expect:
+      stack: [Dragon Whelp ability]
+  - all pass: once
+  - expect:
+      p2.battlefield contains: [Dragon Whelp]
+      p2.graveyard: [Naturalize]

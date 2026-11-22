@@ -15,7 +15,7 @@ export function namedCantActivate(state: GameState, source: ObjectId, cards: Car
     if (obj?.kind !== "card" || obj.chosenName === undefined) return [];
     return staticAbilitiesOf(state, id, cards).some((a) => a.kind === "chosenNameCantActivate") ? [obj.chosenName] : [];
   });
-  // Only then the source's name, through its characteristics (a copy effect could change it, later: CR 707.2).
+  // Only then the source's name, through its characteristics (a copy has the copied name, CR 707.2).
   if (names.length === 0) return null;
   const name = characteristics(state, source, cards).name;
   return names.includes(name) ? name : null;

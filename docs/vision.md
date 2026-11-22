@@ -10,7 +10,9 @@
    the AI, browse and search every Magic card, build and manage decks with the features of the best
    deckbuilding tools, open packs, and manage a collection. Touch first. See `deckbuilding.md`.
 3. **Later, an offline single-player RPG** on the same engine, in the spirit of Shandalar:
-   explore a world, visit areas, fight enemies in card battles, find and buy cards, open packs.
+   explore a world, visit areas, fight enemies in card battles, find and buy cards, open packs. The owner sees the
+   optional LLM opponents (D-136) as a big part of the single-player experience there too (2026-11-22): enemies that
+   play in character. The RPG still works offline with the built-in AI.
 
 The order matters. Rules depth comes first, then the Arena-style app (D-051). The RPG starts only once the
 engine, the architecture and the app foundations are settled and working.
@@ -32,6 +34,18 @@ outer screen and a 7.6-inch inner screen), and also desktop browsers.
   See the "Feel" section of `ui.md`.
 - **Touch first**, with live switching between the folded and unfolded layouts. Mouse works too.
 - **Single player against the AI.** A hotseat mode (two humans on one device) exists for testing.
+- **Optional LLM opponents (owner wish, 2026-11-22).** A player may add their own OpenRouter API key and pick a model
+  to play the AI opponent. The browser calls OpenRouter directly with the player's key (no server of ours); the
+  built-in AI stays the default and the only one offline. The model sees only the player view (as `brief` builds it,
+  D-135) and picks among the legal actions. It's in M3 (M3-02b, D-136). The owner isn't
+  concerned about cost or speed (fast, capable models exist), so one call per real decision with the whole view is fine.
+  It needs to know its deck as a player does: its own decklist and what's left in its library (counts, never the
+  order), the cards the opponent has shown this game, and the deck's game plan.
+  **Goal (owner, 2026-11-22): the player can't tell they're playing an AI.** The model has all the information a human
+  player would have about the game and their deck, no less and no more: what the UI shows a human is what the model
+  gets, from the same data (D-137). The owner imagines it as its own harness, like Claude Code or Codex but built to
+  play Magic through this engine: the tools a model needs to play, over the player's view (2026-11-22; spec being
+  written with the owner).
 - **Correct rules.** When in doubt, the Comprehensive Rules win, not convenience.
 - **Readable, maintainable code** that a person can work on. AI writes most of it, but nothing is a black box.
 

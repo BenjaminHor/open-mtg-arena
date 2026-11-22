@@ -1,0 +1,16 @@
+name: Protection from black prevents only damage from black sources; a red spell's damage is dealt
+rules: [CR 702.16e]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [White Knight]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p2 cast: Shock
+    targets: [p1:White Knight]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [White Knight]

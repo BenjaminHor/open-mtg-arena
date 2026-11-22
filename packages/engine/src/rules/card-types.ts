@@ -6,8 +6,8 @@ import type { ObjectId } from "../state/ids.ts";
 import { layeredOf } from "./layers.ts";
 
 /**
- * An object's subtypes (CR 205.3): layer 4 of `characteristics()`. Printed, since no type-changing effects exist yet;
- * when they do (layer 4, such as later: CR 305.7), they change the answer here.
+ * An object's subtypes (CR 205.3): layer 4 of `characteristics()`, with the effects that change them applied by the
+ * layer pass (Awakener Druid's, a land type set by Convincing Mirage, CR 305.7).
  */
 export function subtypesOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly string[] {
   return layeredOf(state, id, cards)?.subtypes ?? [];

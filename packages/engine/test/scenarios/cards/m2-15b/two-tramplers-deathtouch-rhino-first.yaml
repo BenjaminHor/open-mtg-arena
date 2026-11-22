@@ -1,0 +1,22 @@
+name: Two tramplers on one blocker, one with deathtouch (rhino-first declared first) - its 1 damage is lethal for both, so all the rest can trample over
+rules: [CR 702.19b, CR 702.2c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Darksteel Colossus, Stampeding Rhino, { card: Gorgon Flail, attachedTo: p1:Stampeding Rhino }]
+  p2:
+    battlefield: [Palace Guard]
+steps:
+  - all pass: until combat.declareAttackers
+  - p1 attack: [Stampeding Rhino, Darksteel Colossus]
+  - all pass: until combat.declareBlockers
+  - p2 block: { Palace Guard: [Darksteel Colossus, Stampeding Rhino] }
+  - all pass: until combat.damage
+  - expect:
+      pending: { kind: assignDamage, lethal: [1] }
+  - p1 assign: { Palace Guard: 1, p2: 4 }
+  - p1 assign: { Palace Guard: 0, p2: 11 }
+  - p2 assign: { Darksteel Colossus: 1, Stampeding Rhino: 0 }
+  - expect:
+      p2.life: 5
+      p2.graveyard: [Palace Guard]

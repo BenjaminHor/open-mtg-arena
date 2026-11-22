@@ -254,8 +254,8 @@ animator out and another in) would rejoin combat (CR 506.4). Rules about a whole
 removes the last pick (M2-06c, D-072). The most requirements obeyable is worked out directly, which is exact while the
 only whole-declaration restriction is "alone"; menace (CR 702.111b) and "no more than one creature can attack"
 (CR 508.1d's example) need a search over declarations. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,
-D-071). Two tramplers on one blocker are worked out one after the other, so a split where both trample over can't be
-chosen: checking the whole assignment at once (CR 510.1e) needs a decision that can be taken back or checked as a whole.
+D-071). Two tramplers on one blocker are worked out one after the other (deathtouch tramplers first, so the most
+damage can always trample over), so some splits can't be chosen: checking the whole assignment at once (CR 510.1e) needs a decision that can be taken back or checked as a whole.
 A "can't block" effect not on targets ("creatures without flying can't block this turn") is a rules effect read live
 at declaration (CR 611.2c, 613.11), not an `affected` list. The second step's "remaining attackers and blockers" (CR 510.4) needs the removed-from-combat set too.
 
@@ -433,6 +433,26 @@ actions from the opening hand (CR 103.6, Leylines) and "any time you could mulli
 *Needs now:* the setup can name the starting player; `STARTING_HAND_SIZE` is one constant to make per-player; the
 mulligan count is the only thing that sets how many cards go to the bottom; opening-hand actions slot in before
 `beginFirstTurn`. A match host keeps `STARTING_PLAYER_CHOSEN.chosenBy` from the events, since `pregame` is cleared.
+
+**Layer 4 and 5 in timestamp order with statics (CR 613.7; M2 exit review).** Today layer 4 applies resolved effects,
+then statics that set a land's type (`land-type.ts`, `layers.ts`). No pool pair can tell the order apart. A static that
+sets types or colors and a resolved effect touching the same permanent (an Aura beside Awakener Druid, a Blood Moon)
+need the two merged by timestamp in layers 4, 5 and 7b. *Needs now:* nothing; the seam is one function.
+
+**Keywords that stack (CR 702.23 rampage, 702.45 bushido, 702.83 exalted).** `withoutRepeats` (`layers.ts`) treats
+every keyword as redundant when repeated (CR 702.1 and each rule's own "redundant" clause, true of all fifteen in the
+pool). Rampage, bushido, flanking and exalted count each instance, so `keywords` will need a count or a list kept with
+repeats for those. *Needs now:* nothing.
+
+**Who orders replacements for a card entering under another player (CR 616.1; M2 exit review).** The order is asked
+of `controllerOf` the moving card, its owner outside the battlefield, while "as it enters" choices go to the player it
+enters under. No entering card meets two replacements today. When one does (Rise from the Grave on an opponent's card,
+with an "enters tapped" and an "as it enters"), ask the player it will enter under, with copy effects first (CR
+616.1c). *Needs now:* nothing.
+
+**Intervening "if" on delayed triggers (CR 603.4).** `triggers/delayed.ts` never checks `onlyIf`, since no delayed
+trigger in the pool has one (Dragon Whelp, Stone Giant, Protean Hydra). The first that does needs the check at trigger
+and at resolution, as printed triggers have.
 
 ## App and game features
 

@@ -1,9 +1,12 @@
 # M3 — First playable
 
 **Goal:** the owner plays full games against the AI in a browser, on the iPhone Duo (folded and
-unfolded) and on desktop, and the match already **feels smooth**. The rules are those of M2 (rules depth), which
-comes first since the owner's decision D-051; this spec was written for M1's 17 cards and needs a review for M2's
-bigger pool before it starts.
+unfolded) and on desktop, and the match already **feels smooth**, and as much as possible **like playing MTG Arena**
+(D-140: Arena's layout, flow and interactions, with art and visuals of our own; the research is in `arena-research.md`). The rules are those of M2: the Magic 2010 pool of 240 cards and its five prebuilt decks. This spec was
+reviewed for M2's pool on 2026-11-22.
+
+**Order (owner, 2026-11-22):** a playable game in the browser first, then the rest. Phase 1 is M3-01, M3-02, M3-03
+and M3-04: the owner plays the built-in AI on the folded phone. Phase 2 is M3-05 to M3-12 and M3-02b.
 This milestone is about the app, the AI and the match host. The card pool is small and the menus are basic,
 but the core match should meet the "Feel" targets in `ui.md` from the start (D-012). Polish isn't saved for later.
 
@@ -13,14 +16,34 @@ Review this spec with the owner before starting. It's expected to change based o
 
 **M3-01 Match host.** `packages/match`: holds state, routes decisions to a human or an AI, smart auto-pass
 with per-step stops and a full-control toggle, auto-tap mana with manual override, instant answers where
-there's no real choice, and replay log recording. *Accept:* AI-vs-AI matches run through the
+there's no real choice, and replay log recording. It owns the per-player data the UI and every AI read: `brief`'s
+builder moves here from the CLI (D-135), so the app's screen, the heuristic AI and the LLM opponent see the same
+information (D-137), and the CLI uses it from here. *Accept:* AI-vs-AI matches run through the
 match host in tests, and their replay logs reproduce the final state.
 
-**M3-02 Heuristic AI v0.** `packages/ai`, working from `PlayerView` only: mulligan by land count, play a land,
+**M3-02 Heuristic AI v0.** `packages/ai`, working from the player's view only: mulligan by land count, play a land,
 cast the best affordable spell, burn the best target (lethal on a creature that matters, or face when lethal
-is near), simple attack/block math, use Giant Growth and firebreathing in combat. Deterministic given a seed.
-*Accept:* it beats the random agent at least 95% of 500 games with each deck; no illegal actions; at most
-50 ms per decision on a laptop.
+is near), simple attack/block math, use pump spells and firebreathing in combat. It answers every kind of decision the
+engine has (mulligan and bottom, X, targets, divided damage, planeswalker abilities, choosing cards from a zone, naming a
+card, ordering replacement effects, "may" choices), sensibly where it matters and legally always. Deterministic given a
+seed. *Accept:* it beats the random agent at least 95% of 500 games with each of the five prebuilt decks; no illegal
+actions; at most 50 ms per decision on a laptop.
+
+**M3-02b LLM opponent (owner, D-136).** Spec: `docs/llm-opponent.md`, a harness with tools over the player's view.
+An optional AI player powered by a model the player picks, through their own
+OpenRouter API key (kept on the device, sent only to OpenRouter; check first that it accepts calls straight from a
+browser, as there's no server of ours). It works from the player view only, as `brief` builds it (D-135), plus what a
+player knows of their deck: their decklist, what's left in their library (counts, never the order), the cards the
+opponent has shown this game, and the deck's game plan. It asks the model only for real decisions (the match host
+auto-passes the rest) and answers with the number of a legal action; an invalid reply is retried once, then the
+heuristic AI decides. Prove it in the CLI first (a script that plays `brief --json` games against the built-in agents)
+before the UI. Settings: key, model, a "thinking" indicator while it decides. The heuristic AI stays the default and
+the only one offline. Information parity (D-137): the app's UI and the model read the same per-player data, so anything
+a human sees the model gets, including everything a player remembers: the whole game's history as they saw it, cards
+they know in the opponent's hand (one bounced there, say) and in a library (one they put on top or bottom), and the
+rulings of the cards in play. Response windows a human would get (a combat trick, a counterspell) are offered to the
+model too, and its pacing reads as a player's (not instant every time). *Accept:* in CLI games against the random agent it never makes an illegal move and wins most
+games; in the app the owner can enter a key, pick a model and play a full game against it.
 
 **M3-03 Web app scaffold.** `apps/web`: Vite + React + TypeScript, a PixiJS board canvas under the React UI
 layer, GSAP, the `board-model` / `director` / `renderer` / `effects` structure and the `window.__board` test hook
@@ -28,28 +51,31 @@ layer, GSAP, the `board-model` / `director` / `renderer` / `effects` structure a
 typed message protocol (plain JSON); a PWA manifest and service worker so the app works offline after the
 first load; a Playwright test that loads the app. *Accept:* `pnpm dev` runs; an offline reload still works.
 
-**M3-04 Board, compact layout.** For the folded phone and other small portrait screens (see `ui.md`): both
-battlefields, life totals, hand fan, stack panel, phase and priority indicator, the pass button, and
-decision prompts. *Accept:* a full game is playable at 5.4-inch portrait size in the browser's device emulation.
+**M3-04 Board, compact layout.** For the folded phone and other phones, in landscape as Arena's phone client
+(D-141, `ui.md`): both
+battlefields, life totals, hand fan, stack panel (with targets), phase and priority indicator, the pass button, and
+decision prompts. Everything M2's pool puts on the board: planeswalkers and their loyalty, counters, attached Auras and
+Equipment, tokens, tapped and summoning-sick creatures, damage, graveyards and exile, and revealed hands and library
+tops. *Accept:* a full game is playable at the folded phone's size in landscape in the browser's device emulation.
 
 **M3-05 Board, full layout, and live switching.** The Arena-like layout for the unfolded phone and desktop,
 switching live on resize with no loss of state or in-progress selection. *Accept:* a Playwright test resizes
 mid-selection and the selection survives.
 
 **M3-06 Touch interactions.** Tap to select and confirm, drag to play, long-press for card details, target
-selection, attack and block assignment by tapping, and the damage assignment prompt. *Accept:* every M1
-decision kind can be answered by touch; Playwright tests with touch emulation for each.
+selection, attack and block assignment by tapping, and the damage assignment prompt. *Accept:* every decision kind the
+engine has can be answered by touch; Playwright tests with touch emulation for each.
 
 **M3-07 Animations from events.** The director: GSAP timelines built from engine events for zone moves (using
 `cardId`), damage, life changes, tapping and combat; a first set of effects (spell impact, damage burst, glow on
 playable cards, creature death); the dev effects gallery; speed setting including "instant". *Accept:* tests run at instant speed; animations don't block input.
 
-**M3-08 Card art.** First-run download of the pool's images from Scryfall's image hosts into the Cache API,
-with a progress screen; `navigator.storage.persist()`; a fallback text-only card frame when an image is
+**M3-08 Card art.** First-run download of the pool's images (about 240) from Scryfall's image hosts into the Cache
+API, with a progress screen that shows the size first and resumes if interrupted; `navigator.storage.persist()`; a fallback text-only card frame when an image is
 missing; artist credit in the long-press view. Follow `data-sources.md`. *Accept:* works offline after the
 download; deleting the cache triggers a clean re-download.
 
-**M3-09 Menus.** Title screen, deck choice (the two prebuilt decks), play vs AI, hotseat, settings (animation
+**M3-09 Menus.** Title screen, deck choice (the five prebuilt decks; deckbuilding is M4), play vs AI, hotseat, settings (animation
 speed, stops), About (with the fan-content notice). *Accept:* the owner can start each mode from the title screen.
 
 **M3-10 Saves and bug reports.** Autosave the current match (snapshot + replay log) in IndexedDB and resume it on

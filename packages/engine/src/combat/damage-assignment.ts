@@ -1,7 +1,8 @@
 // Dividing a creature's combat damage among its recipients (CR 510.1c), and trample's rule that the player it attacks
 // gets damage only once its blockers have lethal damage (CR 702.19b, 702.19d; over planeswalkers, later: CR 702.19c).
 // One decision per creature with a choice: the player answers one recipient at a time, an answer that's the only legal
-// one is filled in without asking, and the last recipient gets the rest, so a division always adds up (CR 510.1e).
+// one is filled in without asking, and the last recipient gets the rest, so a division always adds up (CR 510.1c; checking the whole assignment
+// across attackers, later: CR 510.1e).
 
 import type { CardDatabase } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";

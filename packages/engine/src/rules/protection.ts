@@ -11,7 +11,7 @@ import { layeredOf } from "./layers.ts";
 
 /**
  * An object's protection abilities (CR 702.16), in any zone, like `keywordsOf`: layer 6 of the layer pass (`layers.ts`),
- * printed until an effect grants or removes one (later: CR 613.1f). Where they work is the rule's to say
+ * printed, less those a land loses with its rules text (CR 305.7); an effect granting one comes later (later: CR 613.1f). Where they work is the rule's to say
  * (`isProtectedFrom`).
  */
 export function protectionsOf(state: GameState, id: ObjectId, cards: CardDatabase): readonly ProtectionQuality[] {

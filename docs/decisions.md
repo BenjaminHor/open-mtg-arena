@@ -81,7 +81,7 @@ the Arena deckbuilder, Moxfield and Archidekt. Spec in `deckbuilding.md`. Every 
 can go in a deck; only cards in the engine's pool are playable, and the UI always says which.
 Deck logic and search live in pure packages (`library`, `decks`) so they're tested headlessly like the engine.
 
-**D-015: Private repo, no open-source license; Cloudflare Pages for hosting** · 2026-11-19 · accepted
+**D-015: Private repo, no open-source license; Cloudflare Pages for hosting** · 2026-11-19 · accepted; the license part superseded by D-132 (MIT, public)
 The repository is private and has no license file (all rights reserved). Card names, Oracle text, rules text and
 images belong to Wizards of the Coast; card data comes from Scryfall under its terms. GitHub's free plan doesn't
 offer GitHub Pages or protected branches for private repos, so the app is hosted on **Cloudflare Pages**
@@ -944,7 +944,10 @@ every schema change and every change D-024 lists bumps it.
   blocker (CR 702.19b's first example is a scenario), with any from a deathtouch source lethal (CR 702.2c): the attackers'
   divisions are worked out in order, without trample first, each known before the next, forced ones filled in. With
   two tramplers on one blocker, the first can't count the second's damage, so a split where both trample over can't be
-  chosen, though the same totals can be dealt to the player (later: CR 510.1e, checking the whole assignment at once).
+  chosen (later: CR 510.1e, checking the whole assignment at once). Amended at the M2 exit review: with a deathtouch
+  trampler the totals did differ by the order declared (Darksteel Colossus and a Gorgon Flail Rhino on Palace Guard:
+  12 or 15 to the player), so deathtouch tramplers are now worked out before other tramplers, which makes the most
+  damage that can trample over reachable in any order (scenarios `cards/m2-15b/two-tramplers-deathtouch-*`).
 - The `block` scenario step takes a list for such a blocker: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`.
 
 **D-072: Whole-declaration rules: checked at `finishDeclaring`, a `takeBack` answer, the most requirements worked out directly** · 2026-11-20 · accepted (M2-06c)
@@ -2112,3 +2115,65 @@ owner's answer to the D-089 open question, option (a))
   `targetSpecsOf`) and a hint whether their mana could pay it now (`autoPay`, X as 0). It's a hint, as the engine allows
   starting what can't be paid (CR 118.6, 601.2h) and a per-target cost increase is known only once targets are chosen.
 - `show` keeps its stable format for tests; `brief` is the detailed one.
+
+**D-136: LLM opponents in M3 (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner wants an optional AI opponent powered by a model the player picks, through their own OpenRouter key, and
+  placed it in M3 (task M3-02b), beside the heuristic AI rather than after it. The owner isn't concerned about cost or
+  speed, since fast capable models exist.
+- It fits the vision's "no server": the browser calls OpenRouter with the player's key, which stays on the device. The
+  heuristic AI stays the default and the only opponent offline.
+- It sees only the player view (`brief`, D-135) and picks a numbered legal action, so it can't cheat or move illegally.
+  It also gets what a player knows of their own deck: the decklist and what's left in the library (counts only; the
+  list predicts no shuffle, the seed would), the cards the opponent has shown, and the deck's game plan.
+
+**D-137: The AI opponent knows what a human player knows (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner's goal: the player can't tell they're playing against an AI. So the model has all the information a human
+  player has about the game and their deck, no less (or it plays worse than a person) and no more (or it cheats).
+- Parity is made structural, not checked by hand: the app's UI and the AI read one per-player data source (the match
+  host's view with derived values, D-135, as `brief` builds it today). A field added for the UI reaches the AI too.
+- What a human remembers counts as known: the whole game's history as they saw it, cards they know in the opponent's
+  hand or in a library (put there face up, or by themselves), their own decklist and what's left, and the rulings of
+  the cards in play. These are added to the shared data, so a human player sees them too (M3-02b).
+- It also covers behaviour: the AI is offered the response windows a human gets, and paces its actions like a player.
+
+**D-138: The LLM opponent's harness: previews, a 30-second limit, no memory between games (owner, 2026-11-22)** ·
+2026-11-22 · accepted
+- The LLM opponent is a harness of tools over the player's view (`docs/llm-opponent.md`), the owner's idea.
+- Previews are allowed: the model may ask the engine to play out a combat or an action on a world made only of what it
+  knows; a preview stops where a hidden card would matter.
+- 30 seconds of thinking per decision; at the limit the heuristic AI decides that one. A fast model should stay inside.
+- No memory between games for now; a possible RPG feature. Personas are undecided.
+
+**D-139: Mutation testing with StrykerJS (M2-15b)** · 2026-11-22 · accepted
+- Dev dependencies `@stryker-mutator/core` and `@stryker-mutator/vitest-runner` (10.1.1, pinned), the tools testing.md
+  section 7 names. Dev only: nothing of them ships in the app.
+- `pnpm mutate --mutate "<glob>"` runs on one part of the engine at a time (a whole run takes hours), with
+  `vitest.mutate.config.ts`: the engine's unit tests and the scenarios. The CLI's golden games, fuzz and replays are
+  left out as too slow per mutant; a mutant only they would catch is reported as surviving, which errs on the side of
+  writing a scenario for it. No TypeScript checker plugin: the repo's TypeScript 7 has no JavaScript API for it, so
+  mutants that don't type-check run too and count as killed or survived by what the tests see.
+- Not part of `pnpm check`. Surviving mutants in rules code get a test; the rest are listed in status.md with why they
+  survive (equivalent mutants, logging, error messages).
+
+**D-140: The match UI works like MTG Arena's, with a look of our own (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner wants the interface to mimic MTG Arena as closely as possible, and asked for research into Arena's UI.
+- What we copy is the interaction design: board layout conventions, turn flow, passing and stops, auto-tap, targeting,
+  combat, the hand, prompts and feedback. These are how digital card games work, and they're what makes Arena feel
+  good.
+- What we don't copy is Arena's own expression: its art, card frames, icons, sounds, animations' artwork and visual
+  style. Those belong to Wizards of the Coast (the Fan Content Policy allows fan content, not reuse of a game's assets
+  or trade dress), and a fan project that looks like a copy of Arena invites trouble. Our visuals are original; the
+  layout and the feel follow Arena.
+- The research (from public sources: Wizards' Arena help pages and patch notes, guides, reviews, screenshots) is
+  written up in `docs/arena-research.md`, in our own words, as the M3 UI tasks' reference.
+
+**D-141: The folded phone plays in landscape (owner, 2026-11-22)** · 2026-11-22 · accepted
+- Arena's phone client plays in landscape only. To feel like Arena (D-140), the folded iPhone Duo plays in landscape
+  too, with Arena's phone layout, instead of the portrait compact layout ui.md first planned. In portrait a phone shows
+  a "turn your phone" prompt over the paused match. The unfolded phone (nearly square), tablets and desktop use the
+  full layout. Live switching on fold and unfold still must keep the match and any selection.
+
+**D-142: No CLI spot-check for M2 (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner waived M2's exit criterion of playing and spot-checking games through the CLI: they'll play in the browser
+  in M3's first phase instead. The planned `brief` additions (the viewer's decklist and library left, the opponent's
+  shown cards) move to M3-02b, where the LLM opponent needs them.

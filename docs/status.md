@@ -3,7 +3,8 @@
 Living document. Update it at the end of every task: what changed, what's next, and anything the
 next session needs to know. Keep it short. Move finished detail into commit messages.
 
-**Current milestone:** M2 — Rules depth (`milestones/m2-rules-depth.md`)
+**Current milestone:** M2 — Rules depth, **complete** (2026-11-22): every exit criterion met or waived by the owner
+(D-142); tagging `m2` on `main` is the owner's. Next: M3 — First playable (`milestones/m3-first-playable.md`), Phase 1.
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
@@ -909,6 +910,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
               land played this turn, step and next step;
            5. `--json`: the player's view, legal actions and recent events, for programs.
            Do it before the owner's CLI spot-check (an M2 exit criterion), after the pause.
+           Next for `brief` (owner, 2026-11-22, for LLM opponents and people alike): the viewer's own decklist and what's
+           left in their library (decklist minus their visible cards; counts only, never the order: the list doesn't
+           predict a shuffle, the seed does), and the cards each opponent has shown this game. A short game-plan note
+           per prebuilt deck. Not started; moved to M3-02b (D-142).
            Plan (2026-11-22), two PRs:
            - f1: `brief <file> --as pN [--text] [--json]`, built as data (`cli/src/brief/`) from `playerView`, the
              viewer's `eventsFor` events since their last action, and their own legal actions only (another player's
@@ -929,6 +934,34 @@ next session needs to know. Keep it short. Move finished detail into commit mess
              `numberedActions`; only `view.objects` described; recent-event tests; the leak test covers seven folders.
            - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
              view; record that as a decision.
+         - M2-15b in progress (D-139): `pnpm mutate` works (Stryker 10.1.1; the tsconfig step skipped for TypeScript 7;
+           the runner plugin named; workspace packages aliased inside the sandbox, without which the scenarios tested
+           the unmutated engine). Per folder: run, then triage survivors: real gaps get a test, equivalent mutants
+           (guards that only save work, `?.` on what two-player games never leave missing, error-message text) are
+           left with a note. combat/: 70.5% before the alias fix (unit tests only), 88.6% with it; tests added in
+           `test/combat/combat-edges.test.ts` for an illegal attack answer, a pump not being an attack requirement,
+           out-of-range damage division, and no 0-damage event (CR 120.8). Scores (killed of all mutants): combat 89.1%,
+           pipeline 79.5%, effects 82.3%, triggers 87.2%; rules/ (two halves), game/ and the small folders to run.
+           Triage finding (2026-11-22): checked by hand, the survivors are mostly equivalent: a check the code makes
+           twice (an earlier filter already rules the case out), `?? []` and null guards for states that can't happen,
+           `case` labels of exhaustive switches, error-message text. Partial-condition mutants (`false || x`) are
+           usually covered by the rest of the condition. Real gaps found so far got tests (combat-edges, and negative
+           scenarios in `cards/m2-15b/`). The rest are left, not chased line by line: the scenario suite catches real
+           rule changes (e.g. disabling "attacks each combat" or a step trigger fails dozens of scenarios).
+         - M2 exit review by `rules-judge` (2026-11-22), three parts: triggers and replacements, and layers, found no
+           rule broken (stale "later" marks fixed, negative scenarios added in `cards/m2-15b/`, notes in
+           future-rules.md); costs and combat found one wrong result pool cards could reach (two tramplers on one
+           blocker with deathtouch, fixed: deathtouch tramplers first) and an X so large it crashed the engine (capped
+           at 10,000). Done.
+         - M2-15b done. Mutation scores (killed of all mutants), the whole engine: combat 89.1%, triggers 87.2%, game/
+           a-k 83.9% and l-z 87.5%, effects 82.3%, rules/ a-k 81.3% and l-z 74.8%, pipeline 79.5%, mana/zones/
+           permanents/view/rng 79.1%. The survivors checked by hand were nearly all equivalent (see the triage finding
+           above); the real gaps got tests. Reports aren't kept (`reports/` is gitignored); rerun a folder with
+           `pnpm mutate --mutate "<glob>"` (a comma-separated list works; a brace glob ran no tests).
+         - M2-15f merged (#90). M2-15a, the 10k fuzz: the single run hit the 2-hour background limit, so it runs in
+           chunks of 2,000: seeds 100000–109999, 10,000 games, 0 failed (2026-11-22). M2-15a done.
+         - Resume (owner, 2026-11-22): continue automatically at 12:05 p.m. US Eastern that day (a scheduled task is
+           set): M2-15b mutation testing, then the rest of M2 and the planned `brief` additions.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
            says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).
@@ -1527,8 +1560,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   the game-end scenarios check those. The fuzzer could concede now and then, with a small probability.
 
 ## Next up
-- After the owner tags `m1`: M2 rules depth (`docs/milestones/m2-rules-depth.md`), starting with M2-01 (the
-  hidden-information fix) and M2-02 (the Magic 2010 pool and its mechanics map).
+- After the owner tags `m2`: M3 Phase 1 (`docs/milestones/m3-first-playable.md`): M3-01 the match host (with `brief`'s
+  builder moved into `packages/match`), M3-02 the heuristic AI, M3-03 the web app scaffold, M3-04 the landscape phone
+  board (D-141). The UI follows Arena's interaction design with our own look (D-140, `docs/arena-research.md`).
 
 ## Done
 - Starter docs, Claude Code config and rules scripts added (2026-11-19).
@@ -1688,8 +1722,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   1.7 MB for 152 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
-  the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
-  lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
+  the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen. With a deathtouch trampler
+  the totals differed by declaration order until the M2 exit review: deathtouch tramplers now go first, so the most
+  damage can always trample over; a split giving the player less than that can still be unreachable. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
   can be taken back or checked as a whole (06c's take-back answer may serve).
 - Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games. The
   folder is 4.0 MB after M2-06d; the owner raised the budget to 8 MB for M2 (D-073).

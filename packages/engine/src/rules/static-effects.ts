@@ -208,7 +208,7 @@ export function staticPTChanges(
   return changes;
 }
 
-/** An object's name: printed, as nothing changes names yet (layer 1 copies and layer 3 text changes would). */
+/** An object's name: printed, or a copy's copied one (layer 1, through `cardDataOf`); layer 3 text changes would too. */
 function cardName(input: LayerInputs, id: ObjectId, cards: CardDatabase): string | null {
   const obj = input.objects[id];
   return obj?.kind === "card" ? (cardDataOf(obj, cards)?.printed.name ?? null) : null;

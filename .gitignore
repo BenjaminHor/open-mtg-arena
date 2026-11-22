@@ -17,3 +17,5 @@ packages/cards/data/scryfall/
 .env.*
 .claude/settings.local.json
 .DS_Store
+reports/
+.stryker-tmp/

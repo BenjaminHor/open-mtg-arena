@@ -23,10 +23,13 @@
     "bench": "node packages/cli/src/bench.ts",
     "cli": "node packages/cli/src/main.ts",
     "cards:fetch": "node --use-env-proxy packages/cards/scripts/fetch.ts",
-    "cards:extract": "node packages/cards/scripts/extract.ts"
+    "cards:extract": "node packages/cards/scripts/extract.ts",
+    "mutate": "stryker run"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.8",
+    "@stryker-mutator/core": "10.1.1",
+    "@stryker-mutator/vitest-runner": "10.1.1",
     "@types/node": "26.6.6",
     "typescript": "7.0.2",
     "vitest": "5.1.1"

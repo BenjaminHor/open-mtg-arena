@@ -25,6 +25,7 @@ Read these when the task touches their area:
 - `docs/data-sources.md` — the Comprehensive Rules, Scryfall, and their terms
 - `docs/future-rules.md` — rules and features still to come, and what they need from today's code
 - `docs/vision.md` — product goals and non-goals
+- `docs/llm-opponent.md` — the LLM opponent's harness: tools over the player's view (M3-02b)
 
 ## The rules are the spec
 
