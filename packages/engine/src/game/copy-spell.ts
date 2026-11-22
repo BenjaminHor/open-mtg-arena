@@ -2,7 +2,9 @@
 // on the stack (CR 707.10), then its controller may choose new targets for it (CR 707.10c, 115.7d), one target at a
 // time: keep it, even if it's illegal, or a new legal one. The number of targets and the division stay (CR 115.7f).
 // The copy is put on the stack first and its targets chosen with it as the source (its color for protection, its
-// controller, not itself), the same as choosing first, as nothing can happen between (D-125).
+// controller, not itself), the same as choosing first, as nothing can happen between (D-125). Hive Mind's "each other
+// player copies that spell" queues one `copySpellFor` work item per copier, so each copy's targets are chosen before
+// the next copy is put on the stack (its ruling).
 
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { objectsNamed } from "../effects/subjects.ts";
@@ -18,6 +20,7 @@ import type { StackChoices, Target } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
+import { apnapOrder } from "./turn-order.ts";
 import { queueWork } from "./work.ts";
 
 type CopySpell = Extract<Effect, { op: "copySpell" }>;
@@ -36,19 +39,14 @@ export function copySpell(state: GameState, effect: CopySpell, context: EffectCo
   if (spell?.kind !== "card" || spell.choices === null) return { state, events: [] };
   const copied = { original, oracleId: spell.oracleId, choices: spell.choices };
   const caster = context.trigger?.player ?? null;
+  if (effect.by === "eachOtherPlayer" && caster === null)
+    throw new Error('"each other player" needs a triggering player');
   const copiers =
     effect.by === "eachOtherPlayer" ? apnapOrder(state).filter((p) => p !== caster) : [context.controller];
   return {
     state: queueWork(state, ...copiers.map((player) => ({ kind: "copySpellFor", player, spell: copied }) as const)),
     events: [],
   };
-}
-
-/** Every player in turn order from the active player (CR 101.4). */
-function apnapOrder(state: GameState): PlayerId[] {
-  const active = state.turn?.activePlayer;
-  const at = active === undefined ? 0 : Math.max(0, state.turnOrder.indexOf(active));
-  return [...state.turnOrder.slice(at), ...state.turnOrder.slice(0, at)];
 }
 
 /** One copy put on the stack under `player`'s control, who is then asked for its new targets (CR 707.10c). */

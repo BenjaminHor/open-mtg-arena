@@ -1,0 +1,37 @@
+name: Hive Mind's copy of Time Warp retargeted to p2 resolves first; the original's extra turn, created later, is taken first
+rules: [CR 500.7, CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island]
+    hand: [Time Warp]
+  p2:
+    battlefield: [Hive Mind]
+steps:
+  - p1 cast: Time Warp
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseNewTarget }
+  - p2 choose: p2
+  - all pass: once
+  - all pass: once
+  - expect:
+      stack: []
+  - all pass: until upkeep
+  - expect:
+      turn: 4
+      active: p1
+  - all pass: until upkeep
+  - expect:
+      turn: 5
+      active: p2
+  - all pass: until upkeep
+  - expect:
+      turn: 6
+      active: p2
+  - all pass: until upkeep
+  - expect:
+      turn: 7
+      active: p1

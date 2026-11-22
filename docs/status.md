@@ -802,7 +802,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          `copySpellFor` work item per copier in turn order, a spell leaving the stack kept in `lastKnown` (CR 608.2h) so
          one countered in response is still copied. 5 scenarios (Bolt copied and pointed back, its controller casting,
          Earthquake's X, a copy of Silence silencing its own controller's opponent, a spell countered in response). No
-         new golden game (its mechanics were covered). Next: fuzz, reviews, PR.
+         new golden game (its mechanics were covered). Fuzz clean. Rules review: no wrong ruling; 11 scenarios from it
+         (two Hive Minds, Time Warp, Djinn, a creature spell, Duress kept and retargeted, destroyed in response, Earthquake
+         countered, a silenced player copying, Twincast, Howl), a unit test of three players' order, the shared
+         `apnapOrder`, a card check that "each other player" is only in a spell-cast trigger, the copy triggers' rulings
+         in D-125. Code review: the same, plus stale docs. PR #82; next: merge, then M2-14i Clone.
        - M2-14h1 built (2026-11-21, D-125): Twincast (236 cards): the `copy` flag, the `copySpell` pipeline event and op,
          SBA CR 704.5e, the `chooseNewTarget` decision (keep or a new legal target, the share moving with it), a
          copy's targets becoming its targets (Illusionary Servant). 10 scenarios (Bolt kept and retargeted, the

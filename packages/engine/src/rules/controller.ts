@@ -10,7 +10,7 @@ import { layeredOf } from "./layers.ts";
 
 /**
  * The controller of an object that may have left the battlefield since: now if it's still an object, otherwise as it
- * last was on the battlefield (CR 608.2h). Null if there's neither.
+ * last existed on the battlefield or the stack (CR 608.2h). Null if there's neither.
  */
 export function controllerNowOrLastKnown(state: GameState, id: ObjectId, cards: CardDatabase): PlayerId | null {
   if (state.objects[id] !== undefined) return controllerOf(state, id, cards);

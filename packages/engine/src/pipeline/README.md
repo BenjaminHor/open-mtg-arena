@@ -57,7 +57,7 @@ anything can replace or trigger on:
   undoes events rather than causing them;
 - declaring attackers and blockers (the combat record), and creating continuous effects (CR 611.2);
 - triggered abilities waiting and going on the stack (`GameState.pendingTriggers`, CR 603.3), and the last known
-  information kept as a card leaves the battlefield (`GameState.lastKnown`, CR 608.2h);
+  information kept as a card leaves the battlefield or the stack (`GameState.lastKnown`, CR 608.2h);
 - the resolving object's "this way" record (`GameState.resolution`, CR 608.2c, D-064): set as it starts to resolve,
   results added by `remember` in `effects/library-effects.ts` after their events went through `happen`, cleared when
   it finishes, doesn't resolve, or the game ends;
@@ -86,7 +86,7 @@ anything can replace or trigger on:
   where they're emitted (`triggers/README.md`); `ABILITY_ACTIVATED` will be when a card needs it.
 - Looking back in time for leaves-the-battlefield abilities beyond "when this creature dies" (built, D-118;
   CR 603.10a). Last known information
-  (`GameState.lastKnown`, CR 608.2h) is kept as a card leaves the battlefield (`zones/move-card.ts`).
+  (`GameState.lastKnown`, CR 608.2h) is kept as a card leaves the battlefield or the stack (`zones/move-card.ts`).
 
 Tests: `test/pipeline/pipeline.test.ts` (what each event does, and which events the engine batches),
 `only-the-pipeline-performs.test.ts`, and every scenario, golden game and replay, which this path runs through

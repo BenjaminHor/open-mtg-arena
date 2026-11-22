@@ -1,3 +1,5 @@
+# Swarm Intelligence's ruling (2017-07-14): it "can copy the spell even if it's countered before Swarm Intelligence's
+# triggered ability resolves"; Mirari's says the same (D-125).
 name: Hive Mind copies a spell countered in response, as it last existed on the stack (D-125)
 rules: [CR 608.2h, CR 707.10]
 setup:

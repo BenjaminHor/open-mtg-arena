@@ -76,7 +76,7 @@ type GameState = {
   replacements: ReplacementEffect[]// CR 614-616
   delayedTriggers: DelayedTrigger[]
   pendingTriggers: PendingTrigger[] // triggered, waiting to be put on the stack (CR 603.3)
-  lastKnown: Record<ObjectId, CardObject> // cards as they last were on the battlefield (CR 608.2h), until the stack empties
+  lastKnown: Record<ObjectId, CardObject> // cards as they last were on the battlefield or the stack (CR 608.2h), until the stack empties
   lastKnownCharacteristics: Record<ObjectId, LastKnownCharacteristics> // and their computed characteristics, snapshotted as they left (D-096)
   turnHistory: TurnHistory          // facts later rules ask about, emptied each turn (activations, D-078; later "a creature died this turn")
 

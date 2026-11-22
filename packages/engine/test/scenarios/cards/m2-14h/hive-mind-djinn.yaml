@@ -1,0 +1,23 @@
+name: A spell cast during Djinn of Wishes' resolution triggers Hive Mind, put on the stack once the ability is done
+rules: [CR 608.2g, CR 603.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Djinn of Wishes, counters: { wish: 3 } }, Island, Island, Island, Island]
+    library: [Lightning Bolt, Island]
+  p2:
+    battlefield: [Hive Mind]
+steps:
+  - p1 activate: Djinn of Wishes
+    pay: auto
+  - all pass: once
+  - p1 choose: yes
+  - p1 choose: p2
+  - expect:
+      stack: [Lightning Bolt, Hive Mind ability]
+  - all pass: once
+  - p2 choose: p1
+  - all pass: until main2
+  - expect:
+      p1.life: 17
+      p2.life: 17

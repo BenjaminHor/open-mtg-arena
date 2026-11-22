@@ -20,3 +20,9 @@ steps:
     targets: [p2]
     pay: auto
   - expect error: illegalAction
+  # The original Silence silences p2 in turn.
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1]
+    pay: auto
+  - expect error: illegalAction

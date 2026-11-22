@@ -67,8 +67,8 @@ export function subject(state: GameState, s: EffectSubject, context: EffectConte
 }
 
 /**
- * "Its controller": the controller of the targeted object now, or as it last was on the battlefield if it's gone
- * (CR 608.2h). The targets here are those still legal as the spell began to resolve (CR 608.2b).
+ * "Its controller": the controller of the targeted object now, or as it last existed on the battlefield or the stack if
+ * it's gone (CR 608.2h). The targets here are those still legal as the spell began to resolve (CR 608.2b).
  */
 function controllerOfTarget(state: GameState, targets: readonly Target[], cards: CardDatabase): PlayerId | null {
   const [object] = objectsOf(targets);
