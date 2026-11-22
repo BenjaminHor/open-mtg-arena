@@ -63,6 +63,18 @@ describe("definitionProblems", () => {
     expect(problem).toContain("Lightning Bolt: Oracle text changed");
   });
 
+  it('reports "each other player copies" outside a spell-cast trigger, where no player cast it', () => {
+    const copy: Effect = { op: "copySpell", of: { target: 0 }, by: "eachOtherPlayer", newTargets: "may" };
+    const spell: CardDef = {
+      name: "Lightning Bolt",
+      oracle: bolt.oracleText,
+      spell: { targets: [{ kind: "spell", filter: {} }], effects: [copy] },
+    };
+    expect(definitionProblems([spell], [bolt])).toContain(
+      'Lightning Bolt: "each other player" copies only in a spell-cast trigger',
+    );
+  });
+
   it('reports "that player" and "sacrifice it" where nothing supplies them', () => {
     const draw: Effect = { op: "draw", who: "triggeringPlayer", amount: 1 };
     const enters: TriggeredAbilityDef = { when: { kind: "selfEnters" }, targets: [], effects: [draw] };

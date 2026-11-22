@@ -741,9 +741,11 @@ export type Effect =
   /**
    * "Copy target instant or sorcery spell. You may choose new targets for the copy." (Twincast): a copy of the spell
    * named is put on the stack under the controller's control (CR 707.10); with `newTargets`, they may then choose new
-   * targets for it (CR 707.10c, 115.7d).
+   * targets for it (CR 707.10c, 115.7d). `by: "eachOtherPlayer"` (Hive Mind): each player but the one whose casting
+   * triggered it copies the spell, as it last existed if it has left the stack (CR 608.2h), in turn order from the
+   * active player, each choosing new targets for their own copy.
    */
-  | { op: "copySpell"; of: EffectSubject; newTargets: "may" }
+  | { op: "copySpell"; of: EffectSubject; by?: "eachOtherPlayer"; newTargets: "may" }
   /**
    * "You may play that card without paying its mana cost" (Djinn of Wishes): the controller may play the card named, a
    * land (CR 305.2a, 305.3) or a spell, cast now while this resolves (CR 608.2g) for no mana cost (CR 118.9, X is 0,

@@ -136,6 +136,16 @@ export function definitionProblems(defs: readonly CardDef[], pool: readonly Pool
       ...(def.triggers ?? []).flatMap((t) => t.effects),
     ];
     const delayedEffects = delayedOf(def).flatMap(([, delayed]) => delayed.effects);
+    // "Each other player copies that spell" (Hive Mind): "other" than the player who cast it, known only to a
+    // spell-cast trigger.
+    const notCastTriggered = [
+      ...(def.spell?.effects ?? []),
+      ...(def.abilities ?? []).flatMap((a) => a.effects),
+      ...(def.triggers ?? []).filter((t) => t.when.kind !== "spellCast").flatMap((t) => t.effects),
+      ...delayedEffects,
+    ];
+    if (flatEffects(notCastTriggered).some((e) => e.op === "copySpell" && e.by === "eachOtherPlayer"))
+      problems.push(`${def.name}: "each other player" copies only in a spell-cast trigger`);
     for (const e of flatEffects([...allEffects, ...delayedEffects])) {
       if (e.op !== "createTokens") continue;
       const statics = e.token.statics ?? [];

@@ -1,0 +1,22 @@
+name: Hive Mind's copy of Duress keeping its target (p2, not p2's opponent) doesn't resolve
+rules: [CR 608.2b, CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp]
+    hand: [Duress, Shock]
+  p2:
+    battlefield: [Hive Mind]
+    hand: [Divination]
+steps:
+  - p1 cast: Duress
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseNewTarget }
+  - p2 choose: keep
+  - all pass: once
+  - expect:
+      stack: [Duress]
+      p1.hand: [Shock]

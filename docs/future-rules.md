@@ -109,7 +109,7 @@ hide both. Leaves-the-battlefield triggers (CR 603.10a) are built for "when this
 reads a permanent the event moved off the battlefield in `before`. "When this leaves the battlefield" goes through the
 same `leavesTheBattlefield` test; "whenever another creature dies" needs `lookingBack` to scan all of `before`'s
 battlefield, not only the permanent that left (D-118). A "loses the game" effect (CR 104.3e) must ask `cantLose`.
-`lastKnown` for a card leaving other zones remains to do; state triggers (CR 603.8); granted triggered abilities (layer 6) through
+`lastKnown` for a card leaving a zone other than the battlefield or the stack (D-125) remains to do; state triggers (CR 603.8); granted triggered abilities (layer 6) through
 `triggersOf`. Cancelling a cast empties `pendingTriggers` (CR 734.1). That stays right with "becomes the target" (M2-07c2),
 which triggers during a cast: a cast starts only when a player receives priority, which happens only once
 `pendingTriggers` is empty (CR 117.5), so everything pending then came from the cast itself. `lastKnown` is emptied when the stack is empty, so an effect that must read a gone object later (a
@@ -122,8 +122,9 @@ they are then. *Built (M2-09b2b, D-096):* `perform` snapshots each permanent an 
 event (a whole batch, CR 603.10a), into `lastKnownCharacteristics` (controller, types, subtypes, colors, power,
 toughness, and since M2-12a keywords); protection, Stone Giant's "this creature's power", a gone object's controller and
 a gone damage source's lifelink (CR 702.15c: Siege-Gang Commander with Lifelink sacrificed for its own ability) read it;
-deathtouch reads it the same way (M2-12b: a Pyromancer with Gorgon Flail killed in response). A spell leaving the stack keeps no snapshot, which a delayed trigger
-made by a spell that deals damage would need. As readers multiply (M2-09c), "computed if it exists, else the snapshot"
+deathtouch reads it the same way (M2-12b: a Pyromancer with Gorgon Flail killed in response). A spell leaving the stack keeps its raw object in `lastKnown` (D-125) but
+no snapshot, which a delayed trigger made by a spell that deals damage would need, and a copy of a spell whose
+copiable values a layer-1 effect changed (CR 707.2). As readers multiply (M2-09c), "computed if it exists, else the snapshot"
 should live in one small module rather than in each reader. Putting and resolving a trigger read the printed `def.triggers`,
 so granted triggered abilities also need a reference that doesn't index the printed list. `putTriggers` throws for a
 controller who left the game; multiplayer (CR 800.4a) must drop that player's triggers instead.
@@ -331,6 +332,7 @@ back faces and adventures (later: CR 201.4b-f) need more at M4, where the full l
 **Multiplayer (much later).** Turn order with more than two players, APNAP with several players, a player leaving the game.
 An effect lasting until a player's next untap step (Sleep's `doesntUntap`, D-115) never ends if that player leaves:
 leaving must end or drop the effects that name them (later: CR 800.4a).
+Hive Mind copies for each player in `turnOrder` but the caster (D-125): a player who has left mustn't copy.
 *Watch out:* a concession (D-042) goes through `playersLose`, so it reaches the same throw; leaving must also remove
 the player from `turnOrder` (or mark them) so they can't concede twice, and pass priority on if they had it (CR 800.4a).
 `GameResult.winner` is one player: team games (CR 104.2c) and draws for only some players (CR 104.4e) will need a

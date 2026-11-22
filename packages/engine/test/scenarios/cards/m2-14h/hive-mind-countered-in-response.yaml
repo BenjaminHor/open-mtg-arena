@@ -1,0 +1,36 @@
+# Swarm Intelligence's ruling (2017-07-14): it "can copy the spell even if it's countered before Swarm Intelligence's
+# triggered ability resolves"; Mirari's says the same (D-125).
+name: Hive Mind copies a spell countered in response, as it last existed on the stack (D-125)
+rules: [CR 608.2h, CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Hive Mind, Island, Island, Island]
+    hand: [Cancel]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Cancel
+    targets: [spell:p1:Lightning Bolt]
+    pay: auto
+  # Cancel triggers Hive Mind too: p1 copies it, keeping its target, p1's own Lightning Bolt.
+  - all pass: once
+  - p1 choose: keep
+  - all pass: once
+  - expect:
+      p1.graveyard: [Lightning Bolt]
+  # p2's Cancel has no target left; then Hive Mind's first ability copies the Bolt as it last was.
+  - all pass: once
+  - all pass: once
+  - expect:
+      pending: { player: p2, kind: chooseNewTarget }
+  - p2 choose: p1
+  - all pass: once
+  - expect:
+      p1.life: 17
+      stack: []

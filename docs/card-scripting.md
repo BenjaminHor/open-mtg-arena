@@ -119,7 +119,8 @@ export const furnaceWhelp: CardDef = {
 - "This creature enters with X +1/+1 counters on it" is the replacement `{ kind: "entersWithCounters", counter: "+1/+1",
   amount: "X" }` ("with three wish counters": `counter: "wish", amount: 3`); "remove a wish counter from this creature"
   in a cost is `{ kind: "removeCounters", counter: "wish", amount: 1 }`; "copy target instant or sorcery spell. You may
-  choose new targets for the copy" is `{ op: "copySpell", of: { target: 0 }, newTargets: "may" }` (D-125); "you may play that card without paying its
+  choose new targets for the copy" is `{ op: "copySpell", of: { target: 0 }, newTargets: "may" }`, and Hive Mind's "each
+  other player copies that spell" adds `of: "triggeringObject", by: "eachOtherPlayer"` (D-125); "you may play that card without paying its
   mana cost" is `{ op: "mayPlayWithoutPaying", of: "found" }` (D-124); "if damage would be dealt to this creature, prevent that damage and remove that many +1/+1 counters
   from it" is `{ kind: "preventDamageToSelfRemovingCounters", counter: "+1/+1" }`; "whenever a +1/+1 counter is removed
   from this creature" is the trigger `{ kind: "selfCountersRemoved", counter: "+1/+1" }`, once per counter (D-100).

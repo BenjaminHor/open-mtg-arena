@@ -96,6 +96,7 @@ import { grizzlyBears } from "./g/grizzly-bears.ts";
 import { guardianSeraph } from "./g/guardian-seraph.ts";
 import { hauntingEchoes } from "./h/haunting-echoes.ts";
 import { hillGiant } from "./h/hill-giant.ts";
+import { hiveMind } from "./h/hive-mind.ts";
 import { holyStrength } from "./h/holy-strength.ts";
 import { honorOfThePure } from "./h/honor-of-the-pure.ts";
 import { hornedTurtle } from "./h/horned-turtle.ts";
@@ -332,6 +333,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   guardianSeraph,
   hauntingEchoes,
   hillGiant,
+  hiveMind,
   holyStrength,
   honorOfThePure,
   hornedTurtle,

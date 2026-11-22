@@ -1,0 +1,42 @@
+name: A silenced player still copies (the copy isn't cast)
+rules: [CR 707.10, CR 601.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Hive Mind, Plains, Island, Island, Island, Mountain]
+    hand: [Silence, Cancel, Lightning Bolt]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Silence
+    pay: auto
+  - all pass: once
+  - expect:
+      stack: [Silence, Silence copy]
+  - p1 cast: Cancel
+    targets: [spell:p2:Silence copy]
+    pay: auto
+  - all pass: once
+  - p2 choose: keep
+  - all pass: once
+  - all pass: once
+  - all pass: once
+  - expect:
+      stack: []
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Shock
+    targets: [p1]
+    pay: auto
+  - expect error: illegalAction
+  - p2 pass: once
+  - expect:
+      pending: { player: p2, kind: chooseNewTarget }
+  - p2 choose: p1
+  - all pass: until main2
+  - expect:
+      p1.life: 17
+      p2.life: 17

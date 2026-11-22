@@ -1,0 +1,32 @@
+name: Two Hive Minds (one each) make p2 copy twice; no copy triggers either
+rules: [CR 707.10, CR 603.3b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Hive Mind]
+    hand: [Lightning Bolt]
+  p2:
+    battlefield: [Hive Mind]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - expect:
+      stack: [Lightning Bolt, Hive Mind ability, Hive Mind ability]
+  - all pass: once
+  - p2 choose: p1
+  - expect:
+      stack: [Lightning Bolt, Hive Mind ability, Lightning Bolt copy]
+      pending: { player: p1, kind: priority }
+  - all pass: once
+  - expect:
+      p1.life: 17
+      stack: [Lightning Bolt, Hive Mind ability]
+  - all pass: once
+  - p2 choose: p1
+  - expect:
+      stack: [Lightning Bolt, Lightning Bolt copy]
+  - all pass: until main2
+  - expect:
+      p1.life: 14
+      p2.life: 17

@@ -71,8 +71,9 @@ export type GameState = {
    */
   pendingTriggers: PendingTrigger[];
   /**
-   * Last known information (CR 608.2h): permanents as they last existed on the battlefield, by their old id, for
-   * abilities and effects that need an object that has left (a trigger's "intervening if", CR 603.4). Kept while
+   * Last known information (CR 608.2h): permanents as they last existed on the battlefield, and spells as they last
+   * existed on the stack, by their old id, for abilities and effects that need an object that has left (a trigger's
+   * "intervening if", CR 603.4; Hive Mind copying a spell countered in response). Kept while
    * something on the stack or waiting to go on it might need them; emptied when a player gets priority with both empty.
    */
   lastKnown: Record<ObjectId, CardObject>;
