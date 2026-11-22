@@ -8,7 +8,12 @@ export const hauntingEchoes: CardDef = {
     targets: [{ kind: "player" }],
     effects: [
       // "Other than basic land cards": not (basic and land), so a nonbasic land is exiled too.
-      { op: "exileGraveyard", of: { target: 0 }, filter: { not: { supertypes: ["basic"], types: ["land"] } } },
+      {
+        op: "exileAll",
+        zone: "graveyard",
+        of: { target: 0 },
+        filter: { not: { supertypes: ["basic"], types: ["land"] } },
+      },
       // One search for all the names (CR 701.23h); none if nothing was exiled (D-063); any number found (its ruling).
       { op: "search", library: { target: 0 }, count: "anyNumber", sameNameAsExiled: true },
       { op: "exile", of: "found" },

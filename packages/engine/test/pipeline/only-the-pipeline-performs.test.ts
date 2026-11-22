@@ -119,7 +119,14 @@ describe("only the pipeline performs events (D-056)", () => {
     const perform = files.find((f) => f.name === "pipeline/perform.ts");
     // Change nothing themselves: joining steps, reading where a land played goes, reading what a permanent is, to
     // keep as last known information (CR 608.2h), and whose library's top card is revealed, to show it as it's drawn.
-    const helpers = ["andThen", "playLandDestination", "characteristics", "libraryTopsRevealed"];
+    const helpers = [
+      "andThen",
+      "playLandDestination",
+      "characteristics",
+      "libraryTopsRevealed",
+      // Reads the events a batch made so far, to name a card it moved (a reorder after moves, CR 401.4).
+      "zoneChangeOf",
+    ];
     const unguarded = importedValues(perform?.source ?? "").filter(
       (name) => !PRIMITIVES.includes(name) && !helpers.includes(name),
     );

@@ -359,7 +359,7 @@ const PLAYER_SUBJECTS: Partial<Record<Effect["op"], (e: Effect) => EffectSubject
   search: (e) => (e as { library: EffectSubject }).library,
   shuffle: (e) => (e as { who: EffectSubject }).who,
   mayShuffle: (e) => (e as { who: EffectSubject }).who,
-  exileGraveyard: (e) => (e as { of: EffectSubject }).of,
+  exileAll: (e) => (e as { of: EffectSubject }).of,
   sacrifice: (e) => (e as { who: EffectSubject }).who,
   revealTop: (e) => (e as { who: EffectSubject }).who,
   revealUntil: (e) => (e as { who: EffectSubject }).who,
@@ -442,7 +442,7 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       "discard",
       "search",
       "mayShuffle",
-      "exileGraveyard",
+      "exileAll",
       "sacrifice",
       "revealUntil",
       "nameCard",
@@ -488,13 +488,15 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       names(OBJECT_SUBJECTS[effect.op]?.(effect)) ||
       names(PLAYER_SUBJECTS[effect.op]?.(effect)) ||
       (effect.op === "shuffle" && effect.foundOnTop === true);
-    if (foundNamed && !earlier.some((e) => e.op === "search" || e.op === "revealTop" || e.op === "revealUntil"))
-      problems.push(`${where}: ${effect.op} names the cards found, but no search or reveal comes before it`);
+    const finds = (e: Effect) =>
+      e.op === "search" || e.op === "revealTop" || e.op === "revealUntil" || e.op === "choose";
+    if (foundNamed && !earlier.some(finds))
+      problems.push(`${where}: ${effect.op} names the cards found, but no search, reveal or choice comes before it`);
     const readsSacrificed =
       effect.op === "ifNothingSacrificed" || ("amount" in effect && effect.amount === "sacrificedPower");
     if (readsSacrificed && !earlier.some((e) => e.op === "sacrifice"))
       problems.push(`${where}: ${effect.op} reads what was sacrificed, but no sacrifice comes before it`);
-    if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileGraveyard"))
+    if (effect.op === "search" && effect.sameNameAsExiled === true && !earlier.some((e) => e.op === "exileAll"))
       problems.push(`${where}: a search for the cards exiled this way must follow exiling them`);
     // "That doesn't have that name" reads the name chosen earlier in the same resolution (Sphinx Ambassador), wherever
     // the filter is.

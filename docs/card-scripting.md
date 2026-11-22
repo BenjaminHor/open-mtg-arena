@@ -218,6 +218,10 @@ export const furnaceWhelp: CardDef = {
   `{ kind: "entersAsCopy", of: { types: ["creature"] } }` (Clone, D-127): its controller chooses one or none
   (`chooseCards`, purpose "copy"), and it enters with that permanent's copiable values as `copied` (layer 1), which
   every lookup through `cardDataOf` reads.
+- "Choose up to seven face-up exiled cards you own" is `{ op: "choose", from: "exile", filter: { owner: "you" }, upTo: 7,
+  purpose: "putOnTop" }`, its cards `"found"`; "exile all the cards from your library" is `{ op: "exileAll", zone:
+  "library", of: "you" }`; "put the chosen cards on top of your library" is `put` of `"found"`, its owner ordering them
+  (CR 401.4, Mirror of Fate, D-128).
 - "That player chooses a card name" while it resolves is `{ op: "nameCard", who: "triggeringPlayer" }`, and "a
   creature card that doesn't have that name" the filter `{ types: ["creature"], notNamedThisWay: true }` (Sphinx
   Ambassador, D-121).

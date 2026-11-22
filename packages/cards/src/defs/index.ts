@@ -140,6 +140,7 @@ import { mindControl } from "./m/mind-control.ts";
 import { mindRot } from "./m/mind-rot.ts";
 import { mindShatter } from "./m/mind-shatter.ts";
 import { mindSpring } from "./m/mind-spring.ts";
+import { mirrorOfFate } from "./m/mirror-of-fate.ts";
 import { mistLeopard } from "./m/mist-leopard.ts";
 import { moldAdder } from "./m/mold-adder.ts";
 import { mountain } from "./m/mountain.ts";
@@ -386,6 +387,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   mindRot,
   mindShatter,
   mindSpring,
+  mirrorOfFate,
   mistLeopard,
   moldAdder,
   mountain,

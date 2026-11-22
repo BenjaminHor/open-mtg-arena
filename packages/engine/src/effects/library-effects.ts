@@ -10,10 +10,12 @@ import { zoneChangeOf } from "../pipeline/moved.ts";
 import { characteristics } from "../rules/characteristics.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
-import type { GameState, Resolution } from "../state/game-state.ts";
+import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneList, zoneOf } from "../zones/zone-list.ts";
 import { askToChoose, fittingCards, nothing, seenOf } from "./choose-cards.ts";
+import { remember } from "./resolution-results.ts";
 
 type Search = Extract<Effect, { op: "search" }>;
 type LookAtTop = Extract<Effect, { op: "lookAtTop" }>;
@@ -121,18 +123,20 @@ export function shuffleEach(
 }
 
 /**
- * "Exile all cards from [player]'s graveyard [other than ...]": all at once, and the cards exiled this way are kept
- * as `exiled` for the effects after it (CR 608.2c). Exiled cards are public (CR 406.3).
+ * "Exile all cards from [player]'s graveyard [other than ...]" or "from your library": all at once, and the cards
+ * exiled this way are kept as `exiled` for the effects after it (CR 608.2c). Exiled cards are public (CR 406.3). A
+ * library's go in shown order, not the library's, which no one has seen (CR 401.2, D-062).
  */
-export function exileGraveyard(
+export function exileAll(
   state: GameState,
-  player: PlayerId,
+  from: { zone: "graveyard" | "library"; player: PlayerId },
   filter: ObjectFilter | undefined,
   you: PlayerId,
   cards: CardDatabase,
 ): Progress {
-  const graveyard = zoneList(state, { zone: "graveyard", player });
-  const exiled = fittingCards(state, graveyard, filter, you, cards);
+  const all = zoneList(state, from);
+  const fitting = fittingCards(state, all, filter, you, cards);
+  const exiled = from.zone === "library" ? inShownOrder(state, fitting) : fitting;
   if (exiled.length === 0) return nothing(remember(state, { exiled: [] }));
   const moves = exiled.map((object) => ({ kind: "moveCard", object, to: { zone: "exile" } }) as const);
   const moved = happen(state, { kind: "simultaneous", events: moves }, cards);
@@ -202,13 +206,4 @@ function sameNameAsAny(state: GameState, id: ObjectId, names: readonly string[],
 function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
   const name = characteristics(state, id, cards).name;
   return name === "" ? null : name;
-}
-
-/**
- * Keeps a "this way" result for the rest of this resolution (CR 608.2c). Bookkeeping, not an event: the events that
- * did it already went through the pipeline. Only a resolving spell or ability has one (pipeline/README.md).
- */
-function remember(state: GameState, result: Partial<Omit<Resolution, "object">>): GameState {
-  if (state.resolution === null) throw new Error('a "this way" result outside a resolution');
-  return { ...state, resolution: { ...state.resolution, ...result } };
 }

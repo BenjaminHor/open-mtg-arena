@@ -20,6 +20,7 @@ import type { EffectContext } from "../state/effects.ts";
 import type { AuraHost, GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { askToChoose } from "./choose-cards.ts";
+import { remember } from "./resolution-results.ts";
 
 type ReturnAll = Extract<Effect, { op: "returnAllToBattlefield" }>;
 
@@ -127,6 +128,5 @@ function recordHost(progress: Progress, aura: ObjectId, host: ObjectId | null, c
 }
 
 function withAuraHosts(state: GameState, auraHosts: AuraHost[]): GameState {
-  if (state.resolution === null) throw new Error("an Aura's host chosen outside a resolution");
-  return { ...state, resolution: { ...state.resolution, auraHosts } };
+  return remember(state, { auraHosts });
 }

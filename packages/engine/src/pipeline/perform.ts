@@ -16,6 +16,7 @@ import { tapPermanent } from "../permanents/tap.ts";
 import { untapPermanent } from "../permanents/untap.ts";
 import { type Characteristics, characteristics } from "../rules/characteristics.ts";
 import { libraryTopsRevealed } from "../rules/revealed.ts";
+import type { GameEvent } from "../state/events.ts";
 import type { GameState, LastKnownCharacteristics } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { counterObject } from "../zones/counter.ts";
@@ -27,6 +28,7 @@ import { reveal } from "../zones/reveal.ts";
 import { shuffleLibrary } from "../zones/shuffle.ts";
 import { putSpellCopy } from "../zones/spell-copies.ts";
 import { ceaseToExist, createToken } from "../zones/tokens.ts";
+import { zoneChangeOf } from "./moved.ts";
 import { type ProposedEvent, playLandDestination, type SingleEvent } from "./proposed.ts";
 
 export function perform(state: GameState, event: ProposedEvent, cards: CardDatabase): Progress {
@@ -35,7 +37,10 @@ export function perform(state: GameState, event: ProposedEvent, cards: CardDatab
     event.kind !== "simultaneous"
       ? performOne(state, event, cards)
       : // All already replaced, so the order matters only to the order of the events and of a graveyard (D-039).
-        event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, e, cards)), { state, events: [] });
+        event.events.reduce<Progress>((p, e) => andThen(p, (s) => performOne(s, renamed(e, p.events), cards)), {
+          state,
+          events: [],
+        });
   return withNewTopsShown(
     state,
     event,
@@ -65,6 +70,15 @@ function withNewTopsShown(before: GameState, event: ProposedEvent, after: Progre
       : reveal(after.state, { zone: "library", player }, [top]).events;
   });
   return { state: after.state, events: [...after.events, ...shown] };
+}
+
+/**
+ * A reorder in a batch names cards by the ids they had as the batch was proposed: those moved earlier in it (several
+ * cards put on top of a library and then arranged, CR 401.4) are new objects (CR 400.7), named by their new ids.
+ */
+function renamed(event: SingleEvent, earlier: readonly GameEvent[]): SingleEvent {
+  if (event.kind !== "reorderLibrary") return event;
+  return { ...event, top: event.top.map((id) => zoneChangeOf(earlier, id)?.newId ?? id) };
 }
 
 /** A card moving to the stack: the first step of casting it (CR 601.2a). */

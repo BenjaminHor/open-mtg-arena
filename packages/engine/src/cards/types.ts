@@ -449,6 +449,8 @@ export type ObjectFilter = {
    * ability's target, the player its event was about (CR 603.3d, Lightwielder Paladin); only targets can use it.
    */
   controller?: "you" | "notYou" | "opponent" | "triggeringPlayer";
+  /** "You own" (CR 108.3): any object, in any zone, has an owner. */
+  owner?: "you";
   /**
    * "Creature with flying" / "without flying": keyword abilities, as computed (`keywordsOf`, CR 702.9a). `keywords`
    * means any of them; `notKeywords`, none of them. "With flying and first strike" would need an all-of form.
@@ -706,7 +708,7 @@ export type Effect =
    * "Search [whose] library for [a card / a [filter] card / all cards with the same name as a card exiled this way]":
    * "you" look at the whole library (CR 701.23a) and choose; the cards found are `"found"` for the effects after it.
    * With a stated quality the searcher may find none (CR 701.23b); "a card" must be found if there is one
-   * (CR 701.23d). `sameNameAsExiled` searches only if an earlier `exileGraveyard` exiled something (D-063).
+   * (CR 701.23d). `sameNameAsExiled` searches only if an earlier `exileAll` exiled something (D-063).
    */
   | {
       op: "search";
@@ -768,8 +770,18 @@ export type Effect =
   | { op: "mayShuffle"; who: EffectSubject }
   /** "Look at the top N cards of your library, then put them back in any order" (CR 701.20e, 401.4). */
   | { op: "lookAtTop"; count: number }
-  /** "Exile all cards from [whose] graveyard [other than ...]": the cards exiled this way are kept (CR 608.2c). */
-  | { op: "exileGraveyard"; of: EffectSubject; filter?: ObjectFilter }
+  /**
+   * "Choose up to N [filter] exiled cards" (Mirror of Fate: "face-up exiled cards you own"): the controller chooses as
+   * it resolves (CR 608.2d), however they got there (its ruling); every exiled card is face up (CR 406.3; exiled face
+   * down, later: CR 406.3a). The cards chosen are `"found"` for the effects after it, as a search's are. Not asked with none to choose:
+   * exile is public, so that tells nothing.
+   */
+  | { op: "choose"; from: "exile"; filter: ObjectFilter; upTo: number }
+  /**
+   * "Exile all cards from [whose] graveyard [other than ...]" (Haunting Echoes) / "from your library" (Mirror of Fate):
+   * all at once, the cards exiled this way kept for the effects after it (CR 608.2c).
+   */
+  | { op: "exileAll"; zone: "graveyard" | "library"; of: EffectSubject; filter?: ObjectFilter }
   /**
    * "[who] sacrifices a [filter] of their choice": the player chooses one permanent they control that fits, its
    * `controller` read relative to that player (CR 701.21a, 608.2d). `otherThanSelf`: "other than this creature", the

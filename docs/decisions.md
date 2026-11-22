@@ -1993,3 +1993,17 @@ owner's answer to the D-089 open question, option (a))
 - A copy of a token is named as the token is ("Wolf Token", CR 111.4) though it isn't a token.
 - Not built: CR 616.1c (a copy replacement chosen before others): Clone's is the only one and never meets another.
 
+**D-128: Mirror of Fate from general blocks (M2-14j)** · 2026-11-22 · accepted
+- D-126 applied, with no Mirror-specific op. `ObjectFilter.owner: "you"` ("you own", CR 108.3). A `choose` op
+  ("choose up to N [filter] exiled cards", CR 608.2d) that keeps its cards as `found`, like a search, so `put` of
+  "found" follows; not asked with none to choose, as exile is public (CR 406.3). `exileGraveyard` became
+  `exileAll { zone: "graveyard" | "library" }` (Haunting Echoes unchanged); a library's cards go in shown order, as
+  no one has seen the library's (D-062).
+- `put` of several cards on top of a library (CR 401.4): their owner arranges them, a `chooseCards` "putOnTop" choice
+  top first, and the order isn't revealed: they move in shown order and the top is then reordered, which has no event.
+  Cards of several owners would each go to their own library (no pool card does it; it throws, later). The bottom of a
+  library (CR 401.4 too) is the same, later.
+- Every exiled card is face up (CR 406.3); exiling face down, and "face-up" filters, are later.
+- Copies of one card put on top together aren't arranged: no one could tell the orders apart. `choose`'s decision
+  always has the purpose "choose" (the effects after it say what's done), apart from the "putOnTop" arranging.
+

@@ -4107,6 +4107,33 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Mirror of Fate",
+      "slug": "mirror-of-fate",
+      "oracleId": "38ffe614-e8f7-4625-b921-9409e7e7ee5b",
+      "layout": "normal",
+      "manaCost": "{5}",
+      "manaValue": 5,
+      "typeLine": "Artifact",
+      "oracleText": "{T}, Sacrifice this artifact: Choose up to seven face-up exiled cards you own. Exile all the cards from your library, then put the chosen cards on top of your library.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/0/8/08b480c8-d899-4e63-b0e2-f4bec3a3ca4f.jpg?1783942356",
+        "large": "https://cards.scryfall.io/large/front/0/8/08b480c8-d899-4e63-b0e2-f4bec3a3ca4f.jpg?1783942356",
+        "png": "https://cards.scryfall.io/png/front/0/8/08b480c8-d899-4e63-b0e2-f4bec3a3ca4f.png?1783942356",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/0/8/08b480c8-d899-4e63-b0e2-f4bec3a3ca4f.jpg?1783942356"
+      },
+      "artist": "Alan Pollack",
+      "set": "m10",
+      "collectorNumber": "215",
+      "scryfallUri": "https://scryfall.com/card/m10/215/mirror-of-fate?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Mist Leopard",
       "slug": "mist-leopard",
       "oracleId": "49cade2f-92ab-48c8-aed3-d52ab3263506",

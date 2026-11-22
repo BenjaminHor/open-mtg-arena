@@ -48,7 +48,12 @@ const TUTOR = hammerAs(
 const ECHOES = hammerAs(
   [{ kind: "player" }],
   [
-    { op: "exileGraveyard", of: { target: 0 }, filter: { not: { supertypes: ["basic"], types: ["land"] } } },
+    {
+      op: "exileAll",
+      zone: "graveyard",
+      of: { target: 0 },
+      filter: { not: { supertypes: ["basic"], types: ["land"] } },
+    },
     { op: "search", library: { target: 0 }, count: "anyNumber", sameNameAsExiled: true },
     { op: "exile", of: "found" },
     { op: "shuffle", who: { target: 0 } },
@@ -226,6 +231,49 @@ describe("Ponder's order is its caster's secret (CR 401.4, D-062)", () => {
       [no, no],
     ] as const) {
       [x, y] = [act(x, PONDER, first), act(y, PONDER, second)];
+      expect(seen(x, "p2")).toStrictEqual(seen(y, "p2"));
+    }
+    expect(x.state.zones.players.p1?.library).not.toStrictEqual(y.state.zones.players.p1?.library);
+  });
+});
+
+/** Mirror of Fate's effects: "choose up to seven face-up exiled cards you own ... put the chosen cards on top". */
+const MIRROR = hammerAs(
+  [],
+  [
+    { op: "choose", from: "exile", filter: { owner: "you" }, upTo: 7 },
+    { op: "put", of: "found", into: "libraryTop" },
+  ],
+);
+
+describe("cards put on top of a library together are arranged in secret (CR 401.4, D-062)", () => {
+  it("arranging the same three cards in two different orders looks the same to the opponent", () => {
+    const exiled = () =>
+      start({
+        seed: 5,
+        players: [
+          playerSetup("p1", {
+            library: [FOREST],
+            hand: [HAMMER],
+            battlefield: [MOUNTAIN, MOUNTAIN].map(permanent),
+            exile: [STATUE, BEARS, MOUNTAIN],
+          }),
+          playerSetup("p2", { library: [FOREST] }),
+        ],
+        opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+        ruleModifiers: [],
+      });
+    let [x, y] = [exiled(), exiled()];
+    for (const step of [cast, ...toResolve, option(0), option(1), option(2)]) {
+      [x, y] = [act(x, MIRROR, step), act(y, MIRROR, step)];
+    }
+    // One arranges them in the order shown, the other in reverse.
+    for (const [first, second] of [
+      [option(0), option(2)],
+      [option(1), option(1)],
+      [option(2), option(0)],
+    ] as const) {
+      [x, y] = [act(x, MIRROR, first), act(y, MIRROR, second)];
       expect(seen(x, "p2")).toStrictEqual(seen(y, "p2"));
     }
     expect(x.state.zones.players.p1?.library).not.toStrictEqual(y.state.zones.players.p1?.library);
