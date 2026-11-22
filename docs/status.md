@@ -871,6 +871,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (e) more scenarios: Clone revealed with a creature (options []), Entangling Vines to the bottom, a
            planeswalker card to the bottom, Mind Control on a step-4 creature, two Auras of one player, Hive Mind and
            Twincast copying it.
+       - M2-15 plan (2026-11-22), hardening (m2-rules-depth.md), one PR per slice:
+         1. M2-15a `pnpm fuzz --games 10000` clean, with the pool's decks and random decks (exit criterion); failures
+            fixed as bugs (fix-bug skill), each with a scenario.
+         2. M2-15b mutation testing with StrykerJS and its Vitest runner (testing.md, section 7): a dev dependency (a
+            decision entry), a `pnpm mutate` script, run on the engine's rules code in parts (rules/, pipeline/,
+            effects/, game/, combat/, triggers/...) since a whole run is hours; surviving mutants in rules code get
+            tests, the rest are listed with why they survive (equivalent mutants).
+         3. M2-15c the CR progress report for the owner, chapter by chapter: which rules are implemented and tested,
+            from the coverage report's data (`docs/coverage/`).
+         4. M2-15d the D-126 review: effect ops, statics and replacement kinds only one card uses, merged or generalized
+            into building blocks where they're the same idea, and what stays one-off recorded with why.
+         5. Bench against the budgets: done (D-133, ok on this machine).
+         Then the exit criteria: rules-judge review of each system, the owner's CLI spot-check, the M3 spec revised.
        - Owner request (2026-11-22), after M2-14l merges: clean up the READMEs so nothing in them is irrelevant for a
          public repo, and add a straightforward guide to playing games with the CLI. The owner chose MIT and dropped the private starter text
          (D-132). Done: the README rewritten for a public repo (what it is, status, getting
