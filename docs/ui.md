@@ -65,7 +65,7 @@ the art, card frames, icons, sounds and visual style are original, never Arena's
 
 UI quality has to be checked like rules correctness, not assumed:
 - **Screenshots at both layouts.** For every UI change, run the Playwright screenshot suite at the folded
-  (about 5.4-inch portrait) and unfolded (about 7.6-inch, nearly square) sizes, plus desktop, and look at them.
+  (about 5.4-inch, played in landscape) and unfolded (about 7.6-inch, nearly square) sizes, plus desktop, and look at them.
 - **Interaction tests** with touch emulation for every decision kind.
 - **Performance traces.** A Playwright test that plays a scripted match and records a performance trace, failing
   if frames drop during animations or input feedback exceeds 100 ms. Run it with CPU throttling to approximate a phone.
@@ -77,8 +77,10 @@ UI quality has to be checked like rules correctness, not assumed:
 
 - Pick the layout from **viewport size and aspect ratio**, never from the device model or user agent.
   Two board layouts to start:
-  - **Compact** (folded phone, portrait phones): smaller permanents in grouped rows, a hand that's
-    collapsed into a fan and expands on tap, a stack panel that slides in, and card details on long-press.
+  - **Compact** (the folded phone and other phones, **in landscape**, as Arena's phone client plays; owner,
+    D-141): Arena's phone layout: smaller permanents in grouped rows, a hand tucked at the bottom that fans out on
+    tap, the stack at the side, and card details on long-press. In portrait, a phone shows a "turn your phone"
+    prompt over the paused match.
   - **Full** (unfolded, tablets, desktop): an Arena-like board with both battlefields, hand,
     stack and log visible at once.
 - **Folding or unfolding mid-game must just work.** Listen for resize/orientation changes, re-lay out

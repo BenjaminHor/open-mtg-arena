@@ -2163,3 +2163,9 @@ owner's answer to the D-089 open question, option (a))
   layout and the feel follow Arena.
 - The research (from public sources: Wizards' Arena help pages and patch notes, guides, reviews, screenshots) is
   written up in `docs/arena-research.md`, in our own words, as the M3 UI tasks' reference.
+
+**D-141: The folded phone plays in landscape (owner, 2026-11-22)** · 2026-11-22 · accepted
+- Arena's phone client plays in landscape only. To feel like Arena (D-140), the folded iPhone Duo plays in landscape
+  too, with Arena's phone layout, instead of the portrait compact layout ui.md first planned. In portrait a phone shows
+  a "turn your phone" prompt over the paused match. The unfolded phone (nearly square), tablets and desktop use the
+  full layout. Live switching on fold and unfold still must keep the match and any selection.

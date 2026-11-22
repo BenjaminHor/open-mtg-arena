@@ -51,11 +51,12 @@ layer, GSAP, the `board-model` / `director` / `renderer` / `effects` structure a
 typed message protocol (plain JSON); a PWA manifest and service worker so the app works offline after the
 first load; a Playwright test that loads the app. *Accept:* `pnpm dev` runs; an offline reload still works.
 
-**M3-04 Board, compact layout.** For the folded phone and other small portrait screens (see `ui.md`): both
+**M3-04 Board, compact layout.** For the folded phone and other phones, in landscape as Arena's phone client
+(D-141, `ui.md`): both
 battlefields, life totals, hand fan, stack panel (with targets), phase and priority indicator, the pass button, and
 decision prompts. Everything M2's pool puts on the board: planeswalkers and their loyalty, counters, attached Auras and
 Equipment, tokens, tapped and summoning-sick creatures, damage, graveyards and exile, and revealed hands and library
-tops. *Accept:* a full game is playable at 5.4-inch portrait size in the browser's device emulation.
+tops. *Accept:* a full game is playable at the folded phone's size in landscape in the browser's device emulation.
 
 **M3-05 Board, full layout, and live switching.** The Arena-like layout for the unfolded phone and desktop,
 switching live on resize with no loss of state or in-progress selection. *Accept:* a Playwright test resizes
