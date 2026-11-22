@@ -895,6 +895,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            Rats' and Coat of Arms' counts (relative to the creature affected), Warp World's shuffle count, Stone Giant's
            toughness-below-power target. Each merge renames a mechanic key, so golden cover's list changes; saved
            mid-resolution states would break (ENGINE_VERSION 0, acceptable before release).
+         - Owner wish (2026-11-22): the CLI output should be more readable and detailed, enough that an AI agent playing
+           through the CLI has everything it needs to choose the best action. Options proposed; awaiting the owner's pick.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
            says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).
