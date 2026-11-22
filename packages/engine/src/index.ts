@@ -46,6 +46,7 @@ export { loyaltyOf } from "./rules/loyalty.ts";
 export { type LayerSevenCChange, layerSevenCChanges } from "./rules/power-toughness.ts";
 export { handsRevealed, libraryTopsRevealed, type Revealed, revealedBy } from "./rules/revealed.ts";
 export { isFreeOfSummoningSickness } from "./rules/summoning-sickness.ts";
+export { legalTargets, targetSpecsOf } from "./rules/targets.ts";
 export type { Action, Answer } from "./state/actions.ts";
 export type { Casting } from "./state/casting.ts";
 export type { Attack, Block, Combat, CombatDivision, DamageDivision } from "./state/combat.ts";

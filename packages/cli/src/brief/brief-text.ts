@@ -1,6 +1,7 @@
 // `brief` for people: the `Brief` data as plain text, one object per line (M2-15f). Everything shown comes from the
 // data, so it matches `brief --json` exactly. `withText` adds each card's Oracle text under it.
 
+import type { ActionInfo } from "./action-info.ts";
 import type { Brief, PlayerBrief } from "./brief.ts";
 import type { CardInfo, PermanentInfo, StackInfo } from "./brief-objects.ts";
 
@@ -13,11 +14,34 @@ export function briefText(brief: Brief, withText: boolean): string {
   if (you !== undefined) lines.push(...playerLines(you, brief, withText), "");
   if (brief.exile.length > 0) lines.push(`exile: ${brief.exile.map((c) => c.name).join(", ")}`, "");
   lines.push("since you last acted:", ...(brief.recent.length === 0 ? ["  (nothing)"] : brief.recent.map(indent)));
-  if (brief.actions.length > 0) {
-    lines.push("", "your actions (`pnpm cli do <file> <n>`):");
-    for (const a of brief.actions) lines.push(`${String(a.n).padStart(3)}. ${a.text}`);
-  }
+  if (brief.actions.length > 0) lines.push("", ...actionLines(brief.actions));
   return lines.join("\n");
+}
+
+/**
+ * The viewer's actions, one line each, with cost, a payability hint and legal targets. Actions with the same text
+ * (two copies of a card in hand) share a line that keeps every number; mana abilities go on one line at the end.
+ */
+function actionLines(actions: readonly ActionInfo[]): string[] {
+  const lines = [
+    "your actions: `pnpm cli do <file> <n>`, or a step that also chooses and pays,",
+    '  such as `pnpm cli do <file> "cast: Shock, targets: [p2], pay: auto"`:',
+  ];
+  const shown = new Map<string, number[]>();
+  for (const a of actions) if (!a.mana) shown.set(a.text, [...(shown.get(a.text) ?? []), a.n]);
+  for (const [text, numbers] of shown) {
+    const a = actions[(numbers[0] as number) - 1] as ActionInfo;
+    const also = numbers.length > 1 ? ` (same as ${numbers.slice(1).join(", ")})` : "";
+    const cost = a.cost === null ? "" : ` — ${a.cost}${a.payable === false ? " (not enough mana now)" : ""}`;
+    lines.push(`${String(a.n).padStart(3)}. ${text}${cost}${also}`);
+    for (const [i, choices] of a.targets.entries()) {
+      const label = a.targets.length > 1 ? `target ${i + 1}` : "targets";
+      lines.push(`       ${label}: ${choices.length === 0 ? "(none legal now)" : choices.join(", ")}`);
+    }
+  }
+  const mana = actions.filter((a) => a.mana);
+  if (mana.length > 0) lines.push(`  mana abilities: ${mana.map((a) => `${a.n}. ${a.text}`).join("; ")}`);
+  return lines;
 }
 
 function headline(brief: Brief): string {

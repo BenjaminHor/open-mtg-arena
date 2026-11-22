@@ -18,7 +18,7 @@ import {
   type ViewDecision,
 } from "@mtg/engine";
 import { scenarioStep } from "@mtg/scenarios";
-import { actionText } from "../describe.ts";
+import { type ActionInfo, actionInfos } from "./action-info.ts";
 import {
   type CardInfo,
   cardInfo,
@@ -66,7 +66,7 @@ export type Brief = {
   /** The viewer's own decision, as the engine's view shows it (D-062); null when another player must decide. */
   decision: ViewDecision | null;
   /** The viewer's legal actions, numbered as `actions` and `do <file> <n>` number them; empty when not theirs. */
-  actions: { n: number; text: string }[];
+  actions: ActionInfo[];
   /** What the viewer saw happen since they last acted, one event per line. */
   recent: string[];
   result: { winner: PlayerId | null; losses: { player: PlayerId; reason: string }[] } | null;
@@ -96,9 +96,7 @@ export function briefOf(state: GameState, viewer: PlayerId, recent: readonly str
     exile: view.zones.exile.map((id) => cardInfo(state, id, cards)),
     waitingFor: view.waitingFor === null ? null : { player: view.waitingFor.player, kind: view.waitingFor.kind },
     decision: view.decision,
-    actions: mine
-      ? legalActions(state, viewer, cards).map((action, i) => ({ n: i + 1, text: actionText(state, action, cards) }))
-      : [],
+    actions: mine ? actionInfos(state, viewer, legalActions(state, viewer, cards), cards) : [],
     recent: [...recent],
     result:
       view.result === null

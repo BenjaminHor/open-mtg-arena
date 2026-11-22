@@ -920,6 +920,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
              increases aren't known yet), legal targets, attack and block candidates, folded repeats that keep a real
              action number for `do`.
            - f1 built (D-135): `brief` with `--text` and `--json`; leak test over five scenario folders.
+           - f2 built: each action's cost, a "not enough mana now" hint (`autoPay`, X as 0), its legal targets (the
+             engine's `legalTargets`), same-text actions on one line keeping every number, mana abilities on one line.
+             Attackers and blockers were already one action each. `--text` replaced the `card <name>` idea.
            - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
              view; record that as a decision.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner

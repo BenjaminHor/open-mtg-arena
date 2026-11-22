@@ -2108,4 +2108,7 @@ owner's answer to the D-089 open question, option (a))
   computes them from the full state, for public objects only, and sends them with the view. That's how M3's match host
   will give the UI and the AI what they show and weigh: the architecture's `{ view, events, legalActions }` gains these
   derived values, computed beside the view rather than added to it, so `playerView` stays the plain filter it is.
+- Each of the viewer's actions carries its cost, its legal targets (the engine's `legalTargets`, now exported with
+  `targetSpecsOf`) and a hint whether their mana could pay it now (`autoPay`, X as 0). It's a hint, as the engine allows
+  starting what can't be paid (CR 118.6, 601.2h) and a per-target cost increase is known only once targets are chosen.
 - `show` keeps its stable format for tests; `brief` is the detailed one.
