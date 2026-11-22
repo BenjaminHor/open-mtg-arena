@@ -1,0 +1,1544 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Mind Spring, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Pithing Needle, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mirror of Fate, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Nightmare, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Yawning Fissure, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Clone, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Seismic Strike, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Rod of Ruin, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Elvish Visionary, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Lava Axe, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Magebane Armor, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Acolyte of Xathrid, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Mind Spring, p1's hand -> p1's library
+T0 moves: Pithing Needle, p1's hand -> p1's library
+T0 moves: Mirror of Fate, p1's hand -> p1's library
+T0 moves: Nightmare, p1's hand -> p1's library
+T0 moves: Yawning Fissure, p1's hand -> p1's library
+T0 moves: Swamp, p1's hand -> p1's library
+T0 moves: Clone, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Relentless Rats, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Looming Shade, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Goblin Artillery, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Acidic Slime, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Planar Cleansing, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Goblin Artillery, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 moves: Looming Shade, p1's hand -> stack
+T1 p1 cancels casting Looming Shade
+T1 moves: Plains, p1's hand -> battlefield
+T1 p1 plays p1:Plains
+T1 moves: Looming Shade, p1's hand -> stack
+T1 taps: p1:Plains
+T1 p1 adds {W} (p1:Plains)
+T1 p1 taps p1:Plains for mana
+T1 p1 cancels casting Looming Shade
+T1 taps: p1:Plains
+T1 p1 adds {W} (p1:Plains)
+T1 p1 taps p1:Plains for mana
+T1 p1's unspent {W} empties
+T1 p1 attack: nothing
+T2 turn 2 begins (p2)
+T2 moves: Mountain, p2's library -> p2's hand
+T2 p2 draws
+T2 p2 attack: nothing
+T2 moves: Magebane Armor, p2's hand -> stack
+T2 p2 cancels casting Magebane Armor
+T2 moves: Rod of Ruin, p2's hand -> p2's graveyard
+T2 p2 discards Rod of Ruin
+T3 turn 3 begins (p1)
+T3 untaps: p1:Plains
+T3 moves: Furnace Whelp, p1's library -> p1's hand
+T3 p1 draws
+T3 taps: p1:Plains
+T3 p1 adds {W} (p1:Plains)
+T3 p1 taps p1:Plains for mana
+T3 p1's unspent {W} empties
+T3 p1 attack: nothing
+T3 moves: Island, p1's hand -> battlefield
+T3 p1 plays p1:Island
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1's unspent {U} empties
+T4 turn 4 begins (p2)
+T4 moves: Rod of Ruin, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Mountain, p2's hand -> battlefield
+T4 p2 plays p2:Mountain
+T4 p2 attack: nothing
+T5 turn 5 begins (p1)
+T5 untaps: p1:Plains
+T5 untaps: p1:Island
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 taps: p1:Plains
+T5 p1 adds {W} (p1:Plains)
+T5 p1 taps p1:Plains for mana
+T5 p1's unspent {W}{U} empties
+T5 moves: Island, p1's library -> p1's hand
+T5 p1 draws
+T5 taps: p2:Mountain
+T5 p2 adds {R} (p2:Mountain)
+T5 p2 taps p2:Mountain for mana
+T5 p2's unspent {R} empties
+T5 moves: Island, p1's hand -> battlefield
+T5 p1 plays p1:Island#2
+T5 taps: p1:Island#2
+T5 p1 adds {U} (p1:Island#2)
+T5 p1 taps p1:Island#2 for mana
+T5 moves: Acidic Slime, p1's hand -> stack
+T5 p1 cancels casting Acidic Slime
+T5 p1's unspent {U} empties
+T5 p1 attack: nothing
+T6 turn 6 begins (p2)
+T6 untaps: p2:Mountain
+T6 taps: p2:Mountain
+T6 p2 adds {R} (p2:Mountain)
+T6 p2 taps p2:Mountain for mana
+T6 p2's unspent {R} empties
+T6 moves: Plains, p2's library -> p2's hand
+T6 p2 draws
+T6 moves: Magebane Armor, p2's hand -> stack
+T6 p2 cancels casting Magebane Armor
+T6 p2 attack: nothing
+T6 moves: Elvish Visionary, p2's hand -> p2's graveyard
+T6 p2 discards Elvish Visionary
+T7 turn 7 begins (p1)
+T7 untaps: p1:Plains
+T7 untaps: p1:Island#1
+T7 untaps: p1:Island#2
+T7 taps: p1:Island#1
+T7 p1 adds {U} (p1:Island#1)
+T7 p1 taps p1:Island#1 for mana
+T7 p1's unspent {U} empties
+T7 moves: Royal Assassin, p1's library -> p1's hand
+T7 p1 draws
+T7 taps: p1:Plains
+T7 p1 adds {W} (p1:Plains)
+T7 p1 taps p1:Plains for mana
+T7 taps: p1:Island#2
+T7 p1 adds {U} (p1:Island#2)
+T7 p1 taps p1:Island#2 for mana
+T7 moves: Royal Assassin, p1's hand -> stack
+T7 p1 cancels casting Royal Assassin
+T7 moves: Furnace Whelp, p1's hand -> stack
+T7 p1 cancels casting Furnace Whelp
+T7 p1's unspent {W}{U} empties
+T7 p1 attack: nothing
+T8 turn 8 begins (p2)
+T8 untaps: p2:Mountain
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
+T8 p2's unspent {R} empties
+T8 moves: Kelinore Bat, p2's library -> p2's hand
+T8 p2 draws
+T8 moves: Acolyte of Xathrid, p2's hand -> stack
+T8 p2 cancels casting Acolyte of Xathrid
+T8 moves: Kelinore Bat, p2's hand -> stack
+T8 p2 cancels casting Kelinore Bat
+T8 moves: Rod of Ruin, p2's hand -> stack
+T8 p2 cancels casting Rod of Ruin
+T8 moves: Plains, p2's hand -> battlefield
+T8 p2 plays p2:Plains
+T8 taps: p2:Plains
+T8 p2 adds {W} (p2:Plains)
+T8 p2 taps p2:Plains for mana
+T8 p2's unspent {W} empties
+T8 p2 attack: nothing
+T8 moves: Acolyte of Xathrid, p2's hand -> stack
+T8 p2 cancels casting Acolyte of Xathrid
+T8 moves: Rod of Ruin, p2's hand -> stack
+T8 p2 cancels casting Rod of Ruin
+T9 turn 9 begins (p1)
+T9 untaps: p1:Plains
+T9 untaps: p1:Island#1
+T9 untaps: p1:Island#2
+T9 moves: Mountain, p1's library -> p1's hand
+T9 p1 draws
+T9 taps: p1:Plains
+T9 p1 adds {W} (p1:Plains)
+T9 p1 taps p1:Plains for mana
+T9 p1's unspent {W} empties
+T9 moves: Mountain, p1's hand -> battlefield
+T9 p1 plays p1:Mountain
+T9 moves: Planar Cleansing, p1's hand -> stack
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 p1 cancels casting Planar Cleansing
+T9 moves: Planar Cleansing, p1's hand -> stack
+T9 taps: p1:Island#1
+T9 p1 adds {U} (p1:Island#1)
+T9 p1 taps p1:Island#1 for mana
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 p1 cancels casting Planar Cleansing
+T9 moves: Looming Shade, p1's hand -> stack
+T9 taps: p1:Island#1
+T9 p1 adds {U} (p1:Island#1)
+T9 p1 taps p1:Island#1 for mana
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 p1 cancels casting Looming Shade
+T9 moves: Acidic Slime, p1's hand -> stack
+T9 p1 cancels casting Acidic Slime
+T9 moves: Looming Shade, p1's hand -> stack
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 taps: p1:Island#1
+T9 p1 adds {U} (p1:Island#1)
+T9 p1 taps p1:Island#1 for mana
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 p1 cancels casting Looming Shade
+T9 taps: p1:Mountain
+T9 p1 adds {R} (p1:Mountain)
+T9 p1 taps p1:Mountain for mana
+T9 moves: Furnace Whelp, p1's hand -> stack
+T9 p1 cancels casting Furnace Whelp
+T9 taps: p1:Island#1
+T9 p1 adds {U} (p1:Island#1)
+T9 p1 taps p1:Island#1 for mana
+T9 p1's unspent {U}{R} empties
+T9 p1 attack: nothing
+T9 moves: Planar Cleansing, p1's hand -> stack
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 p1 cancels casting Planar Cleansing
+T9 taps: p1:Island#2
+T9 p1 adds {U} (p1:Island#2)
+T9 p1 taps p1:Island#2 for mana
+T9 p1's unspent {U} empties
+T10 turn 10 begins (p2)
+T10 untaps: p2:Mountain
+T10 untaps: p2:Plains
+T10 taps: p2:Mountain
+T10 p2 adds {R} (p2:Mountain)
+T10 p2 taps p2:Mountain for mana
+T10 taps: p2:Plains
+T10 p2 adds {W} (p2:Plains)
+T10 p2 taps p2:Plains for mana
+T10 p2's unspent {W}{R} empties
+T10 moves: Mountain, p2's library -> p2's hand
+T10 p2 draws
+T10 moves: Magebane Armor, p2's hand -> stack
+T10 p2 cancels casting Magebane Armor
+T10 p2 attack: nothing
+T10 moves: Lava Axe, p2's hand -> p2's graveyard
+T10 p2 discards Lava Axe
+T11 turn 11 begins (p1)
+T11 untaps: p1:Plains
+T11 untaps: p1:Island#1
+T11 untaps: p1:Island#2
+T11 untaps: p1:Mountain
+T11 taps: p1:Plains
+T11 p1 adds {W} (p1:Plains)
+T11 p1 taps p1:Plains for mana
+T11 p1's unspent {W} empties
+T11 moves: Veteran Armorsmith, p1's library -> p1's hand
+T11 p1 draws
+T11 taps: p1:Island#2
+T11 p1 adds {U} (p1:Island#2)
+T11 p1 taps p1:Island#2 for mana
+T11 taps: p1:Mountain
+T11 p1 adds {R} (p1:Mountain)
+T11 p1 taps p1:Mountain for mana
+T11 p1's unspent {U}{R} empties
+T11 p1 attack: nothing
+T11 taps: p1:Island#1
+T11 p1 adds {U} (p1:Island#1)
+T11 p1 taps p1:Island#1 for mana
+T11 p1's unspent {U} empties
+T11 moves: Furnace Whelp, p1's hand -> stack
+T11 p1 cancels casting Furnace Whelp
+T11 moves: Acidic Slime, p1's hand -> stack
+T11 p1 cancels casting Acidic Slime
+T12 turn 12 begins (p2)
+T12 untaps: p2:Mountain
+T12 untaps: p2:Plains
+T12 moves: Illusionary Servant, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
+T12 taps: p2:Plains
+T12 p2 adds {W} (p2:Plains)
+T12 p2 taps p2:Plains for mana
+T12 p2's unspent {W}{R} empties
+T12 moves: Plains, p2's hand -> battlefield
+T12 p2 plays p2:Plains#2
+T12 taps: p2:Plains#2
+T12 p2 adds {W} (p2:Plains#2)
+T12 p2 taps p2:Plains#2 for mana
+T12 moves: Magebane Armor, p2's hand -> stack
+T12 p2 cancels casting Magebane Armor
+T12 p2's unspent {W} empties
+T12 p2 attack: nothing
+T12 moves: Rod of Ruin, p2's hand -> stack
+T12 p2 cancels casting Rod of Ruin
+T13 turn 13 begins (p1)
+T13 untaps: p1:Plains
+T13 untaps: p1:Island#1
+T13 untaps: p1:Island#2
+T13 untaps: p1:Mountain
+T13 taps: p1:Island#1
+T13 p1 adds {U} (p1:Island#1)
+T13 p1 taps p1:Island#1 for mana
+T13 taps: p1:Plains
+T13 p1 adds {W} (p1:Plains)
+T13 p1 taps p1:Plains for mana
+T13 taps: p1:Mountain
+T13 p1 adds {R} (p1:Mountain)
+T13 p1 taps p1:Mountain for mana
+T13 p1's unspent {W}{U}{R} empties
+T13 moves: Swamp, p1's library -> p1's hand
+T13 p1 draws
+T13 taps: p1:Island#2
+T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
+T13 moves: Royal Assassin, p1's hand -> stack
+T13 p1 cancels casting Royal Assassin
+T13 moves: Swamp, p1's hand -> battlefield
+T13 p1 plays p1:Swamp
+T13 taps: p1:Swamp
+T13 p1 adds {B} (p1:Swamp)
+T13 p1 taps p1:Swamp for mana
+T13 p1's unspent {U}{B} empties
+T13 p1 attack: nothing
+T14 turn 14 begins (p2)
+T14 untaps: p2:Mountain
+T14 untaps: p2:Plains#1
+T14 untaps: p2:Plains#2
+T14 moves: Mountain, p2's library -> p2's hand
+T14 p2 draws
+T14 moves: Rod of Ruin, p2's hand -> stack
+T14 taps: p2:Plains#2
+T14 p2 adds {W} (p2:Plains#2)
+T14 p2 taps p2:Plains#2 for mana
+T14 taps: p2:Plains#1
+T14 p2 adds {W} (p2:Plains#1)
+T14 p2 taps p2:Plains#1 for mana
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2 cancels casting Rod of Ruin
+T14 taps: p2:Plains#2
+T14 p2 adds {W} (p2:Plains#2)
+T14 p2 taps p2:Plains#2 for mana
+T14 p2's unspent {W} empties
+T14 p2 attack: nothing
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 taps: p2:Plains#1
+T14 p2 adds {W} (p2:Plains#1)
+T14 p2 taps p2:Plains#1 for mana
+T14 p2's unspent {W}{R} empties
+T14 moves: Seismic Strike, p2's hand -> p2's graveyard
+T14 p2 discards Seismic Strike
+T15 turn 15 begins (p1)
+T15 untaps: p1:Plains
+T15 untaps: p1:Island#1
+T15 untaps: p1:Island#2
+T15 untaps: p1:Mountain
+T15 untaps: p1:Swamp
+T15 moves: Liliana Vess, p1's library -> p1's hand
+T15 p1 draws
+T15 moves: Veteran Armorsmith, p1's hand -> stack
+T15 taps: p1:Mountain
+T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
+T15 p1 cancels casting Veteran Armorsmith
+T15 p1 attack: nothing
+T15 taps: p1:Plains
+T15 p1 adds {W} (p1:Plains)
+T15 p1 taps p1:Plains for mana
+T15 p1's unspent {W} empties
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
+T15 taps: p1:Swamp
+T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
+T15 taps: p1:Mountain
+T15 p1 adds {R} (p1:Mountain)
+T15 p1 taps p1:Mountain for mana
+T15 p1's unspent {U}{U}{B}{R} empties
+T15 moves: Liliana Vess, p1's hand -> p1's graveyard
+T15 p1 discards Liliana Vess
+T16 turn 16 begins (p2)
+T16 untaps: p2:Mountain
+T16 untaps: p2:Plains#1
+T16 untaps: p2:Plains#2
+T16 taps: p2:Plains#1
+T16 p2 adds {W} (p2:Plains#1)
+T16 p2 taps p2:Plains#1 for mana
+T16 p2's unspent {W} empties
+T16 moves: Plains, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Mountain
+T16 p2 adds {R} (p2:Mountain)
+T16 p2 taps p2:Mountain for mana
+T16 p2's unspent {R} empties
+T16 taps: p2:Plains#2
+T16 p2 adds {W} (p2:Plains#2)
+T16 p2 taps p2:Plains#2 for mana
+T16 p2's unspent {W} empties
+T16 p2 attack: nothing
+T16 moves: Mountain, p2's hand -> p2's graveyard
+T16 p2 discards Mountain
+T17 turn 17 begins (p1)
+T17 untaps: p1:Plains
+T17 untaps: p1:Island#1
+T17 untaps: p1:Island#2
+T17 untaps: p1:Mountain
+T17 untaps: p1:Swamp
+T17 taps: p1:Mountain
+T17 p1 adds {R} (p1:Mountain)
+T17 p1 taps p1:Mountain for mana
+T17 p1's unspent {R} empties
+T17 moves: Ball Lightning, p1's library -> p1's hand
+T17 p1 draws
+T17 taps: p1:Island#2
+T17 p1 adds {U} (p1:Island#2)
+T17 p1 taps p1:Island#2 for mana
+T17 taps: p1:Island#1
+T17 p1 adds {U} (p1:Island#1)
+T17 p1 taps p1:Island#1 for mana
+T17 p1's unspent {U}{U} empties
+T17 taps: p1:Plains
+T17 p1 adds {W} (p1:Plains)
+T17 p1 taps p1:Plains for mana
+T17 moves: Furnace Whelp, p1's hand -> stack
+T17 taps: p1:Swamp
+T17 p1 adds {B} (p1:Swamp)
+T17 p1 taps p1:Swamp for mana
+T17 p1 cancels casting Furnace Whelp
+T17 taps: p1:Swamp
+T17 p1 adds {B} (p1:Swamp)
+T17 p1 taps p1:Swamp for mana
+T17 p1's unspent {W}{B} empties
+T17 p1 attack: nothing
+T17 moves: Royal Assassin, p1's hand -> p1's graveyard
+T17 p1 discards Royal Assassin
+T18 turn 18 begins (p2)
+T18 untaps: p2:Mountain
+T18 untaps: p2:Plains#1
+T18 untaps: p2:Plains#2
+T18 moves: Swamp, p2's library -> p2's hand
+T18 p2 draws
+T18 moves: Illusionary Servant, p2's hand -> stack
+T18 taps: p2:Mountain
+T18 p2 adds {R} (p2:Mountain)
+T18 p2 taps p2:Mountain for mana
+T18 taps: p2:Plains#1
+T18 p2 adds {W} (p2:Plains#1)
+T18 p2 taps p2:Plains#1 for mana
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Illusionary Servant
+T18 taps: p2:Plains#1
+T18 p2 adds {W} (p2:Plains#1)
+T18 p2 taps p2:Plains#1 for mana
+T18 p2's unspent {W} empties
+T18 taps: p2:Mountain
+T18 p2 adds {R} (p2:Mountain)
+T18 p2 taps p2:Mountain for mana
+T18 p2's unspent {R} empties
+T18 p2 attack: nothing
+T18 moves: Rod of Ruin, p2's hand -> stack
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Rod of Ruin
+T18 moves: Illusionary Servant, p2's hand -> stack
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Illusionary Servant
+T18 moves: Magebane Armor, p2's hand -> stack
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Magebane Armor
+T18 moves: Rod of Ruin, p2's hand -> stack
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 p2 cancels casting Rod of Ruin
+T18 taps: p2:Plains#2
+T18 p2 adds {W} (p2:Plains#2)
+T18 p2 taps p2:Plains#2 for mana
+T18 moves: Swamp, p2's hand -> battlefield
+T18 p2 plays p2:Swamp
+T18 moves: Acolyte of Xathrid, p2's hand -> stack
+T18 taps: p2:Swamp
+T18 p2 adds {B} (p2:Swamp)
+T18 p2 taps p2:Swamp for mana
+T18 p2 casts Acolyte of Xathrid
+T18 resolves: Acolyte of Xathrid
+T18 moves: Acolyte of Xathrid, stack -> battlefield
+T18 moves: Magebane Armor, p2's hand -> stack
+T18 p2 cancels casting Magebane Armor
+T18 p2's unspent {W} empties
+T19 turn 19 begins (p1)
+T19 untaps: p1:Plains
+T19 untaps: p1:Island#1
+T19 untaps: p1:Island#2
+T19 untaps: p1:Mountain
+T19 untaps: p1:Swamp
+T19 moves: Mountain, p1's library -> p1's hand
+T19 p1 draws
+T19 taps: p1:Swamp
+T19 p1 adds {B} (p1:Swamp)
+T19 p1 taps p1:Swamp for mana
+T19 p1's unspent {B} empties
+T19 taps: p1:Island#1
+T19 p1 adds {U} (p1:Island#1)
+T19 p1 taps p1:Island#1 for mana
+T19 taps: p1:Plains
+T19 p1 adds {W} (p1:Plains)
+T19 p1 taps p1:Plains for mana
+T19 p1's unspent {W}{U} empties
+T19 p1 attack: nothing
+T19 taps: p1:Island#2
+T19 p1 adds {U} (p1:Island#2)
+T19 p1 taps p1:Island#2 for mana
+T19 p1's unspent {U} empties
+T19 taps: p1:Mountain
+T19 p1 adds {R} (p1:Mountain)
+T19 p1 taps p1:Mountain for mana
+T19 p1's unspent {R} empties
+T19 moves: Veteran Armorsmith, p1's hand -> p1's graveyard
+T19 p1 discards Veteran Armorsmith
+T20 turn 20 begins (p2)
+T20 untaps: p2:Mountain
+T20 untaps: p2:Plains#1
+T20 untaps: p2:Plains#2
+T20 untaps: p2:Swamp
+T20 moves: Warp World, p2's library -> p2's hand
+T20 p2 draws
+T20 taps: p2:Plains#1
+T20 p2 adds {W} (p2:Plains#1)
+T20 p2 taps p2:Plains#1 for mana
+T20 p2's unspent {W} empties
+T20 taps: p2:Plains#2
+T20 p2 adds {W} (p2:Plains#2)
+T20 p2 taps p2:Plains#2 for mana
+T20 moves: Plains, p2's hand -> battlefield
+T20 p2 plays p2:Plains#3
+T20 taps: p2:Swamp
+T20 p2 adds {B} (p2:Swamp)
+T20 p2 taps p2:Swamp for mana
+T20 p2's unspent {W}{B} empties
+T20 taps: p2:Acolyte of Xathrid
+T20 p2 attack: p2:Acolyte of Xathrid -> p1
+T20 taps: p2:Mountain
+T20 p2 adds {R} (p2:Mountain)
+T20 p2 taps p2:Mountain for mana
+T20 p2's unspent {R} empties
+T20 p1 block: nothing
+T20 taps: p2:Plains#3
+T20 p2 adds {W} (p2:Plains#3)
+T20 p2 taps p2:Plains#3 for mana
+T20 p2's unspent {W} empties
+T21 turn 21 begins (p1)
+T21 untaps: p1:Plains
+T21 untaps: p1:Island#1
+T21 untaps: p1:Island#2
+T21 untaps: p1:Mountain
+T21 untaps: p1:Swamp
+T21 taps: p1:Swamp
+T21 p1 adds {B} (p1:Swamp)
+T21 p1 taps p1:Swamp for mana
+T21 p1's unspent {B} empties
+T21 moves: Yawning Fissure, p1's library -> p1's hand
+T21 p1 draws
+T21 taps: p1:Island#1
+T21 p1 adds {U} (p1:Island#1)
+T21 p1 taps p1:Island#1 for mana
+T21 taps: p1:Mountain
+T21 p1 adds {R} (p1:Mountain)
+T21 p1 taps p1:Mountain for mana
+T21 p1's unspent {U}{R} empties
+T21 moves: Planar Cleansing, p1's hand -> stack
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
+T21 p1 cancels casting Planar Cleansing
+T21 taps: p1:Island#2
+T21 p1 adds {U} (p1:Island#2)
+T21 p1 taps p1:Island#2 for mana
+T21 moves: Mountain, p1's hand -> battlefield
+T21 p1 plays p1:Mountain#2
+T21 moves: Planar Cleansing, p1's hand -> stack
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 taps: p1:Mountain#2
+T21 p1 adds {R} (p1:Mountain#2)
+T21 p1 taps p1:Mountain#2 for mana
+T21 p1 cancels casting Planar Cleansing
+T21 taps: p1:Mountain#2
+T21 p1 adds {R} (p1:Mountain#2)
+T21 p1 taps p1:Mountain#2 for mana
+T21 p1's unspent {U}{R} empties
+T21 p1 attack: nothing
+T21 taps: p1:Plains
+T21 p1 adds {W} (p1:Plains)
+T21 p1 taps p1:Plains for mana
+T21 p1's unspent {W} empties
+T22 turn 22 begins (p2)
+T22 untaps: p2:Mountain
+T22 untaps: p2:Plains#1
+T22 untaps: p2:Plains#2
+T22 untaps: p2:Swamp
+T22 untaps: p2:Acolyte of Xathrid
+T22 untaps: p2:Plains#3
+T22 taps: p2:Swamp
+T22 p2 adds {B} (p2:Swamp)
+T22 p2 taps p2:Swamp for mana
+T22 p2 cancels activating p2:Acolyte of Xathrid
+T22 taps: p2:Mountain
+T22 p2 adds {R} (p2:Mountain)
+T22 p2 taps p2:Mountain for mana
+T22 taps: p2:Plains#3
+T22 p2 adds {W} (p2:Plains#3)
+T22 p2 taps p2:Plains#3 for mana
+T22 taps: p2:Swamp
+T22 p2 adds {B} (p2:Swamp)
+T22 p2 taps p2:Swamp for mana
+T22 taps: p2:Plains#1
+T22 p2 adds {W} (p2:Plains#1)
+T22 p2 taps p2:Plains#1 for mana
+T22 taps: p2:Plains#2
+T22 p2 adds {W} (p2:Plains#2)
+T22 p2 taps p2:Plains#2 for mana
+T22 taps: p2:Acolyte of Xathrid
+T22 p2 activates p2:Acolyte of Xathrid
+T22 p2 loses 1 life
+T22 resolves: p2:Acolyte of Xathrid's ability
+T22 p2's unspent {W}{W}{R} empties
+T22 moves: Island, p2's library -> p2's hand
+T22 p2 draws
+T22 moves: Rod of Ruin, p2's hand -> stack
+T22 p2 cancels casting Rod of Ruin
+T22 p2 attack: nothing
+T22 moves: Rod of Ruin, p2's hand -> stack
+T22 p2 cancels casting Rod of Ruin
+T23 turn 23 begins (p1)
+T23 untaps: p1:Plains
+T23 untaps: p1:Island#1
+T23 untaps: p1:Island#2
+T23 untaps: p1:Mountain#1
+T23 untaps: p1:Swamp
+T23 untaps: p1:Mountain#2
+T23 moves: Nightmare, p1's library -> p1's hand
+T23 p1 draws
+T23 p1 attack: nothing
+T23 taps: p1:Island#2
+T23 p1 adds {U} (p1:Island#2)
+T23 p1 taps p1:Island#2 for mana
+T23 taps: p1:Island#1
+T23 p1 adds {U} (p1:Island#1)
+T23 p1 taps p1:Island#1 for mana
+T23 p1's unspent {U}{U} empties
+T23 taps: p1:Swamp
+T23 p1 adds {B} (p1:Swamp)
+T23 p1 taps p1:Swamp for mana
+T23 p1's unspent {B} empties
+T23 moves: Acidic Slime, p1's hand -> p1's graveyard
+T23 p1 discards Acidic Slime
+T24 turn 24 begins (p2)
+T24 untaps: p2:Mountain
+T24 untaps: p2:Plains#1
+T24 untaps: p2:Plains#2
+T24 untaps: p2:Swamp
+T24 untaps: p2:Acolyte of Xathrid
+T24 untaps: p2:Plains#3
+T24 moves: Mountain, p2's library -> p2's hand
+T24 p2 draws
+T24 taps: p2:Plains#2
+T24 p2 adds {W} (p2:Plains#2)
+T24 p2 taps p2:Plains#2 for mana
+T24 taps: p2:Plains#1
+T24 p2 adds {W} (p2:Plains#1)
+T24 p2 taps p2:Plains#1 for mana
+T24 taps: p2:Swamp
+T24 p2 adds {B} (p2:Swamp)
+T24 p2 taps p2:Swamp for mana
+T24 p2 cancels activating p2:Acolyte of Xathrid
+T24 taps: p1:Mountain#1
+T24 p1 adds {R} (p1:Mountain#1)
+T24 p1 taps p1:Mountain#1 for mana
+T24 taps: p1:Plains
+T24 p1 adds {W} (p1:Plains)
+T24 p1 taps p1:Plains for mana
+T24 taps: p1:Mountain#2
+T24 p1 adds {R} (p1:Mountain#2)
+T24 p1 taps p1:Mountain#2 for mana
+T24 taps: p2:Mountain
+T24 p2 adds {R} (p2:Mountain)
+T24 p2 taps p2:Mountain for mana
+T24 taps: p2:Plains#3
+T24 p2 adds {W} (p2:Plains#3)
+T24 p2 taps p2:Plains#3 for mana
+T24 taps: p2:Acolyte of Xathrid
+T24 p2 activates p2:Acolyte of Xathrid
+T24 p1 loses 1 life
+T24 resolves: p2:Acolyte of Xathrid's ability
+T24 p1's unspent {W}{R}{R} empties
+T24 p2's unspent {W}{W}{W} empties
+T24 moves: Island, p2's hand -> battlefield
+T24 p2 plays p2:Island
+T24 p2 attack: nothing
+T24 taps: p2:Island
+T24 p2 adds {U} (p2:Island)
+T24 p2 taps p2:Island for mana
+T24 moves: Rod of Ruin, p2's hand -> stack
+T24 p2 cancels casting Rod of Ruin
+T24 moves: Warp World, p2's hand -> stack
+T24 p2 cancels casting Warp World
+T24 p2's unspent {U} empties
+T25 turn 25 begins (p1)
+T25 untaps: p1:Plains
+T25 untaps: p1:Island#1
+T25 untaps: p1:Island#2
+T25 untaps: p1:Mountain#1
+T25 untaps: p1:Swamp
+T25 untaps: p1:Mountain#2
+T25 taps: p1:Island#1
+T25 p1 adds {U} (p1:Island#1)
+T25 p1 taps p1:Island#1 for mana
+T25 p1's unspent {U} empties
+T25 moves: Ornithopter, p1's library -> p1's hand
+T25 p1 draws
+T25 p1 attack: nothing
+T25 taps: p1:Swamp
+T25 p1 adds {B} (p1:Swamp)
+T25 p1 taps p1:Swamp for mana
+T25 taps: p1:Mountain#2
+T25 p1 adds {R} (p1:Mountain#2)
+T25 p1 taps p1:Mountain#2 for mana
+T25 taps: p1:Mountain#1
+T25 p1 adds {R} (p1:Mountain#1)
+T25 p1 taps p1:Mountain#1 for mana
+T25 p1's unspent {B}{R}{R} empties
+T25 taps: p1:Island#2
+T25 p1 adds {U} (p1:Island#2)
+T25 p1 taps p1:Island#2 for mana
+T25 p1's unspent {U} empties
+T25 moves: Furnace Whelp, p1's hand -> p1's graveyard
+T25 p1 discards Furnace Whelp
+T26 turn 26 begins (p2)
+T26 untaps: p2:Mountain
+T26 untaps: p2:Plains#1
+T26 untaps: p2:Plains#2
+T26 untaps: p2:Swamp
+T26 untaps: p2:Acolyte of Xathrid
+T26 untaps: p2:Plains#3
+T26 untaps: p2:Island
+T26 moves: Mountain, p2's library -> p2's hand
+T26 p2 draws
+T26 taps: p2:Plains#3
+T26 p2 adds {W} (p2:Plains#3)
+T26 p2 taps p2:Plains#3 for mana
+T26 taps: p2:Swamp
+T26 p2 adds {B} (p2:Swamp)
+T26 p2 taps p2:Swamp for mana
+T26 taps: p2:Mountain
+T26 p2 adds {R} (p2:Mountain)
+T26 p2 taps p2:Mountain for mana
+T26 moves: Illusionary Servant, p2's hand -> stack
+T26 p2 cancels casting Illusionary Servant
+T26 moves: Rod of Ruin, p2's hand -> stack
+T26 taps: p2:Plains#2
+T26 p2 adds {W} (p2:Plains#2)
+T26 p2 taps p2:Plains#2 for mana
+T26 taps: p2:Plains#1
+T26 p2 adds {W} (p2:Plains#1)
+T26 p2 taps p2:Plains#1 for mana
+T26 taps: p2:Island
+T26 p2 adds {U} (p2:Island)
+T26 p2 taps p2:Island for mana
+T26 p2 casts Rod of Ruin
+T26 taps: p2:Acolyte of Xathrid
+T26 p2 activates p2:Acolyte of Xathrid
+T26 p2 loses 1 life
+T26 resolves: p2:Acolyte of Xathrid's ability
+T26 resolves: Rod of Ruin
+T26 moves: Rod of Ruin, stack -> battlefield
+T26 moves: Mountain, p2's hand -> battlefield
+T26 p2 plays p2:Mountain#2
+T26 taps: p1:Plains
+T26 p1 adds {W} (p1:Plains)
+T26 p1 taps p1:Plains for mana
+T26 p1's unspent {W} empties
+T26 taps: p2:Mountain#2
+T26 p2 adds {R} (p2:Mountain#2)
+T26 p2 taps p2:Mountain#2 for mana
+T26 p2 cancels activating p2:Rod of Ruin
+T26 p2's unspent {R} empties
+T26 p2 attack: nothing
+T26 p2 cancels activating p2:Rod of Ruin
+T26 p2 cancels activating p2:Rod of Ruin
+T26 p2 cancels activating p2:Rod of Ruin
+T26 p2 cancels activating p2:Rod of Ruin
+T27 turn 27 begins (p1)
+T27 untaps: p1:Plains
+T27 untaps: p1:Island#1
+T27 untaps: p1:Island#2
+T27 untaps: p1:Mountain#1
+T27 untaps: p1:Swamp
+T27 untaps: p1:Mountain#2
+T27 p2 cancels activating p2:Rod of Ruin
+T27 targeted: p2:Acolyte of Xathrid by Rod of Ruin ability
+T27 p2 cancels activating p2:Rod of Ruin
+T27 moves: Swamp, p1's library -> p1's hand
+T27 p1 draws
+T27 taps: p1:Swamp
+T27 p1 adds {B} (p1:Swamp)
+T27 p1 taps p1:Swamp for mana
+T27 moves: Relentless Rats, p1's hand -> stack
+T27 taps: p1:Island#2
+T27 p1 adds {U} (p1:Island#2)
+T27 p1 taps p1:Island#2 for mana
+T27 taps: p1:Island#1
+T27 p1 adds {U} (p1:Island#1)
+T27 p1 taps p1:Island#1 for mana
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1 taps p1:Mountain#1 for mana
+T27 taps: p1:Plains
+T27 p1 adds {W} (p1:Plains)
+T27 p1 taps p1:Plains for mana
+T27 taps: p1:Mountain#2
+T27 p1 adds {R} (p1:Mountain#2)
+T27 p1 taps p1:Mountain#2 for mana
+T27 p1 cancels casting Relentless Rats
+T27 moves: Swamp, p1's hand -> battlefield
+T27 p1 plays p1:Swamp#2
+T27 p1's unspent {B} empties
+T27 taps: p1:Swamp#2
+T27 p1 adds {B} (p1:Swamp#2)
+T27 p1 taps p1:Swamp#2 for mana
+T27 taps: p1:Island#1
+T27 p1 adds {U} (p1:Island#1)
+T27 p1 taps p1:Island#1 for mana
+T27 p1's unspent {U}{B} empties
+T27 p1 attack: nothing
+T27 taps: p1:Mountain#1
+T27 p1 adds {R} (p1:Mountain#1)
+T27 p1 taps p1:Mountain#1 for mana
+T27 p1's unspent {R} empties
+T27 taps: p1:Plains
+T27 p1 adds {W} (p1:Plains)
+T27 p1 taps p1:Plains for mana
+T27 p1's unspent {W} empties
+T27 moves: Relentless Rats, p1's hand -> stack
+T27 taps: p1:Island#2
+T27 p1 adds {U} (p1:Island#2)
+T27 p1 taps p1:Island#2 for mana
+T27 taps: p1:Mountain#2
+T27 p1 adds {R} (p1:Mountain#2)
+T27 p1 taps p1:Mountain#2 for mana
+T27 p1 cancels casting Relentless Rats
+T27 moves: Ornithopter, p1's hand -> stack
+T27 p1 casts Ornithopter
+T27 taps: p1:Mountain#2
+T27 p1 adds {R} (p1:Mountain#2)
+T27 p1 taps p1:Mountain#2 for mana
+T27 taps: p1:Island#2
+T27 p1 adds {U} (p1:Island#2)
+T27 p1 taps p1:Island#2 for mana
+T27 p2 cancels activating p2:Rod of Ruin
+T27 resolves: Ornithopter
+T27 moves: Ornithopter, stack -> battlefield
+T27 targeted: p1:Ornithopter by Rod of Ruin ability
+T27 p2 cancels activating p2:Rod of Ruin
+T27 p1's unspent {U}{R} empties
+T27 p2 cancels activating p2:Rod of Ruin
+T28 turn 28 begins (p2)
+T28 untaps: p2:Mountain#1
+T28 untaps: p2:Plains#1
+T28 untaps: p2:Plains#2
+T28 untaps: p2:Swamp
+T28 untaps: p2:Acolyte of Xathrid
+T28 untaps: p2:Plains#3
+T28 untaps: p2:Island
+T28 untaps: p2:Mountain#2
+T28 moves: Magebane Armor, p2's library -> p2's hand
+T28 p2 draws
+T28 moves: Warp World, p2's hand -> stack
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2 taps p2:Plains#2 for mana
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 p2 taps p2:Mountain#2 for mana
+T28 taps: p2:Swamp
+T28 p2 adds {B} (p2:Swamp)
+T28 p2 taps p2:Swamp for mana
+T28 taps: p2:Island
+T28 p2 adds {U} (p2:Island)
+T28 p2 taps p2:Island for mana
+T28 p2 cancels casting Warp World
+T28 taps: p2:Acolyte of Xathrid
+T28 p2 attack: p2:Acolyte of Xathrid -> p1
+T28 p1 block: nothing
+T28 taps: p2:Swamp
+T28 p2 adds {B} (p2:Swamp)
+T28 p2 taps p2:Swamp for mana
+T28 taps: p2:Mountain#2
+T28 p2 adds {R} (p2:Mountain#2)
+T28 p2 taps p2:Mountain#2 for mana
+T28 p2's unspent {B}{R} empties
+T28 taps: p2:Island
+T28 p2 adds {U} (p2:Island)
+T28 p2 taps p2:Island for mana
+T28 moves: Mountain, p2's hand -> battlefield
+T28 p2 plays p2:Mountain#3
+T28 moves: Warp World, p2's hand -> stack
+T28 taps: p2:Mountain#3
+T28 p2 adds {R} (p2:Mountain#3)
+T28 p2 taps p2:Mountain#3 for mana
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 p2 taps p2:Mountain#1 for mana
+T28 taps: p2:Plains#3
+T28 p2 adds {W} (p2:Plains#3)
+T28 p2 taps p2:Plains#3 for mana
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2 taps p2:Plains#2 for mana
+T28 taps: p2:Plains#1
+T28 p2 adds {W} (p2:Plains#1)
+T28 p2 taps p2:Plains#1 for mana
+T28 p2 cancels casting Warp World
+T28 moves: Warp World, p2's hand -> stack
+T28 taps: p2:Plains#1
+T28 p2 adds {W} (p2:Plains#1)
+T28 p2 taps p2:Plains#1 for mana
+T28 taps: p2:Plains#3
+T28 p2 adds {W} (p2:Plains#3)
+T28 p2 taps p2:Plains#3 for mana
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2 taps p2:Plains#2 for mana
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 p2 taps p2:Mountain#1 for mana
+T28 taps: p2:Mountain#3
+T28 p2 adds {R} (p2:Mountain#3)
+T28 p2 taps p2:Mountain#3 for mana
+T28 p2 cancels casting Warp World
+T28 taps: p2:Plains#3
+T28 p2 adds {W} (p2:Plains#3)
+T28 p2 taps p2:Plains#3 for mana
+T28 p2's unspent {W}{U} empties
+T28 taps: p2:Mountain#1
+T28 p2 adds {R} (p2:Mountain#1)
+T28 p2 taps p2:Mountain#1 for mana
+T28 taps: p2:Mountain#3
+T28 p2 adds {R} (p2:Mountain#3)
+T28 p2 taps p2:Mountain#3 for mana
+T28 taps: p2:Plains#1
+T28 p2 adds {W} (p2:Plains#1)
+T28 p2 taps p2:Plains#1 for mana
+T28 taps: p2:Plains#2
+T28 p2 adds {W} (p2:Plains#2)
+T28 p2 taps p2:Plains#2 for mana
+T28 targeted: p1:Ornithopter by Rod of Ruin ability
+T28 p2 cancels activating p2:Rod of Ruin
+T28 targeted: p2:Acolyte of Xathrid by Rod of Ruin ability
+T28 taps: p2:Rod of Ruin
+T28 p2 activates p2:Rod of Ruin
+T28 damage: p2:Rod of Ruin -> p2:Acolyte of Xathrid 1
+T28 resolves: p2:Rod of Ruin's ability
+T28 state-based actions: p2:Acolyte of Xathrid lethalDamage
+T28 destroyed: p2:Acolyte of Xathrid
+T28 moves: Acolyte of Xathrid, battlefield -> p2's graveyard
+T28 p2's unspent {R} empties
+T29 turn 29 begins (p1)
+T29 untaps: p1:Plains
+T29 untaps: p1:Island#1
+T29 untaps: p1:Island#2
+T29 untaps: p1:Mountain#1
+T29 untaps: p1:Swamp#1
+T29 untaps: p1:Mountain#2
+T29 untaps: p1:Swamp#2
+T29 taps: p1:Swamp#1
+T29 p1 adds {B} (p1:Swamp#1)
+T29 p1 taps p1:Swamp#1 for mana
+T29 taps: p1:Swamp#2
+T29 p1 adds {B} (p1:Swamp#2)
+T29 p1 taps p1:Swamp#2 for mana
+T29 taps: p1:Mountain#1
+T29 p1 adds {R} (p1:Mountain#1)
+T29 p1 taps p1:Mountain#1 for mana
+T29 p1's unspent {B}{B}{R} empties
+T29 moves: Haunting Echoes, p1's library -> p1's hand
+T29 p1 draws
+T29 taps: p1:Plains
+T29 p1 adds {W} (p1:Plains)
+T29 p1 taps p1:Plains for mana
+T29 taps: p1:Island#1
+T29 p1 adds {U} (p1:Island#1)
+T29 p1 taps p1:Island#1 for mana
+T29 p1's unspent {W}{U} empties
+T29 taps: p1:Ornithopter
+T29 p1 attack: p1:Ornithopter -> p2
+T29 taps: p1:Mountain#2
+T29 p1 adds {R} (p1:Mountain#2)
+T29 p1 taps p1:Mountain#2 for mana
+T29 taps: p1:Island#2
+T29 p1 adds {U} (p1:Island#2)
+T29 p1 taps p1:Island#2 for mana
+T29 p1's unspent {U}{R} empties
+T29 p2 block: nothing
+T29 moves: Looming Shade, p1's hand -> stack
+T29 p1 cancels casting Looming Shade
+T29 moves: Nightmare, p1's hand -> stack
+T29 p1 cancels casting Nightmare
+T29 moves: Relentless Rats, p1's hand -> stack
+T29 p1 cancels casting Relentless Rats
+T30 turn 30 begins (p2)
+T30 untaps: p2:Mountain#1
+T30 untaps: p2:Plains#1
+T30 untaps: p2:Plains#2
+T30 untaps: p2:Swamp
+T30 untaps: p2:Plains#3
+T30 untaps: p2:Island
+T30 untaps: p2:Rod of Ruin
+T30 untaps: p2:Mountain#2
+T30 untaps: p2:Mountain#3
+T30 moves: Negate, p2's library -> p2's hand
+T30 p2 draws
+T30 targeted: p1:Ornithopter by Rod of Ruin ability
+T30 taps: p2:Plains#2
+T30 p2 adds {W} (p2:Plains#2)
+T30 p2 taps p2:Plains#2 for mana
+T30 taps: p2:Mountain#1
+T30 p2 adds {R} (p2:Mountain#1)
+T30 p2 taps p2:Mountain#1 for mana
+T30 taps: p2:Mountain#2
+T30 p2 adds {R} (p2:Mountain#2)
+T30 p2 taps p2:Mountain#2 for mana
+T30 taps: p2:Rod of Ruin
+T30 p2 activates p2:Rod of Ruin
+T30 damage: p2:Rod of Ruin -> p1:Ornithopter 1
+T30 resolves: p2:Rod of Ruin's ability
+T30 moves: Mountain, p2's hand -> battlefield
+T30 p2 plays p2:Mountain#4
+T30 taps: p2:Mountain#4
+T30 p2 adds {R} (p2:Mountain#4)
+T30 p2 taps p2:Mountain#4 for mana
+T30 taps: p2:Mountain#3
+T30 p2 adds {R} (p2:Mountain#3)
+T30 p2 taps p2:Mountain#3 for mana
+T30 taps: p2:Island
+T30 p2 adds {U} (p2:Island)
+T30 p2 taps p2:Island for mana
+T30 taps: p2:Plains#1
+T30 p2 adds {W} (p2:Plains#1)
+T30 p2 taps p2:Plains#1 for mana
+T30 moves: Magebane Armor, p2's hand -> stack
+T30 p2 casts Magebane Armor
+T30 resolves: Magebane Armor
+T30 moves: Magebane Armor, stack -> battlefield
+T30 taps: p2:Plains#3
+T30 p2 adds {W} (p2:Plains#3)
+T30 p2 taps p2:Plains#3 for mana
+T30 taps: p2:Swamp
+T30 p2 adds {B} (p2:Swamp)
+T30 p2 taps p2:Swamp for mana
+T30 p2's unspent {W}{W}{B} empties
+T30 p2 attack: nothing
+T30 moves: Warp World, p2's hand -> stack
+T30 p2 cancels casting Warp World
+T30 moves: Kelinore Bat, p2's hand -> stack
+T30 p2 cancels casting Kelinore Bat
+T30 moves: Magebane Armor, p2's hand -> stack
+T30 p2 cancels casting Magebane Armor
+T30 moves: Illusionary Servant, p2's hand -> stack
+T30 p2 cancels casting Illusionary Servant
+T30 damage removed: p1:Ornithopter (1)
+T31 turn 31 begins (p1)
+T31 untaps: p1:Plains
+T31 untaps: p1:Island#1
+T31 untaps: p1:Island#2
+T31 untaps: p1:Mountain#1
+T31 untaps: p1:Swamp#1
+T31 untaps: p1:Mountain#2
+T31 untaps: p1:Swamp#2
+T31 untaps: p1:Ornithopter
+T31 taps: p1:Swamp#1
+T31 p1 adds {B} (p1:Swamp#1)
+T31 p1 taps p1:Swamp#1 for mana
+T31 taps: p1:Plains
+T31 p1 adds {W} (p1:Plains)
+T31 p1 taps p1:Plains for mana
+T31 p1's unspent {W}{B} empties
+T31 moves: Sphinx Ambassador, p1's library -> p1's hand
+T31 p1 draws
+T31 taps: p1:Island#1
+T31 p1 adds {U} (p1:Island#1)
+T31 p1 taps p1:Island#1 for mana
+T31 taps: p1:Mountain#2
+T31 p1 adds {R} (p1:Mountain#2)
+T31 p1 taps p1:Mountain#2 for mana
+T31 p1's unspent {U}{R} empties
+T31 moves: Looming Shade, p1's hand -> stack
+T31 taps: p1:Mountain#1
+T31 p1 adds {R} (p1:Mountain#1)
+T31 p1 taps p1:Mountain#1 for mana
+T31 taps: p1:Swamp#2
+T31 p1 adds {B} (p1:Swamp#2)
+T31 p1 taps p1:Swamp#2 for mana
+T31 taps: p1:Island#2
+T31 p1 adds {U} (p1:Island#2)
+T31 p1 taps p1:Island#2 for mana
+T31 p1 casts Looming Shade
+T31 resolves: Looming Shade
+T31 moves: Looming Shade, stack -> battlefield
+T31 p1 cancels activating p1:Looming Shade
+T31 moves: Yawning Fissure, p1's hand -> stack
+T31 p1 cancels casting Yawning Fissure
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 attack: nothing
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T31 moves: Yawning Fissure, p1's hand -> stack
+T31 p1 cancels casting Yawning Fissure
+T31 moves: Relentless Rats, p1's hand -> stack
+T31 p1 cancels casting Relentless Rats
+T31 p1 cancels activating p1:Looming Shade
+T31 p1 cancels activating p1:Looming Shade
+T32 turn 32 begins (p2)
+T32 untaps: p2:Mountain#1
+T32 untaps: p2:Plains#1
+T32 untaps: p2:Plains#2
+T32 untaps: p2:Swamp
+T32 untaps: p2:Plains#3
+T32 untaps: p2:Island
+T32 untaps: p2:Rod of Ruin
+T32 untaps: p2:Mountain#2
+T32 untaps: p2:Mountain#3
+T32 untaps: p2:Mountain#4
+T32 taps: p2:Plains#1
+T32 p2 adds {W} (p2:Plains#1)
+T32 p2 taps p2:Plains#1 for mana
+T32 p1 cancels activating p1:Looming Shade
+T32 p2's unspent {W} empties
+T32 moves: Swamp, p2's library -> p2's hand
+T32 p2 draws
+T32 taps: p2:Mountain#3
+T32 p2 adds {R} (p2:Mountain#3)
+T32 p2 taps p2:Mountain#3 for mana
+T32 taps: p2:Mountain#2
+T32 p2 adds {R} (p2:Mountain#2)
+T32 p2 taps p2:Mountain#2 for mana
+T32 taps: p2:Plains#2
+T32 p2 adds {W} (p2:Plains#2)
+T32 p2 taps p2:Plains#2 for mana
+T32 taps: p2:Island
+T32 p2 adds {U} (p2:Island)
+T32 p2 taps p2:Island for mana
+T32 taps: p2:Rod of Ruin
+T32 p2 activates p2:Rod of Ruin
+T32 p1 cancels activating p1:Looming Shade
+T32 damage: p2:Rod of Ruin -> p1 1
+T32 p1 loses 1 life
+T32 resolves: p2:Rod of Ruin's ability
+T32 taps: p2:Mountain#1
+T32 p2 adds {R} (p2:Mountain#1)
+T32 p2 taps p2:Mountain#1 for mana
+T32 p2's unspent {R}{R} empties
+T32 taps: p2:Plains#3
+T32 p2 adds {W} (p2:Plains#3)
+T32 p2 taps p2:Plains#3 for mana
+T32 moves: Warp World, p2's hand -> stack
+T32 taps: p2:Mountain#4
+T32 p2 adds {R} (p2:Mountain#4)
+T32 p2 taps p2:Mountain#4 for mana
+T32 taps: p2:Swamp
+T32 p2 adds {B} (p2:Swamp)
+T32 p2 taps p2:Swamp for mana
+T32 p2 cancels casting Warp World
+T32 moves: Swamp, p2's hand -> battlefield
+T32 p2 plays p2:Swamp#2
+T32 p2's unspent {W} empties
+T32 taps: p2:Mountain#4
+T32 p2 adds {R} (p2:Mountain#4)
+T32 p2 taps p2:Mountain#4 for mana
+T32 p1 cancels activating p1:Looming Shade
+T32 p2's unspent {R} empties
+T32 p2 attack: nothing
+T32 p1 cancels activating p1:Looming Shade
+T32 p1 cancels activating p1:Looming Shade
+T32 taps: p2:Swamp#1
+T32 p2 adds {B} (p2:Swamp#1)
+T32 p2 taps p2:Swamp#1 for mana
+T32 taps: p2:Swamp#2
+T32 p2 adds {B} (p2:Swamp#2)
+T32 p2 taps p2:Swamp#2 for mana
+T32 p1 cancels activating p1:Looming Shade
+T32 p2's unspent {B}{B} empties
+T32 p1 cancels activating p1:Looming Shade
+T33 turn 33 begins (p1)
+T33 untaps: p1:Plains
+T33 untaps: p1:Island#1
+T33 untaps: p1:Island#2
+T33 untaps: p1:Mountain#1
+T33 untaps: p1:Swamp#1
+T33 untaps: p1:Mountain#2
+T33 untaps: p1:Swamp#2
+T33 moves: Clone, p1's library -> p1's hand
+T33 p1 draws
+T33 taps: p1:Island#2
+T33 p1 adds {U} (p1:Island#2)
+T33 p1 taps p1:Island#2 for mana
+T33 taps: p1:Swamp#2
+T33 p1 adds {B} (p1:Swamp#2)
+T33 p1 taps p1:Swamp#2 for mana
+T33 p1's unspent {U}{B} empties
+T33 taps: p1:Plains
+T33 p1 adds {W} (p1:Plains)
+T33 p1 taps p1:Plains for mana
+T33 p1's unspent {W} empties
+T33 p1 attack: nothing
+T33 taps: p1:Swamp#1
+T33 p1 adds {B} (p1:Swamp#1)
+T33 p1 taps p1:Swamp#1 for mana
+T33 p1's unspent {B} empties
+T33 taps: p1:Island#1
+T33 p1 adds {U} (p1:Island#1)
+T33 p1 taps p1:Island#1 for mana
+T33 moves: Clone, p1's hand -> stack
+T33 taps: p1:Mountain#1
+T33 p1 adds {R} (p1:Mountain#1)
+T33 p1 taps p1:Mountain#1 for mana
+T33 taps: p1:Mountain#2
+T33 p1 adds {R} (p1:Mountain#2)
+T33 p1 taps p1:Mountain#2 for mana
+T33 p1 cancels casting Clone
+T33 taps: p1:Mountain#2
+T33 p1 adds {R} (p1:Mountain#2)
+T33 p1 taps p1:Mountain#2 for mana
+T33 moves: Relentless Rats, p1's hand -> stack
+T33 taps: p1:Mountain#1
+T33 p1 adds {R} (p1:Mountain#1)
+T33 p1 taps p1:Mountain#1 for mana
+T33 p1 cancels casting Relentless Rats
+T33 taps: p1:Mountain#1
+T33 p1 adds {R} (p1:Mountain#1)
+T33 p1 taps p1:Mountain#1 for mana
+T33 p1 cancels activating p1:Looming Shade
+T33 p1's unspent {U}{R} empties
+T33 taps: p1:Mountain#1
+T33 p1 adds {R} (p1:Mountain#1)
+T33 p1 taps p1:Mountain#1 for mana
+T33 p1's unspent {R} empties
+T33 moves: Planar Cleansing, p1's hand -> p1's graveyard
+T33 p1 discards Planar Cleansing
+T34 turn 34 begins (p2)
+T34 untaps: p2:Mountain#1
+T34 untaps: p2:Plains#1
+T34 untaps: p2:Plains#2
+T34 untaps: p2:Swamp#1
+T34 untaps: p2:Plains#3
+T34 untaps: p2:Island
+T34 untaps: p2:Rod of Ruin
+T34 untaps: p2:Mountain#2
+T34 untaps: p2:Mountain#3
+T34 untaps: p2:Mountain#4
+T34 untaps: p2:Swamp#2
+T34 taps: p2:Island
+T34 p2 adds {U} (p2:Island)
+T34 p2 taps p2:Island for mana
+T34 p2's unspent {U} empties
+T34 moves: Forest, p2's library -> p2's hand
+T34 p2 draws
+T34 p1 cancels activating p1:Looming Shade
+T34 p1 cancels activating p1:Looming Shade
+T34 p1 cancels activating p1:Looming Shade
+T34 p1 cancels activating p1:Looming Shade
+T34 moves: Illusionary Servant, p2's hand -> stack
+T34 taps: p2:Swamp#1
+T34 p2 adds {B} (p2:Swamp#1)
+T34 p2 taps p2:Swamp#1 for mana
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 p2 taps p2:Mountain#2 for mana
+T34 taps: p2:Mountain#4
+T34 p2 adds {R} (p2:Mountain#4)
+T34 p2 taps p2:Mountain#4 for mana
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 p2 taps p2:Plains#3 for mana
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 taps p2:Plains#1 for mana
+T34 taps: p2:Plains#2
+T34 p2 adds {W} (p2:Plains#2)
+T34 p2 taps p2:Plains#2 for mana
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 p2 taps p2:Mountain#1 for mana
+T34 taps: p2:Swamp#2
+T34 p2 adds {B} (p2:Swamp#2)
+T34 p2 taps p2:Swamp#2 for mana
+T34 taps: p2:Mountain#3
+T34 p2 adds {R} (p2:Mountain#3)
+T34 p2 taps p2:Mountain#3 for mana
+T34 p2 cancels casting Illusionary Servant
+T34 moves: Warp World, p2's hand -> stack
+T34 taps: p2:Mountain#4
+T34 p2 adds {R} (p2:Mountain#4)
+T34 p2 taps p2:Mountain#4 for mana
+T34 taps: p2:Mountain#3
+T34 p2 adds {R} (p2:Mountain#3)
+T34 p2 taps p2:Mountain#3 for mana
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 p2 taps p2:Plains#3 for mana
+T34 taps: p2:Plains#2
+T34 p2 adds {W} (p2:Plains#2)
+T34 p2 taps p2:Plains#2 for mana
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 p2 taps p2:Mountain#1 for mana
+T34 taps: p2:Swamp#1
+T34 p2 adds {B} (p2:Swamp#1)
+T34 p2 taps p2:Swamp#1 for mana
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 taps p2:Plains#1 for mana
+T34 taps: p2:Swamp#2
+T34 p2 adds {B} (p2:Swamp#2)
+T34 p2 taps p2:Swamp#2 for mana
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 p2 taps p2:Mountain#2 for mana
+T34 p2 casts Warp World
+T34 p2 cancels activating p2:Rod of Ruin
+T34 moves: Negate, p2's hand -> stack
+T34 targeted: Warp World by Negate
+T34 p2 cancels casting Negate
+T34 p2 cancels activating p2:Rod of Ruin
+T34 p2 cancels activating p2:Rod of Ruin
+T34 moves: Mountain, battlefield -> p2's library
+T34 moves: Plains, battlefield -> p2's library
+T34 moves: Plains, battlefield -> p2's library
+T34 moves: Swamp, battlefield -> p2's library
+T34 moves: Plains, battlefield -> p2's library
+T34 moves: Island, battlefield -> p2's library
+T34 moves: Rod of Ruin, battlefield -> p2's library
+T34 moves: Mountain, battlefield -> p2's library
+T34 moves: Mountain, battlefield -> p2's library
+T34 moves: Mountain, battlefield -> p2's library
+T34 moves: Magebane Armor, battlefield -> p2's library
+T34 moves: Swamp, battlefield -> p2's library
+T34 moves: Plains, battlefield -> p1's library
+T34 moves: Island, battlefield -> p1's library
+T34 moves: Island, battlefield -> p1's library
+T34 moves: Mountain, battlefield -> p1's library
+T34 moves: Swamp, battlefield -> p1's library
+T34 moves: Mountain, battlefield -> p1's library
+T34 moves: Swamp, battlefield -> p1's library
+T34 moves: Ornithopter, battlefield -> p1's library
+T34 moves: Looming Shade, battlefield -> p1's library
+T34 p2 shuffles their library
+T34 p1 shuffles their library
+T34 p2's library is revealed: Nightmare, Swamp, Cancel, Stampeding Rhino, Mountain, Mountain, Island, Plains, Plains, Plains, Razorfoot Griffin, Magebane Armor
+T34 p1's library is revealed: Mind Spring, Mirror of Fate, Swamp, Swamp, Swamp, Swamp, Swamp, Pithing Needle, Forest
+T34 p1 names Awakener Druid for Pithing Needle
+T34 moves: Nightmare, p2's library -> battlefield
+T34 moves: Swamp, p2's library -> battlefield
+T34 moves: Stampeding Rhino, p2's library -> battlefield
+T34 moves: Mountain, p2's library -> battlefield
+T34 moves: Mountain, p2's library -> battlefield
+T34 moves: Island, p2's library -> battlefield
+T34 moves: Plains, p2's library -> battlefield
+T34 moves: Plains, p2's library -> battlefield
+T34 moves: Plains, p2's library -> battlefield
+T34 moves: Razorfoot Griffin, p2's library -> battlefield
+T34 moves: Magebane Armor, p2's library -> battlefield
+T34 moves: Mirror of Fate, p1's library -> battlefield
+T34 moves: Swamp, p1's library -> battlefield
+T34 moves: Swamp, p1's library -> battlefield
+T34 moves: Swamp, p1's library -> battlefield
+T34 moves: Swamp, p1's library -> battlefield
+T34 moves: Swamp, p1's library -> battlefield
+T34 moves: Pithing Needle, p1's library -> battlefield
+T34 moves: Forest, p1's library -> battlefield
+T34 1 card put on the bottom of p2's library
+T34 1 card put on the bottom of p1's library
+T34 resolves: Warp World
+T34 moves: Warp World, stack -> p2's graveyard
+T34 moves: Illusionary Servant, p2's hand -> stack
+T34 taps: p2:Island
+T34 p2 adds {U} (p2:Island)
+T34 p2 taps p2:Island for mana
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 taps p2:Plains#1 for mana
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 p2 taps p2:Plains#3 for mana
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 p2 taps p2:Mountain#1 for mana
+T34 taps: p2:Swamp
+T34 p2 adds {B} (p2:Swamp)
+T34 p2 taps p2:Swamp for mana
+T34 p2 cancels casting Illusionary Servant
+T34 p2's unspent {B} empties
+T34 taps: p1:Swamp#3
+T34 p1 adds {B} (p1:Swamp#3)
+T34 p1 taps p1:Swamp#3 for mana
+T34 taps: p2:Island
+T34 p2 adds {U} (p2:Island)
+T34 p2 taps p2:Island for mana
+T34 taps: p1:Swamp#4
+T34 p1 adds {B} (p1:Swamp#4)
+T34 p1 taps p1:Swamp#4 for mana
+T34 taps: p1:Swamp#5
+T34 p1 adds {B} (p1:Swamp#5)
+T34 p1 taps p1:Swamp#5 for mana
+T34 p1's unspent {B}{B}{B} empties
+T34 p2's unspent {U} empties
+T34 p2 attack: nothing
+T34 taps: p2:Plains#1
+T34 p2 adds {W} (p2:Plains#1)
+T34 p2 taps p2:Plains#1 for mana
+T34 taps: p2:Plains#2
+T34 p2 adds {W} (p2:Plains#2)
+T34 p2 taps p2:Plains#2 for mana
+T34 p2's unspent {W}{W} empties
+T34 taps: p2:Mountain#1
+T34 p2 adds {R} (p2:Mountain#1)
+T34 p2 taps p2:Mountain#1 for mana
+T34 taps: p2:Swamp
+T34 p2 adds {B} (p2:Swamp)
+T34 p2 taps p2:Swamp for mana
+T34 taps: p2:Mountain#2
+T34 p2 adds {R} (p2:Mountain#2)
+T34 p2 taps p2:Mountain#2 for mana
+T34 taps: p2:Plains#3
+T34 p2 adds {W} (p2:Plains#3)
+T34 p2 taps p2:Plains#3 for mana
+T34 taps: p1:Forest
+T34 p1 adds {G} (p1:Forest)
+T34 p1 taps p1:Forest for mana
+T34 taps: p1:Swamp#1
+T34 p1 adds {B} (p1:Swamp#1)
+T34 p1 taps p1:Swamp#1 for mana
+T34 p1's unspent {B}{G} empties
+T34 p2's unspent {W}{B}{R}{R} empties
+T34 moves: Forest, p2's hand -> battlefield
+T34 p2 plays p2:Forest
+T34 taps: p1:Swamp#2
+T34 p1 adds {B} (p1:Swamp#2)
+T34 p1 taps p1:Swamp#2 for mana
+T34 taps: p1:Mirror of Fate
+T34 p1 sacrifices p1:Mirror of Fate
+T34 moves: Mirror of Fate, battlefield -> p1's graveyard
+T34 p1 activates p1:Mirror of Fate
+T34 moves: Goblin Artillery, p1's library -> exile
+T34 moves: Bountiful Harvest, p1's library -> exile
+T34 moves: Mind Spring, p1's library -> exile
+T34 moves: Looming Shade, p1's library -> exile
+T34 moves: Swamp, p1's library -> exile
+T34 moves: Enormous Baloth, p1's library -> exile
+T34 moves: Prized Unicorn, p1's library -> exile
+T34 moves: Ornithopter, p1's library -> exile
+T34 moves: Mountain, p1's library -> exile
+T34 moves: Mountain, p1's library -> exile
+T34 moves: Island, p1's library -> exile
+T34 moves: Island, p1's library -> exile
+T34 moves: Island, p1's library -> exile
+T34 moves: Island, p1's library -> exile
+T34 moves: Island, p1's library -> exile
+T34 moves: Plains, p1's library -> exile
+T34 moves: Plains, p1's library -> exile
+T34 moves: Plains, p1's library -> exile
+T34 moves: Flashfreeze, p1's library -> exile
+T34 resolves: Mirror of Fate's ability
+T34 taps: p2:Forest
+T34 p2 adds {G} (p2:Forest)
+T34 p2 taps p2:Forest for mana
+T34 targeted: p2:Razorfoot Griffin by Magebane Armor ability
+T34 p2 cancels activating p2:Magebane Armor
+T34 targeted: p2:Razorfoot Griffin by Magebane Armor ability
+T34 p2 cancels activating p2:Magebane Armor
+T34 p1's unspent {B} empties
+T34 p2's unspent {G} empties
+T35 turn 35 begins (p1)
+T35 untaps: p1:Swamp#1
+T35 untaps: p1:Swamp#2
+T35 untaps: p1:Swamp#3
+T35 untaps: p1:Swamp#4
+T35 untaps: p1:Swamp#5
+T35 untaps: p1:Forest

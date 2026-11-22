@@ -68,6 +68,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "CARDS_REVEALED":
     case "STARTING_PLAYER_CHOSEN":
     case "LIBRARY_SHUFFLED":
+    case "PUT_ON_LIBRARY_BOTTOM":
     case "MULLIGAN_DECLARED":
     case "TURN_BEGAN":
     case "EXTRA_TURN_ADDED":
@@ -90,6 +91,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "TOKEN_CREATED":
     case "ATTACHED":
     case "AURA_HOST_CHOSEN":
+    // These three carry no id from a hidden zone, left out where they're emitted (D-129).
     case "NAME_CHOSEN":
     case "OBJECTS_CHOSEN":
     case "UNATTACHED":

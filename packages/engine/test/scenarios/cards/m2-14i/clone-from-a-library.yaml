@@ -1,4 +1,4 @@
-name: A Clone that Sphinx Ambassador puts onto the battlefield from a library chooses what to copy, and the choice doesn't name the card by its library id
+name: A Clone that Sphinx Ambassador puts onto the battlefield from a library chooses what to copy, and the choice announced doesn't name the card by its library id
 rules: [CR 614.12a, CR 707.5, CR 401.2]
 setup:
   turn: { active: p1, step: main1 }
@@ -15,8 +15,9 @@ steps:
   - p2 choose: Grizzly Bears
   - p1 choose: yes
   - expect:
-      pending: { player: p1, kind: chooseCards, purpose: copy, for: null }
+      pending: { player: p1, kind: chooseCards, purpose: copy }
   - p1 choose: Sphinx Ambassador
   - expect:
       p1.battlefield: [Sphinx Ambassador, Sphinx Ambassador]
       p1:Sphinx Ambassador#2.power: 5
+      events contains: [{ type: OBJECTS_CHOSEN, player: p1, object: null }]

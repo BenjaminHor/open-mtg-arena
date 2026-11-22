@@ -15,7 +15,7 @@ import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { ZoneRef } from "../state/zones.ts";
-import { inShownOrder, oracleIdOf } from "../zones/shown-order.ts";
+import { inShownOrder, oracleIdOf, publicIdOf } from "../zones/shown-order.ts";
 
 type ChooseCards = Extract<PendingDecision, { kind: "chooseCards" }>;
 
@@ -105,7 +105,8 @@ export function answerChooseCards(answered: GameState, decision: ChooseCards, an
       const event: GameEvent = {
         type: "OBJECTS_CHOSEN",
         player: decision.player,
-        object: decision.for,
+        object: decision.for === null ? null : publicIdOf(answered, decision.for),
+        card: decision.for === null ? null : oracleIdOf(answered, decision.for),
         purpose: decision.purpose,
         chosen: picked,
       };

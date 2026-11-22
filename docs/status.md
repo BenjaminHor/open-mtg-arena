@@ -837,6 +837,58 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             later), Haunting Echoes still working; the hidden order in the fuzz (two worlds).
          - Future impact: `choose` serves "choose a card in a graveyard" without targets; `exileAll` any zone; CR 401.4
            for the bottom (later) goes in the same place.
+       - M2-14k plan (2026-11-22): Warp World (its rulings give the steps: count the permanents each player owns,
+         shuffle them in, reveal that many cards, artifacts/creatures/lands onto the battlefield at once, then
+         enchantments at once (Auras choose hosts among those, APNAP), the rest on the bottom in any order). CR 401.4,
+         701.24a, 701.20a, 608.2c/d, 303.4f/g, 614.12a, 111.7, 101.4. D-126, mostly generalized blocks:
+         1. New op `shuffleIntoLibraries { filter }`: every permanent fitting it goes to its owner's library at once,
+            each player then shuffles (CR 701.24a); how many each player owned is kept (`Resolution.shuffledIn`; tokens
+            count, its ruling).
+         2. `revealTop` takes `who: "eachPlayer"` and `count: "shuffledIn"`: each reveals that many cards (tokens
+            aren't cards, its ruling), all `found`.
+         3. `returnAllToBattlefield` takes `from: "found"` as well as all graveyards: the cards found that fit, under
+            their owners, Auras choosing hosts already on the battlefield (APNAP, CR 101.4), as for Open the Vaults.
+            An Aura choosing while still in a library: the decision's `for`, and `AURA_HOST_CHOSEN`, show it by identity,
+            not by its library id (D-062): the view's `for` becomes a shown option, as options are, and the fuzz
+            scramble keeps what a viewer's own decision is for.
+         4. `put` of several cards on the bottom of a library (CR 401.4): each owner arranges theirs, unrevealed, in
+            APNAP order; cards already in that library are reordered, not moved (CR 400.7); `reorderLibrary` gains a
+            bottom.
+         5. Scenarios: the basic swap; tokens counted but not revealed; an instant to the bottom; an Aura onto a
+            creature put in step 4, or to the bottom with nothing to enchant; a checkland entering tapped; Clone with
+            nothing to copy; Pithing Needle naming; two players' Auras in APNAP order; enters triggers waiting until it
+            finishes (its ruling); a stolen permanent going to its owner's library; an empty library.
+         - Future impact: `shuffleIntoLibraries` is "shuffle into its owner's library" for any filter; the bottom
+           arranging serves "put the rest on the bottom in any order" cards.
+         - Advisor review of the plan: (a) tokens move with the rest but cease to exist in the same batch (its ruling: "you
+           shouldn't actually shuffle them in"), so no token sits in a library while decisions wait (Nocturnus, views);
+           (b) hidden ids, one commit first: decisions keep real ids and the view shows what they're for by identity
+           (chooseCards' and chooseName's `for`, as options are; Clone's `for: null` reverted to this), events emitted
+           before a card leaves a hidden zone (NAME_CHOSEN, OBJECTS_CHOSEN, AURA_HOST_CHOSEN) carry no id from it;
+           (c) count before moving (a stolen permanent counts for its owner; none still shuffles); cards move out of a
+           library in shown order per owner, APNAP across owners; (d) the fuzz rarely casts it: run the fuzz checks
+           over every step of the m2-14k scenarios, and two-worlds tests for the bottom order and Aura hosts;
+           (e) more scenarios: Clone revealed with a creature (options []), Entangling Vines to the bottom, a
+           planeswalker card to the bottom, Mind Control on a step-4 creature, two Auras of one player, Hive Mind and
+           Twincast copying it.
+       - M2-14k built (2026-11-22, D-129, D-130): Warp World (240 cards, every M2 card but the two set aside). First a
+         separate commit: a card entering from a hidden zone is shown by identity, not id (D-129). Then
+         `shuffleIntoLibraries`, `revealTop` for each player, `returnAllToBattlefield` from `found`, `put` into libraries
+         for several owners and the bottom (CR 401.4, 400.7), `reorderLibrary.bottom`. 11 scenarios (the swap, tokens,
+         a stolen permanent, an Aura auto and chosen, Vines with nothing to enchant, a checkland, Clone with nothing to
+         copy, triggers waiting, a planeswalker to the bottom, Mind Control). Fuzz checks on every scenario state. Golden
+         games regenerated (Lurking Predators' bottom is a reorder now). Fuzz clean, bench within noise (randomGame
+         115 ms, the open budget question). Rules review: every ruling right; one regression, Lurking Predators putting
+         its revealed card on the bottom told no one (CR 701.20a): `PUT_ON_LIBRARY_BOTTOM` (a count, no ids). 17
+         scenarios from it (triggers held and APNAP, no SBA mid-way, two Needles, Mirage, Auras and enchantments entering
+         together, both owners' bottoms, Platinum Angel, Twincast and Hive Mind copying it, a stolen token, protection,
+         shroud, owning nothing). Noted, following Warp World's ruling 5: every Aura host is announced (APNAP) before the
+         choices made as cards enter (a Mirage's land type comes after the other player's host). PR #85.
+         Code review applied: scenarios for Warp World's last clause (a revealed leftover under an
+         unrevealed card) and a token never revealed (an Aura pending); the scenario fuzz checks get each step's events;
+         a chooseName view test; throw on an order answered for no owner; `renamed` an exhaustive switch;
+         `shuffleIntoLibraries { of: EffectSubject }`; definition checks for `count: "shuffledIn"` and `from: "found"`;
+         one `ownerOf`; `card` on NAME_CHOSEN/OBJECTS_CHOSEN; `reorderLibraryTop` renamed; stale READMEs/future-rules.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
          yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong

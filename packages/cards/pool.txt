@@ -232,6 +232,7 @@ Wall of Bone
 Wall of Faith
 Wall of Fire
 Wall of Frost
+Warp World
 Warpath Ghoul
 Weakness
 Whispersilk Cloak

@@ -39,6 +39,12 @@ export type GameEvent =
   /** CR 103.1. `chosenBy` is null when the setup named the starting player. */
   | { type: "STARTING_PLAYER_CHOSEN"; player: PlayerId; chosenBy: PlayerId | null }
   | { type: "LIBRARY_SHUFFLED"; player: PlayerId } // CR 701.24
+  /**
+   * `count` cards already in `player`'s library were put on its bottom (Lurking Predators' revealed card, Warp World's
+   * leftovers): everyone sees that they went (CR 701.20a: a revealed card stays revealed while it matters), but not
+   * which order or which ids (CR 401.4, D-062). Not a zone change (CR 400.7).
+   */
+  | { type: "PUT_ON_LIBRARY_BOTTOM"; player: PlayerId; count: number }
   /** A card drawn (CR 121.1), as well as its `ZONE_CHANGED`. Hidden from other players, like the card itself. */
   | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5
@@ -107,21 +113,40 @@ export type GameEvent =
   | { type: "ATTACHED"; object: ObjectId; to: ObjectId; from: ObjectId | null }
   /**
    * As an Aura is about to be put onto the battlefield other than by resolving, the player who'll control it chose what
-   * it will enchant (CR 303.4f). Public, so the players choosing after know it (CR 101.4b).
+   * it will enchant (CR 303.4f). Public, so the players choosing after know it (CR 101.4b). `card` is what the Aura is;
+   * `aura` is null while it's in a hidden zone (revealed in a library, Warp World), whose id records its history (D-062).
    */
-  | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId; host: ObjectId }
+  | { type: "AURA_HOST_CHOSEN"; player: PlayerId; aura: ObjectId | null; card: OracleId; host: ObjectId }
   /**
    * As a permanent is about to enter, the player it enters under chose a card name (Pithing Needle) or a basic land type
    * (Convincing Mirage) for it (CR 614.12a), as `what` says.
    * Public, so the players choosing after know it (CR 101.4b). `object` is the card as it was, before it entered.
    */
-  | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId; what: ChooseWhat; name: string }
+  /**
+   * `card` is what the card entering is (null while a spell or ability resolves); `object` is null for one entering
+   * from a hidden zone, whose id there records its history (D-062, D-129).
+   */
+  | {
+      type: "NAME_CHOSEN";
+      player: PlayerId;
+      object: ObjectId | null;
+      card: OracleId | null;
+      what: ChooseWhat;
+      name: string;
+    }
   /**
    * As `object` enters, `player` chose these permanents for it (CR 614.12a): the one it enters as a copy of (CR 707.5),
    * or none (Clone's "may"). `object` is null for a card entering from a hidden zone, whose id there records its history
    * (D-062).
    */
-  | { type: "OBJECTS_CHOSEN"; player: PlayerId; object: ObjectId | null; purpose: ChoosePurpose; chosen: ObjectId[] }
+  | {
+      type: "OBJECTS_CHOSEN";
+      player: PlayerId;
+      object: ObjectId | null;
+      card: OracleId | null;
+      purpose: ChoosePurpose;
+      chosen: ObjectId[];
+    }
   /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */
   | { type: "UNATTACHED"; object: ObjectId; from: ObjectId }
   /**

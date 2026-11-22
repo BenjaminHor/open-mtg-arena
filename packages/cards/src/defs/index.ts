@@ -229,6 +229,7 @@ import { wallOfBone } from "./w/wall-of-bone.ts";
 import { wallOfFaith } from "./w/wall-of-faith.ts";
 import { wallOfFire } from "./w/wall-of-fire.ts";
 import { wallOfFrost } from "./w/wall-of-frost.ts";
+import { warpWorld } from "./w/warp-world.ts";
 import { warpathGhoul } from "./w/warpath-ghoul.ts";
 import { weakness } from "./w/weakness.ts";
 import { whispersilkCloak } from "./w/whispersilk-cloak.ts";
@@ -470,6 +471,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   wallOfBone,
   wallOfFaith,
   wallOfFire,
+  warpWorld,
   warpathGhoul,
   weakness,
   whispersilkCloak,

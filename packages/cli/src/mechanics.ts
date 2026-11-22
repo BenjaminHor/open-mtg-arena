@@ -112,6 +112,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   COPY_CEASED_TO_EXIST: true,
   NAME_CHOSEN: true,
   OBJECTS_CHOSEN: true,
+  PUT_ON_LIBRARY_BOTTOM: true,
 };
 
 /**

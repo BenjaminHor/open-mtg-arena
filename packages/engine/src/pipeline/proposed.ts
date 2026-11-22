@@ -61,7 +61,7 @@ export type SingleEvent =
   /** Cards are revealed to every player (CR 701.20a); they stay where they are (CR 701.20b). */
   | { kind: "reveal"; from: ZoneRef; objects: ObjectId[] }
   /** The top cards of a library are put back in this order, top first (CR 401.4); nothing leaves the library. */
-  | { kind: "reorderLibrary"; player: PlayerId; top: ObjectId[] }
+  | { kind: "reorderLibrary"; player: PlayerId; top: ObjectId[]; bottom?: ObjectId[] }
   /** A permanent becomes tapped (CR 701.26a). */
   | { kind: "tap"; object: ObjectId }
   /** A permanent becomes untapped (CR 701.26b). */

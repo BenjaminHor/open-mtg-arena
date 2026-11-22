@@ -16,7 +16,7 @@ function withLibrary(library: string[]): GameState {
   }).state;
   return {
     ...state,
-    resolution: { object: "o999", found: [], exiled: [], sacrificed: [], auraHosts: [], named: null },
+    resolution: { object: "o999", found: [], exiled: [], sacrificed: [], auraHosts: [], named: null, shuffledIn: [] },
   };
 }
 

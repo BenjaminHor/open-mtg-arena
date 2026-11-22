@@ -2,7 +2,7 @@
 // invariants. Returns the problems found; an empty list means the scenario passed. No file I/O here: callers pass
 // the YAML text (the tests and, from M1-17, the CLI).
 
-import { type CardDatabase, createGame, type GameState } from "@mtg/engine";
+import { type CardDatabase, createGame, type GameEvent, type GameState } from "@mtg/engine";
 import { expectationProblems } from "./expect.ts";
 import { parseScenario, type Scenario } from "./format.ts";
 import { invariantProblems } from "./invariants.ts";
@@ -12,7 +12,13 @@ import { type ActionStep, firstRejection, type Game, takeStep } from "./steps.ts
 export type ScenarioResult = { name: string; problems: string[] };
 
 /** Checks one state; the default is the engine's invariants. Tests replace it to prove every state is checked. */
-export type StateCheck = (state: GameState, cards: CardDatabase) => string[];
+/** A check on each state a scenario reaches, with the events of the action that reached it and the state before it. */
+export type StateCheck = (
+  state: GameState,
+  cards: CardDatabase,
+  events: readonly GameEvent[],
+  before: GameState,
+) => string[];
 
 export function runScenario(
   text: string,
@@ -46,8 +52,12 @@ function run(scenario: Scenario, cards: CardDatabase, checkState: StateCheck): s
   }
   if (!created.ok) return [`setup rejected: ${created.error.message}`];
 
+  let checked = 0;
+  let previous = created.state;
   const checkInvariants = (g: Game) => {
-    const problems = checkState(g.state, cards);
+    const problems = checkState(g.state, cards, g.events.slice(checked), previous);
+    checked = g.events.length;
+    previous = g.state;
     if (problems.length > 0) throw new Error(`invariant broken: ${problems.join("; ")}`);
   };
   let game: Game = { state: created.state, events: created.events };

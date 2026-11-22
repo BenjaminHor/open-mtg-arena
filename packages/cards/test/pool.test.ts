@@ -63,6 +63,22 @@ describe("definitionProblems", () => {
     expect(problem).toContain("Lightning Bolt: Oracle text changed");
   });
 
+  it("reports cards returned from those found, or revealed by the count shuffled in, with nothing before to set them", () => {
+    const spell = (effects: Effect[]): CardDef => ({
+      name: "Lightning Bolt",
+      oracle: bolt.oracleText,
+      spell: { targets: [], effects },
+    });
+    const returned: Effect = { op: "returnAllToBattlefield", from: "found", filter: {}, under: "owners" };
+    const revealed: Effect = { op: "revealTop", who: "eachPlayer", count: "shuffledIn" };
+    expect(definitionProblems([spell([returned])], [bolt])).toContain(
+      'Lightning Bolt: returnAllToBattlefield from "found", but no search, reveal or choice comes before it',
+    );
+    expect(definitionProblems([spell([revealed])], [bolt])).toContain(
+      "Lightning Bolt: revealTop counts the cards shuffled in, but no shuffleIntoLibraries comes before it",
+    );
+  });
+
   it('reports "each other player copies" outside a spell-cast trigger, where no player cast it', () => {
     const copy: Effect = { op: "copySpell", of: { target: 0 }, by: "eachOtherPlayer", newTargets: "may" };
     const spell: CardDef = {

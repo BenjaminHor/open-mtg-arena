@@ -286,6 +286,7 @@ function withCardNames(events: readonly GameEvent[], cards: CardDatabase): unkno
     if (e.type === "CARDS_REVEALED") return { ...e, cards: e.cards.map(named) };
     // The card whose text prevents the damage (a Clone copying Protean Hydra names Protean Hydra).
     if (e.type === "DAMAGE_PREVENTED") return { ...e, by: named(e.by) };
+    if (e.type === "AURA_HOST_CHOSEN") return { ...e, card: named(e.card) };
     return e;
   });
 }

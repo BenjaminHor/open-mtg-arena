@@ -32,7 +32,7 @@ const PRIMITIVES = [
   "shuffleLibrary",
   "countLandPlay",
   "reveal",
-  "reorderLibraryTop",
+  "reorderLibrary",
   "regenerate",
   "putCounters",
   "removeCounters",

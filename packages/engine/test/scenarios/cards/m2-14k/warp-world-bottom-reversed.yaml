@@ -1,0 +1,27 @@
+name: Leftovers on the bottom in the other order each owner chooses
+rules: [CR 401.4, CR 101.4]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Garruk Wildspeaker, counters: { loyalty: 3 } }, { card: Jace Beleren, counters: { loyalty: 3 } }]
+    hand: [Warp World]
+    manaPool: { R: 8 }
+    library: []
+  p2:
+    battlefield: [{ card: Ajani Goldmane, counters: { loyalty: 4 } }, { card: Chandra Nalaar, counters: { loyalty: 6 } }]
+    library: []
+steps:
+  - p1 cast: Warp World
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: putOnBottom }
+  - p1 choose: Garruk Wildspeaker
+  - p1 choose: Jace Beleren
+  - expect:
+      pending: { player: p2, kind: chooseCards, purpose: putOnBottom }
+  - p2 choose: Chandra Nalaar
+  - p2 choose: Ajani Goldmane
+  - expect:
+      p1.library: [Garruk Wildspeaker, Jace Beleren]
+      p2.library: [Chandra Nalaar, Ajani Goldmane]

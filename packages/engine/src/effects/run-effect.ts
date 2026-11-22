@@ -28,6 +28,7 @@ import {
   mayShuffle,
   revealObjects,
   revealTop,
+  revealTopEach,
   revealUntil,
   search,
   shuffleEach,
@@ -38,6 +39,7 @@ import { put } from "./put-effects.ts";
 import { addRegenerationShields } from "./regeneration-shield.ts";
 import { returnAllToBattlefield } from "./return-all.ts";
 import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
+import { shuffleIntoLibraries } from "./shuffle-into-libraries.ts";
 import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
 
 /**
@@ -321,9 +323,13 @@ export function runEffect(
     case "mayPlayWithoutPaying":
       return mayPlayWithoutPaying(state, effect, context, cards);
     case "revealTop": {
+      if (effect.count === "shuffledIn")
+        return revealTopEach(state, playersNamed(state, effect.who, context, cards), cards);
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : revealTop(state, player, cards);
     }
+    case "shuffleIntoLibraries":
+      return shuffleIntoLibraries(state, effect, context, cards);
     case "shuffle": {
       const onTop = effect.foundOnTop === true ? objectsNamed(state, "found", context, cards) : undefined;
       return shuffleEach(state, playersNamed(state, effect.who, context, cards), cards, onTop);

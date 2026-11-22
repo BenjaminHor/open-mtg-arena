@@ -1197,7 +1197,7 @@ T28 moves: Unsummon, stack -> p2's graveyard
 T28 resolves: Negate
 T28 moves: Negate, stack -> p2's graveyard
 T28 p1's library is revealed: Forest
-T28 moves: Forest, p1's library -> p1's library
+T28 1 card put on the bottom of p1's library
 T28 resolves: p1:Lurking Predators's ability
 T28 p1's unspent {R}{R}{G}{G} empties
 T28 p2's unspent {B}{B}{B} empties
@@ -1790,7 +1790,7 @@ T36 taps: p1:Forest#2
 T36 p1 adds {G} (p1:Forest#2)
 T36 p1 taps p1:Forest#2 for mana
 T36 p1's library is revealed: Forest
-T36 moves: Forest, p1's library -> p1's library
+T36 1 card put on the bottom of p1's library
 T36 resolves: p1:Lurking Predators's ability
 T36 resolves: Child of Night
 T36 moves: Child of Night, stack -> battlefield

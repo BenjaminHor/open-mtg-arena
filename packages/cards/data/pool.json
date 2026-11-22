@@ -6721,6 +6721,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Warp World",
+      "slug": "warp-world",
+      "oracleId": "50a228a2-c8b6-4416-b0ab-417926a9b9b6",
+      "layout": "normal",
+      "manaCost": "{5}{R}{R}{R}",
+      "manaValue": 8,
+      "typeLine": "Sorcery",
+      "oracleText": "Each player shuffles all permanents they own into their library, then reveals that many cards from the top of their library. Each player puts all artifact, creature, and land cards revealed this way onto the battlefield, then does the same for enchantment cards, then puts all cards revealed this way that weren't put onto the battlefield on the bottom of their library.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [
+        "R"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/a/a/aa6e1fb5-a06b-4e10-8cc7-785e0f0b298e.jpg?1783942367",
+        "large": "https://cards.scryfall.io/large/front/a/a/aa6e1fb5-a06b-4e10-8cc7-785e0f0b298e.jpg?1783942367",
+        "png": "https://cards.scryfall.io/png/front/a/a/aa6e1fb5-a06b-4e10-8cc7-785e0f0b298e.png?1783942367",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/a/a/aa6e1fb5-a06b-4e10-8cc7-785e0f0b298e.jpg?1783942367"
+      },
+      "artist": "Ron Spencer",
+      "set": "m10",
+      "collectorNumber": "163",
+      "scryfallUri": "https://scryfall.com/card/m10/163/warp-world?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Warpath Ghoul",
       "slug": "warpath-ghoul",
       "oracleId": "17ae652c-b1c7-4dde-ae9e-50b9e286776c",

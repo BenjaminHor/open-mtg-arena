@@ -1,0 +1,24 @@
+name: Clone 0/0 in step 4 gets Holy Strength in step 5, survives (no SBA mid-resolution)
+rules: [CR 704.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [{ card: Clone, counters: { "+1/+1": 1 } }, Grizzly Bears, { card: Holy Strength, attachedTo: p1:Grizzly Bears }]
+    hand: [Warp World]
+    manaPool: { R: 8 }
+    library: []
+  p2:
+    library: []
+steps:
+  - p1 cast: Warp World
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: copy }
+  - p1 choose: finish
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: enchant }
+  - p1 choose: Clone
+  - expect:
+      p1.battlefield contains: [Clone, Holy Strength, Grizzly Bears]
+      p1:Holy Strength.attachedTo: p1:Clone

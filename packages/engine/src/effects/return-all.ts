@@ -16,9 +16,11 @@ import { happenOrAsk } from "../pipeline/happen.ts";
 import { isAura } from "../rules/attachment.ts";
 import { canEnchant } from "../rules/can-enchant.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
+import { ownerOf } from "../rules/owner.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { AuraHost, GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
+import { inShownOrder, oracleIdOf, publicIdOf } from "../zones/shown-order.ts";
 import { askToChoose } from "./choose-cards.ts";
 import { remember } from "./resolution-results.ts";
 
@@ -97,22 +99,29 @@ export function returnAllToBattlefield(
  * announced in), each graveyard from the bottom (its order, which anyone may see, CR 404.2).
  */
 function cardsReturning(state: GameState, effect: ReturnAll, context: EffectContext, cards: CardDatabase): ObjectId[] {
-  return apnapOrder(state).flatMap((player) =>
-    (state.zones.players[player]?.graveyard ?? []).filter((id) =>
-      matchesFilter(state, id, effect.filter, context.controller, cards),
-    ),
-  );
+  const fits = (id: ObjectId) => matchesFilter(state, id, effect.filter, context.controller, cards);
+  switch (effect.from) {
+    case "allGraveyards":
+      return apnapOrder(state).flatMap((player) => (state.zones.players[player]?.graveyard ?? []).filter(fits));
+    case "found": {
+      // The cards found that are still in their owner's library (Warp World's revealed cards; those put onto the
+      // battlefield before are new objects), each owner's in shown order: their ids there record how they got there
+      // (D-062).
+      const found = state.resolution?.found ?? [];
+      return apnapOrder(state).flatMap((player) => {
+        const library = state.zones.players[player]?.library ?? [];
+        return inShownOrder(
+          state,
+          found.filter((id) => library.includes(id) && fits(id)),
+        );
+      });
+    }
+  }
 }
 
 /** The permanents already on the battlefield this Aura could enchant under `you`, who'll control it (CR 303.4f). */
 function possibleHosts(state: GameState, aura: ObjectId, you: PlayerId, cards: CardDatabase): ObjectId[] {
   return state.zones.battlefield.filter((host) => canEnchant(state, aura, host, you, cards));
-}
-
-function ownerOf(state: GameState, id: ObjectId): PlayerId {
-  const obj = state.objects[id];
-  if (obj?.kind !== "card") throw new Error(`${id} isn't a card`);
-  return obj.owner;
 }
 
 function hasHost(state: GameState, aura: ObjectId): boolean {
@@ -124,7 +133,14 @@ function recordHost(progress: Progress, aura: ObjectId, host: ObjectId | null, c
   const state = progress.state;
   const recorded = withAuraHosts(state, [...(state.resolution?.auraHosts ?? []), { aura, host }]);
   if (host === null) return { state: recorded, events: progress.events };
-  return { state: recorded, events: [...progress.events, { type: "AURA_HOST_CHOSEN", player: chosenBy, aura, host }] };
+  const event = {
+    type: "AURA_HOST_CHOSEN",
+    player: chosenBy,
+    aura: publicIdOf(state, aura),
+    card: oracleIdOf(state, aura),
+    host,
+  } as const;
+  return { state: recorded, events: [...progress.events, event] };
 }
 
 function withAuraHosts(state: GameState, auraHosts: AuraHost[]): GameState {

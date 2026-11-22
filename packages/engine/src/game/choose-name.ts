@@ -7,6 +7,7 @@ import type { ChooseWhat, PendingDecision } from "../state/decisions.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import { isBasicLandType } from "../state/objects.ts";
+import { oracleIdOf, publicIdOf } from "../zones/shown-order.ts";
 import type { Progress } from "./progress.ts";
 import { resumeAsEnters } from "./work.ts";
 
@@ -37,7 +38,8 @@ export function answerName(
       const event: GameEvent = {
         type: "NAME_CHOSEN",
         player: pending.player,
-        object: answering.for.object,
+        object: publicIdOf(state, answering.for.object),
+        card: oracleIdOf(state, answering.for.object),
         what: pending.what,
         name,
       };
@@ -51,7 +53,16 @@ export function answerName(
       if (resolution === null) throw new Error("a name chosen while nothing resolves");
       return {
         state: { ...state, resolution: { ...resolution, named: name } },
-        events: [{ type: "NAME_CHOSEN", player: pending.player, object: resolution.object, what: pending.what, name }],
+        events: [
+          {
+            type: "NAME_CHOSEN",
+            player: pending.player,
+            object: resolution.object,
+            card: null,
+            what: pending.what,
+            name,
+          },
+        ],
       };
     }
   }
