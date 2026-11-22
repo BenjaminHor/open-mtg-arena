@@ -883,6 +883,18 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          4. M2-15d the D-126 review: effect ops, statics and replacement kinds only one card uses, merged or generalized
             into building blocks where they're the same idea, and what stays one-off recorded with why.
          5. Bench against the budgets: done (D-133, ok on this machine).
+         - M2-15d survey (2026-11-22): of 54 effect ops 19 have one card, of 23 statics 18, of 10 replacement kinds 7, of
+           17 triggers 12. Most are general rules ideas kept as they are. Behaviour-neutral merges to do, in order:
+           (1) destroyAll into destroy of each; (2) asEntersChooseName and asEntersChooseBasicLandType into
+           asEntersChoose with a `what`; (3) the four attached restriction statics into attachedRestricts with a list;
+           (4) ifNothingSacrificed and ifActivatedThisTurn into one `if` with a condition; (5) the two revealed-zone
+           statics into playWithRevealed; (6) the two becomes-the-target triggers into one with `of`, and
+           selfBlocksOrBlocked into selfBlocks with a flag; (7) mayShuffle into shuffle with `optional`. Not now, as they
+           change play or need more first: Elvish Piper and Capricious Efreet through `choose`, putOnTopOfLibrary into
+           `put` (tokens in `put` first), the prevention kinds into one (low value). One-off and kept, with why: Relentless
+           Rats' and Coat of Arms' counts (relative to the creature affected), Warp World's shuffle count, Stone Giant's
+           toughness-below-power target. Each merge renames a mechanic key, so golden cover's list changes; saved
+           mid-resolution states would break (ENGINE_VERSION 0, acceptable before release).
          - M2-15c done: the coverage report (`docs/coverage/rules-coverage.md`) ends with a "By chapter" table, generated
            with it: 1xx 26%, 2xx 18%, 3xx 18%, 4xx 22%, 5xx 42%, 6xx 35%, 7xx 7% (mostly keywords outside the pool),
            8xx and 9xx 0%, of each chapter's rules cited and tested.
