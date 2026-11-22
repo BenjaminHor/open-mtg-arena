@@ -22,6 +22,17 @@ is near), simple attack/block math, use Giant Growth and firebreathing in combat
 *Accept:* it beats the random agent at least 95% of 500 games with each deck; no illegal actions; at most
 50 ms per decision on a laptop.
 
+**M3-02b LLM opponent (owner, D-136).** An optional AI player powered by a model the player picks, through their own
+OpenRouter API key (kept on the device, sent only to OpenRouter; check first that it accepts calls straight from a
+browser, as there's no server of ours). It works from the player view only, as `brief` builds it (D-135), plus what a
+player knows of their deck: their decklist, what's left in their library (counts, never the order), the cards the
+opponent has shown this game, and the deck's game plan. It asks the model only for real decisions (the match host
+auto-passes the rest) and answers with the number of a legal action; an invalid reply is retried once, then the
+heuristic AI decides. Prove it in the CLI first (a script that plays `brief --json` games against the built-in agents)
+before the UI. Settings: key, model, a "thinking" indicator while it decides. The heuristic AI stays the default and
+the only one offline. *Accept:* in CLI games against the random agent it never makes an illegal move and wins most
+games; in the app the owner can enter a key, pick a model and play a full game against it.
+
 **M3-03 Web app scaffold.** `apps/web`: Vite + React + TypeScript, a PixiJS board canvas under the React UI
 layer, GSAP, the `board-model` / `director` / `renderer` / `effects` structure and the `window.__board` test hook
 (`ui.md`); the match host in a Web Worker; a

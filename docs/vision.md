@@ -35,7 +35,7 @@ outer screen and a 7.6-inch inner screen), and also desktop browsers.
 - **Optional LLM opponents (owner wish, 2026-11-22).** A player may add their own OpenRouter API key and pick a model
   to play the AI opponent. The browser calls OpenRouter directly with the player's key (no server of ours); the
   built-in AI stays the default and the only one offline. The model sees only the player view (as `brief` builds it,
-  D-135) and picks among the legal actions. Milestone not set yet: see status.md, Open questions. The owner isn't
+  D-135) and picks among the legal actions. It's in M3 (M3-02b, D-136). The owner isn't
   concerned about cost or speed (fast, capable models exist), so one call per real decision with the whole view is fine.
   It needs to know its deck as a player does: its own decklist and what's left in its library (counts, never the
   order), the cards the opponent has shown this game, and the deck's game plan.

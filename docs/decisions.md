@@ -2112,3 +2112,13 @@ owner's answer to the D-089 open question, option (a))
   `targetSpecsOf`) and a hint whether their mana could pay it now (`autoPay`, X as 0). It's a hint, as the engine allows
   starting what can't be paid (CR 118.6, 601.2h) and a per-target cost increase is known only once targets are chosen.
 - `show` keeps its stable format for tests; `brief` is the detailed one.
+
+**D-136: LLM opponents in M3 (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner wants an optional AI opponent powered by a model the player picks, through their own OpenRouter key, and
+  placed it in M3 (task M3-02b), beside the heuristic AI rather than after it. The owner isn't concerned about cost or
+  speed, since fast capable models exist.
+- It fits the vision's "no server": the browser calls OpenRouter with the player's key, which stays on the device. The
+  heuristic AI stays the default and the only opponent offline.
+- It sees only the player view (`brief`, D-135) and picks a numbered legal action, so it can't cheat or move illegally.
+  It also gets what a player knows of their own deck: the decklist and what's left in the library (counts only; the
+  list predicts no shuffle, the seed would), the cards the opponent has shown, and the deck's game plan.

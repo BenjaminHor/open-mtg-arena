@@ -1615,9 +1615,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Asked 2026-11-22) LLM opponents through the player's OpenRouter key (vision.md): which milestone? Options: (a) after
-  M3's built-in AI, as its own milestone, reusing the match host's view and a `brief`-style prompt (recommended);
-  (b) in M3 beside the heuristic AI; (c) later still.
 - (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
   creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
   by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
