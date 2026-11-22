@@ -208,8 +208,8 @@ export type StaticAbilityDef =
   /**
    * Restrictions on the permanent this is attached to (CR 303.4m, 301.5f), as one ability: "enchanted creature can't
    * attack or block" (Pacifism, CR 508.1c, 509.1b), "equipped creature can't be blocked" (Whispersilk Cloak, CR 509.1b),
-   * "its activated abilities can't be activated" (Ice Cage, mana abilities too, CR 602.5, 605.3a), "enchanted creature
-   * doesn't untap during its controller's untap step" (Entangling Vines, CR 502.3).
+   * "its activated abilities can't be activated" (Ice Cage, CR 602.5; mana abilities too, being activated abilities,
+   * CR 605.1a), "enchanted creature doesn't untap during its controller's untap step" (Entangling Vines, CR 502.3).
    */
   | { kind: "attachedRestricts"; restrictions: AttachedRestriction[] }
   /**
@@ -288,7 +288,7 @@ export type StaticAbilityDef =
   /**
    * "Your opponents play with their hands revealed" (Telepathy: `what: "hand", whose: "opponents"`), "play with the
    * top card of your library revealed" (Vampire Nocturnus: `what: "topOfLibrary", whose: "you"`): every player sees
-   * those cards (CR 401.5, 701.18c, 701.20a), "you" being this permanent's controller. They're still in hidden zones
+   * those cards (a hand, CR 701.18c; a library's top, CR 401.5; CR 701.20a), "you" being this permanent's controller. They're still in hidden zones
    * (CR 400.2). `rules/revealed.ts` reads it.
    */
   | { kind: "playWithRevealed"; what: "hand"; whose: "opponents" }

@@ -14,7 +14,7 @@ export type Revealed = { hands: PlayerId[]; tops: PlayerId[] };
 
 /**
  * One walk of the battlefield, reading each permanent's abilities and controller from the layer pass (`controllerOf`
- * agrees with it, D-104): a `playWithRevealed` reveals the hands or library tops (CR 401.5) of its controller ("you")
+ * agrees with it, D-104): a `playWithRevealed` reveals the hands (CR 701.18c) or library tops (CR 401.5) of its controller ("you")
  * or of its controller's opponents (CR 102.2, any other player, two players only so far). The view shows a top by
  * identity, so it needn't become a new object when it stops being revealed (later: CR 401.6).
  */

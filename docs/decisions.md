@@ -2071,7 +2071,9 @@ owner's answer to the D-089 open question, option (a))
   of them were one idea with a different word, they became one block with a field, without changing any behaviour:
   `destroyAll` is `destroy` of `{ each: filter }`; `asEntersChooseName` and `asEntersChooseBasicLandType` are
   `asEntersChoose` with `what`; the four attached restrictions (Pacifism, Whispersilk Cloak, Ice Cage, Entangling
-  Vines) are `attachedRestricts` with a list, one static ability as the card's text has it; `ifNothingSacrificed` and
+  Vines) are `attachedRestricts` with a list, one static for Ice Cage's one sentence (Whispersilk Cloak's "can't be
+  blocked and has shroud" stays two statics, `attachedRestricts` and `attachedGets`: nothing yet removes one ability of
+  an Equipment, so the split can't be seen); `ifNothingSacrificed` and
   `ifActivatedThisTurn` are `if` with a `condition` (`effects/if-condition.ts`); the two revealed-zone statics are
   `playWithRevealed` with `what` and `whose`; `selfBecomesTarget` and `attachedBecomesTarget` are `becomesTarget` with
   `of`; `selfBlocksOrBlocked` is `selfBlocks` with `orBecomesBlocked`; `mayShuffle` is `shuffle` with `optional`.

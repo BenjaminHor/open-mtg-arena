@@ -69,7 +69,7 @@ export type TriggerCondition =
   /**
    * "When this creature becomes the target of a spell or ability" (`of: "self"`), "when enchanted creature becomes the
    * target..." (Ice Cage, `of: "attached"`, what this is attached to): as the target is chosen (CR 601.2c), for a spell,
-   * an activated ability or a triggered ability (CR 603.3d).
+   * an activated ability (CR 602.2b) or a triggered ability (CR 603.3d).
    */
   | { kind: "becomesTarget"; of: "self" | "attached" }
   /**
