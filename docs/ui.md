@@ -15,7 +15,9 @@ attacking, blocking and paying feel. The research behind this is in `arena-resea
 each finding is tagged by how well it's sourced). The look is our own:
 the art, card frames, icons, sounds and visual style are original, never Arena's assets or trade dress (D-140).
 Where the research leaves a screen open (choosing X or a player, scry and search, dividing damage, exile, default
-stops), we design it ourselves in the same spirit (owner, 2026-11-22).
+stops), we design it ourselves in the same spirit (owner, 2026-11-22). The owner expects the visual design and UX to
+need a lot of refinement through play; Arena is the North Star for the direction (2026-11-22). So build each screen to
+be easy to change (layout and motion values in one place, D-012's shared tokens), and show it to the owner early.
 
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**
