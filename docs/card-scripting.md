@@ -243,6 +243,9 @@ cards, that each definition's `oracle` equals the current Oracle text, and that 
 - **Keywords are shared.** `keywords: ['flying', 'haste']` refers to `src/keywords/`, each citing its CR 702 rule.
 - **Prefer a general effect to a card-specific one.** Add a new effect op only when existing ops
   can't express the card, and document each op in `engine/src/effects/README.md` with its CR basis.
+- **Fundamental building blocks (the owner's requirement, D-126).** Almost any card should be definable from general
+  blocks, with no one-off logic. Before a new op, static or replacement kind: compose existing ones, else generalize
+  one, else add a block named for its CR concept and shaped for the next card that shares the idea.
 - **No functions in definitions.** If a card truly can't be expressed, extend the effect language
   in the engine (with tests). Never add an escape hatch.
 - **Oracle text is the reference, not the printed text.** Errata and modern wording win.

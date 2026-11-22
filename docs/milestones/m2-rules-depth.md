@@ -134,7 +134,9 @@ the fuzzer plays them and random pool decks. *Accept:* every card in `m2-pool.md
 
 **M2-15 Hardening.** Mutation testing on the engine (StrykerJS, testing.md section 7) with surviving mutants in rules
 code addressed; `pnpm fuzz --games 10000` clean; `pnpm bench` against the budgets; a CR progress report for the
-owner, chapter by chapter, of which rules the engine implements and tests. *Accept:* as written.
+owner, chapter by chapter, of which rules the engine implements and tests; a review of the effect ops, statics and
+replacement kinds that only one card uses, merging or generalizing them into building blocks (D-126). *Accept:* as
+written.
 
 ## Exit criteria
 

@@ -1956,3 +1956,17 @@ owner's answer to the D-089 open question, option (a))
   the stack. `by: "eachOtherPlayer"` needs a spell-cast trigger to know who cast the spell; the card check rejects it
   anywhere else. The order of three or more players is a unit test on a hand-built game (createGame takes two).
 
+
+**D-126: Cards from fundamental building blocks (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner's requirement: design the engine so that almost any card can be defined from fundamental building blocks,
+  avoiding one-off logic. Some one-off logic may be unavoidable, but it is the exception, and each one is a candidate to
+  fold into a general block later.
+- How it is applied: before adding an effect op, static or replacement kind, try (1) composing existing ones, then (2)
+  generalizing an existing one (a new field that keeps old definitions unchanged), and only then (3) a new block, named
+  for the CR concept it implements (not the card) and shaped so the next card with that rules idea reuses it. A plan
+  says which of the three it took and why. Context: on 2026-11-22, 17 of the 47 effect ops had a single card using
+  them; some are general ideas only one Magic 2010 card uses yet (`extraTurn`, `cantBlock`), others are shaped around
+  one card's wording (`destroyOneAtRandom`, `ifNothingSacrificed`, `ifActivatedThisTurn`, `exileGraveyard` with
+  `sameNameAsExiled`).
+- M2-15 (hardening) adds a review of the single-user ops, statics and replacement kinds: merge those that are the same
+  idea, generalize those that are narrow, and record what stays one-off and why.
