@@ -1710,8 +1710,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   1.7 MB for 152 cards, and grows with new mechanics, not new cards.
 - (D-071) Two tramplers blocked by one creature (two Stampeding Rhinos into Palace Guard): the attackers' divisions are
   worked out one after the other, so the first can't count the second's damage toward lethal. The player can be dealt
-  the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen; that matters only with
-  lifelink or similar on a trampler. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
+  the same totals, but a split where both Rhinos trample over (2 and 2 each) can't be chosen. With a deathtouch trampler
+  the totals differed by declaration order until the M2 exit review: deathtouch tramplers now go first, so the most
+  damage can always trample over; a split giving the player less than that can still be unreachable. The CR checks the whole assignment at once (CR 510.1e): that needs a decision that
   can be taken back or checked as a whole (06c's take-back answer may serve).
 - Fixed (PR #34, D-069): golden games grew by about 2 MB per M2 task; `pnpm golden:cover` now adds short games. The
   folder is 4.0 MB after M2-06d; the owner raised the budget to 8 MB for M2 (D-073).

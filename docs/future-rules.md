@@ -254,8 +254,8 @@ animator out and another in) would rejoin combat (CR 506.4). Rules about a whole
 removes the last pick (M2-06c, D-072). The most requirements obeyable is worked out directly, which is exact while the
 only whole-declaration restriction is "alone"; menace (CR 702.111b) and "no more than one creature can attack"
 (CR 508.1d's example) need a search over declarations. Trample and first strike are built (M2-06a, D-070), and a creature blocking several attackers (Palace Guard, M2-06b,
-D-071). Two tramplers on one blocker are worked out one after the other, so a split where both trample over can't be
-chosen: checking the whole assignment at once (CR 510.1e) needs a decision that can be taken back or checked as a whole.
+D-071). Two tramplers on one blocker are worked out one after the other (deathtouch tramplers first, so the most
+damage can always trample over), so some splits can't be chosen: checking the whole assignment at once (CR 510.1e) needs a decision that can be taken back or checked as a whole.
 A "can't block" effect not on targets ("creatures without flying can't block this turn") is a rules effect read live
 at declaration (CR 611.2c, 613.11), not an `affected` list. The second step's "remaining attackers and blockers" (CR 510.4) needs the removed-from-combat set too.
 

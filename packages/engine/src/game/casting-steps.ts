@@ -225,12 +225,16 @@ function becameCastOrActivated(player: PlayerId, obj: GameObject): GameEvent {
 
 /**
  * Why this value of X can't be announced, or null: a whole number (CR 107.1a), not negative (CR 107.1b), as the caster
- * chooses (CR 107.3a).
+ * chooses (CR 107.3a). Any X may be announced, but one above `MOST_X` could never be paid, and a cost of that many
+ * mana symbols ("spend only black mana on X") would be too big to build: it's refused as an engine limit, not a rule.
  */
 export function xProblem(value: number): string | null {
-  // A safe integer, so the state stays exact as JSON.
-  return Number.isSafeInteger(value) && value >= 0 ? null : "X is a whole number from 0 (CR 107.1a, 107.1b, 107.3a)";
+  if (!Number.isSafeInteger(value) || value < 0) return "X is a whole number from 0 (CR 107.1a, 107.1b, 107.3a)";
+  return value > MOST_X ? `X can be at most ${MOST_X} here` : null;
 }
+
+/** More mana than any game could make: a hundred lands and every mana doubler there is wouldn't reach it. */
+const MOST_X = 10_000;
 
 /** The player announces X; it's kept on the spell or ability (CR 107.3a). The casting steps then go on. */
 export function announceX(state: GameState, value: number): GameState {

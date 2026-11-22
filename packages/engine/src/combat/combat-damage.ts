@@ -61,12 +61,15 @@ export function combatDamage(state: GameState, divisions: CombatDivision[], card
 }
 
 /**
- * The blocked attackers' divisions, in order: attackers without trample first, then tramplers, each one's division
- * known before the next is worked out, so a trampler's lethal damage counts what every earlier attacker assigns its
- * blockers (CR 702.19b). A division with no choice is filled in; the first attacker with a choice is returned to ask.
- * With two tramplers on one blocker, the first can't count damage from the second, so a split where both trample
- * over can't be chosen; the totals the player can be dealt are the same (later: CR 510.1e, checking the whole
- * assignment at once).
+ * The blocked attackers' divisions, in order (`attackersInOrder`), each one's division known before the next is worked
+ * out, so a trampler's lethal damage counts what every earlier attacker assigns its blockers (CR 702.19b). A division
+ * with no choice is filled in; the first attacker with a choice is returned to ask.
+ *
+ * Asking one attacker at a time means an earlier trampler can't count damage a later one will assign. Deathtouch
+ * tramplers go first among tramplers: 1 of their damage is lethal (CR 702.2c), so the most damage that can trample over
+ * is always reachable, whatever the order the attackers were declared in. A split that gives the player less than that
+ * (a deathtouch trampler giving the blocker nothing, leaving another trampler to cover it) can't be chosen
+ * (later: CR 510.1e, checking the whole assignment at once; Known issues).
  */
 function settleAttackers(
   state: GameState,
@@ -87,11 +90,17 @@ function settleAttackers(
   return { divisions, ask: null };
 }
 
-/** The attacks in combat, those without trample first, otherwise in the order declared. */
+/** The attacks in combat: those without trample, then tramplers with deathtouch, then the other tramplers. */
 function attackersInOrder(state: GameState, cards: CardDatabase): Attack[] {
-  const tramples = (a: { attacker: ObjectId }) => keywordsOf(state, a.attacker, cards).includes("trample");
+  const has = (keyword: "trample" | "deathtouch") => (a: { attacker: ObjectId }) =>
+    keywordsOf(state, a.attacker, cards).includes(keyword);
   const attacks = attacksInCombat(state, cards);
-  return [...attacks.filter((a) => !tramples(a)), ...attacks.filter(tramples)];
+  const tramplers = attacks.filter(has("trample"));
+  return [
+    ...attacks.filter((a) => !has("trample")(a)),
+    ...tramplers.filter(has("deathtouch")),
+    ...tramplers.filter((a) => !has("deathtouch")(a)),
+  ];
 }
 
 /**

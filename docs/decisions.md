@@ -944,7 +944,10 @@ every schema change and every change D-024 lists bumps it.
   blocker (CR 702.19b's first example is a scenario), with any from a deathtouch source lethal (CR 702.2c): the attackers'
   divisions are worked out in order, without trample first, each known before the next, forced ones filled in. With
   two tramplers on one blocker, the first can't count the second's damage, so a split where both trample over can't be
-  chosen, though the same totals can be dealt to the player (later: CR 510.1e, checking the whole assignment at once).
+  chosen (later: CR 510.1e, checking the whole assignment at once). Amended at the M2 exit review: with a deathtouch
+  trampler the totals did differ by the order declared (Darksteel Colossus and a Gorgon Flail Rhino on Palace Guard:
+  12 or 15 to the player), so deathtouch tramplers are now worked out before other tramplers, which makes the most
+  damage that can trample over reachable in any order (scenarios `cards/m2-15b/two-tramplers-deathtouch-*`).
 - The `block` scenario step takes a list for such a blocker: `{ Palace Guard: [Grizzly Bears, Hill Giant] }`.
 
 **D-072: Whole-declaration rules: checked at `finishDeclaring`, a `takeBack` answer, the most requirements worked out directly** · 2026-11-20 · accepted (M2-06c)
