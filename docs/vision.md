@@ -10,7 +10,9 @@
    the AI, browse and search every Magic card, build and manage decks with the features of the best
    deckbuilding tools, open packs, and manage a collection. Touch first. See `deckbuilding.md`.
 3. **Later, an offline single-player RPG** on the same engine, in the spirit of Shandalar:
-   explore a world, visit areas, fight enemies in card battles, find and buy cards, open packs.
+   explore a world, visit areas, fight enemies in card battles, find and buy cards, open packs. The owner sees the
+   optional LLM opponents (D-136) as a big part of the single-player experience there too (2026-11-22): enemies that
+   play in character. The RPG still works offline with the built-in AI.
 
 The order matters. Rules depth comes first, then the Arena-style app (D-051). The RPG starts only once the
 engine, the architecture and the app foundations are settled and working.
