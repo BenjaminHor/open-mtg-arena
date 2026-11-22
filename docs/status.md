@@ -884,6 +884,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          together, both owners' bottoms, Platinum Angel, Twincast and Hive Mind copying it, a stolen token, protection,
          shroud, owning nothing). Noted, following Warp World's ruling 5: every Aura host is announced (APNAP) before the
          choices made as cards enter (a Mirage's land type comes after the other player's host). PR #85.
+         Code review to apply (in progress): scenarios for Warp World's last clause (a revealed leftover under an
+         unrevealed card) and a token never revealed (an Aura pending); the scenario fuzz checks get each step's events;
+         a chooseName view test; throw on an order answered for no owner; `renamed` an exhaustive switch;
+         `shuffleIntoLibraries { of: EffectSubject }`; definition checks for `count: "shuffledIn"` and `from: "found"`;
+         one `ownerOf`; `card` on NAME_CHOSEN/OBJECTS_CHOSEN; `reorderLibraryTop` renamed; stale READMEs/future-rules.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
          yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong
