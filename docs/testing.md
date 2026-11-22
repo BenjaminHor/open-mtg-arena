@@ -317,7 +317,7 @@ it. After every action it checks (`packages/cli/src/fuzz/checks.ts`):
 - `pending` is set, or `result` is set (the engine never stalls)
 - every action from `legalActions()` is accepted by `applyAction()`, and no engine call throws
 - `playerView` and `eventsFor` never leak hidden information: scrambling what a player can't see leaves their view
-  unchanged, and the events they're shown name no object or card id hidden from them before or after the action,
+  (and their whole `seatView`, D-144) unchanged, and the events they're shown name no object or card id hidden from them before or after the action,
   unless they could see it then too (D-044, D-054)
 - no player has negative mana, and life totals change only through events
 - the layer pass kept for the state is what a fresh pass gives (D-092): the kept result can't go stale
@@ -334,6 +334,13 @@ the folder): the game file up to the failing action, plus that action and the pr
 `pnpm test` runs a short fuzz (seeds 1 to 6, in `packages/cli/test/fuzz.test.ts`). Run longer ones before merging
 engine changes. A game takes one to one and a half seconds, so `pnpm fuzz --games 1000` takes 15 to 25 minutes: run it in the
 background.
+
+### Evaluating the AI
+
+`pnpm eval [--deck <name> | all] [--games 500] [--seed 1] [--turn-cap 40] [--vs random]` plays the heuristic AI with
+a prebuilt deck against a simple agent with each prebuilt deck in turn, through the match host, and prints, per deck,
+the games won, lost, drawn and capped, and how long its decisions took (mean and slowest, with the seed). How the
+games are arranged, and what M3-02's "95% with each deck" means: D-145. Ten fixed games per deck run in `pnpm check`.
 
 ## 4. Replays and golden games
 

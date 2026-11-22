@@ -15,8 +15,11 @@ import {
   type ViewEvent,
 } from "@mtg/engine";
 
-/** Who decides for a player: a person (through the UI), or a built-in agent the host runs. */
-export type Seat = { kind: "human" } | { kind: "agent"; agent: AgentName; random: number };
+/**
+ * Who decides for a player: a person (through the UI), a simple agent the host runs (with its random state), or the
+ * heuristic AI, which reads what its seat is shown (`seatView`, D-137) and needs no random state.
+ */
+export type Seat = { kind: "human" } | { kind: "agent"; agent: AgentName; random: number } | { kind: "heuristic" };
 
 /** What the host does on a seat's behalf (the player's settings in the app). */
 export type SeatSettings = {

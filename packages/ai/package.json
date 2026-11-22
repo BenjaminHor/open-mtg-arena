@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "@mtg/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@mtg/cards": "workspace:*"
   }
 }

@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:scenarios": "vitest run --project scenarios",
     "fuzz": "node packages/cli/src/fuzz.ts",
+    "eval": "node packages/cli/src/eval.ts",
     "replays:update": "node packages/cli/src/replays.ts",
     "golden:update": "node packages/cli/src/golden.ts update",
     "golden:add": "node packages/cli/src/golden.ts add",

@@ -2192,3 +2192,28 @@ owner's answer to the D-089 open question, option (a))
 - Gap: auto-tap is one seat-wide flag. The milestone's "manual override" of one payment (tap these lands instead) needs
   the UI's payment screen (M3-04 onward); it's noted in `status.md`.
 - Cost: every priority with something castable is a stop, so a hand of instants stops often. Arena behaves the same.
+
+**D-144: `seatView`, the one thing a seat is shown when it decides (M3-02)** · 2026-11-22 · accepted
+- The heuristic AI must not read the game state (D-062), yet "cast the best affordable spell" needs to know what's
+  affordable and what each spell could target. `seatView(state, player, cards)` in the engine's `view/` gives a seat its
+  `playerView`, its `seenObjects`, and its legal actions as options, each with its mana cost, `payable` (the engine's
+  `autoPay` finds a payment now, X as 0), `mightPay` (auto-pass's looser hint), its legal targets, the ability for an
+  activation, and for a declaration pick whether the declaration could be finished after it (`finishes`).
+- Every one of those is something a person in the seat knows or the table shows: their own mana, targets among what
+  they see, what a card's text says. The app's Worker will post the same to the UI, which uses the hints to highlight
+  what can be cast (D-137): a computer seat and a person's get the same data.
+- The host builds it only for a heuristic seat (`{ kind: "heuristic" }`); the simple agents, the fuzzer and the golden
+  games keep reading the bare legal actions, so they cost no more and their games don't change.
+- Why `finishes`: a stateless player that adds a pick a requirement rules out ("all creatures able to block it do
+  so") has only "take it back" left, then adds the same pick again; the eval found one such game, looping forever.
+- The two-worlds checks (`brief.test.ts`, the fuzzer's `viewsLeakNothing`) compare whole seat views.
+
+**D-145: How the heuristic AI's "95% against random with each deck" is measured (M3-02)** · 2026-11-22 · accepted
+- `pnpm eval --deck <name> --games 500 --seed 1`: the heuristic with that deck against the `random` agent with each
+  prebuilt deck in turn (all five, the mirror included); the heuristic's seat changes every five games and who plays
+  first every ten, so every pairing is played from both seats and both sides of the play.
+- Both seats go through the match host with its auto-pass and auto-tap, as in the app: the random agent is asked only
+  where a person would be, and picks uniformly there. A game past turn 40 counts as not won (`capped`), as does a draw.
+- Each decision is timed with the `seatView` build included, as the app will see it; the report gives the mean and the
+  slowest, with its seed. Ten fixed games per deck run in `pnpm check` (`packages/cli/test/eval.test.ts`, at least seven
+  won), so a regression shows without the full run.

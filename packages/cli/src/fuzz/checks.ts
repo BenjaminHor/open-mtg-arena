@@ -15,7 +15,7 @@ import {
   type PlayerId,
   playerView,
   revealedBy,
-  seenObjects,
+  seatView,
 } from "@mtg/engine";
 import { invariantProblems } from "@mtg/scenarios";
 
@@ -60,9 +60,10 @@ export const viewsLeakNothing: Check = (before, after, events, cards) => {
     if (JSON.stringify(otherView) !== JSON.stringify(view)) {
       problems.push(`${viewer}'s view changes when only hidden information changes`);
     }
-    // The derived values sent beside the view, which the UI and every AI read (D-135, D-137).
-    if (JSON.stringify(seenObjects(scrambled, otherView, cards)) !== JSON.stringify(seenObjects(after, view, cards))) {
-      problems.push(`${viewer}'s seen objects change when only hidden information changes`);
+    // What the seat is shown beside the view: the derived values and the options with their hints, which the UI and
+    // every AI read (D-135, D-137, D-144).
+    if (JSON.stringify(seatView(scrambled, viewer, cards)) !== JSON.stringify(seatView(after, viewer, cards))) {
+      problems.push(`${viewer}'s seat view changes when only hidden information changes`);
     }
     // A card hidden from the viewer before or after the action must not be named by its card id or its object id,
     // unless the viewer could see it then too: their own draw, a card they saw go into a hand (D-054). That includes a

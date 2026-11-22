@@ -20,6 +20,8 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
   `deckGameSetup`.
 - `src/show.ts`: the board as text; `canSeeHand` is the one place hidden information is hidden. `src/describe.ts`:
   actions, targets and mana in words.
+- `src/eval.ts`: the `pnpm eval` command (docs/testing.md, "Evaluating the AI"; D-145). `src/eval/`: `play-eval.ts`
+  (one game, the heuristic's seat played and timed here), `run-eval.ts` (a run for one deck, and its report line).
 - `src/fuzz.ts`: the `pnpm fuzz` command (docs/testing.md, section 3; D-046). `src/fuzz/`: `checks.ts` (what's
   checked after every action, including `scrambleHidden` for views), `run-game.ts` (`fuzzDecks`, `fuzzGame`: one seed,
   one game), `run-fuzz.ts` (many games, failures written to `fuzz-failures/`), `parallel.ts` and `worker.ts` (the same
@@ -45,6 +47,6 @@ Node runs the TypeScript source directly (type stripping), so there is no build 
 including a whole game from the prebuilt decks; `test/agents.test.ts`, `test/export.test.ts` (exported games replay
 exactly), `test/log-inspect-replay.test.ts`, `test/fuzz.test.ts` (the checks, failure files, and the short fuzz `pnpm
 check` runs), `test/replays.test.ts` (every saved replay), `test/coverage.test.ts` (the report and its gap check),
-`test/bench.test.ts` (the bench workloads build and run) and `test/golden.test.ts` (every golden game's log) cover the
+`test/bench.test.ts` (the bench workloads build and run), `test/eval.test.ts` (ten fixed eval games per deck, D-145) and `test/golden.test.ts` (every golden game's log) cover the
 rest; `test/helpers.ts` runs the CLI in-process. Paths given to `pnpm cli` are relative to the repo root, where pnpm
 runs scripts.

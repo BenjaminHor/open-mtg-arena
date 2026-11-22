@@ -12,7 +12,8 @@ the web app's worker (M3-03). Depends on `engine`, `ai` and `cards`, and on no `
   `waitingOn` and `takeEvents`, and change it only through `advance` and `submit`.
 - `src/advance.ts`: `advance(match, cards)` acts until a person must decide or the game ends: a built-in agent's
   choice (its random state kept in the match, never the game's), a decision with one legal answer, auto-tap, auto-pass.
-  `submit(match, action, cards)` applies a person's action; `waitingOn` names who must decide.
+  `submit(match, action, cards)` applies a person's action; `waitingOn` names who must decide. A heuristic seat
+  (`{ kind: "heuristic" }`) is given the engine's `seatView` (D-144) and answers with `heuristicAction`.
 - `src/auto-pass.ts`: `autoPasses`, one pure rule for every seat (D-137): pass when nothing meaningful can be done (a
   land to play, or a spell or non-mana ability the player can pay for now, counts); with your own object on top of the
   stack, pass so it resolves; otherwise stop (D-143). Full control is `autoPass: false`.
@@ -24,4 +25,4 @@ the web app's worker (M3-03). Depends on `engine`, `ai` and `cards`, and on no `
 
 `test/match.test.ts`: agent seats play whole matches and the log replays to the same state (M3-01's acceptance); a
 person's seat is asked only for real decisions and is sent the events it saw. `test/auto-pass.test.ts`: where the
-host stops. `test/host.test.ts`: auto-tap, agent seats, refusals, the JSON round trip. `test/browser-safe.test.ts`: no `node:` import in what the host uses.
+host stops. `test/heuristic-seat.test.ts`: the heuristic AI plays whole games through the host. `test/host.test.ts`: auto-tap, agent seats, refusals, the JSON round trip. `test/browser-safe.test.ts`: no `node:` import in what the host uses.

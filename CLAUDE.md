@@ -148,6 +148,7 @@ The M1 scaffolding task creates these scripts. Keep these names stable.
 - `pnpm test` — unit and scenario tests (Vitest)
 - `pnpm test:scenarios` — scenario tests only
 - `pnpm fuzz --games 500` — random legal games checking invariants
+- `pnpm eval --games 500` — the heuristic AI against the random agent with each prebuilt deck (D-145)
 - `pnpm replays:update` — rewrite the saved replays' final-state hashes (only with an explained diff)
 - `pnpm golden:update` / `pnpm golden:add` — regenerate or add golden games (only with an explained diff);
   `pnpm golden:cover` — add golden games until every mechanic in the pool runs (D-082)

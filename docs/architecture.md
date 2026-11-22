@@ -230,10 +230,13 @@ simple.
 
 ## AI (`packages/ai`)
 
-- Input: a `PlayerView`, with its pending decision in `view.decision`. Output: an action. It never reads full state or
-  `state.pending` (D-062).
-- v0 (M3): heuristics. Board evaluation, simple attack/block math, burn the best target,
-  never make an illegal move.
+- Input: a `SeatView` (D-144): the player's `PlayerView` (its pending decision in `view.decision`), the derived values of
+  what they can see (`seenObjects`), and their legal actions with what the table shows about each (cost, whether it can
+  be paid now, targets). Output: an action. It never reads full state or `state.pending` (D-062). The host builds the
+  seat view; the simple test agents read only the legal actions.
+- v0 (M3-02, `src/heuristic/`): heuristics. Mulligan by land count, play a land, cast the best affordable spell, aim
+  each effect by what it does to its target, simple attack/block math, a legal answer for every decision kind. No
+  memory between decisions and no randomness. Measured by `pnpm eval` (D-145).
 - Later: search (for example Monte Carlo tree search). Clone the state from a sampled "plausible
   world" consistent with the view, and simulate with the real reducer. This is why the reducer
   must stay pure and reasonably fast.
