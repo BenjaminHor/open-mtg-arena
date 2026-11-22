@@ -933,6 +933,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
              `numberedActions`; only `view.objects` described; recent-event tests; the leak test covers seven folders.
            - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
              view; record that as a decision.
+         - M2-15b in progress (D-139): `pnpm mutate` works (Stryker 10.1.1; the tsconfig step skipped for TypeScript 7;
+           the runner plugin named; workspace packages aliased inside the sandbox, without which the scenarios tested
+           the unmutated engine). Per folder: run, then triage survivors: real gaps get a test, equivalent mutants
+           (guards that only save work, `?.` on what two-player games never leave missing, error-message text) are
+           left with a note. combat/: 70.5% before the alias fix (unit tests only), 88.6% with it; tests added in
+           `test/combat/combat-edges.test.ts` for an illegal attack answer, a pump not being an attack requirement,
+           out-of-range damage division, and no 0-damage event (CR 120.8). Next folders: rules/, pipeline/, effects/,
+           game/, triggers/, mana/, zones/, permanents/, view/.
          - M2-15f merged (#90). M2-15a, the 10k fuzz: the single run hit the 2-hour background limit, so it runs in
            chunks of 2,000: seeds 100000–109999, 10,000 games, 0 failed (2026-11-22). M2-15a done.
          - Resume (owner, 2026-11-22): continue automatically at 12:05 p.m. US Eastern that day (a scheduled task is
