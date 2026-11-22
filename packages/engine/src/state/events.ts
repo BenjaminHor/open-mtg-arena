@@ -39,6 +39,12 @@ export type GameEvent =
   /** CR 103.1. `chosenBy` is null when the setup named the starting player. */
   | { type: "STARTING_PLAYER_CHOSEN"; player: PlayerId; chosenBy: PlayerId | null }
   | { type: "LIBRARY_SHUFFLED"; player: PlayerId } // CR 701.24
+  /**
+   * `count` cards already in `player`'s library were put on its bottom (Lurking Predators' revealed card, Warp World's
+   * leftovers): everyone sees that they went (CR 701.20a: a revealed card stays revealed while it matters), but not
+   * which order or which ids (CR 401.4, D-062). Not a zone change (CR 400.7).
+   */
+  | { type: "PUT_ON_LIBRARY_BOTTOM"; player: PlayerId; count: number }
   /** A card drawn (CR 121.1), as well as its `ZONE_CHANGED`. Hidden from other players, like the card itself. */
   | { type: "CARD_DRAWN"; player: PlayerId; newId: ObjectId; cardId: CardId }
   | { type: "MULLIGAN_DECLARED"; player: PlayerId; choice: "keep" | "mulligan" } // CR 103.5

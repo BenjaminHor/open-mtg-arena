@@ -82,6 +82,8 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
     }
     case "STARTING_PLAYER_CHOSEN":
       return `${e.player} goes first${e.chosenBy === null ? "" : ` (chosen by ${e.chosenBy})`}`;
+    case "PUT_ON_LIBRARY_BOTTOM":
+      return `${e.count} card${e.count === 1 ? "" : "s"} put on the bottom of ${e.player}'s library`;
     case "LIBRARY_SHUFFLED":
       return `${e.player} shuffles their library`;
     case "CARD_DRAWN":

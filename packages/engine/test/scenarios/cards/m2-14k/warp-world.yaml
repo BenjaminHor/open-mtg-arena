@@ -21,4 +21,4 @@ steps:
       p2.library: []
       p1.graveyard: [Warp World]
       p1:Grizzly Bears.sick: true
-      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }, { type: LIBRARY_SHUFFLED, player: p2 }]
+      events contains: [{ type: LIBRARY_SHUFFLED, player: p1 }, { type: LIBRARY_SHUFFLED, player: p2 }, { type: CARDS_REVEALED }]

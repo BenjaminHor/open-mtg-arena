@@ -1,0 +1,21 @@
+name: Elvish Visionary trigger held while Aura host is pending
+rules: [CR 603.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Elvish Visionary, Grizzly Bears, { card: Holy Strength, attachedTo: p1:Grizzly Bears }]
+    hand: [Warp World]
+    manaPool: { R: 8 }
+    library: []
+  p2:
+    library: []
+steps:
+  - p1 cast: Warp World
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: enchant }
+      stack: [Warp World]
+  - p1 choose: Grizzly Bears
+  - expect:
+      stack: [Elvish Visionary ability]

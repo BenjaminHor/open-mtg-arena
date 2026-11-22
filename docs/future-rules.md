@@ -461,4 +461,8 @@ before the batch, so a top played revealed is shown only as it ends). *Still to 
 bottom of your library in any order", not in the pool), which goes in the same place; cards of several owners put at
 once (each to their owner's library, each owner arranging theirs; `putSeveralOnTop` throws today); and cards already in
 the library moved as a group, which shouldn't become new objects.
+*Watch out (Warp World, D-130):* `shuffleIntoLibraries` reads the battlefield list directly; a phased-out permanent
+(later: CR 702.26b) must be neither counted nor moved. `NAME_CHOSEN` from a hidden zone has no `card`, unlike
+`AURA_HOST_CHOSEN`: two different name-choosing cards entering from a library at once couldn't be told apart (none in
+the pool; Pithing Needle and Convincing Mirage differ by `what`).
 

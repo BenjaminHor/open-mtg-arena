@@ -1,0 +1,30 @@
+name: Hive Mind copies Warp World for p2; Hive Mind goes and comes back twice
+rules: [CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears]
+    hand: [Warp World]
+    manaPool: { R: 8 }
+    library: []
+  p2:
+    battlefield: [Hive Mind, Hill Giant]
+    library: []
+steps:
+  - p1 cast: Warp World
+    pay: auto
+  - expect:
+      stack: [Warp World, Hive Mind ability]
+  - all pass: once
+  - expect:
+      stack: [Warp World, Warp World copy]
+  - all pass: once
+  - expect:
+      stack: [Warp World]
+      p2.battlefield: [Hill Giant, Hive Mind]
+  - all pass: once
+  - expect:
+      stack: []
+      p1.battlefield: [Grizzly Bears]
+      p2.battlefield: [Hill Giant, Hive Mind]
+      p1.graveyard: [Warp World]

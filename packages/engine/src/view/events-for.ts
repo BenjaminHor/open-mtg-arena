@@ -68,6 +68,7 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
     case "CARDS_REVEALED":
     case "STARTING_PLAYER_CHOSEN":
     case "LIBRARY_SHUFFLED":
+    case "PUT_ON_LIBRARY_BOTTOM":
     case "MULLIGAN_DECLARED":
     case "TURN_BEGAN":
     case "EXTRA_TURN_ADDED":

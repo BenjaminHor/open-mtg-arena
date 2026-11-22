@@ -877,7 +877,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          for several owners and the bottom (CR 401.4, 400.7), `reorderLibrary.bottom`. 11 scenarios (the swap, tokens,
          a stolen permanent, an Aura auto and chosen, Vines with nothing to enchant, a checkland, Clone with nothing to
          copy, triggers waiting, a planeswalker to the bottom, Mind Control). Fuzz checks on every scenario state. Golden
-         games regenerated (Lurking Predators' bottom is a reorder now). Next: fuzz, bench, reviews, PR.
+         games regenerated (Lurking Predators' bottom is a reorder now). Fuzz clean, bench within noise (randomGame
+         115 ms, the open budget question). Rules review: every ruling right; one regression, Lurking Predators putting
+         its revealed card on the bottom told no one (CR 701.20a): `PUT_ON_LIBRARY_BOTTOM` (a count, no ids). 17
+         scenarios from it (triggers held and APNAP, no SBA mid-way, two Needles, Mirage, Auras and enchantments entering
+         together, both owners' bottoms, Platinum Angel, Twincast and Hive Mind copying it, a stolen token, protection,
+         shroud, owning nothing). Noted, following Warp World's ruling 5: every Aura host is announced (APNAP) before the
+         choices made as cards enter (a Mirage's land type comes after the other player's host). PR #85.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
          yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong

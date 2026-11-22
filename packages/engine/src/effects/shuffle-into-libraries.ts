@@ -20,7 +20,8 @@ type ShuffleInto = Extract<Effect, { op: "shuffleIntoLibraries" }>;
  * Every permanent fitting the filter moves to its owner's library, the active player's first, in battlefield order
  * (public, and each library is shuffled after). A token moves too, so what triggers on it leaving does (CR 111.7), and
  * ceases to exist in the same batch: it isn't a card, and its ruling says not to shuffle it in, so no token waits in a
- * library while the rest of the resolution asks its questions. Every player shuffles, one with nothing put in too.
+ * library while the rest of the resolution asks its questions. Every player shuffles, one with nothing put in too
+ * (CR 701.24d: the library is shuffled even with nothing put in).
  */
 export function shuffleIntoLibraries(
   state: GameState,
