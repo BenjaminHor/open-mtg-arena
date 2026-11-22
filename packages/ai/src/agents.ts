@@ -1,9 +1,9 @@
-// Simple agents for `ai` and `auto` until the real AI arrives in M3 (the fuzzer uses `first-legal` and the `by-kind`
-// picker, D-061; the golden games use `by-kind`, D-069). Each is pure: the state,
-// the legal actions and a random state in, an action and the next random state out. They choose only from
+// Simple agents: the CLI's `ai` and `auto`, the fuzzer (`first-legal` and the `by-kind` picker, D-061), the golden
+// games (`by-kind`, D-069) and the match host's test seats. Each is pure: the legal actions and a random state in, an
+// action and the next random state out. They never see the game, so they can't cheat (D-062), and they choose only from
 // `legalActions`, so they never concede (D-042).
 
-import type { Action, GameState } from "@mtg/engine";
+import type { Action } from "@mtg/engine";
 import { pickAction } from "./pick-action.ts";
 import { nextRandom } from "./seeded-random.ts";
 
@@ -18,7 +18,6 @@ export const AGENTS: readonly AgentName[] = ["first-legal", "random", "by-kind"]
  */
 export function chooseAction(
   agent: AgentName,
-  _state: GameState,
   actions: readonly Action[],
   seed: number,
 ): { action: Action; seed: number } {

@@ -4,6 +4,7 @@
 import { mkdtempSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { pickAction } from "@mtg/ai";
 import { cardDatabase } from "@mtg/cards";
 import {
   type Action,
@@ -28,7 +29,6 @@ import { runFuzz } from "../src/fuzz/run-fuzz.ts";
 import { fuzzGame } from "../src/fuzz/run-game.ts";
 import { fuzz } from "../src/fuzz.ts";
 import { readGameFile, replay } from "../src/game-file.ts";
-import { pickAction } from "../src/pick-action.ts";
 import { cli } from "./helpers.ts";
 
 const cards = cardDatabase();
