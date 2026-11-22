@@ -3,7 +3,7 @@
 // (CR 613.7, 613.7a). Also, though not a layer, the restrictions an attached permanent puts on its host (Pacifism,
 // Whispersilk Cloak, Ice Cage, Entangling Vines), marked here because the pass already finds what each static applies to.
 
-import type { CardDatabase, Keyword } from "../cards/types.ts";
+import type { AttachedRestriction, CardDatabase, Keyword } from "../cards/types.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { attachedHostIn } from "./attachment.ts";
 import { type Layered, type LayerInputs, withoutRepeats } from "./layers.ts";
@@ -48,9 +48,10 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
     if (host === null || card === undefined) continue;
     switch (s.def.kind) {
       case "attachedRestricts": {
-        let marked = card;
-        for (const restriction of s.def.restrictions) marked = { ...marked, [restriction]: true };
-        board[host] = marked;
+        // Typed as `Layered`'s own fields, so a restriction it doesn't have fails to compile.
+        const marks: { -readonly [K in AttachedRestriction]?: Layered[K] } = {};
+        for (const restriction of s.def.restrictions) marks[restriction] = true;
+        board[host] = { ...card, ...marks };
         break;
       }
       // Layer 4, in `land-type.ts`.

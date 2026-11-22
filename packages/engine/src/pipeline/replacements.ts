@@ -397,11 +397,16 @@ function replaceByOwnText(
     case "asEntersChoose": {
       if (move.to.zone !== "battlefield" || name === null)
         throw new Error("only a permanent entering chooses as it enters");
-      if (def.what === "cardName")
-        return { before: [], event: rerouted(event, { ...move.to, chosenName: name }), after: [] };
-      // A basic land type (CR 205.3i), checked as it was answered.
-      if (!isBasicLandType(name)) throw new Error(`${name} isn't a basic land type`);
-      return { before: [], event: rerouted(event, { ...move.to, chosenLandType: name }), after: [] };
+      switch (def.what) {
+        case "cardName":
+          return { before: [], event: rerouted(event, { ...move.to, chosenName: name }), after: [] };
+        case "basicLandType":
+          // A basic land type (CR 205.3i), checked as it was answered.
+          if (!isBasicLandType(name)) throw new Error(`${name} isn't a basic land type`);
+          return { before: [], event: rerouted(event, { ...move.to, chosenLandType: name }), after: [] };
+        default:
+          throw new Error(`unknown choice ${def.what satisfies never}`);
+      }
     }
     case "entersAsCopy": {
       // With the chosen permanent's copiable values (CR 707.2) as they are now; none chosen, as itself.

@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "red-green-beats against blue-black-control, setup seed 186, by-kind agents, to turn 20. Covered, when chosen: effect cantBlock, effect ifNothingSacrificed, effect sacrifice, effect tap, event SPELL_DID_NOT_RESOLVE.",
+  "description": "red-green-beats against blue-black-control, setup seed 186, by-kind agents, to turn 20. Covered, when chosen: effect cantBlock, effect if nothingSacrificed, effect sacrifice, effect tap, event SPELL_DID_NOT_RESOLVE.",
   "agent": "by-kind",
   "agentSeed": 186,
   "maxTurns": 20,

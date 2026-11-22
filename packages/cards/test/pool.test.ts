@@ -354,6 +354,20 @@ describe("definitionProblems", () => {
     ).toHaveLength(3);
   });
 
+  it("refuses a shuffle that may be declined and puts the cards found on top, a pair no card uses (D-134)", () => {
+    const ponderCard = POOL.cards.find((c) => c.name === "Ponder");
+    const ponderDef = CARD_DEFS.find((d) => d.name === "Ponder");
+    if (ponderCard === undefined || ponderDef?.spell === undefined) throw new Error("Ponder isn't in the pool");
+    const bad: CardDef = {
+      ...ponderDef,
+      spell: { ...ponderDef.spell, effects: [{ op: "shuffle", who: "you", optional: true, foundOnTop: true }] },
+    };
+    expect(definitionProblems([bad], [ponderCard])).toContain(
+      "Ponder: a shuffle that may be declined can't put the cards found on top",
+    );
+    expect(definitionProblems([ponderDef], [ponderCard])).toStrictEqual([]);
+  });
+
   it("reports a missing keyword", () => {
     const def = { name: "Furnace Whelp", oracle: whelp.oracleText };
     expect(definitionProblems([def], [whelp])).toStrictEqual(['Furnace Whelp: keywords [], but Oracle has ["flying"]']);

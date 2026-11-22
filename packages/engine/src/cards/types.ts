@@ -186,10 +186,10 @@ export type ReplacementDef =
    */
   | { kind: "preventNoncombatDamageToAttached" };
 
-/** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 /** A restriction an `attachedRestricts` static puts on its host, named as the layer pass marks it (`Layered`). */
 export type AttachedRestriction = "cantAttackOrBlock" | "cantBeBlocked" | "cantActivate" | "doesntUntap";
 
+/** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
   /**
    * "Enchanted creature gets +1/+2", "has lifelink", "gets +1/+1 for each Plains you control and has flying" (Armored
@@ -291,7 +291,8 @@ export type StaticAbilityDef =
    * those cards (CR 401.5, 701.18c, 701.20a), "you" being this permanent's controller. They're still in hidden zones
    * (CR 400.2). `rules/revealed.ts` reads it.
    */
-  | { kind: "playWithRevealed"; what: "hand" | "topOfLibrary"; whose: "you" | "opponents" };
+  | { kind: "playWithRevealed"; what: "hand"; whose: "opponents" }
+  | { kind: "playWithRevealed"; what: "topOfLibrary"; whose: "you" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export const KEYWORDS = [
@@ -641,8 +642,10 @@ export type Effect =
    * (CR 701.21a).
    */
   | { op: "sacrificeSource" }
-  /** "Destroy [of]" (CR 701.8a). `noRegeneration`: "It can't be regenerated" (CR 701.19c): no shield is used. */
-  /** "Destroy [subject]"; "destroy all [filter]" is `of: { each: filter }` (CR 701.8a). */
+  /**
+   * "Destroy [of]"; "destroy all [filter]" is `of: { each: filter }` (CR 701.8a). `noRegeneration`: "It can't be
+   * regenerated" (CR 701.19c): no shield is used.
+   */
   | { op: "destroy"; of: EffectSubject; noRegeneration?: true }
   /**
    * "Prevent all [combat] damage that would be dealt [to you and creatures you control] this turn" (Fog, Safe Passage;

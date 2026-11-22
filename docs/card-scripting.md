@@ -129,9 +129,9 @@ export const furnaceWhelp: CardDef = {
   spell's target (CR 303.4a), and what it may stay attached to (CR 704.5m). "Enchanted creature gets +1/+2" is the
   static `{ kind: "attachedGets", power: 1, toughness: 2 }`, with `keywords` for "has flying" and `perCount` for "+1/+1
   for each Plains you control" (a filter, "you" being the Aura's controller); "enchanted creature can't attack or block"
-  is `{ kind: "attachedRestricts", restrictions: ["cantAttackOrBlock"] }` (D-102); "enchanted creature doesn't untap
-  during its controller's untap step" adds `"doesntUntap"` to the list, and "enchant tapped creature" the filter `{ types: ["creature"], tapped:
-  true }` (D-115).
+  is `{ kind: "attachedRestricts", restrictions: ["cantAttackOrBlock"] }` (D-102), one static with every restriction
+  its sentence names (Ice Cage's two); "enchanted creature doesn't untap during its controller's untap step" is the
+  restriction `"doesntUntap"`, and "enchant tapped creature" the filter `{ types: ["creature"], tapped: true }` (D-115).
 - "Those creatures don't untap during that player's next untap step" (Sleep) is `{ op: "doesntUntap", of, during: {
   target: 0 } }`; "that creature doesn't untap during its controller's next untap step" (Wall of Frost) has `during:
   "itsController"`, whoever controls it at that untap step (D-115).
@@ -231,7 +231,8 @@ export const furnaceWhelp: CardDef = {
   Ambassador, D-121).
 - "Regenerate this creature" / "Regenerate target creature" is `{ op: "regenerate", of: "self" }` / `of: { target: 0 }`
   (a shield, D-086); "Destroy target creature. It can't be regenerated." is `{ op: "destroy", of: { target: 0 },
-  noRegeneration: true }`. "Its controller reveals cards from the top of their library until they reveal a creature
+  noRegeneration: true }`; "destroy all enchantments" is `{ op: "destroy", of: { each: { types: ["enchantment"] } } }`
+  (D-134). "Then shuffle" is `{ op: "shuffle", who: "you" }`, and "you may shuffle" adds `optional: true`. "Its controller reveals cards from the top of their library until they reveal a creature
   card" is `{ op: "revealUntil", who: { controllerOf: { target: 0 } }, filter: { types: ["creature"] } }`, and "the
   player puts that card onto the battlefield" `{ op: "put", of: "found", into: "battlefield", by: { controllerOf:
   { target: 0 } } }`.
@@ -256,7 +257,10 @@ cards, that each definition's `oracle` equals the current Oracle text, and that 
   can't express the card, and document each op in `engine/src/effects/README.md` with its CR basis.
 - **Fundamental building blocks (the owner's requirement, D-126).** Almost any card should be definable from general
   blocks, with no one-off logic. Before a new op, static or replacement kind: compose existing ones, else generalize
-  one, else add a block named for its CR concept and shaped for the next card that shares the idea.
+  one, else add a block named for its CR concept and shaped for the next card that shares the idea. Some one-offs are
+  expected while the pool is small (D-134 lists them); the owner expects the right generalization to show as more
+  cards come. So when a new card resembles an existing one-off, generalize that one-off then, with the second card in
+  hand, rather than adding a sibling block.
 - **No functions in definitions.** If a card truly can't be expressed, extend the effect language
   in the engine (with tests). Never add an escape hatch.
 - **Oracle text is the reference, not the printed text.** Errata and modern wording win.

@@ -2081,6 +2081,15 @@ owner's answer to the D-089 open question, option (a))
   Coat of Arms' counts (relative to the creature affected), Warp World's count of the cards shuffled in, Stone Giant's
   "toughness less than this creature's power" target. Most other single-card blocks are general rules ideas (a keyword,
   a zone, a turn structure) that more cards will use.
-- Each merge renamed a mechanic key the golden cover reads, so the cover's list shrank; the golden games themselves
-  didn't change. A saved game stopped mid-resolution with an old op name wouldn't load, which is fine before the first
-  release (ENGINE_VERSION 0).
+- The golden cover still tells each old block apart: a merged block's unit names the variant its fields choose
+  (`static attachedRestricts doesntUntap`, `effect if nothingSacrificed`, `trigger becomesTarget attached`,
+  `effect shuffle optional`, `effect destroy all`, `replacement asEntersChoose cardName`, ...), so the guarantee that
+  some golden game runs each one is unchanged. The golden games didn't change; their descriptions use the new unit
+  names. A saved game stopped mid-resolution with an old op name wouldn't load, which is fine before the first release
+  (ENGINE_VERSION 0).
+- The owner (2026-11-22): one-offs are understandable now; as more cards are built it will be clearer how to
+  generalize them. So a one-off is revisited when a second card needs something like it (card-scripting.md, D-126),
+  not merged ahead of time on a guess.
+- Combinations of the new fields that no card uses are refused rather than left untested: `playWithRevealed` is typed
+  to its two pairs (opponents' hands, your library's top), and `definitionProblems` refuses a `shuffle` both `optional`
+  and `foundOnTop`.

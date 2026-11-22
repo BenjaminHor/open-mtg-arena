@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 49, by-kind agents, to turn 32. Covered, when chosen: static playWithTopOfLibraryRevealed.",
+  "description": "Random pool decks, setup seed 49, by-kind agents, to turn 32. Covered, when chosen: static playWithRevealed topOfLibrary you.",
   "agent": "by-kind",
   "agentSeed": 49,
   "maxTurns": 32,

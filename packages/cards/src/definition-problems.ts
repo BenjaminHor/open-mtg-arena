@@ -448,6 +448,9 @@ function subjectProblems(where: string, targets: readonly TargetSpec[], written:
       (objectOnly(effect.during) || effect.during === "eachPlayer" || effect.during === "eachOpponent")
     )
       problems.push(`${where}: doesntUntap is during one player's untap step`);
+    // No card shuffles "you may" and then puts the cards found on top; nothing tests the pair (D-134).
+    if (effect.op === "shuffle" && effect.optional === true && effect.foundOnTop === true)
+      problems.push(`${where}: a shuffle that may be declined can't put the cards found on top`);
     // "The player puts that card onto the battlefield": one player, who'd also be the one asked "you may".
     if (effect.op === "put" && effect.by !== undefined) {
       if (objectOnly(effect.by) || effect.by === "eachPlayer")
