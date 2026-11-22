@@ -837,6 +837,29 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             later), Haunting Echoes still working; the hidden order in the fuzz (two worlds).
          - Future impact: `choose` serves "choose a card in a graveyard" without targets; `exileAll` any zone; CR 401.4
            for the bottom (later) goes in the same place.
+       - M2-14k plan (2026-11-22): Warp World (its rulings give the steps: count the permanents each player owns,
+         shuffle them in, reveal that many cards, artifacts/creatures/lands onto the battlefield at once, then
+         enchantments at once (Auras choose hosts among those, APNAP), the rest on the bottom in any order). CR 401.4,
+         701.24a, 701.20a, 608.2c/d, 303.4f/g, 614.12a, 111.7, 101.4. D-126, mostly generalized blocks:
+         1. New op `shuffleIntoLibraries { filter }`: every permanent fitting it goes to its owner's library at once,
+            each player then shuffles (CR 701.24a); how many each player owned is kept (`Resolution.shuffledIn`; tokens
+            count, its ruling).
+         2. `revealTop` takes `who: "eachPlayer"` and `count: "shuffledIn"`: each reveals that many cards (tokens
+            aren't cards, its ruling), all `found`.
+         3. `returnAllToBattlefield` takes `from: "found"` as well as all graveyards: the cards found that fit, under
+            their owners, Auras choosing hosts already on the battlefield (APNAP, CR 101.4), as for Open the Vaults.
+            An Aura choosing while still in a library: the decision's `for`, and `AURA_HOST_CHOSEN`, show it by identity,
+            not by its library id (D-062): the view's `for` becomes a shown option, as options are, and the fuzz
+            scramble keeps what a viewer's own decision is for.
+         4. `put` of several cards on the bottom of a library (CR 401.4): each owner arranges theirs, unrevealed, in
+            APNAP order; cards already in that library are reordered, not moved (CR 400.7); `reorderLibrary` gains a
+            bottom.
+         5. Scenarios: the basic swap; tokens counted but not revealed; an instant to the bottom; an Aura onto a
+            creature put in step 4, or to the bottom with nothing to enchant; a checkland entering tapped; Clone with
+            nothing to copy; Pithing Needle naming; two players' Auras in APNAP order; enters triggers waiting until it
+            finishes (its ruling); a stolen permanent going to its owner's library; an empty library.
+         - Future impact: `shuffleIntoLibraries` is "shuffle into its owner's library" for any filter; the bottom
+           arranging serves "put the rest on the bottom in any order" cards.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
          yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong
