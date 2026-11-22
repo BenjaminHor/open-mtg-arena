@@ -12,7 +12,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   refinement). Phase 1: M3-01 match host, M3-02 heuristic AI, M3-03 web scaffold, M3-04 landscape phone board.
   M3-01 plan, one PR per slice:
   - **M3-01a, one per-player data source (D-135, D-137).** In the engine's `view/`, beside `playerView` and not in it:
-    `seenObjects(state, viewer, cards)`, the derived values of every object the viewer can see (characteristics,
+    `seenObjects(state, view, cards)`, the derived values of every object the viewer can see (characteristics,
     summoning sickness, combat roles), keyed by id. The engine owns `characteristics()`, and `ai → engine` is allowed,
     so the UI, the heuristic AI and the LLM harness all read it with no new dependency arrow. `brief`'s builder in the
     CLI is rebuilt on it (text unchanged); text rendering stays in the CLI.
@@ -20,16 +20,19 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     `match` can seat them; the CLI imports them from there.
   - **M3-01c, `packages/match`: a pure step function over plain-JSON match state.** `MatchState` = setup, actions (the
     log, every host-made action included), the game state, seats (per player: `human` or an agent by name, with its
-    random state in the match, never `state.rng`), stops and settings, and each viewer's events not yet sent.
+    random state in the match, never `state.rng`), settings `{ autoPass, autoTap }`, and each human seat's events not yet sent.
     `advance(match)` acts for agent seats, auto-passes and answers forced decisions until a human seat must decide;
     `submit(match, action)` applies one. An LLM seat later is an outside seat too (it answers asynchronously).
-    Auto-pass is one pure function of the decision and the stops, shared by every seat (D-137), erring toward stopping:
-    a stop where a payable non-mana action exists. Auto-tap reuses `autoPay`. The game file's pure part (format,
-    replay) moves into `match`; the CLI keeps file I/O. A guard test: nothing `match` imports uses `node:`.
+    Auto-pass is one pure function shared by every seat (D-137, D-143): stop whenever something meaningful could be
+    done, pass when your own object is on top of the stack; no stops list. Auto-tap reuses `autoPay`, one action at a
+    time. A guard test: nothing `match` imports uses `node:`.
     *Accept (M3-01):* AI-vs-AI matches run through the host in tests and their logs replay to the same final state.
   - M3-01a done (seenObjects, brief on it), M3-01b done (agents in `@mtg/ai`), M3-01c built (`packages/match`: state,
     advance/submit/waitingOn, auto-pass, auto-tap one action at a time, replayLog, deckGameSetup moved in; the CLI's
-    game file keeps its own format and replay for now).
+    game file keeps its own format and replay for now: `replayLog` and the CLI's replay do the same job twice, to merge
+    when the web app saves games). Code review fixes in: the auto-pass rule (D-143), `mightPay`/`actionManaCost` in
+    the engine shared with `brief`, events queued only for human seats, `seenObjects` combat tests.
+  - Gap (D-143): auto-tap has one seat-wide flag; a manual override of one payment waits for the UI's payment screen.
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
     and posts `{ view, seen, legalActions, events }`.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI

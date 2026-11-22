@@ -11,7 +11,7 @@ import { controllerOf } from "../rules/controller.ts";
 import { isFreeOfSummoningSickness } from "../rules/summoning-sickness.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId, PlayerId } from "../state/ids.ts";
-import type { StackChoices, Target } from "../state/objects.ts";
+import type { AbilityRef, StackChoices, Target } from "../state/objects.ts";
 import type { PlayerView } from "./player-view.ts";
 
 /** A card or token the viewer can see, in any zone they see into. */
@@ -34,8 +34,11 @@ export type SeenCard = {
   chosen: string | null;
   /** A creature that can't attack or use {T} abilities yet (CR 302.6). */
   summoningSick: boolean;
-  /** What it attacks while it's an attacking creature (CR 506.4, 508.1b); null otherwise. */
-  attacking: Target | null;
+  /**
+   * While it's an attacking creature: what it attacks (CR 508.1b), or null once the planeswalker it attacked has left
+   * combat, when it's still attacking but attacks nothing (CR 506.4c). Null when it isn't attacking.
+   */
+  attacking: { attacked: Target | null } | null;
   /** The attackers it blocks while it's a blocking creature. */
   blocking: ObjectId[];
   /** A spell's choices on the stack (targets, X, CR 601.2b-c); null elsewhere. */
@@ -49,6 +52,8 @@ export type SeenAbility = {
   source: ObjectId;
   /** The card it came from, for its text. */
   sourceOracleId: OracleId;
+  /** Which of that card's abilities it is: activated or triggered, and which (D-028). */
+  ability: AbilityRef;
   controller: PlayerId;
   choices: StackChoices;
 };
@@ -74,6 +79,7 @@ function seenObject(state: GameState, id: ObjectId, cards: CardDatabase): SeenOb
       id,
       source: obj.source,
       sourceOracleId: obj.sourceOracleId,
+      ability: obj.ability,
       controller: controllerOf(state, id, cards),
       choices: obj.choices,
     };
@@ -94,7 +100,7 @@ function seenObject(state: GameState, id: ObjectId, cards: CardDatabase): SeenOb
     attachedTo: obj.attachedTo ?? null,
     chosen: obj.chosenName ?? obj.chosenLandType ?? null,
     summoningSick: c.types.includes("creature") && !isFreeOfSummoningSickness(state, id, cards),
-    attacking: attack === undefined ? null : attackedNow(state, attack, cards),
+    attacking: attack === undefined ? null : { attacked: attackedNow(state, attack, cards) },
     blocking: isBlocking(state, id, cards)
       ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id).map((b) => b.attacker)
       : [],

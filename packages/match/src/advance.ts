@@ -15,14 +15,14 @@ import {
   type PlayerId,
 } from "@mtg/engine";
 import { autoPasses } from "./auto-pass.ts";
-import { autoTapActions } from "./auto-tap.ts";
+import { autoTapAction } from "./auto-tap.ts";
 import { type MatchState, withEvents } from "./match-state.ts";
 
 /** Enough for any real game between two `advance` calls; reaching it means the host is stuck in a loop. */
 const MOST_ACTIONS = 100_000;
 
-/** What the host does next: actions to apply, from a match that may have moved an agent's random state on. */
-type HostStep = { match: MatchState; actions: Action[] };
+/** What the host does next: an action to apply, from a match that may have moved an agent's random state on. */
+type HostStep = { match: MatchState; action: Action };
 
 /** Acts for the host until a person must decide or the game ends. */
 export function advance(match: MatchState, cards: CardDatabase): MatchState {
@@ -30,7 +30,7 @@ export function advance(match: MatchState, cards: CardDatabase): MatchState {
   for (let i = 0; i < MOST_ACTIONS; i++) {
     const step = hostStep(m, cards);
     if (step === null) return m;
-    m = step.actions.reduce((acc, action) => applied(acc, action, cards), step.match);
+    m = applied(step.match, step.action, cards);
   }
   throw new Error(`the host took ${MOST_ACTIONS} actions without anyone deciding`);
 }
@@ -65,25 +65,24 @@ function hostStep(match: MatchState, cards: CardDatabase): HostStep | null {
   const seat = match.seats[player];
   const settings = match.settings[player];
   if (seat === undefined || settings === undefined) throw new Error(`no seat for ${player}`);
-  // Paying: the host's pick of sources, if the seat leaves it to the host and a way to pay exists. One action at a
-  // time: each mana ability activated is a new decision to answer, and the plan is made again with the mana it added.
+  // Paying: the host's pick of sources, if the seat leaves it to the host and a way to pay exists.
   if (pending.kind === "payMana" && settings.autoTap) {
-    const next = autoTapActions(state, cards)?.[0];
-    if (next !== undefined) return { match, actions: [next] };
+    const next = autoTapAction(state, cards);
+    if (next !== null) return { match, action: next };
   }
   const actions = legalActions(state, player, cards);
   // No real choice: one legal answer is taken at once, so no one sees an empty prompt (ui.md, "Feel").
-  if (pending.kind !== "priority" && actions.length === 1) return { match, actions: [actions[0] as Action] };
+  if (pending.kind !== "priority" && actions.length === 1) return { match, action: actions[0] as Action };
   if (autoPasses(state, player, actions, settings, cards)) {
     const pass = actions.find((a) => a.type === "PASS_PRIORITY");
-    if (pass !== undefined) return { match, actions: [pass] };
+    if (pass !== undefined) return { match, action: pass };
   }
   if (seat.kind === "human") return null;
   // A built-in agent: its choice, and its random state moves on (kept in the match, never the game's, D-062).
   const choice = chooseAction(seat.agent, actions, seat.random);
   return {
     match: { ...match, seats: { ...match.seats, [player]: { ...seat, random: choice.seed } } },
-    actions: [choice.action],
+    action: choice.action,
   };
 }
 

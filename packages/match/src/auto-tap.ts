@@ -4,15 +4,18 @@
 
 import { type Action, autoPay, type CardDatabase, type GameState } from "@mtg/engine";
 
-/** The actions that pay the pending cost: the mana abilities to activate, then the payment; null if none was found. */
-export function autoTapActions(state: GameState, cards: CardDatabase): Action[] | null {
+/**
+ * The next action paying the pending cost: a mana ability to activate, or, once the mana is there, the payment; null
+ * if no way to pay was found. One at a time: each activation leaves a new decision, and the plan is made again with the
+ * mana it added.
+ */
+export function autoTapAction(state: GameState, cards: CardDatabase): Action | null {
   const pending = state.pending;
   if (pending?.kind !== "payMana") return null;
   const plan = autoPay(state, pending.player, pending.cost, cards);
   if (plan === null) return null;
   const { id: decisionId, player } = pending;
-  return [
-    ...plan.activations.map((a): Action => ({ type: "ACTIVATE_ABILITY", decisionId, player, ...a })),
-    { type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: plan.payment } },
-  ];
+  const [activation] = plan.activations;
+  if (activation !== undefined) return { type: "ACTIVATE_ABILITY", decisionId, player, ...activation };
+  return { type: "ANSWER", decisionId, player, answer: { kind: "payMana", payment: plan.payment } };
 }

@@ -11,8 +11,8 @@ This spec is a draft agreed with the owner on 2026-11-22. Decisions: D-136, D-13
 
 ## Shape
 
-- **Package:** `packages/llm-agent`. It depends on `engine` and on the match host's per-player data (`brief`'s builder,
-  moved out of the CLI into `packages/match` in M3). It has no UI.
+- **Package:** `packages/llm-agent`. It depends on `engine` for the per-player data every seat reads (`playerView` and
+  `seenObjects`, D-135); it renders its own prompt text from them, as `brief` does in the CLI. It has no UI.
 - **Two transports, one harness:** in the app, it runs in the match host's Web Worker and calls OpenRouter's API from
   the browser with the player's key (check early that OpenRouter accepts browser calls). In the CLI, the same harness
   plays games for testing and evaluation (`pnpm cli ai --agent llm`, and an evaluation command).

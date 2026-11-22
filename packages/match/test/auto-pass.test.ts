@@ -1,77 +1,66 @@
-// Smart auto-pass (M3-01): the host passes for a player with nothing worth doing, and stops at their stops when they
-// have something. Games set up by hand: p1 with or without a spell they can cast, p2 with nothing.
+// Smart auto-pass (D-143): the host passes for a player with nothing they could do, stops them at every window where
+// they could act (as Arena does), and lets their own spell resolve without asking them.
 
-import { cardDatabase } from "@mtg/cards";
-import type { GameSetup, OracleId, Step } from "@mtg/engine";
+import type { Action, ObjectId } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { advance, DEFAULT_SETTINGS, startMatch, waitingOn } from "../src/index.ts";
-
-const cards = cardDatabase();
-const id = (name: string) => (Object.values(cards).find((c) => c.printed.name === name)?.oracleId ?? name) as OracleId;
-const permanent = (name: string) => ({
-  oracleId: id(name),
-  tapped: false,
-  summoningSick: false,
-  damage: 0,
-  counters: {},
-});
-
-function setup(p1: { hand: string[]; battlefield: string[] }, step: Step, library = "Plains"): GameSetup {
-  const player = (pid: "p1" | "p2", hand: string[], battlefield: string[]) => ({
-    id: pid,
-    life: 20,
-    library: Array.from({ length: 5 }, () => id(library)),
-    hand: hand.map(id),
-    battlefield: battlefield.map(permanent),
-    graveyard: [],
-    exile: [],
-    manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
-  });
-  return {
-    seed: 1,
-    players: [player("p1", p1.hand, p1.battlefield), player("p2", [], [])],
-    opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step } },
-    ruleModifiers: [],
-  };
-}
+import { act, answers, cards, handMade, passes } from "./helpers.ts";
 
 const human = { kind: "human" } as const;
+const people = { p1: human, p2: human };
 
 describe("auto-pass", () => {
-  it("passes the upkeep, not a stop, and stops in the main phase, a stop, where the player can cast something", () => {
-    const match = advance(
-      startMatch(
-        setup({ hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, "upkeep"),
-        { p1: human, p2: human },
-        cards,
-      ),
-      cards,
-    );
-    expect(waitingOn(match, cards)).toBe("p1");
-    expect(match.state.turn?.step).toBe("precombatMain");
-  });
-
-  it("with auto-pass off, stops at every priority", () => {
-    const off = { ...DEFAULT_SETTINGS, autoPass: false };
-    const match = advance(
-      startMatch(
-        setup({ hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, "upkeep"),
-        { p1: human, p2: human },
-        cards,
-        { p1: off },
-      ),
-      cards,
-    );
+  it("stops at any window where the player could act: the upkeep, holding a Lightning Bolt they can pay for", () => {
+    const setup = handMade({ hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, {}, "upkeep");
+    const match = advance(startMatch(setup, people, cards), cards);
     expect(waitingOn(match, cards)).toBe("p1");
     expect(match.state.turn?.step).toBe("upkeep");
   });
 
-  it("never stops a player who can't pay for anything, even at their stops", () => {
+  it("never stops a player who can't pay for anything", () => {
     // Libraries of Lightning Bolts: no land is ever drawn, so nothing can be paid for.
-    const unpayable = setup({ hand: ["Lightning Bolt"], battlefield: [] }, "upkeep", "Lightning Bolt");
-    const match = advance(startMatch(unpayable, { p1: human, p2: human }, cards), cards);
+    const setup = handMade(
+      { hand: ["Lightning Bolt"], library: "Lightning Bolt" },
+      { library: "Lightning Bolt" },
+      "upkeep",
+    );
+    const match = advance(startMatch(setup, people, cards), cards);
     // Nobody had anything to do, so the game went on until a library ran out (CR 704.5b).
     expect(match.state.result).not.toBeNull();
     expect(match.actions.every((a) => a.type === "PASS_PRIORITY" || a.type === "ANSWER")).toBe(true);
+  });
+
+  it("with auto-pass off (full control), stops at every priority, even with nothing to do", () => {
+    const setup = handMade({ library: "Lightning Bolt" }, { library: "Lightning Bolt" }, "upkeep");
+    const off = { ...DEFAULT_SETTINGS, autoPass: false };
+    const match = advance(startMatch(setup, people, cards, { p1: off }), cards);
+    expect(waitingOn(match, cards)).toBe("p1");
+    expect(match.state.turn?.step).toBe("upkeep");
+  });
+
+  it("gives both players their window for a trick after blockers, and an opponent's spell stops them; their own doesn't", () => {
+    const side = { hand: ["Giant Growth"], battlefield: ["Grizzly Bears", "Forest"], library: "Forest" };
+    let match = advance(startMatch(handMade(side, side, "precombatMain"), people, cards), cards);
+    // Into combat: p1 passes their windows until they declare the Bears as an attacker.
+    while (match.state.pending?.kind !== "declareAttackers") match = act(match, passes);
+    const [p1Bears, , p2Bears] = match.state.zones.battlefield as [ObjectId, ObjectId, ObjectId];
+    match = act(
+      match,
+      (a) => a.type === "ANSWER" && a.answer.kind === "declareAttacker" && a.answer.attack.attacker === p1Bears,
+    );
+    match = act(match, answers("finishDeclaring"));
+    while (match.state.pending?.kind !== "declareBlockers") match = act(match, passes);
+    match = act(
+      match,
+      (a) => a.type === "ANSWER" && a.answer.kind === "declareBlocker" && a.answer.block.blocker === p2Bears,
+    );
+    match = act(match, answers("finishDeclaring"));
+    // The declare blockers step: the attacker is asked first, holding a Giant Growth they can pay for.
+    expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p1", "declareBlockers"]);
+    // p1 casts it; auto-tap pays; with their own spell on top, the host passes for them; p2 is stopped to respond.
+    match = act(match, (a) => a.type === "CAST_SPELL");
+    while (match.state.pending?.kind === "chooseTarget") match = act(match, (a: Action) => a.type === "ANSWER");
+    expect(match.state.zones.stack).toHaveLength(1);
+    expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p2", "declareBlockers"]);
   });
 });

@@ -4,7 +4,7 @@
 
 export { advance, submit, waitingOn } from "./advance.ts";
 export { autoPasses } from "./auto-pass.ts";
-export { autoTapActions } from "./auto-tap.ts";
+export { autoTapAction } from "./auto-tap.ts";
 export { deckGameSetup } from "./deck-setup.ts";
 export {
   DEFAULT_SETTINGS,
@@ -13,6 +13,5 @@ export {
   type SeatSettings,
   startMatch,
   takeEvents,
-  withEvents,
 } from "./match-state.ts";
 export { replayLog } from "./replay.ts";

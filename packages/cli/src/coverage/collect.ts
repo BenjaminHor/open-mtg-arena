@@ -8,9 +8,9 @@ import { citedRules, laterRules } from "./citations.ts";
 
 export const REPO = join(import.meta.dirname, "../../../..");
 
-/** The rules code: the engine and the card definitions. Tooling (the CLI, the scenario runner) cites rules too, but
- * only to explain itself. */
-const CODE_DIRS = ["packages/engine/src", "packages/cards/src"];
+/** The rules code: the engine, the card definitions, and the match host and agents, which act on the rules' behalf.
+ * Tooling (the CLI, the scenario runner) cites rules too, but only to explain itself. */
+const CODE_DIRS = ["packages/engine/src", "packages/cards/src", "packages/match/src", "packages/ai/src"];
 const SCENARIOS_DIR = "packages/engine/test/scenarios";
 export const MATRIX = `${SCENARIOS_DIR}/interactions/README.md`;
 

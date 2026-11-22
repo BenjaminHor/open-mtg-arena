@@ -15,6 +15,7 @@ import {
   type PlayerId,
   playerView,
   revealedBy,
+  seenObjects,
 } from "@mtg/engine";
 import { invariantProblems } from "@mtg/scenarios";
 
@@ -53,11 +54,15 @@ export const lifeThroughEvents: Check = (before, after, events) => {
 export const viewsLeakNothing: Check = (before, after, events, cards) => {
   const problems: string[] = [];
   for (const viewer of after.turnOrder) {
-    if (
-      JSON.stringify(playerView(scrambleHidden(after, viewer, cards), viewer, cards)) !==
-      JSON.stringify(playerView(after, viewer, cards))
-    ) {
+    const scrambled = scrambleHidden(after, viewer, cards);
+    const otherView = playerView(scrambled, viewer, cards);
+    const view = playerView(after, viewer, cards);
+    if (JSON.stringify(otherView) !== JSON.stringify(view)) {
       problems.push(`${viewer}'s view changes when only hidden information changes`);
+    }
+    // The derived values sent beside the view, which the UI and every AI read (D-135, D-137).
+    if (JSON.stringify(seenObjects(scrambled, otherView, cards)) !== JSON.stringify(seenObjects(after, view, cards))) {
+      problems.push(`${viewer}'s seen objects change when only hidden information changes`);
     }
     // A card hidden from the viewer before or after the action must not be named by its card id or its object id,
     // unless the viewer could see it then too: their own draw, a card they saw go into a hand (D-054). That includes a

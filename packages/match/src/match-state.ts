@@ -12,7 +12,6 @@ import {
   type GameSetup,
   type GameState,
   type PlayerId,
-  type Step,
   type ViewEvent,
 } from "@mtg/engine";
 
@@ -21,12 +20,10 @@ export type Seat = { kind: "human" } | { kind: "agent"; agent: AgentName; random
 
 /** What the host does on a seat's behalf (the player's settings in the app). */
 export type SeatSettings = {
-  /** Pass priority when there's nothing meaningful to do, or no stop here (`auto-pass.ts`). */
+  /** Pass priority when there's nothing the player could do (`auto-pass.ts`); off is full control. */
   autoPass: boolean;
   /** Pay costs with the host's pick of mana sources (`auto-tap.ts`); off, the player taps by hand. */
   autoTap: boolean;
-  /** Steps where an empty stack still stops for this player: on their own turn, and on an opponent's. */
-  stops: { own: Step[]; opponents: Step[] };
 };
 
 export type MatchState = {
@@ -36,19 +33,12 @@ export type MatchState = {
   state: GameState;
   seats: Record<PlayerId, Seat>;
   settings: Record<PlayerId, SeatSettings>;
-  /** The events each player saw (`eventsFor`) and hasn't been sent yet. */
+  /** The events each person's seat saw (`eventsFor`) and hasn't been sent yet; an agent's aren't kept. */
   unsent: Record<PlayerId, ViewEvent[]>;
 };
 
-/**
- * Stops by default, an empty stack: your own main phases, and an opponent's declare attackers and end step, where
- * a trick or an instant at the end of their turn is played. Auto-pass stops at them only when there's something to do.
- */
-export const DEFAULT_SETTINGS: SeatSettings = {
-  autoPass: true,
-  autoTap: true,
-  stops: { own: ["precombatMain", "postcombatMain"], opponents: ["declareAttackers", "end"] },
-};
+/** Auto-pass and auto-tap on, as Arena plays by default. */
+export const DEFAULT_SETTINGS: SeatSettings = { autoPass: true, autoTap: true };
 
 /** A new match from a setup, each player's seat, and settings (the defaults for anyone left out). */
 export function startMatch(
@@ -67,16 +57,18 @@ export function startMatch(
     state: created.state,
     seats,
     settings: Object.fromEntries(players.map((p) => [p, settings[p] ?? DEFAULT_SETTINGS])),
-    unsent: Object.fromEntries(players.map((p) => [p, []])),
+    unsent: Object.fromEntries(players.filter((p) => seats[p]?.kind === "human").map((p) => [p, []])),
   };
   return withEvents(match, created.events);
 }
 
-/** The events each player sees, queued to be sent. */
+/** The events each person's seat sees, queued to be sent (an agent reads the game through its view as it decides). */
 export function withEvents(match: MatchState, events: readonly GameEvent[]): MatchState {
   if (events.length === 0) return match;
   const unsent: Record<PlayerId, ViewEvent[]> = {};
-  for (const p of match.state.turnOrder) unsent[p] = [...(match.unsent[p] ?? []), ...eventsFor(events, p)];
+  for (const p of Object.keys(match.unsent) as PlayerId[]) {
+    unsent[p] = [...(match.unsent[p] ?? []), ...eventsFor(events, p)];
+  }
   return { ...match, unsent };
 }
 

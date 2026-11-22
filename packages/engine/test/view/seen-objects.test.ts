@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { type GameState, type ObjectId, playerView, seenObjects } from "../../src/index.ts";
 import { BEARS, FOREST, TEST_CARDS } from "../support/cards.ts";
-import { playerSetup, start } from "../support/game.ts";
+import { answer, passBoth, playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string, summoningSick: boolean) => ({
   oracleId,
@@ -52,5 +52,27 @@ describe("seenObjects", () => {
       characteristics: { name: "Grizzly Bears", controller: "p1", power: 2, toughness: 2 },
     });
     expect(seen[theirs]).toMatchObject({ summoningSick: false, characteristics: { controller: "p2" } });
+  });
+
+  it("shows an attacker with what it attacks, and a blocker with the attackers it blocks", () => {
+    let game = start({
+      seed: 1,
+      players: [
+        playerSetup("p1", { library: [FOREST], battlefield: [permanent(BEARS, false)] }),
+        playerSetup("p2", { library: [FOREST], battlefield: [permanent(BEARS, false)] }),
+      ],
+      opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+      ruleModifiers: [],
+    });
+    const [attacker, blocker] = game.state.zones.battlefield as [ObjectId, ObjectId];
+    game = passBoth(passBoth(game));
+    game = answer(game, { kind: "declareAttacker", attack: { attacker, defender: "p2" } });
+    game = answer(game, { kind: "finishDeclaring" });
+    game = passBoth(game);
+    game = answer(game, { kind: "declareBlocker", block: { blocker, attacker } });
+    game = answer(game, { kind: "finishDeclaring" });
+    const seen = seenObjects(game.state, playerView(game.state, "p2", TEST_CARDS), TEST_CARDS);
+    expect(seen[attacker]).toMatchObject({ attacking: { attacked: { kind: "player", player: "p2" } }, blocking: [] });
+    expect(seen[blocker]).toMatchObject({ attacking: null, blocking: [attacker] });
   });
 });

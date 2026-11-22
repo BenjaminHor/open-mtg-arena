@@ -15,10 +15,10 @@ Review this spec with the owner before starting. It's expected to change based o
 ## Tasks
 
 **M3-01 Match host.** `packages/match`: holds state, routes decisions to a human or an AI, smart auto-pass
-with per-step stops and a full-control toggle, auto-tap mana with manual override, instant answers where
-there's no real choice, and replay log recording. It owns the per-player data the UI and every AI read: `brief`'s
-builder moves here from the CLI (D-135), so the app's screen, the heuristic AI and the LLM opponent see the same
-information (D-137), and the CLI uses it from here. *Accept:* AI-vs-AI matches run through the
+that stops whenever you could act, with a full-control toggle (D-143), auto-tap mana with manual override, instant answers where
+there's no real choice, and replay log recording. The per-player data the UI and every AI read is the engine's
+`playerView` with `seenObjects` beside it (D-135), so the app's screen, the heuristic AI and the LLM opponent see the same
+information (D-137); `brief`'s builder stays in the CLI, built on the same two. *Accept:* AI-vs-AI matches run through the
 match host in tests, and their replay logs reproduce the final state.
 
 **M3-02 Heuristic AI v0.** `packages/ai`, working from the player's view only: mulligan by land count, play a land,

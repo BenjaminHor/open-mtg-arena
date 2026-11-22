@@ -5,14 +5,13 @@
 import {
   type Action,
   abilitiesOf,
-  autoPay,
+  actionManaCost,
   type CardDatabase,
   type CostPart,
-  cardDataOf,
   type GameState,
   isManaAbility,
   legalTargets,
-  type ManaCost,
+  mightPay,
   type ObjectFilter,
   type ObjectId,
   type PlayerId,
@@ -63,10 +62,11 @@ function detail(state: GameState, viewer: PlayerId, action: Action, cards: CardD
     case "CAST_SPELL": {
       const obj = state.objects[action.object];
       if (obj?.kind !== "card") return NONE;
-      const manaCost = cardManaCost(state, action.object, cards);
+      // The same cost and payability hint the match host's auto-pass reads (`actionManaCost`, `mightPay`).
+      const manaCost = actionManaCost(state, action, cards);
       return {
         cost: manaCost === null ? null : manaCostText(manaCost),
-        payable: manaCost === null ? null : canPay(state, viewer, manaCost, cards),
+        payable: manaCost === null ? null : mightPay(state, viewer, manaCost, cards),
         targets: targetChoices(state, viewer, action.object, targetSpecsOf(state, action.object, cards), cards),
         mana: false,
       };
@@ -74,11 +74,11 @@ function detail(state: GameState, viewer: PlayerId, action: Action, cards: CardD
     case "ACTIVATE_ABILITY": {
       const ability = abilitiesOf(state, action.object, cards).find((a) => sameAbilityRef(a.ref, action.ability));
       if (ability === undefined) return NONE;
-      const manaPart = ability.def.cost.flatMap((c) => (c.kind === "mana" ? c.cost : []));
+      const manaPart = actionManaCost(state, action, cards);
       const mana = isManaAbility(ability.def);
       return {
         cost: ability.def.cost.map(costPartText).join(", "),
-        payable: mana || manaPart.length === 0 ? null : canPay(state, viewer, manaPart, cards),
+        payable: manaPart === null || manaPart.length === 0 ? null : mightPay(state, viewer, manaPart, cards),
         targets: targetChoices(state, viewer, action.object, ability.def.targets, cards),
         mana,
       };
@@ -89,24 +89,6 @@ function detail(state: GameState, viewer: PlayerId, action: Action, cards: CardD
     case "CONCEDE":
       return NONE;
   }
-}
-
-/** The card's mana cost (CR 202.1), of what it copied if it's a copy. */
-function cardManaCost(state: GameState, id: ObjectId, cards: CardDatabase): ManaCost | null {
-  const obj = state.objects[id];
-  return obj?.kind === "card" ? (cardDataOf(obj, cards)?.printed.manaCost ?? null) : null;
-}
-
-function canPay(state: GameState, viewer: PlayerId, cost: ManaCost, cards: CardDatabase): boolean {
-  // X is announced as the spell is cast (CR 601.2b); the least it can be is 0.
-  return (
-    autoPay(
-      state,
-      viewer,
-      cost.filter((s) => s.kind !== "x"),
-      cards,
-    ) !== null
-  );
 }
 
 function targetChoices(

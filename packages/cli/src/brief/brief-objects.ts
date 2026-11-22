@@ -101,7 +101,13 @@ export function permanentInfo(state: GameState, seen: SeenCard, cards: CardDatab
     damage: seen.damage,
     counters: seen.counters,
     attachedTo: seen.attachedTo === null ? null : objectText(state, seen.attachedTo, cards),
-    attacking: seen.attacking === null ? null : targetText(state, seen.attacking, cards),
+    // Still attacking with its planeswalker gone (CR 506.4c): attacking nothing.
+    attacking:
+      seen.attacking === null
+        ? null
+        : seen.attacking.attacked === null
+          ? "nothing"
+          : targetText(state, seen.attacking.attacked, cards),
     blocking: seen.blocking.map((attacker) => objectText(state, attacker, cards)),
     chosen: seen.chosen,
   };

@@ -33,6 +33,7 @@ export { createGame } from "./game/create-game.ts";
 export { legalActions } from "./game/legal-actions.ts";
 export { nextStep } from "./game/steps.ts";
 export { type AutoPayment, autoPay, manaAvailable } from "./mana/auto-pay.ts";
+export { actionManaCost, mightPay } from "./mana/might-pay.ts";
 export { allPayments, type ManaPayment, manaValue, payFromPool } from "./mana/payment.ts";
 export type { RngState } from "./rng/xoshiro128.ts";
 export { type ActivatedAbility, abilitiesOf, isManaAbility, sameAbilityRef } from "./rules/abilities.ts";
