@@ -1544,11 +1544,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (Asked 2026-11-21, D-123) A full random game takes 100–130 ms on this cloud machine, even idle, against the 100 ms
-  budget "on a laptop" (architecture.md), and the bench varies by up to about 30% between idle runs here. Options: (a)
-  run `pnpm bench` once on the owner's laptop to see whether the budget holds there, and keep it (recommended); (b)
-  profile and speed up the random game in M2-15 regardless; (c) set a separate budget for this machine. Proceeding
-  with M2-14 meanwhile; the bench is judged by alternating runs.
 - (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
   creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
   by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
@@ -1601,6 +1596,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Artillery's two losses kept.)
 - (Answered 2026-11-20, D-078: Dragon Whelp counts an activation as it's activated, and checks the count as each
   activation resolves.)
+- (Answered 2026-11-22, D-133: the random game ran 100–130 ms on this cloud machine against the 100 ms laptop
+  budget. The owner chose a separate, not too strict budget for this machine: 150 ms, by CPU model in `bench.ts`.)
 - (Answered 2026-11-21, D-123: `pnpm bench` failed on main on this machine. The owner chose to reset the baseline on a
   quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
   Done: the median of five idle runs.)
