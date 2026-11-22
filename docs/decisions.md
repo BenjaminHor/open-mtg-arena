@@ -2162,4 +2162,4 @@ owner's answer to the D-089 open question, option (a))
   or trade dress), and a fan project that looks like a copy of Arena invites trouble. Our visuals are original; the
   layout and the feel follow Arena.
 - The research (from public sources: Wizards' Arena help pages and patch notes, guides, reviews, screenshots) is
-  written up in ui.md, "Arena research", in our own words, as the M3 UI tasks' reference.
+  written up in `docs/arena-research.md`, in our own words, as the M3 UI tasks' reference.

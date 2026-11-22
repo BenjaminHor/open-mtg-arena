@@ -2,8 +2,7 @@
 
 **Goal:** the owner plays full games against the AI in a browser, on the iPhone Duo (folded and
 unfolded) and on desktop, and the match already **feels smooth**, and as much as possible **like playing MTG Arena**
-(D-140: Arena's layout, flow and interactions, with art and visuals of our own; the research is in `ui.md`, "Arena
-research"). The rules are those of M2: the Magic 2010 pool of 240 cards and its five prebuilt decks. This spec was
+(D-140: Arena's layout, flow and interactions, with art and visuals of our own; the research is in `arena-research.md`). The rules are those of M2: the Magic 2010 pool of 240 cards and its five prebuilt decks. This spec was
 reviewed for M2's pool on 2026-11-22.
 
 **Order (owner, 2026-11-22):** a playable game in the browser first, then the rest. Phase 1 is M3-01, M3-02, M3-03
