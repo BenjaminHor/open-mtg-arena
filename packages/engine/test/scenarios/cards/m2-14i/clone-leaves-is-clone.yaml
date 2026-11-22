@@ -1,0 +1,26 @@
+name: Clone that copied a creature and dies is a Clone card in the graveyard, and its copied dies trigger triggers
+rules: [CR 707.2, CR 400.7, CR 603.10a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Mountain]
+    hand: [Clone, Lightning Bolt]
+  p2:
+    battlefield: [Magma Phoenix]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Magma Phoenix
+  - p1 cast: Lightning Bolt
+    targets: [p1:Magma Phoenix]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Lightning Bolt, Clone]
+      stack: [Magma Phoenix ability]
+  - all pass: once
+  - expect:
+      p1.life: 17
+      p2.life: 17
+      p2.graveyard: [Magma Phoenix]

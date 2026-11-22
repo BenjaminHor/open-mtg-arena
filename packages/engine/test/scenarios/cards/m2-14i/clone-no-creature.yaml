@@ -1,0 +1,16 @@
+name: With no creature on the battlefield, Clone's controller is still asked, can choose only nothing, and Clone dies
+rules: [CR 614.1c, CR 704.5f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Clone]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: copy, min: 0, max: 1 }
+  - p1 choose: finish
+  - expect:
+      p1.graveyard: [Clone]

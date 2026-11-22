@@ -33,7 +33,11 @@ export type ReplacementEffect =
  * in `GameState.replacements` (made by a resolving spell or ability) by its id.
  */
 export type ReplacementRef =
-  | { kind: "ownText"; object: ObjectId; index: number }
+  /**
+   * `text`: the copied card's oracle id when the replacement is in the text the object enters as a copy of (CR 614.12),
+   * so it isn't taken for the one at the same place in its own text. Left out for its own.
+   */
+  | { kind: "ownText"; object: ObjectId; index: number; text?: OracleId }
   | { kind: "regenerationShield"; object: ObjectId }
   | { kind: "resolvedEffect"; id: ObjectId }
   /** A permanent's protection, preventing damage from a source with its quality (CR 702.16e). */
@@ -47,10 +51,10 @@ export type ReplacementChoice =
   /** Which of several replacement effects applies first (CR 616.1). */
   | { kind: "first"; for: ChoiceFor; ref: ReplacementRef }
   /**
-   * What a replacement effect's own choice was as a permanent enters: so far a card name, "as this enters, choose a
-   * card name" (CR 614.12a, 201.4). Made before it enters, and kept so replacing the event again doesn't ask again.
+   * What a replacement effect's own choice was as a permanent enters: a card name or a basic land type, "as this
+   * enters, choose a card name" (CR 614.12a, 201.4), or the permanent it enters as a copy of, null for none (CR 707.5). Made before it enters, and kept so replacing the event again doesn't ask again.
    */
-  | { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef; chosen: string };
+  | { kind: "asEnters"; for: ChoiceFor; ref: ReplacementRef; chosen: string | null };
 
 /**
  * What a choice between replacement effects is for: the object an event affects, or one entry of a damage event (a
@@ -80,7 +84,7 @@ function sameTarget(a: Target, b: Target): boolean {
 export function sameReplacement(a: ReplacementRef, b: ReplacementRef): boolean {
   switch (a.kind) {
     case "ownText":
-      return b.kind === "ownText" && a.object === b.object && a.index === b.index;
+      return b.kind === "ownText" && a.object === b.object && a.index === b.index && a.text === b.text;
     case "regenerationShield":
       return b.kind === "regenerationShield" && a.object === b.object;
     case "resolvedEffect":

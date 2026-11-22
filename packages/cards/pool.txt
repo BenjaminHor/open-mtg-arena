@@ -38,6 +38,7 @@ Cemetery Reaper
 Centaur Courser
 Chandra Nalaar
 Child of Night
+Clone
 Coat of Arms
 Consume Spirit
 Convincing Mirage

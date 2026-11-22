@@ -5,6 +5,7 @@ import { cardDataByOracleId, cardDataOf } from "../cards/card-data.ts";
 import type { TriggeredAbilityDef } from "../cards/triggers.ts";
 import type {
   AbilityDef,
+  CardData,
   CardDatabase,
   Effect,
   Keyword,
@@ -15,7 +16,7 @@ import type {
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
-import type { AbilityRef, BasicLandType } from "../state/objects.ts";
+import type { AbilityRef, BasicLandType, Copiable } from "../state/objects.ts";
 import type { TriggerRef } from "../state/triggers.ts";
 import { cardTypesOf, subtypesOf } from "./card-types.ts";
 import { layeredOf } from "./layers.ts";
@@ -61,6 +62,20 @@ export function replacementsOf(state: GameState, id: ObjectId, cards: CardDataba
   // some asks the layer pass: this runs for every object an event moves (measured).
   const own = data?.def.replacements ?? [];
   const written = own.length > 0 && rulesTextLost(state, id, cards) ? [] : own;
+  return withIntrinsic(written, data);
+}
+
+/**
+ * The replacement effects in the text a permanent enters as a copy of (CR 614.12, 707.5): "enters with" and "as this
+ * enters" in the copied text apply as it enters, and its printed loyalty.
+ */
+export function copiedReplacements(copied: Copiable, cards: CardDatabase): readonly ReplacementDef[] {
+  const data = copied.token ?? cardDataByOracleId(copied.oracleId, cards);
+  return withIntrinsic(data?.def.replacements ?? [], data);
+}
+
+/** Written replacements, then a planeswalker's entering with its printed loyalty (CR 306.5b). */
+function withIntrinsic(written: readonly ReplacementDef[], data: CardData | undefined): readonly ReplacementDef[] {
   const loyalty = data?.printed.loyalty;
   return loyalty === undefined ? written : [...written, { kind: "entersWithLoyalty", loyalty }];
 }

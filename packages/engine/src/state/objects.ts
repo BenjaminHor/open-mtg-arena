@@ -10,6 +10,12 @@ import type { TriggerEvent } from "./triggers.ts";
 
 export type GameObject = CardObject | AbilityObject;
 
+/**
+ * Copiable values (CR 707.2): those of the card with this oracle id, or of a token's data as the effect that created it
+ * defined them (`token`, CR 111.3). The text printed on it, as modified by other copy effects (CR 707.3).
+ */
+export type Copiable = { oracleId: OracleId; token?: CardData };
+
 /** Counters on an object, by name (`"+1/+1"`). A name that isn't there means none (CR 122). */
 export type Counters = Record<string, number>;
 
@@ -58,6 +64,13 @@ export type CardObject = {
    * for a card, whose come from the `CardDatabase`. Read through `cardDataOf`, never `cards[oracleId]`.
    */
   token?: CardData;
+  /**
+   * The copiable values a copy effect gave it as it entered the battlefield ("enter as a copy", CR 707.5): layer 1
+   * (CR 613.2a), set once and never changed by the original changing (CR 707.2b). Every printed value,
+   * ability and replacement is read from them through `cardDataOf`; its own `oracleId` and `token` stay what it
+   * physically is (a Clone card in the graveyard, not a token if it copies one). Left out when it copies nothing.
+   */
+  copied?: Copiable;
   /**
    * The object an Aura or Equipment on the battlefield is attached to (CR 303.4b, 301.5a). Left out when it's attached to
    * nothing. It goes stale when that object leaves (a new object, CR 400.7): read it through `attachedHost`.

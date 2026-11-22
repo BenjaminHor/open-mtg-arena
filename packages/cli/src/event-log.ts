@@ -181,6 +181,10 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return e.what === "cardName"
         ? `${e.player} names ${e.name} for ${name(e.object)}`
         : `${e.player} chooses ${e.name} for ${name(e.object)}`;
+    case "OBJECTS_CHOSEN":
+      return e.chosen.length === 0
+        ? `${e.player} chooses nothing for ${name(e.object)} to ${e.purpose}`
+        : `${e.player} chooses ${e.chosen.map(name).join(", ")} for ${name(e.object)} to ${e.purpose}`;
     case "UNATTACHED":
       return `unattached: ${name(e.object)} from ${name(e.from)}`;
     case "TOKEN_CREATED":

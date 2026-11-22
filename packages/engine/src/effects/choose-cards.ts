@@ -9,6 +9,7 @@ import { matchesFilter } from "../rules/object-filter.ts";
 import type { Answer } from "../state/actions.ts";
 import type { ChoosePurpose, PendingDecision, Seen } from "../state/decisions.ts";
 import type { EffectContext } from "../state/effects.ts";
+import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { ZoneRef } from "../state/zones.ts";
@@ -46,7 +47,7 @@ export function askToChoose(state: GameState, choice: CardChoice): GameState {
     chosen: [],
     endsOnlyOnFinish: choice.endsOnlyOnFinish ?? false,
     seen: choice.seen ?? null,
-    resume: { effect: choice.effect, context: choice.context },
+    resume: { kind: "effect", effect: choice.effect, context: choice.context },
   });
 }
 
@@ -76,14 +77,43 @@ export function seenOf(state: GameState, from: ZoneRef, ids: readonly ObjectId[]
  * effect queued to run again with the chosen cards, ahead of the rest of the resolution (D-032). `answered` has the
  * decision cleared. No events: what was chosen shows only in what the effect then does.
  */
-export function answerChooseCards(answered: GameState, decision: ChooseCards, answer: Answer): GameState {
+export function answerChooseCards(answered: GameState, decision: ChooseCards, answer: Answer): Progress {
   const chosen = answer.kind === "chooseCard" ? [...decision.chosen, answer.option] : decision.chosen;
   if (answer.kind === "chooseCard" && (chosen.length < decision.max || decision.endsOnlyOnFinish)) {
     const { id: _id, player, ...kind } = decision;
-    return waitFor(answered, player, { ...kind, chosen });
+    return { state: waitFor(answered, player, { ...kind, chosen }), events: [] };
   }
-  const cards = chosen.map((i) => decision.options[i] as ObjectId);
-  return queueWork(answered, { kind: "runEffect", ...decision.resume, chosen: cards });
+  const picked = chosen.map((i) => decision.options[i] as ObjectId);
+  const resume = decision.resume;
+  switch (resume.kind) {
+    case "effect":
+      return {
+        state: queueWork(answered, {
+          kind: "runEffect",
+          effect: resume.effect,
+          context: resume.context,
+          chosen: picked,
+        }),
+        events: [],
+      };
+    case "asEnters": {
+      // Made before it enters (CR 614.12a) and told to everyone, as the permanent will show it (a copy, CR 707.5).
+      if (resume.for.kind !== "object") throw new Error("a choice as it enters is made for an object");
+      const choice = { kind: "asEnters", for: resume.for, ref: resume.ref, chosen: picked[0] ?? null } as const;
+      const { proposed, choices } = resume.event;
+      const event: GameEvent = {
+        type: "OBJECTS_CHOSEN",
+        player: decision.player,
+        object: resume.for.object,
+        purpose: decision.purpose,
+        chosen: picked,
+      };
+      return {
+        state: queueWork(answered, { kind: "resumeEvent", proposed, choices: [...choices, choice] }),
+        events: [event],
+      };
+    }
+  }
 }
 
 /** No change, no events: an effect that does nothing, or that waits for a decision. */

@@ -214,7 +214,10 @@ export const furnaceWhelp: CardDef = {
   abilities" is the static `{ kind: "chosenNameCantActivate" }`. "As this Aura enters, choose a basic land type" is
   `{ kind: "asEntersChooseBasicLandType" }` (kept as `chosenLandType`), and "enchanted land is the chosen type" the
   static `{ kind: "attachedSetsLandType" }`: layer 4 sets the land type, and the land loses its rules text's
-  abilities (CR 305.7, D-120).
+  abilities (CR 305.7, D-120). "You may have this creature enter as a copy of any creature on the battlefield" is
+  `{ kind: "entersAsCopy", of: { types: ["creature"] } }` (Clone, D-127): its controller chooses one or none
+  (`chooseCards`, purpose "copy"), and it enters with that permanent's copiable values as `copied` (layer 1), which
+  every lookup through `cardDataOf` reads.
 - "That player chooses a card name" while it resolves is `{ op: "nameCard", who: "triggeringPlayer" }`, and "a
   creature card that doesn't have that name" the filter `{ types: ["creature"], notNamedThisWay: true }` (Sphinx
   Ambassador, D-121).

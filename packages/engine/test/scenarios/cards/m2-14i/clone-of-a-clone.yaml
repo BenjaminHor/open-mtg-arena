@@ -1,0 +1,22 @@
+name: A Clone copying a Clone that copies Grizzly Bears enters as Grizzly Bears (the copied copy's values)
+rules: [CR 707.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Island, Island, Island, Island]
+    hand: [Clone, Clone]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Grizzly Bears
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Grizzly Bears
+  - expect:
+      p1.battlefield contains: [Grizzly Bears, Grizzly Bears]
+      p1:Grizzly Bears#2.power: 2
+      p1:Grizzly Bears#2.subtypes: [Bear]

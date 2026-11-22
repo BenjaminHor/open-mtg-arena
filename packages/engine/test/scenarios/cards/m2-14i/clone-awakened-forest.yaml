@@ -1,0 +1,30 @@
+name: Clone copying a Forest that Awakener Druid made a creature enters as a Forest land, not a creature
+rules: [CR 707.2]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Clone]
+  p2:
+    battlefield: [Forest, Forest, Forest]
+    hand: [Awakener Druid]
+steps:
+  - p2 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p2 choose: p2:Forest#3
+  - all pass: once
+  - expect:
+      p2:Forest#3.power: 4
+  - all pass: until main1
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: copy }
+  - p1 choose: p2:Forest
+  - expect:
+      p1.battlefield contains: [Forest]
+      p1:Forest.types: [basic, land]
+      p1:Forest.subtypes: [Forest]
+      p1.graveyard: []

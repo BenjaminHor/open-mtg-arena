@@ -1,0 +1,27 @@
+name: Clone copying a Wolf token is a 2/2 green Wolf named Wolf Token, but not a token, so it dies as a Clone card
+rules: [CR 707.2, CR 111.4, CR 111.7]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Forest, Mountain]
+    hand: [Clone, Howl of the Night Pack, Lightning Bolt]
+    manaPool: { G: 7 }
+steps:
+  - p1 cast: Howl of the Night Pack
+    pay: auto
+  - all pass: once
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: Wolf Token
+  - expect:
+      p1.battlefield contains: [Wolf Token, Wolf Token]
+      p1:Wolf Token#2.power: 2
+      p1:Wolf Token#2.colors: [G]
+      p1:Wolf Token#2.subtypes: [Wolf]
+  - p1 cast: Lightning Bolt
+    targets: [p1:Wolf Token#2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Howl of the Night Pack, Lightning Bolt, Clone]

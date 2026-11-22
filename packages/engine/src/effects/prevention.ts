@@ -2,6 +2,7 @@
 // a prevention effect kept in `GameState.replacements` until the cleanup step ends it (CR 615.1a, 514.2). Made outside
 // the event pipeline, like a continuous effect; using it is the pipeline's (`pipeline/damage-replacements.ts`).
 
+import { textOracleId } from "../cards/card-data.ts";
 import type { Effect } from "../cards/types.ts";
 import { newObjectId } from "../game/ids.ts";
 import type { Progress } from "../game/progress.ts";
@@ -32,7 +33,7 @@ function cardOf(state: GameState, context: EffectContext): OracleId {
   const self = state.objects[context.self] ?? state.lastKnown[context.self];
   switch (self?.kind) {
     case "card":
-      return self.oracleId;
+      return textOracleId(self);
     case "ability":
       return self.sourceOracleId;
     case undefined:

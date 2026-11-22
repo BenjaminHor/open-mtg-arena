@@ -798,6 +798,36 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             Silence, no wish counters left, three activations, Nocturnus's revealed top.
          - Future impact: casting during resolution is what cascade and "cast copies" need; Twincast/Hive Mind (M2-14h)
            don't cast. The free cast is an alternative cost (CR 118.9a: one at a time).
+       - M2-14i plan (2026-11-22): Clone ("You may have this creature enter as a copy of any creature on the
+         battlefield."). CR 707.2, 707.2c, 707.3, 707.5, 613.2a (layer 1), 614.1c, 614.12, 614.12a, 704.5f. D-126:
+         a general block, not a Clone one: "enters as a copy" is a replacement kind any clone-like card reuses.
+         1. Layer 1: `CardObject.copied?: { oracleId; token? }`, the copiable values it took as it entered (fixed,
+            CR 707.2c): the chosen permanent's own `copied` if it has one (CR 707.3), else its oracle id (and a token's
+            data, its rulings). `cardDataOf` reads `copied` first, so every printed value, keyword, static, trigger,
+            activated and mana ability and replacement follows (all lookups go through it, a test checks). Abilities
+            put on the stack name the copied text (`sourceOracleId`). Never copied: tapped, counters, attachments,
+            controller, non-copy effects (CR 707.2). Not a token if it copies one (`token` stays the object's own).
+         2. Replacement kind `entersAsCopy { of: ObjectFilter }` (CR 614.1c): as it enters, its controller chooses
+            one permanent of `of` already on the battlefield, or none (the choice, CR 614.12a; one entering with it
+            can't be chosen, its ruling); kept on the move as `copyOf`, like `chosenLandType`. The choice generalizes
+            `chooseCards` (purpose "copy", min 0, max 1) to answer an "as it enters" choice, as `chooseName` does.
+         3. CR 614.12/707.5: once the copy is chosen, the replacements that apply are the copied text's ("enters
+            with": Protean Hydra's X is 0, its ruling), and its enters triggers trigger.
+         4. Scenarios (rulings): copy a creature (P/T, name, abilities); choose none (0/0, dies, CR 704.5f); a token
+            (copies the token's values, not a token); counters, tapped, Giant Growth, an Aura, Act of Treason not copied;
+            doesn't target (a shroud creature); an enters trigger (Elvish Visionary); Protean Hydra 0/0; a Clone of a
+            Clone; an activated and a mana ability; Pithing Needle naming the copied name; the legend rule if any pool
+            legend; Clone leaving is Clone again in the graveyard; a CDA (Ajani's Avatar token).
+         - Future impact: "becomes a copy" (CR 707.4, a continuous effect with a duration) goes in `state.effects`, and
+           `cardDataOf` then takes the state (one signature, every lookup already there); token copies (CR 707.8a) set
+           `copied` on the token; "except ..." (CR 707.9) is a field on `entersAsCopy`.
+       - M2-14i built (2026-11-22, D-127): Clone (238 cards): the `entersAsCopy` replacement, `CardObject.copied` read
+         by `cardDataOf` (layer 1), `textOracleId` for abilities, `chooseCards` resuming an event, `OBJECTS_CHOSEN`, `put`
+         through `happenOrAsk`. 17 scenarios (copies Bears; none; no creature; a token; Giant Growth and an Aura not
+         copied; shroud; Elvish Visionary's trigger; Protean Hydra 0/0; Pyromancer's ability; Llanowar Elves' mana; a
+         Clone of a Clone; dies as Clone with Magma Phoenix's trigger; the original leaving; Pithing Needle; an
+         animated Forest copied as a land; Rise from the Grave; Mind Control). 1 golden game. Next: fuzz, bench,
+         reviews, PR.
        - M2-14h2 built (2026-11-22, D-125): Hive Mind (237 cards): `copySpell`'s `by: "eachOtherPlayer"`, one
          `copySpellFor` work item per copier in turn order, a spell leaving the stack kept in `lastKnown` (CR 608.2h) so
          one countered in response is still copied. 5 scenarios (Bolt copied and pointed back, its controller casting,

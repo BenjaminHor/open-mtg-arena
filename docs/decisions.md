@@ -1970,3 +1970,26 @@ owner's answer to the D-089 open question, option (a))
   `sameNameAsExiled`).
 - M2-15 (hardening) adds a review of the single-user ops, statics and replacement kinds: merge those that are the same
   idea, generalize those that are narrow, and record what stays one-off and why.
+
+**D-127: Copy effects as a permanent enters (M2-14i: Clone)** · 2026-11-22 · accepted
+- D-126 applied: "enters as a copy" is a general replacement kind, `entersAsCopy { of: ObjectFilter }`, not a Clone
+  op. As the permanent enters (CR 614.1c), the player it enters under chooses one permanent fitting `of` already on
+  the battlefield, or none (CR 614.12a), through `chooseCards` (purpose "copy", min 0, max 1), generalized so its answer
+  can resume an event as `chooseName`'s does (`ChooseCardsFor`), and announced as `OBJECTS_CHOSEN`. Doesn't target.
+- Layer 1 (CR 613.2a) is `CardObject.copied?: Copiable` (`{ oracleId, token? }`), the copiable values it entered with:
+  the chosen permanent's own `copied` if it is a copy itself (CR 707.3), else its oracle id and, for a token, the token's
+  data (its ruling). Fixed once (CR 707.2b), never carried to a new object (CR 400.7), so a Clone in the graveyard is
+  a Clone. `cardDataOf` reads it first, and every printed value, keyword, static, trigger, activated and mana ability,
+  replacement and CDA is read through it (a test keeps every database lookup there), so nothing else had to change for
+  the layers, names (Pithing Needle, the legend rule) or abilities. Abilities on the stack name the copied text
+  (`textOracleId`), so they resolve from it. Kept on the object, like `chosenName`, rather than in `state.effects`:
+  it's part of how the object entered and has no duration. Considered and not built: a "becomes a copy" effect with a
+  duration (CR 707.4) will be a layer-1 continuous effect in `state.effects`, and `cardDataOf` will then take the state.
+- CR 614.12: once the copy is chosen, the replacements that apply are the copied text's (Protean Hydra's "enters with
+  X counters", X 0), named apart from its own by `ReplacementRef.text`, so a Clone copying a Clone that copied nothing
+  would get to choose again (the CR 707.9e example's reading), and its enters triggers trigger (CR 707.5).
+- `put` onto the battlefield now uses `happenOrAsk` (its last move), so a Clone risen from a graveyard (Rise from the
+  Grave) chooses too; Rise's "black Zombie" applies on top in layers 4 and 5.
+- A copy of a token is named as the token is ("Wolf Token", CR 111.4) though it isn't a token.
+- Not built: CR 616.1c (a copy replacement chosen before others): Clone's is the only one and never meets another.
+

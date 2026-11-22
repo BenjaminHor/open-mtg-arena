@@ -1,0 +1,17 @@
+name: Clone doesn't target, so it can copy a creature with shroud (Kalonian Behemoth), and has shroud itself
+rules: [CR 707.2, CR 115.1]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island]
+    hand: [Clone]
+  p2:
+    battlefield: [Kalonian Behemoth]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Kalonian Behemoth
+  - expect:
+      p1:Kalonian Behemoth.power: 9
+      p1:Kalonian Behemoth.abilities contains: [shroud]

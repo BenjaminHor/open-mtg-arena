@@ -8,6 +8,7 @@
 // no order among them can differ (like D-077). Choosing it applies one of them, and the rest are checked again
 // (CR 616.1f), so every order the rules allow can still be chosen.
 
+import { textOracleId } from "../cards/card-data.ts";
 import type { CardDatabase, ReplacementDef } from "../cards/types.ts";
 import { replacementsOf } from "../rules/abilities.ts";
 import { attachedHost } from "../rules/attachment.ts";
@@ -157,7 +158,7 @@ function candidatesFor(state: GameState, entry: Damage, cards: CardDatabase): Ca
           ref: { kind: "ownText", object: permanent, index },
           identity: JSON.stringify({ def, you: controllerOf(state, permanent, cards) }),
           prevents,
-          by: obj.oracleId,
+          by: textOracleId(obj),
           ...afterwards,
         },
       ];
@@ -181,7 +182,7 @@ function protectionCandidates(state: GameState, entry: Damage, cards: CardDataba
       ref: { kind: "protection", object },
       identity: JSON.stringify({ kind: "protection", object }),
       prevents: "all",
-      by: obj.oracleId,
+      by: textOracleId(obj),
     },
   ];
 }
@@ -208,6 +209,7 @@ function preventsForPermanent(
     // Not a prevention.
     case "asEntersChooseName":
     case "asEntersChooseBasicLandType":
+    case "entersAsCopy":
       return null;
     case "preventDamageToSelfRemovingCounters":
       // "If damage would be dealt to this creature": all of it (its ruling).

@@ -1,0 +1,459 @@
+T0 p1 goes first (chosen by p1)
+T0 p1 shuffles their library
+T0 p2 shuffles their library
+T0 moves: Weakness, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Flashfreeze, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Flashfreeze, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Merfolk Sovereign, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Megrim, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Swamp, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Island, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Giant Growth, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Plains, p2's library -> p2's hand
+T0 p2 draws
+T0 moves: Mountain, p2's library -> p2's hand
+T0 p2 draws
+T0 p1 mulligans
+T0 p2 keeps
+T0 moves: Weakness, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Flashfreeze, p1's hand -> p1's library
+T0 moves: Flashfreeze, p1's hand -> p1's library
+T0 moves: Merfolk Sovereign, p1's hand -> p1's library
+T0 moves: Swamp, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Bog Wraith, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Stampeding Rhino, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Whispersilk Cloak, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Forest, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Mountain, p1's hand -> p1's library
+T0 p1 mulligans
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Bog Wraith, p1's hand -> p1's library
+T0 moves: Island, p1's hand -> p1's library
+T0 moves: Stampeding Rhino, p1's hand -> p1's library
+T0 moves: Whispersilk Cloak, p1's hand -> p1's library
+T0 moves: Forest, p1's hand -> p1's library
+T0 p1 shuffles their library
+T0 moves: Island, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Flashfreeze, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Illusionary Servant, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Djinn of Wishes, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Swamp, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Lava Axe, p1's library -> p1's hand
+T0 p1 draws
+T0 moves: Plains, p1's hand -> p1's library
+T0 moves: Illusionary Servant, p1's hand -> p1's library
+T0 p1 keeps
+T1 turn 1 begins (p1)
+T1 p1 attack: nothing
+T2 turn 2 begins (p2)
+T2 moves: Plains, p2's library -> p2's hand
+T2 p2 draws
+T2 moves: Island, p2's hand -> battlefield
+T2 p2 plays p2:Island
+T2 moves: Megrim, p2's hand -> stack
+T2 taps: p2:Island
+T2 p2 adds {U} (p2:Island)
+T2 p2 taps p2:Island for mana
+T2 p2 cancels casting Megrim
+T2 taps: p2:Island
+T2 p2 adds {U} (p2:Island)
+T2 p2 taps p2:Island for mana
+T2 p2's unspent {U} empties
+T2 p2 attack: nothing
+T3 turn 3 begins (p1)
+T3 moves: Wall of Bone, p1's library -> p1's hand
+T3 p1 draws
+T3 moves: Island, p1's hand -> battlefield
+T3 p1 plays p1:Island
+T3 moves: Djinn of Wishes, p1's hand -> stack
+T3 taps: p1:Island
+T3 p1 adds {U} (p1:Island)
+T3 p1 taps p1:Island for mana
+T3 p1 cancels casting Djinn of Wishes
+T3 p1 attack: nothing
+T4 turn 4 begins (p2)
+T4 untaps: p2:Island
+T4 taps: p1:Island
+T4 p1 adds {U} (p1:Island)
+T4 p1 taps p1:Island for mana
+T4 taps: p2:Island
+T4 p2 adds {U} (p2:Island)
+T4 p2 taps p2:Island for mana
+T4 p1's unspent {U} empties
+T4 p2's unspent {U} empties
+T4 moves: Plains, p2's library -> p2's hand
+T4 p2 draws
+T4 moves: Megrim, p2's hand -> stack
+T4 p2 cancels casting Megrim
+T4 moves: Megrim, p2's hand -> stack
+T4 p2 cancels casting Megrim
+T4 moves: Megrim, p2's hand -> stack
+T4 p2 cancels casting Megrim
+T4 p2 attack: nothing
+T4 moves: Plains, p2's hand -> battlefield
+T4 p2 plays p2:Plains
+T4 taps: p2:Plains
+T4 p2 adds {W} (p2:Plains)
+T4 p2 taps p2:Plains for mana
+T4 p2's unspent {W} empties
+T5 turn 5 begins (p1)
+T5 untaps: p1:Island
+T5 moves: Stampeding Rhino, p1's library -> p1's hand
+T5 p1 draws
+T5 taps: p1:Island
+T5 p1 adds {U} (p1:Island)
+T5 p1 taps p1:Island for mana
+T5 p1's unspent {U} empties
+T5 p1 attack: nothing
+T5 moves: Djinn of Wishes, p1's hand -> stack
+T5 p1 cancels casting Djinn of Wishes
+T5 moves: Swamp, p1's hand -> battlefield
+T5 p1 plays p1:Swamp
+T5 taps: p1:Swamp
+T5 p1 adds {B} (p1:Swamp)
+T5 p1 taps p1:Swamp for mana
+T5 moves: Djinn of Wishes, p1's hand -> stack
+T5 p1 cancels casting Djinn of Wishes
+T5 p1's unspent {B} empties
+T6 turn 6 begins (p2)
+T6 untaps: p2:Island
+T6 untaps: p2:Plains
+T6 taps: p2:Island
+T6 p2 adds {U} (p2:Island)
+T6 p2 taps p2:Island for mana
+T6 taps: p2:Plains
+T6 p2 adds {W} (p2:Plains)
+T6 p2 taps p2:Plains for mana
+T6 p2's unspent {W}{U} empties
+T6 moves: Swamp, p2's library -> p2's hand
+T6 p2 draws
+T6 moves: Megrim, p2's hand -> stack
+T6 p2 cancels casting Megrim
+T6 p2 attack: nothing
+T6 moves: Plains, p2's hand -> p2's graveyard
+T6 p2 discards Plains
+T7 turn 7 begins (p1)
+T7 untaps: p1:Island
+T7 untaps: p1:Swamp
+T7 moves: Rhox Pikemaster, p1's library -> p1's hand
+T7 p1 draws
+T7 taps: p1:Swamp
+T7 p1 adds {B} (p1:Swamp)
+T7 p1 taps p1:Swamp for mana
+T7 taps: p1:Island
+T7 p1 adds {U} (p1:Island)
+T7 p1 taps p1:Island for mana
+T7 p1's unspent {U}{B} empties
+T7 moves: Stampeding Rhino, p1's hand -> stack
+T7 p1 cancels casting Stampeding Rhino
+T7 p1 attack: nothing
+T7 moves: Lava Axe, p1's hand -> stack
+T7 p1 cancels casting Lava Axe
+T8 turn 8 begins (p2)
+T8 untaps: p2:Island
+T8 untaps: p2:Plains
+T8 moves: Telepathy, p2's library -> p2's hand
+T8 p2 draws
+T8 taps: p2:Plains
+T8 p2 adds {W} (p2:Plains)
+T8 p2 taps p2:Plains for mana
+T8 p2's unspent {W} empties
+T8 moves: Mountain, p2's hand -> battlefield
+T8 p2 plays p2:Mountain
+T8 p2 attack: nothing
+T8 taps: p2:Island
+T8 p2 adds {U} (p2:Island)
+T8 p2 taps p2:Island for mana
+T8 p2's unspent {U} empties
+T8 moves: Telepathy, p2's hand -> stack
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
+T8 p2 cancels casting Telepathy
+T8 taps: p2:Mountain
+T8 p2 adds {R} (p2:Mountain)
+T8 p2 taps p2:Mountain for mana
+T8 p2's unspent {R} empties
+T9 turn 9 begins (p1)
+T9 untaps: p1:Island
+T9 untaps: p1:Swamp
+T9 taps: p1:Swamp
+T9 p1 adds {B} (p1:Swamp)
+T9 p1 taps p1:Swamp for mana
+T9 p1's unspent {B} empties
+T9 moves: Forest, p1's library -> p1's hand
+T9 p1 draws
+T9 taps: p1:Island
+T9 p1 adds {U} (p1:Island)
+T9 p1 taps p1:Island for mana
+T9 p1's unspent {U} empties
+T9 p1 attack: nothing
+T10 turn 10 begins (p2)
+T10 untaps: p2:Island
+T10 untaps: p2:Plains
+T10 untaps: p2:Mountain
+T10 moves: Clone, p2's library -> p2's hand
+T10 p2 draws
+T10 p2 attack: nothing
+T10 taps: p2:Plains
+T10 p2 adds {W} (p2:Plains)
+T10 p2 taps p2:Plains for mana
+T10 p2's unspent {W} empties
+T10 taps: p2:Mountain
+T10 p2 adds {R} (p2:Mountain)
+T10 p2 taps p2:Mountain for mana
+T10 p2's unspent {R} empties
+T10 moves: Megrim, p2's hand -> p2's graveyard
+T10 p2 discards Megrim
+T11 turn 11 begins (p1)
+T11 untaps: p1:Island
+T11 untaps: p1:Swamp
+T11 taps: p1:Island
+T11 p1 adds {U} (p1:Island)
+T11 p1 taps p1:Island for mana
+T11 p1's unspent {U} empties
+T11 moves: Island, p1's library -> p1's hand
+T11 p1 draws
+T11 p1 attack: nothing
+T11 taps: p2:Island
+T11 p2 adds {U} (p2:Island)
+T11 p2 taps p2:Island for mana
+T11 taps: p1:Swamp
+T11 p1 adds {B} (p1:Swamp)
+T11 p1 taps p1:Swamp for mana
+T11 p1's unspent {B} empties
+T11 p2's unspent {U} empties
+T11 moves: Djinn of Wishes, p1's hand -> stack
+T11 p1 cancels casting Djinn of Wishes
+T11 moves: Djinn of Wishes, p1's hand -> stack
+T11 p1 cancels casting Djinn of Wishes
+T11 moves: Djinn of Wishes, p1's hand -> p1's graveyard
+T11 p1 discards Djinn of Wishes
+T12 turn 12 begins (p2)
+T12 untaps: p2:Island
+T12 untaps: p2:Plains
+T12 untaps: p2:Mountain
+T12 taps: p2:Island
+T12 p2 adds {U} (p2:Island)
+T12 p2 taps p2:Island for mana
+T12 p2's unspent {U} empties
+T12 moves: Swamp, p2's library -> p2's hand
+T12 p2 draws
+T12 taps: p2:Plains
+T12 p2 adds {W} (p2:Plains)
+T12 p2 taps p2:Plains for mana
+T12 taps: p2:Mountain
+T12 p2 adds {R} (p2:Mountain)
+T12 p2 taps p2:Mountain for mana
+T12 p2's unspent {W}{R} empties
+T12 moves: Telepathy, p2's hand -> stack
+T12 p2 cancels casting Telepathy
+T12 moves: Swamp, p2's hand -> battlefield
+T12 p2 plays p2:Swamp
+T12 moves: Telepathy, p2's hand -> stack
+T12 taps: p2:Swamp
+T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
+T12 p2 cancels casting Telepathy
+T12 taps: p2:Swamp
+T12 p2 adds {B} (p2:Swamp)
+T12 p2 taps p2:Swamp for mana
+T12 p2's unspent {B} empties
+T12 p2 attack: nothing
+T13 turn 13 begins (p1)
+T13 untaps: p1:Island
+T13 untaps: p1:Swamp
+T13 taps: p1:Island
+T13 p1 adds {U} (p1:Island)
+T13 p1 taps p1:Island for mana
+T13 p1's unspent {U} empties
+T13 moves: Flashfreeze, p1's library -> p1's hand
+T13 p1 draws
+T13 moves: Lava Axe, p1's hand -> stack
+T13 taps: p1:Swamp
+T13 p1 adds {B} (p1:Swamp)
+T13 p1 taps p1:Swamp for mana
+T13 p1 cancels casting Lava Axe
+T13 p1 attack: nothing
+T13 taps: p1:Swamp
+T13 p1 adds {B} (p1:Swamp)
+T13 p1 taps p1:Swamp for mana
+T13 p1's unspent {B} empties
+T13 moves: Lava Axe, p1's hand -> stack
+T13 p1 cancels casting Lava Axe
+T13 moves: Wall of Bone, p1's hand -> stack
+T13 p1 cancels casting Wall of Bone
+T13 moves: Island, p1's hand -> battlefield
+T13 p1 plays p1:Island#2
+T13 taps: p1:Island#2
+T13 p1 adds {U} (p1:Island#2)
+T13 p1 taps p1:Island#2 for mana
+T13 p1's unspent {U} empties
+T14 turn 14 begins (p2)
+T14 untaps: p2:Island
+T14 untaps: p2:Plains
+T14 untaps: p2:Mountain
+T14 untaps: p2:Swamp
+T14 taps: p2:Swamp
+T14 p2 adds {B} (p2:Swamp)
+T14 p2 taps p2:Swamp for mana
+T14 p2's unspent {B} empties
+T14 moves: Panic Attack, p2's library -> p2's hand
+T14 p2 draws
+T14 taps: p2:Plains
+T14 p2 adds {W} (p2:Plains)
+T14 p2 taps p2:Plains for mana
+T14 moves: Telepathy, p2's hand -> stack
+T14 taps: p2:Island
+T14 p2 adds {U} (p2:Island)
+T14 p2 taps p2:Island for mana
+T14 taps: p2:Mountain
+T14 p2 adds {R} (p2:Mountain)
+T14 p2 taps p2:Mountain for mana
+T14 p2 casts Telepathy
+T14 resolves: Telepathy
+T14 moves: Telepathy, stack -> battlefield
+T14 moves: Clone, p2's hand -> stack
+T14 p2 cancels casting Clone
+T14 moves: Swamp, p2's hand -> battlefield
+T14 p2 plays p2:Swamp#2
+T14 moves: Clone, p2's hand -> stack
+T14 taps: p2:Swamp#2
+T14 p2 adds {B} (p2:Swamp#2)
+T14 p2 taps p2:Swamp#2 for mana
+T14 p2 cancels casting Clone
+T14 taps: p2:Swamp#2
+T14 p2 adds {B} (p2:Swamp#2)
+T14 p2 taps p2:Swamp#2 for mana
+T14 p2's unspent {W}{B}{R} empties
+T14 p2 attack: nothing
+T14 moves: Clone, p2's hand -> stack
+T14 p2 cancels casting Clone
+T15 turn 15 begins (p1)
+T15 untaps: p1:Island#1
+T15 untaps: p1:Swamp
+T15 untaps: p1:Island#2
+T15 moves: Island, p1's library -> p1's hand
+T15 p1 draws
+T15 taps: p1:Swamp
+T15 p1 adds {B} (p1:Swamp)
+T15 p1 taps p1:Swamp for mana
+T15 taps: p1:Island#2
+T15 p1 adds {U} (p1:Island#2)
+T15 p1 taps p1:Island#2 for mana
+T15 moves: Island, p1's hand -> battlefield
+T15 p1 plays p1:Island#3
+T15 p1's unspent {U}{B} empties
+T15 p1 attack: nothing
+T15 taps: p1:Island#1
+T15 p1 adds {U} (p1:Island#1)
+T15 p1 taps p1:Island#1 for mana
+T15 taps: p1:Island#3
+T15 p1 adds {U} (p1:Island#3)
+T15 p1 taps p1:Island#3 for mana
+T15 p1's unspent {U}{U} empties
+T16 turn 16 begins (p2)
+T16 untaps: p2:Island
+T16 untaps: p2:Plains
+T16 untaps: p2:Mountain
+T16 untaps: p2:Swamp#1
+T16 untaps: p2:Swamp#2
+T16 moves: Yawning Fissure, p2's library -> p2's hand
+T16 p2 draws
+T16 taps: p2:Island
+T16 p2 adds {U} (p2:Island)
+T16 p2 taps p2:Island for mana
+T16 moves: Clone, p2's hand -> stack
+T16 taps: p2:Swamp#1
+T16 p2 adds {B} (p2:Swamp#1)
+T16 p2 taps p2:Swamp#1 for mana
+T16 taps: p2:Mountain
+T16 p2 adds {R} (p2:Mountain)
+T16 p2 taps p2:Mountain for mana
+T16 taps: p2:Swamp#2
+T16 p2 adds {B} (p2:Swamp#2)
+T16 p2 taps p2:Swamp#2 for mana
+T16 taps: p2:Plains
+T16 p2 adds {W} (p2:Plains)
+T16 p2 taps p2:Plains for mana
+T16 p2 casts Clone
+T16 resolves: Clone
+T16 p2 chooses nothing for Clone to copy
+T16 moves: Clone, stack -> battlefield
+T16 state-based actions: (gone o543) zeroToughness
+T16 moves: Clone, battlefield -> p2's graveyard
+T16 moves: Swamp, p2's hand -> battlefield
+T16 p2 plays p2:Swamp#3
+T16 moves: Yawning Fissure, p2's hand -> stack
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
+T16 p2 cancels casting Yawning Fissure
+T16 moves: Panic Attack, p2's hand -> stack
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
+T16 p2 cancels casting Panic Attack
+T16 moves: Yawning Fissure, p2's hand -> stack
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
+T16 p2 cancels casting Yawning Fissure
+T16 moves: Panic Attack, p2's hand -> stack
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
+T16 p2 cancels casting Panic Attack
+T16 moves: Panic Attack, p2's hand -> stack
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
+T16 p2 cancels casting Panic Attack
+T16 taps: p2:Swamp#3
+T16 p2 adds {B} (p2:Swamp#3)
+T16 p2 taps p2:Swamp#3 for mana
+T16 p2's unspent {B}{B} empties
+T16 p2 attack: nothing
+T16 moves: Panic Attack, p2's hand -> stack
+T16 p2 cancels casting Panic Attack
+T17 turn 17 begins (p1)
+T17 untaps: p1:Island#1
+T17 untaps: p1:Swamp
+T17 untaps: p1:Island#2
+T17 untaps: p1:Island#3

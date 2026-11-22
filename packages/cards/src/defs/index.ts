@@ -35,6 +35,7 @@ import { cemeteryReaper } from "./c/cemetery-reaper.ts";
 import { centaurCourser } from "./c/centaur-courser.ts";
 import { chandraNalaar } from "./c/chandra-nalaar.ts";
 import { childOfNight } from "./c/child-of-night.ts";
+import { clone } from "./c/clone.ts";
 import { coatOfArms } from "./c/coat-of-arms.ts";
 import { consumeSpirit } from "./c/consume-spirit.ts";
 import { convincingMirage } from "./c/convincing-mirage.ts";
@@ -274,6 +275,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   centaurCourser,
   chandraNalaar,
   childOfNight,
+  clone,
   coatOfArms,
   consumeSpirit,
   coralMerfolk,

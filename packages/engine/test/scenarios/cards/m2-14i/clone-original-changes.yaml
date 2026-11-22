@@ -1,0 +1,21 @@
+name: Once Clone has copied a creature, the original leaving the battlefield doesn't change it
+rules: [CR 707.2b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Swamp, Swamp]
+    hand: [Clone, Doom Blade]
+  p2:
+    battlefield: [Hill Giant]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Hill Giant
+  - p1 cast: Doom Blade
+    targets: [p2:Hill Giant]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.graveyard: [Hill Giant]
+      p1:Hill Giant.power: 3

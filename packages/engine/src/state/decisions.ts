@@ -119,7 +119,7 @@ export type DecisionKind =
       endsOnlyOnFinish: boolean;
       /** The whole zone the chooser is shown, by identity only (a searched library, a revealed hand), or null. */
       seen: Seen | null;
-      resume: { effect: Effect; context: EffectContext };
+      resume: ChooseCardsFor;
     }
   /**
    * Several of this player's triggered abilities wait to go on the stack: which goes on next (CR 603.3b). The ones put
@@ -189,7 +189,21 @@ export type NameFor =
 export type ChooseWhat = "cardName" | "basicLandType";
 
 /** What a `chooseCards` decision's cards are chosen for, so a player is told why. */
-export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice" | "enchant";
+export type ChoosePurpose = "discard" | "putOntoBattlefield" | "search" | "putOnTop" | "sacrifice" | "enchant" | "copy";
+
+/**
+ * What a `chooseCards` answer is for: an effect while a spell or ability resolves, run again with the chosen cards; or
+ * a replacement's own choice as a permanent enters (CR 614.12a, "enter as a copy of", CR 707.5), resumed like
+ * `NameFor`'s: the answer kept with the choices, and the event replaced again from the start.
+ */
+export type ChooseCardsFor =
+  | { kind: "effect"; effect: Effect; context: EffectContext }
+  | {
+      kind: "asEnters";
+      for: ChoiceFor;
+      ref: ReplacementRef;
+      event: { proposed: ProposedEvent; choices: ReplacementChoice[] };
+    };
 
 /** Cards shown to one player by what they are, in a fixed order (D-062), and the zone they're in. */
 export type Seen = { from: ZoneRef; cards: OracleId[] };

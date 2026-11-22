@@ -4,7 +4,7 @@
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
-import { happen } from "../pipeline/happen.ts";
+import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
@@ -46,7 +46,9 @@ export function put(state: GameState, effect: Put, context: EffectContext, cards
   if (effect.into === "libraryTop" && more.length === 0 && from?.zone === "library" && "player" in from)
     return happen(state, { kind: "reorderLibrary", player: from.player, top: ids }, cards);
   const to = destinationOf(effect, by, context);
-  return happen(
+  // The last thing this effect does, so a permanent entering may stop to make its choice as it enters (CR 614.12a; a
+  // Clone risen from a graveyard chooses what to copy).
+  return happenOrAsk(
     state,
     { kind: "simultaneous", events: ids.map((object) => ({ kind: "moveCard", object, to })) },
     cards,

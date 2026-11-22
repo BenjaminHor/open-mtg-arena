@@ -111,6 +111,7 @@ const EVENT_TYPES: Record<GameEvent["type"], true | string> = {
   SPELL_COPIED: true,
   COPY_CEASED_TO_EXIST: true,
   NAME_CHOSEN: true,
+  OBJECTS_CHOSEN: true,
 };
 
 /**
@@ -157,6 +158,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   entersWithLoyalty: "battlefield",
   asEntersChooseName: "battlefield",
   asEntersChooseBasicLandType: "battlefield",
+  entersAsCopy: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
   preventNoncombatDamageToAttached: "prevented",
 };
