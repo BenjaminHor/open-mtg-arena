@@ -1,0 +1,22 @@
+name: An Aura with two creatures to choose from asks its owner, who sees which Aura it is
+rules: [CR 303.4f, CR 101.4b]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Grizzly Bears, { card: Holy Strength, attachedTo: p1:Grizzly Bears }]
+    hand: [Warp World]
+    manaPool: { R: 8 }
+    library: []
+  p2:
+    battlefield: [Hill Giant]
+    library: []
+steps:
+  - p1 cast: Warp World
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: enchant }
+  - p1 choose: Hill Giant
+  - expect:
+      p1:Holy Strength.attachedTo: p2:Hill Giant
+      events contains: [{ type: AURA_HOST_CHOSEN, player: p1, aura: null, card: Holy Strength }]

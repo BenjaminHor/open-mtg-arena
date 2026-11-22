@@ -73,12 +73,23 @@ function withNewTopsShown(before: GameState, event: ProposedEvent, after: Progre
 }
 
 /**
- * A reorder in a batch names cards by the ids they had as the batch was proposed: those moved earlier in it (several
- * cards put on top of a library and then arranged, CR 401.4) are new objects (CR 400.7), named by their new ids.
+ * A reorder, or a token ceasing to exist, in a batch names cards by the ids they had as the batch was proposed: those
+ * moved earlier in it (several cards put on top of a library and then arranged, CR 401.4) are new objects (CR 400.7),
+ * named by their new ids.
  */
 function renamed(event: SingleEvent, earlier: readonly GameEvent[]): SingleEvent {
-  if (event.kind !== "reorderLibrary") return event;
-  return { ...event, top: event.top.map((id) => zoneChangeOf(earlier, id)?.newId ?? id) };
+  const newId = (id: ObjectId) => zoneChangeOf(earlier, id)?.newId ?? id;
+  switch (event.kind) {
+    case "reorderLibrary":
+      return event.bottom === undefined
+        ? { ...event, top: event.top.map(newId) }
+        : { ...event, top: event.top.map(newId), bottom: event.bottom.map(newId) };
+    // A token moved earlier in the batch, gone as it ends (Warp World: "you shouldn't actually shuffle them in").
+    case "ceaseToExist":
+      return { ...event, object: newId(event.object) };
+    default:
+      return event;
+  }
 }
 
 /** A card moving to the stack: the first step of casting it (CR 601.2a). */
@@ -200,7 +211,7 @@ function performOne(state: GameState, event: SingleEvent, cards: CardDatabase): 
     case "reveal":
       return reveal(state, event.from, event.objects);
     case "reorderLibrary":
-      return reorderLibraryTop(state, event.player, event.top);
+      return reorderLibraryTop(state, event.player, event.top, event.bottom);
     case "tap":
       return tapPermanent(state, event.object);
     case "counterObject":

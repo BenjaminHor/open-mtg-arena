@@ -2019,3 +2019,19 @@ owner's answer to the D-089 open question, option (a))
   viewer's own decision is for. `chooseReplacement` from a hidden zone (two replacements on one card entering from a
   library) isn't reachable with the pool and still shows ids (future-rules).
 
+**D-130: Warp World from general blocks (M2-14k)** · 2026-11-22 · accepted
+- D-126 applied. New op `shuffleIntoLibraries { filter }`: the permanents go to their owners' libraries at once,
+  each player shuffles, and how many each player owned is kept (`Resolution.shuffledIn`), counted before moving,
+  tokens too (its rulings). Tokens move (so leaving triggers see them) and cease to exist in the same batch (its ruling:
+  "you shouldn't actually shuffle them in"), so no token waits in a library while the rest asks its questions; a reorder
+  or a token ceasing in a batch names objects by their ids before it (`renamed` in perform.ts).
+- Generalized: `revealTop` takes `who: "eachPlayer", count: "shuffledIn"` (each player's that many, all `found`);
+  `returnAllToBattlefield` takes `from: "found"` (the cards found still in their owners' libraries, in shown order per
+  owner, APNAP across), so Warp World's two steps reuse Open the Vaults' Aura hosts (APNAP announcements, CR 303.4f/g).
+- `put` into a library (top or bottom, CR 401.4): each owner arranges theirs in turn order, unrevealed; a card already
+  in that library is only reordered (CR 400.7), not moved: this now holds for one card too, so Lurking Predators'
+  "put it on the bottom" no longer makes a new object (the golden games changed from that move; regenerated).
+  `reorderLibrary` gains `bottom`; a "putOnBottom" purpose, top first like "putOnTop".
+- The fuzz checks that need only the state (views leak nothing, the layer cache, invariants) run on every state of the
+  Clone, Mirror of Fate and Warp World scenarios (`fuzz-checks-on-scenarios.test.ts`), as random games rarely cast them.
+

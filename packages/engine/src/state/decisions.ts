@@ -199,6 +199,7 @@ export type ChoosePurpose =
   | "putOntoBattlefield"
   | "search"
   | "putOnTop"
+  | "putOnBottom"
   | "sacrifice"
   | "enchant"
   | "copy"

@@ -48,7 +48,7 @@ export function resolveTopOfStack(state: GameState, cards: CardDatabase): Progre
   // "This way" (CR 608.2c) starts empty for each resolution; it's cleared as the resolution ends.
   const resolution = removed
     ? null
-    : { object: top, found: [], exiled: [], sacrificed: [], auraHosts: [], named: null };
+    : { object: top, found: [], exiled: [], sacrificed: [], auraHosts: [], named: null, shuffledIn: [] };
   return { state: queueWork({ ...state, passesInSuccession: 0, resolution }, ...items), events: [] };
 }
 

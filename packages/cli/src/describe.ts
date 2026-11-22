@@ -200,6 +200,8 @@ function choiceText(purpose: ChoosePurpose, card: string, forName: string): stri
       return `find ${card}`;
     case "putOnTop":
       return `put ${card} next from the top`;
+    case "putOnBottom":
+      return `put ${card} on the bottom next`;
     case "choose":
       return `choose ${card}`;
     case "copy":

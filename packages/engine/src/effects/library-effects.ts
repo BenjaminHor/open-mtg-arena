@@ -159,6 +159,24 @@ export function revealTop(state: GameState, player: PlayerId, cards: CardDatabas
 }
 
 /**
+ * "Each player reveals that many cards from the top of their library" (Warp World): each player in turn order from the
+ * active player reveals as many as were shuffled in for them this way (`shuffledIn`), all there are if fewer; all of
+ * them are `found` (CR 608.2c). A library holds cards only here: the tokens shuffled in have ceased to exist.
+ */
+export function revealTopEach(state: GameState, players: readonly PlayerId[], cards: CardDatabase): Progress {
+  const counted = state.resolution?.shuffledIn ?? [];
+  const topsOf = players.map((player) => {
+    const count = counted.find((c) => c.player === player)?.count ?? 0;
+    return zoneList(state, { zone: "library", player }).slice(0, count);
+  });
+  const revealed = topsOf.reduce<Progress>(
+    (p, tops) => andThen(p, (s) => revealObjects(s, tops, cards)),
+    nothing(state),
+  );
+  return { state: remember(revealed.state, { found: topsOf.flat() }), events: revealed.events };
+}
+
+/**
  * "Reveals cards from the top of their library until they reveal a [filter] card" (Polymorph): the cards from the top
  * down to the first that fits, or the whole library if none does, revealed together (CR 701.20a); they stay in the
  * library (CR 701.20b). The card that fits, if any, is `"found"` (CR 608.2c).

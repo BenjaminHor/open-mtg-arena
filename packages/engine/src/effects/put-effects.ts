@@ -5,7 +5,8 @@
 import { textOracleId } from "../cards/card-data.ts";
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
-import type { Progress } from "../game/progress.ts";
+import { andThen, type Progress } from "../game/progress.ts";
+import { apnapOrder } from "../game/turn-order.ts";
 import { happen, happenOrAsk } from "../pipeline/happen.ts";
 import type { SingleEvent } from "../pipeline/proposed.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
@@ -15,7 +16,7 @@ import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { Destination } from "../zones/move-card.ts";
 import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneOf } from "../zones/zone-list.ts";
-import { askToChoose, nothing } from "./choose-cards.ts";
+import { askToChoose } from "./choose-cards.ts";
 import { objectsNamed, onePlayer } from "./subjects.ts";
 
 type Put = Extract<Effect, { op: "put" }>;
@@ -50,14 +51,8 @@ export function put(
   // If no such player is left, no one puts it anywhere.
   const by = effect.by === undefined ? context.controller : onePlayer(state, effect.by, context, cards);
   if (by === null) return { state, events: [] };
-  // One card on top of the library it's already in isn't a zone change (CR 400.7): the same object, moved up
-  // (Liliana Vess). Moving several, or from elsewhere, is a move.
-  const [only, ...more] = ids;
-  const from = only === undefined ? null : zoneOf(state, only);
-  if (effect.into === "libraryTop" && more.length === 0 && from?.zone === "library" && "player" in from)
-    return happen(state, { kind: "reorderLibrary", player: from.player, top: ids }, cards);
-  if (effect.into === "libraryTop" && more.length > 0)
-    return putSeveralOnTop(state, ids, effect, context, chosen, cards);
+  if (effect.into === "libraryTop" || effect.into === "libraryBottom")
+    return putInLibraries(state, ids, effect.into === "libraryTop" ? "top" : "bottom", effect, context, chosen, cards);
   const to = destinationOf(effect, by, context);
   // The last thing this effect does, so a permanent entering may stop to make its choice as it enters (CR 614.12a; a
   // Clone risen from a graveyard chooses what to copy).
@@ -69,39 +64,75 @@ export function put(
 }
 
 /**
- * Several cards put on top of a library at once: their owner arranges them (CR 401.4), asked as a "putOnTop" choice,
- * top first, and doesn't reveal the order: they move in shown order (D-062), and the library's top is then put in the
- * chosen order, which no event shows. Copies of one card need no arranging: no one could tell them apart. Several
- * owners' cards would each go to their own library, each owner ordering theirs, and cards already in that library
- * would be reordered without becoming new objects, as one card is above (no pool card does either: later).
+ * Cards put on top or on the bottom of their owners' libraries (CR 400.3). Several at once are arranged by their owner
+ * (CR 401.4), a choice top first, asked of each owner in turn order from the active player (CR 101.4), and the order
+ * isn't revealed: cards from elsewhere move in shown order (D-062), then the library is reordered, which no event shows,
+ * in one batch, so a top played revealed is shown only as it ends (Vampire Nocturnus). A card already in that library
+ * isn't a new object (CR 400.7): it's only reordered (Liliana Vess, Lurking Predators, Warp World's revealed cards).
+ * Copies of one card need no arranging: no one could tell them apart. With `chosen`, the answer is its owner's order;
+ * the owners after them follow.
  */
-function putSeveralOnTop(
+function putInLibraries(
   state: GameState,
   ids: readonly ObjectId[],
+  position: "top" | "bottom",
   effect: Put,
   context: EffectContext,
   chosen: readonly ObjectId[] | null,
   cards: CardDatabase,
 ): Progress {
   const objects = ids.flatMap((id) => (state.objects[id]?.kind === "card" ? [state.objects[id]] : []));
-  const [first] = objects;
-  if (first === undefined || objects.length !== ids.length) throw new Error("only cards are put on top of a library");
-  const owner = first.owner;
-  if (objects.some((o) => o.owner !== owner)) throw new Error("cards of several owners put on top (later)");
-  const alike = objects.every((o) => textOracleId(o) === textOracleId(first));
-  if (chosen === null && alike) return putSeveralOnTop(state, ids, effect, context, ids, cards);
-  if (chosen === null) {
-    const count = ids.length;
-    const options = [...ids];
-    return nothing(
-      askToChoose(state, { chooser: owner, purpose: "putOnTop", options, min: count, max: count, effect, context }),
-    );
+  if (objects.length !== ids.length) throw new Error("only cards are put into a library");
+  const owners = apnapOrder(state).flatMap((owner) => {
+    const theirs = objects.filter((o) => o.owner === owner);
+    return theirs.length === 0 ? [] : [{ owner, cards: theirs }];
+  });
+  const answered = chosen === null ? -1 : owners.findIndex((o) => o.cards.some((c) => c.id === chosen[0]));
+  let progress: Progress = { state, events: [] };
+  for (const [i, { owner, cards: theirs }] of owners.entries()) {
+    if (i < answered) continue;
+    const [first] = theirs;
+    const alike = theirs.every((o) => first !== undefined && textOracleId(o) === textOracleId(first));
+    const order = i === answered && chosen !== null ? chosen : alike ? theirs.map((o) => o.id) : null;
+    if (order === null) {
+      const options = theirs.map((o) => o.id);
+      const count = options.length;
+      const purpose = position === "top" ? "putOnTop" : "putOnBottom";
+      const ask = askToChoose(progress.state, {
+        chooser: owner,
+        purpose,
+        options,
+        min: count,
+        max: count,
+        effect,
+        context,
+      });
+      return { state: ask, events: progress.events };
+    }
+    progress = andThen(progress, (s) => arrange(s, owner, order, position, cards));
   }
-  // One batch, so a library's top played revealed is shown only as it ends (Vampire Nocturnus), never a card that was on
-  // top for a moment of the arranging.
-  const top = { zone: "library", position: "top" } as const;
-  const moves = inShownOrder(state, ids).map((object) => ({ kind: "moveCard", object, to: top }) as const);
-  const arranged: SingleEvent = { kind: "reorderLibrary", player: owner, top: [...chosen] };
+  return progress;
+}
+
+/** `order`, top first, put at that end of `owner`'s library in one batch: moved there if it isn't, then arranged. */
+function arrange(
+  state: GameState,
+  owner: PlayerId,
+  order: readonly ObjectId[],
+  position: "top" | "bottom",
+  cards: CardDatabase,
+): Progress {
+  const library = state.zones.players[owner]?.library ?? [];
+  const to = { zone: "library", position } as const;
+  const moving = inShownOrder(
+    state,
+    order.filter((id) => !library.includes(id)),
+  );
+  const moves = moving.map((object): SingleEvent => ({ kind: "moveCard", object, to }));
+  const arranged: SingleEvent =
+    position === "top"
+      ? { kind: "reorderLibrary", player: owner, top: [...order] }
+      : { kind: "reorderLibrary", player: owner, top: [], bottom: [...order] };
   return happen(state, { kind: "simultaneous", events: [...moves, arranged] }, cards);
 }
 

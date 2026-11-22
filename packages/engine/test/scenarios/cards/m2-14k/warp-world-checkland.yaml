@@ -1,0 +1,16 @@
+name: A checkland put in by Warp World enters tapped, as the lands entering with it don't count (its ruling)
+rules: [CR 614.12, CR 614.1c]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Glacial Fortress, Island]
+    hand: [Warp World]
+    manaPool: { R: 8 }
+    library: []
+steps:
+  - p1 cast: Warp World
+    pay: auto
+  - all pass: once
+  - expect:
+      p1:Glacial Fortress.tapped: true
+      p1:Island.tapped: false

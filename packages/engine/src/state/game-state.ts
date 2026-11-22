@@ -130,7 +130,15 @@ export type Resolution = {
   auraHosts: AuraHost[];
   /** "That player chooses a card name" (Sphinx Ambassador, CR 201.4): the name chosen this way, or null for none yet. */
   named: string | null;
+  /**
+   * How many permanents each player owned that were shuffled into libraries this way (Warp World: "reveals that many
+   * cards"), counted before they moved, tokens too (its rulings). Empty until then.
+   */
+  shuffledIn: ShuffledIn[];
 };
+
+/** A player and how many of their permanents were shuffled into their library this way. */
+export type ShuffledIn = { player: PlayerId; count: number };
 
 /** An Aura and the permanent it will enter attached to, or null when it can't enter at all (CR 303.4g). */
 export type AuraHost = { aura: ObjectId; host: ObjectId | null };

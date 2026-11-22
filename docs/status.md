@@ -871,6 +871,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (e) more scenarios: Clone revealed with a creature (options []), Entangling Vines to the bottom, a
            planeswalker card to the bottom, Mind Control on a step-4 creature, two Auras of one player, Hive Mind and
            Twincast copying it.
+       - M2-14k built (2026-11-22, D-129, D-130): Warp World (240 cards, every M2 card but the two set aside). First a
+         separate commit: a card entering from a hidden zone is shown by identity, not id (D-129). Then
+         `shuffleIntoLibraries`, `revealTop` for each player, `returnAllToBattlefield` from `found`, `put` into libraries
+         for several owners and the bottom (CR 401.4, 400.7), `reorderLibrary.bottom`. 11 scenarios (the swap, tokens,
+         a stolen permanent, an Aura auto and chosen, Vines with nothing to enchant, a checkland, Clone with nothing to
+         copy, triggers waiting, a planeswalker to the bottom, Mind Control). Fuzz checks on every scenario state. Golden
+         games regenerated (Lurking Predators' bottom is a reorder now). Next: fuzz, bench, reviews, PR.
        - M2-14j built (2026-11-22, D-128): Mirror of Fate (239 cards): `owner` filter, the `choose` op, `exileAll`,
          CR 401.4 for several cards put on top. 5 scenarios (two chosen and ordered; none, then a draw loses; only
          yours, none asked; one card, no order asked; seven of eight). 1 golden game. Fuzz clean. Rules review: no wrong

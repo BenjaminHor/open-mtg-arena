@@ -222,6 +222,9 @@ export const furnaceWhelp: CardDef = {
   purpose: "putOnTop" }`, its cards `"found"`; "exile all the cards from your library" is `{ op: "exileAll", zone:
   "library", of: "you" }`; "put the chosen cards on top of your library" is `put` of `"found"`, its owner ordering them
   (CR 401.4, Mirror of Fate, D-128).
+- Warp World is `shuffleIntoLibraries`, `revealTop` with `who: "eachPlayer", count: "shuffledIn"`, two
+  `returnAllToBattlefield` with `from: "found"` (artifacts, creatures, lands; then enchantments), and `put` of `"found"`
+  on the library bottom, each owner arranging theirs (D-130).
 - "That player chooses a card name" while it resolves is `{ op: "nameCard", who: "triggeringPlayer" }`, and "a
   creature card that doesn't have that name" the filter `{ types: ["creature"], notNamedThisWay: true }` (Sphinx
   Ambassador, D-121).
