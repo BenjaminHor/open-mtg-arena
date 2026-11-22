@@ -873,7 +873,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            Twincast copying it.
        - Owner request (2026-11-22), after M2-14l merges: clean up the READMEs so nothing in them is irrelevant for a
          public repo, and add a straightforward guide to playing games with the CLI. The owner chose MIT and dropped the private starter text
-         (D-132).
+         (D-132). Done: the README rewritten for a public repo (what it is, status, getting
+         started, a step-by-step CLI game guide checked against a real game, commands, docs, license), `LICENSE` (MIT),
+         `"license": "MIT"` in every package.json, two package READMEs no longer name Claude Code. The Fan Content
+         Policy notice uses its standard wording; the policy page couldn't be fetched from here, so the owner checks it.
        - M2-14l plan (2026-11-22): the three final decks (m2-pool.md, "Prebuilt decks"). White Soldiers is new (Elite
          Vanguard, Captain of the Watch, Veteran Armorsmith and Swordsmith, Rhox Pikemaster, Honor of the Pure, Pacifism,
          Ajani Goldmane...); Red-Green Beats gains Overrun, Garruk Wildspeaker, Siege-Gang Commander and Howl of the
