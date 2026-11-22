@@ -426,6 +426,7 @@ each milestone, and write tests for surviving mutants in rules code. It's slow, 
 
 ```sh
 pnpm mutate --mutate "packages/engine/src/combat/**/*.ts"   # one folder at a time; a whole run takes hours
+pnpm mutate --mutate "packages/engine/src/mana/*.ts,packages/engine/src/zones/*.ts"   # several: a comma list
 ```
 
 It runs the engine's unit tests and the scenarios (`vitest.mutate.config.ts`), and writes an HTML and a JSON report

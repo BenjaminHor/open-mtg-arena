@@ -952,7 +952,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            future-rules.md); costs and combat found one wrong result pool cards could reach (two tramplers on one
            blocker with deathtouch, fixed: deathtouch tramplers first) and an X so large it crashed the engine (capped
            at 10,000). Done.
-         - Mutation scores: rules/ a-k 81.3%, l-z 74.8%; game/ and the small folders running.
+         - M2-15b done. Mutation scores (killed of all mutants), the whole engine: combat 89.1%, triggers 87.2%, game/
+           a-k 83.9% and l-z 87.5%, effects 82.3%, rules/ a-k 81.3% and l-z 74.8%, pipeline 79.5%, mana/zones/
+           permanents/view/rng 79.1%. The survivors checked by hand were nearly all equivalent (see the triage finding
+           above); the real gaps got tests. Reports aren't kept (`reports/` is gitignored); rerun a folder with
+           `pnpm mutate --mutate "<glob>"` (a comma-separated list works; a brace glob ran no tests).
          - M2-15f merged (#90). M2-15a, the 10k fuzz: the single run hit the 2-hour background limit, so it runs in
            chunks of 2,000: seeds 100000–109999, 10,000 games, 0 failed (2026-11-22). M2-15a done.
          - Resume (owner, 2026-11-22): continue automatically at 12:05 p.m. US Eastern that day (a scheduled task is
