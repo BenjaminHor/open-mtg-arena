@@ -32,6 +32,10 @@ outer screen and a 7.6-inch inner screen), and also desktop browsers.
   See the "Feel" section of `ui.md`.
 - **Touch first**, with live switching between the folded and unfolded layouts. Mouse works too.
 - **Single player against the AI.** A hotseat mode (two humans on one device) exists for testing.
+- **Optional LLM opponents (owner wish, 2026-11-22).** A player may add their own OpenRouter API key and pick a model
+  to play the AI opponent. The browser calls OpenRouter directly with the player's key (no server of ours); the
+  built-in AI stays the default and the only one offline. The model sees only the player view (as `brief` builds it,
+  D-135) and picks among the legal actions. Milestone not set yet: see status.md, Open questions.
 - **Correct rules.** When in doubt, the Comprehensive Rules win, not convenience.
 - **Readable, maintainable code** that a person can work on. AI writes most of it, but nothing is a black box.
 
