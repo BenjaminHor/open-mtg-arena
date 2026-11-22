@@ -3,7 +3,7 @@
 // plain-data snapshot.
 
 import type { Effect } from "../cards/types.ts";
-import type { ProposedEvent } from "../pipeline/proposed.ts";
+import type { ProposedEvent, SpellCopied } from "../pipeline/proposed.ts";
 import type { Attack, Block, CombatDivision } from "./combat.ts";
 import type { EffectContext } from "./effects.ts";
 import type { DidNotResolve } from "./events.ts";
@@ -31,6 +31,8 @@ export type WorkItem =
    * land is played (CR 305.2a), a spell is cast (CR 608.2g).
    */
   | { kind: "playWithoutPaying"; player: PlayerId; card: ObjectId }
+  /** A copy of a spell put on the stack under `player`'s control, who may then choose new targets (CR 707.10c). */
+  | { kind: "copySpellFor"; player: PlayerId; spell: SpellCopied }
   /** The final part of an object's resolution (CR 608.2n, 608.3a). */
   | { kind: "finishResolving"; object: ObjectId }
   /**

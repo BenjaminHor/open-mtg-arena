@@ -798,6 +798,11 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             Silence, no wish counters left, three activations, Nocturnus's revealed top.
          - Future impact: casting during resolution is what cascade and "cast copies" need; Twincast/Hive Mind (M2-14h)
            don't cast. The free cast is an alternative cost (CR 118.9a: one at a time).
+       - M2-14h2 built (2026-11-22, D-125): Hive Mind (237 cards): `copySpell`'s `by: "eachOtherPlayer"`, one
+         `copySpellFor` work item per copier in turn order, a spell leaving the stack kept in `lastKnown` (CR 608.2h) so
+         one countered in response is still copied. 5 scenarios (Bolt copied and pointed back, its controller casting,
+         Earthquake's X, a copy of Silence silencing its own controller's opponent, a spell countered in response). No
+         new golden game (its mechanics were covered). Next: fuzz, reviews, PR.
        - M2-14h1 built (2026-11-21, D-125): Twincast (236 cards): the `copy` flag, the `copySpell` pipeline event and op,
          SBA CR 704.5e, the `chooseNewTarget` decision (keep or a new legal target, the share moving with it), a
          copy's targets becoming its targets (Illusionary Servant). 10 scenarios (Bolt kept and retargeted, the
@@ -809,7 +814,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          Dragon's Claw, Duress, Seismic Strike, Servant kept and not targeted, the original countered, Cancel copying
          itself, not cast). Code review: no bug beyond that; a fuzz invariant for a copy outside the stack, its cease
          event hidden like a token's from a hidden zone, the log naming a copy's moves, the current target no longer
-         offered beside "keep", docs. PR #81.
+         offered beside "keep", docs. Merged as #81.
        - M2-14g built (2026-11-21, D-124): Djinn of Wishes (235 cards): the `removeCounters` cost, `entersWithCounters`
          with a fixed number, the `mayPlayWithoutPaying` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
          cost increases paid, no priority after, a cancel back to the library); CR 401.5's casting delay built

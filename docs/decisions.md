@@ -1944,4 +1944,9 @@ owner's answer to the D-089 open question, option (a))
   triggers on copying a spell (none in the pool) would need it after them.
 - Once they're fixed, each object the copy targets becomes the target of a spell, kept or new: it's a new spell
   targeting it (judge forum, apps.magicjudges.org/forum/post/65270), so Illusionary Servant's ability triggers.
+- (M2-14h2, Hive Mind.) `copySpell` takes `by: "eachOtherPlayer"`: each player but the caster (the trigger's player)
+  copies the spell, in turn order from the active player (its ruling), each as a `copySpellFor` work item with the
+  spell's snapshot, so each copy's targets are chosen before the next copy goes on the stack. The snapshot is the spell
+  on the stack or, gone from it, as it last existed there: a spell leaving the stack is now kept in `lastKnown` like a
+  permanent leaving the battlefield (CR 608.2h), emptied as before when a player gets priority with the stack empty.
 

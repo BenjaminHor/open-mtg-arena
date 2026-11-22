@@ -7,37 +7,57 @@
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { objectsNamed } from "../effects/subjects.ts";
 import { happen } from "../pipeline/happen.ts";
+import type { SpellCopied } from "../pipeline/proposed.ts";
 import { legalTargets, sameTarget, targetSpecsOf } from "../rules/targets.ts";
 import type { PendingDecision } from "../state/decisions.ts";
 import type { EffectContext } from "../state/effects.ts";
 import type { GameEvent } from "../state/events.ts";
 import type { GameState } from "../state/game-state.ts";
-import type { ObjectId } from "../state/ids.ts";
+import type { ObjectId, PlayerId } from "../state/ids.ts";
 import type { StackChoices, Target } from "../state/objects.ts";
 import { detectTriggers } from "../triggers/detect.ts";
 import { waitFor } from "./decide.ts";
 import type { Progress } from "./progress.ts";
+import { queueWork } from "./work.ts";
 
 type CopySpell = Extract<Effect, { op: "copySpell" }>;
 type ChooseNewTarget = Extract<PendingDecision, { kind: "chooseNewTarget" }>;
 
-/** The copy is put on the stack under the controller's control; then its new targets, if it has any. */
+/**
+ * The spell copied, as it is on the stack or, gone from it, as it last existed there (CR 608.2h; Hive Mind copies one
+ * countered in response, D-125); then one copy for each player who copies it, in order: the controller, or each player
+ * but the one who cast it, in turn order from the active player (Hive Mind's ruling).
+ */
 export function copySpell(state: GameState, effect: CopySpell, context: EffectContext, cards: CardDatabase): Progress {
   const [original] = objectsNamed(state, effect.of, context, cards);
-  const spell = original === undefined ? undefined : state.objects[original];
-  // A spell still on the stack: the target was checked as this resolved (CR 608.2b).
-  if (spell?.kind !== "card" || spell.choices === null || !state.zones.stack.includes(spell.id))
-    return { state, events: [] };
-  const copied = { original: spell.id, oracleId: spell.oracleId, choices: spell.choices };
-  const put = happen(state, { kind: "copySpell", player: context.controller, spell: copied }, cards);
+  if (original === undefined) return { state, events: [] };
+  const live = state.zones.stack.includes(original) ? state.objects[original] : undefined;
+  const spell = live ?? state.lastKnown[original];
+  if (spell?.kind !== "card" || spell.choices === null) return { state, events: [] };
+  const copied = { original, oracleId: spell.oracleId, choices: spell.choices };
+  const caster = context.trigger?.player ?? null;
+  const copiers =
+    effect.by === "eachOtherPlayer" ? apnapOrder(state).filter((p) => p !== caster) : [context.controller];
+  return {
+    state: queueWork(state, ...copiers.map((player) => ({ kind: "copySpellFor", player, spell: copied }) as const)),
+    events: [],
+  };
+}
+
+/** Every player in turn order from the active player (CR 101.4). */
+function apnapOrder(state: GameState): PlayerId[] {
+  const active = state.turn?.activePlayer;
+  const at = active === undefined ? 0 : Math.max(0, state.turnOrder.indexOf(active));
+  return [...state.turnOrder.slice(at), ...state.turnOrder.slice(0, at)];
+}
+
+/** One copy put on the stack under `player`'s control, who is then asked for its new targets (CR 707.10c). */
+export function copySpellFor(state: GameState, player: PlayerId, spell: SpellCopied, cards: CardDatabase): Progress {
+  const put = happen(state, { kind: "copySpell", player, spell }, cards);
   const copy = put.events.find((e) => e.type === "SPELL_COPIED")?.object;
   if (copy === undefined) throw new Error("the copy wasn't put on the stack");
   const kept = { targets: spell.choices.targets, division: spell.choices.division };
-  const next = askFrom(
-    put.state,
-    { player: context.controller, object: copy, instance: 0, index: 0, original: kept },
-    cards,
-  );
+  const next = askFrom(put.state, { player, object: copy, instance: 0, index: 0, original: kept }, cards);
   return { state: next.state, events: [...put.events, ...next.events] };
 }
 

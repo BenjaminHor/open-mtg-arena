@@ -2809,6 +2809,35 @@
       "printingChosenBy": "rule"
     },
     {
+      "name": "Hive Mind",
+      "slug": "hive-mind",
+      "oracleId": "f97e405d-4c24-4d4d-9e19-e349c073113c",
+      "layout": "normal",
+      "manaCost": "{5}{U}",
+      "manaValue": 6,
+      "typeLine": "Enchantment",
+      "oracleText": "Whenever a player casts an instant or sorcery spell, each other player copies that spell. Each of those players may choose new targets for their copy.",
+      "power": null,
+      "toughness": null,
+      "loyalty": null,
+      "colors": [
+        "U"
+      ],
+      "colorIndicator": [],
+      "keywords": [],
+      "images": {
+        "normal": "https://cards.scryfall.io/normal/front/8/8/88d50518-5cfc-45de-a125-acabf97b8743.jpg?1783942393",
+        "large": "https://cards.scryfall.io/large/front/8/8/88d50518-5cfc-45de-a125-acabf97b8743.jpg?1783942393",
+        "png": "https://cards.scryfall.io/png/front/8/8/88d50518-5cfc-45de-a125-acabf97b8743.png?1783942393",
+        "artCrop": "https://cards.scryfall.io/art_crop/front/8/8/88d50518-5cfc-45de-a125-acabf97b8743.jpg?1783942393"
+      },
+      "artist": "Steve Argyle",
+      "set": "m10",
+      "collectorNumber": "54",
+      "scryfallUri": "https://scryfall.com/card/m10/54/hive-mind?utm_source=api",
+      "printingChosenBy": "rule"
+    },
+    {
       "name": "Holy Strength",
       "slug": "holy-strength",
       "oracleId": "9357de36-f8be-4f49-b2c8-9fe9eaf82b07",

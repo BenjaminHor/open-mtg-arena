@@ -1,0 +1,22 @@
+name: A copy of Silence silences the other player of its own controller, though no one cast it
+rules: [CR 707.10, CR 601.3]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Plains, Mountain]
+    hand: [Silence, Lightning Bolt]
+  p2:
+    battlefield: [Hive Mind, Mountain]
+    hand: [Shock]
+steps:
+  - p1 cast: Silence
+    pay: auto
+  - all pass: once
+  - all pass: once
+  - all pass: once
+  - expect:
+      stack: []
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - expect error: illegalAction
