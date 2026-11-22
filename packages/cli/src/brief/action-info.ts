@@ -13,6 +13,7 @@ import {
   isManaAbility,
   legalTargets,
   type ManaCost,
+  type ObjectFilter,
   type ObjectId,
   type PlayerId,
   sameAbilityRef,
@@ -30,7 +31,7 @@ export type ActionInfo = {
   cost: string | null;
   /**
    * A hint, not a rule: whether the viewer's mana in pool and untapped sources could pay the mana part now (X as 0).
-   * Starting an action you can't pay is legal and is undone (CR 118.6, 601.2h); a cost increase for extra targets
+   * Starting an action you can't pay is legal, and it's undone when the cost can't be paid (CR 601.2h, 734); a cost increase for extra targets
    * (Fireball) is only known once the targets are chosen. Null when the action has no mana cost.
    */
   payable: boolean | null;
@@ -119,7 +120,17 @@ function targetChoices(
   return specs.map((spec) => legalTargets(state, spec, by, cards).map((t) => targetText(state, t, cards)));
 }
 
-/** `{2}{R}`, `{T}`, `Sacrifice a creature`, `+1`, `−X`. */
+/** "Goblin", "creature", "artifact creature"; "permanent" when the filter names no type. */
+function sacrificeNoun(filter: ObjectFilter): string {
+  const words = [...(filter.subtypes ?? []), ...(filter.types ?? [])];
+  return words.length === 0 ? "permanent" : words.join(" ");
+}
+
+function withArticle(noun: string): string {
+  return /^[aeiou]/i.test(noun) ? `an ${noun}` : `a ${noun}`;
+}
+
+/** `{2}{R}`, `{T}`, `Sacrifice a Goblin`, `+1`, `−X`. */
 function costPartText(part: CostPart): string {
   switch (part.kind) {
     case "mana":
@@ -127,7 +138,7 @@ function costPartText(part: CostPart): string {
     case "tap":
       return "{T}";
     case "sacrifice":
-      return `Sacrifice a ${part.filter.types?.join(" or ") ?? "permanent"}`;
+      return `Sacrifice ${withArticle(sacrificeNoun(part.filter))}`;
     case "sacrificeSelf":
       return "Sacrifice this";
     case "loyalty":

@@ -17,7 +17,9 @@ import { run } from "../src/main.ts";
 import { cli, tempFile } from "./helpers.ts";
 
 const SCENARIOS = join(import.meta.dirname, "../../engine/test/scenarios/cards");
-const FOLDERS = ["m2-05b2", "m2-14f", "m2-14i", "m2-14j", "m2-14k"];
+// Every folder with hidden cards in play: searches and reveals, Telepathy and Vampire Nocturnus, Djinn of Wishes,
+// spell copies, Clone, Mirror of Fate, Warp World.
+const FOLDERS = ["m2-05b2", "m2-14f", "m2-14g", "m2-14h", "m2-14i", "m2-14j", "m2-14k"];
 
 function leaks(state: GameState): string[] {
   const cards = cardDatabase();
@@ -101,5 +103,59 @@ describe("the brief command", () => {
     cli("new", "--scenario", "combat/lethal-attack-ends-the-game", "--out", file);
     expect(run(["brief", file]).output).toBe("brief needs --as <player>");
     expect(run(["brief", file, "--as", "p9"]).output).toBe("--as: no player p9");
+  });
+});
+
+describe("since you last acted (the events each player saw)", () => {
+  it("starts at the viewer's own last action, names only what they saw, folds draws and repeats", () => {
+    const file = tempFile();
+    cli("new", "--decks", "white-soldiers,red-green-beats", "--seed", "1", "--first", "p1", "--out", file);
+    cli("do", file, "2"); // p1 mulligans
+    cli("do", file, "1"); // p2 keeps
+    const recent = (as: string) => JSON.parse(cli("brief", file, "--as", as, "--json")).recent as string[];
+    // p1's hand goes back and seven new cards are drawn: p1 sees which; a draw is one line, repeats are counted.
+    const mine = recent("p1");
+    expect(mine[0]).toBe("T0 p1 mulligans");
+    expect(mine).not.toContain("T0 p1 goes first"); // before p1's last action
+    expect(mine).toContain("T0 p1 draws Plains (x5)");
+    expect(mine.some((l) => l.includes("from p1's library to p1's hand"))).toBe(false);
+    // p2 sees the same moves without a card named (CR 401.2, 402.3).
+    expect(recent("p2")).toStrictEqual([
+      "T0 p2 keeps",
+      "T0 a card moves from p1's hand to p1's library (x7)",
+      "T0 p1 shuffles their library",
+      "T0 p1 draws a card (x7)",
+    ]);
+  });
+
+  it("is everything since the game began for a player who hasn't acted yet", () => {
+    const file = tempFile();
+    cli("new", "--decks", "white-soldiers,red-green-beats", "--seed", "1", "--first", "p1", "--out", file);
+    const lines = JSON.parse(cli("brief", file, "--as", "p2", "--json")).recent as string[];
+    expect(lines.slice(0, 4)).toStrictEqual([
+      "T0 p1 goes first",
+      "T0 p1 shuffles their library",
+      "T0 p2 shuffles their library",
+      "T0 p1 draws a card (x7)",
+    ]);
+    expect(lines).toContain("T0 p2 draws Garruk Wildspeaker");
+  });
+});
+
+describe("action costs", () => {
+  it("names what a sacrifice cost takes: Siege-Gang Commander's Goblin", () => {
+    const file = tempFile();
+    cli("new", "--scenario", "cards/m2-11b/siege-gang-sacrifice-itself", "--out", file);
+    expect(cli("brief", file, "--as", "p1")).toMatch(/Sacrifice a Goblin/);
+  });
+});
+
+describe("the next step", () => {
+  it("passes over a skipped step: the first player's first draw step (CR 103.8a, 500.11)", () => {
+    const file = tempFile();
+    cli("new", "--decks", "white-soldiers,red-green-beats", "--seed", "1", "--first", "p1", "--out", file);
+    cli("do", file, "1"); // p1 keeps
+    cli("do", file, "1"); // p2 keeps
+    expect(cli("brief", file, "--as", "p1")).toMatch(/^Turn 1 · p1's turn · upkeep \(next: main1\)/);
   });
 });

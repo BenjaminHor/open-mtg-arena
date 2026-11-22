@@ -78,15 +78,25 @@ export function endStep(state: GameState, cards: CardDatabase): Progress {
   // As the end of combat step ends, every creature is removed from combat (CR 511.3).
   const left = turn.step === "endOfCombat" ? { ...state, combat: null } : state;
   const emptied = emptyManaPools(left);
-  // After a first strike combat damage step comes a second one (CR 510.4).
-  let next = turn.step === "combatDamage" && secondDamageStepFollows(state) ? "combatDamage" : stepAfter(turn.step);
-  while (next !== null && isSkipped(emptied.state, next)) next = stepAfter(next);
+  const next = nextStep(state);
   if (next !== null) return andThen(emptied, (s) => beginStep(s, next, cards));
   // The next extra turn, if any, else the next regular turn (CR 500.7).
   return andThen(emptied, (s) => {
     const after = nextTurn(s);
     return beginTurn(after.state, after.player, turn.number + 1, cards, after.extra);
   });
+}
+
+/**
+ * The step that begins when this one ends, as things stand: after a first strike combat damage step a second one
+ * (CR 510.4), and skipped steps passed over (CR 500.11). Null after cleanup: the next turn begins. Hosts show it too
+ * (`brief`); everything it reads is public (the turn number, who is attacking).
+ */
+export function nextStep(state: GameState): Step | null {
+  const turn = currentTurn(state);
+  let next = turn.step === "combatDamage" && secondDamageStepFollows(state) ? "combatDamage" : stepAfter(turn.step);
+  while (next !== null && isSkipped(state, next)) next = stepAfter(next);
+  return next;
 }
 
 /**

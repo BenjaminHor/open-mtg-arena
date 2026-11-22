@@ -27,11 +27,16 @@ function actionLines(actions: readonly ActionInfo[]): string[] {
     "your actions: `pnpm cli do <file> <n>`, or a step that also chooses and pays,",
     '  such as `pnpm cli do <file> "cast: Shock, targets: [p2], pay: auto"`:',
   ];
-  const shown = new Map<string, number[]>();
-  for (const a of actions) if (!a.mana) shown.set(a.text, [...(shown.get(a.text) ?? []), a.n]);
-  for (const [text, numbers] of shown) {
-    const a = actions[(numbers[0] as number) - 1] as ActionInfo;
-    const also = numbers.length > 1 ? ` (same as ${numbers.slice(1).join(", ")})` : "";
+  // Each text once: its first action, and the numbers of the others like it.
+  const shown = new Map<string, { first: ActionInfo; others: number[] }>();
+  for (const a of actions) {
+    if (a.mana) continue;
+    const entry = shown.get(a.text);
+    if (entry === undefined) shown.set(a.text, { first: a, others: [] });
+    else entry.others.push(a.n);
+  }
+  for (const [text, { first: a, others }] of shown) {
+    const also = others.length > 0 ? ` (same as ${others.join(", ")})` : "";
     const cost = a.cost === null ? "" : ` — ${a.cost}${a.payable === false ? " (not enough mana now)" : ""}`;
     lines.push(`${String(a.n).padStart(3)}. ${text}${cost}${also}`);
     for (const [i, choices] of a.targets.entries()) {

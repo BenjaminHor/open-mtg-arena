@@ -11,8 +11,9 @@ The full command list and output format are in [`docs/testing.md`](../../docs/te
 - `src/game-file.ts`: the game file (setup, actions, cached state) and `replay` (D-043).
 - `src/commands/`: one file per command: `new`, `show`, `brief`, `actions`, `do`, `ai` (with `auto`), `log`, `inspect`,
   `export`, `replay`.
-- `src/brief/`: `brief`, one player's whole situation as data (`brief.ts`, `brief-objects.ts`), the events they saw
-  since they last acted (`recent-events.ts`), and the same data as text (`brief-text.ts`) (D-135).
+- `src/brief/`: `brief`, one player's whole situation as data (`brief.ts`, `brief-objects.ts`, and `action-info.ts` for
+  each action's cost, mana hint and targets), the events they saw since they last acted (`recent-events.ts`), and the
+  same data as text (`brief-text.ts`) (D-135).
 - `src/agents.ts`, `src/agent-play.ts`: the `first-legal`, `random` and `by-kind` agents and the loop that lets them
   play. `src/pick-action.ts`: the `by-kind` pick, a kind of action first (the fuzzer's, D-061). `src/seeded-random.ts`:
   the seeded random numbers. `src/random-decks.ts`: random 40-card decks from the pool.

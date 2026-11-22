@@ -15,8 +15,8 @@ import {
   type ViewEvent,
   type ZoneRef,
 } from "@mtg/engine";
-import { nameOf, refOf } from "@mtg/scenarios";
-import { eventText } from "../event-log.ts";
+import { refOf } from "@mtg/scenarios";
+import { eventText, nameIn } from "../event-log.ts";
 
 /** At most this many lines, the latest kept: a whole opponent's turn fits, a whole game doesn't. */
 const MOST = 60;
@@ -38,14 +38,14 @@ export function recentLines(
   let lines: string[] = [];
   const add = (events: Parameters<typeof eventsFor>[0], before: GameState, after: GameState) => {
     const name = (id: ObjectId) =>
-      refOf(before, id, cards) ?? refOf(after, id, cards) ?? knownName(before, after, id, cards);
+      refOf(before, id, cards) ?? refOf(after, id, cards) ?? nameIn(before, after, id, cards);
     let turn = before.turn?.number ?? 0;
     const seen = eventsFor(events, viewer);
     for (const [i, event] of seen.entries()) {
       if (event.type === "TURN_BEGAN") turn = event.turn;
       if (event.type === "PRIORITY_PASSED" || event.type === "STEP_BEGAN") continue;
       // A draw is a move from library to hand and then the draw: one line, "p1 draws Plains".
-      if (isDrawn(seen[i + 1])) continue;
+      if (movesToHand(event) && isDrawn(seen[i + 1])) continue;
       lines.push(`T${turn} ${viewEventText(event, name, cards)}`);
     }
   };
@@ -95,15 +95,22 @@ function viewEventText(e: ViewEvent, name: (id: ObjectId) => string, cards: Card
   }
 }
 
+/** A card moved into a hand, seen or not: the first half of a draw. */
+function movesToHand(e: ViewEvent): boolean {
+  switch (e.type) {
+    case "ZONE_CHANGED":
+    case "CARD_CAME_INTO_VIEW":
+    case "HIDDEN_CARD_MOVED":
+      return e.to.zone === "hand";
+    default:
+      return false;
+  }
+}
+
 function isDrawn(next: ViewEvent | undefined): boolean {
   return next?.type === "CARD_DRAWN" || next?.type === "HIDDEN_CARD_DRAWN";
 }
 
 function zoneText(ref: ZoneRef): string {
   return "player" in ref ? `${ref.player}'s ${ref.zone}` : `the ${ref.zone}`;
-}
-
-function knownName(before: GameState, after: GameState, id: ObjectId, cards: CardDatabase): string {
-  const known = (s: GameState) => s.objects[id] !== undefined || s.lastKnown[id] !== undefined;
-  return known(before) ? nameOf(before, id, cards) : nameOf(after, id, cards);
 }

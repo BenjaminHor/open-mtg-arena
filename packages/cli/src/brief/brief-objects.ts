@@ -1,16 +1,16 @@
 // What `brief` says about each object a player can see (M2-15f): a card's name, cost, type line and Oracle text, and
 // for a permanent its current characteristics and status. Read only for objects in the viewer's `playerView`, so it
 // says nothing about a hidden card. Characteristics are derived values the view doesn't carry; the host computes them
-// from the full state for public objects (D-135), as M3's match host will.
+// from the full state for the objects the viewer can see (D-135), as M3's match host will.
 
 import {
   type CardDatabase,
-  type CardObject,
   type Color,
   cardDataByOracleId,
   cardDataOf,
   characteristics,
   controllerOf,
+  type GameObject,
   type GameState,
   isAttacking,
   isBlocking,
@@ -90,7 +90,8 @@ export function cardInfo(state: GameState, id: ObjectId, cards: CardDatabase): C
 }
 
 export function permanentInfo(state: GameState, id: ObjectId, cards: CardDatabase): PermanentInfo {
-  const obj = state.objects[id] as CardObject;
+  const obj = state.objects[id];
+  if (obj?.kind !== "card") throw new Error(`${id} isn't a permanent`);
   const c = characteristics(state, id, cards);
   const blocks = isBlocking(state, id, cards) ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id) : [];
   const attack = isAttacking(state, id, cards) ? state.combat?.attacks.find((a) => a.attacker === id) : undefined;
@@ -126,12 +127,18 @@ export function stackInfo(state: GameState, id: ObjectId, cards: CardDatabase): 
   return {
     id,
     name: nameOf(state, id, cards),
-    kind: obj?.kind === "ability" ? "ability" : obj?.kind === "card" && obj.copy === true ? "copy" : "spell",
+    kind: stackKind(obj),
     controller: controllerOf(state, id, cards),
     targets: (choices?.targets ?? []).flat().map((t) => targetText(state, t, cards)),
     x: choices?.x ?? null,
     text,
   };
+}
+
+/** An ability, a copy of a spell (CR 707.10) or a spell. */
+function stackKind(obj: GameObject | undefined): StackInfo["kind"] {
+  if (obj?.kind === "ability") return "ability";
+  return obj?.copy === true ? "copy" : "spell";
 }
 
 /** `{X}{1}{R}`. */

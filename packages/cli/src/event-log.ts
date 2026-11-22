@@ -63,7 +63,8 @@ export function logUntilRejected(
   return { lines, rejected: null };
 }
 
-function nameIn(before: GameState, after: GameState, id: ObjectId, cards: CardDatabase): string {
+/** An object's name from the state it was last in: before the action (it left), or after (it arrived). */
+export function nameIn(before: GameState, after: GameState, id: ObjectId, cards: CardDatabase): string {
   const known = (s: GameState) => s.objects[id] !== undefined || s.lastKnown[id] !== undefined;
   return known(before) ? nameOf(before, id, cards) : nameOf(after, id, cards);
 }

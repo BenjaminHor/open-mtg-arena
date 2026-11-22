@@ -1,23 +1,24 @@
 // `brief`: everything one player may know when they decide, as data (M2-15f). An AI agent playing through the CLI reads
 // it as JSON; `brief-text.ts` renders the same data for people, so the two can't disagree. Built from the viewer's
-// `playerView` (D-044), with characteristics the host computes for public objects (D-135), the events the viewer saw
+// `playerView` (D-044), with characteristics the host computes for the objects the viewer can see (D-135), the events the viewer saw
 // since they last acted, and their own legal actions only: another player's pending decision is only "waiting for".
 
 import {
   type CardDatabase,
   cardDataByOracleId,
   type GameState,
-  legalActions,
   type ManaPool,
   manaAvailable,
+  nextStep,
+  type ObjectId,
   type OracleId,
   type PlayerId,
   type PlayerView,
   playerView,
-  stepAfter,
   type ViewDecision,
 } from "@mtg/engine";
 import { scenarioStep } from "@mtg/scenarios";
+import { numberedActions } from "../commands/actions.ts";
 import { type ActionInfo, actionInfos } from "./action-info.ts";
 import {
   type CardInfo,
@@ -76,8 +77,9 @@ export function briefOf(state: GameState, viewer: PlayerId, recent: readonly str
   const view = playerView(state, viewer, cards);
   const seated = [viewer, ...view.turnOrder.filter((p) => p !== viewer)];
   const turn = view.turn;
-  const pending = state.pending;
-  const mine = pending !== null && pending.player === viewer;
+  const mine = view.waitingFor?.player === viewer;
+  // Only objects in the view are described: a face-down card (later: CR 708) would be left out of it, not shown here.
+  const seen = (ids: readonly ObjectId[]) => ids.filter((id) => view.objects[id] !== undefined);
   return {
     format: BRIEF_FORMAT,
     version: BRIEF_VERSION,
@@ -89,14 +91,15 @@ export function briefOf(state: GameState, viewer: PlayerId, recent: readonly str
             number: turn.number,
             activePlayer: turn.activePlayer,
             step: scenarioStep(turn.step),
-            nextStep: nextStepName(turn.step),
+            nextStep: nextStepName(state),
           },
-    players: seated.map((p) => playerBrief(state, view, p, cards)),
-    stack: view.zones.stack.map((id) => stackInfo(state, id, cards)),
-    exile: view.zones.exile.map((id) => cardInfo(state, id, cards)),
+    players: seated.map((p) => playerBrief(state, view, p, seen, cards)),
+    stack: seen(view.zones.stack).map((id) => stackInfo(state, id, cards)),
+    exile: seen(view.zones.exile).map((id) => cardInfo(state, id, cards)),
     waitingFor: view.waitingFor === null ? null : { player: view.waitingFor.player, kind: view.waitingFor.kind },
     decision: view.decision,
-    actions: mine ? actionInfos(state, viewer, legalActions(state, viewer, cards), cards) : [],
+    // Numbered by the same function as `actions` and `do`, so the numbers always match.
+    actions: mine ? actionInfos(state, viewer, numberedActions(state, cards), cards) : [],
     recent: [...recent],
     result:
       view.result === null
@@ -108,7 +111,13 @@ export function briefOf(state: GameState, viewer: PlayerId, recent: readonly str
   };
 }
 
-function playerBrief(state: GameState, view: PlayerView, player: PlayerId, cards: CardDatabase): PlayerBrief {
+function playerBrief(
+  state: GameState,
+  view: PlayerView,
+  player: PlayerId,
+  seen: (ids: readonly ObjectId[]) => ObjectId[],
+  cards: CardDatabase,
+): PlayerBrief {
   const ps = view.players[player];
   const zones = view.zones.players[player];
   if (ps === undefined || zones === undefined) throw new Error(`no player ${player}`);
@@ -121,19 +130,19 @@ function playerBrief(state: GameState, view: PlayerView, player: PlayerId, cards
     manaPool: ps.manaPool,
     manaAvailable: manaAvailable(state, player, cards),
     landsPlayedThisTurn: ps.landsPlayedThisTurn,
-    hand: zones.hand === null ? null : zones.hand.map((id) => cardInfo(state, id, cards)),
+    hand: zones.hand === null ? null : seen(zones.hand).map((id) => cardInfo(state, id, cards)),
     revealedHand: zones.revealedHand === null ? null : zones.revealedHand.map(named).sort(),
     revealedTop: zones.revealedTop === null ? null : named(zones.revealedTop),
-    // Each player's side of the table is what they control now (CR 108.4), not what they own.
-    battlefield: view.zones.battlefield
+    // Each player's side of the table is what they control now (CR 110.2), not what they own.
+    battlefield: seen(view.zones.battlefield)
       .map((id) => permanentInfo(state, id, cards))
       .filter((p) => p.controller === player),
-    graveyard: zones.graveyard.map((id) => cardInfo(state, id, cards)),
+    graveyard: seen(zones.graveyard).map((id) => cardInfo(state, id, cards)),
   };
 }
 
-/** The next step of this turn, by its scenario name; null after cleanup (the next turn's untap step). */
-function nextStepName(step: Parameters<typeof stepAfter>[0]): string | null {
-  const next = stepAfter(step);
+/** The step that comes next this turn as things stand (skipped ones passed over), by name; null after cleanup. */
+function nextStepName(state: GameState): string | null {
+  const next = nextStep(state);
   return next === null ? null : scenarioStep(next);
 }

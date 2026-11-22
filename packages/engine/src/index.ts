@@ -31,7 +31,7 @@ export { legalAmounts, withForcedAnswers } from "./combat/damage-assignment.ts";
 export { applyAction } from "./game/apply-action.ts";
 export { createGame } from "./game/create-game.ts";
 export { legalActions } from "./game/legal-actions.ts";
-export { stepAfter } from "./game/turn-steps.ts";
+export { nextStep } from "./game/steps.ts";
 export { type AutoPayment, autoPay, manaAvailable } from "./mana/auto-pay.ts";
 export { allPayments, type ManaPayment, manaValue, payFromPool } from "./mana/payment.ts";
 export type { RngState } from "./rng/xoshiro128.ts";
