@@ -939,8 +939,14 @@ next session needs to know. Keep it short. Move finished detail into commit mess
            (guards that only save work, `?.` on what two-player games never leave missing, error-message text) are
            left with a note. combat/: 70.5% before the alias fix (unit tests only), 88.6% with it; tests added in
            `test/combat/combat-edges.test.ts` for an illegal attack answer, a pump not being an attack requirement,
-           out-of-range damage division, and no 0-damage event (CR 120.8). Next folders: rules/, pipeline/, effects/,
-           game/, triggers/, mana/, zones/, permanents/, view/.
+           out-of-range damage division, and no 0-damage event (CR 120.8). Scores (killed of all mutants): combat 89.1%,
+           pipeline 79.5%, effects 82.3%, triggers 87.2%; rules/ (two halves), game/ and the small folders to run.
+           Triage finding (2026-11-22): checked by hand, the survivors are mostly equivalent: a check the code makes
+           twice (an earlier filter already rules the case out), `?? []` and null guards for states that can't happen,
+           `case` labels of exhaustive switches, error-message text. Partial-condition mutants (`false || x`) are
+           usually covered by the rest of the condition. Real gaps found so far got tests (combat-edges, and negative
+           scenarios in `cards/m2-15b/`). The rest are left, not chased line by line: the scenario suite catches real
+           rule changes (e.g. disabling "attacks each combat" or a step trigger fails dozens of scenarios).
          - M2-15f merged (#90). M2-15a, the 10k fuzz: the single run hit the 2-hour background limit, so it runs in
            chunks of 2,000: seeds 100000–109999, 10,000 games, 0 failed (2026-11-22). M2-15a done.
          - Resume (owner, 2026-11-22): continue automatically at 12:05 p.m. US Eastern that day (a scheduled task is
