@@ -75,7 +75,8 @@ function target(t: Target, name: Namer): string {
 export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): string {
   switch (e.type) {
     case "ZONE_CHANGED": {
-      const card = cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId;
+      const printed = cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId;
+      const card = e.object.copy === true ? `${printed} copy` : printed;
       const zone = (z: typeof e.from) => ("player" in z ? `${z.player}'s ${z.zone}` : z.zone);
       return `moves: ${card}, ${zone(e.from)} -> ${zone(e.to)}`;
     }

@@ -15,7 +15,8 @@ abilities are data in `CardDef.triggers` (`cards/types.ts`): a condition (`when`
    attackers declared (`combat/declare-attackers.ts`), blockers declared (`combat/declare-blockers.ts`, one trigger per
    creature blocked or blocking, CR 509.3), a spell becoming cast (`game/casting-steps.ts`, CR 601.2i), a
    land tapped for mana (`TAPPED_FOR_MANA`, `mana/activate.ts`, CR 106.12a), a permanent becoming a target as a target
-   is chosen (`BECAME_TARGET`, `game/choose-targets.ts`, CR 601.2c). An intervening if that's false as the event happens means no trigger. A match
+   is chosen (`BECAME_TARGET`, `game/choose-targets.ts`, CR 601.2c), or a copy's targets are fixed
+   (`game/copy-spell.ts`, D-125). An intervening if that's false as the event happens means no trigger. A match
    becomes a `PendingTrigger` (`state/triggers.ts`) in `GameState.pendingTriggers`, remembering its source, the
    source's controller then (CR 603.3a) and what triggered it (the player and object "that player", "it" refer to).
 2. **Put on the stack** (`put-on-stack.ts`). The next time a player would receive priority, after state-based actions

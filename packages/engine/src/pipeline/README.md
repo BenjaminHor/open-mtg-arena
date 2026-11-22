@@ -82,8 +82,8 @@ anything can replace or trigger on:
 - **Drawing several cards** as one instruction (CR 121.2a): "draw N" is N single draws for now (D-060); the container
   comes with the first replacement that needs it (M2-08).
 - **Events triggers will match that are emitted outside the pipeline:** `STEP_BEGAN`, `ATTACKERS_DECLARED`,
-  `BLOCKERS_DECLARED`, `SPELL_CAST`, `TAPPED_FOR_MANA` and `BECAME_TARGET` are matched where they're emitted
-  (`triggers/README.md`); `ABILITY_ACTIVATED` will be when a card needs it.
+  `BLOCKERS_DECLARED`, `SPELL_CAST`, `TAPPED_FOR_MANA` and `BECAME_TARGET` (casting, and a copy's targets) are matched
+  where they're emitted (`triggers/README.md`); `ABILITY_ACTIVATED` will be when a card needs it.
 - Looking back in time for leaves-the-battlefield abilities beyond "when this creature dies" (built, D-118;
   CR 603.10a). Last known information
   (`GameState.lastKnown`, CR 608.2h) is kept as a card leaves the battlefield (`zones/move-card.ts`).

@@ -944,7 +944,7 @@ T26 moves: Open the Vaults, p2's library -> p2's graveyard
 T26 moves: Veteran Swordsmith, p2's library -> p2's graveyard
 T26 moves: Lurking Predators, p2's library -> p2's graveyard
 T26 resolves: Tome Scour copy
-T26 moves: Tome Scour, stack -> p2's graveyard
+T26 moves: Tome Scour copy, stack -> p2's graveyard
 T26 state-based actions: (gone o990) copyOutsideStack
 T26 ceases to exist: a copy of Tome Scour (graveyard)
 T26 p2 cancels activating p2:Drudge Skeletons

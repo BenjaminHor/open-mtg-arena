@@ -66,12 +66,17 @@ function askFrom(state: GameState, slot: Slot, cards: CardDatabase): Progress {
 
 /**
  * The targets the copy's controller may choose instead (CR 115.7d): the legal ones for that instance of "target", with
- * the copy as the source. Another target of the copy may be chosen: only the final set is judged (CR 115.7e).
+ * the copy as the source, but the one it has, which is keeping it. Another target of the copy may be chosen: only the
+ * final set is judged (CR 115.7e). No target in the pool depends on another, so a new one can't make a kept one illegal
+ * (later: CR 115.7d's last clause).
  */
 export function newTargetOptions(state: GameState, pending: ChooseNewTarget, cards: CardDatabase): Target[] {
   const spec = targetSpecsOf(state, pending.object, cards)[pending.instance];
+  const current = state.objects[pending.object]?.choices?.targets[pending.instance]?.[pending.index];
   if (spec === undefined) return [];
-  return legalTargets(state, spec, { object: pending.object, controller: pending.player }, cards);
+  return legalTargets(state, spec, { object: pending.object, controller: pending.player }, cards).filter(
+    (t) => current === undefined || !sameTarget(t, current),
+  );
 }
 
 /** Why this can't be the new target, or null: keeping it (null) is always allowed. */

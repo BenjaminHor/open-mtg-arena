@@ -807,7 +807,9 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          start over on a final set naming one object twice; BECAME_TARGET skips a target gone and cites D-125; copies
          left out of graveyard card targets; 17 scenarios from it (shroud, protection, Fireball, Earthquake, owner,
          Dragon's Claw, Duress, Seismic Strike, Servant kept and not targeted, the original countered, Cancel copying
-         itself, not cast). PR #81.
+         itself, not cast). Code review: no bug beyond that; a fuzz invariant for a copy outside the stack, its cease
+         event hidden like a token's from a hidden zone, the log naming a copy's moves, the current target no longer
+         offered beside "keep", docs. PR #81.
        - M2-14g built (2026-11-21, D-124): Djinn of Wishes (235 cards): the `removeCounters` cost, `entersWithCounters`
          with a fixed number, the `mayPlayWithoutPaying` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
          cost increases paid, no priority after, a cancel back to the library); CR 401.5's casting delay built
