@@ -81,7 +81,7 @@ the Arena deckbuilder, Moxfield and Archidekt. Spec in `deckbuilding.md`. Every 
 can go in a deck; only cards in the engine's pool are playable, and the UI always says which.
 Deck logic and search live in pure packages (`library`, `decks`) so they're tested headlessly like the engine.
 
-**D-015: Private repo, no open-source license; Cloudflare Pages for hosting** · 2026-11-19 · accepted
+**D-015: Private repo, no open-source license; Cloudflare Pages for hosting** · 2026-11-19 · accepted; the license part superseded by D-132 (MIT, public)
 The repository is private and has no license file (all rights reserved). Card names, Oracle text, rules text and
 images belong to Wizards of the Coast; card data comes from Scryfall under its terms. GitHub's free plan doesn't
 offer GitHub Pages or protected branches for private repos, so the app is hosted on **Cloudflare Pages**
