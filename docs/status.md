@@ -909,6 +909,19 @@ next session needs to know. Keep it short. Move finished detail into commit mess
               land played this turn, step and next step;
            5. `--json`: the player's view, legal actions and recent events, for programs.
            Do it before the owner's CLI spot-check (an M2 exit criterion), after the pause.
+           Plan (2026-11-22), two PRs:
+           - f1: `brief <file> --as pN [--text] [--json]`, built as data (`cli/src/brief/`) from `playerView`, the
+             viewer's `eventsFor` events since their last action, and their own legal actions only (another player's
+             pending decision shows as "waiting for"), plus each public object's characteristics, which the host (here
+             the CLI) computes from full state as M3's match host will. The text is rendered from that data, so text
+             and JSON can't disagree. Parts 1, 2, 4, 5. Test first: two worlds that differ only in hidden cards give
+             byte-identical `brief` output, text and JSON, over the m2-14 scenarios.
+           - f2: action detail (part 3): cost and a "payable now" hint (`autoPay`, labelled a hint: X and per-target
+             increases aren't known yet), legal targets, attack and block candidates, folded repeats that keep a real
+             action number for `do`.
+           - f1 built (D-135): `brief` with `--text` and `--json`; leak test over five scenario folders.
+           - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
+             view; record that as a decision.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
            says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).

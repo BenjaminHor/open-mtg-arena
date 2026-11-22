@@ -220,7 +220,8 @@ simple.
   the log. **The log is also the bug-report format.** One button in the app exports it, and a test
   can replay it exactly.
 - In the browser, the match host runs in a **Web Worker**. The UI sends actions and receives
-  `{ view, events, legalActions }` messages. All of these are plain JSON. The pending decision reaches the UI as
+  `{ view, events, legalActions }` messages, with the derived values of public objects (power and toughness, types,
+  keywords) computed by the host beside the view (D-135). All of these are plain JSON. The pending decision reaches the UI as
   `view.decision` (a `ViewDecision`), never `state.pending`, which can hold the ids of another player's hidden cards
   and the engine's bookkeeping (D-062).
 
