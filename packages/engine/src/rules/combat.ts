@@ -31,7 +31,7 @@ export function canAttack(state: GameState, id: ObjectId, player: PlayerId, card
   if (controllerOf(state, id, cards) !== player || obj.tapped) return false;
   // Defender: a restriction on attacking (CR 702.3b, 508.1c).
   if (keywordsOf(state, id, cards).includes("defender")) return false;
-  if (attachedCantAttackOrBlock(state, id, cards)) return false;
+  if (restrictedFromAttackingOrBlocking(state, id, cards)) return false;
   return isFreeOfSummoningSickness(state, id, cards);
 }
 
@@ -59,7 +59,7 @@ export function canAttackPlayer(state: GameState, id: ObjectId, defender: Player
 export function canBlock(state: GameState, blocker: ObjectId, attacker: ObjectId, cards: CardDatabase): boolean {
   const obj = state.objects[blocker];
   if (obj?.kind !== "card" || !isCreaturePermanent(state, blocker, cards) || obj.tapped) return false;
-  if (cantBlockNow(state, blocker) || attachedCantAttackOrBlock(state, blocker, cards)) return false;
+  if (cantBlockNow(state, blocker) || restrictedFromAttackingOrBlocking(state, blocker, cards)) return false;
   return (
     flyingAllowsBlock(state, blocker, attacker, cards) &&
     landwalkAllowsBlock(state, blocker, attacker, cards) &&
@@ -73,7 +73,7 @@ export function canBlock(state: GameState, blocker: ObjectId, attacker: ObjectId
  * "Enchanted creature can't attack or block" (Pacifism): a restriction from a permanent attached to it (CR 303.4m,
  * 508.1c, 509.1b).
  */
-function attachedCantAttackOrBlock(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
+function restrictedFromAttackingOrBlocking(state: GameState, id: ObjectId, cards: CardDatabase): boolean {
   return layeredOf(state, id, cards)?.cantAttackOrBlock === true;
 }
 

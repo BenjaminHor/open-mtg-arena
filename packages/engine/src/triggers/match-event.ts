@@ -27,10 +27,8 @@ export function leavesTheBattlefield(when: TriggerCondition): boolean {
     case "playerDiscards":
     case "landTappedForMana":
     case "selfDealsDamageToPlayer":
-    case "selfBlocksOrBlocked":
     case "selfBlocks":
-    case "selfBecomesTarget":
-    case "attachedBecomesTarget":
+    case "becomesTarget":
     case "playerGainsLife":
       return false;
   }
@@ -103,31 +101,23 @@ export function matches(
       return event.type === "LIFE_GAINED" && isRelated(state, source, event.player, when.player, cards)
         ? [{ player: event.player, object: null, amount: event.amount }]
         : [];
-    case "selfBlocksOrBlocked":
-      // "Blocks or becomes blocked by a creature": once per creature it blocks or that blocks it, "that creature" being
-      // the other one (CR 509.3b, 509.3d).
+    case "selfBlocks":
+      // Once for each attacking creature it blocks (CR 509.3b), and with `orBecomesBlocked` each creature blocking it
+      // (CR 509.3d), "that creature" being the other one.
       if (event.type !== "BLOCKERS_DECLARED") return [];
       return event.blocks.flatMap((b) =>
         b.blocker === source
           ? [{ player: null, object: b.attacker, amount: null }]
-          : b.attacker === source
+          : b.attacker === source && when.orBecomesBlocked === true
             ? [{ player: null, object: b.blocker, amount: null }]
             : [],
       );
-    case "selfBlocks":
-      // Once for each attacking creature it blocks, "that creature" being that one (CR 509.3b).
-      if (event.type !== "BLOCKERS_DECLARED") return [];
-      return event.blocks.flatMap((b) =>
-        b.blocker === source ? [{ player: null, object: b.attacker, amount: null }] : [],
-      );
-    case "selfBecomesTarget":
-      return event.type === "BECAME_TARGET" && event.object === source
+    case "becomesTarget": {
+      const watched = when.of === "self" ? source : attachedHost(state, source);
+      return event.type === "BECAME_TARGET" && event.object === watched
         ? [{ player: null, object: null, amount: null }]
         : [];
-    case "attachedBecomesTarget":
-      return event.type === "BECAME_TARGET" && event.object === attachedHost(state, source)
-        ? [{ player: null, object: null, amount: null }]
-        : [];
+    }
     case "spellCast":
       return event.type === "SPELL_CAST" &&
         matchesFilter(state, event.object, when.filter, controllerOf(state, source, cards), cards)

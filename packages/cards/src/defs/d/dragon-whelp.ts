@@ -14,8 +14,8 @@ export const dragonWhelp: CardDef = {
         { op: "modifyPT", power: 1, toughness: 0, of: "self", duration: "endOfTurn" },
         // Counted as each activation is made, checked as each resolves (D-078): four stacked make four delayed triggers.
         {
-          op: "ifActivatedThisTurn",
-          atLeast: 4,
+          op: "if",
+          condition: { kind: "activatedThisTurn", atLeast: 4 },
           effects: [
             {
               op: "createDelayedTrigger",

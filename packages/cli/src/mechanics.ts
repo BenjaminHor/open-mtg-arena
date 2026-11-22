@@ -20,6 +20,7 @@ import type {
   SpellDef,
   StaticAbilityDef,
   TargetSpec,
+  TriggerCondition,
   TriggeredAbilityDef,
 } from "@mtg/engine";
 
@@ -157,8 +158,7 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
   preventDamageToYou: "prevented",
   entersWithCounters: "battlefield",
   entersWithLoyalty: "battlefield",
-  asEntersChooseName: "battlefield",
-  asEntersChooseBasicLandType: "battlefield",
+  asEntersChoose: "battlefield",
   entersAsCopy: "battlefield",
   preventDamageToSelfRemovingCounters: "prevented",
   preventNoncombatDamageToAttached: "prevented",
@@ -166,10 +166,12 @@ const REPLACEMENT_WHERE: Record<ReplacementDef["kind"], "battlefield" | "library
 
 /** The replacement effects a card's own text makes that apply as it moves to `zone`. */
 export function replacementUnits(def: CardDef, where: string): string[] {
-  return (def.replacements ?? [])
-    .filter((r) => REPLACEMENT_WHERE[r.kind] === where)
-    .map((r) => `replacement ${r.kind}`);
+  return (def.replacements ?? []).filter((r) => REPLACEMENT_WHERE[r.kind] === where).map(replacementUnit);
 }
+
+/** A replacement's unit, with the choice it asks for where it asks one (D-134). */
+const replacementUnit = (r: ReplacementDef): string =>
+  r.kind === "asEntersChoose" ? `replacement ${r.kind} ${r.what}` : `replacement ${r.kind}`;
 
 export const decisionUnit = (kind: DecisionKind["kind"]): string => `decision ${kind}`;
 export const eventUnit = (type: GameEvent["type"]): string => `event ${type}`;
@@ -182,7 +184,7 @@ export function wantedMechanics(cards: CardDatabase): string[] {
     ...(card.def.spell === undefined ? [] : spellUnits(card.def.spell, true)),
     ...(card.def.abilities ?? []).flatMap(abilityUnits),
     ...(card.def.triggers ?? []).flatMap(triggerUnits),
-    ...(card.def.replacements ?? []).map((r) => `replacement ${r.kind}`),
+    ...(card.def.replacements ?? []).map(replacementUnit),
     // A delayed triggered ability: wanted, but credited as it resolves.
     ...allEffects(card.def).flatMap((effects) =>
       delayedAbilities(effects).flatMap((ability) => [DELAYED_TRIGGER, ...triggerUnits(ability)]),
@@ -214,8 +216,23 @@ export function permanentUnits(def: CardDef, when: "combat" | "enters"): string[
   const keywords = (def.keywords ?? []).filter((k) => KEYWORD_WHEN[k] === when).map((k) => `keyword ${k}`);
   // Coarse, like indestructible: protection also stops targeting outside combat, which isn't credited.
   const protection = when === "combat" && (def.protections ?? []).length > 0 ? ["keyword protection"] : [];
-  const statics = (def.statics ?? []).filter((s) => STATIC_WHEN[s.kind] === when).map((s) => `static ${s.kind}`);
+  const statics = (def.statics ?? []).filter((s) => STATIC_WHEN[s.kind] === when).flatMap(staticUnits);
   return [...keywords, ...protection, ...statics];
+}
+
+/**
+ * A static ability's units: one per variant its fields choose, so the golden cover tells them apart (D-134). Only the
+ * kinds whose fields name different rules are listed; a new such field must be added here too.
+ */
+function staticUnits(s: StaticAbilityDef): string[] {
+  switch (s.kind) {
+    case "attachedRestricts":
+      return s.restrictions.map((r) => `static ${s.kind} ${r}`);
+    case "playWithRevealed":
+      return [`static ${s.kind} ${s.what} ${s.whose}`];
+    default:
+      return [`static ${s.kind}`];
+  }
 }
 
 /**
@@ -229,8 +246,7 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   attacksEachCombat: "combat",
   mustBeBlockedByAllAble: "combat",
   cantBeCountered: "enters",
-  opponentsPlayWithHandsRevealed: "enters",
-  playWithTopOfLibraryRevealed: "enters",
+  playWithRevealed: "enters",
   // Anthems, coarsely, as their permanent resolves: many are on noncreatures (Honor of the Pure, Coat of Arms), which
   // never attack or block.
   creaturesGet: "enters",
@@ -241,22 +257,18 @@ const STATIC_WHEN: Record<StaticAbilityDef["kind"], "combat" | "enters"> = {
   cantAttackUnlessDefenderControls: "combat",
   // As its permanent resolves, like anthems: it does something only at a cleanup with too many cards.
   noMaximumHandSize: "enters",
-  // Coarse, like anthems: an Aura's resolving shows it; it does something only in an untap step.
-  attachedDoesntUntap: "enters",
   // Coarse, like anthems: it does something only when its controller would lose.
   cantLoseOpponentsCantWin: "enters",
   // Coarse, like anthems: its permanent's resolving shows it.
   chosenNameCantActivate: "enters",
   // Coarse, like anthems: an Aura's resolving shows it.
   attachedSetsLandType: "enters",
-  // As its Aura resolves, like anthems. Pacifism's restriction is on the Aura, which never attacks or blocks, so
-  // crediting it in combat would never count; its Aura resolving is when it starts to apply.
+  // As its Aura resolves, like anthems.
   attachedGets: "enters",
-  attachedCantAttackOrBlock: "enters",
-  // Evasion, like "can't be blocked": its creature attacking shows it.
-  attachedCantBeBlocked: "enters",
+  // Likewise. Pacifism's restriction is on the Aura, which never attacks or blocks, so crediting it in combat would
+  // never count; its Aura resolving is when it starts to apply. Others do something only in combat or an untap step.
+  attachedRestricts: "enters",
   attachedControl: "enters",
-  attachedCantActivate: "enters",
 };
 
 /** Each field of a spell's definition, as units; `manyTargets`: more than one target was chosen. */
@@ -279,7 +291,7 @@ const ABILITY_FIELDS: { [F in keyof AbilityDef]-?: (ability: AbilityDef) => stri
 };
 
 const TRIGGER_FIELDS: { [F in keyof TriggeredAbilityDef]-?: (trigger: TriggeredAbilityDef) => string[] } = {
-  when: (trigger) => [`trigger ${trigger.when.kind}`],
+  when: (trigger) => [triggerWhenUnit(trigger.when)],
   onlyIf: (trigger) => (trigger.onlyIf === undefined ? [] : [`intervening if ${trigger.onlyIf.kind}`]),
   optional: (trigger) => (trigger.optional === true ? ["trigger you may"] : []),
   targets: (trigger) => trigger.targets.map(targetUnit),
@@ -303,10 +315,36 @@ export function triggerUnits(trigger: TriggeredAbilityDef): string[] {
 
 const targetUnit = (t: TargetSpec): string => `target ${t.kind}`;
 
+/** A trigger condition's unit, with the variant its fields choose (D-134). */
+function triggerWhenUnit(when: TriggerCondition): string {
+  switch (when.kind) {
+    case "becomesTarget":
+      return `trigger ${when.kind} ${when.of}`;
+    case "selfBlocks":
+      return when.orBecomesBlocked === true ? `trigger ${when.kind} orBecomesBlocked` : `trigger ${when.kind}`;
+    default:
+      return `trigger ${when.kind}`;
+  }
+}
+
+/** An effect's unit, with the variant its fields choose (D-134): "destroy all", which condition, "you may shuffle". */
+function effectUnit(e: Effect): string {
+  switch (e.op) {
+    case "destroy":
+      return typeof e.of === "object" && "each" in e.of ? "effect destroy all" : "effect destroy";
+    case "if":
+      return `effect if ${e.condition.kind}`;
+    case "shuffle":
+      return e.optional === true ? "effect shuffle optional" : "effect shuffle";
+    default:
+      return `effect ${e.op}`;
+  }
+}
+
 /**
  * Each effect op, those inside a condition too (`conditionalEffects`). Coarse on purpose: a nested op counts when its
  * ability resolves, whether or not its branch ran.
  */
 function effectOps(effects: readonly Effect[]): string[] {
-  return effects.flatMap((e) => [`effect ${e.op}`, ...effectOps(conditionalEffects(e))]);
+  return effects.flatMap((e) => [effectUnit(e), ...effectOps(conditionalEffects(e))]);
 }

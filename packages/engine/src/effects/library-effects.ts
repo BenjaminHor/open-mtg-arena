@@ -19,7 +19,7 @@ import { remember } from "./resolution-results.ts";
 
 type Search = Extract<Effect, { op: "search" }>;
 type LookAtTop = Extract<Effect, { op: "lookAtTop" }>;
-type MayShuffle = Extract<Effect, { op: "mayShuffle" }>;
+type Shuffle = Extract<Effect, { op: "shuffle" }>;
 
 /**
  * "You" search `owner`'s library: look at all of it (CR 701.23a), shown by identity, and choose. The cards found are
@@ -95,8 +95,8 @@ export function lookAtTop(
 }
 
 /** "You may shuffle": `player` answers yes or no; yes queues the shuffle (CR 701.24a), no does nothing. */
-export function mayShuffle(state: GameState, player: PlayerId, effect: MayShuffle, context: EffectContext): Progress {
-  const shuffle = { op: "shuffle", who: effect.who } as const;
+export function mayShuffle(state: GameState, player: PlayerId, effect: Shuffle, context: EffectContext): Progress {
+  const { optional: _, ...shuffle } = effect;
   const resume = [{ kind: "runEffect", effect: shuffle, context, chosen: null } as const];
   return nothing(waitFor(state, player, { kind: "chooseYesNo", purpose: "shuffle", canSayYes: true, resume }));
 }

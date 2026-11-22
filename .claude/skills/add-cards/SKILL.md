@@ -19,7 +19,9 @@ that depends on rules the engine doesn't support yet.
    Report this triage to the owner before doing engine work beyond small, obvious additions.
 2. **For each ready card:**
    - Read its rulings file and the CR rules for each keyword and ability (use the `rules-lookup` skill).
-   - Write `packages/cards/src/defs/<first-letter>/<slug>.ts`. Reuse shared keywords and existing effect ops.
+   - Write `packages/cards/src/defs/<first-letter>/<slug>.ts`. Reuse shared keywords and existing effect ops. If the card
+     needs something like an existing one-off block (D-134 lists them), generalize that block now, with both cards as
+     its tests, instead of adding a second one-off (D-126).
    - Write scenarios under `packages/engine/test/scenarios/cards/<slug>/`: the basic use, each relevant ruling,
      and at least one negative case (an illegal target, wrong timing, or the interaction it doesn't have).
    - Add the name to `pool.txt`.

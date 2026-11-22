@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "blue-black-control against red-green-beats, setup seed 110, by-kind agents, to turn 31. Covered, when chosen: trigger selfBlocksOrBlocked.",
+  "description": "blue-black-control against red-green-beats, setup seed 110, by-kind agents, to turn 31. Covered, when chosen: trigger selfBlocks orBecomesBlocked.",
   "agent": "by-kind",
   "agentSeed": 110,
   "maxTurns": 31,

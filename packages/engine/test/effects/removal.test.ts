@@ -79,7 +79,7 @@ describe("enchantments, until the pool has one", () => {
     expect(targets).toStrictEqual([{ kind: "object", object: enchantment }]);
     const after = runEffect(
       state,
-      { op: "destroyAll", filter: { types: ["enchantment"] } },
+      { op: "destroy", of: { each: { types: ["enchantment"] } } },
       context("o999"),
       TEST_CARDS,
     );

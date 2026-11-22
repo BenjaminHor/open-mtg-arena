@@ -131,10 +131,8 @@ function askAsEnters(state: GameState, candidate: OwnText, object: ObjectId | nu
 /** The name this replacement has its player choose as the permanent enters, if any (CR 614.12a). */
 function nameAsEnters(def: ReplacementDef): ChooseWhat | null {
   switch (def.kind) {
-    case "asEntersChooseName":
-      return "cardName";
-    case "asEntersChooseBasicLandType":
-      return "basicLandType";
+    case "asEntersChoose":
+      return def.what;
     case "entersAsCopy":
     case "entersTapped":
     case "graveyardToLibrary":
@@ -312,8 +310,7 @@ function applies(state: GameState, def: ReplacementDef, move: Move, cards: CardD
       return move.to.zone === "graveyard";
     case "entersWithCounters":
     case "entersWithLoyalty":
-    case "asEntersChooseName":
-    case "asEntersChooseBasicLandType":
+    case "asEntersChoose":
     case "entersAsCopy":
       // Once per event like every replacement: the `applied` list sees to that.
       return move.to.zone === "battlefield";
@@ -397,15 +394,19 @@ function replaceByOwnText(
       const counters = { ...move.to.counters, loyalty: (move.to.counters?.loyalty ?? 0) + def.loyalty };
       return { before: [], event: rerouted(event, { ...move.to, counters }), after: [] };
     }
-    case "asEntersChooseName": {
-      if (move.to.zone !== "battlefield" || name === null) throw new Error("only a permanent entering with a name");
-      return { before: [], event: rerouted(event, { ...move.to, chosenName: name }), after: [] };
-    }
-    case "asEntersChooseBasicLandType": {
-      // Likewise, a basic land type (CR 205.3i), checked as it was answered.
-      if (move.to.zone !== "battlefield" || name === null || !isBasicLandType(name))
-        throw new Error("only a permanent entering with a basic land type");
-      return { before: [], event: rerouted(event, { ...move.to, chosenLandType: name }), after: [] };
+    case "asEntersChoose": {
+      if (move.to.zone !== "battlefield" || name === null)
+        throw new Error("only a permanent entering chooses as it enters");
+      switch (def.what) {
+        case "cardName":
+          return { before: [], event: rerouted(event, { ...move.to, chosenName: name }), after: [] };
+        case "basicLandType":
+          // A basic land type (CR 205.3i), checked as it was answered.
+          if (!isBasicLandType(name)) throw new Error(`${name} isn't a basic land type`);
+          return { before: [], event: rerouted(event, { ...move.to, chosenLandType: name }), after: [] };
+        default:
+          throw new Error(`unknown choice ${def.what satisfies never}`);
+      }
     }
     case "entersAsCopy": {
       // With the chosen permanent's copiable values (CR 707.2) as they are now; none chosen, as itself.

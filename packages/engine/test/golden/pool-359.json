@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 359, by-kind agents, to turn 24. Covered, when chosen: static attachedDoesntUntap.",
+  "description": "Random pool decks, setup seed 359, by-kind agents, to turn 24. Covered, when chosen: static attachedRestricts doesntUntap.",
   "agent": "by-kind",
   "agentSeed": 359,
   "maxTurns": 24,

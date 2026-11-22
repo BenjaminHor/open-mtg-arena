@@ -1,5 +1,5 @@
 // Matching trigger conditions where the pool can't show it: one creature blocking two attackers (only Palace Guard
-// can block more than one, and it has no block trigger), and "when this creature dies" on a permanent that isn't a
+// can block more than one, and it has no block trigger), "blocks" not triggering on becoming blocked, and "when this creature dies" on a permanent that isn't a
 // creature when it dies (no pool card changes a creature's types away).
 
 import { describe, expect, it } from "vitest";
@@ -25,6 +25,23 @@ describe("whenever this creature blocks a creature (CR 509.3b)", () => {
       TEST_CARDS,
     );
     expect(found.map((t) => t.object)).toStrictEqual([a1, a2]);
+  });
+
+  it("doesn't trigger as it attacks and becomes blocked; with orBecomesBlocked it does (CR 509.3d)", () => {
+    // No pool card shows it: Wall of Frost, the only "blocks" without "or becomes blocked", has defender.
+    const attacker = "o1" as ObjectId;
+    const blocker = "o2" as ObjectId;
+    const event = { type: "BLOCKERS_DECLARED" as const, player: "p2" as const, blocks: [{ blocker, attacker }] };
+    const plain = matches({} as GameState, attacker, { kind: "selfBlocks" }, event, TEST_CARDS);
+    expect(plain).toStrictEqual([]);
+    const either = matches(
+      {} as GameState,
+      attacker,
+      { kind: "selfBlocks", orBecomesBlocked: true },
+      event,
+      TEST_CARDS,
+    );
+    expect(either.map((t) => t.object)).toStrictEqual([blocker]);
   });
 });
 

@@ -21,7 +21,7 @@ import { createContinuousEffect } from "./continuous-effect.ts";
 import { createTokens } from "./create-tokens.ts";
 import { destroyOneAtRandom } from "./destroy-at-random.ts";
 import { discardChosen, putOntoBattlefieldFromHand, revealHand } from "./hand-effects.ts";
-import { ifActivatedThisTurn } from "./if-activated.ts";
+import { ifCondition } from "./if-condition.ts";
 import {
   exileAll,
   lookAtTop,
@@ -38,9 +38,9 @@ import { preventAllDamage } from "./prevention.ts";
 import { put } from "./put-effects.ts";
 import { addRegenerationShields } from "./regeneration-shield.ts";
 import { returnAllToBattlefield } from "./return-all.ts";
-import { ifNothingSacrificed, sacrificeChosen } from "./sacrifice-choice.ts";
+import { sacrificeChosen } from "./sacrifice-choice.ts";
 import { shuffleIntoLibraries } from "./shuffle-into-libraries.ts";
-import { amountNow, objectsNamed, onePlayer, permanentsFitting, playersNamed, subject } from "./subjects.ts";
+import { amountNow, objectsNamed, onePlayer, playersNamed, subject } from "./subjects.ts";
 
 /**
  * Carries out one effect of a resolving spell or ability (CR 608.2c). An effect that needs cards chosen waits for
@@ -191,6 +191,9 @@ export function runEffect(
     }
     case "destroy": {
       // Run from the work queue, with the rest of the resolution queued behind it, so the event may wait (CR 616.1).
+      // "Destroy all [filter]" (`of: { each }`): every permanent that fits, decided once now (CR 608.2h), destroyed at
+      // the same time (CR 608.2f). Cards going to one graveyard together go in battlefield order (D-039; later: CR 404.3
+      // lets their owner choose).
       const objects = onBattlefield(state, objectsNamed(state, effect.of, context, cards));
       if (objects.length === 0) return { state, events: [] };
       const destroy = (object: ObjectId): SingleEvent =>
@@ -209,13 +212,6 @@ export function runEffect(
     }
     case "destroyOneAtRandom":
       return destroyOneAtRandom(state, effect.among, context, cards);
-    case "destroyAll": {
-      // Every permanent that fits, decided once now (CR 608.2h), destroyed at the same time (CR 608.2f). Cards going to
-      // one graveyard together go in battlefield order (D-039; later: CR 404.3 lets their owner choose).
-      // (The same as `destroy` of `{ each: filter }`; card definitions use this name for "destroy all".)
-      const all = permanentsFitting(state, effect.filter, context, cards);
-      return toEach(state, all, cards, (object) => ({ kind: "destroy", object }));
-    }
     case "exile":
       return toEach(state, stillThere(state, objectsNamed(state, effect.of, context, cards)), cards, (object) => ({
         kind: "moveCard",
@@ -331,12 +327,12 @@ export function runEffect(
     case "shuffleIntoLibraries":
       return shuffleIntoLibraries(state, effect, context, cards);
     case "shuffle": {
+      if (effect.optional === true) {
+        const player = onePlayer(state, effect.who, context, cards);
+        return player === null ? { state, events: [] } : mayShuffle(state, player, effect, context);
+      }
       const onTop = effect.foundOnTop === true ? objectsNamed(state, "found", context, cards) : undefined;
       return shuffleEach(state, playersNamed(state, effect.who, context, cards), cards, onTop);
-    }
-    case "mayShuffle": {
-      const player = onePlayer(state, effect.who, context, cards);
-      return player === null ? { state, events: [] } : mayShuffle(state, player, effect, context);
     }
     case "lookAtTop":
       return lookAtTop(state, context.controller, effect, context, chosen, cards);
@@ -344,10 +340,8 @@ export function runEffect(
       const player = onePlayer(state, effect.who, context, cards);
       return player === null ? { state, events: [] } : sacrificeChosen(state, player, effect, context, chosen, cards);
     }
-    case "ifNothingSacrificed":
-      return ifNothingSacrificed(state, effect.effects, context);
-    case "ifActivatedThisTurn":
-      return ifActivatedThisTurn(state, effect.atLeast, effect.effects, context);
+    case "if":
+      return ifCondition(state, effect.condition, effect.effects, context);
     case "createDelayedTrigger": {
       const about = effect.about === undefined ? [] : objectsNamed(state, effect.about, context, cards);
       return createDelayedTrigger(state, effect.ability, context, about);

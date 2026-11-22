@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 225, by-kind agents, to turn 1. Covered, when chosen: decision chooseName, replacement asEntersChooseName, static chosenNameCantActivate.",
+  "description": "Random pool decks, setup seed 225, by-kind agents, to turn 1. Covered, when chosen: decision chooseName, replacement asEntersChoose cardName, static chosenNameCantActivate.",
   "agent": "by-kind",
   "agentSeed": 225,
   "maxTurns": 1,

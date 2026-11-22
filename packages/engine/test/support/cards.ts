@@ -629,7 +629,7 @@ export const TEST_CARDS: CardDatabase = {
       name: "Test Mirage",
       oracle: "",
       enchant: { types: ["land"] },
-      replacements: [{ kind: "asEntersChooseBasicLandType" }],
+      replacements: [{ kind: "asEntersChoose", what: "basicLandType" }],
       statics: [{ kind: "attachedSetsLandType" }],
     },
   }),
@@ -882,7 +882,7 @@ export const TEST_CARDS: CardDatabase = {
     def: {
       name: "Wrath",
       oracle: "Destroy all creatures.",
-      spell: { targets: [], effects: [{ op: "destroyAll", filter: { types: ["creature"] } }] },
+      spell: { targets: [], effects: [{ op: "destroy", of: { each: { types: ["creature"] } } }] },
     },
   }),
   [ENCHANTMENT]: card(ENCHANTMENT, {

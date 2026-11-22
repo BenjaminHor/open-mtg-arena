@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 111, by-kind agents, to turn 11. Covered, when chosen: trigger selfBecomesTarget.",
+  "description": "Random pool decks, setup seed 111, by-kind agents, to turn 11. Covered, when chosen: trigger becomesTarget self.",
   "agent": "by-kind",
   "agentSeed": 111,
   "maxTurns": 11,

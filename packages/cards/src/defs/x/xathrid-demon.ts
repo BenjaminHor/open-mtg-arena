@@ -13,7 +13,8 @@ export const xathridDemon: CardDef = {
         { op: "sacrifice", who: "you", filter: { types: ["creature"] }, otherThanSelf: true },
         { op: "loseLife", who: "eachOpponent", amount: "sacrificedPower" },
         {
-          op: "ifNothingSacrificed",
+          op: "if",
+          condition: { kind: "nothingSacrificed" },
           effects: [
             { op: "tap", of: "self" },
             { op: "loseLife", who: "you", amount: 7 },

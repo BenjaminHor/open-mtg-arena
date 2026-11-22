@@ -189,7 +189,7 @@ const PONDER = hammerAs(
   [],
   [
     { op: "lookAtTop", count: 3 },
-    { op: "mayShuffle", who: "you" },
+    { op: "shuffle", who: "you", optional: true },
     { op: "draw", who: "you", amount: 1 },
   ],
 );

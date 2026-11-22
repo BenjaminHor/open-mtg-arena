@@ -14,26 +14,26 @@ export type Revealed = { hands: PlayerId[]; tops: PlayerId[] };
 
 /**
  * One walk of the battlefield, reading each permanent's abilities and controller from the layer pass (`controllerOf`
- * agrees with it, D-104): the opponents of each player controlling Telepathy have their hands revealed (CR 102.2, any
- * other player, two players only so far); each player controlling Vampire Nocturnus has their library's top revealed
- * (CR 401.5). The view shows a top by identity, so it needn't become a new object when it stops being revealed
- * (later: CR 401.6).
+ * agrees with it, D-104): a `playWithRevealed` reveals the hands (CR 701.18c) or library tops (CR 401.5) of its controller ("you")
+ * or of its controller's opponents (CR 102.2, any other player, two players only so far). The view shows a top by
+ * identity, so it needn't become a new object when it stops being revealed (later: CR 401.6).
  */
 export function revealedBy(state: GameState, cards: CardDatabase): Revealed {
   const board = layered(state, cards);
-  const telepaths: PlayerId[] = [];
-  const revealers: PlayerId[] = [];
+  const hands: PlayerId[] = [];
+  const tops: PlayerId[] = [];
   for (const id of state.zones.battlefield) {
     const card = board[id];
     if (card === undefined) continue;
     for (const a of card.statics) {
-      if (a.kind === "opponentsPlayWithHandsRevealed") telepaths.push(card.controller);
-      if (a.kind === "playWithTopOfLibraryRevealed") revealers.push(card.controller);
+      if (a.kind !== "playWithRevealed") continue;
+      const whose = a.whose === "you" ? [card.controller] : state.turnOrder.filter((p) => p !== card.controller);
+      (a.what === "hand" ? hands : tops).push(...whose);
     }
   }
   return {
-    hands: state.turnOrder.filter((p) => telepaths.some((t) => t !== p)),
-    tops: state.turnOrder.filter((p) => revealers.includes(p)),
+    hands: state.turnOrder.filter((p) => hands.includes(p)),
+    tops: state.turnOrder.filter((p) => tops.includes(p)),
   };
 }
 

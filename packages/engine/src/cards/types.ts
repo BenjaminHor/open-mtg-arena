@@ -4,6 +4,7 @@
 // This is a first draft (M1-04). The effect, cost and ability shapes will be reshaped by the tasks that
 // interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities, D-041), see D-026.
 
+import type { ChooseWhat } from "../state/decisions.ts";
 import type { Becomes, Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -160,16 +161,13 @@ export type ReplacementDef =
    */
   | { kind: "entersWithLoyalty"; loyalty: number }
   /**
-   * "As this enters, choose a card name" (Pithing Needle): a replacement effect on how it enters (CR 614.1c), its choice
-   * made before it enters (CR 614.12a) by the player it enters under (CR 614.12's example: its controller), from the names of cards in the card database
-   * (CR 201.4: a card's name, not a token's; D-114). The permanent keeps it as `chosenName`.
+   * "As this enters, choose a card name" (Pithing Needle, `what: "cardName"`) or "choose a basic land type" (Convincing
+   * Mirage, `what: "basicLandType"`): a replacement effect on how it enters (CR 614.1c), its choice made before it
+   * enters (CR 614.12a) by the player it enters under (CR 614.12's example: its controller). A name comes from the
+   * cards in the card database (CR 201.4: a card's name, not a token's; D-114) and is kept as `chosenName`; a type is
+   * one of the five basic land types (CR 205.3i), kept as `chosenLandType`.
    */
-  | { kind: "asEntersChooseName" }
-  /**
-   * "As this Aura enters, choose a basic land type" (Convincing Mirage): asked the same way (CR 614.12a), from the five
-   * basic land types (CR 205.3i). The permanent keeps it as `chosenLandType`.
-   */
-  | { kind: "asEntersChooseBasicLandType" }
+  | { kind: "asEntersChoose"; what: ChooseWhat }
   /**
    * "You may have this enter as a copy of any creature on the battlefield" (Clone): as it enters (CR 614.1c), the player
    * it enters under chooses one permanent fitting `of` already on the battlefield, or none (CR 614.12a; one entering
@@ -188,6 +186,9 @@ export type ReplacementDef =
    */
   | { kind: "preventNoncombatDamageToAttached" };
 
+/** A restriction an `attachedRestricts` static puts on its host, named as the layer pass marks it (`Layered`). */
+export type AttachedRestriction = "cantAttackOrBlock" | "cantBeBlocked" | "cantActivate" | "doesntUntap";
+
 /** A static ability that isn't a keyword (CR 604.1): what it does while its object is on the battlefield. */
 export type StaticAbilityDef =
   /**
@@ -204,13 +205,13 @@ export type StaticAbilityDef =
       loseKeywords?: Keyword[];
       perCount?: ObjectFilter;
     }
-  /** "Enchanted creature can't attack or block" (Pacifism): restrictions on the attached creature (CR 508.1c, 509.1b). */
-  | { kind: "attachedCantAttackOrBlock" }
   /**
-   * "Enchanted creature doesn't untap during its controller's untap step" (Entangling Vines): it's left out when its
-   * controller's permanents untap (CR 502.3).
+   * Restrictions on the permanent this is attached to (CR 303.4m, 301.5f), as one ability: "enchanted creature can't
+   * attack or block" (Pacifism, CR 508.1c, 509.1b), "equipped creature can't be blocked" (Whispersilk Cloak, CR 509.1b),
+   * "its activated abilities can't be activated" (Ice Cage, CR 602.5; mana abilities too, being activated abilities,
+   * CR 605.1a), "enchanted creature doesn't untap during its controller's untap step" (Entangling Vines, CR 502.3).
    */
-  | { kind: "attachedDoesntUntap" }
+  | { kind: "attachedRestricts"; restrictions: AttachedRestriction[] }
   /**
    * "You can't lose the game and your opponents can't win the game" (Platinum Angel): its controller doesn't lose to a
    * state-based action (CR 104.3b-c, 704.5a-b; "can't" wins, CR 101.2); conceding still loses (CR 104.3a, its ruling).
@@ -228,17 +229,10 @@ export type StaticAbilityDef =
    */
   | { kind: "attachedSetsLandType" }
   /**
-   * "Its activated abilities can't be activated" (Ice Cage): the attached permanent's, mana abilities too (CR 602.5,
-   * 605.3a).
-   */
-  | { kind: "attachedCantActivate" }
-  /**
    * "You control enchanted creature" (Mind Control): layer 2 (CR 613.1b) on what it's attached to, "you" being this
    * permanent's controller, in timestamp order with other control effects (CR 613.7a, 613.7e).
    */
   | { kind: "attachedControl" }
-  /** "Equipped creature can't be blocked" (Whispersilk Cloak): an evasion restriction on the attached creature (CR 509.1b). */
-  | { kind: "attachedCantBeBlocked" }
   /**
    * "This creature can't be blocked" (an evasion ability, CR 509.1b), or "can't be blocked except by [filter]" with
    * `except`, read relative to the attacker's controller, the ability's "you" (CR 109.5).
@@ -292,15 +286,13 @@ export type StaticAbilityDef =
   /** "You have no maximum hand size" (Spellbook): its controller skips the cleanup discard (CR 402.2, 514.1). */
   | { kind: "noMaximumHandSize" }
   /**
-   * "Your opponents play with their hands revealed" (Telepathy): every player sees the hands of its controller's
-   * opponents (CR 701.18c, 701.20a). They're still hidden zones (CR 400.2). `rules/revealed.ts` reads it.
+   * "Your opponents play with their hands revealed" (Telepathy: `what: "hand", whose: "opponents"`), "play with the
+   * top card of your library revealed" (Vampire Nocturnus: `what: "topOfLibrary", whose: "you"`): every player sees
+   * those cards (a hand, CR 701.18c; a library's top, CR 401.5; CR 701.20a), "you" being this permanent's controller. They're still in hidden zones
+   * (CR 400.2). `rules/revealed.ts` reads it.
    */
-  | { kind: "opponentsPlayWithHandsRevealed" }
-  /**
-   * "Play with the top card of your library revealed" (Vampire Nocturnus): every player sees the top card of its
-   * controller's library (CR 401.5, 701.18c). `rules/revealed.ts` reads it.
-   */
-  | { kind: "playWithTopOfLibraryRevealed" };
+  | { kind: "playWithRevealed"; what: "hand"; whose: "opponents" }
+  | { kind: "playWithRevealed"; what: "topOfLibrary"; whose: "you" };
 
 /** Keyword abilities in the current pool (CR 702). */
 export const KEYWORDS = [
@@ -551,6 +543,20 @@ export type TokenDef = {
   statics?: StaticAbilityDef[];
 };
 
+/** What an `if` effect checks as it resolves. */
+export type EffectCondition =
+  /**
+   * "If you can't sacrifice a creature": no earlier `sacrifice` of this resolution started to sacrifice anything
+   * (CR 118.12: the sacrifice is a cost paid on resolution, and "can't" asks whether it was started, whatever then
+   * happened).
+   */
+  | { kind: "nothingSacrificed" }
+  /**
+   * "If this ability has been activated [atLeast] or more times this turn": the count of the resolving activated
+   * ability's activations this turn, counted as it was activated (D-078). Only for an activated ability.
+   */
+  | { kind: "activatedThisTurn"; atLeast: number };
+
 export type Effect =
   /** "[from] deals N damage to [to]" (CR 120). The text always says which object deals the damage (CR 120.2b). */
   | {
@@ -636,7 +642,10 @@ export type Effect =
    * (CR 701.21a).
    */
   | { op: "sacrificeSource" }
-  /** "Destroy [of]" (CR 701.8a). `noRegeneration`: "It can't be regenerated" (CR 701.19c): no shield is used. */
+  /**
+   * "Destroy [of]"; "destroy all [filter]" is `of: { each: filter }` (CR 701.8a). `noRegeneration`: "It can't be
+   * regenerated" (CR 701.19c): no shield is used.
+   */
   | { op: "destroy"; of: EffectSubject; noRegeneration?: true }
   /**
    * "Prevent all [combat] damage that would be dealt [to you and creatures you control] this turn" (Fog, Safe Passage;
@@ -655,11 +664,6 @@ export type Effect =
   | { op: "revealUntil"; who: EffectSubject; filter: ObjectFilter }
   /** "Destroy one of them at random": one permanent among those named, picked with the seeded RNG as it resolves. */
   | { op: "destroyOneAtRandom"; among: EffectSubject[] }
-  /**
-   * "Destroy all [filter]": every permanent that fits, decided once as the effect applies (CR 608.2h), destroyed at the
-   * same time (CR 608.2f).
-   */
-  | { op: "destroyAll"; filter: ObjectFilter }
   /** "Exile [subject]": moved to the exile zone (CR 701.13a, 406.2). */
   | { op: "exile"; of: EffectSubject }
   /** "Return [subject] to its owner's hand" (CR 400.3). */
@@ -770,11 +774,10 @@ export type Effect =
   | { op: "mayPlayWithoutPaying"; of: EffectSubject }
   /**
    * "[who] shuffles" (CR 701.24a). `foundOnTop`: "then shuffle and put that card on top" (Liliana Vess), the cards found
-   * left out of the shuffle (CR 701.24b) and put on top in the same event.
+   * left out of the shuffle (CR 701.24b) and put on top in the same event. `optional`: "you may shuffle", a yes or no
+   * choice for the one player named; yes shuffles.
    */
-  | { op: "shuffle"; who: EffectSubject; foundOnTop?: true }
-  /** "You may shuffle": a yes or no choice; yes shuffles (CR 701.24a). */
-  | { op: "mayShuffle"; who: EffectSubject }
+  | { op: "shuffle"; who: EffectSubject; foundOnTop?: true; optional?: true }
   /** "Look at the top N cards of your library, then put them back in any order" (CR 701.20e, 401.4). */
   | { op: "lookAtTop"; count: number }
   /**
@@ -795,17 +798,8 @@ export type Effect =
    * ability's source. What's sacrificed is kept, with its power, for the effects after it (`"sacrificedPower"`).
    */
   | { op: "sacrifice"; who: EffectSubject; filter: ObjectFilter; otherThanSelf?: true }
-  /**
-   * "If you can't sacrifice a creature, [effects]": the effects happen only if no earlier `sacrifice` of this
-   * resolution started to sacrifice anything (CR 118.12: the sacrifice is a cost paid on resolution, and "can't" asks
-   * whether it was started, whatever then happened; CR 608.2c).
-   */
-  | { op: "ifNothingSacrificed"; effects: Effect[] }
-  /**
-   * "If this ability has been activated [atLeast] or more times this turn, [effects]": the count of the resolving
-   * activated ability's activations this turn, counted as it was activated (D-078). Only for an activated ability.
-   */
-  | { op: "ifActivatedThisTurn"; atLeast: number; effects: Effect[] }
+  /** "If [condition], [effects]": the effects happen only if the condition holds as this is applied (CR 608.2c). */
+  | { op: "if"; condition: EffectCondition; effects: Effect[] }
   /**
    * "[Effects] at the beginning of the next end step": makes a delayed triggered ability (CR 603.7), whose source and
    * controller are those of the spell's or ability's, as it resolves (CR 603.7d, 603.7e).

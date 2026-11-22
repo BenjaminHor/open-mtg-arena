@@ -1,7 +1,7 @@
 {
   "format": "open-mtg-arena game",
   "version": 0,
-  "description": "Random pool decks, setup seed 481, by-kind agents, to turn 11. Covered, when chosen: static attachedCantBeBlocked.",
+  "description": "Random pool decks, setup seed 481, by-kind agents, to turn 11. Covered, when chosen: static attachedRestricts cantBeBlocked.",
   "agent": "by-kind",
   "agentSeed": 481,
   "maxTurns": 11,

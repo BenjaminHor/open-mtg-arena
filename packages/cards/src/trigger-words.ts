@@ -57,10 +57,8 @@ function suppliesAmount(when: TriggerCondition): boolean {
     case "playerDiscards":
     case "landTappedForMana":
     case "selfDealsDamageToPlayer":
-    case "selfBlocksOrBlocked":
     case "selfBlocks":
-    case "selfBecomesTarget":
-    case "attachedBecomesTarget":
+    case "becomesTarget":
     case "selfCountersRemoved":
       return false;
   }
@@ -74,14 +72,12 @@ function suppliesObject(when: TriggerCondition): boolean {
     case "anotherEnters":
     case "selfAttacks":
     case "spellCast":
-    case "selfBlocksOrBlocked":
     case "selfBlocks":
       return true;
     // "It" is the source itself ("self"), not the event's object.
     case "selfDies":
       return false;
-    case "selfBecomesTarget":
-    case "attachedBecomesTarget":
+    case "becomesTarget":
     case "beginningOfStep":
     case "playerDraws":
     case "playerDiscards":
@@ -105,10 +101,8 @@ function suppliesPlayer(when: TriggerCondition): boolean {
     case "selfDies":
     case "anotherEnters":
     case "selfAttacks":
-    case "selfBlocksOrBlocked":
     case "selfBlocks":
-    case "selfBecomesTarget":
-    case "attachedBecomesTarget":
+    case "becomesTarget":
     case "selfCountersRemoved":
       return false;
     // The player whose step it is, who cast the spell, drew, discarded, tapped the land, was dealt damage or gained life.

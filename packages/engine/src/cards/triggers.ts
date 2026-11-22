@@ -61,25 +61,17 @@ export type TriggerCondition =
    */
   | { kind: "selfDealsDamageToPlayer"; player: PlayerRelation; combatOnly: boolean }
   /**
-   * "Whenever this creature blocks or becomes blocked by a creature": once for each creature it blocks and each
-   * creature blocking it, as blockers are declared (CR 509.3b, 509.3d). "That creature" is the other one.
-   */
-  | { kind: "selfBlocksOrBlocked" }
-  /**
    * "Whenever this creature blocks a creature": once for each attacking creature it blocks, as blockers are declared
-   * (CR 509.3b). "That creature" is the one it blocks.
+   * (CR 509.3b). "That creature" is the one it blocks. With `orBecomesBlocked`, "blocks or becomes blocked by a
+   * creature": also once for each creature blocking it (CR 509.3d), "that creature" being the other one.
    */
-  | { kind: "selfBlocks" }
+  | { kind: "selfBlocks"; orBecomesBlocked?: true }
   /**
-   * "When this creature becomes the target of a spell or ability": as the target is chosen (CR 601.2c), for a spell, an
-   * activated ability or a triggered ability (CR 603.3d).
+   * "When this creature becomes the target of a spell or ability" (`of: "self"`), "when enchanted creature becomes the
+   * target..." (Ice Cage, `of: "attached"`, what this is attached to): as the target is chosen (CR 601.2c), for a spell,
+   * an activated ability (CR 602.2b) or a triggered ability (CR 603.3d).
    */
-  | { kind: "selfBecomesTarget" }
-  /**
-   * "When enchanted creature becomes the target of a spell or ability" (Ice Cage): what this is attached to, as the
-   * target is chosen (CR 601.2c, 603.3d).
-   */
-  | { kind: "attachedBecomesTarget" }
+  | { kind: "becomesTarget"; of: "self" | "attached" }
   /**
    * "Whenever [you / a player] gain life": once per life-gain event, whatever the amount (CR 119.9; each lifelink source
    * is its own event). "That much" is the amount gained.

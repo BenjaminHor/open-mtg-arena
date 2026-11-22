@@ -3,7 +3,7 @@
 // (CR 613.7, 613.7a). Also, though not a layer, the restrictions an attached permanent puts on its host (Pacifism,
 // Whispersilk Cloak, Ice Cage, Entangling Vines), marked here because the pass already finds what each static applies to.
 
-import type { CardDatabase, Keyword } from "../cards/types.ts";
+import type { AttachedRestriction, CardDatabase, Keyword } from "../cards/types.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { attachedHostIn } from "./attachment.ts";
 import { type Layered, type LayerInputs, withoutRepeats } from "./layers.ts";
@@ -47,18 +47,13 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
     const card = host === null ? undefined : board[host];
     if (host === null || card === undefined) continue;
     switch (s.def.kind) {
-      case "attachedCantAttackOrBlock":
-        board[host] = { ...card, cantAttackOrBlock: true };
+      case "attachedRestricts": {
+        // Typed as `Layered`'s own fields, so a restriction it doesn't have fails to compile.
+        const marks: { -readonly [K in AttachedRestriction]?: Layered[K] } = {};
+        for (const restriction of s.def.restrictions) marks[restriction] = true;
+        board[host] = { ...card, ...marks };
         break;
-      case "attachedCantBeBlocked":
-        board[host] = { ...card, cantBeBlocked: true };
-        break;
-      case "attachedCantActivate":
-        board[host] = { ...card, cantActivate: true };
-        break;
-      case "attachedDoesntUntap":
-        board[host] = { ...card, doesntUntap: true };
-        break;
+      }
       // Layer 4, in `land-type.ts`.
       case "attachedSetsLandType":
       case "attachedControl":
@@ -75,8 +70,7 @@ function markRestrictions(input: LayerInputs, board: Record<ObjectId, Layered>, 
       case "powerToughnessEachEqual":
       case "cantAttackUnlessDefenderControls":
       case "noMaximumHandSize":
-      case "opponentsPlayWithHandsRevealed":
-      case "playWithTopOfLibraryRevealed":
+      case "playWithRevealed":
       case "cantLoseOpponentsCantWin":
       case "chosenNameCantActivate":
         break;
