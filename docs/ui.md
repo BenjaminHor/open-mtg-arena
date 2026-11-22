@@ -14,6 +14,8 @@ interaction design is the model: where things sit on the board, how a turn flows
 attacking, blocking and paying feel. The research behind this is in `arena-research.md` (two passes, 2026-11-22, with a layout map from screenshots;
 each finding is tagged by how well it's sourced). The look is our own:
 the art, card frames, icons, sounds and visual style are original, never Arena's assets or trade dress (D-140).
+Where the research leaves a screen open (choosing X or a player, scry and search, dividing damage, exile, default
+stops), we design it ourselves in the same spirit (owner, 2026-11-22).
 
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**

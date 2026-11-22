@@ -801,6 +801,10 @@ height (H). All [R], from the screenshots.
 
 ## Conflicts and gaps: status after the second pass
 
+**The owner (2026-11-22): the items still open below are ours to design**, in the spirit of what's settled (the
+browser frame, the main button, the Examine panels), rather than researched further.
+
+
 1. **Phase marker position: resolved.** Small ladders sit beside each portrait, plus a current-turn ladder at the bottom right above the main button. Draftsim's "bottom left" text is wrong by its own screenshots.
 2. **Full control keys: resolved.** `Ctrl` is Full Control and `Shift+Ctrl` is Hold Full Control (the in-client table). **Open:** how long plain `Ctrl` lasts (one pass, a step or a turn); sources disagree.
 3. **How long a stop lasts: partly resolved.** Ladder stops are single-use (Draftsim, one source; no source for persistent stops). **Default stops: partly resolved**, from community descriptions plus the official smart-priority rules; there is still no official list.
