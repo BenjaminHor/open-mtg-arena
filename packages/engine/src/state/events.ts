@@ -123,6 +123,10 @@ export type GameEvent =
    * was never in another zone, so no `ZONE_CHANGED`; "enters" triggers see this instead (CR 603.6a).
    */
   | { type: "TOKEN_CREATED"; player: PlayerId; object: ObjectId; cardId: CardId }
+  /** A copy of a spell was put on the stack under `player`'s control (CR 707.10); it isn't cast. */
+  | { type: "SPELL_COPIED"; player: PlayerId; object: ObjectId; original: ObjectId }
+  /** A copy of a spell outside the stack ceased to exist (CR 707.10a, 704.5e). */
+  | { type: "COPY_CEASED_TO_EXIST"; from: ZoneRef; object: CardObject }
   /** A token outside the battlefield ceased to exist (CR 111.7, 704.5d), leaving `from`; `object` as it last was. */
   | { type: "TOKEN_CEASED_TO_EXIST"; from: ZoneRef; object: CardObject }
   /** Counters put on a permanent, or removed from it (CR 122.1, 122.6). */

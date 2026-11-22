@@ -125,6 +125,7 @@ function replaceOne(
     case "putCounters":
     case "removeCounters":
     case "createToken":
+    case "copySpell":
     case "ceaseToExist":
     case "attach":
     case "unattach":

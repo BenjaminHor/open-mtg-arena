@@ -43,10 +43,14 @@ export function createToken(state: GameState, token: CardData, player: PlayerId)
   };
 }
 
-/** A token outside the battlefield ceases to exist (CR 111.7, 704.5d): it leaves its zone and the game. */
+/**
+ * A token outside the battlefield (CR 111.7, 704.5d), or a copy of a spell outside the stack (CR 707.10a, 704.5e),
+ * ceases to exist: it leaves its zone and the game.
+ */
 export function ceaseToExist(state: GameState, id: ObjectId): Progress {
   const object = state.objects[id];
-  if (object?.kind !== "card" || !isToken(object)) throw new Error(`${id} isn't a token`);
+  if (object?.kind !== "card" || (!isToken(object) && object.copy !== true))
+    throw new Error(`${id} isn't a token or a copy of a spell`);
   const from = zoneOf(state, id);
   const next = withZoneList(
     state,
@@ -54,5 +58,6 @@ export function ceaseToExist(state: GameState, id: ObjectId): Progress {
     zoneList(state, from).filter((x) => x !== id),
   );
   const { [id]: _gone, ...objects } = next.objects;
-  return { state: { ...next, objects }, events: [{ type: "TOKEN_CEASED_TO_EXIST", from, object }] };
+  const type = object.copy === true ? "COPY_CEASED_TO_EXIST" : "TOKEN_CEASED_TO_EXIST";
+  return { state: { ...next, objects }, events: [{ type, from, object }] };
 }

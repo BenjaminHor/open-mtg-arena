@@ -75,7 +75,8 @@ function target(t: Target, name: Namer): string {
 export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): string {
   switch (e.type) {
     case "ZONE_CHANGED": {
-      const card = cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId;
+      const printed = cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId;
+      const card = e.object.copy === true ? `${printed} copy` : printed;
       const zone = (z: typeof e.from) => ("player" in z ? `${z.player}'s ${z.zone}` : z.zone);
       return `moves: ${card}, ${zone(e.from)} -> ${zone(e.to)}`;
     }
@@ -184,6 +185,10 @@ export function eventText(e: GameEvent, name: Namer, cards: CardDatabase): strin
       return `unattached: ${name(e.object)} from ${name(e.from)}`;
     case "TOKEN_CREATED":
       return `${e.player} creates ${name(e.object)}`;
+    case "SPELL_COPIED":
+      return `${e.player} copies ${name(e.original)}`;
+    case "COPY_CEASED_TO_EXIST":
+      return `ceases to exist: a copy of ${cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId} (${e.from.zone})`;
     case "TOKEN_CEASED_TO_EXIST":
       return `ceases to exist: ${cardDataOf(e.object, cards)?.printed.name ?? e.object.oracleId} (${e.from.zone})`;
     case "PERMANENT_REGENERATED":

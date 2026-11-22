@@ -90,6 +90,8 @@ function answerText(state: GameState, answer: Answer, cards: CardDatabase): stri
       return `discard ${nameOf(state, answer.object, cards)}`;
     case "chooseTarget":
       return `target ${targetText(state, answer.target, cards)}`;
+    case "chooseNewTarget":
+      return answer.target === null ? "keep the target" : `new target ${targetText(state, answer.target, cards)}`;
     case "chooseTargetCount":
       return `${answer.count} target${answer.count === 1 ? "" : "s"}`;
     case "announceX":

@@ -115,7 +115,9 @@ names an illegal action fails the scenario, unless the next step is `expect erro
   one option, and a name matching two different options is refused; for the legend rule (`keepLegend`, CR 704.5j), the
   name of the permanent to keep, `Jace Beleren#2` for the second of them in battlefield order; for a card name
   (`chooseName`: as a permanent enters, Pithing Needle, CR 614.12a, or while a spell or ability resolves, Sphinx
-  Ambassador), the name as written, and a basic land type (Convincing Mirage) likewise;
+  Ambassador), the name as written, and a basic land type (Convincing Mirage) likewise; for a copy's target
+  (`chooseNewTarget`, Twincast), `keep` or a new one written as `targets:` writes it. A copy of a spell is named
+  "Lightning Bolt copy" (`stack:`, `spell:p1:Lightning Bolt copy`, the log);
   a target in any form `targets:` takes (`p2`, `p2:Grizzly Bears`, `spell:p1:Grizzly Bears`,
   `graveyard:p1:Grizzly Bears`) or `cancel` for a target choice; a payment like `{ R: 1 }`, or `cancel`, while
   paying for a spell. Every payment the pool covers is a legal answer: which mana pays is the player's choice.

@@ -1,0 +1,23 @@
+name: A copy's two targets may be swapped, each share going with its place (CR 115.7e, the Twincast ruling)
+rules: [CR 115.7e, CR 115.7f]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Island, Island]
+    hand: [Ignite Disorder, Twincast]
+  p2:
+    battlefield: [Elite Vanguard, Snapping Drake]
+steps:
+  - p1 cast: Ignite Disorder
+    targets: [[p2:Elite Vanguard, p2:Snapping Drake]]
+    divide: [2, 1]
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Ignite Disorder]
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Snapping Drake
+  - p1 choose: p2:Elite Vanguard
+  - all pass: once
+  - expect:
+      p2.graveyard: [Elite Vanguard, Snapping Drake]

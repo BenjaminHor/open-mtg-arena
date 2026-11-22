@@ -141,7 +141,9 @@ life as costs (CR 601.2f–h, 118).
 
 **Spell copies, modal spells, and choices made on resolution (CR 707, 700.2).**
 *Needs now:* stack objects aren't assumed to be cards; casting choices (modes, targets, X) are stored on the stack object.
-A spell copy has no card and is owned by whoever put it on the stack (CR 707.10, 112.2): a third `GameObject` kind.
+A spell copy has no card and is owned by whoever put it on the stack (CR 707.10, 112.2). *Built (M2-14h, D-125):* a card
+object marked `copy`, not a third kind: everything that works on a spell works on it, as a token's flag does for a
+permanent. A copy of an ability (CR 707.10b) and a copy of a permanent spell becoming a token (CR 707.10f) come later.
 Choices a permanent remembers from its spell (kicked, X; CR 400.7d) must be copied when it enters the battlefield.
 
 **Keyword actions and ability words.** Scryfall's `keywords` list (which the definition check compares with

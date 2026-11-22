@@ -87,7 +87,9 @@ export function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): str
   if (obj === undefined) return `(gone ${id})`;
   if (obj.kind === "ability")
     return `${cardDataByOracleId(obj.sourceOracleId, cards)?.printed.name ?? obj.sourceOracleId} ability`;
-  return cardDataOf(obj, cards)?.printed.name ?? obj.oracleId;
+  const name = cardDataOf(obj, cards)?.printed.name ?? obj.oracleId;
+  // A copy of a spell (CR 707.10) is told from the spell it copies.
+  return obj.copy === true ? `${name} copy` : name;
 }
 
 /** A card in a graveyard, named as `targets:` names it (`graveyard:p1:Grizzly Bears`, `#2` counting from the bottom). */

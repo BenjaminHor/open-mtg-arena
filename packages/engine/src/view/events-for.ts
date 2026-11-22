@@ -56,6 +56,11 @@ function eventFor(e: GameEvent, viewer: PlayerId): ViewEvent {
       return e.player === viewer ? e : { type: "HIDDEN_CARD_DRAWN", player: e.player };
     case "TOKEN_CEASED_TO_EXIST":
       return canSee(e.from, viewer) ? e : { type: "HIDDEN_TOKEN_CEASED_TO_EXIST", from: e.from };
+    // A copy that left the stack for a hidden zone (bounced to a hand, later) is named nowhere, as a token isn't.
+    case "COPY_CEASED_TO_EXIST":
+      return canSee(e.from, viewer) ? e : { type: "HIDDEN_TOKEN_CEASED_TO_EXIST", from: e.from };
+    case "SPELL_COPIED":
+      return e;
     // Everything else names only public objects or facts: cards on the stack or battlefield, a discard (CR 701.9, the
     // card goes to a public graveyard, with the card id it got coming out of the hand, D-054; named by nothing if a
     // replacement sent it somewhere hidden), players and numbers.

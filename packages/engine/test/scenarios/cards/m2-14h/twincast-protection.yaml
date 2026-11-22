@@ -1,0 +1,23 @@
+name: A copy of a black spell is black, so it can't newly target a creature with protection from black
+rules: [CR 702.16b, CR 707.2]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Swamp, Swamp, Island, Island]
+    hand: [Doom Blade, Twincast]
+  p2:
+    battlefield: [Grizzly Bears, White Knight, Elite Vanguard]
+steps:
+  - p1 cast: Doom Blade
+    targets: [p2:Grizzly Bears]
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Doom Blade]
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:White Knight
+  - expect error: illegalAction
+  - p1 choose: p2:Elite Vanguard
+  - all pass: until main2
+  - expect:
+      p2.graveyard: [Elite Vanguard, Grizzly Bears]

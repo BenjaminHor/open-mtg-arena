@@ -759,6 +759,31 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          - Later, not in the pool: CR 401.5's mid-cast delay, CR 401.6's new object (no id is shown, so nothing tracks it).
            (The plan first said no pool card reveals a top only for a moment; the rules review found Diabolic Tutor does.)
          - Future impact: per-player knowledge (a looked-at card, face-down cards) extends the same view fields.
+       - M2-14h plan (2026-11-21), two PRs: copies of spells (CR 707.10). Twincast ("Copy target instant or sorcery
+         spell. You may choose new targets for the copy."), then Hive Mind ("Whenever a player casts an instant or
+         sorcery spell, each other player copies that spell. Each of those players may choose new targets for their
+         copy."). CR 707.2, 707.10, 707.10a/c, 704.5e, 115.7d-f, 601.2c, 608.2b.
+         1. M2-14h1: a spell copy is a card object on the stack marked `copy` (CR 707.10: a spell, no card), with the
+            original's oracle id and choices (targets, X, division; modes later), controlled and owned by who put it
+            there; never cast (no SPELL_CAST: "whenever you cast" doesn't see it). A new pipeline event `copySpell`
+            (SPELL_COPIED). Out of the stack it ceases to exist: the move keeps `copy`, and SBA CR 704.5e removes it.
+         2. "You may choose new targets": before the copy is put on the stack (CR 707.10c), its controller is asked for
+            each target in turn: keep it (even if illegal) or a new legal one (CR 115.7d); the division stays (CR
+            115.7f), and so does the number of targets.
+         3. M2-14h2: Hive Mind, the same op for each other player in APNAP order, its trigger on casting.
+         - Scenarios: Twincast on Lightning Bolt (same target, a new one, an illegal one kept), on Fireball (X and the
+           division kept), on Divination (no targets; "you" is the copy's controller), on a spell that's countered,
+           the copy countered (ceases to exist, not in a graveyard), a copy of a copy, Cancel on the copy; Hive Mind
+           with a burn spell (both copies), not triggering on copies.
+         - Found (D-080): Hive Mind still copies a spell countered in response, from its last known information (judge
+           forum apps.magicjudges.org/forum/topic/8094; TappedOut), so the op copies from a snapshot (oracle id and
+           choices), not only a live stack object. A copy's targets "become the target" of the copy, a new spell, kept or
+           new ones (judge forum apps.magicjudges.org/forum/post/65270): Illusionary Servant triggers. The copy goes on
+           the stack first and its new targets are chosen with it as the source (its color for protection, its
+           controller, not itself), the same as choosing first (CR 707.10c) as nothing can happen between.
+           Scenarios name a copy "Lightning Bolt copy".
+         - Future impact: a copy of an ability (CR 707.10b) and a permanent spell copy becoming a token (CR 707.10f)
+           reuse the flag; Clone (M2-14i) copies permanents in layer 1, not this.
        - M2-14g plan (2026-11-21): Djinn of Wishes ("enters with three wish counters"; "{2}{U}{U}, Remove a wish counter:
          Reveal the top card of your library. You may play that card without paying its mana cost. If you don't, exile
          it."). CR 608.2g (cast during resolution, no priority after), 118.9 (alternative cost; 118.9d increases still
@@ -773,6 +798,18 @@ next session needs to know. Keep it short. Move finished detail into commit mess
             Silence, no wish counters left, three activations, Nocturnus's revealed top.
          - Future impact: casting during resolution is what cascade and "cast copies" need; Twincast/Hive Mind (M2-14h)
            don't cast. The free cast is an alternative cost (CR 118.9a: one at a time).
+       - M2-14h1 built (2026-11-21, D-125): Twincast (236 cards): the `copy` flag, the `copySpell` pipeline event and op,
+         SBA CR 704.5e, the `chooseNewTarget` decision (keep or a new legal target, the share moving with it), a
+         copy's targets becoming its targets (Illusionary Servant). 10 scenarios (Bolt kept and retargeted, the
+         opponent's spell, Divination's "you", a copy countered, the division, Servant, Cancel on the Cancel it copies,
+         a copy of a copy, an illegal target kept). 1 golden game. Rules review: one wrong ruling, new targets couldn't
+         be swapped (CR 115.7e judges only the final set), and shares moved by target, not place; fixed, with a
+         start over on a final set naming one object twice; BECAME_TARGET skips a target gone and cites D-125; copies
+         left out of graveyard card targets; 17 scenarios from it (shroud, protection, Fireball, Earthquake, owner,
+         Dragon's Claw, Duress, Seismic Strike, Servant kept and not targeted, the original countered, Cancel copying
+         itself, not cast). Code review: no bug beyond that; a fuzz invariant for a copy outside the stack, its cease
+         event hidden like a token's from a hidden zone, the log naming a copy's moves, the current target no longer
+         offered beside "keep", docs. PR #81.
        - M2-14g built (2026-11-21, D-124): Djinn of Wishes (235 cards): the `removeCounters` cost, `entersWithCounters`
          with a fixed number, the `mayPlayWithoutPaying` op and a cast during resolution (`Casting.origin` "resolution": X 0, only
          cost increases paid, no priority after, a cancel back to the library); CR 401.5's casting delay built

@@ -1,0 +1,36 @@
+name: A copy of Cancel can't target itself (CR 115.5) but may target the resolving Twincast, and then fizzles
+rules: [CR 115.5, CR 608.2b]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island]
+    hand: [Cancel]
+  p2:
+    battlefield: [Mountain, Island, Island]
+    hand: [Lightning Bolt, Twincast]
+steps:
+  - p2 cast: Lightning Bolt
+    targets: [p1]
+    pay: auto
+  - p2 pass: once
+  - p1 cast: Cancel
+    targets: [spell:p2:Lightning Bolt]
+    pay: auto
+  - p1 pass: once
+  - p2 cast: Twincast
+    targets: [spell:p1:Cancel]
+    pay: auto
+  - all pass: once
+  - p2 choose: spell:p2:Cancel copy
+  - expect error: illegalAction
+  - p2 choose: spell:p2:Twincast
+  - expect:
+      stack: [Lightning Bolt, Cancel, Cancel copy]
+  - all pass: once
+  - expect:
+      stack: [Lightning Bolt, Cancel]
+      p2.graveyard: [Twincast]
+  - all pass: once
+  - expect:
+      stack: []
+      p1.life: 20

@@ -277,6 +277,9 @@ function answerFor(
     // A card name (CR 201.4) or a basic land type (CR 205.3i), as written.
     case "chooseName":
       return { kind: "chooseName", name: text };
+    // A copy's target: `keep`, or a new one written as `targets:` writes it (CR 115.7d).
+    case "chooseNewTarget":
+      return { kind: "chooseNewTarget", target: text === "keep" ? null : targetNamed(state, text, cards) };
     case "chooseReplacement": {
       // "regeneration" for a regeneration shield, the card whose own text it is (Guardian Seraph), or the card whose
       // resolution made it (Fog). Identical effects are one option.

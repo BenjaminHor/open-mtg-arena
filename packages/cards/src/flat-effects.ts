@@ -61,6 +61,7 @@ export function conditionalEffects(effect: Effect): readonly Effect[] {
     case "reveal":
     case "revealTop":
     case "mayPlayWithoutPaying":
+    case "copySpell":
     case "shuffle":
     case "mayShuffle":
     case "lookAtTop":

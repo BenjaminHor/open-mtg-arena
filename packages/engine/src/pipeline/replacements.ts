@@ -174,6 +174,7 @@ function affectedObject(event: SingleEvent): ObjectId | null {
       return event.object;
     // Nothing replaces creating a token or one ceasing to exist yet (later: CR 614.1, "if you would create").
     case "createToken":
+    case "copySpell":
     case "ceaseToExist":
     case "attach":
     case "unattach":
@@ -215,6 +216,7 @@ function affectedPlayer(state: GameState, event: SingleEvent, cards: CardDatabas
     case "putCounters":
     case "removeCounters":
     case "createToken":
+    case "copySpell":
     case "ceaseToExist":
     case "attach":
     case "unattach":
@@ -255,6 +257,7 @@ function moveOf(state: GameState, event: SingleEvent): Move | null {
     case "putCounters":
     case "removeCounters":
     case "createToken":
+    case "copySpell":
     case "ceaseToExist":
     case "attach":
     case "unattach":
@@ -404,6 +407,7 @@ function rerouted(event: SingleEvent, to: Destination): SingleEvent {
     case "putCounters":
     case "removeCounters":
     case "createToken":
+    case "copySpell":
     case "ceaseToExist":
     case "attach":
     case "unattach":

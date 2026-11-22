@@ -1,0 +1,23 @@
+name: A copy can't newly target a creature with shroud
+rules: [CR 702.18a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Island, Island]
+    hand: [Lightning Bolt, Twincast]
+  p2:
+    battlefield: [Mist Leopard]
+steps:
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Lightning Bolt]
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Mist Leopard
+  - expect error: illegalAction
+  - p1 choose: keep
+  - all pass: until main2
+  - expect:
+      p2.life: 14

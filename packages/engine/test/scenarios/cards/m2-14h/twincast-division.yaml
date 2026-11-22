@@ -1,0 +1,29 @@
+name: A copy keeps the division; a target changed takes its share with it (CR 115.7f)
+rules: [CR 115.7f, CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Mountain, Mountain, Island, Island]
+    hand: [Ignite Disorder, Twincast]
+  p2:
+    battlefield: [Elite Vanguard, Coral Merfolk, Snapping Drake]
+steps:
+  - p1 cast: Ignite Disorder
+  - p1 choose: 2
+  - p1 choose: p2:Elite Vanguard
+  - p1 choose: p2:Coral Merfolk
+  - p1 choose: 2
+  - p1 activate: Mountain
+  - p1 activate: Mountain
+  - p1 choose: { R: 2 }
+  - p1 cast: Twincast
+    targets: [spell:p1:Ignite Disorder]
+    pay: auto
+  - all pass: once
+  - p1 choose: keep
+  - p1 choose: p2:Snapping Drake
+  - all pass: once
+  - expect:
+      p2.graveyard: [Elite Vanguard]
+      p2:Snapping Drake.damage: 1
+      p2:Coral Merfolk.damage: 0

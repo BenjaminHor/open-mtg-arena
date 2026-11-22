@@ -211,6 +211,7 @@ import { timeWarp } from "./t/time-warp.ts";
 import { tomeScour } from "./t/tome-scour.ts";
 import { traumatize } from "./t/traumatize.ts";
 import { trumpetBlast } from "./t/trumpet-blast.ts";
+import { twincast } from "./t/twincast.ts";
 import { undeadSlayer } from "./u/undead-slayer.ts";
 import { underworldDreams } from "./u/underworld-dreams.ts";
 import { unholyStrength } from "./u/unholy-strength.ts";
@@ -449,6 +450,7 @@ export const CARD_DEFS: readonly CardDef[] = [
   tomeScour,
   traumatize,
   trumpetBlast,
+  twincast,
   undeadSlayer,
   underworldDreams,
   unholyStrength,

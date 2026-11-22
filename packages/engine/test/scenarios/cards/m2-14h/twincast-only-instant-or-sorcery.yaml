@@ -1,0 +1,14 @@
+name: Twincast can't target a creature spell or an ability, nor be cast with no instant or sorcery spell
+rules: [CR 707.10]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Forest, Forest, Island, Island]
+    hand: [Grizzly Bears, Twincast]
+steps:
+  - p1 cast: Grizzly Bears
+    pay: auto
+  - p1 cast: Twincast
+    targets: [spell:p1:Grizzly Bears]
+    pay: auto
+  - expect error: illegalAction

@@ -103,6 +103,8 @@ export function moveCard(state: GameState, id: ObjectId, to: Destination): Progr
     choices: to.zone === "stack" ? { modes: [], x: null, targets: [], division: null } : null,
     // A token stays a token wherever it goes, until it ceases to exist (CR 111.7, 704.5d).
     ...(old.token === undefined ? {} : { token: old.token }),
+    // So does a copy of a spell, until it ceases to exist outside the stack (CR 707.10a, 704.5e).
+    ...(old.copy === true ? { copy: true } : {}),
     // Attached as it enters, so it's never seen unattached (CR 608.3c); its timestamp is its entering one (attaching
     // it later gives it a new one, CR 613.7e).
     ...(to.zone === "battlefield" && to.attachedTo !== undefined ? { attachedTo: to.attachedTo } : {}),

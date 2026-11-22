@@ -32,6 +32,7 @@ import {
   targetProblem,
 } from "./choose-targets.ts";
 import { recordControlChanges } from "./control-changes.ts";
+import { answerNewTarget, newTargetProblem } from "./copy-spell.ts";
 import { playersLose } from "./game-end.ts";
 import { loyaltyXProblem } from "./loyalty-abilities.ts";
 import { passPriority } from "./pass-priority.ts";
@@ -170,6 +171,12 @@ function handleAction(state: GameState, action: Action, cards: CardDatabase): En
       const problem = nameProblem(pending.what, answer.name, cards);
       if (problem !== null) return error("illegalAction", problem);
       return { ok: true, ...answerName(answered, pending, answer.name) };
+    }
+    case "chooseNewTarget": {
+      if (answer.kind !== "chooseNewTarget") return mismatch;
+      const problem = newTargetProblem(state, pending, answer.target, cards);
+      if (problem !== null) return error("illegalAction", problem);
+      return { ok: true, ...answerNewTarget(answered, pending, answer.target, cards) };
     }
     case "chooseYesNo": {
       if (answer.kind !== "chooseYesNo") return mismatch;

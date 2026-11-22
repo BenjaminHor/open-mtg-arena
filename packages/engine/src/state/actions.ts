@@ -64,6 +64,8 @@ export type Answer =
   | { kind: "finishChoosing" }
   /** The answer to a "you may" (`chooseYesNo`). */
   | { kind: "chooseYesNo"; yes: boolean }
+  /** A copy's target kept (null) or a new one (CR 115.7d). */
+  | { kind: "chooseNewTarget"; target: Target | null }
   /** Which replacement effect applies first, by its position in the decision's `options` (CR 616.1). */
   | { kind: "chooseReplacement"; option: number }
   /** A name, for a `chooseName` decision: a card's in the card database (CR 201.4), or a basic land type (CR 205.3i). */

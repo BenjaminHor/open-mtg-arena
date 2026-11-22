@@ -97,6 +97,8 @@ describe("discriminated unions", () => {
           return `keep one of ${decision.options.length} legendary permanents`;
         case "chooseName":
           return "name a card";
+        case "chooseNewTarget":
+          return "keep or change a target of a copy";
         default:
           return assertNever(decision);
       }

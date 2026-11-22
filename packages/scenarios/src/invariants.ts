@@ -50,6 +50,9 @@ export function invariantProblems(state: GameState, cards: CardDatabase): string
     for (const obj of Object.values(state.objects)) {
       if (obj.kind === "card" && isToken(obj) && !state.zones.battlefield.includes(obj.id))
         problems.push(`${obj.id}: a token outside the battlefield with priority to give`);
+      // Nor a copy of a spell outside the stack (CR 704.5e).
+      if (obj.kind === "card" && obj.copy === true && !state.zones.stack.includes(obj.id))
+        problems.push(`${obj.id}: a copy of a spell outside the stack with priority to give`);
     }
     // And every Aura is attached to a permanent: one attached to nothing has gone to the graveyard (CR 704.5m).
     for (const id of state.zones.battlefield) {

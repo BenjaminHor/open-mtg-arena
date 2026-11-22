@@ -43,6 +43,8 @@ export function stateBasedActions(
     const obj = state.objects[object];
     if (obj?.kind === "card" && isToken(obj) && !state.zones.battlefield.includes(object))
       actions.push({ kind: "tokenOutsideBattlefield", object });
+    if (obj?.kind === "card" && obj.copy === true && !state.zones.stack.includes(object))
+      actions.push({ kind: "copyOutsideStack", object });
   }
   for (const object of state.zones.battlefield) {
     const obj = state.objects[object];
