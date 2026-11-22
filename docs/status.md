@@ -129,7 +129,7 @@ next session needs to know. Keep it short. Move finished detail into commit mess
         the battlefield (tapped: part of the move, CR 110.5b, 603.2e; not a land play, CR 305.4), `shuffle`,
         `mayShuffle` (a `chooseYesNo` decision: yes queues the shuffle, no queues nothing), `lookAtTop` and put back
         in any order (Ponder: a `chooseCards` of the top cards, top first, asked even for one card, CR 701.20e,
-        401.4, later: CR 701.20d; reordering is a pipeline event), `exileGraveyard` (records `exiled`). A
+        401.4, later: CR 701.20d; reordering is a pipeline event), `exileGraveyard` (records `exiled`; now `exileAll`). A
         `chooseCards` decision gains `seen`, the whole zone by identity, shown only to the chooser (a searched
         library; Duress's revealed hand, kept in view mid-choice). An "any number" choice (Haunting Echoes) ends only
         on `finishChoosing`, never at its hidden maximum, or the number of answers would tell how many copies are
@@ -844,7 +844,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          were two events: now one batch, the reorder naming cards by their ids before it (`renamed` in perform.ts). 9
          scenarios from it (owner not controller both ways, three ordered, two Mirrors, Djinn's exiled card, a token,
          Nocturnus twice, all seven), a unit test that the order is secret, a "choose" purpose for the selection step,
-         citations fixed. PR #84; next: code review.
+         citations fixed. Code review: the same order gap (the unit test kills both leak mutants); `choose` loses its
+         `purpose` field (its decision is always "choose") and reads its zone through a switch; copies of one card put on
+         top aren't ordered (a scenario); clearer throws; `remember` in its own file, also used by `return-all.ts`;
+         docs. PR #84.
        - M2-14i built (2026-11-22, D-127): Clone (238 cards): the `entersAsCopy` replacement, `CardObject.copied` read
          by `cardDataOf` (layer 1), `textOracleId` for abilities, `chooseCards` resuming an event, `OBJECTS_CHOSEN`, `put`
          through `happenOrAsk`. 17 scenarios (copies Bears; none; no creature; a token; Giant Growth and an Aura not

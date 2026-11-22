@@ -10,11 +10,12 @@ import { zoneChangeOf } from "../pipeline/moved.ts";
 import { characteristics } from "../rules/characteristics.ts";
 import { matchesFilter } from "../rules/object-filter.ts";
 import type { EffectContext } from "../state/effects.ts";
-import type { GameState, Resolution } from "../state/game-state.ts";
+import type { GameState } from "../state/game-state.ts";
 import type { ObjectId, PlayerId } from "../state/ids.ts";
 import { inShownOrder } from "../zones/shown-order.ts";
 import { zoneList, zoneOf } from "../zones/zone-list.ts";
 import { askToChoose, fittingCards, nothing, seenOf } from "./choose-cards.ts";
+import { remember } from "./resolution-results.ts";
 
 type Search = Extract<Effect, { op: "search" }>;
 type LookAtTop = Extract<Effect, { op: "lookAtTop" }>;
@@ -205,13 +206,4 @@ function sameNameAsAny(state: GameState, id: ObjectId, names: readonly string[],
 function nameOf(state: GameState, id: ObjectId, cards: CardDatabase): string | null {
   const name = characteristics(state, id, cards).name;
   return name === "" ? null : name;
-}
-
-/**
- * Keeps a "this way" result for the rest of this resolution (CR 608.2c). Bookkeeping, not an event: the events that
- * did it already went through the pipeline. Only a resolving spell or ability has one (pipeline/README.md).
- */
-export function remember(state: GameState, result: Partial<Omit<Resolution, "object">>): GameState {
-  if (state.resolution === null) throw new Error('a "this way" result outside a resolution');
-  return { ...state, resolution: { ...state.resolution, ...result } };
 }

@@ -2004,4 +2004,6 @@ owner's answer to the D-089 open question, option (a))
   Cards of several owners would each go to their own library (no pool card does it; it throws, later). The bottom of a
   library (CR 401.4 too) is the same, later.
 - Every exiled card is face up (CR 406.3); exiling face down, and "face-up" filters, are later.
+- Copies of one card put on top together aren't arranged: no one could tell the orders apart. `choose`'s decision
+  always has the purpose "choose" (the effects after it say what's done), apart from the "putOnTop" arranging.
 

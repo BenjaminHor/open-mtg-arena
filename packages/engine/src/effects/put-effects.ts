@@ -1,6 +1,8 @@
 // "Put it into your hand", "onto the battlefield", "on the bottom of your library": moving the cards an effect names,
-// such as the cards a search found or a revealed card (CR 608.2c), to the zone the text says.
+// such as the cards a search found or a revealed card (CR 608.2c), to the zone the text says. Several cards put on top
+// of a library are arranged by their owner, unrevealed (CR 401.4).
 
+import { textOracleId } from "../cards/card-data.ts";
 import type { CardDatabase, Effect } from "../cards/types.ts";
 import { waitFor } from "../game/decide.ts";
 import type { Progress } from "../game/progress.ts";
@@ -69,8 +71,9 @@ export function put(
 /**
  * Several cards put on top of a library at once: their owner arranges them (CR 401.4), asked as a "putOnTop" choice,
  * top first, and doesn't reveal the order: they move in shown order (D-062), and the library's top is then put in the
- * chosen order, which no event shows. Several owners' cards would each go to their own library, each owner ordering
- * theirs (no pool card puts another player's cards on top).
+ * chosen order, which no event shows. Copies of one card need no arranging: no one could tell them apart. Several
+ * owners' cards would each go to their own library, each owner ordering theirs, and cards already in that library
+ * would be reordered without becoming new objects, as one card is above (no pool card does either: later).
  */
 function putSeveralOnTop(
   state: GameState,
@@ -80,10 +83,13 @@ function putSeveralOnTop(
   chosen: readonly ObjectId[] | null,
   cards: CardDatabase,
 ): Progress {
-  const owners = ids.flatMap((id) => (state.objects[id]?.kind === "card" ? [state.objects[id].owner] : []));
-  const [owner] = owners;
-  if (owner === undefined || owners.some((o) => o !== owner))
-    throw new Error("cards of several owners put on top (later)");
+  const objects = ids.flatMap((id) => (state.objects[id]?.kind === "card" ? [state.objects[id]] : []));
+  const [first] = objects;
+  if (first === undefined || objects.length !== ids.length) throw new Error("only cards are put on top of a library");
+  const owner = first.owner;
+  if (objects.some((o) => o.owner !== owner)) throw new Error("cards of several owners put on top (later)");
+  const alike = objects.every((o) => textOracleId(o) === textOracleId(first));
+  if (chosen === null && alike) return putSeveralOnTop(state, ids, effect, context, ids, cards);
   if (chosen === null) {
     const count = ids.length;
     const options = [...ids];

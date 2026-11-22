@@ -4,7 +4,6 @@
 // This is a first draft (M1-04). The effect, cost and ability shapes will be reshaped by the tasks that
 // interpret them (M1-08 mana, M1-10 effects, M1-14 activated abilities, D-041), see D-026.
 
-import type { ChoosePurpose } from "../state/decisions.ts";
 import type { Becomes, Duration } from "../state/effects.ts";
 import type { OracleId } from "../state/ids.ts";
 import type { ManaType } from "../state/mana.ts";
@@ -777,7 +776,7 @@ export type Effect =
    * down, later: CR 406.3a). The cards chosen are `"found"` for the effects after it, as a search's are. Not asked with none to choose:
    * exile is public, so that tells nothing.
    */
-  | { op: "choose"; from: "exile"; filter: ObjectFilter; upTo: number; purpose: ChoosePurpose }
+  | { op: "choose"; from: "exile"; filter: ObjectFilter; upTo: number }
   /**
    * "Exile all cards from [whose] graveyard [other than ...]" (Haunting Echoes) / "from your library" (Mirror of Fate):
    * all at once, the cards exiled this way kept for the effects after it (CR 608.2c).

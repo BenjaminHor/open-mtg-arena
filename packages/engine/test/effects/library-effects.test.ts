@@ -241,7 +241,7 @@ describe("Ponder's order is its caster's secret (CR 401.4, D-062)", () => {
 const MIRROR = hammerAs(
   [],
   [
-    { op: "choose", from: "exile", filter: { owner: "you" }, upTo: 7, purpose: "choose" },
+    { op: "choose", from: "exile", filter: { owner: "you" }, upTo: 7 },
     { op: "put", of: "found", into: "libraryTop" },
   ],
 );

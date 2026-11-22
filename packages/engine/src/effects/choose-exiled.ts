@@ -7,7 +7,7 @@ import type { EffectContext } from "../state/effects.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { ObjectId } from "../state/ids.ts";
 import { askToChoose, fittingCards, nothing } from "./choose-cards.ts";
-import { remember } from "./library-effects.ts";
+import { remember } from "./resolution-results.ts";
 
 type Choose = Extract<Effect, { op: "choose" }>;
 
@@ -23,11 +23,19 @@ export function chooseExiled(
   chosen: readonly ObjectId[] | null,
   cards: CardDatabase,
 ): Progress {
-  const exile = state.zones.exile;
+  const exile = zoneOfChoice(state, effect.from);
   if (chosen !== null) return nothing(remember(state, { found: chosen.filter((id) => exile.includes(id)) }));
   const options = fittingCards(state, exile, effect.filter, context.controller, cards);
   const max = Math.min(effect.upTo, options.length);
   if (max <= 0) return nothing(remember(state, { found: [] }));
   const chooser = context.controller;
-  return nothing(askToChoose(state, { chooser, purpose: effect.purpose, options, min: 0, max, effect, context }));
+  return nothing(askToChoose(state, { chooser, purpose: "choose", options, min: 0, max, effect, context }));
+}
+
+/** The cards a choice is among: a public zone, so not asking when none fit tells nothing (CR 406.3). */
+function zoneOfChoice(state: GameState, from: Choose["from"]): readonly ObjectId[] {
+  switch (from) {
+    case "exile":
+      return state.zones.exile;
+  }
 }
