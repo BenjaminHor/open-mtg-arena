@@ -1,0 +1,16 @@
+name: Magebane Armor prevents noncombat damage only to the creature it's attached to
+rules: [CR 615.1a]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Hill Giant, { card: Magebane Armor, attachedTo: p1:Hill Giant }, Grizzly Bears]
+  p2:
+    battlefield: [Mountain]
+    hand: [Shock]
+steps:
+  - p2 cast: Shock
+    targets: [p1:Grizzly Bears]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.graveyard: [Grizzly Bears]

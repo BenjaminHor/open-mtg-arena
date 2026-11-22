@@ -1,0 +1,20 @@
+name: Guardian Seraph prevents only damage an opponent's source would deal to you, not your own source's, nor damage to the opponent
+rules: [CR 615.1a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Guardian Seraph, Mountain, Mountain]
+    hand: [Shock, Lightning Bolt]
+steps:
+  - p1 cast: Shock
+    targets: [p1]
+    pay: auto
+  - all pass: once
+  - expect:
+      p1.life: 18
+  - p1 cast: Lightning Bolt
+    targets: [p2]
+    pay: auto
+  - all pass: once
+  - expect:
+      p2.life: 17
