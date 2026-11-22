@@ -145,8 +145,8 @@ written.
 - `pnpm fuzz --games 10000` clean with the pool's decks and random pool decks.
 - Mutation testing set up, surviving mutants in rules code addressed.
 - `rules-judge` has reviewed each system (triggers, replacements, layers, costs, combat keywords) against the CR.
-- The owner has played and spot-checked games through the CLI, and the M3 spec has been revised for the new pool and
-  reviewed with the owner.
+- ~~The owner has played and spot-checked games through the CLI~~ (waived by the owner, 2026-11-22, D-142), and the M3
+  spec has been revised for the new pool and reviewed with the owner (done, 2026-11-22).
 
 ## Decided with the owner
 

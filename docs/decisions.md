@@ -2169,3 +2169,8 @@ owner's answer to the D-089 open question, option (a))
   too, with Arena's phone layout, instead of the portrait compact layout ui.md first planned. In portrait a phone shows
   a "turn your phone" prompt over the paused match. The unfolded phone (nearly square), tablets and desktop use the
   full layout. Live switching on fold and unfold still must keep the match and any selection.
+
+**D-142: No CLI spot-check for M2 (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner waived M2's exit criterion of playing and spot-checking games through the CLI: they'll play in the browser
+  in M3's first phase instead. The planned `brief` additions (the viewer's decklist and library left, the opponent's
+  shown cards) move to M3-02b, where the LLM opponent needs them.
