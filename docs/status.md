@@ -909,6 +909,10 @@ next session needs to know. Keep it short. Move finished detail into commit mess
               land played this turn, step and next step;
            5. `--json`: the player's view, legal actions and recent events, for programs.
            Do it before the owner's CLI spot-check (an M2 exit criterion), after the pause.
+           Next for `brief` (owner, 2026-11-22, for LLM opponents and people alike): the viewer's own decklist and what's
+           left in their library (decklist minus their visible cards; counts only, never the order: the list doesn't
+           predict a shuffle, the seed does), and the cards each opponent has shown this game. A short game-plan note
+           per prebuilt deck. Not started.
            Plan (2026-11-22), two PRs:
            - f1: `brief <file> --as pN [--text] [--json]`, built as data (`cli/src/brief/`) from `playerView`, the
              viewer's `eventsFor` events since their last action, and their own legal actions only (another player's
