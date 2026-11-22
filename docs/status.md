@@ -929,6 +929,8 @@ next session needs to know. Keep it short. Move finished detail into commit mess
              `numberedActions`; only `view.objects` described; recent-event tests; the leak test covers seven folders.
            - `show` keeps its stable format. Future impact: M3's match host sends the same characteristics with the
              view; record that as a decision.
+         - M2-15f merged (#90). M2-15a, the 10k fuzz: the single run hit the 2-hour background limit, so it runs in
+           chunks of 2,000 (seeds 100000 on): 100000–103999 clean (4,000 games); 104000 on still to run.
          - PAUSED (owner, 2026-11-22): after the 10k fuzz (M2-15a) finishes, record its result and stop until the owner
            says go (their usage resets the next day at noon). Next after that: M2-15b mutation testing.
          - M2-15d done (D-134): the seven merges above, behaviour-neutral (every scenario and golden game unchanged).
