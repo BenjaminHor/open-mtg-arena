@@ -42,7 +42,11 @@ hidden cards give the same output) runs on every tool's output, so the harness a
 **Looking**
 - `get_state()`: the whole board as `brief` builds it: each player's life, counts and resources, each permanent in
   detail, the stack, the hand, the decision and the legal actions with their costs and targets.
-- `get_card(name)`: a card's Oracle text and its rulings (the pool's rulings files).
+- `get_card(name)`: what a card is and does: its Oracle text, types, cost, power and toughness, and its rulings (the
+  pool's rulings files). **The model learns cards only from this tool, never from its training data** (owner,
+  2026-11-22, D-146): its memory of a card can be wrong, out of date (errata), or about a different printing, and
+  what counts is the card as this engine plays it. The system prompt says so; `get_state` shows each card's name with
+  its current characteristics, so the model knows what to look up; looking up a card costs no thinking time.
 - `get_history(fromTurn?)`: the events this player saw, the whole game or from a turn.
 - `get_my_deck()`: the decklist, and what's left in the library (counts, never the order).
 - `get_known_cards()`: what the opponent has shown this game, and cards this player knows the place of: in the
@@ -90,7 +94,8 @@ hidden cards give the same output) runs on every tool's output, so the harness a
 ## Evaluation
 
 A CLI command plays N games between the LLM and a built-in agent and reports: wins, illegal attempts, decisions that fell
-back to the heuristic AI, tool calls per decision, time per decision, and tokens used. *Accept (M3-02b):* no illegal
+back to the heuristic AI, tool calls per decision, time per decision, and tokens used. Its transcripts show `get_card` looked up for the cards
+it plays and faces, as D-146 asks. *Accept (M3-02b):* no illegal
 action is ever applied, it beats the random agent in most games, and the owner plays a full game against it in the app.
 
 ## Open

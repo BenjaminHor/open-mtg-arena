@@ -2217,3 +2217,11 @@ owner's answer to the D-089 open question, option (a))
 - Each decision is timed with the `seatView` build included, as the app will see it; the report gives the mean and the
   slowest, with its seed. Ten fixed games per deck run in `pnpm check` (`packages/cli/test/eval.test.ts`, at least seven
   won), so a regression shows without the full run.
+
+**D-146: The LLM opponent learns cards from a tool, not its training data (owner, 2026-11-22)** · 2026-11-22 · accepted
+- The owner: the LLM opponent "should be able to query what a card is and does as a tool call. It shouldn't base its
+  decisions off of whatever card information was in its training data." `get_card(name)` (docs/llm-opponent.md,
+  "Tools") gives the Oracle text, characteristics and rulings from the pool, and the harness's system prompt tells the
+  model to look cards up there and not to rely on what it remembers. A model's memory can be wrong, out of date with
+  errata, or about another printing; the card as this engine plays it is what matters.
+- M3-02b's evaluation checks it: the transcripts of its CLI games show `get_card` calls for the cards it plays and faces.
