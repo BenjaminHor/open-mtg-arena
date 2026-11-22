@@ -1,0 +1,18 @@
+name: Soul Warden triggers for a Clone entering as a creature, even copying nothing
+rules: [CR 707.5, CR 603.6a]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Soul Warden]
+    hand: [Clone]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: finish
+  - expect:
+      stack: [Soul Warden ability]
+      p1.graveyard: [Clone]
+  - all pass: once
+  - expect:
+      p1.life: 21

@@ -118,9 +118,10 @@ export type GameEvent =
   | { type: "NAME_CHOSEN"; player: PlayerId; object: ObjectId; what: ChooseWhat; name: string }
   /**
    * As `object` enters, `player` chose these permanents for it (CR 614.12a): the one it enters as a copy of (CR 707.5),
-   * or none.
+   * or none (Clone's "may"). `object` is null for a card entering from a hidden zone, whose id there records its history
+   * (D-062).
    */
-  | { type: "OBJECTS_CHOSEN"; player: PlayerId; object: ObjectId; purpose: ChoosePurpose; chosen: ObjectId[] }
+  | { type: "OBJECTS_CHOSEN"; player: PlayerId; object: ObjectId | null; purpose: ChoosePurpose; chosen: ObjectId[] }
   /** An Equipment became unattached from `from` and stays on the battlefield (CR 701.3d, 704.5n). */
   | { type: "UNATTACHED"; object: ObjectId; from: ObjectId }
   /**

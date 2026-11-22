@@ -1,0 +1,18 @@
+name: Clone copying the uncopied Clone twice stops asking (CR 614.5) and dies as a 0/0
+rules: [CR 614.5, CR 707.9e]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, { card: Clone, counters: { +1/+1: 1 } }]
+    hand: [Clone]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p1:Clone
+  - p1 choose: p1:Clone
+  - expect:
+      pending: { player: p1, kind: priority }
+      p1.graveyard: [Clone]

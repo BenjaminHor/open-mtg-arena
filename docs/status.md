@@ -826,8 +826,13 @@ next session needs to know. Keep it short. Move finished detail into commit mess
          through `happenOrAsk`. 17 scenarios (copies Bears; none; no creature; a token; Giant Growth and an Aura not
          copied; shroud; Elvish Visionary's trigger; Protean Hydra 0/0; Pyromancer's ability; Llanowar Elves' mana; a
          Clone of a Clone; dies as Clone with Magma Phoenix's trigger; the original leaving; Pithing Needle; an
-         animated Forest copied as a land; Rise from the Grave; Mind Control). 1 golden game. Next: fuzz, bench,
-         reviews, PR.
+         animated Forest copied as a land; Rise from the Grave; Mind Control). 1 golden game. Bench: within noise.
+         Fuzz found a leak: a Clone put onto the battlefield from a library (Sphinx Ambassador) was named in the copy
+         choice by its library id (D-062); now `for` (and `OBJECTS_CHOSEN.object`) is null from a hidden zone, with a
+         scenario. Rules review: Elvish Piper's Clone crashed (`putOntoBattlefieldFromHand` now `happenOrAsk`); 9 scenarios
+         from it (Piper, Djinn's wish counters copied, a Clone of an uncopied Clone choosing again, CR 614.5 stopping a
+         second pick, last known colour, Darksteel Colossus, Soul Warden twice, Protean Hydra's prevention); CR 614.5 and
+         707.9e cited; the Mirage/CR 305.7 case in Known issues. PR #83; next: code review.
        - M2-14h2 built (2026-11-22, D-125): Hive Mind (237 cards): `copySpell`'s `by: "eachOtherPlayer"`, one
          `copySpellFor` work item per copier in turn order, a spell leaving the stack kept in `lastKnown` (CR 608.2h) so
          one countered in response is still copied. 5 scenarios (Bolt copied and pointed back, its controller casting,
@@ -1497,6 +1502,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-22, M2-14i rules review) Convincing Mirage on a Clone that copied a land (a Forest Awakener Druid animated)
+  leaves the copy in place: the permanent stays a Forest copy whose land type is Island. CR 305.7 says a land whose
+  type is set loses "any copiable effects affecting that land", but then it's Clone's own 0/0 Shapeshifter creature,
+  not a land, and whether Mirage still applies is a dependency question (CR 613.8) with no ruling found yet (the
+  judge's web search was blocked). Rare (three specific cards), so left as built until settled (D-080: rulings, then
+  judges, then the owner).
 - (2026-11-20, M2-08d rules reviews) Choices between prevention effects are asked per damage entry (D-088), which is
   finer than CR 616.1's "the way an event affects an object or player": with two attackers, Guardian Seraph and Fog,
   the player is asked once per attacker and can order them differently. Life totals can't differ with today's pool;

@@ -1,5 +1,5 @@
 name: Once Clone has copied a creature, the original leaving the battlefield doesn't change it
-rules: [CR 707.2b]
+rules: [CR 707.2]
 setup:
   turn: { active: p1, step: main1 }
   p1:

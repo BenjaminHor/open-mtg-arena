@@ -66,7 +66,7 @@ export type CardObject = {
   token?: CardData;
   /**
    * The copiable values a copy effect gave it as it entered the battlefield ("enter as a copy", CR 707.5): layer 1
-   * (CR 613.2a), set once and never changed by the original changing (CR 707.2b). Every printed value,
+   * (CR 613.2a), set once as it enters, whatever then happens to the original. Every printed value,
    * ability and replacement is read from them through `cardDataOf`; its own `oracleId` and `token` stay what it
    * physically is (a Clone card in the graveyard, not a token if it copies one). Left out when it copies nothing.
    */

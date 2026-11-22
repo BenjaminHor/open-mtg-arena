@@ -104,7 +104,7 @@ export function answerChooseCards(answered: GameState, decision: ChooseCards, an
       const event: GameEvent = {
         type: "OBJECTS_CHOSEN",
         player: decision.player,
-        object: resume.for.object,
+        object: decision.for,
         purpose: decision.purpose,
         chosen: picked,
       };

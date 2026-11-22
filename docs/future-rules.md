@@ -29,7 +29,8 @@ merged into that order (CR 613.7a), as layer 6 does since M2-12b (D-103) and lay
 Control's static control effect takes its Aura's timestamp, renewed when it's attached, CR 613.7e). *Watch out:*
 `anyControlEffects` reads static control abilities from printed text, kept per battlefield list (D-105); a copy effect
 starting on a permanent (layer 1), a permanent turned face up (CR 708), or a control ability granted in layer 6 would
-need it to key on the objects too, or to read the pass. In a simultaneous batch the cards move one by one, so a Druid moving first ends
+need it to key on the objects too, or to read the pass. Clone (D-127) copies no pool card with a static control
+ability, so this still holds. In a simultaneous batch the cards move one by one, so a Druid moving first ends
 its Forest's effect before the Forest moves: last known information must be read from the state before the batch
 (CR 603.10a, 608.2h). "endOfGame" effects stay in `state.effects` after their object is gone; drop them once nothing
 can read them (after the last-known-information snapshot). A gone object's power is read from the snapshot taken as it left (D-096), not worked out from
@@ -166,7 +167,8 @@ must come before. *Built (M2-12a-b, D-102, D-103):* Auras and Equipment, attache
 carrying their own `CardData` (read through `cardDataOf`), so the `kind` checks below hold for them; "card" filters ask
 `isToken` (CR 111.6). *Still to come:* a token's own activated or triggered abilities (the ability object
 names its source only by `sourceOracleId`); a token that left the battlefield staying put (CR 111.8); a token in a hidden
-zone shown by identity (D-062 shows only an oracle id); copies of permanents (CR 707). Replacements on entering from
+zone shown by identity (D-062 shows only an oracle id). Copies of permanents entering as a copy are built (Clone,
+D-127); a copy of a token takes the token's data, but its abilities would hit the same `sourceOracleId` limit. Replacements on entering from
 other permanents' text ("creatures enter tapped", CR 614.12) and "if you would create" (CR 614.1) must watch the
 `createToken` event as well as moves (`moveOf` and `affectedObject` give null for it today). Two different tokens may
 share an oracle id (`token:Soldier Token`), so nothing may treat equal oracle ids as the same card (D-077's identical
@@ -239,8 +241,9 @@ through the target steps with no payment and no cancel. Triggered abilities have
 A non-mana ability's {T} is paid only at the final payment (D-059), so cancelling never has to untap it. The activation events name the source by its id, which dies with the source; a UI that names it later will
 want its `cardId` too, and an event announcing the ability as it's created (none yet; a cast has `ZONE_CHANGED`).
 *Watch out:* an ability on the stack has the text of the ability that created it (CR 602.2a), but `stackAbilityDef`
-reads it from the source's card each time. Copies (layer 1), text changes (layer 3) and granted abilities (layer 6) will
-need the text fixed when it's activated.
+reads it from the source's card each time. A copy (layer 1, Clone, D-127) names the copied card (`textOracleId`), and
+its copy never changes on the battlefield, so that holds; "becomes a copy" (CR 707.4), text changes (layer 3) and
+granted abilities (layer 6) will need the text fixed when it's activated.
 
 **More combat (CR 506–511, D-040).**
 *Built (M2-08b, D-086):* `Combat.removed`, the creatures an effect removed while they stayed on the battlefield
@@ -319,7 +322,10 @@ layer 4 sets the land types after the resolved layer 4 effects, and `Layered.rul
 effect in layer 4 (CR 613.7) isn't kept yet: statics come after, which no pool pair can tell. "Loses all abilities"
 (Turn to Frog, Humility) will need the same flag kept per layer 6 timestamp, with granted abilities after it kept.
 CR 305.7 also takes away "any copiable effects affecting that land": once layer 1 (copies, Clone) exists, the pass must
-know which lands a land-type-setting effect will hit before it runs layer 1.
+know which lands a land-type-setting effect will hit before it runs layer 1. *Reachable since Clone (D-127), not built:*
+Convincing Mirage on a Clone that copied a land (Awakener Druid's animated Forest) leaves the copy in place; CR 305.7
+says the copy effect is lost, and what it then is (a 0/0 Shapeshifter creature, so the Aura falls off?) needs a ruling
+(Known issues).
 
 **Choices as a permanent enters (CR 614.12a, D-119).** Built for "choose a card name" (Pithing Needle) on two paths:
 a permanent spell resolving and Open the Vaults, which use `happenOrAsk`. Other paths onto the battlefield still use

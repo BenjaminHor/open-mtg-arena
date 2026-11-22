@@ -1,0 +1,27 @@
+name: Soul Warden doesn't trigger for a Clone entering as a copy of an animated Forest (it's a land); it taps for G at once
+rules: [CR 707.2, CR 603.6a, CR 302.6]
+setup:
+  turn: { active: p2, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, Soul Warden]
+    hand: [Clone]
+  p2:
+    battlefield: [Forest, Forest, Forest]
+    hand: [Awakener Druid]
+steps:
+  - p2 cast: Awakener Druid
+    pay: auto
+  - all pass: once
+  - p2 choose: p2:Forest#3
+  - all pass: once
+  - all pass: until main1
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - p1 choose: p2:Forest
+  - expect:
+      stack: []
+      p1.life: 21
+  - p1 activate: p1:Forest
+  - expect:
+      p1.manaPool: { G: 1 }

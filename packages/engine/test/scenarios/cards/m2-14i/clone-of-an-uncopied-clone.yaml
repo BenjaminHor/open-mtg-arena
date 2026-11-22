@@ -1,0 +1,22 @@
+name: Clone copying a Clone that copied nothing chooses again (CR 707.9e example) and copies Grizzly Bears
+rules: [CR 707.9e, CR 614.12, CR 707.5]
+setup:
+  turn: { active: p1, step: main1 }
+  p1:
+    battlefield: [Island, Island, Island, Island, { card: Clone, counters: { +1/+1: 1 } }]
+    hand: [Clone]
+  p2:
+    battlefield: [Grizzly Bears]
+steps:
+  - p1 cast: Clone
+    pay: auto
+  - all pass: once
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: copy }
+  - p1 choose: p1:Clone
+  - expect:
+      pending: { player: p1, kind: chooseCards, purpose: copy }
+  - p1 choose: p2:Grizzly Bears
+  - expect:
+      p1.battlefield contains: [Clone, Grizzly Bears]
+      p1:Grizzly Bears.power: 2

@@ -4,8 +4,9 @@
 // (`CardDef.replacements`: "enters tapped unless ...", "if it would be put into a graveyard from anywhere, ...
 // instead"), and a regeneration shield on a permanent about to be destroyed (`GameState.replacements`, CR 701.19a).
 //
-// They're applied one at a time, each once (none so far could apply again to its own result; later: CR 614.5, the
-// `applied` list), and after each the others are checked against the changed event
+// They're applied one at a time, each once: a replacement doesn't apply again to its own result (CR 614.5, the
+// `applied` list; a Clone choosing again the Clone whose text it copied isn't asked a third time), and after each the
+// others are checked against the changed event
 // (CR 616.1f). When two different ones apply, the affected player or the affected object's controller chooses which
 // first (CR 616.1): `choices` holds the choices made so far, and without one for this event the answer is to ask. A
 // replacement with a choice of its own as a permanent enters, "choose a card name" (CR 614.12a, D-119), is asked the
@@ -39,7 +40,7 @@ import { playLandDestination, type SingleEvent } from "./proposed.ts";
 export type Ask =
   | { kind: "choose"; player: PlayerId; for: ChoiceFor; options: ReplacementRef[] }
   | { kind: "chooseName"; what: ChooseWhat; player: PlayerId; for: ChoiceFor; ref: ReplacementRef }
-  /** The permanent to enter as a copy of, or none (CR 707.5), among `options`. */
+  /** The permanent to enter as a copy of (CR 707.5), or none ("you may", Clone), among `options`. */
   | { kind: "chooseCopy"; player: PlayerId; for: ChoiceFor; ref: ReplacementRef; options: ObjectId[] };
 
 /** The events in place of the event, or the choice needed first. */
@@ -155,7 +156,8 @@ function candidatesFor(state: GameState, event: SingleEvent, cards: CardDatabase
 
 /**
  * The moving card's own replacements that apply. Once it's entering as a copy, they're the copied text's, as the
- * permanent would exist on the battlefield (CR 614.12, 707.5), named apart from its own (`text`).
+ * permanent would exist on the battlefield (CR 614.12, 707.5), named apart from its own (`text`): a Clone copying a
+ * Clone that copied nothing gets that Clone's replacement and chooses again (CR 707.9e's example).
  */
 function ownTextFor(state: GameState, move: Move, cards: CardDatabase): OwnText[] {
   const copied = move.to.zone === "battlefield" ? move.to.copied : undefined;
