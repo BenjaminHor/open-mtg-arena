@@ -26,5 +26,5 @@
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["packages/*/**/*.ts", "vitest.config.ts"]
+  "include": ["packages/*/**/*.ts", "vitest.config.ts", "vitest.mutate.config.ts"]
 }

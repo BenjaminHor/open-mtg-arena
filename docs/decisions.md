@@ -2140,3 +2140,14 @@ owner's answer to the D-089 open question, option (a))
   knows; a preview stops where a hidden card would matter.
 - 30 seconds of thinking per decision; at the limit the heuristic AI decides that one. A fast model should stay inside.
 - No memory between games for now; a possible RPG feature. Personas are undecided.
+
+**D-139: Mutation testing with StrykerJS (M2-15b)** · 2026-11-22 · accepted
+- Dev dependencies `@stryker-mutator/core` and `@stryker-mutator/vitest-runner` (10.1.1, pinned), the tools testing.md
+  section 7 names. Dev only: nothing of them ships in the app.
+- `pnpm mutate --mutate "<glob>"` runs on one part of the engine at a time (a whole run takes hours), with
+  `vitest.mutate.config.ts`: the engine's unit tests and the scenarios. The CLI's golden games, fuzz and replays are
+  left out as too slow per mutant; a mutant only they would catch is reported as surviving, which errs on the side of
+  writing a scenario for it. No TypeScript checker plugin: the repo's TypeScript 7 has no JavaScript API for it, so
+  mutants that don't type-check run too and count as killed or survived by what the tests see.
+- Not part of `pnpm check`. Surviving mutants in rules code get a test; the rest are listed in status.md with why they
+  survive (equivalent mutants, logging, error messages).
