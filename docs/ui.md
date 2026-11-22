@@ -11,7 +11,7 @@ finishing touch. Each item below is something the code can be checked against.
 
 **The owner wants the interface to work like MTG Arena's as closely as possible (2026-11-22).** Arena's
 interaction design is the model: where things sit on the board, how a turn flows, how passing, stops, targeting,
-attacking, blocking and paying feel. The research behind this is in `arena-research.md` (a first pass, 2026-11-22;
+attacking, blocking and paying feel. The research behind this is in `arena-research.md` (two passes, 2026-11-22, with a layout map from screenshots;
 each finding is tagged by how well it's sourced). The look is our own:
 the art, card frames, icons, sounds and visual style are original, never Arena's assets or trade dress (D-140).
 
