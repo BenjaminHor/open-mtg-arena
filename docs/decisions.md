@@ -2381,7 +2381,7 @@ owner's answer to the D-089 open question, option (a))
   damage and damage assignment (slice 2), smart stops (slice 3).
 
 
-**D-157: Arena's default skips on top of D-143: no stop in your own upkeep, draw step or end step (M3-04b)** · 2026-11-23 · accepted
+**D-157: Arena's default skips on top of D-143: no stop in your own upkeep, draw step or end step (M3-04b)** · 2026-11-23 · accepted (the owner: "whatever MTGA does, do that")
 - The M3-04b plan in `status.md` proposed stopping only at a list of steps (main phases, the combat declarations,
   the opponent's spells and attacks). That is the design D-143 rejected, because a combat trick lost its window
   after blockers. The research's [R] lines say Arena stops wherever you hold something you can cast. So D-143 stays.
