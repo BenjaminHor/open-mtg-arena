@@ -87,6 +87,13 @@ body,
   justify-content: flex-start;
 }
 
+/* The block is 40 px tall in the layout; its tap reaches 44 (ui.md, Touch). */
+.hud button.player-info::before {
+  content: "";
+  position: absolute;
+  inset: -2px 0;
+}
+
 .player-info.mine {
   justify-content: flex-end;
 }
@@ -777,4 +784,266 @@ body,
   border-radius: 999px;
   border: 1px solid var(--edge);
   background: var(--panel);
+}
+
+/* The zone browser (hud/ZoneBrowser.tsx): a sheet over the dimmed board, its tabs along the top and the cards in a row
+   that scrolls sideways (a swipe on a phone), each large enough to recognise; a tap shows one in the card view. */
+.hud .zone-browser {
+  inset: 0;
+  z-index: 190000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 6, 8, 0.72);
+  pointer-events: auto;
+  animation: card-view-fade 160ms ease-out;
+}
+.zone-browser > section {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: calc(100% - 2 * max(12px, env(safe-area-inset-left), env(safe-area-inset-right)));
+  max-width: 1100px;
+  padding: 10px 0 12px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.zone-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px;
+}
+.zone-tabs button {
+  min-height: 44px;
+  font-variant-numeric: tabular-nums;
+  padding: 0 14px;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.zone-tabs button[aria-selected="true"] {
+  background: #f4f1ec;
+  color: var(--ink);
+}
+.zone-tabs .zone-close {
+  margin-left: auto;
+  color: #f4f1ec;
+}
+/* Whose zones these are, in the block's own label style. */
+.zone-whose {
+  align-self: center;
+  margin-right: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #d9d4cc;
+}
+.zone-tabs {
+  align-items: center;
+}
+.zone-waiting {
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--accent);
+}
+.zone-waiting + .zone-close {
+  margin-left: 0;
+}
+.zone-row {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 12px 6px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  /* The row scrolls with a finger: the app turns browser gestures off (.app), the row turns this one back on. */
+  touch-action: pan-x;
+  /* A swipe lands on whole cards. */
+  scroll-snap-type: x proximity;
+  scroll-padding: 0 12px;
+}
+.zone-row li {
+  flex: none;
+  scroll-snap-align: start;
+  /* A long graveyard draws only the cards near the view. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto min(37vh, 214px) auto min(52vh, 300px);
+}
+/* The row's end keeps its padding when scrolled there (a flex row's own end padding is lost). */
+.zone-row::after {
+  content: "";
+  flex: none;
+  width: 4px;
+}
+.zone-card {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 4.5%;
+  background: #2b2a27;
+  overflow: hidden;
+  /* Large enough to read its name and art, and a whole card in the phone's height. */
+  height: min(52vh, 300px);
+  aspect-ratio: 63 / 88;
+  -webkit-touch-callout: none;
+}
+.zone-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.zone-card img.loading {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+/* Until its image has loaded (or offline): its name on a plain card. */
+.zone-card-name {
+  position: absolute;
+  inset: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  color: #f4f1ec;
+}
+/* As tall as a row of cards, so the sheet keeps one height from tab to tab. */
+.zone-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(min(52vh, 300px) + 8px);
+  margin: 0;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+/* A card in the row drawn as text (no image yet, or offline), at the row's size. */
+.zone-card .card-view-card {
+  height: 100%;
+}
+.zone-card .card-view-card img,
+.zone-card .card-view-text {
+  height: 100%;
+  box-shadow: none;
+}
+.zone-card .card-view-text {
+  padding: 7%;
+  border-width: 3px;
+  font-size: 9px;
+  text-align: left;
+}
+.zone-card .card-view-name {
+  font-size: 10px;
+}
+.zone-card .card-view-text .card-view-pt {
+  font-size: 12px;
+}
+/* A card looked at from the browser is over it. */
+.zone-browser .card-view {
+  position: absolute;
+}
+
+/* What of a player's is revealed (hud/PlayerInfo.tsx): beside their info block, in the outer column, within its width.
+   While the player is a target, the marks step aside so a tap near the block is never taken for another. */
+.hud .revealed-marks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.hud .revealed-marks.inert {
+  opacity: 0.4;
+}
+.hud .revealed-marks.inert button {
+  pointer-events: none;
+}
+/* A face-up card on a pile's edge: the top of a library, not a permanent. */
+.hud .revealed-top {
+  position: relative;
+  flex: none;
+  width: 74px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: #3a3833;
+  box-shadow:
+    2px 2px 0 #2d2b28,
+    4px 4px 0 #1b1a18;
+  overflow: hidden;
+}
+.revealed-top img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.revealed-top span {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 4px 2px;
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+}
+.revealed-top small {
+  font-size: 8px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.hud .revealed-hand {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+/* A 44 px tap height without a taller chip. */
+.hud button.revealed-hand::before {
+  content: "";
+  position: absolute;
+  inset: -8px 0;
+}
+/* The person's own: a note, not a control. */
+.hud .revealed-hand.note {
+  border-color: transparent;
+  background: none;
+  padding: 0 2px;
+  color: var(--muted);
+}
+
+/* Pressed: shown at once (ui.md: feedback within 100 ms). */
+.hud .player-info:active,
+.hud .revealed-top:active,
+.hud .revealed-hand:active,
+.zone-card:active,
+.zone-tabs button:active {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+.zone-card:active {
+  filter: brightness(1.15);
 }

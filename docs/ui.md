@@ -91,6 +91,14 @@ total as a large plain number, and under it the counts in small text ("52 Librar
 the place of the centred life crests and the portraits; whose turn it is and a player target show on the block. Then:
 "the scale of the player info seems too large" (owner, 2026-11-23): smaller, so it sits quietly in the corner.
 
+**Zones from the player info (M3-04c slice 5, D-168):** a tap on a block opens that player's zone browser (Arena:
+"tapping a zone opens a browser of its known cards with a count"): a sheet with a tab per zone (graveyard, exile, and a
+hand or library top while it's revealed), the cards in a row that scrolls sideways, a tap on a card for the card view.
+While the player is a target a tap picks them; a long-press, right-click or "i" still opens the browser. What's
+revealed shows without a tap, in the outer column beside the block: a library's top card as a small face-up tile on a
+pile's edge, a revealed hand as an eye chip (the person's own as a quiet note). Neither reaches past the block's width,
+and both step aside while the player is a target.
+
 **The main button's shape (owner, 2026-11-23):** "the pill button on the bottom right should be a rounded
 square/rectangle instead." A rectangle with softly rounded corners, as the reference app's; the small buttons beside
 it match.

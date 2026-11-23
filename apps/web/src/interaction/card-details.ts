@@ -121,8 +121,11 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   };
 }
 
-/** A card by its printed face alone: an ability's source that has left the zones the person can see. */
-function printedDetails(oracleId: OracleId): CardDetails | null {
+/**
+ * A card by its printed face alone: an ability's source that has left the zones the person can see, or a revealed card,
+ * which is shown by identity only (D-062).
+ */
+export function printedDetails(oracleId: OracleId): CardDetails | null {
   const info = cardInfo(oracleId);
   if (info === null) return null;
   return {

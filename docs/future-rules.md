@@ -496,6 +496,11 @@ can refer to cards the engine doesn't support yet.
 **Animations and the board UI (M3).** *Needs now:* every visible change produces an event, with the `cardId` the UI
 uses to track a card between zones.
 
+**Picking a card from a graveyard or exile in a browser (M3-04c slice 5, D-168).** Arena opens a browser of the cards
+to choose when a spell or ability targets or chooses a card in a graveyard [R]; ours lists them by name in the prompt.
+*Needs now:* the zone browser's card row (`hud/ZoneBrowser.tsx`) takes a click per card, so a "choose" mode can reuse
+it with the prompt's choices on the cards; `controls.ts` already sends those choices to the prompt, not a card.
+
 **Auras entering without being cast, beyond Open the Vaults (CR 303.4f-g, D-107).** Other effects that put an Aura
 onto the battlefield (Academy Researchers, Aura tokens such as Roles, CR 111.10j) choose its host through the same
 steps as `returnAllToBattlefield`: `canEnchant`, a `chooseCards` decision with purpose `enchant` and `for`, and

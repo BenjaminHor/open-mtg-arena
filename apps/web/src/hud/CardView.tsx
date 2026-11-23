@@ -16,13 +16,14 @@ import { ManaText } from "./ManaText.tsx";
 export type Inspected = { mode: "full" | "preview"; id: ObjectId };
 
 type Props = {
-  id: ObjectId;
+  /** What's shown, so a different card starts its image afresh: an object's id, or a revealed card's place. */
+  viewKey: string;
   mode: Inspected["mode"];
   details: CardDetails;
   close: () => void;
 };
 
-export function CardView({ id, mode, details, close }: Props) {
+export function CardView({ viewKey, mode, details, close }: Props) {
   // The full view is modal: focus moves to its Close button, so Enter or Space can't press a card behind it, and goes
   // back where it was when the view closes (ui.md, "Mouse and keyboard too").
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -34,7 +35,7 @@ export function CardView({ id, mode, details, close }: Props) {
   }, [mode]);
   const body = (
     <div className="card-view-body">
-      <CardFace key={id} details={details} />
+      <CardFace key={viewKey} details={details} />
       {details.hangers.length > 0 && (
         <ul className="card-view-hangers">
           {details.hangers.map((hanger) => (
@@ -93,7 +94,7 @@ export function isTouch(e: React.MouseEvent): boolean {
  * The card itself: its image, and until that has loaded (or if it can't, offline), the card as text in its frame, as
  * the hand draws its own fallback (ui.md). A token has no image, so it's always the text.
  */
-function CardFace({ details }: { details: CardDetails }) {
+export function CardFace({ details }: { details: CardDetails }) {
   const [image, setImage] = useState<"loading" | "loaded" | "failed">("loading");
   const showImage = details.image !== null && image !== "failed";
   return (
@@ -120,6 +121,8 @@ function CardFace({ details }: { details: CardDetails }) {
           src={details.image}
           alt={details.name}
           draggable={false}
+          // In the zone browser's long row, only the cards scrolled near load.
+          loading="lazy"
           onLoad={() => setImage("loaded")}
           onError={() => setImage("failed")}
         />
