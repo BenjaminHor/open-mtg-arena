@@ -9,7 +9,7 @@ import type { BoardCard } from "../board-model/board-model.ts";
 import { combatBadge, combatBadgeRadius, pileBadge, tapMark } from "./card-marks.ts";
 import { handLower, ptBox } from "./hand-face.ts";
 import { type ColorSymbol, colorGlyph, manaCostRow, manaSymbol } from "./mana-symbols.ts";
-import { frameColor, mix, PALETTE } from "./palette.ts";
+import { FRAME, frameColor, mix, PALETTE } from "./palette.ts";
 import { fitText } from "./text-fit.ts";
 
 export const ART_LABEL = "art";
@@ -20,7 +20,7 @@ export function drawFace(card: BoardCard): Face {
   const w = card.width;
   const h = card.height;
   const face = new Container();
-  const color = frameColor(card.frameColors);
+  const color = frameColor(card);
   const radius = Math.min(w, h) * 0.07;
   const border = Math.max(3, Math.min(w, h) * 0.07);
   if (card.picked) face.addChild(outlineGlow(w, h, radius, PALETTE.picked));
@@ -37,16 +37,24 @@ export function drawFace(card: BoardCard): Face {
       .roundRect(-w / 2 + 2, -h / 2 + 2, w - 4, h - 4, radius * 0.8)
       .stroke({ width: 1, color: mix(color, 0xffffff, 0.45) }),
   );
+  // A multicolour card's gold frame carries a stripe of each of its colours along the top.
+  if (card.frameColors.length > 1) face.addChild(colourStripes(card, w, h, border));
   const inner = { x: -w / 2 + border, y: -h / 2 + border, w: w - 2 * border };
-  const nameH = Math.max(13, h * (card.zone === "hand" ? 0.1 : 0.17));
+  // A token on the battlefield has no name strip across the top: its art rises into an arch instead [R].
+  const tokenLook = card.token && card.zone === "battlefield";
+  const nameH = tokenLook ? 0 : Math.max(13, h * (card.zone === "hand" ? 0.1 : 0.17));
   const artBottom = card.zone === "hand" ? -h / 2 + h * 0.5 : h / 2 - border;
-  const art = { x: inner.x, y: inner.y + nameH + 1, w: inner.w, h: artBottom - (inner.y + nameH + 1) };
+  const top = tokenLook ? inner.y : inner.y + nameH + 1;
+  const art = { x: inner.x, y: top, w: inner.w, h: artBottom - top, arch: tokenLook ? (artBottom - top) * 0.2 : 0 };
   const fallback = artFallback(card, art);
   face.addChild(fallback);
   const artLayer = new Container();
   face.addChild(artLayer);
-  face.addChild(new Graphics().rect(art.x, art.y, art.w, art.h).stroke({ width: 1, color: PALETTE.rim, alpha: 0.8 }));
-  if (card.behind) {
+  face.addChild(artWindow(new Graphics(), art).stroke({ width: 1, color: PALETTE.rim, alpha: 0.8 }));
+  if (tokenLook && !card.behind) {
+    face.addChild(tokenPlate(card, h));
+    if (card.power !== null && card.toughness !== null) face.addChild(ptPill(card, color, h));
+  } else if (card.behind) {
     // A card behind a pile's front shows only its edge: no strip or badges to clutter the pile.
     face.addChild(new Graphics().rect(inner.x, inner.y, inner.w, nameH).fill(mix(color, PALETTE.parchment, 0.6)));
   } else {
@@ -91,7 +99,7 @@ export function drawFace(card: BoardCard): Face {
       const scale = Math.max(art.w / texture.width, art.h / texture.height);
       sprite.scale.set(scale);
       sprite.position.set(art.x + (art.w - texture.width * scale) / 2, art.y + (art.h - texture.height * scale) / 2);
-      const mask = new Graphics().rect(art.x, art.y, art.w, art.h).fill(0xffffff);
+      const mask = artWindow(new Graphics(), art).fill(0xffffff);
       sprite.mask = mask;
       artLayer.addChild(mask, sprite);
       fallback.visible = false;
@@ -119,10 +127,55 @@ function outlineGlow(w: number, h: number, radius: number, color: number): Graph
 }
 
 /** Until the art loads (or offline): a dark field tinted by the frame, its colour's glyph large in the middle. */
-function artFallback(card: BoardCard, art: { x: number; y: number; w: number; h: number }): Container {
+/** The art window's shape: a rectangle, or for a token a rectangle whose top rises into an arch [R]. */
+type ArtWindow = { x: number; y: number; w: number; h: number; arch: number };
+
+function artWindow(g: Graphics, a: ArtWindow): Graphics {
+  if (a.arch === 0) return g.rect(a.x, a.y, a.w, a.h);
+  return g
+    .moveTo(a.x, a.y + a.arch)
+    .quadraticCurveTo(a.x + a.w / 2, a.y - a.arch * 0.9, a.x + a.w, a.y + a.arch)
+    .lineTo(a.x + a.w, a.y + a.h)
+    .lineTo(a.x, a.y + a.h)
+    .closePath();
+}
+
+/** A token's name on a small dark plate low on its art, above its power/toughness [R]. */
+function tokenPlate(card: BoardCard, h: number): Container {
+  const plate = new Container();
+  const ph = Math.max(13, h * 0.2);
+  const text = new Text({
+    text: card.name,
+    style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: Math.max(7, h * 0.12), fill: PALETTE.badgeText },
+  });
+  fitText(text, card.name, card.width * 0.8);
+  text.anchor.set(0.5);
+  const bw = text.width + 8;
+  const bh = text.height + 2;
+  const y = h / 2 - ph - bh / 2 - 3;
+  plate.addChild(
+    new Graphics().roundRect(-bw / 2, y - bh / 2, bw, bh, bh / 2).fill({ color: PALETTE.rim, alpha: 0.75 }),
+    text,
+  );
+  text.position.set(0, y);
+  return plate;
+}
+
+/** A thin stripe of each of a multicolour card's colours along the top of its gold frame. */
+function colourStripes(card: BoardCard, w: number, h: number, border: number): Graphics {
+  const g = new Graphics();
+  const n = card.frameColors.length;
+  const span = w - 2 * border;
+  card.frameColors.forEach((c, i) => {
+    g.rect(-w / 2 + border + (i * span) / n, -h / 2 + 1.5, span / n, Math.max(2, border * 0.5)).fill(FRAME[c]);
+  });
+  return g;
+}
+
+function artFallback(card: BoardCard, art: ArtWindow): Container {
   const holder = new Container();
-  const color = frameColor(card.frameColors);
-  holder.addChild(new Graphics().rect(art.x, art.y, art.w, art.h).fill(mix(PALETTE.artless, color, 0.28)));
+  const color = frameColor(card);
+  holder.addChild(artWindow(new Graphics(), art).fill(mix(PALETTE.artless, color, 0.28)));
   const first = card.frameColors[0];
   if (first !== undefined) {
     const glyph = colorGlyph(first as ColorSymbol, Math.min(art.w, art.h) * 0.3, mix(color, 0xffffff, 0.15));

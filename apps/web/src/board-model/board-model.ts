@@ -59,6 +59,10 @@ export type BoardCard = {
   frameColors: readonly Color[];
   /** True for a land: drawn with a land's frame. */
   land: boolean;
+  /** True for an artifact: a colourless one has a steel frame. */
+  artifact: boolean;
+  /** A token (CR 111.1): drawn with an arched top and no name strip, so it reads as one at a glance [R]. */
+  token: boolean;
   /**
    * The image to draw, loaded at runtime (D-007): a permanent's art crop, a hand card's full card image. Null for a
    * token, which has none yet.

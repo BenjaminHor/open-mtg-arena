@@ -43,6 +43,8 @@ export function boardCard(
     colors: c.colors,
     frameColors: c.colors.length > 0 || !c.types.includes("land") ? c.colors : basicLandColors(c.subtypes),
     land: c.types.includes("land"),
+    artifact: c.types.includes("artifact"),
+    token: card.token,
     art: (zone === "hand" ? info?.image : info?.artCrop) ?? null,
     // A hand card is drawn whole (ui.md, "Hand cards are whole cards"); a permanent shows its art and name.
     typeLine: zone === "hand" ? (info?.typeLine ?? "") : "",

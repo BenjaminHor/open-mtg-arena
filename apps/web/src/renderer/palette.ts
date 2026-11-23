@@ -33,11 +33,16 @@ export const FRAME: Record<Color, number> = {
   G: 0x2f7d4a,
 };
 
-/** A card's frame colour, from its frame colours: one colour, gold for several, grey for none. */
-export function frameColor(colors: readonly Color[]): number {
+/**
+ * A card's frame colour (ui.md, "Colourless, multicolour and tokens"): its one colour, gold for several, and for none
+ * steel for an artifact, bronze for a land, grey for anything else.
+ */
+export function frameColor(card: { frameColors: readonly Color[]; artifact: boolean; land: boolean }): number {
+  const colors = card.frameColors;
   if (colors.length > 1) return 0xc9a54a;
   const only = colors[0];
-  return only === undefined ? 0x8f949c : FRAME[only];
+  if (only !== undefined) return FRAME[only];
+  return card.artifact ? 0xa7b2bf : card.land ? 0x9a7b4f : 0x8f949c;
 }
 
 /** The fill of each coloured mana symbol. */

@@ -188,6 +188,24 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /** Siege-Gang Commander to cast (three Goblin tokens), and colourless permanents: frames of every kind. */
+  tokens: {
+    turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 18,
+        hand: ["Siege-Gang Commander", "Lightning Bolt"],
+        battlefield: [...many("Mountain", 5), "Rootbound Crag", "Ornithopter", "Howling Mine", "Llanowar Elves"],
+        library: [...many("Forest", 10), ...many("Mountain", 10)],
+      },
+      p2: {
+        life: 20,
+        hand: ["Plains"],
+        battlefield: [...many("Plains", 4), "Elite Vanguard"],
+        library: many("Plains", 20),
+      },
+    },
+  },
 };
 
 export const FIXTURE_NAMES = Object.keys(FIXTURES);

@@ -167,6 +167,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23): "I haven't been able to start the local app yet but I'm wondering what animations are like."
     Answered: there are none yet; cards move to their new places at once. Animation is M3-07 (the director: GSAP
     timelines from the engine's events, ui.md "Animation and feedback"). Gave the steps to run it locally.
+  - Owner (2026-11-23): "Can you show me what a long-press view looks like?", then "If it's not built yet then that's
+    okay." It stays in M3-04c. Its design, from the first try: a pure `examine(shown, id)` in board-model gives the
+    card's name, type line, full image and artist, then panels: one per paragraph of Oracle text (titled by its
+    keyword, else "Triggered ability", "Activated ability" or "Ability"), one per keyword it has that its text doesn't
+    give it ("Given by an effect"), and its state (token, changed P/T against printed, damage, counters, tapped,
+    summoning sick, attacking, blocking whom, regeneration shields, a choice made as it entered). A hit test finds the
+    topmost card under a point; a hold of about 400 ms opens a dark overlay (card large at the left, panels at the
+    right, the artist credit, D-155), and the click after a long-press is swallowed so it doesn't also toggle the hand.
   - Still to do in M3-04a: the frames for colourless, multicolour and tokens (ui.md); the HUD polish (ui.md, "The rest
     of the HUD"); then code and UX reviews, the PR, and screenshots of everything to the owner.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
