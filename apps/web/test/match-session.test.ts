@@ -3,6 +3,7 @@
 import { cardDatabase } from "@mtg/cards";
 import type { Action } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
+import { FIXTURE_NAMES, fixtureSetup } from "../src/fixtures/fixtures.ts";
 import { handle, type Session } from "../src/worker/match-session.ts";
 import type { FromWorker, ToWorker } from "../src/worker/protocol.ts";
 
@@ -83,5 +84,29 @@ describe("the match worker's session", () => {
       session = next.session;
       reply = next.reply;
     }
+  });
+});
+
+describe("starting from a setup (fixture boards)", () => {
+  it("starts each fixture and stops at the person's first decision", () => {
+    for (const name of FIXTURE_NAMES) {
+      const setup = fixtureSetup(name);
+      if (setup === null) throw new Error(name);
+      const reply = update(handle(null, { type: "startFrom", setup, human: "p1" }, cards).reply);
+      expect(reply.waitingOn).toBe("p1");
+      expect(reply.shown.options.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("refuses a seat that isn't in the setup", () => {
+    const setup = fixtureSetup("mid-game");
+    if (setup === null) throw new Error("mid-game");
+    const { session, reply } = handle(null, { type: "startFrom", setup, human: "p9" }, cards);
+    expect(session).toBeNull();
+    expect(reply).toEqual({ type: "error", message: "no seat p9" });
+  });
+
+  it("has no fixture by an unknown name", () => {
+    expect(fixtureSetup("no-such-board")).toBeNull();
   });
 });

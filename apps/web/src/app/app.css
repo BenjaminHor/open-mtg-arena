@@ -1,9 +1,14 @@
-/* The app's plain CSS (ui.md: plain CSS for the DOM layer). M3-04 brings the real look. */
+/* The app's plain CSS (ui.md: plain CSS for the DOM layer). The board's own sizes are in layout/compact.ts; these are
+   the HUD's looks. Colours are original (D-140). */
 :root {
   color-scheme: dark;
   font-family: system-ui, sans-serif;
-  background: #16181d;
-  color: #f2efe6;
+  background: #14171d;
+  color: #f4f0e6;
+  --panel: rgba(16, 18, 24, 0.92);
+  --edge: #4a5262;
+  --gold: #e2b84f;
+  --ink: #14171d;
 }
 
 html,
@@ -11,48 +16,254 @@ body,
 #root {
   margin: 0;
   height: 100%;
-}
-
-.app {
-  display: grid;
-  grid-template-rows: 1fr auto;
-  height: 100%;
-}
-
-.board {
-  position: relative;
-  min-height: 0;
+  background: #14171d;
   overflow: hidden;
 }
 
-.hud {
-  padding: 8px 12px;
-  border-top: 1px solid #333842;
+/* ui.md, "Touch interaction": no browser gestures, selection or overscroll on the board. */
+.app {
+  background:
+    linear-gradient(180deg, rgba(150, 70, 55, 0.12), transparent 45%, transparent 55%, rgba(60, 95, 160, 0.14)),
+    radial-gradient(ellipse 75% 65% at 50% 50%, #2b3242 0%, #1a1e27 60%, #101217 100%);
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
 }
 
-.hud p {
-  margin: 4px 0;
+.board,
+.board canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud > * {
+  position: absolute;
+}
+
+.hud button {
+  pointer-events: auto;
+  font: inherit;
+  color: inherit;
+}
+
+.portrait {
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 2px solid var(--edge);
+  background: linear-gradient(160deg, #3a4357, #1d222c);
+}
+
+.portrait svg {
+  width: 100%;
+  height: 100%;
+  fill: #8e9ab3;
+}
+
+/* The active player's portrait: a gold ring and a marker, not colour alone. */
+.portrait.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(226, 184, 79, 0.35);
+}
+
+.turn-marker {
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left: 8px solid var(--gold);
+}
+
+.life {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  background: radial-gradient(circle at 50% 35%, #353c4b, #171a21 70%);
+  border: 3px solid #8a93a6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.ladder {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 3px 6px;
+  list-style: none;
+  border-radius: 12px;
+  background: rgba(12, 13, 16, 0.75);
+}
+
+.ladder li {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-bottom: 2px solid transparent;
+}
+
+/* Room for the opponent's life crest (50 px) between Main 1 and Combat. */
+.ladder li[data-gap] {
+  margin-left: 58px;
+}
+
+.ladder svg {
+  width: 14px;
+  height: 14px;
+  fill: #5d6577;
+}
+
+.ladder svg.stroke {
+  fill: none;
+  stroke: #5d6577;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* The current phase: bigger, bright, underlined. */
+.ladder li.lit {
+  border-bottom-color: var(--gold);
+}
+
+.ladder li.lit svg {
+  width: 17px;
+  height: 17px;
+  fill: var(--gold);
+}
+
+.ladder li.lit svg.stroke {
+  fill: none;
+  stroke: var(--gold);
+}
+
+.main-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid #f3cf6e;
+  background: linear-gradient(180deg, #f0c75a, #c9952c);
+  color: var(--ink);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+  line-height: 1.05;
+}
+
+.main-button:active {
+  transform: scale(0.96);
+}
+
+.main-label {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.main-detail {
+  font-size: 10px;
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Nothing to press: dark, as Arena's "Opponent's Turn" [R]. */
+.main-button.waiting {
+  background: #23272f;
+  border-color: #3c4250;
+  color: #9aa3b5;
+  box-shadow: none;
+}
+
+.drawer {
+  top: 6px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 46%;
+}
+
+.drawer-toggle {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--edge);
+  background: var(--panel);
+  font-size: 12px;
 }
 
 .options {
+  margin: 0;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  justify-content: flex-end;
+  gap: 5px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
 }
 
 .options button {
-  font: inherit;
-  padding: 6px 10px;
+  pointer-events: auto;
+  font-size: 12px;
+  padding: 5px 9px;
   border-radius: 6px;
   border: 1px solid #5b6270;
   background: #252a33;
-  color: inherit;
 }
 
 .options button:disabled {
   opacity: 0.4;
 }
 
+.result {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 10px 28px;
+  font-size: 28px;
+  font-weight: 800;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 2px solid var(--gold);
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  transform: translateX(-50%);
+  margin: 0;
+  max-width: 80%;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #5a1f1f;
+  border: 1px solid #c0392b;
+  font-size: 13px;
+}
+
 .loading {
-  padding: 16px;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
 }

@@ -3,7 +3,7 @@
 // on it, gets an error reply and leaves the session as it was: nothing here throws.
 
 import { DECKS, type DeckList } from "@mtg/cards";
-import { type CardDatabase, type PlayerId, seatView } from "@mtg/engine";
+import { type CardDatabase, type GameSetup, type PlayerId, seatView } from "@mtg/engine";
 import {
   advance,
   deckGameSetup,
@@ -40,6 +40,8 @@ function handleMessage(
   switch (message.type) {
     case "start":
       return start(session, message, cards);
+    case "startFrom":
+      return startFrom(session, message.setup, message.human, cards);
     case "act": {
       if (session === null) return { session, reply: { type: "error", message: "no match has started" } };
       const result = submit(session.match, message.action, cards);
@@ -66,16 +68,22 @@ function start(
     return { session, reply: { type: "error", message: `a seed is a whole number, 0 or more: ${message.seed}` } };
   }
   const decks = message.decks.map((name) => DECKS[name] as DeckList);
-  const setup = deckGameSetup(decks, message.seed, null);
+  return startFrom(session, deckGameSetup(decks, message.seed, null), message.human, cards);
+}
+
+/** A match from this setup: the person in `human`'s seat, the heuristic AI in every other. */
+function startFrom(
+  session: Session | null,
+  setup: GameSetup,
+  human: PlayerId,
+  cards: CardDatabase,
+): { session: Session | null; reply: FromWorker } {
   const players = setup.players.map((p) => p.id);
-  if (!players.includes(message.human)) {
-    return { session, reply: { type: "error", message: `no seat ${message.human}` } };
-  }
-  // The person in their seat, the heuristic AI in every other.
+  if (!players.includes(human)) return { session, reply: { type: "error", message: `no seat ${human}` } };
   const seats: Record<PlayerId, Seat> = Object.fromEntries(
-    players.map((p): [PlayerId, Seat] => [p, p === message.human ? { kind: "human" } : { kind: "heuristic" }]),
+    players.map((p): [PlayerId, Seat] => [p, p === human ? { kind: "human" } : { kind: "heuristic" }]),
   );
-  return update({ match: startMatch(setup, seats, cards), human: message.human }, cards);
+  return update({ match: startMatch(setup, seats, cards), human }, cards);
 }
 
 /** The host acts until the person must decide; the reply is their seat's view and the events they haven't seen. */

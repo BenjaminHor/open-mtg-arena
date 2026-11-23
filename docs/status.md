@@ -123,6 +123,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     none` but for controls); sprites kept by object id and updated in place (M3-07 moves them). Fixtures (a mid-game
     board, a crowded late one) start the worker from a setup, for tests and screenshots. **Screenshots of both
     fixtures at 812×375 to the owner, before M3-04b; 04b waits for their answer.**
+  - M3-04a progress (2026-11-23): built: layout data (`layout/compact.ts`), the board model (rows, land piles, hand,
+    backs, libraries, HUD anchors, safe areas), keyed sprites with original frames, runtime art with a fallback, mana
+    symbols as shapes, tap marks, the HUD (portraits, life crests, phase ladder, main button, actions drawer), fixture
+    boards (`?fixture=mid-game`, `crowded`). `pnpm check` and the browser tests (desktop and 812×375 touch) green.
+    Next: reviews (code, UX), then screenshots to the owner; 04b waits for their answer.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

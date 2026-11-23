@@ -2296,3 +2296,26 @@ owner's answer to the D-089 open question, option (a))
 - Known limit: a tab still running an old build after the new one takes over can't fetch old files the new cache
   dropped. Harmless today (the app loads every file at start); once the app loads code later (M3-09's screens, a
   worker per match), keep the previous build's cache for one more update.
+
+**D-152: The compact board's first look (M3-04a)** · 2026-11-23 · accepted
+- The layout follows the owner's phone screenshots (arena-research.md); where they don't show something, the desktop
+  map's guess fills in. Every position and size is a share of the play area in one data file (`apps/web/src/layout/
+  compact.ts`), each value tagged [R] (from the screenshots) or [guess], so the look changes in one place (D-012) and
+  the full layout (M3-05) is a second object of the same shape.
+- A tapped permanent tilts about 8°, dims and carries a curved-arrow tap mark, as in the screenshots, rather than
+  turning 90°: the rules only need tapped to be visible (CR 701.26a), and a tilt keeps the rows from reflowing when a
+  card taps. The mark is a shape, so tapped never shows by dimming alone (ui.md).
+- Lands pile when they're interchangeable to look at: same name, same tapped state, no counters or damage, nothing
+  attached either way. A pile shows its front card with an "×N" badge; each land keeps its own rectangle in the model
+  (offset under the front), so a later touch can pick one.
+- The board model also gives the DOM layer its anchors (portraits, life crests, the phase ladder, the main button), so
+  the canvas and the HUD can't disagree on where things are; the canvas is transparent over the page's table
+  background. Safe-area insets are read from CSS (`env(safe-area-inset-*)`) and the layout keeps inside them.
+- Art loads at runtime from Scryfall's image host (D-007), which serves it cross-origin; an art-less original frame
+  shows until it arrives or if it never does, and the browser tests block the host so they never need the network.
+- The main thread reads card faces from `@mtg/cards/pool`, the pool data without the definitions (about 220 KB more in
+  the main bundle, no engine code). Long-press details (M3-04c) need the same data.
+- Fixture boards start the worker from a `GameSetup` (`startFrom`; `?fixture=mid-game` or `crowded` in the address),
+  for tests and the screenshots shown to the owner. The browser tests run at desktop size and at the folded phone in
+  landscape (812×375, touch).
+

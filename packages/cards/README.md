@@ -13,7 +13,8 @@ Where the data comes from and its terms: [`docs/data-sources.md`](../../docs/dat
   - `cardDatabase()`: the engine's `CardDatabase`, built from `data/pool.json` and the definitions.
   - `CARD_DEFS`: every definition (`src/defs/<letter>/<slug>.ts`).
   - `definitionProblems()`: the errata and completeness check.
-  - `POOL`: the extracted Oracle data, including image URIs and artist for the UI.
+  - `POOL`: the extracted Oracle data, including image URIs and artist for the UI. Also on its own as
+    `@mtg/cards/pool` (`src/pool.ts`), without the definitions, for the web app's main thread.
   - `DECKS`, `deckLibrary()`: the prebuilt decks: M1's red-aggro and green-stompy, and Magic 2010's white-soldiers, red-green-beats and blue-black-control (`src/decks/`, D-131), by name and count. M4's
     deck model (`packages/decks`) will absorb this shape.
 - `scripts/fetch.ts` (`pnpm cards:fetch`) and `scripts/extract.ts` (`pnpm cards:extract`): the data pipeline. These

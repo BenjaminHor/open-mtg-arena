@@ -1,66 +1,68 @@
 // The PixiJS scene (D-013, ui.md "Board structure"): it draws the board model and nothing else, with no game logic and
-// no layout math (`board-model/` does that). This first version redraws the whole board on each update, cards as plain
-// rounded rectangles with their names; M3-04 gives them real frames and M3-07 animates between models.
+// no layout math (`board-model/` does that). Cards are kept by object id and updated in place, so a card that moves is
+// the same sprite (M3-07 animates the move); hidden cards (backs, libraries) are few and redrawn each time.
 
-import { Application, Container, Graphics, Text } from "pixi.js";
-import type { BoardCard, BoardModel } from "../board-model/board-model.ts";
+import { Application, Container, Graphics } from "pixi.js";
+import type { BoardModel } from "../board-model/board-model.ts";
+import { cardBackSprite, librarySprite } from "./card-back.ts";
+import { type CardSprite, createCardSprite } from "./card-sprite.ts";
+import { PALETTE } from "./palette.ts";
 
 export type BoardScene = { draw: (model: BoardModel) => void; destroy: () => void };
 
-const COLORS = { table: 0x16181d, mine: 0x2d3e5e, theirs: 0x5e322d, hand: 0x3b4d2c, edge: 0xd8d2c0, text: 0xf2efe6 };
-
 export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   const app = new Application();
-  // Sized by each board model, not `resizeTo`: the model is the one measure of the board, and Pixi's resize plugin
-  // only follows the window, not the board's own box (which the HUD below it can change).
+  // Sized by each board model, not `resizeTo`: the model is the one measure of the board.
   await app.init({
     width: host.clientWidth,
     height: host.clientHeight,
-    background: COLORS.table,
+    // The table itself is the page's background (app.css), under a transparent canvas.
+    backgroundAlpha: 0,
     antialias: true,
     autoDensity: true,
     resolution: devicePixelRatio,
   });
   host.appendChild(app.canvas);
+  const table = new Graphics();
+  const hidden = new Container();
+  const cardLayer = new Container({ sortableChildren: true });
+  app.stage.addChild(table, hidden, cardLayer);
+  const sprites = new Map<string, CardSprite>();
   return {
     draw: (model) => {
       app.renderer.resize(model.width, model.height);
+      table
+        .clear()
+        .rect(model.band.x, model.band.y, model.band.width, model.band.height)
+        .fill({ color: PALETTE.band, alpha: 0.9 })
+        .rect(model.band.x, model.band.y + model.band.height / 2 - 0.5, model.band.width, 1)
+        .fill({ color: 0x3a4252 });
       // `context: true` frees each Graphics' drawing too, which a plain `children: true` leaves behind.
-      for (const child of app.stage.removeChildren()) child.destroy({ children: true, context: true });
-      for (const card of model.cards) app.stage.addChild(cardSprite(card));
+      for (const child of hidden.removeChildren()) child.destroy({ children: true, context: true });
+      for (const pile of model.libraries) hidden.addChild(librarySprite(pile));
+      for (const back of model.backs) hidden.addChild(cardBackSprite(back));
+      const present = new Set<string>();
+      model.cards.forEach((card, i) => {
+        present.add(card.id);
+        const known = sprites.get(card.id);
+        const sprite = known ?? createCardSprite(card);
+        if (known === undefined) {
+          sprites.set(card.id, sprite);
+          cardLayer.addChild(sprite.root);
+        } else sprite.update(card);
+        // The model lists cards back to front.
+        sprite.root.zIndex = i;
+      });
+      for (const [id, sprite] of sprites) {
+        if (!present.has(id)) {
+          sprite.destroy();
+          sprites.delete(id);
+        }
+      }
       exposeForTests(model);
     },
     destroy: () => app.destroy(true, { children: true }),
   };
-}
-
-function cardSprite(card: BoardCard): Container {
-  const sprite = new Container({ x: card.x + card.width / 2, y: card.y + card.height / 2 });
-  // A tapped permanent is turned sideways (CR 701.26a), about its centre.
-  sprite.rotation = card.tapped ? Math.PI / 2 : 0;
-  const fill = card.zone === "hand" ? COLORS.hand : card.mine ? COLORS.mine : COLORS.theirs;
-  const frame = new Graphics()
-    .roundRect(-card.width / 2, -card.height / 2, card.width, card.height, card.width * 0.06)
-    .fill(fill)
-    .stroke({ width: 1.5, color: COLORS.edge });
-  const fontSize = Math.max(9, card.width * 0.12);
-  const name = new Text({
-    text: card.name,
-    style: { fill: COLORS.text, fontSize, wordWrap: true, wordWrapWidth: card.width - 8, fontFamily: "system-ui" },
-  });
-  name.position.set(-card.width / 2 + 4, -card.height / 2 + 4);
-  sprite.addChild(frame, name);
-  if (card.power !== null && card.toughness !== null) {
-    const stats = new Text({
-      text: `${card.power}/${card.toughness}`,
-      style: { fill: COLORS.text, fontSize, fontFamily: "system-ui" },
-    });
-    stats.anchor.set(1, 1);
-    stats.position.set(card.width / 2 - 4, card.height / 2 - 4);
-    sprite.addChild(stats);
-  }
-  sprite.label = card.name;
-  return sprite;
 }
 
 /**

@@ -1,9 +1,13 @@
 // The board model (ui.md, "Board structure"): what the person's seat is shown (`SeatView`) plus the screen size, turned
-// into plain data, every visible card with its place and state. The renderer draws it and does no layout of its own,
-// so the layout is tested here without drawing anything. This first version lays out three rows: the opponent's
-// permanents, the person's permanents, the person's hand. M3-04 replaces it with Arena's layout (arena-research.md).
+// into plain data: every card it draws with its place and state, and where the DOM overlay puts life totals,
+// portraits, the phase ladder and the main button. The renderer draws it and does no layout of its own, so the layout
+// is tested here without drawing anything. The layout's values are data (`layout/compact.ts`).
 
-import type { ObjectId, PlayerId, SeatView, SeenCard } from "@mtg/engine";
+import type { Color, ObjectId, PlayerId, SeatView } from "@mtg/engine";
+import { COMPACT } from "../layout/compact.ts";
+import { battlefieldCards } from "./battlefield.ts";
+import { handCards } from "./hand.ts";
+import { cardBacks, libraryPiles } from "./hidden-cards.ts";
 
 export type BoardCard = {
   id: ObjectId;
@@ -11,94 +15,133 @@ export type BoardCard = {
   zone: "battlefield" | "hand";
   /** Controlled by the person whose board this is. */
   mine: boolean;
-  /** The card's rectangle, in CSS pixels from the board's top left, before turning it for `tapped`. */
+  /** The card's rectangle, in CSS pixels from the board's top left, before it's turned by `rotation`. */
   x: number;
   y: number;
   width: number;
   height: number;
+  /** Radians, about the card's centre: a tapped permanent's tilt, a hand card's place in the fan. */
+  rotation: number;
+  alpha: number;
   tapped: boolean;
+  colors: readonly Color[];
+  /** True for a land: drawn with a land's frame. */
+  land: boolean;
+  /** The art to draw, loaded at runtime (D-007); null for a token, which has none yet. */
+  art: string | null;
+  /** The printed mana cost's symbols, shown over a hand card (CR 107.4). Empty on the battlefield. */
+  manaCost: string[];
   power: number | null;
   toughness: number | null;
+  damage: number;
+  /** On the front card of a pile of lands with the same name, how many it holds; null elsewhere. */
+  pileCount: number | null;
+};
+
+/** A face-down card the person can't see: one of the opponent's hand (CR 402.3). */
+export type CardBack = { key: string; x: number; y: number; width: number; height: number; rotation: number };
+
+/** A library, face down, with how many cards it holds (CR 401.3: anyone may count it). */
+export type LibraryPile = {
+  player: PlayerId;
+  mine: boolean;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  count: number;
+};
+
+export type Point = { x: number; y: number };
+export type Rect = Point & { width: number; height: number };
+
+/** Where the DOM overlay places its pieces, in the same CSS pixels as the cards. */
+export type OverlayAnchors = {
+  portrait: { mine: Rect; opponent: Rect };
+  /** Each life crest's centre. */
+  life: { mine: Point; opponent: Point };
+  mainButton: Rect;
+  /**
+   * On the person's turn, the phase ladder's bottom centre, over the main button; on the opponent's, the centre of
+   * their life crest, which the ladder sits around [R].
+   */
+  ladder: Point;
+  ladderSide: "mine" | "opponent";
 };
 
 export type BoardModel = {
   width: number;
   height: number;
+  /** In drawing order, back to front. */
   cards: BoardCard[];
-  /** The opponent's hand is hidden (CR 402.3): only how many cards it holds. */
-  opponentHandSize: number;
+  backs: CardBack[];
+  libraries: LibraryPile[];
+  /** The band across the middle that splits the two battlefields [R], the board's whole width. */
+  band: Rect;
+  overlay: OverlayAnchors;
 };
 
 export type BoardSize = { width: number; height: number };
+/** The safe-area insets (`env(safe-area-inset-*)`, ui.md "Layouts"): the board is drawn full-bleed, laid out inside. */
+export type Insets = { top: number; right: number; bottom: number; left: number };
 
-/** Cards are shaped like a Magic card: 63 by 88 mm. */
-const CARD_RATIO = 63 / 88;
-const GAP = 8;
+/** The part of the board the layout's shares are taken of. */
+export type PlayArea = { x: number; y: number; w: number; h: number };
 
-export function boardModel(shown: SeatView, size: BoardSize): BoardModel {
+export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
+
+export function boardModel(shown: SeatView, size: BoardSize, insets: Insets = NO_INSETS): BoardModel {
   const me = shown.player;
+  // Two players for now (M3); a multiplayer layout would place each opponent (later: CR 800).
   const opponent = shown.view.turnOrder.find((p) => p !== me) ?? me;
-  const cardHeight = Math.min(size.height * 0.24, 160);
-  const cardWidth = cardHeight * CARD_RATIO;
-  const permanents = shown.view.zones.battlefield.flatMap((id) => seenCard(shown, id));
-  const hand = (shown.view.zones.players[me]?.hand ?? []).flatMap((id) => seenCard(shown, id));
-  const rows: { cards: SeenCard[]; zone: BoardCard["zone"]; y: number }[] = [
-    { cards: permanents.filter((c) => controller(c) === opponent), zone: "battlefield", y: size.height * 0.04 },
-    { cards: permanents.filter((c) => controller(c) === me), zone: "battlefield", y: size.height * 0.36 },
-    { cards: hand, zone: "hand", y: size.height - cardHeight - size.height * 0.04 },
-  ];
-  const cards = rows.flatMap((row) => placeRow(row.cards, row.zone, row.y, me, size.width, cardWidth, cardHeight));
-  return { width: size.width, height: size.height, cards, opponentHandSize: handSize(shown, opponent) };
+  const area: PlayArea = {
+    x: insets.left,
+    y: insets.top,
+    w: Math.max(0, size.width - insets.left - insets.right),
+    h: Math.max(0, size.height - insets.top - insets.bottom),
+  };
+  const cards = [...battlefieldCards(shown, area, me), ...handCards(shown, area)];
+  return {
+    width: size.width,
+    height: size.height,
+    cards,
+    backs: cardBacks(shown.view.zones.players[opponent]?.handSize ?? 0, area),
+    libraries: libraryPiles(shown, area, opponent),
+    band: {
+      x: 0,
+      y: area.y + (COMPACT.band.y - COMPACT.band.h / 2) * area.h,
+      width: size.width,
+      height: COMPACT.band.h * area.h,
+    },
+    overlay: overlayAnchors(area, shown.view.turn?.activePlayer === opponent),
+  };
 }
 
-/**
- * One row of cards, centred. A tapped card is turned sideways (CR 701.26a), so it takes its height in width. A row
- * wider than the board overlaps its cards evenly from edge to edge instead.
- */
-function placeRow(
-  row: readonly SeenCard[],
-  zone: BoardCard["zone"],
-  y: number,
-  me: PlayerId,
-  width: number,
-  cardWidth: number,
-  cardHeight: number,
-): BoardCard[] {
-  const footprint = (card: SeenCard) => (card.tapped ? cardHeight : cardWidth);
-  const natural = row.reduce((sum, card) => sum + footprint(card), 0) + GAP * Math.max(0, row.length - 1);
-  const fits = natural <= width - 2 * GAP;
-  const overlapStep = row.length > 1 ? (width - 2 * GAP - cardHeight) / (row.length - 1) : 0;
-  let left = (width - natural) / 2;
-  return row.map((card, i) => {
-    // The card's own rectangle is centred in its slot; the renderer turns it about that centre.
-    const slotLeft = fits ? left : GAP + i * overlapStep;
-    const slot = fits ? footprint(card) : cardHeight;
-    left += footprint(card) + GAP;
-    return {
-      id: card.id,
-      name: card.characteristics.name,
-      zone,
-      mine: controller(card) === me,
-      x: slotLeft + slot / 2 - cardWidth / 2,
-      y,
-      width: cardWidth,
-      height: cardHeight,
-      tapped: card.tapped,
-      power: card.characteristics.power,
-      toughness: card.characteristics.toughness,
-    };
-  });
-}
-
-function seenCard(shown: SeatView, id: ObjectId): SeenCard[] {
-  const seen = shown.seen[id];
-  return seen?.kind === "card" ? [seen] : [];
-}
-
-function controller(card: SeenCard): PlayerId {
-  return card.characteristics.controller;
-}
-
-function handSize(shown: SeatView, player: PlayerId): number {
-  return shown.view.zones.players[player]?.handSize ?? 0;
+function overlayAnchors(area: PlayArea, opponentsTurn: boolean): OverlayAnchors {
+  const { portrait, life, mainButton } = COMPACT;
+  const button: Rect = {
+    x: area.x + area.w - mainButton.right - mainButton.width,
+    y: area.y + area.h - mainButton.bottom - mainButton.height,
+    width: mainButton.width,
+    height: mainButton.height,
+  };
+  const opponentLife = { x: area.x + area.w / 2, y: area.y + life.opponentY * area.h + life.size / 2 + 2 };
+  return {
+    portrait: {
+      opponent: { x: area.x + portrait.inset, y: area.y + portrait.inset, width: portrait.size, height: portrait.size },
+      mine: {
+        x: area.x + portrait.inset,
+        y: area.y + area.h - portrait.inset - portrait.size,
+        width: portrait.size,
+        height: portrait.size,
+      },
+    },
+    life: {
+      opponent: opponentLife,
+      mine: { x: area.x + area.w / 2, y: area.y + life.mineY * area.h - life.size / 2 - 2 },
+    },
+    mainButton: button,
+    ladder: opponentsTurn ? opponentLife : { x: button.x + button.width / 2, y: button.y - COMPACT.ladder.gap },
+    ladderSide: opponentsTurn ? "opponent" : "mine",
+  };
 }

@@ -1,29 +1,47 @@
-// The app shell for M3-03: one match against the heuristic AI, the board on its canvas, and a plain DOM layer with
-// life totals, the step, and a button for each legal action. Menus are M3-09; the real prompts and HUD are M3-04.
+// The app shell: one match against the heuristic AI, the board full-bleed on its canvas and the HUD over it. Menus are
+// M3-09. The board model is made here, from the seat view and the screen's size, so the canvas and the HUD share it.
 
-import type { PlayerId } from "@mtg/engine";
-import { useEffect, useRef, useState } from "react";
+import type { Action, GameSetup } from "@mtg/engine";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
+import { fixtureSetup } from "../fixtures/fixtures.ts";
+import { Hud } from "../hud/Hud.tsx";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
-import type { FromWorker } from "../worker/protocol.ts";
-import { optionLabel } from "./option-label.ts";
+import type { FromWorker, ToWorker } from "../worker/protocol.ts";
+import { readInsets } from "./safe-area.ts";
 
 type Update = Extract<FromWorker, { type: "update" }>;
 
-/** `?seed=12&deck=red-aggro&vs=white-soldiers` start a given match, for tests and bug reports. */
-function matchFromUrl(): { seed: number; decks: [string, string] } {
+/**
+ * The match the address asks for: `?fixture=mid-game` a fixture board, `?seed=12&deck=red-aggro&vs=white-soldiers` a
+ * given match, for tests and bug reports. A missing or mistyped seed gets a random one.
+ */
+function startFromUrl(): ToWorker | { error: string } {
   const params = new URLSearchParams(location.search);
+  const fixture = params.get("fixture");
+  if (fixture !== null) {
+    const setup: GameSetup | null = fixtureSetup(fixture);
+    return setup === null ? { error: `no fixture ${fixture}` } : { type: "startFrom", setup, human: "p1" };
+  }
   const asked = Number(params.get("seed"));
-  // A seed that isn't a whole number (a typo in the address) gets a random one instead.
   const seed =
     params.has("seed") && Number.isSafeInteger(asked) && asked >= 0 ? asked : Math.floor(Math.random() * 1_000_000_000);
-  return { seed, decks: [params.get("deck") ?? "red-green-beats", params.get("vs") ?? "white-soldiers"] };
+  return {
+    type: "start",
+    decks: [params.get("deck") ?? "red-green-beats", params.get("vs") ?? "white-soldiers"],
+    seed,
+    human: "p1",
+  };
 }
 
 export function App() {
   const client = useRef<MatchClient | null>(null);
+  const main = useRef<HTMLElement>(null);
   const [update, setUpdate] = useState<Update | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [size, setSize] = useState<BoardSize | null>(null);
+  const [insets, setInsets] = useState<Insets>(NO_INSETS);
 
   useEffect(() => {
     const started = startMatchWorker((reply) => {
@@ -33,54 +51,41 @@ export function App() {
       } else setError(reply.message);
     });
     client.current = started;
-    const { seed, decks } = matchFromUrl();
-    started.send({ type: "start", decks, seed, human: "p1" });
+    const start = startFromUrl();
+    if ("error" in start) setError(start.error);
+    else started.send(start);
     return () => started.stop();
   }, []);
 
-  if (update === null) {
-    return error === null ? (
-      <p className="loading">Starting a match…</p>
-    ) : (
-      <p role="alert" className="loading">
-        {error}
-      </p>
-    );
-  }
-  const { shown } = update;
-  const view = shown.view;
-  const life = (p: PlayerId) => view.players[p]?.life ?? 0;
-  const opponent = view.turnOrder.find((p) => p !== shown.player) ?? shown.player;
-  const result = view.result;
+  // The board follows the screen: a turn or a fold re-lays it out (ui.md, "Layouts").
+  useEffect(() => {
+    const element = main.current;
+    if (element === null) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry === undefined) return;
+      setSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+      setInsets(readInsets());
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const model = useMemo(
+    () => (update !== null && size !== null ? boardModel(update.shown, size, insets) : null),
+    [update, size, insets],
+  );
+  const act = useCallback((action: Action) => client.current?.send({ type: "act", action }), []);
+
   return (
-    <main className="app">
-      <BoardCanvas shown={shown} onError={setError} />
-      <section className="hud" aria-label="Match">
-        <p>
-          You {life(shown.player)} · Opponent {life(opponent)} · Turn {view.turn?.number ?? 0}, {view.turn?.step ?? ""}
+    <main className="app" ref={main}>
+      <BoardCanvas model={model} onError={setError} />
+      {update === null && error === null && <p className="loading">Starting a match…</p>}
+      {update !== null && model !== null && <Hud shown={update.shown} model={model} act={act} />}
+      {error !== null && (
+        <p role="alert" className="toast">
+          {error}
         </p>
-        {result !== null && (
-          <p role="status">
-            {result.winner === shown.player ? "You win" : result.winner === null ? "Draw" : "You lose"}
-          </p>
-        )}
-        {error !== null && <p role="alert">{error}</p>}
-        <div className="options">
-          {shown.options.map((option, i) => (
-            <button
-              type="button"
-              // The options are listed in the engine's order, which doesn't change while they're shown.
-              // biome-ignore lint/suspicious/noArrayIndexKey: no other stable key for an action
-              key={i}
-              // A spell or ability the person's mana can't pay for now is shown but not offered (seatView's hint).
-              disabled={option.mightPay === false}
-              onClick={() => client.current?.send({ type: "act", action: option.action })}
-            >
-              {optionLabel(shown, option.action)}
-            </button>
-          ))}
-        </div>
-      </section>
+      )}
     </main>
   );
 }
