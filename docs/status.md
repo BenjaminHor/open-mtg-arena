@@ -313,6 +313,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     small art tile by its player's block, a revealed hand as an eye chip. `interaction/zones.ts` (test/zones.test.ts),
     `hud/ZoneBrowser.tsx`, `hud/long-press.ts`, a `zones` fixture, e2e/zones.spec.ts (both sizes; a real touch
     long-press, whose click-swallow a mutation check confirmed the test catches).
+    Review fixes (code review and UX review), in D-168: the release of a long hold no longer closes the browser it
+    opened (the e2e now holds 1.2 s); focus kept inside the sheet (an e2e, mutation-checked); revealed marks within the
+    block's width and inert while targeting; revealed cards keyed by identity and copy; drawn-card fallbacks offline;
+    "Opponent"/"You" heading, one sheet height, a "Waiting for you" line; press states, 44 px taps, snap scrolling,
+    lazily drawn long rows; the block's label carries life and counts for screen readers.
+    Left from the reviews: the board model doesn't reserve the marks' room (they fit the outer column at every size
+    measured); the card view over the browser is barely larger than a row card on a phone (ask the owner at the end);
+    the tabs have no arrow-key movement; a settings menu left open under the sheet takes the first Escape.
   - Slice 5 plan (2026-11-23, written before starting): graveyards, exile and revealed cards
     [R: arena-research.md "Library, graveyard, exile", "Zones: tapping a zone opens a browser of its known cards with
     a count"; "revealed cards are shown face up" [U]]:
@@ -334,7 +342,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - Graveyard choices (Raise Dead's target, Gravedigger's) stay in the prompt this slice; the browser opens over it.
       Arena picks them in a browser [R]: later, recorded in future-rules.
     - The card view takes a printed card by oracle id too, for revealed cards (`printedDetails`).
-    - Tests first: `test/zones.test.ts` (orders, exile by owner, face-down excluded, reveals, counts); e2e on a `zones`
+    - Tests first: `test/zones.test.ts` (orders, exile by owner, reveals, counts; face-down exile can't be built yet); e2e on a `zones`
       fixture (30-card graveyard, exile, Telepathy, Nocturnus): open, tabs, scroll, card view and back, Escape order,
       keys blocked, target-time long-press.
     - Future impact: the stack slice and graveyard picks reuse the browser's card row; face-down exile (later: CR

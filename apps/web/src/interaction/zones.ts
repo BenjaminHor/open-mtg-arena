@@ -107,12 +107,19 @@ function objects(shown: SeatView, ids: readonly ObjectId[]): ZoneCard[] {
   });
 }
 
-/** Revealed cards, keyed by place: the same card twice is two cards. */
+/**
+ * Revealed cards, keyed by identity and copy ("the second Plains"): the same card twice is two cards, and a card the
+ * view is showing keeps its key when one before it leaves (the order is by identity already, D-062, so this tells
+ * nothing more).
+ */
 function printed(oracleIds: readonly OracleId[], prefix: string): ZoneCard[] {
-  return oracleIds.map((oracleId, i) => {
+  const copies = new Map<OracleId, number>();
+  return oracleIds.map((oracleId) => {
+    const n = (copies.get(oracleId) ?? 0) + 1;
+    copies.set(oracleId, n);
     const info = cardInfo(oracleId);
     return {
-      key: `${prefix}-${i}`,
+      key: `${prefix}-${oracleId}-${n}`,
       id: null,
       oracleId,
       name: info?.name ?? "A card",

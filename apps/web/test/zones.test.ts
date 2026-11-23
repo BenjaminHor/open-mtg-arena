@@ -72,6 +72,14 @@ describe("revealed cards", () => {
     expect(browserTabs(shown, "p2").map((t) => t.zone)).toEqual(["graveyard", "exile", "hand"]);
   });
 
+  it("keys a revealed card by identity and copy, so it keeps its key when a card before it leaves", () => {
+    const before = boardView(board({ battlefield: ["Telepathy"] }, { hand: ["Plains", "Shock", "Pacifism"] }));
+    const after = boardView(board({ battlefield: ["Telepathy"] }, { hand: ["Plains", "Shock"] }));
+    const keyOf = (shown: typeof before, name: string) =>
+      zoneCards(shown, "p2", "hand").find((c) => c.name === name)?.key;
+    for (const name of ["Plains", "Shock"]) expect(keyOf(after, name)).toBe(keyOf(before, name));
+  });
+
   it("marks the person's own revealed hand, without a tab: they hold it", () => {
     const shown = boardView(board({}, { battlefield: ["Telepathy"] }));
     expect(playerZones(shown, "p1").handRevealed).toBe(true);

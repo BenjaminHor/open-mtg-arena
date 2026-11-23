@@ -14,8 +14,8 @@ test("browses the opponent's graveyard, exile and revealed hand; a card's view c
   await expect(page.getByRole("button", { name: /^Next/ })).toContainText("To Combat");
   // What's revealed shows without a tap: the opponent's library top (Vampire Nocturnus) and both hands (Telepathy).
   await expect(page.getByRole("button", { name: "Opponent's library top: Shock" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Hand revealed" })).toBeVisible();
-  await expect(page.getByText("Hand revealed")).toHaveCount(2);
+  await expect(page.getByRole("button", { name: "Opponent's hand revealed" })).toBeVisible();
+  await expect(page.getByText("Your hand is revealed")).toBeVisible();
 
   const block = page.getByRole("button", { name: /^Opponent: graveyard and exile/ });
   await block.click();
@@ -30,13 +30,27 @@ test("browses the opponent's graveyard, exile and revealed hand; a card's view c
   await last.scrollIntoViewIfNeeded();
   await expect(last).toBeInViewport();
 
+  // Focus can't leave it: after a click on the sheet's padding (focus to the page), Shift+Tab and Enter stay inside
+  // rather than reaching Next behind it.
+  const box = await sheet(page).boundingBox();
+  if (box === null) throw new Error("no sheet");
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height - 3);
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Shift+Tab");
+  await expect(sheet(page).locator(":focus")).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: /^Next/ })).toContainText("To Combat");
+  // The Enter pressed whatever in the sheet had focus (a card: its view opened); close that.
+  if ((await page.locator(".card-view.full").count()) > 0) await page.keyboard.press("Escape");
+  await expect(sheet(page)).toBeVisible();
+
   // No key reaches the board behind it: Space doesn't press Next.
   await page.getByRole("tab", { name: "Exile 2" }).click();
   await page.keyboard.press("Space");
-  await expect(page.getByRole("list", { name: "Opponent's Exile 2" }).getByRole("button")).toHaveText([
-    "Lightning Bolt",
-    "Veteran Armorsmith",
-  ]);
+  const exiled = page.getByRole("list", { name: "Opponent's Exile 2" }).getByRole("button");
+  await expect(exiled).toHaveCount(2);
+  await expect(exiled.first()).toHaveAccessibleName("Lightning Bolt");
+  await expect(exiled.last()).toHaveAccessibleName("Veteran Armorsmith");
 
   // A card's view opens over the browser, and Escape closes it first, then the browser.
   await page.getByRole("button", { name: "Lightning Bolt" }).click();
@@ -102,8 +116,11 @@ test("a long-press on a player who is a target looks, and its release doesn't pi
   const at = [{ x: box.x + box.width / 2, y: box.y + box.height / 2 }];
   const touch = await page.context().newCDPSession(page);
   await touch.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: at });
-  await page.waitForTimeout(600);
+  // Held well past the long-press, as a finger often is: the release must neither close the browser it opened nor
+  // pick the player.
+  await page.waitForTimeout(1200);
   await touch.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await page.waitForTimeout(300);
   await expect(sheet(page)).toBeVisible();
   await page.getByRole("button", { name: "Close" }).click();
   // Still choosing: the release's tap didn't pick the opponent as Lightning Bolt's target.

@@ -94,7 +94,7 @@ export function isTouch(e: React.MouseEvent): boolean {
  * The card itself: its image, and until that has loaded (or if it can't, offline), the card as text in its frame, as
  * the hand draws its own fallback (ui.md). A token has no image, so it's always the text.
  */
-function CardFace({ details }: { details: CardDetails }) {
+export function CardFace({ details }: { details: CardDetails }) {
   const [image, setImage] = useState<"loading" | "loaded" | "failed">("loading");
   const showImage = details.image !== null && image !== "failed";
   return (
@@ -121,6 +121,8 @@ function CardFace({ details }: { details: CardDetails }) {
           src={details.image}
           alt={details.name}
           draggable={false}
+          // In the zone browser's long row, only the cards scrolled near load.
+          loading="lazy"
           onLoad={() => setImage("loaded")}
           onError={() => setImage("failed")}
         />

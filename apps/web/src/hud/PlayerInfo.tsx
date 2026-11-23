@@ -6,6 +6,7 @@
 // What of theirs is revealed shows beside it at a glance (`RevealedMarks`).
 
 import type { Action, PlayerId, SeatView } from "@mtg/engine";
+import { useState } from "react";
 import type { Rect } from "../board-model/board-model.ts";
 import type { Choice } from "../interaction/controls.ts";
 import { playerZones, type ZoneName } from "../interaction/zones.ts";
@@ -37,7 +38,8 @@ export function PlayerInfo({ shown, player, rect, side, active, targets, act, br
         type="button"
         className={className}
         style={place(rect)}
-        aria-label={target !== undefined ? `${label}: ${target.label}` : `${name}: graveyard and exile`}
+        // The label is all a screen reader says of a button, so it carries the life and counts too.
+        aria-label={`${target !== undefined ? `${label}: ${target.label}` : `${name}: graveyard and exile`} (life ${life}; ${zones.library} library, ${zones.graveyard} graveyard, ${zones.exile} exile)`}
         onClick={() => (target !== undefined ? act(target.action) : browse("graveyard"))}
         {...look}
       >
@@ -64,53 +66,98 @@ export function PlayerInfo({ shown, player, rect, side, active, targets, act, br
           </span>
         </span>
       </button>
-      <RevealedMarks shown={shown} player={player} rect={rect} side={side} browse={browse} />
+      <RevealedMarks
+        shown={shown}
+        player={player}
+        rect={rect}
+        side={side}
+        browse={browse}
+        inert={target !== undefined}
+      />
     </>
   );
 }
 
-/** px: the marks' row, beside the block (below the opponent's, above the person's, clear of the mana pool chip). */
-const MARKS = { height: 56, gap: 6, pool: 32 };
+/**
+ * px: the marks' column, beside the block (below the opponent's, above the person's, clear of the mana pool chip),
+ * within the block's width so it never reaches the board's rows. The gap keeps a slightly low tap on a targeted player
+ * off them.
+ */
+const MARKS = { tile: 56, chip: 28, between: 6, gap: 12, pool: 32 };
 
 /**
  * What of a player's is revealed to everyone, at a glance [U: "revealed cards are shown face up"]: their library's top
- * card as a small face-up tile (Vampire Nocturnus, CR 401.5), where Arena keeps a library pile, and an eye marking a
- * revealed hand (Telepathy, CR 701.20a). A tap on either opens the browser there; the person's own hand is in front of
- * them, so its mark is only a note.
+ * card as a small face-up tile on a pile's edge (Vampire Nocturnus, CR 401.5), where Arena keeps a library pile, and an
+ * eye marking a revealed hand (Telepathy, CR 701.20a). A tap on either opens the browser there; the person's own hand
+ * is in front of them, so its mark is only a note. While a player is a target they step aside (no taps), so a tap near
+ * the block is never taken for another.
  */
-function RevealedMarks({ shown, player, rect, side, browse }: Omit<Props, "active" | "targets" | "act">) {
+function RevealedMarks({
+  shown,
+  player,
+  rect,
+  side,
+  browse,
+  inert,
+}: Omit<Props, "active" | "targets" | "act"> & {
+  inert: boolean;
+}) {
   const zones = playerZones(shown, player);
-  if (zones.revealedTop === null && !zones.handRevealed) return null;
-  const whose = side === "mine" ? "Your" : "Opponent's";
-  const y = side === "opponent" ? rect.y + rect.height + MARKS.gap : rect.y - MARKS.pool - MARKS.gap - MARKS.height;
   const top = zones.revealedTop;
+  if (top === null && !zones.handRevealed) return null;
+  const whose = side === "mine" ? "Your" : "Opponent's";
+  const height =
+    (top === null ? 0 : MARKS.tile) +
+    (zones.handRevealed ? MARKS.chip : 0) +
+    (top !== null && zones.handRevealed ? MARKS.between : 0);
+  const y = side === "opponent" ? rect.y + rect.height + MARKS.gap : rect.y - MARKS.pool - MARKS.gap - height;
   return (
-    <div className={`revealed-marks ${side}`} style={{ left: rect.x, top: y, height: MARKS.height }}>
+    <div
+      className={`revealed-marks ${side}${inert ? " inert" : ""}`}
+      style={{ left: rect.x, top: y, width: rect.width, height }}
+    >
       {top !== null && (
         <button
           type="button"
           className="revealed-top"
           aria-label={`${whose} library top: ${top.name}`}
+          tabIndex={inert ? -1 : undefined}
           onClick={() => browse("library")}
         >
-          {top.art !== null && <img src={top.art} alt="" draggable={false} />}
-          <span>{top.name}</span>
+          <TopArt url={top.art} />
+          <span>
+            <small>Library top</small>
+            {top.name}
+          </span>
         </button>
       )}
       {zones.handRevealed &&
         (side === "opponent" ? (
-          <button type="button" className="revealed-hand" onClick={() => browse("hand")}>
+          <button
+            type="button"
+            className="revealed-hand"
+            aria-label="Opponent's hand revealed"
+            tabIndex={inert ? -1 : undefined}
+            onClick={() => browse("hand")}
+          >
             <Eye />
             Hand revealed
           </button>
         ) : (
-          <span className="revealed-hand">
+          <span className="revealed-hand note">
             <Eye />
-            Hand revealed
+            Your hand is revealed
           </span>
         ))}
     </div>
   );
+}
+
+/** The top card's art; with none (offline, or it failed), the tile's plain colour and the name on it. */
+function TopArt({ url }: { url: string | null }) {
+  const [failed, setFailed] = useState(false);
+  if (url === null || failed) return null;
+  return <img src={url} alt="" draggable={false} onError={() => setFailed(true)} />;
 }
 
 /** An open eye, our own shape (D-140): this is shown to everyone. */

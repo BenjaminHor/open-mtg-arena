@@ -2581,8 +2581,17 @@ owner's answer to the D-089 open question, option (a))
   arriving leaves it open. The card view shows a revealed card by its printed face (`printedDetails`).
 - Revealed cards show without a tap [U: "revealed cards are shown face up"]: a library's revealed top card as a small
   face-up art tile beside its player's block (in the outer column, where Arena keeps a library pile), and an eye chip
-  "Hand revealed" for a revealed hand, either player's; a tap on the opponent's opens the browser there. The opponent's
+  "Hand revealed" for a revealed hand (the person's own a quiet note: they hold it); a tap on the opponent's opens the
+  browser there. The opponent's
   card backs at the top stay backs: only their bottom edge is on screen, and a revealed hand's order isn't its real
   order (D-062).
 - Picking a card in a graveyard (Gravedigger's target) stays in the prompt: Arena opens a browser of the cards to
   choose [R], later (future-rules.md).
+- After the reviews: a long-press's click is swallowed when the finger lifts, however long it was held (it had been
+  timed from the press firing, so a 700 ms hold opened the browser and its release closed it); the backdrop closes the
+  sheet only on a press that began there. Focus can't leave the sheet (Tab from the page, a prompt arriving behind it).
+  The revealed marks are a column within the block's width (they had reached the board's first pile on a phone) and
+  step aside while the player is a target. A revealed card is keyed by identity and copy, so a card being looked at
+  stays itself when one before it leaves. Cards in the row fall back to the drawn card, as the card view does. The
+  sheet names whose zones they are, keeps one height (an empty zone too), and says when a decision is waiting under it.
+  Press states at once; 44 px taps.
