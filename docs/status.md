@@ -297,7 +297,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     the loyalty shield), placed by `battlefield-tile.ts`; a `badges` fixture (and an e2e smoke test on it). Sick
     creatures dimmed too (owner). After the code review: sickness shown until its controller's next turn, the
     opponent's turn included (CR 302.6); the icons fit the room the counter leaves; badges below a token's arch; the
-    "zz" drawn as strokes. Next: 4b, Auras and Equipment beside their host.
+    "zz" drawn as strokes. After the UX review: only the art dims (name and P/T stay readable); a sick creature
+    dims only on its controller's turn; first strike, protection, reach, trample and indestructible redrawn so no two
+    icons (or the combat badges) look alike; the ellipsis without a disc; loyalty's numeral at P/T size. Hover
+    preview at 250 ms (owner). Left from that review: a token's badges sit lower than its neighbours' (the arch);
+    the settings cog covers the far-right opponent permanent at 812x375 (pre-existing); a counter of another kind is
+    a bare number (none in the pool yet). Next: 4b, Auras and Equipment beside their host.
   - M3-04c slice 4 (was 3; renumbered after the restyle took 3) (2026-11-23, written before starting): badges, then
     attachments, two PRs. The slices after it are now 5 zones, 6 the stack, 7 finishing. The badges are re-sited for
     the frameless tile (the name now runs along the bottom left): keyword icons as small round icons at the top left,
