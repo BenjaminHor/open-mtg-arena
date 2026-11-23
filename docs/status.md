@@ -334,6 +334,26 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - M3-05 plan (2026-11-23, written before starting; the owner: "move forward with M3-05"). Spec: m3-first-playable.md
+    M3-05: the Arena-like layout for the unfolded phone (7.6-inch, nearly square, either way up) and desktop, switching
+    live on resize with no loss of state or selection; accept: a Playwright test resizes mid-selection and it survives.
+    - Seen first (the compact layout at 1280x720, 1024x768, 1000x860, 860x1000): it plays, but sizes are shares of the
+      height, so on the near-square screen cards are huge, land piles overlap, the stack covers the outer row, and the
+      hand strip is oversized.
+    - `FULL`, a second `BoardLayout` value (`layout/full.ts`): Arena's desktop proportions [R: arena-research.md
+      "Desktop match screen"], battlefield cards about 10-12% of the height, the stack at the right edge clear of the
+      outer rows, a smaller share of the hand, px controls a little larger. Any change of shape the full layout needs
+      goes into the model as data, not a fork of it.
+    - `layoutFor(size)` (pure): compact for a short screen (a phone in landscape), full otherwise; the App picks it on
+      every size change, so a fold or a resize re-lays out with state, the lifted card, the chosen targets and the
+      open hand kept (they're React state, not the layout's). `__board` names the layout for tests.
+    - Tests: `layoutFor`; the board-model invariants (inside the screen, clear of the HUD, rows apart, the hand in its
+      strip, the stack clear of the rows) run over both layouts at the folded, unfolded both ways, tablet and desktop
+      sizes; e2e: resize mid-selection (a target being chosen, a card lifted) between folded and unfolded, the
+      selection survives and the layout switches.
+    - Screenshots at the folded, unfolded and desktop sizes, the ux-reviewer, then a PR; the owner tries it unfolded.
+    - Future impact: the layout stays data (D-152), so the RPG's boards and a multiplayer layout are more values; no
+      layout reads the device, only the size (ui.md).
   - The owner on the live stack labels and ladder walk (2026-11-23): "Seems fine at the moment, move forward with
     M3-05". Next: M3-05.
   - **Ladder walk merged (PR #114, squash, 2026-11-23).** Next: the owner tries the live site (the stack's labels,
