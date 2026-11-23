@@ -145,6 +145,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     and blocks"). Plan, in order: combat on the board (attackers forward with a swords badge, blockers opposite their
     attacker with a shield badge, links), fixtures that reach combat, screenshots of attacks and blocks to the owner;
     then the frames for colourless, multicolour and tokens; then the HUD polish; then screenshots of everything.
+  - Owner (2026-11-23) sent four recent Arena phone screenshots of combat, blocking and highlighting what can be
+    played; described in arena-research.md ("The owner's phone screenshots, second set"). Taken into this slice:
+    the cyan outline on everything playable or able to attack or block now (from the seat view's options); the
+    ladder opening into attack, block and damage steps during combat, and the opponent's crest taking the combat slot
+    of their ladder; the main button's labels while attacking or blocking ("No Blocks", "1 Blocker", "To Damage").
+    Left for M3-04b (touch): picking blockers by tapping, the yellow-orange picked outline and the beam to the attacker
+    during the choice, "Cancel Blocks", the "Choose blockers." prompt, the fast-forward button.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

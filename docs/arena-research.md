@@ -799,6 +799,41 @@ height (H). All [R], from the screenshots.
   cards would go to the bottom, and "Keep 7" (right). A round "?" help button sits left of them.
 - Top right: an eye button (to look at the battlefield) beside the count and the cog.
 
+## The owner's phone screenshots, second set (2026-11-23)
+
+Four landscape screenshots from the owner's phone, of the current client, sent "showing combat and blocking and
+highlighting what's available to play on your turn or priority". Described in words; the images aren't kept. All [R].
+
+**Highlighting what can be played**
+- With the hand open on the person's turn, every card that can be played now has a thick glowing cyan outline (a
+  land while a land drop is left, the castable spells); cards that can't be played now have none, but aren't dimmed.
+- While blockers are chosen, a creature that can block glows with the same cyan outline. Once it's picked as a
+  blocker, its outline turns yellow-orange, and a glowing orange beam runs from it to the attacker it blocks.
+
+**Combat**
+- Attacking creatures are tapped (tilted, darkened, the curved arrow) and stay in their row; a red-orange chevron sits
+  under each one, pointing toward the defending player.
+- During the choice, blockers don't move; the beam shows the pairing. A prompt in plain text sits centred between the
+  rows: "Choose blockers."
+- The main button follows the choice: "No Blocks" (a blue pill) before any blocker is picked, "1 Blocker" (a red pill)
+  once one is, both with "To Damage" in small text under the pill; above it a dark outlined pill "Cancel Blocks"
+  appears once something is picked. A round blue fast-forward button sits left of the main button.
+- On the opponent's turn with nothing to decide the main button is plain text, "Opponent's Turn", no pill.
+
+**The phase ladder**
+- At the bottom right over the main button, in combat it opens into its steps: end-cap diamond, main phase card,
+  sword (attackers), shield (blockers), burst (damage), diamond, second main card, diamond. The current step is lit
+  white and larger; the rest are dark blue.
+- Outside combat it's the short form: diamond, card, crossed swords, card, diamond.
+- On the opponent's turn, their life crest at the top centre sits between a diamond and a card on each side, and the
+  crest itself takes the combat slot: during combat it grows glowing blue crossed-sword wings.
+
+**Other details**
+- Keyword icons sit in a small dark square at the bottom-left corner of a permanent (a heart for lifelink, a
+  menace-like icon); a token (an Insect) has an arched top in its colour's frame and no name strip.
+- The collapsed hand shows its cards' name strips and floating mana costs above them, with the life crest over its
+  middle; the person's library is a large face-down pile beside their portrait at the bottom left.
+
 ## Conflicts and gaps: status after the second pass
 
 **The owner (2026-11-22): the items still open below are ours to design**, in the spirit of what's settled (the
