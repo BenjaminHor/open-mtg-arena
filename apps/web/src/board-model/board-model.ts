@@ -3,7 +3,7 @@
 // portraits, the phase ladder and the main button. The renderer draws it and does no layout of its own, so the layout
 // is tested here without drawing anything. The layout's values are data (`BoardLayout`; the compact one by default).
 
-import type { Color, ObjectId, SeatView, Step } from "@mtg/engine";
+import type { Color, ObjectId, PlayerId, SeatView, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
 import { type Badges, badgesOf, NO_BADGES } from "./badges.ts";
@@ -181,7 +181,7 @@ export function boardModel(
   const cards = [...field.cards, ...stack, ...hand]
     .map((c) => {
       const badges = c.zone === "battlefield" ? badgesOfId(shown, c.id) : NO_BADGES;
-      return withSickDim({ ...c, badges }, layout);
+      return withSickDim({ ...c, badges }, shown, turn?.activePlayer ?? null, layout);
     })
     .map((c) => ({
       ...c,
@@ -327,8 +327,12 @@ function badgesOfId(shown: SeatView, id: ObjectId): Badges {
 
 /**
  * A creature that can't attack or tap yet (CR 302.6) is dimmed, as Arena shows it (the owner, ui.md "Summoning
- * sickness, dimmed"), besides its "zz" badge; less than a tapped card, which also tilts and carries its arrow.
+ * sickness, dimmed"), besides its "zz" badge; less than a tapped card, which also tilts and carries its arrow. Only on
+ * its controller's turn: on the other player's it can still block, and a dimmed creature reads as out of play while
+ * blockers are counted (the UX review); its "zz" still says its {T} abilities wait.
  */
-function withSickDim(card: BoardCard, layout: BoardLayout): BoardCard {
-  return card.badges.sick ? { ...card, dim: Math.max(card.dim, layout.sick.dim) } : card;
+function withSickDim(card: BoardCard, shown: SeatView, activePlayer: PlayerId | null, layout: BoardLayout): BoardCard {
+  const seen = shown.seen[card.id];
+  const controllersTurn = seen?.kind === "card" && seen.characteristics.controller === activePlayer;
+  return card.badges.sick && controllersTurn ? { ...card, dim: Math.max(card.dim, layout.sick.dim) } : card;
 }

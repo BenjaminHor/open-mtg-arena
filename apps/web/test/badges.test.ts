@@ -83,6 +83,8 @@ describe("badgesOf", () => {
     const dim = (name: string) => model.cards.find((c) => c.name === name && c.zone === "battlefield")?.dim;
     expect(dim("Llanowar Elves")).toBeGreaterThan(0);
     expect(dim("Grizzly Bears")).toBe(0);
+    // The opponent's sick creature, on the person's turn: "zz" (its {T} abilities wait) but not dimmed (it can block).
+    expect(dim("Elite Vanguard")).toBe(0);
   });
 
   it("doesn't pile a permanent with a twin that has a protection it lacks (its badges would differ)", () => {

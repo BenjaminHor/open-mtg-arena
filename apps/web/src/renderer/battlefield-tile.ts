@@ -30,6 +30,8 @@ export function drawTile(card: BoardCard): Face {
   );
   const artLayer = new Container();
   tile.addChild(artLayer);
+  // A tapped or sick card's art is dimmed; its name and P/T stay as readable as any card's (drawn after).
+  if (card.dim > 0) tile.addChild(shape(new Graphics()).fill({ color: 0x000000, alpha: card.dim }));
   if (!card.behind) tile.addChild(...nameAndStats(card, w, h));
   tile.addChild(shape(new Graphics()).stroke({ width: 1, color: PALETTE.rim, alpha: 0.9 }));
   // Its state, on its own edge (inside it, so neighbours' outlines never touch): a solid outline where it can be used
@@ -38,7 +40,6 @@ export function drawTile(card: BoardCard): Face {
   if (card.picked) tile.addChild(outline(shape, w, h, PALETTE.picked, 2.5));
   else if (card.targetable && !card.behind) tile.addChild(dashed(w, h, PALETTE.playable, 2));
   else if (card.playable && !card.behind) tile.addChild(outline(shape, w, h, PALETTE.playable, 1.5));
-  if (card.dim > 0) tile.addChild(shape(new Graphics()).fill({ color: 0x000000, alpha: card.dim }));
   // An attacker's swords say more than a tap mark would, so it has only the tilt and the swords.
   if (card.tapped && !card.behind && !card.attacking) {
     const mark = tapMark(Math.min(w, h) * 0.78);
@@ -145,7 +146,8 @@ function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
   const pill = hasPowerToughness(card)
     ? ptPill(card, h)
     : loyalty !== null
-      ? loyaltyShield(loyalty, Math.min(18, Math.max(12, h * 0.24)))
+      ? // Its numeral as large as a creature's P/T: a planeswalker's most important number.
+        loyaltyShield(loyalty, Math.min(14, Math.max(8, h * 0.15)) * 1.7)
       : null;
   const name = new Text({
     text: card.name,
@@ -268,7 +270,7 @@ function ptPill(card: BoardCard, h: number): Container {
  */
 function badgeMarks(card: BoardCard, w: number, h: number, inCombat: boolean): Container[] {
   const { badges } = card;
-  const r = Math.min(10, Math.max(6, Math.min(w, h) * 0.11));
+  const r = Math.min(13, Math.max(6, Math.min(w, h) * 0.1));
   const inset = Math.max(2, r * 0.35);
   const top = -h / 2 + inset + (card.token ? h * TOKEN_ARCH_RISE : 0);
   const marks: Container[] = [];

@@ -2527,18 +2527,22 @@ owner's answer to the D-089 open question, option (a))
 **D-166: Badges on a permanent (M3-04c slice 4)** · 2026-11-23 · accepted
 - What a permanent wears besides its name and P/T, decided in `board-model/badges.ts` (pure, tested) and drawn by
   `renderer/badge-marks.ts`, our own shapes (D-140), light on small dark discs, in the minimal style (D-162):
-  - keyword icons along the top left [R] (the name now has the bottom): at most two; with more, one and an ellipsis,
-    the card view listing them all [R]. Most telling first: flying, reach, first/double strike, deathtouch, trample,
+  - keyword icons along the top left [R] (the name now has the bottom): two at most, after "zz" when it's sick, as
+    room allows; with more, one and an ellipsis (three dots, no disc: a disc with dots reads as a menu button), the
+    card view listing them all [R]. Most telling first: flying, reach, first/double strike, deathtouch, trample,
     lifelink, vigilance, haste, protection, indestructible, shroud, landwalk, defender. Flash has none (it does
-    nothing on the battlefield). Protection is an icon of its own (a shield outline; a blocker's badge is filled);
+    nothing on the battlefield). Protection is an icon of its own: a dome (a shield is a blocker's badge and loyalty's, UX
+    review). First strike is an upright sword, double strike two (an attacker's badge is two crossed), flying a wing
+    with feather tips, reach an arrow up to a bar, trample an arrow through a wall, indestructible a hexagon;
   - counters as a small badge at the top right [R], left of a combat badge: "+2", "−1", or another kind's count;
   - a planeswalker's loyalty (CR 306.5c) in a shield where a creature's P/T goes [R]; one that's also a creature
     shows it at the top right;
-  - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay], and the creature
-    dimmed: until its controller's next turn begins, the other player's turn included, as the rule says (it can't
-    attack or use {T}/{Q} abilities then; a Llanowar Elves can't tap for mana on the opponent's turn). First built
-    to show only on its controller's turn; the code review found that hid a real restriction, and the card view
-    already said "Summoning sick" then.
+  - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay] until its
+    controller's next turn begins, the other player's turn included, as the rule says (it can't attack or use {T}/{Q}
+    abilities then; a Llanowar Elves can't tap for mana on the opponent's turn). First built to show only on its
+    controller's turn; the code review found that hid a real restriction. Dimmed (the owner) only on its
+    controller's turn: on the other player's it can still block, and a dimmed creature reads as out of play while
+    blockers are counted (UX review). Only the art dims: its name and P/T stay readable.
 - Protection now splits a pile, as keywords and counters do. Loyalty isn't a counter badge.
 - The icons take the room the counter leaves: fewer, ending in the ellipsis, on a small tile. Badges sit below a
   token's arched corners. A planeswalker that's also a creature (none in the pool) would show its P/T, loyalty in the

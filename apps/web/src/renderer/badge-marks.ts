@@ -30,9 +30,13 @@ export function iconRow(badges: Badges, r: number, room: number): Container {
         : [...all.filter((k) => k !== "more").slice(0, fits - 1), "more" as const];
   kinds.forEach((kind, i) => {
     const badge = new Container();
-    badge.addChild(
-      new Graphics().circle(0, 0, r).fill({ color: DISC, alpha: 0.88 }).stroke({ width: 1, color: INK, alpha: 0.25 }),
-    );
+    // The ellipsis has no disc of its own: a disc with three dots reads as a menu button, and tapping it is a tap on
+    // the card.
+    if (kind !== "more") {
+      badge.addChild(
+        new Graphics().circle(0, 0, r).fill({ color: DISC, alpha: 0.88 }).stroke({ width: 1, color: INK, alpha: 0.25 }),
+      );
+    }
     badge.addChild(kind === "sick" ? sleepy(r) : icon(kind, r * 0.62));
     badge.position.set(r + i * (r * 2 + 2), r);
     row.addChild(badge);
@@ -105,26 +109,35 @@ function icon(kind: BadgeIcon | "more", s: number): Graphics {
   const line = { width: Math.max(1.2, s * 0.24), color: INK, cap: "round" as const, join: "round" as const };
   switch (kind) {
     case "flying":
-      // A wing: a sweep and two feathers.
+      // A wing, wider than tall: a curved leading edge and three feather tips along its trailing edge.
       return g
-        .moveTo(-s, s * 0.6)
-        .quadraticCurveTo(-s * 0.2, -s * 1.1, s, -s * 0.8)
-        .quadraticCurveTo(s * 0.4, -s * 0.1, -s, s * 0.6)
+        .moveTo(-s, s * 0.2)
+        .quadraticCurveTo(-s * 0.2, -s * 0.95, s, -s * 0.55)
+        .lineTo(s * 0.55, -s * 0.05)
+        .lineTo(s * 0.7, -s * 0.05)
+        .lineTo(s * 0.15, s * 0.35)
+        .lineTo(s * 0.3, s * 0.35)
+        .lineTo(-s * 0.3, s * 0.65)
+        .closePath()
         .fill(INK);
     case "reach":
-      // An arrow up, reaching.
+      // An arrow up to a bar overhead: it reaches what flies.
       return g
-        .moveTo(0, s)
-        .lineTo(0, -s)
-        .moveTo(-s * 0.6, -s * 0.35)
-        .lineTo(0, -s)
-        .lineTo(s * 0.6, -s * 0.35)
+        .moveTo(-s * 0.8, -s * 0.9)
+        .lineTo(s * 0.8, -s * 0.9)
+        .moveTo(0, s * 0.9)
+        .lineTo(0, -s * 0.45)
+        .moveTo(-s * 0.5, -s * 0.05)
+        .lineTo(0, -s * 0.5)
+        .lineTo(s * 0.5, -s * 0.05)
         .stroke(line);
     case "first strike":
+      // One upright sword (an attacker's badge is two crossed).
       return sword(g, s, 0, line);
     case "double strike":
-      sword(g, s * 0.85, -s * 0.45, line);
-      return sword(g, s * 0.85, s * 0.45, line);
+      // Two upright swords side by side.
+      sword(g, s * 0.9, -s * 0.42, line);
+      return sword(g, s * 0.9, s * 0.42, line);
     case "deathtouch":
       // A skull: a round head, a jaw, two eyes.
       g.circle(0, -s * 0.15, s * 0.8)
@@ -136,14 +149,15 @@ function icon(kind: BadgeIcon | "more", s: number): Graphics {
         .circle(s * 0.3, -s * 0.15, s * 0.22)
         .fill(DISC);
     case "trample":
-      // Two chevrons pushing through.
+      // An arrow driving through a wall: damage carries past its blockers.
       return g
-        .moveTo(-s, -s * 0.7)
-        .lineTo(-s * 0.2, 0)
-        .lineTo(-s, s * 0.7)
-        .moveTo(-s * 0.05, -s * 0.7)
-        .lineTo(s * 0.75, 0)
-        .lineTo(-s * 0.05, s * 0.7)
+        .moveTo(-s * 0.15, -s * 0.85)
+        .lineTo(-s * 0.15, s * 0.85)
+        .moveTo(-s, 0)
+        .lineTo(s * 0.85, 0)
+        .moveTo(s * 0.4, -s * 0.45)
+        .lineTo(s * 0.85, 0)
+        .lineTo(s * 0.4, s * 0.45)
         .stroke(line);
     case "lifelink":
       // A heart.
@@ -178,8 +192,17 @@ function icon(kind: BadgeIcon | "more", s: number): Graphics {
         ])
         .fill(INK);
     case "indestructible":
-      // A solid diamond.
-      return g.poly([0, -s, s * 0.75, 0, 0, s, -s * 0.75, 0]).fill(INK);
+      // A solid hexagon, a nut that won't break (the ladder's diamonds are other things).
+      return g
+        .poly(
+          Array.from({ length: 6 }, (_, i) => [
+            Math.cos((i * Math.PI) / 3) * s * 0.9,
+            Math.sin((i * Math.PI) / 3) * s * 0.9,
+          ]).flat(),
+        )
+        .fill(INK)
+        .circle(0, 0, s * 0.3)
+        .fill(DISC);
     case "shroud":
       // A target, struck through: it can't be targeted.
       g.circle(0, 0, s * 0.8).stroke({ ...line, width: line.width * 0.8 });
@@ -210,29 +233,30 @@ function icon(kind: BadgeIcon | "more", s: number): Graphics {
         .lineTo(s * 0.5, s * 0.7)
         .stroke({ ...line, width: line.width * 0.7 });
     case "protection":
-      // A shield's outline (a blocker's badge is a filled one).
+      // A dome over a line: covered (a shield is a blocker's badge, and loyalty's).
       return g
-        .moveTo(0, -s)
-        .lineTo(s * 0.85, -s * 0.6)
-        .quadraticCurveTo(s * 0.8, s * 0.5, 0, s)
-        .quadraticCurveTo(-s * 0.8, s * 0.5, -s * 0.85, -s * 0.6)
-        .closePath()
+        .moveTo(-s * 0.9, s * 0.45)
+        .lineTo(s * 0.9, s * 0.45)
+        .moveTo(-s * 0.7, s * 0.45)
+        .arc(0, s * 0.45, s * 0.7, Math.PI, 0)
         .stroke(line);
     case "more":
+      // Three dots with a dark edge, readable on any art without a disc.
       return g
-        .circle(-s * 0.65, 0, s * 0.2)
-        .circle(0, 0, s * 0.2)
-        .circle(s * 0.65, 0, s * 0.2)
-        .fill(INK);
+        .circle(-s * 0.85, 0, s * 0.34)
+        .circle(0, 0, s * 0.34)
+        .circle(s * 0.85, 0, s * 0.34)
+        .fill(INK)
+        .stroke({ width: 1.5, color: DISC });
   }
 }
 
 function sword(g: Graphics, s: number, dx: number, line: { width: number; color: number }): Graphics {
-  // A blade from the bottom left up to the top right, a crossguard near the hilt.
+  // Blade up, a crossguard across it near the hilt.
   return g
-    .moveTo(dx - s * 0.7, s * 0.7)
-    .lineTo(dx + s * 0.8, -s * 0.8)
-    .moveTo(dx - s * 0.75, s * 0.15)
-    .lineTo(dx - s * 0.15, s * 0.75)
+    .moveTo(dx, -s)
+    .lineTo(dx, s * 0.95)
+    .moveTo(dx - s * 0.38, s * 0.35)
+    .lineTo(dx + s * 0.38, s * 0.35)
     .stroke(line);
 }
