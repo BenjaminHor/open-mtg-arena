@@ -226,6 +226,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     choices, a settings cog with Concede, Escape and Space; the actions drawer is gone. The hand opens itself for a
     discard or a mulligan's bottom card; the main button says when a declaration can't finish yet. e2e: casting with a
     target, attacking (with a must-attack creature), blocking, a whole game by the controls alone, the keyboard.
+    After the UX and code reviews: a press of the main button or Undo/Cancel within 300 ms of an update is ignored (a
+    double-tap on Next can't pass twice; card taps are never held back); the spell on the stack goes small at the right
+    while its caster chooses targets; a picked blocker lights the attackers it can block; the prompt sits in the open
+    table; mana symbols in menus, the mana pool by the portrait; the button names the creature that must attack; "Tap
+    again to cast" on a lifted card; a white focus ring; Tab in screen order. "All Attack" is left for later: it isn't
+    an engine option (each attacker is its own pick), so it would be a UI macro of several picks; to raise with the
+    owner, with drag to play, at review time.
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
@@ -233,8 +240,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     triggers, damage assignment, naming a card; the options drawer goes.
   - Added to M3-04c from the final UX review (2026-11-23): keyword badges at a permanent's bottom-left corner
     (flying, reach, deathtouch, first strike...: ui.md "The cards", both screenshot sets); keep the main button's slot
-    as a label naming any decision it can't answer ("Assign Damage", "Pay {R}"); ignore a second press within about
-    250 ms of the button's action changing; the open hand showing less (about 60%) and the collapsed hand more.
+    as a label naming any decision it can't answer ("Assign Damage", "Pay {R}"); the open hand showing less (about 60%) and the collapsed hand more.
   - **M3-04c, everything M2's pool puts on the board.** The stack at the side with its targets, counters and loyalty,
     attached Auras and Equipment beside their permanent with a link mark (the owner's screenshots), tokens, damage, summoning sickness, graveyard and
     exile browsers, revealed hands and library tops, long-press for the card's details, the "turn your phone"
