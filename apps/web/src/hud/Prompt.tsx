@@ -20,7 +20,10 @@ export function Prompt({
   if (prompt === null && title === null) return null;
   return (
     <section className="prompt" aria-label={prompt?.title ?? title ?? undefined}>
-      <p className="prompt-title">{prompt?.title ?? title}</p>
+      {/* Announced as it changes, so a screen reader hears what the game waits for. */}
+      <p className="prompt-title" aria-live="polite">
+        {prompt?.title ?? title}
+      </p>
       {prompt !== null && (
         <div className="prompt-choices">
           {prompt.choices.map((choice, i) => (
@@ -29,8 +32,8 @@ export function Prompt({
               // biome-ignore lint/suspicious/noArrayIndexKey: no other stable key for an action
               key={i}
               type="button"
-              disabled={busy}
-              onClick={() => act(choice.action)}
+              aria-disabled={busy}
+              onClick={() => !busy && act(choice.action)}
             >
               {choice.label}
             </button>

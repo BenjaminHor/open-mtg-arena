@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
 import { Hud } from "../hud/Hud.tsx";
-import { type Choice, controls, type Selection } from "../interaction/controls.ts";
+import { controls, type Selection } from "../interaction/controls.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
@@ -36,6 +36,15 @@ function startFromUrl(): ToWorker | { error: string } {
   };
 }
 
+/**
+ * Whether a control has the keyboard's focus: then Space is that control's, not the main button's. A button a tap or
+ * click left focused doesn't count (it shows no focus ring), so Space after a tap still presses the main button.
+ */
+function keyboardFocused(): boolean {
+  const focused = document.activeElement;
+  return focused instanceof HTMLElement && focused !== document.body && focused.matches(":focus-visible");
+}
+
 export function App() {
   const client = useRef<MatchClient | null>(null);
   const main = useRef<HTMLElement>(null);
@@ -47,11 +56,15 @@ export function App() {
   // The UI's own side of a choice under way (interaction/controls.ts): a lifted hand card or a picked blocker, a card's
   // menu open, and an action on its way to the worker (no second press until the next update, ui.md).
   const [selection, setSelection] = useState<Selection>(null);
-  const [menu, setMenu] = useState<{ id: ObjectId; choices: Choice[] } | null>(null);
+  // An open menu is only which card it's for: its choices are always read from the current controls.
+  const [menuFor, setMenuFor] = useState<ObjectId | null>(null);
   const [busy, setBusy] = useState(false);
+  // The guard itself, so two presses in the same moment can't both send: the state above only draws it.
+  const busyNow = useRef(false);
 
   useEffect(() => {
     const started = startMatchWorker((reply) => {
+      busyNow.current = false;
       setBusy(false);
       if (reply.type === "update") {
         setUpdate(reply);
@@ -105,18 +118,18 @@ export function App() {
     () => (shown !== null && size !== null ? boardModel(shown, size, insets, { handOpen, selected: selection }) : null),
     [shown, size, insets, handOpen, selection],
   );
-  const act = useCallback(
-    (action: Action) => {
-      if (busy) return;
-      setBusy(true);
-      setMenu(null);
-      setSelection(null);
-      // Playing from the hand puts it down again, as Arena does once a card leaves it.
-      if (action.type === "CAST_SPELL" || action.type === "PLAY_LAND") setHandOpen(false);
-      client.current?.send({ type: "act", action });
-    },
-    [busy],
-  );
+  const act = useCallback((action: Action) => {
+    if (busyNow.current) return;
+    busyNow.current = true;
+    setBusy(true);
+    setMenuFor(null);
+    setSelection(null);
+    // Playing from the hand puts it down again, as Arena does once a card leaves it.
+    if (action.type === "CAST_SPELL" || action.type === "PLAY_LAND") setHandOpen(false);
+    client.current?.send({ type: "act", action });
+  }, []);
+  const menuTap = menuFor === null ? undefined : controlsNow?.cards[menuFor]?.tap;
+  const menu = menuFor !== null && menuTap?.kind === "menu" ? { id: menuFor, choices: menuTap.choices } : null;
   const onTap = useCallback(
     (id: ObjectId) => {
       const tap = controlsNow?.cards[id]?.tap;
@@ -125,14 +138,14 @@ export function App() {
           act(tap.choice.action);
           break;
         case "select":
-          setMenu(null);
+          setMenuFor(null);
           setSelection(id);
           break;
         case "deselect":
           setSelection(null);
           break;
         case "menu":
-          setMenu({ id, choices: tap.choices });
+          setMenuFor(id);
           break;
         case undefined:
           break;
@@ -143,7 +156,7 @@ export function App() {
   // A tap on the table, not on a control, puts things down: the menu, then the selection, then the open hand.
   const onTable = (event: React.MouseEvent) => {
     if ((event.target as HTMLElement).closest("button") !== null) return;
-    if (menu !== null) setMenu(null);
+    if (menu !== null) setMenuFor(null);
     else if (selection !== null) setSelection(null);
     else if (handOpen) setHandOpen(false);
   };
@@ -152,12 +165,14 @@ export function App() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        const cancel = controlsNow?.secondary.find((c) => c.label === "Cancel");
-        if (menu !== null) setMenu(null);
+        const cancel = controlsNow?.secondary.find(
+          (c) => c.action.type === "ANSWER" && c.action.answer.kind === "cancelCast",
+        );
+        if (menu !== null) setMenuFor(null);
         else if (selection !== null) setSelection(null);
         else if (cancel !== undefined) act(cancel.action);
         else if (handOpen) setHandOpen(false);
-      } else if (event.key === " " && (document.activeElement === document.body || document.activeElement === null)) {
+      } else if (event.key === " " && !event.repeat && !keyboardFocused()) {
         event.preventDefault();
         if (controlsNow?.main != null) act(controlsNow.main);
       }
@@ -180,7 +195,7 @@ export function App() {
           act={act}
           onTap={onTap}
           menu={menu}
-          closeMenu={() => setMenu(null)}
+          closeMenu={() => setMenuFor(null)}
           handOpen={handOpen}
           openHand={() => setHandOpen(true)}
         />

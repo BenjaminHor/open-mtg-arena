@@ -139,7 +139,7 @@ export type BoardModel = {
    * Where a tap lands on what, topmost last: a pile is one region (its front card's), an open hand card its visible
    * strip, the lifted card all of it. The collapsed hand is `overlay.hand`, one region that opens it.
    */
-  regions: { id: ObjectId; rect: Rect }[];
+  regions: { id: ObjectId; rect: Rect; members: ObjectId[] }[];
 };
 
 /** A line from one card's band-side edge to another's: a block (blocker to attacker) or an attack on a planeswalker. */
@@ -151,7 +151,6 @@ export type Insets = { top: number; right: number; bottom: number; left: number 
 
 export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
 
-/** What the person has opened or chosen on screen, apart from the game: the board lays out differently for it. */
 /**
  * What the person has opened or chosen on screen, apart from the game: the hand open or not, and the card lifted
  * from it or the blocker picked (interaction/controls.ts), which the board lays out differently.
@@ -200,7 +199,7 @@ export function boardModel(
     },
     links: field.links,
     overlay: { ...overlay, hand: handArea(hand, area) },
-    regions: tapRegions(field.cards, hand, ui.handOpen),
+    regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
 

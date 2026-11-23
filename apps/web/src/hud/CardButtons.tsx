@@ -26,9 +26,11 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen }: 
       {hand !== null && !handOpen && (
         <button type="button" className="tap-region" style={place(hand)} aria-label="Open your hand" onClick={onHand} />
       )}
-      {model.regions.map(({ id, rect }) => {
-        const control = controls.cards[id];
-        if (control === undefined) return null;
+      {model.regions.map(({ id, rect, members }) => {
+        // A pile acts through its front card, or the next card in it that has something to do.
+        const actor = members.find((m) => controls.cards[m] !== undefined);
+        const control = actor === undefined ? undefined : controls.cards[actor];
+        if (actor === undefined || control === undefined) return null;
         return (
           <button
             key={id}
@@ -37,7 +39,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen }: 
             style={place(rect)}
             aria-label={control.label}
             aria-disabled={busy}
-            onClick={() => !busy && onTap(id)}
+            onClick={() => !busy && onTap(actor)}
           />
         );
       })}

@@ -2,11 +2,27 @@
 // (CR 104.3a) and so asks once more before it's sent.
 
 import type { Action } from "@mtg/engine";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function SettingsMenu({ concede, act }: { concede: Action | null; act: (action: Action) => void }) {
   const [open, setOpen] = useState(false);
   const [sure, setSure] = useState(false);
+  const close = () => {
+    setOpen(false);
+    setSure(false);
+  };
+  // Escape closes the menu first, before the app's own Escape (a cast under way) sees it.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopImmediatePropagation();
+      setOpen(false);
+      setSure(false);
+    };
+    window.addEventListener("keydown", onKey, { capture: true });
+    return () => window.removeEventListener("keydown", onKey, { capture: true });
+  }, [open]);
   return (
     <div className="settings">
       <button
@@ -21,15 +37,13 @@ export function SettingsMenu({ concede, act }: { concede: Action | null; act: (a
         </svg>
       </button>
       {open && concede !== null && (
-        <div className="settings-menu" role="menu">
+        <div className="settings-menu">
           <button
             type="button"
-            role="menuitem"
             onClick={() => {
               if (!sure) setSure(true);
               else {
-                setOpen(false);
-                setSure(false);
+                close();
                 act(concede);
               }
             }}

@@ -44,8 +44,8 @@ export function mainButton(shown: SeatView): MainButton {
 
 /**
  * While attackers or blockers are being declared, the button finishes the declaration and says what it holds [R]:
- * "No Attacks" or "2 Attackers" (on to blockers), "No Blocks" or "1 Blocker" (on to damage). Picking the creatures is
- * M3-04b's touch; until then the actions drawer picks them.
+ * "No Attacks" or "2 Attackers" (on to blockers), "No Blocks" or "1 Blocker" (on to damage); the creatures are picked
+ * by tapping them (interaction/controls.ts).
  */
 function declarationButton(shown: SeatView): MainButton | null {
   const decision = shown.view.decision;

@@ -397,6 +397,28 @@ describe("the compact board model", () => {
     }
   });
 
+  it("gives tap regions: one per pile listing its cards, none for the hand while it's closed, the lifted card whole", () => {
+    const closed = boardModel(midGame, PHONE);
+    const forests = closed.regions.find(
+      (r) => r.members.length === 2 && closed.cards.find((c) => c.id === r.id)?.name === "Forest",
+    );
+    expect(forests).toBeDefined();
+    expect(closed.regions.some((r) => closed.cards.find((c) => c.id === r.id)?.zone === "hand")).toBe(false);
+    const bolt = midGame.view.zones.players.p1?.hand?.find((id) => {
+      const seen = midGame.seen[id];
+      return seen?.kind === "card" && seen.characteristics.name === "Lightning Bolt";
+    });
+    if (bolt === undefined) throw new Error("no Lightning Bolt");
+    const open = boardModel(midGame, PHONE, undefined, { handOpen: true, selected: bolt });
+    const lifted = open.cards.find((c) => c.id === bolt) as BoardCard;
+    // The lifted card's region is all of it, and last, so it's on top of the hand's strips.
+    expect(open.regions.at(-1)).toEqual({
+      id: bolt,
+      rect: { x: lifted.x, y: lifted.y, width: lifted.width, height: lifted.height },
+      members: [bolt],
+    });
+  });
+
   it("counts each library", () => {
     const model = boardModel(midGame, PHONE);
     const mine = model.libraries.find((l) => l.mine);

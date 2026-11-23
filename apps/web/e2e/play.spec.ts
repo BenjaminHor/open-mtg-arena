@@ -107,3 +107,11 @@ test("the keyboard alone: Tab to a card, Enter to use it, Space for the main but
     "Main 1",
   );
 });
+
+test("concedes from the settings menu, after asking once more", async ({ page }) => {
+  await page.goto("/?fixture=mid-game");
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("button", { name: "Concede" }).click();
+  await page.getByRole("button", { name: "Concede? Tap again" }).click();
+  await expect(page.getByRole("status")).toHaveText("You lose");
+});

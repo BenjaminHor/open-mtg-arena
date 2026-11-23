@@ -40,7 +40,8 @@ export function Hud(props: HudProps) {
   const button = mainButton(shown);
   const result = view.result;
   const deciding = view.decision !== null && view.decision.kind !== "priority" && result === null;
-  const menuAt = props.menu === null ? null : model.regions.find((r) => r.id === props.menu?.id)?.rect;
+  const menuId = props.menu?.id ?? null;
+  const menuAt = menuId === null ? null : model.regions.find((r) => r.members.includes(menuId))?.rect;
   return (
     <section className="hud" aria-label="Match">
       <CardButtons
@@ -82,8 +83,10 @@ export function Hud(props: HudProps) {
           type="button"
           className={`main-button${button.action === null ? " waiting" : ""}`}
           style={place(anchors.mainButton)}
-          disabled={button.action === null || busy}
-          onClick={() => button.action !== null && act(button.action)}
+          // Disabled only when it has nothing to do; while an action is on its way it keeps focus (aria-disabled).
+          disabled={button.action === null}
+          aria-disabled={busy}
+          onClick={() => button.action !== null && !busy && act(button.action)}
         >
           <span className="main-label">{button.label}</span>
           {button.detail !== null && (
@@ -101,8 +104,8 @@ export function Hud(props: HudProps) {
             type="button"
             className="secondary-button"
             style={place(at)}
-            disabled={busy}
-            onClick={() => act(choice.action)}
+            aria-disabled={busy}
+            onClick={() => !busy && act(choice.action)}
           >
             {choice.label}
           </button>

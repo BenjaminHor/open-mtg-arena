@@ -8,25 +8,40 @@ export function tapRegions(
   field: readonly BoardCard[],
   hand: readonly BoardCard[],
   handOpen: boolean,
+  lifted: string | null,
 ): BoardModel["regions"] {
-  // A pile: from its back card's corner to its front card's, under the front card's id.
-  const piles = new Map<string, Rect>();
+  // A pile: from its back card's corner to its front card's, under the front card's id, listing every card in it.
+  const piles = new Map<string, { rect: Rect; members: string[] }>();
   for (const c of field) {
     const known = piles.get(c.pileOf);
-    piles.set(c.pileOf, known === undefined ? rectOf(c) : union(known, rectOf(c)));
+    piles.set(
+      c.pileOf,
+      known === undefined
+        ? { rect: rectOf(c), members: [c.id] }
+        : { rect: union(known.rect, rectOf(c)), members: [...known.members, c.id] },
+    );
   }
-  const fieldRegions = [...piles].map(([id, rect]) => ({ id, rect }));
+  // The front card first: a tap acts on it when it can, else on the next card of the pile that can.
+  const fieldRegions = [...piles].map(([id, { rect, members }]) => ({
+    id,
+    rect,
+    members: [id, ...members.filter((m) => m !== id).reverse()],
+  }));
   if (!handOpen) return fieldRegions as BoardModel["regions"];
   // An open hand card's strip: from its left edge to where the next card starts, from its top down. The lifted card
   // (out of the fan, larger) is whole and on top.
-  const lifted = hand.filter((c) => c.picked);
-  const fan = hand.filter((c) => !c.picked).sort((a, b) => a.x - b.x);
+  const up = hand.filter((c) => c.id === lifted);
+  const fan = hand.filter((c) => c.id !== lifted).sort((a, b) => a.x - b.x);
   const strips = fan.map((c, i) => {
     const next = fan[i + 1];
     const right = next === undefined ? c.x + c.width : Math.min(c.x + c.width, next.x);
-    return { id: c.id, rect: { x: c.x, y: c.y, width: right - c.x, height: c.height } };
+    return { id: c.id, rect: { x: c.x, y: c.y, width: right - c.x, height: c.height }, members: [c.id] };
   });
-  return [...fieldRegions, ...strips, ...lifted.map((c) => ({ id: c.id, rect: rectOf(c) }))] as BoardModel["regions"];
+  return [
+    ...fieldRegions,
+    ...strips,
+    ...up.map((c) => ({ id: c.id, rect: rectOf(c), members: [c.id] })),
+  ] as BoardModel["regions"];
 }
 
 function rectOf(c: BoardCard): Rect {

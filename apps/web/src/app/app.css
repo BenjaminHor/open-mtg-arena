@@ -308,6 +308,7 @@ body,
 }
 
 .hud .secondary-button {
+  min-height: 44px;
   border-radius: 999px;
   border: 1px solid #8a8f9c;
   background: linear-gradient(180deg, #2c313b, #15181e);
@@ -354,7 +355,7 @@ body,
 }
 
 .prompt-choices button {
-  min-height: 36px;
+  min-height: 44px;
   padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid #c9a55a;
@@ -377,7 +378,7 @@ body,
 }
 
 .choice-menu button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 4px 12px;
   border-radius: 8px;
   border: 1px solid #4a5262;
@@ -396,9 +397,9 @@ body,
 }
 
 .hud .settings-toggle {
-  width: 34px;
-  height: 34px;
-  padding: 6px;
+  width: 44px;
+  height: 44px;
+  padding: 9px;
   border-radius: 50%;
   border: 1px solid #6a5531;
   background: linear-gradient(180deg, #23262e, #111318);
@@ -420,7 +421,7 @@ body,
 }
 
 .settings-menu button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 4px 14px;
   border-radius: 8px;
   border: 1px solid #7a3a32;

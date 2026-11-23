@@ -4,9 +4,12 @@
 // `shown.options`' actions, as the engine listed it (ui.md: "it never invents its own legality"). Pure, so a test can
 // check over many games that no option is left without a control.
 
-import { type Action, isManaAbility, type ObjectId, type PlayerId, type SeatView } from "@mtg/engine";
+import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import { optionLabel } from "../app/option-label.ts";
 import { mainButton } from "../hud/main-button.ts";
+import { abilityLabel } from "./ability-label.ts";
+
+type Answer = Extract<Action, { type: "ANSWER" }>["answer"];
 
 /** One thing a tap or a menu entry sends. */
 export type Choice = { label: string; action: Action };
@@ -46,15 +49,19 @@ export function controls(shown: SeatView, selection: Selection): Controls {
     return seen?.kind === "card" ? seen.characteristics.name : "it";
   };
   const hand = new Set(shown.view.zones.players[shown.player]?.hand ?? []);
+  // A card is tapped where the board draws it: on the battlefield or in the person's hand. A card anywhere else (a
+  // graveyard, under the top of the stack) isn't drawn yet (M3-04c), so a choice of it goes to the prompt instead.
+  const onScreen = (id: ObjectId) => hand.has(id) || shown.view.zones.battlefield.includes(id);
   const onCard = new Map<ObjectId, Choice[]>();
   const blocks = new Map<ObjectId, Choice[]>();
   const players: Record<PlayerId, Choice[]> = {};
   const secondary: Choice[] = [];
   const leftover: Choice[] = [];
   const main = mainButton(shown).action;
-  let concede: Action | null = null;
-  const add = (map: Map<ObjectId, Choice[]>, id: ObjectId, choice: Choice) =>
-    map.set(id, [...(map.get(id) ?? []), choice]);
+  const add = (map: Map<ObjectId, Choice[]>, id: ObjectId, choice: Choice) => {
+    if (map === onCard && !onScreen(id)) leftover.push(choice);
+    else map.set(id, [...(map.get(id) ?? []), choice]);
+  };
 
   for (const option of shown.options) {
     const action = option.action;
@@ -66,7 +73,7 @@ export function controls(shown: SeatView, selection: Selection): Controls {
         leftover.push({ label, action });
         break;
       case "CONCEDE":
-        concede = action;
+        // Not listed among the options (D-042): conceding is the settings menu's, below.
         break;
       case "PLAY_LAND":
       case "CAST_SPELL":
@@ -75,39 +82,13 @@ export function controls(shown: SeatView, selection: Selection): Controls {
         break;
       case "ACTIVATE_ABILITY":
         if (option.mightPay !== false) {
-          const mana = option.ability !== null && isManaAbility(option.ability);
-          add(onCard, action.object, { label: mana ? "Tap for mana" : label, action });
+          const what = option.ability === null ? label : abilityLabel(option.ability, action.color);
+          add(onCard, action.object, { label: what, action });
         }
         break;
-      case "ANSWER": {
-        const a = action.answer;
-        switch (a.kind) {
-          case "chooseTarget":
-            if (a.target.kind === "object") add(onCard, a.target.object, { label, action });
-            else players[a.target.player] = [...(players[a.target.player] ?? []), { label, action }];
-            break;
-          case "mulliganBottom":
-          case "discardToHandSize":
-          case "chooseSacrifice":
-            add(onCard, a.object, { label, action });
-            break;
-          case "declareAttacker":
-            add(onCard, a.attack.attacker, { label: attackLabel(a.attack.attacked ?? null, name), action });
-            break;
-          case "declareBlocker":
-            add(blocks, a.block.blocker, { label: `Block ${name(a.block.attacker)}`, action });
-            break;
-          case "takeBack":
-            secondary.push({ label: "Undo", action });
-            break;
-          case "cancelCast":
-            secondary.push({ label: "Cancel", action });
-            break;
-          default:
-            leftover.push({ label, action });
-        }
+      case "ANSWER":
+        answerControl(action, action.answer, label, name, { add, onCard, blocks, players, secondary, leftover });
         break;
-      }
     }
   }
 
@@ -155,8 +136,63 @@ export function controls(shown: SeatView, selection: Selection): Controls {
     main,
     secondary,
     prompt: leftover.length === 0 ? null : { title: promptTitle(shown), choices: leftover },
-    concede,
+    // A player may concede at any time (CR 104.3a); the engine doesn't list it among the options (D-042).
+    concede: shown.view.result === null ? { type: "CONCEDE", player: shown.player } : null,
   };
+}
+
+type Sinks = {
+  add: (map: Map<ObjectId, Choice[]>, id: ObjectId, choice: Choice) => void;
+  onCard: Map<ObjectId, Choice[]>;
+  blocks: Map<ObjectId, Choice[]>;
+  players: Record<PlayerId, Choice[]>;
+  secondary: Choice[];
+  leftover: Choice[];
+};
+
+/** Where an answer's control goes: on a card, a portrait, beside the main button, or in the prompt. */
+function answerControl(action: Action, a: Answer, label: string, name: (id: ObjectId) => string, to: Sinks): void {
+  switch (a.kind) {
+    case "chooseTarget":
+      if (a.target.kind === "object") to.add(to.onCard, a.target.object, { label, action });
+      else to.players[a.target.player] = [...(to.players[a.target.player] ?? []), { label, action }];
+      return;
+    case "mulliganBottom":
+    case "discardToHandSize":
+    case "chooseSacrifice":
+      to.add(to.onCard, a.object, { label, action });
+      return;
+    case "declareAttacker":
+      to.add(to.onCard, a.attack.attacker, { label: attackLabel(a.attack.attacked ?? null, name), action });
+      return;
+    case "declareBlocker":
+      to.add(to.blocks, a.block.blocker, { label: `Block ${name(a.block.attacker)}`, action });
+      return;
+    case "takeBack":
+      to.secondary.push({ label: "Undo", action });
+      return;
+    case "cancelCast":
+      to.secondary.push({ label: "Cancel", action });
+      return;
+    // The rest have no card to tap: the prompt asks (bespoke prompts for each are M3-04b's slice 2).
+    case "chooseStartingPlayer":
+    case "mulligan":
+    case "announceX":
+    case "chooseTargetCount":
+    case "divide":
+    case "payMana":
+    case "finishDeclaring":
+    case "orderTrigger":
+    case "assignDamage":
+    case "chooseCard":
+    case "finishChoosing":
+    case "chooseYesNo":
+    case "chooseNewTarget":
+    case "chooseReplacement":
+    case "chooseName":
+      to.leftover.push({ label, action });
+      return;
+  }
 }
 
 function attackLabel(planeswalker: ObjectId | null, name: (id: ObjectId) => string): string {
@@ -174,7 +210,7 @@ export function promptTitle(shown: SeatView): string {
     case "mulliganBottom":
       return "Put a card on the bottom";
     case "discardToHandSize":
-      return "Discard down to seven";
+      return "Discard down to your hand size";
     case "chooseTarget":
       return "Choose a target";
     case "announceX":
