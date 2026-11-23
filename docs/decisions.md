@@ -2778,3 +2778,28 @@ owner's answer to the D-089 open question, option (a))
 - Future impact: M3-07's animation director can drive the same walk from its own clock; the walk reads only events,
   so extra turns (CR 500.7) and skipped steps (CR 508.8) walk as the engine played them.
 
+**D-176: The full layout for the unfolded phone, tablets and desktop, picked by size (M3-05)** · 2026-11-23 · accepted
+- `layout/full.ts`, a second `BoardLayout` value (D-152), from Arena's desktop match screen [R: arena-research.md]:
+  battlefield cards about 13% of the height, shrinking to 8% before a crowded row overlaps; lands at the left of the
+  outer band, other permanents at its right short of the stack's column; the stack at the right edge; the hand's tops
+  along the bottom, a quarter of each card showing; the controls a little larger. Values that aren't Arena's say
+  [guess].
+- `layout/layout-for.ts`: the layout is picked by the screen's size alone (ui.md: never the device): the compact one
+  under 560 px tall (phones in landscape are 320-430), the full one otherwise [guess for the line]. The App picks it on
+  every resize, so folding or unfolding re-lays out the board with the game, the open hand, the lifted card and the
+  targets being chosen kept: they're the App's state, not the layout's. `window.__board.layout` names it for tests.
+- Found while building it, changed for both layouts: the land row shrinks its cards before it overlaps them (as the
+  creature row does; `lands.minH`); the land row starts clear of the player's info block only when it's level with it
+  (on a tall screen it's well below); the large stack is at most `stack.maxW` of the width (on a screen tall for its
+  width a share of the height made it far too wide). On the phone neither changes what's drawn.
+- No game log (ui.md once said the full layout shows one): Arena has none, its desktop map shows none, and the owner
+  chose to leave it out ("Leave it out", 2026-11-23); the line saying what just happened (D-172) covers the opponent's
+  moves.
+- Tests: `test/full-layout.test.ts` (which layout each size gets; at the unfolded both ways up, 700x900, tablets both
+  ways, 1280x720, 1920x1080 and the shortest full height: permanents on screen and clear of the HUD, each half's rows
+  apart, the hand in its strip below the outer row's costs, the stack clear of the controls; mutation-checked), and
+  `e2e/layout.spec.ts` (folding and unfolding while a target is chosen, then casting the spell; while a card is lifted
+  with the hand open, then casting it). The desktop e2e project now plays every spec in the full layout.
+- Future impact: a third value (a multiplayer board, the RPG's) is more data and a line in `layoutFor`. The owner's
+  unfolded screen size is a guess until they send a screenshot (status, Open questions).
+

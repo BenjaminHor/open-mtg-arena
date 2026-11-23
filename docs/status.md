@@ -334,6 +334,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
+    `layout/layout-for.ts`; lands shrink before overlapping, start clear of the info block only when level with it,
+    the stack capped in width; tests: test/full-layout.test.ts (eight full sizes, mutation-checked),
+    e2e/layout.spec.ts (fold and unfold mid-target and with a card lifted, then finish the action). The owner chose no
+    game log. Next: screenshots, the UX review, the PR, the owner's unfolded screenshot.
   - M3-05 plan (2026-11-23, written before starting; the owner: "move forward with M3-05"). Spec: m3-first-playable.md
     M3-05: the Arena-like layout for the unfolded phone (7.6-inch, nearly square, either way up) and desktop, switching
     live on resize with no loss of state or selection; accept: a Playwright test resizes mid-selection and it survives.
@@ -2298,6 +2303,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
+  from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of
+  the live site unfolded settles both (the 172 px info block gives the scale). Proceeding with the guesses.
 
 - Answered (2026-11-23, pacing, D-172): should the phase ladder step through each step a frame passes over, or jump?
   The owner: "phase bar should mirror what mtg arena does" (D-173), then: "it steps through each phase as it passes -

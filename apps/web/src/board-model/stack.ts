@@ -70,7 +70,11 @@ export function choosingOwn(shown: SeatView): boolean {
  */
 function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boolean): Rect {
   const right = area.x + area.width - 8;
-  const largeH = Math.min(layout.stack.h * area.height, layout.stack.maxH);
+  const largeH = Math.min(
+    layout.stack.h * area.height,
+    layout.stack.maxH,
+    (layout.stack.maxW * area.width) / layout.ratio.hand,
+  );
   const largeW = largeH * layout.ratio.hand;
   const large = {
     x: Math.min(area.x + layout.stack.x * area.width, right - largeW),

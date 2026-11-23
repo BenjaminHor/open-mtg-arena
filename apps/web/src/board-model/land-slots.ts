@@ -38,23 +38,37 @@ export function landSlots(
     return x.name < y.name ? -1 : x.name > y.name ? 1 : x.id - y.id;
   });
   const offsets = pileOffsets(area, layout);
-  const w = row.height * layout.ratio.battlefield;
-  const shift = layout.lands.tappedShift * w;
+  const gap = layout.lands.gap * area.width;
+  // A row too wide for its space shrinks its cards (down to `minH`) before it overlaps them, as the creature row does.
+  const widthAt = (h: number) =>
+    ordered.reduce((sum, slot) => sum + slotWidthAt(slot, h), 0) + gap * Math.max(0, ordered.length - 1);
+  const slotWidthAt = (slot: Slot, h: number) => {
+    const cardW = h * layout.ratio.battlefield;
+    const count = slot.untapped.length + slot.tapped.length;
+    return (
+      (count > 1 ? pileWidth(count, cardW, offsets.step) + layout.lands.tappedShift * cardW : cardW) +
+      roomAt(slot, cardW)
+    );
+  };
+  const roomAt = (slot: Slot, cardW: number) => {
+    const only = slot.untapped[0] ?? slot.tapped[0];
+    return slot.untapped.length + slot.tapped.length === 1 && only !== undefined
+      ? attachedRoom(half.attached, only.id, cardW, layout)
+      : 0;
+  };
+  let h = row.height;
+  const smallest = layout.lands.minH * area.height;
+  while (h > smallest && widthAt(h) > row.right - row.left) h = Math.max(smallest, h - 1);
+  // The row's cards hug the creature row whatever their size.
+  const y = mine ? row.y : row.y + row.height - h;
+  const w = h * layout.ratio.battlefield;
   // A slot's width depends only on how many lands it holds, never on how many are tapped: room for them all in one
   // pile plus the tapped pile's shift. The untapped pile sits at its left, the tapped one at its right.
   // A land something is attached to stands alone in its slot (it can't pile), the slot keeping room left of it for
   // its Aura (`attachments.ts`).
-  const room = (slot: Slot) => {
-    const only = slot.untapped[0] ?? slot.tapped[0];
-    return slot.untapped.length + slot.tapped.length === 1 && only !== undefined
-      ? attachedRoom(half.attached, only.id, w, layout)
-      : 0;
-  };
-  const slotWidth = (slot: Slot) => {
-    const count = slot.untapped.length + slot.tapped.length;
-    return (count > 1 ? pileWidth(count, w, offsets.step) + shift : w) + room(slot);
-  };
-  const xs = spread(ordered.map(slotWidth), row.left, row.right, layout.lands.gap * area.width, "start");
+  const room = (slot: Slot) => roomAt(slot, w);
+  const slotWidth = (slot: Slot) => slotWidthAt(slot, h);
+  const xs = spread(ordered.map(slotWidth), row.left, row.right, gap, "start");
   return ordered.flatMap((slot, i) => {
     const x = xs[i] ?? 0;
     const tappedX = x + slotWidth(slot) - pileWidth(slot.tapped.length, w, offsets.step);
@@ -62,17 +76,10 @@ export function landSlots(
     // pile"), so the pile never shows a tapped land half-hidden inside it.
     return [
       ...(slot.untapped.length > 0
-        ? placePile(
-            slot.untapped,
-            { x: x + room(slot), y: row.y, width: w, height: row.height },
-            offsets,
-            mine,
-            "lands",
-            look,
-          )
+        ? placePile(slot.untapped, { x: x + room(slot), y, width: w, height: h }, offsets, mine, "lands", look)
         : []),
       ...(slot.tapped.length > 0
-        ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, "lands", look)
+        ? placePile(slot.tapped, { x: tappedX, y, width: w, height: h }, offsets, mine, "lands", look)
         : []),
     ];
   });

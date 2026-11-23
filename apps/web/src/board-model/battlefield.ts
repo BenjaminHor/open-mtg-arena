@@ -84,8 +84,12 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
     p.tapped ? { rotation: tapped.tilt, dim: p.attacking === null ? tapped.dim : 0 } : { rotation: 0, dim: 0 };
   const offsets = pileOffsets(area, layout);
 
-  // Lands, a slot per name from the left, clear of the info block in the corner.
-  const landLeft = Math.max(area.x + lands.left * area.width, info.x + info.width + layout.player.gap);
+  // Lands, a slot per name from the left, clear of the info block in the corner when the row is level with it (on a
+  // tall screen the row is well below the opponent's block, and starts at the left).
+  // A pile's lift and a tapped card's tilt reach past the row a little: `gap` of slack.
+  const slack = layout.player.gap;
+  const level = outerY - slack < info.y + info.height && info.y < outerY + outerH + slack;
+  const landLeft = Math.max(area.x + lands.left * area.width, level ? info.x + info.width + layout.player.gap : 0);
   const landRight = area.x + lands.right * area.width;
   const placed = landSlots(landRow, half, { y: outerY, height: outerH, left: landLeft, right: landRight }, look);
 

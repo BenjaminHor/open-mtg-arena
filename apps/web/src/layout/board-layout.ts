@@ -4,6 +4,8 @@
 // of this type, and the board model takes either.
 
 export type BoardLayout = {
+  /** Which layout this is, for tests and the test hook (`window.__board`). */
+  name: "compact" | "full";
   /** Width-to-height ratios: a battlefield card (mostly art) and a whole card (hand, backs). */
   ratio: { battlefield: number; hand: number };
   /** The open table between the two creature rows: its centre line and height. */
@@ -21,6 +23,8 @@ export type BoardLayout = {
    */
   lands: {
     h: number;
+    /** A row too wide for its space shrinks its cards down to this before it overlaps them, as creatures do. */
+    minH: number;
     gap: number;
     left: number;
     right: number;
@@ -78,6 +82,8 @@ export type BoardLayout = {
     h: number;
     /** px: the large stack's height at most. */
     maxH: number;
+    /** The large stack's width at most, of the width: on a screen tall for its width, a share of the height is too wide. */
+    maxW: number;
     smallH: number;
     smallY: number;
     smallMaxH: number;
