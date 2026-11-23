@@ -207,6 +207,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
+  - **M3-04c first slice merged (PR #100, squash, 2026-11-23): All Attack, Clear Attacks, taking one attacker out,
+    and drag to play.** Waiting on the owner's phone check (a real finger, iOS Safari).
   - M3-04c first slice plan (2026-11-23): "All Attack" and drag to play, one PR.
     - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
       creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
