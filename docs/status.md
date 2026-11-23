@@ -374,8 +374,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - Strip map (client/src, non-test files): peer-to-peer in about 70 files, the lobby in about 79, Tauri APIs in 15,
       the updater in 17, telemetry in 25, Supabase in 2, the feeds in 1, Ko-fi in 1: the online pages and services go,
       then type errors lead to each remaining use.
-    - The owner asked for a `pre-import` tag on main (46cc91c, the M3-05 merge: our own engine and client's last
-      state). This session can't push tags (only its working branch), so the owner creates it on GitHub; pending.
+    - No `pre-import` tag (the owner: "Never mind then, not a big deal"); our own engine and client's last state is
+      main at 46cc91c, the M3-05 merge.
     - Build facts (this container, 4 cores, 15 GB): the release engine WASM compiles from scratch in about 20 minutes
       (`cargo build -p engine-wasm --target wasm32-unknown-unknown --release`); wasm-bindgen-cli 0.2.121 (their
       lockfile's) installs with cargo; the client's packages install from their lockfile in seconds (pnpm 9.15.9).
