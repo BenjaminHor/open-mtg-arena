@@ -3,7 +3,7 @@
 // next. One table over every event kind, so a new event has to decide. The numbers are guesses to tune with the owner
 // [guess], against Arena's floor of 0.4 s for an opponent's stack item [R: arena-research.md §5].
 
-import type { PlayerId, ViewEvent } from "@mtg/engine";
+import type { PlayerId, Step, ViewEvent } from "@mtg/engine";
 
 /** ms: the holds, in one place. */
 export const HOLD = {
@@ -19,7 +19,15 @@ export const HOLD = {
   land: 700,
   /** The opponent's new turn: the banner says whose, long enough that a quiet turn is seen to pass. */
   turn: 1000,
+  /**
+   * A new phase of the opponent's turn: a moment on their ladder, so it steps through each phase on their turn's screen
+   * rather than jumping (D-175, the owner: "avoid immediate jumps between the main phases").
+   */
+  phase: 150,
 } as const;
+
+/** The steps that start a phase after the beginning one (CR 500.1; a new turn's beginning is held as the turn). */
+const PHASE_STARTS: readonly Step[] = ["precombatMain", "beginningOfCombat", "postcombatMain", "end"];
 
 /**
  * Whether the worker keeps a frame where these events happened: one holds, so the person gets a moment to see it. The
@@ -69,9 +77,11 @@ export function eventHold(e: ViewEvent, me: PlayerId): number {
     // The person's own turn starts at once, the banner running while they act; the opponent's is held.
     case "TURN_BEGAN":
       return e.activePlayer === me ? 0 : HOLD.turn;
-    // Steps pass without a pause of their own (an empty turn would be a dozen of them): the ladder shows each as the
-    // frames around it move on. The rest are details of something held above, or not shown on the board at all.
+    // The opponent's phases each get a moment (their ladder steps through them, D-175); steps within a phase don't (an
+    // empty turn would be a dozen), nor the person's own (the ladder walks those while they act).
     case "STEP_BEGAN":
+      return e.activePlayer !== me && PHASE_STARTS.includes(e.step) ? HOLD.phase : 0;
+    // The rest are details of something held above, or not shown on the board at all.
     case "ZONE_CHANGED":
     case "STARTING_PLAYER_CHOSEN":
     case "LIBRARY_SHUFFLED":

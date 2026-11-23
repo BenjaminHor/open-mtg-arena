@@ -62,6 +62,22 @@ describe("how long a frame holds", () => {
     const step: ViewEvent = { type: "STEP_BEGAN", turn: 3, step: "upkeep", activePlayer: "p2" };
     expect(frameHold([step, { type: "PRIORITY_PASSED", player: "p2" }], "p1")).toBe(0);
   });
+
+  it("gives each new phase of the opponent's turn a moment, so their ladder steps through it (D-175)", () => {
+    const began = (
+      step: "precombatMain" | "postcombatMain" | "declareBlockers",
+      activePlayer: "p1" | "p2",
+    ): ViewEvent => ({
+      type: "STEP_BEGAN",
+      turn: 3,
+      step,
+      activePlayer,
+    });
+    expect(frameHold([began("postcombatMain", "p2")], "p1")).toBe(HOLD.phase);
+    // Not a step inside a phase, and not the person's own: the ladder walks those while they act.
+    expect(frameHold([began("declareBlockers", "p2")], "p1")).toBe(0);
+    expect(frameHold([began("precombatMain", "p1")], "p1")).toBe(0);
+  });
 });
 
 describe("the line a frame shows", () => {
@@ -133,10 +149,10 @@ describe("the line a frame shows", () => {
     for (const { frame } of framesOfAGame()) expect(frame.shown.options).toEqual([]);
   });
 
-  it("has a line for every frame but a new turn's, which has its banner", () => {
+  it("has a line for every frame but a new turn's (its banner says it) or a new phase's (its ladder does)", () => {
     for (const { frame, before } of frames) {
       if (eventLine(frame.events, before, frame.shown) === null)
-        expect(frame.events.some((e) => e.type === "TURN_BEGAN")).toBe(true);
+        expect(frame.events.some((e) => e.type === "TURN_BEGAN" || e.type === "STEP_BEGAN")).toBe(true);
     }
   });
 });

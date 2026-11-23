@@ -26,6 +26,7 @@ import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
 import { readInsets } from "./safe-area.ts";
 import { TurnYourPhone } from "./TurnYourPhone.tsx";
+import { useLadderWalk } from "./use-ladder-walk.ts";
 import { type Pace, usePlayback } from "./use-playback.ts";
 import { usePortraitPhone } from "./use-portrait.ts";
 
@@ -208,6 +209,7 @@ export function App() {
   const playback = usePlayback(update, pace, inspected?.mode === "full" || browsing !== null);
   playingNow.current = playback.playing;
   const shown = playback.drawn;
+  const ladderAt = useLadderWalk(shown, playback.events, playback.holdMs, pace);
   // When playback ends, on its own or by a skip, the decision it uncovers is new: the settle moment starts there, so a
   // press meant for Skip, or a second tap, isn't taken for it (ui.md, "Never").
   const wasPlaying = useRef(false);
@@ -259,9 +261,10 @@ export function App() {
             selected: selection,
             highlight: controlsNow?.highlight ?? [],
             stackSmall: stackIsSmall(shown, stackSmallFor),
+            ladderAt,
           })
         : null,
-    [shown, size, insets, handOpen, selection, controlsNow, stackSmallFor],
+    [shown, size, insets, handOpen, selection, controlsNow, stackSmallFor, ladderAt],
   );
   // Every message that can move the game goes through one guard: one at a time, and a button's press ignored a moment
   // after the reply to the last one.

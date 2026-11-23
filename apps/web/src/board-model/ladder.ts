@@ -3,13 +3,15 @@
 // during combat it opens into its steps (CR 506.1): a sword for attackers, a shield for blockers, a burst for damage.
 // On the opponent's turn their ladder is at the top centre, the same rungs.
 
-import type { Step } from "@mtg/engine";
+import type { PlayerId, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import type { Rect } from "./board-model.ts";
 
 export type LadderIconKind = "cap" | "card" | "swords" | "sword" | "shield" | "burst";
 export type LadderIcon = { key: string; icon: LadderIconKind; label: string; lit: boolean; rect: Rect };
 export type Ladder = { icons: LadderIcon[]; pills: Rect[] };
+/** Where the ladder lights: a step, and whose turn (which ladder shows it). */
+export type LadderPlace = { step: Step; activePlayer: PlayerId };
 
 type Rung = { key: string; icon: LadderIconKind; label: string; steps: readonly Step[] };
 
@@ -34,8 +36,9 @@ export function inCombat(step: Step): boolean {
   return COMBAT.steps.includes(step);
 }
 
-function rungsFor(step: Step | null): Rung[] {
-  return step !== null && inCombat(step)
+/** The rungs drawn: combat opens into its steps while the game rests in it; a walk passing through keeps it short. */
+function rungsFor(step: Step | null, short: boolean): Rung[] {
+  return step !== null && inCombat(step) && !short
     ? [BEGINNING, MAIN1, ...COMBAT_STEPS, MAIN2, END]
     : [BEGINNING, MAIN1, COMBAT, MAIN2, END];
 }
@@ -50,9 +53,9 @@ function inPill(rungs: readonly Rung[], step: Step | null, x: number, y: number,
   return { icons, pills: [pill] };
 }
 
-/** The current turn's ladder in one pill, centred over the main button. */
-export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout): Ladder {
-  const rungs = rungsFor(step);
+/** The current turn's ladder in one pill, centred over the main button. `short`: a walk is passing (D-175). */
+export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout, short = false): Ladder {
+  const rungs = rungsFor(step, short);
   const { icon, padding, gap } = layout.ladder;
   const width = rungs.length * icon + 2 * padding;
   const x = Math.min(button.x + button.width / 2 - width / 2, button.x + button.width - width);
@@ -60,8 +63,8 @@ export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout)
 }
 
 /** The opponent's ladder on their turn: one pill at the top centre, `gap` below the top edge. */
-export function ladderAtTop(area: Rect, step: Step | null, layout: BoardLayout): Ladder {
-  const rungs = rungsFor(step);
+export function ladderAtTop(area: Rect, step: Step | null, layout: BoardLayout, short = false): Ladder {
+  const rungs = rungsFor(step, short);
   const { icon, padding, gap } = layout.ladder;
   const width = rungs.length * icon + 2 * padding;
   return inPill(rungs, step, area.x + area.width / 2 - width / 2, area.y + gap, layout);
