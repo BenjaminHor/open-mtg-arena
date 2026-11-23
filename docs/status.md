@@ -122,12 +122,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     (M3-05 adds the second), safe-area insets respected; the canvas full-bleed under a DOM overlay (`pointer-events:
     none` but for controls); sprites kept by object id and updated in place (M3-07 moves them). Fixtures (a mid-game
     board, a crowded late one) start the worker from a setup, for tests and screenshots. **Screenshots of both
-    fixtures at 812×375 to the owner, before M3-04b; 04b waits for their answer.**
+    fixtures at 812×375 to the owner, before M3-04b.** Done: the owner saw them and many more, shaped the look through
+    their notes below, and asked to keep going (2026-11-23).
   - M3-04a progress (2026-11-23): built: layout data (`layout/compact.ts`), the board model (rows, land piles, hand,
     backs, libraries, HUD anchors, safe areas), keyed sprites with original frames, runtime art with a fallback, mana
     symbols as shapes, tap marks, the HUD (portraits, life crests, phase ladder, main button, actions drawer), fixture
     boards (`?fixture=mid-game`, `crowded`). `pnpm check` and the browser tests (desktop and 812×375 touch) green.
-    Next: reviews (code, UX), then screenshots to the owner; 04b waits for their answer.
+    Reviews done; screenshots sent; the owner said to keep going.
   - Owner (2026-11-23), seeing the first look's description and a 2018 Arena desktop screenshot: "I feel like we could
     try harder to make it look like the screenshot. Specifically the cards themselves." Recorded in ui.md ("The
     cards"); the card faces are redrawn to that anatomy (D-153) before the screenshots go to the owner. Code and UX

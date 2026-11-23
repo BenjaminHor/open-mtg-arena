@@ -2351,7 +2351,7 @@ owner's answer to the D-089 open question, option (a))
   under the attacker it blocks, with a shield badge; the blockers of one attacker huddle together under it, overlapped
   enough to show each one's power/toughness. Creatures that aren't blocking step aside into the nearest free space.
 - A lone declared blocker under its attacker gets no line: where it sits and its shield say whom it blocks. A beam,
-  centre to centre over the cards, joins the rest: a blocker picked while blockers are being chosen (Arena draws its
+  edge to edge across the open table, joins the rest: a blocker picked while blockers are being chosen (Arena draws its
   beam then, arena-research.md second set), each blocker of a gang (a huddle can sit over a neighbouring attacker), a
   lone blocker pushed out from under its attacker; and an attacker to the planeswalker it attacks.
 - The values (`combat.advance`, `combat.gangOverlap`) are in the layout data. Moving cards between the old and new

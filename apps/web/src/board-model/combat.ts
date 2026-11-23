@@ -25,13 +25,13 @@ export function withCombat(
   const links: CombatLink[] = [];
   for (const card of placed) {
     // A lone declared blocker under its attacker needs no line: where it sits, and its shield, say whom it blocks. A
-    // beam joins the rest to their attackers, centre to centre over the cards: a blocker picked in the declaration
+    // beam joins the rest to their attackers, edge to edge across the open table (never over a power/toughness pill): a blocker picked in the declaration
     // under way (as Arena draws its beam while blockers are chosen [R]), one of a gang (a huddle can sit over a
     // neighbouring attacker), and one the row pushed out from under its attacker.
     for (const attacker of card.blocking.flatMap((id) => at.get(id) ?? [])) {
       const under = card.x < attacker.x + attacker.width && attacker.x < card.x + card.width;
       const gang = placed.filter((c) => c.blocking.includes(attacker.id)).length > 1;
-      if (card.picked || gang || !under) links.push({ kind: "block", from: centre(card), to: centre(attacker) });
+      if (card.picked || gang || !under) links.push({ kind: "block", from: facing(card), to: facing(attacker) });
     }
     const walker = card.attacks === null ? undefined : at.get(card.attacks);
     if (walker !== undefined) links.push({ kind: "attack", from: facing(card), to: centre(walker) });
