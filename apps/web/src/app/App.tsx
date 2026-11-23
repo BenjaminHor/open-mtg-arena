@@ -1,12 +1,18 @@
 // The app shell: one match against the heuristic AI, the board full-bleed on its canvas and the HUD over it. Menus are
 // M3-09. The board model is made here, from the seat view and the screen's size, so the canvas and the HUD share it.
 
-import type { Action, GameSetup, ObjectId } from "@mtg/engine";
+import type { Action, GameSetup, ObjectId, SeatView } from "@mtg/engine";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
 import { Hud } from "../hud/Hud.tsx";
-import { allAttackOffered, nextAllAttackPick } from "../interaction/all-attack.ts";
+import {
+  allAttackGoal,
+  allAttackOffered,
+  stepToward,
+  type WantedAttack,
+  withoutAttacker,
+} from "../interaction/all-attack.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
@@ -41,6 +47,30 @@ function startFromUrl(): ToWorker | { error: string } {
 const SETTLE_MS = 300;
 
 /**
+ * The declaration's batch button, in one fixed place beside the main button [guess: arena-research.md has All Attack
+ * as a label, not its place]: "All Attack" while two or more could
+ * still attack, "Clear Attacks" once some are attacking (D-158). Kept, disabled, while the app works toward its goal.
+ */
+function attackBatch(
+  shown: SeatView,
+  running: string | null,
+  aim: (goal: WantedAttack[], label: string) => void,
+): { label: string; run: () => void; running: boolean } | null {
+  const decision = shown.view.decision;
+  if (decision?.kind !== "declareAttackers") return null;
+  // While it runs: the label pressed, disabled, in its place.
+  if (running !== null) return { label: running, run: () => {}, running: true };
+  if (allAttackOffered(shown)) {
+    return { label: "All Attack", run: () => aim(allAttackGoal(shown), "All Attack"), running: false };
+  }
+  const canTakeBack = shown.options.some((o) => o.action.type === "ANSWER" && o.action.answer.kind === "takeBack");
+  if (decision.chosen.length > 0 && canTakeBack) {
+    return { label: "Clear Attacks", run: () => aim([], "Clear Attacks"), running: false };
+  }
+  return null;
+}
+
+/**
  * Whether a control has the keyboard's focus: then Space is that control's, not the main button's. A button a tap or
  * click left focused doesn't count (it shows no focus ring), so Space after a tap still presses the main button.
  */
@@ -63,10 +93,15 @@ export function App() {
   // The UI's own side of a choice under way (interaction/controls.ts): a lifted hand card or a picked blocker, a card's
   // menu open, and an action on its way to the worker (no second press until the next update, ui.md).
   const [selection, setSelection] = useState<Selection>(null);
-  // All Attack under way: one pick is sent per update, until no creature is left to pick. `picked` is how many attackers
-  // the declaration held when the last pick went out: if the next update holds no more (an error, an Undo), it stops.
-  const [attackingAll, setAttackingAll] = useState(false);
-  const picked = useRef<number | null>(null);
+  // The attackers wanted, while the app moves the declaration there a step per reply (`all-attack.ts`): All Attack,
+  // Clear Attacks, a tap taking one attacker out. `lastStep` is what went out last: the same step again, from the
+  // same declaration, means it didn't land, and the app stops rather than send it once more.
+  const [attackGoal, setAttackGoal] = useState<WantedAttack[] | null>(null);
+  const lastStep = useRef<string | null>(null);
+  // The batch button's label while the app works toward its goal: kept as pressed, not flipping as attackers come and go.
+  const runningLabel = useRef("All Attack");
+  // Whether the hand was open when a drag lifted a card from it, to put it back that way if the drag is cancelled.
+  const handBeforeDrag = useRef(false);
   // An open menu is only which card it's for: its choices are always read from the current controls.
   const [menuFor, setMenuFor] = useState<ObjectId | null>(null);
   const [busy, setBusy] = useState(false);
@@ -91,8 +126,8 @@ export function App() {
         setError(null);
       } else {
         setError(reply.message);
-        // A refused pick would only be sent again: All Attack stops, and the person carries on by hand.
-        setAttackingAll(false);
+        // A refused step would only be sent again: the app stops, and the person carries on by hand.
+        setAttackGoal(null);
       }
     });
     client.current = started;
@@ -169,24 +204,30 @@ export function App() {
     },
     [send],
   );
-  // All Attack: each reply brings the next pick (the engine re-checks the declaration after every pick), until none
-  // is left or the declaration is over; then the person adjusts or finishes it with the main button.
+  // Toward the attack goal: each reply brings the next step (a pick, or a take-back), each one the engine re-checks,
+  // until the declaration is there, is over, or a step didn't land; then the person adjusts or finishes it.
   useEffect(() => {
-    if (!attackingAll || busy || shown === null) return;
+    if (attackGoal === null || busy || shown === null) return;
+    const step = stepToward(shown, attackGoal);
     const decision = shown.view.decision;
-    const chosen = decision?.kind === "declareAttackers" ? decision.chosen.length : null;
-    const pick = nextAllAttackPick(shown);
-    // Done: nothing left to pick, the declaration's over, or the last pick didn't land (refused, or taken back).
-    if (pick === null || chosen === null || (picked.current !== null && chosen <= picked.current)) {
-      setAttackingAll(false);
-      picked.current = null;
-      // A second tap on All Attack would land on Undo, now in its place: the settle moment starts here (ui.md "Never").
+    const at = `${JSON.stringify(decision?.kind === "declareAttackers" ? decision.chosen : null)} ${JSON.stringify(step)}`;
+    if (step === null || at === lastStep.current) {
+      setAttackGoal(null);
+      lastStep.current = null;
+      // A second tap on the button would land on what's under it now: the settle moment starts here (ui.md "Never").
       updatedAt.current = performance.now();
       return;
     }
-    picked.current = chosen;
-    act(pick);
-  }, [attackingAll, busy, shown, act]);
+    lastStep.current = at;
+    act(step);
+  }, [attackGoal, busy, shown, act]);
+  // Starting toward a goal is a button's press: not a moment after a button's reply (the settle guard, above).
+  const aimAttack = useCallback((goal: WantedAttack[], label: string) => {
+    if (busyNow.current || performance.now() - updatedAt.current < SETTLE_MS) return;
+    lastStep.current = null;
+    runningLabel.current = label;
+    setAttackGoal(goal);
+  }, []);
   const menuTap = menuFor === null ? undefined : controlsNow?.cards[menuFor]?.tap;
   const menu = menuFor !== null && menuTap?.kind === "menu" ? { id: menuFor, choices: menuTap.choices } : null;
   const onTap = useCallback(
@@ -206,11 +247,14 @@ export function App() {
         case "menu":
           setMenuFor(id);
           break;
+        case "withdraw":
+          if (shown !== null) setAttackGoal(withoutAttacker(shown, id));
+          break;
         case undefined:
           break;
       }
     },
-    [controlsNow, act],
+    [controlsNow, act, shown],
   );
   // A tap on the table, not on a control, puts things down: the menu, then the selection, then the open hand.
   const onTable = (event: React.MouseEvent) => {
@@ -261,19 +305,12 @@ export function App() {
           fullControl={update?.fullControl ?? false}
           // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
           setFullControl={(on) => send({ type: "fullControl", on }, !on)}
-          allAttack={{
-            offered: !attackingAll && allAttackOffered(shown),
-            // A press a moment after a button's reply was aimed at what was there before (the settle guard, above).
-            start: () => {
-              if (busyNow.current || performance.now() - updatedAt.current < SETTLE_MS) return;
-              picked.current = null;
-              setAttackingAll(true);
-            },
-          }}
+          attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{
             // The card lifts as the drag starts, out of the collapsed hand too.
             lift: (id) => {
               setMenuFor(null);
+              handBeforeDrag.current = handOpen;
               setHandOpen(true);
               setSelection(id);
             },
@@ -284,7 +321,11 @@ export function App() {
               else if (tap?.kind === "menu") setMenuFor(id);
               else setSelection(null);
             },
-            cancel: () => setSelection(null),
+            // Put down: the hand as it was before the drag (a drag from the collapsed hand leaves it collapsed).
+            cancel: () => {
+              setSelection(null);
+              setHandOpen(handBeforeDrag.current);
+            },
           }}
         />
       )}

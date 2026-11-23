@@ -7,9 +7,13 @@ import type { ObjectId } from "@mtg/engine";
 import { useEffect, useRef, useState } from "react";
 import type { BoardModel } from "../board-model/board-model.ts";
 
-/** px: how far up a press must move to be a drag at all, and how far to be let go "on the table" (D-158). */
+/**
+ * px: how far up a press must move to be a drag at all; how far at least to be let go "on the table", which also
+ * means above the open hand's top edge, by `CLEAR` (D-158).
+ */
 const START = 12;
 const DROP = 60;
+const CLEAR = 8;
 
 /** What a drag does: lift the card as it starts, play it when let go on the table, or put it down. */
 export type HandDragCallbacks = { lift: (id: ObjectId) => void; drop: (id: ObjectId) => void; cancel: () => void };
@@ -29,6 +33,9 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
   // The latest callbacks, for listeners added when the press began.
   const latest = useRef(on);
   latest.current = on;
+  // The board model as it is now: the hand opens as a drag starts, and "on the table" means above the open hand.
+  const board = useRef(model);
+  board.current = model;
   // The drag under way's way to end, for an unmount mid-drag: no listener may outlive the hand.
   const stopRef = useRef<(() => void) | null>(null);
   useEffect(() => () => stopRef.current?.(), []);
@@ -41,6 +48,10 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
       if (id === null) return;
       const pointer = e.pointerId;
       const from = e.clientY;
+      const hud = e.currentTarget.closest(".hud");
+      const top = hud?.getBoundingClientRect().top ?? 0;
+      // On the table: far enough up, and above the hand's top edge (the open hand reaches well up the screen).
+      const onTable = (y: number) => from - y >= DROP && y - top < handTop(board.current, id) - CLEAR;
       let lifted = false;
       let armed = false;
       // Followed on the window, not the card: lifting the card redraws the hand, and the element pressed goes away.
@@ -52,9 +63,12 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
         if (!lifted && up < START) return;
         if (!lifted) {
           lifted = true;
+          // Held on the board's stable layer from here: lifting the card redraws the hand, and the element pressed
+          // goes away, which on some browsers (iOS Safari) would leave the pointer's events with nowhere to go.
+          if (hud?.hasPointerCapture(pointer) === false) hud.setPointerCapture(pointer);
           latest.current.lift(id);
-        } else if (armed === up >= DROP) return; // only a change of state redraws, not every move
-        armed = up >= DROP;
+        } else if (armed === onTable(m.clientY)) return; // only a change of state redraws, not every move
+        armed = onTable(m.clientY);
         setDragging({ id, armed });
       };
       const release = (u: PointerEvent) => {
@@ -62,7 +76,7 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
         stop();
         if (!lifted) return;
         swallowNextClick();
-        if (from - u.clientY >= DROP) latest.current.drop(id);
+        if (onTable(u.clientY)) latest.current.drop(id);
         else latest.current.cancel();
       };
       const cancel = () => {
@@ -121,4 +135,13 @@ function handCardAt(model: BoardModel, e: React.PointerEvent<HTMLElement>): Obje
     (c) => c.zone === "hand" && c.mine && x >= c.x && x <= c.x + c.width && y >= c.y && y <= c.y + c.height,
   );
   return (under.at(-1)?.id as ObjectId | undefined) ?? null;
+}
+
+/**
+ * The top edge of the person's hand as drawn now (open or collapsed), in the board's pixels, leaving out the card being
+ * dragged: lifted, it's drawn large near the top of the screen, not in the hand's row.
+ */
+function handTop(model: BoardModel, dragged: ObjectId): number {
+  const tops = model.cards.filter((c) => c.zone === "hand" && c.mine && c.id !== dragged).map((c) => c.y);
+  return tops.length === 0 ? model.height : Math.min(...tops);
 }

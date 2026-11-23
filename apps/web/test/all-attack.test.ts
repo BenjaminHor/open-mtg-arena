@@ -1,98 +1,87 @@
-// All Attack (interaction/all-attack.ts): which picks it makes, one at a time, and when it's offered.
+// Shaping a declaration of attackers a step at a time (interaction/all-attack.ts): All Attack, Clear Attacks, and
+// taking one creature out, each toward a goal through the engine's own picks and take-backs (D-158).
 
-import type { Action, ObjectId, SeatView } from "@mtg/engine";
+import type { SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { fixtureSetup } from "../src/fixtures/fixtures.ts";
-import { allAttackOffered, nextAllAttackPick } from "../src/interaction/all-attack.ts";
+import {
+  allAttackGoal,
+  allAttackOffered,
+  stepToward,
+  type WantedAttack,
+  withoutAttacker,
+} from "../src/interaction/all-attack.ts";
 import { handle } from "../src/worker/match-session.ts";
-import { cards, fixtureView } from "./fixture-views.ts";
+import { cards } from "./fixture-views.ts";
 
-const midGame = fixtureView("mid-game");
-
-const pick = (attacker: string, attacked?: string): SeatView["options"][number] => ({
-  ...(midGame.options[0] as SeatView["options"][number]),
-  action: {
-    type: "ANSWER",
-    decisionId: "d1",
-    player: "p1",
-    answer: { kind: "declareAttacker", attack: { attacker, defender: "p2", ...(attacked ? { attacked } : {}) } },
-  } as unknown as Action,
-});
-
-function declaring(options: SeatView["options"], chosen: { attacker: string }[] = []): SeatView {
-  return {
-    ...midGame,
-    options,
-    view: {
-      ...midGame.view,
-      decision: { kind: "declareAttackers", chosen } as unknown as SeatView["view"]["decision"],
-    },
+/** The attack fixture, played on to the declaration of attackers, through the worker's own session. */
+function atDeclaration() {
+  const setup = fixtureSetup("attack");
+  if (setup === null) throw new Error("no attack fixture");
+  let step = handle(null, { type: "startFrom", setup, human: "p1" }, cards);
+  const shown = (): SeatView => {
+    if (step.reply.type !== "update") throw new Error(step.reply.message);
+    return step.reply.shown;
   };
+  for (let i = 0; i < 6 && shown().view.decision?.kind !== "declareAttackers"; i++) {
+    const pass = shown().options.find((o) => o.action.type === "PASS_PRIORITY");
+    if (pass === undefined) throw new Error("no pass");
+    step = handle(step.session, { type: "act", action: pass.action }, cards);
+  }
+  /** Moves toward the goal as the app does, one step per reply; returns how many steps it took. */
+  const reach = (goal: WantedAttack[]) => {
+    for (let i = 0; i < 20; i++) {
+      const next = stepToward(shown(), goal);
+      if (next === null) return i;
+      step = handle(step.session, { type: "act", action: next }, cards);
+    }
+    throw new Error("never got there");
+  };
+  const attackers = () => {
+    const d = shown().view.decision;
+    return d?.kind === "declareAttackers" ? d.chosen.map((a) => a.attacker) : [];
+  };
+  const name = (id: string) => {
+    const seen = shown().seen[id as keyof SeatView["seen"]];
+    return seen?.kind === "card" ? seen.characteristics.name : id;
+  };
+  return { shown, reach, attackers, name };
 }
 
-const attackerOf = (action: Action | null) =>
-  action?.type === "ANSWER" && action.answer.kind === "declareAttacker" ? action.answer.attack.attacker : null;
-
-describe("All Attack", () => {
-  it("picks each creature that can attack the opponent, one at a time, skipping those already attacking (CR 508.1a)", () => {
-    const shown = declaring([pick("o1"), pick("o2"), pick("o3")], [{ attacker: "o1" }]);
-    expect(attackerOf(nextAllAttackPick(shown))).toBe("o2");
-    expect(attackerOf(nextAllAttackPick(declaring([pick("o3")], [{ attacker: "o1" }, { attacker: "o2" }])))).toBe("o3");
-    expect(nextAllAttackPick(declaring([], [{ attacker: "o1" }]))).toBeNull();
-  });
-
-  it("attacks the player, never a planeswalker: that's chosen on the card (CR 508.1b)", () => {
-    const shown = declaring([pick("o1", "o9"), pick("o1"), pick("o2", "o9")]);
-    expect(attackerOf(nextAllAttackPick(shown))).toBe("o1");
-    const picks: (ObjectId | null)[] = [];
-    let view = shown;
-    for (let i = 0; i < 3; i++) {
-      const next = nextAllAttackPick(view);
-      picks.push(attackerOf(next));
-      if (next === null) break;
-      view = declaring(
-        view.options.filter((o) => attackerOf(o.action) !== attackerOf(next)),
-        [
-          ...(view.view.decision?.kind === "declareAttackers" ? view.view.decision.chosen : []),
-          { attacker: attackerOf(next) as string },
-        ],
-      );
-    }
-    expect(picks).toEqual(["o1", null]);
-  });
-
-  it("is offered only while two or more creatures could still attack, and never outside a declaration", () => {
-    expect(allAttackOffered(declaring([pick("o1"), pick("o2")]))).toBe(true);
-    expect(allAttackOffered(declaring([pick("o1"), pick("o1", "o9")]))).toBe(false);
-    expect(allAttackOffered(midGame)).toBe(false);
-  });
-
-  it("through the real engine: from the attack fixture, picks every creature until none is left, and can finish", () => {
-    const setup = fixtureSetup("attack");
-    if (setup === null) throw new Error("no attack fixture");
-    let step = handle(null, { type: "startFrom", setup, human: "p1" }, cards);
-    const shownNow = () => {
-      if (step.reply.type !== "update") throw new Error(step.reply.message);
-      return step.reply.shown;
-    };
-    // On to the declaration.
-    for (let i = 0; i < 6 && shownNow().view.decision?.kind !== "declareAttackers"; i++) {
-      const pass = shownNow().options.find((o) => o.action.type === "PASS_PRIORITY");
-      if (pass === undefined) throw new Error("no pass");
-      step = handle(step.session, { type: "act", action: pass.action }, cards);
-    }
-    expect(allAttackOffered(shownNow())).toBe(true);
-    for (let i = 0; i < 10; i++) {
-      const pick = nextAllAttackPick(shownNow());
-      if (pick === null) break;
-      step = handle(step.session, { type: "act", action: pick }, cards);
-    }
-    const decision = shownNow().view.decision;
-    expect(decision?.kind === "declareAttackers" ? decision.chosen.length : 0).toBe(4);
+describe("shaping the attack", () => {
+  it("All Attack: every creature that can attack a player, one engine pick at a time (CR 508.1a), then it can finish", () => {
+    const game = atDeclaration();
+    expect(allAttackOffered(game.shown())).toBe(true);
+    expect(game.reach(allAttackGoal(game.shown()))).toBe(4);
+    expect(game.attackers()).toHaveLength(4);
     // Every requirement obeyed (Berserkers of Blood Ridge attacks each combat): the declaration can be finished.
     expect(
-      shownNow().options.some((o) => o.action.type === "ANSWER" && o.action.answer.kind === "finishDeclaring"),
+      game.shown().options.some((o) => o.action.type === "ANSWER" && o.action.answer.kind === "finishDeclaring"),
     ).toBe(true);
-    expect(allAttackOffered(shownNow())).toBe(false);
+    expect(allAttackOffered(game.shown())).toBe(false);
+  });
+
+  it("taking one creature out: the take-back undoes the last pick only, so later picks are taken back and made again", () => {
+    const game = atDeclaration();
+    game.reach(allAttackGoal(game.shown()));
+    const [first, ...rest] = game.attackers();
+    if (first === undefined) throw new Error("no attackers");
+    // Out goes the first one picked: three take-backs (the last three), one more for it, then three picks again.
+    expect(game.reach(withoutAttacker(game.shown(), first))).toBe(7);
+    expect(game.attackers()).toEqual(rest);
+  });
+
+  it("Clear Attacks: back to none, every pick taken back", () => {
+    const game = atDeclaration();
+    game.reach(allAttackGoal(game.shown()));
+    expect(game.reach([])).toBe(4);
+    expect(game.attackers()).toEqual([]);
+  });
+
+  it("a wanted attacker the engine doesn't offer is skipped, not waited for", () => {
+    const game = atDeclaration();
+    const before = game.attackers();
+    expect(game.reach([{ attacker: "o999" as WantedAttack["attacker"] }])).toBe(0);
+    expect(game.attackers()).toEqual(before);
   });
 });

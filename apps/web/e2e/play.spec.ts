@@ -251,6 +251,18 @@ test("All Attack picks every creature that can attack, a double tap included; th
   await expect(page.getByRole("button", { name: /^4 Attackers/ })).toBeEnabled();
   await page.waitForTimeout(400);
   await expect(page.getByRole("button", { name: /^4 Attackers/ })).toBeEnabled();
+  // One creature stays home: a tap on an attacker takes it out (the app takes back and re-picks, D-158).
+  await page.getByRole("button", { name: /^Llanowar Elves: don't attack/ }).click();
+  await expect(page.getByRole("button", { name: /^3 Attackers/ })).toBeEnabled();
+  // Clear Attacks, in All Attack's place, empties the declaration; All Attack is back to fill it again. (A press right
+  // after the app's last step is ignored as a double tap would be: a person's next press comes later.)
+  await page.waitForTimeout(400);
+  await page.getByRole("button", { name: "Clear Attacks" }).click();
+  await expect(page.getByRole("button", { name: /^No Attacks/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "All Attack" })).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.getByRole("button", { name: "All Attack" }).click();
+  await expect(page.getByRole("button", { name: /^4 Attackers/ })).toBeEnabled();
   await page.getByRole("button", { name: /^4 Attackers/ }).click();
   await expect.poll(async () => (await board(page))?.cards.filter((c) => c.mine && c.attacking).length).toBe(4);
 });
@@ -268,21 +280,22 @@ test("drag to play: a land dragged up onto the table is played, a spell is cast,
     if (card === undefined) throw new Error(`no ${name} in hand`);
     return { x: card.x + card.width / 2, y: card.y + 20 };
   };
-  const drag = async (name: string, up: number) => {
+  // Up by `up` pixels, or, with `up` left out, all the way onto the table: above the open hand (D-158).
+  const drag = async (name: string, up?: number) => {
     const at = await handCard(name);
     await page.mouse.move(at.x, at.y);
     await page.mouse.down();
-    await page.mouse.move(at.x, at.y - up, { steps: 6 });
+    await page.mouse.move(at.x, up === undefined ? 60 : at.y - up, { steps: 8 });
     await page.mouse.up();
   };
   const onField = async (name: string) =>
     (await board(page))?.cards.filter((c) => c.name === name && c.zone === "battlefield").length ?? 0;
   const mountains = await onField("Mountain");
-  await drag("Mountain", 120);
+  await drag("Mountain");
   await expect.poll(() => onField("Mountain")).toBe(mountains + 1);
   // Not far enough: back into the hand, nothing played.
   await drag("Lightning Bolt", 30);
   await expect(page.getByText("Choose a target for Lightning Bolt")).toHaveCount(0);
-  await drag("Lightning Bolt", 140);
+  await drag("Lightning Bolt");
   await expect(page.getByText("Choose a target for Lightning Bolt")).toBeVisible();
 });

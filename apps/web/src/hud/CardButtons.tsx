@@ -64,12 +64,12 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
           onPointerDown={busy ? undefined : (e) => handDrag.onPointerDown(e)}
         />
       )}
-      {lifted !== undefined && again?.kind === "send" && (
+      {lifted !== undefined && (again?.kind === "send" || handDrag.dragging !== null) && (
         <div
-          className="tap-again"
+          className={`tap-again${handDrag.dragging?.armed ? " armed" : ""}`}
           style={place({ x: lifted.x + 8, y: lifted.y + lifted.height - 34, width: lifted.width - 16, height: 26 })}
         >
-          {cue(handDrag.dragging, again.choice.label.split(" ")[0]?.toLowerCase() ?? "play")}
+          {cue(handDrag.dragging, again)}
         </div>
       )}
       {/* The card on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it. */}
@@ -109,8 +109,14 @@ function spoken(label: string): string {
   return label.replace(/\{([^}]+)\}/g, (_, symbol: string) => (symbol === "T" ? "tap" : `${symbol} mana`));
 }
 
-/** What the lifted card says: a second tap plays it, or, while it's dragged, whether letting go will. */
-function cue(dragging: { armed: boolean } | null, verb: string): string {
-  if (dragging === null) return `Tap again to ${verb}`;
+/**
+ * What the lifted card says: a second tap plays it, or, while it's dragged, whether letting go will, whether it opens a
+ * choice of what to do, or that it can't be played now (no mana, the wrong moment).
+ */
+function cue(dragging: { armed: boolean } | null, tap: Controls["cards"][ObjectId]["tap"] | undefined): string {
+  const verb = tap?.kind === "send" ? (tap.choice.label.split(" ")[0]?.toLowerCase() ?? "play") : null;
+  if (dragging === null) return `Tap again to ${verb ?? "play"}`;
+  if (tap?.kind === "menu") return dragging.armed ? "Release to choose" : "Drag up to choose";
+  if (verb === null) return "Can't play it now";
   return dragging.armed ? `Release to ${verb}` : `Drag up to ${verb}`;
 }

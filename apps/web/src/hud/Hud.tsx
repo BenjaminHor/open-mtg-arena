@@ -36,8 +36,8 @@ type HudProps = {
   setFullControl: (on: boolean) => void;
   /** Drag to play: a hand card lifted by a drag, let go on the table, or put down (`hand-drag.ts`). */
   drag: HandDragCallbacks;
-  /** All Attack (`interaction/all-attack.ts`): offered now, and what pressing it starts. */
-  allAttack: { offered: boolean; start: () => void };
+  /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
+  attackBatch: { label: string; run: () => void; running: boolean } | null;
 };
 
 export function Hud(props: HudProps) {
@@ -127,16 +127,17 @@ export function Hud(props: HudProps) {
           </button>
         );
       })}
-      {/* All Attack in the next free slot beside the main button, as Arena has it left of the button [R]. */}
-      {props.allAttack.offered && anchors.secondary[controls.secondary.length] !== undefined && (
+      {/* The batch button always in the second slot, Undo always in the first: a tap never lands on a different action
+          that just moved into the place pressed (ui.md "Never"). */}
+      {props.attackBatch !== null && anchors.secondary[1] !== undefined && (
         <button
           type="button"
           className="secondary-button"
-          style={place(anchors.secondary[controls.secondary.length] as Rect)}
-          aria-disabled={busy}
-          onClick={() => !busy && props.allAttack.start()}
+          style={place(anchors.secondary[1])}
+          aria-disabled={busy || props.attackBatch.running}
+          onClick={() => !busy && !props.attackBatch?.running && props.attackBatch?.run()}
         >
-          All Attack
+          {props.attackBatch.label}
         </button>
       )}
       <div className="prompt-anchor" style={{ left: anchors.prompt.x, top: anchors.prompt.y }}>

@@ -316,6 +316,12 @@ body,
 }
 
 /* Above every region: a tap on the stack's card lands on nothing under it. */
+/* Let go now and it's played: the cue lights up gold, so the change shows, not only its words. */
+.hud .tap-again.armed {
+  background: linear-gradient(180deg, #f8dc7e, #c58b22);
+  color: #2a1d08;
+}
+
 .hud .tap-shield {
   pointer-events: auto;
   z-index: 100000;

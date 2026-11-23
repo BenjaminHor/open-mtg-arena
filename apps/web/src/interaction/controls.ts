@@ -24,7 +24,12 @@ export type Tap =
   /** Puts it down again. */
   | { kind: "deselect" }
   /** Several things it can do: a small menu by the card. */
-  | { kind: "menu"; choices: Choice[] };
+  | { kind: "menu"; choices: Choice[] }
+  /**
+   * Takes this creature out of the attack being declared. The engine's take-back undoes the last pick only, so the app
+   * gets there in steps (`all-attack.ts`): a control for it, not one action.
+   */
+  | { kind: "withdraw" };
 
 /** The UI's own state of a choice under way: the hand card lifted, or the blocker picked before its attacker. */
 export type Selection = ObjectId | null;
@@ -115,6 +120,15 @@ export function controls(shown: SeatView, selection: Selection): Controls {
       cards[blocker] = { label: `${name(blocker)}: ${only.label}`, tap: { kind: "send", choice: only } };
     else if (selection === blocker) cards[blocker] = { label: `${name(blocker)}: put down`, tap: { kind: "deselect" } };
     else cards[blocker] = { label: `${name(blocker)}: pick to block`, tap: { kind: "select" } };
+  }
+  // A creature already declared as an attacker: a tap takes it back out, while picks can still be taken back.
+  const decision = shown.view.decision;
+  const canTakeBack = shown.options.some((o) => o.action.type === "ANSWER" && o.action.answer.kind === "takeBack");
+  if (decision?.kind === "declareAttackers" && canTakeBack) {
+    for (const attack of decision.chosen) {
+      if (cards[attack.attacker] !== undefined) continue;
+      cards[attack.attacker] = { label: `${name(attack.attacker)}: don't attack`, tap: { kind: "withdraw" } };
+    }
   }
   const highlight: ObjectId[] = [];
   if (selection !== null && blocks.has(selection)) {
