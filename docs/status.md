@@ -218,6 +218,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
        attackers and blockers, when the opponent puts something on the stack or attacks), not at every step where an
        instant could be cast; a full-control toggle.
     Accept: a full game playable at 812×375 by touch alone, and by keyboard alone, as Playwright tests.
+  - M3-04b slice 1 progress (2026-11-23): built `interaction/controls.ts` (every option to a control; a property test
+    over 24 seeded games checks no option is orphaned and every control is legal), tap regions from the board model
+    (piles, hand strips, the lifted card), transparent buttons over the canvas (touch, mouse, keyboard, labels), the
+    lifted hand card, the stack's top at the right, valid targets glowing, portraits as targets, two-tap blocking, a
+    menu for several choices, Undo and Cancel by the main button, a prompt naming what's awaited with any leftover
+    choices, a settings cog with Concede, Escape and Space; the actions drawer is gone. The hand opens itself for a
+    discard or a mulligan's bottom card; the main button says when a declaration can't finish yet. e2e: casting with a
+    target, attacking (with a must-attack creature), blocking, a whole game by the controls alone, the keyboard.
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

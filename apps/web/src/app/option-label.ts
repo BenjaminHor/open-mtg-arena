@@ -9,7 +9,8 @@ export function optionLabel(shown: SeatView, action: Action): string {
     const seen = shown.seen[id];
     return seen?.kind === "card" ? seen.characteristics.name : "ability";
   };
-  const target = (t: Target) => (t.kind === "player" ? (t.player === shown.player ? "you" : t.player) : name(t.object));
+  const target = (t: Target) =>
+    t.kind === "player" ? (t.player === shown.player ? "you" : "opponent") : name(t.object);
   switch (action.type) {
     case "PASS_PRIORITY":
       return "Pass";

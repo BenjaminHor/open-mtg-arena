@@ -2,24 +2,35 @@
 // board model's anchors. It lets touches through to the canvas except on its own controls (`pointer-events`).
 // Portraits in the corners, life crests on the centre line, the phase ladder and the main button at the bottom right
 // [R]; whose turn it is shows three ways: where the ladder is, a ring and marker on that player's portrait, and the
-// main button's label.
+// main button's label. The cards a tap acts on are buttons over the canvas (CardButtons), choices the board can't
+// offer are in the prompt, and a card with several choices opens a small menu.
 
-import type { Action, PlayerId, SeatView } from "@mtg/engine";
+import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import type { BoardModel, Rect } from "../board-model/board-model.ts";
+import { type Choice, type Controls, promptTitle } from "../interaction/controls.ts";
+import { CardButtons } from "./CardButtons.tsx";
+import { ChoiceMenu } from "./ChoiceMenu.tsx";
 import { mainButton } from "./main-button.ts";
-import { OptionsDrawer } from "./OptionsDrawer.tsx";
 import { PhaseLadder } from "./PhaseLadder.tsx";
+import { Prompt } from "./Prompt.tsx";
 import { place } from "./place.ts";
+import { SettingsMenu } from "./SettingsMenu.tsx";
 
 type HudProps = {
   shown: SeatView;
   model: BoardModel;
+  controls: Controls;
+  busy: boolean;
   act: (action: Action) => void;
+  onTap: (id: ObjectId) => void;
+  menu: { id: ObjectId; choices: Choice[] } | null;
+  closeMenu: () => void;
   handOpen: boolean;
-  toggleHand: () => void;
+  openHand: () => void;
 };
 
-export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
+export function Hud(props: HudProps) {
+  const { shown, model, controls, busy, act } = props;
   const view = shown.view;
   const me = shown.player;
   const opponent = view.turnOrder.find((p) => p !== me) ?? me;
@@ -28,10 +39,34 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
   const anchors = model.overlay;
   const button = mainButton(shown);
   const result = view.result;
+  const deciding = view.decision !== null && view.decision.kind !== "priority" && result === null;
+  const menuAt = props.menu === null ? null : model.regions.find((r) => r.id === props.menu?.id)?.rect;
   return (
     <section className="hud" aria-label="Match">
-      <Portrait rect={anchors.portrait.opponent} label="Opponent" side="opponent" active={active === opponent} />
-      <Portrait rect={anchors.portrait.mine} label="You" side="mine" active={active === me} />
+      <CardButtons
+        model={model}
+        controls={controls}
+        busy={busy}
+        onTap={props.onTap}
+        onHand={props.openHand}
+        handOpen={props.handOpen}
+      />
+      <Portrait
+        rect={anchors.portrait.opponent}
+        label="Opponent"
+        side="opponent"
+        active={active === opponent}
+        targets={controls.players[opponent] ?? []}
+        act={act}
+      />
+      <Portrait
+        rect={anchors.portrait.mine}
+        label="You"
+        side="mine"
+        active={active === me}
+        targets={controls.players[me] ?? []}
+        act={act}
+      />
       <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
       {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
       <LifeCrest
@@ -42,13 +77,12 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
         combat={anchors.opponentInCombat}
       />
       <LifeCrest rect={anchors.life.mine} life={life(me)} label="Your life" side="mine" combat={false} />
-      {/* While a choice other than priority waits, its prompt answers it: no button that does nothing. */}
       {!button.hidden && (
         <button
           type="button"
           className={`main-button${button.action === null ? " waiting" : ""}`}
           style={place(anchors.mainButton)}
-          disabled={button.action === null}
+          disabled={button.action === null || busy}
           onClick={() => button.action !== null && act(button.action)}
         >
           <span className="main-label">{button.label}</span>
@@ -59,18 +93,28 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
           )}
         </button>
       )}
-      {anchors.hand !== null && (
-        // A tap on the hand opens it, and on the open hand closes it [R]. Playing a card from it is M3-04b.
-        <button
-          type="button"
-          className="hand-toggle"
-          style={place(anchors.hand)}
-          aria-label={handOpen ? "Close your hand" : "Open your hand"}
-          aria-expanded={handOpen}
-          onClick={toggleHand}
-        />
+      {controls.secondary.map((choice, i) => {
+        const at = anchors.secondary[i];
+        return at === undefined ? null : (
+          <button
+            key={choice.label}
+            type="button"
+            className="secondary-button"
+            style={place(at)}
+            disabled={busy}
+            onClick={() => act(choice.action)}
+          >
+            {choice.label}
+          </button>
+        );
+      })}
+      <div className="prompt-anchor" style={{ left: anchors.prompt.x, top: anchors.prompt.y }}>
+        <Prompt prompt={controls.prompt} title={deciding ? promptTitle(shown) : null} busy={busy} act={act} />
+      </div>
+      {props.menu !== null && menuAt !== undefined && menuAt !== null && (
+        <ChoiceMenu at={menuAt} choices={props.menu.choices} act={act} close={props.closeMenu} />
       )}
-      <OptionsDrawer shown={shown} act={act} />
+      <SettingsMenu concede={controls.concede} act={act} />
       {result !== null && (
         <p role="status" className="result">
           {result.winner === me ? "You win" : result.winner === null ? "Draw" : "You lose"}
@@ -80,20 +124,43 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
   );
 }
 
-function Portrait(props: { rect: Rect; label: string; side: "mine" | "opponent"; active: boolean }) {
-  const { rect, label, side, active } = props;
-  return (
-    <div
-      className={`portrait ${side}${active ? " active" : ""}`}
-      style={place(rect)}
-      role="img"
-      aria-label={active ? `${label}, this turn` : label}
-    >
+function Portrait(props: {
+  rect: Rect;
+  label: string;
+  side: "mine" | "opponent";
+  active: boolean;
+  targets: Choice[];
+  act: (action: Action) => void;
+}) {
+  const { rect, label, side, active, targets } = props;
+  const target = targets[0];
+  const className = `portrait ${side}${active ? " active" : ""}${target !== undefined ? " target" : ""}`;
+  const face = (
+    <>
       <svg viewBox="0 0 40 40" aria-hidden="true">
         <circle cx="20" cy="15" r="7" />
         <path d="M7 37 C8 27 14 24 20 24 C26 24 32 27 33 37 Z" />
       </svg>
       {active && <span className="turn-marker" aria-hidden="true" />}
+    </>
+  );
+  // A player who can be targeted now is a button: a tap picks them [R].
+  if (target !== undefined) {
+    return (
+      <button
+        type="button"
+        className={className}
+        style={place(rect)}
+        aria-label={`${label}: ${target.label}`}
+        onClick={() => props.act(target.action)}
+      >
+        {face}
+      </button>
+    );
+  }
+  return (
+    <div className={className} style={place(rect)} role="img" aria-label={active ? `${label}, this turn` : label}>
+      {face}
     </div>
   );
 }

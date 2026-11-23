@@ -55,6 +55,12 @@ export type BoardLayout = {
    * sight: the pill spans the middle 0.36 of the card, at least 26 px (renderer/card-face.ts `ptPill`).
    */
   combat: { advance: number; gangOverlap: number };
+  /** px: the small buttons beside the main one ("Undo", "Cancel"). */
+  secondary: { width: number; height: number; gap: number };
+  /** The top of the stack, large right of centre (`x`, `y` its top left, `h` its height) [R]. */
+  stack: { x: number; y: number; h: number };
+  /** The hand card the person lifted, large at the centre [R]: its height and its top. */
+  lifted: { h: number; top: number };
   /** px: the space kept between the outer rows and the life crests. */
   crestClearance: number;
 };

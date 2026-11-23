@@ -62,7 +62,8 @@ describe("the compact board model", () => {
   it("draws every permanent and every card in the person's hand once, and no card of the opponent's hand", () => {
     for (const shown of [midGame, crowded]) {
       const model = boardModel(shown, PHONE);
-      const drawn = model.cards.map((c) => c.id);
+      // The stack's top is drawn too, large at the right (stack.ts); this counts the battlefield and the hand.
+      const drawn = model.cards.filter((c) => c.zone !== "stack").map((c) => c.id);
       expect(new Set(drawn).size).toBe(drawn.length);
       const hand = shown.view.zones.players.p1?.hand ?? [];
       expect(drawn.sort()).toEqual([...battlefieldIds(shown), ...hand].sort());
@@ -384,6 +385,16 @@ describe("the compact board model", () => {
     expect(lit("Llanowar Elves", "battlefield")).toBe(false);
     // Nothing of the opponent's.
     expect(model.cards.some((c) => !c.mine && c.playable)).toBe(false);
+  });
+
+  it("shows what's on top of the stack, large at the right: an ability as the card it came from", () => {
+    const top = crowded.view.zones.stack.at(-1);
+    const stack = boardModel(crowded, PHONE).cards.filter((c) => c.zone === "stack");
+    expect(stack.map((c) => c.id)).toEqual(top === undefined ? [] : [top]);
+    if (top !== undefined) {
+      expect(stack[0]?.name).toBe("Ajani Goldmane ability");
+      expect((stack[0]?.x ?? 0) > PHONE.width / 2).toBe(true);
+    }
   });
 
   it("counts each library", () => {

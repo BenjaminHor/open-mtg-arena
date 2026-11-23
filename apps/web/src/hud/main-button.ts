@@ -52,12 +52,14 @@ function declarationButton(shown: SeatView): MainButton | null {
   if (decision?.kind !== "declareAttackers" && decision?.kind !== "declareBlockers") return null;
   const finish = shown.options.find((o) => o.action.type === "ANSWER" && o.action.answer.kind === "finishDeclaring");
   const action = finish?.action ?? null;
-  // The picks so far are the declaration under way, before it's finished.
+  // The picks so far are the declaration under way, before it's finished. Until it obeys every requirement (CR 508.1d,
+  // 509.1c: a creature that attacks each combat, one all must block), finishing isn't offered: the button says why.
+  const notYet = "Not yet: one more must";
   if (decision.kind === "declareAttackers") {
     const n = decision.chosen.length;
     return {
       label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`,
-      detail: "To Blockers",
+      detail: action === null ? `${notYet} attack` : "To Blockers",
       action,
       hidden: false,
     };
@@ -66,7 +68,7 @@ function declarationButton(shown: SeatView): MainButton | null {
   const n = new Set(decision.chosen.map((b) => b.blocker)).size;
   return {
     label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`,
-    detail: "To Damage",
+    detail: action === null ? `${notYet} block` : "To Damage",
     action,
     hidden: false,
   };

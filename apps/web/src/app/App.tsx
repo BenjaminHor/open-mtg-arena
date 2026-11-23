@@ -1,11 +1,12 @@
 // The app shell: one match against the heuristic AI, the board full-bleed on its canvas and the HUD over it. Menus are
 // M3-09. The board model is made here, from the seat view and the screen's size, so the canvas and the HUD share it.
 
-import type { Action, GameSetup } from "@mtg/engine";
+import type { Action, GameSetup, ObjectId } from "@mtg/engine";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
 import { Hud } from "../hud/Hud.tsx";
+import { type Choice, controls, type Selection } from "../interaction/controls.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
@@ -43,9 +44,15 @@ export function App() {
   const [size, setSize] = useState<BoardSize | null>(null);
   const [insets, setInsets] = useState<Insets>(NO_INSETS);
   const [handOpen, setHandOpen] = useState(false);
+  // The UI's own side of a choice under way (interaction/controls.ts): a lifted hand card or a picked blocker, a card's
+  // menu open, and an action on its way to the worker (no second press until the next update, ui.md).
+  const [selection, setSelection] = useState<Selection>(null);
+  const [menu, setMenu] = useState<{ id: ObjectId; choices: Choice[] } | null>(null);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     const started = startMatchWorker((reply) => {
+      setBusy(false);
       if (reply.type === "update") {
         setUpdate(reply);
         setError(null);
@@ -79,23 +86,100 @@ export function App() {
     };
   }, []);
 
+  const shown = update?.shown ?? null;
+  const controlsNow = useMemo(() => (shown === null ? null : controls(shown, selection)), [shown, selection]);
+  // A decision about the hand's cards (discarding, putting one on the bottom) opens the hand, where they're tapped.
+  const decisionKind = shown?.view.decision?.kind;
+  useEffect(() => {
+    if (decisionKind === "discardToHandSize" || decisionKind === "mulliganBottom") setHandOpen(true);
+  }, [decisionKind]);
+  // A selection the new view no longer offers (the card was played, the step moved on) is dropped.
+  useEffect(() => {
+    if (shown !== null && selection !== null && controls(shown, null).cards[selection] === undefined)
+      setSelection(null);
+  }, [shown, selection]);
   const model = useMemo(
-    () => (update !== null && size !== null ? boardModel(update.shown, size, insets, { handOpen }) : null),
-    [update, size, insets, handOpen],
+    () => (shown !== null && size !== null ? boardModel(shown, size, insets, { handOpen, selected: selection }) : null),
+    [shown, size, insets, handOpen, selection],
   );
-  const act = useCallback((action: Action) => client.current?.send({ type: "act", action }), []);
+  const act = useCallback(
+    (action: Action) => {
+      if (busy) return;
+      setBusy(true);
+      setMenu(null);
+      setSelection(null);
+      // Playing from the hand puts it down again, as Arena does once a card leaves it.
+      if (action.type === "CAST_SPELL" || action.type === "PLAY_LAND") setHandOpen(false);
+      client.current?.send({ type: "act", action });
+    },
+    [busy],
+  );
+  const onTap = useCallback(
+    (id: ObjectId) => {
+      const tap = controlsNow?.cards[id]?.tap;
+      switch (tap?.kind) {
+        case "send":
+          act(tap.choice.action);
+          break;
+        case "select":
+          setMenu(null);
+          setSelection(id);
+          break;
+        case "deselect":
+          setSelection(null);
+          break;
+        case "menu":
+          setMenu({ id, choices: tap.choices });
+          break;
+        case undefined:
+          break;
+      }
+    },
+    [controlsNow, act],
+  );
+  // A tap on the table, not on a control, puts things down: the menu, then the selection, then the open hand.
+  const onTable = (event: React.MouseEvent) => {
+    if ((event.target as HTMLElement).closest("button") !== null) return;
+    if (menu !== null) setMenu(null);
+    else if (selection !== null) setSelection(null);
+    else if (handOpen) setHandOpen(false);
+  };
+  // The keyboard (ui.md, "Mouse and keyboard too"): Escape backs out one level, and a cast or activation under way;
+  // Space presses the main button when no other control has focus.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        const cancel = controlsNow?.secondary.find((c) => c.label === "Cancel");
+        if (menu !== null) setMenu(null);
+        else if (selection !== null) setSelection(null);
+        else if (cancel !== undefined) act(cancel.action);
+        else if (handOpen) setHandOpen(false);
+      } else if (event.key === " " && (document.activeElement === document.body || document.activeElement === null)) {
+        event.preventDefault();
+        if (controlsNow?.main != null) act(controlsNow.main);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [controlsNow, menu, selection, handOpen, act]);
 
   return (
-    <main className="app" ref={main}>
+    // biome-ignore lint/a11y/useKeyWithClickEvents: the keyboard's way to put things down is Escape (above)
+    <main className="app" ref={main} onClick={onTable}>
       <BoardCanvas model={model} onError={setError} />
       {update === null && error === null && <p className="loading">Starting a match…</p>}
-      {update !== null && model !== null && (
+      {shown !== null && model !== null && controlsNow !== null && (
         <Hud
-          shown={update.shown}
+          shown={shown}
           model={model}
+          controls={controlsNow}
+          busy={busy}
           act={act}
+          onTap={onTap}
+          menu={menu}
+          closeMenu={() => setMenu(null)}
           handOpen={handOpen}
-          toggleHand={() => setHandOpen((open) => !open)}
+          openHand={() => setHandOpen(true)}
         />
       )}
       {error !== null && (

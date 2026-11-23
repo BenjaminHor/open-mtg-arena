@@ -42,8 +42,8 @@ export function drawFace(card: BoardCard): Face {
   const inner = { x: -w / 2 + border, y: -h / 2 + border, w: w - 2 * border };
   // A token on the battlefield has no name strip across the top: its art rises into an arch instead [R].
   const tokenLook = card.token && card.zone === "battlefield";
-  const nameH = tokenLook ? 0 : Math.max(13, h * (card.zone === "hand" ? 0.1 : 0.17));
-  const artBottom = card.zone === "hand" ? -h / 2 + h * 0.5 : h / 2 - border;
+  const nameH = tokenLook ? 0 : Math.max(13, h * (card.zone !== "battlefield" ? 0.1 : 0.17));
+  const artBottom = card.zone !== "battlefield" ? -h / 2 + h * 0.5 : h / 2 - border;
   const top = tokenLook ? inner.y : inner.y + nameH + 1;
   const art = { x: inner.x, y: top, w: inner.w, h: artBottom - top, arch: tokenLook ? (artBottom - top) * 0.2 : 0 };
   const fallback = artFallback(card, art);
@@ -59,9 +59,9 @@ export function drawFace(card: BoardCard): Face {
     face.addChild(new Graphics().rect(inner.x, inner.y, inner.w, nameH).fill(mix(color, PALETTE.parchment, 0.6)));
   } else {
     face.addChild(nameStrip(card, color, inner.x, inner.y, inner.w, nameH));
-    if (card.zone === "hand") face.addChild(handLower(card, color, inner, artBottom, border));
+    if (card.zone !== "battlefield") face.addChild(handLower(card, color, inner, artBottom, border));
     if (card.power !== null && card.toughness !== null) {
-      face.addChild(card.zone === "hand" ? ptBox(card, color, inner, border) : ptPill(card, color, h));
+      face.addChild(card.zone !== "battlefield" ? ptBox(card, color, inner, border) : ptPill(card, color, h));
     }
   }
   if (card.dim > 0) {
@@ -90,7 +90,7 @@ export function drawFace(card: BoardCard): Face {
     showArt: (texture) => {
       const sprite = new Sprite(texture);
       sprite.label = ART_LABEL;
-      if (card.zone === "hand") {
+      if (card.zone !== "battlefield") {
         // The whole card image, unaltered (data-sources.md), its corners rounded as the card's are.
         sprite.width = w;
         sprite.height = h;
