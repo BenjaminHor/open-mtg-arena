@@ -21,6 +21,14 @@ export const HOLD = {
   turn: 700,
 } as const;
 
+/**
+ * Whether the worker keeps a frame where these events happened: one holds, so the person gets a moment to see it. The
+ * worker cuts frames by the same table the app holds them by (D-172).
+ */
+export function worthAFrame(events: readonly ViewEvent[], me: PlayerId): boolean {
+  return frameHold(events, me) > 0;
+}
+
 /** How long a frame holds: the longest of what its events ask, 0 for a frame of nothing worth a pause. */
 export function frameHold(events: readonly ViewEvent[], me: PlayerId): number {
   return events.reduce((longest, e) => Math.max(longest, eventHold(e, me)), 0);

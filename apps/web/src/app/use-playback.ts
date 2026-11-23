@@ -55,7 +55,9 @@ export function usePlayback(update: Update | null, pace: Pace): Playback {
   const index = current?.index ?? firstHeld(update, 0, pace);
   const held = update.frames[index];
   if (held === undefined) return { drawn: update.shown, playing: false, line: null, skip };
-  const before = index === 0 ? (current?.before ?? null) : (update.frames[index - 1]?.shown ?? null);
+  // Before the effect has stored it, the view before this reply is still the last reply's.
+  const before =
+    index === 0 ? (current?.before ?? at?.update.shown ?? null) : (update.frames[index - 1]?.shown ?? null);
   return { drawn: held.shown, playing: true, line: eventLine(held.events, before, held.shown), skip };
 }
 

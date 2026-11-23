@@ -2690,6 +2690,11 @@ owner's answer to the D-089 open question, option (a))
   view, zones) works, and the main button is "Skip" (Space too); a skip starts the settle moment, so a double tap
   doesn't also press what it uncovers. The e2e build plays at instant pace (the same path, every frame skipped);
   `?pace=normal` or `?pace=instant` in the address picks it.
+- After the code review: each turn's banner has its own timer and element (frames once cancelled its timer and it
+  stayed up, faded, so later turns showed none); the settle moment starts whenever playback ends, on its own too, and
+  Skip and the main button are different elements, so a press meant for Skip never lands on Next; frames carry no
+  options; the person's own action that begins a turn is a frame of its own; a frame's line comes from its most telling
+  event that has one, and names an object that moved in it (a spell that resolved) from the move.
 - The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
   forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
   slice is tried through it.

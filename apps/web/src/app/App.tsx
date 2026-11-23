@@ -19,6 +19,7 @@ import {
 } from "../interaction/all-attack.ts";
 import { cardDetails } from "../interaction/card-details.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
+import { frameHold } from "../interaction/pacing.ts";
 import { turnBanner } from "../interaction/turn-banner.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
@@ -60,6 +61,11 @@ function paceFromUrl(): Pace {
   const asked = new URLSearchParams(location.search).get("pace");
   if (asked === "normal" || asked === "instant") return asked;
   return import.meta.env.VITE_TEST_HOOKS === "1" ? "instant" : "normal";
+}
+
+/** Whether a reply has frames to hold at this pace (`use-playback.ts`). */
+function repliesPlay(reply: Extract<FromWorker, { type: "update" }>, pace: Pace): boolean {
+  return pace === "normal" && reply.frames.some((f) => frameHold(f.events, f.shown.player) > 0);
 }
 
 /** How long after an update a press is taken as meant for it, not for what was on screen before. */
@@ -156,6 +162,9 @@ export function App() {
       busyNow.current = false;
       setBusy(false);
       if (reply.type === "update") {
+        // Whether this reply will play frames, known now: no tap in the moment before it's drawn may act on the view
+        // it replaces (`send`).
+        playingNow.current = repliesPlay(reply, paceFromUrl());
         if (settlePress.current) updatedAt.current = performance.now();
         settlePress.current = false;
         setUpdate(reply);
@@ -199,8 +208,13 @@ export function App() {
   const playback = usePlayback(update, pace);
   playingNow.current = playback.playing;
   const shown = playback.drawn;
-  // A skip is a press of the main button: the settle moment starts there, so a quick second tap isn't taken for the
-  // decision it uncovers (ui.md, "Never").
+  // When playback ends, on its own or by a skip, the decision it uncovers is new: the settle moment starts there, so a
+  // press meant for Skip, or a second tap, isn't taken for it (ui.md, "Never").
+  const wasPlaying = useRef(false);
+  useEffect(() => {
+    if (wasPlaying.current && !playback.playing) updatedAt.current = performance.now();
+    wasPlaying.current = playback.playing;
+  }, [playback.playing]);
   const skip = useCallback(() => {
     playback.skip();
     updatedAt.current = performance.now();
@@ -213,11 +227,14 @@ export function App() {
     if (shown === null) return;
     const text = turnBanner(lastTurn.current, shown);
     lastTurn.current = shown.view.turn?.number ?? lastTurn.current;
-    if (text === null) return;
-    setBanner(text);
+    if (text !== null) setBanner(text);
+  }, [shown]);
+  // Its own timer, from when it's set: the next frame or update mustn't cancel it and leave it up for good.
+  useEffect(() => {
+    if (banner === null) return;
     const gone = setTimeout(() => setBanner(null), BANNER_MS);
     return () => clearTimeout(gone);
-  }, [shown]);
+  }, [banner]);
   const controlsNow = useMemo(() => (shown === null ? null : controls(shown, selection)), [shown, selection]);
   // A decision about the hand's cards opens the hand: to see the hand you keep or mulligan [R], to tap the card you
   // discard or put on the bottom.

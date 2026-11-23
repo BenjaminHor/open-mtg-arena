@@ -4,20 +4,45 @@
 // before; hidden events say only what's public (D-062).
 
 import type { ObjectId, PlayerId, SeatView, Target, ViewEvent } from "@mtg/engine";
+import { nameOf } from "../board-model/card-info.ts";
 import { objectName, who } from "./names.ts";
 import { eventHold } from "./pacing.ts";
 
 export function eventLine(events: readonly ViewEvent[], before: SeatView | null, after: SeatView): string | null {
   const me = after.player;
-  let telling: ViewEvent | null = null;
+  const moved = movedNames(events);
+  // Among the events with a line: a new turn's (no line, its banner says it) never hides the land played after it.
+  let best: { line: string; hold: number } | null = null;
   for (const e of events) {
-    if (eventHold(e, me) > (telling === null ? 0 : eventHold(telling, me))) telling = e;
+    const hold = eventHold(e, me);
+    if (hold === 0 || (best !== null && hold <= best.hold)) continue;
+    const line = lineOf(e, before, after, moved);
+    if (line !== null) best = { line, hold };
   }
-  return telling === null ? null : lineOf(telling, before, after);
+  return best?.line ?? null;
 }
 
-function lineOf(e: ViewEvent, before: SeatView | null, after: SeatView): string | null {
-  const name = (id: ObjectId) => named(id, before, after);
+/**
+ * The names of the objects that changed zones in these events, by their ids before the move: a spell that resolved is
+ * in neither view by that id once the frame is cut (it's a card in a graveyard now, a new object, CR 400.7).
+ */
+function movedNames(events: readonly ViewEvent[]): ReadonlyMap<ObjectId, string> {
+  const names = new Map<ObjectId, string>();
+  for (const e of events) {
+    if (e.type !== "ZONE_CHANGED") continue;
+    const name = nameOf(e.object.oracleId);
+    if (name !== null) names.set(e.oldId, name);
+  }
+  return names;
+}
+
+function lineOf(
+  e: ViewEvent,
+  before: SeatView | null,
+  after: SeatView,
+  moved: ReadonlyMap<ObjectId, string>,
+): string | null {
+  const name = (id: ObjectId) => named(id, before, after, moved);
   const player = (p: PlayerId) => who(after, p);
   switch (e.type) {
     case "SPELL_CAST":
@@ -46,7 +71,7 @@ function lineOf(e: ViewEvent, before: SeatView | null, after: SeatView): string 
     case "ABILITY_DID_NOT_RESOLVE":
       return `${name(e.object)} did nothing: its targets are gone`;
     case "DAMAGE_DEALT":
-      return `${name(e.source)} dealt ${e.amount} damage to ${target(e.to, before, after)}`;
+      return `${name(e.source)} dealt ${e.amount} damage to ${target(e.to, before, after, moved)}`;
     case "PERMANENT_DESTROYED":
       return `${name(e.object)} was destroyed`;
     case "PERMANENT_SACRIFICED":
@@ -59,16 +84,20 @@ function lineOf(e: ViewEvent, before: SeatView | null, after: SeatView): string 
   }
 }
 
-/** An object by name from whichever side of the frame has it: "a card" when neither does (it's hidden). */
-function named(id: ObjectId, before: SeatView | null, after: SeatView): string {
+/**
+ * An object by name from whichever side of the frame has it, or from the move that took it out of both: "a card" when
+ * none does (it's hidden).
+ */
+function named(id: ObjectId, before: SeatView | null, after: SeatView, moved: ReadonlyMap<ObjectId, string>): string {
   if (after.seen[id] !== undefined) return objectName(after, id);
   if (before?.seen[id] !== undefined) return objectName(before, id);
-  return "a card";
+  return moved.get(id) ?? "a card";
 }
 
-function target(t: Target, before: SeatView | null, after: SeatView): string {
-  if (t.kind === "player") return t.player === after.player ? "you" : "your opponent";
-  return named(t.object, before, after);
+function target(t: Target, before: SeatView | null, after: SeatView, moved: ReadonlyMap<ObjectId, string>): string {
+  // Mid-sentence: "you", "your opponent" (`who`, which says how more players would be named).
+  if (t.kind === "player") return who(after, t.player).toLowerCase();
+  return named(t.object, before, after, moved);
 }
 
 /** One name, or "Grizzly Bears and 2 others". */

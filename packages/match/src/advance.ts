@@ -1,8 +1,7 @@
-// The host's loop (architecture.md, "Match host"). `advance` takes every action the host may take on its own (one at a
-// time with `advanceOne`): an
-// agent seat's choice, a decision with one legal answer, auto-pass and auto-tap. It stops when a person must decide
-// (or the game is over), and the UI shows that decision. `submit` applies the person's action. Both are pure: a match
-// in, a new match out; every action is logged, so the log replays the match exactly.
+// The host's loop (architecture.md, "Match host"). `advance` takes every action the host may take on its own (an agent
+// seat's choice, a decision with one legal answer, auto-pass and auto-tap), and `advanceOne` takes one. It stops when a
+// person must decide (or the game is over), and the UI shows that decision. `submit` applies the person's action. All
+// are pure: a match in, a new match out; every action is logged, so the log replays the match exactly.
 
 import { chooseAction, heuristicAction } from "@mtg/ai";
 import {
@@ -21,7 +20,7 @@ import { autoTapAction } from "./auto-tap.ts";
 import { type MatchState, withEvents } from "./match-state.ts";
 
 /** Enough for any real game between two `advance` calls; reaching it means the host is stuck in a loop. */
-const MOST_ACTIONS = 100_000;
+export const MOST_ACTIONS = 100_000;
 
 /** What the host does next: an action to apply, from a match that may have moved an agent's random state on. */
 type HostStep = { match: MatchState; action: Action };

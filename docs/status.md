@@ -339,6 +339,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     `app/use-playback.ts`; tests: test/match-session.test.ts (frames, no event lost), test/pacing.test.ts,
     packages/match/test/host.test.ts, e2e/pacing.spec.ts (normal pace, Skip, the settle moment after it). Holds are
     guesses to tune with the owner.
+    Code review fixes (in D-172): the turn banner shows every turn again (an e2e checks it goes and comes back), the
+    settle moment at playback's end, frames without options, a turn begun by the person's own action as its own frame,
+    lines naming what moved. Left: playback's position logic as pure functions with unit tests (the hook is covered
+    only by e2e); the worker builds frames' views even at instant pace.
   - Pacing slice plan (D-172, 2026-11-23, written before starting): "the game never jumps".
     - The match host gets a one-action step (`advanceOne`), and the worker's update loops it, keeping a frame (the
       person's seat view and the events since the last frame) after each host action worth seeing: an opponent's cast,

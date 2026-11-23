@@ -18,6 +18,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 
 ## Structure
 
+- `?pace=instant` shows what the host did at once rather than frame by frame (D-172; the e2e build's default),
+  `?pace=normal` frame by frame (everyone else's default).
 - `src/app/`: the React app: `App.tsx` (the match screen; it makes the board model the canvas and the HUD share, and
   keeps whether the hand is open), `option-label.ts` (a label for each legal action), `safe-area.ts`, `use-playback.ts` (the worker's frames played in order, Skip, D-172), `orientation.ts` and `use-portrait.ts` (a phone held upright: the "turn your phone" prompt, D-171), `app.css`.
 - `src/layout/`: `board-layout.ts` (the `BoardLayout` type: every position and size as data) and `compact.ts` (the
@@ -63,7 +65,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   (and `window.__artShown()`) in development and test builds.
 - `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`, `badges`, `attachments`, `zones`, `stack`), for tests
   and screenshots; `setupOf` turns a board a test writes itself into a game setup.
-- `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
+- `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"), stepped one action at a time so each
+  reply carries frames of what happened (D-172). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the
   worker's logic as pure functions (a refused or failed message is an error reply, never a throw), `match.worker.ts`
   the thin `onmessage` shell, `client.ts` the UI's side.

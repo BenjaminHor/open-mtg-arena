@@ -25,6 +25,37 @@ test("shows the opponent's turn a step at a time, saying what happened, and Skip
   await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
 });
 
+test("shows each new turn's banner, the later ones too", async ({ page }) => {
+  await page.goto("/?seed=7&pace=normal");
+  await page.getByRole("button", { name: /^Keep \d/ }).click();
+  await expect(page.locator(".turn-banner")).toHaveText("Turn 1 · Opponent's turn", { timeout: 5_000 });
+  await expect(page.locator(".turn-banner")).toHaveText("Turn 2 · Your turn", { timeout: 15_000 });
+  // On to the opponent's next turn: its banner shows too (it once stayed hidden after the first).
+  const banner = page.locator(".turn-banner");
+  const next = page.getByRole("button", { name: /^Next/ });
+  for (let i = 0; i < 12; i++) {
+    // Read without waiting: the banner is there only a moment at a time.
+    if ((await banner.allInnerTexts()).some((t) => t.startsWith("Turn 3"))) break;
+    if (await next.isVisible()) await next.click({ timeout: 1_000 }).catch(() => undefined);
+    // Passing with a full hand: the cleanup discard (CR 514.1) asks for a card first.
+    const discard = page.getByRole("button", { name: /: Discard/ }).first();
+    if (await discard.isVisible().catch(() => false)) await discard.click({ timeout: 1_000 }).catch(() => undefined);
+    await page.waitForTimeout(400);
+  }
+  await expect(page.locator(".turn-banner")).toHaveText("Turn 3 · Opponent's turn", { timeout: 15_000 });
+  // And it goes after its moment, as each one does (once, one stayed for good, faded out, and the next never showed).
+  await expect(page.locator(".turn-banner")).toHaveCount(0, { timeout: 4_000 });
+});
+
+test("takes no game action from a tap while what happened plays", async ({ page }) => {
+  await page.goto("/?seed=7&pace=normal");
+  await page.getByRole("button", { name: /^Keep \d/ }).click();
+  await expect(page.getByRole("button", { name: "Skip to your decision" })).toBeVisible({ timeout: 5_000 });
+  // A tap on the opponent's info and on the board while frames play: looking only, nothing sent.
+  await page.locator(".board").click({ position: { x: 400, y: 180 } });
+  await expect(page.getByRole("button", { name: /^Next/ })).toContainText("To Combat", { timeout: 15_000 });
+});
+
 test("a quick second tap after Skip isn't taken for the decision it uncovers", async ({ page }) => {
   await page.goto("/?seed=7&pace=normal");
   await page.getByRole("button", { name: /^Keep \d/ }).click();
@@ -34,5 +65,7 @@ test("a quick second tap after Skip isn't taken for the decision it uncovers", a
   await page.locator(".main-button").dblclick();
   const next = page.getByRole("button", { name: /^Next/ });
   await expect(next).toBeVisible();
+  // Long enough for the worker's reply, had the second tap been sent: still the first main phase.
+  await page.waitForTimeout(800);
   await expect(next).toContainText("To Combat");
 });

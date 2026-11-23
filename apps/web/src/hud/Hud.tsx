@@ -122,6 +122,8 @@ export function Hud(props: HudProps) {
       {/* While what the host did plays (D-172), the one button skips to the end: nothing else is pressed meanwhile. */}
       {props.playing ? (
         <button
+          // Not the same element as the main button: a press on Skip as playback ends mustn't land on what replaced it.
+          key="skip"
           type="button"
           className="main-button skip"
           style={place(anchors.mainButton)}
@@ -133,6 +135,7 @@ export function Hud(props: HudProps) {
       ) : (
         !button.hidden && (
           <button
+            key="main"
             type="button"
             // In full control the button turns blue-violet, as Arena's does [R], so it's plain the game won't pass for you.
             className={`main-button${button.action === null ? " waiting" : ""}${props.fullControl ? " full-control" : ""}`}
@@ -168,7 +171,7 @@ export function Hud(props: HudProps) {
       })}
       {/* The batch button always in the second slot, Undo always in the first: a tap never lands on a different action
           that just moved into the place pressed (ui.md "Never"). */}
-      {props.attackBatch !== null && anchors.secondary[1] !== undefined && (
+      {props.attackBatch !== null && !props.playing && anchors.secondary[1] !== undefined && (
         <button
           type="button"
           className="secondary-button"
@@ -204,6 +207,8 @@ export function Hud(props: HudProps) {
       {props.banner !== null && result === null && (
         // At the middle of the open table, over nothing a tap needs; read out once by a screen reader.
         <p
+          // A new element for each turn's banner, so its fade plays again.
+          key={props.banner}
           className="turn-banner"
           role="status"
           style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}

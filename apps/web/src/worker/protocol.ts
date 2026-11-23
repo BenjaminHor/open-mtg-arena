@@ -40,5 +40,8 @@ export type FromWorker =
   /** A message the worker refused: an action that isn't legal now, or a start with an unknown deck. */
   | { type: "error"; message: string };
 
-/** One moment on the way to the person's next decision: their seat's view then, and the events that led to it. */
+/**
+ * One moment on the way to the person's next decision: their seat's view then (with no options: a frame is for looking,
+ * D-172), and the events that led to it.
+ */
 export type Frame = { shown: SeatView; events: ViewEvent[] };

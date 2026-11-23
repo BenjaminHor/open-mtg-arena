@@ -10,6 +10,7 @@ import {
   deckGameSetup,
   HostStuck,
   type MatchState,
+  MOST_ACTIONS,
   type Seat,
   startMatch,
   submit,
@@ -17,7 +18,7 @@ import {
   waitingOn,
   withSettings,
 } from "@mtg/match";
-import { frameHold } from "../interaction/pacing.ts";
+import { worthAFrame } from "../interaction/pacing.ts";
 import type { Frame, FromWorker, ToWorker } from "./protocol.ts";
 
 /** A match in progress, and whose seat the person plays. */
@@ -99,8 +100,6 @@ function startFrom(
 
 /** Enough frames for any one reply (a long opponent turn has a few dozen); past it, the rest fold into the last view. */
 const MOST_FRAMES = 80;
-/** As the host's own `advance`: reaching this many actions without a person deciding means it's stuck in a loop. */
-const MOST_ACTIONS = 100_000;
 
 /**
  * The host acts until the person must decide; the reply is their seat's view and the events they haven't seen. On the
@@ -113,23 +112,24 @@ function update(session: Session, cards: CardDatabase): { session: Session; repl
   let match = session.match;
   const frames: Frame[] = [];
   let since: ViewEvent[] = [];
+  // Takes the events the person hasn't seen; keeps a frame here if they're worth a moment's look.
   const take = (next: typeof match) => {
     const taken = takeEvents(next, human);
     match = taken.match;
-    since = [...since, ...taken.events];
-    return taken.events;
+    since.push(...taken.events);
+    if (frames.length < MOST_FRAMES && worthAFrame(taken.events, human)) {
+      // A frame is for looking (D-172): no options, so nothing can be sent from it.
+      frames.push({ shown: { ...seatView(match.state, human, cards), options: [] }, events: since });
+      since = [];
+    }
   };
-  // The person's own action's events, before the host acts.
+  // The person's own action first: one that begins a turn (keeping a hand, a discard at cleanup) is a frame of its own.
   take(match);
   for (let i = 0; ; i++) {
     if (i === MOST_ACTIONS) throw new HostStuck(`the host took ${MOST_ACTIONS} actions without anyone deciding`);
     const next = advanceOne(match, cards);
     if (next === null) break;
-    const events = take(next);
-    if (frames.length < MOST_FRAMES && frameHold(events, human) > 0) {
-      frames.push({ shown: seatView(match.state, human, cards), events: since });
-      since = [];
-    }
+    take(next);
   }
   const shown = seatView(match.state, human, cards);
   return {

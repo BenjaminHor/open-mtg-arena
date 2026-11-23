@@ -11,10 +11,13 @@ import type { Frame, FromWorker } from "../src/worker/protocol.ts";
 
 const cards = cardDatabase();
 
-/** The seeded game, the person passing whenever they can: every frame the worker sent, with the view before it. */
-function framesOfAGame(): { frame: Frame; before: Frame["shown"] | null }[] {
+/**
+ * A seeded game: every frame the worker sent, with the view before it. The person passes whenever they can, or with
+ * `casting`, casts or plays whatever they can first, so their own spells resolve inside the frames too.
+ */
+function framesOfAGame(seed = 7, casting = false): { frame: Frame; before: Frame["shown"] | null }[] {
   const all: { frame: Frame; before: Frame["shown"] | null }[] = [];
-  let s = handle(null, { type: "start", decks: ["red-green-beats", "white-soldiers"], seed: 7, human: "p1" }, cards);
+  let s = handle(null, { type: "start", decks: ["red-green-beats", "white-soldiers"], seed, human: "p1" }, cards);
   let last: Frame["shown"] | null = null;
   for (let i = 0; i < 80; i++) {
     const reply = s.reply as Extract<FromWorker, { type: "update" }>;
@@ -23,7 +26,12 @@ function framesOfAGame(): { frame: Frame; before: Frame["shown"] | null }[] {
       last = frame.shown;
     }
     last = reply.shown;
-    const option = reply.shown.options.find((o) => o.action.type === "PASS_PRIORITY") ?? reply.shown.options[0];
+    const play = casting
+      ? reply.shown.options.find(
+          (o) => (o.action.type === "CAST_SPELL" || o.action.type === "PLAY_LAND") && o.mightPay !== false,
+        )
+      : undefined;
+    const option = play ?? reply.shown.options.find((o) => o.action.type === "PASS_PRIORITY") ?? reply.shown.options[0];
     if (option === undefined || reply.shown.view.result !== null) break;
     s = handle(s.session, { type: "act", action: option.action }, cards);
   }
@@ -55,6 +63,41 @@ describe("the line a frame shows", () => {
     // Named, never an id or "a card" for something the person saw.
     for (const line of opponents) expect(line).not.toMatch(/\bo\d+\b/);
     expect(opponents.some((l) => /^Your opponent (played|cast|attacked with) [A-Z]/.test(l))).toBe(true);
+  });
+
+  it('names everything, the person\'s own spells that resolved in a frame too, never an id or "a card"', () => {
+    for (const seed of [7, 11, 23]) {
+      for (const { frame, before } of framesOfAGame(seed, true)) {
+        const line = eventLine(frame.events, before, frame.shown);
+        expect(line ?? "", `${seed}: ${frame.events.map((e) => e.type).join(",")}`).not.toMatch(/\ba card\b|\bo\d+\b/);
+      }
+    }
+  });
+
+  it("says each of the opponent's moves, even in the frame a turn begins", () => {
+    for (const seed of [7, 11, 23]) {
+      for (const { frame, before } of framesOfAGame(seed, true)) {
+        const move = frame.events.some((e) =>
+          (e.type === "LAND_PLAYED" || e.type === "SPELL_CAST") && e.player === "p2"
+            ? true
+            : e.type === "ATTACKERS_DECLARED" && e.player === "p2" && e.attacks.length > 0,
+        );
+        if (move) expect(eventLine(frame.events, before, frame.shown), `${seed}`).toBeTruthy();
+      }
+    }
+  });
+
+  it("lets a new turn (its banner says it) never hide the move made in the same frame", () => {
+    const land = framesOfAGame().find(({ frame }) =>
+      frame.events.some((e) => e.type === "LAND_PLAYED" && e.player === "p2"),
+    );
+    if (land === undefined) throw new Error("the opponent plays a land in seed 7");
+    const turn: ViewEvent = { type: "TURN_BEGAN", turn: 9, activePlayer: "p2", extra: false };
+    expect(eventLine([turn, ...land.frame.events], land.before, land.frame.shown)).toMatch(/^Your opponent played /);
+  });
+
+  it("carries no options in a frame: it's for looking (D-172)", () => {
+    for (const { frame } of framesOfAGame()) expect(frame.shown.options).toEqual([]);
   });
 
   it("has a line for every frame but a new turn's, which has its banner", () => {
