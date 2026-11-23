@@ -913,7 +913,7 @@ function GamePageContent({
           DialogHost/TargetingOverlay so confirm controls are not hidden behind
           the player hand. Keep this ordering in GAME_Z_LAYER. */}
       <div
-        className={`relative ${boardChoiceLayerActive && !isReconnecting ? GAME_Z_LAYER.boardChoiceGrid : GAME_Z_LAYER.board} grid min-w-0 h-full${isReconnecting ? " pointer-events-none" : ""}`}
+        className={`relative ${boardChoiceLayerActive ? GAME_Z_LAYER.boardChoiceGrid : GAME_Z_LAYER.board} grid min-w-0 h-full`}
         style={{
           paddingTop: "var(--game-top-overlay-offset, 0px)",
           gridTemplateRows,
@@ -1062,23 +1062,21 @@ function GamePageContent({
           transformOrigin: "bottom right",
         }}
       >
-        {!isSpectatorMode && (
-          <div
-            data-mobile-action-left
-            className="hidden flex-col gap-1 max-lg:portrait:flex max-lg:portrait:min-w-0"
-          >
-            <div className="flex flex-col gap-1 max-lg:gap-1">
-              <MobilePhaseChip className="w-full" />
-              <HandBadge className="w-full" />
-              <DayNightBadge />
-            </div>
-            <div className="flex items-center gap-1.5">
-              <PriorityYieldList />
-              <MayTriggerAutoChoiceList />
-              <FullControlToggle className="w-full" />
-            </div>
+        <div
+          data-mobile-action-left
+          className="hidden flex-col gap-1 max-lg:portrait:flex max-lg:portrait:min-w-0"
+        >
+          <div className="flex flex-col gap-1 max-lg:gap-1">
+            <MobilePhaseChip className="w-full" />
+            <HandBadge className="w-full" />
+            <DayNightBadge />
           </div>
-        )}
+          <div className="flex items-center gap-1.5">
+            <PriorityYieldList />
+            <MayTriggerAutoChoiceList />
+            <FullControlToggle className="w-full" />
+          </div>
+        </div>
         <div
           data-mobile-action-right
           className="flex flex-col items-end gap-1.5 max-lg:min-w-0 max-lg:portrait:items-stretch lg:items-end"
@@ -1089,20 +1087,11 @@ function GamePageContent({
           <div className="hidden max-lg:landscape:block lg:block">
             <CombatPhaseIndicator />
           </div>
-          {isSpectatorMode ? (
-            <div className="flex flex-row items-center gap-1.5">
-              <TurnStatusLine />
-              <DayNightBadge />
-            </div>
-          ) : (
-            <>
-              <div className="hidden max-lg:portrait:block max-lg:portrait:w-full">
-                <TurnStatusLine />
-              </div>
-              <ActionRailStatusRow playerHud={playerHudElement} />
-              <ActionButton />
-            </>
-          )}
+          <div className="hidden max-lg:portrait:block max-lg:portrait:w-full">
+            <TurnStatusLine />
+          </div>
+          <ActionRailStatusRow playerHud={playerHudElement} />
+          <ActionButton />
         </div>
       </DraggableWidget>
 
@@ -1597,7 +1586,7 @@ function GamePageContent({
             )}
 
           {waitingFor?.type === "GameOver" && (
-            <GameOverScreen winner={waitingFor.data.winner} />
+            <GameOverScreen winner={waitingFor.data.winner} mode={mode} />
           )}
 
           {/* Issue #311: Fail-loud safety net for orphan WaitingFor states.
@@ -2227,21 +2216,7 @@ function VictoryParticles() {
   );
 }
 
-function GameOverScreen({
-  winner,
-  mode,
-  seatMode,
-  isOnlineMode = false,
-  gameStartedAt,
-  terminalReason,
-}: {
-  winner: number | null;
-  mode: string | null;
-  seatMode: GamePageMode;
-  isOnlineMode?: boolean;
-  gameStartedAt?: number | null;
-  terminalReason?: string | null;
-}) {
+function GameOverScreen({ winner, mode }: { winner: number | null; mode: GamePageMode }) {
   const { t } = useTranslation("game");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -2250,45 +2225,31 @@ function GameOverScreen({
   const players = gameState?.players;
   const [buttonsVisible, setButtonsVisible] = useState(false);
 
-  // Which seat this client holds is the mode census's answer, never a default:
-  // a wire-assigned seat is authoritative only once the wire has delivered it.
-  // A legacy online save carries no player id, so a recovered result must not be
-  // labelled from seat 0's perspective while the seat is unknown.
-  const assignedSeat = useMultiplayerStore((s) => s.activePlayerId);
-  const seatOrigin = seatSource(seatMode);
-  const localSeat = seatOrigin === "seat-zero" ? PLAYER_ID : assignedSeat;
-  const seatKnown = localSeat !== null;
-  const activePlayerId = localSeat ?? PLAYER_ID;
+  // The local human always sits in seat 0.
+  const activePlayerId = PLAYER_ID;
 
-  const playerLife = gameState && seatKnown
+  const playerLife = gameState
     ? formatLifeReadout(lifeReadout(gameState, activePlayerId))
     : null;
-  const opponentId = seatKnown ? players?.find((p) => p.id !== activePlayerId)?.id : undefined;
+  const opponentId = players?.find((p) => p.id !== activePlayerId)?.id;
   const opponentLife =
-    gameState && seatKnown && opponentId !== undefined
+    gameState && opponentId !== undefined
       ? formatLifeReadout(lifeReadout(gameState, opponentId))
       : null;
 
-  const isVictory = seatKnown && winner === activePlayerId;
+  const isVictory = winner === activePlayerId;
   const isDraw = winner == null;
-  // A winner with no known seat is neither this client's victory nor its defeat.
-  const outcomeUnknown = winner != null && !seatKnown;
 
   const turnCount = gameState?.turn_number ?? 0;
-  const gameDuration = gameStartedAt
-    ? Math.floor((Date.now() - gameStartedAt) / 1000)
-    : null;
 
   const titleText = isDraw
     ? t("gamePage.gameOver.draw")
-    : outcomeUnknown
-      ? t("gamePage.gameOver.complete")
-      : isVictory
-        ? t("gamePage.gameOver.victory")
-        : t("gamePage.gameOver.defeat");
-  const titleColor = isDraw || outcomeUnknown ? "#B0B0B0" : isVictory ? "#C9B037" : "#991B1B";
+    : isVictory
+      ? t("gamePage.gameOver.victory")
+      : t("gamePage.gameOver.defeat");
+  const titleColor = isDraw ? "#B0B0B0" : isVictory ? "#C9B037" : "#991B1B";
 
-  const glowColor = isDraw || outcomeUnknown
+  const glowColor = isDraw
     ? "rgba(176,176,176,0.5)"
     : isVictory
       ? "rgba(201,176,55,0.8)"
@@ -2296,7 +2257,7 @@ function GameOverScreen({
 
   const textShadow = `0 0 20px ${glowColor}, 0 0 40px ${glowColor.replace(/[\d.]+\)$/, "0.5)")}, 0 0 80px ${glowColor.replace(/[\d.]+\)$/, "0.3)")}`;
 
-  const bgGradient = isDraw || outcomeUnknown
+  const bgGradient = isDraw
     ? "radial-gradient(ellipse at center, rgba(50,50,50,0.6) 0%, rgba(0,0,0,0.95) 70%)"
     : isVictory
       ? "radial-gradient(ellipse at center, rgba(60,50,10,0.6) 0%, rgba(0,0,0,0.95) 70%)"
@@ -2305,43 +2266,27 @@ function GameOverScreen({
   const source = searchParams.get("source");
   const draftId = searchParams.get("draftId");
   const isDraft = source === "draft" && !!draftId;
-  const isDraftPodMatch = mode === "draft-match";
   const gameId = useGameStore((s) => s.gameId);
 
   const [resultRecorded, setResultRecorded] = useState(false);
   const [runOver, setRunOver] = useState(false);
 
   useEffect(() => {
-    if (!isDraft || !gameId || resultRecorded || !seatKnown) return;
+    if (!isDraft || !gameId || resultRecorded) return;
     const result: DraftMatchResult = isDraw ? "draw" : isVictory ? "win" : "loss";
     useDraftStore.getState().recordMatchResult(gameId, result).then(() => {
       setResultRecorded(true);
       const meta = loadActiveQuickDraft();
       if (meta?.phase === "complete") setRunOver(true);
     });
-  }, [isDraft, gameId, isDraw, isVictory, resultRecorded, seatKnown]);
-
-  useEffect(() => {
-    if (!isDraftPodMatch || resultRecorded || !seatKnown) return;
-    void useMultiplayerDraftStore
-      .getState()
-      .reportActiveMatchGameResult(winner)
-      .then(() => setResultRecorded(true))
-      .catch((err) => {
-        console.error("[GameOverScreen] failed to report draft pod match result:", err);
-      });
-  }, [isDraftPodMatch, resultRecorded, winner, seatKnown]);
+  }, [isDraft, gameId, isDraw, isVictory, resultRecorded]);
 
   const handleRematch = () => {
     const newId = crypto.randomUUID();
     // Preserve the original launch configuration (format, players, match,
     // first, source, draftId, …) by copying the current URL's searchParams.
-    // Only drop params that are bound to this specific game instance — the
-    // P2P join code and per-room name don't apply to a fresh game.
     const params = new URLSearchParams(searchParams);
-    params.delete("code");
-    params.delete("roomName");
-    if (mode) params.set("mode", mode);
+    params.set("mode", mode);
     params.set("difficulty", difficulty);
     // `format` names the format but carries none of its edited knobs, and the
     // saved active-game record is keyed to the game id we are leaving — so a
@@ -2355,24 +2300,6 @@ function GameOverScreen({
 
   const handleBackToDraft = () => {
     navigate("/draft/quick?resume=1");
-  };
-
-  /**
-   * There are TWO "back to pod" affordances in a `draft-match` game — this
-   * game-over button and the in-game menu's "Back to draft"
-   * (`GameMenu.tsx`) — and a third exit through Concede
-   * (`useConcedeHandler`). All three ask the same question, so all three ask
-   * `endCommanderSession`, which owns the answer and the reasoning: a pairwise
-   * pod match must survive being left, a Commander launch must not.
-   *
-   * `finally`, not `then` — a teardown that rejects must not strand the player
-   * on the game-over screen.
-   */
-  const handleBackToPod = () => {
-    void useMultiplayerDraftStore
-      .getState()
-      .endCommanderSession()
-      .finally(() => navigate("/draft-pod"));
   };
 
   return (
@@ -2406,8 +2333,7 @@ function GameOverScreen({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {terminalReason && <p className="mb-2 text-sm text-slate-300">{terminalReason}</p>}
-            {gameState && seatKnown && playerLife !== null && opponentLife !== null && (
+            {gameState && playerLife !== null && opponentLife !== null && (
               <p className="text-base text-gray-200 sm:text-lg">
                 <Trans
                   i18nKey="gamePage.gameOver.lifeSummary"
@@ -2421,19 +2347,9 @@ function GameOverScreen({
                 />
               </p>
             )}
-            {(turnCount > 0 || gameDuration !== null) && (
+            {turnCount > 0 && (
               <p className="mt-2 text-xs text-gray-400 sm:text-sm">
-                {turnCount > 0 && <span>{t("gamePage.gameOver.turns", { count: turnCount })}</span>}
-                {turnCount > 0 && gameDuration !== null && (
-                  <span className="mx-2 text-gray-600">|</span>
-                )}
-                {gameDuration !== null && (
-                  <span>
-                    {t("gamePage.gameOver.duration", {
-                      time: `${Math.floor(gameDuration / 60)}:${String(gameDuration % 60).padStart(2, "0")}`,
-                    })}
-                  </span>
-                )}
+                <span>{t("gamePage.gameOver.turns", { count: turnCount })}</span>
               </p>
             )}
           </motion.div>
@@ -2462,30 +2378,6 @@ function GameOverScreen({
                 {runOver
                   ? t("gamePage.gameOver.backToDraft")
                   : t("gamePage.gameOver.continueRun")}
-              </button>
-            ) : isDraftPodMatch ? (
-              <button
-                disabled={!resultRecorded}
-                onClick={handleBackToPod}
-                className={gameButtonClass({
-                  tone: isVictory ? "amber" : "slate",
-                  size: "lg",
-                  disabled: !resultRecorded,
-                  className: "w-full justify-center sm:w-auto sm:min-w-[12rem]",
-                })}
-              >
-                {t("gamePage.gameOver.backToDraft")}
-              </button>
-            ) : isOnlineMode ? (
-              <button
-                onClick={() => navigate("/?view=lobby")}
-                className={gameButtonClass({
-                  tone: isVictory ? "amber" : "slate",
-                  size: "lg",
-                  className: "w-full justify-center sm:w-auto sm:min-w-[12rem]",
-                })}
-              >
-                {t("gamePage.gameOver.backToLobby")}
               </button>
             ) : (
               <>
