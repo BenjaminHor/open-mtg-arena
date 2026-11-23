@@ -2474,7 +2474,8 @@ owner's answer to the D-089 open question, option (a))
 
 **D-162: A minimal, clean look throughout; Arena stays the guide for layout and play (owner, 2026-11-23)** · 2026-11-23 · accepted
 - The owner shared screenshots of another MTG web app ("I kind of like how minimalistic and clean this person's web
-  app is", ui.md "Minimal and clean") and, asked how far to go, chose "Minimal throughout": a flat dark table, each
+  app is", ui.md "Minimal and clean"; then "the UI as a whole just feels more clean and minimal") and, asked how far
+  to go, chose "Minimal throughout": a flat dark table, each
   permanent only its art with its name over a dark fade and a small P/T pill, small round icons for keywords and
   counters, plain text for the phases and the life and zone counts, a calmer main button, less ornament everywhere.
 - Kept: touch-first play on the board itself (no side panel of buttons), and Arena's layout and interactions (the hand,
