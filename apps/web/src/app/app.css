@@ -65,55 +65,76 @@ body,
    edge, plain numbers and labels in the app's typeface, one calm accent for what to press. Where they sit comes from
    the board model. */
 
-.portrait {
+/* A player's info in a left corner (hud/PlayerInfo.tsx, D-164): a label and the life on one line, the zone counts
+   under it, as the reference app. No box around it: it's text on the table. */
+.hud .player-info {
   box-sizing: border-box;
-  border-radius: 8px;
-  border: 1px solid var(--edge);
-  background: #2b2a27;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  margin: 0;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: #f4f1ec;
+  text-align: left;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
-.portrait svg {
-  width: 100%;
-  height: 100%;
-  fill: rgba(255, 255, 255, 0.28);
+.player-info.opponent {
+  justify-content: flex-start;
 }
 
-/* The active player's portrait: an accent ring and a marker beside it, not colour alone. */
-.portrait.active {
-  border: 2px solid var(--accent);
-  overflow: visible;
+.player-info.mine {
+  justify-content: flex-end;
+}
+
+.player-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.player-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #d9d4cc;
+}
+
+.player-life {
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-counts {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.player-counts b {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f4f1ec;
+}
+
+/* Whose turn it is: a marker before the label, and the label in the accent (a shape and a colour). */
+.player-info.active .player-name {
+  color: var(--accent);
 }
 
 .turn-marker {
-  position: absolute;
-  right: -11px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 6px solid transparent;
-  border-left: 8px solid var(--accent);
-}
-
-/* A life total: a plain large number on a quiet dark disc, so it reads over the hand's cards too. */
-.life {
-  z-index: 1;
-  box-sizing: border-box;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(34, 33, 31, 0.92);
-  border: 1px solid var(--edge);
-  font-weight: 300;
-  font-size: 30px;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  color: #f4f1ec;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
-}
-
-/* The opponent's life as their ladder's combat rung: a thin blue ring while they're in combat [R]. */
-.life.combat {
-  box-shadow: inset 0 0 0 2px #7fbcff;
+  align-self: center;
+  border: 5px solid transparent;
+  border-left: 7px solid var(--accent);
+  margin-right: -6px;
 }
 
 .ladder {
@@ -299,7 +320,7 @@ body,
 
 /* A player who can be targeted: a cyan outline, as a targetable card has, and a pointer. */
 /* A player who can be targeted: a dashed outline, as a target is marked (a shape, not only the colour). */
-.hud .portrait.target {
+.hud .player-info.target {
   border: 2px dashed #3fd4ff;
   cursor: pointer;
 }
@@ -560,7 +581,7 @@ body,
 .mana-G { background: #4d9a5c; }
 .mana-T { background: #e8e4da; }
 
-/* The person's mana pool, beside their portrait. */
+/* The person's mana pool, just above their info block. */
 .hud .mana-pool {
   display: flex;
   gap: 6px;

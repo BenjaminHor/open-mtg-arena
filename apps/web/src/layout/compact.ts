@@ -16,7 +16,7 @@ export const COMPACT: BoardLayout = {
   // the screen is wider for its height.
   creatures: { h: 0.16, minH: 0.12, gap: 0.008, margin: 0.09 },
   // Lands at the outer left [R], piled by name [R]; smaller than creatures [guess].
-  lands: { h: 0.12, gap: 0.014, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.6 },
+  lands: { h: 0.12, gap: 0.014, left: 0.075, right: 0.54, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.6 },
   // Other non-creature permanents at the outer right, planeswalkers at the right edge [guess, from the desktop map].
   others: { h: 0.14, gap: 0.006, left: 0.55, right: 0.985 },
   // Close enough that the person's outer row ends above the hand's floating mana costs.
@@ -24,7 +24,7 @@ export const COMPACT: BoardLayout = {
   // A small tilt, dimmed, with a tap mark [R].
   tapped: { tilt: (8 * Math.PI) / 180, dim: 0.45 },
   // Overlapped across the bottom centre (about 35–65% W [R], a little wider here so each card shows more), only the
-  // top fifth showing [R], parted around the life crest that sits over it [R].
+  // top fifth showing [R].
   hand: {
     h: 0.34,
     shown: 0.2,
@@ -33,12 +33,11 @@ export const COMPACT: BoardLayout = {
     mostStep: 0.07,
     fan: (2.5 * Math.PI) / 180,
     arcDrop: 0.004,
-    crestGap: 58,
     cost: 7,
     minCost: 4.5,
   },
   // Opened by a tap [R]: the cards fan up across the width short of the main button, enough of each showing to read
-  // its type line and the start of its text; the life crest stays in front at the bottom centre [R].
+  // its type line and the start of its text.
   handOpen: {
     h: 0.58,
     shown: 0.72,
@@ -47,24 +46,21 @@ export const COMPACT: BoardLayout = {
     mostStep: 0.16,
     fan: (3.5 * Math.PI) / 180,
     arcDrop: 0.006,
-    crestGap: 0,
     cost: 9,
     minCost: 6,
   },
-  // Backs along the top edge, left of centre, mostly off screen [R]; clear of the ladder on the opponent's turn.
-  opponentHand: { h: 0.2, shown: 0.42, centre: 0.3, step: 0.022 },
-  // The opponent's library at the top edge near 67% W, the person's near 24% W [R].
-  library: { h: 0.17, opponent: { x: 0.67, shown: 0.5 }, mine: { x: 0.24, shown: 0.5 } },
-  // Small squares, the opponent's top left, the person's bottom left [R].
-  portrait: { size: 46, inset: 6 },
-  // Round crests at top centre and bottom centre, the person's over the hand [R].
-  life: { size: 50, edge: 0 },
+  // Backs along the top edge, mostly off screen [R]; right of the opponent's ladder at the top centre and left of the
+  // settings cog, their info block having the top left.
+  opponentHand: { h: 0.2, shown: 0.42, centre: 0.72, step: 0.022 },
+  // The opponent's at the top left, the person's at the bottom left, as the reference app (the owner): a label and the
+  // life on one line, the counts under it. Wide enough for "52 Library  0 Graveyard  0 Exile" at 11 px.
+  player: { width: 172, height: 52, inset: 8, gap: 8 },
   // Bottom right [R].
   mainButton: { width: 140, height: 48, right: 10, bottom: 8, clearance: 8 },
-  // Over the main button, or around the opponent's crest on their turn [R].
+  // Over the main button, or at the top centre on the opponent's turn.
   ladder: { icon: 20, padding: 2, gap: 6 },
-  crestClearance: 6,
   promptHeight: 26,
+  promptTop: 52,
   promptChoicesHeight: 56, // a 44 px button, its panel's padding and the gap above [guess]
   // "Undo", "Cancel" left of the main button, as Arena's "Cancel Blocks" sits by it [R].
   secondary: { width: 88, height: 44, gap: 6 },

@@ -4,7 +4,7 @@
 // of this type, and the board model takes either.
 
 export type BoardLayout = {
-  /** Width-to-height ratios: a battlefield card (mostly art) and a whole card (hand, backs, libraries). */
+  /** Width-to-height ratios: a battlefield card (mostly art) and a whole card (hand, backs). */
   ratio: { battlefield: number; hand: number };
   /** The open table between the two creature rows: its centre line and height. */
   band: { y: number; h: number };
@@ -14,7 +14,7 @@ export type BoardLayout = {
    */
   creatures: { h: number; minH: number; gap: number; margin: number };
   /**
-   * Lands in the outer row, from `left` up to `right` (and never under a life crest), one slot per name: a pile of the
+   * Lands in the outer row, from `left` up to `right` (and clear of the player's info block), one slot per name: a pile of the
    * untapped ones, and the tapped ones in a second pile `tappedShift` of a card's width to the right, so tapping a
    * land doesn't move the slots after it. Cards behind a pile's front show `pileStep` (of W) right and `pileLift` (of
    * H) up, as a library does.
@@ -39,15 +39,14 @@ export type BoardLayout = {
   handOpen: HandLayout;
   /** The opponent's hand as backs along the top edge, `shown` of their height on screen, centred at `centre`. */
   opponentHand: { h: number; shown: number; centre: number; step: number };
-  /** Each library pile: its centre `x` and how much of it is on screen. */
-  library: { h: number; opponent: { x: number; shown: number }; mine: { x: number; shown: number } };
-  /** px: the portraits in the corners. */
-  portrait: { size: number; inset: number };
-  /** px: the life crests on the centre line, `edge` from the top and bottom edges. */
-  life: { size: number; edge: number };
+  /**
+   * px: each player's info block in a left corner (the owner, ui.md "Player info in the left corners"): label, life,
+   * zone counts; `inset` from the corner, and outer rows start `gap` right of it.
+   */
+  player: { width: number; height: number; inset: number; gap: number };
   /** px: the main button at the bottom right; rows on the person's side stop `clearance` short of it. */
   mainButton: { width: number; height: number; right: number; bottom: number; clearance: number };
-  /** px: the phase ladder's icons, the padding of its pill, and its gap to the button or crest. */
+  /** px: the phase ladder's icons, the padding of its pill, and its gap to the button or the top edge. */
   ladder: { icon: number; padding: number; gap: number };
   /**
    * Combat: how far (of H) an attacking creature steps toward the band, and how much (of a card's width) the blockers
@@ -57,6 +56,8 @@ export type BoardLayout = {
   combat: { advance: number; gangOverlap: number };
   /** px: the height the prompt's words need, to find room for them between the battlefields. */
   promptHeight: number;
+  /** px: the centre of a prompt that can't go between the battlefields, from the top, under the opponent's ladder. */
+  promptTop: number;
   /** px: a row of a prompt's choices under its title (44 px buttons and a gap), budgeted when placing it. */
   promptChoicesHeight: number;
   /** px: the small buttons beside the main one ("Undo", "Cancel"). */
@@ -68,15 +69,12 @@ export type BoardLayout = {
   stack: { x: number; y: number; h: number; smallH: number; smallY: number; smallMaxH: number };
   /** The hand card the person lifted, large at the centre [R]: its height and its top. */
   lifted: { h: number; top: number };
-  /** px: the space kept between the outer rows and the life crests. */
-  crestClearance: number;
 };
 
 /**
  * The person's hand: cards `h` of the height tall, `shown` of each card's height on screen, between `left` and `right`
  * (shares of the width), each card at most `mostStep` (of W) after the last, in a fan of `fan` radians a card dropping
- * `arcDrop` (of H) per card squared from the middle, parted `crestGap` px around the person's life crest (0 to let the
- * crest sit over the cards). Each card's mana cost floats over its top edge, symbols of radius `cost` px, smaller (to
+ * `arcDrop` (of H) per card squared from the middle. Each card's mana cost floats over its top edge, symbols of radius `cost` px, smaller (to
  * `minCost`) when its strip is narrow.
  */
 export type HandLayout = {
@@ -87,7 +85,6 @@ export type HandLayout = {
   mostStep: number;
   fan: number;
   arcDrop: number;
-  crestGap: number;
   cost: number;
   minCost: number;
 };

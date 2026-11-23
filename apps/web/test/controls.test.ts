@@ -1,5 +1,5 @@
 // The controls (interaction/controls.ts), checked the way the HUD shows them: over many real games, every legal option
-// the person has is reachable from something on screen (a card's tap region, a portrait, the main button, a small
+// the person has is reachable from something on screen (a card's tap region, a player's info, the main button, a small
 // button beside it, a prompt), and every control sends an action the engine listed. This is what lets the app drop its
 // list of every action (M3-04b, D-156).
 
@@ -17,7 +17,7 @@ const PHONE = { width: 812, height: 375 };
 /**
  * Every action a person could send from the screen: a tap on a card that has a tap region (the hand open, as a tap on
  * it opens it), and what a first tap opens (a lifted card, a picked blocker: one level is all any choice needs); the
- * one target a portrait shows; the small buttons the HUD has room for; the prompt; the main button; Concede.
+ * one target a player's info shows; the small buttons the HUD has room for; the prompt; the main button; Concede.
  */
 function onScreen(shown: SeatView): Action[] {
   const screen = (selection: ObjectId | null) => {

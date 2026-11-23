@@ -3,14 +3,14 @@
 // portraits, the phase ladder and the main button. The renderer draws it and does no layout of its own, so the layout
 // is tested here without drawing anything. The layout's values are data (`BoardLayout`; the compact one by default).
 
-import type { Color, ObjectId, PlayerId, SeatView, Step } from "@mtg/engine";
+import type { Color, ObjectId, SeatView, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
 import { battlefieldCards } from "./battlefield.ts";
 import { withCombat } from "./combat.ts";
 import { handCards } from "./hand.ts";
-import { cardBacks, libraryPiles } from "./hidden-cards.ts";
-import { inCombat, type Ladder, ladderAroundCrest, ladderOver } from "./ladder.ts";
+import { cardBacks } from "./hidden-cards.ts";
+import { type Ladder, ladderAtTop, ladderOver } from "./ladder.ts";
 import { withPicks } from "./picks.ts";
 import { playableIds } from "./playable.ts";
 import { tapRegions } from "./regions.ts";
@@ -87,31 +87,21 @@ export type BoardCard = {
 /** A face-down card the person can't see: one of the opponent's hand (CR 402.3). */
 export type CardBack = { key: string; x: number; y: number; width: number; height: number; rotation: number };
 
-/** A library, face down, with how many cards it holds (CR 401.3: anyone may count it). */
-export type LibraryPile = {
-  player: PlayerId;
-  mine: boolean;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  count: number;
-};
-
 export type Point = { x: number; y: number };
 export type Rect = Point & { width: number; height: number };
 
 /** Where the DOM overlay places its pieces, in the same CSS pixels as the cards: the HUD does no layout of its own. */
 export type OverlayAnchors = {
-  portrait: { mine: Rect; opponent: Rect };
-  life: { mine: Rect; opponent: Rect };
+  /**
+   * Each player's info block in a left corner (the owner, ui.md "Player info in the left corners"): their label and
+   * life total, and their library, graveyard and exile counts; whose turn it is and a player target show on it too.
+   */
+  player: { mine: Rect; opponent: Rect };
   mainButton: Rect;
   /** The current turn's phase ladder, over the main button [R]. */
   ladder: Ladder;
-  /** On the opponent's turn, their ladder around their life crest [R]; null on the person's turn. */
+  /** On the opponent's turn, their ladder at the top centre; null on the person's turn. */
   opponentLadder: Ladder | null;
-  /** The opponent's crest takes their ladder's combat slot, and glows while they're in combat [R]. */
-  opponentInCombat: boolean;
   /** Where the hand shows on screen, its mana costs included: a tap there opens or closes it. Null with no hand. */
   hand: Rect | null;
   /** The small buttons beside the main one ("Undo", "Cancel"), right to left from the main button. */
@@ -126,7 +116,6 @@ export type BoardModel = {
   /** In drawing order, back to front. */
   cards: BoardCard[];
   backs: CardBack[];
-  libraries: LibraryPile[];
   /** The open table between the two creature rows [R], the board's whole width: drawn as nothing, kept for layout. */
   band: Rect;
   /**
@@ -190,7 +179,6 @@ export function boardModel(
     height: size.height,
     cards,
     backs: cardBacks(shown.view.zones.players[opponent]?.handSize ?? 0, area, layout),
-    libraries: libraryPiles(shown, area, opponent, layout),
     band: {
       x: 0,
       y: area.y + (layout.band.y - layout.band.h / 2) * area.height,
@@ -201,38 +189,33 @@ export function boardModel(
     overlay: {
       ...overlay,
       hand: handArea(hand, area),
-      prompt: promptPlace(shown, ui.handOpen, field.cards, overlay, area, layout),
+      prompt: promptPlace(shown, ui.handOpen, field.cards, area, layout),
     },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
 
 function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, opponentsTurn: boolean): OverlayAnchors {
-  const { portrait, life, mainButton } = layout;
+  const { player, mainButton } = layout;
   const button: Rect = {
     x: area.x + area.width - mainButton.right - mainButton.width,
     y: area.y + area.height - mainButton.bottom - mainButton.height,
     width: mainButton.width,
     height: mainButton.height,
   };
-  const crestX = area.x + area.width / 2 - life.size / 2;
-  const opponentCrest = { x: crestX, y: area.y + life.edge, width: life.size, height: life.size };
-  const myCrest = { x: crestX, y: area.y + area.height - life.edge - life.size, width: life.size, height: life.size };
   return {
-    portrait: {
-      opponent: { x: area.x + portrait.inset, y: area.y + portrait.inset, width: portrait.size, height: portrait.size },
+    player: {
+      opponent: { x: area.x + player.inset, y: area.y + player.inset, width: player.width, height: player.height },
       mine: {
-        x: area.x + portrait.inset,
-        y: area.y + area.height - portrait.inset - portrait.size,
-        width: portrait.size,
-        height: portrait.size,
+        x: area.x + player.inset,
+        y: area.y + area.height - player.inset - player.height,
+        width: player.width,
+        height: player.height,
       },
     },
-    life: { opponent: opponentCrest, mine: myCrest },
     mainButton: button,
     ladder: ladderOver(button, step, layout),
-    opponentLadder: opponentsTurn ? ladderAroundCrest(opponentCrest, step, layout) : null,
-    opponentInCombat: opponentsTurn && step !== null && inCombat(step),
+    opponentLadder: opponentsTurn ? ladderAtTop(area, step, layout) : null,
     hand: null,
     secondary: [0, 1].map((i) => ({
       x: button.x - (i + 1) * (layout.secondary.width + layout.secondary.gap),
@@ -246,30 +229,28 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
 
 /**
  * Where the words of what the game waits for go: in the open table between the two creature rows, where nothing is
- * drawn; or, when combat has filled that gap (attackers step into it), under the opponent's life crest, so the banner
- * never covers a card's power/toughness.
+ * drawn; or, when combat has filled that gap (attackers step into it), near the top under the opponent's ladder, so
+ * the banner never covers a card's power/toughness.
  */
 function promptPlace(
   shown: SeatView,
   handOpen: boolean,
   field: readonly BoardCard[],
-  overlay: OverlayAnchors,
   area: Rect,
   layout: BoardLayout,
 ): Point {
-  const crest = overlay.life.opponent;
-  const underCrest = { x: area.x + area.width / 2, y: crest.y + crest.height + layout.promptHeight / 2 + 4 };
+  const nearTop = { x: area.x + area.width / 2, y: area.y + layout.promptTop };
   // While attackers or blockers are declared, creatures step into the gap as they're picked: the prompt stays put
-  // under the crest rather than jump when the first one moves.
+  // near the top rather than jump when the first one moves.
   const kind = shown.view.decision?.kind;
-  if (kind === "declareAttackers" || kind === "declareBlockers") return underCrest;
+  if (kind === "declareAttackers" || kind === "declareBlockers") return nearTop;
   // Naming a card is a long list with a filter box: it starts high, so the list has the screen's height to use. An
   // open hand rises over the lower half: a prompt answered on its cards (a discard) or a mulligan's two buttons go
   // high, clear of the cards' names; one with choices of its own stays in the table, drawn over the hand, rather than
   // jump onto the opponent's creatures (the targets it may be about).
   const decision = shown.view.decision;
-  if (decision?.kind === "chooseName" && decision.what === "cardName") return underCrest;
-  if (handOpen && (answeredOnCards(kind) || kind === "mulligan")) return underCrest;
+  if (decision?.kind === "chooseName" && decision.what === "cardName") return nearTop;
+  if (handOpen && (answeredOnCards(kind) || kind === "mulligan")) return nearTop;
   // In the gap between the rows: the title, and the rows of choices under it, as many as they'll take.
   const needed =
     layout.promptHeight + (answeredOnCards(kind) ? 0 : choiceRows(shown, area, layout) * layout.promptChoicesHeight);
@@ -280,7 +261,7 @@ function promptPlace(
   const bottom = mine.length === 0 ? area.y + layout.band.y * area.height + 30 : Math.min(...mine);
   if (bottom - top >= needed)
     return { x: area.x + area.width / 2, y: top + (bottom - top - needed) / 2 + layout.promptHeight / 2 };
-  if (answeredOnCards(kind)) return underCrest;
+  if (answeredOnCards(kind)) return nearTop;
   // Choices that don't fit the gap: a panel over the middle of the table, as Arena shows its choice dialogs [R]. It
   // covers cards for a moment, on a backing dark enough to read (`.prompt-choices` in app.css).
   const middle = area.y + layout.band.y * area.height;

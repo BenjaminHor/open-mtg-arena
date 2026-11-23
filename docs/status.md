@@ -271,6 +271,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
         now draws only whole cards (hand, stack).
         Owner on it: names and P/T on one line (done), and the font should match the reference: Inter, bundled
         (D-163), names at natural width, growing with the tile on a desktop.
+      - Owner (2026-11-23), next in the restyle: the player info in the left corners as in the reference (ui.md,
+        "Player info in the left corners"): label, large life, Library/Graveyard/Exile counts; replaces the
+        centred crests and the portraits. A board-model change (the anchors), so its own commit with layout tests.
+        Done (D-164): `hud/PlayerInfo.tsx`, `overlay.player` anchors, no crests, portraits or library piles; land rows
+        start right of the blocks; the hand a plain centred fan; the opponent's ladder at the top centre; layout tests
+        updated.
       - Part 2 done in the same PR (#103): the HUD flat and calm through CSS tokens (`--panel`, `--edge`,
         `--accent` a soft peach, `--muted`): plain life numbers on a dark disc, flat portraits with an accent ring
         for the active player, a flat accent main button (full control a flat blue-violet), flat icon ladders (text

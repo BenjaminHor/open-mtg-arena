@@ -137,19 +137,11 @@ describe("the compact board model", () => {
     }
   });
 
-  it("keeps every permanent clear of the HUD: portraits, life crests, the phase ladder, the main button", () => {
+  it("keeps every permanent clear of the HUD: the players' info, the phase ladders, the main button", () => {
     for (const shown of [midGame, crowded, manyPiles("p1"), manyPiles("p2")]) {
       const model = boardModel(shown, PHONE);
-      const { portrait, life, mainButton, ladder, opponentLadder } = model.overlay;
-      const hud = [
-        portrait.mine,
-        portrait.opponent,
-        life.mine,
-        life.opponent,
-        mainButton,
-        ...ladder.pills,
-        ...(opponentLadder?.pills ?? []),
-      ];
+      const { player, mainButton, ladder, opponentLadder } = model.overlay;
+      const hud = [player.mine, player.opponent, mainButton, ...ladder.pills, ...(opponentLadder?.pills ?? [])];
       for (const card of model.cards.filter((c) => c.zone === "battlefield")) {
         for (const piece of hud)
           expect(overlaps(card, piece), `${card.name} under the HUD at ${piece.x},${piece.y}`).toBe(false);
@@ -214,35 +206,19 @@ describe("the compact board model", () => {
     }
   });
 
-  it("parts the hand around the life crest, so no card hides under it, and fits each cost to its card's strip", () => {
+  it("centres the hand, each card's strip in sight, and fits each cost to its strip", () => {
     const model = boardModel(crowded, PHONE);
-    const crest = model.overlay.life.mine;
     const hand = model.cards.filter((c) => c.zone === "hand").sort((a, b) => a.x - b.x);
+    const first = hand[0];
+    const last = hand.at(-1);
+    if (first === undefined || last === undefined) throw new Error("a hand");
+    // Centred on the board, within a pixel.
+    expect(Math.abs((first.x + last.x + last.width) / 2 - PHONE.width / 2)).toBeLessThan(1);
     hand.forEach((card, i) => {
       const next = hand[i + 1];
-      const stripEnd = next === undefined ? card.x + card.width : next.x;
-      // Some of each card's strip shows outside the crest.
-      const shows = Math.max(0, crest.x - card.x) + Math.max(0, stripEnd - (crest.x + crest.width));
-      expect(shows, card.name).toBeGreaterThan(10);
+      if (next !== undefined) expect(next.x - card.x, card.name).toBeGreaterThan(10);
       expect(card.costRadius).toBeGreaterThanOrEqual(COMPACT.hand.minCost);
     });
-  });
-
-  it("puts a small hand either side of the life crest", () => {
-    const small = boardModel(
-      boardView({
-        turn: { number: 9, activePlayer: "p1", step: "precombatMain" },
-        players: {
-          p1: { life: 20, hand: ["Lightning Bolt", "Giant Growth"], battlefield: ["Mountain"], library: LIBRARY },
-          p2: { life: 20, hand: [], battlefield: [], library: LIBRARY },
-        },
-      }),
-      PHONE,
-    );
-    const crest = small.overlay.life.mine;
-    const hand = small.cards.filter((c) => c.zone === "hand");
-    expect(hand.some((c) => c.x + c.width / 2 < crest.x)).toBe(true);
-    expect(hand.some((c) => c.x > crest.x + crest.width)).toBe(true);
   });
 
   it("keeps the person's outer row above the hand's floating costs", () => {
@@ -334,27 +310,26 @@ describe("the compact board model", () => {
       expect(card.x).toBeGreaterThanOrEqual(insets.left);
       expect(card.x + card.width).toBeLessThanOrEqual(PHONE.width - insets.right);
     }
-    const { mine, opponent } = model.overlay.portrait;
+    const { mine, opponent } = model.overlay.player;
     expect(opponent.x).toBeGreaterThanOrEqual(insets.left);
     expect(mine.y + mine.height).toBeLessThanOrEqual(PHONE.height - insets.bottom);
     const button = model.overlay.mainButton;
     expect(button.x + button.width).toBeLessThanOrEqual(PHONE.width - insets.right);
   });
 
-  it("puts the turn's ladder over the main button, and the opponent's around their crest on their turn", () => {
+  it("puts the turn's ladder over the main button, and the opponent's at the top centre on their turn", () => {
     const mine = boardModel(midGame, PHONE).overlay;
     expect(mine.ladder.icons.map((i) => i.icon)).toEqual(["cap", "card", "swords", "card", "cap"]);
     expect(mine.ladder.icons.filter((i) => i.lit).map((i) => i.key)).toEqual(["main1"]);
     for (const icon of mine.ladder.icons) expect(icon.rect.y + icon.rect.height).toBeLessThanOrEqual(mine.mainButton.y);
     expect(mine.opponentLadder).toBeNull();
     const theirs = boardModel(crowded, PHONE).overlay;
-    const crest = theirs.life.opponent;
-    const around = theirs.opponentLadder?.icons ?? [];
-    // Two rungs each side of the crest, none under it: the crest is the combat rung.
-    expect(around.map((i) => i.key)).toEqual(["beginning", "main1", "main2", "end"]);
-    expect(around.slice(0, 2).every((i) => i.rect.x + i.rect.width <= crest.x)).toBe(true);
-    expect(around.slice(2).every((i) => i.rect.x >= crest.x + crest.width)).toBe(true);
-    expect(theirs.opponentInCombat).toBe(false);
+    const top = theirs.opponentLadder;
+    expect(top?.icons.map((i) => i.key)).toEqual(["beginning", "main1", "combat", "main2", "end"]);
+    const pill = top?.pills[0];
+    if (pill === undefined) throw new Error("a pill");
+    expect(Math.abs(pill.x + pill.width / 2 - PHONE.width / 2)).toBeLessThan(1);
+    expect(pill.y).toBeLessThan(COMPACT.promptTop);
   });
 
   it("opens combat into its steps on the ladder during combat", () => {
@@ -368,7 +343,11 @@ describe("the compact board model", () => {
       ...midGame,
       view: { ...midGame.view, turn: { ...turn, step: "declareBlockers", activePlayer: "p2" } },
     };
-    expect(boardModel(theirs, PHONE).overlay.opponentInCombat).toBe(true);
+    expect(
+      boardModel(theirs, PHONE)
+        .overlay.opponentLadder?.icons.filter((i) => i.lit)
+        .map((i) => i.key),
+    ).toEqual(["blockers"]);
   });
 
   it("outlines what the person can play now, from the options, and not lands for their mana", () => {
@@ -419,28 +398,28 @@ describe("the compact board model", () => {
     });
   });
 
-  it("counts each library", () => {
-    const model = boardModel(midGame, PHONE);
-    const mine = model.libraries.find((l) => l.mine);
-    expect(mine?.count).toBe(midGame.view.zones.players.p1?.librarySize);
-    expect(model.libraries.find((l) => !l.mine)?.count).toBe(midGame.view.zones.players.p2?.librarySize);
+  it("puts each player's info in a left corner, the opponent's at the top, the person's at the bottom", () => {
+    const { player } = boardModel(midGame, PHONE).overlay;
+    expect(player.opponent.x).toBeLessThan(PHONE.width / 4);
+    expect(player.mine.x).toBeLessThan(PHONE.width / 4);
+    expect(player.opponent.y).toBeLessThan(PHONE.height / 4);
+    expect(player.mine.y + player.mine.height).toBeGreaterThan((PHONE.height * 3) / 4);
   });
 
   it("draws an opening hand of seven before the first turn", () => {
     expect(boardModel(mulliganView(), PHONE).cards.filter((c) => c.zone === "hand")).toHaveLength(7);
   });
 
-  it("puts the prompt in the open table between the rows, and high, under the opponent's crest, while the hand is open", () => {
+  it("puts the prompt in the open table between the rows, and high, near the top, while the hand is open", () => {
     const shown = fixtureView("mid-game");
     const closed = boardModel(shown, PHONE);
-    const crest = closed.overlay.life.opponent;
     const theirs = closed.cards.filter((c) => c.row === "creatures" && !c.mine);
     const mine = closed.cards.filter((c) => c.row === "creatures" && c.mine);
     const prompt = closed.overlay.prompt;
     expect(prompt.y).toBeGreaterThan(Math.max(...theirs.map((c) => c.y + c.height)));
     expect(prompt.y).toBeLessThan(Math.min(...mine.map((c) => c.y)));
-    // The open hand rises over the lower half: the prompt goes up, just under the crest, clear of the cards.
+    // The open hand rises over the lower half: the prompt goes up near the top, clear of the cards.
     const open = boardModel(shown, PHONE, undefined, { handOpen: true });
-    expect(open.overlay.prompt.y).toBeLessThan(crest.y + crest.height + COMPACT.promptHeight);
+    expect(open.overlay.prompt.y).toBe(COMPACT.promptTop);
   });
 });

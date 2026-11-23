@@ -1,11 +1,11 @@
 // The PixiJS scene (D-013, ui.md "Board structure"): it draws the board model and nothing else, with no game logic and
 // no layout math (`board-model/` does that). Cards are kept by object id and updated in place, so a card that reflows,
 // piles or taps is the same sprite; one that changes zone is a new object (CR 400.7) and, until M3-07 carries sprites
-// across from the view's events, a new sprite. Hidden cards (backs, libraries) are few and redrawn each time.
+// across from the view's events, a new sprite. Hidden cards (the opponent's hand) are few and redrawn each time.
 
 import { Application, Container, Graphics } from "pixi.js";
 import type { BoardModel } from "../board-model/board-model.ts";
-import { cardBackSprite, librarySprite } from "./card-back.ts";
+import { cardBackSprite } from "./card-back.ts";
 import { pileBadge } from "./card-marks.ts";
 import { type CardSprite, createCardSprite } from "./card-sprite.ts";
 import { PALETTE } from "./palette.ts";
@@ -55,7 +55,6 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
       // The gap between the battlefields is open table (ui.md, "Room between the battlefields"): nothing to draw.
       // `context: true` frees each Graphics' drawing too, which a plain `children: true` leaves behind.
       for (const child of hidden.removeChildren()) child.destroy({ children: true, context: true });
-      for (const pile of model.libraries) hidden.addChild(librarySprite(pile));
       for (const back of model.backs) hidden.addChild(cardBackSprite(back));
       const present = new Set<string>();
       model.cards.forEach((card, i) => {

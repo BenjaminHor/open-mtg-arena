@@ -1,5 +1,5 @@
 // What the person can do right now, and where on screen they do it (M3-04b; ui.md "Touch interaction", "Mouse and
-// keyboard too"). Every legal option in the seat view becomes a control: a tap on a card or a portrait, the main
+// keyboard too"). Every legal option in the seat view becomes a control: a tap on a card or a player's info, the main
 // button, a small button beside it, or a choice in a prompt. Nothing here decides legality: each control sends one of
 // `shown.options`' actions, as the engine listed it (ui.md: "it never invents its own legality"). Pure, so a test can
 // check over many games that no option is left without a control.
@@ -177,7 +177,7 @@ type Sinks = {
   leftover: Choice[];
 };
 
-/** Where an answer's control goes: on a card, a portrait, beside the main button, or in the prompt. */
+/** Where an answer's control goes: on a card, a player's info, beside the main button, or in the prompt. */
 function answerControl(action: Action, a: Answer, label: string, name: (id: ObjectId) => string, to: Sinks): void {
   switch (a.kind) {
     case "chooseTarget":

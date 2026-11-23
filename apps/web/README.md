@@ -39,7 +39,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   Attack's picks, one at a time (the engine has no "all" action). `card-details.ts`: what the card view shows, a card's
   text and image and the hangers beside it (keyword reminders, counters, damage, what's attached, who controls it).
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
-  (`CardButtons.tsx`), portraits (targetable as players), life crests, the phase ladders (`PhaseLadder.tsx`), the main
+  (`CardButtons.tsx`), each player's info in a left corner (`PlayerInfo.tsx`: life and zone counts, targetable as a
+  player), the phase ladders (`PhaseLadder.tsx`), the main
   button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
   card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede and full control (`SettingsMenu.tsx`).
   `hand-drag.ts`: drag a hand card up onto the table to play it, followed on the window so lifting it can't lose it.

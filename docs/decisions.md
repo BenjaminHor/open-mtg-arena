@@ -2499,3 +2499,18 @@ owner's answer to the D-089 open question, option (a))
 - Used by the HUD (`:root`) and by everything the board draws in text (`PALETTE.sans`), except a whole card's drawn
   fallback, which keeps its printed-card serif until the real image loads over it.
 - A permanent's name is never squeezed sideways (letters at their natural width); it shrinks to fit beside the P/T.
+
+**D-164: Each player's info in a left corner (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, pointing at the reference app: "you see how the player and opponent info is on the left corners in the
+  reference screenshots? the life total, library size, graveyard, and exile." So the opponent's block is at the top
+  left and the person's at the bottom left (`hud/PlayerInfo.tsx`): a label and the life total, large, on one line,
+  and under it the library, graveyard and exile counts. It replaces the centred life crests (Arena's) and the
+  portraits, and the library piles (their count is in the block). This departs from Arena's layout (D-160) at the
+  owner's word.
+- Whose turn it is: a marker before the label and the label in the accent. A player who can be targeted: the block
+  becomes a button with a dashed outline. The person's mana pool sits just above their block.
+- The board model gives the blocks as anchors (`overlay.player`); the land rows start right of them; the hand is a
+  plain centred fan (it no longer parts around a crest); on the opponent's turn their ladder is at the top centre,
+  its combat rungs as on the person's; a prompt that can't go between the rows sits near the top (`promptTop`).
+- Exile counts the cards each player owns that can be seen there; graveyard and exile browsing come with the zones
+  slice.

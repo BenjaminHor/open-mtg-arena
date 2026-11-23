@@ -1,11 +1,11 @@
 // The DOM layer over the board (ui.md, "Implementation notes"): the pieces the person reads or presses, placed at the
 // board model's anchors. It lets touches through to the canvas except on its own controls (`pointer-events`).
-// Portraits in the corners, life crests on the centre line, the phase ladder and the main button at the bottom right
-// [R]; whose turn it is shows three ways: where the ladder is, a ring and marker on that player's portrait, and the
-// main button's label. The cards a tap acts on are buttons over the canvas (CardButtons), choices the board can't
+// Each player's info in a left corner (life and zone counts, D-164), the phase ladder and the main button at the bottom
+// right [R]; whose turn it is shows three ways: where the ladder is, a marker on that player's info, and the main
+// button's label. The cards a tap acts on are buttons over the canvas (CardButtons), choices the board can't
 // offer are in the prompt, and a card with several choices opens a small menu.
 
-import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
+import type { Action, ObjectId, SeatView } from "@mtg/engine";
 import type { BoardModel, Rect } from "../board-model/board-model.ts";
 import type { CardDetails } from "../interaction/card-details.ts";
 import type { Choice, Controls } from "../interaction/controls.ts";
@@ -18,6 +18,7 @@ import type { HandDragCallbacks } from "./hand-drag.ts";
 import { ManaText } from "./ManaText.tsx";
 import { mainButton } from "./main-button.ts";
 import { PhaseLadder } from "./PhaseLadder.tsx";
+import { PlayerInfo } from "./PlayerInfo.tsx";
 import { Prompt } from "./Prompt.tsx";
 import { place } from "./place.ts";
 import { SettingsMenu } from "./SettingsMenu.tsx";
@@ -54,7 +55,6 @@ export function Hud(props: HudProps) {
   const me = shown.player;
   const opponent = view.turnOrder.find((p) => p !== me) ?? me;
   const active = view.turn?.activePlayer ?? null;
-  const life = (p: PlayerId) => view.players[p]?.life ?? 0;
   const anchors = model.overlay;
   const button = mainButton(shown);
   const result = view.result;
@@ -74,34 +74,28 @@ export function Hud(props: HudProps) {
         drag={props.drag}
         inspect={props.inspect}
       />
-      <Portrait
-        rect={anchors.portrait.opponent}
-        label="Opponent"
+      <PlayerInfo
+        shown={shown}
+        player={opponent}
+        rect={anchors.player.opponent}
         side="opponent"
         active={active === opponent}
         targets={controls.players[opponent] ?? []}
         act={act}
       />
-      <Portrait
-        rect={anchors.portrait.mine}
-        label="You"
+      <PlayerInfo
+        shown={shown}
+        player={me}
+        rect={anchors.player.mine}
         side="mine"
         active={active === me}
         targets={controls.players[me] ?? []}
         act={act}
       />
       {/* The open hand rises over where it sits; the pool is back when the hand is put down. */}
-      {!props.handOpen && <ManaPoolChip pool={view.players[me]?.manaPool} beside={anchors.portrait.mine} />}
+      {!props.handOpen && <ManaPoolChip pool={view.players[me]?.manaPool} above={anchors.player.mine} />}
       <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
       {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
-      <LifeCrest
-        rect={anchors.life.opponent}
-        life={life(opponent)}
-        label="Opponent's life"
-        side="opponent"
-        combat={anchors.opponentInCombat}
-      />
-      <LifeCrest rect={anchors.life.mine} life={life(me)} label="Your life" side="mine" combat={false} />
       {!button.hidden && (
         <button
           type="button"
@@ -190,16 +184,16 @@ export function Hud(props: HudProps) {
 }
 
 /**
- * The mana in the person's pool (CR 106.4), beside their portrait while there is any: one symbol per type with how much,
- * so mana made by tapping a land for a cost that needs more is in sight until it's spent or empties (CR 500.4).
+ * The mana in the person's pool (CR 106.4), just above their info block while there is any: one symbol per type with
+ * how much, so mana made by tapping a land for a cost that needs more is in sight until it's spent or empties (CR 500.4).
  */
-function ManaPoolChip({ pool, beside }: { pool: Record<string, number> | undefined; beside: Rect }) {
+function ManaPoolChip({ pool, above }: { pool: Record<string, number> | undefined; above: Rect }) {
   const held = Object.entries(pool ?? {}).filter(([, n]) => n > 0);
   if (held.length === 0) return null;
   return (
     <div
       className="mana-pool"
-      style={{ left: beside.x + beside.width + 8, top: beside.y + beside.height / 2 - 14 }}
+      style={{ left: above.x, top: above.y - 32 }}
       role="img"
       aria-label={`Mana pool: ${held.map(([type, n]) => `${n} ${type}`).join(", ")}`}
     >
@@ -209,61 +203,6 @@ function ManaPoolChip({ pool, beside }: { pool: Record<string, number> | undefin
           {n > 1 && <span className="mana-count">×{n}</span>}
         </span>
       ))}
-    </div>
-  );
-}
-
-function Portrait(props: {
-  rect: Rect;
-  label: string;
-  side: "mine" | "opponent";
-  active: boolean;
-  targets: Choice[];
-  act: (action: Action) => void;
-}) {
-  const { rect, label, side, active, targets } = props;
-  const target = targets[0];
-  const className = `portrait ${side}${active ? " active" : ""}${target !== undefined ? " target" : ""}`;
-  const face = (
-    <>
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="15" r="7" />
-        <path d="M7 37 C8 27 14 24 20 24 C26 24 32 27 33 37 Z" />
-      </svg>
-      {active && <span className="turn-marker" aria-hidden="true" />}
-    </>
-  );
-  // A player who can be targeted now is a button: a tap picks them [R].
-  if (target !== undefined) {
-    return (
-      <button
-        type="button"
-        className={className}
-        style={place(rect)}
-        aria-label={`${label}: ${target.label}`}
-        onClick={() => props.act(target.action)}
-      >
-        {face}
-      </button>
-    );
-  }
-  return (
-    <div className={className} style={place(rect)} role="img" aria-label={active ? `${label}, this turn` : label}>
-      {face}
-    </div>
-  );
-}
-
-/** A life total in its crest [R]. The opponent's crest is also the combat rung of their ladder: it glows then. */
-function LifeCrest(props: { rect: Rect; life: number; label: string; side: "mine" | "opponent"; combat: boolean }) {
-  return (
-    <div
-      className={`life life-${props.side}${props.combat ? " combat" : ""}`}
-      style={place(props.rect)}
-      role="img"
-      aria-label={`${props.label} ${props.life}`}
-    >
-      {props.life}
     </div>
   );
 }

@@ -14,7 +14,7 @@ type Slot = { untapped: SeenCard[]; tapped: SeenCard[] };
 export function landSlots(
   lands: readonly SeenCard[],
   half: Half,
-  row: { y: number; height: number; right: number },
+  row: { y: number; height: number; left: number; right: number },
   look: (card: SeenCard) => { rotation: number; dim: number },
 ): BoardCard[] {
   const { area, layout, mine } = half;
@@ -45,13 +45,7 @@ export function landSlots(
     const count = slot.untapped.length + slot.tapped.length;
     return count > 1 ? pileWidth(count, w, offsets.step) + shift : w;
   };
-  const xs = spread(
-    ordered.map(slotWidth),
-    area.x + layout.lands.left * area.width,
-    row.right,
-    layout.lands.gap * area.width,
-    "start",
-  );
+  const xs = spread(ordered.map(slotWidth), row.left, row.right, layout.lands.gap * area.width, "start");
   return ordered.flatMap((slot, i) => {
     const x = xs[i] ?? 0;
     const tappedX = x + slotWidth(slot) - pileWidth(slot.tapped.length, w, offsets.step);
