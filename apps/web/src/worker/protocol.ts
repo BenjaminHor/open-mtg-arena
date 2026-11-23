@@ -11,7 +11,12 @@ export type ToWorker =
   /** A match from a given setup, the person in `human`'s seat: a fixture board for tests and screenshots. */
   | { type: "startFrom"; setup: GameSetup; human: PlayerId }
   /** The person's action, one of `shown.options` from the last update. */
-  | { type: "act"; action: Action };
+  | { type: "act"; action: Action }
+  /**
+   * Full control on or off for the person's seat (arena-research.md, "Full control"): on, the host never passes
+   * priority for them; off, it passes where they have nothing to do (`@mtg/match` auto-pass, D-143, D-157).
+   */
+  | { type: "fullControl"; on: boolean };
 
 /** From the worker to the UI. */
 export type FromWorker =
@@ -19,6 +24,6 @@ export type FromWorker =
    * What the person's seat is shown now, and the events it saw since the last update, in order. `waitingOn` is the
    * person when they must decide, null while no one does (the game is over).
    */
-  | { type: "update"; shown: SeatView; events: ViewEvent[]; waitingOn: PlayerId | null }
+  | { type: "update"; shown: SeatView; events: ViewEvent[]; waitingOn: PlayerId | null; fullControl: boolean }
   /** A message the worker refused: an action that isn't legal now, or a start with an unknown deck. */
   | { type: "error"; message: string };

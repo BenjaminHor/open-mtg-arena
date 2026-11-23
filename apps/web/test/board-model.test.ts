@@ -62,7 +62,8 @@ describe("the compact board model", () => {
   it("draws every permanent and every card in the person's hand once, and no card of the opponent's hand", () => {
     for (const shown of [midGame, crowded]) {
       const model = boardModel(shown, PHONE);
-      const drawn = model.cards.map((c) => c.id);
+      // The stack's top is drawn too, large at the right (stack.ts); this counts the battlefield and the hand.
+      const drawn = model.cards.filter((c) => c.zone !== "stack").map((c) => c.id);
       expect(new Set(drawn).size).toBe(drawn.length);
       const hand = shown.view.zones.players.p1?.hand ?? [];
       expect(drawn.sort()).toEqual([...battlefieldIds(shown), ...hand].sort());
@@ -384,6 +385,38 @@ describe("the compact board model", () => {
     expect(lit("Llanowar Elves", "battlefield")).toBe(false);
     // Nothing of the opponent's.
     expect(model.cards.some((c) => !c.mine && c.playable)).toBe(false);
+  });
+
+  it("shows what's on top of the stack, large at the right: an ability as the card it came from", () => {
+    const top = crowded.view.zones.stack.at(-1);
+    const stack = boardModel(crowded, PHONE).cards.filter((c) => c.zone === "stack");
+    expect(stack.map((c) => c.id)).toEqual(top === undefined ? [] : [top]);
+    if (top !== undefined) {
+      expect(stack[0]?.name).toBe("Ajani Goldmane ability");
+      expect((stack[0]?.x ?? 0) > PHONE.width / 2).toBe(true);
+    }
+  });
+
+  it("gives tap regions: one per pile listing its cards, none for the hand while it's closed, the lifted card whole", () => {
+    const closed = boardModel(midGame, PHONE);
+    const forests = closed.regions.find(
+      (r) => r.members.length === 2 && closed.cards.find((c) => c.id === r.id)?.name === "Forest",
+    );
+    expect(forests).toBeDefined();
+    expect(closed.regions.some((r) => closed.cards.find((c) => c.id === r.id)?.zone === "hand")).toBe(false);
+    const bolt = midGame.view.zones.players.p1?.hand?.find((id) => {
+      const seen = midGame.seen[id];
+      return seen?.kind === "card" && seen.characteristics.name === "Lightning Bolt";
+    });
+    if (bolt === undefined) throw new Error("no Lightning Bolt");
+    const open = boardModel(midGame, PHONE, undefined, { handOpen: true, selected: bolt });
+    const lifted = open.cards.find((c) => c.id === bolt) as BoardCard;
+    // The lifted card's region is all of it, and last, so it's on top of the hand's strips.
+    expect(open.regions.at(-1)).toEqual({
+      id: bolt,
+      rect: { x: lifted.x, y: lifted.y, width: lifted.width, height: lifted.height },
+      members: [bolt],
+    });
   });
 
   it("counts each library", () => {

@@ -3,13 +3,19 @@
 // middle of the hand [R], so the hand parts around it rather than hide a card under it. Opened (a tap on it), the hand
 // fans up across most of the width with the crest in front [R].
 
-import type { SeatView } from "@mtg/engine";
+import type { ObjectId, SeatView } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
 import { cardInfo, manaSymbols } from "./card-info.ts";
 
-export function handCards(shown: SeatView, area: Rect, layout: BoardLayout, open: boolean): BoardCard[] {
+export function handCards(
+  shown: SeatView,
+  area: Rect,
+  layout: BoardLayout,
+  open: boolean,
+  lifted: ObjectId | null,
+): BoardCard[] {
   const hand = open ? layout.handOpen : layout.hand;
   const { ratio } = layout;
   const cards = (shown.view.zones.players[shown.player]?.hand ?? []).flatMap((id) => {
@@ -29,7 +35,7 @@ export function handCards(shown: SeatView, area: Rect, layout: BoardLayout, open
   );
   const middle = (n - 1) / 2;
   const top = area.y + area.height - hand.shown * height;
-  return cards.map((card, i) => {
+  const placed = cards.map((card, i) => {
     const off = i - middle;
     const x = xs[i] ?? 0;
     // A card's own strip runs to where the next card starts; the last card shows its whole width.
@@ -43,6 +49,19 @@ export function handCards(shown: SeatView, area: Rect, layout: BoardLayout, open
     const rect = { x, y: top + off * off * hand.arcDrop * area.height, width, height };
     return boardCard(card, "hand", true, rect, { rotation: off * hand.fan, dim: 0, row: "hand", costRadius });
   });
+  // The lifted card leaves the fan and rises large at the centre [R], drawn over everything else in the hand.
+  const liftedCard = placed.find((c) => c.id === lifted);
+  if (liftedCard === undefined) return placed;
+  const h = layout.lifted.h * area.height;
+  const w = h * ratio.hand;
+  const big = {
+    ...liftedCard,
+    x: area.x + area.width / 2 - w / 2,
+    y: area.y + layout.lifted.top * area.height,
+    width: w,
+    height: h,
+  };
+  return [...placed.filter((c) => c.id !== lifted), { ...big, rotation: 0, costRadius: hand.cost * 1.4 }];
 }
 
 /**

@@ -13,13 +13,15 @@ import { cardBacks, libraryPiles } from "./hidden-cards.ts";
 import { inCombat, type Ladder, ladderAroundCrest, ladderOver } from "./ladder.ts";
 import { withPicks } from "./picks.ts";
 import { playableIds } from "./playable.ts";
+import { tapRegions } from "./regions.ts";
+import { stackTop } from "./stack.ts";
 
 export type BoardCard = {
   id: ObjectId;
   name: string;
-  zone: "battlefield" | "hand";
+  zone: "battlefield" | "hand" | "stack";
   /** Which row of the board it's in. */
-  row: "creatures" | "lands" | "others" | "hand";
+  row: "creatures" | "lands" | "others" | "hand" | "stack";
   /** The front card of the pile it's in (its own id when it stands alone): a pile moves as one. */
   pileOf: ObjectId;
   /** Something the person can act with now: play, cast, activate, attack or block with (`playable.ts`). */
@@ -112,6 +114,10 @@ export type OverlayAnchors = {
   opponentInCombat: boolean;
   /** Where the hand shows on screen, its mana costs included: a tap there opens or closes it. Null with no hand. */
   hand: Rect | null;
+  /** The small buttons beside the main one ("Undo", "Cancel"), right to left from the main button. */
+  secondary: Rect[];
+  /** The centre of what the game is waiting for, in words, between the battlefields [R]. */
+  prompt: Point;
 };
 
 export type BoardModel = {
@@ -129,6 +135,11 @@ export type BoardModel = {
    */
   links: CombatLink[];
   overlay: OverlayAnchors;
+  /**
+   * Where a tap lands on what, topmost last: a pile is one region (its front card's), an open hand card its visible
+   * strip, the lifted card all of it. The collapsed hand is `overlay.hand`, one region that opens it.
+   */
+  regions: { id: ObjectId; rect: Rect; members: ObjectId[] }[];
 };
 
 /** A line from one card's band-side edge to another's: a block (blocker to attacker) or an attack on a planeswalker. */
@@ -140,8 +151,11 @@ export type Insets = { top: number; right: number; bottom: number; left: number 
 
 export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
 
-/** What the person has opened or chosen on screen, apart from the game: the board lays out differently for it. */
-export type BoardUi = { handOpen: boolean };
+/**
+ * What the person has opened or chosen on screen, apart from the game: the hand open or not, and the card lifted
+ * from it or the blocker picked (interaction/controls.ts), which the board lays out differently.
+ */
+export type BoardUi = { handOpen: boolean; selected?: ObjectId | null; highlight?: readonly ObjectId[] };
 
 export function boardModel(
   shown: SeatView,
@@ -164,8 +178,13 @@ export function boardModel(
   const overlay = overlayAnchors(area, layout, turn?.step ?? null, turn?.activePlayer === opponent);
   const field = withCombat(withPicks(shown, battlefieldCards(shown, area, me, layout, overlay)), area, layout);
   const playable = playableIds(shown);
-  const hand = handCards(shown, area, layout, ui.handOpen);
-  const cards = [...field.cards, ...hand].map((c) => ({ ...c, playable: playable.has(c.id) }));
+  const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);
+  const stack = stackTop(shown, area, layout);
+  const cards = [...field.cards, ...stack, ...hand].map((c) => ({
+    ...c,
+    playable: playable.has(c.id) || (ui.highlight ?? []).includes(c.id),
+    picked: c.picked || c.id === ui.selected,
+  }));
   return {
     width: size.width,
     height: size.height,
@@ -179,7 +198,8 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
-    overlay: { ...overlay, hand: handArea(hand, area) },
+    overlay: { ...overlay, hand: handArea(hand, area), prompt: promptPlace(shown, field.cards, overlay, area, layout) },
+    regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
 
@@ -210,7 +230,41 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
     opponentLadder: opponentsTurn ? ladderAroundCrest(opponentCrest, step, layout) : null,
     opponentInCombat: opponentsTurn && step !== null && inCombat(step),
     hand: null,
+    secondary: [0, 1].map((i) => ({
+      x: button.x - (i + 1) * (layout.secondary.width + layout.secondary.gap),
+      y: button.y + button.height - layout.secondary.height,
+      width: layout.secondary.width,
+      height: layout.secondary.height,
+    })),
+    prompt: { x: area.x + area.width / 2, y: area.y + layout.band.y * area.height },
   };
+}
+
+/**
+ * Where the words of what the game waits for go: in the open table between the two creature rows, where nothing is
+ * drawn; or, when combat has filled that gap (attackers step into it), under the opponent's life crest, so the banner
+ * never covers a card's power/toughness.
+ */
+function promptPlace(
+  shown: SeatView,
+  field: readonly BoardCard[],
+  overlay: OverlayAnchors,
+  area: Rect,
+  layout: BoardLayout,
+): Point {
+  const crest = overlay.life.opponent;
+  const underCrest = { x: area.x + area.width / 2, y: crest.y + crest.height + layout.promptHeight / 2 + 4 };
+  // While attackers or blockers are declared, creatures step into the gap as they're picked: the prompt stays put
+  // under the crest rather than jump when the first one moves.
+  const kind = shown.view.decision?.kind;
+  if (kind === "declareAttackers" || kind === "declareBlockers") return underCrest;
+  const creatures = field.filter((c) => c.row === "creatures");
+  const theirs = creatures.filter((c) => !c.mine).map((c) => c.y + c.height);
+  const mine = creatures.filter((c) => c.mine).map((c) => c.y);
+  const top = theirs.length === 0 ? area.y + layout.band.y * area.height - 30 : Math.max(...theirs);
+  const bottom = mine.length === 0 ? area.y + layout.band.y * area.height + 30 : Math.min(...mine);
+  if (bottom - top >= layout.promptHeight) return { x: area.x + area.width / 2, y: (top + bottom) / 2 };
+  return underCrest;
 }
 
 /** The part of the screen the hand covers: from its leftmost card to its rightmost, its costs to the bottom edge. */

@@ -39,25 +39,32 @@ export function mainButton(shown: SeatView): MainButton {
     return { label: "Resolve", detail: name, action: pass, hidden: false };
   }
   if (!myTurn) return { label: "Pass", detail: null, action: pass, hidden: false };
-  return { label: "Next", detail: view.turn === null ? null : nextStop(view.turn.step), action: pass, hidden: false };
+  return {
+    label: "Next",
+    detail: view.turn === null ? null : nextStop(view.turn.step, (view.combat?.attacks.length ?? 0) > 0),
+    action: pass,
+    hidden: false,
+  };
 }
 
 /**
  * While attackers or blockers are being declared, the button finishes the declaration and says what it holds [R]:
- * "No Attacks" or "2 Attackers" (on to blockers), "No Blocks" or "1 Blocker" (on to damage). Picking the creatures is
- * M3-04b's touch; until then the actions drawer picks them.
+ * "No Attacks" or "2 Attackers" (on to blockers), "No Blocks" or "1 Blocker" (on to damage); the creatures are picked
+ * by tapping them (interaction/controls.ts).
  */
 function declarationButton(shown: SeatView): MainButton | null {
   const decision = shown.view.decision;
   if (decision?.kind !== "declareAttackers" && decision?.kind !== "declareBlockers") return null;
   const finish = shown.options.find((o) => o.action.type === "ANSWER" && o.action.answer.kind === "finishDeclaring");
   const action = finish?.action ?? null;
-  // The picks so far are the declaration under way, before it's finished.
+  // The picks so far are the declaration under way, before it's finished. Until it obeys every requirement (CR 508.1d,
+  // 509.1c: a creature that attacks each combat, one all must block), finishing isn't offered: the button says why.
   if (decision.kind === "declareAttackers") {
     const n = decision.chosen.length;
     return {
       label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`,
-      detail: "To Blockers",
+      // No attackers: the blockers and damage steps are skipped (CR 508.8).
+      detail: action === null ? `Not yet: ${mustCount(shown)} must attack` : n === 0 ? "To Main 2" : "To Blockers",
       action,
       hidden: false,
     };
@@ -66,10 +73,33 @@ function declarationButton(shown: SeatView): MainButton | null {
   const n = new Set(decision.chosen.map((b) => b.blocker)).size;
   return {
     label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`,
-    detail: "To Damage",
+    detail: action === null ? `Not yet: ${mustCount(shown)} must block` : "To Damage",
     action,
     hidden: false,
   };
+}
+
+/** How many must still be picked, on the button: "1", or "more" when it can't say. The prompt names them. */
+function mustCount(shown: SeatView): string {
+  const names = mustDeclare(shown);
+  return names.length === 0 ? "one more" : String(names.length);
+}
+
+/**
+ * Who must still be picked before the declaration can finish: the creatures whose pick obeys the most requirements
+ * (the seat view's `obeys`, CR 508.1d, 509.1c: "attacks each combat if able"). Empty when no pick obeys one.
+ */
+export function mustDeclare(shown: SeatView): string[] {
+  const most = Math.max(0, ...shown.options.map((o) => o.obeys ?? 0));
+  const names = new Set<string>();
+  for (const o of shown.options) {
+    if (most === 0 || o.obeys !== most || o.action.type !== "ANSWER") continue;
+    const a = o.action.answer;
+    const id = a.kind === "declareAttacker" ? a.attack.attacker : a.kind === "declareBlocker" ? a.block.blocker : null;
+    const seen = id === null ? undefined : shown.seen[id];
+    if (seen?.kind === "card") names.add(seen.characteristics.name);
+  }
+  return [...names];
 }
 
 /** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */
@@ -78,8 +108,11 @@ function abilitySource(shown: SeatView, source: ObjectId): string {
   return seen?.kind === "card" ? `${seen.characteristics.name} ability` : "An ability";
 }
 
-/** Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. */
-function nextStop(step: Step): string {
+/**
+ * Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. It names the
+ * next step, not the next stop: auto-pass skips the end step (D-157) unless mana is left, as Arena's "To End" does.
+ */
+function nextStop(step: Step, attacked: boolean): string {
   switch (step) {
     case "untap":
     case "upkeep":
@@ -89,14 +122,16 @@ function nextStop(step: Step): string {
       return "To Combat";
     case "beginningOfCombat":
       return "To Attackers";
+    // With no creature declared as an attacker, the declare blockers and combat damage steps are skipped (CR 508.8).
     case "declareAttackers":
-      return "To Blockers";
+      return attacked ? "To Blockers" : "To Main 2";
     case "declareBlockers":
       return "To Damage";
     case "combatDamage":
     case "endOfCombat":
       return "To Main 2";
     case "postcombatMain":
+      return "To End";
     case "end":
     case "cleanup":
       return "End Turn";

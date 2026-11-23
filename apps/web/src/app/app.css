@@ -59,15 +59,6 @@ body,
   color: inherit;
 }
 
-/* An invisible button over the hand: the cards themselves are drawn on the canvas below it. */
-.hud .hand-toggle {
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
 /* The HUD's pieces (ui.md, "The rest of the HUD"): our own crafted look in the spirit of Arena's (D-140): bronze and
    gold metal, dark enamel, depth from light and shadow. Where they sit comes from the board model. */
 
@@ -288,52 +279,219 @@ body,
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-.drawer {
+/* A card's tap region: invisible over the canvas, but for a press and the keyboard's focus ring (ui.md). */
+.hud .tap-region {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+/* Over the lifted hand card's lower edge: what a second tap on it does. Taps go through it to the card. */
+.hud .tap-again {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: rgba(10, 12, 16, 0.85);
+  border: 1px solid var(--gold);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100001;
+}
+
+/* The tap regions' own layer (hud/CardButtons.tsx): their z-indexes stay inside it. */
+.hud .tap-layer {
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hud .tap-layer > * {
+  position: absolute;
+}
+
+/* Above every region: a tap on the stack's card lands on nothing under it. */
+.hud .tap-shield {
+  pointer-events: auto;
+  z-index: 100000;
+}
+
+.hud .tap-region:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Keyboard focus: white with a dark halo, so it reads on any art and never looks like the yellow of a picked card. */
+.hud button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.75);
+}
+
+/* A player who can be targeted: a cyan outline, as a targetable card has, and a pointer. */
+.hud .portrait.target {
+  border-color: #3fd4ff;
+  box-shadow:
+    0 0 0 2px rgba(63, 212, 255, 0.5),
+    0 0 12px 3px rgba(63, 212, 255, 0.5);
+  cursor: pointer;
+}
+
+.hud .secondary-button {
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid #8a8f9c;
+  background: linear-gradient(180deg, #2c313b, #15181e);
+  color: #f0ebdd;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+}
+
+/* What the game waits for, between the battlefields [R]: words on a dark band, choices under them. */
+.prompt-anchor {
+  transform: translate(-50%, -50%);
+}
+
+.prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 70vw;
+}
+
+.prompt-title {
+  margin: 0;
+  padding: 3px 14px;
+  border-radius: 999px;
+  background: rgba(10, 11, 14, 0.7);
+  color: #f4ecd8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+.prompt-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-height: 40vh;
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+.prompt-choices button {
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #c9a55a;
+  background: linear-gradient(180deg, #2c313b, #15181e);
+  color: #f4ecd8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.choice-menu {
+  transform: translate(-50%, calc(-100% - 6px));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid #6a5531;
+  background: rgba(16, 18, 24, 0.95);
+  pointer-events: auto;
+}
+
+.choice-menu button {
+  min-height: 44px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid #4a5262;
+  background: #252a33;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.settings {
   top: calc(6px + env(safe-area-inset-top));
   right: calc(8px + env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
-  max-width: 46%;
 }
 
-.drawer-toggle {
-  padding: 4px 12px;
-  border-radius: 999px;
+.hud .settings-toggle {
+  width: 44px;
+  height: 44px;
+  padding: 9px;
+  border-radius: 50%;
   border: 1px solid #6a5531;
   background: linear-gradient(180deg, #23262e, #111318);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  font-size: 12px;
-  color: #e8dfc8;
 }
 
-.options {
-  margin: 0;
-  min-width: 0;
+.settings-toggle svg {
+  width: 100%;
+  height: 100%;
+  fill: #c9c2b0;
+}
+
+.settings-menu {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 5px;
-  max-height: 55vh;
-  overflow-y: auto;
+  flex-direction: column;
   padding: 6px;
   border-radius: 10px;
-  background: var(--panel);
+  border: 1px solid #6a5531;
+  background: rgba(16, 18, 24, 0.95);
+}
+
+.settings-menu {
+  gap: 6px;
+}
+
+.settings-menu button {
+  min-height: 44px;
+  padding: 4px 14px;
+  border-radius: 8px;
   border: 1px solid var(--edge);
+  background: #23262e;
+  font-size: 13px;
 }
 
-.options button {
-  pointer-events: auto;
-  font-size: 12px;
-  padding: 5px 9px;
-  border-radius: 6px;
-  border: 1px solid #5b6270;
-  background: #252a33;
+.settings-menu button.concede {
+  border-color: #7a3a32;
+  background: #3a1f1d;
 }
 
-.options button:disabled {
-  opacity: 0.4;
+.settings-menu button.full-control[aria-checked="true"] {
+  border-color: #8a7cff;
+  background: #2d2858;
+}
+
+/* Full control: the main button in Arena's blue-violet [R] (arena-research.md, "The main button"). */
+.hud .main-button.full-control:not(.waiting) {
+  border-color: #3a2f8a;
+  background: linear-gradient(180deg, #b7adff 0%, #8577ea 48%, #6a5bd6 52%, #5848bd 100%);
+  color: #120d33;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 3px rgba(20, 10, 80, 0.45),
+    0 0 14px rgba(140, 120, 255, 0.45),
+    0 4px 10px rgba(0, 0, 0, 0.55);
+}
+
+.hud .main-button.full-control:not(.waiting) .main-label {
+  text-shadow: 0 1px 0 rgba(230, 225, 255, 0.6);
 }
 
 .result {
@@ -369,4 +527,48 @@ body,
   display: grid;
   place-items: center;
   margin: 0;
+}
+
+/* Mana symbols in HUD text (hud/ManaText.tsx): the renderer's colours (palette.ts MANA_COLORS), the letter on each,
+   so the shape and letter carry it, not the colour alone. */
+.mana-sym {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  margin: 0 0.08em;
+  border-radius: 50%;
+  border: 1px solid #0c0d10;
+  background: #c4c0b8;
+  color: #1a1a1a;
+  font-size: 0.85em;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: -0.15em;
+}
+.mana-W { background: #eee6c9; }
+.mana-U { background: #4a8fd4; }
+.mana-B { background: #8a8090; }
+.mana-R { background: #d65a42; }
+.mana-G { background: #4d9a5c; }
+.mana-T { background: #e8e4da; }
+
+/* The person's mana pool, beside their portrait. */
+.hud .mana-pool {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+.hud .mana-count {
+  margin-left: 2px;
+  font-size: 12px;
 }

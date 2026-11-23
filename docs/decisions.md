@@ -2362,3 +2362,52 @@ owner's answer to the D-089 open question, option (a))
   without one, as Arena does; the owner ruled that the long-press view (M3-04c), which shows the full card image with
   its artist credit, is enough. No credits line on the board. Hand cards are full card images, credit included.
 
+**D-156: Acting on the board: controls from the options, buttons over the canvas (M3-04b)** · 2026-11-23 · accepted
+- `interaction/controls.ts` turns the seat view's options into controls: a tap on a card (lift a hand card then play
+  it, activate, target, attack, pick a blocker then its attacker, discard, sacrifice), a tap on a portrait (a player
+  target), the main button, small buttons beside it (Undo, the engine's take-back of the last pick; Cancel, its cancel
+  of a cast or activation), and a prompt for what has no card (keep or mulligan, X, dividing damage...). It never
+  decides legality: every control sends an action the engine listed, and a property test over seeded games checks
+  that every option has a control and every control's action is listed. That test is what let the list of every
+  action (M3-03's drawer) go.
+- Taps land on real `<button>`s laid over the canvas at tap regions the board model gives (a pile is one region, an
+  open hand card its visible strip, the lifted card all of it): one path for touch, mouse and keyboard (ui.md "Mouse
+  and keyboard too"), labels for screen readers, stable selectors for tests. The canvas only draws.
+- The UI's own state of a choice under way (the lifted card, the picked blocker, an open menu, an action on its way
+  to the worker) lives in the app, never in the engine; the board model takes the selection to draw it.
+- A spell the person's mana surely can't pay for gets no control (D-144's `mightPay`), as Arena doesn't offer it.
+- A decision about the hand's cards opens the hand; the main button names why a declaration can't finish yet.
+- Left for later: drag to play (taps do everything a drag would), "All Attack", bespoke prompts for X, dividing
+  damage and damage assignment (slice 2), smart stops (slice 3).
+
+
+**D-157: Arena's default skips on top of D-143: no stop in your own upkeep, draw step or end step (M3-04b)** · 2026-11-23 · accepted
+- The M3-04b plan in `status.md` proposed stopping only at a list of steps (main phases, the combat declarations,
+  the opponent's spells and attacks). That is the design D-143 rejected, because a combat trick lost its window
+  after blockers. The research's [R] lines say Arena stops wherever you hold something you can cast. So D-143 stays.
+- What's added is what the research backs, in `arena-research.md`:
+  - An official source (Wizards, Oct 27 2025, "Default auto-passing") says Arena doesn't give you priority in your
+    own upkeep or end step.
+  - A community source (a Steam thread, "Default stops") says the beginning phase runs on to main 1, which covers
+    the draw step.
+  So with auto-pass on and an empty stack, the host passes for you in your own upkeep, draw step and end step, even
+  with an instant in hand. An opponent's object on the stack still stops you there; a test checks this in your
+  upkeep, with your own trigger passed for and the opponent's spell stopping you.
+- One of Arena's smart stops is kept, because it's cheap and loses nothing: mana left in your pool stops you in any
+  of those three steps, as the pool empties when the step ends (CR 500.5).
+- It applies to every seat (D-137), the AI's too. The heuristic AI did sometimes act in its own upkeep or draw step
+  (a removal spell, an activated ability; the code review counted 36 such actions in 40 games). It now does those
+  things in main 1 instead. `pnpm eval --games 500 --seed 1` after the change:
+  - white-soldiers 99.6%
+  - red-aggro 96.8%: 97.4% with the old auto-pass on the same seeds, so a difference of 3 games in 500
+  - green-stompy 97.0%
+  - red-green-beats 97.2%
+  - blue-black-control 94.4%
+  These are within noise of M3-02's 99.6, 97.4, 97.4, 97.4 and 94.0. The few games over the turn cap ("capped")
+  happen with the old auto-pass too.
+- Full control turns auto-pass off (D-143's `autoPass: false`): a switch in the settings menu, and a `fullControl`
+  worker message. While it's on, the main button turns Arena's blue-violet [R]. Turning it off moves the game on at
+  once wherever auto-pass would (so the switch goes through the same one-at-a-time guard as the main button). Arena's full control also turns off
+  auto-tap. Ours doesn't yet: paying by hand needs slice 2's payment prompt.
+- Not built, an open question for the owner: wider skips on your own turn (beginning of combat, combat damage, end
+  of combat) and per-step stops on the phase ladder.

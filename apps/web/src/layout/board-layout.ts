@@ -55,6 +55,17 @@ export type BoardLayout = {
    * sight: the pill spans the middle 0.36 of the card, at least 26 px (renderer/card-face.ts `ptPill`).
    */
   combat: { advance: number; gangOverlap: number };
+  /** px: the height the prompt's words need, to find room for them between the battlefields. */
+  promptHeight: number;
+  /** px: the small buttons beside the main one ("Undo", "Cancel"). */
+  secondary: { width: number; height: number; gap: number };
+  /**
+   * The top of the stack, large right of centre (`x`, `y` its top left, `h` its height) [R]; while the person is choosing
+   * for a spell or ability of their own, small at the right edge (`smallH`, at most `smallMaxH` px; its top `smallY`), clear of the targets [R] [guess for the cap].
+   */
+  stack: { x: number; y: number; h: number; smallH: number; smallY: number; smallMaxH: number };
+  /** The hand card the person lifted, large at the centre [R]: its height and its top. */
+  lifted: { h: number; top: number };
   /** px: the space kept between the outer rows and the life crests. */
   crestClearance: number;
 };

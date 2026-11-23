@@ -6,6 +6,7 @@ import { DECKS, type DeckList } from "@mtg/cards";
 import { type CardDatabase, type GameSetup, type PlayerId, seatView } from "@mtg/engine";
 import {
   advance,
+  DEFAULT_SETTINGS,
   deckGameSetup,
   type MatchState,
   type Seat,
@@ -13,6 +14,7 @@ import {
   submit,
   takeEvents,
   waitingOn,
+  withSettings,
 } from "@mtg/match";
 import type { FromWorker, ToWorker } from "./protocol.ts";
 
@@ -47,6 +49,13 @@ function handleMessage(
       const result = submit(session.match, message.action, cards);
       if (!result.ok) return { session, reply: { type: "error", message: result.error.message } };
       return update({ ...session, match: result.match }, cards);
+    }
+    case "fullControl": {
+      if (session === null) return { session, reply: { type: "error", message: "no match has started" } };
+      const { match, human } = session;
+      const settings = match.settings[human] ?? DEFAULT_SETTINGS;
+      // Turned off, the host may pass at once where the person has nothing to do, as auto-pass always would.
+      return update({ ...session, match: withSettings(match, human, { ...settings, autoPass: !message.on }) }, cards);
     }
     default: {
       // A message from something other than this app's client: refused, while every known type stays checked.
@@ -93,6 +102,12 @@ function update(session: Session, cards: CardDatabase): { session: Session; repl
   const shown = seatView(match.state, session.human, cards);
   return {
     session: { ...session, match },
-    reply: { type: "update", shown, events, waitingOn: waitingOn(match, cards) },
+    reply: {
+      type: "update",
+      shown,
+      events,
+      waitingOn: waitingOn(match, cards),
+      fullControl: match.settings[session.human]?.autoPass === false,
+    },
   };
 }

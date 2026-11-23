@@ -1,6 +1,5 @@
-// A short label for each of the person's legal actions, for M3-03's plain list of buttons: enough to play a game
-// through and to test the worker round trip. M3-04 replaces the list with real prompts (tap a card to cast it, drag to
-// attack) and keeps this only as a fallback for decisions without their own screen yet.
+// A short label for each of the person's legal actions: what a prompt's button or a card's menu entry says, and what a
+// card's tap region tells screen readers and tests (interaction/controls.ts).
 
 import type { Action, ObjectId, SeatView, Target } from "@mtg/engine";
 
@@ -9,7 +8,8 @@ export function optionLabel(shown: SeatView, action: Action): string {
     const seen = shown.seen[id];
     return seen?.kind === "card" ? seen.characteristics.name : "ability";
   };
-  const target = (t: Target) => (t.kind === "player" ? (t.player === shown.player ? "you" : t.player) : name(t.object));
+  const target = (t: Target) =>
+    t.kind === "player" ? (t.player === shown.player ? "you" : "opponent") : name(t.object);
   switch (action.type) {
     case "PASS_PRIORITY":
       return "Pass";
@@ -22,17 +22,17 @@ export function optionLabel(shown: SeatView, action: Action): string {
     case "CONCEDE":
       return "Concede";
     case "ANSWER":
-      return answerLabel(action.answer, name, target);
+      return answerLabel(action.answer, name, target, shown.player);
   }
 }
 
 type Answer = Extract<Action, { type: "ANSWER" }>["answer"];
 
 /** Every kind of answer by name, so a new one is a compile error until it has a label. */
-function answerLabel(a: Answer, name: (id: ObjectId) => string, target: (t: Target) => string): string {
+function answerLabel(a: Answer, name: (id: ObjectId) => string, target: (t: Target) => string, you: string): string {
   switch (a.kind) {
     case "chooseStartingPlayer":
-      return `${a.player} goes first`;
+      return a.player === you ? "I go first" : "Opponent goes first";
     case "mulligan":
       return a.choice === "keep" ? "Keep hand" : "Mulligan";
     case "mulliganBottom":

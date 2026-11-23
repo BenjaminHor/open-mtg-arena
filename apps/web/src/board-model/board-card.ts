@@ -45,10 +45,10 @@ export function boardCard(
     land: c.types.includes("land"),
     artifact: c.types.includes("artifact"),
     token: card.token,
-    art: (zone === "hand" ? info?.image : info?.artCrop) ?? null,
+    art: (zone === "battlefield" ? info?.artCrop : info?.image) ?? null,
     // A hand card is drawn whole (ui.md, "Hand cards are whole cards"); a permanent shows its art and name.
-    typeLine: zone === "hand" ? (info?.typeLine ?? "") : "",
-    text: zone === "hand" ? (info?.oracleText ?? "") : "",
+    typeLine: zone === "battlefield" ? "" : (info?.typeLine ?? ""),
+    text: zone === "battlefield" ? "" : (info?.oracleText ?? ""),
     // The cost floats over a hand card [R]; a permanent's isn't shown.
     manaCost: zone === "hand" ? manaSymbols(info?.manaCost ?? "") : [],
     power: c.power,

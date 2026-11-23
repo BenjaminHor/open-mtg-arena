@@ -58,7 +58,8 @@ test("opens the hand with a tap, and closes it with another", async ({ page }) =
   await page.getByRole("button", { name: "Open your hand" }).click();
   // Open, the cards rise well up the screen to be read [R].
   await expect.poll(handTop).toBeLessThan(0.7);
-  await page.getByRole("button", { name: "Close your hand" }).click();
+  // A tap on the table, away from every card, puts it down again.
+  await page.mouse.click(400, 190);
   await expect.poll(handTop).toBeGreaterThan(0.8);
 });
 
