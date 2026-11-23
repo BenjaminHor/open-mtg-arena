@@ -21,3 +21,13 @@ export function spread(widths: readonly number[], left: number, right: number, g
   const step = widths.length > 1 ? (room - last) / (widths.length - 1) : 0;
   return widths.map((_, i) => left + i * step);
 }
+
+/**
+ * The tallest card height, from `full` down to `smallest` a pixel at a time, at which a row `fits`: a row too wide
+ * for its space shrinks its cards before it overlaps them (`smallest` when nothing fits; the row then overlaps).
+ */
+export function shrinkToFit(full: number, smallest: number, fits: (height: number) => boolean): number {
+  let h = full;
+  while (h > smallest && !fits(h)) h = Math.max(smallest, h - 1);
+  return h;
+}

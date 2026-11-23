@@ -77,7 +77,8 @@ function lineOf(
     case "SPELL_CAST":
       return `${player(e.player)} cast ${name(e.object)}`;
     case "ABILITY_ACTIVATED":
-      return `${player(e.player)} activated ${name(e.object)}`;
+      // "Ajani Goldmane's ability", not "Ajani Goldmane ability" (UX review).
+      return `${player(e.player)} activated ${name(e.object).replace(/ ability$/, "'s ability")}`;
     case "ABILITY_TRIGGERED":
       return `${name(e.object)} triggered`;
     case "LAND_PLAYED":

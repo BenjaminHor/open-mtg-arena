@@ -4,15 +4,24 @@
 // of this type, and the board model takes either.
 
 export type BoardLayout = {
+  /** Which layout this is, for tests and the test hook (`window.__board`). */
+  name: "compact" | "full";
+  /**
+   * Cards' heights are shares of the card basis: the play area's height, or `cardBasis` times its width if that's less.
+   * On a screen tall for its width (an unfolded phone held upright) a share of the height alone makes cards too wide
+   * for their rows. Positions stay shares of the height.
+   */
+  cardBasis: number;
   /** Width-to-height ratios: a battlefield card (mostly art) and a whole card (hand, backs). */
   ratio: { battlefield: number; hand: number };
   /** The open table between the two creature rows: its centre line and height. */
   band: { y: number; h: number };
   /**
-   * The creature row by the band, centred, kept `margin` from each side. A row too wide for its space first shrinks
-   * its cards, down to `minH`, and only then overlaps them.
+   * The creature row by the band, centred, kept `margin` from each side and ending by `right` (clear of the stack's
+   * column): a row that would reach past it moves left. A row too wide for its space first shrinks its cards, down to
+   * `minH`, and only then overlaps them.
    */
-  creatures: { h: number; minH: number; gap: number; margin: number };
+  creatures: { h: number; minH: number; gap: number; margin: number; right: number };
   /**
    * Lands in the outer row, from `left` up to `right` (and clear of the player's info block), one slot per name: a pile of the
    * untapped ones, and the tapped ones in a second pile `tappedShift` of a card's width to the right, so tapping a
@@ -21,6 +30,8 @@ export type BoardLayout = {
    */
   lands: {
     h: number;
+    /** A row too wide for its space shrinks its cards down to this before it overlaps them, as creatures do. */
+    minH: number;
     gap: number;
     left: number;
     right: number;
@@ -78,6 +89,8 @@ export type BoardLayout = {
     h: number;
     /** px: the large stack's height at most. */
     maxH: number;
+    /** The large stack's width at most, of the width: on a screen tall for its width, a share of the height is too wide. */
+    maxW: number;
     smallH: number;
     smallY: number;
     smallMaxH: number;

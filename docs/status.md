@@ -334,6 +334,39 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
+    `layout/layout-for.ts`; lands shrink before overlapping, start clear of the info block only when level with it,
+    the stack capped in width; tests: test/full-layout.test.ts (eight full sizes, mutation-checked),
+    e2e/layout.spec.ts (fold and unfold mid-target and with a card lifted, then finish the action). The owner chose no
+    game log. Code and UX reviews done and applied (in D-176: the card basis, rows clear of the stack, the land
+    rules, the controls a size up). Left, from the UX review: the mulligan screen in the full layout could show the
+    seven cards whole and centred (Keep/Mulligan sit far from them); the mouse preview shows a hand card beside the
+    open hand; the small buttons ("Clear Attacks") can cover the hand's right end; on an upright screen the rows
+    leave empty space above the hand. Next: the PR, the owner's unfolded screenshot.
+  - M3-05 plan (2026-11-23, written before starting; the owner: "move forward with M3-05"). Spec: m3-first-playable.md
+    M3-05: the Arena-like layout for the unfolded phone (7.6-inch, nearly square, either way up) and desktop, switching
+    live on resize with no loss of state or selection; accept: a Playwright test resizes mid-selection and it survives.
+    - Seen first (the compact layout at 1280x720, 1024x768, 1000x860, 860x1000): it plays, but sizes are shares of the
+      height, so on the near-square screen cards are huge, land piles overlap, the stack covers the outer row, and the
+      hand strip is oversized.
+    - `FULL`, a second `BoardLayout` value (`layout/full.ts`): Arena's desktop proportions [R: arena-research.md
+      "Desktop match screen"], battlefield cards about 10-12% of the height, the stack at the right edge clear of the
+      outer rows, a smaller share of the hand, px controls a little larger. Any change of shape the full layout needs
+      goes into the model as data, not a fork of it.
+    - `layoutFor(size)` (pure): compact for a short screen (a phone in landscape), full otherwise; the App picks it on
+      every size change, so a fold or a resize re-lays out with state, the lifted card, the chosen targets and the
+      open hand kept (they're React state, not the layout's). `__board` names the layout for tests.
+    - Tests: `layoutFor`; the board-model invariants (inside the screen, clear of the HUD, rows apart, the hand in its
+      strip, the stack clear of the rows) run over both layouts at the folded, unfolded both ways, tablet and desktop
+      sizes; e2e: resize mid-selection (a target being chosen, a card lifted) between folded and unfolded, the
+      selection survives and the layout switches.
+    - Screenshots at the folded, unfolded and desktop sizes, the ux-reviewer, then a PR; the owner tries it unfolded.
+    - Future impact: the layout stays data (D-152), so the RPG's boards and a multiplayer layout are more values; no
+      layout reads the device, only the size (ui.md).
+  - The owner on the live stack labels and ladder walk (2026-11-23): "Seems fine at the moment, move forward with
+    M3-05". Next: M3-05.
+  - **Ladder walk merged (PR #114, squash, 2026-11-23).** Next: the owner tries the live site (the stack's labels,
+    the walking ladder, the opponent's phase moments); then M3-05 with their feedback taken in first.
   - **Ladder walk done (2026-11-23, D-175): the lit rung moves through each phase passed, never jumping.**
     `interaction/ladder-walk.ts`, `app/use-ladder-walk.ts`, `ui.ladderAt` (board-model), short ladder while walking,
     a 150 ms frame for each new phase of the opponent's turn (`HOLD.phase`); tests: test/ladder-walk.test.ts,
@@ -2275,6 +2308,21 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
+- (2026-11-23, owner) Fork phase-rs and build on it instead? The owner: "Are you familiar with phase-rs the open source
+  engine and client", then "im actually considering that we fork the repo and build upon that instead...is that too
+  much?". phase-rs/phase: a Rust MTG rules engine compiled to native and WASM (desktop app, browser PWA, WebSocket
+  multiplayer), cards parsed from text with MTGJSON data, CR-cited rules tests, MIT/Apache-2.0 (from a web search
+  only; its code not yet read). Proposed: a time-boxed evaluation against our goals before deciding; no decision yet.
+  Then the owner: "what I really want is it's rules engine and frontend client when playing matches against an AI.
+  those are the two biggest things. we would save a ton of time and would be able to get started on the higher value
+  initiatives like an LLM powered opponent and the single player RPG or rogue like". So the evaluation is of those
+  two: phase's rules engine, and its client for a match against the AI, as the base for the LLM opponent and a
+  single-player RPG or roguelike (vision.md).
+
+- (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
+  from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of
+  the live site unfolded settles both (the 172 px info block gives the scale). Proceeding with the guesses.
+
 - Answered (2026-11-23, pacing, D-172): should the phase ladder step through each step a frame passes over, or jump?
   The owner: "phase bar should mirror what mtg arena does" (D-173), then: "it steps through each phase as it passes -
   we should avoid immediate jumps between the "main" phases - this probably would be largely solved with animations".
@@ -2346,6 +2394,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, UX review of M3-05, in both layouts, not yet fixed) The zone browser crops its card at the right; the
+  main button disabled ("No Attacks / Not yet: 1 must attack") reads as bare text, without a button's shape.
 - Fixed (2026-11-23, found while planning the pacing slice): the whole-game e2e (`playWholeGame`, M3's acceptance,
   D-171) stopped at the first `role="status"` element, and since the turn banner (PR #104) is one, it ended at the
   first new turn instead of the game's end. It now waits for the result itself and checks its text.

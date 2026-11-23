@@ -21,6 +21,7 @@ import { cardDetails } from "../interaction/card-details.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
 import { frameHold } from "../interaction/pacing.ts";
 import { turnBanner } from "../interaction/turn-banner.ts";
+import { layoutFor } from "../layout/layout-for.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
@@ -256,13 +257,19 @@ export function App() {
   const model = useMemo(
     () =>
       shown !== null && size !== null
-        ? boardModel(shown, size, insets, {
-            handOpen,
-            selected: selection,
-            highlight: controlsNow?.highlight ?? [],
-            stackSmall: stackIsSmall(shown, stackSmallFor),
-            ladderAt,
-          })
+        ? boardModel(
+            shown,
+            size,
+            insets,
+            {
+              handOpen,
+              selected: selection,
+              highlight: controlsNow?.highlight ?? [],
+              stackSmall: stackIsSmall(shown, stackSmallFor),
+              ladderAt,
+            },
+            layoutFor(size),
+          )
         : null,
     [shown, size, insets, handOpen, selection, controlsNow, stackSmallFor, ladderAt],
   );

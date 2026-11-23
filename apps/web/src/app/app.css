@@ -1272,3 +1272,29 @@ body,
   color: var(--muted);
   box-shadow: none;
 }
+
+/* The full layout (layout/full.ts, D-176): the controls a size up for a larger screen and a mouse; their boxes are the
+   layout's px values, their text follows here [UX review]. */
+.hud[data-layout="full"] .player-name {
+  font-size: 14px;
+}
+.hud[data-layout="full"] .player-life {
+  font-size: 27px;
+}
+.hud[data-layout="full"] .player-counts {
+  font-size: 12px;
+}
+.hud[data-layout="full"] .player-counts b {
+  font-size: 13px;
+}
+.hud[data-layout="full"] .main-label {
+  font-size: 20px;
+}
+.hud[data-layout="full"] .ladder svg {
+  width: 14px;
+  height: 14px;
+}
+.hud[data-layout="full"] .ladder li.lit svg {
+  width: 18px;
+  height: 18px;
+}

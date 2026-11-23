@@ -7,8 +7,9 @@ import type { SeenCard } from "@mtg/engine";
 import { attachedRoom } from "./attachments.ts";
 import type { Half } from "./battlefield.ts";
 import type { BoardCard } from "./board-model.ts";
+import { cardBasis } from "./card-basis.ts";
 import { pileKey, pileOffsets, pileWidth, placePile } from "./piles.ts";
-import { spread } from "./spread.ts";
+import { shrinkToFit, spread } from "./spread.ts";
 
 type Slot = { untapped: SeenCard[]; tapped: SeenCard[] };
 
@@ -38,23 +39,34 @@ export function landSlots(
     return x.name < y.name ? -1 : x.name > y.name ? 1 : x.id - y.id;
   });
   const offsets = pileOffsets(area, layout);
-  const w = row.height * layout.ratio.battlefield;
-  const shift = layout.lands.tappedShift * w;
+  const gap = layout.lands.gap * area.width;
   // A slot's width depends only on how many lands it holds, never on how many are tapped: room for them all in one
   // pile plus the tapped pile's shift. The untapped pile sits at its left, the tapped one at its right.
   // A land something is attached to stands alone in its slot (it can't pile), the slot keeping room left of it for
   // its Aura (`attachments.ts`).
-  const room = (slot: Slot) => {
+  const roomAt = (slot: Slot, cardW: number) => {
     const only = slot.untapped[0] ?? slot.tapped[0];
     return slot.untapped.length + slot.tapped.length === 1 && only !== undefined
-      ? attachedRoom(half.attached, only.id, w, layout)
+      ? attachedRoom(half.attached, only.id, cardW, layout)
       : 0;
   };
-  const slotWidth = (slot: Slot) => {
+  const slotWidthAt = (slot: Slot, cardH: number) => {
+    const cardW = cardH * layout.ratio.battlefield;
     const count = slot.untapped.length + slot.tapped.length;
-    return (count > 1 ? pileWidth(count, w, offsets.step) + shift : w) + room(slot);
+    const piles = count > 1 ? pileWidth(count, cardW, offsets.step) + layout.lands.tappedShift * cardW : cardW;
+    return piles + roomAt(slot, cardW);
   };
-  const xs = spread(ordered.map(slotWidth), row.left, row.right, layout.lands.gap * area.width, "start");
+  // A row too wide for its space shrinks its cards (down to `minH`) before it overlaps them, as the creature row does.
+  const fits = (cardH: number) =>
+    ordered.reduce((sum, slot) => sum + slotWidthAt(slot, cardH), 0) + gap * Math.max(0, ordered.length - 1) <=
+    row.right - row.left;
+  const h = shrinkToFit(row.height, layout.lands.minH * cardBasis(area, layout), fits);
+  // The row's cards hug the creature row whatever their size.
+  const y = mine ? row.y : row.y + row.height - h;
+  const w = h * layout.ratio.battlefield;
+  const room = (slot: Slot) => roomAt(slot, w);
+  const slotWidth = (slot: Slot) => slotWidthAt(slot, h);
+  const xs = spread(ordered.map(slotWidth), row.left, row.right, gap, "start");
   return ordered.flatMap((slot, i) => {
     const x = xs[i] ?? 0;
     const tappedX = x + slotWidth(slot) - pileWidth(slot.tapped.length, w, offsets.step);
@@ -62,17 +74,10 @@ export function landSlots(
     // pile"), so the pile never shows a tapped land half-hidden inside it.
     return [
       ...(slot.untapped.length > 0
-        ? placePile(
-            slot.untapped,
-            { x: x + room(slot), y: row.y, width: w, height: row.height },
-            offsets,
-            mine,
-            "lands",
-            look,
-          )
+        ? placePile(slot.untapped, { x: x + room(slot), y, width: w, height: h }, offsets, mine, "lands", look)
         : []),
       ...(slot.tapped.length > 0
-        ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, "lands", look)
+        ? placePile(slot.tapped, { x: tappedX, y, width: w, height: h }, offsets, mine, "lands", look)
         : []),
     ];
   });

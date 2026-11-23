@@ -2773,6 +2773,50 @@ owner's answer to the D-089 open question, option (a))
   `test/pacing.test.ts` (the phase hold); an e2e watches every change of the lit rung through the opponent's first
   turn and the start of the person's, and checks each goes to the next phase or a new turn's beginning
   (mutation-checked: with the walk off, or without the phase holds, it fails).
+- The owner, after trying the stack labels (D-174) and the walking ladder live: "Seems fine at the moment, move
+  forward with M3-05".
 - Future impact: M3-07's animation director can drive the same walk from its own clock; the walk reads only events,
   so extra turns (CR 500.7) and skipped steps (CR 508.8) walk as the engine played them.
+
+**D-176: The full layout for the unfolded phone, tablets and desktop, picked by size (M3-05)** · 2026-11-23 · accepted
+- `layout/full.ts`, a second `BoardLayout` value (D-152), from Arena's desktop match screen [R: arena-research.md]:
+  battlefield cards about 13% of the height, shrinking to 8% before a crowded row overlaps; lands at the left of the
+  outer band, other permanents at its right short of the stack's column; the stack at the right edge; the hand's tops
+  along the bottom, a quarter of each card showing; the controls a little larger. Values that aren't Arena's say
+  [guess].
+- `layout/layout-for.ts`: the layout is picked by the screen's size alone (ui.md: never the device): the compact one
+  under 560 px tall (phones in landscape are 320-430), the full one otherwise [guess for the line]. The App picks it on
+  every resize, so folding or unfolding re-lays out the board with the game, the open hand, the lifted card and the
+  targets being chosen kept: they're the App's state, not the layout's. `window.__board.layout` names it for tests.
+- Found while building it, in the shared model code (both layouts):
+  - A land row can shrink its cards before it overlaps them, as the creature row does (`lands.minH`; `shrinkToFit`
+    in `spread.ts` is the one loop for both). The phone keeps `minH` = `h`: shrunk, its lands went under a finger's
+    44 px (code review), so a crowded phone row still overlaps as before.
+  - The land row starts clear of the player's info block only when it's level with it, counting how far the deepest
+    pile and a tilt can reach (on a tall screen it's well below the opponent's block). On a phone it's always level,
+    as before.
+  - The large stack is at most `stack.maxW` of the width (0.2 on the phone, which shrinks its card at 667x375 only).
+  - Cards' heights are shares of a card basis (`cardBasis`, `board-model/card-basis.ts`): the height, or a share of
+    the width when that's less. The phone uses the height, as before; the full layout 0.86 of the width, so an
+    unfolded phone held upright gets cards its rows can hold (UX review).
+  - A creature row is centred on the screen, and moves left as far as it must to end by `creatures.right` (the
+    stack's column, 0.8 in the full layout; the phone's is its margin, as before) (UX review).
+- After the UX review, the full layout's values: lands and others smaller (0.09) and spread wider (lands to 0.4,
+  others from 0.42); the band 0.10 (a prompt with its choices fits between the rows); the hand's strip 0.24-0.76
+  (names read; centred, so it mirrors); the open hand 0.34 of the height, nine tenths showing (on a big screen the
+  old 0.44 covered the battlefield); the controls a size up (info 210x50, main button 176x58, ladder icons 26, small
+  buttons 120 wide so "Clear Attacks" fits) with their text sizes in app.css under `.hud[data-layout="full"]`. An
+  activated ability's line says "Prodigal Pyromancer's ability".
+- No game log (ui.md once said the full layout shows one): Arena has none, its desktop map shows none, and the owner
+  chose to leave it out ("Leave it out", 2026-11-23); the line saying what just happened (D-172) covers the opponent's
+  moves.
+- Tests: `test/full-layout.test.ts` (which layout each size gets; at the unfolded both ways up, 700x900, tablets both
+  ways, 1280x720, 1920x1080 and the shortest full height: permanents on screen and clear of the HUD, each half's rows
+  apart, the hand in its strip below the outer row's costs, the stack clear of the controls; and a test for each
+  rule above, each mutation-checked; the phone's deep land piles clear of the info blocks at 915x400 to 932x430 with
+  a bottom inset), and
+  `e2e/layout.spec.ts` (folding and unfolding while a target is chosen, then casting the spell; while a card is lifted
+  with the hand open, then casting it). The desktop e2e project now plays every spec in the full layout.
+- Future impact: a third value (a multiplayer board, the RPG's) is more data and a line in `layoutFor`. The owner's
+  unfolded screen size is a guess until they send a screenshot (status, Open questions).
 

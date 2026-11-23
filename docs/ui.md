@@ -206,8 +206,9 @@ UI quality has to be checked like rules correctness, not assumed:
     D-141): Arena's phone layout: smaller permanents in grouped rows, a hand tucked at the bottom that fans out on
     tap, the stack at the side, and card details on long-press. In portrait, a phone shows a "turn your phone"
     prompt over the paused match.
-  - **Full** (unfolded, tablets, desktop): an Arena-like board with both battlefields, hand,
-    stack and log visible at once.
+  - **Full** (unfolded, tablets, desktop): an Arena-like board with both battlefields, hand and
+    stack visible at once, picked for any screen 560 px tall or more (D-176). No game log, as Arena has none (the
+    owner, D-176).
 - **The ladder walks (owner, 2026-11-23, D-175):** Arena's phase ladder "steps through each phase as it passes - we
   should avoid immediate jumps between the "main" phases". The lit rung moves through every phase the game passes
   (combat as one), a moment on each: the opponent's on their turn's frames, the person's while they act.

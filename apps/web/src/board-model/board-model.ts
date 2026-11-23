@@ -136,6 +136,8 @@ export type OverlayAnchors = {
 };
 
 export type BoardModel = {
+  /** The layout it was laid out by (`layout/layout-for.ts`). */
+  layout: BoardLayout["name"];
   width: number;
   height: number;
   /** In drawing order, back to front. */
@@ -228,6 +230,7 @@ export function boardModel(
       picked: c.picked || c.id === ui.selected,
     }));
   return {
+    layout: layout.name,
     width: size.width,
     height: size.height,
     cards,
