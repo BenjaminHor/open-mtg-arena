@@ -379,6 +379,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - Build facts (this container, 4 cores, 15 GB): the release engine WASM compiles from scratch in about 20 minutes
       (`cargo build -p engine-wasm --target wasm32-unknown-unknown --release`); wasm-bindgen-cli 0.2.121 (their
       lockfile's) installs with cargo; the client's packages install from their lockfile in seconds (pnpm 9.15.9).
+    - Their release WASM profile (opt-level z, full LTO, one codegen unit) runs out of memory at the engine's final
+      link in this 15 GB container (killed twice; a first run's exit was hidden by a pipe). Their CI builds it on a
+      standard 16 GB ubuntu-latest runner in under 30 minutes, so our CI can too. Locally the evaluation uses their
+      `wasm-dev` profile (`./scripts/build-wasm.sh wasm-dev`: opt-level 2, no LTO).
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
