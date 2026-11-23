@@ -75,6 +75,26 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     accepted; combat play and its seat-view hints are D-150.
   - Future impact: the LLM seat (M3-02b) reads the same `SeatView`; search later (MCTS) starts from it plus sampled
     worlds. No engine rule changes.
+  - **M3-02 done, merged (PRs #93, #94).**
+  M3-03 plan (web app scaffold), one PR:
+  - `apps/web` (`@mtg/web`, `apps/*` added to the workspace): Vite + React + TypeScript, PixiJS v8 under a React DOM
+    layer, GSAP (D-013). Runtime deps react, react-dom, pixi.js, gsap; dev deps vite, @vitejs/plugin-react, React types,
+    @playwright/test pinned to 1.63.0 (the version whose browsers this machine has). A decision entry for them.
+  - The match host in a Web Worker: `worker/protocol.ts` (typed plain-JSON messages: start a match, submit an action;
+    back: the human seat's `SeatView`, its new events, who's deciding, the result), `worker/match-session.ts` (pure:
+    message in, session and reply out, unit-tested in Node), `worker/match.worker.ts` (the thin `onmessage` shell),
+    `worker/client.ts` (the UI side). The heuristic plays the other seat.
+  - `board-model/` (pure: `SeatView` + layout size to cards with positions, unit-tested), `renderer/` (a Pixi scene
+    drawing the model; `window.__board` in dev and test builds), `director/` (events to an animation queue; a
+    pass-through until M3-07), `effects/` (only its README until the first effect). Enough on screen to see a game
+    move (cards by name, life totals, a pass button): the real board is M3-04.
+  - Offline: a web manifest and a small hand-written service worker (cache the app shell on install, cache-first for
+    same-origin GETs), not vite-plugin-pwa and Workbox: one short readable file instead of a dependency tree.
+  - Scripts: `pnpm dev`, `pnpm build`, `pnpm preview`, `pnpm test:e2e` (Playwright: the app loads and shows the board;
+    an offline reload still works). `pnpm typecheck` also checks `apps/web/tsconfig.json` (DOM, JSX). CI installs
+    Chromium and runs the e2e tests.
+  - Future impact: M3-04 fills `board-model` and `renderer`; M3-07 the director; M3-10 saves through the worker; the
+    LLM seat (M3-02b) answers in the worker as an outside seat.
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
     and posts `{ view, seen, legalActions, events }`.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
