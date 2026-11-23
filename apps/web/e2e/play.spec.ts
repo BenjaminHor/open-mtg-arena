@@ -84,8 +84,12 @@ test("blocks with two taps: the blocker, then the attacker", async ({ page }) =>
     .toBe(1);
 });
 
-test("plays a whole game through the board and HUD alone: something to press at every step", async ({ page }) => {
-  test.setTimeout(120_000);
+/**
+ * Plays a seeded game to its end through the screen's controls alone, pressing one each time round: a prompt choice,
+ * else a card that does something, else the main button. `how` is how a control is pressed: a touch tap, a mouse
+ * click, or the keyboard (focus it, then Enter).
+ */
+async function playWholeGame(page: Page, how: "tap" | "click" | "keyboard") {
   await page.goto("/?seed=7");
   for (let i = 0; i < 400; i++) {
     if (await page.getByRole("status").count()) break;
@@ -99,14 +103,38 @@ test("plays a whole game through the board and HUD alone: something to press at 
     );
     // The screen can change between finding a control and pressing it (the opponent acted, a decision ended): a press
     // that finds its control gone is simply tried again next time round.
-    const press = (control: typeof main) => control.click({ timeout: 2_000 }).catch(() => undefined);
-    if (await prompt.count()) await press(prompt.first());
-    else if (await cards.count()) await press(cards.first());
-    else if (await main.count()) await press(main);
+    const press = async (control: typeof main) => {
+      const options = { timeout: 2_000 };
+      if (how === "tap") await control.tap(options);
+      else if (how === "click") await control.click(options);
+      else {
+        await control.focus(options);
+        await page.keyboard.press("Enter");
+      }
+    };
+    const tryPress = (control: typeof main) => press(control).catch(() => undefined);
+    if (await prompt.count()) await tryPress(prompt.first());
+    else if (await cards.count()) await tryPress(cards.first());
+    else if (await main.count()) await tryPress(main);
     else await page.waitForTimeout(100);
     await page.waitForTimeout(40);
   }
   await expect(page.getByRole("status")).toBeVisible();
+}
+
+test("plays a whole game through the board and HUD alone: touch taps on the phone, mouse clicks on the desktop", async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120_000);
+  await playWholeGame(page, testInfo.project.name === "phone" ? "tap" : "click");
+});
+
+test("plays a whole game by the keyboard alone: every control reached by focus and pressed with Enter", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "phone", "the keyboard is the desktop's");
+  test.setTimeout(120_000);
+  await playWholeGame(page, "keyboard");
 });
 
 test("the keyboard alone: Tab to a card, Enter to use it, Space for the main button, Escape to back out", async ({
