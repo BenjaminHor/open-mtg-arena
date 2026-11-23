@@ -2230,3 +2230,14 @@ owner's answer to the D-089 open question, option (a))
   model to look cards up there and not to rely on what it remembers. A model's memory can be wrong, out of date with
   errata, or about another printing; the card as this engine plays it is what matters.
 - M3-02b's evaluation checks it: the transcripts of its CLI games show `get_card` calls for the cards it plays and faces.
+
+**D-147: The LLM opponent gets computed facts; the model judges (owner, 2026-11-23)** · 2026-11-23 · accepted
+- Of the ideas offered to make the LLM opponent effective, the owner chose these four for M3-02b ("1,2,3 and 6 sound
+  good"): a `clock()` tool (lethal on board, turns left in the race, dying next turn), a `what_could_they_have()` tool
+  (the pool's cards the opponent could cast now with their open mana and shown colors), an automatic preview check
+  before big moves, and each card's Oracle text and rulings in the situation message the first time it appears.
+- Why: language models are good at strategy and bad at arithmetic and bookkeeping, so the harness computes the facts.
+  Every one reads only the player's view and public knowledge (the card pool), and the leak test runs on their output.
+- Offered and not chosen for now: planning a turn in one go, handing trivial decisions to the heuristic, a "why did
+  you do that?" button, difficulty levels, post-game lessons per deck, evaluating against the heuristic with blunder
+  counts. They can come back later.

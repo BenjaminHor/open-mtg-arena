@@ -25,7 +25,9 @@ Each time the LLM's player must decide, the match host hands the decision to the
 human:
 
 1. The harness sends a short situation message: the turn and step, what the decision is, and what happened since the
-   model last acted (as `brief`'s "since you last acted").
+   model last acted (as `brief`'s "since you last acted"). The first time a card appears to this player in the game, its
+   Oracle text and rulings come with the message (D-147), so the model rarely needs `get_card` and never falls back on
+   what it remembers (D-146); the card texts sit early in the conversation and don't change, which helps prompt caching.
 2. The model calls tools: to look, to work things out, to write a note.
 3. The model calls an action tool. The harness checks it against the legal actions and applies it. A move that isn't
    legal is refused with the reason, and the model tries again.
@@ -54,13 +56,24 @@ hidden cards give the same output) runs on every tool's output, so the harness a
 - `inspect(permanent)`: why a permanent has its characteristics now (as `pnpm cli inspect`).
 - `search_rules(query)`: the Comprehensive Rules, by number or phrase (`scripts/rule.mjs`'s search).
 
-**Working things out (D-138: previews allowed)**
+**Working things out (D-138: previews allowed). The harness computes facts, the model judges (D-147)**
+- `clock()`: who has lethal damage on board right now (attacking with everything against every block the defender
+  could make), how many turns each player has left at the current rate of damage, and whether this player dies next
+  turn if it doesn't block or answer. Models misjudge races; this tells them.
+- `what_could_they_have()`: the pool's cards the opponent could cast right now (instants, flash, activated abilities of
+  what they control) with their untapped mana and the colors they've shown, so the model can play around a combat
+  trick or a counterspell. From the card pool, which every player may know, never from the opponent's hidden hand or
+  deck (D-044), and never from the model's memory (D-146).
 - `preview_combat(attackers, blocks?)`: the engine plays the combat out and reports damage, deaths and life totals,
   for blocks given or for each block the opponent could make.
 - `preview(action)`: what happens if this player takes the action and everyone then passes: the engine plays it
   forward on a world made only of what the player knows. Hidden cards are stand-ins, and where a hidden card would
   matter (a draw, the opponent's response) the preview stops and says so.
 - `can_pay(action)`: whether the action's cost can be paid now, and with which sources.
+
+**A check before big moves (D-147).** Before an attack, a block, or a spell or ability that costs most of its mana,
+the harness runs `preview` itself and shows the outcome ("this attack loses your Hill Giant to their likely block"),
+and the model confirms or changes its move. Small moves (a land, paying, an obvious target) aren't checked.
 
 **Acting**
 - `take_action(n)`: the numbered legal action.
