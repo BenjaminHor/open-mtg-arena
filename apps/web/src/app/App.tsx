@@ -64,17 +64,21 @@ export function App() {
   const [busy, setBusy] = useState(false);
   // The guard itself, so two presses in the same moment can't both send: the state above only draws it.
   const busyNow = useRef(false);
-  // When the last update arrived: a press of the main button or one beside it within a moment of it was aimed at what
+  // When the reply to the last button press arrived: a press of the main button or one beside it within a moment of it was aimed at what
   // was there before (a double-tap on Next would otherwise pass the next step too, ui.md "Never"), so it's ignored.
   // Taps on cards and targets aren't held back: each says on it what it does, and a quick player shouldn't lose one.
   const updatedAt = useRef(0);
+  // Whether the press waiting for its reply was the main button's (or one beside it): only such a reply starts the
+  // moment above, so a quick Undo after tapping an attacker isn't lost.
+  const settlePress = useRef(false);
 
   useEffect(() => {
     const started = startMatchWorker((reply) => {
       busyNow.current = false;
       setBusy(false);
       if (reply.type === "update") {
-        updatedAt.current = performance.now();
+        if (settlePress.current) updatedAt.current = performance.now();
+        settlePress.current = false;
         setUpdate(reply);
         setError(null);
       } else setError(reply.message);
@@ -135,6 +139,7 @@ export function App() {
   );
   const act = useCallback((action: Action, settle = false) => {
     if (busyNow.current || (settle && performance.now() - updatedAt.current < SETTLE_MS)) return;
+    settlePress.current = settle;
     busyNow.current = true;
     setBusy(true);
     setMenuFor(null);

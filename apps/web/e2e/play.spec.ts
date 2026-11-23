@@ -26,6 +26,17 @@ test("casts a spell by taps: open the hand, lift the card, tap it again, pick a 
     [shield.x + shield.width / 2, shield.y + shield.height / 2],
   );
   expect(hit).toBe("tap-shield");
+  // And it covers no target: each one's centre is its own button.
+  const covered = await page.evaluate(() =>
+    [...document.querySelectorAll(".tap-region")]
+      .filter((e) => /: Target /.test(e.getAttribute("aria-label") ?? ""))
+      .filter((e) => {
+        const r = e.getBoundingClientRect();
+        return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) !== e;
+      })
+      .map((e) => e.getAttribute("aria-label")),
+  );
+  expect(covered).toEqual([]);
   await page.getByRole("button", { name: /^Elite Vanguard: Target/ }).click();
   // Three damage to a 3/3: it's gone.
   await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Elite Vanguard")).toBe(false);
@@ -43,9 +54,8 @@ test("attacks by tapping creatures, and finishes with the main button", async ({
   await expect(page.getByRole("button", { name: /^1 Attacker/ })).toBeVisible();
   await page.getByRole("button", { name: /^Shivan Dragon: Attack/ }).click();
   // Berserkers of Blood Ridge attacks each combat if able (CR 508.1d): until it does, the button says why it can't finish.
-  await expect(
-    page.getByRole("button", { name: /^2 Attackers.*Berserkers of Blood Ridge must attack/ }),
-  ).toBeDisabled();
+  await expect(page.getByRole("button", { name: /^2 Attackers.*1 must attack/ })).toBeDisabled();
+  await expect(page.getByText("Berserkers of Blood Ridge must attack")).toBeVisible();
   await page.getByRole("button", { name: /^Berserkers of Blood Ridge: Attack/ }).click();
   await page.getByRole("button", { name: /^3 Attackers/ }).click();
   const attacking = async () =>
@@ -81,14 +91,18 @@ test("plays a whole game through the board and HUD alone: something to press at 
     if (await page.getByRole("status").count()) break;
     // The game is waiting on the person whenever a control is enabled: a prompt choice, the main button, a card.
     const prompt = page.locator(".prompt-choices button:not([disabled])");
-    const main = page.locator(".main-button:not([disabled])");
+    // Not while an action is on its way (aria-disabled): the screen is about to change.
+    const main = page.locator(".main-button:not([disabled]):not([aria-disabled=true])");
     // A card that does something when tapped (not just lifted, put down, or tapped for mana).
     const cards = page.locator(
-      ".tap-region:not([aria-label$=': lift']):not([aria-label$=': put down']):not([aria-label$='Tap for mana'])",
+      ".tap-region:not([aria-label$=': lift']):not([aria-label$=': put down']):not([aria-label$=' mana'])",
     );
-    if (await prompt.count()) await prompt.first().click();
-    else if (await cards.count()) await cards.first().click();
-    else if (await main.count()) await main.click();
+    // The screen can change between finding a control and pressing it (the opponent acted, a decision ended): a press
+    // that finds its control gone is simply tried again next time round.
+    const press = (control: typeof main) => control.click({ timeout: 2_000 }).catch(() => undefined);
+    if (await prompt.count()) await press(prompt.first());
+    else if (await cards.count()) await press(cards.first());
+    else if (await main.count()) await press(main);
     else await page.waitForTimeout(100);
     await page.waitForTimeout(40);
   }

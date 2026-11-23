@@ -58,7 +58,7 @@ function declarationButton(shown: SeatView): MainButton | null {
     const n = decision.chosen.length;
     return {
       label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`,
-      detail: action === null ? `Not yet: ${whoMust(shown)} attack` : "To Blockers",
+      detail: action === null ? `Not yet: ${mustCount(shown)} must attack` : "To Blockers",
       action,
       hidden: false,
     };
@@ -67,18 +67,23 @@ function declarationButton(shown: SeatView): MainButton | null {
   const n = new Set(decision.chosen.map((b) => b.blocker)).size;
   return {
     label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`,
-    detail: action === null ? `Not yet: ${whoMust(shown)} block` : "To Damage",
+    detail: action === null ? `Not yet: ${mustCount(shown)} must block` : "To Damage",
     action,
     hidden: false,
   };
 }
 
+/** How many must still be picked, on the button: "1", or "more" when it can't say. The prompt names them. */
+function mustCount(shown: SeatView): string {
+  const names = mustDeclare(shown);
+  return names.length === 0 ? "one more" : String(names.length);
+}
+
 /**
- * Who must still be picked before the declaration can finish: the creature whose pick obeys a requirement (the seat
- * view's `obeys`, CR 508.1d, 509.1c: "attacks each combat if able"), named when there's just one, as "Berserkers of
- * Blood Ridge must"; else "one more must".
+ * Who must still be picked before the declaration can finish: the creatures whose pick obeys the most requirements
+ * (the seat view's `obeys`, CR 508.1d, 509.1c: "attacks each combat if able"). Empty when no pick obeys one.
  */
-function whoMust(shown: SeatView): string {
+export function mustDeclare(shown: SeatView): string[] {
   const most = Math.max(0, ...shown.options.map((o) => o.obeys ?? 0));
   const names = new Set<string>();
   for (const o of shown.options) {
@@ -88,7 +93,7 @@ function whoMust(shown: SeatView): string {
     const seen = id === null ? undefined : shown.seen[id];
     if (seen?.kind === "card") names.add(seen.characteristics.name);
   }
-  return names.size === 1 ? `${[...names][0]} must` : "one more must";
+  return [...names];
 }
 
 /** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */

@@ -198,7 +198,7 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
-    overlay: { ...overlay, hand: handArea(hand, area), prompt: promptPlace(field.cards, overlay, area, layout) },
+    overlay: { ...overlay, hand: handArea(hand, area), prompt: promptPlace(shown, field.cards, overlay, area, layout) },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
@@ -245,15 +245,26 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
  * drawn; or, when combat has filled that gap (attackers step into it), under the opponent's life crest, so the banner
  * never covers a card's power/toughness.
  */
-function promptPlace(field: readonly BoardCard[], overlay: OverlayAnchors, area: Rect, layout: BoardLayout): Point {
+function promptPlace(
+  shown: SeatView,
+  field: readonly BoardCard[],
+  overlay: OverlayAnchors,
+  area: Rect,
+  layout: BoardLayout,
+): Point {
+  const crest = overlay.life.opponent;
+  const underCrest = { x: area.x + area.width / 2, y: crest.y + crest.height + layout.promptHeight / 2 + 4 };
+  // While attackers or blockers are declared, creatures step into the gap as they're picked: the prompt stays put
+  // under the crest rather than jump when the first one moves.
+  const kind = shown.view.decision?.kind;
+  if (kind === "declareAttackers" || kind === "declareBlockers") return underCrest;
   const creatures = field.filter((c) => c.row === "creatures");
   const theirs = creatures.filter((c) => !c.mine).map((c) => c.y + c.height);
   const mine = creatures.filter((c) => c.mine).map((c) => c.y);
   const top = theirs.length === 0 ? area.y + layout.band.y * area.height - 30 : Math.max(...theirs);
   const bottom = mine.length === 0 ? area.y + layout.band.y * area.height + 30 : Math.min(...mine);
   if (bottom - top >= layout.promptHeight) return { x: area.x + area.width / 2, y: (top + bottom) / 2 };
-  const crest = overlay.life.opponent;
-  return { x: area.x + area.width / 2, y: crest.y + crest.height + layout.promptHeight / 2 + 4 };
+  return underCrest;
 }
 
 /** The part of the screen the hand covers: from its leftmost card to its rightmost, its costs to the bottom edge. */

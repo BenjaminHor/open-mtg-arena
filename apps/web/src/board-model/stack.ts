@@ -17,7 +17,10 @@ export function stackTop(shown: SeatView, area: Rect, layout: BoardLayout): Boar
   if (card?.kind !== "card") return [];
   // While the person chooses for it (targets, X, paying), it's small at the right edge, never over a target [R].
   const choosing = shown.view.casting !== null && shown.view.casting.player === shown.player;
-  const height = (choosing ? layout.stack.smallH : layout.stack.h) * area.height;
+  // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
+  const height = choosing
+    ? Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH)
+    : layout.stack.h * area.height;
   const width = height * layout.ratio.hand;
   const right = area.x + area.width - 8;
   const x = choosing ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);

@@ -41,7 +41,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
             type="button"
             className="tap-region"
             style={{ ...place(rect), zIndex: layer }}
-            aria-label={control.label}
+            aria-label={spoken(control.label)}
             aria-disabled={busy}
             onClick={() => !busy && onTap(actor)}
           />
@@ -89,4 +89,9 @@ function inReadingOrder(regions: BoardModel["regions"]) {
     else rows.push([r]);
   }
   return rows.flatMap((row) => row.sort((a, b) => a.rect.x - b.rect.x));
+}
+
+/** A label as a screen reader should say it: mana symbols as words ("{T}" is "tap", "{G}" is "G mana"), as ManaText. */
+function spoken(label: string): string {
+  return label.replace(/\{([^}]+)\}/g, (_, symbol: string) => (symbol === "T" ? "tap" : `${symbol} mana`));
 }

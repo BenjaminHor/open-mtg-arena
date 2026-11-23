@@ -3,6 +3,7 @@
 import type { SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { mainButton } from "../src/hud/main-button.ts";
+import { promptTitle } from "../src/interaction/controls.ts";
 import { fixtureView, mulliganView } from "./fixture-views.ts";
 
 const midGame = fixtureView("mid-game");
@@ -108,9 +109,11 @@ describe("the main button", () => {
     };
     expect(mainButton(declaring)).toMatchObject({
       label: "No Attacks",
-      detail: `Not yet: ${name} must attack`,
+      detail: "Not yet: 1 must attack",
       action: null,
     });
+    // The button only counts; the prompt, with room for it, names the creature.
+    expect(promptTitle(declaring)).toBe(`${name} must attack`);
   });
 
   it("sends nothing while a decision other than priority waits", () => {

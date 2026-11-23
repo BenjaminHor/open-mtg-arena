@@ -6,7 +6,7 @@
 
 import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import { optionLabel } from "../app/option-label.ts";
-import { mainButton } from "../hud/main-button.ts";
+import { mainButton, mustDeclare } from "../hud/main-button.ts";
 import { abilityLabel } from "./ability-label.ts";
 
 type Answer = Extract<Action, { type: "ANSWER" }>["answer"];
@@ -210,6 +210,11 @@ export function promptTitle(shown: SeatView, selection: Selection = null): strin
   const picked = selection === null ? undefined : shown.seen[selection];
   if (kind === "declareBlockers" && picked?.kind === "card") {
     return `Choose what ${picked.characteristics.name} blocks`;
+  }
+  // A declaration that can't finish yet names who must still be picked (CR 508.1d, 509.1c); the button only counts.
+  const must = mustDeclare(shown);
+  if ((kind === "declareAttackers" || kind === "declareBlockers") && mainButton(shown).action === null && must.length) {
+    return `${must.join(", ")} must ${kind === "declareAttackers" ? "attack" : "block"}`;
   }
   switch (kind) {
     case "chooseStartingPlayer":

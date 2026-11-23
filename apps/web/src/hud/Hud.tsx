@@ -72,7 +72,8 @@ export function Hud(props: HudProps) {
         targets={controls.players[me] ?? []}
         act={act}
       />
-      <ManaPoolChip pool={view.players[me]?.manaPool} beside={anchors.portrait.mine} />
+      {/* The open hand rises over where it sits; the pool is back when the hand is put down. */}
+      {!props.handOpen && <ManaPoolChip pool={view.players[me]?.manaPool} beside={anchors.portrait.mine} />}
       <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
       {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
       <LifeCrest
