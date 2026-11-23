@@ -164,6 +164,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     it. Playing a card from it stays 04b.
   - Owner (2026-11-23): cards in hand can be the actual card image; recorded in ui.md, done (Scryfall's full image at
     runtime, our drawn card as the fallback).
+  - Owner (2026-11-23): "I haven't been able to start the local app yet but I'm wondering what animations are like."
+    Answered: there are none yet; cards move to their new places at once. Animation is M3-07 (the director: GSAP
+    timelines from the engine's events, ui.md "Animation and feedback"). Gave the steps to run it locally.
+  - Still to do in M3-04a: the frames for colourless, multicolour and tokens (ui.md); the HUD polish (ui.md, "The rest
+    of the HUD"); then code and UX reviews, the PR, and screenshots of everything to the owner.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
