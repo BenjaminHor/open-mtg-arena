@@ -30,8 +30,8 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
   const result = view.result;
   return (
     <section className="hud" aria-label="Match">
-      <Portrait rect={anchors.portrait.opponent} label="Opponent" active={active === opponent} />
-      <Portrait rect={anchors.portrait.mine} label="You" active={active === me} />
+      <Portrait rect={anchors.portrait.opponent} label="Opponent" side="opponent" active={active === opponent} />
+      <Portrait rect={anchors.portrait.mine} label="You" side="mine" active={active === me} />
       <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
       {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
       <LifeCrest
@@ -76,10 +76,11 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
   );
 }
 
-function Portrait({ rect, label, active }: { rect: Rect; label: string; active: boolean }) {
+function Portrait(props: { rect: Rect; label: string; side: "mine" | "opponent"; active: boolean }) {
+  const { rect, label, side, active } = props;
   return (
     <div
-      className={`portrait${active ? " active" : ""}`}
+      className={`portrait ${side}${active ? " active" : ""}`}
       style={place(rect)}
       role="img"
       aria-label={active ? `${label}, this turn` : label}

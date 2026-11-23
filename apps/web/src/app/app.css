@@ -68,48 +68,125 @@ body,
   cursor: pointer;
 }
 
+/* The HUD's pieces (ui.md, "The rest of the HUD"): our own crafted look in the spirit of Arena's (D-140): bronze and
+   gold metal, dark enamel, depth from light and shadow. Where they sit comes from the board model. */
+
 .portrait {
   box-sizing: border-box;
-  border-radius: 8px;
-  border: 2px solid var(--edge);
-  background: linear-gradient(160deg, #3a4357, #1d222c);
+  border-radius: 7px;
+  border: 2px solid #2a2218;
+  box-shadow:
+    0 0 0 1px #a8874a,
+    0 3px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 10px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+
+.portrait.opponent {
+  background: radial-gradient(circle at 50% 30%, #6d4a52, #2c1c22 75%);
+}
+
+.portrait.mine {
+  background: radial-gradient(circle at 50% 30%, #4a5d7a, #1a2230 75%);
 }
 
 .portrait svg {
   width: 100%;
   height: 100%;
-  fill: #8e9ab3;
+  fill: rgba(232, 222, 200, 0.55);
 }
 
-/* The active player's portrait: a gold ring and a marker, not colour alone. */
+/* The active player's portrait: a bright gold ring with a glow, and a marker: not colour alone. */
 .portrait.active {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px rgba(226, 184, 79, 0.35);
+  border-color: #f0cd6a;
+  box-shadow:
+    0 0 0 1px #f7e2a0,
+    0 0 12px 3px rgba(240, 200, 100, 0.55),
+    inset 0 0 10px rgba(0, 0, 0, 0.5);
+  overflow: visible;
 }
 
 .turn-marker {
   position: absolute;
-  right: -9px;
+  right: -11px;
   top: 50%;
   transform: translateY(-50%);
   border: 6px solid transparent;
-  border-left: 8px solid var(--gold);
+  border-left: 8px solid #f0cd6a;
+  filter: drop-shadow(0 0 3px rgba(240, 200, 100, 0.8));
 }
 
+/* A life crest: a dark enamel medallion in a metal ring, with a blade on each side. */
 .life {
+  /* Its own stacking context, so the blades (z-index -1) sit behind the medallion but above the board. */
+  z-index: 1;
   box-sizing: border-box;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-weight: 800;
-  font-size: 22px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 24px;
   font-variant-numeric: tabular-nums;
-  background: radial-gradient(circle at 50% 35%, #353c4b, #171a21 70%);
-  border: 3px solid #8a93a6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  color: #f4ecd8;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  background: radial-gradient(circle at 50% 30%, #3b4150, #15181f 70%);
+  border: 3px solid #c9a55a;
+  box-shadow:
+    0 0 0 2px #2a2014,
+    inset 0 2px 4px rgba(255, 255, 255, 0.12),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(0, 0, 0, 0.6);
 }
 
-/* The list spans the HUD so it has a box of its own; its icons are placed inside it by the board model. */
+.life::before,
+.life::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 12px;
+  background: linear-gradient(180deg, #e8cd86, #8f6c2e);
+  z-index: -1;
+}
+
+/* The blades point outward and up on the person's crest, outward and down on the opponent's. */
+.life::before {
+  right: 100%;
+  margin-right: -6px;
+  clip-path: polygon(100% 0, 100% 100%, 0 30%);
+  transform: translateY(-80%) rotate(14deg);
+}
+
+.life::after {
+  left: 100%;
+  margin-left: -6px;
+  clip-path: polygon(0 0, 0 100%, 100% 30%);
+  transform: translateY(-80%) rotate(-14deg);
+}
+
+.life-opponent::before {
+  transform: translateY(-20%) rotate(-14deg) scaleY(-1);
+}
+
+.life-opponent::after {
+  transform: translateY(-20%) rotate(14deg) scaleY(-1);
+}
+
+/* The opponent's crest as their ladder's combat rung: blue light while they're in combat [R]. */
+.life.combat {
+  border-color: #7fbcff;
+  box-shadow:
+    0 0 0 2px #14243a,
+    0 0 16px 5px rgba(111, 180, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+}
+
+.life.combat::before,
+.life.combat::after {
+  background: linear-gradient(180deg, #cfe6ff, #4c8fdc);
+}
+
 .ladder {
   inset: 0;
   margin: 0;
@@ -120,7 +197,11 @@ body,
 .ladder-pill {
   box-sizing: border-box;
   border-radius: 999px;
-  background: rgba(12, 13, 16, 0.75);
+  background: linear-gradient(180deg, #20232b, #0e1014);
+  border: 1px solid #6a5531;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.55);
 }
 
 .ladder li {
@@ -132,44 +213,52 @@ body,
 }
 
 .ladder svg {
-  width: 13px;
-  height: 13px;
-  fill: #5d6577;
+  width: 12px;
+  height: 12px;
+  fill: #6c7488;
 }
 
 .ladder svg.stroke {
   fill: none;
-  stroke: #5d6577;
+  stroke: #6c7488;
   stroke-width: 2;
   stroke-linecap: round;
 }
 
-/* The current phase: bigger, bright, underlined. */
+/* The current phase: bigger, gold, glowing, underlined. */
 .ladder li.lit {
-  border-bottom-color: var(--gold);
+  border-bottom-color: #f0cd6a;
 }
 
 .ladder li.lit svg {
   width: 16px;
   height: 16px;
-  fill: var(--gold);
+  fill: #f6d77c;
+  filter: drop-shadow(0 0 3px rgba(246, 215, 124, 0.8));
 }
 
 .ladder li.lit svg.stroke {
   fill: none;
-  stroke: var(--gold);
+  stroke: #f6d77c;
 }
 
-.main-button {
+/* The main button: a glossy gold pill with a serif label [R], lit from above. (`.hud` in front: it must win over
+   `.hud button`, which sets every control's colour.) */
+.hud .main-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 2px solid #f3cf6e;
-  background: linear-gradient(180deg, #f0c75a, #c9952c);
-  color: var(--ink);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+  border: 1px solid #7a5512;
+  background: linear-gradient(180deg, #f8dc7e 0%, #e2ad3c 48%, #c58b22 52%, #b47a1c 100%);
+  color: #2a1d08;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(80, 40, 0, 0.45),
+    0 0 14px rgba(240, 190, 80, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.55);
   line-height: 1.05;
 }
 
@@ -178,8 +267,10 @@ body,
 }
 
 .main-label {
-  font-weight: 800;
-  font-size: 17px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-shadow: 0 1px 0 rgba(255, 245, 210, 0.6);
 }
 
 .main-detail {
@@ -192,21 +283,16 @@ body,
 }
 
 /* Nothing to press: plain text on the table, as Arena's "Opponent's Turn" [R]. */
-.main-button.waiting {
+.hud .main-button.waiting {
   background: none;
   border-color: transparent;
-  color: #c9c2b0;
+  color: #d9d0bb;
   box-shadow: none;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-  font-family: Georgia, "Times New Roman", serif;
 }
 
-/* The opponent's crest as their ladder's combat rung: swords-blue wings while they're in combat [R]. */
-.life.combat {
-  border-color: #6fb4ff;
-  box-shadow:
-    0 0 0 3px rgba(111, 180, 255, 0.35),
-    0 0 18px 4px rgba(111, 180, 255, 0.55);
+.main-button.waiting .main-label {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .drawer {
@@ -220,11 +306,13 @@ body,
 }
 
 .drawer-toggle {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
-  border: 1px solid var(--edge);
-  background: var(--panel);
+  border: 1px solid #6a5531;
+  background: linear-gradient(180deg, #23262e, #111318);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   font-size: 12px;
+  color: #e8dfc8;
 }
 
 .options {

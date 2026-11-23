@@ -41,17 +41,52 @@ export function librarySprite(pile: LibraryPile): Container {
   return root;
 }
 
+/**
+ * Our own card back (D-140): a deep blue field framed by a bronze rim and a fine gold inner line, a ring and a
+ * four-pointed star in the middle, a dot at each corner of the inner frame.
+ */
 function backFace(w: number, h: number): Graphics {
   const r = w * 0.07;
-  const rim = Math.max(1.5, w * 0.04);
-  const s = Math.min(w, h) * 0.28;
-  return new Graphics()
+  const rim = Math.max(1.5, w * 0.05);
+  const s = Math.min(w, h) * 0.26;
+  const inset = rim + Math.max(1.5, w * 0.05);
+  const g = new Graphics()
     .roundRect(-w / 2, -h / 2, w, h, r)
     .fill(PALETTE.backRim)
+    .roundRect(-w / 2 + rim / 2, -h / 2 + rim / 2, w - rim, h - rim, r * 0.85)
+    .stroke({ width: rim * 0.7, color: 0x7a5f34 })
     .roundRect(-w / 2 + rim, -h / 2 + rim, w - 2 * rim, h - 2 * rim, r * 0.7)
     .fill(PALETTE.back)
+    .roundRect(-w / 2 + inset, -h / 2 + inset, w - 2 * inset, h - 2 * inset, r * 0.5)
+    .stroke({ width: 1, color: 0xc9a55a, alpha: 0.55 })
     .circle(0, 0, s)
-    .stroke({ width: Math.max(1, w * 0.03), color: PALETTE.backEmblem })
-    .poly([0, -s * 0.7, s * 0.45, 0, 0, s * 0.7, -s * 0.45, 0])
-    .fill({ color: PALETTE.backEmblem, alpha: 0.8 });
+    .stroke({ width: Math.max(1, w * 0.025), color: 0xc9a55a, alpha: 0.8 })
+    .poly([
+      0,
+      -s * 0.8,
+      s * 0.18,
+      -s * 0.18,
+      s * 0.8,
+      0,
+      s * 0.18,
+      s * 0.18,
+      0,
+      s * 0.8,
+      -s * 0.18,
+      s * 0.18,
+      -s * 0.8,
+      0,
+      -s * 0.18,
+      -s * 0.18,
+    ])
+    .fill({ color: PALETTE.backEmblem, alpha: 0.9 });
+  for (const [x, y] of [
+    [-1, -1],
+    [1, -1],
+    [1, 1],
+    [-1, 1],
+  ] as const) {
+    g.circle(x * (w / 2 - inset), y * (h / 2 - inset), Math.max(1, w * 0.02)).fill({ color: 0xc9a55a, alpha: 0.7 });
+  }
+  return g;
 }
