@@ -1,4 +1,4 @@
-# Runs `pnpm check` (typecheck, lint, all tests) on every push and pull request.
+# Runs `pnpm check` (typecheck, lint, all tests) and the web app's browser tests on every push and pull request.
 # A pull request merges into main only with this green (CLAUDE.md, "How to work").
 name: CI
 
@@ -25,3 +25,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      # The web app's browser tests, against its production build (D-151).
+      - run: pnpm --filter @mtg/web exec playwright install --with-deps chromium
+      - run: pnpm test:e2e

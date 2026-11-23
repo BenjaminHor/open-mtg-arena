@@ -95,6 +95,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     Chromium and runs the e2e tests.
   - Future impact: M3-04 fills `board-model` and `renderer`; M3-07 the director; M3-10 saves through the worker; the
     LLM seat (M3-02b) answers in the worker as an outside seat.
+  - M3-03 progress: built as planned (D-151). A spike first confirmed the engine, the card pool and the heuristic run in
+    the worker in a production build (485 kB). Found on the way: the service worker's cache lookups must ignore
+    "Vary: Origin", or every module script misses offline. `pnpm dev` runs; the two browser tests pass (a round trip
+    through the worker; an offline reload). The screen is a scaffold: cards as named rectangles, a button per legal
+    action (unpayable ones greyed out); M3-04 brings the real board.
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
     and posts `{ view, seen, legalActions, events }`.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI

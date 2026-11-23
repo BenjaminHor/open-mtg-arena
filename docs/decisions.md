@@ -2277,3 +2277,15 @@ owner's answer to the D-089 open question, option (a))
 - Attacks read evasion from the cards: "can't be blocked", an attached Whispersilk Cloak, landwalk.
 - Tried and dropped, measured: keeping mana open for counterspells, keeping creatures with {T} abilities home, and a
   check that what stays home can survive the attack back (each lost games on the held-out seeds).
+
+**D-151: The web app's dependencies and its offline support (M3-03)** · 2026-11-23 · accepted
+- `apps/web` adds runtime dependencies react and react-dom (the DOM layer, D-013), pixi.js (the board, D-013) and gsap
+  (animation, D-013, used from M3-07), and dev dependencies vite with @vitejs/plugin-react (the bundler; Vite was
+  already here through Vitest), the React types, and @playwright/test. All pinned exactly (D-016).
+- @playwright/test is pinned to 1.63.0, the version whose Chromium this machine has installed; CI installs its own
+  Chromium. The browser tests run against the production build, where the service worker and the bundled worker are
+  real, in their own command (`pnpm test:e2e`) and CI step: `pnpm check` stays quick, and M3's exit criterion
+  ("`pnpm check` is green, including Playwright tests") is met by CI running both.
+- Offline support is one short hand-written service worker, not vite-plugin-pwa and Workbox: precache every file the
+  build wrote (a small Vite plugin lists them), pages network-first so a new build shows at once, hashed files
+  cache-first, one cache per build. Registered only in production builds, so `pnpm dev` never serves a stale module.

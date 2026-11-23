@@ -222,9 +222,9 @@ simple.
 - **Replay log**: a match is `setup + seed + ordered actions`. Saving stores a state snapshot plus
   the log. **The log is also the bug-report format.** One button in the app exports it, and a test
   can replay it exactly.
-- In the browser, the match host runs in a **Web Worker**. The UI sends actions and receives
-  `{ view, events, legalActions }` messages, with the derived values of the objects the viewer can see (power and toughness, types,
-  keywords) computed by the host beside the view (D-135). All of these are plain JSON. The pending decision reaches the UI as
+- In the browser, the match host runs in a **Web Worker** (`apps/web/src/worker/`). The UI sends actions and receives
+  the person's `SeatView` (D-144: their view, the derived values of what they can see, and their legal actions with
+  their hints) and the events they saw, as typed plain-JSON messages (`protocol.ts`). All of these are plain JSON. The pending decision reaches the UI as
   `view.decision` (a `ViewDecision`), never `state.pending`, which can hold the ids of another player's hidden cards
   and the engine's bookkeeping (D-062).
 

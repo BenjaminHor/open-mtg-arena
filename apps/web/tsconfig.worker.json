@@ -1,0 +1,10 @@
+{
+  // The match worker: a Web Worker's globals, no DOM.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["es2024", "webworker"],
+    "jsx": "preserve"
+  },
+  "include": ["src/worker/match.worker.ts"],
+  "exclude": []
+}
