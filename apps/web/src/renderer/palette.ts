@@ -9,19 +9,19 @@ export const PALETTE = {
   parchment: 0xeee8d8,
   ink: 0x1d1a16,
   serif: "Georgia, 'Times New Roman', 'DejaVu Serif', serif",
+  /** The app's typeface (app/font.ts), for everything drawn on the board but a whole card's printed text. */
+  sans: "Inter, system-ui, sans-serif",
   artless: 0x1b1f27,
   raised: 0x1f5fbf,
   lowered: 0xc0392b,
-  badge: 0x0c0d10,
+  badge: 0x161514,
   badgeText: 0xf4f0e6,
   tapMark: 0xe9e6df,
   playable: 0x3fd4ff,
   picked: 0xffb429,
   attack: 0xd9503a,
   block: 0x6f9fd8,
-  back: 0x24304a,
-  backRim: 0x0d1220,
-  backEmblem: 0x8fa3c9,
+  back: 0x403d39,
 } as const;
 
 /** Each colour's frame: the colour of a card's border (CR 105.2 names the five colours). */

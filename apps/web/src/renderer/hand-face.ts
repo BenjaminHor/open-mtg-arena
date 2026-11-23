@@ -29,7 +29,7 @@ export function handLower(
     text: card.typeLine,
     style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: typeH * 0.68, fill: PALETTE.ink },
   });
-  fitText(typeLine, inner.w - 4, typeH);
+  fitText(typeLine, inner.w - 4, { height: typeH });
   typeLine.anchor.set(0, 0.5);
   typeLine.position.set(inner.x + 2, top + typeH / 2);
   lower.addChild(typeLine);

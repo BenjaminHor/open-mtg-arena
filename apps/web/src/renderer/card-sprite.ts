@@ -6,7 +6,8 @@
 import type { Container } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
 import { loadArt } from "./art.ts";
-import { ART_LABEL, drawFace } from "./card-face.ts";
+import { drawFace } from "./card-face.ts";
+import { ART_LABEL } from "./face.ts";
 
 export type CardSprite = {
   root: Container;

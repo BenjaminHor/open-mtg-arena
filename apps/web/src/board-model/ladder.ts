@@ -1,7 +1,7 @@
 // The phase ladders [R] (arena-research.md, both sets of the owner's screenshots). Over the main button, the current
 // turn's ladder: in short form a diamond, a card, crossed swords, a card, a diamond (the turn's five phases, CR 500.1);
 // during combat it opens into its steps (CR 506.1): a sword for attackers, a shield for blockers, a burst for damage.
-// On the opponent's turn their life crest also sits in a ladder of its own, the crest taking the combat slot.
+// On the opponent's turn their ladder is at the top centre, the same rungs.
 
 import type { Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
@@ -34,43 +34,37 @@ export function inCombat(step: Step): boolean {
   return COMBAT.steps.includes(step);
 }
 
-/** The current turn's ladder in one pill, centred over the main button. */
-export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout): Ladder {
-  const rungs =
-    step !== null && inCombat(step)
-      ? [BEGINNING, MAIN1, ...COMBAT_STEPS, MAIN2, END]
-      : [BEGINNING, MAIN1, COMBAT, MAIN2, END];
-  const { icon, padding, gap } = layout.ladder;
-  const width = rungs.length * icon + 2 * padding;
-  const pill = {
-    x: Math.min(button.x + button.width / 2 - width / 2, button.x + button.width - width),
-    y: button.y - gap - icon - 2 * padding,
-    width,
-    height: icon + 2 * padding,
-  };
+function rungsFor(step: Step | null): Rung[] {
+  return step !== null && inCombat(step)
+    ? [BEGINNING, MAIN1, ...COMBAT_STEPS, MAIN2, END]
+    : [BEGINNING, MAIN1, COMBAT, MAIN2, END];
+}
+
+/** The ladder's one pill with its top left at (x, y), for these rungs. */
+function inPill(rungs: readonly Rung[], step: Step | null, x: number, y: number, layout: BoardLayout): Ladder {
+  const { icon, padding } = layout.ladder;
+  const pill = { x, y, width: rungs.length * icon + 2 * padding, height: icon + 2 * padding };
   const icons = rungs.map((r, i) =>
     entry(r, step, { x: pill.x + padding + i * icon, y: pill.y + padding, width: icon, height: icon }),
   );
   return { icons, pills: [pill] };
 }
 
-/** The opponent's ladder around their crest [R]: two rungs each side, the crest itself the combat rung. */
-export function ladderAroundCrest(crest: Rect, step: Step | null, layout: BoardLayout): Ladder {
+/** The current turn's ladder in one pill, centred over the main button. */
+export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout): Ladder {
+  const rungs = rungsFor(step);
   const { icon, padding, gap } = layout.ladder;
-  const y = crest.y + crest.height / 2 - icon / 2;
-  const side = 2 * icon + 2 * padding;
-  const left = { x: crest.x - gap - side, y: y - padding, width: side, height: icon + 2 * padding };
-  const right = { x: crest.x + crest.width + gap, y: y - padding, width: side, height: icon + 2 * padding };
-  const at = (pill: Rect, i: number) => ({ x: pill.x + padding + i * icon, y, width: icon, height: icon });
-  return {
-    icons: [
-      entry(BEGINNING, step, at(left, 0)),
-      entry(MAIN1, step, at(left, 1)),
-      entry(MAIN2, step, at(right, 0)),
-      entry(END, step, at(right, 1)),
-    ],
-    pills: [left, right],
-  };
+  const width = rungs.length * icon + 2 * padding;
+  const x = Math.min(button.x + button.width / 2 - width / 2, button.x + button.width - width);
+  return inPill(rungs, step, x, button.y - gap - icon - 2 * padding, layout);
+}
+
+/** The opponent's ladder on their turn: one pill at the top centre, `gap` below the top edge. */
+export function ladderAtTop(area: Rect, step: Step | null, layout: BoardLayout): Ladder {
+  const rungs = rungsFor(step);
+  const { icon, padding, gap } = layout.ladder;
+  const width = rungs.length * icon + 2 * padding;
+  return inPill(rungs, step, area.x + area.width / 2 - width / 2, area.y + gap, layout);
 }
 
 function entry(rung: Rung, step: Step | null, rect: Rect): LadderIcon {

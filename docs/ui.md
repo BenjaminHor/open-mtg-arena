@@ -26,7 +26,16 @@ the card's colour with a light inner rim and a drop shadow on the table; a light
 serif text; the art filling the rest; power/toughness in a small light pill at the bottom centre, over the frame's
 edge, its numbers coloured when changed; keyword badges at the bottom-left corner; identical tokens piled with an "x4"
 count above the pile; a tapped card tilted, darkened and marked with a large curved arrow. The table is a warm,
-textured playmat, not a flat colour.
+textured playmat, not a flat colour. **Superseded on the battlefield by D-162 (minimal and clean, below):** a permanent
+is now its art only, its name in white over a dark fade at the bottom left, power/toughness in a small dark pill at the
+bottom right, on a flat dark table; the layout, piles, tilt and tap mark stay. **Name and P/T on one line (owner,
+2026-11-23):** "the card name and power/toughness should be on the same line if that makes sense, look at the reference
+screenshots i sent." The name always sits on the pill's line, shrinking to fit beside it; it never moves above it. **Long names (owner,
+2026-11-23):** asked which rule gives on a phone's 72 px tiles (same line, never cut off, readable), the owner chose
+"Fade under the pill": a name shrinks to 7 px at the least, and the end of one that still doesn't fit fades out at the
+pill. The full name is in the card view. This bends "names are never cut off" on the battlefield only. **The font (owner,
+2026-11-23):** "the font style doesn't match the reference." The reference's text is a clean, even sans-serif at a
+regular weight, letters at their natural width (not squeezed), on the cards and in the HUD alike.
 
 **Tapped lands in a pile (owner, 2026-11-23):** "when there's a stack of cards like lands, tapping a subset of them
 just taps them within the stack visually. I think if they're tapped then they should be on top of the visual stack if
@@ -54,6 +63,28 @@ battlefield." Touch has no hover, so on the phone a long-press opens the card's 
 (long-press)": the card large, and a panel per ability or effect on it), built in M3-04c. A desktop mouse resting on a
 card shows the same as a preview, as Arena's desktop client does (D-160 settled it).
 
+**Minimal and clean (owner, 2026-11-23):** the owner shared seven screenshots of another person's MTG web app and said
+"I kind of like how minimalistic and clean this person's web app is." And: "the UI as a whole just feels more clean and
+minimal." What it does (described, not copied; D-140):
+a flat dark table with no texture; a permanent is only its art, with no frame or name strip, the name in small white
+text over a dark fade at the art's bottom left and power/toughness in a small dark pill at the bottom right; a counter
+is a small icon with its count beside the P/T; a keyword such as hexproof is a small round icon at the top left; a
+tapped card tilts with a curved-arrow mark; legal targets get a dashed outline and attacks and blocks an arrow; life
+totals and zone counts are plain large and small numbers in a corner ("52 Library 0 Graveyard 0 Exile"); the phases
+are a row of plain text tabs; decisions and the stack sit in a text panel at the right. The owner chose "Minimal
+throughout" (D-162): this look everywhere, Arena still the guide for layout and interactions.
+
+**Player info in the left corners (owner, 2026-11-23):** "you see how the player and opponent info is on the left
+corners in the reference screenshots? the life total, library size, graveyard, and exile." As in the reference app:
+the opponent's block at the top left, the person's at the bottom left, each a label ("Opponent", "You"), the life
+total as a large plain number, and under it the counts in small text ("52 Library  0 Graveyard  0 Exile"). It takes
+the place of the centred life crests and the portraits; whose turn it is and a player target show on the block. Then:
+"the scale of the player info seems too large" (owner, 2026-11-23): smaller, so it sits quietly in the corner.
+
+**The main button's shape (owner, 2026-11-23):** "the pill button on the bottom right should be a rounded
+square/rectangle instead." A rectangle with softly rounded corners, as the reference app's; the small buttons beside
+it match.
+
 **Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
 battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
 the screen's height tall, and about 9% of the height of open table separates the two creature rows; nothing is drawn
@@ -76,7 +107,11 @@ position can't show the pairing, and an attacker to the planeswalker it attacks 
 than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase
 ladder, main button, card backs, libraries and drawers get the same care as the cards: our own crafted shapes,
 metal-and-enamel finishes, depth and light, in the spirit of Arena's ornate HUD (the reference's crest wraps the
-portrait and the life total; the ladder sits on a curved rail around it), never its assets (D-140).
+portrait and the life total; the ladder sits on a curved rail around it), never its assets (D-140). **Since D-162 the HUD is
+minimal instead:** flat dark surfaces with a thin light edge, life totals as plain large numbers on a quiet dark disc,
+a flat accent-coloured main button, flat icon ladders, plain dark card backs, the app's one typeface (D-163). The
+phase ladder keeps its small icons rather than text labels: five labels don't fit beside the main button at a folded
+phone's width (812 px), and the icons are already plain shapes.
 
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**
@@ -109,6 +144,11 @@ portrait and the life total; the ladder sits on a curved rail around it), never 
 **Never color alone**
 - Magic is full of color, so nothing in the UI may rely on color by itself. Playable cards, valid targets, selected
   cards, attackers and blockers, and whose turn it is also differ by shape, outline, icon, motion or label.
+- A permanent's colours (D-162): its art shows them, and the card view says them in words; with no art (a token,
+  offline) its tile is filled in its colour and carries its colours' glyphs. Its name strip's colour glyphs went with
+  the strip.
+- States differ by shape too: playable is a thin solid outline, a pick a thicker one with its combat badge, attackers
+  and blockers carry swords or a shield, a tapped card the curved arrow.
 - Mana symbols always use their symbol shapes, not just colored dots. Check screenshots with a colorblindness
   simulation (for example the browser dev tools' vision deficiency emulation) for the main board states.
 

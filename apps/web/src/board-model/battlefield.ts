@@ -1,7 +1,7 @@
 // The battlefield (arena-research.md, "The owner's phone screenshots"): each player's half has its creatures close to
 // the band across the middle, centred, and an outer row further out with lands at the left and the other permanents at
-// the right, planeswalkers at the right edge. The opponent's half mirrors the person's. The outer rows stop short of
-// the life crests on the centre line, and the person's short of the main button.
+// the right, planeswalkers at the right edge. The opponent's half mirrors the person's. The lands start right of the
+// player's info block in the left corner, and the person's outer row stops short of the main button.
 
 import type { PlayerId, SeatView, SeenCard } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
@@ -62,17 +62,18 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   const creatureTop = mine ? bandY + (band.h / 2) * area.height : bandY - (band.h / 2) * area.height - fullH;
   const outerH = lands.h * area.height;
   const outerY = mine ? creatureTop + fullH + rowGap * area.height : creatureTop - rowGap * area.height - outerH;
-  const crest = mine ? overlay.life.mine : overlay.life.opponent;
+  const info = mine ? overlay.player.mine : overlay.player.opponent;
   // An attacker tilts as it taps but isn't shaded: it's the card everyone is looking at.
   const look = (p: SeenCard) =>
     p.tapped ? { rotation: tapped.tilt, dim: p.attacking === null ? tapped.dim : 0 } : { rotation: 0, dim: 0 };
   const offsets = pileOffsets(area, layout);
 
-  // Lands, a slot per name from the left edge, up to the life crest.
-  const landRight = Math.min(area.x + lands.right * area.width, crest.x - layout.crestClearance);
-  const placed = landSlots(landRow, half, { y: outerY, height: outerH, right: landRight }, look);
+  // Lands, a slot per name from the left, clear of the info block in the corner.
+  const landLeft = Math.max(area.x + lands.left * area.width, info.x + info.width + layout.player.gap);
+  const landRight = area.x + lands.right * area.width;
+  const placed = landSlots(landRow, half, { y: outerY, height: outerH, left: landLeft, right: landRight }, look);
 
-  // Other permanents, from the right edge back towards the crest.
+  // Other permanents, from the right edge back towards the middle.
   const otherH = others.h * area.height;
   const otherW = otherH * ratio.battlefield;
   // The person's row stops short of the main button and the phase ladder over it, at the bottom right (the ladder can
@@ -81,7 +82,7 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
     Math.min(overlay.mainButton.x, ...overlay.ladder.pills.map((p) => p.x)) - layout.mainButton.clearance;
   const otherXs = spread(
     walkersLast.map(() => otherW),
-    Math.max(area.x + others.left * area.width, crest.x + crest.width + layout.crestClearance),
+    area.x + others.left * area.width,
     mine ? Math.min(area.x + others.right * area.width, buttonLeft) : area.x + others.right * area.width,
     others.gap * area.width,
     "end",

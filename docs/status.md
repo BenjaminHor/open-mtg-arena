@@ -249,6 +249,67 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     clears the safe-area insets; the large image is fetched only 120 ms into a hold or rest (not on every tap or
     sweep); a preview swap doesn't replay the fade; Space on a card only there to be looked at still presses the main
     button. Design recorded as D-161.
+  - **M3-04c slice 2 merged (PR #102, squash, 2026-11-23).**
+  - **Owner (2026-11-23): "Minimal throughout" (D-162).** Asked after the owner shared another web app's screenshots;
+    chosen over "keep Arena's look" and "clean cards, Arena layout". So a restyle comes first, as its own slice, and
+    the badges after it are drawn in the new style:
+    - **Slice 3, the minimal restyle:** a flat dark table (no texture or rings); a permanent is its art only, no
+      frame or name strip, its name in small white text over a dark fade at the art's bottom left, power/toughness in
+      a small dark pill at the bottom right (raised blue, lowered red, as now); lands the same; a token the same
+      (its name on the fade); tapped: tilt and the curved arrow, as now; playable: a thin bright outline, not a glow;
+      the phases as a row of plain text labels with the current one lit; life totals as large plain numbers with
+      small zone counts beside the portraits; the main button a calm flat pill. Hand cards stay whole card images.
+      Future impact: the badges (3a below) and attachments (3b) are drawn on this frameless tile.
+      Two PRs (advisor): first the table and the battlefield tile (renderer only), shown to the owner; then the HUD
+      (life, main button, ladder as text, portraits, prompts, card view) through the CSS tokens, the ladder sized in
+      the board model. The ux-reviewer reviews both together at the second.
+      - Slice 3 PR 1 done (2026-11-23): the flat table (#22211f) and `renderer/battlefield-tile.ts`: art only with
+        rounded corners, name in white with a soft shadow over a smooth dark fade at the bottom left, P/T in a small
+        dark pill at the bottom right (light blue raised, light red lowered, damage underlined), the name always on
+        the pill's line, shrinking to fit beside it (owner: "on the same line"), a token's arched top, no art: the colour with its glyphs.
+        Playable is a thin solid cyan outline (hand cards too), a pick a thicker yellow-orange one. `card-face.ts`
+        now draws only whole cards (hand, stack).
+        Owner on it: names and P/T on one line (done), and the font should match the reference: Inter, bundled
+        (D-163), names at natural width, growing with the tile on a desktop.
+      - Owner (2026-11-23), next in the restyle: the player info in the left corners as in the reference (ui.md,
+        "Player info in the left corners"): label, large life, Library/Graveyard/Exile counts; replaces the
+        centred crests and the portraits. A board-model change (the anchors), so its own commit with layout tests.
+        Done (D-164): `hud/PlayerInfo.tsx`, `overlay.player` anchors, no crests, portraits or library piles; land rows
+        start right of the blocks; the hand a plain centred fan; the opponent's ladder at the top centre; layout tests
+        updated.
+      - UX review of the restyle (2026-11-23), fixed: targets are a dashed outline (cards and players alike), apart
+        from the solid "can be played" one (`targetIds`, `BoardCard.targetable`); outlines drawn inside a tile's edge,
+        so neighbours' never merge; the player block's target outline around it, not through its counts; prompt panels
+        opaque; card backs a step lighter; one ladder, on the active player's side. Long names on a phone's tiles: the
+        owner chose "Fade under the pill" (ui.md "Long names"): 7 px at the least, then cut at the pill with a fade.
+        Left for later, recorded here: a picked blocker shows only a thicker outline until assigned (give it its
+        hollow shield badge); raised and lowered P/T differ by colour only (add a caret or over/underline); full
+        control differs by colour only (add a detail line); the HUD doesn't scale up on a desktop (a --hud-scale);
+        land pile names covered by the tapped sub-pile or the next slot (pre-existing); colourless no-art tiles are
+        blank (a type glyph); Fireball's X wraps 0-6 then 7; the divide panel covers what's divided; "Open your hand"
+        is 40 px tall; planeswalker loyalty (the badges slice).
+      - Part 2 done in the same PR (#103): the HUD flat and calm through CSS tokens (`--panel`, `--edge`,
+        `--accent` a soft peach, `--muted`): plain life numbers on a dark disc, flat portraits with an accent ring
+        for the active player, a flat accent main button (full control a flat blue-violet), flat icon ladders (text
+        labels don't fit at phone width, ui.md), flat prompts, menus and buttons, plain dark card backs and badges.
+  - M3-04c slice 4 (was 3; renumbered after the restyle took 3) (2026-11-23, written before starting): badges, then
+    attachments, two PRs. The slices after it are now 5 zones, 6 the stack, 7 finishing. The badges are re-sited for
+    the frameless tile (the name now runs along the bottom left): keyword icons as small round icons at the top left,
+    as the reference app's hexproof icon; counters as a small icon and count beside the P/T pill. Original plan:
+    - **3a, badges on a permanent** (arena-research.md §"How permanents are drawn", owner screenshots):
+      - Keyword icons in a small dark square at the bottom-left [R]: our own drawn shapes (D-140), one per keyword
+        that has one (a wing for flying, a heart for lifelink, a skull for deathtouch, ...). Up to two icons; with
+        more keywords, or one without an icon, an ellipsis shows and the card view lists them all [R].
+      - Counters: a small round numbered badge at the top right [R] ("+2" for +1/+1 counters, "−1" for −1/−1, the
+        count for others), moved left of a combat badge when there is one.
+      - Loyalty: a planeswalker shows its loyalty in a shield-shaped box at the bottom centre where a creature's P/T
+        goes; a planeswalker that's also a creature shows it in the counter spot [R].
+      - Summoning sickness: an overlay [R], ours a faint "Zz" over the art, on a creature that can't attack or tap yet.
+      - The board model says what to show (`badges` on BoardCard, pure, tested); the renderer only draws it.
+    - **3b, Auras and Equipment beside their host:** an attached permanent leaves the outer row and sits just left of
+      the permanent it's attached to, a little smaller, joined by a small link mark [R, owner screenshot]; the creature
+      row makes room for it. The P/T hanger in the card view names the sources of a change where the view carries
+      them (UX review).
   - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
     as it merges; the owner gives feedback at the end:
     2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full

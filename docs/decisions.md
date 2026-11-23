@@ -2324,7 +2324,9 @@ owner's answer to the D-089 open question, option (a))
   for tests and the screenshots shown to the owner. The browser tests run at desktop size and at the folded phone in
   landscape (812×375, touch).
 
-**D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted
+**D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted, on the battlefield superseded by D-162
+- Since D-162 a permanent is a frameless art tile (`battlefield-tile.ts`); the frame and name strip below remain only
+  for a whole card's drawn fallback (hand, stack) until its image loads. The rest (row sizing, piles) still holds.
 - The owner asked for cards closer to Arena's (ui.md, "The cards"). A permanent is a wide art card (1.2 wide to 1
   tall): a bevelled frame in its colour with a drop shadow, a light name strip with dark serif text and the card's
   colours as glyphs, the art filling the rest, power/toughness in a pill at the bottom centre, a raised number blue
@@ -2471,3 +2473,53 @@ owner's answer to the D-089 open question, option (a))
   (Android fires one during a long hold) neither opens nor closes the view: the long-press's own timer does that.
 - The full view is modal: focus goes to Close and stays there, and no key reaches the board behind it. Every card's
   region is focusable, so "i" reaches cards no tap acts on.
+
+**D-162: A minimal, clean look throughout; Arena stays the guide for layout and play (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner shared screenshots of another MTG web app ("I kind of like how minimalistic and clean this person's web
+  app is", ui.md "Minimal and clean"; then "the UI as a whole just feels more clean and minimal") and, asked how far
+  to go, chose "Minimal throughout": a flat dark table, each
+  permanent only its art with its name over a dark fade and a small P/T pill, small round icons for keywords and
+  counters, plain text for the phases and the life and zone counts, a calmer main button, less ornament everywhere.
+- Kept: touch-first play on the board itself (no side panel of buttons), and Arena's layout and interactions (the hand,
+  the main button's place and job, the ladder's job, the card view, All Attack, drag to play): D-160 still answers
+  how things work and where they go. What changes is how they look.
+- This narrows D-012 ("Arena-level polish"): polish now means clean and calm, not Arena's ornament. D-153's card
+  anatomy (frame, name strip) gives way on the battlefield; hand cards stay whole card images. D-140 (our own shapes and
+  colours, no Arena assets) is unchanged, and so is not copying the other app's assets: we take its restraint, not its
+  pixels.
+
+
+**D-163: Inter as the app's one typeface (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, on the first minimal tiles: "the font style doesn't match the reference" (ui.md, "The font"). The
+  reference uses a clean, even sans-serif at a regular weight. System fonts differ by device (and a squeezed system
+  font read as condensed), so the app bundles one: Inter, by Rasmus Andersson, SIL Open Font License 1.1.
+- New runtime dependency: `@fontsource-variable/inter` 5.3.0 (pinned). Only its Latin variable file is used (48 KB,
+  `app/font.ts`, loaded with the FontFace API), so the service worker's offline cache stays small. The app waits up to
+  1.5 s for it before the first draw, since the board's canvas measures text as it draws.
+- Used by the HUD (`:root`) and by everything the board draws in text (`PALETTE.sans`), except a whole card's drawn
+  fallback, which keeps its printed-card serif until the real image loads over it.
+- A permanent's name is never squeezed sideways (letters at their natural width); it shrinks to fit beside the P/T.
+
+**D-164: Each player's info in a left corner (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, pointing at the reference app: "you see how the player and opponent info is on the left corners in the
+  reference screenshots? the life total, library size, graveyard, and exile." So the opponent's block is at the top
+  left and the person's at the bottom left (`hud/PlayerInfo.tsx`): a label and the life total, large, on one line,
+  and under it the library, graveyard and exile counts. It replaces the centred life crests (Arena's) and the
+  portraits, and the library piles (their count is in the block). This departs from Arena's layout (D-160) at the
+  owner's word.
+- Whose turn it is: a marker before the label and the label in the accent. A player who can be targeted: the block
+  becomes a button with a dashed outline. The person's mana pool sits just above their block.
+- The board model gives the blocks as anchors (`overlay.player`); the land rows start right of them; the hand is a
+  plain centred fan (it no longer parts around a crest); on the opponent's turn their ladder is at the top centre,
+  its combat rungs as on the person's; a prompt that can't go between the rows sits near the top (`promptTop`).
+- Exile counts the cards each player owns that can be seen there; graveyard and exile browsing come with the zones
+  slice.
+
+**D-165: We keep and finish our own rules engine, not Forge's (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner asked whether to adapt the web frontend to Forge's open-source engine (github.com/Card-Forge/forge)
+  rather than build our own. Forge has far more cards ("over 99%" of all cards), but it is Java with no web build,
+  GPL-3.0 (our repo is MIT), and would need a server (or Java running in the browser) for our app, losing offline play
+  and "no server" (vision.md), and the pure-reducer design that replays, fuzzing, the CR-cited tests and the LLM
+  opponent's tools rely on. After the trade-offs, the owner: "never mind then, we'll strive towards finishing our own
+  rules engine." D-051 stands: the engine is the end goal. Card coverage grows a mechanic at a time.
+

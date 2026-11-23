@@ -2,12 +2,18 @@
    the HUD's looks. Colours are original (D-140). */
 :root {
   color-scheme: dark;
-  font-family: system-ui, sans-serif;
+  /* The app's one typeface (app/font.ts, D-163). */
+  font-family: Inter, system-ui, sans-serif;
   background: #14171d;
   color: #f4f0e6;
-  --panel: rgba(16, 18, 24, 0.92);
-  --edge: #4a5262;
-  --gold: #e2b84f;
+  /* The minimal look (D-162): flat dark surfaces, thin light edges, one calm accent. */
+  --panel: #1e1d1b;
+  --edge: rgba(255, 255, 255, 0.12);
+  --accent: #e3a07f;
+  --accent-ink: #1e1410;
+  --muted: #a9a39a;
+  /* The card view's hanger titles. */
+  --gold: var(--accent);
   --ink: #14171d;
 }
 
@@ -22,13 +28,9 @@ body,
 
 /* ui.md, "Touch interaction": no browser gestures, selection or overscroll on the board. */
 .app {
-  /* An original playmat (ui.md, "The cards": warm and textured, not flat): a warm stone field lit from the middle,
-     a faint engraved ring around the centre, fine grain, darker edges. */
-  background:
-    radial-gradient(circle at 50% 50%, transparent 21%, rgba(255, 226, 160, 0.07) 21.4%, transparent 22.2%),
-    radial-gradient(circle at 50% 50%, transparent 31%, rgba(0, 0, 0, 0.1) 31.3%, transparent 32%),
-    repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.018) 0 2px, rgba(0, 0, 0, 0.02) 2px 5px),
-    radial-gradient(ellipse 70% 62% at 50% 50%, #7a6542 0%, #5a4a32 45%, #33291c 80%, #1d1710 100%);
+  /* The table (D-162, minimal and clean): a flat warm dark grey, no texture or ornament, so the cards' art is what
+     catches the eye. */
+  background: #22211f;
   position: fixed;
   inset: 0;
   touch-action: none;
@@ -59,116 +61,80 @@ body,
   color: inherit;
 }
 
-/* The HUD's pieces (ui.md, "The rest of the HUD"): our own crafted look in the spirit of Arena's (D-140): bronze and
-   gold metal, dark enamel, depth from light and shadow. Where they sit comes from the board model. */
+/* The HUD's pieces (ui.md, "The rest of the HUD"), minimal and clean (D-162): flat dark surfaces with a thin light
+   edge, plain numbers and labels in the app's typeface, one calm accent for what to press. Where they sit comes from
+   the board model. */
 
-.portrait {
+/* A player's info in a left corner (hud/PlayerInfo.tsx, D-164): a label and the life on one line, the zone counts
+   under it, as the reference app. No box around it: it's text on the table. */
+.hud .player-info {
   box-sizing: border-box;
-  border-radius: 7px;
-  border: 2px solid #2a2218;
-  box-shadow:
-    0 0 0 1px #a8874a,
-    0 3px 8px rgba(0, 0, 0, 0.6),
-    inset 0 0 10px rgba(0, 0, 0, 0.65);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  margin: 0;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: #f4f1ec;
+  text-align: left;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
-.portrait.opponent {
-  background: radial-gradient(circle at 50% 30%, #6d4a52, #2c1c22 75%);
+.player-info.opponent {
+  justify-content: flex-start;
 }
 
-.portrait.mine {
-  background: radial-gradient(circle at 50% 30%, #4a5d7a, #1a2230 75%);
+.player-info.mine {
+  justify-content: flex-end;
 }
 
-.portrait svg {
-  width: 100%;
-  height: 100%;
-  fill: rgba(232, 222, 200, 0.55);
+.player-line {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
 }
 
-/* The active player's portrait: a bright gold ring with a glow, and a marker: not colour alone. */
-.portrait.active {
-  border-color: #f0cd6a;
-  box-shadow:
-    0 0 0 1px #f7e2a0,
-    0 0 12px 3px rgba(240, 200, 100, 0.55),
-    inset 0 0 10px rgba(0, 0, 0, 0.5);
-  overflow: visible;
+.player-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #d9d4cc;
+}
+
+.player-life {
+  font-size: 21px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-counts {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.player-counts b {
+  font-size: 11px;
+  font-weight: 500;
+  color: #f4f1ec;
+}
+
+/* Whose turn it is: a marker before the label, and the label in the accent (a shape and a colour). */
+.player-info.active .player-name {
+  color: var(--accent);
 }
 
 .turn-marker {
-  position: absolute;
-  right: -11px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 6px solid transparent;
-  border-left: 8px solid #f0cd6a;
-  filter: drop-shadow(0 0 3px rgba(240, 200, 100, 0.8));
-}
-
-/* A life crest: a dark enamel medallion in a metal ring, with a blade on each side. */
-.life {
-  /* Its own stacking context, so the blades (z-index -1) sit behind the medallion but above the board. */
-  z-index: 1;
-  box-sizing: border-box;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 700;
-  font-size: 24px;
-  font-variant-numeric: tabular-nums;
-  color: #f4ecd8;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
-  background: radial-gradient(circle at 50% 30%, #3b4150, #15181f 70%);
-  border: 3px solid #c9a55a;
-  box-shadow:
-    0 0 0 2px #2a2014,
-    inset 0 2px 4px rgba(255, 255, 255, 0.12),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.6),
-    0 4px 10px rgba(0, 0, 0, 0.6);
-}
-
-.life::before,
-.life::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 22px;
-  height: 12px;
-  background: linear-gradient(180deg, #e8cd86, #8f6c2e);
-  z-index: -1;
-}
-
-/* The blades sweep outward and up on both crests, as in the owner's screenshots [R]: mirrored on the opponent's, the
-   crest read as upside down (owner, 2026-11-23). */
-.life::before {
-  right: 100%;
+  align-self: center;
+  border: 5px solid transparent;
+  border-left: 7px solid var(--accent);
   margin-right: -6px;
-  clip-path: polygon(100% 0, 100% 100%, 0 30%);
-  transform: translateY(-80%) rotate(14deg);
-}
-
-.life::after {
-  left: 100%;
-  margin-left: -6px;
-  clip-path: polygon(0 0, 0 100%, 100% 30%);
-  transform: translateY(-80%) rotate(-14deg);
-}
-
-/* The opponent's crest as their ladder's combat rung: blue light while they're in combat [R]. */
-.life.combat {
-  border-color: #7fbcff;
-  box-shadow:
-    0 0 0 2px #14243a,
-    0 0 16px 5px rgba(111, 180, 255, 0.6),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.6);
-}
-
-.life.combat::before,
-.life.combat::after {
-  background: linear-gradient(180deg, #cfe6ff, #4c8fdc);
 }
 
 .ladder {
@@ -180,12 +146,9 @@ body,
 
 .ladder-pill {
   box-sizing: border-box;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #20232b, #0e1014);
-  border: 1px solid #6a5531;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.55);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--edge);
 }
 
 .ladder li {
@@ -199,84 +162,76 @@ body,
 .ladder svg {
   width: 12px;
   height: 12px;
-  fill: #6c7488;
+  fill: #6f6b65;
 }
 
 .ladder svg.stroke {
   fill: none;
-  stroke: #6c7488;
+  stroke: #6f6b65;
   stroke-width: 2;
   stroke-linecap: round;
 }
 
-/* The current phase: bigger, gold, glowing, underlined. */
+/* The current phase: bigger, white, underlined in the accent. */
 .ladder li.lit {
-  border-bottom-color: #f0cd6a;
+  border-bottom-color: var(--accent);
 }
 
 .ladder li.lit svg {
-  width: 16px;
-  height: 16px;
-  fill: #f6d77c;
-  filter: drop-shadow(0 0 3px rgba(246, 215, 124, 0.8));
+  width: 15px;
+  height: 15px;
+  fill: #f4f1ec;
 }
 
 .ladder li.lit svg.stroke {
   fill: none;
-  stroke: #f6d77c;
+  stroke: #f4f1ec;
 }
 
-/* The main button: a glossy gold pill with a serif label [R], lit from above. (`.hud` in front: it must win over
+/* The main button: a flat rounded rectangle in the accent (the owner), its label in the app's typeface. (`.hud` in front: it must win over
    `.hud button`, which sets every control's colour.) */
 .hud .main-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  border: 1px solid #7a5512;
-  background: linear-gradient(180deg, #f8dc7e 0%, #e2ad3c 48%, #c58b22 52%, #b47a1c 100%);
-  color: #2a1d08;
-  box-shadow:
-    0 0 0 2px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -2px 3px rgba(80, 40, 0, 0.45),
-    0 0 14px rgba(240, 190, 80, 0.4),
-    0 4px 10px rgba(0, 0, 0, 0.55);
-  line-height: 1.05;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  line-height: 1.1;
 }
 
 .main-button:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
+  filter: brightness(0.92);
 }
 
 .main-label {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 700;
-  font-size: 18px;
-  text-shadow: 0 1px 0 rgba(255, 245, 210, 0.6);
+  font-weight: 600;
+  font-size: 17px;
 }
 
 /* Its size is set inline to fit (Hud.tsx): a card's name is never cut off (ui.md). */
 .main-detail {
-  font-weight: 600;
+  font-weight: 500;
   max-width: 100%;
   white-space: nowrap;
+  opacity: 0.8;
 }
 
 /* Nothing to press: plain text on the table, as Arena's "Opponent's Turn" [R]. */
 .hud .main-button.waiting {
   background: none;
-  border-color: transparent;
-  color: #d9d0bb;
+  color: var(--muted);
   box-shadow: none;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .main-button.waiting .main-label {
+  font-weight: 500;
   font-size: 15px;
   white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 /* A card's tap region: invisible over the canvas, but for a press and the keyboard's focus ring (ui.md). */
@@ -295,11 +250,11 @@ body,
   align-items: center;
   justify-content: center;
   border-radius: 13px;
-  background: rgba(10, 12, 16, 0.85);
-  border: 1px solid var(--gold);
+  background: rgba(20, 19, 18, 0.88);
+  border: 1px solid var(--edge);
   color: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
   z-index: 100001;
@@ -316,10 +271,10 @@ body,
 }
 
 /* Above every region: a tap on the stack's card lands on nothing under it. */
-/* Let go now and it's played: the cue lights up gold, so the change shows, not only its words. */
+/* Let go now and it's played: the cue fills with the accent, so the change shows, not only its words. */
 .hud .tap-again.armed {
-  background: linear-gradient(180deg, #f8dc7e, #c58b22);
-  color: #2a1d08;
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 /* A card with nothing to do now still takes a long-press, a right-click or a hover, to be looked at. */
@@ -363,25 +318,22 @@ body,
   box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.75);
 }
 
-/* A player who can be targeted: a cyan outline, as a targetable card has, and a pointer. */
-.hud .portrait.target {
-  border-color: #3fd4ff;
-  box-shadow:
-    0 0 0 2px rgba(63, 212, 255, 0.5),
-    0 0 12px 3px rgba(63, 212, 255, 0.5);
+/* A player who can be targeted: a dashed outline, as a targetable card has (a shape, not only the colour), around the
+   block rather than through its text. */
+.hud .player-info.target {
+  outline: 2px dashed #3fd4ff;
+  outline-offset: 3px;
   cursor: pointer;
 }
 
 .hud .secondary-button {
   min-height: 44px;
-  border-radius: 999px;
-  border: 1px solid #8a8f9c;
-  background: linear-gradient(180deg, #2c313b, #15181e);
-  color: #f0ebdd;
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--edge);
+  background: var(--panel);
+  color: #f4f1ec;
+  font-weight: 500;
   font-size: 14px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
 }
 
 /* What the game waits for, between the battlefields [R]: words on a dark band, choices under them. */
@@ -403,11 +355,10 @@ body,
   margin: 0;
   padding: 3px 14px;
   border-radius: 999px;
-  background: rgba(10, 11, 14, 0.7);
-  color: #f4ecd8;
-  font-family: Georgia, "Times New Roman", serif;
+  background: rgba(20, 19, 18, 0.75);
+  color: #f4f1ec;
+  font-weight: 500;
   font-size: 15px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
 }
 
@@ -447,9 +398,9 @@ body,
 /* A prompt with choices is one panel, title and all, so it reads over cards when the table has no room for it. */
 .prompt.with-choices {
   padding: 8px 12px 10px;
-  border-radius: 24px;
-  background: rgba(10, 11, 14, 0.88);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
+  border: 1px solid var(--edge);
+  background: var(--panel);
 }
 
 .prompt.with-choices .prompt-title {
@@ -461,9 +412,9 @@ body,
   min-height: 44px;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid #c9a55a;
-  background: #0e1014;
-  color: #f4ecd8;
+  border: 1px solid var(--edge);
+  background: #1a1918;
+  color: #f4f1ec;
   font: inherit;
   /* 16px: iOS Safari zooms the page into a text box with smaller text. */
   font-size: 16px;
@@ -471,20 +422,19 @@ body,
 
 .prompt-more {
   margin: 0;
-  color: #d9d0bb;
+  color: var(--muted);
   font-size: 12px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .prompt-choices button {
   min-height: 44px;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid #c9a55a;
-  background: linear-gradient(180deg, #2c313b, #15181e);
-  color: #f4ecd8;
+  border: 1px solid var(--edge);
+  background: #33312e;
+  color: #f4f1ec;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .choice-menu {
@@ -494,8 +444,8 @@ body,
   gap: 4px;
   padding: 6px;
   border-radius: 10px;
-  border: 1px solid #6a5531;
-  background: rgba(16, 18, 24, 0.95);
+  border: 1px solid var(--edge);
+  background: var(--panel);
   pointer-events: auto;
 }
 
@@ -503,8 +453,8 @@ body,
   min-height: 44px;
   padding: 4px 12px;
   border-radius: 8px;
-  border: 1px solid #4a5262;
-  background: #252a33;
+  border: 1px solid var(--edge);
+  background: #33312e;
   font-size: 13px;
   white-space: nowrap;
 }
@@ -523,14 +473,14 @@ body,
   height: 44px;
   padding: 9px;
   border-radius: 50%;
-  border: 1px solid #6a5531;
-  background: linear-gradient(180deg, #23262e, #111318);
+  border: 1px solid var(--edge);
+  background: var(--panel);
 }
 
 .settings-toggle svg {
   width: 100%;
   height: 100%;
-  fill: #c9c2b0;
+  fill: var(--muted);
 }
 
 .settings-menu {
@@ -538,8 +488,8 @@ body,
   flex-direction: column;
   padding: 6px;
   border-radius: 10px;
-  border: 1px solid #6a5531;
-  background: rgba(16, 18, 24, 0.95);
+  border: 1px solid var(--edge);
+  background: var(--panel);
 }
 
 .settings-menu {
@@ -551,7 +501,7 @@ body,
   padding: 4px 14px;
   border-radius: 8px;
   border: 1px solid var(--edge);
-  background: #23262e;
+  background: #33312e;
   font-size: 13px;
 }
 
@@ -565,21 +515,11 @@ body,
   background: #2d2858;
 }
 
-/* Full control: the main button in Arena's blue-violet [R] (arena-research.md, "The main button"). */
+/* Full control: the main button in a flat blue-violet, as Arena's colour for it [R] (arena-research.md, "The main
+   button"); the settings menu says it's on in words. */
 .hud .main-button.full-control:not(.waiting) {
-  border-color: #3a2f8a;
-  background: linear-gradient(180deg, #b7adff 0%, #8577ea 48%, #6a5bd6 52%, #5848bd 100%);
+  background: #8f83ee;
   color: #120d33;
-  box-shadow:
-    0 0 0 2px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -2px 3px rgba(20, 10, 80, 0.45),
-    0 0 14px rgba(140, 120, 255, 0.45),
-    0 4px 10px rgba(0, 0, 0, 0.55);
-}
-
-.hud .main-button.full-control:not(.waiting) .main-label {
-  text-shadow: 0 1px 0 rgba(230, 225, 255, 0.6);
 }
 
 .result {
@@ -589,10 +529,10 @@ body,
   margin: 0;
   padding: 10px 28px;
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 600;
   border-radius: 12px;
   background: var(--panel);
-  border: 2px solid var(--gold);
+  border: 1px solid var(--edge);
 }
 
 .toast {
@@ -642,7 +582,7 @@ body,
 .mana-G { background: #4d9a5c; }
 .mana-T { background: #e8e4da; }
 
-/* The person's mana pool, beside their portrait. */
+/* The person's mana pool, just above their info block. */
 .hud .mana-pool {
   display: flex;
   gap: 6px;

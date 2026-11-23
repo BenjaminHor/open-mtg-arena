@@ -51,7 +51,7 @@ export function pileBadge(count: number, w: number, h: number): Container {
   const badge = new Container();
   const text = new Text({
     text: `x${count}`,
-    style: { fontFamily: "system-ui, sans-serif", fontWeight: "800", fontSize: 11, fill: PALETTE.badgeText },
+    style: { fontFamily: PALETTE.sans, fontWeight: "700", fontSize: 11, fill: PALETTE.badgeText },
   });
   text.anchor.set(0.5);
   const bw = text.width + 8;
@@ -60,7 +60,7 @@ export function pileBadge(count: number, w: number, h: number): Container {
     new Graphics()
       .roundRect(-bw / 2, -bh / 2, bw, bh, 3)
       .fill(PALETTE.badge)
-      .stroke({ width: 1, color: 0x6b7385 }),
+      .stroke({ width: 1, color: 0xffffff, alpha: 0.18 }),
     text,
   );
   // Above the card's top-left corner, clear of its name.

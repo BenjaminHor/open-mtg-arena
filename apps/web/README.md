@@ -39,7 +39,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   Attack's picks, one at a time (the engine has no "all" action). `card-details.ts`: what the card view shows, a card's
   text and image and the hangers beside it (keyword reminders, counters, damage, what's attached, who controls it).
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
-  (`CardButtons.tsx`), portraits (targetable as players), life crests, the phase ladders (`PhaseLadder.tsx`), the main
+  (`CardButtons.tsx`), each player's info in a left corner (`PlayerInfo.tsx`: life and zone counts, targetable as a
+  player), the phase ladders (`PhaseLadder.tsx`), the main
   button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
   card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede and full control (`SettingsMenu.tsx`).
   `hand-drag.ts`: drag a hand card up onto the table to play it, followed on the window so lifting it can't lose it.
@@ -47,8 +48,9 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   large; a mouse resting on a card previews it. `swallow-click.ts`: stops the click a drag's or a long-press's release
   fires, so neither also counts as a tap.
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
-  component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `card-face.ts` (a card's face:
-  frame, art window, name strip, power/toughness), `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
+  component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `battlefield-tile.ts` (a permanent:
+  its art only, name over a fade, power/toughness pill, D-162), `card-face.ts` (a whole card off the battlefield: frame,
+  name strip, art, text, until its image loads), `face.ts`, `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
   badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
   `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
   (and `window.__artShown()`) in development and test builds.

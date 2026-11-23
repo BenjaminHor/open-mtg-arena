@@ -11,7 +11,12 @@ const SMALLEST = 6;
 /** The smallest size a wrapped name may take to fit the strip's height. */
 const SMALLEST_WRAPPED = 4.5;
 
-export function fitText(text: Text, width: number, height: number = Number.POSITIVE_INFINITY): void {
+/** `height`: the strip's height, for a wrapped name. */
+export function fitText(
+  text: Text,
+  width: number,
+  { height = Number.POSITIVE_INFINITY }: { height?: number } = {},
+): void {
   const fits = () => text.width <= width;
   if (fits()) return;
   text.scale.x = Math.max(NARROWEST, width / (text.width / text.scale.x));
