@@ -106,23 +106,30 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     show the owner the layout early, before the details.
   - **M3-03 done, merged (PR #95).**
   M3-04 plan (the compact board, the folded phone in landscape, about 812×375 CSS px), three PRs, the look first:
-  - **M3-04a, the layout and the look.** Arena's phone layout (arena-research.md §1–2, "Layout from screenshots",
-    the owner's phone screenshots): the opponent's half on top, the person's below; on each side lands at the back
-    left, other non-creature permanents at the back right, creatures toward the centre line, planeswalkers at the right
-    edge; library and graveyard piles in the outer corners with counts; portraits with life totals on the centre line
-    of each half; the phase ladder (five steps, combat expanding) lit on the current step; the person's hand fanned
-    along the bottom edge, half off screen; the opponent's hand as card backs at the top. Original card frames drawn
-    in Pixi (D-140): a color by the card's colors, a name bar with mana symbols as shapes, the type line, a
-    power/toughness box; on the battlefield a compact frame; tapped as Arena does it (a small tilt, darkened, a tap
-    mark). Layout and look values in one tokens file (D-012). The big main button (React) bottom right. The options
-    list stays for now as a drawer. **Screenshot to the owner before M3-04b.**
+  - **M3-04a, the layout and the look.** The owner's phone screenshots (arena-research.md, "The owner's phone
+    screenshots") decide the compact layout; the desktop map only fills what they don't show, marked as a guess in the
+    layout data. Portraits are small squares in the top-left (opponent) and bottom-left (person) corners; life totals
+    are crests at top centre and bottom centre, the person's over the hand; the opponent's library at the top edge near
+    67% W, the person's beside their portrait near 24% W; the opponent's hand backs along the top edge left of centre.
+    Each side: lands at the outer left, piled by name with an "xN" count; creatures close to the centre band, centred;
+    other non-creature permanents at the outer right and planeswalkers at the right edge (desktop guesses). The phase
+    ladder (five steps, combat expanding) above the main button at the bottom right, around the opponent's life crest
+    on their turn; the person's hand along the bottom centre, mostly off screen. Battlefield cards are mostly art: the
+    pool data has Scryfall art-crop links and Scryfall serves them cross-origin, so 04a loads art at runtime (the
+    browser's own cache only; M3-08 adds the offline cache and the first-run download), with an art-less original
+    frame as the fallback (D-140); tests never need the network. Frames: art, a name bar, mana symbols as shapes, a
+    power/toughness box; tapped as Arena (a small tilt, dimmed, a tap mark). Layout values in one data file per layout
+    (M3-05 adds the second), safe-area insets respected; the canvas full-bleed under a DOM overlay (`pointer-events:
+    none` but for controls); sprites kept by object id and updated in place (M3-07 moves them). Fixtures (a mid-game
+    board, a crowded late one) start the worker from a setup, for tests and screenshots. **Screenshots of both
+    fixtures at 812×375 to the owner, before M3-04b; 04b waits for their answer.**
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
     combat"); prompts (React) for the rest: mulligan, X, choosing cards, yes/no, dividing damage, the order of
     triggers, damage assignment, naming a card; the options drawer goes.
   - **M3-04c, everything M2's pool puts on the board.** The stack at the side with its targets, counters and loyalty,
-    attached Auras and Equipment tucked behind their permanent, tokens, damage, summoning sickness, graveyard and
+    attached Auras and Equipment beside their permanent with a link mark (the owner's screenshots), tokens, damage, summoning sickness, graveyard and
     exile browsers, revealed hands and library tops, long-press for the card's details, the "turn your phone"
     prompt in portrait. *Accept (M3-04):* a full game playable at the folded phone's size in landscape, as a
     Playwright test.
