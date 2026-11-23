@@ -233,8 +233,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     again to cast" on a lifted card; a white focus ring; Tab in screen order. "All Attack" is left for later: it isn't
     an engine option (each attacker is its own pick), so it would be a UI macro of several picks; to raise with the
     owner, with drag to play, at review time.
-  - **M3-04b slices 1 and 3 merged (PR #97, 2026-11-23).** CI green, a 300-game fuzz clean. Next: slice 2, bespoke
-    prompts.
+  - **M3-04b slices 1 and 3 merged (PR #97, 2026-11-23).** CI green, a 300-game fuzz clean.
+  - **M3-04b slice 2 merged (PR #98, squash, 2026-11-23). M3-04b is done.** The branch's own history still holds five
+    debug screenshots that a squash kept out of `main`: squash-merge the next PR from this branch too (a force-push to
+    restart the branch was refused). Next: M3-04c (everything M2's pool puts on the board), with the lists above.
   - M3-04b slice 2 plan (2026-11-23, written before starting): every prompt says what it's for, with the decision's
     own context, and the long ones are easy to use. Web only, no engine change.
     - `interaction/prompt-text.ts` (pure): the prompt's title and each choice's label from the decision.
