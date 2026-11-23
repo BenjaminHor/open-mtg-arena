@@ -140,6 +140,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     pieces are restyled in this slice too.
   - Owner (2026-11-23): tapped lands in a pile should sit on top of the pile, not tapped somewhere inside it, so it
     doesn't look messy. Recorded in ui.md ("Tapped lands in a pile"); each slot now draws its tapped pile in front.
+  - Owner (2026-11-23): asked how colourless and multicolour cards and tokens will look (Arena makes tokens obvious),
+    and to see screenshots of attacks and blocks. Recorded in ui.md ("Colourless, multicolour and tokens", "Attacks
+    and blocks"). Plan, in order: combat on the board (attackers forward with a swords badge, blockers opposite their
+    attacker with a shield badge, links), fixtures that reach combat, screenshots of attacks and blocks to the owner;
+    then the frames for colourless, multicolour and tokens; then the HUD polish; then screenshots of everything.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

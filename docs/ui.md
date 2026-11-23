@@ -33,6 +33,18 @@ just taps them within the stack visually. I think if they're tapped then they sh
 that makes sense. So it doesn't look messy." A pile's tapped cards gather on top of it, together, in front of its
 untapped ones (D-153).
 
+**Colourless, multicolour and tokens (owner, 2026-11-23):** "the color coded borders is neat. However I wonder what
+would be done for colorless cards and multicolor cards. Also wondering what tokens would look like since mtga arena
+makes it obvious at first glance what's a token and not." The answer (D-153): a multicolour card has a gold frame with
+a stripe of each of its colours, and a glyph per colour on its name strip; a colourless artifact has a steel frame, a
+colourless land a bronze one. A token is told by its shape, not only its colour: an arched top to its art, no name
+strip across the top, its name on a small plate low on the art, as Arena's tokens have an arched frame.
+
+**Attacks and blocks (owner, 2026-11-23):** "I'd like to see screenshots of what attack and blocks look like."
+Combat must read at a glance (see "Clarity"): attacking creatures step forward toward the band with a crossed-swords
+badge, each blocker steps forward opposite the attacker it blocks with a shield badge, and a short link joins each
+blocker to its attacker (and an attacker to the planeswalker it attacks).
+
 **The rest of the HUD (owner, 2026-11-23, after the card redraw):** "Looks a lot better! I think some of the UI other
 than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase
 ladder, main button, card backs, libraries and drawers get the same care as the cards: our own crafted shapes,
