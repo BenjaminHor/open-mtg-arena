@@ -334,6 +334,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Slice 7 merged (PR #110, squash, 2026-11-23). M3-04c is done.** Next: the pacing slice (D-172), then the owner's
+    feedback on the live site (and their check of the zone browser's spacing on the phone).
   - **Slice 7 done (2026-11-23, D-171): the "turn your phone" prompt, the hand's 44 px tap, carets on a changed P/T.**
     7b needed nothing new: e2e/play.spec.ts already plays a whole seeded game by touch taps at 812x375 on every PR,
     which is the milestone's acceptance. Next: merge, then ask the owner for feedback with the live link.
