@@ -2313,6 +2313,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   much?". phase-rs/phase: a Rust MTG rules engine compiled to native and WASM (desktop app, browser PWA, WebSocket
   multiplayer), cards parsed from text with MTGJSON data, CR-cited rules tests, MIT/Apache-2.0 (from a web search
   only; its code not yet read). Proposed: a time-boxed evaluation against our goals before deciding; no decision yet.
+  Then the owner: "what I really want is it's rules engine and frontend client when playing matches against an AI.
+  those are the two biggest things. we would save a ton of time and would be able to get started on the higher value
+  initiatives like an LLM powered opponent and the single player RPG or rogue like". So the evaluation is of those
+  two: phase's rules engine, and its client for a match against the AI, as the base for the LLM opponent and a
+  single-player RPG or roguelike (vision.md).
 
 - (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
   from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of
