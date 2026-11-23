@@ -32,8 +32,11 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
   if (request.mode === "navigate") {
-    // Offline, any page is the app's one page, cached as "/" (the manifest's start_url).
-    event.respondWith(fetch(request).catch(() => caches.match("/", { ignoreVary: true })));
+    // Offline, any page is the app's one page, cached under the base it's served from (the manifest's start_url): "/",
+    // or "/open-mtg-arena/" on GitHub Pages, the service worker's own folder.
+    event.respondWith(
+      fetch(request).catch(() => caches.match(new URL("./", self.location).href, { ignoreVary: true })),
+    );
     return;
   }
   // `ignoreVary`: module scripts are requested with an Origin header the install's requests didn't send, and a server

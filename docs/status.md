@@ -206,7 +206,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
+  - Owner (2026-11-23): wants to follow progress on the phone: the app is published to GitHub Pages from `main`
+    (D-159), at https://benjaminhor.github.io/open-mtg-arena/. The owner enables it once (Settings → Pages → Source:
+    "GitHub Actions"); each merged pull request is live a few minutes later.
+  - Owner (2026-11-23): on the stops in your own upkeep, draw step and end step, "whatever MTGA does, do that". D-157
+    is that (Arena's documented default), so it stays; the open question is closed. The rule for stops is Arena's.
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
+  - **M3-04c first slice merged (PR #100, squash, 2026-11-23): All Attack, Clear Attacks, taking one attacker out,
+    and drag to play.** Waiting on the owner's phone check (a real finger, iOS Safari).
   - M3-04c first slice plan (2026-11-23): "All Attack" and drag to play, one PR.
     - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
       creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
@@ -1980,12 +1987,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
-
-- **D-157, awaiting the owner (2026-11-23).** Overnight, auto-pass gained Arena's skips of your own upkeep, draw step
-  and end step (with an empty stack, unless mana is floating), even with an instant in hand. D-143 said per-step
-  changes would wait for playtesting, so this needs your yes. The upkeep and end-step skips are from Wizards; the draw
-  step rests on a community source. To undo it, delete `skipsOwnStep` in `packages/match/src/auto-pass.ts` and its
-  three tests. Keep it, or revert?
 
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an

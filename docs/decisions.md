@@ -2381,7 +2381,7 @@ owner's answer to the D-089 open question, option (a))
   damage and damage assignment (slice 2), smart stops (slice 3).
 
 
-**D-157: Arena's default skips on top of D-143: no stop in your own upkeep, draw step or end step (M3-04b)** · 2026-11-23 · accepted
+**D-157: Arena's default skips on top of D-143: no stop in your own upkeep, draw step or end step (M3-04b)** · 2026-11-23 · accepted (the owner: "whatever MTGA does, do that")
 - The M3-04b plan in `status.md` proposed stopping only at a list of steps (main phases, the combat declarations,
   the opponent's spells and attacks). That is the design D-143 rejected, because a combat trick lost its window
   after blockers. The research's [R] lines say Arena stops wherever you hold something you can cast. So D-143 stays.
@@ -2432,3 +2432,14 @@ owner's answer to the D-089 open question, option (a))
   cue turns gold then. A card that can't be played says so; a cancelled drag leaves the hand as it was. Escape or a shorter drag puts it down. One pointer
   and the main button only; the drag is followed on the window, since lifting the card redraws the hand; the click a
   release fires is swallowed. The card following the finger is M3-07's.
+
+**D-159: The app is published to GitHub Pages from `main` (M3)** · 2026-11-23 · accepted
+- The owner wants to follow progress on their phone. The app is static (no server: everything runs in the browser),
+  so GitHub Pages hosts it for free at `https://benjaminhor.github.io/open-mtg-arena/`.
+- A workflow (`.github/workflows/pages.yml`) builds `apps/web` and publishes it on every push to `main`, so each merged
+  pull request is live a few minutes later. The owner enables it once: Settings → Pages → Source: "GitHub Actions".
+- Pages serves the app under `/open-mtg-arena/`, not `/`: the build takes its base path from `BASE_PATH`, and every
+  path the app writes itself (the service worker, its precache list and offline fallback, the manifest) follows it.
+  Local builds and the tests keep `/`.
+- It's public, as the repository is. Card art is still fetched from Scryfall at runtime and never published with the
+  app (D-007, data-sources.md).
