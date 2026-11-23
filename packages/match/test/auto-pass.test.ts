@@ -1,5 +1,6 @@
-// Smart auto-pass (D-143): the host passes for a player with nothing they could do, stops them at every window where
-// they could act (as Arena does), and lets their own spell resolve without asking them.
+// Smart auto-pass (D-143, D-157): the host passes for a player with nothing they could do, stops them at every window
+// where they could act (as Arena does) but for their own upkeep, draw step and end step, and lets their own spell
+// resolve without asking them.
 
 import type { Action, ObjectId } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
@@ -23,8 +24,7 @@ describe("auto-pass", () => {
     let match = advance(startMatch(setup, people, cards), cards);
     // Straight on to their first main phase.
     expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p1", "precombatMain"]);
-    // Then on through combat to the second main phase, and on from there past their own end step to the opponent's
-    // turn: p2, who has nothing to do, is passed for in every step of it, back to p1's next first main phase.
+    // Then on through combat and the second main phase, past their own end step, until the turn passes to p2.
     const steps: string[] = [];
     for (let i = 0; i < 12 && match.state.turn?.number === 3; i++) {
       steps.push(match.state.turn?.step ?? "");
@@ -44,7 +44,56 @@ describe("auto-pass", () => {
     expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p1", "end"]);
     // Without the mana, the same end step goes by.
     const without = advance(startMatch(setup, people, cards), cards);
-    expect(without.state.turn?.step === "end" && waitingOn(without, cards) === "p1").toBe(false);
+    expect([waitingOn(without, cards), without.state.turn?.step]).not.toStrictEqual(["p1", "end"]);
+  });
+
+  it("stops the player in their own upkeep while mana is left in their pool (CR 500.5)", () => {
+    const setup = handMade({ hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, {}, "upkeep");
+    const withMana: typeof setup = {
+      ...setup,
+      players: setup.players.map((p) => (p.id === "p1" ? { ...p, manaPool: { ...p.manaPool, R: 1 } } : p)),
+    };
+    const match = advance(startMatch(withMana, people, cards), cards);
+    expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p1", "upkeep"]);
+  });
+
+  it("in the player's own upkeep, passes for their own trigger, and stops them for the opponent's spell (D-157)", () => {
+    // Xathrid Demon's upkeep trigger is p1's own: p1 is passed for, and p2, holding a Bolt, is stopped to respond.
+    const setup = handMade(
+      { hand: ["Lightning Bolt"], battlefield: ["Xathrid Demon", "Grizzly Bears", "Mountain"] },
+      { hand: ["Lightning Bolt"], battlefield: ["Mountain"] },
+      "end",
+    );
+    // From the end of p2's turn, so p1's upkeep begins in play and its trigger fires.
+    const fromP2: typeof setup = {
+      ...setup,
+      opening: { kind: "fixed", turn: { number: 2, activePlayer: "p2", step: "end" } },
+    };
+    let match = advance(startMatch(fromP2, people, cards), cards);
+    // p1, holding a Bolt, is stopped in p2's end step: passing on to their own turn.
+    while (match.state.turn?.activePlayer === "p2") match = act(match, passes);
+    expect([waitingOn(match, cards), match.state.turn?.step, match.state.zones.stack.length]).toStrictEqual([
+      "p2",
+      "upkeep",
+      1,
+    ]);
+    // p2 bolts p1 in response: an opponent's object on the stack stops p1 even in p1's own upkeep.
+    match = act(match, (a) => a.type === "CAST_SPELL");
+    while (waitingOn(match, cards) === "p2") {
+      match = act(
+        match,
+        (a) =>
+          a.type === "ANSWER" &&
+          a.answer.kind === "chooseTarget" &&
+          a.answer.target.kind === "player" &&
+          a.answer.target.player === "p1",
+      );
+    }
+    expect([waitingOn(match, cards), match.state.turn?.step, match.state.zones.stack.length]).toStrictEqual([
+      "p1",
+      "upkeep",
+      2,
+    ]);
   });
 
   it("never stops a player who can't pay for anything", () => {

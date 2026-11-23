@@ -18,7 +18,7 @@ function update(reply: FromWorker): Extract<FromWorker, { type: "update" }> {
 describe("the match worker's session", () => {
   it("turns full control on and off: on, it stops at every priority; off, it passes where the person can't act", () => {
     const many = (card: string, n: number) => Array.from({ length: n }, () => card);
-    // A main phase with nothing in hand: auto-pass has nothing to stop for until the opponent's turn.
+    // Nothing in hand: auto-pass has nothing to stop for until p1's next turn, when the Plains they draw can be played.
     const setup = setupOf({
       turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
       players: {
@@ -28,6 +28,11 @@ describe("the match worker's session", () => {
     });
     const started = handle(null, { type: "startFrom", setup, human: "p1" }, cards);
     expect(update(started.reply).fullControl).toBe(false);
+    const at = (s: ReturnType<typeof handle>) => {
+      const turn = update(s.reply).shown.view.turn;
+      return [turn?.number, turn?.activePlayer, turn?.step];
+    };
+    expect(at(started)).toStrictEqual([5, "p1", "precombatMain"]);
     const on = handle(started.session, { type: "fullControl", on: true }, cards);
     expect(update(on.reply).fullControl).toBe(true);
     const pass = (s: ReturnType<typeof handle>) => {
@@ -37,11 +42,12 @@ describe("the match worker's session", () => {
     };
     // Full control: the very next step, the beginning of combat, stops the person.
     const next = pass(on);
-    expect(update(next.reply).shown.view.turn?.step).toBe("beginningOfCombat");
+    expect(at(next)).toStrictEqual([5, "p1", "beginningOfCombat"]);
     // Off again: the host passes on from here at once, as there's nothing the person could do.
     const off = handle(next.session, { type: "fullControl", on: false }, cards);
     expect(update(off.reply).fullControl).toBe(false);
-    expect(update(off.reply).shown.view.turn?.step).not.toBe("beginningOfCombat");
+    // The land is still there to play: the next stop is the second main phase.
+    expect(at(off)).toStrictEqual([5, "p1", "postcombatMain"]);
   });
 
   it("starts a match and stops at the person's first decision, their mulligan", () => {

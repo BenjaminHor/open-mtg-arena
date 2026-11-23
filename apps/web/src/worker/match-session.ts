@@ -14,6 +14,7 @@ import {
   submit,
   takeEvents,
   waitingOn,
+  withSettings,
 } from "@mtg/match";
 import type { FromWorker, ToWorker } from "./protocol.ts";
 
@@ -54,13 +55,7 @@ function handleMessage(
       const { match, human } = session;
       const settings = match.settings[human] ?? DEFAULT_SETTINGS;
       // Turned off, the host may pass at once where the person has nothing to do, as auto-pass always would.
-      return update(
-        {
-          ...session,
-          match: { ...match, settings: { ...match.settings, [human]: { ...settings, autoPass: !message.on } } },
-        },
-        cards,
-      );
+      return update({ ...session, match: withSettings(match, human, { ...settings, autoPass: !message.on }) }, cards);
     }
     default: {
       // A message from something other than this app's client: refused, while every known type stays checked.

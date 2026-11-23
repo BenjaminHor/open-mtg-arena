@@ -13,5 +13,6 @@ export {
   type SeatSettings,
   startMatch,
   takeEvents,
+  withSettings,
 } from "./match-state.ts";
 export { replayLog } from "./replay.ts";

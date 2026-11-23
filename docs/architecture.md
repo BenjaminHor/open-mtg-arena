@@ -213,7 +213,8 @@ simple.
   settings): `advance(match)` acts for agent seats and for what the host does itself until a person must decide;
   `submit(match, action)` applies a person's action; `waitingOn(match)` names who must decide.
 - **Smart auto-pass**: passes priority when the player has nothing meaningful to do, or their own object is on top of
-  the stack, and stops otherwise, as Arena does (D-143). One rule for every seat (D-137). Auto-pass lives here, not
+  the stack, and stops otherwise, as Arena does (D-143); it also skips the player's own upkeep, draw step and end
+  step with an empty stack, as Arena does (D-157). One rule for every seat (D-137). Auto-pass lives here, not
   in the engine; full control turns it off.
 - **Auto-tap**: chooses which mana sources pay a cost (the engine's `autoPay`), one activation at a time. It's a
   seat-wide setting for now; overriding one payment comes with the UI's payment screen.

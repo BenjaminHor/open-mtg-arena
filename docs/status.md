@@ -233,6 +233,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     again to cast" on a lifted card; a white focus ring; Tab in screen order. "All Attack" is left for later: it isn't
     an engine option (each attacker is its own pick), so it would be a UI macro of several picks; to raise with the
     owner, with drag to play, at review time.
+  - M3-04b slice 3 (2026-11-23, in the same PR as slice 1, as both are on one branch): smart stops (D-157). Auto-pass
+    keeps D-143's rule and adds Arena's skips: your own upkeep, draw step and end step with an empty stack, unless
+    mana is left in your pool. Full control is a switch in the settings menu (the main button turns blue-violet). The
+    next-stop labels are right with no attackers (CR 508.8). The 500-game eval is within noise. The code review's
+    fixes are in: the pool check in all three steps, the switch behind the same guard as the main button, tests for
+    an opponent's object stopping you in your own upkeep, and `withSettings` in `@mtg/match`. Left: auto-tap stays on
+    in full control until slice 2's payment prompt; Arena's other smart stops; the wider skips (Open questions).
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

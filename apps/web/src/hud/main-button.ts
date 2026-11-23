@@ -108,7 +108,10 @@ function abilitySource(shown: SeatView, source: ObjectId): string {
   return seen?.kind === "card" ? `${seen.characteristics.name} ability` : "An ability";
 }
 
-/** Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. */
+/**
+ * Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. It names the
+ * next step, not the next stop: auto-pass skips the end step (D-157) unless mana is left, as Arena's "To End" does.
+ */
 function nextStop(step: Step, attacked: boolean): string {
   switch (step) {
     case "untap":

@@ -2385,13 +2385,19 @@ owner's answer to the D-089 open question, option (a))
 - The M3-04b plan in `status.md` proposed stopping only at a list of steps (main phases, the combat declarations,
   the opponent's spells and attacks). That is the design D-143 rejected, because a combat trick lost its window
   after blockers. The research's [R] lines say Arena stops wherever you hold something you can cast. So D-143 stays.
-- What's added is only what an official source backs (Wizards, Oct 27 2025, in `arena-research.md` "Default
-  auto-passing"): Arena doesn't give you priority in your own upkeep or end step, and the beginning phase runs on to
-  main 1. So with auto-pass on and an empty stack, the host passes for you in your own upkeep, draw step and end
-  step, even with an instant in hand. An opponent's object on the stack still stops you there.
-- One of Arena's smart stops is kept, because it's cheap and loses nothing: mana left in your pool stops you in your
-  own end step, as the pool empties when the step ends (CR 500.5).
-- It applies to every seat (D-137), the AI's too. `pnpm eval --games 500 --seed 1` after it:
+- What's added is what the research backs, in `arena-research.md`:
+  - An official source (Wizards, Oct 27 2025, "Default auto-passing") says Arena doesn't give you priority in your
+    own upkeep or end step.
+  - A community source (a Steam thread, "Default stops") says the beginning phase runs on to main 1, which covers
+    the draw step.
+  So with auto-pass on and an empty stack, the host passes for you in your own upkeep, draw step and end step, even
+  with an instant in hand. An opponent's object on the stack still stops you there; a test checks this in your
+  upkeep, with your own trigger passed for and the opponent's spell stopping you.
+- One of Arena's smart stops is kept, because it's cheap and loses nothing: mana left in your pool stops you in any
+  of those three steps, as the pool empties when the step ends (CR 500.5).
+- It applies to every seat (D-137), the AI's too. The heuristic AI did sometimes act in its own upkeep or draw step
+  (a removal spell, an activated ability; the code review counted 36 such actions in 40 games). It now does those
+  things in main 1 instead. `pnpm eval --games 500 --seed 1` after the change:
   - white-soldiers 99.6%
   - red-aggro 96.8%: 97.4% with the old auto-pass on the same seeds, so a difference of 3 games in 500
   - green-stompy 97.0%
@@ -2400,7 +2406,8 @@ owner's answer to the D-089 open question, option (a))
   These are within noise of M3-02's 99.6, 97.4, 97.4, 97.4 and 94.0. The few games over the turn cap ("capped")
   happen with the old auto-pass too.
 - Full control turns auto-pass off (D-143's `autoPass: false`): a switch in the settings menu, and a `fullControl`
-  worker message. While it's on, the main button turns Arena's blue-violet [R]. Arena's full control also turns off
+  worker message. While it's on, the main button turns Arena's blue-violet [R]. Turning it off moves the game on at
+  once wherever auto-pass would (so the switch goes through the same one-at-a-time guard as the main button). Arena's full control also turns off
   auto-tap. Ours doesn't yet: paying by hand needs slice 2's payment prompt.
 - Not built, an open question for the owner: wider skips on your own turn (beginning of combat, combat damage, end
   of combat) and per-step stops on the phase ladder.

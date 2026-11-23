@@ -137,17 +137,26 @@ export function App() {
         : null,
     [shown, size, insets, handOpen, selection, controlsNow],
   );
-  const act = useCallback((action: Action, settle = false) => {
-    if (busyNow.current || (settle && performance.now() - updatedAt.current < SETTLE_MS)) return;
+  // Every message that can move the game goes through one guard: one at a time, and a button's press ignored a moment
+  // after the reply to the last one.
+  const send = useCallback((message: ToWorker, settle: boolean): boolean => {
+    if (busyNow.current || (settle && performance.now() - updatedAt.current < SETTLE_MS)) return false;
     settlePress.current = settle;
     busyNow.current = true;
     setBusy(true);
-    setMenuFor(null);
-    setSelection(null);
-    // Playing from the hand puts it down again, as Arena does once a card leaves it.
-    if (action.type === "CAST_SPELL" || action.type === "PLAY_LAND") setHandOpen(false);
-    client.current?.send({ type: "act", action });
+    client.current?.send(message);
+    return true;
   }, []);
+  const act = useCallback(
+    (action: Action, settle = false) => {
+      if (!send({ type: "act", action }, settle)) return;
+      setMenuFor(null);
+      setSelection(null);
+      // Playing from the hand puts it down again, as Arena does once a card leaves it.
+      if (action.type === "CAST_SPELL" || action.type === "PLAY_LAND") setHandOpen(false);
+    },
+    [send],
+  );
   const menuTap = menuFor === null ? undefined : controlsNow?.cards[menuFor]?.tap;
   const menu = menuFor !== null && menuTap?.kind === "menu" ? { id: menuFor, choices: menuTap.choices } : null;
   const onTap = useCallback(
@@ -220,7 +229,8 @@ export function App() {
           openHand={() => setHandOpen(true)}
           selection={selection}
           fullControl={update?.fullControl ?? false}
-          setFullControl={(on) => client.current?.send({ type: "fullControl", on })}
+          // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
+          setFullControl={(on) => send({ type: "fullControl", on }, !on)}
         />
       )}
       {error !== null && (

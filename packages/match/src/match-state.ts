@@ -44,6 +44,11 @@ export type MatchState = {
 /** Auto-pass and auto-tap on, as Arena plays by default. */
 export const DEFAULT_SETTINGS: SeatSettings = { autoPass: true, autoTap: true };
 
+/** The match with one player's settings changed (the app's settings menu: full control on or off). */
+export function withSettings(match: MatchState, player: PlayerId, settings: SeatSettings): MatchState {
+  return { ...match, settings: { ...match.settings, [player]: settings } };
+}
+
 /** A new match from a setup, each player's seat, and settings (the defaults for anyone left out). */
 export function startMatch(
   setup: GameSetup,
