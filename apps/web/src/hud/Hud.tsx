@@ -83,6 +83,7 @@ export function Hud(props: HudProps) {
         drag={props.drag}
         inspect={props.inspect}
         toggleStack={props.toggleStack}
+        act={act}
       />
       <PlayerInfo
         shown={shown}

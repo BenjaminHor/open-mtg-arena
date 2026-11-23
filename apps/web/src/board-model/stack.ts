@@ -73,16 +73,23 @@ export function stackMore(shown: SeatView, drawn: readonly BoardCard[]): Rect | 
  * far too large), or small at the right edge while the person chooses for it [R], or once they've made it small.
  */
 function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boolean): Rect {
-  const smallNow = small || (shown.view.casting !== null && shown.view.casting.player === shown.player);
-  // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
-  const height = smallNow
-    ? Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH)
-    : Math.min(layout.stack.h * area.height, layout.stack.maxH);
-  const width = height * layout.ratio.hand;
   const right = area.x + area.width - 8;
-  const x = smallNow ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);
-  const y = area.y + (smallNow ? layout.stack.smallY : layout.stack.y) * area.height;
-  return { x, y, width, height };
+  const largeH = Math.min(layout.stack.h * area.height, layout.stack.maxH);
+  const largeW = largeH * layout.ratio.hand;
+  const large = {
+    x: Math.min(area.x + layout.stack.x * area.width, right - largeW),
+    y: area.y + layout.stack.y * area.height,
+  };
+  // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
+  const smallH = Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH);
+  const smallW = smallH * layout.ratio.hand;
+  // While the person chooses for their own spell: at the right edge, clear of the targets [R].
+  if (shown.view.casting !== null && shown.view.casting.player === shown.player) {
+    return { x: right - smallW, y: area.y + layout.stack.smallY * area.height, width: smallW, height: smallH };
+  }
+  // Made small by a tap: in the large one's top right corner, so a second tap where the first was makes it large again.
+  if (small) return { x: large.x + largeW - smallW, y: large.y, width: smallW, height: smallH };
+  return { ...large, width: largeW, height: largeH };
 }
 
 function stackObject(shown: SeatView, id: ObjectId, rect: Rect): BoardCard | null {

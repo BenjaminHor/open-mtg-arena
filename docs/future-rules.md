@@ -494,7 +494,9 @@ modifiers; `GameResult` reports what the meta layer needs.
 **Deckbuilding and the full card database (M4).** *Needs now:* card identity uses Scryfall's `oracle_id`, so decks
 can refer to cards the engine doesn't support yet.
 **Animations and the board UI (M3).** *Needs now:* every visible change produces an event, with the `cardId` the UI
-uses to track a card between zones.
+uses to track a card between zones. *Watch out (D-170):* the stack's target arrows are drawn from the board model's
+positions; once M3-07 tweens the sprites, draw them from the sprites' current positions, or they point at where a card
+is going.
 
 **An ability's own text (D-169).** The web app's stack panel picks an ability's line from its source's printed Oracle
 text by its `AbilityRef` index (`apps/web/src/board-model/ability-text.ts`, checked over the pool). *Watch out:* each

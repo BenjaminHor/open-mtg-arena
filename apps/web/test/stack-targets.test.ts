@@ -161,7 +161,7 @@ describe("the large stack, made small", () => {
     expect(stackIsSmall(newTop, bolt)).toBe(false);
   });
 
-  it("is small at the right edge when the person shrinks it, as while choosing", () => {
+  it("is small when the person shrinks it, where a second tap makes it large again", () => {
     const { shown } = boltAtVanguard();
     const large = boardModel(shown, PHONE)
       .cards.filter((c) => c.zone === "stack")
@@ -169,9 +169,14 @@ describe("the large stack, made small", () => {
     const small = boardModel(shown, PHONE, NO_INSETS, { handOpen: false, stackSmall: true })
       .cards.filter((c) => c.zone === "stack")
       .at(-1);
-    expect(large?.height).toBeGreaterThan(COMPACT.stack.smallMaxH);
-    expect(small?.height).toBeLessThanOrEqual(COMPACT.stack.smallMaxH);
-    expect((small?.x ?? 0) + (small?.width ?? 0)).toBeGreaterThan(PHONE.width - 20);
+    if (large === undefined || small === undefined) throw new Error("drawn");
+    expect(large.height).toBeGreaterThan(COMPACT.stack.smallMaxH);
+    expect(small.height).toBeLessThanOrEqual(COMPACT.stack.smallMaxH);
+    // In the large one's top right corner: a second tap where the first was lands on it again.
+    const tap = centre(large);
+    expect(
+      tap.x >= small.x && tap.x <= small.x + small.width && tap.y >= small.y && tap.y <= small.y + small.height,
+    ).toBe(true);
   });
 });
 

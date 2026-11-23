@@ -9,10 +9,16 @@ import type { BoardCard, OverlayAnchors, Point, Rect } from "./board-model.ts";
 
 export type TargetArrow = { from: Point; to: Point };
 
-export function targetArrows(shown: SeatView, cards: readonly BoardCard[], overlay: OverlayAnchors): TargetArrow[] {
+export function targetArrows(
+  shown: SeatView,
+  cards: readonly BoardCard[],
+  overlay: OverlayAnchors,
+  handOpen: boolean,
+): TargetArrow[] {
   // While a spell or ability is being put on the stack, its targets are still being chosen: the dashed outlines show
-  // what can be, and nothing is chosen yet to point at.
-  if (shown.view.casting !== null) return [];
+  // what can be, and nothing is chosen yet to point at. With the hand open, it covers the board and an arrow would end
+  // on a hand card; the hand closes on the next action.
+  if (shown.view.casting !== null || handOpen) return [];
   const stack = cards.filter((c) => c.zone === "stack");
   const top = stack.at(-1);
   if (top === undefined) return [];

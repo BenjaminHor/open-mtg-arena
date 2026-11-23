@@ -234,7 +234,7 @@ export function boardModel(
     },
     links: field.links,
     // After combat and attachments have placed the cards, so each arrow ends where its target is drawn.
-    arrows: targetArrows(shown, cards, overlay),
+    arrows: targetArrows(shown, cards, overlay, ui.handOpen),
     overlay: {
       ...overlay,
       hand: handArea(hand, area),

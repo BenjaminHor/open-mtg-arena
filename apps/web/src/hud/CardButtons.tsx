@@ -3,7 +3,7 @@
 // that says what it does for screen readers and tests. Invisible but for the focus ring and a press: the card under it
 // is drawn on the canvas.
 
-import type { ObjectId } from "@mtg/engine";
+import type { Action, ObjectId } from "@mtg/engine";
 import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
 import { type InspectCallbacks, useCardInspect } from "./card-inspect.ts";
@@ -27,10 +27,12 @@ type Props = {
   inspect: InspectCallbacks;
   /** Makes the large stack small, or large again (Arena's collapse tab [R]); null while it's small to choose for it. */
   toggleStack: (() => void) | null;
+  /** Sends an action: a spell on the stack picked as a counterspell's target, as its prompt button would. */
+  act: (action: Action) => void;
 };
 
 export function CardButtons(props: Props) {
-  const { model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect, toggleStack } = props;
+  const { model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect, toggleStack, act } = props;
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
   const inspectOn = useCardInspect({
@@ -110,24 +112,41 @@ export function CardButtons(props: Props) {
       )}
       {/* Each object on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it; one under
           the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. A tap makes the
-          stack small, or large again [R]; while it's small to choose for a spell it does nothing, and says so. A spell
-          a counterspell targets is picked in the prompt (D-170). */}
+          stack small, or large again [R]. While the person chooses for a spell, a tap on a spell it can target (a
+          counterspell's) picks it, as the prompt's button does (D-170); anything else does nothing then, and says so. */}
       {model.cards
         .filter((c) => c.zone === "stack")
         .map((c) => {
           // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
           const name = c.ability ? `${c.name} ability` : c.name;
+          const target = controls.prompt?.choices.find(
+            (choice) =>
+              choice.action.type === "ANSWER" &&
+              choice.action.answer.kind === "chooseTarget" &&
+              choice.action.answer.target.kind === "object" &&
+              choice.action.answer.target.object === c.id,
+          );
+          const press = target !== undefined ? () => !busy && act(target.action) : toggleStack;
           return (
             <button
               type="button"
               key={`stack-${c.id}`}
               className="tap-shield"
-              aria-disabled={toggleStack === null}
-              aria-label={toggleStack === null ? name : `${name}: make the stack smaller or larger`}
+              aria-disabled={press === null}
+              aria-label={
+                target !== undefined
+                  ? `${name}: ${target.label}`
+                  : toggleStack === null
+                    ? name
+                    : `${name}: make the stack smaller or larger`
+              }
               style={place(c.shows ?? c)}
               onClick={(e) => {
                 e.stopPropagation();
-                toggleStack?.();
+                // A pointer's press leaves no focus behind it: Space goes on pressing the main button (ui.md, "Mouse and
+                // keyboard too"), not this one again.
+                if (e.detail > 0) e.currentTarget.blur();
+                press?.();
               }}
               {...inspectOn(c.id as ObjectId)}
             />

@@ -2642,3 +2642,15 @@ owner's answer to the D-089 open question, option (a))
 - A spell on the stack a counterspell targets (CR 115.1) is outlined as a target where it's drawn, and picked in the
   prompt by name ("Target Lightning Bolt"): the counterspell being cast is on top, so its target shows only a name
   strip, too small to tap. Arena clicks the spell itself; the prompt is the reachable equivalent here.
+- After the reviews: a partly covered card carries the part that shows (`BoardCard.shows`: a stack object's name strip,
+  an Aura's left edge beside its host), and the target outline, the arrows and the tap regions use it, so an outline
+  never runs down the sides of the card over it and an arrow at an Aura doesn't land on its host. An arrow to a spell
+  under the top ends at its strip's left edge and bows out beside the stack; to a player at their block's edge, clear
+  of the life total; one arrow per target chosen twice. No arrows while the hand is open (it covers the board). The
+  strip of a spell a counterspell can target is also a tap that picks it (the prompt's same choice), so the outline's
+  promise holds. Made small, the stack keeps the large one's top right corner, so a second tap where the first was
+  makes it large again. A pointer's press on the stack leaves no focus behind, so Space goes on pressing the main
+  button. Arrows have a soft glow under them [R].
+- Left for later (UX review): a visible collapse tab (only the tap on the card for now); a mark on the targeted card
+  itself; a second cue for the opponent's arrows; the arrows drawn from the sprites' moving positions once M3-07
+  animates them (today they're from the model's).

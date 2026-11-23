@@ -128,13 +128,15 @@ function drawArrows(g: Graphics, arrows: BoardModel["arrows"]): void {
     const ny = (to.x - from.x) / length;
     const lift = (ny < 0 ? 1 : -1) * length * 0.2;
     const control = { x: (from.x + to.x) / 2 + nx * lift, y: (from.y + to.y) / 2 + ny * lift };
-    for (const [width, color] of [
-      [6, PALETTE.rim],
-      [3, PALETTE.playable],
+    // A soft glow, then the dark edge and the line, as Arena's intention line glows [R].
+    for (const [width, color, alpha] of [
+      [12, PALETTE.playable, 0.18],
+      [6, PALETTE.rim, 1],
+      [3, PALETTE.playable, 1],
     ] as const) {
       g.moveTo(from.x, from.y)
         .quadraticCurveTo(control.x, control.y, to.x, to.y)
-        .stroke({ width, color, cap: "round" });
+        .stroke({ width, color, alpha, cap: "round" });
     }
     // The head points along the curve's last stretch, from the control point to the target.
     const angle = Math.atan2(to.y - control.y, to.x - control.x);

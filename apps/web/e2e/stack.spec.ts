@@ -91,9 +91,17 @@ test("marks the top object's targets with arrows, shrinks the large stack on a t
   await page.getByRole("button", { name: /^Lightning Bolt: make the stack smaller or larger/ }).click();
   await expect.poll(async () => (await stackOf(page)).at(-1)?.height ?? 0).toBe(before);
 
-  // Cancel targets a spell (CR 115.1): Lightning Bolt, a name strip under Cancel, is picked in the prompt.
+  // Cancel targets a spell (CR 115.1): Lightning Bolt, a name strip under Cancel, is picked by a tap on its strip, as
+  // the prompt's "Target Lightning Bolt" would.
   await cast("Cancel");
-  await page.getByRole("button", { name: "Target Lightning Bolt" }).click();
+  await expect(page.getByRole("button", { name: "Target Lightning Bolt", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Lightning Bolt: Target Lightning Bolt", exact: true }).click();
   await expect.poll(async () => (await stackOf(page)).map((c) => c.name)).toEqual(["Lightning Bolt", "Cancel"]);
   await expect.poll(async () => (await board(page))?.arrows.length).toBe(1);
+
+  // After a click on the stack, Space still presses the main button (Resolve), not the stack again: Cancel resolves and
+  // counters Lightning Bolt.
+  await page.getByRole("button", { name: /^Cancel: make the stack smaller or larger/ }).click();
+  await page.keyboard.press("Space");
+  await expect.poll(async () => (await stackOf(page)).length).toBe(0);
 });
