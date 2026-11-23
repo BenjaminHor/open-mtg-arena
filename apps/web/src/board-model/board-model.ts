@@ -3,9 +3,10 @@
 // portraits, the phase ladder and the main button. The renderer draws it and does no layout of its own, so the layout
 // is tested here without drawing anything. The layout's values are data (`BoardLayout`; the compact one by default).
 
-import type { Color, ObjectId, SeatView, Step } from "@mtg/engine";
+import type { Color, ObjectId, PlayerId, SeatView, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
+import { type Badges, badgesOf, NO_BADGES } from "./badges.ts";
 import { battlefieldCards } from "./battlefield.ts";
 import { withCombat } from "./combat.ts";
 import { handCards } from "./hand.ts";
@@ -87,6 +88,8 @@ export type BoardCard = {
   damage: number;
   /** On the front card of a pile (lands or creatures that look the same, piles.ts), how many it holds; null elsewhere. */
   pileCount: number | null;
+  /** A permanent's keyword icons, counters, loyalty and summoning sickness (`badges.ts`); none off the battlefield. */
+  badges: Badges;
 };
 
 /** A face-down card the person can't see: one of the opponent's hand (CR 402.3). */
@@ -175,12 +178,17 @@ export function boardModel(
   const targets = targetIds(shown);
   const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);
   const stack = stackTop(shown, area, layout);
-  const cards = [...field.cards, ...stack, ...hand].map((c) => ({
-    ...c,
-    playable: playable.has(c.id),
-    targetable: targets.has(c.id) || (ui.highlight ?? []).includes(c.id),
-    picked: c.picked || c.id === ui.selected,
-  }));
+  const cards = [...field.cards, ...stack, ...hand]
+    .map((c) => {
+      const badges = c.zone === "battlefield" ? badgesOfId(shown, c.id) : NO_BADGES;
+      return withSickDim({ ...c, badges }, shown, turn?.activePlayer ?? null, layout);
+    })
+    .map((c) => ({
+      ...c,
+      playable: playable.has(c.id),
+      targetable: targets.has(c.id) || (ui.highlight ?? []).includes(c.id),
+      picked: c.picked || c.id === ui.selected,
+    }));
   return {
     width: size.width,
     height: size.height,
@@ -310,4 +318,21 @@ function handArea(hand: readonly BoardCard[], area: Rect): Rect | null {
   const right = Math.max(...hand.map((c) => c.x + c.width));
   const top = Math.min(...hand.map((c) => c.y - 2 * c.costRadius));
   return { x: left, y: top, width: right - left, height: area.y + area.height - top };
+}
+
+function badgesOfId(shown: SeatView, id: ObjectId): Badges {
+  const seen = shown.seen[id];
+  return seen?.kind === "card" ? badgesOf(seen) : NO_BADGES;
+}
+
+/**
+ * A creature that can't attack or tap yet (CR 302.6) is dimmed, as Arena shows it (the owner, ui.md "Summoning
+ * sickness, dimmed"), besides its "zz" badge; less than a tapped card, which also tilts and carries its arrow. Only on
+ * its controller's turn: on the other player's it can still block, and a dimmed creature reads as out of play while
+ * blockers are counted (the UX review); its "zz" still says its {T} abilities wait.
+ */
+function withSickDim(card: BoardCard, shown: SeatView, activePlayer: PlayerId | null, layout: BoardLayout): BoardCard {
+  const seen = shown.seen[card.id];
+  const controllersTurn = seen?.kind === "card" && seen.characteristics.controller === activePlayer;
+  return card.badges.sick && controllersTurn ? { ...card, dim: Math.max(card.dim, layout.sick.dim) } : card;
 }

@@ -3,14 +3,14 @@
 // Decided here, pure and tested; the renderer only draws it (battlefield-tile.ts). The card view lists everything in
 // words, so a badge can stay small.
 
-import type { Keyword, PlayerId, SeenCard } from "@mtg/engine";
+import type { Keyword, SeenCard } from "@mtg/engine";
 
 /** A keyword with an icon of its own, or protection (CR 702.16), which is an ability with a quality. */
 export type BadgeIcon = Exclude<Keyword, "flash"> | "protection";
 
 export type Badges = {
   /** Icons, in the order shown: at most two. */
-  icons: BadgeIcon[];
+  icons: readonly BadgeIcon[];
   /** It has more than the icons show: an ellipsis, and the card view lists them all [R]. */
   more: boolean;
   /** Its counters but loyalty, in short: "+2" (+1/+1 counters), "−1" (−1/−1), or the count of another kind. */
@@ -18,8 +18,8 @@ export type Badges = {
   /** A planeswalker's loyalty, its loyalty counters (CR 306.5c), shown where a creature's power/toughness goes. */
   loyalty: number | null;
   /**
-   * Summoning sick (CR 302.6) on its controller's turn, when it matters: it can't attack or use {T} abilities. Not shown
-   * on the other player's turn, where it can still block and "can't" would mislead.
+   * Summoning sick (CR 302.6): it can't attack or use {T} or {Q} abilities until its controller's next turn begins, so
+   * on the other player's turn too (a Llanowar Elves can't tap for mana then). Blocking it may, always.
    */
   sick: boolean;
 };
@@ -50,7 +50,7 @@ const PROTECTION_ORDER = 8.5;
 /** How many icons fit on a phone's tile beside each other [R: "abbreviated" when there are many]. */
 const MOST_ICONS = 2;
 
-export function badgesOf(card: SeenCard, activePlayer: PlayerId | null): Badges {
+export function badgesOf(card: SeenCard): Badges {
   const c = card.characteristics;
   const all: { icon: BadgeIcon; order: number }[] = [];
   for (const keyword of c.keywords) {
@@ -67,7 +67,7 @@ export function badgesOf(card: SeenCard, activePlayer: PlayerId | null): Badges 
     more,
     counter: counterText(card.counters),
     loyalty: planeswalker ? (card.counters.loyalty ?? 0) : null,
-    sick: card.summoningSick && c.controller === activePlayer,
+    sick: card.summoningSick,
   };
 }
 

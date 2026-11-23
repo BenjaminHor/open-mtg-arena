@@ -2458,7 +2458,7 @@ owner's answer to the D-089 open question, option (a))
 
 **D-161: The card view (M3-04c)** · 2026-11-23 · accepted
 - Arena's "Examined" view: a long-press (400 ms, touch), a right-click, or "i" on a focused card opens it full; a
-  mouse resting 600 ms on a card previews it (D-160). `interaction/card-details.ts` builds what it shows from the seat
+  mouse resting 250 ms on a card previews it (D-160; first 600, then the owner's 250). `interaction/card-details.ts` builds what it shows from the seat
   view alone (D-062): the card, and a hanger per thing its face doesn't say. No rulings, as Arena has none.
 - The view holds the card's id, not a copy of its details: it's re-read from the seat view each render, so it follows
   the game while open and closes when the object is gone (a zone change makes a new object, CR 400.7). The same shape as
@@ -2523,3 +2523,29 @@ owner's answer to the D-089 open question, option (a))
   opponent's tools rely on. After the trade-offs, the owner: "never mind then, we'll strive towards finishing our own
   rules engine." D-051 stands: the engine is the end goal. Card coverage grows a mechanic at a time.
 
+
+**D-166: Badges on a permanent (M3-04c slice 4)** · 2026-11-23 · accepted
+- What a permanent wears besides its name and P/T, decided in `board-model/badges.ts` (pure, tested) and drawn by
+  `renderer/badge-marks.ts`, our own shapes (D-140), light on small dark discs, in the minimal style (D-162):
+  - keyword icons along the top left [R] (the name now has the bottom): two at most, after "zz" when it's sick, as
+    room allows; with more, one and an ellipsis (three dots, no disc: a disc with dots reads as a menu button), the
+    card view listing them all [R]. Most telling first: flying, reach, first/double strike, deathtouch, trample,
+    lifelink, vigilance, haste, protection, indestructible, shroud, landwalk, defender. Flash has none (it does
+    nothing on the battlefield). Protection is an icon of its own: a dome (a shield is a blocker's badge and loyalty's, UX
+    review). First strike is an upright sword, double strike two (an attacker's badge is two crossed), flying a wing
+    with feather tips, reach an arrow up to a bar, trample an arrow through a wall, indestructible a hexagon;
+  - counters as a small badge at the top right [R], left of a combat badge: "+2", "−1", or another kind's count;
+  - a planeswalker's loyalty (CR 306.5c) in a shield where a creature's P/T goes [R]; one that's also a creature
+    shows it at the top right;
+  - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay] until its
+    controller's next turn begins, the other player's turn included, as the rule says (it can't attack or use {T}/{Q}
+    abilities then; a Llanowar Elves can't tap for mana on the opponent's turn). First built to show only on its
+    controller's turn; the code review found that hid a real restriction. Dimmed (the owner) only on its
+    controller's turn: on the other player's it can still block, and a dimmed creature reads as out of play while
+    blockers are counted (UX review). Only the art dims: its name and P/T stay readable.
+- Protection now splits a pile, as keywords and counters do. Loyalty isn't a counter badge.
+- The icons take the room the counter leaves: fewer, ending in the ellipsis, on a small tile. Badges sit below a
+  token's arched corners. A planeswalker that's also a creature (none in the pool) would show its P/T, loyalty in the
+  card view.
+- A sick creature is also dimmed (0.32, less than a tapped card's 0.45), as Arena shows it (the owner, ui.md
+  "Summoning sickness, dimmed"); its badges stay bright over the dimming.

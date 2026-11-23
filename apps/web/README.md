@@ -28,7 +28,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   that look the same), `combat.ts` (attackers step forward, blockers under their attackers, D-154), `picks.ts` (the
   declaration under way), `playable.ts` (what can be played now, from the options), `hand.ts` (collapsed and open),
   `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `stack.ts` (the stack's top),
-  `regions.ts` (where a tap lands), `board-card.ts`, `card-info.ts`
+  `regions.ts` (where a tap lands), `badges.ts` (a permanent's keyword icons, counters, loyalty, sickness),
+  `board-card.ts`, `card-info.ts`
   (printed cost, text, art and images from the pool data), `spread.ts` (a row between two edges). Unit-tested without
   drawing.
 - `src/interaction/controls.ts`: what the person can do now and where (D-156): every legal option as a control, a tap
@@ -49,12 +50,13 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   fires, so neither also counts as a tap.
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
   component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `battlefield-tile.ts` (a permanent:
-  its art only, name over a fade, power/toughness pill, D-162), `card-face.ts` (a whole card off the battlefield: frame,
+  its art only, name over a fade, power/toughness pill, D-162), `badge-marks.ts` (its keyword icons, counter badge,
+  loyalty shield and "zz", D-166), `card-face.ts` (a whole card off the battlefield: frame,
   name strip, art, text, until its image loads), `face.ts`, `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
   badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
   `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
   (and `window.__artShown()`) in development and test builds.
-- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`), for tests
+- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`, `badges`), for tests
   and screenshots; `setupOf` turns a board a test writes itself into a game setup.
 - `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the

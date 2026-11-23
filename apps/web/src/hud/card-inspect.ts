@@ -9,7 +9,7 @@ import { swallowNextClick } from "./swallow-click.ts";
 
 /** ms: a press held this long without moving is a long-press (ui.md: about 400 ms); a mouse resting this long, a hover. */
 const LONG_PRESS = 400;
-const HOVER = 600;
+const HOVER = 250; // the owner's "250ms" (ui.md, "Hover preview, sooner"); it was 600
 /** px: a press that moves more than this is a drag or a scroll, not a long-press. */
 const SLOP = 8;
 /** ms: a mouse moving from one card to the next within this long swaps the preview at once, as Arena's does. */

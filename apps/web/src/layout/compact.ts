@@ -23,6 +23,8 @@ export const COMPACT: BoardLayout = {
   rowGap: 0.035,
   // A small tilt, dimmed, with a tap mark [R].
   tapped: { tilt: (8 * Math.PI) / 180, dim: 0.45 },
+  // Summoning sick: dimmed less than tapped, as Arena shows it (the owner).
+  sick: { dim: 0.32 },
   // Overlapped across the bottom centre (about 35–65% W [R], a little wider here so each card shows more), only the
   // top fifth showing [R].
   hand: {

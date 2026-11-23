@@ -6,7 +6,8 @@
 
 import { Container, FillGradient, Graphics, Sprite, Text } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
-import { combatBadge, tapMark } from "./card-marks.ts";
+import { counterBadge, iconRow, loyaltyShield } from "./badge-marks.ts";
+import { combatBadge, combatBadgeRadius, tapMark } from "./card-marks.ts";
 import { ART_LABEL, type Face } from "./face.ts";
 import { type ColorSymbol, colorGlyph } from "./mana-symbols.ts";
 import { frameColor, mix, PALETTE } from "./palette.ts";
@@ -29,6 +30,8 @@ export function drawTile(card: BoardCard): Face {
   );
   const artLayer = new Container();
   tile.addChild(artLayer);
+  // A tapped or sick card's art is dimmed; its name and P/T stay as readable as any card's (drawn after).
+  if (card.dim > 0) tile.addChild(shape(new Graphics()).fill({ color: 0x000000, alpha: card.dim }));
   if (!card.behind) tile.addChild(...nameAndStats(card, w, h));
   tile.addChild(shape(new Graphics()).stroke({ width: 1, color: PALETTE.rim, alpha: 0.9 }));
   // Its state, on its own edge (inside it, so neighbours' outlines never touch): a solid outline where it can be used
@@ -37,14 +40,16 @@ export function drawTile(card: BoardCard): Face {
   if (card.picked) tile.addChild(outline(shape, w, h, PALETTE.picked, 2.5));
   else if (card.targetable && !card.behind) tile.addChild(dashed(w, h, PALETTE.playable, 2));
   else if (card.playable && !card.behind) tile.addChild(outline(shape, w, h, PALETTE.playable, 1.5));
-  if (card.dim > 0) tile.addChild(shape(new Graphics()).fill({ color: 0x000000, alpha: card.dim }));
   // An attacker's swords say more than a tap mark would, so it has only the tilt and the swords.
   if (card.tapped && !card.behind && !card.attacking) {
     const mark = tapMark(Math.min(w, h) * 0.78);
     mark.y = -h * 0.08;
     tile.addChild(mark);
   }
-  if (card.attacking || card.blocking.length > 0) tile.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
+  const inCombat = card.attacking || card.blocking.length > 0;
+  if (inCombat) tile.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
+  // Over the dimming of a tapped or sick card: its badges stay bright, the thing still worth reading.
+  if (!card.behind) tile.addChild(...badgeMarks(card, w, h, inCombat));
   return {
     container: tile,
     showArt: (texture) => {
@@ -62,8 +67,11 @@ export function drawTile(card: BoardCard): Face {
 }
 
 /** A token's tile: a rounded rectangle whose top rises into an arch. */
+/** How far (of the tile's height) a token's arched top dips at its corners: badges there sit below it. */
+const TOKEN_ARCH_RISE = 0.12;
+
 function arched(w: number, h: number, radius: number): (g: Graphics) => Graphics {
-  const rise = h * 0.12;
+  const rise = h * TOKEN_ARCH_RISE;
   return (g) =>
     g
       .moveTo(-w / 2, -h / 2 + rise)
@@ -133,7 +141,14 @@ function fallback(card: BoardCard, shape: (g: Graphics) => Graphics, w: number, 
  */
 function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
   const pad = Math.max(2, w * 0.03);
-  const pill = card.power !== null && card.toughness !== null ? ptPill(card, h) : null;
+  // A creature's power/toughness, or a planeswalker's loyalty in its place [R].
+  const loyalty = card.badges.loyalty;
+  const pill = hasPowerToughness(card)
+    ? ptPill(card, h)
+    : loyalty !== null
+      ? // Its numeral as large as a creature's P/T: a planeswalker's most important number.
+        loyaltyShield(loyalty, Math.min(14, Math.max(8, h * 0.15)) * 1.7)
+      : null;
   const name = new Text({
     text: card.name,
     style: {
@@ -245,4 +260,34 @@ function ptPill(card: BoardCard, h: number): Container {
     pill.addChild(new Graphics().rect(t.x, ph / 2 + size * 0.5, t.width, Math.max(1.2, size * 0.1)).fill(LOWERED));
   }
   return pill;
+}
+
+/**
+ * Its badges (board-model/badges.ts): counters at the top right, left of a combat badge when there is one, and the
+ * icons along the top left in what room the counter leaves (fewer, with the ellipsis, when they don't fit). Below a
+ * token's arch at the corners. A planeswalker's loyalty is drawn in the P/T's place (`nameAndStats`); one that's also a
+ * creature (none in today's pool) would show only its P/T there, its loyalty in the card view.
+ */
+function badgeMarks(card: BoardCard, w: number, h: number, inCombat: boolean): Container[] {
+  const { badges } = card;
+  const r = Math.min(13, Math.max(6, Math.min(w, h) * 0.1));
+  const inset = Math.max(2, r * 0.35);
+  const top = -h / 2 + inset + (card.token ? h * TOKEN_ARCH_RISE : 0);
+  const marks: Container[] = [];
+  let free = w / 2 - inset - (inCombat ? combatBadgeRadius(h) * 2 : 0);
+  if (badges.counter !== null) {
+    const counter = counterBadge(badges.counter, r * 2);
+    counter.position.set(free, top);
+    marks.push(counter);
+    free -= counter.width + 2;
+  }
+  const left = -w / 2 + inset;
+  const row = iconRow(badges, r, Math.floor((free - left + 2) / (r * 2 + 2)));
+  row.position.set(left, top);
+  marks.push(row);
+  return marks;
+}
+
+function hasPowerToughness(card: BoardCard): boolean {
+  return card.power !== null && card.toughness !== null;
 }

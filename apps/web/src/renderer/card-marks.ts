@@ -64,7 +64,7 @@ export function pileBadge(count: number, w: number, h: number): Container {
     text,
   );
   // Above the card's top-left corner, clear of its name.
-  badge.position.set(-w / 2 + bw / 2, -h / 2 - bh / 2 + 2);
+  badge.position.set(-w / 2 + bw / 2, -h / 2 - bh / 2 - 1);
   return badge;
 }
 

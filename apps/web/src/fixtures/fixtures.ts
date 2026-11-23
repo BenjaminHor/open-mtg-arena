@@ -206,6 +206,48 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /**
+   * Badges (M3-04c, D-166): keywords and an ellipsis, protection, counters (+1/+1 and −1/−1), loyalty, a sick creature
+   * with two keywords, at the creature row's crowded size; Serra Angel in hand too (a hand card wears no badges). A
+   * token's badges show on the `tokens` board once Siege-Gang Commander is cast.
+   */
+  badges: {
+    turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Serra Angel"],
+        battlefield: [
+          "Mountain",
+          "Forest",
+          { card: "Llanowar Elves", sick: true },
+          { card: "Grizzly Bears", counters: { "+1/+1": 2 } },
+          { card: "Serra Angel", sick: true },
+          { card: "Stampeding Rhino", counters: { "-1/-1": 1 } },
+          "Prized Unicorn",
+          "Deadly Recluse",
+          "Shivan Dragon",
+          { card: "Garruk Wildspeaker", counters: { loyalty: 3 } },
+        ],
+        library: many("Forest", 20),
+      },
+      p2: {
+        life: 20,
+        hand: ["Plains"],
+        battlefield: [
+          "Plains",
+          "Plains",
+          "Baneslayer Angel",
+          "White Knight",
+          { card: "Elite Vanguard", sick: true },
+          "Veteran Armorsmith",
+          "Palace Guard",
+          { card: "Ajani Goldmane", counters: { loyalty: 4 } },
+        ],
+        library: many("Plains", 20),
+      },
+    },
+  },
   /** Siege-Gang Commander to cast (three Goblin tokens), and colourless permanents: frames of every kind. */
   tokens: {
     turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
