@@ -7,6 +7,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 ## Run it
 
 - `pnpm dev`: the app with hot reload at http://localhost:5173 (no service worker in development).
+- Live at https://benjaminhor.github.io/open-mtg-arena/, rebuilt from `main` on every merge by
+  `.github/workflows/pages.yml` (D-159). Built there with `BASE_PATH=/open-mtg-arena/`; locally the base stays `/`.
 - `pnpm build` then `pnpm preview`: the production build, with the service worker, at http://localhost:4173.
 - `pnpm test:e2e`: the Playwright tests against a production build with the test hooks, in `dist-e2e` (never `dist`).
   Once per machine, first:

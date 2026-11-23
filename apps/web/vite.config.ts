@@ -8,6 +8,8 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
 export default defineConfig({
+  // Where the app is served from: "/" locally and in the tests, "/open-mtg-arena/" on GitHub Pages (D-159).
+  base: process.env.BASE_PATH ?? "/",
   plugins: [react(), serviceWorker()],
   worker: { format: "es" },
   // PixiJS and React come to about 500 kB; the app is loaded once and then works offline, so one chunk is fine.
@@ -20,16 +22,19 @@ export default defineConfig({
  */
 function serviceWorker(): Plugin {
   let outDir = "dist";
+  let base = "/";
   return {
     name: "open-mtg-arena-service-worker",
     apply: "build",
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);
+      base = config.base;
     },
     closeBundle() {
-      // "/" stands for index.html: every page is the app's one page (the service worker's offline fallback).
+      // The base ("/", or "/open-mtg-arena/" on Pages) stands for index.html: every page is the app's one page (the
+      // service worker's offline fallback).
       const files = listFiles(outDir).filter((f) => !f.endsWith("sw.js") && !f.endsWith("index.html"));
-      const urls = ["/", ...files.map((f) => `/${relative(outDir, f).split("\\").join("/")}`)];
+      const urls = [base, ...files.map((f) => `${base}${relative(outDir, f).split("\\").join("/")}`)];
       const hash = createHash("sha256");
       for (const file of [join(outDir, "index.html"), ...files]) hash.update(file).update(readFileSync(file));
       const name = `open-mtg-arena-app-${hash.digest("hex").slice(0, 12)}`;

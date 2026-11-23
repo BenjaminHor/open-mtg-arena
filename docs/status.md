@@ -206,6 +206,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
+  - Owner (2026-11-23): wants to follow progress on the phone: the app is published to GitHub Pages from `main`
+    (D-159), at https://benjaminhor.github.io/open-mtg-arena/. The owner enables it once (Settings → Pages → Source:
+    "GitHub Actions"); each merged pull request is live a few minutes later.
   - Owner (2026-11-23): on the stops in your own upkeep, draw step and end step, "whatever MTGA does, do that". D-157
     is that (Arena's documented default), so it stays; the open question is closed. The rule for stops is Arena's.
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
