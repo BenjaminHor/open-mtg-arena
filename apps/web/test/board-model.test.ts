@@ -292,6 +292,10 @@ describe("the compact board model", () => {
       [2],
     );
     expect(swampX(false)).toBeCloseTo(swampX(true) as number, 5);
+    // The tapped Forest sits on top of the pile (the owner, ui.md "Tapped lands in a pile"): drawn after every
+    // untapped one, so it's in front.
+    const order = withTapped.cards.filter((c) => c.name === "Forest").map((c) => c.tapped);
+    expect(order).toEqual([false, false, true]);
   });
 
   it("lays out inside the safe-area insets", () => {

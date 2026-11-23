@@ -1,5 +1,5 @@
-// Lands in the outer row [R], one slot per name: the untapped lands of that name in one pile, the tapped ones in a
-// second pile overlapping it from the right. Tapping a land moves it between the two piles of its slot, and a slot's
+// Lands in the outer row [R], one slot per name: the untapped lands of that name in one pile, the tapped ones gathered
+// in a second pile on top of it, from the right. Tapping a land moves it between the two piles of its slot, and a slot's
 // width depends only on how many lands it holds, so nothing moves (ui.md: no layout shifts). A land that can't pile (a counter on it, something attached) has a slot
 // of its own.
 
@@ -46,13 +46,14 @@ export function landSlots(
   return ordered.flatMap((slot, i) => {
     const x = xs[i] ?? 0;
     const tappedX = x + slotWidth(slot) - pileWidth(slot.tapped.length, w, offsets.step);
-    // The tapped pile behind; the untapped one, what's still available, in front.
+    // The untapped pile behind; the tapped ones gathered on top of it, in front (the owner, ui.md "Tapped lands in a
+    // pile"), so the pile never shows a tapped land half-hidden inside it.
     return [
-      ...(slot.tapped.length > 0
-        ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, look)
-        : []),
       ...(slot.untapped.length > 0
         ? placePile(slot.untapped, { x, y: row.y, width: w, height: row.height }, offsets, mine, look)
+        : []),
+      ...(slot.tapped.length > 0
+        ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, look)
         : []),
     ];
   });

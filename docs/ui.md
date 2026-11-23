@@ -28,6 +28,11 @@ edge, its numbers coloured when changed; keyword badges at the bottom-left corne
 count above the pile; a tapped card tilted, darkened and marked with a large curved arrow. The table is a warm,
 textured playmat, not a flat colour.
 
+**Tapped lands in a pile (owner, 2026-11-23):** "when there's a stack of cards like lands, tapping a subset of them
+just taps them within the stack visually. I think if they're tapped then they should be on top of the visual stack if
+that makes sense. So it doesn't look messy." A pile's tapped cards gather on top of it, together, in front of its
+untapped ones (D-153).
+
 **The rest of the HUD (owner, 2026-11-23, after the card redraw):** "Looks a lot better! I think some of the UI other
 than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase
 ladder, main button, card backs, libraries and drawers get the same care as the cards: our own crafted shapes,

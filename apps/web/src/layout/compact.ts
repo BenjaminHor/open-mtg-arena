@@ -14,7 +14,7 @@ export const COMPACT: BoardLayout = {
   // Creatures, close to the band and centred [R].
   creatures: { h: 0.2, minH: 0.15, gap: 0.008, margin: 0.09 },
   // Lands at the outer left [R], piled by name [R]; smaller than creatures [guess].
-  lands: { h: 0.13, gap: 0.008, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.45 },
+  lands: { h: 0.13, gap: 0.014, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.45 },
   // Other non-creature permanents at the outer right, planeswalkers at the right edge [guess, from the desktop map].
   others: { h: 0.13, gap: 0.006, left: 0.55, right: 0.985 },
   // Close enough that the person's outer row ends above the hand's floating mana costs.

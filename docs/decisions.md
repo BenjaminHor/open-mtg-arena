@@ -2306,7 +2306,8 @@ owner's answer to the D-089 open question, option (a))
   turning 90°. CR 701.26a describes a paper card turned sideways; on a screen what matters is that the tapped state
   is plain to see, and a tilt keeps the rows from reflowing when a card taps. The mark is a shape, so tapped never shows by dimming alone (ui.md).
 - Lands pile when they're interchangeable to look at: same name, no counters or damage, nothing attached either way;
-  each name has one slot, its untapped lands in one pile and its tapped ones in a second pile at the slot's right, and
+  each name has one slot, its untapped lands in one pile and its tapped ones gathered in a second pile on top of it,
+  at the slot's right (the owner: tapped cards go on top of the pile, 2026-11-23), and
   a slot's width depends only on how many lands it holds, so tapping a land moves nothing. Identical creatures pile
   the same way (as Arena piles tokens). A pile shows its front card with an "xN" count above it; the cards behind show
   as edges. Only the front few cards are offset, so past four the rest share a rectangle: M3-04b adds a hit area per
