@@ -108,7 +108,10 @@ and the model confirms or changes its move. Small moves (a land, paying, an obvi
 
 A CLI command plays N games between the LLM and a built-in agent and reports: wins, illegal attempts, decisions that fell
 back to the heuristic AI, tool calls per decision, time per decision, and tokens used. Its transcripts show `get_card` looked up for the cards
-it plays and faces, as D-146 asks. *Accept (M3-02b):* no illegal
+it plays and faces, as D-146 asks.
+The owner wants to know how the built-in heuristic AI fares against the LLM opponent (2026-11-23, D-148): the same
+command plays the LLM against the heuristic too, both seats and both sides of the play, so the result says whether the
+LLM opponent is worth its cost and wait over the free, offline one. *Accept (M3-02b):* no illegal
 action is ever applied, it beats the random agent in most games, and the owner plays a full game against it in the app.
 
 ## Open

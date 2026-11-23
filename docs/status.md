@@ -46,8 +46,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - The heuristic (`packages/ai/src/heuristic/`), stateless per decision, from `SeatView` and the card database:
       mulligan by land count and bottom, play a land, cast the best affordable spell, targets by what the effect does
       to them, attack/block math, a legal answer for every decision kind (an exhaustive switch). No livelock: it starts
-      only what's strictly payable, never plans a `cancelCast` or `takeBack`, and computes a whole declaration ignoring
-      `chosen`, then takes the first missing pick or finishes. A test fails if a game reaches the host's action cap.
+      only what's strictly payable, never plans a `cancelCast` or `takeBack`, and plans a declaration with the picks
+      already made as part of it, then takes the next pick or finishes. A test fails if a game reaches the host's action
+      cap, or if `eval`'s fixed games go void or reach 5,000 heuristic decisions.
     - `pnpm eval`: the heuristic with deck D against `random` with each prebuilt deck in turn, seats and starting
       player alternating, through the match host (auto-pass and auto-tap for both seats), a turn cap counting as not a
       win; win rates and the slowest decision (timed with the `seatView` build). A few fixed-seed games per deck run in
@@ -61,6 +62,17 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     0.13-0.16 ms, slowest 40.4 ms (seed 433, red-green-beats). PR 2 brings each deck to 95%.
   - **PR 2: tricks and tuning.** Pump spells and firebreathing in combat, burn to the face when lethal, then tune until
     `eval` shows ≥95% of 500 games per deck, no illegal action, ≤50 ms per decision.
+    PR 2 plan (after a loss study: most losses are long games against white-soldiers; late in games the heuristic holds
+    Giant Growth, Overrun, Fireball and Lightning Bolt while able to pay, and big creatures it can't pay for, partly as
+    Terramorphic Expanse is never used): (1) `tricks.ts`: a pump until end of turn (a spell, Overrun, Firebreathing) is
+    worth casting once blockers are declared, where it saves a creature, kills a blocker or attacker, or makes the
+    unblocked damage lethal; (2) abilities that sacrifice their own source (fetch lands, Gargoyle Castle) when what they
+    do outweighs the permanent; (3) then tune with `pnpm eval` until each deck reaches 95% of 500 games.
+    PR 2 result after both reviews (`pnpm eval --games 500 --seed 1`): white-soldiers 99.6%, red-aggro 97.4%,
+    green-stompy 97.4%, red-green-beats 97.4% (2 void), blue-black-control 94.0% (94.8% on 2,000 held-out games); no
+    illegal action; mean decision 0.12-0.16 ms, slowest under 15 ms but one 56 ms that didn't come back on a rerun (a
+    pause after the random agent's 100,000-action loop in that game). The owner made 95% a target (D-149): M3-02 is
+    accepted; combat play and its seat-view hints are D-150.
   - Future impact: the LLM seat (M3-02b) reads the same `SeatView`; search later (MCTS) starts from it plus sampled
     worlds. No engine rule changes.
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
@@ -1700,6 +1712,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
+  Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
+  deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
 - (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
   creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
   by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
@@ -1760,9 +1775,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Known issues
 - (2026-11-22, M3-02 code review) The `random` agent can spend tens of thousands of actions under Prized Unicorn's
-  block requirement, adding and taking back blocks at random (24,629 pairs in one eval game, seed 22 with
-  red-green-beats): the host's loop allows 100,000 actions between decisions, so a worse seed could reach it. Only the
-  test agents do this (the heuristic uses `finishable`, D-144); if it shows up, have `random` skip take-backs.
+  block requirement, adding and taking back blocks at random, until the host gives up (`HostStuck`, 100,000 actions):
+  about one game in 1,500 of `pnpm eval`, which counts it void (D-145). Only the test agents do this (the heuristic
+  uses `finishable`, D-144). If it starts to matter, have `random` skip take-backs while it has other choices.
 - (2026-11-22, M2-14i rules review) Convincing Mirage on a Clone that copied a land (a Forest Awakener Druid animated)
   leaves the copy in place: the permanent stays a Forest copy whose land type is Island. CR 305.7 says a land whose
   type is set loses "any copiable effects affecting that land", but then it's Clone's own 0/0 Shapeshifter creature,

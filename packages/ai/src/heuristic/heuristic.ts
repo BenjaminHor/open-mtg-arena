@@ -38,9 +38,9 @@ export function heuristicAction(shown: SeatView, cards: CardDatabase): Action {
       case "discardToHandSize":
         return discardAction(shown, decision.chosen, cards);
       case "declareAttackers":
-        return attackAction(shown, decision.chosen);
+        return attackAction(shown, decision.chosen, cards);
       case "declareBlockers":
-        return blockAction(shown, decision.chosen);
+        return blockAction(shown, decision.chosen, cards);
       case "assignDamage":
         return assignDamageAction(shown, decision);
       case "chooseTarget":

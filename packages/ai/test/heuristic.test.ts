@@ -111,6 +111,20 @@ const named = (state: GameState, name: string, owner: PlayerId): ObjectId => {
   return found;
 };
 
+/** p2 attacks with `attacker`; what p1's heuristic blocks with (CR 509.1). */
+function blocks(p1: Side, attackers: string[]): { blocks: Action[]; state: GameState } {
+  let state = until(table(p1, { battlefield: attackers }, "p2", "precombatMain"), "declareAttackers");
+  for (const name of attackers) {
+    state = answering(state, {
+      kind: "declareAttacker",
+      attack: { attacker: named(state, name, "p2"), defender: "p1" },
+    });
+  }
+  state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
+  const acted = heuristicActs(state, "p1");
+  const picks = acted.actions.filter((a) => a.type === "ANSWER" && a.answer.kind === "declareBlocker");
+  return { blocks: picks, state: acted.state };
+}
 describe("the heuristic's main phase", () => {
   it("plays a land first", () => {
     const state = table({ hand: ["Forest", "Grizzly Bears"] }, {}, "p1", "precombatMain");
@@ -264,21 +278,6 @@ describe("the heuristic in combat", () => {
     expect(picks[0]).toMatchObject({ answer: { attack: { attacker: berserkers } } });
   });
 
-  /** p2 attacks with `attacker`; what p1's heuristic blocks with (CR 509.1). */
-  function blocks(p1: Side, attackers: string[]): { blocks: Action[]; state: GameState } {
-    let state = until(table(p1, { battlefield: attackers }, "p2", "precombatMain"), "declareAttackers");
-    for (const name of attackers) {
-      state = answering(state, {
-        kind: "declareAttacker",
-        attack: { attacker: named(state, name, "p2"), defender: "p1" },
-      });
-    }
-    state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
-    const acted = heuristicActs(state, "p1");
-    const picks = acted.actions.filter((a) => a.type === "ANSWER" && a.answer.kind === "declareBlocker");
-    return { blocks: picks, state: acted.state };
-  }
-
   it("blocks with a creature that kills the attacker and survives", () => {
     expect(blocks({ battlefield: ["Centaur Courser"] }, ["Gray Ogre"]).blocks).toHaveLength(1);
   });
@@ -339,6 +338,186 @@ describe("the heuristic's combat damage", () => {
   });
 });
 
+describe("the heuristic's combat tricks and costs", () => {
+  it("keeps a pump spell in its main phase, and casts it once its blocked creature would lose the fight (CR 509)", () => {
+    const start = table(
+      { battlefield: ["Grizzly Bears", "Forest"], hand: ["Giant Growth"] },
+      { battlefield: ["Hill Giant"] },
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(start).type).toBe("PASS_PRIORITY");
+    let state = until(start, "declareAttackers");
+    const bears = named(state, "Grizzly Bears", "p1");
+    state = answering(state, { kind: "declareAttacker", attack: { attacker: bears, defender: "p2" } });
+    state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
+    state = answering(state, {
+      kind: "declareBlocker",
+      block: { blocker: named(state, "Hill Giant", "p2"), attacker: bears },
+    });
+    state = answering(state, { kind: "finishDeclaring" });
+    expect(state.pending).toMatchObject({ player: "p1", kind: "priority" });
+    expect(decide(state)).toMatchObject({ type: "CAST_SPELL" });
+  });
+
+  it("cracks a fetch land: its own land is worth less than the land it finds (CR 701.23)", () => {
+    const state = table({ battlefield: ["Terramorphic Expanse"] }, {}, "p1", "precombatMain");
+    expect(decide(state)).toMatchObject({ type: "ACTIVATE_ABILITY" });
+  });
+
+  it("blocks a big attacker with two creatures that kill it together, losing at most one (CR 509.1a, 510.1c)", () => {
+    const { blocks: picks, state } = blocks({ battlefield: ["Giant Spider", "Hill Giant"] }, ["Craw Wurm"]);
+    const wurm = named(state, "Craw Wurm", "p2");
+    expect(picks).toHaveLength(2);
+    for (const pick of picks) expect(pick).toMatchObject({ answer: { block: { attacker: wurm } } });
+  });
+
+  it("spreads chump blocks over the attackers instead of piling them on one", () => {
+    const { blocks: picks } = blocks({ battlefield: ["Grizzly Bears", "Llanowar Elves"], life: 3 }, [
+      "Hill Giant",
+      "Gray Ogre",
+    ]);
+    const attackers = picks.map((p) =>
+      p.type === "ANSWER" && p.answer.kind === "declareBlocker" ? p.answer.block.attacker : null,
+    );
+    expect(picks).toHaveLength(2);
+    expect(new Set(attackers).size).toBe(2);
+  });
+
+  it("doesn't pay its last life to draw cards (Sign in Blood at 2 life)", () => {
+    const state = table(
+      { hand: ["Sign in Blood"], battlefield: ["Swamp", "Swamp", "Swamp"], life: 2 },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+});
+
+describe("the heuristic reads more of the cards", () => {
+  const attacksWith = (state: GameState) =>
+    heuristicActs(until(state, "declareAttackers"), "p1").actions.filter(
+      (a) => a.type === "ANSWER" && a.answer.kind === "declareAttacker",
+    );
+
+  it("attacks with a creature that can't be blocked, whatever stands in its way (CR 509.1b)", () => {
+    const state = table({ battlefield: ["Phantom Warrior"] }, { battlefield: ["Hill Giant"] }, "p1", "precombatMain");
+    expect(attacksWith(state)).toHaveLength(1);
+  });
+
+  it("blocks with a creature it can regenerate, and regenerates it as it would die (CR 701.19a)", () => {
+    const { blocks: picks, state } = blocks({ battlefield: ["Wall of Bone", "Swamp"] }, ["Craw Wurm"]);
+    expect(picks).toHaveLength(1);
+    // p2, the active player, gets priority first in the declare blockers step and passes; then p1 decides.
+    expect(state.pending).toMatchObject({ kind: "priority", player: "p2" });
+    const passed = apply(state, legalActions(state, "p2", cards).find((a) => a.type === "PASS_PRIORITY") as Action);
+    const wall = named(passed, "Wall of Bone", "p1");
+    const regenerate = heuristicActs(passed, "p1").actions.find((a) => a.type === "ACTIVATE_ABILITY");
+    expect(regenerate).toMatchObject({ object: wall });
+  });
+
+  it("doesn't regenerate a creature that already has a shield", () => {
+    const { state } = blocks({ battlefield: ["Wall of Bone", "Swamp", "Swamp"] }, ["Craw Wurm"]);
+    const passed = apply(state, legalActions(state, "p2", cards).find((a) => a.type === "PASS_PRIORITY") as Action);
+    const wall = named(passed, "Wall of Bone", "p1");
+    const shielded = { ...passed, replacements: [{ kind: "regenerationShield" as const, object: wall }] };
+    expect(decide(shielded).type).toBe("PASS_PRIORITY");
+  });
+
+  it("doesn't start an ability its own {T} keeps it from paying (Gargoyle Castle with four other lands)", () => {
+    const state = table(
+      { battlefield: ["Gargoyle Castle", "Plains", "Plains", "Plains", "Plains"] },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    const castle = named(state, "Gargoyle Castle", "p1");
+    const ability = seatView(state, "p1", cards).options.find(
+      (o) =>
+        o.action.type === "ACTIVATE_ABILITY" &&
+        o.action.object === castle &&
+        o.ability?.cost.some((c) => c.kind === "sacrificeSelf"),
+    );
+    expect(ability?.payable).toBe(false);
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+
+  it("doesn't cast a creature whose entering would cost it its last life (Howling Banshee at 3)", () => {
+    const state = table(
+      { hand: ["Howling Banshee"], battlefield: ["Swamp", "Swamp", "Swamp", "Swamp"], life: 3 },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+
+  it("doesn't aim a discard at an empty hand", () => {
+    const state = table({ hand: ["Mind Rot"], battlefield: ["Swamp", "Swamp", "Swamp"] }, {}, "p1", "precombatMain");
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+});
+
+describe("the heuristic's second review", () => {
+  it("breathes fire as many times as it takes for an unblocked Shivan Dragon to be lethal", () => {
+    let state = until(
+      table(
+        { battlefield: ["Shivan Dragon", "Mountain", "Mountain"] },
+        { battlefield: ["Grizzly Bears"], life: 7 },
+        "p1",
+        "precombatMain",
+      ),
+      "declareAttackers",
+    );
+    const dragon = named(state, "Shivan Dragon", "p1");
+    state = answering(state, { kind: "declareAttacker", attack: { attacker: dragon, defender: "p2" } });
+    state = answering(state, { kind: "finishDeclaring" });
+    // Nothing can block a flier here, so no one declares blockers: pass until p1 has priority after blocks.
+    for (let i = 0; i < 10 && !(state.turn?.step === "declareBlockers" && state.pending?.player === "p1"); i++) {
+      state = apply(state, legalActions(state, state.pending?.player ?? "p1", cards)[0] as Action);
+    }
+    expect(state.pending).toMatchObject({ player: "p1", kind: "priority" });
+    // 5 power against 7 life: two {R} for +2/+0 make it lethal; one alone wouldn't.
+    expect(decide(state)).toMatchObject({ type: "ACTIVATE_ABILITY", object: dragon });
+  });
+
+  it("casts Overrun before combat when it makes attacking with everything lethal (CR 702.19b)", () => {
+    const state = table(
+      {
+        hand: ["Overrun"],
+        battlefield: ["Grizzly Bears", "Grizzly Bears", "Forest", "Forest", "Forest", "Forest", "Forest"],
+      },
+      // Two 5/5 tramplers against one 3/3 blocker: 5 + 2 through, lethal at 7; without Overrun only 2.
+      { battlefield: ["Hill Giant"], life: 7 },
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(state)).toMatchObject({ type: "CAST_SPELL" });
+  });
+
+  it("doesn't gang block when it would lose as much as it kills", () => {
+    expect(blocks({ battlefield: ["Llanowar Elves", "Grizzly Bears"] }, ["Hill Giant"]).blocks).toHaveLength(0);
+  });
+
+  it("attacks with swampwalk only when the defending player has a Swamp (CR 702.14c)", () => {
+    const attacksInto = (land: string) =>
+      heuristicActs(
+        until(
+          table({ battlefield: ["Bog Wraith"] }, { battlefield: ["Craw Wurm", land] }, "p1", "precombatMain"),
+          "declareAttackers",
+        ),
+        "p1",
+      ).actions.filter((a) => a.type === "ANSWER" && a.answer.kind === "declareAttacker");
+    expect(attacksInto("Swamp")).toHaveLength(1);
+    expect(attacksInto("Plains")).toHaveLength(0);
+  });
+
+  it("doesn't count on regenerating without a land that makes its color", () => {
+    expect(blocks({ battlefield: ["Wall of Bone", "Plains"] }, ["Craw Wurm"]).blocks).toHaveLength(0);
+  });
+});
+
 describe("the heuristic's opening hand (CR 103.5)", () => {
   function opening(library: string[]): Action {
     const created = createGame(
@@ -366,6 +545,11 @@ describe("the heuristic's opening hand (CR 103.5)", () => {
   it("keeps three lands in seven", () => {
     const hand = ["Mountain", "Mountain", "Mountain", "Shock", "Shock", "Shock", "Shock"];
     expect(opening(hand)).toMatchObject({ answer: { kind: "mulligan", choice: "keep" } });
+  });
+
+  it("mulligans five lands in seven", () => {
+    const hand = ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Shock", "Shock"];
+    expect(opening(hand)).toMatchObject({ answer: { choice: "mulligan" } });
   });
 
   it("mulligans seven lands and seven spells", () => {

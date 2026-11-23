@@ -16,7 +16,7 @@ import type {
   SeenCard,
 } from "@mtg/engine";
 import { isManaAbility, manaValue } from "@mtg/engine";
-import { cardData, controlledBy, creatureValue, isLand, manaValueOf, seenCard } from "./board.ts";
+import { cardData, controlledBy, creatureValue, isLand, manaValueOf, permanentValue, seenCard } from "./board.ts";
 import { untargetedValue } from "./effect-value.ts";
 import { abilityIntents, cardIntents, type Intent } from "./intents.ts";
 import { bestLand, landColors } from "./lands.ts";
@@ -65,9 +65,14 @@ function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: 
   if (isPermanent && def.enchant === undefined) {
     // A permanent with an X it can't make more than 0 of (Protean Hydra) would enter as nothing worth having.
     if (printed?.some((s) => s.kind === "x") === true && x < 1) return null;
-    // A permanent with no target: worth its size, so the biggest affordable one comes first.
+    // A permanent with no target: worth its size, so the biggest affordable one comes first, and what it does as it
+    // enters (CR 603.6a) when that needs no target ("each player loses 3 life" can make it not worth casting).
     const size = card.characteristics.types.includes("creature") ? creatureValue(card) : 0;
-    return 2 + manaValueOf(card, cards) + x + size / 4;
+    const entering = (def.triggers ?? [])
+      .filter((t) => t.when.kind === "selfEnters" && t.targets.length === 0)
+      .reduce((sum, t) => sum + untargetedValue(shown, t.effects, x, null, cards), 0);
+    const value = 2 + manaValueOf(card, cards) + x + size / 4 + entering;
+    return value > 0 ? value : null;
   }
   const value = effectsValue(shown, option, cardIntents(def, x), def.spell?.effects ?? [], x, cards);
   return value !== null && value >= WORTH_CASTING ? value : null;
@@ -76,9 +81,12 @@ function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: 
 function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase): number | null {
   const ability = option.ability;
   if (ability === null || isManaAbility(ability) || option.action.type !== "ACTIVATE_ABILITY") return null;
-  // A cost that gives up a permanent is left to people for now (later: weigh what's sacrificed).
-  if (ability.cost.some((c) => c.kind === "sacrifice" || c.kind === "sacrificeSelf")) return null;
+  // Sacrificing another permanent is left to people for now (later: weigh which one goes).
+  if (ability.cost.some((c) => c.kind === "sacrifice")) return null;
   const source = seenCard(shown, option.action.object);
+  // Sacrificing its own source (a fetch land, Gargoyle Castle) costs what the source is worth.
+  const sacrificed = ability.cost.some((c) => c.kind === "sacrificeSelf") && source !== null;
+  const given = sacrificed ? permanentValue(source, cards) : 0;
   // Moving Equipment that's already on a creature only shuffles it around.
   const attached = source !== null && source.attachedTo !== null;
   if (ability.keyword === "equip" && attached) return null;
@@ -96,14 +104,23 @@ function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase
     return effect >= WORTH_CASTING ? effect - spent / 2 : null;
   }
   const x = xEstimate(shown, option.manaCost, undefined, cards);
-  const value = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
+  const gained = effectsValue(
+    shown,
+    option,
+    abilityIntents(ability, x),
+    ability.effects,
+    x,
+    cards,
+    repeatsOf(shown, option),
+  );
+  const value = gained === null ? null : gained - given;
   // An ability's cost is usually smaller than a card's, so less is enough: pinging a player with a {T} ability.
   return value !== null && value >= WORTH_CASTING / 2 ? value : null;
 }
 
 /**
- * Its targets' best scores plus what its untargeted effects do. Null when it has a target with no legal choice, or is a
- * combat trick (a pump until end of turn), which a main phase would waste (later: cast it in combat).
+ * Its targets' best scores plus what its untargeted effects do; null when it has a target with no legal choice. A combat
+ * trick scores only in combat (`tricks.ts`), so a main phase never wastes one.
  */
 function effectsValue(
   shown: SeatView,
@@ -112,16 +129,30 @@ function effectsValue(
   effects: readonly Effect[],
   x: number,
   cards: CardDatabase,
+  repeats = 1,
 ): number | null {
-  let value = untargetedValue(shown, effects, x);
+  const source = option.action.type === "ACTIVATE_ABILITY" ? seenCard(shown, option.action.object) : null;
+  let value = untargetedValue(shown, effects, x, source, cards, repeats);
   for (const [i, legal] of option.targets.entries()) {
     const intent = intents[i] ?? { kind: "neutral" };
-    if (intent.kind === "help" && intent.untilEndOfTurn) return null;
     const best = bestTarget(shown, legal, intent, cards);
     if (best === null) return null;
     value += best.score;
   }
   return value;
+}
+
+/**
+ * How many times an ability that costs only mana could be activated with the untapped lands (Firebreathing's "{R}"
+ * three times with three Mountains), at least once: each activation is weighed by what all of them lead to. A guess:
+ * the lands' colors aren't matched to the cost.
+ */
+function repeatsOf(shown: SeatView, option: ActionOption): number {
+  const ability = option.ability;
+  const cost = option.manaCost ?? [];
+  if (ability === null || cost.length === 0 || ability.cost.some((c) => c.kind !== "mana")) return 1;
+  const untapped = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped).length;
+  return Math.max(1, Math.floor(untapped / Math.max(1, manaValue(cost))));
 }
 
 /**

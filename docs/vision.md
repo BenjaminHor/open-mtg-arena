@@ -14,6 +14,10 @@
    optional LLM opponents (D-136) as a big part of the single-player experience there too (2026-11-22): enemies that
    play in character. The RPG still works offline with the built-in AI.
 
+**Owner, 2026-11-23:** the focus is M3 for now, and M4 (deckbuilding) is up for debate. The owner likes Legends of
+Runeterra's roguelike mode (Path of Champions) as a model for single-player: to weigh against the Shandalar-style RPG
+and M4 once M3 is done (status.md, Open questions).
+
 The order matters. Rules depth comes first, then the Arena-style app (D-051). The RPG starts only once the
 engine, the architecture and the app foundations are settled and working.
 

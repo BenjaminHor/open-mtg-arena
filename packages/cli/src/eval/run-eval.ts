@@ -25,7 +25,7 @@ export const DEFAULT_TURN_CAP = 40;
 export function runEval(options: EvalOptions, clock: () => number, cards: CardDatabase): EvalSummary {
   const heroDeck = deck(options.deck);
   const opponents = Object.values(DECKS);
-  const counts = { won: 0, lost: 0, drawn: 0, capped: 0 };
+  const counts = { won: 0, lost: 0, drawn: 0, capped: 0, void: 0 };
   let decisions = 0;
   let totalMs = 0;
   let slowest = { ms: 0, seed: options.seed };
@@ -65,8 +65,9 @@ export function runEval(options: EvalOptions, clock: () => number, cards: CardDa
 export function evalReport(s: EvalSummary): string {
   const share = (n: number) => `${((100 * n) / s.games).toFixed(1)}%`;
   const { won, lost, drawn, capped } = s.counts;
+  const voided = s.counts.void === 0 ? "" : `, void ${s.counts.void}`;
   return (
-    `${s.deck}: won ${won}/${s.games} (${share(won)}), lost ${lost}, drawn ${drawn}, capped ${capped}; ` +
+    `${s.deck}: won ${won}/${s.games} (${share(won)}), lost ${lost}, drawn ${drawn}, capped ${capped}${voided}; ` +
     `${s.decisions} decisions, mean ${s.meanMs.toFixed(2)} ms, slowest ${s.slowestMs.toFixed(1)} ms (seed ${s.slowestSeed})`
   );
 }

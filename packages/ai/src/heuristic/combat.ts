@@ -1,23 +1,49 @@
 // Attacks and blocks (CR 508.1, 509.1), by simple combat math on what's visible: a creature attacks when no blocker the
-// opponent has untapped could kill it and survive, or when the attack is lethal however they block; a creature blocks
-// when it kills the attacker and lives, or trades for something worth as much, and chumps only to stay alive.
-// The whole declaration is planned from the board, ignoring the picks already made, so each answer is the next pick of
-// one fixed plan: a stateless player that re-planned around its own half-made declaration could go back and forth.
+// opponent has untapped could kill it and survive, when nothing can block it, or when the attack is lethal however
+// they block; a creature blocks when it kills the attacker and lives, trades for something worth as much, or holds it
+// off, two together kill what neither could, and it chumps to stay out of danger. The declaration is planned from the
+// board, with the picks already made counted as part of the plan, so each answer is the next pick of one plan.
 
-import type { Action, ActionOption, Attack, Block, ObjectId, SeatView, SeenCard } from "@mtg/engine";
-import { creaturesOf, creatureValue, has, lifeOf, opponents, power, seenCard, toughnessLeft } from "./board.ts";
+import type {
+  Action,
+  ActionOption,
+  Attack,
+  Block,
+  CardDatabase,
+  Keyword,
+  ObjectId,
+  PlayerId,
+  SeatView,
+  SeenCard,
+} from "@mtg/engine";
+import {
+  cardData,
+  controlledBy,
+  creaturesOf,
+  creatureValue,
+  has,
+  isLand,
+  lifeOf,
+  opponents,
+  permanents,
+  power,
+  seenCard,
+  toughnessLeft,
+} from "./board.ts";
+import { canBlock, damageDealt, kills } from "./fights.ts";
+import { landColors } from "./lands.ts";
 
 type Answer = Extract<Action, { type: "ANSWER" }>;
 
-export function attackAction(shown: SeatView, chosen: readonly Attack[]): Action {
-  const planned = attackPlan(shown)
+export function attackAction(shown: SeatView, chosen: readonly Attack[], cards: CardDatabase): Action {
+  const planned = attackPlan(shown, chosen, cards)
     .filter((a) => !chosen.some((c) => c.attacker === a.attacker))
     .flatMap((next) => picksWhere(shown, (a) => a.kind === "declareAttacker" && sameAttack(a.attack, next)));
   return nextPick(shown, planned);
 }
 
-export function blockAction(shown: SeatView, chosen: readonly Block[]): Action {
-  const planned = blockPlan(shown)
+export function blockAction(shown: SeatView, chosen: readonly Block[], cards: CardDatabase): Action {
+  const planned = blockPlan(shown, chosen, cards)
     .filter((b) => !chosen.some((c) => c.blocker === b.blocker))
     .flatMap((next) =>
       picksWhere(
@@ -57,8 +83,11 @@ function picksWhere(shown: SeatView, fits: (answer: Answer["answer"]) => boolean
   return shown.options.filter((o) => o.action.type === "ANSWER" && fits(o.action.answer));
 }
 
-/** Every attack it would make: each creature's attack on a player if it may, else on what it may attack. */
-function attackPlan(shown: SeatView): Attack[] {
+/**
+ * Every attack it would make: each creature's attack on a player if it may, else on what it may attack. The attacks
+ * already declared count as made: the options no longer list them, but the plan is the same one.
+ */
+function attackPlan(shown: SeatView, chosen: readonly Attack[], cards: CardDatabase): Attack[] {
   const possible: Record<ObjectId, Attack> = {};
   for (const o of shown.options) {
     if (o.action.type !== "ANSWER" || o.action.answer.kind !== "declareAttacker") continue;
@@ -68,67 +97,116 @@ function attackPlan(shown: SeatView): Attack[] {
       possible[attack.attacker] = attack;
     }
   }
-  const attacks = Object.values(possible).flatMap((a) => {
+  const attacks = [...chosen, ...Object.values(possible)].flatMap((a) => {
     const card = seenCard(shown, a.attacker);
     return card === null ? [] : [{ attack: a, card }];
   });
   const blockers = opponents(shown)
     .flatMap((p) => creaturesOf(shown, p))
     .filter((c) => !c.tapped);
-  if (
-    isLethalAnyway(
-      shown,
-      attacks.map((a) => a.card),
-      blockers,
-    )
-  )
-    return attacks.map((a) => a.attack);
-  return attacks.filter((a) => attackIsSafe(a.card, blockers)).map((a) => a.attack);
+  const evades = (a: Planned) => unblockable(shown, a.card, a.attack.defender, cards);
+  if (isLethalAnyway(shown, attacks, blockers, evades)) return attacks.map((a) => a.attack);
+  return attacks.filter((a) => power(a.card) > 0 && (evades(a) || attackIsSafe(a.card, blockers))).map((a) => a.attack);
 }
+
+/** An attack it plans, with the creature making it. */
+type Planned = { attack: Attack; card: SeenCard };
 
 /** No blocker that could block it would kill it and live. */
 function attackIsSafe(attacker: SeenCard, blockers: readonly SeenCard[]): boolean {
-  if (power(attacker) <= 0) return false;
   return blockers.every((b) => !canBlock(b, attacker) || !(kills(b, attacker) && !kills(attacker, b)));
 }
 
-/** All in is lethal even if each of their untapped creatures blocks one of the biggest attackers. */
-function isLethalAnyway(shown: SeatView, attackers: readonly SeenCard[], blockers: readonly SeenCard[]): boolean {
-  const powers = attackers.map(damageDealt).sort((a, b) => b - a);
-  const unblocked = powers.slice(blockers.length).reduce((sum, p) => sum + p, 0);
+/**
+ * All in is lethal even if each of their untapped creatures blocks one of the biggest attackers (whether it could block
+ * that one isn't asked: erring toward not attacking). An attacker no one can block always gets through.
+ */
+function isLethalAnyway(
+  shown: SeatView,
+  attacks: readonly Planned[],
+  blockers: readonly SeenCard[],
+  evades: (a: Planned) => boolean,
+): boolean {
+  const through = attacks.filter(evades).reduce((sum, a) => sum + damageDealt(a.card), 0);
+  const powers = attacks
+    .filter((a) => !evades(a))
+    .map((a) => damageDealt(a.card))
+    .sort((a, b) => b - a);
+  const unblocked = through + powers.slice(blockers.length).reduce((sum, p) => sum + p, 0);
   return opponents(shown).some((p) => unblocked >= lifeOf(shown, p));
 }
 
-/** Blocks that win or trade fairly, then chump blocks only if the damage left would be lethal. */
-function blockPlan(shown: SeatView): Block[] {
+/**
+ * Whether no creature can block it: "can't be blocked" on the card or from what's attached to it (Whispersilk Cloak),
+ * or landwalk when the defending player controls a land of that type (CR 509.1b, 702.14c). Read from the cards as printed (later:
+ * from the seat view, once effects grant such abilities).
+ */
+function unblockable(shown: SeatView, attacker: SeenCard, defender: PlayerId, cards: CardDatabase): boolean {
+  const printed = cardData(attacker, cards)?.def.statics ?? [];
+  if (printed.some((st) => st.kind === "cantBeBlocked" && st.except === undefined)) return true;
+  const attached = permanents(shown).filter((c) => c.attachedTo === attacker.id);
+  const restricts = (c: SeenCard) =>
+    (cardData(c, cards)?.def.statics ?? []).some(
+      (st) => st.kind === "attachedRestricts" && st.restrictions.includes("cantBeBlocked"),
+    );
+  if (attached.some(restricts)) return true;
+  const walks: [Keyword, string][] = [
+    ["forestwalk", "Forest"],
+    ["swampwalk", "Swamp"],
+  ];
+  const theirLands = controlledBy(shown, defender).filter(isLand);
+  return walks.some(
+    ([k, type]) => has(attacker, k) && theirLands.some((l) => l.characteristics.subtypes.includes(type)),
+  );
+}
+
+/** At this much life or less after a combat, it chump blocks rather than take the damage. */
+const DANGER = 3;
+
+/**
+ * Blocks that win, trade fairly, or hold the attacker off safely; then chump blocks while the damage left would bring
+ * its life to `DANGER` or less. The blocks already declared count as made, and the rest are planned around them.
+ */
+function blockPlan(shown: SeatView, chosen: readonly Block[], cards: CardDatabase): Block[] {
   const legal = shown.options.flatMap((o) =>
     o.action.type === "ANSWER" && o.action.answer.kind === "declareBlocker" ? [o.action.answer.block] : [],
   );
-  const attackers = legal
-    .map((b) => b.attacker)
-    .filter((id, i, ids) => ids.indexOf(id) === i)
-    .flatMap((id) => seenCard(shown, id) ?? [])
+  const attackers = permanents(shown)
+    .filter((c) => c.attacking !== null && c.characteristics.controller !== shown.player)
     .sort((a, b) => damageDealt(b) - damageDealt(a));
-  const plan: Block[] = [];
+  const plan: Block[] = [...chosen];
   const used = (blocker: ObjectId) => plan.some((b) => b.blocker === blocker);
+  const blocked = (a: SeenCard) => plan.some((b) => b.attacker === a.id);
   const blockersFor = (attacker: SeenCard) =>
     legal
       .filter((b) => b.attacker === attacker.id && !used(b.blocker))
       .flatMap((b) => seenCard(shown, b.blocker) ?? [])
       .sort((a, b) => creatureValue(a) - creatureValue(b));
   const take = (blocker: SeenCard, attacker: SeenCard) => plan.push({ blocker: blocker.id, attacker: attacker.id });
-  for (const attacker of attackers) {
+  for (const attacker of attackers.filter((a) => !blocked(a))) {
     const candidates = blockersFor(attacker);
     const wins = candidates.find((b) => kills(b, attacker) && !kills(attacker, b));
     const trade = candidates.find((b) => kills(b, attacker) && creatureValue(attacker) >= creatureValue(b));
-    const blocker = wins ?? trade;
+    const blocker = wins ?? trade ?? candidates.find((b) => !kills(attacker, b) || canRegenerate(shown, b, cards));
     if (blocker !== undefined) take(blocker, attacker);
   }
-  // Still dying to what's unblocked: chump the biggest attackers with the least valuable creatures.
-  const blocked = (a: SeenCard) => plan.some((b) => b.attacker === a.id);
+  // Two creatures together kill a big attacker neither could alone, when that's worth what it can kill of theirs. A
+  // pair already half declared is completed with the same partner the plan chose then.
+  for (const attacker of attackers.filter((a) => !has(a, "indestructible"))) {
+    const on = plan.filter((b) => b.attacker === attacker.id).flatMap((b) => seenCard(shown, b.blocker) ?? []);
+    if (on.length > 1 || (on.length === 1 && blocksAlone(on[0] as SeenCard, attacker))) continue;
+    const pair = gangBlock(
+      attacker,
+      [...on, ...blockersFor(attacker)].sort((a, b) => creatureValue(a) - creatureValue(b)),
+    );
+    if (pair === null || (on.length === 1 && !pair.includes(on[0] as SeenCard))) continue;
+    for (const blocker of pair) if (!used(blocker.id)) take(blocker, attacker);
+  }
+  // Still in danger from what's unblocked: chump the biggest attackers with the least valuable creatures.
+  const life = lifeOf(shown, shown.player);
   let incoming = attackers.filter((a) => !blocked(a) && attacksMe(shown, a)).reduce((s, a) => s + damageDealt(a), 0);
   for (const attacker of attackers) {
-    if (incoming < lifeOf(shown, shown.player)) break;
+    if (life - incoming > DANGER) break;
     if (blocked(attacker) || !attacksMe(shown, attacker)) continue;
     const chump = blockersFor(attacker)[0];
     if (chump === undefined) continue;
@@ -138,30 +216,56 @@ function blockPlan(shown: SeatView): Block[] {
   return plan;
 }
 
+/** A good block on its own: it kills the attacker and lives, trades for something worth as much, or holds it off. */
+function blocksAlone(blocker: SeenCard, attacker: SeenCard): boolean {
+  const wins = kills(blocker, attacker) && !kills(attacker, blocker);
+  const trades = kills(blocker, attacker) && creatureValue(attacker) >= creatureValue(blocker);
+  return wins || trades || !kills(attacker, blocker);
+}
+
+/**
+ * It can regenerate itself (Wall of Bone's "{B}: Regenerate"), already shielded or with a land untapped to pay: it lives
+ * through the block (CR 701.19a). The heuristic shields it once blockers are declared (`effect-value.ts`).
+ */
+function canRegenerate(shown: SeatView, creature: SeenCard, cards: CardDatabase): boolean {
+  if (creature.regenerationShields > 0) return true;
+  const own = cardData(creature, cards)?.def.abilities ?? [];
+  const lands = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped);
+  return own.some((a) => {
+    if (!a.effects.some((e) => e.op === "regenerate" && e.of === "self")) return false;
+    // A land for each color its cost needs, at least ("{B}": an untapped land that makes black).
+    const colors = a.cost
+      .flatMap((c) => (c.kind === "mana" ? c.cost : []))
+      .flatMap((m) => (m.kind === "colored" ? [m.color] : []));
+    return lands.length > 0 && colors.every((color) => lands.some((l) => landColors(l, cards).includes(color)));
+  });
+}
+
+/**
+ * The cheapest two blockers whose damage together is lethal to the attacker (CR 510.1a), if the attacker is worth more
+ * than what its damage could kill of them (it divides its damage as it likes, CR 510.1c). First strike is left out:
+ * a first striker could kill one before it deals damage.
+ */
+function gangBlock(attacker: SeenCard, candidates: readonly SeenCard[]): [SeenCard, SeenCard] | null {
+  if (has(attacker, "first strike") || has(attacker, "double strike")) return null;
+  let best: { pair: [SeenCard, SeenCard]; cost: number } | null = null;
+  for (const [i, a] of candidates.entries()) {
+    for (const b of candidates.slice(i + 1)) {
+      const deadly = (x: SeenCard) => has(x, "deathtouch") && damageDealt(x) > 0;
+      if (!deadly(a) && !deadly(b) && damageDealt(a) + damageDealt(b) < toughnessLeft(attacker)) continue;
+      // What the attacker needs to assign to kill each: 1 with deathtouch (CR 702.2c), else its toughness left.
+      const need = (x: SeenCard) => (has(attacker, "deathtouch") ? 1 : toughnessLeft(x));
+      const damage = damageDealt(attacker);
+      const killable = [a, b].filter((x) => damage >= need(x));
+      const both = damage >= need(a) + need(b);
+      const cost = both ? creatureValue(a) + creatureValue(b) : Math.max(0, ...killable.map(creatureValue));
+      if (cost < creatureValue(attacker) && (best === null || cost < best.cost)) best = { pair: [a, b], cost };
+    }
+  }
+  return best?.pair ?? null;
+}
+
 function attacksMe(shown: SeatView, attacker: SeenCard): boolean {
   const attacked = attacker.attacking?.attacked;
   return attacked?.kind === "player" && attacked.player === shown.player;
-}
-
-function damageDealt(creature: SeenCard): number {
-  return has(creature, "double strike") ? 2 * power(creature) : power(creature);
-}
-
-/** Flying can be blocked only by flying or reach (CR 702.9b, 702.17b); other evasion isn't weighed yet. */
-function canBlock(blocker: SeenCard, attacker: SeenCard): boolean {
-  if (has(attacker, "flying")) return has(blocker, "flying") || has(blocker, "reach");
-  return true;
-}
-
-/** Whether `a` deals `b` lethal damage in a fight between them, first strike counted (CR 702.7b). */
-function kills(a: SeenCard, b: SeenCard): boolean {
-  if (power(a) <= 0 || has(b, "indestructible")) return false;
-  const strikesFirst = (x: SeenCard) => has(x, "first strike") || has(x, "double strike");
-  // Struck down first, `a` deals no regular combat damage.
-  if (strikesFirst(b) && !strikesFirst(a) && lethal(b, a)) return false;
-  return lethal(a, b);
-}
-
-function lethal(a: SeenCard, b: SeenCard): boolean {
-  return has(a, "deathtouch") || damageDealt(a) >= toughnessLeft(b);
 }

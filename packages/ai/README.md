@@ -13,7 +13,9 @@ Depends only on `@mtg/engine` (its tests also use `@mtg/cards`). See "AI" in [`d
 - `src/heuristic/`: the heuristic AI v0 (M3-02), `heuristicAction(shown, cards)`, from the engine's `seatView` only
   (D-144), stateless and without randomness. `heuristic.ts` picks the chooser for each decision kind (an exhaustive
   switch); `priority.ts` (land, then the spell or ability worth most, only what's strictly payable), `lands.ts`,
-  `combat.ts` (attacks and blocks, a whole declaration planned at once), `opening.ts` (mulligan, bottom, discard),
+  `combat.ts` (attacks and blocks, gang blocks, planned around the picks already made), `fights.ts` (who kills whom),
+  `tricks.ts` (a pump until end of turn, worth what it changes once blockers are declared), `opening.ts` (mulligan,
+  bottom, discard),
   `choices.ts` (targets, X, division, cards, names...), `intents.ts` (what an effect does to each target, read from
   the card's definition), `effect-value.ts` (what untargeted effects are worth), `targets.ts` (what a target is
   worth), `board.ts` (reading the table, what a permanent is worth). The worths are guesses tuned with `pnpm eval`.

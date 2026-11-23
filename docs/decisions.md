@@ -2213,12 +2213,15 @@ owner's answer to the D-089 open question, option (a))
   announced before its targets, and an X the engine can't pay leaves only a cancel, then the same cast again.
 - The two-worlds checks (`brief.test.ts`, the fuzzer's `viewsLeakNothing`) compare whole seat views.
 
-**D-145: How the heuristic AI's "95% against random with each deck" is measured (M3-02)** · 2026-11-22 · accepted
+**D-145: How the heuristic AI's "95% against random with each deck" is measured (M3-02)** · 2026-11-22 · accepted (void games added 2026-11-23, part 2)
 - `pnpm eval --deck <name> --games 500 --seed 1`: the heuristic with that deck against the `random` agent with each
   prebuilt deck in turn (all five, the mirror included); the heuristic's seat changes every five games and who plays
   first every ten, so every pairing is played from both seats and both sides of the play.
 - Both seats go through the match host with its auto-pass and auto-tap, as in the app: the random agent is asked only
   where a person would be, and picks uniformly there. A game past turn 40 counts as not won (`capped`), as does a draw.
+  A game where the random agent goes round in circles until the host gives up (adding and taking back blocks under
+  Prized Unicorn's requirement for 100,000 actions, `HostStuck`) counts as `void`, not won; it's reported, and rare
+  (about one game in 1,500).
 - Each decision is timed with the `seatView` build included, as the app will see it; the report gives the mean and the
   slowest, with its seed. Ten fixed games per deck run in `pnpm check` (`packages/cli/test/eval.test.ts`, at least seven
   won), so a regression shows without the full run.
@@ -2241,3 +2244,36 @@ owner's answer to the D-089 open question, option (a))
 - Offered and not chosen for now: planning a turn in one go, handing trivial decisions to the heuristic, a "why did
   you do that?" button, difficulty levels, post-game lessons per deck, evaluating against the heuristic with blunder
   counts. They can come back later.
+
+**D-148: M3-02b measures the LLM opponent against the heuristic AI too (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "I'm honestly curious how well the offline AI would perform against an LLM opponent - something to maybe
+  test if it's worthwhile." M3-02b's evaluation command plays the LLM against the heuristic AI as well as the random
+  agent, from both seats and both sides of the play, and reports the win rate with the tokens and time each game cost.
+  It's how we'll judge whether the LLM opponent earns its cost and latency over the free, offline heuristic.
+- `pnpm eval` already seats any agent against the heuristic; the LLM seat joins it there (an outside seat, as in M3-01).
+
+**D-149: M3-02's 95% is a target, not a hard bar (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "We don't have to be so strict with the 95%." The heuristic AI was at 99.6% (white-soldiers), 97.4%
+  (green-stompy), 96.6% (red-green-beats), 96.4% (red-aggro) and 94.0% (blue-black-control) on the acceptance run
+  (`pnpm eval --games 500 --seed 1`), and 94.8% for blue-black-control on 2,000 held-out games (seeds from 10,001),
+  within a standard error of the mark. M3-02 is accepted on those numbers; tuning more for the random agent has
+  stopped paying (the last tries changed a handful of games either way), and the app is waiting.
+- What's left for blue-black-control, from a study of its 104 held-out losses: half are against white-soldiers, a
+  third end flooded (eight or more lands, an empty hand), and many hold a counterspell it never had the mana for
+  (holding mana back measured worse). Stronger play later comes from search (architecture.md, "AI"), not more rules.
+- How tuning is measured from now on: on held-out seeds, by games that flip between two versions, the acceptance seeds
+  kept for the final run.
+
+**D-150: How the heuristic AI plays combat, and what its seat is shown for it (M3-02 part 2)** · 2026-11-23 · accepted
+- A pump until end of turn (Giant Growth, Overrun, Firebreathing) is worth only what it changes once blockers are
+  declared (`tricks.ts`): a creature saved, a foe killed, lethal damage through. Before that it scores nothing, so a
+  stateless player never spends a trick in a main phase.
+- A declaration is planned with the picks already made as part of the plan (the options no longer list them), so a
+  chump or gang block isn't repeated on one attacker. Blocks: win, trade, hold off (a creature that can regenerate
+  counts as holding), two together for a big attacker, chumps while life would fall to 3.
+- `seenObjects` shows each card's regeneration shields, public as the abilities that made them resolved, so the
+  heuristic shields a creature once. `seatView` judges an ability whose cost taps its source as if the source were
+  tapped already (Gargoyle Castle can't pay its own {5} with itself).
+- Attacks read evasion from the cards: "can't be blocked", an attached Whispersilk Cloak, landwalk.
+- Tried and dropped, measured: keeping mana open for counterspells, keeping creatures with {T} abilities home, and a
+  check that what stays home can survive the attack back (each lost games on the held-out seeds).

@@ -18,10 +18,10 @@ export function startingPlayerAction(shown: SeatView): Action | null {
   return answer(shown, (a) => a.kind === "chooseStartingPlayer" && a.player === shown.player);
 }
 
-/** Keep two to five lands in seven; after one mulligan, one to five; after two, anything. */
+/** Keep two to four lands in seven; after one mulligan, two to five; after two, anything (CR 103.5). */
 export function mulliganAction(shown: SeatView, mulligansTaken: number): Action | null {
   const lands = hand(shown).filter(isLand).length;
-  const keep = mulligansTaken >= 2 || (lands >= (mulligansTaken === 0 ? 2 : 1) && lands <= 5);
+  const keep = mulligansTaken >= 2 || (lands >= 2 && lands <= (mulligansTaken === 0 ? 4 : 5));
   return answer(shown, (a) => a.kind === "mulligan" && a.choice === (keep ? "keep" : "mulligan"));
 }
 

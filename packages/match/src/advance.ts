@@ -25,6 +25,13 @@ const MOST_ACTIONS = 100_000;
 /** What the host does next: an action to apply, from a match that may have moved an agent's random state on. */
 type HostStep = { match: MatchState; action: Action };
 
+/**
+ * Thrown when the host's own seats (agents, auto-pass) take `MOST_ACTIONS` actions in a row: an agent going round in
+ * circles, never a person. A subclass so a caller can tell it from a bug in what it called (the eval counts the game
+ * void, D-145).
+ */
+export class HostStuck extends Error {}
+
 /** Acts for the host until a person must decide or the game ends. */
 export function advance(match: MatchState, cards: CardDatabase): MatchState {
   let m = match;
@@ -33,7 +40,7 @@ export function advance(match: MatchState, cards: CardDatabase): MatchState {
     if (step === null) return m;
     m = applied(step.match, step.action, cards);
   }
-  throw new Error(`the host took ${MOST_ACTIONS} actions without anyone deciding`);
+  throw new HostStuck(`the host took ${MOST_ACTIONS} actions without anyone deciding`);
 }
 
 /** Who must decide now, if a person: the player the UI should ask. Null while the host or no one acts. */

@@ -26,8 +26,8 @@ cast the best affordable spell, burn the best target (lethal on a creature that 
 is near), simple attack/block math, use pump spells and firebreathing in combat. It answers every kind of decision the
 engine has (mulligan and bottom, X, targets, divided damage, planeswalker abilities, choosing cards from a zone, naming a
 card, ordering replacement effects, "may" choices), sensibly where it matters and legally always. Deterministic given a
-seed. *Accept:* it beats the random agent at least 95% of 500 games with each of the five prebuilt decks; no illegal
-actions; at most 50 ms per decision on a laptop.
+seed. *Accept:* it beats the random agent in about 95% of 500 games with each of the five prebuilt decks (a target, not
+a hard bar: owner, 2026-11-23, D-149); no illegal actions; at most 50 ms per decision on a laptop.
 
 **M3-02b LLM opponent (owner, D-136).** Spec: `docs/llm-opponent.md`, a harness with tools over the player's view.
 An optional AI player powered by a model the player picks, through their own

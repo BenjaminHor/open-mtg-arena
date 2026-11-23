@@ -41,6 +41,8 @@ export type SeenCard = {
   attacking: { attacked: Target | null } | null;
   /** The attackers it blocks while it's a blocking creature. */
   blocking: ObjectId[];
+  /** Regeneration shields on it this turn (CR 701.19a): public, as everyone saw the ability that made each resolve. */
+  regenerationShields: number;
   /** A spell's choices on the stack (targets, X, CR 601.2b-c); null elsewhere. */
   choices: StackChoices | null;
 };
@@ -104,6 +106,7 @@ function seenObject(state: GameState, id: ObjectId, cards: CardDatabase): SeenOb
     blocking: isBlocking(state, id, cards)
       ? (state.combat?.blocks ?? []).filter((b) => b.blocker === id).map((b) => b.attacker)
       : [],
+    regenerationShields: state.replacements.filter((r) => r.kind === "regenerationShield" && r.object === id).length,
     choices: obj.choices,
   };
 }

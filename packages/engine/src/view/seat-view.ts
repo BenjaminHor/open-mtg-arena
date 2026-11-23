@@ -8,7 +8,7 @@ import type { AbilityDef, CardDatabase, ManaCost } from "../cards/types.ts";
 import { attackObeys, attacksCanFinish, blockObeys, blocksCanFinish } from "../combat/declaration-rules.ts";
 import { legalActions } from "../game/legal-actions.ts";
 import { autoPay } from "../mana/auto-pay.ts";
-import { actionManaCost, mightPay } from "../mana/might-pay.ts";
+import { actionManaCost, mightPay, payingState } from "../mana/might-pay.ts";
 import { abilitiesOf, sameAbilityRef } from "../rules/abilities.ts";
 import { totalCost } from "../rules/costs.ts";
 import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
@@ -70,11 +70,12 @@ function actionOption(state: GameState, player: PlayerId, action: Action, cards:
   const manaCost =
     action.type === "ANSWER" ? announcedCost(state, action, cards) : actionManaCost(state, action, cards);
   const paying = manaCost === null || manaCost.length === 0 ? null : manaCost.filter((s) => s.kind !== "x");
+  const payingFrom = payingState(state, action, cards);
   const base = {
     action,
     manaCost,
-    payable: paying === null ? null : autoPay(state, player, paying, cards) !== null,
-    mightPay: paying === null ? null : mightPay(state, player, paying, cards),
+    payable: paying === null ? null : autoPay(payingFrom, player, paying, cards) !== null,
+    mightPay: paying === null ? null : mightPay(payingFrom, player, paying, cards),
   };
   const by = (object: ObjectId) => ({ object, controller: player });
   const finishable = declarationFinishable(state, action, cards);
