@@ -2286,6 +2286,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, owner) "Idk what the plan is but the auto pass feature is a bit jarring currently. Things just progress
+  instantly and I get confused lol". The same cause as the "two lands" report: the host auto-passes (D-143, D-157)
+  and the opponent acts, and the screen jumps to the result with nothing shown in between. The plan's answer is
+  opponent-action pacing and step-by-step showing (ui.md "Pacing for the opponent"; M3-07, M3-12), pulled forward to
+  come right after M3-04c (D-172).
 - (2026-11-23, owner) "I noticed that the cards in the hand, graveyard, exile view are spaced really far apart": the
   zone browser's row (D-168). Chromium draws it tight (140 px cards 8 px apart), so most likely the owner's Safari: the
   card was sized by `aspect-ratio` on a button and its image by a percentage height inside it, either of which Safari

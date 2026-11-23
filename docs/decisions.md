@@ -2665,3 +2665,13 @@ owner's answer to the D-089 open question, option (a))
   power/toughness carries a small caret up or down as well as its colour (ui.md, "Never color alone").
 - M3's acceptance ("a full game is playable at the folded phone's size in landscape") is e2e/play.spec.ts's whole
   game by touch taps at 812x375, run on every PR.
+
+**D-172: Pacing comes next, before the full layout (owner feedback, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "the auto pass feature is a bit jarring currently. Things just progress instantly and I get confused."
+  Auto-pass (D-143, D-157) is Arena's and stays; what's missing is seeing what it passes through. So right after
+  M3-04c, before M3-05, comes a first pacing slice, pulled forward from M3-07/M3-12 (ui.md "Pacing for the
+  opponent", "The game never jumps"): the worker sends each step of what happened rather than only the end state, and
+  the app plays them in order at a pace a person can follow (the opponent's spell held on the stack, an attack shown,
+  the phase ladder stepping, a short line saying what happened), skippable with a tap, an "instant" speed for tests.
+  Arena holds each opponent stack item for a minimum time [R: 0.4 s since 2018]. It's built in a shape M3-07's
+  animation director grows from (a queue of shown steps), not a throwaway.
