@@ -2269,7 +2269,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 ## Open questions
 
 - Answered (2026-11-23, pacing, D-172): should the phase ladder step through each step a frame passes over, or jump?
-  The owner: "phase bar should mirror what mtg arena does" (D-173).
+  The owner: "phase bar should mirror what mtg arena does" (D-173), then: "it steps through each phase as it passes -
+  we should avoid immediate jumps between the "main" phases - this probably would be largely solved with animations".
 
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an

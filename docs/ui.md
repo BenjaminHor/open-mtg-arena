@@ -208,6 +208,9 @@ UI quality has to be checked like rules correctness, not assumed:
     prompt over the paused match.
   - **Full** (unfolded, tablets, desktop): an Arena-like board with both battlefields, hand,
     stack and log visible at once.
+- **The ladder walks (owner, 2026-11-23, D-175):** Arena's phase ladder "steps through each phase as it passes - we
+  should avoid immediate jumps between the "main" phases". The lit rung moves through every step the game passes,
+  a moment on each, on either turn.
 - **The stack reads as the stack (owner, 2026-11-23, D-174):** "when there's something on the stack to resolve, it's
   not immediately obvious that there's something on the stack. maybe the UI can represent this in more clear, clean,
   and minimal way", and Forge's stack list, "but more polished". Arena's large top card at the right stays [R]; over it

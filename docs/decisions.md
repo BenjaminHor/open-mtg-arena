@@ -2717,6 +2717,9 @@ owner's answer to the D-089 open question, option (a))
 - Then: "I know that forge mtg has a UI on the side that shows a list of things on the stack that need resolution - I
   wonder if we could have something similar but more polished lol". Taken into the stack's design (Forge, an open
   source MTG client, lists the stack as a side panel of entries).
+- The ladder, asked directly (Arena's wasn't found): "it steps through each phase as it passes - we should avoid
+  immediate jumps between the \"main\" phases - this probably would be largely solved with animations". So the lit
+  rung walks through each step a frame passes, never jumping from main 1 to main 2 or across a turn (D-175).
 - Research (a web search; page fetches were blocked, so only search summaries): Arena passes priority for you after
   you cast your own spell, whatever you hold [R: Steam thread, cardgamebase]; ours already does (D-157). Whether
   Arena's ladder walks through each passed step or jumps wasn't found [U]; the combat steps appear "when you enter
