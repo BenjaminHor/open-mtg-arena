@@ -2714,4 +2714,11 @@ owner's answer to the D-089 open question, option (a))
   okay for now, we'll revisit later" (the zone browser, D-168); and "when there's something on the stack to resolve,
   it's not immediately obvious that there's something on the stack. maybe the UI can represent this in more clear,
   clean, and minimal way". The last two come next, before M3-05: the stack made obvious, and the ladder as Arena's.
+- Then: "I know that forge mtg has a UI on the side that shows a list of things on the stack that need resolution - I
+  wonder if we could have something similar but more polished lol". Taken into the stack's design (Forge, an open
+  source MTG client, lists the stack as a side panel of entries).
+- Research (a web search; page fetches were blocked, so only search summaries): Arena passes priority for you after
+  you cast your own spell, whatever you hold [R: Steam thread, cardgamebase]; ours already does (D-157). Whether
+  Arena's ladder walks through each passed step or jumps wasn't found [U]; the combat steps appear "when you enter
+  combat" [R: mtgarena.pro, "Updated Phase Ladder", 2018].
 

@@ -2329,6 +2329,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (2026-11-23, owner, after trying the pacing) "something I noticed is that when there's something on the stack to
   resolve, it's not immediately obvious that there's something on the stack. maybe the UI can represent this in more
   clear, clean, and minimal way". Next task (D-173).
+  Then: "I know that forge mtg has a UI on the side that shows a list of things on the stack that need resolution - I
+  wonder if we could have something similar but more polished lol" (D-173).
 - (2026-11-23, owner) On the zone browser's spacing after the fix: "card spacing is okay for now, we'll revisit
   later". Left open for a later look; not blocking.
 - (2026-11-23, owner) "I noticed that the cards in the hand, graveyard, exile view are spaced really far apart": the
