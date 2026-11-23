@@ -141,3 +141,21 @@ test("works offline once it has loaded (the service worker)", async ({ page, con
   await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
 });
+
+test("a phone held upright pauses the match behind a prompt to turn it, and turning it back carries on", async ({
+  page,
+}) => {
+  await page.goto("/?fixture=mid-game");
+  await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  await page.setViewportSize({ width: 375, height: 812 });
+  await expect(page.getByRole("alertdialog", { name: "Turn your phone sideways to play" })).toBeVisible();
+  // The match behind it takes nothing: inert (no tap, focus or screen reader), under the prompt, and no key reaches it.
+  await expect(page.locator("main.app")).toHaveAttribute("inert", "");
+  const under = await page.evaluate(() => document.elementFromPoint(187, 406)?.closest(".turn-your-phone") !== null);
+  expect(under).toBe(true);
+  await page.keyboard.press("Space");
+  await page.setViewportSize({ width: 812, height: 375 });
+  await expect(page.getByRole("alertdialog")).toHaveCount(0);
+  // Where it was: still the first main phase, Next to combat.
+  await expect(page.getByRole("button", { name: /^Next/ })).toContainText("To Combat");
+});

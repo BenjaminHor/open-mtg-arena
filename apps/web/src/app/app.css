@@ -892,8 +892,10 @@ body,
   margin-left: 0;
 }
 .zone-row {
+  /* A card's height in the row: large enough to read its name and art, a whole card in the phone's height. */
+  --zone-card-h: min(52vh, 300px);
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 2px 12px 6px;
   list-style: none;
@@ -909,9 +911,6 @@ body,
   position: relative;
   flex: none;
   scroll-snap-align: start;
-  /* A long graveyard draws only the cards near the view. */
-  content-visibility: auto;
-  contain-intrinsic-size: auto min(37vh, 214px) auto min(52vh, 300px);
 }
 /* The row's end keeps its padding when scrolled there (a flex row's own end padding is lost). */
 .zone-row::after {
@@ -927,9 +926,11 @@ body,
   border-radius: 4.5%;
   background: #2b2a27;
   overflow: hidden;
-  /* Large enough to read its name and art, and a whole card in the phone's height. */
-  height: min(52vh, 300px);
-  aspect-ratio: 63 / 88;
+  /* Both sides set outright, a card's proportions (63 x 88 mm): a button sized by aspect-ratio alone, or an image's
+     percentage height inside one, can come out at the image's natural width in Safari, spacing the row far apart
+     (the owner). */
+  height: var(--zone-card-h);
+  width: calc(var(--zone-card-h) * 63 / 88);
   -webkit-touch-callout: none;
 }
 .zone-card img {
@@ -957,6 +958,7 @@ body,
   align-items: center;
   justify-content: center;
   min-height: calc(min(52vh, 300px) + 8px);
+  box-sizing: border-box;
   margin: 0;
   padding: 0 12px;
   color: var(--muted);
@@ -964,11 +966,14 @@ body,
 }
 /* A card in the row drawn as text (no image yet, or offline), at the row's size. */
 .zone-card .card-view-card {
+  width: 100%;
   height: 100%;
 }
 .zone-card .card-view-card img,
 .zone-card .card-view-text {
+  width: 100%;
   height: 100%;
+  object-fit: cover;
   box-shadow: none;
 }
 .zone-card .card-view-text {
@@ -1114,4 +1119,30 @@ body,
   font-size: 11px;
   font-weight: 600;
   pointer-events: none;
+}
+
+/* A phone held upright (app/App.tsx, ui.md "Layouts"): a calm full-screen prompt over the paused match. */
+.turn-your-phone {
+  position: fixed;
+  inset: 0;
+  z-index: 300000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  background: #22211f;
+  color: #f4f1ec;
+  text-align: center;
+}
+.turn-your-phone p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+.turn-your-phone .turn-your-phone-note {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
 }

@@ -352,8 +352,10 @@ function handArea(hand: readonly BoardCard[], area: Rect): Rect | null {
   if (hand.length === 0) return null;
   const left = Math.min(...hand.map((c) => c.x));
   const right = Math.max(...hand.map((c) => c.x + c.width));
-  const top = Math.min(...hand.map((c) => c.y - 2 * c.costRadius));
-  return { x: left, y: top, width: right - left, height: area.y + area.height - top };
+  const bottom = area.y + area.height;
+  // At least a finger's height (44 px, ui.md "Touch interaction"), reaching up over the table if the strip is lower.
+  const top = Math.min(...hand.map((c) => c.y - 2 * c.costRadius), bottom - 44);
+  return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
 function badgesOfId(shown: SeatView, id: ObjectId): Badges {

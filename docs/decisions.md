@@ -2654,3 +2654,14 @@ owner's answer to the D-089 open question, option (a))
 - Left for later (UX review): a visible collapse tab (only the tap on the card for now); a mark on the targeted card
   itself; a second cue for the opponent's arrows; the arrows drawn from the sprites' moving positions once M3-07
   animates them (today they're from the model's).
+
+**D-171: A phone held upright pauses behind "turn your phone" (M3-04c slice 7)** · 2026-11-23 · accepted
+- The board is laid out for a phone in landscape (D-141), so a phone in portrait shows a full-screen prompt, "Turn
+  your phone sideways to play", over the paused match (ui.md "Layouts"). Decided from the viewport alone: upright and
+  narrower than 700 px (`app/orientation.ts`, followed by `use-portrait.ts`), so the unfolded Duo (832 wide upright)
+  and a tablet play as they are. The match behind is `inert` and takes no key; turning back carries on where it was,
+  nothing reset. Arena's phone client plays only in landscape [R].
+- Small finishing items with it: the collapsed hand's tap area is at least 44 px tall (it was 40); a raised or lowered
+  power/toughness carries a small caret up or down as well as its colour (ui.md, "Never color alone").
+- M3's acceptance ("a full game is playable at the folded phone's size in landscape") is e2e/play.spec.ts's whole
+  game by touch taps at 812x375, run on every PR.
