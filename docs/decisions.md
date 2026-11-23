@@ -2820,3 +2820,21 @@ owner's answer to the D-089 open question, option (a))
 - Future impact: a third value (a multiplayer board, the RPG's) is more data and a line in `layoutFor`. The owner's
   unfolded screen size is a guess until they send a screenshot (status, Open questions).
 
+**D-177: Build on phase-rs's engine and client, imported and rebranded (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, after the evaluation (`docs/phase-rs-evaluation.md`) and playing it: "I'm okay with just forking the
+  current version and then allowing our repo diverge over time. I just want to borrow the major pieces of their
+  implementation so we could build freely on other features." "I think what we could do instead of forking is just
+  clone the repo and replace everything in our repo." "I would want to do a major clean up so that it's not phase-rs
+  branded anymore in any shape or form." "I'm okay with dropping the "nothing a black box" rule for the engine. the
+  match screen feels very good to build on and it feels passable on my phone layout so far."
+- So: phase-rs at a fixed version (v0.131.0, 57c647e) is copied into this repo, replacing our TypeScript engine and
+  client; no upstream tracking; the repo diverges freely. The aim is the higher-value work: the LLM opponent and a
+  single-player RPG or roguelike.
+- Reverses, for the engine: "nothing may become a black box" (CLAUDE.md), the TypeScript pure reducer and its package
+  layout (architecture.md), hand-written card definitions (card-scripting.md). Our phone-first work (D-141 to D-176) is
+  superseded by their client; what it taught (pacing, the stack's labels, the walking ladder, the layouts) is kept in
+  these docs to bring across where it still matters.
+- Branding: every phase-rs name, logo, domain, link, contact and service is removed or replaced. Their copyright and
+  license notices stay, as MIT and Apache-2.0 require: the license files keep their copyright line, and a NOTICE
+  credits the code's origin. That's attribution in the license files, not branding in the app.
+

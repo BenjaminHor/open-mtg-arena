@@ -2319,9 +2319,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   those are the two biggest things. we would save a ton of time and would be able to get started on the higher value
   initiatives like an LLM powered opponent and the single player RPG or rogue like". So the evaluation is of those
   two: phase's rules engine, and its client for a match against the AI, as the base for the LLM opponent and a
-  single-player RPG or roguelike (vision.md). Evaluated (2026-11-23): `docs/phase-rs-evaluation.md`, three options
-  for the owner; waiting on their choice, and on them playing phase-rs.dev on their phone. No new client work until
-  it's decided.
+  single-player RPG or roguelike (vision.md). Evaluated (2026-11-23): `docs/phase-rs-evaluation.md`. Decided: import
+  and rebrand it (D-177).
 
 - (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
   from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of
