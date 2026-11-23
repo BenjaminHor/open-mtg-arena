@@ -68,9 +68,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     worth casting once blockers are declared, where it saves a creature, kills a blocker or attacker, or makes the
     unblocked damage lethal; (2) abilities that sacrifice their own source (fetch lands, Gargoyle Castle) when what they
     do outweighs the permanent; (3) then tune with `pnpm eval` until each deck reaches 95% of 500 games.
-    PR 2 result (`pnpm eval --games 500 --seed 1`, each deck run alone for timing): white-soldiers 99.6%, green-stompy
-    97.4%, red-green-beats 96.6%, red-aggro 96.4%, blue-black-control 94.0% (94.8% on 2,000 held-out games); no
-    illegal action; mean decision 0.13-0.2 ms, slowest 12.8-41 ms. The owner made 95% a target (D-149), so M3-02 is
+    PR 2 result after both reviews (`pnpm eval --games 500 --seed 1`): white-soldiers 99.6%, red-aggro 97.4%,
+    green-stompy 97.4%, red-green-beats 97.4% (2 void), blue-black-control 94.0% (94.8% on 2,000 held-out games); no
+    illegal action; mean decision 0.12-0.16 ms, slowest under 15 ms but one 56 ms that didn't come back on a rerun (a
+    pause after the random agent's 100,000-action loop in that game). The owner made 95% a target (D-149): M3-02 is
     accepted; combat play and its seat-view hints are D-150.
   - Future impact: the LLM seat (M3-02b) reads the same `SeatView`; search later (MCTS) starts from it plus sampled
     worlds. No engine rule changes.
