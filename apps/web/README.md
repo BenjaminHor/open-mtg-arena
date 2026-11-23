@@ -8,7 +8,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 
 - `pnpm dev`: the app with hot reload at http://localhost:5173 (no service worker in development).
 - `pnpm build` then `pnpm preview`: the production build, with the service worker, at http://localhost:4173.
-- `pnpm test:e2e`: the Playwright tests against the production build. Once per machine, first:
+- `pnpm test:e2e`: the Playwright tests against a production build with the test hooks, in `dist-e2e` (never `dist`).
+  Once per machine, first:
   `pnpm --filter @mtg/web exec playwright install chromium`.
 - `?seed=12&deck=red-aggro&vs=white-soldiers` in the address starts a given match.
 
@@ -18,7 +19,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   `app.css`.
 - `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the
-  worker's logic as pure functions, `match.worker.ts` the thin `onmessage` shell, `client.ts` the UI's side.
+  worker's logic as pure functions (a refused or failed message is an error reply, never a throw), `match.worker.ts`
+  the thin `onmessage` shell, `client.ts` the UI's side.
 - `src/board-model/`: pure functions from a `SeatView` and the board's size to the board model, every card with its
   place and state (ui.md, "Board structure"). Unit-tested without drawing.
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`) and its React component (`BoardCanvas.tsx`). Draws the board

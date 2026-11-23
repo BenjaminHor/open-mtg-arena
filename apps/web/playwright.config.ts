@@ -8,11 +8,13 @@ const PORT = 4173;
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: false,
+  forbidOnly: process.env.CI !== undefined,
   reporter: "list",
   use: { baseURL: `http://localhost:${PORT}`, trace: "off" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `vite build && vite preview --port ${PORT} --strictPort`,
+    // Its own output folder, so the test hooks never end up in `dist`, what `pnpm preview` serves and a deploy ships.
+    command: `vite build --outDir dist-e2e && vite preview --outDir dist-e2e --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     env: { VITE_TEST_HOOKS: "1" },
     reuseExistingServer: false,

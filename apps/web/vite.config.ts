@@ -3,7 +3,7 @@
 
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
@@ -14,26 +14,38 @@ export default defineConfig({
   build: { chunkSizeWarningLimit: 800 },
 });
 
-/** After the build, writes `dist/sw.js` from `service-worker/sw.js`, with this build's files and a cache name. */
+/**
+ * After the build, writes `sw.js` from `service-worker/sw.js`, with this build's files and a cache name that changes
+ * whenever any file's name or contents do (so a changed `index.html` or icon is picked up too).
+ */
 function serviceWorker(): Plugin {
   let outDir = "dist";
   return {
     name: "open-mtg-arena-service-worker",
     apply: "build",
     configResolved(config) {
-      outDir = config.build.outDir;
+      outDir = resolve(config.root, config.build.outDir);
     },
     closeBundle() {
-      const files = listFiles(outDir).map((f) => `/${relative(outDir, f).split("\\").join("/")}`);
-      const urls = ["/", ...files.filter((f) => f !== "/sw.js")];
-      const name = `open-mtg-arena-${createHash("sha256").update(urls.join("\n")).digest("hex").slice(0, 12)}`;
+      // "/" stands for index.html: every page is the app's one page (the service worker's offline fallback).
+      const files = listFiles(outDir).filter((f) => !f.endsWith("sw.js") && !f.endsWith("index.html"));
+      const urls = ["/", ...files.map((f) => `/${relative(outDir, f).split("\\").join("/")}`)];
+      const hash = createHash("sha256");
+      for (const file of [join(outDir, "index.html"), ...files]) hash.update(file).update(readFileSync(file));
+      const name = `open-mtg-arena-app-${hash.digest("hex").slice(0, 12)}`;
       const template = readFileSync(new URL("./service-worker/sw.js", import.meta.url), "utf8");
-      const source = template
-        .replace('"__CACHE_NAME__"', JSON.stringify(name))
-        .replace("__PRECACHE__", JSON.stringify(urls));
-      writeFileSync(join(outDir, "sw.js"), source);
+      writeFileSync(
+        join(outDir, "sw.js"),
+        fill(fill(template, '"__CACHE_NAME__"', JSON.stringify(name)), "__PRECACHE__", JSON.stringify(urls)),
+      );
     },
   };
+}
+
+/** The template with its one placeholder filled; a template without it is a mistake worth stopping the build for. */
+function fill(template: string, placeholder: string, value: string): string {
+  if (!template.includes(placeholder)) throw new Error(`service-worker/sw.js has no ${placeholder}`);
+  return template.replace(placeholder, () => value);
 }
 
 function listFiles(dir: string): string[] {

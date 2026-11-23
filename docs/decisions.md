@@ -2288,4 +2288,11 @@ owner's answer to the D-089 open question, option (a))
   ("`pnpm check` is green, including Playwright tests") is met by CI running both.
 - Offline support is one short hand-written service worker, not vite-plugin-pwa and Workbox: precache every file the
   build wrote (a small Vite plugin lists them), pages network-first so a new build shows at once, hashed files
-  cache-first, one cache per build. Registered only in production builds, so `pnpm dev` never serves a stale module.
+  cache-first, one cache per build named for its files' names and contents. Registered only in production builds, so
+  `pnpm dev` never serves a stale module; the app asks for a new build as it starts and as it comes back to the
+  foreground (a Home Screen app rarely navigates).
+- Its caches are named `open-mtg-arena-app-<hash>` and a new build deletes only those: the card art (M3-08) keeps a
+  cache name of its own, so an update never wipes the downloaded images.
+- Known limit: a tab still running an old build after the new one takes over can't fetch old files the new cache
+  dropped. Harmless today (the app loads every file at start); once the app loads code later (M3-09's screens, a
+  worker per match), keep the previous build's cache for one more update.

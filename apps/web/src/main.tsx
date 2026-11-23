@@ -15,5 +15,11 @@ createRoot(root).render(
 );
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
-  void navigator.serviceWorker.register("/sw.js");
+  // An app added to the Home Screen rarely navigates, so it asks for a new build as it starts and whenever it comes
+  // back to the foreground; the browser installs it in the background and the next start uses it.
+  void navigator.serviceWorker.register("/sw.js").then((registration) => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") void registration.update();
+    });
+  });
 }

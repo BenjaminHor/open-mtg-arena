@@ -13,7 +13,10 @@ type Update = Extract<FromWorker, { type: "update" }>;
 /** `?seed=12&deck=red-aggro&vs=white-soldiers` start a given match, for tests and bug reports. */
 function matchFromUrl(): { seed: number; decks: [string, string] } {
   const params = new URLSearchParams(location.search);
-  const seed = Number(params.get("seed") ?? Math.floor(Math.random() * 1_000_000_000));
+  const asked = Number(params.get("seed"));
+  // A seed that isn't a whole number (a typo in the address) gets a random one instead.
+  const seed =
+    params.has("seed") && Number.isSafeInteger(asked) && asked >= 0 ? asked : Math.floor(Math.random() * 1_000_000_000);
   return { seed, decks: [params.get("deck") ?? "red-green-beats", params.get("vs") ?? "white-soldiers"] };
 }
 
@@ -35,7 +38,15 @@ export function App() {
     return () => started.stop();
   }, []);
 
-  if (update === null) return <p className="loading">Starting a match…</p>;
+  if (update === null) {
+    return error === null ? (
+      <p className="loading">Starting a match…</p>
+    ) : (
+      <p role="alert" className="loading">
+        {error}
+      </p>
+    );
+  }
   const { shown } = update;
   const view = shown.view;
   const life = (p: PlayerId) => view.players[p]?.life ?? 0;
@@ -43,7 +54,7 @@ export function App() {
   const result = view.result;
   return (
     <main className="app">
-      <BoardCanvas shown={shown} />
+      <BoardCanvas shown={shown} onError={setError} />
       <section className="hud" aria-label="Match">
         <p>
           You {life(shown.player)} · Opponent {life(opponent)} · Turn {view.turn?.number ?? 0}, {view.turn?.step ?? ""}

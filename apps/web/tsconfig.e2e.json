@@ -3,8 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "lib": ["es2024", "dom"],
-    "types": ["node"],
-    "jsx": "preserve"
+    "types": ["node"]
   },
   "include": ["e2e/**/*.ts", "playwright.config.ts"],
   "exclude": []

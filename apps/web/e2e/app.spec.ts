@@ -12,9 +12,16 @@ test("loads a match and plays the person's first decision through the worker", a
   await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.filter((c) => c.zone === "hand").length).toBe(7);
   await page.getByRole("button", { name: "Keep hand" }).click();
-  // The worker applied the keep and played on until the person's next decision: the mulligan is gone.
+  // The worker applied the keep and played on until the person's next decision: the mulligan is gone, the game is
+  // into its first turn, and the person has something to do.
   await expect(page.getByRole("button", { name: "Keep hand" })).toHaveCount(0);
-  await expect(page.getByRole("button").first()).toBeVisible();
+  await expect(page.getByText(/Turn [1-9]/)).toBeVisible();
+  await expect(page.getByRole("button", { name: /^(Pass|Play .*)$/ }).first()).toBeVisible();
+});
+
+test("shows a refusal rather than hanging: an unknown deck in the address", async ({ page }) => {
+  await page.goto("/?deck=no-such-deck");
+  await expect(page.getByRole("alert")).toContainText("no prebuilt deck");
 });
 
 test("works offline once it has loaded (the service worker)", async ({ page, context }) => {

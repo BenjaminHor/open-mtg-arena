@@ -1,6 +1,6 @@
 {
-  // The browser side of the web app: React (JSX) and the DOM. The worker shell has its own config
-  // (tsconfig.worker.json), and the Node files (Vite and Playwright configs, tests) are in the root one.
+  // The browser side of the web app: React (JSX) and the DOM. The worker shell has its own config (tsconfig.worker.json),
+  // the Playwright tests and config theirs (tsconfig.e2e.json), and the Vite config and unit tests are in the root one.
   "compilerOptions": {
     "target": "es2024",
     "lib": ["es2024", "dom", "dom.iterable"],
@@ -17,6 +17,8 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,

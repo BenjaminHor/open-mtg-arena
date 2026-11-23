@@ -1,6 +1,7 @@
 // The match worker's logic (M3-03), in Node: messages in, replies out, the person's seat shown and nothing hidden.
 
 import { cardDatabase } from "@mtg/cards";
+import type { Action } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { handle, type Session } from "../src/worker/match-session.ts";
 import type { FromWorker, ToWorker } from "../src/worker/protocol.ts";
@@ -52,11 +53,35 @@ describe("the match worker's session", () => {
     expect(next.session).toBe(first.session);
   });
 
-  it("refuses an action before a match, and an unknown deck", () => {
-    expect(handle(null, { type: "act", action: { type: "CONCEDE", player: "p1" } as never }, cards).reply.type).toBe(
-      "error",
-    );
-    const unknown: ToWorker = { type: "start", decks: ["no-such-deck", "white-soldiers"], seed: 7, human: "p1" };
-    expect(handle(null, unknown, cards).reply).toMatchObject({ type: "error" });
+  it("refuses an action before a match, an unknown deck, a bad seed, and an unknown message, without throwing", () => {
+    const refused = (message: ToWorker) => handle(null, message, cards).reply.type;
+    expect(refused({ type: "act", action: { type: "CONCEDE", player: "p1" } as never })).toBe("error");
+    for (const deck of ["no-such-deck", "constructor", "__proto__"]) {
+      expect(refused({ ...start, decks: [deck, "white-soldiers"] } as ToWorker)).toBe("error");
+    }
+    for (const seed of [Number.NaN, 1.5, -3, 1e300]) expect(refused({ ...start, seed } as ToWorker)).toBe("error");
+    expect(refused({ ...start, human: "p9" } as ToWorker)).toBe("error");
+    expect(refused({ type: "nonsense" } as unknown as ToWorker)).toBe("error");
+  });
+
+  it("never shows a card hidden from the person, turn after turn (CR 402.3, 401.2)", () => {
+    let { session, reply } = handle(null, start, cards);
+    for (let i = 0; i < 40 && reply.type === "update" && reply.shown.options.length > 0; i++) {
+      const state = (session as Session).match.state;
+      const hidden = [
+        ...(state.zones.players.p2?.hand ?? []),
+        ...(state.zones.players.p1?.library ?? []),
+        ...(state.zones.players.p2?.library ?? []),
+      ];
+      const text = JSON.stringify(reply);
+      for (const id of hidden) expect(text).not.toContain(`"${id}"`);
+      const next = handle(
+        session,
+        { type: "act", action: (reply.shown.options[0] as { action: Action }).action },
+        cards,
+      );
+      session = next.session;
+      reply = next.reply;
+    }
   });
 });

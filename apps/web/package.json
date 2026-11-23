@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mtg/ai": "workspace:*",
     "@mtg/cards": "workspace:*",
     "@mtg/engine": "workspace:*",
     "@mtg/match": "workspace:*",

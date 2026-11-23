@@ -1,6 +1,6 @@
 // The worker's whole job as pure functions: a message in, the session and a reply out. The worker file only wires
-// these to `onmessage`, so the logic is tested in Node without a browser. A refused message gets an error reply and
-// leaves the session as it was; nothing here throws for something the UI sent.
+// these to `onmessage`, so the logic is tested in Node without a browser. A refused message, or a failure while acting
+// on it, gets an error reply and leaves the session as it was: nothing here throws.
 
 import { DECKS, type DeckList } from "@mtg/cards";
 import { type CardDatabase, type PlayerId, seatView } from "@mtg/engine";
@@ -24,6 +24,19 @@ export function handle(
   message: ToWorker,
   cards: CardDatabase,
 ): { session: Session | null; reply: FromWorker } {
+  try {
+    return handleMessage(session, message, cards);
+  } catch (error) {
+    // An engine or host failure (`HostStuck`, a refused host action) is reported, never left to hang the UI.
+    return { session, reply: { type: "error", message: error instanceof Error ? error.message : String(error) } };
+  }
+}
+
+function handleMessage(
+  session: Session | null,
+  message: ToWorker,
+  cards: CardDatabase,
+): { session: Session | null; reply: FromWorker } {
   switch (message.type) {
     case "start":
       return start(session, message, cards);
@@ -33,6 +46,11 @@ export function handle(
       if (!result.ok) return { session, reply: { type: "error", message: result.error.message } };
       return update({ ...session, match: result.match }, cards);
     }
+    default: {
+      // A message from something other than this app's client: refused, while every known type stays checked.
+      const unknown: never = message;
+      return { session, reply: { type: "error", message: `unknown message ${JSON.stringify(unknown)}` } };
+    }
   }
 }
 
@@ -41,13 +59,22 @@ function start(
   message: Extract<ToWorker, { type: "start" }>,
   cards: CardDatabase,
 ): { session: Session | null; reply: FromWorker } {
-  const decks = message.decks.map((name) => DECKS[name]);
-  if (decks.some((d) => d === undefined)) {
-    return { session, reply: { type: "error", message: `no prebuilt deck ${message.decks.join(" or ")}` } };
+  const unknown = message.decks.filter((name) => !Object.hasOwn(DECKS, name));
+  if (unknown.length > 0)
+    return { session, reply: { type: "error", message: `no prebuilt deck ${unknown.join(", ")}` } };
+  if (!Number.isSafeInteger(message.seed) || message.seed < 0) {
+    return { session, reply: { type: "error", message: `a seed is a whole number, 0 or more: ${message.seed}` } };
   }
-  const other: PlayerId = message.human === "p1" ? "p2" : "p1";
-  const seats: Record<PlayerId, Seat> = { [message.human]: { kind: "human" }, [other]: { kind: "heuristic" } };
-  const setup = deckGameSetup(decks as DeckList[], message.seed, null);
+  const decks = message.decks.map((name) => DECKS[name] as DeckList);
+  const setup = deckGameSetup(decks, message.seed, null);
+  const players = setup.players.map((p) => p.id);
+  if (!players.includes(message.human)) {
+    return { session, reply: { type: "error", message: `no seat ${message.human}` } };
+  }
+  // The person in their seat, the heuristic AI in every other.
+  const seats: Record<PlayerId, Seat> = Object.fromEntries(
+    players.map((p): [PlayerId, Seat] => [p, p === message.human ? { kind: "human" } : { kind: "heuristic" }]),
+  );
   return update({ match: startMatch(setup, seats, cards), human: message.human }, cards);
 }
 

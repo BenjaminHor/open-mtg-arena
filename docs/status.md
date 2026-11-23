@@ -88,8 +88,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     drawing the model; `window.__board` in dev and test builds), `director/` (events to an animation queue; a
     pass-through until M3-07), `effects/` (only its README until the first effect). Enough on screen to see a game
     move (cards by name, life totals, a pass button): the real board is M3-04.
-  - Offline: a web manifest and a small hand-written service worker (cache the app shell on install, cache-first for
-    same-origin GETs), not vite-plugin-pwa and Workbox: one short readable file instead of a dependency tree.
+  - Offline: a web manifest and a small hand-written service worker (D-151: precache every built file, pages
+    network-first, hashed files cache-first), not vite-plugin-pwa and Workbox: one short readable file.
   - Scripts: `pnpm dev`, `pnpm build`, `pnpm preview`, `pnpm test:e2e` (Playwright: the app loads and shows the board;
     an offline reload still works). `pnpm typecheck` also checks `apps/web/tsconfig.json` (DOM, JSX). CI installs
     Chromium and runs the e2e tests.
@@ -104,8 +104,6 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     M3-04 must make the board look like Arena from its first screenshot (arena-research.md, the owner's phone
     screenshots: hand fan, lands row, life and portraits, phase indicator, the pass button, real card frames), and
     show the owner the layout early, before the details.
-  - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
-    and posts `{ view, seen, legalActions, events }`.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
   spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
 - M2-01 Hidden information fix: done, merged (PR #21, D-054).
@@ -1741,6 +1739,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (2026-11-23, M3-03) M3's exit criterion says "`pnpm check` is green, including Playwright tests". The browser tests
+  need a production build and a browser, so they run in their own command (`pnpm test:e2e`) and CI runs both on every
+  pull request (D-151); `pnpm check` stays quick. OK to read the criterion as "CI is green, including Playwright", and
+  word the milestone that way?
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).

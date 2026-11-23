@@ -11,8 +11,11 @@ const COLORS = { table: 0x16181d, mine: 0x2d3e5e, theirs: 0x5e322d, hand: 0x3b4d
 
 export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   const app = new Application();
+  // Sized by each board model, not `resizeTo`: the model is the one measure of the board, and Pixi's resize plugin
+  // only follows the window, not the board's own box (which the HUD below it can change).
   await app.init({
-    resizeTo: host,
+    width: host.clientWidth,
+    height: host.clientHeight,
     background: COLORS.table,
     antialias: true,
     autoDensity: true,
@@ -21,7 +24,9 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   host.appendChild(app.canvas);
   return {
     draw: (model) => {
-      for (const child of app.stage.removeChildren()) child.destroy({ children: true });
+      app.renderer.resize(model.width, model.height);
+      // `context: true` frees each Graphics' drawing too, which a plain `children: true` leaves behind.
+      for (const child of app.stage.removeChildren()) child.destroy({ children: true, context: true });
       for (const card of model.cards) app.stage.addChild(cardSprite(card));
       exposeForTests(model);
     },
