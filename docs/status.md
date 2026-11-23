@@ -224,6 +224,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       (12 px to start, 60 px to play; "Drag up to cast" / "Release to cast" on the lifted card), followed with window
       listeners because lifting the card redraws the hand and removes the element pressed; the click a release fires
       is swallowed. The browser tests drag with a mouse on both projects; a real finger is for the phone check.
+    - After the reviews: the app shapes the declaration toward a goal (All Attack, Clear Attacks, a tap on an
+      attacker to take it out), by the engine's take-back and picks; fixed slots for the batch button and Undo; the
+      drag arms only above the open hand, says when a card can't be played, puts the hand back as it was on cancel,
+      and holds the pointer on the board's layer once lifted (for iOS Safari). Left: the collapsed hand's strips
+      under the small buttons on the phone (they cover a card's edge), and a check on a real iPhone.
   - **M3-04a done, merged (PR #96, 2026-11-23).** CI green, a 300-game fuzz clean. The owner can try it locally:
     `pnpm dev`, `?fixture=mid-game|crowded|attack|block|tokens`.
   - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:
