@@ -101,8 +101,10 @@ test("blocks with two taps: the blocker, then the attacker", async ({ page }) =>
  */
 async function playWholeGame(page: Page, how: "tap" | "click" | "keyboard") {
   await page.goto("/?seed=7");
-  for (let i = 0; i < 400; i++) {
-    if (await page.getByRole("status").count()) break;
+  // The game's result, not any status line: a new turn's banner is one too, and stopping there ended the game early.
+  const result = page.locator(".result");
+  for (let i = 0; i < 600; i++) {
+    if (await result.count()) break;
     // The game is waiting on the person whenever a control is enabled: a prompt choice, the main button, a card.
     const prompt = page.locator(".prompt-choices button:not([disabled])");
     // Not while an action is on its way (aria-disabled): the screen is about to change.
@@ -129,7 +131,8 @@ async function playWholeGame(page: Page, how: "tap" | "click" | "keyboard") {
     else await page.waitForTimeout(100);
     await page.waitForTimeout(40);
   }
-  await expect(page.getByRole("status")).toBeVisible();
+  // The whole game was played, to its result.
+  await expect(result).toHaveText(/^(You win|You lose|Draw)$/);
 }
 
 test("plays a whole game through the board and HUD alone: touch taps on the phone, mouse clicks on the desktop", async ({

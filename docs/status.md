@@ -334,6 +334,21 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - Pacing slice plan (D-172, 2026-11-23, written before starting): "the game never jumps".
+    - The match host gets a one-action step (`advanceOne`), and the worker's update loops it, keeping a frame (the
+      person's seat view and the events since the last frame) after each host action worth seeing: an opponent's cast,
+      activation, trigger, land, attack or block, a resolution, damage, a new step or turn. Pure passes and mana fold into
+      the next frame. The reply carries the frames before the final view (capped), `shown` stays the final one.
+    - The app plays them in order (`interaction/pacing.ts`, pure: how long each frame holds, from its events: an
+      opponent's spell or ability ~0.9 s on the stack [R: Arena holds each at least 0.4 s], an attack or block ~0.9 s,
+      a resolution ~0.5 s, a land ~0.5 s, a step ~0.25 s), with a line saying what happened ("Opponent cast Lightning
+      Bolt", `interaction/event-line.ts`). Nothing can be pressed meanwhile; a tap or a key skips to the end. The e2e
+      build plays at instant speed (ui.md / M3-07: "tests run at instant speed"), with `?pace=normal` for its own test.
+    - Tests: the worker's frames (an AI turn gives frames for its land, cast and attack, the last equal to `shown`);
+      the hold and line per event; e2e at normal pace: the opponent's cast is seen on the stack before the end state.
+    - Future impact: M3-07's director replaces the fixed holds with animations over the same frames.
+  - **Slice 7 merged (PR #110, squash, 2026-11-23). M3-04c is done.** Next: the pacing slice (D-172), then the owner's
+    feedback on the live site (and their check of the zone browser's spacing on the phone).
   - **Slice 7 done (2026-11-23, D-171): the "turn your phone" prompt, the hand's 44 px tap, carets on a changed P/T.**
     7b needed nothing new: e2e/play.spec.ts already plays a whole seeded game by touch taps at 812x375 on every PR,
     which is the milestone's acceptance. Next: merge, then ask the owner for feedback with the live link.
@@ -2286,6 +2301,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- Fixed (2026-11-23, found while planning the pacing slice): the whole-game e2e (`playWholeGame`, M3's acceptance,
+  D-171) stopped at the first `role="status"` element, and since the turn banner (PR #104) is one, it ended at the
+  first new turn instead of the game's end. It now waits for the result itself and checks its text.
 - (2026-11-23, owner) "Idk what the plan is but the auto pass feature is a bit jarring currently. Things just progress
   instantly and I get confused lol". The same cause as the "two lands" report: the host auto-passes (D-143, D-157)
   and the opponent acts, and the screen jumps to the result with nothing shown in between. The plan's answer is
