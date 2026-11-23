@@ -21,7 +21,7 @@ import type { Pump } from "./fights.ts";
 
 export type Intent =
   /** `fromHand`: what it takes is cards from the player's hand (a discard), worth nothing against an empty hand. */
-  | { kind: "harm"; damage: number | null; fromHand?: true }
+  | { kind: "harm"; damage: number | null; fromHand?: true; destroys?: true }
   /** `pump`: what it gives a creature until end of turn, a combat trick's worth (`tricks.ts`). */
   | { kind: "help"; untilEndOfTurn: boolean; pump?: Pump; lifeLoss?: number }
   /** A target the effect neither harms nor helps in a way the heuristic knows: any legal one will do. */
@@ -74,6 +74,7 @@ function effectOn(effect: Effect, x: number | null, index: number): EffectOn {
       return { subjects: [effect.to, ...(effect.and ?? []).map((a) => a.to)], intent: { kind: "harm", damage } };
     }
     case "destroy":
+      return { subjects: [effect.of], intent: { kind: "harm", damage: null, destroys: true } };
     case "exile":
     case "tap":
     case "returnToHand":
@@ -86,7 +87,7 @@ function effectOn(effect: Effect, x: number | null, index: number): EffectOn {
     case "shuffleIntoLibraries":
       return { subjects: [effect.of], intent: HARM };
     case "destroyOneAtRandom":
-      return { subjects: effect.among, intent: HARM };
+      return { subjects: effect.among, intent: { kind: "harm", damage: null, destroys: true } };
     case "discard":
     case "discardAtRandom":
       return { subjects: [effect.who], intent: { kind: "harm", damage: null, fromHand: true } };

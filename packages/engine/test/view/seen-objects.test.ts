@@ -75,4 +75,11 @@ describe("seenObjects", () => {
     expect(seen[attacker]).toMatchObject({ attacking: { attacked: { kind: "player", player: "p2" } }, blocking: [] });
     expect(seen[blocker]).toMatchObject({ attacking: null, blocking: [attacker] });
   });
+  it("counts the regeneration shields on a card, public as the abilities that made them resolved (CR 701.19a)", () => {
+    const state = board();
+    const [, theirs] = state.zones.battlefield as [ObjectId, ObjectId];
+    const shielded = { ...state, replacements: [{ kind: "regenerationShield" as const, object: theirs }] };
+    const seen = seenObjects(shielded, playerView(shielded, "p1", TEST_CARDS), TEST_CARDS);
+    expect(seen[theirs]).toMatchObject({ regenerationShields: 1 });
+  });
 });

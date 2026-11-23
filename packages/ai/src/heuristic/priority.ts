@@ -70,7 +70,7 @@ function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: 
     const size = card.characteristics.types.includes("creature") ? creatureValue(card) : 0;
     const entering = (def.triggers ?? [])
       .filter((t) => t.when.kind === "selfEnters" && t.targets.length === 0)
-      .reduce((sum, t) => sum + untargetedValue(shown, t.effects, x, null), 0);
+      .reduce((sum, t) => sum + untargetedValue(shown, t.effects, x, null, cards), 0);
     const value = 2 + manaValueOf(card, cards) + x + size / 4 + entering;
     return value > 0 ? value : null;
   }
@@ -123,7 +123,7 @@ function effectsValue(
   cards: CardDatabase,
 ): number | null {
   const source = option.action.type === "ACTIVATE_ABILITY" ? seenCard(shown, option.action.object) : null;
-  let value = untargetedValue(shown, effects, x, source);
+  let value = untargetedValue(shown, effects, x, source, cards);
   for (const [i, legal] of option.targets.entries()) {
     const intent = intents[i] ?? { kind: "neutral" };
     const best = bestTarget(shown, legal, intent, cards);

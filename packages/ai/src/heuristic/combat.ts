@@ -30,6 +30,7 @@ import {
   toughnessLeft,
 } from "./board.ts";
 import { canBlock, damageDealt, kills } from "./fights.ts";
+import { landColors } from "./lands.ts";
 
 type Answer = Extract<Action, { type: "ANSWER" }>;
 
@@ -237,8 +238,15 @@ function blocksAlone(blocker: SeenCard, attacker: SeenCard): boolean {
 function canRegenerate(shown: SeatView, creature: SeenCard, cards: CardDatabase): boolean {
   if (creature.regenerationShields > 0) return true;
   const own = cardData(creature, cards)?.def.abilities ?? [];
-  const regenerates = own.some((a) => a.effects.some((e) => e.op === "regenerate" && e.of === "self"));
-  return regenerates && controlledBy(shown, shown.player).some((c) => isLand(c) && !c.tapped);
+  const lands = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped);
+  return own.some((a) => {
+    if (!a.effects.some((e) => e.op === "regenerate" && e.of === "self")) return false;
+    // A land for each color its cost needs, at least ("{B}": an untapped land that makes black).
+    const colors = a.cost
+      .flatMap((c) => (c.kind === "mana" ? c.cost : []))
+      .flatMap((m) => (m.kind === "colored" ? [m.color] : []));
+    return lands.length > 0 && colors.every((color) => lands.some((l) => landColors(l, cards).includes(color)));
+  });
 }
 
 /**

@@ -13,7 +13,9 @@ the web app's worker (M3-03). Depends on `engine`, `ai` and `cards`, and on no `
 - `src/advance.ts`: `advance(match, cards)` acts until a person must decide or the game ends: a built-in agent's
   choice (its random state kept in the match, never the game's), a decision with one legal answer, auto-tap, auto-pass.
   `submit(match, action, cards)` applies a person's action; `waitingOn` names who must decide. A heuristic seat
-  (`{ kind: "heuristic" }`) is given the engine's `seatView` (D-144) and answers with `heuristicAction`.
+  (`{ kind: "heuristic" }`) is given the engine's `seatView` (D-144) and answers with `heuristicAction`. `HostStuck`
+  is thrown when the host's own seats take 100,000 actions in a row (an agent going round in circles); `pnpm eval`
+  counts such a game void (D-145).
 - `src/auto-pass.ts`: `autoPasses`, one pure rule for every seat (D-137): pass when nothing meaningful can be done (a
   land to play, or a spell or non-mana ability the player can pay for now, counts); with your own object on top of the
   stack, pass so it resolves; otherwise stop (D-143). Full control is `autoPass: false`.

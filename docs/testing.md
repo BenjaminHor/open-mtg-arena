@@ -339,7 +339,8 @@ background.
 
 `pnpm eval [--deck <name> | all] [--games 500] [--seed 1] [--turn-cap 40] [--vs random]` plays the heuristic AI with
 a prebuilt deck against a simple agent with each prebuilt deck in turn, through the match host, and prints, per deck,
-the games won, lost, drawn and capped, and how long its decisions took (mean and slowest, with the seed). How the
+the games won, lost, drawn, capped and void (the random agent stuck going round in circles, `HostStuck`), and how
+long its decisions took (mean and slowest, with the seed). How the
 games are arranged, and what M3-02's "95% with each deck" means: D-145. Ten fixed games per deck run in `pnpm check`.
 
 ## 4. Replays and golden games

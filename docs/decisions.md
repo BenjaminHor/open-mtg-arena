@@ -2263,3 +2263,17 @@ owner's answer to the D-089 open question, option (a))
   (holding mana back measured worse). Stronger play later comes from search (architecture.md, "AI"), not more rules.
 - How tuning is measured from now on: on held-out seeds, by games that flip between two versions, the acceptance seeds
   kept for the final run.
+
+**D-150: How the heuristic AI plays combat, and what its seat is shown for it (M3-02 part 2)** · 2026-11-23 · accepted
+- A pump until end of turn (Giant Growth, Overrun, Firebreathing) is worth only what it changes once blockers are
+  declared (`tricks.ts`): a creature saved, a foe killed, lethal damage through. Before that it scores nothing, so a
+  stateless player never spends a trick in a main phase.
+- A declaration is planned with the picks already made as part of the plan (the options no longer list them), so a
+  chump or gang block isn't repeated on one attacker. Blocks: win, trade, hold off (a creature that can regenerate
+  counts as holding), two together for a big attacker, chumps while life would fall to 3.
+- `seenObjects` shows each card's regeneration shields, public as the abilities that made them resolved, so the
+  heuristic shields a creature once. `seatView` judges an ability whose cost taps its source as if the source were
+  tapped already (Gargoyle Castle can't pay its own {5} with itself).
+- Attacks read evasion from the cards: "can't be blocked", an attached Whispersilk Cloak, landwalk.
+- Tried and dropped, measured: keeping mana open for counterspells, keeping creatures with {T} abilities home, and a
+  check that what stays home can survive the attack back (each lost games on the held-out seeds).

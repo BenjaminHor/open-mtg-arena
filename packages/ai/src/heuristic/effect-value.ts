@@ -1,9 +1,10 @@
 // What the effects of a spell or ability that don't target are worth to the heuristic: a rough count of cards drawn,
 // bodies made, life and damage. Effects it doesn't weigh yet count as nothing, so they never make it cast a spell.
 
-import type { Effect, EffectSubject, SeatView, SeenCard } from "@mtg/engine";
-import { controlledBy, creaturesOf, creatureValue, lifeOf, opponents, seenCard } from "./board.ts";
+import type { CardDatabase, Effect, EffectSubject, SeatView, SeenCard } from "@mtg/engine";
+import { controlledBy, creaturesOf, creatureValue, lifeOf, opponents, seenCard, toughnessLeft } from "./board.ts";
 import type { Pump } from "./fights.ts";
+import { stackIntents } from "./intents.ts";
 import { losesFight, type Pumping, pumpsValue } from "./tricks.ts";
 
 /** `source`: the permanent whose ability this is ("this creature", "enchanted creature"); null for a spell. */
@@ -12,13 +13,14 @@ export function untargetedValue(
   effects: readonly Effect[],
   x: number,
   source: SeenCard | null,
+  cards: CardDatabase,
 ): number {
-  return effects.reduce((sum, effect) => sum + effectValue(shown, effect, x, source), 0);
+  return effects.reduce((sum, effect) => sum + effectValue(shown, effect, x, source, cards), 0);
 }
 
 type Amount = Extract<Effect, { op: "draw" }>["amount"];
 
-function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCard | null): number {
+function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCard | null, cards: CardDatabase): number {
   const amount = (a: Amount) => (typeof a === "number" ? a : a === "X" ? x : 1);
   switch (effect.op) {
     case "draw":
@@ -46,7 +48,7 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
       return typeof effect.of === "object" && "each" in effect.of ? sweepValue(shown, effect.of.each.types) : 0;
     case "if":
       // Its condition isn't weighed: half of what it would do.
-      return untargetedValue(shown, effect.effects, x, source) / 2;
+      return untargetedValue(shown, effect.effects, x, source, cards) / 2;
     case "modifyPT":
       if (effect.duration !== "endOfTurn") return 0;
       return pumpsValue(
@@ -61,7 +63,7 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
       );
     // Targeted (weighed by `targets.ts`), or not weighed yet.
     case "regenerate":
-      return regenerateValue(shown, pumpedBy(shown, effect.of, source, NO_PUMP)[0]?.creature ?? null);
+      return regenerateValue(shown, pumpedBy(shown, effect.of, source, NO_PUMP)[0]?.creature ?? null, cards);
     case "addMana":
     case "cantBlock":
     case "cantBeBlocked":
@@ -127,20 +129,27 @@ const NO_PUMP: Pump = { power: 0, toughness: 0, keywords: [] };
  * A regeneration shield (CR 701.19a) is worth the creature when it would otherwise be destroyed now: it loses the fight
  * it's in, or an opponent's spell or ability on the stack would kill it. Nothing once it has a shield already.
  */
-function regenerateValue(shown: SeatView, creature: SeenCard | null): number {
+function regenerateValue(shown: SeatView, creature: SeenCard | null, cards: CardDatabase): number {
   if (creature === null || creature.regenerationShields > 0) return 0;
-  return losesFight(shown, creature) || aimedAt(shown, creature) ? creatureValue(creature) : 0;
+  return losesFight(shown, creature) || aimedAt(shown, creature, cards) ? creatureValue(creature) : 0;
 }
 
-/** An opponent's spell or ability on the stack would harm it (destroy it, or deal it lethal damage). */
-function aimedAt(shown: SeatView, creature: SeenCard): boolean {
+/**
+ * An opponent's spell or ability on the stack would destroy it or deal it lethal damage, what regeneration answers
+ * (not a bounce, an exile or an Aura, CR 701.19a).
+ */
+function aimedAt(shown: SeatView, creature: SeenCard, cards: CardDatabase): boolean {
   return shown.view.zones.stack.some((id) => {
     const seen = shown.seen[id];
     if (seen === undefined) return false;
     const controller = seen.kind === "card" ? seen.characteristics.controller : seen.controller;
     if (controller === shown.player) return false;
-    const targets = (seen.choices?.targets ?? []).flat();
-    return targets.some((t) => t.kind === "object" && t.object === creature.id);
+    const intents = stackIntents(shown, id, cards);
+    return (seen.choices?.targets ?? []).some((group, i) => {
+      const intent = intents[i];
+      if (intent?.kind !== "harm" || !group.some((t) => t.kind === "object" && t.object === creature.id)) return false;
+      return intent.destroys === true || (intent.damage !== null && intent.damage >= toughnessLeft(creature));
+    });
   });
 }
 

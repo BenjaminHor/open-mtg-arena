@@ -417,6 +417,32 @@ describe("the heuristic reads more of the cards", () => {
     expect(regenerate).toMatchObject({ object: wall });
   });
 
+  it("doesn't regenerate a creature that already has a shield", () => {
+    const { state } = blocks({ battlefield: ["Wall of Bone", "Swamp", "Swamp"] }, ["Craw Wurm"]);
+    const passed = apply(state, legalActions(state, "p2", cards).find((a) => a.type === "PASS_PRIORITY") as Action);
+    const wall = named(passed, "Wall of Bone", "p1");
+    const shielded = { ...passed, replacements: [{ kind: "regenerationShield" as const, object: wall }] };
+    expect(decide(shielded).type).toBe("PASS_PRIORITY");
+  });
+
+  it("doesn't start an ability its own {T} keeps it from paying (Gargoyle Castle with four other lands)", () => {
+    const state = table(
+      { battlefield: ["Gargoyle Castle", "Plains", "Plains", "Plains", "Plains"] },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    const castle = named(state, "Gargoyle Castle", "p1");
+    const ability = seatView(state, "p1", cards).options.find(
+      (o) =>
+        o.action.type === "ACTIVATE_ABILITY" &&
+        o.action.object === castle &&
+        o.ability?.cost.some((c) => c.kind === "sacrificeSelf"),
+    );
+    expect(ability?.payable).toBe(false);
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+
   it("doesn't cast a creature whose entering would cost it its last life (Howling Banshee at 3)", () => {
     const state = table(
       { hand: ["Howling Banshee"], battlefield: ["Swamp", "Swamp", "Swamp", "Swamp"], life: 3 },
