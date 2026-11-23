@@ -2654,3 +2654,32 @@ owner's answer to the D-089 open question, option (a))
 - Left for later (UX review): a visible collapse tab (only the tap on the card for now); a mark on the targeted card
   itself; a second cue for the opponent's arrows; the arrows drawn from the sprites' moving positions once M3-07
   animates them (today they're from the model's).
+
+**D-171: A phone held upright pauses behind "turn your phone" (M3-04c slice 7)** · 2026-11-23 · accepted
+- The board is laid out for a phone in landscape (D-141), so a phone in portrait shows a full-screen prompt, "Turn
+  your phone sideways to play", over the paused match (ui.md "Layouts"). Decided from the viewport alone: upright and
+  narrower than 700 px (`app/orientation.ts`, followed by `use-portrait.ts`), so the unfolded Duo (832 wide upright)
+  and a tablet play as they are. The match behind is `inert` and takes no key; turning back carries on where it was,
+  nothing reset. Arena's phone client plays only in landscape [R].
+- Small finishing items with it: the collapsed hand's tap area is at least 44 px tall (it was 40); a raised or lowered
+  power/toughness carries a small caret up or down as well as its colour (ui.md, "Never color alone").
+- M3's acceptance ("a full game is playable at the folded phone's size in landscape") is e2e/play.spec.ts's whole
+  game by touch taps at 812x375, run on every PR.
+- After the code review: every key listener on the window (the zone browser's, the settings menu's, a drag's) checks
+  `matchPaused()` (`hud/paused.ts`: the match's main element is inert), so Escape behind the prompt doesn't close what
+  was open; the prompt takes focus while it's up and gives it back after; it adds "On a computer, widen the window"
+  (a narrow desktop window gets it too, by the viewport rule). Known and left: a hand drag or an All Attack already
+  under way when the phone turns keeps going (rare: it needs a turn mid-gesture).
+
+**D-172: Pacing comes next, before the full layout (owner feedback, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "the auto pass feature is a bit jarring currently. Things just progress instantly and I get confused."
+  Auto-pass (D-143, D-157) is Arena's and stays; what's missing is seeing what it passes through. So right after
+  M3-04c, before M3-05, comes a first pacing slice, pulled forward from M3-07/M3-12 (ui.md "Pacing for the
+  opponent", "The game never jumps"): the worker sends each step of what happened rather than only the end state, and
+  the app plays them in order at a pace a person can follow (the opponent's spell held on the stack, an attack shown,
+  the phase ladder stepping, a short line saying what happened), skippable with a tap, an "instant" speed for tests.
+  Arena holds each opponent stack item for a minimum time [R: 0.4 s since 2018]. It's built in a shape M3-07's
+  animation director grows from (a queue of shown steps), not a throwaway.
+- The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
+  forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
+  slice is tried through it.

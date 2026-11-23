@@ -19,7 +19,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 ## Structure
 
 - `src/app/`: the React app: `App.tsx` (the match screen; it makes the board model the canvas and the HUD share, and
-  keeps whether the hand is open), `option-label.ts` (a label for each legal action), `safe-area.ts`, `app.css`.
+  keeps whether the hand is open), `option-label.ts` (a label for each legal action), `safe-area.ts`, `orientation.ts` and `use-portrait.ts` (a phone held upright: the "turn your phone" prompt, D-171), `app.css`.
 - `src/layout/`: `board-layout.ts` (the `BoardLayout` type: every position and size as data) and `compact.ts` (the
   folded phone in landscape, each value tagged [R] from the owner's screenshots or [guess]; D-152).
 - `src/board-model/`: pure functions from a `SeatView`, the board's size, its safe-area insets and the UI state (hand

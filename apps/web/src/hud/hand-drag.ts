@@ -6,6 +6,7 @@
 import type { ObjectId } from "@mtg/engine";
 import { useEffect, useRef, useState } from "react";
 import type { BoardModel } from "../board-model/board-model.ts";
+import { matchPaused } from "./paused.ts";
 import { swallowNextClick } from "./swallow-click.ts";
 
 /**
@@ -88,7 +89,7 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
         if (lifted) latest.current.cancel();
       };
       const onEscape = (k: KeyboardEvent) => {
-        if (k.key !== "Escape") return;
+        if (k.key !== "Escape" || matchPaused()) return;
         k.stopPropagation();
         cancel();
       };

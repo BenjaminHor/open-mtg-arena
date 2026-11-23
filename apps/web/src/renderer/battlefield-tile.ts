@@ -221,7 +221,11 @@ function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
   return parts;
 }
 
-/** On the dark pill, a raised number is a light blue and a lowered one a light red; damage also underlines it. */
+/**
+ * On the dark pill, a raised number is a light blue with a small caret up after it, and a lowered one a light red with a
+ * caret down: a shape as well as a colour (ui.md, "Never color alone"). Damage underlines the toughness as well, in red:
+ * a raised toughness that's been damaged shows both marks.
+ */
 const RAISED = 0x7cb8ff;
 const LOWERED = 0xff8a7a;
 
@@ -234,20 +238,30 @@ function ptPill(card: BoardCard, h: number): Container {
   const size = Math.min(14, Math.max(8, h * 0.15));
   const style = { fontFamily: PALETTE.sans, fontWeight: "600" as const, fontSize: size };
   const toughness = (card.toughness ?? 0) - card.damage;
-  const tint = (now: number | null, printed: number | null, hurt: boolean) =>
-    hurt || (now !== null && printed !== null && now < printed)
-      ? LOWERED
-      : now !== null && printed !== null && now > printed
-        ? RAISED
-        : 0xffffff;
-  const p = new Text({ text: `${card.power}`, style: { ...style, fill: tint(card.power, card.printed.power, false) } });
+  const change = (now: number | null, printed: number | null): "up" | "down" | null =>
+    now === null || printed === null || now === printed ? null : now > printed ? "up" : "down";
+  const powerChange = change(card.power, card.printed.power);
+  // Damage is its own mark (the underline); only a change in the toughness itself gets a caret.
+  const toughnessChange = change(card.toughness, card.printed.toughness);
+  const tint = (moved: "up" | "down" | null, hurt: boolean) =>
+    hurt || moved === "down" ? LOWERED : moved === "up" ? RAISED : 0xffffff;
+  const p = new Text({ text: `${card.power}`, style: { ...style, fill: tint(powerChange, false) } });
   const slash = new Text({ text: "/", style: { ...style, fill: 0xffffff } });
   const t = new Text({
     text: `${toughness}`,
-    style: { ...style, fill: tint(toughness, card.printed.toughness, card.damage > 0) },
+    style: { ...style, fill: tint(toughnessChange, card.damage > 0) },
   });
+  // At least 4 px wide, so it reads at a phone's smallest pill.
+  const caretW = Math.max(4, size * 0.5);
   const padX = size * 0.3;
-  const pw = p.width + slash.width + t.width + 2 * padX;
+  const parts: (Text | "up" | "down")[] = [
+    p,
+    ...(powerChange === null ? [] : [powerChange]),
+    slash,
+    t,
+    ...(toughnessChange === null ? [] : [toughnessChange]),
+  ];
+  const pw = parts.reduce((w, part) => w + (typeof part === "string" ? caretW + 1 : part.width), 0) + 2 * padX;
   const ph = size * 1.35;
   pill.addChild(
     new Graphics()
@@ -256,7 +270,12 @@ function ptPill(card: BoardCard, h: number): Container {
       .stroke({ width: 1, color: 0xffffff, alpha: 0.18 }),
   );
   let x = padX;
-  for (const part of [p, slash, t]) {
+  for (const part of parts) {
+    if (typeof part === "string") {
+      pill.addChild(caret(part, x + 0.5, ph / 2, caretW));
+      x += caretW + 1;
+      continue;
+    }
     part.anchor.set(0, 0.5);
     part.position.set(x, ph / 2);
     x += part.width;
@@ -266,6 +285,14 @@ function ptPill(card: BoardCard, h: number): Container {
     pill.addChild(new Graphics().rect(t.x, ph / 2 + size * 0.5, t.width, Math.max(1.2, size * 0.1)).fill(LOWERED));
   }
   return pill;
+}
+
+/** A small solid triangle, `w` wide, pointing up (raised) or down (lowered), its left edge at x, centred on y. */
+function caret(direction: "up" | "down", x: number, y: number, w: number): Graphics {
+  const h = w * 0.8;
+  const tip = direction === "up" ? y - h / 2 : y + h / 2;
+  const base = direction === "up" ? y + h / 2 : y - h / 2;
+  return new Graphics().poly([x, base, x + w, base, x + w / 2, tip]).fill(direction === "up" ? RAISED : LOWERED);
 }
 
 /**

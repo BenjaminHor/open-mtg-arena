@@ -10,6 +10,7 @@ import { type CardDetails, cardDetails, printedDetails } from "../interaction/ca
 import { promptTitle } from "../interaction/prompt-text.ts";
 import { type BrowserTab, browserTabs, stackCards, type ZoneCard, type ZoneName } from "../interaction/zones.ts";
 import { CardFace, CardView } from "./CardView.tsx";
+import { matchPaused } from "./paused.ts";
 
 /**
  * What's being browsed, re-read each time, as the card view is (D-161): one of a player's zones, by whose and which, or
@@ -53,6 +54,7 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
       );
     };
     const onKey = (e: KeyboardEvent) => {
+      if (matchPaused()) return;
       if (e.key === "Tab" && !root.current?.contains(document.activeElement)) {
         e.preventDefault();
         inside()?.focus();

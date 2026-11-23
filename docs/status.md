@@ -332,6 +332,23 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     costs, `Browsing` a union, one `names.ts`. Next PR: target arrows and the collapse tap. Not done: X drawn on the
     spell itself [R] (it's in the card view); canvas text shows "{T}" as letters (hand cards too, pre-existing).
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
+  - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
+    a full game at phone size), then ask the owner for feedback with the live link.
+  - **Slice 7 done (2026-11-23, D-171): the "turn your phone" prompt, the hand's 44 px tap, carets on a changed P/T.**
+    7b needed nothing new: e2e/play.spec.ts already plays a whole seeded game by touch taps at 812x375 on every PR,
+    which is the milestone's acceptance. Next: merge, then ask the owner for feedback with the live link.
+  - Slice 7 plan (2026-11-23, written before starting), two PRs, then the owner's feedback with the live link:
+    - **7a:** the "turn your phone" prompt (ui.md "Layouts": a phone in portrait shows it over the paused match): an
+      overlay when the viewport is portrait and narrower than 700 px (a phone, not the unfolded Duo or a tablet), the
+      match behind it inert; turning back restores everything as it was. A pure `isPortraitPhone(w, h)`, unit-tested;
+      e2e at 375x812 then 812x375. Plus the cheap leftover UX items: "Open your hand" at 44 px; a raised or lowered
+      P/T marked by a shape too (a small caret), not colour alone.
+    - **7b:** the acceptance test (milestone: "a full game is playable at the folded phone's size in landscape"): an
+      e2e that plays a whole game by taps at 812x375 through to a result.
+    - Left for after the owner's feedback: the single legal target pre-selected (ui.md), the visible collapse tab, a
+      mark on a targeted card, mana symbols in canvas text, the picked blocker's badge, full control said in words, the
+      HUD scaling up on a desktop, the settings cog over the far-right permanent, Fireball's X row wrapping.
+    - Future impact: the portrait prompt is the place a portrait layout would later replace (ui.md lists landscape only).
   - **Slice 6b done (2026-11-23, D-170): arrows from the top of the stack to its targets, a tap to make the stack
     small and large again, a spell a counterspell targets outlined and picked in the prompt.**
     `board-model/target-arrows.ts`, test/stack-targets.test.ts, e2e/stack.spec.ts (the `stack` fixture now has Cancel).
@@ -2269,6 +2286,17 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, owner) "Idk what the plan is but the auto pass feature is a bit jarring currently. Things just progress
+  instantly and I get confused lol". The same cause as the "two lands" report: the host auto-passes (D-143, D-157)
+  and the opponent acts, and the screen jumps to the result with nothing shown in between. The plan's answer is
+  opponent-action pacing and step-by-step showing (ui.md "Pacing for the opponent"; M3-07, M3-12), pulled forward to
+  come right after M3-04c (D-172).
+- (2026-11-23, owner) "I noticed that the cards in the hand, graveyard, exile view are spaced really far apart": the
+  zone browser's row (D-168). Chromium draws it tight (140 px cards 8 px apart), so most likely the owner's Safari: the
+  card was sized by `aspect-ratio` on a button and its image by a percentage height inside it, either of which Safari
+  can resolve to the image's natural 488 px width. Fix pending the owner's check on the phone (slice 7's PR): the
+  card's width and height set outright, what's inside pinned to its box (no percentage heights), no
+  `content-visibility`, a 6 px gap; an e2e pins the proportions and the gap. Can't be checked here (no WebKit).
 - Fixed (2026-11-23, owner): "sometimes I get to play two lands on one turn and I'm not sure why - I could be
   misunderstanding due to how the auto pass works but it's rather strange." Not the engine: eight seeded games played
   through the worker as the app plays them never gave two land drops in one turn (CR 305.2). The auto-pass (D-143,

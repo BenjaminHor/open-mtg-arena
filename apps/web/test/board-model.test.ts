@@ -399,6 +399,11 @@ describe("the compact board model", () => {
     }
   });
 
+  it("makes the collapsed hand a finger's height at least to tap (44 px, ui.md)", () => {
+    const hand = boardModel(midGame, PHONE).overlay.hand;
+    expect(hand?.height ?? 0).toBeGreaterThanOrEqual(44);
+  });
+
   it("gives tap regions: one per pile listing its cards, none for the hand while it's closed, the lifted card whole", () => {
     const closed = boardModel(midGame, PHONE);
     const forests = closed.regions.find(

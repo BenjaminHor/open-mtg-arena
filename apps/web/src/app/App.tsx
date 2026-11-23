@@ -24,6 +24,8 @@ import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
 import { readInsets } from "./safe-area.ts";
+import { TurnYourPhone } from "./TurnYourPhone.tsx";
+import { usePortraitPhone } from "./use-portrait.ts";
 
 type Update = Extract<FromWorker, { type: "update" }>;
 
@@ -114,6 +116,8 @@ export function App() {
   const runningLabel = useRef("All Attack");
   // The card being looked at (the card view, M3-04c): a full view, or a mouse's preview.
   const [inspected, setInspected] = useState<Inspected | null>(null);
+  // A phone held upright: the match pauses behind a prompt to turn it (ui.md, "Layouts").
+  const portrait = usePortraitPhone();
   // A player's zones being browsed (M3-04c slice 5), or null.
   const [browsing, setBrowsing] = useState<Browsing | null>(null);
   // The stack made small by a tap, for the object on top then: a new object on top shows large again (D-170).
@@ -319,6 +323,8 @@ export function App() {
   // Space presses the main button when no other control has focus.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // Paused behind the "turn your phone" prompt: no key reaches the match.
+      if (portrait) return;
       // The zone browser is modal and handles its own keys (Escape: its card view, then itself).
       if (browsing !== null) return;
       // Escape closes a full view and nothing else; a preview goes, and the Escape does what it would without one.
@@ -349,92 +355,96 @@ export function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [controlsNow, menu, selection, handOpen, act, inspected, shown, browsing]);
+  }, [controlsNow, menu, selection, handOpen, act, inspected, shown, browsing, portrait]);
 
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: the keyboard's way to put things down is Escape (above)
-    <main className="app" ref={main} onClick={onTable}>
-      <BoardCanvas model={model} onError={setError} />
-      {update === null && error === null && <p className="loading">Starting a match…</p>}
-      {shown !== null && model !== null && controlsNow !== null && (
-        <Hud
-          shown={shown}
-          model={model}
-          controls={controlsNow}
-          busy={busy}
-          act={act}
-          onTap={onTap}
-          menu={menu}
-          closeMenu={() => setMenuFor(null)}
-          handOpen={handOpen}
-          openHand={() => setHandOpen(true)}
-          selection={selection}
-          fullControl={update?.fullControl ?? false}
-          // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
-          setFullControl={(on) => send({ type: "fullControl", on }, !on)}
-          inspect={{
-            open: (id, mode) => {
-              // A hover never replaces a view opened on purpose.
-              if (cardDetails(shown, id) !== null && !(mode === "preview" && inspected?.mode === "full"))
-                setInspected({ mode, id });
-            },
-            closePreview: () => setInspected((now) => (now?.mode === "preview" ? null : now)),
-            prefetch: (id) => {
-              const image = cardDetails(shown, id)?.image;
-              // The browser keeps it: the view's own <img> then finds it loaded, or on its way.
-              if (image != null) new Image().src = image;
-            },
-          }}
-          inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
-          banner={banner}
-          closeInspected={() => setInspected(null)}
-          // A tap on the stack makes it small or large again, but not while it's small to choose for it.
-          toggleStack={
-            shown.view.casting?.player === shown.player
-              ? null
-              : () => {
-                  const top = shown.view.zones.stack.at(-1) ?? null;
-                  setStackSmallFor((now) => (now === top ? null : top));
-                }
-          }
-          browsing={browsing}
-          browse={(next) => {
-            // Looking through zones is reading: a preview goes, and nothing else changes.
-            setInspected(null);
-            setBrowsing(next);
-          }}
-          attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
-          drag={{
-            // The card lifts as the drag starts, out of the collapsed hand too.
-            lift: (id) => {
-              // A long-press opened the card view: looking, not playing.
-              if (inspected?.mode === "full") return;
-              setMenuFor(null);
-              handBeforeDrag.current = handOpen;
-              setHandOpen(true);
-              setSelection(id);
-            },
-            // Let go on the table: what a second tap on the lifted card would do.
-            drop: (id) => {
-              if (inspected?.mode === "full") return;
-              const tap = controls(shown, id).cards[id]?.tap;
-              if (tap?.kind === "send") act(tap.choice.action);
-              else if (tap?.kind === "menu") setMenuFor(id);
-              else setSelection(null);
-            },
-            // Put down: the hand as it was before the drag (a drag from the collapsed hand leaves it collapsed).
-            cancel: () => {
-              setSelection(null);
-              setHandOpen(handBeforeDrag.current);
-            },
-          }}
-        />
-      )}
-      {error !== null && (
-        <p role="alert" className="toast">
-          {error}
-        </p>
-      )}
-    </main>
+    <>
+      {/* A phone held upright pauses behind the "turn your phone" prompt: nothing behind it takes a tap, focus or key. */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: the keyboard's way to put things down is Escape (above) */}
+      <main className="app" ref={main} onClick={onTable} inert={portrait}>
+        <BoardCanvas model={model} onError={setError} />
+        {update === null && error === null && <p className="loading">Starting a match…</p>}
+        {shown !== null && model !== null && controlsNow !== null && (
+          <Hud
+            shown={shown}
+            model={model}
+            controls={controlsNow}
+            busy={busy}
+            act={act}
+            onTap={onTap}
+            menu={menu}
+            closeMenu={() => setMenuFor(null)}
+            handOpen={handOpen}
+            openHand={() => setHandOpen(true)}
+            selection={selection}
+            fullControl={update?.fullControl ?? false}
+            // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
+            setFullControl={(on) => send({ type: "fullControl", on }, !on)}
+            inspect={{
+              open: (id, mode) => {
+                // A hover never replaces a view opened on purpose.
+                if (cardDetails(shown, id) !== null && !(mode === "preview" && inspected?.mode === "full"))
+                  setInspected({ mode, id });
+              },
+              closePreview: () => setInspected((now) => (now?.mode === "preview" ? null : now)),
+              prefetch: (id) => {
+                const image = cardDetails(shown, id)?.image;
+                // The browser keeps it: the view's own <img> then finds it loaded, or on its way.
+                if (image != null) new Image().src = image;
+              },
+            }}
+            inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
+            banner={banner}
+            closeInspected={() => setInspected(null)}
+            // A tap on the stack makes it small or large again, but not while it's small to choose for it.
+            toggleStack={
+              shown.view.casting?.player === shown.player
+                ? null
+                : () => {
+                    const top = shown.view.zones.stack.at(-1) ?? null;
+                    setStackSmallFor((now) => (now === top ? null : top));
+                  }
+            }
+            browsing={browsing}
+            browse={(next) => {
+              // Looking through zones is reading: a preview goes, and nothing else changes.
+              setInspected(null);
+              setBrowsing(next);
+            }}
+            attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
+            drag={{
+              // The card lifts as the drag starts, out of the collapsed hand too.
+              lift: (id) => {
+                // A long-press opened the card view: looking, not playing.
+                if (inspected?.mode === "full") return;
+                setMenuFor(null);
+                handBeforeDrag.current = handOpen;
+                setHandOpen(true);
+                setSelection(id);
+              },
+              // Let go on the table: what a second tap on the lifted card would do.
+              drop: (id) => {
+                if (inspected?.mode === "full") return;
+                const tap = controls(shown, id).cards[id]?.tap;
+                if (tap?.kind === "send") act(tap.choice.action);
+                else if (tap?.kind === "menu") setMenuFor(id);
+                else setSelection(null);
+              },
+              // Put down: the hand as it was before the drag (a drag from the collapsed hand leaves it collapsed).
+              cancel: () => {
+                setSelection(null);
+                setHandOpen(handBeforeDrag.current);
+              },
+            }}
+          />
+        )}
+        {error !== null && (
+          <p role="alert" className="toast">
+            {error}
+          </p>
+        )}
+      </main>
+      {portrait && <TurnYourPhone />}
+    </>
   );
 }

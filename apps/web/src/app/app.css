@@ -834,6 +834,8 @@ body,
   animation: card-view-fade 160ms ease-out;
 }
 .zone-browser > section {
+  /* A card's height in the row: large enough to read its name and art, a whole card in the phone's height. */
+  --zone-card-h: min(52vh, 300px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -893,7 +895,7 @@ body,
 }
 .zone-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 2px 12px 6px;
   list-style: none;
@@ -905,13 +907,12 @@ body,
   scroll-snap-type: x proximity;
   scroll-padding: 0 12px;
 }
+/* Every card is drawn (no content-visibility, D-168's first cut): a long graveyard's images still load as they're
+   scrolled near ("lazy"). */
 .zone-row li {
   position: relative;
   flex: none;
   scroll-snap-align: start;
-  /* A long graveyard draws only the cards near the view. */
-  content-visibility: auto;
-  contain-intrinsic-size: auto min(37vh, 214px) auto min(52vh, 300px);
 }
 /* The row's end keeps its padding when scrolled there (a flex row's own end padding is lost). */
 .zone-row::after {
@@ -927,9 +928,11 @@ body,
   border-radius: 4.5%;
   background: #2b2a27;
   overflow: hidden;
-  /* Large enough to read its name and art, and a whole card in the phone's height. */
-  height: min(52vh, 300px);
-  aspect-ratio: 63 / 88;
+  /* Both sides set outright, a card's proportions (63 x 88 mm): a button sized by aspect-ratio alone, or an image's
+     percentage height inside one, can come out at the image's natural width in Safari, spacing the row far apart
+     (the owner). */
+  height: var(--zone-card-h);
+  width: calc(var(--zone-card-h) * 63 / 88);
   -webkit-touch-callout: none;
 }
 .zone-card img {
@@ -956,20 +959,30 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(min(52vh, 300px) + 8px);
+  min-height: calc(var(--zone-card-h) + 8px);
+  box-sizing: border-box;
   margin: 0;
   padding: 0 12px;
   color: var(--muted);
   font-size: 13px;
 }
 /* A card in the row drawn as text (no image yet, or offline), at the row's size. */
+/* Pinned to the card's box, so nothing inside depends on a percentage height resolving inside a button (Safari). */
 .zone-card .card-view-card {
-  height: 100%;
+  position: absolute;
+  inset: 0;
 }
-.zone-card .card-view-card img,
+.zone-card .card-view-card > img,
 .zone-card .card-view-text {
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
   box-shadow: none;
+}
+.zone-card .card-view-card > img {
+  object-fit: cover;
 }
 .zone-card .card-view-text {
   padding: 7%;
@@ -1114,4 +1127,34 @@ body,
   font-size: 11px;
   font-weight: 600;
   pointer-events: none;
+}
+
+/* A phone held upright (app/App.tsx, ui.md "Layouts"): a calm full-screen prompt over the paused match. */
+.turn-your-phone {
+  position: fixed;
+  inset: 0;
+  z-index: 300000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  background: #22211f;
+  color: #f4f1ec;
+  text-align: center;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.turn-your-phone p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+.turn-your-phone .turn-your-phone-note {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
 }

@@ -70,6 +70,8 @@ export type BoardLayout = {
    * The top of the stack, large right of centre (`x`, `y` its top left, `h` its height) [R]; while the person is choosing
    * for a spell or ability of their own, small at the right edge (`smallH`, at most `smallMaxH` px; its top `smallY`), clear of the targets [R] [guess for the cap].
    */
+  /** px: the least height a control a finger taps may have (ui.md, "Touch interaction"). */
+  minTap: number;
   stack: {
     x: number;
     y: number;

@@ -153,6 +153,10 @@ phone's width (812 px), and the icons are already plain shapes.
 - Playable cards glow, valid targets are highlighted, and everything else is dimmed while choosing.
 - There's always one obvious primary button, and its label says what it will do ("Resolve Lightning Bolt", "Next: combat").
 - Whose turn, which step, who has priority and what the game is waiting for are visible at all times.
+- **The game never jumps (owner, 2026-11-23):** "the auto pass feature is a bit jarring currently. Things just
+  progress instantly and I get confused." What auto-pass skips through and what the opponent does must be shown at a
+  pace the person can follow: each opponent action held on screen for a beat, steps and turns seen to pass, never a
+  jump straight to the result. (D-172 pulls this forward.)
 - **Pacing for the opponent**: each AI action is shown clearly (the card is revealed, it travels, it lands)
   with a short beat between actions so the player can follow. A fast AI must not make the game hard to read;
   a slow one must not feel stuck (show a subtle "thinking" indicator after about 300 ms).

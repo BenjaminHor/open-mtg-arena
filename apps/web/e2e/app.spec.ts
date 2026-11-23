@@ -141,3 +141,33 @@ test("works offline once it has loaded (the service worker)", async ({ page, con
   await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
 });
+
+test("a phone held upright pauses the match behind a prompt to turn it, and turning it back carries on", async ({
+  page,
+}) => {
+  await page.goto("/?fixture=zones");
+  await expect(page.getByRole("button", { name: /^Next/ })).toContainText("To Combat");
+  // Something open when the phone turns: the opponent's zones, focus on a tab in them.
+  await page.getByRole("button", { name: /^Opponent: graveyard and exile/ }).click();
+  const sheet = page.getByRole("dialog", { name: "Opponent's zones" });
+  await expect(sheet).toBeVisible();
+  await page.setViewportSize({ width: 375, height: 812 });
+  const prompt = page.getByRole("alertdialog", { name: "Turn your phone sideways to play" });
+  await expect(prompt).toBeVisible();
+  await expect(prompt).toBeFocused();
+  // The match behind it takes nothing: inert (no tap, focus or screen reader), under the prompt, and no key reaches it.
+  await expect(page.locator("main.app")).toHaveAttribute("inert", "");
+  const under = await page.evaluate(() => document.elementFromPoint(187, 406)?.closest(".turn-your-phone") !== null);
+  expect(under).toBe(true);
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Space");
+  // Long enough for a reply from the worker, had a key reached the game.
+  await page.waitForTimeout(600);
+  await page.setViewportSize({ width: 812, height: 375 });
+  await expect(prompt).toHaveCount(0);
+  // Where it was: the zones still open, focus back in them, and still the first main phase.
+  await expect(sheet).toBeVisible();
+  await expect(sheet.locator(":focus")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: /^Next/ })).toContainText("To Combat");
+});
