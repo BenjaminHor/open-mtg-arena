@@ -36,7 +36,7 @@ export function handCards(shown: SeatView, area: Rect, layout: BoardLayout): Boa
     const symbols = manaSymbols(card.oracleId === null ? "" : (cardCost(card.oracleId) ?? ""));
     const costRadius = Math.max(hand.minCost, Math.min(hand.cost, strip / (2.05 * Math.max(1, symbols.length))));
     const rect = { x, y: top + off * off * hand.arcDrop * area.height, width, height };
-    return boardCard(card, "hand", true, rect, { rotation: off * hand.fan, dim: 0, costRadius });
+    return boardCard(card, "hand", true, rect, { rotation: off * hand.fan, dim: 0, row: "hand", costRadius });
   });
 }
 

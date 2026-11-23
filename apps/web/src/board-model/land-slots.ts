@@ -50,10 +50,10 @@ export function landSlots(
     // pile"), so the pile never shows a tapped land half-hidden inside it.
     return [
       ...(slot.untapped.length > 0
-        ? placePile(slot.untapped, { x, y: row.y, width: w, height: row.height }, offsets, mine, look)
+        ? placePile(slot.untapped, { x, y: row.y, width: w, height: row.height }, offsets, mine, "lands", look)
         : []),
       ...(slot.tapped.length > 0
-        ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, look)
+        ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, "lands", look)
         : []),
     ];
   });

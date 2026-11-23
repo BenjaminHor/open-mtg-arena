@@ -48,4 +48,6 @@ export const COMPACT: BoardLayout = {
   // Over the main button, or around the opponent's crest on their turn [R].
   ladder: { icon: 20, padding: 2, gap: 6 },
   crestClearance: 6,
+  // An attacker steps forward [guess: Arena slides attackers toward the opponent; the phone has little room].
+  combat: { advance: 0.025, gangOverlap: 0.3 },
 };

@@ -58,7 +58,9 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   const outerH = lands.h * area.height;
   const outerY = mine ? creatureTop + fullH + rowGap * area.height : creatureTop - rowGap * area.height - outerH;
   const crest = mine ? overlay.life.mine : overlay.life.opponent;
-  const look = (p: SeenCard) => (p.tapped ? { rotation: tapped.tilt, dim: tapped.dim } : { rotation: 0, dim: 0 });
+  // An attacker tilts as it taps but isn't shaded: it's the card everyone is looking at.
+  const look = (p: SeenCard) =>
+    p.tapped ? { rotation: tapped.tilt, dim: p.attacking === null ? tapped.dim : 0 } : { rotation: 0, dim: 0 };
   const offsets = pileOffsets(area, layout);
 
   // Lands, a slot per name from the left edge, up to the life crest.
@@ -79,7 +81,7 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   );
   walkersLast.forEach((p, i) => {
     const rect = { x: otherXs[i] ?? 0, y: outerY + (outerH - otherH), width: otherW, height: otherH };
-    placed.push(boardCard(p, "battlefield", mine, rect, look(p)));
+    placed.push(boardCard(p, "battlefield", mine, rect, { ...look(p), row: "others" }));
   });
 
   // Creatures, identical ones piled, centred on the band: a row too wide shrinks its cards before it overlaps them.
@@ -103,7 +105,9 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   );
   // The row's cards hug the band whatever their size.
   const y = mine ? creatureTop : creatureTop + fullH - h;
-  const rows = piles.map((pile, i) => placePile(pile, { x: xs[i] ?? 0, y, width: w, height: h }, offsets, mine, look));
+  const rows = piles.map((pile, i) =>
+    placePile(pile, { x: xs[i] ?? 0, y, width: w, height: h }, offsets, mine, "creatures", look),
+  );
   // Drawn right to left: when the row overlaps, each card covers only the left edge of the one after it, which keeps
   // the power/toughness pill at its bottom centre in sight, and the leftmost card, drawn last, is whole.
   for (const pile of rows.reverse()) placed.push(...pile);

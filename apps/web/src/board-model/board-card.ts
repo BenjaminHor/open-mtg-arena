@@ -1,6 +1,6 @@
 // One seen card as the board draws it, at a given rectangle. Shared by the battlefield and the hand.
 
-import type { Color, SeenCard } from "@mtg/engine";
+import type { Color, ObjectId, SeenCard } from "@mtg/engine";
 import type { BoardCard, Rect } from "./board-model.ts";
 import { cardInfo, manaSymbols } from "./card-info.ts";
 
@@ -9,7 +9,15 @@ export function boardCard(
   zone: BoardCard["zone"],
   mine: boolean,
   rect: Rect,
-  look: { rotation: number; dim: number; pileCount?: number | null; behind?: boolean; costRadius?: number },
+  look: {
+    rotation: number;
+    dim: number;
+    row: BoardCard["row"];
+    pileCount?: number | null;
+    behind?: boolean;
+    pileOf?: ObjectId;
+    costRadius?: number;
+  },
 ): BoardCard {
   const c = card.characteristics;
   const info = cardInfo(card.oracleId);
@@ -17,6 +25,11 @@ export function boardCard(
     id: card.id,
     name: c.name,
     zone,
+    row: look.row,
+    pileOf: look.pileOf ?? card.id,
+    attacking: card.attacking !== null,
+    attacks: card.attacking?.attacked?.kind === "object" ? card.attacking.attacked.object : null,
+    blocking: card.blocking,
     mine,
     ...rect,
     rotation: look.rotation,

@@ -2340,3 +2340,15 @@ owner's answer to the D-089 open question, option (a))
   rectangle it places (crests, portraits, ladder icons and pills, the main button), so no HUD code holds layout numbers.
 - The canvas draws on demand (no frame loop while the board is still) at no more than twice the CSS resolution.
 
+**D-154: Combat on the compact board (M3-04a)** · 2026-11-23 · accepted
+- The owner asked to see attacks and blocks. On the phone there's little room between the two creature rows, so
+  combat reads by position and shape rather than by long moves: an attacking creature steps a little toward the band
+  and carries a crossed-swords badge (it tilts as it taps but isn't shaded); each blocker moves along its row to sit
+  under the attacker it blocks, with a shield badge; the blockers of one attacker huddle together under it, overlapped
+  enough to show each one's power/toughness. Creatures that aren't blocking step aside into the nearest free space.
+- No line joins a blocker to the attacker it sits under (as in Arena): the cards touch at the band, so a line would
+  lie flat and say nothing. A link is drawn only when position can't pair them (a lone blocker pushed out from under
+  its attacker) and from an attacker to the planeswalker it attacks.
+- The values (`combat.advance`, `combat.gangOverlap`) are in the layout data. Moving cards between the old and new
+  places is M3-07's animation; the board model only says where each card is now.
+

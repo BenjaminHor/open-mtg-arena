@@ -63,6 +63,11 @@ export type BoardLayout = {
   mainButton: { width: number; height: number; right: number; bottom: number; clearance: number };
   /** px: the phase ladder's icons, the padding of its pill, and its gap to the button or crest. */
   ladder: { icon: number; padding: number; gap: number };
+  /**
+   * Combat: how far (of H) an attacking creature steps toward the band, and how much (of a card's width) the blockers
+   * of one attacker overlap as they huddle under it.
+   */
+  combat: { advance: number; gangOverlap: number };
   /** px: the space kept between the outer rows and the life crests. */
   crestClearance: number;
 };

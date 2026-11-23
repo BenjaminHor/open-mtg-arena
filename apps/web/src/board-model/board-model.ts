@@ -7,6 +7,7 @@ import type { Color, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
 import { battlefieldCards } from "./battlefield.ts";
+import { withCombat } from "./combat.ts";
 import { handCards } from "./hand.ts";
 import { cardBacks, libraryPiles } from "./hidden-cards.ts";
 
@@ -14,6 +15,16 @@ export type BoardCard = {
   id: ObjectId;
   name: string;
   zone: "battlefield" | "hand";
+  /** Which row of the board it's in. */
+  row: "creatures" | "lands" | "others" | "hand";
+  /** The front card of the pile it's in (its own id when it stands alone): a pile moves as one. */
+  pileOf: ObjectId;
+  /** An attacking creature (CR 508.1). */
+  attacking: boolean;
+  /** The planeswalker it attacks, when it attacks one (CR 508.1b); null otherwise. */
+  attacks: ObjectId | null;
+  /** The attackers it blocks (CR 509.1), empty when it isn't blocking. */
+  blocking: ObjectId[];
   /** Controlled by the person whose board this is. */
   mine: boolean;
   /** The card's rectangle, in CSS pixels from the board's top left, before it's turned by `rotation`. */
@@ -89,8 +100,13 @@ export type BoardModel = {
   libraries: LibraryPile[];
   /** The band across the middle that splits the two battlefields [R], the board's whole width. */
   band: Rect;
+  /** Combat's pairings: each blocker to the attacker it blocks, each attacker to the planeswalker it attacks. */
+  links: CombatLink[];
   overlay: OverlayAnchors;
 };
+
+/** A line from one card's band-side edge to another's: a block (blocker to attacker) or an attack on a planeswalker. */
+export type CombatLink = { kind: "block" | "attack"; from: Point; to: Point };
 
 export type BoardSize = { width: number; height: number };
 /** The safe-area insets (`env(safe-area-inset-*)`, ui.md "Layouts"): the board is drawn full-bleed, laid out inside. */
@@ -118,7 +134,8 @@ export function boardModel(
     height: Math.max(0, size.height - insets.top - insets.bottom),
   };
   const overlay = overlayAnchors(area, layout, shown.view.turn?.activePlayer === opponent);
-  const cards = [...battlefieldCards(shown, area, me, layout, overlay), ...handCards(shown, area, layout)];
+  const field = withCombat(battlefieldCards(shown, area, me, layout, overlay), area, layout);
+  const cards = [...field.cards, ...handCards(shown, area, layout)];
   return {
     width: size.width,
     height: size.height,
@@ -131,6 +148,7 @@ export function boardModel(
       width: size.width,
       height: layout.band.h * area.height,
     },
+    links: field.links,
     overlay,
   };
 }

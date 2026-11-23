@@ -124,6 +124,70 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /** The person's turn, ready to attack into a few blockers; Giant Growth in hand to keep priority in combat. */
+  attack: {
+    turn: { number: 7, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 15,
+        hand: ["Giant Growth", "Lightning Bolt", "Forest"],
+        battlefield: [
+          ...many("Forest", 3),
+          ...many("Mountain", 2),
+          "Stampeding Rhino",
+          "Shivan Dragon",
+          "Berserkers of Blood Ridge",
+          "Llanowar Elves",
+        ],
+        library: [...many("Forest", 10), ...many("Mountain", 10)],
+      },
+      p2: {
+        life: 16,
+        hand: ["Plains", "Pacifism"],
+        battlefield: [
+          ...many("Plains", 5),
+          "Elite Vanguard",
+          "Veteran Armorsmith",
+          "Siege Mastodon",
+          "Honor of the Pure",
+        ],
+        library: many("Plains", 20),
+      },
+    },
+  },
+  /** The opponent's turn, their bigger creatures ready to attack the person's; Giant Growth in hand to answer. */
+  block: {
+    turn: { number: 8, activePlayer: "p2", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 11,
+        hand: ["Giant Growth", "Shock"],
+        battlefield: [
+          ...many("Forest", 3),
+          ...many("Mountain", 2),
+          "Deadly Recluse",
+          "Prodigal Pyromancer",
+          "Llanowar Elves",
+          "Stampeding Rhino",
+        ],
+        library: [...many("Forest", 10), ...many("Mountain", 10)],
+      },
+      p2: {
+        life: 18,
+        hand: ["Plains"],
+        battlefield: [
+          ...many("Plains", 6),
+          "Serra Angel",
+          "Siege Mastodon",
+          "Rhox Pikemaster",
+          "Elite Vanguard",
+          "Veteran Swordsmith",
+          "Honor of the Pure",
+        ],
+        library: many("Plains", 20),
+      },
+    },
+  },
 };
 
 export const FIXTURE_NAMES = Object.keys(FIXTURES);

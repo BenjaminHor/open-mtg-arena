@@ -32,7 +32,9 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   const table = new Graphics();
   const hidden = new Container();
   const cardLayer = new Container({ sortableChildren: true });
-  app.stage.addChild(table, hidden, cardLayer);
+  // Combat's links go over the cards, so a pairing is never hidden under a card between the two.
+  const links = new Graphics();
+  app.stage.addChild(table, hidden, cardLayer, links);
   const sprites = new Map<string, CardSprite>();
   return {
     draw: (model) => {
@@ -65,6 +67,7 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
           sprites.delete(id);
         }
       }
+      drawLinks(links, model.links);
       exposeForTests(model, sprites);
       render();
     },
@@ -74,6 +77,22 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
       app.destroy(true, { children: true, context: true });
     },
   };
+}
+
+/** Each pairing as a light line with a dark edge and a dot at each end; an attack on a planeswalker in the attack colour. */
+function drawLinks(g: Graphics, links: BoardModel["links"]): void {
+  g.clear();
+  for (const link of links) {
+    const color = link.kind === "attack" ? PALETTE.attack : PALETTE.badgeText;
+    for (const [width, c] of [
+      [5, PALETTE.rim],
+      [2.5, color],
+    ] as const) {
+      g.moveTo(link.from.x, link.from.y).lineTo(link.to.x, link.to.y).stroke({ width, color: c, cap: "round" });
+    }
+    for (const end of [link.from, link.to])
+      g.circle(end.x, end.y, 3.5).fill(color).stroke({ width: 1.5, color: PALETTE.rim });
+  }
 }
 
 /**

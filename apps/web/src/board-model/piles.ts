@@ -53,9 +53,11 @@ export function placePile(
   at: Rect,
   offsets: { step: number; lift: number },
   mine: boolean,
+  row: "creatures" | "lands",
   look: (card: SeenCard) => { rotation: number; dim: number },
 ): BoardCard[] {
   const depth = Math.min(pile.length - 1, PILE_DEPTH);
+  const frontId = pile[pile.length - 1]?.id;
   return pile.map((card, j) => {
     const behind = Math.min(pile.length - 1 - j, PILE_DEPTH);
     const front = j === pile.length - 1;
@@ -67,6 +69,8 @@ export function placePile(
     };
     return boardCard(card, "battlefield", mine, rect, {
       ...look(card),
+      row,
+      ...(frontId === undefined ? {} : { pileOf: frontId }),
       pileCount: front && pile.length > 1 ? pile.length : null,
       behind: !front,
     });

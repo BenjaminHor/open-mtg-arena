@@ -52,7 +52,9 @@ export function drawFace(card: BoardCard): Face {
   if (card.dim > 0) {
     face.addChild(new Graphics().roundRect(-w / 2, -h / 2, w, h, radius).fill({ color: 0x000000, alpha: card.dim }));
   }
-  if (card.tapped && !card.behind) face.addChild(tapMark(Math.min(w, h)));
+  // An attacker's swords say more than a tap mark would, so it has only the tilt and the swords.
+  if (card.tapped && !card.behind && !card.attacking) face.addChild(tapMark(Math.min(w, h)));
+  if (card.attacking || card.blocking.length > 0) face.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
   if (card.pileCount !== null) face.addChild(pileBadge(card.pileCount, w, h));
   if (card.manaCost.length > 0 && card.costRadius > 0) {
     const row = manaCostRow(card.manaCost, card.costRadius);
@@ -110,14 +112,16 @@ function nameStrip(card: BoardCard, color: number, x: number, y: number, w: numb
     g.position.set(x + w - glyphR - 2 - i * (glyphR * 2 + 1), y + h / 2);
     strip.addChild(g);
   });
-  const room = w - 5 - glyphs.length * (glyphR * 2 + 1);
+  // In combat the badge sits on the strip's left end, so the name starts after it.
+  const indent = card.attacking || card.blocking.length > 0 ? combatBadgeRadius(card.height) * 1.5 : 0;
+  const room = w - 5 - indent - glyphs.length * (glyphR * 2 + 1);
   const text = new Text({
     text: card.name,
     style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: Math.min(h * 0.7, 12), fill: PALETTE.ink },
   });
   fitText(text, card.name, room);
   text.anchor.set(0, 0.5);
-  text.position.set(x + 3, y + h / 2 + 0.5);
+  text.position.set(x + 3 + indent, y + h / 2 + 0.5);
   strip.addChild(text);
   return strip;
 }
@@ -180,6 +184,47 @@ function ptPill(card: BoardCard, color: number, h: number): Container {
     pill.addChild(new Graphics().rect(t.x, y + ph * 0.32, t.width, Math.max(1.5, ph * 0.1)).fill(PALETTE.lowered));
   }
   return pill;
+}
+
+/**
+ * An attacker's crossed swords or a blocker's shield, on a round badge at the card's top-left corner: two shapes, so
+ * which side of combat a card is on never rests on the badge's colour.
+ */
+function combatBadge(kind: "attack" | "block", w: number, h: number): Container {
+  const badge = new Container();
+  const r = combatBadgeRadius(h);
+  const ring = kind === "attack" ? PALETTE.attack : PALETTE.block;
+  badge.addChild(new Graphics().circle(0, 0, r).fill(PALETTE.rim).stroke({ width: 2, color: ring }));
+  const s = r * 0.55;
+  const icon = new Graphics();
+  if (kind === "attack") {
+    icon
+      .moveTo(-s, -s)
+      .lineTo(s, s)
+      .moveTo(s, -s)
+      .lineTo(-s, s)
+      .moveTo(s * 0.35, s * 0.85)
+      .lineTo(s * 0.85, s * 0.35)
+      .moveTo(-s * 0.35, s * 0.85)
+      .lineTo(-s * 0.85, s * 0.35)
+      .stroke({ width: Math.max(1.5, r * 0.2), color: PALETTE.badgeText, cap: "round" });
+  } else {
+    icon
+      .moveTo(0, -s)
+      .lineTo(s * 0.9, -s * 0.6)
+      .bezierCurveTo(s * 0.9, s * 0.3, s * 0.4, s * 0.8, 0, s * 1.05)
+      .bezierCurveTo(-s * 0.4, s * 0.8, -s * 0.9, s * 0.3, -s * 0.9, -s * 0.6)
+      .closePath()
+      .fill(PALETTE.badgeText);
+  }
+  badge.addChild(icon);
+  // At the top-left corner: clear of the name, and of the power/toughness pills of the cards across the band.
+  badge.position.set(-w / 2 + r * 0.7, -h / 2 + r * 0.7);
+  return badge;
+}
+
+function combatBadgeRadius(h: number): number {
+  return Math.max(8, h * 0.13);
 }
 
 /** "x4" above a pile's front card, at its top left, as Arena counts a pile of tokens. */
