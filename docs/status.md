@@ -362,6 +362,18 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       MTGJSON and the Rust dist are reachable; building wasm-bindgen-cli 0.2.121 and the release engine WASM in the
       clone at scratchpad/phase-src/repo. The owner: keep their art and audio (credit Kevin MacLeod), keep the copyright
       line and NOTICE in the license files (D-177).
+    - Rebrand inventory (in the clone, excluding target/ and node_modules): "phase-rs" in 381 files, "phase.rs" in
+      127, their domain "phase-rs.dev" in 76, "PHASE_" (env and config names) in 462, Ko-fi/Discord/contact email in a
+      handful; crate names phase-ai (136 files), phase-ast (88), phase-llm (10), phase-parser (364), phase-server (164).
+    - Strip map (Rust): phase-server, server-core and lobby-broker are leaves (nothing the browser game needs depends on
+      them) and go whole, with lobby-worker/, deploy/, docker/, supabase/, Dockerfile, Caddyfile, Tiltfile;
+      feed-scraper, combo-table-gen (Commander Spellbook data), manabrew-compat (another app's wire protocol),
+      probe-pin and engine-inventory-gen are dev tools to drop or keep after a look. engine-wasm depends on
+      seat-reducer and state-codec (kept for now: snapshots and saves). draft-core/draft-wasm are offline drafting
+      against the AI (kept).
+    - Strip map (client/src, non-test files): peer-to-peer in about 70 files, the lobby in about 79, Tauri APIs in 15,
+      the updater in 17, telemetry in 25, Supabase in 2, the feeds in 1, Ko-fi in 1: the online pages and services go,
+      then type errors lead to each remaining use.
   - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
     (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
