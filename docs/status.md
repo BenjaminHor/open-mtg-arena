@@ -159,6 +159,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     desktop hover preview is an open question below.
   - Owner (2026-11-23): Arena doesn't cut off card names; recorded in ui.md, names now shrink to fit.
   - Owner (2026-11-23): mana costs should overlap the hand card's top edge slightly; recorded in ui.md, done.
+  - Owner (2026-11-23): "how does the expanded view of your hand look like". Not built yet (it was 04b's); built now in
+    this slice: the open hand's layout (arena-research.md, "The hand, opened") and a tap on the hand to open or close
+    it. Playing a card from it stays 04b.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

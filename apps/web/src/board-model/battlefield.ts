@@ -70,8 +70,10 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   // Other permanents, from the right edge back towards the crest.
   const otherH = others.h * area.height;
   const otherW = otherH * ratio.battlefield;
-  // The person's row stops short of the main button and the phase ladder over it, at the bottom right.
-  const buttonLeft = overlay.mainButton.x - layout.mainButton.clearance;
+  // The person's row stops short of the main button and the phase ladder over it, at the bottom right (the ladder can
+  // be wider than the button while it shows combat's steps).
+  const buttonLeft =
+    Math.min(overlay.mainButton.x, ...overlay.ladder.pills.map((p) => p.x)) - layout.mainButton.clearance;
   const otherXs = spread(
     walkersLast.map(() => otherW),
     Math.max(area.x + others.left * area.width, crest.x + crest.width + layout.crestClearance),

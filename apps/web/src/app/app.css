@@ -182,12 +182,22 @@ body,
   white-space: nowrap;
 }
 
-/* Nothing to press: dark, as Arena's "Opponent's Turn" [R]. */
+/* Nothing to press: plain text on the table, as Arena's "Opponent's Turn" [R]. */
 .main-button.waiting {
-  background: #23272f;
-  border-color: #3c4250;
-  color: #9aa3b5;
+  background: none;
+  border-color: transparent;
+  color: #c9c2b0;
   box-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* The opponent's crest as their ladder's combat rung: swords-blue wings while they're in combat [R]. */
+.life.combat {
+  border-color: #6fb4ff;
+  box-shadow:
+    0 0 0 3px rgba(111, 180, 255, 0.35),
+    0 0 18px 4px rgba(111, 180, 255, 0.55);
 }
 
 .drawer {

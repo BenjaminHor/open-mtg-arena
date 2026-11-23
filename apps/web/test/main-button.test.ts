@@ -6,6 +6,12 @@ import { mainButton } from "../src/hud/main-button.ts";
 import { fixtureView, mulliganView } from "./fixture-views.ts";
 
 const midGame = fixtureView("mid-game");
+const finishAction = {
+  type: "ANSWER",
+  decisionId: "d1",
+  player: "p1",
+  answer: { kind: "finishDeclaring" },
+} as unknown as SeatView["options"][number]["action"];
 
 describe("the main button", () => {
   it("says Next and where it goes in the person's own main phase, and passes priority", () => {
@@ -32,6 +38,25 @@ describe("the main button", () => {
     if (turn === null) throw new Error("no turn");
     const theirs: SeatView = { ...midGame, view: { ...midGame.view, turn: { ...turn, activePlayer: "p2" } } };
     expect(mainButton(theirs).label).toBe("Pass");
+  });
+
+  it("finishes a declaration of blockers, saying how many creatures block so far", () => {
+    const declaring = (chosen: { blocker: string; attacker: string }[]): SeatView => ({
+      ...midGame,
+      options: [{ ...(midGame.options[0] as SeatView["options"][number]), action: finishAction }],
+      view: {
+        ...midGame.view,
+        decision: { kind: "declareBlockers", chosen } as unknown as SeatView["view"]["decision"],
+      },
+    });
+    expect(mainButton(declaring([]))).toMatchObject({ label: "No Blocks", detail: "To Damage", action: finishAction });
+    // One creature blocking two attackers is one blocker.
+    const twice = [
+      { blocker: "o1", attacker: "o7" },
+      { blocker: "o1", attacker: "o8" },
+    ];
+    expect(mainButton(declaring(twice)).label).toBe("1 Blocker");
+    expect(mainButton(declaring([...twice, { blocker: "o2", attacker: "o7" }])).label).toBe("2 Blockers");
   });
 
   it("sends nothing while a decision other than priority waits", () => {

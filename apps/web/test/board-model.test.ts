@@ -139,8 +139,16 @@ describe("the compact board model", () => {
   it("keeps every permanent clear of the HUD: portraits, life crests, the phase ladder, the main button", () => {
     for (const shown of [midGame, crowded, manyPiles("p1"), manyPiles("p2")]) {
       const model = boardModel(shown, PHONE);
-      const { portrait, life, mainButton, ladder } = model.overlay;
-      const hud = [portrait.mine, portrait.opponent, life.mine, life.opponent, mainButton, ...ladder.pills];
+      const { portrait, life, mainButton, ladder, opponentLadder } = model.overlay;
+      const hud = [
+        portrait.mine,
+        portrait.opponent,
+        life.mine,
+        life.opponent,
+        mainButton,
+        ...ladder.pills,
+        ...(opponentLadder?.pills ?? []),
+      ];
       for (const card of model.cards.filter((c) => c.zone === "battlefield")) {
         for (const piece of hud)
           expect(overlaps(card, piece), `${card.name} under the HUD at ${piece.x},${piece.y}`).toBe(false);
@@ -312,19 +320,34 @@ describe("the compact board model", () => {
     expect(button.x + button.width).toBeLessThanOrEqual(PHONE.width - insets.right);
   });
 
-  it("puts the phase ladder over the main button on the person's turn and around the opponent's crest on theirs", () => {
+  it("puts the turn's ladder over the main button, and the opponent's around their crest on their turn", () => {
     const mine = boardModel(midGame, PHONE).overlay;
-    expect(mine.ladder.side).toBe("mine");
-    expect(mine.ladder.icons).toHaveLength(5);
-    for (const icon of mine.ladder.icons) expect(icon.y + icon.height).toBeLessThanOrEqual(mine.mainButton.y);
+    expect(mine.ladder.icons.map((i) => i.icon)).toEqual(["cap", "card", "swords", "card", "cap"]);
+    expect(mine.ladder.icons.filter((i) => i.lit).map((i) => i.key)).toEqual(["main1"]);
+    for (const icon of mine.ladder.icons) expect(icon.rect.y + icon.rect.height).toBeLessThanOrEqual(mine.mainButton.y);
+    expect(mine.opponentLadder).toBeNull();
     const theirs = boardModel(crowded, PHONE).overlay;
-    expect(theirs.ladder.side).toBe("opponent");
     const crest = theirs.life.opponent;
-    const [beginning, main1, combat] = theirs.ladder.icons;
-    // Two phases left of the crest, the rest right of it, none under it.
-    expect((main1?.x ?? 0) + (main1?.width ?? 0)).toBeLessThanOrEqual(crest.x);
-    expect(beginning?.x).toBeLessThan(main1?.x ?? 0);
-    expect(combat?.x).toBeGreaterThanOrEqual(crest.x + crest.width);
+    const around = theirs.opponentLadder?.icons ?? [];
+    // Two rungs each side of the crest, none under it: the crest is the combat rung.
+    expect(around.map((i) => i.key)).toEqual(["beginning", "main1", "main2", "end"]);
+    expect(around.slice(0, 2).every((i) => i.rect.x + i.rect.width <= crest.x)).toBe(true);
+    expect(around.slice(2).every((i) => i.rect.x >= crest.x + crest.width)).toBe(true);
+    expect(theirs.opponentInCombat).toBe(false);
+  });
+
+  it("opens combat into its steps on the ladder during combat", () => {
+    const turn = midGame.view.turn;
+    if (turn === null) throw new Error("no turn");
+    const blocking: SeatView = { ...midGame, view: { ...midGame.view, turn: { ...turn, step: "declareBlockers" } } };
+    const ladder = boardModel(blocking, PHONE).overlay.ladder;
+    expect(ladder.icons.map((i) => i.icon)).toEqual(["cap", "card", "sword", "shield", "burst", "cap", "card", "cap"]);
+    expect(ladder.icons.filter((i) => i.lit).map((i) => i.key)).toEqual(["blockers"]);
+    const theirs: SeatView = {
+      ...midGame,
+      view: { ...midGame.view, turn: { ...turn, step: "declareBlockers", activePlayer: "p2" } },
+    };
+    expect(boardModel(theirs, PHONE).overlay.opponentInCombat).toBe(true);
   });
 
   it("outlines what the person can play now, from the options, and not lands for their mana", () => {

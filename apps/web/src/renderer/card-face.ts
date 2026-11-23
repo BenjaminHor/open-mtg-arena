@@ -23,7 +23,8 @@ export function drawFace(card: BoardCard): Face {
   const color = frameColor(card.frameColors);
   const radius = Math.min(w, h) * 0.07;
   const border = Math.max(3, Math.min(w, h) * 0.07);
-  if (card.playable && !card.behind) face.addChild(playableGlow(w, h, radius));
+  if (card.picked) face.addChild(outlineGlow(w, h, radius, PALETTE.picked));
+  else if (card.playable && !card.behind) face.addChild(outlineGlow(w, h, radius, PALETTE.playable));
   // The shadow on the table, then the frame: a dark edge, the colour, a light bevel inside it.
   face.addChild(
     new Graphics()
@@ -86,10 +87,10 @@ export function drawFace(card: BoardCard): Face {
 }
 
 /**
- * The cyan outline around what can be played or used now [R]: a thick bright edge (a shape, not only a hue) fading
- * out into a glow.
+ * An outline [R]: cyan around what can be played or used now, yellow-orange around a pick in a declaration. A thick
+ * bright edge (a shape, not only a hue) fading out into a glow; a pick also carries its combat badge.
  */
-function playableGlow(w: number, h: number, radius: number): Graphics {
+function outlineGlow(w: number, h: number, radius: number, color: number): Graphics {
   const g = new Graphics();
   for (const [grow, alpha] of [
     [7, 0.12],
@@ -97,13 +98,11 @@ function playableGlow(w: number, h: number, radius: number): Graphics {
     [3, 0.5],
   ] as const) {
     g.roundRect(-w / 2 - grow, -h / 2 - grow, w + 2 * grow, h + 2 * grow, radius + grow).fill({
-      color: PALETTE.playable,
+      color,
       alpha,
     });
   }
-  return g
-    .roundRect(-w / 2 - 1.5, -h / 2 - 1.5, w + 3, h + 3, radius + 1.5)
-    .stroke({ width: 2, color: PALETTE.playable });
+  return g.roundRect(-w / 2 - 1.5, -h / 2 - 1.5, w + 3, h + 3, radius + 1.5).stroke({ width: 2, color });
 }
 
 /** Until the art loads (or offline): a dark field tinted by the frame, its colour's glyph large in the middle. */

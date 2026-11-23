@@ -24,9 +24,16 @@ export function Hud({ shown, model, act }: { shown: SeatView; model: BoardModel;
     <section className="hud" aria-label="Match">
       <Portrait rect={anchors.portrait.opponent} label="Opponent" active={active === opponent} />
       <Portrait rect={anchors.portrait.mine} label="You" active={active === me} />
-      {view.turn !== null && <PhaseLadder step={view.turn.step} ladder={anchors.ladder} />}
-      <LifeCrest rect={anchors.life.opponent} life={life(opponent)} label="Opponent's life" side="opponent" />
-      <LifeCrest rect={anchors.life.mine} life={life(me)} label="Your life" side="mine" />
+      <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
+      {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
+      <LifeCrest
+        rect={anchors.life.opponent}
+        life={life(opponent)}
+        label="Opponent's life"
+        side="opponent"
+        combat={anchors.opponentInCombat}
+      />
+      <LifeCrest rect={anchors.life.mine} life={life(me)} label="Your life" side="mine" combat={false} />
       {/* While a choice other than priority waits, its prompt answers it: no button that does nothing. */}
       {button.label !== "Choose" && (
         <button
@@ -67,20 +74,16 @@ function Portrait({ rect, label, active }: { rect: Rect; label: string; active: 
   );
 }
 
-function LifeCrest({
-  rect,
-  life,
-  label,
-  side,
-}: {
-  rect: Rect;
-  life: number;
-  label: string;
-  side: "mine" | "opponent";
-}) {
+/** A life total in its crest [R]. The opponent's crest is also the combat rung of their ladder: it glows then. */
+function LifeCrest(props: { rect: Rect; life: number; label: string; side: "mine" | "opponent"; combat: boolean }) {
   return (
-    <div className={`life life-${side}`} style={place(rect)} role="img" aria-label={`${label} ${life}`}>
-      {life}
+    <div
+      className={`life life-${props.side}${props.combat ? " combat" : ""}`}
+      style={place(props.rect)}
+      role="img"
+      aria-label={`${props.label} ${props.life}`}
+    >
+      {props.life}
     </div>
   );
 }

@@ -3,13 +3,15 @@
 // portraits, the phase ladder and the main button. The renderer draws it and does no layout of its own, so the layout
 // is tested here without drawing anything. The layout's values are data (`BoardLayout`; the compact one by default).
 
-import type { Color, ObjectId, PlayerId, SeatView } from "@mtg/engine";
+import type { Color, ObjectId, PlayerId, SeatView, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
 import { battlefieldCards } from "./battlefield.ts";
 import { withCombat } from "./combat.ts";
 import { handCards } from "./hand.ts";
 import { cardBacks, libraryPiles } from "./hidden-cards.ts";
+import { inCombat, type Ladder, ladderAroundCrest, ladderOver } from "./ladder.ts";
+import { withPicks } from "./picks.ts";
 import { playableIds } from "./playable.ts";
 
 export type BoardCard = {
@@ -22,6 +24,11 @@ export type BoardCard = {
   pileOf: ObjectId;
   /** Something the person can act with now: play, cast, activate, attack or block with (`playable.ts`). */
   playable: boolean;
+  /**
+   * Picked in the declaration under way, not yet declared: drawn as attacking or blocking already, with the
+   * yellow-orange outline of a pick [R].
+   */
+  picked: boolean;
   /** An attacking creature (CR 508.1). */
   attacking: boolean;
   /** The planeswalker it attacks, when it attacks one (CR 508.1b); null otherwise. */
@@ -90,11 +97,12 @@ export type OverlayAnchors = {
   portrait: { mine: Rect; opponent: Rect };
   life: { mine: Rect; opponent: Rect };
   mainButton: Rect;
-  /**
-   * The phase ladder [R]: over the main button on the person's turn, parted around the opponent's life crest on
-   * theirs. One rectangle per phase icon, in turn order, and the pills drawn behind them (one, or one each side).
-   */
-  ladder: { side: "mine" | "opponent"; icons: Rect[]; pills: Rect[] };
+  /** The current turn's phase ladder, over the main button [R]. */
+  ladder: Ladder;
+  /** On the opponent's turn, their ladder around their life crest [R]; null on the person's turn. */
+  opponentLadder: Ladder | null;
+  /** The opponent's crest takes their ladder's combat slot, and glows while they're in combat [R]. */
+  opponentInCombat: boolean;
 };
 
 export type BoardModel = {
@@ -120,9 +128,6 @@ export type Insets = { top: number; right: number; bottom: number; left: number 
 
 export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
 
-/** The turn's phases (CR 500.1), one ladder icon each. */
-const PHASE_COUNT = 5;
-
 export function boardModel(
   shown: SeatView,
   size: BoardSize,
@@ -139,8 +144,9 @@ export function boardModel(
     width: Math.max(0, size.width - insets.left - insets.right),
     height: Math.max(0, size.height - insets.top - insets.bottom),
   };
-  const overlay = overlayAnchors(area, layout, shown.view.turn?.activePlayer === opponent);
-  const field = withCombat(battlefieldCards(shown, area, me, layout, overlay), area, layout);
+  const turn = shown.view.turn;
+  const overlay = overlayAnchors(area, layout, turn?.step ?? null, turn?.activePlayer === opponent);
+  const field = withCombat(withPicks(shown, battlefieldCards(shown, area, me, layout, overlay)), area, layout);
   const playable = playableIds(shown);
   const cards = [...field.cards, ...handCards(shown, area, layout)].map((c) => ({
     ...c,
@@ -163,7 +169,7 @@ export function boardModel(
   };
 }
 
-function overlayAnchors(area: Rect, layout: BoardLayout, opponentsTurn: boolean): OverlayAnchors {
+function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, opponentsTurn: boolean): OverlayAnchors {
   const { portrait, life, mainButton } = layout;
   const button: Rect = {
     x: area.x + area.width - mainButton.right - mainButton.width,
@@ -186,60 +192,8 @@ function overlayAnchors(area: Rect, layout: BoardLayout, opponentsTurn: boolean)
     },
     life: { opponent: opponentCrest, mine: myCrest },
     mainButton: button,
-    ladder: opponentsTurn ? ladderAroundCrest(opponentCrest, layout) : ladderOver(button, layout),
+    ladder: ladderOver(button, step, layout),
+    opponentLadder: opponentsTurn ? ladderAroundCrest(opponentCrest, step, layout) : null,
+    opponentInCombat: opponentsTurn && step !== null && inCombat(step),
   };
-}
-
-/** The ladder in one pill, centred over the main button. */
-function ladderOver(button: Rect, layout: BoardLayout): OverlayAnchors["ladder"] {
-  const { icon, padding, gap } = layout.ladder;
-  const width = PHASE_COUNT * icon + 2 * padding;
-  const pill = {
-    x: button.x + button.width / 2 - width / 2,
-    y: button.y - gap - icon - 2 * padding,
-    width,
-    height: icon + 2 * padding,
-  };
-  const icons = Array.from({ length: PHASE_COUNT }, (_, i) => ({
-    x: pill.x + padding + i * icon,
-    y: pill.y + padding,
-    width: icon,
-    height: icon,
-  }));
-  return { side: "mine", icons, pills: [pill] };
-}
-
-/** The ladder parted around the opponent's crest [R]: the beginning and first main phase left of it, the rest right. */
-function ladderAroundCrest(crest: Rect, layout: BoardLayout): OverlayAnchors["ladder"] {
-  const { icon, padding, gap } = layout.ladder;
-  const y = crest.y + crest.height / 2 - icon / 2;
-  const leftCount = 2;
-  const rightCount = PHASE_COUNT - leftCount;
-  const leftPill = {
-    x: crest.x - gap - leftCount * icon - 2 * padding,
-    y: y - padding,
-    width: leftCount * icon + 2 * padding,
-    height: icon + 2 * padding,
-  };
-  const rightPill = {
-    x: crest.x + crest.width + gap,
-    y: y - padding,
-    width: rightCount * icon + 2 * padding,
-    height: icon + 2 * padding,
-  };
-  const icons = [
-    ...Array.from({ length: leftCount }, (_, i) => ({
-      x: leftPill.x + padding + i * icon,
-      y,
-      width: icon,
-      height: icon,
-    })),
-    ...Array.from({ length: rightCount }, (_, i) => ({
-      x: rightPill.x + padding + i * icon,
-      y,
-      width: icon,
-      height: icon,
-    })),
-  ];
-  return { side: "opponent", icons, pills: [leftPill, rightPill] };
 }

@@ -17,6 +17,8 @@ export function mainButton(shown: SeatView): MainButton {
   if (view.result !== null) return { label: "Game over", detail: null, action: null };
   const myTurn = view.turn?.activePlayer === shown.player;
   const pass = shown.options.find((o) => o.action.type === "PASS_PRIORITY")?.action ?? null;
+  const declaring = declarationButton(shown);
+  if (declaring !== null) return declaring;
   if (pass === null) {
     // A decision other than priority (a target, a block) is answered from its prompt, not this button.
     const choosing = shown.options.length > 0;
@@ -31,6 +33,26 @@ export function mainButton(shown: SeatView): MainButton {
   }
   if (!myTurn) return { label: "Pass", detail: null, action: pass };
   return { label: "Next", detail: view.turn === null ? null : nextStop(view.turn.step), action: pass };
+}
+
+/**
+ * While attackers or blockers are being declared, the button finishes the declaration and says what it holds [R]:
+ * "No Attacks" or "2 Attackers" (on to blockers), "No Blocks" or "1 Blocker" (on to damage). Picking the creatures is
+ * M3-04b's touch; until then the actions drawer picks them.
+ */
+function declarationButton(shown: SeatView): MainButton | null {
+  const decision = shown.view.decision;
+  if (decision?.kind !== "declareAttackers" && decision?.kind !== "declareBlockers") return null;
+  const finish = shown.options.find((o) => o.action.type === "ANSWER" && o.action.answer.kind === "finishDeclaring");
+  const action = finish?.action ?? null;
+  // The picks so far are the declaration under way, before it's finished.
+  if (decision.kind === "declareAttackers") {
+    const n = decision.chosen.length;
+    return { label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`, detail: "To Blockers", action };
+  }
+  // A creature that blocks two attackers is still one blocker.
+  const n = new Set(decision.chosen.map((b) => b.blocker)).size;
+  return { label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`, detail: "To Damage", action };
 }
 
 /** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */
