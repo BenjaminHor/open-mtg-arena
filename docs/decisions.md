@@ -2680,6 +2680,16 @@ owner's answer to the D-089 open question, option (a))
   the phase ladder stepping, a short line saying what happened), skippable with a tap, an "instant" speed for tests.
   Arena holds each opponent stack item for a minimum time [R: 0.4 s since 2018]. It's built in a shape M3-07's
   animation director grows from (a queue of shown steps), not a throwaway.
+- Built: the match host's `advanceOne`; the worker loops it and keeps a frame (the person's seat view and the events
+  since the last) after each host action whose events hold (`interaction/pacing.ts`, one exhaustive table over every
+  event kind: an opponent's spell or ability 1 s, an attack or a block 0.9 s, an outcome 0.6 s, a trigger 0.6 s, a land
+  0.5 s, a new turn 0.7 s; the person's own choices, an opponent not attacking, an empty step: none) [guess, to tune
+  with the owner]. The app (`app/use-playback.ts`) draws each frame for its hold with a line under the turn banner
+  ("Your opponent cast Elite Vanguard", `interaction/event-line.ts`), then the reply's own view. Meanwhile no game
+  action is sent (conceding and full control still are), prompts and the small buttons stand down, looking (card
+  view, zones) works, and the main button is "Skip" (Space too); a skip starts the settle moment, so a double tap
+  doesn't also press what it uncovers. The e2e build plays at instant pace (the same path, every frame skipped);
+  `?pace=normal` or `?pace=instant` in the address picks it.
 - The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
   forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
   slice is tried through it.

@@ -1158,3 +1158,19 @@ body,
   font-weight: 400;
   color: var(--muted);
 }
+
+/* What the frame on screen shows while the host's run plays (hud/Hud.tsx, D-172): a calm line under the turn banner. */
+.hud .event-line {
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: rgba(20, 19, 18, 0.88);
+  color: #f4f1ec;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 150000;
+  animation: card-view-fade 160ms ease-out;
+}

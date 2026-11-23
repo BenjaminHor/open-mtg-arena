@@ -24,6 +24,21 @@ export type FromWorker =
    * What the person's seat is shown now, and the events it saw since the last update, in order. `waitingOn` is the
    * person when they must decide, null while no one does (the game is over).
    */
-  | { type: "update"; shown: SeatView; events: ViewEvent[]; waitingOn: PlayerId | null; fullControl: boolean }
+  | {
+      type: "update";
+      /**
+       * What happened on the way here, a frame per thing worth a moment's look (D-172), oldest first: the app shows
+       * each in turn before `shown`. Empty when nothing did.
+       */
+      frames: Frame[];
+      shown: SeatView;
+      /** The events since the last frame (all of them, with no frames). */
+      events: ViewEvent[];
+      waitingOn: PlayerId | null;
+      fullControl: boolean;
+    }
   /** A message the worker refused: an action that isn't legal now, or a start with an unknown deck. */
   | { type: "error"; message: string };
+
+/** One moment on the way to the person's next decision: their seat's view then, and the events that led to it. */
+export type Frame = { shown: SeatView; events: ViewEvent[] };

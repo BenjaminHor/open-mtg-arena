@@ -1,4 +1,5 @@
-// The host's loop (architecture.md, "Match host"). `advance` takes every action the host may take on its own: an
+// The host's loop (architecture.md, "Match host"). `advance` takes every action the host may take on its own (one at a
+// time with `advanceOne`): an
 // agent seat's choice, a decision with one legal answer, auto-pass and auto-tap. It stops when a person must decide
 // (or the game is over), and the UI shows that decision. `submit` applies the person's action. Both are pure: a match
 // in, a new match out; every action is logged, so the log replays the match exactly.
@@ -36,11 +37,21 @@ export class HostStuck extends Error {}
 export function advance(match: MatchState, cards: CardDatabase): MatchState {
   let m = match;
   for (let i = 0; i < MOST_ACTIONS; i++) {
-    const step = hostStep(m, cards);
-    if (step === null) return m;
-    m = applied(step.match, step.action, cards);
+    const next = advanceOne(m, cards);
+    if (next === null) return m;
+    m = next;
   }
   throw new HostStuck(`the host took ${MOST_ACTIONS} actions without anyone deciding`);
+}
+
+/**
+ * The host's next action alone, or null when a person must decide (or the game is over): `advance` a step at a time,
+ * for a caller that shows what happens along the way (the web app's pacing, D-172). It doesn't count steps: a caller
+ * looping it keeps its own limit, as `advance` does.
+ */
+export function advanceOne(match: MatchState, cards: CardDatabase): MatchState | null {
+  const step = hostStep(match, cards);
+  return step === null ? null : applied(step.match, step.action, cards);
 }
 
 /** Who must decide now, if a person: the player the UI should ask. Null while the host or no one acts. */

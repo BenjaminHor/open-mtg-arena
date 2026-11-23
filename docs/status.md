@@ -334,6 +334,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Pacing slice done (2026-11-23, D-172): the host's run shown frame by frame, a line saying what happened, Skip.**
+    `advanceOne` (packages/match), frames in the worker's reply, `interaction/pacing.ts`, `interaction/event-line.ts`,
+    `app/use-playback.ts`; tests: test/match-session.test.ts (frames, no event lost), test/pacing.test.ts,
+    packages/match/test/host.test.ts, e2e/pacing.spec.ts (normal pace, Skip, the settle moment after it). Holds are
+    guesses to tune with the owner.
   - Pacing slice plan (D-172, 2026-11-23, written before starting): "the game never jumps".
     - The match host gets a one-action step (`advanceOne`), and the worker's update loops it, keeping a frame (the
       person's seat view and the events since the last frame) after each host action worth seeing: an opponent's cast,

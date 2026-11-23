@@ -19,7 +19,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 ## Structure
 
 - `src/app/`: the React app: `App.tsx` (the match screen; it makes the board model the canvas and the HUD share, and
-  keeps whether the hand is open), `option-label.ts` (a label for each legal action), `safe-area.ts`, `orientation.ts` and `use-portrait.ts` (a phone held upright: the "turn your phone" prompt, D-171), `app.css`.
+  keeps whether the hand is open), `option-label.ts` (a label for each legal action), `safe-area.ts`, `use-playback.ts` (the worker's frames played in order, Skip, D-172), `orientation.ts` and `use-portrait.ts` (a phone held upright: the "turn your phone" prompt, D-171), `app.css`.
 - `src/layout/`: `board-layout.ts` (the `BoardLayout` type: every position and size as data) and `compact.ts` (the
   folded phone in landscape, each value tagged [R] from the owner's screenshots or [guess]; D-152).
 - `src/board-model/`: pure functions from a `SeatView`, the board's size, its safe-area insets and the UI state (hand
@@ -40,7 +40,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   ranks matches. `ability-label.ts`: an activated ability's short label ("Add {G}", "+2"). `all-attack.ts`: All
   Attack's picks, one at a time (the engine has no "all" action). `card-details.ts`: what the card view shows, a card's
   text and image and the hangers beside it (keyword reminders, counters, damage, what's attached, who controls it).
-  `zones.ts`: each player's zones as the person may see them, the counts and the zone browser's tabs (D-168), and the
+  `pacing.ts`: how long each frame of the host's run holds, by its events (D-172); `event-line.ts`: what a
+  frame shows, in a line. `zones.ts`: each player's zones as the person may see them, the counts and the zone browser's tabs (D-168), and the
   whole stack's. `stack-details.ts`: what the card view adds for a stack object (an ability's own panel, targets, X).
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
   (`CardButtons.tsx`), each player's info in a left corner (`PlayerInfo.tsx`: life and zone counts, targetable as a

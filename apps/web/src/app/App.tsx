@@ -25,6 +25,7 @@ import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
 import { readInsets } from "./safe-area.ts";
 import { TurnYourPhone } from "./TurnYourPhone.tsx";
+import { type Pace, usePlayback } from "./use-playback.ts";
 import { usePortraitPhone } from "./use-portrait.ts";
 
 type Update = Extract<FromWorker, { type: "update" }>;
@@ -49,6 +50,16 @@ function startFromUrl(): ToWorker | { error: string } {
     seed,
     human: "p1",
   };
+}
+
+/**
+ * How fast what the host did is shown (D-172): normal, or instant (every frame skipped, the end at once), as the e2e
+ * build plays so its tests don't wait ("tests run at instant speed", M3-07); `?pace=` in the address overrides.
+ */
+function paceFromUrl(): Pace {
+  const asked = new URLSearchParams(location.search).get("pace");
+  if (asked === "normal" || asked === "instant") return asked;
+  return import.meta.env.VITE_TEST_HOOKS === "1" ? "instant" : "normal";
 }
 
 /** How long after an update a press is taken as meant for it, not for what was on screen before. */
@@ -127,6 +138,9 @@ export function App() {
   // An open menu is only which card it's for: its choices are always read from the current controls.
   const [menuFor, setMenuFor] = useState<ObjectId | null>(null);
   const [busy, setBusy] = useState(false);
+  // How fast what the host did is shown, and whether a frame of it is on screen now (for `send`, a ref: read at once).
+  const [pace] = useState(paceFromUrl);
+  const playingNow = useRef(false);
   // The guard itself, so two presses in the same moment can't both send: the state above only draws it.
   const busyNow = useRef(false);
   // When the reply to the last button press arrived: a press of the main button or one beside it within a moment of it was aimed at what
@@ -180,7 +194,17 @@ export function App() {
     };
   }, []);
 
-  const shown = update?.shown ?? null;
+  // What the host did on the way here, shown in order before the person's decision (D-172): `shown` is what's drawn,
+  // a frame while one holds. Nothing sends a game action meanwhile (`send`); a skip jumps to the end.
+  const playback = usePlayback(update, pace);
+  playingNow.current = playback.playing;
+  const shown = playback.drawn;
+  // A skip is a press of the main button: the settle moment starts there, so a quick second tap isn't taken for the
+  // decision it uncovers (ui.md, "Never").
+  const skip = useCallback(() => {
+    playback.skip();
+    updatedAt.current = performance.now();
+  }, [playback.skip]);
   // A new turn's banner (interaction/turn-banner.ts), shown for a moment: a turn the host passed through is never
   // invisible.
   const [banner, setBanner] = useState<string | null>(null);
@@ -224,6 +248,9 @@ export function App() {
   // after the reply to the last one.
   const send = useCallback((message: ToWorker, settle: boolean): boolean => {
     if (busyNow.current || (settle && performance.now() - updatedAt.current < SETTLE_MS)) return false;
+    // While what happened plays, the frame on screen isn't the decision: no game action is sent from it. Conceding
+    // and full control aren't about the frame, and always go.
+    if (playingNow.current && message.type === "act" && message.action.type !== "CONCEDE") return false;
     settlePress.current = settle;
     busyNow.current = true;
     setBusy(true);
@@ -243,7 +270,7 @@ export function App() {
   // Toward the attack goal: each reply brings the next step (a pick, or a take-back), each one the engine re-checks,
   // until the declaration is there, is over, or a step didn't land; then the person adjusts or finishes it.
   useEffect(() => {
-    if (attackGoal === null || busy || shown === null) return;
+    if (attackGoal === null || busy || playback.playing || shown === null) return;
     const step = stepToward(shown, attackGoal);
     const decision = shown.view.decision;
     const at = `${JSON.stringify(decision?.kind === "declareAttackers" ? decision.chosen : null)} ${JSON.stringify(step)}`;
@@ -256,7 +283,7 @@ export function App() {
     }
     lastStep.current = at;
     act(step);
-  }, [attackGoal, busy, shown, act]);
+  }, [attackGoal, busy, playback.playing, shown, act]);
   // Starting toward a goal is a button's press: not a moment after a button's reply (the settle guard, above).
   const aimAttack = useCallback((goal: WantedAttack[], label: string) => {
     if (busyNow.current || performance.now() - updatedAt.current < SETTLE_MS) return;
@@ -350,12 +377,13 @@ export function App() {
         else if (handOpen) setHandOpen(false);
       } else if (event.key === " " && !event.repeat && !keyboardFocused()) {
         event.preventDefault();
-        if (controlsNow?.main != null) act(controlsNow.main, true);
+        if (playback.playing) skip();
+        else if (controlsNow?.main != null) act(controlsNow.main, true);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [controlsNow, menu, selection, handOpen, act, inspected, shown, browsing, portrait]);
+  }, [controlsNow, menu, selection, handOpen, act, inspected, shown, browsing, portrait, playback.playing, skip]);
 
   return (
     <>
@@ -369,7 +397,7 @@ export function App() {
             shown={shown}
             model={model}
             controls={controlsNow}
-            busy={busy}
+            busy={busy || playback.playing}
             act={act}
             onTap={onTap}
             menu={menu}
@@ -395,6 +423,9 @@ export function App() {
             }}
             inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
             banner={banner}
+            line={playback.playing ? playback.line : null}
+            playing={playback.playing}
+            skip={skip}
             closeInspected={() => setInspected(null)}
             // A tap on the stack makes it small or large again, but not while it's small to choose for it.
             toggleStack={
