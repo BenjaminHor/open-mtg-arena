@@ -233,6 +233,56 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     again to cast" on a lifted card; a white focus ring; Tab in screen order. "All Attack" is left for later: it isn't
     an engine option (each attacker is its own pick), so it would be a UI macro of several picks; to raise with the
     owner, with drag to play, at review time.
+  - **M3-04b slices 1 and 3 merged (PR #97, 2026-11-23).** CI green, a 300-game fuzz clean. Next: slice 2, bespoke
+    prompts.
+  - M3-04b slice 2 plan (2026-11-23, written before starting): every prompt says what it's for, with the decision's
+    own context, and the long ones are easy to use. Web only, no engine change.
+    - `interaction/prompt-text.ts` (pure): the prompt's title and each choice's label from the decision.
+      - Mulligan: "Keep 7" / "Mulligan" [R].
+      - X: "Choose X for Fireball".
+      - Dividing: "How much of 3 to Elite Vanguard?" (no "damage": CR 601.2d divides counters too).
+      - Combat damage: the source, the amount and who gets it, with lethal marked.
+      - Paying: "Pay for" the spell (the payment screen with its cost is later).
+      - Choosing cards: the cards' names.
+      - Trigger order: each trigger by its source ("goes on the stack first, resolves last").
+      - Yes/no: the spell or ability resolving.
+      - Replacement order, the legend rule, a new target: named the same way.
+    - Prompt UI: numbers as a compact row of chips, and a filter box for a long list such as naming a card (every
+      name in the database). Long lists scroll.
+    - Tests: a unit test per decision kind for the title and labels, and e2e for naming a card with the filter and
+      for choosing X.
+  - M3-04b slice 2 progress (2026-11-23): `interaction/prompt-text.ts` gives every decision a title in its own words,
+    and gives the prompt's choices labels with context: "Keep 7", "Choose X for Fireball", "How much of 3 to Elite
+    Vanguard?", "Stampeding Rhino deals 4 damage: how much to Elite Vanguard?" with "3 (lethal)", triggers by source,
+    searched cards by name (even by identity only, D-062), "Keep Llanowar Elves", "Shuffle your library?".
+    Choices that read the same are numbered ("Forest", "Forest 2"). X and damage shares are a compact row of
+    numbers; naming a card has a filter box (Enter takes the first match; 8 shown, the rest by typing). The prompt's
+    title sits on its anchor with the choices below; it goes high while the hand is open (a mulligan, a discard) or
+    for naming a card. A `prompts` fixture (Fireball, Ignite Disorder, Pithing Needle) and an e2e for all three; unit
+    tests for every decision kind's title and the labels that need context.
+    After the code review: the filter ranks the exact name first, then prefixes, then the rest (so "Shatter" doesn't
+    name Mind Shatter), Enter does nothing on an empty box, the box empties for each new decision, and it's focused
+    only with a mouse (on touch it would raise the on-screen keyboard over a folded phone). Replacement order names
+    each effect by its source ("X's regeneration", "X's protection"; a resolved spell's prevention is "A prevention
+    effect", as the view doesn't carry its source: a known gap). A trigger or ability whose source has left is named by
+    its card. Choosing a basic land type is five buttons, not a filter. The prompt goes in the gap between the rows
+    only if a row of choices fits there too. Debug screenshots committed by mistake are removed, and PNGs at the root
+    and in `apps/web/src` are now ignored.
+    After the UX review: a prompt with choices is one dark panel (title and choices), in the gap between the rows if
+    it fits there with all its rows, else over the middle of the table, as Arena's choice dialogs are; an open hand no
+    longer lifts a numbers prompt onto the targets; the filter's text is 16 px (iOS zooms into smaller).
+    Left for M3-04c from that review:
+    - A share with one possible value (dividing 3 among 3) still asks, because Cancel is also legal: answer it
+      without asking.
+    - Screen-reader names for the number buttons ("X = 3"), and a live match count in the filter.
+    - Dividing: say where the rest goes, and ring the target being asked about.
+    - A stepper (− 7 + Max) for X beyond about 10 values.
+    - A pressed look for prompt buttons, and a dimmed look while busy.
+    - "Choose target 2 of 3".
+    - In the filter: word-start matches ranked first, and the cards in sight suggested before A–Z.
+    - Titles allowed to wrap to two lines.
+    - Escape closes the open hand before it cancels a cast.
+    - The phone's on-screen keyboard while naming a card, and focus on the first number when a numbers prompt opens.
   - M3-04b slice 3 (2026-11-23, in the same PR as slice 1, as both are on one branch): smart stops (D-157). Auto-pass
     keeps D-143's rule and adds Arena's skips: your own upkeep, draw step and end step with an empty stack, unless
     mana is left in your pool. Full control is a switch in the settings menu (the main button turns blue-violet). The

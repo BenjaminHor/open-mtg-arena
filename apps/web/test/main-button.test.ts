@@ -3,7 +3,7 @@
 import type { SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { mainButton } from "../src/hud/main-button.ts";
-import { promptTitle } from "../src/interaction/controls.ts";
+import { promptTitle } from "../src/interaction/prompt-text.ts";
 import { fixtureView, mulliganView } from "./fixture-views.ts";
 
 const midGame = fixtureView("mid-game");

@@ -12,7 +12,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   Once per machine, first:
   `pnpm --filter @mtg/web exec playwright install chromium`.
 - `?seed=12&deck=red-aggro&vs=white-soldiers` in the address starts a given match; `?fixture=mid-game` (or
-  `crowded`, `attack`, `block`, `tokens`) starts a fixture board (`src/fixtures/`).
+  `crowded`, `attack`, `block`, `tokens`, `prompts`) starts a fixture board (`src/fixtures/`).
 
 ## Structure
 
@@ -31,6 +31,9 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   drawing.
 - `src/interaction/controls.ts`: what the person can do now and where (D-156): every legal option as a control, a tap
   on a card or portrait, the main button, Undo or Cancel beside it, or a prompt. Pure and tested over whole games.
+  `prompt-text.ts`: what a prompt says, its title and each choice's label from the decision ("Choose X for Fireball",
+  "Keep 7"), how it lays its choices out (buttons, a row of numbers, a filter box for naming a card) and how the filter
+  ranks matches. `ability-label.ts`: an activated ability's short label ("Add {G}", "+2").
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
   (`CardButtons.tsx`), portraits (targetable as players), life crests, the phase ladders (`PhaseLadder.tsx`), the main
   button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
@@ -41,7 +44,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
   `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
   (and `window.__artShown()`) in development and test builds.
-- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`), for tests
+- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`), for tests
   and screenshots; `setupOf` turns a board a test writes itself into a game setup.
 - `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the

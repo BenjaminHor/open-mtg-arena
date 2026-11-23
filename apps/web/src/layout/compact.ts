@@ -65,6 +65,7 @@ export const COMPACT: BoardLayout = {
   ladder: { icon: 20, padding: 2, gap: 6 },
   crestClearance: 6,
   promptHeight: 26,
+  promptChoicesHeight: 56, // a 44 px button, its panel's padding and the gap above [guess]
   // "Undo", "Cancel" left of the main button, as Arena's "Cancel Blocks" sits by it [R].
   secondary: { width: 88, height: 44, gap: 6 },
   // A spell being cast, or an ability, large at the right of centre [R] (smaller than Arena's, the phone's board is full).

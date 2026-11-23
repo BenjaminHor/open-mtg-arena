@@ -39,6 +39,13 @@ const BY_ORACLE_ID = new Map<OracleId, CardInfo>(
   ]),
 );
 
+const NAMES = new Map<OracleId, string>(POOL.cards.map((c) => [c.oracleId, c.name]));
+
+/** A card's name by its oracle id: a card shown by identity only, as in a search's choices (D-062). */
+export function nameOf(oracleId: OracleId): string | null {
+  return NAMES.get(oracleId) ?? null;
+}
+
 export function cardInfo(oracleId: OracleId | null): CardInfo | null {
   return oracleId === null ? null : (BY_ORACLE_ID.get(oracleId) ?? null);
 }

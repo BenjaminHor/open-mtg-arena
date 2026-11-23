@@ -198,7 +198,11 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
-    overlay: { ...overlay, hand: handArea(hand, area), prompt: promptPlace(shown, field.cards, overlay, area, layout) },
+    overlay: {
+      ...overlay,
+      hand: handArea(hand, area),
+      prompt: promptPlace(shown, ui.handOpen, field.cards, overlay, area, layout),
+    },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
@@ -247,6 +251,7 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
  */
 function promptPlace(
   shown: SeatView,
+  handOpen: boolean,
   field: readonly BoardCard[],
   overlay: OverlayAnchors,
   area: Rect,
@@ -258,13 +263,56 @@ function promptPlace(
   // under the crest rather than jump when the first one moves.
   const kind = shown.view.decision?.kind;
   if (kind === "declareAttackers" || kind === "declareBlockers") return underCrest;
+  // Naming a card is a long list with a filter box: it starts high, so the list has the screen's height to use. An
+  // open hand rises over the lower half: a prompt answered on its cards (a discard) or a mulligan's two buttons go
+  // high, clear of the cards' names; one with choices of its own stays in the table, drawn over the hand, rather than
+  // jump onto the opponent's creatures (the targets it may be about).
+  const decision = shown.view.decision;
+  if (decision?.kind === "chooseName" && decision.what === "cardName") return underCrest;
+  if (handOpen && (answeredOnCards(kind) || kind === "mulligan")) return underCrest;
+  // In the gap between the rows: the title, and the rows of choices under it, as many as they'll take.
+  const needed =
+    layout.promptHeight + (answeredOnCards(kind) ? 0 : choiceRows(shown, area, layout) * layout.promptChoicesHeight);
   const creatures = field.filter((c) => c.row === "creatures");
   const theirs = creatures.filter((c) => !c.mine).map((c) => c.y + c.height);
   const mine = creatures.filter((c) => c.mine).map((c) => c.y);
   const top = theirs.length === 0 ? area.y + layout.band.y * area.height - 30 : Math.max(...theirs);
   const bottom = mine.length === 0 ? area.y + layout.band.y * area.height + 30 : Math.min(...mine);
-  if (bottom - top >= layout.promptHeight) return { x: area.x + area.width / 2, y: (top + bottom) / 2 };
-  return underCrest;
+  if (bottom - top >= needed)
+    return { x: area.x + area.width / 2, y: top + (bottom - top - needed) / 2 + layout.promptHeight / 2 };
+  if (answeredOnCards(kind)) return underCrest;
+  // Choices that don't fit the gap: a panel over the middle of the table, as Arena shows its choice dialogs [R]. It
+  // covers cards for a moment, on a backing dark enough to read (`.prompt-choices` in app.css).
+  const middle = area.y + layout.band.y * area.height;
+  return { x: area.x + area.width / 2, y: middle - needed / 2 + layout.promptHeight / 2 };
+}
+
+/**
+ * How many rows the prompt's choices take, roughly: numbers are round 44 px buttons, other choices about 140 px
+ * wide, in at most 70% of the board's width (`.prompt` in app.css). Undo and Cancel sit by the main button instead.
+ */
+function choiceRows(shown: SeatView, area: Rect, layout: BoardLayout): number {
+  const count = shown.options.filter(
+    (o) => o.action.type === "ANSWER" && o.action.answer.kind !== "cancelCast" && o.action.answer.kind !== "takeBack",
+  ).length;
+  const kind = shown.view.decision?.kind;
+  const numbers = kind === "announceX" || kind === "chooseTargetCount" || kind === "divide" || kind === "assignDamage";
+  const perRow = Math.max(1, Math.floor((area.width * 0.7) / (numbers ? layout.promptChoicesHeight : 140)));
+  return Math.max(1, Math.ceil(count / perRow));
+}
+
+/** Decisions answered by tapping cards (or the main button): their prompt is a title alone, with no choices under it. */
+function answeredOnCards(kind: string | undefined): boolean {
+  return (
+    kind === undefined ||
+    kind === "priority" ||
+    kind === "declareAttackers" ||
+    kind === "declareBlockers" ||
+    kind === "chooseTarget" ||
+    kind === "mulliganBottom" ||
+    kind === "discardToHandSize" ||
+    kind === "chooseSacrifice"
+  );
 }
 
 /** The part of the screen the hand covers: from its leftmost card to its rightmost, its costs to the bottom edge. */

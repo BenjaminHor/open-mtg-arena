@@ -152,3 +152,46 @@ test("full control from the settings menu: the main button turns blue-violet, an
   await expect(toggle).toHaveAttribute("aria-checked", "false");
   await expect(page.locator(".main-button")).not.toHaveClass(/full-control/);
 });
+
+test("prompts say what they're for: dividing damage, X as a row of numbers, naming a card with a filter", async ({
+  page,
+}) => {
+  await page.goto("/?fixture=prompts");
+  const cast = async (name: string) => {
+    await page.getByRole("button", { name: "Open your hand" }).click();
+    await page.getByRole("button", { name: new RegExp(`^${name}: lift`) }).click();
+    await page.getByRole("button", { name: new RegExp(`^${name}: Cast`) }).click();
+  };
+  // Ignite Disorder: how many targets, the targets, then how much of the 3 damage goes to the first (CR 601.2d).
+  await cast("Ignite Disorder");
+  await expect(page.getByText("How many targets for Ignite Disorder?")).toBeVisible();
+  await page.getByRole("button", { name: "2", exact: true }).click();
+  await page.getByRole("button", { name: /^Elite Vanguard: Target/ }).click();
+  await page.getByRole("button", { name: /^Veteran Armorsmith: Target/ }).click();
+  await expect(page.getByText("How much of 3 to Elite Vanguard?")).toBeVisible();
+  await page.getByRole("button", { name: "2", exact: true }).click();
+  // Two to the 2/2, one to the 2/3: the Vanguard dies.
+  await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Elite Vanguard")).toBe(false);
+
+  // Fireball: X is a row of numbers; Escape backs out of the cast.
+  await cast("Fireball");
+  await expect(page.getByText("Choose X for Fireball")).toBeVisible();
+  await expect(page.locator(".prompt-choices.numbers button")).not.toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.getByText("Choose X for Fireball")).toBeHidden();
+
+  // Pithing Needle: as it enters, name a card, every name in the database, found by typing.
+  await cast("Pithing Needle");
+  // It usually resolves by itself (the host passes for the caster, the opponent lets it resolve); if a stop asks
+  // first, pass it. A pass button can be gone by the time it's pressed: then the loop looks again.
+  for (let i = 0; i < 8 && !(await page.getByText("Name a card").count()); i++) {
+    const pass = page.getByRole("button", { name: /^(Resolve|Pass|Next)/ });
+    if (await pass.count()) await pass.click({ timeout: 2_000 }).catch(() => undefined);
+    await page.waitForTimeout(400);
+  }
+  await expect(page.getByText("Name a card")).toBeVisible();
+  await page.getByRole("searchbox", { name: "Filter the choices" }).fill("shivan");
+  await page.getByRole("button", { name: "Shivan Dragon", exact: true }).click();
+  await expect(page.getByText("Name a card")).toBeHidden();
+  await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Pithing Needle")).toBe(true);
+});

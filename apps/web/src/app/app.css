@@ -354,8 +354,10 @@ body,
 }
 
 /* What the game waits for, between the battlefields [R]: words on a dark band, choices under them. */
+/* The title is centred on the anchor (the open table between the rows); choices hang below it, never above. 13px is
+   half the title's height (`promptHeight` in layout/compact.ts). */
 .prompt-anchor {
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -13px);
 }
 
 .prompt {
@@ -383,9 +385,64 @@ body,
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
+
   max-height: 40vh;
   overflow-y: auto;
   pointer-events: auto;
+}
+
+/* X, a share of damage: small numbers, a compact row of round buttons. */
+.prompt-choices.numbers button {
+  min-width: 44px;
+  padding: 6px 0;
+  font-size: 16px;
+}
+
+/* A long list (naming a card): a filter box over the first matches. */
+.prompt-filtered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: min(400px, 56vw);
+  pointer-events: auto;
+}
+
+/* Its matches stay within the open table: a few rows, scrolled for more. */
+.prompt-filtered .prompt-choices {
+  max-height: 45vh;
+}
+
+/* A prompt with choices is one panel, title and all, so it reads over cards when the table has no room for it. */
+.prompt.with-choices {
+  padding: 8px 12px 10px;
+  border-radius: 24px;
+  background: rgba(10, 11, 14, 0.88);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.prompt.with-choices .prompt-title {
+  background: none;
+}
+
+.prompt-filter {
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #c9a55a;
+  background: #0e1014;
+  color: #f4ecd8;
+  font: inherit;
+  /* 16px: iOS Safari zooms the page into a text box with smaller text. */
+  font-size: 16px;
+}
+
+.prompt-more {
+  margin: 0;
+  color: #d9d0bb;
+  font-size: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .prompt-choices button {

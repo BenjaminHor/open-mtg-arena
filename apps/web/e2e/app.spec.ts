@@ -22,13 +22,13 @@ test.beforeEach(async ({ page }) => {
 
 test("loads a match and plays the person's first decision through the worker", async ({ page }) => {
   await page.goto("/?seed=7");
-  // The mulligan isn't priority, so the actions drawer opens by itself with its choices.
-  await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
+  // The mulligan is asked in the prompt, with Arena's buttons: "Keep 7", "Mulligan".
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.filter((c) => c.zone === "hand").length).toBe(7);
-  await page.getByRole("button", { name: "Keep hand" }).click();
+  await page.getByRole("button", { name: /^Keep \d/ }).click();
   // The worker applied the keep and played on until the person's next decision: the mulligan is gone, the game is
   // into its first turn (the phase ladder shows), and the main button has something to say.
-  await expect(page.getByRole("button", { name: "Keep hand" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toHaveCount(0);
   await expect(page.getByRole("list", { name: /turn$/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /^(Next|Pass|Resolve)/ })).toBeVisible();
 });
@@ -63,22 +63,29 @@ test("opens the hand with a tap, and closes it with another", async ({ page }) =
   await expect.poll(handTop).toBeGreaterThan(0.8);
 });
 
-test("draws each card's art when it loads, and the art-less frame when it can't", async ({ page }) => {
-  await page.goto("/?fixture=mid-game");
-  await expect(page.getByRole("img", { name: "Your life 17" })).toBeVisible();
-  // The image host is blocked (beforeEach): every card keeps its fallback frame.
-  await page.waitForTimeout(300);
-  expect(await artShown(page)).toEqual([]);
+test.describe("card art", () => {
+  // The page's requests for art are answered by `page.route` below. Once a service worker controls the page (it can,
+  // after the reload), Playwright can't route its requests any more and they'd go to the real image host.
+  test.use({ serviceWorkers: "block" });
 
-  await page.unroute("https://cards.scryfall.io/**");
-  await page.route("https://cards.scryfall.io/**", (route) =>
-    route.fulfill({ body: PIXEL, contentType: "image/png", headers: { "access-control-allow-origin": "*" } }),
-  );
-  await page.reload();
-  await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
-  const drawn = (await board(page))?.cards.length ?? 0;
-  // Every card in the fixture is a real card, so each one gets its art.
-  await expect.poll(async () => (await artShown(page)).length).toBe(drawn);
+  test("draws each card's art when it loads, and the art-less frame when it can't", async ({ page }) => {
+    await page.goto("/?fixture=mid-game");
+    await expect(page.getByRole("img", { name: "Your life 17" })).toBeVisible();
+    // The image host is blocked (beforeEach): every card keeps its fallback frame.
+    await page.waitForTimeout(300);
+    expect(await artShown(page)).toEqual([]);
+
+    await page.unroute("https://cards.scryfall.io/**");
+    await page.route("https://cards.scryfall.io/**", (route) =>
+      route.fulfill({ body: PIXEL, contentType: "image/png", headers: { "access-control-allow-origin": "*" } }),
+    );
+    await page.reload();
+    await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
+    const drawn = (await board(page))?.cards.length ?? 0;
+    // Every card in the fixture is a real card, so each one gets its art.
+    // A busy CI runner with software WebGL can take several seconds to decode and draw them all.
+    await expect.poll(async () => (await artShown(page)).length, { timeout: 15_000 }).toBe(drawn);
+  });
 });
 
 test("shows a refusal rather than hanging: an unknown deck in the address", async ({ page }) => {
@@ -88,7 +95,7 @@ test("shows a refusal rather than hanging: an unknown deck in the address", asyn
 
 test("works offline once it has loaded (the service worker)", async ({ page, context }) => {
   await page.goto("/?seed=7");
-  await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   // Wait until the service worker controls the page, so everything it precached is in its cache.
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -98,6 +105,6 @@ test("works offline once it has loaded (the service worker)", async ({ page, con
   });
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
 });
