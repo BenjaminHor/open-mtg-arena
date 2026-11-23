@@ -156,7 +156,8 @@ The M1 scaffolding task creates these scripts. Keep these names stable.
 - `pnpm bench` — engine benchmarks against `bench/baseline.json`
 - `pnpm cli <command>` — the headless game CLI (see `docs/testing.md`)
 - `pnpm cards:fetch` / `pnpm cards:extract` — download Scryfall bulk data / extract the card pool (see `docs/card-scripting.md`)
-- `pnpm dev` — the web app (from M3)
+- `pnpm dev` — the web app with hot reload; `pnpm build` / `pnpm preview` — its production build, served locally
+- `pnpm test:e2e` — the web app's Playwright tests, against the production build (CI runs them; `pnpm check` doesn't yet)
 - `node scripts/fetch-rules.mjs` — refresh `rules/` when Wizards publishes a new CR
 
 ## Don'ts

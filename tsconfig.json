@@ -1,5 +1,6 @@
 {
-  // One typecheck for the whole repo: every package's source and tests.
+  // The typecheck for every package's source and tests, and the web app's Node files (its Vite config and unit tests).
+  // `pnpm typecheck` also checks the web app's browser, worker and Playwright code with apps/web/tsconfig*.json.
   // There is no build step: Node runs the .ts files directly (type stripping),
   // and Vitest does the same, so code must use only erasable TypeScript syntax.
   "compilerOptions": {
@@ -26,5 +27,11 @@
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["packages/*/**/*.ts", "vitest.config.ts", "vitest.mutate.config.ts"]
+  "include": [
+    "packages/*/**/*.ts",
+    "apps/web/test/**/*.ts",
+    "apps/web/vite.config.ts",
+    "vitest.config.ts",
+    "vitest.mutate.config.ts"
+  ]
 }

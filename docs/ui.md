@@ -128,7 +128,7 @@ Every browser on iOS uses Safari's WebKit engine, so plan for its rules:
 - **Stack (D-013):** PixiJS v8 renders the match board; React renders menus, prompts, buttons and the HUD
   as DOM on top of it; GSAP sequences animations. Plain CSS modules (or a similarly small approach) for DOM styling.
 - **Board structure, kept readable and testable:**
-  - `board-model/`: pure functions that turn a `PlayerView` plus the layout size into a **board model**:
+  - `board-model/`: pure functions that turn a `SeatView` (D-144) plus the layout size into a **board model**:
     plain data listing every visible card with its position, rotation, scale, highlight and interaction
     state. Unit-tested without rendering anything. Layout logic lives here, not in Pixi code.
   - `director/`: turns engine events into an animation queue (GSAP timelines) that moves the board from

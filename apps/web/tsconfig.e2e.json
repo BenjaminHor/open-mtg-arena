@@ -1,0 +1,10 @@
+{
+  // The Playwright tests and config: Node, plus the DOM for the code they run in the page (`page.evaluate`).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["es2024", "dom"],
+    "types": ["node"]
+  },
+  "include": ["e2e/**/*.ts", "playwright.config.ts"],
+  "exclude": []
+}

@@ -343,6 +343,13 @@ the games won, lost, drawn, capped and void (the random agent stuck going round 
 long its decisions took (mean and slowest, with the seed). How the
 games are arranged, and what M3-02's "95% with each deck" means: D-145. Ten fixed games per deck run in `pnpm check`.
 
+### The web app's browser tests
+
+`pnpm test:e2e` runs Playwright against the web app's production build (`apps/web/playwright.config.ts` builds it with
+`VITE_TEST_HOOKS=1`, which keeps the `window.__board` test hook, and serves it with `vite preview`): the app loads and
+plays a round trip through the match worker, and it still works after an offline reload. CI runs it after
+`pnpm check`. Once per machine: `pnpm --filter @mtg/web exec playwright install chromium`.
+
 ## 4. Replays and golden games
 
 - A replay file is the CLI's game file, `{ format, version, setup, actions, state? }` (the seed is part of `setup`;

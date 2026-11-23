@@ -99,5 +99,6 @@ browser's device emulation, and the dev server can be opened from a phone on the
 - The owner has played at least five complete games on the iPhone Duo (folded and unfolded) and on desktop.
 - Every bug the owner reported is a scenario or Playwright test, and fixed (or listed in Known issues with the owner's agreement).
 - The owner says the match feels smooth on the phone, and the performance-trace test passes.
-- `pnpm check` is green, including Playwright tests.
+- CI is green: `pnpm check` and the Playwright tests (`pnpm test:e2e`), which CI runs on every pull request (owner,
+  2026-11-23, D-151).
 - The M3 spec is drafted and reviewed with the owner.

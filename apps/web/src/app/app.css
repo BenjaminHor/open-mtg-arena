@@ -1,0 +1,58 @@
+/* The app's plain CSS (ui.md: plain CSS for the DOM layer). M3-04 brings the real look. */
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  background: #16181d;
+  color: #f2efe6;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+}
+
+.board {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hud {
+  padding: 8px 12px;
+  border-top: 1px solid #333842;
+}
+
+.hud p {
+  margin: 4px 0;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.options button {
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #5b6270;
+  background: #252a33;
+  color: inherit;
+}
+
+.options button:disabled {
+  opacity: 0.4;
+}
+
+.loading {
+  padding: 16px;
+}
