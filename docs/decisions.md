@@ -2284,8 +2284,8 @@ owner's answer to the D-089 open question, option (a))
   already here through Vitest), the React types, and @playwright/test. All pinned exactly (D-016).
 - @playwright/test is pinned to 1.63.0, the version whose Chromium this machine has installed; CI installs its own
   Chromium. The browser tests run against the production build, where the service worker and the bundled worker are
-  real, in their own command (`pnpm test:e2e`) and CI step: `pnpm check` stays quick, and M3's exit criterion
-  ("`pnpm check` is green, including Playwright tests") is met by CI running both.
+  real, in their own command (`pnpm test:e2e`) and CI step: `pnpm check` stays quick. The owner agreed (2026-11-23)
+  that M3's exit criterion reads "CI is green, including the Playwright tests", and the milestone says so.
 - Offline support is one short hand-written service worker, not vite-plugin-pwa and Workbox: precache every file the
   build wrote (a small Vite plugin lists them), pages network-first so a new build shows at once, hashed files
   cache-first, one cache per build named for its files' names and contents. Registered only in production builds, so

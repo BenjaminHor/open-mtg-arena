@@ -1739,10 +1739,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
-- (2026-11-23, M3-03) M3's exit criterion says "`pnpm check` is green, including Playwright tests". The browser tests
-  need a production build and a browser, so they run in their own command (`pnpm test:e2e`) and CI runs both on every
-  pull request (D-151); `pnpm check` stays quick. OK to read the criterion as "CI is green, including Playwright", and
-  word the milestone that way?
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
