@@ -2443,3 +2443,11 @@ owner's answer to the D-089 open question, option (a))
   Local builds and the tests keep `/`.
 - It's public, as the repository is. Card art is still fetched from Scryfall at runtime and never published with the
   app (D-007, data-sources.md).
+
+**D-160: When a UI question comes up, do what Arena does; don't stop to ask (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "mtg arena is the North Star so if there's a question, do what arena would do", and "continue until you
+  need feedback on open questions". This sharpens D-140: for interaction and layout questions, Arena's behaviour is
+  the answer, found in `arena-research.md` (researched further when it's silent), and the work goes on.
+- Still asked: anything Arena can't answer (rules interpretations go to the CR, D-020; scope, priorities, money,
+  publishing), and anything where copying Arena would mean copying its assets (D-140's line stands).
+- First use: a mouse hovering a card shows a large preview, as Arena's desktop client does.

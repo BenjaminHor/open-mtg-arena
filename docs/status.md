@@ -206,6 +206,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
+  - Owner (2026-11-23): "continue until you need feedback on open questions. I would stress that mtg arena is the
+    North Star so if there's a question, do what arena would do" (D-160). So the desktop hover question is closed:
+    hovering a card shows a large preview, as Arena's desktop client does.
   - Owner (2026-11-23, after trying the live site on the phone): "looks good so far but feels a bit buggy"; will give
     suggestions and questions once M3-04c is finished. Ask for them then, with the live link.
   - Owner (2026-11-23): wants to follow progress on the phone: the app is published to GitHub Pages from `main`
@@ -2007,8 +2010,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
   Worth it if playtesting shows too many stops with an instant in hand.
 
-- Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
-  does? On touch, long-press shows the details (M3-04c) either way.
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
