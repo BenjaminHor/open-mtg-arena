@@ -260,7 +260,19 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       the phases as a row of plain text labels with the current one lit; life totals as large plain numbers with
       small zone counts beside the portraits; the main button a calm flat pill. Hand cards stay whole card images.
       Future impact: the badges (3a below) and attachments (3b) are drawn on this frameless tile.
-  - M3-04c slice 3 badge plan (now slice 4, after the restyle) (2026-11-23, written before starting), two PRs:
+      Two PRs (advisor): first the table and the battlefield tile (renderer only), shown to the owner; then the HUD
+      (life, main button, ladder as text, portraits, prompts, card view) through the CSS tokens, the ladder sized in
+      the board model. The ux-reviewer reviews both together at the second.
+      - Slice 3 PR 1 done (2026-11-23): the flat table (#22211f) and `renderer/battlefield-tile.ts`: art only with
+        rounded corners, name in white with a soft shadow over a smooth dark fade at the bottom left, P/T in a small
+        dark pill at the bottom right (light blue raised, light red lowered, damage underlined), the name always on
+        the pill's line, shrinking to fit beside it (owner: "on the same line"), a token's arched top, no art: the colour with its glyphs.
+        Playable is a thin solid cyan outline (hand cards too), a pick a thicker yellow-orange one. `card-face.ts`
+        now draws only whole cards (hand, stack).
+  - M3-04c slice 4 (was 3; renumbered after the restyle took 3) (2026-11-23, written before starting): badges, then
+    attachments, two PRs. The slices after it are now 5 zones, 6 the stack, 7 finishing. The badges are re-sited for
+    the frameless tile (the name now runs along the bottom left): keyword icons as small round icons at the top left,
+    as the reference app's hexproof icon; counters as a small icon and count beside the P/T pill. Original plan:
     - **3a, badges on a permanent** (arena-research.md §"How permanents are drawn", owner screenshots):
       - Keyword icons in a small dark square at the bottom-left [R]: our own drawn shapes (D-140), one per keyword
         that has one (a wing for flying, a heart for lifelink, a skull for deathtouch, ...). Up to two icons; with

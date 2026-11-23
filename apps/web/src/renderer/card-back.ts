@@ -23,7 +23,7 @@ export function librarySprite(pile: LibraryPile): Container {
   }
   const text = new Text({
     text: `${pile.count}`,
-    style: { fontFamily: "system-ui, sans-serif", fontWeight: "800", fontSize: 11, fill: PALETTE.badgeText },
+    style: { fontFamily: PALETTE.sans, fontWeight: "700", fontSize: 11, fill: PALETTE.badgeText },
   });
   text.anchor.set(0.5);
   const bw = Math.max(20, text.width + 8);

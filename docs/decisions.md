@@ -2324,7 +2324,9 @@ owner's answer to the D-089 open question, option (a))
   for tests and the screenshots shown to the owner. The browser tests run at desktop size and at the folded phone in
   landscape (812×375, touch).
 
-**D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted
+**D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted, on the battlefield superseded by D-162
+- Since D-162 a permanent is a frameless art tile (`battlefield-tile.ts`); the frame and name strip below remain only
+  for a whole card's drawn fallback (hand, stack) until its image loads. The rest (row sizing, piles) still holds.
 - The owner asked for cards closer to Arena's (ui.md, "The cards"). A permanent is a wide art card (1.2 wide to 1
   tall): a bevelled frame in its colour with a drop shadow, a light name strip with dark serif text and the card's
   colours as glyphs, the art filling the rest, power/toughness in a pill at the bottom centre, a raised number blue
@@ -2486,3 +2488,14 @@ owner's answer to the D-089 open question, option (a))
   colours, no Arena assets) is unchanged, and so is not copying the other app's assets: we take its restraint, not its
   pixels.
 
+
+**D-163: Inter as the app's one typeface (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, on the first minimal tiles: "the font style doesn't match the reference" (ui.md, "The font"). The
+  reference uses a clean, even sans-serif at a regular weight. System fonts differ by device (and a squeezed system
+  font read as condensed), so the app bundles one: Inter, by Rasmus Andersson, SIL Open Font License 1.1.
+- New runtime dependency: `@fontsource-variable/inter` 5.3.0 (pinned). Only its Latin variable file is used (48 KB,
+  `app/font.ts`, loaded with the FontFace API), so the service worker's offline cache stays small. The app waits up to
+  1.5 s for it before the first draw, since the board's canvas measures text as it draws.
+- Used by the HUD (`:root`) and by everything the board draws in text (`PALETTE.sans`), except a whole card's drawn
+  fallback, which keeps its printed-card serif until the real image loads over it.
+- A permanent's name is never squeezed sideways (letters at their natural width); it shrinks to fit beside the P/T.

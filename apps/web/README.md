@@ -47,8 +47,9 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   large; a mouse resting on a card previews it. `swallow-click.ts`: stops the click a drag's or a long-press's release
   fires, so neither also counts as a tap.
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
-  component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `card-face.ts` (a card's face:
-  frame, art window, name strip, power/toughness), `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
+  component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `battlefield-tile.ts` (a permanent:
+  its art only, name over a fade, power/toughness pill, D-162), `card-face.ts` (a whole card off the battlefield: frame,
+  name strip, art, text, until its image loads), `face.ts`, `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
   badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
   `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
   (and `window.__artShown()`) in development and test builds.

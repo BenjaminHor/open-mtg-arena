@@ -26,7 +26,13 @@ the card's colour with a light inner rim and a drop shadow on the table; a light
 serif text; the art filling the rest; power/toughness in a small light pill at the bottom centre, over the frame's
 edge, its numbers coloured when changed; keyword badges at the bottom-left corner; identical tokens piled with an "x4"
 count above the pile; a tapped card tilted, darkened and marked with a large curved arrow. The table is a warm,
-textured playmat, not a flat colour.
+textured playmat, not a flat colour. **Superseded on the battlefield by D-162 (minimal and clean, below):** a permanent
+is now its art only, its name in white over a dark fade at the bottom left, power/toughness in a small dark pill at the
+bottom right, on a flat dark table; the layout, piles, tilt and tap mark stay. **Name and P/T on one line (owner,
+2026-11-23):** "the card name and power/toughness should be on the same line if that makes sense, look at the reference
+screenshots i sent." The name always sits on the pill's line, shrinking to fit beside it; it never moves above it. **The font (owner,
+2026-11-23):** "the font style doesn't match the reference." The reference's text is a clean, even sans-serif at a
+regular weight, letters at their natural width (not squeezed), on the cards and in the HUD alike.
 
 **Tapped lands in a pile (owner, 2026-11-23):** "when there's a stack of cards like lands, tapping a subset of them
 just taps them within the stack visually. I think if they're tapped then they should be on top of the visual stack if
@@ -120,6 +126,11 @@ portrait and the life total; the ladder sits on a curved rail around it), never 
 **Never color alone**
 - Magic is full of color, so nothing in the UI may rely on color by itself. Playable cards, valid targets, selected
   cards, attackers and blockers, and whose turn it is also differ by shape, outline, icon, motion or label.
+- A permanent's colours (D-162): its art shows them, and the card view says them in words; with no art (a token,
+  offline) its tile is filled in its colour and carries its colours' glyphs. Its name strip's colour glyphs went with
+  the strip.
+- States differ by shape too: playable is a thin solid outline, a pick a thicker one with its combat badge, attackers
+  and blockers carry swords or a shield, a tapped card the curved arrow.
 - Mana symbols always use their symbol shapes, not just colored dots. Check screenshots with a colorblindness
   simulation (for example the browser dev tools' vision deficiency emulation) for the main board states.
 

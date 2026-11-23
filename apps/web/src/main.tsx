@@ -5,13 +5,17 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App.tsx";
 import "./app/app.css";
+import { loadFont } from "./app/font.ts";
 
 const root = document.getElementById("root");
 if (root === null) throw new Error("index.html has no #root");
-createRoot(root).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+// The board draws its text in the app's font, so the font comes first (font.ts).
+void loadFont().then(() =>
+  createRoot(root).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  ),
 );
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {

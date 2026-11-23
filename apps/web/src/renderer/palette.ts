@@ -9,6 +9,8 @@ export const PALETTE = {
   parchment: 0xeee8d8,
   ink: 0x1d1a16,
   serif: "Georgia, 'Times New Roman', 'DejaVu Serif', serif",
+  /** The app's typeface (app/font.ts), for everything drawn on the board but a whole card's printed text. */
+  sans: "Inter, system-ui, sans-serif",
   artless: 0x1b1f27,
   raised: 0x1f5fbf,
   lowered: 0xc0392b,
