@@ -334,6 +334,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
+    (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
     `layout/layout-for.ts`; lands shrink before overlapping, start clear of the info block only when level with it,
     the stack capped in width; tests: test/full-layout.test.ts (eight full sizes, mutation-checked),
@@ -2317,7 +2319,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   those are the two biggest things. we would save a ton of time and would be able to get started on the higher value
   initiatives like an LLM powered opponent and the single player RPG or rogue like". So the evaluation is of those
   two: phase's rules engine, and its client for a match against the AI, as the base for the LLM opponent and a
-  single-player RPG or roguelike (vision.md).
+  single-player RPG or roguelike (vision.md). Evaluated (2026-11-23): `docs/phase-rs-evaluation.md`, three options
+  for the owner; waiting on their choice, and on them playing phase-rs.dev on their phone. No new client work until
+  it's decided.
 
 - (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
   from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of
