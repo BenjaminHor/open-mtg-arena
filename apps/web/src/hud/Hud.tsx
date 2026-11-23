@@ -170,7 +170,8 @@ export function Hud(props: HudProps) {
         setFullControl={props.setFullControl}
       />
       {/* Over everything else: what's being looked at. */}
-      {props.banner !== null && (
+      {/* Not over a finished game: the result says what matters then. */}
+      {props.banner !== null && result === null && (
         // At the middle of the open table, over nothing a tap needs; read out once by a screen reader.
         <p
           className="turn-banner"
