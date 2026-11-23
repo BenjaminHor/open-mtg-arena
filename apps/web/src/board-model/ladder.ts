@@ -3,13 +3,15 @@
 // during combat it opens into its steps (CR 506.1): a sword for attackers, a shield for blockers, a burst for damage.
 // On the opponent's turn their ladder is at the top centre, the same rungs.
 
-import type { Step } from "@mtg/engine";
+import type { PlayerId, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import type { Rect } from "./board-model.ts";
 
 export type LadderIconKind = "cap" | "card" | "swords" | "sword" | "shield" | "burst";
 export type LadderIcon = { key: string; icon: LadderIconKind; label: string; lit: boolean; rect: Rect };
 export type Ladder = { icons: LadderIcon[]; pills: Rect[] };
+/** Where the ladder lights: a step, and whose turn (which ladder shows it). */
+export type LadderPlace = { step: Step; activePlayer: PlayerId };
 
 type Rung = { key: string; icon: LadderIconKind; label: string; steps: readonly Step[] };
 
@@ -32,15 +34,6 @@ const COMBAT_STEPS: Rung[] = [
 
 export function inCombat(step: Step): boolean {
   return COMBAT.steps.includes(step);
-}
-
-/**
- * The rung of the short ladder a step lights: the turn's phases (CR 500.1), combat as one. The ladder walks through
- * these as the game passes them (D-175).
- */
-export function phaseRung(step: Step): string {
-  const rung = [BEGINNING, MAIN1, COMBAT, MAIN2, END].find((r) => r.steps.includes(step));
-  return rung?.key ?? step;
 }
 
 /** The rungs drawn: combat opens into its steps while the game rests in it; a walk passing through keeps it short. */

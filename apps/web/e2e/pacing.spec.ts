@@ -94,6 +94,10 @@ test("walks the phase ladder through each phase passed, never jumping one", asyn
     ["Attackers", "Blockers", "Damage", "End of combat"].includes(label) ? 2 : phases.indexOf(label);
   const order = lit.map(phase).filter((p, i, all) => i === 0 || p !== all[i - 1]);
   expect(order.length).toBeGreaterThan(4);
-  for (let i = 1; i < order.length; i++)
-    expect([order[i - 1], order[i]]).toEqual([order[i - 1], ((order[i - 1] ?? 0) + 1) % 5]);
+  // Each change goes to the next phase, or to a new turn's beginning (the turn's banner marks that change, D-175).
+  const jumps = order.flatMap((p, i) => {
+    const was = order[i - 1];
+    return i === 0 || was === undefined || p === (was + 1) % 5 || p === 0 ? [] : [`${phases[was]} to ${phases[p]}`];
+  });
+  expect(jumps).toEqual([]);
 });

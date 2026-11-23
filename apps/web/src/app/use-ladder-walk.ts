@@ -1,10 +1,11 @@
 // Walks the phase ladder through the phases a new view passed (D-175, `interaction/ladder-walk.ts`): each lit a
 // moment, then the view's own step. Within a held frame the walk fits its hold, so it never runs into the next frame;
-// at the person's decision it runs while they act, holding nothing up. At instant pace (tests) there's no walk.
+// at the person's decision it runs while they act, holding nothing up. A view arriving mid-walk carries on from the
+// phase lit then, through what was left. At instant pace (tests) there's no walk.
 
 import type { SeatView, ViewEvent } from "@mtg/engine";
 import { useEffect, useState } from "react";
-import { ladderWalk, type TurnPlace, WALK_MS } from "../interaction/ladder-walk.ts";
+import { ladderWalk, type TurnPlace, walkStepMs } from "../interaction/ladder-walk.ts";
 import type { Pace } from "./use-playback.ts";
 
 type Walk = { drawn: SeatView | null; places: TurnPlace[]; index: number };
@@ -17,17 +18,20 @@ export function useLadderWalk(
   pace: Pace,
 ): TurnPlace | null {
   const [walk, setWalk] = useState<Walk>({ drawn: null, places: [], index: 0 });
-  // A new view starts its walk in the same render it's drawn in (React's state from props pattern), so the ladder never
+  // A new view starts its walk in the same render it's drawn in (React's state-from-props pattern), so the ladder never
   // shows the view's own step for a frame before walking back to the first phase passed.
   let current = walk;
   if (drawn !== walk.drawn) {
-    const from = walk.drawn === null ? null : placeOf(walk.drawn);
-    const places = pace === "instant" || drawn === null ? [] : ladderWalk(events, from, placeOf(drawn));
+    const rest = walk.drawn === null ? null : placeOf(walk.drawn);
+    const lit = walk.places[walk.index] ?? rest;
+    // Cut short: what it hadn't reached yet, then the old view's own phase, come first.
+    const pending =
+      walk.index < walk.places.length && rest !== null ? [...walk.places.slice(walk.index + 1), rest] : [];
+    const places = pace === "instant" || drawn === null ? [] : ladderWalk(events, lit, placeOf(drawn), pending);
     current = { drawn, places, index: 0 };
     setWalk(current);
   }
-  // Each phase a moment; in a held frame, the whole walk and its resting step share the hold.
-  const ms = holdMs > 0 ? Math.min(WALK_MS, holdMs / (current.places.length + 1)) : WALK_MS;
+  const ms = walkStepMs(holdMs, current.places.length);
   useEffect(() => {
     if (walk.index >= walk.places.length) return;
     const next = setTimeout(() => setWalk((w) => (w === walk ? { ...w, index: w.index + 1 } : w)), ms);
@@ -38,5 +42,5 @@ export function useLadderWalk(
 
 function placeOf(view: SeatView): TurnPlace | null {
   const turn = view.view.turn;
-  return turn === null ? null : { step: turn.step, activePlayer: turn.activePlayer };
+  return turn === null ? null : { turn: turn.number, step: turn.step, activePlayer: turn.activePlayer };
 }

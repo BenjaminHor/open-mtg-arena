@@ -2753,17 +2753,26 @@ owner's answer to the D-089 open question, option (a))
 **D-175: The phase ladder walks through each phase passed (owner, 2026-11-23)** · 2026-11-23 · accepted
 - The owner, asked what Arena does (research hadn't found it): "it steps through each phase as it passes - we should
   avoid immediate jumps between the "main" phases - this probably would be largely solved with animations".
-- Built: when a new view is drawn (a held frame of the host's run, or the reply's own view), the ladder lights each
-  phase the game passed on the way, one after another, then the view's own step (`interaction/ladder-walk.ts`, pure,
-  from the STEP_BEGAN events that led to the view; `app/use-ladder-walk.ts` times it; `ui.ladderAt` in the board
-  model). A phase is a rung of the short ladder (the beginning phase's three steps light "Beginning" once; CR 500.1);
-  across a turn it's the end of one player's turn, then the beginning of the next's, on their ladder.
-- 140 ms a phase [guess]; inside a held frame the walk shares the frame's hold, so it never runs into the next frame;
-  at the person's decision it runs while they act, holding nothing up. The lit rung eases between rungs (120 ms, none
-  with reduced motion). While walking, the ladder stays short (combat one rung), so it doesn't open and close as it
-  passes through combat. At instant pace (tests) there's no walk.
-- An e2e watches every change of the lit rung through the opponent's first turn and the start of the person's, and
-  checks each goes to the next phase (mutation-checked: with the walk off it fails).
+- Built in two parts:
+  - The opponent's turn: each new phase of it (main 1, combat, main 2, end; its beginning is held as the new turn) is
+    a frame of its own, held 150 ms [guess] (`interaction/pacing.ts`, `HOLD.phase`), so their ladder steps through
+    each on their turn's screen. A quiet opponent turn takes about 0.6 s longer.
+  - Every new view (a held frame, or the reply's own view): the ladder lights each phase passed on the way to the
+    view's step (`interaction/ladder-walk.ts`, pure, from the STEP_BEGAN events that led to it; `app/use-ladder-walk.ts`
+    times it; `ui.ladderAt` in the board model). Phases, not steps: the beginning phase's three steps light
+    "Beginning" once (CR 500.1). 140 ms a phase [guess]; inside a held frame the walk shares the frame's hold; at the
+    person's decision it runs while they act. The lit rung eases (120 ms, none with reduced motion); the ladder stays
+    short while walking, so combat doesn't open and close as it's passed. None at instant pace (tests).
+- After the code review: the walk lights only the turn the view shows (its banner, turn marker and controls already
+  say whose turn it is, and the ladder never says otherwise; a turn's change is marked by its banner, and the
+  opponent's phases are walked on their own turn's frames, above). A view arriving mid-walk carries on from the phase
+  lit then, through what was left. After Skip there's no walk: it jumps, as asked. The engine's `phaseOf` decides
+  what's a phase.
+- Tests: `test/ladder-walk.test.ts` (combat passed with no attack, a whole turn, only the shown turn, an extra turn
+  (CR 500.7), a walk cut short, the step time, the board model lighting the walked phase on whose ladder),
+  `test/pacing.test.ts` (the phase hold); an e2e watches every change of the lit rung through the opponent's first
+  turn and the start of the person's, and checks each goes to the next phase or a new turn's beginning
+  (mutation-checked: with the walk off, or without the phase holds, it fails).
 - Future impact: M3-07's animation director can drive the same walk from its own clock; the walk reads only events,
   so extra turns (CR 500.7) and skipped steps (CR 508.8) walk as the engine played them.
 

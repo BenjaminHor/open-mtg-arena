@@ -12,7 +12,7 @@ import { battlefieldCards } from "./battlefield.ts";
 import { withCombat } from "./combat.ts";
 import { handCards } from "./hand.ts";
 import { cardBacks } from "./hidden-cards.ts";
-import { type Ladder, ladderAtTop, ladderOver } from "./ladder.ts";
+import { type Ladder, type LadderPlace, ladderAtTop, ladderOver } from "./ladder.ts";
 import { withPicks } from "./picks.ts";
 import { playableIds, targetIds } from "./playable.ts";
 import { tapRegions } from "./regions.ts";
@@ -178,7 +178,7 @@ export type BoardUi = {
   /** The person made the large stack small (a tap on it, as Arena's collapse tab [R]): drawn as while choosing. */
   stackSmall?: boolean;
   /** Where the phase ladder lights while it walks through the phases passed (D-175), instead of the view's step. */
-  ladderAt?: { step: Step; activePlayer: PlayerId } | null;
+  ladderAt?: LadderPlace | null;
 };
 
 export function boardModel(
