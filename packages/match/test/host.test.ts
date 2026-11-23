@@ -4,6 +4,7 @@ import { DECKS, type DeckList } from "@mtg/cards";
 import { describe, expect, it } from "vitest";
 import {
   advance,
+  advanceOne,
   DEFAULT_SETTINGS,
   deckGameSetup,
   type MatchState,
@@ -53,6 +54,23 @@ describe("agent seats", () => {
     const once = advance(start, cards);
     expect(once.seats.p1).not.toStrictEqual(start.seats.p1);
     expect(advance(start, cards)).toStrictEqual(once);
+  });
+});
+
+describe("one host action at a time", () => {
+  it("reaches what `advance` does, one action each step, and stops where a person decides", () => {
+    const setup = deckGameSetup([DECKS["white-soldiers"] as DeckList, DECKS["red-green-beats"] as DeckList], 3, "p1");
+    const start = startMatch(setup, { p1: { kind: "agent", agent: "random", random: 5 }, p2: human }, cards);
+    let stepped = start;
+    let steps = 0;
+    for (let next = advanceOne(stepped, cards); next !== null; next = advanceOne(stepped, cards)) {
+      expect(next.actions.length).toBe(stepped.actions.length + 1);
+      stepped = next;
+      steps++;
+    }
+    expect(steps).toBeGreaterThan(0);
+    expect(stepped).toStrictEqual(advance(start, cards));
+    expect(advanceOne(stepped, cards)).toBeNull();
   });
 });
 

@@ -51,6 +51,11 @@ type HudProps = {
   closeInspected: () => void;
   /** Makes the large stack small or large again; null while it's small to choose for it. */
   toggleStack: (() => void) | null;
+  /** A frame of what the host did is on screen (D-172): the main button skips to the end instead. */
+  playing: boolean;
+  skip: () => void;
+  /** What the frame on screen shows, in words, while one holds; else null. */
+  line: string | null;
   /** The zone browser, if open: whose zones and which tab (`ZoneBrowser.tsx`). */
   browsing: Browsing | null;
   browse: (browsing: Browsing | null) => void;
@@ -114,26 +119,42 @@ export function Hud(props: HudProps) {
       ) : (
         <PhaseLadder ladder={anchors.opponentLadder} label="Opponent's turn" />
       )}
-      {!button.hidden && (
+      {/* While what the host did plays (D-172), the one button skips to the end: nothing else is pressed meanwhile. */}
+      {props.playing ? (
         <button
+          // Not the same element as the main button: a press on Skip as playback ends mustn't land on what replaced it.
+          key="skip"
           type="button"
-          // In full control the button turns blue-violet, as Arena's does [R], so it's plain the game won't pass for you.
-          className={`main-button${button.action === null ? " waiting" : ""}${props.fullControl ? " full-control" : ""}`}
+          className="main-button skip"
           style={place(anchors.mainButton)}
-          // Disabled only when it has nothing to do; while an action is on its way it keeps focus (aria-disabled).
-          disabled={button.action === null}
-          aria-disabled={busy}
-          onClick={() => button.action !== null && !busy && act(button.action, true)}
+          aria-label="Skip to your decision"
+          onClick={props.skip}
         >
-          <span className="main-label">{button.label}</span>
-          {button.detail !== null && (
-            <span className="main-detail" style={{ fontSize: detailSize(button.detail, anchors.mainButton.width) }}>
-              {button.detail}
-            </span>
-          )}
+          <span className="main-label">Skip</span>
         </button>
+      ) : (
+        !button.hidden && (
+          <button
+            key="main"
+            type="button"
+            // In full control the button turns blue-violet, as Arena's does [R], so it's plain the game won't pass for you.
+            className={`main-button${button.action === null ? " waiting" : ""}${props.fullControl ? " full-control" : ""}`}
+            style={place(anchors.mainButton)}
+            // Disabled only when it has nothing to do; while an action is on its way it keeps focus (aria-disabled).
+            disabled={button.action === null}
+            aria-disabled={busy}
+            onClick={() => button.action !== null && !busy && act(button.action, true)}
+          >
+            <span className="main-label">{button.label}</span>
+            {button.detail !== null && (
+              <span className="main-detail" style={{ fontSize: detailSize(button.detail, anchors.mainButton.width) }}>
+                {button.detail}
+              </span>
+            )}
+          </button>
+        )
       )}
-      {controls.secondary.map((choice, i) => {
+      {(props.playing ? [] : controls.secondary).map((choice, i) => {
         const at = anchors.secondary[i];
         return at === undefined ? null : (
           <button
@@ -150,7 +171,7 @@ export function Hud(props: HudProps) {
       })}
       {/* The batch button always in the second slot, Undo always in the first: a tap never lands on a different action
           that just moved into the place pressed (ui.md "Never"). */}
-      {props.attackBatch !== null && anchors.secondary[1] !== undefined && (
+      {props.attackBatch !== null && !props.playing && anchors.secondary[1] !== undefined && (
         <button
           type="button"
           className="secondary-button"
@@ -163,8 +184,9 @@ export function Hud(props: HudProps) {
       )}
       <div className="prompt-anchor" style={{ left: anchors.prompt.x, top: anchors.prompt.y }}>
         <Prompt
-          prompt={controls.prompt}
-          title={deciding ? promptTitle(shown, props.selection) : null}
+          // While what the host did plays, a frame's decision isn't the person's to answer: no prompt over it.
+          prompt={props.playing ? null : controls.prompt}
+          title={deciding && !props.playing ? promptTitle(shown, props.selection) : null}
           layout={promptLayout(shown)}
           decision={view.decision?.id ?? null}
           busy={busy}
@@ -182,15 +204,31 @@ export function Hud(props: HudProps) {
       />
       {/* Over everything else: what's being looked at. */}
       {/* Not over a finished game: the result says what matters then. */}
-      {props.banner !== null && result === null && (
-        // At the middle of the open table, over nothing a tap needs; read out once by a screen reader.
+      {/* One place at the middle of the open table, over nothing a tap needs: what the frame on screen shows ("Your
+          opponent cast Lightning Bolt", D-172), else a new turn's banner; each line takes the banner's place. The
+          line shows over a game's end too, so the blow that ended it is named; read out once by a screen reader. */}
+      {props.line !== null ? (
         <p
-          className="turn-banner"
+          key={props.line}
+          className="event-line"
           role="status"
           style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}
         >
-          {props.banner}
+          {props.line}
         </p>
+      ) : (
+        props.banner !== null &&
+        result === null && (
+          <p
+            // A new element for each turn's banner, so its fade plays again.
+            key={props.banner}
+            className="turn-banner"
+            role="status"
+            style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}
+          >
+            {props.banner}
+          </p>
+        )
       )}
       {anchors.stackMore !== null && (
         <button

@@ -334,6 +334,18 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Pacing slice done (2026-11-23, D-172): the host's run shown frame by frame, a line saying what happened, Skip.**
+    `advanceOne` (packages/match), frames in the worker's reply, `interaction/pacing.ts`, `interaction/event-line.ts`,
+    `app/use-playback.ts`; tests: test/match-session.test.ts (frames, no event lost), test/pacing.test.ts,
+    packages/match/test/host.test.ts, e2e/pacing.spec.ts (normal pace, Skip, the settle moment after it). Holds are
+    guesses to tune with the owner.
+    Code review fixes (in D-172): the turn banner shows every turn again (an e2e checks it goes and comes back), the
+    settle moment at playback's end, frames without options, a turn begun by the person's own action as its own frame,
+    lines naming what moved. Left: playback's position logic as pure functions with unit tests (the hook is covered
+    only by e2e); the worker builds frames' views even at instant pace.
+    UX review fixes (in D-172): holds retuned, summed damage and token lines, playback paused while looking, the hand
+    closed when playback starts, one slot for the line and the banner, a quiet Skip. Left also: no performance trace of
+    playback; the ladder stepping question (Open questions).
   - Pacing slice plan (D-172, 2026-11-23, written before starting): "the game never jumps".
     - The match host gets a one-action step (`advanceOne`), and the worker's update loops it, keeping a frame (the
       person's seat view and the events since the last frame) after each host action worth seeing: an opponent's cast,
@@ -2233,6 +2245,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- (2026-11-23, pacing, D-172) Should the phase ladder step through each step a frame passes over (Arena lights each
+  step briefly as it passes [unverified]), or jump to where the frame is, as now? Proceeding with "jump" until the
+  owner says; their feedback on the live pacing will settle it.
 
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an

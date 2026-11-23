@@ -1158,3 +1158,30 @@ body,
   font-weight: 400;
   color: var(--muted);
 }
+
+/* What the frame on screen shows while the host's run plays (hud/Hud.tsx, D-172): in the turn banner's place, as
+   calm and as large, each line taking over from the one before. */
+.hud .event-line {
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--edge);
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 150000;
+  animation: card-view-fade 160ms ease-out;
+}
+
+/* Skip, while what happened plays (D-172): quiet, so the bright main button always means "your decision" and a tap
+   that keeps up with Skip isn't mistaken for one (UX review). */
+.hud .main-button.skip {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: var(--muted);
+  box-shadow: none;
+}

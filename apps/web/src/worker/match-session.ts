@@ -3,12 +3,14 @@
 // on it, gets an error reply and leaves the session as it was: nothing here throws.
 
 import { DECKS, type DeckList } from "@mtg/cards";
-import { type CardDatabase, type GameSetup, type PlayerId, seatView } from "@mtg/engine";
+import { type CardDatabase, type GameSetup, type PlayerId, seatView, type ViewEvent } from "@mtg/engine";
 import {
-  advance,
+  advanceOne,
   DEFAULT_SETTINGS,
   deckGameSetup,
+  HostStuck,
   type MatchState,
+  MOST_ACTIONS,
   type Seat,
   startMatch,
   submit,
@@ -16,7 +18,8 @@ import {
   waitingOn,
   withSettings,
 } from "@mtg/match";
-import type { FromWorker, ToWorker } from "./protocol.ts";
+import { worthAFrame } from "../interaction/pacing.ts";
+import type { Frame, FromWorker, ToWorker } from "./protocol.ts";
 
 /** A match in progress, and whose seat the person plays. */
 export type Session = { match: MatchState; human: PlayerId };
@@ -95,19 +98,49 @@ function startFrom(
   return update({ match: startMatch(setup, seats, cards), human }, cards);
 }
 
-/** The host acts until the person must decide; the reply is their seat's view and the events they haven't seen. */
+/** Enough frames for any one reply (a long opponent turn has a few dozen); past it, the rest fold into the last view. */
+const MOST_FRAMES = 80;
+
+/**
+ * The host acts until the person must decide; the reply is their seat's view and the events they haven't seen. On the
+ * way, a frame is kept wherever something worth a moment's look happened (`interaction/pacing.ts`): the seat view just
+ * after it and the events since the last frame, so the app can show the run in order rather than jump to its end
+ * (D-172). The frames' events and the reply's own, in order, are every event the person saw.
+ */
 function update(session: Session, cards: CardDatabase): { session: Session; reply: FromWorker } {
-  const advanced = advance(session.match, cards);
-  const { events, match } = takeEvents(advanced, session.human);
-  const shown = seatView(match.state, session.human, cards);
+  const human = session.human;
+  let match = session.match;
+  const frames: Frame[] = [];
+  let since: ViewEvent[] = [];
+  // Takes the events the person hasn't seen; keeps a frame here if they're worth a moment's look.
+  const take = (next: typeof match) => {
+    const taken = takeEvents(next, human);
+    match = taken.match;
+    since.push(...taken.events);
+    if (frames.length < MOST_FRAMES && worthAFrame(taken.events, human)) {
+      // A frame is for looking (D-172): no options, so nothing can be sent from it.
+      frames.push({ shown: { ...seatView(match.state, human, cards), options: [] }, events: since });
+      since = [];
+    }
+  };
+  // The person's own action first: one that begins a turn (keeping a hand, a discard at cleanup) is a frame of its own.
+  take(match);
+  for (let i = 0; ; i++) {
+    if (i === MOST_ACTIONS) throw new HostStuck(`the host took ${MOST_ACTIONS} actions without anyone deciding`);
+    const next = advanceOne(match, cards);
+    if (next === null) break;
+    take(next);
+  }
+  const shown = seatView(match.state, human, cards);
   return {
     session: { ...session, match },
     reply: {
       type: "update",
+      frames,
       shown,
-      events,
+      events: since,
       waitingOn: waitingOn(match, cards),
-      fullControl: match.settings[session.human]?.autoPass === false,
+      fullControl: match.settings[human]?.autoPass === false,
     },
   };
 }

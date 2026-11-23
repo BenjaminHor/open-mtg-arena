@@ -227,7 +227,9 @@ simple.
   the person's `SeatView` (D-144: their view, the derived values of what they can see, and their legal actions with
   their hints) and the events they saw, as typed plain-JSON messages (`protocol.ts`). The pending decision reaches the UI as
   `view.decision` (a `ViewDecision`), never `state.pending`, which can hold the ids of another player's hidden cards
-  and the engine's bookkeeping (D-062).
+  and the engine's bookkeeping (D-062). The host's run between two decisions comes as frames (D-172): the person's view
+  after each action worth a moment's look (no options: a frame is for looking) and the events up to it, which the app
+  plays in order before the decision (`advanceOne` steps the host one action at a time for this).
 
 ## AI (`packages/ai`)
 

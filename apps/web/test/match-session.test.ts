@@ -1,9 +1,11 @@
 // The match worker's logic (M3-03), in Node: messages in, replies out, the person's seat shown and nothing hidden.
 
 import { cardDatabase } from "@mtg/cards";
-import type { Action } from "@mtg/engine";
+import { type Action, seatView } from "@mtg/engine";
+import { advance, submit, takeEvents } from "@mtg/match";
 import { describe, expect, it } from "vitest";
 import { FIXTURE_NAMES, fixtureSetup, setupOf } from "../src/fixtures/fixtures.ts";
+import { frameHold } from "../src/interaction/pacing.ts";
 import { handle, type Session } from "../src/worker/match-session.ts";
 import type { FromWorker, ToWorker } from "../src/worker/protocol.ts";
 
@@ -117,6 +119,51 @@ describe("the match worker's session", () => {
       );
       session = next.session;
       reply = next.reply;
+    }
+  });
+});
+
+describe("frames: what happened on the way to the person's next decision (D-172)", () => {
+  // The seeded game, the person passing every priority: the AI's turns come back as frames.
+  function playPassing(turns: number) {
+    const replies: Extract<FromWorker, { type: "update" }>[] = [];
+    let s = handle(null, start, cards);
+    for (let i = 0; i < 200 && replies.length < turns; i++) {
+      const reply = update(s.reply);
+      replies.push(reply);
+      const option = reply.shown.options.find((o) => o.action.type === "PASS_PRIORITY") ?? reply.shown.options[0];
+      if (option === undefined || reply.shown.view.result !== null) break;
+      s = handle(s.session, { type: "act", action: option.action }, cards);
+    }
+    return replies;
+  }
+
+  it("keeps a frame at each thing worth a look the opponent did, each one held, the last view the reply's", () => {
+    const replies = playPassing(60);
+    const frames = replies.flatMap((r) => r.frames);
+    expect(frames.length).toBeGreaterThan(0);
+    for (const frame of frames) expect(frameHold(frame.events, "p1")).toBeGreaterThan(0);
+    // The opponent's own moves are among them: a land, a cast or an attack, each seen on its own.
+    const seen = new Set(frames.flatMap((f) => f.events.map((e) => e.type)));
+    expect([...seen].some((t) => t === "LAND_PLAYED" || t === "SPELL_CAST" || t === "ATTACKERS_DECLARED")).toBe(true);
+  });
+
+  it("loses no event: the frames' and the reply's, in order, are what one jump to the end would show", () => {
+    let framed = handle(null, start, cards);
+    for (let i = 0; i < 30; i++) {
+      const reply = update(framed.reply);
+      const option = reply.shown.options.find((o) => o.action.type === "PASS_PRIORITY") ?? reply.shown.options[0];
+      if (option === undefined || reply.shown.view.result !== null) break;
+      const before = framed.session;
+      framed = handle(before, { type: "act", action: option.action }, cards);
+      if (before === null || framed.session === null) throw new Error("a session");
+      // The same step taken in one jump: the host's `advance`, then every event the person hasn't seen.
+      const submitted = submit(before.match, option.action, cards);
+      if (!submitted.ok) throw new Error(submitted.error.message);
+      const jumped = takeEvents(advance(submitted.match, cards), "p1");
+      const after = update(framed.reply);
+      expect([...after.frames.flatMap((f) => f.events), ...after.events]).toStrictEqual(jumped.events);
+      expect(after.shown).toStrictEqual(seatView(jumped.match.state, "p1", cards));
     }
   });
 });

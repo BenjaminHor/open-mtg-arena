@@ -2680,6 +2680,30 @@ owner's answer to the D-089 open question, option (a))
   the phase ladder stepping, a short line saying what happened), skippable with a tap, an "instant" speed for tests.
   Arena holds each opponent stack item for a minimum time [R: 0.4 s since 2018]. It's built in a shape M3-07's
   animation director grows from (a queue of shown steps), not a throwaway.
+- Built: the match host's `advanceOne`; the worker loops it and keeps a frame (the person's seat view and the events
+  since the last) after each host action whose events hold (`interaction/pacing.ts`, one exhaustive table over every
+  event kind: an opponent's spell or ability 1 s, an attack or a block 0.9 s, an outcome 0.6 s, a trigger 0.6 s, a land
+  0.5 s, a new turn 0.7 s; the person's own choices, an opponent not attacking, an empty step: none) [guess, to tune
+  with the owner]. The app (`app/use-playback.ts`) draws each frame for its hold with a line under the turn banner
+  ("Your opponent cast Elite Vanguard", `interaction/event-line.ts`), then the reply's own view. Meanwhile no game
+  action is sent (conceding and full control still are), prompts and the small buttons stand down, looking (card
+  view, zones) works, and the main button is "Skip" (Space too); a skip starts the settle moment, so a double tap
+  doesn't also press what it uncovers. The e2e build plays at instant pace (the same path, every frame skipped);
+  `?pace=normal` or `?pace=instant` in the address picks it.
+- After the code review: each turn's banner has its own timer and element (frames once cancelled its timer and it
+  stayed up, faded, so later turns showed none); the settle moment starts whenever playback ends, on its own too, and
+  Skip and the main button are different elements, so a press meant for Skip never lands on Next; frames carry no
+  options; the person's own action that begins a turn is a frame of its own; a frame's line comes from its most telling
+  event that has one, and names an object that moved in it (a spell that resolved) from the move.
+- After the UX review: the holds retuned (an opponent's spell 1 s, a land 0.7 s, an attack or block 0.9 s, an
+  outcome 0.6 s, the opponent's new turn 1 s; the person's own turn start and their own spell resolving aren't held:
+  the banner runs while they act, and what their spell did is held itself) [guess, to tune with the owner]; several
+  hits on a player in one frame say the total ("You took 8 damage"), several tokens their count; playback pauses while
+  the person looks (the full card view, a zone browser); the hand closes when playback starts; the line and the turn
+  banner share one place at the band's centre (a line takes the banner's place), in the banner's style; Skip is a quiet
+  button, not the main button's colour. Left: playback's position logic as pure functions; the worker builds frames
+  even at instant pace; no performance trace of playback yet; whether the phase ladder should step through the steps
+  a frame skips (Open questions).
 - The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
   forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
   slice is tried through it.
