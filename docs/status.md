@@ -321,6 +321,36 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     Left from the reviews: the board model doesn't reserve the marks' room (they fit the outer column at every size
     measured); the card view over the browser is barely larger than a row card on a phone (ask the owner at the end);
     the tabs have no arrow-key movement; a settings menu left open under the sheet takes the first Escape.
+  - **Slice 5 merged (PR #107, squash, 2026-11-23).** Next: slice 6, the stack.
+  - **Slice 6 first PR done (2026-11-23, D-169): the whole stack, abilities as panels, stack details in the card
+    view.** `board-model/stack.ts` (`stackCards`, `stackMore`), `board-model/ability-text.ts` (tested over the whole
+    pool), `interaction/stack-details.ts`, a Stack tab in the zone browser for a deep stack ("All n"), a `stack` fixture,
+    test/stack.test.ts, test/ability-text.test.ts, e2e/stack.spec.ts. Test helper `playFrom` (fixture-views.ts) plays
+    the test's own actions in full control. Review fixes (code and UX, in D-169): the cascade peeks out upward
+    within the top's old block (leftward it covered creatures and took their taps), a "Stack n" button from two
+    objects, strip-sized tap regions, panel art credited and offline-safe, panels in Inter, the pool test compares exact
+    costs, `Browsing` a union, one `names.ts`. Next PR: target arrows and the collapse tap. Not done: X drawn on the
+    spell itself [R] (it's in the card view); canvas text shows "{T}" as letters (hand cards too, pre-existing).
+  - Slice 6 plan (2026-11-23, written before starting): the whole stack [R: arena-research.md §5, "The stack"]:
+    - `board-model/stack.ts` draws every object, top first: the top large at the right as now, the ones under it
+      peeking out to its left in a cascade (drawn behind it), at most four, then a count. Small while the person
+      chooses for it (as now), and small after a tap on it when it isn't theirs to act on (Arena's collapse tab: "the
+      opponent's large card hides my creatures"), until a new object tops the stack.
+    - An ability is a card-shaped panel [R: "the source's art, an 'Ability' type line, the ability text"]: its source's
+      name and art, "Triggered ability" / "Activated ability", and the ability's own text. The engine keeps no text per
+      ability, so `board-model/ability-text.ts` (pure) picks the ability's line from the source's Oracle text by its
+      `AbilityRef`, with a test over the whole pool against the definitions (counts and kinds line up); a delayed
+      trigger, a land's intrinsic mana ability and anything the test can't line up fall back to the whole text.
+    - Targets marked on the board [R: "a glowing curve from the stack item to its target"]: an arrow from the top
+      object to each of its targets (a card, or a player's info block), from `choices.targets`, computed in the board
+      model (`stackArrows`), drawn by the renderer. The others' targets are in their card views.
+    - The card view of a stack object: an ability shows its own panel (not only its source card), and every stack
+      object gets hangers for its targets, X and "copy" (UX review of slice 2).
+    - Tests first: stack model (order, cascade, count, small), ability-text over the pool, card-details hangers,
+      arrows' ends; e2e with full control: Lightning Bolt then Giant Growth in response, both drawn, arrows to their
+      targets, the collapse tap.
+    - Future impact: Arena's "Order Triggers" browser and a very large stack's full view reuse the cascade; an
+      emblem or a command-zone object would need a seat-view description first.
   - Slice 5 plan (2026-11-23, written before starting): graveyards, exile and revealed cards
     [R: arena-research.md "Library, graveyard, exile", "Zones: tapping a zone opens a browser of its known cards with
     a count"; "revealed cards are shown face up" [U]]:

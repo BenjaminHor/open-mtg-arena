@@ -79,7 +79,7 @@ describe("cardDetails", () => {
     expect(cardDetails(board, "o-unseen" as ObjectId)).toBeNull();
   });
 
-  it("shows an ability on the stack as the card it came from", () => {
+  it("shows an ability on the stack named for the card it came from", () => {
     const crowded = fixtureView("crowded");
     const top = crowded.view.zones.stack.at(-1);
     if (top === undefined) throw new Error("the crowded fixture has an ability on the stack");
@@ -137,7 +137,7 @@ describe("cardDetails", () => {
     });
   });
 
-  it("shows an ability whose source has left by the source's printed card", () => {
+  it("shows an ability whose source has left as its own panel, saying its source is no longer there", () => {
     const crowded = structuredClone(fixtureView("crowded"));
     const top = crowded.view.zones.stack.at(-1);
     const ability = top === undefined ? undefined : crowded.seen[top];
@@ -145,6 +145,7 @@ describe("cardDetails", () => {
     delete crowded.seen[ability.source];
     const shown = cardDetails(crowded, top);
     expect(shown?.name).toBe("Ajani Goldmane");
-    expect(shown?.hangers).toEqual([]);
+    expect(shown?.typeLine).toBe("Activated ability");
+    expect(shown?.hangers).toEqual([{ title: "From", text: "Its source is no longer there" }]);
   });
 });

@@ -496,6 +496,12 @@ can refer to cards the engine doesn't support yet.
 **Animations and the board UI (M3).** *Needs now:* every visible change produces an event, with the `cardId` the UI
 uses to track a card between zones.
 
+**An ability's own text (D-169).** The web app's stack panel picks an ability's line from its source's printed Oracle
+text by its `AbilityRef` index (`apps/web/src/board-model/ability-text.ts`, checked over the pool). *Watch out:* each
+of these needs its own handling there, or better, the engine carrying an ability's text on it: abilities granted by
+layer 6 (CR 613.1f) and text changes (layer 3), ability words ("Landfall — Whenever...", CR 207.2c), activated keyword
+abilities beyond Equip (Cycling), and a card with two triggers of which only one is printed on a line of its own.
+
 **Picking a card from a graveyard or exile in a browser (M3-04c slice 5, D-168).** Arena opens a browser of the cards
 to choose when a spell or ability targets or chooses a card in a graveyard [R]; ours lists them by name in the prompt.
 *Needs now:* the zone browser's card row (`hud/ZoneBrowser.tsx`) takes a click per card, so a "choose" mode can reuse

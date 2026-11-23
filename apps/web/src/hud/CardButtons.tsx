@@ -4,7 +4,7 @@
 // is drawn on the canvas.
 
 import type { ObjectId } from "@mtg/engine";
-import type { BoardModel } from "../board-model/board-model.ts";
+import type { BoardCard, BoardModel, Rect } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
 import { type InspectCallbacks, useCardInspect } from "./card-inspect.ts";
 import { type HandDragCallbacks, useHandDrag } from "./hand-drag.ts";
@@ -105,24 +105,24 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
           {cue(handDrag.dragging, again)}
         </div>
       )}
-      {/* The card on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it. */}
-      {model.cards
-        .filter((c) => c.zone === "stack")
-        .map((c) => (
-          // biome-ignore lint/a11y/noStaticElementInteractions: it only stops a tap; the card has no action of its own
-          // biome-ignore lint/a11y/useKeyWithClickEvents: nothing to do from the keyboard
-          <div
-            key={`stack-${c.id}`}
-            className="tap-shield"
-            role="img"
-            // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
-            tabIndex={0}
-            aria-label={c.name}
-            style={place(c)}
-            onClick={(e) => e.stopPropagation()}
-            {...inspectOn(c.id as ObjectId)}
-          />
-        ))}
+      {/* Each object on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it; one under
+          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. */}
+      {stackStrips(model.cards).map(({ card: c, rect }) => (
+        // biome-ignore lint/a11y/noStaticElementInteractions: it only stops a tap; the card has no action of its own
+        // biome-ignore lint/a11y/useKeyWithClickEvents: nothing to do from the keyboard
+        <div
+          key={`stack-${c.id}`}
+          className="tap-shield"
+          role="img"
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
+          tabIndex={0}
+          // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
+          aria-label={c.ability ? `${c.name} ability` : c.name}
+          style={place(rect)}
+          onClick={(e) => e.stopPropagation()}
+          {...inspectOn(c.id as ObjectId)}
+        />
+      ))}
     </div>
   );
 }
@@ -162,4 +162,14 @@ function cue(dragging: { armed: boolean } | null, tap: Controls["cards"][ObjectI
   if (tap?.kind === "menu") return dragging.armed ? "Release to choose" : "Drag up to choose";
   if (verb === null) return "Can't play it now";
   return dragging.armed ? `Release to ${verb}` : `Drag up to ${verb}`;
+}
+
+/** The stack's objects, each with the part of it that shows: the top whole, each one under it to the next one's edge. */
+function stackStrips(cards: readonly BoardCard[]): { card: BoardCard; rect: Rect }[] {
+  const stack = cards.filter((c) => c.zone === "stack");
+  return stack.map((card, i) => {
+    const above = stack[i + 1];
+    const height = above === undefined ? card.height : Math.max(0, above.y - card.y);
+    return { card, rect: { x: card.x, y: card.y, width: card.width, height } };
+  });
 }

@@ -388,12 +388,13 @@ describe("the compact board model", () => {
     expect(boardModel(midGame, PHONE).cards.some((c) => c.targetable)).toBe(false);
   });
 
-  it("shows what's on top of the stack, large at the right: an ability as the card it came from", () => {
+  it("shows what's on top of the stack, large at the right: an ability as a panel named for its source", () => {
     const top = crowded.view.zones.stack.at(-1);
     const stack = boardModel(crowded, PHONE).cards.filter((c) => c.zone === "stack");
     expect(stack.map((c) => c.id)).toEqual(top === undefined ? [] : [top]);
     if (top !== undefined) {
-      expect(stack[0]?.name).toBe("Ajani Goldmane ability");
+      expect(stack[0]?.name).toBe("Ajani Goldmane");
+      expect(stack[0]?.typeLine).toBe("Activated ability");
       expect((stack[0]?.x ?? 0) > PHONE.width / 2).toBe(true);
     }
   });

@@ -27,7 +27,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   anchors (ui.md, "Board structure"). `battlefield.ts` (the rows), `piles.ts` and `land-slots.ts` (piles of permanents
   that look the same), `combat.ts` (attackers step forward, blockers under their attackers, D-154), `picks.ts` (the
   declaration under way), `playable.ts` (what can be played now, from the options), `hand.ts` (collapsed and open),
-  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `stack.ts` (the stack's top),
+  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `stack.ts` (the whole stack, an ability as a panel), `ability-text.ts` (an ability's own line of its card's text),
   `regions.ts` (where a tap lands), `badges.ts` (a permanent's keyword icons, counters, loyalty, sickness),
   `attachments.ts` (Auras and Equipment beside their host),
   `board-card.ts`, `card-info.ts`
@@ -40,7 +40,8 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   ranks matches. `ability-label.ts`: an activated ability's short label ("Add {G}", "+2"). `all-attack.ts`: All
   Attack's picks, one at a time (the engine has no "all" action). `card-details.ts`: what the card view shows, a card's
   text and image and the hangers beside it (keyword reminders, counters, damage, what's attached, who controls it).
-  `zones.ts`: each player's zones as the person may see them, the counts and the zone browser's tabs (D-168).
+  `zones.ts`: each player's zones as the person may see them, the counts and the zone browser's tabs (D-168), and the
+  whole stack's. `stack-details.ts`: what the card view adds for a stack object (an ability's own panel, targets, X).
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
   (`CardButtons.tsx`), each player's info in a left corner (`PlayerInfo.tsx`: life and zone counts, targetable as a
   player, a tap or a long-press opening their zones, and what of theirs is revealed beside it), the zone browser
@@ -59,7 +60,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
   `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
   (and `window.__artShown()`) in development and test builds.
-- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`, `badges`, `attachments`, `zones`), for tests
+- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`, `badges`, `attachments`, `zones`, `stack`), for tests
   and screenshots; `setupOf` turns a board a test writes itself into a game setup.
 - `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the

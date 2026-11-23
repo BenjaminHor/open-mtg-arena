@@ -89,7 +89,7 @@ export function Hud(props: HudProps) {
         active={active === opponent}
         targets={controls.players[opponent] ?? []}
         act={act}
-        browse={(zone) => props.browse({ player: opponent, zone })}
+        browse={(zone) => props.browse({ kind: "player", player: opponent, zone })}
       />
       <PlayerInfo
         shown={shown}
@@ -99,7 +99,7 @@ export function Hud(props: HudProps) {
         active={active === me}
         targets={controls.players[me] ?? []}
         act={act}
-        browse={(zone) => props.browse({ player: me, zone })}
+        browse={(zone) => props.browse({ kind: "player", player: me, zone })}
       />
       {/* The open hand rises over where it sits; the pool is back when the hand is put down. */}
       {!props.handOpen && <ManaPoolChip pool={view.players[me]?.manaPool} above={anchors.player.mine} />}
@@ -188,11 +188,24 @@ export function Hud(props: HudProps) {
           {props.banner}
         </p>
       )}
+      {anchors.stackMore !== null && (
+        <button
+          type="button"
+          className="stack-more"
+          style={place(anchors.stackMore)}
+          aria-label={`The stack, ${view.zones.stack.length} objects: show them all`}
+          onClick={() => props.browse({ kind: "stack" })}
+        >
+          Stack {view.zones.stack.length}
+        </button>
+      )}
       {props.browsing !== null && (
         <ZoneBrowser
           shown={shown}
           browsing={props.browsing}
-          choose={(zone: ZoneName) => props.browse({ player: props.browsing?.player ?? me, zone })}
+          choose={(zone: ZoneName) => {
+            if (props.browsing?.kind === "player") props.browse({ ...props.browsing, zone });
+          }}
           close={() => props.browse(null)}
         />
       )}

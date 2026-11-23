@@ -63,6 +63,14 @@ export function browserTabs(shown: SeatView, player: PlayerId): BrowserTab[] {
   ];
 }
 
+/**
+ * The whole stack, its top first (CR 405.2: the last put there): the board draws only the top few, so a deep stack is
+ * read here (D-169).
+ */
+export function stackCards(shown: SeatView): ZoneCard[] {
+  return objects(shown, [...shown.view.zones.stack].reverse());
+}
+
 /** The cards of one zone of a player's, in the order the browser shows them. */
 export function zoneCards(shown: SeatView, player: PlayerId, zone: ZoneName): ZoneCard[] {
   const own = shown.view.zones.players[player];
@@ -92,15 +100,17 @@ export function zoneCards(shown: SeatView, player: PlayerId, zone: ZoneName): Zo
 function objects(shown: SeatView, ids: readonly ObjectId[]): ZoneCard[] {
   return ids.flatMap((id) => {
     const seen = shown.seen[id];
-    if (seen?.kind !== "card") return [];
-    const info = cardInfo(seen.oracleId);
+    if (seen === undefined) return [];
+    // An ability (on the stack) is shown as its panel, named for its source, with the source's art.
+    const oracleId = seen.kind === "card" ? seen.oracleId : seen.sourceOracleId;
+    const info = cardInfo(oracleId);
     return [
       {
         key: id,
         id,
-        oracleId: seen.oracleId,
-        name: seen.characteristics.name,
-        image: info?.image ?? null,
+        oracleId,
+        name: seen.kind === "card" ? seen.characteristics.name : `${info?.name ?? "An"} ability`,
+        image: seen.kind === "card" ? (info?.image ?? null) : null,
         art: info?.artCrop ?? null,
       },
     ];

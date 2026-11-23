@@ -733,6 +733,31 @@ body,
   font-weight: 700;
   font-size: 16px;
 }
+/* An ability panel's art in the text card: specific enough to beat the whole-card image rules. */
+.card-view-card .card-view-text img.card-view-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0 0 6px;
+}
+/* Until it has loaded: no box, no broken image. */
+.card-view-card .card-view-text img.card-view-art.loading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+/* The art's artist, credited beside a crop of it (data-sources.md). */
+.card-view-text .card-view-credit {
+  margin: -3px 0 6px;
+  font-size: 10px;
+  font-style: italic;
+  color: #5b554a;
+}
 .card-view-type {
   border-top: 1px solid #9c9584;
   border-bottom: 1px solid #9c9584;
@@ -871,6 +896,7 @@ body,
   scroll-padding: 0 12px;
 }
 .zone-row li {
+  position: relative;
   flex: none;
   scroll-snap-align: start;
   /* A long graveyard draws only the cards near the view. */
@@ -1046,4 +1072,36 @@ body,
 }
 .zone-card:active {
   filter: brightness(1.15);
+}
+
+/* Under the stack's top object when more is on it than the board draws (hud/Hud.tsx): the whole stack in the browser. */
+.hud .stack-more {
+  z-index: 100001;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 12px;
+  font-weight: 500;
+}
+/* A 44 px tap height without a taller button. */
+.hud .stack-more::before {
+  content: "";
+  position: absolute;
+  inset: -7px 0;
+}
+
+/* The stack browser's first card resolves next: said on it, not left to the order. */
+.zone-next {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
 }

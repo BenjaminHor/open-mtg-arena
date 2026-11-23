@@ -47,6 +47,7 @@ export function boardCard(
     land: c.types.includes("land"),
     artifact: c.types.includes("artifact"),
     token: card.token,
+    ability: false,
     art: (zone === "battlefield" ? info?.artCrop : info?.image) ?? null,
     // A hand card is drawn whole (ui.md, "Hand cards are whole cards"); a permanent shows its art and name.
     typeLine: zone === "battlefield" ? "" : (info?.typeLine ?? ""),
