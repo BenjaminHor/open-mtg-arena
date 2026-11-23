@@ -21,8 +21,14 @@ export function drawFace(card: BoardCard): Face {
   const color = frameColor(card);
   const radius = Math.min(w, h) * 0.07;
   const border = Math.max(3, Math.min(w, h) * 0.07);
-  // A target (a spell a counterspell can target): the dashed outline a targetable permanent has (D-162).
-  if (card.targetable) face.addChild(dashed(w + 4, h + 4, PALETTE.playable, 2));
+  // A target (a spell a counterspell can target): the dashed outline a targetable permanent has (D-162), around the part
+  // of it that shows (its name strip, under the stack's top), never down the sides of the card over it.
+  if (card.targetable) {
+    const shows = card.shows?.height ?? h;
+    const outline = dashed(w + 4, shows + 4, PALETTE.playable, 2);
+    outline.position.set(0, -h / 2 + shows / 2);
+    face.addChild(outline);
+  }
   // Playable: a thin bright outline, as a permanent's (D-162).
   else if (card.playable) {
     face.addChild(

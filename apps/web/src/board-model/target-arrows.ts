@@ -17,10 +17,11 @@ export function targetArrows(shown: SeatView, cards: readonly BoardCard[], overl
   const top = stack.at(-1);
   if (top === undefined) return [];
   const object = shown.seen[top.id];
-  const targets = object?.choices?.targets.flat() ?? [];
+  // The same object chosen for two "target" words (CR 115.3) is one arrow.
+  const targets = [...new Map((object?.choices?.targets.flat() ?? []).map((t) => [JSON.stringify(t), t])).values()];
   const from = { x: top.x, y: top.y + top.height / 2 };
   return targets.flatMap((target) => {
-    const to = targetPoint(shown, target, cards, stack, overlay);
+    const to = targetPoint(shown, target, cards, overlay);
     return to === null ? [] : [{ from, to }];
   });
 }
@@ -29,23 +30,23 @@ function targetPoint(
   shown: SeatView,
   target: Target,
   cards: readonly BoardCard[],
-  stack: readonly BoardCard[],
   overlay: OverlayAnchors,
 ): Point | null {
   if (target.kind === "player") {
-    return centre(target.player === shown.player ? overlay.player.mine : overlay.player.opponent);
+    // The edge of their info block facing the board, so the life total isn't under the arrowhead. Two players for now:
+    // later, with more (CR 800), the block found by player id.
+    const block = target.player === shown.player ? overlay.player.mine : overlay.player.opponent;
+    return { x: block.x + block.width, y: block.y + block.height / 2 };
   }
   const card = cards.find((c) => c.id === target.object);
   if (card === undefined) return null;
-  if (card.zone === "stack") {
-    // An object under the top shows only its strip, up to the next one's edge.
-    const above = stack[stack.indexOf(card) + 1];
-    if (above === undefined) return null;
-    return { x: card.x + card.width / 2, y: card.y + (above.y - card.y) / 2 };
-  }
-  // A card behind a pile's front is drawn under it: the arrow goes to the front, where it's seen.
+  // An object under the stack's top shows only its name strip: the arrow ends at the strip's left edge, so it runs up
+  // beside the stack rather than across the face of what's on top.
+  if (card.zone === "stack") return card.shows === null ? null : { x: card.x, y: card.shows.y + card.shows.height / 2 };
+  // A card behind a pile's front is drawn under it: the arrow goes to the front, where it's seen. An Aura beside its
+  // host shows its left edge only: the arrow goes there, not onto the host.
   const shownAt = card.behind ? (cards.find((c) => c.id === card.pileOf) ?? card) : card;
-  return centre(shownAt);
+  return centre(shownAt.shows ?? shownAt);
 }
 
 function centre(r: Rect): Point {

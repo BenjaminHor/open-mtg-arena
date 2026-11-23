@@ -99,6 +99,11 @@ export type BoardCard = {
   badges: Badges;
   /** How many Auras and Equipment sit beside it (`attachments.ts`): its link mark shows when there are any. */
   attachments: number;
+  /**
+   * The part of it that shows, when another card covers the rest (an object under the stack's top shows its name strip,
+   * an Aura beside its host its left edge); null when it shows whole. Its outline, a target arrow and its tap go there.
+   */
+  shows: Rect | null;
 };
 
 /** A face-down card the person can't see: one of the opponent's hand (CR 402.3). */

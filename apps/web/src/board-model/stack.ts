@@ -36,15 +36,25 @@ export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout, sma
   const height = block.height - under * peek;
   const width = height * layout.ratio.hand;
   const x = Math.min(block.x, area.x + area.width - 8 - width);
-  // Top first, then down the stack, as far as is drawn.
+  // Top first, then down the stack, as far as is drawn; each one under the top shows its strip, up to the next one.
   const drawn = [...stack]
     .reverse()
     .slice(0, under + 1)
     .flatMap((id, depth) => {
-      const card = stackObject(shown, id, { x, y: block.y + (under - depth) * peek, width, height });
-      return card === null ? [] : [card];
+      const y = block.y + (under - depth) * peek;
+      const card = stackObject(shown, id, { x, y, width, height });
+      if (card === null) return [];
+      return [depth === 0 ? card : { ...card, shows: { x, y, width, height: peek } }];
     });
   return drawn.reverse();
+}
+
+/**
+ * Whether the stack is drawn small: the person made it small for the object on top then (D-170). A new object on top
+ * shows large again; the old one coming back to the top shows as it was left.
+ */
+export function stackIsSmall(shown: SeatView, smallFor: ObjectId | null): boolean {
+  return smallFor !== null && shown.view.zones.stack.at(-1) === smallFor;
 }
 
 /**
@@ -127,5 +137,6 @@ function abilityPanel(shown: SeatView, ability: SeenAbility, rect: Rect): BoardC
     pileCount: null,
     badges: NO_BADGES,
     attachments: 0,
+    shows: null,
   };
 }

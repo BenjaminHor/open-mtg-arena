@@ -290,18 +290,24 @@ body,
   border-radius: 6px;
 }
 
+.hud .tap-shield[aria-disabled="true"] {
+  cursor: default;
+}
 .hud .tap-shield {
   margin: 0;
   padding: 0;
   border: none;
+  border-radius: 6px;
   background: none;
+  cursor: pointer;
   pointer-events: auto;
   z-index: 100000;
 }
 
 /* Held: the press shows at once (ui.md: feedback within 100 ms), on a card a tap acts on or one only looked at. */
 .hud .tap-region:active,
-.hud .inspect-region:active {
+.hud .inspect-region:active,
+.hud .tap-shield:not([aria-disabled="true"]):active {
   background: rgba(255, 255, 255, 0.12);
 }
 

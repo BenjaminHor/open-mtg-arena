@@ -4,7 +4,7 @@
 // is drawn on the canvas.
 
 import type { ObjectId } from "@mtg/engine";
-import type { BoardCard, BoardModel, Rect } from "../board-model/board-model.ts";
+import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
 import { type InspectCallbacks, useCardInspect } from "./card-inspect.ts";
 import { type HandDragCallbacks, useHandDrag } from "./hand-drag.ts";
@@ -26,11 +26,11 @@ type Props = {
   /** The card view (`card-inspect.ts`): open it for a card, or close a hover's preview. */
   inspect: InspectCallbacks;
   /** Makes the large stack small, or large again (Arena's collapse tab [R]); null while it's small to choose for it. */
-  onStack: (() => void) | null;
+  toggleStack: (() => void) | null;
 };
 
 export function CardButtons(props: Props) {
-  const { model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect, onStack } = props;
+  const { model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect, toggleStack } = props;
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
   const inspectOn = useCardInspect({
@@ -109,38 +109,30 @@ export function CardButtons(props: Props) {
         </div>
       )}
       {/* Each object on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it; one under
-          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. A tap picks it
-          when it's a target (a counterspell's); otherwise it makes the stack small, or large again [R]. */}
-      {stackStrips(model.cards).map(({ card: c, rect }) => {
-        const control = controls.cards[c.id];
-        const press = () => {
-          if (busy) return;
-          if (control !== undefined) onTap(c.id);
-          else onStack?.();
-        };
-        // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
-        const name = c.ability ? `${c.name} ability` : c.name;
-        return (
-          <button
-            type="button"
-            key={`stack-${c.id}`}
-            className={`tap-shield${control !== undefined ? " tap-region" : ""}`}
-            aria-label={
-              control !== undefined
-                ? control.label
-                : onStack === null
-                  ? name
-                  : `${name}: make the stack smaller or larger`
-            }
-            style={place(rect)}
-            onClick={(e) => {
-              e.stopPropagation();
-              press();
-            }}
-            {...inspectOn(c.id as ObjectId)}
-          />
-        );
-      })}
+          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. A tap makes the
+          stack small, or large again [R]; while it's small to choose for a spell it does nothing, and says so. A spell
+          a counterspell targets is picked in the prompt (D-170). */}
+      {model.cards
+        .filter((c) => c.zone === "stack")
+        .map((c) => {
+          // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
+          const name = c.ability ? `${c.name} ability` : c.name;
+          return (
+            <button
+              type="button"
+              key={`stack-${c.id}`}
+              className="tap-shield"
+              aria-disabled={toggleStack === null}
+              aria-label={toggleStack === null ? name : `${name}: make the stack smaller or larger`}
+              style={place(c.shows ?? c)}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleStack?.();
+              }}
+              {...inspectOn(c.id as ObjectId)}
+            />
+          );
+        })}
     </div>
   );
 }
@@ -180,14 +172,4 @@ function cue(dragging: { armed: boolean } | null, tap: Controls["cards"][ObjectI
   if (tap?.kind === "menu") return dragging.armed ? "Release to choose" : "Drag up to choose";
   if (verb === null) return "Can't play it now";
   return dragging.armed ? `Release to ${verb}` : `Drag up to ${verb}`;
-}
-
-/** The stack's objects, each with the part of it that shows: the top whole, each one under it to the next one's edge. */
-function stackStrips(cards: readonly BoardCard[]): { card: BoardCard; rect: Rect }[] {
-  const stack = cards.filter((c) => c.zone === "stack");
-  return stack.map((card, i) => {
-    const above = stack[i + 1];
-    const height = above === undefined ? card.height : Math.max(0, above.y - card.y);
-    return { card, rect: { x: card.x, y: card.y, width: card.width, height } };
-  });
 }

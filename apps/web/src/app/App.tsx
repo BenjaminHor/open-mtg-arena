@@ -4,6 +4,7 @@
 import type { Action, GameSetup, ObjectId, SeatView } from "@mtg/engine";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
+import { stackIsSmall } from "../board-model/stack.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
 import type { Inspected } from "../hud/CardView.tsx";
 import { cardAt } from "../hud/card-inspect.ts";
@@ -84,8 +85,9 @@ function keyboardFocused(): boolean {
   if (!(focused instanceof HTMLElement) || focused === document.body) return false;
   // A text box (the prompt's filter) takes every key typed into it, a space included.
   const typing = focused instanceof HTMLInputElement && (focused.type === "search" || focused.type === "text");
-  // A card that's only there to be looked at ("i") has nothing to press: Space still presses the main button.
-  if (focused.matches(".inspect-region")) return false;
+  // A card that's only there to be looked at ("i"), or the stack while it can't change size, has nothing to press:
+  // Space still presses the main button.
+  if (focused.matches(".inspect-region, .tap-shield[aria-disabled='true']")) return false;
   return typing || focused.matches(":focus-visible");
 }
 
@@ -209,7 +211,7 @@ export function App() {
             handOpen,
             selected: selection,
             highlight: controlsNow?.highlight ?? [],
-            stackSmall: stackSmallFor !== null && shown.view.zones.stack.at(-1) === stackSmallFor,
+            stackSmall: stackIsSmall(shown, stackSmallFor),
           })
         : null,
     [shown, size, insets, handOpen, selection, controlsNow, stackSmallFor],
