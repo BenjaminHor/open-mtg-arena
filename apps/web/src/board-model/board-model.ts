@@ -16,7 +16,8 @@ import { type Ladder, ladderAtTop, ladderOver } from "./ladder.ts";
 import { withPicks } from "./picks.ts";
 import { playableIds, targetIds } from "./playable.ts";
 import { tapRegions } from "./regions.ts";
-import { stackCards, stackHeader } from "./stack.ts";
+import { choosingOwn, stackCards } from "./stack.ts";
+import { type StackLabels, stackLabels } from "./stack-labels.ts";
 import { type TargetArrow, targetArrows } from "./target-arrows.ts";
 
 export type BoardCard = {
@@ -130,8 +131,8 @@ export type OverlayAnchors = {
   secondary: Rect[];
   /** The centre of what the game is waiting for, in words, between the battlefields [R]. */
   prompt: Point;
-  /** Above the stack, its header listing it all, while anything is on it (`stack.ts`); null otherwise. */
-  stackHeader: Rect | null;
+  /** The stack's header and labels while anything is on it (`stack-labels.ts`, D-174); null otherwise. */
+  stack: StackLabels | null;
 };
 
 export type BoardModel = {
@@ -239,7 +240,7 @@ export function boardModel(
       ...overlay,
       hand: handArea(hand, area, layout.minTap),
       prompt: promptPlace(shown, ui.handOpen, combat.cards, area, layout),
-      stackHeader: stackHeader(stack),
+      stack: stackLabels(stack, ui.handOpen ? hand : [], area, choosingOwn(shown)),
     },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
@@ -274,7 +275,7 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
       height: layout.secondary.height,
     })),
     prompt: { x: area.x + area.width / 2, y: area.y + layout.band.y * area.height },
-    stackHeader: null,
+    stack: null,
   };
 }
 

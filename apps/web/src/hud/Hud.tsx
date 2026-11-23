@@ -231,7 +231,7 @@ export function Hud(props: HudProps) {
           </p>
         )
       )}
-      <StackLabels shown={shown} model={model} handOpen={props.handOpen} browse={props.browse} />
+      <StackLabels shown={shown} model={model} browse={props.browse} />
       {props.browsing !== null && (
         <ZoneBrowser
           shown={shown}

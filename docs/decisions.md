@@ -2729,17 +2729,22 @@ owner's answer to the D-089 open question, option (a))
 - The owner (D-173): a lone object on the stack isn't "immediately obvious"; and Forge's side list of the stack, "but
   more polished". What they saw: the opponent's spell held at the right edge as a bare card, nothing saying it's the
   stack, whose it is, or that it waits; only the main button's "Resolve" said so.
-- Arena's large top card at the right stays (D-169) [R]. Added (`hud/StackLabels.tsx`, placed at the board model's
-  rects, `board-model/stack.ts`):
-  - a "Stack · n" header above it from one object on (it was the "Stack n" button from two), a tap listing them all;
-  - the top object ringed in its controller's colour with a tag under it, "Yours" or "Opponent's";
-  - each object under the top a row: "You"/"Opp" and its name in Inter over its strip (the card frame's own title was
-    too small to read there), strips at least 20 px while the stack is large (14 px while small, where a narrow row
-    keeps only the name).
-  - Orange (the app's accent) is the person's, a calm blue the opponent's, as Arena's turn colours [R: arena-research.md,
-    "orange on your turn and blue on the opponent's"], never without the words.
-- The labels stand down only where the open hand would cover them; the rows take no taps (the strips' own regions do,
-  so a counterspell's target is still picked by a tap on its strip).
+- Arena's large top card at the right stays (D-169) [R]. Added (`hud/StackLabels.tsx`, placed at the rects of
+  `board-model/stack-labels.ts`):
+  - a "Stack n" header above it from one object on (it was the "Stack n" button from two), a tap listing them all;
+    its spoken label says whose object is on top ("..., opponent's Elite Vanguard on top");
+  - the top object ringed in a neutral light, with a tag under it, "Yours" or "Opponent's";
+  - each object under the top a row with its name in Inter over its strip (the card frame's own title was too small to
+    read there), strips at least 20 px while the stack is large. A row says "You"/"Opp" only when both players have
+    objects on the stack (else the tag has said it). A small stack's strips are too short for a name and keep their
+    card frames.
+- First drafted with Arena's turn colours (orange the person's, blue the opponent's) on the ring and rows; the UX
+  review found orange already means "whose turn" here (the player info's marker), orange lost on red frames and blue
+  close to the cyan targets. So the ring is neutral and whose is said in words only.
+- No ring or tag while the person chooses targets for their own spell (they'd compete with the targets); labels stand
+  down where the open hand would sit on them (the header stays); the rows take no taps (the strips' own regions do,
+  so a counterspell's target is still picked by a tap on its strip). The ring and tag fade in (not with reduced
+  motion); fading out with the card waits for M3-07's animations.
 - Not changed: Arena's large-card shape. A Forge-style list in place of the large card doesn't fit a 375 px-tall
   board beside the ladder and the main button; the rows give the list's reading without the room.
 - Future impact: none on the engine. "Opponent's" assumes one opponent; with more players the tag names the controller

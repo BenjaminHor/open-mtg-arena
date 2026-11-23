@@ -334,11 +334,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
-  - **Stack slice done (2026-11-23, D-174): a "Stack · n" header from one object, the top ringed and tagged with whose
-    it is, the ones under it as readable rows.** `hud/StackLabels.tsx`, `board-model/stack.ts` (`stackHeader`, 20 px
-    strips while large); tests: test/stack.test.ts (header from one, row heights), e2e/stack.spec.ts (rows and tags,
-    the opponent's lone spell at seed 7 labelled as it's held). Next: the reviews, the PR, then the ladder question
-    to the owner.
+  - **Stack slice done (2026-11-23, D-174): a "Stack n" header from one object, the top ringed and tagged with whose
+    it is, the ones under it as readable rows.** `hud/StackLabels.tsx`, `board-model/stack-labels.ts`, 20 px strips
+    while large (`stack.ts`); tests: test/stack.test.ts (the header from one, the ring, tag and rows, standing down
+    under the open hand, row heights, controller not owner), e2e/stack.spec.ts (rows and tags, the opponent's lone
+    spell at seed 7 labelled as it's held). Code and UX reviews done and applied (in D-174). Next: the PR, then the
+    walking ladder (D-175).
   - Stack slice plan (D-174, 2026-11-23, written before starting; the owner: "it's not immediately obvious that there's
     something on the stack", and Forge's stack list "but more polished"):
     - What they saw: an opponent's spell held at the right edge as a bare card; nothing says it's the stack, whose it

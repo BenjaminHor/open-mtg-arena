@@ -1098,11 +1098,8 @@ body,
 }
 
 /* The stack's header and labels (hud/StackLabels.tsx, D-174): it reads as the stack from one object on, and says whose
-   each object is in words and colour. */
-.hud {
-  --yours: var(--accent);
-  --theirs: #8fb4e0;
-}
+   each object is in words. The ring is a neutral light: orange is the turn's marker, red frames and cyan targets are
+   on the board (UX review). */
 .hud .stack-header {
   z-index: 100001;
   display: flex;
@@ -1116,6 +1113,7 @@ body,
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .hud .stack-count {
   min-width: 18px;
@@ -1130,35 +1128,35 @@ body,
   position: absolute;
   inset: -7px 0;
 }
-/* The top object, waiting to resolve: a ring and a soft glow in its controller's colour. */
+/* Round the top object, waiting to resolve: a light ring and a soft glow, standing off the card (the model's rect). */
 .hud .stack-ring {
   z-index: 1;
-  margin: -3px;
-  padding: 3px;
-  border: 2px solid var(--whose);
-  border-radius: 8px;
-  box-shadow: 0 0 14px color-mix(in srgb, var(--whose) 45%, transparent);
-  box-sizing: content-box;
+  box-sizing: border-box;
+  border: 2px solid rgba(244, 241, 236, 0.85);
+  box-shadow: 0 0 10px rgba(244, 241, 236, 0.3);
   pointer-events: none;
+  animation: stack-in 180ms ease-out;
 }
 .hud .stack-tag {
   z-index: 1;
-  color: var(--whose);
+  color: #f4f1ec;
   font-size: 11px;
   font-weight: 600;
+  line-height: 14px;
   text-align: center;
   pointer-events: none;
+  animation: stack-in 180ms ease-out;
 }
-/* Each object under the top: a row of a list, its controller's mark and its name. */
+/* Each object under the top: a row of a list, its name (and whose it is, when both players have objects on it). */
 .hud .stack-row {
   z-index: 1;
   display: flex;
   align-items: center;
   gap: 5px;
   box-sizing: border-box;
-  padding: 0 6px 0 4px;
-  border-left: 3px solid var(--whose);
-  border-radius: 4px 4px 0 0;
+  padding: 0 6px;
+  border-top: 1px solid var(--edge);
+  border-radius: 5px 5px 0 0;
   background: var(--panel);
   color: #f4f1ec;
   font-size: 11px;
@@ -1168,7 +1166,7 @@ body,
 }
 .hud .stack-whose {
   flex: none;
-  color: var(--whose);
+  color: var(--muted);
   font-size: 10px;
   font-weight: 700;
 }
@@ -1177,11 +1175,16 @@ body,
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.hud .stack-yours {
-  --whose: var(--yours);
+@keyframes stack-in {
+  from {
+    opacity: 0;
+  }
 }
-.hud .stack-theirs {
-  --whose: var(--theirs);
+@media (prefers-reduced-motion: reduce) {
+  .hud .stack-ring,
+  .hud .stack-tag {
+    animation: none;
+  }
 }
 
 /* The stack browser's first card resolves next: said on it, not left to the order. */

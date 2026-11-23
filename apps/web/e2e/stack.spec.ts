@@ -43,12 +43,11 @@ test("draws every object on the stack, an ability as its own panel, and each one
   expect(top?.typeLine).toBe("Activated ability");
   // Each one under the top peeks out above it, a name strip higher.
   expect((growth?.y ?? 0) < (top?.y ?? 0) && (bolt?.y ?? 0) < (growth?.y ?? 0)).toBe(true);
-  // Each one under the top is a row of a list, whose it is and its name in words; the top is tagged too (D-174).
+  // Each one under the top is a row of a list, its name in words; the top is tagged with whose it is (D-174).
   const rows = page.locator(".stack-row");
   await expect(rows).toHaveCount(2);
   await expect(rows.nth(0)).toContainText("Lightning Bolt");
   await expect(rows.nth(1)).toContainText("Giant Growth");
-  await expect(rows.nth(1)).toContainText("You");
   await expect(page.locator(".stack-tag")).toHaveText("Yours");
   // "Stack 3" lists them all, the next to resolve first.
   await page.getByRole("button", { name: /^The stack, 3 objects/ }).click();
@@ -120,9 +119,11 @@ test("labels the opponent's lone spell as the stack, and as theirs", async ({ pa
   await page.goto("/?seed=7&pace=normal");
   await page.getByRole("button", { name: /^Keep \d/ }).click();
   await expect(page.locator(".event-line")).toHaveText("Your opponent cast Elite Vanguard", { timeout: 5_000 });
-  await expect(page.getByRole("button", { name: "The stack, 1 object: show them all" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "The stack, 1 object, opponent's Elite Vanguard on top: show them all" }),
+  ).toBeVisible();
   await expect(page.locator(".stack-tag")).toHaveText("Opponent's");
-  await expect(page.locator(".stack-ring.stack-theirs")).toHaveCount(1);
+  await expect(page.locator(".stack-ring")).toHaveCount(1);
   // Gone with the stack once it resolves.
   await page.getByRole("button", { name: "Skip to your decision" }).click();
   await expect(page.getByRole("button", { name: /^The stack/ })).toHaveCount(0);
