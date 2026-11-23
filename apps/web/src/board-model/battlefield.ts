@@ -5,6 +5,7 @@
 
 import type { PlayerId, SeatView, SeenCard } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
+import { type Attached, attachedRoom, besideIds } from "./attachments.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, OverlayAnchors, Rect } from "./board-model.ts";
 import { landSlots } from "./land-slots.ts";
@@ -18,21 +19,34 @@ export function battlefieldCards(
   me: PlayerId,
   layout: BoardLayout,
   overlay: OverlayAnchors,
+  attached: Attached,
 ): BoardCard[] {
+  // An Aura or Equipment beside its host is placed with it later (`attachments.ts`), not in a row of its own.
+  const beside = besideIds(attached);
   const permanents = shown.view.zones.battlefield.flatMap((id) => {
     const seen = shown.seen[id];
-    return seen?.kind === "card" ? [seen] : [];
+    return seen?.kind === "card" && !beside.has(seen.id) ? [seen] : [];
   });
-  // Some permanents stand apart from a pile of their twins: one something is attached to (CR 301.5, 303.4), and one
-  // picked in the declaration under way, which steps into combat on its own.
+  // Some permanents stand apart from a pile of their twins: one something is attached to (CR 301.5, 303.4), read from
+  // the whole battlefield (its attachments sit beside it, out of the rows), and one picked in the declaration under
+  // way, which steps into combat on its own.
   const apart = new Set([
-    ...permanents.flatMap((p) => (p.attachedTo === null ? [] : [p.attachedTo])),
+    ...shown.view.zones.battlefield.flatMap((id) => {
+      const seen = shown.seen[id];
+      return seen?.kind === "card" && seen.attachedTo !== null ? [seen.attachedTo] : [];
+    }),
     ...pickedIds(shown),
   ]);
-  return [false, true].flatMap((mine) => {
-    const own = permanents.filter((p) => (p.characteristics.controller === me) === mine);
-    return halfCards(own, { area, mine, apart, layout, overlay });
-  });
+  return [false, true]
+    .flatMap((mine) => {
+      const own = permanents.filter((p) => (p.characteristics.controller === me) === mine);
+      return halfCards(own, { area, mine, apart, layout, overlay, attached });
+    })
+    .map((c) => {
+      // A host knows how many sit beside it before combat moves anything, so combat keeps their room too.
+      const count = attached.get(c.id)?.length ?? 0;
+      return count === 0 ? c : { ...c, attachments: count };
+    });
 }
 
 export type Half = {
@@ -41,6 +55,8 @@ export type Half = {
   apart: ReadonlySet<string>;
   layout: BoardLayout;
   overlay: OverlayAnchors;
+  /** What's attached to each host, for the room its row keeps beside it. */
+  attached: Attached;
 };
 
 function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
@@ -97,15 +113,22 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   const left = area.x + creatures.margin * area.width;
   const right = area.x + (1 - creatures.margin) * area.width;
   const gap = creatures.gap * area.width;
+  // A host's pile keeps room left of it for what's attached (a host stands apart, so its pile is itself).
+  const room = (pile: readonly SeenCard[], cardWidth: number) =>
+    pile.length === 1 && pile[0] !== undefined ? attachedRoom(half.attached, pile[0].id, cardWidth, layout) : 0;
   const widthAt = (h: number) =>
-    piles.reduce((sum, pile) => sum + pileWidth(pile.length, h * ratio.battlefield, offsets.step), 0) +
+    piles.reduce(
+      (sum, pile) =>
+        sum + pileWidth(pile.length, h * ratio.battlefield, offsets.step) + room(pile, h * ratio.battlefield),
+      0,
+    ) +
     gap * Math.max(0, piles.length - 1);
   let h = fullH;
   const smallest = creatures.minH * area.height;
   while (h > smallest && widthAt(h) > right - left) h = Math.max(smallest, h - 1);
   const w = h * ratio.battlefield;
   const xs = spread(
-    piles.map((pile) => pileWidth(pile.length, w, offsets.step)),
+    piles.map((pile) => pileWidth(pile.length, w, offsets.step) + room(pile, w)),
     left,
     right,
     gap,
@@ -114,7 +137,7 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   // The row's cards hug the band whatever their size.
   const y = mine ? creatureTop : creatureTop + fullH - h;
   const rows = piles.map((pile, i) =>
-    placePile(pile, { x: xs[i] ?? 0, y, width: w, height: h }, offsets, mine, "creatures", look),
+    placePile(pile, { x: (xs[i] ?? 0) + room(pile, w), y, width: w, height: h }, offsets, mine, "creatures", look),
   );
   // Drawn right to left: when the row overlaps, each card covers only the left edge of the one after it, which keeps
   // the power/toughness pill at its bottom centre in sight, and the leftmost card, drawn last, is whole.

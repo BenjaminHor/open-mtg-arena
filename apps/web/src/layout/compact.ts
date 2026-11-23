@@ -25,6 +25,8 @@ export const COMPACT: BoardLayout = {
   tapped: { tilt: (8 * Math.PI) / 180, dim: 0.45 },
   // Summoning sick: dimmed less than tapped, as Arena shows it (the owner).
   sick: { dim: 0.32 },
+  // Enough of an attached card to show its art and the start of its name [R: the owner's screenshot].
+  attach: { peek: 0.42 },
   // Overlapped across the bottom centre (about 35–65% W [R], a little wider here so each card shows more), only the
   // top fifth showing [R].
   hand: {

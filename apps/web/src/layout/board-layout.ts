@@ -36,6 +36,8 @@ export type BoardLayout = {
   tapped: { tilt: number; dim: number };
   /** How dark a summoning-sick creature is shaded (0 to 1), on its controller's turn. */
   sick: { dim: number };
+  /** An Aura or Equipment beside its host: how much of its width (0 to 1) peeks out left of the host. */
+  attach: { peek: number };
   /** The person's hand collapsed [R], and opened by a tap [R] (`HandLayout`). */
   hand: HandLayout;
   handOpen: HandLayout;

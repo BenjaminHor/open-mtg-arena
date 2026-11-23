@@ -303,6 +303,23 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     preview at 250 ms (owner). Left from that review: a token's badges sit lower than its neighbours' (the arch);
     the settings cog covers the far-right opponent permanent at 812x375 (pre-existing); a counter of another kind is
     a bare number (none in the pool yet). Next: 4b, Auras and Equipment beside their host.
+  - **M3-04c slice 4a merged (PR #105, squash, 2026-11-23).**
+  - **Slice 4b done (2026-11-23, D-167): Auras and Equipment beside their host**, with a link mark; an
+    `attachments` fixture and test/attachments.test.ts. The plan it followed:
+  - Slice 4b plan (2026-11-23, written before starting): Auras and Equipment beside their host [R: the owner's
+    screenshot, "an Aura sits as its own card just left of the creature it enchants, joined by a small link mark"].
+    - The board model leaves an attached permanent (CR 301.5, 303.4) out of its own row when its host is a creature
+      or a land, and reserves room left of the host in the host's row (creature row: the pile's width; land row: the
+      slot's width), the host shifted right by it. Whose side: the host's (a Pacifism on the opponent's creature sits
+      by that creature), as Arena does.
+    - After combat has moved the cards (`withCombat`), each attachment is placed just left of its host's final spot,
+      behind it, peeking out by part of its width (its name's start and art showing), so it follows an attacker or a
+      blocker. The host carries a small link mark on its left edge.
+    - Hosts in the others row (an Aura on an enchantment or a planeswalker: none in the pool) keep today's placement.
+    - Tests: the attachment beside its host, on the host's side, moving with an attacking host, no overlap with the
+      next card in the row; e2e: a fixture with Holy Strength on a creature and an Aura on a land.
+    - Future impact: multiple attachments stack leftwards; the stack slice will want the same "beside" idea for a
+      target arrow's anchor, unaffected.
   - M3-04c slice 4 (was 3; renumbered after the restyle took 3) (2026-11-23, written before starting): badges, then
     attachments, two PRs. The slices after it are now 5 zones, 6 the stack, 7 finishing. The badges are re-sited for
     the frameless tile (the name now runs along the bottom left): keyword icons as small round icons at the top left,

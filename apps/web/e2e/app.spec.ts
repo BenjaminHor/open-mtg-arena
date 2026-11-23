@@ -10,6 +10,8 @@ type Board = {
     zone: string;
     mine: boolean;
     badges?: { counter: string | null; loyalty: number | null; icons: string[] };
+    attachments?: number;
+    x?: number;
   }[];
   backs: unknown[];
 };
@@ -107,6 +109,16 @@ test("draws the badges board: a permanent's keywords, counters and loyalty, and 
   const cards = (await board(page))?.cards ?? [];
   expect(cards.find((c) => c.name === "Garruk Wildspeaker")?.badges?.loyalty).toBe(3);
   expect(cards.find((c) => c.name === "Serra Angel" && c.zone === "hand")?.badges?.icons).toEqual([]);
+});
+
+test("draws an Aura beside the creature it enchants, joined by a link mark", async ({ page }) => {
+  await page.goto("/?fixture=attachments");
+  await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  await expect.poll(async () => (await board(page))?.cards.find((c) => c.name === "Serra Angel")?.attachments).toBe(1);
+  const cards = (await board(page))?.cards ?? [];
+  const angel = cards.find((c) => c.name === "Serra Angel");
+  const strength = cards.find((c) => c.name === "Holy Strength");
+  expect((strength?.x ?? 0) < (angel?.x ?? 0)).toBe(true);
 });
 
 test("shows a refusal rather than hanging: an unknown deck in the address", async ({ page }) => {

@@ -633,7 +633,7 @@ body,
 
 /* The card view (hud/CardView.tsx): a card large, its hangers beside it. Full: over a dimmed board, closed by a tap;
    the card at a fixed place at the left, as Arena's, with the hangers in a fixed-width column to its right, so neither
-   moves as hangers come and go. Preview (a mouse resting on a card): on the half away from that card, passing taps
+   moves as hangers come and go. Preview (a mouse resting on a card): at the left too, always (the owner), passing taps
    through. It comes in with a short fade and grow (ui.md, "Feel"); only the fade when motion is reduced. */
 .hud .card-view {
   inset: 0;
@@ -652,12 +652,6 @@ body,
 .hud .card-view.preview {
   pointer-events: none;
   padding: 0 max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left));
-}
-.hud .card-view.preview.right {
-  justify-content: flex-end;
-}
-.card-view.preview.right .card-view-body {
-  flex-direction: row-reverse;
 }
 .card-view section {
   display: flex;

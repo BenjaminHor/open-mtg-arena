@@ -60,6 +60,8 @@ export function boardCard(
     pileCount: look.pileCount ?? null,
     // Filled in by the board model, which knows whose turn it is (`badges.ts`).
     badges: NO_BADGES,
+    // Filled in for a host by `attachments.ts`.
+    attachments: 0,
   };
 }
 

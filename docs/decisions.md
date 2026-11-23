@@ -2464,8 +2464,8 @@ owner's answer to the D-089 open question, option (a))
   the game while open and closes when the object is gone (a zone change makes a new object, CR 400.7). The same shape as
   a card's menu (`menuFor`).
 - The card has a fixed place at the left, as Arena's, and the hangers a fixed-width column beside it, so a hanger
-  appearing never moves the card. A preview goes on the half of the screen away from the hovered card; moving from
-  card to card swaps it at once.
+  appearing never moves the card. A preview is at the left too, always (the owner: "it should stick to just one
+  side"; it first went on the half away from the hovered card); moving from card to card swaps it at once.
 - It shows Scryfall's large image (672 px, sharp at a phone's DPR 2–3), loading from a moment into the press, and the
   card as text until it has loaded, or for good if it can't (offline, D-007): never a broken image.
 - A long-press waits for its release on the window, not the card's region (which the game may redraw meanwhile), to
@@ -2549,3 +2549,18 @@ owner's answer to the D-089 open question, option (a))
   card view.
 - A sick creature is also dimmed (0.32, less than a tapped card's 0.45), as Arena shows it (the owner, ui.md
   "Summoning sickness, dimmed"); its badges stay bright over the dimming.
+
+**D-167: Auras and Equipment beside their host (M3-04c slice 4b)** · 2026-11-23 · accepted
+- An attached permanent (CR 301.5, 303.4) leaves its own row and sits just left of its host, behind it, 42% of its
+  width peeking out (its art and the start of its name), joined by a link mark on the host's left edge [R: the
+  owner's screenshot]. On the host's side of the table, whoever controls it (a Pacifism by the opponent's creature),
+  as Arena shows it. `board-model/attachments.ts`.
+- The host's row keeps room for it (the creature row's pile width, the land row's slot width), so nothing moves
+  under it. It's placed after combat has moved the cards, so it follows an attacker or a blocker.
+- Hosts in the others row (an enchantment or a planeswalker; none in today's pool) keep today's placement: the
+  attachment stays in the others row.
+- After the code review: a host stands apart from its twins (read from the whole battlefield), so it never piles;
+  combat keeps a host's room when it blocks or steps aside; the prompt's place reads the rows without attachments (an
+  attachment's `mine` is its controller, its side the host's). Known and accepted: the peeking strip is about 30 px
+  wide on a phone's creature (23 on a land), under the 44 px target, as a pile's strips already are; the card view and
+  the host's own tap reach the same things. A tapped attachment's tilted corner can poke a few px past its room.

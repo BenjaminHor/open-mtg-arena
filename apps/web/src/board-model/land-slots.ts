@@ -4,6 +4,7 @@
 // of its own.
 
 import type { SeenCard } from "@mtg/engine";
+import { attachedRoom } from "./attachments.ts";
 import type { Half } from "./battlefield.ts";
 import type { BoardCard } from "./board-model.ts";
 import { pileKey, pileOffsets, pileWidth, placePile } from "./piles.ts";
@@ -41,9 +42,17 @@ export function landSlots(
   const shift = layout.lands.tappedShift * w;
   // A slot's width depends only on how many lands it holds, never on how many are tapped: room for them all in one
   // pile plus the tapped pile's shift. The untapped pile sits at its left, the tapped one at its right.
+  // A land something is attached to stands alone in its slot (it can't pile), the slot keeping room left of it for
+  // its Aura (`attachments.ts`).
+  const room = (slot: Slot) => {
+    const only = slot.untapped[0] ?? slot.tapped[0];
+    return slot.untapped.length + slot.tapped.length === 1 && only !== undefined
+      ? attachedRoom(half.attached, only.id, w, layout)
+      : 0;
+  };
   const slotWidth = (slot: Slot) => {
     const count = slot.untapped.length + slot.tapped.length;
-    return count > 1 ? pileWidth(count, w, offsets.step) + shift : w;
+    return (count > 1 ? pileWidth(count, w, offsets.step) + shift : w) + room(slot);
   };
   const xs = spread(ordered.map(slotWidth), row.left, row.right, layout.lands.gap * area.width, "start");
   return ordered.flatMap((slot, i) => {
@@ -53,7 +62,14 @@ export function landSlots(
     // pile"), so the pile never shows a tapped land half-hidden inside it.
     return [
       ...(slot.untapped.length > 0
-        ? placePile(slot.untapped, { x, y: row.y, width: w, height: row.height }, offsets, mine, "lands", look)
+        ? placePile(
+            slot.untapped,
+            { x: x + room(slot), y: row.y, width: w, height: row.height },
+            offsets,
+            mine,
+            "lands",
+            look,
+          )
         : []),
       ...(slot.tapped.length > 0
         ? placePile(slot.tapped, { x: tappedX, y: row.y, width: w, height: row.height }, offsets, mine, "lands", look)

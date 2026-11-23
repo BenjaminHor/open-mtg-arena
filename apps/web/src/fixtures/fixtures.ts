@@ -248,6 +248,43 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /**
+   * Attachments (M3-04c slice 4b): an Aura and an Equipment on the person's creatures, an Aura on the opponent's, one
+   * on a land: each beside its host, joined by a link mark.
+   */
+  attachments: {
+    turn: { number: 7, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Lightning Bolt"],
+        battlefield: [
+          "Forest",
+          "Forest",
+          "Plains",
+          "Serra Angel",
+          { card: "Holy Strength", attachedTo: 3 },
+          "Llanowar Elves",
+          "Grizzly Bears",
+          { card: "Whispersilk Cloak", attachedTo: 6 },
+        ],
+        library: many("Forest", 20),
+      },
+      p2: {
+        life: 20,
+        hand: ["Plains"],
+        battlefield: [
+          "Island",
+          "Island",
+          { card: "Convincing Mirage", attachedTo: 1, chosenLandType: "Swamp" },
+          "Elite Vanguard",
+          { card: "Pacifism", attachedTo: 3 },
+          "Veteran Armorsmith",
+        ],
+        library: many("Island", 20),
+      },
+    },
+  },
   /** Siege-Gang Commander to cast (three Goblin tokens), and colourless permanents: frames of every kind. */
   tokens: {
     turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
