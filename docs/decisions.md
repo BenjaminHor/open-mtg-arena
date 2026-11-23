@@ -2750,3 +2750,20 @@ owner's answer to the D-089 open question, option (a))
 - Future impact: none on the engine. "Opponent's" assumes one opponent; with more players the tag names the controller
   (`who()` in `names.ts`), as the rest of the HUD will. M3-07's animations bring objects into this column.
 
+**D-175: The phase ladder walks through each phase passed (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, asked what Arena does (research hadn't found it): "it steps through each phase as it passes - we should
+  avoid immediate jumps between the "main" phases - this probably would be largely solved with animations".
+- Built: when a new view is drawn (a held frame of the host's run, or the reply's own view), the ladder lights each
+  phase the game passed on the way, one after another, then the view's own step (`interaction/ladder-walk.ts`, pure,
+  from the STEP_BEGAN events that led to the view; `app/use-ladder-walk.ts` times it; `ui.ladderAt` in the board
+  model). A phase is a rung of the short ladder (the beginning phase's three steps light "Beginning" once; CR 500.1);
+  across a turn it's the end of one player's turn, then the beginning of the next's, on their ladder.
+- 140 ms a phase [guess]; inside a held frame the walk shares the frame's hold, so it never runs into the next frame;
+  at the person's decision it runs while they act, holding nothing up. The lit rung eases between rungs (120 ms, none
+  with reduced motion). While walking, the ladder stays short (combat one rung), so it doesn't open and close as it
+  passes through combat. At instant pace (tests) there's no walk.
+- An e2e watches every change of the lit rung through the opponent's first turn and the start of the person's, and
+  checks each goes to the next phase (mutation-checked: with the walk off it fails).
+- Future impact: M3-07's animation director can drive the same walk from its own clock; the walk reads only events,
+  so extra turns (CR 500.7) and skipped steps (CR 508.8) walk as the engine played them.
+

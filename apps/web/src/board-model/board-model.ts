@@ -177,6 +177,8 @@ export type BoardUi = {
   highlight?: readonly ObjectId[];
   /** The person made the large stack small (a tap on it, as Arena's collapse tab [R]): drawn as while choosing. */
   stackSmall?: boolean;
+  /** Where the phase ladder lights while it walks through the phases passed (D-175), instead of the view's step. */
+  ladderAt?: { step: Step; activePlayer: PlayerId } | null;
 };
 
 export function boardModel(
@@ -197,7 +199,10 @@ export function boardModel(
     height: Math.max(0, size.height - insets.top - insets.bottom),
   };
   const turn = shown.view.turn;
-  const overlay = overlayAnchors(area, layout, turn?.step ?? null, turn?.activePlayer === opponent);
+  // The ladder lights the view's step, or a phase it walks through on the way there (D-175), kept short meanwhile.
+  const lit = ui.ladderAt ?? (turn === null ? null : { step: turn.step, activePlayer: turn.activePlayer });
+  const walking = ui.ladderAt != null;
+  const overlay = overlayAnchors(area, layout, lit?.step ?? null, lit?.activePlayer === opponent, walking);
   const attached = attachedByHost(shown);
   const combat = withCombat(
     withPicks(shown, battlefieldCards(shown, area, me, layout, overlay, attached)),
@@ -246,7 +251,13 @@ export function boardModel(
   };
 }
 
-function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, opponentsTurn: boolean): OverlayAnchors {
+function overlayAnchors(
+  area: Rect,
+  layout: BoardLayout,
+  step: Step | null,
+  opponentsTurn: boolean,
+  walking: boolean,
+): OverlayAnchors {
   const { player, mainButton } = layout;
   const button: Rect = {
     x: area.x + area.width - mainButton.right - mainButton.width,
@@ -265,8 +276,8 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
       },
     },
     mainButton: button,
-    ladder: ladderOver(button, step, layout),
-    opponentLadder: opponentsTurn ? ladderAtTop(area, step, layout) : null,
+    ladder: ladderOver(button, step, layout, walking),
+    opponentLadder: opponentsTurn ? ladderAtTop(area, step, layout, walking) : null,
     hand: null,
     secondary: [0, 1].map((i) => ({
       x: button.x - (i + 1) * (layout.secondary.width + layout.secondary.gap),

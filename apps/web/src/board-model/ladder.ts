@@ -34,8 +34,18 @@ export function inCombat(step: Step): boolean {
   return COMBAT.steps.includes(step);
 }
 
-function rungsFor(step: Step | null): Rung[] {
-  return step !== null && inCombat(step)
+/**
+ * The rung of the short ladder a step lights: the turn's phases (CR 500.1), combat as one. The ladder walks through
+ * these as the game passes them (D-175).
+ */
+export function phaseRung(step: Step): string {
+  const rung = [BEGINNING, MAIN1, COMBAT, MAIN2, END].find((r) => r.steps.includes(step));
+  return rung?.key ?? step;
+}
+
+/** The rungs drawn: combat opens into its steps while the game rests in it; a walk passing through keeps it short. */
+function rungsFor(step: Step | null, short: boolean): Rung[] {
+  return step !== null && inCombat(step) && !short
     ? [BEGINNING, MAIN1, ...COMBAT_STEPS, MAIN2, END]
     : [BEGINNING, MAIN1, COMBAT, MAIN2, END];
 }
@@ -50,9 +60,9 @@ function inPill(rungs: readonly Rung[], step: Step | null, x: number, y: number,
   return { icons, pills: [pill] };
 }
 
-/** The current turn's ladder in one pill, centred over the main button. */
-export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout): Ladder {
-  const rungs = rungsFor(step);
+/** The current turn's ladder in one pill, centred over the main button. `short`: a walk is passing (D-175). */
+export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout, short = false): Ladder {
+  const rungs = rungsFor(step, short);
   const { icon, padding, gap } = layout.ladder;
   const width = rungs.length * icon + 2 * padding;
   const x = Math.min(button.x + button.width / 2 - width / 2, button.x + button.width - width);
@@ -60,8 +70,8 @@ export function ladderOver(button: Rect, step: Step | null, layout: BoardLayout)
 }
 
 /** The opponent's ladder on their turn: one pill at the top centre, `gap` below the top edge. */
-export function ladderAtTop(area: Rect, step: Step | null, layout: BoardLayout): Ladder {
-  const rungs = rungsFor(step);
+export function ladderAtTop(area: Rect, step: Step | null, layout: BoardLayout, short = false): Ladder {
+  const rungs = rungsFor(step, short);
   const { icon, padding, gap } = layout.ladder;
   const width = rungs.length * icon + 2 * padding;
   return inPill(rungs, step, area.x + area.width / 2 - width / 2, area.y + gap, layout);

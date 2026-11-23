@@ -164,12 +164,26 @@ body,
   display: grid;
   place-items: center;
   border-bottom: 2px solid transparent;
+  /* The lit rung walks through the phases passed (D-175): each change eases, so the walk reads as motion. */
+  transition: border-bottom-color 120ms ease-out;
 }
 
 .ladder svg {
   width: 12px;
   height: 12px;
   fill: #6f6b65;
+  transition:
+    width 120ms ease-out,
+    height 120ms ease-out,
+    fill 120ms ease-out,
+    stroke 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ladder li,
+  .ladder svg {
+    transition: none;
+  }
 }
 
 .ladder svg.stroke {

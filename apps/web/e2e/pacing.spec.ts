@@ -71,3 +71,29 @@ test("a quick second tap after Skip isn't taken for the decision it uncovers", a
   await page.waitForTimeout(800);
   await expect(next).toContainText("To Combat");
 });
+
+// The owner: Arena's ladder "steps through each phase as it passes - we should avoid immediate jumps between the "main"
+// phases" (D-175). Every change of the lit rung, watched as it happens, goes to the next phase of the turn.
+test("walks the phase ladder through each phase passed, never jumping one", async ({ page }) => {
+  await page.addInitScript(() => {
+    const seen: string[] = [];
+    (window as unknown as { __lit: string[] }).__lit = seen;
+    new MutationObserver(() => {
+      const lit = document.querySelector('.ladder li[aria-current="step"]')?.getAttribute("aria-label") ?? null;
+      if (lit !== null && lit !== seen.at(-1)) seen.push(lit);
+    }).observe(document, { subtree: true, childList: true, attributes: true });
+  });
+  // Seed 7: the opponent's first turn plays out, then the person's own begins.
+  await page.goto("/?seed=7&pace=normal");
+  await page.getByRole("button", { name: /^Keep \d/ }).click();
+  await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible({ timeout: 20_000 });
+  await page.waitForTimeout(1_000);
+  const lit = await page.evaluate(() => (window as unknown as { __lit: string[] }).__lit);
+  const phases = ["Beginning", "Main 1", "Combat", "Main 2", "End"];
+  const phase = (label: string) =>
+    ["Attackers", "Blockers", "Damage", "End of combat"].includes(label) ? 2 : phases.indexOf(label);
+  const order = lit.map(phase).filter((p, i, all) => i === 0 || p !== all[i - 1]);
+  expect(order.length).toBeGreaterThan(4);
+  for (let i = 1; i < order.length; i++)
+    expect([order[i - 1], order[i]]).toEqual([order[i - 1], ((order[i - 1] ?? 0) + 1) % 5]);
+});

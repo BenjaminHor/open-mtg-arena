@@ -334,6 +334,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Ladder walk done (2026-11-23, D-175): the lit rung moves through each phase passed, never jumping.**
+    `interaction/ladder-walk.ts`, `app/use-ladder-walk.ts`, `ui.ladderAt` (board-model), short ladder while walking;
+    tests: test/ladder-walk.test.ts, e2e/pacing.spec.ts ("walks the phase ladder", mutation-checked). Next: its
+    review and PR.
+  - **Stack slice merged (PR #113, squash, 2026-11-23).**
   - **Stack slice done (2026-11-23, D-174): a "Stack n" header from one object, the top ringed and tagged with whose
     it is, the ones under it as readable rows.** `hud/StackLabels.tsx`, `board-model/stack-labels.ts`, 20 px strips
     while large (`stack.ts`); tests: test/stack.test.ts (the header from one, the ring, tag and rows, standing down
