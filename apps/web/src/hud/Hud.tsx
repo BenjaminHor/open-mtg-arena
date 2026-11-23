@@ -52,7 +52,11 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
           onClick={() => button.action !== null && act(button.action)}
         >
           <span className="main-label">{button.label}</span>
-          {button.detail !== null && <span className="main-detail">{button.detail}</span>}
+          {button.detail !== null && (
+            <span className="main-detail" style={{ fontSize: detailSize(button.detail, anchors.mainButton.width) }}>
+              {button.detail}
+            </span>
+          )}
         </button>
       )}
       {anchors.hand !== null && (
@@ -106,4 +110,12 @@ function LifeCrest(props: { rect: Rect; life: number; label: string; side: "mine
       {props.life}
     </div>
   );
+}
+
+/**
+ * The main button's second line at 11 px, smaller for a long name so it fits the pill without being cut (ui.md, "Names
+ * are never cut off"): a system font's letters average about 0.55 of their size wide.
+ */
+function detailSize(text: string, buttonWidth: number): number {
+  return Math.max(7, Math.min(11, (buttonWidth - 22) / (text.length * 0.55)));
 }

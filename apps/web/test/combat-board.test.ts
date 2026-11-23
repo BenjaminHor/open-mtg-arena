@@ -156,6 +156,8 @@ describe("a declaration under way", () => {
     expect(blockers.map((c) => c.id)).toEqual([picked]);
     const target = model.cards.find((c) => c.id === mastodon) as BoardCard;
     expect(overlapX(blockers[0] as BoardCard, target)).toBe(true);
+    // While blockers are being chosen, a beam joins the pick to its attacker [R].
+    expect(model.links).toEqual([expect.objectContaining({ kind: "block" })]);
     // The rest of the pile isn't under the Mastodon, and is still a pile of two.
     const rest = model.cards.filter((c) => c.name === "Llanowar Elves" && c.id !== picked);
     expect(rest.map((c) => c.pileCount)).toContain(2);

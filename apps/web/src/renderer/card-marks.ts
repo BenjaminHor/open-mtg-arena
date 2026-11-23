@@ -5,7 +5,7 @@ import { Container, Graphics, Text } from "pixi.js";
 import { PALETTE } from "./palette.ts";
 
 /**
- * An attacker's crossed swords or a blocker's shield, on a round badge at the card's top-left corner: two shapes, so
+ * An attacker's crossed swords or a blocker's shield, on a round badge at the card's top-right corner: two shapes, so
  * which side of combat a card is on never rests on the badge's colour.
  */
 export function combatBadge(kind: "attack" | "block", w: number, h: number): Container {
@@ -36,8 +36,9 @@ export function combatBadge(kind: "attack" | "block", w: number, h: number): Con
       .fill(PALETTE.badgeText);
   }
   badge.addChild(icon);
-  // At the top-left corner: clear of the name, and of the power/toughness pills of the cards across the band.
-  badge.position.set(-w / 2 + r * 0.7, -h / 2 + r * 0.7);
+  // At the top-right corner: clear of the power/toughness pills across the table, and the part of a huddled blocker
+  // the next card never covers (a row is drawn right to left).
+  badge.position.set(w / 2 - r * 0.7, -h / 2 + r * 0.7);
   return badge;
 }
 

@@ -33,6 +33,19 @@ describe("the main button", () => {
     expect(mainButton(stacked)).toMatchObject({ label: "Resolve", detail: "Lightning Bolt" });
   });
 
+  it("names the next stop in combat, step by step", () => {
+    const turn = midGame.view.turn;
+    if (turn === null) throw new Error("no turn");
+    const at = (step: "beginningOfCombat" | "declareAttackers" | "declareBlockers" | "combatDamage") =>
+      mainButton({ ...midGame, view: { ...midGame.view, turn: { ...turn, step } } }).detail;
+    expect([at("beginningOfCombat"), at("declareAttackers"), at("declareBlockers"), at("combatDamage")]).toEqual([
+      "To Attackers",
+      "To Blockers",
+      "To Damage",
+      "To Main 2",
+    ]);
+  });
+
   it("says Pass on the opponent's turn", () => {
     const turn = midGame.view.turn;
     if (turn === null) throw new Error("no turn");

@@ -69,8 +69,8 @@ strip across the top, its name on a small plate low on the art, as Arena's token
 **Attacks and blocks (owner, 2026-11-23):** "I'd like to see screenshots of what attack and blocks look like."
 Combat must read at a glance (see "Clarity"): attacking creatures step toward the open table with a crossed-swords
 badge; each blocker moves along its row to sit under the attacker it blocks, with a shield badge, the blockers of one
-attacker huddled together; a link is drawn only where position can't show the pairing (a lone blocker pushed out from
-under its attacker) and from an attacker to the planeswalker it attacks (D-154).
+attacker huddled together; a beam joins a blocker to its attacker while blockers are chosen, in a gang, and wherever
+position can't show the pairing, and an attacker to the planeswalker it attacks (D-154).
 
 **The rest of the HUD (owner, 2026-11-23, after the card redraw):** "Looks a lot better! I think some of the UI other
 than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase

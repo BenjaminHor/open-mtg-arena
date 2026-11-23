@@ -2350,9 +2350,10 @@ owner's answer to the D-089 open question, option (a))
   and carries a crossed-swords badge (it tilts as it taps but isn't shaded); each blocker moves along its row to sit
   under the attacker it blocks, with a shield badge; the blockers of one attacker huddle together under it, overlapped
   enough to show each one's power/toughness. Creatures that aren't blocking step aside into the nearest free space.
-- No line joins a blocker to the attacker it sits under (as in Arena): the cards touch at the band, so a line would
-  lie flat and say nothing. A link is drawn only when position can't pair them (a lone blocker pushed out from under
-  its attacker) and from an attacker to the planeswalker it attacks.
+- A lone declared blocker under its attacker gets no line: where it sits and its shield say whom it blocks. A beam,
+  centre to centre over the cards, joins the rest: a blocker picked while blockers are being chosen (Arena draws its
+  beam then, arena-research.md second set), each blocker of a gang (a huddle can sit over a neighbouring attacker), a
+  lone blocker pushed out from under its attacker; and an attacker to the planeswalker it attacks.
 - The values (`combat.advance`, `combat.gangOverlap`) are in the layout data. Moving cards between the old and new
   places is M3-07's animation; the board model only says where each card is now.
 

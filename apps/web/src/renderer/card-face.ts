@@ -6,7 +6,7 @@
 
 import { Container, Graphics, Sprite, Text, type Texture } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
-import { combatBadge, combatBadgeRadius, pileBadge, tapMark } from "./card-marks.ts";
+import { combatBadge, combatBadgeRadius, tapMark } from "./card-marks.ts";
 import { handLower, ptBox } from "./hand-face.ts";
 import { type ColorSymbol, colorGlyph, manaCostRow, manaSymbol } from "./mana-symbols.ts";
 import { FRAME, frameColor, mix, PALETTE } from "./palette.ts";
@@ -68,9 +68,14 @@ export function drawFace(card: BoardCard): Face {
     face.addChild(new Graphics().roundRect(-w / 2, -h / 2, w, h, radius).fill({ color: 0x000000, alpha: card.dim }));
   }
   // An attacker's swords say more than a tap mark would, so it has only the tilt and the swords.
-  if (card.tapped && !card.behind && !card.attacking) face.addChild(tapMark(Math.min(w, h)));
+  if (card.tapped && !card.behind && !card.attacking) {
+    // Centred on the art, smaller than the card, so it covers neither the name nor the power/toughness.
+    const mark = tapMark(Math.min(w, h) * 0.78);
+    mark.y = nameH / 2;
+    face.addChild(mark);
+  }
   if (card.attacking || card.blocking.length > 0) face.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
-  if (card.pileCount !== null) face.addChild(pileBadge(card.pileCount, w, h));
+  // A pile's count is drawn by the scene, above every card (board-scene.ts), so no neighbour can cover it.
   // A hand card's full image covers the drawn card once it loads, under the floating cost.
   const fullLayer = new Container();
   face.addChild(fullLayer);
@@ -147,7 +152,7 @@ function tokenPlate(card: BoardCard, h: number): Container {
     text: card.name,
     style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: Math.max(7, h * 0.12), fill: PALETTE.badgeText },
   });
-  fitText(text, card.name, card.width * 0.8);
+  fitText(text, card.width * 0.8);
   text.anchor.set(0.5);
   const bw = text.width + 8;
   const bh = text.height + 2;
@@ -197,25 +202,25 @@ function nameStrip(card: BoardCard, color: number, x: number, y: number, w: numb
       .lineTo(x + w, y + h)
       .stroke({ width: 1, color: PALETTE.rim, alpha: 0.6 }),
   );
+  // In combat the badge sits on the strip's right end, so the name stops before it.
+  const badgeRoom = card.attacking || card.blocking.length > 0 ? combatBadgeRadius(card.height) * 1.5 : 0;
   const glyphR = h * 0.32;
   // A hand card's colours are in its floating mana cost; a permanent shows them here, as small mana symbols (a
   // coloured disc with its dark glyph), which read on any strip.
   const glyphs = card.zone === "battlefield" ? card.colors : [];
   glyphs.forEach((c, i) => {
     const g = manaSymbol(c, glyphR);
-    g.position.set(x + w - glyphR - 1.5 - i * (glyphR * 2 + 1), y + h / 2);
+    g.position.set(x + w - badgeRoom - glyphR - 1.5 - i * (glyphR * 2 + 1), y + h / 2);
     strip.addChild(g);
   });
-  // In combat the badge sits on the strip's left end, so the name starts after it.
-  const indent = card.attacking || card.blocking.length > 0 ? combatBadgeRadius(card.height) * 1.5 : 0;
-  const room = w - 5 - indent - glyphs.length * (glyphR * 2 + 1);
+  const room = w - 5 - badgeRoom - glyphs.length * (glyphR * 2 + 1);
   const text = new Text({
     text: card.name,
     style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: Math.min(h * 0.7, 12), fill: PALETTE.ink },
   });
-  fitText(text, card.name, room);
+  fitText(text, room, h);
   text.anchor.set(0, 0.5);
-  text.position.set(x + 3 + indent, y + h / 2 + 0.5);
+  text.position.set(x + 3, y + h / 2 + 0.5);
   strip.addChild(text);
   return strip;
 }

@@ -188,11 +188,25 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23), for M3-07: big emphasis on animations and effects ("that's what makes mtg arena feel so
     polished"), nailed down solid; watch gameplay videos if possible. Recorded in the milestone (M3-07). Video hosts
     were blocked in the research passes: before M3-07, ask for a host allowance or the owner's screen recordings.
+  - Owner (2026-11-23, going to sleep): "I'm hoping to wake up to everything more or less done and ready for review
+    and refinement." Overnight plan, in order: finish the final UX review's fixes (names never cut, pile counts on top
+    and room between rows, the tap mark off the name, gang blockers' links and badges, the button's combat
+    destinations, "Opponent's Turn" on one line), PR and merge M3-04a on green CI (D-027); then M3-04b (touch, mouse,
+    keyboard: play from hand, targets, attack and block by tapping, prompts for every decision, the actions menu gone,
+    smart auto-pass), each slice with its tests, reviews and its own PR; screenshots and a summary waiting for the
+    owner. Items the UX review left for later (keyword badges, the long-press view) stay in M3-04c's list.
+  - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
+    (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
+    proxy injects per request, rather than a plain-text variable.
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
     combat"); prompts (React) for the rest: mulligan, X, choosing cards, yes/no, dividing damage, the order of
     triggers, damage assignment, naming a card; the options drawer goes.
+  - Added to M3-04c from the final UX review (2026-11-23): keyword badges at a permanent's bottom-left corner
+    (flying, reach, deathtouch, first strike...: ui.md "The cards", both screenshot sets); keep the main button's slot
+    as a label naming any decision it can't answer ("Assign Damage", "Pay {R}"); ignore a second press within about
+    250 ms of the button's action changing; the open hand showing less (about 60%) and the collapsed hand more.
   - **M3-04c, everything M2's pool puts on the board.** The stack at the side with its targets, counters and loyalty,
     attached Auras and Equipment beside their permanent with a link mark (the owner's screenshots), tokens, damage, summoning sickness, graveyard and
     exile browsers, revealed hands and library tops, long-press for the card's details, the "turn your phone"

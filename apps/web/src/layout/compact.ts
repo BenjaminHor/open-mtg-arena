@@ -16,11 +16,11 @@ export const COMPACT: BoardLayout = {
   // the screen is wider for its height.
   creatures: { h: 0.16, minH: 0.12, gap: 0.008, margin: 0.09 },
   // Lands at the outer left [R], piled by name [R]; smaller than creatures [guess].
-  lands: { h: 0.12, gap: 0.014, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.45 },
+  lands: { h: 0.12, gap: 0.014, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.6 },
   // Other non-creature permanents at the outer right, planeswalkers at the right edge [guess, from the desktop map].
-  others: { h: 0.12, gap: 0.006, left: 0.55, right: 0.985 },
+  others: { h: 0.14, gap: 0.006, left: 0.55, right: 0.985 },
   // Close enough that the person's outer row ends above the hand's floating mana costs.
-  rowGap: 0.012,
+  rowGap: 0.035,
   // A small tilt, dimmed, with a tap mark [R].
   tapped: { tilt: (8 * Math.PI) / 180, dim: 0.45 },
   // Overlapped across the bottom centre (about 35–65% W [R], a little wider here so each card shows more), only the

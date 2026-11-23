@@ -88,8 +88,11 @@ function nextStop(step: Step): string {
     case "precombatMain":
       return "To Combat";
     case "beginningOfCombat":
+      return "To Attackers";
     case "declareAttackers":
+      return "To Blockers";
     case "declareBlockers":
+      return "To Damage";
     case "combatDamage":
     case "endOfCombat":
       return "To Main 2";

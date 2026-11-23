@@ -6,6 +6,7 @@
 import { Application, Container, Graphics } from "pixi.js";
 import type { BoardModel } from "../board-model/board-model.ts";
 import { cardBackSprite, librarySprite } from "./card-back.ts";
+import { pileBadge } from "./card-marks.ts";
 import { type CardSprite, createCardSprite } from "./card-sprite.ts";
 import { PALETTE } from "./palette.ts";
 
@@ -33,7 +34,9 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   const cardLayer = new Container({ sortableChildren: true });
   // Combat's links go over the cards, so a pairing is never hidden under a card between the two.
   const links = new Graphics();
-  app.stage.addChild(hidden, cardLayer, links);
+  // Pile counts over everything on the board: a neighbouring row never covers one.
+  const marks = new Container();
+  app.stage.addChild(hidden, cardLayer, links, marks);
   const sprites = new Map<string, CardSprite>();
   return {
     draw: (model) => {
@@ -62,6 +65,14 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
         }
       }
       drawLinks(links, model.links);
+      for (const child of marks.removeChildren()) child.destroy({ children: true, context: true });
+      for (const card of model.cards) {
+        if (card.pileCount === null) continue;
+        const badge = pileBadge(card.pileCount, card.width, card.height);
+        const at = new Container({ x: card.x + card.width / 2, y: card.y + card.height / 2, rotation: card.rotation });
+        at.addChild(badge);
+        marks.addChild(at);
+      }
       exposeForTests(model, sprites);
       render();
     },

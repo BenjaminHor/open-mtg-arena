@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { applyAction, type CardDatabase, createGame, type ObjectId, seatView } from "../../src/index.ts";
+import { mightPay } from "../../src/mana/might-pay.ts";
 import { BEARS, ELVES, FOREST, LONER, MOUNTAIN, PINGER, SHOCK, TEST_CARDS, X_BOLT } from "../support/cards.ts";
 import { passBoth, playerSetup, start } from "../support/game.ts";
 
@@ -40,8 +41,8 @@ describe("seatView", () => {
   });
 
   it("says a spell can't be paid when no source makes its colour, though there's mana enough (the owner, 2026-11-23)", () => {
-    // Llanowar Elves costs {G}; a Mountain makes one mana, but red (CR 305.6). The hint used to count only how much mana
-    // there was, so one Mountain "might pay" for the Elves and the app offered to cast them.
+    // Llanowar Elves costs {G}, payable only with green (CR 107.4a); a Mountain makes one mana, but red (CR 305.6). The
+    // hint used to count only how much mana there was, so one Mountain "might pay" for the Elves.
     const { state } = game({ hand: [ELVES], battlefield: [permanent(MOUNTAIN)] });
     const cast = seatView(state, "p1", TEST_CARDS).options.find((o) => o.action.type === "CAST_SPELL");
     expect(cast).toMatchObject({ payable: false, mightPay: false });
@@ -49,6 +50,23 @@ describe("seatView", () => {
     const { state: withForest } = game({ hand: [ELVES], battlefield: [permanent(MOUNTAIN), permanent(FOREST)] });
     const castable = seatView(withForest, "p1", TEST_CARDS).options.find((o) => o.action.type === "CAST_SPELL");
     expect(castable).toMatchObject({ payable: true, mightPay: true });
+  });
+
+  it("needs as many sources of a color as the cost has symbols of it, and usable ones (CR 107.4a, 202.1a)", () => {
+    const greenGreen = [
+      { kind: "colored" as const, color: "G" as const },
+      { kind: "colored" as const, color: "G" as const },
+    ];
+    // Two mana in all, but only one of it green.
+    const { state: short } = game({ battlefield: [permanent(FOREST), permanent(MOUNTAIN)] });
+    expect(mightPay(short, "p1", greenGreen, TEST_CARDS)).toBe(false);
+    // A green source that can't be tapped yet (summoning sick, CR 302.6) is no source.
+    const { state: sick } = game({
+      battlefield: [{ ...permanent(ELVES), summoningSick: true }, permanent(MOUNTAIN)],
+    });
+    expect(mightPay(sick, "p1", [{ kind: "colored", color: "G" }], TEST_CARDS)).toBe(false);
+    const { state: two } = game({ battlefield: [permanent(FOREST), permanent(FOREST)] });
+    expect(mightPay(two, "p1", greenGreen, TEST_CARDS)).toBe(true);
   });
 
   it("says a spell can't be paid for now when its mana is tapped", () => {

@@ -56,7 +56,7 @@ export function mightPayFor(state: GameState, player: PlayerId, action: Action, 
 /**
  * Whether the player's pool and untapped sources might pay this mana now, X as 0 (CR 107.3a). Yes when `autoPay` finds
  * a payment; otherwise yes only when there's mana enough in all and, for each colored symbol, enough sources that can
- * make that color (CR 106.1, 305.6): one Mountain can't pay {G} (the owner, 2026-11-23). Both are needed for a payment
+ * make that color (CR 107.4a, 202.1a): one Mountain, which makes red (CR 305.6), can't pay {G} (the owner, 2026-11-23). Both are needed for a payment
  * to exist, so a no is always right; a yes may still be wrong where `autoPay` falls short, which is what "might" means.
  */
 export function mightPay(state: GameState, player: PlayerId, cost: ManaCost, cards: CardDatabase): boolean {
@@ -66,7 +66,14 @@ export function mightPay(state: GameState, player: PlayerId, cost: ManaCost, car
   const available = manaByType(state, player, cards);
   const needed: Partial<Record<Color, number>> = {};
   for (const symbol of withoutX) {
-    if (symbol.kind === "colored") needed[symbol.color] = (needed[symbol.color] ?? 0) + 1;
+    switch (symbol.kind) {
+      case "colored":
+        needed[symbol.color] = (needed[symbol.color] ?? 0) + 1;
+        break;
+      // Generic mana is any type (CR 107.4b): the total above covers it. (X was taken out above.)
+      case "generic":
+        break;
+    }
   }
   return Object.entries(needed).every(([color, n]) => available[color as Color] >= (n ?? 0));
 }
