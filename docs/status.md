@@ -249,6 +249,22 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     clears the safe-area insets; the large image is fetched only 120 ms into a hold or rest (not on every tap or
     sweep); a preview swap doesn't replay the fade; Space on a card only there to be looked at still presses the main
     button. Design recorded as D-161.
+  - **M3-04c slice 2 merged (PR #102, squash, 2026-11-23).**
+  - M3-04c slice 3 plan (2026-11-23, written before starting), two PRs:
+    - **3a, badges on a permanent** (arena-research.md §"How permanents are drawn", owner screenshots):
+      - Keyword icons in a small dark square at the bottom-left [R]: our own drawn shapes (D-140), one per keyword
+        that has one (a wing for flying, a heart for lifelink, a skull for deathtouch, ...). Up to two icons; with
+        more keywords, or one without an icon, an ellipsis shows and the card view lists them all [R].
+      - Counters: a small round numbered badge at the top right [R] ("+2" for +1/+1 counters, "−1" for −1/−1, the
+        count for others), moved left of a combat badge when there is one.
+      - Loyalty: a planeswalker shows its loyalty in a shield-shaped box at the bottom centre where a creature's P/T
+        goes; a planeswalker that's also a creature shows it in the counter spot [R].
+      - Summoning sickness: an overlay [R], ours a faint "Zz" over the art, on a creature that can't attack or tap yet.
+      - The board model says what to show (`badges` on BoardCard, pure, tested); the renderer only draws it.
+    - **3b, Auras and Equipment beside their host:** an attached permanent leaves the outer row and sits just left of
+      the permanent it's attached to, a little smaller, joined by a small link mark [R, owner screenshot]; the creature
+      row makes room for it. The P/T hanger in the card view names the sources of a change where the view carries
+      them (UX review).
   - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
     as it merges; the owner gives feedback at the end:
     2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full
