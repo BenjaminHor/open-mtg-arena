@@ -94,17 +94,17 @@ body,
 .player-line {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 7px;
 }
 
 .player-name {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: #d9d4cc;
 }
 
 .player-life {
-  font-size: 30px;
+  font-size: 21px;
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -113,14 +113,14 @@ body,
 
 .player-counts {
   display: flex;
-  gap: 10px;
-  font-size: 11px;
+  gap: 8px;
+  font-size: 10px;
   color: var(--muted);
   white-space: nowrap;
 }
 
 .player-counts b {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   color: #f4f1ec;
 }

@@ -53,8 +53,9 @@ export const COMPACT: BoardLayout = {
   // settings cog, their info block having the top left.
   opponentHand: { h: 0.2, shown: 0.42, centre: 0.72, step: 0.022 },
   // The opponent's at the top left, the person's at the bottom left, as the reference app (the owner): a label and the
-  // life on one line, the counts under it. Wide enough for "52 Library  0 Graveyard  0 Exile" at 11 px.
-  player: { width: 172, height: 52, inset: 8, gap: 8 },
+  // life on one line, the counts under it, small (the owner: "too large"). Wide enough for
+  // "52 Library  0 Graveyard  0 Exile" at 10 px.
+  player: { width: 142, height: 40, inset: 6, gap: 8 },
   // Bottom right [R].
   mainButton: { width: 140, height: 48, right: 10, bottom: 8, clearance: 8 },
   // Over the main button, or at the top centre on the opponent's turn.

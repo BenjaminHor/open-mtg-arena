@@ -75,7 +75,8 @@ throughout" (D-162): this look everywhere, Arena still the guide for layout and 
 corners in the reference screenshots? the life total, library size, graveyard, and exile." As in the reference app:
 the opponent's block at the top left, the person's at the bottom left, each a label ("Opponent", "You"), the life
 total as a large plain number, and under it the counts in small text ("52 Library  0 Graveyard  0 Exile"). It takes
-the place of the centred life crests and the portraits; whose turn it is and a player target show on the block.
+the place of the centred life crests and the portraits; whose turn it is and a player target show on the block. Then:
+"the scale of the player info seems too large" (owner, 2026-11-23): smaller, so it sits quietly in the corner.
 
 **Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
 battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
