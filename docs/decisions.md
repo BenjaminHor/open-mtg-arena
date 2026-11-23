@@ -2559,3 +2559,8 @@ owner's answer to the D-089 open question, option (a))
   under it. It's placed after combat has moved the cards, so it follows an attacker or a blocker.
 - Hosts in the others row (an enchantment or a planeswalker; none in today's pool) keep today's placement: the
   attachment stays in the others row.
+- After the code review: a host stands apart from its twins (read from the whole battlefield), so it never piles;
+  combat keeps a host's room when it blocks or steps aside; the prompt's place reads the rows without attachments (an
+  attachment's `mine` is its controller, its side the host's). Known and accepted: the peeking strip is about 30 px
+  wide on a phone's creature (23 on a land), under the 44 px target, as a pile's strips already are; the card view and
+  the host's own tap reach the same things. A tapped attachment's tilted corner can poke a few px past its room.

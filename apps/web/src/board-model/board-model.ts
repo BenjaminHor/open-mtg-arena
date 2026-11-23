@@ -182,7 +182,8 @@ export function boardModel(
     area,
     layout,
   );
-  // Beside their hosts where combat left them, so an attacker's Aura steps forward with it.
+  // Beside their hosts where combat left them, so an attacker's Aura steps forward with it. The prompt reads the rows
+  // without them: an attachment sits on its host's side, which may not be its controller's (`mine`).
   const field = { ...combat, cards: withAttachments(combat.cards, attached, me, layout) };
   const playable = playableIds(shown);
   const targets = targetIds(shown);
@@ -214,7 +215,7 @@ export function boardModel(
     overlay: {
       ...overlay,
       hand: handArea(hand, area),
-      prompt: promptPlace(shown, ui.handOpen, field.cards, area, layout),
+      prompt: promptPlace(shown, ui.handOpen, combat.cards, area, layout),
     },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };

@@ -19,8 +19,14 @@ export function attachedByHost(shown: SeatView): Attached {
     const card = shown.seen[id];
     if (card?.kind !== "card" || card.attachedTo === null) continue;
     const host = shown.seen[card.attachedTo];
-    // A host in the others row (an enchantment, a planeswalker; none in today's pool) keeps today's placement.
-    if (host?.kind !== "card" || !host.characteristics.types.some((t) => t === "creature" || t === "land")) continue;
+    // A host in the others row (an enchantment, a planeswalker), or one itself attached to something (a land made an
+    // Aura), keeps today's placement: none in today's pool.
+    if (
+      host?.kind !== "card" ||
+      host.attachedTo !== null ||
+      !host.characteristics.types.some((t) => t === "creature" || t === "land")
+    )
+      continue;
     byHost.set(host.id, [...(byHost.get(host.id) ?? []), card]);
   }
   return byHost;
@@ -55,15 +61,16 @@ export function withAttachments(
     }
     const peek = layout.attach.peek * card.width;
     // The furthest first, so each nearer one covers it, and the host covers them all.
-    [...onIt].reverse().forEach((attachment, i) => {
-      const k = onIt.length - i;
+    for (let k = onIt.length; k >= 1; k--) {
+      const attachment = onIt[k - 1];
+      if (attachment === undefined) continue;
       const rect = { x: card.x - peek * k, y: card.y, width: card.width, height: card.height };
       const look = attachment.tapped
         ? { rotation: layout.tapped.tilt, dim: layout.tapped.dim }
         : { rotation: 0, dim: 0 };
       const mine = attachment.characteristics.controller === me;
       placed.push(boardCard(attachment, "battlefield", mine, rect, { ...look, row: card.row }));
-    });
+    }
     placed.push({ ...card, attachments: onIt.length });
   }
   return placed;

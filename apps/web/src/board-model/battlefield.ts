@@ -27,16 +27,26 @@ export function battlefieldCards(
     const seen = shown.seen[id];
     return seen?.kind === "card" && !beside.has(seen.id) ? [seen] : [];
   });
-  // Some permanents stand apart from a pile of their twins: one something is attached to (CR 301.5, 303.4), and one
-  // picked in the declaration under way, which steps into combat on its own.
+  // Some permanents stand apart from a pile of their twins: one something is attached to (CR 301.5, 303.4), read from
+  // the whole battlefield (its attachments sit beside it, out of the rows), and one picked in the declaration under
+  // way, which steps into combat on its own.
   const apart = new Set([
-    ...permanents.flatMap((p) => (p.attachedTo === null ? [] : [p.attachedTo])),
+    ...shown.view.zones.battlefield.flatMap((id) => {
+      const seen = shown.seen[id];
+      return seen?.kind === "card" && seen.attachedTo !== null ? [seen.attachedTo] : [];
+    }),
     ...pickedIds(shown),
   ]);
-  return [false, true].flatMap((mine) => {
-    const own = permanents.filter((p) => (p.characteristics.controller === me) === mine);
-    return halfCards(own, { area, mine, apart, layout, overlay, attached });
-  });
+  return [false, true]
+    .flatMap((mine) => {
+      const own = permanents.filter((p) => (p.characteristics.controller === me) === mine);
+      return halfCards(own, { area, mine, apart, layout, overlay, attached });
+    })
+    .map((c) => {
+      // A host knows how many sit beside it before combat moves anything, so combat keeps their room too.
+      const count = attached.get(c.id)?.length ?? 0;
+      return count === 0 ? c : { ...c, attachments: count };
+    });
 }
 
 export type Half = {

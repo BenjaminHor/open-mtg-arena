@@ -80,7 +80,8 @@ function alignBlockers(
       gangs.set(attacker, [...(gangs.get(attacker) ?? []), ...members]);
       continue;
     }
-    const left = Math.min(...members.map((c) => c.x));
+    // A host's room for what's attached beside it (`attachments.ts`) moves with it, so nothing lands on it.
+    const left = Math.min(...members.map((c) => c.x - roomOf(c, layout)));
     const width = Math.max(...members.map((c) => c.x + c.width)) - left;
     units.push({ members, offsets: members.map((c) => c.x - left), width, wish: left, blocks: false, at: left });
   }
@@ -90,9 +91,18 @@ function alignBlockers(
     const members = [...gang].sort((a, b) => a.x - b.x);
     const w = members[0]?.width ?? 0;
     const step = w * (1 - huddle);
-    const width = w + step * (members.length - 1);
-    const wish = attacker.x + attacker.width / 2 - width / 2;
-    units.push({ members, offsets: members.map((_, k) => k * step), width, wish, blocks: true, at: wish });
+    const cards = w + step * (members.length - 1);
+    // The leftmost blocker's room for its attachments; an inner one's peek is under the huddle anyway.
+    const room = members[0] === undefined ? 0 : roomOf(members[0], layout);
+    const wish = attacker.x + attacker.width / 2 - cards / 2 - room;
+    units.push({
+      members,
+      offsets: members.map((_, k) => room + k * step),
+      width: cards + room,
+      wish,
+      blocks: true,
+      at: wish,
+    });
   }
   const lo = area.x + layout.creatures.margin * area.width;
   const hi = area.x + (1 - layout.creatures.margin) * area.width;
@@ -164,4 +174,9 @@ function facing(c: BoardCard): { x: number; y: number } {
 
 function centre(c: BoardCard): { x: number; y: number } {
   return { x: c.x + c.width / 2, y: c.y + c.height / 2 };
+}
+
+/** The room left of a card for the Auras and Equipment beside it (`attachments.ts`). */
+function roomOf(c: BoardCard, layout: BoardLayout): number {
+  return c.attachments * layout.attach.peek * c.width;
 }
