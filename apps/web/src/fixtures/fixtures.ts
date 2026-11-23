@@ -71,6 +71,24 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /** For the prompts (M3-04b slice 2): X (Fireball), dividing damage (Ignite Disorder), naming a card (Pithing Needle). */
+  prompts: {
+    turn: { number: 5, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Fireball", "Ignite Disorder", "Pithing Needle"],
+        battlefield: many("Mountain", 7),
+        library: many("Mountain", 20),
+      },
+      p2: {
+        life: 20,
+        hand: [],
+        battlefield: ["Plains", "Plains", "Elite Vanguard", "Veteran Armorsmith", "Serra Angel"],
+        library: many("Plains", 20),
+      },
+    },
+  },
   /** Turn 11, the opponent's turn: full boards, several land piles, artifacts, enchantments and planeswalkers. */
   crowded: {
     turn: { number: 11, activePlayer: "p2", step: "precombatMain" },

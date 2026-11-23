@@ -198,7 +198,11 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
-    overlay: { ...overlay, hand: handArea(hand, area), prompt: promptPlace(shown, field.cards, overlay, area, layout) },
+    overlay: {
+      ...overlay,
+      hand: handArea(hand, area),
+      prompt: promptPlace(shown, ui.handOpen, field.cards, overlay, area, layout),
+    },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
@@ -247,6 +251,7 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
  */
 function promptPlace(
   shown: SeatView,
+  handOpen: boolean,
   field: readonly BoardCard[],
   overlay: OverlayAnchors,
   area: Rect,
@@ -258,6 +263,9 @@ function promptPlace(
   // under the crest rather than jump when the first one moves.
   const kind = shown.view.decision?.kind;
   if (kind === "declareAttackers" || kind === "declareBlockers") return underCrest;
+  // Naming a card is a long list with a filter box: it starts high, so the list has the screen's height to use. An
+  // open hand rises over the lower half (a mulligan, a discard): the prompt goes high, clear of the cards' names.
+  if (kind === "chooseName" || handOpen) return underCrest;
   const creatures = field.filter((c) => c.row === "creatures");
   const theirs = creatures.filter((c) => !c.mine).map((c) => c.y + c.height);
   const mine = creatures.filter((c) => c.mine).map((c) => c.y);

@@ -7,7 +7,8 @@
 
 import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import type { BoardModel, Rect } from "../board-model/board-model.ts";
-import { type Choice, type Controls, promptTitle } from "../interaction/controls.ts";
+import type { Choice, Controls } from "../interaction/controls.ts";
+import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
 import { CardButtons } from "./CardButtons.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
 import { ManaText } from "./ManaText.tsx";
@@ -124,6 +125,7 @@ export function Hud(props: HudProps) {
         <Prompt
           prompt={controls.prompt}
           title={deciding ? promptTitle(shown, props.selection) : null}
+          layout={promptLayout(shown)}
           busy={busy}
           act={act}
         />

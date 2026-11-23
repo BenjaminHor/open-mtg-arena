@@ -6,8 +6,9 @@
 
 import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import { optionLabel } from "../app/option-label.ts";
-import { mainButton, mustDeclare } from "../hud/main-button.ts";
+import { mainButton } from "../hud/main-button.ts";
 import { abilityLabel } from "./ability-label.ts";
+import { promptLabel, promptTitle } from "./prompt-text.ts";
 
 type Answer = Extract<Action, { type: "ANSWER" }>["answer"];
 
@@ -139,7 +140,14 @@ export function controls(shown: SeatView, selection: Selection): Controls {
     players,
     main,
     secondary,
-    prompt: leftover.length === 0 ? null : { title: promptTitle(shown, selection), choices: leftover },
+    prompt:
+      leftover.length === 0
+        ? null
+        : {
+            title: promptTitle(shown, selection),
+            // In the prompt, a choice says what it's for in the decision's own words ("Keep 7", "3 (lethal)").
+            choices: numberRepeats(leftover.map((c) => ({ ...c, label: promptLabel(shown, c.action) }))),
+          },
     // A player may concede at any time (CR 104.3a); the engine doesn't list it among the options (D-042).
     concede: shown.view.result === null ? { type: "CONCEDE", player: shown.player } : null,
     highlight,
@@ -204,63 +212,17 @@ function attackLabel(planeswalker: ObjectId | null, name: (id: ObjectId) => stri
   return planeswalker === null ? "Attack" : `Attack ${name(planeswalker)}`;
 }
 
-/** What the prompt asks, by the decision waiting (ui.md: always say what the game is waiting for). */
-export function promptTitle(shown: SeatView, selection: Selection = null): string {
-  const kind = shown.view.decision?.kind;
-  const picked = selection === null ? undefined : shown.seen[selection];
-  if (kind === "declareBlockers" && picked?.kind === "card") {
-    return `Choose what ${picked.characteristics.name} blocks`;
-  }
-  // A declaration that can't finish yet names who must still be picked (CR 508.1d, 509.1c); the button only counts.
-  const must = mustDeclare(shown);
-  if ((kind === "declareAttackers" || kind === "declareBlockers") && mainButton(shown).action === null && must.length) {
-    return `${must.join(", ")} must ${kind === "declareAttackers" ? "attack" : "block"}`;
-  }
-  switch (kind) {
-    case "chooseStartingPlayer":
-      return "Who goes first?";
-    case "mulligan":
-      return "Keep this hand?";
-    case "mulliganBottom":
-      return "Put a card on the bottom";
-    case "discardToHandSize":
-      return "Discard down to your hand size";
-    case "chooseTarget":
-      return "Choose a target";
-    case "announceX":
-      return "Choose X";
-    case "chooseTargetCount":
-      return "How many targets?";
-    case "divide":
-      return "Divide it among the targets";
-    case "assignDamage":
-      return "Assign combat damage";
-    case "payMana":
-      return "Pay the cost";
-    case "chooseSacrifice":
-      return "Choose what to sacrifice";
-    case "chooseCards":
-      return "Choose cards";
-    case "orderTriggers":
-      return "Which goes on the stack first?";
-    case "chooseYesNo":
-      return "Do you want to?";
-    case "keepLegend":
-      return "Choose the legend to keep";
-    case "chooseReplacement":
-      return "Which effect applies first?";
-    case "chooseName":
-      return "Name a card";
-    case "chooseNewTarget":
-      return "Choose a new target for the copy";
-    case "declareAttackers":
-      return "Choose attackers";
-    case "declareBlockers":
-      return "Choose blockers";
-    case "priority":
-    case undefined:
-      return "Choose";
-  }
+/**
+ * Choices that read the same (two Forests found by a search, two Soul Wardens' triggers) are told apart by number:
+ * "Forest", "Forest 2". Either is a real choice, and each button must say something different (a test checks).
+ */
+function numberRepeats(choices: Choice[]): Choice[] {
+  const seen = new Map<string, number>();
+  return choices.map((c) => {
+    const n = (seen.get(c.label) ?? 0) + 1;
+    seen.set(c.label, n);
+    return n === 1 ? c : { ...c, label: `${c.label} ${n}` };
+  });
 }
 
 /** Two actions are the same choice: plain JSON, compared by their contents. */

@@ -235,6 +235,31 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     owner, with drag to play, at review time.
   - **M3-04b slices 1 and 3 merged (PR #97, 2026-11-23).** CI green, a 300-game fuzz clean. Next: slice 2, bespoke
     prompts.
+  - M3-04b slice 2 plan (2026-11-23, written before starting): every prompt says what it's for, with the decision's
+    own context, and the long ones are easy to use. Web only, no engine change.
+    - `interaction/prompt-text.ts` (pure): the prompt's title and each choice's label from the decision.
+      - Mulligan: "Keep 7" / "Mulligan" [R].
+      - X: "Choose X for Fireball".
+      - Dividing: "How much of 5 damage to Grizzly Bears?".
+      - Combat damage: the source, the amount and who gets it, with lethal marked.
+      - Paying: the spell and its cost.
+      - Choosing cards: the cards' names.
+      - Trigger order: each trigger by its source ("goes on the stack first, resolves last").
+      - Yes/no: the spell or ability resolving.
+      - Replacement order, the legend rule, a new target: named the same way.
+    - Prompt UI: numbers as a compact row of chips, and a filter box for a long list such as naming a card (every
+      name in the database). Long lists scroll.
+    - Tests: a unit test per decision kind for the title and labels, and e2e for naming a card with the filter and
+      for choosing X.
+  - M3-04b slice 2 progress (2026-11-23): `interaction/prompt-text.ts` gives every decision a title in its own words,
+    and gives the prompt's choices labels with context: "Keep 7", "Choose X for Fireball", "How much of 3 to Elite
+    Vanguard?", "Stampeding Rhino deals 4 damage: how much to Elite Vanguard?" with "3 (lethal)", triggers by source,
+    searched cards by name (even by identity only, D-062), "Keep Llanowar Elves", "Shuffle your library?".
+    Choices that read the same are numbered ("Forest", "Forest 2"). X and damage shares are a compact row of
+    numbers; naming a card has a filter box (Enter takes the first match; 8 shown, the rest by typing). The prompt's
+    title sits on its anchor with the choices below; it goes high while the hand is open (a mulligan, a discard) or
+    for naming a card. A `prompts` fixture (Fireball, Ignite Disorder, Pithing Needle) and an e2e for all three; a
+    unit test per decision kind.
   - M3-04b slice 3 (2026-11-23, in the same PR as slice 1, as both are on one branch): smart stops (D-157). Auto-pass
     keeps D-143's rule and adds Arena's skips: your own upkeep, draw step and end step with an empty stack, unless
     mana is left in your pool. Full control is a switch in the settings menu (the main button turns blue-violet). The

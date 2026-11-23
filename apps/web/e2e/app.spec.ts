@@ -22,13 +22,13 @@ test.beforeEach(async ({ page }) => {
 
 test("loads a match and plays the person's first decision through the worker", async ({ page }) => {
   await page.goto("/?seed=7");
-  // The mulligan isn't priority, so the actions drawer opens by itself with its choices.
-  await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
+  // The mulligan is asked in the prompt, with Arena's buttons: "Keep 7", "Mulligan".
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.filter((c) => c.zone === "hand").length).toBe(7);
-  await page.getByRole("button", { name: "Keep hand" }).click();
+  await page.getByRole("button", { name: /^Keep \d/ }).click();
   // The worker applied the keep and played on until the person's next decision: the mulligan is gone, the game is
   // into its first turn (the phase ladder shows), and the main button has something to say.
-  await expect(page.getByRole("button", { name: "Keep hand" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toHaveCount(0);
   await expect(page.getByRole("list", { name: /turn$/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /^(Next|Pass|Resolve)/ })).toBeVisible();
 });
@@ -88,7 +88,7 @@ test("shows a refusal rather than hanging: an unknown deck in the address", asyn
 
 test("works offline once it has loaded (the service worker)", async ({ page, context }) => {
   await page.goto("/?seed=7");
-  await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   // Wait until the service worker controls the page, so everything it precached is in its cache.
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -98,6 +98,6 @@ test("works offline once it has loaded (the service worker)", async ({ page, con
   });
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole("button", { name: "Keep hand" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Keep \d/ })).toBeVisible();
   await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
 });
