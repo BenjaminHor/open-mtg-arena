@@ -8,7 +8,7 @@ import type { PlayerId, SeatView } from "@mtg/engine";
 import { useEffect, useRef, useState } from "react";
 import { type CardDetails, cardDetails, printedDetails } from "../interaction/card-details.ts";
 import { promptTitle } from "../interaction/prompt-text.ts";
-import { browserTabs, type ZoneCard, type ZoneName } from "../interaction/zones.ts";
+import { browserTabs, stackTabs, type ZoneCard, type ZoneName } from "../interaction/zones.ts";
 import { CardFace, CardView } from "./CardView.tsx";
 
 /** The zone being browsed, by whose and which: re-read each time, as the card view is (D-161). */
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
-  const tabs = browserTabs(shown, browsing.player);
+  const tabs = browsing.zone === "stack" ? stackTabs(shown) : browserTabs(shown, browsing.player);
   // A reveal that ended takes its tab with it: back to the graveyard.
   const tab = tabs.find((t) => t.zone === browsing.zone) ?? tabs[0];
   const [looking, setLooking] = useState<string | null>(null);
@@ -79,7 +79,8 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
   const pressedBackdrop = useRef(false);
   if (tab === undefined) return null;
   const mine = browsing.player === shown.player;
-  const whose = mine ? "Your" : "Opponent's";
+  const stack = browsing.zone === "stack";
+  const whose = stack ? "The" : mine ? "Your" : "Opponent's";
   // The game goes on under the sheet: a decision that's come for the person says so here, as the dimmed prompt would.
   const decision = shown.view.decision;
   const waiting = decision !== null && decision.kind !== "priority" && shown.view.result === null;
@@ -99,11 +100,19 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
         pressedBackdrop.current = false;
       }}
     >
-      <section ref={sheet} role="dialog" aria-modal="true" aria-label={`${whose} zones`} onKeyDown={trapTab}>
+      <section
+        ref={sheet}
+        role="dialog"
+        aria-modal="true"
+        aria-label={stack ? "The stack" : `${whose} zones`}
+        onKeyDown={trapTab}
+      >
         <div className="zone-tabs" role="tablist">
-          <span className="zone-whose" aria-hidden="true">
-            {mine ? "You" : "Opponent"}
-          </span>
+          {!stack && (
+            <span className="zone-whose" aria-hidden="true">
+              {mine ? "You" : "Opponent"}
+            </span>
+          )}
           {tabs.map((t) => (
             <button
               key={t.zone}

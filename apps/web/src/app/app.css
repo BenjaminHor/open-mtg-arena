@@ -733,6 +733,17 @@ body,
   font-weight: 700;
   font-size: 16px;
 }
+/* An ability panel's art in the text card: specific enough to beat the whole-card image rules. */
+.card-view-card .card-view-text img.card-view-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0 0 6px;
+}
 .card-view-type {
   border-top: 1px solid #9c9584;
   border-bottom: 1px solid #9c9584;
@@ -1046,4 +1057,21 @@ body,
 }
 .zone-card:active {
   filter: brightness(1.15);
+}
+
+/* Under the stack's top object when more is on it than the board draws (hud/Hud.tsx): the whole stack in the browser. */
+.hud .stack-more {
+  z-index: 100001;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 12px;
+  font-weight: 500;
+}
+/* A 44 px tap height without a taller button. */
+.hud .stack-more::before {
+  content: "";
+  position: absolute;
+  inset: -7px 0;
 }

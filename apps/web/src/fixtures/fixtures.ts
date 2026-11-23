@@ -323,6 +323,27 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /**
+   * The stack (M3-04c slice 6): with full control on, Lightning Bolt, Giant Growth in response and Prodigal
+   * Pyromancer's ability on top make three objects, a spell's targets and an ability's own panel.
+   */
+  stack: {
+    turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Lightning Bolt", "Giant Growth"],
+        battlefield: [...many("Mountain", 4), ...many("Forest", 2), "Prodigal Pyromancer", "Grizzly Bears"],
+        library: many("Forest", 20),
+      },
+      p2: {
+        life: 20,
+        hand: ["Plains"],
+        battlefield: [...many("Plains", 3), "Elite Vanguard", "Veteran Armorsmith"],
+        library: many("Plains", 20),
+      },
+    },
+  },
   /** Siege-Gang Commander to cast (three Goblin tokens), and colourless permanents: frames of every kind. */
   tokens: {
     turn: { number: 6, activePlayer: "p1", step: "precombatMain" },

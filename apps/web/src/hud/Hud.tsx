@@ -188,6 +188,16 @@ export function Hud(props: HudProps) {
           {props.banner}
         </p>
       )}
+      {anchors.stackMore !== null && (
+        <button
+          type="button"
+          className="stack-more"
+          style={place(anchors.stackMore)}
+          onClick={() => props.browse({ player: me, zone: "stack" })}
+        >
+          All {view.zones.stack.length}
+        </button>
+      )}
       {props.browsing !== null && (
         <ZoneBrowser
           shown={shown}

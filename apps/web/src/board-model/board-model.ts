@@ -16,7 +16,7 @@ import { type Ladder, ladderAtTop, ladderOver } from "./ladder.ts";
 import { withPicks } from "./picks.ts";
 import { playableIds, targetIds } from "./playable.ts";
 import { tapRegions } from "./regions.ts";
-import { stackTop } from "./stack.ts";
+import { stackCards, stackMore } from "./stack.ts";
 
 export type BoardCard = {
   id: ObjectId;
@@ -73,6 +73,11 @@ export type BoardCard = {
   /** A token (CR 111.1): drawn with an arched top and no name strip, so it reads as one at a glance [R]. */
   token: boolean;
   /**
+   * An ability on the stack (CR 113.1c), drawn as a card-shaped panel [R]: its source's name and art (`art` is then
+   * the art crop, in the art window), its kind as the type line, its own text.
+   */
+  ability: boolean;
+  /**
    * The image to draw, loaded at runtime (D-007): a permanent's art crop, a hand card's full card image. Null for a
    * token, which has none yet.
    */
@@ -119,6 +124,11 @@ export type OverlayAnchors = {
   secondary: Rect[];
   /** The centre of what the game is waiting for, in words, between the battlefields [R]. */
   prompt: Point;
+  /**
+   * Under the stack's top object, a button listing the whole stack when more is on it than the board draws (`stack.ts`,
+   * `MOST_UNDER`); null otherwise.
+   */
+  stackMore: Rect | null;
 };
 
 export type BoardModel = {
@@ -188,7 +198,7 @@ export function boardModel(
   const playable = playableIds(shown);
   const targets = targetIds(shown);
   const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);
-  const stack = stackTop(shown, area, layout);
+  const stack = stackCards(shown, area, layout);
   const cards = [...field.cards, ...stack, ...hand]
     .map((c) => {
       const badges = c.zone === "battlefield" ? badgesOfId(shown, c.id) : NO_BADGES;
@@ -216,6 +226,7 @@ export function boardModel(
       ...overlay,
       hand: handArea(hand, area),
       prompt: promptPlace(shown, ui.handOpen, combat.cards, area, layout),
+      stackMore: stackMore(shown, stack),
     },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
@@ -250,6 +261,7 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
       height: layout.secondary.height,
     })),
     prompt: { x: area.x + area.width / 2, y: area.y + layout.band.y * area.height },
+    stackMore: null,
   };
 }
 

@@ -196,7 +196,7 @@ export function promptLayout(shown: SeatView): PromptLayout {
   }
 }
 
-function objectName(shown: SeatView, id: ObjectId): string {
+export function objectName(shown: SeatView, id: ObjectId): string {
   const seen = shown.seen[id];
   if (seen?.kind === "card") return seen.characteristics.name;
   // An ability whose source has left (sacrificed for its cost, CR 400.7) is named by the card it came from.

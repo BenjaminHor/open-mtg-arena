@@ -5,11 +5,14 @@
 
 import type { Keyword, ObjectId, OracleId, SeatView } from "@mtg/engine";
 import { cardInfo } from "../board-model/card-info.ts";
+import { abilityDetails, choiceHangers } from "./stack-details.ts";
 
 export type CardDetails = {
   name: string;
   /** The full card image to show large, or null (a token, a card with no image): then the text is shown instead. */
   image: string | null;
+  /** Art to show in the text card, when there's no image of the whole: an ability's source's (a panel [R]). */
+  art?: string | null;
   manaCost: string;
   typeLine: string;
   oracleText: string;
@@ -42,15 +45,12 @@ const REMINDERS: Record<Keyword, string> = {
 };
 
 /**
- * The card view's contents for an object the person can see, or null for one they can't. An ability on the stack shows
- * the card it came from, as the stack draws it; when that card has left (a "dies" trigger), its printed card.
+ * The card view's contents for an object the person can see, or null for one they can't. An ability on the stack is
+ * its own panel, as the stack draws it (`stack-details.ts`).
  */
 export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   const object = shown.seen[id];
-  if (object?.kind === "ability") {
-    const source = shown.seen[object.source];
-    return source?.kind === "card" ? cardDetails(shown, source.id) : printedDetails(object.sourceOracleId);
-  }
+  if (object?.kind === "ability") return abilityDetails(shown, object);
   const seen = object;
   if (seen?.kind !== "card") return null;
   const c = seen.characteristics;
@@ -110,6 +110,8 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   if (now !== null && printed !== null && now !== printed && onBattlefield) {
     hangers.push({ title: "Power/toughness", text: `${now} now (printed ${printed})` });
   }
+  // On the stack: what was chosen for it as it was cast (CR 601.2b-d).
+  if (shown.view.zones.stack.includes(seen.id)) hangers.push(...choiceHangers(shown, seen.choices));
   return {
     name: c.name,
     image: info?.largeImage ?? null,
@@ -122,8 +124,7 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
 }
 
 /**
- * A card by its printed face alone: an ability's source that has left the zones the person can see, or a revealed card,
- * which is shown by identity only (D-062).
+ * A card by its printed face alone: a revealed card, which is shown by identity only (D-062).
  */
 export function printedDetails(oracleId: OracleId): CardDetails | null {
   const info = cardInfo(oracleId);

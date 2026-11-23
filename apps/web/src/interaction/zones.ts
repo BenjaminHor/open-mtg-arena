@@ -6,8 +6,11 @@
 import type { ObjectId, OracleId, PlayerId, SeatView } from "@mtg/engine";
 import { cardInfo } from "../board-model/card-info.ts";
 
-/** What the browser can show of a player: the public zones, and a hand or library top while it's revealed. */
-export type ZoneName = "graveyard" | "exile" | "hand" | "library";
+/**
+ * What the browser can show: a player's public zones, a hand or library top while it's revealed, and the stack (shared,
+ * so whoever's browsing it doesn't matter).
+ */
+export type ZoneName = "graveyard" | "exile" | "hand" | "library" | "stack";
 
 /**
  * One card in the browser. A card in a public zone is an object (`id`), so the card view follows it as the game goes
@@ -63,6 +66,15 @@ export function browserTabs(shown: SeatView, player: PlayerId): BrowserTab[] {
   ];
 }
 
+/**
+ * The whole stack, its top first (CR 405.2: the last put there): the board draws only the top few, so a deep stack is
+ * read here (slice 6).
+ */
+export function stackTabs(shown: SeatView): BrowserTab[] {
+  const cards = zoneCards(shown, shown.player, "stack");
+  return [{ zone: "stack", label: `Stack ${cards.length}`, cards }];
+}
+
 /** The cards of one zone of a player's, in the order the browser shows them. */
 export function zoneCards(shown: SeatView, player: PlayerId, zone: ZoneName): ZoneCard[] {
   const own = shown.view.zones.players[player];
@@ -86,21 +98,25 @@ export function zoneCards(shown: SeatView, player: PlayerId, zone: ZoneName): Zo
     case "library":
       // Its top card while revealed (CR 401.5).
       return printed(own?.revealedTop == null ? [] : [own.revealedTop], "top");
+    case "stack":
+      return objects(shown, [...shown.view.zones.stack].reverse());
   }
 }
 
 function objects(shown: SeatView, ids: readonly ObjectId[]): ZoneCard[] {
   return ids.flatMap((id) => {
     const seen = shown.seen[id];
-    if (seen?.kind !== "card") return [];
-    const info = cardInfo(seen.oracleId);
+    if (seen === undefined) return [];
+    // An ability (on the stack) is shown as its panel, named for its source, with the source's art.
+    const oracleId = seen.kind === "card" ? seen.oracleId : seen.sourceOracleId;
+    const info = cardInfo(oracleId);
     return [
       {
         key: id,
         id,
-        oracleId: seen.oracleId,
-        name: seen.characteristics.name,
-        image: info?.image ?? null,
+        oracleId,
+        name: seen.kind === "card" ? seen.characteristics.name : `${info?.name ?? "An"} ability`,
+        image: seen.kind === "card" ? (info?.image ?? null) : null,
         art: info?.artCrop ?? null,
       },
     ];

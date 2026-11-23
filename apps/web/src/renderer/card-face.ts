@@ -1,9 +1,10 @@
-// A card's face off the battlefield (a hand card, the card on the stack): a whole card, drawn in the anatomy of a
+// A card's face off the battlefield (a hand card, an object on the stack): a whole card, drawn in the anatomy of a
 // printed card with our own shapes and colours (D-140, D-153): a bevelled frame in the card's colour, a light name
 // strip, the art, a type strip and a text box, until the card's real image loads over it. A permanent is a minimal
-// tile instead (`battlefield-tile.ts`, D-162). All sizes here are proportions of the card the model sized.
+// tile instead (`battlefield-tile.ts`, D-162). An ability on the stack is the same panel with its source's art in the art
+// window and never a whole image over it [R]. All sizes here are proportions of the card the model sized.
 
-import { Container, Graphics, Sprite, Text } from "pixi.js";
+import { Container, Graphics, Sprite, Text, type Texture } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
 import { drawTile } from "./battlefield-tile.ts";
 import { ART_LABEL, type Face } from "./face.ts";
@@ -64,6 +65,11 @@ export function drawFace(card: BoardCard): Face {
   return {
     container: face,
     showArt: (texture) => {
+      // An ability's panel [R]: its source's art in the art window, the panel's own words around it.
+      if (card.ability) {
+        fullLayer.addChild(artInWindow(texture, art));
+        return;
+      }
       // The whole card image, unaltered (data-sources.md), its corners rounded as the card's are.
       const sprite = new Sprite(texture);
       sprite.label = ART_LABEL;
@@ -78,6 +84,21 @@ export function drawFace(card: BoardCard): Face {
 }
 
 type ArtWindow = { x: number; y: number; w: number; h: number };
+
+/** An art crop filling the art window, cropped to it from the centre, never stretched. */
+function artInWindow(texture: Texture, art: ArtWindow): Container {
+  const holder = new Container();
+  const sprite = new Sprite(texture);
+  sprite.label = ART_LABEL;
+  const scale = Math.max(art.w / texture.width, art.h / texture.height);
+  sprite.scale.set(scale);
+  sprite.anchor.set(0.5);
+  sprite.position.set(art.x + art.w / 2, art.y + art.h / 2);
+  const frame = new Graphics().rect(art.x, art.y, art.w, art.h).fill(0xffffff);
+  sprite.mask = frame;
+  holder.addChild(frame, sprite);
+  return holder;
+}
 
 /** A thin stripe of each of a multicolour card's colours along the top of its gold frame. */
 function colourStripes(card: BoardCard, w: number, h: number, border: number): Graphics {

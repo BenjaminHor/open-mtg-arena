@@ -105,7 +105,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
           {cue(handDrag.dragging, again)}
         </div>
       )}
-      {/* The card on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it. */}
+      {/* Each object on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it. */}
       {model.cards
         .filter((c) => c.zone === "stack")
         .map((c) => (
@@ -117,7 +117,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
             role="img"
             // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
             tabIndex={0}
-            aria-label={c.name}
+            aria-label={c.ability ? `${c.name}: ${c.typeLine.toLowerCase()}` : c.name}
             style={place(c)}
             onClick={(e) => e.stopPropagation()}
             {...inspectOn(c.id as ObjectId)}

@@ -70,7 +70,7 @@ export type BoardLayout = {
    * The top of the stack, large right of centre (`x`, `y` its top left, `h` its height) [R]; while the person is choosing
    * for a spell or ability of their own, small at the right edge (`smallH`, at most `smallMaxH` px; its top `smallY`), clear of the targets [R] [guess for the cap].
    */
-  stack: { x: number; y: number; h: number; smallH: number; smallY: number; smallMaxH: number };
+  stack: { x: number; y: number; h: number; smallH: number; smallY: number; smallMaxH: number; peek: number };
   /** The hand card the person lifted, large at the centre [R]: its height and its top. */
   lifted: { h: number; top: number };
 };

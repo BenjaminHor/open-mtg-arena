@@ -105,6 +105,8 @@ export function CardFace({ details }: { details: CardDetails }) {
             <span>{details.name}</span>
             <ManaText text={details.manaCost} />
           </p>
+          {/* An ability's panel has its source's art, as Arena draws one [R]. */}
+          {details.art != null && <img className="card-view-art" src={details.art} alt="" draggable={false} />}
           <p className="card-view-type">{details.typeLine}</p>
           {details.oracleText.split("\n").map((line, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: the lines are fixed text, never reordered

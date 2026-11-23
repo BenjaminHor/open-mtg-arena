@@ -1,0 +1,159 @@
+// The whole stack at the right (M3-04c slice 6; arena-research.md §5): the top object large, the ones under it peeking
+// out to its left, each its own card or ability panel; past a few, counted. Built by the test's own actions with full
+// control on, so several objects wait on the stack (CR 405.1, 117.3c: the caster gets priority again).
+
+import type { Action, ObjectId, SeatView } from "@mtg/engine";
+import { describe, expect, it } from "vitest";
+import { boardModel } from "../src/board-model/board-model.ts";
+import { MOST_UNDER } from "../src/board-model/stack.ts";
+import type { Fixture } from "../src/fixtures/fixtures.ts";
+import { cardDetails } from "../src/interaction/card-details.ts";
+import { stackTabs } from "../src/interaction/zones.ts";
+import { playFrom } from "./fixture-views.ts";
+
+const PHONE = { width: 812, height: 375 };
+const LIBRARY = ["Forest", "Forest", "Forest"];
+
+const board = (hand: string[], extra: string[] = []): Fixture => ({
+  turn: { number: 5, activePlayer: "p1", step: "precombatMain" },
+  players: {
+    p1: {
+      life: 20,
+      hand,
+      battlefield: [...Array(6).fill("Mountain"), "Forest", "Forest", "Prodigal Pyromancer", "Grizzly Bears", ...extra],
+      library: LIBRARY,
+    },
+    p2: { life: 20, hand: [], battlefield: ["Plains", "Elite Vanguard"], library: LIBRARY },
+  },
+});
+
+function idOf(shown: SeatView, name: string): ObjectId {
+  const found = Object.values(shown.seen).find((o) => o.kind === "card" && o.characteristics.name === name);
+  if (found === undefined) throw new Error(`no ${name}`);
+  return found.id;
+}
+
+const targetsObject = (id: ObjectId) => (a: Action) =>
+  a.type === "ANSWER" &&
+  a.answer.kind === "chooseTarget" &&
+  a.answer.target.kind === "object" &&
+  a.answer.target.object === id;
+
+/** Lightning Bolt at Elite Vanguard, Giant Growth on it in response, then Prodigal Pyromancer at the opponent. */
+function threeOnTheStack(): SeatView {
+  const m = playFrom(board(["Lightning Bolt", "Giant Growth"]));
+  const start = m.shown();
+  const vanguard = idOf(start, "Elite Vanguard");
+  m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Lightning Bolt"), "cast Lightning Bolt");
+  m.act(targetsObject(vanguard), "target Elite Vanguard");
+  m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Giant Growth"), "cast Giant Growth");
+  m.act(targetsObject(vanguard), "target Elite Vanguard");
+  m.act((a) => a.type === "ACTIVATE_ABILITY" && a.object === idOf(start, "Prodigal Pyromancer"), "activate");
+  return m.act(
+    (a) =>
+      a.type === "ANSWER" &&
+      a.answer.kind === "chooseTarget" &&
+      a.answer.target.kind === "player" &&
+      a.answer.target.player === "p2",
+    "target the opponent",
+  );
+}
+
+describe("the stack", () => {
+  const shown = threeOnTheStack();
+  const stack = boardModel(shown, PHONE).cards.filter((c) => c.zone === "stack");
+
+  it("draws every object, the deepest first, so the top covers the rest (CR 405.2: the last added is on top)", () => {
+    expect(shown.view.zones.stack).toHaveLength(3);
+    expect(stack.map((c) => c.id)).toEqual(shown.view.zones.stack);
+    expect(stack.map((c) => c.name)).toEqual(["Lightning Bolt", "Giant Growth", "Prodigal Pyromancer"]);
+  });
+
+  it("puts the top large at the right and each one under it further left, all the same size", () => {
+    const [bolt, growth, top] = stack;
+    if (bolt === undefined || growth === undefined || top === undefined) throw new Error("three");
+    expect(top.x > PHONE.width / 2).toBe(true);
+    expect(growth.x).toBeLessThan(top.x);
+    expect(bolt.x).toBeLessThan(growth.x);
+    expect(new Set(stack.map((c) => c.height)).size).toBe(1);
+    // The count rides on the top.
+    expect(top.pileCount).toBe(3);
+    expect(growth.pileCount).toBeNull();
+  });
+
+  it("draws an ability as a panel: its source's name and art, its kind, its own text", () => {
+    const top = stack.at(-1);
+    expect(top?.ability).toBe(true);
+    expect(top?.typeLine).toBe("Activated ability");
+    expect(top?.text).toBe("{T}: This creature deals 1 damage to any target.");
+    expect(top?.art).toMatch(/art_crop/);
+    expect(stack[0]?.ability).toBe(false);
+  });
+
+  it("still draws an ability whose source has left, from its printed card", () => {
+    const gone = structuredClone(shown);
+    const top = gone.view.zones.stack.at(-1);
+    const ability = top === undefined ? undefined : gone.seen[top];
+    if (ability?.kind !== "ability") throw new Error("an ability on top");
+    delete gone.seen[ability.source];
+    const panel = boardModel(gone, PHONE).cards.find((c) => c.id === top);
+    expect(panel?.name).toBe("Prodigal Pyromancer");
+    expect(panel?.colors).toEqual([]);
+  });
+
+  it(`shows at most ${MOST_UNDER} under the top, and counts them all`, () => {
+    const deep = structuredClone(shown);
+    const extra = Array.from({ length: 4 }, (_, i) => `o-extra-${i}` as ObjectId);
+    const bolt = deep.view.zones.stack[0];
+    if (bolt === undefined) throw new Error("a stack");
+    for (const id of extra) deep.seen[id] = { ...(deep.seen[bolt] as object), id } as SeatView["seen"][ObjectId];
+    deep.view.zones.stack = [...extra, ...deep.view.zones.stack];
+    const cards = boardModel(deep, PHONE).cards.filter((c) => c.zone === "stack");
+    expect(cards).toHaveLength(MOST_UNDER + 1);
+    expect(cards.at(-1)?.pileCount).toBe(7);
+    // The rest are a tap away: a button under the top lists the whole stack.
+    expect(boardModel(deep, PHONE).overlay.stackMore).not.toBeNull();
+    expect(boardModel(shown, PHONE).overlay.stackMore).toBeNull();
+    expect(stackTabs(deep)[0]?.cards).toHaveLength(7);
+    expect(stackTabs(deep)[0]?.cards[0]?.name).toBe("Prodigal Pyromancer ability");
+  });
+});
+
+describe("a stack object's card view", () => {
+  const shown = threeOnTheStack();
+  const [bolt, growth, ability] = shown.view.zones.stack;
+
+  it("shows an ability's own panel, not only its source card", () => {
+    const details = ability === undefined ? null : cardDetails(shown, ability);
+    expect(details?.name).toBe("Prodigal Pyromancer");
+    expect(details?.typeLine).toBe("Activated ability");
+    expect(details?.oracleText).toBe("{T}: This creature deals 1 damage to any target.");
+    expect(details?.image).toBeNull();
+    expect(details?.art).toMatch(/art_crop/);
+  });
+
+  it("names each object's targets (CR 601.2c), a player or a card, and what's under it", () => {
+    const hanger = (id: ObjectId | undefined, title: string) =>
+      (id === undefined ? null : cardDetails(shown, id))?.hangers.find((h) => h.title === title)?.text;
+    expect(hanger(ability, "Target")).toBe("Your opponent");
+    expect(hanger(bolt, "Target")).toBe("Elite Vanguard");
+    expect(hanger(growth, "Target")).toBe("Elite Vanguard");
+    expect(hanger(ability, "From")).toBe("Prodigal Pyromancer, on the battlefield");
+  });
+
+  it("says what X is for a spell with X (CR 107.3a)", () => {
+    const m = playFrom(board(["Fireball"]));
+    const start = m.shown();
+    m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Fireball"), "cast Fireball");
+    m.act((a) => a.type === "ANSWER" && a.answer.kind === "announceX" && a.answer.value === 2, "X = 2");
+    let now = m.shown();
+    // Fireball asks how many targets, then the target.
+    if (now.view.decision?.kind === "chooseTargetCount")
+      now = m.act((a) => a.type === "ANSWER" && a.answer.kind === "chooseTargetCount" && a.answer.count === 1, "one");
+    now = m.act(targetsObject(idOf(start, "Elite Vanguard")), "target Elite Vanguard");
+    const top = now.view.zones.stack.at(-1);
+    const details = top === undefined ? null : cardDetails(now, top);
+    expect(details?.hangers).toContainEqual({ title: "X", text: "2" });
+    expect(details?.hangers).toContainEqual({ title: "Target", text: "Elite Vanguard" });
+  });
+});

@@ -2595,3 +2595,20 @@ owner's answer to the D-089 open question, option (a))
   stays itself when one before it leaves. Cards in the row fall back to the drawn card, as the card view does. The
   sheet names whose zones they are, keeps one height (an empty zone too), and says when a decision is waiting under it.
   Press states at once; 44 px taps.
+
+**D-169: The whole stack, and abilities as panels (M3-04c slice 6, first PR)** · 2026-11-23 · accepted
+- Every object on the stack is drawn at the right [R: arena-research.md §5]: the top large (small while the person
+  chooses for it, as before), each one under it peeking out to its left by 16% of a card, the deepest furthest; at most
+  four under the top. Past that, the top's count says how many, and an "All n" button under it opens the whole stack,
+  top first, in the zone browser's row (D-168), so every object stays reachable.
+- An ability is a card-shaped panel [R: "the source's art, an 'Ability' type line, the ability text"]: its source's
+  name and art (in the art window, never a whole image over it), "Activated ability" / "Triggered ability" / "Delayed
+  triggered ability", and its own text. The engine keeps a card's Oracle text whole, so `board-model/ability-text.ts`
+  picks the ability's line by its `AbilityRef` (activated and triggered lines in printed order, reminder text left
+  out); a test over the whole pool checks each ability finds a line whose cost agrees with its definition (equip,
+  loyalty, {T}, sacrifice, counters). A delayed trigger shows its source's whole text. An ability whose source has left
+  is still drawn, from the source's printed card, as a plain panel.
+- The card view of a stack object: an ability shows its own panel (with its source's art) and "From" (its source and
+  where it is, or "Its source has left", CR 113.7a); every stack object shows its targets (a player, or a card with
+  where it is when that isn't the battlefield, or "a card that has left"), X (CR 107.3a), and a divided effect.
+- Arrows from the top object to its targets and the tap that shrinks the large card are the next PR.
