@@ -199,7 +199,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
     (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
     proxy injects per request, rather than a plain-text variable.
-  - **M3-04a: PR #96 open** (2026-11-23), all reviews done; merges on green CI.
+  - **M3-04a done, merged (PR #96, 2026-11-23).** CI green, a 300-game fuzz clean. The owner can try it locally:
+    `pnpm dev`, `?fixture=mid-game|crowded|attack|block|tokens`.
   - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:
     1. **Acting on the board.** `interaction/` (pure, tested): for each object, what a tap does now, from the seat view's
        options and the UI selection: lift a hand card, play or cast it (a second tap, or a drag up), activate an
