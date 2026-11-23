@@ -70,6 +70,15 @@ engine has can be answered by touch; Playwright tests with touch emulation for e
 `cardId`), damage, life changes, tapping and combat; a first set of effects (spell impact, damage burst, glow on
 playable cards, creature death); the dev effects gallery; speed setting including "instant". *Accept:* tests run at instant speed; animations don't block input.
 
+*Owner (2026-11-23): big emphasis.* "Big emphasis on animations and effects, that's what makes mtg arena feel so
+polished ... I wanted to place a lot of emphasis on getting these nailed down solid. Watch videos of gameplay if you're
+able to." So M3-07 is a first-class slice, not a pass of defaults: before building, study Arena's motion frame by frame
+(gameplay video, or the owner's screen recordings if video hosts stay blocked; arena-research.md lists what's blocked),
+write the findings into arena-research.md (each move: what moves, from where to where, how long, the easing, what
+plays alongside, what the player can do meanwhile), and plan the effects list from them. Show the owner the dev effects
+gallery and short recordings early and often; their sense of "feels like Arena" is the acceptance test. M3-12 then
+polishes what M3-07 builds; it doesn't replace it.
+
 **M3-08 Card art.** First-run download of the pool's images (about 240) from Scryfall's image hosts into the Cache
 API, with a progress screen that shows the size first and resumes if interrupted; `navigator.storage.persist()`; a fallback text-only card frame when an image is
 missing; artist credit in the long-press view. Follow `data-sources.md`. *Accept:* works offline after the

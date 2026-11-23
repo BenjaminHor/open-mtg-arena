@@ -11,25 +11,47 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 - `pnpm test:e2e`: the Playwright tests against a production build with the test hooks, in `dist-e2e` (never `dist`).
   Once per machine, first:
   `pnpm --filter @mtg/web exec playwright install chromium`.
-- `?seed=12&deck=red-aggro&vs=white-soldiers` in the address starts a given match.
+- `?seed=12&deck=red-aggro&vs=white-soldiers` in the address starts a given match; `?fixture=mid-game` (or
+  `crowded`, `attack`, `block`, `tokens`) starts a fixture board (`src/fixtures/`).
 
 ## Structure
 
-- `src/app/`: the React app: `App.tsx` (the match screen for now), `option-label.ts` (a label for each legal action),
-  `app.css`.
+- `src/app/`: the React app: `App.tsx` (the match screen; it makes the board model the canvas and the HUD share, and
+  keeps whether the hand is open), `option-label.ts` (a label for each legal action), `safe-area.ts`, `app.css`.
+- `src/layout/`: `board-layout.ts` (the `BoardLayout` type: every position and size as data) and `compact.ts` (the
+  folded phone in landscape, each value tagged [R] from the owner's screenshots or [guess]; D-152).
+- `src/board-model/`: pure functions from a `SeatView`, the board's size, its safe-area insets and the UI state (hand
+  open or not) to the board model: every card with its place and state, the hidden cards, combat's links and the HUD's
+  anchors (ui.md, "Board structure"). `battlefield.ts` (the rows), `piles.ts` and `land-slots.ts` (piles of permanents
+  that look the same), `combat.ts` (attackers step forward, blockers under their attackers, D-154), `picks.ts` (the
+  declaration under way), `playable.ts` (what can be played now, from the options), `hand.ts` (collapsed and open),
+  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `board-card.ts`, `card-info.ts`
+  (printed cost, text, art and images from the pool data), `spread.ts` (a row between two edges). Unit-tested without
+  drawing.
+- `src/hud/`: the DOM layer over the board, placed only by the model's anchors: portraits, life crests, the phase
+  ladders (`PhaseLadder.tsx`), the main button (`main-button.ts` decides what it says and does), the hand toggle, and
+  the actions drawer that stands in for prompts until M3-04b.
+- `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
+  component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `card-face.ts` (a card's face:
+  frame, art window, name strip, power/toughness), `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
+  badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
+  `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
+  (and `window.__artShown()`) in development and test builds.
+- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`), for tests
+  and screenshots; `setupOf` turns a board a test writes itself into a game setup.
 - `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the
   worker's logic as pure functions (a refused or failed message is an error reply, never a throw), `match.worker.ts`
   the thin `onmessage` shell, `client.ts` the UI's side.
-- `src/board-model/`: pure functions from a `SeatView` and the board's size to the board model, every card with its
-  place and state (ui.md, "Board structure"). Unit-tested without drawing.
-- `src/renderer/`: the PixiJS scene (`board-scene.ts`) and its React component (`BoardCanvas.tsx`). Draws the board
-  model, no game logic or layout math; puts the model on `window.__board` in development and test builds.
 - `src/director/`, `src/effects/`: the animation director (M3-07) and the visual effects; only their READMEs so far.
 - `service-worker/sw.js`: the service worker; `vite.config.ts` writes `dist/sw.js` from it with the build's files.
 
 ## Tests
 
-`test/` (Vitest, in `pnpm check`): the worker session (start, act, refuse, nothing hidden in a reply) and the board
-model. `e2e/` (Playwright, `pnpm test:e2e`, run in CI): the app loads and plays a round trip through the worker, and
-works offline after its first load.
+`test/` (Vitest, in `pnpm check`): the worker session (start, start from a setup, act, refuse, nothing hidden in a
+reply), the board model on fixture boards and boards the tests write (`board-model.test.ts`), combat and the
+declaration under way through the real session (`combat-board.test.ts`), the main button, `spread`. `e2e/`
+(Playwright, `pnpm test:e2e`, run in CI, at desktop size and the folded phone in landscape): the app loads and plays a
+round trip through the worker, draws a fixture board, opens and closes the hand, shows art when it loads and the
+art-less frame when it can't, and works offline after its first load. They block Scryfall's image host (or serve a
+stand-in image): no test needs the network.

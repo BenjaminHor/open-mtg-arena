@@ -1,9 +1,14 @@
-/* The app's plain CSS (ui.md: plain CSS for the DOM layer). M3-04 brings the real look. */
+/* The app's plain CSS (ui.md: plain CSS for the DOM layer). The board's own sizes are in layout/compact.ts; these are
+   the HUD's looks. Colours are original (D-140). */
 :root {
   color-scheme: dark;
   font-family: system-ui, sans-serif;
-  background: #16181d;
-  color: #f2efe6;
+  background: #14171d;
+  color: #f4f0e6;
+  --panel: rgba(16, 18, 24, 0.92);
+  --edge: #4a5262;
+  --gold: #e2b84f;
+  --ink: #14171d;
 }
 
 html,
@@ -11,48 +16,357 @@ body,
 #root {
   margin: 0;
   height: 100%;
-}
-
-.app {
-  display: grid;
-  grid-template-rows: 1fr auto;
-  height: 100%;
-}
-
-.board {
-  position: relative;
-  min-height: 0;
+  background: #14171d;
   overflow: hidden;
 }
 
-.hud {
-  padding: 8px 12px;
-  border-top: 1px solid #333842;
+/* ui.md, "Touch interaction": no browser gestures, selection or overscroll on the board. */
+.app {
+  /* An original playmat (ui.md, "The cards": warm and textured, not flat): a warm stone field lit from the middle,
+     a faint engraved ring around the centre, fine grain, darker edges. */
+  background:
+    radial-gradient(circle at 50% 50%, transparent 21%, rgba(255, 226, 160, 0.07) 21.4%, transparent 22.2%),
+    radial-gradient(circle at 50% 50%, transparent 31%, rgba(0, 0, 0, 0.1) 31.3%, transparent 32%),
+    repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.018) 0 2px, rgba(0, 0, 0, 0.02) 2px 5px),
+    radial-gradient(ellipse 70% 62% at 50% 50%, #7a6542 0%, #5a4a32 45%, #33291c 80%, #1d1710 100%);
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
 }
 
-.hud p {
-  margin: 4px 0;
+.board,
+.board canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud > * {
+  position: absolute;
+}
+
+.hud button {
+  pointer-events: auto;
+  font: inherit;
+  color: inherit;
+}
+
+/* An invisible button over the hand: the cards themselves are drawn on the canvas below it. */
+.hud .hand-toggle {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* The HUD's pieces (ui.md, "The rest of the HUD"): our own crafted look in the spirit of Arena's (D-140): bronze and
+   gold metal, dark enamel, depth from light and shadow. Where they sit comes from the board model. */
+
+.portrait {
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 2px solid #2a2218;
+  box-shadow:
+    0 0 0 1px #a8874a,
+    0 3px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 10px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+
+.portrait.opponent {
+  background: radial-gradient(circle at 50% 30%, #6d4a52, #2c1c22 75%);
+}
+
+.portrait.mine {
+  background: radial-gradient(circle at 50% 30%, #4a5d7a, #1a2230 75%);
+}
+
+.portrait svg {
+  width: 100%;
+  height: 100%;
+  fill: rgba(232, 222, 200, 0.55);
+}
+
+/* The active player's portrait: a bright gold ring with a glow, and a marker: not colour alone. */
+.portrait.active {
+  border-color: #f0cd6a;
+  box-shadow:
+    0 0 0 1px #f7e2a0,
+    0 0 12px 3px rgba(240, 200, 100, 0.55),
+    inset 0 0 10px rgba(0, 0, 0, 0.5);
+  overflow: visible;
+}
+
+.turn-marker {
+  position: absolute;
+  right: -11px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left: 8px solid #f0cd6a;
+  filter: drop-shadow(0 0 3px rgba(240, 200, 100, 0.8));
+}
+
+/* A life crest: a dark enamel medallion in a metal ring, with a blade on each side. */
+.life {
+  /* Its own stacking context, so the blades (z-index -1) sit behind the medallion but above the board. */
+  z-index: 1;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  color: #f4ecd8;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  background: radial-gradient(circle at 50% 30%, #3b4150, #15181f 70%);
+  border: 3px solid #c9a55a;
+  box-shadow:
+    0 0 0 2px #2a2014,
+    inset 0 2px 4px rgba(255, 255, 255, 0.12),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.life::before,
+.life::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 12px;
+  background: linear-gradient(180deg, #e8cd86, #8f6c2e);
+  z-index: -1;
+}
+
+/* The blades sweep outward and up on both crests, as in the owner's screenshots [R]: mirrored on the opponent's, the
+   crest read as upside down (owner, 2026-11-23). */
+.life::before {
+  right: 100%;
+  margin-right: -6px;
+  clip-path: polygon(100% 0, 100% 100%, 0 30%);
+  transform: translateY(-80%) rotate(14deg);
+}
+
+.life::after {
+  left: 100%;
+  margin-left: -6px;
+  clip-path: polygon(0 0, 0 100%, 100% 30%);
+  transform: translateY(-80%) rotate(-14deg);
+}
+
+/* The opponent's crest as their ladder's combat rung: blue light while they're in combat [R]. */
+.life.combat {
+  border-color: #7fbcff;
+  box-shadow:
+    0 0 0 2px #14243a,
+    0 0 16px 5px rgba(111, 180, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+}
+
+.life.combat::before,
+.life.combat::after {
+  background: linear-gradient(180deg, #cfe6ff, #4c8fdc);
+}
+
+.ladder {
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ladder-pill {
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #20232b, #0e1014);
+  border: 1px solid #6a5531;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+.ladder li {
+  position: absolute;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border-bottom: 2px solid transparent;
+}
+
+.ladder svg {
+  width: 12px;
+  height: 12px;
+  fill: #6c7488;
+}
+
+.ladder svg.stroke {
+  fill: none;
+  stroke: #6c7488;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* The current phase: bigger, gold, glowing, underlined. */
+.ladder li.lit {
+  border-bottom-color: #f0cd6a;
+}
+
+.ladder li.lit svg {
+  width: 16px;
+  height: 16px;
+  fill: #f6d77c;
+  filter: drop-shadow(0 0 3px rgba(246, 215, 124, 0.8));
+}
+
+.ladder li.lit svg.stroke {
+  fill: none;
+  stroke: #f6d77c;
+}
+
+/* The main button: a glossy gold pill with a serif label [R], lit from above. (`.hud` in front: it must win over
+   `.hud button`, which sets every control's colour.) */
+.hud .main-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #7a5512;
+  background: linear-gradient(180deg, #f8dc7e 0%, #e2ad3c 48%, #c58b22 52%, #b47a1c 100%);
+  color: #2a1d08;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(80, 40, 0, 0.45),
+    0 0 14px rgba(240, 190, 80, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.55);
+  line-height: 1.05;
+}
+
+.main-button:active {
+  transform: scale(0.96);
+}
+
+.main-label {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-shadow: 0 1px 0 rgba(255, 245, 210, 0.6);
+}
+
+/* Its size is set inline to fit (Hud.tsx): a card's name is never cut off (ui.md). */
+.main-detail {
+  font-weight: 600;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+/* Nothing to press: plain text on the table, as Arena's "Opponent's Turn" [R]. */
+.hud .main-button.waiting {
+  background: none;
+  border-color: transparent;
+  color: #d9d0bb;
+  box-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.main-button.waiting .main-label {
+  font-size: 15px;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.drawer {
+  top: calc(6px + env(safe-area-inset-top));
+  right: calc(8px + env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 46%;
+}
+
+.drawer-toggle {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid #6a5531;
+  background: linear-gradient(180deg, #23262e, #111318);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: #e8dfc8;
 }
 
 .options {
+  margin: 0;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  justify-content: flex-end;
+  gap: 5px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
 }
 
 .options button {
-  font: inherit;
-  padding: 6px 10px;
+  pointer-events: auto;
+  font-size: 12px;
+  padding: 5px 9px;
   border-radius: 6px;
   border: 1px solid #5b6270;
   background: #252a33;
-  color: inherit;
 }
 
 .options button:disabled {
   opacity: 0.4;
 }
 
+.result {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 10px 28px;
+  font-size: 28px;
+  font-weight: 800;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 2px solid var(--gold);
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  transform: translateX(-50%);
+  margin: 0;
+  max-width: 80%;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #5a1f1f;
+  border: 1px solid #c0392b;
+  font-size: 13px;
+}
+
 .loading {
-  padding: 16px;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
 }

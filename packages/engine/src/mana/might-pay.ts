@@ -1,15 +1,16 @@
 // Whether a player might pay for an action now: a hint for hosts and UIs (the match host's auto-pass, `brief`'s "not
 // enough mana"), never a rule. The engine lets a player start any listed action and undoes it if the cost can't be
 // paid (CR 601.2h, 734). The hint errs toward yes: `autoPay` misses some payments a player could make (its own comment
-// says which), so when it finds none but the player's mana adds up to enough, the answer is still yes.
+// says which), so when it finds none but the player's mana adds up to enough, of the right colors, the answer is still
+// yes.
 
-import type { CardDatabase, ManaCost } from "../cards/types.ts";
+import type { CardDatabase, Color, ManaCost } from "../cards/types.ts";
 import { abilitiesOf, isManaAbility, sameAbilityRef } from "../rules/abilities.ts";
 import { activationManaCost, totalCost } from "../rules/costs.ts";
 import type { Action } from "../state/actions.ts";
 import type { GameState } from "../state/game-state.ts";
 import type { PlayerId } from "../state/ids.ts";
-import { autoPay, manaAvailable } from "./auto-pay.ts";
+import { autoPay, manaAvailable, manaByType } from "./auto-pay.ts";
 import { manaValue } from "./payment.ts";
 
 /**
@@ -52,8 +53,27 @@ export function mightPayFor(state: GameState, player: PlayerId, action: Action, 
   return mightPay(payingState(state, action, cards), player, cost, cards);
 }
 
-/** Whether the player's pool and untapped sources might pay this mana now, X as 0 (CR 107.3a). */
+/**
+ * Whether the player's pool and untapped sources might pay this mana now, X as 0 (CR 107.3a). Yes when `autoPay` finds
+ * a payment; otherwise yes only when there's mana enough in all and, for each colored symbol, enough sources that can
+ * make that color (CR 107.4a, 202.1a): one Mountain, which makes red (CR 305.6), can't pay {G} (the owner, 2026-11-23). Both are needed for a payment
+ * to exist, so a no is always right; a yes may still be wrong where `autoPay` falls short, which is what "might" means.
+ */
 export function mightPay(state: GameState, player: PlayerId, cost: ManaCost, cards: CardDatabase): boolean {
   const withoutX = cost.filter((s) => s.kind !== "x");
-  return autoPay(state, player, withoutX, cards) !== null || manaAvailable(state, player, cards) >= manaValue(withoutX);
+  if (autoPay(state, player, withoutX, cards) !== null) return true;
+  if (manaAvailable(state, player, cards) < manaValue(withoutX)) return false;
+  const available = manaByType(state, player, cards);
+  const needed: Partial<Record<Color, number>> = {};
+  for (const symbol of withoutX) {
+    switch (symbol.kind) {
+      case "colored":
+        needed[symbol.color] = (needed[symbol.color] ?? 0) + 1;
+        break;
+      // Generic mana is any type (CR 107.4b): the total above covers it. (X was taken out above.)
+      case "generic":
+        break;
+    }
+  }
+  return Object.entries(needed).every(([color, n]) => available[color as Color] >= (n ?? 0));
 }

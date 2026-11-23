@@ -29,7 +29,10 @@ export type ActionOption = {
   manaCost: ManaCost | null;
   /** Whether the engine's own pick of sources pays that mana now (X as 0, or as answered); null with none. Strict. */
   payable: boolean | null;
-  /** The looser hint auto-pass uses (`mightPay`): yes when the player's mana adds up, even with no plan found. */
+  /**
+   * The looser hint auto-pass uses (`mightPay`): yes when the player's mana adds up, of the right colors, even with no
+   * plan found; a no is always right.
+   */
   mightPay: boolean | null;
   /** For a spell or an ability: the legal choices now for each "target" in its text (CR 115), in order. */
   targets: Target[][];

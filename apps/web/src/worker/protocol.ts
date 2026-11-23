@@ -2,12 +2,14 @@
 // `postMessage` unchanged. The UI only ever gets what the person's seat is shown (`SeatView`, D-144) and the events it
 // saw (`ViewEvent`, D-044): never the match or the game state, which hold the other player's hidden cards.
 
-import type { Action, PlayerId, SeatView, ViewEvent } from "@mtg/engine";
+import type { Action, GameSetup, PlayerId, SeatView, ViewEvent } from "@mtg/engine";
 
 /** From the UI to the worker. */
 export type ToWorker =
   /** A new match between two prebuilt decks (by name), the person in `human`'s seat, the heuristic AI in the other. */
   | { type: "start"; decks: [string, string]; seed: number; human: PlayerId }
+  /** A match from a given setup, the person in `human`'s seat: a fixture board for tests and screenshots. */
+  | { type: "startFrom"; setup: GameSetup; human: PlayerId }
   /** The person's action, one of `shown.options` from the last update. */
   | { type: "act"; action: Action };
 

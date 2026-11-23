@@ -19,6 +19,65 @@ stops), we design it ourselves in the same spirit (owner, 2026-11-22). The owner
 need a lot of refinement through play; Arena is the North Star for the direction (2026-11-22). So build each screen to
 be easy to change (layout and motion values in one place, D-012's shared tokens), and show it to the owner early.
 
+**The cards (owner, 2026-11-23, on the first M3-04a look):** "I feel like we could try harder to make it look like the
+screenshot. Specifically the cards themselves", pointing at a 2018 Arena desktop screenshot. What that screenshot shows
+of a permanent, which our own drawing follows (D-153): a wide "art card", wider than tall; a thick bevelled frame in
+the card's colour with a light inner rim and a drop shadow on the table; a light name strip across the top with dark
+serif text; the art filling the rest; power/toughness in a small light pill at the bottom centre, over the frame's
+edge, its numbers coloured when changed; keyword badges at the bottom-left corner; identical tokens piled with an "x4"
+count above the pile; a tapped card tilted, darkened and marked with a large curved arrow. The table is a warm,
+textured playmat, not a flat colour.
+
+**Tapped lands in a pile (owner, 2026-11-23):** "when there's a stack of cards like lands, tapping a subset of them
+just taps them within the stack visually. I think if they're tapped then they should be on top of the visual stack if
+that makes sense. So it doesn't look messy." A pile's tapped cards gather on top of it, together, in front of its
+untapped ones (D-153).
+
+**Hand cards are whole cards (owner, 2026-11-23):** "it might not be obvious but cards in hand are actually a little
+more detailed. You see the entire card." A card in hand is drawn whole: name and mana cost, art, type line, rules
+text, and power/toughness in a box at the bottom right, as a printed card is laid out (our own drawing, D-140).
+
+**Hand cards are the real card image (owner, 2026-11-23):** "I feel like the cards in hand can just be the actual card
+art itself." A card in hand shows Scryfall's full card image (loaded at runtime, D-007), whole and unaltered, its
+artist credit and copyright included (data-sources.md); our drawn whole card is the fallback until it loads, offline
+and in the tests (D-153).
+
+**Names are never cut off (owner, 2026-11-23):** "It also seems like arena doesn't cut off card names." A card's name
+shrinks to fit its strip instead of ending in an ellipsis.
+
+**Mana costs overlap the card (owner, 2026-11-23):** "I think mana costs can overload ever so slightly instead of just
+hovering above the card." A hand card's floating cost sits over its top edge, overlapping the frame a little, as in
+the owner's screenshots, rather than clear above it.
+
+**Hover and long-press (owner's question, 2026-11-23):** "I'm also curious what hovering over a card does on the
+battlefield." Touch has no hover, so on the phone a long-press opens the card's details (arena-research.md, "Examine
+(long-press)": the card large, and a panel per ability or effect on it), planned for M3-04c. Whether a desktop mouse
+hover should also show a large preview, as Arena's desktop client does, is an open question for the owner.
+
+**Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
+battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
+the screen's height tall, and about 9% of the height of open table separates the two creature rows; nothing is drawn
+in that gap. The compact layout keeps that open space (D-152's values).
+
+**Colourless, multicolour and tokens (owner, 2026-11-23):** "the color coded borders is neat. However I wonder what
+would be done for colorless cards and multicolor cards. Also wondering what tokens would look like since mtga arena
+makes it obvious at first glance what's a token and not." The answer (D-153): a multicolour card has a gold frame with
+a stripe of each of its colours, and a glyph per colour on its name strip; a colourless artifact has a steel frame, a
+colourless land a bronze one. A token is told by its shape, not only its colour: an arched top to its art, no name
+strip across the top, its name on a small plate low on the art, as Arena's tokens have an arched frame.
+
+**Attacks and blocks (owner, 2026-11-23):** "I'd like to see screenshots of what attack and blocks look like."
+Combat must read at a glance (see "Clarity"): attacking creatures step toward the open table with a crossed-swords
+badge; each blocker moves along its row to sit under the attacker it blocks, with a shield badge, the blockers of one
+attacker huddled together; a beam joins a blocker to its attacker while blockers are chosen, in a gang, and wherever
+position can't show the pairing, and an attacker to the planeswalker it attacks (D-154).
+
+**The rest of the HUD (owner, 2026-11-23, after the card redraw):** "Looks a lot better! I think some of the UI other
+than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase
+ladder, main button, card backs, libraries and drawers get the same care as the cards: our own crafted shapes,
+metal-and-enamel finishes, depth and light, in the spirit of Arena's ornate HUD (the reference's crest wraps the
+portrait and the life total; the ladder sits on a curved rail around it), never its assets (D-140).
+
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**
   or the worker is busy. The UI responds locally right away (press state, card lift, selection highlight)
@@ -90,6 +149,19 @@ UI quality has to be checked like rules correctness, not assumed:
 - **Folding or unfolding mid-game must just work.** Listen for resize/orientation changes, re-lay out
   with no state loss, and keep any in-progress selection (such as chosen targets).
 - Respect safe areas (`env(safe-area-inset-*)`) and the fold/notch areas.
+
+## Mouse and keyboard too (owner, 2026-11-23)
+
+"This app should be compatible with mouse/keyboard controls as well as touch devices." Touch stays first, but every
+action must also work with a mouse and with a keyboard:
+- A click does what a tap does; a drag with the mouse does what a drag with a finger does. Pointer events, not
+  touch-only events, so one code path serves both.
+- What a long-press opens (the card's details) also opens another way with a mouse (a right-click, or a hover
+  preview: the hover question is still open in status.md).
+- The keyboard can do everything: Tab moves focus through cards and controls with a visible focus ring, Enter or
+  Space acts on the focused thing, Escape cancels a choice under way or closes a view, and a shortcut presses the
+  main button (Space, as Arena's desktop client uses), plus Arena's full-control keys (arena-research.md).
+- Nothing depends on hover to be found or used: hover may add a preview, never an action.
 
 ## Touch interaction
 

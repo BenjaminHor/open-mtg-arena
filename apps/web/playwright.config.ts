@@ -11,7 +11,14 @@ export default defineConfig({
   forbidOnly: process.env.CI !== undefined,
   reporter: "list",
   use: { baseURL: `http://localhost:${PORT}`, trace: "off" },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+    // The folded phone in landscape (D-141), with touch: the compact layout's own size.
+    {
+      name: "phone",
+      use: { ...devices["Desktop Chrome"], viewport: { width: 812, height: 375 }, hasTouch: true, isMobile: true },
+    },
+  ],
   webServer: {
     // Its own output folder, so the test hooks never end up in `dist`, what `pnpm preview` serves and a deploy ships.
     command: `vite build --outDir dist-e2e && vite preview --outDir dist-e2e --port ${PORT} --strictPort`,

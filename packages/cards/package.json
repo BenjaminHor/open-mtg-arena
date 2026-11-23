@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./pool": "./src/pool.ts"
   },
   "dependencies": {
     "@mtg/engine": "workspace:*"

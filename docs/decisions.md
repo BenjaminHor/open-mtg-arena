@@ -2296,3 +2296,69 @@ owner's answer to the D-089 open question, option (a))
 - Known limit: a tab still running an old build after the new one takes over can't fetch old files the new cache
   dropped. Harmless today (the app loads every file at start); once the app loads code later (M3-09's screens, a
   worker per match), keep the previous build's cache for one more update.
+
+**D-152: The compact board's first look (M3-04a)** · 2026-11-23 · accepted
+- The layout follows the owner's phone screenshots (arena-research.md); where they don't show something, the desktop
+  map's guess fills in. Every position and size is a share of the play area in one data file (`apps/web/src/layout/
+  compact.ts`), each value tagged [R] (from the screenshots) or [guess], so the look changes in one place (D-012) and
+  the full layout (M3-05) is a second object of the same shape.
+- A tapped permanent tilts about 8°, dims and carries a curved-arrow tap mark, as in the screenshots, rather than
+  turning 90°. CR 701.26a describes a paper card turned sideways; on a screen what matters is that the tapped state
+  is plain to see, and a tilt keeps the rows from reflowing when a card taps. The mark is a shape, so tapped never shows by dimming alone (ui.md).
+- Lands pile when they're interchangeable to look at: same name, no counters or damage, nothing attached either way;
+  each name has one slot, its untapped lands in one pile and its tapped ones gathered in a second pile on top of it,
+  at the slot's right (the owner: tapped cards go on top of the pile, 2026-11-23), and
+  a slot's width depends only on how many lands it holds, so tapping a land moves nothing. Identical creatures pile
+  the same way (as Arena piles tokens). A pile shows its front card with an "xN" count above it; the cards behind show
+  as edges. Only the front few cards are offset, so past four the rest share a rectangle: M3-04b adds a hit area per
+  pile that lists its members.
+- The board model also gives the DOM layer its anchors (portraits, life crests, the phase ladder, the main button), so
+  the canvas and the HUD can't disagree on where things are; the canvas is transparent over the page's table
+  background. Safe-area insets are read from CSS (`env(safe-area-inset-*)`) and the layout keeps inside them.
+- Art loads at runtime from Scryfall's image host (D-007), which serves it cross-origin; an art-less original frame
+  shows until it arrives or if it never does, and the browser tests block the host so they never need the network.
+- The main thread reads card faces from `@mtg/cards/pool`, the pool data without the definitions (about 220 KB more in
+  the main bundle; of the engine only small pure helpers such as `phaseOf` and `isManaAbility`, which tree-shaking
+  keeps alone). Long-press details (M3-04c) need the same data.
+- Fixture boards start the worker from a `GameSetup` (`startFrom`; `?fixture=mid-game` or `crowded` in the address),
+  for tests and the screenshots shown to the owner. The browser tests run at desktop size and at the folded phone in
+  landscape (812×375, touch).
+
+**D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted
+- The owner asked for cards closer to Arena's (ui.md, "The cards"). A permanent is a wide art card (1.2 wide to 1
+  tall): a bevelled frame in its colour with a drop shadow, a light name strip with dark serif text and the card's
+  colours as glyphs, the art filling the rest, power/toughness in a pill at the bottom centre, a raised number blue
+  and a lowered one red, damage also underlined. A colourless basic land is framed in its mana's colour (CR 305.6).
+- The structure follows Arena; every shape, colour and glyph is drawn by our own code (D-140): no Arena or Wizards
+  frame art, symbols or fonts. The mana glyphs are our own (a sun, a drop, a crescent, a three-tongued flame, a tree).
+- A creature row too wide for its space shrinks its cards (to a floor) before it overlaps them, and an overlapping
+  row is drawn right to left so each card keeps its power/toughness in sight.
+- The hand parts around the person's life crest rather than hide a card under it, and each card's floating cost
+  shrinks to fit its strip of the hand.
+- A card in hand is Scryfall's full card image (the owner, 2026-11-23), shown whole and unaltered with its artist
+  credit and copyright (data-sources.md); overlapping in the fanned hand is how a hand is shown, not an alteration of
+  the image. Our drawn whole card stands in until it loads.
+- Without its art (loading, offline, the browser tests) a card shows a dark field tinted by its frame with its colour's
+  glyph as a watermark, not a flat slab.
+- The board model takes the layout as a parameter (`BoardLayout`, the compact one by default), and gives the HUD every
+  rectangle it places (crests, portraits, ladder icons and pills, the main button), so no HUD code holds layout numbers.
+- The canvas draws on demand (no frame loop while the board is still) at no more than twice the CSS resolution.
+
+**D-154: Combat on the compact board (M3-04a)** · 2026-11-23 · accepted
+- The owner asked to see attacks and blocks. On the phone there's little room between the two creature rows, so
+  combat reads by position and shape rather than by long moves: an attacking creature steps a little toward the band
+  and carries a crossed-swords badge (it tilts as it taps but isn't shaded); each blocker moves along its row to sit
+  under the attacker it blocks, with a shield badge; the blockers of one attacker huddle together under it, overlapped
+  enough to show each one's power/toughness. Creatures that aren't blocking step aside into the nearest free space.
+- A lone declared blocker under its attacker gets no line: where it sits and its shield say whom it blocks. A beam,
+  edge to edge across the open table, joins the rest: a blocker picked while blockers are being chosen (Arena draws its
+  beam then, arena-research.md second set), each blocker of a gang (a huddle can sit over a neighbouring attacker), a
+  lone blocker pushed out from under its attacker; and an attacker to the planeswalker it attacks.
+- The values (`combat.advance`, `combat.gangOverlap`) are in the layout data. Moving cards between the old and new
+  places is M3-07's animation; the board model only says where each card is now.
+
+**D-155: Art credit on the board** · 2026-11-23 · accepted
+- data-sources.md asks for the artist's credit in the same view as an art crop. Permanents on the board show art crops
+  without one, as Arena does; the owner ruled that the long-press view (M3-04c), which shows the full card image with
+  its artist credit, is enough. No credits line on the board. Hand cards are full card images, credit included.
+

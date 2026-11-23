@@ -1,12 +1,11 @@
 // The card database the engine is given: each pool card's printed characteristics plus its definition.
 
 import type { CardData, CardDatabase } from "@mtg/engine";
-import poolJson from "../data/pool.json" with { type: "json" };
 import { CARD_DEFS } from "./defs/index.ts";
-import type { PoolFile } from "./pool-data.ts";
+import { POOL } from "./pool.ts";
 import { printedCard } from "./printed.ts";
 
-export const POOL: PoolFile = poolJson;
+export { POOL };
 
 /** Builds the database from the committed pool data and definitions. Throws if a card is missing either. */
 export function cardDatabase(): CardDatabase {

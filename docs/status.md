@@ -104,6 +104,135 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     M3-04 must make the board look like Arena from its first screenshot (arena-research.md, the owner's phone
     screenshots: hand fan, lands row, life and portraits, phase indicator, the pass button, real card frames), and
     show the owner the layout early, before the details.
+  - **M3-03 done, merged (PR #95).**
+  M3-04 plan (the compact board, the folded phone in landscape, about 812×375 CSS px), three PRs, the look first:
+  - **M3-04a, the layout and the look.** The owner's phone screenshots (arena-research.md, "The owner's phone
+    screenshots") decide the compact layout; the desktop map only fills what they don't show, marked as a guess in the
+    layout data. Portraits are small squares in the top-left (opponent) and bottom-left (person) corners; life totals
+    are crests at top centre and bottom centre, the person's over the hand; the opponent's library at the top edge near
+    67% W, the person's beside their portrait near 24% W; the opponent's hand backs along the top edge left of centre.
+    Each side: lands at the outer left, piled by name with an "xN" count; creatures close to the centre band, centred;
+    other non-creature permanents at the outer right and planeswalkers at the right edge (desktop guesses). The phase
+    ladder (five steps, combat expanding) above the main button at the bottom right, around the opponent's life crest
+    on their turn; the person's hand along the bottom centre, mostly off screen. Battlefield cards are mostly art: the
+    pool data has Scryfall art-crop links and Scryfall serves them cross-origin, so 04a loads art at runtime (the
+    browser's own cache only; M3-08 adds the offline cache and the first-run download), with an art-less original
+    frame as the fallback (D-140); tests never need the network. Frames: art, a name bar, mana symbols as shapes, a
+    power/toughness box; tapped as Arena (a small tilt, dimmed, a tap mark). Layout values in one data file per layout
+    (M3-05 adds the second), safe-area insets respected; the canvas full-bleed under a DOM overlay (`pointer-events:
+    none` but for controls); sprites kept by object id and updated in place (M3-07 moves them). Fixtures (a mid-game
+    board, a crowded late one) start the worker from a setup, for tests and screenshots. **Screenshots of both
+    fixtures at 812×375 to the owner, before M3-04b.** Done: the owner saw them and many more, shaped the look through
+    their notes below, and asked to keep going (2026-11-23).
+  - M3-04a progress (2026-11-23): built: layout data (`layout/compact.ts`), the board model (rows, land piles, hand,
+    backs, libraries, HUD anchors, safe areas), keyed sprites with original frames, runtime art with a fallback, mana
+    symbols as shapes, tap marks, the HUD (portraits, life crests, phase ladder, main button, actions drawer), fixture
+    boards (`?fixture=mid-game`, `crowded`). `pnpm check` and the browser tests (desktop and 812×375 touch) green.
+    Reviews done; screenshots sent; the owner said to keep going.
+  - Owner (2026-11-23), seeing the first look's description and a 2018 Arena desktop screenshot: "I feel like we could
+    try harder to make it look like the screenshot. Specifically the cards themselves." Recorded in ui.md ("The
+    cards"); the card faces are redrawn to that anatomy (D-153) before the screenshots go to the owner. Code and UX
+    reviews are done; their fixes are going in with the redraw (hand parted around the crest, costs sized to fit,
+    creature rows shrink before overlapping, a dark art-less fallback, colour glyphs on permanents, damage marked by
+    shape, pile backs without text, dim by shading, render on demand, safe-area for the drawer, the layout as a
+    `BoardLayout` parameter, rows clear of every HUD piece).
+  - Owner (2026-11-23), on the redrawn cards: "Looks a lot better! I think some of the UI other than the cards could
+    use some polish, they look a little too generic and basic." Recorded in ui.md ("The rest of the HUD"); the HUD
+    pieces are restyled in this slice too.
+  - Owner (2026-11-23): tapped lands in a pile should sit on top of the pile, not tapped somewhere inside it, so it
+    doesn't look messy. Recorded in ui.md ("Tapped lands in a pile"); each slot now draws its tapped pile in front.
+  - Owner (2026-11-23): asked how colourless and multicolour cards and tokens will look (Arena makes tokens obvious),
+    and to see screenshots of attacks and blocks. Recorded in ui.md ("Colourless, multicolour and tokens", "Attacks
+    and blocks"). Plan, in order: combat on the board (attackers forward with a swords badge, blockers opposite their
+    attacker with a shield badge, links), fixtures that reach combat, screenshots of attacks and blocks to the owner;
+    then the frames for colourless, multicolour and tokens; then the HUD polish; then screenshots of everything.
+  - Owner (2026-11-23) sent four recent Arena phone screenshots of combat, blocking and highlighting what can be
+    played; described in arena-research.md ("The owner's phone screenshots, second set"). Taken into this slice:
+    the cyan outline on everything playable or able to attack or block now (from the seat view's options); the
+    ladder opening into attack, block and damage steps during combat, and the opponent's crest taking the combat slot
+    of their ladder; the main button's labels while attacking or blocking ("No Blocks", "1 Blocker", "To Damage").
+    Left for M3-04b (touch): picking blockers by tapping, the yellow-orange picked outline and the beam to the attacker
+    during the choice, "Cancel Blocks", the "Choose blockers." prompt, the fast-forward button.
+  - Owner (2026-11-23): the space between the two battlefields feels cramped next to Arena. Recorded in ui.md ("Room
+    between the battlefields"): smaller creature cards and an open gap between the rows, as in their screenshots.
+  - Owner (2026-11-23): hand cards in Arena are whole cards (type line and rules text too); recorded in ui.md, drawn
+    so in this slice. Asked what hovering over a battlefield card does: answered (long-press details, M3-04c); the
+    desktop hover preview is an open question below.
+  - Owner (2026-11-23): Arena doesn't cut off card names; recorded in ui.md, names now shrink to fit.
+  - Owner (2026-11-23): mana costs should overlap the hand card's top edge slightly; recorded in ui.md, done.
+  - Owner (2026-11-23): "how does the expanded view of your hand look like". Not built yet (it was 04b's); built now in
+    this slice: the open hand's layout (arena-research.md, "The hand, opened") and a tap on the hand to open or close
+    it. Playing a card from it stays 04b.
+  - Owner (2026-11-23): cards in hand can be the actual card image; recorded in ui.md, done (Scryfall's full image at
+    runtime, our drawn card as the fallback).
+  - Owner (2026-11-23): "I haven't been able to start the local app yet but I'm wondering what animations are like."
+    Answered: there are none yet; cards move to their new places at once. Animation is M3-07 (the director: GSAP
+    timelines from the engine's events, ui.md "Animation and feedback"). Gave the steps to run it locally.
+  - Owner (2026-11-23): "Can you show me what a long-press view looks like?", then "If it's not built yet then that's
+    okay." It stays in M3-04c. Its design, from the first try: a pure `examine(shown, id)` in board-model gives the
+    card's name, type line, full image and artist, then panels: one per paragraph of Oracle text (titled by its
+    keyword, else "Triggered ability", "Activated ability" or "Ability"), one per keyword it has that its text doesn't
+    give it ("Given by an effect"), and its state (token, changed P/T against printed, damage, counters, tapped,
+    summoning sick, attacking, blocking whom, regeneration shields, a choice made as it entered). A hit test finds the
+    topmost card under a point; a hold of about 400 ms opens a dark overlay (card large at the left, panels at the
+    right, the artist credit, D-155), and the click after a long-press is swallowed so it doesn't also toggle the hand.
+  - Owner (2026-11-23): "Is the opponent health upside down" — its blades were mirrored to point down; both crests'
+    blades now sweep up, as in their screenshots.
+  - Built since: the frames for colourless, multicolour and tokens, and the HUD polish. Final code review done; its
+    two must-fixes (a pick from a pile moved the whole pile; a combat test that passed without a step) and most
+    should-fixes are in. The final UX review is running; then the PR, and the owner tries a local build once it merges.
+  - Owner (2026-11-23), for M3-04b: "this app should be compatible with mouse/keyboard controls as well as touch
+    devices." Recorded in ui.md ("Mouse and keyboard too"): pointer events serve touch and mouse alike, the long-press
+    view also opens with a mouse, and the keyboard can do everything (focus, Enter/Space, Escape, a main-button key).
+  - Owner (2026-11-23): the actions menu feels strange; they expect to click and drag cards. Confirmed it's temporary:
+    M3-04b replaces it with direct play on the cards and removes it.
+  - Owner (2026-11-23), for M3-07: big emphasis on animations and effects ("that's what makes mtg arena feel so
+    polished"), nailed down solid; watch gameplay videos if possible. Recorded in the milestone (M3-07). Video hosts
+    were blocked in the research passes: before M3-07, ask for a host allowance or the owner's screen recordings.
+  - Owner (2026-11-23, going to sleep): "I'm hoping to wake up to everything more or less done and ready for review
+    and refinement." Overnight plan, in order: finish the final UX review's fixes (names never cut, pile counts on top
+    and room between rows, the tap mark off the name, gang blockers' links and badges, the button's combat
+    destinations, "Opponent's Turn" on one line), PR and merge M3-04a on green CI (D-027); then M3-04b (touch, mouse,
+    keyboard: play from hand, targets, attack and block by tapping, prompts for every decision, the actions menu gone,
+    smart auto-pass), each slice with its tests, reviews and its own PR; screenshots and a summary waiting for the
+    owner. Items the UX review left for later (keyword badges, the long-press view) stay in M3-04c's list.
+  - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
+    (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
+    proxy injects per request, rather than a plain-text variable.
+  - **M3-04a: PR #96 open** (2026-11-23), all reviews done; merges on green CI.
+  - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:
+    1. **Acting on the board.** `interaction/` (pure, tested): for each object, what a tap does now, from the seat view's
+       options and the UI selection: lift a hand card, play or cast it (a second tap, or a drag up), activate an
+       ability, pick a target (cards and portraits), declare an attacker, pick a blocker then its attacker, take back
+       the last pick. The HUD lays a transparent button over each interactive card (`aria-label` = name and what it
+       does): one path for touch, mouse and keyboard (Tab, Enter/Space, a focus ring), and the e2e selectors. Several
+       choices for one card (two abilities, attack a player or a planeswalker): a small menu by the card. The selected
+       hand card rises large at the centre [R]. "All Attack" and "No Blocks" beside the main button; Space presses the
+       main button, Escape cancels.
+    2. **Prompts.** A prompt for every decision the board can't answer (mulligan with the hand shown large, X, target
+       count, dividing damage, damage assignment, trigger order, choosing cards, yes/no, replacement order, naming a
+       card, the starting player, cancel or pay during a cast), Arena-like, at the top centre with a title saying what's
+       awaited; the actions drawer goes.
+    3. **Smart stops.** The host stops for priority only where Arena does by default (own main phases, declaring
+       attackers and blockers, when the opponent puts something on the stack or attacks), not at every step where an
+       instant could be cast; a full-control toggle.
+    Accept: a full game playable at 812×375 by touch alone, and by keyboard alone, as Playwright tests.
+  - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
+    tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
+    creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
+    combat"); prompts (React) for the rest: mulligan, X, choosing cards, yes/no, dividing damage, the order of
+    triggers, damage assignment, naming a card; the options drawer goes.
+  - Added to M3-04c from the final UX review (2026-11-23): keyword badges at a permanent's bottom-left corner
+    (flying, reach, deathtouch, first strike...: ui.md "The cards", both screenshot sets); keep the main button's slot
+    as a label naming any decision it can't answer ("Assign Damage", "Pay {R}"); ignore a second press within about
+    250 ms of the button's action changing; the open hand showing less (about 60%) and the collapsed hand more.
+  - **M3-04c, everything M2's pool puts on the board.** The stack at the side with its targets, counters and loyalty,
+    attached Auras and Equipment beside their permanent with a link mark (the owner's screenshots), tokens, damage, summoning sickness, graveyard and
+    exile browsers, revealed hands and library tops, long-press for the card's details, the "turn your phone"
+    prompt in portrait. *Accept (M3-04):* a full game playable at the folded phone's size in landscape, as a
+    Playwright test.
+  - Future impact: M3-05 adds the full layout beside the compact one (the board model takes the layout as data);
+    M3-07 animates between board models; M3-08 puts art in the frames.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
   spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
 - M2-01 Hidden information fix: done, merged (PR #21, D-054).
@@ -1738,7 +1867,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   failed, 26 minutes); mutants breaking views, events, life, zones and legal actions are caught. One known issue left
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
-## Open questions for the owner
+## Open questions
+
+- Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
+  does? On touch, long-press shows the details (M3-04c) either way.
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
@@ -1801,6 +1933,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- Fixed (2026-11-23, owner): "When I only had a mountain played, llanowar elves (1 green mana card) was available as an
+  action to cast, which is incorrect." The engine may list a spell the player can't pay for: beginning to cast needs
+  only permission (CR 601.3), and a cost that can't be paid rewinds the cast (CR 601.2h, 734). The app greys out what
+  the seat view's `mightPay` hint says can't be paid, but that hint, when the auto-payer found no payment, answered
+  yes whenever the total mana was enough, ignoring colour: one Mountain was "enough" for {G}. Now it also needs, for
+  each coloured symbol, that many pool mana or sources able to make that colour (`manaByType`), so a no is always
+  right. The same hint drives auto-pass and the CLI brief, which no longer stop for or list such spells. Test:
+  packages/engine/test/view/seat-view.test.ts (Llanowar Elves with one Mountain, then with a Forest).
 - (2026-11-22, M3-02 code review) The `random` agent can spend tens of thousands of actions under Prized Unicorn's
   block requirement, adding and taking back blocks at random, until the host gives up (`HostStuck`, 100,000 actions):
   about one game in 1,500 of `pnpm eval`, which counts it void (D-145). Only the test agents do this (the heuristic
