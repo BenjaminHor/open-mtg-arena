@@ -17,6 +17,7 @@ import {
 } from "../interaction/all-attack.ts";
 import { cardDetails } from "../interaction/card-details.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
+import { turnBanner } from "../interaction/turn-banner.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
@@ -86,6 +87,9 @@ function keyboardFocused(): boolean {
   if (focused.matches(".inspect-region, .tap-shield")) return false;
   return typing || focused.matches(":focus-visible");
 }
+
+/** ms: how long a new turn's banner shows. */
+const BANNER_MS = 1600;
 
 export function App() {
   const client = useRef<MatchClient | null>(null);
@@ -166,6 +170,19 @@ export function App() {
   }, []);
 
   const shown = update?.shown ?? null;
+  // A new turn's banner (interaction/turn-banner.ts), shown for a moment: a turn the host passed through is never
+  // invisible.
+  const [banner, setBanner] = useState<string | null>(null);
+  const lastTurn = useRef<number | null>(null);
+  useEffect(() => {
+    if (shown === null) return;
+    const text = turnBanner(lastTurn.current, shown);
+    lastTurn.current = shown.view.turn?.number ?? lastTurn.current;
+    if (text === null) return;
+    setBanner(text);
+    const gone = setTimeout(() => setBanner(null), BANNER_MS);
+    return () => clearTimeout(gone);
+  }, [shown]);
   const controlsNow = useMemo(() => (shown === null ? null : controls(shown, selection)), [shown, selection]);
   // A decision about the hand's cards opens the hand: to see the hand you keep or mulligan [R], to tap the card you
   // discard or put on the bottom.
@@ -359,6 +376,7 @@ export function App() {
             },
           }}
           inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
+          banner={banner}
           closeInspected={() => setInspected(null)}
           attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{

@@ -2163,6 +2163,15 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- Fixed (2026-11-23, owner): "sometimes I get to play two lands on one turn and I'm not sure why - I could be
+  misunderstanding due to how the auto pass works but it's rather strange." Not the engine: eight seeded games played
+  through the worker as the app plays them never gave two land drops in one turn (CR 305.2). The auto-pass (D-143,
+  D-157) did it: one press of the main button could run through the opponent's whole turn (and keeping a hand on the
+  draw went straight to turn 2), with nothing on screen to say a turn had passed, so the next turn's land drop looked
+  like a second one. Now a new turn shows a banner for a moment ("Turn 6 · Your turn"), as Arena marks a turn's
+  start (`interaction/turn-banner.ts`). Test: apps/web/test/turn-banner.test.ts (the banner, and a seeded game: one
+  land per turn, and one press crossing the opponent's turn). Seeing what the opponent did meanwhile is M3-07's
+  pacing and animation.
 - (2026-11-23, M3-04c card view code review) A token's card view shows its name, type line and keywords, but not its
   other abilities' text: the seat view carries no rules text for a token (its abilities are data from the effect that
   made it). Ajani Goldmane's Avatar's "power and toughness are each equal to your life total" is the case in the pool.

@@ -582,6 +582,36 @@ body,
 .mana-G { background: #4d9a5c; }
 .mana-T { background: #e8e4da; }
 
+/* A new turn's banner (interaction/turn-banner.ts): a quiet panel at the middle of the table for a moment, fading
+   in and out; only the fade when motion is reduced (it's the same either way here). */
+.hud .turn-banner {
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--edge);
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 150000;
+  animation: turn-banner 1600ms ease-in-out forwards;
+}
+@keyframes turn-banner {
+  0% {
+    opacity: 0;
+  }
+  15%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* The person's mana pool, just above their info block. */
 .hud .mana-pool {
   display: flex;
