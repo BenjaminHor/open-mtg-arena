@@ -1,5 +1,5 @@
-// The back of a card, for the opponent's hand and the libraries: an original design (D-140), a dark field with a ring
-// and a diamond, not any real card back.
+// The back of a card, for the opponent's hand and the libraries: an original design (D-140), a plain dark field with a
+// small ring (D-162), not any real card back.
 
 import { Container, Graphics, Text } from "pixi.js";
 import type { CardBack, LibraryPile } from "../board-model/board-model.ts";
@@ -32,7 +32,7 @@ export function librarySprite(pile: LibraryPile): Container {
     new Graphics()
       .roundRect(-bw / 2, -8, bw, 16, 8)
       .fill(PALETTE.badge)
-      .stroke({ width: 1, color: 0x6b7385 }),
+      .stroke({ width: 1, color: 0xffffff, alpha: 0.18 }),
     text,
   );
   // On the part of the pile that's on screen: below the opponent's top edge, above the person's bottom edge.
@@ -42,51 +42,16 @@ export function librarySprite(pile: LibraryPile): Container {
 }
 
 /**
- * Our own card back (D-140): a deep blue field framed by a bronze rim and a fine gold inner line, a ring and a
- * four-pointed star in the middle, a dot at each corner of the inner frame.
+ * Our own card back (D-140), minimal (D-162): a plain dark field with a thin light edge and a small ring in the middle.
  */
 function backFace(w: number, h: number): Graphics {
-  const r = w * 0.07;
-  const rim = Math.max(1.5, w * 0.05);
-  const s = Math.min(w, h) * 0.26;
-  const inset = rim + Math.max(1.5, w * 0.05);
-  const g = new Graphics()
+  const r = Math.min(w, h) * 0.08;
+  return new Graphics()
+    .roundRect(-w / 2 + 1, -h / 2 + 2, w, h, r)
+    .fill({ color: 0x000000, alpha: 0.4 })
     .roundRect(-w / 2, -h / 2, w, h, r)
-    .fill(PALETTE.backRim)
-    .roundRect(-w / 2 + rim / 2, -h / 2 + rim / 2, w - rim, h - rim, r * 0.85)
-    .stroke({ width: rim * 0.7, color: 0x7a5f34 })
-    .roundRect(-w / 2 + rim, -h / 2 + rim, w - 2 * rim, h - 2 * rim, r * 0.7)
     .fill(PALETTE.back)
-    .roundRect(-w / 2 + inset, -h / 2 + inset, w - 2 * inset, h - 2 * inset, r * 0.5)
-    .stroke({ width: 1, color: 0xc9a55a, alpha: 0.55 })
-    .circle(0, 0, s)
-    .stroke({ width: Math.max(1, w * 0.025), color: 0xc9a55a, alpha: 0.8 })
-    .poly([
-      0,
-      -s * 0.8,
-      s * 0.18,
-      -s * 0.18,
-      s * 0.8,
-      0,
-      s * 0.18,
-      s * 0.18,
-      0,
-      s * 0.8,
-      -s * 0.18,
-      s * 0.18,
-      -s * 0.8,
-      0,
-      -s * 0.18,
-      -s * 0.18,
-    ])
-    .fill({ color: PALETTE.backEmblem, alpha: 0.9 });
-  for (const [x, y] of [
-    [-1, -1],
-    [1, -1],
-    [1, 1],
-    [-1, 1],
-  ] as const) {
-    g.circle(x * (w / 2 - inset), y * (h / 2 - inset), Math.max(1, w * 0.02)).fill({ color: 0xc9a55a, alpha: 0.7 });
-  }
-  return g;
+    .stroke({ width: 1, color: 0xffffff, alpha: 0.14 })
+    .circle(0, 0, Math.min(w, h) * 0.16)
+    .stroke({ width: Math.max(1, w * 0.02), color: 0xffffff, alpha: 0.16 });
 }

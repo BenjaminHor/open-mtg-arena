@@ -60,7 +60,7 @@ export function pileBadge(count: number, w: number, h: number): Container {
     new Graphics()
       .roundRect(-bw / 2, -bh / 2, bw, bh, 3)
       .fill(PALETTE.badge)
-      .stroke({ width: 1, color: 0x6b7385 }),
+      .stroke({ width: 1, color: 0xffffff, alpha: 0.18 }),
     text,
   );
   // Above the card's top-left corner, clear of its name.

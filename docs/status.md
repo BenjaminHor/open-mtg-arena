@@ -269,6 +269,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
         the pill's line, shrinking to fit beside it (owner: "on the same line"), a token's arched top, no art: the colour with its glyphs.
         Playable is a thin solid cyan outline (hand cards too), a pick a thicker yellow-orange one. `card-face.ts`
         now draws only whole cards (hand, stack).
+        Owner on it: names and P/T on one line (done), and the font should match the reference: Inter, bundled
+        (D-163), names at natural width, growing with the tile on a desktop.
+      - Part 2 done in the same PR (#103): the HUD flat and calm through CSS tokens (`--panel`, `--edge`,
+        `--accent` a soft peach, `--muted`): plain life numbers on a dark disc, flat portraits with an accent ring
+        for the active player, a flat accent main button (full control a flat blue-violet), flat icon ladders (text
+        labels don't fit at phone width, ui.md), flat prompts, menus and buttons, plain dark card backs and badges.
   - M3-04c slice 4 (was 3; renumbered after the restyle took 3) (2026-11-23, written before starting): badges, then
     attachments, two PRs. The slices after it are now 5 zones, 6 the stack, 7 finishing. The badges are re-sited for
     the frameless tile (the name now runs along the bottom left): keyword icons as small round icons at the top left,

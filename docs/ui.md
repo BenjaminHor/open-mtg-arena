@@ -93,7 +93,11 @@ position can't show the pairing, and an attacker to the planeswalker it attacks 
 than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase
 ladder, main button, card backs, libraries and drawers get the same care as the cards: our own crafted shapes,
 metal-and-enamel finishes, depth and light, in the spirit of Arena's ornate HUD (the reference's crest wraps the
-portrait and the life total; the ladder sits on a curved rail around it), never its assets (D-140).
+portrait and the life total; the ladder sits on a curved rail around it), never its assets (D-140). **Since D-162 the HUD is
+minimal instead:** flat dark surfaces with a thin light edge, life totals as plain large numbers on a quiet dark disc,
+a flat accent-coloured main button, flat icon ladders, plain dark card backs, the app's one typeface (D-163). The
+phase ladder keeps its small icons rather than text labels: five labels don't fit beside the main button at a folded
+phone's width (812 px), and the icons are already plain shapes.
 
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**

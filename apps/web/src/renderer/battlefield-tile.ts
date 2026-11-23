@@ -12,8 +12,8 @@ import { type ColorSymbol, colorGlyph } from "./mana-symbols.ts";
 import { frameColor, mix, PALETTE } from "./palette.ts";
 import { fitText } from "./text-fit.ts";
 
-/** The name's size at most, in CSS px. */
-const NAME_SIZE = 11;
+/** The name's size at most, in CSS px: it grows with the tile up to this (a desktop's tiles are twice a phone's). */
+const NAME_SIZE = 14;
 
 export function drawTile(card: BoardCard): Face {
   const w = card.width;
@@ -156,7 +156,7 @@ const LOWERED = 0xff8a7a;
  */
 function ptPill(card: BoardCard, h: number): Container {
   const pill = new Container();
-  const size = Math.min(11, Math.max(8, h * 0.15));
+  const size = Math.min(14, Math.max(8, h * 0.15));
   const style = { fontFamily: PALETTE.sans, fontWeight: "600" as const, fontSize: size };
   const toughness = (card.toughness ?? 0) - card.damage;
   const tint = (now: number | null, printed: number | null, hurt: boolean) =>
