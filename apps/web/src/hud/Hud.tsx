@@ -94,8 +94,13 @@ export function Hud(props: HudProps) {
       />
       {/* The open hand rises over where it sits; the pool is back when the hand is put down. */}
       {!props.handOpen && <ManaPoolChip pool={view.players[me]?.manaPool} above={anchors.player.mine} />}
-      <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
-      {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
+      {/* The ladder sits on the side whose turn it is [R]: by the main button on the person's, at the top on the
+          opponent's (the model gives that one only then). */}
+      {anchors.opponentLadder === null ? (
+        <PhaseLadder ladder={anchors.ladder} label="Your turn" />
+      ) : (
+        <PhaseLadder ladder={anchors.opponentLadder} label="Opponent's turn" />
+      )}
       {!button.hidden && (
         <button
           type="button"

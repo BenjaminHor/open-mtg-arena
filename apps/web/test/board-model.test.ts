@@ -366,6 +366,28 @@ describe("the compact board model", () => {
     expect(model.cards.some((c) => !c.mine && c.playable)).toBe(false);
   });
 
+  it("marks what can be targeted apart from what can be played (a dashed outline, not the solid one)", () => {
+    // The seat view as the engine gives it while a spell's target is chosen (CR 601.2c): each legal target an option.
+    const vanguard = midGame.view.zones.battlefield.find((id) => {
+      const o = midGame.seen[id];
+      return o?.kind === "card" && o.characteristics.name === "Elite Vanguard";
+    });
+    if (vanguard === undefined) throw new Error("Elite Vanguard");
+    const choosing: SeatView = {
+      ...midGame,
+      options: [
+        {
+          ...(midGame.options[0] as SeatView["options"][number]),
+          action: { type: "ANSWER", answer: { kind: "chooseTarget", target: { kind: "object", object: vanguard } } },
+        },
+      ],
+    } as SeatView;
+    const card = boardModel(choosing, PHONE).cards.find((c) => c.id === vanguard);
+    expect(card?.targetable).toBe(true);
+    expect(card?.playable).toBe(false);
+    expect(boardModel(midGame, PHONE).cards.some((c) => c.targetable)).toBe(false);
+  });
+
   it("shows what's on top of the stack, large at the right: an ability as the card it came from", () => {
     const top = crowded.view.zones.stack.at(-1);
     const stack = boardModel(crowded, PHONE).cards.filter((c) => c.zone === "stack");

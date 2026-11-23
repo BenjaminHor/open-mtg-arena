@@ -21,7 +21,7 @@ export const PALETTE = {
   picked: 0xffb429,
   attack: 0xd9503a,
   block: 0x6f9fd8,
-  back: 0x34322f,
+  back: 0x403d39,
 } as const;
 
 /** Each colour's frame: the colour of a card's border (CR 105.2 names the five colours). */

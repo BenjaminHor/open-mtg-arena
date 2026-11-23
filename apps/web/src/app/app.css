@@ -7,7 +7,7 @@
   background: #14171d;
   color: #f4f0e6;
   /* The minimal look (D-162): flat dark surfaces, thin light edges, one calm accent. */
-  --panel: rgba(30, 29, 27, 0.96);
+  --panel: #1e1d1b;
   --edge: rgba(255, 255, 255, 0.12);
   --accent: #e3a07f;
   --accent-ink: #1e1410;
@@ -318,10 +318,11 @@ body,
   box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.75);
 }
 
-/* A player who can be targeted: a cyan outline, as a targetable card has, and a pointer. */
-/* A player who can be targeted: a dashed outline, as a target is marked (a shape, not only the colour). */
+/* A player who can be targeted: a dashed outline, as a targetable card has (a shape, not only the colour), around the
+   block rather than through its text. */
 .hud .player-info.target {
-  border: 2px dashed #3fd4ff;
+  outline: 2px dashed #3fd4ff;
+  outline-offset: 3px;
   cursor: pointer;
 }
 

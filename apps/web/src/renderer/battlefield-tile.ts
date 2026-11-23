@@ -10,10 +10,11 @@ import { combatBadge, tapMark } from "./card-marks.ts";
 import { ART_LABEL, type Face } from "./face.ts";
 import { type ColorSymbol, colorGlyph } from "./mana-symbols.ts";
 import { frameColor, mix, PALETTE } from "./palette.ts";
-import { fitText } from "./text-fit.ts";
 
 /** The name's size at most, in CSS px: it grows with the tile up to this (a desktop's tiles are twice a phone's). */
 const NAME_SIZE = 14;
+/** The smallest a name shrinks to, still readable on a phone; past it, it fades out at the pill. */
+const NAME_SMALLEST = 7;
 
 export function drawTile(card: BoardCard): Face {
   const w = card.width;
@@ -21,10 +22,6 @@ export function drawTile(card: BoardCard): Face {
   const tile = new Container();
   const radius = Math.min(w, h) * 0.08;
   const shape = card.token ? arched(w, h, radius) : (g: Graphics) => g.roundRect(-w / 2, -h / 2, w, h, radius);
-  // The state around it: a solid outline where it can be used now, a thicker yellow-orange one for a pick (which also
-  // carries its combat badge). Two widths and, for a pick, a badge: never the hue alone.
-  if (card.picked) tile.addChild(outline(shape, w, h, PALETTE.picked, 2.5));
-  else if (card.playable && !card.behind) tile.addChild(outline(shape, w, h, PALETTE.playable, 1.5));
   // Its shadow on the table, then the art's field.
   tile.addChild(
     new Graphics().roundRect(-w / 2 + 1, -h / 2 + 2, w, h, radius).fill({ color: 0x000000, alpha: 0.45 }),
@@ -34,6 +31,12 @@ export function drawTile(card: BoardCard): Face {
   tile.addChild(artLayer);
   if (!card.behind) tile.addChild(...nameAndStats(card, w, h));
   tile.addChild(shape(new Graphics()).stroke({ width: 1, color: PALETTE.rim, alpha: 0.9 }));
+  // Its state, on its own edge (inside it, so neighbours' outlines never touch): a solid outline where it can be used
+  // now, a thicker yellow-orange one for a pick (which also carries its combat badge), a dashed one where it can be
+  // targeted, as a targetable player's. Widths, a badge and a dash: never the hue alone.
+  if (card.picked) tile.addChild(outline(shape, w, h, PALETTE.picked, 2.5));
+  else if (card.targetable && !card.behind) tile.addChild(dashed(w, h, PALETTE.playable, 2));
+  else if (card.playable && !card.behind) tile.addChild(outline(shape, w, h, PALETTE.playable, 1.5));
   if (card.dim > 0) tile.addChild(shape(new Graphics()).fill({ color: 0x000000, alpha: card.dim }));
   // An attacker's swords say more than a tap mark would, so it has only the tilt and the swords.
   if (card.tapped && !card.behind && !card.attacking) {
@@ -72,13 +75,38 @@ function arched(w: number, h: number, radius: number): (g: Graphics) => Graphics
       .closePath();
 }
 
+/** The tile's own shape stroked just inside its edge. */
 function outline(shape: (g: Graphics) => Graphics, w: number, h: number, color: number, width: number): Graphics {
-  const g = new Graphics();
-  // Drawn a little larger than the tile, so it stands just outside the art.
-  const grow = (w + 2 * (width + 1)) / w;
-  shape(g).stroke({ width, color, alignment: 0 });
-  g.scale.set(grow, (h + 2 * (width + 1)) / h);
+  const g = shape(new Graphics()).stroke({ width, color });
+  g.scale.set((w - width) / w, (h - width) / h);
   return g;
+}
+
+/** A dashed outline just inside the tile's edge: dashes along each side, the corners left open. */
+function dashed(w: number, h: number, color: number, width: number): Graphics {
+  const g = new Graphics();
+  const dash = 5;
+  const gap = 3.5;
+  const x0 = -w / 2 + width / 2;
+  const y0 = -h / 2 + width / 2;
+  const x1 = w / 2 - width / 2;
+  const y1 = h / 2 - width / 2;
+  const corner = Math.min(w, h) * 0.08;
+  const side = (ax: number, ay: number, bx: number, by: number) => {
+    const length = Math.hypot(bx - ax, by - ay);
+    for (let t = 0; t < length; t += dash + gap) {
+      const end = Math.min(length, t + dash);
+      g.moveTo(ax + ((bx - ax) * t) / length, ay + ((by - ay) * t) / length).lineTo(
+        ax + ((bx - ax) * end) / length,
+        ay + ((by - ay) * end) / length,
+      );
+    }
+  };
+  side(x0 + corner, y0, x1 - corner, y0);
+  side(x1, y0 + corner, x1, y1 - corner);
+  side(x1 - corner, y1, x0 + corner, y1);
+  side(x0, y1 - corner, x0, y0 + corner);
+  return g.stroke({ width, color, cap: "round" });
 }
 
 /** Before the art loads, or without any: the card's colour, darkened, with its colours' glyphs in the middle. */
@@ -99,8 +127,9 @@ function fallback(card: BoardCard, shape: (g: Graphics) => Graphics, w: number, 
 
 /**
  * The name over a dark fade at the bottom, and the power/toughness pill at the bottom right, on one line (the owner,
- * ui.md "Name and P/T on one line"): a long name is squeezed and shrunk to fit beside the pill, never cut off and never
- * moved to a line of its own.
+ * ui.md "Name and P/T on one line"). A long name shrinks, at its letters' natural width, down to a readable
+ * `NAME_SMALLEST`; one that still doesn't fit fades out at the pill (the owner, ui.md "Long names"), its whole name in
+ * the card view.
  */
 function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
   const pad = Math.max(2, w * 0.03);
@@ -117,7 +146,13 @@ function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
     },
   });
   const lineH = name.height;
-  fitText(name, w - 2 * pad - (pill === null ? 0 : pill.width + pad), { oneLine: true });
+  const room = w - 2 * pad - (pill === null ? 0 : pill.width + pad);
+  let size = Number(name.style.fontSize);
+  while (name.width > room && size > NAME_SMALLEST) {
+    size = Math.max(NAME_SMALLEST, size - 0.5);
+    name.style.fontSize = size;
+  }
+  const overflows = name.width > room;
   // On the pill's line: centred on it when there is one.
   const lineMiddle = h / 2 - pad - (pill === null ? lineH : pill.height) / 2;
   name.anchor.set(0, 0.5);
@@ -139,6 +174,25 @@ function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
   const mask = new Graphics().roundRect(-w / 2, -h / 2, w, h, Math.min(w, h) * 0.08).fill(0xffffff);
   fade.mask = mask;
   const parts: Container[] = [mask, fade, name];
+  if (overflows) {
+    // Cut at the pill, its last few pixels fading into the dark under the name.
+    const clip = new Graphics().rect(-w / 2 + pad, lineMiddle - lineH, room, lineH * 2).fill(0xffffff);
+    name.mask = clip;
+    const tail = Math.min(12, room * 0.3);
+    const fadeOut = new Graphics().rect(-w / 2 + pad + room - tail, lineMiddle - lineH / 2, tail, lineH).fill(
+      new FillGradient({
+        type: "linear",
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 0 },
+        colorStops: [
+          { offset: 0, color: "rgba(0,0,0,0)" },
+          { offset: 1, color: "rgba(0,0,0,0.85)" },
+        ],
+        textureSpace: "local",
+      }),
+    );
+    parts.push(clip, fadeOut);
+  }
   if (pill !== null) {
     pill.position.set(w / 2 - pad - pill.width, h / 2 - pad - pill.height);
     parts.push(pill);

@@ -277,6 +277,17 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
         Done (D-164): `hud/PlayerInfo.tsx`, `overlay.player` anchors, no crests, portraits or library piles; land rows
         start right of the blocks; the hand a plain centred fan; the opponent's ladder at the top centre; layout tests
         updated.
+      - UX review of the restyle (2026-11-23), fixed: targets are a dashed outline (cards and players alike), apart
+        from the solid "can be played" one (`targetIds`, `BoardCard.targetable`); outlines drawn inside a tile's edge,
+        so neighbours' never merge; the player block's target outline around it, not through its counts; prompt panels
+        opaque; card backs a step lighter; one ladder, on the active player's side. Long names on a phone's tiles: the
+        owner chose "Fade under the pill" (ui.md "Long names"): 7 px at the least, then cut at the pill with a fade.
+        Left for later, recorded here: a picked blocker shows only a thicker outline until assigned (give it its
+        hollow shield badge); raised and lowered P/T differ by colour only (add a caret or over/underline); full
+        control differs by colour only (add a detail line); the HUD doesn't scale up on a desktop (a --hud-scale);
+        land pile names covered by the tapped sub-pile or the next slot (pre-existing); colourless no-art tiles are
+        blank (a type glyph); Fireball's X wraps 0-6 then 7; the divide panel covers what's divided; "Open your hand"
+        is 40 px tall; planeswalker loyalty (the badges slice).
       - Part 2 done in the same PR (#103): the HUD flat and calm through CSS tokens (`--panel`, `--edge`,
         `--accent` a soft peach, `--muted`): plain life numbers on a dark disc, flat portraits with an accent ring
         for the active player, a flat accent main button (full control a flat blue-violet), flat icon ladders (text

@@ -12,7 +12,7 @@ import { handCards } from "./hand.ts";
 import { cardBacks } from "./hidden-cards.ts";
 import { type Ladder, ladderAtTop, ladderOver } from "./ladder.ts";
 import { withPicks } from "./picks.ts";
-import { playableIds } from "./playable.ts";
+import { playableIds, targetIds } from "./playable.ts";
 import { tapRegions } from "./regions.ts";
 import { stackTop } from "./stack.ts";
 
@@ -26,6 +26,11 @@ export type BoardCard = {
   pileOf: ObjectId;
   /** Something the person can act with now: play, cast, activate, attack or block with (`playable.ts`). */
   playable: boolean;
+  /**
+   * It can be chosen now as a target (CR 601.2c), or a picked blocker can block it: a dashed outline, as a targetable
+   * player has, not the solid one of what can be played.
+   */
+  targetable: boolean;
   /**
    * Picked in the declaration under way, not yet declared: drawn as attacking or blocking already, with the
    * yellow-orange outline of a pick [R].
@@ -167,11 +172,13 @@ export function boardModel(
   const overlay = overlayAnchors(area, layout, turn?.step ?? null, turn?.activePlayer === opponent);
   const field = withCombat(withPicks(shown, battlefieldCards(shown, area, me, layout, overlay)), area, layout);
   const playable = playableIds(shown);
+  const targets = targetIds(shown);
   const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);
   const stack = stackTop(shown, area, layout);
   const cards = [...field.cards, ...stack, ...hand].map((c) => ({
     ...c,
-    playable: playable.has(c.id) || (ui.highlight ?? []).includes(c.id),
+    playable: playable.has(c.id),
+    targetable: targets.has(c.id) || (ui.highlight ?? []).includes(c.id),
     picked: c.picked || c.id === ui.selected,
   }));
   return {

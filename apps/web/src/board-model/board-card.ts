@@ -29,6 +29,7 @@ export function boardCard(
     pileOf: look.pileOf ?? card.id,
     // Filled in by the board model from the options (`playable.ts`).
     playable: false,
+    targetable: false,
     picked: false,
     attacking: card.attacking !== null,
     attacks: card.attacking?.attacked?.kind === "object" ? card.attacking.attacked.object : null,
