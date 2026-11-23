@@ -88,10 +88,13 @@ export function App() {
 
   const shown = update?.shown ?? null;
   const controlsNow = useMemo(() => (shown === null ? null : controls(shown, selection)), [shown, selection]);
-  // A decision about the hand's cards (discarding, putting one on the bottom) opens the hand, where they're tapped.
+  // A decision about the hand's cards opens the hand: to see the hand you keep or mulligan [R], to tap the card you
+  // discard or put on the bottom.
   const decisionKind = shown?.view.decision?.kind;
   useEffect(() => {
-    if (decisionKind === "discardToHandSize" || decisionKind === "mulliganBottom") setHandOpen(true);
+    if (decisionKind === "mulligan" || decisionKind === "discardToHandSize" || decisionKind === "mulliganBottom") {
+      setHandOpen(true);
+    }
   }, [decisionKind]);
   // A selection the new view no longer offers (the card was played, the step moved on) is dropped.
   useEffect(() => {

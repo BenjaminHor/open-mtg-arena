@@ -25,12 +25,16 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   anchors (ui.md, "Board structure"). `battlefield.ts` (the rows), `piles.ts` and `land-slots.ts` (piles of permanents
   that look the same), `combat.ts` (attackers step forward, blockers under their attackers, D-154), `picks.ts` (the
   declaration under way), `playable.ts` (what can be played now, from the options), `hand.ts` (collapsed and open),
-  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `board-card.ts`, `card-info.ts`
+  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `stack.ts` (the stack's top),
+  `regions.ts` (where a tap lands), `board-card.ts`, `card-info.ts`
   (printed cost, text, art and images from the pool data), `spread.ts` (a row between two edges). Unit-tested without
   drawing.
-- `src/hud/`: the DOM layer over the board, placed only by the model's anchors: portraits, life crests, the phase
-  ladders (`PhaseLadder.tsx`), the main button (`main-button.ts` decides what it says and does), the hand toggle, and
-  the actions drawer that stands in for prompts until M3-04b.
+- `src/interaction/controls.ts`: what the person can do now and where (D-156): every legal option as a control, a tap
+  on a card or portrait, the main button, Undo or Cancel beside it, or a prompt. Pure and tested over whole games.
+- `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
+  (`CardButtons.tsx`), portraits (targetable as players), life crests, the phase ladders (`PhaseLadder.tsx`), the main
+  button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
+  card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede (`SettingsMenu.tsx`).
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
   component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `card-face.ts` (a card's face:
   frame, art window, name strip, power/toughness), `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat
@@ -50,8 +54,10 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 
 `test/` (Vitest, in `pnpm check`): the worker session (start, start from a setup, act, refuse, nothing hidden in a
 reply), the board model on fixture boards and boards the tests write (`board-model.test.ts`), combat and the
-declaration under way through the real session (`combat-board.test.ts`), the main button, `spread`. `e2e/`
-(Playwright, `pnpm test:e2e`, run in CI, at desktop size and the folded phone in landscape): the app loads and plays a
+declaration under way through the real session (`combat-board.test.ts`), the main button, `spread`. `controls.test.ts` plays seeded games through the worker and
+checks every option has a control. `e2e/` (Playwright, `pnpm test:e2e`, run in CI, at desktop size and the folded phone
+in landscape): playing by taps (`play.spec.ts`: a spell with a target, attacks, blocks, a whole game by the controls
+alone, the keyboard); the app loads and plays a
 round trip through the worker, draws a fixture board, opens and closes the hand, shows art when it loads and the
 art-less frame when it can't, and works offline after its first load. They block Scryfall's image host (or serve a
 stand-in image): no test needs the network.

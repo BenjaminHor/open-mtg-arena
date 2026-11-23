@@ -2362,3 +2362,21 @@ owner's answer to the D-089 open question, option (a))
   without one, as Arena does; the owner ruled that the long-press view (M3-04c), which shows the full card image with
   its artist credit, is enough. No credits line on the board. Hand cards are full card images, credit included.
 
+**D-156: Acting on the board: controls from the options, buttons over the canvas (M3-04b)** · 2026-11-23 · accepted
+- `interaction/controls.ts` turns the seat view's options into controls: a tap on a card (lift a hand card then play
+  it, activate, target, attack, pick a blocker then its attacker, discard, sacrifice), a tap on a portrait (a player
+  target), the main button, small buttons beside it (Undo, the engine's take-back of the last pick; Cancel, its cancel
+  of a cast or activation), and a prompt for what has no card (keep or mulligan, X, dividing damage...). It never
+  decides legality: every control sends an action the engine listed, and a property test over seeded games checks
+  that every option has a control and every control's action is listed. That test is what let the list of every
+  action (M3-03's drawer) go.
+- Taps land on real `<button>`s laid over the canvas at tap regions the board model gives (a pile is one region, an
+  open hand card its visible strip, the lifted card all of it): one path for touch, mouse and keyboard (ui.md "Mouse
+  and keyboard too"), labels for screen readers, stable selectors for tests. The canvas only draws.
+- The UI's own state of a choice under way (the lifted card, the picked blocker, an open menu, an action on its way
+  to the worker) lives in the app, never in the engine; the board model takes the selection to draw it.
+- A spell the person's mana surely can't pay for gets no control (D-144's `mightPay`), as Arena doesn't offer it.
+- A decision about the hand's cards opens the hand; the main button names why a declaration can't finish yet.
+- Left for later: drag to play (taps do everything a drag would), "All Attack", bespoke prompts for X, dividing
+  damage and damage assignment (slice 2), smart stops (slice 3).
+
