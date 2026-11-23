@@ -198,6 +198,24 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
     (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
     proxy injects per request, rather than a plain-text variable.
+  - **M3-04a: PR #96 open** (2026-11-23), all reviews done; merges on green CI.
+  - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:
+    1. **Acting on the board.** `interaction/` (pure, tested): for each object, what a tap does now, from the seat view's
+       options and the UI selection: lift a hand card, play or cast it (a second tap, or a drag up), activate an
+       ability, pick a target (cards and portraits), declare an attacker, pick a blocker then its attacker, take back
+       the last pick. The HUD lays a transparent button over each interactive card (`aria-label` = name and what it
+       does): one path for touch, mouse and keyboard (Tab, Enter/Space, a focus ring), and the e2e selectors. Several
+       choices for one card (two abilities, attack a player or a planeswalker): a small menu by the card. The selected
+       hand card rises large at the centre [R]. "All Attack" and "No Blocks" beside the main button; Space presses the
+       main button, Escape cancels.
+    2. **Prompts.** A prompt for every decision the board can't answer (mulligan with the hand shown large, X, target
+       count, dividing damage, damage assignment, trigger order, choosing cards, yes/no, replacement order, naming a
+       card, the starting player, cancel or pay during a cast), Arena-like, at the top centre with a title saying what's
+       awaited; the actions drawer goes.
+    3. **Smart stops.** The host stops for priority only where Arena does by default (own main phases, declaring
+       attackers and blockers, when the opponent puts something on the stack or attacks), not at every step where an
+       instant could be cast; a full-control toggle.
+    Accept: a full game playable at 812×375 by touch alone, and by keyboard alone, as Playwright tests.
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
