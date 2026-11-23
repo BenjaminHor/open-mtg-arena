@@ -334,6 +334,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Pacing slice merged (PR #112, squash, 2026-11-23).** Next: the owner tries the live site (pacing timings,
+    the zone browser's spacing on their phone), then M3-05 with their feedback taken in first.
   - **Pacing slice done (2026-11-23, D-172): the host's run shown frame by frame, a line saying what happened, Skip.**
     `advanceOne` (packages/match), frames in the worker's reply, `interaction/pacing.ts`, `interaction/event-line.ts`,
     `app/use-playback.ts`; tests: test/match-session.test.ts (frames, no event lost), test/pacing.test.ts,
