@@ -63,22 +63,29 @@ test("opens the hand with a tap, and closes it with another", async ({ page }) =
   await expect.poll(handTop).toBeGreaterThan(0.8);
 });
 
-test("draws each card's art when it loads, and the art-less frame when it can't", async ({ page }) => {
-  await page.goto("/?fixture=mid-game");
-  await expect(page.getByRole("img", { name: "Your life 17" })).toBeVisible();
-  // The image host is blocked (beforeEach): every card keeps its fallback frame.
-  await page.waitForTimeout(300);
-  expect(await artShown(page)).toEqual([]);
+test.describe("card art", () => {
+  // The page's requests for art are answered by `page.route` below. Once a service worker controls the page (it can,
+  // after the reload), Playwright can't route its requests any more and they'd go to the real image host.
+  test.use({ serviceWorkers: "block" });
 
-  await page.unroute("https://cards.scryfall.io/**");
-  await page.route("https://cards.scryfall.io/**", (route) =>
-    route.fulfill({ body: PIXEL, contentType: "image/png", headers: { "access-control-allow-origin": "*" } }),
-  );
-  await page.reload();
-  await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
-  const drawn = (await board(page))?.cards.length ?? 0;
-  // Every card in the fixture is a real card, so each one gets its art.
-  await expect.poll(async () => (await artShown(page)).length).toBe(drawn);
+  test("draws each card's art when it loads, and the art-less frame when it can't", async ({ page }) => {
+    await page.goto("/?fixture=mid-game");
+    await expect(page.getByRole("img", { name: "Your life 17" })).toBeVisible();
+    // The image host is blocked (beforeEach): every card keeps its fallback frame.
+    await page.waitForTimeout(300);
+    expect(await artShown(page)).toEqual([]);
+
+    await page.unroute("https://cards.scryfall.io/**");
+    await page.route("https://cards.scryfall.io/**", (route) =>
+      route.fulfill({ body: PIXEL, contentType: "image/png", headers: { "access-control-allow-origin": "*" } }),
+    );
+    await page.reload();
+    await expect.poll(async () => (await board(page))?.cards.length ?? 0).toBeGreaterThan(0);
+    const drawn = (await board(page))?.cards.length ?? 0;
+    // Every card in the fixture is a real card, so each one gets its art.
+    // A busy CI runner with software WebGL can take several seconds to decode and draw them all.
+    await expect.poll(async () => (await artShown(page)).length, { timeout: 15_000 }).toBe(drawn);
+  });
 });
 
 test("shows a refusal rather than hanging: an unknown deck in the address", async ({ page }) => {

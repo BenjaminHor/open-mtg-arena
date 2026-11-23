@@ -29,6 +29,17 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   // runs the ticker while it animates.
   app.ticker.stop();
   const render = () => app.render();
+  // Art arriving (a texture per card, often a dozen at once) asks for one render in the next frame, not one each.
+  let frameAsked = false;
+  let destroyed = false;
+  const renderSoon = () => {
+    if (frameAsked) return;
+    frameAsked = true;
+    requestAnimationFrame(() => {
+      frameAsked = false;
+      if (!destroyed) render();
+    });
+  };
   host.appendChild(app.canvas);
   const hidden = new Container();
   const cardLayer = new Container({ sortableChildren: true });
@@ -50,7 +61,7 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
       model.cards.forEach((card, i) => {
         present.add(card.id);
         const known = sprites.get(card.id);
-        const sprite = known ?? createCardSprite(card, new Container(), render);
+        const sprite = known ?? createCardSprite(card, new Container(), renderSoon);
         if (known === undefined) {
           sprites.set(card.id, sprite);
           cardLayer.addChild(sprite.root);
@@ -77,6 +88,7 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
       render();
     },
     destroy: () => {
+      destroyed = true;
       for (const sprite of sprites.values()) sprite.destroy();
       sprites.clear();
       app.destroy(true, { children: true, context: true });
