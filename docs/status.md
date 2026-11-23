@@ -185,6 +185,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     view also opens with a mouse, and the keyboard can do everything (focus, Enter/Space, Escape, a main-button key).
   - Owner (2026-11-23): the actions menu feels strange; they expect to click and drag cards. Confirmed it's temporary:
     M3-04b replaces it with direct play on the cards and removes it.
+  - Owner (2026-11-23), for M3-07: big emphasis on animations and effects ("that's what makes mtg arena feel so
+    polished"), nailed down solid; watch gameplay videos if possible. Recorded in the milestone (M3-07). Video hosts
+    were blocked in the research passes: before M3-07, ask for a host allowance or the owner's screen recordings.
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
