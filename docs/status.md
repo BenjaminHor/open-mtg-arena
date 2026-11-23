@@ -196,15 +196,16 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     keyboard: play from hand, targets, attack and block by tapping, prompts for every decision, the actions menu gone,
     smart auto-pass), each slice with its tests, reviews and its own PR; screenshots and a summary waiting for the
     owner. Items the UX review left for later (keyword badges, the long-press view) stay in M3-04c's list.
-  - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
-    (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
-    proxy injects per request, rather than a plain-text variable.
+  - Owner (2026-11-23): saved an OpenRouter API key for the LLM opponent (M3-02b); now a network secret (below).
   - Owner (2026-11-23, morning): wants both "All Attack" and drag to play. "All Attack" isn't an engine option (each
     attacker is its own pick): a button beside the main one during the declaration, sending a pick for every creature
     that can attack, one at a time, then leaving the declaration open to adjust. Drag to play: drag a hand card up onto
     the table to play or cast it, as the second tap does. Both go into M3-04c, first.
-  - Owner (2026-11-23, morning): asked to move the OpenRouter key to a network secret; the key in the environment's
-    variables should then be removed (Settings, the environment's variables).
+  - Owner (2026-11-23, morning): asked to move the OpenRouter key to a network secret. Done: it's a network secret for
+    openrouter.ai on the "open-mtg-arena" cloud environment (the proxy adds `Authorization: Bearer` to each request;
+    a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
+    key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
+    CI never call it.
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
   - **M3-04a done, merged (PR #96, 2026-11-23).** CI green, a 300-game fuzz clean. The owner can try it locally:
     `pnpm dev`, `?fixture=mid-game|crowded|attack|block|tokens`.
