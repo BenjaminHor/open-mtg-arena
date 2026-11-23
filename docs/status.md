@@ -350,6 +350,17 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - E. Verify: the build plays a match against the AI in a browser at the folded and unfolded sizes.
     - F. Docs: CLAUDE.md, README, architecture, roadmap and status rewritten for the new base and the next goals (the
       LLM opponent, the single-player RPG or roguelike).
+    - Revised after review (before starting): build the untouched clone first and play it from a /open-mtg-arena/
+      subpath (Pages); leave out their CLAUDE.md, AGENTS.md, GEMINI.md, agent config folders and .github/workflows at
+      copy time (a root CLAUDE.md is loaded as instructions; their workflows would run on our push); the import
+      commit brings our own CLAUDE.md, CI and commit helper with it; green on the untouched import first, then strip
+      leaf-first building after each removal (anything that can't come out green is disabled and listed), then
+      rebrand by an explicit token list (phase-rs, phase.rs, phase_rs, phase-rs.dev, data.phase-rs.dev, the crate
+      names phase-ai/-ast/-llm/-parser/-server), never bare "phase", with a CI grep over the built output; this PR
+      changes no behaviour (the fair AI and phone work come after); NOTICE names the upstream commit.
+    - Progress (2026-11-23): their pinned toolchain (nightly-2026-11-19, wasm32 target) installs here; crates.io,
+      MTGJSON and the Rust dist are reachable; building wasm-bindgen-cli 0.2.121 and the release engine WASM in the
+      clone at scratchpad/phase-src/repo. Asked the owner about keeping their unsourced audio and battlefield art.
   - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
     (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
