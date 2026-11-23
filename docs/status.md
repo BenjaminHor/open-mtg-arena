@@ -2308,6 +2308,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
+- (2026-11-23, owner) Fork phase-rs and build on it instead? The owner: "Are you familiar with phase-rs the open source
+  engine and client", then "im actually considering that we fork the repo and build upon that instead...is that too
+  much?". phase-rs/phase: a Rust MTG rules engine compiled to native and WASM (desktop app, browser PWA, WebSocket
+  multiplayer), cards parsed from text with MTGJSON data, CR-cited rules tests, MIT/Apache-2.0 (from a web search
+  only; its code not yet read). Proposed: a time-boxed evaluation against our goals before deciding; no decision yet.
+
 - (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
   from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of
   the live site unfolded settles both (the 172 px info block gives the scale). Proceeding with the guesses.
