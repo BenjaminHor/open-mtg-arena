@@ -3,7 +3,7 @@
 
 import { cardDatabase } from "@mtg/cards";
 import type { SeatView } from "@mtg/engine";
-import { fixtureSetup } from "../src/fixtures/fixtures.ts";
+import { type Fixture, fixtureSetup, setupOf } from "../src/fixtures/fixtures.ts";
 import { handle } from "../src/worker/match-session.ts";
 import type { ToWorker } from "../src/worker/protocol.ts";
 
@@ -23,4 +23,9 @@ export function fixtureView(name: string): SeatView {
 
 export function mulliganView(): SeatView {
   return shownAt({ type: "start", decks: ["red-green-beats", "white-soldiers"], seed: 7, human: "p1" });
+}
+
+/** A board the test writes itself, as the person is first shown it. */
+export function boardView(fixture: Fixture): SeatView {
+  return shownAt({ type: "startFrom", setup: setupOf(fixture), human: "p1" });
 }

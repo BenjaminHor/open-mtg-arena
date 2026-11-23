@@ -67,7 +67,15 @@ export function App() {
       setInsets(readInsets());
     });
     observer.observe(element);
-    return () => observer.disconnect();
+    // A half turn between the two landscape sides keeps the size but moves the notch: read the insets again.
+    const turned = () => setInsets(readInsets());
+    screen.orientation?.addEventListener("change", turned);
+    window.addEventListener("orientationchange", turned);
+    return () => {
+      observer.disconnect();
+      screen.orientation?.removeEventListener("change", turned);
+      window.removeEventListener("orientationchange", turned);
+    };
   }, []);
 
   const model = useMemo(

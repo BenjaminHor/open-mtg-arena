@@ -33,10 +33,10 @@ export function mainButton(shown: SeatView): MainButton {
   return { label: "Next", detail: view.turn === null ? null : nextStop(view.turn.step), action: pass };
 }
 
-/** An ability on the stack is named by where it came from: "Ajani Goldmane's ability". */
+/** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */
 function abilitySource(shown: SeatView, source: ObjectId): string {
   const seen = shown.seen[source];
-  return seen?.kind === "card" ? `${seen.characteristics.name}'s ability` : "An ability";
+  return seen?.kind === "card" ? `${seen.characteristics.name} ability` : "An ability";
 }
 
 /** Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. */

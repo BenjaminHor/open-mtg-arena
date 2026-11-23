@@ -19,6 +19,21 @@ stops), we design it ourselves in the same spirit (owner, 2026-11-22). The owner
 need a lot of refinement through play; Arena is the North Star for the direction (2026-11-22). So build each screen to
 be easy to change (layout and motion values in one place, D-012's shared tokens), and show it to the owner early.
 
+**The cards (owner, 2026-11-23, on the first M3-04a look):** "I feel like we could try harder to make it look like the
+screenshot. Specifically the cards themselves", pointing at a 2018 Arena desktop screenshot. What that screenshot shows
+of a permanent, which our own drawing follows (D-153): a wide "art card", wider than tall; a thick bevelled frame in
+the card's colour with a light inner rim and a drop shadow on the table; a light name strip across the top with dark
+serif text; the art filling the rest; power/toughness in a small light pill at the bottom centre, over the frame's
+edge, its numbers coloured when changed; keyword badges at the bottom-left corner; identical tokens piled with an "x4"
+count above the pile; a tapped card tilted, darkened and marked with a large curved arrow. The table is a warm,
+textured playmat, not a flat colour.
+
+**The rest of the HUD (owner, 2026-11-23, after the card redraw):** "Looks a lot better! I think some of the UI other
+than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase
+ladder, main button, card backs, libraries and drawers get the same care as the cards: our own crafted shapes,
+metal-and-enamel finishes, depth and light, in the spirit of Arena's ornate HUD (the reference's crest wraps the
+portrait and the life total; the ladder sits on a curved rail around it), never its assets (D-140).
+
 **Responsiveness**
 - Every tap, drag or long-press gives visible feedback within 100 ms, **even while the AI is thinking**
   or the worker is busy. The UI responds locally right away (press state, card lift, selection highlight)

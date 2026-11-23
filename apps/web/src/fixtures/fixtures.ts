@@ -3,13 +3,25 @@
 // oracle ids from the pool. `?fixture=<name>` in the address starts one.
 
 import { POOL } from "@mtg/cards/pool";
-import type { GameSetup, OracleId, PermanentSetup, PlayerId, PlayerSetup, Turn } from "@mtg/engine";
+import type { BasicLandType, GameSetup, OracleId, PermanentSetup, PlayerId, PlayerSetup, Turn } from "@mtg/engine";
 
-type Permanent =
+/**
+ * A permanent by name, or with its state. `attachedTo` is the index, in the same player's battlefield, of the
+ * permanent it's attached to (an Aura or Equipment).
+ */
+export type Permanent =
   | string
-  | { card: string; tapped?: boolean; sick?: boolean; damage?: number; counters?: Record<string, number> };
-type Side = { life: number; hand: string[]; battlefield: Permanent[]; graveyard?: string[]; library: string[] };
-type Fixture = { turn: Turn; players: { p1: Side; p2: Side } };
+  | {
+      card: string;
+      tapped?: boolean;
+      sick?: boolean;
+      damage?: number;
+      counters?: Record<string, number>;
+      attachedTo?: number;
+      chosenLandType?: BasicLandType;
+    };
+export type Side = { life: number; hand: string[]; battlefield: Permanent[]; graveyard?: string[]; library: string[] };
+export type Fixture = { turn: Turn; players: { p1: Side; p2: Side } };
 
 const ID_BY_NAME = new Map<string, OracleId>(POOL.cards.map((c) => [c.name, c.oracleId]));
 
@@ -118,8 +130,11 @@ export const FIXTURE_NAMES = Object.keys(FIXTURES);
 
 /** The fixture's game setup, or null when there's no fixture by that name. */
 export function fixtureSetup(name: string): GameSetup | null {
-  if (!Object.hasOwn(FIXTURES, name)) return null;
-  const fixture = FIXTURES[name] as Fixture;
+  return Object.hasOwn(FIXTURES, name) ? setupOf(FIXTURES[name] as Fixture) : null;
+}
+
+/** A board written by card names, as a game setup: for the fixtures here and for tests' own boards. */
+export function setupOf(fixture: Fixture): GameSetup {
   const sides: [PlayerId, Side][] = [
     ["p1", fixture.players.p1],
     ["p2", fixture.players.p2],
@@ -130,7 +145,7 @@ export function fixtureSetup(name: string): GameSetup | null {
       life: side.life,
       library: side.library.map(id),
       hand: side.hand.map(id),
-      battlefield: side.battlefield.map(permanent),
+      battlefield: side.battlefield.map((p) => permanent(p, player)),
       graveyard: (side.graveyard ?? []).map(id),
       exile: [],
       manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
@@ -139,7 +154,7 @@ export function fixtureSetup(name: string): GameSetup | null {
   return { seed: 1, players, opening: { kind: "fixed", turn: fixture.turn }, ruleModifiers: [] };
 }
 
-function permanent(p: Permanent): PermanentSetup {
+function permanent(p: Permanent, player: PlayerId): PermanentSetup {
   const spec = typeof p === "string" ? { card: p } : p;
   return {
     oracleId: id(spec.card),
@@ -147,5 +162,7 @@ function permanent(p: Permanent): PermanentSetup {
     summoningSick: spec.sick ?? false,
     damage: spec.damage ?? 0,
     counters: spec.counters ?? {},
+    ...(spec.attachedTo === undefined ? {} : { attachedTo: { player, index: spec.attachedTo } }),
+    ...(spec.chosenLandType === undefined ? {} : { chosenLandType: spec.chosenLandType }),
   };
 }

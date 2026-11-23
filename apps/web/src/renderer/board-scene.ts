@@ -1,6 +1,7 @@
 // The PixiJS scene (D-013, ui.md "Board structure"): it draws the board model and nothing else, with no game logic and
-// no layout math (`board-model/` does that). Cards are kept by object id and updated in place, so a card that moves is
-// the same sprite (M3-07 animates the move); hidden cards (backs, libraries) are few and redrawn each time.
+// no layout math (`board-model/` does that). Cards are kept by object id and updated in place, so a card that reflows,
+// piles or taps is the same sprite; one that changes zone is a new object (CR 400.7) and, until M3-07 carries sprites
+// across from the view's events, a new sprite. Hidden cards (backs, libraries) are few and redrawn each time.
 
 import { Application, Container, Graphics } from "pixi.js";
 import type { BoardModel } from "../board-model/board-model.ts";
@@ -20,8 +21,13 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
     backgroundAlpha: 0,
     antialias: true,
     autoDensity: true,
-    resolution: devicePixelRatio,
+    // A phone's 3× screen gains little over 2× for the board and costs about twice the pixels to fill.
+    resolution: Math.min(devicePixelRatio, 2),
   });
+  // Drawn on demand: the board is still between updates, so there's no frame loop to drain a phone's battery. M3-07
+  // runs the ticker while it animates.
+  app.ticker.stop();
+  const render = () => app.render();
   host.appendChild(app.canvas);
   const table = new Graphics();
   const hidden = new Container();
@@ -45,7 +51,7 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
       model.cards.forEach((card, i) => {
         present.add(card.id);
         const known = sprites.get(card.id);
-        const sprite = known ?? createCardSprite(card);
+        const sprite = known ?? createCardSprite(card, new Container(), render);
         if (known === undefined) {
           sprites.set(card.id, sprite);
           cardLayer.addChild(sprite.root);
@@ -59,18 +65,26 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
           sprites.delete(id);
         }
       }
-      exposeForTests(model);
+      exposeForTests(model, sprites);
+      render();
     },
-    destroy: () => app.destroy(true, { children: true }),
+    destroy: () => {
+      for (const sprite of sprites.values()) sprite.destroy();
+      sprites.clear();
+      app.destroy(true, { children: true, context: true });
+    },
   };
 }
 
 /**
  * The test hook (ui.md, "Testing a canvas"): Playwright can't see inside a canvas, so development and test builds put
- * the current board model on `window.__board`, each card with its rectangle in CSS pixels. Production builds don't.
+ * the current board model on `window.__board`, each card with its rectangle in CSS pixels, and `window.__artShown()`
+ * lists the cards whose art is showing. Production builds don't.
  */
-function exposeForTests(model: BoardModel): void {
+function exposeForTests(model: BoardModel, sprites: ReadonlyMap<string, CardSprite>): void {
   if (import.meta.env.DEV || import.meta.env.VITE_TEST_HOOKS === "1") {
-    (window as unknown as { __board: BoardModel }).__board = model;
+    const hook = window as unknown as { __board: BoardModel; __artShown: () => string[] };
+    hook.__board = model;
+    hook.__artShown = () => [...sprites].flatMap(([id, sprite]) => (sprite.hasArt() ? [id] : []));
   }
 }

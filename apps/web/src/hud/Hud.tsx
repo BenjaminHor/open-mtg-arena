@@ -5,11 +5,11 @@
 // main button's label.
 
 import type { Action, PlayerId, SeatView } from "@mtg/engine";
-import type { BoardModel, Point, Rect } from "../board-model/board-model.ts";
-import { COMPACT } from "../layout/compact.ts";
+import type { BoardModel, Rect } from "../board-model/board-model.ts";
 import { mainButton } from "./main-button.ts";
 import { OptionsDrawer } from "./OptionsDrawer.tsx";
 import { PhaseLadder } from "./PhaseLadder.tsx";
+import { place } from "./place.ts";
 
 export function Hud({ shown, model, act }: { shown: SeatView; model: BoardModel; act: (action: Action) => void }) {
   const view = shown.view;
@@ -24,31 +24,22 @@ export function Hud({ shown, model, act }: { shown: SeatView; model: BoardModel;
     <section className="hud" aria-label="Match">
       <Portrait rect={anchors.portrait.opponent} label="Opponent" active={active === opponent} />
       <Portrait rect={anchors.portrait.mine} label="You" active={active === me} />
-      {view.turn !== null && (
-        <PhaseLadder
-          step={view.turn.step}
-          side={anchors.ladderSide}
-          style={
-            anchors.ladderSide === "mine"
-              ? { left: anchors.ladder.x, top: anchors.ladder.y, transform: "translate(-50%, -100%)" }
-              : // Two phases left of the crest, three right: shift by half an icon so the gap is on the crest.
-                { left: anchors.ladder.x, top: anchors.ladder.y, transform: "translate(calc(-50% + 11px), -50%)" }
-          }
-        />
+      {view.turn !== null && <PhaseLadder step={view.turn.step} ladder={anchors.ladder} />}
+      <LifeCrest rect={anchors.life.opponent} life={life(opponent)} label="Opponent's life" side="opponent" />
+      <LifeCrest rect={anchors.life.mine} life={life(me)} label="Your life" side="mine" />
+      {/* While a choice other than priority waits, its prompt answers it: no button that does nothing. */}
+      {button.label !== "Choose" && (
+        <button
+          type="button"
+          className={`main-button${button.action === null ? " waiting" : ""}`}
+          style={place(anchors.mainButton)}
+          disabled={button.action === null}
+          onClick={() => button.action !== null && act(button.action)}
+        >
+          <span className="main-label">{button.label}</span>
+          {button.detail !== null && <span className="main-detail">{button.detail}</span>}
+        </button>
       )}
-      <LifeCrest at={anchors.life.opponent} life={life(opponent)} label="Opponent's life" side="opponent" />
-      <LifeCrest at={anchors.life.mine} life={life(me)} label="Your life" side="mine" />
-
-      <button
-        type="button"
-        className={`main-button${button.action === null ? " waiting" : ""}`}
-        style={place(anchors.mainButton)}
-        disabled={button.action === null}
-        onClick={() => button.action !== null && act(button.action)}
-      >
-        <span className="main-label">{button.label}</span>
-        {button.detail !== null && <span className="main-detail">{button.detail}</span>}
-      </button>
       <OptionsDrawer shown={shown} act={act} />
       {result !== null && (
         <p role="status" className="result">
@@ -57,10 +48,6 @@ export function Hud({ shown, model, act }: { shown: SeatView; model: BoardModel;
       )}
     </section>
   );
-}
-
-function place(rect: Rect): React.CSSProperties {
-  return { left: rect.x, top: rect.y, width: rect.width, height: rect.height };
 }
 
 function Portrait({ rect, label, active }: { rect: Rect; label: string; active: boolean }) {
@@ -80,15 +67,19 @@ function Portrait({ rect, label, active }: { rect: Rect; label: string; active: 
   );
 }
 
-function LifeCrest({ at, life, label, side }: { at: Point; life: number; label: string; side: "mine" | "opponent" }) {
-  const size = COMPACT.life.size;
+function LifeCrest({
+  rect,
+  life,
+  label,
+  side,
+}: {
+  rect: Rect;
+  life: number;
+  label: string;
+  side: "mine" | "opponent";
+}) {
   return (
-    <div
-      className={`life life-${side}`}
-      style={{ left: at.x - size / 2, top: at.y - size / 2, width: size, height: size }}
-      role="img"
-      aria-label={`${label} ${life}`}
-    >
+    <div className={`life life-${side}`} style={place(rect)} role="img" aria-label={`${label} ${life}`}>
       {life}
     </div>
   );

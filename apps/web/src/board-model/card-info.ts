@@ -12,12 +12,24 @@ export type CardInfo = {
   /** Scryfall's art crop, loaded at runtime and never bundled (D-007). */
   artCrop: string;
   artist: string;
+  /** Printed power and toughness as numbers; null for none or a "*" value (CR 208.2). */
+  power: number | null;
+  toughness: number | null;
 };
+
+const number = (printed: string | null) => (printed !== null && /^\d+$/.test(printed) ? Number(printed) : null);
 
 const BY_ORACLE_ID = new Map<OracleId, CardInfo>(
   POOL.cards.map((c) => [
     c.oracleId,
-    { manaCost: c.manaCost, typeLine: c.typeLine, artCrop: c.images.artCrop, artist: c.artist },
+    {
+      manaCost: c.manaCost,
+      typeLine: c.typeLine,
+      artCrop: c.images.artCrop,
+      artist: c.artist,
+      power: number(c.power),
+      toughness: number(c.toughness),
+    },
   ]),
 );
 

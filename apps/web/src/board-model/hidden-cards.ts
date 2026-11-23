@@ -3,16 +3,16 @@
 // (CR 401.3) [R].
 
 import type { PlayerId, SeatView } from "@mtg/engine";
-import { COMPACT } from "../layout/compact.ts";
-import type { CardBack, LibraryPile, PlayArea } from "./board-model.ts";
+import type { BoardLayout } from "../layout/board-layout.ts";
+import type { CardBack, LibraryPile, Rect } from "./board-model.ts";
 
-export function cardBacks(count: number, area: PlayArea): CardBack[] {
-  const { opponentHand, ratio } = COMPACT;
-  const height = opponentHand.h * area.h;
+export function cardBacks(count: number, area: Rect, layout: BoardLayout): CardBack[] {
+  const { opponentHand, ratio } = layout;
+  const height = opponentHand.h * area.height;
   const width = height * ratio.hand;
-  const step = opponentHand.step * area.w;
+  const step = opponentHand.step * area.width;
   const middle = (count - 1) / 2;
-  const centre = area.x + opponentHand.centre * area.w;
+  const centre = area.x + opponentHand.centre * area.width;
   return Array.from({ length: count }, (_, i) => ({
     key: `back-${i}`,
     x: centre - width / 2 + (i - middle) * step,
@@ -20,21 +20,21 @@ export function cardBacks(count: number, area: PlayArea): CardBack[] {
     width,
     height,
     // Held facing the person, so the fan opens downward.
-    rotation: -(i - middle) * COMPACT.hand.fan,
+    rotation: -(i - middle) * layout.hand.fan,
   }));
 }
 
-export function libraryPiles(shown: SeatView, area: PlayArea, opponent: PlayerId): LibraryPile[] {
-  const { library, ratio } = COMPACT;
-  const height = library.h * area.h;
+export function libraryPiles(shown: SeatView, area: Rect, opponent: PlayerId, layout: BoardLayout): LibraryPile[] {
+  const { library, ratio } = layout;
+  const height = library.h * area.height;
   const width = height * ratio.hand;
   const pile = (player: PlayerId, mine: boolean): LibraryPile => {
     const place = mine ? library.mine : library.opponent;
     return {
       player,
       mine,
-      x: area.x + place.x * area.w - width / 2,
-      y: mine ? area.y + area.h - place.shown * height : area.y + place.shown * height - height,
+      x: area.x + place.x * area.width - width / 2,
+      y: mine ? area.y + area.height - place.shown * height : area.y + place.shown * height - height,
       width,
       height,
       count: shown.view.zones.players[player]?.librarySize ?? 0,

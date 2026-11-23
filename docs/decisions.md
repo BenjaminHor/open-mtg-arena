@@ -2305,9 +2305,12 @@ owner's answer to the D-089 open question, option (a))
 - A tapped permanent tilts about 8°, dims and carries a curved-arrow tap mark, as in the screenshots, rather than
   turning 90°. CR 701.26a describes a paper card turned sideways; on a screen what matters is that the tapped state
   is plain to see, and a tilt keeps the rows from reflowing when a card taps. The mark is a shape, so tapped never shows by dimming alone (ui.md).
-- Lands pile when they're interchangeable to look at: same name, same tapped state, no counters or damage, nothing
-  attached either way. A pile shows its front card with an "×N" badge; each land keeps its own rectangle in the model
-  (offset under the front), so a later touch can pick one.
+- Lands pile when they're interchangeable to look at: same name, no counters or damage, nothing attached either way;
+  each name has one slot, its untapped lands in one pile and its tapped ones in a second pile at the slot's right, and
+  a slot's width depends only on how many lands it holds, so tapping a land moves nothing. Identical creatures pile
+  the same way (as Arena piles tokens). A pile shows its front card with an "xN" count above it; the cards behind show
+  as edges. Only the front few cards are offset, so past four the rest share a rectangle: M3-04b adds a hit area per
+  pile that lists its members.
 - The board model also gives the DOM layer its anchors (portraits, life crests, the phase ladder, the main button), so
   the canvas and the HUD can't disagree on where things are; the canvas is transparent over the page's table
   background. Safe-area insets are read from CSS (`env(safe-area-inset-*)`) and the layout keeps inside them.
@@ -2318,4 +2321,21 @@ owner's answer to the D-089 open question, option (a))
 - Fixture boards start the worker from a `GameSetup` (`startFrom`; `?fixture=mid-game` or `crowded` in the address),
   for tests and the screenshots shown to the owner. The browser tests run at desktop size and at the folded phone in
   landscape (812×375, touch).
+
+**D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted
+- The owner asked for cards closer to Arena's (ui.md, "The cards"). A permanent is a wide art card (1.15 wide to 1
+  tall): a bevelled frame in its colour with a drop shadow, a light name strip with dark serif text and the card's
+  colours as glyphs, the art filling the rest, power/toughness in a pill at the bottom centre, a raised number blue
+  and a lowered one red, damage also underlined. A colourless basic land is framed in its mana's colour (CR 305.6).
+- The structure follows Arena; every shape, colour and glyph is drawn by our own code (D-140): no Arena or Wizards
+  frame art, symbols or fonts. The mana glyphs are our own (a sun, a drop, a crescent, a three-tongued flame, a tree).
+- A creature row too wide for its space shrinks its cards (to a floor) before it overlaps them, and an overlapping
+  row is drawn right to left so each card keeps its power/toughness in sight.
+- The hand parts around the person's life crest rather than hide a card under it, and each card's floating cost
+  shrinks to fit its strip of the hand.
+- Without its art (loading, offline, the browser tests) a card shows a dark field tinted by its frame with its colour's
+  glyph as a watermark, not a flat slab.
+- The board model takes the layout as a parameter (`BoardLayout`, the compact one by default), and gives the HUD every
+  rectangle it places (crests, portraits, ladder icons and pills, the main button), so no HUD code holds layout numbers.
+- The canvas draws on demand (no frame loop while the board is still) at no more than twice the CSS resolution.
 

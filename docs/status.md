@@ -128,6 +128,16 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     symbols as shapes, tap marks, the HUD (portraits, life crests, phase ladder, main button, actions drawer), fixture
     boards (`?fixture=mid-game`, `crowded`). `pnpm check` and the browser tests (desktop and 812×375 touch) green.
     Next: reviews (code, UX), then screenshots to the owner; 04b waits for their answer.
+  - Owner (2026-11-23), seeing the first look's description and a 2018 Arena desktop screenshot: "I feel like we could
+    try harder to make it look like the screenshot. Specifically the cards themselves." Recorded in ui.md ("The
+    cards"); the card faces are redrawn to that anatomy (D-153) before the screenshots go to the owner. Code and UX
+    reviews are done; their fixes are going in with the redraw (hand parted around the crest, costs sized to fit,
+    creature rows shrink before overlapping, a dark art-less fallback, colour glyphs on permanents, damage marked by
+    shape, pile backs without text, dim by shading, render on demand, safe-area for the drawer, the layout as a
+    `BoardLayout` parameter, rows clear of every HUD piece).
+  - Owner (2026-11-23), on the redrawn cards: "Looks a lot better! I think some of the UI other than the cards could
+    use some polish, they look a little too generic and basic." Recorded in ui.md ("The rest of the HUD"); the HUD
+    pieces are restyled in this slice too.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

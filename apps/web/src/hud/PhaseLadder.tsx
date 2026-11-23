@@ -1,8 +1,11 @@
 // The phase ladder [R]: five small icons for the turn's phases (CR 500.1), the current one lit. It sits over the main
 // button on the person's turn and around the opponent's life crest on theirs, so where it is says whose turn it is.
-// The lit phase also differs by size and an underline, not only by colour (ui.md, "Never color alone").
+// The board model places each icon and pill; this only draws them. The lit phase also differs by size and an
+// underline, not only by colour (ui.md, "Never color alone"). Expanding combat into its steps is M3-04b.
 
 import { type Phase, phaseOf, type Step } from "@mtg/engine";
+import type { OverlayAnchors } from "../board-model/board-model.ts";
+import { place } from "./place.ts";
 
 const PHASES: { phase: Phase; label: string; icon: "cap" | "card" | "swords" }[] = [
   { phase: "beginning", label: "Beginning", icon: "cap" },
@@ -12,35 +15,30 @@ const PHASES: { phase: Phase; label: string; icon: "cap" | "card" | "swords" }[]
   { phase: "ending", label: "End", icon: "cap" },
 ];
 
-export function PhaseLadder({
-  step,
-  side,
-  style,
-}: {
-  step: Step;
-  side: "mine" | "opponent";
-  style: React.CSSProperties;
-}) {
+export function PhaseLadder({ step, ladder }: { step: Step; ladder: OverlayAnchors["ladder"] }) {
   const current = phaseOf(step);
   return (
-    <ol
-      className={`ladder ladder-${side}`}
-      style={style}
-      aria-label={side === "mine" ? "Your turn" : "Opponent's turn"}
-    >
-      {PHASES.map((p, i) => (
-        <li
-          key={p.phase}
-          className={p.phase === current ? "lit" : undefined}
-          aria-current={p.phase === current ? "step" : undefined}
-          aria-label={p.label}
-          // On the opponent's turn the ladder parts around their life crest.
-          data-gap={side === "opponent" && i === 2 ? "" : undefined}
-        >
-          <Icon kind={p.icon} />
-        </li>
+    <>
+      {ladder.pills.map((pill) => (
+        <div key={`${pill.x}`} className="ladder-pill" style={place(pill)} aria-hidden="true" />
       ))}
-    </ol>
+      <ol className="ladder" aria-label={ladder.side === "mine" ? "Your turn" : "Opponent's turn"}>
+        {PHASES.map((p, i) => {
+          const at = ladder.icons[i];
+          return (
+            <li
+              key={p.phase}
+              className={p.phase === current ? "lit" : undefined}
+              style={at === undefined ? undefined : place(at)}
+              aria-current={p.phase === current ? "step" : undefined}
+              aria-label={p.label}
+            >
+              <Icon kind={p.icon} />
+            </li>
+          );
+        })}
+      </ol>
+    </>
   );
 }
 

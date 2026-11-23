@@ -22,9 +22,13 @@ body,
 
 /* ui.md, "Touch interaction": no browser gestures, selection or overscroll on the board. */
 .app {
+  /* An original playmat (ui.md, "The cards": warm and textured, not flat): a warm stone field lit from the middle,
+     a faint engraved ring around the centre, fine grain, darker edges. */
   background:
-    linear-gradient(180deg, rgba(150, 70, 55, 0.12), transparent 45%, transparent 55%, rgba(60, 95, 160, 0.14)),
-    radial-gradient(ellipse 75% 65% at 50% 50%, #2b3242 0%, #1a1e27 60%, #101217 100%);
+    radial-gradient(circle at 50% 50%, transparent 21%, rgba(255, 226, 160, 0.07) 21.4%, transparent 22.2%),
+    radial-gradient(circle at 50% 50%, transparent 31%, rgba(0, 0, 0, 0.1) 31.3%, transparent 32%),
+    repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.018) 0 2px, rgba(0, 0, 0, 0.02) 2px 5px),
+    radial-gradient(ellipse 70% 62% at 50% 50%, #7a6542 0%, #5a4a32 45%, #33291c 80%, #1d1710 100%);
   position: fixed;
   inset: 0;
   touch-action: none;
@@ -96,32 +100,31 @@ body,
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
+/* The list spans the HUD so it has a box of its own; its icons are placed inside it by the board model. */
 .ladder {
-  display: flex;
-  gap: 4px;
+  inset: 0;
   margin: 0;
-  padding: 3px 6px;
+  padding: 0;
   list-style: none;
-  border-radius: 12px;
+}
+
+.ladder-pill {
+  box-sizing: border-box;
+  border-radius: 999px;
   background: rgba(12, 13, 16, 0.75);
 }
 
 .ladder li {
-  width: 18px;
-  height: 18px;
+  position: absolute;
+  box-sizing: border-box;
   display: grid;
   place-items: center;
   border-bottom: 2px solid transparent;
 }
 
-/* Room for the opponent's life crest (50 px) between Main 1 and Combat. */
-.ladder li[data-gap] {
-  margin-left: 58px;
-}
-
 .ladder svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   fill: #5d6577;
 }
 
@@ -138,8 +141,8 @@ body,
 }
 
 .ladder li.lit svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   fill: var(--gold);
 }
 
@@ -167,11 +170,11 @@ body,
 
 .main-label {
   font-weight: 800;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .main-detail {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   max-width: 100%;
   overflow: hidden;
@@ -188,8 +191,8 @@ body,
 }
 
 .drawer {
-  top: 6px;
-  right: 8px;
+  top: calc(6px + env(safe-area-inset-top));
+  right: calc(8px + env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   align-items: flex-end;
