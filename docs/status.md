@@ -335,7 +335,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       opponent's large card hides my creatures"), until a new object tops the stack.
     - An ability is a card-shaped panel [R: "the source's art, an 'Ability' type line, the ability text"]: its source's
       name and art, "Triggered ability" / "Activated ability", and the ability's own text. The engine keeps no text per
-      ability, so `interaction/ability-text.ts` (pure) picks the ability's line from the source's Oracle text by its
+      ability, so `board-model/ability-text.ts` (pure) picks the ability's line from the source's Oracle text by its
       `AbilityRef`, with a test over the whole pool against the definitions (counts and kinds line up); a delayed
       trigger, a land's intrinsic mana ability and anything the test can't line up fall back to the whole text.
     - Targets marked on the board [R: "a glowing curve from the stack item to its target"]: an arrow from the top

@@ -5,7 +5,7 @@
 import { cardDatabase } from "@mtg/cards";
 import type { AbilityDef, CardData, TriggeredAbilityDef } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
-import { abilityText } from "../src/board-model/ability-text.ts";
+import { abilityText, activatedLines, triggeredLines } from "../src/board-model/ability-text.ts";
 
 const pool = Object.values(cardDatabase()) as CardData[];
 const named = (name: string) => {
@@ -58,30 +58,59 @@ describe("an ability's own text", () => {
     expect(abilityText(named("Forest"), { kind: "basicLandType", landType: "Forest" })).toBeNull();
   });
 
-  it("finds a line for every ability in the pool, and its cost agrees with the definition", () => {
+  it("finds exactly one line per ability in the pool, and each line's cost is its definition's", () => {
     for (const { def } of pool) {
+      // As many lines as abilities: a line the parser missed (an ability word, an unknown keyword) or took wrongly fails.
+      expect(activatedLines(def.oracle), def.name).toHaveLength(def.abilities?.length ?? 0);
+      expect(triggeredLines(def.oracle), def.name).toHaveLength(def.triggers?.length ?? 0);
       (def.abilities ?? []).forEach((ability, index) => {
-        const line = abilityText(def.oracle, { kind: "printed", index });
-        expect(line, `${def.name} ability ${index}`).not.toBeNull();
-        expect(costAgrees(line ?? "", ability), `${def.name}: "${line}"`).toBe(true);
-      });
-      (def.triggers ?? []).forEach((_, index) => {
-        const line = abilityText(def.oracle, { kind: "triggered", index });
-        expect(line, `${def.name} trigger ${index}`).toMatch(/^(When|Whenever|At)\b/);
+        const line = abilityText(def.oracle, { kind: "printed", index }) ?? "";
+        expect(costText(line), `${def.name}: "${line}"`).toBe(expectedCost(ability));
       });
     }
   });
 });
 
-/** The line's cost says what the definition's does: equip, loyalty, {T}, a sacrifice, a counter removed. */
-function costAgrees(line: string, ability: AbilityDef): boolean {
-  if (ability.keyword === "equip") return line.startsWith("Equip");
+/**
+ * The cost as written on the line, normalised: mana symbols, {T}, a loyalty amount, sacrifice and remove-counter parts,
+ * so two abilities of one card with costs of the same shape but different amounts can't be swapped unnoticed.
+ */
+function costText(line: string): string {
+  if (line.startsWith("Equip")) return `equip ${line.slice("Equip ".length)}`;
   const cost = line.slice(0, line.indexOf(":"));
-  const has = (kind: string) => ability.cost.some((c) => c.kind === kind);
-  return (
-    /^[+−-]?\d|^[+−-]X/.test(cost) === has("loyalty") &&
-    cost.includes("{T}") === has("tap") &&
-    /Sacrifice/.test(cost) === (has("sacrifice") || has("sacrificeSelf")) &&
-    /Remove/.test(cost) === has("removeCounters")
-  );
+  const loyalty = /^([+−-]?)(\d+|X)$/.exec(cost);
+  if (loyalty !== null) return `loyalty ${loyalty[1] === "+" || loyalty[1] === "" ? "" : "-"}${loyalty[2]}`;
+  return cost
+    .split(", ")
+    .map((part) => (/^Sacrifice/.test(part) ? "sacrifice" : /^Remove/.test(part) ? "remove" : part))
+    .join(" ");
+}
+
+/** The same, from the definition. */
+function expectedCost(ability: AbilityDef): string {
+  const mana = (cost: { kind: string; amount?: number; color?: string }[]) =>
+    cost.map((m) => (m.kind === "generic" ? `{${m.amount}}` : m.kind === "x" ? "{X}" : `{${m.color}}`)).join("");
+  if (ability.keyword === "equip") {
+    const part = ability.cost.find((c) => c.kind === "mana");
+    return `equip ${part?.kind === "mana" ? mana(part.cost) : ""}`;
+  }
+  const loyalty = ability.cost.find((c) => c.kind === "loyalty");
+  if (loyalty?.kind === "loyalty") return `loyalty ${loyalty.amount === "minusX" ? "-X" : loyalty.amount}`;
+  return ability.cost
+    .map((c) => {
+      switch (c.kind) {
+        case "mana":
+          return mana(c.cost);
+        case "tap":
+          return "{T}";
+        case "sacrifice":
+        case "sacrificeSelf":
+          return "sacrifice";
+        case "removeCounters":
+          return "remove";
+        default:
+          return c.kind;
+      }
+    })
+    .join(" ");
 }

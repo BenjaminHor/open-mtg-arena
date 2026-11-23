@@ -6,6 +6,7 @@ import type { Action, ObjectId, SeatView, Target } from "@mtg/engine";
 import { optionLabel } from "../app/option-label.ts";
 import { nameOf } from "../board-model/card-info.ts";
 import { mainButton, mustDeclare } from "../hud/main-button.ts";
+import { objectName } from "./names.ts";
 
 type Answer = Extract<Action, { type: "ANSWER" }>["answer"];
 type Decision = NonNullable<SeatView["view"]["decision"]>;
@@ -194,17 +195,6 @@ export function promptLayout(shown: SeatView): PromptLayout {
     default:
       return "buttons";
   }
-}
-
-export function objectName(shown: SeatView, id: ObjectId): string {
-  const seen = shown.seen[id];
-  if (seen?.kind === "card") return seen.characteristics.name;
-  // An ability whose source has left (sacrificed for its cost, CR 400.7) is named by the card it came from.
-  if (seen?.kind === "ability") {
-    const source = shown.seen[seen.source] === undefined ? nameOf(seen.sourceOracleId) : null;
-    return `${source ?? objectName(shown, seen.source)} ability`;
-  }
-  return "it";
 }
 
 function targetName(shown: SeatView, t: Target): string {

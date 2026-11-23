@@ -117,7 +117,8 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
             role="img"
             // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
             tabIndex={0}
-            aria-label={c.ability ? `${c.name}: ${c.typeLine.toLowerCase()}` : c.name}
+            // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
+            aria-label={c.ability ? `${c.name} ability` : c.name}
             style={place(c)}
             onClick={(e) => e.stopPropagation()}
             {...inspectOn(c.id as ObjectId)}

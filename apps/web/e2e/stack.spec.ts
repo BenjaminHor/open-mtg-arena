@@ -41,7 +41,7 @@ test("draws every object on the stack, an ability as its own panel, and each one
   expect((growth?.x ?? 0) < (top?.x ?? 0) && (bolt?.x ?? 0) < (growth?.x ?? 0)).toBe(true);
 
   // Every object takes "i" for its card view: the ability's own text, and what each targets.
-  await page.getByRole("img", { name: "Prodigal Pyromancer: activated ability" }).focus();
+  await page.getByRole("img", { name: "Prodigal Pyromancer ability" }).focus();
   await page.keyboard.press("i");
   const view = page.getByRole("dialog", { name: "Prodigal Pyromancer" });
   await expect(view).toContainText("Activated ability");

@@ -744,6 +744,13 @@ body,
   object-fit: cover;
   margin: 0 0 6px;
 }
+/* The art's artist, credited beside a crop of it (data-sources.md). */
+.card-view-text .card-view-credit {
+  margin: -3px 0 6px;
+  font-size: 10px;
+  font-style: italic;
+  color: #5b554a;
+}
 .card-view-type {
   border-top: 1px solid #9c9584;
   border-bottom: 1px solid #9c9584;

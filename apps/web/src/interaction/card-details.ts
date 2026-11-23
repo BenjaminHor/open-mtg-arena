@@ -5,14 +5,18 @@
 
 import type { Keyword, ObjectId, OracleId, SeatView } from "@mtg/engine";
 import { cardInfo } from "../board-model/card-info.ts";
+import { who } from "./names.ts";
 import { abilityDetails, choiceHangers } from "./stack-details.ts";
 
 export type CardDetails = {
   name: string;
   /** The full card image to show large, or null (a token, a card with no image): then the text is shown instead. */
   image: string | null;
-  /** Art to show in the text card, when there's no image of the whole: an ability's source's (a panel [R]). */
-  art?: string | null;
+  /**
+   * Art to show in the text card, with its artist credited beside it (data-sources.md): an ability's panel has its
+   * source's [R]. Null for a card, whose whole image carries its own credit (D-155).
+   */
+  art: { url: string; artist: string } | null;
   manaCost: string;
   typeLine: string;
   oracleText: string;
@@ -115,6 +119,7 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   return {
     name: c.name,
     image: info?.largeImage ?? null,
+    art: null,
     manaCost: info?.manaCost ?? "",
     typeLine: info?.typeLine ?? typeLine(c.supertypes, c.types, c.subtypes),
     oracleText: info?.oracleText ?? "",
@@ -132,6 +137,7 @@ export function printedDetails(oracleId: OracleId): CardDetails | null {
   return {
     name: info.name,
     image: info.largeImage,
+    art: null,
     manaCost: info.manaCost,
     typeLine: info.typeLine,
     oracleText: info.oracleText,
@@ -152,11 +158,6 @@ function typeLine(supertypes: readonly string[], types: readonly string[], subty
 function nameOf(shown: SeatView, id: ObjectId): string {
   const seen = shown.seen[id];
   return seen?.kind === "card" ? seen.characteristics.name : "a hidden card";
-}
-
-/** A player as the person reads them. Two players for now: later, with more (CR 800), by name. */
-function who(shown: SeatView, player: string): string {
-  return player === shown.player ? "You" : "Your opponent";
 }
 
 function capitalize(text: string): string {

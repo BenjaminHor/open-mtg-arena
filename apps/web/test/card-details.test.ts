@@ -137,7 +137,7 @@ describe("cardDetails", () => {
     });
   });
 
-  it("shows an ability whose source has left as its own panel, saying the source has left", () => {
+  it("shows an ability whose source has left as its own panel, saying its source is no longer there", () => {
     const crowded = structuredClone(fixtureView("crowded"));
     const top = crowded.view.zones.stack.at(-1);
     const ability = top === undefined ? undefined : crowded.seen[top];
@@ -146,6 +146,6 @@ describe("cardDetails", () => {
     const shown = cardDetails(crowded, top);
     expect(shown?.name).toBe("Ajani Goldmane");
     expect(shown?.typeLine).toBe("Activated ability");
-    expect(shown?.hangers).toEqual([{ title: "From", text: "Its source has left" }]);
+    expect(shown?.hangers).toEqual([{ title: "From", text: "Its source is no longer there" }]);
   });
 });

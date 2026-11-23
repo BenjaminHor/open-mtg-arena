@@ -8,7 +8,7 @@ import { boardModel } from "../src/board-model/board-model.ts";
 import { MOST_UNDER } from "../src/board-model/stack.ts";
 import type { Fixture } from "../src/fixtures/fixtures.ts";
 import { cardDetails } from "../src/interaction/card-details.ts";
-import { stackTabs } from "../src/interaction/zones.ts";
+import { stackCards } from "../src/interaction/zones.ts";
 import { playFrom } from "./fixture-views.ts";
 
 const PHONE = { width: 812, height: 375 };
@@ -114,8 +114,10 @@ describe("the stack", () => {
     // The rest are a tap away: a button under the top lists the whole stack.
     expect(boardModel(deep, PHONE).overlay.stackMore).not.toBeNull();
     expect(boardModel(shown, PHONE).overlay.stackMore).toBeNull();
-    expect(stackTabs(deep)[0]?.cards).toHaveLength(7);
-    expect(stackTabs(deep)[0]?.cards[0]?.name).toBe("Prodigal Pyromancer ability");
+    expect(stackCards(deep)).toHaveLength(7);
+    expect(stackCards(deep)[0]?.name).toBe("Prodigal Pyromancer ability");
+    // The top five are drawn, not the bottom five.
+    expect(cards.map((c) => c.id)).toEqual(deep.view.zones.stack.slice(-(MOST_UNDER + 1)));
   });
 });
 
@@ -129,7 +131,8 @@ describe("a stack object's card view", () => {
     expect(details?.typeLine).toBe("Activated ability");
     expect(details?.oracleText).toBe("{T}: This creature deals 1 damage to any target.");
     expect(details?.image).toBeNull();
-    expect(details?.art).toMatch(/art_crop/);
+    expect(details?.art?.url).toMatch(/art_crop/);
+    expect(details?.art?.artist).toBeTruthy();
   });
 
   it("names each object's targets (CR 601.2c), a player or a card, and what's under it", () => {
@@ -155,5 +158,72 @@ describe("a stack object's card view", () => {
     const details = top === undefined ? null : cardDetails(now, top);
     expect(details?.hangers).toContainEqual({ title: "X", text: "2" });
     expect(details?.hangers).toContainEqual({ title: "Target", text: "Elite Vanguard" });
+  });
+
+  it("says how a divided effect is divided among its targets (CR 601.2d)", () => {
+    const two = board(["Ignite Disorder"]);
+    const m = playFrom({
+      ...two,
+      players: {
+        ...two.players,
+        p2: { ...two.players.p2, battlefield: ["Plains", "Elite Vanguard", "Veteran Armorsmith"] },
+      },
+    });
+    const start = m.shown();
+    m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Ignite Disorder"), "cast Ignite Disorder");
+    m.act((a) => a.type === "ANSWER" && a.answer.kind === "chooseTargetCount" && a.answer.count === 2, "two targets");
+    m.act(targetsObject(idOf(start, "Elite Vanguard")), "target Elite Vanguard");
+    m.act(targetsObject(idOf(start, "Veteran Armorsmith")), "target Veteran Armorsmith");
+    let now = m.shown();
+    if (now.view.decision?.kind === "divide") {
+      const divide = now.options.find((o) => o.action.type === "ANSWER" && o.action.answer.kind === "divide");
+      if (divide === undefined) throw new Error("a division");
+      now = m.act((a) => a === divide.action, "divide");
+    }
+    const top = now.view.zones.stack.at(-1);
+    const divided = (top === undefined ? null : cardDetails(now, top))?.hangers.find((h) => h.title === "Divided");
+    expect(divided?.text).toMatch(
+      /^\d to (Elite Vanguard|Veteran Armorsmith), \d to (Elite Vanguard|Veteran Armorsmith)$/,
+    );
+  });
+
+  it("names a target in a graveyard by whose graveyard it's in", () => {
+    const m = playFrom({
+      ...board(["Gravedigger"]),
+      players: {
+        ...board([]).players,
+        p1: {
+          ...board(["Gravedigger"]).players.p1,
+          battlefield: [...Array(4).fill("Swamp")],
+          graveyard: ["Grizzly Bears"],
+        },
+      },
+    });
+    const start = m.shown();
+    m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Gravedigger"), "cast Gravedigger");
+    // Gravedigger resolves (both pass), and its trigger goes on the stack targeting the only creature card there.
+    let now = m.act((a) => a.type === "PASS_PRIORITY", "pass");
+    if (now.view.decision?.kind === "chooseTarget")
+      now = m.act((a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget", "target Grizzly Bears");
+    const top = now.view.zones.stack.at(-1);
+    const target = (top === undefined ? null : cardDetails(now, top))?.hangers.find((h) => h.title === "Target");
+    expect(target?.text).toBe("Grizzly Bears, in your graveyard");
+  });
+});
+
+describe("the stack while the person chooses", () => {
+  it("is small at the right edge, the object under it peeking out too", () => {
+    const m = playFrom(board(["Lightning Bolt", "Giant Growth"]));
+    const start = m.shown();
+    m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Giant Growth"), "cast Giant Growth");
+    m.act(targetsObject(idOf(start, "Grizzly Bears")), "target Grizzly Bears");
+    // Lightning Bolt is on the stack (CR 601.2a) while its target is chosen.
+    const choosing = m.act((a) => a.type === "CAST_SPELL" && a.object === idOf(start, "Lightning Bolt"), "cast Bolt");
+    const stack = boardModel(choosing, PHONE).cards.filter((c) => c.zone === "stack");
+    expect(stack.map((c) => c.name)).toEqual(["Giant Growth", "Lightning Bolt"]);
+    const [under, top] = stack;
+    expect(top?.height).toBeLessThanOrEqual(112);
+    expect((top?.x ?? 0) + (top?.width ?? 0)).toBeGreaterThan(PHONE.width - 20);
+    expect(under?.x).toBeLessThan(top?.x ?? 0);
   });
 });

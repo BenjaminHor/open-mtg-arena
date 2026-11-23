@@ -8,7 +8,7 @@
 
 import type { ObjectId, SeatView, SeenAbility } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
-import { abilityText } from "./ability-text.ts";
+import { abilityKind, abilityText } from "./ability-text.ts";
 import { NO_BADGES } from "./badges.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
@@ -110,17 +110,4 @@ function abilityPanel(shown: SeatView, ability: SeenAbility, rect: Rect): BoardC
     badges: NO_BADGES,
     attachments: 0,
   };
-}
-
-/** What kind of ability it is, as the panel's type line says: activated (CR 602) or triggered (CR 603). */
-export function abilityKind(ability: SeenAbility): string {
-  switch (ability.ability.kind) {
-    case "printed":
-    case "basicLandType":
-      return "Activated ability";
-    case "triggered":
-      return "Triggered ability";
-    case "delayed":
-      return "Delayed triggered ability";
-  }
 }

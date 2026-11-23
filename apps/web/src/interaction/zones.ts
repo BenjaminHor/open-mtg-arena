@@ -6,11 +6,8 @@
 import type { ObjectId, OracleId, PlayerId, SeatView } from "@mtg/engine";
 import { cardInfo } from "../board-model/card-info.ts";
 
-/**
- * What the browser can show: a player's public zones, a hand or library top while it's revealed, and the stack (shared,
- * so whoever's browsing it doesn't matter).
- */
-export type ZoneName = "graveyard" | "exile" | "hand" | "library" | "stack";
+/** What the browser can show of a player: the public zones, and a hand or library top while it's revealed. */
+export type ZoneName = "graveyard" | "exile" | "hand" | "library";
 
 /**
  * One card in the browser. A card in a public zone is an object (`id`), so the card view follows it as the game goes
@@ -68,11 +65,10 @@ export function browserTabs(shown: SeatView, player: PlayerId): BrowserTab[] {
 
 /**
  * The whole stack, its top first (CR 405.2: the last put there): the board draws only the top few, so a deep stack is
- * read here (slice 6).
+ * read here (D-169).
  */
-export function stackTabs(shown: SeatView): BrowserTab[] {
-  const cards = zoneCards(shown, shown.player, "stack");
-  return [{ zone: "stack", label: `Stack ${cards.length}`, cards }];
+export function stackCards(shown: SeatView): ZoneCard[] {
+  return objects(shown, [...shown.view.zones.stack].reverse());
 }
 
 /** The cards of one zone of a player's, in the order the browser shows them. */
@@ -98,8 +94,6 @@ export function zoneCards(shown: SeatView, player: PlayerId, zone: ZoneName): Zo
     case "library":
       // Its top card while revealed (CR 401.5).
       return printed(own?.revealedTop == null ? [] : [own.revealedTop], "top");
-    case "stack":
-      return objects(shown, [...shown.view.zones.stack].reverse());
   }
 }
 

@@ -8,11 +8,14 @@ import type { PlayerId, SeatView } from "@mtg/engine";
 import { useEffect, useRef, useState } from "react";
 import { type CardDetails, cardDetails, printedDetails } from "../interaction/card-details.ts";
 import { promptTitle } from "../interaction/prompt-text.ts";
-import { browserTabs, stackTabs, type ZoneCard, type ZoneName } from "../interaction/zones.ts";
+import { type BrowserTab, browserTabs, stackCards, type ZoneCard, type ZoneName } from "../interaction/zones.ts";
 import { CardFace, CardView } from "./CardView.tsx";
 
-/** The zone being browsed, by whose and which: re-read each time, as the card view is (D-161). */
-export type Browsing = { player: PlayerId; zone: ZoneName };
+/**
+ * What's being browsed, re-read each time, as the card view is (D-161): one of a player's zones, by whose and which, or
+ * the whole stack (shared, so no one's: D-169).
+ */
+export type Browsing = { kind: "player"; player: PlayerId; zone: ZoneName } | { kind: "stack" };
 
 type Props = {
   shown: SeatView;
@@ -22,18 +25,19 @@ type Props = {
 };
 
 export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
-  const tabs = browsing.zone === "stack" ? stackTabs(shown) : browserTabs(shown, browsing.player);
+  const tabs: BrowserTab[] = browsing.kind === "player" ? browserTabs(shown, browsing.player) : [];
   // A reveal that ended takes its tab with it: back to the graveyard.
-  const tab = tabs.find((t) => t.zone === browsing.zone) ?? tabs[0];
+  const tab = browsing.kind === "player" ? (tabs.find((t) => t.zone === browsing.zone) ?? tabs[0]) : undefined;
+  const cards = browsing.kind === "stack" ? stackCards(shown) : (tab?.cards ?? []);
   const [looking, setLooking] = useState<string | null>(null);
-  const card = tab?.cards.find((c) => c.key === looking) ?? null;
+  const card = cards.find((c) => c.key === looking) ?? null;
   const details = card === null ? null : detailsOf(shown, card);
   // The sheet is modal: focus moves into it and goes back where it was when it closes (ui.md, "Mouse and keyboard
   // too"); Escape closes the card view over it first, then the sheet.
   const sheet = useRef<HTMLElement>(null);
   useEffect(() => {
     const before = document.activeElement as HTMLElement | null;
-    sheet.current?.querySelector<HTMLElement>("[aria-selected='true']")?.focus();
+    sheet.current?.querySelector<HTMLElement>("[aria-selected='true'], .zone-close")?.focus();
     return () => before?.focus();
   }, []);
   // Focus never leaves it: a click on the sheet's padding (focus to the page), a tab or card that's gone, or a prompt
@@ -44,7 +48,8 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
     const inside = () => {
       const at = root.current;
       return (
-        at?.querySelector<HTMLElement>(".card-view-close") ?? at?.querySelector<HTMLElement>("[aria-selected='true']")
+        at?.querySelector<HTMLElement>(".card-view-close") ??
+        at?.querySelector<HTMLElement>("[aria-selected='true'], .zone-close")
       );
     };
     const onKey = (e: KeyboardEvent) => {
@@ -68,19 +73,24 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
   }, [lookingNow, close]);
   // A reveal that ended took its tab: the graveyard's is the one shown now, so it's the one held (a reveal coming back
   // doesn't jump to it), and it takes the focus the gone tab had.
-  const fellBack = tab !== undefined && tab.zone !== browsing.zone;
+  const fellBack = browsing.kind === "player" && tab !== undefined && tab.zone !== browsing.zone;
   useEffect(() => {
     if (!fellBack || tab === undefined) return;
     choose(tab.zone);
     root.current?.querySelector<HTMLElement>("[aria-selected='true']")?.focus();
   }, [fellBack, tab, choose]);
+  // A stack that has resolved away leaves nothing to read: the browser goes with it.
+  const stackGone = browsing.kind === "stack" && cards.length === 0;
+  useEffect(() => {
+    if (stackGone) close();
+  }, [stackGone, close]);
   // A tap outside the sheet closes it, but only a press that began there: a long-press's release, or a finger that
   // slid off a card, isn't one.
   const pressedBackdrop = useRef(false);
-  if (tab === undefined) return null;
-  const mine = browsing.player === shown.player;
-  const stack = browsing.zone === "stack";
-  const whose = stack ? "The" : mine ? "Your" : "Opponent's";
+  if (browsing.kind === "player" && tab === undefined) return null;
+  const mine = browsing.kind === "player" && browsing.player === shown.player;
+  const title =
+    browsing.kind === "stack" ? `The stack, ${cards.length}` : `${mine ? "Your" : "Opponent's"} ${tab?.label ?? ""}`;
   // The game goes on under the sheet: a decision that's come for the person says so here, as the dimmed prompt would.
   const decision = shown.view.decision;
   const waiting = decision !== null && decision.kind !== "priority" && shown.view.result === null;
@@ -104,21 +114,19 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
         ref={sheet}
         role="dialog"
         aria-modal="true"
-        aria-label={stack ? "The stack" : `${whose} zones`}
+        aria-label={browsing.kind === "stack" ? "The stack" : `${mine ? "Your" : "Opponent's"} zones`}
         onKeyDown={trapTab}
       >
         <div className="zone-tabs" role="tablist">
-          {!stack && (
-            <span className="zone-whose" aria-hidden="true">
-              {mine ? "You" : "Opponent"}
-            </span>
-          )}
+          <span className="zone-whose" aria-hidden={browsing.kind === "player"}>
+            {browsing.kind === "stack" ? `The stack, top first: ${cards.length}` : mine ? "You" : "Opponent"}
+          </span>
           {tabs.map((t) => (
             <button
               key={t.zone}
               type="button"
               role="tab"
-              aria-selected={t.zone === tab.zone}
+              aria-selected={t.zone === tab?.zone}
               onClick={() => {
                 setLooking(null);
                 choose(t.zone);
@@ -136,19 +144,19 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
             Close
           </button>
         </div>
-        {tab.cards.length === 0 ? (
+        {cards.length === 0 ? (
           <p className="zone-empty">No cards</p>
         ) : (
           <ul
             className="zone-row"
-            aria-label={`${whose} ${tab.label}`}
+            aria-label={title}
             // A mouse wheel scrolls the row sideways: it has nowhere to go up or down.
             onWheel={(e) => {
               // Firefox counts a notch in lines.
               if (e.deltaX === 0) e.currentTarget.scrollLeft += e.deltaY * (e.deltaMode === 1 ? 16 : 1);
             }}
           >
-            {tab.cards.map((c) => (
+            {cards.map((c) => (
               <li key={c.key}>
                 <button
                   type="button"

@@ -4,11 +4,10 @@
 // these; Arena shows targets on hover [R] and X on the spell [R].
 
 import type { ObjectId, SeatView, SeenAbility, StackChoices, Target } from "@mtg/engine";
-import { abilityText } from "../board-model/ability-text.ts";
+import { abilityKind, abilityText } from "../board-model/ability-text.ts";
 import { cardInfo } from "../board-model/card-info.ts";
-import { abilityKind } from "../board-model/stack.ts";
 import type { CardDetails } from "./card-details.ts";
-import { objectName } from "./prompt-text.ts";
+import { objectName, who } from "./names.ts";
 
 /** An ability on the stack as its own panel, with where it came from and what it chose. */
 export function abilityDetails(shown: SeatView, ability: SeenAbility): CardDetails {
@@ -17,7 +16,8 @@ export function abilityDetails(shown: SeatView, ability: SeenAbility): CardDetai
   return {
     name: info?.name ?? "Ability",
     image: null,
-    art: info?.artCrop ?? null,
+    // A crop of the source's art, so its artist is credited beside it (data-sources.md).
+    art: info === null ? null : { url: info.artCrop, artist: info.artist },
     manaCost: "",
     typeLine: abilityKind(ability),
     oracleText: abilityText(info?.oracleText ?? "", ability.ability) ?? info?.oracleText ?? "",
@@ -25,12 +25,12 @@ export function abilityDetails(shown: SeatView, ability: SeenAbility): CardDetai
     hangers: [
       {
         title: "From",
-        // Its source may have left since (a "dies" trigger, a sacrifice for its cost): the ability goes on without it
+        // Its source may be gone since (a "dies" trigger, a sacrifice for its cost): the ability goes on without it
         // (CR 113.7a).
         text:
           source?.kind === "card"
             ? `${source.characteristics.name}, ${where(shown, source.id)}`
-            : "Its source has left",
+            : "Its source is no longer there",
       },
       ...choiceHangers(shown, ability.choices),
     ],
@@ -60,19 +60,23 @@ export function choiceHangers(shown: SeatView, choices: StackChoices | null): Ca
 
 /** A target as the person reads it: a player, or an object by name, with where it is when that isn't plain. */
 function targetText(shown: SeatView, target: Target): string {
-  if (target.kind === "player") return target.player === shown.player ? "You" : "Your opponent";
-  const seen = shown.seen[target.object];
-  // Gone from where the person can see it (a new object elsewhere, CR 400.7): the target is no longer there.
-  if (seen === undefined) return "a card that has left";
+  if (target.kind === "player") return who(shown, target.player);
+  // Gone from where the person can see it (a new object elsewhere, CR 400.7; a token ceased to exist; resolved).
+  if (shown.seen[target.object] === undefined) return "one no longer there";
   const name = objectName(shown, target.object);
   return shown.view.zones.battlefield.includes(target.object) ? name : `${name}, ${where(shown, target.object)}`;
 }
 
+/** Where an object the person can see is, in words: a graveyard by whose it is (CR 404.1: each player has one). */
 function where(shown: SeatView, id: ObjectId): string {
   const zones = shown.view.zones;
   if (zones.battlefield.includes(id)) return "on the battlefield";
   if (zones.stack.includes(id)) return "on the stack";
   if (zones.exile.includes(id)) return "in exile";
-  if (Object.values(zones.players).some((p) => p.graveyard.includes(id))) return "in a graveyard";
-  return "in a hand";
+  for (const [player, own] of Object.entries(zones.players)) {
+    const whose = player === shown.player ? "your" : "your opponent's";
+    if (own.graveyard.includes(id)) return `in ${whose} graveyard`;
+    if (own.hand?.includes(id)) return `in ${whose} hand`;
+  }
+  return "out of view";
 }
