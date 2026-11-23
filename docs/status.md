@@ -402,6 +402,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       import for keys and tokens found none; its largest file is 6.5 MB. Their client type-check passes here (about
       a minute). `.claude/settings.json` still allows `node scripts/rule.mjs`: editing permissions isn't Claude's to
       do, so the moved script may prompt.
+    - B. Strip, in progress (2026-11-23). Client unit tests at import: 754 files pass, 2 fail (they test the Caddy,
+      Tilt and Helm files left out at import, so they go), 12,949 tests pass, about 7 minutes. A helper is removing
+      online multiplayer, cloud sync, Tauri, telemetry and the scraped feeds from client/ (working tree only,
+      reviewed before commit). Rust: phase-server, server-core, lobby-broker, feed-scraper and lobby-worker/ removed;
+      the workspace's cargo-release block (it bumped the desktop app's versions) and two aliases for removed crates
+      gone; Cargo.lock updates on the next cargo run.
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
