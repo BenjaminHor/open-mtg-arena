@@ -44,6 +44,8 @@ type HudProps = {
   inspect: InspectCallbacks;
   /** The card view, if one is open: how, and what it shows (read from the seat view as it is now). */
   inspected: (Inspected & { details: CardDetails }) | null;
+  /** A new turn's banner ("Turn 6 · Your turn"), for a moment, or null. */
+  banner: string | null;
   closeInspected: () => void;
   /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
   attackBatch: { label: string; run: () => void; running: boolean } | null;
@@ -168,6 +170,17 @@ export function Hud(props: HudProps) {
         setFullControl={props.setFullControl}
       />
       {/* Over everything else: what's being looked at. */}
+      {/* Not over a finished game: the result says what matters then. */}
+      {props.banner !== null && result === null && (
+        // At the middle of the open table, over nothing a tap needs; read out once by a screen reader.
+        <p
+          className="turn-banner"
+          role="status"
+          style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}
+        >
+          {props.banner}
+        </p>
+      )}
       {props.inspected !== null && (
         <CardView
           // A preview made full is a new view (the full one takes focus); a preview swapped to another card isn't.
