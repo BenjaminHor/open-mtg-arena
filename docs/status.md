@@ -179,7 +179,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     blades now sweep up, as in their screenshots.
   - Still to do in M3-04a: the frames for colourless, multicolour and tokens (ui.md); the HUD polish (ui.md, "The rest
     of the HUD"); then code and UX reviews, the PR, and screenshots of everything to the owner.
-  - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
+  - Owner (2026-11-23), for M3-04b: "this app should be compatible with mouse/keyboard controls as well as touch
+    devices." Recorded in ui.md ("Mouse and keyboard too"): pointer events serve touch and mouse alike, the long-press
+    view also opens with a mouse, and the keyboard can do everything (focus, Enter/Space, Escape, a main-button key).
+  - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
     combat"); prompts (React) for the rest: mulligan, X, choosing cards, yes/no, dividing damage, the order of

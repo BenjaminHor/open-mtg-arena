@@ -149,6 +149,19 @@ UI quality has to be checked like rules correctness, not assumed:
   with no state loss, and keep any in-progress selection (such as chosen targets).
 - Respect safe areas (`env(safe-area-inset-*)`) and the fold/notch areas.
 
+## Mouse and keyboard too (owner, 2026-11-23)
+
+"This app should be compatible with mouse/keyboard controls as well as touch devices." Touch stays first, but every
+action must also work with a mouse and with a keyboard:
+- A click does what a tap does; a drag with the mouse does what a drag with a finger does. Pointer events, not
+  touch-only events, so one code path serves both.
+- What a long-press opens (the card's details) also opens another way with a mouse (a right-click, or a hover
+  preview: the hover question is still open in status.md).
+- The keyboard can do everything: Tab moves focus through cards and controls with a visible focus ring, Enter or
+  Space acts on the focused thing, Escape cancels a choice under way or closes a view, and a shortcut presses the
+  main button (Space, as Arena's desktop client uses), plus Arena's full-control keys (arena-research.md).
+- Nothing depends on hover to be found or used: hover may add a preview, never an action.
+
 ## Touch interaction
 
 - **Tap** to select; **tap again or tap a target** to confirm. **Drag** a card from hand onto the board
