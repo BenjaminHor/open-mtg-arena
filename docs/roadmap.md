@@ -39,6 +39,17 @@ another tool, play the deck, and keep everything across sessions.
 A world map, areas, encounters with themed enemy decks and rule modifiers, shops, card rewards,
 progression and save slots. Built in `packages/meta` on top of the unchanged engine.
 
+## Ideas for later (not scheduled)
+
+- **The engine in Odin (owner, 2026-11-23).** After the phase-rs import (D-177), the owner asked what porting its Rust
+  engine to Odin would take: "We can consider it for the future. I think Odin is better than rust". Not impossible:
+  Odin's tagged unions map Rust's enums, it has JSON and a WebAssembly target, and it compiles far faster (our Rust
+  engine takes about 20 minutes from scratch). The cost is a rewrite of about a million lines plus the parser and
+  the browser bridge, by hand where no library exists (serde, `im`, nom, wasm-bindgen). If taken up: move the tests'
+  scenarios to a language-neutral form first, then port subsystem by subsystem behind the same browser bridge,
+  checked against the Rust engine on the same games; a cheap first look is porting one small subsystem (combat
+  damage) and comparing compile time and clarity.
+
 ## Always
 - Grow the card pool steadily with the `add-cards` skill, and with it the rules, toward every rule two-player games
   use (CR chapters 1 to 7), the most common mechanics first (D-051). Multiplayer and casual variants (CR 8, 9) stay
