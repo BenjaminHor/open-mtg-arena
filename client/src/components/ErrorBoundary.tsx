@@ -1,7 +1,5 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-
-import { reportBoundaryError } from "../services/telemetryEvents";
 
 /**
  * Full-screen fallback shown after an uncaught render error. Kept as a small
@@ -36,19 +34,15 @@ interface ErrorBoundaryState {
 
 /**
  * React error boundary for uncaught render errors (a real gap: only engine
- * panics were handled before). Reports each caught error to telemetry as a
- * `js_error` with `source: "boundary"` and renders a reload prompt so a broken
- * render doesn't leave the user staring at a blank or half-painted screen.
+ * panics were handled before). Renders a reload prompt so a broken render
+ * doesn't leave the user staring at a blank or half-painted screen (React
+ * itself logs the caught error).
  */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false };
 
   static getDerivedStateFromError(): ErrorBoundaryState {
     return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, _info: ErrorInfo): void {
-    reportBoundaryError(error);
   }
 
   render(): ReactNode {

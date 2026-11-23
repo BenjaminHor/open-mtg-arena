@@ -202,7 +202,7 @@ describe("ActionRailStatusRow", () => {
     useGameStore.getState().reset();
     const waitingForGiada = buildPriorityWaitingFor({ data: { player: 1 } });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: buildGameState({
         players: buildPlayers([{ id: 0, hand: [11, 12, 13, 14, 15] }, 1]),
         priority_player: 1,
@@ -211,8 +211,6 @@ describe("ActionRailStatusRow", () => {
       waitingFor: waitingForGiada,
     });
     useMultiplayerStore.setState({
-      activePlayerId: 0,
-      isSpectator: false,
       playerNames: new Map([[1, "Giada"]]),
     });
     setViewport(844, 390);
@@ -226,7 +224,7 @@ describe("ActionRailStatusRow", () => {
     document.body.replaceChildren();
     setViewport(initialViewport.width, initialViewport.height);
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false, playerNames: new Map() });
+    useMultiplayerStore.setState({ playerNames: new Map() });
     usePreferencesStore.setState({ flexLayout: initialFlexLayout });
     useUiStore.setState({ fullControl: initialFullControl });
   });

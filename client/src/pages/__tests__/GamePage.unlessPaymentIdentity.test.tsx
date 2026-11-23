@@ -52,8 +52,6 @@ vi.mock("../../components/board/BattlefieldBackground.tsx", () => ({
   BattlefieldBackground: () => null,
 }));
 vi.mock("../../components/stack/StackDisplay.tsx", () => ({ StackDisplay: () => null }));
-vi.mock("../../components/debug/DebugPanel.tsx", () => ({ DebugPanel: () => null }));
-vi.mock("../../components/hud/HUD.tsx", () => ({ HUD: () => null }));
 vi.mock("../../components/board/GameBoard.tsx", () => ({ GameBoard: () => null }));
 vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: () => null }));
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
@@ -139,18 +137,17 @@ function seedPrompt(waitingFor: unknown, activePlayerId: number) {
   act(() => {
     useGameStore.setState({
       gameId: "unless-identity",
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor: waitingFor as never,
     });
-    useMultiplayerStore.setState({ activePlayerId, isSpectator: false });
+    useMultiplayerStore.setState({ activePlayerId,});
   });
 }
 
 function clearSession() {
   act(() => {
     useGameStore.setState({ gameId: null, gameState: null, waitingFor: null, adapter: null });
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
   });
 }
 
@@ -181,7 +178,6 @@ describe("GamePage unless-payment card identity", () => {
 
     // The next opponent's client is asked about the SAME card: identity carries.
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 2 });
       useGameStore.setState({ waitingFor: paymentPrompt(2, CARD_A) as never });
     });
     expect(await screen.findByText("Revealed Alpha")).toBeInTheDocument();
@@ -219,7 +215,6 @@ describe("GamePage unless-payment card identity", () => {
     expect(screen.queryByText("Revealed Alpha")).not.toBeInTheDocument();
 
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 2 });
       useGameStore.setState({ waitingFor: chooseCostPrompt(2, CARD_A) as never });
     });
     expect(await screen.findByText("Revealed Alpha")).toBeInTheDocument();
@@ -242,11 +237,10 @@ describe("GamePage unless-payment card identity", () => {
     act(() => {
       useGameStore.setState({
         gameId: "unless-poll-choices",
-        gameMode: "online",
+        gameMode: "ai",
         gameState: state,
         waitingFor: paymentPrompt(2, null) as never,
       });
-      useMultiplayerStore.setState({ activePlayerId: 2, isSpectator: false });
     });
     render(gamePageTree());
 

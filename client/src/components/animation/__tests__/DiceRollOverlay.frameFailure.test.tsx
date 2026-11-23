@@ -20,7 +20,6 @@ vi.mock("three", async (importOriginal) => {
 });
 
 const reportBoundaryError = vi.hoisted(() => vi.fn());
-vi.mock("../../../services/telemetryEvents", () => ({ reportBoundaryError }));
 
 import { DiceRollOverlay } from "../DiceRollOverlay";
 import { useUiStore } from "../../../stores/uiStore";

@@ -195,7 +195,7 @@ function tableState() {
 }
 
 function showPrompt(gameState: GameState) {
-  setGameStoreForTest({ gameState, gameMode: "online" });
+  setGameStoreForTest({ gameState, gameMode: "ai" });
   render(<CardChoiceModal />);
 }
 
@@ -264,7 +264,6 @@ function expectOneHeaderLine(title: string, confirmName: string): HTMLElement {
 
 beforeEach(() => {
   dispatchMock.mockClear();
-  useMultiplayerStore.setState({ activePlayerId: 0 });
 });
 
 afterEach(() => {

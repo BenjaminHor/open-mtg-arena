@@ -157,7 +157,7 @@ describe("StackDisplay under a targeting prompt", () => {
     usePreferencesStore.setState(usePreferencesStore.getInitialState());
     useTargetingPromptStore.setState(useTargetingPromptStore.getInitialState());
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false, playerNames: new Map() });
+      useMultiplayerStore.setState({ playerNames: new Map() });
     });
   });
 

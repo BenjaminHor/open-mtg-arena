@@ -146,7 +146,6 @@ describe("ZoneViewer preview keyboard modifiers", () => {
       value: 900,
     });
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
     usePreferencesStore.setState({
       cardPreviewMode: "follow",
       cardPreviewHoverDelayMs: 0,

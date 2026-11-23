@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameObject, ViewerInteraction, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayer } from "../../../test/factories/gameStateFactory.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
@@ -38,7 +37,7 @@ function setWaitingFor(
     next_object_id: 100,
   });
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: state,
     waitingFor,
     viewerInteraction,
@@ -59,7 +58,6 @@ function selectInteraction(id: string): ViewerInteraction {
 describe("RevealUntilBottomOrderModal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {

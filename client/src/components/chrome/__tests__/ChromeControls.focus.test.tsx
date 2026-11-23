@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { usePreferencesStore } from "../../../stores/preferencesStore";
 import { ChromeControls } from "../ChromeControls";
 
-vi.mock("../AccountControl", () => ({ AccountControl: () => null }));
 vi.mock("../FullscreenButton", () => ({ FullscreenButton: () => null }));
 vi.mock("../VolumeControl", () => ({ VolumeControl: () => null }));
 

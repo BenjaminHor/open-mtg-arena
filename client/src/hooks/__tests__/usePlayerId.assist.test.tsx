@@ -12,7 +12,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { GameState, WaitingFor } from "../../adapter/types";
 import { useGameStore } from "../../stores/gameStore";
-import { useMultiplayerStore } from "../../stores/multiplayerStore";
 import {
   buildAssistPaymentWaitingFor,
   buildGameState,
@@ -40,22 +39,19 @@ const ASSIST_PAYMENT: WaitingFor = buildAssistPaymentWaitingFor({
 
 function setLocalSeat(seat: number) {
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: createGameState(),
     waitingFor: ASSIST_PAYMENT,
   });
-  useMultiplayerStore.setState({ activePlayerId: seat, isSpectator: false });
 }
 
 describe("useCanActForWaitingState — Assist payment routing (CR 702.132a)", () => {
   beforeEach(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
   });
 
   afterEach(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
   });
 
   it("is true for the chosen helper seat", () => {
@@ -76,7 +72,7 @@ describe("useCanActForWaitingState — Assist payment routing (CR 702.132a)", ()
       data: { player: 0, source_id: 7, costs: [] },
     };
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: buildGameState({
         active_player: 0,
         players: buildPlayers([0, 1]),
@@ -86,7 +82,6 @@ describe("useCanActForWaitingState — Assist payment routing (CR 702.132a)", ()
       }),
       waitingFor,
     });
-    useMultiplayerStore.setState({ activePlayerId: 1, isSpectator: false });
 
     const { result } = renderHook(() => useCanActForWaitingState());
     expect(result.current).toBe(true);

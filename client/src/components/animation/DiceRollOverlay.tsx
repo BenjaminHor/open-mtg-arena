@@ -3,7 +3,6 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
 import { getPlayerId } from "../../hooks/usePlayerId";
-import { reportBoundaryError } from "../../services/telemetryEvents";
 import { getOpponentDisplayName } from "../../stores/multiplayerStore";
 import { usePreferencesStore } from "../../stores/preferencesStore";
 import { useUiStore } from "../../stores/uiStore";
@@ -184,8 +183,8 @@ export function DiceRollOverlay() {
  * it reach the app-level ErrorBoundary, which would unmount the whole game
  * route. The animation is dropped but the engine's result is not: `fallback`
  * re-renders the same payload statically (roll-winner caption, coin outcome).
- * The error is still reported to telemetry like any other caught render error,
- * so a real WebGL crash does not go unseen.
+ * The error is still logged (see `warnOnce` below), so a real WebGL crash does
+ * not go unseen.
  */
 class DiceRollBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
@@ -198,7 +197,6 @@ class DiceRollBoundary extends Component<
   }
 
   componentDidCatch(error: Error): void {
-    reportBoundaryError(error);
     warnOnce("DiceRollBoundary", "dice roll render failed; showing the static result.", error);
   }
 

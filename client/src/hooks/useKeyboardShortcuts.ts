@@ -197,15 +197,7 @@ export function useKeyboardShortcuts({
             if (adapter?.exportPersistenceState && canExportAuthoritativeState(gameMode)) {
               exportAuthoritativeGameStateZip(adapter)
                 .then((result) => {
-                  if (result.kind === "failed") {
-                    console.error("[Debug] Game state export failed");
-                  } else if (result.kind === "requested") {
-                    console.log(`[Debug] Game state export requested (${result.filename})`);
-                  } else if (result.path) {
-                    console.log(`[Debug] Game state exported to ${result.path}`);
-                  } else {
-                    console.log(`[Debug] Game state exported ${result.filename}`);
-                  }
+                  console.log(`[Debug] Game state exported ${result.filename}`);
                 })
                 .catch((err) => console.error("[Debug] Failed to export:", err));
             }

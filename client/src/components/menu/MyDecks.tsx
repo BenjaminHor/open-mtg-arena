@@ -16,7 +16,6 @@ import {
 } from "../../constants/storage";
 import { withSavedDeckLibrary } from "../../services/savedDeckTransaction";
 import { attemptSavedDeckWrite } from "../../services/savedDeckWriteFailure";
-import { PROFILE_REPLACED_EVENT } from "../../stores/cloudSyncStore";
 import { usePreferencesStore } from "../../stores/preferencesStore";
 import { useEffectiveOffline } from "../../stores/connectivityStore";
 import { useDeckFolders } from "../../hooks/useDeckFolders";
@@ -865,15 +864,6 @@ export function MyDecks({
   useEffect(() => {
     setDeckNames(listSavedDeckNames());
   }, [selectedFormat]);
-
-  // Cloud sync's applyRemote() overwrites the user-owned localStorage keys
-  // in place (no page reload). Subscribe to the broadcast so the deck list
-  // re-fetches when a peer device's snapshot lands.
-  useEffect(() => {
-    const onProfileReplaced = () => setDeckNames(listSavedDeckNames());
-    window.addEventListener(PROFILE_REPLACED_EVENT, onProfileReplaced);
-    return () => window.removeEventListener(PROFILE_REPLACED_EVENT, onProfileReplaced);
-  }, []);
 
   useEffect(() => {
     setPreconDisplayCount(PRECON_PAGE_SIZE);

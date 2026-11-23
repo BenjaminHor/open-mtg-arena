@@ -24,7 +24,6 @@ import type {
 import { dispatchInteraction, previewInteractionResponse } from "../../../game/dispatch.ts";
 import { useAppNotificationStore } from "../../../stores/appToastStore.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import {
   buildGameState,
   buildLoopShortcutWaitingFor,
@@ -2773,7 +2772,6 @@ describe("LoopShortcutModal — a proposal without end", () => {
   });
   afterEach(() => {
     cleanup();
-    useMultiplayerStore.setState({ activePlayerId: null });
     useGameStore.setState({ gameMode: null });
   });
 
@@ -2795,8 +2793,7 @@ describe("LoopShortcutModal — a proposal without end", () => {
 
   it("a responder reads it and accepts or shortens it", () => {
     seed(WITHOUT_END_REPLY, {}, WITHOUT_END_REPLY_VIEW);
-    useGameStore.setState({ gameMode: "online" });
-    useMultiplayerStore.setState({ activePlayerId: 1 });
+    useGameStore.setState({ gameMode: "ai" });
     render(<RespondToShortcutModal />);
 
     expect(screen.getByText(WITHOUT_END_TEXT)).toBeInTheDocument();

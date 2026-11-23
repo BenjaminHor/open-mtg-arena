@@ -5,7 +5,6 @@ import type { GameState, WaitingFor } from "../../../adapter/types.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 import { isWaitingForHandled } from "../../../game/waitingForRegistry.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
 
@@ -47,9 +46,8 @@ function makeState(): GameState {
 describe("LearnModal (via CardChoiceModal)", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: makeState(),
       waitingFor: learnChoice,
     });

@@ -35,7 +35,7 @@ function seed(cards: GameObject[], {
       player, source_id: sourceId, cards: cards.map((card) => card.id),
       count, up_to: upTo, constraint,
     }).build();
-  setGameStoreForTest({ gameState, gameMode: "online" });
+  setGameStoreForTest({ gameState, gameMode: "ai" });
 }
 
 function select(card: GameObject) {
@@ -54,7 +54,6 @@ function confirm(cards: number[]) {
 describe("ChooseFromZone modal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
   afterEach(() => {
     cleanup();
@@ -156,7 +155,6 @@ describe("ChooseFromZone modal", () => {
     dispatchMock.mockClear();
     if (identity === "player") {
       // The next prompt belongs to the other seat, which now has control.
-      act(() => useMultiplayerStore.setState({ activePlayerId: 1 }));
       seed([first], { player: 1 });
     } else if (identity === "source") {
       seed([first], { sourceId: 2 });

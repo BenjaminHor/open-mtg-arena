@@ -28,7 +28,6 @@ vi.mock("../visual-packs/VisualPackManager.tsx", () => ({
   VisualPackManager: () => null,
 }));
 
-vi.mock("../../chrome/AccountControl", () => ({ AccountControl: () => null }));
 vi.mock("../../chrome/FullscreenButton", () => ({ FullscreenButton: () => null }));
 vi.mock("../../chrome/VolumeControl", () => ({ VolumeControl: () => null }));
 
@@ -40,8 +39,6 @@ function KeyboardSettingsHarness() {
 function seedFirstPriority(): void {
   act(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
-    useMultiplayerStore.setState({ displayName: "" });
     useUiStore.getState().dismissPreview();
     useUiStore.setState({
       fullControl: false,

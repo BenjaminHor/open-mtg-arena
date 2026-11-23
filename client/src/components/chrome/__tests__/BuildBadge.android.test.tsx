@@ -23,7 +23,6 @@ vi.mock("@tauri-apps/api/app", () => ({ getVersion: mocks.getVersion }));
 vi.mock("../../../pwa/registerServiceWorker", () => ({
   checkForServiceWorkerUpdate: mocks.serviceWorker,
 }));
-vi.mock("../../../pwa/tauriUpdater", () => ({ checkForTauriUpdate: mocks.tauriUpdate }));
 vi.mock("../../../hooks/useCardDataMeta", () => ({
   useCardDataMeta: () => null,
   formatRelativeDate: () => "today",

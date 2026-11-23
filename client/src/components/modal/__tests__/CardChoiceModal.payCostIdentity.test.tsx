@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { WaitingFor } from "../../../adapter/types";
 import { useGameStore } from "../../../stores/gameStore";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore";
 import { gameObjectFactory } from "../../../test/factories/gameObjectFactory";
 import { buildPendingCast, gameStateFactory } from "../../../test/factories/gameStateFactory";
 import { CardChoiceModal } from "../CardChoiceModal";
@@ -48,7 +47,7 @@ function setPrompt(options: {
       has_pending_cast: true,
       derived: { waiting_for_identity: options.identity, state_revision: options.revision, unique_authorized_submitter: player },
     });
-  useGameStore.setState({ gameMode: "online", gameState: state, waitingFor, viewerInteraction: null });
+  useGameStore.setState({ gameMode: "ai", gameState: state, waitingFor, viewerInteraction: null });
 }
 
 function select(id: number) {
@@ -57,7 +56,6 @@ function select(id: number) {
 
 beforeEach(() => {
   dispatchMock.mockReset();
-  useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
 });
 
 afterEach(() => {

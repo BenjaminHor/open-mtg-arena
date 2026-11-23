@@ -45,9 +45,7 @@ describe("NamedChoiceModal visual avatars", () => {
     cardImage.src = "visual-pack://installed-choice-avatar";
     cardImage.isLoading = false;
     cardImage.source = { kind: "installed", src: "visual-pack://installed-choice-avatar" };
-    useMultiplayerStore.setState({
-      activePlayerId: 0,
-      playerNames: new Map([[1, "Public Twin"]]),
+    useMultiplayerStore.setState({ playerNames: new Map([[1, "Public Twin"]]),
       playerAvatars: new Map([
         [1, { kind: "card", cardName: "PRIVATE CHOICE CARD" }],
       ]),

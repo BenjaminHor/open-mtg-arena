@@ -12,7 +12,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameAction, GameObject } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { useUiStore } from "../../../stores/uiStore.ts";
 import {
   buildGameObjectWithCoreTypes,
@@ -725,13 +724,11 @@ describe("ZoneViewer", () => {
         waitingFor: gameState.waiting_for,
         legalActions: withAction ? [delveTap] : [],
         legalActionsByObject: withAction ? { "7": [delveTap] } : {},
-        gameMode: "online",
+        gameMode: "ai",
       });
-      useMultiplayerStore.setState({ activePlayerId: 1 });
     }
 
     afterEach(() => {
-      useMultiplayerStore.setState({ activePlayerId: null });
     });
 
     it("offers the engine's delve action to the seat that is not the holder", () => {

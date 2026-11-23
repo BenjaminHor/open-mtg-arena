@@ -4,22 +4,13 @@ import type { TFunction } from "i18next";
 import { useNavigate } from "react-router";
 
 import { ScreenChrome } from "../components/chrome/ScreenChrome";
-import { COMMANDER_DRAFT_ENTRY, WINSTON_DRAFT_ENTRY, draftKindLabels } from "../components/draft/draftKind";
 import { MenuShell } from "../components/menu/MenuShell";
 import { MenuActionTile } from "../components/menu/MenuActionTile";
-import { PodIcon } from "../components/draft/PodIcon";
 import {
   loadActiveQuickDraft,
   type ActiveQuickDraftMeta,
 } from "../services/quickDraftPersistence";
-import {
-  loadActiveDraftGuest,
-  loadActiveDraftPod,
-  type ActiveDraftGuestMeta,
-  type ActiveDraftPodMeta,
-} from "../services/draftPersistence";
 import { loadGame } from "../services/gamePersistence";
-import { useEffectiveOffline } from "../stores/connectivityStore";
 
 const SET_LABELS: Record<string, string> = {
   otj: "Outlaws of Thunder Junction",
@@ -77,15 +68,10 @@ export function DraftLandingPage() {
   // rather than duplicating the string into draft locales.
   const { t: tMenu } = useTranslation("menu");
   const navigate = useNavigate();
-  const effectiveOffline = useEffectiveOffline();
   const [activeDraft, setActiveDraft] = useState<ActiveQuickDraftMeta | null>(null);
-  const [activePod, setActivePod] = useState<ActiveDraftPodMeta | null>(null);
-  const [activeGuestPod, setActiveGuestPod] = useState<ActiveDraftGuestMeta | null>(null);
 
   useEffect(() => {
     setActiveDraft(loadActiveQuickDraft());
-    setActivePod(loadActiveDraftPod());
-    setActiveGuestPod(loadActiveDraftGuest());
   }, []);
 
   return (
@@ -103,8 +89,6 @@ export function DraftLandingPage() {
       >
         <div className="flex w-full flex-col">
           {activeDraft && <ActiveDraftCard meta={activeDraft} />}
-          {activePod && <ActivePodCard meta={activePod} />}
-          {activeGuestPod && <ActiveGuestPodCard meta={activeGuestPod} />}
 
           <div className="flex flex-col gap-3">
             <h2 className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-fg-meta">
@@ -141,143 +125,10 @@ export function DraftLandingPage() {
                 renderIcon={(cls) => <CubeIcon className={cls} />}
                 onClick={() => navigate("/draft/quick?mode=cube")}
               />
-              <MenuActionTile
-                tone="jade"
-                motif="network"
-                title={t("landing.podDraft.title")}
-                description={effectiveOffline
-                  ? t("offline.startUnavailable")
-                  : t("landing.podDraft.description")}
-                enterLabel={tMenu("home.dashboard.enter")}
-                renderIcon={(cls) => <PodIcon className={cls} />}
-                onClick={() => navigate("/draft-pod")}
-                disabled={effectiveOffline}
-              />
-              <MenuActionTile
-                tone="arcane"
-                motif="network"
-                title={t("landing.commanderDraft.title")}
-                description={effectiveOffline
-                  ? t("offline.startUnavailable")
-                  : t("landing.commanderDraft.description")}
-                enterLabel={tMenu("home.dashboard.enter")}
-                renderIcon={(cls) => <CrownIcon className={cls} />}
-                onClick={() => navigate(`/draft-pod?kind=${COMMANDER_DRAFT_ENTRY}`)}
-                disabled={effectiveOffline}
-              />
-              <MenuActionTile
-                tone="ember"
-                motif="network"
-                title={t("landing.winstonDraft.title")}
-                description={effectiveOffline
-                  ? t("offline.startUnavailable")
-                  : t("landing.winstonDraft.description")}
-                enterLabel={tMenu("home.dashboard.enter")}
-                renderIcon={(cls) => <PilesIcon className={cls} />}
-                onClick={() => navigate(`/draft-pod?kind=${WINSTON_DRAFT_ENTRY}`)}
-                disabled={effectiveOffline}
-              />
             </div>
           </div>
         </div>
       </MenuShell>
-    </div>
-  );
-}
-
-function ActivePodCard({ meta }: { meta: ActiveDraftPodMeta }) {
-  const { t } = useTranslation("draft");
-  const navigate = useNavigate();
-  // `landing.podLabel` interpolates the kind into a sentence, so a raw enum reads
-  // "CommanderDraft Pod". `draftKindLabels` is the single authority for that
-  // rendering, shared with the pod lobby header.
-  const kindLabel = draftKindLabels(t);
-
-  function getPhaseLabel(): string {
-    switch (meta.phase) {
-      case "lobby": return t("podPhase.lobby");
-      case "drafting": return t("podPhase.drafting");
-      // Review remains on the existing drafting workspace, so use its existing
-      // localized label rather than adding a locale surface here.
-      case "review": return t("podPhase.drafting");
-      case "deckbuilding": return t("podPhase.deckbuilding");
-      case "pairing": return t("podPhase.pairing");
-      case "matchInProgress": return t("podPhase.matchInProgress");
-      case "complete": return t("podPhase.complete");
-    }
-  }
-
-  return (
-    <div className="mb-8">
-      <h2 className="mb-3 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-fg-meta">
-        {t("landing.podInProgress")}
-      </h2>
-      <button
-        type="button"
-        onClick={() => navigate("/draft-pod?entry=host")}
-        className="group flex w-full cursor-pointer items-center gap-5 rounded-[20px] border border-cyan-300/20 bg-cyan-400/[0.06] p-5 text-left transition-colors hover:border-cyan-300/35 hover:bg-cyan-400/[0.10]"
-      >
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/8 bg-black/24">
-          <PodIcon />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="text-lg font-semibold text-white">
-            {t("landing.podLabel", { kind: kindLabel[meta.kind] })}
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/45">
-            <span className="rounded-md border border-cyan-300/20 bg-cyan-400/10 px-2 py-0.5 text-xs font-medium text-cyan-100">
-              {getPhaseLabel()}
-            </span>
-            <span>{t("landing.seatCount", { count: meta.podSize })}</span>
-            {meta.roomCode && <span>{t("landing.roomLabel", { code: meta.roomCode })}</span>}
-            {meta.phase === "drafting" && meta.pickCount > 0 && (
-              <span>{t("landing.cardsPicked", { count: meta.pickCount })}</span>
-            )}
-            <span>{formatRelativeTime(meta.updatedAt, t)}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center self-stretch pl-2">
-          <div className="rounded-full border border-cyan-300/15 bg-cyan-400/10 px-4 py-2 text-sm font-medium text-cyan-100 transition-colors group-hover:border-cyan-300/30 group-hover:bg-cyan-400/18">
-            {t("landing.resume")}
-          </div>
-        </div>
-      </button>
-    </div>
-  );
-}
-
-function ActiveGuestPodCard({ meta }: { meta: ActiveDraftGuestMeta }) {
-  const { t } = useTranslation("draft");
-  const navigate = useNavigate();
-
-  return (
-    <div className="mb-8">
-      <h2 className="mb-3 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-fg-meta">
-        {t("landing.guestPodInProgress")}
-      </h2>
-      <button
-        type="button"
-        onClick={() => navigate("/draft-pod?entry=guest")}
-        className="group flex w-full cursor-pointer items-center gap-5 rounded-[20px] border border-violet-300/20 bg-violet-400/[0.06] p-5 text-left transition-colors hover:border-violet-300/35 hover:bg-violet-400/[0.10]"
-      >
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/8 bg-black/24">
-          <PodIcon />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-lg font-semibold text-white">{t("landing.guestPodLabel")}</div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/45">
-            <span>{t("landing.roomLabel", { code: meta.roomCode })}</span>
-            <span>{formatRelativeTime(meta.timestamp, t)}</span>
-          </div>
-        </div>
-        <div className="flex items-center self-stretch pl-2">
-          <div className="rounded-full border border-violet-300/15 bg-violet-400/10 px-4 py-2 text-sm font-medium text-violet-100 transition-colors group-hover:border-violet-300/30 group-hover:bg-violet-400/18">
-            {t("landing.reconnect")}
-          </div>
-        </div>
-      </button>
     </div>
   );
 }
@@ -399,27 +250,10 @@ function BotIcon({ className = "h-6 w-6" }: { className?: string }) {
   );
 }
 
-function CrownIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className={`${className} fill-current`}>
-      <path d="M5 18h14l1.6-9.5-4.6 3.2L12 4.5 7.99 11.7 3.4 8.5 5 18Zm0 1.5h14V21H5v-1.5Z" />
-    </svg>
-  );
-}
-
 function CubeIcon({ className = "h-6 w-6" }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className={`${className} fill-current`}>
       <path d="M12 2.4 3.5 6.8v10.4L12 21.6l8.5-4.4V6.8L12 2.4Zm0 2.25 5.55 2.88L12 10.4 6.45 7.53 12 4.65Zm-6.5 4.5 5.5 2.85v6.8l-5.5-2.85v-6.8Zm7.5 9.65V12l5.5-2.85v6.8L13 18.8Z" />
-    </svg>
-  );
-}
-
-/** Three piles side by side — the shape of a Winston table. */
-function PilesIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className={`${className} fill-current`}>
-      <path d="M2.5 7.5h5v11h-5v-11Zm1.5 1.5v8h2v-8H4Zm5.5-3.5h5v14.5h-5V5.5ZM11 7v11.5h2V7h-2Zm5.5.5h5v11h-5v-11ZM18 9v8h2V9h-2Z" />
     </svg>
   );
 }

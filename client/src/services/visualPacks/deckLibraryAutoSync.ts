@@ -15,8 +15,7 @@ import {
   type DeckLibraryPreparationResult,
   type VisualPackBackend,
 } from "./backend.ts";
-import { watchUserStorage } from "../cloudSync/storageWatcher.ts";
-import { PROFILE_REPLACED_EVENT } from "../../stores/cloudSyncStore.ts";
+import { watchUserStorage } from "../storageWatcher.ts";
 import { usePreferencesStore } from "../../stores/preferencesStore.ts";
 import { invalidateDeckLibraryPack } from "./deckLibraryPack.ts";
 
@@ -381,15 +380,12 @@ export function useDeckLibraryAutoSync(effectiveOffline = false, feedInitializat
       if (event.key === PREFERENCES_KEY) signal(true);
       else if (watchesCatalogKey(event.key)) signal(false, true);
     };
-    const onProfileReplaced = () => signal(true, true);
     window.addEventListener("storage", onStorage);
-    window.addEventListener(PROFILE_REPLACED_EVENT, onProfileReplaced);
     const cleanupListeners = () => {
       unwatchFeedCache();
       unwatchStorage();
       unwatchPreferences();
       window.removeEventListener("storage", onStorage);
-      window.removeEventListener(PROFILE_REPLACED_EVENT, onProfileReplaced);
     };
 
     // Startup is deliberately just another freshness request. Signals arriving

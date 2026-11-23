@@ -3,7 +3,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 import { PlayerHud } from "../PlayerHud.tsx";
 import { StormCounter } from "../StormCounter.tsx";
@@ -29,7 +28,6 @@ describe("StormCounter", () => {
 
   it("renders the shared counter once in the player HUD", () => {
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
       useGameStore.setState({
         gameState: buildGameState({ derived: { storm_count: 3 } }),
         gameMode: null,

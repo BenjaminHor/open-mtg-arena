@@ -33,12 +33,6 @@ vi.mock("../../services/quickDraftPersistence", () => ({
   loadActiveQuickDraft: mocks.loadActiveQuickDraft,
   clearActiveQuickDraft: mocks.clearActiveQuickDraft,
 }));
-vi.mock("../../services/draftPersistence", () => ({
-  loadActiveDraftPod: mocks.loadActiveDraftPod,
-  loadActiveDraftGuest: mocks.loadActiveDraftGuest,
-  clearActiveDraftPod: mocks.clearActiveDraftPod,
-  clearActiveDraftGuest: mocks.clearActiveDraftGuest,
-}));
 vi.mock("../../services/gamePersistence", () => ({ loadGame: mocks.loadGame }));
 
 // No store is mocked here, and none needs to be: `COMMANDER_DRAFT_ENTRY` and

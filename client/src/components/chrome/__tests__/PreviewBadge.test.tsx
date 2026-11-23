@@ -12,9 +12,6 @@ vi.mock("../../../services/platform", () => ({
   isTauri: isTauriMock,
 }));
 
-vi.mock("../../../services/channelPreference", () => ({
-  rememberChannelPreference: vi.fn(),
-}));
 
 // Only openExternal is replaced: the badge validates its runtime target with the
 // real isOpenableExternalUrl, so a stubbed validator would test nothing.

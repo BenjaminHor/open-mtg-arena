@@ -4,9 +4,8 @@
  *
  * Design note — each field is a raw JSON string (or null) rather than a
  * decoded object. Manual export/import round-trips the exact on-disk
- * representation. Cloud sync additionally projects out device-local feed
- * cache material while leaving each store's own versioning machinery in
- * charge of the restored serialized data.
+ * representation, leaving each store's own versioning machinery in charge of
+ * the restored serialized data.
  *
  * IndexedDB caches (feed cache, audio cache, game state checkpoints) are
  * intentionally NOT exported — they rehydrate at runtime from source.
@@ -19,15 +18,11 @@ import {
   DRAFT_WORKSPACE_PREFERENCES_KEY,
   FEED_DECK_ORIGINS_KEY,
   FEED_SUBSCRIPTIONS_KEY,
-  isDraftAutosaveSlot,
   isUserOwnedStorageKey,
   PREFERENCES_KEY,
   STORAGE_KEY_PREFIX,
-  type DeckFolder,
-  type DeckMeta,
 } from "../constants/storage";
 import { withSavedDeckLibrary, type SavedDeckTxn } from "./savedDeckTransaction";
-import type { FeedSubscription } from "../types/feed";
 
 /** Versioned envelope. Future shapes go in a `PhaseBackupV2 | …` union. */
 export interface PhaseBackupV1 {
@@ -57,95 +52,8 @@ export interface PhaseBackupV1 {
 
 export type PhaseBackup = PhaseBackupV1;
 
-/**
- * Reconcile deck collections without discarding either device's deck data.
- *
- * The local collection keeps its names. A cloud deck with the same name but
- * different contents is retained under a stable, unique "(Cloud)" suffix;
- * exact duplicates need only one copy. Profile-level fields deliberately stay
- * local because their opaque serialized formats do not have a safe structural
- * merge contract.
- */
-export function mergeDeckCollections(
-  local: PhaseBackup,
-  cloud: PhaseBackup,
-): PhaseBackupV1 {
-  const decks = { ...local.decks };
-  const cloudDeckNames = new Map<string, string>();
-  // Cloud names the local profile already held (byte-identical), so a
-  // marker on the cloud metadata entry must not confer autosave ownership.
-  const heldLocally = new Set<string>();
-
-  for (const [name, raw] of Object.entries(cloud.decks)) {
-    const existing = decks[name];
-    if (existing === undefined || existing === raw) {
-      decks[name] = raw;
-      cloudDeckNames.set(name, name);
-      if (existing === raw) heldLocally.add(name);
-      continue;
-    }
-
-    let suffix = 1;
-    let mergedName = `${name} (Cloud)`;
-    while (decks[mergedName] !== undefined) {
-      suffix += 1;
-      mergedName = `${name} (Cloud ${suffix})`;
-    }
-    decks[mergedName] = raw;
-    cloudDeckNames.set(name, mergedName);
-  }
-
-  const { folders, folderIds } = mergeFolders(local.deckFolders, cloud.deckFolders);
-  const deckMetadata = mergeDeckMetadata(
-    local.deckMetadata,
-    cloud.deckMetadata,
-    cloudDeckNames,
-    folderIds,
-    heldLocally,
-  );
-  const feedDeckOrigins = mergeDeckRecord(
-    local.feedDeckOrigins,
-    cloud.feedDeckOrigins,
-    cloudDeckNames,
-  );
-
-  return {
-    ...local,
-    exportedAt: new Date().toISOString(),
-    decks,
-    deckMetadata,
-    deckFolders: folders,
-    feedDeckOrigins,
-  };
-}
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
-function parseRecord<T>(
-  raw: string | null,
-  isValue?: (value: unknown) => value is T,
-): Record<string, T> | null {
-  if (raw == null) return {};
-  try {
-    const value: unknown = JSON.parse(raw);
-    if (!isRecord(value)) return null;
-    if (isValue && !Object.values(value).every(isValue)) return null;
-    return value as Record<string, T>;
-  } catch {
-    return null;
-  }
-}
-
-function isDeckMeta(value: unknown): value is DeckMeta {
-  if (!isRecord(value) || typeof value.addedAt !== "number") return false;
-  return (
-    (value.lastPlayedAt === undefined || typeof value.lastPlayedAt === "number") &&
-    (value.folderId === undefined || typeof value.folderId === "string") &&
-    (value.starred === undefined || typeof value.starred === "boolean") &&
-    (value.autosaveSlot === undefined || isDraftAutosaveSlot(value.autosaveSlot))
-  );
 }
 
 /**
@@ -172,99 +80,6 @@ function withoutAutosaveOwnership(raw: string | null, names: ReadonlySet<string>
   return JSON.stringify(value);
 }
 
-function isDeckFolder(value: unknown): value is DeckFolder {
-  return (
-    isRecord(value) &&
-    typeof value.id === "string" &&
-    typeof value.name === "string" &&
-    typeof value.order === "number"
-  );
-}
-
-function parseFolders(raw: string | null | undefined): DeckFolder[] | null {
-  if (raw == null) return [];
-  try {
-    const value: unknown = JSON.parse(raw);
-    return Array.isArray(value) && value.every(isDeckFolder) ? value : null;
-  } catch {
-    return null;
-  }
-}
-
-function mergeFolders(
-  localRaw: string | null | undefined,
-  cloudRaw: string | null | undefined,
-): { folders: string | null; folderIds: Map<string, string> } {
-  const local = parseFolders(localRaw);
-  const cloud = parseFolders(cloudRaw);
-  if (local === null || cloud === null) {
-    return { folders: localRaw ?? null, folderIds: new Map() };
-  }
-
-  const merged = [...local];
-  const folderIds = new Map<string, string>();
-  for (const folder of cloud) {
-    const localFolder = merged.find((candidate) => candidate.id === folder.id);
-    if (localFolder === undefined || (localFolder.name === folder.name && localFolder.order === folder.order)) {
-      if (localFolder === undefined) merged.push(folder);
-      folderIds.set(folder.id, folder.id);
-      continue;
-    }
-
-    let suffix = 1;
-    let id = `${folder.id}-cloud`;
-    while (merged.some((candidate) => candidate.id === id)) {
-      suffix += 1;
-      id = `${folder.id}-cloud-${suffix}`;
-    }
-    merged.push({ ...folder, id });
-    folderIds.set(folder.id, id);
-  }
-  return { folders: JSON.stringify(merged), folderIds };
-}
-
-function mergeDeckMetadata(
-  localRaw: string | null,
-  cloudRaw: string | null,
-  cloudDeckNames: ReadonlyMap<string, string>,
-  folderIds: ReadonlyMap<string, string>,
-  heldLocally: ReadonlySet<string>,
-): string | null {
-  const local = parseRecord(localRaw, isDeckMeta);
-  const cloud = parseRecord(cloudRaw, isDeckMeta);
-  if (local === null || cloud === null) return localRaw;
-
-  for (const [name, meta] of Object.entries(cloud)) {
-    const mergedName = cloudDeckNames.get(name);
-    if (mergedName === undefined || local[mergedName] !== undefined) continue;
-    const folderId = meta.folderId === undefined ? undefined : (folderIds.get(meta.folderId) ?? meta.folderId);
-    const entry: DeckMeta = { ...meta, ...(folderId === undefined ? {} : { folderId }) };
-    // The local profile already held this deck: cloud metadata may describe
-    // the cloud device's own autosave slot, which must not transfer here.
-    if (heldLocally.has(name)) delete entry.autosaveSlot;
-    local[mergedName] = entry;
-  }
-  return JSON.stringify(local);
-}
-
-function mergeDeckRecord<T>(
-  localRaw: string | null,
-  cloudRaw: string | null,
-  cloudDeckNames: ReadonlyMap<string, string>,
-): string | null {
-  const local = parseRecord<T>(localRaw);
-  const cloud = parseRecord<T>(cloudRaw);
-  if (local === null || cloud === null) return localRaw;
-
-  for (const [name, value] of Object.entries(cloud)) {
-    const mergedName = cloudDeckNames.get(name);
-    if (mergedName === undefined || local[mergedName] !== undefined) continue;
-    local[mergedName] = value;
-  }
-  return JSON.stringify(local);
-}
-
-/** Build a backup envelope by snapshotting all user-owned localStorage keys. */
 export function buildBackup(): PhaseBackupV1 {
   const decks: Record<string, string> = {};
   for (let i = 0; i < localStorage.length; i++) {
@@ -287,82 +102,6 @@ export function buildBackup(): PhaseBackupV1 {
     feedSubscriptions: localStorage.getItem(FEED_SUBSCRIPTIONS_KEY),
     feedDeckOrigins: localStorage.getItem(FEED_DECK_ORIGINS_KEY),
   };
-}
-
-function isFeedSubscription(value: unknown): value is FeedSubscription {
-  return (
-    isRecord(value) &&
-    typeof value.sourceId === "string" &&
-    typeof value.url === "string" &&
-    (value.type === "bundled" || value.type === "remote") &&
-    typeof value.subscribedAt === "number" &&
-    typeof value.lastRefreshedAt === "number" &&
-    typeof value.lastVersion === "number" &&
-    (value.error === undefined || typeof value.error === "string")
-  );
-}
-
-function projectCloudSubscriptions(raw: string | null): string | null {
-  if (raw === null) return null;
-  try {
-    const value: unknown = JSON.parse(raw);
-    if (!Array.isArray(value) || !value.every(isFeedSubscription)) return null;
-    return JSON.stringify(value.map(({ sourceId, url, type }) => ({
-      sourceId,
-      url,
-      type,
-      // Required by the local persistence shape, but deliberately reset:
-      // cloud owns only subscription identity, never per-device cache state.
-      subscribedAt: 0,
-      lastRefreshedAt: 0,
-      lastVersion: 0,
-    })));
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Strip device-local feed cache material from a backup used for cloud sync.
- * Manual file exports intentionally retain the complete local profile.
- */
-export function projectCloudBackup(backup: PhaseBackup): PhaseBackupV1 {
-  const origins = parseRecord(backup.feedDeckOrigins, (value): value is string => typeof value === "string");
-  if (origins === null) {
-    return {
-      ...backup,
-      feedSubscriptions: projectCloudSubscriptions(backup.feedSubscriptions),
-      feedDeckOrigins: null,
-    };
-  }
-
-  const feedDeckNames = new Set(Object.keys(origins));
-  const decks = Object.fromEntries(
-    Object.entries(backup.decks).filter(([name]) => !feedDeckNames.has(name)),
-  );
-  const metadata = parseRecord(backup.deckMetadata);
-  let deckMetadata = backup.deckMetadata;
-  if (backup.deckMetadata !== null && metadata !== null) {
-    deckMetadata = JSON.stringify(Object.fromEntries(
-      Object.entries(metadata).filter(([name]) => !feedDeckNames.has(name)),
-    ));
-  }
-
-  return {
-    ...backup,
-    decks,
-    deckMetadata,
-    activeDeck: backup.activeDeck !== null && feedDeckNames.has(backup.activeDeck)
-      ? null
-      : backup.activeDeck,
-    feedSubscriptions: projectCloudSubscriptions(backup.feedSubscriptions),
-    feedDeckOrigins: null,
-  };
-}
-
-/** Snapshot only the portable profile fields owned by cloud sync. */
-export function buildCloudBackup(): PhaseBackupV1 {
-  return projectCloudBackup(buildBackup());
 }
 
 /** Trigger a browser download of the backup payload. */

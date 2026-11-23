@@ -36,7 +36,7 @@ import {
   getDeckColorIdentityPips,
 } from "../components/menu/deckHelpers";
 import { ManaSymbol } from "../components/mana/ManaSymbol";
-import { cappedMatchType, useBestOfThreeCeiling } from "../components/lobby/HostSetup";
+import { cappedMatchType, useBestOfThreeCeiling } from "../hooks/useBestOfThreeCeiling";
 import { menuButtonClass } from "../components/menu/buttonStyles";
 import {
   ACTIVE_DECK_KEY,

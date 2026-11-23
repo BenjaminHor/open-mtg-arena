@@ -1,5 +1,4 @@
 import type { GameFormat } from "../adapter/types";
-import type { DeckChoice } from "../multiplayer/seatTypes";
 import { loadSavedDeck } from "../constants/storage";
 import { expandParsedDeck, type ExpandedDeck } from "./deckParser";
 import { deckSupplyForFormat } from "./engineRuntime";
@@ -36,11 +35,6 @@ export function pileSourceParam(source: PileSource): string | null {
 /** A seat that submits nothing; the engine supplies or defaults its deck. */
 export function emptySeatDeck(): ExpandedDeck {
   return expandParsedDeck({ main: [], sideboard: [] });
-}
-
-/** The AI-seat deck entry for a format whose deck the player does not build. */
-export function suppliedAiDeckChoice(): { id: string; label: string; choice: DeckChoice } {
-  return { id: "supplied", label: "supplied", choice: { type: "DeckList", data: emptySeatDeck() } };
 }
 
 /**

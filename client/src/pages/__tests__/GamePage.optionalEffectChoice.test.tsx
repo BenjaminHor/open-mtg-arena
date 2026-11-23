@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router";
 
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { usePreferencesStore } from "../../stores/preferencesStore.ts";
 import { useUiStore } from "../../stores/uiStore.ts";
 import { gameObjectFactory } from "../../test/factories/gameObjectFactory.ts";
@@ -56,8 +55,6 @@ vi.mock("../../components/board/BattlefieldBackground.tsx", () => ({
   BattlefieldBackground: () => null,
 }));
 vi.mock("../../components/stack/StackDisplay.tsx", () => ({ StackDisplay: () => null }));
-vi.mock("../../components/debug/DebugPanel.tsx", () => ({ DebugPanel: () => null }));
-vi.mock("../../components/hud/HUD.tsx", () => ({ HUD: () => null }));
 vi.mock("../../components/board/GameBoard.tsx", () => ({ GameBoard: () => null }));
 vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: () => null }));
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
@@ -139,11 +136,10 @@ describe("GamePage optional-effect routed player gate", () => {
     act(() => {
       useGameStore.setState({
         gameId: "optional-choice",
-        gameMode: "online",
+        gameMode: "ai",
         gameState: state,
         waitingFor: state.waiting_for,
       });
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
       usePreferencesStore.setState({
         multiplayerBoardLayout: "focused",
         multiplayerSplitLayoutNudgeDismissed: true,
@@ -156,7 +152,6 @@ describe("GamePage optional-effect routed player gate", () => {
     cleanup();
     act(() => {
       useGameStore.setState({ gameId: null, gameState: null, waitingFor: null, adapter: null });
-      useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
     });
   });
 
@@ -172,7 +167,6 @@ describe("GamePage optional-effect routed player gate", () => {
     expect(screen.queryByRole("img", { name: "Bre of Clan Stoutarm" })).not.toBeInTheDocument();
 
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 1 });
       view.rerender(gamePageTree());
     });
 

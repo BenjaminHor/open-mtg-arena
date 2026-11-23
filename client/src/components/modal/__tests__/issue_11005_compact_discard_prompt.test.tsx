@@ -46,7 +46,7 @@ function handState() {
 }
 
 function showPrompt(gameState: GameState) {
-  setGameStoreForTest({ gameState, gameMode: "online" });
+  setGameStoreForTest({ gameState, gameMode: "ai" });
   render(<CardChoiceModal />);
 }
 
@@ -71,7 +71,6 @@ const TOUCH_ROW_CLASSES = ["[&_button]:min-h-11", "[&_select]:min-h-11"];
 
 beforeEach(() => {
   dispatchMock.mockClear();
-  useMultiplayerStore.setState({ activePlayerId: 0 });
 });
 
 afterEach(() => {

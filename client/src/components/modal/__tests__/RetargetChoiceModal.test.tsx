@@ -5,7 +5,6 @@ import type { GameState, TargetRef, WaitingFor } from "../../../adapter/types.ts
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 import { RetargetChoiceModal } from "../RetargetChoiceModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import {
   buildCommanderFormatConfig,
   buildGameState,
@@ -29,7 +28,7 @@ function setUp(data: Partial<RetargetChoiceWaitingFor["data"]>) {
     waiting_for: waitingFor,
   });
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: state,
     waitingFor,
   });
@@ -41,7 +40,6 @@ const opp2: TargetRef = { Player: 1 };
 describe("RetargetChoiceModal (via CardChoiceModal)", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {

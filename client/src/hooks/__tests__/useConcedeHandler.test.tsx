@@ -12,7 +12,6 @@ import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useConcedeHandler } from "../useConcedeHandler";
-import { useMultiplayerStore } from "../../stores/multiplayerStore";
 import { useMultiplayerDraftStore } from "../../stores/multiplayerDraftStore";
 
 // ---- Mocks -----------------------------------------------------------------
@@ -88,7 +87,6 @@ afterEach(async () => {
   const { useGameStore: actualGameStore } =
     await vi.importActual<typeof import("../../stores/gameStore")>("../../stores/gameStore");
   actualGameStore.setState({ gameMode: null });
-  useMultiplayerStore.setState({ activePlayerId: 0 });
   useMultiplayerDraftStore.setState({
     commanderLaunch: null,
     commanderSeat: null,
@@ -336,7 +334,6 @@ describe("useConcedeHandler", () => {
     actualGameStore.setState({ gameMode: "draft-match" });
     // A guest seated third by the host. Deliberately NOT 0 and NOT 1: 0 is the
     // value a broken resolver returns anyway, and 1 is `DRAFT_BOT_AI_SEAT`.
-    useMultiplayerStore.setState({ activePlayerId: 2 });
 
     const { result } = renderHook(
       () =>

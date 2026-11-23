@@ -24,14 +24,10 @@ import type {
   PlayDrawPosition,
   SerializedAbilityCost,
   AiDecisionDiagnosticReceipt,
-  TakebackEvent,
-  TakebackResolution,
 } from "../adapter/types";
 import {
   supportsAiDecisionDiagnostics,
   supportsDebugHandReveal,
-  supportsMatchConcede,
-  supportsTakeback,
 } from "../adapter/types";
 import type {
   InteractionManaRestriction,
@@ -43,7 +39,6 @@ import { loadActiveQuickDraft } from "../services/quickDraftPersistence";
 import type { DraftMatchResult } from "../services/quickDraftPersistence";
 import { useResolvedGridRows, useResolvedSplitGridRows } from "../hooks/useResolvedGridRows.ts";
 import { useDebugHandReveal } from "../hooks/useDebugHandReveal";
-import { isValidFinalView } from "../services/fullTerminalResult";
 import { useIsMobile } from "../hooks/useIsMobile.ts";
 import { formatLifeReadout, lifeReadout } from "../hooks/useDisplayedLife.ts";
 import { useLocalizedCardContent } from "../hooks/useLocalizedCardContent.ts";
@@ -74,7 +69,6 @@ import { BlockerConstraintBadges } from "../components/combat/BlockerConstraintB
 import { GameBoard } from "../components/board/GameBoard.tsx";
 import { CardImage } from "../components/card/CardImage.tsx";
 import { GameCardPreview } from "../components/card/GameCardPreview.tsx";
-import { CardReportDialog } from "../components/card/CardReportDialog.tsx";
 import { isFocusTargetAvailable } from "../components/ui/focusTarget.ts";
 import { ActionButton } from "../components/board/ActionButton.tsx";
 import { ActionRailStatusRow } from "../components/board/ActionRailStatusRow.tsx";
@@ -88,7 +82,6 @@ import { MobileHandDrawer } from "../components/hand/MobileHandDrawer.tsx";
 import { HandBadge } from "../components/hand/HandBadge.tsx";
 import { PlayerHand } from "../components/hand/PlayerHand.tsx";
 import { FlowHelpNudge } from "../components/help/FlowHelpNudge.tsx";
-import { ReportCardNudge } from "../components/help/ReportCardNudge.tsx";
 import { SandboxToolsNudge } from "../components/help/SandboxToolsNudge.tsx";
 import { HelpSheet } from "../components/help/HelpSheet.tsx";
 import { GameLogPanel } from "../components/log/GameLogPanel.tsx";
@@ -143,7 +136,6 @@ import { TopOrBottomChoiceModalContent } from "../components/modal/TopOrBottomCh
 import { MutateMergeChoiceModalContent } from "../components/modal/MutateMergeChoiceModal.tsx";
 import { CipherEncodeChoiceModalContent } from "../components/modal/CipherEncodeChoiceModal.tsx";
 import { ContestOverlay } from "../components/contest/ContestOverlay.tsx";
-import { useContestStore } from "../stores/contestStore.ts";
 import { DialogHost, isClickThroughWaitingFor } from "../components/modal/DialogHost.tsx";
 import { PermanentTypeSlotModal } from "../components/modal/PermanentTypeSlotModal.tsx";
 import { StackDisplay } from "../components/stack/StackDisplay.tsx";
@@ -164,19 +156,9 @@ import {
 import { DebugPanel } from "../components/chrome/DebugPanel.tsx";
 import { AiDecisionOverlay } from "../components/chrome/AiDecisionOverlay.tsx";
 import { GameMenu } from "../components/chrome/GameMenu.tsx";
-import { ConcedeDialog } from "../components/multiplayer/ConcedeDialog.tsx";
-import { TakebackRequestDialog } from "../components/multiplayer/TakebackRequestDialog.tsx";
-import { ConnectionToast } from "../components/multiplayer/ConnectionToast.tsx";
-import { EmoteOverlay } from "../components/multiplayer/EmoteOverlay.tsx";
 import { ResolutionProgressOverlay } from "../components/board/ResolutionProgressOverlay.tsx";
-import { LobbyProgress } from "../components/multiplayer/LobbyProgress.tsx";
-import { DisconnectChoiceDialog } from "../components/hud/DisconnectChoiceDialog.tsx";
 import { PlayerEnchantmentsDialog } from "../components/hud/PlayerEnchantmentsDialog.tsx";
 import { AttachmentFan } from "../components/board/AttachmentFan.tsx";
-import { PausedBanner } from "../components/chrome/PausedBanner.tsx";
-import { P2PHostAdapter, type P2PAdapterEvent } from "../adapter/p2p-adapter.ts";
-import { WebSocketAdapter } from "../adapter/ws-adapter.ts";
-import type { WsAdapterEvent } from "../adapter/ws-adapter.ts";
 import { MANA_PAYMENT_WAITING_FOR_TYPES } from "../game/waitingForRegistry.ts";
 import { useGameDispatch } from "../hooks/useGameDispatch.ts";
 import { useInspectHoverProps } from "../hooks/useInspectHoverProps.ts";
@@ -185,29 +167,13 @@ import { usePriorityAttentionController } from "../hooks/usePriorityAttention.ts
 import { usePriorityChime } from "../hooks/usePriorityChime.ts";
 import { usePriorityTabTitle } from "../hooks/usePriorityTabTitle.ts";
 import { clearPromptOverlayState } from "../game/sessionCleanup.ts";
-import {
-  clearGame,
-  hasRemoteHumans,
-  loadActiveGame,
-  seatSource,
-  useGameStore,
-} from "../stores/gameStore.ts";
+import { clearGame, loadActiveGame, useGameStore } from "../stores/gameStore.ts";
 import { PLAYER_ID } from "../constants/game";
 import { useUiStore } from "../stores/uiStore.ts";
 import { usePreferencesStore } from "../stores/preferencesStore.ts";
-import {
-  FORMAT_DEFAULTS,
-  getOpponentDisplayName,
-  getPlayerDisplayName,
-  playerToastKey,
-  useMultiplayerStore,
-  type PlayerSlot,
-} from "../stores/multiplayerStore.ts";
+import { getOpponentDisplayName } from "../stores/multiplayerStore.ts";
 import { formatMetadata, isSetupFormat } from "../data/formatRegistry.ts";
 import { withChallengeDeck } from "../data/challengeDeckRegistry.ts";
-import { useMultiplayerDraftStore } from "../stores/multiplayerDraftStore.ts";
-import { SpectatorChrome } from "../components/spectator/SpectatorChrome.tsx";
-import { useSpectatorMode } from "../hooks/useSpectatorMode.ts";
 import { GameProvider } from "../providers/GameProvider.tsx";
 import { useCanActForWaitingState, usePerspectivePlayerId, usePlayerId } from "../hooks/usePlayerId.ts";
 import { ABILITY_BLOCK_REASON_KEY } from "../viewmodel/abilityBlockReason.ts";
@@ -421,7 +387,6 @@ function GamePageContent({
   const focusedGridTemplateRows = useResolvedGridRows();
   const splitGridTemplateRows = useResolvedSplitGridRows();
   const gameState = useGameStore((s) => s.gameState);
-  const isBestOfThree = gameState?.match_config?.match_type === "Bo3";
   const objects = useGameStore((s) => s.gameState?.objects);
   const turnNumber = useGameStore((s) => s.gameState?.turn_number);
   // Store `waitingFor`, not `gameState.waiting_for`: only the store's own field is
@@ -500,8 +465,6 @@ function GamePageContent({
 
   const playerId = usePlayerId();
   const perspectivePlayerId = usePerspectivePlayerId();
-  // Card-report picker is valid in a live game.
-  const canReportCard = gameState != null;
   const canActForWaitingState = useCanActForWaitingState();
   const boardChoiceLayerActive = useMemo(() => {
     const choice = getBoardChoiceView(waitingFor, objects, gameState?.allows_cancel_cast);
@@ -511,8 +474,6 @@ function GamePageContent({
   const setHelpSheetOpen = useUiStore((s) => s.setHelpSheetOpen);
   const dismissedFlowHelpNudge = usePreferencesStore((s) => s.dismissedFlowHelpNudge);
   const dismissedSandboxToolsNudge = usePreferencesStore((s) => s.dismissedSandboxToolsNudge);
-  const dismissedReportCardNudge = usePreferencesStore((s) => s.dismissedReportCardNudge);
-  const cardReportDialogOpen = useUiStore((s) => s.cardReportDialogOpen);
   const multiplayerBoardLayout = usePreferencesStore((s) => s.multiplayerBoardLayout);
   const setMultiplayerBoardLayout = usePreferencesStore((s) => s.setMultiplayerBoardLayout);
   const multiplayerSplitLayoutNudgeDismissed = usePreferencesStore(
@@ -847,27 +808,6 @@ function GamePageContent({
     canActForWaitingState &&
     stackLength === 0;
 
-  // Last in the first-run hint chain (requires the sandbox nudge dismissed first)
-  // so the three hints never stack. Same calm-moment guards, plus: gated on the
-  // report affordance being available and hidden once the dialog is already open.
-  const showReportCardNudge =
-    !dismissedReportCardNudge &&
-    dismissedSandboxToolsNudge &&
-    canReportCard &&
-    !cardReportDialogOpen &&
-    !debugPanelOpen &&
-    !helpSheetOpen &&
-    (mode === "ai" || mode === "local") &&
-    viewingZone == null &&
-    preferencesOpen == null &&
-    boardContextMenu == null &&
-    !showCardDataMissing &&
-    resumeResetReason == null &&
-    waitingFor?.type === "Priority" &&
-    waitingFor.data.player === playerId &&
-    canActForWaitingState &&
-    stackLength === 0;
-
   return (
     <div
       className={`game-no-select flex h-[100dvh] w-full flex-col bg-gray-950 lg:flex-row${showDebugBounds ? " debug-bounds" : ""}`}
@@ -979,7 +919,6 @@ function GamePageContent({
             effectiveMultiplayerBoardLayout={effectiveMultiplayerBoardLayout}
             oppHud={oppHud}
             playerHud={playerHud}
-            onKickPlayer={isP2PHost ? handleKickPlayer : undefined}
             onViewZone={handleViewZone}
           />
         </div>
@@ -1083,7 +1022,6 @@ function GamePageContent({
         >
           {showFlowHelpNudge && <FlowHelpNudge />}
           {showSandboxToolsNudge && <SandboxToolsNudge />}
-          {showReportCardNudge && <ReportCardNudge />}
           <div className="hidden max-lg:landscape:block lg:block">
             <CombatPhaseIndicator />
           </div>
@@ -1128,15 +1066,12 @@ function GamePageContent({
         onToggleDebugInteractionMode={sandboxToolsAvailable ? toggleDebugInteractionMode : undefined}
         debugClickModeButtonVisible={debugClickModeButtonVisible}
         onToggleDebugClickModeButtonVisible={toggleDebugClickModeButtonVisible}
-        showReportCard={canReportCard}
-        onReportCardClick={() => useUiStore.getState().openCardReportDialog()}
       />
       {/* Share the viewport stacking order with arrow portals while keeping
           the board's paint containment and the overlay subtree mounted. */}
       {createPortal(
         <div className="game-no-select text-white" style={gamePageStyle}>
           <HelpSheet />
-          <CardReportDialog returnFocusRef={gameMenuTriggerRef} />
 
           {/* Card data missing modal */}
           {showCardDataMissing && (
@@ -1228,9 +1163,6 @@ function GamePageContent({
               onCustomizeLayout={() => useUiStore.getState().setFlexEditMode(true)}
               onToggleGameLog={() => useUiStore.getState().toggleLogPanel()}
               onToggleDebugLog={() => useUiStore.getState().toggleDebugPanel()}
-              onReportCard={
-                canReportCard ? () => useUiStore.getState().openCardReportDialog() : undefined
-              }
             />
           )}
 

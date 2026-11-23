@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import { initializeFeeds } from "../services/feedService";
-import { PROFILE_REPLACED_EVENT } from "../stores/cloudSyncStore";
 import { PROFILE_REPLACEMENT_KEY } from "../constants/storage";
 
 /** Whether the feed generation for the mode currently rendered has settled. */
@@ -11,20 +10,15 @@ export function useFeedInitialization(effectiveOffline: boolean): boolean {
   const [profileRevision, setProfileRevision] = useState(0);
 
   useEffect(() => {
-    const onProfileReplaced = () => setProfileRevision((revision) => revision + 1);
-    // A replacement committed by ANOTHER tab bumps PROFILE_REPLACEMENT_KEY via
-    // a plain localStorage write, which only fires `storage` in other windows
-    // (never this one) — PROFILE_REPLACED_EVENT is same-window only, so without
-    // this listener this tab's aborted feed init would never re-run.
+    // A profile replacement (a backup restore) committed by ANOTHER tab bumps
+    // PROFILE_REPLACEMENT_KEY via a plain localStorage write, which fires
+    // `storage` here; without this listener this tab's aborted feed init would
+    // never re-run.
     const onStorage = (event: StorageEvent) => {
       if (event.key === PROFILE_REPLACEMENT_KEY) setProfileRevision((revision) => revision + 1);
     };
-    window.addEventListener(PROFILE_REPLACED_EVENT, onProfileReplaced);
     window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(PROFILE_REPLACED_EVENT, onProfileReplaced);
-      window.removeEventListener("storage", onStorage);
-    };
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   useEffect(() => {

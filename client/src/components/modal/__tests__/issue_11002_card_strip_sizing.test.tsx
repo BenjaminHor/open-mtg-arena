@@ -312,8 +312,7 @@ describe("the parent of a strip's frame", () => {
       .withObjects(card)
       .searchChoice({ player: 0, cards: [card.id], count: 1 })
       .build();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
-    setGameStoreForTest({ gameState, gameMode: "online" });
+    setGameStoreForTest({ gameState, gameMode: "ai" });
 
     render(<CardChoiceModal />);
 
@@ -347,8 +346,7 @@ describe("what a strip draws besides a card", () => {
       .withObjects(card)
       .learnChoice({ player: 0, hand_cards: [card.id] })
       .build();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
-    setGameStoreForTest({ gameState, gameMode: "online" });
+    setGameStoreForTest({ gameState, gameMode: "ai" });
 
     render(<CardChoiceModal />);
     fireEvent.click(screen.getByRole("button", { name: CARD_NAME }));

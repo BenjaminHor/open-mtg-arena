@@ -34,7 +34,6 @@ import { RichLabel } from "../mana/RichLabel.tsx";
 import { CardArtFallback } from "./CardArtFallback.tsx";
 import { CardBackFallback } from "./CardBackFallback.tsx";
 import { getCardImageSrcSetProps } from "./cardImageSrcSet.ts";
-import { ReportCardButton, type CardReportContext } from "./ReportCardButton.tsx";
 import { GameplayTooltip } from "../ui/GameplayTooltip.tsx";
 import { LoyaltyBadge } from "../ui/LoyaltyBadge.tsx";
 import { CounterTooltip } from "../ui/CounterTooltip.tsx";
@@ -319,12 +318,6 @@ function CardPreviewInner({
   const ownerLookup = objectId !== undefined && obj ? cardImageLookup(obj) : undefined;
   const ownerPrinting = ownerLookup?.ownerPrinting;
   const ownerPrintedRef = ownerLookup ? ownerPrintedRefOf(ownerLookup) : undefined;
-  // `card_report` context needs a live, participating game: `obj == null` (deck
-  // builder) has no zone and a possibly-stale `gameMode`, `gameId == null` means
-  // no game at all, and spectators don't report — building no context in these
-  // cases keeps both the event and the button's wrapper elements out entirely.
-  const gameId = useGameStore((s) => s.gameId);
-  const gameMode = useGameStore((s) => s.gameMode);
 
   // Auto-derive back face name from " // " separator when not explicitly provided
   // (e.g., deck builder passes "Delver of Secrets // Insectile Aberration" as cardName)
@@ -648,29 +641,6 @@ function CardPreviewInner({
     viewportWidth,
   ]);
 
-  // Identity + parse counts for the "report this card" button, carrying the
-  // DISPLAYED face (back face under Ctrl) so the report matches what the player
-  // sees. Undefined outside a live game (`obj == null` or `gameId == null`), so
-  // the button never renders in the deck builder. On mobile `showOtherFace` is
-  // always false, so this resolves to the front face there.
-  // No front-face fallback for the counts: if the back face's parse details
-  // haven't loaded, 0/0 ("no parse data") is honest — front-face counts under a
-  // back-face identity would corrupt the misparse-vs-known-gap triage columns.
-  const reportItems = showOtherFace ? backParseDetails : frontParseDetails;
-  const reportContext: CardReportContext | undefined =
-    !suppressArtLookup && obj != null && gameId !== null && gameMode !== "spectate"
-      ? {
-          oracleId:
-            (showOtherFace ? obj.back_face?.printed_ref?.oracle_id : obj.printed_ref?.oracle_id) ?? "",
-          faceName:
-            (showOtherFace ? obj.back_face?.printed_ref?.face_name : obj.printed_ref?.face_name) ?? "",
-          name: showOtherFace ? (obj.back_face?.printed_ref?.face_name ?? backFaceName ?? obj.name) : obj.name,
-          zone: obj.zone,
-          supported: (reportItems ?? []).filter((item) => item.supported).length,
-          total: (reportItems ?? []).length,
-        }
-      : undefined;
-
   const handPreviewLeft = handPreview
     ? Math.min(
         Math.max(margin, handOrigin.centerX - previewWidth / 2),
@@ -830,7 +800,6 @@ function CardPreviewInner({
         reloadOtherSurfaces={reloadOtherSurfaces}
         onDismiss={onDismiss ?? dismissPreview}
         layout={mobileLayout ?? "modal"}
-        report={reportContext}
       />
     );
   }
@@ -897,7 +866,6 @@ function CardPreviewInner({
             localizedTypeLine={showOtherFace ? engineBackFace?.localized_type_line : engineFrontFace?.localized_type_line}
             parseDetails={showOtherFace && backParseDetails ? backParseDetails : frontParseDetails}
             maxHeight={viewportHeight - margin * 2}
-            report={reportContext}
             onReloadArt={missingArt?.reload ?? reloadOtherSurfaces}
           />
         ) : (
@@ -983,7 +951,6 @@ function MobilePreviewOverlay({
   reloadOtherSurfaces,
   onDismiss,
   layout = "modal",
-  report,
 }: {
   cardName: string;
   /** The parent's RESOLVED art state (marker / generic back / peek already
@@ -1000,9 +967,6 @@ function MobilePreviewOverlay({
   reloadOtherSurfaces?: () => void;
   onDismiss: () => void;
   layout?: "modal" | "compact";
-  /** In-game report context; absent in the deck builder. Only the full modal
-   *  layout hosts the button — the compact peek dismisses on any tap. */
-  report?: CardReportContext;
 }) {
   const { t } = useTranslation("game");
   const src = art.kind === "face" ? art.src : null;
@@ -1076,7 +1040,7 @@ function MobilePreviewOverlay({
     );
   }
 
-  const hasActions = isFlip || report != null || reloadOtherSurfaces != null;
+  const hasActions = isFlip || reloadOtherSurfaces != null;
 
   // pointerdown (not click): the touch-release that opened this overlay fires
   // pointerup, not pointerdown, so a fresh tap is required to dismiss. Only the
@@ -1154,13 +1118,6 @@ function MobilePreviewOverlay({
               >
                 {t("preview.reloadArt")}
               </button>
-            )}
-            {report && (
-              <ReportCardButton
-                key={report.oracleId || report.name}
-                className={MOBILE_ACTION_PILL_CLASS}
-                {...report}
-              />
             )}
           </div>
         )}
@@ -1471,9 +1428,6 @@ interface ParsedAbilitiesPanelProps {
   localizedTypeLine?: string | null;
   parseDetails: ParsedItem[] | null;
   maxHeight?: number;
-  /** In-game report context for the displayed face; absent in the deck builder
-   *  (no live game), where the report button is not shown. */
-  report?: CardReportContext;
   /** Reloads the card's art; present when the displayed face's art failed, or
    *  another surface of the card failed while this one loaded. The pinned panel
    *  is the desktop preview's one surface that takes clicks, so the reload sits
@@ -1488,7 +1442,6 @@ function ParsedAbilitiesPanel({
   localizedTypeLine,
   parseDetails,
   maxHeight,
-  report,
   onReloadArt,
 }: ParsedAbilitiesPanelProps) {
   const { t } = useTranslation("game");
@@ -1511,25 +1464,16 @@ function ParsedAbilitiesPanel({
           <div className="text-[10px] text-gray-500 mt-0.5">{typeLine}</div>
         )}
         <SupportSummary items={items} />
-        {(report || onReloadArt) && (
+        {onReloadArt && (
           <div className="mt-1 flex items-center justify-end gap-3">
-            {onReloadArt && (
-              // `min-h-11` keeps the target at least 44px tall.
-              <button
-                type="button"
-                onClick={onReloadArt}
-                className="min-h-11 px-1 text-[11px] text-indigo-300 hover:text-indigo-200"
-              >
-                {t("preview.reloadArt")}
-              </button>
-            )}
-            {report && (
-              <ReportCardButton
-                key={report.oracleId || report.name}
-                className="text-[11px]"
-                {...report}
-              />
-            )}
+            {/* `min-h-11` keeps the target at least 44px tall. */}
+            <button
+              type="button"
+              onClick={onReloadArt}
+              className="min-h-11 px-1 text-[11px] text-indigo-300 hover:text-indigo-200"
+            >
+              {t("preview.reloadArt")}
+            </button>
           </div>
         )}
       </div>

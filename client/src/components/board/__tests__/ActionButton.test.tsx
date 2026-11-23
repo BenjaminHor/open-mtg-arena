@@ -5,7 +5,6 @@ import type { GameState, WaitingFor } from "../../../adapter/types";
 import { dispatchAction, dispatchResolveAll } from "../../../game/dispatch.ts";
 import { useGameStore } from "../../../stores/gameStore";
 import { useMultiplayerDraftStore } from "../../../stores/multiplayerDraftStore";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore";
 import { usePreferencesStore } from "../../../stores/preferencesStore";
 import { usePriorityAttentionStore } from "../../../stores/priorityAttentionStore";
 import { useUiStore } from "../../../stores/uiStore";
@@ -102,7 +101,6 @@ describe("ActionButton", () => {
       blockerAssignments: new Map(),
       combatClickHandler: null,
     });
-    useMultiplayerStore.setState({ actionPending: false });
     useMultiplayerDraftStore.setState({ matchPairing: null });
   });
 
@@ -137,7 +135,7 @@ describe("ActionButton", () => {
 
   it("shows resolve when turn decision controller differs from priority player (issue #1218)", () => {
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: {
         ...createGameState(priorityPrompt()),
         turn_decision_controller: 1,
@@ -147,7 +145,6 @@ describe("ActionButton", () => {
       waitingFor: priorityPrompt(),
       legalActions: [],
     });
-    useMultiplayerStore.setState({ activePlayerId: 1, actionPending: false });
 
     render(<ActionButton />);
 
@@ -156,7 +153,7 @@ describe("ActionButton", () => {
 
   it("keeps priority actions available when end-of-turn auto-pass pauses for an opponent's stack object", () => {
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: {
         ...createGameState(priorityPrompt()),
         phase: "PostCombatMain",
@@ -166,7 +163,6 @@ describe("ActionButton", () => {
       waitingFor: priorityPrompt(),
       legalActions: [],
     });
-    useMultiplayerStore.setState({ activePlayerId: 0, actionPending: false });
 
     render(<ActionButton />);
 
@@ -177,7 +173,7 @@ describe("ActionButton", () => {
 
   it("does not block Resolve All behind client-side drain state", () => {
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: {
         ...createGameState(priorityPrompt()),
         phase: "PostCombatMain",
@@ -187,7 +183,6 @@ describe("ActionButton", () => {
       waitingFor: priorityPrompt(),
       legalActions: [],
     });
-    useMultiplayerStore.setState({ activePlayerId: 0, actionPending: false });
 
     render(<ActionButton />);
 
@@ -294,7 +289,7 @@ describe("ActionButton", () => {
 
   it("surfaces an armed UntilStackEmpty session with a cancel affordance while an opponent holds priority", () => {
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: {
         ...createGameState(priorityPrompt(1)),
         phase: "PostCombatMain",
@@ -304,7 +299,6 @@ describe("ActionButton", () => {
       waitingFor: priorityPrompt(1),
       legalActions: [],
     });
-    useMultiplayerStore.setState({ activePlayerId: 0, actionPending: false });
 
     render(<ActionButton />);
 
@@ -317,7 +311,7 @@ describe("ActionButton", () => {
 
   it("keeps UntilStackEmpty cancel-only when the local player holds priority", () => {
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: {
         ...createGameState(priorityPrompt()),
         phase: "PostCombatMain",
@@ -328,7 +322,6 @@ describe("ActionButton", () => {
       waitingFor: priorityPrompt(),
       legalActions: [],
     });
-    useMultiplayerStore.setState({ activePlayerId: 0, actionPending: false });
 
     render(<ActionButton />);
 
@@ -508,7 +501,7 @@ describe("ActionButton", () => {
 
   it("shows blocker controls when turn decision controller differs from blocking player (issue #1199)", () => {
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: createGameState(blockerPrompt()),
       waitingFor: blockerPrompt(),
       legalActions: [],
@@ -522,7 +515,6 @@ describe("ActionButton", () => {
           }
         : state.gameState,
     }));
-    useMultiplayerStore.setState({ activePlayerId: 1, actionPending: false });
 
     render(<ActionButton />);
 
@@ -533,9 +525,8 @@ describe("ActionButton", () => {
     beforeEach(() => {
       usePriorityAttentionStore.getState().publish({ cue: "none", chimeCount: 0 });
       usePreferencesStore.setState({ priorityAlertVisual: true });
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false, actionPending: false });
       useGameStore.setState({
-        gameMode: "online",
+        gameMode: "ai",
         gameState: {
           ...createGameState(priorityPrompt()),
           phase: "PreCombatMain",

@@ -52,8 +52,6 @@ vi.mock("../../components/board/BattlefieldBackground.tsx", () => ({
   BattlefieldBackground: () => null,
 }));
 vi.mock("../../components/stack/StackDisplay.tsx", () => ({ StackDisplay: () => null }));
-vi.mock("../../components/debug/DebugPanel.tsx", () => ({ DebugPanel: () => null }));
-vi.mock("../../components/hud/HUD.tsx", () => ({ HUD: () => null }));
 vi.mock("../../components/board/GameBoard.tsx", () => ({ GameBoard: () => null }));
 vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: () => null }));
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
@@ -104,7 +102,7 @@ function showPrompt(waitingFor: WaitingFor, seats: PlayerId[]) {
   act(() => {
     useGameStore.setState({
       gameId: "starting-player-choice",
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor,
       legalActions: [],
@@ -127,8 +125,6 @@ describe("GamePage starting-player choice", () => {
     dispatchMock.mockClear();
     act(() => {
       useMultiplayerStore.setState({
-        activePlayerId: 0,
-        isSpectator: false,
         playerNames: new Map([
           [0, "Alice"],
           [1, "Bob"],
@@ -158,8 +154,6 @@ describe("GamePage starting-player choice", () => {
         legalActions: [],
       });
       useMultiplayerStore.setState({
-        activePlayerId: null,
-        isSpectator: false,
         playerNames: new Map(),
       });
       useUiStore.setState({ diceRoll: null });
@@ -197,7 +191,6 @@ describe("GamePage starting-player choice", () => {
 
   it("non-chooser sees the chooser's name", async () => {
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 1 });
     });
     showPrompt(startingPlayerPrompt(0, [0, 1]), [0, 1]);
     renderGamePage();
@@ -211,7 +204,6 @@ describe("GamePage starting-player choice", () => {
 
   it("spectator sees the chooser's name, not the chooser's prompt", async () => {
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: true });
     });
     showPrompt(startingPlayerPrompt(0, [0, 1]), [0, 1]);
     renderGamePage();
@@ -225,7 +217,6 @@ describe("GamePage starting-player choice", () => {
 
   it("spectator is not shown the between-games play/draw prompt", async () => {
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: true });
     });
     showPrompt(
       {
@@ -241,7 +232,6 @@ describe("GamePage starting-player choice", () => {
 
     // Reach guard: the same seat, seated rather than spectating, is shown the prompt.
     act(() => {
-      useMultiplayerStore.setState({ isSpectator: false });
     });
     expect(await screen.findByText(PLAY_DRAW_TITLE)).toBeInTheDocument();
   });

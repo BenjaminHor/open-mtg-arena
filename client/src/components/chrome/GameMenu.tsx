@@ -46,10 +46,6 @@ interface GameMenuProps {
   onToggleDebugInteractionMode?: () => void;
   debugClickModeButtonVisible?: boolean;
   onToggleDebugClickModeButtonVisible?: () => void;
-  /** Show the always-visible "Report a card problem" flag button. Gated by the
-   *  caller to live, participating (non-spectate) games. */
-  showReportCard?: boolean;
-  onReportCardClick?: () => void;
 }
 
 export function GameMenu({
@@ -73,8 +69,6 @@ export function GameMenu({
   onToggleDebugInteractionMode,
   debugClickModeButtonVisible = false,
   onToggleDebugClickModeButtonVisible,
-  showReportCard,
-  onReportCardClick,
 }: GameMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -214,13 +208,6 @@ export function GameMenu({
             )}
           <div className="my-1 border-t border-gray-700/70" />
           <MenuSectionLabel label={t("gameMenu.sections.tools")} />
-          {showReportCard && onReportCardClick && (
-            <MenuButton
-              label={t("gameMenu.reportCard")}
-              icon={<FlagIcon />}
-              onClick={() => openSurfaceFromMenu(onReportCardClick)}
-            />
-          )}
           {showSandboxTools && onSandboxToolsClick && (
             <MenuButton
               label={t("gameMenu.openSandboxTools")}
@@ -390,23 +377,5 @@ function MenuButton({
         <span className="shrink-0 font-mono text-xs text-gray-500">{status ?? shortcut}</span>
       )}
     </button>
-  );
-}
-
-function FlagIcon() {
-  return (
-    <svg
-      aria-hidden
-      className="h-4 w-4 shrink-0 text-red-400"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.7}
-      viewBox="0 0 20 20"
-    >
-      <path d="M5 3v14" />
-      <path d="M5 4h9l-1.5 3L14 10H5" />
-    </svg>
   );
 }

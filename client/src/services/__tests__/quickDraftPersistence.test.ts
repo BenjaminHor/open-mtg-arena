@@ -10,8 +10,7 @@ const idb = vi.hoisted(() => {
   };
 });
 
-vi.mock("idb-keyval", () => ({ del: idb.del, get: idb.get, set: idb.set }));
-vi.mock("../draftPersistence", () => ({ getDraftStore: () => ({}) }));
+vi.mock("idb-keyval", () => ({ createStore: () => ({}), del: idb.del, get: idb.get, set: idb.set }));
 
 import {
   drainQuickDraftPersistence,

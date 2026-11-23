@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameObject, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayer } from "../../../test/factories/gameStateFactory.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
@@ -60,7 +59,7 @@ function setWaitingFor(waitingFor: WaitingFor) {
     creature(103, "Guard 4", 2, 2),
   );
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: buildGameState({
       players: [buildPlayer({ id: 0 }), buildPlayer({ id: 2 })],
       objects,
@@ -73,7 +72,6 @@ function setWaitingFor(waitingFor: WaitingFor) {
 describe("sequential combat damage prompts", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {

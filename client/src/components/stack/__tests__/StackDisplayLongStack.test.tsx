@@ -287,7 +287,7 @@ describe("StackDisplay with a stack taller than its room", () => {
     usePreferencesStore.setState(usePreferencesStore.getInitialState());
     useTargetingPromptStore.setState(useTargetingPromptStore.getInitialState());
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false, playerNames: new Map() });
+      useMultiplayerStore.setState({ playerNames: new Map() });
     });
   });
 

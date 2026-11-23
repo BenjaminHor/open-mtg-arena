@@ -34,7 +34,6 @@ vi.mock("../ChromeControls", () => ({ ChromeControls: (props: { hideVolume?: boo
 } }));
 vi.mock("../Rail", () => ({ Rail: () => <nav aria-label="Desktop navigation" /> }));
 vi.mock("../TabBar", () => ({ TabBar: () => <nav aria-label="Mobile navigation" /> }));
-vi.mock("../SocialBar", () => ({ SocialBar: () => <div data-testid="social-bar" /> }));
 
 function DraftChromeProbe() {
   const [mode, setMode] = useState<DraftShellChromeMode>("phone-drafting");

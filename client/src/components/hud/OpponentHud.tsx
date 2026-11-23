@@ -1,7 +1,6 @@
 import { type CSSProperties, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { PlayerLatency } from "./PlayerLatency.tsx";
 
 import type { PlayerId } from "../../adapter/types.ts";
 import { useCanActForWaitingState, usePerspectivePlayerId } from "../../hooks/usePlayerId.ts";
@@ -37,7 +36,6 @@ import { BattlefieldPeekPopover } from "./BattlefieldPeekPopover.tsx";
 import { EnchantmentsBadge } from "./EnchantmentsBadge.tsx";
 import { HudPlate } from "./HudPlate.tsx";
 import { IncomingAttackersPopover } from "./IncomingAttackersPopover.tsx";
-import { KickConfirmDialog } from "./KickConfirmDialog.tsx";
 import { NextUpBadge } from "./NextUpBadge.tsx";
 import { UnderAttackOverlay } from "./UnderAttackOverlay.tsx";
 
@@ -46,23 +44,11 @@ import type { ObjectId } from "../../adapter/types.ts";
 const EMPTY_OBJECT_IDS: readonly ObjectId[] = [];
 
 interface OpponentHudProps {
-  opponentName?: string | null;
   splitOverview?: boolean;
-  /**
-   * P2P host-only callback to kick a player. When provided AND the game is
-   * 3+ players, an inline kick button appears on each opponent tab. The
-   * adapter handles auto-concede + denylist + wire broadcast.
-   */
-  onKickPlayer?: (playerId: PlayerId) => void;
 }
 
-export function OpponentHud({
-  opponentName,
-  splitOverview = false,
-  onKickPlayer,
-}: OpponentHudProps) {
+export function OpponentHud({ splitOverview = false }: OpponentHudProps) {
   const { t } = useTranslation("game");
-  const [kickTarget, setKickTarget] = useState<PlayerId | null>(null);
   const playerId = usePerspectivePlayerId();
   const focusedOpponent = useUiStore((s) => s.focusedOpponent) as PlayerId | null;
   const setFocusedOpponent = useUiStore((s) => s.setFocusedOpponent);
@@ -234,9 +220,6 @@ export function OpponentHud({
     setFollowActiveOpponent(!followActiveOpponent);
   }, [followActiveOpponent, setFollowActiveOpponent]);
 
-  const disconnectedPlayers = useMultiplayerStore((s) => s.disconnectedPlayers);
-  const connectionStatus = useMultiplayerStore((s) => s.connectionStatus);
-  const isOnline = connectionStatus !== "disconnected";
   const primaryOpponentId =
     liveOpponents[0] ?? allOpponents[0] ?? (playerId === 0 ? 1 : 0);
   const primaryOpponentAvatarIdentity = useMultiplayerStore(
@@ -256,7 +239,6 @@ export function OpponentHud({
     const opponentRadCounters = gameState?.players[opponentId]?.player_counters?.Rad ?? 0;
     const opponentExperienceCounters = gameState?.players[opponentId]?.player_counters?.Experience ?? 0;
     const opponentDesignations = primaryOpponentDesignations;
-    const isDisconnected = isOnline && disconnectedPlayers.has(opponentId);
     const isOpponentPhasedOut =
       gameState?.players[opponentId]?.status?.type === "PhasedOut";
     // The Horde seat has no life total (it decks out instead) — the engine flag
@@ -264,7 +246,7 @@ export function OpponentHud({
     const isOpponentHorde = gameState?.players[opponentId]?.has_no_life_total ?? false;
     const showMatchScore = gameState?.match_config?.match_type === "Bo3";
     const matchScore = showMatchScore ? gameState?.match_score ?? null : null;
-    const label = opponentName ?? getOpponentDisplayName(opponentId);
+    const label = getOpponentDisplayName(opponentId);
     const opponentAvatarIdentity = primaryOpponentAvatarIdentity;
     const compact = forceCompactHud;
 
@@ -324,8 +306,6 @@ export function OpponentHud({
                 <UnboundedBadge key={u.family} family={u.family} state={u.state} />
               ))}
               {opponentCompanion ? <StatusBadge label={t("badges.companion")} /> : null}
-              {isOnline ? <ConnectionDotInline disconnected={isDisconnected} /> : null}
-              <PlayerLatency playerId={opponentId} />
             </>
           }
         >
@@ -340,7 +320,6 @@ export function OpponentHud({
 
   // Multiplayer: tabbed opponent selector
   const focusedId = effectiveFocused;
-  const targetLabel = kickTarget != null ? getOpponentDisplayName(kickTarget) : "";
   const effectiveCompact = splitOverview || forceCompactHud || opponentHudDensity === "compact";
 
   return (
@@ -350,10 +329,7 @@ export function OpponentHud({
     // stats appear only once a tab earns the width, then collapse back to
     // avatar + name + life when the row is squeezed by additional opponents on
     // a narrow (mobile) viewport. `max-w` on each tab caps its size so one or
-    // two opponents don't balloon on desktop. KickConfirmDialog is a fixed
-    // overlay portaled to document.body: this rail can sit inside a Flex Layout
-    // DraggableWidget whose transform would otherwise become the containing
-    // block for the dialog's `fixed` positioning and clip it to the rail box.
+    // two opponents don't balloon on desktop.
     <div className={`flex w-full items-center justify-center ${splitOverview ? "gap-1 px-1 py-0.5" : "gap-1.5 px-2 py-1"}`}>
       {allOpponents.map((opId) => (
         <OpponentTab
@@ -371,11 +347,6 @@ export function OpponentHud({
           incomingAttackerIds={incomingByOpponent.get(opId) ?? EMPTY_OBJECT_IDS}
           onSelectFocus={() => handleSelectFocus(opId)}
           onTargetPlayer={() => handlePlayerTarget(opId)}
-          onKick={
-            onKickPlayer && !eliminated.includes(opId)
-              ? () => setKickTarget(opId)
-              : undefined
-          }
         />
       ))}
       {!forceCompactHud && !splitOverview && (
@@ -391,18 +362,6 @@ export function OpponentHud({
         onToggle={handleToggleFollowActiveOpponent}
         compact={splitOverview}
       />
-      {createPortal(
-        <KickConfirmDialog
-          isOpen={kickTarget !== null}
-          playerLabel={targetLabel}
-          onConfirm={() => {
-            if (kickTarget !== null && onKickPlayer) onKickPlayer(kickTarget);
-            setKickTarget(null);
-          }}
-          onCancel={() => setKickTarget(null)}
-        />,
-        document.body,
-      )}
     </div>
   );
 }
@@ -546,8 +505,6 @@ interface OpponentTabProps {
   /** Avatar click — fires `ChooseTarget` for this opponent. Only invoked
    *  when `isValidTarget`; the avatar is non-interactive otherwise. */
   onTargetPlayer: () => void;
-  /** Host-only: when provided, render a small kick affordance on the tab. */
-  onKick?: () => void;
 }
 
 function OpponentTab({
@@ -564,7 +521,6 @@ function OpponentTab({
   incomingAttackerIds,
   onSelectFocus,
   onTargetPlayer,
-  onKick,
 }: OpponentTabProps) {
   const { t } = useTranslation("game");
   const isMobile = useIsMobile();
@@ -627,8 +583,6 @@ function OpponentTab({
   // the seat's `LifeTotal` above it.
   const displayedLife = useDisplayedLife(playerId);
   const lifeTitle = lifeReadoutTitle(t, displayedLife);
-  const isDisconnected = useMultiplayerStore((s) => s.disconnectedPlayers.has(playerId));
-  const isOnline = useMultiplayerStore((s) => s.connectionStatus) !== "disconnected";
   const avatarIdentity = useMultiplayerStore((s) => s.playerAvatars.get(playerId) ?? null);
   const counts = useMemo(() => {
     if (!gameState || compact) return { creatures: 0, lands: 0, other: 0 };
@@ -788,32 +742,6 @@ function OpponentTab({
       {designations.unboundedFamilies.map((u) => (
         <UnboundedBadge key={u.family} family={u.family} state={u.state} />
       ))}
-      {isOnline && <ConnectionDotInline disconnected={isDisconnected} />}
-      <PlayerLatency playerId={playerId} />
-      {onKick && !isEliminated && (
-        // Stop propagation so clicking the kick affordance doesn't also fire
-        // the parent button's `onClick` (focus / target select).
-        <span
-          role="button"
-          tabIndex={0}
-          aria-label={t("opponentHud.kickPlayer", { seat: playerId + 1 })}
-          onClick={(e) => {
-            e.stopPropagation();
-            onKick();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.stopPropagation();
-              e.preventDefault();
-              onKick();
-            }
-          }}
-          className="flex h-4 w-4 cursor-pointer items-center justify-center rounded-[4px] bg-red-900/40 text-[11px] font-bold text-red-300 ring-1 ring-red-500/30 transition hover:bg-red-700/60 hover:text-red-100"
-          title={t("opponentHud.kickPlayerTooltip")}
-        >
-          ×
-        </span>
-      )}
     </div>
   );
 
@@ -1044,16 +972,6 @@ function OpponentAvatar({
     >
       {inner}
     </AvatarHoverPreview>
-  );
-}
-
-function ConnectionDotInline({ disconnected }: { disconnected: boolean }) {
-  const { t } = useTranslation("game");
-  return (
-    <span
-      className={`inline-block h-2 w-2 rounded-full ring-1 ring-white/20 ${disconnected ? "bg-red-500 animate-pulse" : "bg-emerald-400"}`}
-      title={disconnected ? t("opponentHud.disconnected") : t("opponentHud.connected")}
-    />
   );
 }
 

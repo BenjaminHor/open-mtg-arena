@@ -28,7 +28,6 @@ function KeyboardHarness() {
 function resetStores(): void {
   act(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
     useUiStore.setState({ helpSheetOpen: false });
   });
 }
@@ -141,9 +140,7 @@ describe("Space priority dispatch authorization", () => {
       priority_player: 1,
       turn_decision_controller: 1,
     });
-    const legacyDispatch = seedGame("online", waitingFor, {
-      activePlayerId: 1,
-      gameState,
+    const legacyDispatch = seedGame("online", waitingFor, { gameState,
     });
     mountKeyboard();
 
@@ -292,14 +289,14 @@ describe("Space priority dispatch authorization", () => {
       active_player: 1,
       priority_player: 1,
     });
-    seedGame("online", waitingFor, { activePlayerId: 0, gameState });
+    seedGame("online", waitingFor, { gameState });
     mountKeyboard();
 
     let legacyDispatch!: LegacyDispatch;
     let event!: KeyboardEvent;
 
     act(() => {
-      legacyDispatch = setGameStores("online", waitingFor, { activePlayerId: 1, gameState });
+      legacyDispatch = setGameStores("online", waitingFor, { gameState });
       event = dispatchSpaceKeydown();
       expect(dispatchActionMock).toHaveBeenCalledExactlyOnceWith({ type: "PassPriority" });
     });
@@ -316,14 +313,14 @@ describe("Space priority dispatch authorization", () => {
       active_player: 1,
       priority_player: 1,
     });
-    seedGame("online", waitingFor, { activePlayerId: 1, gameState });
+    seedGame("online", waitingFor, { gameState });
     mountKeyboard();
 
     let legacyDispatch!: LegacyDispatch;
     let event!: KeyboardEvent;
 
     act(() => {
-      legacyDispatch = setGameStores("online", waitingFor, { activePlayerId: 0, gameState });
+      legacyDispatch = setGameStores("online", waitingFor, { gameState });
       event = dispatchSpaceKeydown();
       expect(dispatchActionMock).not.toHaveBeenCalled();
     });
@@ -348,14 +345,14 @@ describe("Space priority dispatch authorization", () => {
       active_player: 0,
       priority_player: 0,
     });
-    seedGame("online", waitingFor, { activePlayerId: 0, isSpectator: wasSpectator, gameState });
+    seedGame("online", waitingFor, { gameState });
     mountKeyboard();
 
     let legacyDispatch!: LegacyDispatch;
     let event!: KeyboardEvent;
 
     act(() => {
-      legacyDispatch = setGameStores("online", waitingFor, { activePlayerId: 0, isSpectator, gameState });
+      legacyDispatch = setGameStores("online", waitingFor, { isSpectator, gameState });
       event = dispatchSpaceKeydown();
       if (shouldDispatch) {
         expect(dispatchActionMock).toHaveBeenCalledExactlyOnceWith({ type: "PassPriority" });

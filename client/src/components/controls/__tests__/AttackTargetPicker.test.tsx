@@ -87,7 +87,7 @@ function attackTotals() {
 describe("AttackTargetPicker", () => {
   beforeEach(() => {
     // Opponents fall back to "Opp N" labels with an empty name map.
-    useMultiplayerStore.setState({ activePlayerId: 0, playerNames: new Map() });
+    useMultiplayerStore.setState({ playerNames: new Map() });
     useGameStore.setState({ gameState: makeState() });
     usePreferencesStore.setState({ showOwnerPrintings: true });
   });
@@ -135,7 +135,7 @@ describe("AttackTargetPicker", () => {
 
     expect(screen.getByRole("button", { name: /Opp 2 \(Player — 37 life\)/ })).toBeInTheDocument();
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, playerNames: new Map([[1, "Jace"]]) });
+      useMultiplayerStore.setState({ playerNames: new Map([[1, "Jace"]]) });
     });
     expect(screen.getByRole("button", { name: /Jace \(Player — 37 life\)/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Jace \(Planeswalker\)/ })).toBeInTheDocument();
@@ -568,7 +568,7 @@ describe("AttackTargetPicker — per-attacker legal targets", () => {
   }
 
   beforeEach(() => {
-    useMultiplayerStore.setState({ activePlayerId: 0, playerNames: new Map() });
+    useMultiplayerStore.setState({ playerNames: new Map() });
     useGameStore.setState({ gameState: makeState() });
   });
 

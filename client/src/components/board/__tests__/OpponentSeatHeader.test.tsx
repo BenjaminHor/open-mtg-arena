@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TargetRef, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import {
   buildFormatConfig,
   buildGameState,
@@ -73,7 +72,6 @@ describe("OpponentSeatHeader", () => {
     // OR `isSpectator`, and the two live in different module-singleton stores that
     // persist across tests in this file. Both are reset here, not only in
     // `afterEach`, so one spectator row cannot make every later seated row inert.
-    useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
     useGameStore.setState({ gameMode: null });
   });
 
@@ -192,7 +190,6 @@ describe("OpponentSeatHeader", () => {
   it("offers no target control to a spectating client", () => {
     const dispatch = vi.fn();
     const waitingFor = targetSelectionWaitingFor([1]);
-    useMultiplayerStore.setState({ isSpectator: true });
     useGameStore.setState({
       dispatch,
       gameMode: "spectate",

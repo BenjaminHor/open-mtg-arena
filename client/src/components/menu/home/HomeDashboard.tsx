@@ -33,7 +33,6 @@ interface ActionDef {
 }
 const ACTIONS: ActionDef[] = [
   { key: "setup", to: "/setup", tone: "arcane", icon: "play", motif: "swords", titleKey: "home.setup.title", descKey: "home.setup.description", gated: true },
-  { key: "online", to: "/multiplayer", tone: "jade", icon: "online", motif: "network", titleKey: "home.online.title", descKey: "home.online.description", gated: true },
   { key: "draft", to: "/draft", tone: "ember", icon: "draft", motif: "pack", titleKey: "home.draft.title", descKey: "home.draft.description", gated: false },
 ];
 
@@ -63,13 +62,12 @@ function CardActionButton({ action, disabled }: { action: ActionDef; disabled: b
 function ResumeHero() {
   const { t } = useTranslation("menu");
   const navigate = useNavigate();
-  const { match, matchSummary, retainedResult, quickDraft, pod, resumeMatch, viewRetainedResult } = useResumables();
+  const { match, matchSummary, quickDraft, resumeMatch } = useResumables();
 
   // Build the ordered candidate list: the saved match leads (most-relevant
   // resumable), then drafts by recency. Nothing to resume → render nothing.
   const draftEntries = [
     quickDraft && { updatedAt: quickDraft.updatedAt, cta: t("home.dashboard.resumeDraft"), title: quickDraft.setName ?? quickDraft.setCode.toUpperCase(), chip: t("home.draft.title"), meta: [] as string[], onResume: () => navigate("/draft") },
-    pod && { updatedAt: pod.updatedAt, cta: t("home.dashboard.resumeDraft"), title: t("home.dashboard.draftPod"), chip: t("home.dashboard.draftPod"), meta: [] as string[], onResume: () => navigate("/draft") },
   ].filter(Boolean) as { updatedAt: number; cta: string; title: string; chip: string; meta: string[]; onResume: () => void }[];
   draftEntries.sort((a, b) => b.updatedAt - a.updatedAt);
 
@@ -89,7 +87,7 @@ function ResumeHero() {
   if (matchSummary) {
     matchMeta.push(t("home.dashboard.turn", { n: matchSummary.turn }));
     // "Your turn" framing only makes sense where seat 0 is the local human.
-    if (match && (match.mode === "ai" || match.mode === "p2p-host")) {
+    if (match && match.mode === "ai") {
       matchMeta.push(matchSummary.isYourTurn ? t("home.dashboard.yourTurn") : t("home.dashboard.opponentTurn"));
     }
     if (matchSummary.yourLife != null) {
@@ -108,20 +106,7 @@ function ResumeHero() {
     onResume: resumeMatch,
   };
 
-  // A finished match whose result is retained locally still owes the server an
-  // acknowledgement. It is not resumable gameplay, but the Menu must not strand
-  // it: the unresolved result leads the list so reopening re-displays it and
-  // retries the ACK. A successful ACK clears the pointer, which removes it.
-  const retainedFormatLabel = retainedResult?.formatConfig?.format?.replace(/([a-z])([A-Z])/g, "$1 $2");
-  const retainedEntry = retainedResult && {
-    cta: t("home.resume.viewResult"),
-    title: retainedFormatLabel || t(`home.dashboard.mode.${retainedResult.mode}`) || t("home.resume.title"),
-    chip: "",
-    meta: [] as string[],
-    onResume: viewRetainedResult,
-  };
-
-  const ordered = [retainedEntry, matchEntry, ...draftEntries].filter(Boolean) as { cta: string; title: string; chip: string; meta: string[]; onResume: () => void }[];
+  const ordered = [matchEntry, ...draftEntries].filter(Boolean) as { cta: string; title: string; chip: string; meta: string[]; onResume: () => void }[];
   if (ordered.length === 0) return null;
   const [primary, secondary] = ordered;
 

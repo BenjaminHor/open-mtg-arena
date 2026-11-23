@@ -16,7 +16,6 @@ import {
 } from "../constants/storage";
 import { attemptSavedDeckWrite } from "../services/savedDeckWriteFailure";
 import { withSavedDeckLibrary } from "../services/savedDeckTransaction";
-import { PROFILE_REPLACED_EVENT } from "../stores/cloudSyncStore";
 
 export interface FolderGroup {
   folder: DeckFolder;
@@ -137,8 +136,7 @@ export interface UseDeckFoldersResult {
 /**
  * Reactive view over the folder registry + deck metadata. Re-reads on
  * {@link DECKS_CHANGED_EVENT} (our own writes), the native `storage` event
- * (writes from another tab), and {@link PROFILE_REPLACED_EVENT} (a cloud-sync
- * snapshot overwriting the folder registry in this same tab). Each refresh
+ * (writes from another tab). Each refresh
  * produces a fresh `folders` array, so `group()` re-memoizes and consumers
  * recompute with current metadata.
  */
@@ -149,11 +147,9 @@ export function useDeckFolders(): UseDeckFoldersResult {
     const refresh = () => setFolders(listFolders());
     window.addEventListener(DECKS_CHANGED_EVENT, refresh);
     window.addEventListener("storage", refresh);
-    window.addEventListener(PROFILE_REPLACED_EVENT, refresh);
     return () => {
       window.removeEventListener(DECKS_CHANGED_EVENT, refresh);
       window.removeEventListener("storage", refresh);
-      window.removeEventListener(PROFILE_REPLACED_EVENT, refresh);
     };
   }, []);
 

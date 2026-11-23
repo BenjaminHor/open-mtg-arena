@@ -2,13 +2,8 @@ import { act } from "react";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../../services/serverDetection.ts", () => ({
-  detectServerUrl: vi.fn(() => new Promise<string>(() => {})),
-}));
-
 import { assignRandomAvatars } from "../../services/playerAvatars.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerDraftStore } from "../../stores/multiplayerDraftStore.ts";
 import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import {
   buildCommanderFormatConfig,
@@ -32,9 +27,7 @@ describe("GameProvider semantic visual avatars", () => {
     useMultiplayerStore.setState({
       playerNames: new Map(),
       playerAvatars: new Map(),
-      activePlayerId: 0,
     });
-    useMultiplayerDraftStore.setState({ matchPairing: null });
     useGameStore.setState({
       adapter: null,
       gameId: null,
@@ -177,119 +170,4 @@ describe("GameProvider semantic visual avatars", () => {
     );
   });
 
-  it.each([
-    [{ type: "Bot", botName: "Jace" }, 0, "Jace, the Mind Sculptor"],
-    [{ type: "HumanHost", opponentName: "Liliana" }, 0, "Liliana of the Veil"],
-    [{ type: "HumanGuest", opponentName: "Chandra" }, 1, "Chandra, Torch of Defiance"],
-  ] as const)(
-    "installs draft %s identities with the exact local seat",
-    (pairing, localPlayerId, opponentCardName) => {
-      const gameId = `avatar-draft-${pairing.type}`;
-      useMultiplayerDraftStore.setState({ matchPairing: pairing as never });
-      useGameStore.setState({
-        adapter: {} as never,
-        gameId,
-        gameState: buildGameState({ players: buildPlayers([{ id: 0 }, { id: 1 }]) }),
-      });
-
-      render(
-        <GameProvider gameId={gameId} mode="draft-match">
-          <div />
-        </GameProvider>,
-      );
-
-      const state = useMultiplayerStore.getState();
-      const opponentPlayerId = localPlayerId === 0 ? 1 : 0;
-      expect(state.activePlayerId).toBe(localPlayerId);
-      expect(state.playerNames.get(localPlayerId)).toBe("You");
-      expect(state.playerAvatars.get(opponentPlayerId)).toEqual({
-        kind: "card",
-        cardName: opponentCardName,
-      });
-    },
-  );
-
-  it("preserves lobby names while replacing online identities and clears on a local setup", () => {
-    useMultiplayerStore.setState({
-      playerNames: new Map([[0, "Lobby Host"], [1, "Lobby Guest"]]),
-    });
-    const online = render(
-      <GameProvider gameId="avatar-online" mode="online" playerCount={2}>
-        <div />
-      </GameProvider>,
-    );
-
-    expect(useMultiplayerStore.getState().playerNames).toEqual(
-      new Map([[0, "Lobby Host"], [1, "Lobby Guest"]]),
-    );
-    expect(useMultiplayerStore.getState().playerAvatars).toEqual(
-      expectedRandom(2, "avatar-online"),
-    );
-
-    act(() => {
-      useGameStore.setState({
-        gameState: {
-          ...buildGameState({ players: buildPlayers([{ id: 0 }, { id: 1 }]) }),
-          format_config: buildCommanderFormatConfig(),
-          command_zone: [21, 22],
-          objects: {
-            21: { name: "Kinnan, Bonder Prodigy", owner: 0, is_commander: true },
-            22: { name: "Muldrotha, the Gravetide", owner: 1, is_commander: true },
-          },
-        } as never,
-      });
-    });
-    expect(useMultiplayerStore.getState().playerNames).toEqual(
-      new Map([[0, "Lobby Host"], [1, "Lobby Guest"]]),
-    );
-    expect(useMultiplayerStore.getState().playerAvatars).toEqual(new Map([
-      [0, { kind: "card", cardName: "Kinnan, Bonder Prodigy" }],
-      [1, { kind: "card", cardName: "Muldrotha, the Gravetide" }],
-    ]));
-
-    online.unmount();
-    render(
-      <GameProvider gameId="avatar-local" mode="local">
-        <div />
-      </GameProvider>,
-    );
-    expect(useMultiplayerStore.getState().playerAvatars).toEqual(new Map());
-    expect(useMultiplayerStore.getState().playerNames).toEqual(new Map());
-  });
-
-  // Same defect as the AI case above, on the wire-assigned path: the online
-  // effect also gated its commander derivation on `command_zone`.
-  it("keeps commander avatars for an online reload with an empty command zone", () => {
-    useMultiplayerStore.setState({
-      playerNames: new Map([[0, "Lobby Host"], [1, "Lobby Guest"]]),
-    });
-    render(
-      <GameProvider gameId="avatar-online-reload" mode="online" playerCount={2}>
-        <div />
-      </GameProvider>,
-    );
-
-    act(() => {
-      useGameStore.setState({
-        gameState: {
-          ...buildGameState({ players: buildPlayers([{ id: 0 }, { id: 1 }]) }),
-          format_config: buildCommanderFormatConfig(),
-          command_zone: [],
-          objects: {
-            60: { name: "Kinnan, Bonder Prodigy", owner: 0, is_commander: true, zone: "Battlefield" },
-            61: { name: "Muldrotha, the Gravetide", owner: 1, is_commander: true, zone: "Exile" },
-          },
-        } as never,
-      });
-    });
-
-    // Lobby names stay authoritative here; only the artworks are derived.
-    expect(useMultiplayerStore.getState().playerNames).toEqual(
-      new Map([[0, "Lobby Host"], [1, "Lobby Guest"]]),
-    );
-    expect(useMultiplayerStore.getState().playerAvatars).toEqual(new Map([
-      [0, { kind: "card", cardName: "Kinnan, Bonder Prodigy" }],
-      [1, { kind: "card", cardName: "Muldrotha, the Gravetide" }],
-    ]));
-  });
 });

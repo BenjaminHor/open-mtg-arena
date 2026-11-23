@@ -171,15 +171,6 @@ vi.mock("@tauri-apps/plugin-updater", () => ({
   }),
 }));
 vi.mock("@tauri-apps/plugin-process", () => ({ relaunch: vi.fn() }));
-vi.mock("../services/cloudSync", () => ({
-  SyncConflictError: class SyncConflictError extends Error {},
-  isCloudSyncConfigured: () => true,
-  getCloudSyncProvider: () => {
-    test.ledger.cloudProvider += 1;
-    return test.cloudProvider;
-  },
-  pauseCloudSyncProvider: () => test.cloudProvider.pause(),
-}));
 vi.mock("../services/platform", () => ({
   isTauri: () => false,
   isBundledTauriOrigin: () => test.platform.bundled,
@@ -332,7 +323,6 @@ vi.mock("../services/deckMigrations", () => ({
   migrateSavedDecks: vi.fn(),
   canonicalizeSavedDeckNames: vi.fn(async () => undefined),
 }));
-vi.mock("../hooks/useHostingSession", () => ({ useHostingSession: vi.fn() }));
 vi.mock("../hooks/useDeckCardData", () => ({
   useDeckCardData: () => ({ cardDataCache: new Map(), cacheCards: vi.fn() }),
 }));
@@ -345,9 +335,6 @@ vi.mock("../components/chrome/AppShell", async () => {
 });
 vi.mock("../components/chrome/AppToast", () => ({ AppToast: () => null }));
 vi.mock("../components/chrome/ScreenChrome", () => ({ ScreenChrome: () => null }));
-vi.mock("../components/chrome/NativeEngineProgressOverlay", () => ({ NativeEngineProgressOverlay: () => null }));
-vi.mock("../components/chrome/RouteTelemetry", () => ({ RouteTelemetry: () => null }));
-vi.mock("../components/chrome/HostControlTile", () => ({ HostControlTile: () => null }));
 vi.mock("../components/ErrorBoundary", () => ({ ErrorBoundary: ({ children }: { children: ReactNode }) => children }));
 vi.mock("../components/modal/EngineLostModal", () => ({ EngineLostModal: () => null }));
 vi.mock("../components/modal/NonFatalPanicToast", () => ({ NonFatalPanicToast: () => null }));
@@ -356,17 +343,6 @@ vi.mock("../components/splash/SplashScreen", () => ({ SplashScreen: () => null }
 vi.mock("../components/chrome/PreviewBadge", () => ({ PreviewBadge: () => null }));
 vi.mock("../components/chrome/GameMenu", () => ({ GameMenu: () => null }));
 vi.mock("../components/menu/home/HomeDashboard", () => ({ HomeDashboard: () => <div>Home dashboard</div> }));
-vi.mock("../adapter/p2p-adapter", () => ({
-  P2PGuestAdapter: class P2PGuestAdapter { constructor() { test.ledger.p2pConstructor += 1; throw new Error("P2P must stay unreachable"); } },
-  P2PHostAdapter: class P2PHostAdapter { constructor() { test.ledger.p2pConstructor += 1; throw new Error("P2P must stay unreachable"); } },
-}));
-vi.mock("../adapter/ws-adapter", () => ({
-  NativeEngineVersionMismatchError: class NativeEngineVersionMismatchError extends Error {},
-  WebSocketAdapter: class WebSocketAdapter { constructor() { test.ledger.webSocketConstructor += 1; throw new Error("WebSocket must stay unreachable"); } },
-  acknowledgeFullTerminalDelivery: vi.fn(),
-  bootstrapFullTerminalDelivery: vi.fn(),
-  readFullTerminalResult: vi.fn(),
-}));
 vi.mock("../audio/AudioManager", async (importOriginal) => {
   const actual = await importOriginal<typeof AudioManagerModule>();
   return {
@@ -381,12 +357,6 @@ vi.mock("../game/dispatch", () => ({ dispatchAction: vi.fn(), processRemoteUpdat
 vi.mock("../game/staleStateWatchdog", () => ({ resyncFromAdapterSafely: vi.fn() }));
 vi.mock("../game/sessionCleanup", () => ({ clearPromptOverlayState: vi.fn() }));
 vi.mock("../hooks/useGameplayPreferencesSync", () => ({ useGameplayPreferencesSync: vi.fn() }));
-vi.mock("../network/connection", () => ({
-  hostRoom: vi.fn(() => { test.ledger.multiplayerTransport += 1; throw new Error("multiplayer must stay unreachable"); }),
-  joinRoom: vi.fn(() => { test.ledger.multiplayerTransport += 1; throw new Error("multiplayer must stay unreachable"); }),
-}));
-vi.mock("../services/p2pSession", () => ({ loadP2PSession: vi.fn(() => { test.ledger.p2pConstructor += 1; throw new Error("P2P resume must stay unreachable"); }) }));
-vi.mock("../services/p2pTerminalResult", () => ({ loadP2PTerminalResult: vi.fn(() => { test.ledger.p2pConstructor += 1; throw new Error("P2P terminal must stay unreachable"); }) }));
 vi.mock("../services/quickDraftPersistence", () => ({
   loadActiveQuickDraft: vi.fn(() => {
     test.ledger.activeQuickDraftLoads += 1;
@@ -399,18 +369,6 @@ vi.mock("../services/quickDraftPersistence", () => ({
     throw new Error("draft run must stay unreachable");
   }),
 }));
-vi.mock("../services/fullTerminalResult", () => ({
-  commitFullTerminalDelivery: vi.fn(),
-  loadFullTerminalDelivery: vi.fn(),
-  replaceFullTerminalDelivery: vi.fn(),
-}));
-vi.mock("../services/serverDetection", () => ({ detectServerUrl: vi.fn() }));
-vi.mock("../services/nativeEngine", () => ({
-  canAttemptNativeEngine: () => false,
-  ensureNativeEngine: vi.fn(() => { test.ledger.nativeConstructor += 1; throw new Error("native engine must stay unreachable"); }),
-  nativeEngineKeyForCurrentOrigin: () => null,
-}));
-vi.mock("../services/nativeEngineSocket", () => ({ NativeEngineSocket: class NativeEngineSocket { constructor() { test.ledger.nativeConstructor += 1; throw new Error("native socket must stay unreachable"); } } }));
 
 import { App } from "../App";
 

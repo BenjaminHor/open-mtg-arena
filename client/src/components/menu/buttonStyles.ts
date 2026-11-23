@@ -34,7 +34,7 @@ const GHOST_TONES: Record<MenuButtonTone, string> = {
 const SIZES: Record<MenuButtonSize, string> = {
   icon: "min-h-8 h-8 w-8 p-0 rounded-[8px] text-base",
   xs: "min-h-8 px-2.5 py-1 rounded-[7px] text-xs",
-  // Chrome cluster (FullscreenButton/VolumeControl/AccountControl peers):
+  // Chrome cluster (FullscreenButton/VolumeControl peers):
   // a true 36×36 square — `min-h-9 h-9 min-w-9` together prevent any caller's
   // `h-*` override from being defeated by an upstream `min-h-*` baseline.
   chrome: "min-h-9 h-9 min-w-9 px-1.5 py-0 rounded-[8px] text-sm",

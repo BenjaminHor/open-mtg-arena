@@ -60,8 +60,6 @@ vi.mock("../../../hooks/useCardDataMeta.ts", () => ({ useCardDataMeta: () => nul
 vi.mock("../../board/BattlefieldBackground.tsx", () => ({ BattlefieldBackground: () => null }));
 vi.mock("../../board/GameBoard.tsx", () => ({ GameBoard: () => null }));
 vi.mock("../../stack/StackDisplay.tsx", () => ({ StackDisplay: () => null }));
-vi.mock("../../hud/HUD.tsx", () => ({ HUD: () => null }));
-vi.mock("../../debug/DebugPanel.tsx", () => ({ DebugPanel: () => null }));
 vi.mock("../../chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 vi.mock("../../modal/EngineLostModal.tsx", () => ({ EngineLostModal: () => null }));
 vi.mock("../../modal/CardDataMissingModal.tsx", () => ({ CardDataMissingModal: () => null }));
@@ -206,11 +204,10 @@ async function setup({ holdCatalog = false, dfc = false, homonyms = false } = {}
   const animation = (await import("../../../stores/animationStore.ts")).useAnimationStore;
   ui.setState(ui.getInitialState());
   const multiplayer = (await import("../../../stores/multiplayerStore.ts")).useMultiplayerStore;
-  multiplayer.setState({ activePlayerId: 0, isSpectator: false });
   const { setGameStoreForTest } = await import("../../../test/helpers/gameStoreHelpers.ts");
   function seed(objects: GameObject[], overrides: Partial<GameState> = {}) {
     const state = gameStateFactory.withPlayers(0, 1).withObjects(...objects).build(overrides);
-    setGameStoreForTest({ gameState: state, gameMode: "online",
+    setGameStoreForTest({ gameState: state, gameMode: "ai",
       legalActions: [], legalActionsByObject: {}, spellCosts: {}, viewerInteraction: null });
     return state;
   }

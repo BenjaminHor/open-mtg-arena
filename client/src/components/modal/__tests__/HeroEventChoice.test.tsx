@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameObject, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import {
   buildGameState,
@@ -32,7 +31,7 @@ function setWaitingFor(waitingFor: WaitingFor, objects?: Record<string, GameObje
     next_object_id: 100,
   });
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: state,
     waitingFor,
   });
@@ -49,7 +48,6 @@ const cardIds = [1, 2, 3, 4];
 describe("HeroEventChoice modal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
   afterEach(cleanup);
 

@@ -2,9 +2,8 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 
 import { BuildBadge } from "./BuildBadge";
-import { activeNavKey, navItemsFor } from "./navItems";
+import { activeNavKey, NAV_ITEMS } from "./navItems";
 import { SparkleIcon } from "./SparkleIcon";
-import { usePreferencesStore } from "../../stores/preferencesStore";
 
 interface TabBarProps {
   onWhatsNew: () => void;
@@ -19,8 +18,7 @@ interface TabBarProps {
  */
 export function TabBar({ onWhatsNew, hasUnread }: TabBarProps) {
   const { t } = useTranslation("menu");
-  const experimentalTournamentsEnabled = usePreferencesStore((s) => s.experimentalTournamentsEnabled);
-  const navItems = navItemsFor(experimentalTournamentsEnabled);
+  const navItems = NAV_ITEMS;
   const active = activeNavKey(useLocation().pathname, navItems);
 
   return (

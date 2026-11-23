@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 
@@ -71,7 +70,7 @@ function outsideGameChoiceWithExile(): WaitingFor {
 
 function setWaitingFor(waitingFor: WaitingFor) {
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: buildGameState({ waiting_for: waitingFor, next_object_id: 100 }),
     waitingFor,
   });
@@ -80,7 +79,6 @@ function setWaitingFor(waitingFor: WaitingFor) {
 describe("OutsideGameModal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {

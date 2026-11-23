@@ -80,8 +80,6 @@ function makeHarness(gameId = "sandbox-life-correction-test"): Harness {
   const nextGeneration = useGameStore.getState().gameSessionGeneration + 1;
   act(() => {
     useMultiplayerStore.setState({
-      activePlayerId: 0,
-      isSpectator: false,
       playerNames: new Map([[1, "Ada"]]),
     });
     useGameStore.setState({
@@ -156,7 +154,7 @@ describe("SandboxLifeCorrection", () => {
   afterEach(() => {
     cleanup();
     abandonPendingDispatches();
-    useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false, playerNames: new Map() });
+    useMultiplayerStore.setState({ playerNames: new Map() });
     useGameStore.setState({
       gameId: null,
       gameMode: null,
@@ -243,7 +241,7 @@ describe("SandboxLifeCorrection", () => {
 
   it("hides in a remote game even when this local sandbox flag is enabled", () => {
     makeHarness();
-    act(() => useGameStore.setState({ gameMode: "online" }));
+    act(() => useGameStore.setState({ gameMode: "ai" }));
 
     render(<SandboxLifeCorrection />);
 

@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState } from "../../../adapter/types.ts";
 import { CombatTaxModal } from "../CombatTaxModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 
 const dispatchMock = vi.fn();
 
@@ -104,7 +103,6 @@ function makeState(): GameState {
 describe("CombatTaxModal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     const state = makeState();
     useGameStore.setState({
       gameState: state,

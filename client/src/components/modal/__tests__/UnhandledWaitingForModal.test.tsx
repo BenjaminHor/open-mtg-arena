@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState, WaitingFor } from "../../../adapter/types.ts";
 import { UnhandledWaitingForModal } from "../UnhandledWaitingForModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 
 function makeState(waitingFor: WaitingFor): GameState {
@@ -18,7 +17,6 @@ function makeState(waitingFor: WaitingFor): GameState {
 
 describe("UnhandledWaitingForModal (issue #311 safety net)", () => {
   beforeEach(() => {
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {
@@ -75,7 +73,7 @@ describe("UnhandledWaitingForModal (issue #311 safety net)", () => {
       data: { player: 0 },
     } as unknown as WaitingFor;
     const state = makeState(orphan);
-    useGameStore.setState({ gameMode: "online", gameState: state, waitingFor: state.waiting_for });
+    useGameStore.setState({ gameMode: "ai", gameState: state, waitingFor: state.waiting_for });
     const onExit = vi.fn();
     render(
       <UnhandledWaitingForModal onExit={onExit} exitLabel="Concede game" />,

@@ -14,7 +14,6 @@ vi.mock("../dice3d/loaders", () => ({
   loadDice3DModule: () => Promise.resolve({ Dice3D: renderer }),
   loadCoin3DModule: () => Promise.resolve({ Coin3D: coinRenderer }),
 }));
-vi.mock("../../../services/telemetryEvents", () => ({ reportBoundaryError }));
 
 function GameParent() {
   const [turn, setTurn] = useState(1);

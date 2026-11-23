@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WaitingFor } from "../../../adapter/types.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 
@@ -62,9 +61,8 @@ describe("SeparatePilesPartitionModal (via CardChoiceModal)", () => {
       },
     };
     const state = baseState(waitingFor);
-    useMultiplayerStore.setState({ activePlayerId: 1 });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor,
     });
@@ -114,9 +112,8 @@ describe("SeparatePilesChoiceModal (via CardChoiceModal)", () => {
       },
     };
     const state = baseState(waitingFor);
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor,
     });

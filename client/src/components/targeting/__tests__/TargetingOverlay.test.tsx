@@ -49,7 +49,7 @@ describe("TargetingOverlay", () => {
       // `playerNames` is reset too: the overlay's player-target controls label
       // themselves from it, so a name left behind by another suite would change
       // the button text under these tests.
-      useMultiplayerStore.setState({ activePlayerId: 0, playerNames: new Map() });
+      useMultiplayerStore.setState({ playerNames: new Map() });
     });
   });
 

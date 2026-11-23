@@ -1,12 +1,10 @@
-import { createStore, del, get, keys, set } from "idb-keyval";
+import { createStore, del, get, set } from "idb-keyval";
 
 import type {
   EngineAdapter,
   FormatConfig,
   GameState,
-  MatchConfig,
   PersistedGameState,
-  PlayerId,
 } from "../adapter/types";
 import { isCustomGameFormat } from "../adapter/types";
 import { formatMetadata } from "../data/formatRegistry";
@@ -264,6 +262,27 @@ export async function clearGameStrict(gameId: string): Promise<void> {
   });
   if (ownsActiveGame(gameId, pointer)) clearActiveGame();
 }
+
+// ── Checkpoints (IndexedDB) ─────────────────────────────────────────────
+
+export async function saveCheckpoints(gameId: string, checkpoints: PersistedGameState[]): Promise<void> {
+  try {
+    await withGameWriteLock(gameId, async () => {
+      await set(GAME_CHECKPOINTS_PREFIX + gameId, checkpoints, getGameStore());
+    });
+  } catch { /* best effort */ }
+}
+
+export async function loadCheckpoints(gameId: string): Promise<PersistedGameState[]> {
+  try {
+    const checkpoints = await get<PersistedGameState[]>(GAME_CHECKPOINTS_PREFIX + gameId, getGameStore());
+    return checkpoints?.map((checkpoint) => migratePersistedGameState(checkpoint)) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+// ── Active Game Meta (localStorage — tiny, synchronous) ─────────────────
 
 export { ACTIVE_GAME_CHANGED_EVENT, notifyActiveGameChange };
 

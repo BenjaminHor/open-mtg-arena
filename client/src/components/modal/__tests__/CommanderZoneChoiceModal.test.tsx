@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameState } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
@@ -46,9 +45,8 @@ describe("CommanderZoneChoiceModal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
     const state = makeState();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor: state.waiting_for,
     });

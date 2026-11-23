@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState } from "../../../adapter/types.ts";
 import { BattleProtectorModal } from "../BattleProtectorModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
 
@@ -40,10 +39,9 @@ function makeState(): GameState {
 describe("BattleProtectorModal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     const state = makeState();
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor: state.waiting_for,
     });
@@ -80,7 +78,6 @@ describe("BattleProtectorModal", () => {
   });
 
   it("renders nothing when the current player cannot act", () => {
-    useMultiplayerStore.setState({ activePlayerId: 1 });
     const { container } = render(<BattleProtectorModal />);
     expect(container).toBeEmptyDOMElement();
   });

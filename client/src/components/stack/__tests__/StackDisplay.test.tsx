@@ -8,7 +8,6 @@ import { StackDisplay } from "../StackDisplay.tsx";
 import { dispatchAction } from "../../../game/dispatch.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
 import { usePreferencesStore } from "../../../stores/preferencesStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { useUiStore } from "../../../stores/uiStore.ts";
 import { buildGameObject, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import {
@@ -164,7 +163,6 @@ describe("StackDisplay real grouped surfaces", () => {
   beforeEach(() => {
     useGameStore.getState().reset();
     useUiStore.setState(useUiStore.getInitialState());
-    useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
     usePreferencesStore.setState({ ...usePreferencesStore.getInitialState(), language: "en",
       showOwnerPrintings: true, artChain: [],
       artOverrides: { [ORACLE]: { scryfallId: V, setCode: "pin", collectorNumber: "3" } } });

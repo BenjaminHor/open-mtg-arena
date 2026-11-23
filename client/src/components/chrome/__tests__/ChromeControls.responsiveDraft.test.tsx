@@ -8,7 +8,6 @@ vi.mock("../../../stores/preferencesStore", () => ({
 }));
 vi.mock("../../settings/PreferencesModal", () => ({ PreferencesModal: () => null }));
 vi.mock("../../ui/LanguageFlag", () => ({ LanguageFlag: () => <span data-testid="language-flag" /> }));
-vi.mock("../AccountControl", () => ({ AccountControl: () => <div data-testid="account-control" /> }));
 vi.mock("../FullscreenButton", () => ({ FullscreenButton: () => <div data-testid="fullscreen-control" /> }));
 vi.mock("../VolumeControl", () => ({ VolumeControl: () => <div data-testid="volume-control" /> }));
 

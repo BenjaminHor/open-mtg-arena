@@ -13,7 +13,7 @@ import type { OpponentController } from "./types";
 const AUTO_PASS_BEAT_MS = 200;
 
 export interface GameLoopConfig {
-  mode: "ai" | "online" | "local";
+  mode: "ai" | "local";
   /** Default difficulty used as a fallback when no per-seat binding is
    *  supplied (e.g. legacy resume with only a flat `difficulty` in the
    *  `ActiveGameMeta`). Every AI seat gets this difficulty. */
@@ -31,16 +31,12 @@ export interface GameLoopController {
 }
 
 export function createGameLoopController(config: GameLoopConfig): GameLoopController {
-  // Publish the AI seat bindings to the store so telemetry `game_end` can
-  // classify `winner_kind`. Only local "ai" mode starts client-side AI
-  // controllers (`start()` gates on `mode === "ai"`) with bindings this client
-  // owns. "local" is human hotseat (GameProvider passes fabricated `aiSeats`
-  // for BOTH "ai" and "local", so we gate on the mode, not on the presence of
-  // `config.aiSeats`, or hotseat would be mislabeled vs-AI). Online games CAN
-  // have AI seats, but those are server-hosted (`CreateGameWithSettings::ai_seats`)
-  // and not identifiable from client-owned config — a guest cannot know them —
-  // so we publish none and telemetry treats an online winner as unknown.
-  // Cleared with the rest of game state on `reset`.
+  // Publish the AI seat bindings to the store (the contest overlay and
+  // dispatch read them). Only "ai" mode starts client-side AI controllers
+  // (`start()` gates on `mode === "ai"`). "local" is human hotseat
+  // (GameProvider passes fabricated `aiSeats` for BOTH "ai" and "local", so we
+  // gate on the mode, not on the presence of `config.aiSeats`, or hotseat
+  // would be mislabeled vs-AI). Cleared with the rest of game state on `reset`.
   const aiSeatIds =
     config.mode === "ai" ? (config.aiSeats?.map((seat) => seat.playerId) ?? []) : [];
   useGameStore.setState({ aiSeatIds });

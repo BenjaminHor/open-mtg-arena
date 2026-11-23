@@ -19,7 +19,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { DerivedViews, UnboundedFamilyView } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 import declinedWire from "../../../test/fixtures/unbounded-declined-wire.json";
 import tokenWire from "../../../test/fixtures/unbounded-token-wire.json";
@@ -49,7 +48,6 @@ const fam = (
 
 describe("UnboundedBadge + usePlayerDesignations", () => {
   beforeEach(() => {
-    useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
     // `gameMode` is reset explicitly because U8/U9/U10 set it, and a leaked `"spectate"` would
     // silently suppress every second-person assertion in the rows that follow.
     useGameStore.setState({ gameMode: null, gameState: buildGameState() });
@@ -204,8 +202,7 @@ describe("UnboundedBadge + usePlayerDesignations", () => {
     // produce, and it is exactly the case a naive "the badge is on my HUD, so it's my prompt"
     // implementation gets wrong.
     act(() => {
-      useGameStore.setState({ gameMode: "online" });
-      useMultiplayerStore.setState({ activePlayerId: 0 });
+      useGameStore.setState({ gameMode: "ai" });
     });
     seed({
       unbounded_families: [fam("tokens", { type: "Scheduled", data: { prompted: 2 } }, 0)],
@@ -228,8 +225,7 @@ describe("UnboundedBadge + usePlayerDesignations", () => {
     // players, so the badge must fall back to the seat-neutral voice rather than pick a winner,
     // and it must do so even though the viewer is one of the candidates.
     act(() => {
-      useGameStore.setState({ gameMode: "online" });
-      useMultiplayerStore.setState({ activePlayerId: 0 });
+      useGameStore.setState({ gameMode: "ai" });
     });
     seed({
       unbounded_families: [fam("tokens", { type: "Scheduled", data: {} }, 0)],

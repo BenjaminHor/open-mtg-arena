@@ -20,7 +20,6 @@ import {
   usePreferencesStore,
 } from "../../stores/preferencesStore.ts";
 import { ESCALATE_AFTER_MS } from "../../game/priorityAttention.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { useUiStore } from "../../stores/uiStore.ts";
 import {
   ANIMATION_SPEED_DEFAULT,
@@ -60,7 +59,6 @@ import { VisualPackManager } from "./visual-packs/VisualPackManager.tsx";
 import { OfflinePreparationSection } from "./OfflinePreparationSection.tsx";
 import { LlmOpponentsSection } from "./LlmOpponentsSection.tsx";
 
-import { TroubleshootingDialog } from "../help/TroubleshootingDialog";
 
 export type SettingsHighlight = "board-background";
 
@@ -107,11 +105,9 @@ function formatSpeed(value: number, max: number, labels: { instant: string; slow
 const SETTINGS_TABS = [
   { id: "gameplay" },
   { id: "ai" },
-  { id: "experimental" },
   { id: "visual" },
   { id: "combat" },
   { id: "audio" },
-  { id: "multiplayer" },
   { id: "data" },
 ] as const;
 
@@ -160,8 +156,6 @@ export function PreferencesModal({
   returnFocusRef,
 }: PreferencesModalProps) {
   const { t } = useTranslation(["settings", "common"]);
-  const [troubleshootingOpen, setTroubleshootingOpen] = useState(false);
-  const troubleshootingButtonRef = useRef<HTMLButtonElement>(null);
   const setFlexEditMode = useUiStore((s) => s.setFlexEditMode);
   const boardBackgroundRef = useRef<HTMLDivElement | null>(null);
   const visualTabRef = useRef<HTMLButtonElement>(null);
@@ -197,7 +191,6 @@ export function PreferencesModal({
   const setPriorityAlertTitle = usePreferencesStore((s) => s.setPriorityAlertTitle);
   const unCardActionsEnabled = usePreferencesStore((s) => s.unCardActionsEnabled);
   const setUnCardActionsEnabled = usePreferencesStore((s) => s.setUnCardActionsEnabled);
-  const experimentalTournamentsEnabled = usePreferencesStore((s) => s.experimentalTournamentsEnabled);
   const boardBackground = usePreferencesStore((s) => s.boardBackground);
   const vfxQuality = usePreferencesStore((s) => s.vfxQuality);
   const cardAnimationStyle = usePreferencesStore((s) => s.cardAnimationStyle);
@@ -210,7 +203,6 @@ export function PreferencesModal({
   const setMultiplayerBoardLayout = usePreferencesStore((s) => s.setMultiplayerBoardLayout);
   const setSpellPaymentMode = usePreferencesStore((s) => s.setSpellPaymentMode);
   const setPriorityPassingMode = usePreferencesStore((s) => s.setPriorityPassingMode);
-  const setExperimentalTournamentsEnabled = usePreferencesStore((s) => s.setExperimentalTournamentsEnabled);
   const setBoardBackground = usePreferencesStore((s) => s.setBoardBackground);
   const customBackgroundUrl = usePreferencesStore((s) => s.customBackgroundUrl);
   const setCustomBackgroundUrl = usePreferencesStore((s) => s.setCustomBackgroundUrl);
@@ -337,15 +329,10 @@ export function PreferencesModal({
     }
   }, [removeCustomThemeUrl, audioThemeId]);
 
-  // Multiplayer settings — server picking lives in `ServerPicker` (opened
-  // from the lobby header in either server or P2P mode), not here.
-  const displayName = useMultiplayerStore((s) => s.displayName);
-  const setDisplayName = useMultiplayerStore((s) => s.setDisplayName);
   const [activeTab, setActiveTab] = useState<SettingsTabId>(initialTab);
 
   return (
     <>
-    {troubleshootingOpen && <TroubleshootingDialog onClose={() => setTroubleshootingOpen(false)} returnFocusRef={troubleshootingButtonRef} />}
     <ModalPanelShell
       title={t("modal.title")}
       subtitle={t("modal.subtitle")}
@@ -372,7 +359,6 @@ export function PreferencesModal({
                   </button>
                 ))}
               </nav>
-              <button ref={troubleshootingButtonRef} type="button" onClick={() => setTroubleshootingOpen(true)} className="mt-2 min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200 hover:bg-white/10 active:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">{t("common:troubleshooting.title")}</button>
               <div className="hidden shrink-0 border-t border-white/5 pt-6 pb-8 md:block">
                 <ResetAllFooter resetAllPreferences={resetAllPreferences} />
               </div>
@@ -548,27 +534,6 @@ export function PreferencesModal({
               {activeTab === "ai" && (
                 <SettingsSection title={t("llm.title")}>
                   <LlmOpponentsSection />
-                </SettingsSection>
-              )}
-
-              {activeTab === "experimental" && (
-                <SettingsSection title={t("experimental.title")}>
-                  <SettingGroup label={t("experimental.tournaments")}>
-                    <label className="flex min-h-11 items-start gap-2">
-                      <input
-                        type="checkbox"
-                        checked={experimentalTournamentsEnabled}
-                        onChange={(event) => setExperimentalTournamentsEnabled(event.target.checked)}
-                        className="mt-1 accent-cyan-500"
-                      />
-                      <span className="text-sm text-slate-200">
-                        {t("experimental.showTournaments")}
-                        <span className="mt-0.5 block text-xs leading-relaxed text-slate-400">
-                          {t("experimental.showTournamentsDescription")}
-                        </span>
-                      </span>
-                    </label>
-                  </SettingGroup>
                 </SettingsSection>
               )}
 
@@ -882,25 +847,6 @@ export function PreferencesModal({
                   )}
                 </SettingsSection>
               </>)}
-
-              {activeTab === "multiplayer" && (
-                <SettingsSection title={t("multiplayer.title")}>
-                  <SettingGroup label={t("multiplayer.displayName")}>
-                      <input
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        placeholder={t("multiplayer.displayNamePlaceholder")}
-                        maxLength={20}
-                        className="w-full rounded-[14px] border border-white/10 bg-black/18 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-sky-400/40 focus:outline-none"
-                      />
-                  </SettingGroup>
-
-                  <p className="text-xs text-slate-400">
-                    {t("multiplayer.serverSelectionNote")}
-                  </p>
-                </SettingsSection>
-              )}
 
               {activeTab === "data" && (
         <>

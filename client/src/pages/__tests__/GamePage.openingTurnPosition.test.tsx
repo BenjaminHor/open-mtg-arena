@@ -4,7 +4,6 @@ import { MemoryRouter, Route, Routes } from "react-router";
 
 import type { DerivedViews, GameAction, WaitingFor } from "../../adapter/types.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { usePreferencesStore } from "../../stores/preferencesStore.ts";
 import { useUiStore } from "../../stores/uiStore.ts";
 import { gameStateFactory } from "../../test/factories/gameStateFactory.ts";
@@ -52,8 +51,6 @@ vi.mock("../../components/board/BattlefieldBackground.tsx", () => ({
   BattlefieldBackground: () => null,
 }));
 vi.mock("../../components/stack/StackDisplay.tsx", () => ({ StackDisplay: () => null }));
-vi.mock("../../components/debug/DebugPanel.tsx", () => ({ DebugPanel: () => null }));
-vi.mock("../../components/hud/HUD.tsx", () => ({ HUD: () => null }));
 vi.mock("../../components/board/GameBoard.tsx", () => ({ GameBoard: () => null }));
 vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: () => null }));
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
@@ -125,7 +122,7 @@ function showOpeningHand(waitingFor: WaitingFor, derived?: DerivedViews) {
   act(() => {
     useGameStore.setState({
       gameId: "opening-turn-position",
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor,
       legalActions: [KEEP, MULLIGAN],
@@ -147,7 +144,6 @@ describe("GamePage opening turn position", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
       usePreferencesStore.setState({
         multiplayerBoardLayout: "focused",
         multiplayerSplitLayoutNudgeDismissed: true,
@@ -166,7 +162,6 @@ describe("GamePage opening turn position", () => {
         adapter: null,
         legalActions: [],
       });
-      useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
     });
   });
 

@@ -16,20 +16,12 @@ const mocks = vi.hoisted(() => ({
   setUpdateStatus: vi.fn(),
 }));
 
-vi.mock("../multiplayerGuard", () => ({
-  isMultiplayerGameLive: mocks.isMultiplayerGameLive,
-  deferUntilMultiplayerSessionEnds: mocks.deferUntilMultiplayerSessionEnds,
-}));
 vi.mock("../updateStatus", () => ({
   claimUpdateStatus: mocks.claimUpdateStatus,
   pushUpdateDebug: mocks.pushUpdateDebug,
   releaseUpdateStatus: mocks.releaseUpdateStatus,
   setUpdateError: mocks.setUpdateError,
   setUpdateStatus: mocks.setUpdateStatus,
-}));
-vi.mock("../../services/telemetry", () => ({
-  trackEvent: mocks.trackEvent,
-  flushNow: mocks.flushNow,
 }));
 
 const CHUNK_URL = "https://phase-rs.dev/assets/GamePage-abc.js";

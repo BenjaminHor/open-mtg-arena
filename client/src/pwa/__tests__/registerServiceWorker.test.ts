@@ -34,7 +34,6 @@ const mocks = vi.hoisted(() => {
 
 vi.mock("\0virtual:pwa-register-stub", () => ({ registerSW: mocks.registerSW }));
 vi.mock("../../services/platform", () => ({ isBundledTauriOrigin: mocks.isBundledTauriOrigin }));
-vi.mock("../../services/legacyMigration", () => ({ markRemoteLoadOk: mocks.markRemoteLoadOk }));
 vi.mock("../../stores/connectivityStore", () => ({
   getEffectiveOffline: () => mocks.connectivity.offline,
   subscribeEffectiveOffline: (listener: (offline: boolean, previous: boolean) => void) => {

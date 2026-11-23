@@ -303,7 +303,6 @@ function buildDefaultPreferences(): PreferencesState {
     priorityAlertSound: true,
     priorityAlertTitle: true,
     unCardActionsEnabled: false,
-    experimentalTournamentsEnabled: false,
     masterVolume: 100,
     sfxVolume: 70,
     musicVolume: 40,
@@ -315,7 +314,6 @@ function buildDefaultPreferences(): PreferencesState {
     battlefieldCardDisplay: "art_crop",
     collapsedFolderIds: [],
     lastSeenChangelogId: undefined,
-    dismissedStatusId: undefined,
     commandZoneDisplay: "auto",
     collapseLands: "auto",
     collapseSupport: "auto",
@@ -350,7 +348,6 @@ function buildDefaultPreferences(): PreferencesState {
     lastPlayerCount: 2,
     dismissedFlowHelpNudge: false,
     dismissedSandboxToolsNudge: false,
-    dismissedReportCardNudge: false,
     artChain: [] as ArtChainEntry[],
     artOverrides: {} as Record<string, CardArtOverride>,
     flexLayout: defaultFlexLayout(),
@@ -395,8 +392,6 @@ interface PreferencesState {
    *  Gotcha! button and the Un-actions menu. Mirrored to the engine, which
    *  never prompts or offers anything to a player who has not opted in. */
   unCardActionsEnabled: boolean;
-  /** Whether the in-progress tournament UI appears in app navigation. */
-  experimentalTournamentsEnabled: boolean;
   masterVolume: number;
   sfxVolume: number;
   musicVolume: number;
@@ -414,10 +409,6 @@ interface PreferencesState {
    * silently seeds it to the current latest so they get no unread dot for
    * entries that predate their first visit. */
   lastSeenChangelogId?: number;
-  /** Id of the operator status message this player dismissed. Compared for
-   * EQUALITY, so a newly published message (which always carries a new id)
-   * re-shows even after the previous one was dismissed. */
-  dismissedStatusId?: number;
   /** Command-zone layout mode (inline dock / compact pile / auto-by-viewport). */
   commandZoneDisplay: CommandZoneDisplay;
   /** Whether the lands sub-row collapses into its summary tile (auto/on/off). */
@@ -488,7 +479,6 @@ interface PreferencesState {
   lastPlayerCount: number;
   dismissedFlowHelpNudge: boolean;
   dismissedSandboxToolsNudge: boolean;
-  dismissedReportCardNudge: boolean;
   artChain: ArtChainEntry[];
   artOverrides: Record<string, CardArtOverride>;
   /** Persisted board layout (grid bands + per-widget offsets + active preset).
@@ -525,7 +515,6 @@ interface PreferencesActions {
   setPriorityAlertSound: (enabled: boolean) => void;
   setPriorityAlertTitle: (enabled: boolean) => void;
   setUnCardActionsEnabled: (enabled: boolean) => void;
-  setExperimentalTournamentsEnabled: (enabled: boolean) => void;
   setMasterVolume: (vol: number) => void;
   setSfxVolume: (vol: number) => void;
   setMusicVolume: (vol: number) => void;
@@ -539,7 +528,6 @@ interface PreferencesActions {
   toggleFolderCollapsed: (id: string) => void;
   setCollapsedFolderIds: (ids: string[]) => void;
   setLastSeenChangelogId: (id: number) => void;
-  setDismissedStatusId: (id: number) => void;
   setCommandZoneDisplay: (display: CommandZoneDisplay) => void;
   setCollapseLands: (mode: ZoneCollapseMode) => void;
   setCollapseSupport: (mode: ZoneCollapseMode) => void;
@@ -576,7 +564,6 @@ interface PreferencesActions {
   setLastPlayerCount: (count: number) => void;
   setDismissedFlowHelpNudge: (dismissed: boolean) => void;
   setDismissedSandboxToolsNudge: (dismissed: boolean) => void;
-  setDismissedReportCardNudge: (dismissed: boolean) => void;
   addArtChainEntry: (entry: ArtChainEntry) => void;
   removeArtChainEntry: (index: number) => void;
   moveArtChainEntry: (fromIndex: number, toIndex: number) => void;
@@ -688,7 +675,6 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       setPriorityAlertSound: (enabled) => set({ priorityAlertSound: enabled }),
       setPriorityAlertTitle: (enabled) => set({ priorityAlertTitle: enabled }),
       setUnCardActionsEnabled: (enabled) => set({ unCardActionsEnabled: enabled }),
-      setExperimentalTournamentsEnabled: (enabled) => set({ experimentalTournamentsEnabled: enabled }),
       setMasterVolume: (vol) => set({ masterVolume: vol }),
       setSfxVolume: (vol) => set({ sfxVolume: vol }),
       setMusicVolume: (vol) => set({ musicVolume: vol }),
@@ -714,7 +700,6 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
         })),
       setCollapsedFolderIds: (ids) => set({ collapsedFolderIds: ids }),
       setLastSeenChangelogId: (id) => set({ lastSeenChangelogId: id }),
-      setDismissedStatusId: (id) => set({ dismissedStatusId: id }),
       setCommandZoneDisplay: (display) => set({ commandZoneDisplay: display }),
       setCollapseLands: (mode) => set({ collapseLands: mode }),
       setCollapseSupport: (mode) => set({ collapseSupport: mode }),
@@ -778,7 +763,6 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       setLastPlayerCount: (count) => set({ lastPlayerCount: count }),
       setDismissedFlowHelpNudge: (dismissed) => set({ dismissedFlowHelpNudge: dismissed }),
       setDismissedSandboxToolsNudge: (dismissed) => set({ dismissedSandboxToolsNudge: dismissed }),
-      setDismissedReportCardNudge: (dismissed) => set({ dismissedReportCardNudge: dismissed }),
       addArtChainEntry: (entry) =>
         set((state) => {
           const isDuplicate = state.artChain.some((e) =>

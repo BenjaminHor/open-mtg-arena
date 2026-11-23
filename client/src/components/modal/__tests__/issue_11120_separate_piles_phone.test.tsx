@@ -70,7 +70,7 @@ function choiceState(pileB = [3]) {
 
 function showPrompt(gameState: GameState, activePlayerId: number) {
   useMultiplayerStore.setState({ activePlayerId });
-  setGameStoreForTest({ gameState, gameMode: "online" });
+  setGameStoreForTest({ gameState, gameMode: "ai" });
   render(<CardChoiceModal />);
 }
 

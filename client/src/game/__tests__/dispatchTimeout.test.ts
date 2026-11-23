@@ -119,7 +119,7 @@ describe("dispatchAction recovery on ENGINE_UNRESPONSIVE", () => {
     useGameStore.setState({
       adapter: buildEngineAdapterMock(emptyState, { submitAction }),
       gameState: emptyState,
-      gameMode: "online",
+      gameMode: "ai",
     });
 
     await expect(dispatchAction({ type: "PassPriority", data: {} } as GameAction, 0)).rejects.toBe(

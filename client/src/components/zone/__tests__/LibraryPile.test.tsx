@@ -8,7 +8,6 @@ import {
 } from "../../../adapter/types.ts";
 import { useAnimationStore } from "../../../stores/animationStore.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { useUiStore } from "../../../stores/uiStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayers, buildPriorityWaitingFor } from "../../../test/factories/gameStateFactory.ts";
@@ -175,9 +174,8 @@ function setSharedLibrary({ shared }: { shared: boolean }) {
     legalActions: [action],
     legalActionsByObject: { "11": [action] },
     spellCosts: {},
-    gameMode: "online",
+    gameMode: "ai",
   });
-  useMultiplayerStore.setState({ activePlayerId: 1 });
 }
 
 describe("LibraryPile shared library", () => {
@@ -187,7 +185,6 @@ describe("LibraryPile shared library", () => {
 
   afterEach(() => {
     cleanup();
-    useMultiplayerStore.setState({ activePlayerId: null });
   });
 
   it("renders the holder's pile for the non-holder seat's request", () => {

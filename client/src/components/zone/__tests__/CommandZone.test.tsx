@@ -6,7 +6,6 @@ import { dispatchAction } from "../../../game/dispatch.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
 import { useUiStore } from "../../../stores/uiStore.ts";
 import { usePreferencesStore } from "../../../stores/preferencesStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { loadScryfallData, type PrintingEntry } from "../../../services/scryfall.ts";
 import type * as Platform from "../../../services/platform.ts";
 import type { ResolvedAsset } from "../../../services/visualPacks/types.ts";
@@ -108,7 +107,6 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
   usePreferencesStore.setState({ ...usePreferencesStore.getInitialState(), language: "en",
     showOwnerPrintings: true, artChain: [],
     artOverrides: { [ORACLE]: { scryfallId: V, setCode: "pin", collectorNumber: "3" } } });
@@ -617,14 +615,12 @@ describe("CommandZone owner-printing groups", () => {
     seedPrintings([printingA, printingA]);
     const { rerender } = render(<CommandZone playerId={0} />);
     act(() => {
-      useGameStore.setState({ gameMode: "online" });
-      useMultiplayerStore.setState({ activePlayerId: 1 });
+      useGameStore.setState({ gameMode: "ai" });
     });
     const chip = screen.getByTestId("emblem-card");
     expect(chip).not.toHaveAttribute("data-activatable");
     fireEvent.click(chip);
     expect(dispatchAction).not.toHaveBeenCalled();
-    act(() => useMultiplayerStore.setState({ activePlayerId: 0 }));
     rerender(<CommandZone playerId={0} />);
     expect(screen.getByTestId("emblem-card")).toHaveAttribute("data-activatable", "true");
     fireEvent.click(screen.getByTestId("emblem-card"));

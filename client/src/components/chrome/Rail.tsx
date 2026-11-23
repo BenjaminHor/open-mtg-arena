@@ -2,15 +2,13 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { BuildBadge } from "./BuildBadge";
-import { activeNavKey, navItemsFor } from "./navItems";
+import { activeNavKey, NAV_ITEMS } from "./navItems";
 import { SparkleIcon } from "./SparkleIcon";
-import { usePreferencesStore } from "../../stores/preferencesStore";
 
 /**
  * Desktop navigation rail (≥820px). Logo → the five primary destinations, and a
- * footer with Settings and the build/version chip. Social badges live in the
- * shell's top-left SocialBar (not the rail). Hidden below 820px, where TabBar +
- * SocialBar take over.
+ * footer with Settings and the build/version chip. Hidden below 820px, where
+ * TabBar takes over.
  */
 interface RailProps {
   onSettings: (launcher: HTMLButtonElement) => void;
@@ -22,8 +20,7 @@ interface RailProps {
 export function Rail({ onSettings, onWhatsNew, hasUnread }: RailProps) {
   const { t } = useTranslation("menu");
   const navigate = useNavigate();
-  const experimentalTournamentsEnabled = usePreferencesStore((s) => s.experimentalTournamentsEnabled);
-  const navItems = navItemsFor(experimentalTournamentsEnabled);
+  const navItems = NAV_ITEMS;
   const active = activeNavKey(useLocation().pathname, navItems);
 
   return (

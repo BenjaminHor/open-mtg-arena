@@ -78,16 +78,6 @@ export const FEEDS_INITIALIZED_KEY = "phase-feeds-initialized";
 /** Key for active quick-draft metadata in localStorage (synchronous resume detection) */
 export const ACTIVE_QUICK_DRAFT_KEY = "phase-active-quick-draft";
 
-/** Key for active draft-pod metadata in localStorage (synchronous resume detection) */
-export const ACTIVE_DRAFT_POD_KEY = "phase-active-draft-pod";
-
-/**
- * Non-secret pointer to the most recent guest draft. The reconnect capability
- * itself remains in IndexedDB; this record exists only so a reloaded guest can
- * find the pod again from its room code.
- */
-export const ACTIVE_DRAFT_GUEST_KEY = "phase-active-draft-guest";
-
 /** Prefix for quick-draft session blobs in IndexedDB. Full key: `${QUICK_DRAFT_KEY_PREFIX}${draftId}` */
 export const QUICK_DRAFT_KEY_PREFIX = "phase-quick-draft:";
 
@@ -112,15 +102,14 @@ export const DRAFT_WORKSPACE_PREFERENCES_KEY = "phase-draft-workspace-preference
 
 /**
  * localStorage key for a per-device counter bumped by `bumpProfileReplacementGeneration`,
- * called only from `backup.ts::applyBackup` — reached via cloud sync's apply-remote
- * and apply-merged paths (`cloudSyncStore.ts`), manual backup-file import
- * (`backup.ts::importBackupFromFile`), and the legacy-storage migration
- * (`legacyMigration.ts`). `feedService.ts` captures this before waiting on
- * the saved-deck library lock and compares after re-acquiring it, so a feed
- * sync queued behind one of these replacements can detect it and skip.
+ * called only from `backup.ts::applyBackup` — reached via manual backup-file
+ * import (`backup.ts::importBackupFromFile`). `feedService.ts` captures this
+ * before waiting on the saved-deck library lock and compares after
+ * re-acquiring it, so a feed sync queued behind a replacement can detect it
+ * and skip.
  *
- * Deliberately NOT part of {@link isUserOwnedStorageKey}: syncing this counter
- * would let a remote profile apply overwrite the very value used to detect a
+ * Deliberately NOT part of {@link isUserOwnedStorageKey}: restoring this
+ * counter from a backup would overwrite the very value used to detect a
  * profile replacement, defeating the guard it exists to provide.
  */
 export const PROFILE_REPLACEMENT_KEY = "phase-profile-replacement";

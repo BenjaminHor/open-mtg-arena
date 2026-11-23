@@ -39,9 +39,7 @@ function setup(opts: { seat: number; waitingFor: WaitingFor; state?: Parameters<
     gameState: createGameState(opts.state),
     waitingFor: opts.waitingFor,
   });
-  useMultiplayerStore.setState({
-    activePlayerId: opts.seat,
-    isSpectator: opts.spectate ?? false,
+  useMultiplayerStore.setState({ isSpectator: opts.spectate ?? false,
     playerNames: new Map([[1, "Sorin"]]),
   });
 }
@@ -49,14 +47,14 @@ function setup(opts: { seat: number; waitingFor: WaitingFor; state?: Parameters<
 describe("TurnStatusLine", () => {
   beforeEach(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false, playerNames: new Map() });
+    useMultiplayerStore.setState({ playerNames: new Map() });
     usePriorityAttentionStore.getState().publish({ cue: "none", chimeCount: 0 });
     usePreferencesStore.setState({ priorityAlertVisual: true });
   });
   afterEach(() => {
     cleanup();
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false, playerNames: new Map() });
+    useMultiplayerStore.setState({ playerNames: new Map() });
     usePriorityAttentionStore.getState().publish({ cue: "none", chimeCount: 0 });
     usePreferencesStore.setState({ priorityAlertVisual: initialVisualPreference });
   });

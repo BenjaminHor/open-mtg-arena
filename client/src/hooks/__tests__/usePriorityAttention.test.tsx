@@ -9,7 +9,6 @@ import {
 } from "../../game/priorityAttention.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
 import { usePreferencesStore } from "../../stores/preferencesStore.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { usePriorityAttentionStore } from "../../stores/priorityAttentionStore.ts";
 import { useUiStore } from "../../stores/uiStore.ts";
 import { buildGameObject } from "../../test/factories/gameObjectFactory.ts";
@@ -86,7 +85,6 @@ describe("usePriorityAttentionController", () => {
       autoPassRecommended: false,
     });
     useUiStore.setState({ fullControl: false });
-    useMultiplayerStore.setState({ isSpectator: false, activePlayerId: null });
     usePriorityAttentionStore.setState({ cue: "none", chimeCount: 0 });
   });
 
@@ -605,7 +603,6 @@ describe("windows that differ only below the phase", () => {
     vi.useFakeTimers();
     useGameStore.setState({ gameMode: null, gameState: null, waitingFor: null, autoPassRecommended: false });
     useUiStore.setState({ fullControl: false });
-    useMultiplayerStore.setState({ isSpectator: false, activePlayerId: null });
     usePriorityAttentionStore.setState({ cue: "none", chimeCount: 0 });
   });
   afterEach(() => {
@@ -743,7 +740,6 @@ describe("presence and visibility", () => {
     vi.useFakeTimers();
     useGameStore.setState({ gameMode: null, gameState: null, waitingFor: null, autoPassRecommended: false });
     useUiStore.setState({ fullControl: false });
-    useMultiplayerStore.setState({ isSpectator: false, activePlayerId: null });
     usePriorityAttentionStore.setState({ cue: "none", chimeCount: 0 });
   });
   afterEach(() => {

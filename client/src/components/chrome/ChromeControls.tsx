@@ -6,7 +6,6 @@ import { usePreferencesStore } from "../../stores/preferencesStore";
 import { menuButtonClass } from "../menu/buttonStyles";
 import { PreferencesModal } from "../settings/PreferencesModal";
 import { LanguageFlag } from "../ui/LanguageFlag";
-import { AccountControl } from "./AccountControl";
 import { FullscreenButton } from "./FullscreenButton";
 import { VolumeControl } from "./VolumeControl";
 
@@ -71,11 +70,10 @@ export function ChromeControls({
 
   return (
     <>
-      {/* Account + Volume + Settings — upper-right. Fullscreen lives lower-right
+      {/* Volume + Language + Settings — upper-right. Fullscreen lives lower-right
           (below) to keep this cluster uncrowded. */}
       <div className="fixed right-4 top-[calc(env(safe-area-inset-top)+1rem)] z-40 flex gap-2">
         {!hideVolume && <VolumeControl variant="chrome" />}
-        <AccountControl />
         {!hideLanguage && (
           <motion.button
             className={menuButtonClass({

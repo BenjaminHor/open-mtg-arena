@@ -70,7 +70,6 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
       "../../../game/waitingForRegistry",
     );
     realIsHandled = actual.isWaitingForHandled;
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     useGameStore.setState({ gameMode: "ai", gameState: null, waitingFor: null } as never);
     vi.mocked(isWaitingForHandled).mockReset();
   });
@@ -81,7 +80,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 1 — an unhandled WaitingFor verdict surfaces the safety-net diagnostic", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(false);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai", activePlayerId: 0 });
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,
@@ -97,7 +96,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 2 — exit action is reachable and invokes the caller's exit handler (AI/local)", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(false);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai", activePlayerId: 0 });
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
 
     const onExit = vi.fn();
     render(<UnhandledWaitingForModal onExit={onExit} exitLabel="Return to menu" />);
@@ -108,7 +107,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 3 — exit action is reachable in online mode (concede)", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(false);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "online", activePlayerId: 0 });
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
 
     const onExit = vi.fn();
     render(<UnhandledWaitingForModal onExit={onExit} exitLabel="Concede game" />);
@@ -119,7 +118,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 4 — modal returns null when its input predicate reports the variant handled", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(true);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai", activePlayerId: 0 });
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,
@@ -136,7 +135,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
       type: "OrphanEngineChoice",
       data: { player: 0 },
     } as unknown as WaitingFor;
-    seedStoreFromState(orphan, { gameMode: "ai", activePlayerId: 0 });
+    seedStoreFromState(orphan, { gameMode: "ai",});
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,
@@ -154,7 +153,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
       type: "ResolutionOptionalPaymentChoice",
       data: { player: 0, source_id: 7, costs: [] },
     };
-    seedStoreFromState(waitingFor, { gameMode: "ai", activePlayerId: 0 });
+    seedStoreFromState(waitingFor, { gameMode: "ai",});
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,

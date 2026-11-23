@@ -1,19 +1,13 @@
-import { generateProtocolVersions, protocolGenerationPlugin } from "./protocol-generation";
 import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import wasm from "vite-plugin-wasm";
 import { VitePWA } from "vite-plugin-pwa";
 import { compression } from "vite-plugin-compression2";
-import { resolveMultiplayerServerUrls } from "./src/config/multiplayerServerUrls";
-import { resolveTurnCredentialsUrl } from "./src/config/turnCredentials";
 import type { Plugin } from "vite";
-
-generateProtocolVersions();
-
 
 
 // wasm-bindgen emits `import * as importN from "env"` for WASM host-environment
@@ -64,9 +58,9 @@ function externalEngineWasm(): Plugin {
 // mana-font ships a legacy @font-face (eot/woff/ttf/svg) for BOTH the "Mana"
 // glyph family AND an unused "MPlantin" text family. Imported verbatim, Vite
 // emits every referenced url() — ~3.4 MB of fonts (a 1.8 MB SVG among them,
-// plus the whole unused MPlantin family) into the web dist AND the Tauri
-// bundle, when the only asset any `.ms-*` class needs is the 187 KB woff2 the
-// vendored CSS never references. Rewrite that one stylesheet at build time to a
+// plus the whole unused MPlantin family) into the web dist, when the only
+// asset any `.ms-*` class needs is the 187 KB woff2 the vendored CSS never
+// references. Rewrite that one stylesheet at build time to a
 // single woff2-only @font-face for "Mana" and drop the rest, so exactly one
 // font file is emitted. Keeps the npm package as the source of truth for the
 // glyph classes (no vendored copy, updates on version bump). enforce:"pre" so
@@ -120,32 +114,17 @@ function workspaceVersion(): string {
 // time (see release.yml / deploy.yml). That hashed file lives on R2 only;
 // uploading an additional non-hashed `card-data.json` to R2 would be dead
 // weight since no frontend code fetches it. Local dev falls back to the
-// public/ copy served at `/card-data.json` (also used by Tauri bundles and
-// phase-server via `data/card-data.json`).
-function dataFileDefines(mode: string, buildHash: string): Record<string, string> {
+// public/ copy served at `/card-data.json`.
+function dataFileDefines(buildHash: string): Record<string, string> {
   const manifest = JSON.parse(
     readFileSync(path.resolve(__dirname, "../data-files.json"), "utf-8"),
   ) as string[];
-  // Bridge a gitignored repo-root .env into build-time defines for local dev.
-  // Vite does not auto-populate process.env from .env files, so without this the
-  // __SUPABASE_*__ tokens would never resolve from a .env. CI/deploy sets these
-  // as real env vars, which take precedence over any .env entry.
-  const fileEnv = loadEnv(mode, path.resolve(__dirname, ".."), "");
-  const envVar = (name: string): string =>
-    process.env[name] ?? fileEnv[name] ?? "";
   const base = process.env.DATA_BASE_URL || "";
-  const multiplayerServers = resolveMultiplayerServerUrls(envVar);
   const defines: Record<string, string> = {
     __APP_VERSION__: JSON.stringify(workspaceVersion()),
     __BUILD_HASH__: JSON.stringify(buildHash),
-    // Preview deployment stamps this with the fingerprint of its signed native
-    // engine artifact. Local and release builds intentionally compile it as
-    // `undefined`, which keeps preview native routing on the WASM fallback.
-    __ENGINE_FINGERPRINT__: process.env.ENGINE_FINGERPRINT
-      ? JSON.stringify(process.env.ENGINE_FINGERPRINT)
-      : "undefined",
     // Release/staging builds pin the engine binary to an immutable R2 object.
-    // Keep the local bundled WASM fallback when this is unset (dev, Tauri, and
+    // Keep the local bundled WASM fallback when this is unset (dev and
     // self-hosted builds).
     __ENGINE_WASM_URL__: process.env.ENGINE_WASM_URL
       ? JSON.stringify(process.env.ENGINE_WASM_URL)
@@ -153,58 +132,21 @@ function dataFileDefines(mode: string, buildHash: string): Record<string, string
     __AUDIO_BASE_URL__: JSON.stringify(process.env.AUDIO_BASE_URL || ""),
     __GIT_REPO_URL__: JSON.stringify("https://github.com/phase-rs/phase"),
     __PREVIEW_SITE_URL__: JSON.stringify("https://preview.phase-rs.dev"),
-    __RELEASE_SITE_URL__: JSON.stringify("https://phase-rs.dev"),
-    // Channel-scoped official lobby (deploy.yml points preview at its own
-    // broker). DEFAULT falls back to the RESOLVED official value, not the
-    // hardcoded constant — chaining to the constant would leave DEFAULT on
-    // production while OFFICIAL moved to preview, and serverDetection.ts keys
-    // "is this a self-hosted build?" off DEFAULT !== OFFICIAL. That mismatch
-    // would prepend a bogus self-hosted preset holding the production URL and
-    // make it SERVER_PRESETS[0] — i.e. the default pick would become the one
-    // lobby a preview client cannot handshake with.
-    __OFFICIAL_MULTIPLAYER_SERVER_URL__: JSON.stringify(multiplayerServers.official),
-    __DEFAULT_MULTIPLAYER_SERVER_URL__: JSON.stringify(multiplayerServers.buildDefault),
-    // Self-hosted builds may mint short-lived TURN credentials from their own
-    // endpoint. Keep the official endpoint as the compatibility default.
-    __TURN_CREDENTIALS_URL__: JSON.stringify(
-      resolveTurnCredentialsUrl(process.env.TURN_CREDENTIALS_URL),
-    ),
     // True only for tagged production releases (release.yml sets RELEASE_BUILD).
     // The staging deploy (deploy.yml) is also a production Vite build, so we
     // cannot key off import.meta.env.PROD — that would surface the "try the
     // preview" link on the preview site itself. dev + staging → false (hidden);
     // tagged release → true (shown).
     __IS_RELEASE_BUILD__: JSON.stringify(process.env.RELEASE_BUILD === "true"),
-    // True only for the preview deploy (deploy.yml stamps ENGINE_FINGERPRINT;
-    // PREVIEW_BUILD is also accepted as an explicit override). Gates showing
-    // the commit hash next to the version in the UI.
-    __IS_PREVIEW_BUILD__: JSON.stringify(
-      process.env.PREVIEW_BUILD === "true" || Boolean(process.env.ENGINE_FINGERPRINT),
-    ),
-    // Supabase cloud-sync config. Anon key is public by design (RLS is the
-    // access control), so it ships in the bundle. Empty when unset → cloud sync
-    // is disabled, leaving file backup as the only data-portability path. This
-    // keeps self-hosted builds working with no Supabase account.
-    __SUPABASE_URL__: JSON.stringify(envVar("SUPABASE_URL")),
-    __SUPABASE_ANON_KEY__: JSON.stringify(envVar("SUPABASE_ANON_KEY")),
-    // First-party telemetry ingest endpoint (lobby-worker `POST /telemetry`).
-    // Empty when unset (local dev, self-hosted builds) → the telemetry module
-    // compiles to a permanent no-op and nothing is ever sent anywhere.
-    __TELEMETRY_URL__: JSON.stringify(process.env.TELEMETRY_URL || ""),
+    // True only for a preview deploy (PREVIEW_BUILD=true). Gates showing the
+    // commit hash next to the version in the UI.
+    __IS_PREVIEW_BUILD__: JSON.stringify(process.env.PREVIEW_BUILD === "true"),
     __CARD_DATA_URL__: JSON.stringify(process.env.CARD_DATA_URL || "/card-data.json"),
-    // Operator status message. Deliberately NOT manifest-driven: the deploy
-    // workflow's upload loop reads data-files.json and (a) hard-errors when a
-    // listed file was not generated into client/public/, and (b) re-uploads
-    // whatever it finds on EVERY deploy — which would clobber a live status
-    // message the maintainer published out of band. It is published and cleared
-    // by scripts/publish-status.sh alone; no CI job ever touches the object.
-    // Same explicit, non-manifest shape as __CARD_DATA_URL__ above.
-    __STATUS_URL__: JSON.stringify(base ? `${base}/status.json` : "/status.json"),
     // Per-locale content-i18n sidecar URL template ({lng} replaced at runtime).
     // The sidecars are listed in data-files.json, so on deploy they are uploaded
     // to `${DATA_BASE_URL}/card-data.<lng>.json` and stripped from the Pages
     // bundle — this template must point there, mirroring the manifest files. With
-    // no DATA_BASE_URL (local dev, Tauri offline) it resolves to the site-root
+    // no DATA_BASE_URL (local dev) it resolves to the site-root
     // copy in public/. A missing sidecar (404) degrades to English per-field
     // (see ensureCardLocale). An explicit env override still wins.
     __CARD_DATA_LOCALE_URL_TEMPLATE__: JSON.stringify(
@@ -260,7 +202,7 @@ function buildManifest(buildHash: string): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   const buildHash = gitHash();
   const offlineShellMarkerFilename = `offline-shell-${buildHash}.json`;
 
@@ -271,7 +213,7 @@ export default defineConfig(({ mode }) => {
       "@wasm/draft": path.resolve(__dirname, "src/wasm/draft_wasm"),
     },
   },
-  plugins: [protocolGenerationPlugin(),
+  plugins: [
     wasmEnvShim(),
     externalEngineWasm(),
     trimManaFont(),
@@ -455,11 +397,8 @@ export default defineConfig(({ mode }) => {
           },
           {
             // Same-origin deck feeds fetched by the home dashboard
-            // (see src/data/feedRegistry.ts). Mutable — regenerated
-            // periodically — so prefer the network and retain the cached copy
-            // only as an offline fallback. StaleWhileRevalidate returned an
-            // old feed to startup while refreshing it in the background,
-            // allowing default catalogs to differ between active clients.
+            // (see src/data/feedRegistry.ts). Prefer the network and retain
+            // the cached copy as an offline fallback.
             urlPattern: /\/feeds\/[^/]+\.json$/,
             handler: "NetworkFirst",
             options: {
@@ -510,7 +449,7 @@ export default defineConfig(({ mode }) => {
     }),
     compression({ algorithms: ["brotliCompress"] }),
   ],
-  define: dataFileDefines(mode, buildHash),
+  define: dataFileDefines(buildHash),
   worker: {
     plugins: () => [wasmEnvShim(), externalEngineWasm()],
   },
@@ -521,13 +460,9 @@ export default defineConfig(({ mode }) => {
   // hit Caddy rather than the bare :5173 dev server. Both are gated on a
   // hostname presence check so plain `pnpm dev` on localhost still works.
   server: {
-    // Every consumer of this dev server pins :5173 as a literal it cannot
-    // re-resolve — tauri.conf.json's `devUrl`, the Caddyfile's reverse_proxy
-    // upstreams, the Tiltfile's link. `strictPort` is the enforcement: vite
-    // defaults it to false and on EADDRINUSE drifts to ++port, announced only
-    // by an info line that scrolls past inside `tauri dev`, leaving the shell
-    // on a dead URL painting a blank white document. `port` declares the pin;
-    // `strictPort` is what holds it. `vite preview` inherits strictPort from
+    // `port` declares the dev server's port; `strictPort` refuses to drift to
+    // ++port on EADDRINUSE (vite's default), which would leave anything that
+    // pins :5173 on a dead URL. `vite preview` inherits strictPort from
     // here (its own port stays 4173), so `pnpm preview` refuses.
     port: 5173,
     strictPort: true,

@@ -21,7 +21,6 @@ import { EnchantmentsBadge } from "./EnchantmentsBadge.tsx";
 import { HudPlate } from "./HudPlate.tsx";
 import { NextUpBadge } from "./NextUpBadge.tsx";
 import { StormCounter } from "./StormCounter.tsx";
-import { PlayerLatency } from "./PlayerLatency.tsx";
 
 interface PlayerHudProps {
   /** The HUD's root node. The action rail measures it, together with the
@@ -145,7 +144,6 @@ export function PlayerHud({ ref }: PlayerHudProps) {
       >
         <div className={`flex min-w-0 items-center ${compact ? "gap-1" : "gap-2"}`}>
           <LifeTotal playerId={playerId} size={compact ? "sm" : "lg"} hideLabel />
-          <PlayerLatency playerId={playerId} />
           <ManaPoolSummary playerId={playerId} size={compact ? "sm" : "default"} />
         </div>
       </HudPlate>

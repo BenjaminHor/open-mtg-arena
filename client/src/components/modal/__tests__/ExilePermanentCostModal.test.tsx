@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameObject, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPendingCast } from "../../../test/factories/gameStateFactory.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
@@ -33,7 +32,7 @@ function setWaitingFor(waitingFor: WaitingFor, objects?: Record<string, GameObje
     next_object_id: 100,
   });
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: state,
     waitingFor,
   });
@@ -42,7 +41,6 @@ function setWaitingFor(waitingFor: WaitingFor, objects?: Record<string, GameObje
 describe("Exile-permanent cost board choice", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {

@@ -1,7 +1,4 @@
 import { PLAYER_ID } from "../constants/game";
-import { boundedDiagnosticProbe, recordDiagnostic, registerEngineDiagnostics } from "../services/troubleshooting";
-import type { EngineDiagnosticSnapshot } from "../services/troubleshooting";
-import { trackEvent } from "../services/telemetry";
 import { draftSessionAuthorityOf } from "../services/draftFormatConfig";
 import type {
   AiActionProposal,
@@ -308,28 +305,6 @@ export class WasmAdapter
 {
   private initialized = false;
   private disposed = false;
-  private unregisterDiagnostics: (() => void) | null = null;
-
-  constructor() {
-    this.registerDiagnostics();
-  }
-
-  private diagnosticSnapshot(): EngineDiagnosticSnapshot {
-    return {
-      observedAt: Date.now(),
-      initialized: this.initialized,
-      initializing: !this.initialized && this.initPromise !== null,
-      disposed: this.disposed,
-      execution: this.engine ? "worker" : this.fallback ? "main-thread" : "unavailable",
-    };
-  }
-
-  private registerDiagnostics(): void {
-    this.unregisterDiagnostics ??= registerEngineDiagnostics({
-      snapshot: () => this.diagnosticSnapshot(),
-      ping: () => this.initialized ? boundedDiagnosticProbe(() => this.ping()) : Promise.reject(new Error("Engine unavailable")),
-    });
-  }
 
   cardDbLoaded = false;
 
@@ -424,7 +399,6 @@ export class WasmAdapter
 
   async initialize(): Promise<void> {
     this.disposed = false;
-    this.registerDiagnostics();
     if (this.initialized) return;
     if (this.initPromise) return this.initPromise;
     const generation = this.lifecycleGeneration;
@@ -555,7 +529,7 @@ export class WasmAdapter
     clicks: ContestClickInput[],
     awayPlayers: PlayerId[] = [],
   ): Promise<ContestDriveResult> {
-    this.assertInitialized("driveContest");
+    this.assertInitialized();
     try {
       const result = this.engine
         ? await this.engine.driveContest(nowMs, aiPlayers, awayPlayers, clicks)
@@ -569,7 +543,7 @@ export class WasmAdapter
 
   /** Open a takeback vote for `actor` on the hosted ledger (`request_takeback_js`). */
   async requestTakeback(actor: PlayerId, aiPlayers: PlayerId[]): Promise<TakebackReply> {
-    this.assertInitialized("requestTakeback");
+    this.assertInitialized();
     try {
       const reply = this.engine
         ? await this.engine.requestTakeback(actor, aiPlayers)
@@ -587,7 +561,7 @@ export class WasmAdapter
     approve: boolean,
     aiPlayers: PlayerId[],
   ): Promise<TakebackReply> {
-    this.assertInitialized("respondTakeback");
+    this.assertInitialized();
     try {
       const reply = this.engine
         ? await this.engine.respondTakeback(actor, approve, aiPlayers)
@@ -601,7 +575,7 @@ export class WasmAdapter
 
   /** Withdraw `actor`'s own open takeback request (`cancel_takeback_js`). */
   async cancelTakeback(actor: PlayerId): Promise<TakebackReply> {
-    this.assertInitialized("cancelTakeback");
+    this.assertInitialized();
     try {
       return this.engine
         ? await this.engine.cancelTakeback(actor)
@@ -613,7 +587,7 @@ export class WasmAdapter
 
   /** The open takeback vote, if any (`pending_takeback_js`). */
   async pendingTakeback(): Promise<TakebackVote | null> {
-    this.assertInitialized("pendingTakeback");
+    this.assertInitialized();
     try {
       return this.engine
         ? await this.engine.pendingTakeback()
@@ -624,7 +598,7 @@ export class WasmAdapter
   }
 
   async submitAction(action: GameAction, actor: PlayerId): Promise<SubmitResult> {
-    this.assertInitialized("submitAction");
+    this.assertInitialized();
     try {
       const submit = () => this.engine
         ? this.engine.submitAction(actor, action)
@@ -648,7 +622,7 @@ export class WasmAdapter
     submission: InteractionSubmission,
     actor: PlayerId,
   ): Promise<SubmitResult> {
-    this.assertInitialized("submitInteraction");
+    this.assertInitialized();
     try {
       const result = this.engine ? await this.engine.submitInteraction(actor, submission) : await this.fallback!.submitInteraction(submission, actor);
       this.invalidateAiDecisionDiagnostics();
@@ -659,7 +633,7 @@ export class WasmAdapter
   }
 
   async previewManaPayment(action: GameAction, actor: PlayerId): Promise<ObjectId[]> {
-    this.assertInitialized("previewManaPayment");
+    this.assertInitialized();
     try {
       if (this.engine) return await this.engine.previewManaPayment(actor, action);
       return await this.fallback!.previewManaPayment(action, actor);
@@ -672,7 +646,7 @@ export class WasmAdapter
     request: InteractionPreviewRequest,
     actor: PlayerId,
   ): Promise<InteractionPreview> {
-    this.assertInitialized("previewInteraction");
+    this.assertInitialized();
     try {
       if (this.engine) return await this.engine.previewInteraction(actor, request);
       return await this.fallback!.previewInteraction(request, actor);
@@ -682,7 +656,7 @@ export class WasmAdapter
   }
 
   async getState(): Promise<GameState> {
-    this.assertInitialized("getState");
+    this.assertInitialized();
     try {
       // WASM `get_game_state` now returns ClientGameState { state, derived }.
       // Flatten to the store's GameState shape by attaching `derived` as an
@@ -707,7 +681,7 @@ export class WasmAdapter
     // request from an engine that is not (or no longer) running is a no-op —
     // e.g. the game page's cleanup racing adapter disposal.
     if (!enabled && !this.initialized) return;
-    this.assertInitialized("setDebugHandReveal");
+    this.assertInitialized();
     try {
       if (this.engine) await this.engine.setDebugHandReveal(enabled);
       else await this.fallback!.setDebugHandReveal(enabled);
@@ -717,7 +691,7 @@ export class WasmAdapter
   }
 
   async getFilteredState(viewerId: number): Promise<GameState> {
-    this.assertInitialized("getFilteredState");
+    this.assertInitialized();
     try {
       const wrapped = this.engine
         ? await this.engine.getFilteredState(viewerId)
@@ -731,7 +705,7 @@ export class WasmAdapter
   // The in-browser engine serves one local seat (`PLAYER_ID`); every legal-action
   // read below asks the engine for that seat's own list.
   async getLegalActions(): Promise<LegalActionsResult> {
-    this.assertInitialized("getLegalActions");
+    this.assertInitialized();
     try {
       if (this.engine) return await this.engine.getLegalActions(PLAYER_ID);
       return await this.fallback!.getLegalActions(PLAYER_ID);
@@ -741,7 +715,7 @@ export class WasmAdapter
   }
 
   async getLegalActionsForViewer(viewerId: number): Promise<LegalActionsResult> {
-    this.assertInitialized("getLegalActionsForViewer");
+    this.assertInitialized();
     try {
       if (this.engine) return await this.engine.getLegalActionsForViewer(viewerId);
       return await this.fallback!.getLegalActionsForViewer(viewerId);
@@ -761,7 +735,7 @@ export class WasmAdapter
    * every `derived` consumer.
    */
   async getSnapshot(): Promise<EngineSnapshot> {
-    this.assertInitialized("getSnapshot");
+    this.assertInitialized();
     try {
       const raw = this.engine
         ? await this.engine.getSnapshot(PLAYER_ID)
@@ -777,7 +751,7 @@ export class WasmAdapter
   }
 
   async getViewerSnapshot(viewerId: number): Promise<ViewerSnapshot> {
-    this.assertInitialized("getViewerSnapshot");
+    this.assertInitialized();
     try {
       const wrapped = this.engine
         ? await this.engine.getViewerSnapshot(viewerId)
@@ -794,7 +768,7 @@ export class WasmAdapter
     viewerId: number,
     events: GameEvent[],
   ): Promise<ViewerTransitionSnapshot> {
-    this.assertInitialized("getViewerTransitionSnapshot");
+    this.assertInitialized();
     try {
       const wrapped = this.engine
         ? await this.engine.getViewerTransitionSnapshot(viewerId, events)
@@ -809,7 +783,7 @@ export class WasmAdapter
     difficulty: string,
     playerId: number,
   ): Promise<AiActionProposal | null> {
-    this.assertInitialized("getAiActionProposal");
+    this.assertInitialized();
     try {
       const captureEpoch = this.aiDecisionDiagnosticsEpoch;
       const capture = this.aiDecisionDiagnosticsEnabled;
@@ -892,7 +866,7 @@ export class WasmAdapter
     difficulty: string,
     playerId: number,
   ): Promise<AiActionProposal | null> {
-    this.assertInitialized("getAiTacticalActionProposal");
+    this.assertInitialized();
     try {
       if (this.engine) return await this.engine.getAiTacticalActionProposal(difficulty, playerId);
       return await this.fallback!.getAiTacticalActionProposal(difficulty, playerId);
@@ -916,7 +890,7 @@ export class WasmAdapter
     settingsRevision: number,
     clock: LlmClockReading,
   ): Promise<LlmDecisionRequestResult | null> {
-    this.assertInitialized("buildLlmDecisionRequest");
+    this.assertInitialized();
     try {
       if (this.engine) {
         return await this.engine.buildLlmDecisionRequest(
@@ -950,7 +924,7 @@ export class WasmAdapter
     responseBody: string,
     clock: LlmClockReading,
   ): Promise<AiLlmProposalResult | null> {
-    this.assertInitialized("getAiActionProposalFromLlmResponse");
+    this.assertInitialized();
     try {
       if (this.engine) {
         return await this.engine.getAiActionProposalFromLlmResponse(
@@ -978,7 +952,7 @@ export class WasmAdapter
   }
 
   async llmProviderCatalog(): Promise<unknown> {
-    this.assertInitialized("llmProviderCatalog");
+    this.assertInitialized();
     if (this.engine) return await this.engine.llmProviderCatalog();
     return this.fallback!.llmProviderCatalog();
   }
@@ -986,7 +960,7 @@ export class WasmAdapter
   async submitAiActionProposal(
     proposal: AiActionProposal,
   ): Promise<AiProposalSubmission> {
-    this.assertInitialized("submitAiActionProposal");
+    this.assertInitialized();
     try {
       const outcome = this.engine
         ? await this.engine.submitAiActionProposal(proposal)
@@ -1148,7 +1122,7 @@ export class WasmAdapter
   }
 
   async restoreState(state: PersistedGameState): Promise<void> {
-    this.assertInitialized("restoreState");
+    this.assertInitialized();
     await this.requireCardDb();
     const json = JSON.stringify(state);
     if (this.engine) await this.engine.restoreState(json);
@@ -1157,7 +1131,7 @@ export class WasmAdapter
   }
 
   async resumeRestoredGameState(): Promise<RestoredGameStateResult> {
-    this.assertInitialized("resumeRestoredGameState");
+    this.assertInitialized();
     try {
       const resumed = this.engine
         ? await this.engine.resumeRestoredGameState(PLAYER_ID)
@@ -1182,7 +1156,7 @@ export class WasmAdapter
    * runtime on restore.
    */
   async exportPersistenceState(): Promise<string> {
-    this.assertInitialized("exportPersistenceState");
+    this.assertInitialized();
     if (this.engine) return this.engine.exportState();
     return this.fallback!.exportState();
   }
@@ -1200,7 +1174,7 @@ export class WasmAdapter
    * when a host session ends.
    */
   async setMultiplayerMode(enabled: boolean): Promise<void> {
-    this.assertInitialized("setMultiplayerMode");
+    this.assertInitialized();
     if (this.engine) {
       await this.engine.setMultiplayerMode(enabled);
     } else {
@@ -1210,7 +1184,7 @@ export class WasmAdapter
   }
 
   async applySeatMutation(stateJson: string, mutationJson: string): Promise<unknown> {
-    this.assertInitialized("applySeatMutation");
+    this.assertInitialized();
     // No `ensureCardDb()` here: `apply_seat_mutation` never reads CARD_DB. Its
     // `WasmDeckResolver` resolves only against the static `STARTER_DECKS` table
     // (crates/engine/src/starter_decks.rs) and otherwise clones the passed-in
@@ -1231,7 +1205,7 @@ export class WasmAdapter
   }
 
   async projectSeatView(stateJson: string): Promise<unknown> {
-    this.assertInitialized("projectSeatView");
+    this.assertInitialized();
     if (this.engine) {
       return this.engine.projectSeatView(stateJson);
     }
@@ -1252,7 +1226,7 @@ export class WasmAdapter
     state: PersistedGameState,
     owner?: HostSessionOwner,
   ): Promise<RestoredGameStateResult> {
-    this.assertInitialized("resumeMultiplayerHostState");
+    this.assertInitialized();
     // Same CARD_DB requirement as restoreState — resume rehydrates abilities
     // only when the DB is loaded (engine-wasm resume_multiplayer_host_state).
     await this.requireCardDb();
@@ -1497,8 +1471,6 @@ export class WasmAdapter
 
   dispose(): void {
     this.disposed = true;
-    this.unregisterDiagnostics?.();
-    this.unregisterDiagnostics = null;
     this.setAiDecisionDiagnosticsEnabled(false);
     this.aiDecisionDiagnosticListeners.clear();
     this.lifecycleGeneration += 1;
@@ -1525,7 +1497,7 @@ export class WasmAdapter
   }
 
   async ping(): Promise<string> {
-    this.assertInitialized("ping");
+    this.assertInitialized();
     if (this.engine) {
       return this.engine.ping();
     }
@@ -1622,7 +1594,7 @@ export class WasmAdapter
     matchConfig?: MatchConfig,
     firstPlayer?: number,
   ): Promise<SubmitResult> {
-    this.assertInitialized("initializeGame");
+    this.assertInitialized();
     if (deckData) {
       await this.requireCardDb();
     }
@@ -1669,7 +1641,7 @@ export class WasmAdapter
     firstPlayer?: number,
     owner?: HostSessionOwner,
   ): Promise<SubmitResult> {
-    this.assertInitialized("initializeMultiplayerHostGame");
+    this.assertInitialized();
     if (deckData) {
       await this.requireCardDb();
     }
@@ -1706,16 +1678,8 @@ export class WasmAdapter
     return this.engine;
   }
 
-  private assertInitialized(operation: keyof WasmAdapter): void {
+  private assertInitialized(): void {
     if (!this.initialized) {
-      const engine = this.diagnosticSnapshot();
-      recordDiagnostic({ kind: "engine-not-initialized", observedAt: engine.observedAt, operation, engine });
-      trackEvent("wasm_not_initialized", {
-        operation,
-        initializing: engine.initializing,
-        disposed: engine.disposed,
-        observed_at: engine.observedAt,
-      });
       throw new AdapterError(
         AdapterErrorCode.NOT_INITIALIZED,
         "Adapter not initialized. Call initialize() first.",

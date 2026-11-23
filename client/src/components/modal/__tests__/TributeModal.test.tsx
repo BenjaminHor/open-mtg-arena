@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState } from "../../../adapter/types.ts";
 import { TributeModal } from "../TributeModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 
@@ -45,9 +44,8 @@ describe("TributeModal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
     });
-    useMultiplayerStore.setState({ activePlayerId: 1 });
     const state = makeState();
     useGameStore.setState({
       gameState: state,
@@ -85,7 +83,6 @@ describe("TributeModal", () => {
   });
 
   it("renders nothing when the current player is not the chosen opponent", () => {
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     const { container } = render(<TributeModal />);
     expect(container).toBeEmptyDOMElement();
   });

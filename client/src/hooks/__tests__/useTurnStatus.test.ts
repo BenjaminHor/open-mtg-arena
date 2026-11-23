@@ -53,20 +53,16 @@ function setup(opts: {
     gameState: createGameState(opts.state),
     waitingFor: opts.waitingFor,
   });
-  useMultiplayerStore.setState({
-    activePlayerId: opts.seat,
-    isSpectator: opts.spectate ?? false,
+  useMultiplayerStore.setState({ isSpectator: opts.spectate ?? false,
   });
 }
 
 describe("useTurnStatus", () => {
   beforeEach(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
   });
   afterEach(() => {
     useGameStore.getState().reset();
-    useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
   });
 
   it("my priority on an empty main-phase stack: actionable, reason is the main-phase window", () => {

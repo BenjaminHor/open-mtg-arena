@@ -13,7 +13,6 @@ vi.mock("../dice3d/loaders", () => ({
 // A missing chunk is absorbed by `safeLazy`; the local render boundary is only
 // the backstop for a throw, and reports to telemetry when it fires.
 const reportBoundaryError = vi.hoisted(() => vi.fn());
-vi.mock("../../../services/telemetryEvents", () => ({ reportBoundaryError }));
 
 import { DiceRollOverlay } from "../DiceRollOverlay";
 import { useMultiplayerStore } from "../../../stores/multiplayerStore";

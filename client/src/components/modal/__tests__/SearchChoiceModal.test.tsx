@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameObject, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayer } from "../../../test/factories/gameStateFactory.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
@@ -29,7 +28,6 @@ function makeObject(id: number, name: string): GameObject {
 describe("SearchChoice modal", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {
@@ -61,7 +59,7 @@ describe("SearchChoice modal", () => {
         },
       },
     });
-    useGameStore.setState({ gameMode: "online", gameState: state, waitingFor });
+    useGameStore.setState({ gameMode: "ai", gameState: state, waitingFor });
 
     render(<CardChoiceModal />);
 
@@ -100,7 +98,7 @@ describe("SearchChoice modal", () => {
         },
       },
     });
-    useGameStore.setState({ gameMode: "online", gameState: state, waitingFor });
+    useGameStore.setState({ gameMode: "ai", gameState: state, waitingFor });
 
     render(<CardChoiceModal />);
 
@@ -148,7 +146,7 @@ describe("SearchChoice modal", () => {
       ),
       waiting_for: waitingFor,
     });
-    useGameStore.setState({ gameMode: "online", gameState: state, waitingFor });
+    useGameStore.setState({ gameMode: "ai", gameState: state, waitingFor });
 
     render(<CardChoiceModal />);
 
@@ -186,7 +184,7 @@ describe("SearchChoice modal", () => {
       objects: { 42: makeObject(42, "Unordered Card") },
       waiting_for: waitingFor,
     });
-    useGameStore.setState({ gameMode: "online", gameState: state, waitingFor });
+    useGameStore.setState({ gameMode: "ai", gameState: state, waitingFor });
 
     render(<CardChoiceModal />);
     const cardButton = screen

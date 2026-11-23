@@ -1,9 +1,6 @@
 import { registerSW } from "virtual:pwa-register";
 
-import { isBundledTauriOrigin } from "../services/platform";
-import { markRemoteLoadOk } from "../services/legacyMigration";
 import { getEffectiveOffline, subscribeEffectiveOffline } from "../stores/connectivityStore";
-import { deferUntilMultiplayerSessionEnds, isMultiplayerGameLive } from "./multiplayerGuard";
 import { claimServiceWorkerReload, hasServiceWorkerReloadBudget, markPendingAutoUpdate } from "./updateMarker";
 import {
   claimUpdateStatus,
@@ -24,7 +21,7 @@ const PROGRESS_CEILING = 95;
 const BUILD_CHECK_TIMEOUT_MS = 5_000;
 
 type Registration = ServiceWorkerRegistration;
-type LifecycleStatus = "checking" | "deferred" | null;
+type LifecycleStatus = "checking" | null;
 
 export type AppShellReadiness =
   | { readonly status: "ready" }
@@ -42,7 +39,6 @@ export type AppShellReadiness =
         | "active-worker-unavailable"
         | "controller-unavailable"
         | "shell-cache-unavailable"
-        | "remote-load-marker-unavailable"
         | "lifecycle-changed";
     };
 
@@ -67,7 +63,6 @@ interface Lifecycle {
   checkQueued: boolean;
   queuedProbe: boolean;
   deferredReload: (() => void) | null;
-  deferredReloadCancel: (() => void) | null;
   lifecycleStatus: LifecycleStatus;
   ownsLifecycleStatus: boolean;
   beforeUnload: (() => void) | null;
@@ -292,8 +287,6 @@ function pauseLifecycle(candidate: Lifecycle): void {
   candidate.probeAbort = null;
   candidate.checkQueued = false;
   candidate.queuedProbe = false;
-  candidate.deferredReloadCancel?.();
-  candidate.deferredReloadCancel = null;
   settleLifecycleStatus(candidate);
 }
 
@@ -354,37 +347,26 @@ function requestCheck(candidate: Lifecycle, reason: "startup" | "resume" | "inte
     } while (isCurrent(candidate) && !getEffectiveOffline() && candidate.checkQueued && !candidate.deferredReload);
     if (isCurrent(candidate)) {
       candidate.checkActive = false;
-      // A reconnect may have re-submitted a multiplayer-deferred reload while
-      // this older check was unwinding. That retained reload, not the check,
-      // owns the deferred badge until it runs, is rejected, or is cancelled.
       if (candidate.lifecycleStatus === "checking") settleLifecycleStatus(candidate);
     }
   })();
 }
 
+/** Run a reload the worker asked for. Offline, it stays retained until the
+ *  scheduler resubmits it on reconnect. */
 function submitRetainedReload(candidate: Lifecycle): void {
-  const reload = candidate.deferredReload;
-  if (!reload || !isCurrent(candidate) || getEffectiveOffline() || candidate.deferredReloadCancel) return;
-  const scheduled = deferUntilMultiplayerSessionEnds(() => {
-    if (!isCurrent(candidate) || getEffectiveOffline() || candidate.deferredReload !== reload) return;
-    candidate.deferredReload = null;
-    candidate.deferredReloadCancel = null;
-    if (!claimServiceWorkerReload()) {
-      pushUpdateDebug("Service worker reload was already claimed this session.", "warn");
-      settleLifecycleStatus(candidate);
-      return;
-    }
-    markPendingAutoUpdate();
+  if (!candidate.deferredReload || !isCurrent(candidate) || getEffectiveOffline()) return;
+  candidate.deferredReload = null;
+  if (!claimServiceWorkerReload()) {
+    pushUpdateDebug("Service worker reload was already claimed this session.", "warn");
     settleLifecycleStatus(candidate);
-    pushUpdateDebug("Service worker update ready; reloading.");
-    for (const listener of needReloadListeners) listener();
-    window.location.reload();
-  }, "reload");
-  if (scheduled.deferred) {
-    candidate.deferredReloadCancel = scheduled.cancel;
-    setLifecycleStatus(candidate, "deferred");
-    pushUpdateDebug("Service worker update ready during multiplayer; deferring reload.", "warn");
+    return;
   }
+  markPendingAutoUpdate();
+  settleLifecycleStatus(candidate);
+  pushUpdateDebug("Service worker update ready; reloading.");
+  for (const listener of needReloadListeners) listener();
+  window.location.reload();
 }
 
 function installScheduler(candidate: Lifecycle): void {
@@ -505,9 +487,8 @@ export async function checkDeployedBuild(): Promise<DeployedBuildStatus> {
  * `onNeedReload` path (see `isBuildUpdateInFlight`).
  */
 export function updateToLatestBuild({ deadlineMs }: { deadlineMs: number }): Promise<BuildUpdateOutcome> {
-  // A live game is never reloaded from here, on any branch; with no budget left
-  // no automatic reload can happen this session.
-  if (isMultiplayerGameLive() || !hasServiceWorkerReloadBudget()) return Promise.resolve("manual");
+  // With no budget left no automatic reload can happen this session.
+  if (!hasServiceWorkerReloadBudget()) return Promise.resolve("manual");
   if (!("serviceWorker" in navigator) || navigator.serviceWorker.controller === null) {
     // Nothing is cached by a worker, so a plain reload fetches the deployed
     // build. It spends the same per-session budget as the worker path.
@@ -561,17 +542,6 @@ export function isBuildUpdateInFlight(): boolean {
 }
 
 /**
- * The user-driven Refresh: reloads unless a multiplayer game is live, in which
- * case it returns `false` and reloads nothing. It does not claim the service
- * worker reload budget.
- */
-export function reloadIfNoLiveGame(): boolean {
-  if (isMultiplayerGameLive()) return false;
-  window.location.reload();
-  return true;
-}
-
-/**
  * Verifies that the active worker can serve this build's app shell without a
  * network request. Step 7 uses the typed result to describe offline readiness.
  */
@@ -604,10 +574,7 @@ export async function checkAppShellReadiness(): Promise<AppShellReadiness> {
       return notReady("shell-cache-unavailable");
     }
 
-    const markerWritten = await markRemoteLoadOk();
-    const afterMarker = stale();
-    if (afterMarker) return afterMarker;
-    return markerWritten ? { status: "ready" } : notReady("remote-load-marker-unavailable");
+    return { status: "ready" };
   } catch {
     return stale() ?? notReady("shell-cache-unavailable");
   }
@@ -615,7 +582,7 @@ export async function checkAppShellReadiness(): Promise<AppShellReadiness> {
 
 /** Registers the PWA updater only once an effective-online lifecycle exists. */
 export function registerServiceWorker(): void {
-  if (import.meta.env.DEV || isBundledTauriOrigin() || !("serviceWorker" in navigator) || lifecycle) return;
+  if (import.meta.env.DEV || !("serviceWorker" in navigator) || lifecycle) return;
   const candidate: Lifecycle = {
     token: ++lifecycleToken,
     unsubscribe: null,
@@ -632,7 +599,6 @@ export function registerServiceWorker(): void {
     checkQueued: false,
     queuedProbe: false,
     deferredReload: null,
-    deferredReloadCancel: null,
     lifecycleStatus: null,
     ownsLifecycleStatus: false,
     beforeUnload: null,
@@ -664,8 +630,6 @@ function disposeCurrentServiceWorkerLifecycle(candidate: Lifecycle): void {
   clearScheduler(candidate);
   candidate.probeAbort?.abort();
   candidate.probeAbort = null;
-  candidate.deferredReloadCancel?.();
-  candidate.deferredReloadCancel = null;
   candidate.deferredReload = null;
   if (candidate.beforeUnload) window.removeEventListener("beforeunload", candidate.beforeUnload);
   settleLifecycleStatus(candidate);

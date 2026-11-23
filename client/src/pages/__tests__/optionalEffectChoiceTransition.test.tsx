@@ -45,7 +45,6 @@ import { DialogHost } from "../../components/modal/DialogHost.tsx";
 import { dispatchAction } from "../../game/dispatch.ts";
 import { useCanActForWaitingState } from "../../hooks/usePlayerId.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { usePreferencesStore } from "../../stores/preferencesStore.ts";
 import { useUiStore } from "../../stores/uiStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap, gameObjectFactory } from "../../test/factories/gameObjectFactory.ts";
@@ -204,7 +203,6 @@ describe("issue #459 — optional + targeted landfall trigger prompt sequence", 
         turnCheckpoints: [],
       });
       useUiStore.setState({ pendingAbilityChoice: null, enchantmentsDialogPlayer: null });
-      useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
       // Instant animations so the dispatch pipeline does not await timers.
       usePreferencesStore.setState({ animationSpeedMultiplier: 0 });
     });
@@ -214,7 +212,6 @@ describe("issue #459 — optional + targeted landfall trigger prompt sequence", 
     cleanup();
     act(() => {
       useGameStore.setState({ gameState: null, waitingFor: null, adapter: null });
-      useMultiplayerStore.setState({ activePlayerId: null, isSpectator: false });
     });
   });
 
@@ -274,11 +271,10 @@ describe("issue #459 — optional + targeted landfall trigger prompt sequence", 
 
     act(() => {
       useGameStore.setState({
-        gameMode: "online",
+        gameMode: "ai",
         gameState: state,
         waitingFor: state.waiting_for,
       });
-      useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
     });
     const { rerender } = render(<GameDialogHarness />);
 
@@ -287,7 +283,6 @@ describe("issue #459 — optional + targeted landfall trigger prompt sequence", 
     expect(screen.queryByRole("img", { name: "Bre of Clan Stoutarm" })).not.toBeInTheDocument();
 
     act(() => {
-      useMultiplayerStore.setState({ activePlayerId: 1 });
     });
     rerender(<GameDialogHarness />);
 

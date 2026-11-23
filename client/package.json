@@ -5,17 +5,15 @@
   "type": "module",
   "packageManager": "pnpm@9.15.9",
   "scripts": {
-    "dev": "pnpm run protocol:generate && vite",
-    "build": "pnpm run protocol:generate && tsc -b && vite build",
-    "lint": "pnpm run protocol:generate && eslint .",
-    "protocol:generate": "node ../scripts/protocol-versions.mjs generate",
-    "postinstall": "pnpm run protocol:generate",
-    "type-check": "pnpm run protocol:generate && tsc -b --noEmit",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "type-check": "tsc -b --noEmit",
     "preview": "vite preview",
-    "storybook": "pnpm run protocol:generate && storybook dev -c storybook -p 6006",
-    "build-storybook": "pnpm run protocol:generate && storybook build -c storybook -o storybook-static",
-    "test": "pnpm run protocol:generate && vitest",
-    "test:integration": "pnpm run protocol:generate && vitest run --config vitest.integration.config.ts"
+    "storybook": "storybook dev -c storybook -p 6006",
+    "build-storybook": "storybook build -c storybook -o storybook-static",
+    "test": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.2.8",

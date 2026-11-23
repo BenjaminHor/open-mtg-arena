@@ -1,5 +1,4 @@
-import { useCallback, useState } from "react";
-import { createPortal } from "react-dom";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { PlayerId } from "../../adapter/types.ts";
@@ -28,27 +27,21 @@ import {
 } from "../hud/HudBadges.tsx";
 import { AvatarHoverPreview } from "../hud/AvatarHoverPreview.tsx";
 import { EnchantmentsBadge } from "../hud/EnchantmentsBadge.tsx";
-import { KickConfirmDialog } from "../hud/KickConfirmDialog.tsx";
 import { NextUpBadge } from "../hud/NextUpBadge.tsx";
-import { PlayerLatency } from "../hud/PlayerLatency.tsx";
 
 interface OpponentSeatHeaderProps {
   playerId: PlayerId;
   compact?: boolean;
-  onKickPlayer?: (playerId: PlayerId) => void;
 }
 
-export function OpponentSeatHeader({ playerId, compact = false, onKickPlayer }: OpponentSeatHeaderProps) {
+export function OpponentSeatHeader({ playerId, compact = false }: OpponentSeatHeaderProps) {
   const { t } = useTranslation("game");
-  const [kickOpen, setKickOpen] = useState(false);
   const gameState = useGameStore((s) => s.gameState);
   const waitingFor = useGameStore((s) => s.waitingFor);
   const dispatch = useGameStore((s) => s.dispatch);
   const seatColor = getSeatColor(playerId, gameState?.seat_order);
   const avatarIdentity = useMultiplayerStore((s) => s.playerAvatars.get(playerId) ?? null);
   const avatar = usePlayerAvatarImage(avatarIdentity);
-  const disconnected = useMultiplayerStore((s) => s.disconnectedPlayers.has(playerId));
-  const isOnline = useMultiplayerStore((s) => s.connectionStatus) !== "disconnected";
   const designations = usePlayerDesignations(playerId);
   const player = gameState?.players[playerId];
   const label = getOpponentDisplayName(playerId);
@@ -160,14 +153,7 @@ export function OpponentSeatHeader({ playerId, compact = false, onKickPlayer }: 
           >
             {label}
           </span>
-          {isOnline && (
-            <span
-              className={`h-1.5 w-1.5 shrink-0 rounded-full ${disconnected ? "bg-red-500" : "bg-emerald-400"}`}
-              title={disconnected ? t("opponentHud.disconnected") : t("opponentHud.connected")}
-            />
-          )}
           <LifeTotal playerId={playerId} size="sm" hideLabel />
-          <PlayerLatency playerId={playerId} />
           {/* The enclosing identity block is pointer-events-none (so the
               header's full-area target button owns clicks while this seat is a
               legal target). Re-enable pointer events on the badge cluster so the
@@ -224,33 +210,6 @@ export function OpponentSeatHeader({ playerId, compact = false, onKickPlayer }: 
         </div>
       </div>
 
-      {onKickPlayer && (
-        <button
-          type="button"
-          className="relative z-20 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-red-950/70 text-[12px] font-bold text-red-200 ring-1 ring-red-400/30 hover:bg-red-800"
-          aria-label={t("opponentHud.kickPlayer", { seat: playerId + 1 })}
-          title={t("opponentHud.kickPlayerTooltip")}
-          onClick={(event) => {
-            event.stopPropagation();
-            setKickOpen(true);
-          }}
-        >
-          ×
-        </button>
-      )}
-
-      {createPortal(
-        <KickConfirmDialog
-          isOpen={kickOpen}
-          playerLabel={label}
-          onConfirm={() => {
-            onKickPlayer?.(playerId);
-            setKickOpen(false);
-          }}
-          onCancel={() => setKickOpen(false)}
-        />,
-        document.body,
-      )}
     </div>
   );
 }

@@ -61,8 +61,6 @@ describe("OpponentHud", () => {
     // persist across tests in this file. Both are reset here, not only in
     // `afterEach`, so one spectator row cannot make every later seated row inert.
     useMultiplayerStore.setState({
-      activePlayerId: 0,
-      isSpectator: false,
       playerAvatars: new Map(),
     });
     usePreferencesStore.setState({ followActiveOpponent: false, battlefieldPeekOnHover: false });
@@ -89,10 +87,9 @@ describe("OpponentHud", () => {
   });
 
   it("renders opponent tabs clockwise from a non-zero viewer, including eliminated seats", () => {
-    useMultiplayerStore.setState({ activePlayerId: 1 });
     useUiStore.setState({ focusedOpponent: 2 });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: createGameState({
         seat_order: [0, 3, 1, 2],
         eliminated_players: [0],
@@ -604,7 +601,6 @@ describe("OpponentHud", () => {
     const dispatch = vi.fn().mockResolvedValue([]);
     const wf = targetingLocalSeat([{ Player: 1 }]);
     act(() => {
-      useMultiplayerStore.setState({ isSpectator: true });
       useUiStore.setState({ focusedOpponent: 1 });
       useGameStore.setState({
         dispatch,
@@ -663,7 +659,6 @@ describe("OpponentHud", () => {
 
     it("offers no pill affordance to a spectating client", () => {
       act(() => {
-        useMultiplayerStore.setState({ isSpectator: true });
         useGameStore.setState({ gameMode: "spectate" });
       });
       const { dispatch } = mountOneOnOne(targetingLocalSeat([{ Player: 1 }]));
@@ -842,7 +837,6 @@ describe("OpponentHud", () => {
 
     it("shows the incoming popover to a spectator during the same prompt", async () => {
       act(() => {
-        useMultiplayerStore.setState({ isSpectator: true });
         useGameStore.setState({ gameMode: "spectate" });
       });
       mountBoard(targetingLocalSeat([{ Player: 2 }]), withIncomingAttacker());

@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 import { useCardDataMeta, formatRelativeDate } from "../../hooks/useCardDataMeta";
 import { checkForServiceWorkerUpdate } from "../../pwa/registerServiceWorker";
-import { checkForTauriUpdate } from "../../pwa/tauriUpdater";
 import { consumeRecentAutoUpdateMarker } from "../../pwa/updateMarker";
 import {
   useUpdateStatus,
@@ -12,7 +11,6 @@ import {
   getUpdateDebugReport,
 } from "../../pwa/updateStatus";
 import { displayedBuildHash } from "../../services/buildInfo";
-import { isBundledTauriOrigin, isDesktopTauri, isTauri } from "../../services/platform";
 
 const UPDATED_LABEL_MS = 4500;
 
@@ -26,13 +24,10 @@ interface BuildBadgeProps {
 export function BuildBadge({ className = "", inline = false, compact = false }: BuildBadgeProps = {}) {
   const { t } = useTranslation();
   const [showUpdatedLabel, setShowUpdatedLabel] = useState(() => consumeRecentAutoUpdateMarker());
-  const [shellVersion, setShellVersion] = useState<string | null>(null);
   const cardDataMeta = useCardDataMeta();
   const updateStatus = useUpdateStatus();
   const downloadProgress = useDownloadProgress();
   const updateError = useUpdateError();
-  const isRemoteTauriShell = isDesktopTauri() && !isBundledTauriOrigin();
-  const canCheckForUpdates = !isTauri() || isDesktopTauri();
 
   useEffect(() => {
     if (!showUpdatedLabel) return;
@@ -54,25 +49,8 @@ export function BuildBadge({ className = "", inline = false, compact = false }: 
   const isDownloading = updateStatus === "downloading";
   const hasUpdateIssue = Boolean(updateError);
 
-  useEffect(() => {
-    if (!isRemoteTauriShell) return;
-
-    let active = true;
-    void import("@tauri-apps/api/app")
-      .then(({ getVersion }) => getVersion())
-      .then((version) => {
-        if (active) setShellVersion(version);
-      })
-      .catch(() => {});
-
-    return () => {
-      active = false;
-    };
-  }, [isRemoteTauriShell]);
-
   const handleCheckUpdate = () => {
-    if (isDesktopTauri()) checkForTauriUpdate();
-    if (!isTauri() || !isBundledTauriOrigin()) checkForServiceWorkerUpdate();
+    checkForServiceWorkerUpdate();
   };
 
   const handleShowUpdateDebug = () => {
@@ -94,44 +72,36 @@ export function BuildBadge({ className = "", inline = false, compact = false }: 
   if (compact) {
     const tooltip = [
       buildHash ? `v${__APP_VERSION__} · ${buildHash}` : `v${__APP_VERSION__}`,
-      shellVersion && t("buildBadge.desktopAppVersion", { version: shellVersion }),
       cardDataMeta &&
         t("buildBadge.cardDataTitle", {
           date: cardDataMeta.generated_at,
           commit: cardDataMeta.commit_short,
         }),
-      canCheckForUpdates && t("buildBadge.checkForUpdates"),
+      t("buildBadge.checkForUpdates"),
     ]
       .filter(Boolean)
       .join("\n");
     return (
       <div className={`flex flex-col items-center gap-0.5 ${className}`.trim()}>
-        {canCheckForUpdates ? (
-          <button
-            type="button"
-            onClick={handleCheckUpdate}
-            aria-label={t("buildBadge.checkForUpdates")}
-            title={tooltip}
-            className="inline-flex flex-col items-center gap-0.5 font-mono text-[10.5px] leading-none text-slate-400 transition-colors hover:text-white"
-          >
-            <span className="inline-flex items-center gap-1">
-              <span>v{__APP_VERSION__}</span>
-              <span className={`text-[11px] text-slate-500 ${isActive ? "animate-spin" : ""}`} aria-hidden>
-                ↻
-              </span>
-            </span>
-            {buildHash && <span className="text-[9px] text-slate-500">{buildHash}</span>}
-          </button>
-        ) : (
-          <span title={tooltip} className="inline-flex flex-col items-center gap-0.5 font-mono text-[10.5px] leading-none text-slate-400">
+        <button
+          type="button"
+          onClick={handleCheckUpdate}
+          aria-label={t("buildBadge.checkForUpdates")}
+          title={tooltip}
+          className="inline-flex flex-col items-center gap-0.5 font-mono text-[10.5px] leading-none text-slate-400 transition-colors hover:text-white"
+        >
+          <span className="inline-flex items-center gap-1">
             <span>v{__APP_VERSION__}</span>
-            {buildHash && <span className="text-[9px] text-slate-500">{buildHash}</span>}
+            <span className={`text-[11px] text-slate-500 ${isActive ? "animate-spin" : ""}`} aria-hidden>
+              ↻
+            </span>
           </span>
-        )}
-        {canCheckForUpdates && statusLabel && (
+          {buildHash && <span className="text-[9px] text-slate-500">{buildHash}</span>}
+        </button>
+        {statusLabel && (
           <span className="text-center text-[8px] leading-tight text-cyan-300">{statusLabel}</span>
         )}
-        {canCheckForUpdates && hasUpdateIssue && !statusLabel && (
+        {hasUpdateIssue && !statusLabel && (
           <button
             type="button"
             onClick={handleShowUpdateDebug}
@@ -141,7 +111,7 @@ export function BuildBadge({ className = "", inline = false, compact = false }: 
             {t("buildBadge.updateIssue")}
           </button>
         )}
-        {canCheckForUpdates && showUpdatedLabel && !statusLabel && (
+        {showUpdatedLabel && !statusLabel && (
           <span className="text-[8px] text-emerald-300">{t("buildBadge.updated")}</span>
         )}
       </div>
@@ -163,13 +133,6 @@ export function BuildBadge({ className = "", inline = false, compact = false }: 
           {buildHash && <span className="text-slate-600">{buildHash}</span>}
         </a>
 
-        {shellVersion && (
-          <>
-            <span className="text-slate-700">·</span>
-            <span>{t("buildBadge.desktopAppVersion", { version: shellVersion })}</span>
-          </>
-        )}
-
         {cardDataMeta && (
           <>
             <span className="text-slate-700">·</span>
@@ -188,19 +151,17 @@ export function BuildBadge({ className = "", inline = false, compact = false }: 
           </>
         )}
 
-        {canCheckForUpdates && (
-          <button
-            type="button"
-            onClick={handleCheckUpdate}
-            className={`ml-0.5 text-slate-500 hover:text-white transition-colors cursor-pointer ${isActive ? "animate-spin" : ""}`}
-            aria-label={t("buildBadge.checkForUpdates")}
-            title={t("buildBadge.checkForUpdates")}
-          >
-            ↻
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleCheckUpdate}
+          className={`ml-0.5 text-slate-500 hover:text-white transition-colors cursor-pointer ${isActive ? "animate-spin" : ""}`}
+          aria-label={t("buildBadge.checkForUpdates")}
+          title={t("buildBadge.checkForUpdates")}
+        >
+          ↻
+        </button>
 
-        {canCheckForUpdates && hasUpdateIssue && (
+        {hasUpdateIssue && (
           <button
             type="button"
             onClick={handleShowUpdateDebug}
@@ -212,11 +173,11 @@ export function BuildBadge({ className = "", inline = false, compact = false }: 
           </button>
         )}
 
-        {canCheckForUpdates && statusLabel && <span className="ml-0.5 text-cyan-300">{statusLabel}</span>}
-        {canCheckForUpdates && hasUpdateIssue && !statusLabel && <span className="ml-0.5 text-rose-300">{t("buildBadge.updateIssue")}</span>}
-        {canCheckForUpdates && showUpdatedLabel && !statusLabel && <span className="ml-0.5 text-emerald-300">{t("buildBadge.updated")}</span>}
+        {statusLabel && <span className="ml-0.5 text-cyan-300">{statusLabel}</span>}
+        {hasUpdateIssue && !statusLabel && <span className="ml-0.5 text-rose-300">{t("buildBadge.updateIssue")}</span>}
+        {showUpdatedLabel && !statusLabel && <span className="ml-0.5 text-emerald-300">{t("buildBadge.updated")}</span>}
 
-        {canCheckForUpdates && isDownloading && (
+        {isDownloading && (
           <div className="absolute bottom-0 left-0 right-0 h-[2px]">
             <div
               className="h-full bg-cyan-400 transition-[width] duration-200 ease-out"

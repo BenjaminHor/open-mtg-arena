@@ -1,5 +1,5 @@
 import { Suspense, useRef, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { useChangelog } from "../../hooks/useChangelog";
@@ -11,8 +11,6 @@ import { ChromeControls } from "./ChromeControls";
 import { OfflineModeBadge } from "./OfflineModeBadge";
 import { Rail } from "./Rail";
 import { DraftShellChromeProvider, ShellProvider, type DraftShellChromeConfig } from "./ShellContext";
-import { SocialBar } from "./SocialBar";
-import { StatusBanner } from "./StatusBanner";
 import { TabBar } from "./TabBar";
 import { HomeIcon } from "./navIcons";
 
@@ -45,14 +43,6 @@ export function AppShell() {
     ? "deckbuilding"
     : "drafting";
   const changelog = useChangelog();
-  // The operator status banner targets exactly the landing surface and the
-  // online lobby, so the shell owns the route gate rather than the (propless)
-  // banner: keeping it here means the banner's fetch + poll never start on any
-  // other shell route. The gate is also load-bearing for layout — the deck
-  // builder shell is sized with a hard calc(100dvh - …) that a block-level
-  // banner would silently overflow — so widening it is not free.
-  const { pathname } = useLocation();
-  const showStatusBanner = pathname === "/" || pathname === "/multiplayer";
   const openWhatsNew = () => {
     setWhatsNewOpen(true);
     changelog.openAndLoad();
@@ -96,9 +86,9 @@ export function AppShell() {
             />
           )}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            {/* Sticky top chrome row: hosts the social strip and reserves the
-                vertical band the fixed top-right ChromeControls occupy (44px
-                mobile / 56px desktop), so page content clears both. */}
+            {/* Sticky top chrome row: reserves the vertical band the fixed
+                top-right ChromeControls occupy (44px mobile / 56px desktop),
+                so page content clears it. */}
             <div className={phoneDraftChrome
               ? "sticky top-0 z-30 flex min-h-[calc(env(safe-area-inset-top)+52px)] items-center gap-2 px-2 pb-1 pt-[calc(env(safe-area-inset-top)+1rem)]"
               : "sticky top-0 z-30 flex min-h-[calc(env(safe-area-inset-top)+44px)] items-center px-2 pb-1 pt-[calc(env(safe-area-inset-top)+0.5rem)] min-[820px]:min-h-[calc(env(safe-area-inset-top)+56px)] min-[820px]:px-4 min-[820px]:pt-[calc(env(safe-area-inset-top)+0.75rem)]"}
@@ -147,7 +137,7 @@ export function AppShell() {
                   ))}
                 </>
               )}
-              {responsiveDraftChrome && showProgress ? (
+              {responsiveDraftChrome && showProgress && (
                 <div
                   data-shell-draft-steps
                   className="pointer-events-none absolute inset-x-0 z-0 flex min-w-0 justify-center px-2"
@@ -159,18 +149,12 @@ export function AppShell() {
                     flow={draftChromeConfig.progressVariant}
                   />
                 </div>
-              ) : !responsiveDraftChrome ? (
-                <SocialBar />
-              ) : null}
+              )}
             </div>
             <OfflineModeBadge />
             {/* Inner Suspense so a lazy route's load swaps ONLY the content area —
                 the rail/scene persist (true SPA feel). */}
             <main className={`shell-content min-h-0 min-w-0 flex-1 ${responsiveDraftChrome ? "overflow-hidden" : "max-[820px]:pb-[76px]"}`}>
-              {/* Above the Suspense boundary, not inside it: a banner mounted
-                  inside would be swapped out for the route spinner on every
-                  lazy-chunk load and blink away on each navigation. */}
-              {showStatusBanner && <StatusBanner />}
               <Suspense
                 fallback={
                   <div className="flex min-h-full items-center justify-center py-24">

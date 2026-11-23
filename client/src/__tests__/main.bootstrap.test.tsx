@@ -39,24 +39,11 @@ vi.mock("../i18n", () => ({}));
 vi.mock("react-dom/client", () => ({
   createRoot: () => ({ render: () => mocks.calls.push("render") }),
 }));
-vi.mock("../services/legacyMigration", () => ({
-  importLegacyStorage: mocks.importLegacyStorage,
-  markRemoteLoadOk: vi.fn(() => { mocks.calls.push("marked"); }),
-}));
 vi.mock("../pwa/registerServiceWorker", () => ({
   registerServiceWorker: () => mocks.calls.push("service-worker"),
 }));
-vi.mock("../pwa/tauriUpdater", () => ({
-  registerTauriUpdater: () => mocks.calls.push("updater"),
-}));
 vi.mock("../pwa/chunkReloadHandler", () => ({
   installChunkReloadHandler: () => mocks.calls.push("chunk-handler"),
-}));
-vi.mock("../services/externalLinks", () => ({
-  installTauriExternalLinkHandler: () => mocks.calls.push("external-links"),
-}));
-vi.mock("../services/telemetryEvents", () => ({
-  installTelemetry: () => mocks.calls.push("telemetry"),
 }));
 
 afterEach(() => {

@@ -27,7 +27,7 @@ import {
   type SavedDeckRewrite,
 } from "../constants/storage";
 import { withSavedDeckLibraryOrSkip } from "./savedDeckTransaction";
-import { withStorageWatchSuppressed } from "./cloudSync/storageWatcher";
+import { withStorageWatchSuppressed } from "./storageWatcher";
 import { projectSavedDeckSpecialSlots } from "./savedDeckProjection";
 import {
   applyCanonicalNames,

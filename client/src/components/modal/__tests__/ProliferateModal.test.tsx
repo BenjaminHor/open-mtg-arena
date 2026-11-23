@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState, TargetRef, WaitingFor } from "../../../adapter/types.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObject, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import {
   buildCommanderFormatConfig,
@@ -59,7 +58,7 @@ function setUpWaitingFor(waitingFor: ChooseObjectsWaitingFor) {
   const state = makeState(waitingFor.data.eligible);
   state.waiting_for = waitingFor;
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: state,
     waitingFor,
   });
@@ -68,7 +67,7 @@ function setUpWaitingFor(waitingFor: ChooseObjectsWaitingFor) {
 function setUp(eligible: TargetRef[]) {
   const state = makeState(eligible);
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: state,
     waitingFor: state.waiting_for,
   });
@@ -77,7 +76,6 @@ function setUp(eligible: TargetRef[]) {
 describe("ProliferateModal (via CardChoiceModal)", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
   });
 
   afterEach(() => {
@@ -134,7 +132,6 @@ describe("ProliferateModal (via CardChoiceModal)", () => {
   });
 
   it("renders nothing when the current player cannot act", () => {
-    useMultiplayerStore.setState({ activePlayerId: 1 });
     setUp([{ Object: 42 }]);
     const { container } = render(<CardChoiceModal />);
     expect(container).toBeEmptyDOMElement();

@@ -22,7 +22,6 @@ const ready = {
     bundledAiCatalog: { status: "ready" as const },
     deckLibrary: { status: "not-installed" as const },
     coreVisuals: { status: "ready" as const },
-    nativeEngine: { status: "not-applicable" as const },
   },
   visualPacks: { status: "not-installed" as const, installedPacks: [] },
   requiredGaps: [],
@@ -48,7 +47,7 @@ describe("OfflinePreparationSection", () => {
   });
 
   it("prepares without changing Work Offline policy", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
 
@@ -58,7 +57,7 @@ describe("OfflinePreparationSection", () => {
   });
 
   it("reruns fresh preparation before enabling Work Offline", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
     const checkbox = screen.getByRole("checkbox", { name: "Work Offline" });
 
     fireEvent.click(checkbox);
@@ -68,7 +67,7 @@ describe("OfflinePreparationSection", () => {
   });
 
   it("runs a new enable-offline preparation after an earlier manual result", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
     await screen.findByText("This device is ready for offline local play.");
@@ -81,7 +80,7 @@ describe("OfflinePreparationSection", () => {
   it("keeps policy online until a held enable-offline preparation is ready", async () => {
     let resolve!: (value: typeof ready) => void;
     mocks.prepare.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Work Offline" }));
 
@@ -93,7 +92,7 @@ describe("OfflinePreparationSection", () => {
 
   it("requires confirmation before enabling Work Offline with required gaps", async () => {
     mocks.prepare.mockResolvedValueOnce(incomplete);
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Work Offline" }));
 
@@ -105,7 +104,7 @@ describe("OfflinePreparationSection", () => {
 
   it("applies Work Offline only after explicit confirmation", async () => {
     mocks.prepare.mockResolvedValueOnce(incomplete);
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Work Offline" }));
     await screen.findByRole("alertdialog");
@@ -116,7 +115,7 @@ describe("OfflinePreparationSection", () => {
 
   it("turns Work Offline off immediately without preparation", () => {
     useConnectivityStore.setState({ forcedOffline: true });
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Work Offline" }));
 
@@ -126,19 +125,19 @@ describe("OfflinePreparationSection", () => {
 
   it("does not call a warmer when an already-offline toggle is requested", async () => {
     useConnectivityStore.setState({ browserOnline: false });
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Work Offline" }));
 
     await screen.findByText("Reconnect before preparing offline local play.");
     expect(mocks.prepare).not.toHaveBeenCalled();
-    expect(screen.getByText("Native engine").parentElement).toHaveTextContent("Not applicable");
+    expect(screen.getByText("Card back and mana symbols").parentElement).toHaveTextContent("Not ready");
   });
 
   it("supersedes a held request with reconnect-required without leaving stale preparation UI", async () => {
     let resolve!: (value: typeof incomplete) => void;
     mocks.prepare.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
     expect(screen.getByRole("status")).toHaveTextContent("Preparing local play capabilities…");
@@ -157,7 +156,7 @@ describe("OfflinePreparationSection", () => {
   });
 
   it("keeps the live preparing state ahead of an earlier ready result", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
     await screen.findByText("This device is ready for offline local play.");
@@ -176,7 +175,7 @@ describe("OfflinePreparationSection", () => {
     mocks.prepare
       .mockImplementationOnce(() => new Promise((done) => { resolveFirst = done; }))
       .mockImplementationOnce(() => new Promise((done) => { resolveSecond = done; }));
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     const prepare = screen.getByRole("button", { name: "Prepare for Offline" });
     fireEvent.click(prepare);
@@ -195,7 +194,7 @@ describe("OfflinePreparationSection", () => {
   });
 
   it("runs a fresh retry after an earlier preparation result", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
     await screen.findByText("This device is ready for offline local play.");
@@ -209,7 +208,7 @@ describe("OfflinePreparationSection", () => {
       ...ready,
       visualPacks: { status: "warning", issueKinds: ["missing_object"] },
     });
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
 
@@ -228,7 +227,7 @@ describe("OfflinePreparationSection", () => {
     }, "Reload the app or relaunch the desktop shell, then prepare again."],
   ] as const)("reports %s with the actionable terminal status", async (_label, settled, message) => {
     mocks.prepare.mockResolvedValueOnce(settled);
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
 
@@ -238,7 +237,7 @@ describe("OfflinePreparationSection", () => {
   it("retains the mounted fence through StrictMode setup and cleanup", async () => {
     render(
       <StrictMode>
-        <OfflinePreparationSection nativeEngineEnabled={false} />
+        <OfflinePreparationSection />
       </StrictMode>,
     );
 
@@ -250,7 +249,7 @@ describe("OfflinePreparationSection", () => {
   /** The gap this panel used to have: with nothing cached it rendered no card
    *  image line at all, so a device with zero art still read as ready. */
   it("warns when no card images are cached", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
 
@@ -262,7 +261,7 @@ describe("OfflinePreparationSection", () => {
       ...ready,
       visualPacks: { status: "ready" as const, installedPacks: ["curated", "deck_library"] },
     });
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
 
@@ -273,7 +272,7 @@ describe("OfflinePreparationSection", () => {
   });
 
   it("lists the core visuals row in the readiness checklist", async () => {
-    render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "Prepare for Offline" }));
 
@@ -288,7 +287,7 @@ describe("OfflinePreparationSection", () => {
   ] as const)("ignores a late %s preparation result after unmount", async (_label, settled) => {
     let resolve!: (value: typeof settled) => void;
     mocks.prepare.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
-    const section = render(<OfflinePreparationSection nativeEngineEnabled={false} />);
+    const section = render(<OfflinePreparationSection />);
 
     fireEvent.click(screen.getByRole("checkbox", { name: "Work Offline" }));
     section.rerender(<p>Settings closed</p>);

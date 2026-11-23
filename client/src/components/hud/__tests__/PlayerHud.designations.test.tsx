@@ -4,13 +4,11 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { GameState } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
 import { PlayerHud } from "../PlayerHud.tsx";
 
 describe("PlayerHud designations", () => {
   beforeEach(() => {
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     useGameStore.setState({ gameState: buildGameState() });
   });
 

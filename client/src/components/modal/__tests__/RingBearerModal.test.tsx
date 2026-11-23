@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState } from "../../../adapter/types.ts";
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
 
@@ -52,9 +51,8 @@ describe("ChooseRingBearer board choice", () => {
   beforeEach(() => {
     dispatchMock.mockClear();
     const state = makeState();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     useGameStore.setState({
-      gameMode: "online",
+      gameMode: "ai",
       gameState: state,
       waitingFor: state.waiting_for,
     });

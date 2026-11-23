@@ -31,9 +31,6 @@ describe("OpponentSeatHeader visual avatars", () => {
     cardImage.isLoading = false;
     cardImage.source = { kind: "installed", src: "visual-pack://installed-seat-avatar" };
     useMultiplayerStore.setState({
-      activePlayerId: 0,
-      isSpectator: false,
-      connectionStatus: "connected",
       playerNames: new Map([[1, "Public Twin"]]),
       playerAvatars: new Map([
         [1, { kind: "card", cardName: "PRIVATE SEAT CARD" }],

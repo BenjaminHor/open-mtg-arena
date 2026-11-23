@@ -9,7 +9,6 @@ import type { DungeonPreview, GameState, WaitingFor } from "../../../adapter/typ
 import { CardChoiceModal } from "../CardChoiceModal.tsx";
 import { isWaitingForHandled } from "../../../game/waitingForRegistry.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
 
@@ -202,9 +201,8 @@ function makeState(waitingFor: WaitingFor): GameState {
 }
 
 function mount(waitingFor: WaitingFor) {
-  useMultiplayerStore.setState({ activePlayerId: 0 });
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: makeState(waitingFor),
     waitingFor,
   });

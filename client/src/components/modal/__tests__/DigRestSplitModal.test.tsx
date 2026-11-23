@@ -37,7 +37,7 @@ const OBJECTS: Record<string, GameObject> = {
 function mount(data: Extract<WaitingFor, { type: "DigRestSplitChoice" }>["data"]) {
   const waitingFor: WaitingFor = { type: "DigRestSplitChoice", data };
   useGameStore.setState({
-    gameMode: "online",
+    gameMode: "ai",
     gameState: buildGameState({
       players: [buildPlayer({ id: 0, library: data.cards }), buildPlayer({ id: 1 })],
       objects: OBJECTS,

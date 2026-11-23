@@ -4,7 +4,7 @@ const engine = vi.hoisted(() => ({ deckSupplyForFormat: vi.fn() }));
 vi.mock("../engineRuntime", () => engine);
 
 import { STORAGE_KEY_PREFIX } from "../../constants/storage";
-import { emptySeatDeck, pileSeatDeck, suppliedAiDeckChoice } from "../pileSource";
+import { emptySeatDeck, pileSeatDeck } from "../pileSource";
 
 const PILE = { main: [{ name: "Island", count: 40 }, { name: "Dandân", count: 40 }], sideboard: [] };
 
@@ -40,12 +40,5 @@ describe("pileSeatDeck", () => {
   it("answers null for a named pile that is no longer saved", async () => {
     engine.deckSupplyForFormat.mockResolvedValue("HostPile");
     expect(await pileSeatDeck("Dandan", { type: "SavedDeck", name: "Gone" })).toBeNull();
-  });
-});
-
-describe("suppliedAiDeckChoice", () => {
-  it("is an empty DeckList", () => {
-    expect(suppliedAiDeckChoice().choice).toEqual({ type: "DeckList", data: emptySeatDeck() });
-    expect(emptySeatDeck().main_deck).toEqual([]);
   });
 });

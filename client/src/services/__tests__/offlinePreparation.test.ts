@@ -5,20 +5,12 @@ const mocks = vi.hoisted(() => ({
   shell: vi.fn(),
   assets: vi.fn(),
   loadVisual: vi.fn(),
-  canNative: vi.fn(),
-  nativeKey: vi.fn(),
-  prepareNative: vi.fn(),
 }));
 
 vi.mock("../../stores/connectivityStore.ts", () => ({ getEffectiveOffline: () => mocks.offline }));
 vi.mock("../../pwa/registerServiceWorker.ts", () => ({ checkAppShellReadiness: mocks.shell }));
 vi.mock("../offlineAssets.ts", () => ({ prepareOfflineAssets: mocks.assets }));
 vi.mock("../platform.ts", () => ({ loadVisualPackBackend: mocks.loadVisual }));
-vi.mock("../nativeEngine.ts", () => ({
-  canAttemptNativeEngine: mocks.canNative,
-  nativeEngineKeyForCurrentOrigin: mocks.nativeKey,
-  prepareNativeEngineForOffline: mocks.prepareNative,
-}));
 
 import { prepareForOffline } from "../offlinePreparation.ts";
 import { MANA_SYMBOL_SHARDS } from "../scryfall.ts";
@@ -86,25 +78,21 @@ describe("prepareForOffline", () => {
     mocks.shell.mockResolvedValue({ status: "ready" });
     mocks.assets.mockResolvedValue(assetsReady);
     mocks.loadVisual.mockResolvedValue(null);
-    mocks.canNative.mockReturnValue(false);
-    mocks.nativeKey.mockReturnValue(null);
-    mocks.prepareNative.mockResolvedValue({ port: 4312 });
   });
 
   it("does no preparation work while already effectively offline", async () => {
     mocks.offline = true;
 
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "reconnect-required",
     });
 
     expect(mocks.shell).not.toHaveBeenCalled();
     expect(mocks.assets).not.toHaveBeenCalled();
     expect(mocks.loadVisual).not.toHaveBeenCalled();
-    expect(mocks.prepareNative).not.toHaveBeenCalled();
   });
 
-  it("runs shell, assets, visual verification, native preparation, then shell again", async () => {
+  it("runs shell, assets, visual verification, then shell again", async () => {
     const calls: string[] = [];
     mocks.shell.mockImplementation(async () => {
       calls.push("shell");
@@ -131,30 +119,21 @@ describe("prepareForOffline", () => {
       calls.push("visual");
       return visual;
     });
-    mocks.canNative.mockReturnValue(true);
-    mocks.nativeKey.mockReturnValue({ release: { version: "1.0.0" } });
-    mocks.prepareNative.mockImplementation(async () => {
-      calls.push("native");
-      return { port: 4312 };
-    });
+    await expect(prepareForOffline()).resolves.toMatchObject({ status: "ready" });
 
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({ status: "ready" });
-
-    expect(calls).toEqual(["shell", "assets", "visual", "catalog", "verify", "native", "shell"]);
-    expect(mocks.prepareNative).toHaveBeenCalledWith({ release: { version: "1.0.0" } });
+    expect(calls).toEqual(["shell", "assets", "visual", "catalog", "verify", "shell"]);
   });
 
-  it("short-circuits every initial app-shell failure before assets or native preparation", async () => {
+  it("short-circuits every initial app-shell failure before assets preparation", async () => {
     mocks.shell.mockResolvedValueOnce({ status: "not-ready", reason: "insecure-context" });
 
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "failed",
       requiredGaps: ["appShell"],
     });
 
     expect(mocks.assets).not.toHaveBeenCalled();
     expect(mocks.loadVisual).not.toHaveBeenCalled();
-    expect(mocks.prepareNative).not.toHaveBeenCalled();
   });
 
   it("keeps optional visual verification issues visible without blocking ready local play", async () => {
@@ -163,7 +142,7 @@ describe("prepareForOffline", () => {
       verify: vi.fn(async () => ({ issues: [{ kind: "missing_object" }] })),
     }));
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "ready",
       visualPacks: { status: "warning", issueKinds: ["missing_object"] },
     });
@@ -179,20 +158,17 @@ describe("prepareForOffline", () => {
     ["unavailable active worker", { status: "not-ready", reason: "active-worker-unavailable" }, "failed"],
     ["unavailable controller", { status: "not-ready", reason: "controller-unavailable" }, "failed"],
     ["unavailable shell cache", { status: "not-ready", reason: "shell-cache-unavailable" }, "failed"],
-    ["unavailable remote marker", { status: "not-ready", reason: "remote-load-marker-unavailable" }, "failed"],
     ["changed lifecycle", { status: "not-ready", reason: "lifecycle-changed" }, "failed"],
   ] as const)("short-circuits initial shell %s", async (_label, shell, status) => {
     mocks.shell.mockResolvedValueOnce(shell);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status,
       requiredGaps: ["appShell"],
     });
 
     expect(mocks.assets).not.toHaveBeenCalled();
     expect(mocks.loadVisual).not.toHaveBeenCalled();
-    expect(mocks.nativeKey).not.toHaveBeenCalled();
-    expect(mocks.prepareNative).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -204,7 +180,7 @@ describe("prepareForOffline", () => {
   ] as const)("reports optional visual %s without verification", async (_label, backend, visualPacks) => {
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "ready",
       visualPacks,
     });
@@ -213,7 +189,7 @@ describe("prepareForOffline", () => {
   it("reports healthy installed visual packs and catches visual backend failures as optional warnings", async () => {
     const healthy = visualBackend({ catalogStatus: installed("core", "curated") });
     mocks.loadVisual.mockResolvedValue(healthy);
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "ready",
       visualPacks: { status: "ready", installedPacks: ["curated"] },
     });
@@ -224,7 +200,7 @@ describe("prepareForOffline", () => {
     // installed, so overall readiness is not "ready". That distinction is the
     // whole point of core being a required capability rather than an advisory.
     mocks.loadVisual.mockRejectedValueOnce(new Error("adapter unavailable"));
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "failed",
       requiredGaps: ["coreVisuals"],
       visualPacks: { status: "warning", issueKinds: ["unavailable"] },
@@ -240,7 +216,7 @@ describe("prepareForOffline", () => {
     const backend = visualBackend({ catalogStatus: installed(), resolve });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "ready",
       capabilities: { coreVisuals: { status: "ready" } },
     });
@@ -257,7 +233,7 @@ describe("prepareForOffline", () => {
     const backend = visualBackend({ catalogStatus: installed("core") });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       capabilities: { coreVisuals: { status: "ready" } },
     });
     expect(backend.start).not.toHaveBeenCalled();
@@ -287,7 +263,7 @@ describe("prepareForOffline", () => {
     });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       capabilities: { coreVisuals: { status: "ready" } },
     });
     expect(backend.remove).toHaveBeenCalledWith({ kind: "packs", packIds: ["core"] }, "reject_dependents");
@@ -301,7 +277,7 @@ describe("prepareForOffline", () => {
     const backend = visualBackend({ catalogStatus: installed(), resolve, remove: vi.fn() });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       capabilities: { coreVisuals: { status: "ready" } },
     });
     expect(backend.remove).not.toHaveBeenCalled();
@@ -311,7 +287,7 @@ describe("prepareForOffline", () => {
     const backend = visualBackend({ catalogStatus: installed("core"), resolve: resolvesCore(false) });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "failed",
       requiredGaps: ["coreVisuals"],
       capabilities: { coreVisuals: { status: "not-ready" } },
@@ -327,7 +303,7 @@ describe("prepareForOffline", () => {
     });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "failed",
       requiredGaps: ["coreVisuals"],
       capabilities: { coreVisuals: { status: "not-ready" } },
@@ -351,7 +327,7 @@ describe("prepareForOffline", () => {
     });
     mocks.loadVisual.mockResolvedValue(backend);
 
-    const preparation = prepareForOffline({ nativeEngineEnabled: false });
+    const preparation = prepareForOffline();
     await vi.waitFor(() => { expect(emit).not.toBeNull(); });
     // An event for a DIFFERENT operation must not settle this wait.
     emit!({ phase: "completed", operation: { operationId: "op-other" } });
@@ -362,45 +338,10 @@ describe("prepareForOffline", () => {
     });
   });
 
-  it.each([
-    ["disabled", false, true, { release: { version: "1.0.0" } }],
-    ["unsupported", true, false, { release: { version: "1.0.0" } }],
-    ["without a current key", true, true, null],
-  ] as const)("marks native preparation %s as not applicable", async (_label, nativeEngineEnabled, canNative, key) => {
-    mocks.canNative.mockReturnValue(canNative);
-    mocks.nativeKey.mockReturnValue(key);
-
-    await expect(prepareForOffline({ nativeEngineEnabled })).resolves.toMatchObject({
-      status: "ready",
-      capabilities: { nativeEngine: { status: "not-applicable" } },
-    });
-    expect(mocks.prepareNative).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ["release", { release: { version: "1.0.0" } }],
-    ["preview", { preview: { fingerprint: "preview-123" } }],
-  ] as const)("prepares the exact current %s native key", async (_label, key) => {
-    mocks.canNative.mockReturnValue(true);
-    mocks.nativeKey.mockReturnValue(key);
-
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({
-      status: "ready",
-      capabilities: { nativeEngine: { status: "ready" } },
-    });
-    expect(mocks.prepareNative).toHaveBeenCalledWith(key);
   });
 
-  it("makes a required native preparation failure a named gap", async () => {
-    mocks.canNative.mockReturnValue(true);
-    mocks.nativeKey.mockReturnValue({ release: { version: "1.0.0" } });
-    mocks.prepareNative.mockRejectedValueOnce(new Error("native unavailable"));
-
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({
-      status: "failed",
-      capabilities: { nativeEngine: { status: "not-ready" } },
-      requiredGaps: ["nativeEngine"],
-    });
   });
 
   it("preserves named asset gaps and turns browser engine module skew into reload required", async () => {
@@ -415,7 +356,7 @@ describe("prepareForOffline", () => {
       },
     });
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "reload-or-relaunch-required",
       requiredGaps: ["browserEngine", "scryfallSearch", "deckLibrary"],
     });
@@ -432,7 +373,7 @@ describe("prepareForOffline", () => {
     capabilities[asset] = { status: "not-ready" };
     mocks.assets.mockResolvedValueOnce({ status: "not-ready", capabilities });
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status: "failed",
       requiredGaps: [capability],
     });
@@ -449,14 +390,11 @@ describe("prepareForOffline", () => {
       status: "not-ready",
       capabilities: { ...assetsReady.capabilities, scryfallSearch: { status: "not-ready" } },
     });
-    mocks.canNative.mockReturnValue(true);
-    mocks.nativeKey.mockReturnValue({ release: { version: "1.0.0" } });
-    mocks.prepareNative.mockRejectedValueOnce(new Error("missing"));
     mocks.shell.mockResolvedValueOnce({ status: "ready" }).mockResolvedValueOnce(finalShell);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: true })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status,
-      requiredGaps: ["appShell", "scryfallSearch", "nativeEngine"],
+      requiredGaps: ["appShell", "scryfallSearch"],
     });
   });
 
@@ -474,7 +412,7 @@ describe("prepareForOffline", () => {
     });
     mocks.shell.mockResolvedValueOnce({ status: "ready" }).mockResolvedValueOnce(finalShell);
 
-    await expect(prepareForOffline({ nativeEngineEnabled: false })).resolves.toMatchObject({
+    await expect(prepareForOffline()).resolves.toMatchObject({
       status,
       capabilities: {
         appShell: { status: appShellStatus },
@@ -485,8 +423,8 @@ describe("prepareForOffline", () => {
   });
 
   it("runs fresh authorities again for every retry", async () => {
-    await prepareForOffline({ nativeEngineEnabled: false });
-    await prepareForOffline({ nativeEngineEnabled: false });
+    await prepareForOffline();
+    await prepareForOffline();
 
     expect(mocks.shell).toHaveBeenCalledTimes(4);
     expect(mocks.assets).toHaveBeenCalledTimes(2);

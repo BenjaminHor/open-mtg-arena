@@ -17,7 +17,6 @@ type ZoneName = "graveyard" | "exile" | "library";
 interface OpponentSeatPaneProps {
   playerId: PlayerId;
   battlefieldView: PlayerBattlefieldView;
-  onKickPlayer?: (playerId: PlayerId) => void;
   onViewZone: (
     zone: ZoneName,
     playerId: PlayerId,
@@ -35,7 +34,6 @@ const pileSize = { width: "var(--card-w)", height: "var(--card-h)" };
 export function OpponentSeatPane({
   playerId,
   battlefieldView,
-  onKickPlayer,
   onViewZone,
 }: OpponentSeatPaneProps) {
   const { t } = useTranslation("game");
@@ -84,7 +82,6 @@ export function OpponentSeatPane({
         <OpponentSeatHeader
           playerId={playerId}
           compact={false}
-          onKickPlayer={onKickPlayer}
         />
       </div>
       {/* 1fr/auto/1fr grid keeps the hand fan dead-center regardless of the

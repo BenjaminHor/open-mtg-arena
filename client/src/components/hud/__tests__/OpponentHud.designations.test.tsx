@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { GameState } from "../../../adapter/types.ts";
 import { OpponentHud } from "../OpponentHud.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { usePreferencesStore } from "../../../stores/preferencesStore.ts";
 import { useUiStore } from "../../../stores/uiStore.ts";
 
@@ -73,7 +72,6 @@ function createTwoPlayerState(overrides: Partial<GameState> = {}): GameState {
 describe("OpponentHud designations (single-opponent path)", () => {
   beforeEach(() => {
     localStorage.clear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     usePreferencesStore.setState({ followActiveOpponent: false });
     useUiStore.setState({ focusedOpponent: 1 });
     useGameStore.setState({ gameState: createTwoPlayerState() });
@@ -260,7 +258,6 @@ describe("OpponentHud designations (multiplayer tab path)", () => {
 
   beforeEach(() => {
     localStorage.clear();
-    useMultiplayerStore.setState({ activePlayerId: 0 });
     usePreferencesStore.setState({ followActiveOpponent: false });
     useUiStore.setState({ focusedOpponent: 1 });
     useGameStore.setState({ gameState: createFourPlayerState() });

@@ -7,7 +7,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { audioDeviceSafeMock } = vi.hoisted(() => ({
   audioDeviceSafeMock: vi.fn(),
 }));
-vi.mock("../../services/audioHealth", () => ({ audioDeviceSafe: audioDeviceSafeMock }));
 
 // Swappable so a test can reproduce the WebKitGTK failure mode from issue
 // #6744: a decode that neither resolves nor rejects because the pipeline it

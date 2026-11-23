@@ -12,27 +12,16 @@ type DeckList = { player: Deck; opponent: Deck; ai_decks: Deck[] };
 const {
   deckSupplyForFormat,
   gameStoreState,
-  native,
   preferences,
-  recorded,
   useGameStore,
-  multiplayerState,
 } = vi.hoisted(() => {
-  const recorded = {
-    p2pHost: [] as DeckList[],
-    p2pGuest: [] as DeckList[],
-    ws: [] as { mode: string; deck: Deck; opts?: { nativeAi?: { aiSeats: { deck: Deck }[] } } }[],
-  };
   const gameStoreState = {
     adapter: null as unknown,
     gameId: null as string | null,
     gameState: null,
     initGame: vi.fn(async (..._args: unknown[]) => {}),
     resumeGame: vi.fn(),
-    resumeP2PHost: vi.fn(),
-    resumeNativeSolo: vi.fn(),
     reset: vi.fn(),
-    setEngineMode: vi.fn(),
     setGameMode: vi.fn(),
   };
   const useGameStore = Object.assign(
@@ -43,125 +32,38 @@ const {
       subscribe: vi.fn(() => () => {}),
     },
   );
-  const multiplayerState = {
-    displayName: "Player",
-    setActionPending: vi.fn(),
-    setActivePlayerId: vi.fn(),
-    setConnectionStatus: vi.fn(),
-    setIsSpectator: vi.fn(),
-    setLatency: vi.fn(),
-    setOpponentDisplayName: vi.fn(),
-    setSpectators: vi.fn(),
-    showToast: vi.fn(),
-    takeActiveP2PHost: vi.fn(() => null),
-    openBroker: vi.fn(),
-    closeBroker: vi.fn(),
-  };
   return {
     deckSupplyForFormat: vi.fn(async (format: string) =>
       format === "Dandan" ? "HostPile" : format === "Momir" ? "EngineFixed" : "PlayerBuilt"),
     gameStoreState,
-    native: { enabled: false },
     preferences: {
       aiSeats: [] as { difficulty: string; deckId: string }[],
       aiBracketFilter: [] as number[],
       cedhMode: false,
-      nativeEngineEnabled: false,
       artChain: [] as unknown[],
       artOverrides: {} as Record<string, unknown>,
     },
-    recorded,
     useGameStore,
-    multiplayerState,
   };
 });
 
 vi.mock("../../services/engineRuntime", () => ({ deckSupplyForFormat }));
-
-vi.mock("../../adapter/p2p-adapter", () => {
-  const adapter = () => ({ dispose: vi.fn(), onEvent: vi.fn(() => () => {}) });
-  return {
-    P2PHostAdapter: class {
-      constructor(deckList: DeckList) {
-        recorded.p2pHost.push(deckList);
-        return adapter();
-      }
-    },
-    P2PGuestAdapter: class {
-      constructor(deckList: DeckList) {
-        recorded.p2pGuest.push(deckList);
-        return adapter();
-      }
-    },
-  };
-});
 
 vi.mock("../../adapter/wasm-adapter", () => ({
   WasmAdapter: class {},
   getSharedAdapter: () => ({ cardDbLoaded: true }),
 }));
 
-vi.mock("../../adapter/ws-adapter", () => ({
-  NativeEngineVersionMismatchError: class extends Error {},
-  WebSocketAdapter: class {
-    dispose = vi.fn();
-    onEvent = vi.fn(() => () => {});
-    initialize = vi.fn(async () => {});
-    tryReconnect = vi.fn(() => true);
-    constructor(_url: string, mode: string, deck: Deck, ...rest: unknown[]) {
-      recorded.ws.push({ mode, deck, opts: rest[4] as never });
-    }
-  },
-  bootstrapFullTerminalDelivery: vi.fn(async () => null),
-  readFullTerminalResult: vi.fn(async () => null),
-  acknowledgeFullTerminalDelivery: vi.fn(async () => undefined),
-}));
-
-vi.mock("../../services/fullTerminalResult", () => ({
-  loadFullTerminalDelivery: vi.fn(async () => null),
-  commitFullTerminalDelivery: vi.fn(async () => true),
-  replaceFullTerminalDelivery: vi.fn(async () => true),
-}));
-
-vi.mock("../../services/nativeEngine", () => ({
-  canAttemptNativeEngine: () => native.enabled,
-  ensureNativeEngine: vi.fn(async () => {}),
-  nativeEngineKeyForCurrentOrigin: () => (native.enabled ? { dev: true } : null),
-}));
-
-vi.mock("../../services/nativeEngineSocket", () => ({ NativeEngineSocket: class {} }));
-
-// A P2P host reads its pending Full terminal cleanup before building a deck;
-// jsdom has no IndexedDB, so these launches start with none pending.
-vi.mock("../../services/gamePersistence", async (importOriginal) => ({
-  ...await importOriginal<typeof import("../../services/gamePersistence")>(),
-  loadFullTerminalCleanupStrict: vi.fn(async () => null),
-}));
-
 vi.mock("../../stores/gameStore", () => ({
   clearActiveGame: vi.fn(),
   clearGame: vi.fn(),
-  clearP2PHostSession: vi.fn(),
   loadActiveGame: vi.fn(() => null),
   loadGame: vi.fn(async () => null),
-  loadP2PHostSession: vi.fn(async () => null),
   nextGameSessionGeneration: vi.fn(() => 1),
   saveActiveGame: vi.fn(),
   useGameStore,
 }));
 
-vi.mock("../../network/connection", () => ({
-  hostRoom: vi.fn(async () => ({
-    peer: { id: "host-peer", destroy: vi.fn() },
-    roomCode: "ABCDE",
-    onGuestConnected: vi.fn(() => () => {}),
-    destroy: vi.fn(),
-  })),
-  joinRoom: vi.fn(async () => ({ conn: { peer: "host-peer" }, peer: { destroy: vi.fn() } })),
-}));
-
-vi.mock("../../services/p2pSession", () => ({ loadP2PSession: vi.fn(async () => null) }));
-vi.mock("../../services/p2pTerminalResult", () => ({ loadP2PTerminalResult: vi.fn(async () => null) }));
 vi.mock("../../services/deckCompatibility", () => ({
   evaluateDeckCompatibility: vi.fn(async () => ({
     selected_format_compatible: true,
@@ -204,27 +106,18 @@ vi.mock("../../game/sessionCleanup", () => ({ clearPromptOverlayState: vi.fn() }
 vi.mock("../../hooks/useGameplayPreferencesSync", () => ({ useGameplayPreferencesSync: vi.fn() }));
 vi.mock("../../audio/AudioManager", () => ({ audioManager: { setContext: vi.fn() } }));
 vi.mock("../../stores/multiplayerStore", () => ({
-  useMultiplayerStore: Object.assign(vi.fn(), { getState: () => multiplayerState, setState: vi.fn() }),
-}));
-vi.mock("../../stores/multiplayerDraftStore", () => ({
-  useMultiplayerDraftStore: { getState: () => ({ matchPairing: null }) },
+  useMultiplayerStore: Object.assign(vi.fn(), { getState: () => ({}), setState: vi.fn() }),
 }));
 vi.mock("../../services/playerAvatars", () => ({
   assignRandomAvatars: vi.fn(() => []),
   avatarCardNameForName: vi.fn(),
   fetchAvatarArtUrl: vi.fn(async () => null),
 }));
-vi.mock("../../services/multiplayerSession", () => ({
-  clearWsSession: vi.fn(),
-  loadWsSession: vi.fn(() => null),
-  saveWsSession: vi.fn(),
-}));
 vi.mock("../../pwa/updateMarker", () => ({ consumeRecentAutoUpdateMarker: vi.fn() }));
 vi.mock("../../services/quickDraftPersistence", () => ({
   loadDraftRun: vi.fn(),
   inspectActiveQuickDraftLifecycle: vi.fn(),
 }));
-vi.mock("../../services/serverDetection", () => ({ detectServerUrl: vi.fn(async () => "ws://test-server") }));
 
 import { ACTIVE_DECK_KEY, RANDOM_DECK_SELECTION, STORAGE_KEY_PREFIX } from "../../constants/storage";
 import { formatMetadata } from "../../data/formatRegistry";
@@ -272,7 +165,6 @@ describe("a saved deck's combo declaration reaches its own seat", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    native.enabled = false;
     gameStoreState.adapter = null;
     gameStoreState.gameId = null;
     preferences.aiBracketFilter = [];

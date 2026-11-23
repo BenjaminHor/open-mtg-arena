@@ -7,7 +7,6 @@ import { dispatchAction, dispatchResolveAll } from "../../game/dispatch.ts";
 import { usePhaseInfo } from "../../hooks/usePhaseInfo.ts";
 import { usePriorityAttentionClass } from "../../hooks/usePriorityAttention.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { blockerAssignmentPairs, useUiStore } from "../../stores/uiStore.ts";
 import { buildAttacks, hasMultipleAttackTargets, getValidAttackTargets, getValidAttackTargetsByAttacker } from "../../utils/combat.ts";
 import { gameButtonClass } from "../ui/buttonStyles.ts";
@@ -280,10 +279,8 @@ export function ActionButton() {
   const canActDuringAutoPass =
     mode === "combat-attackers" || mode === "combat-blockers";
 
-  const actionPending = useMultiplayerStore((s) => s.actionPending);
-  const actionBlocked = actionPending;
   const idle = mode === "hidden" && !isEndingTurn;
-  const blocked = idle || actionBlocked;
+  const blocked = idle;
   const panelClassName =
     "flex max-w-[min(32rem,calc(100vw-1.25rem))] flex-row flex-wrap items-center justify-end gap-1.5 rounded-[10px] border border-white/10 bg-slate-950/92 p-2 shadow-[0_12px_32px_rgba(15,23,42,0.45)] max-lg:portrait:w-full max-lg:portrait:max-w-none max-lg:portrait:flex-col max-lg:portrait:flex-nowrap max-lg:portrait:gap-1 max-lg:portrait:p-1.5 lg:max-w-none [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-1 [@media(max-height:500px)]:rounded-[8px]";
   const primaryButtonClass = "min-w-[10.5rem] max-lg:portrait:w-full max-lg:portrait:!min-w-0 lg:min-w-[12rem] [@media(max-height:500px)]:!min-w-[5.5rem] [@media(max-height:500px)]:!min-h-7 [@media(max-height:500px)]:!px-2 [@media(max-height:500px)]:!py-0.5 [@media(max-height:500px)]:!text-[10px]";
@@ -295,7 +292,6 @@ export function ActionButton() {
         {mode === "combat-attackers" && (
           <>
             <button
-              disabled={actionBlocked}
               onClick={() => {
                 if (selectedAttackers.length > 0) {
                   handleClearAttackers();
@@ -303,23 +299,21 @@ export function ActionButton() {
                   selectAllAttackers(validAttackerIds);
                 }
               }}
-              className={gameButtonClass({ tone: "amber", size: "md", disabled: actionBlocked, className: secondaryButtonClass })}
+              className={gameButtonClass({ tone: "amber", size: "md", className: secondaryButtonClass })}
             >
               {selectedAttackers.length > 0 ? t("actionButton.clearAttackers") : t("actionButton.attackWithAll")}
             </button>
             {selectedAttackers.length > 0 ? (
               <button
-                disabled={actionBlocked}
                 onClick={handleConfirmAttackers}
-                className={gameButtonClass({ tone: "emerald", size: "md", disabled: actionBlocked, className: primaryButtonClass })}
+                className={gameButtonClass({ tone: "emerald", size: "md", className: primaryButtonClass })}
               >
                 {t("actionButton.confirmAttackers", { count: selectedAttackers.length })}
               </button>
             ) : (
               <button
-                disabled={actionBlocked}
                 onClick={() => handleSkipConfirm("attackers")}
-                className={gameButtonClass({ tone: "slate", size: "md", disabled: actionBlocked, className: primaryButtonClass })}
+                className={gameButtonClass({ tone: "slate", size: "md", className: primaryButtonClass })}
               >
                 {skipArmed === "attackers"
                   ? t("actionButton.attackWithNoneConfirm")
@@ -334,25 +328,22 @@ export function ActionButton() {
             {blockerPairs.length > 0 ? (
               <>
                 <button
-                  disabled={actionBlocked}
                   onClick={handleConfirmBlockers}
-                  className={gameButtonClass({ tone: "emerald", size: "md", disabled: actionBlocked, className: primaryButtonClass })}
+                  className={gameButtonClass({ tone: "emerald", size: "md", className: primaryButtonClass })}
                 >
                   {t("actionButton.confirmBlockers", { count: blockerPairs.length })}
                 </button>
                 <button
-                  disabled={actionBlocked}
                   onClick={handleClearBlockers}
-                  className={gameButtonClass({ tone: "neutral", size: "md", disabled: actionBlocked, className: secondaryButtonClass })}
+                  className={gameButtonClass({ tone: "neutral", size: "md", className: secondaryButtonClass })}
                 >
                   {t("actionButton.resetBlocks")}
                 </button>
               </>
             ) : (
               <button
-                disabled={actionBlocked}
                 onClick={() => handleSkipConfirm("blockers")}
-                className={gameButtonClass({ tone: "slate", size: "md", disabled: actionBlocked, className: primaryButtonClass })}
+                className={gameButtonClass({ tone: "slate", size: "md", className: primaryButtonClass })}
               >
                 {skipArmed === "blockers"
                   ? t("actionButton.blockWithNoneConfirm")
@@ -371,9 +362,8 @@ export function ActionButton() {
           <>
             {canCompanionToHand && (
               <button
-                disabled={actionBlocked}
                 onClick={() => dispatchAction({ type: "CompanionToHand" })}
-                className={gameButtonClass({ tone: "amber", size: "md", disabled: actionBlocked, className: secondaryButtonClass })}
+                className={gameButtonClass({ tone: "amber", size: "md", className: secondaryButtonClass })}
               >
                 {t("actionButton.companionToHand")}
               </button>
@@ -384,12 +374,10 @@ export function ActionButton() {
             {endContinuousEffectOffers.map((offer) => (
               <button
                 key={offer.data.group}
-                disabled={actionBlocked}
                 onClick={() => dispatchAction(offer)}
                 className={gameButtonClass({
                   tone: "amber",
                   size: "md",
-                  disabled: actionBlocked,
                   className: secondaryButtonClass,
                 })}
               >
@@ -400,10 +388,9 @@ export function ActionButton() {
               </button>
             ))}
             <button
-              disabled={actionBlocked}
               onClick={() => dispatchAction({ type: "PassPriority" })}
               aria-describedby={resolveTooltipId}
-              className={gameButtonClass({ tone: "blue", size: "md", disabled: actionBlocked, className: `${primaryButtonClass} group relative ${attentionClass}` })}
+              className={gameButtonClass({ tone: "blue", size: "md", className: `${primaryButtonClass} group relative ${attentionClass}` })}
             >
               {t("actionButton.resolve")}
               <GameplayTooltip id={resolveTooltipId}>
@@ -411,12 +398,11 @@ export function ActionButton() {
               </GameplayTooltip>
             </button>
             <button
-              disabled={actionBlocked}
               onClick={() => {
                 void dispatchResolveAll(playerId);
               }}
               aria-describedby={resolveAllTooltipId}
-              className={gameButtonClass({ tone: "slate", size: "md", disabled: actionBlocked, className: `${secondaryButtonClass} group relative` })}
+              className={gameButtonClass({ tone: "slate", size: "md", className: `${secondaryButtonClass} group relative` })}
             >
               {t("actionButton.resolveAll")}
               <GameplayTooltip id={resolveAllTooltipId}>
@@ -430,9 +416,8 @@ export function ActionButton() {
           <>
             {canCompanionToHand && !idle && (
               <button
-                disabled={actionBlocked}
                 onClick={() => dispatchAction({ type: "CompanionToHand" })}
-                className={gameButtonClass({ tone: "amber", size: "md", disabled: actionBlocked, className: secondaryButtonClass })}
+                className={gameButtonClass({ tone: "amber", size: "md", className: secondaryButtonClass })}
               >
                 {t("actionButton.companionToHand")}
               </button>
@@ -444,12 +429,10 @@ export function ActionButton() {
               endContinuousEffectOffers.map((offer) => (
                 <button
                   key={offer.data.group}
-                  disabled={actionBlocked}
                   onClick={() => dispatchAction(offer)}
                   className={gameButtonClass({
                     tone: "amber",
                     size: "md",
-                    disabled: actionBlocked,
                     className: secondaryButtonClass,
                   })}
                 >
@@ -510,9 +493,8 @@ export function ActionButton() {
 
         {(isEndingTurn || isResolvingStack) && !canActDuringAutoPass && (
           <button
-            disabled={actionBlocked}
             onClick={() => dispatchAction({ type: "CancelAutoPass" })}
-            className={gameButtonClass({ tone: "amber", size: "md", disabled: actionBlocked, className: `${primaryButtonClass} animate-pulse` })}
+            className={gameButtonClass({ tone: "amber", size: "md", className: `${primaryButtonClass} animate-pulse` })}
           >
             <span className="flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 animate-spin">

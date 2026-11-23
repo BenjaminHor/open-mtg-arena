@@ -5,7 +5,6 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { useGameStore } from "../../../stores/gameStore.ts";
 import { usePreferencesStore } from "../../../stores/preferencesStore.ts";
 import { useUiStore } from "../../../stores/uiStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
 import { loadScryfallData, type PrintingEntry } from "../../../services/scryfall.ts";
 import type * as Platform from "../../../services/platform.ts";
@@ -131,7 +130,6 @@ describe("GameBoard multiplayer layout", () => {
       focusedOpponent: 2,
       blockerAssignments: new Map(),
     });
-    useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
     usePreferencesStore.setState({ ...usePreferencesStore.getInitialState(), multiplayerBoardLayout: "focused",
       showOwnerPrintings: true, language: "en", artChain: [], battlefieldCardDisplay: "full_card",
       artOverrides: { [ORACLE]: { scryfallId: V, setCode: "pin", collectorNumber: "3" } } });

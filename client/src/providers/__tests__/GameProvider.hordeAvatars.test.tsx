@@ -2,9 +2,6 @@ import { act } from "react";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../../services/serverDetection.ts", () => ({
-  detectServerUrl: vi.fn(() => new Promise<string>(() => {})),
-}));
 
 // Boss art resolves through the token-image sidecar, a static asset the
 // test environment does not serve. Stub the resolution keyed by the
@@ -34,7 +31,6 @@ import type { HordeRuleset, TokenImageRef } from "../../adapter/types.ts";
 import { OpponentSeatHeader } from "../../components/board/OpponentSeatHeader.tsx";
 import { assignRandomAvatars } from "../../services/playerAvatars.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerDraftStore } from "../../stores/multiplayerDraftStore.ts";
 import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import {
   buildCommanderFormatConfig,
@@ -193,9 +189,7 @@ describe("GameProvider Horde seat identities", () => {
     useMultiplayerStore.setState({
       playerNames: new Map(),
       playerAvatars: new Map(),
-      activePlayerId: 0,
     });
-    useMultiplayerDraftStore.setState({ matchPairing: null });
     useGameStore.setState({
       adapter: null,
       gameId: null,

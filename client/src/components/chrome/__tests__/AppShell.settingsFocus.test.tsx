@@ -25,11 +25,9 @@ vi.mock("../../modal/WhatsNewModal", () => ({ WhatsNewModal: () => null }));
 vi.mock("../../settings/visual-packs/VisualPackManager.tsx", () => ({
   VisualPackManager: () => null,
 }));
-vi.mock("../AccountControl", () => ({ AccountControl: () => null }));
 vi.mock("../BuildBadge", () => ({ BuildBadge: () => null }));
 vi.mock("../CardDataLoadingBar", () => ({ CardDataLoadingBar: () => null }));
 vi.mock("../FullscreenButton", () => ({ FullscreenButton: () => null }));
-vi.mock("../SocialBar", () => ({ SocialBar: () => null }));
 vi.mock("../TabBar", () => ({ TabBar: () => null }));
 vi.mock("../VolumeControl", () => ({ VolumeControl: () => null }));
 

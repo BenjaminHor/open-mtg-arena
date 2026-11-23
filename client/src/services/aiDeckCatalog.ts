@@ -21,7 +21,6 @@ import {
   STORAGE_KEY_PREFIX,
   onSavedDeckRewritten,
 } from "../constants/storage";
-import { PROFILE_REPLACED_EVENT } from "../stores/cloudSyncStore";
 
 export type AiDeckSource = DeckCatalogSource;
 
@@ -299,7 +298,7 @@ export function useAiDeckCatalog({
     requestKey: null,
   });
   // Library inventory revision: importing, deleting, adopting, or refreshing
-  // decks (here, in another tab, or via cloud sync) rescans the catalog so
+  // decks (here or in another tab) rescans the catalog so
   // mounted previews never serve decks game start can no longer draw, or
   // hide decks it can. Folder-only changes need no rescan — grouping reacts
   // through the folder index instead.
@@ -319,13 +318,11 @@ export function useAiDeckCatalog({
       if (isInventoryStorageKey(event.key)) scheduleRescan();
     };
     window.addEventListener(DECKS_CHANGED_EVENT, scheduleRescan);
-    window.addEventListener(PROFILE_REPLACED_EVENT, scheduleRescan);
     window.addEventListener("storage", onStorage);
     const unsubscribeRewritten = onSavedDeckRewritten(() => scheduleRescan());
     return () => {
       if (timer !== null) clearTimeout(timer);
       window.removeEventListener(DECKS_CHANGED_EVENT, scheduleRescan);
-      window.removeEventListener(PROFILE_REPLACED_EVENT, scheduleRescan);
       window.removeEventListener("storage", onStorage);
       unsubscribeRewritten();
     };

@@ -35,7 +35,7 @@ describe("UndoButton", () => {
     // would desync, so the affordance must stay hidden regardless of history.
     useGameStore.setState({
       stateHistory: [{ state: buildGameState(), logSeq: 0 }],
-      gameMode: "online",
+      gameMode: "ai",
     });
 
     render(<UndoButton />);

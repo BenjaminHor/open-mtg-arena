@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameState, TargetRef, WaitingFor } from "../../../adapter/types.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import {
   buildCopyTargetSlot,
   buildGameState,
@@ -24,7 +23,6 @@ describe("PlayerHud", () => {
     // OR `isSpectator`, and the two live in different module-singleton stores that
     // persist across tests in this file. Both are reset here, not only in
     // `afterEach`, so one spectator row cannot make every later seated row inert.
-    useMultiplayerStore.setState({ activePlayerId: 0, isSpectator: false });
     useGameStore.setState({ gameState: buildGameState(), gameMode: null, waitingFor: null });
   });
 
@@ -253,7 +251,6 @@ describe("PlayerHud", () => {
 
       const dispatch = vi.fn().mockResolvedValue([]);
       act(() => {
-        useMultiplayerStore.setState({ isSpectator: true });
         useGameStore.setState({
           dispatch,
           gameMode: "spectate",
@@ -272,7 +269,6 @@ describe("PlayerHud", () => {
     // spectator whose `gameMode` is still null but whose seat is spectating.
     it("gives an isSpectator client no affordance even when gameMode is null", () => {
       act(() => {
-        useMultiplayerStore.setState({ isSpectator: true });
       });
       const { dispatch } = mount(targetSelection([0]));
 

@@ -64,11 +64,10 @@ async function setup() {
   const ui = (await import("../../../stores/uiStore.ts")).useUiStore;
   const multiplayer = (await import("../../../stores/multiplayerStore.ts")).useMultiplayerStore;
   ui.setState(ui.getInitialState());
-  multiplayer.setState({ activePlayerId: 0, isSpectator: false });
   const { setGameStoreForTest } = await import("../../../test/helpers/gameStoreHelpers.ts");
   function seed(object: GameObject, overrides: Partial<GameState> = {}) {
     setGameStoreForTest({ gameState: gameStateFactory.withPlayers(0, 1).withObjects(object).build(overrides),
-      gameMode: "online", legalActions: [], legalActionsByObject: {}, spellCosts: {}, viewerInteraction: null });
+      gameMode: "ai", legalActions: [], legalActionsByObject: {}, spellCosts: {}, viewerInteraction: null });
   }
   return { preferences, store, ui, seed };
 }

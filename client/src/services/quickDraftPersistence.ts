@@ -1,4 +1,4 @@
-import { del, get, set } from "idb-keyval";
+import { createStore, del, get, set } from "idb-keyval";
 
 import { ACTIVE_QUICK_DRAFT_KEY, DRAFT_RUN_KEY_PREFIX, QUICK_DRAFT_KEY_PREFIX } from "../constants/storage";
 import {
@@ -6,7 +6,17 @@ import {
   type DraftWorkspaceState,
 } from "../components/draft/workspace/types";
 import type { DraftPhase, LocalDraftKind, PoolSortMode } from "../stores/draftStore";
-import { getDraftStore } from "./draftPersistence";
+
+/** The IndexedDB store that holds draft sessions (quick drafts and their runs);
+ *  created lazily so environments without IndexedDB never touch it. */
+let _draftStore: ReturnType<typeof createStore> | undefined;
+
+function getDraftStore(): ReturnType<typeof createStore> {
+  if (!_draftStore) {
+    _draftStore = createStore("phase-draft-session", "phase-draft-session");
+  }
+  return _draftStore;
+}
 
 export type DraftRunFormat = "single" | "bo3" | "run";
 
