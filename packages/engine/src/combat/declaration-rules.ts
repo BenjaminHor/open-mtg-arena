@@ -67,6 +67,57 @@ export function blockDeclarationProblem(
 }
 
 /**
+ * Whether this declaration of attackers could still be finished, by adding picks to it: a hint for players
+ * (`seatView`), never a rule. Picks are added greedily, each time one obeying the most requirements (CR 508.1d), until
+ * the declaration can be finished or nothing can be added. That's enough for the pool because each creature's
+ * requirements don't depend on the other picks, and its one whole-declaration restriction, "can't attack alone"
+ * (CR 508.1c), is always repaired by adding another creature, never made worse. A restriction that adding a creature
+ * can break, such as menace, would need a search (later: CR 702.111b).
+ */
+export function attacksCanFinish(state: GameState, chosen: readonly Attack[], cards: CardDatabase): boolean {
+  let current = [...chosen];
+  for (;;) {
+    if (attackDeclarationProblem(state, current, cards) === null) return true;
+    const picks = possibleAttacks(state, current, cards);
+    const best = mostObeying(picks, (a) => attackRequirements(state, a, cards));
+    if (best === undefined) return false;
+    current = [...current, best];
+  }
+}
+
+/** The same for blockers: blocks of an attacker all able creatures must block come first (CR 509.1c). */
+export function blocksCanFinish(state: GameState, chosen: readonly Block[], cards: CardDatabase): boolean {
+  let current = [...chosen];
+  for (;;) {
+    if (blockDeclarationProblem(state, current, cards) === null) return true;
+    const picks = possibleBlocks(state, current, cards);
+    const best = mostObeying(picks, (b) => blockObeys(state, b, cards));
+    if (best === undefined) return false;
+    current = [...current, best];
+  }
+}
+
+/** How many requirements one attack obeys (CR 508.1d): a hint for players, beside `attacksCanFinish`. */
+export function attackObeys(state: GameState, attack: Attack, cards: CardDatabase): number {
+  return attackRequirements(state, attack, cards);
+}
+
+/** How many requirements one block obeys (CR 509.1c): one if it blocks an attacker all able creatures must block. */
+export function blockObeys(state: GameState, block: Block, cards: CardDatabase): number {
+  return isLure(state, block.attacker, cards) ? 1 : 0;
+}
+
+/** The first pick obeying the most requirements; undefined when there are none. */
+function mostObeying<T>(picks: readonly T[], requirements: (pick: T) => number): T | undefined {
+  let best: { pick: T; count: number } | undefined;
+  for (const pick of picks) {
+    const count = requirements(pick);
+    if (best === undefined || count > best.count) best = { pick, count };
+  }
+  return best?.pick;
+}
+
+/**
  * The most requirements a legal declaration could obey: every creature's, except when only one creature has any, it
  * can't be declared alone, and no other creature could be declared with it (CR 508.1c's example: two such creatures may
  * attack together).

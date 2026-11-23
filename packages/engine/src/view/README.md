@@ -11,6 +11,10 @@ never the state (docs/architecture.md, "Hidden information"; D-044).
   values the layer system derives (characteristics, summoning sickness, combat roles, a spell's choices), keyed by id.
   The host sends it beside the view (D-135), so the UI, the heuristic AI and the LLM opponent read one source (D-137).
   Kept out of `playerView`, which stays a plain filter of the state.
+- `seat-view.ts`: `seatView(state, player, cards)`: what a seat is shown when it decides (D-144): the view, the seen
+  objects, and the legal actions as options with their mana cost, whether they can be paid now, their legal targets,
+  an activation's ability, and whether a declaration could finish after a pick. What the heuristic AI reads, and what
+  the app's Worker will post to the UI.
 - `events-for.ts`: `eventsFor(events, viewer)`: events that would reveal a hidden card (another player's draw, a card
   moving between hidden zones) lose the card's identity, and a card moving between a zone the viewer sees and one
   they don't shows only the side they see (`CARD_CAME_INTO_VIEW`, `CARD_LEFT_VIEW`, D-054).

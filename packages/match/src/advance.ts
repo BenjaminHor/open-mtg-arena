@@ -3,7 +3,7 @@
 // (or the game is over), and the UI shows that decision. `submit` applies the person's action. Both are pure: a match
 // in, a new match out; every action is logged, so the log replays the match exactly.
 
-import { chooseAction } from "@mtg/ai";
+import { chooseAction, heuristicAction } from "@mtg/ai";
 import {
   type Action,
   applyAction,
@@ -13,6 +13,7 @@ import {
   type GameState,
   legalActions,
   type PlayerId,
+  seatView,
 } from "@mtg/engine";
 import { autoPasses } from "./auto-pass.ts";
 import { autoTapAction } from "./auto-tap.ts";
@@ -65,8 +66,9 @@ function hostStep(match: MatchState, cards: CardDatabase): HostStep | null {
   const seat = match.seats[player];
   const settings = match.settings[player];
   if (seat === undefined || settings === undefined) throw new Error(`no seat for ${player}`);
-  // Paying: the host's pick of sources, if the seat leaves it to the host and a way to pay exists.
-  if (pending.kind === "payMana" && settings.autoTap) {
+  // Paying: the host's pick of sources, if the seat leaves it to the host and a way to pay exists. A heuristic seat
+  // always does: it only starts what the engine's pick can pay (D-144).
+  if (pending.kind === "payMana" && (settings.autoTap || seat.kind === "heuristic")) {
     const next = autoTapAction(state, cards);
     if (next !== null) return { match, action: next };
   }
@@ -78,6 +80,7 @@ function hostStep(match: MatchState, cards: CardDatabase): HostStep | null {
     if (pass !== undefined) return { match, action: pass };
   }
   if (seat.kind === "human") return null;
+  if (seat.kind === "heuristic") return { match, action: heuristicAction(seatView(state, player, cards), cards) };
   // A built-in agent: its choice, and its random state moves on (kept in the match, never the game's, D-062).
   const choice = chooseAction(seat.agent, actions, seat.random);
   return {

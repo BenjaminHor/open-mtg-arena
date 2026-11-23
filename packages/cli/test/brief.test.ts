@@ -6,7 +6,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cardDatabase } from "@mtg/cards";
-import { type GameState, type ObjectId, playerView, seenObjects } from "@mtg/engine";
+import { type GameState, type ObjectId, seatView } from "@mtg/engine";
 import { runScenario } from "@mtg/scenarios";
 import { describe, expect, it } from "vitest";
 import { briefOf } from "../src/brief/brief.ts";
@@ -29,11 +29,10 @@ function leaks(state: GameState): string[] {
     const other = briefOf(scrambleHidden(state, viewer, cards), viewer, [], cards);
     if (JSON.stringify(real) !== JSON.stringify(other)) problems.push(`${viewer}'s brief changes with hidden cards`);
     if (briefText(real, true) !== briefText(other, true)) problems.push(`${viewer}'s brief text changes`);
-    // The engine's derived values the brief is built on, which the UI and the AI read too (D-135, D-137).
+    // What the seat is shown, which the brief, the UI and every AI read (D-135, D-137, D-144).
     const scrambled = scrambleHidden(state, viewer, cards);
-    const seen = JSON.stringify(seenObjects(state, playerView(state, viewer, cards), cards));
-    const seenScrambled = JSON.stringify(seenObjects(scrambled, playerView(scrambled, viewer, cards), cards));
-    if (seen !== seenScrambled) problems.push(`${viewer}'s seen objects change with hidden cards`);
+    const shown = JSON.stringify(seatView(state, viewer, cards));
+    if (shown !== JSON.stringify(seatView(scrambled, viewer, cards))) problems.push(`${viewer}'s seat view changes`);
   }
   return problems;
 }

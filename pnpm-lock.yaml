@@ -32,6 +32,10 @@ importers:
       '@mtg/engine':
         specifier: workspace:*
         version: link:../engine
+    devDependencies:
+      '@mtg/cards':
+        specifier: workspace:*
+        version: link:../cards
 
   packages/cards:
     dependencies:
