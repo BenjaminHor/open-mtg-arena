@@ -2051,6 +2051,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
+- Visual direction (owner, 2026-11-23): "I kind of like how minimalistic and clean this person's web app is", with
+  screenshots of another MTG web app (described in ui.md, "Minimal and clean"). Asked whether to keep Arena's look,
+  take the minimal look for the cards and table while keeping Arena's layout and interactions, or go further. Slice
+  3's badges wait on the answer.
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.

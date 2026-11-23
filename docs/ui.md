@@ -54,6 +54,16 @@ battlefield." Touch has no hover, so on the phone a long-press opens the card's 
 (long-press)": the card large, and a panel per ability or effect on it), built in M3-04c. A desktop mouse resting on a
 card shows the same as a preview, as Arena's desktop client does (D-160 settled it).
 
+**Minimal and clean (owner, 2026-11-23):** the owner shared seven screenshots of another person's MTG web app and said
+"I kind of like how minimalistic and clean this person's web app is." What it does (described, not copied; D-140):
+a flat dark table with no texture; a permanent is only its art, with no frame or name strip, the name in small white
+text over a dark fade at the art's bottom left and power/toughness in a small dark pill at the bottom right; a counter
+is a small icon with its count beside the P/T; a keyword such as hexproof is a small round icon at the top left; a
+tapped card tilts with a curved-arrow mark; legal targets get a dashed outline and attacks and blocks an arrow; life
+totals and zone counts are plain large and small numbers in a corner ("52 Library 0 Graveyard 0 Exile"); the phases
+are a row of plain text tabs; decisions and the stack sit in a text panel at the right. How far this changes our
+direction (D-012, D-160: Arena as the North Star) is an open question in status.md.
+
 **Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
 battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
 the screen's height tall, and about 9% of the height of open table separates the two creature rows; nothing is drawn
