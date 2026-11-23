@@ -24,3 +24,4 @@ dist-e2e/
 # Screenshots from local checks (scripts write them to the working directory); none belong in the repo.
 /*.png
 apps/web/src/**/*.png
+apps/web/*.png

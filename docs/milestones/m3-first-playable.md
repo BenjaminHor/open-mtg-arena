@@ -73,7 +73,8 @@ playable cards, creature death); the dev effects gallery; speed setting includin
 *Owner (2026-11-23): big emphasis.* "Big emphasis on animations and effects, that's what makes mtg arena feel so
 polished ... I wanted to place a lot of emphasis on getting these nailed down solid. Watch videos of gameplay if you're
 able to." So M3-07 is a first-class slice, not a pass of defaults: before building, study Arena's motion frame by frame
-(gameplay video, or the owner's screen recordings if video hosts stay blocked; arena-research.md lists what's blocked),
+(gameplay video, or the owner's screen recordings if video hosts stay blocked, which the owner said on 2026-11-23
+they'll likely make; arena-research.md lists what's blocked),
 write the findings into arena-research.md (each move: what moves, from where to where, how long, the easing, what
 plays alongside, what the player can do meanwhile), and plan the effects list from them. Show the owner the dev effects
 gallery and short recordings early and often; their sense of "feels like Arena" is the acceptance test. M3-12 then

@@ -196,9 +196,39 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     keyboard: play from hand, targets, attack and block by tapping, prompts for every decision, the actions menu gone,
     smart auto-pass), each slice with its tests, reviews and its own PR; screenshots and a summary waiting for the
     owner. Items the UX review left for later (keyword badges, the long-press view) stay in M3-04c's list.
-  - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
-    (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
-    proxy injects per request, rather than a plain-text variable.
+  - Owner (2026-11-23): saved an OpenRouter API key for the LLM opponent (M3-02b); now a network secret (below).
+  - Owner (2026-11-23, morning): wants both "All Attack" and drag to play. "All Attack" isn't an engine option (each
+    attacker is its own pick): a button beside the main one during the declaration, sending a pick for every creature
+    that can attack, one at a time, then leaving the declaration open to adjust. Drag to play: drag a hand card up onto
+    the table to play or cast it, as the second tap does. Both go into M3-04c, first.
+  - Owner (2026-11-23, morning): asked to move the OpenRouter key to a network secret. Done: it's a network secret for
+    openrouter.ai on the "open-mtg-arena" cloud environment (the proxy adds `Authorization: Bearer` to each request;
+    a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
+    key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
+    CI never call it.
+  - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
+  - M3-04c first slice plan (2026-11-23): "All Attack" and drag to play, one PR.
+    - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
+      creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
+      action; the engine re-checks after each), skipping planeswalkers as targets. Then the declaration stays open to
+      adjust, and the main button finishes it. `interaction/all-attack.ts` says when it's offered (two or more
+      creatures could attack, all at the same player); App sends the picks in turn (D-158).
+    - Drag to play: press a hand card and move it up past a threshold; the card lifts as it starts, "Release to cast"
+      shows, and letting go above the line plays or casts it as the second tap would (the same action, from
+      `controls`). Let go below the line, or press Escape, and it's put down. Pointer events, so mouse and touch
+      alike. The card following the finger is M3-07's animation.
+    - Tests: unit tests for when All Attack is offered; e2e for All Attack (every creature attacking, then finish)
+      and for dragging a land and a spell onto the table, on both projects.
+    - Built (2026-11-23): All Attack beside the main button, offered while two or more creatures could attack;
+      the app sends one pick per reply and stops when none is left. Drag to play from the open or collapsed hand
+      (12 px to start, 60 px to play; "Drag up to cast" / "Release to cast" on the lifted card), followed with window
+      listeners because lifting the card redraws the hand and removes the element pressed; the click a release fires
+      is swallowed. The browser tests drag with a mouse on both projects; a real finger is for the phone check.
+    - After the reviews: the app shapes the declaration toward a goal (All Attack, Clear Attacks, a tap on an
+      attacker to take it out), by the engine's take-back and picks; fixed slots for the batch button and Undo; the
+      drag arms only above the open hand, says when a card can't be played, puts the hand back as it was on cancel,
+      and holds the pointer on the board's layer once lifted (for iOS Safari). Left: the collapsed hand's strips
+      under the small buttons on the phone (they cover a card's edge), and a check on a real iPhone.
   - **M3-04a done, merged (PR #96, 2026-11-23).** CI green, a 300-game fuzz clean. The owner can try it locally:
     `pnpm dev`, `?fixture=mid-game|crowded|attack|block|tokens`.
   - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:
@@ -1961,9 +1991,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
   Worth it if playtesting shows too many stops with an instant in hand.
-- "All Attack" and drag to play (2026-11-23, M3-04b): Arena has both. "All Attack" isn't an engine option (each
-  attacker is its own pick), so it would be a UI shortcut sending several picks. Taps already do all a drag would.
-  Wanted now, or later?
 
 - Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
   does? On touch, long-press shows the details (M3-04c) either way.

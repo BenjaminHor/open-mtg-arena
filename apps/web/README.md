@@ -33,11 +33,13 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   on a card or portrait, the main button, Undo or Cancel beside it, or a prompt. Pure and tested over whole games.
   `prompt-text.ts`: what a prompt says, its title and each choice's label from the decision ("Choose X for Fireball",
   "Keep 7"), how it lays its choices out (buttons, a row of numbers, a filter box for naming a card) and how the filter
-  ranks matches. `ability-label.ts`: an activated ability's short label ("Add {G}", "+2").
+  ranks matches. `ability-label.ts`: an activated ability's short label ("Add {G}", "+2"). `all-attack.ts`: All
+  Attack's picks, one at a time (the engine has no "all" action).
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
   (`CardButtons.tsx`), portraits (targetable as players), life crests, the phase ladders (`PhaseLadder.tsx`), the main
   button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
-  card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede (`SettingsMenu.tsx`).
+  card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede and full control (`SettingsMenu.tsx`).
+  `hand-drag.ts`: drag a hand card up onto the table to play it, followed on the window so lifting it can't lose it.
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
   component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `card-face.ts` (a card's face:
   frame, art window, name strip, power/toughness), `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat

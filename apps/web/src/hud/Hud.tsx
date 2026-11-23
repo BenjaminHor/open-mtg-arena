@@ -11,6 +11,7 @@ import type { Choice, Controls } from "../interaction/controls.ts";
 import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
 import { CardButtons } from "./CardButtons.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
+import type { HandDragCallbacks } from "./hand-drag.ts";
 import { ManaText } from "./ManaText.tsx";
 import { mainButton } from "./main-button.ts";
 import { PhaseLadder } from "./PhaseLadder.tsx";
@@ -33,6 +34,10 @@ type HudProps = {
   selection: ObjectId | null;
   fullControl: boolean;
   setFullControl: (on: boolean) => void;
+  /** Drag to play: a hand card lifted by a drag, let go on the table, or put down (`hand-drag.ts`). */
+  drag: HandDragCallbacks;
+  /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
+  attackBatch: { label: string; run: () => void; running: boolean } | null;
 };
 
 export function Hud(props: HudProps) {
@@ -58,6 +63,7 @@ export function Hud(props: HudProps) {
         onHand={props.openHand}
         handOpen={props.handOpen}
         selection={props.selection}
+        drag={props.drag}
       />
       <Portrait
         rect={anchors.portrait.opponent}
@@ -121,6 +127,19 @@ export function Hud(props: HudProps) {
           </button>
         );
       })}
+      {/* The batch button always in the second slot, Undo always in the first: a tap never lands on a different action
+          that just moved into the place pressed (ui.md "Never"). */}
+      {props.attackBatch !== null && anchors.secondary[1] !== undefined && (
+        <button
+          type="button"
+          className="secondary-button"
+          style={place(anchors.secondary[1])}
+          aria-disabled={busy || props.attackBatch.running}
+          onClick={() => !busy && !props.attackBatch?.running && props.attackBatch?.run()}
+        >
+          {props.attackBatch.label}
+        </button>
+      )}
       <div className="prompt-anchor" style={{ left: anchors.prompt.x, top: anchors.prompt.y }}>
         <Prompt
           prompt={controls.prompt}
