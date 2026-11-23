@@ -146,7 +146,7 @@ body,
 
 .ladder-pill {
   box-sizing: border-box;
-  border-radius: 999px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--edge);
 }
@@ -188,14 +188,14 @@ body,
   stroke: #f4f1ec;
 }
 
-/* The main button: a flat pill in the accent, its label in the app's typeface. (`.hud` in front: it must win over
+/* The main button: a flat rounded rectangle in the accent (the owner), its label in the app's typeface. (`.hud` in front: it must win over
    `.hud button`, which sets every control's colour.) */
 .hud .main-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: 8px;
   border: none;
   background: var(--accent);
   color: var(--accent-ink);
@@ -327,7 +327,7 @@ body,
 
 .hud .secondary-button {
   min-height: 44px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid var(--edge);
   background: var(--panel);
   color: #f4f1ec;

@@ -78,6 +78,10 @@ total as a large plain number, and under it the counts in small text ("52 Librar
 the place of the centred life crests and the portraits; whose turn it is and a player target show on the block. Then:
 "the scale of the player info seems too large" (owner, 2026-11-23): smaller, so it sits quietly in the corner.
 
+**The main button's shape (owner, 2026-11-23):** "the pill button on the bottom right should be a rounded
+square/rectangle instead." A rectangle with softly rounded corners, as the reference app's; the small buttons beside
+it match.
+
 **Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
 battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
 the screen's height tall, and about 9% of the height of open table separates the two creature rows; nothing is drawn
